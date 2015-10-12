@@ -57,10 +57,16 @@ public class QueryRequestTest extends XmlTestNoCastor<QueryRequest> {
         Expression expression = new Expression("ping1Millis", "ping1Micro / 1000", false);
         request.setExpressions(Lists.newArrayList(expression));
 
+        FilterDef filter = new FilterDef("name", "key", "val");
+        request.setFilters(Lists.newArrayList(filter));
+
         return Arrays.asList(new Object[][]{{
                 request,
                 "<query-request step=\"300\" start=\"1000\" end=\"2000\" maxrows=\"1\">" +
                     "<expression transient=\"false\" label=\"ping1Millis\">ping1Micro / 1000</expression>" +
+                    "<filter name=\"name\">" +
+                        "<parameter key=\"key\">val</parameter>" +
+                    "</filter>" +
                     "<source aggregation=\"AVERAGE\" attribute=\"strafeping\" datasource=\"ping1\" transient=\"true\" label=\"ping1Micro\" resourceId=\"node[1].responseTime[127.0.0.1]\"/>" +
                 "</query-request>",
                 null

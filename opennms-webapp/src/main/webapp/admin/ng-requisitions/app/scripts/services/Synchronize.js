@@ -40,6 +40,7 @@
         * @param {string} rescanExisting true to perform a full scan, false to only add/remove nodes without scan, dbonly for all DB operations without scan
         */
         var doSynchronize = function(foreignSource, rescanExisting) {
+          RequisitionsService.startTiming();
           RequisitionsService.synchronizeRequisition(foreignSource, rescanExisting).then(
             function() { // success
               growl.success('The import operation has been started for ' + foreignSource + ' (rescanExisting? ' + rescanExisting + ')');

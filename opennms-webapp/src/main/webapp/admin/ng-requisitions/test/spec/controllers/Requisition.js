@@ -33,10 +33,12 @@ describe('Controller: RequisitionController', function () {
   }));
 
   beforeEach(function() {
+    mockRequisitionsService.getTiming = jasmine.createSpy('getTiming');
     mockRequisitionsService.getRequisition = jasmine.createSpy('getRequisition');
     var requisitionDefer = $q.defer();
     requisitionDefer.resolve(requisition);
     mockRequisitionsService.getRequisition.andReturn(requisitionDefer.promise);
+    mockRequisitionsService.getTiming.andReturn({ isRunning: false });
 
     mockGrowl = {
       warn: function(msg) { console.warn(msg); },

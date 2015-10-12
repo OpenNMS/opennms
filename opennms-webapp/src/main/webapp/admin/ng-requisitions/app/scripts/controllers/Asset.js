@@ -19,10 +19,11 @@
   * @requires RequisitionsService The Requisitions Servive
   * @requires EmptyTypeaheadService The empty typeahead Service
   * @requires asset Node asset object
+  * @requires assetsBlackList The black list of asset fields
   *
   * @description The controller for manage the modal dialog for add/edit asserts of requisitioned nodes
   */
-  .controller('AssetController', ['$scope', '$modalInstance', 'RequisitionsService', 'EmptyTypeaheadService', 'asset', function($scope, $modalInstance, RequisitionsService, EmptyTypeaheadService, asset) {
+  .controller('AssetController', ['$scope', '$modalInstance', 'RequisitionsService', 'EmptyTypeaheadService', 'asset', 'assetsBlackList', function($scope, $modalInstance, RequisitionsService, EmptyTypeaheadService, asset, assetsBlackList) {
 
     /**
     * @description The asset object
@@ -43,6 +44,16 @@
     * @returns {array} List of valid asset fields
     */
     $scope.assetFields = [];
+
+    /**
+    * @description The black list of asset fields. 
+    *
+    * @ngdoc property
+    * @name AssetController#assetsBlackList
+    * @propertyOf AssetController
+    * @returns {array} The black list of asset fields.
+    */
+    $scope.assetsBlackList = assetsBlackList;
 
     /**
     * @description fieldComparator method from EmptyTypeaheadService
@@ -82,6 +93,24 @@
     */
     $scope.cancel = function() {
       $modalInstance.dismiss('cancel');
+    };
+
+    /**
+    * @description Get the unused available assets
+    *
+    * @name AssetController:getAvailableAssetFields
+    * @ngdoc method
+    * @methodOf AssetController
+    * @returns {array} the unused available assets
+    */
+    $scope.getAvailableAssetFields = function() {
+      var assets = [];
+      angular.forEach($scope.assetFields, function(asset) {
+        if ($scope.assetsBlackList.indexOf(asset) == -1) {
+          assets.push(asset);
+        }
+      });
+      return assets;
     };
 
     // Initialization

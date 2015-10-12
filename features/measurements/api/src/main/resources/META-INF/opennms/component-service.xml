@@ -18,7 +18,4 @@
 
   <onmsgi:service interface="org.opennms.netmgt.measurements.api.MeasurementFetchStrategy" ref="measurementFetchStrategy"/>
 
-  <!-- This is a list of analytics filters that can be used to filter the measurements REST results -->
-  <onmsgi:list id="analyticsFilters" interface="org.opennms.netmgt.jasper.analytics.FilterFactory"/>
-
 </beans>

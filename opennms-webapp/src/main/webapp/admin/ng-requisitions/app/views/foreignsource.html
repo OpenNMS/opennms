@@ -1,51 +1,63 @@
 <!-- Author: Alejandro Galue <agalue@opennms.org> -->
 
-<div class="panel panel-default">
+<ol class="breadcrumb">
+  <li><a href="/opennms/index.jsp">Home</a></li>
+  <li><a href="/opennms/admin/index.jsp">Admin</a></li>
+  <li><a ng-click="goTop()">Provisioning Requisitions</a></li>
+  <li ng-hide="foreignSource == 'default'"><a ng-click="goBack()">{{ foreignSource }}</a></li>
+  <li ng-hide="foreignSource == 'default'">Foreign Source Definition</li>
+  <li ng-show="foreignSource == 'default'">Default Definition</li>
+</ol>
 
-  <form name="fsForm" novalidate>
+<form name="fsForm" novalidate>
 
-    <!-- Navigation Bar -->
-    <nav class="navbar navbar-default" role="navigation">
-      <div class="container-fluid">
-        <div class="navbar-header">
-          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#node-navbar-collapse">
-            <span class="sr-only">Toggle navigation</span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
-          <div class="navbar-brand hidden-xs">Foreign Source Definition ({{ foreignSource }})</div>
-          <div class="navbar-brand visible-xs">FS Definition</div>
-        </div>
-        <div class="collapse navbar-collapse" id="node-navbar-collapse">
-          <ul class="nav navbar-nav navbar-right">
-            <li><a ng-click="goBack()"><span class="glyphicon glyphicon-remove"></span> Return</a></li>
-            <li><button type="button" class="btn btn-primary navbar-btn" ng-show="fsForm.$dirty && fsForm.$valid" ng-click="save()"><span class="glyphicon glyphicon-save"></span> Save</button></li>
-          </ul>
-        </div>
-      </div>
-    </nav>
+<!-- Toolbar -->
 
-    <!-- Common Information -->
-    <div class="container-fluid">
-      <div class="row">
-        <div class="col-md-6">
-          <div class="form-group">
-            <label classs="control-label">Last Modified</label>
-            <span class="form-control">{{ foreignSourceDef['date-stamp'] | date:'dd-MM-yy hh:mm:ss' }}</span>
-          </div>
-        </div>
-        <div class="col-md-6">
-          <div class="form-group" ng-class="{ 'has-error' : fsForm.scanInterval.$invalid }">
-            <label classs="control-label" for="scanInterval">Scan Interval</label>
-            <input class="form-control" type="text" id="scanInterval" name="scanInterval" placeholder="Scan Interval" ng-model="foreignSourceDef['scan-interval']" required></input>
-            <div ng-show="fsForm.scanInterval.$invalid" class="help-block">Scan Interval is required.</div>
-          </div>
-        </div>
-      </div>
+<div class="row">
+  <div class="col-md-6">
+    <h4 ng-show="foreignSource == 'default'" class="hidden-xs">Default Foreign Source Definition</h4>
+    <h4 ng-hide="foreignSource == 'default'" class="hidden-xs">Foreign Source Definition for Requisition {{ foreignSource }}</h4>
+    <h4 class="visible-xs">FS Definition</h4>
+  </div>
+  <div class="col-md-6">
+    <div class="input-group pull-right">
+      <button class="btn btn-danger" ng-click="save()" ng-show="fsForm.$dirty && fsForm.$valid" ng-disabled="timingStatus.isRunning">
+        <span class="glyphicon glyphicon-save"></span> Save
+      </button>
+      <button class="btn btn-default" ng-click="goBack()">
+        <span class="glyphicon glyphicon-remove"></span> Return
+      </button>
     </div>
+  </div>
+</div>
 
-    <!-- TabPanel -->
+<!-- Common - Content -->
+
+<div class="row">
+  <div class="col-md-12">
+    <br/>
+  </div>
+  <div class="col-md-6">
+    <div class="form-group">
+      <label class="control-label">Last Modified</label>
+      <span class="form-control">{{ foreignSourceDef['date-stamp'] | date:'dd-MM-yy hh:mm:ss' }}</span>
+    </div>
+  </div>
+  <div class="col-md-6">
+    <div class="form-group" ng-class="{ 'has-error' : fsForm.scanInterval.$invalid }">
+      <label class="control-label" for="scanInterval">Scan Interval</label>
+      <input class="form-control" type="text" id="scanInterval" name="scanInterval" placeholder="Scan Interval" ng-model="foreignSourceDef['scan-interval']" required></input>
+      <div ng-show="fsForm.scanInterval.$invalid" class="help-block">Scan Interval is required.</div>
+    </div>
+  </div>
+</div>
+
+<!-- Content -->
+
+<div class="row">
+  <div class="col-md-12">
+
+    <!-- Tab Panel -->
     <div class="container-fluid">
       <tabset>
 
@@ -75,12 +87,12 @@
                   </td>
                   <td>
                     <span class="pull-right">
-                      <a class="btn btn-default btn-xs" tooltip="Edit the detector" ng-click="editDetector($index)">
+                      <button class="btn btn-default btn-xs" tooltip="Edit the detector" ng-click="editDetector($index)">
                         <span class="glyphicon glyphicon-pencil"/>
-                      </a>
-                      <a class="btn btn-default btn-xs" tooltip="Remove the detector" ng-click="removeDetector($index)">
+                      </button>
+                      <button class="btn btn-default btn-xs" tooltip="Remove the detector" ng-click="removeDetector($index)">
                         <span class="glyphicon glyphicon-remove"/>
-                      </a>
+                      </button>
                     </span>
                   </td>
                 </tr>
@@ -130,8 +142,9 @@
         </tab>
 
       </tabset>
-    </div> <!-- container-fluid -->
+    </div> <!-- tab-panel container-fluid -->
 
-  </form>
+  </div> <!-- column -->
+</div> <!-- row -->
 
-</div> <!-- panel -->
+</form>

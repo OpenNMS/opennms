@@ -30,31 +30,37 @@ package org.opennms.netmgt.integrations.R;
 
 import static org.junit.Assert.assertEquals;
 
+import java.util.Map;
+
 import org.junit.Test;
 
 import com.google.common.collect.ImmutableTable;
+import com.google.common.collect.Maps;
 import com.google.common.collect.RowSortedTable;
 import com.google.common.collect.TreeBasedTable;
 
 public class RScriptExecutorIT {
     @Test
     public void canRunScriptInClasspath() throws RScriptException {
-        int N = 8192;
+        long N = 8192;
 
         // Generate data for the input table
-        RowSortedTable<Integer, String, Double> expectedTable = TreeBasedTable.create();
-        for (int i = 0; i < N; i++) {
+        RowSortedTable<Long, String, Double> expectedTable = TreeBasedTable.create();
+        for (long i = 0; i < N; i++) {
             expectedTable.put(i, "x", Double.valueOf(i));
             expectedTable.put(i, "y", Double.valueOf(i*2));
         }
 
+        Map<String, Object> arguments = Maps.newHashMap();
+        arguments.put("unescapable_option", "\"'\\U0027\\U0027");
+
         // Execute the script
         RScriptExecutor executor = new RScriptExecutor();
-        RScriptOutput output = executor.exec("/echo.R", new RScriptInput(expectedTable));
-        ImmutableTable<Integer, String, Double> actualTable = output.getTable();
+        RScriptOutput output = executor.exec("/echo.R", new RScriptInput(expectedTable, arguments));
+        ImmutableTable<Long, String, Double> actualTable = output.getTable();
 
         // Expect the same table back
-        for (int i = 0; i < N; i++) {
+        for (long i = 0; i < N; i++) {
             assertEquals(i, actualTable.get(i, "x"), 0.0001);
             assertEquals(i*2, actualTable.get(i, "y"), 0.0001);
         }

@@ -1,31 +1,39 @@
 <!-- Author: Alejandro Galue <agalue@opennms.org> -->
 
-<div class="panel panel-default">
+<ol class="breadcrumb">
+  <li><a href="/opennms/index.jsp">Home</a></li>
+  <li><a href="/opennms/admin/index.jsp">Admin</a></li>
+  <li><a ng-click="goTop()">Provisioning Requisitions</a></li>
+  <li><a ng-click="goBack()">{{ foreignSource }}</a></li>
+  <li>{{ node.nodeLabel }}</li>
+</ol>
 
-  <form name="nodeForm" novalidate>
+<form name="nodeForm" novalidate>
 
-    <!-- Navigation Bar -->
-    <nav class="navbar navbar-default" role="navigation">
-      <div class="container-fluid">
-        <div class="navbar-header">
-          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#node-navbar-collapse">
-            <span class="sr-only">Toggle navigation</span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
-          <div class="navbar-brand">{{ node.nodeLabel }} @ {{ foreignSource }}</div>
-        </div>
-        <div class="collapse navbar-collapse" id="node-navbar-collapse">
-          <ul class="nav navbar-nav navbar-right">
-            <li><a ng-click="goBack()"><span class="glyphicon glyphicon-remove"></span> Return</a></li>
-            <li><button type="button" class="btn btn-danger navbar-btn" ng-show="nodeForm.$dirty && nodeForm.$valid" ng-click="save()"><span class="glyphicon glyphicon-save"></span> Save</button></li>
-          </ul>
-        </div>
-      </div>
-    </nav>
+<!-- Toolbar -->
 
-    <!-- TabPanel -->
+<div class="row">
+  <div class="col-md-6">
+    <h4>Node {{ node.nodeLabel }} at {{ foreignSource }}</h4>
+  </div>
+  <div class="col-md-6">
+    <div class="input-group pull-right">
+      <button class="btn btn-danger" ng-click="save()" ng-show="nodeForm.$dirty && nodeForm.$valid" ng-disabled="timingStatus.isRunning">
+        <span class="glyphicon glyphicon-save"></span> Save
+      </button>
+      <button class="btn btn-default" ng-click="goBack()">
+        <span class="glyphicon glyphicon-remove"></span> Return
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Content -->
+
+<div class="row">
+  <div class="col-md-12">
+
+    <!-- Tab Panel -->
     <div class="container-fluid">
       <tabset justified="true">
 
@@ -35,21 +43,21 @@
           <br/>
           <br/>
           <div class="form-group" ng-class="{ 'has-error' : nodeForm.foreignId.$invalid }">
-            <label classs="control-label" for="foreignId">Foreign ID</label>
-            <input class="form-control" type="text" id="foreignId" name="foreignId" placeholder="Foreign ID (must be unique within the requisition)" ng-model="node.foreignId" required unique-foreign-id="foreignIdBlackList" ng-disabled="!isNew"/>
+            <label class="control-label" for="foreignId">Foreign ID</label>
+            <input class="form-control" type="text" id="foreignId" name="foreignId" placeholder="Foreign ID (must be unique within the requisition)" ng-model="node.foreignId" ng-disabled="!isNew" required valid-foreign-id/>
             <p ng-show="nodeForm.foreignId.$invalid" class="help-block">Foreign ID is required and must be unique within the requisition.</p>
           </div>
           <div class="form-group" ng-class="{ 'has-error' : nodeForm.nodeLabel.$invalid }">
-            <label classs="control-label" for="nodeLabel">Node Label</label>
+            <label class="control-label" for="nodeLabel">Node Label</label>
             <input class="form-control" type="text" id="nodeLabel" name="nodeLabel" placeholder="Node Label" ng-model="node.nodeLabel" required/>
             <p ng-show="nodeForm.nodeLabel.$invalid" class="help-block">Node Label is required.</p>
           </div>
           <div class="form-group">
-            <label classs="control-label" for="building">Building</label>
+            <label class="control-label" for="building">Building</label>
             <input class="form-control" type="text" id="building" name="building" placeholder="Building" ng-model="node.building"/>
           </div>
           <div class="form-group">
-            <label classs="control-label" for="city">City</label>
+            <label class="control-label" for="city">City</label>
             <input class="form-control" type="text" id="city" name="city" placeholder="City" ng-model="node.city"/>
           </div>
         </tab>
@@ -150,19 +158,23 @@
         <tab heading="Categories">
           <a ng-click="addCategory()" class="btn"><span class="glyphicon glyphicon-plus"/> Add Category</a>
           <br/>
-          <div class="form-group">
-            <div class="input-group" ng-repeat="category in node.categories">
-              <input class="form-control" type="text" placeholder="Category Name" ng-model="category.name" ng-focus="onFocus($event)" empty-typeahead typeahead-editable="true" typeahead="category for category in availableCategories | filter:$viewValue:fieldComparator" required></input>
-              <span class="input-group-btn">
-                <button class="btn btn-default" type="button" ng-click="removeCategory($index)"><span class="glyphicon glyphicon-remove"></span></button>
-              </span>
+          <ng-form name="categoryForm" ng-repeat="category in node.categories">
+            <div class="form-group" ng-class="{ 'has-error' : categoryForm.categoryName.$invalid }">
+              <div class="input-group">
+                <input class="form-control" type="text" name="categoryName" placeholder="Category Name" ng-model="category.name" ng-focus="onFocus($event)" empty-typeahead typeahead-editable="true" typeahead="category for category in getAvailableCategories() | filter:$viewValue:fieldComparator" required valid-category="category"></input>
+                <span class="input-group-btn">
+                  <button class="btn btn-default" type="button" ng-click="removeCategory($index)"><span class="glyphicon glyphicon-remove"></span></button>
+                </span>
+              </div>
+              <p ng-show="categoryForm.categoryName.$invalid" class="help-block">Category name is required and should be unique on the node.</p>
             </div>
-          </div>
+          </ng-form>
         </tab>
 
       </tabset>
-    </div> <!-- container-fluid -->
+    </div> <!-- tab-panel container-fluid -->
 
-  </form>
+  </div> <!-- column -->
+</div> <!-- row -->
 
-</div> <!-- panel -->
+</form>

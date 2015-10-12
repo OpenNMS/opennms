@@ -144,4 +144,17 @@ public class MeasurementRestServiceIT extends AbstractSpringJerseyRestTestCase {
         assertTrue(xml.contains("<columns>"));
         assertTrue(json.contains("\"columns\":"));
     }
+
+    @Test
+    public void canRetrieveFilters() throws Exception {
+        // Retrieve all filters
+        String filtersXml = sendRequest(GET, "/measurements/filters", 200);
+        System.err.println("Filters XML: " + filtersXml);
+        assertTrue(filtersXml.contains("Chomp"));
+
+        // Retrieve a specific filter by name
+        String filterXml = sendRequest(GET, "/measurements/filters/chomp", 200);
+        System.err.println("Filter XML: " + filterXml);
+        assertTrue(filterXml.contains("Chomp"));
+    }
 }

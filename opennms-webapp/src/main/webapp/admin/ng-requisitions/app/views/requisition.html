@@ -1,37 +1,46 @@
 <!-- Author: Alejandro Galue <agalue@opennms.org> -->
 
-<div class="panel panel-default">
+<ol class="breadcrumb">
+  <li><a href="/opennms/index.jsp">Home</a></li>
+  <li><a href="/opennms/admin/index.jsp">Admin</a></li>
+  <li><a ng-click="goBack()">Provisioning Requisitions</a></li>
+  <li>{{ requisition.foreignSource }}</li>
+</ol>
 
-  <div>
+<!-- Toolbar -->
 
-    <!-- Navigation Bar -->
-    <nav class="navbar navbar-default" role="navigation">
-      <div class="container-fluid">
-        <div class="navbar-header">
-          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#requisition-navbar-collapse">
-            <span class="sr-only">Toggle navigation</span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
-          <div class="navbar-brand">{{ requisition.foreignSource }} ({{ requisition.nodes.length }} nodes)</div>
-        </div>
-        <div class="collapse navbar-collapse" id="requisition-navbar-collapse">
-          <ul class="nav navbar-nav navbar-right">
-            <li><a ng-click="goBack()"><span class="glyphicon glyphicon-remove"/> Return</a></li>
-            <li><a ng-click="editForeignSource()"><span class="glyphicon glyphicon-edit"/> Edit Definition</a></li>
-            <li><a ng-click="synchronize()"><span class="glyphicon glyphicon-refresh"/> Synchronize</a></li>
-            <li><a ng-click="addNode()"><span class="glyphicon glyphicon-plus"/> Add Node</a></li>
-          </ul>
-          <form class="navbar-form" role="search">
-            <div class="input-group">
-              <span class="input-group-addon"><span class="glyphicon glyphicon-search"/></span>
-              <input class="form-control" type="text" placeholder="Search/Filter" ng-model="reqFilter"></input>
-            </div>
-          </form>
-        </div>
+<div class="row">
+  <div class="col-md-6">
+    <h4>Requisition {{ requisition.foreignSource }} ({{ requisition.nodes.length }} nodes)</h4>
+  </div>
+  <div class="col-md-6">
+    <form class="form-inline pull-right" role="search">
+      <div class="input-group">
+        <span class="input-group-addon"><span class="glyphicon glyphicon-search"/></span>
+        <input class="form-control" type="text" placeholder="Search/Filter" ng-model="reqFilter"></input>
       </div>
-    </nav>
+      <div class="input-group">
+        <button class="btn btn-default" ng-click="editForeignSource()">
+          <span class="glyphicon glyphicon-edit"/> Edit Definition
+        </button>
+        <button class="btn btn-default" ng-disabled="timingStatus.isRunning" ng-click="synchronize()">
+          <span class="glyphicon glyphicon-refresh"/> Synchronize
+        </button>
+        <button class="btn btn-default" ng-click="addNode()">
+          <span class="glyphicon glyphicon-plus"/> Add Node
+        </button>
+        <button class="btn btn-default" ng-click="goBack()">
+          <span class="glyphicon glyphicon-remove"/> Return
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Content -->
+
+<div class="row">
+  <div class="col-md-12">
 
     <!-- Default View -->
     <div class="jumbotron" ng-show="requisition.nodes.length == 0">
@@ -41,45 +50,44 @@
       </div>
     </div>
 
-  </div>
+    <!-- Table with Navigation -->
+    <div class="container-fluid table-responsive" ng-show="requisition.nodes.length > 0">
 
-  <!-- Table with Navigation -->
-  <div class="container-fluid table-responsive" ng-show="requisition.nodes.length > 0">
+      <table class="table table-striped table-condensed table-hover">
+        <thead>
+          <tr>
+            <th>Node Label</th>
+            <th>Foreign ID</th>
+            <th>Building</th>
+            <th>City</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr ng-class="{danger: !node.deployed}" ng-repeat="node in filteredNodes | startFrom:(currentPage-1)*pageSize | limitTo:pageSize ">
+            <td>{{ node.nodeLabel }}</td>
+            <td>{{ node.foreignId }}</td>
+            <td>{{ node.building }}</td>
+            <td>{{ node.city }}</td>
+            <td>
+              <button class="btn btn-default btn-xs" tooltip="Edit the {{node.nodeLabel}} Node" ng-click="editNode(node)">
+                <span class="glyphicon glyphicon-pencil"></span>
+              </button>
+              <button class="btn btn-default btn-xs" tooltip="Remove the {{node.nodeLabel}} Node" ng-click="deleteNode(node)">
+                <span class="glyphicon glyphicon-remove"></span>
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
 
-    <table class="table table-striped table-condensed table-hover">
-      <thead>
-        <tr>
-          <th>Node Label</th>
-          <th>Foreign ID</th>
-          <th>Building</th>
-          <th>City</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr ng-class="{danger: !node.deployed}" ng-repeat="node in filteredNodes | startFrom:(currentPage-1)*pageSize | limitTo:pageSize ">
-          <td>{{ node.nodeLabel }}</td>
-          <td>{{ node.foreignId }}</td>
-          <td>{{ node.building }}</td>
-          <td>{{ node.city }}</td>
-          <td>
-            <a class="btn btn-default btn-xs" tooltip="Edit the {{node.nodeLabel}} Node" ng-click="editNode(node)">
-              <span class="glyphicon glyphicon-pencil"></span>
-            </a>
-            <a class="btn btn-default btn-xs" tooltip="Remove the {{node.nodeLabel}} Node" ng-click="deleteNode(node)">
-              <span class="glyphicon glyphicon-remove"></span>
-            </a>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+      <br ng-hide="filteredRequisitions.length > pageSize" />
 
-    <br ng-hide="filteredRequisitions.length > pageSize" />
+      <pagination total-items="totalItems" num-pages="numPages" ng-model="currentPage" max-size="maxSize" boundary-links="true"
+        class="pagination-sm" previous-text="&lsaquo;" next-text="&rsaquo;" first-text="&laquo;" last-text="&raquo;"
+        ng-show="filteredNodes.length > pageSize"></pagination>
 
-    <pagination total-items="totalItems" num-pages="numPages" ng-model="currentPage" max-size="maxSize" boundary-links="true"
-      class="pagination-sm" previous-text="&lsaquo;" next-text="&rsaquo;" first-text="&laquo;" last-text="&raquo;"
-      ng-show="filteredNodes.length > pageSize"></pagination>
+    </div> <!-- table-with-navigation -->
 
-  </div> <!-- container-fluid -->
-
-</div> <!-- panel -->
+  </div> <!-- column -->
+</div> <!-- row -->

@@ -28,6 +28,16 @@
   .controller('RequisitionsController', ['$scope', '$filter', '$window', 'RequisitionsService', 'SynchronizeService', 'growl', function($scope, $filter, $window, RequisitionsService, SynchronizeService, growl) {
 
     /**
+    * @description The timing status.
+    *
+    * @ngdoc property
+    * @name RequisitionsController#timingStatus
+    * @propertyOf RequisitionsController
+    * @returns {object} The timing status object
+    */
+    $scope.timingStatus = RequisitionsService.getTiming();
+
+    /**
     * @description The load flag.
     *
     * @ngdoc property
@@ -199,6 +209,7 @@
     $scope.removeAllNodes = function(foreignSource) {
       bootbox.confirm('Are you sure you want to remove all the nodes from ' + foreignSource + '?', function(ok) {
         if (ok) {
+          RequisitionsService.startTiming();
           RequisitionsService.removeAllNodesFromRequisition(foreignSource).then(
             function() { // success
               growl.success('All the nodes from ' + foreignSource + ' have been removed');
@@ -220,6 +231,7 @@
     $scope.delete = function(foreignSource) {
       bootbox.confirm('Are you sure you want to remove the requisition ' + foreignSource + '?', function(ok) {
         if (ok) {
+          RequisitionsService.startTiming();
           RequisitionsService.deleteRequisition(foreignSource).then(
             function() { // success
               growl.success('The requisition ' + foreignSource + ' has been deleted.');

@@ -29,6 +29,16 @@
   .controller('RequisitionController', ['$scope', '$filter', '$window', '$routeParams', 'RequisitionsService', 'SynchronizeService', 'growl', function($scope, $filter, $window, $routeParams, RequisitionsService, SynchronizeService, growl) {
 
     /**
+    * @description The timing status.
+    *
+    * @ngdoc property
+    * @name RequisitionController#timingStatus
+    * @propertyOf RequisitionController
+    * @returns {object} The timing status object
+    */
+    $scope.timingStatus = RequisitionsService.getTiming();
+
+    /**
     * @description The foreign source (a.k.a the name of the requisition).
     * The default value is obtained from the $routeParams.
     *
@@ -134,8 +144,7 @@
     * @methodOf RequisitionController
     */
     $scope.synchronize = function() {
-      var foreignSource = $scope.foreignSource;
-      SynchronizeService.synchronize(foreignSource, $scope.errorHandler);
+      SynchronizeService.synchronize($scope.foreignSource, $scope.errorHandler);
     };
 
     /**
@@ -173,6 +182,7 @@
     $scope.deleteNode = function(node) {
       bootbox.confirm('Are you sure you want to remove the node ' + node.nodeLabel + '?', function(ok) {
         if (ok) {
+          RequisitionsService.startTiming();
           RequisitionsService.deleteNode(node).then(
             function() { // success
               growl.success('The node ' + node.nodeLabel + ' has been deleted.');

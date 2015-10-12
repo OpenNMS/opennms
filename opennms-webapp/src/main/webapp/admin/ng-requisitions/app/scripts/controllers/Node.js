@@ -29,6 +29,16 @@
   .controller('NodeController', ['$scope', '$routeParams', '$window', '$modal', 'RequisitionsService', 'EmptyTypeaheadService', 'growl', function($scope, $routeParams, $window, $modal, RequisitionsService, EmptyTypeaheadService, growl) {
 
     /**
+    * @description The timing status.
+    *
+    * @ngdoc property
+    * @name NodeController#timingStatus
+    * @propertyOf NodeController
+    * @returns {object} The timing status object
+    */
+    $scope.timingStatus = RequisitionsService.getTiming();
+
+    /**
     * @description The foreign source (a.k.a the name of the requisition).
     * The default value is obtained from the $routeParams.
     *
@@ -113,15 +123,16 @@
     $scope.onFocus = EmptyTypeaheadService.onFocus;
 
     /**
-    * @description Goes back to requisition editor (navigation)
+    * @description Goes to specific URL warning about changes if exist.
     *
-    * @name NodeController:goBack
+    * @name NodeController:goTo
     * @ngdoc method
     * @methodOf NodeController
+    * @param {string} url The URL to go
     */
-    $scope.goBack = function() {
-      var doGoBack = function() {
-        $window.location.href = '#/requisitions/' + $scope.foreignSource;
+    $scope.goTo = function(url) {
+      var doGoTo = function() {
+        $window.location.href = url;
       };
       if (this.nodeForm.$dirty) {
         bootbox.dialog({
@@ -131,7 +142,7 @@
             success: {
               label: 'Yes',
               className: 'btn-danger',
-              callback: doGoBack
+              callback: doGoTo
             },
             main: {
               label: 'No',
@@ -140,8 +151,30 @@
           }
         });
       } else {
-        doGoBack();
+        doGoTo();
       }
+    };
+
+    /**
+    * @description Goes back to requisitions list (navigation)
+    *
+    * @name NodeController:goTop
+    * @ngdoc method
+    * @methodOf NodeController
+    */
+    $scope.goTop = function() {
+      $scope.goTo('#/requisitions');
+    };
+
+    /**
+    * @description Goes back to requisition editor (navigation)
+    *
+    * @name NodeController:goBack
+    * @ngdoc method
+    * @methodOf NodeController
+    */
+    $scope.goBack = function() {
+      $scope.goTo('#/requisitions/' + $scope.foreignSource);
     };
 
     /**
@@ -181,13 +214,18 @@
     $scope.editAsset = function(index, isNew) {
       var form = this.nodeForm;
       var assetToEdit = $scope.node.assets[index];
+      var assetsBlackList = [];
+      angular.forEach($scope.node.assets, function(asset) {
+        assetsBlackList.push(asset.name);
+      });
 
       var modalInstance = $modal.open({
         backdrop: 'static',
         controller: 'AssetController',
         templateUrl: 'views/asset.html',
         resolve: {
-          asset: function() { return angular.copy(assetToEdit); }
+          asset: function() { return angular.copy(assetToEdit); },
+          assetsBlackList: function() { return assetsBlackList; }
         }
       });
 
@@ -238,14 +276,21 @@
       var form = this.nodeForm;
       var intfToEdit = $scope.node.interfaces[index];
       var foreignSource = $scope.foreignSource;
+      var foreignId = $scope.foreignId;
+      var ipBlackList = [];
+      angular.forEach($scope.node.interfaces, function(intf) {
+        ipBlackList.push(intf.ipAddress);
+      });
 
       var modalInstance = $modal.open({
         backdrop: 'static',
         controller: 'InterfaceController',
         templateUrl: 'views/interface.html',
         resolve: {
+          foreignId: function() { return foreignId; },
           foreignSource: function() { return foreignSource; },
-          requisitionInterface: function() { return angular.copy(intfToEdit); }
+          requisitionInterface: function() { return angular.copy(intfToEdit); },
+          ipBlackList: function() { return ipBlackList; }
         }
       });
 
@@ -317,6 +362,7 @@
     */
     $scope.save = function() {
       var form = this.nodeForm;
+      RequisitionsService.startTiming();
       RequisitionsService.saveNode($scope.node).then(
         function() { // success
           growl.success('The node ' + $scope.node.nodeLabel + ' has been saved.');
@@ -343,6 +389,30 @@
       );
     };
 
+    /**
+    * @description Get the unused available categories
+    *
+    * @name NodeController:getAvailableCategories
+    * @ngdoc method
+    * @methodOf NodeController
+    * @returns {array} the unused available categories
+    */
+    $scope.getAvailableCategories = function() {
+      var categories = [];
+      angular.forEach($scope.availableCategories, function(category) {
+        var found = false;
+        angular.forEach($scope.node.categories, function(c) {
+          if (c.name == category) {
+            found = true;
+          }
+        });
+        if (!found) {
+          categories.push(category);
+        }
+      });
+      return categories;
+    };
+
     // Initialization of the node's page for either adding a new node or editing an existing node
 
     if ($scope.isNew) {
@@ -361,13 +431,14 @@
 
     // Initialize foreign-id black list (thanks to the cache, this call is not expensive)
     RequisitionsService.getRequisition($scope.foreignSource).then(
-      function(requisition) { // success
+      function(requisition) {
         angular.forEach(requisition.nodes, function(node) {
           $scope.foreignIdBlackList.push(node.foreignId);
         });
       },
       $scope.errorHandler
     );
+
   }]);
 
 }());

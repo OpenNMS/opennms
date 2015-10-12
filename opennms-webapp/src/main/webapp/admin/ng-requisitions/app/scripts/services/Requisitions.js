@@ -23,6 +23,7 @@
   * @requires $cacheFactory Angular cache management
   * @requires $window Document window
   * @requires $http Angular service that facilitates communication with the remote HTTP servers
+  * @requires $timeout Angular service that facilitates timeout functions
   * @requires $log Angular log facility
   *
   * @description The RequisitionsService provides all the required methods to access ReST API for the OpenNMS requisitions.
@@ -34,12 +35,14 @@
   *
   * If the cache is not going to be used, the controllers are responsible for maintaining the state of the data.
   */
-  .factory('RequisitionsService', ['$q', '$cacheFactory', '$window', '$http', '$log', function($q, $cacheFactory, $window, $http, $log) {
+  .factory('RequisitionsService', ['$q', '$cacheFactory', '$window', '$http', '$timeout', '$log', function($q, $cacheFactory, $window, $http, $timeout, $log) {
 
     $log.debug('Initializing RequisitionsService');
 
     var requisitionsService = {};
     requisitionsService.internal = {};
+
+    // Declaring Service Variables
 
     var baseHref = $window.ONMS_BASE_HREF === undefined ? '' : $window.ONMS_BASE_HREF;
     $log.debug('baseHref = "' + baseHref + '"');
@@ -47,6 +50,9 @@
     requisitionsService.internal.foreignSourcesUrl = baseHref + 'rest/foreignSources';
     requisitionsService.internal.foreignSourcesConfigUrl = baseHref + 'rest/foreignSourcesConfig';
     requisitionsService.internal.cache = $cacheFactory('RequisitionsService');
+    requisitionsService.internal.errorHelp = ' Check the OpenNMS logs for more details, or try again later.';
+    requisitionsService.internal.defaultTimeout = 5;
+    requisitionsService.internal.timingStatus = { isRunning: false };
 
     /**
     * @description (Internal) Gets the requisitions data from the internal cache
@@ -226,6 +232,38 @@
     };
 
     /**
+    * @description Gets the timing status object
+    *
+    * @name RequisitionsService:getTiming
+    * @ngdoc method
+    * @methodOf RequisitionsService
+    * @param {object} ts The timeout in seconds
+    * @returns {object} the timing status object
+    */
+    requisitionsService.startTiming = function(ts) {
+      if (ts == null || ts == undefined) {
+        ts = requisitionsService.internal.defaultTimeout;
+      }
+      $log.debug('startTiming: starting timeout of ' + ts + ' seconds.');
+      requisitionsService.internal.timingStatus.isRunning = true;
+      $timeout(function() {
+        requisitionsService.internal.timingStatus.isRunning = false;
+      }, ts * 1000);
+    };
+
+    /**
+    * @description Gets the timing status object
+    *
+    * @name RequisitionsService:getTiming
+    * @ngdoc method
+    * @methodOf RequisitionsService
+    * @returns {object} the timing status object
+    */
+    requisitionsService.getTiming = function() {
+      return requisitionsService.internal.timingStatus;
+    };
+
+    /**
     * @description Requests all the requisitions (pending and deployed) from OpenNMS.
     *
     * After retrieving the pending requisitions and the defined requisitions, the data
@@ -303,7 +341,7 @@
       })
       .error(function(error, status) {
         $log.error('getRequisition: GET ' + url + ' failed:', error, status);
-        deferred.reject('Cannot retrieve the requisition ' + foreignSource + '. HTTP ' + status + ' ' + error);
+        deferred.reject('Cannot retrieve the requisition ' + foreignSource + '.' + requisitionsService.internal.errorHelp);
       });
       return deferred.promise;
     };
@@ -349,7 +387,7 @@
       })
       .error(function(error, status) {
         $log.error('synchronizeRequisition: PUT ' + url + ' failed:', error, status);
-        deferred.reject('Cannot synchronize the requisition ' + foreignSource + '. HTTP ' + status + ' ' + error);
+        deferred.reject('Cannot synchronize the requisition ' + foreignSource + '.' + requisitionsService.internal.errorHelp);
       });
       return deferred.promise;
     };
@@ -391,7 +429,7 @@
         deferred.resolve(requisition);
       }).error(function(error, status) {
         $log.error('addRequisition: POST ' + url + ' failed:', error, status);
-        deferred.reject('Cannot add the requisition ' + foreignSource + '. HTTP ' + status + ' ' + error);
+        deferred.reject('Cannot add the requisition ' + foreignSource + '.' + requisitionsService.internal.errorHelp);
       });
       return deferred.promise;
     };
@@ -444,7 +482,7 @@
         deferred.resolve(results);
       }, function(error, status) {
         $log.error('deleteRequisition: DELETE operation failed:', error, status);
-        deferred.reject('Cannot delete the requisition ' + foreignSource + '. HTTP ' + status + ' ' + error);
+        deferred.reject('Cannot delete the requisition ' + foreignSource + '.' + requisitionsService.internal.errorHelp);
       });
 
       return deferred.promise;
@@ -491,7 +529,7 @@
         deferred.resolve(data);
       }).error(function(error, status) {
         $log.error('removeAllNodesFromRequisition: POST ' + url + ' failed:', error, status);
-        deferred.reject('Cannot remove all nodes from requisition ' + foreignSource + '. HTTP ' + status + ' ' + error);
+        deferred.reject('Cannot remove all nodes from requisition ' + foreignSource + '.' + requisitionsService.internal.errorHelp);
       });
       return deferred.promise;
     };
@@ -528,7 +566,7 @@
       })
       .error(function(error, status) {
         $log.error('getNode: GET ' + url + ' failed:', error, status);
-        deferred.reject('Cannot retrieve node ' + foreignId + ' from requisition ' + foreignSource + '. HTTP ' + status + ' ' + error);
+        deferred.reject('Cannot retrieve node ' + foreignId + ' from requisition ' + foreignSource + '.' + requisitionsService.internal.errorHelp);
       });
       return deferred.promise;
     };
@@ -568,7 +606,7 @@
         deferred.resolve(data);
       }).error(function(error, status) {
         $log.error('saveNode: POST ' + url + ' failed:', error, status);
-        deferred.reject('Cannot save node ' + node.foreignId + ' on requisition ' + node.foreignSource + '. HTTP ' + status + ' ' + error);
+        deferred.reject('Cannot save node ' + node.foreignId + ' on requisition ' + node.foreignSource + '.' + requisitionsService.internal.errorHelp);
       });
       return deferred.promise;
     };
@@ -606,7 +644,7 @@
         deferred.resolve(data);
       }).error(function(error, status) {
         $log.error('deleteNode: DELETE ' + url + ' failed:', error, status);
-        deferred.reject('Cannot delete node ' + node.foreignId + ' from requisition ' + node.foreignSource + '. HTTP ' + status + ' ' + error);
+        deferred.reject('Cannot delete node ' + node.foreignId + ' from requisition ' + node.foreignSource + '.' + requisitionsService.internal.errorHelp);
       });
       return deferred.promise;
     };
@@ -632,7 +670,7 @@
       })
       .error(function(error, status) {
         $log.error('getForeignSourceDefinition: GET ' + url + ' failed:', error, status);
-        deferred.reject('Cannot retrieve foreign source definition (detectors and policies) for requisition ' + foreignSource + '. HTTP ' + status + ' ' + error);
+        deferred.reject('Cannot retrieve foreign source definition (detectors and policies) for requisition ' + foreignSource + '.' + requisitionsService.internal.errorHelp);
       });
       return deferred.promise;
     };
@@ -660,7 +698,7 @@
         deferred.resolve(data);
       }).error(function(error, status) {
         $log.error('saveForeignSourceDefinition: POST ' + url + ' failed:', error, status);
-        deferred.reject('Cannot save foreign source definition (detectors and policies) for requisition ' + foreignSource + '. HTTP ' + status + ' ' + error);
+        deferred.reject('Cannot save foreign source definition (detectors and policies) for requisition ' + foreignSource + '.' + requisitionsService.internal.errorHelp);
       });
       return deferred.promise;
     };
@@ -696,7 +734,7 @@
       })
       .error(function(error, status) {
         $log.error('getAvailableDetectors: GET ' + url + ' failed:', error, status);
-        deferred.reject('Cannot retrieve available detectors. HTTP ' + status + ' ' + error);
+        deferred.reject('Cannot retrieve available detectors.' + requisitionsService.internal.errorHelp);
       });
       return deferred.promise;
     };
@@ -732,7 +770,7 @@
       })
       .error(function(error, status) {
         $log.error('getAvailablePolicies: GET ' + url + ' failed:', error, status);
-        deferred.reject('Cannot retrieve available policies. HTTP ' + status + ' ' + error);
+        deferred.reject('Cannot retrieve available policies.' + requisitionsService.internal.errorHelp);
       });
       return deferred.promise;
     };
@@ -771,7 +809,7 @@
       })
       .error(function(error, status) {
         $log.error('getAvailableServices: GET ' + url + ' failed:', error, status);
-        deferred.reject('Cannot retrieve available services. HTTP ' + status + ' ' + error);
+        deferred.reject('Cannot retrieve available services.' + requisitionsService.internal.errorHelp);
       });
       return deferred.promise;
     };
@@ -809,7 +847,7 @@
       })
       .error(function(error, status) {
         $log.error('getAvailableAssets: GET ' + url + ' failed:', error, status);
-        deferred.reject('Cannot retrieve available assets. HTTP ' + status + ' ' + error);
+        deferred.reject('Cannot retrieve available assets.' + requisitionsService.internal.errorHelp);
       });
       return deferred.promise;
     };
@@ -847,7 +885,130 @@
       })
       .error(function(error, status) {
         $log.error('getAvailableCategories: GET ' + url + ' failed:', error, status);
-        deferred.reject('Cannot retrieve available categories. HTTP ' + status + ' ' + error);
+        deferred.reject('Cannot retrieve available categories.' + requisitionsService.internal.errorHelp);
+      });
+      return deferred.promise;
+    };
+
+    /**
+    * @description Checks if a given foreignId exists on a specific requisition
+    *
+    * @name RequisitionsService:isForeignIdOnRequisition
+    * @ngdoc method
+    * @methodOf RequisitionsService
+    * @param {string} foreignSource The requisition's name (a.k.a. foreign source)
+    * @param {string} foreignId The foreign Id
+    * @returns {object} a promise (true, if the foreignId exists on the requisition)
+    */
+    requisitionsService.isForeignIdOnRequisition = function(foreignSource, foreignId) {
+      var deferred = $q.defer();
+      requisitionsService.getRequisition(foreignSource)
+      .then(function(req) {
+        var found = false;
+        angular.forEach(req.nodes, function(n) {
+          if (n.foreignId == foreignId) {
+            found = true;
+          }
+        });
+        deferred.resolve(found);
+      }, function(err) {
+        var message = 'cannot verify foreignId ' + foreignId + '@' + foreignSource + '. ';
+        $log.error('isForeignIdOnRequisition: ' + message, err);
+        deferred.reject(message + requisitionsService.internal.errorHelp);
+      });
+      return deferred.promise;
+    };
+
+    /**
+    * @description Checks if a given IP Address exists on a specific node
+    *
+    * @name RequisitionsService:isIpAddressOnNode
+    * @ngdoc method
+    * @methodOf RequisitionsService
+    * @param {string} foreignSource The requisition's name (a.k.a. foreign source)
+    * @param {string} foreignId The foreign Id of the node
+    * @param {string} ipAddress The IP address to check
+    * @returns {object} a promise (true, if the IP Address exists on the node)
+    */
+    requisitionsService.isIpAddressOnNode = function(foreignSource, foreignId, ipAddress) {
+      var deferred = $q.defer();
+      requisitionsService.getNode(foreignSource, foreignId)
+      .then(function(node) {
+        var found = false;
+        angular.forEach(node.interfaces, function(intf) {
+          if (intf.ipAddress == ipAddress) {
+            found = true;
+          }
+        });
+        deferred.resolve(found);
+      }, function(err) {
+        var message = 'cannot verify ipAddress on node ' + foreignId + '@' + foreignSource + '. ';
+        $log.error('isIpAddressOnNode: ' + message, err);
+        deferred.reject(message + requisitionsService.internal.errorHelp);
+      });
+      return deferred.promise;
+    };
+
+    /**
+    * @description Checks if a given category exists on a specific node
+    *
+    * @name RequisitionsService:isCategoryOnNode
+    * @ngdoc method
+    * @methodOf RequisitionsService
+    * @param {string} foreignSource The requisition's name (a.k.a. foreign source)
+    * @param {string} foreignId The foreign Id of the node
+    * @param {string} category The category to check
+    * @returns {object} a promise (true, if the category exists on the node)
+    */
+    requisitionsService.isCategoryOnNode = function(foreignSource, foreignId, category) {
+      console.log('isCategoryOnNode: checking category ' + category + ' at ' + foreignId + '@' + foreignSource);
+      var deferred = $q.defer();
+      requisitionsService.getNode(foreignSource, foreignId)
+      .then(function(node) {
+        var found = false;
+        angular.forEach(node.categories, function(cat) {
+          if (cat.name == category) {
+            found = true;
+          }
+        });
+        deferred.resolve(found);
+      }, function(err) {
+        var message = 'cannot verify category on node ' + foreignId + '@' + foreignSource + '. ';
+        $log.error('isCategoryOnNode: ' + message, err);
+        deferred.reject(message + requisitionsService.internal.errorHelp);
+      });
+      return deferred.promise;
+    };
+
+    /**
+    * @description Checks if a given category exists on a specific node
+    *
+    * @name RequisitionsService:isCategoryOnNode
+    * @ngdoc method
+    * @methodOf RequisitionsService
+    * @param {string} foreignSource The requisition's name (a.k.a. foreign source)
+    * @param {string} foreignId The foreign Id of the node
+    * @param {string} ipAddress The IP address to check
+    * @param {string} service The service to check
+    * @returns {object} a promise (true, if the service exists on the Node/IP)
+    */
+    requisitionsService.isServiceOnNode = function(foreignSource, foreignId, ipAddress, service) {
+      var deferred = $q.defer();
+      requisitionsService.getNode(foreignSource, foreignId)
+      .then(function(node) {
+        var found = false;
+        angular.forEach(node.interfaces, function(intf) {
+          angular.forEach(intf.services, function(svc) {
+            if (svc.name == service) {
+              found = true;
+            }
+          });
+        });
+        deferred.resolve(found);
+      }, function(err) {
+        var message = 'cannot verify category on node ' + foreignId + '@' + foreignSource + '. ';
+        $log.error('isIpAddressOnNode: ' + message, err);
+        deferred.reject(message + requisitionsService.internal.errorHelp);
       });
       return deferred.promise;
     };

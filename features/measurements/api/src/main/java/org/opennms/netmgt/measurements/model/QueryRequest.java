@@ -39,7 +39,6 @@ import javax.xml.bind.annotation.XmlRootElement;
 import com.google.common.collect.Lists;
 
 import org.codehaus.jackson.annotate.JsonProperty;
-import org.opennms.netmgt.jasper.analytics.AnalyticsCommand;
 
 /**
  * Query request attributes.
@@ -75,7 +74,7 @@ public class QueryRequest {
 
     private List<Expression> expressions = Lists.newArrayListWithCapacity(0);
 
-    private List<AnalyticsCommand> analyticsCommands = Lists.newArrayListWithCapacity(0);
+    private List<FilterDef> filters = Lists.newArrayListWithCapacity(0);
 
     @XmlAttribute(name = "start")
     public long getStart() {
@@ -133,13 +132,13 @@ public class QueryRequest {
         this.expressions = expressions;
     }
 
-    @XmlElement(name = "analytics-command")
-    public List<AnalyticsCommand> getAnalyticsCommands() {
-        return analyticsCommands;
+    @XmlElement(name = "filter")
+    public List<FilterDef> getFilters() {
+        return filters;
     }
 
-    public void setAnalyticsCommands(final List<AnalyticsCommand> analyticsCommand) {
-        this.analyticsCommands = analyticsCommand;
+    public void setFilters(final List<FilterDef> filters) {
+        this.filters = filters;
     }
 
     @Override
@@ -156,13 +155,14 @@ public class QueryRequest {
              && com.google.common.base.Objects.equal(this.start, other.start)
              && com.google.common.base.Objects.equal(this.end, other.end)
              && com.google.common.base.Objects.equal(this.sources, other.sources)
-             && com.google.common.base.Objects.equal(this.expressions, other.expressions);
+             && com.google.common.base.Objects.equal(this.expressions, other.expressions)
+             && com.google.common.base.Objects.equal(this.filters, other.filters);
     }
 
     @Override
     public int hashCode() {
        return com.google.common.base.Objects.hashCode(
-                 this.step, this.start, this.end, this.sources, this.expressions);
+                 this.step, this.start, this.end, this.sources, this.expressions, this.filters);
     }
 
     @Override
@@ -173,6 +173,7 @@ public class QueryRequest {
                  .add("End", this.end)
                  .add("Sources", this.sources)
                  .add("Expressions", this.expressions)
+                 .add("Filters", this.filters)
                  .toString();
     }
 }

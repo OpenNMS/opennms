@@ -33,7 +33,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.annotation.Resource;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
@@ -47,15 +46,15 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
-import org.opennms.netmgt.jasper.analytics.AnalyticsCommand;
-import org.opennms.netmgt.jasper.analytics.FilterFactory;
-import org.opennms.netmgt.jasper.analytics.helper.DataSourceFilter;
 import org.opennms.netmgt.measurements.api.ExpressionEngine;
 import org.opennms.netmgt.measurements.api.ExpressionException;
 import org.opennms.netmgt.measurements.api.FetchResults;
+import org.opennms.netmgt.measurements.api.FilterEngine;
 import org.opennms.netmgt.measurements.api.MeasurementFetchStrategy;
 import org.opennms.netmgt.measurements.impl.JEXLExpressionEngine;
 import org.opennms.netmgt.measurements.model.Expression;
+import org.opennms.netmgt.measurements.model.FilterDef;
+import org.opennms.netmgt.measurements.model.FilterMetaData;
 import org.opennms.netmgt.measurements.model.QueryRequest;
 import org.opennms.netmgt.measurements.model.QueryResponse;
 import org.opennms.netmgt.measurements.model.Source;
@@ -99,23 +98,26 @@ public class MeasurementsRestService {
     @Autowired
     private MeasurementFetchStrategy m_fetchStrategy;
 
-    /**
-     * A list of {@link FilterFactory} services that can be used to fetch analytics
-     * filters to filter the measurements that are returned. This collection is created
-     * in the component-service.xml in the org.opennms.features.measurements.api project.
-     */
-    @Resource(name="analyticsFilters")
-    private List<FilterFactory> m_filterFactories;
-
     private final ExpressionEngine expressionEngine = new JEXLExpressionEngine();
 
-    private DataSourceFilter dataSourceFilter;
+    private final FilterEngine filterEngine = new FilterEngine();
 
-    protected DataSourceFilter getDataSourceFilter() {
-        if (dataSourceFilter == null) {
-            dataSourceFilter = new DataSourceFilter(m_filterFactories);
+    @GET
+    @Path("filters")
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
+    public List<FilterMetaData> getFilterMetadata() {
+        return filterEngine.getFilterMetaData();
+    }
+
+    @GET
+    @Path("filters/{name}")
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
+    public FilterMetaData getFilterMetadata(@PathParam("name") final String name) {
+        FilterMetaData metaData = filterEngine.getFilterMetaData(name);
+        if (metaData == null) {
+            throw getException(Status.NOT_FOUND, "No filter with name '{}' was found.", name);
         }
-        return dataSourceFilter;
+        return metaData;
     }
 
     /**
@@ -184,7 +186,7 @@ public class MeasurementsRestService {
                         request.getSources()
                         );
         } catch (Exception e) {
-            throw getException(Status.INTERNAL_SERVER_ERROR, e, "Fetch failed");
+            throw getException(Status.INTERNAL_SERVER_ERROR, e, "Fetch failed: {}", e.getMessage());
         }
 
         // Return a 404 when null
@@ -196,17 +198,16 @@ public class MeasurementsRestService {
         try {
             expressionEngine.applyExpressions(request, results);
         } catch (ExpressionException e) {
-            throw getException(Status.BAD_REQUEST, e, "An error occurred while evaluating an expression.");
+            throw getException(Status.BAD_REQUEST, e, "An error occurred while evaluating an expression: {}", e.getMessage());
         }
 
-        // Apply the analytics commands to filter results
-        // If there is an analytics command, apply it to the metrics
-        if (!request.getAnalyticsCommands().isEmpty()) {
-            RowSortedTable<Integer, String, Double> table = results.asRowSortedTable();
+        // Apply the filters
+        if (!request.getFilters().isEmpty()) {
+            RowSortedTable<Long, String, Double> table = results.asRowSortedTable();
             try {
-                getDataSourceFilter().filter(request.getAnalyticsCommands(), table);
-            } catch (Exception e) {
-                throw getException(Status.BAD_REQUEST, e, "An error occurred while executing an analytics filter: " + e.getMessage());
+                filterEngine.filter(request.getFilters(), table);
+            } catch (Throwable t) {
+                throw getException(Status.BAD_REQUEST, t, "An error occurred while applying one or more filters: {}", t.getMessage());
             }
             results = new FetchResults(table, results.getStep(), results.getConstants());
         }
@@ -259,7 +260,7 @@ public class MeasurementsRestService {
                 throw getException(Status.BAD_REQUEST, "Query source fields must be set: {}", source);
             }
             if (labels.containsKey(source.getLabel())) {
-                throw getException(Status.BAD_REQUEST, "Query source label '" + source.getLabel() + "' conflict: source with that label is already defined.");
+                throw getException(Status.BAD_REQUEST, "Query source label '{}' conflict: source with that label is already defined.", source.getLabel());
             } else {
                 labels.put(source.getLabel(), "source");
             }
@@ -271,19 +272,16 @@ public class MeasurementsRestService {
             }
             if (labels.containsKey(expression.getLabel())) {
                 final String type = labels.get(expression.getLabel());
-                throw getException(Status.BAD_REQUEST, "Query expression label '" + expression.getLabel() + "' conflict: " + type + " with that label is already defined.");
+                throw getException(Status.BAD_REQUEST, "Query expression label '{}' conflict: {} with that label is already defined.", expression.getLabel(), type);
             } else {
                 labels.put(expression.getLabel(), "expression");
             }
         }
-        List<AnalyticsCommand> analyticsCommands = request.getAnalyticsCommands();
-        if (analyticsCommands.size() > 0) {
-            for (AnalyticsCommand command : analyticsCommands) {
-                if (
-                    command.getModule() == null || 
-                    command.getColumnNameOrPrefix() == null
-                ) {
-                    throw getException(Status.BAD_REQUEST, "Analytics command fields must be set: {}", analyticsCommands);
+        List<FilterDef> filters = request.getFilters();
+        if (filters.size() > 0) {
+            for (FilterDef filter : filters) {
+                if (filter.getName() == null) {
+                    throw getException(Status.BAD_REQUEST, "Filter name must be set: {}", filter);
                 }
             }
         }

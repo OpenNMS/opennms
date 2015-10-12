@@ -15,6 +15,24 @@
     'angular-loading-bar'
   ])
 
+  .factory('authHttpResponseInterceptor',['$q','$location', function($q, $location) {
+    return {
+      response: function(response) {
+        return response || $q.when(response);
+      },
+      responseError: function(rejection) {
+        if (rejection.status === 401) {
+          $location.path('/opennms/login.jsp').search('returnTo', $location.path());
+        }
+        return $q.reject(rejection);
+      }
+    };
+  }])
+
+  .config(['$httpProvider',function($httpProvider) {
+    $httpProvider.interceptors.push('authHttpResponseInterceptor');
+  }])
+
   .config(['$routeProvider', function ($routeProvider) {
     $routeProvider
     .when('/requisitions', {

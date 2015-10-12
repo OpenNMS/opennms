@@ -39,7 +39,6 @@
     </plugins>
   </build>
   <modules>
-    <module>opennms-analytics-filters</module>
     <module>opennms-dns-provisioning-adapter</module>
     <module>opennms-reverse-dns-provisioning-adapter</module>
     <module>opennms-puppet-provisioning-adapter</module>
