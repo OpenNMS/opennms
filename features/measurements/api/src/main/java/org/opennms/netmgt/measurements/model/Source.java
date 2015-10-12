@@ -64,6 +64,12 @@ public class Source {
     private String attribute;
 
     /**
+     * fallback Attribute name.
+     * i.e. ifInOctets
+     */
+    private String fallbackAttribute;
+
+    /**
      * Data source name. Typically the same as the attribute name, but may differ
      * if an attribute contains multiple data sources.
      *
@@ -123,6 +129,15 @@ public class Source {
 
     public void setAttribute(final String attribute) {
         this.attribute = attribute;
+    }
+
+    @XmlAttribute(name = "fallback-attribute")
+    public String getFallbackAttribute() {
+        return this.fallbackAttribute;
+    }
+
+    public void setFallbackAttribute(final String fallbackAttribute) {
+        this.fallbackAttribute = fallbackAttribute;
     }
 
     @XmlAttribute(name = "datasource")
