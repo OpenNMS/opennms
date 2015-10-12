@@ -60,6 +60,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Optional;
+import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
@@ -135,8 +136,15 @@ public class NewtsFetchStrategy implements MeasurementFetchStrategy {
                 Utils.convertStringAttributesToConstants(source.getLabel(), resource.getStringPropertyAttributes(), constants);
 
                 // Grab the attribute that matches the source
-                final RrdGraphAttribute rrdGraphAttribute = resource
-                        .getRrdGraphAttributes().get(source.getAttribute());
+                RrdGraphAttribute rrdGraphAttribute = resource.getRrdGraphAttributes().get(source.getAttribute());
+
+                if (rrdGraphAttribute == null && !Strings.isNullOrEmpty(source.getFallbackAttribute())) {
+                    LOG.error("No attribute with name '{}', using fallback-attribute with name '{}'", source.getAttribute(), source.getFallbackAttribute());
+                    source.setAttribute(source.getFallbackAttribute());
+                    source.setFallbackAttribute(null);
+                    rrdGraphAttribute = resource.getRrdGraphAttributes().get(source.getAttribute());
+                }
+
                 if (rrdGraphAttribute == null) {
                     LOG.error("No attribute with name: {}", source.getAttribute());
                     return null;

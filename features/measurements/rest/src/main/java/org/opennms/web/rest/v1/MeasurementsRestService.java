@@ -67,6 +67,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.google.common.base.Preconditions;
+import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.RowSortedTable;
 
@@ -134,6 +135,7 @@ public class MeasurementsRestService {
             @DefaultValue("0") @QueryParam("end") final long end,
             @DefaultValue("300000") @QueryParam("step") final long step,
             @DefaultValue("0") @QueryParam("maxrows") final int maxrows,
+            @DefaultValue("") @QueryParam("fallback-attribute") final String fallbackAttribute,
             @DefaultValue("AVERAGE") @QueryParam("aggregation") final String aggregation) {
 
         QueryRequest request = new QueryRequest();
@@ -151,6 +153,7 @@ public class MeasurementsRestService {
 
         // Use the attribute name as the datasource and label
         Source source = new Source(attribute, resourceId, attribute, attribute, false);
+        source.setFallbackAttribute(fallbackAttribute);
         source.setAggregation(aggregation);
         request.setSources(Lists.newArrayList(source));
 
