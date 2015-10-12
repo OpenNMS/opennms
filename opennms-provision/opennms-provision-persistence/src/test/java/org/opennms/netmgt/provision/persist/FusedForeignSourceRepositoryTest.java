@@ -65,11 +65,11 @@ import org.springframework.core.io.UrlResource;
 
 public class FusedForeignSourceRepositoryTest extends ForeignSourceRepositoryTestCase {
     @Autowired
-    @Qualifier("pending")
+    @Qualifier("filePending")
     private ForeignSourceRepository m_pending;
     
     @Autowired
-    @Qualifier("deployed")
+    @Qualifier("fileDeployed")
     private ForeignSourceRepository m_active;
     
     @Autowired
