@@ -18,7 +18,7 @@ The utility is installed by default and its wrapper script is located in the `${
 [source, shell]
 ----
 $ cd /path/to/opennms/bin
-$ ./resourcecli
+$ runjava -r -jar ../contrib/resource-cli/resource-cli-*-jar-with-dependencies.jar
 ----
 
 TIP: When invoked without parameters the usage and help information is printed.
