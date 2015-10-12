@@ -121,8 +121,9 @@ public class RequisitionRestServiceIT extends AbstractSpringJerseyRestTestCase {
         // get individual node
         url = "/requisitions/test/nodes/4243";
         xml = sendRequest(GET, url, 200);
-        assertTrue(xml.contains("parent-node-label=\"apknd\""));
-        assertTrue(xml.contains("node-label=\"apknd\""));
+        System.err.println(xml);
+        assertTrue(xml.contains(" parent-node-label=\"apknd\""));
+        assertTrue(xml.contains(" node-label=\"david\"")); // The white space is required to avoid match parent-node-label
         
         // set attributes
         sendPut(url, "node-label=homo+sapien", 303, "/nodes/4243");
@@ -146,7 +147,7 @@ public class RequisitionRestServiceIT extends AbstractSpringJerseyRestTestCase {
         // get list of nodes
         String xml = sendRequest(GET, url, 200);
         assertTrue(xml.contains("<node "));
-        assertTrue(xml.contains("node-label="));
+        assertTrue(xml.contains("node-label=\"shoe\"")); // verify that the node was modified instead of created.
         assertTrue("Expected only 1 node", xml.contains("count=\"1\""));
         
     }
@@ -234,6 +235,7 @@ public class RequisitionRestServiceIT extends AbstractSpringJerseyRestTestCase {
         String xml = sendRequest(GET, url, 200);
         assertTrue(xml.contains("count=\"4\""));
         assertTrue(xml.contains("name=\"low\""));
+        assertTrue(xml.contains("name=\"Dead Servers\""));
         
         // get individual category
         url = "/requisitions/test/nodes/4243/categories/low";
@@ -250,8 +252,6 @@ public class RequisitionRestServiceIT extends AbstractSpringJerseyRestTestCase {
 
         // create a category on a node that is not in the requisition
         base = "/requisitions/test/nodes/4244/categories";
-        // create a category
-        
         sendPost(base, "<category xmlns=\"http://xmlns.opennms.org/xsd/config/model-import\" name=\"New Category\" />", 303, "/nodes/4244/categories/New%20Category");
         xml = sendRequest(GET, base + "/New%20Category", 404);
     }
@@ -311,7 +311,6 @@ public class RequisitionRestServiceIT extends AbstractSpringJerseyRestTestCase {
     }
 
     @Test
-    @Ignore // Ignore this test while XML validation is disabled
     public void testBadRequisition() throws Exception {
         String req =
             "<model-import date-stamp=\"2006-03-09T00:03:09\" foreign-source=\"test\">" +

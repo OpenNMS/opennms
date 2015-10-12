@@ -99,7 +99,7 @@ public abstract class AbstractSpringJerseyRestTestCase {
     public static String DELETE = "DELETE";
     public static String PUT = "PUT";
     
-    private static int nodeCounter = 1;
+    protected static int nodeCounter = 1;
 
     ///String contextPath = "/opennms/rest";
     public static String contextPath = "/";
@@ -294,11 +294,11 @@ public abstract class AbstractSpringJerseyRestTestCase {
         m_roles.set(new HashSet<String>(Arrays.asList(roles)));
     }
 
-    private static String getUser() {
+    protected static String getUser() {
         return m_username.get();
     }
 
-    private static Collection<String> getUserRoles() {
+    protected static Collection<String> getUserRoles() {
         final Set<String> roles = m_roles.get();
         return roles == null? new HashSet<String>() : new HashSet<>(roles);
     }
