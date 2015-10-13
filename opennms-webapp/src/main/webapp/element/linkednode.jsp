@@ -407,7 +407,7 @@
 		    <% } %>
 --%>
 				
-			<td style="font-size:70%" width="35%">
+			<td>
 		       	<a href="element/linkednode.jsp?node=<%=linkInterface.getLinkedNodeId()%>"><%=factory.getNodeLabel(linkInterface.getLinkedNodeId())%></a>
 		       	&nbsp;
 		       	<%	if (linkInterface.hasLinkedInterface()) { %>
