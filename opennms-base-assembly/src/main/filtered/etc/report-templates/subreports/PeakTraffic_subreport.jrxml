@@ -62,8 +62,8 @@
 	</parameter>
 	<queryString language="measurement">
 		<![CDATA[<query-request step="300000" start="$P{startDateTime}" end="$P{endDateTime}" maxrows="5000">
-  <source aggregation="AVERAGE" label="InOctets" attribute="ifHCInOctets" transient="false" resourceId="$P{nodeResourceDescriptor}.interfaceSnmp[$P{interface}]"/>
-  <source aggregation="AVERAGE" label="OutOctets" attribute="ifHCOutOctets" transient="false" resourceId="$P{nodeResourceDescriptor}.interfaceSnmp[$P{interface}]"/>
+  <source aggregation="AVERAGE" label="InOctets" attribute="ifHCInOctets" fallback-attribute="ifInOctets" transient="false" resourceId="$P{nodeResourceDescriptor}.interfaceSnmp[$P{interface}]"/>
+  <source aggregation="AVERAGE" label="OutOctets" attribute="ifHCOutOctets" fallback-attribute="ifOutOctets" transient="false" resourceId="$P{nodeResourceDescriptor}.interfaceSnmp[$P{interface}]"/>
 </query-request>]]>
 	</queryString>
 	<field name="timestamp" class="java.util.Date">
