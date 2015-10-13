@@ -173,7 +173,7 @@ public class HeatMapRestService extends OnmsRestService {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Transactional
-    @Path("outages/managedServices")
+    @Path("outages/monitoredServices")
     public Response outagesByServices() throws IOException {
         final List<HeatMapElement> heatMapElements = m_outageDao.getHeatMapItemsForEntity("service.servicename", "service.serviceid", null, null);
         final JSONObject jo = new JSONObject(transformResults(heatMapElements, System.getProperty(SERVICE_FILTER_PROPERTY_KEY, SERVICE_FILTER_PROPERTY_DEFAULT)));
@@ -203,9 +203,9 @@ public class HeatMapRestService extends OnmsRestService {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Transactional
-    @Path("outages/nodesByManagedService/{managedService}")
-    public Response outagesOfNodesByService(@PathParam("managedService") final String managedService) throws IOException {
-        final List<HeatMapElement> heatMapElements = m_outageDao.getHeatMapItemsForEntity("node.nodelabel", "node.nodeid", "service.servicename", managedService);
+    @Path("outages/nodesByMonitoredService/{monitoredService}")
+    public Response outagesOfNodesByService(@PathParam("monitoredService") final String monitoredService) throws IOException {
+        final List<HeatMapElement> heatMapElements = m_outageDao.getHeatMapItemsForEntity("node.nodelabel", "node.nodeid", "service.servicename", monitoredService);
         final JSONObject jo = new JSONObject(transformResults(heatMapElements, null));
         return Response.ok(jo.toString(), MediaType.APPLICATION_JSON).build();
     }
@@ -235,7 +235,7 @@ public class HeatMapRestService extends OnmsRestService {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Transactional
-    @Path("alarms/managedServices")
+    @Path("alarms/monitoredServices")
     public Response alarmsByServices() throws IOException {
         boolean processAcknowledged = !Boolean.parseBoolean(System.getProperty(ONLY_UNACKNOWLEDGED_PROPERTY_KEY, ONLY_UNACKNOWLEDGED_PROPERTY_DEFAULT));
         final List<HeatMapElement> heatMapElements = m_alarmDao.getHeatMapItemsForEntity("service.servicename", "service.serviceid", processAcknowledged, null, null);
@@ -268,10 +268,10 @@ public class HeatMapRestService extends OnmsRestService {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Transactional
-    @Path("alarms/nodesByManagedService/{managedService}")
-    public Response alarmsOfNodesByService(@PathParam("managedService") final String managedService) throws IOException {
+    @Path("alarms/nodesByMonitoredService/{monitoredService}")
+    public Response alarmsOfNodesByService(@PathParam("monitoredService") final String monitoredService) throws IOException {
         boolean processAcknowledged = !Boolean.parseBoolean(System.getProperty(ONLY_UNACKNOWLEDGED_PROPERTY_KEY, ONLY_UNACKNOWLEDGED_PROPERTY_DEFAULT));
-        final List<HeatMapElement> heatMapElements = m_alarmDao.getHeatMapItemsForEntity("node.nodelabel", "node.nodeid", processAcknowledged, "service.servicename", managedService);
+        final List<HeatMapElement> heatMapElements = m_alarmDao.getHeatMapItemsForEntity("node.nodelabel", "node.nodeid", processAcknowledged, "service.servicename", monitoredService);
         final JSONObject jo = new JSONObject(transformResults(heatMapElements, null));
         return Response.ok(jo.toString(), MediaType.APPLICATION_JSON).build();
     }
