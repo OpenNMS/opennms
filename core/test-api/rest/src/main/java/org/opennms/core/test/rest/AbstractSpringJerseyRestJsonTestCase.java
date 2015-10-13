@@ -51,6 +51,8 @@ import org.springframework.mock.web.MockHttpServletResponse;
 public abstract class AbstractSpringJerseyRestJsonTestCase extends AbstractSpringJerseyRestTestCase {
     private static final Logger LOG = LoggerFactory.getLogger(AbstractSpringJerseyRestJsonTestCase.class);
 
+    private static int jsonNodeCounter = 1;
+
     public static String ACCEPT = "Accept";
 
     @Override
@@ -96,14 +98,14 @@ public abstract class AbstractSpringJerseyRestJsonTestCase extends AbstractSprin
     protected void createNode(int statusCode) throws Exception {
         JSONObject node = new JSONObject();
         node.put("type", "A");
-        node.put("label", "TestMachine" + nodeCounter);
+        node.put("label", "TestMachine" + jsonNodeCounter);
         node.put("labelSource", "H");
         node.put("sysContact", "The Owner");
         node.put("sysDescription", "Darwin TestMachine 9.4.0 Darwin Kernel Version 9.4.0: Mon Jun  9 19:30:53 PDT 2008; root:xnu-1228.5.20~1/RELEASE_I386 i386");
         node.put("sysLocation", "DevJam");
-        node.put("sysName", "TestMachine" + nodeCounter);
+        node.put("sysName", "TestMachine" + jsonNodeCounter);
         node.put("sysObjectId", ".1.3.6.1.4.1.8072.3.2.255");
-        sendPost("/nodes", node.toString(), statusCode, "/nodes/" + nodeCounter++);
+        sendPost("/nodes", node.toString(), statusCode, "/nodes/" + jsonNodeCounter++);
     }
 
     @Override
