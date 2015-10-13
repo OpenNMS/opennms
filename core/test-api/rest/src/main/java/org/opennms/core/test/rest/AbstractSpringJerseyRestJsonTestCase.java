@@ -51,6 +51,8 @@ import org.springframework.mock.web.MockHttpServletResponse;
 public abstract class AbstractSpringJerseyRestJsonTestCase extends AbstractSpringJerseyRestTestCase {
     private static final Logger LOG = LoggerFactory.getLogger(AbstractSpringJerseyRestJsonTestCase.class);
 
+    private static int jsonNodeCounter = 1;
+
     public static String ACCEPT = "Accept";
 
     @Override
@@ -95,26 +97,26 @@ public abstract class AbstractSpringJerseyRestJsonTestCase extends AbstractSprin
     @Override
     protected void createNode(int statusCode) throws Exception {
         JSONObject node = new JSONObject();
-        node.append("type", "A");
-        node.append("label", "TestMachine" + nodeCounter);
-        node.append("labelSource", "H");
-        node.append("sysContact", "The Owner");
-        node.append("sysDescription", "Darwin TestMachine 9.4.0 Darwin Kernel Version 9.4.0: Mon Jun  9 19:30:53 PDT 2008; root:xnu-1228.5.20~1/RELEASE_I386 i386");
-        node.append("sysLocation", "DevJam");
-        node.append("sysName", "TestMachine" + nodeCounter);
-        node.append("sysObjectId", ".1.3.6.1.4.1.8072.3.2.255");
-        sendPost("/nodes", node.toString(), statusCode, "/nodes/" + nodeCounter++);
+        node.put("type", "A");
+        node.put("label", "TestMachine" + jsonNodeCounter);
+        node.put("labelSource", "H");
+        node.put("sysContact", "The Owner");
+        node.put("sysDescription", "Darwin TestMachine 9.4.0 Darwin Kernel Version 9.4.0: Mon Jun  9 19:30:53 PDT 2008; root:xnu-1228.5.20~1/RELEASE_I386 i386");
+        node.put("sysLocation", "DevJam");
+        node.put("sysName", "TestMachine" + jsonNodeCounter);
+        node.put("sysObjectId", ".1.3.6.1.4.1.8072.3.2.255");
+        sendPost("/nodes", node.toString(), statusCode, "/nodes/" + jsonNodeCounter++);
     }
 
     @Override
     protected void createIpInterface() throws Exception {
         createNode();
         JSONObject ipInterface = new JSONObject();
-        ipInterface.append("isManaged","M");
-        ipInterface.append("snmpPrimary","P");
-        ipInterface.append("ipAddress","10.10.10.10");
-        ipInterface.append("hostName","TestMachine");
-        ipInterface.append("ipStatus","1");
+        ipInterface.put("isManaged", "M");
+        ipInterface.put("snmpPrimary", "P");
+        ipInterface.put("ipAddress", "10.10.10.10");
+        ipInterface.put("hostName", "TestMachine");
+        ipInterface.put("ipStatus", "1");
         sendPost("/nodes/1/ipinterfaces", ipInterface.toString(), 303, "/nodes/1/ipinterfaces/10.10.10.10");
     }
 
@@ -122,15 +124,15 @@ public abstract class AbstractSpringJerseyRestJsonTestCase extends AbstractSprin
     protected void createSnmpInterface() throws Exception {
         createIpInterface();
         JSONObject snmpInterface = new JSONObject();
-        snmpInterface.append("ifIndex", "6");
-        snmpInterface.append("ifAdminStatus", "1");
-        snmpInterface.append("ifDescr", "en1");
-        snmpInterface.append("ifName", "en1");
-        snmpInterface.append("ifOperStatus", "1");
-        snmpInterface.append("ifSpeed", "10000000");
-        snmpInterface.append("ifType", "6");
-        snmpInterface.append("netMask", "255.255.255.0");
-        snmpInterface.append("physAddr", "001e5271136d");
+        snmpInterface.put("ifIndex", "6");
+        snmpInterface.put("ifAdminStatus", "1");
+        snmpInterface.put("ifDescr", "en1");
+        snmpInterface.put("ifName", "en1");
+        snmpInterface.put("ifOperStatus", "1");
+        snmpInterface.put("ifSpeed", "10000000");
+        snmpInterface.put("ifType", "6");
+        snmpInterface.put("netMask", "255.255.255.0");
+        snmpInterface.put("physAddr", "001e5271136d");
         sendPost("/nodes/1/snmpinterfaces", snmpInterface.toString(), 303, "/nodes/1/snmpinterfaces/6");
     }
 
@@ -138,12 +140,12 @@ public abstract class AbstractSpringJerseyRestJsonTestCase extends AbstractSprin
     protected void createService() throws Exception {
         createIpInterface();
         JSONObject service = new JSONObject();
-        service.append("source", "P");
-        service.append("status", "N");
-        service.append("notify", "Y");
+        service.put("source", "P");
+        service.put("status", "N");
+        service.put("notify", "Y");
         JSONObject serviceType = new JSONObject();
-        serviceType.append("name", "ICMP");
-        service.append("serviceType",serviceType);
+        serviceType.put("name", "ICMP");
+        service.put("serviceType",serviceType);
         sendPost("/nodes/1/ipinterfaces/10.10.10.10/services", service.toString(), 303, "/nodes/1/ipinterfaces/10.10.10.10/services/ICMP");
     }
 
@@ -151,8 +153,8 @@ public abstract class AbstractSpringJerseyRestJsonTestCase extends AbstractSprin
     protected void createCategory() throws Exception {
         createNode();
         JSONObject category = new JSONObject();
-        category.append("name", "Routers");
-        category.append("description", "Core Routers");
+        category.put("name", "Routers");
+        category.put("description", "Core Routers");
         sendPost("/categories", category.toString(), 303, "/categories/Routers");
     }
 

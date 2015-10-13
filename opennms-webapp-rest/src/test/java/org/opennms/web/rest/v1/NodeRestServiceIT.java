@@ -335,7 +335,7 @@ public class NodeRestServiceIT extends AbstractSpringJerseyRestTestCase {
         jo = ja.getJSONObject(0);
         assertTrue(jo.isNull("ifIndex"));
         assertEquals("10.10.10.10", jo.getString("ipAddress"));
-        assertEquals("1", jo.getString("nodeId"));
+        assertEquals(1, jo.getInt("nodeId"));
     }
 
     @Test
@@ -489,6 +489,7 @@ public class NodeRestServiceIT extends AbstractSpringJerseyRestTestCase {
         createIpInterface();
         String url = "/nodes";
         String xml = sendRequest(GET, url, parseParamData("comparator=ilike&match=any&label=1%25&ipInterface.ipAddress=1%25&ipInterface.ipHostName=1%25"), 200);
+        System.err.println("XXXX> " + xml);
         assertXpathMatches(xml, "//node[@type='A' and @id='1' and @label='TestMachine0']");
         assertTrue(xml, xml.contains("count=\"1\""));
         assertTrue(xml, xml.contains("totalCount=\"1\""));

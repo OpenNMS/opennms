@@ -99,7 +99,7 @@ public abstract class AbstractSpringJerseyRestTestCase {
     public static String DELETE = "DELETE";
     public static String PUT = "PUT";
     
-    protected static int nodeCounter = 1;
+    private static int nodeCounter = 1;
 
     ///String contextPath = "/opennms/rest";
     public static String contextPath = "/";
