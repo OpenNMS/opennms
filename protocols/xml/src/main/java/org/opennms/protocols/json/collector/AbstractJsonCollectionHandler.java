@@ -43,6 +43,7 @@ import net.sf.json.JSONObject;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.jxpath.JXPathContext;
 import org.apache.commons.jxpath.Pointer;
+import org.apache.commons.jxpath.JXPathException;
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
@@ -103,11 +104,15 @@ public abstract class AbstractJsonCollectionHandler extends AbstractXmlCollectio
                 LOG.debug("fillCollectionSet: processing resource {}", collectionResource);
                 AttributeGroupType attribGroupType = new AttributeGroupType(group.getName(), group.getIfType());
                 for (XmlObject object : group.getXmlObjects()) {
-                    Object obj = relativeContext.getValue(object.getXpath());
-                    if (obj != null) {
-                        String value = obj.toString();
-                        XmlCollectionAttributeType attribType = new XmlCollectionAttributeType(object, attribGroupType);
-                        collectionResource.setAttributeValue(attribType, value);
+                    try {
+                        Object obj = relativeContext.getValue(object.getXpath());
+                        if (obj != null) {
+                            String value = obj.toString();
+                            XmlCollectionAttributeType attribType = new XmlCollectionAttributeType(object, attribGroupType);
+                            collectionResource.setAttributeValue(attribType, value);
+                        }
+                    } catch (JXPathException ex) {
+                        LOG.warn("Unable to get value for {}: {}", object.getXpath(), ex.getMessage());
                     }
                 }
                 processXmlResource(collectionResource, attribGroupType);
