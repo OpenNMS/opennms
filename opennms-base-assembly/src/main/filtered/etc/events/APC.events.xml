@@ -17702,7 +17702,7 @@
 	mtrapargsInteger03=%parm[#6]%
 	mtrapargsString=%parm[#7]%&lt;/p&gt;
 	</logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Warning</severity>
    </event>
    <event>
       <mask>
@@ -17768,7 +17768,7 @@
 	mtrapargsInteger03=%parm[#6]%
 	mtrapargsString=%parm[#7]%&lt;/p&gt;
 	</logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Normal</severity>
    </event>
    <event>
       <mask>
@@ -17818,7 +17818,7 @@
 	xATSIdentProductName=%parm[#2]%
 	mtrapargsString=%parm[#3]%&lt;/p&gt;
 	</logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Minor</severity>
    </event>
    <event>
       <mask>
@@ -17868,7 +17868,7 @@
 	xATSIdentProductName=%parm[#2]%
 	mtrapargsString=%parm[#3]%&lt;/p&gt;
 	</logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Cleared</severity>
    </event>
    <event>
       <mask>
@@ -17910,7 +17910,7 @@
 	xATSIdentProductName=%parm[#2]%
 	mtrapargsString=%parm[#3]%&lt;/p&gt;
 	</logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Warning</severity>
    </event>
    <event>
       <mask>
@@ -17952,7 +17952,7 @@
 	xATSIdentProductName=%parm[#2]%
 	mtrapargsString=%parm[#3]%&lt;/p&gt;
 	</logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Cleared</severity>
    </event>
    <event>
       <mask>
@@ -17996,7 +17996,7 @@
 	xATSIdentProductName=%parm[#2]%
 	mtrapargsString=%parm[#3]%&lt;/p&gt;
 	</logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Warning</severity>
    </event>
    <event>
       <mask>
@@ -18038,7 +18038,7 @@
 	xATSIdentProductName=%parm[#2]%
 	mtrapargsString=%parm[#3]%&lt;/p&gt;
 	</logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Cleared</severity>
    </event>
    <event>
       <mask>
@@ -18086,7 +18086,7 @@
 	mtrapargsInteger=%parm[#3]%
 	mtrapargsString=%parm[#4]%&lt;/p&gt;
 	</logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Warning</severity>
    </event>
    <event>
       <mask>
@@ -18134,7 +18134,7 @@
 	mtrapargsInteger=%parm[#3]%
 	mtrapargsString=%parm[#4]%&lt;/p&gt;
 	</logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Cleared</severity>
    </event>
    <event>
       <mask>
@@ -18182,7 +18182,7 @@
 	mtrapargsInteger=%parm[#3]%
 	mtrapargsString=%parm[#4]%&lt;/p&gt;
 	</logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Minor</severity>
    </event>
    <event>
       <mask>
@@ -18230,7 +18230,7 @@
 	mtrapargsInteger=%parm[#3]%
 	mtrapargsString=%parm[#4]%&lt;/p&gt;
 	</logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Cleared</severity>
    </event>
    <event>
       <mask>
@@ -18278,7 +18278,7 @@
 	mtrapargsInteger=%parm[#3]%
 	mtrapargsString=%parm[#4]%&lt;/p&gt;
 	</logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Warning</severity>
    </event>
    <event>
       <mask>
@@ -18326,7 +18326,7 @@
 	mtrapargsInteger=%parm[#3]%
 	mtrapargsString=%parm[#4]%&lt;/p&gt;
 	</logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Cleared</severity>
    </event>
    <event>
       <mask>
@@ -18374,7 +18374,7 @@
 	mtrapargsInteger=%parm[#3]%
 	mtrapargsString=%parm[#4]%&lt;/p&gt;
 	</logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Minor</severity>
    </event>
    <event>
       <mask>
@@ -18422,7 +18422,7 @@
 	mtrapargsInteger=%parm[#3]%
 	mtrapargsString=%parm[#4]%&lt;/p&gt;
 	</logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Cleared</severity>
    </event>
    <event>
       <mask>
@@ -18470,7 +18470,7 @@
 	mtrapargsInteger=%parm[#3]%
 	mtrapargsString=%parm[#4]%&lt;/p&gt;
 	</logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Warning</severity>
    </event>
    <event>
       <mask>
@@ -18518,7 +18518,7 @@
 	mtrapargsInteger=%parm[#3]%
 	mtrapargsString=%parm[#4]%&lt;/p&gt;
 	</logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Cleared</severity>
    </event>
    <event>
       <mask>
@@ -18566,7 +18566,7 @@
 	mtrapargsInteger=%parm[#3]%
 	mtrapargsString=%parm[#4]%&lt;/p&gt;
 	</logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Warning</severity>
    </event>
    <event>
       <mask>
@@ -18614,7 +18614,7 @@
 	mtrapargsInteger=%parm[#3]%
 	mtrapargsString=%parm[#4]%&lt;/p&gt;
 	</logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Cleared</severity>
    </event>
    <event>
       <mask>
@@ -18663,7 +18663,7 @@
 	mtrapargsInteger=%parm[#3]%
 	mtrapargsString=%parm[#4]%&lt;/p&gt;
 	</logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Warning</severity>
    </event>
    <event>
       <mask>
@@ -18711,7 +18711,7 @@
 	mtrapargsInteger=%parm[#3]%
 	mtrapargsString=%parm[#4]%&lt;/p&gt;
 	</logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Cleared</severity>
    </event>
    <event>
       <mask>
@@ -18760,7 +18760,7 @@
 	mtrapargsInteger=%parm[#3]%
 	mtrapargsString=%parm[#4]%&lt;/p&gt;
 	</logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Minor</severity>
    </event>
    <event>
       <mask>
@@ -18809,7 +18809,7 @@
 	mtrapargsInteger=%parm[#3]%
 	mtrapargsString=%parm[#4]%&lt;/p&gt;
 	</logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Cleared</severity>
    </event>
    <event>
       <mask>
@@ -18866,7 +18866,7 @@
 	mtrapargsInteger02=%parm[#4]%
 	mtrapargsString=%parm[#5]%&lt;/p&gt;
 	</logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Major</severity>
    </event>
    <event>
       <mask>
@@ -18920,7 +18920,7 @@
 	mtrapargsInteger02=%parm[#4]%
 	mtrapargsString=%parm[#5]%&lt;/p&gt;
 	</logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Cleared</severity>
    </event>
    <event>
       <mask>
@@ -18968,7 +18968,7 @@
 	mtrapargsInteger=%parm[#3]%
 	mtrapargsString=%parm[#4]%&lt;/p&gt;
 	</logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Warning</severity>
    </event>
    <event>
       <mask>
@@ -19016,7 +19016,7 @@
 	mtrapargsInteger=%parm[#3]%
 	mtrapargsString=%parm[#4]%&lt;/p&gt;
 	</logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Cleared</severity>
    </event>
    <event>
       <mask>
@@ -19064,7 +19064,7 @@
 	mtrapargsInteger=%parm[#3]%
 	mtrapargsString=%parm[#4]%&lt;/p&gt;
 	</logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Warning</severity>
    </event>
    <event>
       <mask>
@@ -19112,7 +19112,7 @@
 	mtrapargsInteger=%parm[#3]%
 	mtrapargsString=%parm[#4]%&lt;/p&gt;
 	</logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Cleared</severity>
    </event>
    <event>
       <mask>
@@ -19160,7 +19160,7 @@
 	mtrapargsInteger=%parm[#3]%
 	mtrapargsString=%parm[#4]%&lt;/p&gt;
 	</logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Warning</severity>
    </event>
    <event>
       <mask>
@@ -19208,7 +19208,7 @@
 	mtrapargsInteger=%parm[#3]%
 	mtrapargsString=%parm[#4]%&lt;/p&gt;
 	</logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Cleared</severity>
    </event>
    <event>
       <mask>
@@ -19256,7 +19256,7 @@
 	mtrapargsInteger=%parm[#3]%
 	mtrapargsString=%parm[#4]%&lt;/p&gt;
 	</logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Warning</severity>
    </event>
    <event>
       <mask>
@@ -19304,7 +19304,7 @@
 	mtrapargsInteger=%parm[#3]%
 	mtrapargsString=%parm[#4]%&lt;/p&gt;
 	</logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Cleared</severity>
    </event>
    <event>
       <mask>
@@ -19352,7 +19352,7 @@
 	mtrapargsInteger=%parm[#3]%
 	mtrapargsString=%parm[#4]%&lt;/p&gt;
 	</logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Warning</severity>
    </event>
    <event>
       <mask>
@@ -19400,7 +19400,7 @@
 	mtrapargsInteger=%parm[#3]%
 	mtrapargsString=%parm[#4]%&lt;/p&gt;
 	</logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Cleared</severity>
    </event>
    <event>
       <mask>
@@ -19448,7 +19448,7 @@
 	mtrapargsInteger=%parm[#3]%
 	mtrapargsString=%parm[#4]%&lt;/p&gt;
 	</logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Minor</severity>
    </event>
    <event>
       <mask>
@@ -19496,7 +19496,7 @@
 	mtrapargsInteger=%parm[#3]%
 	mtrapargsString=%parm[#4]%&lt;/p&gt;
 	</logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Cleared</severity>
    </event>
    <event>
       <mask>
@@ -19544,7 +19544,7 @@
 	mtrapargsInteger=%parm[#3]%
 	mtrapargsString=%parm[#4]%&lt;/p&gt;
 	</logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Warning</severity>
    </event>
    <event>
       <mask>
@@ -19592,7 +19592,7 @@
 	mtrapargsInteger=%parm[#3]%
 	mtrapargsString=%parm[#4]%&lt;/p&gt;
 	</logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Cleared</severity>
    </event>
    <event>
       <mask>
@@ -19640,7 +19640,7 @@
 	mtrapargsInteger=%parm[#3]%
 	mtrapargsString=%parm[#4]%&lt;/p&gt;
 	</logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Warning</severity>
    </event>
    <event>
       <mask>
@@ -19688,7 +19688,7 @@
 	mtrapargsInteger=%parm[#3]%
 	mtrapargsString=%parm[#4]%&lt;/p&gt;
 	</logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Cleared</severity>
    </event>
    <event>
       <mask>
@@ -19736,7 +19736,7 @@
 	mtrapargsInteger=%parm[#3]%
 	mtrapargsString=%parm[#4]%&lt;/p&gt;
 	</logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Minor</severity>
    </event>
    <event>
       <mask>
@@ -19784,7 +19784,7 @@
 	mtrapargsInteger=%parm[#3]%
 	mtrapargsString=%parm[#4]%&lt;/p&gt;
 	</logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Cleared</severity>
    </event>
    <event>
       <mask>
@@ -19832,7 +19832,7 @@
 	mtrapargsInteger=%parm[#3]%
 	mtrapargsString=%parm[#4]%&lt;/p&gt;
 	</logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Warning</severity>
    </event>
    <event>
       <mask>
@@ -19880,7 +19880,7 @@
 	mtrapargsInteger=%parm[#3]%
 	mtrapargsString=%parm[#4]%&lt;/p&gt;
 	</logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Cleared</severity>
    </event>
    <event>
       <mask>
@@ -19928,7 +19928,7 @@
 	mtrapargsInteger=%parm[#3]%
 	mtrapargsString=%parm[#4]%&lt;/p&gt;
 	</logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Warning</severity>
    </event>
    <event>
       <mask>
@@ -19976,7 +19976,7 @@
 	mtrapargsInteger=%parm[#3]%
 	mtrapargsString=%parm[#4]%&lt;/p&gt;
 	</logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Cleared</severity>
    </event>
    <event>
       <mask>
@@ -20025,7 +20025,7 @@
 	mtrapargsInteger=%parm[#3]%
 	mtrapargsString=%parm[#4]%&lt;/p&gt;
 	</logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Warning</severity>
    </event>
    <event>
       <mask>
@@ -20067,7 +20067,7 @@
 	xATSIdentProductName=%parm[#2]%
 	mtrapargsString=%parm[#3]%&lt;/p&gt;
 	</logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Cleared</severity>
    </event>
    <event>
       <mask>
@@ -20115,7 +20115,7 @@
 	mtrapargsInteger=%parm[#3]%
 	mtrapargsString=%parm[#4]%&lt;/p&gt;
 	</logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Minor</severity>
    </event>
    <event>
       <mask>
@@ -20157,7 +20157,7 @@
 	xATSIdentProductName=%parm[#2]%
 	mtrapargsString=%parm[#3]%&lt;/p&gt;
 	</logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Cleared</severity>
    </event>
    <event>
       <mask>
@@ -20205,7 +20205,7 @@
 	mtrapargsInteger=%parm[#3]%
 	mtrapargsString=%parm[#4]%&lt;/p&gt;
 	</logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Warning</severity>
    </event>
    <event>
       <mask>
@@ -20247,7 +20247,7 @@
 	xATSIdentProductName=%parm[#2]%
 	mtrapargsString=%parm[#3]%&lt;/p&gt;
 	</logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Cleared</severity>
    </event>
    <event>
       <mask>
@@ -20296,7 +20296,7 @@
 	mtrapargsInteger=%parm[#3]%
 	mtrapargsString=%parm[#4]%&lt;/p&gt;
 	</logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Minor</severity>
    </event>
    <event>
       <mask>
@@ -20338,7 +20338,7 @@
 	xATSIdentProductName=%parm[#2]%
 	mtrapargsString=%parm[#3]%&lt;/p&gt;
 	</logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Cleared</severity>
    </event>
    <event>
       <mask>
@@ -20387,7 +20387,7 @@
 	xATSIdentProductName=%parm[#2]%
 	mtrapargsString=%parm[#3]%&lt;/p&gt;
 	</logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Warning</severity>
    </event>
    <event>
       <mask>
@@ -20429,7 +20429,7 @@
 	xATSIdentProductName=%parm[#2]%
 	mtrapargsString=%parm[#3]%&lt;/p&gt;
 	</logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Cleared</severity>
    </event>
    <event>
       <mask>
@@ -20477,7 +20477,7 @@
 	mtrapargsInteger=%parm[#3]%
 	mtrapargsString=%parm[#4]%&lt;/p&gt;
 	</logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Minor</severity>
    </event>
    <event>
       <mask>
@@ -20525,7 +20525,7 @@
 	mtrapargsInteger=%parm[#3]%
 	mtrapargsString=%parm[#4]%&lt;/p&gt;
 	</logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Cleared</severity>
    </event>
    <event>
       <mask>
@@ -20573,7 +20573,7 @@
 	mtrapargsInteger=%parm[#3]%
 	mtrapargsString=%parm[#4]%&lt;/p&gt;
 	</logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Minor</severity>
    </event>
    <event>
       <mask>
@@ -20621,7 +20621,7 @@
 	mtrapargsInteger=%parm[#3]%
 	mtrapargsString=%parm[#4]%&lt;/p&gt;
 	</logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Cleared</severity>
    </event>
    <event>
       <mask>
@@ -20717,7 +20717,7 @@
 	mtrapargsInteger=%parm[#3]%
 	mtrapargsString=%parm[#4]%&lt;/p&gt;
 	</logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Cleared</severity>
    </event>
    <event>
       <mask>
@@ -20759,7 +20759,7 @@
 	xPDUIdentProductName=%parm[#2]%
 	mtrapargsString=%parm[#3]%&lt;/p&gt;
 	</logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Cleared</severity>
    </event>
    <event>
       <mask>
@@ -20860,7 +20860,7 @@
 	mtrapargsInteger=%parm[#3]%
 	mtrapargsString=%parm[#4]%&lt;/p&gt;
 	</logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Cleared</severity>
    </event>
    <event>
       <mask>
@@ -21266,7 +21266,7 @@
 	xPDUIdentProductName=%parm[#2]%
 	mtrapargsString=%parm[#3]%&lt;/p&gt;
 	</logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Warning</severity>
    </event>
    <event>
       <mask>
@@ -21308,7 +21308,7 @@
 	xPDUIdentProductName=%parm[#2]%
 	mtrapargsString=%parm[#3]%&lt;/p&gt;
 	</logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Cleared</severity>
    </event>
    <event>
       <mask>
@@ -21350,7 +21350,7 @@
 	xPDUIdentProductName=%parm[#2]%
 	mtrapargsString=%parm[#3]%&lt;/p&gt;
 	</logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Warning</severity>
    </event>
    <event>
       <mask>
@@ -21392,7 +21392,7 @@
 	xPDUIdentProductName=%parm[#2]%
 	mtrapargsString=%parm[#3]%&lt;/p&gt;
 	</logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Normal</severity>
    </event>
    <event>
       <mask>
@@ -21440,7 +21440,7 @@
 	mtrapargsInteger=%parm[#3]%
 	mtrapargsString=%parm[#4]%&lt;/p&gt;
 	</logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Warning</severity>
    </event>
    <event>
       <mask>
@@ -21488,7 +21488,7 @@
 	mtrapargsInteger=%parm[#3]%
 	mtrapargsString=%parm[#4]%&lt;/p&gt;
 	</logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Cleared</severity>
    </event>
    <event>
       <mask>
@@ -21536,7 +21536,7 @@
 	mtrapargsInteger=%parm[#3]%
 	mtrapargsString=%parm[#4]%&lt;/p&gt;
 	</logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Warning</severity>
    </event>
    <event>
       <mask>
@@ -21584,7 +21584,7 @@
 	mtrapargsInteger=%parm[#3]%
 	mtrapargsString=%parm[#4]%&lt;/p&gt;
 	</logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Cleared</severity>
    </event>
    <event>
       <mask>
@@ -21633,7 +21633,7 @@
 	mtrapargsInteger=%parm[#3]%
 	mtrapargsString=%parm[#4]%&lt;/p&gt;
 	</logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Warning</severity>
    </event>
    <event>
       <mask>
@@ -21675,7 +21675,7 @@
 	xATSIdentProductName=%parm[#2]%
 	mtrapargsString=%parm[#3]%&lt;/p&gt;
 	</logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Cleared</severity>
    </event>
    <event>
       <mask>
@@ -21736,7 +21736,7 @@
 	mtrapargsInteger=%parm[#5]%
 	mtrapargsString=%parm[#6]%&lt;/p&gt;
 	</logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Normal</severity>
    </event>
    <event>
       <mask>
@@ -21790,7 +21790,7 @@
 	mtrapargsString03=%parm[#4]%
 	mtrapargsString=%parm[#5]%&lt;/p&gt;
 	</logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Normal</severity>
    </event>
    <event>
       <mask>
@@ -21844,7 +21844,7 @@
 	mtrapargsString03=%parm[#4]%
 	mtrapargsString=%parm[#5]%&lt;/p&gt;
 	</logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Warning</severity>
    </event>
    <event>
       <mask>
@@ -21874,7 +21874,7 @@
         APC Event: upsPfcInputRelayFailure trap received
 	mtrapargsString=%parm[#1]%&lt;/p&gt;
 	</logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Warning</severity>
    </event>
    <event>
       <mask>
@@ -21904,7 +21904,7 @@
         APC Event: upsPfcInputRelayFailureCleared trap received
 	mtrapargsString=%parm[#1]%&lt;/p&gt;
 	</logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Cleared</severity>
    </event>
    <event>
       <mask>
@@ -21934,7 +21934,7 @@
         APC Event: upsInverterOverTemperature trap received
 	mtrapargsString=%parm[#1]%&lt;/p&gt;
 	</logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Warning</severity>
    </event>
    <event>
       <mask>
@@ -21964,7 +21964,7 @@
         APC Event: upsInverterOverTemperatureCleared trap received
 	mtrapargsString=%parm[#1]%&lt;/p&gt;
 	</logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Cleared</severity>
    </event>
    <event>
       <mask>
@@ -21994,7 +21994,7 @@
         APC Event: upsBatteryOverVoltage trap received
 	mtrapargsString=%parm[#1]%&lt;/p&gt;
 	</logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Warning</severity>
    </event>
    <event>
       <mask>
@@ -22024,7 +22024,7 @@
         APC Event: upsBatteryOverVoltageCleared trap received
 	mtrapargsString=%parm[#1]%&lt;/p&gt;
 	</logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Cleared</severity>
    </event>
    <event>
       <mask>
@@ -22054,7 +22054,7 @@
         APC Event: upsEepromFault trap received
 	mtrapargsString=%parm[#1]%&lt;/p&gt;
 	</logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Warning</severity>
    </event>
    <event>
       <mask>
@@ -22084,7 +22084,7 @@
         APC Event: upsEepromFaultCleared trap received
 	mtrapargsString=%parm[#1]%&lt;/p&gt;
 	</logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Cleared</severity>
    </event>
    <event>
       <mask>
@@ -22145,7 +22145,7 @@
 	mtrapargsInteger=%parm[#5]%
 	mtrapargsString=%parm[#6]%&lt;/p&gt;
 	</logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Warning</severity>
    </event>
    <event>
       <mask>
@@ -22206,7 +22206,7 @@
 	mtrapargsInteger=%parm[#5]%
 	mtrapargsString=%parm[#6]%&lt;/p&gt;
 	</logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Cleared</severity>
    </event>
    <event>
       <mask>
@@ -22267,7 +22267,7 @@
 	mtrapargsInteger=%parm[#5]%
 	mtrapargsString=%parm[#6]%&lt;/p&gt;
 	</logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Warning</severity>
    </event>
    <event>
       <mask>
@@ -22327,7 +22327,7 @@
 	mtrapargsInteger=%parm[#5]%
 	mtrapargsString=%parm[#6]%&lt;/p&gt;
 	</logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Cleared</severity>
    </event>
    <event>
       <mask>
@@ -22381,7 +22381,7 @@
 	rARUStatusAruName=%parm[#4]%
 	mtrapargsString=%parm[#5]%&lt;/p&gt;
 	</logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Warning</severity>
    </event>
    <event>
       <mask>
@@ -22435,7 +22435,7 @@
 	rARUStatusAruName=%parm[#4]%
 	mtrapargsString=%parm[#5]%&lt;/p&gt;
 	</logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Cleared</severity>
    </event>
    <event>
       <mask>
@@ -22483,7 +22483,7 @@
 	mtrapargsInteger04=%parm[#3]%
 	mtrapargsString=%parm[#4]%&lt;/p&gt;
 	</logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Normal</severity>
    </event>
    <event>
       <mask>
@@ -22543,7 +22543,7 @@
 	mtrapargsString04=%parm[#5]%
 	mtrapargsString=%parm[#6]%&lt;/p&gt;
 	</logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Normal</severity>
    </event>
    <event>
       <mask>
@@ -22603,7 +22603,7 @@
 	mtrapargsString04=%parm[#5]%
 	mtrapargsString=%parm[#6]%&lt;/p&gt;
 	</logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Warning</severity>
    </event>
    <event>
       <mask>
@@ -22663,7 +22663,7 @@
 	mtrapargsString04=%parm[#5]%
 	mtrapargsString=%parm[#6]%&lt;/p&gt;
 	</logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Warning</severity>
    </event>
    <event>
       <mask>
@@ -22723,7 +22723,7 @@
 	mtrapargsString04=%parm[#5]%
 	mtrapargsString=%parm[#6]%&lt;/p&gt;
 	</logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Cleared</severity>
    </event>
    <event>
       <mask>
@@ -22783,7 +22783,7 @@
 	mtrapargsString04=%parm[#5]%
 	mtrapargsString=%parm[#6]%&lt;/p&gt;
 	</logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Warning</severity>
    </event>
    <event>
       <mask>
@@ -22843,7 +22843,7 @@
 	mtrapargsString04=%parm[#5]%
 	mtrapargsString=%parm[#6]%&lt;/p&gt;
 	</logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Cleared</severity>
    </event>
    <event>
       <mask>
@@ -22903,7 +22903,7 @@
 	mtrapargsString04=%parm[#5]%
 	mtrapargsString=%parm[#6]%&lt;/p&gt;
 	</logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Warning</severity>
    </event>
    <event>
       <mask>
@@ -22963,7 +22963,7 @@
 	mtrapargsString04=%parm[#5]%
 	mtrapargsString=%parm[#6]%&lt;/p&gt;
 	</logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Cleared</severity>
    </event>
    <event>
       <mask>
@@ -23023,7 +23023,7 @@
 	mtrapargsString04=%parm[#5]%
 	mtrapargsString=%parm[#6]%&lt;/p&gt;
 	</logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Warning</severity>
    </event>
    <event>
       <mask>
@@ -23083,7 +23083,7 @@
 	mtrapargsString04=%parm[#5]%
 	mtrapargsString=%parm[#6]%&lt;/p&gt;
 	</logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Cleared</severity>
    </event>
    <event>
       <mask>
@@ -23143,7 +23143,7 @@
 	mtrapargsString04=%parm[#5]%
 	mtrapargsString=%parm[#6]%&lt;/p&gt;
 	</logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Warning</severity>
    </event>
    <event>
       <mask>
@@ -23203,7 +23203,7 @@
 	mtrapargsString04=%parm[#5]%
 	mtrapargsString=%parm[#6]%&lt;/p&gt;
 	</logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Cleared</severity>
    </event>
    <event>
       <mask>
@@ -23263,7 +23263,7 @@
 	mtrapargsString04=%parm[#5]%
 	mtrapargsString=%parm[#6]%&lt;/p&gt;
 	</logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Warning</severity>
    </event>
    <event>
       <mask>
@@ -23323,7 +23323,7 @@
 	mtrapargsString04=%parm[#5]%
 	mtrapargsString=%parm[#6]%&lt;/p&gt;
 	</logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Cleared</severity>
    </event>
    <event>
       <mask>
@@ -23383,7 +23383,7 @@
 	mtrapargsString04=%parm[#5]%
 	mtrapargsString=%parm[#6]%&lt;/p&gt;
 	</logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Warning</severity>
    </event>
    <event>
       <mask>
@@ -23443,7 +23443,7 @@
 	mtrapargsString04=%parm[#5]%
 	mtrapargsString=%parm[#6]%&lt;/p&gt;
 	</logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Cleared</severity>
    </event>
    <event>
       <mask>
@@ -23503,7 +23503,7 @@
 	mtrapargsString04=%parm[#5]%
 	mtrapargsString=%parm[#6]%&lt;/p&gt;
 	</logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Warning</severity>
    </event>
    <event>
       <mask>
@@ -23563,7 +23563,7 @@
 	mtrapargsString04=%parm[#5]%
 	mtrapargsString=%parm[#6]%&lt;/p&gt;
 	</logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Cleared</severity>
    </event>
    <event>
       <mask>
@@ -23623,7 +23623,7 @@
 	mtrapargsString04=%parm[#5]%
 	mtrapargsString=%parm[#6]%&lt;/p&gt;
 	</logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Warning</severity>
    </event>
    <event>
       <mask>
@@ -23683,7 +23683,7 @@
 	mtrapargsString04=%parm[#5]%
 	mtrapargsString=%parm[#6]%&lt;/p&gt;
 	</logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Cleared</severity>
    </event>
    <event>
       <mask>
@@ -23743,7 +23743,7 @@
 	mtrapargsString04=%parm[#5]%
 	mtrapargsString=%parm[#6]%&lt;/p&gt;
 	</logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Warning</severity>
    </event>
    <event>
       <mask>
@@ -23803,7 +23803,7 @@
 	mtrapargsString04=%parm[#5]%
 	mtrapargsString=%parm[#6]%&lt;/p&gt;
 	</logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Cleared</severity>
    </event>
    <event>
       <mask>
@@ -23863,7 +23863,7 @@
 	mtrapargsString04=%parm[#5]%
 	mtrapargsString=%parm[#6]%&lt;/p&gt;
 	</logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Warning</severity>
    </event>
    <event>
       <mask>
@@ -23923,7 +23923,7 @@
 	mtrapargsString04=%parm[#5]%
 	mtrapargsString=%parm[#6]%&lt;/p&gt;
 	</logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Cleared</severity>
    </event>
    <event>
       <mask>
@@ -23983,7 +23983,7 @@
 	mtrapargsString04=%parm[#5]%
 	mtrapargsString=%parm[#6]%&lt;/p&gt;
 	</logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Warning</severity>
    </event>
    <event>
       <mask>
@@ -24043,7 +24043,7 @@
 	mtrapargsString04=%parm[#5]%
 	mtrapargsString=%parm[#6]%&lt;/p&gt;
 	</logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Cleared</severity>
    </event>
    <event>
       <mask>
@@ -24091,7 +24091,7 @@
 	mtrapargsInteger04=%parm[#3]%
 	mtrapargsString=%parm[#4]%&lt;/p&gt;
 	</logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Normal</severity>
    </event>
    <event>
       <mask>
@@ -24139,7 +24139,7 @@
 	mtrapargsInteger04=%parm[#3]%
 	mtrapargsString=%parm[#4]%&lt;/p&gt;
 	</logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Warning</severity>
    </event>
    <event>
       <mask>
@@ -24187,7 +24187,7 @@
 	mtrapargsInteger04=%parm[#3]%
 	mtrapargsString=%parm[#4]%&lt;/p&gt;
 	</logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Normal</severity>
    </event>
    <event>
       <mask>
@@ -24235,7 +24235,7 @@
 	mtrapargsInteger04=%parm[#3]%
 	mtrapargsString=%parm[#4]%&lt;/p&gt;
 	</logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Normal</severity>
    </event>
    <event>
       <mask>
