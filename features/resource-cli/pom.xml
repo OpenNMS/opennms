@@ -32,7 +32,7 @@
         <dependency>
             <groupId>args4j</groupId>
             <artifactId>args4j</artifactId>
-            <version>${args4j.version}</version>
+            <version>${args4jVersion}</version>
         </dependency>
         <dependency>
             <groupId>com.sun.jersey.contribs</groupId>

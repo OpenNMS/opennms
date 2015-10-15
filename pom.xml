@@ -1213,7 +1213,7 @@
 
     <!-- dependency versions -->
     <oldAsmVersion>99.99.99-exclude-and-use-org.ow2.asm.asm-all-instead</oldAsmVersion>
-    <args4j.version>2.32</args4j.version>
+    <args4jVersion>2.32</args4jVersion>
     <asmVersion>5.0.4</asmVersion>
     <asciidoctorVersion>1.5.2.1</asciidoctorVersion>
     <asciidoctorjVersion>1.5.2</asciidoctorjVersion>
