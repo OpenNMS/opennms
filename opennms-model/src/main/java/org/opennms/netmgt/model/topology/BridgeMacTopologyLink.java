@@ -38,8 +38,11 @@ public class BridgeMacTopologyLink extends TopologyLink {
     private final Integer m_bridgePortIfIndex;
     private final String m_bridgePortIfName;
     private final Integer m_vlan;
+    private final Integer m_targetBridgePort;
+    private final Integer m_targetIfIndex;
+    private final String m_targetPortIfName;
+
     private final String m_macAddr;
-    private final String m_netaddress;
 
     public BridgeMacTopologyLink(Integer id, 
             Integer nodeId, 
@@ -51,7 +54,9 @@ public class BridgeMacTopologyLink extends TopologyLink {
             Integer targetNodeId, 
             String targetLabel, String targetSysoid, String targetLocation,
             NodeType targetNodeType,
-            String macAddr, String netaddress) {
+            String macAddr,
+            Integer targetIfIndex, String targetPortIfName, 
+            Integer targetBridgePort) {
         super(nodeId,srcLabel,srcSysoid,srcLocation,srcNodeType,targetNodeId,targetLabel,targetSysoid,targetLocation,targetNodeType);
         m_id = id;
         m_bridgePort = bridgePort;
@@ -59,7 +64,9 @@ public class BridgeMacTopologyLink extends TopologyLink {
         m_bridgePortIfName = bridgePortIfName;
         m_vlan = vlan;
         m_macAddr = macAddr;
-        m_netaddress = netaddress;
+        m_targetIfIndex = targetIfIndex;
+        m_targetPortIfName = targetPortIfName;
+        m_targetBridgePort = targetBridgePort;
     }
 
     public int getId() {
@@ -85,9 +92,17 @@ public class BridgeMacTopologyLink extends TopologyLink {
     public String getMacAddr() {
         return m_macAddr;
     }
+    
+    public Integer getTargetIfIndex() {
+        return m_targetIfIndex;
+    }
 
-    public String getNetaddress() {
-        return m_netaddress;
+    public String getTargetPortIfName() {
+        return m_targetPortIfName;
+    }
+
+    public Integer getTargetBridgePort() {
+        return m_targetBridgePort;
     }
 
 }

@@ -38,17 +38,16 @@ import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.netmgt.config.EnhancedLinkdConfig;
-
 import org.opennms.netmgt.dao.api.CdpLinkDao;
+import org.opennms.netmgt.dao.api.IpNetToMediaDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.BridgeBridgeLinkDao;
 import org.opennms.netmgt.dao.api.BridgeMacLinkDao;
 import org.opennms.netmgt.dao.api.IsIsLinkDao;
 import org.opennms.netmgt.dao.api.LldpLinkDao;
 import org.opennms.netmgt.dao.api.OspfLinkDao;
-
+import org.opennms.netmgt.model.IpNetToMedia;
 import org.opennms.netmgt.model.OnmsNode;
-
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -93,6 +92,9 @@ public abstract class EnLinkdTestBuilder extends EnLinkdTestHelper implements In
     @Autowired
     protected BridgeMacLinkDao m_bridgeMacLinkDao;
 
+    @Autowired
+    protected IpNetToMediaDao m_ipNetToMediaDao;
+
     @Override
     public void afterPropertiesSet() throws Exception {
         BeanUtils.assertAutowiring(this);
@@ -116,9 +118,11 @@ public abstract class EnLinkdTestBuilder extends EnLinkdTestHelper implements In
 
     @After
     public void tearDown() throws Exception {
-        for (final OnmsNode node : m_nodeDao.findAll()) {
+        for (final IpNetToMedia at: m_ipNetToMediaDao.findAll())
+            m_ipNetToMediaDao.delete(at);
+        m_ipNetToMediaDao.flush();
+        for (final OnmsNode node : m_nodeDao.findAll())
             m_nodeDao.delete(node);
-        }
         m_nodeDao.flush();
     }
     

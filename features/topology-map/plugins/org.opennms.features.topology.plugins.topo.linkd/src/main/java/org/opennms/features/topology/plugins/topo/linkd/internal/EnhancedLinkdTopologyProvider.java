@@ -32,8 +32,10 @@ import java.io.File;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.net.MalformedURLException;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.xml.bind.JAXBException;
@@ -277,8 +279,8 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
         private final String m_vertexNamespace;
 
 
-        public BridgeLinkDetail(String id, String vertexNamespace, Vertex source, Integer sourceLink, Vertex target, Integer targetLink) {
-            super(id, source, sourceLink, target, targetLink);
+        public BridgeLinkDetail(String id, String vertexNamespace, Vertex source, Integer sourceIfIndex, Vertex target, Integer targetIfIndex) {
+            super(id, source, sourceIfIndex, target, targetIfIndex);
             m_vertexNamespace = vertexNamespace;
         }
 
@@ -302,15 +304,22 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
                 return false;
             }
         }
+        
+        @Override
+        public String getId() {
+            if (getTargetIfIndex() == null) 
+                return getSource().getNodeID() + ":" + getSourceIfIndex() + "|" + getTarget().getNodeID();
+            return getSource().getNodeID() + ":" + getSourceIfIndex() + "|" + getTarget().getNodeID() +":" + getTargetIfIndex();
+        }
 
         @Override
         public Integer getSourceIfIndex() {
-            return 0;
+            return getSourceLink();
         }
 
         @Override
         public Integer getTargetIfIndex() {
-            return 0;
+            return getTargetLink();
         }
 
         @Override
@@ -733,24 +742,146 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
     }
 
     private void getBridgeLinks(){
-
-        Multimap<String, BridgeMacTopologyLink> multimap = HashMultimap.create();
-        List<BridgeMacTopologyLink> macLinks = m_bridgeMacLinkDao.getAllBridgeLinksToIpAddrToNodes();
-        if (macLinks != null && macLinks.size() > 0) {
-            for (BridgeMacTopologyLink macLink : macLinks) {
-                multimap.put(String.valueOf(macLink.getSrcNodeId()) + "|" +String.valueOf(macLink.getBridgePort()), macLink);
+        for (BridgeBridgeLink link : m_bridgeBridgeLinkDao.findAll()) {
+            String id = Math.min(link.getNode().getId(), link.getDesignatedNode().getId()) + "|" + Math.max(link.getNode().getId(), link.getDesignatedNode().getId());
+            Vertex source = getVertex(getVertexNamespace(), link.getNode().getId().toString());
+            if (source==null) {
+                source = getDefaultVertex(link.getNode().getId(), link.getNode().getSysObjectId(), link.getNode().getLabel(),link.getNode().getSysDescription(),link.getNode().getType());
+                addVertices(source);
+           }
+            Vertex target = getVertex(getVertexNamespace(), link.getDesignatedNode().getId().toString());
+            if (target == null) {
+                target = getDefaultVertex(link.getDesignatedNode().getId(), link.getDesignatedNode().getSysObjectId(), link.getDesignatedNode().getLabel(),link.getDesignatedNode().getSysDescription(),link.getDesignatedNode().getType());
+                addVertices(target);
             }
+            BridgeLinkDetail detail = new BridgeLinkDetail(id, EnhancedLinkdTopologyProvider.TOPOLOGY_NAMESPACE_LINKD,source,link.getId()
+                        , target, link.getId());
+           AbstractEdge edge = connectVertices(detail.getId(), detail.getSource(), detail.getTarget(), BRIDGE_EDGE_NAMESPACE);
+           edge.setTooltipText(getEdgeTooltipText(detail));
+        }
+
+        Map<String, String> mactocloud = new HashMap<String, String>(); 
+        int cloudindex = 0;
+        for (BridgeMacTopologyLink link : m_bridgeMacLinkDao.getAllBridgeLinksToBridgeNodes()) {
+            String sourceLinkId=link.getSrcNodeId()+":"+link.getBridgePort();
+            String targetLinkId=link.getTargetNodeId()+":"+link.getTargetBridgePort();
+            
+            if (mactocloud.containsKey(sourceLinkId) && mactocloud.containsKey(targetLinkId)) {
+                mactocloud.put(link.getMacAddr(), mactocloud.get(sourceLinkId));
+                continue;
+            }
+            
+            if (mactocloud.containsKey(sourceLinkId) && !mactocloud.containsKey(targetLinkId)) {
+                Vertex cloudVertex = getVertex(getVertexNamespace(), mactocloud.get(sourceLinkId));
+                Vertex target = getVertex(getVertexNamespace(), link.getTargetNodeId().toString());
+                if (target == null) {
+                    target = getDefaultVertex(link.getTargetNodeId(),
+                                       link.getTargetSysoid(),
+                                       link.getTargetLabel(),
+                                     link.getTargetLocation(),
+                                     link.getTargetNodeType());
+                    addVertices(target);
+                }
+                Edge edge = connectVertices(targetLinkId, cloudVertex, target, BRIDGE_EDGE_NAMESPACE);
+                edge.setTooltipText(getEndBridgeCloudTooltip(target, link));
+
+                mactocloud.put(link.getMacAddr(), mactocloud.get(sourceLinkId));
+                mactocloud.put(targetLinkId, mactocloud.get(sourceLinkId));
+                continue;
+            }
+            
+            if (!mactocloud.containsKey(sourceLinkId) && mactocloud.containsKey(targetLinkId)) {
+                Vertex cloudVertex = getVertex(getVertexNamespace(), mactocloud.get(targetLinkId));
+                Vertex source = getVertex(getVertexNamespace(), link.getSrcNodeId().toString());
+                if (source == null) {
+                    source = getDefaultVertex(link.getSrcNodeId(),
+                                       link.getSrcSysoid(),
+                                       link.getSrcLabel(),
+                                     link.getSrcLocation(),
+                                     link.getSrcNodeType());
+                    addVertices(source);
+                }
+                Edge edge = connectVertices(sourceLinkId, cloudVertex, source, BRIDGE_EDGE_NAMESPACE);
+                edge.setTooltipText(getEndBridgeCloudTooltip(source, link));
+
+                mactocloud.put(link.getMacAddr(), mactocloud.get(targetLinkId));
+                mactocloud.put(sourceLinkId, mactocloud.get(targetLinkId));
+                continue;
+            }
+
+            Vertex source = getVertex(getVertexNamespace(), link.getSrcNodeId().toString());
+            if (source == null) {
+                source = getDefaultVertex(link.getSrcNodeId(),
+                                   link.getSrcSysoid(),
+                                   link.getSrcLabel(),
+                                 link.getSrcLocation(),
+                                 link.getSrcNodeType());
+                addVertices(source);
+            }
+            Vertex target = getVertex(getVertexNamespace(), link.getTargetNodeId().toString());
+            if (target == null) {
+                target = getDefaultVertex(link.getTargetNodeId(),
+                                   link.getTargetSysoid(),
+                                   link.getTargetLabel(),
+                                 link.getTargetLocation(),
+                                 link.getTargetNodeType());
+                addVertices(target);
+            }
+            if (mactocloud.containsKey(link.getMacAddr())) {
+                Vertex cloudVertex = getVertex(getVertexNamespace(), mactocloud.get(link.getMacAddr()));
+                Edge edge1 = connectVertices(sourceLinkId, cloudVertex, source, BRIDGE_EDGE_NAMESPACE);
+                edge1.setTooltipText(getEndBridgeCloudTooltip(source, link));
+                Edge edge2 = connectVertices(targetLinkId, cloudVertex, target, BRIDGE_EDGE_NAMESPACE);
+                edge2.setTooltipText(getEndBridgeCloudTooltip(target, link));
+                mactocloud.put(sourceLinkId, mactocloud.get(link.getMacAddr()));
+                mactocloud.put(targetLinkId, mactocloud.get(link.getMacAddr()));
+                continue;
+            }
+            
+            String cloudId = "Cloud:"+cloudindex;
+            AbstractVertex cloudVertex = addVertex(cloudId, 0, 0);
+            cloudVertex.setLabel("");
+            cloudVertex.setIconKey("cloud");
+            cloudVertex.setTooltipText("Cloud Representing a Shared Segment connecting more switches");
+            addVertices(cloudVertex);
+
+            Edge edge1 = connectVertices(sourceLinkId, cloudVertex, source, BRIDGE_EDGE_NAMESPACE);
+            edge1.setTooltipText(getEndBridgeCloudTooltip(source, link));
+            Edge edge2 = connectVertices(targetLinkId, cloudVertex, target, BRIDGE_EDGE_NAMESPACE);
+            edge2.setTooltipText(getEndBridgeCloudTooltip(target, link));
+            mactocloud.put(link.getMacAddr(), cloudId);
+            mactocloud.put(sourceLinkId, cloudId);
+            mactocloud.put(targetLinkId, cloudId);
+            cloudindex++;
+        }
+        
+        Multimap<String, BridgeMacTopologyLink> multimap = HashMultimap.create();
+        for (BridgeMacTopologyLink macLink : m_bridgeMacLinkDao.getAllBridgeLinksToIpAddrToNodes()) {
+            multimap.put(String.valueOf(macLink.getSrcNodeId()) + ":" +String.valueOf(macLink.getBridgePort()), macLink);
         }
 
         //if multimap entry has more than one item, check bridgeBridgeLink and add cloud vertex
         for (String key : multimap.keySet()){
             Collection<BridgeMacTopologyLink> links = multimap.get(key);
-            if (links.size() > 1) {
-                //process link with cloud
-                processMultipleBridgeLinks(key, links);
-            } else{
-                //add single connection
+            if (links.size() == 1) {
                 BridgeMacTopologyLink link = links.iterator().next();
+                Vertex target = getVertex(getVertexNamespace(), link.getTargetNodeId().toString());
+                if (target == null) {
+                    target = getDefaultVertex(link.getTargetNodeId(),
+                                       link.getTargetSysoid(),
+                                       link.getTargetLabel(),
+                                     link.getTargetLocation(),
+                                     link.getTargetNodeType());
+                    addVertices(target);
+                }
+
+                if (mactocloud.containsKey(link.getMacAddr())) {
+                    Vertex cloudVertex = getVertex(getVertexNamespace(), mactocloud.get(link.getMacAddr()));
+                    String targetLinkId=link.getTargetNodeId()+":"+link.getBridgePortIfName();
+                    Edge edge = connectVertices(targetLinkId, cloudVertex, target, BRIDGE_EDGE_NAMESPACE);
+                    edge.setTooltipText(getEndBridgeCloudTooltip(target, link));
+                    continue;
+                }
                 String id = Math.min(link.getSrcNodeId(), link.getTargetNodeId()) + "|" + Math.max(link.getSrcNodeId(), link.getTargetNodeId());
                 Vertex source = getVertex(getVertexNamespace(), link.getSrcNodeId().toString());
                 if (source == null) {
@@ -761,78 +892,54 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
                                      link.getSrcNodeType());
                     addVertices(source);
                 }
-                Vertex target = getVertex(getVertexNamespace(), link.getTargetNodeId().toString());
-                if (target == null) {
-                    target = getDefaultVertex(link.getTargetNodeId(),
-                                       link.getTargetSysoid(),
-                                       link.getTargetLabel(),
-                                     link.getTargetLocation(),
-                                     link.getTargetNodeType());
-                    addVertices(target);
-                }
-                BridgeLinkDetail detail = new BridgeLinkDetail(id, EnhancedLinkdTopologyProvider.TOPOLOGY_NAMESPACE_LINKD,source, link.getId(), target, link.getId());
+                BridgeLinkDetail detail = new BridgeLinkDetail(id, EnhancedLinkdTopologyProvider.TOPOLOGY_NAMESPACE_LINKD,source, link.getBridgePortIfIndex(), target, link.getTargetIfIndex());
                 AbstractEdge edge = connectVertices(detail.getId(), detail.getSource(), detail.getTarget(), BRIDGE_EDGE_NAMESPACE);
                 edge.setTooltipText(getEdgeTooltipText(detail));
+                continue;
             }
-
-        }
-        
-        List<BridgeBridgeLink> links = m_bridgeBridgeLinkDao.findAll();
-        if (links != null && links.size() > 0) {
-            for (BridgeBridgeLink link : links) {
-                String id = Math.min(link.getNode().getId(), link.getDesignatedNode().getId()) + "|" + Math.max(link.getNode().getId(), link.getDesignatedNode().getId());
-                Vertex source = getVertex(getVertexNamespace(), link.getNode().getId().toString());
-                if (source==null) {
-                    source = getDefaultVertex(link.getNode().getId(), link.getNode().getSysObjectId(), link.getNode().getLabel(),link.getNode().getSysDescription(),link.getNode().getType());
-                    addVertices(source);
-               }
-                Vertex target = getVertex(getVertexNamespace(), link.getDesignatedNode().getId().toString());
-                if (target == null) {
-                    target = getDefaultVertex(link.getDesignatedNode().getId(), link.getDesignatedNode().getSysObjectId(), link.getDesignatedNode().getLabel(),link.getDesignatedNode().getSysDescription(),link.getDesignatedNode().getType());
-                    addVertices(target);
+            // This is a multi link. Means that we have the same port indexed and a cloud with node linked
+            String[] keyParts = key.split(":");
+            if (mactocloud.containsKey(key)) {
+                Vertex cloudVertex = getVertex(getVertexNamespace(), mactocloud.get(mactocloud.get(key)));
+                for (BridgeMacTopologyLink link : multimap.get(key)) {
+                    String edgeId = key+ "|" + link.getTargetNodeId();
+                    Vertex target = getVertex(getVertexNamespace(), link.getTargetNodeId().toString());
+                    if (target == null) {
+                        target = getDefaultVertex(link.getTargetNodeId(),
+                                           link.getTargetSysoid(),
+                                           link.getTargetLabel(),
+                                         link.getTargetLocation(),
+                                         link.getTargetNodeType());
+                        addVertices(target);
+                    }
+                    AbstractEdge edge2 = connectVertices(edgeId, cloudVertex, target, BRIDGE_EDGE_NAMESPACE);
+                    edge2.setTooltipText(getEndBridgeCloudTooltip(target, link));
                 }
-                BridgeLinkDetail detail = new BridgeLinkDetail(id, EnhancedLinkdTopologyProvider.TOPOLOGY_NAMESPACE_LINKD,source,link.getId()
-                            , target, link.getId());
-               AbstractEdge edge = connectVertices(detail.getId(), detail.getSource(), detail.getTarget(), BRIDGE_EDGE_NAMESPACE);
-               edge.setTooltipText(getEdgeTooltipText(detail));
+                continue;
             }
-        }
-    }
 
-    private void processMultipleBridgeLinks(String bridgeLinkKey, Collection<BridgeMacTopologyLink> topoLinks) {
-        String[] keyParts = bridgeLinkKey.split("\\|");
-
-        int parentNodeId = Integer.parseInt(keyParts[0]);
-        String bridgePort = keyParts[1];
-
-
-        Vertex parentVertex = getVertex(getVertexNamespace(), Integer.toString(parentNodeId));
-        if (parentVertex == null) {
-            for (BridgeMacTopologyLink topoLink : topoLinks) {
-                parentVertex = getDefaultVertex(topoLink.getSrcNodeId(),
-                               topoLink.getSrcSysoid(),
-                               topoLink.getSrcLabel(),
-                             topoLink.getSrcLocation(),
-                             topoLink.getSrcNodeType());
+            String sourceNodeId = keyParts[0];
+            String bridgePort = keyParts[1];
+            Vertex parentVertex = getVertex(getVertexNamespace(), sourceNodeId);
+            BridgeMacTopologyLink link1 = multimap.get(key).iterator().next();
+            if (parentVertex == null) {
+                parentVertex = getDefaultVertex(link1.getSrcNodeId(),
+                                   link1.getSrcSysoid(),
+                                   link1.getSrcLabel(),
+                                 link1.getSrcLocation(),
+                                 link1.getSrcNodeType());
                 addVertices(parentVertex);
-                break;
             }
-        }
+            
+            AbstractVertex    cloudVertex = addVertex(key, 0, 0);
+            cloudVertex.setLabel("");
+            cloudVertex.setIconKey("cloud");
+            cloudVertex.setTooltipText("Cloud Representing the Shared Segment connecting to switch: " + parentVertex.getLabel() + " bridge port: " + bridgePort);
 
-        AbstractVertex cloudVertex = addVertex(bridgeLinkKey, 0, 0);
-        cloudVertex.setLabel("");
-        cloudVertex.setIconKey("cloud");
-        cloudVertex.setTooltipText(parentVertex.getLabel() + " bridge port: " + bridgePort);
-
-        for (BridgeMacTopologyLink link : topoLinks) {
-            if(link.getTargetNodeId() != null) {
-                //Check to see if there are any edges with the cloudVertex, if not add it
-                if (getEdgeIdsForVertex(cloudVertex).length == 0) {
-                    Edge edge = connectVertices(bridgeLinkKey, cloudVertex, parentVertex, BRIDGE_EDGE_NAMESPACE);
-                    edge.setTooltipText(getBridgeCloudTooltip(parentVertex, bridgePort));
-                }
-
-                String edgeId = Math.min(link.getSrcNodeId(), link.getTargetNodeId()) + "|" + Math.max(link.getSrcNodeId(), link.getTargetNodeId());
+            Edge edge = connectVertices(key, cloudVertex, parentVertex, BRIDGE_EDGE_NAMESPACE);
+            edge.setTooltipText(getEndBridgeCloudTooltip(parentVertex, link1));
+            for (BridgeMacTopologyLink link : multimap.get(key)) {
+                String edgeId = key+ "|" + link.getTargetNodeId();
                 Vertex target = getVertex(getVertexNamespace(), link.getTargetNodeId().toString());
                 if (target == null) {
                     target = getDefaultVertex(link.getTargetNodeId(),
@@ -842,20 +949,10 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
                                      link.getTargetNodeType());
                     addVertices(target);
                 }
-                AbstractEdge edge = connectVertices(edgeId, cloudVertex, target, BRIDGE_EDGE_NAMESPACE);
-
-
-                //Creating just for tooltip text,
-                AbstractVertex tooltipCloudVertex = new SimpleLeafVertex(TOPOLOGY_NAMESPACE_LINKD, null, 0,0);
-                tooltipCloudVertex.setLabel(parentVertex.getLabel() + " bridge port: " + bridgePort);
-                tooltipCloudVertex.setIpAddress("");
-
-                BridgeLinkDetail detail = new BridgeLinkDetail(edgeId, EnhancedLinkdTopologyProvider.TOPOLOGY_NAMESPACE_LINKD,
-                        tooltipCloudVertex, link.getId(), target, link.getId());
-
-                edge.setTooltipText(getEdgeTooltipText(detail));
+                AbstractEdge edge2 = connectVertices(edgeId, cloudVertex, target, BRIDGE_EDGE_NAMESPACE);
+                edge2.setTooltipText(getEndBridgeCloudTooltip(target, link));
             }
-
+    
         }
 
 
@@ -873,7 +970,7 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
         }
     }
 
-    private String getBridgeCloudTooltip(Vertex parentVertex, String bridgePort) {
+    private String getEndBridgeCloudTooltip(Vertex parentVertex, BridgeMacTopologyLink link) {
         StringBuffer tooltipText = new StringBuffer();
 
         tooltipText.append(HTML_TOOLTIP_TAG_OPEN);
@@ -881,12 +978,12 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
         tooltipText.append(HTML_TOOLTIP_TAG_OPEN);
 
         tooltipText.append(HTML_TOOLTIP_TAG_OPEN);
-        tooltipText.append("Name: &lt;endpoint1 " + parentVertex.getLabel() + " bridge port: " + bridgePort);
+        tooltipText.append("Name: &lt;endpoint1 " + parentVertex.getLabel() + " bridge port: " + link.getBridgePortIfName());
         tooltipText.append( " ---- endpoint2 " + parentVertex.getLabel() + "&gt;");
         tooltipText.append(HTML_TOOLTIP_TAG_END);
 
         tooltipText.append(HTML_TOOLTIP_TAG_OPEN);
-        tooltipText.append( "End Point 1: " + parentVertex.getLabel() + " bridge port: " + bridgePort);
+        tooltipText.append( "End Point 1: " + parentVertex.getLabel() + " bridge port: " + link.getBridgePortIfName());
         tooltipText.append(HTML_TOOLTIP_TAG_END);
 
         tooltipText.append(HTML_TOOLTIP_TAG_OPEN);
