@@ -8,8 +8,6 @@ import com.sun.jersey.client.apache.ApacheHttpClient;
 import com.sun.jersey.client.apache.config.DefaultApacheHttpClientConfig;
 import org.opennms.features.resourcemgnt.ResourceCli;
 
-import javax.jws.WebParam;
-
 public abstract class AbstractCommand implements Command {
 
     protected WebResource connect(final ResourceCli resourceCli, final String resource) {
