@@ -153,7 +153,7 @@ public class DefaultForeignSourceRepositoryFactory implements ForeignSourceRepos
      */
     @Override
     public FactoryStrategy getRepositoryStrategy() {
-        return FactoryStrategy.valueOf(System.getProperty(REPOSITORY_IMPLEMENTATION, DEFAULT_IMPLEMENTATION));
+        return FactoryStrategy.valueOf(System.getProperty(REPOSITORY_IMPLEMENTATION, "file"));
     }
 
     /* (non-Javadoc)
