@@ -80,7 +80,7 @@ public class BridgeMacLinkDaoHibernate extends AbstractDaoHibernate<BridgeMacLin
 	}
 
 	private final static String SQL_GET_MAC_LINKS=
-	        "select mlink.id as id, "
+	        "select mlink.id as source_id, "
 	        + "mlink.nodeid as source_nodeid, "
 	        + "n.nodelabel as sourcenodelabel, "
 	        + "n.nodesysoid as sourcenodesysoid, "
@@ -98,7 +98,8 @@ public class BridgeMacLinkDaoHibernate extends AbstractDaoHibernate<BridgeMacLin
 	        + "ntm.physaddress as target_mac,  "
                 + "ip.ifindex as target_ifindex, "
                 + "ip.ipaddr as target_ifname, "
-                + "ip.ifindex as target_bridgeport "
+                + "ip.ifindex as target_bridgeport, "
+                + "ip.id as target_id "
 	        + "from bridgemaclink as mlink "
 	        + "left join ipnettomedia as ntm on mlink.macaddress = ntm.physaddress "
 	        + "left join ipinterface ip on ip.ipaddr = ntm.netaddress "
@@ -126,7 +127,8 @@ public class BridgeMacLinkDaoHibernate extends AbstractDaoHibernate<BridgeMacLin
 	        + "plink.macaddress as target_mac, "
                 + "plink.bridgeportifindex as target_ifindex, "
                 + "plink.bridgeportifname as target_ifname, "
-                + "plink.bridgeport as target_bridgeport "
+                + "plink.bridgeport as target_bridgeport, "
+                + "plink.id as target_id "
 	        + "from bridgemaclink as mlink "
 	        + "left join bridgemaclink as plink on mlink.macaddress = plink.macaddress "
 	        + "left join node n on mlink.nodeid = n.nodeid "
@@ -157,7 +159,8 @@ public class BridgeMacLinkDaoHibernate extends AbstractDaoHibernate<BridgeMacLin
                                     (String) objs[15],
                                     (Integer) objs[16],
                                     (String) objs[17],
-                                    (Integer) objs[18]
+                                    (Integer) objs[18],
+                                    (Integer) objs[19]
                                             )
                                   );
             }

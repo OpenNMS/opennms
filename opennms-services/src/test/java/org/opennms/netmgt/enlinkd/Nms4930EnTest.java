@@ -143,6 +143,7 @@ public class Nms4930EnTest extends EnLinkdTestBuilder {
             assertNotNull(link.getTargetNodeId());
             assertNotNull(link.getMacAddr());
             assertNotNull(link.getTargetBridgePort());
+            assertNotNull(link.getTargetId());
         }
         
 

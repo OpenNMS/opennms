@@ -117,6 +117,7 @@ public class EnhancedLinkdTopologyProviderTest {
         MockLogAppender.setupLogging();
 
         EasyMock.expect(m_bridgeBridgeLinkDao.findAll()).andReturn(new ArrayList<BridgeBridgeLink>()).anyTimes();
+        EasyMock.expect(m_bridgeMacLinkDao.getAllBridgeLinksToBridgeNodes()).andReturn(new ArrayList<BridgeMacTopologyLink>()).anyTimes();
         EasyMock.expect(m_bridgeMacLinkDao.getAllBridgeLinksToIpAddrToNodes()).andReturn(new ArrayList<BridgeMacTopologyLink>()).anyTimes();
         EasyMock.expect(m_cdpLinkDao.findLinksForTopology()).andReturn(new ArrayList<CdpTopologyLink>()).anyTimes();
         EasyMock.expect(m_isisLinkDao.getLinksForTopology()).andReturn(new ArrayList<IsisTopologyLink>()).anyTimes();
