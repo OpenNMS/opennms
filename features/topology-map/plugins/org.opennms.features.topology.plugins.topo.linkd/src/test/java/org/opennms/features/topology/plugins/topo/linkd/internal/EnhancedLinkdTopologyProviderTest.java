@@ -309,6 +309,11 @@ public class EnhancedLinkdTopologyProviderTest {
         EasyMock.replay(mockDao);
         m_topologyProvider.setLldpLinkDao(mockDao);
 
+        OspfLinkDao dao2 = m_topologyProvider.getOspfLinkDao();
+        OspfLinkDao mockDao2 = EasyMock.createMock(OspfLinkDao.class);
+        EasyMock.expect(mockDao2.findAll()).andReturn(new ArrayList<OspfLink>()).anyTimes();
+        EasyMock.replay(mockDao2);
+        m_topologyProvider.setOspfLinkDao(mockDao2);
         m_topologyProvider.load(null);
 
         // Should have 8 groups
@@ -359,6 +364,7 @@ public class EnhancedLinkdTopologyProviderTest {
         assertEquals(0, m_topologyProvider.getSemanticZoomLevel(vert8));
 
         // Reset the DataLinkInterfaceDao
+        m_topologyProvider.setOspfLinkDao(dao2);
         m_topologyProvider.setLldpLinkDao(dao);
     }
 
