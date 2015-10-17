@@ -279,6 +279,7 @@ public final class NodeDiscoveryBridge extends NodeDiscovery {
 			@Override
 			public void processDot1dTpFdbRow(final Dot1dTpFdbRow row) {
 				BridgeMacLink link = row.getLink();
+				LOG.debug("processDot1dTpFdbRow: found mac {} on port {}", row.getDot1dTpFdbAddress(), row.getDot1dTpFdbPort());
 				link.setVlan(vlan);
 				link.setBridgePortIfIndex(bridgeifindex.get(link.getBridgePort()));
 				if (isValidBridgeAddress(link.getMacAddress())
@@ -316,6 +317,7 @@ public final class NodeDiscoveryBridge extends NodeDiscovery {
 			@Override
 			public void processDot1qTpFdbRow(final Dot1qTpFdbRow row) {
 				BridgeMacLink link = row.getLink();
+                                LOG.debug("processDot1qTpFdbRow: found mac {} on port {}", row.getDot1qTpFdbAddress(), row.getDot1qTpFdbPort());
 				link.setBridgePortIfIndex(bridgeifindex.get(link.getBridgePort()));
 				if (isValidBridgeAddress(link.getMacAddress()) && link.getBridgePort() != null
 						&& link.getBridgeDot1qTpFdbStatus() == BridgeMacLink.BridgeDot1qTpFdbStatus.DOT1D_TP_FDB_STATUS_LEARNED)

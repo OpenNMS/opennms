@@ -38,6 +38,7 @@ import org.hibernate.Session;
 import org.opennms.netmgt.dao.api.CdpLinkDao;
 import org.opennms.netmgt.model.CdpLink;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.OnmsNode.NodeType;
 import org.opennms.netmgt.model.topology.CdpTopologyLink;
 import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.util.Assert;
@@ -81,33 +82,67 @@ public class CdpLinkDaoHibernate extends AbstractDaoHibernate<CdpLink, Integer> 
         return find("from CdpLink cdpLink where cdpLink.node.id = ?", nodeId);
     }
 
+    private static String SQL_CDP_LINK_BASE_QUERY =                         
+            "select l.id as sourceid, " +
+            "l.nodeid as sourcenodeid, " +
+            "n.nodelabel as sourcenodelabel, " +
+            "n.nodesysoid as sourcenodesysoid, " +
+            "n.nodesyslocation as sourcenodelocation, " +
+            "n.nodetype as sourcenodetype, " +
+            "l.cdpcacheifindex as sourceifindex, " +
+            "l.cdpinterfacename as sourceifname, " +
+            "e.id as targetid, " +
+            "e.nodeid as targetnodeid, " +
+            "np.nodelabel as targetnodelabel, " +
+            "np.nodesysoid as targetnodesysoid, " +
+            "np.nodesyslocation as targetnodelocation, " +
+            "np.nodetype as targetnodetype, " +
+            "l.cdpcachedeviceport as targetifname " +
+            "from cdplink l " +
+            "left join node n " +
+            "on l.nodeid = n.nodeid " +
+            "right join ipinterface e " +
+            "on l.cdpcacheaddress = e.ipaddr " +
+            "left join node np " +
+            "on e.nodeid = np.nodeid " +
+            "where l.cdpcacheaddresstype=1";
+
+    private List<CdpTopologyLink> convertObjectToTopologyLink(List<Object[]> list) {
+        List<CdpTopologyLink> topoLinks = new ArrayList<CdpTopologyLink>();
+        for (Object[] objs : list) {
+            Integer targetId = (Integer)objs[8];
+            Integer targetNodeId =(Integer)objs[9];
+            if(targetId != null && targetNodeId != null) {
+                topoLinks.add(
+                              new CdpTopologyLink(
+                                (Integer) objs[0], 
+                                (Integer) objs[1], 
+                                (String) objs[2], 
+                                (String) objs[3],
+                                (String) objs[4],
+                                NodeType.getNodeTypeFromChar((char)objs[5]),
+                                (Integer) objs[6], 
+                                (String) objs[7], 
+                                (Integer) objs[8], 
+                                (Integer) objs[9], 
+                                (String) objs[10], 
+                                (String) objs[11],
+                                (String) objs[12],
+                                NodeType.getNodeTypeFromChar((char)objs[13]),
+                                (String) objs[14]));
+            }
+        }
+
+        return topoLinks;
+        
+    }
     @Override
     public List<CdpTopologyLink> findLinksForTopology() {
         return getHibernateTemplate().execute(new HibernateCallback<List<CdpTopologyLink>>() {
             @Override
             public List<CdpTopologyLink> doInHibernate(Session session) throws HibernateException, SQLException {
-                List<Object[]> list = session.createSQLQuery("select l.id as sourceid, " +
-                        "l.nodeid as sourcenodeid, " +
-                        "l.cdpcacheifindex as sourceifindex, " +
-                        "l.cdpinterfacename as sourceifname, " +
-                        "e.id as targetid, " +
-                        "e.nodeid as targetnodeid, " +
-                        "l.cdpcachedeviceport as targetifname " +
-                        "from cdplink l " +
-                        "right join ipinterface e " +
-                        "on l.cdpcacheaddress = e.ipaddr " +
-                        "where l.cdpcacheaddresstype=1;").list();
+                return convertObjectToTopologyLink(session.createSQLQuery(SQL_CDP_LINK_BASE_QUERY+";").list());
 
-                List<CdpTopologyLink> topoLinks = new ArrayList<CdpTopologyLink>();
-                for (Object[] objs : list) {
-                    Integer targetId = (Integer)objs[4];
-                    Integer targetNodeId =(Integer)objs[5];
-                    if(targetId != null && targetNodeId != null) {
-                        topoLinks.add(new CdpTopologyLink((Integer) objs[0], (Integer) objs[1], (Integer) objs[2], (String) objs[3], (Integer) objs[4], (Integer) objs[5], (String) objs[6]));
-                    }
-                }
-
-                return topoLinks;
             }
 
         });
@@ -133,29 +168,10 @@ public class CdpLinkDaoHibernate extends AbstractDaoHibernate<CdpLink, Integer> 
                 }
 
 
-                List<Object[]> list = session.createSQLQuery("select l.id as sourceid, " +
-                        "l.nodeid as sourcenodeid, " +
-                        "l.cdpcacheifindex as sourceifindex, " +
-                        "l.cdpinterfacename as sourceifname, " +
-                        "e.id as targetid, " +
-                        "e.nodeid as targetnodeid, " +
-                        "l.cdpcachedeviceport as targetifname " +
-                        "from cdplink l " +
-                        "right join ipinterface e " +
-                        "on l.cdpcacheaddress = e.ipaddr " +
-                        "where l.cdpcacheaddresstype=1 " +
-                         conditional.toString() + ";").list();
+                return convertObjectToTopologyLink(session.createSQLQuery(SQL_CDP_LINK_BASE_QUERY +
+                         conditional.toString() + ";").list());
 
-                List<CdpTopologyLink> topoLinks = new ArrayList<CdpTopologyLink>();
-                for (Object[] objs : list) {
-                    Integer targetId = (Integer) objs[4];
-                    Integer targetNodeId = (Integer) objs[5];
-                    if (targetId != null && targetNodeId != null) {
-                        topoLinks.add(new CdpTopologyLink((Integer) objs[0], (Integer) objs[1], (Integer) objs[2], (String) objs[3], (Integer) objs[4], (Integer) objs[5], (String) objs[6]));
-                    }
-                }
 
-                return topoLinks;
             }
 
         });
