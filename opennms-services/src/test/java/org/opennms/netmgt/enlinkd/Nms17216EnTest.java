@@ -440,6 +440,8 @@ public class Nms17216EnTest extends EnLinkdTestBuilder {
         assertTrue(m_linkd.runSingleSnmpCollection(router4.getId()));
         assertEquals(26, m_cdpLinkDao.countAll());
 
+        assertEquals(26, m_cdpLinkDao.findLinksForTopology().size());
+
         for (final OnmsNode node: m_nodeDao.findAll()) {
             assertNotNull(node.getCdpElement());
             printCdpElement(node.getCdpElement());

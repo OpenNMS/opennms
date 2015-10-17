@@ -28,20 +28,28 @@
 
 package org.opennms.features.topology.plugins.topo.linkd.internal;
 
-import com.google.common.collect.HashMultimap;
-import com.google.common.collect.Multimap;
 import org.opennms.features.topology.api.topo.EdgeRef;
+import org.opennms.netmgt.dao.api.BridgeBridgeLinkDao;
 import org.opennms.netmgt.dao.api.BridgeMacLinkDao;
+import org.opennms.netmgt.model.BridgeBridgeLink;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.topology.BridgeMacTopologyLink;
 import org.opennms.netmgt.model.topology.EdgeAlarmStatusSummary;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
 public class BridgeLinkStatusProvider extends AbstractLinkStatusProvider {
+    
+    private static Logger LOG = LoggerFactory.getLogger(BridgeLinkStatusProvider.class);
 
-    private BridgeMacLinkDao m_bridgeMackLinkDao;
-    private Multimap<String, BridgeMacTopologyLink> m_multimapLinks;
+    private BridgeMacLinkDao m_bridgeMacLinkDao;
+    private BridgeBridgeLinkDao m_bridgeBridgeLinkDao;
+
+    private Map<String, BridgeMacTopologyLink> m_macBridgeMacLinks;
+    private Map<String, BridgeMacTopologyLink> m_bridgeBridgeMacLinks;
+    private Map<String, BridgeBridgeLink> m_bridgeBridgeLinks;
 
     @Override
     public String getNameSpace() {
@@ -52,80 +60,218 @@ public class BridgeLinkStatusProvider extends AbstractLinkStatusProvider {
     protected List<EdgeAlarmStatusSummary> getEdgeAlarmSummaries(List<Integer> linkIds) {
         //Bridge Links are different, don't need the linkIds
 
-        Multimap<String, EdgeAlarmStatusSummary> summaryMap = HashMultimap.create();
-        for(BridgeMacTopologyLink link : m_multimapLinks.values()) {
-            String key = link.getNodeId() + ":" + link.getBridgePortIfIndex();
-
-            if (!summaryMap.containsKey(key)){
-                summaryMap.put(key, new EdgeAlarmStatusSummary(link.getNodeId(), link.getBridgePort(), null));
-            }
-
-            if(link.getTargetNodeId() != null && link.getSourceIfIndex() != null){
-                summaryMap.put(link.getTargetNodeId() + ":" + link.getSourceIfIndex(), new EdgeAlarmStatusSummary(link.getNodeId(), link.getTargetNodeId(), null));
-            }
+        Map<String,EdgeAlarmStatusSummary> alarmMap = new HashMap<String, EdgeAlarmStatusSummary>();
+        for (String key: m_bridgeBridgeLinks.keySet()) {
+            BridgeBridgeLink link = m_bridgeBridgeLinks.get(key);
+            alarmMap.put(key, new EdgeAlarmStatusSummary(key, link.getId(), link.getId(), null));
         }
 
-        List<OnmsAlarm> alarms = getLinkDownAlarms();
-        for(OnmsAlarm alarm : alarms){
-            String key = alarm.getNodeId() + ":" + alarm.getIfIndex();
-            String cloudKey = alarm.getNodeId() + "|" + alarm.getIfIndex();
-            if (summaryMap.containsKey(key)) {
-                Collection<EdgeAlarmStatusSummary> summaries = summaryMap.get(key);
+        for (String key: m_bridgeBridgeMacLinks.keySet()) {
+            BridgeMacTopologyLink link = m_bridgeBridgeMacLinks.get(key);
+            alarmMap.put(key, new EdgeAlarmStatusSummary(key, link.getId(), link.getId(), null));
+        }        
 
-                if(m_multimapLinks.containsKey(cloudKey)){
-                    for(BridgeMacTopologyLink link : m_multimapLinks.get(cloudKey)) {
-                        String indexKey = link.getTargetNodeId() + ":" + link.getSourceIfIndex();
-                        summaries.addAll(summaryMap.get(indexKey));
+        for (String key: m_macBridgeMacLinks.keySet()) {
+            BridgeMacTopologyLink link = m_macBridgeMacLinks.get(key);
+            alarmMap.put(key, new EdgeAlarmStatusSummary(key, link.getId(), link.getId(), null));
+        }
+        
+        for(OnmsAlarm alarm : getLinkDownAlarms()){
+            LOG.debug("getEdgeAlarmSummaries: alarm: nodeid {} ifindex {} uei {}", alarm.getNodeId(), alarm.getIfIndex(),alarm.getUei());
+            for (String key: m_bridgeBridgeLinks.keySet()) {
+                BridgeBridgeLink link = m_bridgeBridgeLinks.get(key);
+                LOG.debug("getEdgeAlarmSummaries: key {} bridgebridgelink: {} ", key, link.getId());
+                if ( alarm.getNodeId() == link.getNode().getId()) {
+                    if (link.getBridgePortIfIndex() != 0) {
+                        if (alarm.getIfIndex() == link.getBridgePortIfIndex()) {
+                            alarmMap.get(key).setEventUEI(alarm.getUei());
+                            LOG.debug("getEdgeAlarmSummaries: matchted source bridgebridgelink id {} key {}", link.getId(),key);
+                        }
+                    } else {
+                        if (alarm.getIfIndex() == link.getBridgePort()) {
+                            alarmMap.get(key).setEventUEI(alarm.getUei());
+                            LOG.debug("getEdgeAlarmSummaries: matchted source bridgebridgelink id {} key {}", link.getId(),key);
+                        }
+                    }
+                } else if (alarm.getNodeId() == link.getDesignatedNode().getId()) {
+                    if (link.getDesignatedPortIfIndex() != 0) {
+                        if ( alarm.getIfIndex() == link.getDesignatedPortIfIndex()) {
+                            alarmMap.get(key).setEventUEI(alarm.getUei());
+                            LOG.debug("getEdgeAlarmSummaries: matchted target bridgebridgelink id {} key {}", link.getId(),key);
+                        }
+                    } else {
+                        if (alarm.getIfIndex() == link.getDesignatedPort()) {
+                            alarmMap.get(key).setEventUEI(alarm.getUei());
+                            LOG.debug("getEdgeAlarmSummaries: matchted target bridgebridgelink id {} key {}", link.getId(),key);
+                        }
+                    }
+                }    
+            }
+            
+            for (String key: m_bridgeBridgeMacLinks.keySet()) {
+                BridgeMacTopologyLink link = m_bridgeBridgeMacLinks.get(key);
+                LOG.debug("getEdgeAlarmSummaries: key {} bridge bridgemaclink: {} ", key, link.getId());
+                String sourceLink = EdgeAlarmStatusSummary.getDefaultEdgeId(link.getId(), link.getId());
+                String targetLink = EdgeAlarmStatusSummary.getDefaultEdgeId(link.getTargetId(), link.getTargetId());
+                LOG.debug("getEdgeAlarmSummaries: sourcelinkid: {}", sourceLink);
+                LOG.debug("getEdgeAlarmSummaries: targetLinkId: {}", targetLink);
+                if (alarm.getNodeId() == link.getSrcNodeId() && sourceLink.equals(key) ) {
+                    if (link.getBridgePortIfIndex() != 0) {
+                        if (alarm.getIfIndex() == link.getBridgePortIfIndex()) {
+                            alarmMap.get(key).setEventUEI(alarm.getUei());
+                            LOG.debug("getEdgeAlarmSummaries: matchted source bridgebridgelink id {} key {}", link.getId(),key);
+                        }
+                    } else {
+                        if (alarm.getIfIndex() == link.getBridgePort()) {
+                            alarmMap.get(key).setEventUEI(alarm.getUei());
+                            LOG.debug("getEdgeAlarmSummaries: matchted source bridgebridgelink id {} key {}", link.getId(),key);
+                        }
+                    }
+                } else if (alarm.getNodeId() == link.getTargetNodeId() && targetLink.equals(key) ){
+                    if (link.getTargetIfIndex() != 0) {
+                        if ( alarm.getIfIndex() == link.getTargetIfIndex()) {
+                            alarmMap.get(key).setEventUEI(alarm.getUei());
+                            LOG.debug("getEdgeAlarmSummaries: matchted target bridgebridgelink id {} key {}", link.getId(),key);
+                        }
+                    } else {
+                        if (alarm.getIfIndex() == link.getTargetBridgePort()) {
+                            alarmMap.get(key).setEventUEI(alarm.getUei());
+                            LOG.debug("getEdgeAlarmSummaries: matchted target bridgebridgelink id {} key {}", link.getId(),key);
+                        }
                     }
                 }
-
-                for (EdgeAlarmStatusSummary summary : summaries) {
-                    summary.setEventUEI(alarm.getUei());
+            }            
+            
+            for (String key: m_macBridgeMacLinks.keySet()) {
+                BridgeMacTopologyLink link = m_macBridgeMacLinks.get(key);
+                LOG.debug("getEdgeAlarmSummaries: key {} bridgemaclink: {} ", key, link.getId());
+                String targetLink = String.valueOf(link.getId()+"|"+String.valueOf(link.getTargetId()));
+                LOG.debug("getEdgeAlarmSummaries: targetLinkId: {}", targetLink);
+                if (alarm.getNodeId() == link.getSrcNodeId()) {
+                    if (link.getBridgePortIfIndex() != 0) {
+                        if (alarm.getIfIndex() == link.getBridgePortIfIndex()) {
+                            alarmMap.get(key).setEventUEI(alarm.getUei());
+                            LOG.debug("getEdgeAlarmSummaries: matchted source bridgebridgelink id {} key {}", link.getId(),key);
+                        }
+                    } else {
+                        if (alarm.getIfIndex() == link.getBridgePort()) {
+                            alarmMap.get(key).setEventUEI(alarm.getUei());
+                            LOG.debug("getEdgeAlarmSummaries: matchted source bridgebridgelink id {} key {}", link.getId(),key);
+                        }
+                    }
+                } else if (alarm.getNodeId() == link.getTargetNodeId() && targetLink.equals(key) ){
+                    if (link.getTargetIfIndex() == null ) {
+                        alarmMap.get(key).setEventUEI(alarm.getUei());
+                        LOG.debug("getEdgeAlarmSummaries: matchted target bridgebridgelink id {} key {}", link.getId(),key);
+                   } else  {
+                        if ( alarm.getIfIndex() == link.getTargetIfIndex()) {
+                            alarmMap.get(key).setEventUEI(alarm.getUei());
+                            LOG.debug("getEdgeAlarmSummaries: matchted target bridgebridgelink id {} key {}", link.getId(),key);
+                        }
+                    }
                 }
             }
         }
-
-
         List<EdgeAlarmStatusSummary> ret_val = new ArrayList<EdgeAlarmStatusSummary>();
-        for (String summaryMapKey : summaryMap.keySet()) {
-            ret_val.addAll(summaryMap.get(summaryMapKey));
-        }
-
+        ret_val.addAll(alarmMap.values());
         return ret_val;
     }
 
     @Override
     protected Set<Integer> getLinkIds(Map<String, EdgeRef> mappedRefs) {
-        List<BridgeMacTopologyLink> bridgeMacLinks = m_bridgeMackLinkDao.getAllBridgeLinksToIpAddrToNodes();
-
-        Multimap<String, BridgeMacTopologyLink> multimap = HashMultimap.create();
-        for (BridgeMacTopologyLink macLink : bridgeMacLinks) {
-            String idKey = String.valueOf(macLink.getNodeId()) + "|" + String.valueOf(macLink.getBridgePort());
-            if (mappedRefs.containsKey(idKey) && macLink.getTargetNodeId() != null && macLink.getSourceIfIndex() != null) {
-                multimap.put(idKey, macLink);
+        
+        Map<String, BridgeBridgeLink> mapA = new HashMap<String, BridgeBridgeLink>();
+        for (BridgeBridgeLink link: m_bridgeBridgeLinkDao.findAll()) {
+            String idKey = EdgeAlarmStatusSummary.getDefaultEdgeId(link.getId(), link.getId());
+            LOG.debug("getLinkIds: parsing key {} bridgebridgelink: {} ", idKey, link.getId());
+            if (mappedRefs.containsKey(idKey) ) {
+                LOG.debug("getLinkIds: adding matched key {} bridgebridgelink: {} ", idKey, link.getId());
+                mapA.put(idKey, link);
+            }            
+        }
+        
+        Map<String, BridgeMacTopologyLink> mapB =  new HashMap<String, BridgeMacTopologyLink>();
+        for (BridgeMacTopologyLink link : m_bridgeMacLinkDao.getAllBridgeLinksToBridgeNodes()) {
+            String idKey = EdgeAlarmStatusSummary.getDefaultEdgeId(link.getTargetId(), link.getTargetId());
+            LOG.debug("getLinkIds: parsing key {} bridge bridgemaclink: {} ", idKey, link.getId());
+            if (mappedRefs.containsKey(idKey) ) {
+                LOG.debug("getLinkIds: adding matched key {} bridge bridgemaclink: {} ", idKey, link.getId());
+                mapB.put(idKey, link);
             }
-
+            idKey = EdgeAlarmStatusSummary.getDefaultEdgeId(link.getId(), link.getId());
+            LOG.debug("getLinkIds: parsing key {} bridge bridgemaclink: {} ", idKey, link.getId());
+            if (mappedRefs.containsKey(idKey) ) {
+                LOG.debug("getLinkIds: adding matched key {} bridge bridgemaclink: {} ", idKey, link.getId());
+                mapB.put(idKey, link);
+            }
+        }
+        
+        Map<String, BridgeMacTopologyLink> mapC =  new HashMap<String, BridgeMacTopologyLink>();
+        for (BridgeMacTopologyLink link : m_bridgeMacLinkDao.getAllBridgeLinksToIpAddrToNodes()) {
+            String idKey = String.valueOf(link.getId())+ "|" + String.valueOf(link.getTargetId());
+            LOG.debug("getLinkIds: parsing key {} mac bridgemaclink: {} ", idKey, link.getId());
+            if (mappedRefs.containsKey(idKey) ) {
+                LOG.debug("getLinkIds: adding matched key {} mac bridgemaclink: {} ", idKey, link.getId());
+                mapC.put(idKey, link);
+            }
+            idKey = EdgeAlarmStatusSummary.getDefaultEdgeId(link.getId(), link.getId());
+            LOG.debug("getLinkIds: parsing key {} mac bridgemaclink: {} ", idKey, link.getId());
+            if (mappedRefs.containsKey(idKey) ) {
+                LOG.debug("getLinkIds: adding matched key {} mac bridgemaclink: {} ", idKey, link.getId());
+                mapC.put(idKey, link);
+            }
         }
 
-        if(m_multimapLinks == null){
-            m_multimapLinks = HashMultimap.create();
+        if(m_bridgeBridgeLinks == null){
+            m_bridgeBridgeLinks = new HashMap<String, BridgeBridgeLink>();
         }
-        m_multimapLinks.clear();
-        m_multimapLinks.putAll(multimap);
+        m_bridgeBridgeLinks.clear();
+        m_bridgeBridgeLinks.putAll(mapA);
+
+        if(m_bridgeBridgeMacLinks == null){
+            m_bridgeBridgeMacLinks = new HashMap<String, BridgeMacTopologyLink>();
+        }
+        m_bridgeBridgeMacLinks.clear();
+        m_bridgeBridgeMacLinks.putAll(mapB);
+
+        if(m_macBridgeMacLinks == null){
+            m_macBridgeMacLinks = new HashMap<String, BridgeMacTopologyLink>();
+        }
+        m_macBridgeMacLinks.clear();
+        m_macBridgeMacLinks.putAll(mapC);
+        
 
         Set<Integer> ret_val = new HashSet<Integer>();
-        for (String key : multimap.keySet()) {
-            Collection<BridgeMacTopologyLink> links = multimap.get(key);
-            for (BridgeMacTopologyLink link : links) {
+        for (BridgeBridgeLink link : mapA.values()) {
                     ret_val.add(link.getId());
-            }
-
         }
 
+        for (BridgeMacTopologyLink link : mapB.values()) {
+                ret_val.add(link.getId());
+        }
+        
+        for (BridgeMacTopologyLink link : mapC.values()) {
+                    ret_val.add(link.getId());
+        }
+
+        LOG.debug("getLinkIds {}", ret_val);
         return ret_val;
     }
 
-    public void setBridgeMacLinkDao(BridgeMacLinkDao bridgeMacLinkDao) {
-        m_bridgeMackLinkDao = bridgeMacLinkDao;
+    public BridgeMacLinkDao getBridgeMacLinkDao() {
+        return m_bridgeMacLinkDao;
     }
+
+    public void setBridgeMacLinkDao(BridgeMacLinkDao bridgeMacLinkDao) {
+        m_bridgeMacLinkDao = bridgeMacLinkDao;
+    }
+    
+    public BridgeBridgeLinkDao getBridgeBridgeLinkDao() {
+        return m_bridgeBridgeLinkDao;
+    }
+
+    public void setBridgeBridgeLinkDao(BridgeBridgeLinkDao bridgeBridgeLinkDao) {
+        m_bridgeBridgeLinkDao = bridgeBridgeLinkDao;
+    }
+
 }

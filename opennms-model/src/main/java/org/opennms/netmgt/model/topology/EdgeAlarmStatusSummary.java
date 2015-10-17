@@ -30,12 +30,22 @@ package org.opennms.netmgt.model.topology;
 
 public class EdgeAlarmStatusSummary {
 
+    public static final String getDefaultEdgeId(int sourceId,int targetId) {
+        return Math.min(sourceId, targetId) + "|" + Math.max(sourceId, targetId);
+    }
 
     private final String m_targetId;
     private final String m_sourceId;
     private String m_eventUEI;
     private final String m_id;
 
+    public EdgeAlarmStatusSummary(String id,int sourceId, int targetId, String eventUEI) {
+        m_id = id;
+        m_sourceId = String.valueOf(sourceId);
+        m_targetId = String.valueOf(targetId);
+        m_eventUEI = eventUEI;
+    }
+    
     public EdgeAlarmStatusSummary(int sourceId, int targetId, String eventUEI) {
         m_id = Math.min(sourceId, targetId) + "|" + Math.max(sourceId, targetId);
         m_sourceId = String.valueOf(sourceId);
