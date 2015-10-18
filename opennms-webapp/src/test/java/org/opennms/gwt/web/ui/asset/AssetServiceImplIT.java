@@ -37,24 +37,26 @@ import java.util.Date;
 import java.util.HashSet;
 
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.utils.WebSecurityUtils;
+import org.opennms.gwt.web.ui.asset.client.AssetService;
 import org.opennms.gwt.web.ui.asset.server.AssetServiceImpl;
 import org.opennms.gwt.web.ui.asset.shared.AssetCommand;
 import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.netmgt.dao.api.AssetRecordDao;
-import org.opennms.netmgt.dao.api.DistPollerDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.OnmsAssetRecord;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.opennms.web.api.Authentication;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -71,13 +73,13 @@ import org.springframework.test.context.ContextConfiguration;
 		"classpath:/META-INF/opennms/applicationContext-minimal-conf.xml",
 		"classpath:/META-INF/opennms/applicationContext-soa.xml",
 		"classpath:/META-INF/opennms/applicationContext-mockDao.xml",
-		"classpath*:/META-INF/opennms/component-dao.xml"})
+		"classpath*:/META-INF/opennms/component-dao.xml",
+		"classpath*:/applicationContext-asset-test.xml"})
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
-public class AssetServiceImplIT implements InitializingBean {
+public class AssetServiceImplIT {
 
-	@Autowired
-	private DistPollerDao m_distPollerDao;
+	private static final Logger LOG = LoggerFactory.getLogger(AssetServiceImplIT.class);
 
 	@Autowired
 	private NodeDao m_nodeDao;
@@ -88,73 +90,29 @@ public class AssetServiceImplIT implements InitializingBean {
 	@Autowired
 	private DatabasePopulator m_databasePopulator;
 
-	// private SecurityContextService m_securityContextService;
+	@Autowired
+	private AssetService m_assetService;
 
 	private final GrantedAuthority ROLE_ADMIN = new SimpleGrantedAuthority(Authentication.ROLE_ADMIN);
-	
-	/*
-	private final GrantedAuthority ROLE_PROVISION = new GrantedAuthorityImpl(Authentication.ROLE_PROVISION);
-	private final GrantedAuthority ROLE_USER = new GrantedAuthorityImpl(Authentication.ROLE_USER);
-	*/
 
 	private final String USERNAME = "opennms";
 
 	private final String PASS = "r0c|<Z";
 	
 	private User validAdmin;
-	
-	/*
-	private User invalidAdmin;
-	
-	private User validProvision;
-	
-	private User invalidProvision;
-	
-	private User validUser;
-	
-	private User invalidUser;
-	
-	private User validPower;
-	
-	private User invalidPower;
-	*/
-	
+
 	private org.springframework.security.core.Authentication m_auth;
 
 	private SecurityContext m_context;
 
-	@Override
-	public void afterPropertiesSet() throws Exception {
-	    org.opennms.core.spring.BeanUtils.assertAutowiring(this);
-	}
-
 	@Before
 	public void setUp() {
+		org.opennms.core.spring.BeanUtils.assertAutowiring(this);
 		m_databasePopulator.populateDatabase();
 		m_context = new SecurityContextImpl();
 		
 		validAdmin = new User(USERNAME, PASS, true, true, true, true,
 				Arrays.asList(new GrantedAuthority[] { ROLE_ADMIN }));
-		
-		/*
-		invalidAdmin = new User(USERNAME, PASS, true, true, true, true,
-				new GrantedAuthority[] { ROLE_ADMIN });
-		
-		validProvision = new User(USERNAME, PASS, true, true, true, true,
-				new GrantedAuthority[] { ROLE_PROVISION });
-		invalidProvision = new User(USERNAME, PASS, true, true, true, true,
-				new GrantedAuthority[] { ROLE_PROVISION });
-		
-		validUser = new User(USERNAME, PASS, true, true, true, true,
-				new GrantedAuthority[] { ROLE_USER });
-		invalidUser = new User(USERNAME, PASS, true, true, true, true,
-				new GrantedAuthority[] { ROLE_USER });
-
-		validPower = new User(USERNAME, PASS, true, true, true, true,
-				new GrantedAuthority[] { ROLE_ADMIN, ROLE_PROVISION });
-		invalidPower = new User(USERNAME, PASS, true, true, true, true,
-				new GrantedAuthority[] { ROLE_USER, ROLE_PROVISION });
-				*/
 
 		m_auth = new PreAuthenticatedAuthenticationToken(validAdmin, new Object());
 		m_context.setAuthentication(m_auth);
@@ -188,7 +146,7 @@ public class AssetServiceImplIT implements InitializingBean {
 	}
 
 	@Test
-	public void testAssetServiceImpl() {
+	public void testAssetServiceImpl() throws Exception {
         OnmsNode onmsNode = new OnmsNode("myNode");
 		m_nodeDao.save(onmsNode);
 		OnmsAssetRecord assetRecord = onmsNode.getAssetRecord();
@@ -209,46 +167,13 @@ public class AssetServiceImplIT implements InitializingBean {
 		m_assetRecordDao.update(assetRecord);
 		m_assetRecordDao.flush();
 
-		AssetServiceImpl assetServiceImpl = new AssetServiceImpl();
-		assetServiceImpl.setNodeDao(m_nodeDao);
-		assetServiceImpl.setAssetRecordDao(m_assetRecordDao);
-
-		System.out.println("AssetCommand: "
-				+ assetServiceImpl.getAssetByNodeId(onmsNode.getId()).toString());
-		System.out.println("Suggestions: "
-				+ assetServiceImpl.getAssetSuggestions());
-		assertTrue("Test save or update by admin.", assetServiceImpl.getAssetByNodeId(onmsNode.getId()).getAllowModify());
+		LOG.info("AssetCommand: {}", m_assetService.getAssetByNodeId(onmsNode.getId()).toString());
+		LOG.info("Suggestions: {}", m_assetService.getAssetSuggestions());
+		assertTrue("Test save or update by admin.", m_assetService.getAssetByNodeId(onmsNode.getId()).getAllowModify());
 	}
 
-//	@Test
-//	public void successAllowModifyAssetByAdmin() {
-//		AssetServiceImpl assetServiceImpl = new AssetServiceImpl();
-//		assetServiceImpl.setNodeDao(m_nodeDao);
-//		assetServiceImpl.setAssetRecordDao(m_assetRecordDao);
-//		m_auth = new PreAuthenticatedAuthenticationToken(
-//				validAdmin, new Object());
-//		m_context.setAuthentication(m_auth);
-//		SecurityContextHolder.setContext(m_context);
-//		m_securityContextService = new SpringSecurityContextService();
-//		assertTrue("Test save or update by admin.", assetServiceImpl.getAssetByNodeId(7).getAllowModify());
-//	}
-//
-//	@Test
-//	public void failAllowModifyAssetByAdmin() {
-//		AssetServiceImpl assetServiceImpl = new AssetServiceImpl();
-//		assetServiceImpl.setNodeDao(m_nodeDao);
-//		assetServiceImpl.setAssetRecordDao(m_assetRecordDao);
-//		m_auth = new PreAuthenticatedAuthenticationToken(
-//				invalidAdmin, new Object());
-//		m_context.setAuthentication(m_auth);
-//		SecurityContextHolder.setContext(m_context);
-//		m_securityContextService = new SpringSecurityContextService();
-//		assertFalse("Test save or update by admin.", assetServiceImpl.getAssetByNodeId(7).getAllowModify());
-//	}
-	
-	
 	@Test
-	public void testSaveOrUpdate() {
+	public void testSaveOrUpdate() throws Exception {
 		OnmsNode onmsNode = new OnmsNode("myNode");
 		m_nodeDao.save(onmsNode);
 		OnmsAssetRecord assetRecord = onmsNode.getAssetRecord();
@@ -268,14 +193,9 @@ public class AssetServiceImplIT implements InitializingBean {
 		AssetCommand assetCommand = new AssetCommand();
 		BeanUtils.copyProperties(assetRecord, assetCommand);
 
-		System.out.println("AssetCommand (Source): " + assetCommand);
-		System.out.println("Asset to Save (Target): " + assetRecord);
-
-		AssetServiceImpl assetServiceImpl = new AssetServiceImpl();
-		assetServiceImpl.setNodeDao(m_nodeDao);
-		assetServiceImpl.setAssetRecordDao(m_assetRecordDao);
-		System.out.println();
-		assertTrue(assetServiceImpl.saveOrUpdateAssetByNodeId(onmsNode.getId(), assetCommand));
+		LOG.info("AssetCommand (Source): " + assetCommand);
+		LOG.info("Asset to Save (Target): " + assetRecord);
+		assertTrue(m_assetService.saveOrUpdateAssetByNodeId(onmsNode.getId(), assetCommand));
 		
 		OnmsAssetRecord updated = m_assetRecordDao.get(assetRecord.getId());
 		assertEquals(assetRecord.getGeolocation().getAddress1(), updated.getGeolocation().getAddress1());
@@ -288,7 +208,56 @@ public class AssetServiceImplIT implements InitializingBean {
 	}
 
 	@Test
-	public void testAssetSuggestion() {
+	public void saveOrUpdateAssetByNodeIdForGeolocationTest() throws Exception {
+		// save part
+		final AssetCommand firstAssetCommand = new AssetCommand();
+		firstAssetCommand.setAddress1("Street 1");
+		firstAssetCommand.setAddress2("Street 2");
+		firstAssetCommand.setCity("Stuttgart");
+		firstAssetCommand.setCountry("Germany");
+		firstAssetCommand.setLatitude(13.0f);
+		firstAssetCommand.setLongitude(14.0f);
+		firstAssetCommand.setState("N.a.");
+		firstAssetCommand.setZip("0123456789");
+
+		final int nodeId = 3;
+		boolean isSaved = m_assetService.saveOrUpdateAssetByNodeId(nodeId, firstAssetCommand);
+		Assert.assertTrue(isSaved);
+
+		OnmsAssetRecord assetRecord = m_assetRecordDao.findByNodeId(nodeId);
+		Assert.assertNotNull(assetRecord);
+		Assert.assertTrue(assetRecord.getAddress1().equals(firstAssetCommand.getAddress1()));
+		Assert.assertTrue(assetRecord.getAddress2().equals(firstAssetCommand.getAddress2()));
+		Assert.assertTrue(assetRecord.getCity().equals(firstAssetCommand.getCity()));
+		Assert.assertTrue(assetRecord.getCountry().equals(firstAssetCommand.getCountry()));
+		Assert.assertTrue(assetRecord.getLatitude().equals(firstAssetCommand.getLatitude()));
+		Assert.assertTrue(assetRecord.getLongitude().equals(firstAssetCommand.getLongitude()));
+		Assert.assertTrue(assetRecord.getState().equals(firstAssetCommand.getState()));
+		Assert.assertTrue(assetRecord.getZip().equals(firstAssetCommand.getZip()));
+
+		// update part
+		final AssetCommand secondAssetCommand = new AssetCommand();
+		secondAssetCommand.setAddress1("Street 1");
+		secondAssetCommand.setAddress2("Street 2");
+		secondAssetCommand.setCity("Berlin");
+		secondAssetCommand.setCountry("Germany");
+		secondAssetCommand.setLatitude(13.0f);
+		secondAssetCommand.setLongitude(14.0f);
+		secondAssetCommand.setState("N.a.");
+		secondAssetCommand.setZip("0123456789");
+
+		isSaved = m_assetService.saveOrUpdateAssetByNodeId(nodeId, secondAssetCommand);
+		Assert.assertTrue(isSaved);
+
+		OnmsAssetRecord secondAssetRecord = m_assetRecordDao.findByNodeId(nodeId);
+
+		Assert.assertTrue(secondAssetRecord.getCity().equals(secondAssetCommand.getCity()));
+		Assert.assertFalse(firstAssetCommand.getCity().equals(secondAssetCommand.getCity()));
+		Assert.assertFalse(secondAssetRecord.getCity().equals(firstAssetCommand.getCity()));
+	}
+
+	@Test
+	public void testAssetSuggestion() throws Exception {
 	OnmsNode onmsNode = new OnmsNode("your Node");
 		onmsNode.setSysObjectId("mySysOid");
 		m_nodeDao.save(onmsNode);
@@ -310,10 +279,7 @@ public class AssetServiceImplIT implements InitializingBean {
 		m_assetRecordDao.update(assetRecord);
 		m_assetRecordDao.flush();
 
-		AssetServiceImpl assetServiceImpl = new AssetServiceImpl();
-		assetServiceImpl.setNodeDao(m_nodeDao);
-		assetServiceImpl.setAssetRecordDao(m_assetRecordDao);
-		System.out.println("Asset: " + assetServiceImpl.getAssetByNodeId(onmsNode.getId()));
+		LOG.info("Asset: " + m_assetService.getAssetByNodeId(onmsNode.getId()));
 	}
 
 	@Test
