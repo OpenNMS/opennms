@@ -82,4 +82,55 @@ Other subsystems with an interest in new nodes subscribe to the _node-added_ eve
 The publisher and subscriber components do not need to have any knowledge of each other, allowing for a clean division of labor and lessening the programming burden to add entirely new {opennms-product-name} subsystems or modify the behavior of existing ones.
 
 [[section-events-events-in-action]]
-=== Events in Action
+==== Events in Action
+
+[[section-events-events-in-action-notifications]]
+
+
+[[section-events-forwarding-to-elastisearch]]
+==== Forwarding Events to Elasticsearch
+
+OpenNMS can be configured to forward all events and alarms to https://www.elastic.co/products/elasticsearch[Elasticsearch] for indexing, long time archiving, plotting with Grafana
+and browsing with Kibana.
+
+NOTE: Elasticsearch is not intended as a replacement for Postgres which is still a required component to run OpenNMS.
+
+First check that your OpenNMS installation supports this feature. If it does
+there should be a '${OPENNMS_HOME}/etc/org.opennms.features.elasticsearch.eventforwarder.cfg' file.
+
+If there is open it and review its content. Make sure to apply the correct settings depending
+on your environment.
+
+The following table describes all settings and possible values.
+
+[options="header, autowidth"]
+|===
+| Parameter              | Default          |  Description 
+|`elasticsearchCluster`  | opennms          | The name of the elasticsearch cluster as specified in the elasticsearch configuration file (required).
+|`elasticsearchIp`       | localhost        | the TransportClient remote host ip to use. Has the same meaning as the ip options of the http://camel.apache.org/elasticsearch.html[camel-elasticsearch] component
+|`logEventDescription`   | false            | Whether to forward the event description to Elasticsearch. Th reason it is off by default is that it is usually some standard and possibily long text which will grow the index without adding useful information
+|`cache_max_ttl`         | 0                | The number of minutes the node information is kept in the cache. Set to 0 to disable (which is the default and is generally safe because the cache knows when to refresh itself, by intercepting nodeUpdated and similar events)
+|`cache_max_size`        | 10000            | The number of node information entries to be kept in the cache before eviction start. Set to 0 to disable.
+|===
+
+Once you are sure everything is correctly configured you can activate the Elasticsearch forwarder.
+
+Log into the OSGi console (ssh admin@localhost -p 8101) and install the feature with the following command:
+
+`features:install opennms-elasticsearch-event-forwarder`
+
+You can check the routes status with the camel:* commands and/or inspect the log with log:tail for any obvious errors. The feature has a trace level logging that can be used to trace operations.
+
+If all goes well events and alarms will be pushed in realtime into Elasticsearch.
+You should now be able to view the events and graph them with https://www.elastic.co/products/kibana[Kibana].
+
+If you have never used Kibana before you should probably start with Kibana 3 which is simpler.
+Kibana 4 is more powerful, but harder to get started with.
+
+*Troubleshooting*
+
+If events are not reaching Elasticsearch check that OpenNMS is correctly
+configured, in particulare review the `elasticsearchCluster` and `elasticsearchIp`.
+
+If those appear to be correct verify that OpenNMS can communicate with
+Elasticsearch over port 9300.
