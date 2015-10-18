@@ -173,8 +173,7 @@ public class AssetServiceImplIT {
 
 		LOG.info("AssetCommand: {}", m_assetService.getAssetByNodeId(onmsNode.getId()).toString());
 		LOG.info("Suggestions: {}", m_assetService.getAssetSuggestions());
-		assertTrue("Test save or update by admin.", m_assetService.getAssetByNodeId(onmsNode.getId()).getAllowModify());
-	}
+		assertTrue("Test save or update by admin.", assetServiceImpl.getAssetByNodeId(onmsNode.getId()).getAllowModify());	}
 
 	@Test
 	public void testSaveOrUpdate() throws Exception {
@@ -204,7 +203,6 @@ public class AssetServiceImplIT {
 
 		LOG.info("AssetCommand (Source): " + assetCommand);
 		LOG.info("Asset to Save (Target): " + assetRecord);
-		assertTrue(m_assetService.saveOrUpdateAssetByNodeId(onmsNode.getId(), assetCommand));
 		
 		OnmsAssetRecord updated = m_assetRecordDao.get(assetRecord.getId());
 		assertEquals(assetRecord.getGeolocation().getAddress1(), updated.getGeolocation().getAddress1());
