@@ -53,6 +53,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
@@ -124,7 +125,7 @@ public class AssetServiceImpl extends RemoteServiceServlet implements AssetServi
      * This is a simple method is used to sanitize all bean string properties. 
      * 
      * @param bean a {@link java.lang.Object} object. 
-     * @param Set of fieldnames as Strings that are allowed for html content. All fieldnames in lowercase. null -> no html
+     * @param allowHtmlFields of fieldnames as Strings that are allowed for html content. All fieldnames in lowercase. null -> no html
      * @return a {@link java.lang.Object} object.
      */
     public static <T> T sanitizeBeanStringProperties(T bean, Set<String> allowHtmlFields) {
@@ -157,15 +158,10 @@ public class AssetServiceImpl extends RemoteServiceServlet implements AssetServi
     	return bean;
     }
 
-    /**
-     *
-     */
     public AssetServiceImpl() {
         m_securityContext = new SpringSecurityContextService();
 
-        /*
-         * Init AllowHtmlFields for sanitizing Strings
-         */
+        // Init AllowHtmlFields for sanitizing Strings
         m_allowHtmlFields = new HashSet<String>();
         final String allowHtmlFieldNames = System.getProperty("opennms.assets.allowHtmlFields");
         
@@ -314,39 +310,21 @@ public class AssetServiceImpl extends RemoteServiceServlet implements AssetServi
      */
     @Override
     public Boolean saveOrUpdateAssetByNodeId(int nodeId, AssetCommand assetCommand) {
-
-        logger.debug("nodeId: '{}' assetCommand: '{}'", nodeId, assetCommand);
+        logger.trace("nodeId: '{}' assetCommand: '{}'", nodeId, assetCommand);
 
         Boolean isSaved = false;
         m_onmsNode = m_nodeDao.get(nodeId);
         m_onmsAssetRecord = m_onmsNode.getAssetRecord();
         OnmsGeolocation geolocation = m_onmsAssetRecord.getGeolocation();
 
-        logger.debug("gelocation before: {}", geolocation);
-
         // copy the transfer object for rpc back to the hibernate model
+        logger.trace("gelocation before: {}", geolocation);
         final AssetCommand sanitizeBeanStringProperties = sanitizeBeanStringProperties(assetCommand, m_allowHtmlFields);
-        
-        // logger.debug("nodeId: '{}' sanitized assetCommand: '{}'", nodeId, sanitizeBeanStringProperties);
-
         BeanUtils.copyProperties(sanitizeBeanStringProperties, m_onmsAssetRecord);
-
-        geolocation = m_onmsAssetRecord.getGeolocation();
-        logger.debug("gelocation after: {}", geolocation);
-
-        // logger.debug("copyProperties finished");
-
-        if (geolocation == null) {
-            geolocation = new OnmsGeolocation();
-            m_onmsAssetRecord.setGeolocation(geolocation);
-        }
-        
-        // logger.debug("geolocation: {}", geolocation);
-
-        geolocation.setLongitude(sanitizeBeanStringProperties.getLongitude());
-        geolocation.setLatitude(sanitizeBeanStringProperties.getLatitude());
-
-        logger.debug("OnmsAssetRecord: '{}'", m_onmsAssetRecord);
+        geolocation = extractGeolocation(sanitizeBeanStringProperties);
+        logger.trace("gelocation after: {}", geolocation);
+        m_onmsAssetRecord.setGeolocation(geolocation);
+        logger.trace("OnmsAssetRecord: '{}'", m_onmsAssetRecord);
 
         // set the last modified user from logged in user
         m_onmsAssetRecord.setLastModifiedBy(m_securityContext.getUsername());
@@ -357,9 +335,9 @@ public class AssetServiceImpl extends RemoteServiceServlet implements AssetServi
 
         // try to persist the asset record from the web ui
         try {
-            logger.debug("OnmsNode '{}'", m_onmsNode.toString());
-            logger.debug("AssetRecordDao to update '{}'", m_assetRecordDao.toString());
-            logger.debug("OnmsAssetRecord to update '{}'", m_onmsAssetRecord.toString());
+            logger.trace("OnmsNode '{}'", m_onmsNode.toString());
+            logger.trace("AssetRecordDao to update '{}'", m_assetRecordDao.toString());
+            logger.trace("OnmsAssetRecord to update '{}'", m_onmsAssetRecord.toString());
 
             m_assetRecordDao.saveOrUpdate(m_onmsAssetRecord);
             isSaved = true;
@@ -367,53 +345,35 @@ public class AssetServiceImpl extends RemoteServiceServlet implements AssetServi
             // TODO: Catch exception and show error in web user interface
             isSaved = false;
             logger.error("Problem during saving or updating assets '{}'", e.getMessage());
-            e.printStackTrace();
         }
-
-        // save was successful
         return isSaved;
     }
 
-    /**
-     * <p>
-     * getAssetRecordDao
-     * </p>
-     *
-     * @return assetRecordDao a {@link org.opennms.netmgt.model.OnmsAssetRecord}
-     */
+    private OnmsGeolocation extractGeolocation(AssetCommand sanitizeBeanStringProperties) {
+        OnmsGeolocation geoLocation = new OnmsGeolocation();
+        geoLocation.setAddress1(sanitizeBeanStringProperties.getAddress1());
+        geoLocation.setAddress2(sanitizeBeanStringProperties.getAddress2());
+        geoLocation.setCity(sanitizeBeanStringProperties.getCity());
+        geoLocation.setCountry(sanitizeBeanStringProperties.getCountry());
+        geoLocation.setLatitude(sanitizeBeanStringProperties.getLatitude());
+        geoLocation.setLongitude(sanitizeBeanStringProperties.getLongitude());
+        geoLocation.setState(sanitizeBeanStringProperties.getState());
+        geoLocation.setZip(sanitizeBeanStringProperties.getZip());
+        return geoLocation;
+    }
+
     public AssetRecordDao getAssetRecordDao() {
         return m_assetRecordDao;
     }
 
-    /**
-     * <p>
-     * setAssetRecordDao
-     * </p>
-     *
-     * @param m_assetRecordDao a {@link org.opennms.netmgt.model.OnmsAssetRecord}
-     */
     public void setAssetRecordDao(AssetRecordDao assetRecordDao) {
         m_assetRecordDao = assetRecordDao;
     }
 
-    /**
-     * <p>
-     * getNodeDao
-     * </p>
-     *
-     * @return m_nodeDao a {@link org.opennms.netmgt.dao.api.NodeDao}
-     */
     public NodeDao getNodeDao() {
         return m_nodeDao;
     }
 
-    /**
-     * <p>
-     * setNodeDao
-     * </p>
-     *
-     * @param m_nodeDao a {@link org.opennms.netmgt.dao.api.NodeDao}
-     */
     public void setNodeDao(NodeDao nodeDao) {
         m_nodeDao = nodeDao;
     }
