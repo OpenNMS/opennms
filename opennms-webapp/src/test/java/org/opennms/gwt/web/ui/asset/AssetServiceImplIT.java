@@ -166,6 +166,10 @@ public class AssetServiceImplIT {
 		assetRecord.getGeolocation().setZip("yourzip");
 		m_assetRecordDao.update(assetRecord);
 		m_assetRecordDao.flush();
+		
+		AssetServiceImpl assetServiceImpl = new AssetServiceImpl();
+		assetServiceImpl.setNodeDao(m_nodeDao);
+		assetServiceImpl.setAssetRecordDao(m_assetRecordDao);
 
 		LOG.info("AssetCommand: {}", m_assetService.getAssetByNodeId(onmsNode.getId()).toString());
 		LOG.info("Suggestions: {}", m_assetService.getAssetSuggestions());
@@ -192,6 +196,11 @@ public class AssetServiceImplIT {
 
 		AssetCommand assetCommand = new AssetCommand();
 		BeanUtils.copyProperties(assetRecord, assetCommand);
+		
+		AssetServiceImpl assetServiceImpl = new AssetServiceImpl();
+		assetServiceImpl.setNodeDao(m_nodeDao);
+		assetServiceImpl.setAssetRecordDao(m_assetRecordDao);
+		assertTrue(assetServiceImpl.saveOrUpdateAssetByNodeId(onmsNode.getId(), assetCommand));
 
 		LOG.info("AssetCommand (Source): " + assetCommand);
 		LOG.info("Asset to Save (Target): " + assetRecord);
@@ -280,6 +289,12 @@ public class AssetServiceImplIT {
 		m_assetRecordDao.flush();
 
 		LOG.info("Asset: " + m_assetService.getAssetByNodeId(onmsNode.getId()));
+		
+		AssetServiceImpl assetServiceImpl = new AssetServiceImpl();
+		assetServiceImpl.setNodeDao(m_nodeDao);
+		assetServiceImpl.setAssetRecordDao(m_assetRecordDao);
+		
+		LOG.info("Asset: " + assetServiceImpl.getAssetByNodeId(onmsNode.getId()));
 	}
 
 	@Test
