@@ -138,17 +138,20 @@ public class IpNetToMediaTableTracker extends TableTracker
 		    SnmpValue mac = getValue(IPNETTOMEDIA_TABLE_PHYSADDR);
 		        // Try to fetch the physical address value as a hex string.
 	            String hexString = mac.toHexString();
+	            LOG.debug("getIpNetToMediaPhysAddress: checking as hexString {}", hexString);
 	            if (hexString != null && isValidBridgeAddress(hexString))
 	                // If the hex string is 12 characters long, than the agent is kinda weird and
 	                // is returning the value as a raw binary value that is 6 bytes in length.
 	                // But that's OK, as long as we can convert it into a string, that's fine. 
 	                return hexString;
 	            try{ 
-	                if (mac.isDisplayable())
+	                if (mac.isDisplayable()) {
 	                // This is the normal case that most agents conform to: the value is an ASCII 
 	                // string representing the colon-separated MAC address. We just need to reformat 
 	                // it to remove the colons and convert it into a 12-character string.
-	                hexString = getValue(IPNETTOMEDIA_TABLE_PHYSADDR).toDisplayString();
+	                    hexString = normalizeMacAddress(getValue(IPNETTOMEDIA_TABLE_PHYSADDR).toDisplayString());
+	                    LOG.debug("getIpNetToMediaPhysAddress: found as normalized Display String {}", hexString);
+	                }
 		    } catch (IllegalArgumentException e) {
 		        LOG.warn("getIpNetToMediaPhysAddress: IllegalArgument mac on ipnettomediatable:  return null", e);
 		        return null;
