@@ -93,7 +93,7 @@ public final class LldpLocalGroupTracker extends AggregateTracker {
             if (snmpValue.isDisplayable())
                 decodedsnmpValue = snmpValue.toDisplayString();
         } catch (Exception e) {
-            e.printStackTrace();
+            LOG.debug("getDisplayable: got not displayable Value", e);
         }
         return decodedsnmpValue;
     }
@@ -105,7 +105,7 @@ public final class LldpLocalGroupTracker extends AggregateTracker {
         try {
             type = LldpChassisIdSubType.get(lldpLocChassisidSubType);
         }  catch (IllegalArgumentException iae) {
-            iae.printStackTrace();
+            LOG.debug("decodeLldpChassisId: not valid subtype, return displayable", iae);
             return getDisplayable(lldpchassisid);
         }
         /*
@@ -228,10 +228,10 @@ public final class LldpLocalGroupTracker extends AggregateTracker {
                  try {
                      return LldpUtils.decodeNetworkAddress(getDisplayable(lldpchassisid));
                  } catch (Exception e) {
-                     e.printStackTrace();
+                     LOG.debug("decodeLldpChassisId: subtype networkaddress is not inet family", e);
                  }
             }
-        return lldpchassisid.toHexString();
+        return getDisplayable(lldpchassisid);
     }
 
     private SnmpStore m_store;

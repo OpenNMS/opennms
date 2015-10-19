@@ -77,7 +77,8 @@ public final class NodeDiscoveryIpNetToMedia extends NodeDiscovery {
 		IpNetToMediaTableTracker ipNetToMediaTableTracker = new IpNetToMediaTableTracker() {
 		    public void processIpNetToMediaRow(final IpNetToMediaRow row) {
 		    	IpNetToMedia macep = row.getIpNetToMedia();
-		    	if (macep.getIpNetToMediaType() == IpNetToMediaType.IPNETTOMEDIA_TYPE_DYNAMIC || macep.getIpNetToMediaType() == IpNetToMediaType.IPNETTOMEDIA_TYPE_STATIC)
+		    	if (macep.getPhysAddress() != null && 
+		    	        (macep.getIpNetToMediaType() == IpNetToMediaType.IPNETTOMEDIA_TYPE_DYNAMIC || macep.getIpNetToMediaType() == IpNetToMediaType.IPNETTOMEDIA_TYPE_STATIC))
 		    		m_linkd.getQueryManager().store(getNodeId(),macep);
 		    }
 		};
