@@ -37,6 +37,7 @@ import java.util.Date;
 import java.util.HashSet;
 
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -44,6 +45,7 @@ import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.TemporaryDatabaseExecutionListener;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.utils.WebSecurityUtils;
+import org.opennms.gwt.web.ui.asset.client.AssetService;
 import org.opennms.gwt.web.ui.asset.server.AssetServiceImpl;
 import org.opennms.gwt.web.ui.asset.shared.AssetCommand;
 import org.opennms.netmgt.dao.DatabasePopulator;
@@ -80,12 +82,16 @@ import org.springframework.test.context.transaction.TransactionalTestExecutionLi
 @ContextConfiguration(locations = {
 		"classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
 		"classpath:/META-INF/opennms/applicationContext-soa.xml",
-	        "classpath:/META-INF/opennms/applicationContext-mockDao.xml",
-		"classpath*:/META-INF/opennms/component-dao.xml"})
+        "classpath:/META-INF/opennms/applicationContext-mockDao.xml",
+		"classpath*:/META-INF/opennms/component-dao.xml",
+        "classpath*:/applicationContext-asset-test.xml"})
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
 public class AssetServiceImplTest implements InitializingBean {
 
+	@Autowired
+    private AssetService m_assetService;
+    
 	@Autowired
 	private DistPollerDao m_distPollerDao;
 
@@ -300,6 +306,56 @@ public class AssetServiceImplTest implements InitializingBean {
                 assertEquals(assetRecord.getGeolocation().getLongitude(), updated.getGeolocation().getLongitude());
                 assertEquals(assetRecord.getGeolocation().getLatitude(), updated.getGeolocation().getLatitude());
 	}
+	
+	 @Test
+	    public void saveOrUpdateAssetByNodeIdForGeolocationTest() throws Exception {
+	        // save part
+	        final AssetCommand firstAssetCommand = new AssetCommand();
+	        firstAssetCommand.setAddress1("Street 1");
+	        firstAssetCommand.setAddress2("Street 2");
+	        firstAssetCommand.setCity("Stuttgart");
+	        firstAssetCommand.setCountry("Germany");
+	        firstAssetCommand.setLatitude(13.0f);
+	        firstAssetCommand.setLongitude(14.0f);
+	        firstAssetCommand.setState("N.a.");
+	        firstAssetCommand.setZip("0123456789");
+
+	        final int nodeId = 3;
+	        boolean isSaved = m_assetService.saveOrUpdateAssetByNodeId(nodeId, firstAssetCommand);
+	        Assert.assertTrue(isSaved);
+
+	        OnmsAssetRecord assetRecord = m_assetRecordDao.findByNodeId(nodeId);
+	        Assert.assertNotNull(assetRecord);
+	        Assert.assertTrue(assetRecord.getAddress1().equals(firstAssetCommand.getAddress1()));
+	        Assert.assertTrue(assetRecord.getAddress2().equals(firstAssetCommand.getAddress2()));
+	        Assert.assertTrue(assetRecord.getCity().equals(firstAssetCommand.getCity()));
+	        Assert.assertTrue(assetRecord.getCountry().equals(firstAssetCommand.getCountry()));
+	        Assert.assertTrue(assetRecord.getLatitude().equals(firstAssetCommand.getLatitude()));
+	        Assert.assertTrue(assetRecord.getLongitude().equals(firstAssetCommand.getLongitude()));
+	        Assert.assertTrue(assetRecord.getState().equals(firstAssetCommand.getState()));
+	        Assert.assertTrue(assetRecord.getZip().equals(firstAssetCommand.getZip()));
+
+	        // update part
+	        final AssetCommand secondAssetCommand = new AssetCommand();
+	        secondAssetCommand.setAddress1("Street 1");
+	        secondAssetCommand.setAddress2("Street 2");
+	        secondAssetCommand.setCity("Berlin");
+	        secondAssetCommand.setCountry("Germany");
+	        secondAssetCommand.setLatitude(13.0f);
+	        secondAssetCommand.setLongitude(14.0f);
+	        secondAssetCommand.setState("N.a.");
+	        secondAssetCommand.setZip("0123456789");
+
+	        isSaved = m_assetService.saveOrUpdateAssetByNodeId(nodeId, secondAssetCommand);
+	        Assert.assertTrue(isSaved);
+
+	        OnmsAssetRecord secondAssetRecord = m_assetRecordDao.findByNodeId(nodeId);
+
+	        Assert.assertTrue(secondAssetRecord.getCity().equals(secondAssetCommand.getCity()));
+	        Assert.assertFalse(firstAssetCommand.getCity().equals(secondAssetCommand.getCity()));
+	        Assert.assertFalse(secondAssetRecord.getCity().equals(firstAssetCommand.getCity()));
+	    }
+
 
 	@Test
 	public void testAssetSuggestion() {
