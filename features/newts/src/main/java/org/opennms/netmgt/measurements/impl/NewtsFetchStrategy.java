@@ -40,6 +40,7 @@ import org.opennms.netmgt.dao.api.ResourceDao;
 import org.opennms.netmgt.measurements.api.FetchResults;
 import org.opennms.netmgt.measurements.api.MeasurementFetchStrategy;
 import org.opennms.netmgt.measurements.model.Source;
+import org.opennms.netmgt.measurements.utils.Utils;
 import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.RrdGraphAttribute;
 import org.opennms.newts.api.Context;
@@ -59,6 +60,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Optional;
+import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
@@ -100,6 +102,7 @@ public class NewtsFetchStrategy implements MeasurementFetchStrategy {
 
         final Optional<Timestamp> startTs = Optional.of(Timestamp.fromEpochMillis(start));
         final Optional<Timestamp> endTs = Optional.of(Timestamp.fromEpochMillis(end));
+        final Map<String, Object> constants = Maps.newHashMap();
 
         // Group the sources by resource id to avoid calling the ResourceDao
         // multiple times for the same resource
@@ -129,9 +132,19 @@ public class NewtsFetchStrategy implements MeasurementFetchStrategy {
         for (Entry<OnmsResource, List<Source>> entry : sourcesByResource.entrySet()) {
             final OnmsResource resource = entry.getKey();
             for (Source source : entry.getValue()) {
+                // Gather the values from strings.properties
+                Utils.convertStringAttributesToConstants(source.getLabel(), resource.getStringPropertyAttributes(), constants);
+
                 // Grab the attribute that matches the source
-                final RrdGraphAttribute rrdGraphAttribute = resource
-                        .getRrdGraphAttributes().get(source.getAttribute());
+                RrdGraphAttribute rrdGraphAttribute = resource.getRrdGraphAttributes().get(source.getAttribute());
+
+                if (rrdGraphAttribute == null && !Strings.isNullOrEmpty(source.getFallbackAttribute())) {
+                    LOG.error("No attribute with name '{}', using fallback-attribute with name '{}'", source.getAttribute(), source.getFallbackAttribute());
+                    source.setAttribute(source.getFallbackAttribute());
+                    source.setFallbackAttribute(null);
+                    rrdGraphAttribute = resource.getRrdGraphAttributes().get(source.getAttribute());
+                }
+
                 if (rrdGraphAttribute == null) {
                     LOG.error("No attribute with name: {}", source.getAttribute());
                     return null;
@@ -158,7 +171,6 @@ public class NewtsFetchStrategy implements MeasurementFetchStrategy {
         // so we perform multiple queries in parallel, and aggregate the results.
         final AtomicReference<long[]> timestamps = new AtomicReference<>();
         final Map<String, double[]> columns = Maps.newConcurrentMap();
-        final Map<String, Object> constants = Maps.newConcurrentMap();
 
         sourcesByNewtsResourceId.entrySet().parallelStream().forEach(entry -> {
             final String newtsResourceId = entry.getKey();
@@ -181,7 +193,6 @@ public class NewtsFetchStrategy implements MeasurementFetchStrategy {
             LOG.debug("Found {} rows.", rows.size());
 
             final int N = rows.size();
-            final Map<String, Object> myConstants = Maps.newHashMap();
             final Map<String, double[]> myColumns = Maps.newHashMap();
 
             timestamps.updateAndGet(existing -> {
@@ -202,17 +213,17 @@ public class NewtsFetchStrategy implements MeasurementFetchStrategy {
             int k = 0;
             for (Row<Measurement> row : results.getRows()) {
                 for (Measurement measurement : row.getElements()) {
-                    myColumns.putIfAbsent(measurement.getName(), new double[N]);
-                    myColumns.get(measurement.getName())[k] = measurement.getValue();
-                    if (measurement.getAttributes() != null) {
-                        myConstants.putAll(measurement.getAttributes());
+                    double[] column = myColumns.get(measurement.getName());
+                    if (column == null) {
+                        column = new double[N];
+                        myColumns.put(measurement.getName(), column);
                     }
+                    column[k] = measurement.getValue();
                 }
                 k += 1;
             }
 
             columns.putAll(myColumns);
-            constants.putAll(myConstants);
         });
 
         FetchResults fetchResults = new FetchResults(timestamps.get(), columns, fetchStep, constants);

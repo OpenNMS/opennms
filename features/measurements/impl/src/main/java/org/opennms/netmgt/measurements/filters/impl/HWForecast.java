@@ -36,6 +36,8 @@ import org.opennms.netmgt.integrations.R.RScriptExecutor;
 import org.opennms.netmgt.integrations.R.RScriptInput;
 import org.opennms.netmgt.integrations.R.RScriptOutput;
 import org.opennms.netmgt.measurements.api.Filter;
+import org.opennms.netmgt.measurements.api.FilterInfo;
+import org.opennms.netmgt.measurements.api.FilterParam;
 import org.opennms.netmgt.measurements.filters.impl.Utils.TableLimits;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,13 +53,36 @@ import com.google.common.collect.RowSortedTable;
  *
  * @author jwhite
  */
+@FilterInfo(name="HoltWinters", description="Performs Holt-Winters forecasting.", backend="R")
 public class HWForecast implements Filter {
     private static final Logger LOG = LoggerFactory.getLogger(HWForecast.class);
     private static final String PATH_TO_R_SCRIPT = "/org/opennms/netmgt/measurements/filters/impl/holtWinters.R";
-    private final HWForecastConfig m_config;
 
-    public HWForecast(HWForecastConfig config) {
-        m_config = config;
+    @FilterParam(key="inputColumn", required=true, displayName="Input", description="Input column.")
+    private String m_inputColumn;
+
+    @FilterParam(key="outputPrefix", value="HW", displayName="Output", description="Output prefix.")
+    private String m_outputPrefix;
+
+    @FilterParam(key="numPeriodsToForecast", value="3", displayName="# Periods", description="Number of periods to forecast.")
+    private int m_numPeriodsToForecast;
+
+    @FilterParam(key="periodInSeconds", required=true, displayName="Period", description="Size of a period in seconds.")
+    private long m_periodInSeconds;
+
+    @FilterParam(key="confidenceLevel", value="0.95", displayName="Level", description="Probability used for confidence bounds. Set this to 0 in order to disable the bounds.")
+    private double m_confidenceLevel;
+
+    protected HWForecast() {}
+
+    public HWForecast(String outputPrefix, String inputColumn,
+            int numPeriodsToForecast, long periodInSeconds,
+            double confidenceLevel) {
+        m_outputPrefix = outputPrefix;
+        m_inputColumn = inputColumn;
+        m_numPeriodsToForecast = numPeriodsToForecast;
+        m_periodInSeconds = periodInSeconds;
+        m_confidenceLevel = confidenceLevel;
     }
 
     @Override
@@ -66,7 +91,7 @@ public class HWForecast implements Filter {
 
         // Determine the index of the first and last non-NaN values
         // Assume the values between these are contiguous
-        TableLimits limits = Utils.getRowsWithValues(table, m_config.getInputColumn());
+        TableLimits limits = Utils.getRowsWithValues(table, m_inputColumn);
 
         // Make sure we have some samples
         long numSampleRows = limits.lastRowWithValues - limits.firstRowWithValues;
@@ -80,18 +105,18 @@ public class HWForecast implements Filter {
         long stepInMs = (long)(table.get(limits.lastRowWithValues, TIMESTAMP_COLUMN_NAME) - table.get(limits.lastRowWithValues-1, Filter.TIMESTAMP_COLUMN_NAME));
 
         // Calculate the number of samples per period
-        int numSamplesPerPeriod = (int)Math.floor(m_config.getPeriodInSeconds() * 1000 / stepInMs);
+        int numSamplesPerPeriod = (int)Math.floor(m_periodInSeconds * 1000 / stepInMs);
         numSamplesPerPeriod = Math.max(1, numSamplesPerPeriod);
 
         // Calculate the number of steps to forecast
-        int numForecasts = numSamplesPerPeriod * m_config.getNumPeriodsToForecast();
+        int numForecasts = numSamplesPerPeriod * m_numPeriodsToForecast;
 
         // Script arguments
         Map<String, Object> arguments = Maps.newHashMap();
-        arguments.put("columnToForecast", m_config.getInputColumn());
+        arguments.put("columnToForecast", m_inputColumn);
         arguments.put("numSamplesPerSeason", numSamplesPerPeriod);
         arguments.put("numForecasts", numForecasts);
-        arguments.put("confidenceLevel", m_config.getConfidenceLevel());
+        arguments.put("confidenceLevel", m_confidenceLevel);
         // Array indices in R start at 1
         arguments.put("firstIndex", limits.firstRowWithValues+1);
         arguments.put("lastIndex", limits.lastRowWithValues+1);
@@ -109,16 +134,18 @@ public class HWForecast implements Filter {
         // Add the fitted values to rows where the input column has values
         for (long i = 0; i < numFittedValues; i++) {
             long idxTarget = i + (numSampleRows - numFittedValues) + limits.firstRowWithValues + 1;
-            table.put(idxTarget, m_config.getOutputPrefix() + "Fit", outputTable.get(i, "fit"));
+            table.put(idxTarget, m_outputPrefix + "Fit", outputTable.get(i, "fit"));
         }
 
         // Append the forecasted values and include the time stamp with the appropriate step
         for (long i = numFittedValues; i < numOutputRows; i++) {
             long idxForecast = i - numFittedValues + 1;
             long idxTarget = limits.lastRowWithValues + idxForecast;
-            table.put(idxTarget, m_config.getOutputPrefix() + "Fit", outputTable.get(i, "fit"));
-            table.put(idxTarget, m_config.getOutputPrefix() + "Lwr", outputTable.get(i, "lwr"));
-            table.put(idxTarget, m_config.getOutputPrefix() + "Upr", outputTable.get(i, "upr"));
+            if (m_confidenceLevel > 0) {
+                table.put(idxTarget, m_outputPrefix + "Fit", outputTable.get(i, "fit"));
+                table.put(idxTarget, m_outputPrefix + "Lwr", outputTable.get(i, "lwr"));
+                table.put(idxTarget, m_outputPrefix + "Upr", outputTable.get(i, "upr"));
+            }
             table.put(idxTarget, TIMESTAMP_COLUMN_NAME, (double)new Date(lastTimestamp.getTime() + stepInMs * idxForecast).getTime());
         }
     }

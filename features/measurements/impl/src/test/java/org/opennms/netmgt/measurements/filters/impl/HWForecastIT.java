@@ -31,7 +31,7 @@ package org.opennms.netmgt.measurements.filters.impl;
 import org.junit.Assert;
 import org.junit.Test;
 import org.opennms.netmgt.measurements.api.Filter;
-import org.opennms.netmgt.measurements.model.FilterDefinition;
+import org.opennms.netmgt.measurements.model.FilterDef;
 
 import com.google.common.collect.RowSortedTable;
 import com.google.common.collect.TreeBasedTable;
@@ -40,7 +40,7 @@ public class HWForecastIT extends AnalyticsFilterTest {
 
     @Test
     public void canForecastValues() throws Exception {
-        FilterDefinition filterDef = new FilterDefinition("HoltWinters",
+        FilterDef filterDef = new FilterDef("HoltWinters",
                 "outputPrefix", "HW",
                 "inputColumn", "X",
                 "numPeriodsToForecast", "12",

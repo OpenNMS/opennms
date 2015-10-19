@@ -39,34 +39,34 @@ import javax.xml.bind.annotation.XmlRootElement;
 import com.google.common.collect.Lists;
 
 /**
- * Represents a filter and it's parameters.
+ * Used to reference a filter and set it's parameters.
  *
  * @author jwhite
  */
 @XmlRootElement(name="filter")
 @XmlAccessorType(XmlAccessType.NONE)
-public class FilterDefinition {
+public class FilterDef {
 
     @XmlAttribute(name="name", required=true)
     private String name;
 
     @XmlElement(name="parameter")
-    private List<FilterParameter> parameters = Lists.newArrayListWithCapacity(0);
+    private List<FilterParamDef> parameters = Lists.newArrayListWithCapacity(0);
 
     /**
      * Zero-arg constructor for JAXB.
      */
-    public FilterDefinition() {
+    public FilterDef() {
     }
 
-    public FilterDefinition(String name, String... paramNamesAndValues) {
+    public FilterDef(String name, String... paramNamesAndValues) {
         // Combine the varargs into key-value pairs
         if (paramNamesAndValues.length % 2 != 0) {
             throw new IllegalArgumentException("Must have an even number of parameter names and values");
         }
-        List<FilterParameter> parameters = Lists.newLinkedList();
+        List<FilterParamDef> parameters = Lists.newLinkedList();
         for (int i = 0; i < paramNamesAndValues.length; i+=2) {
-            parameters.add(new FilterParameter(
+            parameters.add(new FilterParamDef(
                     paramNamesAndValues[i], paramNamesAndValues[i+1]));
         }
 
@@ -74,7 +74,7 @@ public class FilterDefinition {
         this.parameters = parameters;
     }
 
-    public FilterDefinition(String name, List<FilterParameter> parameters) {
+    public FilterDef(String name, List<FilterParamDef> parameters) {
         this.name = name;
         this.parameters = parameters;
     }
@@ -83,7 +83,7 @@ public class FilterDefinition {
         return name;
     }
 
-    public List<FilterParameter> getParameters() {
+    public List<FilterParamDef> getParameters() {
         return parameters;
     }
 
@@ -95,7 +95,7 @@ public class FilterDefinition {
        if (getClass() != obj.getClass()) {
           return false;
        }
-       final FilterDefinition other = (FilterDefinition) obj;
+       final FilterDef other = (FilterDef) obj;
 
        return   com.google.common.base.Objects.equal(this.name, other.name)
              && com.google.common.base.Objects.equal(this.parameters, other.parameters);

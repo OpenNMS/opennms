@@ -30,7 +30,7 @@ package org.opennms.netmgt.measurements.api.exceptions;
 
 public class FetchException extends MeasurementException {
 
-    public FetchException(Throwable cause, String message) {
-        super(cause, message);
+    public FetchException(Throwable cause, String message, Object... params) {
+        super(cause, message, params);
     }
 }

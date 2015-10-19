@@ -28,6 +28,8 @@
 
 package org.opennms.netmgt.measurements.utils;
 
+import java.util.Map;
+
 /**
  * Utility functions.
  *
@@ -47,6 +49,31 @@ public class Utils {
         } else {
             // Simple way of casting integers, floats and longs
             return Double.valueOf(o.toString());
+        }
+    }
+
+    /**
+     * Converts constants stored in strings.properties to {@link org.opennms.netmgt.measurements.api.FetchResult}
+     * constants.
+     *
+     * Keys are prefix with the source label in order to avoid collisions.
+     * Values are converted to doubles when possible to allows the to be used by the {@link org.opennms.netmgt.measurements.api.ExpressionEngine}.
+     *
+     */
+    public static void convertStringAttributesToConstants(String sourceLabel, Map<String, String> stringAttributes, Map<String, Object> fetchResultConstants) {
+        for (final Map.Entry<String, String> propertyEntry : stringAttributes.entrySet()) {
+            final String propertyName = propertyEntry.getKey();
+
+            // Attempt to cast the value as a double, fall back to keeping it as a string
+            Object propertyValue;
+            try {
+                propertyValue = toDouble(propertyEntry.getValue());
+            } catch (Throwable t) {
+                propertyValue = propertyEntry.getValue();
+            }
+
+            fetchResultConstants.put(String.format("%s.%s", sourceLabel, propertyName),
+                    propertyValue);
         }
     }
 }

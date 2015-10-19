@@ -74,7 +74,7 @@ public class QueryRequest {
 
     private List<Expression> expressions = Lists.newArrayListWithCapacity(0);
 
-    private List<FilterDefinition> filters = Lists.newArrayListWithCapacity(0);
+    private List<FilterDef> filters = Lists.newArrayListWithCapacity(0);
 
     @XmlAttribute(name = "start")
     public long getStart() {
@@ -133,11 +133,11 @@ public class QueryRequest {
     }
 
     @XmlElement(name = "filter")
-    public List<FilterDefinition> getFilters() {
+    public List<FilterDef> getFilters() {
         return filters;
     }
 
-    public void setFilters(final List<FilterDefinition> filters) {
+    public void setFilters(final List<FilterDef> filters) {
         this.filters = filters;
     }
 

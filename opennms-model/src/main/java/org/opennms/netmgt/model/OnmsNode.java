@@ -214,9 +214,6 @@ public class OnmsNode extends OnmsEntity implements Serializable, Comparable<Onm
     public OnmsNode(final String label) {
         // Set the label
         setLabel(label);
-        // Create an asset record for the node
-        m_assetRecord = new OnmsAssetRecord();
-        m_assetRecord.setNode(this);
     }
 
     /**
@@ -733,6 +730,10 @@ public class OnmsNode extends OnmsEntity implements Serializable, Comparable<Onm
     @OneToOne(mappedBy="node", cascade = CascadeType.ALL, fetch=FetchType.LAZY)
     @XmlElement(name="assetRecord")
     public OnmsAssetRecord getAssetRecord() {
+        if (m_assetRecord == null) {
+            m_assetRecord = new OnmsAssetRecord();
+            m_assetRecord.setNode(this);
+        }
         return m_assetRecord;
     }
 

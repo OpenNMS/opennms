@@ -31,7 +31,7 @@ package org.opennms.netmgt.measurements.filters.impl;
 import org.junit.Assert;
 import org.junit.Test;
 import org.opennms.netmgt.measurements.api.Filter;
-import org.opennms.netmgt.measurements.model.FilterDefinition;
+import org.opennms.netmgt.measurements.model.FilterDef;
 
 import com.google.common.collect.RowSortedTable;
 import com.google.common.collect.TreeBasedTable;
@@ -39,11 +39,11 @@ import com.google.common.collect.TreeBasedTable;
 public class TrendLineIT extends AnalyticsFilterTest {
     @Test
     public void canTrend() throws Exception {
-        FilterDefinition filterDef = new FilterDefinition("TrendLine",
+        FilterDef filterDef = new FilterDef("Trend",
                 "outputColumn", "Z",
                 "inputColumn", "Y",
                 "secondsAhead", "1",
-                "polynomialOrder", "3");
+                "polynomialOrder", "5");
 
         // Use constant values for the Y column
         RowSortedTable<Long, String, Double> table = TreeBasedTable.create();

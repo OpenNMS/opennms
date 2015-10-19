@@ -29,9 +29,8 @@
 package org.opennms.netmgt.measurements.filters.impl;
 
 import org.opennms.netmgt.measurements.api.Filter;
-import org.opennms.netmgt.measurements.api.FilterConfig;
 import org.opennms.netmgt.measurements.api.FilterFactory;
-import org.opennms.netmgt.measurements.model.FilterDefinition;
+import org.opennms.netmgt.measurements.model.FilterDef;
 
 import com.google.common.collect.RowSortedTable;
 
@@ -45,7 +44,7 @@ public class NoOpFilter implements FilterFactory {
     public static final String FILTER_NAME = "NoOp";
 
     @Override
-    public Filter getFilter(FilterDefinition filterDef) {
+    public Filter getFilter(FilterDef filterDef) {
         if (FILTER_NAME.equalsIgnoreCase(filterDef.getName())) {
             return new Filter() {
                 @Override
@@ -58,7 +57,7 @@ public class NoOpFilter implements FilterFactory {
     }
 
     @Override
-    public Class<? extends FilterConfig> getFilterConfigType() {
+    public Class<? extends Filter> getFilterType() {
         return null;
     }
 }

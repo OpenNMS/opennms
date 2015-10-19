@@ -34,7 +34,7 @@ import java.util.Map;
 
 import org.opennms.netmgt.measurements.api.exceptions.ValidationException;
 import org.opennms.netmgt.measurements.model.Expression;
-import org.opennms.netmgt.measurements.model.FilterDefinition;
+import org.opennms.netmgt.measurements.model.FilterDef;
 import org.opennms.netmgt.measurements.model.QueryRequest;
 import org.opennms.netmgt.measurements.model.Source;
 
@@ -68,14 +68,14 @@ public class QueryRequestValidator {
             }
             if (labels.containsKey(expression.getLabel())) {
                 final String type = labels.get(expression.getLabel());
-                throw new ValidationException("Query expression label '" + expression.getLabel() + "' conflict: " + type + " with that label is already defined.");
+                throw new ValidationException("Query expression label '{}' conflict: {} with that label is already defined.", expression.getLabel(), type);
             } else {
                 labels.put(expression.getLabel(), "expression");
             }
         }
-        List<FilterDefinition> filters = request.getFilters();
+        List<FilterDef> filters = request.getFilters();
         if (filters.size() > 0) {
-            for (FilterDefinition filter : filters) {
+            for (FilterDef filter : filters) {
                 if (filter.getName() == null) {
                     throw new ValidationException("Filter name must be set: {}", filter);
                 }

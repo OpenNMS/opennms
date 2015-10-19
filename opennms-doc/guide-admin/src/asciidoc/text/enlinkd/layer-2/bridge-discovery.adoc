@@ -23,7 +23,7 @@ The following _MIBS_ must be supported by the _SNMP agent_ to allow _Transparent
                                                                     If the device does not support _VTP_, the version is _none(3)_.
 |===
 
-.Supported MIBS from the IP-MIB
+.Supported OIDs from the IP-MIB
 [options="headers, autowidth"]
 |===
 | Name                            | OID                           | Description

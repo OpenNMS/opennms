@@ -44,6 +44,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 
 /**
@@ -79,28 +80,22 @@ public abstract class AbstractRrdBasedFetchStrategy implements MeasurementFetchS
             }
 
             // Grab the attribute
-            final RrdGraphAttribute rrdGraphAttribute = resource
-                    .getRrdGraphAttributes().get(source.getAttribute());
+            RrdGraphAttribute rrdGraphAttribute = resource.getRrdGraphAttributes().get(source.getAttribute());
+
+            if (rrdGraphAttribute == null && !Strings.isNullOrEmpty(source.getFallbackAttribute())) {
+                LOG.error("No attribute with name '{}', using fallback-attribute with name '{}'", source.getAttribute(), source.getFallbackAttribute());
+                source.setAttribute(source.getFallbackAttribute());
+                source.setFallbackAttribute(null);
+                rrdGraphAttribute = resource.getRrdGraphAttributes().get(source.getAttribute());
+            }
+
             if (rrdGraphAttribute == null) {
                 LOG.error("No attribute with name: {}", source.getAttribute());
                 return null;
             }
 
             // Gather the values from strings.properties
-            for (final Map.Entry<String, String> propertyEntry : resource.getStringPropertyAttributes().entrySet()) {
-                final String propertyName = propertyEntry.getKey();
-
-                // Attempt to cast the value as a double, fall back to keeping it as a string
-                Object propertyValue;
-                try {
-                    propertyValue = Utils.toDouble(propertyEntry.getValue());
-                } catch (Throwable t) {
-                    propertyValue = propertyEntry.getValue();
-                }
-
-                constants.put(String.format("%s.%s", source.getLabel(), propertyName),
-                        propertyValue);
-            }
+            Utils.convertStringAttributesToConstants(source.getLabel(), resource.getStringPropertyAttributes(), constants);
 
             // Build the path to the archive
             final String rrdFile = System.getProperty("rrd.base.dir")

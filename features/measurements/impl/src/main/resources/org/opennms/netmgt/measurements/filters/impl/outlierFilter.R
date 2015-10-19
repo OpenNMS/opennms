@@ -1,7 +1,7 @@
 # Options
 inputFile <- 'stdin'
 
-columnToFilter <- '${columnToFilter}'
+columnToFilter <- '${columnToFilter?js_string}'
 probability <- ${probability?c}
 
 # Read the data from stdin

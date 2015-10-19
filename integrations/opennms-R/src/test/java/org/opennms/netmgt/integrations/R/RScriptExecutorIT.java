@@ -30,9 +30,12 @@ package org.opennms.netmgt.integrations.R;
 
 import static org.junit.Assert.assertEquals;
 
+import java.util.Map;
+
 import org.junit.Test;
 
 import com.google.common.collect.ImmutableTable;
+import com.google.common.collect.Maps;
 import com.google.common.collect.RowSortedTable;
 import com.google.common.collect.TreeBasedTable;
 
@@ -48,9 +51,12 @@ public class RScriptExecutorIT {
             expectedTable.put(i, "y", Double.valueOf(i*2));
         }
 
+        Map<String, Object> arguments = Maps.newHashMap();
+        arguments.put("unescapable_option", "\"'\\U0027\\U0027");
+
         // Execute the script
         RScriptExecutor executor = new RScriptExecutor();
-        RScriptOutput output = executor.exec("/echo.R", new RScriptInput(expectedTable));
+        RScriptOutput output = executor.exec("/echo.R", new RScriptInput(expectedTable, arguments));
         ImmutableTable<Long, String, Double> actualTable = output.getTable();
 
         // Expect the same table back

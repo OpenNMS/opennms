@@ -1,13 +1,10 @@
 package org.opennms.features.resourcemgnt.commands;
 
 import org.kohsuke.args4j.Argument;
-import org.kohsuke.args4j.Option;
 import org.opennms.features.resourcemgnt.ResourceCli;
 import org.opennms.netmgt.model.RrdGraphAttribute;
 import org.opennms.web.rest.v1.ResourceDTO;
-import org.opennms.web.rest.v1.ResourceDTOCollection;
 
-import javax.jws.WebParam;
 import java.util.Map;
 
 public class ShowCommand extends AbstractCommand {

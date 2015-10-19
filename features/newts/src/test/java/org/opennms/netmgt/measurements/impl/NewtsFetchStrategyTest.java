@@ -29,6 +29,7 @@
 package org.opennms.netmgt.measurements.impl;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.List;
@@ -87,6 +88,64 @@ public class NewtsFetchStrategyTest {
     }
 
     @Test
+    public void canRetrieveAttributeWhenFallbackAttributeIsSet() throws Exception {
+        List<Source> sources = Lists.newArrayList(
+                createMockResource("icmplocalhost", "icmp", "127.0.0.1")
+        );
+        replay();
+
+        Source sourceToBeFetched = new Source();
+        sourceToBeFetched.setResourceId("nodeSource[NODES:1505998205].responseTime[127.0.0.1]");
+        sourceToBeFetched.setAttribute("icmp");
+        sourceToBeFetched.setFallbackAttribute("willNotBeFound");
+        sourceToBeFetched.setAggregation("AVERAGE");
+        sourceToBeFetched.setLabel("icmp");
+
+        FetchResults fetchResults = m_newtsFetchStrategy.fetch(1431047069000L - (60 * 60 * 1000), 1431047069000L, 300 * 1000, 0, Lists.newArrayList(sourceToBeFetched));
+        assertEquals(1, fetchResults.getColumns().keySet().size());
+        assertTrue(fetchResults.getColumns().containsKey("icmplocalhost"));
+        assertEquals(1, fetchResults.getTimestamps().length);
+    }
+
+    @Test
+    public void canRetrieveFallbackAttributeWhenAttributeNotFound() throws Exception {
+        List<Source> sources = Lists.newArrayList(
+                createMockResource("icmplocalhost", "icmp", "127.0.0.1")
+        );
+        replay();
+
+        Source sourceToBeFetched = new Source();
+        sourceToBeFetched.setResourceId("nodeSource[NODES:1505998205].responseTime[127.0.0.1]");
+        sourceToBeFetched.setAttribute("willNotBeFound");
+        sourceToBeFetched.setFallbackAttribute("icmp");
+        sourceToBeFetched.setAggregation("AVERAGE");
+        sourceToBeFetched.setLabel("icmp");
+
+        FetchResults fetchResults = m_newtsFetchStrategy.fetch(1431047069000L - (60 * 60 * 1000), 1431047069000L, 300 * 1000, 0, Lists.newArrayList(sourceToBeFetched));
+        assertEquals(1, fetchResults.getColumns().keySet().size());
+        assertTrue(fetchResults.getColumns().containsKey("icmplocalhost"));
+        assertEquals(1, fetchResults.getTimestamps().length);
+    }
+
+    @Test
+    public void cannotRetrieveUnknownAttributeAndUnknownFallbackAttribute() {
+        List<Source> sources = Lists.newArrayList(
+                createMockResource("icmplocalhost", "shouldNotBeFound", "127.0.0.1", false)
+        );
+        replay();
+
+        Source sourceToBeFetched = new Source();
+        sourceToBeFetched.setResourceId("nodeSource[NODES:1505998205].responseTime[127.0.0.1]");
+        sourceToBeFetched.setAttribute("willNotBeFound");
+        sourceToBeFetched.setFallbackAttribute("willNotBeFoundToo");
+        sourceToBeFetched.setAggregation("AVERAGE");
+        sourceToBeFetched.setLabel("icmp");
+
+        FetchResults fetchResults = m_newtsFetchStrategy.fetch(1431047069000L - (60 * 60 * 1000), 1431047069000L, 300 * 1000, 0, Lists.newArrayList(sourceToBeFetched));
+        assertNull(fetchResults);
+    }
+
+    @Test
     public void testFetch() throws Exception {
         List<Source> sources = Lists.newArrayList(
             createMockResource("icmplocalhost", "icmp", "127.0.0.1"),
@@ -117,6 +176,10 @@ public class NewtsFetchStrategyTest {
     }
 
     public Source createMockResource(final String label, final String attr, final String node) {
+        return createMockResource(label, attr, node, true);
+    }
+
+    public Source createMockResource(final String label, final String attr, final String node, boolean expect) {
         OnmsResourceType type = EasyMock.createNiceMock(OnmsResourceType.class);
 
         final int nodeId = node.hashCode();
@@ -137,9 +200,11 @@ public class NewtsFetchStrategyTest {
         row.addElement(measurement);
         results.addRow(row);
 
-        EasyMock.expect(m_sampleRepository.select(
-                EasyMock.eq(m_context), EasyMock.eq(res), EasyMock.anyObject(), EasyMock.anyObject(), EasyMock.anyObject(), EasyMock.anyObject()
-                )).andReturn(results);
+        if (expect) {
+            EasyMock.expect(m_sampleRepository.select(
+                    EasyMock.eq(m_context), EasyMock.eq(res), EasyMock.anyObject(), EasyMock.anyObject(), EasyMock.anyObject(), EasyMock.anyObject()
+            )).andReturn(results);
+        }
 
         final Source source = new Source();
         source.setAggregation("AVERAGE");

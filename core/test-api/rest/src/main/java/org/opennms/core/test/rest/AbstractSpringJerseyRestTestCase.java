@@ -294,11 +294,11 @@ public abstract class AbstractSpringJerseyRestTestCase {
         m_roles.set(new HashSet<String>(Arrays.asList(roles)));
     }
 
-    private static String getUser() {
+    protected static String getUser() {
         return m_username.get();
     }
 
-    private static Collection<String> getUserRoles() {
+    protected static Collection<String> getUserRoles() {
         final Set<String> roles = m_roles.get();
         return roles == null? new HashSet<String>() : new HashSet<>(roles);
     }

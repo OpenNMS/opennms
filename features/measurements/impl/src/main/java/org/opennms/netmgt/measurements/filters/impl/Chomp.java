@@ -31,6 +31,8 @@ package org.opennms.netmgt.measurements.filters.impl;
 import java.util.Set;
 
 import org.opennms.netmgt.measurements.api.Filter;
+import org.opennms.netmgt.measurements.api.FilterInfo;
+import org.opennms.netmgt.measurements.api.FilterParam;
 import org.opennms.netmgt.measurements.filters.impl.Utils.TableLimits;
 
 import com.google.common.collect.RowSortedTable;
@@ -46,12 +48,20 @@ import com.google.common.collect.Sets;
  *
  * @author jwhite
  */
+@FilterInfo(name="Chomp", description="Strips leading and trailing rows that contain nothing but NaNs/null values.")
 public class Chomp implements Filter {
 
-    private final ChompConfig m_config;
+    @FilterParam(key="stripNaNs", value="true", displayName="Strip", description="When set, leading and trailing rows containing NaNs will be removed")
+    private boolean m_stripNaNs;
 
-    public Chomp(ChompConfig config) {
-        m_config = config;
+    @FilterParam(key="cutoffDate", value="0", displayName="Cutoff", description="Timestamp in milliseconds. Any rows before this time will be removed.")
+    private double m_cutoffDate;
+
+    protected Chomp() { }
+
+    public Chomp(double cutOffDate, boolean stripNaNs) {
+        m_cutoffDate = cutOffDate;
+        m_stripNaNs = stripNaNs;
     }
 
     @Override
@@ -65,13 +75,13 @@ public class Chomp implements Filter {
         // Determine the index of the first row with a timestamp
         // on/after the cutoff date
         for (long k : qrAsTable.rowKeySet()) {
-            if(qrAsTable.get(k, TIMESTAMP_COLUMN_NAME) >= m_config.getCutoffDate()) {
+            if(qrAsTable.get(k, TIMESTAMP_COLUMN_NAME) >= m_cutoffDate) {
                 firstRowToKeep = k;
                 break;
             }
         }
 
-        if (m_config.getStripNaNs()) {
+        if (m_stripNaNs) {
             // Excluding the timestamp column, determine the
             // index of the first and last rows which don't contain
             // completely NaN values

@@ -74,7 +74,7 @@ public class MeasurementsService {
                     request.getMaxRows(),
                     request.getSources());
         } catch (Exception e) {
-            throw new FetchException(e, "Fetch failed");
+            throw new FetchException(e, "Fetch failed: {}", e.getMessage());
         }
         if (results == null) {
             throw new ResourceNotFoundException(request);

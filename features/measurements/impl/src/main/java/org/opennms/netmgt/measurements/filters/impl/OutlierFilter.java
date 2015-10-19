@@ -35,6 +35,8 @@ import org.opennms.netmgt.integrations.R.RScriptExecutor;
 import org.opennms.netmgt.integrations.R.RScriptInput;
 import org.opennms.netmgt.integrations.R.RScriptOutput;
 import org.opennms.netmgt.measurements.api.Filter;
+import org.opennms.netmgt.measurements.api.FilterInfo;
+import org.opennms.netmgt.measurements.api.FilterParam;
 
 import com.google.common.collect.ImmutableTable;
 import com.google.common.collect.Maps;
@@ -46,21 +48,30 @@ import com.google.common.collect.RowSortedTable;
  * @see {@link org.opennms.netmgt.measurements.filters.impl.OutlierFilterConfig}
  * @author jwhite
  */
+@FilterInfo(name="Outlier", description="Removes outliers and replaces them with interpolated values.", backend="R")
 public class OutlierFilter implements Filter {
     private static final String PATH_TO_R_SCRIPT = "/org/opennms/netmgt/measurements/filters/impl/outlierFilter.R";
-    private final OutlierFilterConfig m_config;
 
-    public OutlierFilter(OutlierFilterConfig config) {
-        m_config = config;
+    @FilterParam(key="inputColumn", required=true, displayName="Input", description="Input column.")
+    private String m_inputColumn;
+
+    @FilterParam(key="probability", value="0.975", displayName="Level", description="Probability used to calculate the quantiles, any values greater than these will be replaced with an interpolated value.")
+    private double m_probability;
+
+    protected OutlierFilter() {}
+
+    public OutlierFilter(String inputColumn, double probability) {
+        m_inputColumn = inputColumn;
+        m_probability = probability;
     }
 
     @Override
     public void filter(RowSortedTable<Long, String, Double> dsAsTable) throws RScriptException {
-        String columnToFilter = m_config.getInputColumn();
+        String columnToFilter = m_inputColumn;
 
         Map<String, Object> arguments = Maps.newHashMap();
         arguments.put("columnToFilter", columnToFilter);
-        arguments.put("probability", m_config.getProbability());
+        arguments.put("probability", m_probability);
 
         RScriptExecutor executor = new RScriptExecutor();
         RScriptOutput output = executor.exec(PATH_TO_R_SCRIPT, new RScriptInput(dsAsTable, arguments));
@@ -78,7 +89,7 @@ public class OutlierFilter implements Filter {
     }
 
     public void linearInterpolation(RowSortedTable<Long, String, Double> dsAsTable) {
-        final String columnToFilter = m_config.getInputColumn();
+        final String columnToFilter = m_inputColumn;
         final Map<Long, Double> column = dsAsTable.column(columnToFilter);
         final Map<Long, Double> interpolatedValues = Maps.newHashMap();
 

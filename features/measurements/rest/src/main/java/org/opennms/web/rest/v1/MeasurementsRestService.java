@@ -29,6 +29,7 @@
 package org.opennms.web.rest.v1;
 
 import java.util.Date;
+import java.util.List;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
@@ -46,17 +47,20 @@ import javax.ws.rs.core.Response.Status;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 
+import org.opennms.netmgt.measurements.api.FilterEngine;
 import org.opennms.netmgt.measurements.api.MeasurementsService;
 import org.opennms.netmgt.measurements.api.exceptions.ExpressionException;
 import org.opennms.netmgt.measurements.api.exceptions.FetchException;
 import org.opennms.netmgt.measurements.api.exceptions.FilterException;
 import org.opennms.netmgt.measurements.api.exceptions.ResourceNotFoundException;
 import org.opennms.netmgt.measurements.api.exceptions.ValidationException;
+import org.opennms.netmgt.measurements.model.FilterMetaData;
 import org.opennms.netmgt.measurements.model.QueryRequest;
 import org.opennms.netmgt.measurements.model.QueryResponse;
 import org.opennms.netmgt.measurements.model.Source;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.helpers.MessageFormatter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -90,6 +94,27 @@ public class MeasurementsRestService {
     @Autowired
     private MeasurementsService service;
 
+    @Autowired
+    private FilterEngine filterEngine;
+
+    @GET
+    @Path("filters")
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
+    public List<FilterMetaData> getFilterMetadata() {
+        return filterEngine.getFilterMetaData();
+    }
+
+    @GET
+    @Path("filters/{name}")
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
+    public FilterMetaData getFilterMetadata(@PathParam("name") final String name) {
+        FilterMetaData metaData = filterEngine.getFilterMetaData(name);
+        if (metaData == null) {
+            throw getException(Status.NOT_FOUND, "No filter with name '{}' was found.", name);
+        }
+        return metaData;
+    }
+
     /**
      * Retrieves the measurements for a single attribute.
      */
@@ -104,6 +129,7 @@ public class MeasurementsRestService {
             @DefaultValue("0") @QueryParam("end") final long end,
             @DefaultValue("300000") @QueryParam("step") final long step,
             @DefaultValue("0") @QueryParam("maxrows") final int maxrows,
+            @DefaultValue("") @QueryParam("fallback-attribute") final String fallbackAttribute,
             @DefaultValue("AVERAGE") @QueryParam("aggregation") final String aggregation) {
 
         QueryRequest request = new QueryRequest();
@@ -121,6 +147,7 @@ public class MeasurementsRestService {
 
         // Use the attribute name as the datasource and label
         Source source = new Source(attribute, resourceId, attribute, attribute, false);
+        source.setFallbackAttribute(fallbackAttribute);
         source.setAggregation(aggregation);
         request.setSources(Lists.newArrayList(source));
 
@@ -145,14 +172,16 @@ public class MeasurementsRestService {
         QueryResponse response = null;
         try {
             response = service.query(request);
-        } catch (ExpressionException | FilterException | ValidationException e) {
+        } catch (ExpressionException e) {
+            throw getException(Status.BAD_REQUEST, e, "An error occurred while evaluating an expression: {}", e.getMessage());
+        } catch (FilterException  | ValidationException e) {
             throw getException(Status.BAD_REQUEST, e, e.getMessage());
         } catch (ResourceNotFoundException e) {
             throw getException(Status.NOT_FOUND, e, e.getMessage());
         } catch (FetchException e) {
             throw getException(Status.INTERNAL_SERVER_ERROR, e, e.getMessage());
         } catch (Exception e) {
-            throw getException(Status.INTERNAL_SERVER_ERROR, e, "Query failed");
+            throw getException(Status.INTERNAL_SERVER_ERROR, e, "Query failed: {}", e.getMessage());
         }
 
         // Return a 204 if there are no columns
@@ -163,12 +192,14 @@ public class MeasurementsRestService {
         return response;
     }
 
-    protected static WebApplicationException getException(final Status status, String msg) throws WebApplicationException {
+    protected static WebApplicationException getException(final Status status, String msg, Object... params) throws WebApplicationException {
+        if (params != null) msg = MessageFormatter.arrayFormat(msg, params).getMessage();
         LOG.error(msg);
         return new WebApplicationException(Response.status(status).type(MediaType.TEXT_PLAIN).entity(msg).build());
     }
 
-    protected static WebApplicationException getException(final Status status, Throwable t, String msg) throws WebApplicationException {
+    protected static WebApplicationException getException(final Status status, Throwable t, String msg, Object... params) throws WebApplicationException {
+        if (params != null) msg = MessageFormatter.arrayFormat(msg, params).getMessage();
         LOG.error(msg, t);
         return new WebApplicationException(Response.status(status).type(MediaType.TEXT_PLAIN).entity(msg).build());
     }
