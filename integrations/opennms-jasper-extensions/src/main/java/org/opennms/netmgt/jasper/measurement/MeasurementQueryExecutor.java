@@ -39,7 +39,7 @@ import net.sf.jasperreports.engine.query.JRAbstractQueryExecuter;
 import org.opennms.netmgt.jasper.helper.MeasurementsHelper;
 import org.opennms.netmgt.jasper.measurement.local.LocalMeasurementDataSourceWrapper;
 import org.opennms.netmgt.jasper.measurement.remote.RemoteMeasurementDataSourceWrapper;
-import org.opennms.netmgt.measurements.api.MeasurementFetchStrategyFactory;
+import org.opennms.netmgt.measurements.api.MeasurementFetchStrategy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -70,10 +70,7 @@ class MeasurementQueryExecutor extends JRAbstractQueryExecuter {
 
     @Override
     public JRRewindableDataSource createDatasource() throws JRException {
-       return getDataSource();
-    }
-
-    public JRRewindableDataSource getDataSource() throws JRException {
+        LOG.debug("Create datasource for query '{}'", getQueryString());
         if (datasourceWrapper == null) {
             datasourceWrapper = createDatasourceWrapper();
         }
@@ -94,12 +91,12 @@ class MeasurementQueryExecutor extends JRAbstractQueryExecuter {
     private MeasurementDataSourceWrapper createDatasourceWrapper() {
         if (MeasurementsHelper.isRunInOpennmsJvm()) {
             return new LocalMeasurementDataSourceWrapper(
-                    MeasurementsHelper.getMeasurementFetchStrategy(),
-                    MeasurementsHelper.getExpressionEngine(),
-                    MeasurementsHelper.getFilterEngine());
+                    MeasurementsHelper.getSpringHelper().getMeasurementFetchStrategy(),
+                    MeasurementsHelper.getSpringHelper().getExpressionEngine(),
+                    MeasurementsHelper.getSpringHelper().getFilterEngine());
         }
 
-        LOG.warn("No {} implementation found. Falling back to HTTP mode.", MeasurementFetchStrategyFactory.class);
+        LOG.warn("No {} implementation found. Falling back to HTTP mode.", MeasurementFetchStrategy.class);
         boolean useSsl = Boolean.valueOf(System.getProperty(SSL_PROPERTY_KEY, "false")).booleanValue();
         return new RemoteMeasurementDataSourceWrapper(
                 useSsl,

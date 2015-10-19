@@ -36,12 +36,14 @@ import javax.xml.bind.JAXB;
 
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRRewindableDataSource;
+import org.opennms.netmgt.jasper.measurement.EmptyJRDataSource;
 import org.opennms.netmgt.jasper.measurement.MeasurementDataSource;
 import org.opennms.netmgt.jasper.measurement.MeasurementDataSourceWrapper;
 import org.opennms.netmgt.measurements.api.ExpressionEngine;
 import org.opennms.netmgt.measurements.api.FilterEngine;
 import org.opennms.netmgt.measurements.api.MeasurementFetchStrategy;
 import org.opennms.netmgt.measurements.api.MeasurementsService;
+import org.opennms.netmgt.measurements.api.exceptions.ResourceNotFoundException;
 import org.opennms.netmgt.measurements.model.QueryRequest;
 import org.opennms.netmgt.measurements.model.QueryResponse;
 import org.slf4j.Logger;
@@ -73,6 +75,9 @@ public class LocalMeasurementDataSourceWrapper implements MeasurementDataSourceW
         try {
             QueryResponse response = fetchService.query(queryRequest);
             return new MeasurementDataSource(response);
+        } catch (ResourceNotFoundException rnfe) {
+            LOG.warn("A attribute or resource was not found", rnfe);
+            return new EmptyJRDataSource();
         } catch (Exception e) {
            LOG.error("An error occurred while fetching the measurement results", e);
            throw new JRException(e);

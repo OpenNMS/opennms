@@ -13,7 +13,7 @@
 	<parameter name="startDate" class="java.util.Date"/>
 	<parameter name="endDate" class="java.util.Date"/>
 	<queryString language="measurement">
-		<![CDATA[<query-request start="$P{startDate}" end="$P{endDate}">
+		<![CDATA[<query-request step="3600" start="$P{startDate}" end="$P{endDate}">
   <source aggregation="AVERAGE" label="SshLatency" attribute="ssh" transient="false" resourceId="node[46].responseTime[172.20.1.38]"/>
   <source aggregation="AVERAGE" label="HttpLatency" attribute="http-8980" transient="false" resourceId="node[13].interfaceSnmp[en0-005e60e77189]"/>
 </query-request>]]>

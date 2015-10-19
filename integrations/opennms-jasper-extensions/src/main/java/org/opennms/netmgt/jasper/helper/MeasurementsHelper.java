@@ -30,18 +30,16 @@ package org.opennms.netmgt.jasper.helper;
 
 import com.google.common.base.Strings;
 
-import org.opennms.netmgt.measurements.api.ExpressionEngine;
-import org.opennms.netmgt.measurements.api.FilterEngine;
-import org.opennms.netmgt.measurements.api.MeasurementFetchStrategy;
-import org.opennms.netmgt.measurements.api.MeasurementFetchStrategyFactory;
-import org.opennms.netmgt.measurements.impl.NullFetchStrategy;
-import org.springframework.beans.BeanInstantiationException;
-import org.springframework.beans.BeanUtils;
+import org.opennms.core.spring.BeanUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Provides helper methods for the {@link org.opennms.netmgt.jasper.measurement.MeasurementDataSource}.
  */
 public abstract class MeasurementsHelper {
+
+    private static Logger LOG = LoggerFactory.getLogger(MeasurementsHelper.class);
 
     private MeasurementsHelper() {
 
@@ -75,29 +73,15 @@ public abstract class MeasurementsHelper {
     }
 
     public static boolean isRunInOpennmsJvm() {
-        MeasurementFetchStrategy strategy = getMeasurementFetchStrategy();
-        return strategy != null && strategy.getClass() !=  NullFetchStrategy.class;
+        return getSpringHelper().getSpringContext() != null;
     }
 
-    public static MeasurementFetchStrategy getMeasurementFetchStrategy() {
+    public static SpringHelper getSpringHelper() {
         try {
-            MeasurementFetchStrategyFactory strategyFactory = BeanUtils.instantiate(MeasurementFetchStrategyFactory.class);
-            return strategyFactory.getStrategy();
-        } catch (BeanInstantiationException |  InstantiationException | IllegalAccessException ex) {
-            return null;
+            return BeanUtils.getBean("measurementDataSourceContext", "springHelper", SpringHelper.class);
+        } catch (Exception ex) {
+            LOG.warn("Error creating bean 'springHelper'. Creating empty SpringHelper");
+            return new SpringHelper();
         }
-    }
-
-    public static ExpressionEngine getExpressionEngine() {
-        try {
-            ExpressionEngine expressionEngine = BeanUtils.instantiate(ExpressionEngine.class);
-            return expressionEngine;
-        } catch (BeanInstantiationException ex) {
-            return null;
-        }
-    }
-
-    public static FilterEngine getFilterEngine() {
-        return new FilterEngine();
     }
 }

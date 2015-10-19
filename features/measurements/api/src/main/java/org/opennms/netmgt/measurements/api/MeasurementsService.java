@@ -28,8 +28,6 @@
 
 package org.opennms.netmgt.measurements.api;
 
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import com.google.common.base.Preconditions;
@@ -39,8 +37,6 @@ import org.opennms.netmgt.measurements.api.exceptions.FetchException;
 import org.opennms.netmgt.measurements.api.exceptions.MeasurementException;
 import org.opennms.netmgt.measurements.api.exceptions.ResourceNotFoundException;
 import org.opennms.netmgt.measurements.api.exceptions.ValidationException;
-import org.opennms.netmgt.measurements.model.Expression;
-import org.opennms.netmgt.measurements.model.FilterDefinition;
 import org.opennms.netmgt.measurements.model.QueryRequest;
 import org.opennms.netmgt.measurements.model.QueryResponse;
 import org.opennms.netmgt.measurements.model.Source;
@@ -53,6 +49,7 @@ public class MeasurementsService {
     private final MeasurementFetchStrategy fetchStrategy;
     private final ExpressionEngine expressionEngine;
     private final FilterEngine filterEngine;
+    private final QueryRequestValidator queryRequestValidator = new QueryRequestValidator();
 
     @Autowired
     public MeasurementsService(MeasurementFetchStrategy fetchStrategy, ExpressionEngine expressionEngine, FilterEngine filterEngine) {
@@ -112,46 +109,6 @@ public class MeasurementsService {
     }
 
     private void validate(QueryRequest request) throws ValidationException {
-        if (request.getEnd() < 0) {
-            throw new ValidationException("Query end must be >= 0: {}", request.getEnd());
-        }
-        if (request.getStep() <= 0) {
-            throw new ValidationException("Query step must be > 0: {}", request.getStep());
-        }
-
-        final Map<String,String> labels = new HashMap<>();
-        for (final Source source : request.getSources()) {
-            if (source.getResourceId() == null
-                    || source.getAttribute() == null
-                    || source.getLabel() == null
-                    || source.getAggregation() == null) {
-                throw new ValidationException("Query source fields must be set: {}", source);
-            }
-            if (labels.containsKey(source.getLabel())) {
-                throw new ValidationException("Query source label '{}' conflict: source with that label is already defined.", source.getLabel());
-            } else {
-                labels.put(source.getLabel(), "source");
-            }
-        }
-        for (final Expression expression : request.getExpressions()) {
-            if (expression.getExpression() == null
-                    || expression.getLabel() == null) {
-                throw new ValidationException("Query expression fields must be set: {}", expression);
-            }
-            if (labels.containsKey(expression.getLabel())) {
-                final String type = labels.get(expression.getLabel());
-                throw new ValidationException("Query expression label '" + expression.getLabel() + "' conflict: " + type + " with that label is already defined.");
-            } else {
-                labels.put(expression.getLabel(), "expression");
-            }
-        }
-        List<FilterDefinition> filters = request.getFilters();
-        if (filters.size() > 0) {
-            for (FilterDefinition filter : filters) {
-                if (filter.getName() == null) {
-                    throw new ValidationException("Filter name must be set: {}", filter);
-                }
-            }
-        }
+        queryRequestValidator.validate(request);
     }
 }

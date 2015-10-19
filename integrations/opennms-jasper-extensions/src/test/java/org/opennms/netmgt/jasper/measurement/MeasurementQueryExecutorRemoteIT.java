@@ -28,104 +28,34 @@
 
 package org.opennms.netmgt.jasper.measurement;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
-import javax.xml.bind.JAXB;
-
 import com.github.tomakehurst.wiremock.client.WireMock;
-import com.github.tomakehurst.wiremock.http.Request;
-import com.github.tomakehurst.wiremock.http.RequestListener;
-import com.github.tomakehurst.wiremock.http.Response;
-import com.github.tomakehurst.wiremock.junit.WireMockRule;
-import com.github.tomakehurst.wiremock.verification.LoggedRequest;
 import com.google.common.collect.Table;
 import com.google.common.collect.TreeBasedTable;
-import com.google.common.io.ByteStreams;
 
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRParameter;
-import net.sf.jasperreports.engine.JasperCompileManager;
-import net.sf.jasperreports.engine.JasperExportManager;
-import net.sf.jasperreports.engine.JasperFillManager;
-import net.sf.jasperreports.engine.JasperPrint;
-import net.sf.jasperreports.engine.JasperReport;
-import net.sf.jasperreports.engine.export.JRCsvExporter;
-import net.sf.jasperreports.export.SimpleExporterInput;
-import net.sf.jasperreports.export.SimpleWriterExporterOutput;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.opennms.core.test.Level;
-import org.opennms.core.test.LoggingEvent;
-import org.opennms.core.test.MockLogAppender;
-import org.opennms.netmgt.measurements.model.QueryRequest;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.opennms.netmgt.jasper.helper.MeasurementsHelper;
 
 /**
- * Verifies that the {@link MeasurementQueryExecutor} works correctly.
+ * Verifies that the {@link MeasurementQueryExecutor} works correctly when running not in jvm mode.
+ * Verifies multiple reports.
  */
-public class MeasurementQueryExecutorIT {
-
-    private static final Logger LOG = LoggerFactory.getLogger(MeasurementQueryExecutorIT.class);
-
-    private static final DateFormat DATE_FORMAT = new SimpleDateFormat("EEE MMM dd HH:mm:ss z yyyy");
-
-    private interface ReportFiller {
-        void fill(Map<String, Object> params) throws Exception;
-    }
-
-    @Rule
-    public WireMockRule wireMockRule = new WireMockRule(9999);
-
-    private List<Request> requestList = new ArrayList<Request>();
-
-    @After
-    public void after() {
-        try {
-            LoggingEvent[] errorEvents = MockLogAppender.getEventsAtLevel(Level.ERROR);
-            for (LoggingEvent eachEvent : errorEvents) {
-                if ("net.sf.jasperreports.extensions.DefaultExtensionsRegistry".equals(eachEvent.getLoggerName())
-                        && eachEvent.getMessage().contains("Error instantiating extensions registry")) {
-                    Assert.fail("Jasper Report extensions not setup correctly. " +
-                            "See http://jasperreports.sourceforge.net/api/net/sf/jasperreports/extensions/DefaultExtensionsRegistry.html for more details.");
-                }
-            }
-        } finally {
-            MockLogAppender.resetEvents();
-        }
-    }
+public class MeasurementQueryExecutorRemoteIT extends AbstractMeasurementQueryExecutorTest {
 
     @Before
     public void before() throws IOException {
-        requestList.clear();
-
-        // we listen to all requests and verify that the POST data can be parsed as a Query Request
-        wireMockRule.addMockServiceRequestListener(new RequestListener() {
-            @Override
-            public void requestReceived(Request request, Response response) {
-                requestList.add(LoggedRequest.createFrom(request));
-            }
-        });
+        super.before();
 
         // AllCharts Request 1
         WireMock.stubFor(WireMock.post(WireMock.urlEqualTo("/opennms/rest/measurements"))
@@ -184,31 +114,8 @@ public class MeasurementQueryExecutorIT {
                         .withBody("<query-response />") // minimal parsable
                 ));
 
-        // Everything else is automatically bound to a 404
-    }
-
-    private void verifyHttpCalls(int number) {
-        // ensure a request was actually made and was only made <number> times
-        WireMock.verify(number, WireMock.postRequestedFor(WireMock.urlMatching("/opennms/rest/measurements"))
-                .withoutHeader("Authorization")
-                .withHeader("Content-Type", WireMock.equalTo("application/xml")));
-
-        // VERIFY that the Request Body is a valid QueryRequest
-        Assert.assertEquals(number, requestList.size());
-        for (Request eachRequest : requestList) {
-            JAXB.unmarshal(new ByteArrayInputStream(eachRequest.getBody()), QueryRequest.class);
-        }
-    }
-
-    private static String createBodyFrom(String filename) throws IOException {
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        ByteStreams.copy(MeasurementQueryExecutorIT.class.getResourceAsStream("/responses/" + filename), outputStream);
-        return outputStream.toString();
-    }
-
-    @Before
-    public void setUp() {
-        new File("target/reports").mkdirs();
+        // Ensure that we are NOT running in jvm mode
+        Assert.assertEquals(Boolean.FALSE, MeasurementsHelper.isRunInOpennmsJvm());
     }
 
     // The jrxml file contains a language="resourceQuery" statement, but is not supported anymore.
@@ -344,69 +251,5 @@ public class MeasurementQueryExecutorIT {
         Assert.assertEquals(24079.4692522087, forecasts.get(327, "fit"), 0.00001);
         // First forecasted value
         Assert.assertEquals(22245.5417010936, forecasts.get(328, "fit"), 0.00001);
-    }
-
-    private void createReport(String reportName, ReportFiller filler) throws JRException, IOException {
-        JasperReport jasperReport = JasperCompileManager.compileReport(getClass().getResourceAsStream("/reports/" + reportName + ".jrxml"));
-        JasperPrint jasperPrint = fill(jasperReport, filler);
-        createPdf(jasperPrint, reportName);
-        createXhtml(jasperPrint, reportName);
-        createCsv(jasperPrint, reportName);
-
-        // this is ugly, but we verify that the reports exists and have a file size > 0
-        verifyReport(reportName, "pdf");
-        verifyReport(reportName, "html");
-        verifyReport(reportName, "csv");
-    }
-
-    private void verifyReport(String reportName, String extension) throws IOException {
-        final Path path = Paths.get(createFileName(reportName, extension));
-        Assert.assertTrue(Files.exists(path));
-        if (!"csv".equals(extension)) {
-            Assert.assertTrue(Files.size(path) > 0);
-        }
-    }
-
-    private static String createFileName(String reportName, String extension) {
-        return String.format("target/reports/%s.%s", reportName, extension);
-    }
-
-    private JasperPrint fill(final JasperReport jasperReport, final ReportFiller filler) throws JRException {
-        try {
-            Map<String, Object> params = new HashMap<String, Object>();
-            filler.fill(params);
-            return JasperFillManager.fillReport(jasperReport, params);
-        } catch (Exception ex) {
-            if (ex instanceof JRException) {
-                throw (JRException) ex;
-            }
-            throw new JRException(ex);
-        }
-    }
-
-    private void createPdf(JasperPrint jasperPrint, String reportName) throws JRException {
-        long start = System.currentTimeMillis();
-        JasperExportManager.exportReportToPdfFile(jasperPrint, createFileName(reportName, "pdf"));
-        LOG.info("PDF creation time: {} ms", (System.currentTimeMillis() - start));
-    }
-
-    private void createXhtml(JasperPrint jasperPrint, String reportName) throws JRException {
-        long start = System.currentTimeMillis();
-        JasperExportManager.exportReportToHtmlFile(jasperPrint, createFileName(reportName, "html"));
-        LOG.info("XHTML creation time: {} ms", (System.currentTimeMillis() - start));
-    }
-
-    private void createCsv(JasperPrint jasperPrint, String reportName) throws JRException {
-        long start = System.currentTimeMillis();
-
-        SimpleExporterInput input = new SimpleExporterInput(jasperPrint);
-        SimpleWriterExporterOutput output = new SimpleWriterExporterOutput(createFileName(reportName, "csv"));
-
-        JRCsvExporter exporter = new JRCsvExporter();
-        exporter.setExporterInput(input);
-        exporter.setExporterOutput(output);
-        exporter.exportReport();
-
-        LOG.info("CSV creation time: {} ms", (System.currentTimeMillis() - start));
     }
 }
