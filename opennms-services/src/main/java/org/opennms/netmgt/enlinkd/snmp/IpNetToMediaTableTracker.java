@@ -29,6 +29,7 @@
 package org.opennms.netmgt.enlinkd.snmp;
 
 import static org.opennms.core.utils.InetAddressUtils.normalizeMacAddress;
+import static org.opennms.core.utils.InetAddressUtils.isValidBridgeAddress;
 
 import java.net.InetAddress;
 
@@ -38,6 +39,7 @@ import org.opennms.netmgt.snmp.RowCallback;
 import org.opennms.netmgt.snmp.SnmpInstId;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpRowResult;
+import org.opennms.netmgt.snmp.SnmpValue;
 import org.opennms.netmgt.snmp.TableTracker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -133,25 +135,28 @@ public class IpNetToMediaTableTracker extends TableTracker
 		 * @see {@link org.opennms.netmgt.provision.service.snmp.IfTableEntry#getPhysAddr()}
 		 */
 		public String getIpNetToMediaPhysAddress(){
-		    try {
+		    SnmpValue mac = getValue(IPNETTOMEDIA_TABLE_PHYSADDR);
 		        // Try to fetch the physical address value as a hex string.
-	            String hexString = getValue(IPNETTOMEDIA_TABLE_PHYSADDR).toHexString();
-	            if (hexString != null && hexString.length() == 12) {
+	            String hexString = mac.toHexString();
+	            if (hexString != null && isValidBridgeAddress(hexString))
 	                // If the hex string is 12 characters long, than the agent is kinda weird and
 	                // is returning the value as a raw binary value that is 6 bytes in length.
 	                // But that's OK, as long as we can convert it into a string, that's fine. 
 	                return hexString;
-	            } else {
+	            try{ 
+	                if (mac.isDisplayable())
 	                // This is the normal case that most agents conform to: the value is an ASCII 
 	                // string representing the colon-separated MAC address. We just need to reformat 
 	                // it to remove the colons and convert it into a 12-character string.
-	                String mac = getValue(IPNETTOMEDIA_TABLE_PHYSADDR).toDisplayString();
-	                return mac == null || mac.trim().isEmpty() ? null : normalizeMacAddress(mac);
-	            }
+	                hexString = getValue(IPNETTOMEDIA_TABLE_PHYSADDR).toDisplayString();
 		    } catch (IllegalArgumentException e) {
-		        LOG.warn("IllegalArgument on ipnettomediatable", e);
-		        return getValue(IPNETTOMEDIA_TABLE_PHYSADDR).toDisplayString();
+		        LOG.warn("getIpNetToMediaPhysAddress: IllegalArgument mac on ipnettomediatable:  return null", e);
+		        return null;
 		    }
+	            if (hexString != null && !hexString.trim().isEmpty() && isValidBridgeAddress(hexString))
+	                return hexString;
+                    LOG.warn("getIpNetToMediaPhysAddress: not valid mac {}, return null", hexString);
+	            return null;
 		}
 		
 		/**
