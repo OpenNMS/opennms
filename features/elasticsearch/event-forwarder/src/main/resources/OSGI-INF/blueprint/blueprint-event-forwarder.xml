@@ -1,0 +1,135 @@
+<blueprint
+        xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0"
+        xmlns:ext="http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.1.0"
+        xmlns:camel="http://camel.apache.org/schema/blueprint"
+        xsi:schemaLocation="
+		http://www.osgi.org/xmlns/blueprint/v1.0.0
+		http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd
+		
+		http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0
+		http://aries.apache.org/schemas/blueprint-cm/blueprint-cm-1.1.0.xsd
+		
+		http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.1.0
+		http://aries.apache.org/schemas/blueprint-ext/blueprint-ext-1.1.xsd
+
+		http://camel.apache.org/schema/blueprint
+		http://camel.apache.org/schema/blueprint/camel-blueprint-2.12.2.xsd
+">
+
+  <!-- Configuration properties -->
+  <cm:property-placeholder id="esEventForwarderProperties" persistent-id="org.opennms.features.elasticsearch.eventforwarder" update-strategy="reload">
+    <cm:default-properties>
+        <cm:property name="elasticsearchCluster" value="opennms"/>
+        <cm:property name="elasticsearchIp" value="127.0.0.1"/>
+        <cm:property name="logEventDescription" value="false"/>
+        <cm:property name="cache_max_ttl" value="0"/> <!-- set to zero to disable TTL -->
+        <cm:property name="cache_max_size" value="10000"/> <!-- set to zero to disable max size -->
+    </cm:default-properties>
+  </cm:property-placeholder>
+
+  <bean id="elasticsearchNorthbounder" class="org.opennms.features.elasticsearch.eventforwarder.ElasticsearchNorthbounder">
+      <property name="alarmForwarder" ref="alarmForwarder" />
+  </bean>
+
+  <service id="elasticsearchNorthbounderService" ref="elasticsearchNorthbounder" interface="org.opennms.netmgt.alarmd.api.Northbounder">
+      <service-properties>
+            <entry key="registration.export" value="true" />
+      </service-properties>
+  </service>
+
+  <bean id="alarmForwarder" class="org.opennms.features.elasticsearch.eventforwarder.internal.DefaultAlarmForwarder">
+    <argument value="seda:elasticsearchForwardAlarm"/>
+  </bean>
+
+  <!-- TODO: Fetch EventIpcManager using service registry? -->
+  <bean id="eventIpcManager" class="org.opennms.netmgt.events.api.EventIpcManagerFactory" factory-method="getIpcManager"/>
+
+  <bean id="eventListener" class="org.opennms.features.elasticsearch.eventforwarder.ForwardingEventListener" init-method="init">
+    <property name="eventIpcManager" ref="eventIpcManager" />
+    <property name="eventForwarder" ref="eventForwarder" />
+  </bean>
+
+  <reference id="nodeDao" interface="org.opennms.netmgt.dao.api.NodeDao" availability="mandatory"/>
+  <reference id="transactionOperations" interface="org.springframework.transaction.support.TransactionOperations" availability="mandatory"/>
+
+  <!-- Event listener that connects the EventIpcManager to this Camel context -->
+  <bean id="eventForwarder" class="org.opennms.features.elasticsearch.eventforwarder.internal.DefaultEventForwarder">
+    <argument value="seda:elasticsearchForwardEvent"/>
+  </bean>
+
+    <bean id="nodeDataCache" class="org.opennms.features.elasticsearch.eventforwarder.internal.NodeCache"
+            init-method="init">
+        <property name="nodeDao" ref="nodeDao"/>
+        <property name="transactionOperations" ref="transactionOperations"/>
+        <property name="MAX_TTL" value="${cache_max_ttl}"/>
+        <property name="MAX_SIZE" value="${cache_max_size}"/>
+    </bean>
+
+  <bean id="elasticsearchHeaders" class="org.opennms.features.elasticsearch.eventforwarder.internal.ESHeaders">
+    <property name="logEventDescription" value="${logEventDescription}"/>
+    <property name="cache" ref="nodeDataCache"/>
+  </bean>
+
+  <bean id="indexNameFunction" class="org.opennms.features.elasticsearch.eventforwarder.internal.IndexNameFunction">
+    <argument value="yyyy.MM"/>
+  </bean>
+
+  <bean id="elmapping" class="org.opennms.features.elasticsearch.eventforwarder.internal.ElMappingLoader"/>
+
+  <!-- **************************************
+                  Camel Context
+       ************************************** -->
+
+  <camelContext autoStartup="true" id="elasticsearchEventForwarder" xmlns="http://camel.apache.org/schema/blueprint">
+    <!--<propertyPlaceholder id="properties" location="blueprint:esEventForwarderProperties"/>-->
+    <propertyPlaceholder id="funcBasedProperties" location="none" ignoreMissingLocation="true">
+      <propertiesFunction ref="indexNameFunction"/>
+    </propertyPlaceholder>
+
+    <errorHandler id="noErrorHandler" type="NoErrorHandler"/>
+
+    <onException>
+      <exception>java.lang.Exception</exception>
+      <redeliveryPolicy maximumRedeliveries="10" delayPattern="2:30000;4:60000;6:120000"/>
+    </onException>
+
+    <route id="updateElastisearchTemplateMappingRunOnlyOnce" autoStartup="true" startupOrder="1">
+        <from uri="timer://runOnce?repeatCount=1&amp;delay=0"/>
+        <setHeader headerName="CamelHttpMethod">
+          <constant>PUT</constant>
+        </setHeader>
+        <setHeader headerName="CamelContentType">
+          <constant>application/x-www-form-urlencoded</constant>
+        </setHeader>
+        <bean ref="elmapping" method="process"/>
+        <to uri="http:{{elasticsearchIp}}:9200/_template/{{elasticsearchCluster}}"/>
+        <log message="${body}"/>
+    </route>
+
+    <route id="eventsFromOpennms" autoStartup="true" startupOrder="2">
+        <from uri="seda:elasticsearchForwardEvent"/>
+        <to uri="direct:ES_PRE"/>
+    </route>
+
+    <route id="alarmsFromOpennms" autoStartup="true" startupOrder="3">
+        <from uri="seda:elasticsearchForwardAlarm"/>
+        <to uri="direct:ES_PRE"/>
+    </route>
+
+    <route id="enrichAlarmsAndEvents" autoStartup="true" startupOrder="4">
+        <from uri="direct:ES_PRE"/>
+        <bean ref="elasticsearchHeaders" method="process"/>
+        <to uri="direct:ES"/>
+    </route>
+
+    <route id="toElasticsearch" autoStartup="true" startupOrder="5" errorHandlerRef="noErrorHandler">
+        <from uri="direct:ES"/>
+        <log message="ES: ${body.toString()}"/>
+        <to uri="elasticsearch://{{elasticsearchCluster}}?operation=INDEX&amp;ip={{elasticsearchIp}}"/>
+    </route>
+
+  </camelContext>
+
+</blueprint>

@@ -107,5 +107,8 @@
     <module>ncs</module>
     <module>springframework-security</module>
     <module>system-report</module>
+
+    <!-- Elasticsearch event-forwarder-->
+    <module>elasticsearch</module>
   </modules>
 </project>
