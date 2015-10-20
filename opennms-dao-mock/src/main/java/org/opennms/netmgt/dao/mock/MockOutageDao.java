@@ -51,6 +51,18 @@ public class MockOutageDao extends AbstractMockDao<OnmsOutage, Integer> implemen
         return outage.getId();
     }
 
+    /**
+     * When we save an outage, make sure to add the outage to the currentOutages
+     * property of {@link OnmsMonitoredService}.
+     */
+    @Override
+    public void save(final OnmsOutage entity) {
+        super.save(entity);
+        if (entity.getIfRegainedService() == null) {
+            entity.getMonitoredService().getCurrentOutages().add(entity);
+        }
+    }
+
     @Override
     public Integer currentOutageCount() {
         throw new UnsupportedOperationException("Not yet implemented!");

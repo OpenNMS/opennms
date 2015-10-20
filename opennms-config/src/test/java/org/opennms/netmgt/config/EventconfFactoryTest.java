@@ -62,7 +62,7 @@ import org.opennms.core.utils.InetAddressUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.opennms.core.xml.JaxbUtils;
-import org.opennms.netmgt.EventConstants;
+import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.snmp.SyntaxToEvent;
 import org.opennms.netmgt.snmp.SnmpObjId;
@@ -71,6 +71,7 @@ import org.opennms.netmgt.snmp.TrapIdentity;
 import org.opennms.netmgt.xml.eventconf.AlarmData;
 import org.opennms.netmgt.xml.eventconf.Event;
 import org.opennms.netmgt.xml.eventconf.Events;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
@@ -434,7 +435,9 @@ public class EventconfFactoryTest {
     
     //Ensure reload does indeed reload fresh data
     @Test
-    public void testReload() {
+    public void testReload() throws Exception {
+		m_eventConfDao.setConfigResource(new ClassPathResource(getResourceForRelativePath("eventconf-speedtest/eventconf.xml")));
+
         String newUEI="uei.opennms.org/custom/newTestUEI";
         List<Event> events=m_eventConfDao.getEvents(knownUEI1);
         Event event=(Event)events.get(0);

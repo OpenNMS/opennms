@@ -40,9 +40,9 @@ import org.opennms.core.spring.BeanUtils;
 import org.opennms.netmgt.config.EnhancedLinkdConfig;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
+import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.linkd.scheduler.ReadyRunnable;
 import org.opennms.netmgt.linkd.scheduler.Scheduler;
-import org.opennms.netmgt.model.events.EventForwarder;
 import org.opennms.netmgt.model.topology.LinkableSnmpNode;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.slf4j.Logger;
@@ -115,7 +115,7 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
         Assert.notNull(m_nodes);
         scheduleCollection();
 
-        LOG.info("init: ENHANCED LINKD CONFIGURATION INITIALIZED");
+        LOG.info("init: ENHANCED LINKD INITIALIZED");
     }
 
     private void scheduleCollection() {

@@ -32,8 +32,7 @@
 <%@page language="java"
 	contentType="text/html"
 	session="true"
-	import="
-        org.opennms.web.svclayer.ResourceService,
+	import="org.opennms.web.svclayer.api.ResourceService,
         org.opennms.web.servlet.XssRequestWrapper,
         org.springframework.web.context.WebApplicationContext,
       	org.springframework.web.context.support.WebApplicationContextUtils

@@ -29,6 +29,7 @@
 package org.opennms.netmgt.linkd;
 
 import java.util.List;
+import java.util.Set;
 
 import org.opennms.netmgt.model.OnmsArpInterface.StatusType;
 import org.opennms.netmgt.model.topology.LinkableNode;
@@ -41,54 +42,6 @@ import org.opennms.netmgt.model.topology.LinkableSnmpNode;
  * @version $Id: $
  */
 public interface QueryManager {
-
-    public static final int SNMP_IF_TYPE_ETHERNET = 6;
-
-    public static final int SNMP_IF_TYPE_PROP_VIRTUAL = 53;
-
-    public static final int SNMP_IF_TYPE_L2_VLAN = 135;
-
-    public static final int SNMP_IF_TYPE_L3_VLAN = 136;
-
-	/**
-	 * The status of the info in FDB table entry The meanings of the value is
-	 * other(1): none of the following. This would include the case where some
-	 * other MIB object (not the corresponding instance of dot1dTpFdbPort, nor
-	 * an entry in the dot1dStaticTable) is being used to determine if and how
-	 * frames addressed to the value of the corresponding instance of
-	 * dot1dTpFdbAddress are being forwarded.
-	 */
-	public static final int SNMP_DOT1D_FDB_STATUS_OTHER = 1;
-
-	/**
-	 * The status of the info in FDB table entry The status of this entry. The
-	 * meanings of the values are: invalid(2) : this entry is not longer valid
-	 * (e.g., it was learned but has since aged-out), but has not yet been
-	 * flushed from the table.
-	 */
-	public static final int SNMP_DOT1D_FDB_STATUS_INVALID = 2;
-
-	/**
-	 * The status of the info in FDB table entry The status of this entry. The
-	 * meanings of the values are: learned(3) : the value of the corresponding
-	 * instance of dot1dTpFdbPort was learned, and is being used.
-	 */
-	public static final int SNMP_DOT1D_FDB_STATUS_LEARNED = 3;
-
-	/**
-	 * The status of the info in FDB table entry The status of this entry. The
-	 * meanings of the values are: self(4) : the value of the corresponding
-	 * instance of dot1dTpFdbAddress represents one of the bridge's addresses.
-	 * The corresponding instance of dot1dTpFdbPort indicates which of the
-	 * bridge's ports has this address.
-	 */
-	public static final int SNMP_DOT1D_FDB_STATUS_SELF = 4;
-
-	/**
-	 * mgmt(5) : the value of the corresponding instance of dot1dTpFdbAddress is
-	 * also the value of an existing instance of dot1dStaticAddress.
-	 */
-	public static final int SNMP_DOT1D_FDB_STATUS_MGMT = 5;
 
     /**
      * <p>getSnmpNodeList</p>
@@ -122,7 +75,7 @@ public interface QueryManager {
      * @return a {@link org.opennms.netmgt.model.topology.LinkableNode} object.
      * @throws java.sql.SQLException if any.
      */
-    LinkableNode storeSnmpCollection(LinkableNode node, SnmpCollection snmpColl);
+    LinkableNode storeSnmpCollection(LinkableNode node, SnmpCollection snmpColl, Linkd linkd);
     
     /**
      * <p>storeDiscoveryLink</p>
@@ -139,7 +92,7 @@ public interface QueryManager {
      * @param action a char.
      * @throws java.sql.SQLException if any.
      */
-    void update(int nodeid, StatusType action);
+    void update(int nodeid, StatusType action,Set<String> activePackages);
     
     /**
      * <p>updateForInterface</p>
@@ -150,9 +103,6 @@ public interface QueryManager {
      * @param action a char.
      * @throws java.sql.SQLException if any.
      */
-    void updateForInterface(int nodeid, String ipAddr, int ifIndex, StatusType action);
+    void updateForInterface(int nodeid, String ipAddr, int ifIndex, StatusType action,Set<String> activePackages);
     
-    public Linkd getLinkd();
-    public void setLinkd(final Linkd linkd);
-
 }

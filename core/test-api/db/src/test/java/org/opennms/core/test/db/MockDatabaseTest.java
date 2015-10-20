@@ -164,15 +164,14 @@ public class MockDatabaseTest extends TestCase {
         assertEquals(0, m_db.countRows("select * from ipInterface where nodeid = '1'"));
         assertEquals(0, m_db.countRows("select * from ifServices where nodeid = '1'"));
     }
-    
+
     public void testOutage() {
         final MockService svc = m_network.getService(1, "192.168.1.1", "ICMP");
         Event svcLostEvent = MockEventUtil.createNodeLostServiceEvent("TEST", svc);
-        
+
         m_db.writeEvent(svcLostEvent);
         m_db.createOutage(svc, svcLostEvent);
-        m_db.createOutage(svc, svcLostEvent);
-        assertEquals(2, m_db.countOutagesForService(svc));
+        assertEquals(1, m_db.countOutagesForService(svc));
         Querier querier = new Querier(m_db, "select * from outages") {
             @Override
             public void processRow(ResultSet rs) throws SQLException {
@@ -185,10 +184,9 @@ public class MockDatabaseTest extends TestCase {
             }
         };
         querier.execute();
-        assertEquals(2, querier.getCount());
-        
+        assertEquals(1, querier.getCount());
     }
-    
+
     public void testUpdateNodeSequence() {
         int maxNodeId = m_db.getJdbcTemplate().queryForInt("select max(nodeid) from node");
         int nextSeqNum = m_db.getJdbcTemplate().queryForInt("select nextval('nodeNxtId')");

@@ -946,7 +946,7 @@ public class QueuingRrdStrategy implements RrdStrategy<QueuingRrdStrategy.Create
      *
      * @return a {@link org.opennms.netmgt.rrd.RrdStrategy} object.
      */
-    RrdStrategy<Object, Object> getDelegate() {
+    public RrdStrategy<Object, Object> getDelegate() {
         return m_delegate;
     }
 

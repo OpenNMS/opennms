@@ -31,7 +31,7 @@ package org.opennms.netmgt.provision.service;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.opennms.netmgt.model.events.EventForwarder;
+import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Log;
 import org.slf4j.Logger;

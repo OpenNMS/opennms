@@ -9,10 +9,10 @@
 
 ### BEGIN INIT INFO
 # Provides:          opennms
-# Required-Start:    $network $time postgresql
-# Required-Stop:     $network postgresql
-# Should-Start:      $local_fs
-# Should-Stop:       $local_fs
+# Required-Start:    $network $time
+# Required-Stop:     $network
+# Should-Start:      $local_fs postgresql
+# Should-Stop:       $local_fs postgresql
 # Default-Start:     2 3 4 5
 # Default-Stop:      0 1 6
 # Short-Description: OpenNMS - Open Source Network Management System
@@ -36,15 +36,14 @@ if [ -f /etc/default/$NAME ]; then
 	. /etc/default/$NAME
 fi
 
-if [ -z "$JAVA_HOME" ] && [ -e "$OPENNMS_HOME/etc/java.conf" ]; then
-	JAVA_EXE=`cat "$OPENNMS_HOME/etc/java.conf"`
-	if [ -e "$JAVA_EXE" ] && [ -x "$JAVA_EXE" ]; then
-		JAVA_BIN=`dirname "$JAVA_EXE"`
-		JAVA_HOME=`dirname "$JAVA_BIN"`
-		if [ ! -d "$JAVA_HOME" ]; then
-			unset JAVA_HOME
+# Check for JAVA_HOME
+if [ -z "$JAVA_HOME" ]; then
+	for dir in `find /usr/lib/jvm/* -maxdepth 0 -type d | grep java-8 | sort -u -r`; do
+		if [ -d "$dir" -a -f "$dir/lib/tools.jar" ]; then
+			JAVA_HOME="$dir"
+			break
 		fi
-	fi
+    done
 fi
 
 # Check for JAVA_HOME

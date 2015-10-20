@@ -33,12 +33,13 @@ import static org.junit.Assert.assertEquals;
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.http.JUnitHttpServerExecutionListener;
@@ -100,15 +101,18 @@ public class NCSNorthbounderTest {
 
         TestServlet.reset();
 
-        HttpClient client = new DefaultHttpClient();
-        HttpEntity entity = new StringEntity(xml);
-        HttpPost method = new HttpPost("http://localhost:10342/fmpm/restful/NotificationMessageRelay");
-        method.setEntity(entity);
-        HttpResponse response = client.execute(method);
-        assertEquals(200, response.getStatusLine().getStatusCode());
-
-        assertEquals(xml, TestServlet.getPosted());
-
+        CloseableHttpClient client = HttpClientBuilder.create().build();
+        try {
+            HttpEntity entity = new StringEntity(xml);
+            HttpPost method = new HttpPost("http://localhost:10342/fmpm/restful/NotificationMessageRelay");
+            method.setEntity(entity);
+            HttpResponse response = client.execute(method);
+            assertEquals(200, response.getStatusLine().getStatusCode());
+    
+            assertEquals(xml, TestServlet.getPosted());
+        } finally {
+            IOUtils.closeQuietly(client);
+        }
     }
 
 

@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.alarmd.northbounder.syslog;
 
+import java.net.InetAddress;
 import java.util.Collection;
 import java.util.Date;
 import java.util.LinkedList;
@@ -200,6 +201,11 @@ public class TestNodeDao implements NodeDao {
 
 	@Override
 	public List<OnmsNode> findByForeignSource(String foreignSource) {
+		return null;
+	}
+
+	@Override
+	public List<OnmsNode> findByIpAddressAndService(InetAddress ipAddress, String serviceName) {
 		return null;
 	}
 

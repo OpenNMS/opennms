@@ -39,7 +39,7 @@
 				java.util.*,
 				java.net.*,
         org.opennms.core.utils.InetAddressUtils,
-        org.opennms.web.svclayer.ResourceService,
+        org.opennms.web.svclayer.api.ResourceService,
         org.springframework.web.context.WebApplicationContext,
         org.springframework.web.context.support.WebApplicationContextUtils
         "

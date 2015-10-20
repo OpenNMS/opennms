@@ -3,7 +3,7 @@
 
     <!-- HP-UX fileSystemTable resource type -->
     <resourceType name="hpuxFSTable" label="HP-UX Filesystem" resourceLabel="${hpuxFSName} on ${hpuxFSDir}">
-      <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
       <storageStrategy class="org.opennms.netmgt.dao.support.SiblingColumnStorageStrategy">
         <parameter key="sibling-column-name" value="hpuxFSDir" />
 		<parameter key="replace-first" value="s/^-$/_root_fs/" />

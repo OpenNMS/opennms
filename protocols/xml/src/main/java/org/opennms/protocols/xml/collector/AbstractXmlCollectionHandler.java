@@ -42,7 +42,6 @@ import java.net.URLEncoder;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -66,12 +65,12 @@ import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.jsoup.Jsoup;
 import org.opennms.core.spring.BeanUtils;
-import org.opennms.netmgt.collectd.PersistAllSelectorStrategy;
 import org.opennms.netmgt.collection.api.AttributeGroupType;
 import org.opennms.netmgt.collection.api.CollectionAgent;
 import org.opennms.netmgt.collection.api.CollectionException;
 import org.opennms.netmgt.collection.api.CollectionResource;
 import org.opennms.netmgt.collection.api.ServiceCollector;
+import org.opennms.netmgt.collection.support.PersistAllSelectorStrategy;
 import org.opennms.netmgt.config.DataCollectionConfigFactory;
 import org.opennms.netmgt.config.datacollection.PersistenceSelectorStrategy;
 import org.opennms.netmgt.config.datacollection.ResourceType;
@@ -114,9 +113,6 @@ public abstract class AbstractXmlCollectionHandler implements XmlCollectionHandl
 
     /** The RRD Repository. */
     private RrdRepository m_rrdRepository;
-
-    /** The XML resource type Map. */
-    private Map<String, XmlResourceType> m_resourceTypeList = new HashMap<String, XmlResourceType>();
 
     /* (non-Javadoc)
      * @see org.opennms.protocols.xml.collector.XmlCollectionHandler#setServiceName(java.lang.String)
@@ -564,21 +560,17 @@ public abstract class AbstractXmlCollectionHandler implements XmlCollectionHandl
      * @return the XML resource type
      */
     protected XmlResourceType getXmlResourceType(CollectionAgent agent, String resourceType) {
-        if (!m_resourceTypeList.containsKey(resourceType)) {
-            ResourceType rt = DataCollectionConfigFactory.getInstance().getConfiguredResourceTypes().get(resourceType);
-            if (rt == null) {
-                LOG.debug("getXmlResourceType: using default XML resource type strategy.");
-                rt = new ResourceType();
-                rt.setName(resourceType);
-                rt.setStorageStrategy(new StorageStrategy());
-                rt.getStorageStrategy().setClazz(XmlStorageStrategy.class.getName());
-                rt.setPersistenceSelectorStrategy(new PersistenceSelectorStrategy());
-                rt.getPersistenceSelectorStrategy().setClazz(PersistAllSelectorStrategy.class.getName());
-            }
-            XmlResourceType type = new XmlResourceType(agent, rt);
-            m_resourceTypeList.put(resourceType, type);
+        ResourceType rt = DataCollectionConfigFactory.getInstance().getConfiguredResourceTypes().get(resourceType);
+        if (rt == null) {
+            LOG.debug("getXmlResourceType: using default XML resource type strategy.");
+            rt = new ResourceType();
+            rt.setName(resourceType);
+            rt.setStorageStrategy(new StorageStrategy());
+            rt.getStorageStrategy().setClazz(XmlStorageStrategy.class.getName());
+            rt.setPersistenceSelectorStrategy(new PersistenceSelectorStrategy());
+            rt.getPersistenceSelectorStrategy().setClazz(PersistAllSelectorStrategy.class.getName());
         }
-        return m_resourceTypeList.get(resourceType);
+        return new XmlResourceType(agent, rt);
     }
 
 }

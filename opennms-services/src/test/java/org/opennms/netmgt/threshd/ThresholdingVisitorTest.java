@@ -62,7 +62,6 @@ import org.opennms.core.db.DataSourceFactory;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.db.MockDatabase;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.collectd.AliasedResource;
 import org.opennms.netmgt.collectd.GenericIndexResource;
 import org.opennms.netmgt.collectd.GenericIndexResourceType;
@@ -83,24 +82,26 @@ import org.opennms.netmgt.collection.api.CollectionSetVisitor;
 import org.opennms.netmgt.collection.api.ServiceCollector;
 import org.opennms.netmgt.collection.api.ServiceParameters;
 import org.opennms.netmgt.config.DatabaseSchemaConfigFactory;
-import org.opennms.netmgt.config.MibObject;
 import org.opennms.netmgt.config.PollOutagesConfigFactory;
 import org.opennms.netmgt.config.ThreshdConfigFactory;
 import org.opennms.netmgt.config.ThreshdConfigManager;
 import org.opennms.netmgt.config.ThresholdingConfigFactory;
+import org.opennms.netmgt.config.datacollection.MibObject;
+import org.opennms.netmgt.dao.api.IfLabel;
 import org.opennms.netmgt.dao.mock.EventAnticipator;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
-import org.opennms.netmgt.filter.FilterDao;
+import org.opennms.netmgt.events.api.EventConstants;
+import org.opennms.netmgt.events.api.EventIpcManager;
+import org.opennms.netmgt.events.api.EventIpcManagerFactory;
 import org.opennms.netmgt.filter.FilterDaoFactory;
 import org.opennms.netmgt.filter.JdbcFilterDao;
+import org.opennms.netmgt.filter.api.FilterDao;
 import org.opennms.netmgt.mock.MockDataCollectionConfig;
 import org.opennms.netmgt.mock.MockNetwork;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.model.ResourceTypeUtils;
 import org.opennms.netmgt.model.events.EventBuilder;
-import org.opennms.netmgt.model.events.EventIpcManager;
-import org.opennms.netmgt.model.events.EventIpcManagerFactory;
 import org.opennms.netmgt.rrd.RrdRepository;
 import org.opennms.netmgt.snmp.SnmpInstId;
 import org.opennms.netmgt.snmp.SnmpUtils;
@@ -1195,60 +1196,6 @@ public class ThresholdingVisitorTest {
     }
 
     /*
-     * Testing custom ThresholdingSet implementation for in-line Latency thresholds processing (Bug 3448)
-     */
-    @Test
-    public void testBug3488() throws Exception {
-        String ipAddress = "127.0.0.1";
-        setupSnmpInterfaceDatabase(ipAddress, null);
-        LatencyThresholdingSet thresholdingSet = new LatencyThresholdingSet(1, ipAddress, "HTTP", getRepository());
-        assertTrue(thresholdingSet.hasThresholds()); // Global Test
-        Map<String, Double> attributes = new HashMap<String, Double>();
-        attributes.put("http", 200.0);
-        assertTrue(thresholdingSet.hasThresholds(attributes)); // Datasource Test
-
-        List<Event> triggerEvents = new ArrayList<Event>();
-        for (int i=0; i<5; i++)
-            triggerEvents.addAll(thresholdingSet.applyThresholds("http", attributes));
-        assertTrue(triggerEvents.size() == 1);
-
-        addEvent(EventConstants.HIGH_THRESHOLD_EVENT_UEI, "127.0.0.1", "HTTP", 5, 100.0, 50.0, 200.0, "no_ifLabel", "127.0.0.1[http]", "http", "no_ifLabel", null, m_anticipator, m_anticipatedEvents);
-        ThresholdingEventProxy proxy = new ThresholdingEventProxy();
-        proxy.add(triggerEvents);
-        proxy.sendAllEvents();
-        verifyEvents(0);
-    }
-
-    /*
-     * This test uses this files from src/test/resources:
-     * - threshd-configuration-bug3575.xml
-     * - test-thresholds-bug3575.xml
-     */
-    @Test
-    public void testBug3575() throws Exception {
-        initFactories("/threshd-configuration-bug3575.xml","/test-thresholds-bug3575.xml");
-        String ipAddress = "127.0.0.1";
-        String ifName = "eth0";
-        setupSnmpInterfaceDatabase(ipAddress, ifName);
-        LatencyThresholdingSet thresholdingSet = new LatencyThresholdingSet(1, ipAddress, "StrafePing", getRepository());
-        assertTrue(thresholdingSet.hasThresholds());
-        Map<String, Double> attributes = new HashMap<String, Double>();
-        for (double i=1; i<21; i++)
-            attributes.put("ping" + i, 2 * i);
-        attributes.put("loss", 60.0);
-        attributes.put("response-time", 100.0);
-        attributes.put("median", 100.0);
-        assertTrue(thresholdingSet.hasThresholds(attributes));
-        List<Event> triggerEvents = thresholdingSet.applyThresholds("StrafePing", attributes);
-        assertTrue(triggerEvents.size() == 1);
-        addEvent(EventConstants.HIGH_THRESHOLD_EVENT_UEI, "127.0.0.1", "StrafePing", 1, 50.0, 25.0, 60.0, ifName, "127.0.0.1[StrafePing]", "loss", "eth0", null, m_anticipator, m_anticipatedEvents);
-        ThresholdingEventProxy proxy = new ThresholdingEventProxy();
-        proxy.add(triggerEvents);
-        proxy.sendAllEvents();
-        verifyEvents(0);
-    }
-
-    /*
      * This test uses this files from src/test/resources:
      * - threshd-configuration.xml
      * - test-thresholds-bug3428.xml
@@ -1473,118 +1420,6 @@ public class ThresholdingVisitorTest {
 
         EasyMock.verify(agent);
         verifyEvents(1);
-    }
-
-    /*
-     * Testing custom ThresholdingSet implementation for in-line Latency thresholds processing for Pollerd.
-     * 
-     * This test validate that Bug 1582 has been fixed.
-     * ifLabel and ifIndex are set correctly based on Bug 2711
-     */
-    @Test    
-    public void testLatencyThresholdingSet() throws Exception {
-        Integer ifIndex = 1;
-        String ifName = "lo0";
-        setupSnmpInterfaceDatabase("127.0.0.1", ifName);
-
-        LatencyThresholdingSet thresholdingSet = new LatencyThresholdingSet(1, "127.0.0.1", "HTTP", getRepository());
-        assertTrue(thresholdingSet.hasThresholds()); // Global Test
-        Map<String, Double> attributes = new HashMap<String, Double>();
-        attributes.put("http", 90.0);
-        assertTrue(thresholdingSet.hasThresholds(attributes)); // Datasource Test
-        List<Event> triggerEvents = thresholdingSet.applyThresholds("http", attributes);
-        assertTrue(triggerEvents.size() == 0);
-
-        // Test Trigger
-        attributes.put("http", 200.0);
-        for (int i = 1; i < 5; i++) {
-            LOG.debug("testLatencyThresholdingSet: run number {}", i);
-            if (thresholdingSet.hasThresholds(attributes)) {
-                triggerEvents = thresholdingSet.applyThresholds("http", attributes);
-                assertTrue(triggerEvents.size() == 0);
-            }
-        }
-        if (thresholdingSet.hasThresholds(attributes)) {
-            LOG.debug("testLatencyThresholdingSet: run number 5");
-            triggerEvents = thresholdingSet.applyThresholds("http", attributes);
-            assertTrue(triggerEvents.size() == 1);
-        }
-        
-        // Test Rearm
-        List<Event> rearmEvents = null;
-        if (thresholdingSet.hasThresholds(attributes)) {
-            attributes.put("http", 40.0);
-            rearmEvents = thresholdingSet.applyThresholds("http", attributes);
-            assertTrue(rearmEvents.size() == 1);
-        }
-
-        // Validate Events
-        addEvent(EventConstants.HIGH_THRESHOLD_EVENT_UEI, "127.0.0.1", "HTTP", 5, 100.0, 50.0, 200.0, ifName, "127.0.0.1[http]", "http", ifName, ifIndex.toString(), m_anticipator, m_anticipatedEvents);
-        addEvent(EventConstants.HIGH_THRESHOLD_REARM_EVENT_UEI, "127.0.0.1", "HTTP", 5, 100.0, 50.0, 40.0, ifName, "127.0.0.1[http]", "http", ifName, ifIndex.toString(), m_anticipator, m_anticipatedEvents);
-        ThresholdingEventProxy proxy = new ThresholdingEventProxy();
-        proxy.add(triggerEvents);
-        proxy.add(rearmEvents);
-        proxy.sendAllEvents();
-        verifyEvents(0);
-    }
-
-    /*
-     * Testing counter reset.
-     * When a threshold condition increases the violation count, and before reach the trigger, the value of the variable is on rearm
-     * condition, the counter should be reinitialized and should start over again.
-     * 
-     * This test validate that Bug 1582 has been fixed.
-     */
-    @Test    
-    public void testCounterReset() throws Exception {
-        String ifName = "lo0";
-        setupSnmpInterfaceDatabase("127.0.0.1", ifName);
-
-        LatencyThresholdingSet thresholdingSet = new LatencyThresholdingSet(1, "127.0.0.1", "HTTP", getRepository());
-        assertTrue(thresholdingSet.hasThresholds()); // Global Test
-        Map<String, Double> attributes = new HashMap<String, Double>();
-        attributes.put("http", 90.0);
-        assertTrue(thresholdingSet.hasThresholds(attributes)); // Datasource Test
-        List<Event> triggerEvents = thresholdingSet.applyThresholds("http", attributes);
-        assertTrue(triggerEvents.size() == 0);
-
-        // Testing trigger the threshold 3 times
-        attributes.put("http", 200.0);
-        for (int i = 1; i <= 3; i++) {
-            LOG.debug("testLatencyThresholdingSet: ------------------------------------ trigger number {}", i);
-            if (thresholdingSet.hasThresholds(attributes)) {
-                triggerEvents = thresholdingSet.applyThresholds("http", attributes);
-                assertTrue(triggerEvents.size() == 0);
-            }
-        }
-        assertTrue(triggerEvents.size() == 0);
-        
-        // This should reset the counter
-        attributes.put("http", 40.0);
-        LOG.debug("testLatencyThresholdingSet: ------------------------------------ reseting counter");
-        triggerEvents = thresholdingSet.applyThresholds("http", attributes);
-
-        // Increase the counter again two times, no threshold should be generated
-        attributes.put("http", 300.0);
-        for (int i = 4; i <= 5; i++) {
-            LOG.debug("testLatencyThresholdingSet: ------------------------------------ trigger number {}", i);
-            if (thresholdingSet.hasThresholds(attributes)) {
-                triggerEvents = thresholdingSet.applyThresholds("http", attributes);
-                assertTrue(triggerEvents.size() == 0);
-            }
-        }
-        
-        // Increase 3 more times and now, the threshold event should be triggered.
-        for (int i = 6; i <= 8; i++) {
-            LOG.debug("testLatencyThresholdingSet: ------------------------------------ trigger number {}", i);
-            if (thresholdingSet.hasThresholds(attributes)) {
-                triggerEvents = thresholdingSet.applyThresholds("http", attributes);
-                if (i < 8)
-                    assertTrue(triggerEvents.size() == 0);
-            }
-        }
-        
-        assertTrue(triggerEvents.size() == 1);
     }
 
     /*
@@ -1830,10 +1665,10 @@ public class ThresholdingVisitorTest {
         type.setName(resourceTypeName);
         type.setLabel(resourceTypeName);
         org.opennms.netmgt.config.datacollection.StorageStrategy strategy = new org.opennms.netmgt.config.datacollection.StorageStrategy();
-        strategy.setClazz("org.opennms.netmgt.dao.support.IndexStorageStrategy");
+        strategy.setClazz("org.opennms.netmgt.collection.support.IndexStorageStrategy");
         type.setStorageStrategy(strategy);
         org.opennms.netmgt.config.datacollection.PersistenceSelectorStrategy pstrategy = new org.opennms.netmgt.config.datacollection.PersistenceSelectorStrategy();
-        pstrategy.setClazz("org.opennms.netmgt.collectd.PersistAllSelectorStrategy");
+        pstrategy.setClazz("org.opennms.netmgt.collection.support.PersistAllSelectorStrategy");
         type.setPersistenceSelectorStrategy(pstrategy);
         MockDataCollectionConfig dataCollectionConfig = new MockDataCollectionConfig();
         OnmsSnmpCollection collection = new OnmsSnmpCollection(agent, new ServiceParameters(new HashMap<String, Object>()), dataCollectionConfig);

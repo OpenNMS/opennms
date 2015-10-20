@@ -32,7 +32,6 @@ import static org.opennms.core.utils.InetAddressUtils.addr;
 import static org.opennms.core.utils.InetAddressUtils.str;
 
 import java.net.InetAddress;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
@@ -41,20 +40,20 @@ import java.util.List;
 import java.util.Set;
 
 import org.opennms.core.utils.ConfigFileConstants;
-import org.opennms.netmgt.EventConstants;
-import org.opennms.netmgt.capsd.EventUtils;
 import org.opennms.netmgt.config.PollerConfig;
-import org.opennms.netmgt.model.events.EventIpcManager;
-import org.opennms.netmgt.model.events.EventListener;
+import org.opennms.netmgt.events.api.EventConstants;
+import org.opennms.netmgt.events.api.EventIpcManager;
+import org.opennms.netmgt.events.api.EventListener;
+import org.opennms.netmgt.model.events.EventUtils;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.poller.pollables.PollableInterface;
 import org.opennms.netmgt.poller.pollables.PollableNetwork;
 import org.opennms.netmgt.poller.pollables.PollableNode;
 import org.opennms.netmgt.poller.pollables.PollableService;
-import org.opennms.netmgt.utils.XmlrpcUtil;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
 import org.opennms.netmgt.xml.event.Value;
+import org.opennms.netmgt.xmlrpcd.XmlrpcUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -351,12 +350,7 @@ final class PollerEventProcessor implements EventListener {
             }
         }
 
-        Date closeDate;
-        try {
-            closeDate = EventConstants.parseToDate(event.getTime());
-        } catch (ParseException e) {
-            closeDate = new Date();
-        }
+        Date closeDate = event.getTime();
 
         getPoller().getQueryManager().closeOutagesForNode(closeDate, event.getDbid(), nodeId.intValue());
 
@@ -431,12 +425,7 @@ final class PollerEventProcessor implements EventListener {
             }
         }
 
-        Date closeDate;
-        try {
-            closeDate = EventConstants.parseToDate(event.getTime());
-        } catch (ParseException e) {
-            closeDate = new Date();
-        }
+        Date closeDate = event.getTime();
 
         getPoller().getQueryManager().closeOutagesForInterface(closeDate, event.getDbid(), nodeId.intValue(), str(ipAddr));
 
@@ -465,12 +454,7 @@ final class PollerEventProcessor implements EventListener {
         InetAddress ipAddr = event.getInterfaceAddress();
         String service = event.getService();
 
-        Date closeDate;
-        try {
-            closeDate = EventConstants.parseToDate(event.getTime());
-        } catch (ParseException e) {
-            closeDate = new Date();
-        }
+        Date closeDate = event.getTime();
 
         getPoller().getQueryManager().closeOutagesForService(closeDate, event.getDbid(), nodeId.intValue(), str(ipAddr), service);
 
@@ -671,12 +655,7 @@ final class PollerEventProcessor implements EventListener {
             return;
         }
 
-        Date closeDate;
-        try {
-            closeDate = EventConstants.parseToDate(sourceEvent.getTime());
-        } catch (final ParseException e) {
-            closeDate = new Date();
-        }
+        Date closeDate = sourceEvent.getTime();
 
         final Set<Service> databaseServices = new HashSet<>();
 

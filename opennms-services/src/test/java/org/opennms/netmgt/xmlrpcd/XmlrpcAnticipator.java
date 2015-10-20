@@ -306,13 +306,17 @@ public class XmlrpcAnticipator implements XmlRpcHandler {
     public synchronized void anticipateCall(String method, Object... args) {
         Vector<Object> params = new Vector<Object>();
         for(Object arg: args) {
-            params.add(arg);
+            if (arg instanceof Hashtable<?,?>) {
+                params.add(arg);
+            } else {
+                params.add(String.valueOf(arg));
+            }
         }
         m_anticipated.add(new XmlrpcCall(method, params));
     }
 
     // Implements Apache XMLRPC API
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked","rawtypes"})
     @Override
     public Object execute(String method, Vector vector) {
         if (m_webServer == null) {

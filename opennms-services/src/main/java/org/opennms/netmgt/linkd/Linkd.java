@@ -34,34 +34,32 @@ import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.TreeSet;
 
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.utils.InetAddressComparator;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.LinkdConfig;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.config.linkd.Package;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
+import org.opennms.netmgt.events.api.EventConstants;
+import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.linkd.scheduler.ReadyRunnable;
 import org.opennms.netmgt.linkd.scheduler.Scheduler;
 import org.opennms.netmgt.model.OnmsArpInterface.StatusType;
 import org.opennms.netmgt.model.events.EventBuilder;
-import org.opennms.netmgt.model.events.EventForwarder;
 import org.opennms.netmgt.model.topology.AtInterface;
 import org.opennms.netmgt.model.topology.LinkableNode;
 import org.opennms.netmgt.model.topology.LinkableSnmpNode;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
 /**
@@ -101,7 +99,7 @@ public class Linkd extends AbstractServiceDaemon {
      */
     private List<LinkableNode> m_nodes;
 
-    private Map<String, Map<String, List<AtInterface>>> m_macToAtinterface = new HashMap<String, Map<String, List<AtInterface>>>();
+    private Map<String, Map<String, List<AtInterface>>> m_macToAtinterface = new TreeMap<String, Map<String, List<AtInterface>>>();
 
     /**
      * the list of {@link java.net.InetAddress} for which new suspect event is
@@ -139,12 +137,6 @@ public class Linkd extends AbstractServiceDaemon {
      */
     public Linkd() {
         super(LOG_PREFIX);
-        m_nodes = new ArrayList<LinkableNode>();
-        Assert.notNull(m_nodes);
-        m_newSuspectEventsIpAddr = Collections.synchronizedSet(new TreeSet<InetAddress>(new InetAddressComparator()));
-        m_newSuspectEventsIpAddr.add(InetAddressUtils.ONE_TWENTY_SEVEN);
-        m_newSuspectEventsIpAddr.add(InetAddressUtils.ZEROS);
-        Assert.notNull(m_newSuspectEventsIpAddr);
     }
 
     /**
@@ -155,6 +147,14 @@ public class Linkd extends AbstractServiceDaemon {
     @Override
     protected void onInit() {
         BeanUtils.assertAutowiring(this);
+
+        m_nodes = new ArrayList<LinkableNode>();
+        Assert.notNull(m_nodes);
+
+        m_newSuspectEventsIpAddr = Collections.synchronizedSet(new TreeSet<InetAddress>(new InetAddressComparator()));
+        m_newSuspectEventsIpAddr.add(InetAddressUtils.ONE_TWENTY_SEVEN);
+        m_newSuspectEventsIpAddr.add(InetAddressUtils.ZEROS);
+        Assert.notNull(m_newSuspectEventsIpAddr);
 
         Assert.state(m_eventForwarder != null,
                 "must set the eventForwarder property");
@@ -172,7 +172,7 @@ public class Linkd extends AbstractServiceDaemon {
 
         schedule(m_queryMgr.getSnmpNodeList());
 
-        LOG.info("init: LINKD CONFIGURATION INITIALIZED");
+        LOG.info("init: LINKD INITIALIZED");
     }
 
     private void schedule(List<LinkableSnmpNode> nodes) {
@@ -546,7 +546,7 @@ public class Linkd extends AbstractServiceDaemon {
     void deleteNode(int nodeid) {
         LOG.debug("deleteNode: deleting LinkableNode for node {}", nodeid);
 
-        m_queryMgr.update(nodeid, StatusType.DELETED);
+        m_queryMgr.update(nodeid, StatusType.DELETED,getActivePackages());
 
         LinkableSnmpNode node = removeNode(nodeid);
 
@@ -591,7 +591,7 @@ public class Linkd extends AbstractServiceDaemon {
         LOG.debug("deleteInterface: marking table entries as deleted for node {} with IP address {} and ifIndex {}", nodeid, ipAddr, (ifIndex > -1 ? "" + ifIndex : "N/A"));
 
         m_queryMgr.updateForInterface(nodeid, ipAddr, ifIndex,
-                                      StatusType.DELETED);
+                                      StatusType.DELETED, getActivePackages());
 
         // database changed need reload packageiplist
         m_linkdConfig.update();
@@ -601,7 +601,7 @@ public class Linkd extends AbstractServiceDaemon {
     void suspendNodeCollection(int nodeid) {
         LOG.debug("suspendNodeCollection: suspend collection LinkableNode for node {}", nodeid);
 
-        m_queryMgr.update(nodeid, StatusType.INACTIVE);
+        m_queryMgr.update(nodeid, StatusType.INACTIVE,getActivePackages());
 
         if (!isScheduled(nodeid)) {
             LOG.warn("suspendNodeCollection: found null ReadyRunnable");
@@ -641,7 +641,6 @@ public class Linkd extends AbstractServiceDaemon {
      * 
      * @param snmpcoll
      */
-    @Transactional
     public void updateNodeSnmpCollection(final SnmpCollection snmpcoll) {
         LOG.debug("Updating SNMP collection for {}", str(snmpcoll.getTarget()));
         LinkableNode node = removeNode(snmpcoll.getPackageName(),snmpcoll.getTarget());
@@ -655,7 +654,7 @@ public class Linkd extends AbstractServiceDaemon {
             return;
         }
         node = new LinkableNode(snmpNode,snmpcoll.getPackageName());
-        node = m_queryMgr.storeSnmpCollection(node, snmpcoll);
+        node = m_queryMgr.storeSnmpCollection(node, snmpcoll,this);
         if (node != null) {
             synchronized (m_nodes) {
                 m_nodes.add(node);
@@ -860,7 +859,7 @@ public class Linkd extends AbstractServiceDaemon {
         synchronized (m_macToAtinterface) {
             if (!m_macToAtinterface.containsKey(packageName)) {
                 LOG.debug("addAtInterface: creating map for package {}.",packageName);
-                m_macToAtinterface.put(packageName, new HashMap<String, List<AtInterface>>());
+                m_macToAtinterface.put(packageName, new TreeMap<String, List<AtInterface>>());
             }
 
             final List<AtInterface> atis;
@@ -906,13 +905,8 @@ public class Linkd extends AbstractServiceDaemon {
         }
     }
 
-    public String getSource() {
-        return "linkd";
-    }
-
-
     public Set<String> getActivePackages() {
-        Set<String> packages = new HashSet<String>();
+        Set<String> packages = new TreeSet<String>();
         synchronized (m_nodes) {
             for (LinkableNode node: m_nodes)
                 packages.add(node.getPackageName());

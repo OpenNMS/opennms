@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd">
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd">
 	<bean id="rrdConfigurationPropertiesDefaults" class="org.springframework.beans.factory.config.PropertiesFactoryBean">
 		<property name="properties">
 			<props>
@@ -36,7 +36,7 @@
 	<bean id="rrdConfigurationProperties" class="org.springframework.beans.factory.config.PropertiesFactoryBean">
 		<property name="propertiesArray">
 			<list>
-				<ref local="rrdConfigurationPropertiesDefaults" />
+				<ref bean="rrdConfigurationPropertiesDefaults" />
 				<!-- Use the rrd-configuration.properties as a source of configuration parameters for this context -->
 				<bean class="org.opennms.netmgt.rrd.RrdConfig" factory-method="getProperties" />
 			</list>
@@ -45,7 +45,7 @@
 
 	<bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
 		<property name="properties">
-			<ref local="rrdConfigurationProperties" />
+			<ref bean="rrdConfigurationProperties" />
 		</property>
 	</bean>
 
@@ -88,14 +88,14 @@
 		<property name="writeThreadExitDelay" value="${org.opennms.rrd.queuing.writethread.exitDelay}" />
 		<!-- Delegate for queueing strategy -->
 		<constructor-arg>
-			<ref local="basicRrdStrategy" />
+			<ref bean="basicRrdStrategy" />
 		</constructor-arg>
 	</bean>
 
 	<bean id="tcpAndBasicRrdStrategy" class="org.opennms.netmgt.rrd.MultiOutputRrdStrategy" lazy-init="true">
 		<property name="delegates">
 			<list>
-				<ref local="basicRrdStrategy" />
+				<ref bean="basicRrdStrategy" />
 				<bean class="org.opennms.netmgt.rrd.tcp.QueuingTcpRrdStrategy" lazy-init="true">
 					<constructor-arg ref="tcpRrdStrategy" />
 					<constructor-arg value="${org.opennms.rrd.queuing.queueSize}" />
@@ -111,7 +111,7 @@
 	<bean id="tcpAndQueuingRrdStrategy" class="org.opennms.netmgt.rrd.MultiOutputRrdStrategy" lazy-init="true">
 		<property name="delegates">
 			<list>
-				<ref local="queuingRrdStrategy" />
+				<ref bean="queuingRrdStrategy" />
 				<bean class="org.opennms.netmgt.rrd.tcp.QueuingTcpRrdStrategy" lazy-init="true">
 					<constructor-arg ref="tcpRrdStrategy" />
 					<constructor-arg value="${org.opennms.rrd.queuing.queueSize}" />

@@ -152,7 +152,7 @@
             <!-- Secret function 
                     <a href="admin/eventconf/list.jsp">Configure Events</a> 
             -->
-            <li><a href="admin/sendevent.jsp">Send Event</a></li>
+            <li><a href="admin/sendevent.htm">Send Event</a></li>
             <li><a href="admin/notification/index.jsp">Configure Notifications</a></li>
             <li><a href="admin/sched-outages/index.jsp">Scheduled Outages</a></li>
             <li><a href="admin/manageEvents.jsp">Manage Events Configuration</a></li>

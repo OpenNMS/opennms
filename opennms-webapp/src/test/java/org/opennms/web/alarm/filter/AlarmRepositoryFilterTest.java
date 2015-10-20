@@ -65,8 +65,8 @@ import org.springframework.transaction.annotation.Transactional;
         "classpath*:/META-INF/opennms/component-dao.xml",
         "classpath*:/META-INF/opennms/component-service.xml",
         "classpath:/daoWebRepositoryTestContext.xml",
-        "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml",
-        "classpath:/META-INF/opennms/applicationContext-commonConfigs.xml"
+        "classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
+        "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml"
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
@@ -267,7 +267,7 @@ public class AlarmRepositoryFilterTest implements InitializingBean {
         AlarmCriteria criteria = getCriteria(new ServiceFilter(1, null));
         
         OnmsAlarm[] alarms = m_daoAlarmRepo.getMatchingAlarms(AlarmUtil.getOnmsCriteria(criteria));
-        assertEquals(0, alarms.length);
+        assertEquals(1, alarms.length);
     }
     
     @Test
@@ -393,8 +393,9 @@ public class AlarmRepositoryFilterTest implements InitializingBean {
         
         AlarmCriteria criteria = new AlarmCriteria(parmFilter);
         OnmsAlarm[] alarms = m_daoAlarmRepo.getMatchingAlarms(AlarmUtil.getOnmsCriteria(criteria));
-        assertEquals(1, alarms.length);
         
+        // alarm2 and the alarm from DatabasePopulator match this criteria
+        assertEquals(2, alarms.length);
     }
     
     private AlarmCriteria getCriteria(Filter...filters){

@@ -57,25 +57,36 @@ public class AddNodePageTest extends OpenNMSSeleniumTestCase {
 
     @Test
     public void testAddNodePage() throws Exception {
+        // Visit the provisioning page
         provisioningPage();
+
+        // Add a foreign source named REQUISITION_NAME
         m_driver.findElement(By.cssSelector("form[name=takeAction] input[name=groupName]")).sendKeys(REQUISITION_NAME);
         m_driver.findElement(By.cssSelector("form[name=takeAction] input[type=submit]")).click();
+
+        // Synchronize the empty requisition
         findElementByXpath("//input[@value='Synchronize']").click();
 
         frontPage();
         clickMenuItem("name=nav-admin-top", "Quick-Add Node", BASE_URL + "opennms/admin/node/add.htm");
 
+        // Make sure there is a Provision button on the page
         final WebElement submitButton = m_driver.findElement(By.cssSelector("input[type=submit][value=Provision]"));
         assertEquals("Provision", submitButton.getAttribute("value"));
 
+        // Select our test foreign source
         final WebElement selectElement = m_driver.findElement(By.cssSelector("select[name=foreignSource]"));
         final Select sel = new Select(selectElement);
         sel.selectByVisibleText(REQUISITION_NAME);
 
+        // Add an unreachable IP address to the requisition
         findElementByName("ipAddress").sendKeys(m_unreachableIp);
         findElementByName("nodeLabel").sendKeys("AddNodePageTest");
+
+        // Submit
         submitButton.click();
 
+        // Click on the Provisioning Requisitions breadcrumb
         findElementByLink("Provisioning Requisitions").click();
         findElementById("edit_req_anchor_" + REQUISITION_NAME).click();
 

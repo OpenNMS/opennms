@@ -31,25 +31,21 @@ package org.opennms.protocols.http;
 import java.net.URL;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.http.HttpResponse;
+import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
-
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
 import org.opennms.core.test.http.JUnitHttpServerExecutionListener;
 import org.opennms.core.test.http.annotations.JUnitHttpServer;
 import org.opennms.core.test.http.annotations.Webapp;
+import org.opennms.core.web.HttpClientWrapper;
 import org.opennms.core.xml.JaxbUtils;
-import org.opennms.protocols.http.HttpUrlConnection;
 import org.opennms.protocols.xml.config.Content;
 import org.opennms.protocols.xml.config.Request;
-
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -75,13 +71,17 @@ public class HttpUrlConnectionTest {
     })
     public void testServlet() throws Exception {
         String xml = "<person><firstName>Alejandro</firstName></person>";
-        DefaultHttpClient client = new DefaultHttpClient();
-        StringEntity entity = new StringEntity(xml, ContentType.APPLICATION_XML);
-        HttpPost method = new HttpPost("http://localhost:10342/junit/test/sample");
-        method.setEntity(entity);
-        HttpResponse response = client.execute(method);
-        Assert.assertEquals(200, response.getStatusLine().getStatusCode());
-        Assert.assertEquals("OK!", EntityUtils.toString(response.getEntity()));
+        final HttpClientWrapper clientWrapper = HttpClientWrapper.create();
+        try {
+            StringEntity entity = new StringEntity(xml, ContentType.APPLICATION_XML);
+            HttpPost method = new HttpPost("http://localhost:10342/junit/test/sample");
+            method.setEntity(entity);
+            CloseableHttpResponse response = clientWrapper.execute(method);
+            Assert.assertEquals(200, response.getStatusLine().getStatusCode());
+            Assert.assertEquals("OK!", EntityUtils.toString(response.getEntity()));
+        } finally {
+            IOUtils.closeQuietly(clientWrapper);
+        }
     }
 
     /**

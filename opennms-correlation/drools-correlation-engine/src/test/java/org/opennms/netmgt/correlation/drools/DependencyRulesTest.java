@@ -31,7 +31,7 @@ package org.opennms.netmgt.correlation.drools;
 import static org.opennms.core.utils.InetAddressUtils.addr;
 
 import org.junit.Test;
-import org.opennms.netmgt.EventConstants;
+import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.test.mock.EasyMockUtils;
@@ -63,7 +63,7 @@ public class DependencyRulesTest extends CorrelationRulesTestCase {
 
         Event event = createNodeLostServiceEvent( 1, "10.1.1.1", "ICMP" );
         event.setDbid(17);
-		engine.correlate( event );
+	engine.correlate(event);
 
         // event + initialized
         m_anticipatedMemorySize = 18;

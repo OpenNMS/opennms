@@ -31,7 +31,6 @@ package org.opennms.netmgt.collectd;
 import static org.opennms.core.utils.InetAddressUtils.str;
 
 import java.net.InetAddress;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -47,9 +46,7 @@ import java.util.Set;
 import org.apache.commons.lang.StringUtils;
 import org.opennms.core.logging.Logging;
 import org.opennms.core.utils.ConfigFileConstants;
-import org.opennms.netmgt.EventConstants;
-import org.opennms.netmgt.capsd.EventUtils;
-import org.opennms.netmgt.capsd.InsufficientInformationException;
+import org.opennms.core.utils.InsufficientInformationException;
 import org.opennms.netmgt.collection.api.CollectionInitializationException;
 import org.opennms.netmgt.collection.api.CollectionInstrumentation;
 import org.opennms.netmgt.collection.api.ServiceCollector;
@@ -65,14 +62,16 @@ import org.opennms.netmgt.config.collectd.Package;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.NodeDao;
-import org.opennms.netmgt.filter.FilterDao;
+import org.opennms.netmgt.events.api.EventConstants;
+import org.opennms.netmgt.events.api.EventIpcManager;
+import org.opennms.netmgt.events.api.EventListener;
+import org.opennms.netmgt.filter.api.FilterDao;
 import org.opennms.netmgt.model.AbstractEntityVisitor;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.events.EventBuilder;
-import org.opennms.netmgt.model.events.EventIpcManager;
-import org.opennms.netmgt.model.events.EventListener;
+import org.opennms.netmgt.model.events.EventUtils;
 import org.opennms.netmgt.scheduler.LegacyScheduler;
 import org.opennms.netmgt.scheduler.ReadyRunnable;
 import org.opennms.netmgt.scheduler.Scheduler;
@@ -259,7 +258,7 @@ public class Collectd extends AbstractServiceDaemon implements
     /**
      * <p>setEventIpcManager</p>
      *
-     * @param eventIpcManager a {@link org.opennms.netmgt.model.events.EventIpcManager} object.
+     * @param eventIpcManager a {@link org.opennms.netmgt.events.api.EventIpcManager} object.
      */
     public void setEventIpcManager(EventIpcManager eventIpcManager) {
         m_eventIpcManager = eventIpcManager;
@@ -268,7 +267,7 @@ public class Collectd extends AbstractServiceDaemon implements
     /**
      * <p>getEventIpcManager</p>
      *
-     * @return a {@link org.opennms.netmgt.model.events.EventIpcManager} object.
+     * @return a {@link org.opennms.netmgt.events.api.EventIpcManager} object.
      */
     public EventIpcManager getEventIpcManager() {
         return m_eventIpcManager;
@@ -291,8 +290,6 @@ public class Collectd extends AbstractServiceDaemon implements
                     public void run() {
                         try {
                             scheduleExistingInterfaces();
-                        } catch (SQLException e) {
-                            LOG.error("start: Failed to schedule existing interfaces", e);
                         } finally {
                             setSchedulingCompleted(true);
                         }
@@ -357,11 +354,8 @@ public class Collectd extends AbstractServiceDaemon implements
 
     /**
      * Schedule existing interfaces for data collection.
-     * 
-     * @throws SQLException
-     *             if database errors encountered.
      */
-    private void scheduleExistingInterfaces() throws SQLException {
+    private void scheduleExistingInterfaces() {
         
         instrumentation().beginScheduleExistingInterfaces();
         try {
@@ -576,6 +570,12 @@ public class Collectd extends AbstractServiceDaemon implements
                 continue;
             }
 
+            // Ensure that the package is not a remote package
+            if (wpkg.isRemote()) {
+                LOG.debug("getSpecificationsForInterface: address/service: {}/{} not scheduled, package {} is a remote package.", iface, svcName, wpkg.getName());
+                continue;
+            }
+
             // Is the interface in the package?
             if (!m_collectdConfigFactory.interfaceInPackage(iface, wpkg)) {
                 LOG.debug("getSpecificationsForInterface: address/service: {}/{} not scheduled, interface does not belong to package: {}", iface, svcName, wpkg.getName());
@@ -730,7 +730,7 @@ public class Collectd extends AbstractServiceDaemon implements
     /**
      * <p>handleInsufficientInfo</p>
      *
-     * @param e a {@link org.opennms.netmgt.capsd.InsufficientInformationException} object.
+     * @param e a {@link org.opennms.core.utils.InsufficientInformationException} object.
      */
     protected void handleInsufficientInfo(InsufficientInformationException e) {
         LOG.info(e.getMessage());
@@ -1476,7 +1476,7 @@ public class Collectd extends AbstractServiceDaemon implements
     /**
      * <p>setFilterDao</p>
      *
-     * @param dao a {@link org.opennms.netmgt.filter.FilterDao} object.
+     * @param dao a {@link org.opennms.netmgt.filter.api.FilterDao} object.
      */
     void setFilterDao(FilterDao dao) {
         m_filterDao = dao;

@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+  xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+  xsi:schemaLocation="
+    http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd
+    http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd
+  ">
+
+  <changeSet author="ranger@opennms.org" id="1.13.4-minion-base">
+
+    <createTable tableName="minions">
+      <column name="id" type="varchar(36)">
+        <constraints nullable="false" primaryKey="true" primaryKeyName="pk_minions" />
+      </column>
+      <column name="location" type="text">
+        <constraints nullable="false" />
+      </column>
+      <column name="status" type="text" />
+      <column name="last_updated" type="DATETIME" defaultValueDate="CURRENT_TIMESTAMP" />
+    </createTable>
+
+    <createTable tableName="minions_properties">
+      <column name="id" type="varchar(36)">
+        <constraints nullable="false" />
+      </column>
+      <column name="key" type="text">
+        <constraints nullable="false" />
+      </column>
+      <column name="value" type="text" />
+    </createTable>
+
+    <addForeignKeyConstraint constraintName="fk_minions_properties" onDelete="CASCADE"
+      baseTableName="minions_properties" baseColumnNames="id"
+      referencedTableName="minions" referencedColumnNames="id" />
+
+    <createIndex tableName="minions_properties" indexName="minions_properties_unique_idx" unique="true">
+      <column name="id" />
+      <column name="key" />
+    </createIndex>
+
+    <rollback>
+      <dropTable tableName="minions_properties" />
+      <dropTable tableName="minions" />
+    </rollback>
+
+  </changeSet>
+
+  <changeSet author="ranger@opennms.org" id="1.13.4-add-primary-key-to-minions-properties">
+    <renameColumn tableName="minions_properties" oldColumnName="id" newColumnName="minion_id" />
+
+    <addColumn tableName="minions_properties">
+      <column name="id" type="integer" defaultValueComputed="NEXTVAL('opennmsnxtid')">
+        <constraints nullable="false" />
+      </column>
+    </addColumn>
+
+    <addPrimaryKey tableName="minions_properties" columnNames="id" constraintName="pk_minions_properties_id" />        
+
+    <rollback>
+      <dropPrimaryKey tableName="minions_properties" constraintName="pk_minions_properties_id" />
+      <dropColumn tableName="minions_properties" columnName="id" />
+      <renameColumn tableName="minions_properties" oldColumnName="minion_id" newColumnName="id" />
+    </rollback>
+  </changeSet>
+
+</databaseChangeLog>

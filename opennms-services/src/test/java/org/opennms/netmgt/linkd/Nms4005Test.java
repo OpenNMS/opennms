@@ -28,12 +28,12 @@
 
 package org.opennms.netmgt.linkd;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.opennms.netmgt.nb.NmsNetworkBuilder.R1_NAME;
 import static org.opennms.netmgt.nb.NmsNetworkBuilder.R2_NAME;
 import static org.opennms.netmgt.nb.NmsNetworkBuilder.R3_NAME;
 import static org.opennms.netmgt.nb.NmsNetworkBuilder.R4_NAME;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.Collections;

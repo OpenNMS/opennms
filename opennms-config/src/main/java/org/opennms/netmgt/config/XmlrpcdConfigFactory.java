@@ -45,11 +45,11 @@ import org.opennms.core.utils.ConfigFileConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.opennms.core.xml.CastorUtils;
-import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.xmlrpcd.ExternalServers;
 import org.opennms.netmgt.config.xmlrpcd.SubscribedEvent;
 import org.opennms.netmgt.config.xmlrpcd.Subscription;
 import org.opennms.netmgt.config.xmlrpcd.XmlrpcdConfiguration;
+import org.opennms.netmgt.events.api.EventConstants;
 
 /**
  * This is the singleton class used to load the configuration for the OpenNMS

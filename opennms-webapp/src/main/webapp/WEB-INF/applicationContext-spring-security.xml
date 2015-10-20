@@ -2,8 +2,8 @@
 <beans:beans xmlns="http://www.springframework.org/schema/security"
   xmlns:beans="http://www.springframework.org/schema/beans"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
-              http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.1.xsd"> 
+  xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+              http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.2.xsd"> 
   
   <!-- Only use BASIC auth for the RESTful APIs -->
   <http pattern="/rest/**" realm="OpenNMS Realm">
@@ -24,6 +24,9 @@
 
     <!-- Restrict access to SNMP configuration to ROLE_REST and ROLE_ADMIN only -->
     <intercept-url pattern="/rest/snmpConfig/**" access="ROLE_REST,ROLE_ADMIN"/>
+
+    <!-- Allow users to POST to the Measurements API, which is read-only -->
+    <intercept-url pattern="/rest/measurements" method="POST" access="ROLE_REST,ROLE_ADMIN,ROLE_USER"/>
 
     <!-- read-only calls should be allowed for any user -->
     <intercept-url pattern="/rest/**" method="GET" access="ROLE_REST,ROLE_ADMIN,ROLE_MOBILE,ROLE_USER"/>
@@ -73,6 +76,8 @@
     
     <intercept-url pattern="/frontpage.htm" access="ROLE_USER,ROLE_DASHBOARD" />
     <intercept-url pattern="/dashboard.jsp" access="ROLE_USER,ROLE_DASHBOARD" />
+    <intercept-url pattern="/osgi/vaadin-surveillance-views/**" access="ROLE_USER,ROLE_DASHBOARD" />
+    <intercept-url pattern="/osgi/VAADIN/**" access="ROLE_USER,ROLE_DASHBOARD" />
     <intercept-url pattern="/gwt.js" access="ROLE_USER,ROLE_DASHBOARD" />
     <intercept-url pattern="/surveillanceservice.gwt" access="ROLE_USER,ROLE_DASHBOARD" />
     <intercept-url pattern="/graph/graph.png" access="ROLE_USER,ROLE_DASHBOARD" />

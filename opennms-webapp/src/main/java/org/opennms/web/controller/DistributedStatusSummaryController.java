@@ -38,7 +38,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.opennms.web.svclayer.DistributedStatusService;
-import org.opennms.web.svclayer.SimpleWebTable;
+import org.opennms.web.svclayer.model.SimpleWebTable;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.AbstractController;
 

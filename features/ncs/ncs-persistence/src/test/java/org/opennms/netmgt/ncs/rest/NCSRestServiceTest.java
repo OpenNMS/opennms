@@ -43,9 +43,9 @@ import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.opennms.core.test.MockLogAppender;
-import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.dao.mock.EventAnticipator;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
+import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.ncs.NCSComponent;
 import org.opennms.netmgt.model.ncs.NCSComponentRepository;
@@ -191,7 +191,7 @@ public class NCSRestServiceTest extends AbstractSpringJerseyRestTestCase {
 
 	@Override
 	protected void afterServletStart() throws Exception {
-		m_eventIpcManager = getWebAppContext().getBean(MockEventIpcManager.class);
+		m_eventIpcManager = getWebAppContext().getBean("eventProxy", MockEventIpcManager.class);
 		m_eventAnticipator = m_eventIpcManager.getEventAnticipator();
 		final NCSComponentService service = getWebAppContext().getBean(NCSComponentService.class);
 		service.setEventProxy(m_eventIpcManager);

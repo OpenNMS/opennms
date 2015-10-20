@@ -224,7 +224,7 @@
             </div>
           </c:if>
           <!-- Button bar -->
-          <div clas="btn-group">
+          <div class="btn-group">
             <button class="btn btn-default" type="button" onclick="exitReport()">Exit Report Viewer</button>
             <c:if test="${!empty timeSpan || !empty graphType}">
               <button class="btn btn-default" type="button" onclick="updateReport()">Update Report View</button>

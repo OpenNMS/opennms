@@ -172,8 +172,8 @@ public class XmpMonitor extends AbstractServiceMonitor {
         if (parameters != null) {
             retry = ParameterMap.getKeyedInteger(parameters, "retry", protoConfig.hasRetry() ? protoConfig.getRetry() : DEFAULT_RETRY);
             timeout = ParameterMap.getKeyedInteger(parameters, "timeout", protoConfig.hasTimeout() ? protoConfig.getTimeout() : DEFAULT_TIMEOUT);
-            port = ParameterMap.getKeyedInteger(parameters, "port", DEFAULT_PORT);
-            authenUser = ParameterMap.getKeyedString(parameters, "authenUser", DEFAULT_AUTHEN_USER);
+            port = ParameterMap.getKeyedInteger(parameters, "port", protoConfig.hasPort() ? protoConfig.getPort() : DEFAULT_PORT);
+            authenUser = ParameterMap.getKeyedString(parameters, "authenUser", (protoConfig.getAuthenUser() != null) ? protoConfig.getAuthenUser() : DEFAULT_AUTHEN_USER);
             requestType = ParameterMap.getKeyedString(parameters, "request-type", DEFAULT_REQUEST_TYPE);
             mib = ParameterMap.getKeyedString(parameters, "mib", DEFAULT_REQUEST_MIB);
             table = ParameterMap.getKeyedString(parameters, "table", DEFAULT_REQUEST_TABLE);

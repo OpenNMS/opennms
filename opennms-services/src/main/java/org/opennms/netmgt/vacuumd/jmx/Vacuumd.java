@@ -28,8 +28,8 @@
 
 package org.opennms.netmgt.vacuumd.jmx;
 
-import org.opennms.netmgt.model.events.EventIpcManager;
-import org.opennms.netmgt.model.events.EventIpcManagerFactory;
+import org.opennms.netmgt.events.api.EventIpcManager;
+import org.opennms.netmgt.events.api.EventIpcManagerFactory;
 
 /**
  * Implementws the VacuumdMBead interface and delegeates the mbean

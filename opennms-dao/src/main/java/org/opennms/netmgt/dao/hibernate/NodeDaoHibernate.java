@@ -28,8 +28,10 @@
 
 package org.opennms.netmgt.dao.hibernate;
 
+import java.net.InetAddress;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
@@ -40,6 +42,11 @@ import java.util.Map;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.transform.ResultTransformer;
+import org.opennms.core.criteria.Alias;
+import org.opennms.core.criteria.Alias.JoinType;
+import org.opennms.core.criteria.Order;
+import org.opennms.core.criteria.restrictions.EqRestriction;
+import org.opennms.core.criteria.restrictions.NeRestriction;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsDistPoller;
@@ -322,7 +329,7 @@ public class NodeDaoHibernate extends AbstractDaoHibernate<OnmsNode, Integer> im
     @SuppressWarnings("unchecked")
     @Override
     public Map<String, Integer> getForeignIdToNodeIdMap(String foreignSource) {
-        List<Object[]> pairs = getHibernateTemplate().find("select n.id, n.foreignId from OnmsNode n where n.foreignSource = ?", foreignSource);
+        List<Object[]> pairs = (List<Object[]>)getHibernateTemplate().find("select n.id, n.foreignId from OnmsNode n where n.foreignSource = ?", foreignSource);
         Map<String, Integer> foreignIdMap = new HashMap<String, Integer>();
         for (Object[] pair : pairs) {
             foreignIdMap.put((String)pair[1], (Integer)pair[0]);
@@ -376,6 +383,25 @@ public class NodeDaoHibernate extends AbstractDaoHibernate<OnmsNode, Integer> im
     @Override
     public List<OnmsNode> findAllProvisionedNodes() {
         return find("from OnmsNode n where n.foreignSource is not null");
+    }
+
+    @Override
+    public List<OnmsNode> findByIpAddressAndService(InetAddress ipAddress, String serviceName) {
+        final org.opennms.core.criteria.Criteria criteria = new org.opennms.core.criteria.Criteria(OnmsNode.class)
+        .setAliases(Arrays.asList(new Alias[] {
+                new Alias("ipInterfaces","ipInterfaces", JoinType.LEFT_JOIN),
+                new Alias("ipInterfaces.monitoredServices","monitoredServices", JoinType.LEFT_JOIN),
+                new Alias("monitoredServices.serviceType","serviceType", JoinType.LEFT_JOIN)
+        }))
+        .addRestriction(new EqRestriction("ipInterfaces.ipAddress", ipAddress))
+        //TODO: Replace D with a constant
+        .addRestriction(new NeRestriction("ipInterfaces.isManaged", "D"))
+        .addRestriction(new EqRestriction("serviceType.name", serviceName))
+        .setOrders(Arrays.asList(new Order[] {
+                Order.desc("id")
+        }));
+
+        return findMatching(criteria);
     }
 
     /** {@inheritDoc} */

@@ -30,8 +30,8 @@ package org.opennms.features.topology.app.internal.ui;
 
 
 import java.util.Collection;
+import java.util.Hashtable;
 import java.util.List;
-import java.util.Properties;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -314,7 +314,7 @@ public class SearchBox extends AbstractComponent implements SelectionListener, G
             return mapToSuggestions(results);
         }
         
-        List<SearchProvider> providers = m_serviceManager.getServices(SearchProvider.class, null, new Properties());
+        List<SearchProvider> providers = m_serviceManager.getServices(SearchProvider.class, null, new Hashtable<String,Object>());
         LOG.debug("SearchBox->getQueryResults: service manager reports {} SearchProviders.", providers.size());
         
 

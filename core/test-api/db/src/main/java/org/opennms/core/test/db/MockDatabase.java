@@ -30,20 +30,18 @@ package org.opennms.core.test.db;
 
 import static org.opennms.core.utils.InetAddressUtils.str;
 
-import java.net.InetAddress;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
-import java.text.ParseException;
 import java.util.Collection;
-import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.Querier;
 import org.opennms.core.utils.SingleResultQuerier;
-import org.opennms.netmgt.EventConstants;
+import org.opennms.netmgt.events.api.EventParameterUtils;
+import org.opennms.netmgt.events.api.EventWriter;
 import org.opennms.netmgt.mock.MockInterface;
 import org.opennms.netmgt.mock.MockNetwork;
 import org.opennms.netmgt.mock.MockNode;
@@ -53,8 +51,6 @@ import org.opennms.netmgt.mock.MockVisitor;
 import org.opennms.netmgt.mock.MockVisitorAdapter;
 import org.opennms.netmgt.mock.Outage;
 import org.opennms.netmgt.model.OnmsSeverity;
-import org.opennms.netmgt.model.events.EventWriter;
-import org.opennms.netmgt.model.events.Parameter;
 import org.opennms.netmgt.xml.event.Event;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -124,21 +120,22 @@ public class MockDatabase extends TemporaryDatabasePostgreSQL implements EventWr
     }
     
     public void writeNode(MockNode node) {
+        LOG.info("Inserting node \"{}\" into database with ID {}", node.getLabel(), node.getNodeId());
         Object[] values = { Integer.valueOf(node.getNodeId()), node.getLabel(), new Timestamp(System.currentTimeMillis()), "A" };
         update("insert into node (dpName, nodeID, nodeLabel, nodeCreateTime, nodeType) values ('localhost', ?, ?, ?, ?);", values);
-        
     }
 
     public void writeInterface(MockInterface iface) {
+        LOG.info("Inserting interface into database with IP address {}", iface.getAddress());
         writeSnmpInterface(iface);
-		Object[] values = { Integer.valueOf(iface.getNodeId()), str(iface.getAddress()), iface.getIfIndex(), (iface.getIfIndex() == 1 ? "P" : "N"), "A" };
+        Object[] values = { Integer.valueOf(iface.getNodeId()), str(iface.getAddress()), iface.getIfIndex(), (iface.getIfIndex() == 1 ? "P" : "N"), "M" };
         update("insert into ipInterface (nodeID, ipAddr, ifIndex, isSnmpPrimary, isManaged) values (?, ?, ?, ?, ?);", values);
     }
 
     public void writeSnmpInterface(MockInterface iface) {
         LOG.info("Inserting into snmpInterface {} {} {}", Integer.valueOf(iface.getNodeId()), iface.getIfAlias(), iface.getIfIndex() );
-        Object[] values = { Integer.valueOf(iface.getNodeId()), iface.getIfAlias(), iface.getIfIndex() };
-        update("insert into snmpInterface (nodeID, snmpifAlias, snmpIfIndex) values (?, ?, ?);", values);
+        Object[] values = { Integer.valueOf(iface.getNodeId()), iface.getIfAlias(), iface.getIfAlias(), iface.getIfIndex() };
+        update("insert into snmpInterface (nodeID, snmpifAlias, snmpifDescr, snmpIfIndex) values (?, ?, ?, ?);", values);
     }
 
     public void writeService(MockService svc) {
@@ -147,8 +144,8 @@ public class MockDatabase extends TemporaryDatabasePostgreSQL implements EventWr
         if (serviceId == null) {
             svc.setId(getNextServiceId());
             Object[] svcValues = { svc.getId(), svcName };
-            update("insert into service (serviceID, serviceName) values (?, ?);", svcValues);
             LOG.info("Inserting service \"{}\" into database with ID {}", svcName, svc.getId());
+            update("insert into service (serviceID, serviceName) values (?, ?);", svcValues);
         } else {
             svc.setId(serviceId);
         }
@@ -158,9 +155,9 @@ public class MockDatabase extends TemporaryDatabasePostgreSQL implements EventWr
     }
 
     public void writePathOutage(MockPathOutage out) {
-    	LOG.info("Inserting into pathoutage {} {} {}" ,out.getNodeId(), InetAddressUtils.str(out.getIpAddress()), out.getServiceName());
-    	Object[] values = { Integer.valueOf(out.getNodeId()), InetAddressUtils.str(out.getIpAddress()), out.getServiceName() };
-    	update("insert into pathoutage (nodeid, criticalpathip, criticalpathservicename) values (?, ?, ?);", values);
+        LOG.info("Inserting into pathoutage {} {} {}" ,out.getNodeId(), InetAddressUtils.str(out.getIpAddress()), out.getServiceName());
+        Object[] values = { Integer.valueOf(out.getNodeId()), InetAddressUtils.str(out.getIpAddress()), out.getServiceName() };
+        update("insert into pathoutage (nodeid, criticalpathip, criticalpathservicename) values (?, ?, ?);", values);
     }
 
     public String getNextOutageIdStatement() {
@@ -217,7 +214,7 @@ public class MockDatabase extends TemporaryDatabasePostgreSQL implements EventWr
     }
 
     public void createOutage(MockService svc, Event svcLostEvent) {
-        createOutage(svc, svcLostEvent.getDbid(), convertEventTimeToTimeStamp(svcLostEvent.getTime()));
+        createOutage(svc, svcLostEvent.getDbid(), new Timestamp(svcLostEvent.getTime().getTime()));
     }
 
     public void createOutage(MockService svc, int eventId, Timestamp time) {
@@ -235,7 +232,7 @@ public class MockDatabase extends TemporaryDatabasePostgreSQL implements EventWr
     }
     
     public void resolveOutage(MockService svc, Event svcRegainEvent) {
-        resolveOutage(svc, svcRegainEvent.getDbid(), convertEventTimeToTimeStamp(svcRegainEvent.getTime()));
+        resolveOutage(svc, svcRegainEvent.getDbid(), new Timestamp(svcRegainEvent.getTime().getTime()));
     }        
 
     public void resolveOutage(MockService svc, int eventId, Timestamp timestamp) {
@@ -249,17 +246,6 @@ public class MockDatabase extends TemporaryDatabasePostgreSQL implements EventWr
                };
         
         update("UPDATE outages set svcRegainedEventID=?, ifRegainedService=? where (nodeid = ? AND ipAddr = ? AND serviceID = ? and (ifRegainedService IS NULL));", values);
-    }
-    
-
-    
-    public Timestamp convertEventTimeToTimeStamp(String time) {
-        try {
-            Date date = EventConstants.parseToDate(time);
-            return new Timestamp(date.getTime());
-        } catch (ParseException e) {
-            throw new RuntimeException("Invalid date format "+time, e);
-        }
     }
 
     /**
@@ -276,8 +262,8 @@ public class MockDatabase extends TemporaryDatabasePostgreSQL implements EventWr
                 eventId,
                 e.getSource(),
                 e.getUei(),
-                convertEventTimeToTimeStamp(e.getCreationTime()),
-                convertEventTimeToTimeStamp(e.getTime()),
+                new Timestamp(e.getCreationTime().getTime()),
+                new Timestamp(e.getTime().getTime()),
                 Integer.valueOf(OnmsSeverity.get(e.getSeverity()).getId()),
                 (e.hasNodeid() ? new Long(e.getNodeid()) : null),
                 e.getInterface(),
@@ -287,7 +273,7 @@ public class MockDatabase extends TemporaryDatabasePostgreSQL implements EventWr
                 "Y",
                 e.getTticket() == null ? "" : e.getTticket().getContent(),
                 Integer.valueOf(e.getTticket() == null ? "0" : e.getTticket().getState()),
-                Parameter.format(e),
+                EventParameterUtils.format(e),
                 e.getLogmsg() == null? null : e.getLogmsg().getContent()
         };
         e.setDbid(eventId.intValue());

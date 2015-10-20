@@ -28,8 +28,6 @@
 
 package org.opennms.web.element;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.EnumMap;

@@ -30,7 +30,6 @@ package org.opennms.features.topology.app.internal.operations;
 
 import java.util.List;
 
-import com.vaadin.ui.UI;
 import org.opennms.features.topology.api.Operation;
 import org.opennms.features.topology.api.OperationContext;
 import org.opennms.features.topology.api.OperationContext.DisplayLocation;

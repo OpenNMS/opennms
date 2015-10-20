@@ -133,17 +133,65 @@ public class InterfaceSnmpResourceType implements OnmsResourceType {
         if (node == null) {
             throw new ObjectRetrievalFailureException(OnmsNode.class, Integer.toString(nodeId), "Could not find node with node ID " + nodeId, null);
         }
-        
+
         File parent = getParentResourceDirectory(Integer.toString(nodeId), true);
         return OnmsResource.sortIntoResourceList(populateResourceList(parent, null, node, false));
-        
     }
-    
+
+    /** {@inheritDoc} */
+    @Override
+    public OnmsResource getChildByName(final OnmsResource parent, final String name) {
+        if (parent.getResourceType() instanceof DomainResourceType) {
+            // Load all of the resources and search when dealing with domains.
+            // This is not efficient, but resources of this type should be sparse.
+            for (final OnmsResource resource : getResourcesForDomain(parent.getName())) {
+                if (resource.getName().equals(name)) {
+                    return resource;
+                }
+            }
+            throw new ObjectRetrievalFailureException(OnmsResource.class, "No child with name '" + name + "' found on '" + parent + "'");
+        }
+
+        // Grab the node entity
+        final OnmsNode node = ResourceTypeUtils.getNodeFromResource(parent);
+
+        // Determine the parent folder
+        File parentFolder = null;
+        File relPath = null;
+        Boolean isForeign = ResourceTypeUtils.isStoreByForeignSource();
+
+        if (isForeign) {
+            relPath = new File(ResourceTypeUtils.FOREIGN_SOURCE_DIRECTORY, node.getForeignSource() + File.separator + node.getForeignId());
+            parentFolder = getParentResourceDirectory(relPath.toString(), true);;
+        } else {
+            parentFolder = getParentResourceDirectory(Integer.toString(node.getId()), true);
+        }
+
+        // Verify that the requested resource exists
+        final File resourceFolder = new File(parentFolder, name);
+        if (!resourceFolder.isDirectory()) {
+            throw new ObjectRetrievalFailureException(OnmsResource.class, "No resource with name '" + name + "' found.");
+        }
+
+        // Leverage the existing function for retrieving the resource list
+        final List<OnmsResource> resources = populateResourceList(parentFolder, relPath, new File[] {resourceFolder}, node, isForeign);
+        if (resources.size() != 1) {
+            throw new ObjectRetrievalFailureException(OnmsResource.class, "No resource with name '" + name + "' found.");
+        }
+
+        final OnmsResource resource = resources.get(0);
+        resource.setParent(parent);
+        return resource;
+    }
+
     private List<OnmsResource> populateResourceList(File parent, File relPath, OnmsNode node, Boolean isForeign) {
+        final File[] intfDirs = parent.listFiles(RrdFileConstants.INTERFACE_DIRECTORY_FILTER);
+        return populateResourceList(parent, relPath, intfDirs, node, isForeign);
+    }
+
+    private List<OnmsResource> populateResourceList(File parent, File relPath, File[] intfDirs, OnmsNode node, Boolean isForeign) {
             
         ArrayList<OnmsResource> resources = new ArrayList<OnmsResource>();
-
-        File[] intfDirs = parent.listFiles(RrdFileConstants.INTERFACE_DIRECTORY_FILTER);
 
         Set<OnmsSnmpInterface> snmpInterfaces = node.getSnmpInterfaces();
         Map<String, OnmsSnmpInterface> intfMap = new HashMap<String, OnmsSnmpInterface>();

@@ -39,7 +39,7 @@
     org.opennms.core.utils.InetAddressUtils,
     org.opennms.netmgt.model.OnmsNode,
 		org.opennms.web.element.*,
-		org.opennms.web.svclayer.ResourceService,
+		org.opennms.web.svclayer.api.ResourceService,
 		org.springframework.web.context.WebApplicationContext,
 		org.springframework.web.context.support.WebApplicationContextUtils
 "%>

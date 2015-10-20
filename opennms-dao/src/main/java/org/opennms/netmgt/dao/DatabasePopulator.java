@@ -112,13 +112,13 @@ import org.springframework.transaction.support.TransactionOperations;
  */
 public class DatabasePopulator {
 	
-	public static interface Extension<T extends OnmsDao> {
+	public static interface Extension<T extends OnmsDao<?,?>> {
 		DaoSupport<T> getDaoSupport();
 		void onPopulate(DatabasePopulator populator, T dao);
 		void onShutdown(DatabasePopulator populator, T dao);
 	}
 	
-	public static class DaoSupport<T extends OnmsDao> {
+	public static class DaoSupport<T extends OnmsDao<?,?>> {
 		private final Class<T> daoClass;
 		private final T daoObject;
 		
@@ -128,7 +128,7 @@ public class DatabasePopulator {
 		}
 		
 		public Class<T> getDaoClass() {
-			return this.daoClass;
+			return (Class<T>)this.daoClass;
 		}
 		
 		public T getDao() {
@@ -168,10 +168,10 @@ public class DatabasePopulator {
     private boolean m_populateInSeparateTransaction = true;
     private final List<Extension> extensions = new ArrayList<Extension>();
     
-    private Map<Class<? super OnmsDao>, OnmsDao> daoRegistry = new HashMap<Class<? super OnmsDao>, OnmsDao>();
+    private Map<Class<? super OnmsDao<?,?>>, OnmsDao<?,?>> daoRegistry = new HashMap<Class<? super OnmsDao<?,?>>, OnmsDao<?,?>>();
     
-    public <T extends OnmsDao> T lookupDao(Class<? super OnmsDao> daoClass) {
-    	for (Class<? super OnmsDao> eachDaoClass : daoRegistry.keySet()) {
+    public <T extends OnmsDao<?,?>> T lookupDao(Class<? super OnmsDao<?,?>> daoClass) {
+    	for (Class<? super OnmsDao<?,?>> eachDaoClass : daoRegistry.keySet()) {
     		if (eachDaoClass.isAssignableFrom(daoClass)) {
     			return (T)daoRegistry.get(eachDaoClass);
     		}
@@ -179,10 +179,10 @@ public class DatabasePopulator {
     	return null;
     }
 
-    public void registerDao(Class<? super OnmsDao> daoClass, OnmsDao dao) {
+    public void registerDao(Class<? super OnmsDao<?,?>> daoClass, OnmsDao<?,?> dao) {
     	if (dao == null || daoClass == null) return;
     	// check if not already added
-    	for (Class<? super OnmsDao> eachDaoClass : daoRegistry.keySet()) {
+    	for (Class<? super OnmsDao<?,?>> eachDaoClass : daoRegistry.keySet()) {
     		if (eachDaoClass.isAssignableFrom(daoClass)) {
     			return; // a super class for this is already added (ignore)
     		}
@@ -249,11 +249,15 @@ public class DatabasePopulator {
         for (final OnmsServiceType service : m_serviceTypeDao.findAll()) {
             m_serviceTypeDao.delete(service);
         }
+        for (final OnmsCategory category : m_categoryDao.findAll()) {
+            m_categoryDao.delete(category);
+        }
+        
         
         LOG.debug("= DatabasePopulatorExtension Reset Starting =");
     	for (Extension eachExtension : extensions) {
     			DaoSupport daoSupport = eachExtension.getDaoSupport();
-    			OnmsDao dao = daoSupport != null && daoSupport.getDaoClass() != null ? lookupDao(daoSupport.getDaoClass()) : null;
+    			OnmsDao<?,?> dao = daoSupport != null && daoSupport.getDaoClass() != null ? lookupDao(daoSupport.getDaoClass()) : null;
 
     			eachExtension.onShutdown(this, dao);
     			if (dao != null) {
@@ -312,6 +316,8 @@ public class DatabasePopulator {
         setNode6(node6);
         
         final OnmsEvent event = buildEvent(distPoller);
+        event.setEventCreateTime(new Date(1436881548292L));
+        event.setEventTime(new Date(1436881548292L));
         getEventDao().save(event);
         getEventDao().flush();
         
@@ -328,11 +334,11 @@ public class DatabasePopulator {
         getUserNotificationDao().flush();
         
         final OnmsMonitoredService svc = getMonitoredServiceDao().get(node1.getId(), InetAddressUtils.addr("192.168.1.1"), "SNMP");
-        final OnmsOutage resolved = new OnmsOutage(new Date(), new Date(), event, event, svc, null, null);
+        final OnmsOutage resolved = new OnmsOutage(new Date(1436881548292L), new Date(1436881548292L), event, event, svc, null, null);
         getOutageDao().save(resolved);
         getOutageDao().flush();
         
-        final OnmsOutage unresolved = new OnmsOutage(new Date(), event, svc);
+        final OnmsOutage unresolved = new OnmsOutage(new Date(1436881548292L), event, svc);
         getOutageDao().save(unresolved);
         getOutageDao().flush();
         
@@ -370,7 +376,7 @@ public class DatabasePopulator {
         getDataLinkInterfaceDao().flush();
         
         final OnmsAcknowledgment ack = new OnmsAcknowledgment();
-        ack.setAckTime(new Date());
+        ack.setAckTime(new Date(1437073152156L));
         ack.setAckType(AckType.UNSPECIFIED);
         ack.setAckAction(AckAction.UNSPECIFIED);
         ack.setAckUser("admin");
@@ -389,8 +395,8 @@ public class DatabasePopulator {
         LOG.debug("= DatabasePopulatorExtension Populate Starting =");
         for (Extension eachExtension : extensions) {
         	DaoSupport daoSupport = eachExtension.getDaoSupport();
-        	OnmsDao dao = daoSupport != null ? daoSupport.getDao() : null;
-        	Class<? super OnmsDao> daoClass = daoSupport != null ? daoSupport.getDaoClass() : null;
+        	OnmsDao<?,?> dao = daoSupport != null ? daoSupport.getDao() : null;
+        	Class<? super OnmsDao<?,?>> daoClass = daoSupport != null ? daoSupport.getDaoClass() : null;
         	registerDao(daoClass, dao);
 
         	dao = lookupDao(daoClass);
@@ -546,13 +552,20 @@ public class DatabasePopulator {
     public OnmsEvent buildEvent(final OnmsDistPoller distPoller) {
         final OnmsEvent event = new OnmsEvent();
         event.setDistPoller(distPoller);
-        event.setEventUei("uei.opennms.org/test");
-        event.setEventTime(new Date());
-        event.setEventSource("test");
-        event.setEventCreateTime(new Date());
-        event.setEventSeverity(1);
-        event.setEventLog("Y");
+        event.setEventCreateTime(new Date(1437061537126L));
+        event.setEventDescr("This is the description of a test event.");
         event.setEventDisplay("Y");
+        event.setEventHost("127.0.0.1"); // TODO: Figure out exactly what this field is storing
+        event.setEventLog("Y");
+        event.setEventLogMsg("Test Event Log Message");
+        event.setEventParms("testParm=HelloWorld(string,text)");
+        event.setEventSeverity(1);
+        event.setEventSource("test");
+        event.setEventTime(new Date(1437061537105L));
+        event.setEventUei("uei.opennms.org/test");
+        event.setIpAddr(InetAddressUtils.getInetAddress("192.168.1.1"));
+        event.setNode(m_node1);
+        event.setServiceType(m_serviceTypeDao.findByName("ICMP"));
         return event;
     }
 
@@ -581,6 +594,8 @@ public class DatabasePopulator {
     }
 
     private OnmsAlarm buildAlarm(final OnmsEvent event) {
+        // TODO: Add reductionKey, suppressedTime, suppressedUntil to this object?
+
         final OnmsAlarm alarm = new OnmsAlarm();
         alarm.setDistPoller(getDistPollerDao().load("localhost"));
         alarm.setUei(event.getEventUei());
@@ -593,6 +608,8 @@ public class DatabasePopulator {
         alarm.setSeverity(OnmsSeverity.NORMAL);
         alarm.setFirstEventTime(event.getEventTime());
         alarm.setLastEvent(event);
+        alarm.setEventParms(event.getEventParms());
+        alarm.setServiceType(m_serviceTypeDao.findByName("ICMP"));
         return alarm;
     }
 

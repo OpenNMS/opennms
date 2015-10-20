@@ -28,19 +28,16 @@
 
 package org.opennms.netmgt.enlinkd;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.opennms.netmgt.nb.NmsNetworkBuilder.ITPN0111_IP;
 import static org.opennms.netmgt.nb.NmsNetworkBuilder.ITPN0111_NAME;
 import static org.opennms.netmgt.nb.NmsNetworkBuilder.ITPN0111_SNMP_RESOURCE;
-
 import static org.opennms.netmgt.nb.NmsNetworkBuilder.ITPN0112_IP;
 import static org.opennms.netmgt.nb.NmsNetworkBuilder.ITPN0112_NAME;
 import static org.opennms.netmgt.nb.NmsNetworkBuilder.ITPN0112_SNMP_RESOURCE;
 
 import java.util.List;
-
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;

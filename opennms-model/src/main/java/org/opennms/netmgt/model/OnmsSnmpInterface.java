@@ -656,6 +656,7 @@ public class OnmsSnmpInterface extends OnmsEntity implements Serializable {
         } else if (getIfDescr() != null) {
             label = AlphaNumeric.parseAndReplace(getIfDescr(), '_');
         } else {
+            // TODO: Use IfLabel.NO_IFLABEL instead of "no_ifLabel"
             LOG.info("Interface ({}) has no ifName and no ifDescr...setting to label to 'no_ifLabel'.", this);
             label = "no_ifLabel";
         }

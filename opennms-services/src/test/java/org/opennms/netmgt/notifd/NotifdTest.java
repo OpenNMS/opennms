@@ -48,9 +48,9 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.opennms.core.utils.RowProcessor;
-import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.NotificationManager;
 import org.opennms.netmgt.config.notifications.Notification;
+import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.mock.MockEventUtil;
 import org.opennms.netmgt.mock.MockInterface;
 import org.opennms.netmgt.mock.MockNode;
@@ -339,7 +339,7 @@ public class NotifdTest extends NotificationsTestCase {
 
         Event event = MockEventUtil.createServiceEvent("Test", "uei.opennms.org/tests/nodeTimeTest", svc, null);
         
-        Date date = EventConstants.parseToDate(event.getTime());
+        Date date = event.getTime();
         String dateString = DateFormat.getDateTimeInstance(DateFormat.FULL,
                        DateFormat.FULL).format(date);
         long endTime = anticipateNotificationsForGroup("time " + dateString + ".", "Timestamp: " + dateString + ".", "InitialGroup", date, interval);
@@ -369,8 +369,8 @@ public class NotifdTest extends NotificationsTestCase {
         
         int index = 0;
         for (Integer notifId : notifIds) {
-            Map<String, String> originalMap = BroadcastEventProcessor.buildParameterMap(notification[index], event, notifId.intValue());
-            
+            Map<String, String> originalMap = m_eventProcessor.buildParameterMap(notification[index], event, notifId.intValue());
+
             Map<String, String> resolutionMap = new HashMap<String, String>(originalMap);
             resolutionMap.put(NotificationManager.PARAM_SUBJECT, "RESOLVED: "+resolutionMap.get(NotificationManager.PARAM_SUBJECT));
             resolutionMap.put(NotificationManager.PARAM_TEXT_MSG, "RESOLVED: "+resolutionMap.get(NotificationManager.PARAM_TEXT_MSG));
