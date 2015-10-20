@@ -49,7 +49,11 @@
           );
         };
         bootbox.dialog({
-          message: 'Do you want to rescan existing nodes ?',
+          message: 'Do you want to rescan existing nodes ?<br/><hr/>' +
+                   'Choose <b>yes</b> to synchronize all the nodes with the database executing the scan phase.<br/>' +
+                   'Choose <b>no</b> to synchronize only the new and deleted nodes with the database executing the scan phase only for new nodes.<br/>' +
+                   'Choose <b>dbonly</b> to synchronize all the nodes with the database skipping the scan phase.<br/>' +
+                   'Choose <b>cancel</b> to abort the request.',
           title: 'Synchronize Requisition ' + foreignSource,
           buttons: {
             success: {
