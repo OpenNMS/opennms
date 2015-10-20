@@ -2439,6 +2439,11 @@
         <version>${project.version}</version>
       </dependency>
       <dependency>
+        <groupId>org.opennms.features.measurements</groupId>
+        <artifactId>org.opennms.features.measurements.api</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
         <groupId>org.opennms</groupId>
         <artifactId>opennms-site</artifactId>
         <version>${project.version}</version>

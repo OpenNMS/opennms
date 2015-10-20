@@ -28,7 +28,9 @@
 
 package org.opennms.netmgt.dao.support;
 
-import org.opennms.netmgt.dao.api.RrdDao;
+import org.opennms.netmgt.measurements.api.FetchResults;
+import org.opennms.netmgt.measurements.api.MeasurementFetchStrategy;
+import org.opennms.netmgt.measurements.model.Source;
 import org.opennms.netmgt.model.AttributeStatisticVisitor;
 import org.opennms.netmgt.model.AttributeVisitor;
 import org.opennms.netmgt.model.OnmsAttribute;
@@ -37,6 +39,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
+import java.util.Collections;
 
 /**
  * <p>RrdStatisticAttributeVisitor class.</p>
@@ -46,7 +49,9 @@ import org.springframework.util.Assert;
  */
 public class RrdStatisticAttributeVisitor implements AttributeVisitor, InitializingBean {
     private static final Logger LOG = LoggerFactory.getLogger(RrdStatisticAttributeVisitor.class);
-    private RrdDao m_rrdDao;
+
+    private MeasurementFetchStrategy m_fetchStrategy;
+
     private String m_consolidationFunction;
     private Long m_startTime;
     private Long m_endTime;
@@ -59,8 +64,37 @@ public class RrdStatisticAttributeVisitor implements AttributeVisitor, Initializ
             // Nothing to do if we can't cast to an RrdGraphAttribute
             return;
         }
-        
-        double statistic = m_rrdDao.getPrintValue(attribute, m_consolidationFunction, m_startTime, m_endTime);
+
+        final Source source = new Source();
+        source.setLabel("result");
+        source.setResourceId(attribute.getResource().getId());
+        source.setAttribute(attribute.getName());
+        source.setAggregation(m_consolidationFunction.toUpperCase());
+
+        final FetchResults results;
+        try {
+            results = m_fetchStrategy.fetch(m_startTime,
+                                            m_endTime,
+                                            m_endTime - m_startTime,
+                                            1,
+                                            Collections.singletonList(source));
+        } catch (final Exception e) {
+            LOG.warn("Failed to fetch statistic: {}", source, e);
+            return;
+        }
+
+        if (results == null) {
+            LOG.warn("No statistic found: {}", source);
+            return;
+        }
+
+        final double[] statistics = results.getColumns().get(source.getLabel());
+        if (statistics == null || statistics.length < 1) {
+            LOG.warn("Statistic is empty: {}", source);
+            return;
+        }
+
+        double statistic = statistics[statistics.length - 1];
         
         LOG.debug("The value of {} is {}", attribute, statistic);
         
@@ -86,29 +120,19 @@ public class RrdStatisticAttributeVisitor implements AttributeVisitor, Initializ
      */
     @Override
     public void afterPropertiesSet() {
-        Assert.state(m_rrdDao != null, "property rrdDao must be set to a non-null value");
+        Assert.state(m_fetchStrategy != null, "property fetchStrategy must be set to a non-null value");
         Assert.state(m_consolidationFunction != null, "property consolidationFunction must be set to a non-null value");
         Assert.state(m_startTime != null, "property startTime must be set to a non-null value");
         Assert.state(m_endTime != null, "property endTime must be set to a non-null value");
         Assert.state(m_statisticVisitor != null, "property statisticVisitor must be set to a non-null value");
     }
 
-    /**
-     * <p>getRrdDao</p>
-     *
-     * @return a {@link org.opennms.netmgt.dao.api.RrdDao} object.
-     */
-    public RrdDao getRrdDao() {
-        return m_rrdDao;
+    public MeasurementFetchStrategy getFetchStrategy() {
+        return m_fetchStrategy;
     }
 
-    /**
-     * <p>setRrdDao</p>
-     *
-     * @param rrdDao a {@link org.opennms.netmgt.dao.api.RrdDao} object.
-     */
-    public void setRrdDao(RrdDao rrdDao) {
-        m_rrdDao = rrdDao;
+    public void setFetchStrategy(MeasurementFetchStrategy fetchStrategy) {
+        m_fetchStrategy = fetchStrategy;
     }
 
     /**
