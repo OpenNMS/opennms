@@ -53,12 +53,9 @@ public class MeasurementsService {
 
     @Autowired
     public MeasurementsService(MeasurementFetchStrategy fetchStrategy, ExpressionEngine expressionEngine, FilterEngine filterEngine) {
-        Preconditions.checkNotNull(fetchStrategy);
-        Preconditions.checkNotNull(expressionEngine);
-        Preconditions.checkNotNull(filterEngine);
-        this.fetchStrategy = fetchStrategy;
-        this.expressionEngine = expressionEngine;
-        this.filterEngine = filterEngine;
+        this.fetchStrategy = Preconditions.checkNotNull(fetchStrategy);
+        this.expressionEngine = Preconditions.checkNotNull(expressionEngine);
+        this.filterEngine = Preconditions.checkNotNull(filterEngine);
     }
 
     public QueryResponse query(QueryRequest request) throws MeasurementException {
