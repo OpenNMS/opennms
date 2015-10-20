@@ -55,7 +55,7 @@ public interface StatisticsReportService {
     /**
      * <p>getReport</p>
      *
-     * @param command a {@link org.opennms.web.command.StatisticsReportCommand} object.
+     * @param command a {@link org.opennms.web.svclayer.model.StatisticsReportCommand} object.
      * @param errors a {@link org.springframework.validation.BindingResult} object.
      * @return a {@link org.opennms.web.svclayer.model.StatisticsReportModel} object.
      */
