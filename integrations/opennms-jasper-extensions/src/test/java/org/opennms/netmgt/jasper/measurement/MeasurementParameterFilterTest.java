@@ -61,15 +61,17 @@ public class MeasurementParameterFilterTest {
         parameter.setName(name);
         return parameter;
     }
+    private boolean jvmMode;
 
-    @Parameterized.Parameter(0)
-    public boolean jvmMode;
+    private boolean apply;
 
-    @Parameterized.Parameter(1)
-    public boolean apply;
+    private JRParameter parameter;
 
-    @Parameterized.Parameter(2)
-    public JRParameter parameter;
+    public MeasurementParameterFilterTest(boolean jvmMode, boolean apply, JRParameter parameter) {
+        this.jvmMode = jvmMode;
+        this.apply = apply;
+        this.parameter = parameter;
+    }
 
     @Test
     public void test() {
