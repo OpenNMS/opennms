@@ -123,8 +123,10 @@ public class OutageDaoIT implements InitializingBean {
         m_transTemplate.execute(new TransactionCallbackWithoutResult() {
             @Override
             public void doInTransactionWithoutResult(TransactionStatus status) {
-                OnmsServiceType t = new OnmsServiceType("ICMP");
-                m_serviceTypeDao.save(t);
+                if (m_serviceTypeDao.findByName("ICMP") == null) {
+                    OnmsServiceType t = new OnmsServiceType("ICMP");
+                    m_serviceTypeDao.save(t);
+                }
             }
         });
     }
