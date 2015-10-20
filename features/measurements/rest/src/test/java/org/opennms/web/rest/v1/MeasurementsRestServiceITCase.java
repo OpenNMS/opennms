@@ -28,6 +28,11 @@
 
 package org.opennms.web.rest.v1;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
+
+import java.util.Map;
+
 import javax.ws.rs.WebApplicationException;
 
 import org.hamcrest.BaseMatcher;
@@ -40,6 +45,7 @@ import org.opennms.core.spring.BeanUtils;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.support.FilesystemResourceStorageDao;
 import org.opennms.netmgt.measurements.model.QueryRequest;
+import org.opennms.netmgt.measurements.model.QueryResponse;
 import org.opennms.netmgt.measurements.model.Source;
 import org.opennms.netmgt.model.OnmsNode;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -152,5 +158,101 @@ public abstract class MeasurementsRestServiceITCase {
         request.setSources(Lists.newArrayList(source));
 
         return request;
+    }
+
+    @Test
+    public void canRetrieveFallbackAttributeWhenAttributeNotFound() {
+        QueryRequest request = new QueryRequest();
+        request.setStart(1414602000000L);
+        request.setEnd(1417046400000L);
+        request.setStep(1000L);
+        request.setMaxRows(700);
+
+        // Average
+        Source ifInOctetsAvg = new Source();
+        ifInOctetsAvg.setResourceId("node[1].interfaceSnmp[eth0-04013f75f101]");
+        ifInOctetsAvg.setAttribute("willNotBeFound");
+        ifInOctetsAvg.setFallbackAttribute("ifInOctets");
+        ifInOctetsAvg.setAggregation("AVERAGE");
+        ifInOctetsAvg.setLabel("ifInOctetsAvg");
+
+        request.setSources(Lists.newArrayList(
+                ifInOctetsAvg
+        ));
+
+        // Perform the query
+        QueryResponse response = m_svc.query(request);
+
+        // Validate the results
+        long timestamps[] = response.getTimestamps();
+        final Map<String, double[]> columns = response.columnsWithLabels();
+
+        assertEquals(3600000L, response.getStep());
+        assertEquals(680, timestamps.length);
+
+        // Verify the values at an arbitrary index
+        final int idx = 8;
+        assertEquals(1414630800000L, timestamps[idx]);
+        assertEquals(270.66140826873385, columns.get("ifInOctetsAvg")[idx], 0.0001);
+    }
+
+    @Test
+    public void canRetrieveAttributeWhenFallbackAttributeIsSet() {
+        QueryRequest request = new QueryRequest();
+        request.setStart(1414602000000L);
+        request.setEnd(1417046400000L);
+        request.setStep(1000L);
+        request.setMaxRows(700);
+
+        // Average
+        Source ifInOctetsAvg = new Source();
+        ifInOctetsAvg.setResourceId("node[1].interfaceSnmp[eth0-04013f75f101]");
+        ifInOctetsAvg.setAttribute("ifInOctets");
+        ifInOctetsAvg.setFallbackAttribute("willNotBeFound");
+        ifInOctetsAvg.setAggregation("AVERAGE");
+        ifInOctetsAvg.setLabel("ifInOctetsAvg");
+
+        request.setSources(Lists.newArrayList(
+                ifInOctetsAvg
+        ));
+
+        // Perform the query
+        QueryResponse response = m_svc.query(request);
+
+        // Validate the results
+        long timestamps[] = response.getTimestamps();
+        final Map<String, double[]> columns = response.columnsWithLabels();
+
+        assertEquals(3600000L, response.getStep());
+        assertEquals(680, timestamps.length);
+
+        // Verify the values at an arbitrary index
+        final int idx = 8;
+        assertEquals(1414630800000L, timestamps[idx]);
+        assertEquals(270.66140826873385, columns.get("ifInOctetsAvg")[idx], 0.0001);
+    }
+
+    @Test(expected = javax.ws.rs.WebApplicationException.class)
+    public void cannotRetrieveUnknownAttributeAndUnknownFallbackAttribute() {
+        QueryRequest request = new QueryRequest();
+        request.setStart(1414602000000L);
+        request.setEnd(1417046400000L);
+        request.setStep(1000L);
+        request.setMaxRows(700);
+
+        // Average
+        Source ifInOctetsAvg = new Source();
+        ifInOctetsAvg.setResourceId("node[1].interfaceSnmp[eth0-04013f75f101]");
+        ifInOctetsAvg.setAttribute("willNotBeFound");
+        ifInOctetsAvg.setFallbackAttribute("willNotBeFoundToo");
+        ifInOctetsAvg.setAggregation("AVERAGE");
+        ifInOctetsAvg.setLabel("ifInOctetsAvg");
+
+        request.setSources(Lists.newArrayList(
+                ifInOctetsAvg
+        ));
+
+        // Perform the query - this must fail
+        QueryResponse response = m_svc.query(request);
     }
 }

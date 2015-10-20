@@ -1,11 +1,5 @@
 package org.opennms.features.resourcemgnt;
 
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Maps;
-import com.sun.jersey.api.client.WebResource;
-import com.sun.jersey.api.json.JSONConfiguration;
-import com.sun.jersey.client.apache.ApacheHttpClient;
-import com.sun.jersey.client.apache.config.DefaultApacheHttpClientConfig;
 import org.kohsuke.args4j.Argument;
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
@@ -17,12 +11,6 @@ import org.opennms.features.resourcemgnt.commands.Command;
 import org.opennms.features.resourcemgnt.commands.DeleteCommand;
 import org.opennms.features.resourcemgnt.commands.ListCommand;
 import org.opennms.features.resourcemgnt.commands.ShowCommand;
-import org.opennms.web.rest.v1.ResourceDTO;
-import org.opennms.web.rest.v1.ResourceDTOCollection;
-
-import javax.persistence.MapsId;
-import java.util.EnumMap;
-import java.util.Map;
 
 public class ResourceCli {
 

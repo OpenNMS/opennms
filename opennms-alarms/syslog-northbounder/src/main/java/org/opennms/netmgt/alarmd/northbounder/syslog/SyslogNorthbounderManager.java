@@ -41,8 +41,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.Assert;
 
-public class SyslogNorthbounderManager implements InitializingBean,
-        DisposableBean {
+public class SyslogNorthbounderManager implements InitializingBean, DisposableBean {
 
     @Autowired
     private ServiceRegistry m_serviceRegistry;

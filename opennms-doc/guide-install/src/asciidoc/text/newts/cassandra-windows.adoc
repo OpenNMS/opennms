@@ -14,7 +14,7 @@ NOTE: This description was built on _Windows Server 2012_.
 [source]
 ----
 cd C:\Users\Administrator\Downloads
-Invoke-WebRequest http://downloads.datastax.com/community/datastax-community-64bit_2.1.8.msi -Outfile datastax-community-64bit_2.1.8.msi
+Invoke-WebRequest http://downloads.datastax.com/community/datastax-community-64bit_2.1.10.msi -Outfile datastax-community-64bit_2.1.10.msi
 ----
 
 Run the Windows Installer file from _PowerShell_ or through _Windows Explorer_ and follow the setup wizard to install.
