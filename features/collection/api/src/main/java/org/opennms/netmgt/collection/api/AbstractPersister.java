@@ -80,15 +80,16 @@ public abstract class AbstractPersister extends AbstractCollectionSetVisitor imp
      * <p>commitBuilder</p>
      */
     public void commitBuilder() {
-        if (isPersistDisabled())
+        if (isPersistDisabled()) {
+            LOG.debug("Persist disabled for {}", m_builder.getName());
             return;
-        String name = m_builder.getName();
+        }
         try {
             m_builder.commit();
-            m_builder = null;
         } catch (PersistException e) {
-            LOG.error("Unable to persist data for {}", name, e);
+            LOG.error("Unable to persist data for {}", m_builder.getName(), e);
         }
+        m_builder = null;
     }
 
     private boolean isPersistDisabled() {
