@@ -28,6 +28,7 @@
 
 package org.opennms.web.rest.v1;
 
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
@@ -36,6 +37,9 @@ import java.util.Map;
 
 import javax.servlet.ServletContext;
 import javax.ws.rs.core.MediaType;
+
+import com.google.common.base.Charsets;
+import com.google.common.collect.Maps;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -46,15 +50,13 @@ import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.test.rest.AbstractSpringJerseyRestTestCase;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.support.FilesystemResourceStorageDao;
+import org.opennms.netmgt.measurements.api.MeasurementsService;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.web.WebAppConfiguration;
-
-import com.google.common.base.Charsets;
-import com.google.common.collect.Maps;
 
 /**
  * Used to make calls to an instance of MeasurementRestService.
@@ -71,7 +73,8 @@ import com.google.common.collect.Maps;
         "classpath*:/META-INF/opennms/component-service.xml",
         "classpath*:/META-INF/opennms/component-dao.xml",
         "classpath:/META-INF/opennms/mockEventIpcManager.xml",
-        "classpath:/META-INF/opennms/applicationContext-measurements-test.xml",
+        "classpath*:/META-INF/opennms/component-measurement.xml",
+        "classpath:/META-INF/opennms/applicationContext-measurements-rest-test.xml",
         "file:../../../opennms-webapp-rest/src/main/webapp/WEB-INF/applicationContext-svclayer.xml",
         "file:../../../opennms-webapp-rest/src/main/webapp/WEB-INF/applicationContext-cxf-common.xml"
 })
@@ -89,6 +92,13 @@ public class MeasurementRestServiceIT extends AbstractSpringJerseyRestTestCase {
 
     @Autowired
     protected FilesystemResourceStorageDao m_resourceStorageDao;
+
+    @Autowired
+    private MeasurementsRestService restService;
+
+    @Autowired
+    private MeasurementsService service;
+
     
     public MeasurementRestServiceIT() {
         super("file:../../../opennms-webapp-rest/src/main/webapp/WEB-INF/applicationContext-cxf-rest-v1.xml");
@@ -99,6 +109,8 @@ public class MeasurementRestServiceIT extends AbstractSpringJerseyRestTestCase {
         super.setUp();
 
         BeanUtils.assertAutowiring(this);
+        assertNotNull(restService);
+        assertNotNull(service);
 
         OnmsNode node = new OnmsNode();
         node.setId(1);

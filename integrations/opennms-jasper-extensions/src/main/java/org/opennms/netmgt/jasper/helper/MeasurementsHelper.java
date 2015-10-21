@@ -30,10 +30,16 @@ package org.opennms.netmgt.jasper.helper;
 
 import com.google.common.base.Strings;
 
+import org.opennms.core.spring.BeanUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * Provides helper methods for the {@link org.opennms.netmgt.jasper.measurement.MeasurementDataSource}.
  */
 public abstract class MeasurementsHelper {
+
+    private static Logger LOG = LoggerFactory.getLogger(MeasurementsHelper.class);
 
     private MeasurementsHelper() {
 
@@ -64,5 +70,18 @@ public abstract class MeasurementsHelper {
             return String.format("nodeSource[%s:%s]", foreignSource, foreignId);
         }
         return String.format("node[%s]", nodeId);
+    }
+
+    public static boolean isRunInOpennmsJvm() {
+        return getSpringHelper().getSpringContext() != null;
+    }
+
+    public static SpringHelper getSpringHelper() {
+        try {
+            return BeanUtils.getBean("measurementDataSourceContext", "springHelper", SpringHelper.class);
+        } catch (Exception ex) {
+            LOG.warn("Error creating bean 'springHelper'. Creating empty SpringHelper");
+            return new SpringHelper();
+        }
     }
 }

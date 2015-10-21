@@ -159,6 +159,7 @@ public class DatabasePopulator {
     private OnmsNode m_node6;
     
     private boolean m_populateInSeparateTransaction = true;
+    private boolean m_resetInSeperateTransaction = true;
     private final List<Extension> extensions = new ArrayList<Extension>();
     
     private Map<Class<? super OnmsDao<?,?>>, OnmsDao<?,?>> daoRegistry = new HashMap<Class<? super OnmsDao<?,?>>, OnmsDao<?,?>>();
@@ -197,6 +198,10 @@ public class DatabasePopulator {
         m_populateInSeparateTransaction = pop;
     }
 
+    public void setResetInSeperateTransaction(boolean resetInSeperateTransaction) {
+        m_resetInSeperateTransaction = resetInSeperateTransaction;
+    }
+
     public void populateDatabase() {
         if (m_populateInSeparateTransaction) {
             m_transOperation.execute(new TransactionCallbackWithoutResult() {
@@ -211,6 +216,19 @@ public class DatabasePopulator {
     }
 
     public void resetDatabase() {
+        if (m_resetInSeperateTransaction) {
+            m_transOperation.execute(new TransactionCallbackWithoutResult() {
+                @Override
+                public void doInTransactionWithoutResult(final TransactionStatus status) {
+                    doResetDatabase();
+                }
+            });
+        } else {
+            doResetDatabase();
+        }
+    }
+
+    private void doResetDatabase() {
         LOG.debug("==== DatabasePopulator Reset ====");
         for (final OnmsOutage outage : m_outageDao.findAll()) {
             m_outageDao.delete(outage);
@@ -227,10 +245,18 @@ public class DatabasePopulator {
         for (final OnmsEvent event : m_eventDao.findAll()) {
             m_eventDao.delete(event);
         }
-        for (final OnmsSnmpInterface iface : m_snmpInterfaceDao.findAll()) {
-            m_snmpInterfaceDao.delete(iface);
+
+        for (final OnmsSnmpInterface snmpIface : m_snmpInterfaceDao.findAll()) {
+            for (OnmsIpInterface eachIf : snmpIface.getIpInterfaces()) {
+                eachIf.setSnmpInterface(null);
+                snmpIface.getNode().getIpInterfaces().remove(eachIf);
+            }
+            snmpIface.getNode().getSnmpInterfaces().remove(snmpIface);
+            m_snmpInterfaceDao.delete(snmpIface);
         }
         for (final OnmsIpInterface iface : m_ipInterfaceDao.findAll()) {
+            iface.setSnmpInterface(null);
+            iface.getNode().getIpInterfaces().remove(iface);
             m_ipInterfaceDao.delete(iface);
         }
         for (final OnmsNode node : m_nodeDao.findAll()) {

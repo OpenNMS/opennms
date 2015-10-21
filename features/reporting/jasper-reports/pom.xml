@@ -95,6 +95,11 @@
       <artifactId>jasper-dependencies</artifactId>
       <type>pom</type>
     </dependency>
+    <dependency>
+      <groupId>org.opennms.features.reporting</groupId>
+      <artifactId>jasper-reports-filter</artifactId>
+      <version>${project.version}</version>
+    </dependency>
   </dependencies>
 
   <repositories>

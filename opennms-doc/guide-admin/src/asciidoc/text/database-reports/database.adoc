@@ -114,6 +114,8 @@ WARNING: Before _OpenNMS 17_ it was possible to access the performance data stor
 To access performance data within reports we created a custom _Measurement Datasource_ which allows to query the _Measurements API_ and process the returned data in your reports.
 Please refer to the link:http://docs.opennms.org/opennms/releases/{opennms-version}/guide-development/guide-development.html#_measurements_api[official Measurements API documentation] on how to use the _Measurements API_.
 
+NOTE:  When using the _Measurements Datasource_ within a report a `HTTP` connection to the _Measurements API_ is only established if the report is NOT running within OpenNMS, e.g. when used with _Jaspersoft Studio_.
+
 To receive data from the _Measurements API_ simply create a query as follows:
 
 .Sample queryString to receive data from the `Measurements API`
@@ -279,4 +281,3 @@ WARNING: If `org.opennms.netmgt.jasper.measurement.ssl.enable` is set to `false`
 
  * Only a _JDBC Datasource_ to the _OpenNMS Database connection_ can be passed to a report, or no datasource at all.
    One does not have to use the datasource, though.
- * When using the _Measurements Datasource_ within a report a `HTTP` connection to the _Measurements API_ is always established, even if it is executed from within _OpenNMS_. See issue link:http://issues.opennms.org/browse/HZN-453[HZN-453] for more details.

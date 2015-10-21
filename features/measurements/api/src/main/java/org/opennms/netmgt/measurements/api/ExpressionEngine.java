@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.measurements.api;
 
+import org.opennms.netmgt.measurements.api.exceptions.ExpressionException;
 import org.opennms.netmgt.measurements.model.QueryRequest;
 
 /**
