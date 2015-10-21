@@ -201,8 +201,7 @@ public class HeatMapRestService extends OnmsRestService {
     @Path("outages/nodesByMonitoredService/{monitoredService}")
     public Response outagesOfNodesByService(@PathParam("monitoredService") final String monitoredService) throws IOException {
         final List<HeatMapElement> heatMapElements = m_outageDao.getHeatMapItemsForEntity("node.nodelabel", "node.nodeid", "service.servicename", monitoredService);
-        final JSONObject jo = new JSONObject(transformResults(heatMapElements, null));
-        return Response.ok(jo.toString(), MediaType.APPLICATION_JSON).build();
+        return Response.ok(transformResults(heatMapElements, null)).build();
     }
 
     @GET
@@ -262,7 +261,6 @@ public class HeatMapRestService extends OnmsRestService {
     public Response alarmsOfNodesByService(@PathParam("monitoredService") final String monitoredService) throws IOException {
         boolean processAcknowledged = !Boolean.parseBoolean(System.getProperty(ONLY_UNACKNOWLEDGED_PROPERTY_KEY, ONLY_UNACKNOWLEDGED_PROPERTY_DEFAULT));
         final List<HeatMapElement> heatMapElements = m_alarmDao.getHeatMapItemsForEntity("node.nodelabel", "node.nodeid", processAcknowledged, "service.servicename", monitoredService);
-        final JSONObject jo = new JSONObject(transformResults(heatMapElements, null));
-        return Response.ok(jo.toString(), MediaType.APPLICATION_JSON).build();
+        return Response.ok(transformResults(heatMapElements, null)).build();
     }
 }
