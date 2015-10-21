@@ -43,6 +43,30 @@ public class Nms4930NetworkBuilder extends NmsNetworkBuilder {
 	NodeDao m_nodeDao;
 	IpNetToMediaDao m_ipNetToMediaDao;
 
+        public void addMacNodeWithSnmpInterface(String mac, String ip, Integer ifindex) {
+            NetworkBuilder nb = getNetworkBuilder();
+            nb.addNode(ip).setForeignSource("linkd").setForeignId(ip).setType(NodeType.ACTIVE);
+            nb.addInterface(ip).setIsSnmpPrimary("N").setIsManaged("M")
+            .addSnmpInterface(ifindex).setIfName("eth0").setIfType(6).setPhysAddr(mac).setIfDescr("eth0");
+            m_nodeDao.save(nb.getCurrentNode());
+            m_nodeDao.flush();
+
+            IpNetToMedia at0 = new IpNetToMedia();
+            at0.setSourceIfIndex(100);
+            at0.setPhysAddress(mac);
+            at0.setLastPollTime(at0.getCreateTime());
+            at0.setSourceNode(m_nodeDao.findByForeignId("linkd", ip));
+            try {
+                at0.setNetAddress(InetAddress.getByName(ip));
+            } catch (UnknownHostException e) {
+                e.printStackTrace();
+            }
+            at0.setIpNetToMediaType(IpNetToMediaType.IPNETTOMEDIA_TYPE_DYNAMIC);
+            m_ipNetToMediaDao.saveOrUpdate(at0);
+            m_ipNetToMediaDao.flush();
+
+        }
+        
         public void addMacNode(String mac, String ip) {
             NetworkBuilder nb = getNetworkBuilder();
             nb.addNode(ip).setForeignSource("linkd").setForeignId(ip).setType(NodeType.ACTIVE);
