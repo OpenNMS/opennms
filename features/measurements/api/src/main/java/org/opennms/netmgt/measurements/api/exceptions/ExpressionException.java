@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2015 The OpenNMS Group, Inc.
+ * Copyright (C) 2010-2015 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2015 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -26,22 +26,17 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.jasper.measurement;
+package org.opennms.netmgt.measurements.api.exceptions;
 
-import org.junit.Assert;
-import org.junit.Test;
+/**
+ * A generic exception used by the expression engine.
+ *
+ * @author jwhite
+ */
+public class ExpressionException extends MeasurementException {
+    private static final long serialVersionUID = 8110948443639294775L;
 
-public class MeasurementApiConnectorTest {
-    @Test
-    public void testAuthenticationRequired() {
-        Assert.assertFalse(MeasurementApiConnector.isAuthenticationRequired(null, null));
-        Assert.assertFalse(MeasurementApiConnector.isAuthenticationRequired(null, ""));
-        Assert.assertFalse(MeasurementApiConnector.isAuthenticationRequired("", null));
-        Assert.assertFalse(MeasurementApiConnector.isAuthenticationRequired("", ""));
-        Assert.assertFalse(MeasurementApiConnector.isAuthenticationRequired("dummy", null));
-        Assert.assertFalse(MeasurementApiConnector.isAuthenticationRequired("dummy", ""));
-        Assert.assertFalse(MeasurementApiConnector.isAuthenticationRequired(null, "dummy"));
-        Assert.assertFalse(MeasurementApiConnector.isAuthenticationRequired("", "dummy"));
-        Assert.assertTrue(MeasurementApiConnector.isAuthenticationRequired("dummy", "dummy"));
+    public ExpressionException(Throwable cause, String message, Object... params) {
+        super(cause, message, params);
     }
 }

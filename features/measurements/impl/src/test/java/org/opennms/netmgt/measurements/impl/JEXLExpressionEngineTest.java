@@ -34,7 +34,7 @@ import java.util.Map;
 
 import org.junit.Test;
 import org.opennms.netmgt.measurements.api.ExpressionEngine;
-import org.opennms.netmgt.measurements.api.ExpressionException;
+import org.opennms.netmgt.measurements.api.exceptions.ExpressionException;
 import org.opennms.netmgt.measurements.api.FetchResults;
 import org.opennms.netmgt.measurements.model.Expression;
 import org.opennms.netmgt.measurements.model.QueryRequest;

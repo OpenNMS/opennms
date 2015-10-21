@@ -14,8 +14,8 @@
 			<![CDATA[<query-request step="3600" start="$P{startDate}" end="$P{endDate}">
    <expression label="moCallAttempts" transient="false" value="mo_call_attempts * 3600"/>
    <expression label="mtCallAttempts" transient="false" value="mt_call_attempts * 3600"/>
-   <source aggregation="AVERAGE" attribute="mt_call_attempts" transient="true" resourceId="node[13].interfaceSnmp[en0-005e60e77189]"/>
-   <source aggregation="AVERAGE" attribute="mo_call_attempts" transient="true" resourceId="node[13].interfaceSnmp[en0-005e60e77189]"/>
+   <source aggregation="AVERAGE" label="mt_call_attempts" attribute="mt_call_attempts" transient="true" resourceId="node[13].interfaceSnmp[en0-005e60e77189]"/>
+   <source aggregation="AVERAGE" label="mo_call_attempts" attribute="mo_call_attempts" transient="true" resourceId="node[13].interfaceSnmp[en0-005e60e77189]"/>
  </query-request>]]>
 		</queryString>
 		<field name="timestamp" class="java.util.Date">
@@ -40,10 +40,10 @@
 			<![CDATA[<query-request step="3600" start="$P{startDate}" end="$P{endDate}">
   <expression label="moSuccessRate" transient="false" value="moCompletes * 100 / moAttempts"/>
   <expression label="mtSuccessRate" transient="false" value="mtCompletes * 100 / mAttempts"/>
-  <source aggregation="AVERAGE" attribute="mt_call_completes" transient="true" resourceId="node[13].interfaceSnmp[en0-005e60e77189]"/>
-  <source aggregation="AVERAGE" attribute="mt_call_attempts" transient="true" resourceId="node[13].interfaceSnmp[en0-005e60e77189]"/>
-  <source aggregation="AVERAGE" attribute="mo_call_completes" transient="true" resourceId="node[13].interfaceSnmp[en0-005e60e77189]"/>
-  <source aggregation="AVERAGE" attribute="mo_call_attempts" transient="true" resourceId="node[13].interfaceSnmp[en0-005e60e77189]"/>
+  <source aggregation="AVERAGE" label="mt_call_completes" attribute="mt_call_completes" transient="true" resourceId="node[13].interfaceSnmp[en0-005e60e77189]"/>
+  <source aggregation="AVERAGE" label="mt_call_attempts" attribute="mt_call_attempts" transient="true" resourceId="node[13].interfaceSnmp[en0-005e60e77189]"/>
+  <source aggregation="AVERAGE" label="mo_call_completes" attribute="mo_call_completes" transient="true" resourceId="node[13].interfaceSnmp[en0-005e60e77189]"/>
+  <source aggregation="AVERAGE" label="mo_call_attempts" attribute="mo_call_attempts" transient="true" resourceId="node[13].interfaceSnmp[en0-005e60e77189]"/>
 </query-request>]]>
 		</queryString>
 		<field name="timestamp" class="java.util.Date">

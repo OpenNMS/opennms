@@ -35,6 +35,8 @@ import static org.junit.Assert.assertTrue;
 import java.io.File;
 import java.util.Map;
 
+import com.google.common.collect.Lists;
+
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -48,8 +50,6 @@ import org.opennms.netmgt.measurements.model.Source;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.annotation.Transactional;
-
-import com.google.common.collect.Lists;
 
 /**
  * Tests the Measurements API with an RRD backend.
@@ -65,8 +65,9 @@ import com.google.common.collect.Lists;
         "classpath:/META-INF/opennms/applicationContext-soa.xml",
         "classpath:/META-INF/opennms/applicationContext-dao.xml",
         "classpath*:/META-INF/opennms/component-service.xml",
+        "classpath*:/META-INF/opennms/component-measurement.xml",
         "classpath*:/META-INF/opennms/component-dao.xml",
-        "classpath:/META-INF/opennms/applicationContext-measurements-test.xml"
+        "classpath:/META-INF/opennms/applicationContext-measurements-rest-test.xml"
 })
 @JUnitConfigurationEnvironment(systemProperties={
         "org.opennms.rrd.strategyClass=org.opennms.netmgt.rrd.rrdtool.JniRrdStrategy"

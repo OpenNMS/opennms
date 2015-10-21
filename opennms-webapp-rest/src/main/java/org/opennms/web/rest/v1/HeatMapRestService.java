@@ -41,7 +41,6 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import org.json.JSONObject;
 import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.dao.api.OutageDao;
 import org.opennms.netmgt.model.HeatMapElement;
@@ -151,57 +150,52 @@ public class HeatMapRestService extends OnmsRestService {
     }
 
     @GET
-    @Produces(MediaType.APPLICATION_JSON)
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     @Transactional
     @Path("outages/categories")
     public Response outagesByCategories() throws IOException {
         final List<HeatMapElement> heatMapElements = m_outageDao.getHeatMapItemsForEntity("categories.categoryname", "categories.categoryid", null, null);
-        final JSONObject jo = new JSONObject(transformResults(heatMapElements, System.getProperty(CATEGORY_FILTER_PROPERTY_KEY, CATEGORY_FILTER_PROPERTY_DEFAULT)));
-        return Response.ok(jo.toString(), MediaType.APPLICATION_JSON).build();
+        return Response.ok(transformResults(heatMapElements, System.getProperty(CATEGORY_FILTER_PROPERTY_KEY, CATEGORY_FILTER_PROPERTY_DEFAULT))).build();
     }
 
     @GET
-    @Produces(MediaType.APPLICATION_JSON)
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     @Transactional
     @Path("outages/foreignSources")
     public Response outagesByForeignsources() throws IOException {
         final List<HeatMapElement> heatMapElements = m_outageDao.getHeatMapItemsForEntity("foreignsource", "0", null, null, "foreignsource");
-        final JSONObject jo = new JSONObject(transformResults(heatMapElements, System.getProperty(FOREIGNSOURCE_FILTER_PROPERTY_KEY, FOREIGNSOURCE_FILTER_PROPERTY_DEFAULT)));
-        return Response.ok(jo.toString(), MediaType.APPLICATION_JSON).build();
+        return Response.ok(transformResults(heatMapElements, System.getProperty(FOREIGNSOURCE_FILTER_PROPERTY_KEY, FOREIGNSOURCE_FILTER_PROPERTY_DEFAULT))).build();
     }
 
     @GET
-    @Produces(MediaType.APPLICATION_JSON)
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     @Transactional
     @Path("outages/monitoredServices")
     public Response outagesByServices() throws IOException {
         final List<HeatMapElement> heatMapElements = m_outageDao.getHeatMapItemsForEntity("service.servicename", "service.serviceid", null, null);
-        final JSONObject jo = new JSONObject(transformResults(heatMapElements, System.getProperty(SERVICE_FILTER_PROPERTY_KEY, SERVICE_FILTER_PROPERTY_DEFAULT)));
-        return Response.ok(jo.toString(), MediaType.APPLICATION_JSON).build();
+        return Response.ok(transformResults(heatMapElements, System.getProperty(SERVICE_FILTER_PROPERTY_KEY, SERVICE_FILTER_PROPERTY_DEFAULT))).build();
     }
 
     @GET
-    @Produces(MediaType.APPLICATION_JSON)
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     @Transactional
     @Path("outages/nodesByCategory/{category}")
     public Response outagesOfNodesByCategory(@PathParam("category") final String category) throws IOException {
         final List<HeatMapElement> heatMapElements = m_outageDao.getHeatMapItemsForEntity("node.nodelabel", "node.nodeid", "categories.categoryname", category);
-        final JSONObject jo = new JSONObject(transformResults(heatMapElements, null));
-        return Response.ok(jo.toString(), MediaType.APPLICATION_JSON).build();
+        return Response.ok(transformResults(heatMapElements, null)).build();
     }
 
     @GET
-    @Produces(MediaType.APPLICATION_JSON)
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     @Transactional
     @Path("outages/nodesByForeignSource/{foreignSource}")
     public Response outagesOfNodesByForeignSource(@PathParam("foreignSource") final String foreignSource) throws IOException {
         final List<HeatMapElement> heatMapElements = m_outageDao.getHeatMapItemsForEntity("node.nodelabel", "node.nodeid", "foreignsource", foreignSource);
-        final JSONObject jo = new JSONObject(transformResults(heatMapElements, null));
-        return Response.ok(jo.toString(), MediaType.APPLICATION_JSON).build();
+        return Response.ok(transformResults(heatMapElements, null)).build();
     }
 
     @GET
-    @Produces(MediaType.APPLICATION_JSON)
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     @Transactional
     @Path("outages/nodesByMonitoredService/{monitoredService}")
     public Response outagesOfNodesByService(@PathParam("monitoredService") final String monitoredService) throws IOException {
@@ -211,62 +205,57 @@ public class HeatMapRestService extends OnmsRestService {
     }
 
     @GET
-    @Produces(MediaType.APPLICATION_JSON)
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     @Transactional
     @Path("alarms/categories")
     public Response alarmsByCategories() throws IOException {
         boolean processAcknowledged = !Boolean.parseBoolean(System.getProperty(ONLY_UNACKNOWLEDGED_PROPERTY_KEY, ONLY_UNACKNOWLEDGED_PROPERTY_DEFAULT));
         final List<HeatMapElement> heatMapElements = m_alarmDao.getHeatMapItemsForEntity("categories.categoryname", "categories.categoryid", processAcknowledged, null, null);
-        final JSONObject jo = new JSONObject(transformResults(heatMapElements, System.getProperty(CATEGORY_FILTER_PROPERTY_KEY, CATEGORY_FILTER_PROPERTY_DEFAULT)));
-        return Response.ok(jo.toString(), MediaType.APPLICATION_JSON).build();
+        return Response.ok(transformResults(heatMapElements, System.getProperty(CATEGORY_FILTER_PROPERTY_KEY, CATEGORY_FILTER_PROPERTY_DEFAULT))).build();
     }
 
     @GET
-    @Produces(MediaType.APPLICATION_JSON)
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     @Transactional
     @Path("alarms/foreignSources")
     public Response alarmsByForeignsources() throws IOException {
         boolean processAcknowledged = !Boolean.parseBoolean(System.getProperty(ONLY_UNACKNOWLEDGED_PROPERTY_KEY, ONLY_UNACKNOWLEDGED_PROPERTY_DEFAULT));
         final List<HeatMapElement> heatMapElements = m_alarmDao.getHeatMapItemsForEntity("foreignsource", "0", processAcknowledged, null, null, "foreignsource");
-        final JSONObject jo = new JSONObject(transformResults(heatMapElements, System.getProperty(FOREIGNSOURCE_FILTER_PROPERTY_KEY, FOREIGNSOURCE_FILTER_PROPERTY_DEFAULT)));
-        return Response.ok(jo.toString(), MediaType.APPLICATION_JSON).build();
+        return Response.ok(transformResults(heatMapElements, System.getProperty(FOREIGNSOURCE_FILTER_PROPERTY_KEY, FOREIGNSOURCE_FILTER_PROPERTY_DEFAULT))).build();
     }
 
     @GET
-    @Produces(MediaType.APPLICATION_JSON)
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     @Transactional
     @Path("alarms/monitoredServices")
     public Response alarmsByServices() throws IOException {
         boolean processAcknowledged = !Boolean.parseBoolean(System.getProperty(ONLY_UNACKNOWLEDGED_PROPERTY_KEY, ONLY_UNACKNOWLEDGED_PROPERTY_DEFAULT));
         final List<HeatMapElement> heatMapElements = m_alarmDao.getHeatMapItemsForEntity("service.servicename", "service.serviceid", processAcknowledged, null, null);
-        final JSONObject jo = new JSONObject(transformResults(heatMapElements, System.getProperty(SERVICE_FILTER_PROPERTY_KEY, SERVICE_FILTER_PROPERTY_DEFAULT)));
-        return Response.ok(jo.toString(), MediaType.APPLICATION_JSON).build();
+        return Response.ok(transformResults(heatMapElements, System.getProperty(SERVICE_FILTER_PROPERTY_KEY, SERVICE_FILTER_PROPERTY_DEFAULT))).build();
     }
 
     @GET
-    @Produces(MediaType.APPLICATION_JSON)
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     @Transactional
     @Path("alarms/nodesByCategory/{category}")
     public Response alarmsOfNodesByCategory(@PathParam("category") final String category) throws IOException {
         boolean processAcknowledged = !Boolean.parseBoolean(System.getProperty(ONLY_UNACKNOWLEDGED_PROPERTY_KEY, ONLY_UNACKNOWLEDGED_PROPERTY_DEFAULT));
         final List<HeatMapElement> heatMapElements = m_alarmDao.getHeatMapItemsForEntity("node.nodelabel", "node.nodeid", processAcknowledged, "categories.categoryname", category);
-        final JSONObject jo = new JSONObject(transformResults(heatMapElements, null));
-        return Response.ok(jo.toString(), MediaType.APPLICATION_JSON).build();
+        return Response.ok(transformResults(heatMapElements, null)).build();
     }
 
     @GET
-    @Produces(MediaType.APPLICATION_JSON)
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     @Transactional
     @Path("alarms/nodesByForeignSource/{foreignSource}")
     public Response alarmsOfNodesByForeignSource(@PathParam("foreignSource") final String foreignSource) throws IOException {
         boolean processAcknowledged = !Boolean.parseBoolean(System.getProperty(ONLY_UNACKNOWLEDGED_PROPERTY_KEY, ONLY_UNACKNOWLEDGED_PROPERTY_DEFAULT));
         final List<HeatMapElement> heatMapElements = m_alarmDao.getHeatMapItemsForEntity("node.nodelabel", "node.nodeid", processAcknowledged, "foreignsource", foreignSource);
-        final JSONObject jo = new JSONObject(transformResults(heatMapElements, null));
-        return Response.ok(jo.toString(), MediaType.APPLICATION_JSON).build();
+        return Response.ok(transformResults(heatMapElements, null)).build();
     }
 
     @GET
-    @Produces(MediaType.APPLICATION_JSON)
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     @Transactional
     @Path("alarms/nodesByMonitoredService/{monitoredService}")
     public Response alarmsOfNodesByService(@PathParam("monitoredService") final String monitoredService) throws IOException {
@@ -275,6 +264,4 @@ public class HeatMapRestService extends OnmsRestService {
         final JSONObject jo = new JSONObject(transformResults(heatMapElements, null));
         return Response.ok(jo.toString(), MediaType.APPLICATION_JSON).build();
     }
-
 }
-

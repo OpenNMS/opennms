@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.jasper.measurement;
+package org.opennms.netmgt.jasper.measurement.remote;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -48,13 +48,13 @@ import org.slf4j.LoggerFactory;
 /**
  * Posts a given query to a given url using optional username and password.
  */
-class MeasurementApiConnector {
+class MeasurementApiClient {
 
     protected static final int CONNECT_TIMEOUT = 2500;
 
     protected static final int READ_TIMEOUT = 10000;
 
-    private static final Logger LOG = LoggerFactory.getLogger(MeasurementApiConnector.class);
+    private static final Logger LOG = LoggerFactory.getLogger(MeasurementApiClient.class);
 
     private final int connectTimeout;
 
@@ -62,11 +62,11 @@ class MeasurementApiConnector {
 
     private HttpURLConnection connection;
 
-    public MeasurementApiConnector() {
+    public MeasurementApiClient() {
         this(CONNECT_TIMEOUT, READ_TIMEOUT);
     }
 
-    public MeasurementApiConnector(int connectTimeout, int readTimeout) {
+    public MeasurementApiClient(int connectTimeout, int readTimeout) {
         this.connectTimeout = connectTimeout;
         this.readTimeout = readTimeout;
     }

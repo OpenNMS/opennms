@@ -26,13 +26,10 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.jasper.measurement;
+package org.opennms.netmgt.jasper.measurement.remote;
 
 import java.io.InputStream;
 
-/**
- * Created by mvrueden on 26/08/15.
- */
 class Result {
     private InputStream errorStream;
     private InputStream inputStream;

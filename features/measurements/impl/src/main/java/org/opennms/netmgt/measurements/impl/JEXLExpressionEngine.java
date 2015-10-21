@@ -3,27 +3,29 @@ package org.opennms.netmgt.measurements.impl;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import com.google.common.base.Preconditions;
+import com.google.common.collect.Maps;
+
 import org.apache.commons.jexl2.JexlContext;
 import org.apache.commons.jexl2.JexlEngine;
 import org.apache.commons.jexl2.JexlException;
 import org.apache.commons.jexl2.MapContext;
 import org.opennms.netmgt.measurements.api.ExpressionEngine;
-import org.opennms.netmgt.measurements.api.ExpressionException;
 import org.opennms.netmgt.measurements.api.FetchResults;
+import org.opennms.netmgt.measurements.api.exceptions.ExpressionException;
 import org.opennms.netmgt.measurements.model.Expression;
 import org.opennms.netmgt.measurements.model.QueryRequest;
 import org.opennms.netmgt.measurements.utils.Utils;
+import org.springframework.stereotype.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.common.base.Preconditions;
-import com.google.common.collect.Maps;
 
 /**
  * An expression engine implemented using JEXL.
  *
  * @author jwhite
  */
+@Component("expressionEngine")
 public class JEXLExpressionEngine implements ExpressionEngine {
 
     private static final Logger LOG = LoggerFactory.getLogger(JEXLExpressionEngine.class);
@@ -76,8 +78,7 @@ public class JEXLExpressionEngine implements ExpressionEngine {
             try {
                 expressions.put(e.getLabel(), jexl.createExpression(e.getExpression()));
             } catch (JexlException ex) {
-                throw new ExpressionException("Failed to parse expression label '" +
-                        e.getLabel() + "'.", ex);
+                throw new ExpressionException(ex, "Failed to parse expression label '{}'.", e.getLabel());
             }
         }
 
@@ -128,11 +129,11 @@ public class JEXLExpressionEngine implements ExpressionEngine {
                     // by subsequent expression in the row
                     jexlValues.put(expressionEntry.getKey(), derivedAsDouble);
                 } catch (NullPointerException|NumberFormatException e) {
-                    throw new ExpressionException("The return value from expression with label '" +
-                            expressionEntry.getKey() + "' could not be cast to a Double.", e);
+                    throw new ExpressionException(e, "The return value from expression with label '" +
+                            expressionEntry.getKey() + "' could not be cast to a Double.");
                 } catch (JexlException e) {
-                    throw new ExpressionException("Failed to evaluate expression with label '" +
-                            expressionEntry.getKey() + "'.", e);
+                    throw new ExpressionException(e, "Failed to evaluate expression with label '" +
+                            expressionEntry.getKey() + "'.");
                 }
             }
         }
