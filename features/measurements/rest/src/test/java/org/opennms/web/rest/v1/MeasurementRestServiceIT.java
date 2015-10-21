@@ -73,8 +73,8 @@ import org.springframework.test.context.web.WebAppConfiguration;
         "classpath*:/META-INF/opennms/component-service.xml",
         "classpath*:/META-INF/opennms/component-dao.xml",
         "classpath:/META-INF/opennms/mockEventIpcManager.xml",
+        "classpath*:/META-INF/opennms/component-measurement.xml",
         "classpath:/META-INF/opennms/applicationContext-measurements-rest-test.xml",
-        "classpath:/META-INF/opennms/applicationContext-measurements-rest.xml",
         "file:../../../opennms-webapp-rest/src/main/webapp/WEB-INF/applicationContext-svclayer.xml",
         "file:../../../opennms-webapp-rest/src/main/webapp/WEB-INF/applicationContext-cxf-common.xml"
 })
