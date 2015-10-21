@@ -123,7 +123,8 @@ include::text/performance-data-collection/collectors/wsman/detector.adoc[]
 
 [[ga-events]]
 == Events
-include::text/events.adoc[]
+include::text/events/events.adoc[]
+include::text/events/forward-elasticsearch.adoc[]
 
 [[ga-notifications]]
 == Notifications
