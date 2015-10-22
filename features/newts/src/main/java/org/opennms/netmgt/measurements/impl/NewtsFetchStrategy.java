@@ -81,7 +81,7 @@ public class NewtsFetchStrategy implements MeasurementFetchStrategy {
 
     private static final int RESOLUTION_MULTIPLIER = 2;
 
-    private static final int STEP_LOWER_BOUND_IN_MS = 30 * 1000;
+    private static final int STEP_LOWER_BOUND_IN_MS = Integer.getInteger("org.opennms.newts.config.step_lower_bound_ms", 30*1000);
 
     @Autowired
     private Context m_context;
