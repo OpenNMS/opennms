@@ -94,20 +94,33 @@ public class NewtsFetchStrategy implements MeasurementFetchStrategy {
     private SampleRepository m_sampleRepository;
 
     @Override
-    public FetchResults fetch(long start, long end, long step, int maxrows, List<Source> sources) {
+    public FetchResults fetch(long start, long end, long step, int maxrows, Long interval, Long heartbeat, List<Source> sources) {
         // Limit the step with a lower bound in order to prevent extremely large queries
-        long boundedStep = Math.max(STEP_LOWER_BOUND_IN_MS, step);
-        if (boundedStep != step) {
-            LOG.warn("Requested step size {} is too small. Using {}.", step, boundedStep);
+        long effectiveStep = Math.max(STEP_LOWER_BOUND_IN_MS, step);
+        if (effectiveStep != step) {
+            LOG.warn("Requested step size {} is too small. Using {}.", step, effectiveStep);
         }
 
-        // Make sure the fetchStep is evenly divisible by the INTERVAL_DIVIDER
-        if (boundedStep % INTERVAL_DIVIDER != 0) {
-            boundedStep += boundedStep % INTERVAL_DIVIDER;
+        long effectiveInterval;
+        if (interval == null) {
+            // Make sure the fetchStep is evenly divisible by the INTERVAL_DIVIDER
+            if (effectiveStep % INTERVAL_DIVIDER != 0) {
+                effectiveStep += effectiveStep % INTERVAL_DIVIDER;
+            }
+            effectiveInterval = effectiveStep / INTERVAL_DIVIDER;
+        } else {
+            effectiveInterval = interval;
         }
-        final long stepInMs = boundedStep;
-        long intervalInMs = stepInMs / INTERVAL_DIVIDER;
 
+        long effectiveHeartbeat;
+        if (heartbeat == null) {
+            effectiveHeartbeat = effectiveInterval * HEARTBEAT_MULTIPLIER;
+        } else {
+            effectiveHeartbeat = heartbeat;
+        }
+
+        // We need effectiveStep to be final, so we redefine it here
+        final long effectiveStepInMs = effectiveStep;
         final Optional<Timestamp> startTs = Optional.of(Timestamp.fromEpochMillis(start));
         final Optional<Timestamp> endTs = Optional.of(Timestamp.fromEpochMillis(end));
         final Map<String, Object> constants = Maps.newHashMap();
@@ -184,19 +197,19 @@ public class NewtsFetchStrategy implements MeasurementFetchStrategy {
             final String newtsResourceId = entry.getKey();
             final List<Source> listOfSources = entry.getValue();
 
-            ResultDescriptor resultDescriptor = new ResultDescriptor(intervalInMs);
+            ResultDescriptor resultDescriptor = new ResultDescriptor(effectiveInterval);
             for (Source source : listOfSources) {
                 final String metricName = source.getAttribute();
                 final String name = source.getLabel();
                 final AggregationFunction fn = toAggregationFunction(source.getAggregation());
 
-                resultDescriptor.datasource(name, metricName, HEARTBEAT_MULTIPLIER*intervalInMs, fn);
+                resultDescriptor.datasource(name, metricName, effectiveHeartbeat, fn);
                 resultDescriptor.export(name);
             }
 
             LOG.debug("Querying Newts for resource id {} with result descriptor: {}", newtsResourceId, resultDescriptor);
             Results<Measurement> results = m_sampleRepository.select(m_context, new Resource(newtsResourceId), startTs, endTs,
-                    resultDescriptor, Optional.of(Duration.millis(stepInMs)));
+                    resultDescriptor, Optional.of(Duration.millis(effectiveStepInMs)));
             Collection<Row<Measurement>> rows = results.getRows();
             LOG.debug("Found {} rows.", rows.size());
 
@@ -234,7 +247,7 @@ public class NewtsFetchStrategy implements MeasurementFetchStrategy {
             columns.putAll(myColumns);
         });
 
-        FetchResults fetchResults = new FetchResults(timestamps.get(), columns, stepInMs, constants);
+        FetchResults fetchResults = new FetchResults(timestamps.get(), columns, effectiveStep, constants);
         LOG.trace("Fetch results: {}", fetchResults);
         return fetchResults;
     }

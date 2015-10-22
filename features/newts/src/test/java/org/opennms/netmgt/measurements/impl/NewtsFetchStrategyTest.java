@@ -89,9 +89,7 @@ public class NewtsFetchStrategyTest {
 
     @Test
     public void canRetrieveAttributeWhenFallbackAttributeIsSet() throws Exception {
-        List<Source> sources = Lists.newArrayList(
-                createMockResource("icmplocalhost", "icmp", "127.0.0.1")
-        );
+        createMockResource("icmplocalhost", "icmp", "127.0.0.1");
         replay();
 
         Source sourceToBeFetched = new Source();
@@ -101,7 +99,7 @@ public class NewtsFetchStrategyTest {
         sourceToBeFetched.setAggregation("AVERAGE");
         sourceToBeFetched.setLabel("icmp");
 
-        FetchResults fetchResults = m_newtsFetchStrategy.fetch(1431047069000L - (60 * 60 * 1000), 1431047069000L, 300 * 1000, 0, Lists.newArrayList(sourceToBeFetched));
+        FetchResults fetchResults = m_newtsFetchStrategy.fetch(1431047069000L - (60 * 60 * 1000), 1431047069000L, 300 * 1000, 0, null, null, Lists.newArrayList(sourceToBeFetched));
         assertEquals(1, fetchResults.getColumns().keySet().size());
         assertTrue(fetchResults.getColumns().containsKey("icmplocalhost"));
         assertEquals(1, fetchResults.getTimestamps().length);
@@ -109,9 +107,7 @@ public class NewtsFetchStrategyTest {
 
     @Test
     public void canRetrieveFallbackAttributeWhenAttributeNotFound() throws Exception {
-        List<Source> sources = Lists.newArrayList(
-                createMockResource("icmplocalhost", "icmp", "127.0.0.1")
-        );
+        createMockResource("icmplocalhost", "icmp", "127.0.0.1");
         replay();
 
         Source sourceToBeFetched = new Source();
@@ -121,7 +117,7 @@ public class NewtsFetchStrategyTest {
         sourceToBeFetched.setAggregation("AVERAGE");
         sourceToBeFetched.setLabel("icmp");
 
-        FetchResults fetchResults = m_newtsFetchStrategy.fetch(1431047069000L - (60 * 60 * 1000), 1431047069000L, 300 * 1000, 0, Lists.newArrayList(sourceToBeFetched));
+        FetchResults fetchResults = m_newtsFetchStrategy.fetch(1431047069000L - (60 * 60 * 1000), 1431047069000L, 300 * 1000, 0, null, null, Lists.newArrayList(sourceToBeFetched));
         assertEquals(1, fetchResults.getColumns().keySet().size());
         assertTrue(fetchResults.getColumns().containsKey("icmplocalhost"));
         assertEquals(1, fetchResults.getTimestamps().length);
@@ -129,9 +125,7 @@ public class NewtsFetchStrategyTest {
 
     @Test
     public void cannotRetrieveUnknownAttributeAndUnknownFallbackAttribute() {
-        List<Source> sources = Lists.newArrayList(
-                createMockResource("icmplocalhost", "shouldNotBeFound", "127.0.0.1", false)
-        );
+        createMockResource("icmplocalhost", "shouldNotBeFound", "127.0.0.1", false);
         replay();
 
         Source sourceToBeFetched = new Source();
@@ -141,7 +135,7 @@ public class NewtsFetchStrategyTest {
         sourceToBeFetched.setAggregation("AVERAGE");
         sourceToBeFetched.setLabel("icmp");
 
-        FetchResults fetchResults = m_newtsFetchStrategy.fetch(1431047069000L - (60 * 60 * 1000), 1431047069000L, 300 * 1000, 0, Lists.newArrayList(sourceToBeFetched));
+        FetchResults fetchResults = m_newtsFetchStrategy.fetch(1431047069000L - (60 * 60 * 1000), 1431047069000L, 300 * 1000, 0, null, null, Lists.newArrayList(sourceToBeFetched));
         assertNull(fetchResults);
     }
 
@@ -154,7 +148,7 @@ public class NewtsFetchStrategyTest {
         );
         replay();
 
-        FetchResults fetchResults = m_newtsFetchStrategy.fetch(1431047069000L - (60 * 60 * 1000), 1431047069000L, 300 * 1000, 0, sources);
+        FetchResults fetchResults = m_newtsFetchStrategy.fetch(1431047069000L - (60 * 60 * 1000), 1431047069000L, 300 * 1000, 0, null, null, sources);
         assertEquals(3, fetchResults.getColumns().keySet().size());
         assertTrue(fetchResults.getColumns().containsKey("icmplocalhost"));
         assertTrue(fetchResults.getColumns().containsKey("snmplocalhost"));
@@ -170,7 +164,7 @@ public class NewtsFetchStrategyTest {
         );
         replay();
 
-        FetchResults fetchResults = m_newtsFetchStrategy.fetch(1431047069000L - (60 * 60 * 1000), 1431047069000L, 300 * 1000, 0, sources);
+        FetchResults fetchResults = m_newtsFetchStrategy.fetch(1431047069000L - (60 * 60 * 1000), 1431047069000L, 300 * 1000, 0, null, null, sources);
         // It's not possible to fetch multiple resources with the same label, we should only get 1 ICMP result
         assertEquals(1, fetchResults.getColumns().keySet().size());
     }
