@@ -32,10 +32,6 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.sprin
     <property name="categoryDao" ref="categoryDao"/>
     <property name="siteStatusViewConfigDao" ref="siteStatusViewConfigDao"/>
   </bean>
-  <!-- Outage Service beans -->
-  <bean id="outageService" class="org.opennms.web.svclayer.outage.DefaultOutageService">
-    <property name="dao" ref="outageDao"/>
-  </bean>
   <!-- Category Status View beans (note: categoryConfigDao is different that the DAO for the categories table -->
   <bean id="categoryConfigDao" class="org.opennms.web.svclayer.dao.support.DefaultCategoryConfigDao"/>
   <bean id="viewDisplayDao" class="org.opennms.web.svclayer.dao.support.DefaultViewDisplayDao"/>
