@@ -75,14 +75,12 @@
         >
       
         <ec:exportPdf fileName="Statistics Report List.pdf" tooltip="Export PDF"
+          viewResolver="org.opennms.web.extremecomponent.view.resolver.OnmsPdfViewResolver"
           headerColor="black" headerBackgroundColor="#b6c2da"
           headerTitle="Statistics Report List" />
         <ec:exportXls fileName="Statistics Report List.xls" tooltip="Export Excel" />
       
         <ec:row highlightRow="false">
-        <%--
-          <ec:column property="name" interceptor="org.opennms.web.svclayer.outage.GroupColumnInterceptor"/>
-          --%>
 
           <ec:column property="description" title="Enter Filter Text Above <br/> <br/> Report Description">
           	<c:url var="reportUrl" value="statisticsReports/report.htm">
@@ -97,14 +95,6 @@
             ${row.durationString}
           </ec:column>
           
-          
-        <%--
-          <ec:column property="jobStartedDate" title="Enter Filter Text Above <br/> <br/> Job Started"  cell="date" format="MMM d, yyyy  HH:mm:ss"/>
-          <ec:column property="jobCompletedDate" title="Enter Filter Text Above <br/> <br/> Job Completed"  cell="date" format="MMM d, yyyy  HH:mm:ss"/>
-          <ec:column property="Enter Filter Text Above <br/> <br/> jobDuration" title="Job Run Time">
-            ${row.jobDurationString}
-          </ec:column>
-        --%>
 
           <ec:column property="maxDatumValue" title="Enter Filter Text Above <br/> <br/> Max Value">
             ${row.maxDatumValue}
