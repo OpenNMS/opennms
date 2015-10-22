@@ -29,8 +29,6 @@
 package org.opennms.web.rest.v1;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
-
 import java.util.Map;
 
 import javax.ws.rs.WebApplicationException;

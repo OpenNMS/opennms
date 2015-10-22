@@ -34,7 +34,6 @@ import java.util.Queue;
 
 import org.opennms.core.logging.Logging;
 import org.opennms.protocols.icmp.ICMPEchoPacket;
-import org.opennms.protocols.icmp.ICMPHeader;
 import org.opennms.protocols.icmp.IcmpSocket;
 import org.opennms.protocols.rt.Messenger;
 import org.slf4j.Logger;

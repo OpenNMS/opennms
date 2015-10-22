@@ -42,8 +42,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.util.Assert;
 
-import javax.naming.event.EventContext;
-
 /**
  * This event sends incoming events to an {@link EventForwarder} that uses Camel+ActiveMQ to 
  * forward events to an external ActiveMQ broker. 
