@@ -32,7 +32,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -43,6 +42,8 @@ import javax.ws.rs.core.Response;
 
 import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.dao.api.OutageDao;
+import org.opennms.netmgt.model.HeatMapDTOCollection;
+import org.opennms.netmgt.model.HeatMapDTOItem;
 import org.opennms.netmgt.model.HeatMapElement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -90,11 +91,11 @@ public class HeatMapRestService extends OnmsRestService {
      * @param heatMapElements the list of heatmap elements
      * @return the map for the json response
      */
-    private Map<String, List<Map<String, Object>>> transformResults(List<HeatMapElement> heatMapElements, String filter) {
+    private HeatMapDTOCollection transformResults(List<HeatMapElement> heatMapElements, String filter) {
         /**
          * the item list
          */
-        final List<Map<String, Object>> itemList = new ArrayList<>();
+        final List<HeatMapDTOItem> itemList = new ArrayList<>();
 
         /**
          * Helper field for sizes
@@ -119,11 +120,11 @@ public class HeatMapRestService extends OnmsRestService {
                 if (filter == null || heatMapElement.getName().matches(filter)) {
                     elementSizes.put(heatMapElement.getName(), heatMapElement.getServicesTotal());
 
-                    Map<String, Object> item = new HashMap<>();
-                    item.put("id", heatMapElement.getName());
-                    item.put("elementId", heatMapElement.getId());
-                    item.put("color", Lists.newArrayList(heatMapElement.getColor()));
-                    itemList.add(item);
+                    HeatMapDTOItem heatMapDTOItem = new HeatMapDTOItem();
+                    heatMapDTOItem.setId(heatMapElement.getName());
+                    heatMapDTOItem.setElementId(heatMapElement.getId());
+                    heatMapDTOItem.setColor(Lists.newArrayList(heatMapElement.getColor()));
+                    itemList.add(heatMapDTOItem);
 
                     totalServices += heatMapElement.getServicesTotal();
                 }
@@ -134,19 +135,19 @@ public class HeatMapRestService extends OnmsRestService {
          * now iterate over the results and set the size attribute for
          * each entry...
          */
-        for (Map<String, Object> map : itemList) {
-            int nodesInEntity = elementSizes.get(map.get("id"));
-            double size = (double) nodesInEntity / (double) totalServices;
-            map.put("size", Lists.newArrayList(Double.valueOf(size)));
+        for (HeatMapDTOItem heatMapDTOItem : itemList) {
+            int servicesInEntity = elementSizes.get(heatMapDTOItem.getId());
+            double size = (double) servicesInEntity / (double) totalServices;
+            heatMapDTOItem.setSize(Lists.newArrayList(Double.valueOf(size)));
         }
 
         /**
          * create the "outer" map and add the list to it...
          */
-        Map<String, List<Map<String, Object>>> map = new HashMap<>();
-        map.put("children", itemList);
+        HeatMapDTOCollection heatMapDTOCollection = new HeatMapDTOCollection();
+        heatMapDTOCollection.setHeatMapDTOItems(itemList);
 
-        return map;
+        return heatMapDTOCollection;
     }
 
     @GET
