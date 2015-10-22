@@ -30,8 +30,6 @@ package org.opennms.dashboard.client;
 
 import com.google.gwt.user.client.ui.DockPanel;
 import com.google.gwt.user.client.ui.FlexTable;
-import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.VerticalPanel;
 
 /**
  * <p>Abstract PageableTableView class.</p>

@@ -28,11 +28,8 @@
 
 package org.opennms.web.element;
 
-import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-
 import org.opennms.netmgt.model.OnmsNode;
 
 public interface NetworkElementFactoryInterface {

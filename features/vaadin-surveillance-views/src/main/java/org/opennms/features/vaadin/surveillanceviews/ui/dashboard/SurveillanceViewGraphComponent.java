@@ -32,7 +32,6 @@ import com.google.common.util.concurrent.MoreExecutors;
 import com.vaadin.data.Property;
 import com.vaadin.server.Page;
 import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.JavaScript;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.NativeSelect;
 import com.vaadin.ui.VerticalLayout;

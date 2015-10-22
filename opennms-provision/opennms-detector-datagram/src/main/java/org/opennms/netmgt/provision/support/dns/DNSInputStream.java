@@ -245,6 +245,10 @@ public class DNSInputStream extends ByteArrayInputStream {
             return new DNSAddressRR(rrName, rrType, rrClass, rrTTL, rrDNSIn);
         } catch (Throwable ex) {
             throw new IOException("Unknown DNSAddressRR (type " + " (" + rrType + "))" + "\nOriginating Exception: " + ex.getMessage());
+        } finally {
+            if (rrDNSIn != null) {
+                rrDNSIn.close();
+            }
         }
     }
 }

@@ -33,6 +33,7 @@ import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 
@@ -106,7 +107,7 @@ public class ConfirmationDialog extends Window implements Window.CloseListener, 
     }
 
     public void open() {
-        getUI().getCurrent().addWindow(this);
+        UI.getCurrent().addWindow(this);
     }
 
     public ConfirmationDialog withOkLabel(String okLabel) {

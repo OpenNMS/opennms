@@ -28,6 +28,15 @@
 
 package org.opennms.netmgt.provision.detector.jmx;
 
+import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.netmgt.provision.support.SyncAbstractDetector;
+import org.opennms.netmgt.provision.support.jmx.connectors.ConnectionWrapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.management.InstanceNotFoundException;
+import javax.management.MalformedObjectNameException;
+import javax.management.ObjectName;
 import java.io.IOException;
 import java.io.InterruptedIOException;
 import java.net.ConnectException;

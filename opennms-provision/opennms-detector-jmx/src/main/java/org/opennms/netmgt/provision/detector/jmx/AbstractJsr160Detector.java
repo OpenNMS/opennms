@@ -28,12 +28,7 @@
 
 package org.opennms.netmgt.provision.detector.jmx;
 
-import java.io.IOException;
-import java.net.ConnectException;
-import java.net.InetAddress;
-import java.net.MalformedURLException;
-import java.util.Map;
-
+import com.google.common.collect.Maps;
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.jmx.MBeanServer;
@@ -44,7 +39,8 @@ import org.opennms.netmgt.jmx.connection.JmxServerConnector;
 import org.opennms.netmgt.jmx.impl.connection.connectors.Jsr160ConnectionFactory;
 import org.opennms.netmgt.jmx.impl.connection.connectors.PlatformMBeanServerConnector;
 
-import com.google.common.collect.Maps;
+import java.net.InetAddress;
+import java.util.Map;
 
 /**
  * <p>Abstract AbstractJsr160Detector class.</p>
