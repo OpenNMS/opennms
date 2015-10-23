@@ -253,7 +253,9 @@ public final class SyslogHandler implements Fiber {
         m_status = STOP_PENDING;
 
         try {
-            m_receiver.stop();
+            if (m_receiver != null) {
+                m_receiver.stop();
+            }
         } catch (InterruptedException e) {
             LOG.warn("The thread was interrupted while attempting to join sub-threads", e);
         }
