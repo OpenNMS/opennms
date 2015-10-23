@@ -45,11 +45,14 @@ public interface MeasurementFetchStrategy {
      * @param start      timestamp in milliseconds
      * @param end        timestamp in milliseconds
      * @param step       desired resolution in milliseconds - actual resolution might differ
-     * @param maxrows    maximum number of rows- no limit when <= 0
+     * @param maxrows    maximum number of rows - no limit when <= 0
+     * @param interval   duration in milliseconds, used by strategies that implement late aggregation
+     * @param heartbeat  duration in milliseconds, used by strategies that implement late aggregation 
      * @param sources    array of sources - these should have unique labels
      * @return           null when a resource id or attribute cannot be found
      * @throws Exception
      */
     public FetchResults fetch(long start, long end, long step, int maxrows,
+            Long interval, Long heartbeat,
             List<Source> sources) throws Exception;
 }

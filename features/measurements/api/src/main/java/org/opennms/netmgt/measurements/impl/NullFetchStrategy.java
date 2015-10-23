@@ -46,6 +46,7 @@ public class NullFetchStrategy implements MeasurementFetchStrategy {
      */
     @Override
     public FetchResults fetch(long start, long end, long step, int maxrows,
+            Long interval, Long heartbeat,
             List<Source> sources) throws Exception {
         return null;
     }

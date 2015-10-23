@@ -76,12 +76,11 @@ public class NewtsFetchStrategy implements MeasurementFetchStrategy {
 
     private static final Logger LOG = LoggerFactory.getLogger(NewtsFetchStrategy.class);
 
-    // The heartbeat will default to this constant * the requested step
-    private static final int HEARTBEAT_MULTIPLIER = 3;
+    public static final long MIN_STEP_MS = Long.getLong("org.opennms.newts.query.minimum_step", 30*1000);
 
-    private static final int RESOLUTION_MULTIPLIER = 2;
+    public static final int INTERVAL_DIVIDER = Integer.getInteger("org.opennms.newts.query.interval_divider", 2);
 
-    private static final int STEP_LOWER_BOUND_IN_MS = 30 * 1000;
+    public static final long DEFAULT_HEARTBEAT_MS = Long.getLong("org.opennms.newts.query.heartbeat", 450*1000);
 
     @Autowired
     private Context m_context;
@@ -93,13 +92,8 @@ public class NewtsFetchStrategy implements MeasurementFetchStrategy {
     private SampleRepository m_sampleRepository;
 
     @Override
-    public FetchResults fetch(long start, long end, long step, int maxrows, List<Source> sources) {
-        // Limit the step with a lower bound in order to prevent extremely large queries
-        final long fetchStep = Math.max(STEP_LOWER_BOUND_IN_MS, step);
-        if (fetchStep != step) {
-            LOG.warn("Requested step size {} is too small. Using {}.", step, fetchStep);
-        }
-
+    public FetchResults fetch(long start, long end, long step, int maxrows, Long interval, Long heartbeat, List<Source> sources) {
+        final LateAggregationParams lag = getLagParams(step, interval, heartbeat);
         final Optional<Timestamp> startTs = Optional.of(Timestamp.fromEpochMillis(start));
         final Optional<Timestamp> endTs = Optional.of(Timestamp.fromEpochMillis(end));
         final Map<String, Object> constants = Maps.newHashMap();
@@ -176,19 +170,19 @@ public class NewtsFetchStrategy implements MeasurementFetchStrategy {
             final String newtsResourceId = entry.getKey();
             final List<Source> listOfSources = entry.getValue();
 
-            ResultDescriptor resultDescriptor = new ResultDescriptor(fetchStep);
+            ResultDescriptor resultDescriptor = new ResultDescriptor(lag.getInterval());
             for (Source source : listOfSources) {
                 final String metricName = source.getAttribute();
                 final String name = source.getLabel();
                 final AggregationFunction fn = toAggregationFunction(source.getAggregation());
 
-                resultDescriptor.datasource(name, metricName, HEARTBEAT_MULTIPLIER*fetchStep, fn);
+                resultDescriptor.datasource(name, metricName, lag.getHeartbeat(), fn);
                 resultDescriptor.export(name);
             }
 
             LOG.debug("Querying Newts for resource id {} with result descriptor: {}", newtsResourceId, resultDescriptor);
             Results<Measurement> results = m_sampleRepository.select(m_context, new Resource(newtsResourceId), startTs, endTs,
-                    resultDescriptor, Optional.of(Duration.millis(RESOLUTION_MULTIPLIER*fetchStep)));
+                    resultDescriptor, Optional.of(Duration.millis(lag.getStep())));
             Collection<Row<Measurement>> rows = results.getRows();
             LOG.debug("Found {} rows.", rows.size());
 
@@ -226,8 +220,8 @@ public class NewtsFetchStrategy implements MeasurementFetchStrategy {
             columns.putAll(myColumns);
         });
 
-        FetchResults fetchResults = new FetchResults(timestamps.get(), columns, fetchStep, constants);
-        LOG.debug("Fetch results: {}", fetchResults);
+        FetchResults fetchResults = new FetchResults(timestamps.get(), columns, lag.getStep(), constants);
+        LOG.trace("Fetch results: {}", fetchResults);
         return fetchResults;
     }
 
@@ -241,6 +235,90 @@ public class NewtsFetchStrategy implements MeasurementFetchStrategy {
         } else {
             throw new IllegalArgumentException("Unsupported aggregation function: " + fn);
         }
+    }
+
+    @VisibleForTesting
+    protected static class LateAggregationParams {
+        final long step;
+        final long interval;
+        final long heartbeat;
+
+        public LateAggregationParams(long step, long interval, long heartbeat) {
+            this.step = step;
+            this.interval = interval;
+            this.heartbeat = heartbeat;
+        }
+
+        public long getStep() {
+            return step;
+        }
+
+        public long getInterval() {
+            return interval;
+        }
+
+        public long getHeartbeat() {
+            return heartbeat;
+        }
+    }
+
+    /**
+     * Calculates the parameters to use for late aggregation.
+     *
+     * Since we're in the process of transitioning from an RRD-world, most queries won't
+     * contain a specified interval or heartbeat. For this reason, we need to derive sensible
+     * values that will allow users to visualize the data on the graphs without too many NaNs.
+     *
+     * The given step size will be variable based on the time range and the pixel width of the
+     * graph, so we need to derive the interval and heartbeat accordingly.
+     *
+     * Let S = step, I = interval and H = heartbeat, the constraints are as follows:
+     *    0 < S
+     *    0 < I
+     *    0 < H
+     *    S = aI      for some integer a >= 2
+     *    H = bI      for some integer b >= 2
+     *
+     * While achieving these constraints, we also want to optimize for:
+     *    min(|S - S*|)
+     * where S* is the user supplied step and S is the effective step.
+     *
+     */
+    @VisibleForTesting
+    protected static LateAggregationParams getLagParams(long step, Long interval, Long heartbeat) {
+
+        // Limit the step with a lower bound in order to prevent extremely large queries
+        long effectiveStep = Math.max(MIN_STEP_MS, step);
+        if (effectiveStep != step) {
+            LOG.warn("Requested step size {} is too small. Using {}.", step, effectiveStep);
+        }
+
+        // If the interval is specified, and already a multiple of the step then use it as is
+        long effectiveInterval = 0;
+        if (interval != null && interval < effectiveStep && (effectiveStep % interval) == 0) {
+            effectiveInterval = interval;
+        } else {
+            // Otherwise, make sure the step is evenly divisible by the INTERVAL_DIVIDER
+            if (effectiveStep % INTERVAL_DIVIDER != 0) {
+                effectiveStep += effectiveStep % INTERVAL_DIVIDER;
+            }
+            effectiveInterval = effectiveStep / INTERVAL_DIVIDER;
+        }
+
+        // Use the given heartbeat if specified, fall back to the default
+        long effectiveHeartbeat = heartbeat != null ? heartbeat : DEFAULT_HEARTBEAT_MS;
+        if (effectiveInterval < effectiveHeartbeat) {
+            if (effectiveHeartbeat % effectiveInterval != 0) {
+                effectiveHeartbeat += effectiveHeartbeat % effectiveInterval;
+            } else {
+                // Existing heartbeat is valid
+            }
+        } else {
+            effectiveHeartbeat = effectiveInterval + 1;
+            effectiveHeartbeat += effectiveHeartbeat % effectiveInterval;
+        }
+
+        return new LateAggregationParams(effectiveStep, effectiveInterval, effectiveHeartbeat);
     }
 
     @VisibleForTesting

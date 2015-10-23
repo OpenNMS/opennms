@@ -251,6 +251,6 @@ public abstract class MeasurementsRestServiceITCase {
         ));
 
         // Perform the query - this must fail
-        QueryResponse response = m_svc.query(request);
+        m_svc.query(request);
     }
 }

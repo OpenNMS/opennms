@@ -29,6 +29,7 @@
 package org.opennms.netmgt.measurements.api.exceptions;
 
 public class FetchException extends MeasurementException {
+    private static final long serialVersionUID = 716990245630852896L;
 
     public FetchException(Throwable cause, String message, Object... params) {
         super(cause, message, params);
