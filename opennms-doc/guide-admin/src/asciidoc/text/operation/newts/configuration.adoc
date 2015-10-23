@@ -46,7 +46,9 @@ The following properties, found in `${OPENNMS_HOME}/etc/opennms.properties`, can
 | `org.opennms.newts.config.ring_buffer_size`     | `8192`               | Maximum number of records that can be held in the ring buffer. Must be a power of two.
 | `org.opennms.newts.config.ttl`                  | `31540000`           | Number of seconds after which samples will automatically be deleted. Defaults to one year.
 | `org.opennms.newts.config.resource_shard`       | `604800`             | Duration in seconds for which samples will be stored at the same key. Defaults to 7 days in seconds.
-| `org.opennms.newts.config.step_lower_bound_ms`  | `30000`              | Minimum step size in milliseconds. Used to prevent large queries.
+| `org.opennms.newts.query.minimum_step`          | `30000`              | Minimum step size in milliseconds. Used to prevent large queries.
+| `org.opennms.newts.query.interval_divider`      | `2`                  | If no interval is specified in the query, the step will be divided into this many intervals when aggregating values.
+| `org.opennms.newts.query.heartbeat`             | `450000`             | Duriation in milliseconds. Used when no heartbeat is specified. Should generally be 1.5x your smallest collection interval.
 | `org.opennms.newts.config.cache.strategy`       | See bellow           | Canonical name of the class used for resource level caching. See the table bellow for all of the available options.
 | `org.opennms.newts.config.cache.max_entries`    | `8192`               | Maximum number of records to keep in the cache when using an in-memory caching strategy.
 |===

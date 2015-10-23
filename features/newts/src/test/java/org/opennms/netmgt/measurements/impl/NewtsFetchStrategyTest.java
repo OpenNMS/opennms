@@ -43,6 +43,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.opennms.netmgt.dao.api.ResourceDao;
 import org.opennms.netmgt.measurements.api.FetchResults;
+import org.opennms.netmgt.measurements.impl.NewtsFetchStrategy.LateAggregationParams;
 import org.opennms.netmgt.measurements.model.Source;
 import org.opennms.netmgt.model.OnmsAttribute;
 import org.opennms.netmgt.model.OnmsResource;
@@ -167,6 +168,40 @@ public class NewtsFetchStrategyTest {
         FetchResults fetchResults = m_newtsFetchStrategy.fetch(1431047069000L - (60 * 60 * 1000), 1431047069000L, 300 * 1000, 0, null, null, sources);
         // It's not possible to fetch multiple resources with the same label, we should only get 1 ICMP result
         assertEquals(1, fetchResults.getColumns().keySet().size());
+    }
+
+    @Test
+    public void canLimitStepSize() {
+        replay();
+        // Request a step size smaller than the lower bound
+        LateAggregationParams lag = NewtsFetchStrategy.getLagParams(NewtsFetchStrategy.MIN_STEP_MS - 1,
+                null, null);
+        assertEquals(NewtsFetchStrategy.MIN_STEP_MS, lag.step);
+    }
+
+    @Test
+    public void canCalculateLagParams() {
+        replay();
+
+        // Supply sane values and make sure the same values are returned
+        LateAggregationParams lag = NewtsFetchStrategy.getLagParams(30*1000L, 15*1000L, 450*1000L);
+        assertEquals(30*1000L, lag.step);
+        assertEquals(15*1000L, lag.interval);
+        assertEquals(450*1000L, lag.heartbeat);
+
+        // Supply a step that is not a multiple of the interval, make sure this is corrected
+        lag = NewtsFetchStrategy.getLagParams(31*1000L, 15*1000L, 450*1000L);
+        assertEquals(31000L, lag.step);
+        assertEquals(15500L, lag.interval);
+        assertEquals(450500L, lag.heartbeat);
+
+        // Supply an interval that is much larger than the step
+        lag = NewtsFetchStrategy.getLagParams(30*1000L, 150*1000L, 4500*1000L);
+        assertEquals(30*1000L, lag.step);
+        // Interval should be reduced
+        assertEquals(15*1000L, lag.interval);
+        // But the hearbeat should stay the same
+        assertEquals(4500*1000L, lag.heartbeat);
     }
 
     public Source createMockResource(final String label, final String attr, final String node) {
