@@ -29,6 +29,8 @@
 package org.opennms.netmgt.measurements.api.exceptions;
 
 public class ValidationException extends MeasurementException {
+    private static final long serialVersionUID = -6497214044842725684L;
+
     public ValidationException(String message, Object... params) {
         super(message, params);
     }

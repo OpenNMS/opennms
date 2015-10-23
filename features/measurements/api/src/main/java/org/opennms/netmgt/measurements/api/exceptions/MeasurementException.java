@@ -31,6 +31,7 @@ package org.opennms.netmgt.measurements.api.exceptions;
 import org.slf4j.helpers.MessageFormatter;
 
 public class MeasurementException extends Exception {
+    private static final long serialVersionUID = 6689687379641992161L;
 
     public MeasurementException(Throwable cause, String message, Object... params) {
         super(format(message, params), cause);
