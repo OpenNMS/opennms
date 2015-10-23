@@ -11,6 +11,9 @@ describe('Model: RequisitionsNode', function () {
     'foreign-id': '1001',
     'node-label': 'testing-node',
     'building' : 'Office',
+    'parent-foreign-source' : 'routers',
+    'parent-node-label' : 'rt001.local',
+    'parent-foreign-id' : null,
     'interface': [{
       'ip-addr': '10.0.0.1',
       'descr': 'eth0',
@@ -37,6 +40,9 @@ describe('Model: RequisitionsNode', function () {
   it('verify object translation', function () {
     var reqNode = new RequisitionNode('test-requisition', onmsNode, false);
     expect(reqNode).not.toBe(null);
+    expect(reqNode.parentForeignSource).toBe("routers");
+    expect(reqNode.parentForeignId).toBe(null);
+    expect(reqNode.parentNodeLabel).toBe("rt001.local");
     expect(reqNode.categories.length).toBe(1);
     expect(reqNode.categories[0].name).toBe('Servers');
     expect(reqNode.interfaces.length).toBe(1);
