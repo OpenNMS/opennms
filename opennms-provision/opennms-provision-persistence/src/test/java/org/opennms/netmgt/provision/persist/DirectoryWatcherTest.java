@@ -43,6 +43,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.opennms.core.spring.FileReloadCallback;
+import org.opennms.core.test.MockLogAppender;
 import org.springframework.core.io.Resource;
 
 public class DirectoryWatcherTest {
@@ -52,7 +53,7 @@ public class DirectoryWatcherTest {
 
 	@Before
 	public void setUp() throws Exception {
-		
+		MockLogAppender.setupLogging();
 		m_bldr = new FileSystemBuilder("target", "DirectoryWatcherTest");
 		m_bldr.file("file1.xml", "file1Contents").file("file2.xml", "file2Contents");
 		
@@ -73,6 +74,7 @@ public class DirectoryWatcherTest {
 	public void tearDown() throws Exception {
 		m_bldr.cleanup();
 		m_watcher.stop();
+		MockLogAppender.assertNoWarningsOrGreater();
 	}
 
 	@Test
@@ -96,7 +98,7 @@ public class DirectoryWatcherTest {
 	}
 
 	@Test
-	public void testFilUpdated() throws IOException {
+	public void testFilUpdated() throws Exception {
 	    assertEquals("file2Contents", m_watcher.getContents("file2.xml"));
 
 	    m_bldr.file("file2.xml", "updated-content");

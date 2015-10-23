@@ -58,7 +58,7 @@ public class FasterFilesystemForeignSourceRepository extends FilesystemForeignSo
 
     /** The foreign sources watcher. */
     private DirectoryWatcher<ForeignSource> m_foreignSources;
-    
+
     /** The requisitions watcher. */
     private DirectoryWatcher<Requisition> m_requisitions;
 
@@ -231,7 +231,7 @@ public class FasterFilesystemForeignSourceRepository extends FilesystemForeignSo
             try {
                 m_requisitions = new DirectoryWatcher<Requisition>(new File(m_requisitionPath), reqLoader());
             } catch (InterruptedException e) {
-                throw new ForeignSourceRepositoryException("Can't initialize Foreign Sources Directory Watcher for " + m_foreignSourcePath, e);
+                throw new ForeignSourceRepositoryException("Can't initialize Requisition Directory Watcher for " + m_requisitionPath, e);
             }
         }
         return m_requisitions;
@@ -246,7 +246,7 @@ public class FasterFilesystemForeignSourceRepository extends FilesystemForeignSo
         return new FileReloadCallback<ForeignSource>() {
             @Override
             public ForeignSource reload(ForeignSource object, Resource resource) throws IOException {
-                if (resource == null || resource.getFile() == null || resource.getFile().isDirectory()) {
+                if (resource == null || resource.getFile() == null) {
                     return object;
                 } else {
                     return RequisitionFileUtils.getForeignSourceFromFile(resource.getFile());
@@ -264,7 +264,7 @@ public class FasterFilesystemForeignSourceRepository extends FilesystemForeignSo
         return new FileReloadCallback<Requisition>() {
             @Override
             public Requisition reload(Requisition object, Resource resource) throws IOException {
-                if (resource == null || resource.getFile() == null || resource.getFile().isDirectory()) {
+                if (resource == null || resource.getFile() == null) {
                     return object;
                 } else {
                     return RequisitionFileUtils.getRequisitionFromFile(resource.getFile());

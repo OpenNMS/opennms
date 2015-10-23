@@ -140,8 +140,7 @@ public class DirectoryWatcher<T> implements Runnable, Closeable {
                     LOG.debug("waiting for create event");
                     key = watcher.take();
                     LOG.debug("got an event, process it");
-                }
-                catch (InterruptedException ie) {
+                } catch (InterruptedException ie) {
                     LOG.info("interruped, must be time to shut down...");
                     break;
                 }
@@ -150,30 +149,21 @@ public class DirectoryWatcher<T> implements Runnable, Closeable {
                     WatchEvent.Kind<?> kind = watchEvent.kind();
                     Path pathChanged = ((WatchEvent<Path>) watchEvent).context();
                     final String fileName = pathChanged.toString();
-                    if (new File(m_directory, fileName).isDirectory()) { // Ignoring changes on directories.
-                        LOG.debug("ignoring changes on directories.");
+                    final File file = new File(m_directory, fileName);
+                    if (file.isDirectory()) { // Ignoring changes on directories.
+                        LOG.debug("{} is a directory, ignoring.", file);
                         continue;
                     }
                     if (kind == StandardWatchEventKinds.OVERFLOW) {
                         LOG.debug("overflow receiving, ignoring changes.");
                         continue;
                     } else if (kind == StandardWatchEventKinds.ENTRY_CREATE) {
-                        LOG.info("file '{}' created.", fileName);
-                        try {
-                            getContents(fileName);
-                        } catch (FileNotFoundException e) {
-                            LOG.warn("file {} not found at {}", fileName, m_directory, e);
-                        }
+                        LOG.info("file '{}' created. Ignoring...", fileName);
                     } else if (kind == StandardWatchEventKinds.ENTRY_MODIFY) {
-                        LOG.info("file '{}' modified.", fileName);
+                        LOG.info("file '{}' modified. Removing entry from cache.", fileName);
                         m_contents.remove(fileName);
-                        try {
-                            getContents(fileName);
-                        } catch (FileNotFoundException e) {
-                            LOG.warn("file {} not found at {}", fileName, m_directory, e);
-                        }
                     } else if (kind == StandardWatchEventKinds.ENTRY_DELETE) {
-                        LOG.info("file '{}' deleted.", fileName);
+                        LOG.info("file '{}' deleted. Removing entry from cache.", fileName);
                         m_contents.remove(fileName);
                     }
                     // IMPORTANT: The key must be reset after processed
@@ -255,8 +245,11 @@ public class DirectoryWatcher<T> implements Runnable, Closeable {
         if (file.exists() && !file.isDirectory()) {
             FileReloadContainer<T> newContainer = new FileReloadContainer<T>(file, m_loader);
             newContainer.setReloadCheckInterval(0);
-            FileReloadContainer<T> container = m_contents.putIfAbsent(file.getName(), newContainer);
-            if (container == null) { container = newContainer; }
+            FileReloadContainer<T> container = m_contents.putIfAbsent(fileName, newContainer);
+            if (container == null) {
+                LOG.debug("getting content of {}", file);
+                container = newContainer;
+            }
             return container.getObject();
         } else {
             m_contents.remove(fileName);
