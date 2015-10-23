@@ -91,9 +91,7 @@ import org.springframework.transaction.annotation.Transactional;
         "classpath:/META-INF/opennms/applicationContext-daemon.xml",
         "classpath:/META-INF/opennms/applicationContext-setupIpLike-enabled.xml",
         "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml",
-        "classpath:/META-INF/opennms/applicationContext-eventDaemon.xml",
-        "classpath:/META-INF/opennms/applicationContext-eventUtil.xml",
-        "classpath:/META-INF/opennms/testEventProxy.xml"
+        "classpath:/META-INF/opennms/applicationContext-eventDaemon.xml"
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
@@ -321,7 +319,7 @@ public class SyslogdEventdLoadIT implements InitializingBean {
          * Rather than defaulting to localhost all the time, give an option in properties
          */
         String proxyHostName = "127.0.0.1";
-        String proxyHostPort = "5837";
+        String proxyHostPort = "5817";
         String proxyHostTimeout = String.valueOf(TcpEventProxy.DEFAULT_TIMEOUT);
         InetAddress proxyAddr = null;
         EventProxy proxy = null;

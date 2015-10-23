@@ -1785,6 +1785,11 @@
       </dependency>
       <dependency>
         <groupId>org.opennms.features.events</groupId>
+        <artifactId>org.opennms.features.events.syslog</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.features.events</groupId>
         <artifactId>org.opennms.features.events.traps</artifactId>
         <version>${project.version}</version>
       </dependency>
