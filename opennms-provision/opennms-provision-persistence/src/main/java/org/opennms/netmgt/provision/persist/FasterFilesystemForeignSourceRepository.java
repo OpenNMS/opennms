@@ -43,6 +43,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.core.io.Resource;
+import org.springframework.util.Assert;
 
 /**
  * <p>FasterFilesystemForeignSourceRepository class.</p>
@@ -69,6 +70,24 @@ public class FasterFilesystemForeignSourceRepository extends FilesystemForeignSo
      */
     public FasterFilesystemForeignSourceRepository() throws ForeignSourceRepositoryException {
         super();
+    }
+
+    /* (non-Javadoc)
+     * @see org.opennms.netmgt.provision.persist.AbstractForeignSourceRepository#importResourceRequisition(org.springframework.core.io.Resource)
+     */
+    @Override
+    public Requisition importResourceRequisition(final Resource resource) throws ForeignSourceRepositoryException {
+        Assert.notNull(resource);
+        try {
+            // Trust whatever is on the cache and not the physical location on disk.
+            LOG.debug("importResourceRequisition: saving cached requisition to disk");
+            final Requisition req = m_requisitions.getContents(resource.getFile().getName());
+            save(req);
+            return req;
+        } catch (Exception e) {
+            LOG.error("importResourceRequisition: can save requisition located at {}", resource, e);
+        }
+        return null; // This should never happen
     }
 
     /* (non-Javadoc)
