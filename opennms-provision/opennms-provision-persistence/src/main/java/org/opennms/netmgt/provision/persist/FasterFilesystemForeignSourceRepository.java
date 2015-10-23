@@ -33,8 +33,8 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.LinkedHashSet;
 import java.util.Set;
+import java.util.TreeSet;
 
 import org.opennms.core.spring.FileReloadCallback;
 import org.opennms.netmgt.provision.persist.foreignsource.ForeignSource;
@@ -46,6 +46,10 @@ import org.springframework.core.io.Resource;
 
 /**
  * <p>FasterFilesystemForeignSourceRepository class.</p>
+ * <p>The directory watcher should keep a cache of all requisitions on disk.</p>
+ * <p>The directory watcher will always return the object from the cache, and the cache should be updated when changes are detected on the directories.</p>
+ * 
+ * <p>The method AbstractForeignSourceRepository.importResourceRequisition will read the requisition and update the copy on disk. This should trigger the update of the cache.</p>
  */
 public class FasterFilesystemForeignSourceRepository extends FilesystemForeignSourceRepository implements InitializingBean {
 
@@ -74,11 +78,10 @@ public class FasterFilesystemForeignSourceRepository extends FilesystemForeignSo
     public Set<String> getActiveForeignSourceNames() {
         m_readLock.lock();
         try {
-            Set<String> activeForeignSourceNames = new LinkedHashSet<String>();
+            final Set<String> activeForeignSourceNames = new TreeSet<String>();
             activeForeignSourceNames.addAll(getForeignSourcesDirectoryWatcher().getBaseNamesWithExtension(".xml"));
             activeForeignSourceNames.addAll(getRequisitionsDirectoryWatcher().getBaseNamesWithExtension(".xml"));
             return activeForeignSourceNames;
-
         } finally {
             m_readLock.unlock();
         }
@@ -104,10 +107,10 @@ public class FasterFilesystemForeignSourceRepository extends FilesystemForeignSo
     public Set<ForeignSource> getForeignSources() throws ForeignSourceRepositoryException {
         m_readLock.lock();
         try {
-            Set<ForeignSource> foreignSources = new LinkedHashSet<ForeignSource>();
+            final Set<ForeignSource> foreignSources = new TreeSet<ForeignSource>();
             for(String baseName : getForeignSourcesDirectoryWatcher().getBaseNamesWithExtension(".xml")) {
                 try {
-                    ForeignSource contents = getForeignSourcesDirectoryWatcher().getContents(baseName+".xml");
+                    ForeignSource contents = getForeignSourcesDirectoryWatcher().getContents(baseName + ".xml");
                     foreignSources.add(contents);
                 } catch (FileNotFoundException e) {
                     LOG.info("Unable to load foreignSource {}: It must have been deleted by another thread", baseName, e);
@@ -129,7 +132,7 @@ public class FasterFilesystemForeignSourceRepository extends FilesystemForeignSo
         }
         m_readLock.lock();
         try {
-            return getForeignSourcesDirectoryWatcher().getContents(foreignSourceName+".xml");
+            return getForeignSourcesDirectoryWatcher().getContents(foreignSourceName + ".xml");
         } catch (FileNotFoundException e) {
             final ForeignSource fs = getDefaultForeignSource();
             fs.setName(foreignSourceName);
@@ -146,10 +149,10 @@ public class FasterFilesystemForeignSourceRepository extends FilesystemForeignSo
     public Set<Requisition> getRequisitions() throws ForeignSourceRepositoryException {
         m_readLock.lock();
         try {
-            Set<Requisition> requisitions = new LinkedHashSet<Requisition>();
+            final Set<Requisition> requisitions = new TreeSet<Requisition>();
             for(String baseName : getRequisitionsDirectoryWatcher().getBaseNamesWithExtension(".xml")) {
                 try {
-                    Requisition contents = getRequisitionsDirectoryWatcher().getContents(baseName+".xml");
+                    Requisition contents = getRequisitionsDirectoryWatcher().getContents(baseName + ".xml");
                     requisitions.add(contents);
                 } catch (FileNotFoundException e) {
                     LOG.info("Unable to load requisition {}: It must have been deleted by another thread", baseName, e);
@@ -171,7 +174,7 @@ public class FasterFilesystemForeignSourceRepository extends FilesystemForeignSo
         }
         m_readLock.lock();
         try {
-            return getRequisitionsDirectoryWatcher().getContents(foreignSourceName+".xml");
+            return getRequisitionsDirectoryWatcher().getContents(foreignSourceName + ".xml");
         } catch (FileNotFoundException e) {
             LOG.info("There is no requisition XML file for {} on {}", foreignSourceName, m_requisitionPath);
             return null;
@@ -243,14 +246,14 @@ public class FasterFilesystemForeignSourceRepository extends FilesystemForeignSo
         return new FileReloadCallback<ForeignSource>() {
             @Override
             public ForeignSource reload(ForeignSource object, Resource resource) throws IOException {
-                if (resource == null || resource.getFile() == null) {
+                if (resource == null || resource.getFile() == null || resource.getFile().isDirectory()) {
                     return object;
                 } else {
                     return RequisitionFileUtils.getForeignSourceFromFile(resource.getFile());
                 }
             }
         };
-    };
+    }
 
     /**
      * Requisitions loader.
@@ -261,7 +264,7 @@ public class FasterFilesystemForeignSourceRepository extends FilesystemForeignSo
         return new FileReloadCallback<Requisition>() {
             @Override
             public Requisition reload(Requisition object, Resource resource) throws IOException {
-                if (resource == null || resource.getFile() == null) {
+                if (resource == null || resource.getFile() == null || resource.getFile().isDirectory()) {
                     return object;
                 } else {
                     return RequisitionFileUtils.getRequisitionFromFile(resource.getFile());

@@ -94,7 +94,16 @@ public class DirectoryWatcherTest {
 		
 		assertEquals("file3Contents", m_watcher.getContents("file3.xml"));
 	}
-	
+
+	@Test
+	public void testFilUpdated() throws IOException {
+	    assertEquals("file2Contents", m_watcher.getContents("file2.xml"));
+
+	    m_bldr.file("file2.xml", "updated-content");
+
+	    assertEquals("updated-content", m_watcher.getContents("file2.xml"));
+	}
+
 	@Test(expected=FileNotFoundException.class)
 	public void testFileDeleted() throws IOException {
 		assertEquals("file2Contents", m_watcher.getContents("file2.xml"));
