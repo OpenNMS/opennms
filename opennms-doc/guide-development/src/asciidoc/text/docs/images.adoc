@@ -1,6 +1,10 @@
 
+// Allow image rendering
+:imagesdir: ../../images
+
 [[doc-guidelines-images]]
-== Include images
+=== Include images
+
 When visualizing complex problems you can help the explanation and provide greater information by using an image.
 We use in OpenNMS documentation modules two directories for images.
 
@@ -47,19 +51,19 @@ In this case it is a little bit easier to locate the AsciiDoc text file where th
 
 IMPORTANT: All images in the entire manual share the same namespace, it is therefore best practice to use unique identifiers for images.
 
-To include an image file, make sure that it resides in the 'images/' directory relative to the document you're including it within. 
+To include an image file, make sure that it resides in the 'images/' directory relative to the document you're including it within.
 Then use the following syntax for inclusion in the document:
 
 .First included image
 [source]
 ----
 .This is a caption of the image
-image::../images/01_opennms-logo.png[]
+image::docs/02_opennms-logo.png[]
 ----
 
 Which is rendered as:
 
 .This is a caption of the image
-image::../images/01_opennms-logo.png[]
+image::docs/02_opennms-logo.png[]
 
 IMPORTANT: The image path for the images you include is relative to the *.adoc source file, where you use the image.
