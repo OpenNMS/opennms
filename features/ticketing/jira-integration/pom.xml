@@ -52,6 +52,11 @@
             <type>pom</type>
         </dependency>
         <dependency>
+            <groupId>org.opennms.dependencies</groupId>
+            <artifactId>jersey-client-dependencies</artifactId>
+            <type>pom</type>
+        </dependency>
+        <dependency>
             <groupId>org.opennms.features.ticketing</groupId>
             <artifactId>org.opennms.features.ticketing.api</artifactId>
         </dependency>
@@ -73,6 +78,14 @@
             <artifactId>jira-rest-java-client</artifactId>
             <version>1.0</version>
             <exclusions>
+                <exclusion>
+                    <groupId>com.sun.jersey</groupId>
+                    <artifactId>jersey-client</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.sun.jersey.contribs</groupId>
+                    <artifactId>jersey-apache-client</artifactId>
+                </exclusion>
                 <exclusion>
                     <groupId>javax.xml.bind</groupId>
                     <artifactId>jaxb-api</artifactId>

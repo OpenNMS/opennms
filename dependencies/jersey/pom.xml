@@ -10,10 +10,6 @@
   <artifactId>jersey-dependencies</artifactId>
   <packaging>pom</packaging>
   <name>OpenNMS Dependencies Jersey</name>
-  <properties>
-    <jerseyVersion>1.19</jerseyVersion>
-    <jerseyContribVersion>1.19</jerseyContribVersion>
-  </properties>
   <dependencies>
     <dependency>
       <groupId>com.sun.jersey</groupId>
