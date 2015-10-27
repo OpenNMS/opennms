@@ -131,7 +131,7 @@
       </div>
       <div class="panel-body">
         <ul class="list-unstyled">
-            <li><a href="admin/sysconfig.jsp">System Information</a></li>
+            <li><a href="admin/sysconfig.jsp">System Configuration</a></li>
             <li><a href="admin/userGroupView/index.jsp">Configure Users, Groups and On-Call Roles</a></li>
         </ul>
       </div> <!-- panel-body -->
