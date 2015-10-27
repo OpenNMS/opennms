@@ -23,8 +23,11 @@ $color_citron_approx: #999900;
 $color_celeste_approx: #ccc;
 $color_alto_approx: #ddd;
 $color_bright_red_approx: #a20200;
-$color_alizarin_crimson_approx: #ef2929;
-$color_lima_approx: #73d216;
+$color_alizarin_crimson_approx: #a40000;
+$color_lima_approx: #4c9d29;
+
+$color_opennms: #4c9d29;
+$color_opennms_light: #5acc29;
 
 /* for now just disable menu collapse */
 /* $grid-float-breakpoint: 300px; */
@@ -33,7 +36,7 @@ $font-size-base:  12px;
 
 $font-family-base-sans-serif: 'Lucida Grande', Verdana, sans-serif;
 
-$navbar-logo-height: 44px;
+$navbar-logo-height: 64px;
 $navbar-margin-bottom: 0;
 $navbar-inverse-color: white;
 $navbar-inverse-bg: $color_mine_shaft_approx;

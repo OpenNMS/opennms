@@ -100,7 +100,6 @@ tr.header td {
 
 .gwt-DialogBox .Caption {
 	background-color:#366903;
-    background-image:url(../images/headingbg.png);
     background-position:center;
     background-repeat:repeat-x;
     border-style:none;
@@ -123,7 +122,6 @@ tr.header td {
 
 table.dashletTitlePanel td {
 	background-color:#366903;
-    background-image:url(../images/headingbg.png);
     background-position:center;
     background-repeat:repeat-x;
     border-style:none;
