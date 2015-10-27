@@ -10,10 +10,6 @@
   <artifactId>jersey-client-dependencies</artifactId>
   <packaging>pom</packaging>
   <name>OpenNMS Dependencies Jersey Client</name>
-  <properties>
-    <jerseyVersion>1.19</jerseyVersion>
-    <jerseyContribVersion>1.19</jerseyContribVersion>
-  </properties>
   <dependencies>
     <dependency>
       <groupId>com.sun.jersey</groupId>
@@ -41,6 +37,18 @@
         </exclusion>
       </exclusions>
     </dependency>
+    <dependency>
+      <groupId>com.sun.jersey</groupId>
+      <artifactId>jersey-json</artifactId>
+      <version>${jerseyVersion}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>com.sun.xml.bind</groupId>
+          <artifactId>jaxb-impl</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+
     <!-- replacing jsr311-api dep in jersey-client -->
     <dependency>
       <groupId>javax.ws.rs</groupId>
