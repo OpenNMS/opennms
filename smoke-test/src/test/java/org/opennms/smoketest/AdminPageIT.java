@@ -60,7 +60,7 @@ public class AdminPageIT extends OpenNMSSeleniumTestCase {
         for (final String[] entry : new String[][] {
                 // OpenNMS System
                 new String[] { "Configure Users, Groups and On-Call Roles", "//h3[text()='Users and Groups']" },
-                new String[] { "System Information", "//h3[text()='OpenNMS Configuration']" },
+                new String[] { "System Configuration", "//h3[text()='OpenNMS Configuration']" },
                 new String[] { "Instrumentation Log Reader", "//h3[text()='Filtering']" },
 
                 // Operations

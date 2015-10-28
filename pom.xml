@@ -1245,6 +1245,8 @@
     <jacksonVersion>1.9.13</jacksonVersion>
     <jasperreportsVersion>6.1.1</jasperreportsVersion>
     <jettyVersion>8.1.10.v20130312</jettyVersion>
+    <jerseyVersion>1.19</jerseyVersion>
+    <jerseyContribVersion>1.19</jerseyContribVersion>
     <jodaTimeVersion>2.1</jodaTimeVersion>
     <jrubyVersion>9.0.0.0</jrubyVersion>
     <karafVersion>2.4.0</karafVersion>
