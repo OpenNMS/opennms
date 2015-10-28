@@ -1,6 +1,9 @@
 
-[[doc-guidelines-writing]]
-== Writing
+// Allow image rendering
+:imagesdir: ../../images
+
+[[gd-docs-writing]]
+=== Writing
 The following rules will help you to commit correctly formatted and prepared documentation for inclusion in the OpenNMS project.
 It is important that we maintain a level of consistency across all of our committers and the documentation they produce.
 
@@ -11,11 +14,12 @@ This will also allow us to assign comments on a sentence in GitHub which will fa
 NOTE: Other than writing documentation, you can help out by providing comments on documentation, reviewing, suggesting improvements or reporting bugs.
 To do this head over to: http://issues.opennms.org/browse/NMS/component/10011[issue tracker for documentation]!
 
-[[doc-guidelines-conventions]]
-=== Conventions for text formatting
+[[gd-docs-conventions]]
+==== Conventions for text formatting
+
 The following conventions are used:
 
-* File names and path are written in `'poller-configuration.xml'` they will be rendered in: 'poller-configuration.xml';
+* File names and path are written in \`poller-configuration.xml` they will be rendered in: `poller-configuration.xml`;
 * Names that indicate special attention, e.g. this configuration matches \*any* entry: this is rendered as: this configuration matches *any* entry;
 * \_Italics_ is rendered as _Italics_ and used for emphasis and indicate internal names and abbreviations;
 * \*Bold* is rendered as *Bold* and should be used sparingly, for strong emphasis only;
@@ -23,16 +27,24 @@ The following conventions are used:
   (note: the content between the `+` signs _will_ be parsed);
 * \`command` is rendered as `command` (typically used for command-line or parts used in configuration files),
   (note: the content between the +`+ signs _will not_ be parsed);
-* Mono\+\+space\++d is rendered as Mono++space++d and is used for monospaced letters;
-* \'my/path/' is rendered as 'my/path/' this is used for file names and paths;
+* \`my/path/` is rendered as `my/path/` this is used for file names and paths;
 * \\``double quote'' (which is two grave accents to the left and two acute accents to the right) renders as ``double quote'';
 * \`single quote' (which is a single grave accent to the left and a single acute accent to the right) renders as `single quote'.
 
-[[doc-guidelines-gotchas]]
-=== Gotchas
+[[gd-docs-gotchas]]
+==== Gotchas
 
 * Always leave a blank line at the top of the documents section.
-It might be the title ends up in the last paragraph of the document;
+  It might be the title ends up in the last paragraph of the document;
+
+* Start in line 2 setting a relative path to the images directory to picture rendering on GitHub:
+
+[source]
+----
+// Allow image rendering
+:imagesdir: relative/path/to/images/dir
+----
+
 * Always leave a blank line at the end of documents;
 * As +{}+ are used for Asciidoc attributes, everything inside will be treated as an attribute.
   To avoid this you have to escape the opening brace: +\\{+.
@@ -50,7 +62,8 @@ and this a forced 2nd line
 This is the first line +
 and this a forced 2nd line
 
-== Headings and document structure
+[[gd-docs-structure]]
+=== Headings and document structure
 
 Each document starts over with headings from level zero (the document title).
 Each document should have an id.
@@ -82,8 +95,8 @@ content here ...
 
 ----
 
-[[doc-guidelines-links]]
-== Links
+[[gd-docs-links]]
+=== Links
 
 When you need to link to other parts of the manual you use the target id.
 To use a target id you follow this syntax:
@@ -95,8 +108,7 @@ To use a target id you follow this syntax:
 
 This will render as: <<doc-guidelines-links>>
 
-[NOTE]
-To use the target id in you document simply write the target id in your text, for example:
+NOTE: To use the target id in you document simply write the target id in your text, for example:
 
 see \<<target-id>>
 
@@ -110,7 +122,7 @@ If you need to link to another document with your own link text, then follow thi
 ----
 
 NOTE: Having lots of linked text may work well in a web context but is a distracting in print.
-The documentation we are creating is intended for both mediums so be considerate of this in your usage.
+      The documentation we are creating is intended for both mediums so be considerate of this in your usage.
 
 If you wish to use an external link, they are are added as:
 
@@ -133,7 +145,7 @@ Which renders as: http://www.opennms.org/
 NOTE: It is acceptable to have a period trailing after the URL, it will not render as a part of the link.
 
 [[doc-guideline-admonitions-notes]]
-== Admonitions and useful notes
+=== Admonitions and useful notes
 
 These are useful for defining specific sections, such as Notes, Tips and Important information.
 We encourage the use of them in the documentation as long as they are used appropriately.
@@ -193,20 +205,19 @@ A multiline variation:
 
 [source]
 ----
-[TIP]
-Tiptext. +
-Line 2.
+TIP: Tiptext. +
+     Line 2.
 ----
 
 Which is rendered as:
 
-[TIP]
-Tiptext. +
-Line 2.
+TIP: Tiptext. +
+     Line 2.
 
 NOTE: Remember to write these in full caps. There is no easy manner in which to add new admonitions, do not create your own.
 
-== Attributes
+[[gd-docs-attributes]]
+=== Attributes
 
 Common attributes you can use in documents:
 
@@ -220,7 +231,8 @@ Sample Asciidoc attributes which can be used:
 * \{docdir} - root directory of the documents
 * \{nbsp} - non-breaking space
 
-== Comments
+[[gd-docs-comments]]
+=== Comments
 
 There's a separate build that includes comments.
 When the comments are used they show up with a yellow background.
@@ -246,7 +258,9 @@ That is, missing includes here will still break the build!
 ////
 ----
 
-== Tables
+[[gd-docs-tables]]
+=== Tables
+
 For representing structured information you can use tables.
 A table is constructed in the following manner:
 
@@ -270,10 +284,10 @@ This is rendered as:
 |===
 
 NOTE: Please align your columns in the AsciiDoc source in order to give better readability when editing in text view.
-If you have a very long description, break at 120 characters and align the text to improve source readability.
+      If you have a very long description, break at 120 characters and align the text to improve source readability.
 
 .Example in AsciiDoc source for very long table descriptions
-image::../images/01_long-table-formatting.png[]
+image::docs/01_long-table-formatting.png[]
 
 this is rendered as:
 
@@ -288,5 +302,5 @@ this is rendered as:
                            3- the password. +
                           `basic-authentication` takes precedence over the `user` and `password` parameters.           | optional | `-`
 | `header[0-9]+`         | Additional headers to be sent along with the request. Example of valid parameter's names are
-                           `header0`, `header1` and `header180`. `header` is *not* a valid parameter name.            | optional | `-`
+                           `header0`, `header1` and `header180`. `header` is *not* a valid parameter name.             | optional | `-`
 |===
