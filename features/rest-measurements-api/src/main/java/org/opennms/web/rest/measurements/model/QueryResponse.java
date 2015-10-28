@@ -33,9 +33,12 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlValue;
 
 import com.google.common.collect.Maps;
 
@@ -77,6 +80,11 @@ public class QueryResponse {
      * Column values
      */
     private WrappedPrimitive[] columns;
+
+    /**
+     * String constants
+     */
+    private List<QueryConstant> constants;
 
     @XmlAttribute(name = "step")
     public long getStep() {
@@ -162,6 +170,23 @@ public class QueryResponse {
         }
     }
 
+    @XmlElement(name="constants")
+    public List<QueryConstant> getConstants() {
+        return this.constants;
+    }
+
+    public void setConstants(final List<QueryConstant> constants) {
+        this.constants = constants;
+    }
+
+    public void setConstants(final Map<String,Object> constants) {
+        final List<QueryConstant> c = new ArrayList<>();
+        for (final Map.Entry<String,Object> entry : constants.entrySet()) {
+            c.add(new QueryConstant(entry.getKey(), entry.getValue().toString()));
+        }
+        this.constants = c;
+    }
+
     /**
      * Convenience method.
      */
@@ -188,6 +213,7 @@ public class QueryResponse {
        return   com.google.common.base.Objects.equal(this.step, other.step)
              && com.google.common.base.Objects.equal(this.start, other.start)
              && com.google.common.base.Objects.equal(this.end, other.end)
+             && com.google.common.base.Objects.equal(this.constants, other.constants)
              && Arrays.equals(this.timestamps, other.timestamps)
              && Arrays.equals(this.labels, other.labels)
              && Arrays.equals(this.columns, other.columns);
@@ -196,7 +222,7 @@ public class QueryResponse {
     @Override
     public int hashCode() {
        return com.google.common.base.Objects.hashCode(
-                 this.step, this.start, this.end, this.timestamps, this.labels, this.columns);
+                 this.step, this.start, this.end, this.timestamps, this.labels, this.columns, this.constants);
     }
 
     @Override
@@ -208,6 +234,7 @@ public class QueryResponse {
                  .add("Timestamps", Arrays.toString(this.timestamps))
                  .add("Labels", Arrays.toString(this.labels))
                  .add("Columns", Arrays.toString(this.columns))
+                 .add("Constants", this.constants)
                  .toString();
     }
 
@@ -260,6 +287,28 @@ public class QueryResponse {
            return com.google.common.base.Objects.toStringHelper(this)
                      .add("Values", Arrays.toString(this.values))
                      .toString();
+        }
+    }
+
+    @XmlAccessorType(XmlAccessType.NONE)
+    @XmlRootElement(name="constant")
+    public static class QueryConstant {
+        @XmlAttribute private final String key;
+        @XmlValue     private final String value;
+
+        public QueryConstant() {
+            this.key = null;
+            this.value = null;
+        }
+        public QueryConstant(final String key, final String value) {
+            this.key = key;
+            this.value = value;
+        }
+        public String getKey() {
+            return this.key;
+        }
+        public String getValue() {
+            return this.value;
         }
     }
 }

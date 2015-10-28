@@ -196,6 +196,7 @@ public class MeasurementsRestService {
         response.setStep(results.getStep());
         response.setTimestamps(results.getTimestamps());
         response.setColumns(columns);
+        response.setConstants(results.getConstants());
 
         return response;
     }
