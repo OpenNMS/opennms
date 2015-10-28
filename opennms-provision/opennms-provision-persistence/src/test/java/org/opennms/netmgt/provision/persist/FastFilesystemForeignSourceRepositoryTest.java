@@ -40,6 +40,7 @@ import java.util.Set;
 import java.util.UUID;
 
 import org.apache.commons.io.FileUtils;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.opennms.core.xml.JaxbUtils;
@@ -66,8 +67,13 @@ public class FastFilesystemForeignSourceRepositoryTest extends ForeignSourceRepo
     public void setUp() throws Exception {
         m_defaultForeignSourceName = "imported:";
         m_requisitionDirectory = new File("target/opennms-home/etc/imports/pending");
+        m_requisitionDirectory.mkdirs();
         FileUtils.copyFile(new File("src/test/resources/requisition-test.xml"), getRequisitionFile());
+    }
 
+    @After
+    public void tearDown() throws Exception {
+       FileUtils.deleteDirectory(m_requisitionDirectory); 
     }
 
     private File getRequisitionFile() {

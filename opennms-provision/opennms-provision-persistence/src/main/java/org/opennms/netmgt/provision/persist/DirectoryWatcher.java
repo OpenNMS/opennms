@@ -251,10 +251,9 @@ public class DirectoryWatcher<T> implements Runnable, Closeable {
                 container = newContainer;
             }
             return container.getObject();
-        } else {
-            m_contents.remove(fileName);
-            throw new FileNotFoundException("there is no file called '" + fileName + "' in directory " + m_directory);
         }
+        m_contents.remove(fileName);
+        throw new FileNotFoundException("there is no file called '" + fileName + "' in directory " + m_directory);
     }
 
 }

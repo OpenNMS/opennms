@@ -82,16 +82,17 @@ public class FasterFilesystemForeignSourceRepository extends FilesystemForeignSo
             // Trust whatever is on the cache if exist.
             LOG.debug("importResourceRequisition: saving cached requisition to disk");
             final Requisition req = getRequisitionsDirectoryWatcher().getContents(resource.getFilename());
-            if (req == null) { // Falls back to the default implementation if the cache is empty.
-                LOG.debug("importResourceRequisition: the requisition {} is  not on the cache, falling back to disk.", resource.getFilename());
-                return super.importResourceRequisition(resource);
+            if (req != null) {
+                req.setResource(resource);
+                save(req);
+                return req;
             }
-            save(req);
-            return req;
-        } catch (Exception e) {
-            LOG.error("importResourceRequisition: can't save requisition located at {}", resource, e);
+        } catch (FileNotFoundException e) {
+            LOG.error("importResourceRequisition: can't save cached requisition associated with {}", resource, e);
         }
-        return null; // This should never happen
+        // Use the default implementation if the cache doesn't contain the requisition.
+        LOG.debug("importResourceRequisition: the requisition {} is  not on the cache, falling back to disk.", resource.getFilename());
+        return super.importResourceRequisition(resource);
     }
 
     /* (non-Javadoc)
