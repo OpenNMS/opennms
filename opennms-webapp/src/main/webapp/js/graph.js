@@ -115,7 +115,7 @@ GraphContainers = (function () {
       });
 
       // Build and render the graph
-      var graph = new Backshift.Graph.DC({
+      var graph = new Backshift.Graph.Flot({
         element: el[0],
         width: dim.width,
         height: dim.height,
@@ -123,7 +123,7 @@ GraphContainers = (function () {
         end: def.end,
         dataSource: ds,
         series: graphModel.series,
-        step: true,
+        printStatements: graphModel.printStatements,
         title: graphModel.title,
         verticalLabel: graphModel.verticalLabel
       });
@@ -191,7 +191,7 @@ GraphContainers = (function () {
         def.widthRatio = 0.8;
       }
       if (def.heightRatio === undefined || def.heightRatio === null) {
-        def.heightRatio = 0.3;
+        def.heightRatio = 0.4;
       }
 
       // Determine the target dimensions
@@ -204,8 +204,39 @@ GraphContainers = (function () {
           didDrawOneOrMorePlaceholders = true;
         });
       } else if (graphingEngine === "backshift") {
-        require(['backshift', 'dc'], function (backshift, dc) {
-          window.dc = dc;
+        require.config({
+            shim: {
+                'jquery.flot': {
+                    exports: 'jQuery.plot'
+                },
+                'jquery.flot.time': {
+                    deps: ['jquery.flot']
+                },
+                'jquery.flot.canvas': {
+                    deps: ['jquery.flot']
+                },
+                'jquery.flot.legend': {
+                    deps: ['jquery.flot']
+                },
+                'jquery.flot.axislabels': {
+                    deps: ['jquery.flot']
+                },
+                'jquery.flot.tooltip': {
+                    deps: ['jquery.flot']
+                },
+            },
+            paths: {
+               'jquery.flot'           : window.onmsGraphContainers.baseHref + 'lib/flot/jquery.flot.min',
+               'jquery.flot.time'      : window.onmsGraphContainers.baseHref + 'lib/flot/jquery.flot.time.min',
+               'jquery.flot.canvas'    : window.onmsGraphContainers.baseHref + 'lib/flot/jquery.flot.canvas.min',
+               'jquery.flot.legend'    : window.onmsGraphContainers.baseHref + 'lib/flot-legend/jquery.flot.legend.min',
+               'jquery.flot.axislabels': window.onmsGraphContainers.baseHref + 'lib/flot-axislabels/jquery.flot.axislabels',
+               'jquery.flot.tooltip'   : window.onmsGraphContainers.baseHref + 'lib/flot.tooltip/js/jquery.flot.tooltip.min'
+            }
+        });
+
+        require(['backshift', 'jquery.flot', 'jquery.flot.time', 'jquery.flot.canvas',
+                 'jquery.flot.legend', 'jquery.flot.axislabels', 'jquery.flot.tooltip'], function (backshift) {
           drawBackshiftGraph(el, def, dim);
         });
       } else {

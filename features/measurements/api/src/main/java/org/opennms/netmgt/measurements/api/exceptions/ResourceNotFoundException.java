@@ -31,6 +31,7 @@ package org.opennms.netmgt.measurements.api.exceptions;
 import org.opennms.netmgt.measurements.model.QueryRequest;
 
 public class ResourceNotFoundException extends MeasurementException {
+    private static final long serialVersionUID = -969754477921363951L;
 
     public ResourceNotFoundException(QueryRequest request) {
         super("Resource or attribute not found for {}", request);

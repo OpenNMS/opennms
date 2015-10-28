@@ -29,6 +29,8 @@
 package org.opennms.netmgt.measurements.api.exceptions;
 
 public class FilterException extends MeasurementException {
+    private static final long serialVersionUID = 4613129855600381779L;
+
     public FilterException(Throwable cause, String message, Object... params) {
         super(cause, message, params);
     }

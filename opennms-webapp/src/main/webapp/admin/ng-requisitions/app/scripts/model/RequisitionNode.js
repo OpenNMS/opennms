@@ -21,6 +21,11 @@ function RequisitionNode(foreignSource, node, isDeployed) {
 
   var self = this;
 
+  // Internal function for initialization purposes
+  var isEmpty = function(str) {
+    return (str === null || str === undefined || 0 === str.length); 
+  };
+
   /**
    * @description the foreign source
    * @ngdoc property
@@ -47,7 +52,7 @@ function RequisitionNode(foreignSource, node, isDeployed) {
    * @returns {string} The foreign Id
    */
   self.foreignId = node['foreign-id'];
-  if (self.foreignId == null || self.foreignId == undefined) {
+  if (isEmpty(self.foreignId)) {
     self.foreignId = new Date().getTime() + '';
   }
 
@@ -88,22 +93,24 @@ function RequisitionNode(foreignSource, node, isDeployed) {
   self.parentForeignSource = node['parent-foreign-source'];
 
   /**
-   * @description The parent foreign ID (for path outages), to uniquely identify the parent node (can not be used if parentForeignLabel is defined)
+   * @description The parent foreign ID (for path outages), to uniquely identify the parent node (can not be used if parentNodeLabel is defined)
    * @ngdoc property
    * @name RequisitionNode#parentForeignId
    * @propertyOf RequisitionNode
    * @returns {string} The parent foreign ID
    */
-  self.parentForeignId = node['parent-foreign-id'];
+  var _parentForeignId = node['parent-foreign-id'];
+  self.parentForeignId = isEmpty(_parentForeignId) ? null : _parentForeignId;
 
   /**
-   * @description The parent foreign kavek (for path outages), to uniquely identify the parent node (can not be used if parentForeignId is defined)
+   * @description The parent node label (for path outages), to uniquely identify the parent node (can not be used if parentForeignId is defined)
    * @ngdoc property
-   * @name RequisitionNode#parentForeignLabel
+   * @name RequisitionNode#parentNodeLabel
    * @propertyOf RequisitionNode
    * @returns {string} The parent foreign Label
    */
-  self.parentForeignLabel = node['parent-foreign-label'];
+  var _parentNodeLabel = node['parent-node-label'];
+  self.parentNodeLabel = isEmpty(_parentNodeLabel) ? null : _parentNodeLabel;
 
   /**
    * @description The array of interfaces
@@ -213,7 +220,7 @@ function RequisitionNode(foreignSource, node, isDeployed) {
       'interface': [],
       'parent-foreign-source': self.parentForeignSource,
       'parent-foreign-id': self.parentForeignId,
-      'parent-foreign-label': self.parentForeignLabel,
+      'parent-node-label': self.parentNodeLabel,
       'asset': [],
       'category': []
     };
