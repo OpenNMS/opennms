@@ -98,7 +98,8 @@ public abstract class AbstractSpringJerseyRestTestCase {
     public static String POST = "POST";
     public static String DELETE = "DELETE";
     public static String PUT = "PUT";
-    
+    public static String ACCEPT = "Accept";
+
     private static int nodeCounter = 1;
 
     ///String contextPath = "/opennms/rest";
@@ -482,6 +483,7 @@ public abstract class AbstractSpringJerseyRestTestCase {
     protected <T> T getXmlObject(JAXBContext context, String url, int expectedStatus, Class<T> expectedClass) throws Exception {
         MockHttpServletRequest request = createRequest(servletContext, GET, url, getUser(), getUserRoles());
         MockHttpServletResponse response = createResponse();
+        request.addHeader(ACCEPT, MediaType.APPLICATION_XML);
         dispatch(request, response);
         assertEquals(expectedStatus, response.getStatus());
 

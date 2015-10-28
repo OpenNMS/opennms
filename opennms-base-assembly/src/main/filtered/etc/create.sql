@@ -2638,3 +2638,21 @@ CREATE TABLE subcomponents (
 
 ALTER TABLE subcomponents ADD CONSTRAINT subcomponents_pkey PRIMARY KEY (component_id, subcomponent_id);
 ALTER TABLE subcomponents ADD CONSTRAINT subcomponents_component_id_subcomponent_id_key UNIQUE (component_id, subcomponent_id);
+
+--##################################################################
+--# Business Service Monitor (BSM) tables
+--##################################################################
+
+CREATE TABLE bsm_service (
+    id integer NOT NULL,
+    name text NOT NULL,
+    CONSTRAINT bsm_services_pkey PRIMARY KEY (id)
+);
+
+CREATE TABLE bsm_service_attributes (
+    bsm_service_id integer NOT NULL,
+    key character varying(255) NOT NULL,
+    value TEXT NOT NULL,
+    CONSTRAINT bsm_service_attributes_pkey PRIMARY KEY (bsm_service_id, key)
+);
+

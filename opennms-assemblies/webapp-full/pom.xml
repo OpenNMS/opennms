@@ -102,6 +102,17 @@
   </build>
   <dependencies>
     <dependency>
+      <groupId>org.opennms.features.bsm</groupId>
+      <artifactId>org.opennms.features.bsm.rest</artifactId>
+      <version>${project.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>*</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
       <groupId>org.opennms.features.ncs</groupId>
       <artifactId>ncs-alarm-gui</artifactId>
       <type>war</type>

@@ -118,5 +118,8 @@
 
     <!-- Elasticsearch event-forwarder-->
     <module>elasticsearch</module>
+
+    <!-- Business Service Monitor -->
+    <module>bsm</module>
   </modules>
 </project>
