@@ -31595,7 +31595,7 @@
 	mtrapargsInteger=%parm[#3]%
 	mtrapargsString=%parm[#4]%&lt;/p&gt;
 	</logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Warning</severity>
    </event>
    <event>
       <mask>
@@ -31637,7 +31637,7 @@
 	mtrapargsString03=%parm[#2]%
 	mtrapargsString=%parm[#3]%&lt;/p&gt;
 	</logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Cleared</severity>
    </event>
    <event>
       <mask>
@@ -31685,7 +31685,7 @@
 	mtrapargsInteger=%parm[#3]%
 	mtrapargsString=%parm[#4]%&lt;/p&gt;
 	</logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Minor</severity>
    </event>
    <event>
       <mask>
@@ -31733,7 +31733,7 @@
 	mtrapargsInteger=%parm[#3]%
 	mtrapargsString=%parm[#4]%&lt;/p&gt;
 	</logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Normal</severity>
    </event>
    <event>
       <mask>
@@ -31783,7 +31783,7 @@
 	mtrapargsInteger=%parm[#3]%
 	mtrapargsString=%parm[#4]%&lt;/p&gt;
 	</logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Warning</severity>
    </event>
    <event>
       <mask>
@@ -31833,7 +31833,7 @@
 	mtrapargsInteger=%parm[#3]%
 	mtrapargsString=%parm[#4]%&lt;/p&gt;
 	</logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Normal</severity>
    </event>
    <event>
       <mask>
@@ -31863,7 +31863,7 @@
         APC Event: atsControllerRestart trap received
 	mtrapargsString=%parm[#1]%&lt;/p&gt;
 	</logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Normal</severity>
    </event>
    <event>
       <mask>
@@ -31905,7 +31905,7 @@
 	xATSIdentProductName=%parm[#2]%
 	mtrapargsString=%parm[#3]%&lt;/p&gt;
 	</logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Warning</severity>
    </event>
    <event>
       <mask>
@@ -31947,7 +31947,7 @@
 	xATSIdentProductName=%parm[#2]%
 	mtrapargsString=%parm[#3]%&lt;/p&gt;
 	</logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Cleared</severity>
    </event>
    <event>
       <mask>
@@ -31995,7 +31995,7 @@
 	mtrapargsInteger=%parm[#3]%
 	mtrapargsString=%parm[#4]%&lt;/p&gt;
 	</logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Warning</severity>
    </event>
    <event>
       <mask>
@@ -32037,7 +32037,7 @@
 	xATSIdentProductName=%parm[#2]%
 	mtrapargsString=%parm[#3]%&lt;/p&gt;
 	</logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Cleared</severity>
    </event>
    <event>
       <mask>
@@ -32079,7 +32079,7 @@
 	mtrapargsString03=%parm[#2]%
 	mtrapargsString=%parm[#3]%&lt;/p&gt;
 	</logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Warning</severity>
    </event>
    <event>
       <mask>
@@ -32121,7 +32121,7 @@
 	mtrapargsString03=%parm[#2]%
 	mtrapargsString=%parm[#3]%&lt;/p&gt;
 	</logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Cleared</severity>
    </event>
    <event>
       <mask>
@@ -32151,7 +32151,7 @@
         APC Event: apcInternalCommunicationFault trap received
 	mtrapargsString=%parm[#1]%&lt;/p&gt;
 	</logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Warning</severity>
    </event>
    <event>
       <mask>
@@ -32181,7 +32181,7 @@
         APC Event: apcInternalCommunicationFaultCleared trap received
 	mtrapargsString=%parm[#1]%&lt;/p&gt;
 	</logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Cleared</severity>
    </event>
    <event>
       <mask>
@@ -32216,7 +32216,7 @@
 	upsOutletGroupControlIndex=%parm[#1]%
 	mtrapargsString=%parm[#2]%&lt;/p&gt;
 	</logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Warning</severity>
    </event>
    <event>
       <mask>
@@ -32247,7 +32247,7 @@
         APC Event: onbatterycommunicationLost trap received
 	mtrapargsString=%parm[#1]%&lt;/p&gt;
 	</logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Warning</severity>
    </event>
    <event>
       <mask>
@@ -32289,7 +32289,7 @@
 	mtrapargsInteger=%parm[#2]%
 	mtrapargsString=%parm[#3]%&lt;/p&gt;
 	</logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Minor</severity>
    </event>
    <event>
       <mask>
@@ -32330,7 +32330,7 @@
 	mtrapargsInteger=%parm[#2]%
 	mtrapargsString=%parm[#3]%&lt;/p&gt;
 	</logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Cleared</severity>
    </event>
    <event>
       <mask>
@@ -32371,7 +32371,7 @@
 	mtrapargsInteger=%parm[#2]%
 	mtrapargsString=%parm[#3]%&lt;/p&gt;
 	</logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Warning</severity>
    </event>
    <event>
       <mask>
@@ -32412,7 +32412,7 @@
 	mtrapargsInteger=%parm[#2]%
 	mtrapargsString=%parm[#3]%&lt;/p&gt;
 	</logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Cleared</severity>
    </event>
    <event>
       <mask>
@@ -32453,7 +32453,7 @@
 	mtrapargsInteger=%parm[#2]%
 	mtrapargsString=%parm[#3]%&lt;/p&gt;
 	</logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Normal</severity>
    </event>
    <event>
       <mask>
@@ -32494,7 +32494,7 @@
 	mtrapargsInteger=%parm[#2]%
 	mtrapargsString=%parm[#3]%&lt;/p&gt;
 	</logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Cleared</severity>
    </event>
    <event>
       <mask>
@@ -32632,7 +32632,7 @@
 	mtrapargsOctetString08=%parm[#18]%
 	mtrapargsString=%parm[#19]%&lt;/p&gt;
 	</logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Normal</severity>
    </event>
    <event>
       <mask>
@@ -32770,7 +32770,7 @@
 	mtrapargsOctetString08=%parm[#18]%
 	mtrapargsString=%parm[#19]%&lt;/p&gt;
 	</logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Cleared</severity>
    </event>
    <event>
       <mask>
@@ -32908,7 +32908,7 @@
 	mtrapargsOctetString08=%parm[#18]%
 	mtrapargsString=%parm[#19]%&lt;/p&gt;
 	</logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Warning</severity>
    </event>
    <event>
       <mask>
@@ -33046,7 +33046,7 @@
 	mtrapargsOctetString08=%parm[#18]%
 	mtrapargsString=%parm[#19]%&lt;/p&gt;
 	</logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Cleared</severity>
    </event>
    <event>
       <mask>
@@ -33184,7 +33184,7 @@
 	mtrapargsOctetString08=%parm[#18]%
 	mtrapargsString=%parm[#19]%&lt;/p&gt;
 	</logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Minor</severity>
    </event>
    <event>
       <mask>
@@ -33322,7 +33322,7 @@
 	mtrapargsOctetString08=%parm[#18]%
 	mtrapargsString=%parm[#19]%&lt;/p&gt;
 	</logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Cleared</severity>
    </event>
    <event>
       <mask>
@@ -33460,7 +33460,7 @@
 	mtrapargsOctetString08=%parm[#18]%
 	mtrapargsString=%parm[#19]%&lt;/p&gt;
 	</logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Major</severity>
    </event>
    <event>
       <mask>
@@ -33598,7 +33598,7 @@
 	mtrapargsOctetString08=%parm[#18]%
 	mtrapargsString=%parm[#19]%&lt;/p&gt;
 	</logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Major</severity>
    </event>
    <event>
       <mask>
@@ -33736,7 +33736,7 @@
 	mtrapargsOctetString08=%parm[#18]%
 	mtrapargsString=%parm[#19]%&lt;/p&gt;
 	</logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Major</severity>
    </event>
    <event>
       <mask>
@@ -33874,7 +33874,7 @@
 	mtrapargsOctetString08=%parm[#18]%
 	mtrapargsString=%parm[#19]%&lt;/p&gt;
 	</logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Cleared</severity>
    </event>
    <event>
       <mask>
@@ -33935,7 +33935,7 @@
 	mtrapargsInteger03=%parm[#5]%
 	mtrapargsString=%parm[#6]%&lt;/p&gt;
 	</logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Minor</severity>
    </event>
    <event>
       <mask>
@@ -33996,7 +33996,7 @@
 	mtrapargsInteger03=%parm[#5]%
 	mtrapargsString=%parm[#6]%&lt;/p&gt;
 	</logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Cleared</severity>
    </event>
    <event>
       <mask>
@@ -34057,7 +34057,7 @@
 	mtrapargsInteger03=%parm[#5]%
 	mtrapargsString=%parm[#6]%&lt;/p&gt;
 	</logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Warning</severity>
    </event>
    <event>
       <mask>
@@ -34118,7 +34118,7 @@
 	mtrapargsInteger03=%parm[#5]%
 	mtrapargsString=%parm[#6]%&lt;/p&gt;
 	</logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Cleared</severity>
    </event>
    <event>
       <mask>
@@ -34179,7 +34179,7 @@
 	mtrapargsInteger03=%parm[#5]%
 	mtrapargsString=%parm[#6]%&lt;/p&gt;
 	</logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Normal</severity>
    </event>
    <event>
       <mask>
@@ -34240,7 +34240,7 @@
 	mtrapargsInteger03=%parm[#5]%
 	mtrapargsString=%parm[#6]%&lt;/p&gt;
 	</logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Cleared</severity>
    </event>
    <event>
       <mask>
@@ -34282,7 +34282,7 @@
 	mtrapargsString03=%parm[#2]%
 	mtrapargsString=%parm[#3]%&lt;/p&gt;
 	</logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Minor</severity>
    </event>
    <event>
       <mask>
@@ -34324,7 +34324,7 @@
 	mtrapargsString03=%parm[#2]%
 	mtrapargsString=%parm[#3]%&lt;/p&gt;
 	</logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Cleared</severity>
    </event>
    <event>
       <mask>
@@ -34354,7 +34354,7 @@
         APC Event: upsFirmwareUpdateStarted trap received
 	mtrapargsString=%parm[#1]%&lt;/p&gt;
 	</logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Warning</severity>
    </event>
    <event>
       <mask>
@@ -34384,7 +34384,7 @@
         APC Event: upsFirmwareUpdateFinished trap received
 	mtrapargsString=%parm[#1]%&lt;/p&gt;
 	</logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Normal</severity>
    </event>
    <event>
       <mask>
@@ -34414,7 +34414,7 @@
         APC Event: upsFirmwareUpdateSucceeded trap received
 	mtrapargsString=%parm[#1]%&lt;/p&gt;
 	</logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Cleared</severity>
    </event>
    <event>
       <mask>
@@ -34444,7 +34444,7 @@
         APC Event: upsFirmwareUpdateFailed trap received
 	mtrapargsString=%parm[#1]%&lt;/p&gt;
 	</logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Minor</severity>
    </event>
    <event>
       <mask>
@@ -34474,7 +34474,7 @@
         APC Event: upsHasNoValidFirmware trap received
 	mtrapargsString=%parm[#1]%&lt;/p&gt;
 	</logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Minor</severity>
    </event>
    <event>
       <mask>
@@ -34504,7 +34504,7 @@
         APC Event: upsHasNoValidFirmwareCleared trap received
 	mtrapargsString=%parm[#1]%&lt;/p&gt;
 	</logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Cleared</severity>
    </event>
    <event>
       <mask>
@@ -34534,7 +34534,7 @@
         APC Event: upsLocalDisplayButtonFault trap received
 	mtrapargsString=%parm[#1]%&lt;/p&gt;
 	</logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Warning</severity>
    </event>
    <event>
       <mask>
@@ -34564,7 +34564,7 @@
         APC Event: upsLocalDisplayButtonFaultCleared trap received
 	mtrapargsString=%parm[#1]%&lt;/p&gt;
 	</logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Cleared</severity>
    </event>
    <event>
       <mask>
@@ -34594,7 +34594,7 @@
         APC Event: upsNeedsFactorySetupFault trap received
 	mtrapargsString=%parm[#1]%&lt;/p&gt;
 	</logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Minor</severity>
    </event>
    <event>
       <mask>
@@ -34624,7 +34624,7 @@
         APC Event: upsNeedsFactorySetupFaultCleared trap received
 	mtrapargsString=%parm[#1]%&lt;/p&gt;
 	</logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Cleared</severity>
    </event>
    <event>
       <mask>
@@ -34654,7 +34654,7 @@
         APC Event: upsEPOActive trap received
 	mtrapargsString=%parm[#1]%&lt;/p&gt;
 	</logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Major</severity>
    </event>
    <event>
       <mask>
@@ -34684,7 +34684,7 @@
         APC Event: upsEPOActiveCleared trap received
 	mtrapargsString=%parm[#1]%&lt;/p&gt;
 	</logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Cleared</severity>
    </event>
    <event>
       <mask>
@@ -34714,7 +34714,7 @@
         APC Event: upsFirmwareMismatch trap received
 	mtrapargsString=%parm[#1]%&lt;/p&gt;
 	</logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Minor</severity>
    </event>
    <event>
       <mask>
@@ -34744,7 +34744,7 @@
         APC Event: upsFirmwareMismatchCleared trap received
 	mtrapargsString=%parm[#1]%&lt;/p&gt;
 	</logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Cleared</severity>
    </event>
    <event>
       <mask>
@@ -34774,7 +34774,7 @@
         APC Event: upsOscillatorFailed trap received
 	mtrapargsString=%parm[#1]%&lt;/p&gt;
 	</logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Minor</severity>
    </event>
    <event>
       <mask>
@@ -34804,6 +34804,6 @@
         APC Event: upsOscillatorFailedCleared trap received
 	mtrapargsString=%parm[#1]%&lt;/p&gt;
 	</logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Cleared</severity>
    </event>
 </events>
