@@ -70,6 +70,16 @@ public class QueryRequest {
      */
     private int maxrows = 0;
 
+    /**
+     * Interval in ms.
+     */
+    private Long interval;
+
+    /**
+     * Heartbeat in ms.
+     */
+    private Long heartbeat;
+
     private List<Source> sources = Lists.newArrayListWithCapacity(0);
 
     private List<Expression> expressions = Lists.newArrayListWithCapacity(0);
@@ -110,6 +120,24 @@ public class QueryRequest {
 
     public void setMaxRows(int maxrows) {
         this.maxrows = maxrows;
+    }
+
+    @XmlAttribute(name = "interval")
+    public Long getInterval() {
+        return interval;
+    }
+
+    public void setInterval(Long interval) {
+        this.interval = interval;
+    }
+
+    @XmlAttribute(name = "heartbeat")
+    public Long getHeartbeat() {
+        return heartbeat;
+    }
+
+    public void setHeartbeat(Long heartbeat) {
+        this.heartbeat = heartbeat;
     }
 
     @XmlElement(name = "source")
@@ -154,6 +182,9 @@ public class QueryRequest {
        return   com.google.common.base.Objects.equal(this.step, other.step)
              && com.google.common.base.Objects.equal(this.start, other.start)
              && com.google.common.base.Objects.equal(this.end, other.end)
+             && com.google.common.base.Objects.equal(this.maxrows, other.maxrows)
+             && com.google.common.base.Objects.equal(this.interval, other.interval)
+             && com.google.common.base.Objects.equal(this.heartbeat, other.heartbeat)
              && com.google.common.base.Objects.equal(this.sources, other.sources)
              && com.google.common.base.Objects.equal(this.expressions, other.expressions)
              && com.google.common.base.Objects.equal(this.filters, other.filters);
@@ -162,7 +193,8 @@ public class QueryRequest {
     @Override
     public int hashCode() {
        return com.google.common.base.Objects.hashCode(
-                 this.step, this.start, this.end, this.sources, this.expressions, this.filters);
+                 this.step, this.start, this.end, this.maxrows, this.interval,
+                 this.heartbeat ,this.sources, this.expressions, this.filters);
     }
 
     @Override
@@ -171,6 +203,9 @@ public class QueryRequest {
                  .add("Step", this.step)
                  .add("Start", this.start)
                  .add("End", this.end)
+                 .add("Max Rows", this.maxrows)
+                 .add("Interval", this.interval)
+                 .add("Heartbeat", this.heartbeat)
                  .add("Sources", this.sources)
                  .add("Expressions", this.expressions)
                  .add("Filters", this.filters)

@@ -69,6 +69,8 @@ public class MeasurementsService {
                     request.getEnd(),
                     request.getStep(),
                     request.getMaxRows(),
+                    request.getHeartbeat(),
+                    request.getInterval(),
                     request.getSources());
         } catch (Exception e) {
             throw new FetchException(e, "Fetch failed: {}", e.getMessage());
@@ -102,6 +104,7 @@ public class MeasurementsService {
         response.setStep(results.getStep());
         response.setTimestamps(results.getTimestamps());
         response.setColumns(results.getColumns());
+        response.setConstants(results.getConstants());
         return response;
     }
 

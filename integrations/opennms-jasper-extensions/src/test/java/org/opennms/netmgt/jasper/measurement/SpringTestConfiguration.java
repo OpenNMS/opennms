@@ -28,16 +28,14 @@
 
 package org.opennms.netmgt.jasper.measurement;
 
-import java.util.List;
-
 import org.opennms.netmgt.jasper.helper.SpringHelper;
 import org.opennms.netmgt.measurements.api.ExpressionEngine;
 import org.opennms.netmgt.measurements.api.FetchResults;
 import org.opennms.netmgt.measurements.api.FilterEngine;
 import org.opennms.netmgt.measurements.api.MeasurementFetchStrategy;
 import org.opennms.netmgt.measurements.api.exceptions.ExpressionException;
+import org.opennms.netmgt.measurements.impl.NullFetchStrategy;
 import org.opennms.netmgt.measurements.model.QueryRequest;
-import org.opennms.netmgt.measurements.model.Source;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -67,12 +65,8 @@ public class SpringTestConfiguration {
 
     @Bean(name="measurementFetchStrategy")
     public MeasurementFetchStrategy createFetchStrategy() {
-        return new MeasurementFetchStrategy() {
-            @Override
-            public FetchResults fetch(long start, long end, long step, int maxrows, List<Source> sources) throws Exception {
-                return null; // dummy implementation
-            }
-        };
+        // Dummy implementation
+        return new NullFetchStrategy();
     }
 
     @Bean(name="springHelper")

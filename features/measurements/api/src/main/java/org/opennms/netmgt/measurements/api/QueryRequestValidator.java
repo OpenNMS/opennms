@@ -46,6 +46,28 @@ public class QueryRequestValidator {
         if (request.getStep() <= 0) {
             throw new ValidationException("Query step must be > 0: {}", request.getStep());
         }
+        if ((request.getHeartbeat() == null && request.getInterval() != null)
+                || (request.getHeartbeat() != null && request.getInterval() == null)) {
+            throw new ValidationException("If either the heartbeat or the interval are set, then both must be set.");
+        }
+        if (request.getHeartbeat() != null && request.getInterval() != null) {
+            if (request.getHeartbeat() <= 0) {
+                throw new ValidationException("Heartbeat must be positive: {}", request.getHeartbeat());
+            }
+            if (request.getInterval() <= 0) {
+                throw new ValidationException("Interval must be positive: {}", request.getInterval());
+            }
+
+            if (request.getStep() % request.getInterval() != 0) {
+                throw new ValidationException("Step must be a multiple of the interval. Step: {}, Interval: {}",
+                        request.getStep(), request.getInterval());
+            }
+
+            if (request.getHeartbeat() % request.getInterval() != 0) {
+                throw new ValidationException("Hearbeat must be a multiple of the interval. Interval: {} Hearbeat: {}",
+                        request.getInterval(), request.getHeartbeat());
+            }
+        }
 
         final Map<String,String> labels = new HashMap<>();
         for (final Source source : request.getSources()) {
