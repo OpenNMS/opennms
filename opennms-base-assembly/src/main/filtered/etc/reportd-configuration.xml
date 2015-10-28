@@ -6,7 +6,7 @@
   persist-reports="yes"
 > 
   <!--  
-    http://www.quartz-scheduler.org/docs/tutorials/crontrigger.html
+    http://www.quartz-scheduler.org/documentation/quartz-1.x/tutorials/crontrigger
         Field Name     Allowed Values      Allowed Special Characters
         Seconds        0-59                , - * /
         Minutes        0-59                , - * /

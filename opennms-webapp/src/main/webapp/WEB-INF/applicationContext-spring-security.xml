@@ -42,6 +42,25 @@
     <custom-filter position="LAST" ref="authFilterEnabler"/>
   </http>
   
+  <!-- Only use BASIC auth for the RESTful API v2 -->
+  <http pattern="/api/v2/**" realm="OpenNMS Realm">
+    <!-- OPTIONS pre-flight requests should always be accepted -->
+    <intercept-url pattern="/api/v2/**" method="OPTIONS" access="ROLE_ANONYMOUS,ROLE_REST,ROLE_ADMIN,ROLE_USER,ROLE_MOBILE"/>
+
+    <!-- read-only calls should be allowed for any user -->
+    <intercept-url pattern="/api/v2/**" method="GET" access="ROLE_REST,ROLE_ADMIN,ROLE_MOBILE,ROLE_USER"/>
+    <intercept-url pattern="/api/v2/**" method="HEAD" access="ROLE_REST,ROLE_ADMIN,ROLE_MOBILE,ROLE_USER"/>
+
+    <!-- read-write calls should be allowed for the REST and ADMIN roles -->
+    <intercept-url pattern="/api/v2/**" method="DELETE" access="ROLE_REST,ROLE_ADMIN"/>
+    <intercept-url pattern="/api/v2/**" method="POST" access="ROLE_REST,ROLE_ADMIN"/>
+    <intercept-url pattern="/api/v2/**" method="PUT" access="ROLE_REST,ROLE_ADMIN"/>
+
+    <http-basic />
+
+    <custom-filter position="LAST" ref="authFilterEnabler"/>
+  </http>
+
   <!-- Only use BASIC auth for the RSS URL -->
   <http pattern="/rss.jsp*" access-denied-page="/accessDenied.jsp" realm="OpenNMS Realm">
     <intercept-url pattern="/rss.jsp*" access="ROLE_REST,ROLE_ADMIN,ROLE_USER"/>
