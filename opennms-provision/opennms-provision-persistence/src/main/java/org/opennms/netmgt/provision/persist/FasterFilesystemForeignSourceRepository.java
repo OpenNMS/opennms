@@ -79,13 +79,17 @@ public class FasterFilesystemForeignSourceRepository extends FilesystemForeignSo
     public Requisition importResourceRequisition(final Resource resource) throws ForeignSourceRepositoryException {
         Assert.notNull(resource);
         try {
-            // Trust whatever is on the cache and not the physical location on disk.
+            // Trust whatever is on the cache if exist.
             LOG.debug("importResourceRequisition: saving cached requisition to disk");
-            final Requisition req = m_requisitions.getContents(resource.getFile().getName());
+            final Requisition req = getRequisitionsDirectoryWatcher().getContents(resource.getFilename());
+            if (req == null) { // Falls back to the default implementation if the cache is empty.
+                LOG.debug("importResourceRequisition: the requisition {} is  not on the cache, falling back to disk.", resource.getFilename());
+                return super.importResourceRequisition(resource);
+            }
             save(req);
             return req;
         } catch (Exception e) {
-            LOG.error("importResourceRequisition: can save requisition located at {}", resource, e);
+            LOG.error("importResourceRequisition: can't save requisition located at {}", resource, e);
         }
         return null; // This should never happen
     }
