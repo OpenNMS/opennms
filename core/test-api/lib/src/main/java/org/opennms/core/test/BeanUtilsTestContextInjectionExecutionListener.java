@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2010-2014 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -26,45 +26,25 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.correlation;
+package org.opennms.core.test;
 
-import java.util.Collection;
+import org.opennms.core.spring.BeanUtils;
+import org.springframework.context.access.DefaultLocatorFactory;
+import org.springframework.test.context.TestContext;
+import org.springframework.test.context.support.AbstractTestExecutionListener;
 
 /**
- * <p>CorrelationEngineRegistrar interface.</p>
- *
- * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
- * @version $Id: $
+ * This listener will inject the {@link ApplicationContext} from 
+ * the {@link TestContext} into {@link BeanUtils} so that it can locate
+ * beans inside the test context instead of using {@link DefaultLocatorFactory}.
+ * If {@link BeanUtils} uses {@link DefaultLocatorFactory}, it will start
+ * up another Spring context hierarchy inside the tests causing duplicate
+ * beans.
  */
-public interface CorrelationEngineRegistrar {
+public class BeanUtilsTestContextInjectionExecutionListener extends AbstractTestExecutionListener {
 
-    /**
-     * <p>addCorrelationEngine</p>
-     *
-     * @param engine a {@link org.opennms.netmgt.correlation.CorrelationEngine} object.
-     */
-    void addCorrelationEngine(CorrelationEngine engine);
-    
-    /**
-     * <p>addCorrelationEngine</p>
-     *
-     * @param engine a {@link org.opennms.netmgt.correlation.CorrelationEngine} object.
-     */
-    void addCorrelationEngines(CorrelationEngine... engines);
-    
-    /**
-     * <p>getEngines</p>
-     *
-     * @return a {@link java.util.List} object.
-     */
-    Collection<CorrelationEngine> getEngines();
-    
-    /**
-     * <p>findEngineByName</p>
-     *
-     * @param name a {@link java.lang.String} object.
-     * @return a {@link org.opennms.netmgt.correlation.CorrelationEngine} object.
-     */
-    CorrelationEngine findEngineByName(String name);
-
+	@Override
+	public void beforeTestMethod(TestContext testContext) throws Exception {
+		BeanUtils.setStaticApplicationContext(testContext.getApplicationContext());
+	}
 }

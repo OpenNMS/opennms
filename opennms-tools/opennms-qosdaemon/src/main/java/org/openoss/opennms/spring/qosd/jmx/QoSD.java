@@ -28,13 +28,11 @@
 
 package org.openoss.opennms.spring.qosd.jmx;
 
+import org.opennms.core.spring.BeanUtils;
+import org.opennms.netmgt.daemon.AbstractServiceDaemon;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.opennms.netmgt.daemon.AbstractServiceDaemon;
-import org.springframework.beans.factory.access.BeanFactoryLocator;
-import org.springframework.beans.factory.access.BeanFactoryReference;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.access.DefaultLocatorFactory;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 /**
@@ -93,10 +91,7 @@ public class QoSD extends AbstractServiceDaemon implements QoSDMBean {
 		LOG.debug("SPRING: thread.classLoader={}", Thread.currentThread().getContextClassLoader());
 
 		// finds the already instantiated OpenNMS daoContext
-		BeanFactoryLocator bfl = DefaultLocatorFactory.getInstance();
-		BeanFactoryReference bf = bfl.useBeanFactory("daoContext");
-		ApplicationContext daoContext = (ApplicationContext) bf.getFactory();
-
+		ApplicationContext daoContext = BeanUtils.getFactory("daoContext", ApplicationContext.class);
 
 		// this chooses if we expect AlarmMonitor to run in seperate j2ee container ( Jboss ) or in local
 		// OpenNMS spring container

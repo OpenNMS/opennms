@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2014 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -26,45 +26,33 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.correlation;
+package org.opennms.netmgt.daemon;
 
-import java.util.Collection;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
+import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
+import org.opennms.test.JUnitConfigurationEnvironment;
+import org.springframework.test.context.ContextConfiguration;
 
-/**
- * <p>CorrelationEngineRegistrar interface.</p>
- *
- * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
- * @version $Id: $
- */
-public interface CorrelationEngineRegistrar {
+@RunWith(OpenNMSJUnit4ClassRunner.class)
+@ContextConfiguration(locations={
+		"classpath:/META-INF/opennms/applicationContext-soa.xml",
+		"classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
+		"classpath:/META-INF/opennms/applicationContext-daemon.xml"
+})
+@JUnitConfigurationEnvironment//(systemProperties="activemq.data=target/activemq")
+@JUnitTemporaryDatabase(dirtiesContext=false)
+public class DaemonContextIT {
 
-    /**
-     * <p>addCorrelationEngine</p>
-     *
-     * @param engine a {@link org.opennms.netmgt.correlation.CorrelationEngine} object.
-     */
-    void addCorrelationEngine(CorrelationEngine engine);
-    
-    /**
-     * <p>addCorrelationEngine</p>
-     *
-     * @param engine a {@link org.opennms.netmgt.correlation.CorrelationEngine} object.
-     */
-    void addCorrelationEngines(CorrelationEngine... engines);
-    
-    /**
-     * <p>getEngines</p>
-     *
-     * @return a {@link java.util.List} object.
-     */
-    Collection<CorrelationEngine> getEngines();
-    
-    /**
-     * <p>findEngineByName</p>
-     *
-     * @param name a {@link java.lang.String} object.
-     * @return a {@link org.opennms.netmgt.correlation.CorrelationEngine} object.
-     */
-    CorrelationEngine findEngineByName(String name);
+	@Before
+	public void setUp() throws Throwable {
+	}
+
+	@Test
+	public void testActiveMqBroker() throws Throwable {
+		// TODO: Add some tests to make sure that the ActiveMQ broker started successfully
+	}
 
 }
