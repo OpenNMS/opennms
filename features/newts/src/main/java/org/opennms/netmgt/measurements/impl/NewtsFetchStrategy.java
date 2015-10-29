@@ -33,7 +33,13 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.concurrent.atomic.AtomicReference;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.Semaphore;
+import java.util.concurrent.ThreadFactory;
 import java.util.stream.Collectors;
 
 import org.opennms.netmgt.dao.api.ResourceDao;
@@ -50,6 +56,7 @@ import org.opennms.newts.api.Resource;
 import org.opennms.newts.api.Results;
 import org.opennms.newts.api.Results.Row;
 import org.opennms.newts.api.SampleRepository;
+import org.opennms.newts.api.SampleSelectCallback;
 import org.opennms.newts.api.Timestamp;
 import org.opennms.newts.api.query.AggregationFunction;
 import org.opennms.newts.api.query.ResultDescriptor;
@@ -61,14 +68,22 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Optional;
 import com.google.common.base.Strings;
+import com.google.common.base.Throwables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
 /**
  * Used to retrieve measurements from {@link org.opennms.newts.api.SampleRepository}.
  *
  * If a request to {@link #fetch} spans multiple resources, separate calls to
  * the {@link SampleRepository} will be performed in parallel.
+ *
+ * Reading the samples and computing the aggregated values can be very CPU intensive.
+ * The "parallelism" attribute is used to set an upper limit on how may concurrent threads
+ * can be used to perform these calculations. By default, this is set to the number of
+ * cores, but can be reduced if the operator wishes to ensure cores are available
+ * for other purposes.
  *
  * @author jwhite
  */
@@ -82,6 +97,8 @@ public class NewtsFetchStrategy implements MeasurementFetchStrategy {
 
     public static final long DEFAULT_HEARTBEAT_MS = Long.getLong("org.opennms.newts.query.heartbeat", 450*1000);
 
+    public static final int PARALLELISM = Integer.getInteger("org.opennms.newts.query.parallelism", Runtime.getRuntime().availableProcessors());
+
     @Autowired
     private Context m_context;
 
@@ -90,6 +107,13 @@ public class NewtsFetchStrategy implements MeasurementFetchStrategy {
 
     @Autowired
     private SampleRepository m_sampleRepository;
+
+    private final ThreadFactory namedThreadFactory = new ThreadFactoryBuilder().setNameFormat("NewtsFetchStrateg-%d").build();
+
+    private final ExecutorService threadPool = Executors.newCachedThreadPool(namedThreadFactory);
+
+    // Used to limit the number of threads that are performing aggregation calculations in parallel
+    private final Semaphore availableAggregationThreads = new Semaphore(PARALLELISM);
 
     @Override
     public FetchResults fetch(long start, long end, long step, int maxrows, Long interval, Long heartbeat, List<Source> sources) {
@@ -103,23 +127,26 @@ public class NewtsFetchStrategy implements MeasurementFetchStrategy {
         Map<String, List<Source>> sourcesByResourceId = sources.stream()
                 .collect(Collectors.groupingBy(Source::getResourceId));
 
-        // Lookup the resources in parallel
-        Map<OnmsResource, List<Source>> sourcesByResource = sourcesByResourceId.entrySet()
-                .parallelStream()
-                .collect(Collectors.toMap(
-                    e -> {
-                        final OnmsResource resource = m_resourceDao.getResourceById(e.getKey());
-                        if (resource == null) {
-                            LOG.error("No resource with id: {}", e.getKey());
-                            throw new IllegalArgumentException("No resource with id: " + e.getKey());
-                        }
-                        // The attributes are typically lazy loaded, so we trigger the load here
-                        // while we're in a parallel context
-                        resource.getAttributes();
-                        return resource;
-                    },
-                    e -> e.getValue()
-                    ));
+        // Lookup the OnmsResources in parallel
+        Map<String, Future<OnmsResource>> resourceFuturesById = Maps.newHashMapWithExpectedSize(sourcesByResourceId.size());
+        for (String resourceId : sourcesByResourceId.keySet()) {
+            resourceFuturesById.put(resourceId, threadPool.submit(getResourceByIdCallable(resourceId)));
+        }
+
+        // Gather the results, fail if any of the resources were not found
+        Map<OnmsResource, List<Source>> sourcesByResource = Maps.newHashMapWithExpectedSize(sourcesByResourceId.size());
+        for (Entry<String, Future<OnmsResource>> entry : resourceFuturesById.entrySet()) {
+            try {
+                OnmsResource resource = entry.getValue().get();
+                if (resource == null) {
+                    LOG.error("No resource with id: {}", entry.getKey());
+                    return null;
+                }
+                sourcesByResource.put(resource, sourcesByResourceId.get(entry.getKey()));
+            } catch (ExecutionException | InterruptedException e) {
+                throw Throwables.propagate(e);
+            }
+        }
 
         // Now group the sources by Newts Resource ID, which differs from the OpenNMS Resource ID.
         Map<String, List<Source>> sourcesByNewtsResourceId = Maps.newHashMap();
@@ -163,67 +190,109 @@ public class NewtsFetchStrategy implements MeasurementFetchStrategy {
 
         // The Newts API only allows us to perform a query using a single (Newts) Resource ID,
         // so we perform multiple queries in parallel, and aggregate the results.
-        final AtomicReference<long[]> timestamps = new AtomicReference<>();
-        final Map<String, double[]> columns = Maps.newConcurrentMap();
+        Map<String, Future<Collection<Row<Measurement>>>> measurementsByNewtsResourceId = Maps.newHashMapWithExpectedSize(sourcesByNewtsResourceId.size());
+        for (Entry<String, List<Source>> entry : sourcesByNewtsResourceId.entrySet()) {
+            measurementsByNewtsResourceId.put(entry.getKey(), threadPool.submit(
+                    getMeasurementsForResourceCallable(entry.getKey(), entry.getValue(), startTs, endTs, lag)));
+        }
 
-        sourcesByNewtsResourceId.entrySet().parallelStream().forEach(entry -> {
-            final String newtsResourceId = entry.getKey();
-            final List<Source> listOfSources = entry.getValue();
+        long[] timestamps = null;
+        Map<String, double[]> columns = Maps.newHashMap();
 
-            ResultDescriptor resultDescriptor = new ResultDescriptor(lag.getInterval());
-            for (Source source : listOfSources) {
-                final String metricName = source.getAttribute();
-                final String name = source.getLabel();
-                final AggregationFunction fn = toAggregationFunction(source.getAggregation());
-
-                resultDescriptor.datasource(name, metricName, lag.getHeartbeat(), fn);
-                resultDescriptor.export(name);
+        for (Entry<String, Future<Collection<Row<Measurement>>>> entry : measurementsByNewtsResourceId.entrySet()) {
+            Collection<Row<Measurement>> rows;
+            try {
+                rows = entry.getValue().get();
+            } catch (InterruptedException | ExecutionException e) {
+                throw Throwables.propagate(e);
             }
 
-            LOG.debug("Querying Newts for resource id {} with result descriptor: {}", newtsResourceId, resultDescriptor);
-            Results<Measurement> results = m_sampleRepository.select(m_context, new Resource(newtsResourceId), startTs, endTs,
-                    resultDescriptor, Optional.of(Duration.millis(lag.getStep())));
-            Collection<Row<Measurement>> rows = results.getRows();
-            LOG.debug("Found {} rows.", rows.size());
-
             final int N = rows.size();
-            final Map<String, double[]> myColumns = Maps.newHashMap();
 
-            timestamps.updateAndGet(existing -> {
-                if (existing == null) {
-                    // this is the first thread that has returned, build the array of timestamps
-                    // the timestamps should bet the same against all result sets
-                    final long[] tses = new long[rows.size()];
-                    int k=0;
-                    for (final Row<Measurement> row : results.getRows()) {
-                        tses[k] = row.getTimestamp().asMillis();
-                        k++;
-                    }
-                    return tses;
+            if (timestamps == null) {
+                timestamps = new long[N];
+                int k=0;
+                for (final Row<Measurement> row : rows) {
+                    timestamps[k] = row.getTimestamp().asMillis();
+                    k++;
                 }
-                return existing;
-            });
+            }
 
             int k = 0;
-            for (Row<Measurement> row : results.getRows()) {
+            for (Row<Measurement> row : rows) {
                 for (Measurement measurement : row.getElements()) {
-                    double[] column = myColumns.get(measurement.getName());
+                    double[] column = columns.get(measurement.getName());
                     if (column == null) {
                         column = new double[N];
-                        myColumns.put(measurement.getName(), column);
+                        columns.put(measurement.getName(), column);
                     }
                     column[k] = measurement.getValue();
                 }
                 k += 1;
             }
+        }
 
-            columns.putAll(myColumns);
-        });
-
-        FetchResults fetchResults = new FetchResults(timestamps.get(), columns, lag.getStep(), constants);
+        FetchResults fetchResults = new FetchResults(timestamps, columns, lag.getStep(), constants);
         LOG.trace("Fetch results: {}", fetchResults);
         return fetchResults;
     }
+
+    private Callable<OnmsResource> getResourceByIdCallable(final String resourceId) {
+        return new Callable<OnmsResource>() {
+            @Override
+            public OnmsResource call() throws IllegalArgumentException {
+                final OnmsResource resource = m_resourceDao.getResourceById(resourceId);
+                if (resource != null) {
+                    // The attributes are typically lazy loaded, so we trigger the load here
+                    // while we're in a threaded context
+                    resource.getAttributes();
+                }
+                return resource;
+            }
+        };
+    }
+
+    private SampleSelectCallback limitConcurrentAggregationsCallback = new SampleSelectCallback() {
+
+        @Override
+        public void beforeProcess() {
+            try {
+                availableAggregationThreads.acquire();
+            } catch (InterruptedException e) {
+                throw Throwables.propagate(e);
+            }
+        }
+
+        @Override
+        public void afterProcess() {
+            availableAggregationThreads.release();
+        }
+    };
+
+    private Callable<Collection<Row<Measurement>>> getMeasurementsForResourceCallable(final String newtsResourceId, final List<Source> listOfSources, final Optional<Timestamp> start, final Optional<Timestamp> end, final LateAggregationParams lag) {
+        return new Callable<Collection<Row<Measurement>>>() {
+            @Override
+            public Collection<Row<Measurement>> call() throws Exception {
+                ResultDescriptor resultDescriptor = new ResultDescriptor(lag.getInterval());
+                for (Source source : listOfSources) {
+                    final String metricName = source.getAttribute();
+                    final String name = source.getLabel();
+                    final AggregationFunction fn = toAggregationFunction(source.getAggregation());
+
+                    resultDescriptor.datasource(name, metricName, lag.getHeartbeat(), fn);
+                    resultDescriptor.export(name);
+                }
+
+                LOG.debug("Querying Newts for resource id {} with result descriptor: {}", newtsResourceId, resultDescriptor);
+                Results<Measurement> results = m_sampleRepository.select(m_context, new Resource(newtsResourceId), start, end,
+                        resultDescriptor, Optional.of(Duration.millis(lag.getStep())), limitConcurrentAggregationsCallback);
+                Collection<Row<Measurement>> rows = results.getRows();
+                LOG.debug("Found {} rows.", rows.size());
+                return rows;
+            }
+        };
+    }
+
 
     private static AggregationFunction toAggregationFunction(String fn) {
         if ("average".equalsIgnoreCase(fn) || "avg".equalsIgnoreCase(fn)) {
