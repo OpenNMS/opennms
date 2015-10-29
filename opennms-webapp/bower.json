@@ -5,6 +5,10 @@
     "bootstrap-sass-official": "~3.3.1",
     "c3": "https://github.com/masayuki0812/c3.git#v0.4.11-rc1",
     "d3": "~3.5.6",
-    "dcjs": "https://github.com/dc-js/dc.js.git#2.0.0-beta.17"
+    "dcjs": "https://github.com/dc-js/dc.js.git#2.0.0-beta.17",
+    "flot": "flot#~0.8.3",
+    "flot-axislabels": "https://github.com/j-white/flot-axislabels.git#master",
+    "flot.tooltip": "~0.8.5",
+    "flot-legend": "https://github.com/j-white/flot-legend.git#master"
   }
 }
