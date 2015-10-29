@@ -33,8 +33,8 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.LinkedHashSet;
 import java.util.Set;
+import java.util.TreeSet;
 
 import org.opennms.core.spring.FileReloadCallback;
 import org.opennms.netmgt.provision.persist.foreignsource.ForeignSource;
@@ -43,9 +43,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.core.io.Resource;
+import org.springframework.util.Assert;
 
 /**
  * <p>FasterFilesystemForeignSourceRepository class.</p>
+ * <p>The directory watcher should keep a cache of all requisitions on disk.</p>
+ * <p>The directory watcher will always return the object from the cache, and the cache should be updated when changes are detected on the directories.</p>
+ * 
+ * <p>The method AbstractForeignSourceRepository.importResourceRequisition will read the requisition and update the copy on disk. This should trigger the update of the cache.</p>
  */
 public class FasterFilesystemForeignSourceRepository extends FilesystemForeignSourceRepository implements InitializingBean {
 
@@ -54,7 +59,7 @@ public class FasterFilesystemForeignSourceRepository extends FilesystemForeignSo
 
     /** The foreign sources watcher. */
     private DirectoryWatcher<ForeignSource> m_foreignSources;
-    
+
     /** The requisitions watcher. */
     private DirectoryWatcher<Requisition> m_requisitions;
 
@@ -68,17 +73,39 @@ public class FasterFilesystemForeignSourceRepository extends FilesystemForeignSo
     }
 
     /* (non-Javadoc)
+     * @see org.opennms.netmgt.provision.persist.AbstractForeignSourceRepository#importResourceRequisition(org.springframework.core.io.Resource)
+     */
+    @Override
+    public Requisition importResourceRequisition(final Resource resource) throws ForeignSourceRepositoryException {
+        Assert.notNull(resource);
+        try {
+            // Trust whatever is on the cache if exist.
+            LOG.debug("importResourceRequisition: saving cached requisition to disk");
+            final Requisition req = getRequisitionsDirectoryWatcher().getContents(resource.getFilename());
+            if (req != null) {
+                req.setResource(resource);
+                save(req);
+                return req;
+            }
+        } catch (FileNotFoundException e) {
+            LOG.error("importResourceRequisition: can't save cached requisition associated with {}", resource, e);
+        }
+        // Use the default implementation if the cache doesn't contain the requisition.
+        LOG.debug("importResourceRequisition: the requisition {} is  not on the cache, falling back to disk.", resource.getFilename());
+        return super.importResourceRequisition(resource);
+    }
+
+    /* (non-Javadoc)
      * @see org.opennms.netmgt.provision.persist.FilesystemForeignSourceRepository#getActiveForeignSourceNames()
      */
     @Override
     public Set<String> getActiveForeignSourceNames() {
         m_readLock.lock();
         try {
-            Set<String> activeForeignSourceNames = new LinkedHashSet<String>();
+            final Set<String> activeForeignSourceNames = new TreeSet<String>();
             activeForeignSourceNames.addAll(getForeignSourcesDirectoryWatcher().getBaseNamesWithExtension(".xml"));
             activeForeignSourceNames.addAll(getRequisitionsDirectoryWatcher().getBaseNamesWithExtension(".xml"));
             return activeForeignSourceNames;
-
         } finally {
             m_readLock.unlock();
         }
@@ -104,10 +131,10 @@ public class FasterFilesystemForeignSourceRepository extends FilesystemForeignSo
     public Set<ForeignSource> getForeignSources() throws ForeignSourceRepositoryException {
         m_readLock.lock();
         try {
-            Set<ForeignSource> foreignSources = new LinkedHashSet<ForeignSource>();
+            final Set<ForeignSource> foreignSources = new TreeSet<ForeignSource>();
             for(String baseName : getForeignSourcesDirectoryWatcher().getBaseNamesWithExtension(".xml")) {
                 try {
-                    ForeignSource contents = getForeignSourcesDirectoryWatcher().getContents(baseName+".xml");
+                    ForeignSource contents = getForeignSourcesDirectoryWatcher().getContents(baseName + ".xml");
                     foreignSources.add(contents);
                 } catch (FileNotFoundException e) {
                     LOG.info("Unable to load foreignSource {}: It must have been deleted by another thread", baseName, e);
@@ -129,7 +156,7 @@ public class FasterFilesystemForeignSourceRepository extends FilesystemForeignSo
         }
         m_readLock.lock();
         try {
-            return getForeignSourcesDirectoryWatcher().getContents(foreignSourceName+".xml");
+            return getForeignSourcesDirectoryWatcher().getContents(foreignSourceName + ".xml");
         } catch (FileNotFoundException e) {
             final ForeignSource fs = getDefaultForeignSource();
             fs.setName(foreignSourceName);
@@ -146,10 +173,10 @@ public class FasterFilesystemForeignSourceRepository extends FilesystemForeignSo
     public Set<Requisition> getRequisitions() throws ForeignSourceRepositoryException {
         m_readLock.lock();
         try {
-            Set<Requisition> requisitions = new LinkedHashSet<Requisition>();
+            final Set<Requisition> requisitions = new TreeSet<Requisition>();
             for(String baseName : getRequisitionsDirectoryWatcher().getBaseNamesWithExtension(".xml")) {
                 try {
-                    Requisition contents = getRequisitionsDirectoryWatcher().getContents(baseName+".xml");
+                    Requisition contents = getRequisitionsDirectoryWatcher().getContents(baseName + ".xml");
                     requisitions.add(contents);
                 } catch (FileNotFoundException e) {
                     LOG.info("Unable to load requisition {}: It must have been deleted by another thread", baseName, e);
@@ -171,7 +198,7 @@ public class FasterFilesystemForeignSourceRepository extends FilesystemForeignSo
         }
         m_readLock.lock();
         try {
-            return getRequisitionsDirectoryWatcher().getContents(foreignSourceName+".xml");
+            return getRequisitionsDirectoryWatcher().getContents(foreignSourceName + ".xml");
         } catch (FileNotFoundException e) {
             LOG.info("There is no requisition XML file for {} on {}", foreignSourceName, m_requisitionPath);
             return null;
@@ -228,7 +255,7 @@ public class FasterFilesystemForeignSourceRepository extends FilesystemForeignSo
             try {
                 m_requisitions = new DirectoryWatcher<Requisition>(new File(m_requisitionPath), reqLoader());
             } catch (InterruptedException e) {
-                throw new ForeignSourceRepositoryException("Can't initialize Foreign Sources Directory Watcher for " + m_foreignSourcePath, e);
+                throw new ForeignSourceRepositoryException("Can't initialize Requisition Directory Watcher for " + m_requisitionPath, e);
             }
         }
         return m_requisitions;
@@ -250,7 +277,7 @@ public class FasterFilesystemForeignSourceRepository extends FilesystemForeignSo
                 }
             }
         };
-    };
+    }
 
     /**
      * Requisitions loader.
