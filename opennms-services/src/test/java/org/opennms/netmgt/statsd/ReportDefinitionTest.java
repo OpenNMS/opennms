@@ -45,6 +45,9 @@ import org.opennms.netmgt.dao.api.ResourceDao;
 import org.opennms.netmgt.dao.api.RrdDao;
 import org.opennms.netmgt.dao.support.BottomNAttributeStatisticVisitor;
 import org.opennms.netmgt.filter.api.FilterDao;
+import org.opennms.netmgt.measurements.api.FetchResults;
+import org.opennms.netmgt.measurements.api.MeasurementFetchStrategy;
+import org.opennms.netmgt.measurements.model.Source;
 import org.opennms.netmgt.mock.MockResourceType;
 import org.opennms.netmgt.model.AttributeStatisticVisitorWithResults;
 import org.opennms.netmgt.model.ExternalValueAttribute;
@@ -64,7 +67,7 @@ public class ReportDefinitionTest extends TestCase {
     private EasyMockUtils m_mocks = new EasyMockUtils();
     private NodeDao m_nodeDao = m_mocks.createMock(NodeDao.class);
     private ResourceDao m_resourceDao = m_mocks.createMock(ResourceDao.class);
-    private RrdDao m_rrdDao = m_mocks.createMock(RrdDao.class);
+    private MeasurementFetchStrategy m_fetchStrategy = m_mocks.createMock(MeasurementFetchStrategy.class);
     private FilterDao m_filterDao = m_mocks.createMock(FilterDao.class);
     
     @Override
@@ -107,7 +110,7 @@ public class ReportDefinitionTest extends TestCase {
         ReportDefinition def = createReportDefinition();
         def.setResourceAttributeKey("ifSpeed");
         def.setResourceAttributeValueMatch("100000000");
-        ReportInstance report = def.createReport(m_nodeDao, m_resourceDao, m_rrdDao, m_filterDao);
+        ReportInstance report = def.createReport(m_nodeDao, m_resourceDao, m_fetchStrategy, m_filterDao);
 
         m_mocks.replayAll();
         
@@ -127,7 +130,7 @@ public class ReportDefinitionTest extends TestCase {
         ReportDefinition def = createReportDefinition();
         def.setResourceAttributeKey("ifSpeed");
         def.setResourceAttributeValueMatch("100000000");
-        ReportInstance report = def.createReport(m_nodeDao, m_resourceDao, m_rrdDao, m_filterDao);
+        ReportInstance report = def.createReport(m_nodeDao, m_resourceDao, m_fetchStrategy, m_filterDao);
 
         m_mocks.replayAll();
         
@@ -153,9 +156,26 @@ public class ReportDefinitionTest extends TestCase {
         ReportDefinition def = createReportDefinition();
         def.setResourceAttributeKey(externalValueAttribute.getName());
         def.setResourceAttributeValueMatch(externalValueAttribute.getValue());
-        ReportInstance report = def.createReport(m_nodeDao, m_resourceDao, m_rrdDao, m_filterDao);
+        ReportInstance report = def.createReport(m_nodeDao, m_resourceDao, m_fetchStrategy, m_filterDao);
 
-        EasyMock.expect(m_rrdDao.getPrintValue(rrdAttribute, def.getConsolidationFunction(), report.getStartTime(), report.getEndTime())).andReturn(1.0);
+        rrdAttribute.setResource(new OnmsResource("1", "Node One", resourceType, Collections.singleton(rrdAttribute), ResourcePath.get("foo")));
+        Source source = new Source();
+        source.setLabel("result");
+        source.setResourceId(rrdAttribute.getResource().getId());
+        source.setAttribute(rrdAttribute.getName());
+        source.setAggregation("AVERAGE");
+        FetchResults results = new FetchResults(new long[] {report.getStartTime()},
+                                                Collections.singletonMap("result", new double[] {100.0}),
+                                                report.getEndTime() - report.getStartTime(),
+                                                Collections.emptyMap());
+        EasyMock.expect(m_fetchStrategy.fetch(report.getStartTime(),
+                                              report.getEndTime(),
+                                              1,
+                                              0,
+                                              null,
+                                              null,
+                                              Collections.singletonList(source)))
+                .andReturn(results);
 
         m_mocks.replayAll();
         
@@ -183,7 +203,7 @@ public class ReportDefinitionTest extends TestCase {
         def.getReport().getPackage().setFilter("");
         def.setResourceAttributeKey("ifSpeed");
         def.setResourceAttributeValueMatch("100000000");
-        ReportInstance report = def.createReport(m_nodeDao, m_resourceDao, m_rrdDao, m_filterDao);
+        ReportInstance report = def.createReport(m_nodeDao, m_resourceDao, m_fetchStrategy, m_filterDao);
 
         SortedMap<Integer,String> sortedNodeMap = new TreeMap<Integer, String>();
         sortedNodeMap.put(node.getId(), node.getLabel());
@@ -220,7 +240,7 @@ public class ReportDefinitionTest extends TestCase {
         def.getReport().getPackage().setFilter("");
         def.setResourceAttributeKey(externalValueAttribute.getName());
         def.setResourceAttributeValueMatch(externalValueAttribute.getValue());
-        ReportInstance report = def.createReport(m_nodeDao, m_resourceDao, m_rrdDao, m_filterDao);
+        ReportInstance report = def.createReport(m_nodeDao, m_resourceDao, m_fetchStrategy, m_filterDao);
 
         SortedMap<Integer,String> sortedNodeMap = new TreeMap<Integer, String>();
         sortedNodeMap.put(node.getId(), node.getLabel());
@@ -228,7 +248,24 @@ public class ReportDefinitionTest extends TestCase {
 
         EasyMock.expect(m_resourceDao.getResourceForNode(node)).andReturn(resource);
 
-        EasyMock.expect(m_rrdDao.getPrintValue(rrdAttribute, def.getConsolidationFunction(), report.getStartTime(), report.getEndTime())).andReturn(1.0);
+        Source source = new Source();
+        source.setLabel("result");
+        source.setResourceId(resource.getId());
+        source.setAttribute(rrdAttribute.getName());
+        source.setAggregation("AVERAGE");
+        FetchResults results = new FetchResults(new long[] {report.getStartTime()},
+                                                Collections.singletonMap("result", new double[] {100.0}),
+                                                report.getEndTime() - report.getStartTime(),
+                                                Collections.emptyMap());
+        EasyMock.expect(m_fetchStrategy.fetch(report.getStartTime(),
+                                              report.getEndTime(),
+                                              1,
+                                              0,
+                                              null,
+                                              null,
+                                              Collections.singletonList(source)))
+                .andReturn(results);
+
 
         m_mocks.replayAll();
         

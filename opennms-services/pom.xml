@@ -440,6 +440,11 @@
       <artifactId>mockito-all</artifactId>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>org.opennms.features.measurements</groupId>
+      <artifactId>org.opennms.features.measurements.impl</artifactId>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 
   <repositories>
