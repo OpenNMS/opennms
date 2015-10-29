@@ -25,14 +25,19 @@
     <dependency>
       <groupId>org.opennms.features.measurements</groupId>
       <artifactId>org.opennms.features.measurements.api</artifactId>
-      <version>${project.version}</version>
     </dependency>
 
-	<!-- R -->
+    <!-- R -->
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-R</artifactId>
       <version>${project.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-math3</artifactId>
+      <version>${commonsMath3Version}</version>
     </dependency>
 
     <!-- RRD/JRobin -->
