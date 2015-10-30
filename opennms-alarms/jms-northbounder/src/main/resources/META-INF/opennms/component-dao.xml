@@ -8,12 +8,12 @@
 	">
 	<bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer" />
 	<bean name="m_jmsNorthbounderConnectionFactory" class="org.springframework.jms.connection.CachingConnectionFactory">
-		<property name="targetConnectionFactory" ref="${opennms.alarms.northbound.jms.connectionFactoryImplRef:activemqConnectionFactory}"></property>
+		<property name="targetConnectionFactory" ref="${opennms.alarms.northbound.jms.connectionFactoryImplRef}"></property>
 	</bean>
 	<bean name="activemqConnectionFactory" class="org.apache.activemq.ActiveMQConnectionFactory">
-		<property name="brokerURL" value="${opennms.alarms.northbound.jms.activemq.brokerURL:vm://localhost}"/>
-		<property name="userName" value="${opennms.alarms.northbound.jms.activemq.userName:}"/>
-		<property name="password" value="${opennms.alarms.northbound.jms.activemq.password:}"/>
+		<property name="brokerURL" value="${opennms.alarms.northbound.jms.activemq.brokerURL}"/>
+		<property name="userName" value="${opennms.alarms.northbound.jms.activemq.userName}"/>
+		<property name="password" value="${opennms.alarms.northbound.jms.activemq.password}"/>
 	</bean>
 	<bean name="jmsNorthbounderConfigDao" class="org.opennms.netmgt.alarmd.northbounder.jms.JmsNorthbounderConfigDao">
       <property name="configResource" value="file:${opennms.home}/etc/jms-northbounder-configuration.xml" />
