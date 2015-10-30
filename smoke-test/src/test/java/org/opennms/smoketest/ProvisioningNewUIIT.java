@@ -122,9 +122,9 @@ public class ProvisioningNewUIIT extends OpenNMSSeleniumTestCase {
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//h4[text()='Foreign Source Definition for Requisition " + REQUISITION_NAME + "']")));
 
         // Add a detector
-        wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//div/a[contains(@ng-click,'addDetector')]")));
+        wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//div/button[contains(@ng-click,'addDetector')]")));
         Thread.sleep(10000); // Inducing a delay to be sure that the page and all the asynchronous operations have been executed
-        findElementByXpath("//div/a[contains(@ng-click,'addDetector')]").click();
+        findElementByXpath("//div/button[contains(@ng-click,'addDetector')]").click();
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector(".modal-dialog")));
         enterText(By.xpath("//input[@ng-model='detector.name']"), "HTTP-8980");
         enterText(By.xpath("//input[@ng-model='detector.class']"), "HTTP");
