@@ -122,7 +122,7 @@ GraphContainers = (function () {
         start: def.start,
         end: def.end,
         dataSource: ds,
-        series: graphModel.series,
+        model: graphModel,
         printStatements: graphModel.printStatements,
         title: graphModel.title,
         verticalLabel: graphModel.verticalLabel
