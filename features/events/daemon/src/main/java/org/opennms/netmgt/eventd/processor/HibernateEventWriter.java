@@ -40,6 +40,7 @@ import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.ServiceTypeDao;
 import org.opennms.netmgt.dao.util.AutoAction;
 import org.opennms.netmgt.dao.util.Correlation;
+import org.opennms.netmgt.dao.util.DeadLockDebugger;
 import org.opennms.netmgt.dao.util.Forward;
 import org.opennms.netmgt.dao.util.OperatorAction;
 import org.opennms.netmgt.dao.util.SnmpInfo;
@@ -146,6 +147,8 @@ public class HibernateEventWriter implements EventWriter {
         try {
             insertEvent(eventHeader, event);
         } catch (DeadlockLoserDataAccessException e) {
+            // See NMS-7899 for details
+            DeadLockDebugger.gatherDetails(e);
             throw new EventProcessorException("Encountered deadlock when inserting event: " + event.toString(), e);
         }
     }
