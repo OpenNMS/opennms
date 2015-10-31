@@ -151,7 +151,6 @@ GraphContainers = (function () {
     }
 
     if (graphingEngine === "backshift" && !cssLoaded) {
-        loadCSS("lib/dcjs/dc.css");
         cssLoaded = true;
     }
 
@@ -224,6 +223,15 @@ GraphContainers = (function () {
                 'jquery.flot.tooltip': {
                     deps: ['jquery.flot']
                 },
+                'jquery.flot.saveas': {
+                    deps: ['jquery.flot']
+                },
+                'jquery.flot.navigate': {
+                    deps: ['jquery.flot']
+                },
+                'jquery.flot.datatable': {
+                    deps: ['d3', 'jquery.flot']
+                },
             },
             paths: {
                'jquery.flot'           : window.onmsGraphContainers.baseHref + 'lib/flot/jquery.flot.min',
@@ -231,12 +239,16 @@ GraphContainers = (function () {
                'jquery.flot.canvas'    : window.onmsGraphContainers.baseHref + 'lib/flot/jquery.flot.canvas.min',
                'jquery.flot.legend'    : window.onmsGraphContainers.baseHref + 'lib/flot-legend/jquery.flot.legend.min',
                'jquery.flot.axislabels': window.onmsGraphContainers.baseHref + 'lib/flot-axislabels/jquery.flot.axislabels',
-               'jquery.flot.tooltip'   : window.onmsGraphContainers.baseHref + 'lib/flot.tooltip/js/jquery.flot.tooltip.min'
+               'jquery.flot.tooltip'   : window.onmsGraphContainers.baseHref + 'lib/flot.tooltip/js/jquery.flot.tooltip.min',
+               'jquery.flot.saveas'    : window.onmsGraphContainers.baseHref + 'lib/flot-saveas/jquery.flot.saveas',
+               'jquery.flot.navigate'  : window.onmsGraphContainers.baseHref + 'lib/flot-navigate/jquery.flot.navigate',
+               'jquery.flot.datatable' : window.onmsGraphContainers.baseHref + 'lib/flot-datatable/jquery.flot.datatable.min'
             }
         });
 
         require(['backshift', 'jquery.flot', 'jquery.flot.time', 'jquery.flot.canvas',
-                 'jquery.flot.legend', 'jquery.flot.axislabels', 'jquery.flot.tooltip'], function (backshift) {
+                 'jquery.flot.legend', 'jquery.flot.axislabels', 'jquery.flot.tooltip',
+                 'jquery.flot.saveas', 'jquery.flot.navigate', 'jquery.flot.datatable'], function (backshift) {
           drawBackshiftGraph(el, def, dim);
         });
       } else {

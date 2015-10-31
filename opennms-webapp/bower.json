@@ -3,12 +3,13 @@
   "dependencies": {
     "bootstrap": "~3.3.1",
     "bootstrap-sass-official": "~3.3.1",
-    "c3": "https://github.com/masayuki0812/c3.git#v0.4.11-rc1",
     "d3": "~3.5.6",
-    "dcjs": "https://github.com/dc-js/dc.js.git#2.0.0-beta.17",
-    "flot": "flot#~0.8.3",
-    "flot-axislabels": "https://github.com/j-white/flot-axislabels.git#master",
+    "flot": "~0.8.3",
+    "flot-axislabels": "https://github.com/j-white/flot-axislabels.git#0d6ae9a79338",
     "flot.tooltip": "~0.8.5",
-    "flot-legend": "https://github.com/j-white/flot-legend.git#master"
+    "flot-legend": "https://github.com/j-white/flot-legend.git#v1.0.0",
+    "flot-saveas": "https://github.com/j-white/flot-saveas.git#v1.0.0",
+    "flot-datatable": "https://github.com/j-white/flot-datatable.git#v1.0.3",
+    "flot-navigate": "https://github.com/j-white/flot-navigate.git#v1.3-CUSTOM"
   }
 }
