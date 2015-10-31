@@ -28,68 +28,59 @@
 
 package org.opennms.netmgt.syslogd;
 
-import java.io.IOException;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.sql.SQLException;
 
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
 import org.opennms.netmgt.config.SyslogdConfigFactory;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
-import org.opennms.netmgt.dao.api.EventDao;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
- * The received messages are converted into XML and sent to eventd
+ * <p>
+ * The received messages are converted into XML and sent to eventd.
  * </p>
- * <p/>
+ * <p>
  * <strong>Note: </strong>Syslogd is a PausableFiber so as to receive control
  * events. However, a 'pause' on Syslogd has no impact on the receiving and
- * processing of traps
+ * processing of syslog messages.
  * </p>
+ * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
+ * @author <a href="mailto:joed@opennms.org">Johan Edstrom</a>
+ * @author <a href="mailto:mhuot@opennms.org">Mike Huot</a>
  */
- /**
-  * <p>Syslogd class.</p>
-  *
-  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
-  * @author <a href="mailto:david@opennms.org">David Hustace</a>
-  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
-  * @author <a href="mailto:joed@opennms.org">Johan Edstrom</a>
-  * @author <a href="mailto:mhuot@opennms.org">Mike Huot</a>
-  */
- public class Syslogd extends AbstractServiceDaemon {
-     
-     private static final Logger LOG = LoggerFactory.getLogger(Syslogd.class);
-     
-     /**
+public class Syslogd extends AbstractServiceDaemon {
+
+    private static final Logger LOG = LoggerFactory.getLogger(Syslogd.class);
+
+    /**
      * The name of the logging category for Syslogd.
      */
-    static final String LOG4J_CATEGORY = "syslogd";
-
-    /**
-     * The singleton instance.
-     */
-    private static final Syslogd m_singleton = new Syslogd();
-
-    /**
-     * <p>getSingleton</p>
-     *
-     * @return a {@link org.opennms.netmgt.syslogd.Syslogd} object.
-     */
-    public static synchronized Syslogd getSingleton() {
-        return m_singleton;
-    }
+    public static final String LOG4J_CATEGORY = "syslogd";
 
     private SyslogHandler m_udpEventReceiver;
 
-    private EventDao m_eventDao;
+    private BroadcastEventProcessor m_broadcastEventProcessor;
+
+    @Autowired
+    private SyslogdConfigFactory m_config;
 
     /**
      * <p>Constructor for Syslogd.</p>
      */
     public Syslogd() {
         super(LOG4J_CATEGORY);
+    }
+
+    public SyslogdConfigFactory getConfigFactory() {
+        return m_config;
+    }
+
+    public void setConfigFactory(SyslogdConfigFactory config) {
+        m_config = config;
     }
 
     /**
@@ -99,20 +90,6 @@ import org.slf4j.LoggerFactory;
     protected void onInit() {
 
         try {
-            LOG.debug("start: Initializing the syslogd config factory");
-            SyslogdConfigFactory.init();
-        } catch (MarshalException e) {
-            LOG.error("Failed to load configuration", e);
-            throw new UndeclaredThrowableException(e);
-        } catch (ValidationException e) {
-            LOG.error("Failed to load configuration", e);
-            throw new UndeclaredThrowableException(e);
-        } catch (IOException e) {
-            LOG.error("Failed to load configuration", e);
-            throw new UndeclaredThrowableException(e);
-        }
-
-        try {
             // clear out the known nodes
             SyslogdIPMgrJDBCImpl.getInstance().dataSourceSync();
         } catch (SQLException e) {
@@ -120,10 +97,7 @@ import org.slf4j.LoggerFactory;
             throw new UndeclaredThrowableException(e);
         }
 
-        SyslogHandler.setSyslogConfig(SyslogdConfigFactory.getInstance());
-        LOG.debug("Starting SyslogProcessor");
-
-        m_udpEventReceiver = new SyslogHandler();
+        m_udpEventReceiver = new SyslogHandler(m_config);
 
     }
 
@@ -132,15 +106,11 @@ import org.slf4j.LoggerFactory;
      */
     @Override
     protected void onStart() {
+        LOG.debug("Starting SyslogHandler");
         m_udpEventReceiver.start();
 
-        // // start the event reader
-        // The Node list is update with new suspects
-        // Also this enables the syslogd to act as
-        // trapd and see New suspects.
-
         try {
-            new BroadcastEventProcessor();
+            m_broadcastEventProcessor = new BroadcastEventProcessor();
         } catch (Throwable ex) {
             LOG.error("Failed to setup event reader", ex);
             throw new UndeclaredThrowableException(ex);
@@ -152,51 +122,16 @@ import org.slf4j.LoggerFactory;
      */
     @Override
     protected void onStop() {
-        // shutdown and wait on the background processing thread to exit.
-        LOG.debug("exit: closing communication paths.");
-
-        try {
-            LOG.debug("stop: Closing SYSLOGD message session.");
-
-            LOG.debug("stop: Syslog message session closed.");
-        } catch (IllegalStateException e) {
-            LOG.debug("stop: The Syslog session was already closed");
+        if (m_broadcastEventProcessor != null) {
+            LOG.debug("stop: Stopping the Syslogd event receiver");
+            m_broadcastEventProcessor.close();
+            LOG.debug("stop: Stopped the Syslogd event receiver");
         }
 
-        LOG.debug("stop: Stopping queue processor.");
-
-        m_udpEventReceiver.stop();
-        LOG.debug("Stopped the Syslog UDP Receiver");
-    }
-
-    /**
-     * Returns the singular instance of the syslogd daemon. There can be only
-     * one instance of this service per virtual machine.
-     *
-     * @return Singleton
-     */
-    public static Syslogd getInstance() {
-        return m_singleton;
-    }
-
-    /*
-    * @return EventDao
-     */
-    /**
-     * <p>getEventDao</p>
-     *
-     * @return a {@link org.opennms.netmgt.dao.api.EventDao} object.
-     */
-    public EventDao getEventDao() {
-        return m_eventDao;
-    }
-
-    /**
-     * <p>setEventDao</p>
-     *
-     * @param eventDao a {@link org.opennms.netmgt.dao.api.EventDao} object.
-     */
-    public void setEventDao(EventDao eventDao) {
-        m_eventDao = eventDao;
+        if (m_udpEventReceiver != null) {
+            LOG.debug("stop: Stopping the Syslogd UDP receiver");
+            m_udpEventReceiver.stop();
+            LOG.debug("stop: Stopped the Syslogd UDP receiver");
+        }
     }
 }

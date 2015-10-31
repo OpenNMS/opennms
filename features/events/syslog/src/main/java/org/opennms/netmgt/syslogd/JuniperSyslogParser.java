@@ -32,22 +32,20 @@ import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.opennms.netmgt.config.SyslogdConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class JuniperSyslogParser extends SyslogParser {
     private static final Logger LOG = LoggerFactory.getLogger(JuniperSyslogParser.class);
+
     //                                                                PRI         TIMESTAMP                                          HOST      PROCESS/ID          MESSAGE
     private static final Pattern m_juniperPattern = Pattern.compile("^<(\\d+)>\\s*(\\S\\S\\S\\s+\\d{1,2}\\s+\\d\\d:\\d\\d:\\d\\d)\\s+(\\S+)\\s+(\\S+)\\[(\\d+)\\]: (.*?)$", Pattern.MULTILINE);
 
-    protected JuniperSyslogParser(final String text) {
-        super(text);
+    public JuniperSyslogParser(final SyslogdConfig config, final String text) {
+        super(config, text);
     }
 
-    public static SyslogParser getParser(final String text) {
-        return new JuniperSyslogParser(text);
-    }
-    
     @Override
     protected Pattern getPattern() {
         return m_juniperPattern;
@@ -58,7 +56,7 @@ public class JuniperSyslogParser extends SyslogParser {
         if (!this.find()) {
             if (traceEnabled()) {
                 LOG.trace("'{}' did not match '{}', falling back to the custom parser", m_juniperPattern, getText());
-                final SyslogParser custom = CustomSyslogParser.getParser(getText());
+                final SyslogParser custom = new CustomSyslogParser(getConfig(), getText());
                 return custom.parse();
             }
             return null;

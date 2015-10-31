@@ -60,10 +60,6 @@ import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.SyslogdConfigFactory;
-import org.opennms.netmgt.config.syslogd.HideMessage;
-import org.opennms.netmgt.config.syslogd.Match;
-import org.opennms.netmgt.config.syslogd.UeiList;
-import org.opennms.netmgt.config.syslogd.UeiMatch;
 import org.opennms.netmgt.eventd.Eventd;
 import org.opennms.netmgt.events.api.EventIpcManager;
 import org.opennms.netmgt.events.api.EventListener;
@@ -84,7 +80,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations={
-		"classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
+        "classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
         "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml",
         "classpath:/META-INF/opennms/applicationContext-soa.xml",
         "classpath:/META-INF/opennms/applicationContext-dao.xml",
@@ -99,12 +95,6 @@ public class SyslogdEventdLoadIT implements InitializingBean {
     private static final Logger LOG = LoggerFactory.getLogger(SyslogdEventdLoadIT.class);
 
     private EventCounter m_eventCounter;
-    private static final String MATCH_PATTERN = "^.*\\s(19|20)\\d\\d([-/.])(0[1-9]|1[012])\\2(0[1-9]|[12][0-9]|3[01])(\\s+)(\\S+)(\\s)(\\S.+)";
-    private static final int HOST_GROUP = 6;
-    private static final int MESSAGE_GROUP = 8;
-    private static final HideMessage HIDE_MESSAGE = new HideMessage();
-    private static final String DISCARD_UEI = "DISCARD-MATCHING-MESSAGES";
-    private static final UeiList UEI_LIST = new UeiList();
 
     @Autowired
     @Qualifier(value="eventIpcManagerImpl")
@@ -115,25 +105,9 @@ public class SyslogdEventdLoadIT implements InitializingBean {
     
     private Syslogd m_syslogd;
 
+    private SyslogdConfigFactory m_config;
+
     private final ExecutorService m_executorService = Executors.newCachedThreadPool();
-
-    static {
-        UeiMatch ueiMatch;
-        Match match;
-        for (int i = 0; i < 10000; i++) {
-            /* <ueiMatch>
-             *   <match type="regex" expression=".*foo0: .*load test (\S+) on ((pts\/\d+)|(tty\d+)).*"/><uei>uei.example.org/syslog/loadTest/foo0</uei>
-             * </ueiMatch> */
-
-            ueiMatch = new UeiMatch();
-            match = new Match();
-            match.setType("regex");
-            match.setExpression(String.format(".*foo%d: .*load test (\\S+) on ((pts\\/\\d+)|(tty\\d+)).*", i));
-            ueiMatch.setMatch(match);
-            ueiMatch.setUei(String.format("uei.example.org/syslog/loadTest/foo%d", i));
-            UEI_LIST.addUeiMatch(ueiMatch);
-        }
-    }
 
     @Override
     public void afterPropertiesSet() throws Exception {
@@ -162,8 +136,7 @@ public class SyslogdEventdLoadIT implements InitializingBean {
         InputStream stream = null;
         try {
             stream = ConfigurationTestUtils.getInputStreamForResource(this, configuration);
-            SyslogdConfigFactory cf = new SyslogdConfigFactory(stream);
-            SyslogdConfigFactory.setInstance(cf);
+            m_config = new SyslogdConfigFactory(stream);
         } finally {
             if (stream != null) {
                 IOUtils.closeQuietly(stream);
@@ -172,9 +145,9 @@ public class SyslogdEventdLoadIT implements InitializingBean {
     }
 
     private void startSyslogdGracefully() {
-        ConvertToEvent.invalidate();
         try {
             m_syslogd = new Syslogd();
+            m_syslogd.setConfigFactory(m_config);
             m_syslogd.init();
             m_syslogd.start();
         } catch (UndeclaredThrowableException ute) {
@@ -187,7 +160,7 @@ public class SyslogdEventdLoadIT implements InitializingBean {
         }
     }
 
-    @Test
+    @Test(timeout=120000)
     @Transactional
     public void testDefaultSyslogd() throws Exception {
         startSyslogdGracefully();
@@ -209,7 +182,7 @@ public class SyslogdEventdLoadIT implements InitializingBean {
         for (int i = 0; i < eventCount; i++) {
             int foo = foos.get(i);
             DatagramPacket pkt = sc.getPacket(SyslogClient.LOG_DEBUG, String.format(testPduFormat, foo, foo));
-            WaterfallExecutor.waterfall(m_executorService, new SyslogConnection(pkt, MATCH_PATTERN, HOST_GROUP, MESSAGE_GROUP, UEI_LIST, HIDE_MESSAGE, DISCARD_UEI));
+            WaterfallExecutor.waterfall(m_executorService, new SyslogConnection(pkt, m_config));
         }
 
         long mid = System.currentTimeMillis();
@@ -221,7 +194,7 @@ public class SyslogdEventdLoadIT implements InitializingBean {
         System.err.println(String.format("total time: %d, wait time: %d, events per second: %8.4f", total, (end - mid), eventsPerSecond));
     }
 
-    @Test
+    @Test(timeout=120000)
     @Transactional
     public void testRfcSyslog() throws Exception {
         loadSyslogConfiguration("/etc/syslogd-rfc-configuration.xml");
@@ -235,19 +208,19 @@ public class SyslogdEventdLoadIT implements InitializingBean {
         // handle an invalid packet
         byte[] bytes = "<34>1 2010-08-19T22:14:15.000Z localhost - - - - BOMfoo0: load test 0 on tty1\0".getBytes();
         DatagramPacket pkt = new DatagramPacket(bytes, bytes.length, address, SyslogClient.PORT);
-        WaterfallExecutor.waterfall(m_executorService, new SyslogConnection(pkt, MATCH_PATTERN, HOST_GROUP, MESSAGE_GROUP, UEI_LIST, HIDE_MESSAGE, DISCARD_UEI));
+        WaterfallExecutor.waterfall(m_executorService, new SyslogConnection(pkt, m_config));
 
         // handle a valid packet
         bytes = "<34>1 2003-10-11T22:14:15.000Z plonk -ev/pts/8\0".getBytes();
         pkt = new DatagramPacket(bytes, bytes.length, address, SyslogClient.PORT);
-        WaterfallExecutor.waterfall(m_executorService, new SyslogConnection(pkt, MATCH_PATTERN, HOST_GROUP, MESSAGE_GROUP, UEI_LIST, HIDE_MESSAGE, DISCARD_UEI));
+        WaterfallExecutor.waterfall(m_executorService, new SyslogConnection(pkt, m_config));
 
         m_eventCounter.waitForFinish(120000);
         
         assertEquals(1, m_eventCounter.getCount());
     }
 
-    @Test
+    @Test(timeout=120000)
     @Transactional
     public void testNGSyslog() throws Exception {
         loadSyslogConfiguration("/etc/syslogd-syslogng-configuration.xml");
@@ -261,19 +234,19 @@ public class SyslogdEventdLoadIT implements InitializingBean {
         // handle an invalid packet
         byte[] bytes = "<34>main: 2010-08-19 localhost foo0: load test 0 on tty1\0".getBytes();
         DatagramPacket pkt = new DatagramPacket(bytes, bytes.length, address, SyslogClient.PORT);
-        WaterfallExecutor.waterfall(m_executorService, new SyslogConnection(pkt, MATCH_PATTERN, HOST_GROUP, MESSAGE_GROUP, UEI_LIST, HIDE_MESSAGE, DISCARD_UEI));
+        WaterfallExecutor.waterfall(m_executorService, new SyslogConnection(pkt, m_config));
 
         // handle a valid packet
         bytes = "<34>monkeysatemybrain!\0".getBytes();
         pkt = new DatagramPacket(bytes, bytes.length, address, SyslogClient.PORT);
-        WaterfallExecutor.waterfall(m_executorService, new SyslogConnection(pkt, MATCH_PATTERN, HOST_GROUP, MESSAGE_GROUP, UEI_LIST, HIDE_MESSAGE, DISCARD_UEI));
+        WaterfallExecutor.waterfall(m_executorService, new SyslogConnection(pkt, m_config));
 
         m_eventCounter.waitForFinish(120000);
         
         assertEquals(1, m_eventCounter.getCount());
     }
 
-    @Test
+    @Test(timeout=120000)
     @Transactional
     public void testEventd() throws Exception {
     	m_eventd.start();
@@ -356,6 +329,7 @@ public class SyslogdEventdLoadIT implements InitializingBean {
                 } catch (final InterruptedException e) {
                     LOG.warn("thread was interrupted while sleeping", e);
                     Thread.currentThread().interrupt();
+                    break;
                 }
             }
         }

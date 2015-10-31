@@ -54,7 +54,6 @@ import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.MockDatabase;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
-import org.opennms.netmgt.config.SyslogdConfig;
 import org.opennms.netmgt.config.SyslogdConfigFactory;
 import org.opennms.netmgt.dao.mock.EventAnticipator;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
@@ -68,22 +67,21 @@ import org.springframework.transaction.annotation.Transactional;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations={
+        "classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
+        "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml",
         "classpath:/META-INF/opennms/applicationContext-soa.xml",
         "classpath:/META-INF/opennms/applicationContext-dao.xml",
-        "classpath*:/META-INF/opennms/component-dao.xml",
         "classpath:/META-INF/opennms/applicationContext-daemon.xml",
-        "classpath:/META-INF/opennms/mockEventIpcManager.xml",
         "classpath:/META-INF/opennms/applicationContext-setupIpLike-enabled.xml",
         "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml",
-        "classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
-        "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml"
+        "classpath:/META-INF/opennms/mockEventIpcManager.xml"
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase(dirtiesContext=false,tempDbClass=MockDatabase.class)
 @Transactional
 public class Nms4335IT implements InitializingBean {
-    
-    String m_localhost = "127.0.0.1";
+
+    private SyslogdConfigFactory m_config;
 
     private Syslogd m_syslogd;
 
@@ -147,15 +145,17 @@ public class Nms4335IT implements InitializingBean {
             		"</syslogd-configuration>\n";
             
             stream = new ByteArrayInputStream(config.getBytes());
-            SyslogdConfigFactory.setInstance(new SyslogdConfigFactory(stream));
+            m_config = new SyslogdConfigFactory(stream);
+
+            m_syslogd = new Syslogd();
+            m_syslogd.setConfigFactory(m_config);
+            m_syslogd.init();
+
         } finally {
             if (stream != null) {
                 IOUtils.closeQuietly(stream);
             }
         }
-
-        m_syslogd = new Syslogd();
-        m_syslogd.init();
     }
 
     @After
@@ -172,7 +172,7 @@ public class Nms4335IT implements InitializingBean {
     }
     
     @Test
-    @Ignore
+    @Ignore("SL 2015-01-30 - Why is this set to ignore?")
     public void testAuthFailureShouldNotLog() throws Exception {
         doMessageTest("Jan 7 12:42:48 cartman su[25856]: pam_authenticate: Authentication failure",
                       "192.168.0.1",
@@ -207,8 +207,7 @@ public class Nms4335IT implements InitializingBean {
         
         final SyslogClient sc = new SyslogClient(null, 10, SyslogClient.LOG_DAEMON, addr("127.0.0.1"));
         final DatagramPacket pkt = sc.getPacket(SyslogClient.LOG_DEBUG, testPDU);
-        final SyslogdConfig config = SyslogdConfigFactory.getInstance();
-        WaterfallExecutor.waterfall(m_executorServices, new SyslogConnection(pkt, config.getForwardingRegexp(), config.getMatchingGroupHost(), config.getMatchingGroupMessage(), config.getUeiList(), config.getHideMessages(), config.getDiscardUei()));
+        WaterfallExecutor.waterfall(m_executorServices, new SyslogConnection(pkt, m_config));
 
         ea.verifyAnticipated(5000,0,0,0,0);
         final Event receivedEvent = ea.getAnticipatedEventsRecieved().get(0);
