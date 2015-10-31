@@ -33,15 +33,15 @@ import static org.opennms.core.utils.InetAddressUtils.addr;
 import java.util.List;
 import java.util.concurrent.Callable;
 
+import org.opennms.netmgt.xml.event.Event;
 import org.opennms.core.concurrent.EndOfTheWaterfall;
 import org.opennms.core.utils.InetAddressUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.opennms.netmgt.config.SyslogdConfigFactory;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventIpcManagerFactory;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.Parm;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This class encapsulates the execution context for processing syslog messages
@@ -59,11 +59,11 @@ final class SyslogProcessor implements EndOfTheWaterfall {
 
     private final String m_localAddr;
 
-    private final ConvertToEvent m_event;
+    private final Event m_event;
 
-    public SyslogProcessor(ConvertToEvent event) {
+    public SyslogProcessor(Event event, boolean newSuspectOnMessage) {
         m_event = event;
-        m_NewSuspectOnMessage = SyslogdConfigFactory.getInstance().getNewSuspectOnMessage();
+        m_NewSuspectOnMessage = newSuspectOnMessage;
         m_localAddr = InetAddressUtils.getLocalHostName();
     }
 
@@ -76,16 +76,16 @@ final class SyslogProcessor implements EndOfTheWaterfall {
         try {
             if (LOG.isTraceEnabled())  {
                 LOG.trace("Processing a syslog to event dispatch", m_event.toString());
-                String uuid = m_event.getEvent().getUuid();
+                String uuid = m_event.getUuid();
                 LOG.trace("Event {");
                 LOG.trace("  uuid  = {}", (uuid != null && uuid.length() > 0 ? uuid : "<not-set>"));
-                LOG.trace("  uei   = {}", m_event.getEvent().getUei());
-                LOG.trace("  src   = {}", m_event.getEvent().getSource());
-                LOG.trace("  iface = {}", m_event.getEvent().getInterface());
-                LOG.trace("  time  = {}", m_event.getEvent().getTime());
-                LOG.trace("  Msg   = {}", m_event.getEvent().getLogmsg().getContent());
-                LOG.trace("  Dst   = {}", m_event.getEvent().getLogmsg().getDest());
-                List<Parm> parms = (m_event.getEvent().getParmCollection() == null ? null : m_event.getEvent().getParmCollection());
+                LOG.trace("  uei   = {}", m_event.getUei());
+                LOG.trace("  src   = {}", m_event.getSource());
+                LOG.trace("  iface = {}", m_event.getInterface());
+                LOG.trace("  time  = {}", m_event.getTime());
+                LOG.trace("  Msg   = {}", m_event.getLogmsg().getContent());
+                LOG.trace("  Dst   = {}", m_event.getLogmsg().getDest());
+                List<Parm> parms = (m_event.getParmCollection() == null ? null : m_event.getParmCollection());
                 if (parms != null) {
                     LOG.trace("  parms {");
                     for (Parm parm : parms) {
@@ -99,11 +99,11 @@ final class SyslogProcessor implements EndOfTheWaterfall {
                 LOG.trace("}");
             }
 
-            EventIpcManagerFactory.getIpcManager().sendNow(m_event.getEvent());
+            EventIpcManagerFactory.getIpcManager().sendNow(m_event);
 
-            if (m_NewSuspectOnMessage && !m_event.getEvent().hasNodeid()) {
-                LOG.trace("Syslogd: Found a new suspect {}", m_event.getEvent().getInterface());
-                sendNewSuspectEvent(m_localAddr, m_event.getEvent().getInterface());
+            if (m_NewSuspectOnMessage && !m_event.hasNodeid()) {
+                LOG.trace("Syslogd: Found a new suspect {}", m_event.getInterface());
+                sendNewSuspectEvent(m_localAddr, m_event.getInterface());
             }
 
         } catch (Throwable t) {

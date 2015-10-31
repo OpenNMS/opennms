@@ -31,22 +31,19 @@ package org.opennms.netmgt.syslogd;
 import static org.opennms.core.utils.InetAddressUtils.addr;
 
 import java.io.UnsupportedEncodingException;
-import java.lang.reflect.Method;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.WeakHashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.opennms.core.utils.InetAddressUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.opennms.netmgt.config.SyslogdConfigFactory;
+import org.opennms.netmgt.config.SyslogdConfig;
 import org.opennms.netmgt.config.syslogd.HideMatch;
 import org.opennms.netmgt.config.syslogd.HideMessage;
 import org.opennms.netmgt.config.syslogd.HostaddrMatch;
@@ -57,10 +54,12 @@ import org.opennms.netmgt.config.syslogd.UeiList;
 import org.opennms.netmgt.config.syslogd.UeiMatch;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This routine does the majority of Syslogd's work.
- * Improvements most likely are to be made.
+ * Improvements are most likely to be made.
  *
  * @author <a href="mailto:joed@opennms.org">Johan Edstrom</a>
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
@@ -69,56 +68,16 @@ import org.opennms.netmgt.xml.event.Event;
  * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
  * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
  */
-final class ConvertToEvent {
+public class ConvertToEvent {
+
     private static final Logger LOG = LoggerFactory.getLogger(ConvertToEvent.class);
 
     /** Constant <code>HIDDEN_MESSAGE="The message logged has been removed due"{trunked}</code> */
     protected static final String HIDDEN_MESSAGE = "The message logged has been removed due to configuration of Syslogd; it may contain sensitive data.";
 
-    /**
-     * The received XML event, decoded using the US-ASCII encoding.
-     */
-    private final String m_eventXML;
+    private final Event m_event;
 
-    /**
-     * The Internet address of the sending agent.
-     */
-    private final InetAddress m_sender;
-
-    /**
-     * The port of the agent on the remote system.
-     */
-    private final int m_port;
-
-    /**
-     * The list of event that have been acknowledged.
-     */
-    private final List<Event> m_ackEvents = new ArrayList<Event>();
-
-    private Event m_event;
-
-    private static Class<? extends SyslogParser> m_parserClass = null;
-
-    private static Map<String,Pattern> m_patterns = new ConcurrentHashMap<String,Pattern>();
-
-    /**
-     * Private constructor to prevent the used of <em>new</em> except by the
-     * <code>make</code> method.
-     * 
-     * @param eventXml 
-     * @param port 
-     * @param addr 
-     */
-    private ConvertToEvent(InetAddress addr, int port, String eventXml) {
-        m_sender = addr;
-        m_port = port;
-        m_eventXML = eventXml;
-    }
-
-    public static void invalidate() {
-        m_parserClass = null;
-        m_patterns.clear();
-    }
+    private static final Map<String,Pattern> CACHED_PATTERNS = Collections.synchronizedMap(new WeakHashMap<String,Pattern>());
 
     /**
      * Constructs a new event encapsulation instance based upon the
@@ -131,9 +90,11 @@ final class ConvertToEvent {
      *          US-ASCII encoding.
      * @throws MessageDiscardedException 
      */
-    static ConvertToEvent make(final DatagramPacket packet, final String matchPattern, final int hostGroup, final int messageGroup, final UeiList ueiList, final HideMessage hideMessage, final String discardUei)
-            throws UnsupportedEncodingException, MessageDiscardedException {
-        return make(packet.getAddress(), packet.getPort(), packet.getData(), packet.getLength(), matchPattern, hostGroup, messageGroup, ueiList, hideMessage, discardUei);
+    public ConvertToEvent(
+        final DatagramPacket packet,
+        final SyslogdConfig config
+    ) throws UnsupportedEncodingException, MessageDiscardedException {
+        this(packet.getAddress(), packet.getPort(), packet.getData(), packet.getLength(), config);
     }
 
     /**
@@ -150,39 +111,32 @@ final class ConvertToEvent {
      *          US-ASCII encoding.
      * @throws MessageDiscardedException 
      */
-    static ConvertToEvent make(final InetAddress addr, final int port, final byte[] data,
-                               final int len, final String matchPattern, final int hostGroup, final int messageGroup,
-                               final UeiList ueiList, final HideMessage hideMessage, final String discardUei)
-            throws UnsupportedEncodingException, MessageDiscardedException {
-        if (m_parserClass == null) {
-            final String parser = SyslogdConfigFactory.getInstance().getParser();
-            try {
-                m_parserClass = Class.forName(parser).asSubclass(SyslogParser.class);
-            } catch (final Exception ex) {
-                LOG.debug("Unable to instantiate Syslog parser class specified in config: {}", parser, ex);
-                m_parserClass = CustomSyslogParser.class;
-            }
+    public ConvertToEvent(
+        final InetAddress addr,
+        final int port,
+        final byte[] data,
+        final int len,
+        final SyslogdConfig config
+    ) throws UnsupportedEncodingException, MessageDiscardedException {
+
+        if (config == null) {
+            throw new IllegalArgumentException("Config cannot be null");
         }
+
+        final UeiList ueiList = config.getUeiList();
+        final HideMessage hideMessage = config.getHideMessages();
+        final String discardUei = config.getDiscardUei();
 
         String deZeroedData = new String(data, 0, len, "US-ASCII");
         if (deZeroedData.endsWith("\0")) {
             deZeroedData = deZeroedData.substring(0, deZeroedData.length() - 1);
         }
 
-        final ConvertToEvent e = new ConvertToEvent(addr, port, deZeroedData);
+        String syslogString = deZeroedData;
 
-        LOG.debug("Converting to event: {}", e);
+        LOG.debug("Converting to event: {}", this);
 
-        final SyslogParser parser;
-        try {
-            Method m = m_parserClass.getDeclaredMethod("getParser", String.class);
-            Object[] args = new Object[] { e.m_eventXML };
-            parser = (SyslogParser)m.invoke(ConvertToEvent.class, args);
-        } catch (final Exception ex) {
-            LOG.debug("Unable to get parser for class '{}'", m_parserClass.getName(), ex);
-            throw new MessageDiscardedException(ex);
-        }
-
+        SyslogParser parser = SyslogParser.getParserInstance(config, syslogString);
         if (!parser.find()) {
             throw new MessageDiscardedException("message does not match");
         }
@@ -190,13 +144,13 @@ final class ConvertToEvent {
         try {
             message = parser.parse();
         } catch (final SyslogParserException ex) {
-            LOG.debug("Unable to parse '{}'", e.m_eventXML, ex);
+            LOG.debug("Unable to parse '{}'", syslogString, ex);
             throw new MessageDiscardedException(ex);
         }
 
         LOG.debug("got syslog message {}", message);
         if (message == null) {
-            throw new MessageDiscardedException(String.format("Unable to parse '%s'", e.m_eventXML));
+            throw new MessageDiscardedException(String.format("Unable to parse '%s'", syslogString));
         }
         // Build a basic event out of the syslog message
         final String priorityTxt = message.getSeverity().toString();
@@ -287,7 +241,7 @@ final class ConvertToEvent {
                     	msgPat = Pattern.compile(hide.getMatch().getExpression(), Pattern.MULTILINE);
                     	msgMat = msgPat.matcher(fullText);            		
                 	} catch (PatternSyntaxException pse) {
-			    LOG.warn("Failed to compile regex pattern '{}'", hide.getMatch().getExpression(), pse);
+                		LOG.warn("Failed to compile regex pattern '{}'", hide.getMatch().getExpression(), pse);
                 		msgMat = null;
                 	}
                 	if ((msgMat != null) && (msgMat.find())) {
@@ -298,8 +252,8 @@ final class ConvertToEvent {
                 if (doHide) {
                     LOG.debug("Hiding syslog message from Event - May contain sensitive data");
                     message.setMessage(HIDDEN_MESSAGE);
-    	            // We want to stop here, no point in checking further hideMatches
-    	            break;
+                    // We want to stop here, no point in checking further hideMatches
+                    break;
                 }
             }
         }
@@ -321,8 +275,7 @@ final class ConvertToEvent {
             bldr.addParam("processid", message.getProcessId().toString());
         }
 
-        e.m_event = bldr.getEvent();
-        return e;
+        m_event = bldr.getEvent();
     }
 
     private static boolean matchFind(final String expression, final String input, final String context) {
@@ -392,11 +345,11 @@ final class ConvertToEvent {
     }
 
     private static Pattern getPattern(final String expression) {
-        final Pattern msgPat = m_patterns.get(expression);
+        final Pattern msgPat = CACHED_PATTERNS.get(expression);
         if (msgPat == null) {
             try {
                 final Pattern newPat = Pattern.compile(expression, Pattern.MULTILINE);
-                m_patterns.put(expression, newPat);
+                CACHED_PATTERNS.put(expression, newPat);
                 return newPat;
             } catch(final PatternSyntaxException pse) {
                 LOG.warn("Failed to compile regex pattern '{}'", expression, pse);
@@ -477,81 +430,12 @@ final class ConvertToEvent {
     }
 
     /**
-     * Adds the event to the list of events acknowledged in this event XML
-     * document.
-     *
-     * @param e The event to acknowledge.
-     */
-    void ackEvent(final Event e) {
-        if (!m_ackEvents.contains(e))
-            m_ackEvents.add(e);
-    }
-
-    /**
-     * Returns the raw XML data as a string.
-     */
-    String getXmlData() {
-        return m_eventXML;
-    }
-
-    /**
-     * Returns the sender's address.
-     */
-    InetAddress getSender() {
-        return m_sender;
-    }
-
-    /**
-     * Returns the sender's port
-     */
-    int getPort() {
-        return m_port;
-    }
-
-    /**
-     * Get the acknowledged events
-     *
-     * @return a {@link java.util.List} object.
-     */
-    public List<Event> getAckedEvents() {
-        return m_ackEvents;
-    }
-
-    /**
      * <p>getEvent</p>
      *
      * @return a {@link org.opennms.netmgt.xml.event.Event} object.
      */
     public Event getEvent() {
         return m_event;
-    }
-
-    /**
-     * {@inheritDoc}
-     *
-     * Returns true if the instance matches the object based upon the remote
-     * agent's address &amp; port. If the passed instance is from the same
-     * agent then it is considered equal.
-     */
-    @Override
-    public boolean equals(final Object o) {
-        if (o != null && o instanceof ConvertToEvent) {
-            final ConvertToEvent e = (ConvertToEvent) o;
-            return (this == e || (m_port == e.m_port && m_sender.equals(e.m_sender)));
-        }
-        return false;
-    }
-
-    /**
-     * Returns the hash code of the instance. The hash code is computed by
-     * taking the bitwise XOR of the port and the agent's Internet address
-     * hash code.
-     *
-     * @return The 32-bit has code for the instance.
-     */
-    @Override
-    public int hashCode() {
-        return (m_port ^ m_sender.hashCode());
     }
 
     /**
@@ -562,9 +446,6 @@ final class ConvertToEvent {
     @Override
     public String toString() {
         return new ToStringBuilder(this)
-            .append("Sender", m_sender)
-            .append("Port", m_port)
-            .append("Acknowledged Events", m_ackEvents)
             .append("Event", m_event)
             .toString();
     }

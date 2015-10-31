@@ -30,6 +30,7 @@ package org.opennms.netmgt.syslogd;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import static org.opennms.core.utils.InetAddressUtils.addr;
 
 import java.io.InputStream;
@@ -56,7 +57,6 @@ import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.MockDatabase;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
-import org.opennms.netmgt.config.SyslogdConfig;
 import org.opennms.netmgt.config.SyslogdConfigFactory;
 import org.opennms.netmgt.config.syslogd.UeiMatch;
 import org.opennms.netmgt.dao.mock.EventAnticipator;
@@ -72,15 +72,16 @@ import org.springframework.transaction.annotation.Transactional;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations={
-		"classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
+        "classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
         "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml",
         "classpath:/META-INF/opennms/applicationContext-soa.xml",
         "classpath:/META-INF/opennms/applicationContext-dao.xml",
-        "classpath*:/META-INF/opennms/component-dao.xml",
         "classpath:/META-INF/opennms/applicationContext-daemon.xml",
-        "classpath:/META-INF/opennms/mockEventIpcManager.xml",
         "classpath:/META-INF/opennms/applicationContext-setupIpLike-enabled.xml",
-        "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml"
+        "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml",
+        "classpath:/META-INF/opennms/applicationContext-eventDaemon.xml",
+        "classpath:/META-INF/opennms/applicationContext-eventUtil.xml",
+        "classpath:/META-INF/opennms/mockEventIpcManager.xml"
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase(dirtiesContext=false,tempDbClass=MockDatabase.class)
@@ -88,6 +89,8 @@ import org.springframework.transaction.annotation.Transactional;
 public class SyslogdIT implements InitializingBean {
     
     String m_localhost = "127.0.0.1";
+
+    private SyslogdConfigFactory m_config;
 
     private Syslogd m_syslogd;
 
@@ -108,7 +111,7 @@ public class SyslogdIT implements InitializingBean {
         InputStream stream = null;
         try {
             stream = ConfigurationTestUtils.getInputStreamForResource(this, "/etc/syslogd-configuration.xml");
-            SyslogdConfigFactory.setInstance(new SyslogdConfigFactory(stream));
+            m_config = new SyslogdConfigFactory(stream);
         } finally {
             if (stream != null) {
                 IOUtils.closeQuietly(stream);
@@ -116,13 +119,14 @@ public class SyslogdIT implements InitializingBean {
         }
 
         m_syslogd = new Syslogd();
+        m_syslogd.setConfigFactory(m_config);
         m_syslogd.init();
 
         // Verify that the test syslogd-configuration.xml file was loaded
         boolean foundBeer = false;
         boolean foundMalt = false;
-        assertEquals(10514, SyslogdConfigFactory.getInstance().getSyslogPort());
-        for (final UeiMatch match : SyslogdConfigFactory.getInstance().getUeiList().getUeiMatch()) {
+        assertEquals(10514, m_config.getSyslogPort());
+        for (final UeiMatch match : m_config.getUeiList().getUeiMatch()) {
             if (match.getProcessMatch() != null) {
                 if (!foundBeer && "beerd".equals(match.getProcessMatch().getExpression())) {
                     foundBeer = true;
@@ -166,8 +170,7 @@ public class SyslogdIT implements InitializingBean {
         
         final SyslogClient sc = new SyslogClient(null, 10, SyslogClient.LOG_DAEMON);
         final DatagramPacket pkt = sc.getPacket(SyslogClient.LOG_DEBUG, testPDU);
-        final SyslogdConfig config = SyslogdConfigFactory.getInstance();
-        WaterfallExecutor.waterfall(m_executorService, new SyslogConnection(pkt, config.getForwardingRegexp(), config.getMatchingGroupHost(), config.getMatchingGroupMessage(), config.getUeiList(), config.getHideMessages(), config.getDiscardUei()));
+        WaterfallExecutor.waterfall(m_executorService, new SyslogConnection(pkt, m_config));
 
         ea.verifyAnticipated(5000,0,0,0,0);
         final Event receivedEvent = ea.getAnticipatedEventsRecieved().get(0);
@@ -239,8 +242,8 @@ public class SyslogdIT implements InitializingBean {
         try {
             s = new SyslogClient(null, 10, SyslogClient.LOG_DAEMON);
             s.syslog(SyslogClient.LOG_CRIT, testPDU);
-        } catch (UnknownHostException uhe) {
-            //Failures are for weenies
+        } catch (UnknownHostException e) {
+            fail(e.getMessage()); //Failures are for weenies
         }
 
         ea.verifyAnticipated(10000, 0, 0, 0, 0);
@@ -272,8 +275,8 @@ public class SyslogdIT implements InitializingBean {
         try {
             s = new SyslogClient("maltd", 10, SyslogClient.LOG_LOCAL1);
             s.syslog(SyslogClient.LOG_WARNING, testPDU);
-        } catch (UnknownHostException uhe) {
-            //Failures are for weenies
+        } catch (UnknownHostException e) {
+            fail(e.getMessage()); //Failures are for weenies
         }
     
         ea.verifyAnticipated(5000, 0, 0, 0, 0);
@@ -304,8 +307,8 @@ public class SyslogdIT implements InitializingBean {
         try {
             s = new SyslogClient(null, 10, SyslogClient.LOG_LOCAL1);
             s.syslog(SyslogClient.LOG_WARNING, testPDU);
-        } catch (UnknownHostException uhe) {
-            //Failures are for weenies
+        } catch (UnknownHostException e) {
+            fail(e.getMessage()); //Failures are for weenies
         }
     
         ea.verifyAnticipated(5000, 0, 0, 0, 0);
@@ -335,8 +338,8 @@ public class SyslogdIT implements InitializingBean {
         try {
             s = new SyslogClient(null, 10, SyslogClient.LOG_LOCAL0);
             s.syslog(SyslogClient.LOG_DEBUG, testPDU);
-        } catch (UnknownHostException uhe) {
-            //Failures are for weenies
+        } catch (UnknownHostException e) {
+            fail(e.getMessage()); //Failures are for weenies
         }
 
         ea.verifyAnticipated(5000, 0, 0, 0, 0);
@@ -366,8 +369,8 @@ public class SyslogdIT implements InitializingBean {
         try {
             s = new SyslogClient("beerd", 10, SyslogClient.LOG_DAEMON);
             s.syslog(SyslogClient.LOG_DEBUG, testPDU);
-        } catch (UnknownHostException uhe) {
-            //Failures are for weenies
+        } catch (UnknownHostException e) {
+            fail(e.getMessage()); //Failures are for weenies
         }
     
         ea.verifyAnticipated(5000, 0, 0, 0, 0);
@@ -380,7 +383,7 @@ public class SyslogdIT implements InitializingBean {
             s = new SyslogClient(null, 10, SyslogClient.LOG_DAEMON);
             s.syslog(SyslogClient.LOG_DEBUG, "2007-01-01 127.0.0.1 A SyslogNG style message");
         } catch (UnknownHostException e) {
-            //Failures are for weenies
+            fail(e.getMessage()); //Failures are for weenies
         }
     }
 
@@ -391,7 +394,7 @@ public class SyslogdIT implements InitializingBean {
             s = new SyslogClient(null, 10, SyslogClient.LOG_DAEMON);
             s.syslog(SyslogClient.LOG_DEBUG, "2007-01-01 www.opennms.org A SyslogNG style message");
         } catch (UnknownHostException e) {
-            //Failures are for weenies
+            fail(e.getMessage()); //Failures are for weenies
         }
     }
     
@@ -511,8 +514,8 @@ public class SyslogdIT implements InitializingBean {
         try {
             s = new SyslogClient(null, 10, SyslogClient.LOG_DAEMON);
             s.syslog(SyslogClient.LOG_DEBUG, testPDU);
-        } catch (UnknownHostException uhe) {
-            //Failures are for weenies
+        } catch (UnknownHostException e) {
+            fail(e.getMessage()); //Failures are for weenies
         }
 
         ea.verifyAnticipated(5000, 0, 0, 0, 0);

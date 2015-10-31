@@ -32,20 +32,18 @@ import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.opennms.netmgt.config.SyslogdConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class SyslogNGParser extends SyslogParser {
     private static final Logger LOG = LoggerFactory.getLogger(SyslogNGParser.class);
+
     //                                                                <PRI>        IDENT               TIMESTAMP                                                                                 HOST   PROCESS/ID                            MESSAGE
     private static final Pattern m_syslogNGPattern = Pattern.compile("^<(\\d{1,3})>(?:(\\S*?)(?::? )?)((?:\\d\\d\\d\\d-\\d\\d-\\d\\d)|(?:\\S\\S\\S\\s+\\d{1,2}\\s+\\d\\d:\\d\\d:\\d\\d)) (\\S+) (?:(\\S+?)(?:\\[(\\d+)\\])?:\\s+){0,1}(\\S.*?)$", Pattern.MULTILINE);
 
-    protected SyslogNGParser(final String text) {
-        super(text);
-    }
-
-    public static SyslogParser getParser(final String text) {
-        return new SyslogNGParser(text);
+    public SyslogNGParser(final SyslogdConfig config, final String text) {
+        super(config, text);
     }
 
     @Override

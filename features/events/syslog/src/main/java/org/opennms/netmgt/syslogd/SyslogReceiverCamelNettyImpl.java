@@ -47,8 +47,7 @@ import org.opennms.core.concurrent.LogPreservingThreadFactory;
 import org.opennms.core.concurrent.WaterfallExecutor;
 import org.opennms.core.logging.Logging;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.netmgt.config.syslogd.HideMessage;
-import org.opennms.netmgt.config.syslogd.UeiList;
+import org.opennms.netmgt.config.SyslogdConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -65,17 +64,7 @@ class SyslogReceiverCamelNettyImpl implements SyslogReceiver {
 
     private final int m_port;
 
-    private final String m_matchPattern;
-
-    private final int m_hostGroup;
-
-    private final int m_messageGroup;
-    
-    private final String m_discardUei;
-
-    private final UeiList m_UeiList;
-
-    private final HideMessage m_HideMessages;
+    private final SyslogdConfig m_config;
 
     private final ExecutorService m_executor;
 
@@ -91,23 +80,19 @@ class SyslogReceiverCamelNettyImpl implements SyslogReceiver {
      * @throws IOException 
      */
     SyslogReceiverCamelNettyImpl(
-        InetAddress host,
-        int port,
-        String matchPattern,
-        int hostGroup,
-        int messageGroup,
-        UeiList ueiList,
-        HideMessage hideMessages,
-        String discardUei
+        final InetAddress host,
+        final int port,
+        final SyslogdConfig config
     ) {
+        if (host == null) {
+            throw new IllegalArgumentException("Host cannot be null");
+        } else if (config == null) {
+            throw new IllegalArgumentException("Config cannot be null");
+        }
+
         m_host = host == null ? InetAddressUtils.getLocalHostAddress() : host;
         m_port = port;
-        m_matchPattern = matchPattern;
-        m_hostGroup = hostGroup;
-        m_messageGroup = messageGroup;
-        m_discardUei = discardUei;
-        m_UeiList = ueiList;
-        m_HideMessages = hideMessages;
+        m_config = config;
 
         m_executor = new ThreadPoolExecutor(
             Runtime.getRuntime().availableProcessors() * 2,
@@ -163,11 +148,11 @@ class SyslogReceiverCamelNettyImpl implements SyslogReceiver {
                     .process(new Processor() {
                         @Override
                         public void process(Exchange exchange) throws Exception {
-                             ChannelBuffer buffer = exchange.getIn().getBody(ChannelBuffer.class);
+                            ChannelBuffer buffer = exchange.getIn().getBody(ChannelBuffer.class);
                             // NettyConstants.NETTY_REMOTE_ADDRESS is a SocketAddress type but because 
                             // we are listening on an InetAddress, it will always be of type InetAddressSocket
                             InetSocketAddress source = (InetSocketAddress)exchange.getIn().getHeader(NettyConstants.NETTY_REMOTE_ADDRESS); 
-                            WaterfallExecutor.waterfall(m_executor, new SyslogConnection(source, buffer.toByteBuffer(), m_matchPattern, m_hostGroup, m_messageGroup, m_UeiList, m_HideMessages, m_discardUei));
+                            WaterfallExecutor.waterfall(m_executor, new SyslogConnection(source, buffer.toByteBuffer(), m_config));
                         }
                     });
                 }

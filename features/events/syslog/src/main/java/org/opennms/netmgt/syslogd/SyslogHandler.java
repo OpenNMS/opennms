@@ -36,8 +36,6 @@ import java.nio.channels.DatagramChannel;
 import org.opennms.core.fiber.Fiber;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.SyslogdConfig;
-import org.opennms.netmgt.config.syslogd.HideMessage;
-import org.opennms.netmgt.config.syslogd.UeiList;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.EventReceipt;
 import org.slf4j.Logger;
@@ -74,21 +72,7 @@ public final class SyslogHandler implements Fiber {
      */
     private DatagramSocket m_dgSock;
 
-    private final String m_ForwardingRegexp;
-
-    private final int m_MatchingGroupHost;
-
-    private final int m_MatchingGroupMessage;
-
-    /**
-     * A collection of Strings->UEI's
-     */
-    private final UeiList m_UeiList;
-
-    /**
-     * A collection of Strings we do not want to attach to the event.
-     */
-    private final HideMessage m_HideMessages;
+    private SyslogdConfig m_config;
 
     /**
      * The UDP socket port binding.
@@ -105,49 +89,24 @@ public final class SyslogHandler implements Fiber {
      */
     private String m_logPrefix;
 
-    private final String m_DiscardUei;
-
-    /**
-     * Set the Trapd configuration
-     */
-    private static SyslogdConfig m_syslogdConfig;
-
     /**
      * <p>Constructor for SyslogHandler.</p>
      */
-    public SyslogHandler() {
+    public SyslogHandler(SyslogdConfig config) {
+        if (config == null) {
+            throw new IllegalArgumentException("Config cannot be null");
+        }
+
         m_dgSock = null;
-        m_dgPort = m_syslogdConfig.getSyslogPort();
-        m_dgIp = m_syslogdConfig.getListenAddress();
+        m_dgPort = config.getSyslogPort();
+        m_dgIp = config.getListenAddress();
 
-        // the Matching Regexp is broken out into the config-file of syslogd
-
-        m_ForwardingRegexp = m_syslogdConfig.getForwardingRegexp();
-
-        m_MatchingGroupHost = m_syslogdConfig.getMatchingGroupHost();
-
-        m_MatchingGroupMessage = m_syslogdConfig.getMatchingGroupMessage();
-        
-        m_DiscardUei = m_syslogdConfig.getDiscardUei();
-
-        m_UeiList = m_syslogdConfig.getUeiList();
-
-        m_HideMessages = m_syslogdConfig.getHideMessages();
+        m_config = config;
 
         m_status = START_PENDING;
 
-        m_dgSock = null;
         m_receiver = null;
         m_logPrefix = null;
-    }
-
-    /**
-     * <p>setSyslogConfig</p>
-     *
-     * @param syslogdConfig a {@link org.opennms.netmgt.config.SyslogdConfig} object.
-     */
-    public static void setSyslogConfig(SyslogdConfig syslogdConfig) {
-        m_syslogdConfig = syslogdConfig;
     }
 
     /**
@@ -173,12 +132,7 @@ public final class SyslogHandler implements Fiber {
 
                 m_receiver = new SyslogReceiverNioThreadPoolImpl(
                     channel,
-                    m_ForwardingRegexp,
-                    m_MatchingGroupHost,
-                    m_MatchingGroupMessage,
-                    m_UeiList,
-                    m_HideMessages,
-                    m_DiscardUei
+                    m_config
                 );
             } else if (USE_NETTY){
                 // Camel Netty SyslogReceiver implementation
@@ -188,12 +142,7 @@ public final class SyslogHandler implements Fiber {
                         InetAddressUtils.addr(m_dgIp) :
                         InetAddressUtils.getLocalHostAddress(),
                     m_dgPort,
-                    m_ForwardingRegexp,
-                    m_MatchingGroupHost,
-                    m_MatchingGroupMessage,
-                    m_UeiList,
-                    m_HideMessages,
-                    m_DiscardUei
+                    m_config
                 );
             } else {
                 // java.net SyslogReceiver implementation
@@ -206,12 +155,7 @@ public final class SyslogHandler implements Fiber {
 
                 m_receiver = new SyslogReceiverJavaNetImpl(
                     m_dgSock,
-                    m_ForwardingRegexp,
-                    m_MatchingGroupHost,
-                    m_MatchingGroupMessage,
-                    m_UeiList,
-                    m_HideMessages,
-                    m_DiscardUei
+                    m_config
                 );
             }
 

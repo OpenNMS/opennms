@@ -44,8 +44,7 @@ import java.util.concurrent.TimeUnit;
 import org.opennms.core.concurrent.LogPreservingThreadFactory;
 import org.opennms.core.concurrent.WaterfallExecutor;
 import org.opennms.core.logging.Logging;
-import org.opennms.netmgt.config.syslogd.HideMessage;
-import org.opennms.netmgt.config.syslogd.UeiList;
+import org.opennms.netmgt.config.SyslogdConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -72,17 +71,7 @@ class SyslogReceiverNioThreadPoolImpl implements SyslogReceiver {
      */
     private Thread m_context;
 
-    private final String m_matchPattern;
-
-    private final int m_hostGroup;
-
-    private final int m_messageGroup;
-    
-    private final String m_discardUei;
-
-    private final UeiList m_UeiList;
-
-    private final HideMessage m_HideMessages;
+    private final SyslogdConfig m_config;
 
     private final ExecutorService m_executor;
 
@@ -96,16 +85,16 @@ class SyslogReceiverNioThreadPoolImpl implements SyslogReceiver {
      * @param hostGroup
      * @param messageGroup
      */
-    SyslogReceiverNioThreadPoolImpl(DatagramChannel channel, String matchPattern, int hostGroup, int messageGroup,
-                   UeiList ueiList, HideMessage hideMessages, String discardUei) {
+    SyslogReceiverNioThreadPoolImpl(DatagramChannel channel, SyslogdConfig config) {
+        if (channel == null) {
+            throw new IllegalArgumentException("Channel cannot be null");
+        } else if (config == null) {
+            throw new IllegalArgumentException("Config cannot be null");
+        }
+
         m_stop = false;
         m_channel = channel;
-        m_matchPattern = matchPattern;
-        m_hostGroup = hostGroup;
-        m_messageGroup = messageGroup;
-        m_discardUei = discardUei;
-        m_UeiList = ueiList;
-        m_HideMessages = hideMessages;
+        m_config = config;
 
         m_executor = new ThreadPoolExecutor(
             Runtime.getRuntime().availableProcessors() * 2,
@@ -216,7 +205,7 @@ class SyslogReceiverNioThreadPoolImpl implements SyslogReceiver {
                             // Flip the buffer from write to read mode
                             buffer.flip();
 
-                            WaterfallExecutor.waterfall(m_executor, new SyslogConnection(source, buffer, m_matchPattern, m_hostGroup, m_messageGroup, m_UeiList, m_HideMessages, m_discardUei));
+                            WaterfallExecutor.waterfall(m_executor, new SyslogConnection(source, buffer, m_config));
 
                             // Clear the buffer so that it's ready for writing again
                             buffer.clear();

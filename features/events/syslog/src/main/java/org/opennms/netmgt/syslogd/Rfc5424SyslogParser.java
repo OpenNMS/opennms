@@ -36,22 +36,20 @@ import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.opennms.netmgt.config.SyslogdConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class Rfc5424SyslogParser extends SyslogParser {
     private static final Logger LOG = LoggerFactory.getLogger(Rfc5424SyslogParser.class);
+
     //                                                                <PRI>VERSION            TIMESTAMP    HOST   APP    PROC     MSGID  STRUCTURED   MSG
     private static final Pattern m_rfc5424Pattern = Pattern.compile("^<(\\d{1,3})>(\\d{0,2}?) (\\S+T\\S+) (\\S*) (\\S*) (\\d+|-) (\\S*) ((?:\\[.*?\\])*|-)(?: (?:BOM)?(.*?))?$", Pattern.MULTILINE);
 
     private static final Pattern m_dateWithOffset = Pattern.compile("^(.*[\\-\\+]\\d\\d):?(\\d\\d)$");
 
-    protected Rfc5424SyslogParser(final String text) {
-        super(text);
-    }
-
-    public static SyslogParser getParser(final String text) {
-        return new Rfc5424SyslogParser(text);
+    public Rfc5424SyslogParser(final SyslogdConfig config, final String text) {
+        super(config, text);
     }
 
     @Override
@@ -112,8 +110,7 @@ public class Rfc5424SyslogParser extends SyslogParser {
         return message;
     }
 
-    @Override
-    protected Date parseDate(final String dateString) {
+    protected static Date parseDate(final String dateString) {
         if (dateString.endsWith("Z")) {
             try {
                 final DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.ROOT);

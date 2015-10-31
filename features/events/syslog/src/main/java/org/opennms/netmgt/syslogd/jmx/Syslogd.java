@@ -28,64 +28,24 @@
 
 package org.opennms.netmgt.syslogd.jmx;
 
+import org.opennms.netmgt.daemon.AbstractSpringContextJmxServiceDaemon;
+
 /**
  * <p>Syslogd class.</p>
  *
  * @author ranger
  * @version $Id: $
  */
-public class Syslogd implements SyslogdMBean {
-    /**
-     * <p>init</p>
-     */
+public class Syslogd extends AbstractSpringContextJmxServiceDaemon<org.opennms.netmgt.syslogd.Syslogd> implements SyslogdMBean {
+
     @Override
-    public void init() {
-        org.opennms.netmgt.syslogd.Syslogd.getInstance().init();
+    protected String getLoggingPrefix() {
+        return org.opennms.netmgt.syslogd.Syslogd.LOG4J_CATEGORY;
     }
 
-    /**
-     * <p>start</p>
-     */
     @Override
-    public void start() {
-        org.opennms.netmgt.syslogd.Syslogd.getInstance().start();
+    protected String getSpringContext() {
+        return "syslogDaemonContext";
     }
-
-    /**
-     * <p>stop</p>
-     */
-    @Override
-    public void stop() {
-        org.opennms.netmgt.syslogd.Syslogd.getInstance();
-    }
-
-    /**
-     * <p>getStatus</p>
-     *
-     * @return a int.
-     */
-    @Override
-    public int getStatus() {
-        return org.opennms.netmgt.syslogd.Syslogd.getInstance().getStatus();
-    }
-
-    /**
-     * <p>status</p>
-     *
-     * @return a {@link java.lang.String} object.
-     */
-    @Override
-    public String status() {
-        return org.opennms.core.fiber.Fiber.STATUS_NAMES[getStatus()];
-    }
-
-    /**
-     * <p>getStatusText</p>
-     *
-     * @return a {@link java.lang.String} object.
-     */
-    @Override
-    public String getStatusText() {
-        return org.opennms.core.fiber.Fiber.STATUS_NAMES[getStatus()];
-    }
+    
 }

@@ -59,7 +59,11 @@ public class SyslogMessage {
         }
     };
 
+    /**
+     * This field is for informational purposes only.
+     */
     private Class<? extends SyslogParser> m_parserClass;
+
     private SyslogFacility m_facility = SyslogFacility.UNKNOWN;
     private SyslogSeverity m_severity = SyslogSeverity.UNKNOWN;
     private Integer m_version;

@@ -36,8 +36,7 @@ import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 import java.util.concurrent.Callable;
 
-import org.opennms.netmgt.config.syslogd.HideMessage;
-import org.opennms.netmgt.config.syslogd.UeiList;
+import org.opennms.netmgt.config.SyslogdConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,17 +52,7 @@ public class SyslogConnection implements Callable<Callable<?>> {
 
     private final DatagramPacket _packet;
 
-    private final String _matchPattern;
-
-    private final int _hostGroup;
-
-    private final int _messageGroup;
-
-    private final String _discardUei;
-
-    private final UeiList _ueiList;
-
-    private final HideMessage _hideMessages;
+    private final SyslogdConfig _config;
 
     /**
      * <p>Constructor for SyslogConnection.</p>
@@ -76,24 +65,28 @@ public class SyslogConnection implements Callable<Callable<?>> {
      * @param hideMessages a {@link org.opennms.netmgt.config.syslogd.HideMessage} object.
      * @param discardUei a {@link java.lang.String} object.
      */
-    public SyslogConnection(final DatagramPacket packet, final String matchPattern, final int hostGroup, final int messageGroup, final UeiList ueiList, final HideMessage hideMessages, final String discardUei) {
+    public SyslogConnection(final DatagramPacket packet, final SyslogdConfig config) {
+        if (packet == null) {
+            throw new IllegalArgumentException("Packet cannot be null");
+        } else if (config == null) {
+            throw new IllegalArgumentException("Config cannot be null");
+        }
+
         _packet = copyPacket(packet);
-        _matchPattern = matchPattern;
-        _hostGroup = hostGroup;
-        _messageGroup = messageGroup;
-        _discardUei = discardUei;
-        _ueiList = ueiList;
-        _hideMessages = hideMessages;
+        _config = config;
     }
 
-    public SyslogConnection(final InetSocketAddress source, final ByteBuffer buffer, final String matchPattern, final int hostGroup, final int messageGroup, final UeiList ueiList, final HideMessage hideMessages, final String discardUei) {
+    public SyslogConnection(final InetSocketAddress source, final ByteBuffer buffer, final SyslogdConfig config) {
+        if (source == null) {
+            throw new IllegalArgumentException("Source cannot be null");
+        } else if (buffer == null) {
+            throw new IllegalArgumentException("Buffer cannot be null");
+        } else if (config == null) {
+            throw new IllegalArgumentException("Config cannot be null");
+        }
+
         _packet = copyPacket(source, buffer);
-        _matchPattern = matchPattern;
-        _hostGroup = hostGroup;
-        _messageGroup = messageGroup;
-        _discardUei = discardUei;
-        _ueiList = ueiList;
-        _hideMessages = hideMessages;
+        _config = config;
     }
 
     /**
@@ -104,11 +97,14 @@ public class SyslogConnection implements Callable<Callable<?>> {
 
         ConvertToEvent re = null;
         try {
-            re = ConvertToEvent.make(_packet, _matchPattern, _hostGroup,  _messageGroup, _ueiList, _hideMessages, _discardUei);
+            re = new ConvertToEvent(
+                _packet,
+                _config
+            );
 
             LOG.debug("Sending received packet to the SyslogProcessor queue");
 
-            return new SyslogProcessor(re);
+            return new SyslogProcessor(re.getEvent(), _config.getNewSuspectOnMessage());
 
         } catch (final UnsupportedEncodingException e1) {
             LOG.debug("Failure to convert package", e1);

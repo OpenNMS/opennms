@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.syslogd;
 
+import java.lang.reflect.Constructor;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -37,20 +38,48 @@ import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.opennms.netmgt.config.SyslogdConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 
 public class SyslogParser {
     private static final Logger LOG = LoggerFactory.getLogger(SyslogParser.class);
-    private static Pattern m_pattern = Pattern.compile("^.*$");
     private Matcher m_matcher = null;
+    private final SyslogdConfig m_config;
     private final String m_text;
     private Boolean m_found = null;
     private Boolean m_matched = null;
     private boolean m_traceEnabled = false;
+    
+    public static SyslogParser getParserInstance(SyslogdConfig config, String text) throws MessageDiscardedException {
+        Class<? extends SyslogParser> m_parserClass = null;
+        try {
+            m_parserClass = Class.forName(config.getParser()).asSubclass(SyslogParser.class);
+        } catch (final Exception ex) {
+            LOG.debug("Unable to instantiate Syslog parser class specified in config: {}", config.getParser(), ex);
+            m_parserClass = CustomSyslogParser.class;
+        }
 
-    protected SyslogParser(final String text) {
+        final SyslogParser retval;
+        try {
+            Constructor<? extends SyslogParser> m = m_parserClass.getConstructor(SyslogdConfig.class, String.class);
+            retval = (SyslogParser)m.newInstance(config, text);
+        } catch (final Exception ex) {
+            LOG.debug("Unable to get parser for class '{}'", m_parserClass.getName(), ex);
+            throw new MessageDiscardedException(ex);
+        }
+
+        return retval;
+    }
+
+    protected SyslogParser(final SyslogdConfig config, final String text) {
+        if (config == null) {
+            throw new IllegalArgumentException("Config argument to SyslogParser must not be null");
+        } else if (text == null) {
+            throw new IllegalArgumentException("Text argument to SyslogParser must not be null");
+        }
+        m_config = config;
         m_text = text;
         m_traceEnabled = LOG.isTraceEnabled();
     }
@@ -75,6 +104,10 @@ public class SyslogParser {
         return m_matched;
     }
 
+    protected SyslogdConfig getConfig() {
+        return m_config;
+    }
+
     protected String getText() {
         return m_text;
     }
@@ -83,14 +116,9 @@ public class SyslogParser {
         return m_traceEnabled;
     }
 
-    /* override this to return your own class */
-    public static SyslogParser getParser(final String text) throws SyslogParserException {
-        throw new UnsupportedOperationException("You must implement getParser() in your subclass!");
-    }
-
     /* override this to get your custom pattern */
     protected Pattern getPattern() {
-        return m_pattern;
+        return Pattern.compile("^.*$");
     }
 
     /* override this to parse data from the matcher */
@@ -107,7 +135,7 @@ public class SyslogParser {
         return m_matcher;
     }
 
-    protected Date parseDate(final String dateString) {
+    protected static Date parseDate(final String dateString) {
         Date date;
         try {
             final DateFormat df = new SimpleDateFormat("yyyy-MM-dd", Locale.ROOT);

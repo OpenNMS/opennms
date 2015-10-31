@@ -32,10 +32,9 @@ import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.opennms.netmgt.config.SyslogdConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.opennms.netmgt.config.SyslogdConfig;
-import org.opennms.netmgt.config.SyslogdConfigFactory;
 
 public class CustomSyslogParser extends SyslogParser {
     private static final Logger LOG = LoggerFactory.getLogger(CustomSyslogParser.class);
@@ -43,14 +42,13 @@ public class CustomSyslogParser extends SyslogParser {
     private static final Pattern m_datePattern = Pattern.compile("^((\\d\\d\\d\\d-\\d\\d-\\d\\d)\\s+)");
     private static final Pattern m_oldDatePattern = Pattern.compile("^\\s*(\\S\\S\\S\\s+\\d{1,2}\\s+\\d\\d:\\d\\d:\\d\\d)\\s+");
 
-    private Pattern m_forwardingPattern;
-    private int m_matchingGroupHost;
-    private int m_matchingGroupMessage;
+    private final Pattern m_forwardingPattern;
+    private final int m_matchingGroupHost;
+    private final int m_matchingGroupMessage;
 
-    protected CustomSyslogParser(final String text) throws SyslogParserException {
-        super(text);
+    public CustomSyslogParser(final SyslogdConfig config, final String text) throws SyslogParserException {
+        super(config, text);
 
-        final SyslogdConfig config = SyslogdConfigFactory.getInstance();
         final String forwardingRegexp = config.getForwardingRegexp();
         if (forwardingRegexp == null || forwardingRegexp.length() == 0) {
             throw new SyslogParserException("no forwarding regular expression defined");
@@ -58,10 +56,6 @@ public class CustomSyslogParser extends SyslogParser {
         m_forwardingPattern = Pattern.compile(forwardingRegexp, Pattern.MULTILINE);
         m_matchingGroupHost = config.getMatchingGroupHost();
         m_matchingGroupMessage = config.getMatchingGroupMessage();
-    }
-
-    public static SyslogParser getParser(final String text) throws SyslogParserException {
-        return new CustomSyslogParser(text);
     }
 
     @Override
