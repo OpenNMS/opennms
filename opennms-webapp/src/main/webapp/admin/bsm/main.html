@@ -3,7 +3,12 @@
 <div ng-controller="BusinessServicesController">
 
 	<div class="panel panel-default">
-		<table class="table table-bordered table-striped table-condensed">
+		<div class="panel-body" ng-if="items.length < 1">
+			<strong>There are no business services defined.</strong>
+		</div>
+
+		<table class="table table-bordered table-striped table-condensed" ng-if="items.length > 0
+">
 			<tbody>
 				<tr>
 					<th class="col-sm-1">
