@@ -114,6 +114,11 @@ class SyslogReceiverJavaNetImpl implements SyslogReceiver {
     public void stop() throws InterruptedException {
         m_stop = true;
 
+        // Close the datagram socket
+        if (m_dgSock != null) {
+            m_dgSock.close();
+        }
+
         // Shut down the thread pools that are executing SyslogConnection and SyslogProcessor tasks
         m_executor.shutdown();
 
@@ -207,14 +212,5 @@ class SyslogReceiverJavaNetImpl implements SyslogReceiver {
 
         LOG.debug("Thread context exiting");
 
-    }
-
-    /**
-     * <p>setLogPrefix</p>
-     *
-     * @param prefix a {@link java.lang.String} object.
-     */
-    @Override
-    public void setLogPrefix(String prefix) {
     }
 }

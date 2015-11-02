@@ -38,6 +38,4 @@ public interface SyslogReceiver extends Runnable {
     void run();
 
     void stop() throws InterruptedException;
-
-    void setLogPrefix(String prefix);
 }

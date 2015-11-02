@@ -33,11 +33,9 @@ import java.net.DatagramSocket;
 import java.net.InetSocketAddress;
 import java.nio.channels.DatagramChannel;
 
-import org.opennms.core.fiber.Fiber;
+import org.apache.camel.Service;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.SyslogdConfig;
-import org.opennms.netmgt.xml.event.Event;
-import org.opennms.netmgt.xml.event.EventReceipt;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,7 +49,7 @@ import org.slf4j.LoggerFactory;
  * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
  * @author <a href="http://www.oculan.com">Oculan Corporation </a>
  */
-public final class SyslogHandler implements Fiber {
+public final class SyslogHandler implements Service {
     private static final Logger LOG = LoggerFactory.getLogger(SyslogHandler.class);
 
     private final boolean USE_NIO = false;
@@ -61,16 +59,6 @@ public final class SyslogHandler implements Fiber {
      * The UDP receiver thread.
      */
     private SyslogReceiver m_receiver;
-
-    /**
-     * The Fiber's status.
-     */
-    private volatile int m_status;
-
-    /**
-     * The UDP socket for receipt and transmission of packets from agents.
-     */
-    private DatagramSocket m_dgSock;
 
     private SyslogdConfig m_config;
 
@@ -85,11 +73,6 @@ public final class SyslogHandler implements Fiber {
     private String m_dgIp;
 
     /**
-     * The log prefix
-     */
-    private String m_logPrefix;
-
-    /**
      * <p>Constructor for SyslogHandler.</p>
      */
     public SyslogHandler(SyslogdConfig config) {
@@ -97,16 +80,11 @@ public final class SyslogHandler implements Fiber {
             throw new IllegalArgumentException("Config cannot be null");
         }
 
-        m_dgSock = null;
         m_dgPort = config.getSyslogPort();
         m_dgIp = config.getListenAddress();
-
         m_config = config;
 
-        m_status = START_PENDING;
-
         m_receiver = null;
-        m_logPrefix = null;
     }
 
     /**
@@ -114,11 +92,6 @@ public final class SyslogHandler implements Fiber {
      */
     @Override
     public synchronized void start() {
-        if (m_status != START_PENDING)
-            throw new RuntimeException("The Fiber is in an incorrect state");
-
-        m_status = STARTING;
-
         try {
             if (USE_NIO) {
                 // NIO SyslogReceiver implementation
@@ -147,21 +120,21 @@ public final class SyslogHandler implements Fiber {
             } else {
                 // java.net SyslogReceiver implementation
 
+                // The UDP socket for receipt of packets
+                DatagramSocket dgSock;
+
                 if (m_dgIp != null && m_dgIp.length() != 0) {
-                    m_dgSock = new DatagramSocket(m_dgPort, InetAddressUtils.addr(m_dgIp));
+                    dgSock = new DatagramSocket(m_dgPort, InetAddressUtils.addr(m_dgIp));
                 } else {
-                    m_dgSock = new DatagramSocket(m_dgPort);
+                    dgSock = new DatagramSocket(m_dgPort);
                 }
 
                 m_receiver = new SyslogReceiverJavaNetImpl(
-                    m_dgSock,
+                    dgSock,
                     m_config
                 );
             }
 
-            if (m_logPrefix != null) {
-                m_receiver.setLogPrefix(m_logPrefix);
-            }
         } catch (IOException e) {
             throw new java.lang.reflect.UndeclaredThrowableException(e);
         }
@@ -174,12 +147,8 @@ public final class SyslogHandler implements Fiber {
 
         } catch (RuntimeException e) {
             rThread.interrupt();
-
-            m_status = STOPPED;
             throw e;
         }
-
-        m_status = RUNNING;
     }
 
     /**
@@ -187,15 +156,6 @@ public final class SyslogHandler implements Fiber {
      */
     @Override
     public synchronized void stop() {
-        if (m_status == STOPPED)
-            return;
-        if (m_status == START_PENDING) {
-            m_status = STOPPED;
-            return;
-        }
-
-        m_status = STOP_PENDING;
-
         try {
             if (m_receiver != null) {
                 m_receiver.stop();
@@ -203,44 +163,6 @@ public final class SyslogHandler implements Fiber {
         } catch (InterruptedException e) {
             LOG.warn("The thread was interrupted while attempting to join sub-threads", e);
         }
-
-        if (m_dgSock != null) {
-            m_dgSock.close();
-        }
-
-        m_status = STOPPED;
-    }
-
-    /**
-     * <p>getName</p>
-     *
-     * @return a {@link java.lang.String} object.
-     */
-    @Override
-    public String getName() {
-        return "SyslogdHandler[" + getIpAddress() + ":" + m_dgPort + "]";
-    }
-
-    /**
-     * <p>getStatus</p>
-     *
-     * @return a int.
-     */
-    @Override
-    public int getStatus() {
-        return m_status;
-    }
-
-    /**
-     * <p>init</p>
-     */
-    public void init() {
-    }
-
-    /**
-     * <p>destroy</p>
-     */
-    public void destroy() {
     }
 
     /**
@@ -249,10 +171,6 @@ public final class SyslogHandler implements Fiber {
      * @param port a {@link java.lang.Integer} object.
      */
     public void setPort(final Integer port) {
-        if (m_status == STARTING || m_status == RUNNING
-                || m_status == STOP_PENDING)
-            throw new IllegalStateException("The process is already running");
-
         m_dgPort = port;
     }
 
@@ -286,15 +204,5 @@ public final class SyslogHandler implements Fiber {
             return "0.0.0.0";
         }
         return m_dgIp;
-    }
-
-    public void setLogPrefix(String prefix) {
-        m_logPrefix = prefix;
-    }
-
-    public interface EventHandler {
-        public boolean processEvent(Event event);
-
-        public void receiptSent(EventReceipt receipt);
     }
 }

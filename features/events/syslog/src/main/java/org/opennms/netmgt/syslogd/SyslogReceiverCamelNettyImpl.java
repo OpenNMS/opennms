@@ -163,13 +163,4 @@ class SyslogReceiverCamelNettyImpl implements SyslogReceiver {
             LOG.error("Could not configure Camel routes for syslog receiver", e);
         }
     }
-
-    /**
-     * <p>setLogPrefix</p>
-     *
-     * @param prefix a {@link java.lang.String} object.
-     */
-    @Override
-    public void setLogPrefix(String prefix) {
-    }
 }
