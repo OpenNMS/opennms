@@ -147,11 +147,15 @@ public class DeadLockDebugger {
             }
         } finally {
             try {
-                set.close();
+                if (set != null) {
+                    set.close();
+                }
             } catch (Throwable ignore) {
             }
             try {
-                s.close();
+                if (s != null) {
+                    s.close();
+                }
             } catch (Throwable ignore) {
             }
         }
