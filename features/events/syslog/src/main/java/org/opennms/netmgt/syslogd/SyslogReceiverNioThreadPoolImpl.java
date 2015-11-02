@@ -49,6 +49,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
+ * @author Seth
  * @author <a href="mailto:weave@oculan.com">Brian Weaver</a>
  * @author <a href="http://www.oculan.com">Oculan Corporation</a>
  * @fiddler joed
@@ -235,14 +236,5 @@ class SyslogReceiverNioThreadPoolImpl implements SyslogReceiver {
                 }
             });
         }
-    }
-
-    /**
-     * <p>setLogPrefix</p>
-     *
-     * @param prefix a {@link java.lang.String} object.
-     */
-    @Override
-    public void setLogPrefix(String prefix) {
     }
 }

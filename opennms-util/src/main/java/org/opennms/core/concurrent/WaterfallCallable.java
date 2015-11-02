@@ -49,7 +49,7 @@ public class WaterfallCallable implements Runnable {
     /**
      * This method will execute the given {@link Callable} and if it returns a subsequent
      * {@link Callable}, it will enqueue the subsequent {@link Callable} on the same
-     * {@link ExecutorO}.
+     * {@link Executor}.
      */
     @SuppressWarnings({ "rawtypes", "unchecked" })
     @Override
