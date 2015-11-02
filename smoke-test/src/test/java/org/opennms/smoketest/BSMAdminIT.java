@@ -49,6 +49,11 @@ public class BSMAdminIT extends OpenNMSSeleniumTestCase {
 
     @Test
     public void canReadBusinessServices() throws ClientProtocolException, IOException {
+        // Deferring this check until we can delete entries via the UI
+//        // Verify that a message is presented when there are no business services defined
+//        m_driver.get(BASE_URL + "opennms/admin/bsm/index.jsp");
+//        findElementByXpath("//*[contains(text(), 'There are no business services defined.')]");
+
         // Create a new Business Service via the REST API
         String servicePrefix = UUID.randomUUID().toString();
         createServiceWithPrefix(servicePrefix);
