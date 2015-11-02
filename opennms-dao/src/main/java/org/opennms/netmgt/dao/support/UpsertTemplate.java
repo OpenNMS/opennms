@@ -28,7 +28,9 @@
 
 package org.opennms.netmgt.dao.support;
 
+import org.hibernate.exception.GenericJDBCException;
 import org.opennms.netmgt.dao.api.OnmsDao;
+import org.opennms.netmgt.dao.util.DeadLockDebugger;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.TransactionStatus;
@@ -144,12 +146,17 @@ public abstract class UpsertTemplate<T, D extends OnmsDao<T, ?>> {
 
             @Override
             public T doInTransaction(TransactionStatus status) {
-                return doUpsert();
+                try {
+                    return doUpsert();
+                } catch (GenericJDBCException e) {
+                    // See NMS-7899 for details
+                    DeadLockDebugger.gatherDetails(e);
+                    throw e;
+                }
             }
         });
-        
     }
-    
+
     /**
      * Called from upsert after it creates a transaction.
      */

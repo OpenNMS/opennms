@@ -35,6 +35,12 @@
       <artifactId>org.opennms.core.soa</artifactId>
     </dependency>
     <dependency>
+      <!-- This is strictly for the DeadLockDebugger -->
+      <groupId>org.opennms.core</groupId>
+      <artifactId>org.opennms.core.db</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-config-api</artifactId>
     </dependency>
