@@ -30,8 +30,6 @@ package org.opennms.smoketest;
 
 import java.util.concurrent.TimeUnit;
 
-import org.apache.http.client.methods.HttpDelete;
-import org.apache.http.client.methods.HttpGet;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -54,6 +52,8 @@ public class ProvisioningNewUIIT extends OpenNMSSeleniumTestCase {
     private static final String NODE_FOREIGNID = "localNode";
     private static final String NODE_IPADDR = "127.0.0.1";
 
+    private RequisitionUtils m_requisitionUtils = new RequisitionUtils(this);
+
     /**
      * Sets up the test.
      *
@@ -61,7 +61,7 @@ public class ProvisioningNewUIIT extends OpenNMSSeleniumTestCase {
      */
     @Before
     public void setUp() throws Exception {
-        deleteTestRequisition();
+        m_requisitionUtils.deleteTestRequisition();
         provisioningPage();
     }
 
@@ -73,34 +73,7 @@ public class ProvisioningNewUIIT extends OpenNMSSeleniumTestCase {
      */
     @After
     public void tearDown() throws Exception {
-        deleteTestRequisition();
-    }
-
-    /* (non-Javadoc)
-     * @see org.opennms.smoketest.OpenNMSSeleniumTestCase#provisioningPage()
-     */
-    @Override
-    protected void provisioningPage() {
-        m_driver.get(BASE_URL + "opennms/admin/index.jsp");
-        m_driver.findElement(By.linkText("Manage Provisioning Requisitions [New UI]")).click();
-    }
-
-    /* (non-Javadoc)
-     * @see org.opennms.smoketest.OpenNMSSeleniumTestCase#deleteTestRequisition()
-     */
-    @Override
-    protected void deleteTestRequisition() throws Exception {
-        // TODO This can be done using the new UI as well
-        final Integer responseCode = doRequest(new HttpGet(BASE_URL + "/opennms/rest/requisitions/" + REQUISITION_NAME));
-        if (responseCode == 404 || responseCode == 204) {
-            return;
-        }
-        doRequest(new HttpDelete(BASE_URL + "/opennms/rest/nodes/" + REQUISITION_NAME + ':' + NODE_FOREIGNID));
-        doRequest(new HttpDelete(BASE_URL + "/opennms/rest/requisitions/" + REQUISITION_NAME));
-        doRequest(new HttpDelete(BASE_URL + "/opennms/rest/requisitions/deployed/" + REQUISITION_NAME));
-        doRequest(new HttpDelete(BASE_URL + "/opennms/rest/foreignSources/" + REQUISITION_NAME));
-        doRequest(new HttpDelete(BASE_URL + "/opennms/rest/foreignSources/deployed/" + REQUISITION_NAME));
-        doRequest(new HttpGet(BASE_URL + "/opennms/rest/requisitions"));
+        m_requisitionUtils.deleteTestRequisition();
     }
 
     /**

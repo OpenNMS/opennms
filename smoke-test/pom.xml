@@ -74,6 +74,16 @@
       </exclusions>
     </dependency>
     <dependency>
+      <groupId>org.opennms.core</groupId>
+      <artifactId>org.opennms.core.web</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-model</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
       <groupId>org.opennms.smoke</groupId>
       <artifactId>org.opennms.smoke.test-api</artifactId>
       <version>1-SNAPSHOT</version>
