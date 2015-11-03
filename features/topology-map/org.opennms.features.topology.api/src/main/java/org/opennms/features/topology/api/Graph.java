@@ -47,5 +47,4 @@ public interface Graph {
 
 	void visit(GraphVisitor visitor) throws Exception;
 	
-	
 }

@@ -57,16 +57,16 @@ public class NoContentAvailableWindow extends Window {
                 "<li>the last vertex was removed from focus or</li>" +
                 "<li>no default focus is available.</li>" +
                 "</ul>" +
-                "To add a node to focus" +
+                "To add a vertex to focus" +
                 "<ul>" +
-                "<li>manually add a node to focus via the search box</li>" +
+                "<li>manually add a vertex to focus via the search box</li>" +
                 "<li>use the default focus</li>" +
                 "</ul>",  ContentMode.HTML);
 
         final HorizontalLayout defaultLayout = new HorizontalLayout();
         defaultLayout.setMargin(true);
         defaultLayout.setSpacing(true);
-        noDefaultsAvailable = new Label("No nodes found.<br/>Please add nodes manually.", ContentMode.HTML);
+        noDefaultsAvailable = new Label("No vertices found.<br/>Please add vertices manually.", ContentMode.HTML);
         noDefaultsAvailable.setVisible(false);
 
         Button defaultFocusButton = new Button("Use Default Focus");
@@ -76,18 +76,12 @@ public class NoContentAvailableWindow extends Window {
             public void buttonClick(Button.ClickEvent event) {
                 Criteria defaultCriteria = graphContainer.getBaseTopology().getDefaultCriteria();
                 if (defaultCriteria != null) {
-                    // check if there is already a criteria registered for focus nodes. If so, remove that
-                	
+                    // check if there is already a criteria registered for focus vertices. If so, remove them
                 	Criteria[] allCriteria = graphContainer.getCriteria();
                 	for (Criteria criterion : allCriteria) {
 						graphContainer.removeCriteria(criterion);
 					}
-                	
-//                    VertexHopGraphProvider.FocusNodeHopCriteria criteria = VertexHopGraphProvider.getFocusNodeHopCriteriaForContainer(graphContainer, false);
-//                    if (criteria != null) {
-//                        graphContainer.removeCriteria(criteria);
-//                    }
-                	
+
                     graphContainer.addCriteria(defaultCriteria); // add default criteria
                     graphContainer.redoLayout(); // we need to redo the layout
                     noDefaultsAvailable.setVisible(false);
