@@ -29,7 +29,7 @@
     </property>
   </bean>
 
-  <context:property-placeholder ignore-unresolvable="true" properties-ref="pollerBackendProperties">
+  <context:property-placeholder ignore-unresolvable="true" properties-ref="pollerBackendProperties" />
 
   <bean name="daemon" class="org.opennms.netmgt.poller.remote.support.DefaultPollerBackEnd">
     <property name="monitoringLocationDao">
