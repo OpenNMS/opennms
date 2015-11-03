@@ -16,6 +16,9 @@
 // Include your documentation sections here
 // include::text/myFile.adoc[]
 
+== Setup a development system
+include::text/dev-guide.adoc[]
+
 == CORS Support
 include::text/rest/CORS.adoc[]
 
