@@ -1,4 +1,4 @@
-/*******************************************************************************
+package org.opennms.features.topology.plugins.topo.linkd.internal; /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
  * Copyright (C) 2013-2014 The OpenNMS Group, Inc.
@@ -26,7 +26,6 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.app.internal;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -38,6 +37,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.opennms.features.topology.api.topo.Criteria;
+import org.opennms.features.topology.api.topo.DefaultStatus;
 import org.opennms.features.topology.api.topo.Status;
 import org.opennms.features.topology.api.topo.StatusProvider;
 import org.opennms.features.topology.api.topo.Vertex;
@@ -50,38 +50,25 @@ import org.slf4j.LoggerFactory;
 
 public class AlarmStatusProvider implements StatusProvider {
 
-    public static class AlarmStatus implements Status {
-
-        private final String m_label;
-        private final long m_alarmCount;
-
+    private static class AlarmStatus extends DefaultStatus {
         public AlarmStatus(String label, long count) {
-            m_label = label;
-            m_alarmCount = count;
-        }
-
-        @Override
-        public String computeStatus() {
-            return m_label.toLowerCase();
-        }
-
-        @Override
-        public Map<String, String> getStatusProperties() {
-            Map<String, String> statusMap = new HashMap<String, String>();
-            statusMap.put("status", m_label.toLowerCase());
-            statusMap.put("statusCount", "" + m_alarmCount);
-            return statusMap;
-        }
-
-        @Override
-        public String toString() {
-            return String.format("[%s: %d]", m_label, m_alarmCount);
+            super(label, count);
         }
     }
 
-    private AlarmDao m_alarmDao;
+    @Override
+    public String getNamespace() {
+        return AbstractLinkdTopologyProvider.TOPOLOGY_NAMESPACE_LINKD;
+    }
 
-    public void setAlarmDao(AlarmDao alarmDao) {
+    @Override
+    public boolean contributesTo(String namespace) {
+        return getNamespace() != null && getNamespace().equals(namespace);
+    }
+
+    private final AlarmDao m_alarmDao;
+
+    public AlarmStatusProvider(AlarmDao alarmDao) {
         m_alarmDao = alarmDao;
     }
 
@@ -140,7 +127,7 @@ public class AlarmStatusProvider implements StatusProvider {
     }
 
     private static AlarmStatus createStatus(AlarmSummary summary) {
-    	return new AlarmStatus(summary.getMaxSeverity().getLabel(), summary.getAlarmCount());
+        return new AlarmStatus(summary.getMaxSeverity().getLabel(), summary.getAlarmCount());
     }
 
     private static Map<Integer, VertexRef> extractNodeIds(Collection<VertexRef> inputList) {
@@ -164,7 +151,7 @@ public class AlarmStatusProvider implements StatusProvider {
 
     private static List<VertexRef> getNodeVertexRefs(VertexProvider vertexProvider, Collection<VertexRef> vertices, Criteria[] criteria) {
         List<VertexRef> returnList = new ArrayList<VertexRef>();
-         for (VertexRef eachRef : vertices) {
+        for (VertexRef eachRef : vertices) {
             if ("nodes".equals(eachRef.getNamespace())) {
                 if(isGroup(eachRef)) {
                     addChildrenRecursively(vertexProvider, eachRef, returnList, criteria);
@@ -174,7 +161,7 @@ public class AlarmStatusProvider implements StatusProvider {
                     }
                 }
             }
-         }
+        }
         return returnList;
     }
 

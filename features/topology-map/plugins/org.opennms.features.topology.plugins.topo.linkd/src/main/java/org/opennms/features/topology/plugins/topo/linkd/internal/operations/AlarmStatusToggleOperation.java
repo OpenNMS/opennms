@@ -26,7 +26,11 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.app.internal.operations;
+package org.opennms.features.topology.plugins.topo.linkd.internal.operations;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
 import org.opennms.features.topology.api.AbstractCheckedOperation;
 import org.opennms.features.topology.api.GraphContainer;
@@ -34,10 +38,7 @@ import org.opennms.features.topology.api.OperationContext;
 import org.opennms.features.topology.api.topo.StatusProvider;
 import org.opennms.features.topology.api.topo.VertexRef;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-
+// TODO MVR was moved from internal.app and should be generalized shouldnt it?
 public class AlarmStatusToggleOperation extends AbstractCheckedOperation {
 
     private StatusProvider m_statusProvider;
@@ -65,7 +66,7 @@ public class AlarmStatusToggleOperation extends AbstractCheckedOperation {
 
     @Override
     protected boolean isChecked(GraphContainer container) {
-        return container.getVertexStatusProvider() != null;
+        return container.getVertexStatusProvider() != null && container.getVertexStatusProvider() == m_statusProvider;
     }
 
     @Override
