@@ -48,6 +48,9 @@ echo "local   all             postgres                                peer" > /e
 echo "local   all             all                                     peer" >> /etc/postgresql/9.3/main/pg_hba.conf
 echo "host    all             all             127.0.0.1/32            trust" >> /etc/postgresql/9.3/main/pg_hba.conf
 echo "host    all             all             ::1/128                 trust" >> /etc/postgresql/9.3/main/pg_hba.conf
+# restart postgres to use new configs
+/etc/init.d/postgresql restart
+
 # install OpenNMS basic dependencies
 apt-get install -y maven
 apt-get install -y jicmp jicmp6
