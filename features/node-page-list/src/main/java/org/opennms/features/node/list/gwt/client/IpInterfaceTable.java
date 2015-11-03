@@ -28,16 +28,14 @@
 
 package org.opennms.features.node.list.gwt.client;
 
+import org.gwtbootstrap3.client.ui.gwt.CellTable;
 import org.opennms.features.node.list.gwt.client.events.IpInterfaceSelectionEvent;
 import org.opennms.features.node.list.gwt.client.events.IpInterfaceSelectionHandler;
 
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.shared.SimpleEventBus;
-import com.google.gwt.user.cellview.client.CellTable;
 import com.google.gwt.user.cellview.client.RowStyles;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.view.client.CellPreviewEvent;
-import com.google.gwt.view.client.SelectionChangeEvent;
 import com.google.gwt.view.client.SingleSelectionModel;
 
 public class IpInterfaceTable extends CellTable<IpInterface> {
@@ -45,12 +43,17 @@ public class IpInterfaceTable extends CellTable<IpInterface> {
     private SimpleEventBus m_eventBus = new SimpleEventBus();
 
     public IpInterfaceTable() {
-        super(15, (CellTable.Resources) GWT.create(OnmsTableResources.class));
+        super(15);
         initialize();
     }
 
     private void initialize() {
-        
+
+        setBordered(true);
+        setCondensed(true);
+        setStriped(true);
+        setHover(true);
+
         setRowStyles(new RowStyles<IpInterface>() {
             
             @Override
@@ -110,15 +113,7 @@ public class IpInterfaceTable extends CellTable<IpInterface> {
         
         final SingleSelectionModel<IpInterface> selectionModel = new SingleSelectionModel<IpInterface>();
         setSelectionModel(selectionModel);
-        selectionModel.addSelectionChangeHandler(new SelectionChangeEvent.Handler() {
-            
-            @Override
-            public void onSelectionChange(SelectionChangeEvent event) {
-                IpInterface selected = selectionModel.getSelectedObject();
-                // TODO: Do something here?
-            }
-        });
-        
+
         addCellPreviewHandler(new CellPreviewEvent.Handler<IpInterface>(){
 
             @Override

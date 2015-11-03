@@ -16,7 +16,7 @@
                     <b:Row>
                         <b:Column size="MD_12">
                             <g:FlowPanel ui:field="m_ipInterfaceTableDiv" height="606px">
-                                <opennms:IpInterfaceTable ui:field="m_ipInterfaceTable" styleName="table table-condensed table-bordered"/>
+                                <opennms:IpInterfaceTable ui:field="m_ipInterfaceTable"/>
                             </g:FlowPanel>
                         </b:Column>
                     </b:Row>
