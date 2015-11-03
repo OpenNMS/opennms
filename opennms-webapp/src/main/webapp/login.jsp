@@ -36,7 +36,6 @@
   <jsp:param name="nonavbar" value="true" />
 </jsp:include>
 
-<!-- OpenNMS mobile app promotion -->
 <jsp:include page="/includes/mobile-app-promo.jsp" flush="false" />
 
 <%-- this form-login-page form is also used as the 

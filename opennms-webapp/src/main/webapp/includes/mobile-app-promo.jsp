@@ -36,28 +36,15 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
-<c:if test="${sessionScope.mobilePromoShown != 'true'}">
-  <c:choose>
-    <c:when test="${ ( (fn:contains(header['User-Agent'],'iPhone')) || (fn:contains(header['User-Agent'],'iPad')) ) }">
-      <!-- App Store promo div -->
-      <div class="alert alert-success alert-dismissible" role="alert">
-        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <strong>OpenNMS Compass for iOS</strong>&nbsp;
-        <a href="https://itunes.apple.com/app/opennms-compass/id968875097?ls=1&mt=8" target="_blank">
-          <button type="button" class="btn btn-default"><span class="glyphicon glyphicon-phone" aria-hidden="true"></span> Install</button>
-        </a>
-      </div>
-    </c:when>
-    <c:when test="${ fn:contains(header['User-Agent'],'Android') }">
-      <!-- Google Play promo div -->
-      <div class="alert alert-success alert-dismissible" role="alert">
-        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <strong>OpenNMS Compass for Android</strong>&nbsp;
-        <a href="market://details?id=com.opennms.compass">
-          <button type="button" class="btn btn-default"><span class="glyphicon glyphicon-phone" aria-hidden="true"></span> Install</button>
-        </a>
-      </div>
-    </c:when>
-  </c:choose>
-  <c:set var="mobilePromoShown" value="true" scope="session" />
-</c:if>
+<c:choose>
+  <c:when test="${ fn:contains(header['User-Agent'],'Android') }">
+    <!-- Google Play promo for OpenNMS Compass app -->
+    <div class="alert alert-success alert-dismissible" role="alert">
+      <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+      <strong>OpenNMS Compass for Android</strong>&nbsp;
+      <a href="market://details?id=com.opennms.compass">
+        <button type="button" class="btn btn-default"><span class="glyphicon glyphicon-phone" aria-hidden="true"></span> Install</button>
+      </a>
+    </div>
+  </c:when>
+</c:choose>
