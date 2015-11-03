@@ -45,6 +45,20 @@ echo "host    all             all             ::1/128                 trust" >> 
 apt-get install -y maven
 apt-get install -y jicmp jicmp6
 apt-get install -y jrrd
+
+# install Oracle Java 8 JDK
+# this setup is based on: http://www.webupd8.org/2014/03/how-to-install-oracle-java-8-in-debian.html
+
+# add the private package archive webupd8team/java
+add-apt-repository ppa:webupd8team/java
+apt-get update
+
+# install Oracle Java8
+apt-get install oracle-java8-installer
+
+# setup Oracle Java8 to be the default Java VM
+apt-get install oracle-java8-set-default
+
 # fix locales
 echo 'LC_ALL="en_US.utf8"' >> /etc/environment
 locale-gen
@@ -66,23 +80,22 @@ cd ~/dev/opennms
 ./assemble.pl -p dir
 ----
 
-After OpenNMS successfully built, please follow the instructions link:http://www.opennms.org/wiki/Installation:Source[here] under "Running OpenNMS", to start OpenNMS.
+For more information on how to build OpenNMS from source check this wiki link:http://www.opennms.org/wiki/Installation:Source#Building[Install from Source].
+
+After OpenNMS successfully built, please follow the wiki link:http://www.opennms.org/wiki/Installation:Source#Running_OpenNMS[Running OpenNMS].
 
 === Tooling
 We recommend the following toolset:
 
- * Git
- * Maven 3
- * IDE: IntelliJ IDEA Ultimate
- * DB-Tool: DBeaver or Postgres Admin
- * Graphing: yEd
- * Other: link:atom.io[www.atom.io]
+ * IDE: link:https://www.jetbrains.com/idea/[IntelliJ IDEA Ultimate]
+ * DB-Tool: link:http://dbeaver.jkiss.org/[DBeaver] or link:http://www.pgadmin.org/[Postgres Admin - pgAdmin]
+ * Graphing: link:http://www.yworks.com/en/products/yfiles/yed/[yEd]
+ * Other: link:http://www.atom.io[atom.io]
 
 
 === Useful links
 
 ==== General
-
  * https://www.github.com/OpenNMS/opennms: The source code hosted on GitHub
  * http://wiki.opennms.org: Our Wiki, especially the start page is of interest. It points you in the right directions.
  * http://issues.opennms.org: Our issue/bug tracker.
@@ -90,7 +103,8 @@ We recommend the following toolset:
  * https://github.com/opennms-forge/vagrant-opennms: A vagrant box to setup a virtual box to run OpenNMS
 
 ==== Installation / Setup
-* http://www.opennms.eu/docs/opennms-community-welcome-guide/0.0.5-SNAPSHOT/[]
-* http://www.opennms.org/wiki/Installation:Source[]
-* http://www.opennms.org/wiki/Developing_with_Git[]
-* http://www.opennms.org/wiki/Eclipse_and_OpenNMS[]
+ * http://www.opennms.eu/docs/opennms-community-welcome-guide/0.0.5-SNAPSHOT/[]
+ * http://www.opennms.org/wiki/Installation:Source[]
+ * http://www.opennms.org/wiki/Developing_with_Git[]
+ * http://www.opennms.org/wiki/Eclipse_and_OpenNMS[]
+ * http://www.opennms.org/wiki/IDEA_and_OpenNMS[]
