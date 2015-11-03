@@ -29,10 +29,10 @@ wget -O - http://debian.opennms.org/OPENNMS-GPG-KEY | apt-key add -
 
 # overall update
 apt-get update
+
 # install stuff
-apt-get install -y software-properties-common wget git-core
-apt-get install -y tree tcpdump iftop htop slurm screen
-apt-get install -y zsh
+apt-get install -y software-properties-common
+apt-get install -y git-core
 apt-get install -y nsis
 
 # install Oracle Java 8 JDK
