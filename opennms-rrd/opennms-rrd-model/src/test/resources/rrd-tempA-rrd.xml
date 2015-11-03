@@ -7,7 +7,7 @@
 	<lastupdate>1381503600</lastupdate> <!-- 2013-10-11 11:00:00 EDT -->
 
 	<ds>
-		<name> temp </name>
+		<name> tempA </name>
 		<type> GAUGE </type>
 		<minimal_heartbeat>600</minimal_heartbeat>
 		<min>-2.7300000000e+02</min>

@@ -101,7 +101,7 @@ public abstract class AbstractRRA {
      * Format equals.
      * 
      * @param rra the RRA object
-     * @return true, if successful
+     * @return true, if the format is equal
      */
     public boolean formatEquals(AbstractRRA rra) {
         if (this.pdpPerRow != null) {
@@ -123,4 +123,24 @@ public abstract class AbstractRRA {
         return true;
     }
 
+    /**
+     * Format mergeable.
+     * <p>Two RRA can be merged if and only if the Consolidation Function and the PDP per row are the same.</p>
+     * <p>The amount of rows is not strict for a merge operation.</p>
+     * <ul>
+     *   <li>If the sourceRra has more rows than the current RRA, the result will be truncated by the number of rows on the current RRA.</li>
+     *   <li>If the sourceRra has less rows than the current RRA, the result will have a NaN window as big as the different between the number of rows.</li>
+     * </ul>
+     * 
+     * @param sourceRra the source RRA object
+     * @return true, if the format is mergeable
+     */
+    public abstract boolean formatMergeable(AbstractRRA sourceRra);
+
+    /**
+     * Checks for average as consolidation function.
+     *
+     * @return true, if the consolidation function is AVERAGE
+     */
+    public abstract boolean hasAverageAsCF();
 }

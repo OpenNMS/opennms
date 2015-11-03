@@ -60,6 +60,17 @@ public class Row {
     }
 
     /**
+     * Gets the value.
+     *
+     * @param index the index
+     * @return the value
+     */
+    @XmlTransient
+    public Double getValue(int index) {
+        return values.get(index);
+    }
+
+    /**
      * Sets the values.
      *
      * @param values the new values

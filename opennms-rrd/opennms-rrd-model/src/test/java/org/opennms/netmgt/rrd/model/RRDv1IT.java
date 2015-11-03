@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2013-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -37,19 +37,17 @@ import org.apache.commons.io.FileUtils;
 import org.junit.Assert;
 import org.junit.Test;
 import org.opennms.core.xml.JaxbUtils;
-import org.opennms.netmgt.rrd.model.AbstractRRD;
-import org.opennms.netmgt.rrd.model.Row;
-import org.opennms.netmgt.rrd.model.v3.CFType;
-import org.opennms.netmgt.rrd.model.v3.DSType;
-import org.opennms.netmgt.rrd.model.v3.RRA;
-import org.opennms.netmgt.rrd.model.v3.RRDv3;
+import org.opennms.netmgt.rrd.model.v1.RRDv1;
+import org.opennms.netmgt.rrd.model.v1.CFType;
+import org.opennms.netmgt.rrd.model.v1.DSType;
+import org.opennms.netmgt.rrd.model.v1.RRA;
 
 /**
- * The Class RRD Parsing Test.
+ * The Class JRB Parsing Test.
  * 
  * @author Alejandro Galue <agalue@opennms.org>
  */
-public class RRDv3IT {
+public class RRDv1IT {
 
     /**
      * Parses a simple RRD.
@@ -58,7 +56,7 @@ public class RRDv3IT {
      */
     @Test
     public void parseRrdSimple() throws Exception {
-        RRDv3 rrd = JaxbUtils.unmarshal(RRDv3.class, new File("src/test/resources/rrd-dump.xml"));
+        RRDv1 rrd = JaxbUtils.unmarshal(RRDv1.class, new File("src/test/resources/jrb-dump.xml"));
         Assert.assertNotNull(rrd);
         Assert.assertEquals(new Long(300), rrd.getStep());
         Assert.assertEquals(new Long(1233926670), rrd.getLastUpdate());
@@ -95,41 +93,19 @@ public class RRDv3IT {
     }
 
     /**
-     * Parses the RRD with computed DS.
-     *
-     * @throws Exception the exception
-     */
-    @Test
-    public void parseRrdWithComputedDs() throws Exception {
-        RRDv3 rrd = JaxbUtils.unmarshal(RRDv3.class, new File("src/test/resources/rrd-dump-compute-ds.xml"));
-        Assert.assertNotNull(rrd);
-    }
-
-    /**
-     * Parses the RRD with aberrant behavior detection.
-     *
-     * @throws Exception the exception
-     */
-    @Test
-    public void parseRrdWithAberrantBehaviorDetection() throws Exception {
-        RRDv3 rrd = JaxbUtils.unmarshal(RRDv3.class, new File("src/test/resources/rrd-dump-aberrant-behavior-detection.xml"));
-        Assert.assertNotNull(rrd);
-    }
-
-    /**
      * Test split and merge
      *
      * @throws Exception the exception
      */
     @Test
     public void testSplit() throws Exception {
-        RRDv3 masterRrd = JaxbUtils.unmarshal(RRDv3.class, new File("src/test/resources/rrd-dump.xml"));
+        RRDv1 masterRrd = JaxbUtils.unmarshal(RRDv1.class, new File("src/test/resources/jrb-dump.xml"));
         Assert.assertNotNull(masterRrd);
         List<AbstractRRD> rrds = masterRrd.split();
         Assert.assertEquals(masterRrd.getDataSources().size(), rrds.size());
         RRA masterRRA = masterRrd.getRras().get(0);
         for (int i=0; i<rrds.size(); i++) {
-            RRDv3 singleRRD = (RRDv3) rrds.get(i);
+            RRDv1 singleRRD = (RRDv1) rrds.get(i);
             Assert.assertEquals(1, singleRRD.getDataSources().size());
             Assert.assertEquals(masterRrd.getDataSource(i).getName(), singleRRD.getDataSource(0).getName());
             RRA singleRRA = singleRRD.getRras().get(0);
@@ -162,19 +138,23 @@ public class RRDv3IT {
      */
     @Test
     public void testMerge() throws Exception {
-        File sourceFile = new File("src/test/resources/rrd-temp-multids-rrd.xml");
+        File sourceFile = new File("src/test/resources/rrd-temp-multids-jrb.xml");
         File targetFile = new File("target/multimetric.xml");
-        RRDv3 multimetric = JaxbUtils.unmarshal(RRDv3.class, sourceFile);
+        RRDv1 multimetric = JaxbUtils.unmarshal(RRDv1.class, sourceFile);
         Assert.assertNotNull(multimetric);
         Assert.assertEquals("tempA", multimetric.getDataSource(0).getName());
         Assert.assertEquals("tempB", multimetric.getDataSource(1).getName());
-        multimetric.reset();
-        List<RRDv3> singleMetricArray = new ArrayList<RRDv3>();
-        RRDv3 tempA = JaxbUtils.unmarshal(RRDv3.class, new File("src/test/resources/rrd-tempA-rrd.xml"));
+        multimetric.getRras().stream().flatMap(rra -> rra.getRows().stream()).forEach(row -> {
+            List<Double> values = new ArrayList<Double>();
+            row.getValues().forEach(d -> values.add(Double.NaN));
+            row.setValues(values);
+        });
+        List<RRDv1> singleMetricArray = new ArrayList<RRDv1>();
+        RRDv1 tempA = JaxbUtils.unmarshal(RRDv1.class, new File("src/test/resources/rrd-tempA-jrb.xml"));
         Assert.assertNotNull(tempA);
         Assert.assertEquals("tempA", tempA.getDataSource(0).getName());
         singleMetricArray.add(tempA);
-        RRDv3 tempB = JaxbUtils.unmarshal(RRDv3.class, new File("src/test/resources/rrd-tempB-rrd.xml"));
+        RRDv1 tempB = JaxbUtils.unmarshal(RRDv1.class, new File("src/test/resources/rrd-tempB-jrb.xml"));
         Assert.assertNotNull(tempB);
         Assert.assertEquals("tempB", tempB.getDataSource(0).getName());
         singleMetricArray.add(tempB);
@@ -182,69 +162,6 @@ public class RRDv3IT {
         JaxbUtils.marshal(multimetric, new FileWriter(targetFile));
         Assert.assertTrue(FileUtils.contentEquals(sourceFile, targetFile));
         targetFile.delete();
-    }
-
-    /**
-     * Test samples for a single RRA
-     *
-     * @throws Exception the exception
-     */
-    @Test
-    public void testSamplesSingleRRA() throws Exception {
-        File source = new File("src/test/resources/sample-counter.xml");
-        RRDv3 rrd = JaxbUtils.unmarshal(RRDv3.class, source);
-        Assert.assertNotNull(rrd);
-        List<RrdSample> samples = rrd.generateSamples(rrd.getRras().get(0));
-        Assert.assertFalse(samples.isEmpty());
-        long ts = 1441748400000L;
-        Double v1 = 600.0;
-        Double v2 = 2.0;
-        Assert.assertEquals(rrd.getRras().get(0).getRows().size(), samples.size());
-        for (RrdSample s : samples) {
-            System.out.println(s);
-            Assert.assertEquals(2, s.getValues().size());
-            Assert.assertEquals(ts, s.getTimestamp());
-            Assert.assertEquals(v1, s.getValue(0));
-            Assert.assertEquals(v2, s.getValue(1));
-            ts += 300000L;
-            v1 += 300.0 * v2;
-            v2 += 1.0;
-        }
-    }
-
-    /**
-     * Test samples for multiple RRAs (1)
-     *
-     * @throws Exception the exception
-     */
-    @Test
-    public void testSamplesMultipleRRAs1() throws Exception {
-        File source = new File("src/test/resources/sample-counter-rras.xml");
-        RRDv3 rrd = JaxbUtils.unmarshal(RRDv3.class, source);
-        Assert.assertNotNull(rrd);
-        List<RrdSample> samples = rrd.generateSamples(rrd.getRras().get(1));
-        samples.forEach(System.out::println);
-        Assert.assertFalse(samples.isEmpty());
-        Assert.assertEquals(rrd.getRras().get(1).getRows().size(), samples.size());
-    }
-
-    /**
-     * Test samples for multiple RRAs (2)
-     *
-     * @throws Exception the exception
-     */
-    @Test
-    public void testSamplesMultipleRRAs2() throws Exception {
-        File source = new File("src/test/resources/sample-counter-rras.xml");
-        RRDv3 rrd = JaxbUtils.unmarshal(RRDv3.class, source);
-        Assert.assertNotNull(rrd);
-        List<RrdSample> samples = rrd.generateSamples();
-        Assert.assertFalse(samples.isEmpty());
-        int size = rrd.getRras().stream().mapToInt(r -> r.getRows().size()).sum();
-        Assert.assertEquals(size - 3, samples.size()); // There are 3 timestamps that exist in both RRAs.
-        samples.forEach(s -> {
-            System.out.println("rrdtool update sample2.rrd '" + s.getTimestamp()/1000 + ':' + s.getValue(0).longValue() + ':' + s.getValue(1) + "'; \\");
-        });
     }
 
 }

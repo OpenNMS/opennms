@@ -57,6 +57,9 @@ import org.jrobin.core.RrdBackendFactory;
 import org.jrobin.core.RrdDb;
 import org.jrobin.core.RrdDef;
 import org.jrobin.core.RrdException;
+import org.opennms.netmgt.rrd.model.AbstractDS;
+import org.opennms.netmgt.rrd.model.RrdConvertUtils;
+import org.opennms.netmgt.rrd.model.v1.RRDv1;
 import org.opennms.tools.rrd.converter.LogUtils.Level;
 
 public class JRobinConverter {
@@ -262,6 +265,7 @@ public class JRobinConverter {
     }
 
     public void consolidateRrdFile(final File groupFile, final File outputFile) throws IOException, RrdException, ConverterException {
+        /*
         final List<RrdDatabase> rrds = new ArrayList<RrdDatabase>();
         rrds.add(new RrdDatabase(new RrdDb(groupFile, true)));
         for (final File individualFile : getMatchingGroupRrds(groupFile)) {
@@ -282,6 +286,21 @@ public class JRobinConverter {
         }
         dataSource.close();
         outputRrd.close();
+        */
+        final RRDv1 groupRrd = RrdConvertUtils.dumpJrb(groupFile);
+        LogUtils.debugf(this, "consolidateRrdFile: multi-metric RRD with %d data sources", groupRrd.getDataSources().size());
+        int i = 1;
+        for (AbstractDS ds : groupRrd.getDataSources()) {
+            LogUtils.debugf(this, "consolidateRrdFile: multi-metric data source %d: %s", i++, ds.getName());
+        }
+        final List<RRDv1> singleMetricFiles = new ArrayList<RRDv1>();
+        for (final File individualFile : getMatchingGroupRrds(groupFile)) {
+            final RRDv1 singleRrd = RrdConvertUtils.dumpJrb(individualFile);
+            LogUtils.debugf(this, "consolidateRrdFile: adding single-metric RRD for data source %s", singleRrd.getDataSource(0).getName());
+            singleMetricFiles.add(singleRrd);
+        }
+        groupRrd.merge(singleMetricFiles);
+        RrdConvertUtils.restoreJrb(groupRrd, outputFile);
     }
 
     public List<File> findRrds(final File topDirectory) {

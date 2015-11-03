@@ -80,13 +80,13 @@ public abstract class XmlCollectorITCase {
     private XmlDataCollectionConfigDaoJaxb m_xmlCollectionDao;
 
     /** The RRD strategy. */
-    private RrdStrategy<?, ?> m_rrdStrategy;
+    protected RrdStrategy<?, ?> m_rrdStrategy;
 
     /** The resource storage DAO. */
-    private FilesystemResourceStorageDao m_resourceStorageDao;
+    protected FilesystemResourceStorageDao m_resourceStorageDao;
 
     /** The persister factory. */
-    private RrdPersisterFactory m_persisterFactory;
+    protected RrdPersisterFactory m_persisterFactory;
 
     /**
      * Sets the up.

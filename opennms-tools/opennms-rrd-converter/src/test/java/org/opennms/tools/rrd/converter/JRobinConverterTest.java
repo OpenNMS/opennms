@@ -71,7 +71,8 @@ public class JRobinConverterTest {
     
     File m_workDir = new File("target/rrd");
     private final File m_sineFull    = new File(m_workDir, "sine.rrd");
-    private final File m_sineSource  = new File(m_workDir, "a.rrd");
+    private final File m_sineSourceA  = new File(m_workDir, "a.rrd");
+    private final File m_sineSourceB  = new File(m_workDir, "b.rrd");
     private final File m_variation   = new File(m_workDir, "variation.rrd");
     private final File m_overlapping = new File(m_workDir, "overlapping.rrd");
     
@@ -90,7 +91,8 @@ public class JRobinConverterTest {
     @After
     public void tearDown() throws Exception {
         m_sineFull.delete();
-        m_sineSource.delete();
+        m_sineSourceA.delete();
+        m_sineSourceB.delete();
         m_variation.delete();
         m_overlapping.delete();
     }
@@ -139,15 +141,19 @@ public class JRobinConverterTest {
     private void createMockSineRrds(final RrdBackendFactory factory) throws RrdException, IOException {
         final long start = (m_baseTime - (SECONDS_PER_DAY * 56L));
         initializeRrd(m_sineFull, new String[] { "a", "b" }, new String[] { "1:4032", "12:1488", "288:366" });
-        initializeRrd(m_sineSource, new String[] { "a" }, new String[] { "1:8928", "12:8784" });
+        initializeRrd(m_sineSourceA, new String[] { "a" }, new String[] { "1:8928", "12:8784" });
+        initializeRrd(m_sineSourceB, new String[] { "b" }, new String[] { "1:8928", "12:8784" });
         final RrdDb sineFull;
-        final RrdDb sineSource;
+        final RrdDb sineSourceA;
+        final RrdDb sineSourceB;
         if (factory == null) {
             sineFull   = new RrdDb(m_sineFull);
-            sineSource = new RrdDb(m_sineSource);
+            sineSourceA = new RrdDb(m_sineSourceA);
+            sineSourceB = new RrdDb(m_sineSourceB);
         } else {
             sineFull   = new RrdDb(m_sineFull.getAbsolutePath(), factory);
-            sineSource = new RrdDb(m_sineSource.getAbsolutePath(), factory);
+            sineSourceA = new RrdDb(m_sineSourceA.getAbsolutePath(), factory);
+            sineSourceB = new RrdDb(m_sineSourceB.getAbsolutePath(), factory);
         }
         Function bigSine = new Sin(start, 15, -10, SECONDS_PER_DAY * 7L);
         Function smallSine = new Sin(start, 7, 5, SECONDS_PER_DAY * 2L);
@@ -156,19 +162,24 @@ public class JRobinConverterTest {
 
         long timestamp = start - 300L;
         for(; timestamp <= (m_baseTime - (SECONDS_PER_DAY * 28L)); timestamp += 300L) {
-            Sample sample = sineSource.createSample(timestamp);
-            double value = bigSineCounter.evaluate(timestamp);
-            sample.setValue("a", value);
-            sample.update();
+            Sample sampleA = sineSourceA.createSample(timestamp);
+            sampleA.setValue("a", bigSineCounter.evaluate(timestamp));
+            sampleA.update();
+            Sample sampleB = sineSourceB.createSample(timestamp);
+            sampleB.setValue("b", Double.NaN);
+            sampleB.update();
         }
         for(; timestamp <= m_baseTime; timestamp += 300L) {
-            Sample sample = sineFull.createSample(timestamp);
-            double value = smallSineCounter.evaluate(timestamp);
-            sample.setValue("a", value);
-            sample.update();
+            Sample sampleA = sineFull.createSample(timestamp);
+            sampleA.setValue("a", smallSineCounter.evaluate(timestamp));
+            sampleA.update();
+            Sample sampleB = sineSourceB.createSample(timestamp);
+            sampleB.setValue("b", Double.NaN);
+            sampleB.update();
         }
         sineFull.close();
-        sineSource.close();
+        sineSourceA.close();
+        sineSourceB.close();
     }
 
     private long getMidnightInSeconds(final long seconds) {
@@ -224,13 +235,13 @@ public class JRobinConverterTest {
         for (final RrdBackendFactory factory : factories) {
 //            LogUtils.infof(this, "starting with backend factory %s", factory);
             m_sineFull.delete();
-            m_sineSource.delete();
+            m_sineSourceA.delete();
             long factoryStart = System.nanoTime();
             createMockSineRrds(factory);
             for (int i = 0; i < 10; i++) {
                 final File newFile = m_converter.createTempRrd(m_sineFull);
                 try {
-                    m_converter.consolidateRrdFile(m_sineSource, newFile);
+                    m_converter.consolidateRrdFile(m_sineSourceA, newFile);
                 } finally {
                     newFile.delete();
                 }
@@ -245,7 +256,7 @@ public class JRobinConverterTest {
         createMockSineRrds(null);
         final File newFile = m_converter.createTempRrd(m_sineFull);
         try {
-            m_converter.consolidateRrdFile(m_sineSource, newFile);
+            m_converter.consolidateRrdFile(m_sineSourceA, newFile);
         } finally {
             newFile.delete();
         }
@@ -270,7 +281,7 @@ public class JRobinConverterTest {
     public void testGetMatchingRrds() throws Exception {
         createMockSineRrds(null);
         final List<File> matches = m_converter.getMatchingGroupRrds(m_sineFull);
-        assertEquals(1, matches.size());
+        assertEquals(2, matches.size());
     }
     
     @Test
@@ -467,7 +478,7 @@ public class JRobinConverterTest {
     @Test
     public void testAggregateRrdDatabase() throws Exception {
         createMockSineRrds(null);
-        RrdDb source = new RrdDb(m_sineSource);
+        RrdDb source = new RrdDb(m_sineSourceA);
         RrdDb full = new RrdDb(m_sineFull);
   
         RrdDatabase sourceDatabase = new RrdDatabase(source);
@@ -500,7 +511,7 @@ public class JRobinConverterTest {
         long dbTime = 0;
         long aggTime = 0;
         for (int i = 0; i < 20; i++) {
-            RrdDb source = new RrdDb(m_sineSource);
+            RrdDb source = new RrdDb(m_sineSourceA);
             RrdDatabase sourceDatabase = new RrdDatabase(source);
     
             TimeSeriesDataSource aggregate = new AggregateTimeSeriesDataSource(Collections.singletonList(sourceDatabase));
@@ -526,7 +537,7 @@ public class JRobinConverterTest {
         long dbTime = 0;
         long aggTime = 0;
         for (int i = 0; i < 20; i++) {
-            RrdDb source = new RrdDb(m_sineSource);
+            RrdDb source = new RrdDb(m_sineSourceA);
             RrdDatabase sourceDatabase = new RrdDatabase(source);
     
             TimeSeriesDataSource aggregate = new AggregateTimeSeriesDataSource(Collections.singletonList(sourceDatabase));
@@ -584,8 +595,9 @@ public class JRobinConverterTest {
             Robin robin = archive.getRobin(newRrd.getDsIndex("a"));
             assertEquals(4032, robin.getSize());
             assertEquals(Double.NaN, rrdDatabase.getDataAt(1293195600).getValue("a"), ACCEPTABLE_DOUBLE_DELTA);
-            assertEquals(0.049532528339D, rrdDatabase.getDataAt(1293210000).getValue("a"), ACCEPTABLE_DOUBLE_DELTA);
+            assertEquals(0.049584469635D, rrdDatabase.getDataAt(1293210000).getValue("a"), ACCEPTABLE_DOUBLE_DELTA);
             assertEquals(0.023333333333D, rrdDatabase.getDataAt(1298046000).getValue("a"), ACCEPTABLE_DOUBLE_DELTA);
+            
         } finally {
             newFile.delete();
         }
