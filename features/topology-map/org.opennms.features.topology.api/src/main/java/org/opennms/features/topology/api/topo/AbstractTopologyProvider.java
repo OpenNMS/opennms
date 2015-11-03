@@ -204,6 +204,10 @@ public abstract class AbstractTopologyProvider extends DelegatingVertexEdgeProvi
     protected AbstractTopologyProvider(String namespace) {
 		super(namespace);
 	}
+
+    protected AbstractTopologyProvider(SimpleVertexProvider vertexProvider, SimpleEdgeProvider edgeProvider) {
+        super(vertexProvider, edgeProvider);
+    }
     
     public List<Vertex> getVerticesWithoutGroups() {
         return new ArrayList<Vertex>(

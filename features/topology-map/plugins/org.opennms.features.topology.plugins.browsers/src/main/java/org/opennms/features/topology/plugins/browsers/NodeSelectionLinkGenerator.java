@@ -28,6 +28,9 @@
 
 package org.opennms.features.topology.plugins.browsers;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import com.vaadin.data.Property;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
@@ -36,14 +39,11 @@ import com.vaadin.ui.Table;
 import com.vaadin.ui.Table.ColumnGenerator;
 import com.vaadin.ui.themes.BaseTheme;
 
-import org.opennms.features.topology.api.SelectionListener;
 import org.opennms.features.topology.api.VerticesUpdateManager;
 import org.opennms.features.topology.api.topo.DefaultVertexRef;
 import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.osgi.EventProxy;
 import org.opennms.osgi.EventProxyAware;
-
-import java.util.*;
 
 public class NodeSelectionLinkGenerator implements ColumnGenerator, EventProxyAware {
 
@@ -53,10 +53,6 @@ public class NodeSelectionLinkGenerator implements ColumnGenerator, EventProxyAw
     private final String m_nodeLabelProperty;
 	private final ColumnGenerator m_generator;
 
-	/**
-	 * TODO: Fix concurrent access to this field
-	 */
-	private Collection<SelectionListener> m_selectionListeners = new HashSet<SelectionListener>();
     private EventProxy m_eventProxy;
 
     public NodeSelectionLinkGenerator(String nodeIdProperty, String nodeLabelProperty) {
@@ -96,7 +92,7 @@ public class NodeSelectionLinkGenerator implements ColumnGenerator, EventProxyAw
 	}
 
     protected void fireVertexUpdatedEvent(Integer nodeId, String nodeLabel) {
-        Set<VertexRef> vertexRefs = new HashSet<VertexRef>();
+        Set<VertexRef> vertexRefs = new HashSet<>();
         VertexRef vRef = new DefaultVertexRef("nodes", String.valueOf(nodeId), nodeLabel);
         vertexRefs.add(vRef);
         getEventProxy().fireEvent(new VerticesUpdateManager.VerticesUpdateEvent(vertexRefs));

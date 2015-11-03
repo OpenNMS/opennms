@@ -38,10 +38,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import com.google.gwt.thirdparty.guava.common.base.Function;
+import com.google.gwt.thirdparty.guava.common.collect.Collections2;
+import com.vaadin.data.Container;
+import com.vaadin.data.Item;
+import com.vaadin.data.Property;
+import com.vaadin.data.util.BeanItem;
+
 import org.opennms.core.criteria.Criteria;
 import org.opennms.core.criteria.Order;
 import org.opennms.core.criteria.restrictions.Restriction;
-import org.opennms.features.topology.api.SelectionListener;
 import org.opennms.features.topology.api.VerticesUpdateManager;
 import org.opennms.features.topology.api.topo.GroupRef;
 import org.opennms.features.topology.api.topo.Vertex;
@@ -50,13 +56,12 @@ import org.opennms.netmgt.dao.api.OnmsDao;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.gwt.thirdparty.guava.common.base.Function;
-import com.google.gwt.thirdparty.guava.common.collect.Collections2;
-import com.vaadin.data.Container;
-import com.vaadin.data.Item;
-import com.vaadin.data.Property;
-import com.vaadin.data.util.BeanItem;
 
+/**
+ *
+ * @param <T> The type of the elements in the container.
+ * @param <K> the key of the elements in the container.
+ */
 public abstract class OnmsDaoContainer<T,K extends Serializable> implements Container, Container.Sortable, Container.Ordered, Container.Indexed, Container.ItemSetChangeNotifier, VerticesUpdateManager.VerticesUpdateListener {
     private static final long serialVersionUID = -9131723065433979979L;
 
@@ -65,7 +70,8 @@ public abstract class OnmsDaoContainer<T,K extends Serializable> implements Cont
 
     protected static class Page {
         protected int length;
-        protected int offset;
+        // we initially set it to -1 to force an update on index=0
+        protected int offset = -1;
         protected final Size size;
 
         public Page (int length, Size size) {
@@ -205,11 +211,6 @@ public abstract class OnmsDaoContainer<T,K extends Serializable> implements Cont
      * TODO: Fix concurrent access to this field
      */
     private final Collection<ItemSetChangeListener> m_itemSetChangeListeners = new HashSet<ItemSetChangeListener>();
-
-    /**
-     * TODO: Fix concurrent access to this field
-     */
-    private Collection<SelectionListener> m_selectionListeners = new HashSet<SelectionListener>();
 
     private final Map<String,String> m_beanToHibernatePropertyMapping = new HashMap<String,String>();
 

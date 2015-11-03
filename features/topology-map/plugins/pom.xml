@@ -27,6 +27,7 @@
     <module>org.opennms.features.topology.plugins.topo.sfree</module>
     <module>org.opennms.features.topology.plugins.topo.simple</module>
     <module>org.opennms.features.topology.plugins.topo.vmware</module>
+    <module>org.opennms.features.topology.plugins.topo.application</module>
   </modules>
 
   <repositories>

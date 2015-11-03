@@ -28,6 +28,11 @@
 
 package org.opennms.features.topology.plugins.topo.linkd.internal.operations;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import org.opennms.features.topology.api.AbstractCheckedOperation;
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.OperationContext;
@@ -35,12 +40,8 @@ import org.opennms.features.topology.api.topo.EdgeStatusProvider;
 import org.opennms.features.topology.api.topo.VertexRef;
 import org.osgi.framework.ServiceReference;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-public class LinkdEdgeStatusToggleOperation extends AbstractCheckedOperation {
+// TODO MVR in general it might be a good idea to get ALL registered EdgeStatusProvider instead of only the onces provided here
+public class LinkStatusToggleOperation extends AbstractCheckedOperation {
 
     private EdgeStatusProvider m_edgeStatusProvider;
     private List<EdgeStatusProvider> m_providers;
@@ -48,8 +49,12 @@ public class LinkdEdgeStatusToggleOperation extends AbstractCheckedOperation {
     private Boolean m_enlinkdIsActive = false;
 
     public void init() {
-        m_providers = new ArrayList<EdgeStatusProvider>();
-        m_providers.add(m_edgeStatusProvider);
+        m_providers = new ArrayList<>();
+        m_providers.add(m_llpdStatusProvider);
+        m_providers.add(m_ospfLinkStatusProvider);
+        m_providers.add(m_isisLinkStatusProvider);
+        m_providers.add(m_bridgeLinkStatusProvider);
+        m_providers.add(m_cdpLinkStatusProvider);
     }
 
     @Override

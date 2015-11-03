@@ -77,7 +77,7 @@ public class TopologyComponentTest {
         
         EasyMock.replay(target, selectionManager);
         
-        TestTopologyProvider topoProvider = new TestTopologyProvider("test");
+        TestTopologyProvider topoProvider = new TestTopologyProvider();
         assertEquals(2, topoProvider.getVertices().size());
         assertEquals(1, topoProvider.getEdges().size());
         GraphContainer graphContainer = new VEProviderGraphContainer(topoProvider, new ProviderManager());
@@ -122,7 +122,7 @@ public class TopologyComponentTest {
         
         EasyMock.replay(target, selectionManager);
         
-        TestTopologyProvider topoProvider = new TestTopologyProvider("test");
+        TestTopologyProvider topoProvider = new TestTopologyProvider();
         assertEquals(2, topoProvider.getVertices().size());
         assertEquals(1, topoProvider.getEdges().size());
         GraphContainer graphContainer = new VEProviderGraphContainer(topoProvider, new ProviderManager());
@@ -183,7 +183,7 @@ public class TopologyComponentTest {
 
         EasyMock.replay(target, selectionManager);
         
-        TestTopologyProvider topologyProvider = new TestTopologyProvider("test");
+        TestTopologyProvider topologyProvider = new TestTopologyProvider();
         GraphContainer graphContainer = new VEProviderGraphContainer(topologyProvider, new ProviderManager());
         graphContainer.setSelectionManager(selectionManager);
         TopologyComponent topoComponent = getTopologyComponent(graphContainer);
@@ -228,7 +228,7 @@ public class TopologyComponentTest {
         EasyMock.expect(selectionManager.isEdgeRefSelected(EasyMock.anyObject(EdgeRef.class))).andReturn(false).anyTimes();
         EasyMock.replay(selectionManager);
 
-        TestTopologyProvider topoProvider = new TestTopologyProvider("test");
+        TestTopologyProvider topoProvider = new TestTopologyProvider();
         GraphContainer graphContainer = new VEProviderGraphContainer(topoProvider, new ProviderManager());
         graphContainer.setSelectionManager(selectionManager);
         TopologyComponent topoComponent = getTopologyComponent(graphContainer);

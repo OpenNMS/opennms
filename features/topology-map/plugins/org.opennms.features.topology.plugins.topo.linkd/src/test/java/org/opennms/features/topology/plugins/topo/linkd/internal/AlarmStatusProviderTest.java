@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.app.internal;
+package org.opennms.features.topology.plugins.topo.linkd.internal;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -35,6 +35,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+
+import com.vaadin.data.Item;
 
 import org.easymock.EasyMock;
 import org.junit.Before;
@@ -49,10 +51,8 @@ import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.alarm.AlarmSummary;
 
-import com.vaadin.data.Item;
-
 public class AlarmStatusProviderTest {
-    
+
     private class TestVertex extends AbstractRef implements Vertex {
 
         public TestVertex() {
@@ -136,11 +136,10 @@ public class AlarmStatusProviderTest {
     @Before
     public void setUp() {
         m_alarmDao = EasyMock.createMock(AlarmDao.class);
-        m_statusProvider = new AlarmStatusProvider();
-        m_statusProvider.setAlarmDao(m_alarmDao);
+        m_statusProvider = new AlarmStatusProvider(m_alarmDao);
 
         m_vertexProvider = EasyMock.createMock(VertexProvider.class);
-        EasyMock.expect(m_vertexProvider.getChildren(EasyMock.<VertexRef>anyObject())).andReturn(new ArrayList<Vertex>());
+        EasyMock.expect(m_vertexProvider.getChildren(EasyMock.<VertexRef>anyObject())).andReturn(new ArrayList<>());
         EasyMock.replay(m_vertexProvider);
     }
     
@@ -148,7 +147,7 @@ public class AlarmStatusProviderTest {
     @Test
     public void testGetAlarmStatus() {
         Vertex vertex = new TestVertex();
-        List<VertexRef> vertexList = new ArrayList<VertexRef>();
+        List<VertexRef> vertexList = new ArrayList<>();
         vertexList.add(vertex);
 
         EasyMock.expect(
@@ -158,7 +157,7 @@ public class AlarmStatusProviderTest {
         
         Map<VertexRef, Status> statusMap = m_statusProvider.getStatusForVertices(m_vertexProvider, vertexList, new Criteria[0]);
         assertEquals(1, statusMap.size());
-        assertEquals(vertex, new ArrayList<VertexRef>(statusMap.keySet()).get(0));
+        assertEquals(vertex, new ArrayList<>(statusMap.keySet()).get(0));
         String computeStatus = statusMap.get(vertex).computeStatus();
         assertTrue(computeStatus.equals("major"));
         
@@ -167,7 +166,7 @@ public class AlarmStatusProviderTest {
 
 
     private List<AlarmSummary> createNormalAlarmSummaryList() {
-        List<AlarmSummary> alarms = new ArrayList<AlarmSummary>();
+        List<AlarmSummary> alarms = new ArrayList<>();
         alarms.add(new AlarmSummary(1, "node1", new Date(), OnmsSeverity.MAJOR, 1L));
         return alarms;
     }
