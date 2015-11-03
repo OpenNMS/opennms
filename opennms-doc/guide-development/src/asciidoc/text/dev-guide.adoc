@@ -35,6 +35,13 @@ apt-get install -y tree tcpdump iftop htop slurm screen
 apt-get install -y zsh
 apt-get install -y nsis
 
+# install Oracle Java 8 JDK
+# this setup is based on: http://www.webupd8.org/2014/03/how-to-install-oracle-java-8-in-debian.html
+add-apt-repository -y ppa:webupd8team/java
+apt-get update
+apt-get install -y oracle-java8-installer
+apt-get install -y oracle-java8-set-default
+
 # install and configure PostgreSQL
 apt-get install -y postgresql
 echo "local   all             postgres                                peer" > /etc/postgresql/9.3/main/pg_hba.conf
@@ -45,25 +52,6 @@ echo "host    all             all             ::1/128                 trust" >> 
 apt-get install -y maven
 apt-get install -y jicmp jicmp6
 apt-get install -y jrrd
-
-# install Oracle Java 8 JDK
-# this setup is based on: http://www.webupd8.org/2014/03/how-to-install-oracle-java-8-in-debian.html
-
-# add the private package archive webupd8team/java
-add-apt-repository ppa:webupd8team/java
-apt-get update
-
-# install Oracle Java8
-apt-get install oracle-java8-installer
-
-# setup Oracle Java8 to be the default Java VM
-apt-get install oracle-java8-set-default
-
-# fix locales
-echo 'LC_ALL="en_US.utf8"' >> /etc/environment
-locale-gen
-# set shell to use zsh
-chsh -s /bin/zsh $USER
 
 # clone opennms
 mkdir -p ~/dev/opennms
