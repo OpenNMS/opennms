@@ -254,15 +254,7 @@ public class VertexHopGraphProvider implements GraphProvider {
                     && (other.getLabel() != null && other.getLabel().equals(getLabel()))) {
                return true; 
             }
-            
-//            if (m_vertices == null) {
-//                if (other.m_vertices != null) {
-//                    return false;
-//                }
-//            } else if (!m_vertices.equals(other.m_vertices)) {
-//                return false;
-//            }
-            
+
             return false;
         }
     }

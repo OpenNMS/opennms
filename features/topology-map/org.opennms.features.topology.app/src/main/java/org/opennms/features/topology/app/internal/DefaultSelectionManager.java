@@ -116,12 +116,7 @@ public class DefaultSelectionManager implements SelectionManager {
 			m_addedListeners.add(listener);
 		}
 	}
-	
-	@Override
-	public void setSelectionListeners(Set<SelectionListener> listeners) {
-		m_addedListeners.clear();
-		m_listeners = listeners;
-	}
+
 	
 	@Override
 	public void removeSelectionListener(SelectionListener listener) {

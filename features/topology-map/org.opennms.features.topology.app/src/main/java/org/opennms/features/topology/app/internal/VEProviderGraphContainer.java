@@ -28,9 +28,23 @@
 
 package org.opennms.features.topology.app.internal;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedHashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.atomic.AtomicBoolean;
+
+import com.vaadin.data.Item;
+import com.vaadin.data.Property;
+import com.vaadin.data.util.BeanItem;
 
 import org.opennms.features.topology.api.AutoRefreshSupport;
 import org.opennms.features.topology.api.Graph;
@@ -42,7 +56,19 @@ import org.opennms.features.topology.api.MapViewManager;
 import org.opennms.features.topology.api.SelectionManager;
 import org.opennms.features.topology.api.support.SemanticZoomLevelCriteria;
 import org.opennms.features.topology.api.support.VertexHopGraphProvider;
-import org.opennms.features.topology.api.topo.*;
+import org.opennms.features.topology.api.topo.AbstractEdge;
+import org.opennms.features.topology.api.topo.Criteria;
+import org.opennms.features.topology.api.topo.Edge;
+import org.opennms.features.topology.api.topo.EdgeListener;
+import org.opennms.features.topology.api.topo.EdgeProvider;
+import org.opennms.features.topology.api.topo.EdgeStatusProvider;
+import org.opennms.features.topology.api.topo.GraphProvider;
+import org.opennms.features.topology.api.topo.RefComparator;
+import org.opennms.features.topology.api.topo.StatusProvider;
+import org.opennms.features.topology.api.topo.Vertex;
+import org.opennms.features.topology.api.topo.VertexListener;
+import org.opennms.features.topology.api.topo.VertexProvider;
+import org.opennms.features.topology.api.topo.VertexRef;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceEvent;
@@ -50,10 +76,6 @@ import org.osgi.framework.ServiceListener;
 import org.osgi.framework.ServiceReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.vaadin.data.Item;
-import com.vaadin.data.Property;
-import com.vaadin.data.util.BeanItem;
 
 public class VEProviderGraphContainer implements GraphContainer, VertexListener, EdgeListener, ServiceListener {
 
@@ -547,7 +569,36 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
 		}
 	}
 
-	@Override
+    @Override
+    public <T extends Criteria> Set<T> findCriteria(Class<T> criteriaType) {
+        Objects.requireNonNull(criteriaType);
+        final Set<T> criteriaSet = new HashSet<>();
+        for (Criteria eachCriteria : getCriteria()) {
+            if (criteriaType.isAssignableFrom(eachCriteria.getClass())) {
+                criteriaSet.add((T) eachCriteria);
+            }
+        }
+        return criteriaSet;
+    }
+
+    @Override
+    public <T extends Criteria> T findSingleCriteria(Class<T> criteriaType) {
+        if (criteriaType == null) {
+            return null;
+        }
+        Set<T> criteriaSet = findCriteria(criteriaType);
+        if (!criteriaSet.isEmpty()) {
+            if (criteriaSet.size() > 1) {
+                s_log.warn("Found more than one criteria of type {}. Returning first.", criteriaType);
+            }
+            return criteriaSet.iterator().next();
+        }
+
+        // not found
+        return null;
+    }
+
+    @Override
 	public void addChangeListener(ChangeListener listener) {
 		m_listeners.add(listener);
 	}
@@ -612,7 +663,7 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
 
     @Override
     public Set<EdgeStatusProvider> getEdgeStatusProviders(){
-        if(m_edgeStatusProviders == null) m_edgeStatusProviders = new HashSet<EdgeStatusProvider>();
+        if(m_edgeStatusProviders == null) m_edgeStatusProviders = new HashSet<>();
         return m_edgeStatusProviders;
     }
 

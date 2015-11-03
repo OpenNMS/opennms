@@ -194,12 +194,10 @@ public class NCSServiceContainerTest {
     public void testGetChildrenForItemId() {
         Collection<Long> rootItemIds = m_container.rootItemIds();
         Long parentId = rootItemIds.iterator().next();
-        System.out.println(parentId);
         Collection<Long> children = m_container.getChildren(parentId);
         for(Long id : children) {
             assertFalse(parentId == id);
         }
-        System.out.println(children);
     }
     
     @Test

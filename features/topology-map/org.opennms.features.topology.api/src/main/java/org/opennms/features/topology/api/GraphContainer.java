@@ -31,18 +31,18 @@ package org.opennms.features.topology.api;
 import java.util.Collection;
 import java.util.Set;
 
+import com.vaadin.data.Property;
+
 import org.opennms.features.topology.api.topo.Criteria;
 import org.opennms.features.topology.api.topo.EdgeStatusProvider;
 import org.opennms.features.topology.api.topo.GraphProvider;
 import org.opennms.features.topology.api.topo.StatusProvider;
 import org.opennms.features.topology.api.topo.VertexRef;
 
-import com.vaadin.data.Property;
-
 public interface GraphContainer extends DisplayState {
 
-    public interface ChangeListener {
-        public void graphChanged(GraphContainer graphContainer);
+    interface ChangeListener {
+        void graphChanged(GraphContainer graphContainer);
     }
 
     GraphProvider getBaseTopology();

@@ -64,7 +64,7 @@ public class ConfigurableIconRepository implements IconRepository, ManagedServic
 
     @Override
     public List<String> getSVGIconFiles() {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return null;
     }
 
     @Override

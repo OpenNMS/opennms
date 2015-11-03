@@ -33,6 +33,9 @@ import static org.junit.Assert.assertEquals;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import com.vaadin.server.PaintException;
+import com.vaadin.server.PaintTarget;
+
 import org.easymock.EasyMock;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -48,9 +51,6 @@ import org.opennms.features.topology.api.topo.EdgeRef;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.features.topology.app.internal.support.IconRepositoryManager;
-
-import com.vaadin.server.PaintException;
-import com.vaadin.server.PaintTarget;
 
 @Ignore
 public class TopologyComponentTest {
