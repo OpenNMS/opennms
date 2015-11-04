@@ -93,7 +93,7 @@ public abstract class OnmsProperties {
                 dsc = CastorUtils.unmarshal(DataSourceConfiguration.class, fileInputStream);
             } finally {
                 IOUtils.closeQuietly(fileInputStream);
-            } 
+            }
             boolean found = false;
             for (JdbcDataSource jds : dsc.getJdbcDataSourceCollection()) {
                 if (jds.getName().equals("opennms")) {
