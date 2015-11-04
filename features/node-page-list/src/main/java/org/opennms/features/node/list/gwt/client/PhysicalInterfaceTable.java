@@ -28,12 +28,12 @@
 
 package org.opennms.features.node.list.gwt.client;
 
+import org.gwtbootstrap3.client.ui.gwt.CellTable;
 import org.opennms.features.node.list.gwt.client.events.PhysicalInterfaceSelectionEvent;
 import org.opennms.features.node.list.gwt.client.events.PhysicalInterfaceSelectionHandler;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.shared.SimpleEventBus;
-import com.google.gwt.user.cellview.client.CellTable;
 import com.google.gwt.user.cellview.client.RowStyles;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.view.client.CellPreviewEvent;
@@ -41,21 +41,25 @@ import com.google.gwt.view.client.SelectionChangeEvent;
 import com.google.gwt.view.client.SingleSelectionModel;
 
 public class PhysicalInterfaceTable extends CellTable<PhysicalInterface> {
-    
+
     SimpleEventBus m_eventBus = new SimpleEventBus();
 
     public PhysicalInterfaceTable() {
-        super(15, (CellTable.Resources) GWT.create(OnmsTableResources.class));
-        setStyleName("table table-condensed table-bordered severity");
+        super(15);
         initialize();
     }
-    
-    //TODO:finish handler
+
     public void addSelectEventHandler(PhysicalInterfaceSelectionHandler handler) {
         getEventBus().addHandler(PhysicalInterfaceSelectionEvent.TYPE, handler);
     }
 
     private void initialize() {
+
+        setBordered(true);
+        setCondensed(true);
+        setStriped(true);
+        setHover(true);
+
         setRowStyles(new RowStyles<PhysicalInterface>() {
             
             @Override
@@ -153,16 +157,6 @@ public class PhysicalInterfaceTable extends CellTable<PhysicalInterface> {
             
         };
         addColumn(snmpIfSpeedColumn, "SNMP ifSpeed");
-        
-//        DblClickTextColumn<PhysicalInterface> ipAddresColumn = new DblClickTextColumn<PhysicalInterface>() {
-//
-//            @Override
-//            public String getValue(PhysicalInterface physIface) {
-//                return physIface.getIpAddress();
-//            }
-//            
-//        };
-//        addColumn(ipAddresColumn, "IP Address");
     }
     
     

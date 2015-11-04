@@ -204,6 +204,24 @@ function RequisitionNode(foreignSource, node, isDeployed) {
   };
 
   /**
+  * @description Gets the primary IP address if exist.
+  *
+  * @name RequisitionNode:getPrimaryIpAddress
+  * @ngdoc method
+  * @methodOf RequisitionNode
+  * @returns {string} the primary IP address (null if it doesn't exist)
+  */
+  self.getPrimaryIpAddress = function() {
+    var ip = null;
+    angular.forEach(self.interfaces, function(intf) {
+      if (intf.snmpPrimary == 'P') {
+        ip = intf.ipAddress;
+      }
+    });
+    return ip;
+  };
+
+  /**
   * @description Gets the OpenNMS representation of the requisitioned node
   *
   * @name RequisitionNode:getOnmsRequisitionNode
