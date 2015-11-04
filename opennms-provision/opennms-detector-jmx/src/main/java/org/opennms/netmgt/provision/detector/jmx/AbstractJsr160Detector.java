@@ -28,7 +28,6 @@
 
 package org.opennms.netmgt.provision.detector.jmx;
 
-import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.utils.InetAddressUtils;
@@ -38,7 +37,6 @@ import org.opennms.netmgt.provision.support.jmx.connectors.ConnectionWrapper;
 import org.opennms.netmgt.provision.support.jmx.connectors.Jsr160ConnectionFactory;
 
 import java.net.InetAddress;
-import java.util.Collections;
 import java.util.Map;
 
 /**

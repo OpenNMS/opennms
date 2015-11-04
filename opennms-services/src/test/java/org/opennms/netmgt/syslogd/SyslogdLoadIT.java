@@ -36,7 +36,6 @@ import java.io.InputStream;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.net.BindException;
 import java.net.DatagramPacket;
-import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
@@ -93,6 +92,7 @@ import org.springframework.transaction.annotation.Transactional;
         "classpath:/META-INF/opennms/mockEventIpcManager.xml",
         "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml",
         "classpath:/META-INF/opennms/applicationContext-eventDaemon.xml",
+        "classpath:/META-INF/opennms/applicationContext-eventUtil.xml",
         "classpath:/syslogdTest.xml"
 })
 @JUnitConfigurationEnvironment

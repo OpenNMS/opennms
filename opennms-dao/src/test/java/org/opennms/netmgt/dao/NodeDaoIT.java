@@ -415,37 +415,40 @@ public class NodeDaoIT implements InitializingBean {
     @Test
     @JUnitTemporaryDatabase // This test manages its own transactions so use a fresh database
     public void testDeleteObsoleteInterfaces() {
-        m_populator.populateDatabase();
+        try {
+            m_populator.populateDatabase();
 
-        final Date timestamp = new Date(1234);
+            final Date timestamp = new Date(1234);
 
-        m_transTemplate.execute(new TransactionCallbackWithoutResult() {
+            m_transTemplate.execute(new TransactionCallbackWithoutResult() {
 
-            @Override
-            public void doInTransactionWithoutResult(TransactionStatus status) {
-                simulateScan(timestamp);
-            }
+                @Override
+                public void doInTransactionWithoutResult(TransactionStatus status) {
+                    simulateScan(timestamp);
+                }
 
-        });
+            });
 
-        m_transTemplate.execute(new TransactionCallbackWithoutResult() {
+            m_transTemplate.execute(new TransactionCallbackWithoutResult() {
 
-            @Override
-            public void doInTransactionWithoutResult(TransactionStatus status) {
-                deleteObsoleteInterfaces(timestamp);
-            }
+                @Override
+                public void doInTransactionWithoutResult(TransactionStatus status) {
+                    deleteObsoleteInterfaces(timestamp);
+                }
 
-        });
+            });
 
-        m_transTemplate.execute(new TransactionCallbackWithoutResult() {
+            m_transTemplate.execute(new TransactionCallbackWithoutResult() {
 
-            @Override
-            public void doInTransactionWithoutResult(TransactionStatus status) {
-                validateScan();
-            }
+                @Override
+                public void doInTransactionWithoutResult(TransactionStatus status) {
+                    validateScan();
+                }
 
-        });
-
+            });
+        } finally {
+            m_populator.resetDatabase();
+        }
     }
 
     private void validateScan() {

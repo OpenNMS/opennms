@@ -131,7 +131,7 @@
       </div>
       <div class="panel-body">
         <ul class="list-unstyled">
-            <li><a href="admin/sysconfig.jsp">System Information</a></li>
+            <li><a href="admin/sysconfig.jsp">System Configuration</a></li>
             <li><a href="admin/userGroupView/index.jsp">Configure Users, Groups and On-Call Roles</a></li>
         </ul>
       </div> <!-- panel-body -->
@@ -195,6 +195,7 @@
             <li><a href="admin/sched-outages/index.jsp">Configure Scheduled Outages</a></li>
             <li><a href="javascript:snmpConfigPost()">Configure SNMP Community Names by IP Address</a></li>
             <li><a href="javascript:submitPost()">Manage and Unmanage Interfaces and Services</a></li>
+            <li><a href="admin/bsm/index.jsp">Manage Business Services</a></li>
         </ul>
       </div> <!-- panel-body -->
     </div> <!-- panel -->

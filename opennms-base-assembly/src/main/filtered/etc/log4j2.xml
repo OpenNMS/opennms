@@ -191,13 +191,14 @@
         <KeyValuePair key="reportd"              value="DEBUG" />
         <KeyValuePair key="reports"              value="DEBUG" />
         <KeyValuePair key="rtc"                  value="DEBUG" />
-        <KeyValuePair key="syslogd"              value="DEBUG" />
+        <KeyValuePair key="statsd"               value="DEBUG" />
         <KeyValuePair key="scriptd"              value="DEBUG" />
         <KeyValuePair key="snmp-poller"          value="DEBUG" />
         <KeyValuePair key="syslogd"              value="DEBUG" />
         <KeyValuePair key="threshd"              value="DEBUG" />
         <KeyValuePair key="tl1d"                 value="DEBUG" />
         <KeyValuePair key="trapd"                value="DEBUG" />
+        <KeyValuePair key="trouble-ticketer"     value="DEBUG" />
         <KeyValuePair key="vacuumd"              value="DEBUG" />
         <KeyValuePair key="web"                  value="DEBUG" />
       </DynamicThresholdFilter>

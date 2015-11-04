@@ -30,7 +30,6 @@ package org.opennms.protocols.xml.collector;
 
 import org.opennms.netmgt.collection.api.CollectionAgent;
 import org.opennms.netmgt.collection.api.CollectionResource;
-import org.opennms.netmgt.model.ResourcePath;
 
 /**
  * The Class XmlSingleInstanceCollectionResource.

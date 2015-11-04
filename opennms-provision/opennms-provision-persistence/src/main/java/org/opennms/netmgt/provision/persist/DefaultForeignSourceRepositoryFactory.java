@@ -43,6 +43,9 @@ public class DefaultForeignSourceRepositoryFactory implements ForeignSourceRepos
     /** The Constant REPOSITORY_IMPLEMENTATION. */
     public static final String REPOSITORY_IMPLEMENTATION = "org.opennms.provisiond.repositoryImplementation";
 
+    /** The Constant DEFAULT_IMPLEMENTATION. */
+    public static final String DEFAULT_IMPLEMENTATION = "file";
+
     /** The file based pending repository. */
     @Autowired
     @Qualifier("filePending")
@@ -150,7 +153,7 @@ public class DefaultForeignSourceRepositoryFactory implements ForeignSourceRepos
      */
     @Override
     public FactoryStrategy getRepositoryStrategy() {
-        return FactoryStrategy.valueOf(System.getProperty(REPOSITORY_IMPLEMENTATION, "file"));
+        return FactoryStrategy.valueOf(System.getProperty(REPOSITORY_IMPLEMENTATION, DEFAULT_IMPLEMENTATION));
     }
 
     /* (non-Javadoc)

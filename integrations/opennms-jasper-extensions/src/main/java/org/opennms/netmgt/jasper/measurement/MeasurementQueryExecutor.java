@@ -36,12 +36,20 @@ import net.sf.jasperreports.engine.JRRewindableDataSource;
 import net.sf.jasperreports.engine.JRValueParameter;
 import net.sf.jasperreports.engine.JasperReportsContext;
 import net.sf.jasperreports.engine.query.JRAbstractQueryExecuter;
+import org.opennms.netmgt.jasper.helper.MeasurementsHelper;
+import org.opennms.netmgt.jasper.measurement.local.LocalMeasurementDataSourceWrapper;
+import org.opennms.netmgt.jasper.measurement.remote.RemoteMeasurementDataSourceWrapper;
+import org.opennms.netmgt.measurements.api.MeasurementFetchStrategy;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 class MeasurementQueryExecutor extends JRAbstractQueryExecuter {
 
+    private static final Logger LOG = LoggerFactory.getLogger(MeasurementQueryExecutor.class);
+
     private static final String SSL_PROPERTY_KEY = "org.opennms.netmgt.jasper.measurement.ssl.enable";
 
-    private RemoteMeasurementDataSourceWrapper dataSourceCreator;
+    private MeasurementDataSourceWrapper datasourceWrapper;
 
     protected MeasurementQueryExecutor(JasperReportsContext jasperReportsContext, JRDataset dataset, Map<String, ? extends JRValueParameter> parametersMap) {
         super(jasperReportsContext, dataset, parametersMap);
@@ -62,32 +70,39 @@ class MeasurementQueryExecutor extends JRAbstractQueryExecuter {
 
     @Override
     public JRRewindableDataSource createDatasource() throws JRException {
-       return getDataSource(
-               (String) getParameterValue(Parameters.URL),  // required parameter
-               (String) getParameterValue(Parameters.USERNAME, true), // optional parameter
-               (String) getParameterValue(Parameters.PASSWORD, true), // optional parameter
-               getQueryString());
-    }
-
-    public JRRewindableDataSource getDataSource(final String url, final String username, final String password, final String query) throws JRException {
-        if (dataSourceCreator == null) {
-            dataSourceCreator = new RemoteMeasurementDataSourceWrapper(useSSL(), url, username, password);
+        LOG.debug("Create datasource for query '{}'", getQueryString());
+        if (datasourceWrapper == null) {
+            datasourceWrapper = createDatasourceWrapper();
         }
-        return dataSourceCreator.createDataSource(query);
+        return datasourceWrapper.createDataSource(getQueryString());
     }
 
     @Override
     public void close() {
         try {
-            if (dataSourceCreator != null) {
-                dataSourceCreator.disconnect();
+            if (datasourceWrapper != null) {
+                datasourceWrapper.close();
             }
         } finally {
-            dataSourceCreator = null;
+            datasourceWrapper = null;
         }
     }
 
-    private static boolean useSSL() {
-        return Boolean.valueOf(System.getProperty(SSL_PROPERTY_KEY, "false")).booleanValue();
+    private MeasurementDataSourceWrapper createDatasourceWrapper() {
+        if (MeasurementsHelper.isRunInOpennmsJvm()) {
+            return new LocalMeasurementDataSourceWrapper(
+                    MeasurementsHelper.getSpringHelper().getMeasurementFetchStrategy(),
+                    MeasurementsHelper.getSpringHelper().getExpressionEngine(),
+                    MeasurementsHelper.getSpringHelper().getFilterEngine());
+        }
+
+        LOG.warn("No {} implementation found. Falling back to HTTP mode.", MeasurementFetchStrategy.class);
+        boolean useSsl = Boolean.valueOf(System.getProperty(SSL_PROPERTY_KEY, "false")).booleanValue();
+        return new RemoteMeasurementDataSourceWrapper(
+                useSsl,
+                (String) getParameterValue(Parameters.URL),  // required parameter
+                (String) getParameterValue(Parameters.USERNAME, true), // optional parameter
+                (String) getParameterValue(Parameters.PASSWORD, true) // optional parameter
+        );
     }
 }

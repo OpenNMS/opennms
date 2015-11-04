@@ -30,31 +30,14 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
+            <groupId>org.opennms.dependencies</groupId>
+            <artifactId>jersey-client-dependencies</artifactId>
+            <type>pom</type>
+        </dependency>
+        <dependency>
             <groupId>args4j</groupId>
             <artifactId>args4j</artifactId>
             <version>${args4jVersion}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.sun.jersey.contribs</groupId>
-            <artifactId>jersey-apache-client</artifactId>
-            <version>1.14</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>commons-logging</groupId>
-                    <artifactId>commons-logging</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>com.sun.jersey</groupId>
-            <artifactId>jersey-json</artifactId>
-            <version>1.14</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>com.sun.xml.bind</groupId>
-                    <artifactId>jaxb-impl</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
         <dependency>
             <groupId>com.google.guava</groupId>

@@ -64,7 +64,7 @@ public abstract class AbstractRrdBasedFetchStrategy implements MeasurementFetchS
      */
     @Override
     public FetchResults fetch(long start, long end, long step, int maxrows,
-            List<Source> sources) throws Exception {
+            Long interval, Long heartbeat, List<Source> sources) throws Exception {
 
         final Map<String, Object> constants = Maps.newHashMap();
 

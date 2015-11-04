@@ -107,7 +107,8 @@ include::text/poller/monitors/XmpMonitor.adoc[]
 
 [[ga-events]]
 == Events
-include::text/events.adoc[]
+include::text/events/events.adoc[]
+include::text/events/forward-elasticsearch.adoc[]
 
 [ga-provisioning]
 == Provisioning

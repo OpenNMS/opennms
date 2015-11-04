@@ -35,16 +35,17 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.RowSortedTable;
 
-import org.opennms.netmgt.measurements.api.Filter;
-import org.opennms.netmgt.measurements.api.FilterFactory;
+import org.opennms.netmgt.measurements.api.exceptions.FilterException;
 import org.opennms.netmgt.measurements.model.FilterDef;
 import org.opennms.netmgt.measurements.model.FilterMetaData;
+import org.springframework.stereotype.Component;
 
 /**
  * Used to apply a series of {@link Filter} to a {@link RowSortedTable}. 
  *
  * @author jwhite
  */
+@Component("filterEngine")
 public class FilterEngine {
 
     private final static ServiceLoader<FilterFactory> filterFactories = ServiceLoader.load(FilterFactory.class);
@@ -64,17 +65,20 @@ public class FilterEngine {
     /**
      * Successively applies all of the filters.
      */
-    public void filter(final List<FilterDef> filterDefinitions,
-                       final RowSortedTable<Long, String, Double> table) throws Exception {
+    public void filter(final List<FilterDef> filterDefinitions, final RowSortedTable<Long, String, Double> table) throws FilterException {
         Preconditions.checkNotNull(filterDefinitions, "filterDefinitions argument");
         Preconditions.checkNotNull(table, "table argument");
 
         for (FilterDef filterDef : filterDefinitions) {
             Filter filter = getFilter(filterDef);
             if (filter == null) {
-                throw new Exception("No filter implementation found for " + filterDef.getName());
+                throw new FilterException("No filter implementation found for {}", filterDef.getName());
             }
-            filter.filter(table);
+            try {
+                filter.filter(table);
+            } catch (Throwable t) {
+                throw new FilterException(t, "An error occurred while applying filter {}", t.getMessage());
+            }
         }
     }
 

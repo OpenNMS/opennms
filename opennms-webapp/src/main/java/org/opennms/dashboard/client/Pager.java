@@ -28,15 +28,9 @@
 
 package org.opennms.dashboard.client;
 
-import com.google.gwt.dom.builder.client.DomUListBuilder;
-import com.google.gwt.dom.client.Document;
-import com.google.gwt.dom.client.Style;
-import com.google.gwt.dom.client.UListElement;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.*;
-import org.gwtbootstrap3.client.ui.Row;
-import org.gwtbootstrap3.client.ui.html.UnorderedList;
 
 /**
  * <p>Pager class.</p>

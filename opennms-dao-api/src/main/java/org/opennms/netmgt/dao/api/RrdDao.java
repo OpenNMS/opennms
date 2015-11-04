@@ -28,7 +28,6 @@
 
 package org.opennms.netmgt.dao.api;
 
-import java.io.File;
 import java.io.InputStream;
 
 import org.opennms.netmgt.model.OnmsAttribute;

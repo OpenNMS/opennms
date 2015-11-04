@@ -111,28 +111,7 @@
             	${row.prettyResource.label}
             </c:if>
           </ec:column>
-          
-          <%--
-          <ec:column property="resource" sortable="false">
-            <c:choose>
-              <c:when test="${!empty row.resourceThrowable}">
-                <span title="Exception: ${row.resourceThrowable}">Could not find resource: ${row.resourceThrowableId}</span>
-              </c:when>
-              
-              <c:when test="${!empty row.resource.link}">
-                ${row.resource.resourceType.label}:
-                <c:url var="resourceLink" value="${row.resource.link}"/>
-                <a href="${resourceLink}">${row.resource.label}</a>
-              </c:when>
-                
-              <c:otherwise>
-                ${row.resource.resourceType.label}:
-                ${row.resource.label}
-              </c:otherwise>
-            </c:choose>
-          </ec:column>
-          --%>
-      
+
           <ec:column property="value"/>
           
           <c:if test="${empty param.reportList_ev}"> <%-- We are in a web view (exclude the Graphs column from PDF and XLS exports) --%>

@@ -42,6 +42,7 @@ import java.util.Set;
 
 import javax.sql.DataSource;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -72,7 +73,7 @@ import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
 
 /**
- * 
+ *
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
  */
 @RunWith(OpenNMSJUnit4ClassRunner.class)
@@ -131,6 +132,11 @@ public class JdbcFilterDaoIT implements InitializingBean {
         m_dao.setDatabaseSchemaConfigFactory(DatabaseSchemaConfigFactory.getInstance());
         m_dao.afterPropertiesSet();
         FilterDaoFactory.setInstance(m_dao);
+    }
+
+    @After
+    public void tearDown() {
+        m_populator.resetDatabase();
     }
 
     @Test

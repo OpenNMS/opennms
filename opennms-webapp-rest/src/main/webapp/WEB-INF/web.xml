@@ -83,6 +83,10 @@
       <param-name>config-location</param-name>
       <param-value>/WEB-INF/applicationContext-cxf-rest-v1.xml</param-value>
     </init-param>
+    <init-param>
+      <param-name>service-list-path</param-name>
+      <param-value>wadl-services</param-value>
+    </init-param>
     <load-on-startup>1</load-on-startup>
   </servlet>
   <servlet>
@@ -91,6 +95,10 @@
     <init-param>
       <param-name>config-location</param-name>
       <param-value>/WEB-INF/applicationContext-cxf-rest-v2.xml</param-value>
+    </init-param>
+    <init-param>
+      <param-name>service-list-path</param-name>
+      <param-value>wadl-services</param-value>
     </init-param>
     <load-on-startup>1</load-on-startup>
   </servlet>

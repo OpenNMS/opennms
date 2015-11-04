@@ -28,15 +28,16 @@
 
 package org.opennms.features.vaadin.jmxconfiggenerator.ui.mbeans;
 
-import org.opennms.xmlns.xsd.config.jmx_datacollection.Mbean;
-
-import javax.management.MalformedObjectNameException;
-import javax.management.ObjectName;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+
+import javax.management.MalformedObjectNameException;
+import javax.management.ObjectName;
+
+import org.opennms.xmlns.xsd.config.jmx_datacollection.Mbean;
 
 /**
  * This class is a helper to build a tree representation or the MBean's
@@ -114,9 +115,10 @@ abstract class MBeansHelper {
 		if (keyPropertyListString != null && !keyPropertyListString.isEmpty()) {
 			String[] keyValuePairs = keyPropertyListString.split(",");
 			for (String eachKeyValue : keyValuePairs) {
-				String[] keyValue = eachKeyValue.split("=");
-				if (keyValue.length >= 1) {
-					keyValueMap.put(keyValue[0], keyValue.length == 2 ? keyValue[1] : "undefined");
+				String key = eachKeyValue.substring(0, eachKeyValue.indexOf("="));
+				String value =  eachKeyValue.length() > key.length() ? eachKeyValue.substring(key.length() + 1) : "undefined";
+				if (!key.isEmpty() && !value.isEmpty()) {
+					keyValueMap.put(key, value);
 				}
 			}
 		}
