@@ -410,18 +410,11 @@ public class DefaultSurveillanceViewService implements SurveillanceViewService {
      */
     @Override
     public Map<OnmsResourceType, List<OnmsResource>> getResourceTypeMapForNodeId(int nodeId) {
-        return getResourceTypeMapForNodeId(String.valueOf(nodeId));
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public Map<OnmsResourceType, List<OnmsResource>> getResourceTypeMapForNodeId(final String nodeId) {
         return m_transactionOperations.execute(new TransactionCallback<Map<OnmsResourceType, List<OnmsResource>>>() {
             @Override
             public Map<OnmsResourceType, List<OnmsResource>> doInTransaction(TransactionStatus transactionStatus) {
-                OnmsResource resource = m_resourceDao.getResourceById("node[" + nodeId + "]");
+                OnmsNode node = m_nodeDao.get(nodeId);
+                OnmsResource resource = m_resourceDao.getResourceForNode(node);
 
                 Map<OnmsResourceType, List<OnmsResource>> resourceTypeMap = new LinkedHashMap<OnmsResourceType, List<OnmsResource>>();
                 for (OnmsResource childResource : resource.getChildResources()) {
@@ -434,6 +427,14 @@ public class DefaultSurveillanceViewService implements SurveillanceViewService {
                 return resourceTypeMap;
             }
         });
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Map<OnmsResourceType, List<OnmsResource>> getResourceTypeMapForNodeId(final String nodeId) {
+        return getResourceTypeMapForNodeId(Integer.parseInt(nodeId));
     }
 
     /**
