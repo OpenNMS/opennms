@@ -672,7 +672,12 @@ a.list-group-item.active:focus {
 ----------------------------------------------- */
 
 .graph-aux-controls {
-	text-align: right;
+  text-align: right;
+}
+
+.graph-container {
+  margin-left: auto;
+  margin-right: auto;
 }
 
 #footer {
