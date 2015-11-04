@@ -89,6 +89,10 @@ public class DefaultOtrsConfigDao {
 		return getProperties().getString("otrs.endpoint");
 	}
 	
+	public String getSoapActionHeader() {
+		return getProperties().getString("otrs.soapaction");
+	}
+	
 	public String getState() {
 		return getProperties().getString("otrs.state");
 	}

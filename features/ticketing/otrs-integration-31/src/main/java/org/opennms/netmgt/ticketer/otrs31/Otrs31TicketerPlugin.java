@@ -61,6 +61,8 @@ public class Otrs31TicketerPlugin implements Plugin {
         BindingProvider bindingProvider = (BindingProvider) m_ticketConnector;
         bindingProvider.getRequestContext().put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, m_configDao.getEndpoint());
         LOG.info("Binding {} to value {}", BindingProvider.ENDPOINT_ADDRESS_PROPERTY, m_configDao.getEndpoint());
+        bindingProvider.getRequestContext().put(BindingProvider.SOAPACTION_URI_PROPERTY, m_configDao.getSoapActionHeader());
+        LOG.info("Binding {} to value {}", BindingProvider.SOAPACTION_URI_PROPERTY, m_configDao.getSoapActionHeader());
     }
 
     /*
