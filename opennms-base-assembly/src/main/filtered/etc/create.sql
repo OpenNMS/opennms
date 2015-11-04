@@ -1189,7 +1189,7 @@ create table assets (
         enable			text,
         autoenable		char(1),
         connection		varchar(32),
-        userLastModified char(20) not null,
+        userLastModified varchar(20) not null,
         lastModifiedDate timestamp with time zone not null,
         dateInstalled   varchar(64),
         lease           text,
