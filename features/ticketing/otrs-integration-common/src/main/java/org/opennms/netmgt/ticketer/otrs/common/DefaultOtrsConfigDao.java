@@ -101,6 +101,10 @@ public class DefaultOtrsConfigDao {
 		return getProperties().getString("otrs.priority");
 	}
 	
+	public String getType() {
+		return getProperties().getString("otrs.type");
+	}
+	
 	public String getLock() {
 		return getProperties().getString("otrs.lock");
 	}
