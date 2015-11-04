@@ -65,7 +65,6 @@ public class Row {
      * @param index the index
      * @return the value
      */
-    @XmlTransient
     public Double getValue(int index) {
         return values.get(index);
     }

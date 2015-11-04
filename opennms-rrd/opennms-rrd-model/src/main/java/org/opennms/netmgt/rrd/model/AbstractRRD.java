@@ -35,7 +35,6 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 /**
@@ -430,7 +429,6 @@ public abstract class AbstractRRD {
      *
      * @return the all samples
      */
-    @XmlTransient
     public List<RrdSample> generateSamples() {
         List<RrdSample> samples = new ArrayList<RrdSample>();
         getRras().stream().filter(r -> r.hasAverageAsCF()).sorted((r1,r2) -> r1.getPdpPerRow().compareTo(r2.getPdpPerRow())).forEach(r -> {
@@ -447,7 +445,6 @@ public abstract class AbstractRRD {
      * Resets the row values for all the RRAs.
      * <p>Double.NaN will be stored on each slot</p>
      */
-    @XmlTransient
     public void reset() {
         getRras().stream().flatMap(rra -> rra.getRows().stream()).forEach(row -> {
             List<Double> values = new ArrayList<Double>();
@@ -462,7 +459,6 @@ public abstract class AbstractRRD {
      * @param rra the source RRA to be used (it must have AVERAGE for its consolidation function)
      * @return the samples for the given RRA
      */
-    @XmlTransient
     public List<RrdSample> generateSamples(AbstractRRA rra) {
         List<RrdSample> samples = new ArrayList<RrdSample>();
         if (!rra.hasAverageAsCF()) {

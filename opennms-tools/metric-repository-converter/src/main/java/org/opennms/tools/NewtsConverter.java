@@ -28,23 +28,23 @@
 
 package org.opennms.tools;
 
-import java.io.File;
-import java.io.FileInputStream;
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-import java.util.Set;
-import java.util.TreeMap;
-import java.util.TreeSet;
 
+import com.google.common.base.Optional;
+import com.google.common.base.Throwables;
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.HelpFormatter;
@@ -52,31 +52,35 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang.BooleanUtils;
 import org.joda.time.Interval;
 import org.joda.time.Period;
 import org.joda.time.format.PeriodFormatter;
 import org.joda.time.format.PeriodFormatterBuilder;
 import org.opennms.core.db.DataSourceFactory;
-import org.opennms.core.utils.DBUtils;
+import org.opennms.netmgt.model.ResourcePath;
+import org.opennms.netmgt.newts.support.NewtsUtils;
 import org.opennms.netmgt.rrd.model.AbstractDS;
+import org.opennms.netmgt.rrd.model.AbstractRRD;
 import org.opennms.netmgt.rrd.model.RrdConvertUtils;
 import org.opennms.netmgt.rrd.model.RrdSample;
-import org.opennms.netmgt.rrd.model.v1.RRDv1;
-import org.opennms.netmgt.rrd.model.v3.RRDv3;
 import org.opennms.newts.api.MetricType;
 import org.opennms.newts.api.Resource;
 import org.opennms.newts.api.Sample;
 import org.opennms.newts.api.SampleRepository;
 import org.opennms.newts.api.Timestamp;
 import org.opennms.newts.api.ValueType;
+import org.opennms.newts.api.search.Indexer;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import com.google.common.collect.Lists;
 
 /**
  * The Class NewtsConverter.
- * <p>The converter requires multi-ds metrics; otherwise it won't work.</p>
- * 
+ *
+ * The converter requires multi-ds metrics; otherwise it won't work.
+ *
  * @author Alejandro Galue <agalue@opennms.org>
  */
 public class NewtsConverter {
@@ -84,17 +88,30 @@ public class NewtsConverter {
     /** The Constant CMD_SYNTAX. */
     private static final String CMD_SYNTAX = "newts-converter [options]";
 
-    /** The SNMP directory. */
-    private File snmpDir;
+    private static final Timestamp EPOCH = Timestamp.fromEpochMillis(0);
+    private static final ValueType<?> ZERO = ValueType.compose(0, MetricType.GAUGE);
 
-    /** The nodes list. */
-    private List<Node> nodes;
+    private final Path onmsHome;
+    private final Path rrdDir;
+    private final Path rrdBinary;
+    private final int threads;
+    private final boolean storeByGroup;
+    private final boolean rrdTool;
+
+    /**
+     * Mapping form node ID to foreign ID.
+     **/
+    private final Map<Integer, String> foreignIds = Maps.newHashMap();
 
     /** The Cassandra/Newts Repository. */
-    private SampleRepository repository;
+    private final SampleRepository repository;
+
+    /** The Cassandra/Newts Indexer. */
+    private final Indexer indexer;
 
     /** The processed resources. */
-    private int processedResources;
+    private int processedMetrics;
+    private int processedSamples;
 
     /** The Newts inject batch size. */
     private int batchSize;
@@ -104,81 +121,136 @@ public class NewtsConverter {
      *
      * @param args the arguments
      */
-    public static void main(String[] args) {
-        NewtsConverter converter = new NewtsConverter();
-        converter.execute(args);
+    public static void main(final String... args) {
+        final NewtsConverter converter = new NewtsConverter(args);
+        converter.execute();
     }
 
-    /**
-     * Execute.
-     *
-     * @param args the arguments
-     */
-    public void execute(String[] args) {
-        Options options = new Options();
-        options.addOption(new Option("h", "help", false, "Print this help"));
-        options.addOption(new Option("o", "onms-home", true, "OpenNMS Home Directory (defaults to /opt/opennms)"));
-        options.addOption(new Option("r", "rrd-dir", true, "OpenNMS Home Directory (defaults to /var/opennms/rrd)"));
-        options.addOption(new Option("R", "rrd-binary", true, "The binary path to the rrdtool command (defaults to /usr/bin/rrdtool)"));
-        options.addOption(new Option("t", "threads", true, "Number of conversion threads (defaults to 5)"));
+    private NewtsConverter(final String... args) {
+        final Options options = new Options();
 
-        CommandLineParser parser = new PosixParser();
-        CommandLine cmd = null;
+        final Option helpOption = new Option("h", "help", false, "Print this help");
+        options.addOption(helpOption);
 
+        final Option opennmsHomeOption = new Option("o", "onms-home", true, "OpenNMS Home Directory (defaults to /opt/opennms)");
+        options.addOption(opennmsHomeOption);
+
+        final Option rrdPathOption = new Option("r", "rrd-dir", true, "The path to the RRD data (defaults to /var/opennms/rrd)");
+        options.addOption(rrdPathOption);
+
+        final Option rrdToolOption = new Option("t", "rrd-tool", true, "Whether to use rrdtool or JRobin (defaults to use rrdtool)");
+        options.addOption(rrdToolOption);
+
+        final Option rrdBinaryOption = new Option("T",
+                                                  "rrd-binary",
+                                                  true,
+                                                  "The binary path to the rrdtool command (defaults to /usr/bin/rrdtool, only used if rrd-tool is set)");
+        options.addOption(rrdBinaryOption);
+
+        final Option storeByGroupOption = new Option("s", "store-by-group", true, "Whether store by group was enabled or not");
+        storeByGroupOption.setRequired(true);
+        options.addOption(storeByGroupOption);
+
+        final Option threadsOption = new Option("n", "threads", true, "Number of conversion threads (defaults to 5)");
+        options.addOption(threadsOption);
+
+        final CommandLineParser parser = new PosixParser();
+
+        final CommandLine cmd;
         try {
             cmd = parser.parse(options, args);
+
         } catch (ParseException e) {
             new HelpFormatter().printHelp(80, CMD_SYNTAX, String.format("ERROR: %s%n", e.getMessage()), options, null);
             System.exit(1);
+            throw null;
         }
 
         // Processing Options
-
         if (cmd.hasOption('h')) {
             new HelpFormatter().printHelp(80, CMD_SYNTAX, null, options, null);
             System.exit(0);
         }
 
-        File onmsHome = new File(cmd.hasOption('o') ? cmd.getOptionValue('o') : "/opt/opennms");
-        if (!onmsHome.exists() || onmsHome.isFile()) {
-            new HelpFormatter().printHelp(80, CMD_SYNTAX, String.format("ERROR: Directory %s doesn't exist%n", onmsHome.getAbsolutePath()), options, null);
+        this.onmsHome = cmd.hasOption('o')
+                        ? Paths.get(cmd.getOptionValue('o'))
+                        : Paths.get("/opt/opennms");
+        if (!Files.exists(this.onmsHome) || !Files.isDirectory(this.onmsHome)) {
+            new HelpFormatter().printHelp(80, CMD_SYNTAX, String.format("ERROR: Directory %s doesn't exist%n", this.onmsHome.toAbsolutePath()), options, null);
             System.exit(1);
+            throw null;
         }
-        System.setProperty("opennms.home", onmsHome.getAbsolutePath());
-        File rrdDir = new File(cmd.hasOption('r') ? cmd.getOptionValue('r') : "/var/opennms/rrd");
-        if (!rrdDir.exists() || rrdDir.isFile()) {
-            new HelpFormatter().printHelp(80, CMD_SYNTAX, String.format("ERROR: Directory %s doesn't exist%n", rrdDir.getAbsolutePath()), options, null);
+        System.setProperty("opennms.home", onmsHome.toAbsolutePath().toString());
+
+        this.rrdDir = cmd.hasOption('r')
+                      ? Paths.get(cmd.getOptionValue('r'))
+                      : Paths.get("/var/opennms/rrd");
+        if (!Files.exists(this.rrdDir) || !Files.isDirectory(this.rrdDir)) {
+            new HelpFormatter().printHelp(80, CMD_SYNTAX, String.format("ERROR: Directory %s doesn't exist%n", this.rrdDir.toAbsolutePath()), options, null);
             System.exit(1);
+            throw null;
         }
-        File rrdBinary = new File(cmd.hasOption('R') ? cmd.getOptionValue('R') : "/usr/bin/rrdtool");
-        if (!rrdBinary.exists() || rrdBinary.isDirectory()) {
-            new HelpFormatter().printHelp(80, CMD_SYNTAX, String.format("ERROR: RRDtool command %s doesn't exist%n", rrdBinary.getAbsolutePath()), options, null);
-            System.exit(1);
-        }
-        String threadsStr = cmd.hasOption('t') ? cmd.getOptionValue('t') : "5";
-        int threads = -1;
+
         try {
-            threads = Integer.parseInt(threadsStr);            
+            storeByGroup = BooleanUtils.toBooleanObject(cmd.getOptionValue('s'));
+
+        } catch (NullPointerException e) {
+            new HelpFormatter().printHelp(80, CMD_SYNTAX, String.format("ERROR: Invalid value for storeByGroup%n"), options, null);
+            System.exit(1);
+            throw null;
+        }
+
+        try {
+            rrdTool = cmd.hasOption('t')
+                      ? BooleanUtils.toBooleanObject(cmd.getOptionValue('t'))
+                      : true;
+
+        } catch (NullPointerException e) {
+            new HelpFormatter().printHelp(80, CMD_SYNTAX, String.format("ERROR: Invalid value for rrd-tool%n"), options, null);
+            System.exit(1);
+            throw null;
+        }
+
+        this.rrdBinary = cmd.hasOption('T')
+                         ? Paths.get(cmd.getOptionValue('T'))
+                         : Paths.get("/usr/bin/rrdtool");
+        if (!Files.exists(this.rrdBinary) || !Files.isExecutable(this.rrdBinary)) {
+            new HelpFormatter().printHelp(80,
+                                          CMD_SYNTAX,
+                                          String.format("ERROR: RRDtool command %s doesn't exist%n", this.rrdBinary.toAbsolutePath()),
+                                          options,
+                                          null);
+            System.exit(1);
+            throw null;
+        }
+
+
+        try {
+            this.threads = cmd.hasOption('n')
+                           ? Integer.parseInt(cmd.getOptionValue('n'))
+                           : 5;
         } catch (Exception e) {
             new HelpFormatter().printHelp(80, CMD_SYNTAX, String.format("ERROR: Invalid number of threads: %s%n", e.getMessage()), options, null);
             System.exit(1);
+            throw null;
         }
 
         // Initialize OpenNMS
-
         OnmsProperties.initialize();
 
         final String strategy = System.getProperty("org.opennms.timeseries.strategy", "rrd");
         final String host = System.getProperty("org.opennms.newts.config.hostname", "localhost");
         final String keyspace = System.getProperty("org.opennms.newts.config.keyspace", "newts");
         int ttl = Integer.parseInt(System.getProperty("org.opennms.newts.config.ttl", "31540000"));
-        int port = Integer.parseInt(System.getProperty("org.opennms.newts.config.keyspace", "9042"));
+        int port = Integer.parseInt(System.getProperty("org.opennms.newts.config.port", "9042"));
 
         batchSize = Integer.parseInt(System.getProperty("org.opennms.newts.config.max_batch_size", "16"));
 
         System.out.printf("OpenNMS Home: %s\n", onmsHome);
         System.out.printf("RRD Directory: %s\n", rrdDir);
+        System.out.printf("Use RRDtool Tool: %s\n", rrdTool);
         System.out.printf("RRDtool CLI: %s\n", rrdBinary);
+        System.out.printf("StoreByGroup: %s\n", storeByGroup);
         System.out.printf("Timeseries Strategy: %s\n", strategy);
         System.out.printf("Conversion Threads: %d\n", threads);
         System.out.printf("Cassandra Host: %s\n", host);
@@ -191,231 +263,294 @@ public class NewtsConverter {
             System.err.println("ERROR: The configured timeseries strategy is not 'newts' on opennms.properties (org.opennms.timeseries.strategy).");
             System.err.println("       Fix it before continue");
             System.exit(1);
+            throw null;
         }
 
-        ClassPathXmlApplicationContext context = null;
-
         try {
-            context = new ClassPathXmlApplicationContext(new String[] {
+            final ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext(new String[]{
                     "classpath:/META-INF/opennms/applicationContext-soa.xml",
                     "classpath:/META-INF/opennms/applicationContext-newts.xml"
             });
-            repository = context.getBean(SampleRepository.class);
-        } catch (Exception e) {
+
+            Runtime.getRuntime().addShutdownHook(new Thread() {
+                @Override
+                public void run() {
+                    context.close();
+                }
+            });
+
+            this.repository = context.getBean(SampleRepository.class);
+            this.indexer = context.getBean(Indexer.class);
+
+        } catch (final Exception e) {
             System.err.printf("ERROR: Cannot connect to the Cassandra/Newts backend: %s%n", e.getMessage());
             System.err.println("       Make sure Newts is properly configured in opennms.properties.");
             System.err.println("       There is no need to stop OpenNMS to execute this tool.");
             System.exit(1);
+            throw null;
+        }
+    }
+
+    public void execute() {
+        // Initialize node ID to foreign ID mapping
+        try (final Connection conn = DataSourceFactory.getInstance().getConnection();
+             final Statement st = conn.createStatement();
+             final ResultSet rs = st.executeQuery("SELECT nodeid, foreignsource, foreignid from node n")) {
+            while (rs.next()) {
+                foreignIds.put(rs.getInt("nodeid"),
+                               String.format("%s:%s",
+                                             rs.getString("foreignsource"),
+                                             rs.getString("foreignid")));
+            }
+
+        } catch (final Exception e) {
+            System.err.println("ERROR: Failed to connect to database: " + e.getMessage());
+            System.exit(1);
+            throw null;
         }
 
-        nodes = new ArrayList<Node>();
-        Connection conn = null;
-        try {
-            conn = DataSourceFactory.getInstance().getConnection();
-        } catch (SQLException e) {
-            new HelpFormatter().printHelp(80, CMD_SYNTAX, String.format("ERROR: Cannot connect to the database: %s%n", e.getMessage()), options, null);
-            System.exit(1);
-        }
-        final DBUtils db = new DBUtils(NewtsConverter.class);
-        db.watch(conn);
-        try {
-            Statement st = conn.createStatement();
-            db.watch(st);
-            ResultSet rs = st.executeQuery("SELECT nodeid, nodelabel, foreignsource, foreignid from node n");
-            db.watch(rs);
-            while (rs.next()) {
-                nodes.add(new Node(rs));
-            }
-        } catch (Throwable t) {
-            new HelpFormatter().printHelp(80, CMD_SYNTAX, String.format("ERROR: Cannot obtain the nodes from the database: %s%n", t.getMessage()), options, null);
-            System.exit(1);
-        } finally {
-            db.cleanUp();
-        }
-        System.out.printf("Found %d nodes on the database\n", nodes.size());
+        System.out.printf("Found %d nodes on the database\n", foreignIds.size());
 
         // Process JRB/RRD files
-
-        long start = System.currentTimeMillis();
+        final long start = System.currentTimeMillis();
         System.out.println("Starting Conversion...");
+        System.out.println("Processing " + rrdDir);
 
-        processedResources = 0;
-        snmpDir = new File(rrdDir, "snmp");
-        System.out.println("Processing " + snmpDir);
-        try {
-            Files.walk(snmpDir.toPath())
-            .filter(p -> p.toString().endsWith("ds.properties"))
-            .forEach(p -> processResource(p.getParent()));
-        } catch (Exception e) {
-            new HelpFormatter().printHelp(80, CMD_SYNTAX, String.format("ERROR: Cannot get the RRD/JRB files: %s%n", e.getMessage()), options, null);
-            System.exit(1);
+        processedMetrics = 0;
+        processedSamples = 0;
+
+        this.processStoreByGroupResources(this.rrdDir.resolve("response"));
+
+        this.processStringsProperties(this.rrdDir.resolve("snmp"));
+        if (storeByGroup) {
+            this.processStoreByGroupResources(this.rrdDir.resolve("snmp"));
+        } else {
+            this.processStoreByMetricResources(this.rrdDir.resolve("snmp"));
         }
 
-        Period period = new Interval(start, System.currentTimeMillis()).toPeriod();
-        PeriodFormatter formatter = new PeriodFormatterBuilder()
+        final Period period = new Interval(start, System.currentTimeMillis()).toPeriod();
+        final PeriodFormatter formatter = new PeriodFormatterBuilder()
                 .appendSeconds().appendSuffix(" sec")
                 .appendMinutes().appendSuffix(" min")
                 .appendHours().appendSuffix(" hours")
                 .appendDays().appendSuffix(" days")
                 .printZeroNever()
                 .toFormatter();
-        System.out.printf("\nConversion Finished.\nResources updated: %d\nEnlapsed time %s\n", processedResources, formatter.print(period));
-        context.close();
-
-        if (processedResources == 0) {
-            System.err.println("\nERROR: There are no multi-metric DS on your RRD directory.");
-            System.err.println("       Newts requires that storeByGroup is enabled.");
-            System.err.println("       If storeByGroup is not enabled, you must do the following:\n");
-            System.err.println("a) Stop OpenNMS if it is running.");
-            System.err.println("b) Enable storeByGroup.");
-            System.err.println("c) Start OpenNMS and give it some time to be sure that all the multi-metric RRD/JRB files were created.");
-            System.err.println("   Do not panic, the old data will be merged.");
-            System.err.println("d) Use the rrd-converter tool, to merge the single-metric JRB/RRD into multi-metric JRB/RRD.");
-            System.err.println("   This process could take a while. Wait until it is completely finished.");
-            System.err.println("e) Use the rrd-converter tool again to clean the RRD/JRB directory (i.e. remove the left-over/temporary files.");
-            System.err.println("f) Execute the Newts converter again.");
-            System.exit(1);
-        }
+        System.out.printf("\nConversion Finished.\nMetrics updated: %d\nEnlapsed time %s\n", processedMetrics, formatter.print(period));
 
         System.exit(0);
     }
 
-    /**
-     * Process resource.
-     *
-     * @param resourcePath the resource path
-     */
-    private void processResource(Path resourcePath) {
-        processedResources++;
-        String resourceId = getResourceId(resourcePath);
-        System.out.println("\nProcessing resource: " + resourceId);
-        Properties ds = new Properties();
+    private void processStoreByGroupResources(final Path path) {
         try {
-            ds.load(new FileInputStream(new File(resourcePath.toFile(), "ds.properties")));
+            // Find and process all resource folders containing a 'ds.properties' file
+            Files.walk(path)
+                 .filter(p -> p.endsWith("ds.properties"))
+                 .forEach(p -> processStoreByGroupResource(p.getParent()));
+
         } catch (Exception e) {
-            System.err.printf("ERROR: can't parse ds.properties from %s\n", resourcePath);
+            System.err.println("ERROR: Error while reading RRD files: " + e.getMessage());
             e.printStackTrace();
-            return;
+            System.exit(1);
+            throw null;
         }
-        Set<String> rrds = new TreeSet<String>();
-        ds.values().forEach(o -> rrds.add((String)o));
-        rrds.forEach(p -> {
-            processResource(resourcePath, resourceId, p);
-        });
+    }
+
+    private void processStoreByGroupResource(final Path path) {
+        // Load the 'ds.properties' for the current path
+        final Properties ds = new Properties();
+        try (final BufferedReader r = Files.newBufferedReader(path.resolve("ds.properties"))) {
+            ds.load(r);
+
+        } catch (final IOException e) {
+            throw Throwables.propagate(e);
+        }
+
+        // Get all groups declared in the ds.properties and process the RRD files
+        Sets.newHashSet(Iterables.transform(ds.values(), Object::toString))
+            .forEach(group -> {
+                processResource(path,
+                                group,
+                                group);
+            });
+    }
+
+    private void processStoreByMetricResources(final Path path) {
+        try {
+            // Find an process all '.meta' files and the according RRD files
+            Files.walk(path)
+                 .filter(p -> p.getFileName().toString().endsWith(".meta"))
+                 .forEach(p -> this.processStoreByMetricResource(p));
+
+        } catch (Exception e) {
+            System.err.println("ERROR: Error while reading RRD files: " + e.getMessage());
+            e.printStackTrace();
+            System.exit(1);
+            throw null;
+        }
+    }
+
+    private void processStoreByMetricResource(final Path metaPath) {
+        // Use the containing directory as resource path
+        final Path path = metaPath.getParent();
+
+        // Extract the metric name from the file name
+        final String metric = FilenameUtils.removeExtension(metaPath.getFileName().toString());
+
+        // Load the '.meta' file to get the group name
+        final Properties meta = new Properties();
+        try (final BufferedReader r = Files.newBufferedReader(path.resolve(String.format("%s.meta", metric)))) {
+            meta.load(r);
+
+        } catch (final IOException e) {
+            throw Throwables.propagate(e);
+        }
+
+        final String group = meta.getProperty("GROUP");
+
+        // Process the resource
+        this.processResource(path,
+                             metric,
+                             group);
     }
 
     /**
      * Process metric.
      *
-     * @param resourcePath the resource path
-     * @param resourceId the resource id
-     * @param multiDsFileName the multi-ds file name
+     * @param resourceDir the path where the resource file lives in
+     * @param fileName the RRD file name without extension
+     * @param group the group name
      */
-    private void processResource(Path resourcePath, String resourceId, String multiDsFileName) {
-        System.out.printf("   Metric-group: %s\n", multiDsFileName);
-        String metricId = resourceId + ':' + multiDsFileName;
-        // TODO Map<String,String> properties = getStringProperties(resourcePath);
+    private void processResource(final Path resourceDir,
+                                 final String fileName,
+                                 final String group) {
+        final ResourcePath resourcePath = buildResourcePath(resourceDir);
+
+        // Load and interpolate the RRD file
+        final AbstractRRD rrd;
         try {
-            File metricFile = new File(resourcePath.toFile(), multiDsFileName + ".rrd");
-            if (metricFile.exists()) {
-                parseRrd(metricId, metricFile);
-                return;
+            if (this.rrdTool) {
+                rrd = RrdConvertUtils.dumpRrd(resourceDir.resolve(fileName + ".rrd").toFile());
+
+            } else {
+                rrd = RrdConvertUtils.dumpJrb(resourceDir.resolve(fileName + ".jrb").toFile());
             }
-            metricFile = new File(resourcePath.toFile(), multiDsFileName + ".jrb");
-            if (metricFile.exists()) {
-                parseJrb(metricId, metricFile);
-                return;
-            }
-        } catch (Exception e) {
-            System.err.printf("ERROR: Can't parse JRB/RRD for %s at %s: %s\n", multiDsFileName, resourcePath, e.getMessage());
+
+        } catch (final Exception e) {
+            System.err.printf("ERROR: Can't parse JRB/RRD %s.(rrd/jrb): %s\n", resourceDir.resolve(fileName), e.getMessage());
+            e.printStackTrace();
+            System.exit(1);
+            throw null;
         }
-        System.err.printf("ERROR: There are no multi-ds JRB/RRD for %s at %s\n", multiDsFileName, resourcePath);
+
+        // Inject the samples from the RRD file to NewTS
+        this.injectSamplesToNewts(resourcePath,
+                                  group,
+                                  rrd.getDataSources(),
+                                  rrd.generateSamples());
+
     }
 
-    /**
-     * Gets the string properties.
-     *
-     * @param resourcePath the resource path
-     * @return the string properties
-     */
-    private Map<String,String> getStringProperties(Path resourcePath) {
-        Properties properties = new Properties();
-        File file = new File(resourcePath.toFile(), "strings.properties");
-        if (file.exists()) {
-            try {
-                properties.load(new FileInputStream(file));
-            } catch (IOException e) {
-                System.err.printf("ERROR: Can't parse strings.properties at %s: %s\n", resourcePath, e.getMessage());
-            }
-        }
-        Map<String,String> map = new TreeMap<String,String>();
-        properties.forEach((k,v) -> map.put((String)k, (String)v));
-        return map;
-    }
+    private void injectSamplesToNewts(final ResourcePath resourcePath,
+                                      final String group,
+                                      final List<? extends AbstractDS> dataSources,
+                                      final List<RrdSample> samples) {
+        // Create a resource ID from the resource path
+        final String groupId = NewtsUtils.toResourceId(ResourcePath.get(resourcePath, group));
 
-    /**
-     * Parses a JRobin file.
-     *
-     * @param metricId the metric id
-     * @param metricFile the metric file
-     * @throws Exception the exception
-     */
-    private void parseJrb(String metricId, File metricFile) throws Exception {
-        System.out.printf("    Parsing JRobin file %s\n", metricFile);
-        RRDv1 rrd = RrdConvertUtils.dumpJrb(metricFile);
-        injectDataToNewts(metricId, rrd.generateSamples(), rrd.getDataSources());
-    }
-
-    /**
-     * Parses a RRDtool file.
-     *
-     * @param metricId the metric id
-     * @param metricFile the metric file
-     * @throws Exception the exception
-     */
-    private void parseRrd(String metricId, File metricFile) throws Exception {
-        System.out.printf("    Parsing RRDtool file %s\n", metricFile);
-        RRDv3 rrd = RrdConvertUtils.dumpRrd(metricFile);
-        injectDataToNewts(metricId, rrd.generateSamples(), rrd.getDataSources());
-    }
-
-    /**
-     * Inject data to newts.
-     *
-     * @param metricId the metric id
-     * @param samples the samples
-     * @param dataSources the data sources
-     */
-    private void injectDataToNewts(String metricId, List<RrdSample> samples, List<? extends AbstractDS> dataSources) {
-        List<Sample> newtsSamples = new ArrayList<Sample>();
+        // Insert the samples in batches
+        List<Sample> batch = Lists.newArrayListWithCapacity(this.batchSize);
         for (RrdSample s : samples) {
-            for (int i=0; i<dataSources.size(); i++) {
-                String ds = dataSources.get(i).getName();
-                MetricType type = dataSources.get(i).isCounter() ? MetricType.COUNTER : MetricType.GAUGE;
-                ValueType<?> valueType = ValueType.compose(s.getValue(i), type);
-                Timestamp ts = Timestamp.fromEpochMillis(s.getTimestamp());
-                Resource resource = new Resource(metricId);
-                newtsSamples.add(new Sample(ts, resource, ds, type, valueType));
+            for (int i = 0; i < dataSources.size(); i++) {
+                final Timestamp timestamp = Timestamp.fromEpochMillis(s.getTimestamp());
+
+                final Map<String, String> attributes = Maps.newHashMap();
+                NewtsUtils.addIndicesToAttributes(resourcePath, attributes);
+                final Resource resource = new Resource(groupId,
+                                                       Optional.of(attributes));
+
+                final String metric = dataSources.get(i).getName();
+
+                final MetricType type = dataSources.get(i).isCounter()
+                                        ? MetricType.COUNTER
+                                        : MetricType.GAUGE;
+                final ValueType<?> valueType = ValueType.compose(s.getValue(i), type);
+
+                final Sample sample = new Sample(timestamp, resource, metric, type, valueType);
+
+                batch.add(sample);
+
+                if (batch.size() >= this.batchSize) {
+                    repository.insert(batch, true);
+                    batch = Lists.newArrayListWithCapacity(this.batchSize);
+                }
             }
-        };
-        Lists.partition(newtsSamples, batchSize - 1).forEach(l -> repository.insert(l));
+        }
+
+        repository.insert(batch, true);
+
+        this.processedMetrics += dataSources.size();
+        this.processedSamples += dataSources.size() * samples.size();
+
+        System.out.println("Stats: " + this.processedMetrics + " / " + this.processedSamples);
     }
 
-    /**
-     * Gets the resource ID for Newts.
-     *
-     * @param resourcePath the resource path
-     * @return the resource ID
-     */
-    private String getResourceId(Path resourcePath) {
-        String resourceDir = resourcePath.toString().replace(snmpDir.toString() + '/', "");
-        final String fileRegex = "[" + File.separator + "]";
-        String idStr = resourceDir.split(fileRegex)[0];
-        if (!"fs".equals(idStr)) {
-            int nodeId = Integer.parseInt(idStr);
-            String id = nodes.stream().filter(n -> n.getId() == nodeId).findFirst().get().getFSId();
-            return "snmp:fs:" + resourceDir.replace(idStr, id).replaceAll(fileRegex, ":");
+    private void processStringsProperties(final Path path) {
+        try {
+            // Find an process all 'strings.properties' files
+            Files.walk(path)
+                 .filter(p -> p.endsWith("strings.properties"))
+                 .forEach(p -> {
+                     final Properties properties = new Properties();
+                     try (final BufferedReader r = Files.newBufferedReader(p)) {
+                         properties.load(r);
+
+                     } catch (final IOException e) {
+                         throw Throwables.propagate(e);
+                     }
+
+                     this.injectStringPropertiesToNewts(buildResourcePath(p.getParent()),
+                                                        Maps.fromProperties(properties));
+                 });
+
+        } catch (Exception e) {
+            System.err.println("ERROR: Error while reading RRD files: " + e.getMessage());
+            e.printStackTrace();
+            System.exit(1);
+            throw null;
         }
-        return "snmp:" + resourceDir.replaceAll(fileRegex, ":");
+    }
+
+    private void injectStringPropertiesToNewts(final ResourcePath resourcePath,
+                                               final Map<String, String> stringProperties) {
+        final Resource resource = new Resource(NewtsUtils.toResourceId(resourcePath),
+                                               Optional.of(stringProperties));
+
+        final Sample sample = new Sample(EPOCH,
+                                         resource,
+                                         "strings",
+                                         MetricType.GAUGE,
+                                         ZERO);
+
+        indexer.update(Lists.newArrayList(sample));
+    }
+
+    private ResourcePath buildResourcePath(final Path resourceDir) {
+        final ResourcePath resourcePath;
+        final Path relativeResourceDir = this.rrdDir.relativize(resourceDir);
+
+        // Transform store-by-id path into store-by-foreign-source path
+        if (relativeResourceDir.startsWith(Paths.get("snmp")) &&
+            !relativeResourceDir.startsWith(Paths.get("snmp", "fs"))) {
+
+            // The part after snmp/ is considered the node ID
+            final int nodeId = Integer.valueOf(relativeResourceDir.getName(1).toString());
+
+            resourcePath = ResourcePath.get("snmp", "fs", foreignIds.get(nodeId));
+
+        } else {
+            resourcePath = ResourcePath.get(relativeResourceDir);
+        }
+        return resourcePath;
     }
 }
