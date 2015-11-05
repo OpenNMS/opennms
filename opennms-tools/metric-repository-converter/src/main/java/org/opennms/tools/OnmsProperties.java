@@ -67,7 +67,6 @@ public abstract class OnmsProperties {
      */
     private static void loadProperties(Properties properties, String fileName) throws Exception {
         File propertiesFile = ConfigFileConstants.getConfigFileByName(fileName);
-        System.out.printf("Loading %s\n", propertiesFile);
         properties.load(new FileInputStream(propertiesFile));
     }
 
@@ -85,7 +84,6 @@ public abstract class OnmsProperties {
             registerProperties(rrdProperties);
 
             final File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.OPENNMS_DATASOURCE_CONFIG_FILE_NAME);
-            System.out.printf("Loading %s\n", cfgFile);
             DataSourceConfiguration dsc = null;
             FileInputStream fileInputStream = null;
             try {
@@ -98,19 +96,15 @@ public abstract class OnmsProperties {
             for (JdbcDataSource jds : dsc.getJdbcDataSourceCollection()) {
                 if (jds.getName().equals("opennms")) {
                     SimpleDataSource ds = new SimpleDataSource(jds);
-                    System.out.printf("Connecting to %s\n", ds.getUrl());
                     DataSourceFactory.setInstance(ds);
                     found = true;
                 }
             }
             if (!found) {
-                System.err.printf("Error: Can't find OpenNMS database configuration.\n");
-                System.exit(1);
+                throw NewtsConverterError.create("Can't find OpenNMS database configuration");
             }
         } catch (Exception e) {
-            System.err.printf("Error: Can't initialize OpenNMS database connection factory. %s\n", e.getMessage());
-            System.exit(1);
+            throw NewtsConverterError.create(e, "Can't initialize OpenNMS database connection factory: {}", e.getMessage());
         }
     }
-    
 }

@@ -72,6 +72,8 @@ import org.opennms.newts.api.SampleRepository;
 import org.opennms.newts.api.Timestamp;
 import org.opennms.newts.api.ValueType;
 import org.opennms.newts.api.search.Indexer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import com.google.common.collect.Lists;
@@ -82,14 +84,16 @@ import com.google.common.collect.Lists;
  * The converter requires multi-ds metrics; otherwise it won't work.
  *
  * @author Alejandro Galue <agalue@opennms.org>
+ * @author Dustin Frisch <dustin@opennms.org>
  */
 public class NewtsConverter {
+    private final static Logger LOG = LoggerFactory.getLogger(NewtsConverter.class);
 
     /** The Constant CMD_SYNTAX. */
-    private static final String CMD_SYNTAX = "newts-converter [options]";
+    private final static String CMD_SYNTAX = "newts-converter [options]";
 
-    private static final Timestamp EPOCH = Timestamp.fromEpochMillis(0);
-    private static final ValueType<?> ZERO = ValueType.compose(0, MetricType.GAUGE);
+    private final static Timestamp EPOCH = Timestamp.fromEpochMillis(0);
+    private final static ValueType<?> ZERO = ValueType.compose(0, MetricType.GAUGE);
 
     private final Path onmsHome;
     private final Path rrdDir;
@@ -123,7 +127,14 @@ public class NewtsConverter {
      */
     public static void main(final String... args) {
         final NewtsConverter converter = new NewtsConverter(args);
-        converter.execute();
+
+        try {
+            converter.execute();
+
+        } catch (final NewtsConverterError e) {
+            LOG.error(e.getMessage(), e);
+            System.exit(1);
+        }
     }
 
     private NewtsConverter(final String... args) {
@@ -246,24 +257,21 @@ public class NewtsConverter {
 
         batchSize = Integer.parseInt(System.getProperty("org.opennms.newts.config.max_batch_size", "16"));
 
-        System.out.printf("OpenNMS Home: %s\n", onmsHome);
-        System.out.printf("RRD Directory: %s\n", rrdDir);
-        System.out.printf("Use RRDtool Tool: %s\n", rrdTool);
-        System.out.printf("RRDtool CLI: %s\n", rrdBinary);
-        System.out.printf("StoreByGroup: %s\n", storeByGroup);
-        System.out.printf("Timeseries Strategy: %s\n", strategy);
-        System.out.printf("Conversion Threads: %d\n", threads);
-        System.out.printf("Cassandra Host: %s\n", host);
-        System.out.printf("Cassandra Port: %s\n", port);
-        System.out.printf("Cassandra Keyspace: %s\n", keyspace);
-        System.out.printf("Newts Max Batch Size: %d\n", batchSize);
-        System.out.printf("Newts TTL: %d\n", ttl);
+        LOG.debug("OpenNMS Home: {}", onmsHome);
+        LOG.debug("RRD Directory: {}", rrdDir);
+        LOG.debug("Use RRDtool Tool: {}", rrdTool);
+        LOG.debug("RRDtool CLI: {}", rrdBinary);
+        LOG.debug("StoreByGroup: {}", storeByGroup);
+        LOG.debug("Timeseries Strategy: {}", strategy);
+        LOG.debug("Conversion Threads: {}", threads);
+        LOG.debug("Cassandra Host: {}", host);
+        LOG.debug("Cassandra Port: {}", port);
+        LOG.debug("Cassandra Keyspace: {}", keyspace);
+        LOG.debug("Newts Max Batch Size: {}", batchSize);
+        LOG.debug("Newts TTL: {}", ttl);
 
         if (!"newts".equals(strategy)) {
-            System.err.println("ERROR: The configured timeseries strategy is not 'newts' on opennms.properties (org.opennms.timeseries.strategy).");
-            System.err.println("       Fix it before continue");
-            System.exit(1);
-            throw null;
+            throw NewtsConverterError.create("The configured timeseries strategy must be 'newts' on opennms.properties (org.opennms.timeseries.strategy)");
         }
 
         try {
@@ -271,23 +279,13 @@ public class NewtsConverter {
                     "classpath:/META-INF/opennms/applicationContext-soa.xml",
                     "classpath:/META-INF/opennms/applicationContext-newts.xml"
             });
-
-            Runtime.getRuntime().addShutdownHook(new Thread() {
-                @Override
-                public void run() {
-                    context.close();
-                }
-            });
+            context.registerShutdownHook();
 
             this.repository = context.getBean(SampleRepository.class);
             this.indexer = context.getBean(Indexer.class);
 
         } catch (final Exception e) {
-            System.err.printf("ERROR: Cannot connect to the Cassandra/Newts backend: %s%n", e.getMessage());
-            System.err.println("       Make sure Newts is properly configured in opennms.properties.");
-            System.err.println("       There is no need to stop OpenNMS to execute this tool.");
-            System.exit(1);
-            throw null;
+            throw NewtsConverterError.create(e, "Cannot connect to the Cassandra/Newts backend: {}", e.getMessage());
         }
     }
 
@@ -304,17 +302,15 @@ public class NewtsConverter {
             }
 
         } catch (final Exception e) {
-            System.err.println("ERROR: Failed to connect to database: " + e.getMessage());
-            System.exit(1);
-            throw null;
+            throw NewtsConverterError.create(e, "Failed to connect to database: {}", e.getMessage());
         }
 
-        System.out.printf("Found %d nodes on the database\n", foreignIds.size());
+        LOG.trace("Found {} nodes on the database", foreignIds.size());
 
         // Process JRB/RRD files
         final long start = System.currentTimeMillis();
-        System.out.println("Starting Conversion...");
-        System.out.println("Processing " + rrdDir);
+        LOG.trace("Starting Conversion...");
+        LOG.trace("Processing {}", rrdDir);
 
         processedMetrics = 0;
         processedSamples = 0;
@@ -336,9 +332,7 @@ public class NewtsConverter {
                 .appendDays().appendSuffix(" days")
                 .printZeroNever()
                 .toFormatter();
-        System.out.printf("\nConversion Finished.\nMetrics updated: %d\nEnlapsed time %s\n", processedMetrics, formatter.print(period));
-
-        System.exit(0);
+        LOG.info("Conversion Finished: metrics processed: {}, time elapsed: {}", processedMetrics, formatter.print(period));
     }
 
     private void processStoreByGroupResources(final Path path) {
@@ -349,10 +343,7 @@ public class NewtsConverter {
                  .forEach(p -> processStoreByGroupResource(p.getParent()));
 
         } catch (Exception e) {
-            System.err.println("ERROR: Error while reading RRD files: " + e.getMessage());
-            e.printStackTrace();
-            System.exit(1);
-            throw null;
+            throw NewtsConverterError.create(e, "Error while reading RRD files: {}", e.getMessage());
         }
     }
 
@@ -383,10 +374,7 @@ public class NewtsConverter {
                  .forEach(p -> this.processStoreByMetricResource(p));
 
         } catch (Exception e) {
-            System.err.println("ERROR: Error while reading RRD files: " + e.getMessage());
-            e.printStackTrace();
-            System.exit(1);
-            throw null;
+            throw NewtsConverterError.create(e, "Error while reading RRD files: {}", e.getMessage());
         }
     }
 
@@ -437,10 +425,7 @@ public class NewtsConverter {
             }
 
         } catch (final Exception e) {
-            System.err.printf("ERROR: Can't parse JRB/RRD %s.(rrd/jrb): %s\n", resourceDir.resolve(fileName), e.getMessage());
-            e.printStackTrace();
-            System.exit(1);
-            throw null;
+            throw NewtsConverterError.create(e, "Can't parse JRB/RRD {}.(rrd/jrb): {}", resourceDir.resolve(fileName), e.getMessage());
         }
 
         // Inject the samples from the RRD file to NewTS
@@ -492,7 +477,7 @@ public class NewtsConverter {
         this.processedMetrics += dataSources.size();
         this.processedSamples += dataSources.size() * samples.size();
 
-        System.out.println("Stats: " + this.processedMetrics + " / " + this.processedSamples);
+        LOG.trace("Stats: {} / {}", this.processedMetrics, this.processedSamples);
     }
 
     private void processStringsProperties(final Path path) {
@@ -514,10 +499,7 @@ public class NewtsConverter {
                  });
 
         } catch (Exception e) {
-            System.err.println("ERROR: Error while reading RRD files: " + e.getMessage());
-            e.printStackTrace();
-            System.exit(1);
-            throw null;
+            throw NewtsConverterError.create(e, "Error while reading RRD files: {}", e.getMessage());
         }
     }
 
