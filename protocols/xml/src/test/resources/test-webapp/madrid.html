@@ -1,0 +1,1187 @@
+<!DOCTYPE html>
+<html style="" class=" js flexbox flexboxlegacy no-touch rgba hsla multiplebgs backgroundsize borderimage borderradius boxshadow textshadow opacity cssanimations csscolumns cssgradients no-cssreflections csstransforms csstransforms3d csstransitions fontface generatedcontent svg" lang="en"><head><title>Madrid System - Fee Calculator</title><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta http-equiv="cleartype" content="on">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link rel="stylesheet" href="madrid_files/styles.css">
+<!--[if (lt IE 9) & (!IEMobile)]>
+<script src='/export/system/modules/org.wipo.internet.rwd.templates/resources/scripts/selectivizr-min.js'></script><link rel='stylesheet' href='/export/system/modules/org.wipo.internet.rwd.templates/resources/css/lte-ie8.css'>
+<![endif]-->
+<link rel="stylesheet" href="madrid_files/ss-standard.css">
+<script src="madrid_files/modernizr-2.js"></script>
+<script src="madrid_files/jquery-min.js"></script>
+<link href="http://www.wipo.int/madrid/en/rss" type="application/rss+xml" rel="alternate" title="RSS News Feed on Madrid System">
+<style>
+@media print {
+.cols {
+        clear: both;
+        padding-bottom: 0.4em; }
+.cols:before, .cols:after {
+        display: table;
+        content: ""; }
+.cols:after {
+        clear: both; }
+.col {
+        float: left;
+        margin-right: -100%; }
+.cols--four .col {
+        width: 23.4848%; }
+.cols--four .col--two {
+        margin-left: 25.5051%; }
+.cols--four .col--three {
+        clear: none;
+        margin-left: 51.0101%; }
+.cols--four .col--four {
+        margin-left: 76.5152%; }
+/*cols--four */
+}
+</style><style class="firebugResetStyles" type="text/css" charset="utf-8">/* See license.txt for terms of usage */
+/** reset styling **/
+.firebugResetStyles {
+    z-index: 2147483646 !important;
+    top: 0 !important;
+    left: 0 !important;
+    display: block !important;
+    border: 0 none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    outline: 0 !important;
+    min-width: 0 !important;
+    max-width: none !important;
+    min-height: 0 !important;
+    max-height: none !important;
+    position: fixed !important;
+    transform: rotate(0deg) !important;
+    transform-origin: 50% 50% !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    background: transparent none !important;
+    pointer-events: none !important;
+    white-space: normal !important;
+}
+style.firebugResetStyles {
+    display: none !important;
+}
+
+.firebugBlockBackgroundColor {
+    background-color: transparent !important;
+}
+
+.firebugResetStyles:before, .firebugResetStyles:after {
+    content: "" !important;
+}
+/**actual styling to be modified by firebug theme**/
+.firebugCanvas {
+    display: none !important;
+}
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+.firebugLayoutBox {
+    width: auto !important;
+    position: static !important;
+}
+
+.firebugLayoutBoxOffset {
+    opacity: 0.8 !important;
+    position: fixed !important;
+}
+
+.firebugLayoutLine {
+    opacity: 0.4 !important;
+    background-color: #000000 !important;
+}
+
+.firebugLayoutLineLeft, .firebugLayoutLineRight {
+    width: 1px !important;
+    height: 100% !important;
+}
+
+.firebugLayoutLineTop, .firebugLayoutLineBottom {
+    width: 100% !important;
+    height: 1px !important;
+}
+
+.firebugLayoutLineTop {
+    margin-top: -1px !important;
+    border-top: 1px solid #999999 !important;
+}
+
+.firebugLayoutLineRight {
+    border-right: 1px solid #999999 !important;
+}
+
+.firebugLayoutLineBottom {
+    border-bottom: 1px solid #999999 !important;
+}
+
+.firebugLayoutLineLeft {
+    margin-left: -1px !important;
+    border-left: 1px solid #999999 !important;
+}
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+.firebugLayoutBoxParent {
+    border-top: 0 none !important;
+    border-right: 1px dashed #E00 !important;
+    border-bottom: 1px dashed #E00 !important;
+    border-left: 0 none !important;
+    position: fixed !important;
+    width: auto !important;
+}
+
+.firebugRuler{
+    position: absolute !important;
+}
+
+.firebugRulerH {
+    top: -15px !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: 14px !important;
+    background: url("data:image/png,%89PNG%0D%0A%1A%0A%00%00%00%0DIHDR%00%00%13%88%00%00%00%0E%08%02%00%00%00L%25a%0A%00%00%00%04gAMA%00%00%D6%D8%D4OX2%00%00%00%19tEXtSoftware%00Adobe%20ImageReadyq%C9e%3C%00%00%04%F8IDATx%DA%EC%DD%D1n%E2%3A%00E%D1%80%F8%FF%EF%E2%AF2%95%D0D4%0E%C1%14%B0%8Fa-%E9%3E%CC%9C%87n%B9%81%A6W0%1C%A6i%9A%E7y%0As8%1CT%A9R%A5J%95*U%AAT%A9R%A5J%95*U%AAT%A9R%A5J%95*U%AAT%A9R%A5J%95*U%AAT%A9R%A5J%95*U%AAT%A9R%A5J%95*U%AAT%A9R%A5J%95*U%AATE9%FE%FCw%3E%9F%AF%2B%2F%BA%97%FDT%1D~K(%5C%9D%D5%EA%1B%5C%86%B5%A9%BDU%B5y%80%ED%AB*%03%FAV9%AB%E1%CEj%E7%82%EF%FB%18%BC%AEJ8%AB%FA'%D2%BEU9%D7U%ECc0%E1%A2r%5DynwVi%CFW%7F%BB%17%7Dy%EACU%CD%0E%F0%FA%3BX%FEbV%FEM%9B%2B%AD%BE%AA%E5%95v%AB%AA%E3E5%DCu%15rV9%07%B5%7F%B5w%FCm%BA%BE%AA%FBY%3D%14%F0%EE%C7%60%0EU%AAT%A9R%A5J%95*U%AAT%A9R%A5J%95*U%AAT%A9R%A5J%95*U%AAT%A9R%A5J%95*U%AAT%A9R%A5JU%88%D3%F5%1F%AE%DF%3B%1B%F2%3E%DAUCNa%F92%D02%AC%7Dm%F9%3A%D4%F2%8B6%AE*%BF%5C%C2Ym~9g5%D0Y%95%17%7C%C8c%B0%7C%18%26%9CU%CD%13i%F7%AA%90%B3Z%7D%95%B4%C7%60%E6E%B5%BC%05%B4%FBY%95U%9E%DB%FD%1C%FC%E0%9F%83%7F%BE%17%7DkjMU%E3%03%AC%7CWj%DF%83%9An%BCG%AE%F1%95%96yQ%0Dq%5Dy%00%3Et%B5'%FC6%5DS%95pV%95%01%81%FF'%07%00%00%00%00%00%00%00%00%00%F8x%C7%F0%BE%9COp%5D%C9%7C%AD%E7%E6%EBV%FB%1E%E0(%07%E5%AC%C6%3A%ABi%9C%8F%C6%0E9%AB%C0'%D2%8E%9F%F99%D0E%B5%99%14%F5%0D%CD%7F%24%C6%DEH%B8%E9rV%DFs%DB%D0%F7%00k%FE%1D%84%84%83J%B8%E3%BA%FB%EF%20%84%1C%D7%AD%B0%8E%D7U%C8Y%05%1E%D4t%EF%AD%95Q%BF8w%BF%E9%0A%BF%EB%03%00%00%00%00%00%00%00%00%00%B8vJ%8E%BB%F5%B1u%8Cx%80%E1o%5E%CA9%AB%CB%CB%8E%03%DF%1D%B7T%25%9C%D5(%EFJM8%AB%CC'%D2%B2*%A4s%E7c6%FB%3E%FA%A2%1E%80~%0E%3E%DA%10x%5D%95Uig%15u%15%ED%7C%14%B6%87%A1%3B%FCo8%A8%D8o%D3%ADO%01%EDx%83%1A~%1B%9FpP%A3%DC%C6'%9C%95gK%00%00%00%00%00%00%00%00%00%20%D9%C9%11%D0%C0%40%AF%3F%EE%EE%92%94%D6%16X%B5%BCMH%15%2F%BF%D4%A7%C87%F1%8E%F2%81%AE%AAvzr%DA2%ABV%17%7C%E63%83%E7I%DC%C6%0Bs%1B%EF6%1E%00%00%00%00%00%00%00%00%00%80cr%9CW%FF%7F%C6%01%0E%F1%CE%A5%84%B3%CA%BC%E0%CB%AA%84%CE%F9%BF)%EC%13%08WU%AE%AB%B1%AE%2BO%EC%8E%CBYe%FE%8CN%ABr%5Dy%60~%CFA%0D%F4%AE%D4%BE%C75%CA%EDVB%EA(%B7%F1%09g%E5%D9%12%00%00%00%00%00%00%00%00%00H%F6%EB%13S%E7y%5E%5E%FB%98%F0%22%D1%B2'%A7%F0%92%B1%BC%24z3%AC%7Dm%60%D5%92%B4%7CEUO%5E%F0%AA*%3BU%B9%AE%3E%A0j%94%07%A0%C7%A0%AB%FD%B5%3F%A0%F7%03T%3Dy%D7%F7%D6%D4%C0%AAU%D2%E6%DFt%3F%A8%CC%AA%F2%86%B9%D7%F5%1F%18%E6%01%F8%CC%D5%9E%F0%F3z%88%AA%90%EF%20%00%00%00%00%00%00%00%00%00%C0%A6%D3%EA%CFi%AFb%2C%7BB%0A%2B%C3%1A%D7%06V%D5%07%A8r%5D%3D%D9%A6%CAu%F5%25%CF%A2%99%97zNX%60%95%AB%5DUZ%D5%FBR%03%AB%1C%D4k%9F%3F%BB%5C%FF%81a%AE%AB'%7F%F3%EA%FE%F3z%94%AA%D8%DF%5B%01%00%00%00%00%00%00%00%00%00%8E%FB%F3%F2%B1%1B%8DWU%AAT%A9R%A5J%95*U%AAT%A9R%A5J%95*U%AAT%A9R%A5J%95*U%AAT%A9R%A5J%95*U%AAT%A9R%A5J%95*U%AAT%A9R%A5J%95*U%AAT%A9R%A5J%95*UiU%C7%BBe%E7%F3%B9%CB%AAJ%95*U%AAT%A9R%A5J%95*U%AAT%A9R%A5J%95*U%AAT%A9R%A5J%95*U%AAT%A9R%A5J%95*U%AAT%A9R%A5J%95*U%AAT%A9R%A5J%95*U%AAT%A9R%A5*%AAj%FD%C6%D4%5Eo%90%B5Z%ADV%AB%D5j%B5Z%ADV%AB%D5j%B5Z%ADV%AB%D5j%B5Z%ADV%AB%D5j%B5Z%ADV%AB%D5j%B5Z%ADV%AB%D5j%B5Z%ADV%AB%D5j%B5%86%AF%1B%9F%98%DA%EBm%BBV%AB%D5j%B5Z%ADV%AB%D5j%B5Z%ADV%AB%D5j%B5Z%ADV%AB%D5j%B5Z%ADV%AB%D5j%B5Z%ADV%AB%D5j%B5Z%ADV%AB%D5j%B5Z%AD%D6%E4%F58%01%00%00%00%00%00%00%00%00%00%00%00%00%00%40%85%7F%02%0C%008%C2%D0H%16j%8FX%00%00%00%00IEND%AEB%60%82") repeat-x !important;
+    border-top: 1px solid #BBBBBB !important;
+    border-right: 1px dashed #BBBBBB !important;
+    border-bottom: 1px solid #000000 !important;
+}
+
+.firebugRulerV {
+    top: 0 !important;
+    left: -15px !important;
+    width: 14px !important;
+    height: 100% !important;
+    background: url("data:image/png,%89PNG%0D%0A%1A%0A%00%00%00%0DIHDR%00%00%00%0E%00%00%13%88%08%02%00%00%00%0E%F5%CB%10%00%00%00%04gAMA%00%00%D6%D8%D4OX2%00%00%00%19tEXtSoftware%00Adobe%20ImageReadyq%C9e%3C%00%00%06~IDATx%DA%EC%DD%D1v%A20%14%40Qt%F1%FF%FF%E4%97%D9%07%3BT%19%92%DC%40(%90%EEy%9A5%CB%B6%E8%F6%9Ac%A4%CC0%84%FF%DC%9E%CF%E7%E3%F1%88%DE4%F8%5D%C7%9F%2F%BA%DD%5E%7FI%7D%F18%DDn%BA%C5%FB%DF%97%BFk%F2%10%FF%FD%B4%F2M%A7%FB%FD%FD%B3%22%07p%8F%3F%AE%E3%F4S%8A%8F%40%EEq%9D%BE8D%F0%0EY%A1Uq%B7%EA%1F%81%88V%E8X%3F%B4%CEy%B7h%D1%A2E%EBohU%FC%D9%AF2fO%8BBeD%BE%F7X%0C%97%A4%D6b7%2Ck%A5%12%E3%9B%60v%B7r%C7%1AI%8C%BD%2B%23r%00c0%B2v%9B%AD%CA%26%0C%1Ek%05A%FD%93%D0%2B%A1u%8B%16-%95q%5Ce%DCSO%8E%E4M%23%8B%F7%C2%FE%40%BB%BD%8C%FC%8A%B5V%EBu%40%F9%3B%A72%FA%AE%8C%D4%01%CC%B5%DA%13%9CB%AB%E2I%18%24%B0n%A9%0CZ*Ce%9C%A22%8E%D8NJ%1E%EB%FF%8F%AE%CAP%19*%C3%BAEKe%AC%D1%AAX%8C*%DEH%8F%C5W%A1e%AD%D4%B7%5C%5B%19%C5%DB%0D%EF%9F%19%1D%7B%5E%86%BD%0C%95%A12%AC%5B*%83%96%CAP%19%F62T%86%CAP%19*%83%96%CA%B8Xe%BC%FE)T%19%A1%17xg%7F%DA%CBP%19*%C3%BA%A52T%86%CAP%19%F62T%86%CA%B0n%A9%0CZ%1DV%C6%3D%F3%FCH%DE%B4%B8~%7F%5CZc%F1%D6%1F%AF%84%F9%0F6%E6%EBVt9%0E~%BEr%AF%23%B0%97%A12T%86%CAP%19%B4T%86%CA%B8Re%D8%CBP%19*%C3%BA%A52huX%19%AE%CA%E5%BC%0C%7B%19*CeX%B7h%A9%0C%95%E1%BC%0C%7B%19*CeX%B7T%06%AD%CB%5E%95%2B%BF.%8F%C5%97%D5%E4%7B%EE%82%D6%FB%CF-%9C%FD%B9%CF%3By%7B%19%F62T%86%CA%B0n%D1R%19*%A3%D3%CA%B0%97%A12T%86uKe%D0%EA%B02*%3F1%99%5DB%2B%A4%B5%F8%3A%7C%BA%2B%8Co%7D%5C%EDe%A8%0C%95a%DDR%19%B4T%C66%82fA%B2%ED%DA%9FC%FC%17GZ%06%C9%E1%B3%E5%2C%1A%9FoiB%EB%96%CA%A0%D5qe4%7B%7D%FD%85%F7%5B%ED_%E0s%07%F0k%951%ECr%0D%B5C%D7-g%D1%A8%0C%EB%96%CA%A0%A52T%C6)*%C3%5E%86%CAP%19%D6-%95A%EB*%95q%F8%BB%E3%F9%AB%F6%E21%ACZ%B7%22%B7%9B%3F%02%85%CB%A2%5B%B7%BA%5E%B7%9C%97%E1%BC%0C%EB%16-%95%A12z%AC%0C%BFc%A22T%86uKe%D0%EA%B02V%DD%AD%8A%2B%8CWhe%5E%AF%CF%F5%3B%26%CE%CBh%5C%19%CE%CB%B0%F3%A4%095%A1%CAP%19*Ce%A8%0C%3BO*Ce%A8%0C%95%A12%3A%AD%8C%0A%82%7B%F0v%1F%2FD%A9%5B%9F%EE%EA%26%AF%03%CA%DF9%7B%19*Ce%A8%0C%95%A12T%86%CA%B8Ze%D8%CBP%19*Ce%A8%0C%95%D1ae%EC%F7%89I%E1%B4%D7M%D7P%8BjU%5C%BB%3E%F2%20%D8%CBP%19*Ce%A8%0C%95%A12T%C6%D5*%C3%5E%86%CAP%19*Ce%B4O%07%7B%F0W%7Bw%1C%7C%1A%8C%B3%3B%D1%EE%AA%5C%D6-%EBV%83%80%5E%D0%CA%10%5CU%2BD%E07YU%86%CAP%19*%E3%9A%95%91%D9%A0%C8%AD%5B%EDv%9E%82%FFKOee%E4%8FUe%A8%0C%95%A12T%C6%1F%A9%8C%C8%3D%5B%A5%15%FD%14%22r%E7B%9F%17l%F8%BF%ED%EAf%2B%7F%CF%ECe%D8%CBP%19*Ce%A8%0C%95%E1%93~%7B%19%F62T%86%CAP%19*Ce%A8%0C%E7%13%DA%CBP%19*Ce%A8%0CZf%8B%16-Z%B4h%D1R%19f%8B%16-Z%B4h%D1R%19%B4%CC%16-Z%B4h%D1R%19%B4%CC%16-Z%B4h%D1%A2%A52%CC%16-Z%B4h%D1%A2%A52h%99-Z%B4h%D1%A2%A52h%99-Z%B4h%D1%A2EKe%98-Z%B4h%D1%A2EKe%D02%5B%B4h%D1%A2EKe%D02%5B%B4h%D1%A2E%8B%96%CA0%5B%B4h%D1%A2E%8B%96%CA%A0e%B6h%D1%A2E%8B%96%CA%A0e%B6h%D1%A2E%8B%16-%95a%B6h%D1%A2E%8B%16-%95A%CBl%D1%A2E%8B%16-%95A%CBl%D1%A2E%8B%16-Z*%C3l%D1%A2E%8B%16-Z*%83%96%D9%A2E%8B%16-Z*%83%96%D9%A2E%8B%16-Z%B4T%86%D9%A2E%8B%16-Z%B4T%06-%B3E%8B%16-Z%B4T%06-%B3E%8B%16-Z%B4h%A9%0C%B3E%8B%16-Z%B4h%A9%0CZf%8B%16-Z%B4h%A9%0CZf%8B%16-Z%B4h%D1R%19f%8B%16-Z%B4h%D1R%19%B4%CC%16-Z%B4h%D1R%19%B4%CC%16-Z%B4h%D1%A2%A52%CC%16-Z%B4h%D1%A2%A52h%99-Z%B4h%D1%A2%A52h%99-Z%B4h%D1%A2EKe%98-Z%B4h%D1%A2EKe%D02%5B%B4h%D1%A2EKe%D02%5B%B4h%D1%A2E%8B%96%CA0%5B%B4h%D1%A2E%8B%96%CA%A0e%B6h%D1%A2E%8B%96%CA%A0e%B6h%D1%A2E%8B%16-%95a%B6h%D1%A2E%8B%16-%95A%CBl%D1%A2E%8B%16-%95A%CBl%D1%A2E%8B%16-Z*%C3l%D1%A2E%8B%16-Z*%83%96%D9%A2E%8B%16-Z*%83%96%D9%A2E%8B%16-Z%B4T%86%D9%A2E%8B%16-Z%B4T%06-%B3E%8B%16-Z%B4T%06-%B3E%8B%16-Z%B4h%A9%0C%B3E%8B%16-Z%B4h%A9%0CZf%8B%16-Z%B4h%A9%0CZf%8B%16-Z%B4h%D1R%19f%8B%16-Z%B4h%D1R%19%B4%CC%16-Z%B4h%D1R%19%B4%CC%16-Z%B4h%D1%A2%A52%CC%16-Z%B4h%D1%A2%A52h%99-Z%B4h%D1%A2%A52h%99-Z%B4h%D1%A2EKe%98-Z%B4h%D1%A2EKe%D02%5B%B4h%D1%A2EKe%D02%5B%B4h%D1%A2E%8B%96%CA0%5B%B4h%D1%A2E%8B%96%CA%A0e%B6h%D1%A2E%8B%96%CA%A0e%B6h%D1%A2E%8B%16-%95a%B6h%D1%A2E%8B%16-%95A%CBl%D1%A2E%8B%16-%95A%CBl%D1%A2E%8B%16-Z*%C3l%D1%A2E%8B%16-Z*%83%96%D9%A2E%8B%16-Z*%83%96%D9%A2E%8B%16-Z%B4T%86%D9%A2E%8B%16-Z%B4T%06-%B3E%8B%16-Z%B4%AE%A4%F5%25%C0%00%DE%BF%5C'%0F%DA%B8q%00%00%00%00IEND%AEB%60%82") repeat-y !important;
+    border-left: 1px solid #BBBBBB !important;
+    border-right: 1px solid #000000 !important;
+    border-bottom: 1px dashed #BBBBBB !important;
+}
+
+.overflowRulerX > .firebugRulerV {
+    left: 0 !important;
+}
+
+.overflowRulerY > .firebugRulerH {
+    top: 0 !important;
+}
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+.fbProxyElement {
+    position: fixed !important;
+    pointer-events: auto !important;
+}
+</style></head>
+<body class="theme theme--blue" id="wipo-int"><div class="printOnly"><img id="printLogo" alt="WIPO" src="madrid_files/header-logo-wipo.png"></div>
+<div class="container">
+<header role="banner">
+<h1 class="banner__logo"><a href="http://www.wipo.int/portal/en/">World Intellectual Property Organization</a></h1>
+<a href="#tools" class="banner__toggle ss-icon" title="Tools">…</a>
+</header><!-- banner -->
+<div class="wrap-outer">
+<div class="wrap-inner">
+<nav class="navigation">
+<a href="#navigation-toggle" class="navigation-toggle">Menu</a>
+<ul class="navigation__flyout">
+<li class="flyout-control">
+<a href="http://www.wipo.int/services/en/" class="m-hide">IP Services</a>
+<a href="http://www.wipo.int/services/en/" class="t-hide d-hide">IP Services</a>
+<div style="display: none;" class="flyout">
+<p class="flyout__span d-hide"><a href="http://www.wipo.int/services/en/" class="btn btn-info">All IP Services</a></p>
+<div class="nav-group nav-group--two">
+<div class="nav nav--one">
+<h3 class="flyout__header">Protecting IP</h3>
+<ul class="flyout__list">
+<li><a href="http://www.wipo.int/pct/en/">PCT - The International Patent System</a></li>
+<li><a href="http://www.wipo.int/madrid/en/">Madrid - The International Trademark System</a></li>
+<li><a href="http://www.wipo.int/hague/en/">Hague - The International Design System</a></li>
+<li><a href="http://www.wipo.int/lisbon/en/">Lisbon - The International System of Appellations of Origin</a></li>
+<li><a href="http://www.wipo.int/article6ter/en/">Article 6ter</a></li>
+</ul>
+</div>
+<div class="nav nav--two">
+<h3 class="flyout__header">Resolving Disputes</h3>
+<ul class="flyout__list">
+<li><a href="http://www.wipo.int/amc/en/">Alternative Dispute Resolution</a></li>
+<li><a href="http://www.wipo.int/amc/en/domains/">Domain Name Disputes</a></li>
+</ul>
+</div>
+</div>
+</div>
+</li>
+<li class="flyout-control">
+<a href="http://www.wipo.int/policy/en/" class="m-hide">Policy</a>
+<a href="http://www.wipo.int/policy/en/" class="t-hide d-hide">Policy</a>
+<div style="display: none;" class="flyout">
+<p class="flyout__span d-hide"><a href="http://www.wipo.int/policy/en/" class="btn btn-info">All policy</a></p>
+<div class="nav-group nav-group--two">
+<div class="nav nav--one">
+<h3 class="flyout__header">Decision Making &amp; Negotiating Bodies</h3>
+<ul class="flyout__list">
+<li><a href="http://www.wipo.int/about-wipo/en/assemblies/">WIPO Assemblies</a></li>
+<li><a href="http://www.wipo.int/policy/en/sccr/">SCCR - Standing Committee on Copyright and Related Rights</a></li>
+<li><a href="http://www.wipo.int/policy/en/scp/">SCP - Standing Committee on the Law of Patents</a></li>
+<li><a href="http://www.wipo.int/policy/en/sct/">SCT - Standing Committee on the Law of Trademarks</a></li>
+<li><a href="http://www.wipo.int/tk/en/igc/">IGC - Intergovernmental Committee on IP &amp; GR, TK &amp; Folklore</a></li>
+<li><a href="http://www.wipo.int/policy/en/cdip/">CDIP - Committee on Development and IP</a></li>
+<li><a href="http://www.wipo.int/cws/en/">CWS - Committee on WIPO Standards</a></li>
+<li><a href="http://www.wipo.int/enforcement/en/ace/">ACE - Advisory Committee on Enforcement</a></li>
+<li><a href="http://www.wipo.int/policy/en/index.html#bodies">All Decision Making &amp; Negotiating Bodies</a></li>
+</ul>
+</div>
+<div class="nav nav--two">
+<h3 class="flyout__header">IP &amp; Other Policy Topics</h3>
+<ul class="flyout__list">
+<li><a href="http://www.wipo.int/tk/en/">Traditional Knowledge</a></li>
+<li><a href="http://www.wipo.int/econ_stat/en/economics/">Economics</a></li>
+<li><a href="http://www.wipo.int/policy/en/global_health/">Global Health</a></li>
+<li><a href="http://www.wipo.int/policy/en/climate_change/">Climate Change</a></li>
+<li><a href="http://www.wipo.int/ip-competition/en/">Competition Policy</a></li>
+</ul>
+</div>
+</div>
+</div>
+</li>
+<li class="flyout-control">
+<a href="http://www.wipo.int/cooperation/en/" class="m-hide">Cooperation</a>
+<a href="http://www.wipo.int/cooperation/en/" class="t-hide d-hide">Cooperation</a>
+<div style="display: none;" class="flyout">
+<p class="flyout__span d-hide"><a href="http://www.wipo.int/cooperation/en/" class="btn btn-info">All cooperation</a></p>
+<div class="nav-group nav-group--two">
+<div class="nav nav--one">
+<h3 class="flyout__header">Development</h3>
+<ul class="flyout__list">
+<li><a href="http://www.wipo.int/ip-development/en/agenda/">Development Agenda</a></li>
+<li><a href="http://www.wipo.int/global_ip/en/activities/technicalassistance/">Technical Assistance</a></li>
+<li><a href="http://www.wipo.int/cooperation/en/capacity_building/">Capacity Building</a></li>
+<li><a href="http://www.wipo.int/ip-development/en/legislative_assistance/">Legislative &amp; Policy Advice</a></li>
+<li><a href="http://www.wipo.int/ipstrategies/en/">IP Strategies</a></li>
+</ul>
+</div>
+<div class="nav nav--two">
+<h3 class="flyout__header">Global Cooperation</h3>
+<ul class="flyout__list">
+<li><a href="http://www.wipo.int/global_ip/en/">IP Infrastructure</a></li>
+<li><a href="http://www.wipo.int/enforcement/en/">Building Respect for IP</a></li>
+<li><a href="http://www.wipo.int/cooperation/en/multi_stakeholder_platforms/">Multi-stakeholder Platforms</a></li>
+</ul>
+<h3 class="flyout__header">Cooperation with:</h3>
+<ul class="flyout__list">
+<li><a href="http://www.wipo.int/cooperation/en/index.html#countries">Countries &amp; regions</a></li>
+<!--<li><a href="/cooperation/en/ngos_igos/">NGOs & IGOs</a></li>-->
+</ul>
+</div>
+</div>
+</div>
+</li>
+<li class="flyout-control">
+<a href="http://www.wipo.int/reference/en/" class="m-hide">Reference</a>
+<a href="http://www.wipo.int/reference/en/" class="t-hide d-hide">Reference</a>
+<div style="display: none;" class="flyout">
+<p class="flyout__span d-hide"><a href="http://www.wipo.int/reference/en/" class="btn btn-info">All reference</a></p>
+<div class="nav-group nav-group--three">
+<div class="nav nav--one">
+<h3 class="flyout__header">IP Databases</h3>
+<ul class="flyout__list">
+<li><a href="http://www.wipo.int/patentscope/en/">PATENTSCOPE</a></li>
+<li><a href="http://www.wipo.int/reference/en/branddb/">Global Brand Database</a></li>
+<li><a href="http://www.wipo.int/madrid/en/romarin/">ROMARIN</a></li>
+<li><a href="http://www.wipo.int/reference/en/designdb/">Global Design Database</a></li>
+<li><a href="http://www.wipo.int/hague/en/design_search/">Hague Express</a></li>
+<li><a href="http://www.wipo.int/ipdl/en/6ter/search-struct.jsp">Article 6ter</a></li>
+</ul>
+</div>
+<div class="nav nav--two">
+<h3 class="flyout__header">Legal Resources</h3>
+<ul class="flyout__list">
+<li><a href="http://www.wipo.int/wipolex/en/">IP Laws and Treaties (WIPO Lex)</a></li>
+<li><a href="http://www.wipo.int/treaties/en/">WIPO Administered Treaties</a></li>
+</ul>
+<h3 class="flyout__header">Technical Resources</h3>
+<ul class="flyout__list">
+<li><a href="http://www.wipo.int/classifications/en/">International Classifications</a></li>
+<li><a href="http://www.wipo.int/standards/en/">Standards (WIPO Handbook)</a></li>
+<li><a href="http://www.wipo.int/wipopearl/">Terminology (WIPO Pearl)</a></li>
+</ul>
+</div>
+<div class="nav nav--three">
+<h3 class="flyout__header">Information Resources</h3>
+<ul class="flyout__list">
+<li><a href="http://www.wipo.int/meetings/en/archive.jsp">Documents</a></li>
+<li><a href="http://www.wipo.int/ipstats/en/">Statistics</a></li>
+<li><a href="http://www.wipo.int/freepublications/en/">Publications</a></li>
+<li><a href="http://www.wipo.int/directory/en/">Country Profiles</a></li>
+<li><a href="http://www.wipo.int/ipadvantage/en/">Case Studies</a></li>
+<li><a href="http://www.wipo.int/library/en/">Library</a></li>
+</ul>
+</div>
+</div>
+</div>
+</li>
+<li class="flyout-control">
+<a href="http://www.wipo.int/about-ip/en/" class="m-hide">About IP</a>
+<a href="http://www.wipo.int/about-ip/en/" class="t-hide d-hide">About IP</a>
+<div style="display: none;" class="flyout">
+<p class="flyout__span d-hide"><a href="http://www.wipo.int/about-ip/en/" class="btn btn-info">All about IP</a></p>
+<div class="nav-group nav-group--three">
+<div class="nav nav--one">
+<h3 class="flyout__header">Intellectual Property</h3>
+<ul class="flyout__list">
+<li><a href="http://www.wipo.int/copyright/en/">Copyright</a></li>
+<li><a href="http://www.wipo.int/patents/en/">Patents</a></li>
+<li><a href="http://www.wipo.int/trademarks/en/">Trademarks</a></li>
+<li><a href="http://www.wipo.int/designs/en/">Industrial Designs</a></li>
+<li><a href="http://www.wipo.int/geo_indications/en/">Geographical Indications</a></li>
+</ul>
+</div>
+<div class="nav nav--two">
+<h3 class="flyout__header">Training</h3>
+<ul class="flyout__list">
+<li><a href="http://www.wipo.int/academy/en/">WIPO Academy</a></li>
+<li><a href="http://www.wipo.int/meetings/en/topic_type.jsp?group_id=242">Workshops &amp; Seminars</a></li>
+</ul>
+</div>
+<div class="nav nav--three">
+<h3 class="flyout__header">Raising Awareness</h3>
+<ul class="flyout__list">
+<li><a href="http://www.wipo.int/ip-outreach/en/ipday/">World IP Day</a></li>
+<li><a href="http://www.wipo.int/ip-outreach/en/awards/">WIPO Awards</a></li>
+<li><a href="http://www.wipo.int/ip-outreach/en/tools/">Outreach Campaigns</a></li>
+<li><a href="http://www.wipo.int/wipo_magazine/en/">WIPO Magazine</a></li>
+<li><a href="http://www.wipo.int/women-and-ip/en/">Women and IP</a></li>
+</ul>
+</div>
+</div>
+</div>
+</li>
+<li class="flyout-control">
+<a href="http://www.wipo.int/about-wipo/en/" class="m-hide">Inside WIPO</a>
+<a href="http://www.wipo.int/about-wipo/en/" class="t-hide d-hide">Inside WIPO</a>
+<div style="display: none;" class="flyout flyout--shaded">
+<p class="flyout__span d-hide"><a href="http://www.wipo.int/about-wipo/en/" class="btn btn-info">All inside WIPO</a></p>
+<div class="nav-group nav-group--three">
+<div class="nav nav--one">
+<h3 class="flyout__header">About WIPO</h3>
+<ul class="flyout__list">
+<li><a href="http://www.wipo.int/about-wipo/en/">What is WIPO?</a></li>
+<li><a href="http://www.wipo.int/members/en/">Member States</a></li>
+<li><a href="http://www.wipo.int/members/en/admission/observers.html">Observers</a></li>
+<li><a href="http://www.wipo.int/about-wipo/en/dgo/">Director General</a></li>
+<li><a href="http://www.wipo.int/about-wipo/en/activities_by_unit/">Activities by Unit</a></li>
+<li><a href="http://www.wipo.int/about-wipo/en/offices/">External Offices</a></li>
+</ul>
+</div>
+<div class="nav nav--two">
+<h3 class="flyout__header">Accountability</h3>
+<ul class="flyout__list">
+<li><a href="http://www.wipo.int/about-wipo/en/budget/">Results &amp; Budget</a></li>
+<li><a href="http://www.wipo.int/about-wipo/en/budget/financial.html">Financial Reporting</a></li>
+<li><a href="http://www.wipo.int/about-wipo/en/oversight/">Oversight</a></li>
+</ul>
+<h3 class="flyout__header">Working with Us</h3>
+<ul class="flyout__list">
+<li><a href="http://www.wipo.int/erecruitment/en/">WIPO Careers</a></li>
+<li><a href="http://www.wipo.int/procurement/en/">Procurement</a></li>
+<!--<li><a href="/about-wipo/en/finance/">Financial Transactions</a></li>-->
+</ul>
+</div>
+<div class="nav nav--three">
+<h3>Connecting with WIPO</h3>
+<p class="secondary">
+34, chemin des Colombettes<br>
+<span class="spaced">CH-1211</span> Geneva 20, Switzerland<br>
+<a href="http://www.wipo.int/contact/en/">Contact Us</a></p>
+<ul class="secondary">
+<li><a href="http://www.wipo.int/about-wipo/en/visit_wipo.html">Visit Us</a></li>
+
+</ul>
+<small class="social-h">
+<a href="http://www.facebook.com/worldipday/" target="_blank" title="Facebook">Facebook</a> 
+<a href="http://www.twitter.com/wipo/" target="_blank" title="Twitter">Twitter</a> 
+<a href="http://www.youtube.com/wipo/" target="_blank" title="YouTube">YouTube</a>
+<a href="http://www.flickr.com/photos/wipo/collections/" target="_blank" title="Flickr">Flickr</a>
+<a href="http://www.scribd.com/WIPO_Publications" target="_blank" title="Scribd">Scribd</a> 
+<a href="http://www.wipo.int/news/en/newsfeed.jsp" target="_blank" title="RSS">RSS</a>
+<a href="https://www3.wipo.int/newsletters/en/" target="_blank" title="Newsletters">Newsletters</a>
+</small>
+</div>
+</div>
+</div>
+</li>
+</ul><form class="form-search" action="/tools/en/gsearch.html" id="searchbox_016458537594905406506:hmturfwvzzq">
+<input value="016458537594905406506:hmturfwvzzq" name="cx" type="hidden">
+<input value="FORID:11" name="cof" type="hidden">
+<label for="search-query" class="element-invisible">Search</label>
+<input name="q" id="search-query" class="search-query" placeholder="Search WIPO" type="text">
+<button class="btn ss-icon" title="Search">search</button>
+</form></nav><div class="branding-sub"><ul class="nav-breadcrumb"><li class="nav-breadcrumb__one"><a href="http://www.wipo.int/portal/en/">Home</a></li><li class="nav-breadcrumb__two"><a href="http://www.wipo.int/services/en/">IP Services</a></li>
+<li class="nav-breadcrumb__three"><a href="http://www.wipo.int/madrid/en/">Madrid System</a></li>
+<li class="nav-breadcrumb__four"><a href="http://www.wipo.int/madrid/en/fees/">Fees/Fee Calculator</a></li>
+</ul><h3 class="branding promo__madrid">madrid</h3></div><!-- content begin -->
+<div class="content">
+
+<div class="content">
+<h1 class="first">International Registration of Marks - Fee Calculation</h1>
+<div class="complementary  no-print">
+<div class="box">
+<h3 class="box__header">Related Links</h3>
+<ul class="box__list">
+<li>
+<a href="http://www.wipo.int/madrid/en/fees/sched.html">Schedule of Fees</a>
+</li>
+<li>
+<a href="http://www.wipo.int/madrid/en/madridgazette/remarks/ind_taxes.html">Individual fees</a>
+</li>
+<li>
+<a href="http://www.wipo.int/about-wipo/en/finance/madrid.html">How to pay</a>
+</li>
+<li>
+<a href="http://www.wipo.int/madrid/en/forms/">Forms</a>
+</li>
+</ul>
+</div>
+</div>
+<div class="main">
+<form name="Calc">
+<input name="Lang" value="E" type="hidden">
+<table max-width="80%" class="table" border="0" cellpadding="0" cellspacing="0" width="80%">
+<tbody><tr>
+<td height="37" width="15%">For date:</td><td height="37" width="15%"><select name="ForDate" size="1" onchange="document.forms.Calc.submit()"><option value="20130101">01.01.2013</option><option value="20130205">05.02.2013</option><option value="20130217">17.02.2013</option><option value="20130219">19.02.2013</option><option value="20130227">27.02.2013</option><option value="20130310">10.03.2013</option><option value="20130501">01.05.2013</option><option value="20130507">07.05.2013</option><option value="20130526">26.05.2013</option><option value="20130621">21.06.2013</option><option value="20130629">29.06.2013</option><option value="20130701">01.07.2013</option><option value="20130708">08.07.2013</option><option value="20130720">20.07.2013</option><option value="20130817">17.08.2013</option><option value="20131012">12.10.2013</option><option value="20131016">16.10.2013</option><option value="20131107">07.11.2013</option><option value="20131112">12.11.2013</option><option value="20131207">07.12.2013</option><option value="20140101">01.01.2014</option><option value="20140112">12.01.2014</option><option value="20140114">14.01.2014</option><option value="20140306">06.03.2014</option><option value="20140409">09.04.2014</option><option value="20140510">10.05.2014</option><option value="20140524">24.05.2014</option><option value="20140612">12.06.2014</option><option value="20140615">15.06.2014</option><option value="20140701">01.07.2014</option><option value="20140712">12.07.2014</option><option value="20140905">05.09.2014</option><option value="20141201">01.12.2014</option><option value="20150101">01.01.2015</option><option value="20150206">06.02.2015</option><option value="20150305">05.03.2015</option><option value="20150309">09.03.2015</option><option value="20150311">11.03.2015</option><option value="20150329">29.03.2015</option><option value="20150511">11.05.2015</option><option value="20150605">05.06.2015</option><option value="20150606">06.06.2015</option><option value="20150704">04.07.2015</option><option value="20150810">10.08.2015</option><option value="20150816">16.08.2015</option><option value="20150913">13.09.2015</option><option value="20151003">03.10.2015</option><option value="20151030">30.10.2015</option><option selected="selected" value="20151031">31.10.2015</option><option value="20151122">22.11.2015</option></select></td><td height="37" width="20%">Office of origin: </td><td height="37" width="30%"><select name="Origin" size="1" onchange="document.forms.Calc.submit()"><option value="OA">African Intellectual Property Organization (OAPI)</option><option value="AL">Albania</option><option value="DZ">Algeria</option><option value="AG">Antigua and Barbuda</option><option value="AM">Armenia</option><option value="AU">Australia</option><option value="AT">Austria</option><option value="AZ">Azerbaijan</option><option value="BH">Bahrain</option><option value="BY">Belarus</option><option value="BX">Benelux</option><option value="BT">Bhutan</option><option value="BQ">Bonaire, Sint Eustatius and Saba</option><option value="BA">Bosnia and Herzegovina</option><option value="BW">Botswana</option><option value="BG">Bulgaria</option><option value="KH">Cambodia</option><option value="CN">China</option><option value="CO">Colombia</option><option value="HR">Croatia</option><option value="CU">Cuba</option><option value="CW">Curaçao</option><option value="CY">Cyprus</option><option value="CZ">Czech Republic</option><option value="KP">Democratic People’s Republic of Korea</option><option value="DK">Denmark</option><option value="EG">Egypt</option><option value="EE">Estonia</option><option value="EM">European Union</option><option value="FI">Finland</option><option value="FR">France</option><option value="GE">Georgia</option><option value="DE">Germany</option><option value="GH">Ghana</option><option value="GR">Greece</option><option value="HU">Hungary</option><option value="IS">Iceland</option><option value="IN">India</option><option value="IE">Ireland</option><option value="IR">Islamic Republic of Iran</option><option value="IL">Israel</option><option value="IT">Italy</option><option value="JP">Japan</option><option value="KZ">Kazakhstan</option><option value="KE">Kenya</option><option value="KG">Kyrgyzstan</option><option value="LV">Latvia</option><option value="LS">Lesotho</option><option value="LR">Liberia</option><option value="LI">Liechtenstein</option><option value="LT">Lithuania</option><option value="MG">Madagascar</option><option value="MX">Mexico</option><option value="MC">Monaco</option><option value="MN">Mongolia</option><option value="ME">Montenegro</option><option value="MA">Morocco</option><option value="MZ">Mozambique</option><option value="NA">Namibia</option><option value="NZ">New Zealand</option><option value="NO">Norway</option><option value="OM">Oman</option><option value="PH">Philippines</option><option value="PL">Poland</option><option value="PT">Portugal</option><option value="KR">Republic of Korea</option><option value="MD">Republic of Moldova</option><option value="RO">Romania</option><option value="RU">Russian Federation</option><option value="RW">Rwanda</option><option value="SM">San Marino</option><option value="ST">Sao Tome and Principe</option><option value="RS">Serbia</option><option value="SL">Sierra Leone</option><option value="SG">Singapore</option><option value="SX">Sint Maarten (Dutch part)</option><option value="SK">Slovakia</option><option value="SI">Slovenia</option><option value="ES">Spain</option><option value="SD">Sudan</option><option value="SZ">Swaziland</option><option value="SE">Sweden</option><option value="CH">Switzerland</option><option value="SY">Syrian Arab Republic</option><option value="TJ">Tajikistan</option><option value="MK">The former Yugoslav Republic of Macedonia</option><option value="TN">Tunisia</option><option value="TR">Turkey</option><option value="TM">Turkmenistan</option><option value="UA">Ukraine</option><option value="GB">United Kingdom</option><option selected="selected" value="US">United States of America</option><option value="UZ">Uzbekistan</option><option value="VN">Viet Nam</option><option value="ZM">Zambia</option><option value="ZW">Zimbabwe</option></select></td>
+</tr>
+<tr>
+<td>
+<p></p>
+</td>
+</tr>
+<tr>
+<td height="37" width="15%">Number of classes: </td><td height="37" width="15%"><select name="Classes" size="1"><option selected="selected" value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option><option value="9">9</option><option value="10">10</option><option value="11">11</option><option value="12">12</option><option value="13">13</option><option value="14">14</option><option value="15">15</option><option value="16">16</option><option value="17">17</option><option value="18">18</option><option value="19">19</option><option value="20">20</option><option value="21">21</option><option value="22">22</option><option value="23">23</option><option value="24">24</option><option value="25">25</option><option value="26">26</option><option value="27">27</option><option value="28">28</option><option value="29">29</option><option value="30">30</option><option value="31">31</option><option value="32">32</option><option value="33">33</option><option value="34">34</option><option value="35">35</option><option value="36">36</option><option value="37">37</option><option value="38">38</option><option value="39">39</option><option value="40">40</option><option value="41">41</option><option value="42">42</option><option value="43">43</option><option value="44">44</option><option value="45">45</option></select></td><td height="37" width="20%">Type: </td><td height="37" width="30%"><select name="ServCd" size="1" onchange="document.forms.Calc.submit()"><option selected="selected" value="EN">New application</option><option value="EX">Subsequent designation</option><option value="NT">New tax - 2nd part fee</option><option value="RE">Renewal</option></select></td>
+</tr>
+</tbody></table>
+<div class="content cols cols--four">
+<div class="col col--one">
+<p>
+<input checked="checked" name="AG" value="Y" type="checkbox"><a style="text-decoration: none; color: #000000;" title="Antigua and Barbuda" href="javascript:void();" onmouseover="self.status='Antigua and Barbuda';return true;" onmouseout="self.status='';return true;"> <b>AG</b> Antigua and Barbuda</a>
+</p>
+<p>
+<input checked="checked" name="AL" value="Y" type="checkbox"><a style="text-decoration: none; color: #000000;" title="Albania" href="javascript:void();" onmouseover="self.status='Albania';return true;" onmouseout="self.status='';return true;"> <b>AL</b> Albania</a>
+</p>
+<p>
+<input checked="checked" name="AM" value="Y" type="checkbox"><a style="text-decoration: none; color: #000000;" title="Armenia" href="javascript:void();" onmouseover="self.status='Armenia';return true;" onmouseout="self.status='';return true;"> <b>AM</b> Armenia</a>
+</p>
+<p>
+<input checked="checked" name="AT" value="Y" type="checkbox"><a style="text-decoration: none; color: #000000;" title="Austria" href="javascript:void();" onmouseover="self.status='Austria';return true;" onmouseout="self.status='';return true;"> <b>AT</b> Austria</a>
+</p>
+<p>
+<input checked="checked" name="AU" value="Y" type="checkbox"><a style="text-decoration: none; color: #000000;" title="Australia" href="javascript:void();" onmouseover="self.status='Australia';return true;" onmouseout="self.status='';return true;"> <b>AU</b> Australia</a>
+</p>
+<p>
+<input checked="checked" name="AZ" value="Y" type="checkbox"><a style="text-decoration: none; color: #000000;" title="Azerbaijan" href="javascript:void();" onmouseover="self.status='Azerbaijan';return true;" onmouseout="self.status='';return true;"> <b>AZ</b> Azerbaijan</a>
+</p>
+<p>
+<input checked="checked" name="BA" value="Y" type="checkbox"><a style="text-decoration: none; color: #000000;" title="Bosnia and Herzegovina" href="javascript:void();" onmouseover="self.status='Bosnia and Herzegovina';return true;" onmouseout="self.status='';return true;"> <b>BA</b> Bosnia and Herzegovina</a>
+</p>
+<p>
+<input checked="checked" name="BG" value="Y" type="checkbox"><a style="text-decoration: none; color: #000000;" title="Bulgaria" href="javascript:void();" onmouseover="self.status='Bulgaria';return true;" onmouseout="self.status='';return true;"> <b>BG</b> Bulgaria</a>
+</p>
+<p>
+<input checked="checked" name="BH" value="Y" type="checkbox"><a style="text-decoration: none; color: #000000;" title="Bahrain" href="javascript:void();" onmouseover="self.status='Bahrain';return true;" onmouseout="self.status='';return true;"> <b>BH</b> Bahrain</a>
+</p>
+<p>
+<input checked="checked" name="BQ" value="Y" type="checkbox"><a style="text-decoration: none; color: #000000;" title="Bonaire, Sint Eustatius and Saba" href="javascript:void();" onmouseover="self.status='Bonaire, Sint Eustatius and Saba';return true;" onmouseout="self.status='';return true;"> <b>BQ</b> Bonaire, Sint Eustatius and Saba</a>
+</p>
+<p>
+<input checked="checked" name="BT" value="Y" type="checkbox"><a style="text-decoration: none; color: #000000;" title="Bhutan" href="javascript:void();" onmouseover="self.status='Bhutan';return true;" onmouseout="self.status='';return true;"> <b>BT</b> Bhutan</a>
+</p>
+<p>
+<input checked="checked" name="BW" value="Y" type="checkbox"><a style="text-decoration: none; color: #000000;" title="Botswana" href="javascript:void();" onmouseover="self.status='Botswana';return true;" onmouseout="self.status='';return true;"> <b>BW</b> Botswana</a>
+</p>
+<p>
+<input checked="checked" name="BX" value="Y" type="checkbox"><a style="text-decoration: none; color: #000000;" title="Benelux" href="javascript:void();" onmouseover="self.status='Benelux';return true;" onmouseout="self.status='';return true;"> <b>BX</b> Benelux</a>
+</p>
+<p>
+<input checked="checked" name="BY" value="Y" type="checkbox"><a style="text-decoration: none; color: #000000;" title="Belarus" href="javascript:void();" onmouseover="self.status='Belarus';return true;" onmouseout="self.status='';return true;"> <b>BY</b> Belarus</a>
+</p>
+<p>
+<input checked="checked" name="CH" value="Y" type="checkbox"><a style="text-decoration: none; color: #000000;" title="Switzerland" href="javascript:void();" onmouseover="self.status='Switzerland';return true;" onmouseout="self.status='';return true;"> <b>CH</b> Switzerland</a>
+</p>
+<p>
+<input checked="checked" name="CN" value="Y" type="checkbox"><a style="text-decoration: none; color: #000000;" title="China" href="javascript:void();" onmouseover="self.status='China';return true;" onmouseout="self.status='';return true;"> <b>CN</b> China</a>
+</p>
+<p>
+<input checked="checked" name="CO" value="Y" type="checkbox"><a style="text-decoration: none; color: #000000;" title="Colombia" href="javascript:void();" onmouseover="self.status='Colombia';return true;" onmouseout="self.status='';return true;"> <b>CO</b> Colombia</a>
+</p>
+<p>
+<input checked="checked" name="CU" value="Y" type="checkbox"><a style="text-decoration: none; color: #000000;" title="Cuba" href="javascript:void();" onmouseover="self.status='Cuba';return true;" onmouseout="self.status='';return true;"> <b>CU</b> Cuba</a>
+</p>
+<p>
+<input checked="checked" name="CW" value="Y" type="checkbox"><a style="text-decoration: none; color: #000000;" title="Curaçao" href="javascript:void();" onmouseover="self.status='Curaçao';return true;" onmouseout="self.status='';return true;"> <b>CW</b> Curaçao</a>
+</p>
+<p>
+<input checked="checked" name="CY" value="Y" type="checkbox"><a style="text-decoration: none; color: #000000;" title="Cyprus" href="javascript:void();" onmouseover="self.status='Cyprus';return true;" onmouseout="self.status='';return true;"> <b>CY</b> Cyprus</a>
+</p>
+<p>
+<input checked="checked" name="CZ" value="Y" type="checkbox"><a style="text-decoration: none; color: #000000;" title="Czech Republic" href="javascript:void();" onmouseover="self.status='Czech Republic';return true;" onmouseout="self.status='';return true;"> <b>CZ</b> Czech Republic</a>
+</p>
+<p>
+<input checked="checked" name="DE" value="Y" type="checkbox"><a style="text-decoration: none; color: #000000;" title="Germany" href="javascript:void();" onmouseover="self.status='Germany';return true;" onmouseout="self.status='';return true;"> <b>DE</b> Germany</a>
+</p>
+<p>
+<input checked="checked" name="DK" value="Y" type="checkbox"><a style="text-decoration: none; color: #000000;" title="Denmark" href="javascript:void();" onmouseover="self.status='Denmark';return true;" onmouseout="self.status='';return true;"> <b>DK</b> Denmark</a>
+</p>
+<p>
+<input checked="checked" name="DZ" value="Y" type="checkbox"><a style="text-decoration: none; color: #000000;" title="Algeria" href="javascript:void();" onmouseover="self.status='Algeria';return true;" onmouseout="self.status='';return true;"> <b>DZ</b> Algeria</a>
+</p></div><div class="col col--two"><p>
+<input checked="checked" name="EE" value="Y" type="checkbox"><a style="text-decoration: none; color: #000000;" title="Estonia" href="javascript:void();" onmouseover="self.status='Estonia';return true;" onmouseout="self.status='';return true;"> <b>EE</b> Estonia</a>
+</p>
+<p>
+<input checked="checked" name="EG" value="Y" type="checkbox"><a style="text-decoration: none; color: #000000;" title="Egypt" href="javascript:void();" onmouseover="self.status='Egypt';return true;" onmouseout="self.status='';return true;"> <b>EG</b> Egypt</a>
+</p>
+<p>
+<input checked="checked" name="EM" value="Y" type="checkbox"><a style="text-decoration: none; color: #000000;" title="European Union" href="javascript:void();" onmouseover="self.status='European Union';return true;" onmouseout="self.status='';return true;"> <b>EM</b> European Union</a>
+</p>
+<p>
+<input checked="checked" name="ES" value="Y" type="checkbox"><a style="text-decoration: none; color: #000000;" title="Spain" href="javascript:void();" onmouseover="self.status='Spain';return true;" onmouseout="self.status='';return true;"> <b>ES</b> Spain</a>
+</p>
+<p>
+<input checked="checked" name="FI" value="Y" type="checkbox"><a style="text-decoration: none; color: #000000;" title="Finland" href="javascript:void();" onmouseover="self.status='Finland';return true;" onmouseout="self.status='';return true;"> <b>FI</b> Finland</a>
+</p>
+<p>
+<input checked="checked" name="FR" value="Y" type="checkbox"><a style="text-decoration: none; color: #000000;" title="France" href="javascript:void();" onmouseover="self.status='France';return true;" onmouseout="self.status='';return true;"> <b>FR</b> France</a>
+</p>
+<p>
+<input checked="checked" name="GB" value="Y" type="checkbox"><a style="text-decoration: none; color: #000000;" title="United Kingdom" href="javascript:void();" onmouseover="self.status='United Kingdom';return true;" onmouseout="self.status='';return true;"> <b>GB</b> United Kingdom</a>
+</p>
+<p>
+<input checked="checked" name="GE" value="Y" type="checkbox"><a style="text-decoration: none; color: #000000;" title="Georgia" href="javascript:void();" onmouseover="self.status='Georgia';return true;" onmouseout="self.status='';return true;"> <b>GE</b> Georgia</a>
+</p>
+<p>
+<input checked="checked" name="GH" value="Y" type="checkbox"><a style="text-decoration: none; color: #000000;" title="Ghana" href="javascript:void();" onmouseover="self.status='Ghana';return true;" onmouseout="self.status='';return true;"> <b>GH</b> Ghana</a>
+</p>
+<p>
+<input checked="checked" name="GR" value="Y" type="checkbox"><a style="text-decoration: none; color: #000000;" title="Greece" href="javascript:void();" onmouseover="self.status='Greece';return true;" onmouseout="self.status='';return true;"> <b>GR</b> Greece</a>
+</p>
+<p>
+<input checked="checked" name="HR" value="Y" type="checkbox"><a style="text-decoration: none; color: #000000;" title="Croatia" href="javascript:void();" onmouseover="self.status='Croatia';return true;" onmouseout="self.status='';return true;"> <b>HR</b> Croatia</a>
+</p>
+<p>
+<input checked="checked" name="HU" value="Y" type="checkbox"><a style="text-decoration: none; color: #000000;" title="Hungary" href="javascript:void();" onmouseover="self.status='Hungary';return true;" onmouseout="self.status='';return true;"> <b>HU</b> Hungary</a>
+</p>
+<p>
+<input checked="checked" name="IE" value="Y" type="checkbox"><a style="text-decoration: none; color: #000000;" title="Ireland" href="javascript:void();" onmouseover="self.status='Ireland';return true;" onmouseout="self.status='';return true;"> <b>IE</b> Ireland</a>
+</p>
+<p>
+<input checked="checked" name="IL" value="Y" type="checkbox"><a style="text-decoration: none; color: #000000;" title="Israel" href="javascript:void();" onmouseover="self.status='Israel';return true;" onmouseout="self.status='';return true;"> <b>IL</b> Israel</a>
+</p>
+<p>
+<input checked="checked" name="IN" value="Y" type="checkbox"><a style="text-decoration: none; color: #000000;" title="India" href="javascript:void();" onmouseover="self.status='India';return true;" onmouseout="self.status='';return true;"> <b>IN</b> India</a>
+</p>
+<p>
+<input checked="checked" name="IR" value="Y" type="checkbox"><a style="text-decoration: none; color: #000000;" title="Islamic Republic of Iran" href="javascript:void();" onmouseover="self.status='Islamic Republic of Iran';return true;" onmouseout="self.status='';return true;"> <b>IR</b> Islamic Republic of Iran</a>
+</p>
+<p>
+<input checked="checked" name="IS" value="Y" type="checkbox"><a style="text-decoration: none; color: #000000;" title="Iceland" href="javascript:void();" onmouseover="self.status='Iceland';return true;" onmouseout="self.status='';return true;"> <b>IS</b> Iceland</a>
+</p>
+<p>
+<input checked="checked" name="IT" value="Y" type="checkbox"><a style="text-decoration: none; color: #000000;" title="Italy" href="javascript:void();" onmouseover="self.status='Italy';return true;" onmouseout="self.status='';return true;"> <b>IT</b> Italy</a>
+</p>
+<p>
+<input checked="checked" name="JP" value="Y" type="checkbox"><a style="text-decoration: none; color: #000000;" title="Japan" href="javascript:void();" onmouseover="self.status='Japan';return true;" onmouseout="self.status='';return true;"> <b>JP</b> Japan</a>
+</p>
+<p>
+<input checked="checked" name="KE" value="Y" type="checkbox"><a style="text-decoration: none; color: #000000;" title="Kenya" href="javascript:void();" onmouseover="self.status='Kenya';return true;" onmouseout="self.status='';return true;"> <b>KE</b> Kenya</a>
+</p>
+<p>
+<input checked="checked" name="KG" value="Y" type="checkbox"><a style="text-decoration: none; color: #000000;" title="Kyrgyzstan" href="javascript:void();" onmouseover="self.status='Kyrgyzstan';return true;" onmouseout="self.status='';return true;"> <b>KG</b> Kyrgyzstan</a>
+</p>
+<p>
+<input checked="checked" name="KH" value="Y" type="checkbox"><a style="text-decoration: none; color: #000000;" title="Cambodia" href="javascript:void();" onmouseover="self.status='Cambodia';return true;" onmouseout="self.status='';return true;"> <b>KH</b> Cambodia</a>
+</p>
+<p>
+<input checked="checked" name="KP" value="Y" type="checkbox"><a style="text-decoration: none; color: #000000;" title="Democratic Peoples Republic of Korea" href="javascript:void();" onmouseover="self.status='Democratic Peoples Republic of Korea';return true;" onmouseout="self.status='';return true;"> <b>KP</b> Democratic People’s Republic of Korea</a>
+</p>
+<p>
+<input checked="checked" name="KR" value="Y" type="checkbox"><a style="text-decoration: none; color: #000000;" title="Republic of Korea" href="javascript:void();" onmouseover="self.status='Republic of Korea';return true;" onmouseout="self.status='';return true;"> <b>KR</b> Republic of Korea</a>
+</p></div><div class="col col--three"><p>
+<input checked="checked" name="KZ" value="Y" type="checkbox"><a style="text-decoration: none; color: #000000;" title="Kazakhstan" href="javascript:void();" onmouseover="self.status='Kazakhstan';return true;" onmouseout="self.status='';return true;"> <b>KZ</b> Kazakhstan</a>
+</p>
+<p>
+<input checked="checked" name="LI" value="Y" type="checkbox"><a style="text-decoration: none; color: #000000;" title="Liechtenstein" href="javascript:void();" onmouseover="self.status='Liechtenstein';return true;" onmouseout="self.status='';return true;"> <b>LI</b> Liechtenstein</a>
+</p>
+<p>
+<input checked="checked" name="LR" value="Y" type="checkbox"><a style="text-decoration: none; color: #000000;" title="Liberia" href="javascript:void();" onmouseover="self.status='Liberia';return true;" onmouseout="self.status='';return true;"> <b>LR</b> Liberia</a>
+</p>
+<p>
+<input checked="checked" name="LS" value="Y" type="checkbox"><a style="text-decoration: none; color: #000000;" title="Lesotho" href="javascript:void();" onmouseover="self.status='Lesotho';return true;" onmouseout="self.status='';return true;"> <b>LS</b> Lesotho</a>
+</p>
+<p>
+<input checked="checked" name="LT" value="Y" type="checkbox"><a style="text-decoration: none; color: #000000;" title="Lithuania" href="javascript:void();" onmouseover="self.status='Lithuania';return true;" onmouseout="self.status='';return true;"> <b>LT</b> Lithuania</a>
+</p>
+<p>
+<input checked="checked" name="LV" value="Y" type="checkbox"><a style="text-decoration: none; color: #000000;" title="Latvia" href="javascript:void();" onmouseover="self.status='Latvia';return true;" onmouseout="self.status='';return true;"> <b>LV</b> Latvia</a>
+</p>
+<p>
+<input checked="checked" name="MA" value="Y" type="checkbox"><a style="text-decoration: none; color: #000000;" title="Morocco" href="javascript:void();" onmouseover="self.status='Morocco';return true;" onmouseout="self.status='';return true;"> <b>MA</b> Morocco</a>
+</p>
+<p>
+<input checked="checked" name="MC" value="Y" type="checkbox"><a style="text-decoration: none; color: #000000;" title="Monaco" href="javascript:void();" onmouseover="self.status='Monaco';return true;" onmouseout="self.status='';return true;"> <b>MC</b> Monaco</a>
+</p>
+<p>
+<input checked="checked" name="MD" value="Y" type="checkbox"><a style="text-decoration: none; color: #000000;" title="Republic of Moldova" href="javascript:void();" onmouseover="self.status='Republic of Moldova';return true;" onmouseout="self.status='';return true;"> <b>MD</b> Republic of Moldova</a>
+</p>
+<p>
+<input checked="checked" name="ME" value="Y" type="checkbox"><a style="text-decoration: none; color: #000000;" title="Montenegro" href="javascript:void();" onmouseover="self.status='Montenegro';return true;" onmouseout="self.status='';return true;"> <b>ME</b> Montenegro</a>
+</p>
+<p>
+<input checked="checked" name="MG" value="Y" type="checkbox"><a style="text-decoration: none; color: #000000;" title="Madagascar" href="javascript:void();" onmouseover="self.status='Madagascar';return true;" onmouseout="self.status='';return true;"> <b>MG</b> Madagascar</a>
+</p>
+<p>
+<input checked="checked" name="MK" value="Y" type="checkbox"><a style="text-decoration: none; color: #000000;" title="The former Yugoslav Republic of Macedonia" href="javascript:void();" onmouseover="self.status='The former Yugoslav Republic of Macedonia';return true;" onmouseout="self.status='';return true;"> <b>MK</b> The former Yugoslav Republic of Macedonia</a>
+</p>
+<p>
+<input checked="checked" name="MN" value="Y" type="checkbox"><a style="text-decoration: none; color: #000000;" title="Mongolia" href="javascript:void();" onmouseover="self.status='Mongolia';return true;" onmouseout="self.status='';return true;"> <b>MN</b> Mongolia</a>
+</p>
+<p>
+<input checked="checked" name="MX" value="Y" type="checkbox"><a style="text-decoration: none; color: #000000;" title="Mexico" href="javascript:void();" onmouseover="self.status='Mexico';return true;" onmouseout="self.status='';return true;"> <b>MX</b> Mexico</a>
+</p>
+<p>
+<input checked="checked" name="MZ" value="Y" type="checkbox"><a style="text-decoration: none; color: #000000;" title="Mozambique" href="javascript:void();" onmouseover="self.status='Mozambique';return true;" onmouseout="self.status='';return true;"> <b>MZ</b> Mozambique</a>
+</p>
+<p>
+<input checked="checked" name="NA" value="Y" type="checkbox"><a style="text-decoration: none; color: #000000;" title="Namibia" href="javascript:void();" onmouseover="self.status='Namibia';return true;" onmouseout="self.status='';return true;"> <b>NA</b> Namibia</a>
+</p>
+<p>
+<input checked="checked" name="NO" value="Y" type="checkbox"><a style="text-decoration: none; color: #000000;" title="Norway" href="javascript:void();" onmouseover="self.status='Norway';return true;" onmouseout="self.status='';return true;"> <b>NO</b> Norway</a>
+</p>
+<p>
+<input checked="checked" name="NZ" value="Y" type="checkbox"><a style="text-decoration: none; color: #000000;" title="New Zealand" href="javascript:void();" onmouseover="self.status='New Zealand';return true;" onmouseout="self.status='';return true;"> <b>NZ</b> New Zealand</a>
+</p>
+<p>
+<input checked="checked" name="OA" value="Y" type="checkbox"><a style="text-decoration: none; color: #000000;" title="African Intellectual Property Organization (OAPI)" href="javascript:void();" onmouseover="self.status='African Intellectual Property Organization (OAPI)';return true;" onmouseout="self.status='';return true;"> <b>OA</b> African Intellectual Property Organization (OAPI)</a>
+</p>
+<p>
+<input checked="checked" name="OM" value="Y" type="checkbox"><a style="text-decoration: none; color: #000000;" title="Oman" href="javascript:void();" onmouseover="self.status='Oman';return true;" onmouseout="self.status='';return true;"> <b>OM</b> Oman</a>
+</p>
+<p>
+<input checked="checked" name="PH" value="Y" type="checkbox"><a style="text-decoration: none; color: #000000;" title="Philippines" href="javascript:void();" onmouseover="self.status='Philippines';return true;" onmouseout="self.status='';return true;"> <b>PH</b> Philippines</a>
+</p>
+<p>
+<input checked="checked" name="PL" value="Y" type="checkbox"><a style="text-decoration: none; color: #000000;" title="Poland" href="javascript:void();" onmouseover="self.status='Poland';return true;" onmouseout="self.status='';return true;"> <b>PL</b> Poland</a>
+</p>
+<p>
+<input checked="checked" name="PT" value="Y" type="checkbox"><a style="text-decoration: none; color: #000000;" title="Portugal" href="javascript:void();" onmouseover="self.status='Portugal';return true;" onmouseout="self.status='';return true;"> <b>PT</b> Portugal</a>
+</p>
+<p>
+<input checked="checked" name="RO" value="Y" type="checkbox"><a style="text-decoration: none; color: #000000;" title="Romania" href="javascript:void();" onmouseover="self.status='Romania';return true;" onmouseout="self.status='';return true;"> <b>RO</b> Romania</a>
+</p></div><div class="col col--four"><p>
+<input checked="checked" name="RS" value="Y" type="checkbox"><a style="text-decoration: none; color: #000000;" title="Serbia" href="javascript:void();" onmouseover="self.status='Serbia';return true;" onmouseout="self.status='';return true;"> <b>RS</b> Serbia</a>
+</p>
+<p>
+<input checked="checked" name="RU" value="Y" type="checkbox"><a style="text-decoration: none; color: #000000;" title="Russian Federation" href="javascript:void();" onmouseover="self.status='Russian Federation';return true;" onmouseout="self.status='';return true;"> <b>RU</b> Russian Federation</a>
+</p>
+<p>
+<input checked="checked" name="RW" value="Y" type="checkbox"><a style="text-decoration: none; color: #000000;" title="Rwanda" href="javascript:void();" onmouseover="self.status='Rwanda';return true;" onmouseout="self.status='';return true;"> <b>RW</b> Rwanda</a>
+</p>
+<p>
+<input checked="checked" name="SD" value="Y" type="checkbox"><a style="text-decoration: none; color: #000000;" title="Sudan" href="javascript:void();" onmouseover="self.status='Sudan';return true;" onmouseout="self.status='';return true;"> <b>SD</b> Sudan</a>
+</p>
+<p>
+<input checked="checked" name="SE" value="Y" type="checkbox"><a style="text-decoration: none; color: #000000;" title="Sweden" href="javascript:void();" onmouseover="self.status='Sweden';return true;" onmouseout="self.status='';return true;"> <b>SE</b> Sweden</a>
+</p>
+<p>
+<input checked="checked" name="SG" value="Y" type="checkbox"><a style="text-decoration: none; color: #000000;" title="Singapore" href="javascript:void();" onmouseover="self.status='Singapore';return true;" onmouseout="self.status='';return true;"> <b>SG</b> Singapore</a>
+</p>
+<p>
+<input checked="checked" name="SI" value="Y" type="checkbox"><a style="text-decoration: none; color: #000000;" title="Slovenia" href="javascript:void();" onmouseover="self.status='Slovenia';return true;" onmouseout="self.status='';return true;"> <b>SI</b> Slovenia</a>
+</p>
+<p>
+<input checked="checked" name="SK" value="Y" type="checkbox"><a style="text-decoration: none; color: #000000;" title="Slovakia" href="javascript:void();" onmouseover="self.status='Slovakia';return true;" onmouseout="self.status='';return true;"> <b>SK</b> Slovakia</a>
+</p>
+<p>
+<input checked="checked" name="SL" value="Y" type="checkbox"><a style="text-decoration: none; color: #000000;" title="Sierra Leone" href="javascript:void();" onmouseover="self.status='Sierra Leone';return true;" onmouseout="self.status='';return true;"> <b>SL</b> Sierra Leone</a>
+</p>
+<p>
+<input checked="checked" name="SM" value="Y" type="checkbox"><a style="text-decoration: none; color: #000000;" title="San Marino" href="javascript:void();" onmouseover="self.status='San Marino';return true;" onmouseout="self.status='';return true;"> <b>SM</b> San Marino</a>
+</p>
+<p>
+<input checked="checked" name="ST" value="Y" type="checkbox"><a style="text-decoration: none; color: #000000;" title="Sao Tome and Principe" href="javascript:void();" onmouseover="self.status='Sao Tome and Principe';return true;" onmouseout="self.status='';return true;"> <b>ST</b> Sao Tome and Principe</a>
+</p>
+<p>
+<input checked="checked" name="SX" value="Y" type="checkbox"><a style="text-decoration: none; color: #000000;" title="Sint Maarten (Dutch part)" href="javascript:void();" onmouseover="self.status='Sint Maarten (Dutch part)';return true;" onmouseout="self.status='';return true;"> <b>SX</b> Sint Maarten (Dutch part)</a>
+</p>
+<p>
+<input checked="checked" name="SY" value="Y" type="checkbox"><a style="text-decoration: none; color: #000000;" title="Syrian Arab Republic" href="javascript:void();" onmouseover="self.status='Syrian Arab Republic';return true;" onmouseout="self.status='';return true;"> <b>SY</b> Syrian Arab Republic</a>
+</p>
+<p>
+<input checked="checked" name="SZ" value="Y" type="checkbox"><a style="text-decoration: none; color: #000000;" title="Swaziland" href="javascript:void();" onmouseover="self.status='Swaziland';return true;" onmouseout="self.status='';return true;"> <b>SZ</b> Swaziland</a>
+</p>
+<p>
+<input checked="checked" name="TJ" value="Y" type="checkbox"><a style="text-decoration: none; color: #000000;" title="Tajikistan" href="javascript:void();" onmouseover="self.status='Tajikistan';return true;" onmouseout="self.status='';return true;"> <b>TJ</b> Tajikistan</a>
+</p>
+<p>
+<input checked="checked" name="TM" value="Y" type="checkbox"><a style="text-decoration: none; color: #000000;" title="Turkmenistan" href="javascript:void();" onmouseover="self.status='Turkmenistan';return true;" onmouseout="self.status='';return true;"> <b>TM</b> Turkmenistan</a>
+</p>
+<p>
+<input checked="checked" name="TN" value="Y" type="checkbox"><a style="text-decoration: none; color: #000000;" title="Tunisia" href="javascript:void();" onmouseover="self.status='Tunisia';return true;" onmouseout="self.status='';return true;"> <b>TN</b> Tunisia</a>
+</p>
+<p>
+<input checked="checked" name="TR" value="Y" type="checkbox"><a style="text-decoration: none; color: #000000;" title="Turkey" href="javascript:void();" onmouseover="self.status='Turkey';return true;" onmouseout="self.status='';return true;"> <b>TR</b> Turkey</a>
+</p>
+<p>
+<input checked="checked" name="UA" value="Y" type="checkbox"><a style="text-decoration: none; color: #000000;" title="Ukraine" href="javascript:void();" onmouseover="self.status='Ukraine';return true;" onmouseout="self.status='';return true;"> <b>UA</b> Ukraine</a>
+</p>
+<p>
+<input checked="checked" name="UZ" value="Y" type="checkbox"><a style="text-decoration: none; color: #000000;" title="Uzbekistan" href="javascript:void();" onmouseover="self.status='Uzbekistan';return true;" onmouseout="self.status='';return true;"> <b>UZ</b> Uzbekistan</a>
+</p>
+<p>
+<input checked="checked" name="VN" value="Y" type="checkbox"><a style="text-decoration: none; color: #000000;" title="Viet Nam" href="javascript:void();" onmouseover="self.status='Viet Nam';return true;" onmouseout="self.status='';return true;"> <b>VN</b> Viet Nam</a>
+</p>
+<p>
+<input checked="checked" name="ZM" value="Y" type="checkbox"><a style="text-decoration: none; color: #000000;" title="Zambia" href="javascript:void();" onmouseover="self.status='Zambia';return true;" onmouseout="self.status='';return true;"> <b>ZM</b> Zambia</a>
+</p>
+<p>
+<input checked="checked" name="ZW" value="Y" type="checkbox"><a style="text-decoration: none; color: #000000;" title="Zimbabwe" href="javascript:void();" onmouseover="self.status='Zimbabwe';return true;" onmouseout="self.status='';return true;"> <b>ZW</b> Zimbabwe</a>
+</p>
+</div>
+</div><table class="table" border="0" cellpadding="0" cellspacing="0" width="80%">
+<tbody><tr>
+<td height="37" width="20%"><input checked="checked" name="Colour" value="Y" type="checkbox"> Colour </td><td height="37" width="60%"><input checked="checked" name="Collective" value="Y" type="checkbox"> Collective mark, certification mark, or guarantee mark </td>
+</tr>
+
+</tbody></table><table class="table" width="100%">
+<tbody><tr>
+<td height="37" width="33%"><input class="btn btn-info" name="Selall" value="Select All" onclick="SelectAll(this.form)" type="button"></td><td height="37" width="33%"><input class="btn btn-info" name="Deselall" value="Clear All" onclick="DeselectAll(this.form);document.forms.Calc.submit()" type="button"></td><td height="37" width="33%"><input class="btn" value="Calculate" type="SUBMIT"></td>
+</tr>
+</tbody></table>
+
+<div class="media-right no-print">
+<div class="box">
+<ul>
+<li>A designation of the Benelux (BX) covers Belgium, Luxembourg and the Netherlands</li>
+<li>A designation of the European Union (EM) covers its  <a href="http://europa.eu/abc/european_countries/index_en.htm">28 Member states</a>
+</li>
+<li>A designation of the African Intellectual Property Organization (OA) covers its  <a href="http://www.oapi.int/">17 Member states</a>
+</li>
+<li>Bonaire, Saint Eustatius and Saba (BQ), Curaçao (CW) and Sint 
+Maarten (Dutch part) (SX) are autonomous territories of the Kingdom of 
+the Netherlands that can be individually designated</li>
+</ul>
+</div>
+</div>
+<div class="content">
+<table class="table" width="100%">
+<tbody><tr>
+<td>Basic fee where any reproduction of the mark is in color :</td><td><input size="20" value="903" name="PACF" style="text-align:right" onfocus="this.blur()" type="text"></td>
+</tr>
+<tr>
+<td>Complementary fee : (AG, AL, AT, AZ, BA, BT, BW, CY, CZ, DE, DZ, EG,
+ ES, FR, HR, HU, IR, KH, KP, KZ, LI, LR, LS, LT, LV, MA, MC, ME, MG, MK,
+ MN, MZ, NA, PL, PT, RO, RS, RU, RW, SD, SI, SK, SL, ST, SZ, ZM, ZW) 47 x
+ 100.00 CHF</td><td><input size="20" value="4700" name="PACO" style="text-align:right" onfocus="this.blur()" type="text"></td>
+</tr>
+<tr>
+<td><b>Armenia</b></td>
+</tr>
+<tr>
+<td>Individual fee (international application):</td><td><input size="20" value="221" name="PAINAM" style="text-align:right" onfocus="this.blur()" type="text"></td>
+</tr>
+<tr>
+<td><b>Australia</b></td>
+</tr>
+<tr>
+<td>Individual fee (international application):</td><td><input size="20" value="320" name="PAINAU" style="text-align:right" onfocus="this.blur()" type="text"></td>
+</tr>
+<tr>
+<td><b>Bulgaria</b></td>
+</tr>
+<tr>
+<td>Individual fee - collective mark:</td><td><input size="20" value="595" name="PAICBG" style="text-align:right" onfocus="this.blur()" type="text"></td>
+</tr>
+<tr>
+<td><b>Bahrain</b></td>
+</tr>
+<tr>
+<td>Individual fee - collective mark:</td><td><input size="20" value="297" name="PAICBH" style="text-align:right" onfocus="this.blur()" type="text"></td>
+</tr>
+<tr>
+<td><b>Bonaire, Sint Eustatius and Saba</b></td>
+</tr>
+<tr>
+<td>Individual fee - collective mark:</td><td><input size="20" value="279" name="PAICBQ" style="text-align:right" onfocus="this.blur()" type="text"></td>
+</tr>
+<tr>
+<td><b>Benelux</b></td>
+</tr>
+<tr>
+<td>Individual fee - collective mark:</td><td><input size="20" value="238" name="PAICBX" style="text-align:right" onfocus="this.blur()" type="text"></td>
+</tr>
+<tr>
+<td><b>Belarus</b></td>
+</tr>
+<tr>
+<td>Individual fee (international application):</td><td><input size="20" value="600" name="PAINBY" style="text-align:right" onfocus="this.blur()" type="text"></td>
+</tr>
+<tr>
+<td><b>Switzerland</b></td>
+</tr>
+<tr>
+<td>Individual fee (international application):</td><td><input size="20" value="450" name="PAINCH" style="text-align:right" onfocus="this.blur()" type="text"></td>
+</tr>
+<tr>
+<td><b>China</b></td>
+</tr>
+<tr>
+<td>Individual fee - collective mark:</td><td><input size="20" value="747" name="PAICCN" style="text-align:right" onfocus="this.blur()" type="text"></td>
+</tr>
+<tr>
+<td><b>Colombia</b></td>
+</tr>
+<tr>
+<td>Individual fee - collective mark:</td><td><input size="20" value="419" name="PAICCO" style="text-align:right" onfocus="this.blur()" type="text"></td>
+</tr>
+<tr>
+<td><b>Cuba</b></td>
+</tr>
+<tr>
+<td>Individual fee - collective mark:</td><td><input size="20" value="320" name="PAICCU" style="text-align:right" onfocus="this.blur()" type="text"></td>
+</tr>
+<tr>
+<td><b>This may be subject of the payment of a second part of the individual fee which can be estimated separately by clicking <a href="http://www.wipo.int/madrid/en/fees/calculator.jsp?Lang=E&amp;ForDate=&amp;Origin=US&amp;Classes=1&amp;ServCd=NT&amp;CU=Y">here</a></b>
+<br>&nbsp;
+	</td>
+</tr>
+<tr>
+<td><b>Curaçao</b></td>
+</tr>
+<tr>
+<td>Individual fee - collective mark:</td><td><input size="20" value="540" name="PAICCW" style="text-align:right" onfocus="this.blur()" type="text"></td>
+</tr>
+<tr>
+<td><b>Denmark</b></td>
+</tr>
+<tr>
+<td>Individual fee (international application):</td><td><input size="20" value="330" name="PAINDK" style="text-align:right" onfocus="this.blur()" type="text"></td>
+</tr>
+<tr>
+<td><b>Estonia</b></td>
+</tr>
+<tr>
+<td>Individual fee - collective mark:</td><td><input size="20" value="203" name="PAICEE" style="text-align:right" onfocus="this.blur()" type="text"></td>
+</tr>
+<tr>
+<td><b>European Union</b></td>
+</tr>
+<tr>
+<td>Individual fee - collective mark:</td><td><input size="20" value="1699" name="PAICEM" style="text-align:right" onfocus="this.blur()" type="text"></td>
+</tr>
+<tr>
+<td><b>Finland</b></td>
+</tr>
+<tr>
+<td>Individual fee - collective mark:</td><td><input size="20" value="304" name="PAICFI" style="text-align:right" onfocus="this.blur()" type="text"></td>
+</tr>
+<tr>
+<td><b>United Kingdom</b></td>
+</tr>
+<tr>
+<td>Individual fee (international application):</td><td><input size="20" value="262" name="PAINGB" style="text-align:right" onfocus="this.blur()" type="text"></td>
+</tr>
+<tr>
+<td><b>Georgia</b></td>
+</tr>
+<tr>
+<td>Individual fee (international application):</td><td><input size="20" value="314" name="PAINGE" style="text-align:right" onfocus="this.blur()" type="text"></td>
+</tr>
+<tr>
+<td><b>Ghana</b></td>
+</tr>
+<tr>
+<td>Individual fee (international application):</td><td><input size="20" value="379" name="PAINGH" style="text-align:right" onfocus="this.blur()" type="text"></td>
+</tr>
+<tr>
+<td><b>Greece</b></td>
+</tr>
+<tr>
+<td>Individual fee - collective mark:</td><td><input size="20" value="577" name="PAICGR" style="text-align:right" onfocus="this.blur()" type="text"></td>
+</tr>
+<tr>
+<td><b>Ireland</b></td>
+</tr>
+<tr>
+<td>Individual fee (international application):</td><td><input size="20" value="257" name="PAINIE" style="text-align:right" onfocus="this.blur()" type="text"></td>
+</tr>
+<tr>
+<td><b>Israel</b></td>
+</tr>
+<tr>
+<td>Individual fee (international application):</td><td><input size="20" value="404" name="PAINIL" style="text-align:right" onfocus="this.blur()" type="text"></td>
+</tr>
+<tr>
+<td><b>India</b></td>
+</tr>
+<tr>
+<td>Individual fee - collective mark:</td><td><input size="20" value="156" name="PAICIN" style="text-align:right" onfocus="this.blur()" type="text"></td>
+</tr>
+<tr>
+<td><b>Iceland</b></td>
+</tr>
+<tr>
+<td>Individual fee - collective mark:</td><td><input size="20" value="221" name="PAICIS" style="text-align:right" onfocus="this.blur()" type="text"></td>
+</tr>
+<tr>
+<td><b>Italy</b></td>
+</tr>
+<tr>
+<td>Individual fee - collective mark:</td><td><input size="20" value="318" name="PAICIT" style="text-align:right" onfocus="this.blur()" type="text"></td>
+</tr>
+<tr>
+<td><b>Japan</b></td>
+</tr>
+<tr>
+<td>Individual fee (first part):</td><td><input size="20" value="99" name="P1INJP" style="text-align:right" onfocus="this.blur()" type="text"></td>
+</tr>
+<tr>
+<td><b>This may be subject of the payment of a second part of the individual fee which can be estimated separately by clicking <a href="http://www.wipo.int/madrid/en/fees/calculator.jsp?Lang=E&amp;ForDate=&amp;Origin=US&amp;Classes=1&amp;ServCd=NT&amp;JP=Y">here</a></b>
+<br>&nbsp;
+	</td>
+</tr>
+<tr>
+<td><b>Kenya</b></td>
+</tr>
+<tr>
+<td>Individual fee - collective mark:</td><td><input size="20" value="312" name="PAICKE" style="text-align:right" onfocus="this.blur()" type="text"></td>
+</tr>
+<tr>
+<td><b>Kyrgyzstan</b></td>
+</tr>
+<tr>
+<td>Individual fee (international application):</td><td><input size="20" value="340" name="PAINKG" style="text-align:right" onfocus="this.blur()" type="text"></td>
+</tr>
+<tr>
+<td><b>Republic of Korea</b></td>
+</tr>
+<tr>
+<td>Individual fee (international application):</td><td><input size="20" value="233" name="PAINKR" style="text-align:right" onfocus="this.blur()" type="text"></td>
+</tr>
+<tr>
+<td><b>Republic of Moldova</b></td>
+</tr>
+<tr>
+<td>Individual fee - collective mark:</td><td><input size="20" value="304" name="PAICMD" style="text-align:right" onfocus="this.blur()" type="text"></td>
+</tr>
+<tr>
+<td><b>Mexico</b></td>
+</tr>
+<tr>
+<td>Individual fee (international application):</td><td><input size="20" value="160" name="PAINMX" style="text-align:right" onfocus="this.blur()" type="text"></td>
+</tr>
+<tr>
+<td><b>Norway</b></td>
+</tr>
+<tr>
+<td>Individual fee - collective mark:</td><td><input size="20" value="278" name="PAICNO" style="text-align:right" onfocus="this.blur()" type="text"></td>
+</tr>
+<tr>
+<td><b>New Zealand</b></td>
+</tr>
+<tr>
+<td>Individual fee (international application):</td><td><input size="20" value="115" name="PAINNZ" style="text-align:right" onfocus="this.blur()" type="text"></td>
+</tr>
+<tr>
+<td><b>African Intellectual Property Organization (OAPI)</b></td>
+</tr>
+<tr>
+<td>Individual fee (international application):</td><td><input size="20" value="639" name="PAINOA" style="text-align:right" onfocus="this.blur()" type="text"></td>
+</tr>
+<tr>
+<td><b>Oman</b></td>
+</tr>
+<tr>
+<td>Individual fee - collective mark:</td><td><input size="20" value="1211" name="PAICOM" style="text-align:right" onfocus="this.blur()" type="text"></td>
+</tr>
+<tr>
+<td><b>Philippines</b></td>
+</tr>
+<tr>
+<td>Individual fee (international application):</td><td><input size="20" value="95" name="PAINPH" style="text-align:right" onfocus="this.blur()" type="text"></td>
+</tr>
+<tr>
+<td><b>Sweden</b></td>
+</tr>
+<tr>
+<td>Individual fee (international application):</td><td><input size="20" value="260" name="PAINSE" style="text-align:right" onfocus="this.blur()" type="text"></td>
+</tr>
+<tr>
+<td><b>Singapore</b></td>
+</tr>
+<tr>
+<td>Individual fee (international application):</td><td><input size="20" value="272" name="PAINSG" style="text-align:right" onfocus="this.blur()" type="text"></td>
+</tr>
+<tr>
+<td><b>San Marino</b></td>
+</tr>
+<tr>
+<td>Individual fee - collective mark:</td><td><input size="20" value="279" name="PAICSM" style="text-align:right" onfocus="this.blur()" type="text"></td>
+</tr>
+<tr>
+<td><b>Sint Maarten (Dutch part)</b></td>
+</tr>
+<tr>
+<td>Individual fee - collective mark:</td><td><input size="20" value="593" name="PAICSX" style="text-align:right" onfocus="this.blur()" type="text"></td>
+</tr>
+<tr>
+<td><b>Syrian Arab Republic</b></td>
+</tr>
+<tr>
+<td>Individual fee (international application):</td><td><input size="20" value="83" name="PAINSY" style="text-align:right" onfocus="this.blur()" type="text"></td>
+</tr>
+<tr>
+<td><b>Tajikistan</b></td>
+</tr>
+<tr>
+<td>Individual fee (international application):</td><td><input size="20" value="428" name="PAINTJ" style="text-align:right" onfocus="this.blur()" type="text"></td>
+</tr>
+<tr>
+<td><b>Turkmenistan</b></td>
+</tr>
+<tr>
+<td>Individual fee (international application):</td><td><input size="20" value="151" name="PAINTM" style="text-align:right" onfocus="this.blur()" type="text"></td>
+</tr>
+<tr>
+<td><b>Tunisia</b></td>
+</tr>
+<tr>
+<td>Individual fee (international application):</td><td><input size="20" value="131" name="PAINTN" style="text-align:right" onfocus="this.blur()" type="text"></td>
+</tr>
+<tr>
+<td><b>Turkey</b></td>
+</tr>
+<tr>
+<td>Individual fee (international application):</td><td><input size="20" value="178" name="PAINTR" style="text-align:right" onfocus="this.blur()" type="text"></td>
+</tr>
+<tr>
+<td><b>Ukraine</b></td>
+</tr>
+<tr>
+<td>Individual fee (international application):</td><td><input size="20" value="429" name="PAINUA" style="text-align:right" onfocus="this.blur()" type="text"></td>
+</tr>
+<tr>
+<td><b>Uzbekistan</b></td>
+</tr>
+<tr>
+<td>Individual fee - collective mark:</td><td><input size="20" value="1543" name="PAICUZ" style="text-align:right" onfocus="this.blur()" type="text"></td>
+</tr>
+<tr>
+<td><b>Viet Nam</b></td>
+</tr>
+<tr>
+<td>Individual fee (international application):</td><td><input size="20" value="101" name="PAINVN" style="text-align:right" onfocus="this.blur()" type="text"></td>
+</tr>
+<tr>
+<td><b>TOTAL: Swiss francs (CHF)</b></td><td><input size="15" value="24287" style="text-align:right" onfocus="this.blur()" name="TOTAL" type="text"></td>
+</tr>
+</tbody></table>
+</div>
+</form>
+<script language="javascript">
+<!--
+							function init() {
+							Total_fees(document.forms.Calc);
+							}
+							window.onload = init;
+							function Total_fees(form) {
+
+							form.TOTAL.value =
+							eval(form.PACF.value)+eval(form.PAINAM.value)+eval(form.PAINAU.value)+eval(form.PAICBG.value)+eval(form.PAICBH.value)+eval(form.PAICBQ.value)+eval(form.PAICBX.value)+eval(form.PAINBY.value)+eval(form.PAINCH.value)+eval(form.PAICCN.value)+eval(form.PAICCO.value)+eval(form.PAICCU.value)+eval(form.PAICCW.value)+eval(form.PAINDK.value)+eval(form.PAICEE.value)+eval(form.PAICEM.value)+eval(form.PAICFI.value)+eval(form.PAINGB.value)+eval(form.PAINGE.value)+eval(form.PAINGH.value)+eval(form.PAICGR.value)+eval(form.PAINIE.value)+eval(form.PAINIL.value)+eval(form.PAICIN.value)+eval(form.PAICIS.value)+eval(form.PAICIT.value)+eval(form.P1INJP.value)+eval(form.PAICKE.value)+eval(form.PAINKG.value)+eval(form.PAINKR.value)+eval(form.PAICMD.value)+eval(form.PAINMX.value)+eval(form.PAICNO.value)+eval(form.PAINNZ.value)+eval(form.PAINOA.value)+eval(form.PAICOM.value)+eval(form.PAINPH.value)+eval(form.PAINSE.value)+eval(form.PAINSG.value)+eval(form.PAICSM.value)+eval(form.PAICSX.value)+eval(form.PAINSY.value)+eval(form.PAINTJ.value)+eval(form.PAINTM.value)+eval(form.PAINTN.value)+eval(form.PAINTR.value)+eval(form.PAINUA.value)+eval(form.PAICUZ.value)+eval(form.PAINVN.value)+eval(form.PACO.value)+
+							0}
+						
+						function SelectAll(form) {
+						form.AG.checked=true;form.AL.checked=true;form.AM.checked=true;form.AT.checked=true;form.AU.checked=true;form.AZ.checked=true;form.BA.checked=true;form.BG.checked=true;form.BH.checked=true;form.BQ.checked=true;form.BT.checked=true;form.BW.checked=true;form.BX.checked=true;form.BY.checked=true;form.CH.checked=true;form.CN.checked=true;form.CO.checked=true;form.CU.checked=true;form.CW.checked=true;form.CY.checked=true;form.CZ.checked=true;form.DE.checked=true;form.DK.checked=true;form.DZ.checked=true;form.EE.checked=true;form.EG.checked=true;form.EM.checked=true;form.ES.checked=true;form.FI.checked=true;form.FR.checked=true;form.GB.checked=true;form.GE.checked=true;form.GH.checked=true;form.GR.checked=true;form.HR.checked=true;form.HU.checked=true;form.IE.checked=true;form.IL.checked=true;form.IN.checked=true;form.IR.checked=true;form.IS.checked=true;form.IT.checked=true;form.JP.checked=true;form.KE.checked=true;form.KG.checked=true;form.KH.checked=true;form.KP.checked=true;form.KR.checked=true;form.KZ.checked=true;form.LI.checked=true;form.LR.checked=true;form.LS.checked=true;form.LT.checked=true;form.LV.checked=true;form.MA.checked=true;form.MC.checked=true;form.MD.checked=true;form.ME.checked=true;form.MG.checked=true;form.MK.checked=true;form.MN.checked=true;form.MX.checked=true;form.MZ.checked=true;form.NA.checked=true;form.NO.checked=true;form.NZ.checked=true;form.OA.checked=true;form.OM.checked=true;form.PH.checked=true;form.PL.checked=true;form.PT.checked=true;form.RO.checked=true;form.RS.checked=true;form.RU.checked=true;form.RW.checked=true;form.SD.checked=true;form.SE.checked=true;form.SG.checked=true;form.SI.checked=true;form.SK.checked=true;form.SL.checked=true;form.SM.checked=true;form.ST.checked=true;form.SX.checked=true;form.SY.checked=true;form.SZ.checked=true;form.TJ.checked=true;form.TM.checked=true;form.TN.checked=true;form.TR.checked=true;form.UA.checked=true;form.UZ.checked=true;form.VN.checked=true;form.ZM.checked=true;form.ZW.checked=true;
+						}
+						function DeselectAll(form) {
+						form.AG.checked=false;form.AL.checked=false;form.AM.checked=false;form.AT.checked=false;form.AU.checked=false;form.AZ.checked=false;form.BA.checked=false;form.BG.checked=false;form.BH.checked=false;form.BQ.checked=false;form.BT.checked=false;form.BW.checked=false;form.BX.checked=false;form.BY.checked=false;form.CH.checked=false;form.CN.checked=false;form.CO.checked=false;form.CU.checked=false;form.CW.checked=false;form.CY.checked=false;form.CZ.checked=false;form.DE.checked=false;form.DK.checked=false;form.DZ.checked=false;form.EE.checked=false;form.EG.checked=false;form.EM.checked=false;form.ES.checked=false;form.FI.checked=false;form.FR.checked=false;form.GB.checked=false;form.GE.checked=false;form.GH.checked=false;form.GR.checked=false;form.HR.checked=false;form.HU.checked=false;form.IE.checked=false;form.IL.checked=false;form.IN.checked=false;form.IR.checked=false;form.IS.checked=false;form.IT.checked=false;form.JP.checked=false;form.KE.checked=false;form.KG.checked=false;form.KH.checked=false;form.KP.checked=false;form.KR.checked=false;form.KZ.checked=false;form.LI.checked=false;form.LR.checked=false;form.LS.checked=false;form.LT.checked=false;form.LV.checked=false;form.MA.checked=false;form.MC.checked=false;form.MD.checked=false;form.ME.checked=false;form.MG.checked=false;form.MK.checked=false;form.MN.checked=false;form.MX.checked=false;form.MZ.checked=false;form.NA.checked=false;form.NO.checked=false;form.NZ.checked=false;form.OA.checked=false;form.OM.checked=false;form.PH.checked=false;form.PL.checked=false;form.PT.checked=false;form.RO.checked=false;form.RS.checked=false;form.RU.checked=false;form.RW.checked=false;form.SD.checked=false;form.SE.checked=false;form.SG.checked=false;form.SI.checked=false;form.SK.checked=false;form.SL.checked=false;form.SM.checked=false;form.ST.checked=false;form.SX.checked=false;form.SY.checked=false;form.SZ.checked=false;form.TJ.checked=false;form.TM.checked=false;form.TN.checked=false;form.TR.checked=false;form.UA.checked=false;form.UZ.checked=false;form.VN.checked=false;form.ZM.checked=false;form.ZW.checked=false;
+						}
+					--></script>
+</div>
+</div>
+
+<!-- content end -->
+</div></div><!-- wrap-inner -->
+
+<div id="tools"><h4 class="t-hide d-hide">Tools</h4>
+<ul><li><a href="http://www.wipo.int/pressroom/en/">Media</a></li>
+<li><a href="http://www.wipo.int/meetings/en/">Meetings</a></li>
+<li><a href="http://www.wipo.int/contact/en/area.jsp?area=madrid">Contact Us</a></li>
+<li><a href="http://www.wipo.int/myaccount/en/">My Account</a></li><li class="dropdown language-switcher">
+<a href="#" class="dropdown-toggle" data-toggle="dropdown">English <b class="caret"></b></a>
+<ul class="dropdown-menu"><li><a href="http://www.wipo.int/adm/getlang.jsp?lang=es">Español</a></li><li><a href="http://www.wipo.int/adm/getlang.jsp?lang=fr">Français</a></li></ul>
+</li><!-- language-switcher --></ul>
+</div><!-- tools --></div><!-- wrap-outer -->
+
+<div class="content explore m-hide">
+<h2>Explore WIPO</h2>
+<ul class="explore__list">
+<li class="explore__title"><strong>IP Services</strong></li>
+<li><a href="http://www.wipo.int/services/en/index.html#protect">Protecting IP</a></li>
+<li><a href="http://www.wipo.int/services/en/index.html#disputes">Resolving Disputes</a></li>
+</ul>
+<ul class="explore__list">
+<li class="explore__title"><strong>Policy</strong></li>
+<li><a href="http://www.wipo.int/policy/en/index.html#bodies">Decision Making &amp; Negotiating Bodies</a></li>
+<li><a href="http://www.wipo.int/policy/en/index.html#topics">IP &amp; Other Policy Topics</a></li>
+</ul>
+<ul class="explore__list">
+<li class="explore__title"><strong>Cooperation</strong></li>
+<li><a href="http://www.wipo.int/cooperation/en/index.html#development">Development</a></li>
+<li><a href="http://www.wipo.int/cooperation/en/index.html#countries">Global Cooperation</a></li>
+<li><a href="http://www.wipo.int/cooperation/en/index.html#countries">Cooperation with...</a></li>
+</ul>
+<ul class="explore__list">
+<li class="explore__title"><strong>Reference</strong></li>
+<li><a href="http://www.wipo.int/reference/en/index.html#databases">IP Databases</a></li>
+<li><a href="http://www.wipo.int/reference/en/index.html#legal">Legal Resources</a></li>
+<li><a href="http://www.wipo.int/reference/en/index.html#classifications">Classifications &amp; Standards</a></li>
+<li><a href="http://www.wipo.int/reference/en/index.html#info">Information Resources</a></li>
+</ul>
+<ul class="explore__list">
+<li class="explore__title"><strong>About IP</strong></li>
+<li><a href="http://www.wipo.int/about-ip/en/index.html#ip">Intellectual Property</a></li>
+<li><a href="http://www.wipo.int/about-ip/en/index.html#training">Training</a></li>
+<li><a href="http://www.wipo.int/about-ip/en/index.html#awareness">Raising Awareness</a></li>
+</ul>
+<ul class="explore__list">
+<li class="explore__title"><strong>Inside WIPO</strong></li>
+<li><a href="http://www.wipo.int/about-wipo/en/index.html">About WIPO</a></li>
+<li><a href="http://www.wipo.int/about-wipo/en/index.html#accountability">Accountability</a></li>
+<li><a href="http://www.wipo.int/about-wipo/en/index.html#working">Working with Us</a></li>
+<li><a href="http://www.wipo.int/about-wipo/en/index.html#connecting">Connecting with WIPO</a></li>
+</ul>
+</div><!--explore--></div><!-- container -->
+
+<footer role="contentinfo">
+<div class="contentinfo__inner">
+<a href="http://www.wipo.int/portal/en/" class="self m-hide" title="World Intellectual Property Organization">↑</a>
+<small id="social" class="social">
+<a href="http://www.facebook.com/worldipday/" target="_blank" title="Facebook">Facebook</a> 
+<a href="http://www.twitter.com/wipo/" target="_blank" title="Twitter">Twitter</a> 
+<a href="http://www.youtube.com/wipo/" target="_blank" title="YouTube">YouTube</a>
+<a href="http://www.flickr.com/photos/wipo/collections/" target="_blank" title="Flickr">Flickr</a>
+<a href="http://www.scribd.com/WIPO_Publications" target="_blank" title="Scribd">Scribd</a> 
+<a href="http://www.wipo.int/news/en/newsfeed.jsp" target="_blank" title="RSS">RSS</a> 
+<a href="https://www3.wipo.int/newsletters/en/" target="_blank" title="Newsletters">Newsletters</a>
+</small>
+<ul class="secondary">
+
+<li><a href="http://www.wipo.int/accessibility/en/">Accessibility</a></li><li><a href="http://www.wipo.int/tools/en/disclaim.html">Terms of use and privacy policy</a></li>
+</ul>
+<small><a href="#wipo-int" class="t-hide d-hide">Back to top</a></small>
+</div><!-- contentinfo__inner -->
+</footer><script src="madrid_files/plugins.js"></script>
+<script src="madrid_files/main.js"></script>
+<script src="madrid_files/ss-standard.js"></script>
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www."); document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script><script src="madrid_files/ga.js" type="text/javascript"></script>
+<script type="text/javascript">
+try {
+var pageTracker = _gat._getTracker("UA-138270-1"); pageTracker._setLocalRemoteServerMode();
+pageTracker._trackPageview();
+} catch(err) {}</script>
+
+</body></html>

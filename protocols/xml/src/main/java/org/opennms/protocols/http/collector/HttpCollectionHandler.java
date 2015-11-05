@@ -42,6 +42,7 @@ import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Entities.EscapeMode;
 import org.jsoup.select.Elements;
 import org.opennms.netmgt.collection.api.AttributeGroupType;
 import org.opennms.netmgt.collection.api.CollectionAgent;
@@ -182,7 +183,8 @@ public class HttpCollectionHandler extends AbstractXmlCollectionHandler {
             URL url = UrlFactory.getUrl(urlString, request);
             c = url.openConnection();
             is = c.getInputStream();
-            final Document doc = Jsoup.parse(is, "UTF-8", "/");
+            final Document doc = Jsoup.parse(is, "ISO-8859-9", "/");
+            doc.outputSettings().escapeMode(EscapeMode.xhtml);
             return doc;
         } finally {
             IOUtils.closeQuietly(is);
