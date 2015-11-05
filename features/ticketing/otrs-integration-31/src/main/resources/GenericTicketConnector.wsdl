@@ -13,7 +13,38 @@
             elementFormDefault="qualified"
             xmlns:xsd="http://www.w3.org/2001/XMLSchema"
             targetNamespace="http://www.otrs.org/TicketConnector/">
-            <xsd:complexType name="TicketCreate"></xsd:complexType>
+
+            <xsd:element name="TicketCreate"
+                 type="tns:OTRS_TicketCreate">
+            </xsd:element>
+            <xsd:element name="TicketCreateResponse" 
+                type="tns:OTRS_TicketCreateResponse">
+            </xsd:element>
+            <xsd:element name="TicketUpdate"
+                 type="tns:OTRS_TicketUpdate">
+            </xsd:element>
+            <xsd:element name="TicketUpdateResponse"
+                 type="tns:OTRS_TicketUpdateResponse">
+            </xsd:element>
+            <xsd:element name="TicketGet"
+                 type="tns:OTRS_TicketGet">
+            </xsd:element>
+            <xsd:element name="TicketGetResponse"
+                 type="tns:OTRS_TicketGetResponse">
+            </xsd:element>
+            <xsd:element name="TicketSearch"
+                 type="tns:OTRS_TicketSearch">
+            </xsd:element>
+            <xsd:element name="TicketSearchResponse"
+                 type="tns:OTRS_TicketSearchResponse">
+            </xsd:element>
+            <xsd:element name="SessionCreate"
+                 type="tns:OTRS_SessionCreate">
+            </xsd:element>
+            <xsd:element name="SessionCreateResponse"
+                 type="tns:OTRS_SessionCreateResponse">
+            </xsd:element>
+
             <xsd:complexType name="OTRS_TicketCreate">
                 <xsd:sequence>
                     <xsd:choice
@@ -1998,60 +2029,61 @@
     <wsdl:message name="TicketCreateRequest">
         <wsdl:part
             name="TicketCreate"
-            type="tns:OTRS_TicketCreate">
+            element="tns:TicketCreate">
         </wsdl:part>
     </wsdl:message>
     <wsdl:message name="TicketCreateResponse">
         <wsdl:part
-            name="TicketCreateResponse" type="tns:OTRS_TicketCreateResponse">
+            name="TicketCreateResponse" 
+            element="tns:TicketCreateResponse">
         </wsdl:part>
     </wsdl:message>
     <wsdl:message name="TicketUpdateRequest">
         <wsdl:part
             name="TicketUpdate"
-            type="tns:OTRS_TicketUpdate">
+            element="tns:TicketUpdate">
         </wsdl:part>
     </wsdl:message>
     <wsdl:message name="TicketUpdateResponse">
         <wsdl:part
             name="TicketUpdateResponse"
-            type="tns:OTRS_TicketUpdateResponse">
+            element="tns:TicketUpdateResponse">
         </wsdl:part>
     </wsdl:message>
     <wsdl:message name="TicketGetRequest">
         <wsdl:part
             name="TicketGet"
-            type="tns:OTRS_TicketGet">
+            element="tns:TicketGet">
         </wsdl:part>
     </wsdl:message>
     <wsdl:message name="TicketGetResponse">
         <wsdl:part
             name="TicketGetResponse"
-            type="tns:OTRS_TicketGetResponse">
+            element="tns:TicketGetResponse">
         </wsdl:part>
     </wsdl:message>
     <wsdl:message name="TicketSearchRequest">
         <wsdl:part
             name="TicketSearch"
-            type="tns:OTRS_TicketSearch">
+            element="tns:TicketSearch">
         </wsdl:part>
     </wsdl:message>
     <wsdl:message name="TicketSearchResponse">
         <wsdl:part
             name="TicketSearchResponse"
-            type="tns:OTRS_TicketSearchResponse">
+            element="tns:TicketSearchResponse">
         </wsdl:part>
     </wsdl:message>
     <wsdl:message name="SessionCreateRequest">
         <wsdl:part
             name="SessionCreate"
-            type="tns:OTRS_SessionCreate">
+            element="tns:SessionCreate">
         </wsdl:part>
     </wsdl:message>
     <wsdl:message name="SessionCreateResponse">
         <wsdl:part
             name="SessionCreateResponse"
-            type="tns:OTRS_SessionCreateResponse">
+            element="tns:SessionCreateResponse">
         </wsdl:part>
     </wsdl:message>
     <wsdl:portType name="GenericTicketConnector_Interface">
