@@ -39,6 +39,11 @@ import java.sql.Statement;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.TimeUnit;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Throwables;
@@ -86,7 +91,7 @@ import com.google.common.collect.Lists;
  * @author Alejandro Galue <agalue@opennms.org>
  * @author Dustin Frisch <dustin@opennms.org>
  */
-public class NewtsConverter {
+public class NewtsConverter implements AutoCloseable {
     private final static Logger LOG = LoggerFactory.getLogger(NewtsConverter.class);
 
     /** The Constant CMD_SYNTAX. */
@@ -98,7 +103,6 @@ public class NewtsConverter {
     private final Path onmsHome;
     private final Path rrdDir;
     private final Path rrdBinary;
-    private final int threads;
     private final boolean storeByGroup;
     private final boolean rrdTool;
 
@@ -114,11 +118,13 @@ public class NewtsConverter {
     private final Indexer indexer;
 
     /** The processed resources. */
-    private int processedMetrics;
-    private int processedSamples;
+    private static int processedMetrics = 0;
+    private static int processedSamples = 0;
 
     /** The Newts inject batch size. */
     private int batchSize;
+
+    private final ExecutorService executor;
 
     /**
      * The main method.
@@ -126,15 +132,29 @@ public class NewtsConverter {
      * @param args the arguments
      */
     public static void main(final String... args) {
-        final NewtsConverter converter = new NewtsConverter(args);
+        final long start;
+        try (final NewtsConverter converter = new NewtsConverter(args)) {
+            start = System.currentTimeMillis();
 
-        try {
             converter.execute();
 
         } catch (final NewtsConverterError e) {
             LOG.error(e.getMessage(), e);
             System.exit(1);
+            throw null;
         }
+
+        final Period period = new Interval(start, System.currentTimeMillis()).toPeriod();
+        final PeriodFormatter formatter = new PeriodFormatterBuilder()
+                .appendDays().appendSuffix(" days ")
+                .appendHours().appendSuffix(" hours ")
+                .appendMinutes().appendSuffix(" min ")
+                .appendSeconds().appendSuffix(" sec ")
+                .printZeroNever()
+                .toFormatter();
+
+        LOG.info("Conversion Finished: metrics processed: {}, time elapsed: {}", processedMetrics, formatter.print(period));
+        System.exit(0);
     }
 
     private NewtsConverter(final String... args) {
@@ -162,7 +182,7 @@ public class NewtsConverter {
         storeByGroupOption.setRequired(true);
         options.addOption(storeByGroupOption);
 
-        final Option threadsOption = new Option("n", "threads", true, "Number of conversion threads (defaults to 5)");
+        final Option threadsOption = new Option("n", "threads", true, "Number of conversion threads (defaults to number of CPUs)");
         options.addOption(threadsOption);
 
         final CommandLineParser parser = new PosixParser();
@@ -235,11 +255,17 @@ public class NewtsConverter {
             throw null;
         }
 
-
+        final int threads;
         try {
-            this.threads = cmd.hasOption('n')
+            threads = cmd.hasOption('n')
                            ? Integer.parseInt(cmd.getOptionValue('n'))
-                           : 5;
+                           : Runtime.getRuntime().availableProcessors();
+            this.executor = new ForkJoinPool(threads,
+                                             ForkJoinPool.defaultForkJoinWorkerThreadFactory,
+                                             null,
+                                             true);
+//            this.executor = Executors.newFixedThreadPool(threads);
+
         } catch (Exception e) {
             new HelpFormatter().printHelp(80, CMD_SYNTAX, String.format("ERROR: Invalid number of threads: %s%n", e.getMessage()), options, null);
             System.exit(1);
@@ -257,18 +283,18 @@ public class NewtsConverter {
 
         batchSize = Integer.parseInt(System.getProperty("org.opennms.newts.config.max_batch_size", "16"));
 
-        LOG.debug("OpenNMS Home: {}", onmsHome);
-        LOG.debug("RRD Directory: {}", rrdDir);
-        LOG.debug("Use RRDtool Tool: {}", rrdTool);
-        LOG.debug("RRDtool CLI: {}", rrdBinary);
-        LOG.debug("StoreByGroup: {}", storeByGroup);
-        LOG.debug("Timeseries Strategy: {}", strategy);
-        LOG.debug("Conversion Threads: {}", threads);
-        LOG.debug("Cassandra Host: {}", host);
-        LOG.debug("Cassandra Port: {}", port);
-        LOG.debug("Cassandra Keyspace: {}", keyspace);
-        LOG.debug("Newts Max Batch Size: {}", batchSize);
-        LOG.debug("Newts TTL: {}", ttl);
+        LOG.info("OpenNMS Home: {}", onmsHome);
+        LOG.info("RRD Directory: {}", rrdDir);
+        LOG.info("Use RRDtool Tool: {}", rrdTool);
+        LOG.info("RRDtool CLI: {}", rrdBinary);
+        LOG.info("StoreByGroup: {}", storeByGroup);
+        LOG.info("Timeseries Strategy: {}", strategy);
+        LOG.info("Conversion Threads: {}", threads);
+        LOG.info("Cassandra Host: {}", host);
+        LOG.info("Cassandra Port: {}", port);
+        LOG.info("Cassandra Keyspace: {}", keyspace);
+        LOG.info("Newts Max Batch Size: {}", batchSize);
+        LOG.info("Newts TTL: {}", ttl);
 
         if (!"newts".equals(strategy)) {
             throw NewtsConverterError.create("The configured timeseries strategy must be 'newts' on opennms.properties (org.opennms.timeseries.strategy)");
@@ -287,9 +313,7 @@ public class NewtsConverter {
         } catch (final Exception e) {
             throw NewtsConverterError.create(e, "Cannot connect to the Cassandra/Newts backend: {}", e.getMessage());
         }
-    }
 
-    public void execute() {
         // Initialize node ID to foreign ID mapping
         try (final Connection conn = DataSourceFactory.getInstance().getConnection();
              final Statement st = conn.createStatement();
@@ -306,14 +330,10 @@ public class NewtsConverter {
         }
 
         LOG.trace("Found {} nodes on the database", foreignIds.size());
+    }
 
-        // Process JRB/RRD files
-        final long start = System.currentTimeMillis();
+    public void execute() {
         LOG.trace("Starting Conversion...");
-        LOG.trace("Processing {}", rrdDir);
-
-        processedMetrics = 0;
-        processedSamples = 0;
 
         this.processStoreByGroupResources(this.rrdDir.resolve("response"));
 
@@ -323,16 +343,6 @@ public class NewtsConverter {
         } else {
             this.processStoreByMetricResources(this.rrdDir.resolve("snmp"));
         }
-
-        final Period period = new Interval(start, System.currentTimeMillis()).toPeriod();
-        final PeriodFormatter formatter = new PeriodFormatterBuilder()
-                .appendSeconds().appendSuffix(" sec")
-                .appendMinutes().appendSuffix(" min")
-                .appendHours().appendSuffix(" hours")
-                .appendDays().appendSuffix(" days")
-                .printZeroNever()
-                .toFormatter();
-        LOG.info("Conversion Finished: metrics processed: {}, time elapsed: {}", processedMetrics, formatter.print(period));
     }
 
     private void processStoreByGroupResources(final Path path) {
@@ -359,11 +369,9 @@ public class NewtsConverter {
 
         // Get all groups declared in the ds.properties and process the RRD files
         Sets.newHashSet(Iterables.transform(ds.values(), Object::toString))
-            .forEach(group -> {
-                processResource(path,
-                                group,
-                                group);
-            });
+            .forEach(group -> this.executor.execute(() -> processResource(path,
+                                                                          group,
+                                                                          group)));
     }
 
     private void processStoreByMetricResources(final Path path) {
@@ -397,9 +405,9 @@ public class NewtsConverter {
         final String group = meta.getProperty("GROUP");
 
         // Process the resource
-        this.processResource(path,
-                             metric,
-                             group);
+        this.executor.execute(() -> this.processResource(path,
+                                                         metric,
+                                                         group));
     }
 
     /**
@@ -412,6 +420,8 @@ public class NewtsConverter {
     private void processResource(final Path resourceDir,
                                  final String fileName,
                                  final String group) {
+        LOG.info("Processing resource: dir={}, file={}, group={}", resourceDir, fileName, group);
+
         final ResourcePath resourcePath = buildResourcePath(resourceDir);
 
         // Load and interpolate the RRD file
@@ -433,7 +443,6 @@ public class NewtsConverter {
                                   group,
                                   rrd.getDataSources(),
                                   rrd.generateSamples());
-
     }
 
     private void injectSamplesToNewts(final ResourcePath resourcePath,
@@ -534,5 +543,17 @@ public class NewtsConverter {
             resourcePath = ResourcePath.get(relativeResourceDir);
         }
         return resourcePath;
+    }
+
+    @Override
+    public void close() {
+        this.executor.shutdown();
+
+        while (!this.executor.isTerminated()) {
+            try {
+                this.executor.awaitTermination(10, TimeUnit.SECONDS);
+            } catch (final InterruptedException e) {
+            }
+        }
     }
 }
