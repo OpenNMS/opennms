@@ -73,7 +73,7 @@ public class AddVertexOperation implements Operation{
     }
 
     @Override
-    public Undoer execute(List<VertexRef> targets, OperationContext operationContext) {
+    public void execute(List<VertexRef> targets, OperationContext operationContext) {
         LoggerFactory.getLogger(getClass()).debug("execute()");
         Object vertexId = targets.isEmpty() ? null : targets.get(0).getId();
         String icon = getIconKey();
@@ -91,8 +91,6 @@ public class AddVertexOperation implements Operation{
             connectNewVertex(vertexId.toString(), icon, operationContext.getGraphContainer());
         }
         operationContext.getGraphContainer().redoLayout();
-        
-        return null;
     }
     
 }

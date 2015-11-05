@@ -29,29 +29,34 @@
 package org.opennms.features.topology.netutils.internal.operations;
 
 import java.util.List;
-import java.util.Objects;
 
-import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.features.topology.api.AbstractOperation;
 import org.opennms.features.topology.api.OperationContext;
-import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
-import org.opennms.features.topology.netutils.internal.PingWindow;
-import org.opennms.features.topology.netutils.internal.service.PingService;
-import org.opennms.netmgt.icmp.Pinger;
+import org.opennms.features.topology.netutils.internal.Node;
+import org.opennms.features.topology.netutils.internal.TracerouteWindow;
 
-import com.google.common.base.Strings;
+public class TracerouteOperation extends AbstractOperation {
+    private String m_tracerouteURL;
 
-public class PingOperation extends AbstractOperation {
-
-    private Pinger pinger;
-
-    public PingOperation(Pinger pinger) {
-        this.pinger = Objects.requireNonNull(pinger);
+    @Override
+    public boolean display(final List<VertexRef> targets, final OperationContext operationContext) {
+        if (targets != null) {
+            for (final VertexRef target : targets) {
+                final String addrValue = getIpAddrValue(operationContext, target);
+                if (addrValue != null) return super.display(targets, operationContext);
+            }
+        }
+        return false;
     }
 
     @Override
     public void execute(final List<VertexRef> targets, final OperationContext operationContext) {
+        final String url = getTracerouteURL();
+        if (url == null) {
+            return;
+        }
+
         if (targets != null) {
             for (final VertexRef target : targets) {
                 final String addrValue = getIpAddrValue(operationContext, target);
@@ -60,21 +65,25 @@ public class PingOperation extends AbstractOperation {
 
                 if (addrValue != null && nodeValue != null && nodeValue > 0) {
                     final Node node = new Node(nodeValue.intValue(), addrValue, labelValue == null? "" : labelValue);
-                    final String url = getPingURL();
-                    final String fullUrl = url.startsWith("/")? url : getFullUrl(url);
-                    operationContext.getMainWindow().addWindow(new PingWindow(node, fullUrl));
+
+                    final String tracerouteUrl = url.startsWith("/")? url : getFullUrl(url);
+                    operationContext.getMainWindow().addWindow(new TracerouteWindow(node, tracerouteUrl));
                 }
             }
         }
     }
 
     @Override
-    public boolean display(final List<VertexRef> targets, final OperationContext operationContext) {
-        return targets != null && targets.size() > 0;
+    public String getId() {
+        return "traceroute";
     }
 
-    @Override
-    public String getId() {
-        return "ping";
+    public void setTracerouteURL(final String url) {
+        m_tracerouteURL = url;
     }
+
+    public String getTracerouteURL() {
+        return m_tracerouteURL;
+    }
+
 }

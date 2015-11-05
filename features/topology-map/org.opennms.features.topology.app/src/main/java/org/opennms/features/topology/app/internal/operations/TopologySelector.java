@@ -67,9 +67,8 @@ public class TopologySelector {
     	
 
     	@Override
-    	public Undoer execute(List<VertexRef> targets, OperationContext operationContext) {
+    	public void execute(List<VertexRef> targets, OperationContext operationContext) {
     		execute(operationContext.getGraphContainer());
-    		return null;
     	}
     	
     	private void execute(GraphContainer container) {

@@ -42,8 +42,10 @@ import org.opennms.features.topology.api.topo.VertexRef;
 public class AddFocusVerticesOperation implements Constants, Operation {
 
 	@Override
-	public Undoer execute(List<VertexRef> targets, final OperationContext operationContext) {
-		if (targets == null || targets.isEmpty()) return null;
+	public void execute(List<VertexRef> targets, final OperationContext operationContext) {
+		if (targets == null || targets.isEmpty()) {
+			return;
+		}
 
 		final GraphContainer graphContainer = operationContext.getGraphContainer();
 
@@ -52,7 +54,6 @@ public class AddFocusVerticesOperation implements Constants, Operation {
 			criteria.add(target);
 		}
 		graphContainer.redoLayout();
-		return null;
 	}
 
 	@Override
