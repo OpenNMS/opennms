@@ -364,7 +364,7 @@ public class NewtsConverter implements AutoCloseable {
             ds.load(r);
 
         } catch (final IOException e) {
-            throw Throwables.propagate(e);
+            throw NewtsConverterError.create("No group information found - please verify storeByGroup settings");
         }
 
         // Get all groups declared in the ds.properties and process the RRD files
@@ -403,6 +403,9 @@ public class NewtsConverter implements AutoCloseable {
         }
 
         final String group = meta.getProperty("GROUP");
+        if (group == null) {
+            throw NewtsConverterError.create("No group information found - please verify storeByGroup settings");
+        }
 
         // Process the resource
         this.executor.execute(() -> this.processResource(path,
