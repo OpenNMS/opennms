@@ -17,9 +17,7 @@ if (typeof requirejs === "function") {
   requirejs.config({
     baseUrl: 'lib',
     paths: {
-      dc: 'dcjs/dc.min',
       d3: 'd3/d3.min',
-      crossfilter: 'crossfilter/crossfilter.min',
       backshift: '../js/backshift.onms.min',
       holder: '../js/holder.min'
     }

@@ -19,7 +19,7 @@
   * @description The controller for manage all the requisitions (list/add/remove/synchronize)
   *
   * @requires $scope Angular local scope
-  * @requires $filter Angular requisitions list filter
+  * @requires $filter Angular filter
   * @requires $window Document window
   * @requires RequisitionsService The requisitions service
   * @requires SynchronizeService The synchronize service
@@ -278,6 +278,19 @@
       $scope.initialize();
     };
 
+   /**
+    * @description Updates the pagination variables for the requisitions.
+    *
+    * @name RequisitionsController:updateFilteredNodes
+    * @ngdoc method
+    * @methodOf RequisitionsController
+    */
+    $scope.updateFilteredRequisitions = function() {
+      $scope.currentPage = 1;
+      $scope.totalItems = $scope.filteredRequisitions.length;
+      $scope.numPages = Math.ceil($scope.totalItems / $scope.pageSize);
+    }
+
     /**
     * @description Initializes the local requisitions list from the server
     *
@@ -289,11 +302,9 @@
       $scope.loaded = false;
       RequisitionsService.getRequisitions().then(
         function(data) { // success
-          $scope.currentPage = 1;
           $scope.requisitions = data.requisitions;
-          $scope.totalItems = data.requisitions.length;
-          $scope.numPages = Math.ceil($scope.totalItems / $scope.pageSize);
           $scope.filteredRequisitions = data.requisitions;
+          $scope.updateFilteredRequisitions();
           $scope.loaded = true;
           growl.success('Loaded ' + data.requisitions.length + ' requisitions...');
         },
@@ -304,15 +315,13 @@
     /**
     * @description Watch for filter changes in order to update the requisitions list and updates the pagination control
     *
-    * @name RequisitionsController:regFilter
+    * @name RequisitionsController:reqFilter
     * @ngdoc event
     * @methodOf RequisitionsController
     */
     $scope.$watch('reqFilter', function() {
-      $scope.currentPage = 1;
       $scope.filteredRequisitions = $filter('filter')($scope.requisitions, $scope.reqFilter);
-      $scope.totalItems = $scope.filteredRequisitions.length;
-      $scope.numPages = Math.ceil($scope.totalItems / $scope.pageSize);
+      $scope.updateFilteredRequisitions();
     });
 
     // Initialization

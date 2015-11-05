@@ -17,6 +17,7 @@
   * @module onms-requisitions
   *
   * @requires $scope Angular local scope
+  * @requires $filter Angular filter
   * @requires $routeParams Angular route parameters
   * @requires $window Document window
   * @requires $modal Angular modal
@@ -26,7 +27,7 @@
   *
   * @description The controller for manage foreign source definitions (i.e. policies and detectors)
   */
-  .controller('ForeignSourceController', ['$scope', '$routeParams', '$window', '$modal', 'RequisitionsService', 'EmptyTypeaheadService', 'growl', function($scope, $routeParams, $window, $modal, RequisitionsService, EmptyTypeaheadService, growl) {
+  .controller('ForeignSourceController', ['$scope', '$filter', '$routeParams', '$window', '$modal', 'RequisitionsService', 'EmptyTypeaheadService', 'growl', function($scope, $filter, $routeParams, $window, $modal, RequisitionsService, EmptyTypeaheadService, growl) {
 
     /**
     * @description The timing status.
@@ -57,7 +58,7 @@
     * @propertyOf ForeignSourceController
     * @returns {object} The foreign source definition
     */
-    $scope.foreignSourceDef = {};
+    $scope.foreignSourceDef = { detectors: [], policies: [] };
 
     /**
     * @description fieldComparator method from EmptyTypeaheadService
@@ -78,6 +79,86 @@
     $scope.onFocus = EmptyTypeaheadService.onFocus;
 
     /**
+    * @description The filtered list of detectors
+    *
+    * @ngdoc property
+    * @name ForeignSourceController#filteredDetectors
+    * @propertyOf ForeignSourceController
+    * @returns {array} The filtered array
+    */
+    $scope.filteredDetectors = [];
+
+    /**
+    * @description The amount of detectors per page for pagination (defaults to 10)
+    *
+    * @ngdoc property
+    * @name ForeignSourceController#detectorsPageSize
+    * @propertyOf ForeignSourceController
+    * @returns {integer} The page size
+    */
+    $scope.detectorsPageSize = 10;
+
+    /**
+    * @description The maximum size of detector pages for pagination (defaults to 5)
+    *
+    * @ngdoc property
+    * @name ForeignSourceController#detectorsMaxSize
+    * @propertyOf ForeignSourceController
+    * @returns {integer} The maximum size
+    */
+    $scope.detectorsMaxSize = 5;
+
+    /**
+    * @description The total amount of detectors for pagination (defaults to 0)
+    *
+    * @ngdoc property
+    * @name ForeignSourceController#detectorsTotalItems
+    * @propertyOf ForeignSourceController
+    * @returns {integer} The total detectors
+    */
+    $scope.detectorsTotalItems = 0;
+
+    /**
+    * @description The filtered list of policies
+    *
+    * @ngdoc property
+    * @name ForeignSourceController#filteredPolicies
+    * @propertyOf ForeignSourceController
+    * @returns {array} The filtered array
+    */
+    $scope.filteredPolicies = [];
+
+    /**
+    * @description The amount of policies per page for pagination (defaults to 10)
+    *
+    * @ngdoc property
+    * @name ForeignSourceController#policiesPageSize
+    * @propertyOf ForeignSourceController
+    * @returns {integer} The page size
+    */
+    $scope.policiesPageSize = 10;
+
+    /**
+    * @description The maximum size of policies pages for pagination (defaults to 5)
+    *
+    * @ngdoc property
+    * @name ForeignSourceController#policiesMaxSize
+    * @propertyOf ForeignSourceController
+    * @returns {integer} The maximum size
+    */
+    $scope.policiesMaxSize = 5;
+
+    /**
+    * @description The total amount of policies for pagination (defaults to 0)
+    *
+    * @ngdoc property
+    * @name ForeignSourceController#policiesTotalItems
+    * @propertyOf ForeignSourceController
+    * @returns {integer} The total policies
+    */
+    $scope.policiesTotalItems = 0;
+
+    /**
     * @description Goes to specific URL warning about changes if exist.
     *
     * @name ForeignSourceController:goTo
@@ -85,6 +166,7 @@
     * @methodOf ForeignSourceController
     * @param {object} handler The goto handler
     */
+
     $scope.goTo = function(handler) {
       if (this.fsForm.$dirty) {
         bootbox.dialog({
@@ -279,26 +361,82 @@
     };
 
     /**
-    * @description Refreshes the local node from the server
+    * @description Updates the pagination variables for the policies.
     *
-    * @name ForeignSourceController:refresh
+    * @name ForeignSourceController:updateFilteredPolicies
     * @ngdoc method
     * @methodOf ForeignSourceController
     */
-    $scope.refresh = function() {
+    $scope.updateFilteredPolicies = function() {
+      $scope.policiesCurrentPage = 1;
+      $scope.policiesTotalItems = $scope.filteredPolicies.length;
+      $scope.policiesNumPages = Math.ceil($scope.policiesTotalItems / $scope.policiesPageSize);
+    };
+
+    /**
+    * @description Updates the pagination variables for the detectors.
+    *
+    * @name ForeignSourceController:updateFilteredDetectors
+    * @ngdoc method
+    * @methodOf ForeignSourceController
+    */
+    $scope.updateFilteredDetectors = function() {
+      $scope.detectorsCurrentPage = 1;
+      $scope.detectorsTotalItems = $scope.filteredDetectors.length;
+      $scope.detectorsNumPages = Math.ceil($scope.detectorsTotalItems / $scope.detectorsPageSize);
+    }
+
+    /**
+    * @description Initialized the local foreign source definition from the server
+    *
+    * @name ForeignSourceController:initialize
+    * @ngdoc method
+    * @methodOf ForeignSourceController
+    */
+    $scope.initialize = function() {
       growl.success('Retrieving definition for requisition ' + $scope.foreignSource + '...');
       RequisitionsService.getForeignSourceDefinition($scope.foreignSource).then(
-        function(data) { // success
-          $scope.foreignSourceDef = data;
+        function(foreignSourceDef) { // success
+          $scope.foreignSourceDef = foreignSourceDef;
+          // Updating pagination variables for detectors.
+          $scope.filteredDetectors = $scope.foreignSourceDef.detectors;
+          $scope.updateFilteredDetectors();
+          // Updating pagination variables for policies.
+          $scope.filteredPolicies = $scope.foreignSourceDef.policies;
+          $scope.updateFilteredPolicies();
         },
         $scope.errorHandler
       );
     };
 
+    /**
+    * @description Watch for filter changes in order to update the detector list and updates the pagination control
+    *
+    * @name ForeignSourceController:detectorFilter
+    * @ngdoc event
+    * @methodOf ForeignSourceController
+    */
+    $scope.$watch('detectorFilter', function() {
+      $scope.filteredDetectors = $filter('filter')($scope.foreignSourceDef.detectors, $scope.detectorFilter);
+      $scope.updateFilteredDetectors();
+    });
+
+    /**
+    * @description Watch for filter changes in order to update the policy list and updates the pagination control
+    *
+    * @name ForeignSourceController:policyFilter
+    * @ngdoc event
+    * @methodOf ForeignSourceController
+    */
+    $scope.$watch('policyFilter', function() {
+      $scope.filteredPolicies = $filter('filter')($scope.foreignSourceDef.policies, $scope.policyFilter);
+      $scope.updateFilteredPolicies();
+    });
+
     // Initialization
 
     if ($scope.foreignSource) {
-      $scope.refresh();
+      $scope.initialize();
     }
   }]);
 

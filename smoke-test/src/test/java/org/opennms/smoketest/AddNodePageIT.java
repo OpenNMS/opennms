@@ -36,23 +36,25 @@ import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.smoketest.expectations.ExpectationBuilder;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class AddNodePageIT extends OpenNMSSeleniumTestCase {
     private static final String m_unreachableIp = InetAddressUtils.str(InetAddressUtils.UNPINGABLE_ADDRESS);
 
+    private RequisitionUtils m_requisitionUtils = new RequisitionUtils(this);
+
     @Before
     public void setUp() throws Exception {
-        deleteTestRequisition();
+        m_requisitionUtils.deleteTestRequisition();
     }
 
     @After
     public void tearDown() throws Exception {
-        deleteTestRequisition();
+        m_requisitionUtils.deleteTestRequisition();
     }
 
     @Test
@@ -60,12 +62,27 @@ public class AddNodePageIT extends OpenNMSSeleniumTestCase {
         // Visit the provisioning page
         provisioningPage();
 
-        // Add a foreign source named REQUISITION_NAME
-        m_driver.findElement(By.cssSelector("form[name=takeAction] input[name=groupName]")).sendKeys(REQUISITION_NAME);
-        m_driver.findElement(By.cssSelector("form[name=takeAction] input[type=submit]")).click();
+        // Add a requisition called REQUISITION_NAME
+        findElementByXpath("//div/button[contains(@ng-click,'add')]").click();
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector(".modal-dialog")));
+        enterText(By.xpath("//form/input[contains(@class,'bootbox-input')]"), REQUISITION_NAME);
+        findElementByXpath("//div/button[text()='OK']").click();
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//td[text()='" + REQUISITION_NAME + "']")));
+
+        // Edit the requisition
+        findElementByXpath("//td[text()='" + REQUISITION_NAME + "']/../td/button[contains(@ng-click,'edit(')]").click();
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//h1[text()='There are no nodes on the " + REQUISITION_NAME + "']")));
 
         // Synchronize the empty requisition
-        findElementByXpath("//input[@value='Synchronize']").click();
+        final String syncXpath = "//div/button[contains(@ng-click,'synchronize')]";
+        wait.until(ExpectedConditions.elementToBeClickable(By.xpath(syncXpath)));
+        findElementByXpath(syncXpath).click();
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector(".modal-dialog")));
+        findElementByXpath("//div/button[text()='No']").click();
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//h1[text()='There are no nodes on the " + REQUISITION_NAME + "']")));
+
+        // Wait for the requisition to be synchronized
+        Thread.sleep(5000);
 
         frontPage();
         clickMenuItem("name=nav-admin-top", "Quick-Add Node", BASE_URL + "opennms/admin/node/add.htm");
@@ -88,12 +105,7 @@ public class AddNodePageIT extends OpenNMSSeleniumTestCase {
 
         // Click on the Provisioning Requisitions breadcrumb
         findElementByLink("Provisioning Requisitions").click();
-        findElementById("edit_req_anchor_" + REQUISITION_NAME).click();
-
-        new ExpectationBuilder("css=input[value=AddNodePageTest]").check(m_driver);
-
-        provisioningPage();
-        wait.until(new WaitForNodesInDatabase(1));
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//td[text()='" + REQUISITION_NAME + "']")));
+        wait.until(m_requisitionUtils.new WaitForNodesInDatabase(1));
     }
-
 }

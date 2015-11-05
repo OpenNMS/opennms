@@ -74,7 +74,7 @@ public class OutlierFilterIT extends AnalyticsFilterTest {
     public void canInterpolateValues() throws Exception {
         FilterDef filterDef = new FilterDef("Outlier",
                 "inputColumn", "Y",
-                "probability", "0.99");
+                "quantile", "0.99");
 
         // Use non-constant values for the Y column
         RowSortedTable<Long, String, Double> table = TreeBasedTable.create();

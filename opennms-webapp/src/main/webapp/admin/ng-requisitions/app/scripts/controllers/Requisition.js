@@ -19,7 +19,7 @@
   * @description The controller for manage a single requisition (add/edit)
   *
   * @requires $scope Angular local scope
-  * @requires $filter Angular requisitions list filter
+  * @requires $filter Angular filter
   * @requires $window Document window
   * @requires $routeParams Angular route parameters
   * @requires RequisitionsService The requisitions service
@@ -93,7 +93,7 @@
     * @description The total amount of items for pagination (defaults to 0)
     *
     * @ngdoc property
-    * @name RequisitionController#maxSize
+    * @name RequisitionController#totalItems
     * @propertyOf RequisitionController
     * @returns {integer} The total items
     */
@@ -193,6 +193,19 @@
       });
     };
 
+   /**
+    * @description Updates the pagination variables for the nodes.
+    *
+    * @name RequisitionController:updateFilteredNodes
+    * @ngdoc method
+    * @methodOf RequisitionController
+    */
+    $scope.updateFilteredNodes = function() {
+      $scope.currentPage = 1;
+      $scope.totalItems = $scope.filteredNodes.length;
+      $scope.numPages = Math.ceil($scope.totalItems / $scope.pageSize);
+    }
+
     /**
     * @description Initializes the local requisition from the server
     *
@@ -204,11 +217,9 @@
       growl.success('Retrieving requisition ' + $scope.foreignSource + '...');
       RequisitionsService.getRequisition($scope.foreignSource).then(
         function(requisition) { // success
-          $scope.currentPage = 1;
           $scope.requisition = requisition;
-          $scope.totalItems = requisition.nodes.length;
-          $scope.numPages = Math.ceil($scope.totalItems / $scope.pageSize);
           $scope.filteredNodes = requisition.nodes;
+          $scope.updateFilteredNodes();
         },
         $scope.errorHandler
       );
@@ -217,15 +228,13 @@
     /**
     * @description Watch for filter changes in order to update the nodes list and updates the pagination control
     *
-    * @name RequisitionController:regFilter
+    * @name RequisitionController:reqFilter
     * @ngdoc event
     * @methodOf RequisitionController
     */
     $scope.$watch('reqFilter', function() {
-      $scope.currentPage = 1;
       $scope.filteredNodes = $filter('filter')($scope.requisition.nodes, $scope.reqFilter);
-      $scope.totalItems = $scope.filteredNodes.length;
-      $scope.numPages = Math.ceil($scope.totalItems / $scope.pageSize);
+      $scope.updateFilteredNodes();
     });
 
     // Initialization
