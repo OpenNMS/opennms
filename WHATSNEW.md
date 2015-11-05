@@ -51,10 +51,14 @@ Events
 * ~50 new NetApp Events
 * Raytheon NXU-2A
 
+Thanks to Marcel Fuhrmann (@mfuhrmann) and Cyrille Bollu (@StCyr)
+
 Data Collection
 ---------------
 * Fortinet Fortigate
 * Sonicwall
+
+Thanks to Marcel Fuhrmann (@mfuhrmann) and Cyrille Bollu (@StCyr)
 
 Retired Features
 ----------------
@@ -71,5 +75,13 @@ Internal Updates
 * The REST interface was refactored to be based on Apache CXF 3.1.1.
 * The Dashboard has been rewritten using the Vaadin toolkit to modernize its look-and-feel.
 * The `opennms-assemblies/jmx-config-generator-onejar` project has been moved to `features/jmx-config-generator`.
+
+Documentation
+-------------
+* Introducing installation guide for Debian, CentOS and Windows based systems
+* Introducing installation guide for Newts
+* Docs for JasperReports using the Measurement ReST API in admin guide
+* Docs for Enhanced Linkd daemon configuration and collected information for Bridge-MIB discovery, LLDP, CDP, OSPF and IS-IS in admin guide
+* Docs how to deal with SSL in Java and Jetty in admin guide
 
 [GNU Affero General Public License 3.0]: http://www.gnu.org/licenses/agpl-3.0.html
