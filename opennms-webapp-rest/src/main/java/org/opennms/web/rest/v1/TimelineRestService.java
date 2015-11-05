@@ -89,11 +89,11 @@ public class TimelineRestService extends OnmsRestService {
         /**
          * Red color
          */
-        private static final Color ONMS_RED = Color.decode("#CC0000");
+        private static final Color ONMS_RED = Color.decode("#e35d5b");
         /**
          * Green color
          */
-        private static final Color ONMS_GREEN = Color.decode("#6F9F3A");
+        private static final Color ONMS_GREEN = Color.decode("#99bf73");
         /**
          * Green color
          */

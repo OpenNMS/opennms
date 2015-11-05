@@ -151,6 +151,7 @@ public class Otrs31TicketerPlugin implements Plugin {
         otrsTicket.setQueue(m_configDao.getQueue());
         otrsTicket.setStateID(openNMSToOTRSState(newTicket.getState()));
         otrsTicket.setPriority(m_configDao.getPriority());
+        otrsTicket.setType(m_configDao.getType());
 
         OTRSArticle otrsArticle = new OTRSArticle();
         // TODO Figure out why we can't set ArticleFrom without an error from OTRS
