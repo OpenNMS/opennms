@@ -47,16 +47,16 @@ import org.slf4j.LoggerFactory;
 
 public class ApplicationTopologyProvider extends AbstractTopologyProvider implements GraphProvider {
 
-	public static final String TOPOLOGY_NAMESPACE_SIMPLE = "application";
+	public static final String TOPOLOGY_NAMESPACE = "application";
 
 	private static final Logger LOG = LoggerFactory.getLogger(ApplicationTopologyProvider.class);
 
     private ApplicationDao applicationDao;
 
     public ApplicationTopologyProvider(ApplicationDao applicationDao) {
-        super(new ApplicationVertexProvider(TOPOLOGY_NAMESPACE_SIMPLE), new SimpleEdgeProvider(TOPOLOGY_NAMESPACE_SIMPLE));
+        super(new ApplicationVertexProvider(TOPOLOGY_NAMESPACE), new SimpleEdgeProvider(TOPOLOGY_NAMESPACE));
         this.applicationDao = applicationDao;
-        LOG.debug("Creating a new SimpleTopologyProvider with namespace {}", TOPOLOGY_NAMESPACE_SIMPLE);
+        LOG.debug("Creating a new SimpleTopologyProvider with namespace {}", TOPOLOGY_NAMESPACE);
     }
 
     @Override
@@ -68,7 +68,9 @@ public class ApplicationTopologyProvider extends AbstractTopologyProvider implem
         resetContainer();
         List<OnmsApplication> applications = applicationDao.findAll();
         if (!applications.isEmpty()) {
-            for (OnmsApplication application : applications) {
+            // TODO MVR consider all applications, not just the first one
+            OnmsApplication application = applications.get(0);
+//            for (OnmsApplication application : applications) {
                 ApplicationVertex applicationVertex = new ApplicationVertex(String.valueOf(application.getId()));
                 applicationVertex.setLabel(application.getName());
                 applicationVertex.setTooltipText(String.format("Application '%s'", application.getName()));
@@ -90,7 +92,7 @@ public class ApplicationTopologyProvider extends AbstractTopologyProvider implem
                     edge.setTooltipText("LINK");
                     addEdges(edge);
                 }
-            }
+//            }
         }
     }
 

@@ -28,6 +28,8 @@
 
 package org.opennms.features.topology.plugins.topo.application.browsers;
 
+import java.util.Objects;
+
 import com.vaadin.data.Property;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Table;
@@ -36,21 +38,18 @@ import com.vaadin.ui.themes.BaseTheme;
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.plugins.browsers.ToStringColumnGenerator;
 import org.opennms.features.topology.plugins.topo.application.ApplicationCriteria;
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.ServiceReference;
 
 public class ApplicationSelectionLinkGenerator implements Table.ColumnGenerator {
 
-    public ApplicationSelectionLinkGenerator(String idPropertyName, BundleContext bundleContext) {
+    public ApplicationSelectionLinkGenerator(String idPropertyName, GraphContainer graphContainer) {
 		this.idPropertyName = idPropertyName;
+		this.graphContainer = graphContainer;
 		this.columnGenerator = new ToStringColumnGenerator();
-		this.bundleContext = bundleContext;
 	}
 
 	private final String idPropertyName;
 	private final Table.ColumnGenerator columnGenerator;
-//	private final GraphContainer graphContainer;
-	private final BundleContext bundleContext;
+	private final GraphContainer graphContainer;
 
 	@Override
 	public Object generateCell(final Table source, final Object itemId, Object columnId) {
@@ -68,22 +67,16 @@ public class ApplicationSelectionLinkGenerator implements Table.ColumnGenerator 
 				button.addClickListener(new Button.ClickListener() {
 					@Override
 					public void buttonClick(Button.ClickEvent event) {
-						ServiceReference<GraphContainer> serviceReference = bundleContext.getServiceReference(GraphContainer.class);
-						try {
-							GraphContainer graphContainer = bundleContext.getService(serviceReference);
 							ApplicationCriteria applicationCriteria = graphContainer.findSingleCriteria(ApplicationCriteria.class);
 							if (applicationCriteria == null) {
 								applicationCriteria = new ApplicationCriteria();
 								graphContainer.addCriteria(applicationCriteria);
 							}
-//							if (!Objects.equals(applicationCriteria.getApplicationId(), String.valueOf(idProperty.getValue()))) {
+							if (!Objects.equals(applicationCriteria.getApplicationId(), String.valueOf(idProperty.getValue()))) {
 								applicationCriteria.setApplicationId(String.valueOf(idProperty.getValue()));
 								graphContainer.setDirty(true);
 								graphContainer.redoLayout();
-//							}
-						} finally {
-							bundleContext.ungetService(serviceReference);
-						}
+							}
 					}
 				});
 				return button;

@@ -40,9 +40,13 @@ class ApplicationVertex extends AbstractVertex {
     private List<VertexRef> children = new ArrayList<>();
 
     private OnmsServiceType serviceType;
-    
+
+    /**
+     * Creates a new {@link ApplicationVertex}.
+     * @param id the unique id of this vertex. Must be unique overall the namespace.
+     */
     public ApplicationVertex(String id) {
-        super(ApplicationTopologyProvider.TOPOLOGY_NAMESPACE_SIMPLE, id);
+        super(ApplicationTopologyProvider.TOPOLOGY_NAMESPACE, id);
         setIconKey(null);
         setLocked(false);
         setSelected(false);
