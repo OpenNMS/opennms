@@ -62,8 +62,10 @@ import com.vaadin.ui.Window;
 public class CreateGroupOperation implements Constants, Operation {
 
 	@Override
-	public Undoer execute(final List<VertexRef> targets, final OperationContext operationContext) {
-		if (targets == null || targets.isEmpty()) return null;
+	public void execute(final List<VertexRef> targets, final OperationContext operationContext) {
+		if (targets == null || targets.isEmpty()) {
+			return;
+		}
 
 		final GraphContainer graphContainer = operationContext.getGraphContainer();
 
@@ -189,7 +191,6 @@ public class CreateGroupOperation implements Constants, Operation {
 		groupNamePrompt.setContent(promptForm);
 
 		window.addWindow(groupNamePrompt);
-		return null;
 	}
 
 	private void addValidators(final Form promptForm, final GraphContainer graphContainer) {
