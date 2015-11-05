@@ -40,13 +40,12 @@ import edu.uci.ics.jung.graph.SparseGraph;
 import org.opennms.features.topology.api.Graph;
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.Layout;
+import org.opennms.features.topology.api.Point;
 import org.opennms.features.topology.api.topo.Edge;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
 
 public class HierarchyLayoutAlgorithm extends AbstractLayoutAlgorithm {
-    private static final int HORIZONTAL_SPACING = 60;
-    private static final int VERTICAL_SPACING = 60;
 
     @Override
     public void updateLayout(final GraphContainer graphContainer) {
@@ -72,18 +71,26 @@ public class HierarchyLayoutAlgorithm extends AbstractLayoutAlgorithm {
     }
 
     private void transformLayout(final Collection<? extends Vertex> vertices, final edu.uci.ics.jung.algorithms.layout.Layout<VertexRef, Edge> layout, final Layout graphLayout) {
-        Point2D p;
         for(VertexRef v : vertices) {
-            p = (Point2D) layout.transform(v);
-            graphLayout.setLocation(v, p.getX(), p.getY());
+            Point2D p = layout.transform(v);
+            graphLayout.setLocation(v, new Point(p.getX(), p.getY()));
         }
     }
 
+    private Vertex getRoot(Graph g) {
+        for (Vertex eachVertex : g.getDisplayVertices()) {
+            if (eachVertex.getParent() == null) {
+                return eachVertex;
+            }
+        }
+        return null;
+    }
+
     public Forest createMinForest(final Graph g) {
-        return new MinimumSpanningForest(convert(g), new DelegateForest(), null).getForest();
+        return new MinimumSpanningForest(convert(g), new DelegateForest(), getRoot(g)).getForest();
     }
 
     public edu.uci.ics.jung.algorithms.layout.Layout<VertexRef, Edge> createTreeLayout(final Graph g) {
-        return new TreeLayout<VertexRef, Edge>(createMinForest(g));
+        return new TreeLayout<>(createMinForest(g));
     }
 }
