@@ -139,7 +139,7 @@ if (currConfig == null) {
 </div> <!-- row -->
 
 <div class="row top-buffer">
-  <div class="col-md-4">
+  <div class="col-md-6">
     <div class="panel panel-default">
       <div class="panel-heading">
         <h3 class="panel-title">General Settings</h3>
@@ -212,7 +212,7 @@ if (currConfig == null) {
 </div> <!-- row -->
 
 <div class="row top-buffer">
-  <div class="col-md-6">
+  <div class="col-md-12">
     <div class="panel panel-default">
       <div class="panel-heading">
         <h3 class="panel-title">Specifics</h3>
@@ -257,7 +257,7 @@ if (currConfig == null) {
 </div> <!-- row -->
 
 <div class="row top-buffer">
-  <div class="col-md-6">
+  <div class="col-md-12">
     <div class="panel panel-default">
       <div class="panel-heading">
         <h3 class="panel-title">Include URLs</h3>
@@ -285,7 +285,7 @@ if (currConfig == null) {
 					  <td><%=urls[i].getContent()%></td>
 					  <td><%=(urls[i].getTimeout()!=0)?""+urls[i].getTimeout():""+currConfig.getTimeout() %></td>
 					  <td><%=(urls[i].getRetries()!=0)?""+urls[i].getRetries():""+currConfig.getRetries() %></td>
-					  <td width="1%"><button type="button" onclick="deleteIncludeUrl(<%=i%>);">Delete</button></td>
+					  <td width="1%"><button type="button" class="btn btn-default" onclick="deleteIncludeUrl(<%=i%>);">Delete</button></td>
 					</tr>
 				      <%} // end for%>
 				     </table>
@@ -302,7 +302,7 @@ if (currConfig == null) {
 </div> <!-- row -->
 
 <div class="row top-buffer">
-  <div class="col-md-6">
+  <div class="col-md-12">
     <div class="panel panel-default">
       <div class="panel-heading">
         <h3 class="panel-title">Include Ranges</h3>
@@ -353,7 +353,7 @@ if (currConfig == null) {
 </div> <!-- row -->
 
 <div class="row top-buffer">
-  <div class="col-md-6">
+  <div class="col-md-12">
     <div class="panel panel-default">
       <div class="panel-heading">
         <h3 class="panel-title">Exclude Ranges</h3>

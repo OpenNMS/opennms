@@ -413,6 +413,19 @@
       return categories;
     };
 
+    /**
+    * @description Gets the primary IP address
+    *
+    * @name NodeController:getPrimaryAddress
+    * @ngdoc method
+    * @methodOf NodeController
+    * @returns {string} the primary IP address or 'N/A' if it doesn't exist.
+    */
+    $scope.getPrimaryAddress = function() {
+      var ip = $scope.node.getPrimaryIpAddress();
+      return ip == null ? "N/A" : ip;
+    }
+
     // Initialization of the node's page for either adding a new node or editing an existing node
 
     if ($scope.isNew) {

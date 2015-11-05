@@ -29,16 +29,12 @@
 package org.opennms.netmgt.measurements.filters.impl;
 
 import java.util.Map;
+import java.util.Map.Entry;
 
-import org.opennms.netmgt.integrations.R.RScriptException;
-import org.opennms.netmgt.integrations.R.RScriptExecutor;
-import org.opennms.netmgt.integrations.R.RScriptInput;
-import org.opennms.netmgt.integrations.R.RScriptOutput;
 import org.opennms.netmgt.measurements.api.Filter;
 import org.opennms.netmgt.measurements.api.FilterInfo;
 import org.opennms.netmgt.measurements.api.FilterParam;
 
-import com.google.common.collect.ImmutableTable;
 import com.google.common.collect.Maps;
 import com.google.common.collect.RowSortedTable;
 
@@ -48,49 +44,49 @@ import com.google.common.collect.RowSortedTable;
  * @see {@link org.opennms.netmgt.measurements.filters.impl.OutlierFilterConfig}
  * @author jwhite
  */
-@FilterInfo(name="Outlier", description="Removes outliers and replaces them with interpolated values.", backend="R")
+@FilterInfo(name="Outlier", description="Removes outliers and replaces them with interpolated values.")
 public class OutlierFilter implements Filter {
-    private static final String PATH_TO_R_SCRIPT = "/org/opennms/netmgt/measurements/filters/impl/outlierFilter.R";
 
     @FilterParam(key="inputColumn", required=true, displayName="Input", description="Input column.")
     private String m_inputColumn;
 
-    @FilterParam(key="probability", value="0.975", displayName="Level", description="Probability used to calculate the quantiles, any values greater than these will be replaced with an interpolated value.")
-    private double m_probability;
+    @FilterParam(key="quantile", value="0.95", displayName="Quantile", description="Quantile level. Must be > 0 and <= 100. Any values greater than the calculated percentile will be replaced with an interpolated value.")
+    private double m_quantile;
 
     protected OutlierFilter() {}
 
-    public OutlierFilter(String inputColumn, double probability) {
+    public OutlierFilter(String inputColumn, double quantile) {
         m_inputColumn = inputColumn;
-        m_probability = probability;
+        m_quantile = quantile;
     }
 
     @Override
-    public void filter(RowSortedTable<Long, String, Double> dsAsTable) throws RScriptException {
-        String columnToFilter = m_inputColumn;
+    public void filter(RowSortedTable<Long, String, Double> qrAsTable) {
+        // Extract the values of the input column as a primitive array
+        final Map<Long, Double> column = qrAsTable.column(m_inputColumn);
+        final double values[] = new double[column.size()];
+        int k = 0;
+        for (Double value : column.values()) {
+            values[k++] = value;
+        }
 
-        Map<String, Object> arguments = Maps.newHashMap();
-        arguments.put("columnToFilter", columnToFilter);
-        arguments.put("probability", m_probability);
+        // Calculate the percentile
+        org.apache.commons.math3.stat.descriptive.rank.Percentile percentileCalculator = new org.apache.commons.math3.stat.descriptive.rank.Percentile();
+        Double nthPercentile = percentileCalculator.evaluate(values, 100 * m_quantile);
 
-        RScriptExecutor executor = new RScriptExecutor();
-        RScriptOutput output = executor.exec(PATH_TO_R_SCRIPT, new RScriptInput(dsAsTable, arguments));
-        ImmutableTable<Long, String, Double> outputTable = output.getTable();
-
-        // Replace all of the values in the given column with those returned
-        // by the script
-        int numRowsInTable = dsAsTable.rowKeySet().size();
-        for (long i = 0; i < numRowsInTable; i++) {
-            dsAsTable.put(i, columnToFilter, outputTable.get(i, columnToFilter));
+        // Replace values greater than the percentile with NaNs
+        for (Entry<Long, Double> entry : column.entrySet()) {
+            if (!entry.getValue().isNaN() && entry.getValue() > nthPercentile) {
+                entry.setValue(Double.NaN);
+            }
         }
 
         // Perform linear interpolation on missing values
-        linearInterpolation(dsAsTable);
+        linearInterpolation(qrAsTable);
     }
 
-    public void linearInterpolation(RowSortedTable<Long, String, Double> dsAsTable) {
-        final String columnToFilter = m_inputColumn;
-        final Map<Long, Double> column = dsAsTable.column(columnToFilter);
+    public void linearInterpolation(RowSortedTable<Long, String, Double> qrAsTable) {
+        final Map<Long, Double> column = qrAsTable.column(m_inputColumn);
         final Map<Long, Double> interpolatedValues = Maps.newHashMap();
 
         Long x0 = null;
