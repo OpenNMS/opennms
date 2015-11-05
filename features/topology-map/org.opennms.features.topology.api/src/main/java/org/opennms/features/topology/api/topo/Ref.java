@@ -34,7 +34,7 @@ public interface Ref extends Comparable<Ref> {
 	 * An identifier unique to the provider that 'owns' this reference
 	 * @return
 	 */
-	public String getId();
+	String getId();
 
 	/**
 	 * A string used to identify the provider this belongs to.
@@ -43,11 +43,11 @@ public interface Ref extends Comparable<Ref> {
 	 * such as letters digits and underscore (no colons, periods, commas etc.)
 	 * 
 	 */
-	public String getNamespace();
+	String getNamespace();
 
 	/**
 	 * A human-readable label for the reference.
 	 */
-	public String getLabel();
+	String getLabel();
 
 }

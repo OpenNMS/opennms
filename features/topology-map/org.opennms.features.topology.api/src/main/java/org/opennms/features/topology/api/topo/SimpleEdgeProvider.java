@@ -36,6 +36,7 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 
@@ -64,18 +65,23 @@ public class SimpleEdgeProvider implements EdgeProvider {
 
         @Override
         public int hashCode() {
-            return m_namespace.hashCode() * 31 + m_regex.hashCode();
+            return Objects.hash(m_namespace, m_regex);
         }
 
         @Override
         public boolean equals(Object obj) {
+			if (obj == this) {
+				return true;
+			}
+			if (obj == null || getClass() != obj.getClass()) {
+				return false;
+			}
             if (obj instanceof MatchingCriteria) {
                 MatchingCriteria c = (MatchingCriteria) obj;
-                return c.getNamespace().equals(this.getNamespace()) && c.m_regex.equals(this.m_regex);
-            }else {
-                return false;
+                boolean equals = Objects.equals(c.m_namespace, m_namespace) && Objects.equals(c.m_regex, m_regex);
+				return equals;
             }
-
+			return false;
         }
 
         public  boolean matches(Edge edge){

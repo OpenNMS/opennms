@@ -3,7 +3,7 @@ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:cm="http://aries.apa
 xsi:schemaLocation="
 http://www.osgi.org/xmlns/blueprint/v1.0.0 http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd
 http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0 https://svn.apache.org/repos/asf/aries/tags/blueprint-0.3.1/blueprint-cm/src/main/resources/org/apache/aries/blueprint/compendium/cm/blueprint-cm-1.1.0.xsd
-http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/aries/tags/blueprint-0.3.1/blueprint-core/src/main/resources/org/apache/aries/blueprint/ext/blueprint-ext.xsd">
+http://www.osgi.org/xmlns/blueprint-ext/v1.1.0">
     
     <cm:property-placeholder id="appConfig" persistent-id="org.opennms.features.topology.app" update-strategy="reload">
         <cm:default-properties>
@@ -38,8 +38,8 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
         <argument ref="providerManager" />
         <property name="bundleContext" ref="blueprintBundleContext" />
         <property name="autoRefreshSupport" ref="defaultAutoRefreshSupport"/>
-        <property name="vertexStatusProvider" ref="statusProvider"/>
     </bean>
+    <service id="graphContainer" interface="org.opennms.features.topology.api.GraphContainer" ref="veGraphContainer"/>
 
     <!--  Header reference -->
     <reference id="onmsHeaderProvider" interface="org.opennms.web.api.OnmsHeaderProvider" availability="mandatory" />
@@ -52,6 +52,7 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
     <reference id="categoryDao" interface="org.opennms.netmgt.dao.api.CategoryDao" availability="mandatory" />
     <reference id="nodeDao" interface="org.opennms.netmgt.dao.api.NodeDao" availability="mandatory" />
     <reference id="ipInterfaceDao" interface="org.opennms.netmgt.dao.api.IpInterfaceDao" availability="mandatory" />
+    <reference id="alarmDao" interface="org.opennms.netmgt.dao.api.AlarmDao" availability="mandatory" />
 
     <bean id="categoryHopCriteriaFactory" class="org.opennms.features.topology.app.internal.support.CategoryHopCriteriaFactory">
         <argument ref="categoryDao"/>
@@ -91,14 +92,6 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
             <argument ref="alarmDao" />
         </bean>
     </service>
-
-
-    <!-- status provider -->
-    <reference id="alarmDao" interface="org.opennms.netmgt.dao.api.AlarmDao" availability="mandatory" />
-
-    <bean id="statusProvider" class="org.opennms.features.topology.app.internal.AlarmStatusProvider">
-        <property name="alarmDao" ref="alarmDao"/>
-    </bean>
 
     <bean id="topologyUIFactory" class="org.opennms.features.topology.app.internal.TopologyUIFactory" >
         <!-- Blueprint container bean -->
@@ -229,7 +222,16 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
         </service-properties>
         <bean class="org.opennms.features.topology.app.internal.operations.CircleLayoutOperation"/>
     </service>
-    
+
+
+    <service interface="org.opennms.features.topology.api.CheckedOperation" >
+        <service-properties>
+            <entry key="operation.menuLocation" value="View"/>
+            <entry key="operation.label" value="Hierarchy Layout?group=layout"/>
+        </service-properties>
+        <bean class="org.opennms.features.topology.app.internal.operations.HierarchyLayoutOperation"/>
+    </service>
+
     <!--
     <service interface="org.opennms.features.topology.api.CheckedOperation" >
         <service-properties>
@@ -373,16 +375,6 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/
             <entry key="operation.label" value="Automatic Refresh?group=additions"/>
         </service-properties>
         <bean class="org.opennms.features.topology.app.internal.operations.AutoRefreshToggleOperation"/>
-    </service>
-
-    <service interface="org.opennms.features.topology.api.CheckedOperation" >
-        <service-properties>
-            <entry key="operation.menuLocation" value="View"/>
-            <entry key="operation.label" value="Alarm Status?group=status"/>
-        </service-properties>
-        <bean class="org.opennms.features.topology.app.internal.operations.AlarmStatusToggleOperation">
-            <property name="statusProvider" ref="statusProvider"/>
-        </bean>
     </service>
 
     <!-- removed for SPC-247

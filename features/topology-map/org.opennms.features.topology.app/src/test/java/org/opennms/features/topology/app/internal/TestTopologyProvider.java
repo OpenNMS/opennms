@@ -38,7 +38,7 @@ import org.opennms.features.topology.api.topo.Vertex;
 
 public class TestTopologyProvider extends AbstractTopologyProvider implements GraphProvider {
 
-    public TestTopologyProvider(String namespace) {
+    public TestTopologyProvider() {
         super("test");
         
         resetContainer();

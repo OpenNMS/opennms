@@ -19,6 +19,7 @@
   <modules>
     <module>vaadin</module>
     <module>api</module>
+    <module>runtime-application</module>
     <module>runtime-base</module>
     <module>runtime-browsers</module>
     <module>runtime-simple</module>

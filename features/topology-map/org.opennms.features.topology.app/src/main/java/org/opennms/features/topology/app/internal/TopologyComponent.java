@@ -28,23 +28,36 @@
 
 package org.opennms.features.topology.app.internal;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
+import java.util.concurrent.CopyOnWriteArraySet;
+
 import com.vaadin.annotations.JavaScript;
 import com.vaadin.data.Property;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.shared.MouseEventDetails;
 import com.vaadin.ui.AbstractComponent;
-import org.opennms.features.topology.api.*;
+
+import org.opennms.features.topology.api.BoundingBox;
+import org.opennms.features.topology.api.Graph;
+import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.GraphContainer.ChangeListener;
+import org.opennms.features.topology.api.GraphVisitor;
+import org.opennms.features.topology.api.MapViewManager;
+import org.opennms.features.topology.api.MapViewManagerListener;
+import org.opennms.features.topology.api.Point;
+import org.opennms.features.topology.api.SelectionContext;
+import org.opennms.features.topology.api.SelectionListener;
 import org.opennms.features.topology.api.topo.Edge;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.features.topology.app.internal.gwt.client.TopologyComponentServerRpc;
 import org.opennms.features.topology.app.internal.gwt.client.TopologyComponentState;
 import org.opennms.features.topology.app.internal.support.IconRepositoryManager;
-
-import java.util.*;
-import java.util.concurrent.CopyOnWriteArraySet;
 import org.slf4j.LoggerFactory;
 
 @JavaScript({"gwt/public/topologywidget/js/d3.v3.4.13.js"})
@@ -140,7 +153,7 @@ public class TopologyComponent extends AbstractComponent implements ChangeListen
     };
 
     public interface VertexUpdateListener{
-        public void onVertexUpdate();
+        void onVertexUpdate();
     }
 
     private static final long serialVersionUID = 1L;
@@ -261,7 +274,7 @@ public class TopologyComponent extends AbstractComponent implements ChangeListen
 
         Vertex vertex = getGraph().getVertexByKey(id);
 
-        getGraph().getLayout().setLocation(vertex, x, y);
+        getGraph().getLayout().setLocation(vertex, new Point(x, y));
 
         if (selected) {
             m_graphContainer.getSelectionManager().selectVertexRefs(Collections.singleton(vertex));

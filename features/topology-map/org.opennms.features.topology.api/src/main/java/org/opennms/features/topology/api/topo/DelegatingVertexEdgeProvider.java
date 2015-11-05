@@ -40,8 +40,12 @@ public class DelegatingVertexEdgeProvider implements VertexProvider, EdgeProvide
 	}
 
 	public DelegatingVertexEdgeProvider(String vertexNamespace, String edgeNamespace) {
-		m_vertexProvider = new SimpleVertexProvider(vertexNamespace);
-		m_edgeProvider = new SimpleEdgeProvider(edgeNamespace);
+		this(new SimpleVertexProvider(vertexNamespace), new SimpleEdgeProvider(edgeNamespace));
+	}
+
+	public DelegatingVertexEdgeProvider(SimpleVertexProvider vertexProvider, SimpleEdgeProvider edgeProvider) {
+		m_vertexProvider = vertexProvider;
+		m_edgeProvider = edgeProvider;
 	}
 
 	protected final SimpleVertexProvider getSimpleVertexProvider() {

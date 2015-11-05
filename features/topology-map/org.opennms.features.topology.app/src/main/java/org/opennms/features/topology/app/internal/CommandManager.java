@@ -36,6 +36,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import com.vaadin.ui.MenuBar;
+import com.vaadin.ui.MenuBar.MenuItem;
+import com.vaadin.ui.UI;
+
 import org.opennms.features.topology.api.CheckedOperation;
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.Operation;
@@ -43,10 +47,6 @@ import org.opennms.features.topology.api.OperationContext;
 import org.opennms.features.topology.api.OperationContext.DisplayLocation;
 import org.opennms.features.topology.api.topo.VertexRef;
 import org.slf4j.LoggerFactory;
-
-import com.vaadin.ui.MenuBar;
-import com.vaadin.ui.MenuBar.MenuItem;
-import com.vaadin.ui.UI;
 
 public class CommandManager {
 
@@ -73,7 +73,7 @@ public class CommandManager {
 			return m_graphContainer;
 		}
 
-                @Override
+		@Override
 		public DisplayLocation getDisplayLocation() {
 			return m_displayLocation;
 		}
@@ -288,21 +288,21 @@ public class CommandManager {
 		//Check for null because separators have no Operation
 		
 		try {
-		if(operation != null) {
-    		List<VertexRef> selectedVertices = new ArrayList<VertexRef>(graphContainer.getSelectionManager().getSelectedVertexRefs());
-			boolean visibility = operation.display(selectedVertices, operationContext);
-    		menuItem.setVisible(visibility);
-    		boolean enabled = operation.enabled(selectedVertices, operationContext);
-    		menuItem.setEnabled(enabled);
-    
-    		if (operation instanceof CheckedOperation) {
-    			if (!menuItem.isCheckable()) {
-    				menuItem.setCheckable(true);
-    			}
-    
-    			menuItem.setChecked(((CheckedOperation) operation).isChecked(selectedVertices, operationContext));
-    		}
-		}
+			if(operation != null) {
+				List<VertexRef> selectedVertices = new ArrayList<VertexRef>(graphContainer.getSelectionManager().getSelectedVertexRefs());
+				boolean visibility = operation.display(selectedVertices, operationContext);
+				menuItem.setVisible(visibility);
+				boolean enabled = operation.enabled(selectedVertices, operationContext);
+				menuItem.setEnabled(enabled);
+
+				if (operation instanceof CheckedOperation) {
+					if (!menuItem.isCheckable()) {
+						menuItem.setCheckable(true);
+					}
+
+					menuItem.setChecked(((CheckedOperation) operation).isChecked(selectedVertices, operationContext));
+				}
+			}
 		} catch (final RuntimeException e) {
 		    LoggerFactory.getLogger(this.getClass()).warn("updateMenuItem: operation failed", e);
 		}
