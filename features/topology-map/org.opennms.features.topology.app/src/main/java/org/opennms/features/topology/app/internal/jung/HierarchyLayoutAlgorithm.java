@@ -45,8 +45,41 @@ import org.opennms.features.topology.api.topo.Edge;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
 
+/**
+ * Algorithm to transform a graph of vertices and edges into a hierarchical structure of a 2D plane.
+ * It is a geometric transformation which does not change the graph but the x an y position of its vertices.
+ *
+ * The current graph to be transformed is extracted from the {@link org.opennms.features.topology.api.GraphContainer}.
+ * Basically all its vertices are transformed and then the new layout is set back to the GraphContainer by executing
+ * the {@link #updateLayout(GraphContainer) updateLayout} method.
+ *
+ *
+ * <p>
+ *     Currently these algorithms can be used for transformations:
+ *     <ul>
+ *          <li>{@link org.opennms.features.topology.app.internal.jung.CircleLayoutAlgorithm}
+ *          <li>{@link org.opennms.features.topology.app.internal.jung.D3TopoLayoutAlgorithm}
+ *          <li>{@link org.opennms.features.topology.app.internal.jung.FRLayoutAlgorithm}
+ *          <li>{@link org.opennms.features.topology.app.internal.jung.ISOMLayoutAlgorithm}
+ *          <li>{@link org.opennms.features.topology.app.internal.jung.KKLayoutAlgorithm}
+ *          <li>{@link org.opennms.features.topology.app.internal.jung.RealUltimateLayoutAlgorithm}
+ *          <li>{@link org.opennms.features.topology.app.internal.jung.SpringLayoutAlgorithm}
+ *          <li>{@link org.opennms.features.topology.app.internal.jung.TopoFRLayoutAlgorithm}
+ *     </ul><p>
+ *
+ * @see <a href="http://jung.sourceforge.net">Java Universal Network/Graph Framework</a>
+ *
+ *
+ */
 public class HierarchyLayoutAlgorithm extends AbstractLayoutAlgorithm {
 
+    /**
+     * Updates the current layout by extracting the containers graph and then perform a (x,y) tranformation
+     * of all vertices.
+     *
+     * @param graphContainer The container of the current graph. Contains all relevant informations to perform the transformation
+     *                       of the {@link org.opennms.features.topology.api.Graph} by changing its {@link org.opennms.features.topology.api.Layout}
+     */
     @Override
     public void updateLayout(final GraphContainer graphContainer) {
         final Graph g = graphContainer.getGraph();
