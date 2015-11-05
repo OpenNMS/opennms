@@ -37,12 +37,8 @@
           <artifactId>commons-logging</artifactId>
         </exclusion>
         <exclusion>
-          <groupId>bouncycastle</groupId>
-          <artifactId>bcmail-jdk14</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>bouncycastle</groupId>
-          <artifactId>bcprov-jdk14</artifactId>
+          <groupId>com.lowagie</groupId>
+          <artifactId>itext</artifactId>
         </exclusion>
       </exclusions>
     </dependency>
@@ -58,6 +54,18 @@
         <exclusion>
           <groupId>commons-logging</groupId>
           <artifactId>commons-logging</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.bouncycastle</groupId>
+          <artifactId>bctsp-jdk14</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>bouncycastle</groupId>
+          <artifactId>bcmail-jdk14</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>bouncycastle</groupId>
+          <artifactId>bcprov-jdk14</artifactId>
         </exclusion>
       </exclusions>
     </dependency>
@@ -109,13 +117,6 @@
     <repository>
       <snapshots><enabled>false</enabled></snapshots>
       <releases><enabled>true</enabled></releases>
-      <id>opennms-repo</id>
-      <name>OpenNMS Maven Repository</name>
-      <url>http://maven.opennms.org/content/groups/opennms.org-release</url>
-    </repository>
-    <repository>
-      <snapshots><enabled>false</enabled></snapshots>
-      <releases><enabled>true</enabled></releases>
       <id>jasperreports</id>
       <name>Jasper Reports Maven Repository</name>
       <url>http://maven.opennms.org/content/repositories/jasperreports</url>
@@ -126,6 +127,13 @@
       <id>jaspersoft-third-party</id>
       <name>JasperSoft Third Party Maven Repository</name>
       <url>http://maven.opennms.org/content/repositories/jaspersoft-third-party</url>
+    </repository>
+    <repository>
+      <snapshots><enabled>false</enabled></snapshots>
+      <releases><enabled>true</enabled></releases>
+      <id>opennms-repo</id>
+      <name>OpenNMS Maven Repository</name>
+      <url>http://maven.opennms.org/content/groups/opennms.org-release</url>
     </repository>
   </repositories>
 </project>

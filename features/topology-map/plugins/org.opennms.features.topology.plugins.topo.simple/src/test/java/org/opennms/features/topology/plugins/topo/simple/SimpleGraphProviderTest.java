@@ -43,6 +43,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.xml.bind.JAXB;
 
+import com.vaadin.ui.UI;
+
 import org.easymock.EasyMock;
 import org.junit.After;
 import org.junit.Before;
@@ -66,10 +68,12 @@ import org.opennms.features.topology.api.topo.WrappedLeafVertex;
 import org.opennms.features.topology.api.topo.WrappedVertex;
 import org.opennms.features.topology.plugins.topo.simple.internal.operations.AddVertexOperation;
 import org.opennms.features.topology.plugins.topo.simple.internal.operations.RemoveVertexOperation;
-
-import com.vaadin.ui.UI;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class SimpleGraphProviderTest {
+
+    private static final Logger LOG = LoggerFactory.getLogger(SimpleGraphProviderTest.class);
 
     private static class TestOperationContext implements OperationContext {
 
@@ -228,8 +232,8 @@ public class SimpleGraphProviderTest {
         GraphProvider topologyProvider = new SimpleGraphProvider();
         topologyProvider.load("saved-vmware-graph.xml");
 
-        System.err.println("Vertex Count: " + topologyProvider.getVertices().size());
-        System.err.println("Edge Count: " + topologyProvider.getEdges().size());
+        LOG.info("Vertex Count: " + topologyProvider.getVertices().size());
+        LOG.info("Edge Count: " + topologyProvider.getEdges().size());
     }
 
     @Test

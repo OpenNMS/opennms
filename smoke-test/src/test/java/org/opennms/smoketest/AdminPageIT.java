@@ -60,7 +60,7 @@ public class AdminPageIT extends OpenNMSSeleniumTestCase {
         for (final String[] entry : new String[][] {
                 // OpenNMS System
                 new String[] { "Configure Users, Groups and On-Call Roles", "//h3[text()='Users and Groups']" },
-                new String[] { "System Information", "//h3[text()='OpenNMS Configuration']" },
+                new String[] { "System Configuration", "//h3[text()='OpenNMS Configuration']" },
                 new String[] { "Instrumentation Log Reader", "//h3[text()='Filtering']" },
 
                 // Operations
@@ -78,10 +78,11 @@ public class AdminPageIT extends OpenNMSSeleniumTestCase {
                 new String[] { "Ops Board Configuration", "//div[@id='content']//iframe" },
                 new String[] { "Surveillance Views Configuration", "//div[@id='content']//iframe" },
                 new String[] { "JMX Configuration Generator", "//div[@id='content']//iframe" },
+                new String[] { "Manage Business Services", "//h3[text()='Business Services']" },
 
                 // Node Provisioning
                 new String[] { "Manually Add an Interface", "//h3[text()='Enter IP Address']" },
-                new String[] { "Manage Provisioning Requisitions", "//h3[text()='Default Foreign Source Definition']" },
+                new String[] { "Manage Provisioning Requisitions", "//h4[contains(text(), 'Requisitions (')]" },
                 new String[] { "Import and Export Asset Information", "//h3[text()='Import and Export Assets']" },
                 new String[] { "Manage Surveillance Categories", "//h3[text()='Surveillance Categories']" },
                 new String[] { "Delete Nodes", "//h3[text()='Delete Nodes']" },

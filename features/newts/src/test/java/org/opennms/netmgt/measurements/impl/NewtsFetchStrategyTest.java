@@ -231,7 +231,7 @@ public class NewtsFetchStrategyTest {
 
         if (expect) {
             EasyMock.expect(m_sampleRepository.select(
-                    EasyMock.eq(m_context), EasyMock.eq(res), EasyMock.anyObject(), EasyMock.anyObject(), EasyMock.anyObject(), EasyMock.anyObject()
+                    EasyMock.eq(m_context), EasyMock.eq(res), EasyMock.anyObject(), EasyMock.anyObject(), EasyMock.anyObject(), EasyMock.anyObject(), EasyMock.anyObject()
             )).andReturn(results);
         }
 

@@ -30,6 +30,7 @@ package org.opennms.features.topology.app.internal;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -48,14 +49,15 @@ import org.opennms.core.test.MockLogAppender;
 import org.opennms.features.topology.api.Graph;
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.GraphVisitor;
+import org.opennms.features.topology.api.support.SemanticZoomLevelCriteria;
 import org.opennms.features.topology.api.support.VertexHopGraphProvider;
 import org.opennms.features.topology.api.support.VertexHopGraphProvider.FocusNodeHopCriteria;
 import org.opennms.features.topology.api.support.VertexHopGraphProvider.VertexHopCriteria;
 import org.opennms.features.topology.api.topo.AbstractEdgeRef;
 import org.opennms.features.topology.api.topo.AbstractVertex;
-import org.opennms.features.topology.api.topo.DefaultVertexRef;
 import org.opennms.features.topology.api.topo.CollapsibleCriteria;
 import org.opennms.features.topology.api.topo.Criteria;
+import org.opennms.features.topology.api.topo.DefaultVertexRef;
 import org.opennms.features.topology.api.topo.Edge;
 import org.opennms.features.topology.api.topo.EdgeProvider;
 import org.opennms.features.topology.api.topo.EdgeRef;
@@ -453,6 +455,33 @@ public class VEProviderGraphContainerTest {
 		
 		reset();
 
+	}
+
+	@Test
+	public void testFindCriteria() {
+		// The easiest test
+		Set<Criteria> criteria = m_graphContainer.findCriteria(Criteria.class);
+		assertNotNull(criteria);
+		assertEquals(criteria.size(), m_graphContainer.getCriteria().length);
+
+		// verify that subclasses also match
+		Set<TestCriteria1> testCriteria = m_graphContainer.findCriteria(TestCriteria1.class);
+		assertNotNull(testCriteria);
+		assertEquals(0, testCriteria.size());
+
+		m_graphContainer.addCriteria(new TestCriteria1());
+		m_graphContainer.addCriteria(new TestCriteria2());
+
+		testCriteria = m_graphContainer.findCriteria(TestCriteria1.class);
+		assertNotNull(testCriteria);
+		assertEquals(1, testCriteria.size());
+	}
+
+	@Test
+	public void testFindSingleCriteria() {
+		assertEquals(m_graphContainer.getCriteria()[0], m_graphContainer.findSingleCriteria(SemanticZoomLevelCriteria.class));
+		assertEquals(m_graphContainer.getCriteria()[0], m_graphContainer.findSingleCriteria(Criteria.class));
+		assertNull(m_graphContainer.findSingleCriteria(TestCriteria1.class));
 	}
 
 	private void verify() {

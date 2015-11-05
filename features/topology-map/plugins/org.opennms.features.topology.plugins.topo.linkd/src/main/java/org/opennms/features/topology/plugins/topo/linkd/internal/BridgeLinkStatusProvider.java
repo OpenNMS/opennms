@@ -52,7 +52,7 @@ public class BridgeLinkStatusProvider extends AbstractLinkStatusProvider {
     private Map<String, BridgeBridgeLink> m_bridgeBridgeLinks;
 
     @Override
-    public String getNameSpace() {
+    public String getNamespace() {
         return EnhancedLinkdTopologyProvider.BRIDGE_EDGE_NAMESPACE;
     }
 

@@ -30,8 +30,12 @@ package org.opennms.features.topology.plugins.browsers;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ProfilerTest {
+
+    private static final Logger LOG = LoggerFactory.getLogger(ProfilerTest.class);
 
     @Test
     public void testProfiler() throws InterruptedException {
@@ -48,14 +52,13 @@ public class ProfilerTest {
         Assert.assertTrue(profiler.timerMap.get("test").isStarted());
         Assert.assertEquals(2, profiler.timerMap.get("test").getCount());
 
-        Thread.sleep(1000);
+        Thread.sleep(250);
 
         profiler.stop("test");
         Assert.assertNotNull(profiler.timerMap.get("test"));
         Assert.assertFalse(profiler.timerMap.get("test").isStarted());
         Assert.assertEquals(2, profiler.timerMap.get("test").getCount());
-
-
-        System.out.println(profiler.toString());
+        
+        LOG.info(profiler.toString());
     }
 }

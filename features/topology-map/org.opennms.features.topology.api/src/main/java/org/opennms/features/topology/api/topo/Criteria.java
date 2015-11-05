@@ -96,7 +96,7 @@ public abstract class Criteria {
 	 * This criteria only applies to providers for this namespace
 	 */
 	public abstract String getNamespace();
-	
+
     @Override
     public abstract int hashCode();
 

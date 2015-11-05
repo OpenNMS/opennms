@@ -35,6 +35,9 @@
       <property name="eventForwarder">
         <onmsgi:reference interface="org.opennms.netmgt.events.api.EventForwarder"/>
       </property>
+        <property name="fetchStrategy">
+            <onmsgi:reference interface="org.opennms.netmgt.measurements.api.MeasurementFetchStrategy"/>
+        </property>
     </bean>
 
     <bean id="daemonListener" class="org.opennms.netmgt.events.api.AnnotationBasedEventListenerAdapter">

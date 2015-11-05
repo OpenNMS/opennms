@@ -17,7 +17,7 @@
     <form class="form-inline pull-right" role="search">
       <div class="input-group">
         <span class="input-group-addon"><span class="glyphicon glyphicon-search"/></span>
-        <input class="form-control" type="text" placeholder="Search/Filter" ng-model="reqFilter"></input>
+        <input class="form-control" type="text" placeholder="Search/Filter Nodes" ng-model="reqFilter"></input>
       </div>
       <div class="input-group">
         <button class="btn btn-default" ng-click="editForeignSource()">
@@ -60,6 +60,9 @@
             <th>Foreign ID</th>
             <th>Building</th>
             <th>City</th>
+            <th>IP Addresses</th>
+            <th># Assets</th>
+            <th># Categories</th>
             <th>Actions</th>
           </tr>
         </thead>
@@ -69,6 +72,14 @@
             <td>{{ node.foreignId }}</td>
             <td>{{ node.building }}</td>
             <td>{{ node.city }}</td>
+            <td>
+              <div ng-hide="node.interfaces.length > 0">[No IP Addresses]</div>
+              <div ng-repeat="intf in node.interfaces">
+                <p>{{ intf.ipAddress }} ({{ intf.snmpPrimary }})</p>
+              </div>
+            </td>
+            <td>{{ node.assets.length }}</td>
+            <td>{{ node.categories.length }}</td>
             <td>
               <button class="btn btn-default btn-xs" tooltip="Edit the {{node.nodeLabel}} Node" ng-click="editNode(node)">
                 <span class="glyphicon glyphicon-pencil"></span>
