@@ -22,26 +22,34 @@ API Changes
 
 New Features
 ------------
-* **FreeIPA Kerberos Authentication**: We've added a sample configuration for FreeIPA Kerberos SSO to our `jetty-webapps/opennms/WEB-INF/spring-security.d` directory.
-* **Alarm Heatmap**: A heatmap visualization has been added that lets you quickly visualize alarm status and outages within a category or on a node.
-* **JMX Configuration UI and CLI**: The JMX Configuration web UI and CLI have been rewritten to make it easier to generate complex JMX data collection configurations.
+* **Newts Storage for Data Collection**: In addition to RRD and JRobin, OpenNMS 17 data collection now supports our [Newts](http://opennms.github.io/newts/) time-series data store that uses the highly-scalable Apache Cassandra database as the storage backend. This storage solution provides higher performance than the file-based RRD and JRobin databases and practically unlimited scalability when using a cluster of Cassandra nodes. You can drastically reduce CPU and storage load on your OpenNMS system and increase the number of metrics stored per second by using the Newts storage engine.
+* **Measurements REST API Filtering**: The measurements REST API now supports the use of arithmetic filters on the returned datasets. This allows you to perform calculations or statistical operations on the data via server-side processing.
 * **Grafana Panel**: An optional panel has been added to the UI to allow you to integrate links to Grafana graphs in the UI.
-* **JMS Alarm Northbounder**: The implementation of a JMS northbounder for sending OpenNMS Alarms to external JMS listeners has been completed. Thanks to David Schlenk for this contribution!
-* **Easier Remote Poller configuration**: Monitoring locations can now be associated with multiple polling and collection packages. This can make some Remote Poller scenarios easier to configure.
+* **Streamlined UI Style**: The style of the UI has been refined to provide a clearer, more modern look-and-feel.
+* **Alarm Heatmap**: A heatmap visualization has been added that lets you quickly visualize alarm status and outages within a category or on a node.
+* **FreeIPA Kerberos Authentication**: We've added a sample configuration for FreeIPA Kerberos SSO to our `jetty-webapps/opennms/WEB-INF/spring-security.d` directory.
+* **JMX Configuration UI and CLI**: The JMX Configuration web UI and CLI have been rewritten to make it easier to generate complex JMX data collection configurations.
+* **JMS Alarm Northbounder**: The implementation of a JMS northbounder for sending OpenNMS Alarms to external JMS listeners has been completed. Thanks to David Schlenk (@dschlenk) for this contribution!
+* **OTRS 3.1+ Ticketing Integration**: Our OTRS ticketing integration has been updated to work with the API in OTRS 3.1 and higher. Thanks to Jonathan Sartin (@blackpoplar) for this contribution!
+* **Easier Remote Poller Configuration**: Monitoring locations can now be associated with multiple polling and collection packages. This can make some Remote Poller scenarios easier to configure.
+
+Dependency Updates
+------------------
+
+* Jasper Reports has been upgraded from 5.6.1 to 6.1.1.
 
 Events
 ------
 * A10 AX Load Balancer
-* Infoblox
-* Raytheon NXU-2A
 * Avocent DSView
+* Dell Force 10
 * Evertz 7800FR Multiframe
   * 7880-IP-ASI-IP
   * 7881-DEC-MP2
   * 7780-ASI-IP2
-* Dell Force 10
+* Infoblox
 * ~50 new NetApp Events
-
+* Raytheon NXU-2A
 
 Data Collection
 ---------------
@@ -54,14 +62,14 @@ Retired Features
 * **SVG Maps**: The SVG map feature relied on Linkd's code for drawing links between items on the map so it was also removed in OpenNMS 17.
 * **Xmlrpcd**: Xmlrpcd was a daemon that relayed inventory and polling events to an external system over the XML-RPC protocol. Because you can accomplish almost all of its use cases by using the provisioning REST service, it has been removed.
 
-CLI Changes
------------
-* `opennms-assemblies/jmx-config-generator-onejar` does not exist anymore. The onejar project is now located in `features/jmx-config-generator`.
-
 Internal Updates
 ----------------
-* The resource API for data storage has undergone heavy refactoring.
+* The Enlinkd link scanning code and topology code have been updated to provide higher performance.
+* The resource API for data storage has undergone heavy refactoring to provide changes necessary to support Newts.
+* The Jasper and statsd reports have been changed so that they use a new unified interface for fetching data from either RRD, JRobin, or Newts.
+* The Discovery engine has been refactored into its own project.
 * The REST interface was refactored to be based on Apache CXF 3.1.1.
 * The Dashboard has been rewritten using the Vaadin toolkit to modernize its look-and-feel.
+* The `opennms-assemblies/jmx-config-generator-onejar` project has been moved to `features/jmx-config-generator`.
 
 [GNU Affero General Public License 3.0]: http://www.gnu.org/licenses/agpl-3.0.html
