@@ -35,7 +35,6 @@ import java.util.Collection;
 import java.util.Date;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.spring.BeanUtils;
@@ -101,42 +100,33 @@ public class DefaultOutageServiceIntegrationTest implements InitializingBean {
         //assertEquals("Collection should be of size " + RANGE_LIMIT, RANGE_LIMIT, outages.size());
     }
 
-    // More tests should be defined for these
-
-    @Test
-    @Transactional
-    @Ignore
-    public void testGetSupressedOutages() {
-        Collection<OnmsOutage> outages = m_outageService.getSuppressedOutages();
-        assertTrue("Collection should be emtpy ", outages.isEmpty());
-
-    }
-
     @Test
     @JUnitTemporaryDatabase
-    public void testLoadOneOutage() {
-        OnmsOutage outage = m_outageService.load(1);
-        assertTrue("We loaded one outage ",outage.getId().equals(1));
-    }
+    public void testLoadOutageById() {
+     // Grab the id for the first outage in the collection
+        Collection<OnmsOutage> outages = m_outageService.getCurrentOutages();
+        assertTrue("The database should contain at least one outage", outages.size() > 0);
+        int id = outages.iterator().next().getId();
 
-    @Test
-    @Transactional
-    @Ignore
-    public void testNoOfSuppressedOutages(){
-        Integer outages = m_outageService.getSuppressedOutageCount();
-        assertTrue("We should find suppressed messages ", outages == 0);
+        OnmsOutage outage = m_outageService.load(id);
+        assertTrue("We loaded one outage ", outage.getId().equals(id));
     }
 
     @Test
     @Transactional
     @JUnitTemporaryDatabase
     public void testSuppression() {
+        // Grab the id for the first outage in the collection
+        Collection<OnmsOutage> outages = m_outageService.getCurrentOutages();
+        assertTrue("The database should contain at least one outage", outages.size() > 0);
+        int id = outages.iterator().next().getId();
+
         Date time = new Date();
-        //Load Outage manipulate and save it.
-        OnmsOutage myOutage = m_outageService.load(Integer.valueOf(1));
-        assertTrue("Loaded the outage ", myOutage.getId().equals(Integer.valueOf(1)));
+        // Load the outage, manipulate it and save it
+        OnmsOutage myOutage = m_outageService.load(Integer.valueOf(id));
+        assertTrue("Loaded the outage ", myOutage.getId().equals(id));
         myOutage.setSuppressTime(time);
         m_outageService.update(myOutage);
-        m_outageService.load(Integer.valueOf(1));
+        m_outageService.load(id);
     }
 }
