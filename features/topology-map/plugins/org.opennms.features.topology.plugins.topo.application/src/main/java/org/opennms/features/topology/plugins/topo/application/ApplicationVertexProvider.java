@@ -74,7 +74,6 @@ public class ApplicationVertexProvider extends SimpleVertexProvider {
         });
     }
 
-
     private <T extends VertexRef> T filter(T refToFilter, Criteria... criteria) {
         for (ApplicationCriteria eachCriteria : getApplicationCriteria(criteria)) {
             if (!eachCriteria.apply(refToFilter)) {

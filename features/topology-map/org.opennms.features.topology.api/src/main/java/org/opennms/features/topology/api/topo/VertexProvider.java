@@ -53,8 +53,9 @@ public interface VertexProvider {
 	boolean contributesTo(String namespace);
 
 	/**
-	 * @deprecated Use {@link #containsVertexId(VertexRef id)} instead.
+	 * @deprecated Use {@link #containsVertexId(VertexRef, Criteria...)} instead.
 	 */
+	@Deprecated
 	boolean containsVertexId(String id);
 
 	boolean containsVertexId(VertexRef id, Criteria... criteria);
