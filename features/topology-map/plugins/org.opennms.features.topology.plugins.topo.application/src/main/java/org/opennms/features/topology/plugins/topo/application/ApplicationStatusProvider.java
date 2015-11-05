@@ -115,7 +115,7 @@ public class ApplicationStatusProvider implements StatusProvider {
 
     @Override
     public String getNamespace() {
-        return ApplicationTopologyProvider.TOPOLOGY_NAMESPACE_SIMPLE;
+        return ApplicationTopologyProvider.TOPOLOGY_NAMESPACE;
     }
 
     @Override

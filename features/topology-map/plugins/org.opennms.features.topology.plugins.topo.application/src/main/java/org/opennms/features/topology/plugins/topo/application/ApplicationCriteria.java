@@ -53,7 +53,7 @@ public class ApplicationCriteria extends Criteria implements NamespaceAware {
 
     @Override
     public String getNamespace() {
-        return ApplicationTopologyProvider.TOPOLOGY_NAMESPACE_SIMPLE;
+        return ApplicationTopologyProvider.TOPOLOGY_NAMESPACE;
     }
 
     public boolean apply(VertexRef vertexRef) {
