@@ -74,6 +74,7 @@ public class ApplicationTopologyProvider extends AbstractTopologyProvider implem
                 ApplicationVertex applicationVertex = new ApplicationVertex(String.valueOf(application.getId()));
                 applicationVertex.setLabel(application.getName());
                 applicationVertex.setTooltipText(String.format("Application '%s'", application.getName()));
+                applicationVertex.setIconKey("application");
                 addVertices(applicationVertex);
 
                 for (OnmsMonitoredService eachMonitoredService : application.getMonitoredServices()) {
