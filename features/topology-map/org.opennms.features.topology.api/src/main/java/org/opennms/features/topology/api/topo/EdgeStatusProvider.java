@@ -31,11 +31,8 @@ package org.opennms.features.topology.api.topo;
 import java.util.Collection;
 import java.util.Map;
 
-public interface EdgeStatusProvider {
+import org.opennms.features.topology.api.NamespaceAware;
 
-    public String getNameSpace();
-
-    public Map<EdgeRef, Status> getStatusForEdges(EdgeProvider edgeProvider, Collection<EdgeRef> edges, Criteria[] criteria);
-
-    public boolean contributesTo(String namespace);
+public interface EdgeStatusProvider extends NamespaceAware {
+    Map<EdgeRef, Status> getStatusForEdges(EdgeProvider edgeProvider, Collection<EdgeRef> edges, Criteria[] criteria);
 }
