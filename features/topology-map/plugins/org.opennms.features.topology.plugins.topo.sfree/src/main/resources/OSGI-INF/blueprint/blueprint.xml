@@ -4,9 +4,9 @@ xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0"
 xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0 
 					http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd
 					http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0 
-					https://svn.apache.org/repos/asf/aries/tags/blueprint-0.3.1/blueprint-cm/src/main/resources/org/apache/aries/blueprint/compendium/cm/blueprint-cm-1.1.0.xsd
+					http://aries.apache.org/schemas/blueprint-cm/blueprint-cm-1.1.0.xsd
 					http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 
-					https://svn.apache.org/repos/asf/aries/tags/blueprint-0.3.1/blueprint-core/src/main/resources/org/apache/aries/blueprint/ext/blueprint-ext.xsd">
+					http://aries.apache.org/schemas/blueprint-ext/blueprint-ext-1.1.xsd">
    
 
    <bean id="sfreeTopologyProvider"  class="org.opennms.features.topology.plugins.topo.sfree.internal.SFreeTopologyProvider"/>

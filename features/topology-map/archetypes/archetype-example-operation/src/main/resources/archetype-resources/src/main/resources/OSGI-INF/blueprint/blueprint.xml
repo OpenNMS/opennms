@@ -1,3 +1,7 @@
+#set( $symbol_pound = '#' )
+#set( $symbol_dollar = '$' )
+#set( $symbol_escape = '\' )
+<?xml version="1.0" encoding="UTF-8"?>
 <blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0"
 xsi:schemaLocation="
@@ -6,11 +10,11 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 http://aries.apache.org/schemas/b
 
     <service interface="org.opennms.features.topology.api.Operation" >
         <service-properties>
-            <entry key="operation.menuLocation" value="Device"/>
+            <entry key="operation.menuLocation" value="File"/>
+            <entry key="operation.label" value="Test Operation"/>
             <entry key="operation.contextMenuLocation" value=""/>
-            <entry key="operation.label" value="SSH?group=additions"/> <!-- The label for this operation -->
         </service-properties>
-        <bean class="org.opennms.features.topology.ssh.internal.operations.SSHOperation"/>
+        <bean class="${package}.ExampleOperation"/>
     </service>
-    
+
 </blueprint>
