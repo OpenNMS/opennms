@@ -47,16 +47,16 @@ import org.slf4j.LoggerFactory;
 
 public class ApplicationTopologyProvider extends AbstractTopologyProvider implements GraphProvider {
 
-	public static final String TOPOLOGY_NAMESPACE = "application";
+    public static final String TOPOLOGY_NAMESPACE = "application";
 
-	private static final Logger LOG = LoggerFactory.getLogger(ApplicationTopologyProvider.class);
+    private static final Logger LOG = LoggerFactory.getLogger(ApplicationTopologyProvider.class);
 
     private ApplicationDao applicationDao;
 
     public ApplicationTopologyProvider(ApplicationDao applicationDao) {
         super(new ApplicationVertexProvider(TOPOLOGY_NAMESPACE), new SimpleEdgeProvider(TOPOLOGY_NAMESPACE));
         this.applicationDao = applicationDao;
-        LOG.debug("Creating a new SimpleTopologyProvider with namespace {}", TOPOLOGY_NAMESPACE);
+        LOG.debug("Creating a new {} with namespace {}", getClass().getSimpleName(), TOPOLOGY_NAMESPACE);
     }
 
     @Override
@@ -74,6 +74,7 @@ public class ApplicationTopologyProvider extends AbstractTopologyProvider implem
                 ApplicationVertex applicationVertex = new ApplicationVertex(String.valueOf(application.getId()));
                 applicationVertex.setLabel(application.getName());
                 applicationVertex.setTooltipText(String.format("Application '%s'", application.getName()));
+                applicationVertex.setIconKey("application");
                 addVertices(applicationVertex);
 
                 for (OnmsMonitoredService eachMonitoredService : application.getMonitoredServices()) {

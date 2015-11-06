@@ -44,12 +44,10 @@ public class VmwareRefreshOperation implements Operation {
     }
 
     @Override
-    public Undoer execute(List<VertexRef> targets, OperationContext operationContext) {
+    public void execute(List<VertexRef> targets, OperationContext operationContext) {
         m_topologyProvider.refresh();
 
         operationContext.getGraphContainer().redoLayout();
-
-        return null;
     }
 
     @Override
