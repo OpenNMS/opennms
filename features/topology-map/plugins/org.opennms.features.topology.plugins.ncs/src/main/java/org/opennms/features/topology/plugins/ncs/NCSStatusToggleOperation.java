@@ -60,14 +60,8 @@ public class NCSStatusToggleOperation extends AbstractCheckedOperation {
     }
 
     @Override
-    public Undoer execute(List<VertexRef> targets, OperationContext operationContext) {
+    public void execute(List<VertexRef> targets, OperationContext operationContext) {
         toggle(operationContext.getGraphContainer());
-        return new Undoer() {
-            @Override
-            public void undo(OperationContext operationContext) {
-                toggle(operationContext.getGraphContainer());
-            }
-        };
     }
 
     private void toggle(GraphContainer graphContainer) {

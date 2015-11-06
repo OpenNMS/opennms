@@ -106,9 +106,9 @@ public class TestContextMenuBuilder {
 				return new Operation() {
 
                     @Override
-                    public Undoer execute(List<VertexRef> targets, OperationContext operationContext) {
-                        return null;
-                    }
+                    public void execute(List<VertexRef> targets, OperationContext operationContext) {
+
+					}
 
                     @Override
                     public boolean display(List<VertexRef> targets,

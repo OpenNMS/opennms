@@ -37,7 +37,7 @@ import java.util.List;
 public abstract class AbstractSearchSelectionOperation implements Operation {
 
     @Override
-    public abstract Undoer execute(List<VertexRef> targets, OperationContext operationContext);
+    public abstract void execute(List<VertexRef> targets, OperationContext operationContext);
 
     @Override
     public boolean display(List<VertexRef> targets, OperationContext operationContext) {

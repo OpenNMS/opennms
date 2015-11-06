@@ -42,7 +42,7 @@ import org.slf4j.LoggerFactory;
 public class ErdosReniyOperation implements Operation {
 
 	@Override
-	public Undoer execute(List<VertexRef> targets, OperationContext operationContext) {
+	public void execute(List<VertexRef> targets, OperationContext operationContext) {
 		if (operationContext != null && operationContext.getGraphContainer() != null) {
 			try {
 				operationContext.getGraphContainer().getBaseTopology().load(SFreeTopologyProvider.ERDOS_RENIS);
@@ -55,7 +55,6 @@ public class ErdosReniyOperation implements Operation {
 			}
 			operationContext.getGraphContainer().redoLayout();
 		}
-		return null;
 	}
 
 	@Override
