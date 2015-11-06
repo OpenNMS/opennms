@@ -40,8 +40,10 @@ import java.util.List;
 public class SetFocusVertexOperation implements Operation {
 
     @Override
-    public Undoer execute(List<VertexRef> targets, OperationContext operationContext) {
-        if(targets == null || targets.isEmpty()) return null;
+    public void execute(List<VertexRef> targets, OperationContext operationContext) {
+        if(targets == null || targets.isEmpty()) {
+            return;
+        }
 
         final GraphContainer graphContainer = operationContext.getGraphContainer();
         graphContainer.clearCriteria();
@@ -51,8 +53,6 @@ public class SetFocusVertexOperation implements Operation {
             criteria.add(target);
         }
         graphContainer.redoLayout();
-
-        return null;
     }
 
     @Override

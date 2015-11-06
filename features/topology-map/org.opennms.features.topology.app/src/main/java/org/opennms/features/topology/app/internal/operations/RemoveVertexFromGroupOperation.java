@@ -58,9 +58,9 @@ import com.vaadin.ui.Window;
 public class RemoveVertexFromGroupOperation implements Constants, Operation {
 	
 	@Override
-	public Undoer execute(final List<VertexRef> targets, final OperationContext operationContext) {
+	public void execute(final List<VertexRef> targets, final OperationContext operationContext) {
 		if (targets == null || targets.isEmpty() || targets.size() != 1) {
-			return null;
+			return;
 		}
 
 		final Logger log = LoggerFactory.getLogger(this.getClass());
@@ -172,8 +172,6 @@ public class RemoveVertexFromGroupOperation implements Constants, Operation {
 		groupNamePrompt.setContent(promptForm);
 
 		window.addWindow(groupNamePrompt);
-
-		return null;
 	}
 
 	@Override

@@ -51,9 +51,11 @@ public class TracerouteOperation extends AbstractOperation {
     }
 
     @Override
-    public Undoer execute(final List<VertexRef> targets, final OperationContext operationContext) {
+    public void execute(final List<VertexRef> targets, final OperationContext operationContext) {
         final String url = getTracerouteURL();
-        if (url == null) return null;
+        if (url == null) {
+            return;
+        }
 
         if (targets != null) {
             for (final VertexRef target : targets) {
@@ -66,11 +68,9 @@ public class TracerouteOperation extends AbstractOperation {
 
                     final String tracerouteUrl = url.startsWith("/")? url : getFullUrl(url);
                     operationContext.getMainWindow().addWindow(new TracerouteWindow(node, tracerouteUrl));
-                    return null;
                 }
             }
         }
-        return null;
     }
 
     @Override
