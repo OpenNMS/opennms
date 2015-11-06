@@ -66,11 +66,11 @@ public class XmlCollectionAttribute extends AbstractCollectionAttribute {
         try {
             return parseNumber(m_value);
         } catch (Exception e) {
-            LOG.debug("getNumericValue: the value {} is not a valid number. Removing invalid characters and try again.", m_value);
+            LOG.debug("getNumericValue: the value '{}' is not a valid number. Removing invalid characters and try again.", m_value);
             try {
                 return parseNumber(m_value.replaceAll("[^-\\d.]+", "")); // Removing Units to return only a numeric value.
             } catch (Exception ex) {
-                LOG.warn("getNumericValue: the value {} is not parsable as a valid numeric value.", m_value);
+                LOG.warn("getNumericValue: the value '{}' is not parsable as a valid numeric value.", m_value);
             }
         }
         return Double.NaN; // Ignoring value from RRDtool/JRobin point of view.
