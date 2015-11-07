@@ -152,11 +152,11 @@ public class JmsNorthbounder extends AbstractNorthbounder implements
                                         }
 
                                     });
+                    LOG.debug("Sent message.");
                 } catch (JmsException e) {
                     LOG.error("Unable to send alarm to JMS NB because "
                             + e.getLocalizedMessage());
                 }
-                LOG.debug("Sent message.");
             }
         }
     }
