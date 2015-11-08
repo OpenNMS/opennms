@@ -43,7 +43,7 @@ public class NodeInfoOperation extends AbstractOperation {
     private String m_nodeListURL;
 
     @Override
-    public Undoer execute(final List<VertexRef> targets, final OperationContext operationContext) {
+    public void execute(final List<VertexRef> targets, final OperationContext operationContext) {
         try {
             String label = "";
             int nodeID = -1;
@@ -72,7 +72,6 @@ public class NodeInfoOperation extends AbstractOperation {
 
             final URL fullUrl = new URL(getFullUrl(url));
             operationContext.getMainWindow().addWindow(new NodeInfoWindow(node, fullUrl));
-            return null;
         } catch (final Exception e) {
             if (e instanceof RuntimeException) {
                 throw (RuntimeException)e;

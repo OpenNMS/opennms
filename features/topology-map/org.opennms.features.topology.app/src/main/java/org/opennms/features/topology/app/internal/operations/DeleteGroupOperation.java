@@ -39,9 +39,9 @@ import org.opennms.features.topology.api.topo.VertexRef;
 public class DeleteGroupOperation implements Operation {
 
 	@Override
-	public Undoer execute(List<VertexRef> targets, OperationContext operationContext) {
+	public void execute(List<VertexRef> targets, OperationContext operationContext) {
 		if (targets == null || targets.isEmpty() || targets.size() != 1) {
-			return null;
+			return;
 		}
 
 		GraphContainer graphContainer = operationContext.getGraphContainer();
@@ -68,8 +68,6 @@ public class DeleteGroupOperation implements Operation {
 		} else {
 			// Display a warning that the vertex cannot be deleted
 		}
-
-		return null;
 	}
 
 	@Override
