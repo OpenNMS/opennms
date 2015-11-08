@@ -46,28 +46,23 @@ import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
 
 /**
+ * <p>
  * Algorithm to transform a graph of vertices and edges into a hierarchical structure of a 2D plane.
  * It is a geometric transformation which does not change the graph but the x an y position of its vertices.
- *
+ * </p>
+ * <p>
+ * The algorithm generates the layout correctly if only one root element exists or if there are no vertices at all
+ * If no root element exists, a random vertex from the graph is picked and defined as root.
+ * If multiple root elements exist, the first one returned by getDisplayedVertices() which has no parent (= root candidate) is picked as the root element
+ * </p>
+ * <p>
  * The current graph to be transformed is extracted from the {@link org.opennms.features.topology.api.GraphContainer}.
  * Basically all its vertices are transformed and then the new layout is set back to the GraphContainer by executing
  * the {@link #updateLayout(GraphContainer) updateLayout} method.
+ * </p>
  *
- *
- * <p>
- *     Currently these algorithms can be used for transformations:
- *     <ul>
- *          <li>{@link org.opennms.features.topology.app.internal.jung.CircleLayoutAlgorithm}
- *          <li>{@link org.opennms.features.topology.app.internal.jung.D3TopoLayoutAlgorithm}
- *          <li>{@link org.opennms.features.topology.app.internal.jung.FRLayoutAlgorithm}
- *          <li>{@link org.opennms.features.topology.app.internal.jung.ISOMLayoutAlgorithm}
- *          <li>{@link org.opennms.features.topology.app.internal.jung.KKLayoutAlgorithm}
- *          <li>{@link org.opennms.features.topology.app.internal.jung.RealUltimateLayoutAlgorithm}
- *          <li>{@link org.opennms.features.topology.app.internal.jung.SpringLayoutAlgorithm}
- *          <li>{@link org.opennms.features.topology.app.internal.jung.TopoFRLayoutAlgorithm}
- *     </ul><p>
- *
- * @see <a href="http://jung.sourceforge.net">Java Universal Network/Graph Framework</a>
+ * The Algorithm uses the JUNG library.
+ * @see <a href="http://jung.sourceforge.net">JUNG Framework (Java Universal Network/Graph Framework)</a>
  *
  *
  */
