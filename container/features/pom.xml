@@ -53,6 +53,9 @@
             <!-- OpenNMS OSGi core -->
             <repository>mvn:org.opennms.osgi/opennms-osgi-core/${project.version}/xml/features</repository>
 
+            <!-- JAAS Login Module -->
+            <repository>mvn:org.opennms.container/jaas-login-module/${project.version}/xml/features</repository>
+
             <!-- JMX Config Generator features -->
             <repository>mvn:org.opennms.features/jmxconfiggenerator/${project.version}/xml/features</repository>
             <repository>mvn:org.opennms.features/vaadin-jmxconfiggenerator/${project.version}/xml/features</repository>
@@ -192,6 +195,7 @@
             <feature>opennms-osgi-core</feature>
             <feature>opennms-core</feature>
             <feature>opennms-core-web</feature>
+            <feature>opennms-jaas-login-module</feature>
             <feature>dashlet-alarms</feature>
             <feature>dashlet-charts</feature>
             <feature>dashlet-image</feature>
@@ -255,6 +259,12 @@
       <artifactId>karaf</artifactId>
       <version>${project.version}</version>
       <type>pom</type>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.container</groupId>
+      <artifactId>jaas-login-module</artifactId>
+      <version>${project.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
