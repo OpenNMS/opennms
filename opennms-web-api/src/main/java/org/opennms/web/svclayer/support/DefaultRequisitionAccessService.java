@@ -28,8 +28,10 @@
 
 package org.opennms.web.svclayer.support;
 
+import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -42,6 +44,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.ThreadFactory;
 
 import javax.ws.rs.core.MultivaluedMap;
+import javax.xml.datatype.XMLGregorianCalendar;
 
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventProxy;
@@ -433,14 +436,23 @@ public class DefaultRequisitionAccessService implements RequisitionAccessService
         URL createSnapshot() throws MalformedURLException {
             flush();
 
-            final Requisition pending = getPendingForeignSourceRepository().getRequisition(getForeignSource());
-            final Requisition deployed = getDeployedForeignSourceRepository().getRequisition(getForeignSource());
+            final ForeignSourceRepository pendingForeignSourceRepository = getPendingForeignSourceRepository();
+            final String foreignSource = getForeignSource();
 
-            final URL activeUrl = pending == null || (deployed != null && deployed.getDateStamp().compare(pending.getDateStamp()) > -1)
-                    ? getDeployedForeignSourceRepository().getRequisitionURL(getForeignSource())
-                        : RequisitionFileUtils.createSnapshot(getPendingForeignSourceRepository(), getForeignSource(), pending.getDate()).toURI().toURL();
+            final Requisition pending = pendingForeignSourceRepository.getRequisition(foreignSource);
+            final Requisition deployed = getDeployedForeignSourceRepository().getRequisition(foreignSource);
 
-                    return activeUrl;
+            final URL activeUrl;
+            final XMLGregorianCalendar pendingDateStamp = pending.getDateStamp();
+
+            if (pending == null || (deployed != null && deployed.getDateStamp().compare(pendingDateStamp) > -1)) {
+                activeUrl = getDeployedForeignSourceRepository().getRequisitionURL(foreignSource);
+            } else {
+                final Date pendingDate = pending.getDate();
+                final File snapshot = RequisitionFileUtils.createSnapshot(pendingForeignSourceRepository, foreignSource, pendingDate);
+                activeUrl = snapshot.toURI().toURL();
+            }
+            return activeUrl;
         }
 
         private void flush() {
