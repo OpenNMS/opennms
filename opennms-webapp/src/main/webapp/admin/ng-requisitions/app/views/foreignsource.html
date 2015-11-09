@@ -9,7 +9,6 @@
   <li ng-show="foreignSource == 'default'">Default Definition</li>
 </ol>
 
-<form name="fsForm" novalidate>
 
 <!-- Toolbar -->
 
@@ -34,6 +33,7 @@
 <!-- Common - Content -->
 
 <div class="row">
+<form name="fsForm" novalidate>
   <div class="col-md-12">
     <br/>
   </div>
@@ -50,6 +50,7 @@
       <div ng-show="fsForm.scanInterval.$invalid" class="help-block">Scan Interval is required.</div>
     </div>
   </div>
+</form>
 </div>
 
 <!-- Content -->
@@ -65,12 +66,10 @@
         <tab heading="Detectors">
           <div class="row">
             <div class="col-md-3">
-              <!-- Not working at the moment
               <div class="input-group">
                 <span class="input-group-addon"><span class="glyphicon glyphicon-search"/></span>
-                <input class="form-control" type="text" placeholder="Search/Filter Detectors" ng-model="detectorFilter" />
+                <input class="form-control" type="text" placeholder="Search/Filter Detectors" ng-model="filters.detector" />
               </div>
-              -->
             </div>
             <div class="col-md-9">
               <div class="input-group pull-right">
@@ -120,12 +119,10 @@
         <tab heading="Policies">
           <div class="row">
             <div class="col-md-3">
-              <!-- Not working at the moment
               <div class="input-group">
                 <span class="input-group-addon"><span class="glyphicon glyphicon-search"/></span>
-                <input class="form-control" type="text" placeholder="Search/Filter Policies" ng-model="policyFilter" />
+                <input class="form-control" type="text" placeholder="Search/Filter Policies" ng-model="filters.policy" />
               </div>
-              -->
             </div>
             <div class="col-md-9">
               <div class="input-group pull-right">
@@ -177,4 +174,3 @@
   </div> <!-- column -->
 </div> <!-- row -->
 
-</form>
