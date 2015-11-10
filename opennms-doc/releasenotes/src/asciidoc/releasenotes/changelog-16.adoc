@@ -1,6 +1,46 @@
 [releasenotes-16]
 === OpenNMS 16
 
+[releasenotes-changelog-16.0.4]
+==== Release 16.0.4
+
+Release 16.0.4 is the latest stable release of OpenNMS.  It contains a number of bugfixes, including a change
+to help mitigate remote attacks over RMI.
+
+As of this release, RMI listens only on localhost by default.  This can be overridden by setting the property `opennms.poller.server.serverHost={lt}hostname or IP{gt}` in `opennms.conf` or `opennms.properties`.
+
+The old behavior can be restored by setting the property to: `opennms.poller.server.serverHost=0.0.0.0`.
+
+The codename for 16.0.4 is _Doorman_.
+
+===== Bug
+
+* JMX Config Tool CLI is not packaged correctly (Issue http://issues.opennms.org/browse/NMS-5946[NMS-5946])
+* Event Translator cant translate events with update-field data present (Issue http://issues.opennms.org/browse/NMS-7024[NMS-7024])
+* Fonts are too small in link detail page (Issue http://issues.opennms.org/browse/NMS-7411[NMS-7411])
+* Discovery.Pinger seems to ignore loglevel (Issue http://issues.opennms.org/browse/NMS-7509[NMS-7509])
+* Cannot edit some Asset Info fields (Issue http://issues.opennms.org/browse/NMS-7750[NMS-7750])
+* c.m.v.a.ThreadPoolAsynchronousRunner: com.mchange.v2.async.ThreadPoolAsynchronousRunner$DeadlockDetector@59804d53 -- APPARENT DEADLOCK!!! Creating emergency threads for unassigned pending tasks! (Issue http://issues.opennms.org/browse/NMS-7755[NMS-7755])
+* Linkd Not Start and close OpenNMS starting (Issue http://issues.opennms.org/browse/NMS-7789[NMS-7789])
+* NPE on "manage and unmanage services and interfaces" (Issue http://issues.opennms.org/browse/NMS-7828[NMS-7828])
+* Slow LinkdTopologyProvider/EnhancedLinkdTopologyProvider in bigger enviroments (Issue http://issues.opennms.org/browse/NMS-7846[NMS-7846])
+* distributed details page broken (Issue http://issues.opennms.org/browse/NMS-7855[NMS-7855])
+* IpNetToMedia Hibernate exception in enlinkd.log (Issue http://issues.opennms.org/browse/NMS-7861[NMS-7861])
+* HttpClient ignores socket timeout (Issue http://issues.opennms.org/browse/NMS-7877[NMS-7877])
+* XML data collection with JSON handler fails (Issue http://issues.opennms.org/browse/NMS-7885[NMS-7885])
+* Statsd PDF export gives class not found exception (Issue http://issues.opennms.org/browse/NMS-7897[NMS-7897])
+* Deadlocks on Demo (Issue http://issues.opennms.org/browse/NMS-7899[NMS-7899])
+* JMX Configgenerator Web UI throws NPE when navigating to 2nd page. (Issue http://issues.opennms.org/browse/NMS-7900[NMS-7900])
+* Alarm detail filters get mixed up on the ops board (Issue http://issues.opennms.org/browse/NMS-7917[NMS-7917])
+* Exception Decoding LLDP ChassisId When type is NetworkAddress (Issue http://issues.opennms.org/browse/NMS-7931[NMS-7931])
+* Bouncycastle JARs break large-key crypto operations (Issue http://issues.opennms.org/browse/NMS-7959[NMS-7959])
+* JSoup doesn't properly parse encoded HTML character which confuses the XML Collector (Issue http://issues.opennms.org/browse/NMS-7963[NMS-7963])
+* RMI should only bind to localhost by default. (Issue http://issues.opennms.org/browse/NMS-7971[NMS-7971])
+
+===== Enhancement
+
+* Interactive JMX data collection configuration UI (Issue http://issues.opennms.org/browse/NMS-4364[NMS-4364])
+
 [releasenotes-changelog-16.0.3]
 ==== Release 16.0.3
 
