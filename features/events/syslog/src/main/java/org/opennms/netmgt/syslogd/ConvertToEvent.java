@@ -60,6 +60,9 @@ import org.slf4j.LoggerFactory;
 /**
  * This routine does the majority of Syslogd's work.
  * Improvements are most likely to be made.
+ * 
+ * TODO: This class is sloooow. It needs to be sped up significantly
+ * to handle increased syslog volume.
  *
  * @author <a href="mailto:joed@opennms.org">Johan Edstrom</a>
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
@@ -94,7 +97,7 @@ public class ConvertToEvent {
         final DatagramPacket packet,
         final SyslogdConfig config
     ) throws UnsupportedEncodingException, MessageDiscardedException {
-        this(packet.getAddress(), packet.getPort(), packet.getData(), packet.getLength(), config);
+        this(packet.getAddress(), packet.getPort(), new String(packet.getData(), 0, packet.getLength(), "US-ASCII"), config);
     }
 
     /**
@@ -114,8 +117,7 @@ public class ConvertToEvent {
     public ConvertToEvent(
         final InetAddress addr,
         final int port,
-        final byte[] data,
-        final int len,
+        final String data,
         final SyslogdConfig config
     ) throws UnsupportedEncodingException, MessageDiscardedException {
 
@@ -127,12 +129,13 @@ public class ConvertToEvent {
         final HideMessage hideMessage = config.getHideMessages();
         final String discardUei = config.getDiscardUei();
 
-        String deZeroedData = new String(data, 0, len, "US-ASCII");
-        if (deZeroedData.endsWith("\0")) {
-            deZeroedData = deZeroedData.substring(0, deZeroedData.length() - 1);
+        final String syslogString;
+        if (data.endsWith("\0")) {
+            syslogString = data.substring(0, data.length() - 1);
+        } else {
+            syslogString = data;
         }
 
-        String syslogString = deZeroedData;
 
         LOG.debug("Converting to event: {}", this);
 

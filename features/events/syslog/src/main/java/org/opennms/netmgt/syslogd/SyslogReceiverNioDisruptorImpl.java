@@ -37,26 +37,24 @@ import java.nio.ByteBuffer;
 import java.nio.channels.DatagramChannel;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
 
-import org.opennms.core.concurrent.LogPreservingThreadFactory;
+import org.apache.cassandra.concurrent.JMXEnabledSharedExecutorPool;
+import org.apache.cassandra.config.Config;
 import org.opennms.core.concurrent.WaterfallExecutor;
 import org.opennms.core.logging.Logging;
 import org.opennms.netmgt.config.SyslogdConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.lmax.disruptor.RingBuffer;
+import com.lmax.disruptor.dsl.Disruptor;
+
 /**
  * @author Seth
- * @author <a href="mailto:weave@oculan.com">Brian Weaver</a>
- * @author <a href="http://www.oculan.com">Oculan Corporation</a>
- * @fiddler joed
  */
-class SyslogReceiverNioThreadPoolImpl implements SyslogReceiver {
+class SyslogReceiverNioDisruptorImpl implements SyslogReceiver {
 
-    private static final Logger LOG = LoggerFactory.getLogger(SyslogReceiverNioThreadPoolImpl.class);
+    private static final Logger LOG = LoggerFactory.getLogger(SyslogReceiverNioDisruptorImpl.class);
 
     private static final int SOCKET_TIMEOUT = 500;
 
@@ -71,6 +69,19 @@ class SyslogReceiverNioThreadPoolImpl implements SyslogReceiver {
      * calls on the syslog port.
      */
     public static final int SOCKET_RECEIVER_COUNT = Runtime.getRuntime().availableProcessors() * 2;
+
+    /**
+     * This is the size of the LMAX Disruptor queue that contains preallocated
+     * {@link ByteBufferMessage} instances. This is the number of simultaneous
+     * messages that can be in-flight at any given time.
+     */
+    public static final int SOCKET_BYTE_BUFFER_QUEUE_SIZE = 16384;
+
+    /**
+     * This is the size of the LMAX Disruptor queue that contains {@link SyslogConnection}
+     * tasks that will convert the syslog bytes into OpenNMS events.
+     */
+    public static final int EVENT_CONVERSION_TASK_QUEUE_SIZE = 65536;
 
     /**
      * The Fiber's status.
@@ -90,6 +101,20 @@ class SyslogReceiverNioThreadPoolImpl implements SyslogReceiver {
 
     private final ExecutorService m_socketReceivers;
 
+    //private final Disruptor<SyslogConnection> m_disruptor;
+
+    private final Disruptor<ByteBufferMessage> m_byteBuffers;
+    private final RingBuffer<ByteBufferMessage> m_ringBuffer;
+
+    /**
+     * This class is a container for a preallocated {@link ByteBuffer} that is
+     * used to hold incoming syslog packet data.
+     */
+    private static class ByteBufferMessage {
+        // Allocate a buffer that's big enough to handle any sane syslog message
+        public final ByteBuffer buffer = ByteBuffer.allocate(MAX_PACKET_SIZE);
+    }
+
     /**
      * Construct a new receiver
      *
@@ -98,7 +123,7 @@ class SyslogReceiverNioThreadPoolImpl implements SyslogReceiver {
      * @param hostGroup
      * @param messageGroup
      */
-    SyslogReceiverNioThreadPoolImpl(DatagramChannel channel, SyslogdConfig config) {
+    SyslogReceiverNioDisruptorImpl(DatagramChannel channel, SyslogdConfig config) {
         if (channel == null) {
             throw new IllegalArgumentException("Channel cannot be null");
         } else if (config == null) {
@@ -109,6 +134,12 @@ class SyslogReceiverNioThreadPoolImpl implements SyslogReceiver {
         m_channel = channel;
         m_config = config;
 
+        // Turn Cassandra client mode on so that we can use the {@link SharedExecutorPool} classes.
+        Config.setClientMode(true);
+
+        m_executor = JMXEnabledSharedExecutorPool.SHARED.newExecutor(Runtime.getRuntime().availableProcessors() * 2, Integer.MAX_VALUE, "syslogConnections", "OpenNMS.Syslogd");
+
+        /*
         m_executor = new ThreadPoolExecutor(
             Runtime.getRuntime().availableProcessors() * 2,
             Runtime.getRuntime().availableProcessors() * 2,
@@ -117,10 +148,14 @@ class SyslogReceiverNioThreadPoolImpl implements SyslogReceiver {
             new LinkedBlockingQueue<Runnable>(),
             new LogPreservingThreadFactory(getClass().getSimpleName(), Integer.MAX_VALUE)
         );
+        */
 
         // This thread pool is used to process {@link DatagramChannel#receive(ByteBuffer)} calls
         // on the syslog port. By using multiple threads, we can optimize the receipt of
         // packet data from the syslog port and avoid discarding UDP syslog packets.
+        m_socketReceivers = JMXEnabledSharedExecutorPool.SHARED.newExecutor(SOCKET_RECEIVER_COUNT, Integer.MAX_VALUE, "socketReceivers", "OpenNMS.Syslogd");
+
+        /*
         m_socketReceivers = new ThreadPoolExecutor(
             Runtime.getRuntime().availableProcessors(),
             Runtime.getRuntime().availableProcessors(),
@@ -129,6 +164,43 @@ class SyslogReceiverNioThreadPoolImpl implements SyslogReceiver {
             new LinkedBlockingQueue<Runnable>(),
             new LogPreservingThreadFactory(getClass().getSimpleName() + "-SocketReceiver", Integer.MAX_VALUE)
         );
+        */
+
+        /*
+        // Use an LMAX Disruptor to process incoming packets
+        m_disruptor = new Disruptor<SyslogConnection>(SyslogConnection::new, EVENT_CONVERSION_TASK_QUEUE_SIZE, m_executor);
+        // Handle each message by enqueuing it on an executor
+        m_disruptor.handleEventsWith(
+            (event, sequence, endOfBatch) -> 
+            WaterfallExecutor.waterfall(m_executor, event)
+        );
+        m_disruptor.start();
+        */
+
+        /*
+        // Use an LMAX Disruptor as a ring buffer for incoming packets
+        m_packetRingBuffer = new Disruptor<PacketMessage>(PacketMessage::new, SOCKET_BYTE_BUFFER_QUEUE_SIZE, Executors.newCachedThreadPool());
+        // Handle each message by enqueuing it on an executor
+        m_disruptor.handleEventsWith(
+            (event, sequence, endOfBatch) -> 
+            WaterfallExecutor.waterfall(m_executor, new SyslogConnection(event))
+        );
+        */
+
+        m_byteBuffers = new Disruptor<ByteBufferMessage>(ByteBufferMessage::new, SOCKET_BYTE_BUFFER_QUEUE_SIZE, m_executor);
+        m_byteBuffers.start();
+        m_ringBuffer = m_byteBuffers.getRingBuffer();
+
+        /*
+         * TODO: Do we need to do anything to warm up the ring buffer? Probably not I guess.
+
+        for (int i = 0; i < 8192; i++) {
+            long sequence = ringBuffer.next();
+            try {
+                ringBuffer.get(sequence);
+            }
+        }
+        */
     }
 
     /**
@@ -197,10 +269,6 @@ class SyslogReceiverNioThreadPoolImpl implements SyslogReceiver {
                     // set to avoid numerous tracing message
                     boolean ioInterrupted = false;
 
-                    // Allocate a buffer that's big enough to handle any sane syslog message
-                    ByteBuffer buffer = ByteBuffer.allocate(MAX_PACKET_SIZE);
-                    buffer.clear();
-
                     // now start processing incoming requests
                     while (!m_stop) {
                         if (m_context.isInterrupted()) {
@@ -213,16 +281,33 @@ class SyslogReceiverNioThreadPoolImpl implements SyslogReceiver {
                                 LOG.debug("Waiting on a datagram to arrive");
                             }
 
+                            // Check out a ByteBufferMessage
+                            final long sequence = m_ringBuffer.next();
+
+                            // Fetch the ByteBufferMessage
+                            final ByteBufferMessage message = m_ringBuffer.get(sequence);
+
                             // Write the datagram into the ByteBuffer
-                            InetSocketAddress source = (InetSocketAddress)m_channel.receive(buffer);
+                            final InetSocketAddress source = (InetSocketAddress)m_channel.receive(message.buffer);
 
                             // Flip the buffer from write to read mode
-                            buffer.flip();
+                            message.buffer.flip();
 
-                            WaterfallExecutor.waterfall(m_executor, new SyslogConnection(SyslogConnection.copyPacket(source.getAddress(), source.getPort(), buffer), m_config));
+                            // TODO: Change this into a disruptor call
+                            WaterfallExecutor.waterfall(m_executor, new SyslogConnection(source.getAddress(), source.getPort(), message.buffer, m_config, new Runnable() {
+                                @Override
+                                public void run() {
+                                    // Clear the buffer so that it's ready for writing again
+                                    message.buffer.clear();
 
-                            // Clear the buffer so that it's ready for writing again
-                            buffer.clear();
+                                    if (sequence % 50 == 0) {
+                                        LOG.debug("Released 50 more datagrams");
+                                    }
+
+                                    // Release the buffer back to the disruptor
+                                    m_ringBuffer.publish(sequence);
+                                }
+                            }));
 
                             // reset the flag
                             ioInterrupted = false; 

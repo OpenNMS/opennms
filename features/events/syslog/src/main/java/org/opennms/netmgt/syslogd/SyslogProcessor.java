@@ -44,10 +44,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * This class encapsulates the execution context for processing syslog messages
- * received via UDP from remote agents. This is a separate event context to
- * allow the event receiver to do minimum work to avoid dropping packets from
- * the agents.
+ * <p>This class is a {@link Callable} task that is responsible for broadcasting
+ * an OpenNMS syslog event on the event bus. It also broadcasts newSuspect events
+ * if a syslog message has been received that is not associated with a node.</p>
+ * 
+ * <p>This task is separated out to allow the event receiver to do minimum work 
+ * to avoid dropping packets from the syslog agents.</p>
  *
  * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
  * @author <a href="http://www.oculan.com">Oculan Corporation </a>

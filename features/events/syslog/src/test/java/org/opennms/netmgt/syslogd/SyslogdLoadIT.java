@@ -38,7 +38,10 @@ import java.net.BindException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
+import java.net.SocketAddress;
 import java.net.UnknownHostException;
+import java.nio.ByteBuffer;
+import java.nio.channels.DatagramChannel;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -206,7 +209,7 @@ public class SyslogdLoadIT implements InitializingBean {
         // Test by sending over an NIO channel
         SocketAddress address = new InetSocketAddress(InetAddressUtils.getLocalHostAddress(), SyslogClient.PORT);
         final DatagramChannel channel = DatagramChannel.open();
-        final ByteBuffer buffer = ByteBuffer.allocate(0xffff);
+        final ByteBuffer buffer = ByteBuffer.allocate(SyslogReceiverNioThreadPoolImpl.MAX_PACKET_SIZE);
         buffer.clear();
         System.err.println("Starting to send packets");
         final long start = System.currentTimeMillis();
@@ -220,12 +223,13 @@ public class SyslogdLoadIT implements InitializingBean {
         channel.close();
         */
 
-        System.err.println(String.format("Sent %d packets in %d milliseconds", eventCount, System.currentTimeMillis() - start));
-
         long mid = System.currentTimeMillis();
+        System.err.println(String.format("Sent %d packets in %d milliseconds", eventCount, mid - start));
+
         m_eventCounter.waitForFinish(120000);
         long end = System.currentTimeMillis();
-        
+
+        System.err.println(String.format("Events expected: %d, events received: %d", eventCount, m_eventCounter.getCount()));
         final long total = (end - start);
         final double eventsPerSecond = (eventCount * 1000.0 / total);
         System.err.println(String.format("total time: %d, wait time: %d, events per second: %8.4f", total, (end - mid), eventsPerSecond));
