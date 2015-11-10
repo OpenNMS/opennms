@@ -31,9 +31,9 @@ package org.opennms.netmgt.syslogd;
 import java.io.UnsupportedEncodingException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
-import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 import java.util.concurrent.Callable;
 
 import org.opennms.netmgt.config.SyslogdConfig;
@@ -41,75 +41,124 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * <p>SyslogConnection class.</p>
+ * <p>This class is a {@link Callable} task that is responsible for converting
+ * the syslog payload into an OpenNMS event by using the {@link ConvertToEvent}
+ * class.</p>
  *
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  * @author <a href="mailto:joed@opennms.org">Johan Edstrom</a>
  * @author <a href="mailto:mhuot@opennms.org">Mike Huot</a>
  */
 public class SyslogConnection implements Callable<Callable<?>> {
+
     private static final Logger LOG = LoggerFactory.getLogger(SyslogConnection.class);
 
-    private final DatagramPacket _packet;
-
-    private final SyslogdConfig _config;
+    private InetAddress m_sourceAddress;
+    private int m_port;
+    private ByteBuffer m_bytes;
+    private SyslogdConfig m_config;
+    private Runnable m_callback;
 
     /**
-     * <p>Constructor for SyslogConnection.</p>
-     *
-     * @param packet a {@link java.net.DatagramPacket} object.
-     * @param matchPattern a {@link java.lang.String} object.
-     * @param hostGroup a int.
-     * @param messageGroup a int.
-     * @param ueiList a {@link org.opennms.netmgt.config.syslogd.UeiList} object.
-     * @param hideMessages a {@link org.opennms.netmgt.config.syslogd.HideMessage} object.
-     * @param discardUei a {@link java.lang.String} object.
+     * No-arg constructor so that we can preallocate this object for use with
+     * an LMAX Disruptor.
      */
+    public SyslogConnection() {
+    }
+
     public SyslogConnection(final DatagramPacket packet, final SyslogdConfig config) {
-        if (packet == null) {
-            throw new IllegalArgumentException("Packet cannot be null");
+        this(packet, config, null);
+    }
+
+    public SyslogConnection(final DatagramPacket packet, final SyslogdConfig config, final Runnable callback) {
+        this(packet.getAddress(), packet.getPort(), ByteBuffer.wrap(packet.getData()), config, callback);
+    }
+
+    public SyslogConnection(final InetAddress sourceAddress, final int port, final ByteBuffer bytes, final SyslogdConfig config, final Runnable callback) {
+        if (sourceAddress == null) {
+            throw new IllegalArgumentException("Source address cannot be null");
+        } else if (bytes == null) {
+            throw new IllegalArgumentException("Bytes cannot be null");
         } else if (config == null) {
             throw new IllegalArgumentException("Config cannot be null");
         }
 
-        _packet = copyPacket(packet);
-        _config = config;
+        m_sourceAddress = sourceAddress;
+        m_port = port;
+        m_bytes = bytes;
+        m_config = config;
+        m_callback = callback;
     }
 
-    public SyslogConnection(final InetSocketAddress source, final ByteBuffer buffer, final SyslogdConfig config) {
-        if (source == null) {
-            throw new IllegalArgumentException("Source cannot be null");
-        } else if (buffer == null) {
-            throw new IllegalArgumentException("Buffer cannot be null");
-        } else if (config == null) {
-            throw new IllegalArgumentException("Config cannot be null");
-        }
-
-        _packet = copyPacket(source, buffer);
-        _config = config;
+    public InetAddress getSourceAddress() {
+        return m_sourceAddress;
     }
 
-    /**
-     * <p>call</p>
-     */
+    public void setSourceAddress(InetAddress sourceAddress) {
+        m_sourceAddress = sourceAddress;
+    }
+
+    public int getPort() {
+        return m_port;
+    }
+
+    public void setPort(int port) {
+        m_port = port;
+    }
+
+    public ByteBuffer getByteBuffer() {
+        return m_bytes;
+    }
+
+    public void setByteBuffer(ByteBuffer bytes) {
+        m_bytes = bytes;
+    }
+
+    public Runnable getCallback() {
+        return m_callback;
+    }
+
+    public void setCallback(Runnable callback) {
+        m_callback = callback;
+    }
+
+    public SyslogdConfig getConfig() {
+        return m_config;
+    }
+
+    public void setConfig(SyslogdConfig config) {
+        m_config = config;
+    }
+
     @Override
     public SyslogProcessor call() {
 
-        ConvertToEvent re = null;
         try {
-            re = new ConvertToEvent(
-                _packet,
-                _config
+            LOG.debug("Converting syslog message into event");
+
+            // TODO: Change to a static call?
+            ConvertToEvent re = new ConvertToEvent(
+                m_sourceAddress,
+                m_port,
+                // Decode the packet content as ASCII
+                // TODO: Support more character encodings?
+                StandardCharsets.US_ASCII.decode(m_bytes).toString(),
+                m_config
             );
 
-            LOG.debug("Sending received packet to the SyslogProcessor queue");
+            LOG.debug("Sending syslog event to the SyslogProcessor queue");
 
-            return new SyslogProcessor(re.getEvent(), _config.getNewSuspectOnMessage());
+            return new SyslogProcessor(re.getEvent(), m_config.getNewSuspectOnMessage());
 
         } catch (final UnsupportedEncodingException e1) {
             LOG.debug("Failure to convert package", e1);
         } catch (final MessageDiscardedException e) {
             LOG.debug("Message discarded, returning without enqueueing event.", e);
+        } finally {
+            // TODO: Make this async?
+            if (m_callback != null) {
+                m_callback.run();
+            }
         }
         return null;
     }
@@ -121,32 +170,36 @@ public class SyslogConnection implements Callable<Callable<?>> {
         try {
             addr = InetAddress.getByAddress(packet.getAddress().getHostName(), packet.getAddress().getAddress());
             DatagramPacket retPacket = new DatagramPacket(
-                                                          message,
-                                                          packet.getOffset(),
-                                                          packet.getLength(),
-                                                          addr,
-                                                          packet.getPort()
-                                                      );
-                                                      return retPacket;
+                message,
+                packet.getOffset(),
+                packet.getLength(),
+                addr,
+                packet.getPort()
+            );
+            return retPacket;
         } catch (UnknownHostException e) {
             LOG.warn("unable to clone InetAddress object for {}", packet.getAddress());
         }
         return null;
     }
 
-    private static DatagramPacket copyPacket(final InetSocketAddress source, final ByteBuffer buffer) {
-        byte[] message = new byte[0xffff];
+    public static DatagramPacket copyPacket(final InetAddress sourceAddress, final int sourcePort, final ByteBuffer buffer) {
+        byte[] message = new byte[SyslogReceiverNioThreadPoolImpl.MAX_PACKET_SIZE];
         int i = 0;
         // Copy the buffer into the byte array
         while (buffer.hasRemaining()) {
             message[i++] = buffer.get();
         }
+        return copyPacket(sourceAddress, sourcePort, message, i);
+    }
+
+    private static DatagramPacket copyPacket(final InetAddress sourceAddress, final int sourcePort, final byte[] buffer, final int length) {
         DatagramPacket retPacket = new DatagramPacket(
-            message,
+            buffer,
             0,
-            i,
-            source.getAddress(),
-            source.getPort()
+            length,
+            sourceAddress,
+            sourcePort
         );
         return retPacket;
     }

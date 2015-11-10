@@ -52,8 +52,15 @@ import org.slf4j.LoggerFactory;
 public final class SyslogHandler implements Service {
     private static final Logger LOG = LoggerFactory.getLogger(SyslogHandler.class);
 
-    private final boolean USE_NIO = false;
-    private final boolean USE_NETTY = false;
+    private static enum SyslogReceiverImpl {
+        JAVA_NET,
+        NIO,
+        NIO_DISRUPTOR,
+        NETTY
+    }
+
+    // TODO: Make this configurable
+    private static final SyslogReceiverImpl IMPLEMENTATION = SyslogReceiverImpl.JAVA_NET;
 
     /**
      * The UDP receiver thread.
@@ -93,7 +100,9 @@ public final class SyslogHandler implements Service {
     @Override
     public synchronized void start() {
         try {
-            if (USE_NIO) {
+            switch(IMPLEMENTATION) {
+            case NIO:
+            case NIO_DISRUPTOR:
                 // NIO SyslogReceiver implementation
 
                 DatagramChannel channel = DatagramChannel.open();
@@ -103,11 +112,19 @@ public final class SyslogHandler implements Service {
                     channel.socket().bind(new InetSocketAddress(m_dgPort));
                 }
 
-                m_receiver = new SyslogReceiverNioThreadPoolImpl(
-                    channel,
-                    m_config
-                );
-            } else if (USE_NETTY){
+                if (IMPLEMENTATION == SyslogReceiverImpl.NIO) {
+                    m_receiver = new SyslogReceiverNioThreadPoolImpl(
+                        channel,
+                        m_config
+                    );
+                } else {
+                    m_receiver = new SyslogReceiverNioDisruptorImpl(
+                        channel,
+                        m_config
+                    );
+                }
+                break;
+            case NETTY:
                 // Camel Netty SyslogReceiver implementation
 
                 m_receiver = new SyslogReceiverCamelNettyImpl(
@@ -117,7 +134,9 @@ public final class SyslogHandler implements Service {
                     m_dgPort,
                     m_config
                 );
-            } else {
+                break;
+            case JAVA_NET:
+            default:
                 // java.net SyslogReceiver implementation
 
                 // The UDP socket for receipt of packets
