@@ -29,7 +29,8 @@
 		<property name="serviceName" value="daemonMgr"/>
 		<property name="service" ref="daemonMgr"/>
 		<property name="serviceInterface" value="org.opennms.netmgt.vmmgr.DaemonManager"/>	
-		<property name="clientSocketFactory" ref="rmiSocketFactory" />
+		<!-- limits to localhost
+          <property name="clientSocketFactory" ref="rmiSocketFactory" /> -->
 		<!-- defaults to 1099 
 		<property name="registryPort" value="1199"/>
 		-->
