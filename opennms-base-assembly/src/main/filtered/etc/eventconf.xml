@@ -10,11 +10,10 @@
     </security>
   </global>
 
+  <!-- Be cautious changing the order of event files as events are processed in top-to-bottom file list order with the first found event match winning -->
   <event-file>events/opennms.events.xml</event-file>
   <event-file>events/Translator.default.events.xml</event-file>
-  
   <event-file>events/Rancid.events.xml</event-file>
-  
   <event-file>events/3Com.events.xml</event-file>
   <event-file>events/AdaptecRaid.events.xml</event-file>
   <event-file>events/ADIC-v2.events.xml</event-file>
@@ -238,7 +237,6 @@
   <event-file>events/Websense.events.xml</event-file>
   <event-file>events/Xerox-V2.events.xml</event-file>
   <event-file>events/Xerox.events.xml</event-file>
-  
   <event-file>events/topology-status.events.xml</event-file>
   <event-file>events/ncs-component.events.xml</event-file>
   <event-file>events/asset-management.events.xml</event-file>
