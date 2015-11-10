@@ -105,11 +105,11 @@ public class NodeRestServiceIT extends AbstractSpringJerseyRestTestCase {
 
         // Use "Hello, Handsome" as a value to test CXF 'search.decode.values' property which will
         // URL-decode FIQL search values
-        LOG.warn(sendRequest(GET, url, parseParamData("_s=label==Hello%252C+Handsome"), 404));
+        LOG.warn(sendRequest(GET, url, parseParamData("_s=label==Hello%252C+Handsome"), 204));
 
         // Put all of the FIQL reserved characters into a string which should equal:
         // !$'()+,;=
-        LOG.warn(sendRequest(GET, url, parseParamData("_s=label==%2521%2524%2527%2528%2529%252B%252C%253B%253D"), 404));
+        LOG.warn(sendRequest(GET, url, parseParamData("_s=label==%2521%2524%2527%2528%2529%252B%252C%253B%253D"), 204));
 
         //LOG.warn(sendRequest(GET, url, parseParamData("limit=2&$filter=id eq '1'"), 200));
 
