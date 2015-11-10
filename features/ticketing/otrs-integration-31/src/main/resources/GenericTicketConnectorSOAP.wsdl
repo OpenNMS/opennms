@@ -4,7 +4,7 @@ The Generic Ticket Connector web service for SOAP protocol
 
 WARNING: This WSDL file is for Development and Test purposes ONLY!
 </wsdl:documentation>
-    <wsdl:types><xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.otrs.org/TicketConnector/">
+    <wsdl:types><xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" targetNamespace="http://www.otrs.org/TicketConnector/">
     <xsd:element name="TicketCreate">
         <xsd:complexType>
             <xsd:sequence>
