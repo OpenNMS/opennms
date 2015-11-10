@@ -37,6 +37,10 @@
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
+      <artifactId>opennms-bootstrap</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
       <artifactId>opennms-icmp-api</artifactId>
     </dependency>
     <dependency>
