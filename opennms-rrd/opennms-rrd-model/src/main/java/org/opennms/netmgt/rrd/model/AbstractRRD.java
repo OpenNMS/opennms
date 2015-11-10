@@ -29,10 +29,17 @@
 package org.opennms.netmgt.rrd.model;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.SortedSet;
 import java.util.TreeMap;
+import java.util.TreeSet;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
@@ -429,15 +436,15 @@ public abstract class AbstractRRD {
      *
      * @return the all samples
      */
-    public List<RrdSample> generateSamples() {
-        List<RrdSample> samples = new ArrayList<RrdSample>();
-        getRras().stream().filter(r -> r.hasAverageAsCF()).sorted((r1,r2) -> r1.getPdpPerRow().compareTo(r2.getPdpPerRow())).forEach(r -> {
-            generateSamples(r).forEach(s -> {
-                if (!samples.contains(s))
-                    samples.add(s);
-            });
-        });
-        Collections.sort(samples);
+    public Collection<RrdSample> generateSamples() {
+        final SortedSet<RrdSample> samples = new TreeSet<>();
+        getRras().stream()
+                 .filter(r -> r.hasAverageAsCF())
+                 .sorted((r1, r2) -> r2.getPdpPerRow().compareTo(r1.getPdpPerRow()))
+                 .forEach(r -> generateSamples(r).stream()
+                                                 .filter(s -> !s.isNan())
+                                                 .forEach(s -> samples.add(s)));
+
         return samples;
     }
 
@@ -460,7 +467,7 @@ public abstract class AbstractRRD {
      * @return the samples for the given RRA
      */
     public List<RrdSample> generateSamples(AbstractRRA rra) {
-        List<RrdSample> samples = new ArrayList<RrdSample>();
+        final List<RrdSample> samples = new ArrayList<>();
         if (!rra.hasAverageAsCF()) {
             return samples;
         }
@@ -476,7 +483,7 @@ public abstract class AbstractRRD {
             for (int i=0; i<getDataSources().size(); i++) {
                 values.add(Double.NaN);
             }
-            valuesMap.put(new Long(ts), values);
+            valuesMap.put(ts, values);
         }
 
         // Initialize Last Values
@@ -489,7 +496,7 @@ public abstract class AbstractRRD {
         // Set Last-Value for Counters
         for (int i = 0; i < getDataSources().size(); i++) {
             if (getDataSource(i).isCounter()) {
-                valuesMap.get(new Long(end)).set(i, lastValues.get(i));
+                valuesMap.get(end).set(i, lastValues.get(i));
             }
         }
 
@@ -510,12 +517,12 @@ public abstract class AbstractRRD {
                         }
                         lastValues.set(i, value);
                         if (!counterSrc.getValue(i).isNaN()) {
-                            valuesMap.get(new Long(ts)).set(i, value);
+                            valuesMap.get(ts).set(i, value);
                         }
                     }
                 } else {
                     if (!counterSrc.getValue(i).isNaN()) {
-                        valuesMap.get(new Long(ts + step)).set(i, counterSrc.getValue(i));
+                        valuesMap.get(ts + step).set(i, counterSrc.getValue(i));
                     }
                 }
             }

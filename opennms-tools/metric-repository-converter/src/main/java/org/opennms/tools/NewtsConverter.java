@@ -36,18 +36,27 @@ import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Properties;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Throwables;
 import com.google.common.collect.Iterables;
+import com.google.common.collect.Iterators;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import org.apache.commons.cli.CommandLine;
@@ -118,8 +127,8 @@ public class NewtsConverter implements AutoCloseable {
     private final Indexer indexer;
 
     /** The processed resources. */
-    private static int processedMetrics = 0;
-    private static int processedSamples = 0;
+    private static AtomicLong processedMetrics = new AtomicLong(0);
+    private static AtomicLong processedSamples = new AtomicLong(0);
 
     /** The Newts inject batch size. */
     private int batchSize;
@@ -153,7 +162,7 @@ public class NewtsConverter implements AutoCloseable {
                 .printZeroNever()
                 .toFormatter();
 
-        LOG.info("Conversion Finished: metrics processed: {}, time elapsed: {}", processedMetrics, formatter.print(period));
+        LOG.info("Conversion Finished: metrics: {}, samples: {}, time: {}", processedMetrics, processedSamples, formatter.print(period));
         System.exit(0);
     }
 
@@ -258,13 +267,12 @@ public class NewtsConverter implements AutoCloseable {
         final int threads;
         try {
             threads = cmd.hasOption('n')
-                           ? Integer.parseInt(cmd.getOptionValue('n'))
-                           : Runtime.getRuntime().availableProcessors();
+                      ? Integer.parseInt(cmd.getOptionValue('n'))
+                      : Runtime.getRuntime().availableProcessors();
             this.executor = new ForkJoinPool(threads,
                                              ForkJoinPool.defaultForkJoinWorkerThreadFactory,
                                              null,
                                              true);
-//            this.executor = Executors.newFixedThreadPool(threads);
 
         } catch (Exception e) {
             new HelpFormatter().printHelp(80, CMD_SYNTAX, String.format("ERROR: Invalid number of threads: %s%n", e.getMessage()), options, null);
@@ -451,43 +459,53 @@ public class NewtsConverter implements AutoCloseable {
     private void injectSamplesToNewts(final ResourcePath resourcePath,
                                       final String group,
                                       final List<? extends AbstractDS> dataSources,
-                                      final List<RrdSample> samples) {
+                                      final Collection<RrdSample> samples) {
         // Create a resource ID from the resource path
         final String groupId = NewtsUtils.toResourceId(ResourcePath.get(resourcePath, group));
 
-        // Insert the samples in batches
-        List<Sample> batch = Lists.newArrayListWithCapacity(this.batchSize);
-        for (RrdSample s : samples) {
+        final Map<String, String> attributes = Maps.newHashMap();
+        NewtsUtils.addIndicesToAttributes(resourcePath, attributes);
+
+        final Resource resource = new Resource(groupId,
+                                               Optional.of(attributes));
+
+        // Transform the RRD samples into NewTS samples
+        List<Sample> batch = new ArrayList<>(this.batchSize);
+        for (final RrdSample s : samples) {
             for (int i = 0; i < dataSources.size(); i++) {
+                final double value = s.getValue(i);
+                if (Double.isNaN(value)) {
+                    continue;
+                }
+
+                final AbstractDS ds = dataSources.get(i);
+
                 final Timestamp timestamp = Timestamp.fromEpochMillis(s.getTimestamp());
 
-                final Map<String, String> attributes = Maps.newHashMap();
-                NewtsUtils.addIndicesToAttributes(resourcePath, attributes);
-                final Resource resource = new Resource(groupId,
-                                                       Optional.of(attributes));
+                final String metric = ds.getName();
 
-                final String metric = dataSources.get(i).getName();
-
-                final MetricType type = dataSources.get(i).isCounter()
+                final MetricType type = ds.isCounter()
                                         ? MetricType.COUNTER
                                         : MetricType.GAUGE;
-                final ValueType<?> valueType = ValueType.compose(s.getValue(i), type);
+                final ValueType<?> valueType = ValueType.compose(value, type);
 
-                final Sample sample = new Sample(timestamp, resource, metric, type, valueType);
-
-                batch.add(sample);
+                batch.add(new Sample(timestamp, resource, metric, type, valueType));
 
                 if (batch.size() >= this.batchSize) {
-                    repository.insert(batch, true);
-                    batch = Lists.newArrayListWithCapacity(this.batchSize);
+                    this.repository.insert(batch, true);
+                    this.processedSamples.getAndAdd(batch.size());
+
+                    batch = new ArrayList<>(this.batchSize);
                 }
             }
         }
 
-        repository.insert(batch, true);
+        if (!batch.isEmpty()) {
+            this.repository.insert(batch, true);
+            this.processedSamples.getAndAdd(batch.size());
+        }
 
-        this.processedMetrics += dataSources.size();
-        this.processedSamples += dataSources.size() * samples.size();
+        this.processedMetrics.getAndAdd(dataSources.size());
 
         LOG.trace("Stats: {} / {}", this.processedMetrics, this.processedSamples);
     }
