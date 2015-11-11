@@ -84,9 +84,11 @@ public class AlarmRestService extends AlarmRestServiceBase {
     public Response getAlarm(@Context SecurityContext securityContext, @PathParam("alarmId") final String alarmId) {
         assertUserReadCredentials(securityContext);
         if ("summaries".equals(alarmId)) {
-            return Response.ok(new AlarmSummaryCollection(m_alarmDao.getNodeAlarmSummaries())).build();
+            final AlarmSummaryCollection collection = new AlarmSummaryCollection(m_alarmDao.getNodeAlarmSummaries());
+            return collection == null ? Response.noContent().build() : Response.ok(collection).build();
         } else {
-            return Response.ok(m_alarmDao.get(Integer.valueOf(alarmId))).build();
+            final OnmsAlarm alarm = m_alarmDao.get(Integer.valueOf(alarmId));
+            return alarm == null ? Response.noContent().build() : Response.ok(alarm).build();
         }
     }
 
