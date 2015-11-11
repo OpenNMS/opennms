@@ -28,14 +28,6 @@
 
 package org.opennms.features.vaadin.jmxconfiggenerator.ui.mbeans;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-
 import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
 import com.google.common.collect.Maps;
@@ -54,7 +46,6 @@ import com.vaadin.ui.Field;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.TableFieldFactory;
 import com.vaadin.ui.TextField;
-
 import org.opennms.features.vaadin.jmxconfiggenerator.Config;
 import org.opennms.features.vaadin.jmxconfiggenerator.data.MetaAttribItem;
 import org.opennms.features.vaadin.jmxconfiggenerator.data.MetaAttribItem.AttribType;
@@ -63,6 +54,14 @@ import org.opennms.features.vaadin.jmxconfiggenerator.data.SelectionValueChanged
 import org.opennms.features.vaadin.jmxconfiggenerator.ui.UIHelper;
 import org.opennms.features.vaadin.jmxconfiggenerator.ui.mbeans.validation.AttributeNameValidator;
 import org.opennms.features.vaadin.jmxconfiggenerator.ui.mbeans.validation.UniqueAttributeNameValidator;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 /**
  *
@@ -104,10 +103,10 @@ public class AttributesTable<T> extends Table implements SelectionValueChangedLi
 			Field<?> field = null;
 			if (MetaAttribItem.ALIAS.equals(propertyId.toString())) {
 				field = new TableTextFieldWrapper(createAlias(itemId));
-				field.setWidth(80, Unit.PERCENTAGE);
 			}
 			if (MetaAttribItem.NAME.equals(propertyId.toString())) {
-				field = createName(itemId);
+				field = new TextField();
+				field.setReadOnly(true);
 			}
 			if (MetaAttribItem.SELECTED.equals(propertyId.toString())) {
 				field = createSelected(itemId);
@@ -116,14 +115,6 @@ public class AttributesTable<T> extends Table implements SelectionValueChangedLi
 				field = createType(itemId);
 			}
 			return field;
-		}
-
-		private TextField createName(final Object itemId) {
-			TextField field = new TextField();
-			field.setWidth(100, Unit.PERCENTAGE);
-			field.setReadOnly(true);
-			return field;
-
 		}
 
 		private CheckBox createSelected(final Object itemId) {
