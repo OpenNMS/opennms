@@ -105,8 +105,7 @@ public class AttributesTable<T> extends Table implements SelectionValueChangedLi
 				field = new TableTextFieldWrapper(createAlias(itemId));
 			}
 			if (MetaAttribItem.NAME.equals(propertyId.toString())) {
-				field = new TextField();
-				field.setReadOnly(true);
+				field = createName(itemId);
 			}
 			if (MetaAttribItem.SELECTED.equals(propertyId.toString())) {
 				field = createSelected(itemId);
@@ -114,6 +113,13 @@ public class AttributesTable<T> extends Table implements SelectionValueChangedLi
 			if (MetaAttribItem.TYPE.equals(propertyId.toString())) {
 				field = createType(itemId);
 			}
+			return field;
+		}
+
+		private TextField createName(final Object itemId) {
+			TextField field = new TextField();
+			field.setWidth(100, Unit.PERCENTAGE);
+			field.setReadOnly(true);
 			return field;
 		}
 
@@ -329,7 +335,7 @@ public class AttributesTable<T> extends Table implements SelectionValueChangedLi
 		final Map<Object, Field<String>> filteredFieldsToValidate = Maps.filterEntries(aliasFieldsMap, new Predicate<Map.Entry<Object, Field<String>>>() {
 			@Override
 			public boolean apply(Map.Entry<Object, Field<String>> input) {
-					return getContainerDataSource().isSelected((T) input.getKey());
+				return getContainerDataSource().isSelected((T) input.getKey());
 			}
 		});
 
