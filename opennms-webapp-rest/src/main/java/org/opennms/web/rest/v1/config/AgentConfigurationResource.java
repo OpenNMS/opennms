@@ -160,7 +160,7 @@ public class AgentConfigurationResource implements InitializingBean {
         LOG.debug("getAgentsForService(): filterName={}, serviceName={}", filterName, serviceName);
 
         if (filterName == null || serviceName == null) {
-            throw new IllegalArgumentException("You must specify a filter name and service name!");
+            throw new ConfigurationResourceException("You must specify a filter name and service name!");
         }
 
         final Filter filter = m_collectdConfigurationResource.get().getFilter(filterName);

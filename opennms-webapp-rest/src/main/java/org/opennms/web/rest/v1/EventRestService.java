@@ -42,6 +42,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriInfo;
 
@@ -101,13 +102,11 @@ public class EventRestService extends OnmsRestService {
      * parameters
      * 
      * @return Collection of OnmsEventCollection (ready to be XML-ified)
-     * @throws java.text.ParseException
-     *             if any.
      */
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     @Transactional
-    public OnmsEventCollection getEvents(@Context final UriInfo uriInfo) throws ParseException {
+    public OnmsEventCollection getEvents(@Context final UriInfo uriInfo) {
         final CriteriaBuilder builder = getCriteriaBuilder(uriInfo.getQueryParameters());
         builder.orderBy("eventTime").asc();
 
@@ -122,14 +121,12 @@ public class EventRestService extends OnmsRestService {
      * parameters
      * 
      * @return Collection of OnmsEventCollection (ready to be XML-ified)
-     * @throws java.text.ParseException
-     *             if any.
      */
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     @Path("between")
     @Transactional
-    public OnmsEventCollection getEventsBetween(@Context final UriInfo uriInfo) throws ParseException {
+    public OnmsEventCollection getEventsBetween(@Context final UriInfo uriInfo) {
         final MultivaluedMap<String, String> params = uriInfo.getQueryParameters();
 
         final String column;
@@ -143,8 +140,12 @@ public class EventRestService extends OnmsRestService {
         if (params.containsKey("begin")) {
             try {
                 begin = ISO8601_FORMATTER.parseLocalDateTime(params.getFirst("begin")).toDate();
-            } catch (final Throwable t) {
-                begin = ISO8601_FORMATTER_MILLIS.parseDateTime(params.getFirst("begin")).toDate();
+            } catch (final Throwable t1) {
+                try {
+                    begin = ISO8601_FORMATTER_MILLIS.parseDateTime(params.getFirst("begin")).toDate();
+                } catch (final Throwable t2) {
+                    throw getException(Status.BAD_REQUEST, "Can't parse start date");
+                }
             }
             params.remove("begin");
         } else {
@@ -154,8 +155,12 @@ public class EventRestService extends OnmsRestService {
         if (params.containsKey("end")) {
             try {
                 end = ISO8601_FORMATTER.parseLocalDateTime(params.getFirst("end")).toDate();
-            } catch (final Throwable t) {
-                end = ISO8601_FORMATTER_MILLIS.parseLocalDateTime(params.getFirst("end")).toDate();
+            } catch (final Throwable t1) {
+                try {
+                    end = ISO8601_FORMATTER_MILLIS.parseLocalDateTime(params.getFirst("end")).toDate();
+                } catch (final Throwable t2) {
+                    throw getException(Status.BAD_REQUEST, "Can't parse end date");
+                }
             }
             params.remove("end");
         } else {
@@ -167,7 +172,7 @@ public class EventRestService extends OnmsRestService {
         try {
             builder.between(column, begin, end);
         } catch (final Throwable t) {
-            throw new IllegalArgumentException("Unable to parse " + begin + " and " + end + " as dates!");
+            throw getException(Status.BAD_REQUEST, "Unable to parse " + begin + " and " + end + " as dates!");
         }
 
         final OnmsEventCollection coll = new OnmsEventCollection(m_eventDao.findMatching(builder.toCriteria()));
@@ -196,7 +201,7 @@ public class EventRestService extends OnmsRestService {
         try {
             final OnmsEvent event = m_eventDao.get(Integer.valueOf(eventId));
             if (ack == null) {
-                throw new IllegalArgumentException("Must supply the 'ack' parameter, set to either 'true' or 'false'");
+                throw getException(Status.BAD_REQUEST, "Must supply the 'ack' parameter, set to either 'true' or 'false'");
             }
             processEventAck(securityContext, event, ack);
             return Response.seeOther(getRedirectUri(uriInfo)).build();
