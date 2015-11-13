@@ -81,7 +81,7 @@ public class AgentConfigurationResourceTest {
         m_configResource.afterPropertiesSet();
     }
 
-    @Test(expected=IllegalArgumentException.class)
+    @Test(expected=WebApplicationException.class)
     public void testInvalidInputs() throws Exception {
         m_configResource.getAgentsJson(null, null);
     }
