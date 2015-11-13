@@ -202,6 +202,7 @@ public class Controller {
         Authenticator.setDefault(getAuthenticator());
 
         StatusGetter statusGetter = new StatusGetter();
+        statusGetter.setJmxUrl(getJmxUrl());
         statusGetter.setVerbose(isVerbose());
 
         try {

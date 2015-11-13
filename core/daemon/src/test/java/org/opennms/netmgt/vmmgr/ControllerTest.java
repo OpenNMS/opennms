@@ -113,4 +113,11 @@ public class ControllerTest {
         MockLogAppender.resetEvents();
         server.close();
     }
+
+    @Test
+    public void testStatus() throws Exception {
+        final Controller controller = new Controller();
+        System.out.println(controller.getJmxUrl());
+        System.out.println("Status: " + controller.status());
+    }
 }

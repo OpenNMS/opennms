@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.vmmgr;
 
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map.Entry;
@@ -158,7 +159,20 @@ public class StatusGetter {
 
         LinkedHashMap<String, String> results = new LinkedHashMap<String, String>();
 
-        List<String> statusResults = (List<String>)Controller.doInvokeOperation(getJmxUrl(), "status");
+        List<String> statusResults = Collections.emptyList();
+        try {
+            statusResults = (List<String>)Controller.doInvokeOperation(getJmxUrl(), "status");
+        } catch (Throwable e) {
+            if (isVerbose()) {
+                System.out.println("Could not connect to "
+                        + getJmxUrl()
+                        + " (OpenNMS might not be running or "
+                        + "could be starting up or shutting down): "
+                        + e.getMessage());
+            }
+            m_status = Status.CONNECTION_REFUSED;
+            return;
+        }
 
         /*
          * Once we split a status entry, it will look like this:
