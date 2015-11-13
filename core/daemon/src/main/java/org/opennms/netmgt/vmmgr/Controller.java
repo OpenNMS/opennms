@@ -29,9 +29,7 @@
 package org.opennms.netmgt.vmmgr;
 
 import java.io.IOException;
-import java.net.Authenticator;
 import java.net.MalformedURLException;
-import java.net.PasswordAuthentication;
 
 import javax.management.InstanceNotFoundException;
 import javax.management.MBeanException;
@@ -44,12 +42,12 @@ import javax.management.remote.JMXConnectorFactory;
 import javax.management.remote.JMXServiceURL;
 
 import org.opennms.core.logging.Logging;
-import org.opennms.netmgt.config.ServiceConfigFactory;
-import org.opennms.netmgt.config.service.Argument;
-import org.opennms.netmgt.config.service.Invoke;
-import org.opennms.netmgt.config.service.Service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.sun.tools.attach.AttachNotSupportedException;
+import com.sun.tools.attach.VirtualMachine;
+import com.sun.tools.attach.VirtualMachineDescriptor;
 
 /**
  * <p>
@@ -80,26 +78,33 @@ import org.slf4j.LoggerFactory;
  * @author <a href="mailto:sowmya@opennms.org">Sowmya Nataraj</a>
  */
 public class Controller {
-	
-	private static final Logger LOG = LoggerFactory.getLogger(Controller.class);
-	
-    private static final String JMX_HTTP_ADAPTER_NAME = ":Name=HttpAdaptorMgmt";
+
+    private static final Logger LOG = LoggerFactory.getLogger(Controller.class);
 
     /**
-     * Default JMX URL. This is used for getting status information from a
+     * The system property used to determine the JMX management agent URI for the
+     * JVM that we are attaching to. This is used for getting status information from a
      * running OpenNMS instance.
+     * 
+     * @see https://docs.oracle.com/javase/8/docs/technotes/guides/management/agent.html
      */
-    public static final String DEFAULT_JMX_URL = System.getProperty("com.sun.management.jmxremote.localConnectorAddress", "service:jmx:rmi:///jndi/rmi://127.0.0.1:1099/jmxrmi");
+    public static final String CONNECTOR_ADDRESS = "com.sun.management.jmxremote.localConnectorAddress";
 
     /**
      * The log4j category used to log debug messages and statements.
      */
     private static final String LOG4J_CATEGORY = "manager";
-    
+
+    /**
+     * This is the name of the JVM that we try to connect to when we are invoking
+     * operations or checking status. If the name of the OpenNMS process changes then
+     * this value might change. Run jconsole to see the list of available JVM display 
+     * names on the system.
+     */
+    private static final String OPENNMS_JVM_DISPLAY_NAME_SUBSTRING = "opennms_bootstrap";
+
     private boolean m_verbose = false;
-    private String m_jmxUrl = DEFAULT_JMX_URL;
-    private Authenticator m_authenticator;
-    
+
     /**
      * <p>Constructor for Controller.</p>
      */
@@ -124,21 +129,21 @@ public class Controller {
                                    + "[<options>] <command>");
                 System.out.println("Accepted options:");
                 System.out.println("        -t <timeout>    HTTP connection timeout in seconds.  Defaults to 30.");
-                System.out.println("        -u <URL>        Alternate JMX URL.");
+                //System.out.println("        -u <URL>        Alternate JMX URL.");
                 System.out.println("        -v              Verbose mode.");
                 System.out.println("");
                 System.out.println("Accepted commands: start, stop, status, check, dumpThreads, exit");
-                System.out.println("");
-                System.out.println("The default JMX URL is: " + DEFAULT_JMX_URL);
+                //System.out.println("");
+                //System.out.println("The default JMX URL is: " + DEFAULT_JMX_URL);
                 System.exit(0);
             } else if (argv[i].equals("-t")) {
                 c.setRmiHandshakeTimeout(Integer.parseInt(argv[i + 1]) * 1000);
                 i++;
             } else if (argv[i].equals("-v")) {
                 c.setVerbose(true);
-            } else if (argv[i].equals("-u")) {
-                c.setJmxUrl(argv[i + 1]);
-                i++;
+            //} else if (argv[i].equals("-u")) {
+            //    c.setJmxUrl(argv[i + 1]);
+            //    i++;
             } else if (i != (argv.length - 1)) {
                 System.err.println("Invalid command-line option: \"" + argv[i] + "\".  Use \"-h\" option for help.");
                 System.exit(1);
@@ -199,13 +204,11 @@ public class Controller {
      * @return a int.
      */
     public int status() {
-        Authenticator.setDefault(getAuthenticator());
 
         StatusGetter statusGetter = new StatusGetter();
-        statusGetter.setJmxUrl(getJmxUrl());
-        statusGetter.setVerbose(isVerbose());
 
         try {
+            statusGetter.setVerbose(isVerbose());
             statusGetter.queryStatus();
         } catch (Throwable t) {
             String message =  "Error invoking status command";
@@ -270,7 +273,7 @@ public class Controller {
 
     public int invokeOperation(String operation) {
         try {
-            doInvokeOperation(getJmxUrl(), operation); // Ignore the returned object
+            doInvokeOperation(operation); // Ignore the returned object
         } catch (final Throwable t) {
             LOG.error("error invoking \"{}\" operation", operation, t);
             System.err.println("error invoking \"" + operation + "\" operation");
@@ -280,8 +283,8 @@ public class Controller {
         return 0;
     }
 
-    public static Object doInvokeOperation(String jmxUrl, String operation) throws MalformedURLException, IOException, InstanceNotFoundException, MalformedObjectNameException, MBeanException, ReflectionException, NullPointerException {
-        try (JMXConnector connector = JMXConnectorFactory.connect(new JMXServiceURL(jmxUrl))) {
+    public static Object doInvokeOperation(String operation) throws MalformedURLException, IOException, InstanceNotFoundException, MalformedObjectNameException, MBeanException, ReflectionException, NullPointerException {
+        try (JMXConnector connector = JMXConnectorFactory.connect(new JMXServiceURL(getJmxUrl()))) {
             MBeanServerConnection connection = connector.getMBeanServerConnection();
             return connection.invoke(ObjectName.getInstance("OpenNMS:Name=Manager"), operation, new Object[0], new String[0]);
         }
@@ -401,8 +404,50 @@ public class Controller {
      *
      * @return a {@link java.lang.String} object.
      */
-    public String getJmxUrl() {
-        return m_jmxUrl;
+    public static String getJmxUrl() {
+        for (VirtualMachineDescriptor vmDescr : VirtualMachine.list()) {
+            if (vmDescr.displayName().contains(OPENNMS_JVM_DISPLAY_NAME_SUBSTRING)) {
+                // Attach to the OpenNMS application
+                VirtualMachine vm = null;
+                try {
+                    vm = VirtualMachine.attach(vmDescr);
+                } catch (AttachNotSupportedException e) {
+                    throw new IllegalStateException("Cannot attach to OpenNMS JVM", e);
+                } catch (IOException e) {
+                    throw new IllegalStateException("IOException when attaching to OpenNMS JVM", e);
+                }
+
+                String connectorAddress = null;
+                try {
+                    // Get the local JMX connector URI
+                    vm.getAgentProperties().getProperty(CONNECTOR_ADDRESS);
+                } catch (IOException e) {
+                    throw new IllegalStateException("IOException when fetching JMX URI", e);
+                }
+
+                // If there is no local JMX connector URI, we need to launch the
+                // JMX agent via this VirtualMachine attachment.
+                if (connectorAddress == null) {
+                    LOG.info("Starting local management agent in JVM with ID: " + vm.id());
+
+                    try {
+                        vm.startLocalManagementAgent();
+                    } catch (IOException e) {
+                        throw new IllegalStateException("IOException when starting local JMX management agent", e);
+                    }
+
+                    // agent is started, get the connector address
+                    try {
+                        connectorAddress = vm.getAgentProperties().getProperty(CONNECTOR_ADDRESS);
+                    } catch (IOException e) {
+                        throw new IllegalStateException("IOException when fetching JMX URI", e);
+                    }
+                }
+
+                return connectorAddress;
+            }
+        }
+        throw new IllegalStateException("Could not find OpenNMS JVM (" + OPENNMS_JVM_DISPLAY_NAME_SUBSTRING + ")");
     }
 
     /**
@@ -410,27 +455,11 @@ public class Controller {
      *
      * @param jmxUrl a {@link java.lang.String} object.
      */
+    /*
     public void setJmxUrl(String jmxUrl) {
         m_jmxUrl = jmxUrl;
     }
-
-    /**
-     * <p>getAuthenticator</p>
-     *
-     * @return a {@link java.net.Authenticator} object.
-     */
-    public Authenticator getAuthenticator() {
-        return m_authenticator;
-    }
-
-    /**
-     * <p>setAuthenticator</p>
-     *
-     * @param authenticator a {@link java.net.Authenticator} object.
-     */
-    public void setAuthenticator(Authenticator authenticator) {
-        m_authenticator = authenticator;
-    }
+    */
 
     public int getRmiHandshakeTimeout() {
         // This default value is from:

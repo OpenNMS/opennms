@@ -28,22 +28,13 @@
 
 package org.opennms.netmgt.vmmgr;
 
-import com.sun.tools.attach.VirtualMachine;
-import com.sun.tools.attach.VirtualMachineDescriptor;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-
-import java.io.File;
-import java.io.IOException;
-import java.lang.Thread.UncaughtExceptionHandler;
-import java.lang.reflect.UndeclaredThrowableException;
-import java.net.ServerSocket;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.opennms.core.test.MockLogAppender;
+
+import com.sun.tools.attach.VirtualMachine;
+import com.sun.tools.attach.VirtualMachineDescriptor;
 
 public class ControllerTest {
 
@@ -58,74 +49,12 @@ public class ControllerTest {
     }
 
     @Test
-    public void testClientTimeout() throws Exception {
-        final ServerSocket server = new ServerSocket(0);
-        System.out.printf("Connected to socket on %s:%d\n", server.getInetAddress(), server.getLocalPort());
-        
-        final Controller c = new Controller();
-        //c.setJmxUrl("service:jmx:rmi://127.0.0.1:" + server.getLocalPort() + "/stub/");
-        c.setJmxUrl("service:jmx:rmi:///jndi/rmi://127.0.0.1:" + server.getLocalPort() + "/jmxrmi");
-        c.setRmiHandshakeTimeout(2000);
-        
-        Thread clientThread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                c.invokeOperation("testClientTimeout");
-            }
-        }, this.getClass().getSimpleName() + "-clientThread");
-        
-        final StringBuffer exceptionBuffer = new StringBuffer();
-        
-        UncaughtExceptionHandler handler  = new UncaughtExceptionHandler() {
-            @Override
-            public void uncaughtException(Thread thread, Throwable t) {
-                exceptionBuffer.append(t.toString());
-            }
-        };
-
-        clientThread.setUncaughtExceptionHandler(handler);
-        
-        clientThread.start();
-        
-        Thread acceptThread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    server.accept();
-                    System.out.println("Connection established! Exiting...");
-                } catch (IOException e) {
-                    throw new UndeclaredThrowableException(e);
-                }
-            }
-        }, this.getClass().getSimpleName() + "-acceptThread");
-
-        acceptThread.setUncaughtExceptionHandler(handler);
-        
-        acceptThread.start();
-        
-        acceptThread.join(1000);
-        assertFalse("the accept thread should have stopped because it should have received a connection", acceptThread.isAlive());
-
-        clientThread.join(c.getRmiHandshakeTimeout() * 2);
-        assertFalse("the client thread should have stopped within " + c.getRmiHandshakeTimeout() + " because it should have timed out its connection", clientThread.isAlive());
-        
-        assertEquals("exception buffer is non-empty: " + exceptionBuffer.toString(), 0, exceptionBuffer.length());
-        
-//        assertEquals("there should be exactly one logged message", 1, MockLogAppender.getEvents().length);
-//        assertEquals("the first log message should be an error", Level.ERROR, MockLogAppender.getEvents()[0].getLevel());
-        
-        MockLogAppender.resetEvents();
-        server.close();
-    }
-
-    @Test
     public void testStatus() throws Exception {
         final Controller controller = new Controller();
-        System.out.println(controller.getJmxUrl());
+        // This can return different results depending on whether an OpenNMS JVM
+        // is running while the unit test is running so don't do an assertion here.
         System.out.println("Status: " + controller.status());
     }
-
-    private static final String CONNECTOR_ADDRESS = "com.sun.management.jmxremote.localConnectorAddress";
 
     @Test
     public void testAttach() throws Exception {
@@ -140,7 +69,7 @@ public class ControllerTest {
                 VirtualMachine vm = VirtualMachine.attach(vmDescr);
 
                 // Get the local JMX connector URI
-                String connectorAddress = vm.getAgentProperties().getProperty(CONNECTOR_ADDRESS);
+                String connectorAddress = vm.getAgentProperties().getProperty(Controller.CONNECTOR_ADDRESS);
 
                 // If there is no local JMX connector URI, we need to launch the
                 // JMX agent via this VirtualMachine attachment.
@@ -152,7 +81,7 @@ public class ControllerTest {
                     vm.startLocalManagementAgent();
 
                     // agent is started, get the connector address
-                    connectorAddress = vm.getAgentProperties().getProperty(CONNECTOR_ADDRESS);
+                    connectorAddress = vm.getAgentProperties().getProperty(Controller.CONNECTOR_ADDRESS);
                 }
 
                 System.out.println(connectorAddress);
