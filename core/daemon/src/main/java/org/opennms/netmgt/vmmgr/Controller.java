@@ -28,13 +28,20 @@
 
 package org.opennms.netmgt.vmmgr;
 
-import java.io.InputStream;
+import java.io.IOException;
 import java.net.Authenticator;
-import java.net.ConnectException;
-import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.PasswordAuthentication;
-import java.net.URL;
+
+import javax.management.InstanceNotFoundException;
+import javax.management.MBeanException;
+import javax.management.MBeanServerConnection;
+import javax.management.MalformedObjectNameException;
+import javax.management.ObjectName;
+import javax.management.ReflectionException;
+import javax.management.remote.JMXConnector;
+import javax.management.remote.JMXConnectorFactory;
+import javax.management.remote.JMXServiceURL;
 
 import org.opennms.core.logging.Logging;
 import org.opennms.netmgt.config.ServiceConfigFactory;
@@ -79,27 +86,19 @@ public class Controller {
     private static final String JMX_HTTP_ADAPTER_NAME = ":Name=HttpAdaptorMgmt";
 
     /**
-     * Default invoker URL. This is used for getting status information from a
+     * Default JMX URL. This is used for getting status information from a
      * running OpenNMS instance.
      */
-    public static final String DEFAULT_INVOKER_URL =
-        "http://127.0.0.1:8181/invoke?objectname=OpenNMS%3AName=Manager";
+    public static final String DEFAULT_JMX_URL = System.getProperty("com.sun.management.jmxremote.localConnectorAddress", "service:jmx:rmi:///jndi/rmi://127.0.0.1:1099/jmxrmi");
 
     /**
-     * The log4j category used to log debug messsages and statements.
+     * The log4j category used to log debug messages and statements.
      */
     private static final String LOG4J_CATEGORY = "manager";
     
-    /**
-     * Default read timeout for HTTP requests in milliseconds.
-     * The default is zero which means wait forever.
-     */
-    private static final int DEFAULT_HTTP_REQUEST_READ_TIMEOUT = 0;
-    
     private boolean m_verbose = false;
-    private String m_invokeUrl = DEFAULT_INVOKER_URL;
+    private String m_jmxUrl = DEFAULT_JMX_URL;
     private Authenticator m_authenticator;
-    private int m_httpRequestReadTimeout = DEFAULT_HTTP_REQUEST_READ_TIMEOUT;
     
     /**
      * <p>Constructor for Controller.</p>
@@ -125,20 +124,20 @@ public class Controller {
                                    + "[<options>] <command>");
                 System.out.println("Accepted options:");
                 System.out.println("        -t <timeout>    HTTP connection timeout in seconds.  Defaults to 30.");
-                System.out.println("        -u <URL>        Alternate invoker URL.");
+                System.out.println("        -u <URL>        Alternate JMX URL.");
                 System.out.println("        -v              Verbose mode.");
                 System.out.println("");
-                System.out.println("Accepted commands: start, stop, status");
+                System.out.println("Accepted commands: start, stop, status, check, dumpThreads, exit");
                 System.out.println("");
-                System.out.println("The default invoker URL is: " + DEFAULT_INVOKER_URL);
+                System.out.println("The default JMX URL is: " + DEFAULT_JMX_URL);
                 System.exit(0);
             } else if (argv[i].equals("-t")) {
-                c.setHttpRequestReadTimeout(Integer.parseInt(argv[i + 1]) * 1000);
+                c.setRmiHandshakeTimeout(Integer.parseInt(argv[i + 1]) * 1000);
                 i++;
             } else if (argv[i].equals("-v")) {
                 c.setVerbose(true);
             } else if (argv[i].equals("-u")) {
-                c.setInvokeUrl(argv[i + 1]);
+                c.setJmxUrl(argv[i + 1]);
                 i++;
             } else if (i != (argv.length - 1)) {
                 System.err.println("Invalid command-line option: \"" + argv[i] + "\".  Use \"-h\" option for help.");
@@ -154,7 +153,7 @@ public class Controller {
             System.exit(1);
         }
         
-        c.setAuthenticator(c.createAuthenticatorUsingConfigCredentials());
+        //c.setAuthenticator(c.createAuthenticatorUsingConfigCredentials());
 
         String command = argv[argv.length - 1];
 
@@ -166,6 +165,8 @@ public class Controller {
             System.exit(c.status());
         } else if ("check".equals(command)) {
             System.exit(c.check());
+        } else if ("dumpThreads".equals(command)) {
+            System.exit(c.dumpThreads());
         } else if ("exit".equals(command)) {
             System.exit(c.exit());
         } else {
@@ -202,15 +203,6 @@ public class Controller {
 
         StatusGetter statusGetter = new StatusGetter();
         statusGetter.setVerbose(isVerbose());
-        
-        String url = getInvokeUrl() + "&operation=status";
-        try {
-            statusGetter.setInvokeURL(new URL(url));
-        } catch (MalformedURLException e) {
-            String message = "Error creating URL object for invoke URL: '" + url + "'";
-            System.err.println(message);
-            LOG.error(message, e);
-        }
 
         try {
             statusGetter.queryStatus();
@@ -258,6 +250,15 @@ public class Controller {
     }
 
     /**
+     * <p>dumpThreads</p>
+     *
+     * @return a int.
+     */
+    public int dumpThreads() {
+        return invokeOperation("dumpThreads");
+    }
+
+    /**
      * <p>exit</p>
      *
      * @return a int.
@@ -265,46 +266,32 @@ public class Controller {
     public int exit() {
         return invokeOperation("doSystemExit");
     }
-    
-    int invokeOperation(String operation) {
-        Authenticator.setDefault(getAuthenticator());
 
-        String urlString = getInvokeUrl() + "&operation=" + operation;
+    public int invokeOperation(String operation) {
         try {
-            URL invoke = new URL(urlString);
-            HttpURLConnection connection = (HttpURLConnection) invoke.openConnection();
-            connection.setReadTimeout(getHttpRequestReadTimeout());
-            InputStream in = connection.getInputStream();
-
-            int ch;
-            StringBuffer line = new StringBuffer();
-            while ((ch = in.read()) != -1) {
-                line.append((char)ch);
-            }
-            LOG.debug(line.toString());
-            in.close();
-            System.out.println("");
-            System.out.flush();
-        } catch (final ConnectException e) {
-            LOG.error("error when attempting to fetch URL \"{}\"", urlString, e);
-            if (isVerbose()) {
-                System.out.println(e.getMessage() + " when attempting to fetch URL \"" + urlString + "\"");
-            }
-            return 1;
+            doInvokeOperation(getJmxUrl(), operation); // Ignore the returned object
         } catch (final Throwable t) {
-            LOG.error("error invoking {} operation", operation, t);
-            System.out.println("error invoking " + operation + " operation");
+            LOG.error("error invoking \"{}\" operation", operation, t);
+            System.err.println("error invoking \"" + operation + "\" operation");
             return 1;
         }
 
         return 0;
     }
 
+    public static Object doInvokeOperation(String jmxUrl, String operation) throws MalformedURLException, IOException, InstanceNotFoundException, MalformedObjectNameException, MBeanException, ReflectionException, NullPointerException {
+        try (JMXConnector connector = JMXConnectorFactory.connect(new JMXServiceURL(jmxUrl))) {
+            MBeanServerConnection connection = connector.getMBeanServerConnection();
+            return connection.invoke(ObjectName.getInstance("OpenNMS:Name=Manager"), operation, new Object[0], new String[0]);
+        }
+    }
+
     /*
      * Create an Authenticator so that we can provide authentication, if
      * needed, when go to connect to the URL
      */
-    Authenticator createAuthenticatorUsingConfigCredentials() {
+    /*
+    public static Authenticator createAuthenticatorUsingConfigCredentials() {
         Service service = getConfiguredService(JMX_HTTP_ADAPTER_NAME);
         if (service == null) {
             // Didn't find the service we were looking for
@@ -372,8 +359,10 @@ public class Controller {
             }
         };
     }
+    */
 
-    private Service getConfiguredService(String serviceName) {
+    /*
+    private static Service getConfiguredService(String serviceName) {
         ServiceConfigFactory sfact = new ServiceConfigFactory();
 
         Service[] services = sfact.getServices();
@@ -386,6 +375,7 @@ public class Controller {
         
         return null;
     }
+    */
 
     /**
      * <p>isVerbose</p>
@@ -406,21 +396,21 @@ public class Controller {
     }
 
     /**
-     * <p>getInvokeUrl</p>
+     * <p>getJmxUrl</p>
      *
      * @return a {@link java.lang.String} object.
      */
-    public String getInvokeUrl() {
-        return m_invokeUrl;
+    public String getJmxUrl() {
+        return m_jmxUrl;
     }
 
     /**
-     * <p>setInvokeUrl</p>
+     * <p>setJmxUrl</p>
      *
-     * @param invokerUrl a {@link java.lang.String} object.
+     * @param jmxUrl a {@link java.lang.String} object.
      */
-    public void setInvokeUrl(String invokerUrl) {
-        m_invokeUrl = invokerUrl;
+    public void setJmxUrl(String jmxUrl) {
+        m_jmxUrl = jmxUrl;
     }
 
     /**
@@ -441,21 +431,13 @@ public class Controller {
         m_authenticator = authenticator;
     }
 
-    /**
-     * <p>getHttpRequestReadTimeout</p>
-     *
-     * @return a int.
-     */
-    public int getHttpRequestReadTimeout() {
-        return m_httpRequestReadTimeout;
+    public int getRmiHandshakeTimeout() {
+        // This default value is from:
+        // http://docs.oracle.com/javase/7/docs/technotes/guides/rmi/sunrmiproperties.html
+        return Integer.valueOf(System.getProperty("sun.rmi.transport.handshakeTimeout", "60000"));
     }
 
-    /**
-     * <p>setHttpRequestReadTimeout</p>
-     *
-     * @param httpRequestReadTimeout a int.
-     */
-    public void setHttpRequestReadTimeout(int httpRequestReadTimeout) {
-        m_httpRequestReadTimeout = httpRequestReadTimeout;
+    public void setRmiHandshakeTimeout(int httpRequestReadTimeout) {
+        System.setProperty("sun.rmi.transport.tcp.handshakeTimeout", String.valueOf(httpRequestReadTimeout));
     }
 }

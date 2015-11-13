@@ -44,9 +44,6 @@ import org.opennms.core.utils.ParameterMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-//import mx4j.tools.remote.*;
-
-
 /**
  * This class creates a connection to the remote server. There are many options to using this
  * class.  BUT THEY ARE NOT WORKING YET....

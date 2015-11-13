@@ -28,16 +28,8 @@
 
 package org.opennms.netmgt.vmmgr;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.lang.reflect.UndeclaredThrowableException;
-import java.net.Authenticator;
-import java.net.ConnectException;
-import java.net.MalformedURLException;
-import java.net.PasswordAuthentication;
-import java.net.URL;
-import java.net.URLConnection;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -47,22 +39,14 @@ public class StatusGetter {
         UNKNOWN, RUNNING, PARTIALLY_RUNNING, NOT_RUNNING, CONNECTION_REFUSED
     }
 
-    private static final URL DEFAULT_INVOKE_URL;
+    //public static final String DEFAULT_JMX_URL = "service:jmx:rmi:///jndi/rmi://127.0.0.1:1099/jmxrmi";
+    public static final String DEFAULT_JMX_URL = System.getProperty("com.sun.management.jmxremote.localConnectorAddress", "service:jmx:rmi:///jndi/rmi://127.0.0.1:1099/jmxrmi");
 
     private boolean m_verbose = false;
 
-    private URL m_invokeURL = DEFAULT_INVOKE_URL;
+    private String m_jmxUrl = DEFAULT_JMX_URL;
 
     private Status m_status = Status.UNKNOWN;
-
-    static {
-        try {
-            DEFAULT_INVOKE_URL = new URL("http://127.0.0.1:8181/invoke?objectname=OpenNMS:Name=Manager&operation=status");
-        } catch (final MalformedURLException e) {
-            // This should never happen
-            throw new UndeclaredThrowableException(e);
-        }
-    }
 
     /**
      * <p>Constructor for StatusGetter.</p>
@@ -89,21 +73,21 @@ public class StatusGetter {
     }
 
     /**
-     * <p>getInvokeURL</p>
+     * <p>getJmxUrl</p>
      *
-     * @return a {@link java.net.URL} object.
+     * @return a {@link java.lang.String} object.
      */
-    public URL getInvokeURL() {
-        return m_invokeURL;
+    public String getJmxUrl() {
+        return m_jmxUrl;
     }
 
     /**
-     * <p>setInvokeURL</p>
+     * <p>setJmxUrl</p>
      *
-     * @param invokeURL a {@link java.net.URL} object.
+     * @param jmxUrl a {@link java.lang.String} object.
      */
-    public void setInvokeURL(URL invokeURL) {
-        m_invokeURL = invokeURL;
+    public void setJmxUrl(String jmxUrl) {
+        m_jmxUrl = jmxUrl;
     }
 
     /**
@@ -129,28 +113,20 @@ public class StatusGetter {
             if (argv[i].equals("-h")) {
                 System.out.println("Accepted options:");
                 System.out.println("        -v              Verbose mode.");
-                System.out.println("        -u <URL>        Alternate invoker URL.");
-                System.out.println("The default invoker URL is: "
-                        + statusGetter.getInvokeURL());
+                System.out.println("        -u <URL>        Alternate JMX URL.");
+                System.out.println("The default JMX URL is: "
+                        + DEFAULT_JMX_URL);
                 statusGetter.setVerbose(true);
             } else if (argv[i].equals("-v")) {
                 statusGetter.setVerbose(true);
             } else if (argv[i].equals("-u")) {
-                statusGetter.setInvokeURL(new URL(argv[i + 1]));
+                statusGetter.setJmxUrl(argv[i + 1]);
                 i++;
             } else {
                 throw new Exception("Invalid command-line option: \""
                         + argv[i] + "\"");
             }
         }
-
-        Authenticator.setDefault(new Authenticator() {
-            @Override
-            protected PasswordAuthentication getPasswordAuthentication() {
-                return new PasswordAuthentication("manager",
-                                                  "manager".toCharArray());
-            }
-        });
 
         statusGetter.queryStatus();
 
@@ -178,63 +154,17 @@ public class StatusGetter {
      */
     public void queryStatus() throws Exception {
 
-        URLConnection connection = m_invokeURL.openConnection();
-        BufferedReader reader;
-        try {
-            connection.connect();
-            reader = new BufferedReader(
-                                        new InputStreamReader(
-                                                              connection.getInputStream(), "UTF-8"));
-        } catch (ConnectException e) {
-            if (isVerbose()) {
-                System.out.println("Could not connect to "
-                        + getInvokeURL().getHost() + " on port "
-                        + getInvokeURL().getPort()
-                        + " (OpenNMS might not be running or "
-                        + "could be starting up or shutting down): "
-                        + e.getMessage());
-            }
-            m_status = Status.CONNECTION_REFUSED;
-            return;
-        }
-
-        StringBuffer statusResultsBuf = new StringBuffer();
-        String line;
-
-        while ((line = reader.readLine()) != null) {
-            statusResultsBuf.append(line);
-            statusResultsBuf.append("\n");
-        }
-
-        String statusResults = statusResultsBuf.toString();
-
-        int i;
-        if ((i = statusResults.indexOf("return=\"[")) == -1) {
-            throw new Exception("could not find start of status results");
-        }
-        statusResults = statusResults.substring(i + "return=\"[".length());
-        if ((i = statusResults.indexOf("]\"")) == -1) {
-            throw new Exception("could not find end of status results");
-        }
-        statusResults = statusResults.substring(0, i);
-
-        LinkedHashMap<String, String> results = new LinkedHashMap<String, String>();
         Pattern p = Pattern.compile("Status: OpenNMS:Name=(\\S+) = (\\S+)");
 
+        LinkedHashMap<String, String> results = new LinkedHashMap<String, String>();
+
+        List<String> statusResults = (List<String>)Controller.doInvokeOperation(getJmxUrl(), "status");
+
         /*
-         * Once we split a status entry, it will look like this: Status:
-         * OpenNMS:Name=Eventd = RUNNING
+         * Once we split a status entry, it will look like this:
+         * Status: OpenNMS:Name=Eventd = RUNNING
          */
-        while (statusResults.length() > 0) {
-            String result;
-
-            i = statusResults.indexOf(", ");
-
-            if (i == -1) {
-                result = statusResults;
-            } else {
-                result = statusResults.substring(0, i);
-            }
+        for (String result : statusResults) {
 
             Matcher m = p.matcher(result);
             if (!m.matches()) {
@@ -242,12 +172,6 @@ public class StatusGetter {
                         + "\" does not match our regular expression");
             }
             results.put(m.group(1), m.group(2));
-
-            if (i == -1) {
-                break;
-            } else {
-                statusResults = statusResults.substring(i + ", ".length());
-            }
         }
 
         /*

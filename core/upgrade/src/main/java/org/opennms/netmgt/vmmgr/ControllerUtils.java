@@ -46,8 +46,8 @@ public abstract class ControllerUtils {
     public static Controller getController() {
         if (controller == null) {
             controller = new Controller();
-            controller.setInvokeUrl("http://127.0.0.1:8181/invoke?objectname=OpenNMS:Name=Manager");
-            controller.setAuthenticator(controller.createAuthenticatorUsingConfigCredentials());
+            //controller.setJmxUrl("http://127.0.0.1:8181/invoke?objectname=OpenNMS:Name=Manager");
+            //controller.setAuthenticator(controller.createAuthenticatorUsingConfigCredentials());
         }
         return controller;
     }
