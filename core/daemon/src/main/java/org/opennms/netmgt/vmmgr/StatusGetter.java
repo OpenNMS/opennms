@@ -41,19 +41,13 @@ public class StatusGetter {
     }
 
     //public static final String DEFAULT_JMX_URL = "service:jmx:rmi:///jndi/rmi://127.0.0.1:1099/jmxrmi";
-    public static final String DEFAULT_JMX_URL = System.getProperty("com.sun.management.jmxremote.localConnectorAddress", "service:jmx:rmi:///jndi/rmi://127.0.0.1:1099/jmxrmi");
+    //public static final String DEFAULT_JMX_URL = System.getProperty("com.sun.management.jmxremote.localConnectorAddress", "service:jmx:rmi:///jndi/rmi://127.0.0.1:1099/jmxrmi");
 
     private boolean m_verbose = false;
 
-    private String m_jmxUrl = DEFAULT_JMX_URL;
+    //private String m_jmxUrl = DEFAULT_JMX_URL;
 
     private Status m_status = Status.UNKNOWN;
-
-    /**
-     * <p>Constructor for StatusGetter.</p>
-     */
-    public StatusGetter() {
-    }
 
     /**
      * <p>isVerbose</p>
@@ -78,18 +72,22 @@ public class StatusGetter {
      *
      * @return a {@link java.lang.String} object.
      */
+     /*
     public String getJmxUrl() {
         return m_jmxUrl;
     }
+    */
 
     /**
      * <p>setJmxUrl</p>
      *
      * @param jmxUrl a {@link java.lang.String} object.
      */
+     /*
     public void setJmxUrl(String jmxUrl) {
         m_jmxUrl = jmxUrl;
     }
+    */
 
     /**
      * <p>getStatus</p>
@@ -114,15 +112,14 @@ public class StatusGetter {
             if (argv[i].equals("-h")) {
                 System.out.println("Accepted options:");
                 System.out.println("        -v              Verbose mode.");
-                System.out.println("        -u <URL>        Alternate JMX URL.");
-                System.out.println("The default JMX URL is: "
-                        + DEFAULT_JMX_URL);
+                //System.out.println("        -u <URL>        Alternate JMX URL.");
+                //System.out.println("The default JMX URL is: " + DEFAULT_JMX_URL);
                 statusGetter.setVerbose(true);
             } else if (argv[i].equals("-v")) {
                 statusGetter.setVerbose(true);
-            } else if (argv[i].equals("-u")) {
-                statusGetter.setJmxUrl(argv[i + 1]);
-                i++;
+            //} else if (argv[i].equals("-u")) {
+            //    statusGetter.setJmxUrl(argv[i + 1]);
+            //    i++;
             } else {
                 throw new Exception("Invalid command-line option: \""
                         + argv[i] + "\"");
@@ -161,11 +158,10 @@ public class StatusGetter {
 
         List<String> statusResults = Collections.emptyList();
         try {
-            statusResults = (List<String>)Controller.doInvokeOperation(getJmxUrl(), "status");
+            statusResults = (List<String>)Controller.doInvokeOperation("status");
         } catch (Throwable e) {
             if (isVerbose()) {
-                System.out.println("Could not connect to "
-                        + getJmxUrl()
+                System.out.println("Could not connect to the OpenNMS JVM"
                         + " (OpenNMS might not be running or "
                         + "could be starting up or shutting down): "
                         + e.getMessage());
