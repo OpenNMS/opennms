@@ -56,10 +56,12 @@ public class ControllerTest {
     @Test
     public void testClientTimeout() throws Exception {
         final ServerSocket server = new ServerSocket(0);
+        System.out.printf("Connected to socket on %s:%d\n", server.getInetAddress(), server.getLocalPort());
         
         final Controller c = new Controller();
-        c.setInvokeUrl(Controller.DEFAULT_INVOKER_URL.replaceAll(":8181", ":" + server.getLocalPort()));
-        c.setHttpRequestReadTimeout(2000);
+        //c.setJmxUrl("service:jmx:rmi://127.0.0.1:" + server.getLocalPort() + "/stub/");
+        c.setJmxUrl("service:jmx:rmi:///jndi/rmi://127.0.0.1:" + server.getLocalPort() + "/jmxrmi");
+        c.setRmiHandshakeTimeout(2000);
         
         Thread clientThread = new Thread(new Runnable() {
             @Override
@@ -76,7 +78,7 @@ public class ControllerTest {
                 exceptionBuffer.append(t.toString());
             }
         };
-                
+
         clientThread.setUncaughtExceptionHandler(handler);
         
         clientThread.start();
@@ -86,6 +88,7 @@ public class ControllerTest {
             public void run() {
                 try {
                     server.accept();
+                    System.out.println("Connection established! Exiting...");
                 } catch (IOException e) {
                     throw new UndeclaredThrowableException(e);
                 }
@@ -99,8 +102,8 @@ public class ControllerTest {
         acceptThread.join(1000);
         assertFalse("the accept thread should have stopped because it should have received a connection", acceptThread.isAlive());
 
-        clientThread.join(c.getHttpRequestReadTimeout() * 2);
-        assertFalse("the client thread should have stopped within " + c.getHttpRequestReadTimeout() + " because it should have timed out its connection", clientThread.isAlive());
+        clientThread.join(c.getRmiHandshakeTimeout() * 2);
+        assertFalse("the client thread should have stopped within " + c.getRmiHandshakeTimeout() + " because it should have timed out its connection", clientThread.isAlive());
         
         assertEquals("exception buffer is non-empty: " + exceptionBuffer.toString(), 0, exceptionBuffer.length());
         

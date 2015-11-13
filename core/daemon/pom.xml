@@ -99,6 +99,7 @@
     <dependency>
       <groupId>mx4j</groupId>
       <artifactId>mx4j-tools</artifactId>
+      <scope>test</scope>
     </dependency>
   </dependencies>
 </project>
