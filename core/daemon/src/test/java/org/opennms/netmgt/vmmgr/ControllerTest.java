@@ -28,9 +28,13 @@
 
 package org.opennms.netmgt.vmmgr;
 
+import com.sun.tools.attach.VirtualMachine;
+import com.sun.tools.attach.VirtualMachineDescriptor;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 
+import java.io.File;
 import java.io.IOException;
 import java.lang.Thread.UncaughtExceptionHandler;
 import java.lang.reflect.UndeclaredThrowableException;
@@ -119,5 +123,40 @@ public class ControllerTest {
         final Controller controller = new Controller();
         System.out.println(controller.getJmxUrl());
         System.out.println("Status: " + controller.status());
+    }
+
+    private static final String CONNECTOR_ADDRESS = "com.sun.management.jmxremote.localConnectorAddress";
+
+    @Test
+    public void testAttach() throws Exception {
+    
+        for (VirtualMachineDescriptor vm : VirtualMachine.list()) {
+            System.out.println(vm.displayName() + " [" + vm.id() + "]");
+        }
+
+        for (VirtualMachineDescriptor vmDescr : VirtualMachine.list()) {
+            if (vmDescr.displayName().contains("opennms_bootstrap")) {
+                // Attach to the OpenNMS application
+                VirtualMachine vm = VirtualMachine.attach(vmDescr);
+
+                // Get the local JMX connector URI
+                String connectorAddress = vm.getAgentProperties().getProperty(CONNECTOR_ADDRESS);
+
+                // If there is no local JMX connector URI, we need to launch the
+                // JMX agent via this VirtualMachine attachment.
+                if (connectorAddress == null) {
+                    System.out.println("Starting local management agent in JVM with ID: " + vm.id());
+
+                    //String agent = vm.getSystemProperties().getProperty("java.home") + File.separator + "lib" + File.separator + "management-agent.jar";
+                    //vm.loadAgent(agent);
+                    vm.startLocalManagementAgent();
+
+                    // agent is started, get the connector address
+                    connectorAddress = vm.getAgentProperties().getProperty(CONNECTOR_ADDRESS);
+                }
+
+                System.out.println(connectorAddress);
+            }
+        }
     }
 }
