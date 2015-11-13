@@ -21,14 +21,14 @@ _OpenNMS_ can be installed with Installation of stable repository and GPG key
 .Installation of _OpenNMS Debian_ repository
 [source, shell]
 ----
-deb http://debian.opennms.org stable main
-deb-src http://debian.opennms.org stable main
+deb http://debian.mirrors.opennms.org stable main
+deb-src http://debian.mirrors.opennms.org stable main
 ----
 
 .Installation of repository GPG key
 [source, shell]
 ----
-wget -O - http://debian.opennms.org/OPENNMS-GPG-KEY | apt-key add -
+wget -O - http://debian.mirrors.opennms.org/OPENNMS-GPG-KEY | apt-key add -
 ----
 
 .Update apt repository cache
