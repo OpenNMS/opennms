@@ -29,10 +29,12 @@
 package org.opennms.netmgt.model.bsm;
 
 import java.util.Map;
+import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Inheritance;
@@ -40,15 +42,22 @@ import javax.persistence.InheritanceType;
 import javax.persistence.JoinTable;
 import javax.persistence.JoinColumn;
 import javax.persistence.MapKeyColumn;
+import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
+import javax.xml.bind.annotation.XmlIDREF;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
+import org.codehaus.jackson.annotate.JsonBackReference;
+import org.opennms.netmgt.model.OnmsMonitoredService;
+
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 
 @Entity
 @Table(name = "bsm_service")
@@ -66,6 +75,12 @@ public class BusinessService {
     @XmlElement(name = "attributes", required = false)
     @XmlJavaTypeAdapter(JAXBMapAdapter.class)
     private Map<String, String> m_attributes = Maps.newLinkedHashMap();
+
+    @XmlIDREF
+    @XmlElement(name="ipServiceId")
+    @XmlElementWrapper(name="ipServices")
+    @JsonBackReference
+    private Set<OnmsMonitoredService> m_ipServices = Sets.newLinkedHashSet();
 
     @Id
     @SequenceGenerator(name = "opennmsSequence", sequenceName = "opennmsNxtId")
@@ -108,6 +123,22 @@ public class BusinessService {
         return m_attributes.remove(key);
     }
 
+    @OneToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "bsm_service_ifservices",
+        joinColumns = @JoinColumn(name = "bsm_service_id", referencedColumnName = "id"),
+        inverseJoinColumns=@JoinColumn(name="ifserviceid"))
+    public Set<OnmsMonitoredService> getIpServices() {
+        return m_ipServices;
+    }
+
+    public void setIpServices(Set<OnmsMonitoredService> ipServices) {
+        m_ipServices = ipServices;
+    }
+
+    public void addIpService(OnmsMonitoredService ipService) {
+        m_ipServices.add(ipService);
+    }
+
     @Override
     public boolean equals(Object obj) {
         if (obj == null) {
@@ -120,17 +151,20 @@ public class BusinessService {
 
         return com.google.common.base.Objects.equal(m_id, other.m_id)
                 && com.google.common.base.Objects.equal(m_name, other.m_name)
-                && com.google.common.base.Objects.equal(m_attributes, other.m_attributes);
+                && com.google.common.base.Objects.equal(m_attributes, other.m_attributes)
+                && com.google.common.base.Objects.equal(m_ipServices, other.m_ipServices);
     }
 
     @Override
     public int hashCode() {
-        return com.google.common.base.Objects.hashCode(m_id, m_name, m_attributes);
+        return com.google.common.base.Objects.hashCode(m_id, m_name, m_attributes, m_ipServices);
     }
 
     @Override
     public String toString() {
         return com.google.common.base.Objects.toStringHelper(this).add("id", m_id).add("name", m_name)
-                .add("attributes", m_attributes).toString();
+                .add("attributes", m_attributes)
+                .add("ipServices", m_ipServices)
+                .toString();
     }
 }

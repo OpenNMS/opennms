@@ -30,12 +30,15 @@ package org.opennms.netmgt.bsm.persistence;
 
 import static org.junit.Assert.assertEquals;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.MockDatabase;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
+import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.netmgt.dao.bsm.BusinessServiceDao;
+import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.bsm.BusinessService;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,7 +60,15 @@ import org.springframework.transaction.annotation.Transactional;
 public class BusinessServiceDaoIT {
 
     @Autowired
+    private DatabasePopulator m_databasePopulator;
+
+    @Autowired
     private BusinessServiceDao m_businessServiceDao;
+
+    @Before
+    public void setUp() {
+        m_databasePopulator.populateDatabase();
+    }
 
     @Test
     public void canCreateReadUpdateAndDeleteBusinessServices() {
@@ -79,6 +90,12 @@ public class BusinessServiceDaoIT {
         bs.setName("Application Servers");
         bs.setAttribute("dc", "!RDU");
         bs.setAttribute("cd", "/");
+
+        // Grab the first monitored service from node 1
+        OnmsMonitoredService ipService = m_databasePopulator.getNode1()
+                .getIpInterfaces().iterator().next()
+                .getMonitoredServices().iterator().next();
+        bs.addIpService(ipService);
 
         m_businessServiceDao.update(bs);
         m_businessServiceDao.flush();

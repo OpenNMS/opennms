@@ -48,6 +48,12 @@ public class BusinessServiceJaxbTest extends XmlTestNoCastor<BusinessService> {
         bs.setName("Web Servers");
         bs.setAttribute("dc", "RDU");
 
+        // IP services are marshaled as id references, so the unmarshall
+        // doesn't work as expected for these test cases.
+        //OnmsMonitoredService ipService = new OnmsMonitoredService();
+        //ipService.setId(1);
+        //bs.addIpService(ipService);
+
         return Arrays.asList(new Object[][]{{
             bs,
             "<business-service>" +

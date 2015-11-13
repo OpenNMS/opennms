@@ -2656,3 +2656,9 @@ CREATE TABLE bsm_service_attributes (
     CONSTRAINT bsm_service_attributes_pkey PRIMARY KEY (bsm_service_id, key)
 );
 
+CREATE TABLE bsm_service_ifservices (
+    bsm_service_id integer NOT NULL,
+    ifserviceid integer NOT NULL,
+    CONSTRAINT bsm_service_ifservices_pkey PRIMARY KEY (bsm_service_id, ifserviceid)
+);
+

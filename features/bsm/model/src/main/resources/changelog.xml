@@ -41,4 +41,30 @@
 
 	</changeSet>
 
+	<changeSet author="jwhite" id="18.0.0-bsm-ifservices">
+
+		<createTable tableName="bsm_service_ifservices" >
+
+			<column name="bsm_service_id" type="integer">
+			  <constraints nullable="false"/>
+			</column>
+
+			<column name="ifserviceid" type="integer">
+			  <constraints nullable="false"/>
+			</column>
+
+		</createTable>
+
+		<addPrimaryKey tableName="bsm_service_ifservices" columnNames="bsm_service_id, ifserviceid" constraintName="bsm_service_ifservices_pkey" />
+
+		<addForeignKeyConstraint constraintName="fk_bsm_service_ifservices_service_id"
+			baseTableName="bsm_service_ifservices" baseColumnNames="bsm_service_id"
+			referencedTableName="bsm_service" referencedColumnNames="id" />
+
+		<addForeignKeyConstraint constraintName="fk_bsm_service_ifservices_ifserviceid"
+			baseTableName="bsm_service_ifservices" baseColumnNames="ifserviceid"
+			referencedTableName="ifservices" referencedColumnNames="id" />
+
+	</changeSet>
+
 </databaseChangeLog>
