@@ -19,8 +19,8 @@ The setup process is described in the following steps:
 .Installation of stable repository and GPG key
 [source, shell]
 ----
-rpm -Uvh http://yum.opennms.org/repofiles/opennms-repo-stable-rhel7.noarch.rpm
-rpm --import http://yum.opennms.org/OPENNMS-GPG-KEY
+rpm -Uvh http://yum.mirrors.opennms.org/repofiles/opennms-repo-stable-rhel7.noarch.rpm
+rpm --import http://yum.mirrors.opennms.org/OPENNMS-GPG-KEY
 ----
 
 [[gi-install-opennms-rhel-package]]
