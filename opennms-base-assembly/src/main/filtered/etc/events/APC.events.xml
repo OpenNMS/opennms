@@ -3554,6 +3554,7 @@
 	mtrapargsString=%parm[#3]%&lt;/p&gt;
 	</logmsg>
       <severity>Major</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" alarm-type="1" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -3595,7 +3596,8 @@
 	mtrapargsString02=%parm[#2]%
 	mtrapargsString=%parm[#3]%&lt;/p&gt;
 	</logmsg>
-      <severity>Cleared</severity>
+      <severity>Normal</severity>
+      <alarm-data reduction-key="uei.opennms.org/vendor/APC/traps/rsLostRedundancy:%dpname%:%nodeid%:%parm[#1]%" clear-key="uei.opennms.org/vendor/APC/traps/rsLostRedundancy:%dpname%:%nodeid%:%parm[#1]%" alarm-type="2" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -3806,6 +3808,7 @@
 	mtrapargsString=%parm[#1]%&lt;/p&gt;
 	</logmsg>
       <severity>Minor</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -3835,7 +3838,8 @@
         APC Event: dcMajorAlarmCleared trap received
 	mtrapargsString=%parm[#1]%&lt;/p&gt;
 	</logmsg>
-      <severity>Cleared</severity>
+      <severity>Normal</severity>
+      <alarm-data reduction-key="uei.opennms.org/vendor/APC/traps/dcMajorAlarm:%dpname%:%nodeid%:%interface%" clear-key="uei.opennms.org/vendor/APC/traps/dcMajorAlarm:%dpname%:%nodeid%:%interface%" alarm-type="2" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -3865,7 +3869,8 @@
         APC Event: dcMinorAlarm trap received
 	mtrapargsString=%parm[#1]%&lt;/p&gt;
 	</logmsg>
-      <severity>Minor</severity>
+      <severity>Warning</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -3895,7 +3900,8 @@
         APC Event: dcMinorAlarmCleared trap received
 	mtrapargsString=%parm[#1]%&lt;/p&gt;
 	</logmsg>
-      <severity>Cleared</severity>
+      <severity>Normal</severity>
+      <alarm-data reduction-key="uei.opennms.org/vendor/APC/traps/dcMinorAlarm:%dpname%:%nodeid%:%interface%" clear-key="uei.opennms.org/vendor/APC/traps/dcMinorAlarm:%dpname%:%nodeid%:%interface%" alarm-type="2" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -4308,7 +4314,7 @@
 	mtrapargsString=%parm[#3]%&lt;/p&gt;
 	</logmsg>
       <severity>Minor</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" alarm-type="1" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -4350,8 +4356,8 @@
 	mtrapargsString02=%parm[#2]%
 	mtrapargsString=%parm[#3]%&lt;/p&gt;
 	</logmsg>
-      <severity>Cleared</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" clear-key="uei.opennms.org/vendor/APC/traps/atsLostRedundancy:%dpname%:%nodeid%:%interface%" alarm-type="2" auto-clean="false"/>
+      <severity>Normal</severity>
+      <alarm-data reduction-key="uei.opennms.org/vendor/APC/traps/atsLostRedundancy:%dpname%:%nodeid%:%parm[#1]%" clear-key="uei.opennms.org/vendor/APC/traps/atsLostRedundancy:%dpname%:%nodeid%:%parm[#1]%" alarm-type="2" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -4483,7 +4489,8 @@
         APC Event: atsOverCurrent trap received
 	mtrapargsString=%parm[#1]%&lt;/p&gt;
 	</logmsg>
-      <severity>Major</severity>
+      <severity>Minor</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -4514,7 +4521,8 @@
         APC Event: atsOverCurrentCleared trap received
 	mtrapargsString=%parm[#1]%&lt;/p&gt;
 	</logmsg>
-      <severity>Cleared</severity>
+      <severity>Normal</severity>
+      <alarm-data reduction-key="uei.opennms.org/vendor/APC/traps/atsOverCurrent:%dpname%:%nodeid%:%interface%" clear-key="uei.opennms.org/vendor/APC/traps/atsOverCurrent:%dpname%:%nodeid%:%interface%" alarm-type="2" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -4554,7 +4562,8 @@
 	mtrapargsInteger=%parm[#1]%
 	mtrapargsString=%parm[#2]%&lt;/p&gt;
 	</logmsg>
-      <severity>Major</severity>
+      <severity>Minor</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" alarm-type="1" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -4594,7 +4603,8 @@
 	mtrapargsInteger=%parm[#1]%
 	mtrapargsString=%parm[#2]%&lt;/p&gt;
 	</logmsg>
-      <severity>Cleared</severity>
+      <severity>Normal</severity>
+      <alarm-data reduction-key="uei.opennms.org/vendor/APC/traps/atsPowerSupplyFailure:%dpname%:%nodeid%:%parm[#1]%" clear-key="uei.opennms.org/vendor/APC/traps/atsPowerSupplyFailure:%dpname%:%nodeid%:%parm[#1]%" alarm-type="2" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -4625,6 +4635,7 @@
 	mtrapargsString=%parm[#1]%&lt;/p&gt;
 	</logmsg>
       <severity>Warning</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -4654,7 +4665,8 @@
         APC Event: dcMainsFailAlarmCleared trap received
 	mtrapargsString=%parm[#1]%&lt;/p&gt;
 	</logmsg>
-      <severity>Cleared</severity>
+      <severity>Normal</severity>
+      <alarm-data reduction-key="uei.opennms.org/vendor/APC/traps/dcMainsFailAlarm:%dpname%:%nodeid%:%interface%" clear-key="uei.opennms.org/vendor/APC/traps/dcMainsFailAlarm:%dpname%:%nodeid%:%interface%" alarm-type="2" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -4684,7 +4696,8 @@
         APC Event: dcFanFailAlarm trap received
 	mtrapargsString=%parm[#1]%&lt;/p&gt;
 	</logmsg>
-      <severity>Minor</severity>
+      <severity>Warning</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -4714,7 +4727,8 @@
         APC Event: dcFanFailAlarmCleared trap received
 	mtrapargsString=%parm[#1]%&lt;/p&gt;
 	</logmsg>
-      <severity>Cleared</severity>
+      <severity>Normal</severity>
+      <alarm-data reduction-key="uei.opennms.org/vendor/APC/traps/dcFanFailAlarm:%dpname%:%nodeid%:%interface%" clear-key="uei.opennms.org/vendor/APC/traps/dcFanFailAlarm:%dpname%:%nodeid%:%interface%" alarm-type="2" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -4744,7 +4758,8 @@
         APC Event: dcRectifierOvertempAlarm trap received
 	mtrapargsString=%parm[#1]%&lt;/p&gt;
 	</logmsg>
-      <severity>Minor</severity>
+      <severity>Warning</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -4774,7 +4789,8 @@
         APC Event: dcRectifierOvertempAlarmCleared trap received
 	mtrapargsString=%parm[#1]%&lt;/p&gt;
 	</logmsg>
-      <severity>Cleared</severity>
+      <severity>Normal</severity>
+      <alarm-data reduction-key="uei.opennms.org/vendor/APC/traps/dcRectifierOvertempAlarm:%dpname%:%nodeid%:%interface%" clear-key="uei.opennms.org/vendor/APC/traps/dcRectifierOvertempAlarm:%dpname%:%nodeid%:%interface%" alarm-type="2" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -4805,6 +4821,7 @@
 	mtrapargsString=%parm[#1]%&lt;/p&gt;
 	</logmsg>
       <severity>Warning</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -4834,7 +4851,8 @@
         APC Event: dcCurrentLimitAlarmCleared trap received
 	mtrapargsString=%parm[#1]%&lt;/p&gt;
 	</logmsg>
-      <severity>Cleared</severity>
+      <severity>Normal</severity>
+      <alarm-data reduction-key="uei.opennms.org/vendor/APC/traps/dcCurrentLimitAlarm:%dpname%:%nodeid%:%interface%" clear-key="uei.opennms.org/vendor/APC/traps/dcCurrentLimitAlarm:%dpname%:%nodeid%:%interface%" alarm-type="2" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -4864,7 +4882,8 @@
         APC Event: dcRectifierFailAlarm trap received
 	mtrapargsString=%parm[#1]%&lt;/p&gt;
 	</logmsg>
-      <severity>Minor</severity>
+      <severity>Warning</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -4894,7 +4913,8 @@
         APC Event: dcRectifierFailAlarmCleared trap received
 	mtrapargsString=%parm[#1]%&lt;/p&gt;
 	</logmsg>
-      <severity>Cleared</severity>
+      <severity>Normal</severity>
+      <alarm-data reduction-key="uei.opennms.org/vendor/APC/traps/dcRectifierFailAlarm:%dpname%:%nodeid%:%interface%" clear-key="uei.opennms.org/vendor/APC/traps/dcRectifierFailAlarm:%dpname%:%nodeid%:%interface%" alarm-type="2" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -4924,7 +4944,8 @@
         APC Event: dcMultRectFailAlarm trap received
 	mtrapargsString=%parm[#1]%&lt;/p&gt;
 	</logmsg>
-      <severity>Minor</severity>
+      <severity>Warning<severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -4954,7 +4975,8 @@
         APC Event: dcMultRectFailAlarmCleared trap received
 	mtrapargsString=%parm[#1]%&lt;/p&gt;
 	</logmsg>
-      <severity>Cleared</severity>
+      <severity>Normal</severity>
+      <alarm-data reduction-key="uei.opennms.org/vendor/APC/traps/dcMultRectFailAlarm:%dpname%:%nodeid%:%interface%" clear-key="uei.opennms.org/vendor/APC/traps/dcMultRectFailAlarm:%dpname%:%nodeid%:%interface%" alarm-type="2" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -4985,6 +5007,7 @@
 	mtrapargsString=%parm[#1]%&lt;/p&gt;
 	</logmsg>
       <severity>Warning</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -5014,7 +5037,8 @@
         APC Event: dcBatteryBreakerAlarmCleared trap received
 	mtrapargsString=%parm[#1]%&lt;/p&gt;
 	</logmsg>
-      <severity>Cleared</severity>
+      <severity>Normal</severity>
+      <alarm-data reduction-key="uei.opennms.org/vendor/APC/traps/dcBatteryBreakerAlarm:%dpname%:%nodeid%:%interface%" clear-key="uei.opennms.org/vendor/APC/traps/dcBatteryBreakerAlarm:%dpname%:%nodeid%:%interface%" alarm-type="2" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -5045,6 +5069,7 @@
 	mtrapargsString=%parm[#1]%&lt;/p&gt;
 	</logmsg>
       <severity>Warning</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -5074,7 +5099,8 @@
         APC Event: dcRectifierOVPAlarmCleared trap received
 	mtrapargsString=%parm[#1]%&lt;/p&gt;
 	</logmsg>
-      <severity>Cleared</severity>
+      <severity>Normal</severity>
+      <alarm-data reduction-key="uei.opennms.org/vendor/APC/traps/dcRectifierOVPAlarm:%dpname%:%nodeid%:%interface%" clear-key="uei.opennms.org/vendor/APC/traps/dcRectifierOVPAlarm:%dpname%:%nodeid%:%interface%" alarm-type="2" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -5105,6 +5131,7 @@
 	mtrapargsString=%parm[#1]%&lt;/p&gt;
 	</logmsg>
       <severity>Warning</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -5134,7 +5161,8 @@
         APC Event: dcLVDImminentAlarmCleared trap received
 	mtrapargsString=%parm[#1]%&lt;/p&gt;
 	</logmsg>
-      <severity>Cleared</severity>
+      <severity>Normal</severity>
+      <alarm-data reduction-key="uei.opennms.org/vendor/APC/traps/dcLVDImminentAlarm:%dpname%:%nodeid%:%interface%" clear-key="uei.opennms.org/vendor/APC/traps/dcLVDImminentAlarm:%dpname%:%nodeid%:%interface%" alarm-type="2" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -5165,6 +5193,7 @@
 	mtrapargsString=%parm[#1]%&lt;/p&gt;
 	</logmsg>
       <severity>Warning</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -5194,7 +5223,8 @@
         APC Event: dcFuseCBAlarmCleared trap received
 	mtrapargsString=%parm[#1]%&lt;/p&gt;
 	</logmsg>
-      <severity>Cleared</severity>
+      <severity>Normal</severity>
+      <alarm-data reduction-key="uei.opennms.org/vendor/APC/traps/dcFuseCBAlarm:%dpname%:%nodeid%:%interface%" clear-key="uei.opennms.org/vendor/APC/traps/dcFuseCBAlarm:%dpname%:%nodeid%:%interface%" alarm-type="2" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -5255,6 +5285,7 @@
 	mtrapargsString=%parm[#1]%&lt;/p&gt;
 	</logmsg>
       <severity>Warning</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -5284,7 +5315,8 @@
         APC Event: dcTemperatureAlarmCleared trap received
 	mtrapargsString=%parm[#1]%&lt;/p&gt;
 	</logmsg>
-      <severity>Cleared</severity>
+      <severity>Normal</severity>
+      <alarm-data reduction-key="uei.opennms.org/vendor/APC/traps/dcTemperatureAlarm:%dpname%:%nodeid%:%interface%" clear-key="uei.opennms.org/vendor/APC/traps/dcTemperatureAlarm:%dpname%:%nodeid%:%interface%" alarm-type="2" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -5315,6 +5347,7 @@
 	mtrapargsString=%parm[#1]%&lt;/p&gt;
 	</logmsg>
       <severity>Warning</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -5344,7 +5377,8 @@
         APC Event: dcHumidityAlarmCleared trap received
 	mtrapargsString=%parm[#1]%&lt;/p&gt;
 	</logmsg>
-      <severity>Cleared</severity>
+      <severity>Normal</severity>
+      <alarm-data reduction-key="uei.opennms.org/vendor/APC/traps/dcHumidityAlarm:%dpname%:%nodeid%:%interface%" clear-key="uei.opennms.org/vendor/APC/traps/dcHumidityAlarm:%dpname%:%nodeid%:%interface%" alarm-type="2" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -5509,7 +5543,7 @@
 	iemStatusProbeName=%parm[#2]%
 	mtrapargsString=%parm[#3]%&lt;/p&gt;
 	</logmsg>
-      <severity>Cleared</severity>
+      <severity>Normal</severity>
       <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%" clear-key="uei.opennms.org/vendor/APC/traps/iemHighTempThresholdViolation:%dpname%:%nodeid%:%interface%:%parm[#2]%" alarm-type="2" auto-clean="false"/>
    </event>
    <event>
@@ -5573,6 +5607,8 @@
          <decode varbindvalue="1" varbinddecodedstring="celsius"/>
          <decode varbindvalue="2" varbinddecodedstring="fahrenheit"/>
       </varbindsdecode>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#4]%" alarm-type="1" auto-clean="false"/>
+   </event>
    </event>
    <event>
       <mask>
@@ -5614,7 +5650,8 @@
 	iemStatusProbeName=%parm[#2]%
 	mtrapargsString=%parm[#3]%&lt;/p&gt;
 	</logmsg>
-      <severity>Cleared</severity>
+      <severity>Normal</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%" clear-key="uei.opennms.org/vendor/APC/traps/iemLowTempThresholdViolation:%dpname%:%nodeid%:%interface%:%parm[#2]%" alarm-type="2" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -5663,6 +5700,8 @@
 	mtrapargsString=%parm[#4]%&lt;/p&gt;
 	</logmsg>
       <severity>Minor</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%" alarm-type="1" auto-clean="false"/>
+   </event>
    </event>
    <event>
       <mask>
@@ -5704,7 +5743,8 @@
 	iemStatusProbeName=%parm[#2]%
 	mtrapargsString=%parm[#3]%&lt;/p&gt;
 	</logmsg>
-      <severity>Cleared</severity>
+      <severity>Normal</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%" clear-key="uei.opennms.org/vendor/APC/traps/iemHighHumidThresholdViolation:%dpname%:%nodeid%:%interface%:%parm[#2]%" alarm-type="2" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -5753,6 +5793,8 @@
 	mtrapargsString=%parm[#4]%&lt;/p&gt;
 	</logmsg>
       <severity>Minor</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%" alarm-type="1" auto-clean="false"/>
+   </event>
    </event>
    <event>
       <mask>
@@ -5794,7 +5836,8 @@
 	iemStatusProbeName=%parm[#2]%
 	mtrapargsString=%parm[#3]%&lt;/p&gt;
 	</logmsg>
-      <severity>Cleared</severity>
+      <severity>Normal</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%" clear-key="uei.opennms.org/vendor/APC/traps/iemLowHumidThresholdViolation:%dpname%:%nodeid%:%interface%:%parm[#2]%" alarm-type="2" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -5905,6 +5948,8 @@
 	mtrapargsString=%parm[#3]%&lt;/p&gt;
 	</logmsg>
       <severity>Warning</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="1" auto-clean="false"/>
+   </event>
    </event>
    <event>
       <mask>
@@ -5947,7 +5992,8 @@
 	iemStatusContactName=%parm[#2]%
 	mtrapargsString=%parm[#3]%&lt;/p&gt;
 	</logmsg>
-      <severity>Cleared</severity>
+      <severity>Normal</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" clear-key="uei.opennms.org/vendor/APC/traps/iemContactFault:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="2" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -5997,6 +6043,8 @@
 	mtrapargsString=%parm[#4]%&lt;/p&gt;
 	</logmsg>
       <severity>Minor</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="1" auto-clean="false"/>
+   </event>
    </event>
    <event>
       <mask>
@@ -6039,7 +6087,8 @@
 	iemStatusRelayName=%parm[#2]%
 	mtrapargsString=%parm[#3]%&lt;/p&gt;
 	</logmsg>
-      <severity>Cleared</severity>
+      <severity>Normal</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" clear-key="uei.opennms.org/vendor/APC/traps/iemRelayFault:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="2" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -6145,6 +6194,7 @@
 	mtrapargsString=%parm[#2]%&lt;/p&gt;
 	</logmsg>
       <severity>Minor</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -6179,7 +6229,8 @@
 	mtrapargsInteger=%parm[#1]%
 	mtrapargsString=%parm[#2]%&lt;/p&gt;
 	</logmsg>
-      <severity>Cleared</severity>
+      <severity>Normal</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" clear-key="uei.opennms.org/vendor/APC/traps/bmBatManKneeAlarm:%dpname%:%nodeid%:%interface%" alarm-type="2" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -6215,6 +6266,7 @@
 	mtrapargsString=%parm[#2]%&lt;/p&gt;
 	</logmsg>
       <severity>Warning</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -6249,7 +6301,8 @@
 	mtrapargsInteger=%parm[#1]%
 	mtrapargsString=%parm[#2]%&lt;/p&gt;
 	</logmsg>
-      <severity>Cleared</severity>
+      <severity>Normal</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" clear-key="uei.opennms.org/vendor/APC/traps/bmBatManChargerAlarm:%dpname%:%nodeid%:%interface%" alarm-type="2" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -6285,6 +6338,7 @@
 	mtrapargsString=%parm[#2]%&lt;/p&gt;
 	</logmsg>
       <severity>Warning</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -6319,7 +6373,8 @@
 	mtrapargsInteger=%parm[#1]%
 	mtrapargsString=%parm[#2]%&lt;/p&gt;
 	</logmsg>
-      <severity>Cleared</severity>
+      <severity>Normal</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" clear-key="uei.opennms.org/vendor/APC/traps/bmBatManBatteryAlarm:%dpname%:%nodeid%:%interface%" alarm-type="2" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -6354,7 +6409,8 @@
 	mtrapargsInteger=%parm[#1]%
 	mtrapargsString=%parm[#2]%&lt;/p&gt;
 	</logmsg>
-      <severity>Minor</severity>
+      <severity>Warning</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -6389,7 +6445,8 @@
 	mtrapargsInteger=%parm[#1]%
 	mtrapargsString=%parm[#2]%&lt;/p&gt;
 	</logmsg>
-      <severity>Cleared</severity>
+      <severity>Normal</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" clear-key="uei.opennms.org/vendor/APC/traps/bmBatManEnvironmentAlarm:%dpname%:%nodeid%:%interface%" alarm-type="2" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -6425,6 +6482,7 @@
 	mtrapargsString=%parm[#2]%&lt;/p&gt;
 	</logmsg>
       <severity>Warning</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -6459,7 +6517,8 @@
 	mtrapargsInteger=%parm[#1]%
 	mtrapargsString=%parm[#2]%&lt;/p&gt;
 	</logmsg>
-      <severity>Cleared</severity>
+      <severity>Normal</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" clear-key="uei.opennms.org/vendor/APC/traps/ibmBatManMaintenanceAlarm:%dpname%:%nodeid%:%interface%" alarm-type="2" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -6592,6 +6651,7 @@
 	mtrapargsString=%parm[#4]%&lt;/p&gt;
 	</logmsg>
       <severity>Minor</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#2]%:%parm[#3]%" alarm-type="1" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -6639,7 +6699,8 @@
 	mtrapargsInteger=%parm[#3]%
 	mtrapargsString=%parm[#4]%&lt;/p&gt;
 	</logmsg>
-      <severity>Cleared</severity>
+      <severity>Normal</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#2]%:%parm[#3]%" clear-key="uei.opennms.org/vendor/APC/traps/pduUtilityLineUndervoltage:%dpname%:%nodeid%:%parm[#2]%:%parm[#3]%" alarm-type="2" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -6688,6 +6749,7 @@
 	mtrapargsString=%parm[#4]%&lt;/p&gt;
 	</logmsg>
       <severity>Minor</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#2]%:%parm[#3]%" alarm-type="1" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -6735,7 +6797,8 @@
 	mtrapargsInteger=%parm[#3]%
 	mtrapargsString=%parm[#4]%&lt;/p&gt;
 	</logmsg>
-      <severity>Cleared</severity>
+      <severity>Normal</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#2]%:%parm[#3]%" clear-key="uei.opennms.org/vendor/APC/traps/pduUtilityLineOvervoltage:%dpname%:%nodeid%:%parm[#2]%:%parm[#3]%" alarm-type="2" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -6778,6 +6841,7 @@
 	mtrapargsString=%parm[#3]%&lt;/p&gt;
 	</logmsg>
       <severity>Minor</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#2]%" alarm-type="1" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -6819,7 +6883,8 @@
 	mtrapargsString02=%parm[#2]%
 	mtrapargsString=%parm[#3]%&lt;/p&gt;
 	</logmsg>
-      <severity>Cleared</severity>
+      <severity>Normal</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#2]%" clear-key="uei.opennms.org/vendor/APC/traps/pduGroundOvercurrent:%dpname%:%nodeid%:%parm[#2]%" alarm-type="2" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -6868,6 +6933,7 @@
 	mtrapargsString=%parm[#4]%&lt;/p&gt;
 	</logmsg>
       <severity>Minor</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#2]%:%parm[#3]%" alarm-type="1" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -6915,7 +6981,8 @@
 	mtrapargsInteger=%parm[#3]%
 	mtrapargsString=%parm[#4]%&lt;/p&gt;
 	</logmsg>
-      <severity>Cleared</severity>
+      <severity>Normal</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#2]%:%parm[#3]%" clear-key="uei.opennms.org/vendor/APC/traps//pduCircuitPanelInputUndervoltage:%dpname%:%nodeid%:%parm[#2]%:%parm[#3]%" alarm-type="2" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -6964,6 +7031,7 @@
 	mtrapargsString=%parm[#4]%&lt;/p&gt;
 	</logmsg>
       <severity>Minor</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#2]%:%parm[#3]%" alarm-type="1" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -7011,7 +7079,8 @@
 	mtrapargsInteger=%parm[#3]%
 	mtrapargsString=%parm[#4]%&lt;/p&gt;
 	</logmsg>
-      <severity>Cleared</severity>
+      <severity>Normal</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#2]%:%parm[#3]%" clear-key="uei.opennms.org/vendor/APC/traps/pduUtilityLineOvervoltage:%dpname%:%nodeid%:%parm[#2]%:%parm[#3]%" alarm-type="2" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -7060,6 +7129,7 @@
 	mtrapargsString=%parm[#4]%&lt;/p&gt;
 	</logmsg>
       <severity>Minor</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#2]%:%parm[#3]%" alarm-type="1" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -7107,7 +7177,8 @@
 	mtrapargsInteger=%parm[#3]%
 	mtrapargsString=%parm[#4]%&lt;/p&gt;
 	</logmsg>
-      <severity>Cleared</severity>
+      <severity>Normal</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#2]%:%parm[#3]%" clear-key="uei.opennms.org/vendor/APC/traps/pduCircuitPanelInputUndercurrent:%dpname%:%nodeid%:%parm[#2]%:%parm[#3]%" alarm-type="2" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -7156,6 +7227,7 @@
 	mtrapargsString=%parm[#4]%&lt;/p&gt;
 	</logmsg>
       <severity>Minor</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#2]%:%parm[#3]%" alarm-type="1" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -7203,7 +7275,8 @@
 	mtrapargsInteger=%parm[#3]%
 	mtrapargsString=%parm[#4]%&lt;/p&gt;
 	</logmsg>
-      <severity>Cleared</severity>
+      <severity>Normal</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#2]%:%parm[#3]%" clear-key="uei.opennms.org/vendor/APC/traps/pduCircuitPanelInputOvercurrent:%dpname%:%nodeid%:%parm[#2]%:%parm[#3]%" alarm-type="2" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -7246,6 +7319,7 @@
 	mtrapargsString=%parm[#3]%&lt;/p&gt;
 	</logmsg>
       <severity>Minor</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#2]%" alarm-type="1" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -7287,7 +7361,8 @@
 	mtrapargsString02=%parm[#2]%
 	mtrapargsString=%parm[#3]%&lt;/p&gt;
 	</logmsg>
-      <severity>Cleared</severity>
+      <severity>Normal</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#2]%" clear-key="uei.opennms.org/vendor/APC/traps/pduCircuitPanelFrequencyOutofRange:%dpname%:%nodeid%:%parm[#2]%" alarm-type="2" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -7330,6 +7405,7 @@
 	mtrapargsString=%parm[#3]%&lt;/p&gt;
 	</logmsg>
       <severity>Minor</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#2]%" alarm-type="1" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -7371,7 +7447,8 @@
 	mtrapargsString02=%parm[#2]%
 	mtrapargsString=%parm[#3]%&lt;/p&gt;
 	</logmsg>
-      <severity>Cleared</severity>
+      <severity>Normal</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#2]%" clear-key="uei.opennms.org/vendor/APC/traps/pduCircuitPanelNeutralOvercurrent:%dpname%:%nodeid%:%parm[#2]%" alarm-type="2" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -7708,6 +7785,7 @@
 	mtrapargsString=%parm[#3]%&lt;/p&gt;
 	</logmsg>
       <severity>Minor</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#2]%" alarm-type="1" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -7749,7 +7827,8 @@
 	mtrapargsString02=%parm[#2]%
 	mtrapargsString=%parm[#3]%&lt;/p&gt;
 	</logmsg>
-      <severity>Cleared</severity>
+      <severity>Normal</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#2]%" clear-key="uei.opennms.org/vendor/APC/traps/pduInputTransformerOverTemperature:%dpname%:%nodeid%:%parm[#2]%" alarm-type="2" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -7798,6 +7877,7 @@
 	mtrapargsString=%parm[#4]%&lt;/p&gt;
 	</logmsg>
       <severity>Minor</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#2]%:%parm[#3]%" alarm-type="1" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -7845,7 +7925,8 @@
 	mtrapargsInteger=%parm[#3]%
 	mtrapargsString=%parm[#4]%&lt;/p&gt;
 	</logmsg>
-      <severity>Cleared</severity>
+      <severity>Normal</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#2]%:%parm[#3]%" clear-key="uei.opennms.org/vendor/APC/traps/pduUPSInputVoltageLost:%dpname%:%nodeid%:%parm[#2]%:%parm[#3]%" alarm-type="2" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -7893,7 +7974,8 @@
 	mtrapargsInteger=%parm[#3]%
 	mtrapargsString=%parm[#4]%&lt;/p&gt;
 	</logmsg>
-      <severity>Warning</severity>
+      <severity>Minor</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#2]%:%parm[#3]%" alarm-type="1" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -7941,7 +8023,8 @@
 	mtrapargsInteger=%parm[#3]%
 	mtrapargsString=%parm[#4]%&lt;/p&gt;
 	</logmsg>
-      <severity>Cleared</severity>
+      <severity>Normal</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#2]%:%parm[#3]%" clear-key="uei.opennms.org/vendor/APC/traps/pduContactFault:%dpname%:%nodeid%:%parm[#2]%:%parm[#3]%" alarm-type="2" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -7996,6 +8079,7 @@
 	mtrapargsString=%parm[#5]%&lt;/p&gt;
 	</logmsg>
       <severity>Warning</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#2]%:%parm[#3]%:%parm[#4]%" alarm-type="1" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -8050,7 +8134,8 @@
 	rPDULoadStatusPhaseNumber=%parm[#4]%
 	mtrapargsString=%parm[#5]%&lt;/p&gt;
 	</logmsg>
-      <severity>Cleared</severity>
+      <severity>Normal</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#2]%:%parm[#3]%:%parm[#4]%" clear-key="uei.opennms.org/vendor/APC/traps/rPDUBankPhaseLowLoad:%dpname%:%nodeid%:%parm[#2]%:%parm[#3]%:%parm[#4]%" alarm-type="2" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -8105,6 +8190,7 @@
 	mtrapargsString=%parm[#5]%&lt;/p&gt;
 	</logmsg>
       <severity>Warning</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#2]%:%parm[#3]%:%parm[#4]%" alarm-type="1" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -8159,7 +8245,8 @@
 	rPDULoadStatusPhaseNumber=%parm[#4]%
 	mtrapargsString=%parm[#5]%&lt;/p&gt;
 	</logmsg>
-      <severity>Cleared</severity>
+      <severity>Normal</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#2]%:%parm[#3]%:%parm[#4]%" clear-key="uei.opennms.org/vendor/APC/traps/rPDUBankPhaseNearOverload:%dpname%:%nodeid%:%parm[#2]%:%parm[#3]%:%parm[#4]%" alarm-type="2" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -8214,7 +8301,8 @@
 	rPDULoadStatusPhaseNumber=%parm[#4]%
 	mtrapargsString=%parm[#5]%&lt;/p&gt;
 	</logmsg>
-      <severity>Warning</severity>
+      <severity>Minor</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#2]%:%parm[#3]%:%parm[#4]%" alarm-type="1" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -8269,7 +8357,8 @@
 	rPDULoadStatusPhaseNumber=%parm[#4]%
 	mtrapargsString=%parm[#5]%&lt;/p&gt;
 	</logmsg>
-      <severity>Cleared</severity>
+      <severity>Normal</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#2]%:%parm[#3]%:%parm[#4]%" clear-key="uei.opennms.org/vendor/APC/traps/rPDUBankPhaseOverload:%dpname%:%nodeid%:%parm[#2]%:%parm[#3]%:%parm[#4]%" alarm-type="2" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -8720,6 +8809,7 @@
 	mtrapargsString=%parm[#5]%&lt;/p&gt;
 	</logmsg>
       <severity>Warning</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#2]%:%parm[#3]%:%parm[#4]%" alarm-type="1" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -8773,7 +8863,8 @@
 	emsSensorStatusSensorName=%parm[#4]%
 	mtrapargsString=%parm[#5]%&lt;/p&gt;
 	</logmsg>
-      <severity>Cleared</severity>
+      <severity>Normal</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#2]%:%parm[#3]%:%parm[#4]%" clear-key="uei.opennms.org/vendor/APC/traps/emsSensorFault:%dpname%:%nodeid%:%parm[#2]%:%parm[#3]%:%parm[#4]%" alarm-type="2" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -8984,6 +9075,7 @@
 	mtrapargsString=%parm[#3]%&lt;/p&gt;
 	</logmsg>
       <severity>Minor</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#2]%" alarm-type="1" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -9025,7 +9117,8 @@
 	emsIdentEMSName=%parm[#2]%
 	mtrapargsString=%parm[#3]%&lt;/p&gt;
 	</logmsg>
-      <severity>Cleared</severity>
+      <severity>Normal</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#2]%" clear-key="uei.opennms.org/vendor/APC/traps/emsMajorAlarm:%dpname%:%nodeid%:%parm[#2]%" alarm-type="2" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -9068,6 +9161,7 @@
 	mtrapargsString=%parm[#3]%&lt;/p&gt;
 	</logmsg>
       <severity>Warning</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#2]%" alarm-type="1" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -9109,7 +9203,8 @@
 	emsIdentEMSName=%parm[#2]%
 	mtrapargsString=%parm[#3]%&lt;/p&gt;
 	</logmsg>
-      <severity>Cleared</severity>
+      <severity>Normal</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#2]%" clear-key="uei.opennms.org/vendor/APC/traps/emsMinorAlarm:%dpname%:%nodeid%:%parm[#2]%" alarm-type="2" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -9718,6 +9813,7 @@
          <decode varbindvalue="1" varbinddecodedstring="celsius"/>
          <decode varbindvalue="2" varbinddecodedstring="fahrenheit"/>
       </varbindsdecode>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#2]%:%parm[#5]%:%parm[#6]%" alarm-type="1" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -9786,7 +9882,8 @@
 	emsProbeStatusProbeName=%parm[#6]%
 	mtrapargsString=%parm[#7]%&lt;/p&gt;
 	</logmsg>
-      <severity>Cleared</severity>
+      <severity>Normal</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#2]%:%parm[#5]%:%parm[#6]%" clear-key="uei.opennms.org/vendor/APC/traps/envHighTempThresholdViolation:%dpname%:%nodeid%:%parm[#2]%:%parm[#5]%:%parm[#6]%" alarm-type="2" auto-clean="false"/>
       <varbindsdecode>
          <parmid>parm[#4]</parmid>
          <decode varbindvalue="1" varbinddecodedstring="celsius"/>
@@ -9866,6 +9963,7 @@
          <decode varbindvalue="1" varbinddecodedstring="celsius"/>
          <decode varbindvalue="2" varbinddecodedstring="fahrenheit"/>
       </varbindsdecode>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#2]%:%parm[#5]%:%parm[#6]%" alarm-type="1" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -9934,7 +10032,8 @@
 	emsProbeStatusProbeName=%parm[#6]%
 	mtrapargsString=%parm[#7]%&lt;/p&gt;
 	</logmsg>
-      <severity>Cleared</severity>
+      <severity>Normal</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#2]%:%parm[#5]%:%parm[#6]%" clear-key="uei.opennms.org/vendor/APC/traps/envLowTempThresholdViolation:%dpname%:%nodeid%:%parm[#2]%:%parm[#5]%:%parm[#6]%" alarm-type="2" auto-clean="false"/>
       <varbindsdecode>
          <parmid>parm[#4]</parmid>
          <decode varbindvalue="1" varbinddecodedstring="celsius"/>
@@ -10000,6 +10099,7 @@
 	mtrapargsString=%parm[#6]%&lt;/p&gt;
 	</logmsg>
       <severity>Minor</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#2]%:%parm[#4]%:%parm[#5]%" alarm-type="1" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -10059,7 +10159,8 @@
 	emsProbeStatusProbeName=%parm[#5]%
 	mtrapargsString=%parm[#6]%&lt;/p&gt;
 	</logmsg>
-      <severity>Cleared</severity>
+      <severity>Normal</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#2]%:%parm[#4]%:%parm[#5]%" clear-key="uei.opennms.org/vendor/APC/traps/envHighHumidityThresholdViolation:%dpname%:%nodeid%:%parm[#2]%:%parm[#4]%:%parm[#5]%" alarm-type="2" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -10120,6 +10221,7 @@
 	mtrapargsString=%parm[#6]%&lt;/p&gt;
 	</logmsg>
       <severity>Minor</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#2]%:%parm[#4]%:%parm[#5]%" alarm-type="1" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -10179,7 +10281,8 @@
 	emsProbeStatusProbeName=%parm[#5]%
 	mtrapargsString=%parm[#6]%&lt;/p&gt;
 	</logmsg>
-      <severity>Cleared</severity>
+      <severity>Normal</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#2]%:%parm[#4]%:%parm[#5]%" clear-key="uei.opennms.org/vendor/APC/traps/envLowTempThresholdViolation:%dpname%:%nodeid%:%parm[#2]%:%parm[#4]%:%parm[#5]%" alarm-type="2" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -10517,7 +10620,7 @@
 	rPDULoadStatusPhaseNumber=%parm[#3]%
 	mtrapargsString=%parm[#4]%&lt;/p&gt;
 	</logmsg>
-      <severity>Minor</severity>
+      <severity>Warning</severity>
       <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%" alarm-type="1" auto-clean="true"/>
    </event>
    <event>
@@ -10616,7 +10719,7 @@
 	rPDULoadStatusPhaseNumber=%parm[#3]%
 	mtrapargsString=%parm[#4]%&lt;/p&gt;
 	</logmsg>
-      <severity>Minor</severity>
+      <severity>Warning</severity>
       <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%" alarm-type="1" auto-clean="false"/>
    </event>
    <event>
@@ -10715,7 +10818,7 @@
 	rPDULoadStatusPhaseNumber=%parm[#3]%
 	mtrapargsString=%parm[#4]%&lt;/p&gt;
 	</logmsg>
-      <severity>Major</severity>
+      <severity>Minor</severity>
       <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%" alarm-type="1" auto-clean="false"/>
    </event>
    <event>
