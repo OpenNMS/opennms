@@ -80,8 +80,8 @@ public class EventRestService extends OnmsRestService {
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     @Path("{eventId}")
     @Transactional
-    public OnmsEvent getEvent(@PathParam("eventId") final String eventId) {
-        return m_eventDao.get(Integer.valueOf(eventId));
+    public OnmsEvent getEvent(@PathParam("eventId") final Integer eventId) {
+        return m_eventDao.get(eventId);
     }
 
     /**
@@ -102,11 +102,13 @@ public class EventRestService extends OnmsRestService {
      * parameters
      * 
      * @return Collection of OnmsEventCollection (ready to be XML-ified)
+     * @throws java.text.ParseException
+     *             if any.
      */
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     @Transactional
-    public OnmsEventCollection getEvents(@Context final UriInfo uriInfo) {
+    public OnmsEventCollection getEvents(@Context final UriInfo uriInfo) throws ParseException {
         final CriteriaBuilder builder = getCriteriaBuilder(uriInfo.getQueryParameters());
         builder.orderBy("eventTime").asc();
 
@@ -121,12 +123,14 @@ public class EventRestService extends OnmsRestService {
      * parameters
      * 
      * @return Collection of OnmsEventCollection (ready to be XML-ified)
+     * @throws java.text.ParseException
+     *             if any.
      */
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     @Path("between")
     @Transactional
-    public OnmsEventCollection getEventsBetween(@Context final UriInfo uriInfo) {
+    public OnmsEventCollection getEventsBetween(@Context final UriInfo uriInfo) throws ParseException {
         final MultivaluedMap<String, String> params = uriInfo.getQueryParameters();
 
         final String column;

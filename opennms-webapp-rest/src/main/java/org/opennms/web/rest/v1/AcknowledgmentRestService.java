@@ -180,14 +180,6 @@ public class AcknowledgmentRestService extends OnmsRestService {
         return Response.ok(ack).build();
     }
 
-    private Integer getNumericValue(String number) {
-        try {
-            return Integer.valueOf(number);
-        } catch (NumberFormatException e) {
-            return null;
-        }
-    }
-
     private static CriteriaBuilder getQueryFilters(MultivaluedMap<String,String> params) {
         final CriteriaBuilder builder = new CriteriaBuilder(OnmsAcknowledgment.class);
         applyQueryFilters(params, builder);

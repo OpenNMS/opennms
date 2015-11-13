@@ -81,13 +81,13 @@ public class AlarmRestService extends AlarmRestServiceBase {
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     @Path("{alarmId}")
     @Transactional
-    public Response getAlarm(@Context SecurityContext securityContext, @PathParam("alarmId") final String alarmId) {
+    public Response getAlarm(@Context SecurityContext securityContext, @PathParam("alarmId") final Integer alarmId) {
         assertUserReadCredentials(securityContext);
         if ("summaries".equals(alarmId)) {
             final AlarmSummaryCollection collection = new AlarmSummaryCollection(m_alarmDao.getNodeAlarmSummaries());
             return collection == null ? Response.noContent().build() : Response.ok(collection).build();
         } else {
-            final OnmsAlarm alarm = m_alarmDao.get(Integer.valueOf(alarmId));
+            final OnmsAlarm alarm = m_alarmDao.get(alarmId);
             return alarm == null ? Response.noContent().build() : Response.ok(alarm).build();
         }
     }
