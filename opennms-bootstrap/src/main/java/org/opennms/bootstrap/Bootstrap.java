@@ -338,6 +338,9 @@ public abstract class Bootstrap {
                     + File.separator + "etc";
         }
 
+        // Add the JDK tools.jar to the classpath so that we can use the Attach API
+        dir += File.pathSeparator + System.getProperty("java.home") + File.separator + ".." + File.separator + "lib" + File.separator + "tools.jar";
+
         if (System.getProperty("org.opennms.protocols.icmp.interfaceJar") != null) {
         	dir += File.pathSeparator + System.getProperty("org.opennms.protocols.icmp.interfaceJar");
         }
