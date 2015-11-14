@@ -50,30 +50,13 @@ import com.sun.tools.attach.VirtualMachine;
 import com.sun.tools.attach.VirtualMachineDescriptor;
 
 /**
- * <p>
- * The Manager is responsible for launching/starting all services in the VM
- * that it is started for. The Manager operates in two modes, normal and
- * server
- * </p>
- * <p>
- * normal mode: In the normal mode, the Manager starts all services configured
- * for its VM in the service-configuration.xml and starts listening for
- * control events on the 'control-broadcast' JMS topic for stop control
- * messages for itself
- * </p>
- * <p>
- * server mode: In the server mode, the Manager starts up and listens on the
- * 'control-broadcast' JMS topic for 'start' control messages for services in
- * its VM and a stop control message for itself. When a start for a service is
- * received, it launches only that service and sends a successful 'running' or
- * an 'error' response to the Controller
- * </p>
- * <p>
- * <strong>Note: </strong>The Manager is NOT intelligent - if it receives a
- * stop control event, it will exit - does not check to see if the services
- * its started are all stopped
- * <p>
+ * <p>This {@link Controller} class is used to interact with a Manager
+ * MBean running inside an OpenNMS JMX service. This class can invoke operations
+ * on that MBean and request status information from it. It is used to execute
+ * shell operations to control the lifecycle of the OpenNMS process from init.d
+ * or systemd scripts.
  *
+ * @author Seth
  * @author <a href="mailto:weave@oculan.com">Brian Weaver</a>
  * @author <a href="mailto:sowmya@opennms.org">Sowmya Nataraj</a>
  */
@@ -106,13 +89,6 @@ public class Controller {
     private boolean m_verbose = false;
 
     /**
-     * <p>Constructor for Controller.</p>
-     */
-    public Controller() {
-        
-    }
-
-    /**
      * <p>main</p>
      *
      * @param argv an array of {@link java.lang.String} objects.
@@ -129,21 +105,15 @@ public class Controller {
                                    + "[<options>] <command>");
                 System.out.println("Accepted options:");
                 System.out.println("        -t <timeout>    HTTP connection timeout in seconds.  Defaults to 30.");
-                //System.out.println("        -u <URL>        Alternate JMX URL.");
                 System.out.println("        -v              Verbose mode.");
                 System.out.println("");
                 System.out.println("Accepted commands: start, stop, status, check, dumpThreads, exit");
-                //System.out.println("");
-                //System.out.println("The default JMX URL is: " + DEFAULT_JMX_URL);
                 System.exit(0);
             } else if (argv[i].equals("-t")) {
                 c.setRmiHandshakeTimeout(Integer.parseInt(argv[i + 1]) * 1000);
                 i++;
             } else if (argv[i].equals("-v")) {
                 c.setVerbose(true);
-            //} else if (argv[i].equals("-u")) {
-            //    c.setJmxUrl(argv[i + 1]);
-            //    i++;
             } else if (i != (argv.length - 1)) {
                 System.err.println("Invalid command-line option: \"" + argv[i] + "\".  Use \"-h\" option for help.");
                 System.exit(1);
@@ -157,8 +127,6 @@ public class Controller {
                                + " option for help");
             System.exit(1);
         }
-        
-        //c.setAuthenticator(c.createAuthenticatorUsingConfigCredentials());
 
         String command = argv[argv.length - 1];
 
@@ -290,97 +258,6 @@ public class Controller {
         }
     }
 
-    /*
-     * Create an Authenticator so that we can provide authentication, if
-     * needed, when go to connect to the URL
-     */
-    /*
-    public static Authenticator createAuthenticatorUsingConfigCredentials() {
-        Service service = getConfiguredService(JMX_HTTP_ADAPTER_NAME);
-        if (service == null) {
-            // Didn't find the service we were looking for
-        	LOG.warn("Could not find configured service for '{}'", JMX_HTTP_ADAPTER_NAME);
-            return null;
-        }
-
-        org.opennms.netmgt.config.service.Attribute[] attribs = service.getAttribute();
-
-        if (attribs == null) {
-            // the AuthenticationMethod is not set, so no authentication
-            return null;
-        }
-
-        boolean usingBasic = false;
-        for (org.opennms.netmgt.config.service.Attribute attrib : attribs) {
-            if (attrib.getName().equals("AuthenticationMethod")) {
-                if (!attrib.getValue().getContent().equals("basic")) {
-                	LOG.error("AuthenticationMethod is \"{}\", but only \"basic\" is supported", attrib.getValue());
-                    return null;
-                }
-                usingBasic = true;
-                break;
-            }
-        }
-            
-        if (!usingBasic) {
-            // AuthenticationMethod is not set to basic, so no authentication
-            return null;
-        }
-
-        Invoke[] invokes = service.getInvoke();
-        if (invokes == null) {
-            // No username or password could be set
-            return null;
-        }
-        
-        String username = null;
-        String password = null;
-        for (Invoke invoke : invokes) {
-            if (invoke.getMethod().equals("addAuthorization")) {
-                Argument[] args = invoke.getArgument();
-                if (args != null && args.length == 2
-                        && args[0].getContent().equals("manager")) {
-                    username = args[0].getContent();
-                    password = args[1].getContent();
-                    break;
-                }
-            }
-        }
-            
-        if (username == null || password == null) {
-            // Didn't find a username or password
-            return null;
-        }
-            
-        final String username_f = username;
-        final String password_f = password;
-        
-        return new Authenticator() {
-            @Override
-            protected PasswordAuthentication getPasswordAuthentication() {
-                return new PasswordAuthentication(username_f,
-                                                  password_f.toCharArray());
-            }
-        };
-    }
-    */
-
-    /*
-    private static Service getConfiguredService(String serviceName) {
-        ServiceConfigFactory sfact = new ServiceConfigFactory();
-
-        Service[] services = sfact.getServices();
-
-        for (Service service : services) {
-            if (service.getName().equals(serviceName)) {
-                return service;
-            }
-        }
-        
-        return null;
-    }
-    */
-
     /**
      * <p>isVerbose</p>
      *
@@ -400,7 +277,11 @@ public class Controller {
     }
 
     /**
-     * <p>getJmxUrl</p>
+     * This method uses the Java Attach API to connect to a running OpenNMS JVM
+     * and fetch the dynamically assigned local JMX agent URL.
+     * 
+     * @see https://docs.oracle.com/javase/8/docs/jdk/api/attach/spec/index.html
+     * @see https://docs.oracle.com/javase/8/docs/technotes/guides/management/agent.html
      *
      * @return a {@link java.lang.String} object.
      */
@@ -449,17 +330,6 @@ public class Controller {
         }
         throw new IllegalStateException("Could not find OpenNMS JVM (" + OPENNMS_JVM_DISPLAY_NAME_SUBSTRING + ")");
     }
-
-    /**
-     * <p>setJmxUrl</p>
-     *
-     * @param jmxUrl a {@link java.lang.String} object.
-     */
-    /*
-    public void setJmxUrl(String jmxUrl) {
-        m_jmxUrl = jmxUrl;
-    }
-    */
 
     public int getRmiHandshakeTimeout() {
         // This default value is from:
