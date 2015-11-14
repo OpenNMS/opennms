@@ -167,7 +167,7 @@ public class AgentConfigurationResource implements InitializingBean {
         final Filter filter = m_collectdConfigurationResource.get().getFilter(filterName);
         if (filter == null) {
             LOG.warn("No filter matching {} could be found.", filterName);
-            throw new WebApplicationException(Status.BAD_REQUEST);
+            throw new WebApplicationException(Status.NOT_FOUND);
         }
 
         final List<InetAddress> addresses = m_filterDao.getActiveIPAddressList(filter.getContent());
