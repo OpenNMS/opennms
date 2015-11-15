@@ -81,13 +81,13 @@ public class AlarmRestService extends AlarmRestServiceBase {
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     @Path("{alarmId}")
     @Transactional
-    public Response getAlarm(@Context SecurityContext securityContext, @PathParam("alarmId") final String alarmId) {
+    public Response getAlarm(@Context SecurityContext securityContext, @PathParam("alarmId") final Integer alarmId) {
         assertUserReadCredentials(securityContext);
         if ("summaries".equals(alarmId)) {
             final AlarmSummaryCollection collection = new AlarmSummaryCollection(m_alarmDao.getNodeAlarmSummaries());
             return collection == null ? Response.noContent().build() : Response.ok(collection).build();
         } else {
-            final OnmsAlarm alarm = m_alarmDao.get(Integer.valueOf(alarmId));
+            final OnmsAlarm alarm = m_alarmDao.get(alarmId);
             return alarm == null ? Response.noContent().build() : Response.ok(alarm).build();
         }
     }
@@ -149,7 +149,7 @@ public class AlarmRestService extends AlarmRestServiceBase {
 
         try {
             if (alarmId == null) {
-                throw new IllegalArgumentException("Unable to determine alarm ID to update based on query path.");
+                return getBadRequestResponse("Unable to determine alarm ID to update based on query path.");
             }
 
             final String ackValue = formProperties.getFirst("ack");
@@ -163,7 +163,7 @@ public class AlarmRestService extends AlarmRestServiceBase {
 
             final OnmsAlarm alarm = m_alarmDao.get(alarmId);
             if (alarm == null) {
-                throw new IllegalArgumentException("Unable to locate alarm with ID '" + alarmId + "'");
+                return getBadRequestResponse("Unable to locate alarm with ID '" + alarmId + "'");
             }
 
             final String ackUser = ackUserValue == null ? securityContext.getUserPrincipal().getName() : ackUserValue;
@@ -186,7 +186,7 @@ public class AlarmRestService extends AlarmRestServiceBase {
                     acknowledgement.setAckAction(AckAction.CLEAR);
                 }
             } else {
-                throw new IllegalArgumentException("Must supply one of the 'ack', 'escalate', or 'clear' parameters, set to either 'true' or 'false'.");
+                return getBadRequestResponse("Must supply one of the 'ack', 'escalate', or 'clear' parameters, set to either 'true' or 'false'.");
             }
             m_ackDao.processAck(acknowledgement);
             return Response.seeOther(getRedirectUri(uriInfo)).build();
@@ -245,7 +245,7 @@ public class AlarmRestService extends AlarmRestServiceBase {
                         acknowledgement.setAckAction(AckAction.CLEAR);
                     }
                 } else {
-                    throw new IllegalArgumentException("Must supply one of the 'ack', 'escalate', or 'clear' parameters, set to either 'true' or 'false'.");
+                    throw getException(Status.BAD_REQUEST, "Must supply one of the 'ack', 'escalate', or 'clear' parameters, set to either 'true' or 'false'.");
                 }
                 m_ackDao.processAck(acknowledgement);
             }
@@ -273,7 +273,7 @@ public class AlarmRestService extends AlarmRestServiceBase {
             return;
         }
         // otherwise
-        throw new WebApplicationException(new IllegalArgumentException("User '" + currentUser + "', is not allowed to read alarms."), Status.FORBIDDEN);
+        throw new WebApplicationException(Response.status(Response.Status.FORBIDDEN).entity("User '" + currentUser + "', is not allowed to read alarms.").type(MediaType.TEXT_PLAIN).build());
     }
 
     private static void assertUserEditCredentials(final SecurityContext securityContext, final String ackUser) {
@@ -285,7 +285,7 @@ public class AlarmRestService extends AlarmRestServiceBase {
         }
         if (securityContext.isUserInRole(Authentication.ROLE_READONLY)) {
             // read only is not allowed to edit
-            throw new WebApplicationException(new IllegalArgumentException("User '" + currentUser + "', is a read-only user!"), Status.FORBIDDEN);
+            throw new WebApplicationException(Response.status(Response.Status.FORBIDDEN).entity("User '" + currentUser + "', is a read-only user!").type(MediaType.TEXT_PLAIN).build());
         }
         if (securityContext.isUserInRole(Authentication.ROLE_REST) ||
                 securityContext.isUserInRole(Authentication.ROLE_USER) ||
@@ -297,7 +297,7 @@ public class AlarmRestService extends AlarmRestServiceBase {
             }
         }
         // otherwise
-        throw new WebApplicationException(new IllegalArgumentException("User '" + currentUser + "', is not allowed to perform updates to alarms as user '" + ackUser + "'"), Status.FORBIDDEN);
+        throw new WebApplicationException(Response.status(Response.Status.FORBIDDEN).entity("User '" + currentUser + "', is not allowed to perform updates to alarms as user '" + ackUser + "'").type(MediaType.TEXT_PLAIN).build());
     }
 
 }
