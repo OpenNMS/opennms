@@ -283,4 +283,16 @@ public class OnmsRestService {
         RestUtils.setBeanProperties(req, params);
     }
 
+	protected Response getBadRequestResponse(String message) {
+            return Response.status(Response.Status.BAD_REQUEST).entity(message).type(MediaType.TEXT_PLAIN).build();
+	}
+
+	    protected Integer getNumericValue(String number) {
+	        try {
+	            return Integer.valueOf(number);
+	        } catch (NumberFormatException e) {
+	            return null;
+	        }
+	    }
+
 }
