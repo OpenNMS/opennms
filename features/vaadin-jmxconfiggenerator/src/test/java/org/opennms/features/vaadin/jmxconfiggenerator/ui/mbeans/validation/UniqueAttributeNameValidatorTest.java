@@ -88,7 +88,6 @@ public class UniqueAttributeNameValidatorTest {
         Assert.assertTrue(Arrays.equals(new String[]{"attrib1", "compMem1", "compMem2"}, names.toArray(new String[names.size()])));
 
         mbean.getAttrib().add(TestHelper.createAttrib("attribute2", "attrib1")); // alias clash
-        nameProvider.invalidateCache();
         names = new ArrayList<>(nameProvider.getNamesMap().values());
         Assert.assertEquals(4, names.size());
 

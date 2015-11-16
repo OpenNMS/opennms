@@ -123,9 +123,13 @@ public class ConfirmationDialog extends Window implements Window.CloseListener, 
     @Override
     public void windowClose(CloseEvent e) {
         if (okPressed) {
-            okAction.execute(this);
+            if (okAction != null) {
+                okAction.execute(this);
+            }
         } else {
-            cancelAction.execute(this);
+            if (cancelAction != null) {
+                cancelAction.execute(this);
+            }
         }
     }
 
