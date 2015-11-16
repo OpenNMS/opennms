@@ -84,7 +84,7 @@ public class Controller {
      * this value might change. Run jconsole to see the list of available JVM display 
      * names on the system.
      */
-    private static final String OPENNMS_JVM_DISPLAY_NAME_SUBSTRING = "opennms_bootstrap";
+    private static final String OPENNMS_JVM_DISPLAY_NAME_SUBSTRING = "opennms_bootstrap.jar start";
 
     private boolean m_verbose = false;
 
