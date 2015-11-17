@@ -14,7 +14,7 @@
     <dependency>
       <groupId>org.opennms.lib</groupId>
       <artifactId>org.opennms.lib.tracker</artifactId>
-      <version>0.6</version>
+      <version>0.7</version>
       <exclusions>
         <exclusion>
           <groupId>log4j</groupId>
