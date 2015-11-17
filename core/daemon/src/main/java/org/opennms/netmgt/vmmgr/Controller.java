@@ -179,9 +179,9 @@ public class Controller {
             statusGetter.setVerbose(isVerbose());
             statusGetter.queryStatus();
         } catch (Throwable t) {
-            String message =  "Error invoking status command";
-            System.err.println(message);
+            String message = "error invoking \"status\" operation: " + t.getMessage();
             LOG.error(message, t);
+            System.err.println(message);
             return 1;
         }
 
@@ -215,7 +215,9 @@ public class Controller {
         try {
             new DatabaseChecker().check();
         } catch (final Throwable t) {
-        	LOG.error("error invoking check command", t);
+            String message = "error invoking \"check\" operation: " + t.getMessage();
+            LOG.error(message, t);
+            System.err.println(message);
             return 1;
         }
         return 0;
@@ -243,8 +245,9 @@ public class Controller {
         try {
             doInvokeOperation(operation); // Ignore the returned object
         } catch (final Throwable t) {
-            LOG.error("error invoking \"{}\" operation", operation, t);
-            System.err.println("error invoking \"" + operation + "\" operation");
+            String message = "error invoking \"" + operation + "\" operation: " + t.getMessage();
+            LOG.error(message, t);
+            System.err.println(message);
             return 1;
         }
 
@@ -286,7 +289,15 @@ public class Controller {
      * @return a {@link java.lang.String} object.
      */
     public static String getJmxUrl() {
+        StringBuffer vmNames = new StringBuffer();
+        boolean first = true;
         for (VirtualMachineDescriptor vmDescr : VirtualMachine.list()) {
+            if (!first) {
+                vmNames.append(", ");
+            }
+            vmNames.append("\"" + vmDescr.displayName() + "\"");
+            first = false;
+
             if (vmDescr.displayName().contains(OPENNMS_JVM_DISPLAY_NAME_SUBSTRING)) {
                 // Attach to the OpenNMS application
                 VirtualMachine vm = null;
@@ -328,7 +339,7 @@ public class Controller {
                 return connectorAddress;
             }
         }
-        throw new IllegalStateException("Could not find OpenNMS JVM (" + OPENNMS_JVM_DISPLAY_NAME_SUBSTRING + ")");
+        throw new IllegalStateException("Could not find OpenNMS JVM (\"" + OPENNMS_JVM_DISPLAY_NAME_SUBSTRING + "\") among JVMs (" + vmNames + ")");
     }
 
     public int getRmiHandshakeTimeout() {
