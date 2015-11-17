@@ -44,6 +44,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriInfo;
 
 import org.joda.time.Duration;
@@ -142,16 +143,17 @@ public class ForeignSourceRestService extends OnmsRestService {
      * <p>getDefaultForeignSource</p>
      *
      * @return a {@link org.opennms.netmgt.provision.persist.foreignsource.ForeignSource} object.
-     * @throws java.text.ParseException if any.
      */
     @GET
     @Path("default")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
-    public ForeignSource getDefaultForeignSource() throws ParseException {
+    public ForeignSource getDefaultForeignSource() {
         readLock();
         try {
             m_deployedForeignSourceRepository.flush();
             return m_deployedForeignSourceRepository.getDefaultForeignSource();
+        } catch (final Throwable t) {
+            throw getException(Status.BAD_REQUEST, t.getMessage());
         } finally {
             readUnlock();
         }
@@ -161,17 +163,18 @@ public class ForeignSourceRestService extends OnmsRestService {
      * Returns all the deployed foreign sources
      *
      * @return Collection of OnmsForeignSources (ready to be XML-ified)
-     * @throws java.text.ParseException if any.
      */
     @GET
     @Path("deployed")
-    public ForeignSourceCollection getDeployedForeignSources() throws ParseException {
+    public ForeignSourceCollection getDeployedForeignSources() {
         readLock();
         try {
             m_deployedForeignSourceRepository.flush();
             ForeignSourceCollection retval = new ForeignSourceCollection();
             retval.getForeignSources().addAll(m_deployedForeignSourceRepository.getForeignSources());
             return retval;
+        } catch (final Throwable t) {
+            throw getException(Status.BAD_REQUEST, t.getMessage());
         } finally {
             readUnlock();
         }
@@ -190,6 +193,8 @@ public class ForeignSourceRestService extends OnmsRestService {
         try {
             m_deployedForeignSourceRepository.flush();
             return Integer.toString(m_deployedForeignSourceRepository.getForeignSourceCount());
+        } catch (final Throwable t) {
+            throw getException(Status.BAD_REQUEST, t.getMessage());
         } finally {
             readUnlock();
         }
@@ -203,9 +208,8 @@ public class ForeignSourceRestService extends OnmsRestService {
      */
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
-    public ForeignSourceCollection getForeignSources() throws ParseException {
+    public ForeignSourceCollection getForeignSources() {
         readLock();
-        
         try {
             final Set<ForeignSource> foreignSources = new TreeSet<ForeignSource>();
             for (final String fsName : getActiveForeignSourceNames()) {
@@ -214,6 +218,8 @@ public class ForeignSourceRestService extends OnmsRestService {
             ForeignSourceCollection retval = new ForeignSourceCollection();
             retval.getForeignSources().addAll(foreignSources);
             return retval;
+        } catch (final Throwable t) {
+            throw getException(Status.BAD_REQUEST, t.getMessage());
         } finally {
             readUnlock();
         }
@@ -223,15 +229,16 @@ public class ForeignSourceRestService extends OnmsRestService {
      * returns a plaintext string being the number of pending foreign sources
      *
      * @return a int.
-     * @throws java.text.ParseException if any.
      */
     @GET
     @Path("count")
     @Produces(MediaType.TEXT_PLAIN)
-    public String getTotalCount() throws ParseException {
+    public String getTotalCount() {
         readLock();
         try {
             return Integer.toString(getActiveForeignSourceNames().size());
+        } catch (final Throwable t) {
+            throw getException(Status.BAD_REQUEST, t.getMessage());
         } finally {
             readUnlock();
         }
@@ -250,6 +257,8 @@ public class ForeignSourceRestService extends OnmsRestService {
         readLock();
         try {
             return getActiveForeignSource(foreignSource);
+        } catch (final Throwable t) {
+            throw getException(Status.BAD_REQUEST, t.getMessage());
         } finally {
             readUnlock();
         }

@@ -95,13 +95,14 @@ The next step is creating an _opennms_ database user with password and configure
 su - postgres
 createuser -P opennms
 createdb -O opennms opennms
+exit
 ----
 
 NOTE: It is not necessary to change the authentication method in `pg_hba.conf`, it is by default set to `md5` for localhost connections.
 
 [source, shell]
 ----
-vi ${OPENNMS_HOME}/etc/opennms-datasource.xml
+vi ${OPENNMS_HOME}/etc/opennms-datasources.xml
 ----
 
 .Configuration for database authentication in _OpenNMS_

@@ -45,10 +45,10 @@ public class UniqueAttributeNameValidator extends AbstractStringValidator {
 
 	/**
 	 * Maps a Attrib/CompMember to a certain Vaadin field value. We need this, because we need the possibility to validate
-	 * the uniqueness of the Atrrib's/CompMember's aliases. Wile editing the final alias has not yet been written to the underlying
+	 * the uniqueness of the Atrrib's/CompMember's aliases. While editing the final alias has not yet been written to the underlying
 	 * bean and therefore need to be considered by the name provider. This field is optional and may be empty, but not null.
 	 * For example at the initial validation phase the map may be empty, but while validating the input of the alias
-	 * of an Attribute in the Attributes tables the map shoult not be empty.
+	 * of an Attribute in the Attributes tables the map should not be empty.
 	 */
 	public interface FieldProvider {
 
