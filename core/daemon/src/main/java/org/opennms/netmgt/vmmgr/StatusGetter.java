@@ -35,7 +35,13 @@ import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class StatusGetter {
+
+    private static final Logger LOG = LoggerFactory.getLogger(StatusGetter.class);
+
     public enum Status {
         UNKNOWN, RUNNING, PARTIALLY_RUNNING, NOT_RUNNING, CONNECTION_REFUSED
     }
@@ -128,7 +134,9 @@ public class StatusGetter {
         try {
             statusResults = (List<String>)Controller.doInvokeOperation("status");
         } catch (Throwable e) {
+            LOG.debug("Could not fetch status: " + e.getMessage());
             if (isVerbose()) {
+                // TODO Should this be System.err instead?
                 System.out.println("Could not connect to the OpenNMS JVM"
                         + " (OpenNMS might not be running or "
                         + "could be starting up or shutting down): "
