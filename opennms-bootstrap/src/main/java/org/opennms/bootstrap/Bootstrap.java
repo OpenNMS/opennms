@@ -395,6 +395,8 @@ public abstract class Bootstrap {
             m_rmiServerSocketFactory = new HostRMIServerSocketFactory("localhost");
             RMISocketFactory.setSocketFactory(m_rmiServerSocketFactory);
         }
+
+        OpenNMSProxyLoginModule.setClassloader(cl);
     }
 
     protected static void loadDefaultProperties() throws Exception {
