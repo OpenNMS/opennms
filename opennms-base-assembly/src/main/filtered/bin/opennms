@@ -79,8 +79,9 @@ VERBOSE_GC=""
 # Additional options to pass to runjava.
 RUNJAVA_OPTIONS=""
 
-# URL that this script uses to communicate with a running OpenNMS daemon.
-#JMX_URL="service:jmx:rmi:///jndi/rmi://127.0.0.1:1099/jmxrmi"
+# JMX URL that this script uses to communicate with a running OpenNMS daemon
+# when it cannot connect using the Attach API (automatically or by PID)
+JMX_URL="service:jmx:rmi:///jndi/rmi://127.0.0.1:1099/jmxrmi"
 
 # The user that OpenNMS needs to run as.
 RUNAS="root"
@@ -393,9 +394,16 @@ doStart(){
 
 doPause(){
 	if doStatus; then
+		# If there is a PID file for OpenNMS, specify the PID
+		PID=`getPid`
+		if [ x"$PID" != x"" ]; then
+			PARM_PID="-p $PID"
+		else
+			PARM_PID=""
+		fi
+
 		APP_VM_PARMS="$CONTROLLER_OPTIONS"
-		#APP_PARMS_BEFORE="-u $JMX_URL pause $SERVICE"
-		APP_PARMS_BEFORE="pause $SERVICE"
+		APP_PARMS_BEFORE="$PARM_PID -u $JMX_URL pause $SERVICE"
 		if [ -z "$NOEXECUTE" ]; then
 			$JAVA_CMD $APP_VM_PARMS -jar $BOOTSTRAP $APP_PARMS_CONTROLLER $APP_PARMS_BEFORE "$@" $APP_PARMS_AFTER
 		fi
@@ -406,9 +414,16 @@ doPause(){
 
 doResume(){
 	if doStatus; then
+		# If there is a PID file for OpenNMS, specify the PID
+		PID=`getPid`
+		if [ x"$PID" != x"" ]; then
+			PARM_PID="-p $PID"
+		else
+			PARM_PID=""
+		fi
+
 		APP_VM_PARMS="$CONTROLLER_OPTIONS"
-		#APP_PARMS_BEFORE="-u $JMX_URL resume $SERVICE"
-		APP_PARMS_BEFORE="resume $SERVICE"
+		APP_PARMS_BEFORE="$PARM_PID -u $JMX_URL resume $SERVICE"
 		if [ -z "$NOEXECUTE" ]; then
 			$JAVA_CMD $APP_VM_PARMS -jar $BOOTSTRAP $APP_PARMS_CONTROLLER $APP_PARMS_BEFORE "$@" $APP_PARMS_AFTER
 		fi
@@ -450,10 +465,17 @@ doStop() {
 			return 0
 		fi
 
+		# If there is a PID file for OpenNMS, specify the PID
+		PID=`getPid`
+		if [ x"$PID" != x"" ]; then
+			PARM_PID="-p $PID"
+		else
+			PARM_PID=""
+		fi
+
 		if [ -z "$NOEXECUTE" ]; then
 			APP_VM_PARMS="$CONTROLLER_OPTIONS"
-			#APP_PARMS_BEFORE="-u $JMX_URL stop $SERVICE"
-			APP_PARMS_BEFORE="stop $SERVICE"
+			APP_PARMS_BEFORE="$PARM_PID -u $JMX_URL stop $SERVICE"
 			$JAVA_CMD $APP_VM_PARMS -jar $BOOTSTRAP $APP_PARMS_CONTROLLER $APP_PARMS_BEFORE "$@" $APP_PARMS_AFTER
 		fi
 
@@ -467,9 +489,16 @@ doStop() {
 
 doKill(){
 	if doStatus; then
+		# If there is a PID file for OpenNMS, specify the PID
+		PID=`getPid`
+		if [ x"$PID" != x"" ]; then
+			PARM_PID="-p $PID"
+		else
+			PARM_PID=""
+		fi
+
 		APP_VM_PARMS="$CONTROLLER_OPTIONS"
-		#APP_PARMS_BEFORE="-u $JMX_URL exit"
-		APP_PARMS_BEFORE="exit"
+		APP_PARMS_BEFORE="$PARM_PID -u $JMX_URL exit"
 		$JAVA_CMD $APP_VM_PARMS -jar $BOOTSTRAP $APP_PARMS_CONTROLLER $APP_PARMS_BEFORE "$@" $APP_PARMS_AFTER
 	fi
 
@@ -485,15 +514,22 @@ doKill(){
 
 doStatus(){
 	if [ $VERBOSE -gt 0 ]; then
-		STATUS_VERBOSE="-v"
+		PARM_VERBOSE="-v"
 	else
-		STATUS_VERBOSE=""
+		PARM_VERBOSE=""
+	fi
+
+	# If there is a PID file for OpenNMS, specify the PID
+	PID=`getPid`
+	if [ x"$PID" != x"" ]; then
+		PARM_PID="-p $PID"
+	else
+		PARM_PID=""
 	fi
 
 	if [ -z "$NOEXECUTE" ]; then
 		APP_VM_PARMS="$CONTROLLER_OPTIONS"
-		#APP_PARMS_BEFORE="-u $JMX_URL $STATUS_VERBOSE status"
-		APP_PARMS_BEFORE="$STATUS_VERBOSE status"
+		APP_PARMS_BEFORE="$PARM_PID -u $JMX_URL $PARM_VERBOSE status"
 		$JAVA_CMD $APP_VM_PARMS -jar $BOOTSTRAP $APP_PARMS_CONTROLLER $APP_PARMS_BEFORE "$@" $APP_PARMS_AFTER
 	fi
 }

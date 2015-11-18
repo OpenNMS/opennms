@@ -42,30 +42,16 @@ public class StatusGetter {
 
     private static final Logger LOG = LoggerFactory.getLogger(StatusGetter.class);
 
-    public enum Status {
+    public static enum Status {
         UNKNOWN, RUNNING, PARTIALLY_RUNNING, NOT_RUNNING, CONNECTION_REFUSED
     }
 
-    private boolean m_verbose = false;
-
     private Status m_status = Status.UNKNOWN;
 
-    /**
-     * <p>isVerbose</p>
-     *
-     * @return a boolean.
-     */
-    public boolean isVerbose() {
-        return m_verbose;
-    }
+    private final Controller m_controller;
 
-    /**
-     * <p>setVerbose</p>
-     *
-     * @param verbose a boolean.
-     */
-    public void setVerbose(boolean verbose) {
-        m_verbose = verbose;
+    public StatusGetter(Controller controller) {
+        m_controller = controller;
     }
 
     /**
@@ -75,48 +61,6 @@ public class StatusGetter {
      */
     public Status getStatus() {
         return m_status;
-    }
-
-    /**
-     * <p>main</p>
-     *
-     * @param argv an array of {@link java.lang.String} objects.
-     * @throws java.lang.Exception if any.
-     */
-    public static void main(String[] argv) throws Exception {
-        StatusGetter statusGetter = new StatusGetter();
-        int i;
-
-        for (i = 0; i < argv.length; i++) {
-            if (argv[i].equals("-h")) {
-                System.out.println("Accepted options:");
-                System.out.println("        -v              Verbose mode.");
-                statusGetter.setVerbose(true);
-            } else if (argv[i].equals("-v")) {
-                statusGetter.setVerbose(true);
-            } else {
-                throw new Exception("Invalid command-line option: \""
-                        + argv[i] + "\"");
-            }
-        }
-
-        statusGetter.queryStatus();
-
-        if (statusGetter.getStatus() == Status.NOT_RUNNING
-                || statusGetter.getStatus() == Status.CONNECTION_REFUSED) {
-            System.exit(3); // According to LSB: 3 - service not running
-        } else if (statusGetter.getStatus() == Status.PARTIALLY_RUNNING) {
-            /*
-             * According to LSB: reserved for application So, I say 160 -
-             * partially running
-             */
-            System.exit(160);
-        } else if (statusGetter.getStatus() == Status.RUNNING) {
-            System.exit(0); // everything should be good and running
-        } else {
-            throw new Exception("Unknown status returned from "
-                    + "statusGetter.getStatus(): " + statusGetter.getStatus());
-        }
     }
 
     /**
@@ -132,10 +76,10 @@ public class StatusGetter {
 
         List<String> statusResults = Collections.emptyList();
         try {
-            statusResults = (List<String>)Controller.doInvokeOperation("status");
+            statusResults = (List<String>)m_controller.doInvokeOperation("status");
         } catch (Throwable e) {
             LOG.debug("Could not fetch status: " + e.getMessage());
-            if (isVerbose()) {
+            if (m_controller.isVerbose()) {
                 // TODO Should this be System.err instead?
                 System.out.println("Could not connect to the OpenNMS JVM"
                         + " (OpenNMS might not be running or "
@@ -175,7 +119,7 @@ public class StatusGetter {
             if (status.equals("running")) {
                 running++;
             }
-            if (m_verbose) {
+            if (m_controller.isVerbose()) {
                 System.out.println("OpenNMS." + daemon
                         + spaces.substring(daemon.length()) + ": " + status);
             }
