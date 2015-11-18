@@ -86,7 +86,13 @@ public class Controller {
      */
     private static final String OPENNMS_JVM_DISPLAY_NAME_SUBSTRING = "opennms_bootstrap.jar start";
 
+    public static final String DEFAULT_JMX_RMI_URL = "service:jmx:rmi:///jndi/rmi://127.0.0.1:1099/jmxrmi";
+
     private boolean m_verbose = false;
+
+    private String m_jmxUrl = DEFAULT_JMX_RMI_URL;
+
+    private String m_pid = null;
 
     /**
      * <p>main</p>
@@ -104,13 +110,23 @@ public class Controller {
                 System.out.println("Usage: java org.opennms.netmgt.vmmgr.Controller "
                                    + "[<options>] <command>");
                 System.out.println("Accepted options:");
+                System.out.println("        -p <pid>        PID of the OpenNMS process. Used when the process cannot be autodetected.");
                 System.out.println("        -t <timeout>    HTTP connection timeout in seconds.  Defaults to 30.");
+                System.out.println("        -u <URL>        JMX RMI URL. Used when we cannot automatically attach to the OpenNMS JVM.");
                 System.out.println("        -v              Verbose mode.");
                 System.out.println("");
                 System.out.println("Accepted commands: start, stop, status, check, dumpThreads, exit");
+                System.out.println("");
+                System.out.println("The default JMX RMI URL is: " + DEFAULT_JMX_RMI_URL);
                 System.exit(0);
+            } else if (argv[i].equals("-p")) {
+                c.setPid(argv[i + 1]);
+                i++;
             } else if (argv[i].equals("-t")) {
                 c.setRmiHandshakeTimeout(Integer.parseInt(argv[i + 1]) * 1000);
+                i++;
+            } else if (argv[i].equals("-u")) {
+                c.setJmxRmiUrl(argv[i + 1]);
                 i++;
             } else if (argv[i].equals("-v")) {
                 c.setVerbose(true);
@@ -173,10 +189,9 @@ public class Controller {
      */
     public int status() {
 
-        StatusGetter statusGetter = new StatusGetter();
+        StatusGetter statusGetter = new StatusGetter(this);
 
         try {
-            statusGetter.setVerbose(isVerbose());
             statusGetter.queryStatus();
         } catch (Throwable t) {
             String message = "error invoking \"status\" operation: " + t.getMessage();
@@ -201,7 +216,7 @@ public class Controller {
             return 0; // everything should be good and running
 
         default:
-        	LOG.error("Unknown status returned from statusGetter.getStatus(): {}", statusGetter.getStatus());
+            LOG.error("Unknown status returned from statusGetter.getStatus(): {}", statusGetter.getStatus());
             return 1;
         }
     }
@@ -254,7 +269,7 @@ public class Controller {
         return 0;
     }
 
-    public static Object doInvokeOperation(String operation) throws MalformedURLException, IOException, InstanceNotFoundException, MalformedObjectNameException, MBeanException, ReflectionException, NullPointerException {
+    public Object doInvokeOperation(String operation) throws MalformedURLException, IOException, InstanceNotFoundException, MalformedObjectNameException, MBeanException, ReflectionException, NullPointerException {
         try (JMXConnector connector = JMXConnectorFactory.connect(new JMXServiceURL(getJmxUrl()))) {
             MBeanServerConnection connection = connector.getMBeanServerConnection();
             return connection.invoke(ObjectName.getInstance("OpenNMS:Name=Manager"), operation, new Object[0], new String[0]);
@@ -288,9 +303,15 @@ public class Controller {
      *
      * @return a {@link java.lang.String} object.
      */
-    public static String getJmxUrl() {
+    public String getJmxUrl() {
+        VirtualMachine vm = null;
+
         StringBuffer vmNames = new StringBuffer();
         boolean first = true;
+
+        // Use the Attach API to enumerate all of the JVMs that are running as the same
+        // user on this machine
+        VirtualMachineDescriptor foundVm = null;
         for (VirtualMachineDescriptor vmDescr : VirtualMachine.list()) {
             if (!first) {
                 vmNames.append(", ");
@@ -299,47 +320,97 @@ public class Controller {
             first = false;
 
             if (vmDescr.displayName().contains(OPENNMS_JVM_DISPLAY_NAME_SUBSTRING)) {
-                // Attach to the OpenNMS application
-                VirtualMachine vm = null;
-                try {
-                    vm = VirtualMachine.attach(vmDescr);
-                } catch (AttachNotSupportedException e) {
-                    throw new IllegalStateException("Cannot attach to OpenNMS JVM", e);
-                } catch (IOException e) {
-                    throw new IllegalStateException("IOException when attaching to OpenNMS JVM", e);
-                }
-
-                String connectorAddress = null;
-                try {
-                    // Get the local JMX connector URI
-                    vm.getAgentProperties().getProperty(CONNECTOR_ADDRESS);
-                } catch (IOException e) {
-                    throw new IllegalStateException("IOException when fetching JMX URI", e);
-                }
-
-                // If there is no local JMX connector URI, we need to launch the
-                // JMX agent via this VirtualMachine attachment.
-                if (connectorAddress == null) {
-                    LOG.info("Starting local management agent in JVM with ID: " + vm.id());
-
-                    try {
-                        vm.startLocalManagementAgent();
-                    } catch (IOException e) {
-                        throw new IllegalStateException("IOException when starting local JMX management agent", e);
-                    }
-
-                    // agent is started, get the connector address
-                    try {
-                        connectorAddress = vm.getAgentProperties().getProperty(CONNECTOR_ADDRESS);
-                    } catch (IOException e) {
-                        throw new IllegalStateException("IOException when fetching JMX URI", e);
-                    }
-                }
-
-                return connectorAddress;
+                foundVm = vmDescr;
             }
         }
-        throw new IllegalStateException("Could not find OpenNMS JVM (\"" + OPENNMS_JVM_DISPLAY_NAME_SUBSTRING + "\") among JVMs (" + vmNames + ")");
+
+        if (foundVm == null) {
+            LOG.debug("Could not find OpenNMS JVM (\"" + OPENNMS_JVM_DISPLAY_NAME_SUBSTRING + "\") among JVMs (" + vmNames + ")");
+        } else {
+            try {
+                vm = VirtualMachine.attach(foundVm);
+                LOG.debug("Attached to OpenNMS JVM: " + foundVm.id() + " (" + foundVm.displayName() + ")");
+            } catch (AttachNotSupportedException e) {
+                // This exception is unexpected so log a warning
+                LOG.warn("Cannot attach to OpenNMS JVM", e);
+            } catch (IOException e) {
+                // This exception is unexpected so log a warning
+                LOG.warn("IOException when attaching to OpenNMS JVM", e);
+            }
+        }
+
+        if (vm == null) {
+            if (m_pid == null) {
+                LOG.debug("No PID specified for OpenNMS JVM");
+            } else {
+                try {
+                    vm = VirtualMachine.attach(m_pid);
+                    LOG.debug("Attached to OpenNMS JVM with PID: " + m_pid);
+                } catch (AttachNotSupportedException e) {
+                    // This exception is unexpected so log a warning
+                    LOG.warn("Cannot attach to OpenNMS JVM at PID: " + m_pid, e);
+                } catch (IOException e) {
+                    // This exception will occur if the PID cannot be found
+                    // because the process has been terminated
+                    LOG.debug("IOException when attaching to OpenNMS JVM at PID: " + m_pid + ": " + e.getMessage());
+                }
+            }
+        }
+
+        if (vm == null) {
+            LOG.debug("Could not attach to JVM, falling back to JMX over RMI");
+            return m_jmxUrl;
+        } else {
+            return getJmxUriFromVirtualMachine(vm);
+        }
+    }
+
+    /**
+     * <p>setJmxRmiUrl</p>
+     *
+     * @param jmxUrl a {@link java.lang.String} object.
+     */
+    public void setJmxRmiUrl(String jmxUrl) {
+        m_jmxUrl = jmxUrl;
+    }
+ 
+    private static String getJmxUriFromVirtualMachine(VirtualMachine vm) {
+        String connectorAddress = null;
+        try {
+            // Get the local JMX connector URI
+            connectorAddress = vm.getAgentProperties().getProperty(CONNECTOR_ADDRESS);
+        } catch (IOException e) {
+            throw new IllegalStateException("IOException when fetching JMX URI from JVM with ID: " + vm.id(), e);
+        }
+
+        // If there is no local JMX connector URI, we need to launch the
+        // JMX agent via this VirtualMachine attachment.
+        if (connectorAddress == null) {
+            LOG.info("Starting local management agent in JVM with ID: " + vm.id());
+
+            try {
+                vm.startLocalManagementAgent();
+            } catch (IOException e) {
+                throw new IllegalStateException("IOException when starting local JMX management agent in JVM with ID: " + vm.id(), e);
+            }
+
+            // Agent is started, get the connector address
+            try {
+                connectorAddress = vm.getAgentProperties().getProperty(CONNECTOR_ADDRESS);
+            } catch (IOException e) {
+                throw new IllegalStateException("IOException when fetching JMX URI from JVM with ID: " + vm.id(), e);
+            }
+        }
+
+        return connectorAddress;
+    }
+
+    public String getPid() {
+        return m_pid;
+    }
+
+    public void setPid(String pid) {
+        m_pid = pid;
     }
 
     public int getRmiHandshakeTimeout() {
