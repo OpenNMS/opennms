@@ -40,23 +40,15 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Properties;
-import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Throwables;
 import com.google.common.collect.Iterables;
-import com.google.common.collect.Iterators;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import org.apache.commons.cli.CommandLine;
@@ -115,10 +107,21 @@ public class NewtsConverter implements AutoCloseable {
     private final boolean storeByGroup;
     private final boolean rrdTool;
 
+    private static class ForeignId {
+        private final String foreignSource;
+        private final String foreignId;
+
+        public ForeignId(final String foreignSource,
+                         final String foreignId) {
+            this.foreignSource = foreignSource;
+            this.foreignId = foreignId;
+        }
+    }
+
     /**
      * Mapping form node ID to foreign ID.
      **/
-    private final Map<Integer, String> foreignIds = Maps.newHashMap();
+    private final Map<Integer, ForeignId> foreignIds = Maps.newHashMap();
 
     /** The Cassandra/Newts Repository. */
     private final SampleRepository repository;
@@ -163,7 +166,6 @@ public class NewtsConverter implements AutoCloseable {
                 .toFormatter();
 
         LOG.info("Conversion Finished: metrics: {}, samples: {}, time: {}", processedMetrics, processedSamples, formatter.print(period));
-        System.exit(0);
     }
 
     private NewtsConverter(final String... args) {
@@ -263,6 +265,7 @@ public class NewtsConverter implements AutoCloseable {
             System.exit(1);
             throw null;
         }
+        System.setProperty("rrd.binary", this.rrdBinary.toString());
 
         final int threads;
         try {
@@ -328,8 +331,7 @@ public class NewtsConverter implements AutoCloseable {
              final ResultSet rs = st.executeQuery("SELECT nodeid, foreignsource, foreignid from node n")) {
             while (rs.next()) {
                 foreignIds.put(rs.getInt("nodeid"),
-                               String.format("%s:%s",
-                                             rs.getString("foreignsource"),
+                               new ForeignId(rs.getString("foreignsource"),
                                              rs.getString("foreignid")));
             }
 
@@ -434,6 +436,9 @@ public class NewtsConverter implements AutoCloseable {
         LOG.info("Processing resource: dir={}, file={}, group={}", resourceDir, fileName, group);
 
         final ResourcePath resourcePath = buildResourcePath(resourceDir);
+        if (resourcePath == null) {
+            return;
+        }
 
         // Load and interpolate the RRD file
         final AbstractRRD rrd;
@@ -460,12 +465,16 @@ public class NewtsConverter implements AutoCloseable {
                                       final String group,
                                       final List<? extends AbstractDS> dataSources,
                                       final Collection<RrdSample> samples) {
+        final ResourcePath groupPath = ResourcePath.get(resourcePath, group);
+
         // Create a resource ID from the resource path
-        final String groupId = NewtsUtils.toResourceId(ResourcePath.get(resourcePath, group));
+        final String groupId = NewtsUtils.toResourceId(groupPath);
 
+        // Build indexing attributes
         final Map<String, String> attributes = Maps.newHashMap();
-        NewtsUtils.addIndicesToAttributes(resourcePath, attributes);
+        NewtsUtils.addIndicesToAttributes(groupPath, attributes);
 
+        // Create the NewTS resource to insert
         final Resource resource = new Resource(groupId,
                                                Optional.of(attributes));
 
@@ -524,7 +533,12 @@ public class NewtsConverter implements AutoCloseable {
                          throw Throwables.propagate(e);
                      }
 
-                     this.injectStringPropertiesToNewts(buildResourcePath(p.getParent()),
+                     final ResourcePath resourcePath = buildResourcePath(p.getParent());
+                     if (resourcePath == null) {
+                         return;
+                     }
+
+                     this.injectStringPropertiesToNewts(resourcePath,
                                                         Maps.fromProperties(properties));
                  });
 
@@ -558,7 +572,18 @@ public class NewtsConverter implements AutoCloseable {
             // The part after snmp/ is considered the node ID
             final int nodeId = Integer.valueOf(relativeResourceDir.getName(1).toString());
 
-            resourcePath = ResourcePath.get("snmp", "fs", foreignIds.get(nodeId));
+            // Get the foreign source for the node
+            final ForeignId foreignId = foreignIds.get(nodeId);
+            if (foreignId == null) {
+                return null;
+            }
+
+            // Make a store-by-foreign-source compatible path by using the found foreign ID and append the remaining path as-is
+            resourcePath = ResourcePath.get(ResourcePath.get(ResourcePath.get("snmp", "fs"),
+                                                             foreignId.foreignSource,
+                                                             foreignId.foreignId),
+                                            Iterables.transform(relativeResourceDir.subpath(2, relativeResourceDir.getNameCount()),
+                                                                Path::toString));
 
         } else {
             resourcePath = ResourcePath.get(relativeResourceDir);

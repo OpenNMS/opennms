@@ -79,10 +79,6 @@ public abstract class OnmsProperties {
             loadProperties(mainProperties, "opennms.properties");
             registerProperties(mainProperties);
 
-            final Properties rrdProperties = new Properties();
-            loadProperties(rrdProperties, "rrd-configuration.properties");
-            registerProperties(rrdProperties);
-
             final File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.OPENNMS_DATASOURCE_CONFIG_FILE_NAME);
             DataSourceConfiguration dsc = null;
             FileInputStream fileInputStream = null;
