@@ -148,6 +148,7 @@
   <event-file>events/IPV6.events.xml</event-file>
   <event-file>events/Juniper.mcast.events.xml</event-file>
   <event-file>events/Juniper.events.xml</event-file>
+  <event-file>events/Juniper.ive.events.xml</event-file>
   <event-file>events/Juniper.screen.events.xml</event-file>
   <event-file>events/Junos.events.xml</event-file>
   <event-file>events/JunosV1.events.xml</event-file>
