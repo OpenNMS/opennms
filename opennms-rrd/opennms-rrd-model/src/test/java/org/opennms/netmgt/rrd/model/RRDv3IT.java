@@ -31,6 +31,7 @@ package org.opennms.netmgt.rrd.model;
 import java.io.File;
 import java.io.FileWriter;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
@@ -238,7 +239,7 @@ public class RRDv3IT {
         File source = new File("src/test/resources/sample-counter-rras.xml");
         RRDv3 rrd = JaxbUtils.unmarshal(RRDv3.class, source);
         Assert.assertNotNull(rrd);
-        List<RrdSample> samples = rrd.generateSamples();
+        Collection<RrdSample> samples = rrd.generateSamples();
         Assert.assertFalse(samples.isEmpty());
         int size = rrd.getRras().stream().mapToInt(r -> r.getRows().size()).sum();
         Assert.assertEquals(size - 3, samples.size()); // There are 3 timestamps that exist in both RRAs.
