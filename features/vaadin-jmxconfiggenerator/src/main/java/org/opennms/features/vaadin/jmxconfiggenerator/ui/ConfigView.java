@@ -96,6 +96,7 @@ public class ConfigView extends VerticalLayout implements View, Button.ClickList
 		private void initFields() {
 			CheckBox authenticateField = new CheckBox();
 			authenticateField.setCaption("Authentication");
+			authenticateField.setId("authenticate");
 			authenticateField.addValueChangeListener(new Property.ValueChangeListener() {
 				@Override
 				public void valueChange(Property.ValueChangeEvent event) {
@@ -105,11 +106,13 @@ public class ConfigView extends VerticalLayout implements View, Button.ClickList
 			authenticateField.setDescription("Connection requires authentication");
 
 			TextField userField = new TextField();
+			userField.setId("authenticateUser");
 			userField.setCaption("User");
 			userField.setNullRepresentation("");
 			userField.setDescription("Username for JMX-RMI Authentication");
 
 			PasswordField passwordField = new PasswordField();
+			passwordField.setId("authenticatePassword");
 			passwordField.setCaption("Password");
 			passwordField.setNullRepresentation("");
 			passwordField.setDescription("Password for JMX-RMI Authentication");
