@@ -65,6 +65,9 @@ public class BusinessServiceJaxbTest extends XmlTestNoCastor<BusinessService> {
                    "<value>RDU</value>" +
                  "</attribute>" +
                "</attributes>" +
+               "<ipServices>" +
+                   "<ipServiceId>1</ipServiceId>" +
+               "</ipServices>" +
             "</business-service>",
             null
         }});

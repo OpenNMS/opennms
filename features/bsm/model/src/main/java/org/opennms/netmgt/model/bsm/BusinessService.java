@@ -53,7 +53,6 @@ import javax.xml.bind.annotation.XmlIDREF;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
-import org.codehaus.jackson.annotate.JsonBackReference;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 
 import com.google.common.collect.Maps;
@@ -79,7 +78,6 @@ public class BusinessService {
     @XmlIDREF
     @XmlElement(name="ipServiceId")
     @XmlElementWrapper(name="ipServices")
-    @JsonBackReference
     private Set<OnmsMonitoredService> m_ipServices = Sets.newLinkedHashSet();
 
     @Id
@@ -126,7 +124,7 @@ public class BusinessService {
     @OneToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "bsm_service_ifservices",
         joinColumns = @JoinColumn(name = "bsm_service_id", referencedColumnName = "id"),
-        inverseJoinColumns=@JoinColumn(name="ifserviceid"))
+        inverseJoinColumns = @JoinColumn(name="ifserviceid"))
     public Set<OnmsMonitoredService> getIpServices() {
         return m_ipServices;
     }
@@ -137,6 +135,10 @@ public class BusinessService {
 
     public void addIpService(OnmsMonitoredService ipService) {
         m_ipServices.add(ipService);
+    }
+
+    public void removeIpService(OnmsMonitoredService ipService) {
+        m_ipServices.remove(ipService);
     }
 
     @Override

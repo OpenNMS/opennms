@@ -30,12 +30,21 @@ package org.opennms.web.rest.v2;
 
 import java.util.Collection;
 
+import javax.ws.rs.DELETE;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 import org.opennms.core.config.api.JaxbListWrapper;
 import org.opennms.core.criteria.CriteriaBuilder;
+import org.opennms.netmgt.dao.api.MonitoredServiceDao;
 import org.opennms.netmgt.dao.api.OnmsDao;
 import org.opennms.netmgt.dao.bsm.BusinessServiceDao;
+import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.bsm.BusinessService;
 import org.opennms.netmgt.model.bsm.BusinessServiceList;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,14 +54,18 @@ import org.springframework.transaction.annotation.Transactional;
 @Component
 @Path("business-services")
 @Transactional
+@Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_ATOM_XML})
 public class BusinessServiceRestService extends AbstractDaoRestService<BusinessService, Long> {
 
     @Autowired
-    private BusinessServiceDao m_businessServiceDao;
+    private MonitoredServiceDao monitoredServiceDao;
+
+    @Autowired
+    private BusinessServiceDao businessServiceDao;
 
     @Override
     protected OnmsDao<BusinessService, Long> getDao() {
-        return m_businessServiceDao;
+        return businessServiceDao;
     }
 
     @Override
@@ -69,4 +82,55 @@ public class BusinessServiceRestService extends AbstractDaoRestService<BusinessS
     protected JaxbListWrapper<BusinessService> createListWrapper(Collection<BusinessService> services) {
         return new BusinessServiceList(services);
     }
+
+    @POST
+    @Path("{id}/ip-service/{ipServiceId}")
+    public Response attachIpService(@PathParam("id") final Long serviceId,
+                                    @PathParam("ipServiceId") final Integer ipServiceId) {
+        final BusinessService service = getBusinessService(serviceId);
+        final OnmsMonitoredService monitoredService = getIpService(ipServiceId);
+        // if already exists, no update
+        if (service.getIpServices().contains(monitoredService)) {
+            return Response.notModified().build();
+        }
+        // add and update
+        service.addIpService(monitoredService);
+        getDao().update(service);
+        return Response.ok().build();
+    }
+
+    @DELETE
+    @Path("{id}/ip-service/{ipServiceId}")
+    public Response detachIpService(@PathParam("id") final Long serviceId,
+                                    @PathParam("ipServiceId") final Integer ipServiceId) {
+        final BusinessService service = getBusinessService(serviceId);
+        final OnmsMonitoredService monitoredService = getIpService(ipServiceId);
+
+        // does not exist, no update necessary
+        if (!service.getIpServices().contains(monitoredService)) {
+            return Response.notModified().build();
+        }
+
+        // remove and update
+        service.removeIpService(monitoredService);
+        businessServiceDao.update(service);
+        return Response.ok().build();
+    }
+
+    private BusinessService getBusinessService(Long serviceId) {
+        final BusinessService service = getDao().get(serviceId);
+        if (service == null) {
+            throw new WebApplicationException(Response.Status.NOT_FOUND);
+        }
+        return service;
+    }
+
+    private OnmsMonitoredService getIpService(Integer serviceId) {
+        final OnmsMonitoredService monitoredService = monitoredServiceDao.get(serviceId);
+        if (monitoredService == null) {
+            throw new WebApplicationException(Response.Status.NOT_FOUND);
+        }
+        return monitoredService;
+    }
+
 }
