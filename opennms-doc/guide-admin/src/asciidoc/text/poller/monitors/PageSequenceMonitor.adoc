@@ -4,11 +4,11 @@
 [[poller-page-sequence-monitor]]
 ==== PageSequenceMonitor
 
-The _PageSequenceMonitor_ (PSM) allows to monitor web applications.
+The _PageSequenceMonitor_ (PSM) allows OpenNMS to monitor web applications.
 This monitor has several configuration options regarding _IPv4_, _IPv6_ and how to deal with name resolution.
-To add flexibility the node label and IP address can be passed as variable into the monitor.
+To add flexibility, the node label and IP address can be passed as variable into the monitor.
 This allows running the monitor with node dependent configuration.
-Beyond testing a web application with a single _URL_ it allows also to test a path through a web application.
+Beyond testing a web application with a single _URL_ it can also test a path through a web application.
 A test path through an web application can look like this:
 
 . login to a certain web application
@@ -30,15 +30,15 @@ If there's an error somewhere, your application will need attention and the serv
 [[poller-page-sequence-monitor-configuration]]
 ===== Configuration and Usage
 
-The configuration for this monitor consists several parts.
-First part is the overall configuration for `retries` and `timeouts`.
+The configuration for this monitor consists of several parts.
+First is the overall configuration for `retries` and `timeouts`.
 These parameters are global for the whole path through the web application.
 
 .Configuration overview of the _PSM_
 image::poller/01_page-sequence-monitor-config.png[]
 
 The overall layout of the monitor configuration is more complex.
-Additional to the parameter keys it is possible to configure a page sequence containing a path through an web application.
+Additionally, it is possible to configure a page sequence containing a path through a web application.
 
 .Monitor parameters for the PageSequenceMonitor
 [options="header, autowidth"]
@@ -109,7 +109,7 @@ The captured values can then be assigned to variable names by using the session-
 
 It is possible to collect response times for individual pages in a sequence.
 To use this functionality, a `ds-name` attribute must be added to each page whose load time should be tracked.
-The response time for each such page will be stored in the same _RRD_ file specified for the service via the `rrd-base-name` parameter under the specified datasource name.
+The response time for each page will be stored in the same _RRD_ file specified for the service via the `rrd-base-name` parameter under the specified datasource name.
 
 WARNING: You will need to delete existing _RRD_ files and let them be recreated with the new list of datasources when you add a `ds-name` attribute to a page in a sequence that is already storing response time data.
 
