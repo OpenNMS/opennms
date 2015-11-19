@@ -72,7 +72,7 @@ The following information has to be provided:
 IMPORTANT: Choose secure passwords for all database users and don't use the example passwords above in production.
 
 WARNING: There is currently an open issue in the installer link:http://issues.opennms.org/browse/NMS-7831[NMS-7831].
-         Username and password are not written to the `opennms-datasource.xml` file and has to be changed manually.
+         Username and password are not written to the `opennms-datasources.xml` file and has to be changed manually.
          The initialize of the database will fail with an authentication error.
 
 .Configuration for database authentication in _OpenNMS_
@@ -98,7 +98,7 @@ WARNING: There is currently an open issue in the installer link:http://issues.op
 <3> Set the user name for administrative changes of the _OpenNMS_ database table
 <4> Set the password for administrative changes of the _OpenNMS_ database table
 
-After setting the username and passwords in `opennms-datasource.xml` re-run the graphical installer and also initialize the database.
+After setting the username and passwords in `opennms-datasources.xml` re-run the graphical installer and also initialize the database.
 _OpenNMS_ can be started and stopped with the `start.bat` and `stop.bat` script located in `%OPENNMS_HOME%\bin` directory.
 
 After starting _OpenNMS_ with the `start.bat` file the web application can be accessed on http://<ip-or-fqdn-of-your-server>:8980/opennms.

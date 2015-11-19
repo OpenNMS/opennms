@@ -1237,7 +1237,7 @@
     <ecjVersion>4.2.2</ecjVersion>
     <eclipselinkVersion>2.5.1</eclipselinkVersion>
     <freemarkerVersion>2.3.21</freemarkerVersion>
-    <groovyVersion>2.3.6</groovyVersion>
+    <groovyVersion>2.4.5</groovyVersion>
     <guavaVersion>17.0</guavaVersion>
     <gwtVersion>2.6.1</gwtVersion>
     <gwtPluginVersion>2.6.1</gwtPluginVersion>

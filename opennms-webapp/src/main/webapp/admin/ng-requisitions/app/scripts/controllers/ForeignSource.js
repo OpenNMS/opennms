@@ -17,17 +17,17 @@
   * @module onms-requisitions
   *
   * @requires $scope Angular local scope
-  * @requires $filter Angular filter
   * @requires $routeParams Angular route parameters
   * @requires $window Document window
   * @requires $modal Angular modal
+  * @required filterFilter the Angular filter
   * @requires RequisitionsService The requisitions service
   * @requires EmptyTypeaheadService The empty typeahead Service
   * @requires growl The growl plugin for instant notifications
   *
   * @description The controller for manage foreign source definitions (i.e. policies and detectors)
   */
-  .controller('ForeignSourceController', ['$scope', '$filter', '$routeParams', '$window', '$modal', 'RequisitionsService', 'EmptyTypeaheadService', 'growl', function($scope, $filter, $routeParams, $window, $modal, RequisitionsService, EmptyTypeaheadService, growl) {
+  .controller('ForeignSourceController', ['$scope', '$routeParams', '$window', '$modal', 'filterFilter', 'RequisitionsService', 'EmptyTypeaheadService', 'growl', function($scope, $routeParams, $window, $modal, filterFilter, RequisitionsService, EmptyTypeaheadService, growl) {
 
     /**
     * @description The timing status.
@@ -77,6 +77,16 @@
     * @methodOf AssetController
     */
     $scope.onFocus = EmptyTypeaheadService.onFocus;
+
+    /**
+    * @description The filteres object (used to track the content of the search fields)
+    *
+    * @ngdoc property
+    * @name ForeignSourceController#filters
+    * @propertyOf ForeignSourceController
+    * @returns {object} The filteres object
+    */
+    $scope.filters = { detector: null, policy: null };
 
     /**
     * @description The filtered list of detectors
@@ -416,8 +426,8 @@
     * @ngdoc event
     * @methodOf ForeignSourceController
     */
-    $scope.$watch('detectorFilter', function() {
-      $scope.filteredDetectors = $filter('filter')($scope.foreignSourceDef.detectors, $scope.detectorFilter);
+    $scope.$watch("filters.detector", function() {
+      $scope.filteredDetectors = filterFilter($scope.foreignSourceDef.detectors, $scope.filters.detector);
       $scope.updateFilteredDetectors();
     });
 
@@ -428,8 +438,8 @@
     * @ngdoc event
     * @methodOf ForeignSourceController
     */
-    $scope.$watch('policyFilter', function() {
-      $scope.filteredPolicies = $filter('filter')($scope.foreignSourceDef.policies, $scope.policyFilter);
+    $scope.$watch('filters.policy', function() {
+      $scope.filteredPolicies = filterFilter($scope.foreignSourceDef.policies, $scope.filters.policy);
       $scope.updateFilteredPolicies();
     });
 
