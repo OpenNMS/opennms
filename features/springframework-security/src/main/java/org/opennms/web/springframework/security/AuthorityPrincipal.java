@@ -2,6 +2,7 @@ package org.opennms.web.springframework.security;
 
 import java.io.Serializable;
 import java.security.Principal;
+import java.util.Objects;
 
 import org.springframework.security.core.GrantedAuthority;
 
@@ -24,10 +25,7 @@ public class AuthorityPrincipal implements Principal, Serializable {
 
     @Override
     public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + ((m_name == null) ? 0 : m_name.hashCode());
-        return result;
+        return Objects.hash(m_name);
     }
 
     @Override
@@ -38,18 +36,11 @@ public class AuthorityPrincipal implements Principal, Serializable {
         if (obj == null) {
             return false;
         }
-        if (getClass() != obj.getClass()) {
-            return false;
+        if (obj instanceof AuthorityPrincipal) {
+            final AuthorityPrincipal other = (AuthorityPrincipal) obj;
+            return Objects.equals(m_name, other.m_name);
         }
-        final AuthorityPrincipal other = (AuthorityPrincipal) obj;
-        if (m_name == null) {
-            if (other.m_name != null) {
-                return false;
-            }
-        } else if (!m_name.equals(other.m_name)) {
-            return false;
-        }
-        return true;
+        return false;
     }
 
 }
