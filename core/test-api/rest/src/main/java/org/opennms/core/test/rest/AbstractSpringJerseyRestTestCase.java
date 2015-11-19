@@ -277,7 +277,7 @@ public abstract class AbstractSpringJerseyRestTestCase {
         return createRequest(context, requestType, urlPath, "admin", emptySet);
     }
 
-    protected static MockHttpServletRequest createRequest(final ServletContext context, final String requestType, final String urlPath, final String username, final Collection<String> roles) {
+    protected static MockHttpServletRequest createRequest(final ServletContext context, final String requestType, final String urlPath, Map<String, String> parameterMap, final String username, final Collection<String> roles) {
         final MockHttpServletRequest request = new MockHttpServletRequestThatWorks(context, requestType, contextPath + urlPath);
         request.setContextPath(contextPath);
         request.setUserPrincipal(MockUserPrincipal.getInstance());
@@ -287,7 +287,16 @@ public abstract class AbstractSpringJerseyRestTestCase {
                 request.addUserRole(role);
             }
         }
+        if (parameterMap != null) {
+            for (Entry<String, String> eachEntry : parameterMap.entrySet()) {
+                request.addParameter(eachEntry.getKey(), eachEntry.getValue());
+            }
+        }
         return request;
+    }
+
+    protected static MockHttpServletRequest createRequest(final ServletContext context, final String requestType, final String urlPath, final String username, final Collection<String> roles) {
+        return createRequest(context, requestType, urlPath, Collections.emptyMap(), username, roles);
     }
 
     protected static void setUser(final String user, final String[] roles) {
@@ -480,8 +489,8 @@ public abstract class AbstractSpringJerseyRestTestCase {
         return xml;
     }
 
-    protected <T> T getXmlObject(JAXBContext context, String url, int expectedStatus, Class<T> expectedClass) throws Exception {
-        MockHttpServletRequest request = createRequest(servletContext, GET, url, getUser(), getUserRoles());
+    protected <T> T getXmlObject(JAXBContext context, String url, Map<String, String> parameterMap, int expectedStatus, Class<T> expectedClass) throws Exception {
+        MockHttpServletRequest request = createRequest(servletContext, GET, url, parameterMap, getUser(), getUserRoles());
         MockHttpServletResponse response = createResponse();
         request.addHeader(ACCEPT, MediaType.APPLICATION_XML);
         dispatch(request, response);
@@ -494,9 +503,11 @@ public abstract class AbstractSpringJerseyRestTestCase {
         Unmarshaller unmarshaller = context.createUnmarshaller();
 
         T result = expectedClass.cast(unmarshaller.unmarshal(in));
-
         return result;
+    }
 
+    protected <T> T getXmlObject(JAXBContext context, String url, int expectedStatus, Class<T> expectedClass) throws Exception {
+        return getXmlObject(context, url, Collections.emptyMap(), expectedStatus, expectedClass);
     }
 
     protected void putXmlObject(final JAXBContext context, final String url, final int expectedStatus, final Object object) throws Exception {
