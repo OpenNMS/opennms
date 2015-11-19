@@ -438,12 +438,16 @@ public class DefaultRequisitionAccessService implements RequisitionAccessService
 
             final ForeignSourceRepository pendingForeignSourceRepository = getPendingForeignSourceRepository();
             final String foreignSource = getForeignSource();
+            LOG.debug("createSnapshot(): foreignSource = {}", foreignSource);
 
             final Requisition pending = pendingForeignSourceRepository.getRequisition(foreignSource);
+            LOG.debug("createSnapshot(): pending = {}", pending);
+
             final Requisition deployed = getDeployedForeignSourceRepository().getRequisition(foreignSource);
+            LOG.debug("createSnapshot(): deployed = {}", deployed);
 
             final URL activeUrl;
-            final XMLGregorianCalendar pendingDateStamp = pending.getDateStamp();
+            final XMLGregorianCalendar pendingDateStamp = pending == null? null : pending.getDateStamp();
 
             if (pending == null || (deployed != null && deployed.getDateStamp().compare(pendingDateStamp) > -1)) {
                 activeUrl = getDeployedForeignSourceRepository().getRequisitionURL(foreignSource);
