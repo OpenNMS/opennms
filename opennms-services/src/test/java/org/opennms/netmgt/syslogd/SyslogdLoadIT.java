@@ -204,7 +204,7 @@ public class SyslogdLoadIT implements InitializingBean {
         m_eventCounter.setAnticipated(eventCount);
 
         String testPduFormat = "2010-08-19 localhost foo%d: load test %d on tty1";
-        SyslogClient sc = new SyslogClient(null, 10, SyslogClient.LOG_USER);
+        SyslogClient sc = new SyslogClient(null, 10, SyslogClient.LOG_USER, addr("127.0.0.1"));
 
         // Test by directly invoking the SyslogConnection task
         System.err.println("Starting to send packets");
