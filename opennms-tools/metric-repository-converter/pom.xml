@@ -93,6 +93,12 @@
       <scope>test</scope>
     </dependency>
     <dependency>
+      <groupId>org.hamcrest</groupId>
+	  <artifactId>hamcrest-library</artifactId>
+	  <version>1.1</version>
+	  <scope>test</scope>
+	</dependency>
+    <dependency>
       <groupId>org.opennms.newts</groupId>
       <artifactId>newts-cassandra-test</artifactId>
       <version>${newtsVersion}</version>
@@ -117,6 +123,10 @@
         <exclusion>
           <groupId>ch.qos.logback</groupId>
           <artifactId>logback-classic</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.hamcrest</groupId>
+          <artifactId>hamcrest-library</artifactId>
         </exclusion>
       </exclusions>
     </dependency>
