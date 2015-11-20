@@ -120,7 +120,10 @@ public class CachingForeignSourceRepository extends AbstractForeignSourceReposit
 						for (final String dirtyForeignSource : m_dirtyForeignSources) {
 							final ForeignSource fs = getForeignSourceMap().get(dirtyForeignSource);
 							if (fs == null) {
-								m_foreignSourceRepository.delete(fs);
+								final ForeignSource current = m_foreignSourceRepository.getForeignSource(dirtyForeignSource);
+								if (current != null) {
+	                                                                m_foreignSourceRepository.delete(current);
+								}
 							} else {
 								m_foreignSourceRepository.save(fs);
 							}
@@ -134,7 +137,10 @@ public class CachingForeignSourceRepository extends AbstractForeignSourceReposit
 						for (final String dirtyRequisition : m_dirtyRequisitions) {
 							final Requisition r = getRequisitionMap().get(dirtyRequisition);
 							if (r == null) {
-								m_foreignSourceRepository.delete(r);
+								final Requisition current = m_foreignSourceRepository.getRequisition(dirtyRequisition);
+								if (current != null) {
+	                                                                m_foreignSourceRepository.delete(r);
+								}
 							} else {
 								m_foreignSourceRepository.save(r);
 							}
