@@ -152,4 +152,14 @@ public abstract class AbstractForeignSourceRepository implements ForeignSourceRe
             }
         }
     }
+
+    @Override
+    public void clear() throws ForeignSourceRepositoryException {
+        for (final Requisition req : getRequisitions()) {
+            if (req != null) delete(req);
+        }
+        for (final ForeignSource fs : getForeignSources()) {
+            if (fs != null) delete(fs);
+        }
+    }
 }

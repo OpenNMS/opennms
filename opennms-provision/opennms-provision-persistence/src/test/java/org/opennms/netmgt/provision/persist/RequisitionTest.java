@@ -35,7 +35,7 @@ public class RequisitionTest implements InitializingBean, ApplicationContextAwar
     public void setUp() throws Exception {
         if (m_repositories != null) {
             for (final ForeignSourceRepository fsr : m_repositories.values()) {
-                fsr.resetDefaultForeignSource();
+                fsr.clear();
                 fsr.flush();
             }
         }
