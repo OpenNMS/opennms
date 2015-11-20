@@ -2,9 +2,7 @@ package org.opennms.netmgt.provision.persist;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 
-import java.net.URL;
 import java.util.Map;
 
 import org.junit.Before;
@@ -48,14 +46,28 @@ public class RequisitionTest implements InitializingBean, ApplicationContextAwar
         void test(T t);
     }
 
-    protected <T> void runTest(final RepositoryTest<ForeignSourceRepository> rt) {
+    protected <T> void runTest(final RepositoryTest<ForeignSourceRepository> rt, final Class<? extends Throwable> expected) {
         m_repositories.entrySet().stream().forEach(entry -> {
             final String bundleName = entry.getKey();
             final ForeignSourceRepository fsr = entry.getValue();
             LOG.info("=== " + bundleName + " ===");
             fsr.resetDefaultForeignSource();
             fsr.flush();
-            rt.test(fsr);
+            if (expected != null) {
+                try {
+                    rt.test(fsr);
+                    throw new RuntimeException("Expected throwable " + expected.getName() + " when running test against " + bundleName + ", but it passed!");
+                } catch (final Throwable t) {
+                    LOG.debug("expected: {}, got: {}", expected, t);
+                    if (t.getClass().getCanonicalName().equals(expected.getCanonicalName())) {
+                        // we got the exception we expected, carry on
+                    } else {
+                        throw new RuntimeException("Expected throwable " + expected.getName() + " when running test against " + bundleName + ", but got " + t.getClass() + " instead!", t);
+                    }
+                }
+            } else {
+                rt.test(fsr);
+            }
         });
     }
 
@@ -69,7 +81,8 @@ public class RequisitionTest implements InitializingBean, ApplicationContextAwar
                     req = fsr.getRequisition("imported:");
                     assertNotNull(req);
                     assertEquals(2, req.getNodeCount());
-                }
+                },
+                null
         );
     }
 
@@ -84,7 +97,8 @@ public class RequisitionTest implements InitializingBean, ApplicationContextAwar
                     fs = fsr.getForeignSource("blah");
                     assertNotNull(fs);
                     assertNotNull(fs.getScanInterval());
-                }
+                },
+                null
         );
     }
 
@@ -99,7 +113,8 @@ public class RequisitionTest implements InitializingBean, ApplicationContextAwar
                     final Requisition saved = fsr.getRequisition("foo bar");
                     assertNotNull(saved);
                     assertEquals(req, saved);
-                }
+                },
+                null
         );
     }
 
@@ -114,7 +129,24 @@ public class RequisitionTest implements InitializingBean, ApplicationContextAwar
                     final ForeignSource saved = fsr.getForeignSource("foo bar");
                     assertNotNull(saved);
                     assertEquals(fs, saved);
-                }
+                },
+                null
+        );
+    }
+
+    @Test
+    public void testForeignSourceWithSlash() {
+        runTest(
+                fsr -> {
+                    final ForeignSource fs = fsr.getForeignSource("foo/bar");
+                    fs.setDefault(false);
+                    fsr.save(fs);
+                    fsr.flush();
+                    final ForeignSource saved = fsr.getForeignSource("foo/bar");
+                    assertNotNull(saved);
+                    assertEquals(fs, saved);
+                },
+                ForeignSourceRepositoryException.class
         );
     }
 

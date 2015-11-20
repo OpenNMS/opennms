@@ -116,6 +116,7 @@ public class QueueingForeignSourceRepository implements ForeignSourceRepository,
     @Override
     public void save(final ForeignSource foreignSource) throws ForeignSourceRepositoryException {
         LOG.debug("Queueing save of foreign source {}", foreignSource.getName());
+        validate(foreignSource);
         m_pendingForeignSources.put(foreignSource.getName(), foreignSource);
         m_executor.execute(new QueuePersistRunnable());
     }
