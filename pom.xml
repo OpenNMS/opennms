@@ -1277,7 +1277,7 @@
     <springWebFlowVersion>2.3.4.RELEASE</springWebFlowVersion>
     <springSecurityVersion>3.2.7.RELEASE</springSecurityVersion>
     <springLdapVersion>${springSecurityVersion}</springLdapVersion>
-    <springSecurityKerberosVersion>1.0.0.RELEASE</springSecurityKerberosVersion>
+    <springSecurityKerberosVersion>1.0.1.RELEASE</springSecurityKerberosVersion>
 
     <!-- moved here from topology features -->
     <jungVersion>2.0.1</jungVersion>
