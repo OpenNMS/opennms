@@ -42,7 +42,7 @@
 
       &lt;p>Source: %parm[configSource]% &lt;/p>
       &lt;p>User: %parm[configUser]% &lt;/p></descr>
-      <logmsg dest="logndisplay">&lt;p>%parm[configUser]%&quot; changed entity %nodelabel%_%interface% from source: %parm[configSource]% &lt;/a>&lt;/p></logmsg>
+      <logmsg dest="logndisplay">&lt;p>"%parm[configUser]%&quot; changed entity %nodelabel%_%interface% from source: %parm[configSource]% &lt;/a>&lt;/p></logmsg>
       <severity>Warning</severity>
       <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="3" auto-clean="false"/>
    </event>
