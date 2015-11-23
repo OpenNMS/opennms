@@ -41,6 +41,7 @@ import javax.management.remote.JMXServiceURL;
 
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
+import org.opennms.netmgt.jmx.connection.JmxServerConnectionWrapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -61,7 +62,7 @@ public abstract class Jsr160ConnectionFactory {
      * @param address a {@link java.net.InetAddress} object.
      * @return a {@link org.opennms.netmgt.provision.support.jmx.connectors.Jsr160ConnectionWrapper} object.
      */
-    public static Jsr160ConnectionWrapper getMBeanServerConnection(Map<String, Object> propertiesMap, InetAddress address) {
+    public static JmxServerConnectionWrapper getMBeanServerConnection(Map<String, Object> propertiesMap, InetAddress address) {
         String factory  = ParameterMap.getKeyedString( propertiesMap, "factory", "STANDARD");
         int    port     = ParameterMap.getKeyedInteger(propertiesMap, "port",     1099);
         String protocol = ParameterMap.getKeyedString( propertiesMap, "protocol", "rmi");
@@ -72,7 +73,7 @@ public abstract class Jsr160ConnectionFactory {
         return getWrapper(address, factory, port, protocol, urlPath, username, password);
     }
 
-    private static Jsr160ConnectionWrapper getWrapper(InetAddress address, String factory, int port,
+    private static JmxServerConnectionWrapper getWrapper(InetAddress address, String factory, int port,
             String protocol, String urlPath, String username, String password) {
         Jsr160ConnectionWrapper connectionWrapper = null;
         JMXServiceURL url = null;

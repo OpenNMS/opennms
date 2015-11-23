@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.jmx.impl.connection.connectors;
 
+import java.net.InetAddress;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -90,7 +91,7 @@ public class DefaultConnectionManager implements JmxConnectionManager {
     }
 
     @Override
-    public JmxServerConnectionWrapper connect(JmxConnectors connectorName, String ipAddress, Map<String, String> properties, RetryCallback retryCallback) throws JmxServerConnectionException {
+    public JmxServerConnectionWrapper connect(JmxConnectors connectorName, InetAddress ipAddress, Map<String, String> properties, RetryCallback retryCallback) throws JmxServerConnectionException {
         // if null, use dummy implementation
         if (retryCallback == null) {
             retryCallback = NULL_CALLBACK;
