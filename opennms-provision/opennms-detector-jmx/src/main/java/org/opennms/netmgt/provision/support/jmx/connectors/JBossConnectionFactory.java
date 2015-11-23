@@ -43,6 +43,7 @@ import javax.naming.NamingException;
 
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
+import org.opennms.netmgt.jmx.connection.JmxServerConnectionWrapper;
 import org.opennms.netmgt.provision.support.jmx.connectors.IsolatingClassLoader.InvalidContextClassLoaderException;
 import org.opennms.netmgt.provision.support.protocol.jmx.MBeanServerProxy;
 import org.slf4j.Logger;
@@ -74,7 +75,7 @@ public abstract class JBossConnectionFactory {
      * @param address a {@link java.net.InetAddress} object.
      * @return a {@link org.opennms.netmgt.provision.support.jmx.connectors.JBossConnectionWrapper} object.
      */
-    public static JBossConnectionWrapper getMBeanServerConnection(Map<String,Object> propertiesMap, InetAddress address) {
+    public static JmxServerConnectionWrapper getMBeanServerConnection(Map<String,Object> propertiesMap, InetAddress address) {
         
         JBossConnectionWrapper wrapper = null;
         //IsolatingClassLoader   icl     = null;

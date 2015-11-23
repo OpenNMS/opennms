@@ -51,6 +51,7 @@ import javax.management.ReflectionException;
 import javax.management.openmbean.CompositeData;
 
 import org.opennms.core.spring.BeanUtils;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.collectd.jmx.Attrib;
 import org.opennms.netmgt.config.collectd.jmx.CompAttrib;
 import org.opennms.netmgt.config.collectd.jmx.CompMember;
@@ -98,7 +99,7 @@ public class DefaultJmxCollector implements JmxCollector {
         }
 
         JmxConnectionManager connectionManager = new DefaultConnectionManager(config.getRetries());
-        try (JmxServerConnectionWrapper connectionWrapper = connectionManager.connect(config.getConnectionName(), config.getAgentAddress(), mergedStringMap, null)) {
+        try (JmxServerConnectionWrapper connectionWrapper = connectionManager.connect(config.getConnectionName(), InetAddressUtils.addr(config.getAgentAddress()), mergedStringMap, null)) {
             Objects.requireNonNull(connectionWrapper, "connectionWrapper should never be null");
             Objects.requireNonNull(connectionWrapper.getMBeanServerConnection(), "connectionWrapper.getMBeanServerConnection() should never be null");
 

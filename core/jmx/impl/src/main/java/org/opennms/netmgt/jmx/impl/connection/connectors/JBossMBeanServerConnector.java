@@ -28,6 +28,20 @@
 
 package org.opennms.netmgt.jmx.impl.connection.connectors;
 
+import java.io.File;
+import java.net.InetAddress;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
+import java.util.Hashtable;
+import java.util.Map;
+
+import javax.naming.Context;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
+
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.netmgt.jmx.connection.JmxServerConnectionException;
 import org.opennms.netmgt.jmx.connection.JmxServerConnectionWrapper;
@@ -35,17 +49,6 @@ import org.opennms.netmgt.jmx.connection.JmxServerConnector;
 import org.opennms.netmgt.jmx.impl.connection.connectors.IsolatingClassLoader.InvalidContextClassLoaderException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import javax.naming.Context;
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
-import java.io.File;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.security.AccessController;
-import java.security.PrivilegedAction;
-import java.util.Hashtable;
-import java.util.Map;
 
 /**
  * The JBossMBeanServerConnector handles the creation of a connection to the
@@ -64,7 +67,7 @@ class JBossMBeanServerConnector implements JmxServerConnector {
     private static final String[] PACKAGES = {"org.jboss.naming.*", "org.jboss.interfaces.*"};
 
     @Override
-    public JmxServerConnectionWrapper createConnection(String ipAddress, Map<String, String> propertiesMap) throws JmxServerConnectionException {
+    public JmxServerConnectionWrapper createConnection(final InetAddress ipAddress, final Map<String, String> propertiesMap) throws JmxServerConnectionException {
         JBossConnectionWrapper wrapper = null;
         ClassLoader icl = null;
         final ClassLoader originalLoader = Thread.currentThread().getContextClassLoader();
@@ -121,8 +124,8 @@ class JBossMBeanServerConnector implements JmxServerConnector {
         if (connectionType.equals("RMI")) {
             InitialContext  ctx  = null;
 
-            final String hostAddress = ipAddress;
-			try {
+            final String hostAddress = InetAddressUtils.str(ipAddress);
+            try {
                 
                 Hashtable<String, String> props = new Hashtable<String, String>();
                 props.put(Context.INITIAL_CONTEXT_FACTORY, "org.jboss.naming.NamingContextFactory");
@@ -151,8 +154,8 @@ class JBossMBeanServerConnector implements JmxServerConnector {
             InitialContext ctx  = null;
             String invokerSuffix = null;
 
-            final String hostAddress = ipAddress;
-			try {
+            final String hostAddress = InetAddressUtils.str(ipAddress);
+            try {
                 
                 Hashtable<String, String> props = new Hashtable<String, String>();
                 props.put(Context.INITIAL_CONTEXT_FACTORY, "org.jboss.naming.HttpNamingContextFactory");

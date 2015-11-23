@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.jmx.connection;
 
+import java.net.InetAddress;
 import java.util.Map;
 
 /**
@@ -56,7 +57,7 @@ public interface JmxConnectionManager {
      * @return A JmxServerConnectionWrapper for the MBeanServerConnection.
      * @throws JmxServerConnectionException if the connection to the given ipAddress using the registered JmxServerConnector could not be established.
      */
-    JmxServerConnectionWrapper connect(JmxConnectors connectionName, String ipAddress, Map<String, String> connectionProperties, RetryCallback retryCallback) throws JmxServerConnectionException;
+    JmxServerConnectionWrapper connect(JmxConnectors connectionName, InetAddress ipAddress, Map<String, String> connectionProperties, RetryCallback retryCallback) throws JmxServerConnectionException;
 
     /**
      * This callback should always be invoked BEFORE invoking

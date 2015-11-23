@@ -28,12 +28,15 @@
 
 package org.opennms.netmgt.jmx.connection;
 
+import java.net.InetAddress;
 import java.util.Map;
 
 /**
  * The JmxServerConnector implements the logic on how to connect to a certain JMX Server (MBeanServer).
  */
 public interface JmxServerConnector {
+
+    public static String DEFAULT_OPENNMS_JMX_PORT = "18980";
 
     /**
      * Establishes a jmx connection ({@link javax.management.MBeanServerConnection}) to the given <code>ipAddress</code>
@@ -46,5 +49,5 @@ public interface JmxServerConnector {
      * @return The wrapped {@link javax.management.MBeanServerConnection}. May return null, but should throw a {@link JmxServerConnectionException} instead.
      * @throws JmxServerConnectionException If a jmx connection to the given <code>ipAddress</code> could not be established.
      */
-    JmxServerConnectionWrapper createConnection(final String ipAddress, final Map<String, String> propertiesMap) throws JmxServerConnectionException;
+    JmxServerConnectionWrapper createConnection(final InetAddress ipAddress, final Map<String, String> propertiesMap) throws JmxServerConnectionException;
 }

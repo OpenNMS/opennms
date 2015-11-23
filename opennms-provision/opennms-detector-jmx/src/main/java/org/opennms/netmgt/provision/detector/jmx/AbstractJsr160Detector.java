@@ -29,11 +29,12 @@
 package org.opennms.netmgt.provision.detector.jmx;
 
 import com.google.common.collect.Maps;
+
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.jmx.MBeanServer;
 import org.opennms.netmgt.dao.jmx.JmxConfigDao;
-import org.opennms.netmgt.provision.support.jmx.connectors.ConnectionWrapper;
+import org.opennms.netmgt.jmx.connection.JmxServerConnectionWrapper;
 import org.opennms.netmgt.provision.support.jmx.connectors.Jsr160ConnectionFactory;
 
 import java.net.InetAddress;
@@ -73,7 +74,7 @@ public abstract class AbstractJsr160Detector extends JMXDetector {
 
     /** {@inheritDoc} */
     @Override
-    protected ConnectionWrapper connect(final InetAddress address, final int port, final int timeout) {
+    protected JmxServerConnectionWrapper connect(final InetAddress address, final int port, final int timeout) {
         if (m_jmxConfigDao == null) {
             m_jmxConfigDao = BeanUtils.getBean("daoContext", "jmxConfigDao", JmxConfigDao.class);
         }

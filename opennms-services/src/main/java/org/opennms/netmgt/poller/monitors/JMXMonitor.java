@@ -28,15 +28,15 @@
 
 package org.opennms.netmgt.poller.monitors;
 
-import org.opennms.core.spring.BeanUtils;
+import java.net.InetAddress;
+import java.util.Map;
 
-import com.google.common.collect.Maps;
-
-import org.apache.commons.jexl2.JexlEngine;
 import org.apache.commons.jexl2.Expression;
 import org.apache.commons.jexl2.JexlContext;
-import org.apache.commons.jexl2.ReadonlyContext;
+import org.apache.commons.jexl2.JexlEngine;
 import org.apache.commons.jexl2.MapContext;
+import org.apache.commons.jexl2.ReadonlyContext;
+import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.netmgt.config.jmx.MBeanServer;
@@ -56,8 +56,7 @@ import org.opennms.netmgt.snmp.InetAddrUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.net.InetAddress;
-import java.util.Map;
+import com.google.common.collect.Maps;
 
 @Distributable
 /**
@@ -137,7 +136,7 @@ public abstract class JMXMonitor extends AbstractServiceMonitor {
             };
 
             try (JmxServerConnectionWrapper connection = connectionManager.connect(getConnectionName(),
-                                                                                   InetAddrUtils.str(ipv4Addr),
+                                                                                   ipv4Addr,
                                                                                    JmxUtils.convertToStringMap(map),
                                                                                    retryCallback)) {
 
