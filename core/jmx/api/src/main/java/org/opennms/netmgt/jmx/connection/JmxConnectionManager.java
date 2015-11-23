@@ -50,13 +50,13 @@ public interface JmxConnectionManager {
      * If the connection to the server could not be established (e.g. no retries left) a JmxServerConnectionException is thrown.
      *
      * @param connectionName       The {@link org.opennms.netmgt.jmx.connection.JmxConnectors} name of the connection. May be null.
-     * @param ipAddress            the address to connecto to
+     * @param ipAddress            the address to connect to
      * @param connectionProperties properties for the connection (e.g. port, user, etc.)
      * @param retryCallback        A callback, which should be called BEFORE creating the connection. May be null.
      * @return A JmxServerConnectionWrapper for the MBeanServerConnection.
      * @throws JmxServerConnectionException if the connection to the given ipAddress using the registered JmxServerConnector could not be established.
      */
-    JmxServerConnectionWrapper connect(String connectionName, String ipAddress, Map<String, String> connectionProperties, RetryCallback retryCallback) throws JmxServerConnectionException;
+    JmxServerConnectionWrapper connect(JmxConnectors connectionName, String ipAddress, Map<String, String> connectionProperties, RetryCallback retryCallback) throws JmxServerConnectionException;
 
     /**
      * This callback should always be invoked BEFORE invoking

@@ -31,19 +31,10 @@ package org.opennms.netmgt.jmx.connection;
 /**
  * All available connectors.
  */
-public final class JmxConnectors {
-
-    public static final String JSR160 = "jsr160";
-
-    public static final String JBOSS = "jboss";
-
-    public static final String MX4J = "mx4j";
-
-    public static final String JMX_SECURE = "jmx_secure";
-
-    public static final String PLATFORM = "platform";
-
-    private JmxConnectors() {
-
-    }
+public enum JmxConnectors {
+    jsr160,
+    jboss,
+    mx4j,
+    jmx_secure,
+    platform
 }
