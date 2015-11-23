@@ -38,9 +38,6 @@ import org.slf4j.LoggerFactory;
 
 public class CustomSyslogParser extends SyslogParser {
     private static final Logger LOG = LoggerFactory.getLogger(CustomSyslogParser.class);
-    private static final Pattern m_messageIdPattern = Pattern.compile("^((\\S+):\\s*)");
-    private static final Pattern m_datePattern = Pattern.compile("^((\\d\\d\\d\\d-\\d\\d-\\d\\d)\\s+)");
-    private static final Pattern m_oldDatePattern = Pattern.compile("^\\s*(\\S\\S\\S\\s+\\d{1,2}\\s+\\d\\d:\\d\\d:\\d\\d)\\s+");
 
     private final Pattern m_forwardingPattern;
     private final int m_matchingGroupHost;
@@ -60,6 +57,19 @@ public class CustomSyslogParser extends SyslogParser {
 
     @Override
     public SyslogMessage parse() throws SyslogParserException {
+    	
+	
+		// Static declaration from class level has been removed and made to
+		// class level to avoid static variable access which consumes time also
+		// cause memory leak
+		 
+		Pattern m_messageIdPattern = Pattern.compile("^((\\S+):\\s*)");
+		// date pattern has been updated to support space at start and end of
+		// the message
+		Pattern m_datePattern = Pattern
+				.compile("^\\s*((\\d\\d\\d\\d-\\d\\d-\\d\\d)\\s*)");
+		Pattern m_oldDatePattern = Pattern
+				.compile("^\\s*(\\S\\S\\S\\s+\\d{1,2}\\s+\\d\\d:\\d\\d:\\d\\d)\\s+");
         final SyslogMessage syslogMessage = new SyslogMessage();
         syslogMessage.setParserClass(getClass());
 
@@ -98,34 +108,29 @@ public class CustomSyslogParser extends SyslogParser {
         }
 
         LOG.trace("message = {}", message);
-        
-        Matcher oldDateMatcher = m_oldDatePattern.matcher(message);
-        if (!oldDateMatcher.find()) {
-            oldDateMatcher = null;
-        }
-        LOG.trace("stdMsg = {}", Boolean.toString(oldDateMatcher != null));
-
         String timestamp;
-
-        if (oldDateMatcher == null) {
-            final Matcher stampMatcher = m_datePattern.matcher(message);
-            if (stampMatcher.find()) {
-                timestamp = stampMatcher.group(2);
-                LOG.trace("found timestamp '{}'", timestamp);
-//                message = message.substring(stampMatcher.group(1).length());
-            } else {
-                try {
-                    timestamp = SyslogTimeStamp.getInstance().format(new Date());
-                } catch (final IllegalArgumentException ex) {
-                    LOG.debug("ERROR INTERNAL DATE ERROR!");
-                    timestamp = "";
-                }
-            }
-        } else {
-            timestamp = oldDateMatcher.group(1);
-            message = oldDateMatcher.replaceFirst("");
-        }
-
+        Matcher oldDateMatcher = m_oldDatePattern.matcher(message);
+		if (!oldDateMatcher.find()) {
+			final Matcher stampMatcher = m_datePattern.matcher(message);
+			if (stampMatcher.find()) {
+				LOG.trace("stdMsg = {}", "false");
+				timestamp = stampMatcher.group(2);
+				LOG.trace("found timestamp '{}'", timestamp);
+				// message = message.substring(stampMatcher.group(1).length());
+			} else {
+				try {
+					timestamp = SyslogTimeStamp.getInstance()
+							.format(new Date());
+				} catch (final IllegalArgumentException ex) {
+					LOG.debug("ERROR INTERNAL DATE ERROR!");
+					timestamp = "";
+				}
+			}
+		} else {
+			LOG.trace("stdMsg = {}", "true");
+			timestamp = oldDateMatcher.group(1);
+			message = oldDateMatcher.replaceFirst("");
+		}
         LOG.trace("timestamp = {}", timestamp);
         syslogMessage.setDate(parseDate(timestamp));
         
@@ -179,7 +184,16 @@ public class CustomSyslogParser extends SyslogParser {
         String processName = "";
         String processIdStr = "";
 
-        if (lbIdx < (rbIdx - 1) && colonIdx == (rbIdx + 1) && spaceIdx == (colonIdx + 1)) {
+		
+		// If loop has been reversed, in-order to fasten up that decides which
+		// loop to enter rather than calculating lbIdx < (rbIdx - 1) which might
+		// fail
+		 
+        if (lbIdx < 0 && rbIdx < 0 && colonIdx > 0 && spaceIdx == (colonIdx + 1)) {
+            processName = message.substring(0, colonIdx);
+            message = message.substring(colonIdx + 2);
+        }
+        else if (lbIdx < (rbIdx - 1) && colonIdx == (rbIdx + 1) && spaceIdx == (colonIdx + 1)) {
             processName = message.substring(0, lbIdx);
             processIdStr = message.substring(lbIdx + 1, rbIdx);
             message = message.substring(colonIdx + 2);
@@ -190,10 +204,7 @@ public class CustomSyslogParser extends SyslogParser {
                 LOG.debug("Bad process id '{}'", processIdStr);
                 processId = 0;
             }
-        } else if (lbIdx < 0 && rbIdx < 0 && colonIdx > 0 && spaceIdx == (colonIdx + 1)) {
-            processName = message.substring(0, colonIdx);
-            message = message.substring(colonIdx + 2);
-        }
+        } 
 
         syslogMessage.setProcessId(processId);
         syslogMessage.setProcessName(processName);

@@ -214,16 +214,20 @@ public class ConvertToEvent {
                                                   matchProcess(uei.getProcessMatch(), message.getProcessName()) && 
                                                   matchHostname(uei.getHostnameMatch(), message.getHostName()) &&
                                                   matchHostAddr(uei.getHostaddrMatch(), message.getHostAddress());
-                
-                if (otherStuffMatches && uei.getMatch().getType().equals("substr")) {
-                    if (matchSubstring(discardUei, bldr, matchedText, uei)) {
-                        break;
-                    }
-                } else if (otherStuffMatches && (uei.getMatch().getType().startsWith("regex"))) {
-                    if (matchRegex(message, uei, bldr, discardUei)) {
-                        break;
-                    }
-                }
+				
+				// Single boolean check is added instead of performing multiple
+				// boolean check for both if and else if which causes a extra time
+				if (otherStuffMatches) {
+					if (uei.getMatch().getType().equals("substr")) {
+						if (matchSubstring(discardUei, bldr, matchedText, uei)) {
+							break;
+						}
+					} else if ((uei.getMatch().getType().startsWith("regex"))) {
+						if (matchRegex(message, uei, bldr, discardUei)) {
+							break;
+						}
+					}
+				}
             }
         }
 
@@ -407,14 +411,16 @@ public class ConvertToEvent {
 
             // We matched a UEI
             bldr.setUei(uei.getUei());
-            if (msgMat.groupCount() > 0 && uei.getMatch().isDefaultParameterMapping()) {
+            //Removed check of count in both if condition which is redundant
+			if (msgMat.groupCount() > 0) {
+            if ( uei.getMatch().isDefaultParameterMapping()) {
                 if (traceEnabled) LOG.trace("Doing default parameter mappings for this regex match.");
                 for (int groupNum = 1; groupNum <= msgMat.groupCount(); groupNum++) {
                     if (traceEnabled) LOG.trace("Added parm 'group{}' with value '{}' to Syslogd event based on regex match group", groupNum, msgMat.group(groupNum));
                     bldr.addParam("group"+groupNum, msgMat.group(groupNum));
                 }
             }
-            if (msgMat.groupCount() > 0 && uei.getParameterAssignmentCount() > 0) {
+            if (uei.getParameterAssignmentCount() > 0) {
                 if (traceEnabled) LOG.trace("Doing user-specified parameter assignments for this regex match.");
                 for (ParameterAssignment assignment : uei.getParameterAssignmentCollection()) {
                     String parmName = assignment.getParameterName();
@@ -422,8 +428,9 @@ public class ConvertToEvent {
                     parmValue = parmValue == null ? "" : parmValue;
                     bldr.addParam(parmName, parmValue);
                     if (traceEnabled) LOG.trace("Added parm '{}' with value '{}' to Syslogd event based on user-specified parameter assignment", parmName, parmValue);
-                }
-            }
+					}
+				}
+			}
             // I think we want to stop processing here so the first
             // ueiMatch wins, right?
             return true;
