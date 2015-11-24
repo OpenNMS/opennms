@@ -32,7 +32,6 @@ package org.opennms.web.rest.v1;
 import java.beans.IntrospectionException;
 import java.lang.reflect.Method;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.concurrent.locks.Lock;
 
 import javax.ws.rs.WebApplicationException;
@@ -40,7 +39,6 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
-import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
 import javax.xml.datatype.XMLGregorianCalendar;
 
@@ -55,6 +53,7 @@ import org.opennms.netmgt.provision.persist.StringXmlCalendarPropertyEditor;
 import org.opennms.web.api.ISO8601DateEditor;
 import org.opennms.web.api.RestUtils;
 import org.opennms.web.rest.support.MultivaluedMapImpl;
+import org.opennms.web.rest.support.RedirectHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.helpers.MessageFormatter;
@@ -255,22 +254,7 @@ public class OnmsRestService {
 
 
     protected static URI getRedirectUri(final UriInfo uriInfo, final Object... pathComponents) {
-        if (pathComponents != null && pathComponents.length == 0) {
-            final URI requestUri = uriInfo.getRequestUri();
-            try {
-                return new URI(requestUri.getScheme(), requestUri.getUserInfo(), requestUri.getHost(), requestUri.getPort(), requestUri.getPath().replaceAll("/$", ""), null, null);
-            } catch (final URISyntaxException e) {
-                return requestUri;
-            }
-        } else {
-            UriBuilder builder = uriInfo.getRequestUriBuilder();
-            for (final Object component : pathComponents) {
-                if (component != null) {
-                    builder = builder.path(component.toString());
-                }
-            }
-            return builder.build();
-        }
+		return RedirectHelper.getRedirectUri(uriInfo, pathComponents);
     }
 
     /**

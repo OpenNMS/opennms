@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.model.bsm;
+package org.opennms.web.rest.v2.bsm.model;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
