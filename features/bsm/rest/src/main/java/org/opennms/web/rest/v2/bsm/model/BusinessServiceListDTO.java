@@ -26,33 +26,51 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.model.bsm;
+package org.opennms.web.rest.v2.bsm.model;
 
 import java.util.Collection;
 import java.util.List;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.codehaus.jackson.map.annotate.JsonRootName;
 import org.opennms.core.config.api.JaxbListWrapper;
+import org.opennms.web.rest.support.JAXBResourceLocationAdapter;
+import org.opennms.web.rest.support.ResourceLocation;
 
 @XmlRootElement(name = "business-services")
 @JsonRootName("business-services")
-public class BusinessServiceList extends JaxbListWrapper<BusinessService> {
+public class BusinessServiceListDTO extends JaxbListWrapper<BusinessServiceDTO> {
+
+    private ResourceLocation location;
+
     private static final long serialVersionUID = 1L;
 
-    public BusinessServiceList() {
+    public BusinessServiceListDTO() {
+
     }
 
-    public BusinessServiceList(final Collection<? extends BusinessService> services) {
+    public BusinessServiceListDTO(final Collection<? extends BusinessServiceDTO> services, ResourceLocation location) {
         super(services);
+        this.location = location;
     }
 
     @XmlElement(name = "business-service")
     @JsonProperty("business-service")
-    public List<BusinessService> getObjects() {
+    public List<BusinessServiceDTO> getObjects() {
         return super.getObjects();
+    }
+
+    @XmlElement(name = "location")
+    @XmlJavaTypeAdapter(JAXBResourceLocationAdapter.class)
+    public ResourceLocation getLocation() {
+        return location;
+    }
+
+    public void setLocation(ResourceLocation location) {
+        this.location = location;
     }
 }

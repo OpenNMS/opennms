@@ -32,18 +32,26 @@ import static org.junit.Assert.assertEquals;
 
 import java.util.List;
 
+import javax.ws.rs.core.MediaType;
 import javax.xml.bind.JAXBContext;
 
+import org.junit.After;
+import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.config.api.JaxbListWrapper;
+import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.test.rest.AbstractSpringJerseyRestTestCase;
-import org.opennms.netmgt.dao.bsm.BusinessServiceDao;
-import org.opennms.netmgt.model.bsm.BusinessService;
-import org.opennms.netmgt.model.bsm.BusinessServiceList;
+import org.opennms.netmgt.dao.DatabasePopulator;
+import org.opennms.netmgt.dao.api.MonitoredServiceDao;
+import org.opennms.netmgt.bsm.persistence.api.BusinessServiceDao;
+import org.opennms.netmgt.bsm.persistence.model.BusinessService;
+import org.opennms.web.rest.v2.bsm.model.BusinessServiceDTO;
+import org.opennms.web.rest.v2.bsm.model.BusinessServiceListDTO;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -69,6 +77,29 @@ public class BusinessServiceRestServiceIT extends AbstractSpringJerseyRestTestCa
     @Autowired
     private BusinessServiceDao m_businessServiceDao;
 
+    @Autowired
+    private DatabasePopulator populator;
+
+    @Autowired
+    private MonitoredServiceDao monitoredServiceDao;
+
+    @Before
+    public void setUp() throws Throwable {
+        super.setUp();
+        BeanUtils.assertAutowiring(this);
+        populator.populateDatabase();
+    }
+
+    @After
+    @Transactional
+    public void tearDown() throws Exception {
+        super.tearDown();
+        populator.resetDatabase();
+        for (BusinessService eachService : m_businessServiceDao.findAll()) {
+            m_businessServiceDao.delete(eachService);
+        }
+    }
+
     public BusinessServiceRestServiceIT() {
         super("file:../../../opennms-webapp-rest/src/main/webapp/WEB-INF/applicationContext-cxf-rest-v2.xml");
     }
@@ -81,21 +112,114 @@ public class BusinessServiceRestServiceIT extends AbstractSpringJerseyRestTestCa
     @Test
     @JUnitTemporaryDatabase
     @Transactional
+    public void canAddIpService() throws Exception {
+        BusinessService service = new BusinessService();
+        service.setName("Dummy Service");
+        final Long serviceId = m_businessServiceDao.save(service);
+        m_businessServiceDao.flush();
+
+        // verify adding not existing ip service not possible
+        sendPost(getIpServiceUrl(serviceId, -1), "", 404, null);
+
+        // verify adding of existing ip service is possible
+        sendPost(getIpServiceUrl(serviceId, 10), "", 200, null);
+        Assert.assertEquals(1, m_businessServiceDao.get(serviceId).getIpServices().size());
+
+        // verify adding twice possible, but not modified
+        sendPost(getIpServiceUrl(serviceId, 10), "", 304, null);
+        Assert.assertEquals(1, m_businessServiceDao.get(serviceId).getIpServices().size());
+
+        // verify adding of existing ip service is possible
+        sendPost(getIpServiceUrl(serviceId, 17), "", 200, null);
+        Assert.assertEquals(2, m_businessServiceDao.get(serviceId).getIpServices().size());
+    }
+
+    @Test
+    @JUnitTemporaryDatabase
+    @Transactional
+    public void canRemoveIpService() throws Exception {
+        BusinessService service = new BusinessService();
+        service.setName("Dummy Service");
+        final Long serviceId = m_businessServiceDao.save(service);
+        service.addIpService(monitoredServiceDao.get(17));
+        service.addIpService(monitoredServiceDao.get(18));
+        service.addIpService(monitoredServiceDao.get(20));
+        m_businessServiceDao.saveOrUpdate(service);
+        m_businessServiceDao.flush();
+
+        // verify removing not existing ip service not possible
+        sendData(DELETE, MediaType.APPLICATION_XML, getIpServiceUrl(serviceId, -1), "", 404);
+
+        // verify removing of existing ip service is possible
+        sendData(DELETE, MediaType.APPLICATION_XML, getIpServiceUrl(serviceId, 17), "", 200);
+        Assert.assertEquals(2, m_businessServiceDao.get(serviceId).getIpServices().size());
+
+        // verify removing twice possible, but not modified
+        sendData(DELETE, MediaType.APPLICATION_XML, getIpServiceUrl(serviceId, 17), "", 304);
+        Assert.assertEquals(2, m_businessServiceDao.get(serviceId).getIpServices().size());
+
+        // verify removing of existing ip service is possible
+        sendData(DELETE, MediaType.APPLICATION_XML, getIpServiceUrl(serviceId, 18), "", 200);
+        Assert.assertEquals(1, m_businessServiceDao.get(serviceId).getIpServices().size());
+    }
+
+    private String getIpServiceUrl(Long servieId, int ipServiceId) {
+        return String.format("/business-services/%s/ip-service/%s", servieId, ipServiceId);
+    }
+
+    @Test
+    @JUnitTemporaryDatabase
+    @Transactional
     @SuppressWarnings("unchecked")
     public void canRetrieveBusinessServices() throws Exception {
         // Add business services to the DB
         BusinessService bs = new BusinessService();
         bs.setName("Application Servers");
-        m_businessServiceDao.save(bs);
+        Long id = m_businessServiceDao.save(bs);
         m_businessServiceDao.flush();
 
         // Retrieve the list of business services
         String url = "/business-services";
-        JAXBContext context = JAXBContext.newInstance(BusinessServiceList.class, BusinessService.class);
-        List<BusinessService> businessServices = getXmlObject(context, url, 200, JaxbListWrapper.class).getObjects();
+        JAXBContext context = JAXBContext.newInstance(BusinessServiceListDTO.class, BusinessServiceDTO.class);
+        List<BusinessServiceDTO> businessServices = getXmlObject(context, url, 200, JaxbListWrapper.class).getObjects();
 
         // Verify
         assertEquals(1, businessServices.size());
-        assertEquals(bs, businessServices.get(0));
+        BusinessServiceDTO bsDTO = new BusinessServiceDTO();
+        bsDTO.setName(bs.getName());
+        bsDTO.setId(id);
+        assertEquals(bsDTO, businessServices.get(0));
+    }
+
+    @Test
+    @JUnitTemporaryDatabase
+    @Transactional
+    public void canCreateBusinessService() throws Exception {
+        final String businessServiceJson = "{" +
+                "\"name\":\"some-name\"," +
+                "\"attributes\":{\"attribute\":[{\"key\":\"some-key\",\"value\":\"some-value\"}]}" +
+                "}";
+        final String businessServiceXml = "<business-service>" +
+                "    <name>some-name2</name>" +
+                "</business-service>";
+        sendData(POST, MediaType.APPLICATION_JSON, "/business-services", businessServiceJson, 201);
+        sendData(POST, MediaType.APPLICATION_XML, "/business-services", businessServiceXml, 201);
+        Assert.assertEquals(2, m_businessServiceDao.findAll().size());
+    }
+
+
+    @Test
+    @JUnitTemporaryDatabase
+    @Transactional
+    public void canUpdateBusinessService() throws Exception {
+        BusinessService service = new BusinessService();
+        service.setName("Dummy Service");
+        final Long serviceId = m_businessServiceDao.save(service);
+        m_businessServiceDao.flush();
+        final String businessServiceDtoXml = "<business-service>" +
+                "    <id>" + serviceId + "</id>" +
+                "    <name>Dummy Service Updated</name>" +
+                "</business-service>";
+        sendData(PUT, MediaType.APPLICATION_XML, "/business-services/" + serviceId, businessServiceDtoXml, 204);
     }
 }

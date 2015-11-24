@@ -45,6 +45,8 @@ import org.opennms.core.network.InetAddressXmlAdapter;
 @XmlRootElement(name = "monitored-service")
 public class OnmsMonitoredServiceDetail implements Serializable, Comparable<OnmsMonitoredServiceDetail> {
 
+    private String m_id;
+
     private String m_statusCode;
 
     private String m_status;
@@ -70,6 +72,7 @@ public class OnmsMonitoredServiceDetail implements Serializable, Comparable<Onms
         m_isDown = service.isDown();
         m_statusCode = service.getStatus();
         m_status = service.getStatusLong();
+        m_id = service.getXmlId();
     }
 
     @XmlElement(name="status")
@@ -126,6 +129,15 @@ public class OnmsMonitoredServiceDetail implements Serializable, Comparable<Onms
     @XmlAttribute(name="isDown")
     public boolean isDown() {
         return m_isDown;
+    }
+
+    @XmlAttribute(name="id")
+    public String getId() {
+        return m_id;
+    }
+
+    public void setId(String id) {
+        m_id = id;
     }
 
     @Override
