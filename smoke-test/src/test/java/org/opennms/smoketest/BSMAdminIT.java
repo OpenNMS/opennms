@@ -28,70 +28,61 @@
 
 package org.opennms.smoketest;
 
-import java.io.IOException;
-import java.util.UUID;
-
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.StringEntity;
+import org.junit.FixMethodOrder;
 import org.junit.Test;
-import org.opennms.core.web.HttpClientWrapper;
-import org.openqa.selenium.By;
-import org.openqa.selenium.WebElement;
+import org.junit.runners.MethodSorters;
 
-import com.google.common.net.HttpHeaders;
-import com.google.common.net.MediaType;
-
-import static org.junit.Assert.assertEquals;
-
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class BSMAdminIT extends OpenNMSSeleniumTestCase {
 
+    private final String RENAMED_SERVICE_NAME = "renamed_service";
+    private final String BSM_LIST_URL = BASE_URL + "opennms/admin/bsm/index.jsp";
+    private final String BASIC_SERVICE_NAME = "BasicService";
+    private final String BASIC_SERVICE_NAME_TO_CHANGE = "BasicServiceToChange";
+
     @Test
-    public void canReadBusinessServices() throws ClientProtocolException, IOException {
-        // Deferring this check until we can delete entries via the UI
-//        // Verify that a message is presented when there are no business services defined
-//        m_driver.get(BASE_URL + "opennms/admin/bsm/index.jsp");
-//        findElementByXpath("//*[contains(text(), 'There are no business services defined.')]");
-
-        // Create a new Business Service via the REST API
-        String servicePrefix = UUID.randomUUID().toString();
-        createServiceWithPrefix(servicePrefix);
-
-        // Verify that the Business Service appears in the list
-        m_driver.get(BASE_URL + "opennms/admin/bsm/index.jsp");
-        findElementByXpath("//*[contains(text(), '" + servicePrefix + "-name')]");
-
-        // The Business Service's attributes should also be displayed
-        WebElement el = findElementByXpath("//*[contains(text(), '" + servicePrefix + "-key')]");
-        WebElement parent = el.findElement(By.xpath(".."));
-        assertEquals(servicePrefix + "-key: " + servicePrefix + "-value", parent.getText());
+    public void testCreateBusinessServices() {
+        m_driver.get(BSM_LIST_URL);
+        findElementById("createInput").sendKeys(BASIC_SERVICE_NAME);
+        findElementById("createButton").click();
+        findElementByXpath("//*[contains(text(), '" + BASIC_SERVICE_NAME + "')]");
     }
 
-    /**
-     * Creates a BusinessService with a single attribute.
-     *
-     * The name of the service, and its key-value attributes are all prefixed
-     * with the given value.
-     */
-    private static void createServiceWithPrefix(String prefix) throws ClientProtocolException, IOException {
-        String businessServiceApiUrl = BASE_URL + "opennms/api/v2/business-services";
+    @Test
+    public void testDeleteBusinessServices() {
+        m_driver.get(BSM_LIST_URL);
+        findElementById("delete-" + BASIC_SERVICE_NAME).click();
+        findElementByXpath("//*[contains(text(), 'There are no business services defined.')]");
+    }
 
-        try (HttpClientWrapper httpClient = HttpClientWrapper.create()) {
-            httpClient.addBasicCredentials(BASIC_AUTH_USERNAME, BASIC_AUTH_PASSWORD);
-            httpClient.usePreemptiveAuth();
-            HttpPost request = new HttpPost(businessServiceApiUrl);
-            request.setHeader(HttpHeaders.CONTENT_TYPE, MediaType.JSON_UTF_8.toString());
+    @Test
+    public void testEditBusinessServices() {
+        //open the page and check that there are no BusinessServices
+        m_driver.get(BSM_LIST_URL);
+        findElementByXpath("//*[contains(text(), 'There are no business services defined.')]");
 
-            StringEntity params = new StringEntity("{" +
-                    "\"name\":\"" + prefix + "-name\"," +
-                    "\"attributes\":{\"attribute\":[{\"key\":\"" + prefix + "-key\",\"value\":\"" + prefix + "-value\"}]}" +
-                    "}");
-            request.setEntity(params);
+        //create a new BusinessService
+        findElementById("createInput").sendKeys(BASIC_SERVICE_NAME_TO_CHANGE);
+        findElementById("createButton").click();
+        findElementByXpath("//*[contains(text(), '" + BASIC_SERVICE_NAME_TO_CHANGE + "')]");
 
-            try (CloseableHttpResponse response = httpClient.execute(request)) {
-                assertEquals(201, response.getStatusLine().getStatusCode());
-            }
-        }
+        //edit the new BusinessService
+        findElementById("edit-" + BASIC_SERVICE_NAME_TO_CHANGE).click();
+        findElementById("bsName").clear();
+        findElementById("bsName").sendKeys(RENAMED_SERVICE_NAME);
+        findElementById("update").click();
+
+        //verify that the changed BusinessService is displayed
+        findElementByXpath("//*[contains(text(), '" + RENAMED_SERVICE_NAME + "')]");
+
+        //delete the BusinessService to cleanup
+        findElementById("delete-" + RENAMED_SERVICE_NAME).click();
+        findElementByXpath("//*[contains(text(), 'There are no business services defined.')]");
+    }
+
+    @Test
+    public void testShowNoBusinessServicesPresentMessage() {
+        m_driver.get(BSM_LIST_URL);
+        findElementByXpath("//*[contains(text(), 'There are no business services defined.')]");
     }
 }

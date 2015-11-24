@@ -42,27 +42,14 @@ public class DefaultNameProvider implements NameProvider {
 
     private final SelectionManager selectionManager;
 
-    private Map<Object, String> objectToNameMap;
-
     public DefaultNameProvider(SelectionManager selectionManager) {
         Objects.requireNonNull(selectionManager);
         this.selectionManager = selectionManager;
     }
 
-    public void invalidateCache() {
-        objectToNameMap = null;
-    }
-
     @Override
     public Map<Object, String> getNamesMap() {
-        if (objectToNameMap == null) {
-            initNameMap();
-        }
-        return Collections.unmodifiableMap(objectToNameMap);
-    }
-
-    private void initNameMap() {
-        objectToNameMap = new HashMap<>();
+        Map<Object, String> objectToNameMap = new HashMap<>();
         for (Mbean bean : selectionManager.getSelectedMbeans()) {
             for (Attrib att : selectionManager.getSelectedAttributes(bean)) {
                 objectToNameMap.put(att, att.getAlias());
@@ -73,5 +60,6 @@ public class DefaultNameProvider implements NameProvider {
                 }
             }
         }
+        return Collections.unmodifiableMap(objectToNameMap);
     }
 }
