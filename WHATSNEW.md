@@ -4,7 +4,7 @@ About OpenNMS Meridian 2015.1.1
 OpenNMS Meridian is a custom build of OpenNMS Horizon designed for stability and long-term support.
 
 Since Meridian 2015.1.0, there have been tons of minor bug fixes.  For a complete list, see the
-release notes [here].
+release notes [here](http://meridian.opennms.com/releasenotes/2015/latest/).
 
 The most notable changes over 2015.1.0 are:
 
@@ -16,5 +16,5 @@ The most notable changes over 2015.1.0 are:
 * Linkd and Enlinkd have both received a number of fixes and enhancements.
 * The JMX configuration tool has been updated and fixed.
 * Multiple scanning or failure issues in Provisiond have been fixed.
-* Performance updates in the topology UI.
+* Performance has been improved in the topology UI.
 * A race condition that could cause dropped ICMP packets under high load was fixed.
