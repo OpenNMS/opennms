@@ -38,6 +38,8 @@ public interface JmxServerConnector {
 
     public static String DEFAULT_OPENNMS_JMX_PORT = "18980";
 
+    public static String JMX_PORT_SYSTEM_PROPERTY = "com.sun.management.jmxremote.port";
+
     /**
      * Establishes a jmx connection ({@link javax.management.MBeanServerConnection}) to the given <code>ipAddress</code>
      * using required properties from the given <code>propertiesMap</code>.

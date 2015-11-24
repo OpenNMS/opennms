@@ -49,6 +49,8 @@ import org.slf4j.LoggerFactory;
  * This class creates a connection to the remote server. There are many options to using this
  * class.  BUT THEY ARE NOT WORKING YET....
  * 
+ * TODO: Merge this code with {@link org.opennms.netmgt.jmx.impl.connection.connectors.DefaultJmxConnector}.
+ * 
  * @author <A HREF="mailto:mike@opennms.org">Mike Jamison </A>
  */
 public abstract class Jsr160ConnectionFactory {
@@ -62,7 +64,7 @@ public abstract class Jsr160ConnectionFactory {
      * @param address a {@link java.net.InetAddress} object.
      * @return a {@link org.opennms.netmgt.provision.support.jmx.connectors.Jsr160ConnectionWrapper} object.
      */
-    public static JmxServerConnectionWrapper getMBeanServerConnection(Map<String, Object> propertiesMap, InetAddress address) {
+    public static JmxServerConnectionWrapper getMBeanServerConnection(Map<String,?> propertiesMap, InetAddress address) {
         String factory  = ParameterMap.getKeyedString( propertiesMap, "factory", "STANDARD");
         int    port     = ParameterMap.getKeyedInteger(propertiesMap, "port",     1099);
         String protocol = ParameterMap.getKeyedString( propertiesMap, "protocol", "rmi");
