@@ -191,7 +191,6 @@ public class BusinessServiceRestServiceIT extends AbstractSpringJerseyRestTestCa
         assertEquals(bsDTO, businessServices.get(0));
     }
 
-
     @Test
     @JUnitTemporaryDatabase
     @Transactional
@@ -206,5 +205,21 @@ public class BusinessServiceRestServiceIT extends AbstractSpringJerseyRestTestCa
         sendData(POST, MediaType.APPLICATION_JSON, "/business-services", businessServiceJson, 201);
         sendData(POST, MediaType.APPLICATION_XML, "/business-services", businessServiceXml, 201);
         Assert.assertEquals(2, m_businessServiceDao.findAll().size());
+    }
+
+
+    @Test
+    @JUnitTemporaryDatabase
+    @Transactional
+    public void canUpdateBusinessService() throws Exception {
+        BusinessService service = new BusinessService();
+        service.setName("Dummy Service");
+        final Long serviceId = m_businessServiceDao.save(service);
+        m_businessServiceDao.flush();
+        final String businessServiceDtoXml = "<business-service>" +
+                "    <id>" + serviceId + "</id>" +
+                "    <name>Dummy Service Updated</name>" +
+                "</business-service>";
+        sendData(PUT, MediaType.APPLICATION_XML, "/business-services/" + serviceId, businessServiceDtoXml, 204);
     }
 }

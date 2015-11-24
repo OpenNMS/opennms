@@ -54,6 +54,7 @@ import org.opennms.web.rest.support.RedirectHelper;
 import org.opennms.web.rest.v2.bsm.model.BusinessServiceDTO;
 import org.opennms.web.rest.v2.bsm.model.BusinessServiceListDTO;
 import org.opennms.web.rest.v2.bsm.model.IpServiceDTO;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -115,7 +116,8 @@ public class BusinessServiceRestService {
         if (!businessService.getId().equals(dto.getId())) {
             return Response.status(Response.Status.BAD_REQUEST).build();
         }
-        getDao().saveOrUpdate(transform(dto));
+        BeanUtils.copyProperties(transform(dto), businessService);
+        getDao().update(businessService);
         return Response.noContent().build();
     }
 
