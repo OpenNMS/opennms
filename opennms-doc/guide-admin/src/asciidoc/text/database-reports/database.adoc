@@ -106,13 +106,13 @@ NOTE: Even if there is no `Read Fields` functionality available, the `Data previ
       The <<ga-database-reports-fields, Supported Fields>> section gives more details. In addition you have
 
 [[ga-database-reports-access-performance-data]]
-=== Accessing Performance Data (`Measurement Datasource`)
+=== Accessing Performance Data
 
 WARNING: Before _OpenNMS 17_ it was possible to access the performance data stored in `.rrd` or `.jrobin` files directly by using the `jrobin` language extension provided by the `RrdDataSource`.
          This is no longer possible and the _Measurements Datasource_ has to be used.
 
 To access performance data within reports we created a custom _Measurement Datasource_ which allows to query the _Measurements API_ and process the returned data in your reports.
-Please refer to the link:http://docs.opennms.org/opennms/releases/{opennms-version}/guide-development/guide-development.html#_measurements_api[official Measurements API documentation] on how to use the _Measurements API_.
+Please refer to the link:http://docs.opennms.org/opennms/releases/{opennms-version}/guide-development/guide-development.html#\_measurements_api[official Measurements API documentation] on how to use the _Measurements API_.
 
 NOTE:  When using the _Measurements Datasource_ within a report a `HTTP` connection to the _Measurements API_ is only established if the report is NOT running within OpenNMS, e.g. when used with _Jaspersoft Studio_.
 
@@ -145,7 +145,7 @@ The _Measurement Datasource_ supports the following fields:
 | `end`       | `java.lang.Long`   | The `End` timestamp in milliseconds of the `Response`. Returns the same value for all rows.
 |===
 
-For more details about the `Response`, please refer to the link:http://docs.opennms.org/opennms/releases/{opennms-version}/guide-development/guide-development.html#_measurements_api[official Measurement API documentation].
+For more details about the `Response`, please refer to the link:http://docs.opennms.org/opennms/releases/{opennms-version}/guide-development/guide-development.html#_measurements\_api[official Measurement API documentation].
 
 [[ga-database-reports-parameters]]
 ==== Parameters
@@ -193,7 +193,7 @@ These helpers come along with the _Measurement Datasource_.
 |===
 
 [[ga-database-reports-interface-descriptor]]
-==== Usage of the `interface descriptor`
+==== Usage of the interface descriptor
 
 An `interfaceSnmp` is addressed with the exact `interface descriptor`.
 To allow easy access to the `interface descriptor` a helper tool is provided.
@@ -214,7 +214,7 @@ The following example shows the usage of that helper.
 ------
 
 [[ga-database-reports-node-source-descriptor]]
-==== Usage of the `node source descriptor`
+==== Usage of the node source descriptor
 
 A node is addressed by a `node source descriptor`.
 The `node source descriptor` references the node either via the `foreign source` and `foreign id` or by the `node id`.
@@ -242,7 +242,7 @@ The following example shows the usage of that helper.
 Depending on the input parameters you either get a `node resource descriptor` or a `foreign source/foreign id resource descriptor`.
 
 [[ga-database-reports-interface-descriptor]]
-==== Usage of the `interface descriptor`
+==== Usage of the interface descriptor
 
 An `interfaceSnmp` is addressed with the exact `interface descriptor`.
 To allow easy access to the `interface descriptor` a helper tool is provided.

@@ -399,7 +399,6 @@
 
       <bundle dependency="true">wrap:mvn:com.googlecode.concurrent-locks/concurrent-locks/1.0.0</bundle>
       <bundle dependency="true">wrap:mvn:org.jasypt/jasypt/1.9.0</bundle>
-      <bundle dependency="true">wrap:mvn:mx4j/mx4j-tools/3.0.1</bundle>
 
       <bundle>mvn:org.opennms/opennms-config/${project.version}</bundle>
     </feature>
