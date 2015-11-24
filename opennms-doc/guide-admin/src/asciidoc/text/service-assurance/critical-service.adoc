@@ -1,0 +1,25 @@
+
+// Allow GitHub image rendering
+:imagesdir: ../../images
+
+[[ga-service-assurance-critical-service]]
+=== Critical Service
+
+The _Critical Service_ is used to correlate outages from _Services_ to a _nodeDown_ or _interfaceDown_ event.
+It is a global configuration of _Pollerd_ defined in `poller-configuration.xml`.
+The _OpenNMS_ default configuration enables this behavior.
+
+.Critical Service Configuration in Pollerd
+[source, xml]
+----
+<poller-configuration threads="30"
+                      pathOutageEnabled="false"
+                      serviceUnresponsiveEnabled="false"
+                      pollAllIfNoCriticalServiceDefined="true">
+
+  <node-outage status="on"> <1>
+    <critical-service name="ICMP" /> <2>
+  </node-outage>
+----
+<1> Enable _Node Outage_ correlation based on a _Critical Service_
+<2> Define _Critical Service_ for _Node Outage_ correlation

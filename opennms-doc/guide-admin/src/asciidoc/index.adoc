@@ -59,10 +59,17 @@ include::text/webui/heatmap/introduction.adoc[]
 
 [[ga-service-assurance]]
 == Service Assurance
+include::text/service-assurance/introduction.adoc[]
+include::text/service-assurance/configuration.adoc[]
+include::text/service-assurance/critical-service.adoc[]
+include::text/service-assurance/downtime-model.adoc[]
+include::text/service-assurance/path-outages.adoc[]
+include::text/service-assurance/polling-packages.adoc[]
 
 // Included in alphabetical order
 [[ga-service-monitors]]
 === Service monitors
+include::text/service-assurance/monitors/introduction.adoc[]
 include::text/service-assurance/monitors/AvailabilityMonitor.adoc[]
 include::text/service-assurance/monitors/BgpSessionMonitor.adoc[]
 include::text/service-assurance/monitors/BSFMonitor.adoc[]

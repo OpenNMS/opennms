@@ -16,8 +16,8 @@ The following image shows, how _Critical Services_ are used to generate these ev
 .Service assurance with _Pollerd_ in _OpenNMS_ platform
 image::service-assurance/03_node-outage-correlation.png[]
 
-* (1) Critical services are all _Up_ on the _Node_ and just a _nodeLostService_ is sent
-* (2) Critical of one of many _IP interface_ are _Down_ on this and a _interfaceDown_ is sent.
+* (1) Critical services are all _Up_ on the _Node_ and just a _nodeLostService_ is sent.
+* (2) Critical service of one of many _IP interface_ is _Down_ and _interfaceDown_ is sent.
       All other services are not tested and no events are sent, the services are assumed as unreachable.
-* (3) All Critical services on the _Node_ are _Down_ and just a _nodeDown_ is sent
+* (3) All Critical services on the _Node_ are _Down_ and just a _nodeDown_ is sent.
       All other services on the other _IP Interfaces_ are not tested and no events are sent, these services are assumed as unreachable.
