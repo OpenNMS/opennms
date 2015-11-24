@@ -1,6 +1,9 @@
 
+// Allow image rendering
+:imagesdir: ../../images
+
 [[doc-guidelines-cheat-sheets]]
-== Cheat Sheets and additional hints
+=== Cheat Sheets and additional hints
 
 For instructions on how to build your own version of the manual:
 
@@ -21,5 +24,3 @@ For other resources, to gain familiarity with AsciiDoc, you can visit:
  * http://code.google.com/p/asciidoc/issues/list[AsciiDoc issue tracker]
  * https://github.com/oreillymedia/docbook2asciidoc[Docbook to AsciiDoc]
  * http://blog.rainwebs.net/2010/02/25/how-to-create-handsome-pdf-documents-without-frustration/[How to create handsome PDF documents without frustration]
-
-We recommend you use the cheatsheets (they are super useful!).
