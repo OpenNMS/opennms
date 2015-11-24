@@ -1,5 +1,5 @@
 // Allow GitHub image rendering
-:imagesdir: ../../images
+:imagesdir: ../../../images
 
 ==== DhcpMonitor
 
@@ -83,10 +83,10 @@ CAUTION: Make sure no DHCP client is running on the {opennms-product-name} serve
 |===
 
 .Visualization of DHCP message flow in broadcast mode
-image::poller/02_01_dhcp-monitor-messages-broadcast.png[]
+image::service-assurance/monitors/02_01_dhcp-monitor-messages-broadcast.png[]
 
 .Visualization of DHCP message flow in relay mode
-image::poller/02_02_dhcp-monitor-messages-unicast.png[]
+image::service-assurance/monitors/02_02_dhcp-monitor-messages-unicast.png[]
 
 ===== Example testing DHCP server in the same subnet
 
