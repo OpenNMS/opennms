@@ -437,13 +437,14 @@ public abstract class AbstractRRD {
      * @return the all samples
      */
     public Collection<RrdSample> generateSamples() {
-        final SortedSet<RrdSample> samples = new TreeSet<>();
-        getRras().stream()
-                 .filter(r -> r.hasAverageAsCF())
-                 .sorted((r1, r2) -> r2.getPdpPerRow().compareTo(r1.getPdpPerRow()))
-                 .forEach(r -> generateSamples(r).stream()
-                                                 .filter(s -> !s.isNan())
-                                                 .forEach(s -> samples.add(s)));
+        List<RrdSample> samples = new ArrayList<RrdSample>();
+        getRras().stream().filter(r -> r.hasAverageAsCF()).sorted((r1,r2) -> r1.getPdpPerRow().compareTo(r2.getPdpPerRow())).forEach(r -> {
+            generateSamples(r).forEach(s -> {
+                if (!samples.contains(s))
+                    samples.add(s);
+            });
+        });
+        Collections.sort(samples);
 
         return samples;
     }
@@ -511,9 +512,9 @@ public abstract class AbstractRRD {
                     if (j > 0) {
                         Double last = lastValues.get(i);
                         Double current = counterSrc.getValue(i).isNaN() ? 0 : counterSrc.getValue(i);
-                        Double value = last - current * step;
+                        Double value = last - (current * step);
                         if (value < 0) { // Counter-Wrap emulation
-                            value += Long.MAX_VALUE;
+                            value += Math.pow(2, 32);
                         }
                         lastValues.set(i, value);
                         if (!counterSrc.getValue(i).isNaN()) {

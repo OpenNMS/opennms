@@ -30,6 +30,8 @@ package org.opennms.tools;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -51,6 +53,7 @@ import com.google.common.base.Throwables;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+import com.google.common.primitives.UnsignedLong;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.HelpFormatter;
@@ -71,6 +74,8 @@ import org.opennms.netmgt.rrd.model.AbstractDS;
 import org.opennms.netmgt.rrd.model.AbstractRRD;
 import org.opennms.netmgt.rrd.model.RrdConvertUtils;
 import org.opennms.netmgt.rrd.model.RrdSample;
+import org.opennms.newts.api.Counter;
+import org.opennms.newts.api.Gauge;
 import org.opennms.newts.api.MetricType;
 import org.opennms.newts.api.Resource;
 import org.opennms.newts.api.Sample;
@@ -496,7 +501,11 @@ public class NewtsConverter implements AutoCloseable {
                 final MetricType type = ds.isCounter()
                                         ? MetricType.COUNTER
                                         : MetricType.GAUGE;
-                final ValueType<?> valueType = ValueType.compose(value, type);
+                final ValueType<?> valueType = ds.isCounter()
+                                               ? new Counter(UnsignedLong.valueOf(BigDecimal.valueOf(value).toBigInteger()))
+                                               : new Gauge(value);
+
+                        ValueType.compose(value, type);
 
                 batch.add(new Sample(timestamp, resource, metric, type, valueType));
 
