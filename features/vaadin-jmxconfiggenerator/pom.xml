@@ -191,6 +191,12 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
+            <groupId>org.opennms.dependencies</groupId>
+            <artifactId>jmx-dependencies</artifactId>
+            <type>pom</type>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
             <groupId>org.opennms</groupId>
             <artifactId>opennms-web-api</artifactId>
             <scope>provided</scope>

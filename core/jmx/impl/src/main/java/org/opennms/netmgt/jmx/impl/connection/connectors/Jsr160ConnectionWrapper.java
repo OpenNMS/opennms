@@ -31,7 +31,13 @@ package org.opennms.netmgt.jmx.impl.connection.connectors;
 import javax.management.MBeanServerConnection;
 import javax.management.remote.JMXConnector;
 
-class Jsr160ConnectionWrapper extends DefaultConnectionWrapper {
+/**
+ * This class manages the connection to the remote JMX server.  The Jsr160ConnectionFactory
+ * class creates the connection and the close method closes it.
+ * 
+ * @author <A HREF="mailto:mike@opennms.org">Mike Jamison </A>
+ */
+public class Jsr160ConnectionWrapper extends DefaultConnectionWrapper {
     
     public Jsr160ConnectionWrapper(JMXConnector connector, MBeanServerConnection connection) {
         super(connector, connection);

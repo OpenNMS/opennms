@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.provision.support.jmx.connectors;
+package org.opennms.netmgt.jmx.impl.connection.connectors;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -224,7 +224,7 @@ public abstract class Jsr160ConnectionFactory {
         return connectionWrapper;
     }    
 
-    private static JMXServiceURL getUrl(InetAddress address, int port, String protocol, String urlPath) throws MalformedURLException {
+    public static JMXServiceURL getUrl(InetAddress address, int port, String protocol, String urlPath) throws MalformedURLException {
         if (protocol.equalsIgnoreCase("jmxmp") || protocol.equalsIgnoreCase("remoting-jmx")) {
 
             // Create an JMXMP connector client and

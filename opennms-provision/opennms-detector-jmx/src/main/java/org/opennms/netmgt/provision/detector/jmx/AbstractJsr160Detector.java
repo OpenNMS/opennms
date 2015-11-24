@@ -39,8 +39,8 @@ import org.opennms.netmgt.dao.jmx.JmxConfigDao;
 import org.opennms.netmgt.jmx.connection.JmxServerConnectionException;
 import org.opennms.netmgt.jmx.connection.JmxServerConnectionWrapper;
 import org.opennms.netmgt.jmx.connection.JmxServerConnector;
+import org.opennms.netmgt.jmx.impl.connection.connectors.Jsr160ConnectionFactory;
 import org.opennms.netmgt.jmx.impl.connection.connectors.PlatformMBeanServerConnector;
-import org.opennms.netmgt.provision.support.jmx.connectors.Jsr160ConnectionFactory;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
