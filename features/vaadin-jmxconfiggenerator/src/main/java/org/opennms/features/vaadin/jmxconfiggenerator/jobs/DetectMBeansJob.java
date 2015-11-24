@@ -94,10 +94,10 @@ public class DetectMBeansJob implements JobManager.Task<JmxDatacollectionConfig>
     @Override
 	public JmxDatacollectionConfig execute() throws JobManager.TaskRunException {
         try {
-            final JmxDatacollectionConfiggenerator jmxConfigGenerator = new JmxDatacollectionConfiggenerator(new Slf4jLogAdapter(JmxDatacollectionConfiggenerator.class));
             final JMXServiceURL jmxServiceURL = JmxHelper.createJmxServiceUrl(null, config.getHost(), config.getPort(), config.isJmxmp());
 
             try (JMXConnector connector = JmxHelper.createJmxConnector(config.getUser(), config.getPassword(), jmxServiceURL)) {
+                final JmxDatacollectionConfiggenerator jmxConfigGenerator = new JmxDatacollectionConfiggenerator(new Slf4jLogAdapter(JmxDatacollectionConfiggenerator.class));
                 final JmxDatacollectionConfig generatedJmxConfigModel = jmxConfigGenerator.generateJmxConfigModel(
                         connector.getMBeanServerConnection(),
                         "anyservice",
