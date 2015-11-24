@@ -1,0 +1,23 @@
+
+// REMOVE ME!! Please keep first line an empty line to make sure, the ToC can be build correctly
+==== File: {name-of-the-configuration-file}
+
+A short summary what is the configuration file is doing
+
+[options="autowidth"]
+|===
+| Type             | e.g. Java property file with key value pairs or XML file with XSD
+| Location         | `path where the configuration file is located`
+| Restart required | yes or no
+|===
+
+===== Section or Property description
+
+[options="header, autowidth"]
+|===
+| Property | `org.opennms.netmgt.icmp.requireV4` +
+             `org.opennms.netmgt.icmp.requireV6`
+2+|By default, OpenNMS will start up if either _ICMPv4_ *or* _ICMPv6_ are available and initialize properly.
+   If you wish to force _IPv4_ or _IPv6_ explicitly, set one or both of these properties to `detect`.
+| Default | Not set
+|===

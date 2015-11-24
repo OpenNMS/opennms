@@ -144,6 +144,10 @@ include::text/enlinkd/layer-3-discovery.adoc[]
 include::text/enlinkd/layer-3/ospf-discovery.adoc[]
 include::text/enlinkd/layer-3/is-is-discovery.adoc[]
 
+// Description for configuration files
+== Configuration files
+include::text/config-files/opennms.properties.adoc[]
+
 [[ga-opennms-operation]]
 == Operation
 include::text/operation/ssl/ssl.adoc[]
