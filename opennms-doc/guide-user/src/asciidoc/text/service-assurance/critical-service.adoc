@@ -1,0 +1,23 @@
+
+// Allow GitHub image rendering
+:imagesdir: ../../images
+
+[[gu-service-assurance-critical-service]]
+=== Critical service
+
+Monitoring services on an _IP network_ is resource expensive, especially if you have a lot of services to monitor which are not available.
+In case of an outage, the monitoring system uses most of its time waiting for retries and timeouts.
+To be more efficient, _OpenNMS_ uses by default _ICMP_ as a critical service.
+If the IP interface for example doesn't reply on layer 3 _ICMP_ echo requests, all other services will be not tested and are assumed as _Down_.
+This behavior is also used to correlate _nodeDown_ and _interfaceDown_ events.
+
+The following image shows, how _Critical Services_ are used to generate these events.
+
+.Service assurance with _Pollerd_ in _OpenNMS_ platform
+image::service-assurance/03_node-outage-correlation.png[]
+
+* (1) Critical services are all _Up_ on the _Node_ and just a _nodeLostService_ is sent
+* (2) Critical of one of many _IP interface_ are _Down_ on this and a _interfaceDown_ is sent.
+      All other services are not tested and no events are sent, the services are assumed as unreachable.
+* (3) All Critical services on the _Node_ are _Down_ and just a _nodeDown_ is sent
+      All other services on the other _IP Interfaces_ are not tested and no events are sent, these services are assumed as unreachable.
