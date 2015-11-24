@@ -11,8 +11,6 @@
   <packaging>pom</packaging>
   <name>OpenNMS :: Features :: BSM</name>
   <modules>
-    <module>api</module>
-    <module>model</module>
     <module>persistence</module>
     <module>rest</module>
   </modules>

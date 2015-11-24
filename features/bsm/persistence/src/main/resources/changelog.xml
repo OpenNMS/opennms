@@ -1,70 +1,48 @@
 <?xml version="1.0" encoding="UTF-8"?>
- 
 <databaseChangeLog
 	xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
 	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd
 		http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
-
 	<changeSet author="jwhite" id="18.0.0-bsm-initialize">
-
 		<createTable tableName="bsm_service">
 			<column name="id" type="integer">
 				<constraints nullable="false" primaryKey="true" primaryKeyName="bsm_services_pkey" />
 			</column>
-			
 			<column name="name" type="text" />
 		</createTable>
-
 		<createTable tableName="bsm_service_attributes" >
-
 			<column name="bsm_service_id" type="integer">
 			  <constraints nullable="false"/>
 			</column>
-
 			<column name="key" type="varchar(255)">
 			  <constraints nullable="false"/>
 			</column>
-
 			<column name="value" type="text">
 			  <constraints nullable="false"/>
 			</column>
-			
 		</createTable>
-
 		<addPrimaryKey tableName="bsm_service_attributes" columnNames="bsm_service_id, key" constraintName="bsm_service_attributes_pkey" />
-
 		<addForeignKeyConstraint constraintName="fk_bsm_service_attributes_service_id"
 			baseTableName="bsm_service_attributes" baseColumnNames="bsm_service_id"
 			referencedTableName="bsm_service" referencedColumnNames="id" />
-
 	</changeSet>
-
 	<changeSet author="jwhite" id="18.0.0-bsm-ifservices">
-
 		<createTable tableName="bsm_service_ifservices" >
-
 			<column name="bsm_service_id" type="integer">
 			  <constraints nullable="false"/>
 			</column>
-
 			<column name="ifserviceid" type="integer">
 			  <constraints nullable="false"/>
 			</column>
-
 		</createTable>
-
 		<addPrimaryKey tableName="bsm_service_ifservices" columnNames="bsm_service_id, ifserviceid" constraintName="bsm_service_ifservices_pkey" />
-
 		<addForeignKeyConstraint constraintName="fk_bsm_service_ifservices_service_id"
 			baseTableName="bsm_service_ifservices" baseColumnNames="bsm_service_id"
 			referencedTableName="bsm_service" referencedColumnNames="id" />
-
 		<addForeignKeyConstraint constraintName="fk_bsm_service_ifservices_ifserviceid"
 			baseTableName="bsm_service_ifservices" baseColumnNames="ifserviceid"
 			referencedTableName="ifservices" referencedColumnNames="id" />
-
 	</changeSet>
-
 </databaseChangeLog>

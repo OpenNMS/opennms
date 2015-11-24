@@ -14,10 +14,10 @@
   <context:annotation-config />
   <tx:annotation-driven />
 
-  <bean id="businessServiceDao" class="org.opennms.netmgt.bsm.persistence.BusinessServiceDaoImpl">
+  <bean id="businessServiceDao" class="org.opennms.netmgt.bsm.persistence.impl.BusinessServiceDaoImpl">
   	<property name="sessionFactory" ref="sessionFactory" />
   </bean>
 
-  <onmsgi:service interface="org.opennms.netmgt.dao.bsm.BusinessServiceDao" ref="businessServiceDao" />
+  <onmsgi:service interface="org.opennms.netmgt.bsm.persistence.api.BusinessServiceDao" ref="businessServiceDao" />
 
 </beans>

@@ -59,6 +59,17 @@
       <version>${project.version}</version>
       <type>pom</type>
     </dependency>
+    <dependency>
+      <groupId>com.google.guava</groupId>
+      <artifactId>guava</artifactId>
+      <version>${guavaVersion}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.googlecode.concurrent-locks</groupId>
+      <artifactId>concurrent-locks</artifactId>
+      <version>1.0.0</version>
+    </dependency>
 
     <!-- Test Dependencies -->
     <dependency>
@@ -113,6 +124,11 @@
     <dependency>
       <groupId>org.opennms.features.collection</groupId>
       <artifactId>org.opennms.features.collection.persistence.rrd</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.core.test-api</groupId>
+      <artifactId>org.opennms.core.test-api.xml</artifactId>
       <scope>test</scope>
     </dependency>
   </dependencies>

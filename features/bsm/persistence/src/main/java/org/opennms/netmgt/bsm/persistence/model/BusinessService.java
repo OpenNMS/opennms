@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.model.bsm;
+package org.opennms.netmgt.bsm.persistence.model;
 
 import java.util.Map;
 import java.util.Set;
@@ -39,19 +39,12 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
-import javax.persistence.JoinTable;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
 import javax.persistence.MapKeyColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElementWrapper;
-import javax.xml.bind.annotation.XmlIDREF;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.opennms.netmgt.model.OnmsMonitoredService;
 
@@ -61,23 +54,14 @@ import com.google.common.collect.Sets;
 @Entity
 @Table(name = "bsm_service")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-@XmlRootElement(name = "business-service")
-@XmlAccessorType(XmlAccessType.NONE)
 public class BusinessService {
 
-    @XmlElement(name = "id")
     private Long m_id;
 
-    @XmlElement(name = "name")
     private String m_name;
 
-    @XmlElement(name = "attributes", required = false)
-    @XmlJavaTypeAdapter(JAXBMapAdapter.class)
     private Map<String, String> m_attributes = Maps.newLinkedHashMap();
 
-    @XmlIDREF
-    @XmlElement(name="ipServiceId")
-    @XmlElementWrapper(name="ipServices")
     private Set<OnmsMonitoredService> m_ipServices = Sets.newLinkedHashSet();
 
     @Id

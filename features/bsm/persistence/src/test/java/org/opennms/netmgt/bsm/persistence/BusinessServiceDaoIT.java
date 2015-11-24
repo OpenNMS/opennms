@@ -33,13 +33,14 @@ import static org.junit.Assert.assertEquals;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.MockDatabase;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
+import org.opennms.netmgt.bsm.persistence.api.BusinessServiceDao;
+import org.opennms.netmgt.bsm.persistence.model.BusinessService;
 import org.opennms.netmgt.dao.DatabasePopulator;
-import org.opennms.netmgt.dao.bsm.BusinessServiceDao;
 import org.opennms.netmgt.model.OnmsMonitoredService;
-import org.opennms.netmgt.model.bsm.BusinessService;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -50,7 +51,8 @@ import org.springframework.transaction.annotation.Transactional;
     "classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
     "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml",
     "classpath:/META-INF/opennms/applicationContext-soa.xml",
-    "classpath:/META-INF/opennms/applicationContext-dao.xml", "classpath*:/META-INF/opennms/component-dao.xml",
+    "classpath:/META-INF/opennms/applicationContext-dao.xml",
+    "classpath*:/META-INF/opennms/component-dao.xml",
     "classpath:/META-INF/opennms/mockEventIpcManager.xml",
     "classpath:/META-INF/opennms/applicationContext-setupIpLike-enabled.xml",
     "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml" })
@@ -67,6 +69,7 @@ public class BusinessServiceDaoIT {
 
     @Before
     public void setUp() {
+        BeanUtils.assertAutowiring(this);
         m_databasePopulator.populateDatabase();
     }
 
