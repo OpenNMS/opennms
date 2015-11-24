@@ -58,6 +58,12 @@
 
   <dependencies>
     <dependency>
+      <groupId>org.opennms.features.amqp</groupId>
+      <artifactId>org.opennms.features.amqp.common</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+
+    <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
       <scope>provided</scope>

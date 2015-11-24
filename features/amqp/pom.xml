@@ -21,6 +21,7 @@
   </properties>
 
   <modules>
+    <module>common</module>
     <module>event-forwarder</module>
     <module>event-receiver</module>
     <module>alarm-northbounder</module>

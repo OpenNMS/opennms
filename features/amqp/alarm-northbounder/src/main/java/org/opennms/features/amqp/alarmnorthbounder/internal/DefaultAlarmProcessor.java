@@ -26,21 +26,20 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.amqp.eventforwarder;
+package org.opennms.features.amqp.alarmnorthbounder.internal;
 
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
-import org.opennms.core.xml.JaxbUtils;
-import org.opennms.netmgt.xml.event.Event;
+import org.opennms.netmgt.alarmd.api.NorthboundAlarm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class JaxbUtilsMarshalProcessor implements Processor {
-	public static final Logger LOG = LoggerFactory.getLogger(JaxbUtilsMarshalProcessor.class);
+public class DefaultAlarmProcessor implements Processor {
+    public static final Logger LOG = LoggerFactory.getLogger(DefaultAlarmProcessor.class);
 
-	@Override
-	public void process(final Exchange exchange) throws Exception {
-		final Object object = exchange.getIn().getBody(Event.class);
-		exchange.getIn().setBody(JaxbUtils.marshal(object), String.class);
-	}
+    @Override
+    public void process(final Exchange exchange) throws Exception {
+        final NorthboundAlarm alarm = exchange.getIn().getBody(NorthboundAlarm.class);
+        exchange.getIn().setBody(alarm.toString(), String.class);
+    }
 }

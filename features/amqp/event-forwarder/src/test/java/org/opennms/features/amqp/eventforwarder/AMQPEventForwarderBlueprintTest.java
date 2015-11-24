@@ -46,6 +46,9 @@ import org.opennms.netmgt.xml.event.Event;
 /**
  * Simple test that verifies the Blueprint syntax.
  *
+ * NOTE: These tests do not run reliably and tend to fail fairly
+ * often so they are disabled by default.
+ *
  * @author jwhite
  */
 @Ignore

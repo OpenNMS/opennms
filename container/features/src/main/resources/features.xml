@@ -44,6 +44,7 @@
       <feature>camel-http</feature>
       <feature>camel-amqp</feature>
       <bundle dependency="true">mvn:org.opennms.core/org.opennms.core.camel/${project.version}</bundle>
+      <bundle>mvn:org.opennms.features.amqp/org.opennms.features.amqp.common/${project.version}</bundle>
       <bundle>mvn:org.opennms.features.amqp/org.opennms.features.amqp.event-forwarder/${project.version}</bundle>
     </feature>
 
@@ -53,6 +54,7 @@
       <feature>camel-http</feature>
       <feature>camel-amqp</feature>
       <bundle dependency="true">mvn:org.opennms.core/org.opennms.core.camel/${project.version}</bundle>
+      <bundle>mvn:org.opennms.features.amqp/org.opennms.features.amqp.common/${project.version}</bundle>
       <bundle>mvn:org.opennms.features.amqp/org.opennms.features.amqp.event-receiver/${project.version}</bundle>
     </feature>
 
@@ -62,6 +64,7 @@
       <feature>camel-http</feature>
       <feature>camel-amqp</feature>
       <bundle dependency="true">mvn:org.opennms.core/org.opennms.core.camel/${project.version}</bundle>
+      <bundle>mvn:org.opennms.features.amqp/org.opennms.features.amqp.common/${project.version}</bundle>
       <bundle>mvn:org.opennms.features.amqp/org.opennms.features.amqp.alarm-northbounder/${project.version}</bundle>
     </feature>
 

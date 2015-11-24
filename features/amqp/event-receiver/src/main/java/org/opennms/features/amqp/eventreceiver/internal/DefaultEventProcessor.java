@@ -26,38 +26,31 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.amqp.eventreceiver;
+package org.opennms.features.amqp.eventreceiver.internal;
 
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
+import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.xml.event.Event;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class UpdateNodeIdByForeignSourceForeignIdHeaderProcessor implements Processor {
-    public static final Logger LOG = LoggerFactory.getLogger(UpdateNodeIdByForeignSourceForeignIdHeaderProcessor.class);
+public class DefaultEventProcessor implements Processor {
+    public static final Logger LOG = LoggerFactory.getLogger(DefaultEventProcessor.class);
 
+    public static final String EVENT_HEADER_SYSTEMID = "systemId";
     public static final String EVENT_HEADER_FOREIGNSOURCE = "foreignSource";
     public static final String EVENT_HEADER_FOREIGNID = "foreignId";
-    public static final String EVENT_HEADER_SYSTEMID = "systemId";
 
     private NodeDao nodeDao;
 
-    public NodeDao getNodeDao() {
-        return nodeDao;
-    }
-
-    public void setNodeDao(NodeDao nodeDao) {
-        this.nodeDao = nodeDao;
-    }
-
     @Override
     public void process(final Exchange exchange) throws Exception {
-        final Event event = exchange.getIn().getBody(Event.class);
-        
-        String systemId = exchange.getIn().getHeader(EVENT_HEADER_SYSTEMID, String.class);
+        final String eventXml = exchange.getIn().getBody(String.class);
+        final Event event = JaxbUtils.unmarshal(Event.class, eventXml);
+        final String systemId = exchange.getIn().getHeader(EVENT_HEADER_SYSTEMID, String.class);
 
         if (event.getNodeid() > 0) {
             String foreignSource = exchange.getIn().getHeader(EVENT_HEADER_FOREIGNSOURCE, String.class);
@@ -75,5 +68,15 @@ public class UpdateNodeIdByForeignSourceForeignIdHeaderProcessor implements Proc
                 exchange.setProperty(Exchange.ROUTE_STOP, Boolean.TRUE);
             }
         }
+
+        exchange.getIn().setBody(event, Event.class);
+    }
+
+    public NodeDao getNodeDao() {
+        return nodeDao;
+    }
+
+    public void setNodeDao(NodeDao nodeDao) {
+        this.nodeDao = nodeDao;
     }
 }

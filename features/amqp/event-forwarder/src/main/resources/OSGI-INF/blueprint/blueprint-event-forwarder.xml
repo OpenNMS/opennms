@@ -25,6 +25,7 @@
       <cm:property name="connectionUrl" value="amqp://guest:guest@onms/test?brokerlist='tcp://127.0.0.1:5672?retries=9999&amp;connectdelay=30000'&amp;maxprefetch=10"/>
       <!-- amqp:exchange/routingkey?options -->
       <cm:property name="destination" value="amqp:OpenNMS-Exchange/opennms-routing-key"/>
+      <cm:property name="processorName" value="default-event-forwarder-processor"/>
     </cm:default-properties>
   </cm:property-placeholder>
 
@@ -35,45 +36,45 @@
     <property name="eventForwarder" ref="eventForwarder" />
   </bean>
 
-  <reference id="nodeDao" interface="org.opennms.netmgt.dao.api.NodeDao" availability="mandatory"/>
-
-  <bean id="foreignSourceForeignIdHeaderProcessor" class="org.opennms.features.amqp.eventforwarder.ForeignSourceForeignIdHeaderProcessor">
-    <property name="nodeDao" ref="nodeDao"/>
-  </bean>
-
-  <!-- Camel marshalling processor -->
-  <bean id="marshaller" class="org.opennms.features.amqp.eventforwarder.JaxbUtilsMarshalProcessor"/>
-
   <!-- Event listener that connects the EventIpcManager to this Camel context -->
   <bean id="eventForwarder" class="org.opennms.features.amqp.eventforwarder.internal.DefaultEventForwarder">
     <argument value="seda:forwardEvent"/>
+  </bean>
+
+  <reference id="nodeDao" interface="org.opennms.netmgt.dao.api.NodeDao" availability="mandatory"/>
+
+  <bean id="defaultEventProcessor" class="org.opennms.features.amqp.eventforwarder.internal.DefaultEventProcessor">
+    <property name="nodeDao" ref="nodeDao"/>
+  </bean>
+
+  <service id="defaultEventProcessorService" ref="defaultEventProcessor" interface="org.apache.camel.Processor">
+    <service-properties>
+      <entry key="name" value="default-event-forwarder-processor"/>
+    </service-properties>
+  </service>
+
+  <bean id="dynamicallyTrackedProcessor" class="org.opennms.features.amqp.common.DynamicallyTrackedProcessor" destroy-method="destroy">
+    <property name="context" ref="blueprintBundleContext"/>
+    <property name="processorName" value="${processorName}"/>
   </bean>
 
   <!--
         Reduces the graceful shutdown time from 300 to 15 seconds.
    -->
   <bean id="shutdownStrategy" class="org.apache.camel.impl.DefaultShutdownStrategy">
-        <property name="timeout" value="15"/>
+    <property name="timeout" value="15"/>
   </bean>
 
-  <camelContext autoStartup="true" id="amqpEventForwarderCamelContext" xmlns="http://camel.apache.org/schema/blueprint">
+  <camelContext autoStartup="true" id="amqpEventForwarderCamelContext" xmlns="http://camel.apache.org/schema/blueprint" allowUseOriginalMessage="false">
     <propertyPlaceholder id="properties" location="blueprint:eventForwarderProperties" />
-    <errorHandler id="noErrorHandler" type="NoErrorHandler"/>
-
-    <onException>
-      <exception>java.lang.Exception</exception>
-      <redeliveryPolicy maximumRedeliveries="10" delayPattern="2:30000;4:60000;6:120000"/>
-    </onException>
 
     <route id="forwardEvent">
       <from uri="seda:forwardEvent"/>
       <convertBodyTo type="org.opennms.netmgt.xml.event.Event"/>
-      <!-- Add headers for foreignsource/foreignid -->
-      <bean ref="foreignSourceForeignIdHeaderProcessor"/>
-      <!-- Marshal Event to XML -->
-      <bean ref="marshaller"/>
-      <log message="blueprint-event-forwarder.xml: Forwarding event: ${body.toString()}"/>
-      <!-- Send to AMQP -->
+      <log message="blueprint-event-forwarder.xml: Forwarding event: ${body.getUei()}"/>
+      <!-- Filter and/or transform the event -->
+      <bean ref="dynamicallyTrackedProcessor"/>
+      <!-- Send the event via AMQP -->
       <to uri="{{destination}}" pattern="InOnly" />
     </route>
   </camelContext>

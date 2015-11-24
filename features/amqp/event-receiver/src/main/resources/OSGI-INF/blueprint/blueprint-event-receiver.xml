@@ -25,6 +25,7 @@
       <cm:property name="connectionUrl" value="amqp://guest:guest@onms/test?brokerlist='tcp://127.0.0.1:5672?retries=9999&amp;connectdelay=30000'&amp;maxprefetch=10"/>
       <!-- amqp:exchange/routingkey?options -->
       <cm:property name="source" value="amqp:OpenNMS-Queue"/>
+      <cm:property name="processorName" value="default-event-receiver-processor"/>
     </cm:default-properties>
   </cm:property-placeholder>
 
@@ -32,37 +33,38 @@
 
   <reference id="nodeDao" interface="org.opennms.netmgt.dao.api.NodeDao" availability="mandatory"/>
 
-  <bean id="nodeIdHeaderProcessor" class="org.opennms.features.amqp.eventreceiver.UpdateNodeIdByForeignSourceForeignIdHeaderProcessor">
+  <bean id="defaultEventProcessor" class="org.opennms.features.amqp.eventreceiver.internal.DefaultEventProcessor">
     <property name="nodeDao" ref="nodeDao"/>
   </bean>
 
-  <!-- Camel unmarshalling processor -->
-  <bean id="unmarshaller" class="org.opennms.features.amqp.eventreceiver.JaxbUtilsUnmarshalProcessor"/>
+  <service id="defaultEventProcessorService" ref="defaultEventProcessor" interface="org.apache.camel.Processor">
+    <service-properties>
+      <entry key="name" value="default-event-receiver-processor"/>
+    </service-properties>
+  </service>
+
+  <bean id="dynamicallyTrackedProcessor" class="org.opennms.features.amqp.common.DynamicallyTrackedProcessor" destroy-method="destroy">
+    <property name="context" ref="blueprintBundleContext"/>
+    <property name="processorName" value="${processorName}"/>
+  </bean>
 
   <!--
         Reduces the graceful shutdown time from 300 to 15 seconds.
    -->
   <bean id="shutdownStrategy" class="org.apache.camel.impl.DefaultShutdownStrategy">
-        <property name="timeout" value="15"/>
+    <property name="timeout" value="15"/>
   </bean>
 
-  <camelContext autoStartup="true" id="amqpEventReceiverCamelContext" xmlns="http://camel.apache.org/schema/blueprint">
+  <camelContext autoStartup="true" id="amqpEventReceiverCamelContext" xmlns="http://camel.apache.org/schema/blueprint" allowUseOriginalMessage="false">
     <propertyPlaceholder id="properties" location="blueprint:eventReceiverProperties" />
-    <errorHandler id="noErrorHandler" type="NoErrorHandler"/>
-
-    <onException>
-      <exception>java.lang.Exception</exception>
-      <redeliveryPolicy maximumRedeliveries="10" delayPattern="2:30000;4:60000;6:120000"/>
-    </onException>
 
     <route id="receiveEvent">
       <!-- Receive from AMQP -->
       <from uri="{{source}}"/>
-      <log message="blueprint-event-receiver.xml: Received event: ${body.toString()}"/>
-      <!-- Unmarshal Event from XML -->
-      <bean ref="unmarshaller"/>
-      <!-- Update node ID to the value on the local OpenNMS instance -->
-      <bean ref="nodeIdHeaderProcessor"/>
+      <!-- Filter and/or transform the event -->
+      <bean ref="dynamicallyTrackedProcessor"/>
+      <convertBodyTo type="org.opennms.netmgt.xml.event.Event"/>
+      <log message="blueprint-event-receiver.xml: Received event: ${body.getUei()}"/>
       <!-- Send to the OpenNMS event IPC manager -->
       <bean ref="eventIpcManager" method="send"/>
     </route>

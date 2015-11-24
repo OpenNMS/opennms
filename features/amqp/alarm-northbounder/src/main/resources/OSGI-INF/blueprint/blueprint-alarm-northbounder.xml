@@ -25,6 +25,7 @@
         <cm:property name="connectionUrl" value="amqp://guest:guest@onms/test?brokerlist='tcp://127.0.0.1:5672?retries=9999&amp;connectdelay=30000'&amp;maxprefetch=10"/>
         <!-- amqp:exchange/routingkey?options -->
         <cm:property name="destination" value="amqp:OpenNMS-Exchange/opennms-routing-key"/>
+        <cm:property name="processorName" value="default-alarm-northbounder-processor"/>
     </cm:default-properties>
   </cm:property-placeholder>
 
@@ -33,41 +34,46 @@
   </bean>
 
   <service id="alarmNorthbounderService" ref="alarmNorthbounder" interface="org.opennms.netmgt.alarmd.api.Northbounder">
-      <service-properties>
-            <entry key="registration.export" value="true" />
-      </service-properties>
+    <service-properties>
+      <!-- This flag is set to expose the service via the OpenNMS Service Registry -->
+      <entry key="registration.export" value="true" />
+    </service-properties>
   </service>
 
   <bean id="alarmForwarder" class="org.opennms.features.amqp.alarmnorthbounder.internal.DefaultAlarmForwarder">
     <argument value="seda:forwardAlarm"/>
   </bean>
 
-  <!-- Camel processor -->
-  <bean id="marshaller" class="org.opennms.features.amqp.alarmnorthbounder.AlarmToStringProcessor"/>
+  <bean id="defaultAlarmProcessor" class="org.opennms.features.amqp.alarmnorthbounder.internal.DefaultAlarmProcessor" />
+
+  <service id="defaultAlarmProcessorService" ref="defaultAlarmProcessor" interface="org.apache.camel.Processor">
+    <service-properties>
+      <entry key="name" value="default-alarm-northbounder-processor"/>
+    </service-properties>
+  </service>
+
+  <bean id="dynamicallyTrackedProcessor" class="org.opennms.features.amqp.common.DynamicallyTrackedProcessor" destroy-method="destroy">
+    <property name="context" ref="blueprintBundleContext"/>
+    <property name="processorName" value="${processorName}"/>
+  </bean>
 
   <!--
         Reduces the graceful shutdown time from 300 to 15 seconds.
    -->
   <bean id="shutdownStrategy" class="org.apache.camel.impl.DefaultShutdownStrategy">
-        <property name="timeout" value="15"/>
+    <property name="timeout" value="15"/>
   </bean>
 
-  <camelContext autoStartup="true" id="amqpAlarmNorthbounderCamelContext" xmlns="http://camel.apache.org/schema/blueprint">
+  <camelContext autoStartup="true" id="amqpAlarmNorthbounderCamelContext" xmlns="http://camel.apache.org/schema/blueprint" allowUseOriginalMessage="false">
     <propertyPlaceholder id="properties" location="blueprint:alarmNorthbounderProperties" />
-    <errorHandler id="noErrorHandler" type="NoErrorHandler"/>
-
-    <onException>
-      <exception>java.lang.Exception</exception>
-      <redeliveryPolicy maximumRedeliveries="10" delayPattern="2:30000;4:60000;6:120000"/>
-    </onException>
 
     <route id="forwardAlarm">
       <from uri="seda:forwardAlarm"/>
       <convertBodyTo type="org.opennms.netmgt.alarmd.api.NorthboundAlarm"/>
-      <!-- Convert the NorthboundAlarm to a String -->
-      <bean ref="marshaller"/>
-      <log message="blueprint-alarm-northbounder.xml: Forwarding alarm: ${body.toString()}"/>
-      <!-- Send to AMQP -->
+      <log message="blueprint-alarm-northbounder.xml: Forwarding alarm: ${body.getUei()}"/>
+      <!-- Filter and/or transform the alarm -->
+      <bean ref="dynamicallyTrackedProcessor"/>
+      <!-- Send the alarm via AMQP -->
       <to uri="{{destination}}" pattern="InOnly" />
     </route>
   </camelContext>
