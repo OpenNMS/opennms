@@ -58,6 +58,8 @@ import org.slf4j.LoggerFactory;
  * the jboss-service.xml found in the 
  * <jboss-home>/server/default/deploy/http-invoker/META-INF directory
  * 
+ * TODO: Merge this code with {@link org.opennms.netmgt.jmx.impl.connection.connectors.JBossMBeanServerConnector}.
+ * 
  * @author <A HREF="mailto:mike@opennms.org">Mike Jamison </A>
  */
 public abstract class JBossConnectionFactory {

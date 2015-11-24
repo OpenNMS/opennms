@@ -64,11 +64,25 @@ class DefaultJmxConnector implements JmxServerConnector {
             final String protocol = ParameterMap.getKeyedString(propertiesMap, "protocol", "rmi");
             final String urlPath = ParameterMap.getKeyedString(propertiesMap, "urlPath",  "/jmxrmi");
 
-            // If we're trying to create a connection to a localhost address and we're using the
-            // default OpenNMS JMX port, then just use the {@link PlatformMBeanServerConnector}
-            // to connect to this JVM's MBeanServer directly.
-            //
-            if (ipAddress != null && ipAddress.isLoopbackAddress() && DEFAULT_OPENNMS_JMX_PORT.equals(port)) {
+            // If remote JMX access is enabled, this will return a non-null value
+            String jmxPort = System.getProperty(JMX_PORT_SYSTEM_PROPERTY);
+
+            if (
+                ipAddress != null && 
+                // If we're trying to create a connection to a localhost address...
+                ipAddress.isLoopbackAddress() &&
+                // port should never be null but let's check anyway 
+                port != null && 
+                (
+                    // If the port matches the port of the current JVM...
+                    port.equals(jmxPort) ||
+                    // Or if remote JMX RMI is disabled and we're attempting to connect
+                    // to the default OpenNMS JMX port...
+                    (jmxPort == null && DEFAULT_OPENNMS_JMX_PORT.equals(port))
+                )
+            ) {
+                // ...then use the {@link PlatformMBeanServerConnector} to connect to 
+                // this JVM's MBeanServer directly.
                 return new PlatformMBeanServerConnector().createConnection(ipAddress, propertiesMap);
             }
 
