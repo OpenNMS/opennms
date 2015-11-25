@@ -11,6 +11,8 @@ Important Upgrade Notes
 
 * **Clean Up Events and Alarms**: Please clean up your event and alarm lists as much as possible before performing an upgrade to OpenNMS 17. The upgrade process contains a large number of database schema migrations which will cause rewrites of all of the data in some tables. If you prune unused data from these tables beforehand, it will make the upgrade process much quicker.
 * **Remote Poller API Change**: Due to internal API changes, the Remote Poller API has changed in OpenNMS 17. If you upgrade to OpenNMS 17, you will also need to upgrade all Remote Pollers attached to the system to version 17 as well.
+* **RMI Security Updates**: Since OpenNMS 16.0.4, the RMI registry has been changed to only listen on localhost by default.  Starting in OpenNMS 17, it also now requires authentication using an OpenNMS administrator account.
+* **JMX Updates**: JMX is no longer enabled by default on port 18980.  If you have reason to access your OpenNMS instance remotely over JMX, you can reenable it by adding `-Dcom.sun.management.jmxremote.port=18980` and `-Dcom.sun.management.jmxremote.ssl=false` to `ADDITIONAL_MANAGER_OPTIONS` in `$OPENNMS_HOME/etc/opennms.conf`. Note that OpenNMS-JVM monitoring of the local instance (ie, localhost) will still work by using the JMX Access API, without needing to enable the TCP port.
 
 API Changes
 -----------
