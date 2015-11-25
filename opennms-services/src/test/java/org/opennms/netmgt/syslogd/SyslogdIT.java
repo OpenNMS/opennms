@@ -87,7 +87,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class SyslogdIT implements InitializingBean {
     
-    String m_localhost = "127.0.0.1";
+    final String m_localhost = "127.0.0.1";
 
     private Syslogd m_syslogd;
 
@@ -104,6 +104,7 @@ public class SyslogdIT implements InitializingBean {
     @Before
     public void setUp() throws Exception {
         MockLogAppender.setupLogging();
+        MockLogAppender.resetEvents();
 
         InputStream stream = null;
         try {
@@ -140,6 +141,11 @@ public class SyslogdIT implements InitializingBean {
         MockLogAppender.assertNoErrorOrGreater();
     }
 
+    @After
+    public void stopSyslogd() throws Exception {
+        m_syslogd.stop();
+    }
+
     /**
      * Send a raw syslog message and expect a given event as a result
      * 
@@ -164,7 +170,7 @@ public class SyslogdIT implements InitializingBean {
         m_eventIpcManager.addEventListener(ea);
         ea.anticipateEvent(expectedEventBldr.getEvent());
         
-        final SyslogClient sc = new SyslogClient(null, 10, SyslogClient.LOG_DAEMON);
+        final SyslogClient sc = new SyslogClient(null, 10, SyslogClient.LOG_DAEMON, addr(m_localhost));
         final DatagramPacket pkt = sc.getPacket(SyslogClient.LOG_DEBUG, testPDU);
         final SyslogdConfig config = SyslogdConfigFactory.getInstance();
         WaterfallExecutor.waterfall(m_executorService, new SyslogConnection(pkt, config.getForwardingRegexp(), config.getMatchingGroupHost(), config.getMatchingGroupMessage(), config.getUeiList(), config.getHideMessages(), config.getDiscardUei()));
@@ -193,33 +199,24 @@ public class SyslogdIT implements InitializingBean {
     }
 
     @Test
-    public void testMessaging() {
+    public void testMessaging() throws UnknownHostException {
         // More of an integrations test
         // relies on you reading some of the logging....
 
-        SyslogClient s = null;
-        try {
-            s = new SyslogClient(null, 0, SyslogClient.LOG_DAEMON);
-            s.syslog(SyslogClient.LOG_ERR, "Hello.");
-        } catch (UnknownHostException e) {
-            //Failures are for weenies
-        }
+        final SyslogClient s = new SyslogClient(null, 0, SyslogClient.LOG_DAEMON, addr(m_localhost));
+        s.syslog(SyslogClient.LOG_ERR, "Hello.");
     }
 
     @Test
-    public void testMyPatternsSyslogNG() {
-        SyslogClient s = null;
-        try {
-            s = new SyslogClient(null, 10, SyslogClient.LOG_DAEMON);
-            s.syslog(SyslogClient.LOG_DEBUG, "2007-01-01 host.domain.com A SyslogNG style message");
-        } catch (UnknownHostException e) {
-            //Failures are for weenies
-        }
+    public void testMyPatternsSyslogNG() throws UnknownHostException {
+        final SyslogClient s = new SyslogClient(null, 10, SyslogClient.LOG_DAEMON, addr(m_localhost));
+        s.syslog(SyslogClient.LOG_DEBUG, "2007-01-01 host.domain.com A SyslogNG style message");
     }
 
     @Test
     public void testRegexSeverityMatch() throws Exception {
         startSyslogdGracefully();
+
         MockLogAppender.setupLogging(true, "TRACE");
         String localhost = m_localhost;
         final String testPDU = "2007-01-01 127.0.0.1 beer - Not just for dinner anymore";
@@ -235,13 +232,8 @@ public class SyslogdIT implements InitializingBean {
         m_eventIpcManager.addEventListener(ea);
         ea.anticipateEvent(expectedEventBldr.getEvent());
         
-        SyslogClient s = null;
-        try {
-            s = new SyslogClient(null, 10, SyslogClient.LOG_DAEMON);
-            s.syslog(SyslogClient.LOG_CRIT, testPDU);
-        } catch (UnknownHostException uhe) {
-            //Failures are for weenies
-        }
+        final SyslogClient s = new SyslogClient(null, 10, SyslogClient.LOG_DAEMON, addr(m_localhost));
+        s.syslog(SyslogClient.LOG_CRIT, testPDU);
 
         ea.verifyAnticipated(10000, 0, 0, 0, 0);
     }
@@ -268,13 +260,8 @@ public class SyslogdIT implements InitializingBean {
         m_eventIpcManager.addEventListener(ea);
         ea.anticipateEvent(expectedEventBldr.getEvent());
         
-        SyslogClient s = null;
-        try {
-            s = new SyslogClient("maltd", 10, SyslogClient.LOG_LOCAL1);
-            s.syslog(SyslogClient.LOG_WARNING, testPDU);
-        } catch (UnknownHostException uhe) {
-            //Failures are for weenies
-        }
+        final SyslogClient s = new SyslogClient("maltd", 10, SyslogClient.LOG_LOCAL1, addr(m_localhost));
+        s.syslog(SyslogClient.LOG_WARNING, testPDU);
     
         ea.verifyAnticipated(5000, 0, 0, 0, 0);
     }
@@ -300,13 +287,8 @@ public class SyslogdIT implements InitializingBean {
         m_eventIpcManager.addEventListener(ea);
         ea.anticipateEvent(expectedEventBldr.getEvent());
         
-        SyslogClient s = null;
-        try {
-            s = new SyslogClient(null, 10, SyslogClient.LOG_LOCAL1);
-            s.syslog(SyslogClient.LOG_WARNING, testPDU);
-        } catch (UnknownHostException uhe) {
-            //Failures are for weenies
-        }
+        final SyslogClient s = new SyslogClient(null, 10, SyslogClient.LOG_LOCAL1, addr(m_localhost));
+        s.syslog(SyslogClient.LOG_WARNING, testPDU);
     
         ea.verifyAnticipated(5000, 0, 0, 0, 0);
     }
@@ -331,13 +313,8 @@ public class SyslogdIT implements InitializingBean {
         m_eventIpcManager.addEventListener(ea);
         ea.anticipateEvent(expectedEventBldr.getEvent());
         
-        SyslogClient s = null;
-        try {
-            s = new SyslogClient(null, 10, SyslogClient.LOG_LOCAL0);
-            s.syslog(SyslogClient.LOG_DEBUG, testPDU);
-        } catch (UnknownHostException uhe) {
-            //Failures are for weenies
-        }
+        final SyslogClient s = new SyslogClient(null, 10, SyslogClient.LOG_LOCAL0, addr(localhost));
+        s.syslog(SyslogClient.LOG_DEBUG, testPDU);
 
         ea.verifyAnticipated(5000, 0, 0, 0, 0);
     }
@@ -362,37 +339,22 @@ public class SyslogdIT implements InitializingBean {
         m_eventIpcManager.addEventListener(ea);
         ea.anticipateEvent(expectedEventBldr.getEvent());
         
-        SyslogClient s = null;
-        try {
-            s = new SyslogClient("beerd", 10, SyslogClient.LOG_DAEMON);
-            s.syslog(SyslogClient.LOG_DEBUG, testPDU);
-        } catch (UnknownHostException uhe) {
-            //Failures are for weenies
-        }
+        final SyslogClient s = new SyslogClient("beerd", 10, SyslogClient.LOG_DAEMON, addr(m_localhost));
+        s.syslog(SyslogClient.LOG_DEBUG, testPDU);
     
         ea.verifyAnticipated(5000, 0, 0, 0, 0);
     }
 
     @Test
-    public void testIPPatternsSyslogNG() {
-        SyslogClient s = null;
-        try {
-            s = new SyslogClient(null, 10, SyslogClient.LOG_DAEMON);
-            s.syslog(SyslogClient.LOG_DEBUG, "2007-01-01 127.0.0.1 A SyslogNG style message");
-        } catch (UnknownHostException e) {
-            //Failures are for weenies
-        }
+    public void testIPPatternsSyslogNG() throws UnknownHostException {
+        final SyslogClient s = new SyslogClient(null, 10, SyslogClient.LOG_DAEMON, addr(m_localhost));
+        s.syslog(SyslogClient.LOG_DEBUG, "2007-01-01 127.0.0.1 A SyslogNG style message");
     }
 
     @Test
-    public void testResolvePatternsSyslogNG() {
-        SyslogClient s = null;
-        try {
-            s = new SyslogClient(null, 10, SyslogClient.LOG_DAEMON);
-            s.syslog(SyslogClient.LOG_DEBUG, "2007-01-01 www.opennms.org A SyslogNG style message");
-        } catch (UnknownHostException e) {
-            //Failures are for weenies
-        }
+    public void testResolvePatternsSyslogNG() throws UnknownHostException {
+        final SyslogClient s = new SyslogClient(null, 10, SyslogClient.LOG_DAEMON, addr(m_localhost));
+        s.syslog(SyslogClient.LOG_DEBUG, "2007-01-01 www.opennms.org A SyslogNG style message");
     }
     
     private void startSyslogdGracefully() {
@@ -444,8 +406,7 @@ public class SyslogdIT implements InitializingBean {
         final EventAnticipator ea = new EventAnticipator();
         m_eventIpcManager.addEventListener(ea);
         
-        SyslogClient sc = null;
-        sc = new SyslogClient(null, 10, SyslogClient.LOG_DAEMON);
+        final SyslogClient sc = new SyslogClient(null, 10, SyslogClient.LOG_DAEMON, addr(m_localhost));
         sc.syslog(SyslogClient.LOG_DEBUG, testPDU);
 
         ea.verifyAnticipated(5000, 0, 0, 0, 0);
@@ -459,8 +420,7 @@ public class SyslogdIT implements InitializingBean {
         final EventAnticipator ea = new EventAnticipator();
         m_eventIpcManager.addEventListener(ea);
         
-        SyslogClient sc = null;
-        sc = new SyslogClient(null, 10, SyslogClient.LOG_DAEMON);
+        final SyslogClient sc = new SyslogClient(null, 10, SyslogClient.LOG_DAEMON, addr(m_localhost));
         sc.syslog(SyslogClient.LOG_DEBUG, testPDU);
 
         ea.verifyAnticipated(5000, 0, 0, 0, 0);
@@ -485,7 +445,7 @@ public class SyslogdIT implements InitializingBean {
     }
 
     @Test
-    public void testRegexUEIWithOnlyUserSpecifiedParameterAssignments() throws InterruptedException {
+    public void testRegexUEIWithOnlyUserSpecifiedParameterAssignments() throws InterruptedException, UnknownHostException {
         startSyslogdGracefully();
         
         final String localhost = m_localhost;
@@ -507,13 +467,8 @@ public class SyslogdIT implements InitializingBean {
         m_eventIpcManager.addEventListener(ea);
         ea.anticipateEvent(expectedEventBldr.getEvent());
         
-        SyslogClient s = null;
-        try {
-            s = new SyslogClient(null, 10, SyslogClient.LOG_DAEMON);
-            s.syslog(SyslogClient.LOG_DEBUG, testPDU);
-        } catch (UnknownHostException uhe) {
-            //Failures are for weenies
-        }
+        final SyslogClient s = new SyslogClient(null, 10, SyslogClient.LOG_DAEMON, addr(m_localhost));
+        s.syslog(SyslogClient.LOG_DEBUG, testPDU);
 
         ea.verifyAnticipated(5000, 0, 0, 0, 0);
     }
