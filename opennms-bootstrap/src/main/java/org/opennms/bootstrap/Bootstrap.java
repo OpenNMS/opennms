@@ -399,6 +399,13 @@ public abstract class Bootstrap {
             RMISocketFactory.setSocketFactory(m_rmiServerSocketFactory);
         }
 
+        /**
+          * This is necessary so the ProxyLoginModule can find the OpenNMSLoginModule because
+          * otherwise we're at the mercy of which thread/context is the first to make a JAAS
+          * request, since LoginModules are initialized statically.  In my testing, attempting
+          * to connect to JMX with jconsole would give a class not found while attempting to
+          * locate the OpenNMSLoginModule without using a classloader like this.
+          */
         OpenNMSProxyLoginModule.setClassloader(cl);
     }
 
