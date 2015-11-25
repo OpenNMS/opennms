@@ -13,5 +13,6 @@
   <modules>
     <module>persistence</module>
     <module>rest</module>
+    <module>vaadin-masterpage</module>
   </modules>
 </project>
