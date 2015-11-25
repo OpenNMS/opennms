@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2005-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2015 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2015 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,29 +26,27 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.provision.support.jmx.connectors;
+package org.opennms.web.springframework.security;
 
-import java.io.Closeable;
+import java.security.Principal;
+import java.util.Set;
 
-import javax.management.MBeanServerConnection;
+import javax.security.auth.callback.CallbackHandler;
 
-/**
- * This interface defines the ability to handle a live connection and the ability to
- * close it.
- * 
- * @author <A HREF="mailto:mike@opennms.org">Mike Jamison </A>
- */
-public interface ConnectionWrapper extends Closeable {
-    /**
-     * <p>getMBeanServer</p>
-     *
-     * @return a {@link javax.management.MBeanServerConnection} object.
-     */
-    public MBeanServerConnection getMBeanServer();
-    
-    /**
-     * <p>close</p>
-     */
-    public void close();
+import org.opennms.netmgt.config.api.UserConfig;
+import org.springframework.security.core.GrantedAuthority;
+
+public interface LoginHandler {
+
+    public CallbackHandler callbackHandler();
+    public UserConfig userConfig();
+    public SpringSecurityUserDao springSecurityUserDao();
+
+    public Set<Principal> createPrincipals(final GrantedAuthority authority);
+    public String user();
+    public void setUser(final String user);
+
+    public Set<Principal> principals();
+    public void setPrincipals(final Set<Principal> principals);
 
 }

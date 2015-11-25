@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.jmx.impl.connection.connectors;
 
+import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.security.KeyStore;
 import java.security.cert.CertificateException;
@@ -46,6 +47,7 @@ import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
 import javax.net.ssl.X509TrustManager;
 
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.netmgt.jmx.connection.JmxServerConnectionException;
 import org.opennms.netmgt.jmx.connection.JmxServerConnectionWrapper;
@@ -58,7 +60,7 @@ class JMXSecureMBeanServerConnector implements JmxServerConnector {
 	private static final Logger LOG = LoggerFactory.getLogger(JMXSecureMBeanServerConnector.class);
 
     @Override
-    public JmxServerConnectionWrapper createConnection(String ipAddress, Map<String, String> propertiesMap) throws JmxServerConnectionException {
+    public JmxServerConnectionWrapper createConnection(final InetAddress ipAddress, final Map<String, String> propertiesMap) throws JmxServerConnectionException {
         Jsr160ConnectionWrapper connectionWrapper = null;
 
         JMXServiceURL url = null;
@@ -75,10 +77,10 @@ class JMXSecureMBeanServerConnector implements JmxServerConnector {
 
                 // Create an JMXMP connector client and
                 // connect it to the JMXMP connector server
-                url = new JMXServiceURL(protocol, ipAddress, Integer.parseInt(port), urlPath);
+                url = new JMXServiceURL(protocol, InetAddressUtils.str(ipAddress), Integer.parseInt(port), urlPath);
             } else {
                 // Fallback, building a URL for RMI
-                url = new JMXServiceURL("service:jmx:" + protocol + ":///jndi/" + protocol + "://" + ipAddress + ":" + port + urlPath);
+                url = new JMXServiceURL("service:jmx:" + protocol + ":///jndi/" + protocol + "://" + InetAddressUtils.str(ipAddress) + ":" + port + urlPath);
             }
         } catch (MalformedURLException e) {
             LOG.error("JMXServiceURL exception: {}. Error message: {}", url, e.getMessage());

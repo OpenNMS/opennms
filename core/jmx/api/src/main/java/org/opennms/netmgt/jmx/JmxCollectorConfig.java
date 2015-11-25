@@ -29,12 +29,13 @@
 package org.opennms.netmgt.jmx;
 
 import org.opennms.netmgt.config.collectd.jmx.JmxCollection;
+import org.opennms.netmgt.jmx.connection.JmxConnectors;
 
 import java.util.Map;
 
 public class JmxCollectorConfig {
 
-    private String connectionName;
+    private JmxConnectors connectionName;
 
     private String agentAddress;
 
@@ -64,11 +65,11 @@ public class JmxCollectorConfig {
         this.retries = retries;
     }
 
-    public String getConnectionName() {
+    public JmxConnectors getConnectionName() {
         return connectionName;
     }
 
-    public void setConnectionName(String connectionName) {
+    public void setConnectionName(JmxConnectors connectionName) {
         this.connectionName = connectionName;
     }
 

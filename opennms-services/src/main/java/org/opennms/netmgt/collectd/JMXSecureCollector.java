@@ -55,7 +55,7 @@ public class JMXSecureCollector extends JMXCollector {
     }
 
     @Override
-    protected String getConnectionName() {
-        return JmxConnectors.JMX_SECURE;
+    protected JmxConnectors getConnectionName() {
+        return JmxConnectors.jmx_secure;
     }
 }

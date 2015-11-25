@@ -41,7 +41,7 @@ import org.opennms.netmgt.jmx.connection.JmxConnectors;
 public class JBossMonitor extends JMXMonitor {
 
     @Override
-    protected String getConnectionName() {
-        return JmxConnectors.JBOSS;
+    protected JmxConnectors getConnectionName() {
+        return JmxConnectors.jboss;
     }
 }
