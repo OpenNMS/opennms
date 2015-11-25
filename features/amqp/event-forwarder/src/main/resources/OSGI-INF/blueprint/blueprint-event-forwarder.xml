@@ -22,7 +22,7 @@
   <cm:property-placeholder id="eventForwarderProperties" persistent-id="org.opennms.features.amqp.eventforwarder" update-strategy="reload">
     <cm:default-properties>
       <!-- amqp://username:password@virtualhost?brokerlist='tcp://127.0.0.1:5672?options -->
-      <cm:property name="connectionUrl" value="amqp://guest:guest@onms/test?brokerlist='tcp://127.0.0.1:5672?retries=9999&amp;connectdelay=30000'&amp;maxprefetch=10"/>
+      <cm:property name="connectionUrl" value="amqp://guest:guest@onms/test?brokerlist='tcp://127.0.0.1:5672'"/>
       <!-- amqp:exchange/routingkey?options -->
       <cm:property name="destination" value="amqp:OpenNMS-Exchange/opennms-routing-key"/>
       <cm:property name="processorName" value="default-event-forwarder-processor"/>
