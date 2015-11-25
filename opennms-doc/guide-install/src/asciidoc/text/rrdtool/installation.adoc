@@ -59,7 +59,7 @@ To configure _OpenNMS_ to use _RRDtool_ instead of _JRobin_ configure the follow
 [source]
 ----
 org.opennms.rrd.strategyClass=org.opennms.netmgt.rrd.rrdtool.MultithreadedJniRrdStrategy
-org.opennms.rrd.interfaceJar=/usr/share/java/jrrd2-api-2.0.1.jar
+org.opennms.rrd.interfaceJar=/usr/share/java/jrrd2.jar
 opennms.library.jrrd2=/usr/lib64/libjrrd2.so
 ----
 
