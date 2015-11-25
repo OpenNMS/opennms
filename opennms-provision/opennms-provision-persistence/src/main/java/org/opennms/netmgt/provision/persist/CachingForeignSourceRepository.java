@@ -430,4 +430,15 @@ public class CachingForeignSourceRepository extends AbstractForeignSourceReposit
     public void flush() throws ForeignSourceRepositoryException {
         getRefreshRunnable().run();
     }
+
+    @Override
+    public void clear() throws ForeignSourceRepositoryException {
+        cleanCache();
+        writeLock();
+        try {
+            m_foreignSourceRepository.clear();
+        } finally {
+            writeUnlock();
+        }
+    }
 }

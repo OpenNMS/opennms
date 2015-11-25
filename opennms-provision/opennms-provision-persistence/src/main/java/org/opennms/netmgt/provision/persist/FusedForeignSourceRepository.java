@@ -272,6 +272,14 @@ public class FusedForeignSourceRepository extends AbstractForeignSourceRepositor
     @Override
     public void flush() throws ForeignSourceRepositoryException {
         // Unnecessary, there is no caching/delayed writes in FusedForeignSourceRepository
+        m_pendingForeignSourceRepository.flush();
+        m_deployedForeignSourceRepository.flush();
     }
 
+    @Override
+    public void clear() throws ForeignSourceRepositoryException {
+        m_pendingForeignSourceRepository.clear();
+        m_deployedForeignSourceRepository.clear();
+        super.clear();
+    }
 }
