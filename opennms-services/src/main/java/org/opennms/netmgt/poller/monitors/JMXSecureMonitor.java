@@ -41,7 +41,7 @@ import org.opennms.netmgt.poller.Distributable;
 public class JMXSecureMonitor extends JMXMonitor {
 
     @Override
-    protected String getConnectionName() {
-        return JmxConnectors.JMX_SECURE;
+    protected JmxConnectors getConnectionName() {
+        return JmxConnectors.jmx_secure;
     }
 }

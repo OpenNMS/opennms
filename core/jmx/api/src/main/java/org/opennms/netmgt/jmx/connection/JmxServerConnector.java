@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.jmx.connection;
 
+import java.net.InetAddress;
 import java.util.Map;
 
 /**
@@ -35,16 +36,31 @@ import java.util.Map;
  */
 public interface JmxServerConnector {
 
+    public static String DEFAULT_OPENNMS_JMX_PORT = "18980";
+
+    public static String JMX_PORT_SYSTEM_PROPERTY = "com.sun.management.jmxremote.port";
+
+    public static enum Parameters {
+        factory,
+        port,
+        protocol,
+        sunCacao,
+        timeout,
+        urlPath,
+        version
+    }
+
     /**
-     * Establishes a jmx connection ({@link javax.management.MBeanServerConnection}) to the given <code>ipAddress</code>
+     * <p>
+     * Establishes a JMX connection ({@link javax.management.MBeanServerConnection}) to the given <code>ipAddress</code>
      * using required properties from the given <code>propertiesMap</code>.
      * <p/>
      * The created {@link javax.management.MBeanServerConnection} is wrapped by the {@link org.opennms.netmgt.jmx.connection.JmxServerConnectionWrapper}.
      *
-     * @param ipAddress     The ip to connect to.
+     * @param ipAddress     The IP address to connect to.
      * @param propertiesMap Properties to use to establish the connection (e.g. timeout, user, password, etc.)
      * @return The wrapped {@link javax.management.MBeanServerConnection}. May return null, but should throw a {@link JmxServerConnectionException} instead.
-     * @throws JmxServerConnectionException If a jmx connection to the given <code>ipAddress</code> could not be established.
+     * @throws JmxServerConnectionException If a JMX connection to the given <code>ipAddress</code> could not be established.
      */
-    JmxServerConnectionWrapper createConnection(final String ipAddress, final Map<String, String> propertiesMap) throws JmxServerConnectionException;
+    JmxServerConnectionWrapper createConnection(final InetAddress ipAddress, final Map<String, String> propertiesMap) throws JmxServerConnectionException;
 }

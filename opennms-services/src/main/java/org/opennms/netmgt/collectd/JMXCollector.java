@@ -57,14 +57,15 @@ import org.opennms.netmgt.config.JMXDataCollectionConfigFactory;
 import org.opennms.netmgt.config.collectd.jmx.Attrib;
 import org.opennms.netmgt.config.collectd.jmx.Mbean;
 import org.opennms.netmgt.dao.jmx.JmxConfigDao;
+import org.opennms.netmgt.events.api.EventProxy;
 import org.opennms.netmgt.jmx.JmxCollector;
 import org.opennms.netmgt.jmx.JmxCollectorConfig;
 import org.opennms.netmgt.jmx.JmxSampleProcessor;
 import org.opennms.netmgt.jmx.JmxUtils;
+import org.opennms.netmgt.jmx.connection.JmxConnectors;
 import org.opennms.netmgt.jmx.impl.DefaultJmxCollector;
 import org.opennms.netmgt.jmx.samples.JmxAttributeSample;
 import org.opennms.netmgt.jmx.samples.JmxCompositeSample;
-import org.opennms.netmgt.events.api.EventProxy;
 import org.opennms.netmgt.rrd.RrdRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -265,7 +266,7 @@ public abstract class JMXCollector implements ServiceCollector {
     }
 
     // we need this to determine which connection type/manager should be used to connect to the jvm
-    protected abstract String getConnectionName();
+    protected abstract JmxConnectors getConnectionName();
 
     /**
      * {@inheritDoc}

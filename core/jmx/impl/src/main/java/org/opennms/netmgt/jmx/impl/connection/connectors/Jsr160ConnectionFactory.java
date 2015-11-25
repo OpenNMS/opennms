@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.provision.support.jmx.connectors;
+package org.opennms.netmgt.jmx.impl.connection.connectors;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -41,15 +41,15 @@ import javax.management.remote.JMXServiceURL;
 
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
+import org.opennms.netmgt.jmx.connection.JmxServerConnectionWrapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-//import mx4j.tools.remote.*;
-
 
 /**
  * This class creates a connection to the remote server. There are many options to using this
  * class.  BUT THEY ARE NOT WORKING YET....
+ * 
+ * TODO: Merge this code with {@link org.opennms.netmgt.jmx.impl.connection.connectors.DefaultJmxConnector}.
  * 
  * @author <A HREF="mailto:mike@opennms.org">Mike Jamison </A>
  */
@@ -64,7 +64,7 @@ public abstract class Jsr160ConnectionFactory {
      * @param address a {@link java.net.InetAddress} object.
      * @return a {@link org.opennms.netmgt.provision.support.jmx.connectors.Jsr160ConnectionWrapper} object.
      */
-    public static Jsr160ConnectionWrapper getMBeanServerConnection(Map<String, Object> propertiesMap, InetAddress address) {
+    public static JmxServerConnectionWrapper getMBeanServerConnection(Map<String,?> propertiesMap, InetAddress address) {
         String factory  = ParameterMap.getKeyedString( propertiesMap, "factory", "STANDARD");
         int    port     = ParameterMap.getKeyedInteger(propertiesMap, "port",     1099);
         String protocol = ParameterMap.getKeyedString( propertiesMap, "protocol", "rmi");
@@ -75,7 +75,7 @@ public abstract class Jsr160ConnectionFactory {
         return getWrapper(address, factory, port, protocol, urlPath, username, password);
     }
 
-    private static Jsr160ConnectionWrapper getWrapper(InetAddress address, String factory, int port,
+    private static JmxServerConnectionWrapper getWrapper(InetAddress address, String factory, int port,
             String protocol, String urlPath, String username, String password) {
         Jsr160ConnectionWrapper connectionWrapper = null;
         JMXServiceURL url = null;
@@ -224,19 +224,17 @@ public abstract class Jsr160ConnectionFactory {
         return connectionWrapper;
     }    
 
-    private static JMXServiceURL getUrl(InetAddress address, int port, String protocol, String urlPath) throws MalformedURLException {
-        JMXServiceURL url;
+    public static JMXServiceURL getUrl(InetAddress address, int port, String protocol, String urlPath) throws MalformedURLException {
         if (protocol.equalsIgnoreCase("jmxmp") || protocol.equalsIgnoreCase("remoting-jmx")) {
 
             // Create an JMXMP connector client and
             // connect it to the JMXMP connector server
             //
-            url = new JMXServiceURL(protocol, InetAddressUtils.str(address), port, urlPath);
+            return new JMXServiceURL(protocol, InetAddressUtils.str(address), port, urlPath);
         } else {
             // Fallback, building a URL for RMI
-            url = new JMXServiceURL("service:jmx:" + protocol + ":///jndi/" + protocol + "://" + InetAddressUtils.str(address) + ":" + port + urlPath);
+            return new JMXServiceURL("service:jmx:" + protocol + ":///jndi/" + protocol + "://" + InetAddressUtils.str(address) + ":" + port + urlPath);
         }
-        return url;
-    }    
+    }
 
 }
