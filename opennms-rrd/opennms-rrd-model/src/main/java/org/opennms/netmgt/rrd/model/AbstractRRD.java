@@ -29,17 +29,17 @@
 package org.opennms.netmgt.rrd.model;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.NavigableMap;
+import java.util.NavigableSet;
+import java.util.SortedMap;
 import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
@@ -432,30 +432,12 @@ public abstract class AbstractRRD {
     }
 
     /**
-     * Generate raw samples.
-     *
-     * @return the all samples
-     */
-    public Collection<RrdSample> generateSamples() {
-        List<RrdSample> samples = new ArrayList<RrdSample>();
-        getRras().stream().filter(r -> r.hasAverageAsCF()).sorted((r1,r2) -> r1.getPdpPerRow().compareTo(r2.getPdpPerRow())).forEach(r -> {
-            generateSamples(r).forEach(s -> {
-                if (!samples.contains(s))
-                    samples.add(s);
-            });
-        });
-        Collections.sort(samples);
-
-        return samples;
-    }
-
-    /**
      * Resets the row values for all the RRAs.
      * <p>Double.NaN will be stored on each slot</p>
      */
     public void reset() {
         getRras().stream().flatMap(rra -> rra.getRows().stream()).forEach(row -> {
-            List<Double> values = new ArrayList<Double>();
+            List<Double> values = new ArrayList<>();
             row.getValues().forEach(d -> values.add(Double.NaN));
             row.setValues(values);
         });
@@ -464,23 +446,52 @@ public abstract class AbstractRRD {
     /**
      * Generate raw samples.
      *
+     * @return the all samples
+     */
+    public SortedMap<Long, List<Double>> generateSamples() {
+        final NavigableSet<AbstractRRA> rras = this.getRras()
+                                                   .stream()
+                                                   .filter(AbstractRRA::hasAverageAsCF)
+                                                   .collect(Collectors.toCollection(() -> new TreeSet<>((rra1, rra2) -> rra1.getPdpPerRow().compareTo(rra2.getPdpPerRow()))));
+        final SortedMap<Long, List<Double>> collected = new TreeMap<>();
+
+        for (final AbstractRRA rra : rras) {
+            NavigableMap<Long, List<Double>> samples = this.generateSamples(rra);
+
+            final AbstractRRA lowerRra = rras.lower(rra);
+            if (lowerRra != null) {
+                final long lowerRraStart = this.getLastUpdate() - lowerRra.getPdpPerRow() * this.getStep() * lowerRra.getRows().size();
+                final long rraStep = rra.getPdpPerRow() * this.getStep();
+                samples = samples.headMap((int) Math.ceil(((double) lowerRraStart) / ((double) rraStep)) * rraStep, false);
+            }
+
+            final AbstractRRA higherRra = rras.higher(rra);
+            if (higherRra != null) {
+                final long higherRraStep = higherRra.getPdpPerRow() * this.getStep();
+                samples = samples.tailMap((int) Math.ceil(((double) samples.firstKey()) / ((double) higherRraStep)) * higherRraStep, true);
+            }
+
+            collected.putAll(samples);
+        }
+
+        return collected;
+    }
+
+    /**
+     * Generate raw samples.
+     *
      * @param rra the source RRA to be used (it must have AVERAGE for its consolidation function)
      * @return the samples for the given RRA
      */
-    public List<RrdSample> generateSamples(AbstractRRA rra) {
-        final List<RrdSample> samples = new ArrayList<>();
-        if (!rra.hasAverageAsCF()) {
-            return samples;
-        }
-
+    public NavigableMap<Long, List<Double>> generateSamples(AbstractRRA rra) {
         long step = rra.getPdpPerRow() * getStep();
         long start = getStartTimestamp(rra);
         long end = getEndTimestamp(rra);
 
         // Initialize Values Map
-        Map<Long,List<Double>> valuesMap = new TreeMap<Long,List<Double>>();
+        NavigableMap<Long, List<Double>> valuesMap = new TreeMap<>();
         for (long ts = start; ts <= end; ts+= step) {
-            List<Double> values = new ArrayList<Double>();
+            List<Double> values = new ArrayList<>();
             for (int i=0; i<getDataSources().size(); i++) {
                 values.add(Double.NaN);
             }
@@ -488,7 +499,7 @@ public abstract class AbstractRRD {
         }
 
         // Initialize Last Values
-        List<Double> lastValues = new ArrayList<Double>();
+        List<Double> lastValues = new ArrayList<>();
         for (AbstractDS ds : getDataSources()) {
             Double v = ds.getLastDs() == null ? 0.0 : ds.getLastDs();
             lastValues.add(v - v % step);
@@ -506,33 +517,33 @@ public abstract class AbstractRRD {
         // The first sample is processed separated because the lastValues must be updated after adding each sample.
         long ts = end - step;
         for (int j = rra.getRows().size() - 1; j >= 0; j--) {
-            Row counterSrc = rra.getRows().get(j);
+            final Row row = rra.getRows().get(j);
+
             for (int i = 0; i < getDataSources().size(); i++) {
                 if (getDataSource(i).isCounter()) {
                     if (j > 0) {
                         Double last = lastValues.get(i);
-                        Double current = counterSrc.getValue(i).isNaN() ? 0 : counterSrc.getValue(i);
+                        Double current = row.getValue(i).isNaN() ? 0 : row.getValue(i);
                         Double value = last - (current * step);
                         if (value < 0) { // Counter-Wrap emulation
                             value += Math.pow(2, 32);
                         }
                         lastValues.set(i, value);
-                        if (!counterSrc.getValue(i).isNaN()) {
+                        if (!row.getValue(i).isNaN()) {
                             valuesMap.get(ts).set(i, value);
                         }
                     }
                 } else {
-                    if (!counterSrc.getValue(i).isNaN()) {
-                        valuesMap.get(ts + step).set(i, counterSrc.getValue(i));
+                    if (!row.getValue(i).isNaN()) {
+                        valuesMap.get(ts + step).set(i, row.getValue(i));
                     }
                 }
             }
+
             ts -= step;
         }
 
-        // Update Samples
-        valuesMap.forEach((timestamp, data) -> samples.add(new RrdSample(timestamp,data)));
-        return samples;
+        return valuesMap;
     }
 
     /**

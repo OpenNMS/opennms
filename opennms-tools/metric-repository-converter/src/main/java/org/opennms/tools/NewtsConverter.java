@@ -43,6 +43,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.SortedMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.TimeUnit;
@@ -469,7 +470,7 @@ public class NewtsConverter implements AutoCloseable {
     private void injectSamplesToNewts(final ResourcePath resourcePath,
                                       final String group,
                                       final List<? extends AbstractDS> dataSources,
-                                      final Collection<RrdSample> samples) {
+                                      final SortedMap<Long, List<Double>> samples) {
         final ResourcePath groupPath = ResourcePath.get(resourcePath, group);
 
         // Create a resource ID from the resource path
@@ -485,16 +486,16 @@ public class NewtsConverter implements AutoCloseable {
 
         // Transform the RRD samples into NewTS samples
         List<Sample> batch = new ArrayList<>(this.batchSize);
-        for (final RrdSample s : samples) {
+        for (final Map.Entry<Long, List<Double>> s : samples.entrySet()) {
             for (int i = 0; i < dataSources.size(); i++) {
-                final double value = s.getValue(i);
+                final double value = s.getValue().get(i);
                 if (Double.isNaN(value)) {
                     continue;
                 }
 
                 final AbstractDS ds = dataSources.get(i);
 
-                final Timestamp timestamp = Timestamp.fromEpochMillis(s.getTimestamp());
+                final Timestamp timestamp = Timestamp.fromEpochSeconds(s.getKey());
 
                 final String metric = ds.getName();
 
@@ -504,8 +505,6 @@ public class NewtsConverter implements AutoCloseable {
                 final ValueType<?> valueType = ds.isCounter()
                                                ? new Counter(UnsignedLong.valueOf(BigDecimal.valueOf(value).toBigInteger()))
                                                : new Gauge(value);
-
-                        ValueType.compose(value, type);
 
                 batch.add(new Sample(timestamp, resource, metric, type, valueType));
 
