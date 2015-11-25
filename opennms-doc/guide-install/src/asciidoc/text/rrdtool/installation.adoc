@@ -1,0 +1,87 @@
+
+// Allow GitHub image rendering
+:imagesdir: ../../images
+
+[[gi-rrdtool-time-series-database]]
+== RRDtool as Time Series Database
+
+In most _Open Source_ application link:http://oss.oetiker.ch/rrdtool[RRDtool] is often used and is the de-facto open standard for _Time Series Data_.
+The basic installation of _OpenNMS_ comes with _JRobin_ enabled and it is possible to persist _Time Series Data_ in _RRDtool_.
+This section describes how to install _RRDtool_, the _jrrd2_ _OpenNMS Java Interface_ and how to configure _OpenNMS_ to use it.
+
+[[gi-rrdtool-install]]
+=== RRDtool Installation
+
+_RRDtool_ can be installed from the official package repositories provided by _RHEL_ and _Debian_ based _Linux_ distributions.
+
+.Installation on RHEL/CentOS
+[source, shell]
+----
+yum install rrdtool
+----
+
+.Installation of RRDtool on Debian/Ubuntu
+[source, shell]
+----
+apt-get install rrdtool
+----
+
+NOTE: If you want to install the latest _RRDtool_ from source, make sure the `rrdtool` binary is in search path.
+      To make the setup easier, you can link the binary to `/usr/bin/rrdtool` which is the location _OpenNMS_ will expect the executable binary.
+
+[[gi-jrrd2-install]]
+=== Install jrrd2 Interface
+
+To get access from the _OpenNMS Java Virtual Machine_ you have to install _jrrd2_ as an interface.
+You can install it from the _OpenNMS_ package repository with:
+
+.Installation of _jrrd2_ on RHEL/CentOS
+[source, shell]
+----
+yum install jrrd2
+----
+
+.Installation of _jrrd2_ on Debian/Ubuntu
+[source, shell]
+----
+apt-get install jrrd2
+----
+
+NOTE: With OpenNMS 17.0.0 it is preferred to use _jrrd2_ instead of _jrrd_.
+      The _jrrd2_ module is improved for performance by adding multithreading capabilities.
+
+[[gi-rrdtool-configure-opennms]]
+=== Configuration of OpenNMS
+
+To configure _OpenNMS_ to use _RRDtool_ instead of _JRobin_ configure the following properties in `rrd-configuration.properties`.
+
+.Configuration of RRDtool in OpenNMS on RHEL/CentOS
+[source]
+----
+org.opennms.rrd.strategyClass=org.opennms.netmgt.rrd.rrdtool.MultithreadedJniRrdStrategy
+org.opennms.rrd.interfaceJar=/usr/share/java/jrrd2.jar
+opennms.library.jrrd2=/usr/lib64/libjrrd2.so
+----
+
+.Configuration of RRDtool in OpenNMS on Debian/Ubuntu
+[source]
+----
+org.opennms.rrd.strategyClass=org.opennms.netmgt.rrd.rrdtool.MultithreadedJniRrdStrategy
+org.opennms.rrd.interfaceJar=/usr/share/java/jrrd2.jar
+opennms.library.jrrd2=/usr/lib/jni/libjrrd2.so
+----
+
+TIP: _OpenNMS_ expects the _RRDtool_ binary in `/usr/bin/rrdtool`.
+
+.References to the RRDtool binary
+[options="header, autowidth"]
+|===
+| Configuration file                | Property
+| `opennms.properties`              | `rrd.binary=/usr/bin/rrdtool`
+| `response-adhoc-graph.properties` | `command.prefix=/usr/bin/rrdtool`
+| `response-graph.properties`       | `command.prefix=/usr/bin/rrdtool` +
+                                      `info.command=/usr/bin/rrdtool`
+| `snmp-adhoc-graph.properties`     | `command.prefix=/usr/bin/rrdtool`
+| `snmp-graph.properties`           | `command.prefix=/usr/bin/rrdtool` +
+                                      `command=/usr/bin/rrdtool info`
+|===
