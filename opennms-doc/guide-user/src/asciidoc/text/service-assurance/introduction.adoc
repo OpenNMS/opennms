@@ -4,7 +4,7 @@
 
 This section will cover the basic functionalities how _OpenNMS_ monitors availability and latency from applications or management agents.
 To change the behavior of how _OpenNMS_ monitors applications or status information from management agents please see _Administration Guide_.
-Extending the _Service Monitor_ framework please see _Development Guide_ of the _OpenNMS_ documentation.
+To extend the _Service Monitor_ framework please see _Development Guide_ of the _OpenNMS_ documentation.
 
 Measuring availability and latency of network services or applications is an important part in fault- and performance management.
 In _OpenNMS_ this task is provided by a _Service Monitor_ framework.
