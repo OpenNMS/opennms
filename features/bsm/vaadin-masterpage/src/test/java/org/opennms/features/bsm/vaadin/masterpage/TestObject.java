@@ -33,8 +33,8 @@ import org.springframework.transaction.support.TransactionSynchronizationManager
 import com.google.common.base.Preconditions;
 
 /**
- * TestObject to verify that the {@link TransactionAwareBeanProxy} works as expected.
- * Please do not change the behaviour here, as it is required to pass the tests in {@link TransactionAwareBeanProxyTest}.
+ * TestObject to verify that the {@link TransactionAwareBeanProxyFactory} works as expected.
+ * Please do not change the behaviour here, as it is required to pass the tests in {@link TransactionAwareBeanProxyFactoryTest}.
  */
 public class TestObject {
 

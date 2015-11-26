@@ -68,6 +68,6 @@ public class BusinessServiceMasterPageUI extends UI {
 
 	public void setBusinessServiceManager(BusinessServiceManager businessServiceManager) {
 		Objects.requireNonNull(businessServiceManager);
-		this.businessServiceManager = new TransactionAwareBeanProxy(transactionOperations).getProxy(businessServiceManager);
+		this.businessServiceManager = new TransactionAwareBeanProxyFactory(transactionOperations).createProxy(businessServiceManager);
 	}
 }
