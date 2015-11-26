@@ -26,7 +26,7 @@
  * http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.web.rest.v2.bsm;
+package org.opennms.web.rest.support;
 
 import java.util.NoSuchElementException;
 
@@ -34,10 +34,14 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
 
+/**
+ * Maps an Exception of type {@link NoSuchElementException} to a Response HTTP Status of 404 (not found).
+ */
 @Provider
 public class NoSuchElementProvider implements ExceptionMapper<NoSuchElementException> {
     @Override
     public Response toResponse(NoSuchElementException exception) {
+        // if there is an optional exception message, we add it to the response
         if (exception.getMessage() != null) {
             return Response.status(Response.Status.NOT_FOUND).entity(exception.getMessage()).build();
         }
