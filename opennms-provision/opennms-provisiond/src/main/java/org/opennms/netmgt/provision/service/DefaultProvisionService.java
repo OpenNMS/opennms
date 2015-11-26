@@ -708,21 +708,18 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
 
     @Override
     public LocationDef createLocationIfNecessary(final String locationName) {
-        LocationDef location = new LocationDef();
-        location.setLocationName(locationName);
-        return createLocationIfNecessary(location);
+        if (locationName == null) {
+            return createLocationIfNecessary("localhost");
+        } else {
+            LocationDef location = new LocationDef();
+            location.setLocationName(locationName);
+            // NMS-7968: Set monitoring area too because it is a non-null field
+            location.setMonitoringArea(locationName);
+            return createLocationDefIfNecessary(location);
+        }
     }
 
-    public LocationDef createLocationIfNecessary(LocationDef scannedLocation) {
-
-        final LocationDef location;
-        if (scannedLocation == null) {
-            location = new LocationDef();
-            location.setLocationName("localhost");
-        } else {
-            location = scannedLocation;
-        }
-
+    public LocationDef createLocationDefIfNecessary(final LocationDef location) {
         return new CreateIfNecessaryTemplate<LocationDef, MonitoringLocationDao>(m_transactionManager, m_monitoringLocationDao) {
 
             @Override

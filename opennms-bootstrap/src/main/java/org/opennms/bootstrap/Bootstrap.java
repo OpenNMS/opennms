@@ -338,6 +338,9 @@ public abstract class Bootstrap {
                     + File.separator + "etc";
         }
 
+        // Add the JDK tools.jar to the classpath so that we can use the Attach API
+        dir += File.pathSeparator + System.getProperty("java.home") + File.separator + ".." + File.separator + "lib" + File.separator + "tools.jar";
+
         if (System.getProperty("org.opennms.protocols.icmp.interfaceJar") != null) {
         	dir += File.pathSeparator + System.getProperty("org.opennms.protocols.icmp.interfaceJar");
         }
@@ -395,6 +398,15 @@ public abstract class Bootstrap {
             m_rmiServerSocketFactory = new HostRMIServerSocketFactory("localhost");
             RMISocketFactory.setSocketFactory(m_rmiServerSocketFactory);
         }
+
+        /**
+          * This is necessary so the ProxyLoginModule can find the OpenNMSLoginModule because
+          * otherwise we're at the mercy of which thread/context is the first to make a JAAS
+          * request, since LoginModules are initialized statically.  In my testing, attempting
+          * to connect to JMX with jconsole would give a class not found while attempting to
+          * locate the OpenNMSLoginModule without using a classloader like this.
+          */
+        OpenNMSProxyLoginModule.setClassloader(cl);
     }
 
     protected static void loadDefaultProperties() throws Exception {

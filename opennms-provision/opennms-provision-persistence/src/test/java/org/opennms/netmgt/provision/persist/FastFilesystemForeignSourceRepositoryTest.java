@@ -41,6 +41,7 @@ import java.util.UUID;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.opennms.core.xml.JaxbUtils;
@@ -53,8 +54,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.io.FileSystemResource;
 
-import junit.framework.Assert;
-
 public class FastFilesystemForeignSourceRepositoryTest extends ForeignSourceRepositoryTestCase {
     private String m_defaultForeignSourceName;
     private File m_requisitionDirectory;
@@ -65,9 +64,13 @@ public class FastFilesystemForeignSourceRepositoryTest extends ForeignSourceRepo
 
     @Before
     public void setUp() throws Exception {
-        m_defaultForeignSourceName = "imported:";
         m_requisitionDirectory = new File("target/opennms-home/etc/imports/pending");
         m_requisitionDirectory.mkdirs();
+
+        m_defaultForeignSourceName = "imported:";
+        m_foreignSourceRepository.clear();
+        m_foreignSourceRepository.flush();
+
         FileUtils.copyFile(new File("src/test/resources/requisition-test.xml"), getRequisitionFile());
     }
 

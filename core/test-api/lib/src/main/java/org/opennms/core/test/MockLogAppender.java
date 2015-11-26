@@ -195,7 +195,6 @@ public class MockLogAppender {
         setProperty(logger, MockLogger.LOG_KEY_PREFIX + "com.mchange", "INFO");
         setProperty(logger, MockLogger.LOG_KEY_PREFIX + "com.mchange.v2", "WARN");
         setProperty(logger, MockLogger.LOG_KEY_PREFIX + "httpclient", "INFO");
-        setProperty(logger, MockLogger.LOG_KEY_PREFIX + "mx4j", "INFO");
         setProperty(logger, MockLogger.LOG_KEY_PREFIX + "org.apache.bsf", "INFO");
         setProperty(logger, MockLogger.LOG_KEY_PREFIX + "org.apache.commons.httpclient.HttpMethodBase", "ERROR");
         setProperty(logger, MockLogger.LOG_KEY_PREFIX + "org.exolab.castor", "INFO");

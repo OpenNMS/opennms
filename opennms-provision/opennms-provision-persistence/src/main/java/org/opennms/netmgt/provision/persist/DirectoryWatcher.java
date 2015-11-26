@@ -212,7 +212,8 @@ public class DirectoryWatcher<T> implements Runnable, Closeable {
      * @return the file names
      */
     public Set<String> getFileNames() {
-        return new LinkedHashSet<String>(Arrays.asList(m_directory.list()));
+        final String[] list = m_directory.list();
+        return new LinkedHashSet<String>(Arrays.asList(list));
     }
 
     /**

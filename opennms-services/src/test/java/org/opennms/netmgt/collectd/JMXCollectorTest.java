@@ -315,8 +315,8 @@ public class JMXCollectorTest {
 
     public class JMXCollectorImpl extends JMXCollector {
         @Override
-        protected String getConnectionName() {
-            return JmxConnectors.PLATFORM;
+        protected JmxConnectors getConnectionName() {
+            return JmxConnectors.platform;
         }
 
         protected void setJmxConfigDao(JmxConfigDao jmxConfigDao) {

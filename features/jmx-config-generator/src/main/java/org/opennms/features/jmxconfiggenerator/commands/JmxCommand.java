@@ -73,7 +73,7 @@ public abstract class JmxCommand extends Command {
             LOG.warn("WARNING: You have defined an url and a hostname and/or port. Using url '{}' and ignoring hostname:port", url);
         }
         if (url == null && (hostName == null || port == null)) {
-            throw new CmdLineException(parser, "You have to define either an url or an hostname and port to connect to a jmx server.");
+            throw new CmdLineException(parser, "You have to define either an URL or an hostname and port to connect to a JMX server.");
         }
     }
 
@@ -87,16 +87,6 @@ public abstract class JmxCommand extends Command {
     }
 
     /**
-     * Determines the jmxServiceUrl depending on jmxmp.
-     *
-     * @return
-     * @throws MalformedURLException
-     */
-    private JMXServiceURL getJmxServiceURL() throws MalformedURLException {
-        return JmxHelper.createJmxServiceUrl(url, hostName, port, jmxmp);
-    }
-
-    /**
      * This method gets the JmxConnector to connect with the given
      * jmxServiceURL.
 
@@ -106,7 +96,7 @@ public abstract class JmxCommand extends Command {
      *             authentication failure or not reachable)
      */
     private JMXConnector getJmxConnector() throws IOException {
-        return JmxHelper.createJmxConnector(username, password, getJmxServiceURL());
+        return JmxHelper.createJmxConnector(username, password, JmxHelper.createJmxServiceUrl(url, hostName, port, jmxmp));
     }
 
     protected abstract void execute(MBeanServerConnection mBeanServerConnection) throws MBeanServerQueryException, IOException, JMException;

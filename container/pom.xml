@@ -16,6 +16,7 @@
     <module>karaf</module>
     <module>servlet</module>
     <module>bridge</module>
+    <module>jaas-login-module</module>
   </modules>
 
   <repositories>

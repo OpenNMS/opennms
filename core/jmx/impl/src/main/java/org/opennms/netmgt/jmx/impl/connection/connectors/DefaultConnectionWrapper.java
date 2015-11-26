@@ -36,7 +36,7 @@ import javax.management.remote.JMXConnector;
 import java.io.IOException;
 import java.util.Objects;
 
-class DefaultConnectionWrapper implements JmxServerConnectionWrapper {
+public class DefaultConnectionWrapper implements JmxServerConnectionWrapper {
 
     private JMXConnector connector;
     private MBeanServerConnection connection;

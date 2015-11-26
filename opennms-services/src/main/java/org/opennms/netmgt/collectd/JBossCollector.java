@@ -42,11 +42,11 @@ public class JBossCollector extends JMXCollector {
 
     public JBossCollector() {
         super();
-        setServiceName("jboss");
+        setServiceName(JmxConnectors.jboss.toString());
     }
 
     @Override
-    protected String getConnectionName() {
-        return JmxConnectors.JBOSS;
+    protected JmxConnectors getConnectionName() {
+        return JmxConnectors.jboss;
     }
 }

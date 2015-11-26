@@ -29,7 +29,8 @@
 package org.opennms.netmgt.provision.detector.jmx;
 
 import com.google.common.collect.ImmutableMap;
-import org.opennms.netmgt.provision.support.jmx.connectors.ConnectionWrapper;
+
+import org.opennms.netmgt.jmx.connection.JmxServerConnectionWrapper;
 import org.opennms.netmgt.provision.support.jmx.connectors.JBossConnectionFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -58,7 +59,7 @@ public class JBossDetector extends JMXDetector {
 
     /** {@inheritDoc} */
     @Override
-    protected ConnectionWrapper connect(final InetAddress address, final int port, final int timeout) {
+    protected JmxServerConnectionWrapper connect(final InetAddress address, final int port, final int timeout) {
         return JBossConnectionFactory.getMBeanServerConnection(ImmutableMap.<String, Object>builder()
                                                                            .put("port", port)
                                                                            .put("timeout", timeout)

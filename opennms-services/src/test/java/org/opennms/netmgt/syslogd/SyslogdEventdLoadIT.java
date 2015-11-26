@@ -206,7 +206,7 @@ public class SyslogdEventdLoadIT implements InitializingBean {
 
         long start = System.currentTimeMillis();
         String testPduFormat = "2010-08-19 localhost foo%d: load test %d on tty1";
-        SyslogClient sc = new SyslogClient(null, 10, SyslogClient.LOG_DEBUG);
+        SyslogClient sc = new SyslogClient(null, 10, SyslogClient.LOG_DEBUG, addr("127.0.0.1"));
         for (int i = 0; i < eventCount; i++) {
             int foo = foos.get(i);
             DatagramPacket pkt = sc.getPacket(SyslogClient.LOG_DEBUG, String.format(testPduFormat, foo, foo));
