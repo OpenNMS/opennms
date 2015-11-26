@@ -40,19 +40,35 @@ import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionOperations;
 
 /**
- * Ensures that each method of a bean is invoked within a Transaction scope.
+ * This factory class is needed, because when we use DAOs or other classes requiring a transaction scope, we either have 
+ * to ensure that the method call is run within a transaction scope, or we create an new scope.
+ * We already have setup this with Spring and do not want to set it up again in the blueprint container.
+ * 
+ * The factory creates a proxy of an already existing object and ensures that each method of a bean is invoked within a transaction scope.
+ * This is achieved by wrapping each method call around a {@link TransactionOperations#execute(TransactionCallback)} call.
  */
-public class TransactionAwareBeanProxy {
+public class TransactionAwareBeanProxyFactory {
 
+    /**
+     * Is used to execute the object to proxy's executed method within a transaction scope.
+     */
     private final TransactionOperations transactionOperations;
-
-    public TransactionAwareBeanProxy(TransactionOperations transactionOperations) {
+    
+    public TransactionAwareBeanProxyFactory(TransactionOperations transactionOperations) {
         this.transactionOperations = Objects.requireNonNull(transactionOperations);
     }
 
-    public <T> T getProxy(final T businessServiceManager) {
-        Objects.requireNonNull(businessServiceManager);
-        final ProxyFactory proxyFactory = new ProxyFactory(businessServiceManager);
+    /**
+     * Creates a proxy for the given object. The object must already been instantiated.
+     * The proxy creation is quite different from the creation of the standard java Proxy pattern.
+     * The returned proxy wraps ALL method calls around a transaction scope.
+     * @param createProxyFor The object to create the proxy for. Must not be null.
+     * @param <T> The type of the proxy object.
+     * @return The proxy of the object to proxy where each method call is enforced to run within a transaction scope.
+     */
+    public <T> T createProxy(final T createProxyFor) {
+        Objects.requireNonNull(createProxyFor);
+        final ProxyFactory proxyFactory = new ProxyFactory(createProxyFor);
         proxyFactory.addAdvice(new MethodInterceptor() {
             @Override
             public Object invoke(MethodInvocation invocation) throws Throwable {

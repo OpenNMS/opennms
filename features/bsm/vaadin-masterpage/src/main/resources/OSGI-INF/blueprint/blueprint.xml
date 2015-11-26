@@ -6,13 +6,13 @@
     <reference id="businessServiceDao" interface="org.opennms.netmgt.bsm.persistence.api.BusinessServiceDao" availability="mandatory"/>
     <reference id="monitoringServiceDao" interface="org.opennms.netmgt.bsm.persistence.api.MonitoredServiceDao" availability="mandatory"/>
 
-    <bean id="businesssServiceManager" class="org.opennms.web.rest.v2.bsm.service.BusinessServiceManager">
+    <bean id="businessServiceManager" class="org.opennms.web.rest.v2.bsm.service.BusinessServiceManager">
         <property name="businessServiceDao" ref="businessServiceDao"/>
         <property name="monitoringServiceDao" ref="monitoringServiceDao"/>
     </bean>
     <bean id="bsmUi" class="org.opennms.features.bsm.vaadin.masterpage.BusinessServiceMasterPageUI" scope="prototype">
         <argument ref="transactionOperations"/>
-        <property name="businessServiceManager" ref="businesssServiceManager"/>
+        <property name="businessServiceManager" ref="businessServiceManager"/>
     </bean>
 	<bean id="bsmMasterPageApplicationFactory" class="org.opennms.features.bsm.vaadin.masterpage.BusinessServiceMasterPageUIFactory" scope="singleton">
         <argument ref="blueprintContainer"/>
