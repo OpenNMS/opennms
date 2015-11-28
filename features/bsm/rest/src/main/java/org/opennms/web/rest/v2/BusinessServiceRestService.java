@@ -42,10 +42,11 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
+import org.opennms.netmgt.bsm.service.BusinessServiceManager;
+import org.opennms.netmgt.bsm.service.model.BusinessServiceDTO;
+import org.opennms.web.rest.api.ResourceLocationFactory;
 import org.opennms.web.rest.support.RedirectHelper;
-import org.opennms.web.rest.v2.bsm.model.BusinessServiceDTO;
 import org.opennms.web.rest.v2.bsm.model.BusinessServiceListDTO;
-import org.opennms.web.rest.v2.bsm.service.BusinessServiceManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
