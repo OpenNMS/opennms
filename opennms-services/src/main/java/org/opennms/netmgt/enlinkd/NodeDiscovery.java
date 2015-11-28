@@ -33,7 +33,6 @@ import java.net.InetAddress;
 import org.opennms.netmgt.enlinkd.scheduler.ReadyRunnable;
 import org.opennms.netmgt.enlinkd.scheduler.Scheduler;
 import org.opennms.netmgt.model.events.EventBuilder;
-import org.opennms.netmgt.model.topology.LinkableSnmpNode;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 
 /**
@@ -48,7 +47,7 @@ public abstract class NodeDiscovery implements ReadyRunnable {
 	/**
      * The node ID of the system used to collect the SNMP information
      */
-    protected final LinkableSnmpNode m_node;
+    protected final Node m_node;
 
     /**
      * The scheduler object
@@ -81,7 +80,7 @@ public abstract class NodeDiscovery implements ReadyRunnable {
      * @param config
      *            The SnmpPeer object to collect from.
      */
-    public NodeDiscovery(final EnhancedLinkd linkd, final LinkableSnmpNode node) {
+    public NodeDiscovery(final EnhancedLinkd linkd, final Node node) {
         m_linkd = linkd;
         m_node = node;
         m_initial_sleep_time = m_linkd.getInitialSleepTime();

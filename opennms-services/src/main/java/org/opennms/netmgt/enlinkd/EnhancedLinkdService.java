@@ -45,7 +45,6 @@ import org.opennms.netmgt.model.LldpElement;
 import org.opennms.netmgt.model.LldpLink;
 import org.opennms.netmgt.model.OspfElement;
 import org.opennms.netmgt.model.OspfLink;
-import org.opennms.netmgt.model.topology.LinkableSnmpNode;
 
 /**
  * <p>QueryManager interface.</p>
@@ -60,7 +59,7 @@ public interface EnhancedLinkdService {
      *
      * @return a {@link java.util.List} object.
      */
-    List<LinkableSnmpNode> getSnmpNodeList();
+    List<Node> getSnmpNodeList();
 
     /**
      * <p>getSnmpNode</p>
@@ -68,7 +67,7 @@ public interface EnhancedLinkdService {
      * @param nodeid a int.
      * @return a {@link org.opennms.netmgt.enlinkd.LinkableNode} object.
      */
-    LinkableSnmpNode getSnmpNode(int nodeid);
+    Node getSnmpNode(int nodeid);
         
     /**
      * <p>delete</p>
