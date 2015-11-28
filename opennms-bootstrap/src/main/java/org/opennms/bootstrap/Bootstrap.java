@@ -38,6 +38,7 @@ import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.rmi.server.RMISocketFactory;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
@@ -73,6 +74,7 @@ public abstract class Bootstrap {
             return name.endsWith(".jar");
         }
     };
+    private static HostRMIServerSocketFactory m_rmiServerSocketFactory;
 
     /**
      * Create a ClassLoader with the JARs found in dirStr.
@@ -321,11 +323,11 @@ public abstract class Bootstrap {
         executeClass(classToExec, classToExecMethod, classToExecArgs, false);
     }
 
-    protected static void executeClass(final String classToExec, final String classToExecMethod, final String[] classToExecArgs, boolean appendClasspath) throws MalformedURLException, ClassNotFoundException, NoSuchMethodException {
+    protected static void executeClass(final String classToExec, final String classToExecMethod, final String[] classToExecArgs, boolean appendClasspath) throws ClassNotFoundException, NoSuchMethodException, IOException {
         executeClass(classToExec, classToExecMethod, classToExecArgs, appendClasspath, false);
     }
 
-    protected static void executeClass(final String classToExec, final String classToExecMethod, final String[] classToExecArgs, boolean appendClasspath, final boolean recurse) throws MalformedURLException, ClassNotFoundException, NoSuchMethodException {
+    protected static void executeClass(final String classToExec, final String classToExecMethod, final String[] classToExecArgs, boolean appendClasspath, final boolean recurse) throws ClassNotFoundException, NoSuchMethodException, IOException {
         String dir = System.getProperty("opennms.classpath");
         if (dir == null) {
             dir = System.getProperty(OPENNMS_HOME_PROPERTY) + File.separator
@@ -335,6 +337,9 @@ public abstract class Bootstrap {
                     + System.getProperty(OPENNMS_HOME_PROPERTY)
                     + File.separator + "etc";
         }
+
+        // Add the JDK tools.jar to the classpath so that we can use the Attach API
+        dir += File.pathSeparator + System.getProperty("java.home") + File.separator + ".." + File.separator + "lib" + File.separator + "tools.jar";
 
         if (System.getProperty("org.opennms.protocols.icmp.interfaceJar") != null) {
         	dir += File.pathSeparator + System.getProperty("org.opennms.protocols.icmp.interfaceJar");
@@ -351,6 +356,8 @@ public abstract class Bootstrap {
         }
 
         final ClassLoader cl = Bootstrap.loadClasses(dir, recurse, appendClasspath);
+
+        configureRMI(cl);
 
         if (classToExec != null) {
             final String className = classToExec;
@@ -375,6 +382,31 @@ public abstract class Bootstrap {
             bootstrapper.setContextClassLoader(cl);
             bootstrapper.start();
         }
+    }
+
+    private static void configureRMI(final ClassLoader cl) throws IOException {
+        if (m_rmiServerSocketFactory != null) {
+            // socket already configured
+            return;
+        }
+
+        final String host = System.getProperty("opennms.poller.server.serverHost", "localhost");
+        if ("localhost".equals(host) || "127.0.0.1".equals(host) || "::1".equals(host)) {
+            if (System.getProperty("java.rmi.server.hostname") == null) {
+                System.setProperty("java.rmi.server.hostname", host);
+            }
+            m_rmiServerSocketFactory = new HostRMIServerSocketFactory("localhost");
+            RMISocketFactory.setSocketFactory(m_rmiServerSocketFactory);
+        }
+
+        /**
+          * This is necessary so the ProxyLoginModule can find the OpenNMSLoginModule because
+          * otherwise we're at the mercy of which thread/context is the first to make a JAAS
+          * request, since LoginModules are initialized statically.  In my testing, attempting
+          * to connect to JMX with jconsole would give a class not found while attempting to
+          * locate the OpenNMSLoginModule without using a classloader like this.
+          */
+        OpenNMSProxyLoginModule.setClassloader(cl);
     }
 
     protected static void loadDefaultProperties() throws Exception {

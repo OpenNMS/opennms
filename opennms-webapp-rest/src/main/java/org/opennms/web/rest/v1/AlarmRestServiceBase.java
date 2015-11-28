@@ -32,6 +32,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.core.Response.Status;
 
 import org.apache.commons.lang.StringUtils;
 import org.opennms.core.criteria.Alias.JoinType;
@@ -77,7 +78,7 @@ public class AlarmRestServiceBase extends OnmsRestService {
 
         if (params.containsKey("alarmId")) {
         	if (params.containsKey("id")) {
-        		throw new IllegalArgumentException("Form parameters contain both the 'alarmId' and 'id' properties!  Pick a side!");
+        	    throw getException(Status.BAD_REQUEST, "Form parameters contain both the 'alarmId' and 'id' properties!  Pick a side!");
         	}
         	params.put("id", params.remove("alarmId"));
         }

@@ -50,6 +50,16 @@
       <artifactId>javax.servlet</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.apache.karaf.jaas</groupId>
+      <artifactId>org.apache.karaf.jaas.boot</artifactId>
+      <version>${karafVersion}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.karaf.jaas</groupId>
+      <artifactId>org.apache.karaf.jaas.config</artifactId>
+      <version>${karafVersion}</version>
+    </dependency>
+    <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-model</artifactId>
     </dependency>

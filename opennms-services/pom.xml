@@ -330,11 +330,6 @@
       <scope>compile</scope>
     </dependency>
     <dependency>
-      <groupId>mx4j</groupId>
-      <artifactId>mx4j-tools</artifactId>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
       <groupId>bsf</groupId>
       <artifactId>bsf</artifactId>
       <scope>compile</scope>

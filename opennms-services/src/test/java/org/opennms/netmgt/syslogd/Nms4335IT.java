@@ -107,6 +107,7 @@ public class Nms4335IT implements InitializingBean {
             		"<syslogd-configuration> \n" + 
             		"    <configuration \n" + 
             		"            syslog-port=\"10514\" \n" + 
+            		"            listen-address=\"127.0.0.1\" \n" +
             		"            new-suspect-on-message=\"false\" \n" + 
             		"            forwarding-regexp=\"^((.+?) (.*))\\n?$\" \n" + 
             		"            matching-group-host=\"2\" \n" + 
@@ -204,7 +205,7 @@ public class Nms4335IT implements InitializingBean {
         m_eventIpcManager.addEventListener(ea);
         ea.anticipateEvent(expectedEventBldr.getEvent());
         
-        final SyslogClient sc = new SyslogClient(null, 10, SyslogClient.LOG_DAEMON);
+        final SyslogClient sc = new SyslogClient(null, 10, SyslogClient.LOG_DAEMON, addr("127.0.0.1"));
         final DatagramPacket pkt = sc.getPacket(SyslogClient.LOG_DEBUG, testPDU);
         final SyslogdConfig config = SyslogdConfigFactory.getInstance();
         WaterfallExecutor.waterfall(m_executorServices, new SyslogConnection(pkt, config.getForwardingRegexp(), config.getMatchingGroupHost(), config.getMatchingGroupMessage(), config.getUeiList(), config.getHideMessages(), config.getDiscardUei()));

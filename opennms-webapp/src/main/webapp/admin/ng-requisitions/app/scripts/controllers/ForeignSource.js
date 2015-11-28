@@ -17,17 +17,17 @@
   * @module onms-requisitions
   *
   * @requires $scope Angular local scope
-  * @requires $filter Angular filter
   * @requires $routeParams Angular route parameters
   * @requires $window Document window
   * @requires $modal Angular modal
+  * @required filterFilter the Angular filter
   * @requires RequisitionsService The requisitions service
   * @requires EmptyTypeaheadService The empty typeahead Service
   * @requires growl The growl plugin for instant notifications
   *
   * @description The controller for manage foreign source definitions (i.e. policies and detectors)
   */
-  .controller('ForeignSourceController', ['$scope', '$filter', '$routeParams', '$window', '$modal', 'RequisitionsService', 'EmptyTypeaheadService', 'growl', function($scope, $filter, $routeParams, $window, $modal, RequisitionsService, EmptyTypeaheadService, growl) {
+  .controller('ForeignSourceController', ['$scope', '$routeParams', '$window', '$modal', 'filterFilter', 'RequisitionsService', 'EmptyTypeaheadService', 'growl', function($scope, $routeParams, $window, $modal, filterFilter, RequisitionsService, EmptyTypeaheadService, growl) {
 
     /**
     * @description The timing status.
@@ -77,6 +77,16 @@
     * @methodOf AssetController
     */
     $scope.onFocus = EmptyTypeaheadService.onFocus;
+
+    /**
+    * @description The filteres object (used to track the content of the search fields)
+    *
+    * @ngdoc property
+    * @name ForeignSourceController#filters
+    * @propertyOf ForeignSourceController
+    * @returns {object} The filteres object
+    */
+    $scope.filters = { detector: null, policy: null };
 
     /**
     * @description The filtered list of detectors
@@ -234,26 +244,59 @@
     };
 
     /**
+    * @description Returns the index of a policy
+    *
+    * @name ForeignSourceController:indexOfPolicy
+    * @ngdoc method
+    * @methodOf ForeignSourceController
+    * @param {object} policy The policy object
+    */
+    $scope.indexOfPolicy = function(policy) {
+      for (var i = 0; i < $scope.foreignSourceDef.policies.length; i++) {
+        if ($scope.foreignSourceDef.policies[i].name === policy.name) {
+          return i;
+        }
+      }
+      return -1;
+    };
+
+    /**
+    * @description Returns the index of a detector
+    *
+    * @name ForeignSourceController:indexOfDetector
+    * @ngdoc method
+    * @methodOf ForeignSourceController
+    * @param {object} policy The detector object
+    */
+    $scope.indexOfDetector = function(detector) {
+      for (var i = 0; i < $scope.foreignSourceDef.detectors.length; i++) {
+        if ($scope.foreignSourceDef.detectors[i].name === detector.name) {
+          return i;
+        }
+      }
+      return -1;
+    };
+
+    /**
     * @description Opens the modal window to add/edit a policy
     *
     * @name ForeignSourceController:editPolicy
     * @ngdoc method
     * @methodOf ForeignSourceController
-    * @param {integer} index The index of the policy to edit
+    * @param {object} policy The policy object to edit
     * @param {boolean} isNew true, if the policy is new
     */
-    $scope.editPolicy = function(index, isNew) {
+    $scope.editPolicy = function(policy, isNew) {
       var form = this.fsForm;
-      var policyToEdit = $scope.foreignSourceDef.policies[index];
       $modal.open({
         backdrop: true,
         controller: 'PolicyController',
         templateUrl: 'views/policy.html',
         resolve: {
-          policy: function() { return angular.copy(policyToEdit); }
+          policy: function() { return angular.copy(policy); }
         }
       }).result.then(function(result) {
-        angular.copy(result, policyToEdit);
+        angular.copy(result, policy);
         form.$dirty = true;
       }, function() {
         if (isNew) {
@@ -268,11 +311,14 @@
     * @name ForeignSourceController:removePolicy
     * @ngdoc method
     * @methodOf ForeignSourceController
-    * @param {integer} index The index of the policy to remove
+    * @param {object} policy The policy object to remove
     */
-    $scope.removePolicy = function(index) {
-      $scope.foreignSourceDef.policies.splice(index, 1);
-      this.fsForm.$dirty = true;
+    $scope.removePolicy = function(policy) {
+      var index = $scope.indexOfPolicy(policy);
+      if (index > -1) {
+        $scope.foreignSourceDef.policies.splice(index, 1);
+        this.fsForm.$dirty = true;
+      }
     };
 
     /**
@@ -284,7 +330,8 @@
     */
     $scope.addPolicy = function() {
       $scope.foreignSourceDef.policies.push({ 'name': '', 'class': '', 'parameter': [] });
-      $scope.editPolicy($scope.foreignSourceDef.policies.length - 1, true);
+      var index = $scope.foreignSourceDef.policies.length - 1;
+      $scope.editPolicy($scope.foreignSourceDef.policies[index], true);
     };
 
     /**
@@ -293,21 +340,20 @@
     * @name ForeignSourceController:editDetector
     * @ngdoc method
     * @methodOf ForeignSourceController
-    * @param {integer} index The index of the detector to edit
+    * @param {object} detector The detector object to edit
     * @param {boolean} isNew true, if the detector is new
     */
-    $scope.editDetector = function(index, isNew) {
+    $scope.editDetector = function(detector, isNew) {
       var form = this.fsForm;
-      var detectorToEdit = $scope.foreignSourceDef.detectors[index];
       $modal.open({
         backdrop: true,
         controller: 'DetectorController',
         templateUrl: 'views/detector.html',
         resolve: {
-          detector: function() { return angular.copy(detectorToEdit); }
+          detector: function() { return angular.copy(detector); }
         }
       }).result.then(function(result) {
-        angular.copy(result, detectorToEdit);
+        angular.copy(result, detector);
         form.$dirty = true;
       }, function() {
         if (isNew) {
@@ -322,11 +368,14 @@
     * @name ForeignSourceController:removeDetector
     * @ngdoc method
     * @methodOf ForeignSourceController
-    * @param {integer} index The index of the detector to remove
+    * @param {object} detector The detector object to remove
     */
-    $scope.removeDetector = function(index) {
-      $scope.foreignSourceDef.detectors.splice(index, 1);
-      this.fsForm.$dirty = true;
+    $scope.removeDetector = function(detector) {
+      var index = $scope.indexOfDetector(detector);
+      if (index > -1) {
+        $scope.foreignSourceDef.detectors.splice(index, 1);
+        this.fsForm.$dirty = true;
+      }
     };
 
     /**
@@ -338,7 +387,8 @@
     */
     $scope.addDetector = function() {
       $scope.foreignSourceDef.detectors.push({ 'name': '', 'class': '', 'parameter': [] });
-      $scope.editDetector($scope.foreignSourceDef.detectors.length - 1, true);
+      var index = $scope.foreignSourceDef.detectors.length - 1;
+      $scope.editDetector($scope.foreignSourceDef.detectors[index], true);
     };
 
     /**
@@ -416,8 +466,8 @@
     * @ngdoc event
     * @methodOf ForeignSourceController
     */
-    $scope.$watch('detectorFilter', function() {
-      $scope.filteredDetectors = $filter('filter')($scope.foreignSourceDef.detectors, $scope.detectorFilter);
+    $scope.$watch("filters.detector", function() {
+      $scope.filteredDetectors = filterFilter($scope.foreignSourceDef.detectors, $scope.filters.detector);
       $scope.updateFilteredDetectors();
     });
 
@@ -428,8 +478,8 @@
     * @ngdoc event
     * @methodOf ForeignSourceController
     */
-    $scope.$watch('policyFilter', function() {
-      $scope.filteredPolicies = $filter('filter')($scope.foreignSourceDef.policies, $scope.policyFilter);
+    $scope.$watch('filters.policy', function() {
+      $scope.filteredPolicies = filterFilter($scope.foreignSourceDef.policies, $scope.filters.policy);
       $scope.updateFilteredPolicies();
     });
 

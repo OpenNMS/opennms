@@ -69,6 +69,7 @@ import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.netmgt.dao.api.AssetRecordDao;
+import org.opennms.netmgt.dao.api.CategoryDao;
 import org.opennms.netmgt.dao.api.DistPollerDao;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
@@ -76,7 +77,6 @@ import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.ServiceTypeDao;
 import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
 import org.opennms.netmgt.dao.mock.EventAnticipator;
-import org.opennms.netmgt.dao.mock.MockCategoryDao;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
 import org.opennms.netmgt.dao.mock.MockNodeDao;
 import org.opennms.netmgt.events.api.EventConstants;
@@ -111,13 +111,6 @@ import org.opennms.netmgt.provision.persist.foreignsource.ForeignSource;
 import org.opennms.netmgt.provision.persist.foreignsource.PluginConfig;
 import org.opennms.netmgt.provision.persist.policies.NodeCategorySettingPolicy;
 import org.opennms.netmgt.provision.persist.requisition.Requisition;
-import org.opennms.netmgt.provision.service.ImportScheduler;
-import org.opennms.netmgt.provision.service.ModelImportException;
-import org.opennms.netmgt.provision.service.NodeScan;
-import org.opennms.netmgt.provision.service.NodeScanSchedule;
-import org.opennms.netmgt.provision.service.ProvisionService;
-import org.opennms.netmgt.provision.service.Provisioner;
-import org.opennms.netmgt.provision.service.ProvisioningITCase;
 import org.opennms.netmgt.snmp.SnmpAgentAddress;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.test.JUnitConfigurationEnvironment;
@@ -176,7 +169,7 @@ public class ProvisionerIT extends ProvisioningITCase implements InitializingBea
     private MockNodeDao m_nodeDao;
 
     @Autowired
-    private MockCategoryDao m_categoryDao;
+    private CategoryDao m_categoryDao;
 
     @Autowired
     private DistPollerDao m_distPollerDao;
@@ -1541,6 +1534,11 @@ public class ProvisionerIT extends ProvisioningITCase implements InitializingBea
 
         eventAnticipator.resetUnanticipated();
         eventAnticipator.verifyAnticipated();
+    }
+
+    @Test(timeout=300000)
+    public void testCreateUndiscoveredNode() throws Exception {
+        m_provisionService.createUndiscoveredNode("127.0.0.1", "discovered");
     }
 
     /**

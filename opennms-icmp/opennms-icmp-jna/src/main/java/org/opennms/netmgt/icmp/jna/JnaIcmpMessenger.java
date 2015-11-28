@@ -29,11 +29,11 @@
 package org.opennms.netmgt.icmp.jna;
 
 import java.net.InetAddress;
-import java.util.Queue;
 
 import org.opennms.netmgt.icmp.EchoPacket;
 import org.opennms.netmgt.icmp.IcmpMessengerIOException;
 import org.opennms.protocols.rt.Messenger;
+import org.opennms.protocols.rt.ReplyHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,7 +49,7 @@ public class JnaIcmpMessenger implements Messenger<JnaPingRequest, JnaPingReply>
 	
 	private V4Pinger m_v4;
 	private V6Pinger m_v6;
-    private Queue<JnaPingReply> pendingReplies = null;
+    private ReplyHandler<JnaPingReply> m_callback = null;
 
 	public JnaIcmpMessenger(final int pingerId) throws Exception {
 	    Throwable error = null;
@@ -98,15 +98,15 @@ public class JnaIcmpMessenger implements Messenger<JnaPingRequest, JnaPingReply>
 	}
 
         @Override
-	public void start(final Queue<JnaPingReply> replyQueue) {
-        pendingReplies = replyQueue;
+	public void start(ReplyHandler<JnaPingReply> callback) {
+        m_callback = callback;
         m_v4.start();
         m_v6.start();
 	}
 
         @Override
 	public void onPingReply(final InetAddress address, final EchoPacket packet) {
-		pendingReplies.offer(new JnaPingReply(address, packet));
+        m_callback.handleReply(new JnaPingReply(address, packet));
 	}
 
 }

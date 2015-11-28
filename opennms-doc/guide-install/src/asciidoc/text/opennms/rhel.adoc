@@ -94,6 +94,7 @@ The next step is creating an _opennms_ database user with password and configure
 su - postgres
 createuser -P opennms
 createdb -O opennms opennms
+exit
 ----
 
 To allow _OpenNMS_ access to the database over the local network _PostgreSQL_ has to be configured.
@@ -122,7 +123,7 @@ In the next step configure the _OpenNMS_ database configuration.
 
 [source, shell]
 ----
-vi ${OPENNMS_HOME}/etc/opennms-datasource.xml
+vi ${OPENNMS_HOME}/etc/opennms-datasources.xml
 ----
 
 .Configuration for database authentication in _OpenNMS_
