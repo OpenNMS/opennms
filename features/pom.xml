@@ -50,6 +50,9 @@
     <!-- OpenNMS Resource CLI tool -->
     <module>resource-cli</module>
 
+    <!-- OpenNMS rest commons module -->
+    <module>rest-commons</module>
+
     <!-- OpenNMS OSGI Core -->
     <module>opennms-osgi-core</module>
 

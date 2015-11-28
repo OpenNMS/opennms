@@ -24,8 +24,6 @@
                     <instructions>
                         <Bundle-SymbolicName>${bundle.symbolicName}</Bundle-SymbolicName>
                         <Bundle-Version>${project.version}</Bundle-Version>
-                        <Export-Package>${bundle.namespace}.*;version="${project.version}"</Export-Package>
-                        <Import-Package>!org.opennms.features.bsm.vaadin,*</Import-Package>
                     </instructions>
                 </configuration>
             </plugin>
@@ -35,11 +33,16 @@
                 <configuration>
                     <bundles>
                         <bundle>mvn:org.opennms.features.bsm/vaadin-masterpage/${project.version}</bundle>
+
+                        <!-- TODO move to feature definition "bsm" or something like that -->
+                        <bundle>mvn:org.opennms.features.bsm/org.opennms.features.bsm.persistence.api/${project.version}</bundle>
+                        <bundle>mvn:org.opennms.features.bsm/org.opennms.features.bsm.service/${project.version}</bundle>
                         <bundle>wrap:mvn:com.google.guava/guava/${guavaVersion}</bundle>
-                        <bundle>wrap:mvn:org.opennms.features.bsm/org.opennms.features.bsm.rest/${project.version}</bundle>
+                        <bundle>mvn:org.opennms.features/org.opennms.features.rest-commons/${project.version}</bundle>
                     </bundles>
                     <features>
                         <feature>vaadin</feature>
+                        <feature>opennms-osgi-core</feature>
                     </features>
                 </configuration>
             </plugin>
@@ -73,8 +76,15 @@
 	    </dependency>
         <dependency>
             <groupId>org.opennms.features.bsm</groupId>
-            <artifactId>org.opennms.features.bsm.rest</artifactId>
+            <artifactId>org.opennms.features.bsm.persistence.api</artifactId>
             <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.features.bsm</groupId>
+            <artifactId>org.opennms.features.bsm.service</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.osgi</groupId>

@@ -38,8 +38,9 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.codehaus.jackson.map.annotate.JsonRootName;
 import org.opennms.core.config.api.JaxbListWrapper;
-import org.opennms.web.rest.support.JAXBResourceLocationAdapter;
-import org.opennms.web.rest.support.ResourceLocation;
+import org.opennms.netmgt.bsm.service.model.BusinessServiceDTO;
+import org.opennms.web.rest.api.JAXBResourceLocationAdapter;
+import org.opennms.web.rest.api.ResourceLocation;
 
 @XmlRootElement(name = "business-services")
 @JsonRootName("business-services")

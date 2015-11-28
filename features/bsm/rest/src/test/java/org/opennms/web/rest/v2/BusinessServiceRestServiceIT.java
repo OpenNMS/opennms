@@ -46,13 +46,13 @@ import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.test.rest.AbstractSpringJerseyRestTestCase;
+import org.opennms.netmgt.bsm.service.model.BusinessServiceDTO;
+import org.opennms.netmgt.bsm.persistence.api.BusinessService;
+import org.opennms.netmgt.bsm.persistence.api.BusinessServiceDao;
 import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
-import org.opennms.netmgt.bsm.persistence.api.BusinessServiceDao;
-import org.opennms.netmgt.bsm.persistence.model.BusinessService;
-import org.opennms.web.rest.v2.bsm.model.BusinessServiceDTO;
-import org.opennms.web.rest.v2.bsm.model.BusinessServiceListDTO;
 import org.opennms.test.JUnitConfigurationEnvironment;
+import org.opennms.web.rest.v2.bsm.model.BusinessServiceListDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.web.WebAppConfiguration;
@@ -64,7 +64,8 @@ import org.springframework.transaction.annotation.Transactional;
     "classpath:/META-INF/opennms/applicationContext-soa.xml",
     "classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
     "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml",
-    "classpath:/META-INF/opennms/applicationContext-dao.xml", "classpath*:/META-INF/opennms/component-service.xml",
+    "classpath:/META-INF/opennms/applicationContext-dao.xml",
+    "classpath*:/META-INF/opennms/component-service.xml",
     "classpath*:/META-INF/opennms/component-dao.xml",
     "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml",
     "classpath:/META-INF/opennms/mockEventIpcManager.xml",

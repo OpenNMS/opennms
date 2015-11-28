@@ -28,41 +28,20 @@
 
 package org.opennms.features.bsm.vaadin.masterpage;
 
-import org.springframework.transaction.support.TransactionSynchronizationManager;
-
-import com.google.common.base.Preconditions;
+import org.opennms.netmgt.bsm.vaadin.masterpage.TransactionAwareBeanProxyFactory;
 
 /**
  * TestObject to verify that the {@link TransactionAwareBeanProxyFactory} works as expected.
- * Please do not change the behaviour here, as it is required to pass the tests in {@link TransactionAwareBeanProxyFactoryTest}.
+ * Please do not change the behaviour here, as it is required to pass the tests in {@link TransactionAwareBeanProxyFactoryIT}.
  */
-public class TestObject {
+public interface TestObject {
+    void setSomeValue(String someValue);
 
-    private boolean transactionActive;
+    String getSomeValue();
 
-    private String someValue;
+    void doSomething();
 
-    public TestObject(boolean transactionActive) {
-        this.transactionActive = transactionActive;
-    }
+    void doSomething2();
 
-    public void setSomeValue(String someValue) {
-        this.someValue = someValue;
-    }
-
-    public String getSomeValue() {
-        return someValue;
-    }
-
-    public void doSomething() {
-        Preconditions.checkArgument(TransactionSynchronizationManager.isActualTransactionActive() == transactionActive);
-    }
-
-    public void doSomething2() {
-        Preconditions.checkArgument(TransactionSynchronizationManager.isActualTransactionActive() == transactionActive);
-    }
-
-    public boolean isTransactionActive() {
-        return transactionActive;
-    }
+    boolean isTransactionActive();
 }

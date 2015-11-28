@@ -38,7 +38,7 @@
     <jsp:param name="headTitle" value="Busiess Service Master Page" />
     <jsp:param name="location" value="admin" />
     <jsp:param name="breadcrumb" value="<a href='admin/index.jsp'>Admin</a>" />
-    <jsp:param name="breadcrumb" value="Busiess Service Master Page" />
+    <jsp:param name="breadcrumb" value="Busiess Services Master Page" />
     <jsp:param name="vaadinEmbeddedStyles" value="true" />
 </jsp:include>
 

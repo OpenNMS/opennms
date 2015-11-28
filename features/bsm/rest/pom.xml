@@ -8,44 +8,44 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.features.bsm</groupId>
   <artifactId>org.opennms.features.bsm.rest</artifactId>
-  <packaging>jar</packaging>
+  <packaging>bundle</packaging>
   <name>OpenNMS :: Features :: BSM :: ReST</name>
-  <properties>
-    <skipITs>true</skipITs>
-  </properties>
   <build>
     <plugins>
       <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-failsafe-plugin</artifactId>
+        <groupId>org.apache.felix</groupId>
+        <artifactId>maven-bundle-plugin</artifactId>
+        <extensions>true</extensions>
         <configuration>
-          <skipITs>${skipITs}</skipITs>
-          <argLine>-Xmx1g -Djava.endorsed.dirs=${basedir}/target/endorsed</argLine>
-          <systemPropertyVariables>
-            <opennms.home>${project.build.testOutputDirectory}</opennms.home>
-            <java.endorsed.dirs>${basedir}/target/endorsed</java.endorsed.dirs>
-          </systemPropertyVariables>
+          <instructions>
+            <Bundle-RequiredExecutionEnvironment>JavaSE-1.8</Bundle-RequiredExecutionEnvironment>
+            <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
+            <Bundle-Version>${project.version}</Bundle-Version>
+          </instructions>
         </configuration>
-        <executions>
-          <execution>
-            <goals>
-              <goal>integration-test</goal>
-              <goal>verify</goal>
-            </goals>
-          </execution>
-        </executions>
       </plugin>
     </plugins>
   </build>
-
   <dependencies>
     <!-- All of this projects dependencies should have either a 'provided' or 'test' scope, since
          this .jar gets pull into jetty-webapps/opennmns/WEB-INF/lib -->
     <dependency>
 	  <groupId>org.opennms.features.bsm</groupId>
-	  <artifactId>org.opennms.features.bsm.persistence</artifactId>
+	  <artifactId>org.opennms.features.bsm.service</artifactId>
 	  <version>${project.version}</version>
-	  <scope>provided</scope>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features</groupId>
+      <artifactId>org.opennms.features.rest-commons</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.bsm</groupId>
+      <artifactId>org.opennms.features.bsm.persistence.api</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
@@ -69,6 +69,7 @@
       <groupId>com.googlecode.concurrent-locks</groupId>
       <artifactId>concurrent-locks</artifactId>
       <version>1.0.0</version>
+      <scope>provided</scope>
     </dependency>
 
     <!-- Test Dependencies -->
@@ -86,6 +87,12 @@
       <groupId>org.opennms</groupId>
       <artifactId>opennms-dao</artifactId>
       <type>test-jar</type>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.bsm</groupId>
+      <artifactId>org.opennms.features.bsm.persistence.impl</artifactId>
+      <version>${project.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -120,11 +127,6 @@
     <dependency>
       <groupId>org.opennms.core.test-api</groupId>
       <artifactId>org.opennms.core.test-api.rest</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.features.collection</groupId>
-      <artifactId>org.opennms.features.collection.persistence.rrd</artifactId>
-      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms.core.test-api</groupId>
