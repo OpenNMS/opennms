@@ -44,7 +44,6 @@ import java.util.List;
 
 import org.junit.Test;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.netmgt.model.topology.LinkableSnmpNode;
 import org.opennms.netmgt.nb.Nms10205bNetworkBuilder;
 import org.opennms.netmgt.nb.Nms17216NetworkBuilder;
 
@@ -66,11 +65,11 @@ public class EnLinkdIT extends EnLinkdBuilderITCase {
         final int switch1 = m_nodeDao.findByForeignId("linkd", SWITCH1_NAME).getId().intValue();
         
 
-        List<LinkableSnmpNode> linkablenodes = m_linkd.getQueryManager().getSnmpNodeList();
+        List<Node> linkablenodes = m_linkd.getQueryManager().getSnmpNodeList();
         assertNotNull(linkablenodes);
         assertEquals(3, linkablenodes.size());
         
-        for (LinkableSnmpNode linkablenode: linkablenodes) {
+        for (Node linkablenode: linkablenodes) {
         	if (linkablenode.getNodeId() == mumbai) {
         		assertEquals(InetAddressUtils.addr(MUMBAI_IP), linkablenode.getSnmpPrimaryIpAddr());
         		assertEquals(MUMBAI_SYSOID,linkablenode.getSysoid());
@@ -85,7 +84,7 @@ public class EnLinkdIT extends EnLinkdBuilderITCase {
         	}
         }
 
-        LinkableSnmpNode delhilinkablenode = m_linkd.getQueryManager().getSnmpNode(delhi);
+        Node delhilinkablenode = m_linkd.getQueryManager().getSnmpNode(delhi);
         assertNotNull(delhilinkablenode);
 		assertEquals(delhi, delhilinkablenode.getNodeId());
 		assertEquals(InetAddressUtils.addr(DELHI_IP), delhilinkablenode.getSnmpPrimaryIpAddr());

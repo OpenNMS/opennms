@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.model.topology;
+package org.opennms.netmgt.enlinkd;
 
 import static org.opennms.core.utils.InetAddressUtils.str;
 
@@ -42,7 +42,7 @@ import org.apache.commons.lang.builder.ToStringBuilder;
  * @author <a href="mailto:antonio@opennms.it">Antonio Russo</a>
  * @version $Id: $
  */
-public class LinkableSnmpNode {
+public class Node {
 
     private final int m_nodeId;
 
@@ -64,7 +64,7 @@ public class LinkableSnmpNode {
      * @param sysoid
      *            a {@link java.lang.String} object.
      */
-    public LinkableSnmpNode(final int nodeId,
+    public Node(final int nodeId,
             final InetAddress snmpPrimaryAddr, final String sysoid, final String sysname) {
         m_nodeId = nodeId;
         m_snmpprimaryaddr = snmpPrimaryAddr;
@@ -150,7 +150,7 @@ public class LinkableSnmpNode {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		LinkableSnmpNode other = (LinkableSnmpNode) obj;
+		Node other = (Node) obj;
 		if (m_nodeId != other.m_nodeId)
 			return false;
 		if (m_snmpprimaryaddr == null) {

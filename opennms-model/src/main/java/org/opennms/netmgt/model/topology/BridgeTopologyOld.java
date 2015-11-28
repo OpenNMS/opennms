@@ -41,8 +41,8 @@ import org.apache.commons.lang.builder.CompareToBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class BridgeTopology {
-    private static final Logger LOG = LoggerFactory.getLogger(BridgeTopology.class);
+public class BridgeTopologyOld {
+    private static final Logger LOG = LoggerFactory.getLogger(BridgeTopologyOld.class);
 
     public enum BridgePortRole {
         BACKBONE,
@@ -345,7 +345,7 @@ public class BridgeTopology {
             bridgeTopologyPortCandidates.add(parseBFTEntry(topologycandidate));
         }
         // first: cannot have two backbone from one bridge, so if a backbone and b with candidate, then b is direct
-        Set<BridgeTopologyLinkCandidate> secondStep = new TreeSet<BridgeTopology.BridgeTopologyLinkCandidate>();
+        Set<BridgeTopologyLinkCandidate> secondStep = new TreeSet<BridgeTopologyOld.BridgeTopologyLinkCandidate>();
         for (BridgeTopologyLinkCandidate candidateA : bridgeTopologyPortCandidates) {
             if (candidateA.getRole() != BridgePortRole.BACKBONE) {
                 continue;

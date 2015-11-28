@@ -49,11 +49,8 @@ import org.opennms.netmgt.model.BridgeElement;
 import org.opennms.netmgt.model.BridgeElement.BridgeDot1dBaseType;
 import org.opennms.netmgt.model.BridgeMacLink;
 import org.opennms.netmgt.model.BridgeStpLink;
-import org.opennms.netmgt.model.topology.LinkableSnmpNode;
-
 import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpWalker;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -79,7 +76,7 @@ public final class NodeDiscoveryBridge extends NodeDiscovery {
 	 *            node
 	 */
 	public NodeDiscoveryBridge(final EnhancedLinkd linkd,
-			final LinkableSnmpNode node) {
+			final Node node) {
 		super(linkd, node);
 	}
 	

@@ -42,8 +42,8 @@ import java.util.Set;
 import org.junit.Before;
 import org.junit.Test;
 import org.opennms.core.test.MockLogAppender;
-import org.opennms.netmgt.model.topology.BridgeTopology.BridgeTopologyLink;
-import org.opennms.netmgt.model.topology.BridgeTopology.BridgeTopologyPort;
+import org.opennms.netmgt.model.topology.BridgeTopologyOld.BridgeTopologyLink;
+import org.opennms.netmgt.model.topology.BridgeTopologyOld.BridgeTopologyPort;
 public class DefaultBridgeTopologyTest {
 
     @Before
@@ -115,7 +115,7 @@ public class DefaultBridgeTopologyTest {
         bftA = addBridgeForwardingTableEntry(portA4, mac4, bftA);
         bftA = addBridgeForwardingTableEntry(portA5, mac5, bftA);
 
-        BridgeTopology bridgeTopology = new BridgeTopology();
+        BridgeTopologyOld bridgeTopology = new BridgeTopologyOld();
 
         bridgeTopology.parseBFT(nodeA,bftA);
 
@@ -164,7 +164,7 @@ public class DefaultBridgeTopologyTest {
         bftA =addBridgeForwardingTableEntry(portA1, mac3,bftA);
         bftA =addBridgeForwardingTableEntry(portA1, mac4,bftA);
 
-        BridgeTopology bridgeTopology = new BridgeTopology();
+        BridgeTopologyOld bridgeTopology = new BridgeTopologyOld();
 
         bridgeTopology.parseBFT(nodeA,bftA);
 
@@ -246,7 +246,7 @@ public class DefaultBridgeTopologyTest {
         bftA =addBridgeForwardingTableEntry(portA25, mac253,bftA);
 
 
-        BridgeTopology bridgeTopology = new BridgeTopology();
+        BridgeTopologyOld bridgeTopology = new BridgeTopologyOld();
 
         bridgeTopology.parseBFT(nodeA,bftA);
 
@@ -355,7 +355,7 @@ public class DefaultBridgeTopologyTest {
         bftB =addBridgeForwardingTableEntry(portB8, mac8,bftB);
         bftB =addBridgeForwardingTableEntry(portB9, mac9,bftB);
 
-        BridgeTopology bridgeTopology = new BridgeTopology();
+        BridgeTopologyOld bridgeTopology = new BridgeTopologyOld();
 
         bridgeTopology.parseBFT(nodeA,bftA);
         bridgeTopology.parseBFT(nodeB,bftB);
@@ -463,7 +463,7 @@ public class DefaultBridgeTopologyTest {
         bftB =addBridgeForwardingTableEntry(portBA, mac8,bftB);
         bftB =addBridgeForwardingTableEntry(portBA, mac9,bftB);
 
-        BridgeTopology bridgeTopology = new BridgeTopology();
+        BridgeTopologyOld bridgeTopology = new BridgeTopologyOld();
 
         bridgeTopology.parseBFT(nodeA,bftA);
         bridgeTopology.parseBFT(nodeB,bftB);
@@ -540,7 +540,7 @@ public class DefaultBridgeTopologyTest {
         bftB =addBridgeForwardingTableEntry(portB2, macB21,bftB);
         bftB =addBridgeForwardingTableEntry(portB2, macB22,bftB);
 
-        BridgeTopology bridgeTopology = new BridgeTopology();
+        BridgeTopologyOld bridgeTopology = new BridgeTopologyOld();
 
         bridgeTopology.parseBFT(nodeA,bftA);
         bridgeTopology.parseBFT(nodeB,bftB);
@@ -580,7 +580,7 @@ public class DefaultBridgeTopologyTest {
     public void testTwoConnectedBridgeTopologyAB() {
         ABCTopology topology = new ABCTopology();
 
-        BridgeTopology bridgeTopology = new BridgeTopology();
+        BridgeTopologyOld bridgeTopology = new BridgeTopologyOld();
         bridgeTopology.parseBFT(topology.nodeA,topology.bftA);
         bridgeTopology.parseBFT(topology.nodeB,topology.bftB);
 
@@ -592,7 +592,7 @@ public class DefaultBridgeTopologyTest {
     public void testTwoConnectedBridgeTopologyBA() {
         ABCTopology topology = new ABCTopology();
 
-        BridgeTopology bridgeTopology = new BridgeTopology();
+        BridgeTopologyOld bridgeTopology = new BridgeTopologyOld();
 
         bridgeTopology.parseBFT(topology.nodeB,topology.bftB);
         bridgeTopology.parseBFT(topology.nodeA,topology.bftA);
@@ -604,7 +604,7 @@ public class DefaultBridgeTopologyTest {
     public void testTwoConnectedBridgeTopologyAC() {
 
         ABCTopology topology = new ABCTopology();
-        BridgeTopology bridgeTopology = new BridgeTopology();
+        BridgeTopologyOld bridgeTopology = new BridgeTopologyOld();
 
         bridgeTopology.parseBFT(topology.nodeA,topology.bftA);
         bridgeTopology.parseBFT(topology.nodeC,topology.bftC);
@@ -616,7 +616,7 @@ public class DefaultBridgeTopologyTest {
     public void testTwoConnectedBridgeTopologyCA() {
 
         ABCTopology topology = new ABCTopology();
-        BridgeTopology bridgeTopology = new BridgeTopology();
+        BridgeTopologyOld bridgeTopology = new BridgeTopologyOld();
 
         bridgeTopology.parseBFT(topology.nodeC,topology.bftC);
         bridgeTopology.parseBFT(topology.nodeA,topology.bftA);
@@ -628,7 +628,7 @@ public class DefaultBridgeTopologyTest {
     public void testTwoConnectedBridgeTopologyBC() {
         ABCTopology topology = new ABCTopology();
 
-        BridgeTopology bridgeTopology = new BridgeTopology();
+        BridgeTopologyOld bridgeTopology = new BridgeTopologyOld();
 
         bridgeTopology.parseBFT(topology.nodeB,topology.bftB);
         bridgeTopology.parseBFT(topology.nodeC,topology.bftC);
@@ -640,7 +640,7 @@ public class DefaultBridgeTopologyTest {
     public void testTwoConnectedBridgeTopologyCB() {
         ABCTopology topology = new ABCTopology();
 
-        BridgeTopology bridgeTopology = new BridgeTopology();
+        BridgeTopologyOld bridgeTopology = new BridgeTopologyOld();
 
         bridgeTopology.parseBFT(topology.nodeC,topology.bftC);
         bridgeTopology.parseBFT(topology.nodeB,topology.bftB);
@@ -652,7 +652,7 @@ public class DefaultBridgeTopologyTest {
     public void testTwoConnectedBridgeTopologyDE() {
         DEFGTopology topology = new DEFGTopology();
 
-        BridgeTopology bridgeTopology = new BridgeTopology();
+        BridgeTopologyOld bridgeTopology = new BridgeTopologyOld();
 
         bridgeTopology.parseBFT(topology.nodeD,topology.bftD);
         bridgeTopology.parseBFT(topology.nodeE,topology.bftE);
@@ -665,7 +665,7 @@ public class DefaultBridgeTopologyTest {
     public void testTwoConnectedBridgeTopologyDF() {
         DEFGTopology topology = new DEFGTopology();
 
-        BridgeTopology bridgeTopology = new BridgeTopology();
+        BridgeTopologyOld bridgeTopology = new BridgeTopologyOld();
 
         bridgeTopology.parseBFT(topology.nodeD,topology.bftD);
         bridgeTopology.parseBFT(topology.nodeF,topology.bftF);
@@ -677,7 +677,7 @@ public class DefaultBridgeTopologyTest {
     public void testTwoConnectedBridgeTopologyEF() {
         DEFGTopology topology = new DEFGTopology();
 
-        BridgeTopology bridgeTopology = new BridgeTopology();
+        BridgeTopologyOld bridgeTopology = new BridgeTopologyOld();
 
         bridgeTopology.parseBFT(topology.nodeE,topology.bftE);
         bridgeTopology.parseBFT(topology.nodeF,topology.bftF);
@@ -690,7 +690,7 @@ public class DefaultBridgeTopologyTest {
     public void testThreeConnectedBridgeTopologyABC() {
         ABCTopology topology = new ABCTopology();
 
-        BridgeTopology bridgeTopology = new BridgeTopology();
+        BridgeTopologyOld bridgeTopology = new BridgeTopologyOld();
 
         bridgeTopology.parseBFT(topology.nodeA,topology.bftA);
         bridgeTopology.parseBFT(topology.nodeB,topology.bftB);
@@ -704,7 +704,7 @@ public class DefaultBridgeTopologyTest {
     public void testThreeConnectedBridgeTopologyACB() {
         ABCTopology topology = new ABCTopology();
 
-        BridgeTopology bridgeTopology = new BridgeTopology();
+        BridgeTopologyOld bridgeTopology = new BridgeTopologyOld();
 
         bridgeTopology.parseBFT(topology.nodeA,topology.bftA);
         bridgeTopology.parseBFT(topology.nodeC,topology.bftC);
@@ -718,7 +718,7 @@ public class DefaultBridgeTopologyTest {
     public void testThreeConnectedBridgeTopologyBAC() {
         ABCTopology topology = new ABCTopology();
 
-        BridgeTopology bridgeTopology = new BridgeTopology();
+        BridgeTopologyOld bridgeTopology = new BridgeTopologyOld();
 
         bridgeTopology.parseBFT(topology.nodeB,topology.bftB);
         bridgeTopology.parseBFT(topology.nodeA,topology.bftA);
@@ -732,7 +732,7 @@ public class DefaultBridgeTopologyTest {
     public void testThreeConnectedBridgeTopologyBCA() {
         ABCTopology topology = new ABCTopology();
 
-        BridgeTopology bridgeTopology = new BridgeTopology();
+        BridgeTopologyOld bridgeTopology = new BridgeTopologyOld();
 
         bridgeTopology.parseBFT(topology.nodeB,topology.bftB);
         bridgeTopology.parseBFT(topology.nodeC,topology.bftC);
@@ -745,7 +745,7 @@ public class DefaultBridgeTopologyTest {
     public void testThreeConnectedBridgeTopologyCAB() {
         ABCTopology topology = new ABCTopology();
 
-        BridgeTopology bridgeTopology = new BridgeTopology();
+        BridgeTopologyOld bridgeTopology = new BridgeTopologyOld();
 
         bridgeTopology.parseBFT(topology.nodeC,topology.bftC);
         bridgeTopology.parseBFT(topology.nodeA,topology.bftA);
@@ -758,7 +758,7 @@ public class DefaultBridgeTopologyTest {
     public void testThreeConnectedBridgeTopologyCBA() {
         ABCTopology topology = new ABCTopology();
 
-        BridgeTopology bridgeTopology = new BridgeTopology();
+        BridgeTopologyOld bridgeTopology = new BridgeTopologyOld();
 
         bridgeTopology.parseBFT(topology.nodeC,topology.bftC);
         bridgeTopology.parseBFT(topology.nodeB,topology.bftB);
@@ -773,7 +773,7 @@ public class DefaultBridgeTopologyTest {
 
         DEFGTopology topology = new DEFGTopology();
 
-        BridgeTopology bridgeTopology = new BridgeTopology();
+        BridgeTopologyOld bridgeTopology = new BridgeTopologyOld();
 
         bridgeTopology.parseBFT(topology.nodeD,topology.bftD);
         bridgeTopology.parseBFT(topology.nodeE,topology.bftE);
@@ -787,7 +787,7 @@ public class DefaultBridgeTopologyTest {
     public void testThreeConnectedBridgeTopologyDFE() {
         DEFGTopology topology = new DEFGTopology();
 
-        BridgeTopology bridgeTopology = new BridgeTopology();
+        BridgeTopologyOld bridgeTopology = new BridgeTopologyOld();
 
         bridgeTopology.parseBFT(topology.nodeD,topology.bftD);
         bridgeTopology.parseBFT(topology.nodeF,topology.bftF);
@@ -800,7 +800,7 @@ public class DefaultBridgeTopologyTest {
     public void testFourConnectedBridgeTopologyDEFG() {
         DEFGTopology topology = new DEFGTopology();
 
-        BridgeTopology bridgeTopology = new BridgeTopology();
+        BridgeTopologyOld bridgeTopology = new BridgeTopologyOld();
 
         bridgeTopology.parseBFT(topology.nodeD,topology.bftD);
         bridgeTopology.parseBFT(topology.nodeE,topology.bftE);

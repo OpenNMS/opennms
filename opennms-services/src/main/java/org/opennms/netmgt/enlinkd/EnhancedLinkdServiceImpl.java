@@ -72,9 +72,8 @@ import org.opennms.netmgt.model.OnmsNode.NodeType;
 import org.opennms.netmgt.model.OspfElement;
 import org.opennms.netmgt.model.OspfLink;
 import org.opennms.netmgt.model.PrimaryType;
-import org.opennms.netmgt.model.topology.BridgeTopology;
-import org.opennms.netmgt.model.topology.BridgeTopology.BridgeTopologyLink;
-import org.opennms.netmgt.model.topology.LinkableSnmpNode;
+import org.opennms.netmgt.model.topology.BridgeTopologyOld;
+import org.opennms.netmgt.model.topology.BridgeTopologyOld.BridgeTopologyLink;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -122,8 +121,8 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
 	volatile Map<Integer, Map<Integer,Integer>> m_nodebridgeportvlan =new HashMap<Integer, Map<Integer,Integer>>();
 
     @Override
-	public List<LinkableSnmpNode> getSnmpNodeList() {
-		final List<LinkableSnmpNode> nodes = new ArrayList<LinkableSnmpNode>();
+	public List<Node> getSnmpNodeList() {
+		final List<Node> nodes = new ArrayList<Node>();
 		
 		final Criteria criteria = new Criteria(OnmsNode.class);
 		criteria.setAliases(Arrays.asList(new Alias[] {
@@ -132,13 +131,13 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
         criteria.addRestriction(new EqRestriction("type", NodeType.ACTIVE));
         criteria.addRestriction(new EqRestriction("iface.isSnmpPrimary", PrimaryType.PRIMARY));
         for (final OnmsNode node : m_nodeDao.findMatching(criteria)) {
-            nodes.add(new LinkableSnmpNode(node.getId(), node.getPrimaryInterface().getIpAddress(), node.getSysObjectId(),node.getSysName()));
+            nodes.add(new Node(node.getId(), node.getPrimaryInterface().getIpAddress(), node.getSysObjectId(),node.getSysName()));
         }
         return nodes;
 	}
 
 	@Override
-	public LinkableSnmpNode getSnmpNode(final int nodeid) {
+	public Node getSnmpNode(final int nodeid) {
 		final Criteria criteria = new Criteria(OnmsNode.class);
 		criteria.setAliases(Arrays.asList(new Alias[] {
 	            new Alias("ipInterfaces", "iface", JoinType.LEFT_JOIN)
@@ -150,7 +149,7 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
 
         if (nodes.size() > 0) {
         	final OnmsNode node = nodes.get(0);
-			return new LinkableSnmpNode(node.getId(), node.getPrimaryInterface().getIpAddress(), node.getSysObjectId(),node.getSysName());
+			return new Node(node.getId(), node.getPrimaryInterface().getIpAddress(), node.getSysObjectId(),node.getSysName());
         } else {
         	return null;
         }
@@ -618,7 +617,7 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
 			savedtopology.put(maclink.getNode().getId(), nodesavedtopology);
 		}
 		
-		BridgeTopology topology = new BridgeTopology();
+		BridgeTopologyOld topology = new BridgeTopologyOld();
 		Set<Integer> targets = new HashSet<Integer>();
 		targets.add(nodeId);
 		for (BridgeBridgeLink bblink: m_bridgeBridgeLinkDao.findByNodeId(nodeId)) {

@@ -34,6 +34,7 @@ import java.util.Date;
 
 
 
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.opennms.netmgt.enlinkd.snmp.CdpCacheTableTracker;
@@ -41,8 +42,6 @@ import org.opennms.netmgt.enlinkd.snmp.CdpGlobalGroupTracker;
 import org.opennms.netmgt.enlinkd.snmp.CdpInterfacePortNameGetter;
 import org.opennms.netmgt.model.CdpElement;
 import org.opennms.netmgt.model.OspfElement.TruthValue;
-import org.opennms.netmgt.model.topology.LinkableSnmpNode;
-
 import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpWalker;
 
@@ -64,7 +63,7 @@ public final class NodeDiscoveryCdp extends NodeDiscovery {
 	 * @param EnhancedLinkd linkd
 	 * @param LinkableNode node
 	 */
-    public NodeDiscoveryCdp(final EnhancedLinkd linkd, final LinkableSnmpNode node) {
+    public NodeDiscoveryCdp(final EnhancedLinkd linkd, final Node node) {
     	super(linkd, node);
     }
 

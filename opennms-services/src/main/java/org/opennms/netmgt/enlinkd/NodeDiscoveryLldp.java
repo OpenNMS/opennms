@@ -36,7 +36,6 @@ import org.opennms.core.utils.LldpUtils.LldpChassisIdSubType;
 import org.opennms.netmgt.enlinkd.snmp.LldpLocPortGetter;
 import org.opennms.netmgt.enlinkd.snmp.LldpLocalGroupTracker;
 import org.opennms.netmgt.enlinkd.snmp.LldpRemTableTracker;
-import org.opennms.netmgt.model.topology.LinkableSnmpNode;
 import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpWalker;
 import org.slf4j.Logger;
@@ -66,7 +65,7 @@ public final class NodeDiscoveryLldp extends NodeDiscovery {
      * @param LinkableNode node
      * 
      */
-    public NodeDiscoveryLldp(final EnhancedLinkd linkd, final LinkableSnmpNode node) {
+    public NodeDiscoveryLldp(final EnhancedLinkd linkd, final Node node) {
     	super(linkd, node);
     }
 
