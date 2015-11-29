@@ -139,4 +139,19 @@ public class Jsr160DetectorTest implements InitializingBean {
         assertFalse(m_detector.isServiceDetected(InetAddress.getLocalHost()));
 
     }
+
+    /**
+     * If we try to connect to localhost on the default OpenNMS JMX port, the detector
+     * should connect to the in-JVM {@link MBeanServer} and return that the service has
+     * been detected.
+     */
+    @Test(timeout=20000)
+    public void testDetectorLocalJvm() throws IOException, MalformedObjectNameException, NullPointerException, InstanceAlreadyExistsException, MBeanRegistrationException, NotCompliantMBeanException {
+
+        m_detector.setPort(18980);
+        m_detector.init();
+
+        assertTrue(m_detector.isServiceDetected(InetAddress.getLocalHost()));
+    }
+
 }

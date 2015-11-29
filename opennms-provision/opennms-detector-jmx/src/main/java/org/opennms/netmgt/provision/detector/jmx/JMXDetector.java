@@ -87,7 +87,7 @@ public abstract class JMXDetector extends SyncAbstractDetector {
         super(serviceName, port, timeout, retries);
     }
 
-    abstract protected JmxServerConnectionWrapper connect(final InetAddress address, final int port, final int timeout) throws ConnectException;
+    abstract protected JmxServerConnectionWrapper connect(final InetAddress address, final int port, final int timeout) throws ConnectException, IOException;
 
     /** {@inheritDoc} */
     @Override
