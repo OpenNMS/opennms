@@ -204,7 +204,12 @@ class SyslogReceiverJavaNetImpl implements SyslogReceiver {
                 LOG.error("Task interrupted in {}", this.getClass().getSimpleName(), e);
                 break;
             } catch (IOException e) {
-                LOG.error("An I/O exception occured on the datagram receipt port, exiting", e);
+                if (m_stop) {
+                    // A SocketException can be thrown during normal shutdown so log as debug
+                    LOG.debug("Shutting down the datagram receipt port: " + e.getMessage());
+                } else {
+                    LOG.error("An I/O exception occured on the datagram receipt port, exiting", e);
+                }
                 break;
             }
 
