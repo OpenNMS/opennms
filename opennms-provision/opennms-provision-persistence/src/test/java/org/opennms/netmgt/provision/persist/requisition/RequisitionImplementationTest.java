@@ -1,16 +1,21 @@
-package org.opennms.netmgt.provision.persist;
+package org.opennms.netmgt.provision.persist.requisition;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.Map;
 
+import org.apache.commons.io.FileUtils;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
+import org.opennms.netmgt.provision.persist.ForeignSourceRepository;
+import org.opennms.netmgt.provision.persist.ForeignSourceRepositoryException;
 import org.opennms.netmgt.provision.persist.foreignsource.ForeignSource;
-import org.opennms.netmgt.provision.persist.requisition.Requisition;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,20 +31,33 @@ import org.springframework.test.context.ContextConfiguration;
         "classpath:/testForeignSourceContext.xml"
 })
 @JUnitConfigurationEnvironment
-public class RequisitionTest implements InitializingBean, ApplicationContextAware {
-    private static final Logger LOG = LoggerFactory.getLogger(RequisitionTest.class);
+public class RequisitionImplementationTest implements InitializingBean, ApplicationContextAware {
+    private static final Logger LOG = LoggerFactory.getLogger(RequisitionImplementationTest.class);
 
     private Map<String, ForeignSourceRepository> m_repositories;
 
     @Before
     public void setUp() throws Exception {
         if (m_repositories != null) {
+            resetDirectories();
             for (final ForeignSourceRepository fsr : m_repositories.values()) {
                 fsr.clear();
                 fsr.flush();
             }
         }
         LOG.info("Test context prepared.");
+    }
+
+    @After
+    public void tearDown() throws Exception {
+        resetDirectories();
+    }
+
+    private void resetDirectories() throws IOException {
+        FileUtils.deleteDirectory(new File("target/opennms-home/etc/imports"));
+        FileUtils.forceMkdir(new File("target/opennms-home/etc/imports/pending"));
+        FileUtils.deleteDirectory(new File("target/opennms-home/etc/foreign-sources"));
+        FileUtils.forceMkdir(new File("target/opennms-home/etc/foreign-sources/pending"));
     }
 
     interface RepositoryTest<T> {

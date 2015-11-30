@@ -255,8 +255,7 @@ public class CachingForeignSourceRepository extends AbstractForeignSourceReposit
 	public void delete(final ForeignSource foreignSource) throws ForeignSourceRepositoryException {
 		readLock();
 		try {
-			final Map<String,ForeignSource> fses = getForeignSourceMap();
-			fses.remove(foreignSource.getName());
+			getForeignSourceMap().remove(foreignSource.getName());
 			m_dirtyForeignSources.add(foreignSource.getName());
 		} finally {
 			readUnlock();
