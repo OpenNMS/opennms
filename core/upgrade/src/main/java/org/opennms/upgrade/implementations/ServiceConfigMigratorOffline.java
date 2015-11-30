@@ -159,14 +159,6 @@ public class ServiceConfigMigratorOffline extends AbstractOnmsUpgrade {
     @Override
     public void execute() throws OnmsUpgradeException {
         if (skipMe) return;
-
-        final String[] eol = {
-                "OpenNMS:Name=Linkd",
-                "OpenNMS:Name=Xmlrpcd",
-                "OpenNMS:Name=XmlrpcProvisioner",
-                "OpenNMS:Name=AccessPointMonitor"
-        };
-
         try {
             ServiceConfiguration currentCfg = JaxbUtils.unmarshal(ServiceConfiguration.class, configFile);
             int index = 0;
@@ -189,8 +181,11 @@ public class ServiceConfigMigratorOffline extends AbstractOnmsUpgrade {
                     log("Fixing the class path for RemotePollerBackEnd.\n");
                     localSvc.setClassName("org.opennms.netmgt.poller.remote.jmx.RemotePollerBackEnd");
                 }
-
-                final Attribute a = getLoggingPrefix(localSvc);
+                if (localSvc.getName().equals("OpenNMS:Name=Linkd")) {
+                    log("Disabling Linkd (to promote EnhancedLinkd)\n");
+                    localSvc.setEnabled(false);
+                }
+                Attribute a = getLoggingPrefix(localSvc);
                 if (a != null) {
                     String prefix = a.getValue().getContent().toLowerCase();
                     // If the logging prefix isn't already lower case...
@@ -202,21 +197,6 @@ public class ServiceConfigMigratorOffline extends AbstractOnmsUpgrade {
                 }
                 index++;
             }
-
-            // Remove any end-of-life'd daemons from service configuration
-            for (final String serviceName : eol) {
-                final Service eolService = getService(currentCfg, serviceName);
-                if (eolService == null) {
-                    continue;
-                }
-                final String eolServiceName = eolService.getName();
-                if (eolServiceName.equals(serviceName)) {
-                    final String displayName = serviceName.replace("OpenNMS:Name=", "");
-                    log("Disabling EOL service: " + displayName + "\n");
-                    eolService.setEnabled(false);
-                }
-            }
-
             StringWriter sw = new StringWriter();
             sw.write("<?xml version=\"1.0\"?>\n");
             sw.write("<!-- NOTE!!!!!!!!!!!!!!!!!!!\n");

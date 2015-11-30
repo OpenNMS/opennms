@@ -28,25 +28,16 @@
 
 package org.opennms.upgrade.implementations;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-
 import java.io.File;
-import java.util.Arrays;
-import java.util.Collection;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameters;
 import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.config.ServiceConfigFactory;
-import org.opennms.netmgt.config.service.Service;
 import org.opennms.netmgt.config.service.ServiceConfiguration;
 
 /**
@@ -54,19 +45,7 @@ import org.opennms.netmgt.config.service.ServiceConfiguration;
  * 
  * @author Alejandro Galue <agalue@opennms.org>
  */
-@RunWith(Parameterized.class)
 public class ServiceConfigMigratorOfflineTest {
-    private final String m_testFile;
-    private final int m_totalBefore;
-    private final int m_totalAfter;
-    private final int m_enabledAfter;
-
-    public ServiceConfigMigratorOfflineTest(final String testFile, final int totalBefore, final int totalAfter, final int enabledAfter) {
-        m_testFile = testFile;
-        m_totalBefore = totalBefore;
-        m_totalAfter = totalAfter;
-        m_enabledAfter = enabledAfter;
-    }
 
     /**
      * Sets up the test.
@@ -77,7 +56,6 @@ public class ServiceConfigMigratorOfflineTest {
     public void setUp() throws Exception {
         FileUtils.copyDirectory(new File("src/test/resources/etc"), new File("target/home/etc"));
         System.setProperty("opennms.home", "target/home");
-        FileUtils.copyFile(new File(m_testFile), new File("target/home/etc/service-configuration.xml"));
     }
 
     /**
@@ -90,56 +68,28 @@ public class ServiceConfigMigratorOfflineTest {
         FileUtils.deleteDirectory(new File("target/home"));
     }
 
-    @Parameters
-    public static Collection<Object[]> params() {
-        return Arrays.asList(new Object[][] {
-            // service config, total, enabled
-            { "target/home/etc/service-configuration-1.8.17.xml",  30, 39, 28 },
-            { "target/home/etc/service-configuration-1.10.14.xml", 29, 39, 28 },
-            { "target/home/etc/service-configuration-1.12.9.xml",  26, 38, 27 },
-            { "target/home/etc/service-configuration-14.0.3.xml",  38, 38, 27 },
-            { "target/home/etc/service-configuration-15.0.2.xml",  38, 38, 27 },
-            { "target/home/etc/service-configuration-16.0.4.xml",  37, 38, 27 }
-        });
-    }
-
     /**
      * Test fixing the configuration file.
      *
      * @throws Exception the exception
      */
     @Test
-    public void testUpgradeConfig() throws Exception {
+    public void testFixingConfig() throws Exception {
+        ServiceConfigMigratorOffline migrator = new ServiceConfigMigratorOffline();
+        migrator.execute();
+
+        // Checking parsing the fixed file (it should contain all the services)
         File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.SERVICE_CONF_FILE_NAME);
         ServiceConfiguration cfg = JaxbUtils.unmarshal(ServiceConfiguration.class, cfgFile);
 
-        // check the total and active services before doing the upgrade
-        assertEquals(m_totalBefore, cfg.getServiceCount());
+        // Do not change this value: the config file behind this test should always contain
+        // the content for OpenNMS 14.0.0, regardless of whether or not services are added,
+        // changed, or removed in the latest version.
+        Assert.assertEquals(38, cfg.getServiceCount());
 
-        // perform the upgrade
-        final ServiceConfigMigratorOffline migrator = new ServiceConfigMigratorOffline();
-        migrator.execute();
-
-        // confirm the total and active services after the upgrade
-        cfg = JaxbUtils.unmarshal(ServiceConfiguration.class, cfgFile);
-        final ServiceConfigFactory factory = new ServiceConfigFactory();
-        Assert.assertEquals(m_totalAfter, cfg.getServiceCount());
-        Assert.assertEquals(m_enabledAfter, factory.getServices().length);
-
-        for (final Service svc : cfg.getServiceCollection()) {
-            if ("OpenNMS:Name=Linkd".equals(svc.getName())) {
-                assertFalse(svc.isEnabled());
-            };
-            if ("OpenNMS:Name=Xmlrpcd".equals(svc.getName())) {
-                assertFalse(svc.isEnabled());
-            };
-            if ("OpenNMS:Name=XmlrpcProvisioner".equals(svc.getName())) {
-                assertFalse(svc.isEnabled());
-            };
-            if ("OpenNMS:Name=AccessPointMonitor".equals(svc.getName())) {
-                assertFalse(svc.isEnabled());
-            };
-        }
+        // Checking Service Factory (it should return only the enabled services)
+        ServiceConfigFactory factory = new ServiceConfigFactory();
+        Assert.assertEquals(27, factory.getServices().length);
     }
 
 }
