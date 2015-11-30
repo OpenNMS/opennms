@@ -28,8 +28,16 @@
 
 package org.opennms.netmgt.bsm.persistence.api;
 
+import java.util.List;
+
 import org.opennms.netmgt.dao.api.OnmsDao;
 
 public interface BusinessServiceDao extends OnmsDao<BusinessService, Long> {
 
+    /**
+     * Load all alarms from the alarm table which have a node id, ip address and service type set.
+     *
+     * @return all alarms from the alarm table which have a node id, ip address and service type set.
+     */
+    List<BusinessStatusEntity> getStatus();
 }

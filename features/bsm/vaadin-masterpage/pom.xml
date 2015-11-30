@@ -114,6 +114,12 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
+            <groupId>org.opennms.features.themes</groupId>
+            <artifactId>bsm-theme</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <!-- Test dependencies -->
+        <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <scope>test</scope>

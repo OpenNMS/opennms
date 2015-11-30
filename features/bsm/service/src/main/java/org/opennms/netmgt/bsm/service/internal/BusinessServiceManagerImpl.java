@@ -30,18 +30,21 @@ package org.opennms.netmgt.bsm.service.internal;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.stream.Collectors;
+import java.util.Set;
 
+import org.opennms.netmgt.bsm.persistence.api.BusinessService;
+import org.opennms.netmgt.bsm.persistence.api.BusinessServiceDao;
+import org.opennms.netmgt.bsm.persistence.api.BusinessStatusEntity;
 import org.opennms.netmgt.bsm.service.BusinessServiceManager;
 import org.opennms.netmgt.bsm.service.model.BusinessServiceDTO;
 import org.opennms.netmgt.bsm.service.model.IpServiceDTO;
-import org.opennms.netmgt.bsm.persistence.api.BusinessService;
-import org.opennms.netmgt.bsm.persistence.api.BusinessServiceDao;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.OnmsMonitoredService;
+import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.web.rest.api.ResourceLocationFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -126,8 +129,33 @@ public class BusinessServiceManagerImpl implements BusinessServiceManager {
     }
 
     @Override
-    public List<IpServiceDTO> getAllIpServiceDTO() {
-        return transformAll(monitoredServiceDao.findAll());
+    public OnmsSeverity calculateStatus(Long serviceId) {
+        final BusinessService service = getBusinessService(serviceId);
+        final List<BusinessStatusEntity> statusEntities = getDao().getStatus();
+        if (!statusEntities.isEmpty()) {
+            final Set<BusinessStatusEntity.Key> keySet = new HashSet<>();
+            for (OnmsMonitoredService eachMonitoredService : service.getIpServices()) {
+                BusinessStatusEntity.Key key = new BusinessStatusEntity.Key(eachMonitoredService.getNodeId(), eachMonitoredService.getServiceId(), eachMonitoredService.getIpAddress());
+                keySet.add(key);
+            }
+
+            // find the status for the the service we are looking for
+            final List<BusinessStatusEntity> statusList = new ArrayList<>();
+            for (BusinessStatusEntity eachStatus : statusEntities) {
+                if (keySet.contains(eachStatus.getKey())) {
+                    statusList.add(eachStatus);
+                }
+            }
+            // calculate for the business service
+            OnmsSeverity maxSeverity = OnmsSeverity.NORMAL;
+            for (BusinessStatusEntity eachStatus : statusList) {
+                if (maxSeverity.isLessThan(eachStatus.getSeverity())) {
+                    maxSeverity = eachStatus.getSeverity();
+                }
+            }
+            return maxSeverity;
+        }
+        return OnmsSeverity.NORMAL;
     }
 
     private BusinessServiceDao getDao() {
