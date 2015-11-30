@@ -55,6 +55,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.test.MockLogAppender;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.jmx.JmxConfig;
 import org.opennms.netmgt.dao.jmx.JmxConfigDao;
 import org.opennms.netmgt.provision.detector.jmx.Jsr160Detector;
@@ -151,7 +152,7 @@ public class Jsr160DetectorTest implements InitializingBean {
         m_detector.setPort(18980);
         m_detector.init();
 
-        assertTrue(m_detector.isServiceDetected(InetAddress.getLocalHost()));
+        assertTrue(m_detector.isServiceDetected(InetAddressUtils.ONE_TWENTY_SEVEN));
     }
 
 }
