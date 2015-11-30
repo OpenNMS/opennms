@@ -1,0 +1,36 @@
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0 http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd">
+
+    <reference id="transactionOperations" interface="org.springframework.transaction.support.TransactionOperations" availability="mandatory"/>
+    <reference id="businessServiceManager" interface="org.opennms.netmgt.bsm.service.BusinessServiceManager" availability="mandatory"/>
+
+    <bean id="transactionAwareBeanProxyFactory" class="org.opennms.netmgt.bsm.vaadin.adminpage.TransactionAwareBeanProxyFactory">
+        <argument ref="transactionOperations"/>
+    </bean>
+    <bean id="bsmUi" class="org.opennms.netmgt.bsm.vaadin.adminpage.BusinessServiceAdminPageUI" scope="prototype">
+        <argument ref="transactionAwareBeanProxyFactory"/>
+        <property name="businessServiceManager" ref="businessServiceManager"/>
+    </bean>
+	<bean id="bsmAdminPageApplicationFactory" class="org.opennms.netmgt.bsm.vaadin.adminpage.BusinessServiceAdminPageUIFactory" scope="singleton">
+        <argument ref="blueprintContainer"/>
+        <argument value="bsmUi"/>
+    </bean>
+    <bean id="bsmAdminPageUi" class="org.opennms.netmgt.bsm.vaadin.adminpage.AdminPageNavEntry">
+        <property name="url" value="admin/bsm/adminpage.jsp" />
+        <property name="name" value="Business Service Monitoring Admin Page" />
+    </bean>
+
+    <service interface="org.opennms.vaadin.extender.ApplicationFactory" ref="bsmAdminPageApplicationFactory">
+        <service-properties>
+            <entry key="alias" value="/bsm-admin-page" />
+        </service-properties>
+    </service>
+    <service interface="org.opennms.web.navigate.PageNavEntry" ref="bsmAdminPageUi">
+        <service-properties>
+            <entry key="Page" value="admin" />
+            <entry key="Category" value="service-monitoring" />
+            <entry key="registration.export" value="true" />
+        </service-properties>
+    </service>
+</blueprint>

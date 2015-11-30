@@ -18,6 +18,7 @@
     <module>rest</module>
     <module>service</module>
     <module>vaadin-masterpage</module>
+    <module>vaadin-adminpage</module>
   </modules>
   <build>
     <plugins>
