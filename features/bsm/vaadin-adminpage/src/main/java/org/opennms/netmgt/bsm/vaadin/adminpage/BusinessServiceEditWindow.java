@@ -28,6 +28,9 @@
 
 package org.opennms.netmgt.bsm.vaadin.adminpage;
 
+import java.util.Set;
+
+import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
@@ -38,12 +41,15 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 
 import org.opennms.netmgt.bsm.service.model.BusinessServiceDTO;
+import org.opennms.netmgt.bsm.service.model.IpServiceDTO;
 
 public class BusinessServiceEditWindow extends Window {
 
     private BusinessServiceMainLayout businessServiceMainLayout;
     private TextField nameField;
     private TwinColSelect ipServiceSelect;
+    private BeanItemContainer<IpServiceDTO> beanItemContainer = new BeanItemContainer<>(IpServiceDTO.class);
+
 
     public BusinessServiceEditWindow(BusinessServiceDTO businessServiceDTO, BusinessServiceMainLayout businessServiceMainLayout) {
         super("Business Service Edit");
@@ -66,6 +72,7 @@ public class BusinessServiceEditWindow extends Window {
             @Override
             public void buttonClick(Button.ClickEvent event) {
                 businessServiceDTO.setName(nameField.getValue().trim());
+                businessServiceDTO.setIpServices((Set<IpServiceDTO>)ipServiceSelect.getValue());
                 if (businessServiceDTO.getId() == null) {
                     businessServiceMainLayout.getBusinessServiceManager().save(businessServiceDTO);
                 } else {
@@ -92,6 +99,10 @@ public class BusinessServiceEditWindow extends Window {
         ipServiceSelect = new TwinColSelect();
         ipServiceSelect.setWidth(100.0f, Unit.PERCENTAGE);
         ipServiceSelect.setSizeFull();
+        beanItemContainer.addAll(businessServiceMainLayout.getBusinessServiceManager().getAllIpServiceDTO());
+        ipServiceSelect.setContainerDataSource(beanItemContainer);
+        ipServiceSelect.setValue(businessServiceDTO.getIpServices());
+
         Panel ipServiceSelectPanel = new Panel("IP-Services", ipServiceSelect);
         ipServiceSelectPanel.setSizeFull();
         verticalLayout.addComponent(ipServiceSelectPanel);
