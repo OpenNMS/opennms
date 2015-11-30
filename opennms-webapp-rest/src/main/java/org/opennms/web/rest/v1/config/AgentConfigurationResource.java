@@ -44,6 +44,7 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 
 import org.opennms.core.config.api.ConfigurationResource;
 import org.opennms.core.config.api.ConfigurationResourceException;
@@ -160,13 +161,13 @@ public class AgentConfigurationResource implements InitializingBean {
         LOG.debug("getAgentsForService(): filterName={}, serviceName={}", filterName, serviceName);
 
         if (filterName == null || serviceName == null) {
-            throw new IllegalArgumentException("You must specify a filter name and service name!");
+            throw new WebApplicationException(Response.status(Status.BAD_REQUEST).type(MediaType.TEXT_PLAIN).entity("You must specify a filter name and service name!").build());
         }
 
         final Filter filter = m_collectdConfigurationResource.get().getFilter(filterName);
         if (filter == null) {
             LOG.warn("No filter matching {} could be found.", filterName);
-            throw new WebApplicationException(404);
+            throw new WebApplicationException(Status.NOT_FOUND);
         }
 
         final List<InetAddress> addresses = m_filterDao.getActiveIPAddressList(filter.getContent());

@@ -104,6 +104,7 @@ public class MeasurementsService {
         response.setStep(results.getStep());
         response.setTimestamps(results.getTimestamps());
         response.setColumns(results.getColumns());
+        response.setConstants(results.getConstants());
         return response;
     }
 

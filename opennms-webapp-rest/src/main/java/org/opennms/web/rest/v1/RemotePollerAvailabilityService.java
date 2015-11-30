@@ -46,6 +46,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriInfo;
 
 import org.opennms.netmgt.config.monitoringLocations.LocationDef;
@@ -185,7 +186,7 @@ public class RemotePollerAvailabilityService extends OnmsRestService {
         
         LocationDef locationDefinition = m_monitoringLocationDao.get(location);
         if (locationDefinition == null) {
-            throw new IllegalArgumentException("Cannot find location definition: " + location);
+            throw getException(Status.BAD_REQUEST, "Cannot find location definition: " + location);
         }
         Collection<OnmsLocationMonitor> monitors = m_locationMonitorDao.findByLocationDefinition(locationDefinition);
         
@@ -350,7 +351,7 @@ public class RemotePollerAvailabilityService extends OnmsRestService {
         Date start = getStartTime(params);
         Date end = getEndTime(params);
         if((end.getTime() - start.getTime()) < TimeChunker.MINUTE) {
-            throw new IllegalArgumentException("The endTime has to be after the startTime by 5 minutes.\nCurrently the startTime is " + start + " and endTime is " + end);
+            throw getException(Status.BAD_REQUEST, "The endTime has to be after the startTime by 5 minutes.\nCurrently the startTime is " + start + " and endTime is " + end);
         }
         
         timeChunker = new TimeChunker(getResolution(params), start, end);
@@ -362,7 +363,7 @@ public class RemotePollerAvailabilityService extends OnmsRestService {
         Collection<OnmsApplication> applications = m_applicationDao.findAll();
         
         if (applications.size() == 0) {
-            throw new IllegalArgumentException("there are no applications");
+            throw getException(Status.BAD_REQUEST, "there are no applications");
         }
         
         sortedApplications = new ArrayList<OnmsApplication>(applications);

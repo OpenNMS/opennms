@@ -32,7 +32,6 @@ import java.io.Closeable;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.nio.file.FileSystems;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardWatchEventKinds;
@@ -122,15 +121,17 @@ public class DirectoryWatcher<T> implements Runnable, Closeable {
      * @see java.lang.Runnable#run()
      */
     @Override
+    @SuppressWarnings("unchecked")
     public void run() {
-        try (WatchService watcher = FileSystems.getDefault().newWatchService()) {
-            LOG.debug("registering create watcher on " + m_path.toAbsolutePath().toString());
-            m_path.register( watcher, StandardWatchEventKinds.ENTRY_MODIFY);
-            LOG.debug( "watcher registration complete for " + m_path.toAbsolutePath().toString() );
+        LOG.info("starting run loop");
+        try (WatchService watcher = m_path.getFileSystem().newWatchService()) {
+            LOG.debug("registering create watcher on {}", m_path.toAbsolutePath().toString());
+            m_path.register(watcher, StandardWatchEventKinds.ENTRY_CREATE, StandardWatchEventKinds.ENTRY_DELETE, StandardWatchEventKinds.ENTRY_MODIFY);
+            LOG.debug("watcher registration complete for {}", m_path.toAbsolutePath().toString());
             synchronized (this) {
                 this.notifyAll();
             }
-            for ( ;; ) {
+            while (true) {
                 if (m_thread.isInterrupted()) {
                     break;
                 }
@@ -139,43 +140,39 @@ public class DirectoryWatcher<T> implements Runnable, Closeable {
                     LOG.debug("waiting for create event");
                     key = watcher.take();
                     LOG.debug("got an event, process it");
-                }
-                catch (InterruptedException ie) {
+                } catch (InterruptedException ie) {
                     LOG.info("interruped, must be time to shut down...");
                     break;
                 }
 
-                for (WatchEvent<?> eventUnknown : key.pollEvents()) {
-                    @SuppressWarnings("unchecked")
-                    WatchEvent<Path> event = (WatchEvent<Path>) eventUnknown;
-                    WatchEvent.Kind<Path> kind = event.kind();
-                    String fileName = event.context().toString();
-                    File file = new File(m_directory, fileName);
+                for (WatchEvent<?> watchEvent : key.pollEvents()) {
+                    WatchEvent.Kind<?> kind = watchEvent.kind();
+                    Path pathChanged = ((WatchEvent<Path>) watchEvent).context();
+                    final String fileName = pathChanged.toString();
+                    final File file = new File(m_directory, fileName);
                     if (file.isDirectory()) { // Ignoring changes on directories.
+                        LOG.debug("{} is a directory, ignoring.", file);
                         continue;
                     }
-                    switch (kind.name()) {
-                    case "ENTRY_CREATE":
-                        LOG.info("created {} in {}.", fileName, m_directory);
-                        getContents(fileName);
-                        break;
-                    case "ENTRY_MODIFY":
-                        LOG.info("modified {} in {}.", fileName, m_directory);
+                    if (kind == StandardWatchEventKinds.OVERFLOW) {
+                        LOG.debug("overflow receiving, ignoring changes.");
+                        continue;
+                    } else if (kind == StandardWatchEventKinds.ENTRY_CREATE) {
+                        LOG.info("file '{}' created. Ignoring...", fileName);
+                    } else if (kind == StandardWatchEventKinds.ENTRY_MODIFY) {
+                        LOG.info("file '{}' modified. Removing entry from cache.", fileName);
                         m_contents.remove(fileName);
-                        getContents(fileName);
-                        break;
-                    case "ENTRY_DELETE":
-                        LOG.info("deleted {} from {}.", fileName, m_directory);
+                    } else if (kind == StandardWatchEventKinds.ENTRY_DELETE) {
+                        LOG.info("file '{}' deleted. Removing entry from cache.", fileName);
                         m_contents.remove(fileName);
-                        break;
                     }
+                    // IMPORTANT: The key must be reset after processed
                     if (! key.reset()) {
                         break;
                     }
                 }
             }
-        }
-        catch ( IOException ioe ) {
+        } catch (IOException ioe) {
             LOG.error(ioe.getMessage(), ioe);
         }
         LOG.info("existing run loop");
@@ -188,7 +185,7 @@ public class DirectoryWatcher<T> implements Runnable, Closeable {
      */
     public void start() throws InterruptedException {
         LOG.trace("starting monitor");
-        m_thread = new Thread(this, "DirectoryWatcher-" + m_directory.getName());
+        m_thread = new Thread(this, "DirectoryWatcher-" + m_directory.getParentFile().getName() + '-' + m_directory.getName());
         m_thread.start();
         synchronized (this) {
             this.wait();
@@ -245,16 +242,18 @@ public class DirectoryWatcher<T> implements Runnable, Closeable {
      */
     public T getContents(String fileName) throws FileNotFoundException {
         File file = new File(m_directory, fileName);
-        if (file.exists()) {
+        if (file.exists() && !file.isDirectory()) {
             FileReloadContainer<T> newContainer = new FileReloadContainer<T>(file, m_loader);
             newContainer.setReloadCheckInterval(0);
-            FileReloadContainer<T> container = m_contents.putIfAbsent(file.getName(), newContainer);
-            if (container == null) { container = newContainer; }
+            FileReloadContainer<T> container = m_contents.putIfAbsent(fileName, newContainer);
+            if (container == null) {
+                LOG.debug("getting content of {}", file);
+                container = newContainer;
+            }
             return container.getObject();
-        } else {
-            m_contents.remove(fileName);
-            throw new FileNotFoundException("there is no file " + fileName + " in directory " + m_directory);
         }
+        m_contents.remove(fileName);
+        throw new FileNotFoundException("there is no file called '" + fileName + "' in directory " + m_directory);
     }
 
 }
