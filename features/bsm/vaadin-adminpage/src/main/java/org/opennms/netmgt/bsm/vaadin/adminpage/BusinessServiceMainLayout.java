@@ -117,6 +117,5 @@ public class BusinessServiceMainLayout extends VerticalLayout {
     public void refreshTable() {
         beanItemContainer.removeAllItems();
         beanItemContainer.addAll(businessServiceManager.findAll());
-        System.out.println(businessServiceManager.findAll().get(0).getId() + "");
     }
 }

@@ -34,11 +34,11 @@
 %>
 
 <jsp:include page="/includes/bootstrap.jsp" flush="false" >
-    <jsp:param name="title" value="Busiess Service Admin Page" />
-    <jsp:param name="headTitle" value="Busiess Service Admin Page" />
+    <jsp:param name="title" value="Business Service Admin Page" />
+    <jsp:param name="headTitle" value="Business Service Admin Page" />
     <jsp:param name="location" value="admin" />
     <jsp:param name="breadcrumb" value="<a href='admin/index.jsp'>Admin</a>" />
-    <jsp:param name="breadcrumb" value="Busiess Services Admin Page" />
+    <jsp:param name="breadcrumb" value="Business Services Admin Page" />
     <jsp:param name="vaadinEmbeddedStyles" value="true" />
 </jsp:include>
 

@@ -35,10 +35,10 @@ import javax.xml.bind.annotation.XmlID;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
+import com.google.common.base.Objects;
+
 import org.opennms.web.rest.api.JAXBResourceLocationAdapter;
 import org.opennms.web.rest.api.ResourceLocation;
-
-import com.google.common.base.Objects;
 
 @XmlRootElement(name = "ip-service")
 @XmlAccessorType(XmlAccessType.NONE)
@@ -51,6 +51,12 @@ public class IpServiceDTO {
     @XmlElement(name="location")
     @XmlJavaTypeAdapter(JAXBResourceLocationAdapter.class)
     private ResourceLocation location;
+
+    private String serviceName;
+
+    private String nodeLabel;
+
+    private String ipAddress;
 
     public ResourceLocation getLocation() {
         return location;
@@ -85,9 +91,37 @@ public class IpServiceDTO {
         return equals;
     }
 
+    public String getServiceName() {
+        return serviceName;
+    }
+
+    public void setServiceName(String serviceName) {
+        this.serviceName = serviceName;
+    }
+
+    public String getNodeLabel() {
+        return nodeLabel;
+    }
+
+    public void setNodeLabel(String nodeLabel) {
+        this.nodeLabel = nodeLabel;
+    }
+
+    public String getIpAddress() {
+        return ipAddress;
+    }
+
+    public void setIpAddress(String ipAddress) {
+        this.ipAddress = ipAddress;
+    }
+
     @Override
     public int hashCode() {
         return Objects.hashCode(id, location);
     }
 
+    @Override
+    public String toString() {
+        return getNodeLabel()+"/"+getIpAddress()+"/"+getServiceName();
+    }
 }

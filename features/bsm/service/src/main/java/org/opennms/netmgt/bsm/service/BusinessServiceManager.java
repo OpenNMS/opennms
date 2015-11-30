@@ -31,6 +31,7 @@ package org.opennms.netmgt.bsm.service;
 import java.util.List;
 
 import org.opennms.netmgt.bsm.service.model.BusinessServiceDTO;
+import org.opennms.netmgt.bsm.service.model.IpServiceDTO;
 
 public interface BusinessServiceManager {
 
@@ -47,4 +48,6 @@ public interface BusinessServiceManager {
     boolean assignIpInterface(Long serviceId, Integer ipServiceId);
 
     boolean removeIpInterface(Long serviceId, Integer ipServiceId);
+
+    List<IpServiceDTO> getAllIpServiceDTO();
 }
