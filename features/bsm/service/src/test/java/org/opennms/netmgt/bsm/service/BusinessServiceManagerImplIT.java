@@ -111,27 +111,37 @@ public class BusinessServiceManagerImplIT {
         Long serviceId2 = businessServiceDao.save(service2);
 
         // no ip services attached
-        Assert.assertEquals(OnmsSeverity.CLEARED, businessServiceManager.calculateStatus(serviceId1));
-        Assert.assertEquals(OnmsSeverity.CLEARED, businessServiceManager.calculateStatus(serviceId2));
+        Assert.assertEquals(OnmsSeverity.NORMAL, businessServiceManager.calculateStatus(serviceId1));
+        Assert.assertEquals(OnmsSeverity.NORMAL, businessServiceManager.calculateStatus(serviceId2));
 
         // ip services attached
         businessServiceManager.assignIpInterface(serviceId1, 5);
         businessServiceManager.assignIpInterface(serviceId1, 6);
 
         // should not have any effect
-        Assert.assertEquals(OnmsSeverity.CLEARED, businessServiceManager.calculateStatus(serviceId1));
-        Assert.assertEquals(OnmsSeverity.CLEARED, businessServiceManager.calculateStatus(serviceId2));
+        Assert.assertEquals(OnmsSeverity.NORMAL, businessServiceManager.calculateStatus(serviceId1));
+        Assert.assertEquals(OnmsSeverity.NORMAL, businessServiceManager.calculateStatus(serviceId2));
 
 
-        // atach NORMAL alarm to service 1
+        // attach NORMAL alarm to service 1
         alarmDao.save(createAlarm(monitoredServiceDao.get(5), OnmsSeverity.NORMAL));
         Assert.assertEquals(OnmsSeverity.NORMAL, businessServiceManager.calculateStatus(serviceId1));
-        Assert.assertEquals(OnmsSeverity.CLEARED, businessServiceManager.calculateStatus(serviceId2));
+        Assert.assertEquals(OnmsSeverity.NORMAL, businessServiceManager.calculateStatus(serviceId2));
 
-        // atach CRITICAL alarm to service 1
+        // attach INDETERMINATE alarm to service 1
+        alarmDao.save(createAlarm(monitoredServiceDao.get(5), OnmsSeverity.INDETERMINATE));
+        Assert.assertEquals(OnmsSeverity.NORMAL, businessServiceManager.calculateStatus(serviceId1));
+        Assert.assertEquals(OnmsSeverity.NORMAL, businessServiceManager.calculateStatus(serviceId2));
+
+        // attach WARNING alarm to service 1
+        alarmDao.save(createAlarm(monitoredServiceDao.get(5), OnmsSeverity.WARNING));
+        Assert.assertEquals(OnmsSeverity.WARNING, businessServiceManager.calculateStatus(serviceId1));
+        Assert.assertEquals(OnmsSeverity.NORMAL, businessServiceManager.calculateStatus(serviceId2));
+
+        // attach CRITICAL alarm to service 1
         alarmDao.save(createAlarm(monitoredServiceDao.get(5), OnmsSeverity.CRITICAL));
         Assert.assertEquals(OnmsSeverity.CRITICAL, businessServiceManager.calculateStatus(serviceId1));
-        Assert.assertEquals(OnmsSeverity.CLEARED, businessServiceManager.calculateStatus(serviceId2));
+        Assert.assertEquals(OnmsSeverity.NORMAL, businessServiceManager.calculateStatus(serviceId2));
     }
 
     private BusinessService createService(String serviceName) {
