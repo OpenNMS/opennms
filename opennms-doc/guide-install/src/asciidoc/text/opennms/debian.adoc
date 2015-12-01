@@ -95,6 +95,7 @@ The next step is creating an _opennms_ database user with password and configure
 su - postgres
 createuser -P opennms
 createdb -O opennms opennms
+psql -c "ALTER USER opennms WITH SUPERUSER;"
 exit
 ----
 
@@ -134,7 +135,7 @@ vi ${OPENNMS_HOME}/etc/opennms-datasources.xml
 _OpenNMS_ is now configured to access the database.
 It is required to set the _Java_ environment running _OpenNMS_ and initialize the database schema.
 
-.Configuration of _Java_ environment for _OpenNMS_ 
+.Configuration of _Java_ environment for _OpenNMS_
 [source, shell]
 ----
 ${OPENNMS_HOME}/bin/runjava -s
@@ -147,6 +148,18 @@ ${OPENNMS_HOME}/bin/install -dis
 ----
 
 NOTE: It is not necessary to add _OpenNMS_ to the run level manually, it is automatically added after setup.
+
+Running _OpenNMS_ doesn't require super user permissions.
+They are necessary for installing the _IPLIKE_ stored procedure during the database initialization.
+For operation the _OpenNMS_ database user can be restricted to a normal user.
+
+.Lockdown database permissions
+[source, shell]
+----
+su - postgres
+psql -c "ALTER ROLE opennms NOSUPERUSER;"
+psql -c "ALTER ROLE opennms NOCREATEDB;"
+----
 
 .Startup _OpenNMS_
 [source, shell]
