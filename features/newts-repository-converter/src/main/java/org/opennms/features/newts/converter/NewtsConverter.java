@@ -590,7 +590,7 @@ public class NewtsConverter implements AutoCloseable {
             resourcePath = ResourcePath.get(ResourcePath.get(ResourcePath.get("snmp", "fs"),
                                                              foreignId.foreignSource,
                                                              foreignId.foreignId),
-                                            Iterables.transform(relativeResourceDir.subpath(2, relativeResourceDir.getNameCount()),
+                                            Iterables.transform(Iterables.skip(relativeResourceDir, 2),
                                                                 Path::toString));
 
         } else {

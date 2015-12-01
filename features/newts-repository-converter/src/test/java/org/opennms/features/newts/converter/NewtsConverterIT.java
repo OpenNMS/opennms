@@ -568,15 +568,15 @@ public class NewtsConverterIT implements TemporaryDatabaseAware {
         for (Results.Row<Measurement> r : result) {
             final double d = r.getElement("ifInOctets").getValue().doubleValue() - EXPECTED_DATA[i].value;
 
-            System.out.println(String.format(
-                    "%4d: %s\t%11.2f %11.2f %11.2f %36s|%s",
-                    i,
-                    r.getElement("ifInOctets").getTimestamp().asDate().toString(),
-                    r.getElement("ifInOctets").getValue().doubleValue(),
-                    EXPECTED_DATA[i].value,
-                    d,
-                    d < -1.0 ? Strings.repeat("\u2592", (int) Math.abs(Math.log10(-d) * 10.0)) : "",
-                    d >  1.0 ? Strings.repeat("\u2592", (int) Math.abs(Math.log10(d) * 10.0)) : ""));
+//            System.out.println(String.format(
+//                    "%4d: %s\t%11.2f %11.2f %11.2f %36s|%s",
+//                    i,
+//                    r.getElement("ifInOctets").getTimestamp().asDate().toString(),
+//                    r.getElement("ifInOctets").getValue().doubleValue(),
+//                    EXPECTED_DATA[i].value,
+//                    d,
+//                    d < -1.0 ? Strings.repeat("\u2592", (int) Math.abs(Math.log10(-d) * 10.0)) : "",
+//                    d >  1.0 ? Strings.repeat("\u2592", (int) Math.abs(Math.log10(d) * 10.0)) : ""));
 
             assertThat(r.getTimestamp().asSeconds(),
                        is(EXPECTED_DATA[i].timestamp));
