@@ -6,7 +6,6 @@
     <version>18.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
-  <groupId>org.opennms.features.bsm</groupId>
   <artifactId>org.opennms.features.bsm.persistence.api</artifactId>
   <packaging>bundle</packaging>
   <name>OpenNMS :: Features :: BSM :: Persistence :: API</name>
@@ -38,7 +37,6 @@
     <dependency>
       <groupId>com.google.guava</groupId>
       <artifactId>guava</artifactId>
-      <version>${guavaVersion}</version>
     </dependency>
   </dependencies>
 </project>
