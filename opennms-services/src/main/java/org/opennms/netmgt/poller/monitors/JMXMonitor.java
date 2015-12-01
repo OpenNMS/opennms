@@ -28,19 +28,22 @@
 
 package org.opennms.netmgt.poller.monitors;
 
-import org.opennms.core.spring.BeanUtils;
-import com.google.common.collect.Maps;
-import org.apache.commons.jexl2.JexlEngine;
+import java.net.InetAddress;
+import java.util.Map;
+
 import org.apache.commons.jexl2.Expression;
 import org.apache.commons.jexl2.JexlContext;
-import org.apache.commons.jexl2.ReadonlyContext;
+import org.apache.commons.jexl2.JexlEngine;
 import org.apache.commons.jexl2.MapContext;
+import org.apache.commons.jexl2.ReadonlyContext;
+import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.netmgt.config.jmx.MBeanServer;
 import org.opennms.netmgt.dao.jmx.JmxConfigDao;
 import org.opennms.netmgt.jmx.JmxUtils;
 import org.opennms.netmgt.jmx.connection.JmxConnectionManager;
+import org.opennms.netmgt.jmx.connection.JmxConnectors;
 import org.opennms.netmgt.jmx.connection.JmxServerConnectionException;
 import org.opennms.netmgt.jmx.connection.JmxServerConnectionWrapper;
 import org.opennms.netmgt.jmx.impl.connection.connectors.DefaultConnectionManager;
@@ -52,8 +55,8 @@ import org.opennms.netmgt.poller.jmx.wrappers.ObjectNameWrapper;
 import org.opennms.netmgt.snmp.InetAddrUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import java.net.InetAddress;
-import java.util.Map;
+
+import com.google.common.collect.Maps;
 
 @Distributable
 /**
@@ -100,7 +103,7 @@ public abstract class JMXMonitor extends AbstractServiceMonitor {
         }
     }
 
-    protected abstract String getConnectionName();
+    protected abstract JmxConnectors getConnectionName();
 
     /**
      * {@inheritDoc}
@@ -133,7 +136,7 @@ public abstract class JMXMonitor extends AbstractServiceMonitor {
             };
 
             try (JmxServerConnectionWrapper connection = connectionManager.connect(getConnectionName(),
-                                                                                   InetAddrUtils.str(ipv4Addr),
+                                                                                   ipv4Addr,
                                                                                    JmxUtils.convertToStringMap(map),
                                                                                    retryCallback)) {
 

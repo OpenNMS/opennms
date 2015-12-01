@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans:beans xmlns="http://www.springframework.org/schema/security"
   xmlns:beans="http://www.springframework.org/schema/beans"
+  xmlns:onmsgi="http://xmlns.opennms.org/xsd/spring/onms-osgi"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
-              http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.2.xsd"> 
+              http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.2.xsd
+              http://xmlns.opennms.org/xsd/spring/onms-osgi http://xmlns.opennms.org/xsd/spring/onms-osgi.xsd">
   
   <!-- Only use BASIC auth for the RESTful APIs -->
   <http pattern="/rest/**" realm="OpenNMS Realm">
@@ -164,6 +166,35 @@
     <beans:property name="useGroups" value="false" />
     <beans:property name="userManager" ref="userManager" />
     <beans:property name="groupManager" ref="groupManager" />
+  </beans:bean>
+  <onmsgi:service id="springSecurityUserDaoService" ref="userDao" interface="org.opennms.web.springframework.security.SpringSecurityUserDao" />
+
+  <!-- Supercedes the Karaf container's OSGi Configuration implementation to hard-code the "opennms" realm. -->
+  <beans:bean id="config"
+      class="org.opennms.web.springframework.security.OpenNMSConfiguration"
+      init-method="init"
+      destroy-method="close" />
+
+  <beans:bean id="loginModuleUserConfigInitializer" class="org.springframework.beans.factory.config.MethodInvokingBean">
+      <beans:property name="staticMethod">
+          <beans:value>org.opennms.web.springframework.security.OpenNMSLoginModule.setUserConfig</beans:value>
+      </beans:property>
+      <beans:property name="arguments">
+          <beans:list>
+              <beans:ref bean="userManager" />
+          </beans:list>
+      </beans:property>
+  </beans:bean>
+
+  <beans:bean id="loginModuleSpringSecurityUserDaoInitializer" class="org.springframework.beans.factory.config.MethodInvokingBean">
+      <beans:property name="staticMethod">
+          <beans:value>org.opennms.web.springframework.security.OpenNMSLoginModule.setSpringSecurityUserDao</beans:value>
+      </beans:property>
+      <beans:property name="arguments">
+          <beans:list>
+              <beans:ref bean="userDao" />
+          </beans:list>
+      </beans:property>
   </beans:bean>
 
   <beans:bean id="openNMSUserDetailsService" class="org.opennms.web.springframework.security.OpenNMSUserDetailsService">

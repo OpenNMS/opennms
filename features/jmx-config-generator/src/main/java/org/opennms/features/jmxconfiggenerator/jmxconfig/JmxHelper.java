@@ -28,22 +28,34 @@
 
 package org.opennms.features.jmxconfiggenerator.jmxconfig;
 
-import javax.management.remote.JMXConnector;
-import javax.management.remote.JMXConnectorFactory;
-import javax.management.remote.JMXServiceURL;
 import java.io.BufferedInputStream;
 import java.io.IOException;
+import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Properties;
 
+import javax.management.remote.JMXConnector;
+import javax.management.remote.JMXConnectorFactory;
+import javax.management.remote.JMXServiceURL;
+
 /**
  * Helper class to handle create JMX connections.
  */
 public class JmxHelper {
 
+    /**
+     * @deprecated Use {@link Jsr160ConnectionFactory#getUrl(InetAddress, int, String, String)} instead.
+     * 
+     * @param url
+     * @param hostName
+     * @param port
+     * @param jmxmp
+     * @return
+     * @throws MalformedURLException
+     */
     public static JMXServiceURL createJmxServiceUrl(String url, String hostName, String port, boolean jmxmp) throws MalformedURLException {
         if (url != null) {
             return new JMXServiceURL(url);
@@ -57,6 +69,15 @@ public class JmxHelper {
         throw new IllegalStateException("Something went wrong. Was not able to determine JMX Connection URL.");
     }
 
+    /**
+     * @deprecated Use {@link DefaultJmxConnector#createConnection(InetAddress, Map<String, String>)} instead.
+     * 
+     * @param username
+     * @param password
+     * @param serviceUrl
+     * @return
+     * @throws IOException
+     */
     public static JMXConnector createJmxConnector(String username, String password, JMXServiceURL serviceUrl) throws IOException {
         Objects.requireNonNull(serviceUrl, "You must specify a JMXServiceURL in order to create a JMXConnector.");
         HashMap<String, String[]> env = new HashMap<String, String[]>();

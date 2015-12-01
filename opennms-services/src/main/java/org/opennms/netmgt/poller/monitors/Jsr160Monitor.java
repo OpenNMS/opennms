@@ -41,7 +41,7 @@ import org.opennms.netmgt.jmx.connection.JmxConnectors;
 public class Jsr160Monitor extends JMXMonitor {
 
     @Override
-    protected String getConnectionName() {
-        return JmxConnectors.JSR160;
+    protected JmxConnectors getConnectionName() {
+        return JmxConnectors.jsr160;
     }
 }

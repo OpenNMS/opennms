@@ -31,6 +31,8 @@ package org.opennms.netmgt.provision.support.jmx.connectors;
 import javax.management.MBeanServer;
 import javax.management.MBeanServerConnection;
 
+import org.opennms.netmgt.jmx.connection.JmxServerConnectionWrapper;
+
 /**
  * The JBossConnectionWrapper class manages the connection to the JBoss server.  The 
  * JBossConnectionFactory creates the connection to the server and closes the 
@@ -38,7 +40,7 @@ import javax.management.MBeanServerConnection;
  * 
  * @author <A HREF="mailto:mike@opennms.org">Mike Jamison </A>
  */
-public class JBossConnectionWrapper implements ConnectionWrapper {
+public class JBossConnectionWrapper implements JmxServerConnectionWrapper {
     private MBeanServer mbeanServer;
     
     /**
@@ -70,7 +72,7 @@ public class JBossConnectionWrapper implements ConnectionWrapper {
      * @return a {@link javax.management.MBeanServerConnection} object.
      */
     @Override
-    public MBeanServerConnection getMBeanServer() {
+    public MBeanServerConnection getMBeanServerConnection() {
         return mbeanServer;
     }
 }
