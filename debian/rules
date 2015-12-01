@@ -315,6 +315,13 @@ install: build
 	rm -rf debian/temp/contrib/remote-poller
 
 	##
+	## Setup the opennms-source package
+	##
+	install -d -m 755 debian/opennms-source/usr/share/opennms/jetty-webapps/opennms
+	mv debian/temp/jetty-webapps/opennms/source debian/opennms-source/usr/share/opennms/jetty-webapps/opennms/
+	find debian/opennms-webapp-jetty/usr/share/opennms/jetty-webapps/opennms* -type f -execdir chmod 644 {} \;
+
+	##
 	## Setup the opennms-webapp-jetty package
 	##
 	install -m 644 debian/opennms-webapp-jetty.overrides debian/opennms-webapp-jetty/usr/share/lintian/overrides/opennms-webapp-jetty
