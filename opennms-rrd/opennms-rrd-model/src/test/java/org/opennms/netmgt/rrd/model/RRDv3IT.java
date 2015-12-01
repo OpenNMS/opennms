@@ -200,7 +200,7 @@ public class RRDv3IT {
         Assert.assertNotNull(rrd);
         NavigableMap<Long, List<Double>> samples = rrd.generateSamples(rrd.getRras().get(0));
         Assert.assertFalse(samples.isEmpty());
-        long ts = 1441748400000L;
+        long ts = 1441748400L;
         Double v1 = 600.0;
         Double v2 = 2.0;
         Assert.assertEquals(rrd.getRras().get(0).getRows().size(), samples.size());
@@ -210,7 +210,7 @@ public class RRDv3IT {
             Assert.assertEquals(ts, (long) s.getKey());
             Assert.assertEquals(v1, s.getValue().get(0));
             Assert.assertEquals(v2, s.getValue().get(1));
-            ts += 300000L;
+            ts += 300L;
             v1 += 300.0 * v2;
             v2 += 1.0;
         }
@@ -244,7 +244,7 @@ public class RRDv3IT {
         SortedMap<Long, List<Double>> samples = rrd.generateSamples();
         Assert.assertFalse(samples.isEmpty());
         int size = rrd.getRras().stream().mapToInt(r -> r.getRows().size()).sum();
-        Assert.assertEquals(size - 3, samples.size()); // There are 3 timestamps that exist in both RRAs.
+        Assert.assertEquals(size - 3 - 1, samples.size()); // There are 3 timestamps that exist in both RRAs and the last one is incomplete
     }
 
 }
