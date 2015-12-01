@@ -415,8 +415,9 @@ public class Installer {
         loadEtcPropertiesFile("rrd-configuration.properties");
         
         m_install_servletdir = fetchProperty("install.servlet.dir");
-        m_import_dir = fetchProperty("importer.requisition.dir");
-        if (m_import_dir == null) {
+        try {
+            m_import_dir = fetchProperty("importer.requisition.dir");
+        } catch (Exception e) {
             m_import_dir = m_opennms_home + File.separator + "etc" + File.separator + "imports";
         }
 
