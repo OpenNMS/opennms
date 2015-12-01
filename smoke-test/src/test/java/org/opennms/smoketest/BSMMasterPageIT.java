@@ -31,10 +31,13 @@ package org.opennms.smoketest;
 import java.io.IOException;
 import java.util.UUID;
 
+import org.apache.http.Header;
 import org.apache.http.HttpHeaders;
 import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Test;
 import org.opennms.core.web.HttpClientWrapper;
@@ -47,6 +50,25 @@ public class BSMMasterPageIT extends OpenNMSSeleniumTestCase {
 
     private static final String BSM_REST_API_URL = BASE_URL + "opennms/api/v2/business-services";
 
+    private String businessServiceCreatedUrl;
+
+    @After
+    public void deleteAllCreatedBusinessServices() throws IOException {
+        if (businessServiceCreatedUrl != null) {
+            // We have to delete the created Business Services in order to not let other tests fail
+            try (HttpClientWrapper httpClient = HttpClientWrapper.create()) {
+                httpClient.addBasicCredentials(BASIC_AUTH_USERNAME, BASIC_AUTH_PASSWORD);
+                httpClient.usePreemptiveAuth();
+                HttpDelete request = new HttpDelete(businessServiceCreatedUrl);
+                request.setHeader(HttpHeaders.CONTENT_TYPE, MediaType.JSON_UTF_8.toString());
+
+                try (CloseableHttpResponse response = httpClient.execute(request)) {
+                    Assert.assertEquals(200, response.getStatusLine().getStatusCode());
+                }
+            }
+        }
+    }
+
     @Test
     public void testMasterPage() throws IOException, InterruptedException {
         gotoMasterPage();
@@ -54,7 +76,7 @@ public class BSMMasterPageIT extends OpenNMSSeleniumTestCase {
 
         // create service
         String servicePrefix = UUID.randomUUID().toString();
-        createServiceWithPrefix(servicePrefix);
+        businessServiceCreatedUrl = createServiceWithPrefix(servicePrefix);
 
         // refresh page and check for entry
         gotoMasterPage();
@@ -74,7 +96,7 @@ public class BSMMasterPageIT extends OpenNMSSeleniumTestCase {
      * The name of the service, and its key-value attributes are all prefixed
      * with the given value.
      */
-    private static void createServiceWithPrefix(String prefix) throws IOException {
+    private static String createServiceWithPrefix(String prefix) throws IOException {
         try (HttpClientWrapper httpClient = HttpClientWrapper.create()) {
             httpClient.addBasicCredentials(BASIC_AUTH_USERNAME, BASIC_AUTH_PASSWORD);
             httpClient.usePreemptiveAuth();
@@ -89,6 +111,10 @@ public class BSMMasterPageIT extends OpenNMSSeleniumTestCase {
 
             try (CloseableHttpResponse response = httpClient.execute(request)) {
                 Assert.assertEquals(201, response.getStatusLine().getStatusCode());
+                // Determine the location of the created object to delete it afterwards
+                Header[] locations = response.getHeaders("Location");
+                Assert.assertNotNull(locations);
+                return locations[0].getValue();
             }
         }
     }
