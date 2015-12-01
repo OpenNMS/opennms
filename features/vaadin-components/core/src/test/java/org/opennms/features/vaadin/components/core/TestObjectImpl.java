@@ -26,7 +26,7 @@
  * http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.bsm.vaadin.masterpage;
+package org.opennms.features.vaadin.components.core;
 
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 

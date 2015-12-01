@@ -26,7 +26,7 @@
  * http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.bsm.vaadin.masterpage;
+package org.opennms.features.vaadin.components.core;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -35,7 +35,6 @@ import org.junit.runner.RunWith;
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
-import org.opennms.netmgt.bsm.vaadin.masterpage.TransactionAwareBeanProxyFactory;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;

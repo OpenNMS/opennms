@@ -28,12 +28,22 @@
 
 package org.opennms.features.vaadin.jmxconfiggenerator.jobs;
 
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.management.JMException;
+import javax.management.remote.JMXConnector;
+import javax.management.remote.JMXServiceURL;
+
 import org.opennms.features.jmxconfiggenerator.jmxconfig.JmxDatacollectionConfiggenerator;
 import org.opennms.features.jmxconfiggenerator.jmxconfig.JmxHelper;
 import org.opennms.features.jmxconfiggenerator.jmxconfig.query.MBeanServerQueryException;
 import org.opennms.features.jmxconfiggenerator.log.Slf4jLogAdapter;
+import org.opennms.features.vaadin.components.core.UIHelper;
+import org.opennms.features.vaadin.jmxconfiggenerator.JmxConfigGeneratorUI;
 import org.opennms.features.vaadin.jmxconfiggenerator.data.ServiceConfig;
-import org.opennms.features.vaadin.jmxconfiggenerator.ui.UIHelper;
 import org.opennms.features.vaadin.jmxconfiggenerator.ui.UiState;
 import org.opennms.xmlns.xsd.config.jmx_datacollection.Attrib;
 import org.opennms.xmlns.xsd.config.jmx_datacollection.CompAttrib;
@@ -41,14 +51,6 @@ import org.opennms.xmlns.xsd.config.jmx_datacollection.CompMember;
 import org.opennms.xmlns.xsd.config.jmx_datacollection.JmxDatacollectionConfig;
 import org.opennms.xmlns.xsd.config.jmx_datacollection.Mbean;
 import org.opennms.xmlns.xsd.config.jmx_datacollection.Mbeans;
-
-import javax.management.JMException;
-import javax.management.remote.JMXConnector;
-import javax.management.remote.JMXServiceURL;
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Runnable to query the MBean server.
@@ -118,8 +120,8 @@ public class DetectMBeansJob implements JobManager.Task<JmxDatacollectionConfig>
 
     @Override
     public void onSuccess(JmxDatacollectionConfig generatedJmxConfigModel) {
-        UIHelper.getCurrent().setRawModel(generatedJmxConfigModel);
-        UIHelper.getCurrent().updateView(UiState.MbeansView);
+        UIHelper.getCurrent(JmxConfigGeneratorUI.class).setRawModel(generatedJmxConfigModel);
+        UIHelper.getCurrent(JmxConfigGeneratorUI.class).updateView(UiState.MbeansView);
     }
 
     @Override

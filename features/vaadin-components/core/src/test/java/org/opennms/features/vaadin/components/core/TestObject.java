@@ -26,9 +26,7 @@
  * http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.bsm.vaadin.masterpage;
-
-import org.opennms.netmgt.bsm.vaadin.masterpage.TransactionAwareBeanProxyFactory;
+package org.opennms.features.vaadin.components.core;
 
 /**
  * TestObject to verify that the {@link TransactionAwareBeanProxyFactory} works as expected.
