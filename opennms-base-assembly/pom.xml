@@ -624,17 +624,17 @@
     </dependency>
     <dependency>
       <groupId>org.opennms.features.bsm</groupId>
-      <artifactId>org.opennms.features.bsm.persistence.api</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.features.bsm</groupId>
       <artifactId>org.opennms.features.bsm.persistence.impl</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.opennms.features.bsm</groupId>
-      <artifactId>org.opennms.features.bsm.service</artifactId>
+      <artifactId>org.opennms.features.bsm.service.impl</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.bsm</groupId>
+      <artifactId>org.opennms.features.bsm.daemon</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>

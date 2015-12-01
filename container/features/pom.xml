@@ -58,7 +58,7 @@
             <repository>mvn:org.opennms.features/vaadin-jmxconfiggenerator/${project.version}/xml/features</repository>
 
             <!-- BSM features -->
-            <repository>mvn:org.opennms.features.bsm/org.opennms.features.bsm.service/${project.version}/xml/features</repository>
+            <repository>mvn:org.opennms.features.bsm/org.opennms.features.bsm.service.api/${project.version}/xml/features</repository>
             <repository>mvn:org.opennms.features.bsm/vaadin-masterpage/${project.version}/xml/features</repository>
             <repository>mvn:org.opennms.features.bsm/vaadin-adminpage/${project.version}/xml/features</repository>
 
@@ -257,7 +257,7 @@
             <feature>opennms-elasticsearch-event-forwarder</feature>
 
             <!-- BSM -->
-            <feature>org.opennms.features.bsm.service</feature>
+            <feature>org.opennms.features.bsm.service.api</feature>
             <feature>vaadin-masterpage</feature>
 
           </features>

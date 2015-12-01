@@ -34,7 +34,6 @@ import java.util.Map;
 import org.opennms.netmgt.alarmd.api.NorthboundAlarm;
 import org.opennms.netmgt.alarmd.api.Northbounder;
 import org.opennms.netmgt.daemon.SpringServiceDaemon;
-import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.events.api.annotations.EventHandler;
 import org.opennms.netmgt.events.api.annotations.EventListener;
 import org.opennms.netmgt.model.OnmsAlarm;
@@ -61,16 +60,11 @@ public class Alarmd implements SpringServiceDaemon, DisposableBean {
 
     /** Constant <code>NAME="Alarmd"</code> */
     public static final String NAME = "Alarmd";
-
-    private EventForwarder m_eventForwarder;
     
     private List<Northbounder> m_northboundInterfaces;
 
     private AlarmPersister m_persister;
-    
-    
-    
-    
+
     //Get all events
     /**
      * <p>onEvent</p>
@@ -144,24 +138,6 @@ public class Alarmd implements SpringServiceDaemon, DisposableBean {
      */
     public AlarmPersister getPersister() {
         return m_persister;
-    }
-
-    /**
-     * <p>getEventForwarder</p>
-     *
-     * @return a {@link org.opennms.netmgt.events.api.EventForwarder} object.
-     */
-    public EventForwarder getEventForwarder() {
-        return m_eventForwarder;
-    }
-
-    /**
-     * <p>setEventForwarder</p>
-     *
-     * @param eventForwarder a {@link org.opennms.netmgt.events.api.EventForwarder} object.
-     */
-    public void setEventForwarder(EventForwarder eventForwarder) {
-        m_eventForwarder = eventForwarder;
     }
 
     /**

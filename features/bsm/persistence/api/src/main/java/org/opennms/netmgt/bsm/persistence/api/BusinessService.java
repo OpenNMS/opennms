@@ -30,6 +30,7 @@ package org.opennms.netmgt.bsm.persistence.api;
 
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
@@ -45,6 +46,7 @@ import javax.persistence.MapKeyColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import org.opennms.netmgt.model.OnmsMonitoredService;
 
@@ -125,6 +127,13 @@ public class BusinessService {
         m_ipServices.remove(ipService);
     }
 
+    @Transient
+    private Set<Integer> getIpServiceIds() {
+        return m_ipServices.stream()
+            .map(ipSvc -> ipSvc.getId())
+            .collect(Collectors.toSet());
+    }
+
     @Override
     public boolean equals(Object obj) {
         if (obj == null) {
@@ -138,12 +147,14 @@ public class BusinessService {
         return com.google.common.base.Objects.equal(m_id, other.m_id)
                 && com.google.common.base.Objects.equal(m_name, other.m_name)
                 && com.google.common.base.Objects.equal(m_attributes, other.m_attributes)
-                && com.google.common.base.Objects.equal(m_ipServices, other.m_ipServices);
+                // OnmsMonitoredService objects don't properly support the equals() and hashCode() methods
+                // so we resort to comparing their IDs, which is sufficient in the case of the Business Service
+                && com.google.common.base.Objects.equal(getIpServiceIds(), other.getIpServiceIds());
     }
 
     @Override
     public int hashCode() {
-        return com.google.common.base.Objects.hashCode(m_id, m_name, m_attributes, m_ipServices);
+        return com.google.common.base.Objects.hashCode(m_id, m_name, m_attributes, getIpServiceIds());
     }
 
     @Override

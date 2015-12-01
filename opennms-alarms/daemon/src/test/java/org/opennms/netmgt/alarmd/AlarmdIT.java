@@ -302,7 +302,7 @@ public class AlarmdIT implements TemporaryDatabaseAware<MockDatabase>, Initializ
 
         rowCount = m_jdbcTemplate.queryForObject("select count(*) from events where alarmid is null", Integer.class).intValue();
         MockUtil.println(String.valueOf(rowCount) + " of events with null alarmid");
-        assertEquals(0, rowCount);
+        assertEquals(10, rowCount);
 
     }
 
