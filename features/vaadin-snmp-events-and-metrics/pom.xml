@@ -84,24 +84,16 @@
   </pluginRepositories>
 
     <dependencies>
-
-        <!-- OSGi Dependencies -->
-        <dependency>
-            <groupId>org.opennms.vaadin-extender</groupId>
-            <artifactId>service</artifactId>
-        </dependency>
-        <dependency> <!-- Required by pax/vaadin -->
-            <groupId>org.opennms.dependencies</groupId>
-            <artifactId>servlet-dependencies</artifactId>
-            <type>pom</type>
-            <scope>provided</scope>
-        </dependency>
-
-        <!-- Vaadin Dependencies -->
+        <!-- Vaadin and OSGI dependencies -->
         <dependency>
             <groupId>org.opennms.osgi.features.topology</groupId>
             <artifactId>vaadin</artifactId>
             <type>pom</type>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.features.vaadin-components</groupId>
+            <artifactId>core</artifactId>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.opennms.features.themes</groupId>

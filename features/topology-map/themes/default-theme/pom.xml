@@ -20,11 +20,6 @@
     
     <dependencies>
         <dependency>
-            <groupId>org.osgi</groupId>
-            <artifactId>org.osgi.core</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
             <groupId>org.opennms.osgi.features.topology</groupId>
             <artifactId>opennms-topology-api</artifactId>
             <type>pom</type>

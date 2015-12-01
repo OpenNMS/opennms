@@ -1299,6 +1299,7 @@
     <jcommonVersion>1.0.23</jcommonVersion>
     <jodaTimeVersion>2.1</jodaTimeVersion>
     <jrubyVersion>9.0.0.0</jrubyVersion>
+    <jsoupVersion>1.7.2</jsoupVersion>
     <karafVersion>2.4.0</karafVersion>
     <karafPaxExamVersion>2.3.9</karafPaxExamVersion>
     <felixVersion>2.3.0</felixVersion>
@@ -1337,17 +1338,12 @@
     <!-- moved here from topology features -->
     <jungVersion>2.0.1</jungVersion>
     <vaadinVersion>7.2.7</vaadinVersion>
+    <vaadinSharedEpsVersion>1.0.2</vaadinSharedEpsVersion>
     <vaadin.plugin.version>${vaadinVersion}</vaadin.plugin.version>
     <vaadinExtenderVersion>1.0.0</vaadinExtenderVersion>
-    
-    <skipPdfGeneration>true</skipPdfGeneration>
-    <skipSignJar>true</skipSignJar>
-
-    <!-- moved here from opennms-pluginmanger -->
-    <pluginmanagerVersion>1.0.1</pluginmanagerVersion>
-    <licencemanagerVersion>1.0.1</licencemanagerVersion>
-    <featuremanagerVersion>1.0.1</featuremanagerVersion>
-
+    <vaadinAddonContextMenuVersion>4.2.1</vaadinAddonContextMenuVersion>
+    <vaadinAddonRefresherVersion>1.2.3.7</vaadinAddonRefresherVersion>
+    <vaadinAddonConfirmDialogVersion>2.0.4</vaadinAddonConfirmDialogVersion>
   </properties>
 
   <profiles>
@@ -3023,25 +3019,55 @@
       <!-- Vaadin -->
       <dependency>
         <groupId>com.vaadin</groupId>
-	<artifactId>vaadin-server</artifactId>
-	<version>${vaadinVersion}</version>
+        <artifactId>vaadin-server</artifactId>
+	    <version>${vaadinVersion}</version>
       </dependency>
       <dependency>
         <groupId>com.vaadin</groupId>
-	<artifactId>vaadin-client-compiled</artifactId>
-	<version>${vaadinVersion}</version>
+        <artifactId>vaadin-shared</artifactId>
+        <version>${vaadinVersion}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>com.vaadin.external.google</groupId>
+            <artifactId>guava</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>com.vaadin</groupId>
-	<artifactId>vaadin-client</artifactId>
-	<version>${vaadinVersion}</version>
+        <artifactId>vaadin-shared-deps</artifactId>
+        <version>${vaadinSharedEpsVersion}</version>
       </dependency>
       <dependency>
         <groupId>com.vaadin</groupId>
-	<artifactId>vaadin-themes</artifactId>
-	<version>${vaadinVersion}</version>
+	    <artifactId>vaadin-client-compiled</artifactId>
+	    <version>${vaadinVersion}</version>
       </dependency>
-
+      <dependency>
+        <groupId>com.vaadin</groupId>
+	    <artifactId>vaadin-client</artifactId>
+	    <version>${vaadinVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.vaadin</groupId>
+	    <artifactId>vaadin-themes</artifactId>
+	    <version>${vaadinVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.vaadin.addons</groupId>
+        <artifactId>contextmenu</artifactId>
+        <version>${vaadinAddonContextMenuVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.vaadin.addons</groupId>
+        <artifactId>refresher</artifactId>
+        <version>${vaadinAddonRefresherVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.vaadin.addon</groupId>
+        <artifactId>confirmdialog</artifactId>
+        <version>${vaadinAddonConfirmDialogVersion}</version>
+      </dependency>
       <dependency>
         <groupId>org.opennms.vaadin-extender</groupId>
         <artifactId>service</artifactId>
@@ -3469,7 +3495,7 @@
       <dependency>
         <groupId>org.jsoup</groupId>
         <artifactId>jsoup</artifactId>
-        <version>1.7.2</version>
+        <version>${jsoupVersion}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.mina</groupId>

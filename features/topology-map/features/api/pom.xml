@@ -26,7 +26,6 @@
                 <configuration>
                     <features>
                         <feature>vaadin</feature>
-                        <feature>opennms-osgi-core</feature>
                     </features>
                 </configuration>
             </plugin>

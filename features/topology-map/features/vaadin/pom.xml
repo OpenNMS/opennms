@@ -11,9 +11,9 @@
   <groupId>org.opennms.osgi.features.topology</groupId>
   <artifactId>vaadin</artifactId>
 
-  <name>OpenNMS :: Features :: Topology :: Vaadin + Dependencies</name>
+  <name>OpenNMS :: Features :: Vaadin + Dependencies</name>
 
-  <description>The Vaadin web application framework.</description>
+  <description>The Vaadin web application framework including some addons and osgi related packages.</description>
 
   <packaging>pom</packaging>
 
@@ -27,17 +27,16 @@
             <feature>http-whiteboard</feature>
           </features>
           <bundles>
-            <bundle>wrap:mvn:org.vaadin.addons/refresher/1.2.3.7</bundle>
-            <bundle>wrap:mvn:org.vaadin.addons/contextmenu/4.2.1</bundle>
-            <bundle>wrap:mvn:org.vaadin.addon/confirmdialog/2.0.4</bundle>
+            <!-- Manually define non bundles to be included -->
+            <bundle>wrap:mvn:org.vaadin.addons/refresher/${vaadinAddonRefresherVersion}</bundle>
+            <bundle>wrap:mvn:org.vaadin.addons/contextmenu/${vaadinAddonContextMenuVersion}</bundle>
+            <bundle>wrap:mvn:org.vaadin.addon/confirmdialog/${vaadinAddonConfirmDialogVersion}</bundle>
           </bundles>
         </configuration>
       </plugin>
     </plugins>
   </build>
-
   <dependencies>
-<!-- Vaadin Update -->
     <dependency>
       <groupId>com.vaadin</groupId>
       <artifactId>vaadin-server</artifactId>
@@ -57,7 +56,6 @@
     <dependency>
       <groupId>com.vaadin</groupId>
       <artifactId>vaadin-shared</artifactId>
-      <version>${vaadinVersion}</version>
       <exclusions>
         <exclusion>
           <groupId>com.vaadin.external.google</groupId>
@@ -66,15 +64,13 @@
       </exclusions>
     </dependency>
     <dependency>
-        <groupId>com.vaadin</groupId>
-        <artifactId>vaadin-shared-deps</artifactId>
-        <version>1.0.2</version>
+      <groupId>com.vaadin</groupId>
+      <artifactId>vaadin-shared-deps</artifactId>
     </dependency>
     <dependency>
-        <groupId>org.jsoup</groupId>
-        <artifactId>jsoup</artifactId>
+      <groupId>org.jsoup</groupId>
+      <artifactId>jsoup</artifactId>
     </dependency>
-    
     <dependency>
       <groupId>org.opennms.vaadin-extender</groupId>
       <artifactId>service</artifactId>
@@ -84,34 +80,42 @@
       <artifactId>javax.servlet</artifactId>
       <scope>provided</scope>
     </dependency>
-    <!-- this will actually get skipped because it's wrapped above -->
+    <!-- this override's vaadin's 16.x guava dependency -->
     <dependency>
-      <groupId>org.vaadin.addons</groupId>
-      <artifactId>contextmenu</artifactId>
-      <version>4.2.1</version>
+      <groupId>com.google.guava</groupId>
+      <artifactId>guava</artifactId>
     </dependency>
+    <!-- required by pax vaadin -->
     <dependency>
-    	<groupId>org.vaadin.addons</groupId>
-    	<artifactId>refresher</artifactId>
-    	<version>1.2.3.7</version>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>servlet-dependencies</artifactId>
+      <type>pom</type>
     </dependency>
+    <!-- Custom OpenNMS Osgi components shared with all vaadin applications -->
     <dependency>
-      <groupId>org.vaadin.addon</groupId>
-      <artifactId>confirmdialog</artifactId>
-      <version>2.0.4</version>
+      <groupId>org.opennms.osgi</groupId>
+      <artifactId>opennms-osgi-core</artifactId>
+      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.opennms.features.themes</groupId>
       <artifactId>onms-default-theme</artifactId>
       <version>${project.version}</version>
     </dependency>
-    <!-- this override's vaadin's 16.x guava dependency -->
+    <!-- Additional Addons shared with all Vaadin Applications -->
     <dependency>
-      <groupId>com.google.guava</groupId>
-      <artifactId>guava</artifactId>
+      <groupId>org.vaadin.addons</groupId>
+      <artifactId>contextmenu</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.vaadin.addons</groupId>
+      <artifactId>refresher</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.vaadin.addon</groupId>
+      <artifactId>confirmdialog</artifactId>
     </dependency>
   </dependencies>
-
   <repositories>
     <repository>
        <id>vaadin-addons</id>

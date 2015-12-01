@@ -1,59 +1,45 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
- *
- * Copyright (C) 2012-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
- *
+ * <p>
+ * Copyright (C) 2015 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2015 The OpenNMS Group, Inc.
+ * <p>
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
- *
+ * <p>
  * OpenNMS(R) is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
- *
+ * <p>
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Affero General Public License for more details.
- *
+ * <p>
  * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
- *      http://www.gnu.org/licenses/
- *
+ * http://www.gnu.org/licenses/
+ * <p>
  * For more information contact:
- *     OpenNMS(R) Licensing <license@opennms.org>
- *     http://www.opennms.org/
- *     http://www.opennms.com/
+ * OpenNMS(R) Licensing <license@opennms.org>
+ * http://www.opennms.org/
+ * http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.vaadin.jmxconfiggenerator;
-
-import org.opennms.web.navigate.PageNavEntry;
+package org.opennms.netmgt.vaadin.core;
 
 /**
- *
- * @author Markus von Rüden <mvr@opennms.com>
+ * TestObject to verify that the {@link TransactionAwareBeanProxyFactory} works as expected.
+ * Please do not change the behaviour here, as it is required to pass the tests in {@link TransactionAwareBeanProxyFactoryIT}.
  */
-public class AdminPageNavEntry implements PageNavEntry {
+public interface TestObject {
+    void setSomeValue(String someValue);
 
-    private String name;
-    private String url;
+    String getSomeValue();
 
-    @Override
-    public String getName() {
-        return name;
-    }
+    void doSomething();
 
-    public void setName(final String name) {
-        this.name = name;
-    }
+    void doSomething2();
 
-    @Override
-    public String getUrl() {
-        return url;
-    }
-
-    public void setUrl(final String url) {
-        this.url = url;
-    }
+    boolean isTransactionActive();
 }

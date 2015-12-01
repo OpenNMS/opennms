@@ -64,21 +64,11 @@
     </build>
 
     <dependencies>
-        <!-- Vaadin Dependencies -->
         <dependency>
             <groupId>org.opennms.osgi.features.topology</groupId>
             <artifactId>vaadin</artifactId>
             <type>pom</type>
         </dependency>
-
-        <!-- Required by pax/vaadin -->
-        <dependency>
-            <groupId>org.opennms.dependencies</groupId>
-            <artifactId>servlet-dependencies</artifactId>
-            <type>pom</type>
-            <scope>provided</scope>
-        </dependency>
-
         <dependency>
             <groupId>org.opennms.core</groupId>
             <artifactId>org.opennms.core.lib</artifactId>

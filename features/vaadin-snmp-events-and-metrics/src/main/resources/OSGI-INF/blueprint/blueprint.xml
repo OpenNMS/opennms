@@ -29,7 +29,7 @@
         <property name="dataCollectionDao" ref="dataCollectionConfigDao" />
     </bean>
         
-    <bean id="snmpCollectionAdminUiLink" class="org.opennms.features.vaadin.mibcompiler.AdminPageNavEntry">
+    <bean id="snmpCollectionAdminUiLink" class="org.opennms.netmgt.vaadin.core.AdminPageNavEntry">
         <property name="url" value="admin/mibCompiler.jsp" />
         <property name="name" value="SNMP MIB Compiler" />
     </bean>

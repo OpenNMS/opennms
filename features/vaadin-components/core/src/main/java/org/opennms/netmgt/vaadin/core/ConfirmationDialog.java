@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.vaadin.jmxconfiggenerator.ui;
+package org.opennms.netmgt.vaadin.core;
 
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Alignment;
@@ -38,7 +38,7 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 
 /**
- * Created by mvrueden on 21/07/15.
+ * A confirmation dialog.
  */
 public class ConfirmationDialog extends Window implements Window.CloseListener, Button.ClickListener {
 
