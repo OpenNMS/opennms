@@ -1,3 +1,4 @@
+<%--
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
@@ -18,34 +19,28 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
- * http://www.gnu.org/licenses/
+ *      http://www.gnu.org/licenses/
  *
  * For more information contact:
- * OpenNMS(R) Licensing <license@opennms.org>
- * http://www.opennms.org/
- * http://www.opennms.com/
+ *     OpenNMS(R) Licensing <license@opennms.org>
+ *     http://www.opennms.org/
+ *     http://www.opennms.com/
  *******************************************************************************/
+--%>
 
-package org.opennms.netmgt.bsm.vaadin.adminpage;
+<%@page language="java"
+        contentType="text/html"
+        session="true"
+%>
 
+<jsp:include page="/includes/bootstrap.jsp" flush="false" >
+    <jsp:param name="title" value="Business Service Admin Page" />
+    <jsp:param name="headTitle" value="Business Service Admin Page" />
+    <jsp:param name="location" value="admin" />
+    <jsp:param name="breadcrumb" value="<a href='admin/index.jsp'>Admin</a>" />
+    <jsp:param name="breadcrumb" value="Business Services Admin Page" />
+    <jsp:param name="vaadinEmbeddedStyles" value="true" />
+</jsp:include>
 
-import org.opennms.osgi.OnmsVaadinUIFactory;
-import org.osgi.service.blueprint.container.BlueprintContainer;
-
-/**
- * Factory responsible for constructing UI application instances.
- *
- * @author Markus Neumann <markus@opennms.com>
- * @author Christian Pape <christian@opennms.org>
- */
-public class BusinessServiceAdminPageUIFactory extends OnmsVaadinUIFactory {
-    /**
-     * Constructor
-     *
-     * @param container the blueprint container
-     * @param uiBeanId the UI bean
-     */
-    public BusinessServiceAdminPageUIFactory(BlueprintContainer container, String uiBeanId) {
-        super(BusinessServiceAdminPageUI.class, container, uiBeanId);
-    }
-}
+<iframe id="vaadin-content" src="osgi/bsm-admin-page" frameborder="0" style="height:100%; width:100%;"></iframe>
+<jsp:include page="/includes/bootstrap-footer.jsp" flush="true"/>
