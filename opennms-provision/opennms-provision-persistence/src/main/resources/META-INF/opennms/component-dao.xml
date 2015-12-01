@@ -7,7 +7,17 @@
        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.0.xsd">
 
 	<context:annotation-config />
-	<context:property-placeholder ignore-unresolvable="true" />
+
+	<bean id="provisionPersistenceProperties" class="org.springframework.beans.factory.config.PropertiesFactoryBean">
+		<property name="properties">
+			<props>
+				<prop key="importer.foreign-source.dir">${install.dir}/etc/foreign-sources</prop>
+				<prop key="importer.requisition.dir">${install.dir}/etc/imports</prop>
+			</props>
+		</property>
+	</bean>
+
+	<context:property-placeholder ignore-unresolvable="true" properties-ref="provisionPersistenceProperties" />
 
 	<bean id="foreignSourceRepositoryFactory" class="org.opennms.netmgt.provision.persist.DefaultForeignSourceRepositoryFactory" />
 
