@@ -1,25 +1,25 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
- * <p>
+ *
  * Copyright (C) 2015 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2015 The OpenNMS Group, Inc.
- * <p>
+ *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
- * <p>
+ *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
- * <p>
+ *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Affero General Public License for more details.
- * <p>
+ *
  * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  * http://www.gnu.org/licenses/
- * <p>
+ *
  * For more information contact:
  * OpenNMS(R) Licensing <license@opennms.org>
  * http://www.opennms.org/
@@ -29,6 +29,9 @@
 package org.opennms.netmgt.bsm.vaadin.adminpage;
 
 import java.util.Set;
+
+import org.opennms.netmgt.bsm.service.model.BusinessServiceDTO;
+import org.opennms.netmgt.bsm.service.model.IpServiceDTO;
 
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.ui.Alignment;
@@ -40,39 +43,79 @@ import com.vaadin.ui.TwinColSelect;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 
-import org.opennms.netmgt.bsm.service.model.BusinessServiceDTO;
-import org.opennms.netmgt.bsm.service.model.IpServiceDTO;
-
+/**
+ * Modal dialog window used to edit the properties of a Business Service definition. This class will be
+ * instantiated by the {@see BusinessServiceMainLayout} main layout.
+ *
+ * @author Markus Neumann <markus@opennms.com>
+ * @author Christian Pape <christian@opennms.org>
+ */
 public class BusinessServiceEditWindow extends Window {
+    /**
+     * the parent main layout
+     */
+    private BusinessServiceMainLayout m_businessServiceMainLayout;
+    /**
+     * the name textfield
+     */
+    private TextField m_nameTextField;
+    /**
+     * the twin selection box used for selecting or deselecting IP services
+     */
+    private TwinColSelect m_ipServicesTwinColSelect;
+    /**
+     * bean item container for IP services DTOs
+     */
+    private BeanItemContainer<IpServiceDTO> m_beanItemContainer = new BeanItemContainer<>(IpServiceDTO.class);
 
-    private BusinessServiceMainLayout businessServiceMainLayout;
-    private TextField nameField;
-    private TwinColSelect ipServiceSelect;
-    private BeanItemContainer<IpServiceDTO> beanItemContainer = new BeanItemContainer<>(IpServiceDTO.class);
-
-
+    /**
+     * Constructor
+     *
+     * @param businessServiceDTO the Business Service DTO instance to be configured
+     * @param businessServiceMainLayout the parent main layout
+     */
     public BusinessServiceEditWindow(BusinessServiceDTO businessServiceDTO, BusinessServiceMainLayout businessServiceMainLayout) {
+        /**
+         * set window title...
+         */
         super("Business Service Edit");
 
-        this.businessServiceMainLayout = businessServiceMainLayout;
+        /**
+         * set the member field...
+         */
+        this.m_businessServiceMainLayout = businessServiceMainLayout;
 
+        /**
+         * ...and query for IP services.
+         */
+        m_beanItemContainer.addAll(m_businessServiceMainLayout.getBusinessServiceManager().getAllIpServiceDTO());
+
+        /**
+         * ...and basic properties
+         */
         setModal(true);
         setClosable(false);
         setResizable(false);
         setWidth(60, Unit.PERCENTAGE);
         setHeight(80, Unit.PERCENTAGE);
 
+        /**
+         * construct the main layout
+         */
         VerticalLayout verticalLayout = new VerticalLayout();
         verticalLayout.setSizeFull();
         verticalLayout.setSpacing(true);
         verticalLayout.setMargin(true);
 
+        /**
+         * add save button
+         */
         Button saveButton = new Button("Save");
         saveButton.addClickListener(new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent event) {
-                businessServiceDTO.setName(nameField.getValue().trim());
-                businessServiceDTO.setIpServices((Set<IpServiceDTO>)ipServiceSelect.getValue());
+                businessServiceDTO.setName(m_nameTextField.getValue().trim());
+                businessServiceDTO.setIpServices((Set<IpServiceDTO>) m_ipServicesTwinColSelect.getValue());
                 if (businessServiceDTO.getId() == null) {
                     businessServiceMainLayout.getBusinessServiceManager().save(businessServiceDTO);
                 } else {
@@ -83,39 +126,56 @@ public class BusinessServiceEditWindow extends Window {
             }
         });
 
-        Button closeButton = new Button("Cancel");
-        closeButton.addClickListener(new Button.ClickListener() {
+        /**
+         * add the cancel button
+         */
+        Button cancelButton = new Button("Cancel");
+        cancelButton.addClickListener(new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent event) {
                 close();
             }
         });
 
-        nameField = new TextField();
-        nameField.setValue(businessServiceDTO.getName());
-        nameField.setWidth(100.0f, Unit.PERCENTAGE);
-        verticalLayout.addComponent(new Panel("Name", nameField));
+        /**
+         * add the buttons to a HorizontalLayout
+         */
+        HorizontalLayout buttonLayout = new HorizontalLayout();
+        buttonLayout.addComponent(saveButton);
+        buttonLayout.addComponent(cancelButton);
 
-        ipServiceSelect = new TwinColSelect();
-        ipServiceSelect.setWidth(100.0f, Unit.PERCENTAGE);
-        ipServiceSelect.setSizeFull();
-        beanItemContainer.addAll(businessServiceMainLayout.getBusinessServiceManager().getAllIpServiceDTO());
-        ipServiceSelect.setContainerDataSource(beanItemContainer);
-        ipServiceSelect.setValue(businessServiceDTO.getIpServices());
+        /**
+         * instantiate the input fields
+         */
+        m_nameTextField = new TextField();
+        m_nameTextField.setValue(businessServiceDTO.getName());
+        m_nameTextField.setWidth(100.0f, Unit.PERCENTAGE);
+        verticalLayout.addComponent(new Panel("Name", m_nameTextField));
 
-        Panel ipServiceSelectPanel = new Panel("IP-Services", ipServiceSelect);
+        m_ipServicesTwinColSelect = new TwinColSelect();
+        m_ipServicesTwinColSelect.setWidth(100.0f, Unit.PERCENTAGE);
+        m_ipServicesTwinColSelect.setSizeFull();
+
+        m_ipServicesTwinColSelect.setContainerDataSource(m_beanItemContainer);
+        m_ipServicesTwinColSelect.setValue(businessServiceDTO.getIpServices());
+
+        /**
+         * wrap the IP selection box in a Vaadin Panel
+         */
+        Panel ipServiceSelectPanel = new Panel("IP-Services", m_ipServicesTwinColSelect);
         ipServiceSelectPanel.setSizeFull();
         verticalLayout.addComponent(ipServiceSelectPanel);
-
         verticalLayout.setExpandRatio(ipServiceSelectPanel, 1.0f);
 
-        HorizontalLayout horizontalLayout = new HorizontalLayout();
+        /**
+         * now add the button layout to the main layout
+         */
+        verticalLayout.addComponent(buttonLayout);
+        verticalLayout.setComponentAlignment(buttonLayout, Alignment.BOTTOM_RIGHT);
 
-        horizontalLayout.addComponent(saveButton);
-        horizontalLayout.addComponent(closeButton);
-        verticalLayout.addComponent(horizontalLayout);
-        verticalLayout.setComponentAlignment(horizontalLayout, Alignment.BOTTOM_RIGHT);
-
+        /**
+         * set the window's content
+         */
         setContent(verticalLayout);
     }
 }
