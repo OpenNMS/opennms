@@ -247,11 +247,6 @@ public class ConfigTesterTest {
     }
 
     @Test
-    public void testModelImporter() {
-        testConfigFile("model-importer.properties");
-    }
-
-    @Test
     /**
      * FIXME: Don't know why this is ignored.
      * 

@@ -38,7 +38,6 @@
         <entry key="ksc-performance-reports.xml" value="kscReportFactory"/>
         <entry key="magic-users.properties" value="userDao"/>
         <entry key="microblog-configuration.xml" value="microblogConfigurationDao"/>
-        <entry key="model-importer.properties" value="modelImporterProperties"/>
         <!--  <entry key="modemConfig.properties" value="unknown"/> -->
         <entry key="notifd-configuration.xml" value="notifdConfigFactory"/>
         <entry key="notificationCommands.xml" value="notificationCommandFactory"/>
@@ -250,26 +249,6 @@
   <bean id="microblogConfigurationDao" class="org.opennms.netmgt.dao.castor.DefaultMicroblogConfigurationDao">
     <property name="configResource" value="file:${opennms.home}/etc/microblog-configuration.xml"/>
   </bean>
-
-  <bean id="modelImporterProperties" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
-    <property name="location">
-      <value>file:${opennms.home}/etc/model-importer.properties</value>
-    </property>
-  </bean>
-
-<!-- 
-  <bean id="specFile-constructor" class="org.opennms.netmgt.importer.specification.SpecFile"/>
-    
-  <bean id="specFile" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-	<property name="targetObject" ref="specFile-constructor" />
-    <property name="targetMethod"><value>loadResource</value></property>
-    <property name="arguments">
-      <list>
-        <value>file:${opennms.home}/etc/model-importer.properties</value>
-      </list>
-    </property>
-  </bean>
-  -->
 
   <bean id="notifdConfigFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
     <property name="staticMethod"><value>org.opennms.netmgt.config.NotifdConfigFactory.init</value></property>

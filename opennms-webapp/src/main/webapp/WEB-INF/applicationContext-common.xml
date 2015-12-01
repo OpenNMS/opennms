@@ -1,18 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:context="http://www.springframework.org/schema/context"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation="
            http://www.springframework.org/schema/beans
-           http://www.springframework.org/schema/beans/spring-beans-4.0.xsd">
+           http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+           http://www.springframework.org/schema/context
+           http://www.springframework.org/schema/context/spring-context-4.0.xsd">
 
-  <bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
-    <property name="systemPropertiesModeName" value="SYSTEM_PROPERTIES_MODE_OVERRIDE" />
-    <property name="locations">
-      <list>
-        <value>file:${opennms.home}/etc/model-importer.properties</value>
-      </list>
-    </property>
-  </bean>
+  <context:property-placeholder ignore-unresolvable="true"/>
   
   <bean id="networkElementFactory" class="org.opennms.web.element.NetworkElementFactory"/>
   <bean id="enLinkdElementFactory" class="org.opennms.web.enlinkd.EnLinkdElementFactory"/>
