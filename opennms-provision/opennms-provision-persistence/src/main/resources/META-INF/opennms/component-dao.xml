@@ -11,8 +11,8 @@
 	<bean id="provisionPersistenceProperties" class="org.springframework.beans.factory.config.PropertiesFactoryBean">
 		<property name="properties">
 			<props>
-				<prop key="importer.foreign-source.dir">${install.dir}/etc/foreign-sources</prop>
-				<prop key="importer.requisition.dir">${install.dir}/etc/imports</prop>
+				<prop key="importer.foreign-source.dir">${opennms.home}/etc/foreign-sources</prop>
+				<prop key="importer.requisition.dir">${opennms.home}/etc/imports</prop>
 			</props>
 		</property>
 	</bean>
