@@ -163,13 +163,6 @@
         </dependency>
 
         <dependency>
-            <groupId>org.opennms.osgi</groupId>
-            <artifactId>opennms-osgi-core</artifactId>
-            <version>${project.version}</version>
-            <scope>provided</scope>
-        </dependency>
-
-        <dependency>
             <groupId>org.opennms.features.vaadin-components</groupId>
             <artifactId>graph</artifactId>
             <version>${project.version}</version>
@@ -182,18 +175,9 @@
             <artifactId>vaadin</artifactId>
             <type>pom</type>
         </dependency>
-
-        <!-- Required by pax/vaadin -->
         <dependency>
-            <groupId>org.opennms.dependencies</groupId>
-            <artifactId>servlet-dependencies</artifactId>
-            <type>pom</type>
-            <scope>provided</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.opennms.features.themes</groupId>
-            <artifactId>onms-default-theme</artifactId>
+            <groupId>org.opennms.features.vaadin-components</groupId>
+            <artifactId>core</artifactId>
             <version>${project.version}</version>
         </dependency>
 

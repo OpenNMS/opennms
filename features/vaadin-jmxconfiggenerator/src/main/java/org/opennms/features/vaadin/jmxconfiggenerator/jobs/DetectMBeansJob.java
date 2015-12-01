@@ -29,7 +29,6 @@
 package org.opennms.features.vaadin.jmxconfiggenerator.jobs;
 
 import java.io.IOException;
-import java.net.ConnectException;
 import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.net.UnknownHostException;
@@ -45,13 +44,13 @@ import org.opennms.features.jmxconfiggenerator.jmxconfig.JmxDatacollectionConfig
 import org.opennms.features.jmxconfiggenerator.jmxconfig.JmxHelper;
 import org.opennms.features.jmxconfiggenerator.jmxconfig.query.MBeanServerQueryException;
 import org.opennms.features.jmxconfiggenerator.log.Slf4jLogAdapter;
+import org.opennms.netmgt.vaadin.core.UIHelper;
+import org.opennms.features.vaadin.jmxconfiggenerator.JmxConfigGeneratorUI;
 import org.opennms.features.vaadin.jmxconfiggenerator.data.ServiceConfig;
-import org.opennms.features.vaadin.jmxconfiggenerator.ui.UIHelper;
 import org.opennms.features.vaadin.jmxconfiggenerator.ui.UiState;
 import org.opennms.netmgt.jmx.connection.JmxServerConnectionException;
 import org.opennms.netmgt.jmx.connection.JmxServerConnectionWrapper;
 import org.opennms.netmgt.jmx.connection.JmxServerConnector;
-import org.opennms.netmgt.jmx.impl.connection.connectors.Jsr160ConnectionFactory;
 import org.opennms.netmgt.jmx.impl.connection.connectors.PlatformMBeanServerConnector;
 import org.opennms.xmlns.xsd.config.jmx_datacollection.Attrib;
 import org.opennms.xmlns.xsd.config.jmx_datacollection.CompAttrib;
@@ -106,18 +105,18 @@ public class DetectMBeansJob implements JobManager.Task<JmxDatacollectionConfig>
         try {
             InetAddress address = InetAddress.getByName(config.getHost());
 
-            // TODO: Refactor this to use the same code as 
+            // TODO: Refactor this to use the same code as
             // {@link org.opennms.netmgt.jmx.impl.connection.connectors.DefaultJmxConnector}
 
             // If remote JMX access is enabled, this will return a non-null value
             String jmxPort = System.getProperty(JmxServerConnector.JMX_PORT_SYSTEM_PROPERTY);
 
             if (
-                address != null && 
+                address != null &&
                 // If we're trying to create a connection to a localhost address...
                 address.isLoopbackAddress() &&
-                // port should never be null but let's check anyway 
-                config.getPort() != null && 
+                // port should never be null but let's check anyway
+                config.getPort() != null &&
                 (
                     // If the port matches the port of the current JVM...
                     config.getPort().equals(jmxPort) ||
@@ -126,7 +125,7 @@ public class DetectMBeansJob implements JobManager.Task<JmxDatacollectionConfig>
                     (jmxPort == null && JmxServerConnector.DEFAULT_OPENNMS_JMX_PORT.equals(config.getPort()))
                 )
             ) {
-                // ...then use the {@link PlatformMBeanServerConnector} to connect to 
+                // ...then use the {@link PlatformMBeanServerConnector} to connect to
                 // this JVM's MBeanServer directly.
                 try (JmxServerConnectionWrapper connector = new PlatformMBeanServerConnector().createConnection(address, Collections.emptyMap())) {
                     final JmxDatacollectionConfiggenerator jmxConfigGenerator = new JmxDatacollectionConfiggenerator(new Slf4jLogAdapter(JmxDatacollectionConfiggenerator.class));
@@ -171,8 +170,8 @@ public class DetectMBeansJob implements JobManager.Task<JmxDatacollectionConfig>
 
     @Override
     public void onSuccess(JmxDatacollectionConfig generatedJmxConfigModel) {
-        UIHelper.getCurrent().setRawModel(generatedJmxConfigModel);
-        UIHelper.getCurrent().updateView(UiState.MbeansView);
+        UIHelper.getCurrent(JmxConfigGeneratorUI.class).setRawModel(generatedJmxConfigModel);
+        UIHelper.getCurrent(JmxConfigGeneratorUI.class).updateView(UiState.MbeansView);
     }
 
     @Override
