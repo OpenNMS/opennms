@@ -38,6 +38,7 @@ import java.net.BindException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
+import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
@@ -144,10 +145,10 @@ public class SyslogdEventdLoadIT implements InitializingBean {
         }
     }
 
-    private void startSyslogdGracefully() {
+    private void startSyslogdGracefully() throws SocketException {
         try {
             m_syslogd = new Syslogd();
-            m_syslogd.setConfigFactory(m_config);
+            m_syslogd.setSyslogReceiver(new SyslogReceiverJavaNetImpl(m_config));
             m_syslogd.init();
             m_syslogd.start();
         } catch (UndeclaredThrowableException ute) {

@@ -43,6 +43,7 @@ import org.apache.cassandra.concurrent.JMXEnabledSharedExecutorPool;
 import org.apache.cassandra.concurrent.SharedExecutorPool;
 import org.apache.cassandra.config.Config;
 import org.opennms.core.logging.Logging;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.SyslogdConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -63,7 +64,7 @@ import com.lmax.disruptor.dsl.Disruptor;
  * 
  * @author Seth
  */
-class SyslogReceiverNioDisruptorImpl implements SyslogReceiver {
+public class SyslogReceiverNioDisruptorImpl implements SyslogReceiver {
 
     private static final Logger LOG = LoggerFactory.getLogger(SyslogReceiverNioDisruptorImpl.class);
     private static final MetricRegistry METRICS = new MetricRegistry();
@@ -158,6 +159,20 @@ class SyslogReceiverNioDisruptorImpl implements SyslogReceiver {
         public final ByteBuffer buffer = ByteBuffer.allocate(MAX_PACKET_SIZE);
     }
 
+    public static DatagramChannel openChannel(SyslogdConfig config) throws SocketException, IOException {
+        DatagramChannel channel = DatagramChannel.open();
+        if (config.getListenAddress() != null && config.getListenAddress().length() != 0) {
+            channel.socket().bind(new InetSocketAddress(InetAddressUtils.addr(config.getListenAddress()), config.getSyslogPort()));
+        } else {
+            channel.socket().bind(new InetSocketAddress(config.getSyslogPort()));
+        }
+        return channel;
+    }
+
+    public SyslogReceiverNioDisruptorImpl(SyslogdConfig config) throws SocketException, IOException {
+        this(openChannel(config), config);
+    }
+
     /**
      * Construct a new receiver
      *
@@ -166,7 +181,7 @@ class SyslogReceiverNioDisruptorImpl implements SyslogReceiver {
      * @param hostGroup
      * @param messageGroup
      */
-    SyslogReceiverNioDisruptorImpl(DatagramChannel channel, SyslogdConfig config) {
+    public SyslogReceiverNioDisruptorImpl(DatagramChannel channel, SyslogdConfig config) {
         if (channel == null) {
             throw new IllegalArgumentException("Channel cannot be null");
         } else if (config == null) {
@@ -212,6 +227,12 @@ class SyslogReceiverNioDisruptorImpl implements SyslogReceiver {
             }
         }
         */
+    }
+
+    @Override
+    public String getName() {
+        String listenAddress = (m_config.getListenAddress() != null && m_config.getListenAddress().length() > 0) ? m_config.getListenAddress() : "0.0.0.0";
+        return getClass().getSimpleName() + " [" + listenAddress + ":" + m_config.getSyslogPort() + "]";
     }
 
     /**

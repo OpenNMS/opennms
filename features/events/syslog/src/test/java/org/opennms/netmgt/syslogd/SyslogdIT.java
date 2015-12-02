@@ -30,7 +30,6 @@ package org.opennms.netmgt.syslogd;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 import static org.opennms.core.utils.InetAddressUtils.addr;
 
 import java.io.InputStream;
@@ -120,7 +119,7 @@ public class SyslogdIT implements InitializingBean {
         }
 
         m_syslogd = new Syslogd();
-        m_syslogd.setConfigFactory(m_config);
+        m_syslogd.setSyslogReceiver(new SyslogReceiverJavaNetImpl(m_config));
         m_syslogd.init();
 
         // Verify that the test syslogd-configuration.xml file was loaded

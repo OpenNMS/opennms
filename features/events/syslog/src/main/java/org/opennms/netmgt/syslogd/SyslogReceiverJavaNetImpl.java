@@ -43,6 +43,7 @@ import java.util.concurrent.TimeUnit;
 import org.opennms.core.concurrent.LogPreservingThreadFactory;
 import org.opennms.core.concurrent.WaterfallExecutor;
 import org.opennms.core.logging.Logging;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.SyslogdConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,7 +53,7 @@ import org.slf4j.LoggerFactory;
  * @author <a href="http://www.oculan.com">Oculan Corporation</a>
  * @fiddler joed
  */
-class SyslogReceiverJavaNetImpl implements SyslogReceiver {
+public class SyslogReceiverJavaNetImpl implements SyslogReceiver {
     private static final Logger LOG = LoggerFactory.getLogger(SyslogReceiverJavaNetImpl.class);
 
     private static final int SOCKET_TIMEOUT = 500;
@@ -76,6 +77,23 @@ class SyslogReceiverJavaNetImpl implements SyslogReceiver {
 
     private final ExecutorService m_executor;
 
+    private static DatagramSocket openSocket(SyslogdConfig config) throws SocketException {
+        // The UDP socket for receipt of packets
+        DatagramSocket dgSock;
+
+        if (config.getListenAddress() != null && config.getListenAddress().length() != 0) {
+            dgSock = new DatagramSocket(config.getSyslogPort(), InetAddressUtils.addr(config.getListenAddress()));
+        } else {
+            dgSock = new DatagramSocket(config.getSyslogPort());
+        }
+
+        return dgSock;
+    }
+
+    public SyslogReceiverJavaNetImpl(final SyslogdConfig config) throws SocketException {
+        this(openSocket(config), config);
+    }
+
     /**
      * construct a new receiver
      *
@@ -84,7 +102,7 @@ class SyslogReceiverJavaNetImpl implements SyslogReceiver {
      * @param hostGroup
      * @param messageGroup
      */
-    SyslogReceiverJavaNetImpl(DatagramSocket sock, final SyslogdConfig config) {
+    public SyslogReceiverJavaNetImpl(DatagramSocket sock, final SyslogdConfig config) {
         if (sock == null) {
             throw new IllegalArgumentException("Socket cannot be null");
         } else if (config == null) {
@@ -103,6 +121,12 @@ class SyslogReceiverJavaNetImpl implements SyslogReceiver {
             new LinkedBlockingQueue<Runnable>(),
             new LogPreservingThreadFactory(getClass().getSimpleName(), Integer.MAX_VALUE)
         );
+    }
+
+    @Override
+    public String getName() {
+        String listenAddress = (m_config.getListenAddress() != null && m_config.getListenAddress().length() > 0) ? m_config.getListenAddress() : "0.0.0.0";
+        return getClass().getSimpleName() + " [" + listenAddress + ":" + m_config.getSyslogPort() + "]";
     }
 
     /*

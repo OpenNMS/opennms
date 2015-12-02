@@ -44,6 +44,7 @@ import java.util.concurrent.TimeUnit;
 import org.opennms.core.concurrent.LogPreservingThreadFactory;
 import org.opennms.core.concurrent.WaterfallExecutor;
 import org.opennms.core.logging.Logging;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.SyslogdConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,7 +55,7 @@ import org.slf4j.LoggerFactory;
  * @author <a href="http://www.oculan.com">Oculan Corporation</a>
  * @fiddler joed
  */
-class SyslogReceiverNioThreadPoolImpl implements SyslogReceiver {
+public class SyslogReceiverNioThreadPoolImpl implements SyslogReceiver {
 
     private static final Logger LOG = LoggerFactory.getLogger(SyslogReceiverNioThreadPoolImpl.class);
 
@@ -90,6 +91,20 @@ class SyslogReceiverNioThreadPoolImpl implements SyslogReceiver {
 
     private final ExecutorService m_socketReceivers;
 
+    public static DatagramChannel openChannel(SyslogdConfig config) throws SocketException, IOException {
+        DatagramChannel channel = DatagramChannel.open();
+        if (config.getListenAddress() != null && config.getListenAddress().length() != 0) {
+            channel.socket().bind(new InetSocketAddress(InetAddressUtils.addr(config.getListenAddress()), config.getSyslogPort()));
+        } else {
+            channel.socket().bind(new InetSocketAddress(config.getSyslogPort()));
+        }
+        return channel;
+    }
+
+    public SyslogReceiverNioThreadPoolImpl(SyslogdConfig config) throws SocketException, IOException {
+        this(openChannel(config), config);
+    }
+
     /**
      * Construct a new receiver
      *
@@ -98,7 +113,7 @@ class SyslogReceiverNioThreadPoolImpl implements SyslogReceiver {
      * @param hostGroup
      * @param messageGroup
      */
-    SyslogReceiverNioThreadPoolImpl(DatagramChannel channel, SyslogdConfig config) {
+    public SyslogReceiverNioThreadPoolImpl(DatagramChannel channel, SyslogdConfig config) {
         if (channel == null) {
             throw new IllegalArgumentException("Channel cannot be null");
         } else if (config == null) {
@@ -129,6 +144,12 @@ class SyslogReceiverNioThreadPoolImpl implements SyslogReceiver {
             new LinkedBlockingQueue<Runnable>(),
             new LogPreservingThreadFactory(getClass().getSimpleName() + "-SocketReceiver", Integer.MAX_VALUE)
         );
+    }
+
+    @Override
+    public String getName() {
+        String listenAddress = (m_config.getListenAddress() != null && m_config.getListenAddress().length() > 0) ? m_config.getListenAddress() : "0.0.0.0";
+        return getClass().getSimpleName() + " [" + listenAddress + ":" + m_config.getSyslogPort() + "]";
     }
 
     /**

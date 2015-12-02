@@ -28,6 +28,8 @@
 
 package org.opennms.netmgt.syslogd;
 
+import static org.opennms.core.utils.InetAddressUtils.addr;
+
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
@@ -54,7 +56,7 @@ import org.slf4j.LoggerFactory;
 /**
  * @author Seth
  */
-class SyslogReceiverCamelNettyImpl implements SyslogReceiver {
+public class SyslogReceiverCamelNettyImpl implements SyslogReceiver {
 
     private static final Logger LOG = LoggerFactory.getLogger(SyslogReceiverNioThreadPoolImpl.class);
 
@@ -68,7 +70,7 @@ class SyslogReceiverCamelNettyImpl implements SyslogReceiver {
 
     private final ExecutorService m_executor;
 
-	private DefaultCamelContext m_camel;
+    private DefaultCamelContext m_camel;
 
     /**
      * Construct a new receiver
@@ -79,19 +81,13 @@ class SyslogReceiverCamelNettyImpl implements SyslogReceiver {
      * @param messageGroup
      * @throws IOException 
      */
-    SyslogReceiverCamelNettyImpl(
-        final InetAddress host,
-        final int port,
-        final SyslogdConfig config
-    ) {
-        if (host == null) {
-            throw new IllegalArgumentException("Host cannot be null");
-        } else if (config == null) {
+    public SyslogReceiverCamelNettyImpl(final SyslogdConfig config) {
+        if (config == null) {
             throw new IllegalArgumentException("Config cannot be null");
         }
 
-        m_host = host == null ? InetAddressUtils.getLocalHostAddress() : host;
-        m_port = port;
+        m_host = config.getListenAddress() == null ? addr("0.0.0.0"): addr(config.getListenAddress());
+        m_port = config.getSyslogPort();
         m_config = config;
 
         m_executor = new ThreadPoolExecutor(
@@ -102,6 +98,12 @@ class SyslogReceiverCamelNettyImpl implements SyslogReceiver {
             new LinkedBlockingQueue<Runnable>(),
             new LogPreservingThreadFactory(getClass().getSimpleName(), Integer.MAX_VALUE)
         );
+    }
+
+    @Override
+    public String getName() {
+        String listenAddress = (m_config.getListenAddress() != null && m_config.getListenAddress().length() > 0) ? m_config.getListenAddress() : "0.0.0.0";
+        return getClass().getSimpleName() + " [" + listenAddress + ":" + m_config.getSyslogPort() + "]";
     }
 
     /**
