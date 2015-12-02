@@ -42,10 +42,17 @@ public class CustomSyslogParser extends SyslogParser {
     private final Pattern m_forwardingPattern;
     private final int m_matchingGroupHost;
     private final int m_matchingGroupMessage;
-
+    private final Pattern m_messageIdPattern = Pattern.compile("^((\\S+):\\s*)");
+	// date pattern has been updated to support space at start and end of
+	// the message
+    private final Pattern m_datePattern = Pattern
+			.compile("^\\s*((\\d\\d\\d\\d-\\d\\d-\\d\\d)\\s*)");
+    private final Pattern m_oldDatePattern = Pattern
+			.compile("^\\s*(\\S\\S\\S\\s+\\d{1,2}\\s+\\d\\d:\\d\\d:\\d\\d)\\s+");
+     SyslogMessage syslogMessage = null;
     public CustomSyslogParser(final SyslogdConfig config, final String text) throws SyslogParserException {
         super(config, text);
-
+        syslogMessage = new SyslogMessage();
         final String forwardingRegexp = config.getForwardingRegexp();
         if (forwardingRegexp == null || forwardingRegexp.length() == 0) {
             throw new SyslogParserException("no forwarding regular expression defined");
@@ -58,23 +65,12 @@ public class CustomSyslogParser extends SyslogParser {
     @Override
     public SyslogMessage parse() throws SyslogParserException {
     	
-	
-		// Static declaration from class level has been removed and made to
-		// class level to avoid static variable access which consumes time also
-		// cause memory leak
-		 
-		Pattern m_messageIdPattern = Pattern.compile("^((\\S+):\\s*)");
-		// date pattern has been updated to support space at start and end of
-		// the message
-		Pattern m_datePattern = Pattern
-				.compile("^\\s*((\\d\\d\\d\\d-\\d\\d-\\d\\d)\\s*)");
-		Pattern m_oldDatePattern = Pattern
-				.compile("^\\s*(\\S\\S\\S\\s+\\d{1,2}\\s+\\d\\d:\\d\\d:\\d\\d)\\s+");
-        final SyslogMessage syslogMessage = new SyslogMessage();
+		LOG.info("Messsage Parse Start");
+		
         syslogMessage.setParserClass(getClass());
 
         String message = getText();
-
+        
         int lbIdx = message.indexOf('<');
         int rbIdx = message.indexOf('>');
 
@@ -84,7 +80,7 @@ public class CustomSyslogParser extends SyslogParser {
 
         int priCode = 0;
         String priStr = message.substring(lbIdx + 1, rbIdx);
-
+       
         try {
             priCode = Integer.parseInt(priStr);
         } catch (final NumberFormatException ex) {
@@ -132,8 +128,9 @@ public class CustomSyslogParser extends SyslogParser {
 			message = oldDateMatcher.replaceFirst("");
 		}
         LOG.trace("timestamp = {}", timestamp);
-        syslogMessage.setDate(parseDate(timestamp));
         
+		syslogMessage.setDate(parseDate(timestamp));
+
         // These 2 debugs will aid in analyzing the regexes as syslog seems
         // to differ a lot depending on implementation or message structure.
 
@@ -209,7 +206,9 @@ public class CustomSyslogParser extends SyslogParser {
         syslogMessage.setProcessId(processId);
         syslogMessage.setProcessName(processName);
         syslogMessage.setMessage(message.trim());
-
+        LOG.info("Message Parse End");
+        
         return syslogMessage;
     }
+    
 }
