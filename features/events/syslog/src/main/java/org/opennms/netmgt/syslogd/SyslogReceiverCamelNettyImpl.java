@@ -152,7 +152,7 @@ class SyslogReceiverCamelNettyImpl implements SyslogReceiver {
                             // NettyConstants.NETTY_REMOTE_ADDRESS is a SocketAddress type but because 
                             // we are listening on an InetAddress, it will always be of type InetAddressSocket
                             InetSocketAddress source = (InetSocketAddress)exchange.getIn().getHeader(NettyConstants.NETTY_REMOTE_ADDRESS); 
-                            WaterfallExecutor.waterfall(m_executor, new SyslogConnection(source.getAddress(), source.getPort(), buffer.toByteBuffer(), m_config, null));
+                            WaterfallExecutor.waterfall(m_executor, new SyslogConnection(source.getAddress(), source.getPort(), buffer.toByteBuffer(), m_config));
                         }
                     });
                 }
