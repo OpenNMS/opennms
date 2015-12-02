@@ -538,4 +538,8 @@ public class NorthboundAlarm implements Preservable {
 		return m_nodeId;
 	}
 
+	@Override
+	public String toString() {
+	    return String.format("NorthboundAlarm[id=%d, uei='%s', nodeId=%d]", m_id, m_uei, m_nodeId);
+	}
 }

@@ -1,0 +1,78 @@
+<blueprint
+	xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0"
+	xmlns:ext="http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.1.0"
+	xmlns:camel="http://camel.apache.org/schema/blueprint"
+	xsi:schemaLocation="
+		http://www.osgi.org/xmlns/blueprint/v1.0.0
+		http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd
+		
+		http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0
+		http://aries.apache.org/schemas/blueprint-cm/blueprint-cm-1.1.0.xsd
+		
+		http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.1.0
+		http://aries.apache.org/schemas/blueprint-ext/blueprint-ext-1.1.xsd
+
+		http://camel.apache.org/schema/blueprint
+		http://camel.apache.org/schema/blueprint/camel-blueprint-2.12.2.xsd
+">
+
+  <!-- Configuration properties -->
+  <cm:property-placeholder id="eventReceiverProperties" persistent-id="org.opennms.features.amqp.eventreceiver" update-strategy="reload">
+    <cm:default-properties>
+      <!-- amqp://username:password@virtualhost?brokerlist='tcp://127.0.0.1:5672?options -->
+      <cm:property name="connectionUrl" value="amqp://guest:guest@onms/test?brokerlist='tcp://127.0.0.1:5672?retries=9999&amp;connectdelay=30000'&amp;maxprefetch=10"/>
+      <!-- amqp:exchange/routingkey?options -->
+      <cm:property name="source" value="amqp:OpenNMS-Queue"/>
+    </cm:default-properties>
+  </cm:property-placeholder>
+
+  <reference id="eventIpcManager" interface="org.opennms.netmgt.events.api.EventIpcManager" availability="mandatory"/>
+
+  <reference id="nodeDao" interface="org.opennms.netmgt.dao.api.NodeDao" availability="mandatory"/>
+
+  <bean id="nodeIdHeaderProcessor" class="org.opennms.features.amqp.eventreceiver.UpdateNodeIdByForeignSourceForeignIdHeaderProcessor">
+    <property name="nodeDao" ref="nodeDao"/>
+  </bean>
+
+  <!-- Camel unmarshalling processor -->
+  <bean id="unmarshaller" class="org.opennms.features.amqp.eventreceiver.JaxbUtilsUnmarshalProcessor"/>
+
+  <!--
+        Reduces the graceful shutdown time from 300 to 15 seconds.
+   -->
+  <bean id="shutdownStrategy" class="org.apache.camel.impl.DefaultShutdownStrategy">
+        <property name="timeout" value="15"/>
+  </bean>
+
+  <camelContext autoStartup="true" id="amqpEventReceiverCamelContext" xmlns="http://camel.apache.org/schema/blueprint">
+    <propertyPlaceholder id="properties" location="blueprint:eventReceiverProperties" />
+    <errorHandler id="noErrorHandler" type="NoErrorHandler"/>
+
+    <onException>
+      <exception>java.lang.Exception</exception>
+      <redeliveryPolicy maximumRedeliveries="10" delayPattern="2:30000;4:60000;6:120000"/>
+    </onException>
+
+    <route id="receiveEvent">
+      <!-- Receive from AMQP -->
+      <from uri="{{source}}"/>
+      <log message="blueprint-event-receiver.xml: Received event: ${body.toString()}"/>
+      <!-- Unmarshal Event from XML -->
+      <bean ref="unmarshaller"/>
+      <!-- Update node ID to the value on the local OpenNMS instance -->
+      <bean ref="nodeIdHeaderProcessor"/>
+      <!-- Send to the OpenNMS event IPC manager -->
+      <bean ref="eventIpcManager" method="send"/>
+    </route>
+  </camelContext>
+
+  <bean id="amqp" class="org.apache.camel.component.amqp.AMQPComponent">
+    <property name="connectionFactory">
+      <bean class="org.apache.qpid.client.AMQConnectionFactory">
+        <property name="connectionURLString" value="${connectionUrl}" />
+      </bean>
+    </property>
+  </bean>
+</blueprint>
