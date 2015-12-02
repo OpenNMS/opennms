@@ -38,12 +38,6 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>org.opennms.osgi</groupId>
-            <artifactId>opennms-osgi-core</artifactId>
-            <version>${project.version}</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
             <groupId>org.osgi</groupId>
             <artifactId>org.osgi.core</artifactId>
             <scope>provided</scope>
@@ -79,7 +73,7 @@
             <type>pom</type>
         </dependency>
         <dependency>
-            <groupId>org.opennms.osgi.features.topology</groupId>
+            <groupId>org.opennms.features</groupId>
             <artifactId>vaadin</artifactId>
             <type>pom</type>
         </dependency>

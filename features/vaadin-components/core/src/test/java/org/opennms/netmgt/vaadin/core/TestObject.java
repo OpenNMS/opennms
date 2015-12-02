@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2015 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2015 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,34 +26,20 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.vaadin.jmxconfiggenerator;
-
-import org.opennms.web.navigate.PageNavEntry;
+package org.opennms.netmgt.vaadin.core;
 
 /**
- *
- * @author Markus von Rüden <mvr@opennms.com>
+ * TestObject to verify that the {@link TransactionAwareBeanProxyFactory} works as expected.
+ * Please do not change the behaviour here, as it is required to pass the tests in {@link TransactionAwareBeanProxyFactoryIT}.
  */
-public class AdminPageNavEntry implements PageNavEntry {
+public interface TestObject {
+    void setSomeValue(String someValue);
 
-    private String name;
-    private String url;
+    String getSomeValue();
 
-    @Override
-    public String getName() {
-        return name;
-    }
+    void doSomething();
 
-    public void setName(final String name) {
-        this.name = name;
-    }
+    void doSomething2();
 
-    @Override
-    public String getUrl() {
-        return url;
-    }
-
-    public void setUrl(final String url) {
-        this.url = url;
-    }
+    boolean isTransactionActive();
 }
