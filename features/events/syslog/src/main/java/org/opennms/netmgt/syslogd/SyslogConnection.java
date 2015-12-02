@@ -57,24 +57,21 @@ public class SyslogConnection implements Callable<Callable<?>> {
     private int m_port;
     private ByteBuffer m_bytes;
     private SyslogdConfig m_config;
-    private Runnable m_callback;
 
     /**
      * No-arg constructor so that we can preallocate this object for use with
      * an LMAX Disruptor.
      */
+    /*
     public SyslogConnection() {
     }
+    */
 
     public SyslogConnection(final DatagramPacket packet, final SyslogdConfig config) {
-        this(packet, config, null);
+        this(packet.getAddress(), packet.getPort(), ByteBuffer.wrap(packet.getData()), config);
     }
 
-    public SyslogConnection(final DatagramPacket packet, final SyslogdConfig config, final Runnable callback) {
-        this(packet.getAddress(), packet.getPort(), ByteBuffer.wrap(packet.getData()), config, callback);
-    }
-
-    public SyslogConnection(final InetAddress sourceAddress, final int port, final ByteBuffer bytes, final SyslogdConfig config, final Runnable callback) {
+    public SyslogConnection(final InetAddress sourceAddress, final int port, final ByteBuffer bytes, final SyslogdConfig config) {
         if (sourceAddress == null) {
             throw new IllegalArgumentException("Source address cannot be null");
         } else if (bytes == null) {
@@ -87,7 +84,6 @@ public class SyslogConnection implements Callable<Callable<?>> {
         m_port = port;
         m_bytes = bytes;
         m_config = config;
-        m_callback = callback;
     }
 
     public InetAddress getSourceAddress() {
@@ -112,14 +108,6 @@ public class SyslogConnection implements Callable<Callable<?>> {
 
     public void setByteBuffer(ByteBuffer bytes) {
         m_bytes = bytes;
-    }
-
-    public Runnable getCallback() {
-        return m_callback;
-    }
-
-    public void setCallback(Runnable callback) {
-        m_callback = callback;
     }
 
     public SyslogdConfig getConfig() {
@@ -154,11 +142,6 @@ public class SyslogConnection implements Callable<Callable<?>> {
             LOG.debug("Failure to convert package", e1);
         } catch (final MessageDiscardedException e) {
             LOG.debug("Message discarded, returning without enqueueing event.", e);
-        } finally {
-            // TODO: Make this async?
-            if (m_callback != null) {
-                m_callback.run();
-            }
         }
         return null;
     }

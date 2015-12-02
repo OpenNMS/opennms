@@ -69,6 +69,11 @@
       <artifactId>opennms-dao-api</artifactId>
     </dependency>
     <dependency>
+        <groupId>io.dropwizard.metrics</groupId>
+        <artifactId>metrics-core</artifactId>
+        <version>3.1.2</version>
+    </dependency>
+    <dependency>
       <groupId>com.lmax</groupId>
       <artifactId>disruptor</artifactId>
       <version>3.3.2</version>
