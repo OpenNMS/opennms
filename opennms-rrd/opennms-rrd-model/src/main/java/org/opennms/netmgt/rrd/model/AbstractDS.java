@@ -29,6 +29,7 @@
 package org.opennms.netmgt.rrd.model;
 
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 /**
@@ -198,6 +199,14 @@ public abstract class AbstractDS {
     public void setUnknownSec(Long unknownSec) {
         this.unknownSec = unknownSec;
     }
+
+    /**
+     * Checks if the data source is counter.
+     *
+     * @return true, if the data source is a counter
+     */
+    @XmlTransient
+    abstract public boolean isCounter();
 
     /**
      * Format equals.
