@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.provision.detector.jmx;
 
+import java.io.IOException;
 import java.net.ConnectException;
 import java.net.InetAddress;
 import java.util.Map;
@@ -78,10 +79,10 @@ public abstract class AbstractJsr160Detector extends JMXDetector {
     }
 
     /** 
-     * @throws ConnectException 
+     * @throws IOException 
      */
     @Override
-    protected JmxServerConnectionWrapper connect(final InetAddress address, final int port, final int timeout) throws ConnectException {
+    protected JmxServerConnectionWrapper connect(final InetAddress address, final int port, final int timeout) throws IOException {
         if (m_jmxConfigDao == null) {
             m_jmxConfigDao = BeanUtils.getBean("daoContext", "jmxConfigDao", JmxConfigDao.class);
         }
@@ -117,7 +118,7 @@ public abstract class AbstractJsr160Detector extends JMXDetector {
                 String.valueOf(port).equals(jmxPort) ||
                 // Or if remote JMX RMI is disabled and we're attempting to connect
                 // to the default OpenNMS JMX port...
-                (jmxPort == null && JmxServerConnector.DEFAULT_OPENNMS_JMX_PORT.equals(port))
+                (jmxPort == null && JmxServerConnector.DEFAULT_OPENNMS_JMX_PORT.equals(String.valueOf(port)))
             )
         ) {
             // ...then use the {@link PlatformMBeanServerConnector} to connect to 

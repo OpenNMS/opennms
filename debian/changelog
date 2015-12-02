@@ -1,3 +1,10 @@
+opennms (17.0.0-1) stable; urgency=medium
+
+  * New stable series.  This release contains a large number of bug fixes and
+    new features.
+
+ -- OpenNMS Release Manager <opennms@opennms.org>  Tue, 1 Dec 2015 15:12:00 -0500
+
 opennms (16.0.4-1) stable; urgency=high
 
   * New upstream release.  This release contains a number of bug fixes over 16.0.3,
