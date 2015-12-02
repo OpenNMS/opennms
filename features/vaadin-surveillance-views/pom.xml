@@ -111,36 +111,6 @@
         </plugins>
 
     </build>
-
-    <repositories>
-        <repository>
-            <snapshots><enabled>true</enabled></snapshots>
-            <releases><enabled>false</enabled></releases>
-            <id>opennms-snapshots</id>
-            <name>OpenNMS Snapshot Maven Repository</name>
-            <url>http://maven.opennms.org/content/groups/opennms.org-snapshot/</url>
-        </repository>
-        <repository>
-            <id>vaadin-snapshots</id>
-            <releases><enabled>false</enabled></releases>
-            <snapshots><enabled>true</enabled></snapshots>
-            <url>http://maven.opennms.org/content/repositories/vaadin-snapshots/</url>
-        </repository>
-        <repository>
-            <id>vaadin-addons</id>
-            <url>http://maven.opennms.org/content/repositories/vaadin-addons/</url>
-        </repository>
-    </repositories>
-
-    <pluginRepositories>
-        <pluginRepository>
-            <id>vaadin-snapshots</id>
-            <snapshots><enabled>true</enabled></snapshots>
-            <releases><enabled>false</enabled></releases>
-            <url>http://maven.opennms.org/content/repositories/vaadin-snapshots/</url>
-        </pluginRepository>
-    </pluginRepositories>
-
     <dependencies>
         <dependency>
             <groupId>org.slf4j</groupId>

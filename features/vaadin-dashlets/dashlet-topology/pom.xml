@@ -21,16 +21,6 @@
     <name>${bundle.symbolicName}</name>
 
     <packaging>bundle</packaging>
-
-    <repositories>
-        <repository>
-            <id>vaadin-snapshots</id>
-            <releases><enabled>false</enabled></releases>
-            <snapshots><enabled>true</enabled></snapshots>
-            <url>http://maven.opennms.org/content/repositories/vaadin-snapshots/</url>
-        </repository>
-    </repositories>
-
     <dependencies>
 
         <dependency>
