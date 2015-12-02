@@ -29,14 +29,17 @@
 package org.opennms.netmgt.provision.detector.jmx;
 
 import org.opennms.core.utils.InetAddressUtils;
+
+import org.opennms.netmgt.dao.jmx.JmxConfigDao;
+import org.opennms.netmgt.jmx.connection.JmxServerConnectionWrapper;
 import org.opennms.netmgt.provision.support.SyncAbstractDetector;
-import org.opennms.netmgt.provision.support.jmx.connectors.ConnectionWrapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.management.InstanceNotFoundException;
 import javax.management.MalformedObjectNameException;
 import javax.management.ObjectName;
+
 import java.io.IOException;
 import java.io.InterruptedIOException;
 import java.net.ConnectException;
@@ -82,7 +85,7 @@ public abstract class JMXDetector extends SyncAbstractDetector {
         super(serviceName, port, timeout, retries);
     }
 
-    abstract protected ConnectionWrapper connect(final InetAddress address, final int port, final int timeout);
+    abstract protected JmxServerConnectionWrapper connect(final InetAddress address, final int port, final int timeout) throws ConnectException, IOException;
 
     /** {@inheritDoc} */
     @Override
@@ -96,15 +99,15 @@ public abstract class JMXDetector extends SyncAbstractDetector {
 
         for (int attempts = 0; attempts < retries; attempts++) {
 
-            try (final ConnectionWrapper client = this.connect(address, port, timeout)) {
+            try (final JmxServerConnectionWrapper client = this.connect(address, port, timeout)) {
                 LOG.info("isServiceDetected: {}: Attempting to connect to address: {}, port: {}, attempt: #{}", getServiceName(), ipAddr, port, attempts);
 
-                if (client.getMBeanServer().getMBeanCount() <= 0) {
+                if (client.getMBeanServerConnection().getMBeanCount() <= 0) {
                     return false;
                 }
 
                 if (m_object != null) {
-                    client.getMBeanServer().getObjectInstance(new ObjectName(m_object));
+                    client.getMBeanServerConnection().getObjectInstance(new ObjectName(m_object));
                 }
 
                 return true;

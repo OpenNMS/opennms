@@ -30,7 +30,9 @@ package org.opennms.netmgt.provision.service;
 
 import static org.opennms.core.utils.InetAddressUtils.addr;
 
+import java.io.File;
 import java.net.InetAddress;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -66,6 +68,7 @@ import org.opennms.netmgt.xml.event.Parm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 
@@ -484,9 +487,27 @@ public class Provisioner implements SpringServiceDaemon {
         try {
             
             LOG.info("doImport: importing from url: {}, rescanExisting ? {}", url, rescanExisting);
-            
-            Resource resource = new UrlResource(url);
-            
+
+            final Resource resource;
+
+            final URL u = new URL(url);
+            if ("file".equals(u.getProtocol())) {
+                final File file = new File(u.toURI());
+                LOG.debug("doImport: file = {}", file);
+                if (file.exists()) {
+                    resource = new FileSystemResource(file);
+                } else {
+                    final String filename = file.getName();
+                    if (filename.contains("%20")) {
+                        resource = new FileSystemResource(new File(file.getParentFile(), filename.replace("%20", " ")));
+                    } else {
+                        resource = new UrlResource(url);
+                    }
+                }
+            } else {
+                resource = new UrlResource(url);
+            }
+
             m_stats = new TimeTrackingMonitor();
             
             send(importStartedEvent(resource, rescanExisting));

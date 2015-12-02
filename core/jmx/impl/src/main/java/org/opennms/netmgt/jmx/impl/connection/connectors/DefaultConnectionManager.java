@@ -28,6 +28,10 @@
 
 package org.opennms.netmgt.jmx.impl.connection.connectors;
 
+import java.net.InetAddress;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.opennms.netmgt.jmx.connection.JmxConnectionManager;
 import org.opennms.netmgt.jmx.connection.JmxConnectors;
 import org.opennms.netmgt.jmx.connection.JmxServerConnectionException;
@@ -35,9 +39,6 @@ import org.opennms.netmgt.jmx.connection.JmxServerConnectionWrapper;
 import org.opennms.netmgt.jmx.connection.JmxServerConnector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Handles the establishing of a connection to the jmx server.
@@ -62,7 +63,7 @@ public class DefaultConnectionManager implements JmxConnectionManager {
      * All known connectors ({@link org.opennms.netmgt.jmx.connection.JmxConnectors}
      * and its implementation {@link org.opennms.netmgt.jmx.connection.JmxServerConnector}.
      */
-    private final Map<String, JmxServerConnector> connectorMap = new HashMap<>();
+    private final Map<JmxConnectors, JmxServerConnector> connectorMap = new HashMap<>();
 
     /**
      * Number of retries: how many times should establishing of a connection retried, until failure.
@@ -75,11 +76,11 @@ public class DefaultConnectionManager implements JmxConnectionManager {
      */
     public DefaultConnectionManager(int retryCount) {
         retries = retryCount <= 0 ? 3 : retryCount;
-        connectorMap.put(JmxConnectors.JSR160, new Jsr160MBeanServerConnector());
-        connectorMap.put(JmxConnectors.MX4J, new MX4JMBeanServerConnector());
-        connectorMap.put(JmxConnectors.JBOSS, new JBossMBeanServerConnector());
-        connectorMap.put(JmxConnectors.JMX_SECURE, new JMXSecureMBeanServerConnector());
-        connectorMap.put(JmxConnectors.PLATFORM, new PlatformMBeanServerConnector());
+        connectorMap.put(JmxConnectors.jsr160, new Jsr160MBeanServerConnector());
+        connectorMap.put(JmxConnectors.mx4j, new MX4JMBeanServerConnector());
+        connectorMap.put(JmxConnectors.jboss, new JBossMBeanServerConnector());
+        connectorMap.put(JmxConnectors.jmx_secure, new JMXSecureMBeanServerConnector());
+        connectorMap.put(JmxConnectors.platform, new PlatformMBeanServerConnector());
     }
 
     /**
@@ -90,7 +91,7 @@ public class DefaultConnectionManager implements JmxConnectionManager {
     }
 
     @Override
-    public JmxServerConnectionWrapper connect(String connectorName, String ipAddress, Map<String, String> properties, RetryCallback retryCallback) throws JmxServerConnectionException {
+    public JmxServerConnectionWrapper connect(JmxConnectors connectorName, InetAddress ipAddress, Map<String, String> properties, RetryCallback retryCallback) throws JmxServerConnectionException {
         // if null, use dummy implementation
         if (retryCallback == null) {
             retryCallback = NULL_CALLBACK;
@@ -126,7 +127,7 @@ public class DefaultConnectionManager implements JmxConnectionManager {
      * @return
      * @throws JmxServerConnectionException
      */
-    public JmxServerConnector getConnector(String connectorName) throws JmxServerConnectionException {
+    public JmxServerConnector getConnector(JmxConnectors connectorName) throws JmxServerConnectionException {
         if (!connectorMap.containsKey(connectorName)) {
             throw new JmxServerConnectionException("No Connector available for connection name '" + connectorName + "'");
         }

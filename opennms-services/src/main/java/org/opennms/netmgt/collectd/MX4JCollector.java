@@ -42,11 +42,11 @@ public class MX4JCollector extends JMXCollector {
 
     public MX4JCollector() {
         super();
-        setServiceName("mx4j");
+        setServiceName(JmxConnectors.mx4j.toString());
     }
 
     @Override
-    protected String getConnectionName() {
-        return JmxConnectors.MX4J;
+    protected JmxConnectors getConnectionName() {
+        return JmxConnectors.mx4j;
     }
 }

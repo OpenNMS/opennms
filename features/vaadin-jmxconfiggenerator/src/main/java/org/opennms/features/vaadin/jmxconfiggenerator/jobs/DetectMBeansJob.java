@@ -29,11 +29,14 @@
 package org.opennms.features.vaadin.jmxconfiggenerator.jobs;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.management.JMException;
+import javax.management.MBeanServerConnection;
 import javax.management.remote.JMXConnector;
 import javax.management.remote.JMXServiceURL;
 
@@ -45,6 +48,10 @@ import org.opennms.features.vaadin.components.core.UIHelper;
 import org.opennms.features.vaadin.jmxconfiggenerator.JmxConfigGeneratorUI;
 import org.opennms.features.vaadin.jmxconfiggenerator.data.ServiceConfig;
 import org.opennms.features.vaadin.jmxconfiggenerator.ui.UiState;
+import org.opennms.netmgt.jmx.connection.JmxServerConnectionException;
+import org.opennms.netmgt.jmx.connection.JmxServerConnectionWrapper;
+import org.opennms.netmgt.jmx.connection.JmxServerConnector;
+import org.opennms.netmgt.jmx.impl.connection.connectors.PlatformMBeanServerConnector;
 import org.opennms.xmlns.xsd.config.jmx_datacollection.Attrib;
 import org.opennms.xmlns.xsd.config.jmx_datacollection.CompAttrib;
 import org.opennms.xmlns.xsd.config.jmx_datacollection.CompMember;
@@ -94,29 +101,70 @@ public class DetectMBeansJob implements JobManager.Task<JmxDatacollectionConfig>
     }
 
     @Override
-	public JmxDatacollectionConfig execute() throws JobManager.TaskRunException {
-        try {
+    public JmxDatacollectionConfig execute() throws JobManager.TaskRunException {
+        try (JmxServerConnectionWrapper connectionWrapper = getJmxServerConnectionWrapper(config)) {
             final JmxDatacollectionConfiggenerator jmxConfigGenerator = new JmxDatacollectionConfiggenerator(new Slf4jLogAdapter(JmxDatacollectionConfiggenerator.class));
-            final JMXServiceURL jmxServiceURL = JmxHelper.createJmxServiceUrl(null, config.getHost(), config.getPort(), config.isJmxmp());
-
-            try (JMXConnector connector = JmxHelper.createJmxConnector(config.getUser(), config.getPassword(), jmxServiceURL)) {
-                final JmxDatacollectionConfig generatedJmxConfigModel = jmxConfigGenerator.generateJmxConfigModel(
-                        connector.getMBeanServerConnection(),
-                        "anyservice",
-                        !config.isSkipDefaultVM(),
-                        config.isSkipNonNumber(),
-                        JmxHelper.loadInternalDictionary());
-                applyFilters(generatedJmxConfigModel);
-                return generatedJmxConfigModel;
-            } catch (IOException | MBeanServerQueryException | JMException e) {
-                throw new JobManager.TaskRunException("Error while retrieving MBeans from server.", e);
-            }
-        } catch (MalformedURLException e) {
-            throw new JobManager.TaskRunException(
-                    String.format("Cannot create valid JMX Connection URL. Host = '%s', Port = '%s', use jmxmp = %s", config.getHost(), config.getPort(), config.isJmxmp()),
-                    e);
+            final JmxDatacollectionConfig generatedJmxConfigModel = jmxConfigGenerator.generateJmxConfigModel(
+                    connectionWrapper.getMBeanServerConnection(),
+                    "anyservice",
+                    !config.isSkipDefaultVM(),
+                    config.isSkipNonNumber(),
+                    JmxHelper.loadInternalDictionary());
+            applyFilters(generatedJmxConfigModel);
+            return generatedJmxConfigModel;
+        } catch (IOException | MBeanServerQueryException | JMException e) {
+            throw new JobManager.TaskRunException("Error while retrieving MBeans from server.", e);
+        } catch (JmxServerConnectionException e) {
+            throw new JobManager.TaskRunException("Error while retrieving MBeans from server.", e);
         }
-	}
+    }
+
+    // TODO: Refactor this to use the same code as
+    // {@link org.opennms.netmgt.jmx.impl.connection.connectors.DefaultJmxConnector}
+    private JmxServerConnectionWrapper getJmxServerConnectionWrapper(ServiceConfig serviceConfig) throws IOException, JmxServerConnectionException {
+        if (isLocalConnection(serviceConfig.getHost(), serviceConfig.getPort())) {
+            return new PlatformMBeanServerConnector().createConnection(InetAddress.getByName(config.getHost()), Collections.emptyMap());
+        }
+        final JMXServiceURL jmxServiceURL = JmxHelper.createJmxServiceUrl(null, config.getHost(), config.getPort(), config.isJmxmp());
+        final JMXConnector connector = JmxHelper.createJmxConnector(config.getUser(), config.getPassword(), jmxServiceURL);
+        MBeanServerConnection mBeanServerConnection = connector.getMBeanServerConnection();
+        return new JmxServerConnectionWrapper() {
+            @Override
+            public MBeanServerConnection getMBeanServerConnection() {
+                return mBeanServerConnection;
+            }
+
+            @Override
+            public void close() {
+                try {
+                    connector.close();
+                } catch (IOException e) {
+                    ; // we don't care
+                }
+            }
+        };
+    }
+
+    private boolean isLocalConnection(String host, String port) throws UnknownHostException {
+        InetAddress address = InetAddress.getByName(host);
+        String jmxPort = System.getProperty(JmxServerConnector.JMX_PORT_SYSTEM_PROPERTY);  // If remote JMX access is enabled, this will return a non-null value
+
+        // If we're trying to create a connection to a localhost address...
+        // If the port matches the port of the current JVM...
+        // Or if remote JMX RMI is disabled and we're attempting to connect
+        // to the default OpenNMS JMX port...
+        if (
+            address != null &&
+            address.isLoopbackAddress() &&
+            port != null &&
+            (port.equals(jmxPort)
+                    || (jmxPort == null && JmxServerConnector.DEFAULT_OPENNMS_JMX_PORT.equals(port))
+            )
+        ){
+            return true;
+        }
+        return false;
+    }
 
     @Override
     public void onSuccess(JmxDatacollectionConfig generatedJmxConfigModel) {

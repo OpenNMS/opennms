@@ -45,11 +45,11 @@ public class Jsr160Collector extends JMXCollector {
      */
     public Jsr160Collector() {
         super();
-        setServiceName("jsr160");
+        setServiceName(JmxConnectors.jsr160.toString());
     }
 
     @Override
-    protected String getConnectionName() {
-        return JmxConnectors.JSR160;
+    protected JmxConnectors getConnectionName() {
+        return JmxConnectors.jsr160;
     }
 }

@@ -27,6 +27,9 @@ include::text/java/debian.adoc[]
 include::text/java/windows-server.adoc[]
 include::text/java/environment.adoc[]
 
+// Installation Guide for RRDtool
+include::text/rrdtool/installation.adoc[]
+
 // Installation Guide for Time Series Database Newts
 include::text/newts/introduction.adoc[]
 include::text/newts/cassandra-rhel.adoc[]

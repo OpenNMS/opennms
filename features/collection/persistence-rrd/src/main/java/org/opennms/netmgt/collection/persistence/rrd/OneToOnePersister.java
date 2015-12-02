@@ -29,10 +29,15 @@
 package org.opennms.netmgt.collection.persistence.rrd;
 
 import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
+import org.opennms.netmgt.collection.api.AttributeGroup;
 import org.opennms.netmgt.collection.api.CollectionAttribute;
 import org.opennms.netmgt.collection.api.ServiceParameters;
 import org.opennms.netmgt.dao.api.ResourceStorageDao;
+import org.opennms.netmgt.model.ResourcePath;
+import org.opennms.netmgt.model.ResourceTypeUtils;
 import org.opennms.netmgt.rrd.RrdRepository;
 import org.opennms.netmgt.rrd.RrdStrategy;
 
@@ -44,6 +49,8 @@ import org.opennms.netmgt.rrd.RrdStrategy;
  * @version $Id: $
  */
 public class OneToOnePersister extends BasePersister {
+
+    private String m_group = null;
 
     /**
      * <p>Constructor for OneToOnePersister.</p>
@@ -60,7 +67,12 @@ public class OneToOnePersister extends BasePersister {
     public void visitAttribute(CollectionAttribute attribute) {
         pushShouldPersist(attribute);
         if (shouldPersist()) {
-            setBuilder(createBuilder(attribute.getResource(), attribute.getName(), Collections.singleton(attribute.getAttributeType())));
+            final RrdPersistOperationBuilder builder = createBuilder(attribute.getResource(),
+                                                                     attribute.getName(),
+                                                                     Collections.singleton(attribute.getAttributeType()));
+            builder.setAttributeMetadata("GROUP", m_group);
+
+            setBuilder(builder);
             storeAttribute(attribute);
         }
     }
@@ -74,4 +86,11 @@ public class OneToOnePersister extends BasePersister {
         popShouldPersist();
     }
 
+    /** {@inheritDoc} */
+    @Override
+    public void visitGroup(AttributeGroup group) {
+        super.visitGroup(group);
+
+        m_group = group.getName();
+    }
 }

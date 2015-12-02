@@ -138,7 +138,7 @@ public class JmxRrdMigratorOffline extends AbstractOnmsUpgrade {
                 zipDir(new File(jmxResourceDir.getAbsolutePath() + ZIP_EXT), jmxResourceDir);
             }
         } else {
-            throw new OnmsUpgradeException("This upgrade procedure requires at least OpenNMS 1.12.2, the current version is " + getOpennmsVersion());
+            throw new OnmsUpgradeException("This upgrade procedure requires at least OpenNMS 1.12.2; the current version is " + getOpennmsVersion());
         }
     }
 

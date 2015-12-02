@@ -31,6 +31,12 @@ package org.opennms.netmgt.vmmgr;
 import java.util.List;
 
 public interface ManagerMBean {
+
+    /**
+     * <p>dumpThreads</p>
+     */
+    public void dumpThreads();
+
     /**
      * <p>status</p>
      *

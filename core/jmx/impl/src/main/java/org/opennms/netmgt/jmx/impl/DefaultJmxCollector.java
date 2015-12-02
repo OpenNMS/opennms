@@ -28,7 +28,30 @@
 
 package org.opennms.netmgt.jmx.impl;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+import java.util.StringTokenizer;
+
+import javax.management.Attribute;
+import javax.management.AttributeList;
+import javax.management.InstanceNotFoundException;
+import javax.management.JMException;
+import javax.management.MBeanServerConnection;
+import javax.management.MalformedObjectNameException;
+import javax.management.ObjectName;
+import javax.management.ReflectionException;
+import javax.management.openmbean.CompositeData;
+
 import org.opennms.core.spring.BeanUtils;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.collectd.jmx.Attrib;
 import org.opennms.netmgt.config.collectd.jmx.CompAttrib;
 import org.opennms.netmgt.config.collectd.jmx.CompMember;
@@ -47,27 +70,6 @@ import org.opennms.netmgt.jmx.samples.JmxAttributeSample;
 import org.opennms.netmgt.jmx.samples.JmxCompositeSample;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import javax.management.Attribute;
-import javax.management.AttributeList;
-import javax.management.InstanceNotFoundException;
-import javax.management.JMException;
-import javax.management.MBeanServerConnection;
-import javax.management.MalformedObjectNameException;
-import javax.management.ObjectName;
-import javax.management.ReflectionException;
-import javax.management.openmbean.CompositeData;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
-import java.util.StringTokenizer;
 
 /**
  * A implementation of the JmxCollector.
@@ -97,7 +99,7 @@ public class DefaultJmxCollector implements JmxCollector {
         }
 
         JmxConnectionManager connectionManager = new DefaultConnectionManager(config.getRetries());
-        try (JmxServerConnectionWrapper connectionWrapper = connectionManager.connect(config.getConnectionName(), config.getAgentAddress(), mergedStringMap, null)) {
+        try (JmxServerConnectionWrapper connectionWrapper = connectionManager.connect(config.getConnectionName(), InetAddressUtils.addr(config.getAgentAddress()), mergedStringMap, null)) {
             Objects.requireNonNull(connectionWrapper, "connectionWrapper should never be null");
             Objects.requireNonNull(connectionWrapper.getMBeanServerConnection(), "connectionWrapper.getMBeanServerConnection() should never be null");
 
