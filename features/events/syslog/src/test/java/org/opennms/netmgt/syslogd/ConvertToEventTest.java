@@ -2,7 +2,6 @@ package org.opennms.netmgt.syslogd;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.nio.ByteBuffer;
@@ -19,6 +18,11 @@ import org.opennms.test.JUnitConfigurationEnvironment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Convert to event junit test file to test the performance of Syslogd ConvertToEvent processor
+ * @author ms043660
+ * 
+ */
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
 public class ConvertToEventTest {
@@ -55,7 +59,6 @@ public class ConvertToEventTest {
 		String data = StandardCharsets.US_ASCII.decode(
 				ByteBuffer.wrap(pkt.getData())).toString();
 
-		final long startTime = System.currentTimeMillis();
 		// ConvertToEvent takes 4 parameter
 		// @param addr The remote agent's address.
 		// @param port The remote agent's port
@@ -68,9 +71,6 @@ public class ConvertToEventTest {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		final long endTime = System.currentTimeMillis();
-		System.out
-				.println("Total execution time: " + (endTime - startTime));
 
 	}
 }
