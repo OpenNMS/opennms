@@ -19,6 +19,29 @@
   <context:annotation-config />
   <tx:annotation-driven/>
 
-  <bean id="daemon" class="org.opennms.netmgt.syslogd.Syslogd"/>
+  <bean id="syslogReceiverNio" class="org.opennms.netmgt.syslogd.SyslogReceiverNioThreadPoolImpl">
+    <constructor-arg ref="syslogdConfigFactory"/>
+  </bean>
+
+  <bean id="syslogReceiverNioDisruptor" class="org.opennms.netmgt.syslogd.SyslogReceiverNioDisruptorImpl">
+    <constructor-arg ref="syslogdConfigFactory"/>
+  </bean>
+
+  <bean id="syslogReceiverJavaNet" class="org.opennms.netmgt.syslogd.SyslogReceiverJavaNetImpl">
+    <constructor-arg ref="syslogdConfigFactory"/>
+  </bean>
+
+  <bean id="syslogReceiverCamelNetty" class="org.opennms.netmgt.syslogd.SyslogReceiverCamelNettyImpl">
+    <constructor-arg ref="syslogdConfigFactory"/>
+  </bean>
+
+  <!-- Expose one particular implementation as the chosen implementation -->
+  <onmsgi:service interface="org.opennms.netmgt.syslogd.SyslogReceiver" ref="syslogReceiverJavaNet"/>
+
+  <bean id="daemon" class="org.opennms.netmgt.syslogd.Syslogd">
+    <property name="syslogReceiver">
+      <onmsgi:reference interface="org.opennms.netmgt.syslogd.SyslogReceiver"/>
+    </property>
+  </bean>
 
 </beans>

@@ -148,7 +148,7 @@ public class Nms4335IT implements InitializingBean {
             m_config = new SyslogdConfigFactory(stream);
 
             m_syslogd = new Syslogd();
-            m_syslogd.setConfigFactory(m_config);
+            m_syslogd.setSyslogReceiver(new SyslogReceiverJavaNetImpl(m_config));
             m_syslogd.init();
 
         } finally {

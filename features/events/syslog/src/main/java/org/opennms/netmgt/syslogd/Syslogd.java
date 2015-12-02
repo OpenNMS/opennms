@@ -31,7 +31,6 @@ package org.opennms.netmgt.syslogd;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.sql.SQLException;
 
-import org.opennms.netmgt.config.SyslogdConfigFactory;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -61,12 +60,10 @@ public class Syslogd extends AbstractServiceDaemon {
      */
     public static final String LOG4J_CATEGORY = "syslogd";
 
-    private SyslogHandler m_udpEventReceiver;
+    @Autowired
+    private SyslogReceiver m_udpEventReceiver;
 
     private BroadcastEventProcessor m_broadcastEventProcessor;
-
-    @Autowired
-    private SyslogdConfigFactory m_config;
 
     /**
      * <p>Constructor for Syslogd.</p>
@@ -75,12 +72,12 @@ public class Syslogd extends AbstractServiceDaemon {
         super(LOG4J_CATEGORY);
     }
 
-    public SyslogdConfigFactory getConfigFactory() {
-        return m_config;
+    public SyslogReceiver getSyslogReceiver() {
+        return m_udpEventReceiver;
     }
 
-    public void setConfigFactory(SyslogdConfigFactory config) {
-        m_config = config;
+    public void setSyslogReceiver(SyslogReceiver receiver) {
+        m_udpEventReceiver = receiver;
     }
 
     /**
@@ -97,8 +94,6 @@ public class Syslogd extends AbstractServiceDaemon {
             throw new UndeclaredThrowableException(e);
         }
 
-        m_udpEventReceiver = new SyslogHandler(m_config);
-
     }
 
     /**
@@ -107,13 +102,20 @@ public class Syslogd extends AbstractServiceDaemon {
     @Override
     protected void onStart() {
         LOG.debug("Starting SyslogHandler");
-        m_udpEventReceiver.start();
+        Thread rThread = new Thread(m_udpEventReceiver, m_udpEventReceiver.getName());
+
+        try {
+            rThread.start();
+        } catch (RuntimeException e) {
+            rThread.interrupt();
+            throw e;
+        }
 
         try {
             m_broadcastEventProcessor = new BroadcastEventProcessor();
-        } catch (Throwable ex) {
-            LOG.error("Failed to setup event reader", ex);
-            throw new UndeclaredThrowableException(ex);
+        } catch (Throwable e) {
+            LOG.error("Failed to setup event reader", e);
+            throw new UndeclaredThrowableException(e);
         }
     }
 
@@ -130,7 +132,14 @@ public class Syslogd extends AbstractServiceDaemon {
 
         if (m_udpEventReceiver != null) {
             LOG.debug("stop: Stopping the Syslogd UDP receiver");
-            m_udpEventReceiver.stop();
+            try {
+                m_udpEventReceiver.stop();
+            } catch (InterruptedException e) {
+                // Ignore?
+            } catch (Throwable e) {
+                LOG.error("stop: Failed to stop the Syslog UDP receiver", e);
+                throw new UndeclaredThrowableException(e);
+            }
             LOG.debug("stop: Stopped the Syslogd UDP receiver");
         }
     }

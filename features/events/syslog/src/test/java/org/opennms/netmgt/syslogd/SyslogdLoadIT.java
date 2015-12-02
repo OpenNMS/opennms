@@ -148,10 +148,10 @@ public class SyslogdLoadIT implements InitializingBean {
         }
     }
 
-    private void startSyslogdGracefully() {
+    private void startSyslogdGracefully() throws Exception {
         try {
             m_syslogd = new Syslogd();
-            m_syslogd.setConfigFactory(m_config);
+            m_syslogd.setSyslogReceiver(new SyslogReceiverJavaNetImpl(m_config));
             m_syslogd.init();
             m_syslogd.start();
         } catch (UndeclaredThrowableException ute) {

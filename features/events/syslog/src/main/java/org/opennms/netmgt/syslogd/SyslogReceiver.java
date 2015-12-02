@@ -37,5 +37,7 @@ public interface SyslogReceiver extends Runnable {
     @Override
     void run();
 
+    String getName();
+
     void stop() throws InterruptedException;
 }
