@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2007-2015 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2015 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,20 +28,12 @@
 
 package org.opennms.netmgt.vmmgr;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
 import java.lang.management.ManagementFactory;
 import java.net.URL;
 import java.util.List;
-import java.util.Map.Entry;
-import java.util.Properties;
-import java.util.TreeMap;
 
 import javax.management.MBeanServer;
 
-import org.apache.commons.io.IOUtils;
 import org.opennms.core.logging.Logging;
 import org.opennms.netmgt.config.ServiceConfigFactory;
 import org.opennms.netmgt.config.service.Service;
@@ -94,11 +86,8 @@ public class Starter {
      */
     public void startDaemon() {
         try {
-            configureLog4j();
 
             setLogPrefix();
-
-            loadGlobalProperties();
 
             setDefaultProperties();
 
@@ -106,11 +95,6 @@ public class Starter {
         } catch(Exception e) {
             die("Exception during startup: " + e.getMessage(), e);
         }
-    }
-
-
-    private void configureLog4j() {
-
     }
 
     private void setDefaultProperties() {
@@ -134,47 +118,6 @@ public class Starter {
         }
     }
 
-    private void loadGlobalProperties() {
-        // Log system properties, sorted by property name
-        TreeMap<Object, Object> sortedProps = new TreeMap<Object, Object>(System.getProperties());
-        for (Entry<Object, Object> entry : sortedProps.entrySet()) {
-            LOG.debug("System property '{}' already set to value '{}'.", entry.getKey(), entry.getValue());
-        }
-
-        File propertiesFile = getPropertiesFile();
-        if (!propertiesFile.exists()) {
-            // don't require the file
-            return;
-        }
-
-        Properties props = new Properties();
-        InputStream in = null;
-        try {
-            in = new FileInputStream(propertiesFile);
-            props.load(in);
-        } catch (IOException e) {
-            die("Error trying to read properties file '" + propertiesFile + "': " + e, e);
-        } finally {
-            IOUtils.closeQuietly(in);
-        }
-
-        for (Entry<Object, Object> entry : props.entrySet()) {
-            String systemValue = System.getProperty(entry.getKey().toString());
-            if (systemValue != null) {
-                LOG.debug("Property '{}' from {} already exists as a system property (with value '{}').  Not overridding existing system property.", entry.getKey(), propertiesFile, systemValue);
-            } else {
-                LOG.debug("Setting system property '{}' to '{}' from {}.", entry.getKey(), entry.getValue(), propertiesFile);
-                System.setProperty(entry.getKey().toString(), entry.getValue().toString());
-            }
-        }
-
-        if (props.containsKey("networkaddress.cache.ttl")) {
-            java.security.Security.setProperty("networkaddress.cache.ttl", props.getProperty("networkaddress.cache.ttl"));
-        } else {
-            java.security.Security.setProperty("networkaddress.cache.ttl", "120");
-        }
-    }
-
     /**
      * Print out a message and stack trace and then exit.
      * This method does not return.
@@ -189,12 +132,6 @@ public class Starter {
 
     public void die(String message) {
         die(message, null);
-    }
-
-    private File getPropertiesFile() {
-        String homeDir = System.getProperty("opennms.home");
-        File etcDir = new File(homeDir, "etc");
-        return new File(etcDir, "opennms.properties");
     }
 
     private void start() {
