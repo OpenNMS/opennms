@@ -69,11 +69,17 @@
         </pluginRepository>
     </pluginRepositories>
     <dependencies>
-       <dependency>
-			<groupId>org.opennms.osgi.features.topology</groupId>
-	      	<artifactId>vaadin</artifactId>
-	      	<type>pom</type>
-	    </dependency>
+        <dependency>
+            <groupId>org.opennms.features</groupId>
+            <artifactId>vaadin</artifactId>
+            <type>pom</type>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.features.vaadin-components</groupId>
+            <artifactId>core</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
         <dependency>
             <groupId>org.opennms.features.bsm</groupId>
             <artifactId>org.opennms.features.bsm.persistence.api</artifactId>
