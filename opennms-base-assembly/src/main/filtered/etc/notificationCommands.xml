@@ -1,5 +1,5 @@
-<?xml version="1.0"?>
-<notification-commands>
+<?xml version="1.0" encoding="UTF-8"?>
+<notification-commands xmlns="http://xmlns.opennms.org/xsd/notificationCommands">
     <header>
         <ver>.9</ver>
         <created>Wednesday, February 6, 2002 10:10:00 AM EST</created>
@@ -187,17 +187,17 @@
         </argument>
     </command>
     <command binary="false">
-    	<name>microblogUpdate</name>
-    	<execute>org.opennms.netmgt.notifd.MicroblogNotificationStrategy</execute>
-    	<comment>class for updating a microblog service (Identica / StatusNet / Twitter) for notifications</comment>
+        <name>microblogUpdate</name>
+        <execute>org.opennms.netmgt.notifd.MicroblogNotificationStrategy</execute>
+        <comment>class for updating a microblog service (Identica / StatusNet / Twitter) for notifications</comment>
         <argument streamed="false">
             <switch>-tm</switch>
         </argument>
     </command>
     <command binary="false">
-    	<name>microblogReply</name>
-    	<execute>org.opennms.netmgt.notifd.MicroblogReplyNotificationStrategy</execute>
-    	<comment>class for replying to a microblog (Identica / StatusNet / Twitter) user for notifications</comment>
+        <name>microblogReply</name>
+        <execute>org.opennms.netmgt.notifd.MicroblogReplyNotificationStrategy</execute>
+        <comment>class for replying to a microblog (Identica / StatusNet / Twitter) user for notifications</comment>
         <contact-type>microblog</contact-type>
         <argument streamed="false">
             <switch>-ublog</switch>
@@ -207,9 +207,9 @@
         </argument>
     </command>
     <command binary="false">
-    	<name>microblogDM</name>
-    	<execute>org.opennms.netmgt.notifd.MicroblogDMNotificationStrategy</execute>
-    	<comment>class for sending direct messages to a microblog (Identica / StatusNet / Twitter) user for notifications</comment>
+        <name>microblogDM</name>
+        <execute>org.opennms.netmgt.notifd.MicroblogDMNotificationStrategy</execute>
+        <comment>class for sending direct messages to a microblog (Identica / StatusNet / Twitter) user for notifications</comment>
         <contact-type>microblog</contact-type>
         <argument streamed="false">
             <switch>-ublog</switch>
