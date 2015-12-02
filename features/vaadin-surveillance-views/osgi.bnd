@@ -1,0 +1,8 @@
+#-----------------------------------------------------------------
+# Use this file to add customized Bnd instructions for the bundle
+#-----------------------------------------------------------------
+
+# Package format version - do not change
+Vaadin-Package-Version: 1
+Vaadin-Widgetsets: org.opennms.features.vaadin.surveillanceviews.SurveillanceViewsWidgetSet
+Include-Resource: {maven-resources},target/gwt/

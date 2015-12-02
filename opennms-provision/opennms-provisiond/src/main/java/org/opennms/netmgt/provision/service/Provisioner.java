@@ -30,7 +30,9 @@ package org.opennms.netmgt.provision.service;
 
 import static org.opennms.core.utils.InetAddressUtils.addr;
 
+import java.io.File;
 import java.net.InetAddress;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -46,16 +48,16 @@ import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.tasks.DefaultTaskCoordinator;
 import org.opennms.core.tasks.Task;
 import org.opennms.core.utils.url.GenericURLFactory;
-import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.api.SnmpAgentConfigFactory;
 import org.opennms.netmgt.daemon.SpringServiceDaemon;
+import org.opennms.netmgt.events.api.EventConstants;
+import org.opennms.netmgt.events.api.EventForwarder;
+import org.opennms.netmgt.events.api.annotations.EventHandler;
+import org.opennms.netmgt.events.api.annotations.EventListener;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.events.EventBuilder;
-import org.opennms.netmgt.model.events.EventForwarder;
 import org.opennms.netmgt.model.events.EventUtils;
-import org.opennms.netmgt.model.events.annotations.EventHandler;
-import org.opennms.netmgt.model.events.annotations.EventListener;
 import org.opennms.netmgt.provision.service.lifecycle.LifeCycleInstance;
 import org.opennms.netmgt.provision.service.lifecycle.LifeCycleRepository;
 import org.opennms.netmgt.provision.service.operations.NoOpProvisionMonitor;
@@ -66,6 +68,7 @@ import org.opennms.netmgt.xml.event.Parm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 
@@ -428,7 +431,7 @@ public class Provisioner implements SpringServiceDaemon {
     /**
      * <p>setEventForwarder</p>
      *
-     * @param eventForwarder a {@link org.opennms.netmgt.model.events.EventForwarder} object.
+     * @param eventForwarder a {@link org.opennms.netmgt.events.api.EventForwarder} object.
      */
     public void setEventForwarder(EventForwarder eventForwarder) {
         m_eventForwarder = eventForwarder;
@@ -437,7 +440,7 @@ public class Provisioner implements SpringServiceDaemon {
     /**
      * <p>getEventForwarder</p>
      *
-     * @return a {@link org.opennms.netmgt.model.events.EventForwarder} object.
+     * @return a {@link org.opennms.netmgt.events.api.EventForwarder} object.
      */
     public EventForwarder getEventForwarder() {
         return m_eventForwarder;
@@ -478,16 +481,33 @@ public class Provisioner implements SpringServiceDaemon {
      * <p>doImport</p>
      *
      * @param url a {@link java.lang.String} object.
-     * @param rescanExisting TODO
      */
     public void doImport(final String url, final String rescanExisting) {
         
         try {
             
             LOG.info("doImport: importing from url: {}, rescanExisting ? {}", url, rescanExisting);
-            
-            Resource resource = new UrlResource(url);
-            
+
+            final Resource resource;
+
+            final URL u = new URL(url);
+            if ("file".equals(u.getProtocol())) {
+                final File file = new File(u.toURI());
+                LOG.debug("doImport: file = {}", file);
+                if (file.exists()) {
+                    resource = new FileSystemResource(file);
+                } else {
+                    final String filename = file.getName();
+                    if (filename.contains("%20")) {
+                        resource = new FileSystemResource(new File(file.getParentFile(), filename.replace("%20", " ")));
+                    } else {
+                        resource = new UrlResource(url);
+                    }
+                }
+            } else {
+                resource = new UrlResource(url);
+            }
+
             m_stats = new TimeTrackingMonitor();
             
             send(importStartedEvent(resource, rescanExisting));
@@ -915,7 +935,7 @@ public class Provisioner implements SpringServiceDaemon {
     
         return new EventBuilder( EventConstants.IMPORT_SUCCESSFUL_UEI, NAME )
             .addParam( EventConstants.PARM_IMPORT_RESOURCE, url)
-            .addParam( EventConstants.PARM_IMPORT_RESCAN_EXISTING, rescanExisting)
+            .addParam( EventConstants.PARM_IMPORT_RESCAN_EXISTING, rescanExisting )
             .addParam( EventConstants.PARM_IMPORT_STATS, stats.toString() )
             .getEvent();
     }
@@ -937,7 +957,7 @@ public class Provisioner implements SpringServiceDaemon {
     
         return new EventBuilder( EventConstants.IMPORT_STARTED_UEI, NAME )
             .addParam( EventConstants.PARM_IMPORT_RESOURCE, resource.toString() )
-            .addParam( EventConstants.PARM_IMPORT_RESCAN_EXISTING, rescanExisting)
+            .addParam( EventConstants.PARM_IMPORT_RESCAN_EXISTING, rescanExisting )
             .getEvent();
     }
 

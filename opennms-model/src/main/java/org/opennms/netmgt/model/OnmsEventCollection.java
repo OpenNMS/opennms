@@ -34,10 +34,14 @@ import java.util.List;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.codehaus.jackson.annotate.JsonProperty;
+import org.codehaus.jackson.map.annotate.JsonRootName;
 import org.opennms.core.config.api.JaxbListWrapper;
 
 @XmlRootElement(name="events")
+@JsonRootName("events")
 public class OnmsEventCollection extends JaxbListWrapper<OnmsEvent> {
+
     private static final long serialVersionUID = 1L;
 
     public OnmsEventCollection() { super(); }
@@ -46,8 +50,8 @@ public class OnmsEventCollection extends JaxbListWrapper<OnmsEvent> {
     }
 
     @XmlElement(name="event")
+    @JsonProperty("event")
     public List<OnmsEvent> getObjects() {
         return super.getObjects();
     }
 }
-

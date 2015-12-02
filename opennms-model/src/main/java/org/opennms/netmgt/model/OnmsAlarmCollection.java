@@ -34,9 +34,12 @@ import java.util.List;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.codehaus.jackson.annotate.JsonProperty;
+import org.codehaus.jackson.map.annotate.JsonRootName;
 import org.opennms.core.config.api.JaxbListWrapper;
 
 @XmlRootElement(name="alarms")
+@JsonRootName("alarms")
 public class OnmsAlarmCollection extends JaxbListWrapper<OnmsAlarm> {
     private static final long serialVersionUID = 1L;
 
@@ -46,6 +49,7 @@ public class OnmsAlarmCollection extends JaxbListWrapper<OnmsAlarm> {
     }
 
     @XmlElement(name="alarm")
+    @JsonProperty("alarm")
     public List<OnmsAlarm> getObjects() {
         return super.getObjects();
     }

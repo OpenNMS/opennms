@@ -30,8 +30,8 @@ package org.opennms.netmgt.enlinkd;
 
 import java.net.InetAddress;
 
-import org.opennms.netmgt.linkd.scheduler.ReadyRunnable;
-import org.opennms.netmgt.linkd.scheduler.Scheduler;
+import org.opennms.netmgt.enlinkd.scheduler.ReadyRunnable;
+import org.opennms.netmgt.enlinkd.scheduler.Scheduler;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.topology.LinkableSnmpNode;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
@@ -139,7 +139,7 @@ public abstract class NodeDiscovery implements ReadyRunnable {
      * getScheduler
      * </p>
      * 
-     * @return a {@link org.opennms.netmgt.linkd.scheduler.Scheduler} object.
+     * @return a {@link org.opennms.netmgt.enlinkd.scheduler.Scheduler} object.
      */
     public Scheduler getScheduler() {
         return m_scheduler;
@@ -151,7 +151,7 @@ public abstract class NodeDiscovery implements ReadyRunnable {
      * </p>
      * 
      * @param scheduler
-     *            a {@link org.opennms.netmgt.linkd.scheduler.Scheduler}
+     *            a {@link org.opennms.netmgt.enlinkd.scheduler.Scheduler}
      *            object.
      */
     public void setScheduler(Scheduler scheduler) {

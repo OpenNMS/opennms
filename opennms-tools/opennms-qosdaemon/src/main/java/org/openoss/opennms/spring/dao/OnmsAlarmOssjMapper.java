@@ -320,10 +320,7 @@ public class OnmsAlarmOssjMapper {
 					onmsAlarm.setFirstEventTime(alarmValue.getAlarmRaisedTime());
 					onmsAlarm.setLastEventTime(alarmValue.getAlarmChangedTime());
 
-//					TODO removed - do create distpoller with hibernate dao	
-//					onmsAlarm.setDistPoller(new OnmsDistPoller("undefined","localhost")); //simple constructor
-					onmsAlarm.setDistPoller(distPollerDao.get("localhost"));
-
+					onmsAlarm.setDistPoller(distPollerDao.whoami());
 
 					onmsAlarm.setDescription(alarmValue.getAdditionalText()); //TODO need Qosd Not to generate this if remote
 					onmsAlarm.setCounter(new Integer(1));

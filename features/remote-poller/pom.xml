@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>org.opennms.features</artifactId>
-    <version>14.0.3-SNAPSHOT</version>
+    <version>2016.1.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.features</groupId>
@@ -163,10 +163,6 @@ groovy.compiler.output.path=target/classes
       <scope>runtime</scope>
       <!-- There's a bunch of stuff in this POM that we don't need in the remote poller. -->
       <exclusions>
-        <exclusion>
-          <groupId>org.springframework</groupId>
-          <artifactId>spring-struts</artifactId>
-        </exclusion>
         <exclusion>
           <groupId>org.springframework</groupId>
           <artifactId>spring-webmvc</artifactId>

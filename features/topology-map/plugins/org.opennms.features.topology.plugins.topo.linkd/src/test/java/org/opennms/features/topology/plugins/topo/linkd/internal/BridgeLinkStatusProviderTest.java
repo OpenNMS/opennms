@@ -34,7 +34,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -51,10 +50,10 @@ import org.opennms.features.topology.api.topo.EdgeProvider;
 import org.opennms.features.topology.api.topo.EdgeRef;
 import org.opennms.features.topology.api.topo.Status;
 import org.opennms.features.topology.api.topo.Vertex;
-import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.dao.api.BridgeBridgeLinkDao;
 import org.opennms.netmgt.dao.api.BridgeMacLinkDao;
+import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.model.BridgeBridgeLink;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsNode;
@@ -203,8 +202,8 @@ public class BridgeLinkStatusProviderTest {
 
     private List<BridgeMacTopologyLink> createBridgeLinks(){
         // now the query changed so no null nodeid is allowed
-        BridgeMacTopologyLink link1 = new BridgeMacTopologyLink(521, 1, "mrkitty", ".1.3.6.1.4.2.9.9.1540", "Server Room", NodeType.ACTIVE, 48, 48, "port 48", null, 2, "mrmakay",null,null, NodeType.ACTIVE, "a8d0e5a0a490",24,"192.168.0.1",null,101, new Date());
-        BridgeMacTopologyLink link2 = new BridgeMacTopologyLink(522, 1, "mrkitty", ".1.3.6.1.4.2.9.9.1540", "Server Room", NodeType.ACTIVE, 48, 48, "port 48", null, 3, "mrrusso",null,null, NodeType.ACTIVE, "a8d0e5a0a467",null,"192.168.0.2",null,102,new Date());
+        BridgeMacTopologyLink link1 = new BridgeMacTopologyLink(521, 1, "mrkitty", ".1.3.6.1.4.2.9.9.1540", "Server Room", NodeType.ACTIVE, 48, 48, "port 48", null, 2, "mrmakay",null,null, NodeType.ACTIVE, "a8d0e5a0a490",24,"192.168.0.1",null,101);
+        BridgeMacTopologyLink link2 = new BridgeMacTopologyLink(522, 1, "mrkitty", ".1.3.6.1.4.2.9.9.1540", "Server Room", NodeType.ACTIVE, 48, 48, "port 48", null, 3, "mrrusso",null,null, NodeType.ACTIVE, "a8d0e5a0a467",null,"192.168.0.2",null,102);
   
         return Arrays.asList(link1,link2);
     }

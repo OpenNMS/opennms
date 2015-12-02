@@ -44,7 +44,7 @@
 	<head>
 		<title>OpenNMS - Remote Monitor</title>
 		<link rel="stylesheet" type="text/css" href="styles.css" />
-		<script type="text/javascript" language="javascript">
+		<script type="text/javascript">
 			window.mapImplementation = "<%= mapImplementation %>";
 			window.openlayersUrl = "<%= openlayersUrl %>";
 		</script>
@@ -58,7 +58,7 @@
 			<script type="text/javascript" src="opennms-openlayers.js"></script>
 			<script type="text/javascript" src="openlayers/OpenLayers.js"></script>
 		<% } %>
-		<script type="text/javascript" language="javascript" src="RemotePollerMap.nocache.js"></script>
+		<script type="text/javascript" src="RemotePollerMap.nocache.js"></script>
 	</head>
 	<body>
 		<div id="map"></div>

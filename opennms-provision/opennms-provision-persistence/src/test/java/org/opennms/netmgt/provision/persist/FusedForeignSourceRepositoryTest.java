@@ -65,11 +65,11 @@ import org.springframework.core.io.UrlResource;
 
 public class FusedForeignSourceRepositoryTest extends ForeignSourceRepositoryTestCase {
     @Autowired
-    @Qualifier("pending")
+    @Qualifier("filePending")  // TODO fused doesn't work with fastFilePending
     private ForeignSourceRepository m_pending;
     
     @Autowired
-    @Qualifier("deployed")
+    @Qualifier("fileDeployed") // TODO fused doesn't work with fastFileDeployed
     private ForeignSourceRepository m_active;
     
     @Autowired
@@ -84,22 +84,8 @@ public class FusedForeignSourceRepositoryTest extends ForeignSourceRepositoryTes
         MockLogAppender.setupLogging(props);
 
         System.err.println("setUp()");
-        /* 
-         * since we share the filesystem with other tests, best
-         * to make sure it's totally clean here.
-         */
-        for (final ForeignSource fs : m_pending.getForeignSources()) {
-            m_pending.delete(fs);
-        }
-        for (final ForeignSource fs : m_active.getForeignSources()) {
-            m_active.delete(fs);
-        }
-        for (final Requisition r : m_pending.getRequisitions()) {
-            m_pending.delete(r);
-        }
-        for (final Requisition r : m_active.getRequisitions()) {
-            m_active.delete(r);
-        }
+        m_pending.clear();
+        m_active.clear();
         
         FileUtils.deleteDirectory(new File("target/opennms-home/etc/imports/pending"));
 

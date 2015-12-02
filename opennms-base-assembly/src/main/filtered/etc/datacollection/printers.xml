@@ -1,7 +1,7 @@
 <datacollection-group xmlns="http://xmlns.opennms.org/xsd/config/datacollection" name="Printers">
    <resourceType name="prtMarkerSuppliesIndex" label="Printer Marker Supply" resourceLabel="${prtMarkerSuppliesDescription}">
-      <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
-      <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
    </resourceType>
    <group name="printer-usage" ifType="ignore">
       <mibObj oid=".1.3.6.1.2.1.43.10.2.1.4.1" instance="1" alias="lifeCount" type="Gauge"/>

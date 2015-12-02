@@ -42,7 +42,7 @@
 <%
 boolean canForecast = true;
 try {
-    org.opennms.netmgt.jasper.analytics.HWForecast.checkForecastSupport();
+    // org.opennms.netmgt.jasper.analytics.HWForecast.checkForecastSupport();
 } catch (Throwable t) {
     canForecast = false;
 }

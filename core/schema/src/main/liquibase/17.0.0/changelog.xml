@@ -1,0 +1,374 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+  xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd" >
+
+  <!-- Drop all legacy vulscand tables and sequences -->
+  <changeSet author="seth" id="17.0.0-drop-vulnplugins-table">
+    <preConditions onFail="MARK_RAN">
+      <tableExists tableName="vulnplugins"/>
+    </preConditions>
+    <dropTable tableName="vulnplugins" />
+  </changeSet>
+
+  <changeSet author="seth" id="17.0.0-drop-vulnerabilities-table">
+    <preConditions onFail="MARK_RAN">
+      <tableExists tableName="vulnerabilities"/>
+    </preConditions>
+    <dropTable tableName="vulnerabilities" />
+  </changeSet>
+
+  <changeSet author="seth" id="17.0.0-drop-vulnnxtid-sequence">
+    <sql>
+      DROP SEQUENCE IF EXISTS vulnnxtid;
+    </sql>
+  </changeSet>
+
+
+  <!-- Fix a misspelled outage index -->
+  <changeSet author="seth" id="17.0.0-remove-misspelled-outage-index">
+    <preConditions onFail="MARK_RAN">
+      <indexExists indexName="outages_ifservivceid_idx"/>
+    </preConditions>
+    <dropIndex tableName="outages" indexName="outages_ifservivceid_idx"/>
+  </changeSet>
+
+  <changeSet author="seth" id="17.0.0-add-correctly-spelled-outage-index">
+    <preConditions onFail="MARK_RAN">
+      <not>
+        <indexExists indexName="outages_ifserviceid_idx"/>
+      </not>
+    </preConditions>
+
+    <createIndex tableName="outages" indexName="outages_ifserviceid_idx" unique="false">
+      <column name="ifserviceid" type="INTEGER"/>
+    </createIndex>
+  </changeSet>
+
+
+  <!-- Remove all of the legacy triggers and related fields from ipinterface, ifservices, and outages -->
+  <changeSet author="seth" id="17.0.0-remove-legacy-triggers-and-functions">
+    <sql>
+      DROP TRIGGER IF EXISTS setIfServiceKeysOnInsertTrigger ON outages;
+      DROP FUNCTION IF EXISTS setIfServiceKeysOnInsert();
+      DROP TRIGGER IF EXISTS setIfServiceKeysOnUpdateTrigger ON outages;
+      DROP FUNCTION IF EXISTS setIfServiceKeysOnUpdate();
+
+      DROP TRIGGER IF EXISTS setIpInterfaceKeysOnInsertTrigger ON ifServices;
+      DROP FUNCTION IF EXISTS setIpInterfaceKeysOnInsert();
+      DROP TRIGGER IF EXISTS setIpInterfaceKeysOnUpdateTrigger ON ifServices;
+      DROP FUNCTION IF EXISTS setIpInterfaceKeysOnUpdate();
+
+      DROP TRIGGER IF EXISTS setSnmpInterfaceKeysOnInsertTrigger ON ipInterface;
+      DROP FUNCTION IF EXISTS setSnmpInterfaceKeysOnInsert();
+      DROP TRIGGER IF EXISTS setSnmpInterfaceKeysOnUpdateTrigger ON ipInterface;
+      DROP FUNCTION IF EXISTS setSnmpInterfaceKeysOnUpdate();
+    </sql>
+  </changeSet>
+
+  <changeSet author="seth" id="17.0.0-remove-legacy-ifservices-composite-key-fields">
+    <!-- Drop indices that rely on legacy columns -->
+    <dropIndex tableName="ifservices" indexName="ifservices_nodeid_ipaddr_status"/>
+    <dropIndex tableName="ifservices" indexName="ifservices_nodeid_status"/>
+    <dropIndex tableName="ifservices" indexName="ifservices_nodeid_idx"/>
+    <dropIndex tableName="ifservices" indexName="ifservices_nodeid_serviceid_idx"/>
+    <!-- Use SQL for this one because we need it to cascade into a foreign key -->
+    <!-- <dropIndex tableName="ifservices" indexName="ifservices_nodeid_ipaddr_svc_unique"/> -->
+    <sql>
+      DROP INDEX ifservices_nodeid_ipaddr_svc_unique CASCADE;
+    </sql>
+
+    <!-- Create equivalent indices -->
+    <createIndex tableName="ifservices" indexName="ifservices_ipinterfaceid_svc_unique" unique="true">
+      <column name="ipinterfaceid" type="INTEGER"/>
+      <column name="serviceid" type="INTEGER"/>
+    </createIndex>
+    <createIndex tableName="ifservices" indexName="ifservices_ipinterfaceid_status" unique="false">
+      <column name="ipinterfaceid" type="INTEGER"/>
+      <column name="status" type="CHARACTER(1)"/>
+    </createIndex>
+
+    <!-- Drop legacy columns -->
+    <dropColumn tableName="ifservices" columnName="nodeid"/>
+    <dropColumn tableName="ifservices" columnName="ipaddr"/>
+  </changeSet>
+
+  <changeSet author="seth" id="17.0.0-remove-legacy-ipinterface-composite-key-fields">
+    <!-- Drop legacy columns -->
+    <dropColumn tableName="ipinterface" columnName="ifindex"/>
+  </changeSet>
+
+  <changeSet author="seth" id="17.0.0-remove-legacy-outages-composite-key-fields">
+    <!-- Drop indices that rely on legacy columns -->
+    <dropIndex tableName="outages" indexName="outages_nodeid_ipaddr_svc_idx"/>
+    <dropIndex tableName="outages" indexName="outages_nodeid_idx"/>
+    <dropIndex tableName="outages" indexName="outages_serviceid_idx"/>
+    <dropIndex tableName="outages" indexName="outages_ipaddr_idx"/>
+
+    <!-- Drop legacy columns -->
+    <dropColumn tableName="outages" columnName="nodeid"/>
+    <dropColumn tableName="outages" columnName="ipaddr"/>
+    <dropColumn tableName="outages" columnName="serviceid"/>
+  </changeSet>
+
+  <changeSet author="cpape" id="1.17.0-linkd-removal">
+    <dropTable tableName="linkstate"/>
+    <dropTable tableName="datalinkinterface"/>
+    <dropTable tableName="vlan"/>
+    <dropTable tableName="stpnode"/>
+    <dropTable tableName="stpinterface"/>
+    <dropTable tableName="element"/>
+    <dropTable tableName="map"/>
+    <dropTable tableName="iprouteinterface"/>
+    <dropTable tableName="atinterface"/>
+  </changeSet>
+
+  <!-- Drop unused servermap table -->
+  <changeSet author="seth" id="17.0.0-drop-servermap-table">
+    <preConditions onFail="MARK_RAN">
+      <tableExists tableName="servermap"/>
+    </preConditions>
+    <dropTable tableName="servermap" />
+  </changeSet>
+
+  <!-- Create column cdpGlobalDeviceIdFormat on cdpElement table -->
+  <changeSet author="rssntn67" id="17.0.0-create-cdpglobaldeviceidformat-on-cdpelement-table">
+    <preConditions onFail="MARK_RAN">
+      <tableExists tableName="cdpelement"/>
+    </preConditions> 
+    <addColumn tableName="cdpelement">
+    	<column name="cdpglobaldeviceidformat" type="integer"/>
+    </addColumn>
+  </changeSet>
+
+  <changeSet author="seth" id="17.0.0-create-monitoringsystems-table">
+    <preConditions onFail="MARK_RAN">
+      <not><tableExists tableName="monitoringsystems"/></not>
+    </preConditions> 
+
+    <createTable tableName="monitoringsystems">
+      <column name="id" type="TEXT">
+        <constraints nullable="false" primaryKey="true" primaryKeyName="monitoringsystems_pkey" />
+      </column>
+      <column name="label" type="TEXT"/>
+      <column name="location" type="TEXT">
+        <constraints nullable="false" />
+      </column>
+      <column name="type" type="TEXT">
+        <constraints nullable="false" />
+      </column>
+      <column name="status" type="TEXT"/>
+      <column name="last_updated" type="DATETIME"/>
+    </createTable>
+  </changeSet>
+
+  <changeSet author="seth" id="17.0.0-create-monitoringsystemsproperties-table">
+    <preConditions onFail="MARK_RAN">
+      <not><tableExists tableName="monitoringsystemsproperties"/></not>
+    </preConditions>
+
+    <createTable tableName="monitoringsystemsproperties">
+      <column name="monitoringsystemid" type="TEXT">
+        <constraints nullable="false" foreignKeyName="monitoringsystemsproperties_fkey" references="monitoringsystems(id)" deleteCascade="true"/>
+      </column>
+      <column name="property" type="TEXT">
+        <constraints nullable="false" />
+      </column>
+      <column name="propertyvalue" type="TEXT"/>
+    </createTable>
+
+    <!-- Create indices -->
+    <sql>
+      CREATE INDEX monitoringsystemsproperties_id_idx on monitoringsystemsproperties(monitoringsystemid);
+      CREATE UNIQUE INDEX monitoringsystemsproperties_id_property_idx on monitoringsystemsproperties(monitoringsystemid, property);
+    </sql>
+  </changeSet>
+
+  <changeSet author="seth" id="17.0.0-insert-default-monitoringsystem">
+    <insert tableName="monitoringsystems">
+      <column name="id" value="00000000-0000-0000-0000-000000000000"/>
+      <column name="label" value="localhost"/>
+      <column name="location" value="localhost"/>
+      <column name="type" value="OpenNMS"/>
+    </insert>
+  </changeSet>
+
+  <changeSet author="seth" id="17.0.0-disassociate-node-from-distpoller">
+    <dropColumn tableName="node" columnName="dpname"/>
+  </changeSet>
+
+  <changeSet author="seth" id="17.0.0-reassociate-alarms-with-monitoringsystems">
+    <dropColumn tableName="alarms" columnName="dpname"/>
+    <addColumn tableName="alarms">
+      <column name="systemid" type="TEXT" value="00000000-0000-0000-0000-000000000000"/>
+    </addColumn>
+    <addNotNullConstraint tableName="alarms" columnName="systemid"/>
+    <addForeignKeyConstraint constraintName="fk_alarms_systemid" baseTableName="alarms" baseColumnNames="systemid" referencedTableName="monitoringsystems" referencedColumnNames="id" deleteCascade="true"/>
+    <!-- Recreate related indices -->
+    <sql>
+      CREATE INDEX alarm_reduction_idx ON alarms(alarmID, eventUei, systemId, nodeID, serviceID, reductionKey);
+    </sql>
+  </changeSet>
+
+  <changeSet author="seth" id="17.0.0-reassociate-events-with-monitoringsystems">
+    <dropColumn tableName="events" columnName="eventdpname"/>
+    <addColumn tableName="events">
+      <column name="systemid" type="TEXT" value="00000000-0000-0000-0000-000000000000"/>
+    </addColumn>
+    <addNotNullConstraint tableName="events" columnName="systemid"/>
+  </changeSet>
+
+  <changeSet author="seth" id="17.0.0-copy-location_monitors-into-monitoringsystems">
+    <sql>
+      INSERT INTO monitoringsystems (id, label, location, type, status, last_updated) SELECT lm.id, lm.id, lm.definitionname, 'Remote Poller', lm.status, lm.lastcheckintime FROM location_monitors AS lm;
+      INSERT INTO monitoringsystemsproperties (monitoringsystemid, property, propertyvalue) SELECT lmd.locationmonitorid, lmd.property, lmd.propertyvalue FROM location_monitor_details AS lmd;
+    </sql>
+  </changeSet>
+
+  <changeSet author="seth" id="17.0.0-reassociate-loc_spec_status_changes-with-systems">
+    <!-- Add the systemId column with no constraints -->
+    <addColumn tableName="location_specific_status_changes">
+      <column name="systemid" type="TEXT">
+        <!-- 
+        <constraints nullable="false" foreignKeyName="location_specific_status_changes_systemid_fkey" references="monitoringsystems(id)" deleteCascade="true"/>
+        -->
+      </column>
+    </addColumn>
+
+    <!-- Copy the locationMonitorId into systemId and then add the NOT NULL and foreign key constraints -->
+    <sql>
+      UPDATE location_specific_status_changes SET systemid = locationmonitorid;
+    </sql>
+    <addNotNullConstraint tableName="location_specific_status_changes" columnName="systemid"/>
+    <addForeignKeyConstraint constraintName="location_specific_status_changes_systemid_fkey" baseTableName="location_specific_status_changes" baseColumnNames="systemid" referencedTableName="monitoringsystems" referencedColumnNames="id" deleteCascade="true"/>
+    <!-- Recreate related indices -->
+    <sql>
+      CREATE INDEX location_specific_status_changes_systemid ON location_specific_status_changes(systemId);
+      CREATE INDEX location_specific_status_changes_systemid_ifserviceid ON location_specific_status_changes(systemId, ifserviceid);
+      CREATE INDEX location_specific_status_changes_systemid_if_time ON location_specific_status_changes(systemId, ifserviceid, statustime);
+    </sql>
+
+    <!-- Drop the old locationmonitorid column -->
+    <dropColumn tableName="location_specific_status_changes" columnName="locationmonitorid"/>
+  </changeSet>
+
+  <changeSet author="seth" id="17.0.0-drop-distpoller-table">
+    <preConditions onFail="MARK_RAN">
+      <tableExists tableName="distpoller"/>
+    </preConditions> 
+    <dropTable tableName="distpoller" />
+  </changeSet>
+
+  <changeSet author="seth" id="17.0.0-drop-location-monitor-details-table">
+    <preConditions onFail="MARK_RAN">
+      <tableExists tableName="location_monitor_details"/>
+    </preConditions> 
+    <dropTable tableName="location_monitor_details" />
+  </changeSet>
+
+  <changeSet author="seth" id="17.0.0-drop-location-monitors-table">
+    <preConditions onFail="MARK_RAN">
+      <tableExists tableName="location_monitors"/>
+    </preConditions> 
+    <dropTable tableName="location_monitors" />
+  </changeSet>
+
+  <changeSet author="seth" id="17.0.0-drop-minions-properties-table">
+    <preConditions onFail="MARK_RAN">
+      <tableExists tableName="minions_properties"/>
+    </preConditions> 
+    <dropTable tableName="minions_properties" />
+  </changeSet>
+
+  <changeSet author="seth" id="17.0.0-drop-minions-table">
+    <preConditions onFail="MARK_RAN">
+      <tableExists tableName="minions"/>
+    </preConditions> 
+    <dropTable tableName="minions" />
+  </changeSet>
+
+
+  <changeSet author="seth" id="17.0.0-create-monitoringlocations-table">
+    <preConditions onFail="MARK_RAN">
+      <not><tableExists tableName="monitoringlocations"/></not>
+    </preConditions> 
+
+    <createTable tableName="monitoringlocations">
+      <column name="id" type="TEXT">
+        <constraints nullable="false" primaryKey="true" primaryKeyName="monitoringlocations_pkey" />
+      </column>
+      <column name="monitoringarea" type="TEXT">
+        <constraints nullable="false" />
+      </column>
+      <column name="geolocation" type="TEXT"/>
+      <column name="latitude" type="DOUBLE PRECISION"/>
+      <column name="longitude" type="DOUBLE PRECISION"/>
+      <column name="priority" type="INTEGER"/>
+    </createTable>
+  </changeSet>
+
+  <changeSet author="seth" id="17.0.0-create-monitoringlocationspollingpackages-table">
+    <preConditions onFail="MARK_RAN">
+      <not><tableExists tableName="monitoringlocationspollingpackages"/></not>
+    </preConditions>
+
+    <createTable tableName="monitoringlocationspollingpackages">
+      <column name="monitoringlocationid" type="TEXT">
+        <constraints nullable="false" foreignKeyName="monitoringlocationspollingpackages_fkey" references="monitoringlocations(id)" deleteCascade="true"/>
+      </column>
+      <column name="packagename" type="TEXT">
+        <constraints nullable="false" />
+      </column>
+    </createTable>
+
+    <!-- Create indices -->
+    <sql>
+      CREATE INDEX monitoringlocationspollingpackages_id_idx on monitoringlocationspollingpackages(monitoringlocationid);
+      CREATE UNIQUE INDEX monitoringlocationspollingpackages_id_pkg_idx on monitoringlocationspollingpackages(monitoringlocationid, packagename);
+    </sql>
+  </changeSet>
+
+  <changeSet author="seth" id="17.0.0-create-monitoringlocationscollectionpackages-table">
+    <preConditions onFail="MARK_RAN">
+      <not><tableExists tableName="monitoringlocationscollectionpackages"/></not>
+    </preConditions>
+
+    <createTable tableName="monitoringlocationscollectionpackages">
+      <column name="monitoringlocationid" type="TEXT">
+        <constraints nullable="false" foreignKeyName="monitoringlocationscollectionpackages_fkey" references="monitoringlocations(id)" deleteCascade="true"/>
+      </column>
+      <column name="packagename" type="TEXT">
+        <constraints nullable="false" />
+      </column>
+    </createTable>
+
+    <!-- Create indices -->
+    <sql>
+      CREATE INDEX monitoringlocationscollectionpackages_id_idx on monitoringlocationscollectionpackages(monitoringlocationid);
+      CREATE UNIQUE INDEX monitoringlocationscollectionpackages_id_pkg_idx on monitoringlocationscollectionpackages(monitoringlocationid, packagename);
+    </sql>
+  </changeSet>
+
+  <changeSet author="seth" id="17.0.0-create-monitoringlocationstags-table">
+    <preConditions onFail="MARK_RAN">
+      <not><tableExists tableName="monitoringlocationstags"/></not>
+    </preConditions>
+
+    <createTable tableName="monitoringlocationstags">
+      <column name="monitoringlocationid" type="TEXT">
+        <constraints nullable="false" foreignKeyName="monitoringlocationstags_fkey" references="monitoringlocations(id)" deleteCascade="true"/>
+      </column>
+      <column name="tag" type="TEXT">
+        <constraints nullable="false" />
+      </column>
+    </createTable>
+
+    <!-- Create indices -->
+    <sql>
+      CREATE INDEX monitoringlocationstags_id_idx on monitoringlocationstags(monitoringlocationid);
+      CREATE UNIQUE INDEX monitoringlocationstags_id_pkg_idx on monitoringlocationstags(monitoringlocationid, tag);
+    </sql>
+  </changeSet>
+
+</databaseChangeLog>

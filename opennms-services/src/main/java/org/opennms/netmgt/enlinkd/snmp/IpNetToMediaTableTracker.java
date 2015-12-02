@@ -138,6 +138,7 @@ public class IpNetToMediaTableTracker extends TableTracker
 		    SnmpValue mac = getValue(IPNETTOMEDIA_TABLE_PHYSADDR);
 		        // Try to fetch the physical address value as a hex string.
 	            String hexString = mac.toHexString();
+	            LOG.debug("getIpNetToMediaPhysAddress: checking as hexString {}", hexString);
 	            if (hexString != null && isValidBridgeAddress(hexString))
 	                // If the hex string is 12 characters long, than the agent is kinda weird and
 	                // is returning the value as a raw binary value that is 6 bytes in length.
@@ -152,13 +153,12 @@ public class IpNetToMediaTableTracker extends TableTracker
 	                    return displayString == null || displayString.trim().isEmpty() ? null : normalizeMacAddress(displayString);
 	                }
 		    } catch (IllegalArgumentException e) {
-		        LOG.warn("IllegalArgument mac on ipnettomediatable:  return null", e);
+		        LOG.warn("getIpNetToMediaPhysAddress: IllegalArgument mac on ipnettomediatable:  return null", e);
 		        return null;
 		    }
-	            hexString=mac.toDisplayString();
-	            if (isValidBridgeAddress(hexString))
+	            if (hexString != null && !hexString.trim().isEmpty() && isValidBridgeAddress(hexString))
 	                return hexString;
-                    LOG.warn("IllegalArgument mac {} on ipnettomediatable {} return null", hexString);
+                    LOG.warn("getIpNetToMediaPhysAddress: not valid mac {}, return null", hexString);
 	            return null;
 		}
 		

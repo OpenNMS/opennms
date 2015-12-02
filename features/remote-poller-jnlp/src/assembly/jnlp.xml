@@ -1,4 +1,8 @@
-<assembly>
+<assembly
+    xmlns="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.2"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.2 http://maven.apache.org/xsd/assembly-1.1.2.xsd"
+>
   <id>jnlp</id>
   <formats>
     <format>tar.gz</format>
@@ -7,9 +11,8 @@
   <fileSets>
     <fileSet>
       <directory>target/jnlp</directory>
-      <outputDirectory>/</outputDirectory>
-      <fileMode>0644</fileMode>
-      <directoryMode>0755</directoryMode>
+      <!-- Output to the root directory -->
+      <outputDirectory></outputDirectory>
     </fileSet>
   </fileSets>
 </assembly>

@@ -79,16 +79,6 @@
         <column name="lastGood" visible="true"/>
         <column name="lastFail" visible="true"/>
     </table>
-    <table visible="true" name="serverMap" key="secondary">
-        <join type="inner" column="ipAddr" table="ipInterface" table-column="ipAddr"/>
-        <column name="ipAddr" visible="false"/>
-        <column name="serverName" visible="true"/>
-    </table>
-    <table visible="true" name="serviceMap" key="secondary">
-        <join type="inner" column="ipAddr" table="ipInterface" table-column="ipAddr"/>
-        <column name="ipAddr" visible="false"/>
-        <column name="serviceMapName" visible="true"/>
-    </table>
     <table visible="true" name="assets" key="secondary">
         <join type="inner" column="nodeID" table="ipInterface" table-column="nodeID"/>
         <column name="nodeID" visible="false"/>

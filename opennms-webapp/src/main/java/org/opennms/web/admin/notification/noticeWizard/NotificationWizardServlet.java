@@ -52,9 +52,9 @@ import org.opennms.netmgt.config.NotificationFactory;
 import org.opennms.netmgt.config.notifications.Notification;
 import org.opennms.netmgt.config.notifications.Parameter;
 import org.opennms.netmgt.config.notifications.Varbind;
-import org.opennms.netmgt.filter.FilterDao;
 import org.opennms.netmgt.filter.FilterDaoFactory;
-import org.opennms.netmgt.filter.FilterParseException;
+import org.opennms.netmgt.filter.api.FilterDao;
+import org.opennms.netmgt.filter.api.FilterParseException;
 import org.opennms.web.api.Util;
 
 /**
@@ -75,14 +75,14 @@ public class NotificationWizardServlet extends HttpServlet {
     /** Constant <code>SOURCE_PAGE_OTHER_WEBUI="eventslist"</code> */
     public static final String SOURCE_PAGE_OTHER_WEBUI = "eventslist";
 
-    /** Constant <code>SOURCE_PAGE_NOTICES="eventNotices.jsp"</code> */
-    public static final String SOURCE_PAGE_NOTICES = "eventNotices.jsp";
+    /** Constant <code>SOURCE_PAGE_NOTICES="eventNotices.htm"</code> */
+    public static final String SOURCE_PAGE_NOTICES = "eventNotices.htm";
 
     /** Constant <code>SOURCE_PAGE_NOTIFS_FOR_UEI="notifsForUEI.jsp"</code> */
     public static final String SOURCE_PAGE_NOTIFS_FOR_UEI = "notifsForUEI.jsp";
 
-    /** Constant <code>SOURCE_PAGE_UEIS="chooseUeis.jsp"</code> */
-    public static final String SOURCE_PAGE_UEIS = "chooseUeis.jsp";
+    /** Constant <code>SOURCE_PAGE_UEIS="chooseUeis.htm"</code> */
+    public static final String SOURCE_PAGE_UEIS = "chooseUeis.htm";
 
     /** Constant <code>SOURCE_PAGE_RULE="buildRule.jsp"</code> */
     public static final String SOURCE_PAGE_RULE = "buildRule.jsp";

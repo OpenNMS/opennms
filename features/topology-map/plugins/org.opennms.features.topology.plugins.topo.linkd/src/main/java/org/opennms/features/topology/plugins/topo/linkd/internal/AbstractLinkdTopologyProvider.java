@@ -39,7 +39,6 @@ import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
 import org.opennms.netmgt.dao.api.TopologyDao;
-import org.opennms.netmgt.model.DataLinkInterface;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.FilterManager;
@@ -403,65 +402,6 @@ public abstract class AbstractLinkdTopologyProvider extends AbstractTopologyProv
         vertex.setNodeID(nodeId);
         vertex.setTooltipText(tooltipText);
         return vertex;
-    }
-
-    protected String getEdgeTooltipText(DataLinkInterface link,
-                                        Vertex source, Vertex target) {
-        StringBuffer tooltipText = new StringBuffer();
-
-        OnmsSnmpInterface sourceInterface = getSnmpInterfaceDao().findByNodeIdAndIfIndex(Integer.parseInt(source.getId()), link.getIfIndex());
-        OnmsSnmpInterface targetInterface = getSnmpInterfaceDao().findByNodeIdAndIfIndex(Integer.parseInt(target.getId()), link.getParentIfIndex());
-
-        tooltipText.append(HTML_TOOLTIP_TAG_OPEN);
-        if (sourceInterface != null && targetInterface != null
-         && sourceInterface.getNetMask() != null && !sourceInterface.getNetMask().isLoopbackAddress()
-         && targetInterface.getNetMask() != null && !targetInterface.getNetMask().isLoopbackAddress()) {
-            tooltipText.append("Type of Link: Layer3/Layer2");
-        } else {
-            tooltipText.append("Type of Link: Layer2");
-        }
-        tooltipText.append(HTML_TOOLTIP_TAG_END);
-
-        tooltipText.append(HTML_TOOLTIP_TAG_OPEN);
-        tooltipText.append( "Name: &lt;endpoint1 " + source.getLabel());
-        if (sourceInterface != null )
-            tooltipText.append( ":"+sourceInterface.getIfName());
-        tooltipText.append( " ---- endpoint2 " + target.getLabel());
-        if (targetInterface != null)
-            tooltipText.append( ":"+targetInterface.getIfName());
-        tooltipText.append("&gt;");
-        tooltipText.append(HTML_TOOLTIP_TAG_END);
-
-        LinkStateMachine stateMachine = new LinkStateMachine();
-        stateMachine.setParentInterfaces(sourceInterface, targetInterface);
-        tooltipText.append(HTML_TOOLTIP_TAG_OPEN);
-        tooltipText.append("Link status: " + stateMachine.getLinkStatus());
-        tooltipText.append(HTML_TOOLTIP_TAG_END);
-
-
-        if ( targetInterface != null) {
-            if (targetInterface.getIfSpeed() != null) {
-                tooltipText.append(HTML_TOOLTIP_TAG_OPEN);
-                tooltipText.append( "Bandwidth: " + getHumanReadableIfSpeed(targetInterface.getIfSpeed()));
-                tooltipText.append(HTML_TOOLTIP_TAG_END);
-            }
-        } else if (sourceInterface != null) {
-            if (sourceInterface.getIfSpeed() != null) {
-                tooltipText.append(HTML_TOOLTIP_TAG_OPEN);
-                tooltipText.append( "Bandwidth: " + getHumanReadableIfSpeed(sourceInterface.getIfSpeed()));
-                tooltipText.append(HTML_TOOLTIP_TAG_END);
-            }
-        }
-
-        tooltipText.append(HTML_TOOLTIP_TAG_OPEN);
-        tooltipText.append( "End Point 1: " + source.getLabel() + ", " + source.getIpAddress());
-        tooltipText.append(HTML_TOOLTIP_TAG_END);
-
-        tooltipText.append(HTML_TOOLTIP_TAG_OPEN);
-        tooltipText.append( "End Point 2: " + target.getLabel() + ", " + target.getIpAddress());
-        tooltipText.append(HTML_TOOLTIP_TAG_END);
-
-        return tooltipText.toString();
     }
 
     @Override

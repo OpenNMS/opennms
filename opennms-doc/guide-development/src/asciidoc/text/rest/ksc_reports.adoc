@@ -1,0 +1,26 @@
+
+==== KSC Reports
+
+===== GETs (Reading Data)
+
+[options="header", cols="5,10"]
+|===
+| Resource          | Description
+| `/ksc`            | Get a list of all KSC reports, this includes ID and label.
+| `/ksc/{reportId}` | Get a specific KSC report, by ID.
+| `/ksc/count`      | Get a count of all KSC reports.
+|===
+
+===== PUTs (Modifying Data)
+
+[options="header", cols="5,10"]
+|===
+| Resource          | Description
+| `/ksc/{reportId}` | Modify a report with the given ID.
+|===
+
+===== POSTs (Creating Data)
+Documentation incomplete see issue: link:http://issues.opennms.org/browse/NMS-7162[NMS-7162]
+
+===== DELETEs (Removing Data)
+Documentation incomplete see issue: link:http://issues.opennms.org/browse/NMS-7162[NMS-7162]

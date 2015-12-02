@@ -31,9 +31,7 @@ package org.opennms.netmgt.dao.hibernate;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
@@ -41,9 +39,7 @@ import org.opennms.netmgt.dao.api.CdpLinkDao;
 import org.opennms.netmgt.model.CdpLink;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsNode.NodeType;
-import org.opennms.netmgt.model.topology.CdpInterface;
 import org.opennms.netmgt.model.topology.CdpTopologyLink;
-import org.opennms.netmgt.model.topology.NodeToNodeLink;
 import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.util.Assert;
 
@@ -101,8 +97,7 @@ public class CdpLinkDaoHibernate extends AbstractDaoHibernate<CdpLink, Integer> 
             "np.nodesysoid as targetnodesysoid, " +
             "np.nodesyslocation as targetnodelocation, " +
             "np.nodetype as targetnodetype, " +
-            "l.cdpcachedeviceport as targetifname, " +
-            "l.cdplinklastpolltime as lastPollTime " +
+            "l.cdpcachedeviceport as targetifname " +
             "from cdplink l " +
             "left join node n " +
             "on l.nodeid = n.nodeid " +
@@ -134,63 +129,22 @@ public class CdpLinkDaoHibernate extends AbstractDaoHibernate<CdpLink, Integer> 
                                 (String) objs[11],
                                 (String) objs[12],
                                 NodeType.getNodeTypeFromChar((char)objs[13]),
-                                (String) objs[14],
-                                (Date) objs[15]
-                                        )
-                              );
+                                (String) objs[14]));
             }
         }
 
         return topoLinks;
         
     }
-    
     @Override
     public List<CdpTopologyLink> findLinksForTopology() {
         return getHibernateTemplate().execute(new HibernateCallback<List<CdpTopologyLink>>() {
             @Override
             public List<CdpTopologyLink> doInHibernate(Session session) throws HibernateException, SQLException {
-               Map<String, CdpTopologyLink> mapToLink = new HashMap<String,CdpTopologyLink>();
-                for (CdpTopologyLink link: convertObjectToTopologyLink(session.createSQLQuery(SQL_CDP_LINK_BASE_QUERY+";").list())){
-                    String sourcekey=link.getSrcNodeId()+link.getSrcIfName();
-                    String targetkey=link.getTargetNodeId()+link.getTargetIfName();
-                    if (mapToLink.containsKey(sourcekey)) {
-                        if (link.getLastPollTime().after(mapToLink.get(sourcekey).getLastPollTime())) {
-                            CdpTopologyLink oldlink = mapToLink.get(sourcekey);
-                            String oldsourcekey=oldlink.getSrcNodeId()+oldlink.getSrcIfName();
-                            String oldtargetkey=oldlink.getTargetNodeId()+oldlink.getTargetIfName();
-                            mapToLink.remove(oldsourcekey);
-                            mapToLink.remove(oldtargetkey);
-                            mapToLink.put(sourcekey, link);
-                            mapToLink.put(targetkey, link);
-                            continue;
-                        }
-                    } 
-                    if (mapToLink.containsKey(targetkey)) {
-                        if (link.getLastPollTime().after(mapToLink.get(targetkey).getLastPollTime())) {
-                            CdpTopologyLink oldlink = mapToLink.get(targetkey);
-                            String oldsourcekey=oldlink.getSrcNodeId()+oldlink.getSrcIfName();
-                            String oldtargetkey=oldlink.getTargetNodeId()+oldlink.getTargetIfName();
-                            mapToLink.remove(oldsourcekey);
-                            mapToLink.remove(oldtargetkey);
-                            mapToLink.put(sourcekey, link);
-                            mapToLink.put(targetkey, link);
-                            continue;
-                        }
-                    }
-                    mapToLink.put(sourcekey, link);
-                    mapToLink.put(targetkey, link);
-                }
-                List<Integer> ids = new ArrayList<Integer>();
-                List<CdpTopologyLink> links = new ArrayList<CdpTopologyLink>();
-                for (CdpTopologyLink link: mapToLink.values()) {
-                    if (ids.contains(link.getSourceId()))
-                        continue;
-                    links.add(link);
-                    ids.add(link.getSourceId());
-                }
-                return links;
+                return convertObjectToTopologyLink(session.createSQLQuery(SQL_CDP_LINK_BASE_QUERY+";").list());
+
             }
+
         });
     }
 

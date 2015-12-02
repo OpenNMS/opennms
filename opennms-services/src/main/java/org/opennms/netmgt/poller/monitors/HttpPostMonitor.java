@@ -29,32 +29,22 @@
 package org.opennms.netmgt.poller.monitors;
 
 import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
 import java.net.InetAddress;
 import java.net.URISyntaxException;
+import java.nio.charset.UnsupportedCharsetException;
 import java.util.Map;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.auth.AuthScope;
-import org.apache.http.auth.Credentials;
-import org.apache.http.auth.UsernamePasswordCredentials;
+import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.utils.URIBuilder;
-import org.apache.http.conn.scheme.Scheme;
-import org.apache.http.conn.ssl.AllowAllHostnameVerifier;
-import org.apache.http.conn.ssl.SSLSocketFactory;
-import org.apache.http.conn.ssl.TrustSelfSignedStrategy;
+import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.impl.client.DefaultHttpRequestRetryHandler;
-import org.apache.http.params.BasicHttpParams;
-import org.apache.http.params.CoreConnectionPNames;
-import org.apache.http.params.HttpParams;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.TimeoutTracker;
+import org.opennms.core.web.HttpClientWrapper;
 import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.poller.DistributionContext;
 import org.opennms.netmgt.poller.MonitoredService;
@@ -178,26 +168,27 @@ final public class HttpPostMonitor extends AbstractServiceMonitor {
         PollStatus serviceStatus = PollStatus.unavailable();
 
         for (tracker.reset(); tracker.shouldRetry() && !serviceStatus.isAvailable(); tracker.nextAttempt()) {
+            HttpClientWrapper clientWrapper = null;
             try {
                 tracker.startAttempt();
 
-                HttpParams clientParams = new BasicHttpParams();
-                clientParams.setIntParameter(CoreConnectionPNames.CONNECTION_TIMEOUT, tracker.getSoTimeout());
-                clientParams.setIntParameter(CoreConnectionPNames.SO_TIMEOUT, tracker.getSoTimeout());
-                DefaultHttpClient client = new DefaultHttpClient(clientParams);
-                client.setHttpRequestRetryHandler(new DefaultHttpRequestRetryHandler(DEFAULT_RETRY, false));
-                if (boolSSLFilter) 
-                    client.getConnectionManager().getSchemeRegistry().register(new Scheme(strScheme, port, new SSLSocketFactory(new TrustSelfSignedStrategy(), new AllowAllHostnameVerifier())));
+                clientWrapper = HttpClientWrapper.create()
+                        .setConnectionTimeout(tracker.getSoTimeout())
+                        .setSocketTimeout(tracker.getSoTimeout())
+                        .setRetries(DEFAULT_RETRY);
+
+                if (boolSSLFilter)  {
+                    clientWrapper.trustSelfSigned(strScheme);
+                }
                 HttpEntity postReq;
 
                 if (strUser != null && strPasswd != null) {
-                    Credentials defaultcreds = new UsernamePasswordCredentials(strUser, strPasswd);
-                    client.getCredentialsProvider().setCredentials(AuthScope.ANY, defaultcreds);
+                    clientWrapper.addBasicCredentials(strUser, strPasswd);
                 }
 
                 try {
-                    postReq = new StringEntity(strPayload, strMimetype, strCharset);
-                } catch (UnsupportedEncodingException e) {
+                    postReq = new StringEntity(strPayload, ContentType.create(strMimetype, strCharset));
+                } catch (final UnsupportedCharsetException e) {
                     serviceStatus = PollStatus.unavailable("Unsupported encoding encountered while constructing POST body " + e);
                     break;
                 }
@@ -212,7 +203,7 @@ final public class HttpPostMonitor extends AbstractServiceMonitor {
 
                 HttpPost post = new HttpPost(ub.build());
                 post.setEntity(postReq);
-                HttpResponse response = client.execute(post);
+                CloseableHttpResponse response = clientWrapper.execute(post);
 
                 LOG.debug("HttpPostMonitor: Status Line is " + response.getStatusLine());
 
@@ -257,16 +248,18 @@ final public class HttpPostMonitor extends AbstractServiceMonitor {
                     }
                 }
 
-            } catch (URISyntaxException e) {
-                String reason = "URISyntaxException for URI: " + strURI + " " + e.getMessage();
+            } catch (final URISyntaxException e) {
+                final String reason = "URISyntaxException for URI: " + strURI + " " + e.getMessage();
                 LOG.debug(reason, e);
                 serviceStatus = PollStatus.unavailable(reason);
                 break;
-            } catch (Exception e) {
-                String reason = "Exception: " + e.getMessage();
+            } catch (final Exception e) {
+                final String reason = "Exception: " + e.getMessage();
                 LOG.debug(reason, e);
                 serviceStatus = PollStatus.unavailable(reason);
                 break;
+            } finally {
+                IOUtils.closeQuietly(clientWrapper);
             }
         }
 

@@ -40,16 +40,19 @@ import org.jrobin.core.RrdDb;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
+import org.junit.rules.TemporaryFolder;
 import org.opennms.core.test.MockLogAppender;
-import org.opennms.netmgt.collection.persistence.rrd.BasePersister;
 import org.opennms.netmgt.collection.api.CollectionAgent;
-import org.opennms.netmgt.collection.persistence.rrd.GroupPersister;
+import org.opennms.netmgt.collection.persistence.rrd.RrdPersisterFactory;
+import org.opennms.netmgt.dao.support.FilesystemResourceStorageDao;
 import org.opennms.netmgt.collection.api.ServiceCollector;
 import org.opennms.netmgt.collection.api.CollectionSet;
+import org.opennms.netmgt.collection.api.CollectionSetVisitor;
 import org.opennms.netmgt.collection.api.ServiceParameters;
+import org.opennms.netmgt.events.api.EventProxy;
 import org.opennms.netmgt.rrd.RrdRepository;
-import org.opennms.netmgt.model.events.EventProxy;
-import org.opennms.netmgt.rrd.RrdUtils;
+import org.opennms.netmgt.rrd.RrdStrategy;
 import org.opennms.netmgt.rrd.jrobin.JRobinRrdStrategy;
 import org.opennms.protocols.xml.collector.XmlCollector;
 import org.opennms.protocols.xml.config.XmlRrd;
@@ -64,8 +67,8 @@ import org.springframework.core.io.Resource;
  */
 public abstract class AbstractVTDXmlCollectorTest {
 
-    /** The Constant TEST_SNMP_DIRECTORY. */
-    private static final String TEST_SNMP_DIRECTORY = "target/snmp/";
+    @Rule
+    public TemporaryFolder m_temporaryFolder = new TemporaryFolder();
 
     /** The collection agent. */
     private CollectionAgent m_collectionAgent;
@@ -76,6 +79,12 @@ public abstract class AbstractVTDXmlCollectorTest {
     /** The XML collection DAO. */
     private XmlDataCollectionConfigDaoJaxb m_xmlCollectionDao;
 
+    private RrdStrategy<?, ?> m_rrdStrategy;
+
+    private FilesystemResourceStorageDao m_resourceStorageDao;
+
+    private RrdPersisterFactory m_persisterFactory;
+
     /**
      * Sets the up.
      *
@@ -83,12 +92,16 @@ public abstract class AbstractVTDXmlCollectorTest {
      */
     @Before
     public void setUp() throws Exception {
-        FileUtils.deleteDirectory(new File(TEST_SNMP_DIRECTORY));
         MockLogAppender.setupLogging();
 
-        System.setProperty("org.opennms.rrd.usetcp", "false");
-        System.setProperty("org.opennms.rrd.usequeue", "false");
-        RrdUtils.setStrategy(new JRobinRrdStrategy());
+        m_rrdStrategy = new JRobinRrdStrategy();
+        m_resourceStorageDao = new FilesystemResourceStorageDao();
+        m_resourceStorageDao.setRrdDirectory(m_temporaryFolder.getRoot());
+        m_temporaryFolder.newFolder("snmp");
+
+        m_persisterFactory = new RrdPersisterFactory();
+        m_persisterFactory.setResourceStorageDao(m_resourceStorageDao);
+        m_persisterFactory.setRrdStrategy(m_rrdStrategy);
 
         m_collectionAgent = EasyMock.createMock(CollectionAgent.class);
         EasyMock.expect(m_collectionAgent.getNodeId()).andReturn(1).anyTimes();
@@ -155,10 +168,10 @@ public abstract class AbstractVTDXmlCollectorTest {
         Assert.assertEquals(ServiceCollector.COLLECTION_SUCCEEDED, collectionSet.getStatus());
 
         ServiceParameters serviceParams = new ServiceParameters(new HashMap<String,Object>());
-        BasePersister persister =  new GroupPersister(serviceParams, createRrdRepository((String)parameters.get("collection"))); // storeByGroup=true;
+        CollectionSetVisitor persister = m_persisterFactory.createGroupPersister(serviceParams, createRrdRepository((String)parameters.get("collection")), false, false);
         collectionSet.visit(persister);
 
-        Assert.assertEquals(expectedFiles, FileUtils.listFiles(new File(TEST_SNMP_DIRECTORY), new String[] { "jrb" }, true).size());
+        Assert.assertEquals(expectedFiles, FileUtils.listFiles(getSnmpRoot(), new String[] { "jrb" }, true).size());
     }
 
     /**
@@ -191,11 +204,14 @@ public abstract class AbstractVTDXmlCollectorTest {
     private RrdRepository createRrdRepository(String collection) throws IOException {
         XmlRrd rrd = m_xmlCollectionDao.getDataCollectionByName(collection).getXmlRrd();
         RrdRepository repository = new RrdRepository();
-        repository.setRrdBaseDir(new File(TEST_SNMP_DIRECTORY));
+        repository.setRrdBaseDir(getSnmpRoot());
         repository.setHeartBeat(rrd.getStep() * 2);
         repository.setStep(rrd.getStep());
         repository.setRraList(rrd.getXmlRras());
         return repository;
     }
 
+    public File getSnmpRoot() {
+        return new File(m_temporaryFolder.getRoot(), "snmp");
+    }
 }

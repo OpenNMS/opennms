@@ -1,0 +1,9 @@
+<label class="control-label">{{ parameter.key }}</label>
+<div class="input-group">
+  <input class="form-control" type="text" placeholder="Parameter Value" ng-model="parameter.value" required></input>
+  <span class="input-group-btn">
+    <button class="btn btn-default" type="button" ng-click="removeParameter($index)">
+      <span class="glyphicon glyphicon-remove"></span>
+    </button>
+  </span>
+</div>

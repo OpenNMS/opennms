@@ -38,7 +38,7 @@
 	<jsp:param name="headTitle" value="Add Node" />
 	<jsp:param name="location" value="addNode" />		
 	<jsp:param name="breadcrumb" value="<a href='admin/index.jsp'>Admin</a>" />
-	<jsp:param name="breadcrumb" value="<a href='admin/provisioningGroups.htm'>Provisioning Requisitions</a>" />
+	<jsp:param name="breadcrumb" value="<a href='admin/ng-requisitions/app/index.jsp'>Provisioning Requisitions</a>" />
 	<jsp:param name="breadcrumb" value="Node Quick-Add" />
 </jsp:include>
 
@@ -60,7 +60,7 @@
         <h3 class="panel-title">Missing Requisition</h3>
       </div>
       <div class="panel-body">
-        <p>You must first <a href='admin/provisioningGroups.htm'>create and import a requisition</a> before using this page.</p>
+        <p>You must first <a href='admin/ng-requisitions/app/index.jsp'>create and import a requisition</a> before using this page.</p>
       </div>
     </div> <!-- panel -->
 </c:when>

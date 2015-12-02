@@ -31,37 +31,64 @@ package org.opennms.netmgt.provision.persist;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import java.io.File;
+import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
+import org.apache.commons.io.FileUtils;
+import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.provision.persist.foreignsource.ForeignSource;
 import org.opennms.netmgt.provision.persist.foreignsource.PluginConfig;
 import org.opennms.netmgt.provision.persist.requisition.Requisition;
+import org.opennms.netmgt.provision.persist.requisition.RequisitionCategory;
+import org.opennms.netmgt.provision.persist.requisition.RequisitionNode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.FileSystemResource;
 
 public class FastFilesystemForeignSourceRepositoryTest extends ForeignSourceRepositoryTestCase {
     private String m_defaultForeignSourceName;
+    private File m_requisitionDirectory;
 
     @Autowired
-    @Qualifier("fast")
+    @Qualifier("fastFilePending")
     private ForeignSourceRepository m_foreignSourceRepository;
 
     @Before
-    public void setUp() {
+    public void setUp() throws Exception {
+        m_requisitionDirectory = new File("target/opennms-home/etc/imports/pending");
+        m_requisitionDirectory.mkdirs();
+
         m_defaultForeignSourceName = "imported:";
+        m_foreignSourceRepository.clear();
+        m_foreignSourceRepository.flush();
+
+        FileUtils.copyFile(new File("src/test/resources/requisition-test.xml"), getRequisitionFile());
+    }
+
+    @After
+    public void tearDown() throws Exception {
+       FileUtils.deleteDirectory(m_requisitionDirectory); 
+    }
+
+    private File getRequisitionFile() {
+        return new File(m_requisitionDirectory, m_defaultForeignSourceName + ".xml");
     }
 
     private Requisition createRequisition() throws Exception {
-        Requisition r = m_foreignSourceRepository.importResourceRequisition(new ClassPathResource("/requisition-test.xml"));
+        FileSystemResource resource = new FileSystemResource(getRequisitionFile());
+        Requisition r = m_foreignSourceRepository.importResourceRequisition(resource);
         m_foreignSourceRepository.save(r);
         m_foreignSourceRepository.flush();
+        Thread.sleep(2000); // Give enough time to watcher's thread to cache the requisition
         return r;
     }
 
@@ -71,7 +98,27 @@ public class FastFilesystemForeignSourceRepositoryTest extends ForeignSourceRepo
         fs.addPolicy(new PluginConfig("all-ipinterfaces", "org.opennms.netmgt.provision.persist.policies.InclusiveInterfacePolicy"));
         m_foreignSourceRepository.save(fs);
         m_foreignSourceRepository.flush();
+        Thread.sleep(2000); // Give enough time to watcher's thread to cache the requisition
         return fs;
+    }
+
+    private void modifyRequisition() throws Exception {
+        Requisition r = JaxbUtils.unmarshal(Requisition.class, getRequisitionFile());
+        Assert.assertNotNull(r);
+        r.getNode("4243").setNodeLabel("apknd_2"); // Modify existing node
+        RequisitionNode n = new RequisitionNode();
+        n.setForeignId("R2D2");
+        n.setNodeLabel("utility-robot");
+        n.getCategories().add(new RequisitionCategory("StarWars"));
+        n.getCategories().add(new RequisitionCategory("Rebels"));
+        r.getNodes().add(n); // Add a new node
+        JaxbUtils.marshal(r, new FileWriter(getRequisitionFile()));
+        Thread.sleep(2000); // Give enough time to watcher's thread to cache the requisition
+    }
+
+    private void deleteRequisition() throws Exception {
+        Assert.assertTrue(getRequisitionFile().delete());
+        Thread.sleep(2000); // Give enough time to watcher's thread to cache the requisition
     }
 
     @Test
@@ -82,6 +129,21 @@ public class FastFilesystemForeignSourceRepositoryTest extends ForeignSourceRepo
         r.visit(v);
         assertEquals("number of nodes visited", 2, v.getNodeReqs().size());
         assertEquals("node name matches", "apknd", v.getNodeReqs().get(0).getNodeLabel());
+
+        // Modifying the requisition outside the repository and verifying that the repository cache was updated.
+        modifyRequisition();
+        r = m_foreignSourceRepository.getRequisition(m_defaultForeignSourceName);
+        v = new TestVisitor();
+        r.visit(v);
+        assertEquals("number of nodes visited", 3, v.getNodeReqs().size());
+        assertEquals("node name matches", "apknd_2", v.getNodeReqs().get(0).getNodeLabel());
+        assertEquals("node name matches", "wan0", v.getNodeReqs().get(1).getNodeLabel());
+        assertEquals("node name matches", "utility-robot", v.getNodeReqs().get(2).getNodeLabel());
+
+        // Removing the requisition outside the repository and verifying that the repository cache was updated.
+        deleteRequisition();
+        r = m_foreignSourceRepository.getRequisition(m_defaultForeignSourceName);
+        Assert.assertNull(r);
     }
 
     @Test

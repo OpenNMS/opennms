@@ -1,5 +1,5 @@
-/* 
-Bootstrap Theme Specific Stylesheet 
+/*
+Bootstrap Theme Specific Stylesheet
  * Contents:
  *  1.0 - Structure
  *  2.0 - Menu
@@ -26,7 +26,6 @@ Bootstrap Theme Specific Stylesheet
 ----------------------------------------------- */
 
 body {
-  //background:url(../images/textures/debut_dark.png);
   background-color: white;
   font: 'Open Sans', Arial, sans-serif;
 }
@@ -673,7 +672,12 @@ a.list-group-item.active:focus {
 ----------------------------------------------- */
 
 .graph-aux-controls {
-	text-align: right;
+  text-align: right;
+}
+
+.graph-container {
+  margin-left: auto;
+  margin-right: auto;
 }
 
 #footer {
@@ -698,7 +702,7 @@ a.list-group-item.active:focus {
   font-weight: bold;
 }
 
-/* 
+/*
 Expand line-height for labels so that they have vertical whitespace between
 each other when they wrap inside a div
 */
@@ -710,18 +714,6 @@ each other when they wrap inside a div
 .pager {
   text-align: left;
 }
-
-/*
-.panel.panel-success.fix-subpixel {
-	background-color: $color_green_leaf_approx;
-	.table {
-		background-color: white;
-	}
-	.clear {
-		background-color: white;
-	}
-}
-*/
 
 /* report list page action buttons */
 .o-report-deliver,  .o-report-schedule, .o-report-online{

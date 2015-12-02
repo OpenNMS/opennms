@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>org.opennms.features</artifactId>
-    <version>14.0.3-SNAPSHOT</version>
+    <version>2016.1.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.features</groupId>
@@ -87,7 +87,7 @@
           <descriptors>
             <descriptor>src/assembly/jnlp.xml</descriptor>
           </descriptors>
-          <tarLongFileMode>gnu</tarLongFileMode>
+          <tarLongFileMode>posix</tarLongFileMode>
         </configuration>
         <executions>
           <execution>
@@ -155,6 +155,8 @@
           <outputJarVersions>false</outputJarVersions>
           <verbose>false</verbose>
           <verifyjar>true</verifyjar>
+          <canUnsign>true</canUnsign>
+          <unsignAlreadySignedJars>true</unsignAlreadySignedJars>
           <sign>
             <keystore>${webstart.keystore}</keystore>
             <keypass>${webstart.keypass}</keypass>
@@ -162,6 +164,7 @@
             <alias>${webstart.keyalias}</alias>
             <dnameCn>${webstart.dnameCn}</dnameCn>
             <dnameCn>${webstart.dnameCn}</dnameCn>
+            <verify>true</verify>
           </sign>
           <updateManifestEntries>
             <Permissions>all-permissions</Permissions>

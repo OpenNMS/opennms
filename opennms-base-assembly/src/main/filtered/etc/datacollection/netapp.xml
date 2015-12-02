@@ -1,7 +1,7 @@
 <datacollection-group xmlns="http://xmlns.opennms.org/xsd/config/datacollection" name="Network Appliance">
    <resourceType name="naDfIndex" label="Disk Space (Network Appliance MIB)" resourceLabel="${naDfFileSys} (index ${index})">
-      <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
-      <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
    </resourceType>
    <group name="netapp-cpu" ifType="ignore">
       <mibObj oid=".1.3.6.1.4.1.789.1.2.1.3" instance="0" alias="cpuBusyTimePct" type="INTEGER"/>

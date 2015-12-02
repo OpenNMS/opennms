@@ -3,29 +3,14 @@
   <parent>
     <artifactId>dependencies</artifactId>
     <groupId>org.opennms</groupId>
-    <version>14.0.3-SNAPSHOT</version>
+    <version>2016.1.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.dependencies</groupId>
   <artifactId>jersey-dependencies</artifactId>
   <packaging>pom</packaging>
   <name>OpenNMS Dependencies Jersey</name>
-  <properties>
-    <jerseyVersion>1.18.1</jerseyVersion>
-    <jerseyContribVersion>1.18</jerseyContribVersion>
-  </properties>
   <dependencies>
-    <dependency>
-      <groupId>com.sun.jersey</groupId>
-      <artifactId>jersey-client</artifactId>
-      <version>${jerseyVersion}</version>
-      <exclusions>
-        <exclusion>
-          <groupId>commons-logging</groupId>
-          <artifactId>commons-logging</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
     <dependency>
       <groupId>com.sun.jersey</groupId>
       <artifactId>jersey-server</artifactId>
@@ -38,6 +23,10 @@
         <exclusion>
           <groupId>commons-logging</groupId>
           <artifactId>commons-logging</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>javax.ws.rs</groupId>
+          <artifactId>jsr311-api</artifactId>
         </exclusion>
       </exclusions>
     </dependency>
@@ -81,6 +70,10 @@
       <version>${jerseyContribVersion}</version>
       <exclusions>
         <exclusion>
+          <groupId>asm</groupId>
+          <artifactId>asm</artifactId>
+        </exclusion>
+        <exclusion>
           <groupId>commons-logging</groupId>
           <artifactId>commons-logging</artifactId>
         </exclusion>
@@ -116,17 +109,6 @@
     </dependency>
     <dependency>
       <groupId>com.sun.jersey.contribs</groupId>
-      <artifactId>jersey-apache-client</artifactId>
-      <version>${jerseyContribVersion}</version>
-      <exclusions>
-        <exclusion>
-          <groupId>commons-logging</groupId>
-          <artifactId>commons-logging</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
-      <groupId>com.sun.jersey.contribs</groupId>
       <artifactId>jersey-multipart</artifactId>
       <version>${jerseyContribVersion}</version>
     </dependency>
@@ -140,10 +122,10 @@
       <artifactId>oauth-signature</artifactId>
       <version>${jerseyContribVersion}</version>
     </dependency>
+    <!-- replacing jsr311-api dep in jersey-server -->
     <dependency>
       <groupId>javax.ws.rs</groupId>
-      <artifactId>jsr311-api</artifactId>
-      <version>1.0</version>
+      <artifactId>javax.ws.rs-api</artifactId>
     </dependency>
     <!-- replacing asm/asm dep in jersey-server -->
     <dependency>

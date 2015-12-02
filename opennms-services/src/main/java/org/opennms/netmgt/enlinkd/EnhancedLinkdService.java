@@ -59,7 +59,6 @@ public interface EnhancedLinkdService {
      * <p>getSnmpNodeList</p>
      *
      * @return a {@link java.util.List} object.
-     * @throws java.sql.SQLException if any.
      */
     List<LinkableSnmpNode> getSnmpNodeList();
 
@@ -68,7 +67,6 @@ public interface EnhancedLinkdService {
      *
      * @param nodeid a int.
      * @return a {@link org.opennms.netmgt.enlinkd.LinkableNode} object.
-     * @throws java.sql.SQLException if any.
      */
     LinkableSnmpNode getSnmpNode(int nodeid);
         

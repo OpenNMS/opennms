@@ -29,7 +29,7 @@
 package org.opennms.netmgt.collection.api;
 
 import java.util.Collection;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,8 +45,11 @@ public class AttributeGroup implements CollectionVisitable, Persistable {
     
     private final CollectionResource m_resource;
     private final AttributeGroupType m_groupType;
-    private final Set<CollectionAttribute> m_attributes = new HashSet<CollectionAttribute>();
-    
+
+    // When persisting certain collection sets i.e. latency statistics it is important that attributes
+    // are visited in the same order as they were added
+    private final Set<CollectionAttribute> m_attributes = new LinkedHashSet<CollectionAttribute>();
+
     /**
      * <p>Constructor for AttributeGroup.</p>
      *

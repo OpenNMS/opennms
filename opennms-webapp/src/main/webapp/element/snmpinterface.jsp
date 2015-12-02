@@ -36,10 +36,11 @@
     org.opennms.core.utils.SIUtils,
     org.opennms.netmgt.model.OnmsNode,
     org.opennms.netmgt.model.OnmsResource,
+    org.opennms.netmgt.dao.api.IfLabel,
     org.opennms.web.api.Authentication,
     org.opennms.web.element.*,
-    org.opennms.web.svclayer.ResourceService,
-    org.opennms.netmgt.utils.IfLabel,
+    org.opennms.web.svclayer.api.ResourceService,
+    org.opennms.netmgt.dao.hibernate.IfLabelDaoImpl,
     org.springframework.web.context.WebApplicationContext,
     org.springframework.web.context.support.WebApplicationContextUtils"
 %>
@@ -118,9 +119,9 @@ if (request.isUserInRole( Authentication.ROLE_ADMIN )) {
   <%
     String ifLabel;
     if (ifIndex != -1) {
-      ifLabel = IfLabel.getIfLabelfromSnmpIfIndex(nodeId, ifIndex);
+      ifLabel = IfLabelDaoImpl.getInstance().getIfLabelfromSnmpIfIndex(nodeId, ifIndex);
     } else {
-      ifLabel = "no_ifLabel";
+      ifLabel = IfLabel.NO_IFLABEL;
     }
     List<OnmsResource> resources = m_resourceService.findNodeChildResources(node);
     for (OnmsResource resource : resources) {
@@ -205,12 +206,6 @@ if (request.isUserInRole( Authentication.ROLE_ADMIN )) {
         </tr>              
       </table>
     </div>
-
-    <!-- Node Link box -->
-    <jsp:include page="/includes/interfaceLink-box.jsp" flush="false">
-        <jsp:param name="node" value="<%=nodeId%>" />
-        <jsp:param name="ifindex" value="<%=ifIndex%>" />
-    </jsp:include>                        
 
     <!-- SNMP box, if info available -->
     <div class="panel panel-default">

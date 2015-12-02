@@ -1,0 +1,54 @@
+<datacollection-group xmlns="http://xmlns.opennms.org/xsd/config/datacollection" name="Fortinet-Fortigate-System-v5.2">
+   <resourceType name="fgProcessorEntIndex" label="Fortigate Processor" resourceLabel="CPU: ${fgProcEntIndex}">
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
+   </resourceType>
+   <resourceType name="fgVpnSslStatsEntry" label="Fortigate SSL VPN Statistics" resourceLabel="Virtual Domain: ${fgVdEntName}">
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
+   </resourceType>
+   <group name="fgSysteminfo" ifType="ignore">
+      <mibObj oid=".1.3.6.1.4.1.12356.101.4.1.3" instance="0" alias="fgSysCpuUsage" type="Gauge32"/>
+      <mibObj oid=".1.3.6.1.4.1.12356.101.4.1.4" instance="0" alias="fgSysMemUsage" type="Gauge32"/>
+      <mibObj oid=".1.3.6.1.4.1.12356.101.4.1.6" instance="0" alias="fgSysDiskUsage" type="Gauge32"/>
+      <mibObj oid=".1.3.6.1.4.1.12356.101.4.1.7" instance="0" alias="fgSysDiskCapacity" type="Gauge32"/>
+      <mibObj oid=".1.3.6.1.4.1.12356.101.4.1.8" instance="0" alias="fgSysSesCount" type="Gauge32"/>
+      <mibObj oid=".1.3.6.1.4.1.12356.101.4.1.9" instance="0" alias="fgSysLowMemUsage" type="Gauge32"/>
+      <mibObj oid=".1.3.6.1.4.1.12356.101.4.1.11" instance="0" alias="fgSysSesRate1" type="Gauge32"/>
+      <mibObj oid=".1.3.6.1.4.1.12356.101.4.1.12" instance="0" alias="fgSysSesRate10" type="Gauge32"/>
+      <mibObj oid=".1.3.6.1.4.1.12356.101.4.1.13" instance="0" alias="fgSysSesRate30" type="Gauge32"/>
+      <mibObj oid=".1.3.6.1.4.1.12356.101.4.1.14" instance="0" alias="fgSysSesRate60" type="Gauge32"/>
+      <mibObj oid=".1.3.6.1.4.1.12356.101.4.1.15" instance="0" alias="fgSysSes6Count" type="Gauge32"/>
+      <mibObj oid=".1.3.6.1.4.1.12356.101.4.1.16" instance="0" alias="fgSysSes6Rate1" type="Gauge32"/>
+      <mibObj oid=".1.3.6.1.4.1.12356.101.4.1.17" instance="0" alias="fgSysSes6Rate10" type="Gauge32"/>
+      <mibObj oid=".1.3.6.1.4.1.12356.101.4.1.18" instance="0" alias="fgSysSes6Rate30" type="Gauge32"/>
+      <mibObj oid=".1.3.6.1.4.1.12356.101.4.1.19" instance="0" alias="fgSysSes6Rate60" type="Gauge32"/>
+   </group>
+   <group name="fgProcessorTable" ifType="all">
+      <mibObj oid=".1.3.6.1.4.1.12356.101.4.4.2.1.1" instance="fgProcessorEntIndex" alias="fgProcEntIndex" type="String"/>
+      <mibObj oid=".1.3.6.1.4.1.12356.101.4.4.2.1.2" instance="fgProcessorEntIndex" alias="fgProcUsage" type="Gauge32"/>
+      <mibObj oid=".1.3.6.1.4.1.12356.101.4.4.2.1.3" instance="fgProcessorEntIndex" alias="fgProcUsage5sec" type="Gauge32"/>
+      <mibObj oid=".1.3.6.1.4.1.12356.101.4.4.2.1.6" instance="fgProcessorEntIndex" alias="fgProcPktRxCnt" type="Gauge64"/>
+      <mibObj oid=".1.3.6.1.4.1.12356.101.4.4.2.1.7" instance="fgProcessorEntIndex" alias="fgProcPktTxCnt" type="Gauge64"/>
+      <mibObj oid=".1.3.6.1.4.1.12356.101.4.4.2.1.8" instance="fgProcessorEntIndex" alias="fgProcPktDropCnt" type="Gauge64"/>
+      <mibObj oid=".1.3.6.1.4.1.12356.101.4.4.2.1.9" instance="fgProcessorEntIndex" alias="fgProcUserUsage" type="Gauge32"/>
+      <mibObj oid=".1.3.6.1.4.1.12356.101.4.4.2.1.10" instance="fgProcessorEntIndex" alias="fgProcSysUsage" type="Gauge32"/>
+   </group>
+   <group name="fgVpnSslStatsTable" ifType="all">
+      <mibObj oid=".1.3.6.1.4.1.12356.101.3.2.1.1.2" instance="fgVpnSslStatsEntry" alias="fgVdEntName" type="String"/>
+      <mibObj oid=".1.3.6.1.4.1.12356.101.12.2.3.1.2" instance="fgVpnSslStatsEntry" alias="fgVpnSslLogUsr" type="Counter32"/>
+      <mibObj oid=".1.3.6.1.4.1.12356.101.12.2.3.1.3" instance="fgVpnSslStatsEntry" alias="fgVpnSslMaxUsr" type="Counter32"/>
+      <mibObj oid=".1.3.6.1.4.1.12356.101.12.2.3.1.4" instance="fgVpnSslStatsEntry" alias="fgVpnSslActWebSess" type="Counter32"/>
+      <mibObj oid=".1.3.6.1.4.1.12356.101.12.2.3.1.5" instance="fgVpnSslStatsEntry" alias="fgVpnSslMaxWebSess" type="Counter32"/>
+      <mibObj oid=".1.3.6.1.4.1.12356.101.12.2.3.1.6" instance="fgVpnSslStatsEntry" alias="fgVpnSslActTunnels" type="Counter32"/>
+      <mibObj oid=".1.3.6.1.4.1.12356.101.12.2.3.1.7" instance="fgVpnSslStatsEntry" alias="fgVpnSslMaxTunnels" type="Counter32"/>
+   </group>
+   <systemDef name="Fortinet-Fortigate-System-v5.2">
+      <sysoidMask>.1.3.6.1.4.1.12356.</sysoidMask>
+      <collect>
+         <includeGroup>fgSysteminfo</includeGroup>
+         <includeGroup>fgProcessorTable</includeGroup>
+         <includeGroup>fgVpnSslStatsTable</includeGroup>
+      </collect>
+   </systemDef>
+</datacollection-group>

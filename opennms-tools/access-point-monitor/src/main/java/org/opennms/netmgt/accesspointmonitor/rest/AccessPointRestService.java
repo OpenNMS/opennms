@@ -31,14 +31,12 @@ package org.opennms.netmgt.accesspointmonitor.rest;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-import javax.servlet.ServletContext;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriInfo;
 
 import org.opennms.core.criteria.CriteriaBuilder;
@@ -63,7 +61,7 @@ import com.sun.jersey.spi.resource.PerRequest;
  * 
  * @author <a href="mailto:jwhite@datavalet.com">Jesse White</a>
  */
-@Component
+@Component("accessPointRestService")
 @PerRequest
 @Scope("prototype")
 @Path("accesspoints")
@@ -71,15 +69,6 @@ public class AccessPointRestService {
 
     @Autowired
     private AccessPointDao m_accessPointDao;
-
-    @Context
-    private UriInfo m_uriInfo;
-
-    @Context
-    private SecurityContext m_securityContext;
-
-    @Context
-    private ServletContext m_servletContext;
 
     /**
      * <p>
@@ -134,13 +123,13 @@ public class AccessPointRestService {
     @GET
     @Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
     @Transactional
-    public OnmsAccessPointCollection getAccessPoints() {
+    public OnmsAccessPointCollection getAccessPoints(@Context final UriInfo uriInfo) {
         readLock();
         try {
             final CriteriaBuilder builder = new CriteriaBuilder(OnmsAccessPoint.class);
             // TODO: Fix query filters - these don't seem to work outside of
             // the opennms-webapp project
-            // applyQueryFilters(m_uriInfo.getQueryParameters(), builder);
+            // applyQueryFilters(uriInfo.getQueryParameters(), builder);
 
             final OnmsAccessPointCollection coll = new OnmsAccessPointCollection(m_accessPointDao.findAll());
 

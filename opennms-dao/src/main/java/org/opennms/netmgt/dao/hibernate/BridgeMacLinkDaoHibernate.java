@@ -96,14 +96,14 @@ public class BridgeMacLinkDaoHibernate extends AbstractDaoHibernate<BridgeMacLin
 	        + "np.nodesyslocation as targetnodelocation, "
 	        + "np.nodetype as targetnodetype, "
 	        + "ntm.physaddress as target_mac,  "
-                + "ip.ifindex as target_ifindex, "
+                + "snmp.snmpifindex as target_ifindex, "
                 + "ip.ipaddr as target_ifname, "
-                + "ip.ifindex as target_bridgeport, "
-                + "ip.id as target_id, "
-                + "mlink.bridgemaclinklastpolltime as lastPollTime "
+                + "snmp.snmpifindex as target_bridgeport, "
+                + "ip.id as target_id "
 	        + "from bridgemaclink as mlink "
 	        + "left join ipnettomedia as ntm on mlink.macaddress = ntm.physaddress "
 	        + "left join ipinterface ip on ip.ipaddr = ntm.netaddress "
+                + "left join snmpinterface snmp on ip.snmpInterfaceId = snmp.id "
 	        + "left join node n on mlink.nodeid = n.nodeid "
 	        + "left join node np on ip.nodeid = np.nodeid "
 	        + "where ip.nodeid is not null "
@@ -129,8 +129,7 @@ public class BridgeMacLinkDaoHibernate extends AbstractDaoHibernate<BridgeMacLin
                 + "plink.bridgeportifindex as target_ifindex, "
                 + "plink.bridgeportifname as target_ifname, "
                 + "plink.bridgeport as target_bridgeport, "
-                + "plink.id as target_id, "
-                + "mlink.bridgemaclinklastpolltime as lastPollTime "
+                + "plink.id as target_id "
 	        + "from bridgemaclink as mlink "
 	        + "left join bridgemaclink as plink on mlink.macaddress = plink.macaddress "
 	        + "left join node n on mlink.nodeid = n.nodeid "
@@ -162,8 +161,7 @@ public class BridgeMacLinkDaoHibernate extends AbstractDaoHibernate<BridgeMacLin
                                     (Integer) objs[16],
                                     (String) objs[17],
                                     (Integer) objs[18],
-                                    (Integer) objs[19],
-                                    (Date) objs[20]
+                                    (Integer) objs[19]
                                             )
                                   );
             }

@@ -30,6 +30,7 @@ package org.opennms.test;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 
 import junit.framework.AssertionFailedError;
 import junit.framework.TestCase;
@@ -405,5 +406,24 @@ public class FileAnticipatorTest extends TestCase {
         assertEquals("random hex string s2 length", length * 2, s2.length());
         
         assertNotSame("random hex strings s1 and s2 should not be equal", s1, s2);
+    }
+
+    public void testAnticipateFileWithPrefixAndExclude() throws IOException {
+        m_anticipator.initialize();
+
+        File subdir = m_anticipator.tempDir("dir");
+        m_anticipator.expectingFileWithPrefix(subdir, "should_not_exist", ".meta");
+
+        assertFalse(m_anticipator.foundExpected());
+
+        m_anticipator.tempFile(subdir, "should_not_exist.meta");
+
+        assertFalse(m_anticipator.foundExpected());
+
+        m_anticipator.tempFile(subdir, "should_not_exist.jrb");
+
+        assertTrue(m_anticipator.foundExpected());
+
+        m_anticipator.deleteExpected(true);
     }
 }

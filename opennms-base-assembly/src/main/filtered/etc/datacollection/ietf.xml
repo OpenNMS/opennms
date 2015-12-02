@@ -1,11 +1,11 @@
 <datacollection-group xmlns="http://xmlns.opennms.org/xsd/config/datacollection" name="IETF">
    <resourceType name="msdpPeerEntry" label="MSDP Peer" resourceLabel="Remote ${msdpPeerRemoteAddr}:${msdpPeerRemotePort} (Local ${msdpPeerLocalAddr}:${msdpPeerLocalPort})">
-      <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
-      <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
    </resourceType>
    <resourceType name="mplsL3VpnVrf" label="MPLS L3VPN VRF" resourceLabel="${mL3VVrfName} - ${mL3VVrfDescr}">
-      <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
-      <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
    </resourceType>
    <group name="ietf-igmp-interfaces" ifType="all">
       <mibObj oid=".1.3.6.1.2.1.85.1.1.1.10" instance="ifIndex" alias="igmpIfWrongVerQrys" type="counter"/>

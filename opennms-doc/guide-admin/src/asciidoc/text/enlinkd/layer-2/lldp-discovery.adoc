@@ -1,0 +1,78 @@
+
+// Allow GitHub image rendering
+:imagesdir: ../../../images
+
+==== LLDP Discovery
+
+The _Link Layer Discovery Protocol (LLDP)_ is a vendor-neutral link layer protocol.
+It is used by network devices for advertising their identity, capabilities, and neighbors.
+_LLDP_ performs functions similar to several proprietary protocols, such as the _Cisco Discovery Protocol (CDP)_, _Extreme Discovery Protocol_, _Foundry Discovery Protocol (FDP)_, _Nortel Discovery Protocol (also known as SONMP)_, and _Microsoft's Link Layer Topology Discovery (LLTD)footnote:[Wikipedia LLDP: https://en.wikipedia.org/wiki/Link_Layer_Discovery_Protocol]_.
+
+NOTE: Only nodes with a running _LLDP_ process can be part of the link discovery.
+      The data is similar to running a `show lldp neighbor` command on the device.
+      Linux and Windows servers don't have an _LLDP_ process running by default and will not be part of the link discovery.
+
+The following OIDs are supported to discover and build the _LLDP_ network topology.
+
+.Supported OIDs from LLDP-MIB
+[options="header, autowidth"]
+|===
+| Name                      | OID                         | Description
+| _lldpLocChassisIdSubtype_ | `.1.0.8802.1.1.2.1.3.1.0`   | The type of encoding used to identify the chassis associated with the local system. Possible values can be: +
+                                                            _chassisComponent(1)_ +
+                                                            _interfaceAlias(2)_ +
+                                                            _portComponent(3)_ +
+                                                            _macAddress(4)_ +
+                                                            _networkAddress(5)_ +
+                                                            _interfaceName(6)_ +
+                                                            _local(7)_
+| _lldpLocChassisId_        | `.1.0.8802.1.1.2.1.3.2.0`   | The string value used to identify the chassis component associated with the local system.
+| _lldpLocSysName_          | `.1.0.8802.1.1.2.1.3.3.0`   | The string value used to identify the system name of the local system.
+                                                            If the local agent supports link:http://tools.ietf.org/html/rfc3418[IETF RFC 3418], _lldpLocSysName_ object should have the same value of _sysName_ object.
+| _lldpLocPortIdSubtype_    | `.1.0.8802.1.1.2.1.3.7.1.2` | The type of port identifier encoding used in the associated _lldpLocPortId_ object.
+| _lldpLocPortId_           | `.1.0.8802.1.1.2.1.3.7.1.3` | The string value used to identify the port component associated with a given port in the local system.
+| _lldpLocPortDesc_         | `.1.0.8802.1.1.2.1.3.7.1.4` | The string value used to identify the _802 LAN station's_ port description associated with the local system.
+                                                            If the local agent supports _IETF RFC 2863_, _lldpLocPortDesc_ object should have the same value of _ifDescr_ object.
+| _lldpRemChassisIdSubtype_ | `.1.0.8802.1.1.2.1.4.1.1.4` | The type of encoding used to identify the chassis associated with the local system. Possible values can be: +
+                                                            _chassisComponent(1)_ +
+                                                            _interfaceAlias(2)_ +
+                                                            _portComponent(3)_ +
+                                                            _macAddress(4)_ +
+                                                            _networkAddress(5)_ +
+                                                            _interfaceName(6)_ +
+                                                            _local(7)_
+| _lldpRemChassisId_        | `.1.0.8802.1.1.2.1.4.1.1.5` | The string value used to identify the chassis component associated with the remote system.
+| _lldpRemPortIdSubtype_    | `.1.0.8802.1.1.2.1.4.1.1.6` | The type of port identifier encoding used in the associated _lldpRemPortId_ object. +
+                                                            +
+                                                            _interfaceAlias(1)_ +
+                                                            the octet string identifies a particular instance of the _ifAlias_ object (defined in IETF RFC 2863). If the particular _ifAlias_ object does not contain any values, another port identifier type should be used. +
+                                                            +
+                                                            _portComponent(2)_ +
+                                                            the octet string identifies a particular instance of the _entPhysicalAlias_ object (defined in IETF RFC 2737) for a port or backplane component. +
+                                                            +
+                                                            _macAddress(3)_ +
+                                                            this string identifies a particular unicast source address (encoded in network byte order and IEEE 802.3 canonical bit order) associated with the port (IEEE Std 802-2001). +
+                                                            +
+                                                            _networkAddress(4)_ +
+                                                            this string identifies a network address associated with the port.
+                                                            The first octet contains the _IANA AddressFamilyNumbers_ enumeration value for the specific address type, and octets 2 through N contain the _networkAddress_ address value in network byte order. +
+                                                            +
+                                                            _interfaceName(5)_ +
+                                                            the octet string identifies a particular instance of the _ifName_ object (defined in IETF RFC 2863).
+                                                            If the particular _ifName_ object does not contain any values, another port identifier type should be used. +
+                                                            +
+                                                            _agentCircuitId(6)_ +
+                                                            this string identifies a agent-local identifier of the circuit (defined in RFC 3046) +
+                                                            +
+                                                            _local(7)_ +
+                                                            this string identifies a locally assigned port ID.
+| _lldpRemPortId_           | `.1.0.8802.1.1.2.1.4.1.1.7` | The string value used to identify the port component associated with the remote system.
+| _lldpRemPortDesc_         | `.1.0.8802.1.1.2.1.4.1.1.8` | The string value used to identify the description of the given port associated with the remote system.
+| _lldpRemSysName_          | `.1.0.8802.1.1.2.1.4.1.1.9` | The string value used to identify the system name of the remote system.
+|===
+
+Generic information about the _LLDP_ process can be found in the _LLDP Information_ box on the _Node Detail Page_ of the device.
+Information gathered from these OIDs will be stored in the following database table:
+
+.Database tables related to LLDP discovery
+image::enlinkd/lldp-database.png[]

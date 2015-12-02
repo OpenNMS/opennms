@@ -4,8 +4,8 @@
        xmlns:context="http://www.springframework.org/schema/context"
        xmlns:util="http://www.springframework.org/schema/util"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
-       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd
-       http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.5.xsd
+       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.0.xsd
+       http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-4.0.xsd
        ">
 
   <context:annotation-config />
@@ -16,17 +16,12 @@
 
   <bean id="geocoder" class="org.opennms.features.poller.remote.gwt.server.geocoding.NullGeocoder" />
 
-  <bean id="locationMonitorConfigResourceLocation" class="java.lang.String">
-    <constructor-arg value="classpath:monitoring-locations.xml" />
-  </bean>
-
 <!-- 
 
   <bean id="monitoringLocationsConfiguration" class="org.opennms.features.poller.remote.gwt.server.TestMonitoringLocationsConfiguration" />
 
   <bean id="locationMonitorDao" class="org.opennms.netmgt.dao.hibernate.LocationMonitorDaoHibernate">
     <property name="sessionFactory" ref="sessionFactory" />
-    <property name="monitoringLocationsConfiguration" ref="monitoringLocationsConfiguration" />
   </bean>
 
   <bean id="locationDataService" class="org.opennms.features.poller.remote.gwt.server.DefaultLocationDataService">
@@ -45,6 +40,7 @@
   </bean>
 
   <bean name="pollerBackEnd" class="org.opennms.netmgt.poller.remote.support.DefaultPollerBackEnd">
+    <property name="monitoringLocationDao" ref="monitoringLocationDao" />
     <property name="locationMonitorDao" ref="locationMonitorDao" />
     <property name="monitoredServiceDao" ref="monitoredServiceDao" />
     <property name="pollerConfig" ref="pollerConfig" />

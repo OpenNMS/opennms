@@ -1,15 +1,15 @@
 <datacollection-group xmlns="http://xmlns.opennms.org/xsd/config/datacollection" name="ServerTech">
    <resourceType name="stSentry3Tower" label="ServerTech Sentry Tower (3rd Gen)" resourceLabel="${towerName} - ID ${towerID}, Model ${towerModelNumber}">
-      <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
-      <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
    </resourceType>
    <resourceType name="stSentry3Infeed" label="ServerTech Sentry Input Feed (3rd Gen)" resourceLabel="${infeedName}">
-      <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
-      <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
    </resourceType>
    <resourceType name="stSentry3EnvMon" label="ServerTech Sentry Environmental Monitor (3rd Gen)" resourceLabel="${envMonName}">
-      <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
-      <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
    </resourceType>
    <group name="servertech-sentry3-system" ifType="ignore">
       <mibObj oid=".1.3.6.1.4.1.1718.3.1.1" instance="0" alias="stSentry3SystemVer" type="string"/>

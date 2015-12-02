@@ -16,4 +16,5 @@
 // Include your documentation sections here
 // include::text/myFile.adoc[]
 
+include::text/surveillance-view.adoc[]
 include::text/dashboard.adoc[]

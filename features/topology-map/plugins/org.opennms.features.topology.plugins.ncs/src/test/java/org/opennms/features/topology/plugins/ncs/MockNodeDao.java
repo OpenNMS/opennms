@@ -28,6 +28,7 @@
 
 package org.opennms.features.topology.plugins.ncs;
 
+import java.net.InetAddress;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -37,7 +38,6 @@ import org.opennms.core.criteria.Criteria;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsCriteria;
-import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.SurveillanceStatus;
@@ -123,8 +123,8 @@ public class MockNodeDao implements NodeDao {
     }
 
     @Override
-    public void save(OnmsNode entity) {
-        // TODO Auto-generated method stub
+    public Integer save(OnmsNode entity) {
+        return null;
 
     }
 
@@ -154,12 +154,6 @@ public class MockNodeDao implements NodeDao {
 
     @Override
     public List<OnmsNode> findByLabel(String label) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public List<OnmsNode> findNodes(OnmsDistPoller dp) {
         // TODO Auto-generated method stub
         return null;
     }
@@ -220,6 +214,12 @@ public class MockNodeDao implements NodeDao {
 
     @Override
     public List<OnmsNode> findByForeignSource(String foreignSource) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public List<OnmsNode> findByIpAddressAndService(InetAddress ipAddress, String serviceName) {
         // TODO Auto-generated method stub
         return null;
     }

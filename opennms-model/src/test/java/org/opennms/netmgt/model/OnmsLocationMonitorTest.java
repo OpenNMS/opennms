@@ -28,65 +28,71 @@
 
 package org.opennms.netmgt.model;
 
+import java.util.UUID;
+
 import junit.framework.TestCase;
 
 public class OnmsLocationMonitorTest extends TestCase {
+
+    private static final String LOCATION_MONITOR_ID_A = "A" + UUID.randomUUID().toString();
+    private static final String LOCATION_MONITOR_ID_B = "B" + UUID.randomUUID().toString();
+
     public void testCompareToEqual() {
         OnmsLocationMonitor o1 = new OnmsLocationMonitor();
-        o1.setDefinitionName("a");
-        o1.setId(1);
+        o1.setLocation("a");
+        o1.setId(LOCATION_MONITOR_ID_A);
         
         OnmsLocationMonitor o2 = new OnmsLocationMonitor();
-        o2.setDefinitionName("a");
-        o2.setId(1);
+        o2.setLocation("a");
+        o2.setId(LOCATION_MONITOR_ID_A);
         
         assertEquals("compareTo should return 0 as the two objects are equal", 0, o1.compareTo(o2));
     }
     
     public void testCompareToFirstHigherId() {
         OnmsLocationMonitor o1 = new OnmsLocationMonitor();
-        o1.setDefinitionName("a");
-        o1.setId(2);
+        o1.setLocation("a");
+        o1.setId(LOCATION_MONITOR_ID_B);
         
         OnmsLocationMonitor o2 = new OnmsLocationMonitor();
-        o2.setDefinitionName("a");
-        o2.setId(1);
+        o2.setLocation("a");
+        o2.setId(LOCATION_MONITOR_ID_A);
         
         assertEquals("compareTo should return 1 as the first object has a higher ID", 1, o1.compareTo(o2));
     }
     
     public void testCompareToFirstLowerId() {
         OnmsLocationMonitor o1 = new OnmsLocationMonitor();
-        o1.setDefinitionName("a");
-        o1.setId(1);
+        o1.setLocation("a");
+        o1.setId(LOCATION_MONITOR_ID_A);
         
         OnmsLocationMonitor o2 = new OnmsLocationMonitor();
-        o2.setDefinitionName("a");
-        o2.setId(2);
+        o2.setLocation("a");
+        o2.setId(LOCATION_MONITOR_ID_B);
         
         assertEquals("compareTo should return 1 as the first object has a lower ID", -1, o1.compareTo(o2));
     }
     
     public void testCompareToFirstHigherName() {
         OnmsLocationMonitor o1 = new OnmsLocationMonitor();
-        o1.setDefinitionName("b");
-        o1.setId(1);
+        o1.setLocation("b");
+        o1.setId(LOCATION_MONITOR_ID_A);
         
         OnmsLocationMonitor o2 = new OnmsLocationMonitor();
-        o2.setDefinitionName("a");
-        o2.setId(1);
+        o2.setLocation("a");
+        o2.setId(LOCATION_MONITOR_ID_A);
         
         assertEquals("compareTo should return 1 as the first object has a higher name", 1, o1.compareTo(o2));
     }
     
     public void testCompareToFirstLowerName() {
         OnmsLocationMonitor o1 = new OnmsLocationMonitor();
-        o1.setDefinitionName("a");
-        o1.setId(1);
+        o1.setLocation("a");
+        o1.setId(LOCATION_MONITOR_ID_A);
         
         OnmsLocationMonitor o2 = new OnmsLocationMonitor();
-        o2.setDefinitionName("b");
-        o2.setId(1);
+        o2.setLocation("b");
+        o2.setId(LOCATION_MONITOR_ID_A);
         
         assertEquals("compareTo should return 1 as the first object has a lower name", -1, o1.compareTo(o2));
     }

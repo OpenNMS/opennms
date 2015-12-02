@@ -27,6 +27,7 @@
  *******************************************************************************/
 
 package org.opennms.web.admin.discovery;
+
 import java.io.IOException;
 
 
@@ -41,22 +42,15 @@ import org.opennms.netmgt.config.discovery.DiscoveryConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
-
 /**
- * A servlet that handles updating the status of the notifications
+ * A servlet that handles editing the discovery configuration.
  *
  * @author <A HREF="mailto:jason@opennms.org">Jason Johns </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * @author <A HREF="mailto:jason@opennms.org">Jason Johns </A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * @version $Id: $
- * @since 1.8.1
  */
 public class ModifyDiscoveryConfigurationServlet extends HttpServlet {
-	
-	private static final Logger LOG = LoggerFactory.getLogger(ModifyDiscoveryConfigurationServlet.class);
 
+	private static final Logger LOG = LoggerFactory.getLogger(ModifyDiscoveryConfigurationServlet.class);
 
 	/**
      * 
@@ -94,8 +88,9 @@ public class ModifyDiscoveryConfigurationServlet extends HttpServlet {
 	public static DiscoveryConfiguration getDiscoveryConfig() throws ServletException {
         DiscoveryConfiguration config = null;
         try {
-             DiscoveryConfigFactory.reload();
-             config = DiscoveryConfigFactory.getInstance().getConfiguration();
+             DiscoveryConfigFactory factory = DiscoveryConfigFactory.getInstance();
+             factory.reload();
+             config = factory.getConfiguration();
         } catch (final Exception e) {
             throw new ServletException("Could not load configuration: " + e.getMessage(), e);
         }

@@ -9,7 +9,7 @@
     acknowledge-id-sql="SELECT notifyid FROM notifications WHERE eventuei=? AND nodeid=? AND interfaceid=? AND serviceid=?"
     acknowledge-update-sql="UPDATE notifications SET answeredby=?, respondtime=? WHERE notifyId=?"
     match-all="true" email-address-command="javaEmail">
-    <auto-acknowledge-alarm resolution-prefix="RESOLVED: ">
+    <auto-acknowledge-alarm resolution-prefix="Cleared: ">
         <uei>uei.opennms.org/threshold/highThresholdRearmed</uei>
         <uei>uei.opennms.org/threshold/lowThresholdRearmed</uei>
     </auto-acknowledge-alarm>

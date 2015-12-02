@@ -195,7 +195,6 @@ public class MockLogAppender {
         setProperty(logger, MockLogger.LOG_KEY_PREFIX + "com.mchange", "INFO");
         setProperty(logger, MockLogger.LOG_KEY_PREFIX + "com.mchange.v2", "WARN");
         setProperty(logger, MockLogger.LOG_KEY_PREFIX + "httpclient", "INFO");
-        setProperty(logger, MockLogger.LOG_KEY_PREFIX + "mx4j", "INFO");
         setProperty(logger, MockLogger.LOG_KEY_PREFIX + "org.apache.bsf", "INFO");
         setProperty(logger, MockLogger.LOG_KEY_PREFIX + "org.apache.commons.httpclient.HttpMethodBase", "ERROR");
         setProperty(logger, MockLogger.LOG_KEY_PREFIX + "org.exolab.castor", "INFO");
@@ -273,11 +272,14 @@ public class MockLogAppender {
             throw new AssertionFailedError("MockLogAppender has not been initialized");
         }
 
+/*
         try {
             Thread.sleep(500);
         } catch (final InterruptedException e) {
             Thread.currentThread().interrupt();
         }
+*/
+
         final LoggingEvent[] events = getEventsGreaterOrEqual(level);
         if (events.length == 0) {
             return;
@@ -325,11 +327,14 @@ public class MockLogAppender {
             throw new AssertionFailedError("MockLogAppender has not been initialized");
         }
 
+/*
         try {
             Thread.sleep(500);
         } catch (final InterruptedException e) {
             Thread.currentThread().interrupt();
         }
+*/
+
         final LoggingEvent[] events = getEventsAtLevel(level);
         if (events.length == 0) {
             throw new AssertionFailedError("No messages were received at level " + level);
@@ -361,5 +366,4 @@ public class MockLogAppender {
         }
         throw new AssertionFailedError("No log message matched for log level " + level + ", message '" + message + "'");
     }
-
 }

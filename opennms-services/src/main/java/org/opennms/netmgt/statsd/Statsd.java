@@ -30,17 +30,17 @@ package org.opennms.netmgt.statsd;
 
 import java.text.ParseException;
 
-import org.opennms.netmgt.EventConstants;
-import org.opennms.netmgt.capsd.EventUtils;
 import org.opennms.netmgt.daemon.SpringServiceDaemon;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.ResourceDao;
-import org.opennms.netmgt.dao.api.RrdDao;
-import org.opennms.netmgt.filter.FilterDao;
+import org.opennms.netmgt.events.api.EventConstants;
+import org.opennms.netmgt.events.api.EventForwarder;
+import org.opennms.netmgt.events.api.annotations.EventHandler;
+import org.opennms.netmgt.events.api.annotations.EventListener;
+import org.opennms.netmgt.filter.api.FilterDao;
+import org.opennms.netmgt.measurements.api.MeasurementFetchStrategy;
 import org.opennms.netmgt.model.events.EventBuilder;
-import org.opennms.netmgt.model.events.EventForwarder;
-import org.opennms.netmgt.model.events.annotations.EventHandler;
-import org.opennms.netmgt.model.events.annotations.EventListener;
+import org.opennms.netmgt.model.events.EventUtils;
 import org.opennms.netmgt.xml.event.Event;
 import org.quartz.JobDetail;
 import org.quartz.Scheduler;
@@ -74,8 +74,7 @@ public class Statsd implements SpringServiceDaemon {
     @Autowired
     private ResourceDao m_resourceDao;
 
-    @Autowired
-    private RrdDao m_rrdDao;
+    private MeasurementFetchStrategy m_fetchStrategy;
 
     @Autowired
     private FilterDao m_filterDao;
@@ -226,7 +225,7 @@ public class Statsd implements SpringServiceDaemon {
     public void runReport(ReportDefinition reportDef) throws Throwable {
         final ReportInstance report;
         try {
-            report = reportDef.createReport(m_nodeDao, m_resourceDao, m_rrdDao, m_filterDao);
+            report = reportDef.createReport(m_nodeDao, m_resourceDao, m_fetchStrategy, m_filterDao);
         } catch (Throwable t) {
             LOG.error("Could not create a report instance for report definition {}", reportDef, t);
             throw t;
@@ -261,7 +260,7 @@ public class Statsd implements SpringServiceDaemon {
     public void afterPropertiesSet() throws Exception {
         Assert.state(m_nodeDao != null, "property nodeDao must be set to a non-null value");
         Assert.state(m_resourceDao != null, "property resourceDao must be set to a non-null value");
-        Assert.state(m_rrdDao != null, "property rrdDao must be set to a non-null value");
+        Assert.state(m_fetchStrategy != null, "property fetchStrategy must be set to a non-null value");
         Assert.state(m_filterDao != null, "property filterDao must be set to a non-null value");
         Assert.state(m_transactionTemplate != null, "property transactionTemplate must be set to a non-null value");
         Assert.state(m_reportPersister != null, "property reportPersister must be set to a non-null value");
@@ -286,13 +285,12 @@ public class Statsd implements SpringServiceDaemon {
         return m_resourceDao;
     }
 
-    /**
-     * <p>getRrdDao</p>
-     *
-     * @return a {@link org.opennms.netmgt.dao.api.RrdDao} object.
-     */
-    public RrdDao getRrdDao() {
-        return m_rrdDao;
+    public MeasurementFetchStrategy getFetchStrategy() {
+        return m_fetchStrategy;
+    }
+
+    public void setFetchStrategy(final MeasurementFetchStrategy fetchStrategy) {
+        this.m_fetchStrategy = fetchStrategy;
     }
 
     /**
@@ -361,7 +359,7 @@ public class Statsd implements SpringServiceDaemon {
     /**
      * <p>getFilterDao</p>
      *
-     * @return a {@link org.opennms.netmgt.filter.FilterDao} object.
+     * @return a {@link org.opennms.netmgt.filter.api.FilterDao} object.
      */
     public FilterDao getFilterDao() {
         return m_filterDao;
@@ -370,7 +368,7 @@ public class Statsd implements SpringServiceDaemon {
     /**
      * <p>setEventForwarder</p>
      *
-     * @param eventForwarder a {@link org.opennms.netmgt.model.events.EventForwarder} object.
+     * @param eventForwarder a {@link org.opennms.netmgt.events.api.EventForwarder} object.
      */
     public void setEventForwarder(EventForwarder eventForwarder) {
         m_eventForwarder = eventForwarder;
@@ -379,7 +377,7 @@ public class Statsd implements SpringServiceDaemon {
     /**
      * <p>getEventForwarder</p>
      *
-     * @return a {@link org.opennms.netmgt.model.events.EventForwarder} object.
+     * @return a {@link org.opennms.netmgt.events.api.EventForwarder} object.
      */
     public EventForwarder getEventForwarder() {
         return m_eventForwarder;
