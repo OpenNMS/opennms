@@ -28,6 +28,8 @@
 
 package org.opennms.netmgt.model.topology;
 
+import java.util.Date;
+
 import org.opennms.netmgt.model.OnmsNode.NodeType;
 
 
@@ -46,8 +48,8 @@ public class CdpTopologyLink extends TopologyLink {
             Integer targetNodeId,
             String targetLabel, String targetSysoid, String targetLocation,
             NodeType targetNodeType,
-            String targetIfName) {
-        super(srcNodeId,srcLabel,srcSysoid,srcLocation,srcNodeType,targetNodeId,targetLabel,targetSysoid,targetLocation,targetNodeType);
+            String targetIfName,Date lastPollTime) {
+        super(lastPollTime, srcNodeId,srcLabel,srcSysoid,srcLocation,srcNodeType,targetNodeId,targetLabel,targetSysoid,targetLocation,targetNodeType);
         m_sourceId = sourceId;
         m_srcIfIndex = srcIfIndex;
         m_srcIfName = srcIfName;
@@ -70,4 +72,5 @@ public class CdpTopologyLink extends TopologyLink {
     public Integer getTargetId() { return m_targetId; }
 
     public Integer getSourceId() { return m_sourceId; }
+    
 }

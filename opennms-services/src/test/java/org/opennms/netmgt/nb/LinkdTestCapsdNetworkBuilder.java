@@ -168,6 +168,7 @@ public class LinkdTestCapsdNetworkBuilder extends NmsNetworkBuilder implements I
     }
 
     @Test
+    @Ignore
     @JUnitSnmpAgents(value={
             @JUnitSnmpAgent(host = SIEGFRIE_IP, port = 161, resource = SIEGFRIE_SNMP_RESOURCE),
     })
