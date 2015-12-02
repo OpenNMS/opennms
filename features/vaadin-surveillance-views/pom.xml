@@ -145,6 +145,11 @@
             <artifactId>vaadin</artifactId>
             <type>pom</type>
         </dependency>
+        <dependency>
+            <groupId>org.opennms.features.vaadin-components</groupId>
+            <artifactId>core</artifactId>
+            <version>${project.version}</version>
+        </dependency>
 
         <dependency>
             <groupId>org.opennms</groupId>

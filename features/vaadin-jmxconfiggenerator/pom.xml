@@ -55,7 +55,6 @@
             <groupId>org.opennms.features.vaadin-components</groupId>
             <artifactId>core</artifactId>
             <version>${project.version}</version>
-            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>javax.validation</groupId>
