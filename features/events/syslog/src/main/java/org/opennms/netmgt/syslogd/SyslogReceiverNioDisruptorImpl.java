@@ -39,9 +39,6 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.cassandra.concurrent.JMXEnabledSharedExecutorPool;
-import org.apache.cassandra.concurrent.SharedExecutorPool;
-import org.apache.cassandra.config.Config;
 import org.opennms.core.logging.Logging;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.SyslogdConfig;
@@ -59,8 +56,8 @@ import com.lmax.disruptor.dsl.Disruptor;
  * This implementation of {@link SyslogReceiver} uses multithreaded NIO to
  * handle socket receive() calls and then uses an LMAX disruptor ring buffer
  * to store the packet data. The packets are then decoded using async 
- * {@link CompletableFuture} calls that are executed on thread pools implemented
- * by Cassandra's {@link SharedExecutorPool}.
+ * {@link CompletableFuture} calls that are executed on a set of {@link ExecutorService}
+ * thread pools.
  * 
  * @author Seth
  */
@@ -68,11 +65,6 @@ public class SyslogReceiverNioDisruptorImpl implements SyslogReceiver {
 
     private static final Logger LOG = LoggerFactory.getLogger(SyslogReceiverNioDisruptorImpl.class);
     private static final MetricRegistry METRICS = new MetricRegistry();
-
-    /**
-     * Create a shared executor pool for all of the threads used in this class
-     */
-    public static final JMXEnabledSharedExecutorPool SYSLOGD_SEP = new JMXEnabledSharedExecutorPool(SyslogReceiverNioDisruptorImpl.class.getSimpleName());
 
     private static final int SOCKET_TIMEOUT = 500;
 
@@ -125,11 +117,18 @@ public class SyslogReceiverNioDisruptorImpl implements SyslogReceiver {
     public static final int EVENT_CONVERSION_TASK_QUEUE_SIZE = 65536;
 
     /**
+     * {@link ExecutorFactory} that is used to construct the thread pools that execute
+     * the async operations for processing syslog messages. By default, this is set to
+     * the {@link ExecutorFactoryJavaImpl}.
+     */
+    private ExecutorFactory m_executorFactory = new ExecutorFactoryJavaImpl();
+
+    /**
      * The Fiber's status.
      */
     private volatile boolean m_stop;
 
-    private final DatagramChannel m_channel;
+    private DatagramChannel m_channel;
 
     /**
      * The context thread
@@ -143,9 +142,9 @@ public class SyslogReceiverNioDisruptorImpl implements SyslogReceiver {
      * calls on the syslog port. By using multiple threads, we can optimize the receipt of
      * packet data from the syslog port and avoid discarding UDP syslog packets.
      */
-    private final ExecutorService m_socketReceivers;
-    private final ExecutorService m_syslogConnectionExecutor;
-    private final ExecutorService m_syslogProcessorExecutor;
+    private ExecutorService m_socketReceivers;
+    private ExecutorService m_syslogConnectionExecutor;
+    private ExecutorService m_syslogProcessorExecutor;
 
     private final Disruptor<ByteBufferMessage> m_byteBuffers;
     private final RingBuffer<ByteBufferMessage> m_ringBuffer;
@@ -169,10 +168,6 @@ public class SyslogReceiverNioDisruptorImpl implements SyslogReceiver {
         return channel;
     }
 
-    public SyslogReceiverNioDisruptorImpl(SyslogdConfig config) throws SocketException, IOException {
-        this(openChannel(config), config);
-    }
-
     /**
      * Construct a new receiver
      *
@@ -181,35 +176,18 @@ public class SyslogReceiverNioDisruptorImpl implements SyslogReceiver {
      * @param hostGroup
      * @param messageGroup
      */
-    public SyslogReceiverNioDisruptorImpl(DatagramChannel channel, SyslogdConfig config) {
-        if (channel == null) {
-            throw new IllegalArgumentException("Channel cannot be null");
-        } else if (config == null) {
+    public SyslogReceiverNioDisruptorImpl(SyslogdConfig config) throws SocketException, IOException {
+        if (config == null) {
             throw new IllegalArgumentException("Config cannot be null");
         }
 
         m_stop = false;
-        m_channel = channel;
+        m_channel = null;
         m_config = config;
 
-        // Turn Cassandra client mode on so that we can use the {@link SharedExecutorPool} classes.
-        Config.setClientMode(true);
-
-        // These executors are all created using the Cassandra SharedExecutorPool
-        m_socketReceivers = SYSLOGD_SEP.newExecutor(SOCKET_RECEIVER_THREADS, Integer.MAX_VALUE, "socketReceivers", "OpenNMS.Syslogd");
-        m_syslogConnectionExecutor = SYSLOGD_SEP.newExecutor(EVENT_PARSER_THREADS, Integer.MAX_VALUE, "syslogConnections", "OpenNMS.Syslogd");
-        m_syslogProcessorExecutor = SYSLOGD_SEP.newExecutor(EVENT_SENDER_THREADS, Integer.MAX_VALUE, "syslogProcessors", "OpenNMS.Syslogd");
-
-        /*
-        m_socketReceivers = new ThreadPoolExecutor(
-            Runtime.getRuntime().availableProcessors(),
-            Runtime.getRuntime().availableProcessors(),
-            1000L,
-            TimeUnit.MILLISECONDS,
-            new LinkedBlockingQueue<Runnable>(),
-            new LogPreservingThreadFactory(getClass().getSimpleName() + "-SocketReceiver", Integer.MAX_VALUE)
-        );
-        */
+        //m_socketReceivers = m_executorFactory.newExecutor(SOCKET_RECEIVER_THREADS, Integer.MAX_VALUE, "OpenNMS.Syslogd", "socketReceivers");
+        //m_syslogConnectionExecutor = m_executorFactory.newExecutor(EVENT_PARSER_THREADS, Integer.MAX_VALUE, "OpenNMS.Syslogd", "syslogConnections");
+        //m_syslogProcessorExecutor = m_executorFactory.newExecutor(EVENT_SENDER_THREADS, Integer.MAX_VALUE, "OpenNMS.Syslogd", "syslogProcessors");
 
         // We can use a null executor here because we're not queueing executable tasks.
         // We're just using this ring buffer to access preallocated ByteBuffers.
@@ -235,6 +213,14 @@ public class SyslogReceiverNioDisruptorImpl implements SyslogReceiver {
         return getClass().getSimpleName() + " [" + listenAddress + ":" + m_config.getSyslogPort() + "]";
     }
 
+    public ExecutorFactory getExecutorFactory() {
+        return m_executorFactory;
+    }
+
+    public void setExecutorFactory(ExecutorFactory executorFactory) {
+        m_executorFactory = executorFactory;
+    }
+
     /**
      * stop the current receiver
      * @throws InterruptedException
@@ -250,6 +236,14 @@ public class SyslogReceiverNioDisruptorImpl implements SyslogReceiver {
         // Shut down the thread pools that are executing SyslogConnection and SyslogProcessor tasks
         m_syslogConnectionExecutor.shutdown();
         m_syslogProcessorExecutor.shutdown();
+
+        try {
+            m_channel.close();
+        } catch (IOException e) {
+            LOG.warn("Exception while closing syslog channel: " + e.getMessage());
+        } finally {
+            m_channel = null;
+        }
 
         if (m_context != null) {
             LOG.debug("Stopping and joining thread context {}", m_context.getName());
@@ -287,6 +281,17 @@ public class SyslogReceiverNioDisruptorImpl implements SyslogReceiver {
             return;
         } else {
             LOG.debug("Thread context started");
+        }
+
+        m_socketReceivers = m_executorFactory.newExecutor(SOCKET_RECEIVER_THREADS, Integer.MAX_VALUE, "OpenNMS.Syslogd", "socketReceivers");
+        m_syslogConnectionExecutor = m_executorFactory.newExecutor(EVENT_PARSER_THREADS, Integer.MAX_VALUE, "OpenNMS.Syslogd", "syslogConnections");
+        m_syslogProcessorExecutor = m_executorFactory.newExecutor(EVENT_SENDER_THREADS, Integer.MAX_VALUE, "OpenNMS.Syslogd", "syslogProcessors");
+
+        try {
+            LOG.debug("Opening syslog channel...");
+            m_channel = openChannel(m_config);
+        } catch (IOException e) {
+            LOG.warn("An I/O error occured while trying to set the socket timeout", e);
         }
 
         // set an SO timeout to make sure we don't block forever

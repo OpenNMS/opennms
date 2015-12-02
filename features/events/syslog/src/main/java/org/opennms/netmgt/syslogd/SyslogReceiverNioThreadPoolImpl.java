@@ -78,7 +78,7 @@ public class SyslogReceiverNioThreadPoolImpl implements SyslogReceiver {
      */
     private volatile boolean m_stop;
 
-    private final DatagramChannel m_channel;
+    private DatagramChannel m_channel;
 
     /**
      * The context thread
@@ -101,10 +101,6 @@ public class SyslogReceiverNioThreadPoolImpl implements SyslogReceiver {
         return channel;
     }
 
-    public SyslogReceiverNioThreadPoolImpl(SyslogdConfig config) throws SocketException, IOException {
-        this(openChannel(config), config);
-    }
-
     /**
      * Construct a new receiver
      *
@@ -113,15 +109,13 @@ public class SyslogReceiverNioThreadPoolImpl implements SyslogReceiver {
      * @param hostGroup
      * @param messageGroup
      */
-    public SyslogReceiverNioThreadPoolImpl(DatagramChannel channel, SyslogdConfig config) {
-        if (channel == null) {
-            throw new IllegalArgumentException("Channel cannot be null");
-        } else if (config == null) {
+    public SyslogReceiverNioThreadPoolImpl(SyslogdConfig config) throws SocketException, IOException {
+        if (config == null) {
             throw new IllegalArgumentException("Config cannot be null");
         }
 
         m_stop = false;
-        m_channel = channel;
+        m_channel = null;
         m_config = config;
 
         m_executor = new ThreadPoolExecutor(
@@ -167,6 +161,14 @@ public class SyslogReceiverNioThreadPoolImpl implements SyslogReceiver {
         // Shut down the thread pools that are executing SyslogConnection and SyslogProcessor tasks
         m_executor.shutdown();
 
+        try {
+            m_channel.close();
+        } catch (IOException e) {
+            LOG.warn("Exception while closing syslog channel: " + e.getMessage());
+        } finally {
+            m_channel = null;
+        }
+
         if (m_context != null) {
             LOG.debug("Stopping and joining thread context {}", m_context.getName());
             m_context.interrupt();
@@ -191,6 +193,13 @@ public class SyslogReceiverNioThreadPoolImpl implements SyslogReceiver {
             return;
         } else {
             LOG.debug("Thread context started");
+        }
+
+        try {
+            LOG.debug("Opening syslog channel...");
+            m_channel = openChannel(m_config);
+        } catch (IOException e) {
+            LOG.warn("An I/O error occured while trying to set the socket timeout", e);
         }
 
         // set an SO timeout to make sure we don't block forever

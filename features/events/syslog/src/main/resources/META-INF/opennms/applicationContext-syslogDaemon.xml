@@ -4,20 +4,21 @@
   xmlns:tx="http://www.springframework.org/schema/tx"
   xmlns:context="http://www.springframework.org/schema/context"
   xmlns:util="http://www.springframework.org/schema/util"
-  xmlns:aop="http://www.springframework.org/schema/aop"
-  xmlns:jdbc="http://www.springframework.org/schema/jdbc" 
   xmlns:onmsgi="http://xmlns.opennms.org/xsd/spring/onms-osgi"
   xsi:schemaLocation="
   http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
   http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.0.xsd
   http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.0.xsd
   http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-4.0.xsd
-  http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.0.xsd
   http://xmlns.opennms.org/xsd/spring/onms-osgi http://xmlns.opennms.org/xsd/spring/onms-osgi.xsd
 ">
 
   <context:annotation-config />
   <tx:annotation-driven/>
+
+  <bean id="executorFactoryJava" class="org.opennms.netmgt.syslogd.ExecutorFactoryJavaImpl"/>
+
+  <bean id="executorFactoryCassandraSEP" class="org.opennms.netmgt.syslogd.ExecutorFactoryCassandraSEPImpl"/>
 
   <bean id="syslogReceiverNio" class="org.opennms.netmgt.syslogd.SyslogReceiverNioThreadPoolImpl">
     <constructor-arg ref="syslogdConfigFactory"/>
@@ -25,6 +26,11 @@
 
   <bean id="syslogReceiverNioDisruptor" class="org.opennms.netmgt.syslogd.SyslogReceiverNioDisruptorImpl">
     <constructor-arg ref="syslogdConfigFactory"/>
+  </bean>
+
+  <bean id="syslogReceiverNioDisruptorSEP" class="org.opennms.netmgt.syslogd.SyslogReceiverNioDisruptorImpl">
+    <constructor-arg ref="syslogdConfigFactory"/>
+    <property name="executorFactory" ref="executorFactoryCassandraSEP"/>
   </bean>
 
   <bean id="syslogReceiverJavaNet" class="org.opennms.netmgt.syslogd.SyslogReceiverJavaNetImpl">
@@ -36,6 +42,7 @@
   </bean>
 
   <!-- Expose one particular implementation as the chosen implementation -->
+  <!--
   <onmsgi:service interface="org.opennms.netmgt.syslogd.SyslogReceiver" ref="syslogReceiverJavaNet"/>
 
   <bean id="daemon" class="org.opennms.netmgt.syslogd.Syslogd">
@@ -43,5 +50,6 @@
       <onmsgi:reference interface="org.opennms.netmgt.syslogd.SyslogReceiver"/>
     </property>
   </bean>
+  -->
 
 </beans>
