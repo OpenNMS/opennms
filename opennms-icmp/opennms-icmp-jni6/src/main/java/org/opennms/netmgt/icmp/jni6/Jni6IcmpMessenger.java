@@ -31,7 +31,6 @@ package org.opennms.netmgt.icmp.jni6;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.Inet6Address;
-import java.util.Queue;
 
 import org.opennms.core.logging.Logging;
 import org.opennms.protocols.icmp6.ICMPv6EchoReply;
@@ -39,6 +38,7 @@ import org.opennms.protocols.icmp6.ICMPv6Packet;
 import org.opennms.protocols.icmp6.ICMPv6Packet.Type;
 import org.opennms.protocols.icmp6.ICMPv6Socket;
 import org.opennms.protocols.rt.Messenger;
+import org.opennms.protocols.rt.ReplyHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -65,7 +65,7 @@ public class Jni6IcmpMessenger implements Messenger<Jni6PingRequest, Jni6PingRes
         m_socket = new ICMPv6Socket();
     }
 
-    void processPackets(Queue<Jni6PingResponse> pendingReplies) {
+    void processPackets(ReplyHandler<Jni6PingResponse> callback) {
         while (true) {
             try {
                 DatagramPacket packet = m_socket.receive();
@@ -73,7 +73,7 @@ public class Jni6IcmpMessenger implements Messenger<Jni6PingRequest, Jni6PingRes
                 Jni6PingResponse reply = Jni6IcmpMessenger.createPingResponse(packet);
                 
                 if (reply != null && reply.getIdentifier() == m_pingerId) {
-                    pendingReplies.offer(reply);
+                    callback.handleReply(reply);
                 }
 
      
@@ -103,14 +103,14 @@ public class Jni6IcmpMessenger implements Messenger<Jni6PingRequest, Jni6PingRes
 
     /** {@inheritDoc} */
     @Override
-    public void start(final Queue<Jni6PingResponse> responseQueue) {
+    public void start(final ReplyHandler<Jni6PingResponse> callback) {
         Thread socketReader = new Thread("JNI-ICMP-"+m_pingerId+"-Socket-Reader") {
 
             @Override
             public void run() {
                 Logging.putPrefix("icmp");
                 try {
-                    processPackets(responseQueue);
+                    processPackets(callback);
                 } catch (Throwable t) {
                     LOG.error("Unexpected exception on Thread {}!", this, t);
                 }

@@ -41,6 +41,7 @@ import org.opennms.features.vaadin.jmxconfiggenerator.JmxConfigGeneratorUI;
 import org.opennms.features.vaadin.jmxconfiggenerator.data.JmxCollectionCloner;
 import org.opennms.features.vaadin.jmxconfiggenerator.data.UiModel;
 import org.opennms.features.vaadin.jmxconfiggenerator.ui.ButtonPanel;
+import org.opennms.features.vaadin.jmxconfiggenerator.ui.ConfirmationDialog;
 import org.opennms.features.vaadin.jmxconfiggenerator.ui.UIHelper;
 import org.opennms.features.vaadin.jmxconfiggenerator.ui.UiState;
 import org.opennms.xmlns.xsd.config.jmx_datacollection.Attrib;
@@ -89,11 +90,29 @@ public class MBeansView extends VerticalLayout implements ClickListener, View {
 	}
 
 	@Override
-	public void buttonClick(ClickEvent event) {
+	public void buttonClick(final ClickEvent event) {
 		if (event.getButton().equals(buttonPanel.getPrevious())) {
 			app.updateView(UiState.ServiceConfigurationView);
 		}
 		if (event.getButton().equals(buttonPanel.getNext())) {
+			// If there are unsaved changes, there is a validation error and continuing should enforce a Dialog
+			if (mbeansContentPanel.isDirty()) {
+				new ConfirmationDialog()
+						.withOkAction(new ConfirmationDialog.Action() {
+							@Override
+							public void execute(ConfirmationDialog window) {
+								mbeansContentPanel.discard();
+								buttonClick(event);
+							}
+						})
+						.withOkLabel("yes")
+						.withCancelLabel("no")
+						.withCaption("Validation errors")
+						.withDescription("The current view contains validation errors.<br/>The values cannot be saved.<br/>If you continue, they are lost.<br/><br/>Do you want to move to the next page?")
+						.open();
+				return;
+			}
+			// if there is a validation error, do not continue
 			if (!isValid()) {
 				UIHelper.showValidationError("There are errors on this view. Please fix them first");
 				return;

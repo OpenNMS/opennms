@@ -41,6 +41,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriInfo;
 
@@ -131,7 +132,7 @@ public class NotificationRestService extends OnmsRestService {
         try {
             OnmsNotification notif=m_notifDao.get(Integer.valueOf(notifId));
             if(ack==null) {
-                throw new  IllegalArgumentException("Must supply the 'ack' parameter, set to either 'true' or 'false'");
+                throw getException(Status.BAD_REQUEST, "Must supply the 'ack' parameter, set to either 'true' or 'false'");
             }
             processNotifAck(securityContext, notif,ack);
             return Response.seeOther(uriInfo.getBaseUriBuilder().path(this.getClass()).path(this.getClass(), "getNotification").build(notifId)).build();

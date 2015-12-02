@@ -38,7 +38,6 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-failsafe-plugin</artifactId>
-        <version>2.16</version>
         <configuration>
           <skipITs>${skipITs}</skipITs>
         </configuration>
@@ -145,6 +144,10 @@
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-rrd-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.measurements</groupId>
+      <artifactId>org.opennms.features.measurements.api</artifactId>
     </dependency>
     <dependency>
       <groupId>org.opennms.features.collection</groupId>

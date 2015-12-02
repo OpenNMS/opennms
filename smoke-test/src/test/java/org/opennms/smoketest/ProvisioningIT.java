@@ -47,6 +47,11 @@ public class ProvisioningIT extends OpenNMSSeleniumTestCase {
     private static final String NODE_LABEL = "localNode";
     private static final Logger LOG = LoggerFactory.getLogger(ProvisioningIT.class);
 
+    @Override
+    protected void provisioningPage() {
+        m_driver.get(BASE_URL + "opennms/admin/provisioningGroups.htm");
+    }
+
     @Before
     public void setUp() throws Exception {
         deleteTestRequisition();
@@ -128,6 +133,9 @@ public class ProvisioningIT extends OpenNMSSeleniumTestCase {
 
         assertTrue(wait.until(new WaitForNodesInDatabase(1)));
         LOG.debug("Found 1 node in the database.");
+
+        // wait for the node scanning to complete
+        Thread.sleep(5000);
 
         clickMenuItem("Info", "Nodes", "element/nodeList.htm");
 

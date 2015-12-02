@@ -265,7 +265,6 @@ public class MBeansController implements SelectionManager, NameProvider, Selecti
 		for (Object childItemId : mbeansContainer.getChildren(itemId)) {
 			handleSelectDeselect(mbeansContainer.getItem(childItemId), childItemId, select);
 		}
-		defaultNameProvider.invalidateCache();
 		validate(); // we changed the amount of elements considered for validation, so we have to update everything
 	}
 
@@ -361,7 +360,6 @@ public class MBeansController implements SelectionManager, NameProvider, Selecti
 		mbeansTree.setComponentError(null); // reset any errors which might be there
 		currentSelection.reset();
 		mbeansContentPanel.reset();
-		defaultNameProvider.invalidateCache();
 		for (AttributesContainerCache eachCache : attributesContainerCacheMap.values()) {
 			eachCache.clear();
 		}

@@ -9,7 +9,6 @@
   <li ng-show="foreignSource == 'default'">Default Definition</li>
 </ol>
 
-<form name="fsForm" novalidate>
 
 <!-- Toolbar -->
 
@@ -34,6 +33,7 @@
 <!-- Common - Content -->
 
 <div class="row">
+<form name="fsForm" novalidate>
   <div class="col-md-12">
     <br/>
   </div>
@@ -50,6 +50,7 @@
       <div ng-show="fsForm.scanInterval.$invalid" class="help-block">Scan Interval is required.</div>
     </div>
   </div>
+</form>
 </div>
 
 <!-- Content -->
@@ -63,7 +64,19 @@
 
         <!-- Detectors Tab -->
         <tab heading="Detectors">
-          <a ng-click="addDetector()" class="btn"><span class="glyphicon glyphicon-plus"/> Add Detector</a>
+          <div class="row">
+            <div class="col-md-3">
+              <div class="input-group">
+                <span class="input-group-addon"><span class="glyphicon glyphicon-search"/></span>
+                <input class="form-control" type="text" placeholder="Search/Filter Detectors" ng-model="filters.detector" />
+              </div>
+            </div>
+            <div class="col-md-9">
+              <div class="input-group pull-right">
+                <button class="btn btn-default" ng-click="addDetector()"><span class="glyphicon glyphicon-plus"/> Add Detector</button>
+              </div>
+            </div>
+          </div>
           <br/>
           <div class="table-responsive">
             <table class="table table-striped table-condensed">
@@ -76,7 +89,7 @@
                 </tr>
               </thead>
               <tbody>
-                <tr ng-repeat="detector in foreignSourceDef.detectors">
+                <tr ng-repeat="detector in filteredDetectors | startFrom:(detectorsCurrentPage-1)*detectorsPageSize | limitTo:detectorsPageSize ">
                   <td>{{ detector.name }}</td>
                   <td>{{ detector.class }}</td>
                   <td>
@@ -98,12 +111,25 @@
                 </tr>
               </tbody>
             </table>
-          </div>
+            <pagination total-items="detectorsTotalItems" num-pages="detectorsNumPages" ng-model="detectorsCurrentPage" max-size="detectorsMaxSize" boundary-links="true" class="pagination-sm" previous-text="&lsaquo;" next-text="&rsaquo;" first-text="&laquo;" last-text="&raquo;" ng-show="filteredDetectors.length > detectorsPageSize"></pagination>
+            </div>
         </tab>
 
         <!-- Policies Tab -->
         <tab heading="Policies">
-          <a ng-click="addPolicy()" class="btn"><span class="glyphicon glyphicon-plus"/> Add Policy</a>
+          <div class="row">
+            <div class="col-md-3">
+              <div class="input-group">
+                <span class="input-group-addon"><span class="glyphicon glyphicon-search"/></span>
+                <input class="form-control" type="text" placeholder="Search/Filter Policies" ng-model="filters.policy" />
+              </div>
+            </div>
+            <div class="col-md-9">
+              <div class="input-group pull-right">
+                <button class="btn btn-default" ng-click="addPolicy()"><span class="glyphicon glyphicon-plus"/> Add Policy</button>
+              </div>
+            </div>
+          </div>
           <br/>
           <div class="table-responsive">
             <table class="table table-striped table-condensed">
@@ -116,7 +142,7 @@
                 </tr>
               </thead>
               <tbody>
-                <tr ng-repeat="policy in foreignSourceDef.policies">
+                <tr ng-repeat="policy in filteredPolicies | startFrom:(policiesCurrentPage-1)*policiesPageSize | limitTo:policiesPageSize ">
                   <td>{{ policy.name }}</td>
                   <td>{{ policy.class }}</td>
                   <td>
@@ -138,6 +164,7 @@
                 </tr>
               </tbody>
             </table>
+            <pagination total-items="policiesTotalItems" num-pages="policiesNumPages" ng-model="policiesCurrentPage" max-size="policiesMaxSize" boundary-links="true" class="pagination-sm" previous-text="&lsaquo;" next-text="&rsaquo;" first-text="&laquo;" last-text="&raquo;" ng-show="filteredPolicies.length > policiesPageSize"></pagination>
           </div>
         </tab>
 
@@ -147,4 +174,3 @@
   </div> <!-- column -->
 </div> <!-- row -->
 
-</form>

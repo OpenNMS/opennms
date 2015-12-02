@@ -9,11 +9,17 @@
     <property name="serviceDaemons"><ref bean="serviceDaemons"/></property> 
   </bean>
   
+  <bean id="rmiSocketFactory" class="org.opennms.bootstrap.HostRMIServerSocketFactory">
+    <property name="host" value="localhost" />
+  </bean>
+
   <bean id="exporter" class="org.springframework.remoting.rmi.RmiServiceExporter">
 		<!-- does not necessarily have to be the same name as the bean to be exported -->	
 		<property name="serviceName" value="daemonMgr"/>
 		<property name="service" ref="daemonMgr"/>
 		<property name="serviceInterface" value="org.opennms.netmgt.vmmgr.DaemonManager"/>	
+		<!-- limits to localhost
+          <property name="clientSocketFactory" ref="rmiSocketFactory" /> -->
 		<!-- defaults to 1099 
 		<property name="registryPort" value="1199"/>
 		-->
