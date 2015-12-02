@@ -66,7 +66,7 @@ public class SyslogReceiverJavaNetImpl implements SyslogReceiver {
     /**
      * The UDP socket for receipt and transmission of packets from agents.
      */
-    private final DatagramSocket m_dgSock;
+    private DatagramSocket m_dgSock;
 
     /**
      * The context thread
@@ -90,10 +90,6 @@ public class SyslogReceiverJavaNetImpl implements SyslogReceiver {
         return dgSock;
     }
 
-    public SyslogReceiverJavaNetImpl(final SyslogdConfig config) throws SocketException {
-        this(openSocket(config), config);
-    }
-
     /**
      * construct a new receiver
      *
@@ -102,15 +98,13 @@ public class SyslogReceiverJavaNetImpl implements SyslogReceiver {
      * @param hostGroup
      * @param messageGroup
      */
-    public SyslogReceiverJavaNetImpl(DatagramSocket sock, final SyslogdConfig config) {
-        if (sock == null) {
-            throw new IllegalArgumentException("Socket cannot be null");
-        } else if (config == null) {
+    public SyslogReceiverJavaNetImpl(final SyslogdConfig config) throws SocketException {
+        if (config == null) {
             throw new IllegalArgumentException("Config cannot be null");
         }
 
         m_stop = false;
-        m_dgSock = sock;
+        m_dgSock = null;
         m_config = config;
 
         m_executor = new ThreadPoolExecutor(
@@ -174,6 +168,14 @@ public class SyslogReceiverJavaNetImpl implements SyslogReceiver {
         // allocate a buffer
         final int length = 0xffff;
         final byte[] buffer = new byte[length];
+
+        try {
+            LOG.debug("Opening socket");
+            m_dgSock = openSocket(m_config);
+        } catch (SocketException e) {
+            LOG.warn("Could not open syslog socket: " + e.getMessage(), e);
+            return;
+        }
 
         // set an SO timeout to make sure we don't block forever
         // if a socket is closed.
