@@ -44,6 +44,8 @@ import org.opennms.netmgt.model.OnmsNode.NodeType;
  * 
  */
 public abstract class NmsNetworkBuilder {
+
+    //NMS8003
     //NMS8000
     public final static String NMMR1_ROOT= "NMMR1";
     public static final String NMMR1_IP = "192.168.3.1";
@@ -51,6 +53,7 @@ public abstract class NmsNetworkBuilder {
     public static final String NMMR1_SYSNAME = "NMM-R1.informatik.hs-fulda.de";
     public static final String NMMR1_SYSOID = ".1.3.6.1.4.1.9.1.1045";
     public static final String NMMR1_SNMP_RESOURCE = "classpath:linkd/nms8000/"+NMMR1_NAME+".snmpwalk.txt";
+    public static final String NMMR1_SNMP_RESOURCE_2 = "classpath:linkd/nms8003/"+NMMR1_NAME+".snmpwalk.txt";
     
     public static final Map<InetAddress,Integer> NMMR1_IP_IF_MAP =  new HashMap<InetAddress,Integer>();
     public static final Map<Integer,String>      NMMR1_IF_IFNAME_MAP = new HashMap<Integer, String>();
@@ -65,6 +68,7 @@ public abstract class NmsNetworkBuilder {
     public static final String NMMR2_SYSNAME = "NMM-R2.informatik.hs-fulda.de";
     public static final String NMMR2_SYSOID = ".1.3.6.1.4.1.9.1.1045";
     public static final String NMMR2_SNMP_RESOURCE = "classpath:linkd/nms8000/"+NMMR2_NAME+".snmpwalk.txt";
+    public static final String NMMR2_SNMP_RESOURCE_2 = "classpath:linkd/nms8003/"+NMMR2_NAME+".snmpwalk.txt";
     
     public static final Map<InetAddress,Integer> NMMR2_IP_IF_MAP =  new HashMap<InetAddress,Integer>();
     public static final Map<Integer,String>      NMMR2_IF_IFNAME_MAP = new HashMap<Integer, String>();
@@ -79,6 +83,7 @@ public abstract class NmsNetworkBuilder {
     public static final String NMMR3_SYSNAME = "NMM-R3.informatik.hs-fulda.de";
     public static final String NMMR3_SYSOID = ".1.3.6.1.4.1.9.1.1045";
     public static final String NMMR3_SNMP_RESOURCE = "classpath:linkd/nms8000/"+NMMR3_NAME+".snmpwalk.txt";
+    public static final String NMMR3_SNMP_RESOURCE_2 = "classpath:linkd/nms8003/"+NMMR3_NAME+".snmpwalk.txt";
     
     public static final Map<InetAddress,Integer> NMMR3_IP_IF_MAP =  new HashMap<InetAddress,Integer>();
     public static final Map<Integer,String>      NMMR3_IF_IFNAME_MAP = new HashMap<Integer, String>();
@@ -93,6 +98,7 @@ public abstract class NmsNetworkBuilder {
     public static final String NMMSW1_SYSNAME = "NMM-SW1.informatik.hs-fulda.de";
     public static final String NMMSW1_SYSOID = ".1.3.6.1.4.1.9.1.716";
     public static final String NMMSW1_SNMP_RESOURCE = "classpath:linkd/nms8000/"+NMMSW1_NAME+".snmpwalk.txt";
+    public static final String NMMSW1_SNMP_RESOURCE_2 = "classpath:linkd/nms8003/"+NMMSW1_NAME+".snmpwalk.txt";
     
     public static final Map<InetAddress,Integer> NMMSW1_IP_IF_MAP =  new HashMap<InetAddress,Integer>();
     public static final Map<Integer,String>      NMMSW1_IF_IFNAME_MAP = new HashMap<Integer, String>();
@@ -107,6 +113,7 @@ public abstract class NmsNetworkBuilder {
     public static final String NMMSW2_SYSNAME = "NMM-SW2.informatik.hs-fulda.de";
     public static final String NMMSW2_SYSOID = ".1.3.6.1.4.1.9.1.716";
     public static final String NMMSW2_SNMP_RESOURCE = "classpath:linkd/nms8000/"+NMMSW2_NAME+".snmpwalk.txt";
+    public static final String NMMSW2_SNMP_RESOURCE_2 = "classpath:linkd/nms8003/"+NMMSW2_NAME+".snmpwalk.txt";
     
     public static final Map<InetAddress,Integer> NMMSW2_IP_IF_MAP =  new HashMap<InetAddress,Integer>();
     public static final Map<Integer,String>      NMMSW2_IF_IFNAME_MAP = new HashMap<Integer, String>();
