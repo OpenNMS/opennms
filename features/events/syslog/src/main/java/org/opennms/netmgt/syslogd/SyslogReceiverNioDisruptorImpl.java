@@ -40,6 +40,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.cassandra.concurrent.JMXEnabledSharedExecutorPool;
+import org.apache.cassandra.concurrent.SharedExecutorPool;
 import org.apache.cassandra.config.Config;
 import org.opennms.core.logging.Logging;
 import org.opennms.netmgt.config.SyslogdConfig;
@@ -54,6 +55,12 @@ import com.lmax.disruptor.RingBuffer;
 import com.lmax.disruptor.dsl.Disruptor;
 
 /**
+ * This implementation of {@link SyslogReceiver} uses multithreaded NIO to
+ * handle socket receive() calls and then uses an LMAX disruptor ring buffer
+ * to store the packet data. The packets are then decoded using async 
+ * {@link CompletableFuture} calls that are executed on thread pools implemented
+ * by Cassandra's {@link SharedExecutorPool}.
+ * 
  * @author Seth
  */
 class SyslogReceiverNioDisruptorImpl implements SyslogReceiver {
@@ -61,28 +68,41 @@ class SyslogReceiverNioDisruptorImpl implements SyslogReceiver {
     private static final Logger LOG = LoggerFactory.getLogger(SyslogReceiverNioDisruptorImpl.class);
     private static final MetricRegistry METRICS = new MetricRegistry();
 
+    /**
+     * Create a shared executor pool for all of the threads used in this class
+     */
+    public static final JMXEnabledSharedExecutorPool SYSLOGD_SEP = new JMXEnabledSharedExecutorPool(SyslogReceiverNioDisruptorImpl.class.getSimpleName());
+
     private static final int SOCKET_TIMEOUT = 500;
 
     /**
      * This size is used as the size of each {@link ByteBuffer} used to capture syslog
      * messages.
+     * 
+     * TODO: Make this configurable
      */
     public static final int MAX_PACKET_SIZE = 4096;
 
     /**
      * This is the number of NIO listener threads that will process {@link DatagramChannel#receive(ByteBuffer)}
      * calls on the syslog port.
+     * 
+     * TODO: Make this configurable
      */
     public static final int SOCKET_RECEIVER_THREADS = Runtime.getRuntime().availableProcessors();
 
     /**
      * This is the number of threads that are used to parse syslog messages into
      * OpenNMS events.
+     * 
+     * TODO: Make this configurable
      */
     public static final int EVENT_PARSER_THREADS = Runtime.getRuntime().availableProcessors();
 
     /**
      * This is the number of threads that are used to broadcast the OpenNMS events.
+     * 
+     * TODO: Make this configurable
      */
     public static final int EVENT_SENDER_THREADS = Runtime.getRuntime().availableProcessors();
 
@@ -90,12 +110,16 @@ class SyslogReceiverNioDisruptorImpl implements SyslogReceiver {
      * This is the size of the LMAX Disruptor queue that contains preallocated
      * {@link ByteBufferMessage} instances. This is the number of simultaneous
      * messages that can be in-flight at any given time.
+     * 
+     * TODO: Make this configurable
      */
     public static final int SOCKET_BYTE_BUFFER_QUEUE_SIZE = 65536;
 
     /**
      * This is the size of the LMAX Disruptor queue that contains {@link SyslogConnection}
      * tasks that will convert the syslog bytes into OpenNMS events.
+     * 
+     * TODO: Make this configurable
      */
     public static final int EVENT_CONVERSION_TASK_QUEUE_SIZE = 65536;
 
@@ -157,12 +181,9 @@ class SyslogReceiverNioDisruptorImpl implements SyslogReceiver {
         Config.setClientMode(true);
 
         // These executors are all created using the Cassandra SharedExecutorPool
-        // TODO: Override the SocketFactory for the pool so that the threads are given
-        // more user-friendly names.
-        //
-        m_socketReceivers = JMXEnabledSharedExecutorPool.SHARED.newExecutor(SOCKET_RECEIVER_THREADS, Integer.MAX_VALUE, "socketReceivers", "OpenNMS.Syslogd");
-        m_syslogConnectionExecutor = JMXEnabledSharedExecutorPool.SHARED.newExecutor(EVENT_PARSER_THREADS, Integer.MAX_VALUE, "syslogConnections", "OpenNMS.Syslogd");
-        m_syslogProcessorExecutor = JMXEnabledSharedExecutorPool.SHARED.newExecutor(EVENT_SENDER_THREADS, Integer.MAX_VALUE, "syslogProcessors", "OpenNMS.Syslogd");
+        m_socketReceivers = SYSLOGD_SEP.newExecutor(SOCKET_RECEIVER_THREADS, Integer.MAX_VALUE, "socketReceivers", "OpenNMS.Syslogd");
+        m_syslogConnectionExecutor = SYSLOGD_SEP.newExecutor(EVENT_PARSER_THREADS, Integer.MAX_VALUE, "syslogConnections", "OpenNMS.Syslogd");
+        m_syslogProcessorExecutor = SYSLOGD_SEP.newExecutor(EVENT_SENDER_THREADS, Integer.MAX_VALUE, "syslogProcessors", "OpenNMS.Syslogd");
 
         /*
         m_socketReceivers = new ThreadPoolExecutor(
@@ -173,17 +194,6 @@ class SyslogReceiverNioDisruptorImpl implements SyslogReceiver {
             new LinkedBlockingQueue<Runnable>(),
             new LogPreservingThreadFactory(getClass().getSimpleName() + "-SocketReceiver", Integer.MAX_VALUE)
         );
-        */
-
-        /*
-        // Use an LMAX Disruptor to process incoming packets
-        m_disruptor = new Disruptor<SyslogConnection>(SyslogConnection::new, EVENT_CONVERSION_TASK_QUEUE_SIZE, m_executor);
-        // Handle each message by enqueuing it on an executor
-        m_disruptor.handleEventsWith(
-            (event, sequence, endOfBatch) -> 
-            WaterfallExecutor.waterfall(m_executor, event)
-        );
-        m_disruptor.start();
         */
 
         // We can use a null executor here because we're not queueing executable tasks.
@@ -356,14 +366,15 @@ class SyslogReceiverNioDisruptorImpl implements SyslogReceiver {
                         } catch (InterruptedIOException e) {
                             ioInterrupted = true;
                             continue;
-                            /*
+                        /*
+                        TODO: Figure out how to handle exceptions appropriately in the async code
                         } catch (ExecutionException e) {
                             LOG.error("Task execution failed in {}", this.getClass().getSimpleName(), e);
                             break;
                         } catch (InterruptedException e) {
                             LOG.error("Task interrupted in {}", this.getClass().getSimpleName(), e);
                             break;
-                            */
+                        */
                         } catch (IOException e) {
                             LOG.error("An I/O exception occured on the datagram receipt port, exiting", e);
                             break;
