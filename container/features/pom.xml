@@ -82,7 +82,7 @@
             <repository>mvn:org.opennms.osgi.features.topology/opennms-topology-runtime-application/${project.version}/xml/features</repository>
 
             <!-- Vaadin Feature -->
-            <repository>mvn:org.opennms.osgi.features.topology/vaadin/${project.version}/xml/features</repository>
+            <repository>mvn:org.opennms.features/vaadin/${project.version}/xml/features</repository>
 
             <!-- Vaadin Dashboard Feature-->
             <repository>mvn:org.opennms.features/vaadin-dashboard/${project.version}/xml/features</repository>
@@ -328,7 +328,7 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>org.opennms.osgi.features.topology</groupId>
+      <groupId>org.opennms.features</groupId>
       <artifactId>vaadin</artifactId>
       <version>${project.version}</version>
       <type>pom</type>
