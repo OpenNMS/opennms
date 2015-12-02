@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2015 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2015 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,30 +26,22 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.vaadin.dashboard.config.ui;
+package org.opennms.netmgt.vaadin.core;
 
 import org.opennms.web.navigate.PageNavEntry;
 
-/**
- * Navigation entry for displaying a link to the wallboard configuration page.
- *
- * @author Christian Pape
- */
 public class AdminPageNavEntry implements PageNavEntry {
     /**
      * name of this PageNavEntry
      */
     private String m_name;
-
     /**
      * URL of this PageNavEntry
      */
     private String m_url;
 
     /**
-     * Returns the name of this PageNavEntry.
-     *
-     * @return the name
+     * {@inheritDoc}
      */
     @Override
     public String getName() {
@@ -66,9 +58,7 @@ public class AdminPageNavEntry implements PageNavEntry {
     }
 
     /**
-     * Returns the URL associated with this PageNavEntry.
-     *
-     * @return the URL
+     * {@inheritDoc}
      */
     @Override
     public String getUrl() {

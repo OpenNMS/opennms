@@ -33,7 +33,7 @@ import org.opennms.features.vaadin.jmxconfiggenerator.data.SelectableBeanItemCon
 import org.opennms.features.vaadin.jmxconfiggenerator.data.SelectionChangedListener;
 import org.opennms.features.vaadin.jmxconfiggenerator.data.SelectionValueChangedListener;
 import org.opennms.features.vaadin.jmxconfiggenerator.data.UiModel;
-import org.opennms.features.vaadin.jmxconfiggenerator.ui.ConfirmationDialog;
+import org.opennms.netmgt.vaadin.core.ConfirmationDialog;
 import org.opennms.features.vaadin.jmxconfiggenerator.ui.mbeans.validation.ValidationManager;
 import org.opennms.features.vaadin.jmxconfiggenerator.ui.mbeans.validation.ValidationResult;
 import org.opennms.xmlns.xsd.config.jmx_datacollection.Attrib;

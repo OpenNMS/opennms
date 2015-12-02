@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2013-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2015 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2015 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,54 +26,44 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.vaadin.mibcompiler;
+package org.opennms.netmgt.vaadin.core;
 
-import org.opennms.web.navigate.PageNavEntry;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
-/**
- * The Class AdminPageNavEntry.
- *
- * @author Markus von Rüden <mvr@opennms.com>
- */
-public class AdminPageNavEntry implements PageNavEntry {
+import com.google.common.base.Preconditions;
 
-    /** The name. */
-    private String name;
+public class TestObjectImpl implements TestObject {
 
-    /** The url. */
-    private String url;
+    private boolean transactionActive;
 
-    /* (non-Javadoc)
-     * @see org.opennms.web.navigate.PageNavEntry#getName()
-     */
+    private String someValue;
+
+    public TestObjectImpl(boolean transactionActive) {
+        this.transactionActive = transactionActive;
+    }
+
     @Override
-    public String getName() {
-        return name;
+    public void setSomeValue(String someValue) {
+        this.someValue = someValue;
     }
 
-    /**
-     * Sets the name.
-     *
-     * @param name the new name
-     */
-    public void setName(final String name) {
-        this.name = name;
-    }
-
-    /* (non-Javadoc)
-     * @see org.opennms.web.navigate.PageNavEntry#getUrl()
-     */
     @Override
-    public String getUrl() {
-        return url;
+    public String getSomeValue() {
+        return someValue;
     }
 
-    /**
-     * Sets the url.
-     *
-     * @param url the new url
-     */
-    public void setUrl(final String url) {
-        this.url = url;
+    @Override
+    public void doSomething() {
+        Preconditions.checkArgument(TransactionSynchronizationManager.isActualTransactionActive() == transactionActive);
+    }
+
+    @Override
+    public void doSomething2() {
+        Preconditions.checkArgument(TransactionSynchronizationManager.isActualTransactionActive() == transactionActive);
+    }
+
+    @Override
+    public boolean isTransactionActive() {
+        return transactionActive;
     }
 }
