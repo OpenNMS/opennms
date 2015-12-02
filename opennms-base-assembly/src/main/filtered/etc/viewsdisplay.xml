@@ -1,6 +1,5 @@
-<?xml version="1.0"?>
-
-<viewinfo>
+<?xml version="1.0" encoding="UTF-8"?>
+<viewinfo xmlns="http://xmlns.opennms.org/xsd/viewsdisplay" default-view="WebConsoleView">
 	<view>
 		<view-name>WebConsoleView</view-name>
 		<section>
@@ -19,4 +18,3 @@
 		</section>            
 	</view>
 </viewinfo>
-

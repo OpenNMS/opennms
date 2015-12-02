@@ -23,8 +23,8 @@
 %{!?bindir:%define bindir %instprefix/bin}
 
 # Description
-%{!?_name:%define _name "opennms"}
-%{!?_descr:%define _descr "OpenNMS"}
+%{!?_name:%define _name "meridian"}
+%{!?_descr:%define _descr "OpenNMS Meridian"}
 %{!?packagedir:%define packagedir %{_name}-%version-%{releasenumber}}
 
 %{!?jdk:%define jdk jdk >= 2000:1.7}
@@ -93,6 +93,10 @@ Requires(pre):	jicmp
 Requires:	jicmp
 Requires(pre):	jicmp6
 Requires:	jicmp6
+Requires(pre):  jrrd >= 1.0.9
+Requires:       jrrd >= 1.0.9
+Requires(pre):  opennms-rrdtool
+Requires:       opennms-rrdtool
 Requires(pre):	%{jdk}
 Requires:	%{jdk}
 Obsoletes:	opennms < 1.3.11
@@ -519,8 +523,14 @@ else
 fi
 
 echo "=== BUILDING ASSEMBLIES ==="
-./assemble.pl $OPTS_SETTINGS_XML $OPTS_ENABLE_SNAPSHOTS $OPTS_UPDATE_POLICY -Dbuild=all -Dinstall.version="%{version}-%{release}" -Ddist.name="$RPM_BUILD_ROOT" \
-	-Dopennms.home="%{instprefix}" -Dbuild.profile=full install
+./assemble.pl $OPTS_SETTINGS_XML $OPTS_ENABLE_SNAPSHOTS $OPTS_UPDATE_POLICY \
+	-Dbuild=all \
+	-Dinstall.version="%{version}-%{release}" \
+	-Dinstall.rrdtool.bin="%{instprefix}/bin/rrdtool" \
+	-Ddist.name="$RPM_BUILD_ROOT" \
+	-Dopennms.home="%{instprefix}" \
+	-Dbuild.profile=full \
+	install
 
 cd opennms-tools
 	../compile.pl $OPTS_SETTINGS_XML $OPTS_ENABLE_SNAPSHOTS $OPTS_UPDATE_POLICY -N -Dinstall.version="%{version}-%{release}" -Ddist.name="$RPM_BUILD_ROOT" \

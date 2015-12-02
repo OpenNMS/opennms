@@ -187,8 +187,7 @@
       <% } %>
     &mdash; <a href="<%=this.makeLink( parms, new ArrayList<Filter>())%>" title="Remove all filters">[Remove all]</a>
   </p>
-<% } %>
-	<jsp:include page="/includes/key.jsp" flush="false" />
+<% } %> 
         <form action="notification/acknowledge" method="post" name="acknowledge_form">
           <input type="hidden" name="curUser" value="<%=request.getRemoteUser()%>"/>
           <input type="hidden" name="redirectParms" value="<c:out value="<%=request.getQueryString()%>"/>" />

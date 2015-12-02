@@ -1,5 +1,5 @@
-<?xml version="1.0"?>
-<syslogd-configuration>
+<?xml version="1.0" encoding="UTF-8"?>
+<syslogd-configuration xmlns="http://xmlns.opennms.org/xsd/config/syslogd">
     <configuration
             syslog-port="10514"
             new-suspect-on-message="false"

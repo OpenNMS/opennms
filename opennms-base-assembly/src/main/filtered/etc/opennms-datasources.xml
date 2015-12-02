@@ -1,8 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<datasource-configuration xmlns:this="http://xmlns.opennms.org/xsd/config/opennms-datasources" 
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
-  xsi:schemaLocation="http://xmlns.opennms.org/xsd/config/opennms-datasources 
-  http://www.opennms.org/xsd/config/opennms-datasources.xsd ">
+<data-source-configuration xmlns="http://xmlns.opennms.org/xsd/config/opennms-datasources">
 
   <!-- 
     Available implementations:
@@ -50,4 +47,4 @@
                     url="jdbc:postgresql://localhost:5432/template1"
                     user-name="${install.database.admin.user}"
                     password="${install.database.admin.password}" />
-</datasource-configuration>
+</data-source-configuration>

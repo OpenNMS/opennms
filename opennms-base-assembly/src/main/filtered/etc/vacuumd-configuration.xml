@@ -1,4 +1,4 @@
-<VacuumdConfiguration period="86400000" >
+<VacuumdConfiguration xmlns="http://xmlns.opennms.org/xsd/config/vacuumd" period="86400000">
   <statement>
     <!-- removes references in topo maps to nodes that have been marked as deleted - cascading deletes cannot work here -->
     DELETE FROM element

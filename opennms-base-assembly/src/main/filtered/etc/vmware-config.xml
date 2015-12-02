@@ -1,5 +1,4 @@
-<?xml version="1.0"?>
-<vmware-config>
+<vmware-config xmlns="http://xmlns.opennms.org/xsd/config/vmware-config">
 <!--
     Authentication entries for VMware management servers.
 
@@ -9,4 +8,3 @@
     <vmware-server hostname="vcenter.mydomain.org" username="OpenNMS" password="secret"/>
 -->
 </vmware-config>
-

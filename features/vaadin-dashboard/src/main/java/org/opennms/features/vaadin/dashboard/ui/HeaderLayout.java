@@ -67,7 +67,7 @@ public class HeaderLayout extends HorizontalLayout implements ViewChangeListener
          * Adding the logo
          */
         Link link = new Link(null, new ExternalResource("/opennms/index.jsp"));
-        link.setIcon(new ThemeResource("img/logo.png"));
+        link.setIcon(new ThemeResource("img/logo.svg"));
         addComponent(link);
         setExpandRatio(link, 1.0f);
 
