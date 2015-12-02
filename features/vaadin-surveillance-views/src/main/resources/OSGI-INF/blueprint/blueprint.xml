@@ -50,7 +50,7 @@
         <property name="surveillanceViewService" ref="surveillanceViewService"/>
     </bean>
 
-    <bean id="surveillanceViewsConfigUILink" class="org.opennms.features.vaadin.components.core.AdminPageNavEntry">
+    <bean id="surveillanceViewsConfigUILink" class="AdminPageNavEntry">
         <property name="url" value="admin/surveillanceViewsConfig.jsp"/>
         <property name="name" value="Surveillance Views Configuration"/>
     </bean>

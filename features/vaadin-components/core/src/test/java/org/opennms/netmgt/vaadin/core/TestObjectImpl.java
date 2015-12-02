@@ -26,51 +26,44 @@
  * http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.vaadin.components.core;
+package org.opennms.netmgt.vaadin.core;
 
-import org.opennms.web.navigate.PageNavEntry;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
-public class AdminPageNavEntry implements PageNavEntry {
-    /**
-     * name of this PageNavEntry
-     */
-    private String m_name;
-    /**
-     * URL of this PageNavEntry
-     */
-    private String m_url;
+import com.google.common.base.Preconditions;
 
-    /**
-     * {@inheritDoc}
-     */
+public class TestObjectImpl implements TestObject {
+
+    private boolean transactionActive;
+
+    private String someValue;
+
+    public TestObjectImpl(boolean transactionActive) {
+        this.transactionActive = transactionActive;
+    }
+
     @Override
-    public String getName() {
-        return m_name;
+    public void setSomeValue(String someValue) {
+        this.someValue = someValue;
     }
 
-    /**
-     * Sets the name of the PageNavEntry.
-     *
-     * @param name the name to be set
-     */
-    public void setName(final String name) {
-        this.m_name = name;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
     @Override
-    public String getUrl() {
-        return m_url;
+    public String getSomeValue() {
+        return someValue;
     }
 
-    /**
-     * Sets the URL of this PageNavEntry.
-     *
-     * @param url the URL to be set
-     */
-    public void setUrl(final String url) {
-        this.m_url = url;
+    @Override
+    public void doSomething() {
+        Preconditions.checkArgument(TransactionSynchronizationManager.isActualTransactionActive() == transactionActive);
+    }
+
+    @Override
+    public void doSomething2() {
+        Preconditions.checkArgument(TransactionSynchronizationManager.isActualTransactionActive() == transactionActive);
+    }
+
+    @Override
+    public boolean isTransactionActive() {
+        return transactionActive;
     }
 }

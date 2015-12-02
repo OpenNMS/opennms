@@ -28,7 +28,7 @@
 
 package org.opennms.features.vaadin.jmxconfiggenerator.ui;
 
-import org.opennms.features.vaadin.components.core.UIHelper;
+import org.opennms.netmgt.vaadin.core.UIHelper;
 import org.opennms.features.vaadin.jmxconfiggenerator.JmxConfigGeneratorUI;
 import org.opennms.features.vaadin.jmxconfiggenerator.jobs.JobManager;
 

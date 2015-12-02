@@ -31,7 +31,7 @@ package org.opennms.netmgt.bsm.vaadin.masterpage;
 import java.util.List;
 import java.util.Objects;
 
-import org.opennms.features.vaadin.components.core.TransactionAwareBeanProxyFactory;
+import org.opennms.netmgt.vaadin.core.TransactionAwareBeanProxyFactory;
 import org.opennms.netmgt.bsm.service.BusinessServiceManager;
 import org.opennms.netmgt.bsm.service.model.BusinessServiceDTO;
 import org.opennms.netmgt.model.OnmsSeverity;

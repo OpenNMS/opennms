@@ -44,7 +44,7 @@ import org.opennms.features.jmxconfiggenerator.jmxconfig.JmxDatacollectionConfig
 import org.opennms.features.jmxconfiggenerator.jmxconfig.JmxHelper;
 import org.opennms.features.jmxconfiggenerator.jmxconfig.query.MBeanServerQueryException;
 import org.opennms.features.jmxconfiggenerator.log.Slf4jLogAdapter;
-import org.opennms.features.vaadin.components.core.UIHelper;
+import org.opennms.netmgt.vaadin.core.UIHelper;
 import org.opennms.features.vaadin.jmxconfiggenerator.JmxConfigGeneratorUI;
 import org.opennms.features.vaadin.jmxconfiggenerator.data.ServiceConfig;
 import org.opennms.features.vaadin.jmxconfiggenerator.ui.UiState;

@@ -26,20 +26,51 @@
  * http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.vaadin.components.core;
+package org.opennms.netmgt.vaadin.core;
 
-/**
- * TestObject to verify that the {@link TransactionAwareBeanProxyFactory} works as expected.
- * Please do not change the behaviour here, as it is required to pass the tests in {@link TransactionAwareBeanProxyFactoryIT}.
- */
-public interface TestObject {
-    void setSomeValue(String someValue);
+import org.opennms.web.navigate.PageNavEntry;
 
-    String getSomeValue();
+public class AdminPageNavEntry implements PageNavEntry {
+    /**
+     * name of this PageNavEntry
+     */
+    private String m_name;
+    /**
+     * URL of this PageNavEntry
+     */
+    private String m_url;
 
-    void doSomething();
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getName() {
+        return m_name;
+    }
 
-    void doSomething2();
+    /**
+     * Sets the name of the PageNavEntry.
+     *
+     * @param name the name to be set
+     */
+    public void setName(final String name) {
+        this.m_name = name;
+    }
 
-    boolean isTransactionActive();
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getUrl() {
+        return m_url;
+    }
+
+    /**
+     * Sets the URL of this PageNavEntry.
+     *
+     * @param url the URL to be set
+     */
+    public void setUrl(final String url) {
+        this.m_url = url;
+    }
 }

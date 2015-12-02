@@ -10,7 +10,7 @@
 		</service-properties>
 	</service>
         
-    <bean id="jmxconfiggeneratoruiLink" class="org.opennms.features.vaadin.components.core.AdminPageNavEntry">
+    <bean id="jmxconfiggeneratoruiLink" class="org.opennms.netmgt.vaadin.core.AdminPageNavEntry">
         <property name="url" value="admin/jmxConfigGenerator.jsp" />
         <property name="name" value="JMX Configuration Generator" />
     </bean>

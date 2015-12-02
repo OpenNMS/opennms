@@ -28,7 +28,7 @@
         <property name="dashletSelector" ref="dashletSelector"/>
     </bean>
 
-    <bean id="wallboardConfigUILink" class="org.opennms.features.vaadin.components.core.AdminPageNavEntry">
+    <bean id="wallboardConfigUILink" class="AdminPageNavEntry">
         <property name="url" value="admin/wallboardConfig.jsp"/>
         <property name="name" value="Ops Board Configuration"/>
     </bean>

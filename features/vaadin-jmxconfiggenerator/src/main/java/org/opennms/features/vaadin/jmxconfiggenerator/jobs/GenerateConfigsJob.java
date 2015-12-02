@@ -34,7 +34,7 @@ import org.opennms.features.jmxconfiggenerator.graphs.GraphConfigGenerator;
 import org.opennms.features.jmxconfiggenerator.graphs.JmxConfigReader;
 import org.opennms.features.jmxconfiggenerator.graphs.Report;
 import org.opennms.features.jmxconfiggenerator.log.Slf4jLogAdapter;
-import org.opennms.features.vaadin.components.core.UIHelper;
+import org.opennms.netmgt.vaadin.core.UIHelper;
 import org.opennms.features.vaadin.jmxconfiggenerator.JmxConfigGeneratorUI;
 import org.opennms.features.vaadin.jmxconfiggenerator.data.UiModel;
 import org.opennms.features.vaadin.jmxconfiggenerator.ui.UiState;

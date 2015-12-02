@@ -30,7 +30,7 @@ package org.opennms.features.vaadin.jmxconfiggenerator.ui;
 
 import java.util.Objects;
 
-import org.opennms.features.vaadin.components.core.UIHelper;
+import org.opennms.netmgt.vaadin.core.UIHelper;
 
 import com.vaadin.server.Sizeable;
 import com.vaadin.shared.ui.label.ContentMode;

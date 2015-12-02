@@ -32,8 +32,8 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import org.opennms.features.vaadin.components.core.ConfirmationDialog;
-import org.opennms.features.vaadin.components.core.UIHelper;
+import org.opennms.netmgt.vaadin.core.ConfirmationDialog;
+import org.opennms.netmgt.vaadin.core.UIHelper;
 import org.opennms.features.vaadin.jmxconfiggenerator.JmxConfigGeneratorUI;
 import org.opennms.features.vaadin.jmxconfiggenerator.data.JmxCollectionCloner;
 import org.opennms.features.vaadin.jmxconfiggenerator.data.UiModel;
