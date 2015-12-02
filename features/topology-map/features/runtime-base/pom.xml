@@ -24,7 +24,7 @@
         <artifactId>features-maven-plugin</artifactId>
         <configuration>
           <repositories>
-            <repository>mvn:${project.groupId}/vaadin/${project.version}/xml/features</repository>
+            <repository>mvn:org.opennms.features/vaadin/${project.version}/xml/features</repository>
             <repository>mvn:${project.groupId}/opennms-topology-api/${project.version}/xml/features</repository>
           </repositories>
           <features>
@@ -70,7 +70,7 @@
 
   <dependencies>
     <dependency>
-      <groupId>org.opennms.osgi.features.topology</groupId>
+      <groupId>org.opennms.features</groupId>
       <artifactId>vaadin</artifactId>
       <version>${project.version}</version>
       <classifier>features</classifier>

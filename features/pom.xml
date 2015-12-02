@@ -98,6 +98,9 @@
     <!-- OpenNMS Vaadin Themes -->
     <module>themes</module>
 
+    <!-- Vaadin Feature -->
+    <module>vaadin</module>
+
     <!-- Generic Vaadin components -->
     <module>vaadin-components</module>
 

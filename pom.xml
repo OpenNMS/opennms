@@ -1881,7 +1881,7 @@
         <type>pom</type>
       </dependency>
       <dependency>
-        <groupId>org.opennms.osgi.features.topology</groupId>
+        <groupId>org.opennms.features</groupId>
         <artifactId>vaadin</artifactId>
         <version>${project.version}</version>
         <type>pom</type>
