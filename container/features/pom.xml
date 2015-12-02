@@ -50,9 +50,6 @@
             <!-- OpenNMS features bundle -->
             <repository>file:${project.build.outputDirectory}/features.xml</repository>
 
-            <!-- OpenNMS OSGi core -->
-            <repository>mvn:org.opennms.osgi/opennms-osgi-core/${project.version}/xml/features</repository>
-
             <!-- JAAS Login Module -->
             <repository>mvn:org.opennms.container/jaas-login-module/${project.version}/xml/features</repository>
 
@@ -61,6 +58,7 @@
             <repository>mvn:org.opennms.features/vaadin-jmxconfiggenerator/${project.version}/xml/features</repository>
 
             <!-- BSM features -->
+            <repository>mvn:org.opennms.features.bsm/org.opennms.features.bsm.service/${project.version}/xml/features</repository>
             <repository>mvn:org.opennms.features.bsm/vaadin-masterpage/${project.version}/xml/features</repository>
 
             <!-- MIB Parser and Event/Collection features -->
@@ -82,6 +80,9 @@
             <repository>mvn:org.opennms.osgi.features.topology/opennms-topology-runtime-simple/${project.version}/xml/features</repository>
             <repository>mvn:org.opennms.osgi.features.topology/opennms-topology-runtime-vmware/${project.version}/xml/features</repository>
             <repository>mvn:org.opennms.osgi.features.topology/opennms-topology-runtime-application/${project.version}/xml/features</repository>
+
+            <!-- Vaadin Feature -->
+            <repository>mvn:org.opennms.features/vaadin/${project.version}/xml/features</repository>
 
             <!-- Vaadin Dashboard Feature-->
             <repository>mvn:org.opennms.features/vaadin-dashboard/${project.version}/xml/features</repository>
@@ -196,7 +197,6 @@
             <feature>postgresql</feature>
 
             <!-- Features from other OpenNMS repositories -->
-            <feature>opennms-osgi-core</feature>
             <feature>opennms-core</feature>
             <feature>opennms-core-web</feature>
             <feature>opennms-jaas-login-module</feature>
@@ -223,13 +223,18 @@
             <feature>opennms-topology-runtime-simple</feature>
             <feature>opennms-topology-runtime-vmware</feature>
             <feature>opennms-topology-runtime-application</feature>
+            <feature>vaadin</feature>
             <feature>vaadin-dashboard</feature>
             <feature>vaadin-jmxconfiggenerator</feature>
-            <feature>vaadin-masterpage</feature>
             <feature>vaadin-node-maps</feature>
             <feature>vaadin-snmp-events-and-metrics</feature>
             <feature>vaadin-surveillance-views</feature>
             <feature>opennms-elasticsearch-event-forwarder</feature>
+
+            <!-- BSM -->
+            <feature>org.opennms.features.bsm.service</feature>
+            <feature>vaadin-masterpage</feature>
+
           </features>
         </configuration>
       </plugin>
@@ -275,15 +280,15 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>org.opennms.osgi</groupId>
-      <artifactId>opennms-osgi-core</artifactId>
+      <groupId>org.opennms.features</groupId>
+      <artifactId>jmxconfiggenerator</artifactId>
       <version>${project.version}</version>
       <type>pom</type>
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>org.opennms.features</groupId>
-      <artifactId>jmxconfiggenerator</artifactId>
+      <groupId>org.opennms.features.bsm</groupId>
+      <artifactId>org.opennms.features.bsm.service</artifactId>
       <version>${project.version}</version>
       <type>pom</type>
       <scope>provided</scope>
@@ -318,6 +323,13 @@
     <dependency>
       <groupId>org.opennms.osgi.features.nrtg</groupId>
       <artifactId>nrtg</artifactId>
+      <version>${project.version}</version>
+      <type>pom</type>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features</groupId>
+      <artifactId>vaadin</artifactId>
       <version>${project.version}</version>
       <type>pom</type>
       <scope>provided</scope>

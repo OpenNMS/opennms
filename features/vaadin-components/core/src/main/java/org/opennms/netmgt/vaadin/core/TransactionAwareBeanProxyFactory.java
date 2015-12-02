@@ -26,7 +26,7 @@
  * http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.bsm.vaadin.masterpage;
+package org.opennms.netmgt.vaadin.core;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;

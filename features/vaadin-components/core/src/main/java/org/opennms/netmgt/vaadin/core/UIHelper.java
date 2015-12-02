@@ -26,7 +26,16 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.vaadin.jmxconfiggenerator.ui;
+package org.opennms.netmgt.vaadin.core;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Collection;
+import java.util.Objects;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Throwables;
 import com.google.common.io.ByteStreams;
@@ -41,16 +50,6 @@ import com.vaadin.ui.Field;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.UI;
-import org.opennms.features.vaadin.jmxconfiggenerator.Config;
-import org.opennms.features.vaadin.jmxconfiggenerator.JmxConfigGeneratorUI;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Collection;
-import java.util.Objects;
 
 /**
  * This class provides several helper methods for ui stuff, e.g. creating a
@@ -61,6 +60,9 @@ import java.util.Objects;
 public abstract class UIHelper {
 
 	private static final Logger LOG = LoggerFactory.getLogger(UIHelper.class);
+
+	// in ms
+	public static int  DEFAULT_NOTIFICATION_DELAY = 3000;
 
 	public static Button createButton(
 			final String buttonCaption,
@@ -121,8 +123,8 @@ public abstract class UIHelper {
 		showNotification("Validation Error", errorMessage != null ? errorMessage : "An unknown error occurred.", Type.ERROR_MESSAGE);
 	}
 
-	public static JmxConfigGeneratorUI getCurrent() {
-		return (JmxConfigGeneratorUI) UI.getCurrent();
+	public static <T> T getCurrent(Class<T> clazz) {
+		return (T) UI.getCurrent();
 	}
 
 	public static void showNotification(String message) {
@@ -130,17 +132,13 @@ public abstract class UIHelper {
 	}
 
 	public static void showNotification(String title, String message, Type type) {
-		showNotification(title, message, type, Config.NOTIFICATION_DELAY);
+		showNotification(title, message, type, DEFAULT_NOTIFICATION_DELAY);
 	}
 
 	public static void showNotification(String title, String message, Type type, int delayMsec) {
 		Notification notification = new Notification(title, message, type, true);
 		notification.setDelayMsec(delayMsec);
 		notification.show(Page.getCurrent());
-	}
-
-	public static void updateView(UiState newUiState) {
-		getCurrent().updateView(newUiState);
 	}
 
 	/**
