@@ -103,23 +103,23 @@
             var grafanaTag = '<%=grafanaTag%>';
             var obj = <%=responseString%>;
 
-            jQuery.each(obj['dashboards'], function (i, val) {
+            for (var val of obj) {
                 var showDashboard = true;
 
                 if (grafanaTag != '') {
                     showDashboard = false;
 
-                    for (var index in val['tags']) {
-                        if (grafanaTag == val['tags'][index]) {
+                    for (var tag of val['tags']) {
+                        if (grafanaTag == tag) {
                             showDashboard = true;
                             break;
                         }
                     }
                 }
                 if (showDashboard) {
-                    $('#dashboardlist').append('<a href="<%=grafanaProtocol%>://<%=grafanaHostname%>:<%=grafanaPort%>/dashboard/db/' + val['slug'] + '"><span class="glyphicon glyphicon-signal" aria-hidden="true"></span>&nbsp;' + val['title'] + "</a><br/>");
+                    $('#dashboardlist').append('<a href="<%=grafanaProtocol%>://<%=grafanaHostname%>:<%=grafanaPort%>/dashboard/' + val['uri'] + '"><span class="glyphicon glyphicon-signal" aria-hidden="true"></span>&nbsp;' + val['title'] + "</a><br/>");
                 }
-            });
+            };
         </script>
         <%
             } else {
