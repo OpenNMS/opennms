@@ -454,7 +454,7 @@
 
   <onmsgi:service interface="org.opennms.netmgt.dao.api.BridgeTopologyDao" ref="bridgeTopologyDao" />
 
-  <bean id="bridgeTopologyDao" class="org.opennms.netmgt.BridgeTopologyDaoInMemory">
+  <bean id="bridgeTopologyDao" class="org.opennms.netmgt.dao.BridgeTopologyDaoInMemory">
   </bean>
 
   <onmsgi:service interface="org.opennms.netmgt.dao.api.TopologyDao" ref="topologyDao" />
