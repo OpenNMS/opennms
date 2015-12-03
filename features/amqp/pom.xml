@@ -12,12 +12,19 @@
 
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.features</groupId>
-  <artifactId>org.opennms.features.activemq</artifactId>
-  <name>OpenNMS :: Features :: ActiveMQ</name>
+  <artifactId>org.opennms.features.amqp</artifactId>
+  <name>OpenNMS :: Features :: AMQP</name>
   <packaging>pom</packaging>
 
+  <properties>
+    <qpidVersion>0.32</qpidVersion>
+  </properties>
+
   <modules>
-    <module>broker</module>
+    <module>common</module>
+    <module>event-forwarder</module>
+    <module>event-receiver</module>
+    <module>alarm-northbounder</module>
   </modules>
 
 </project>
