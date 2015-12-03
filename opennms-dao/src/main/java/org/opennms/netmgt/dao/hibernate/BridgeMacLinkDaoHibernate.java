@@ -99,7 +99,8 @@ public class BridgeMacLinkDaoHibernate extends AbstractDaoHibernate<BridgeMacLin
                 + "snmp.snmpifindex as target_ifindex, "
                 + "ip.ipaddr as target_ifname, "
                 + "snmp.snmpifindex as target_bridgeport, "
-                + "ip.id as target_id "
+                + "ip.id as target_id, "
+                + "mlink.bridgemaclinklastpolltime as lastPollTime "
 	        + "from bridgemaclink as mlink "
 	        + "left join ipnettomedia as ntm on mlink.macaddress = ntm.physaddress "
 	        + "left join ipinterface ip on ip.ipaddr = ntm.netaddress "
@@ -129,7 +130,8 @@ public class BridgeMacLinkDaoHibernate extends AbstractDaoHibernate<BridgeMacLin
                 + "plink.bridgeportifindex as target_ifindex, "
                 + "plink.bridgeportifname as target_ifname, "
                 + "plink.bridgeport as target_bridgeport, "
-                + "plink.id as target_id "
+                + "plink.id as target_id, "
+                + "mlink.bridgemaclinklastpolltime as lastPollTime "
 	        + "from bridgemaclink as mlink "
 	        + "left join bridgemaclink as plink on mlink.macaddress = plink.macaddress "
 	        + "left join node n on mlink.nodeid = n.nodeid "
@@ -161,7 +163,8 @@ public class BridgeMacLinkDaoHibernate extends AbstractDaoHibernate<BridgeMacLin
                                     (Integer) objs[16],
                                     (String) objs[17],
                                     (Integer) objs[18],
-                                    (Integer) objs[19]
+                                    (Integer) objs[19],
+                                    (Date) objs[20]
                                             )
                                   );
             }
