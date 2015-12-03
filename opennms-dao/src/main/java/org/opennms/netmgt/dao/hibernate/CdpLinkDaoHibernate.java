@@ -149,7 +149,8 @@ public class CdpLinkDaoHibernate extends AbstractDaoHibernate<CdpLink, Integer> 
             @Override
             public List<CdpTopologyLink> doInHibernate(Session session) throws HibernateException, SQLException {
                Map<String, CdpTopologyLink> mapToLink = new HashMap<String,CdpTopologyLink>();
-                for (CdpTopologyLink link: convertObjectToTopologyLink(session.createSQLQuery(SQL_CDP_LINK_BASE_QUERY+";").list())){
+               List<CdpTopologyLink> alllinks = convertObjectToTopologyLink(session.createSQLQuery(SQL_CDP_LINK_BASE_QUERY+";").list());
+               for (CdpTopologyLink link: alllinks){
                     String sourcekey=link.getSrcNodeId()+link.getSrcIfName();
                     String targetkey=link.getTargetNodeId()+link.getTargetIfName();
                     if (mapToLink.containsKey(sourcekey)) {
@@ -178,16 +179,16 @@ public class CdpLinkDaoHibernate extends AbstractDaoHibernate<CdpLink, Integer> 
                     }
                     mapToLink.put(sourcekey, link);
                     mapToLink.put(targetkey, link);
-                }
-                List<Integer> ids = new ArrayList<Integer>();
-                List<CdpTopologyLink> links = new ArrayList<CdpTopologyLink>();
-                for (CdpTopologyLink link: mapToLink.values()) {
+               }
+               List<Integer> ids = new ArrayList<Integer>();
+               List<CdpTopologyLink> links = new ArrayList<CdpTopologyLink>();
+               for (CdpTopologyLink link: mapToLink.values()) {
                     if (ids.contains(link.getSourceId()))
                         continue;
                     links.add(link);
                     ids.add(link.getSourceId());
-                }
-                return links;
+               }
+               return links;
             }
         });
     }
