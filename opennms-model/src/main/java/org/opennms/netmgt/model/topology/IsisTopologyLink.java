@@ -28,6 +28,8 @@
 
 package org.opennms.netmgt.model.topology;
 
+import java.util.Date;
+
 import org.opennms.netmgt.model.OnmsNode.NodeType;
 
 
@@ -45,8 +47,8 @@ public class IsisTopologyLink extends TopologyLink {
             Integer targetNodeId,
             String targetLabel, String targetSysoid, String targetLocation,
             NodeType targetNodeType,
-            Integer targetIfIndex) {
-        super(srcNodeId,srcLabel,srcSysoid,srcLocation,srcNodeType,targetNodeId,targetLabel,targetSysoid,targetLocation,targetNodeType);
+            Integer targetIfIndex, Date lastPollTime ) {
+        super(lastPollTime, srcNodeId,srcLabel,srcSysoid,srcLocation,srcNodeType,targetNodeId,targetLabel,targetSysoid,targetLocation,targetNodeType);
         m_sourceId = sourceId;
         m_srcIfIndex = srcIfIndex;
         m_targetId = targetId;
