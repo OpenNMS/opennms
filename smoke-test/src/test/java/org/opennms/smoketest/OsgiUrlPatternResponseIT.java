@@ -23,8 +23,8 @@ public class OsgiUrlPatternResponseIT extends OpenNMSSeleniumTestCase {
                 "jmx-config-tool",
                 "vaadin-surveillance-views?dashboard=true",
                 "vaadin-surveillance-views?dashboard=false",
-                "vaadin-surveillance-views-config",
-                "wallboard-config"
+                "vaadin-surveillance-views-config", "wallboard-config",
+                "bsm-master-page"
         };
 
         for (final String eachPath : paths) {
