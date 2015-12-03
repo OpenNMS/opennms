@@ -190,7 +190,7 @@ public class Manager implements ManagerMBean {
 
     }
 
-    private void dumpThreads() {
+    public void dumpThreads() {
         Map<Thread, StackTraceElement[]> threads = Thread.getAllStackTraces();
         int daemons = 0;
         for (Thread t : threads.keySet()) {

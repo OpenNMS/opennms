@@ -98,8 +98,6 @@ public class Starter {
 
             setLogPrefix();
 
-            setupMx4jLogger();
-
             loadGlobalProperties();
 
             setDefaultProperties();
@@ -110,40 +108,6 @@ public class Starter {
         }
     }
 
-
-    public static class Mx4jSlf4JLogger extends mx4j.log.Logger {
-
-        Logger m_slf4jLogger;
-
-        @Override
-        protected void log(int priority, Object msg, Throwable t) {
-            switch(priority) {
-            case mx4j.log.Logger.DEBUG:
-                m_slf4jLogger.debug(msg == null ? "" : msg.toString(), t);
-            case mx4j.log.Logger.ERROR:
-                m_slf4jLogger.error(msg == null ? "" : msg.toString(), t);
-            case mx4j.log.Logger.FATAL:
-                m_slf4jLogger.error(msg == null ? "" : msg.toString(), t);
-            case mx4j.log.Logger.INFO:
-                m_slf4jLogger.info(msg == null ? "" : msg.toString(), t);
-            case mx4j.log.Logger.TRACE:
-                m_slf4jLogger.trace(msg == null ? "" : msg.toString(), t);
-            case mx4j.log.Logger.WARN:
-                m_slf4jLogger.warn(msg == null ? "" : msg.toString(), t);
-            }
-        }
-
-        @Override
-        protected void setCategory(String category) {
-            super.setCategory(category);
-            m_slf4jLogger = LoggerFactory.getLogger(category);
-        }
-
-    }
-
-    private void setupMx4jLogger() {
-        mx4j.log.Log.redirectTo(new Mx4jSlf4JLogger());
-    }
 
     private void configureLog4j() {
 

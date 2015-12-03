@@ -42,7 +42,6 @@
                     </bundles>
                     <features>
                         <feature>vaadin</feature>
-                        <feature>opennms-osgi-core</feature>
                     </features>
                 </configuration>
             </plugin>
@@ -69,11 +68,17 @@
         </pluginRepository>
     </pluginRepositories>
     <dependencies>
-       <dependency>
-			<groupId>org.opennms.osgi.features.topology</groupId>
-	      	<artifactId>vaadin</artifactId>
-	      	<type>pom</type>
-	    </dependency>
+        <dependency>
+            <groupId>org.opennms.features</groupId>
+            <artifactId>vaadin</artifactId>
+            <type>pom</type>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.features.vaadin-components</groupId>
+            <artifactId>core</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
         <dependency>
             <groupId>org.opennms.features.bsm</groupId>
             <artifactId>org.opennms.features.bsm.persistence.api</artifactId>
@@ -113,6 +118,12 @@
             <version>${project.version}</version>
             <scope>provided</scope>
         </dependency>
+        <dependency>
+            <groupId>org.opennms.features.themes</groupId>
+            <artifactId>bsm-theme</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <!-- Test dependencies -->
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>

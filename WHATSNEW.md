@@ -11,6 +11,8 @@ Important Upgrade Notes
 
 * **Clean Up Events and Alarms**: Please clean up your event and alarm lists as much as possible before performing an upgrade to OpenNMS 17. The upgrade process contains a large number of database schema migrations which will cause rewrites of all of the data in some tables. If you prune unused data from these tables beforehand, it will make the upgrade process much quicker.
 * **Remote Poller API Change**: Due to internal API changes, the Remote Poller API has changed in OpenNMS 17. If you upgrade to OpenNMS 17, you will also need to upgrade all Remote Pollers attached to the system to version 17 as well.
+* **RMI Security Updates**: Since OpenNMS 16.0.4, the RMI registry has been changed to only listen on localhost by default.  Starting in OpenNMS 17, it also now requires authentication using an OpenNMS administrator account.
+* **JMX Updates**: JMX is no longer enabled by default on port 18980.  If you have reason to access your OpenNMS instance remotely over JMX, you can reenable it by adding `-Dcom.sun.management.jmxremote.port=18980` and `-Dcom.sun.management.jmxremote.ssl=false` to `ADDITIONAL_MANAGER_OPTIONS` in `$OPENNMS_HOME/etc/opennms.conf`. Note that OpenNMS-JVM monitoring of the local instance (ie, localhost) will still work by using the JMX Access API, without needing to enable the TCP port.
 
 API Changes
 -----------
@@ -65,6 +67,7 @@ Retired Features
 * **Linkd**: Linkd was the original implementation of the link scanning daemon for OpenNMS. It has been superseded by Enhanced Linkd (Enlinkd) in OpenNMS 14 and higher. Linkd has been removed as of OpenNMS 17.
 * **SVG Maps**: The SVG map feature relied on Linkd's code for drawing links between items on the map so it was also removed in OpenNMS 17.
 * **Xmlrpcd**: Xmlrpcd was a daemon that relayed inventory and polling events to an external system over the XML-RPC protocol. Because you can accomplish almost all of its use cases by using the provisioning REST service, it has been removed.
+* **MX4J**: The MX4J HTTP interface has been removed in favor of using more modern JMX access methods that have been added in recent versions of the JVM. 
 
 Internal Updates
 ----------------
@@ -72,7 +75,7 @@ Internal Updates
 * The resource API for data storage has undergone heavy refactoring to provide changes necessary to support Newts.
 * The Jasper and statsd reports have been changed so that they use a new unified interface for fetching data from either RRD, JRobin, or Newts.
 * The Discovery engine has been refactored into its own project.
-* The REST interface was refactored to be based on Apache CXF 3.1.4.
+* The REST interface has been refactored to be based on Apache CXF 3.1.4.
 * The Dashboard has been rewritten using the Vaadin toolkit to modernize its look-and-feel.
 * The `opennms-assemblies/jmx-config-generator-onejar` project has been moved to `features/jmx-config-generator`.
 

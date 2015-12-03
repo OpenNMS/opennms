@@ -242,6 +242,26 @@ external JMS listener.
 %{extrainfo2}
 
 
+%package plugin-provisioning-map
+Summary:	Obsolete: Map Provisioning Adapter
+Group:		Applications/System
+Requires(pre):	%{name}-core = %{version}-%{release}
+Requires:	%{name}-core = %{version}-%{release}
+
+%description plugin-provisioning-map
+The map provisioning adapter is no longer part of OpenNMS.
+
+
+%package plugin-provisioning-link
+Summary:	Obsolete: Link Provisioning Adapter
+Group:		Applications/System
+Requires(pre):	%{name}-core = %{version}-%{release}
+Requires:	%{name}-core = %{version}-%{release}
+
+%description plugin-provisioning-link
+The map provisioning adapter is no longer part of OpenNMS.
+
+
 %package plugin-provisioning-dns
 Summary:	DNS Provisioning Adapter
 Group:		Applications/System
@@ -819,7 +839,6 @@ rm -rf $RPM_BUILD_ROOT
 %config(noreplace) %{instprefix}/etc/examples/3gpp-juniper/xml-*.xml
 %config(noreplace) %{instprefix}/etc/examples/3gpp-juniper/*datacollection*/3gpp*
 %config(noreplace) %{instprefix}/etc/examples/3gpp-juniper/snmp-graph.properties.d/3gpp*
-%config(noreplace) %{instprefix}/etc/examples/opennms-mx4j/*
 %{instprefix}/lib/org.opennms.protocols.xml-*.jar
 %attr(755,root,root) %{instprefix}/contrib/xml-collector/3gpp*
 %{sharedir}/etc-pristine/xml-*.xml

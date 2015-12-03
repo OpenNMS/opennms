@@ -39,7 +39,6 @@ import com.vaadin.server.Resource;
 public interface Config {
 
     int ATTRIBUTES_ALIAS_MAX_LENGTH = 19;
-    int NOTIFICATION_DELAY = 3000;
     int CONFIG_SNIPPET_MAX_LINES = 2500;
 
     /**

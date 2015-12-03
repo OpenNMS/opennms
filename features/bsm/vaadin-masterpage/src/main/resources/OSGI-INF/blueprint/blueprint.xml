@@ -18,7 +18,7 @@
     </bean>
     <bean id="bsmMasterPageUi" class="org.opennms.netmgt.bsm.vaadin.masterpage.AdminPageNavEntry">
         <property name="url" value="admin/bsm/masterpage.jsp" />
-        <property name="name" value="Business Service Monitoring Master Page" />
+        <property name="name" value="Business Services Master Page" />
     </bean>
 
     <service interface="org.opennms.vaadin.extender.ApplicationFactory" ref="bsmMasterPageApplicationFactory">

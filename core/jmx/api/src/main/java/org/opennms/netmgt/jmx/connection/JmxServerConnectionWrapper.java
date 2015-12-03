@@ -32,10 +32,11 @@ import javax.management.MBeanServerConnection;
 import java.io.Closeable;
 
 /**
- * Wraps the established {@link javax.management.MBeanServerConnection}.
- * <p/>
- * Basically this makes closing an established connection easier, du to the
- * <a href="http://docs.oracle.com/javase/tutorial/essential/exceptions/tryResourceClose.html">try-resource java 7 language feature</a>.
+ * <p>Wraps the established {@link javax.management.MBeanServerConnection}.<p/>
+ * 
+ * <p>Basically this makes closing an established connection easier, due to the
+ * <a href="http://docs.oracle.com/javase/tutorial/essential/exceptions/tryResourceClose.html">
+ * try-resource Java 7 language feature</a>.</p>
  */
 public interface JmxServerConnectionWrapper extends Closeable {
 

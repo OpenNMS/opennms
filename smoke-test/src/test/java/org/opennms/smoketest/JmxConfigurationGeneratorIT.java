@@ -1,7 +1,9 @@
 package org.opennms.smoketest;
 
-import com.google.common.base.Predicate;
-import com.google.common.collect.Collections2;
+import java.util.Collection;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -11,9 +13,9 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
-import java.util.Collection;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+
+import com.google.common.base.Predicate;
+import com.google.common.collect.Collections2;
 
 /**
  * Verifies that the Vaadin JMX Configuration Generator Application is deployed correctly.
@@ -55,7 +57,7 @@ public class JmxConfigurationGeneratorIT extends OpenNMSSeleniumTestCase {
 
     @Test
     public void testNavigation() throws InterruptedException {
-        updatePort();
+        updateConnection();
         findElementById("next").click();
 
         wait.until(pageContainsText(MBEANS_VIEW_TREE_WAIT_NAME));
@@ -80,7 +82,7 @@ public class JmxConfigurationGeneratorIT extends OpenNMSSeleniumTestCase {
      */
     @Test
     public void verifyCompMemberSelection() throws InterruptedException {
-        updatePort();
+        updateConnection();
         findElementByXpath("//span[@id='skipDefaultVM']/input").click(); // deselect
 
         // go to next page
@@ -109,20 +111,31 @@ public class JmxConfigurationGeneratorIT extends OpenNMSSeleniumTestCase {
         m_driver.switchTo().frame(findElementByXpath("/html/body/div/iframe"));
     }
 
-    private void updatePort() {
-        findElementById("port").clear();
-        waitForPort(""); // wait until is really empty
-        findElementById("port").sendKeys("18980"); // Set OpenNMS JMX port
-        waitForPort("18980"); // wait until set
+    private void updateConnection() {
+        updateElementValue("port", "18980");
+
+        // configure authentication
+        if (!findElementById("authenticate").isSelected()) {
+            findElementById("authenticate").findElement(By.tagName("input")).click();
+        };
+        updateElementValue("authenticateUser", "admin");
+        updateElementValue("authenticatePassword", "admin");
+    }
+
+    private void updateElementValue(final String elementName, final String elementText) {
+        findElementById(elementName).clear();
+        waitForValue(elementName, ""); // wait until is really empty
+        findElementById(elementName).sendKeys(elementText); // Set OpenNMS JMX port
+        waitForValue(elementName, elementText); // wait until set
     }
 
     // we have to wait, until the field is really ready, otherwise
     // the port might not have been set correctly
-    private void waitForPort(final String value) {
+    private void waitForValue(final String elementId, final String value) {
         wait.until(new Predicate<WebDriver>() {
             @Override
-            public boolean apply(WebDriver input) {
-                return value.equals(findElementById("port").getAttribute("value"));
+            public boolean apply(final WebDriver input) {
+                return value.equals(findElementById(elementId).getAttribute("value"));
             }
         });
     }

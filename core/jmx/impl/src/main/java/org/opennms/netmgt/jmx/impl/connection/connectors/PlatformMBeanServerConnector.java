@@ -28,14 +28,16 @@
 
 package org.opennms.netmgt.jmx.impl.connection.connectors;
 
-import org.opennms.netmgt.jmx.connection.JmxServerConnectionException;
-import org.opennms.netmgt.jmx.connection.JmxServerConnectionWrapper;
-import org.opennms.netmgt.jmx.connection.JmxServerConnector;
+import java.lang.management.ManagementFactory;
+import java.net.InetAddress;
+import java.util.Map;
 
 import javax.management.MBeanServer;
 import javax.management.MBeanServerConnection;
-import java.lang.management.ManagementFactory;
-import java.util.Map;
+
+import org.opennms.netmgt.jmx.connection.JmxServerConnectionException;
+import org.opennms.netmgt.jmx.connection.JmxServerConnectionWrapper;
+import org.opennms.netmgt.jmx.connection.JmxServerConnector;
 
 /**
  * This {@link JmxServerConnector} does not connect to a JMX server,
@@ -45,7 +47,7 @@ import java.util.Map;
  */
 public class PlatformMBeanServerConnector implements JmxServerConnector {
     @Override
-    public JmxServerConnectionWrapper createConnection(String ipAddress, Map<String, String> propertiesMap) throws JmxServerConnectionException {
+    public JmxServerConnectionWrapper createConnection(final InetAddress ipAddress, final Map<String, String> propertiesMap) throws JmxServerConnectionException {
         final MBeanServer platformMBeanServer = ManagementFactory.getPlatformMBeanServer();
         final JmxServerConnectionWrapper jmxConnectionWrapper = new JmxServerConnectionWrapper() {
             @Override

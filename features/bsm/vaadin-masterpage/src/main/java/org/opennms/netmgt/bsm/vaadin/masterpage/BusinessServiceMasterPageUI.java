@@ -28,19 +28,23 @@
 
 package org.opennms.netmgt.bsm.vaadin.masterpage;
 
+import java.util.List;
 import java.util.Objects;
 
 import org.opennms.netmgt.bsm.service.BusinessServiceManager;
+import org.opennms.netmgt.bsm.service.model.BusinessServiceDTO;
+import org.opennms.netmgt.model.OnmsSeverity;
 
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.Title;
 import com.vaadin.server.VaadinRequest;
-import com.vaadin.ui.Button;
+import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.Panel;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 
-@Theme("opennms")
+@Theme("bsm")
 @Title("Business Service Master Page")
 @SuppressWarnings("serial")
 public class BusinessServiceMasterPageUI extends UI {
@@ -55,19 +59,42 @@ public class BusinessServiceMasterPageUI extends UI {
 
 	@Override
 	protected void init(VaadinRequest request) {
-		Button b = new Button("Click me");
-		b.addClickListener(event -> businessServiceManager.findAll());
+		final VerticalLayout mainLayout = new VerticalLayout();
+		mainLayout.setMargin(true);
 
-		VerticalLayout layout = new VerticalLayout();
-		layout.addComponent(new Label("Welcome to the new Business Service Master Page *yay*"));
-		layout.addComponent(b);
-
-		setContent(layout);
+		final List<BusinessServiceDTO> serviceDTOs = businessServiceManager.findAll();
+		if (serviceDTOs.isEmpty()) {
+			mainLayout.addComponent(new Label("There are no Business Services defined."));
+		} else {
+			for (BusinessServiceDTO eachService : serviceDTOs) {
+				mainLayout.addComponent(createRow(eachService));
+			}
+		}
+		final Panel mainPanel = new Panel();
+		mainPanel.setCaption("Business Services Master Page");
+		mainPanel.setContent(mainLayout);
+		setContent(mainPanel);
 	}
 
 	public void setBusinessServiceManager(BusinessServiceManager businessServiceManager) {
 		Objects.requireNonNull(businessServiceManager);
 		this.businessServiceManager = transactionAwareBeanProxyFactory.createProxy(businessServiceManager);
-//		this.businessServiceManager = Objects.requireNonNull(businessServiceManager);
+	}
+
+	private HorizontalLayout createRow(BusinessServiceDTO serviceDTO) {
+		HorizontalLayout rowLayout = new HorizontalLayout();
+		rowLayout.setSizeFull();
+		rowLayout.setSpacing(true);
+
+		final OnmsSeverity severity = businessServiceManager.calculateStatus(serviceDTO.getId());
+		Label nameLabel = new Label(serviceDTO.getName());
+		nameLabel.setSizeFull();
+		nameLabel.setStyleName("h1");
+		nameLabel.addStyleName("bright");
+		nameLabel.addStyleName("severity");
+		nameLabel.addStyleName(severity.getLabel());
+
+		rowLayout.addComponent(nameLabel);
+		return rowLayout;
 	}
 }
