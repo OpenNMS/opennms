@@ -25,7 +25,9 @@ public class OsgiUrlPatternResponseIT {
         final String[] paths = new String[]{
                 "jmx-config-tool", "vaadin-surveillance-views?dashboard=true",
                 "vaadin-surveillance-views?dashboard=false",
-                "vaadin-surveillance-views-config", "wallboard-config"  };
+                "vaadin-surveillance-views-config", "wallboard-config",
+                "bsm-master-page"
+        };
 
         for (String eachPath : paths) {
             final String urlString = String.format("http://%s:%s/opennms/osgi/%s", OPENNMS_WEB_HOST, OPENNMS_WEB_PORT, eachPath);
