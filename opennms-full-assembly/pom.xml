@@ -322,13 +322,6 @@
       <classifier>docs</classifier>
     </dependency>
     <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-rxtx-assembly</artifactId>
-      <version>${project.version}</version>
-      <type>tar.gz</type>
-      <classifier>rxtx</classifier>
-    </dependency>
-    <dependency>
       <groupId>org.opennms.assemblies</groupId>
       <artifactId>org.opennms.assemblies.xsds</artifactId>
       <version>${project.version}</version>

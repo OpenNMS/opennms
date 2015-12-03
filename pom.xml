@@ -2107,12 +2107,6 @@
       </dependency>
       <dependency>
         <groupId>org.opennms.dependencies</groupId>
-        <artifactId>rxtx-dependencies</artifactId>
-        <version>${project.version}</version>
-        <type>pom</type>
-      </dependency>
-      <dependency>
-        <groupId>org.opennms.dependencies</groupId>
         <artifactId>servlet-dependencies</artifactId>
         <version>${project.version}</version>
         <type>pom</type>
@@ -3619,11 +3613,6 @@
         <groupId>org.tuckey</groupId>
         <artifactId>urlrewritefilter</artifactId>
         <version>4.0.3</version>
-      </dependency>
-      <dependency>
-        <groupId>org.rxtx</groupId>
-        <artifactId>rxtx</artifactId>
-        <version>2.2-pre2</version>
       </dependency>
       <dependency>
         <groupId>oro</groupId>
