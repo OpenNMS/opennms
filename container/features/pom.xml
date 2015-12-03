@@ -17,12 +17,12 @@
         <artifactId>features-maven-plugin</artifactId>
         <configuration>
           <name>opennms-${project.version}</name>
-          <!-- 
-            This option will recursively pull the all of the <repository> references inside all of the 
+          <!--
+            This option will recursively pull the all of the <repository> references inside all of the
             referenced repositories and put all of their features into a single <features> repository.
           -->
           <importRepositories>true</importRepositories>
-          <!-- 
+          <!--
             Don't import other repositories that are already inside well-organized feature hierarchies
             outside of OpenNMS (Karaf, ActiveMQ, Camel).
           -->
@@ -33,8 +33,8 @@
           </importRepositoryExclusions>
           <repositories>
 
-            <!-- 
-              We rely on features from Karaf's standard repository, but don't declare that dependency in 
+            <!--
+              We rely on features from Karaf's standard repository, but don't declare that dependency in
               this features.xml. This will allow us to run on any version Karaf that provides features with the
               same names, including vanilla Karaf and the org.opennms.container/karaf servlet bridge Karaf container.
             -->
@@ -58,6 +58,7 @@
             <repository>mvn:org.opennms.features/vaadin-jmxconfiggenerator/${project.version}/xml/features</repository>
 
             <!-- BSM features -->
+            <repository>mvn:org.opennms.features.bsm/org.opennms.features.bsm.service/${project.version}/xml/features</repository>
             <repository>mvn:org.opennms.features.bsm/vaadin-masterpage/${project.version}/xml/features</repository>
             <repository>mvn:org.opennms.features.bsm/vaadin-adminpage/${project.version}/xml/features</repository>
 
@@ -111,7 +112,7 @@
 
           </repositories>
 
-          <!-- 
+          <!--
             Import all of the features into the "opennms-${project.version}" feature. This list
             determines the JARs that are installed into the ${opennms.home}/system directory during
             opennms-full-assembly.
@@ -247,14 +248,18 @@
             <feature>opennms-topology-runtime-simple</feature>
             <feature>opennms-topology-runtime-vmware</feature>
             <feature>opennms-topology-runtime-application</feature>
+            <feature>vaadin</feature>
             <feature>vaadin-dashboard</feature>
             <feature>vaadin-jmxconfiggenerator</feature>
-            <feature>vaadin-masterpage</feature>
-            <feature>vaadin-adminpage</feature>
             <feature>vaadin-node-maps</feature>
             <feature>vaadin-snmp-events-and-metrics</feature>
             <feature>vaadin-surveillance-views</feature>
             <feature>opennms-elasticsearch-event-forwarder</feature>
+
+            <!-- BSM -->
+            <feature>org.opennms.features.bsm.service</feature>
+            <feature>vaadin-masterpage</feature>
+
           </features>
         </configuration>
       </plugin>
@@ -265,8 +270,8 @@
         <executions>
           <execution>
             <id>copy-resources</id>
-            <!-- 
-              Move this task from process-resources to generate-resources in the build cycle 
+            <!--
+              Move this task from process-resources to generate-resources in the build cycle
               so that it is available for the features-maven-plugin.
             -->
             <phase>generate-resources</phase>
