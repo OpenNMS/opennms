@@ -112,8 +112,12 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
 
         Assert.notNull(m_nodes);
         scheduleCollection();
-
+        loadBridgeTopology();
         LOG.info("init: ENHANCED LINKD INITIALIZED");
+    }
+
+    private void loadBridgeTopology() {
+        
     }
 
     private void scheduleCollection() {
@@ -152,41 +156,40 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
         if (m_linkdConfig.useLldpDiscovery()) {
             LOG.info("getSnmpCollections: adding Lldp Discovery: {}",
                     node);
-            NodeDiscoveryLldp lldpcoll = new NodeDiscoveryLldp(this, node);
-            snmpcolls.add(lldpcoll);
+            snmpcolls.add(new NodeDiscoveryLldp(this, node));
         }
         
         if (m_linkdConfig.useCdpDiscovery()) {
             LOG.info("getSnmpCollections: adding Cdp Discovery: {}",
                     node);
-             NodeDiscoveryCdp cdpcoll = new NodeDiscoveryCdp(this, node);
-             snmpcolls.add(cdpcoll);   	
+             snmpcolls.add(new NodeDiscoveryCdp(this, node));   	
         }
         
         if (m_linkdConfig.useBridgeDiscovery()) {
         	LOG.info("getSnmpCollections: adding IpNetToMedia Discovery: {}",
                     node);
-        	NodeDiscoveryIpNetToMedia ipnettomediacoll = new NodeDiscoveryIpNetToMedia(this, node);
-        	snmpcolls.add(ipnettomediacoll);
+        	snmpcolls.add(new NodeDiscoveryIpNetToMedia(this, node));
         	
         	LOG.info("getSnmpCollections: adding Bridge Discovery: {}",
                     node);
-        	NodeDiscoveryBridge bridgecoll = new NodeDiscoveryBridge(this, node);
-        	snmpcolls.add(bridgecoll);
+        	snmpcolls.add(new NodeDiscoveryBridge(this, node));
+        	
+                LOG.info("getSnmpCollections: adding Bridge Topology Discovery: {}",
+                         node);
+                 snmpcolls.add(new NodeDiscoveryBridgeTopology(this, node));
+
         }
 
         if (m_linkdConfig.useOspfDiscovery()) {
             LOG.info("getSnmpCollections: adding Ospf Discovery: {}",
                     node);
-        	NodeDiscoveryOspf ospfcoll = new NodeDiscoveryOspf(this, node);
-        	snmpcolls.add(ospfcoll);
+        	snmpcolls.add(new NodeDiscoveryOspf(this, node));
         }
 
         if (m_linkdConfig.useIsisDiscovery()) {
             LOG.info("getSnmpCollections: adding Is-Is Discovery: {}",
                     node);
-        	NodeDiscoveryIsis isiscoll = new NodeDiscoveryIsis(this, node);
-        	snmpcolls.add(isiscoll);
+        	snmpcolls.add(new NodeDiscoveryIsis(this, node));
         }
 
         return snmpcolls;
