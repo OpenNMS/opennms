@@ -41,9 +41,7 @@ import org.opennms.netmgt.dao.api.CdpLinkDao;
 import org.opennms.netmgt.model.CdpLink;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsNode.NodeType;
-import org.opennms.netmgt.model.topology.CdpInterface;
 import org.opennms.netmgt.model.topology.CdpTopologyLink;
-import org.opennms.netmgt.model.topology.NodeToNodeLink;
 import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.util.Assert;
 
