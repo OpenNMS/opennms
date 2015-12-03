@@ -99,7 +99,6 @@ public class BridgeMacLinkDaoHibernate extends AbstractDaoHibernate<BridgeMacLin
                 + "snmp.snmpifindex as target_ifindex, "
                 + "ip.ipaddr as target_ifname, "
                 + "snmp.snmpifindex as target_bridgeport, "
-                + "ip.id as target_id "
                 + "ip.id as target_id, "
                 + "mlink.bridgemaclinklastpolltime as lastPollTime "
 	        + "from bridgemaclink as mlink "
