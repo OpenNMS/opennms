@@ -112,7 +112,7 @@
     <property name="sessionFactory" ref="sessionFactory" />
   </bean>  
 
-  <bean id="bridgeTopologyDao" class="org.opennms.netmgt.BridgeTopologyDaoInMemory">
+  <bean id="bridgeTopologyDao" class="org.opennms.netmgt.dao.BridgeTopologyDaoInMemory">
   </bean>
 
     <bean id="queryManager" class="org.opennms.netmgt.enlinkd.EnhancedLinkdServiceImpl">
