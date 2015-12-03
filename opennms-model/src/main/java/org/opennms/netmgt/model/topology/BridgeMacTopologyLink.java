@@ -28,6 +28,8 @@
 
 package org.opennms.netmgt.model.topology;
 
+import java.util.Date;
+
 import org.opennms.netmgt.model.OnmsNode.NodeType;
 
 
@@ -57,8 +59,8 @@ public class BridgeMacTopologyLink extends TopologyLink {
             NodeType targetNodeType,
             String macAddr,
             Integer targetIfIndex, String targetPortIfName, 
-            Integer targetBridgePort, Integer targetid) {
-        super(nodeId,srcLabel,srcSysoid,srcLocation,srcNodeType,targetNodeId,targetLabel,targetSysoid,targetLocation,targetNodeType);
+            Integer targetBridgePort, Integer targetid, Date lastPollTime) {
+        super(lastPollTime,nodeId,srcLabel,srcSysoid,srcLocation,srcNodeType,targetNodeId,targetLabel,targetSysoid,targetLocation,targetNodeType);
         m_id = id;
         m_bridgePort = bridgePort;
         m_bridgePortIfIndex = bridgePortIfIndex;
