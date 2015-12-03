@@ -68,7 +68,7 @@ import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.CdpLink.CiscoNetworkProtocolType;
 import org.opennms.netmgt.nb.Nms8000NetworkBuilder;
 
-public class Nms8000EnTest extends EnLinkdTestBuilder {
+public class Nms8000EnIT extends EnLinkdBuilderITCase {
         
 	Nms8000NetworkBuilder builder = new Nms8000NetworkBuilder();        
     /* 
