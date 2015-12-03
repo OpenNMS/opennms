@@ -101,7 +101,6 @@ public final class NodeDiscoveryBridge extends NodeDiscovery {
 			getPeer().setReadCommunity(community);
 		}
 		LOG.debug("run: found on node: '{}' bridge ifindex map {}",getNodeId(), bridgeifindex);
-		m_linkd.getQueryManager().storeBridgeToIfIndexMap(getNodeId(), bridgeifindex);
 		walkDot1qTpFdp(bridgeifindex);
 		m_linkd.getQueryManager().reconcileBridge(getNodeId(), now);
 	}
@@ -238,8 +237,6 @@ public final class NodeDiscoveryBridge extends NodeDiscovery {
 		} else {
 			walkSpanningTree(bridge.getBaseBridgeAddress(),vlan, bridgetoifindex);
 		}
-		if (vlan != null)
-		    m_linkd.getQueryManager().storeBridgetoVlanMap(getNodeId(), bridgetoifindex.keySet(), vlan);
 		walkDot1dTpFdp(vlan,bridgetoifindex);
 		return bridgetoifindex;
 	}
