@@ -28,11 +28,9 @@
 
 package org.opennms.netmgt.jmx.connection;
 
-
-import org.opennms.netmgt.jmx.impl.connection.connectors.DefaultConnectionManager;
 import org.junit.Assert;
 import org.junit.Test;
-import java.lang.reflect.Field;
+import org.opennms.netmgt.jmx.impl.connection.connectors.DefaultConnectionManager;
 
 public class JmxConnectorsTest {
 
@@ -40,12 +38,9 @@ public class JmxConnectorsTest {
     public void testConnectionHasConnectorAssigned() throws IllegalAccessException, JmxServerConnectionException {
         DefaultConnectionManager connectionManager = new DefaultConnectionManager();
 
-        for (Field eachField : JmxConnectors.class.getFields()) {
-            Object connectorName = eachField.get(null);
+        for (JmxConnectors connectorName : JmxConnectors.values()) {
             Assert.assertNotNull(connectorName);
-            Assert.assertEquals(String.class, connectorName.getClass());
-            Assert.assertFalse("ConnectorName should not be an empty string", ((String) connectorName).isEmpty());
-            Assert.assertNotNull(connectionManager.getConnector((String) connectorName));
+            Assert.assertNotNull(connectionManager.getConnector(connectorName));
         }
     }
 }

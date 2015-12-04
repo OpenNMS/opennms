@@ -255,8 +255,7 @@ public class CachingForeignSourceRepository extends AbstractForeignSourceReposit
 	public void delete(final ForeignSource foreignSource) throws ForeignSourceRepositoryException {
 		readLock();
 		try {
-			final Map<String,ForeignSource> fses = getForeignSourceMap();
-			fses.remove(foreignSource.getName());
+			getForeignSourceMap().remove(foreignSource.getName());
 			m_dirtyForeignSources.add(foreignSource.getName());
 		} finally {
 			readUnlock();
@@ -429,5 +428,16 @@ public class CachingForeignSourceRepository extends AbstractForeignSourceReposit
     @Override
     public void flush() throws ForeignSourceRepositoryException {
         getRefreshRunnable().run();
+    }
+
+    @Override
+    public void clear() throws ForeignSourceRepositoryException {
+        cleanCache();
+        writeLock();
+        try {
+            m_foreignSourceRepository.clear();
+        } finally {
+            writeUnlock();
+        }
     }
 }

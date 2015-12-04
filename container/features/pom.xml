@@ -50,8 +50,8 @@
             <!-- OpenNMS features bundle -->
             <repository>file:${project.build.outputDirectory}/features.xml</repository>
 
-            <!-- OpenNMS OSGi core -->
-            <repository>mvn:org.opennms.osgi/opennms-osgi-core/${project.version}/xml/features</repository>
+            <!-- JAAS Login Module -->
+            <repository>mvn:org.opennms.container/jaas-login-module/${project.version}/xml/features</repository>
 
             <!-- JMX Config Generator features -->
             <repository>mvn:org.opennms.features/jmxconfiggenerator/${project.version}/xml/features</repository>
@@ -75,6 +75,9 @@
             <repository>mvn:org.opennms.osgi.features.topology/opennms-topology-runtime-sfree/${project.version}/xml/features</repository>
             <repository>mvn:org.opennms.osgi.features.topology/opennms-topology-runtime-simple/${project.version}/xml/features</repository>
             <repository>mvn:org.opennms.osgi.features.topology/opennms-topology-runtime-vmware/${project.version}/xml/features</repository>
+
+            <!-- Vaadin Feature -->
+            <repository>mvn:org.opennms.features/vaadin/${project.version}/xml/features</repository>
 
             <!-- Vaadin Dashboard Feature-->
             <repository>mvn:org.opennms.features/vaadin-dashboard/${project.version}/xml/features</repository>
@@ -189,9 +192,9 @@
             <feature>postgresql</feature>
 
             <!-- Features from other OpenNMS repositories -->
-            <feature>opennms-osgi-core</feature>
             <feature>opennms-core</feature>
             <feature>opennms-core-web</feature>
+            <feature>opennms-jaas-login-module</feature>
             <feature>dashlet-alarms</feature>
             <feature>dashlet-charts</feature>
             <feature>dashlet-image</feature>
@@ -204,8 +207,9 @@
             <feature>dashlet-topology</feature>
             <feature>dashlet-url</feature>
             <feature>nrtg</feature>
-            <feature>opennms-activemq-event-forwarder</feature>
-            <feature>opennms-activemq-event-receiver</feature>
+            <feature>opennms-amqp-event-forwarder</feature>
+            <feature>opennms-amqp-event-receiver</feature>
+            <feature>opennms-amqp-alarm-northbounder</feature>
             <feature>opennms-topology-dev</feature>
             <feature>opennms-topology-runtime-base</feature>
             <feature>opennms-topology-runtime-browsers</feature>
@@ -259,10 +263,9 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>org.opennms.osgi</groupId>
-      <artifactId>opennms-osgi-core</artifactId>
+      <groupId>org.opennms.container</groupId>
+      <artifactId>jaas-login-module</artifactId>
       <version>${project.version}</version>
-      <type>pom</type>
       <scope>provided</scope>
     </dependency>
     <dependency>
@@ -295,6 +298,13 @@
     <dependency>
       <groupId>org.opennms.osgi.features.nrtg</groupId>
       <artifactId>nrtg</artifactId>
+      <version>${project.version}</version>
+      <type>pom</type>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features</groupId>
+      <artifactId>vaadin</artifactId>
       <version>${project.version}</version>
       <type>pom</type>
       <scope>provided</scope>
