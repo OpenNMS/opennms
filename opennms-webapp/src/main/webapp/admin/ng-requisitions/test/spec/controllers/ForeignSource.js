@@ -35,7 +35,7 @@ describe('Controller: ForeignSourceController', function () {
     mockRequisitionsService.getForeignSourceDefinition = jasmine.createSpy('getForeignSourceDefinition');
     mockRequisitionsService.getTiming = jasmine.createSpy('getTiming');
     var requisitionDefer = $q.defer();
-    requisitionDefer.resolve({ detectors: [], policies: [] });
+    requisitionDefer.resolve({ detectors: [{'name':'ICMP'},{'name':'SNMP'}], policies: [{'name':'Foo'},{'name':'Bar'}] });
     mockRequisitionsService.getForeignSourceDefinition.andReturn(requisitionDefer.promise);
     mockRequisitionsService.getTiming.andReturn({ isRunning: false });
 
@@ -52,6 +52,10 @@ describe('Controller: ForeignSourceController', function () {
     scope.$digest();
     expect(mockRequisitionsService.getForeignSourceDefinition).toHaveBeenCalledWith(foreignSource);
     expect(scope.foreignSource).toBe(foreignSource);
+    expect(scope.indexOfDetector({name:'ICMP'})).toBe(0);
+    expect(scope.indexOfPolicy({name:'Foo'})).toBe(0);
+    expect(scope.indexOfDetector({name:'HTTP'})).toBe(-1);
+    expect(scope.indexOfPolicy({name:'Test'})).toBe(-1);
   });
 
 });

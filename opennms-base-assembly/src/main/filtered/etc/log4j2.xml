@@ -93,9 +93,6 @@
     <logger name="httpclient" additivity="false" level="INFO">
       <appender-ref ref="RoutingAppender"/>
     </logger>
-    <logger name="mx4j" additivity="false" level="INFO">
-      <appender-ref ref="RoutingAppender"/>
-    </logger>
     <logger name="net.sf.jasperreports" additivity="false" level="INFO">
       <appender-ref ref="RoutingAppender"/>
     </logger>

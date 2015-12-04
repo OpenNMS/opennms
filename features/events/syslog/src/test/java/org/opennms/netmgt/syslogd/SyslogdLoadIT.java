@@ -148,20 +148,11 @@ public class SyslogdLoadIT implements InitializingBean {
         }
     }
 
-    private void startSyslogdGracefully() {
-        try {
-            m_syslogd = new Syslogd();
-            m_syslogd.setConfigFactory(m_config);
-            m_syslogd.init();
-            m_syslogd.start();
-        } catch (UndeclaredThrowableException ute) {
-            if (ute.getCause() instanceof BindException) {
-                LOG.warn("received a bind exception", ute);
-                // continue, this was expected
-            } else {
-                throw ute;
-            }
-        }
+    private void startSyslogdGracefully() throws Exception {
+        m_syslogd = new Syslogd();
+        m_syslogd.setSyslogReceiver(new SyslogReceiverJavaNetImpl(m_config));
+        m_syslogd.init();
+        SyslogdTestUtils.startSyslogdGracefully(m_syslogd);
     }
 
     @Test

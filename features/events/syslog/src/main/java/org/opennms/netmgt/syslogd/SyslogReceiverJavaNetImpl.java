@@ -32,6 +32,7 @@ import java.io.IOException;
 import java.io.InterruptedIOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
+import java.net.InetSocketAddress;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.util.concurrent.ExecutionException;
@@ -43,6 +44,7 @@ import java.util.concurrent.TimeUnit;
 import org.opennms.core.concurrent.LogPreservingThreadFactory;
 import org.opennms.core.concurrent.WaterfallExecutor;
 import org.opennms.core.logging.Logging;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.SyslogdConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,7 +54,7 @@ import org.slf4j.LoggerFactory;
  * @author <a href="http://www.oculan.com">Oculan Corporation</a>
  * @fiddler joed
  */
-class SyslogReceiverJavaNetImpl implements SyslogReceiver {
+public class SyslogReceiverJavaNetImpl implements SyslogReceiver {
     private static final Logger LOG = LoggerFactory.getLogger(SyslogReceiverJavaNetImpl.class);
 
     private static final int SOCKET_TIMEOUT = 500;
@@ -65,7 +67,7 @@ class SyslogReceiverJavaNetImpl implements SyslogReceiver {
     /**
      * The UDP socket for receipt and transmission of packets from agents.
      */
-    private final DatagramSocket m_dgSock;
+    private DatagramSocket m_dgSock;
 
     /**
      * The context thread
@@ -76,6 +78,19 @@ class SyslogReceiverJavaNetImpl implements SyslogReceiver {
 
     private final ExecutorService m_executor;
 
+    private static DatagramSocket openSocket(SyslogdConfig config) throws SocketException {
+        // The UDP socket for receipt of packets
+        DatagramSocket dgSock;
+
+        if (config.getListenAddress() != null && config.getListenAddress().length() != 0) {
+            dgSock = new DatagramSocket(config.getSyslogPort(), InetAddressUtils.addr(config.getListenAddress()));
+        } else {
+            dgSock = new DatagramSocket(config.getSyslogPort());
+        }
+
+        return dgSock;
+    }
+
     /**
      * construct a new receiver
      *
@@ -84,15 +99,13 @@ class SyslogReceiverJavaNetImpl implements SyslogReceiver {
      * @param hostGroup
      * @param messageGroup
      */
-    SyslogReceiverJavaNetImpl(DatagramSocket sock, final SyslogdConfig config) {
-        if (sock == null) {
-            throw new IllegalArgumentException("Socket cannot be null");
-        } else if (config == null) {
+    public SyslogReceiverJavaNetImpl(final SyslogdConfig config) throws SocketException {
+        if (config == null) {
             throw new IllegalArgumentException("Config cannot be null");
         }
 
         m_stop = false;
-        m_dgSock = sock;
+        m_dgSock = null;
         m_config = config;
 
         m_executor = new ThreadPoolExecutor(
@@ -103,6 +116,12 @@ class SyslogReceiverJavaNetImpl implements SyslogReceiver {
             new LinkedBlockingQueue<Runnable>(),
             new LogPreservingThreadFactory(getClass().getSimpleName(), Integer.MAX_VALUE)
         );
+    }
+
+    @Override
+    public String getName() {
+        String listenAddress = (m_config.getListenAddress() != null && m_config.getListenAddress().length() > 0) ? m_config.getListenAddress() : "0.0.0.0";
+        return getClass().getSimpleName() + " [" + listenAddress + ":" + m_config.getSyslogPort() + "]";
     }
 
     /*
@@ -151,6 +170,14 @@ class SyslogReceiverJavaNetImpl implements SyslogReceiver {
         final int length = 0xffff;
         final byte[] buffer = new byte[length];
 
+        try {
+            LOG.debug("Creating syslog socket");
+            m_dgSock = new DatagramSocket(null);
+        } catch (SocketException e) {
+            LOG.warn("Could not create syslog socket: " + e.getMessage(), e);
+            return;
+        }
+
         // set an SO timeout to make sure we don't block forever
         // if a socket is closed.
         try {
@@ -158,6 +185,16 @@ class SyslogReceiverJavaNetImpl implements SyslogReceiver {
             m_dgSock.setSoTimeout(SOCKET_TIMEOUT);
         } catch (SocketException e) {
             LOG.warn("An I/O error occured while trying to set the socket timeout", e);
+        }
+
+        // Set SO_REUSEADDR so that we don't run into problems in
+        // unit tests trying to rebind to an address where other tests
+        // also bound. This shouldn't have any effect at runtime.
+        try {
+            LOG.debug("Setting socket SO_REUSEADDR to true");
+            m_dgSock.setReuseAddress(true);
+        } catch (SocketException e) {
+            LOG.warn("An I/O error occured while trying to set SO_REUSEADDR", e);
         }
 
         // Increase the receive buffer for the socket
@@ -168,6 +205,18 @@ class SyslogReceiverJavaNetImpl implements SyslogReceiver {
         } catch (SocketException e) {
             LOG.info("Failed to set the receive buffer to {}", Integer.MAX_VALUE, e);
         }
+
+        try {
+            LOG.debug("Opening datagram socket");
+            if (m_config.getListenAddress() != null && m_config.getListenAddress().length() != 0) {
+                m_dgSock.bind(new InetSocketAddress(InetAddressUtils.addr(m_config.getListenAddress()), m_config.getSyslogPort()));
+            } else {
+                m_dgSock.bind(new InetSocketAddress(m_config.getSyslogPort()));
+            }
+        } catch (SocketException e) {
+            LOG.info("Failed to open datagram socket", e);
+        }
+
         // set to avoid numerous tracing message
         boolean ioInterrupted = false;
 

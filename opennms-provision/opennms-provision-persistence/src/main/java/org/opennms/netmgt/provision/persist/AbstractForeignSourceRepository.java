@@ -39,6 +39,7 @@ import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.provision.persist.foreignsource.ForeignSource;
 import org.opennms.netmgt.provision.persist.requisition.Requisition;
+import org.opennms.netmgt.provision.persist.requisition.RequisitionNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.ClassPathResource;
@@ -46,9 +47,9 @@ import org.springframework.core.io.Resource;
 import org.springframework.util.Assert;
 
 public abstract class AbstractForeignSourceRepository implements ForeignSourceRepository {
-    
+
     private static final Logger LOG = LoggerFactory.getLogger(AbstractForeignSourceRepository.class);
-    
+
     /**
      * <p>Constructor for AbstractForeignSourceRepository.</p>
      */
@@ -59,7 +60,7 @@ public abstract class AbstractForeignSourceRepository implements ForeignSourceRe
     @Override
     public Requisition importResourceRequisition(final Resource resource) throws ForeignSourceRepositoryException {
         Assert.notNull(resource);
- 
+
         LOG.debug("importing requisition from {}", resource);
         final Requisition requisition = JaxbUtils.unmarshal(Requisition.class, resource);
         requisition.setResource(resource);
@@ -129,30 +130,36 @@ public abstract class AbstractForeignSourceRepository implements ForeignSourceRe
         Requisition req = getRequisition(foreignSource);
         return (req == null ? null : req.getNodeRequistion(foreignId));
     }
-    
+
     @Override
     public void validate(final ForeignSource foreignSource) throws ForeignSourceRepositoryException {
-        /*
-    	final String name = foreignSource.getName();
-		if (name.contains(":")) {
-    		throw new ForeignSourceRepositoryException("Foreign Source (" + name + ") cannot contain a colon!");
-    	}
-         */
+        final String name = foreignSource.getName();
+        if (name.contains("/")) {
+            throw new ForeignSourceRepositoryException("Foreign Source (" + name + ") contains invalid characters. ('/' is forbidden.)");
+        }
     }
-    
+
     @Override
     public void validate(final Requisition requisition) throws ForeignSourceRepositoryException {
-        /*
-    	final String foreignSource = requisition.getForeignSource();
-		if (foreignSource.contains(":")) {
-    		throw new ForeignSourceRepositoryException("Foreign Source (" + foreignSource + ") cannot contain a colon!");
-    	}
-    	for (final RequisitionNode node : requisition.getNodes()) {
-    		final String foreignId = node.getForeignId();
-			if (foreignId.contains(":")) {
-        		throw new ForeignSourceRepositoryException("Foreign ID (" + foreignId + ") for node " + node.getNodeLabel() + " in Foreign Source " + foreignSource + " cannot contain a colon!");
-    		}
-    	}
-         */
+        final String foreignSource = requisition.getForeignSource();
+        if (foreignSource.contains("/")) {
+            throw new ForeignSourceRepositoryException("Foreign Source (" + foreignSource + ") contains invalid characters. ('/' is forbidden.)");
+        }
+        for (final RequisitionNode node : requisition.getNodes()) {
+            final String foreignId = node.getForeignId();
+            if (foreignId.contains("/")) {
+                throw new ForeignSourceRepositoryException("Foreign ID (" + foreignId + ") for node " + node.getNodeLabel() + " in Foreign Source " + foreignSource + " contains invalid characters. '/' is forbidden.)");
+            }
+        }
+    }
+
+    @Override
+    public void clear() throws ForeignSourceRepositoryException {
+        for (final Requisition req : getRequisitions()) {
+            if (req != null) delete(req);
+        }
+        for (final ForeignSource fs : getForeignSources()) {
+            if (fs != null) delete(fs);
+        }
     }
 }

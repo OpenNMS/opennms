@@ -44,6 +44,7 @@ import java.util.concurrent.TimeUnit;
 import org.opennms.core.concurrent.LogPreservingThreadFactory;
 import org.opennms.core.concurrent.WaterfallExecutor;
 import org.opennms.core.logging.Logging;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.SyslogdConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,7 +55,7 @@ import org.slf4j.LoggerFactory;
  * @author <a href="http://www.oculan.com">Oculan Corporation</a>
  * @fiddler joed
  */
-class SyslogReceiverNioThreadPoolImpl implements SyslogReceiver {
+public class SyslogReceiverNioThreadPoolImpl implements SyslogReceiver {
 
     private static final Logger LOG = LoggerFactory.getLogger(SyslogReceiverNioThreadPoolImpl.class);
 
@@ -77,7 +78,7 @@ class SyslogReceiverNioThreadPoolImpl implements SyslogReceiver {
      */
     private volatile boolean m_stop;
 
-    private final DatagramChannel m_channel;
+    private DatagramChannel m_channel;
 
     /**
      * The context thread
@@ -90,6 +91,20 @@ class SyslogReceiverNioThreadPoolImpl implements SyslogReceiver {
 
     private final ExecutorService m_socketReceivers;
 
+    public static DatagramChannel openChannel(SyslogdConfig config) throws SocketException, IOException {
+        DatagramChannel channel = DatagramChannel.open();
+        // Set SO_REUSEADDR so that we don't run into problems in
+        // unit tests trying to rebind to an address where other tests
+        // also bound. This shouldn't have any effect at runtime.
+        channel.socket().setReuseAddress(true);
+        if (config.getListenAddress() != null && config.getListenAddress().length() != 0) {
+            channel.socket().bind(new InetSocketAddress(InetAddressUtils.addr(config.getListenAddress()), config.getSyslogPort()));
+        } else {
+            channel.socket().bind(new InetSocketAddress(config.getSyslogPort()));
+        }
+        return channel;
+    }
+
     /**
      * Construct a new receiver
      *
@@ -98,15 +113,13 @@ class SyslogReceiverNioThreadPoolImpl implements SyslogReceiver {
      * @param hostGroup
      * @param messageGroup
      */
-    SyslogReceiverNioThreadPoolImpl(DatagramChannel channel, SyslogdConfig config) {
-        if (channel == null) {
-            throw new IllegalArgumentException("Channel cannot be null");
-        } else if (config == null) {
+    public SyslogReceiverNioThreadPoolImpl(SyslogdConfig config) throws SocketException, IOException {
+        if (config == null) {
             throw new IllegalArgumentException("Config cannot be null");
         }
 
         m_stop = false;
-        m_channel = channel;
+        m_channel = null;
         m_config = config;
 
         m_executor = new ThreadPoolExecutor(
@@ -131,6 +144,12 @@ class SyslogReceiverNioThreadPoolImpl implements SyslogReceiver {
         );
     }
 
+    @Override
+    public String getName() {
+        String listenAddress = (m_config.getListenAddress() != null && m_config.getListenAddress().length() > 0) ? m_config.getListenAddress() : "0.0.0.0";
+        return getClass().getSimpleName() + " [" + listenAddress + ":" + m_config.getSyslogPort() + "]";
+    }
+
     /**
      * stop the current receiver
      * @throws InterruptedException
@@ -145,6 +164,14 @@ class SyslogReceiverNioThreadPoolImpl implements SyslogReceiver {
 
         // Shut down the thread pools that are executing SyslogConnection and SyslogProcessor tasks
         m_executor.shutdown();
+
+        try {
+            m_channel.close();
+        } catch (IOException e) {
+            LOG.warn("Exception while closing syslog channel: " + e.getMessage());
+        } finally {
+            m_channel = null;
+        }
 
         if (m_context != null) {
             LOG.debug("Stopping and joining thread context {}", m_context.getName());
@@ -170,6 +197,13 @@ class SyslogReceiverNioThreadPoolImpl implements SyslogReceiver {
             return;
         } else {
             LOG.debug("Thread context started");
+        }
+
+        try {
+            LOG.debug("Opening syslog channel...");
+            m_channel = openChannel(m_config);
+        } catch (IOException e) {
+            LOG.warn("An I/O error occured while trying to set the socket timeout", e);
         }
 
         // set an SO timeout to make sure we don't block forever
