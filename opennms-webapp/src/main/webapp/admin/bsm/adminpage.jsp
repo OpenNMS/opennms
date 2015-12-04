@@ -1,56 +1,46 @@
+<%--
 /*******************************************************************************
  * This file is part of OpenNMS(R).
- * <p>
+ *
  * Copyright (C) 2015 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2015 The OpenNMS Group, Inc.
- * <p>
+ *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
- * <p>
+ *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
- * <p>
+ *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Affero General Public License for more details.
- * <p>
+ *
  * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
- * http://www.gnu.org/licenses/
- * <p>
+ *      http://www.gnu.org/licenses/
+ *
  * For more information contact:
- * OpenNMS(R) Licensing <license@opennms.org>
- * http://www.opennms.org/
- * http://www.opennms.com/
+ *     OpenNMS(R) Licensing <license@opennms.org>
+ *     http://www.opennms.org/
+ *     http://www.opennms.com/
  *******************************************************************************/
+--%>
 
-package org.opennms.netmgt.bsm.service;
+<%@page language="java"
+        contentType="text/html"
+        session="true"
+%>
 
-import java.util.List;
+<jsp:include page="/includes/bootstrap.jsp" flush="false" >
+    <jsp:param name="title" value="Manage Business Services" />
+    <jsp:param name="headTitle" value="Manage Business Services" />
+    <jsp:param name="location" value="admin" />
+    <jsp:param name="breadcrumb" value="<a href='admin/index.jsp'>Admin</a>" />
+    <jsp:param name="breadcrumb" value="Business Services" />
+    <jsp:param name="vaadinEmbeddedStyles" value="true" />
+</jsp:include>
 
-import org.opennms.netmgt.bsm.service.model.BusinessServiceDTO;
-import org.opennms.netmgt.bsm.service.model.IpServiceDTO;
-import org.opennms.netmgt.model.OnmsSeverity;
-
-public interface BusinessServiceManager {
-
-    List<BusinessServiceDTO> findAll();
-
-    Long save(BusinessServiceDTO newObject);
-
-    void update(BusinessServiceDTO objectToUpdate);
-
-    BusinessServiceDTO getById(Long id);
-
-    void delete(Long id);
-
-    boolean assignIpInterface(Long serviceId, Integer ipServiceId);
-
-    boolean removeIpInterface(Long serviceId, Integer ipServiceId);
-
-    List<IpServiceDTO> getAllIpServiceDTO();
-
-    OnmsSeverity calculateStatus(Long serviceId);
-}
+<iframe id="vaadin-content" src="osgi/bsm-admin-page" frameborder="0" style="height:100%; width:100%;"></iframe>
+<jsp:include page="/includes/bootstrap-footer.jsp" flush="true"/>

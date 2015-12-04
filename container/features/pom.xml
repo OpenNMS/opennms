@@ -59,6 +59,7 @@
 
             <!-- BSM features -->
             <repository>mvn:org.opennms.features.bsm/org.opennms.features.bsm.service/${project.version}/xml/features</repository>
+            <repository>mvn:org.opennms.features.bsm/vaadin-adminpage/${project.version}/xml/features</repository>
             <repository>mvn:org.opennms.features.bsm/vaadin-masterpage/${project.version}/xml/features</repository>
 
             <!-- MIB Parser and Event/Collection features -->
@@ -225,7 +226,8 @@
             <feature>opennms-topology-runtime-application</feature>
             <feature>vaadin</feature>
             <feature>vaadin-dashboard</feature>
-            <feature>vaadin-jmxconfiggenerator</feature>
+            <feature>vaadin-jmxconfiggenerator</feature>>
+
             <feature>vaadin-node-maps</feature>
             <feature>vaadin-snmp-events-and-metrics</feature>
             <feature>vaadin-surveillance-views</feature>
@@ -233,6 +235,7 @@
 
             <!-- BSM -->
             <feature>org.opennms.features.bsm.service</feature>
+            <feature>vaadin-adminpage</feature>
             <feature>vaadin-masterpage</feature>
 
           </features>
@@ -289,6 +292,13 @@
     <dependency>
       <groupId>org.opennms.features.bsm</groupId>
       <artifactId>vaadin-masterpage</artifactId>
+      <version>${project.version}</version>
+      <type>pom</type>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.bsm</groupId>
+      <artifactId>vaadin-adminpage</artifactId>
       <version>${project.version}</version>
       <type>pom</type>
       <scope>provided</scope>
