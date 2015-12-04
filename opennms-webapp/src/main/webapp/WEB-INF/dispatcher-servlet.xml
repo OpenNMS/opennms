@@ -16,7 +16,19 @@
     <!-- Scan the following packages for controllers that are annotated with the @Controller annotation -->
     <context:component-scan base-package="org.opennms.web.controller"/>
 
-    <context:property-placeholder ignore-unresolvable="true"/>
+    <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <property name="systemPropertiesModeName" value="SYSTEM_PROPERTIES_MODE_OVERRIDE" />
+        <!-- 
+          We need to ignore unresolvable placeholders since if multiple PropertyPlaceholderConfigurer
+          preprocessors are in use in a single context (such as inside unit tests), Spring will encounter
+          the issue documented here:
+
+          https://jira.springsource.org/browse/SPR-6428
+
+          TODO: Fix this behavior after upgrading to Spring 3.1.
+        -->
+        <property name="ignoreUnresolvablePlaceholders" value="true"/>
+    </bean>
 
     <!-- Map controllers based on their bean name -->
     <bean class="org.springframework.web.servlet.handler.BeanNameUrlHandlerMapping">

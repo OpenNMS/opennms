@@ -13,8 +13,6 @@
        ">
 
   <context:annotation-config />
-  <context:property-placeholder ignore-unresolvable="true"/>
-
   <cache:annotation-driven />
 
   <!-- Spring Cache Manager -->
@@ -27,6 +25,20 @@
         </bean>
       </set>
     </property>
+  </bean>
+
+  <bean id="propertyPlaceholderConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+    <property name="systemPropertiesModeName" value="SYSTEM_PROPERTIES_MODE_OVERRIDE" />
+    <!-- 
+      We need to ignore unresolvable placeholders since if multiple PropertyPlaceholderConfigurer
+      preprocessors are in use in a single context (such as inside unit tests), Spring will encounter
+      the issue documented here:
+
+      https://jira.springsource.org/browse/SPR-6428
+
+      TODO: Fix this behavior after upgrading to Spring 3.1.
+    -->
+    <property name="ignoreUnresolvablePlaceholders" value="true"/>
   </bean>
 
   <!-- 
