@@ -5,6 +5,7 @@ import static org.junit.Assert.assertNotNull;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Date;
 import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
@@ -121,6 +122,7 @@ public class RequisitionImplementationTest implements InitializingBean, Applicat
         runTest(
                 fsr -> {
                     final Requisition req = new Requisition("foo bar");
+                    req.setDate(new Date(0));
                     fsr.save(req);
                     fsr.flush();
                     final Requisition saved = fsr.getRequisition("foo bar");
