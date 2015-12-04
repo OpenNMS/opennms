@@ -31,6 +31,7 @@ package org.opennms.netmgt.bsm.vaadin.adminpage;
 import java.util.Objects;
 
 import org.opennms.netmgt.bsm.service.BusinessServiceManager;
+import org.opennms.netmgt.vaadin.core.TransactionAwareBeanProxyFactory;
 
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.Title;

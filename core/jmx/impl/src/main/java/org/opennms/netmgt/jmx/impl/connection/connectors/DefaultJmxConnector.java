@@ -28,6 +28,18 @@
 
 package org.opennms.netmgt.jmx.impl.connection.connectors;
 
+import java.io.IOException;
+import java.net.InetAddress;
+import java.net.MalformedURLException;
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.management.MBeanServerConnection;
+import javax.management.remote.JMXConnector;
+import javax.management.remote.JMXConnectorFactory;
+import javax.management.remote.JMXServiceURL;
+
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.netmgt.jmx.connection.JmxServerConnectionException;
 import org.opennms.netmgt.jmx.connection.JmxServerConnectionWrapper;
@@ -35,31 +47,46 @@ import org.opennms.netmgt.jmx.connection.JmxServerConnector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.management.MBeanServerConnection;
-import javax.management.remote.JMXConnector;
-import javax.management.remote.JMXConnectorFactory;
-import javax.management.remote.JMXServiceURL;
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.util.HashMap;
-import java.util.Map;
-
 /**
- * Implements the default "jsr160" connection logic.
+ * Implements the default "jsr160" connection logic. If attempting to connect to a localhost
+ * address on the default OpenNMS JMX port, it will also bypass using a socket connection
+ * and connect directly to the JVM's MBeanServer.
  */
 class DefaultJmxConnector implements JmxServerConnector {
 
     private static final Logger LOG = LoggerFactory.getLogger(DefaultJmxConnector.class);
 
     @Override
-    public JmxServerConnectionWrapper createConnection(final String ipAddress, final Map<String, String> propertiesMap) throws JmxServerConnectionException {
+    public JmxServerConnectionWrapper createConnection(final InetAddress ipAddress, final Map<String, String> propertiesMap) throws JmxServerConnectionException {
         try {
             final String factory = ParameterMap.getKeyedString(propertiesMap, "factory", "STANDARD");
             final String port = ParameterMap.getKeyedString(propertiesMap, "port", "1099");
             final String protocol = ParameterMap.getKeyedString(propertiesMap, "protocol", "rmi");
             final String urlPath = ParameterMap.getKeyedString(propertiesMap, "urlPath",  "/jmxrmi");
 
-            final JMXServiceURL url = new JMXServiceURL("service:jmx:" + protocol + ":///jndi/"+protocol+"://" + ipAddress + ":" + port + urlPath);
+            // If remote JMX access is enabled, this will return a non-null value
+            String jmxPort = System.getProperty(JMX_PORT_SYSTEM_PROPERTY);
+
+            if (
+                ipAddress != null && 
+                // If we're trying to create a connection to a localhost address...
+                ipAddress.isLoopbackAddress() &&
+                // port should never be null but let's check anyway 
+                port != null && 
+                (
+                    // If the port matches the port of the current JVM...
+                    port.equals(jmxPort) ||
+                    // Or if remote JMX RMI is disabled and we're attempting to connect
+                    // to the default OpenNMS JMX port...
+                    (jmxPort == null && DEFAULT_OPENNMS_JMX_PORT.equals(port))
+                )
+            ) {
+                // ...then use the {@link PlatformMBeanServerConnector} to connect to 
+                // this JVM's MBeanServer directly.
+                return new PlatformMBeanServerConnector().createConnection(ipAddress, propertiesMap);
+            }
+
+            final JMXServiceURL url = new JMXServiceURL("service:jmx:" + protocol + ":///jndi/"+protocol+"://" + InetAddressUtils.str(ipAddress) + ":" + port + urlPath);
             LOG.debug("JMX: {} - {}", factory, url);
 
             final Map<String,String[]> env = new HashMap<>();

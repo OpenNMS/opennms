@@ -41,7 +41,7 @@ import org.opennms.netmgt.jmx.connection.JmxConnectors;
 public class MX4JMonitor extends JMXMonitor {
 
     @Override
-    protected String getConnectionName() {
-        return JmxConnectors.MX4J;
+    protected JmxConnectors getConnectionName() {
+        return JmxConnectors.mx4j;
     }
 }

@@ -28,16 +28,23 @@
 
 package org.opennms.netmgt.provision.detector.jmx;
 
-import com.google.common.collect.Maps;
+import java.io.IOException;
+import java.net.ConnectException;
+import java.net.InetAddress;
+import java.util.Map;
+
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.jmx.MBeanServer;
 import org.opennms.netmgt.dao.jmx.JmxConfigDao;
-import org.opennms.netmgt.provision.support.jmx.connectors.ConnectionWrapper;
-import org.opennms.netmgt.provision.support.jmx.connectors.Jsr160ConnectionFactory;
+import org.opennms.netmgt.jmx.connection.JmxServerConnectionException;
+import org.opennms.netmgt.jmx.connection.JmxServerConnectionWrapper;
+import org.opennms.netmgt.jmx.connection.JmxServerConnector;
+import org.opennms.netmgt.jmx.impl.connection.connectors.Jsr160ConnectionFactory;
+import org.opennms.netmgt.jmx.impl.connection.connectors.PlatformMBeanServerConnector;
 
-import java.net.InetAddress;
-import java.util.Map;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Maps;
 
 /**
  * <p>Abstract AbstractJsr160Detector class.</p>
@@ -71,16 +78,18 @@ public abstract class AbstractJsr160Detector extends JMXDetector {
         // TODO Auto-generated constructor stub
     }
 
-    /** {@inheritDoc} */
+    /** 
+     * @throws IOException 
+     */
     @Override
-    protected ConnectionWrapper connect(final InetAddress address, final int port, final int timeout) {
+    protected JmxServerConnectionWrapper connect(final InetAddress address, final int port, final int timeout) throws IOException {
         if (m_jmxConfigDao == null) {
             m_jmxConfigDao = BeanUtils.getBean("daoContext", "jmxConfigDao", JmxConfigDao.class);
         }
 
-        Map<String, Object> props = Maps.newHashMap();
-        props.put("port", port);
-        props.put("timeout", timeout);
+        Map<String, String> props = Maps.newHashMap();
+        props.put("port", String.valueOf(port));
+        props.put("timeout", String.valueOf(timeout));
         props.put("factory", getFactory());
         props.put("friendlyname", getFriendlyName());
         props.put("username", getUsername());
@@ -92,6 +101,33 @@ public abstract class AbstractJsr160Detector extends JMXDetector {
         final MBeanServer server = m_jmxConfigDao.getConfig().lookupMBeanServer(InetAddressUtils.str(address), port);
         if (server != null) {
             props.putAll(server.getParameterMap());
+        }
+
+        // TODO: Refactor this to use the same code as 
+        // {@link org.opennms.netmgt.jmx.impl.connection.connectors.DefaultJmxConnector}
+
+        // If remote JMX access is enabled, this will return a non-null value
+        String jmxPort = System.getProperty(JmxServerConnector.JMX_PORT_SYSTEM_PROPERTY);
+
+        if (
+            address != null && 
+            // If we're trying to create a connection to a localhost address...
+            address.isLoopbackAddress() &&
+            (
+                // If the port matches the port of the current JVM...
+                String.valueOf(port).equals(jmxPort) ||
+                // Or if remote JMX RMI is disabled and we're attempting to connect
+                // to the default OpenNMS JMX port...
+                (jmxPort == null && JmxServerConnector.DEFAULT_OPENNMS_JMX_PORT.equals(String.valueOf(port)))
+            )
+        ) {
+            // ...then use the {@link PlatformMBeanServerConnector} to connect to 
+            // this JVM's MBeanServer directly.
+            try {
+                return new PlatformMBeanServerConnector().createConnection(address, props);
+            } catch (JmxServerConnectionException e) {
+                throw new ConnectException(e.getMessage());
+            }
         }
 
         return Jsr160ConnectionFactory.getMBeanServerConnection(props, address);
