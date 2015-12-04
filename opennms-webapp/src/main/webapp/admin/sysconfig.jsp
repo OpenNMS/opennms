@@ -34,6 +34,7 @@
 	session="true"
 %>
 <%@page import="org.opennms.core.resource.Vault"%>
+<%@page import="org.opennms.core.spring.BeanUtils"%>
 <%@page import="org.opennms.netmgt.config.SyslogdConfigFactory"%>
 <%@page import="org.opennms.netmgt.config.TrapdConfigFactory"%>
 
@@ -59,13 +60,17 @@
    try {
        TrapdConfigFactory.init();
        trapPort = String.valueOf(TrapdConfigFactory.getInstance().getSnmpTrapPort());
-   } catch (Throwable e) { /*if factory can't be initialized, status is already 'Unknown'*/ }
+   } catch (Throwable e) {
+       // if factory can't be initialized, status is already 'Unknown'
+   }
 
    String syslogPort = "Unknown";
    try {
-       SyslogdConfigFactory.init();
-       syslogPort = String.valueOf(SyslogdConfigFactory.getInstance().getSyslogPort());
-   } catch (Throwable e) { /*if factory can't be initialized, status is already 'Unknown'*/ }
+       SyslogdConfigFactory syslogdConfig = BeanUtils.getBean("commonContext", "syslogdConfigFactory", SyslogdConfigFactory.class);
+       syslogPort = String.valueOf(syslogdConfig.getSyslogPort());
+   } catch (Throwable e) {
+       // if factory can't be initialized, status is already 'Unknown'
+   }
 %>
 
 <div class="row">
