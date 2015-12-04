@@ -130,8 +130,9 @@
 
         <element maxOccurs="unbounded" minOccurs="0" ref="this:parameter">
           <annotation>
-            <documentation>An optional parameter to be assigned to the
-            event</documentation>
+            <documentation>An optional parameter (name-value pair) to be 
+            assigned to the event. If this parameter duplciates an existing
+            parameter of the event, it will be ignored.</documentation>
           </annotation>
         </element>
 
