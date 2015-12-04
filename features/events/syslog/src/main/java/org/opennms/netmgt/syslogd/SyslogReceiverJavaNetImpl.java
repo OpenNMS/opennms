@@ -32,6 +32,7 @@ import java.io.IOException;
 import java.io.InterruptedIOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
+import java.net.InetSocketAddress;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.util.concurrent.ExecutionException;
@@ -170,10 +171,10 @@ public class SyslogReceiverJavaNetImpl implements SyslogReceiver {
         final byte[] buffer = new byte[length];
 
         try {
-            LOG.debug("Opening socket");
-            m_dgSock = openSocket(m_config);
+            LOG.debug("Creating syslog socket");
+            m_dgSock = new DatagramSocket(null);
         } catch (SocketException e) {
-            LOG.warn("Could not open syslog socket: " + e.getMessage(), e);
+            LOG.warn("Could not create syslog socket: " + e.getMessage(), e);
             return;
         }
 
@@ -186,6 +187,16 @@ public class SyslogReceiverJavaNetImpl implements SyslogReceiver {
             LOG.warn("An I/O error occured while trying to set the socket timeout", e);
         }
 
+        // Set SO_REUSEADDR so that we don't run into problems in
+        // unit tests trying to rebind to an address where other tests
+        // also bound. This shouldn't have any effect at runtime.
+        try {
+            LOG.debug("Setting socket SO_REUSEADDR to true");
+            m_dgSock.setReuseAddress(true);
+        } catch (SocketException e) {
+            LOG.warn("An I/O error occured while trying to set SO_REUSEADDR", e);
+        }
+
         // Increase the receive buffer for the socket
         try {
             LOG.debug("Attempting to set receive buffer size to {}", Integer.MAX_VALUE);
@@ -194,6 +205,18 @@ public class SyslogReceiverJavaNetImpl implements SyslogReceiver {
         } catch (SocketException e) {
             LOG.info("Failed to set the receive buffer to {}", Integer.MAX_VALUE, e);
         }
+
+        try {
+            LOG.debug("Opening datagram socket");
+            if (m_config.getListenAddress() != null && m_config.getListenAddress().length() != 0) {
+                m_dgSock.bind(new InetSocketAddress(InetAddressUtils.addr(m_config.getListenAddress()), m_config.getSyslogPort()));
+            } else {
+                m_dgSock.bind(new InetSocketAddress(m_config.getSyslogPort()));
+            }
+        } catch (SocketException e) {
+            LOG.info("Failed to open datagram socket", e);
+        }
+
         // set to avoid numerous tracing message
         boolean ioInterrupted = false;
 

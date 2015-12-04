@@ -160,6 +160,10 @@ public class SyslogReceiverNioDisruptorImpl implements SyslogReceiver {
 
     public static DatagramChannel openChannel(SyslogdConfig config) throws SocketException, IOException {
         DatagramChannel channel = DatagramChannel.open();
+        // Set SO_REUSEADDR so that we don't run into problems in
+        // unit tests trying to rebind to an address where other tests
+        // also bound. This shouldn't have any effect at runtime.
+        channel.socket().setReuseAddress(true);
         if (config.getListenAddress() != null && config.getListenAddress().length() != 0) {
             channel.socket().bind(new InetSocketAddress(InetAddressUtils.addr(config.getListenAddress()), config.getSyslogPort()));
         } else {
