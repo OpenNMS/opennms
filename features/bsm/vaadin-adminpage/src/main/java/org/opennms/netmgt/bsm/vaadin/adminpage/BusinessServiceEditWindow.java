@@ -30,9 +30,6 @@ package org.opennms.netmgt.bsm.vaadin.adminpage;
 
 import java.util.Set;
 
-import org.opennms.netmgt.bsm.service.model.BusinessServiceDTO;
-import org.opennms.netmgt.bsm.service.model.IpServiceDTO;
-
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
@@ -42,6 +39,9 @@ import com.vaadin.ui.TextField;
 import com.vaadin.ui.TwinColSelect;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
+
+import org.opennms.netmgt.bsm.service.model.BusinessServiceDTO;
+import org.opennms.netmgt.bsm.service.model.IpServiceDTO;
 
 /**
  * Modal dialog window used to edit the properties of a Business Service definition. This class will be
@@ -111,6 +111,7 @@ public class BusinessServiceEditWindow extends Window {
          * add save button
          */
         Button saveButton = new Button("Save");
+        saveButton.setId("saveButton");
         saveButton.addClickListener(new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent event) {
@@ -130,6 +131,7 @@ public class BusinessServiceEditWindow extends Window {
          * add the cancel button
          */
         Button cancelButton = new Button("Cancel");
+        cancelButton.setId("cancelButton");
         cancelButton.addClickListener(new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent event) {
@@ -148,11 +150,13 @@ public class BusinessServiceEditWindow extends Window {
          * instantiate the input fields
          */
         m_nameTextField = new TextField();
+        m_nameTextField.setId("nameField");
         m_nameTextField.setValue(businessServiceDTO.getName());
         m_nameTextField.setWidth(100.0f, Unit.PERCENTAGE);
         verticalLayout.addComponent(new Panel("Name", m_nameTextField));
 
         m_ipServicesTwinColSelect = new TwinColSelect();
+        m_ipServicesTwinColSelect.setId("ipServiceSelect");
         m_ipServicesTwinColSelect.setWidth(100.0f, Unit.PERCENTAGE);
         m_ipServicesTwinColSelect.setSizeFull();
 
