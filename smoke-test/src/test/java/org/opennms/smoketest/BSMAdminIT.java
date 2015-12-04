@@ -44,19 +44,21 @@ public class BSMAdminIT extends OpenNMSSeleniumTestCase {
     private final String BSM_ADMIN_URL = BASE_URL + "opennms/admin/bsm/adminpage.jsp";
     private final String BASIC_SERVICE_NAME = "BasicService";
 
-    private final String ADD_BUTTON_XPATH = "/html/body/div[3]/div[5]/div/div/div[5]/div/div/div/div[3]/div/div[2]/div/div[2]/div[1]/span/span";
-    private final String REMOVE_BUTTON_XPATH = "/html/body/div[3]/div[5]/div/div/div[5]/div/div/div/div[3]/div/div[2]/div/div[2]/div[3]/span/span";
+
+    private final String IP_Service_Select_XPATH = "//*[@id=\"ipServiceSelect\"]";
+    private final String ADD_BUTTON_XPATH = IP_Service_Select_XPATH + "/div[2]/div[1]/span/span";
+    private final String REMOVE_BUTTON_XPATH =  IP_Service_Select_XPATH + "/div[2]/div[3]/span/span";
 
     private final String IP_SERVICE_1 = "NodeA//0:0:0:0:0:0:0:1/AAA";
     private final String IP_SERVICE_2 = "NodeA//0:0:0:0:0:0:0:1/BBB";
     private final String IP_SERVICE_3 = "NodeA//127.0.0.1/CCC";
     private final String IP_SERVICE_4 = "NodeA//127.0.0.1/DDD";
 
-    private final String IP_SERVICE_1_XPATH_SELECTED = "/html/body/div[3]/div[5]/div/div/div[5]/div/div/div/div[3]/div/div[2]/div/select[2]/option[1]";
-    private final String IP_SERVICE_1_XPATH_SELECTED_NOT = "/html/body/div[3]/div[5]/div/div/div[5]/div/div/div/div[3]/div/div[2]/div/select[1]/option[1]";
+    private final String IP_SERVICE_1_XPATH_SELECTED = IP_Service_Select_XPATH + "/select[2]/option[1]";
+    private final String IP_SERVICE_1_XPATH_SELECTED_NOT = IP_Service_Select_XPATH + "/select[1]/option[1]";
 
-    private final String IP_SERVICE_2_XPATH_SELECTED = "/html/body/div[3]/div[5]/div/div/div[5]/div/div/div/div[3]/div/div[2]/div/select[2]/option[2]";
-    private final String IP_SERVICE_2_XPATH_SELECTED_NOT = "/html/body/div[3]/div[5]/div/div/div[5]/div/div/div/div[3]/div/div[2]/div/select[1]/option[2]";
+    private final String IP_SERVICE_2_XPATH_SELECTED = IP_Service_Select_XPATH + "/select[2]/option[2]";
+    private final String IP_SERVICE_2_XPATH_SELECTED_NOT = IP_Service_Select_XPATH + "/select[1]/option[2]";
 
     private final RequisitionUtils requisitionUtils = new RequisitionUtils(this);
 
