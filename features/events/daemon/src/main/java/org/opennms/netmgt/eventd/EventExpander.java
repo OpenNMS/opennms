@@ -36,17 +36,23 @@ import java.util.Map;
 
 import org.opennms.netmgt.config.api.EventConfDao;
 import org.opennms.netmgt.events.api.EventProcessor;
+import org.opennms.netmgt.model.events.EventUtils;
 import org.opennms.netmgt.xml.event.AlarmData;
 import org.opennms.netmgt.xml.event.Autoaction;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Header;
 import org.opennms.netmgt.xml.event.Logmsg;
 import org.opennms.netmgt.xml.event.Operaction;
+import org.opennms.netmgt.xml.event.Parm;
 import org.opennms.netmgt.xml.event.Tticket;
 import org.opennms.netmgt.xml.event.UpdateField;
+import org.opennms.netmgt.xml.event.Value;
 import org.opennms.netmgt.xml.eventconf.Decode;
 import org.opennms.netmgt.xml.eventconf.Maskelement;
+import org.opennms.netmgt.xml.eventconf.Parameter;
 import org.opennms.netmgt.xml.eventconf.Varbindsdecode;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
 
@@ -95,6 +101,8 @@ import org.springframework.util.Assert;
  * @author <a href="http://www.opennms.org/">OpenNMS </a>
  */
 public final class EventExpander implements org.opennms.netmgt.dao.api.EventExpander, EventProcessor, InitializingBean {
+
+    private static final Logger LOG = LoggerFactory.getLogger(EventExpander.class);
 
     private EventConfDao m_eventConfDao;
 
@@ -722,6 +730,26 @@ public final class EventExpander implements org.opennms.netmgt.dao.api.EventExpa
                 }
                 
                 e.setAlarmData(alarmData);
+            }
+
+            if (econf.getParameterCollection() != null && econf.getParameterCount() > 0) {
+                if (e.getParmCollection() == null) {
+                    e.setParmCollection(new ArrayList<Parm>());
+                }
+                for (Parameter p : econf.getParameterCollection()) {
+                    if (EventUtils.getParm(e, p.getName()) == null) {
+                        Parm parm = new Parm();
+                        parm.setParmName(p.getName());
+                        Value v = new Value();
+                        v.setContent(p.getValue());
+                        v.setType("string");
+                        v.setEncoding("text");
+                        parm.setValue(v);
+                        e.addParm(parm);
+                    } else {
+                        LOG.warn("expandEvent: the event {} already has a parameter named {}, the original content will be preserved. Check the event definition and rename the optional parameter.", e.getUei(),p.getName());
+                    }
+                }
             }
         }
         
