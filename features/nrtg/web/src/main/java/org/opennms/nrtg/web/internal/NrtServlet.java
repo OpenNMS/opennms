@@ -34,6 +34,10 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+
+import com.google.common.net.HttpHeaders;
+import com.google.common.net.MediaType;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -62,14 +66,19 @@ public class NrtServlet extends HttpServlet {
                 resp.getOutputStream().println(m_controller.getMeasurementSetsForDestination(req.getParameter("nrtCollectionTaskId")));
             }
         } else if (req.getParameter("resourceId") != null && req.getParameter("report") != null) {
-            ModelAndView modelAndView = m_controller.nrtStart(req.getParameter("resourceId"), req.getParameter("report"), httpSession);
+            // Render JSON instead of HTML
+            boolean useJson = (req.getHeader(HttpHeaders.ACCEPT) != null && req.getHeader(HttpHeaders.ACCEPT).contains("application/json"));
+            if (useJson) {
+                resp.setContentType(MediaType.JSON_UTF_8.toString());
+            }
+
+            ModelAndView modelAndView = m_controller.nrtStart(req.getParameter("resourceId"), req.getParameter("report"), httpSession, useJson);
 
             String template = getTemplateAsString(modelAndView.getViewName() + ".template");
 
             for (Entry<String, Object> entry : modelAndView.getModel().entrySet()) {
                 template = template.replaceAll("\\$\\{" + entry.getKey() + "\\}", (entry.getValue() != null ? entry.getValue().toString() : "null"));
             }
-            
             resp.getOutputStream().write(template.getBytes());
         } else {
             throw new ServletException("unrecognized servlet parameters");
@@ -95,5 +104,4 @@ public class NrtServlet extends HttpServlet {
             }
         }
     }
-
 }

@@ -11,8 +11,11 @@
   <name>OpenNMS Features</name>
   <modules>
 
-    <!-- ActiveMQ broker and JMS features -->
+    <!-- ActiveMQ broker -->
     <module>activemq</module>
+
+    <!-- AMQP Event Gateway and Alarm Northbounder -->
+    <module>amqp</module>
 
     <!-- OpenNMS Provisioning API and implementations -->
     <module>provisioning</module>
