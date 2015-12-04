@@ -33,8 +33,6 @@ import static org.junit.Assert.assertTrue;
 import static org.opennms.core.utils.InetAddressUtils.addr;
 
 import java.io.InputStream;
-import java.lang.reflect.UndeclaredThrowableException;
-import java.net.BindException;
 import java.net.DatagramPacket;
 import java.net.UnknownHostException;
 import java.util.HashMap;
@@ -66,6 +64,7 @@ import org.opennms.netmgt.xml.event.Parm;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -118,10 +117,6 @@ public class SyslogdIT implements InitializingBean {
             }
         }
 
-        m_syslogd = new Syslogd();
-        m_syslogd.setSyslogReceiver(new SyslogReceiverJavaNetImpl(m_config));
-        m_syslogd.init();
-
         // Verify that the test syslogd-configuration.xml file was loaded
         boolean foundBeer = false;
         boolean foundMalt = false;
@@ -137,16 +132,17 @@ public class SyslogdIT implements InitializingBean {
         }
         assertTrue(foundBeer);
         assertTrue(foundMalt);
+
+        m_syslogd = new Syslogd();
+        m_syslogd.setSyslogReceiver(new SyslogReceiverJavaNetImpl(m_config));
+        m_syslogd.init();
+        SyslogdTestUtils.startSyslogdGracefully(m_syslogd);
     }
 
     @After
     public void tearDown() throws Exception {
-        MockLogAppender.assertNoErrorOrGreater();
-    }
-
-    @After
-    public void stopSyslogd() throws Exception {
         m_syslogd.stop();
+        MockLogAppender.assertNoErrorOrGreater();
     }
 
     /**
@@ -162,8 +158,6 @@ public class SyslogdIT implements InitializingBean {
      * @throws ExecutionException 
      */
     private List<Event> doMessageTest(String testPDU, String expectedHost, String expectedUEI, String expectedLogMsg) throws UnknownHostException, InterruptedException, ExecutionException {
-        startSyslogdGracefully();
-        
         final EventBuilder expectedEventBldr = new EventBuilder(expectedUEI, "syslogd");
         expectedEventBldr.setInterface(addr(expectedHost));
         expectedEventBldr.setLogDest("logndisplay");
@@ -217,8 +211,6 @@ public class SyslogdIT implements InitializingBean {
 
     @Test
     public void testRegexSeverityMatch() throws Exception {
-        startSyslogdGracefully();
-
         MockLogAppender.setupLogging(true, "TRACE");
         String localhost = m_localhost;
         final String testPDU = "2007-01-01 127.0.0.1 beer - Not just for dinner anymore";
@@ -247,7 +239,6 @@ public class SyslogdIT implements InitializingBean {
 
     @Test
     public void testRegexFacilitySeverityProcessMatch() throws Exception {
-        startSyslogdGracefully();
         MockLogAppender.setupLogging(true, "TRACE");
         String localhost = m_localhost;
         final String testPDU = "2007-01-01 127.0.0.1 maltd: beer - Not just for lunch anymore";
@@ -280,7 +271,6 @@ public class SyslogdIT implements InitializingBean {
     
     @Test
     public void testRegexFacilitySeverityMatch() throws Exception {
-        startSyslogdGracefully();
         MockLogAppender.setupLogging(true, "TRACE");
         final String localhost = m_localhost;
         final String testPDU = "2007-01-01 127.0.0.1 beer - Not just for lunch anymore";
@@ -312,7 +302,6 @@ public class SyslogdIT implements InitializingBean {
     
     @Test
     public void testRegexFacilityMatch() throws Exception {
-        startSyslogdGracefully();
         MockLogAppender.setupLogging(true, "TRACE");
         final String localhost = m_localhost;
         final String testPDU = "2007-01-01 127.0.0.1 beer - Not just for lunch anymore";
@@ -343,7 +332,6 @@ public class SyslogdIT implements InitializingBean {
     
     @Test
     public void testRegexProcessMatch() throws Exception {
-        startSyslogdGracefully();
         MockLogAppender.setupLogging(true, "TRACE");
         final String localhost = m_localhost;
         final String testPDU = "2007-01-01 127.0.0.1 beerd: beer - Not just for breakfast anymore";
@@ -393,19 +381,7 @@ public class SyslogdIT implements InitializingBean {
             fail(e.getMessage()); //Failures are for weenies
         }
     }
-    
-    private void startSyslogdGracefully() {
-        try {
-            m_syslogd.start();
-        } catch (UndeclaredThrowableException ute) {
-            if (ute.getCause() instanceof BindException) {
-                // continue, this was expected
-            } else {
-                throw ute;
-            }
-        }
-    }
-    
+
     @Test
     public void testSubstrUEIRewrite() throws Exception {
         doMessageTest("2007-01-01 localhost A CRISCO message",
@@ -414,7 +390,7 @@ public class SyslogdIT implements InitializingBean {
     }
 
     @Test
-	public void testRegexUEIRewrite() throws Exception {
+    public void testRegexUEIRewrite() throws Exception {
         MockLogAppender.setupLogging(true, "TRACE");
         doMessageTest("2007-01-01 localhost foo: 100 out of 666 tests failed for bar",
                       m_localhost, "uei.opennms.org/tests/syslogd/regexUeiRewriteTest",
@@ -437,7 +413,6 @@ public class SyslogdIT implements InitializingBean {
     
     @Test
     public void testSubstrDiscard() throws Exception {
-        startSyslogdGracefully();
         final String testPDU = "2007-01-01 127.0.0.1 A JUNK message";
         
         final EventAnticipator ea = new EventAnticipator();
@@ -451,7 +426,6 @@ public class SyslogdIT implements InitializingBean {
 
     @Test
     public void testRegexDiscard() throws Exception {
-        startSyslogdGracefully();
         final String testPDU = "2007-01-01 127.0.0.1 A TrAsH message";
         
         final EventAnticipator ea = new EventAnticipator();
@@ -483,8 +457,6 @@ public class SyslogdIT implements InitializingBean {
 
     @Test
     public void testRegexUEIWithOnlyUserSpecifiedParameterAssignments() throws InterruptedException, UnknownHostException {
-        startSyslogdGracefully();
-        
         final String localhost = m_localhost;
         final String testPDU = "2007-01-01 127.0.0.1 tea: Secretly replaced cmiskell's tea with 666 ferrets";
         final String testUEI = "uei.opennms.org/tests/syslogd/regexParameterAssignmentTest/userSpecifiedOnly";

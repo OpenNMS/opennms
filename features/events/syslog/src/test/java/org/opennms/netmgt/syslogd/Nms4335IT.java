@@ -33,8 +33,6 @@ import static org.opennms.core.utils.InetAddressUtils.addr;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
-import java.lang.reflect.UndeclaredThrowableException;
-import java.net.BindException;
 import java.net.DatagramPacket;
 import java.net.UnknownHostException;
 import java.util.List;
@@ -194,7 +192,7 @@ public class Nms4335IT implements InitializingBean {
      * @throws ExecutionException 
      */
     private List<Event> doMessageTest(String testPDU, String expectedHost, String expectedUEI, String expectedLogMsg) throws UnknownHostException, InterruptedException, ExecutionException {
-        startSyslogdGracefully();
+        SyslogdTestUtils.startSyslogdGracefully(m_syslogd);
         
         final EventBuilder expectedEventBldr = new EventBuilder(expectedUEI, "syslogd");
         expectedEventBldr.setInterface(addr(expectedHost));
@@ -214,17 +212,5 @@ public class Nms4335IT implements InitializingBean {
         assertEquals("Log messages do not match", expectedLogMsg, receivedEvent.getLogmsg().getContent());
         
         return ea.getAnticipatedEventsRecieved();
-    }
-    
-    private void startSyslogdGracefully() {
-        try {
-            m_syslogd.start();
-        } catch (UndeclaredThrowableException ute) {
-            if (ute.getCause() instanceof BindException) {
-                // continue, this was expected
-            } else {
-                throw ute;
-            }
-        }
     }
 }
