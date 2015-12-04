@@ -80,8 +80,12 @@ public class RequisitionUtils {
         m_testCase.doRequest(request);
     }
 
-    protected void deleteNode(final String foreignId) throws Exception {
+    protected void deleteNode(final String foreignId) throws IOException, InterruptedException {
         m_testCase.sendDelete("/rest/nodes/" + m_testCase.REQUISITION_NAME + ":" + foreignId);
+    }
+
+    protected void deleteForeignSource() throws IOException, InterruptedException {
+        m_testCase.sendDelete("/rest/foreignSources/" + m_testCase.REQUISITION_NAME);
     }
 
     protected void deleteTestRequisition() throws Exception {

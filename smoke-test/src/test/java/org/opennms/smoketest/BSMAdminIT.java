@@ -62,7 +62,7 @@ public class BSMAdminIT extends OpenNMSSeleniumTestCase {
 
     private final RequisitionUtils requisitionUtils = new RequisitionUtils(this);
 
-    private void buildNodes() throws Exception {
+    private void createTestSetup() throws Exception {
         String requisitionXML = "<model-import foreign-source=\"" + OpenNMSSeleniumTestCase.REQUISITION_NAME + "\">" +
                 "<node foreign-id=\"NodeA\" node-label=\"NodeA\">" +
                 "<interface ip-addr=\"::1\" status=\"1\" snmp-primary=\"N\">" +
@@ -84,8 +84,9 @@ public class BSMAdminIT extends OpenNMSSeleniumTestCase {
         requisitionUtils.setupTestRequisition(requisitionXML, foreignSourceXML);
     }
 
-    private void removeNodes() throws Exception {
+    private void removeTestSetup() throws Exception {
         requisitionUtils.deleteNode("NodeA");
+        requisitionUtils.deleteForeignSource();
     }
 
     @Before
@@ -137,7 +138,7 @@ public class BSMAdminIT extends OpenNMSSeleniumTestCase {
     @Test
     public void testCanHandelIpServicesDuringEdit() throws Exception {
         //Create test data and wait for it to show up
-        buildNodes();
+        createTestSetup();
         wait.until(requisitionUtils.new WaitForNodesInDatabase(1));
 
         //Create BusinessService open editor
@@ -184,7 +185,7 @@ public class BSMAdminIT extends OpenNMSSeleniumTestCase {
         findElementById("cancelButton").click();
         findElementById("deleteButton-BasicService").click();
 
-        removeNodes();
+        removeTestSetup();
     }
 
     // switches to the embedded vaadin iframe
