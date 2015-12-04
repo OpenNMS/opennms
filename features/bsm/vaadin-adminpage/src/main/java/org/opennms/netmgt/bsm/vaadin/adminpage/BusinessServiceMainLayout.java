@@ -30,9 +30,6 @@ package org.opennms.netmgt.bsm.vaadin.adminpage;
 
 import java.util.Objects;
 
-import org.opennms.netmgt.bsm.service.BusinessServiceManager;
-import org.opennms.netmgt.bsm.service.model.BusinessServiceDTO;
-
 import com.google.common.base.Strings;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.ui.Alignment;
@@ -41,6 +38,9 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
+
+import org.opennms.netmgt.bsm.service.BusinessServiceManager;
+import org.opennms.netmgt.bsm.service.model.BusinessServiceDTO;
 
 /**
  * This class represents the main  Vaadin component for editing Business Service definitions.
@@ -91,11 +91,13 @@ public class BusinessServiceMainLayout extends VerticalLayout {
          */
         final TextField createTextField = new TextField();
         createTextField.setInputPrompt("Business Service Name");
+        createTextField.setId("createTextField");
 
         /**
          * ...and the button
          */
         final Button createButton = new Button("Create");
+        createButton.setId("createButton");
         createButton.addClickListener((Button.ClickListener) event -> {
             /**
              * check for valid value
@@ -150,6 +152,8 @@ public class BusinessServiceMainLayout extends VerticalLayout {
             @Override
             public Object generateCell(Table source, Object itemId, Object columnId) {
                 Button editButton = new Button("edit");
+                editButton.setId("editButton-" + ((BusinessServiceDTO) itemId).getName());
+
                 editButton.addClickListener((Button.ClickListener) event -> {
                     getUI().addWindow(new BusinessServiceEditWindow((BusinessServiceDTO) itemId, BusinessServiceMainLayout.this));
                     refreshTable();
@@ -165,6 +169,7 @@ public class BusinessServiceMainLayout extends VerticalLayout {
             @Override
             public Object generateCell(Table source, Object itemId, Object columnId) {
                 Button deleteButton = new Button("delete");
+                deleteButton.setId("deleteButton-" + ((BusinessServiceDTO) itemId).getName());
                 deleteButton.addClickListener((Button.ClickListener) event -> {
                     businessServiceManager.delete(((BusinessServiceDTO) itemId).getId());
                     refreshTable();

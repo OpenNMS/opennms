@@ -1,5 +1,10 @@
 package org.opennms.smoketest;
 
+import static org.opennms.smoketest.OpenNMSSeleniumTestCase.BASIC_AUTH_PASSWORD;
+import static org.opennms.smoketest.OpenNMSSeleniumTestCase.BASIC_AUTH_USERNAME;
+import static org.opennms.smoketest.OpenNMSSeleniumTestCase.OPENNMS_WEB_HOST;
+import static org.opennms.smoketest.OpenNMSSeleniumTestCase.OPENNMS_WEB_PORT;
+
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -23,9 +28,7 @@ public class OsgiUrlPatternResponseIT extends OpenNMSSeleniumTestCase {
                 "jmx-config-tool",
                 "vaadin-surveillance-views?dashboard=true",
                 "vaadin-surveillance-views?dashboard=false",
-                "vaadin-surveillance-views-config", "wallboard-config",
-                "bsm-master-page"
-        };
+                "vaadin-surveillance-views-config", "wallboard-config", "bsm-admin-page"};
 
         for (final String eachPath : paths) {
             final String urlString = String.format("http://%s:%s/opennms/osgi/%s", getServerAddress(), getServerHttpPort(), eachPath);
