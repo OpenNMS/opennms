@@ -39,6 +39,12 @@
       TODO: Fix this behavior after upgrading to Spring 3.1.
     -->
     <property name="ignoreUnresolvablePlaceholders" value="true"/>
+    <property name="properties">
+      <props>
+        <prop key="importer.foreign-source.dir">${opennms.home}/etc/foreign-sources</prop>
+        <prop key="importer.requisition.dir">${opennms.home}/etc/imports</prop>
+      </props>
+    </property>
   </bean>
 
   <!-- 
