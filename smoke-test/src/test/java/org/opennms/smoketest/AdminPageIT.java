@@ -126,7 +126,7 @@ public class AdminPageIT extends OpenNMSSeleniumTestCase {
                 new String[] { "Ops Board Configuration", "//div[@id='content']//iframe" },
                 new String[] { "Surveillance Views Configuration", "//div[@id='content']//iframe" },
                 new String[] { "JMX Configuration Generator", "//div[@id='content']//iframe" },
-                new String[] { "Manage Business Services", "//h3[text()='Business Services']" },
+                new String[] { "Manage Business Services", "//div[@id='content']//iframe" },
                 new String[] { "Business Services Master Page", "//div[@id='content']//iframe" },
 
                 // Node Provisioning
