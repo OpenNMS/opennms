@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.syslogd;
+package org.opennms.core.concurrent;
 
 import java.util.concurrent.ExecutorService;
 
