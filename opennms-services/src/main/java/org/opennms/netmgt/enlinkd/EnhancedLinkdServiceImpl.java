@@ -69,7 +69,8 @@ import org.opennms.netmgt.model.OnmsNode.NodeType;
 import org.opennms.netmgt.model.OspfElement;
 import org.opennms.netmgt.model.OspfLink;
 import org.opennms.netmgt.model.PrimaryType;
-import org.opennms.netmgt.model.topology.BridgeTopology;
+import org.opennms.netmgt.model.topology.BroadcastDomain;
+import org.opennms.netmgt.model.topology.SharedSegment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.Transactional;
@@ -151,6 +152,7 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
 		reconcileOspf(nodeId, now);
 		reconcileIpNetToMedia(nodeId, now);
 		reconcileBridge(nodeId, now);
+		m_bridgeTopologyDao.delete(nodeId);
 	}
 
 	@Override
@@ -499,7 +501,7 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
 		if (link == null)
 			return;
 		saveBridgeStpLink(nodeId, link);
-		m_bridgeTopologyDao.store(link);
+		m_bridgeTopologyDao.parse(link);
 		
 	}
 
@@ -539,7 +541,7 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
 	public void store(int nodeId, BridgeMacLink link) {
 		if (link == null)
 			return;
-		m_bridgeTopologyDao.store(link);
+		m_bridgeTopologyDao.parse(link);
 	}
 
 	@Override
@@ -550,27 +552,35 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
 		m_bridgeStpLinkDao.deleteByNodeIdOlderThen(nodeId, now);
 		m_bridgeStpLinkDao.flush();
 
-		m_bridgeTopologyDao.walked(nodeId, now);
+		m_bridgeTopologyDao.walked(nodeId);
 
 	}
 
         @Override
         public void storeBridgeTopology(int nodeId) {
-            if (!m_bridgeTopologyDao.topologyChanged(nodeId))
+            
+            BroadcastDomain domain = m_bridgeTopologyDao.getBroadcastDomain(nodeId);
+            if (!domain.topologyChanged(nodeId))
                 return;
-            BridgeTopology topology=m_bridgeTopologyDao.getTopology(nodeId);
-            for (BridgeBridgeLink link: topology.getBridgeBridgeLinks()) 
-                saveBridgeBridgeLink(link);
-            for (BridgeMacLink link: topology.getBridgeMacLinks())
-                saveBridgeMacLink(link);
-            Date updatedate=m_bridgeTopologyDao.getUpdateTime(nodeId);
-            for (Integer curNodeId: m_bridgeTopologyDao.getUpdatedNodes(nodeId)) {
+            for (SharedSegment segment: domain.getTopology()) {
+                if (segment.noMacsOnSegment()) {
+                    for (BridgeBridgeLink link: segment.getBridgeBridgeLinks()) 
+                        saveBridgeBridgeLink(link);
+                } else {
+                    for (BridgeMacLink link: segment.getBridgeMacLinks())
+                        saveBridgeMacLink(link);
+                }
+            }
+            
+            Date updatedate=domain.getUpdateTime(nodeId);
+            for (Integer curNodeId: domain.getUpdatedNodes(nodeId)) {
                 m_bridgeMacLinkDao.deleteByNodeIdOlderThen(curNodeId, updatedate);
                 m_bridgeMacLinkDao.flush();
                 m_bridgeBridgeLinkDao.deleteByNodeIdOlderThen(curNodeId, updatedate);
                 m_bridgeBridgeLinkDao.deleteByDesignatedNodeIdOlderThen(curNodeId, updatedate);
                 m_bridgeBridgeLinkDao.flush();
             }
+
         }
         
 
@@ -676,12 +686,12 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
 	public void loadBridgeTopology() {
 	    for (BridgeElement bridge: m_bridgeElementDao.findAll())
 	        m_bridgeTopologyDao.store(bridge);
-            for (BridgeMacLink link: m_bridgeMacLinkDao.findAll())
-                m_bridgeTopologyDao.store(link);
-            for (BridgeStpLink link: m_bridgeStpLinkDao.findAll())
-                m_bridgeTopologyDao.store(link);
-            for (BridgeBridgeLink link: m_bridgeBridgeLinkDao.findAll())
-                m_bridgeTopologyDao.store(link);
+
+	    for (BridgeMacLink link: m_bridgeMacLinkDao.findAll()) 
+	        m_bridgeTopologyDao.store(link);
+
+	    for (BridgeBridgeLink link: m_bridgeBridgeLinkDao.findAll()) 
+	        m_bridgeTopologyDao.store(link);
 	}
 
 	public CdpLinkDao getCdpLinkDao() {
