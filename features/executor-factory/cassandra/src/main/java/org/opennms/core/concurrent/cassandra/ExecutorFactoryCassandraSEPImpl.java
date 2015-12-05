@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.syslogd;
+package org.opennms.core.concurrent.cassandra;
 
 import java.util.concurrent.ExecutorService;
 
