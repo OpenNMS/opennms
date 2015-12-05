@@ -15,13 +15,13 @@ public class BridgeTopologyDaoInMemory implements BridgeTopologyDao {
     }
 
     @Override
-    public void parse(BridgeMacLink maclink) {
+    public void parse(int nodeid,BridgeMacLink maclink) {
         // TODO Auto-generated method stub
 
     }
 
     @Override
-    public void parse(BridgeStpLink stplink) {
+    public void parse(int nodeid, BridgeStpLink stplink) {
         // TODO Auto-generated method stub
 
     }
