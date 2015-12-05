@@ -11,8 +11,8 @@ public interface BridgeTopologyDao {
     
     void delete(int nodeid);
     // The parse methods are used to check the Bridge Forwarding Table
-    void parse(BridgeMacLink maclink);
-    void parse(BridgeStpLink stpLink);
+    void parse(int nodeid, BridgeMacLink maclink);
+    void parse(int nodeid, BridgeStpLink stpLink);
     
     // Storing is saving data without calculations
     void store(BridgeElement bridge);

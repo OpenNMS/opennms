@@ -17,10 +17,28 @@ public class BroadcastDomain {
         final Integer m_id;
         Set<String> m_bridgeIds = new HashSet<String>();
         Set<String> m_portMacs = new HashSet<String>();
-        
+        Integer m_rootPort;
+        boolean m_isRootBridge=false;
+
         public Bridge(Integer id) {
             super();
             m_id = id;
+        }
+
+        public Integer getRootPort() {
+            return m_rootPort;
+        }
+
+        public void setRootPort(Integer rootPort) {
+            m_rootPort = rootPort;
+        }
+
+        public boolean isRootBridge() {
+            return m_isRootBridge;
+        }
+
+        public void setRootBridge(boolean isRootBridge) {
+            m_isRootBridge = isRootBridge;
         }
 
         public Bridge(Integer id, String bridgeId) {

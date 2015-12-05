@@ -501,7 +501,7 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
 		if (link == null)
 			return;
 		saveBridgeStpLink(nodeId, link);
-		m_bridgeTopologyDao.parse(link);
+		m_bridgeTopologyDao.parse(nodeId,link);
 		
 	}
 
@@ -541,7 +541,7 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
 	public void store(int nodeId, BridgeMacLink link) {
 		if (link == null)
 			return;
-		m_bridgeTopologyDao.parse(link);
+		m_bridgeTopologyDao.parse(nodeId,link);
 	}
 
 	@Override
@@ -565,10 +565,10 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
             for (SharedSegment segment: domain.getTopology()) {
                 if (segment.noMacsOnSegment()) {
                     for (BridgeBridgeLink link: segment.getBridgeBridgeLinks()) 
-                        saveBridgeBridgeLink(link);
+                        saveBridgeBridgeLink(nodeId, link);
                 } else {
                     for (BridgeMacLink link: segment.getBridgeMacLinks())
-                        saveBridgeMacLink(link);
+                        saveBridgeMacLink(nodeId,link);
                 }
             }
             
@@ -585,12 +585,12 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
         
 
 	@Transactional
-    protected void saveBridgeMacLink(final BridgeMacLink saveMe) {
+    protected void saveBridgeMacLink(int nodeId, final BridgeMacLink saveMe) {
 		new UpsertTemplate<BridgeMacLink, BridgeMacLinkDao>(m_transactionManager,m_bridgeMacLinkDao) {
 
 			@Override
 			protected BridgeMacLink query() {
-				return m_dao.getByNodeIdBridgePortMac(saveMe.getNode().getId(),saveMe.getBridgePort(),saveMe.getMacAddress());
+				return m_dao.getByNodeIdBridgePortMac(nodeId,saveMe.getBridgePort(),saveMe.getMacAddress());
 			}
 
 			@Override
@@ -603,22 +603,26 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
 
 			@Override
 			protected BridgeMacLink doInsert() {
-				saveMe.setBridgeMacLinkLastPollTime(saveMe.getBridgeMacLinkCreateTime());
-				m_dao.saveOrUpdate(saveMe);
-				m_dao.flush();
-				return saveMe;
+                            final OnmsNode node = m_nodeDao.get(nodeId);
+                            if ( node == null )
+                                    return null;
+                            saveMe.setNode(node);
+                            saveMe.setBridgeMacLinkLastPollTime(saveMe.getBridgeMacLinkCreateTime());
+                            m_dao.saveOrUpdate(saveMe);
+                            m_dao.flush();
+                            return saveMe;
 			}
 			
 		}.execute();
 	}
 	
 	@Transactional
-    protected void saveBridgeBridgeLink(final BridgeBridgeLink saveMe) {
+    protected void saveBridgeBridgeLink(int nodeId, final BridgeBridgeLink saveMe) {
 		new UpsertTemplate<BridgeBridgeLink, BridgeBridgeLinkDao>(m_transactionManager,m_bridgeBridgeLinkDao) {
 
 			@Override
 			protected BridgeBridgeLink query() {
-				return m_dao.getByNodeIdBridgePort(saveMe.getNode().getId(),saveMe.getBridgePort());
+				return m_dao.getByNodeIdBridgePort(nodeId,saveMe.getBridgePort());
 			}
 
 			@Override
@@ -631,10 +635,14 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
 
 			@Override
 			protected BridgeBridgeLink doInsert() {
-				saveMe.setBridgeBridgeLinkLastPollTime(saveMe.getBridgeBridgeLinkCreateTime());
-				m_dao.saveOrUpdate(saveMe);
-				m_dao.flush();
-				return saveMe;
+                            final OnmsNode node = m_nodeDao.get(nodeId);
+                            if ( node == null )
+                                    return null;
+                            saveMe.setNode(node);
+                            saveMe.setBridgeBridgeLinkLastPollTime(saveMe.getBridgeBridgeLinkCreateTime());
+                            m_dao.saveOrUpdate(saveMe);
+                            m_dao.flush();
+                            return saveMe;
 			}
 			
 		}.execute();
