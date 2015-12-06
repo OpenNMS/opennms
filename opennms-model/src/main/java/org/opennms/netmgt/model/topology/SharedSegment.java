@@ -1,15 +1,44 @@
 package org.opennms.netmgt.model.topology;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.opennms.netmgt.model.BridgeBridgeLink;
 import org.opennms.netmgt.model.BridgeMacLink;
 
 public class SharedSegment {
 
-    List<BridgeMacLink> m_bridgeportsOnSegment;
-    List<BridgeBridgeLink> m_bridgeportsOnLink;
-        
+    List<BridgeMacLink> m_bridgeportsOnSegment = new ArrayList<BridgeMacLink>();
+    List<BridgeBridgeLink> m_bridgeportsOnLink = null;
+
+    public boolean isEmpty() {
+        if (noMacsOnSegment())
+            return m_bridgeportsOnLink.isEmpty();
+        return m_bridgeportsOnSegment.isEmpty();
+    }
+    
+    public void delete(int nodeid) {
+        if (noMacsOnSegment()) {
+            List<BridgeBridgeLink> curlist = new ArrayList<BridgeBridgeLink>();
+            for (BridgeBridgeLink link: m_bridgeportsOnLink) {
+                if (link.getNode().getId().intValue() == nodeid ||
+                        link.getDesignatedNode().getId().intValue() == nodeid)
+                    continue;
+                curlist.add(link);
+            }
+            m_bridgeportsOnLink=curlist;
+            return;
+        }
+        List<BridgeMacLink> curlist = new ArrayList<BridgeMacLink>();
+        for (BridgeMacLink link: m_bridgeportsOnSegment) {
+            if (link.getNode().getId().intValue() == nodeid )
+                continue;
+        }
+        m_bridgeportsOnSegment=curlist;
+    }
+    
     public List<BridgeBridgeLink> getBridgeBridgeLinks() {
         return m_bridgeportsOnLink;
     }
@@ -23,16 +52,41 @@ public class SharedSegment {
     }
     
     public void add(BridgeMacLink link) {
-        
+        m_bridgeportsOnSegment.add(link);
     }
     
     public void add(BridgeBridgeLink link) {
-        
+        m_bridgeportsOnLink.add(link);
+    }
+
+    public Set<String> getMacsOnSegment() {
+        Set<String>macs = new HashSet<String>();
+            for (BridgeMacLink link: m_bridgeportsOnSegment)
+                macs.add(link.getMacAddress());
+        return macs;
+
+    }
+
+    public Set<Integer> getBridgeIdsOnSegment() {
+        Set<Integer> nodes = new HashSet<Integer>();
+        if (noMacsOnSegment()) {
+            for (BridgeBridgeLink link: m_bridgeportsOnLink) {
+                nodes.add(link.getNode().getId());
+                nodes.add(link.getDesignatedNode().getId());
+            }
+            return nodes;
+        }
+        for ( BridgeMacLink link: m_bridgeportsOnSegment) {
+            nodes.add(link.getNode().getId());
+        }
+        return nodes;
     }
 
     public boolean containsMac(String mac) {
+        if ( mac == null) 
+            return false;
         for (BridgeMacLink link: m_bridgeportsOnSegment) {
-            if (mac != null && mac.equals(link.getMacAddress()))
+            if (mac.equals(link.getMacAddress()))
                 return true;
         }
         return false;
