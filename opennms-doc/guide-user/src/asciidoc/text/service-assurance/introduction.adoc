@@ -3,10 +3,10 @@
 :imagesdir: ../../images
 
 This section will cover the basic functionalities how _OpenNMS_ monitors availability and latency from applications or management agents.
-To change the behavior of how _OpenNMS_ monitors applications or status information from management agents please see _Administration Guide_.
-To extend the _Service Monitor_ framework please see _Development Guide_ of the _OpenNMS_ documentation.
+To change the behavior of how _OpenNMS_ monitors applications or status information from management agents please see the _Administration Guide_.
+To extend the _Service Monitor_ framework please see the _Development Guide_.
 
-Measuring availability and latency of network services or applications is an important part in fault- and performance management.
+Measuring availability and latency of network services or applications is an important part in fault and performance management.
 In _OpenNMS_ this task is provided by a _Service Monitor_ framework.
 The main component is _Pollerd_ which provides the following functionalities:
 
@@ -51,3 +51,5 @@ _Pollerd_ can generate the following _Events_ in _OpenNMS_:
 |===
 
 The behavior to generate _interfaceDown_ and _nodeDown_ events is described in the <<gu-service-assurance-critical-service, Critical Service>> section.
+
+NOTE: This assumes that node-outage processing is enabled.
