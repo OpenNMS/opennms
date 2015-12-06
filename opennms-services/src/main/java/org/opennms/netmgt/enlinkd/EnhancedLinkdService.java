@@ -32,6 +32,7 @@ import org.opennms.netmgt.model.LldpElement;
 import org.opennms.netmgt.model.LldpLink;
 import org.opennms.netmgt.model.OspfElement;
 import org.opennms.netmgt.model.OspfLink;
+import org.opennms.netmgt.model.topology.BroadcastDomain;
 
 /**
  * <p>
@@ -88,7 +89,9 @@ public interface EnhancedLinkdService {
 
     void reconcileBridge(int nodeId, Date now);
 
-    void storeBridgeTopology(int nodeId);
+    BroadcastDomain getBridgeTopologyBroadcastDomain(int nodeId);
+    
+    void store(BroadcastDomain domain, Date now);
 
     void store(int nodeId, LldpLink link);
 

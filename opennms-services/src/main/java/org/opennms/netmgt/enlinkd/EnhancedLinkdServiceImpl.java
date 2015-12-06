@@ -461,7 +461,7 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
 		if (bridge == null)
 			return;
 		saveBridgeElement(nodeId, bridge);
-		m_bridgeTopologyDao.store(bridge);
+		m_bridgeTopologyDao.parse(nodeId,bridge);
 	}
 
 	@Transactional
@@ -557,27 +557,31 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
 	}
 
         @Override
-        public void storeBridgeTopology(int nodeId) {
-            
-            BroadcastDomain domain = m_bridgeTopologyDao.getBroadcastDomain(nodeId);
-            if (!domain.topologyChanged(nodeId))
-                return;
+        public BroadcastDomain getBridgeTopologyBroadcastDomain(int nodeId) {
+            return m_bridgeTopologyDao.getBroadcastDomain(nodeId);
+        }
+
+        @Override
+        public void  store(BroadcastDomain domain, Date now) {
             for (SharedSegment segment: domain.getTopology()) {
                 if (segment.noMacsOnSegment()) {
-                    for (BridgeBridgeLink link: segment.getBridgeBridgeLinks()) 
-                        saveBridgeBridgeLink(nodeId, link);
+                    for (BridgeBridgeLink link: segment.getBridgeBridgeLinks()) {
+                        link.setBridgeBridgeLinkLastPollTime(now);
+                        saveBridgeBridgeLink(link);
+                    }
                 } else {
-                    for (BridgeMacLink link: segment.getBridgeMacLinks())
-                        saveBridgeMacLink(nodeId,link);
+                    for (BridgeMacLink link: segment.getBridgeMacLinks()) {
+                        link.setBridgeMacLinkLastPollTime(now);
+                        saveBridgeMacLink(link);
+                    }
                 }
             }
             
-            Date updatedate=domain.getUpdateTime(nodeId);
-            for (Integer curNodeId: domain.getUpdatedNodes(nodeId)) {
-                m_bridgeMacLinkDao.deleteByNodeIdOlderThen(curNodeId, updatedate);
+            for (Integer curNodeId: domain.getUpdatedNodes()) {
+                m_bridgeMacLinkDao.deleteByNodeIdOlderThen(curNodeId, now);
                 m_bridgeMacLinkDao.flush();
-                m_bridgeBridgeLinkDao.deleteByNodeIdOlderThen(curNodeId, updatedate);
-                m_bridgeBridgeLinkDao.deleteByDesignatedNodeIdOlderThen(curNodeId, updatedate);
+                m_bridgeBridgeLinkDao.deleteByNodeIdOlderThen(curNodeId, now);
+                m_bridgeBridgeLinkDao.deleteByDesignatedNodeIdOlderThen(curNodeId, now);
                 m_bridgeBridgeLinkDao.flush();
             }
 
@@ -585,12 +589,12 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
         
 
 	@Transactional
-    protected void saveBridgeMacLink(int nodeId, final BridgeMacLink saveMe) {
+    protected void saveBridgeMacLink(final BridgeMacLink saveMe) {
 		new UpsertTemplate<BridgeMacLink, BridgeMacLinkDao>(m_transactionManager,m_bridgeMacLinkDao) {
 
 			@Override
 			protected BridgeMacLink query() {
-				return m_dao.getByNodeIdBridgePortMac(nodeId,saveMe.getBridgePort(),saveMe.getMacAddress());
+				return m_dao.getByNodeIdBridgePortMac(saveMe.getNode().getId(),saveMe.getBridgePort(),saveMe.getMacAddress());
 			}
 
 			@Override
@@ -603,11 +607,10 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
 
 			@Override
 			protected BridgeMacLink doInsert() {
-                            final OnmsNode node = m_nodeDao.get(nodeId);
+                            final OnmsNode node = m_nodeDao.get(saveMe.getNode().getId());
                             if ( node == null )
                                     return null;
                             saveMe.setNode(node);
-                            saveMe.setBridgeMacLinkLastPollTime(saveMe.getBridgeMacLinkCreateTime());
                             m_dao.saveOrUpdate(saveMe);
                             m_dao.flush();
                             return saveMe;
@@ -617,12 +620,12 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
 	}
 	
 	@Transactional
-    protected void saveBridgeBridgeLink(int nodeId, final BridgeBridgeLink saveMe) {
+    protected void saveBridgeBridgeLink(final BridgeBridgeLink saveMe) {
 		new UpsertTemplate<BridgeBridgeLink, BridgeBridgeLinkDao>(m_transactionManager,m_bridgeBridgeLinkDao) {
 
 			@Override
 			protected BridgeBridgeLink query() {
-				return m_dao.getByNodeIdBridgePort(nodeId,saveMe.getBridgePort());
+				return m_dao.getByNodeIdBridgePort(saveMe.getNode().getId(),saveMe.getBridgePort());
 			}
 
 			@Override
@@ -635,11 +638,10 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
 
 			@Override
 			protected BridgeBridgeLink doInsert() {
-                            final OnmsNode node = m_nodeDao.get(nodeId);
+                            final OnmsNode node = m_nodeDao.get(saveMe.getNode().getId());
                             if ( node == null )
                                     return null;
                             saveMe.setNode(node);
-                            saveMe.setBridgeBridgeLinkLastPollTime(saveMe.getBridgeBridgeLinkCreateTime());
                             m_dao.saveOrUpdate(saveMe);
                             m_dao.flush();
                             return saveMe;
@@ -692,15 +694,9 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
 	}
 	
 	public void loadBridgeTopology() {
-	    for (BridgeElement bridge: m_bridgeElementDao.findAll())
-	        m_bridgeTopologyDao.store(bridge);
-
-	    for (BridgeMacLink link: m_bridgeMacLinkDao.findAll()) 
-	        m_bridgeTopologyDao.store(link);
-
-	    for (BridgeBridgeLink link: m_bridgeBridgeLinkDao.findAll()) 
-	        m_bridgeTopologyDao.store(link);
-	}
+	        m_bridgeTopologyDao.loadTopology(m_bridgeElementDao.findAll(),
+	                                         m_bridgeMacLinkDao.findAll(), 
+	                                         m_bridgeBridgeLinkDao.findAll());	}
 
 	public CdpLinkDao getCdpLinkDao() {
 		return m_cdpLinkDao;
