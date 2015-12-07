@@ -436,7 +436,7 @@ public class Nms17216EnIT extends EnLinkdBuilderITCase {
         assertTrue(m_linkd.runSingleSnmpCollection(router4.getId()));
         assertEquals(26, m_cdpLinkDao.countAll());
 
-        assertEquals(26, m_cdpLinkDao.findLinksForTopology().size());
+        assertEquals(13, m_cdpLinkDao.findLinksForTopology().size());
 
         for (final OnmsNode node: m_nodeDao.findAll()) {
             assertNotNull(node.getCdpElement());

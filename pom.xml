@@ -1466,7 +1466,7 @@
               <dependency>
               <groupId>com.sun</groupId>
               <artifactId>tools</artifactId>
-              <version>1.7</version>
+              <version>1.8</version>
               <scope>system</scope>
               <systemPath>${java.home}/../lib/tools.jar</systemPath>
               </dependency>
@@ -1485,6 +1485,13 @@
         <groupId>org.opennms.api.integration</groupId>
         <artifactId>opennms-provisioning</artifactId>
         <version>1.0.0</version>
+      </dependency>
+      <dependency>
+        <groupId>com.sun</groupId>
+        <artifactId>tools</artifactId>
+        <version>1.8</version>
+        <scope>system</scope>
+        <systemPath>${java.home}/../lib/tools.jar</systemPath>
       </dependency>
 
       <!--  opennms dependencies -->
@@ -2071,12 +2078,6 @@
       <dependency>
         <groupId>org.opennms.dependencies</groupId>
         <artifactId>quartz-dependencies</artifactId>
-        <version>${project.version}</version>
-        <type>pom</type>
-      </dependency>
-      <dependency>
-        <groupId>org.opennms.dependencies</groupId>
-        <artifactId>rxtx-dependencies</artifactId>
         <version>${project.version}</version>
         <type>pom</type>
       </dependency>
@@ -3572,11 +3573,6 @@
         <groupId>org.tuckey</groupId>
         <artifactId>urlrewritefilter</artifactId>
         <version>4.0.3</version>
-      </dependency>
-      <dependency>
-        <groupId>org.rxtx</groupId>
-        <artifactId>rxtx</artifactId>
-        <version>2.2-pre2</version>
       </dependency>
       <dependency>
         <groupId>oro</groupId>

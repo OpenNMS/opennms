@@ -94,7 +94,7 @@ public class NrtHelper {
         }
 
         for (final Map.Entry<String,String> entry : rrdGraphAttributesToMetricIds.entrySet()) {
-            final String row = String.format("'%s': '%s:%s', %n", entry.getValue(), rrdFileMapping.get(entry.getKey()), entry.getKey());
+            final String row = String.format("\"%s\": \"%s:%s\", %n", entry.getValue(), rrdFileMapping.get(entry.getKey()), entry.getKey());
             stringBuilder.append(row);
         }
 

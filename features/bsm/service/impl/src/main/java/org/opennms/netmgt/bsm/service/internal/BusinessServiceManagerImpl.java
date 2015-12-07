@@ -32,6 +32,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.stream.Collectors;
 
 import org.opennms.netmgt.bsm.persistence.api.BusinessService;
 import org.opennms.netmgt.bsm.persistence.api.BusinessServiceDao;
@@ -40,6 +41,7 @@ import org.opennms.netmgt.bsm.service.BusinessServiceStateMachine;
 import org.opennms.netmgt.bsm.service.model.BusinessServiceDTO;
 import org.opennms.netmgt.bsm.service.model.IpServiceDTO;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
+import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.web.rest.api.ResourceLocationFactory;
@@ -57,6 +59,9 @@ public class BusinessServiceManagerImpl implements BusinessServiceManager {
 
     @Autowired
     private BusinessServiceStateMachine businessServiceStateMachine;
+
+    @Autowired
+    private NodeDao nodeDao;
 
     @Override
     public List<BusinessServiceDTO> findAll() {
@@ -139,6 +144,11 @@ public class BusinessServiceManagerImpl implements BusinessServiceManager {
         return severity != null ? severity : OnmsSeverity.INDETERMINATE;
     }
 
+    @Override
+    public List<IpServiceDTO> getAllIpServiceDTO() {
+        return transformAll(monitoredServiceDao.findAll());
+    }
+
     private BusinessServiceDao getDao() {
         return businessServiceDao;
     }
@@ -169,11 +179,21 @@ public class BusinessServiceManagerImpl implements BusinessServiceManager {
         return dto;
     }
 
+    private List<IpServiceDTO> transformAll(List<OnmsMonitoredService> all) {
+        if (all != null) {
+            return all.stream().map(this::transform).collect(Collectors.toList());
+        }
+        return null;
+    }
+
     private IpServiceDTO transform(OnmsMonitoredService input) {
         if (input != null) {
             IpServiceDTO output = new IpServiceDTO();
             if (input.getId() != null) {
                 output.setId(String.valueOf(input.getId()));
+                output.setNodeLabel(nodeDao.get(input.getNodeId()).getLabel());
+                output.setServiceName(input.getServiceName());
+                output.setIpAddress(input.getIpAddress().toString());
                 output.setLocation(ResourceLocationFactory.createIpServiceLocation(output.getId()));
                 return output;
             }

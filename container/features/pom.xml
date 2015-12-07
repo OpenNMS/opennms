@@ -59,6 +59,7 @@
 
             <!-- BSM features -->
             <repository>mvn:org.opennms.features.bsm/org.opennms.features.bsm.service.api/${project.version}/xml/features</repository>
+            <repository>mvn:org.opennms.features.bsm/vaadin-adminpage/${project.version}/xml/features</repository>
             <repository>mvn:org.opennms.features.bsm/vaadin-masterpage/${project.version}/xml/features</repository>
 
             <!-- MIB Parser and Event/Collection features -->
@@ -212,8 +213,9 @@
             <feature>dashlet-topology</feature>
             <feature>dashlet-url</feature>
             <feature>nrtg</feature>
-            <feature>opennms-activemq-event-forwarder</feature>
-            <feature>opennms-activemq-event-receiver</feature>
+            <feature>opennms-amqp-event-forwarder</feature>
+            <feature>opennms-amqp-event-receiver</feature>
+            <feature>opennms-amqp-alarm-northbounder</feature>
             <feature>opennms-topology-dev</feature>
             <feature>opennms-topology-runtime-base</feature>
             <feature>opennms-topology-runtime-browsers</feature>
@@ -225,7 +227,8 @@
             <feature>opennms-topology-runtime-application</feature>
             <feature>vaadin</feature>
             <feature>vaadin-dashboard</feature>
-            <feature>vaadin-jmxconfiggenerator</feature>
+            <feature>vaadin-jmxconfiggenerator</feature>>
+
             <feature>vaadin-node-maps</feature>
             <feature>vaadin-snmp-events-and-metrics</feature>
             <feature>vaadin-surveillance-views</feature>
@@ -233,6 +236,7 @@
 
             <!-- BSM -->
             <feature>org.opennms.features.bsm.service.api</feature>
+            <feature>vaadin-adminpage</feature>
             <feature>vaadin-masterpage</feature>
 
           </features>
@@ -289,6 +293,13 @@
     <dependency>
       <groupId>org.opennms.features.bsm</groupId>
       <artifactId>vaadin-masterpage</artifactId>
+      <version>${project.version}</version>
+      <type>pom</type>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.bsm</groupId>
+      <artifactId>vaadin-adminpage</artifactId>
       <version>${project.version}</version>
       <type>pom</type>
       <scope>provided</scope>
