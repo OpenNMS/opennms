@@ -26,16 +26,16 @@ import org.opennms.api.integration.ticketing.PluginException;
 import org.opennms.api.integration.ticketing.Ticket;
 import org.opennms.netmgt.ticketer.otrs.common.DefaultOtrsConfigDao;
 import org.otrs.ticketconnector.GenericTicketConnector;
-import org.otrs.ticketconnector.GenericTicketConnectorInterface;
+import org.otrs.ticketconnector.GenericTicketConnectorPortType;
 import org.otrs.ticketconnector.OTRSArticle;
-import org.otrs.ticketconnector.OTRSTicketCreate;
-import org.otrs.ticketconnector.OTRSTicketCreateResponse;
+import org.otrs.ticketconnector.TicketCreate;
+import org.otrs.ticketconnector.TicketCreateResponse;
 import org.otrs.ticketconnector.OTRSTicketCreateTicket;
-import org.otrs.ticketconnector.OTRSTicketGet;
-import org.otrs.ticketconnector.OTRSTicketGetResponse;
+import org.otrs.ticketconnector.TicketGet;
+import org.otrs.ticketconnector.TicketGetResponse;
 import org.otrs.ticketconnector.OTRSTicketGetResponseArticle;
 import org.otrs.ticketconnector.OTRSTicketGetResponseTicket;
-import org.otrs.ticketconnector.OTRSTicketUpdate;
+import org.otrs.ticketconnector.TicketUpdate;
 import org.otrs.ticketconnector.OTRSTicketUpdateTicket;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,11 +52,11 @@ public class Otrs31TicketerPlugin implements Plugin {
 
     private final DefaultOtrsConfigDao m_configDao;
 
-    private final GenericTicketConnectorInterface m_ticketConnector;
+    private final GenericTicketConnectorPortType m_ticketConnector;
 
     public Otrs31TicketerPlugin() {
         m_configDao = new DefaultOtrsConfigDao();
-        m_ticketConnector = new GenericTicketConnector().getGenericTicketConnectorEndPoint();
+        m_ticketConnector = new GenericTicketConnector().getGenericTicketConnectorPort();
 
         BindingProvider bindingProvider = (BindingProvider) m_ticketConnector;
         bindingProvider.getRequestContext().put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, m_configDao.getEndpoint());
@@ -72,12 +72,12 @@ public class Otrs31TicketerPlugin implements Plugin {
         Objects.requireNonNull(ticketId, "Please provide a ticketId");
         Objects.requireNonNull(m_ticketConnector, "The GenericTicketConnector was not initialized properly");
 
-        OTRSTicketGet ticketGet = new OTRSTicketGet();
+        TicketGet ticketGet = new TicketGet();
         ticketGet.setUserLogin(m_configDao.getUserName());
         ticketGet.setPassword(m_configDao.getPassword());
         ticketGet.setTicketID(new BigInteger[] { new BigInteger(ticketId) });
 
-        OTRSTicketGetResponse response = m_ticketConnector.ticketGet(ticketGet);
+        TicketGetResponse response = m_ticketConnector.ticketGet(ticketGet);
         LOG.debug("TicketGet responded with {} tickets" + response.getTicketLength());
 
         if (response.getTicketLength() == 0) {
@@ -164,13 +164,13 @@ public class Otrs31TicketerPlugin implements Plugin {
         otrsArticle.setHistoryType(m_configDao.getArticleHistoryType());
         otrsArticle.setHistoryComment(m_configDao.getArticleHistoryComment());
 
-        OTRSTicketCreate createRequest = new OTRSTicketCreate();
+        TicketCreate createRequest = new TicketCreate();
         createRequest.setUserLogin(m_configDao.getUserName());
         createRequest.setPassword(m_configDao.getPassword());
         createRequest.setTicket(otrsTicket);
         createRequest.setArticle(otrsArticle);
 
-        OTRSTicketCreateResponse response = m_ticketConnector.ticketCreate(createRequest);
+        TicketCreateResponse response = m_ticketConnector.ticketCreate(createRequest);
         if (response.getError() != null) {
             throw new Otrs31PluginException(response.getError());
         }
@@ -223,7 +223,7 @@ public class Otrs31TicketerPlugin implements Plugin {
                     articleUpdate.setBody(m_configDao.getTicketUpdatedMessage());
             }
 
-            OTRSTicketUpdate update = new OTRSTicketUpdate();
+            TicketUpdate update = new TicketUpdate();
             update.setUserLogin(m_configDao.getUserName());
             update.setPassword(m_configDao.getPassword());
             update.setTicketID(new BigInteger(currentTicket.getId()));

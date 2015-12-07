@@ -25,8 +25,8 @@
 						<configuration>
 							<wsdlOptions>
 								<wsdlOption>
-									<wsdl>src/main/resources/GenericTicketConnector.wsdl</wsdl>
-									<wsdlLocation>classpath:GenericTicketConnector.wsdl</wsdlLocation>
+									<wsdl>src/main/resources/GenericTicketConnectorSOAP.wsdl</wsdl>
+									<wsdlLocation>classpath:GenericTicketConnectorSOAP.wsdl</wsdlLocation>
 									<frontEnd>jaxws21</frontEnd>
 									<faultSerialVersionUID>1</faultSerialVersionUID>
 									<bindingFiles>
