@@ -84,8 +84,8 @@ public class RequisitionUtils {
         m_testCase.sendDelete("/rest/nodes/" + m_testCase.REQUISITION_NAME + ":" + foreignId);
     }
 
-    protected void deleteForeignSource() throws IOException, InterruptedException {
-        m_testCase.sendDelete("/rest/foreignSources/" + m_testCase.REQUISITION_NAME);
+    protected void deleteDeployedForeignSource() throws IOException, InterruptedException {
+        m_testCase.sendDelete("/rest/foreignSources/deployed/" + m_testCase.REQUISITION_NAME);
     }
 
     protected void deleteTestRequisition() throws Exception {
