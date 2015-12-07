@@ -42,8 +42,6 @@ import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.netmgt.bsm.daemon.Bsmd;
 import org.opennms.netmgt.bsm.persistence.api.BusinessService;
 import org.opennms.netmgt.bsm.persistence.api.BusinessServiceDao;
-import org.opennms.netmgt.bsm.service.internal.DefaultBusinessServiceStateMachine;
-import org.opennms.netmgt.config.api.EventConfDao;
 import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.dao.api.DistPollerDao;
@@ -52,13 +50,13 @@ import org.opennms.netmgt.dao.mock.MockEventIpcManager;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsMonitoredService;
+import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.support.TransactionTemplate;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations={
@@ -72,7 +70,8 @@ import org.springframework.transaction.support.TransactionTemplate;
         "classpath:/META-INF/opennms/applicationContext-eventUtil.xml",
         "classpath:/META-INF/opennms/mockEventIpcManager.xml",
         "classpath:/META-INF/opennms/applicationContext-setupIpLike-enabled.xml",
-        "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml"
+        "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml",
+        "classpath:/META-INF/opennms/applicationContext-bsmd.xml"
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
@@ -95,30 +94,18 @@ public class BsmdIT {
     private MockEventIpcManager m_eventMgr;
 
     @Autowired
-    private EventConfDao m_eventConfDao;
-
-    @Autowired
-    private TransactionTemplate m_template;
-
     private Bsmd m_bsmd;
 
     private EventAnticipator m_anticipator;
-    
+
     @Before
     public void setUp() throws Exception {
         BeanUtils.assertAutowiring(this);
 
-        // We don't @Autowire this one since there are two implementations of the EventIpcManager in the Spring context
-        m_bsmd = new Bsmd();
-        m_bsmd.setBusinessServiceDao(m_businessServiceDao);
-        m_bsmd.setAlarmDao(m_alarmDao);
-        m_bsmd.setEventIpcManager(m_eventMgr);
-        m_bsmd.setEventConfDao(m_eventConfDao);
-        m_bsmd.setTransactionTemplate(m_template);
         // We don't have a full blown event configuration, so don't validate these during the integration tests
         m_bsmd.setVerifyReductionKeys(false);
-        m_bsmd.setBusinessServiceStateMachine(new DefaultBusinessServiceStateMachine());
-        m_bsmd.afterPropertiesSet();
+        // Replace the default eventIpcManager with our mock
+        m_bsmd.setEventIpcManager(m_eventMgr);
 
         m_databasePopulator.populateDatabase();
 
@@ -153,6 +140,7 @@ public class BsmdIT {
         // Create the alarm
         OnmsAlarm alarm = new OnmsAlarm();
         alarm.setUei(EventConstants.NODE_LOST_SERVICE_EVENT_UEI);
+        alarm.setSeverity(OnmsSeverity.CRITICAL);
         alarm.setAlarmType(1);
         alarm.setCounter(1);
         alarm.setDistPoller(m_distPollerDao.whoami());

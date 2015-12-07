@@ -29,6 +29,7 @@
 package org.opennms.netmgt.bsm.daemon;
 
 import java.util.List;
+import java.util.Objects;
 
 import org.opennms.netmgt.bsm.persistence.api.BusinessService;
 import org.opennms.netmgt.bsm.persistence.api.BusinessServiceDao;
@@ -49,13 +50,12 @@ import org.opennms.netmgt.xml.event.Parm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
 
-import com.google.common.base.Preconditions;
-
-/**
+/**:
  * This daemon is responsible for driving the Business Service state machine by:
  *  - Sending alarms to the state machine when they are created and/or updated
  *  - Sending events on the event bus when the state of a Business Service changes
@@ -80,6 +80,7 @@ public class Bsmd implements SpringServiceDaemon, BusinessServiceStateChangeHand
     private AlarmDao m_alarmDao;
 
     @Autowired
+    @Qualifier("eventIpcManager")
     private EventIpcManager m_eventIpcManager;
 
     @Autowired
@@ -95,7 +96,7 @@ public class Bsmd implements SpringServiceDaemon, BusinessServiceStateChangeHand
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        Preconditions.checkNotNull(m_stateMachine, "stateMachine cannot be null");
+        Objects.requireNonNull(m_stateMachine, "stateMachine cannot be null");
 
         LOG.info("Initializing bsmd...");
         m_stateMachine.addHandler(this, null);
@@ -103,10 +104,10 @@ public class Bsmd implements SpringServiceDaemon, BusinessServiceStateChangeHand
 
     @Override
     public void start() throws Exception {
-        Preconditions.checkNotNull(m_businessServiceDao, "businessServiceDao cannot be null");
-        Preconditions.checkNotNull(m_alarmDao, "alarmDao cannot be null");
-        Preconditions.checkNotNull(m_eventIpcManager, "eventIpcManager cannot be null");
-        Preconditions.checkNotNull(m_eventConfDao, "eventConfDao cannot be null");
+        Objects.requireNonNull(m_businessServiceDao, "businessServiceDao cannot be null");
+        Objects.requireNonNull(m_alarmDao, "alarmDao cannot be null");
+        Objects.requireNonNull(m_eventIpcManager, "eventIpcManager cannot be null");
+        Objects.requireNonNull(m_eventConfDao, "eventConfDao cannot be null");
 
         handleConfigurationChanged();
     }
@@ -185,19 +186,9 @@ public class Bsmd implements SpringServiceDaemon, BusinessServiceStateChangeHand
 
                 LOG.debug("Handling alarm with id: {}, reduction key: {} and severity: {}",
                         alarm.getId(), alarm.getReductionKey(), alarm.getSeverity());
-                handleNewOrUpdatedAlarm(alarm);
+                m_stateMachine.handleNewOrUpdatedAlarm(alarm);
             }
         });
-    }
-
-    /**
-     * Called when a new alarm is created or an existing alarm was updated in some way.
-     */
-    private void handleNewOrUpdatedAlarm(OnmsAlarm alarm) {
-        if (alarm == null) {
-            return;
-        }
-        m_stateMachine.handleNewOrUpdatedAlarm(alarm);
     }
 
     /**

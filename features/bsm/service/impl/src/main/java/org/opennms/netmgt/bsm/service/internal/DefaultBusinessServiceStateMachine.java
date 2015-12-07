@@ -30,6 +30,7 @@ package org.opennms.netmgt.bsm.service.internal;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -45,7 +46,6 @@ import org.opennms.netmgt.model.OnmsSeverity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
@@ -62,10 +62,11 @@ public class DefaultBusinessServiceStateMachine implements BusinessServiceStateM
     private final Map<String, Set<BusinessService>> m_reductionKeys = Maps.newHashMap();
     private final Map<BusinessService, OnmsSeverity> m_businessServiceSeverity = Maps.newHashMap();
     private final Map<String, OnmsSeverity> m_reductionKeyToSeverity = Maps.newHashMap();
+    private final Set<Integer> m_ipServiceIds = Sets.newHashSet();
 
     @Override
     public void setBusinessServices(List<BusinessService> businessServices) {
-        Preconditions.checkNotNull(businessServices, "businessServices cannot be null");
+        Objects.requireNonNull(businessServices, "businessServices cannot be null");
 
         m_rwLock.writeLock().lock();
         try {
@@ -73,11 +74,13 @@ public class DefaultBusinessServiceStateMachine implements BusinessServiceStateM
             m_reductionKeys.clear();
             m_businessServiceSeverity.clear();
             m_reductionKeyToSeverity.clear();
+            m_ipServiceIds.clear();
 
             // Rebuild
             for (BusinessService businessService : businessServices) {
                 m_businessServiceSeverity.put(businessService, DEFAULT_SEVERITY);
                 for (OnmsMonitoredService ipService : businessService.getIpServices()) {
+                    m_ipServiceIds.add(ipService.getId());
                     for (String reductionKey : getReductionKeysFor(ipService)) {
                         addReductionKey(reductionKey, businessService);
                     }
@@ -160,30 +163,50 @@ public class DefaultBusinessServiceStateMachine implements BusinessServiceStateM
 
     @Override
     public OnmsSeverity getOperationalStatus(BusinessService businessService) {
-        return m_businessServiceSeverity.get(businessService);
+        m_rwLock.readLock().lock();
+        try {
+            return m_businessServiceSeverity.get(businessService);
+        } finally {
+            m_rwLock.readLock().unlock();
+        }
     }
 
     @Override
     public OnmsSeverity getOperationalStatus(OnmsMonitoredService ipService) {
-        // The IP-Service resolves to multiple reduction keys, we use the one with the highest severity
-        OnmsSeverity highestSeverity = null;
-        for (String reductionKey : getReductionKeysFor(ipService)) {
-            final OnmsSeverity severity = m_reductionKeyToSeverity.get(reductionKey);
-            if (severity != null) {
-                if (highestSeverity == null) {
-                    highestSeverity = severity;
-                } else if (severity.isGreaterThan(highestSeverity)) {
-                    highestSeverity = severity;
+        m_rwLock.readLock().lock();
+        try {
+            // Return null if the IP-Service is not associated with any Business Service
+            if (!m_ipServiceIds.contains(ipService.getId())) {
+                return null;
+            }
+
+            // The IP-Service resolves to multiple reduction keys, we use the one with the highest severity
+            OnmsSeverity highestSeverity = DEFAULT_SEVERITY;
+            for (String reductionKey : getReductionKeysFor(ipService)) {
+                final OnmsSeverity severity = m_reductionKeyToSeverity.get(reductionKey);
+                if (severity != null) {
+                    if (highestSeverity == null) {
+                        highestSeverity = severity;
+                    } else if (severity.isGreaterThan(highestSeverity)) {
+                        highestSeverity = severity;
+                    }
                 }
             }
+            return highestSeverity;
+        } finally {
+            m_rwLock.readLock().unlock();
         }
-        return highestSeverity;
     }
 
     @Override
     public List<BusinessService> getBusinessServices() {
-        // Return a shallow copy
-        return Lists.newArrayList(m_businessServiceSeverity.keySet());
+        m_rwLock.readLock().lock();
+        try {
+            // Return a shallow copy
+            return Lists.newArrayList(m_businessServiceSeverity.keySet());
+        } finally {
+            m_rwLock.readLock().unlock();
+        }
     }
 
     @Override
