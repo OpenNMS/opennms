@@ -2436,11 +2436,6 @@
       </dependency>
       <dependency>
         <groupId>org.opennms</groupId>
-        <artifactId>opennms-rrd-rrdtool</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.opennms</groupId>
         <artifactId>opennms-rrd-tcp</artifactId>
         <version>${project.version}</version>
       </dependency>
