@@ -136,7 +136,7 @@ public class BusinessServiceManagerImplIT {
 
         // attach INDETERMINATE alarm to service 1
         businessServiceStateMachine.handleNewOrUpdatedAlarm(createAlarm(monitoredServiceDao.get(5), OnmsSeverity.INDETERMINATE));
-        Assert.assertEquals(OnmsSeverity.INDETERMINATE, businessServiceManager.getOperationalStatusForIPService(5));
+        Assert.assertEquals(OnmsSeverity.NORMAL, businessServiceManager.getOperationalStatusForIPService(5));
         Assert.assertEquals(OnmsSeverity.NORMAL, businessServiceManager.getOperationalStatusForBusinessService(serviceId1));
         Assert.assertEquals(OnmsSeverity.NORMAL, businessServiceManager.getOperationalStatusForBusinessService(serviceId2));
 
