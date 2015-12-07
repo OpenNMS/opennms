@@ -93,8 +93,8 @@ Requires(pre):	jicmp
 Requires:	jicmp
 Requires(pre):	jicmp6
 Requires:	jicmp6
-Requires(pre):  jrrd >= 1.0.9
-Requires:       jrrd >= 1.0.9
+Requires(pre):  jrrd2
+Requires:       jrrd2
 Requires(pre):  opennms-rrdtool
 Requires:       opennms-rrdtool
 Requires(pre):	%{jdk}
