@@ -44,6 +44,7 @@ import javax.ws.rs.core.UriInfo;
 
 import org.opennms.netmgt.bsm.service.BusinessServiceManager;
 import org.opennms.netmgt.bsm.service.model.BusinessServiceDTO;
+import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.web.rest.api.ResourceLocationFactory;
 import org.opennms.web.rest.support.RedirectHelper;
 import org.opennms.web.rest.v2.bsm.model.BusinessServiceListDTO;
@@ -104,6 +105,16 @@ public class BusinessServiceRestService {
         return Response.noContent().build();
     }
 
+    @GET
+    @Path("{id}/operational-status")
+    public Response getOperationStatusForBusinessServiceById(@PathParam("id") Long id) {
+        final OnmsSeverity severity = getManager().getOperationalStatusForBusinessService(id);
+        if (severity != null) {
+            return Response.ok(severity.toString()).type(MediaType.TEXT_PLAIN).build();
+        }
+        return Response.noContent().build();
+    }
+
     @POST
     @Path("{id}/ip-service/{ipServiceId}")
     public Response attachIpService(@PathParam("id") final Long serviceId,
@@ -124,5 +135,15 @@ public class BusinessServiceRestService {
             return Response.notModified().build();
         }
         return Response.ok().build();
+    }
+
+    @GET
+    @Path("{id}/ip-service/operational-status/{ipServiceId}")
+    public Response getOperationStatusForIPServiceById(@PathParam("id") Integer ipServiceId) {
+        final OnmsSeverity severity = getManager().getOperationalStatusForIPService(ipServiceId);
+        if (severity != null) {
+            return Response.ok(severity.toString()).type(MediaType.TEXT_PLAIN).build();
+        }
+        return Response.noContent().build();
     }
 }

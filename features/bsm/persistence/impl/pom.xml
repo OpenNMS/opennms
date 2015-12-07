@@ -6,7 +6,6 @@
     <version>18.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
-  <groupId>org.opennms.features.bsm</groupId>
   <artifactId>org.opennms.features.bsm.persistence.impl</artifactId>
   <packaging>jar</packaging>
   <name>OpenNMS :: Features :: BSM :: Persistence :: Impl</name>
