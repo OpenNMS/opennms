@@ -185,38 +185,9 @@ include::text/operation/newts-repository-converter.adoc[]
 === Newts
 include::text/operation/newts/introduction.adoc[]
 include::text/operation/newts/configuration.adoc[]
-include::text/operation/newts/cassandra-jmx.adoc[]
-include::text/operation/newts/cassandra-newts-jmx.adoc[]
+include::text/operation/newts/cassandra21x.adoc[]
+include::text/operation/newts/newts.adoc[]
 
-[[ga-opennms-operation-daemon-config-files]]
-=== Daemon Configuration Files
-include::text/operation/daemon-config-files/introduction.adoc[]
-include::text/operation/daemon-config-files/eventd.adoc[]
-include::text/operation/daemon-config-files/notifd.adoc[]
-include::text/operation/daemon-config-files/pollerd.adoc[]
-
-[[ga-ticketing]]
-== Ticketing
-include::text/ticketing/introduction.adoc[]
-include::text/ticketing/jira.adoc[]
-
-[[ga-rmi]]
-== Enabling RMI
-include::text/rmi.adoc[]
-
-[[ga-opennms-plugin-manager]]
-== Plugin Manager
-include::text/plugin-manager/introduction.adoc[]
-include::text/plugin-manager/setting-karaf-instance-data.adoc[]
-include::text/plugin-manager/installing-available-plugins.adoc[]
-include::text/plugin-manager/installing-licences.adoc[]
-include::text/plugin-manager/internal-plugins-repository.adoc[]
-
-== Internal Plugins
-include::text/plugins/introduction.adoc[]
-include::text/plugins/alarm-change-notifier.adoc[]
-include::text/plugins/opennms-es-rest.adoc[]
-
-[[ga-special-cases-and-workarounds]]
-== Special Cases and Workarounds
-include::text/workarounds/snmp.adoc[]
+[[ga-opennms-system-properties]]
+== System Properties
+include::text/system-properties/introduction.adoc[]
