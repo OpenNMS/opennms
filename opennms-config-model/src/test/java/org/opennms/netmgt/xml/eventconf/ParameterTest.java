@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -26,27 +26,31 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.sms.reflector.smsservice;
+package org.opennms.netmgt.xml.eventconf;
 
+import java.text.ParseException;
+import java.util.Arrays;
+import java.util.Collection;
 
+import org.junit.runners.Parameterized.Parameters;
+import org.opennms.core.test.xml.XmlTestNoCastor;
 
-/**
- * PingResponseMatcher
- *
- * @author brozow
- */
-class PingResponseMatcher implements MobileMsgResponseMatcher {
-    @Override
-    public boolean matches(MobileMsgRequest request, MobileMsgResponse response) {
-        
-        if (!(request instanceof SmsRequest)) return false;
-        if (!(response instanceof SmsResponse)) return false;
-        
-        
-        SmsRequest smsRequest = (SmsRequest) request;
-        SmsResponse smsResponse = (SmsResponse) response;
-        
-        return smsRequest.getRecipient().equals(smsResponse.getOriginator()) 
-            && "pong".equalsIgnoreCase(smsResponse.getText());
-    }
+public class ParameterTest extends XmlTestNoCastor<Parameter> {
+
+	public ParameterTest(final Parameter sampleObject, final String sampleXml, final String schemaFile) {
+		super(sampleObject, sampleXml, schemaFile);
+	}
+
+	@Parameters
+	public static Collection<Object[]> data() throws ParseException {
+		Parameter p = new Parameter();
+		p.setName("username");
+		p.setValue("agalue");
+		return Arrays.asList(new Object[][] {
+				{p,
+				"<parameter name=\"username\" value=\"agalue\"/>",
+				"target/classes/xsds/eventconf.xsd" }
+		});
+	}
+
 }

@@ -5,6 +5,7 @@ import static org.junit.Assert.assertNotNull;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Date;
 import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
@@ -37,20 +38,16 @@ public class RequisitionImplementationTest implements InitializingBean, Applicat
     private Map<String, ForeignSourceRepository> m_repositories;
 
     @Before
-    public void setUp() throws Exception {
+    @After
+    public void cleanUp() throws Exception {
         if (m_repositories != null) {
             resetDirectories();
             for (final ForeignSourceRepository fsr : m_repositories.values()) {
-                fsr.clear();
                 fsr.flush();
+                fsr.clear();
             }
         }
         LOG.info("Test context prepared.");
-    }
-
-    @After
-    public void tearDown() throws Exception {
-        resetDirectories();
     }
 
     private void resetDirectories() throws IOException {
@@ -71,11 +68,13 @@ public class RequisitionImplementationTest implements InitializingBean, Applicat
             LOG.info("=== " + bundleName + " ===");
             fsr.resetDefaultForeignSource();
             fsr.flush();
-            if (expected != null) {
-                try {
-                    rt.test(fsr);
-                    throw new RuntimeException("Expected throwable " + expected.getName() + " when running test against " + bundleName + ", but it passed!");
-                } catch (final Throwable t) {
+            try {
+                rt.test(fsr);
+            } catch (final Throwable t) {
+                if (expected == null) {
+                    // we didn't expect a failure, but got one... rethrow it
+                    throw t;
+                } else {
                     LOG.debug("expected: {}, got: {}", expected, t);
                     if (t.getClass().getCanonicalName().equals(expected.getCanonicalName())) {
                         // we got the exception we expected, carry on
@@ -83,8 +82,6 @@ public class RequisitionImplementationTest implements InitializingBean, Applicat
                         throw new RuntimeException("Expected throwable " + expected.getName() + " when running test against " + bundleName + ", but got " + t.getClass() + " instead!", t);
                     }
                 }
-            } else {
-                rt.test(fsr);
             }
         });
     }
@@ -101,7 +98,7 @@ public class RequisitionImplementationTest implements InitializingBean, Applicat
                     assertEquals(2, req.getNodeCount());
                 },
                 null
-        );
+                );
     }
 
     @Test
@@ -117,15 +114,15 @@ public class RequisitionImplementationTest implements InitializingBean, Applicat
                     assertNotNull(fs.getScanInterval());
                 },
                 null
-        );
+                );
     }
 
     @Test
     public void testRequisitionWithSpace() {
         runTest(
                 fsr -> {
-                    final Requisition req = fsr.importResourceRequisition(new ClassPathResource("/requisition-test.xml"));
-                    req.setForeignSource("foo bar");
+                    final Requisition req = new Requisition("foo bar");
+                    req.setDate(new Date(0));
                     fsr.save(req);
                     fsr.flush();
                     final Requisition saved = fsr.getRequisition("foo bar");
@@ -133,7 +130,19 @@ public class RequisitionImplementationTest implements InitializingBean, Applicat
                     assertEquals(req, saved);
                 },
                 null
-        );
+                );
+    }
+
+    @Test
+    public void testRequisitionWithSlash() {
+        runTest(
+                fsr -> {
+                    final Requisition req = new Requisition("foo/bar");
+                    req.setForeignSource("foo/bar");
+                    fsr.save(req);
+                },
+                ForeignSourceRepositoryException.class
+                );
     }
 
     @Test
@@ -149,7 +158,7 @@ public class RequisitionImplementationTest implements InitializingBean, Applicat
                     assertEquals(fs, saved);
                 },
                 null
-        );
+                );
     }
 
     @Test
@@ -165,7 +174,7 @@ public class RequisitionImplementationTest implements InitializingBean, Applicat
                     assertEquals(fs, saved);
                 },
                 ForeignSourceRepositoryException.class
-        );
+                );
     }
 
     @Override

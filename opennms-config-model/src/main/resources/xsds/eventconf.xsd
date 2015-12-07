@@ -128,6 +128,14 @@
           </annotation>
         </element>
 
+        <element maxOccurs="unbounded" minOccurs="0" ref="this:parameter">
+          <annotation>
+            <documentation>An optional parameter (name-value pair) to be 
+            assigned to the event. If this parameter duplciates an existing
+            parameter of the event, it will be ignored.</documentation>
+          </annotation>
+        </element>
+
         <element maxOccurs="unbounded" minOccurs="0" ref="this:operaction">
           <annotation>
             <documentation>The operator action to be taken when this event
@@ -642,6 +650,13 @@
         </element>
       </choice>
       <attribute name="textual-convention" type="this:rfc1903-snmp-tc" use="optional" />
+    </complexType>
+  </element>
+
+  <element name="parameter">
+    <complexType>
+      <attribute name="name" type="string" use="required" />
+      <attribute name="value" type="string" use="required" />
     </complexType>
   </element>
 </schema>
