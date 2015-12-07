@@ -155,3 +155,7 @@ include::text/operation/newts/introduction.adoc[]
 include::text/operation/newts/configuration.adoc[]
 include::text/operation/newts/cassandra21x.adoc[]
 include::text/operation/newts/newts.adoc[]
+
+[[ga-opennms-system-properties]]
+== System Properties
+include::text/system-properties/introduction.adoc[]
