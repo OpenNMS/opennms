@@ -26,13 +26,14 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.syslogd;
+package org.opennms.core.concurrent.cassandra;
 
 import java.util.concurrent.ExecutorService;
 
 import org.apache.cassandra.concurrent.JMXEnabledSharedExecutorPool;
 import org.apache.cassandra.concurrent.SharedExecutorPool;
 import org.apache.cassandra.config.Config;
+import org.opennms.core.concurrent.ExecutorFactory;
 
 /**
  * This {@link ExecutorFactory} returns {@link ExecutorService} instances that are 

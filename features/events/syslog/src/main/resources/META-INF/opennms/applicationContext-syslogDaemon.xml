@@ -16,9 +16,9 @@
   <context:annotation-config />
   <tx:annotation-driven/>
 
-  <bean id="executorFactoryJava" class="org.opennms.netmgt.syslogd.ExecutorFactoryJavaImpl"/>
+  <bean id="executorFactoryJava" class="org.opennms.core.concurrent.ExecutorFactoryJavaImpl"/>
 
-  <bean id="executorFactoryCassandraSEP" class="org.opennms.netmgt.syslogd.ExecutorFactoryCassandraSEPImpl"/>
+  <bean id="executorFactoryCassandraSEP" class="org.opennms.core.concurrent.cassandra.ExecutorFactoryCassandraSEPImpl"/>
 
   <bean id="syslogReceiverNio" class="org.opennms.netmgt.syslogd.SyslogReceiverNioThreadPoolImpl">
     <constructor-arg ref="syslogdConfigFactory"/>
