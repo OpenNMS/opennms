@@ -1,19 +1,51 @@
 package org.opennms.netmgt.model.topology;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.model.BridgeElement;
 import org.opennms.netmgt.model.BridgeMacLink;
 import org.opennms.netmgt.model.BridgeStpLink;
 
 public class BroadcastDomain {
 
+    Set<Bridge> m_bridges = new HashSet<Bridge>();
+    List<SharedSegment> m_topology = new ArrayList<SharedSegment>();
+    boolean m_topologyChanged = false;
+    volatile Map<Integer, List<BridgeMacLink>> m_notYetParsedBFTMap = new HashMap<Integer, List<BridgeMacLink>>();
+    volatile Map<Integer, List<BridgeStpLink>> m_notYetParsedSTPMap = new HashMap<Integer, List<BridgeStpLink>>();
+    Integer m_rootBridgeId;
+    volatile List<BridgeMacLink> m_rootBridgeBFT = new ArrayList<BridgeMacLink>();
+
+    //FIXME here you have to find the links...
+    private class BridgeTopologyHelper {
+        final Integer m_xBridge;
+        final Integer m_yBridge;
+        final List<BridgeMacLink> m_xBFT;
+        final List<BridgeMacLink> m_yBFT;
+        public BridgeTopologyHelper(Integer xBridge, Integer yBridge,
+                List<BridgeMacLink> xBFT, List<BridgeMacLink> yBFT) {
+            super();
+            m_xBridge = xBridge;
+            m_yBridge = yBridge;
+            m_xBFT = xBFT;
+            m_yBFT = yBFT;
+        }
+        
+        public Integer getXYPort() {
+            return null;
+        }
+        
+        public Integer getYXPort() {
+            return null;
+        }
+    }
+    
     private class Bridge {
 
         final Integer m_id;
@@ -25,6 +57,29 @@ public class BroadcastDomain {
         public Bridge(Integer id) {
             super();
             m_id = id;
+        }
+
+        public boolean hasBridgeId(String bridgeId) {
+            if (bridgeId == null)
+                return false;
+            for (BridgeElement element: m_bridgeIds) {
+                if (bridgeId.equals(element.getBaseBridgeAddress()))
+                        return true;
+            }
+            return false;
+        }
+                
+        public Set<String> getOtherStpRoots() {
+            Set<String> stpRoots = new HashSet<String>();
+            for (BridgeElement element: m_bridgeIds) {
+                if (InetAddressUtils.isValidStpBridgeId(element.getStpDesignatedRoot())) {
+                    String stpRoot = InetAddressUtils.getBridgeAddressFromStpBridgeId(element.getStpDesignatedRoot());
+                    if ( stpRoot.equals(element.getBaseBridgeAddress()))
+                            continue;
+                    stpRoots.add(stpRoot);
+                }
+            }
+            return stpRoots;
         }
 
         public Bridge(BridgeElement bridgeElement) {
@@ -50,10 +105,6 @@ public class BroadcastDomain {
             m_isRootBridge = isRootBridge;
         }
 
-        public Set<BridgeElement> getBridgeElementIds() {
-            return m_bridgeIds;
-        }
-
         public void addBridgeElement(BridgeElement bridgeElement) {
             if (bridgeElement.getNode().getId() != m_id)
                 return; 
@@ -70,12 +121,8 @@ public class BroadcastDomain {
             return m_portMacs;
         }
 
-        public void setPortMacs(Set<String> portMacs) {
-            m_portMacs = portMacs;
-        }
-
-        public void addPortMac(String portMac) {
-            m_portMacs.add(portMac);
+        public void addPortMac(Set<String> portMacs) {
+            m_portMacs.addAll(portMacs);
         }
 
         public Integer getId() {
@@ -116,26 +163,16 @@ public class BroadcastDomain {
         
         
     }
-
-    Set<Integer> m_updatedNodes = new HashSet<Integer>();
-    Set<Bridge> m_bridges = new HashSet<Bridge>();
-    List<SharedSegment> m_topology = new ArrayList<SharedSegment>();
-    boolean m_topologyChanged = false;
-    volatile Map<Integer, List<BridgeMacLink>> m_notYetParsedBFTMap = new HashMap<Integer, List<BridgeMacLink>>();
-    volatile Map<Integer, List<BridgeStpLink>> m_notYetParsedSTPMap = new HashMap<Integer, List<BridgeStpLink>>();
-
     
     public synchronized boolean topologyChanged() {
         return m_topologyChanged;
     }
 
     public synchronized Set<Integer> getUpdatedNodes() {
-      return m_updatedNodes;  
-    }
-
-    //FIXME
-    public synchronized Date getUpdateTime() {
-        return null;
+        Set<Integer> updatedNodes = new HashSet<Integer>();
+        for (Bridge bridge: m_bridges)
+            updatedNodes.add(bridge.getId());
+        return updatedNodes;
     }
     
     public synchronized void addBridgeElement(BridgeElement bridgeElement) {
@@ -153,6 +190,7 @@ public class BroadcastDomain {
             m_bridges.add(new Bridge(nodeId));
         }
     }
+    
     public synchronized boolean containsAtleastOne(Set<Integer> nodeids) {
         for (Bridge bridge: m_bridges) {
             for (Integer nodeid:nodeids) {
@@ -179,6 +217,7 @@ public class BroadcastDomain {
     }
 
     public synchronized void loadBFT(int nodeId, List<BridgeMacLink> maclinks, List<BridgeStpLink> stplinks) {
+        m_topologyChanged = true;
         m_notYetParsedBFTMap.put(nodeId, maclinks);
         m_notYetParsedSTPMap.put(nodeId, stplinks);
     }
@@ -219,51 +258,146 @@ public class BroadcastDomain {
             bridges.add(bridge);
         }
         m_bridges = bridges;
-
+        m_topologyChanged = true;
     }
     
     public synchronized boolean isEmpty() {
         return m_bridges.isEmpty();
     }
     
+    //FIXME implement this method
     public synchronized void calculate() {
+       //here use the partial algorithm to perform topology calculation
+       // do not forget to setNode for objects 
+       // the main element are the following....
+       // choose the root!
+       if (m_rootBridgeBFT.isEmpty())
+           electRootBridge();
+
+       for (Integer nodeid: m_notYetParsedBFTMap.keySet()) {
+           findBridgesTopo(m_rootBridgeId, m_rootBridgeBFT, nodeid, m_notYetParsedBFTMap.get(nodeid));
+       }
+       
+       //once calculated....
+       m_notYetParsedBFTMap.clear();
+       // mantain the bft of the root
+       // found the port of the root where the bridge is 
+       // work on the segments there to find the link
+       // use the least condition theorem from lowercamp
+       // traverse the segment starting from the first found
+       // shared segment
+       // operation on shared segment are split and merge 
+       m_topologyChanged = false;
+    }
+
+    //FIXME
+    public void findBridgesTopo(Integer RBridgeId, List<BridgeMacLink> RBft, Integer XBridgeId, List<BridgeMacLink> XBFT) {
+        BridgeTopologyHelper RX = new BridgeTopologyHelper(RBridgeId, XBridgeId, RBft, XBFT);
+        Integer RXport = RX.getXYPort();
+        Integer XRport = RX.getYXPort();
+        SharedSegment topSegment = getSharedSegment(RBridgeId,RXport);
+        if (topSegment == null) {
+            topSegment = new SharedSegment(RBridgeId,RXport);
+            // FIXME 
+            //topSegment.assign the macaddress
+            m_topology.add(topSegment);
+
+            //FIXME
+            //add the other segments for each port on each bridge;
+            return;
+        }
+        
+        for (Bridge Y: getBridgeOnSharedSegment(topSegment)) {
+            BridgeTopologyHelper XY = new BridgeTopologyHelper(RBridgeId, XBridgeId, RBft, XBFT);
+            Integer XYport = XY.getXYPort();
+            Integer YXport = XY.getYXPort();
+            Integer YRport = Y.getRootPort();
+            // X is a leaf of Y
+            if (XYport == XRport && YXport != YRport) {
+                //FIXME
+                //Remove Y from topSegment
+                //FIXME we have to find a real BFT for Y bridgeId
+                findBridgesTopo(Y.getId(), getEffectiveBFT(Y.getId()), XBridgeId, XBFT);
+                return;
+            }
+            // Y is a leaf of X
+            if (XYport != XRport && YXport == YRport) {
+                //FIXME create a SharedSegment with root port
+                SharedSegment leafSegment = new SharedSegment(XBridgeId, XYport);
+                //leafSegment assign bridgemaclinks
+                //topSegment remove bridgemaclinks from Y
+                m_topology.add(leafSegment);
+            }            
+        }
+        //FIXME
+        //Se sono qui e' perche' non sono una foglia, ho fogliato
+        // e mi devo aggiungere al top segment
+        //topSegment.assign()
+        
         
     }
-}
 
-/*     FIXME check reuse code
- * 
-volatile Map<Integer,Map<Integer,Set<String>>> m_bftMap = new HashMap<Integer, Map<Integer,Set<String>>>();
+    //FIXME
+    public List<BridgeMacLink> getEffectiveBFT(Integer bridgeId) {
+        return null;
+    }
+    //FIXME
+    public List<Bridge> getBridgeOnSharedSegment(SharedSegment segment) {
+        return null;
+    }
 
-volatile Map<Integer,Map<Integer,Integer>> m_nodebridgeportifindex = new HashMap<Integer, Map<Integer,Integer>>();
-
-volatile Map<Integer, Map<Integer,Integer>> m_nodebridgeportvlan =new HashMap<Integer, Map<Integer,Integer>>();
-
-@Override
-public void storeBridgeToIfIndexMap(int nodeid, Map<Integer,Integer> bridgeportifindex) {
-    m_nodebridgeportifindex.put(nodeid, bridgeportifindex);
-}
-
-@Override
-public void storeBridgetoVlanMap(int nodeId, Set<Integer> bridgeports, Integer vlanid) {
-    Map<Integer,Integer> portvlan = new HashMap<Integer, Integer>();
-    if (m_nodebridgeportvlan.containsKey(nodeId)) 
-        portvlan = m_nodebridgeportvlan.get(nodeId);
-    for (Integer bridgeport: bridgeports) {
-        if (portvlan.containsKey(bridgeport)) {
-            if (portvlan.get(bridgeport) == vlanid) {
+    //FIXME
+    public SharedSegment getSharedSegment(Integer bridgeId, Integer BridgePort) {
+        return null;
+    }
+    
+    public void electRootBridge() {
+        //check the spanning tree if exists.
+        Set<String> rootBridgeIds=new HashSet<String>();
+        for (Bridge bridge: m_bridges) {
+            rootBridgeIds = bridge.getOtherStpRoots();
+            if (rootBridgeIds.isEmpty())
                 continue;
-            }   else { 
-                // port is a trunk
-                portvlan.remove(bridgeport);
-                continue;
+            break;
+        }
+        Bridge rootBridge= null;
+        for (String rootBridgeId: rootBridgeIds) {
+            for (Bridge bridge: m_bridges) {
+                if (bridge.hasBridgeId(rootBridgeId)) {
+                    rootBridge = bridge;
+                    break;
+                }
             }
         }
-        portvlan.put(bridgeport, vlanid);
+
+        if (rootBridge == null) {
+            int size = 0;
+            Integer rootNodeid = null;
+            for (Integer nodeid:  m_notYetParsedBFTMap.keySet()) {
+                int cursize = m_notYetParsedBFTMap.get(nodeid).size();
+                if (size < cursize) {
+                    rootNodeid = nodeid;
+                    size = cursize;
+                }
+            }
+            if (rootNodeid != null ) {
+                for (Bridge bridge: m_bridges) {
+                    if (bridge.getId().intValue() == rootNodeid.intValue()) {
+                        rootBridge = bridge;
+                        break;
+                    }
+                }
+            }
+        }
+        if (rootBridge == null)
+            return;
+        m_rootBridgeId = rootBridge.getId();
+        rootBridge.setRootBridge(true);
+        rootBridge.setRootPort(null);
+        m_rootBridgeBFT = m_notYetParsedBFTMap.remove(rootBridge.getId());
     }
-    m_nodebridgeportvlan.put(nodeId, portvlan);
 }
-*/
+
 
 /*
 protected void saveBridgeTopology(final BridgeTopologyLink bridgelink) {
