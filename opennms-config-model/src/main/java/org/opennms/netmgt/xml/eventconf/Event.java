@@ -62,7 +62,8 @@ import org.xml.sax.ContentHandler;
 public class Event implements Serializable, Comparable<Event> {
 	private static final long serialVersionUID = 565808183599950549L;
 
-	private static final Varbindsdecode[] EMPTY_VARBINDSDECODE_ARRAY = new Varbindsdecode[0];
+	private static final Parameter[]      EMPTY_PARAMETER_ARRAY = new Parameter[0];
+        private static final Varbindsdecode[] EMPTY_VARBINDSDECODE_ARRAY = new Varbindsdecode[0];
 	private static final Script[]         EMPTY_SCRIPT_ARRAY = new Script[0];
 	private static final Operaction[]     EMPTY_OPERACTION_ARRAY = new Operaction[0];
 	private static final String[]         EMPTY_STRING_ARRAY = new String[0];
@@ -143,6 +144,13 @@ public class Event implements Serializable, Comparable<Event> {
 	// @Size(min=0)
 	@XmlElement(name="varbindsdecode", required=false)
     private List<Varbindsdecode> m_varbindsdecodes = new ArrayList<Varbindsdecode>();
+
+    /**
+     * The varbind decoding tag used to decode value into a string
+     */
+	// @Size(min=0)
+	@XmlElement(name="parameter", required=false)
+    private List<Parameter> m_parameters = new ArrayList<Parameter>();
 
     /**
      * The operator action to be taken when this event occurs
@@ -266,6 +274,14 @@ public class Event implements Serializable, Comparable<Event> {
         m_varbindsdecodes.add(index, varbindsdecode);
     }
 
+    public void addParameter(final Parameter parameter) throws IndexOutOfBoundsException {
+        m_parameters.add(parameter);
+    }
+
+    public void addParameter(final int index, final Parameter parameter) throws IndexOutOfBoundsException {
+        m_parameters.add(index, parameter);
+    }
+
     public Enumeration<Autoaction> enumerateAutoaction() {
         return Collections.enumeration(m_autoactions);
     }
@@ -288,6 +304,10 @@ public class Event implements Serializable, Comparable<Event> {
 
     public Enumeration<Varbindsdecode> enumerateVarbindsdecode() {
         return Collections.enumeration(m_varbindsdecodes);
+    }
+
+    public Enumeration<Parameter> enumerateParameters() {
+        return Collections.enumeration(m_parameters);
     }
 
     public AlarmData getAlarmData() {
@@ -452,6 +472,22 @@ public class Event implements Serializable, Comparable<Event> {
         return m_varbindsdecodes.size();
     }
 
+    public Parameter geParameter(final int index) throws IndexOutOfBoundsException {
+        return m_parameters.get(index);
+    }
+
+    public Parameter[] getParameter() {
+        return m_parameters.toArray(EMPTY_PARAMETER_ARRAY);
+    }
+
+    public List<Parameter> getParameterCollection() {
+        return m_parameters;
+    }
+
+    public int getParameterCount() {
+        return m_parameters.size();
+    }
+
     /**
      * @return true if this object is valid according to the schema
      */
@@ -486,6 +522,10 @@ public class Event implements Serializable, Comparable<Event> {
 
     public Iterator<Varbindsdecode> iterateVarbindsdecode() {
         return m_varbindsdecodes.iterator();
+    }
+
+    public Iterator<Parameter> iterateParameter() {
+        return m_parameters.iterator();
     }
 
     public void marshal(final Writer out)  throws MarshalException, ValidationException {
@@ -566,6 +606,14 @@ public class Event implements Serializable, Comparable<Event> {
 
     public Varbindsdecode removeVarbindsdecodeAt(final int index) {
         return m_varbindsdecodes.remove(index);
+    }
+
+    public boolean removeParameter(final Parameter parameter) {
+        return m_parameters.remove(parameter);
+    }
+
+    public Parameter removeParameterAt(final int index) {
+        return m_parameters.remove(index);
     }
 
     public void setAlarmData(final AlarmData alarmData) {
@@ -750,6 +798,27 @@ public class Event implements Serializable, Comparable<Event> {
         setVarbindsdecode(decodes);
     }
 
+    public void setParameter(final int index, final Parameter parameter) throws IndexOutOfBoundsException {
+        m_parameters.set(index, parameter);
+    }
+
+    public void setParameter(final Parameter[] parameters) {
+        m_parameters.clear();
+        for (final Parameter parameter : parameters) {
+            m_parameters.add(parameter);
+        }
+    }
+
+    public void setParameter(final List<Parameter> parameters) {
+        if (m_parameters == parameters) return;
+        m_parameters.clear();
+        m_parameters.addAll(parameters);
+    }
+
+    public void setParameterCollection(final List<Parameter> decodes) {
+        setParameterCollection(decodes);
+    }
+
     public static Event unmarshal(final Reader reader) throws MarshalException, ValidationException {
         return (Event) Unmarshaller.unmarshal(Event.class, reader);
     }
@@ -783,6 +852,7 @@ public class Event implements Serializable, Comparable<Event> {
 		result = prime * result + ((m_tticket == null) ? 0 : m_tticket.hashCode());
 		result = prime * result + ((m_uei == null) ? 0 : m_uei.hashCode());
 		result = prime * result + ((m_varbindsdecodes == null) ? 0 : m_varbindsdecodes.hashCode());
+                result = prime * result + ((m_parameters == null) ? 0 : m_parameters.hashCode());
 		return result;
 	}
 
@@ -891,6 +961,11 @@ public class Event implements Serializable, Comparable<Event> {
 			if (other.m_varbindsdecodes != null) return false;
 		} else if (!m_varbindsdecodes.equals(other.m_varbindsdecodes)) {
 			return false;
+		}
+		if (m_parameters == null) {
+		    if (other.m_parameters != null) return false;
+		} else if (!m_parameters.equals(other.m_parameters)) {
+		    return false;
 		}
 		return true;
 	}
