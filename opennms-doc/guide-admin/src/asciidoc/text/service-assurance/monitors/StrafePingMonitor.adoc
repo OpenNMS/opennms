@@ -1,5 +1,5 @@
 // Allow GitHub image rendering
-:imagesdir: ../../images
+:imagesdir: ../../../images
 
 ==== StrafePingMonitor
 
@@ -9,7 +9,7 @@ The _StrafePingMonitor_ performs multiple _ICMP echo requests_ (ping) and stores
 Credit is due to Tobias Oetiker, as this graphing feature is an adaptation of the http://oss.oetiker.ch/smokeping/[SmokePing] tool that he developed.
 
 .Visualization of a graph from the StrafePingMonitor
-image::poller/01_strafeping.png[]
+image::service-assurance/monitors/01_strafeping.png[]
 
 ===== Monitor facts
 
