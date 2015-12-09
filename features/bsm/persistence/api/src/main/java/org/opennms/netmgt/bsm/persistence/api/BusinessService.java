@@ -48,10 +48,10 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import org.opennms.netmgt.model.OnmsMonitoredService;
-
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+
+import org.opennms.netmgt.model.OnmsMonitoredService;
 
 @Entity
 @Table(name = "bsm_service")
@@ -65,6 +65,8 @@ public class BusinessService {
     private Map<String, String> m_attributes = Maps.newLinkedHashMap();
 
     private Set<OnmsMonitoredService> m_ipServices = Sets.newLinkedHashSet();
+
+    private Set<String> m_reductionKeys = Sets.newLinkedHashSet();
 
     @Id
     @SequenceGenerator(name = "opennmsSequence", sequenceName = "opennmsNxtId")
@@ -88,7 +90,7 @@ public class BusinessService {
     }
 
     @ElementCollection
-    @JoinTable(name = "bsm_service_attributes", joinColumns = @JoinColumn(name = "bsm_service_id", referencedColumnName = "id") )
+    @JoinTable(name = "bsm_service_attributes", joinColumns = @JoinColumn(name = "bsm_service_id", referencedColumnName = "id"))
     @MapKeyColumn(name = "key")
     @Column(name = "value", nullable = false)
     public Map<String, String> getAttributes() {
@@ -132,6 +134,17 @@ public class BusinessService {
         return m_ipServices.stream()
             .map(ipSvc -> ipSvc.getId())
             .collect(Collectors.toSet());
+    }
+
+    @ElementCollection
+    @JoinTable(name = "bsm_service_reductionkeys", joinColumns = @JoinColumn(name = "bsm_service_id", referencedColumnName = "id"))
+    @Column(name = "reductionkey", nullable = false)
+    public Set<String> getReductionKeys() {
+        return m_reductionKeys;
+    }
+
+    public void setReductionKeys(Set<String> m_reductionKeys) {
+        this.m_reductionKeys = m_reductionKeys;
     }
 
     @Override

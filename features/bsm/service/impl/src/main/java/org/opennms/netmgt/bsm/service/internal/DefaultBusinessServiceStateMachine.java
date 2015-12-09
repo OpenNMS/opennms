@@ -35,28 +35,24 @@ import java.util.Set;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-import org.opennms.core.utils.InetAddressUtils;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
+
 import org.opennms.netmgt.bsm.persistence.api.BusinessService;
 import org.opennms.netmgt.bsm.service.BusinessServiceStateChangeHandler;
 import org.opennms.netmgt.bsm.service.BusinessServiceStateMachine;
-import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
-
 public class DefaultBusinessServiceStateMachine implements BusinessServiceStateMachine {
     private static final Logger LOG = LoggerFactory.getLogger(DefaultBusinessServiceStateMachine.class);
 
     private ReadWriteLock m_rwLock = new ReentrantReadWriteLock();
     public static final OnmsSeverity DEFAULT_SEVERITY = OnmsSeverity.NORMAL;
-    // TODO: The distributed poller name (now monitoring system name?) should be part of the edge details
-    public static final String DEFAULT_DISTRIBUTED_POLLER_NAME = "";
 
     private final List<BusinessServiceStateChangeHandler> m_handlers = Lists.newArrayList();
     private final Map<String, Set<BusinessService>> m_reductionKeys = Maps.newHashMap();
@@ -81,7 +77,7 @@ public class DefaultBusinessServiceStateMachine implements BusinessServiceStateM
                 m_businessServiceSeverity.put(businessService, DEFAULT_SEVERITY);
                 for (OnmsMonitoredService ipService : businessService.getIpServices()) {
                     m_ipServiceIds.add(ipService.getId());
-                    for (String reductionKey : getReductionKeysFor(ipService)) {
+                    for (String reductionKey : ipService.getReductionKeys()) {
                         addReductionKey(reductionKey, businessService);
                     }
                 }
@@ -151,7 +147,7 @@ public class DefaultBusinessServiceStateMachine implements BusinessServiceStateM
     private OnmsSeverity calculateCurrentSeverity(BusinessService businessService) {
         OnmsSeverity maxSeverity = DEFAULT_SEVERITY;
         for (OnmsMonitoredService ipService : businessService.getIpServices()) {
-            for (String reductionKey : getReductionKeysFor(ipService)) {
+            for (String reductionKey : ipService.getReductionKeys()) {
                 final OnmsSeverity ipServiceSeverity = m_reductionKeyToSeverity.get(reductionKey);
                 if (ipServiceSeverity != null && ipServiceSeverity.isGreaterThan(maxSeverity)) {
                     maxSeverity = ipServiceSeverity;
@@ -182,7 +178,7 @@ public class DefaultBusinessServiceStateMachine implements BusinessServiceStateM
 
             // The IP-Service resolves to multiple reduction keys, we use the one with the highest severity
             OnmsSeverity highestSeverity = DEFAULT_SEVERITY;
-            for (String reductionKey : getReductionKeysFor(ipService)) {
+            for (String reductionKey : ipService.getReductionKeys()) {
                 final OnmsSeverity severity = m_reductionKeyToSeverity.get(reductionKey);
                 if (severity != null) {
                     if (highestSeverity == null) {
@@ -227,19 +223,5 @@ public class DefaultBusinessServiceStateMachine implements BusinessServiceStateM
         } finally {
             m_rwLock.writeLock().unlock();
         }
-    }
-
-    private static Set<String> getReductionKeysFor(OnmsMonitoredService ipService) {
-        final String nodeLostServiceReductionKey = String.format("%s:%s:%d:%s:%s",
-                EventConstants.NODE_LOST_SERVICE_EVENT_UEI, DEFAULT_DISTRIBUTED_POLLER_NAME,
-                ipService.getNodeId(), InetAddressUtils.toIpAddrString(ipService.getIpAddress()),
-                ipService.getServiceName());
-
-        // When node processing is enabled, we may get node down instead of node lost service events
-        final String nodeDownReductionKey = String.format("%s:%s:%d",
-                EventConstants.NODE_DOWN_EVENT_UEI, DEFAULT_DISTRIBUTED_POLLER_NAME,
-                ipService.getNodeId());
-
-        return Sets.newHashSet(nodeLostServiceReductionKey, nodeDownReductionKey);
     }
 }
