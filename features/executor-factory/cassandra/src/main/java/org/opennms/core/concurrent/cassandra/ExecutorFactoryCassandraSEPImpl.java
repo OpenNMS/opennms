@@ -46,7 +46,7 @@ public class ExecutorFactoryCassandraSEPImpl implements ExecutorFactory {
 	 * 
 	 * TODO: Make this into a map of separate pools per daemon?
 	 */
-	public static final JMXEnabledSharedExecutorPool SHARED = new JMXEnabledSharedExecutorPool("OpenNMS.Syslogd");
+	public static final JMXEnabledSharedExecutorPool SHARED = new JMXEnabledSharedExecutorPool("OpenNMS");
 
 	static {
 		// Turn Cassandra client mode on so that we can use the {@link SharedExecutorPool} classes.
