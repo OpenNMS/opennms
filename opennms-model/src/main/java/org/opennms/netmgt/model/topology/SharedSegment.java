@@ -10,11 +10,15 @@ import org.opennms.netmgt.model.BridgeMacLink;
 
 public class SharedSegment {
     
-    final Integer m_designatedBridge;
-    final Integer m_designatedPort;
+    Integer m_designatedBridge;
+    Integer m_designatedPort;
     List<BridgeMacLink> m_bridgeportsOnSegment = new ArrayList<BridgeMacLink>();
     List<BridgeBridgeLink> m_bridgeportsOnLink = null;
-
+    
+    public SharedSegment() {
+        
+    }
+    
     public SharedSegment(Integer designatedBridge,Integer designatedPort) {
         m_designatedBridge=designatedBridge;
         m_designatedPort = designatedPort;
