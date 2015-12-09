@@ -1303,7 +1303,8 @@
     <karafVersion>2.4.0</karafVersion>
     <karafPaxExamVersion>2.3.9</karafPaxExamVersion>
     <felixVersion>2.3.0</felixVersion>
-    <liquibaseVersion>2.0.5-ONMS20160524b</liquibaseVersion>
+    <liquibaseVersion>2.0.5</liquibaseVersion>
+    <lmaxDisruptorVersion>3.3.2</lmaxDisruptorVersion>
     <log4jVersion>99.99.99-use-log4j2</log4jVersion>
     <log4j2Version>2.5</log4j2Version>
     <minaVersion>2.0.7</minaVersion>
