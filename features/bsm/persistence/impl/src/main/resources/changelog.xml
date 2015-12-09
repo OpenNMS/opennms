@@ -45,4 +45,15 @@
 			baseTableName="bsm_service_ifservices" baseColumnNames="ifserviceid"
 			referencedTableName="ifservices" referencedColumnNames="id" />
 	</changeSet>
+	<changeSet id="18.0.0-bsm-reductionkeys" author="mneumann">
+		<createTable tableName="bsm_service_reductionkeys">
+			<column name="bsm_service_id" type="integer">
+				<constraints nullable="false"/>
+			</column>
+			<column name="reductionkey" type="text">
+				<constraints nullable="false"/>
+			</column>
+		</createTable>
+		<addPrimaryKey tableName="bsm_service_reductionkeys" columnNames="bsm_service_id, reductionkey" constraintName="bsm_service_reductionkeys_pkey" />
+	</changeSet>
 </databaseChangeLog>

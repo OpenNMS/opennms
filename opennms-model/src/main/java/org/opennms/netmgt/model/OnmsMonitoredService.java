@@ -35,6 +35,7 @@ import java.math.BigInteger;
 import java.net.InetAddress;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
@@ -67,6 +68,8 @@ import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.codehaus.jackson.annotate.JsonManagedReference;
 import org.hibernate.annotations.Where;
+import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.netmgt.events.api.EventConstants;
 import org.springframework.core.style.ToStringCreator;
 
 @XmlRootElement(name = "service")
@@ -75,6 +78,9 @@ import org.springframework.core.style.ToStringCreator;
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class OnmsMonitoredService extends OnmsEntity implements Serializable, Comparable<OnmsMonitoredService> {
     private static final long serialVersionUID = 7899180234592272274L;
+
+    // TODO: The distributed poller name (now monitoring system name?) should be part of the edge details
+    public static final String DEFAULT_DISTRIBUTED_POLLER_NAME = "";
 
     private Integer m_id;
 
@@ -613,5 +619,23 @@ public class OnmsMonitoredService extends OnmsEntity implements Serializable, Co
             return getIpInterface().getForeignId();
         }
         return null;
+    }
+
+    @Transient
+    @XmlTransient
+    @JsonIgnore
+    public Set<String> getReductionKeys() {
+        Set<String> reductionKeys = new HashSet<>();
+        final String nodeLostServiceReductionKey = String.format("%s:%s:%d:%s:%s",
+                EventConstants.NODE_LOST_SERVICE_EVENT_UEI, DEFAULT_DISTRIBUTED_POLLER_NAME,
+                getNodeId() , InetAddressUtils.toIpAddrString(this.getIpAddress()),
+                getServiceName());
+        reductionKeys.add(nodeLostServiceReductionKey);
+
+        // When node processing is enabled, we may get node down instead of node lost service events
+        final String nodeDownReductionKey = String.format("%s:%s:%d",
+                EventConstants.NODE_DOWN_EVENT_UEI, DEFAULT_DISTRIBUTED_POLLER_NAME, getNodeId());
+        reductionKeys.add(nodeDownReductionKey);
+        return reductionKeys;
     }
 }
