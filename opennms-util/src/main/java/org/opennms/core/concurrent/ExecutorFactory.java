@@ -30,9 +30,47 @@ package org.opennms.core.concurrent;
 
 import java.util.concurrent.ExecutorService;
 
+/**
+ * This factory is used to create {@link ExecutorService} thread pools for use by
+ * daemon processes. This is provided as a service so that thread pools throughout
+ * the system are constructed in the same manner and have consistent thread names,
+ * logging, and queue implementations.
+ * 
+ * @author Seth
+ */
 public interface ExecutorFactory {
 
+	/**
+	 * Construct a new {@link ExecutorService} with an unbounded queue size 
+	 * ({@link Integer#MAX_VALUE).
+	 * 
+	 * For CPU-intensive tasks, it is a good idea to use the value of
+	 * {@link Runtime#availableProcessors()} (or a reasonable multiple of it
+	 * based on the tasks) for the <code>threads</code> parameter to ensure 
+	 * that the CPU is fully utilized.
+	 * 
+	 * @param threads
+	 * @param daemonName
+	 * @param executorName
+	 * @return An ExecutorService pool
+	 */
 	ExecutorService newExecutor(int threads, String daemonName, String executorName);
 
+	/**
+	 * Construct a new {@link ExecutorService} with a specified queue size for 
+	 * the backlog of tasks. When the queue is full, the pool may block,
+	 * discard the incoming task, or throw an exception. This behavior is
+	 * dependent on the implementation of the {@link ExecutorService}.
+	 * 
+	 * For CPU-intensive tasks, it is a good idea to use the value of
+	 * {@link Runtime#availableProcessors()} (or a reasonable multiple of it
+	 * based on the tasks) for the <code>threads</code> parameter to ensure 
+	 * that the CPU is fully utilized.
+	 * 
+	 * @param threads
+	 * @param daemonName
+	 * @param executorName
+	 * @return An ExecutorService pool
+	 */
 	ExecutorService newExecutor(int threads, int queueSize, String daemonName, String executorName);
 }
