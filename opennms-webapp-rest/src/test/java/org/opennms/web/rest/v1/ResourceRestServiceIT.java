@@ -93,6 +93,8 @@ public class ResourceRestServiceIT extends AbstractSpringJerseyRestTestCase {
     @Rule
     public TemporaryFolder m_tempFolder = new TemporaryFolder();
 
+    protected String m_extension;
+
     @Before
     public void setUp() throws Throwable {
         super.setUp();
@@ -104,10 +106,10 @@ public class ResourceRestServiceIT extends AbstractSpringJerseyRestTestCase {
         m_resourceStorageDao.setRrdDirectory(m_tempFolder.getRoot());
 
         // Add some blank RRD files
-        final String extension = m_rrdStrategyFactory.getStrategy().getDefaultFileExtension();
+        m_extension = m_rrdStrategyFactory.getStrategy().getDefaultFileExtension();
         File nodeSnmp1 = m_tempFolder.newFolder("snmp", "1");
-        FileUtils.touch(new File(nodeSnmp1, "SwapIn" + extension));
-        FileUtils.touch(new File(nodeSnmp1, "SwapOut" + extension));
+        FileUtils.touch(new File(nodeSnmp1, "SwapIn" + m_extension));
+        FileUtils.touch(new File(nodeSnmp1, "SwapOut" + m_extension));
     }
 
     @Test
@@ -149,7 +151,8 @@ public class ResourceRestServiceIT extends AbstractSpringJerseyRestTestCase {
         String json = sendRequest(jsonRequest, 200);
 
         JSONObject restObject = new JSONObject(json);
-        JSONObject expectedObject = new JSONObject(IOUtils.toString(new FileInputStream("src/test/resources/v1/resources.json")));
+        final String jsonString = IOUtils.toString(new FileInputStream("src/test/resources/v1/resources.json"));
+        JSONObject expectedObject = new JSONObject(jsonString.replace(".jrb", m_extension));
         JSONAssert.assertEquals(expectedObject, restObject, true);
     }
 }
