@@ -68,6 +68,10 @@ public class BusinessServiceDTO {
     @XmlElementWrapper(name="ip-services")
     private Set<IpServiceDTO> m_ipServices = Sets.newLinkedHashSet();
 
+    @XmlElement(name="child-service")
+    @XmlElementWrapper(name="child-services")
+    private Set<BusinessServiceDTO> m_childServices = Sets.newLinkedHashSet();
+
     public Long getId() {
         return m_id;
     }
@@ -116,6 +120,22 @@ public class BusinessServiceDTO {
         m_ipServices.remove(ipService);
     }
 
+    public Set<BusinessServiceDTO> getChildServices() {
+        return m_childServices;
+    }
+
+    public void setChildServices(Set<BusinessServiceDTO> childServices) {
+        m_childServices = childServices;
+    }
+
+    public void addChildService(BusinessServiceDTO childService) {
+        m_childServices.add(childService);
+    }
+
+    public void removeChildService(BusinessServiceDTO childService) {
+        m_childServices.remove(childService);
+    }
+
     public void setLocation(ResourceLocation location) {
         this.location = location;
     }
@@ -138,6 +158,7 @@ public class BusinessServiceDTO {
                 && Objects.equals(m_name, other.m_name)
                 && Objects.equals(m_attributes, other.m_attributes)
                 && Objects.equals(m_ipServices, other.m_ipServices)
+                && Objects.equals(m_childServices, other.m_childServices)
                 && Objects.equals(location, other.location);
     }
 
@@ -151,6 +172,7 @@ public class BusinessServiceDTO {
         return com.google.common.base.Objects.toStringHelper(this).add("id", m_id).add("name", m_name)
                 .add("attributes", m_attributes)
                 .add("ipServices", m_ipServices)
+                .add("childServices", m_childServices)
                 .add("location", location)
                 .toString();
     }
