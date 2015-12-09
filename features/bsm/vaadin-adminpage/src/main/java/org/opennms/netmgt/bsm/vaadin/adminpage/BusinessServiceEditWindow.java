@@ -30,18 +30,18 @@ package org.opennms.netmgt.bsm.vaadin.adminpage;
 
 import java.util.Set;
 
+import org.opennms.netmgt.bsm.service.model.BusinessServiceDTO;
+import org.opennms.netmgt.bsm.service.model.IpServiceDTO;
+
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Panel;
+import com.vaadin.ui.ListSelect;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.TwinColSelect;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
-
-import org.opennms.netmgt.bsm.service.model.BusinessServiceDTO;
-import org.opennms.netmgt.bsm.service.model.IpServiceDTO;
 
 /**
  * Modal dialog window used to edit the properties of a Business Service definition. This class will be
@@ -64,14 +64,26 @@ public class BusinessServiceEditWindow extends Window {
      */
     private TwinColSelect m_ipServicesTwinColSelect;
     /**
+     * the Business Services twin selection box
+     */
+    private TwinColSelect m_businessServicesTwinColSelect;
+    /**
      * bean item container for IP services DTOs
      */
-    private BeanItemContainer<IpServiceDTO> m_beanItemContainer = new BeanItemContainer<>(IpServiceDTO.class);
+    private BeanItemContainer<IpServiceDTO> m_ipServicesContainer = new BeanItemContainer<>(IpServiceDTO.class);
+    /**
+     * bean item container for Business Services DTOs
+     */
+    private BeanItemContainer<BusinessServiceDTO> m_businessServicesContainer = new BeanItemContainer<>(BusinessServiceDTO.class);
+    /**
+     * list of reduction keys
+     */
+    private ListSelect m_reductionKeyListSelect;
 
     /**
      * Constructor
      *
-     * @param businessServiceDTO the Business Service DTO instance to be configured
+     * @param businessServiceDTO        the Business Service DTO instance to be configured
      * @param businessServiceMainLayout the parent main layout
      */
     public BusinessServiceEditWindow(BusinessServiceDTO businessServiceDTO, BusinessServiceMainLayout businessServiceMainLayout) {
@@ -88,7 +100,16 @@ public class BusinessServiceEditWindow extends Window {
         /**
          * ...and query for IP services.
          */
-        m_beanItemContainer.addAll(m_businessServiceMainLayout.getBusinessServiceManager().getAllIpServiceDTO());
+        m_ipServicesContainer.addAll(m_businessServiceMainLayout.getBusinessServiceManager().getAllIpServiceDTO());
+
+        /**
+         * ...and query for Business Services.
+         */
+        m_businessServicesContainer.addAll(m_businessServiceMainLayout.getBusinessServiceManager().findAll());
+
+        /**
+         * TODO: now remove this DTO and all elements who have this DTO as descendant...
+         */
 
         /**
          * ...and basic properties
@@ -97,7 +118,7 @@ public class BusinessServiceEditWindow extends Window {
         setClosable(false);
         setResizable(false);
         setWidth(60, Unit.PERCENTAGE);
-        setHeight(80, Unit.PERCENTAGE);
+        setHeight(85, Unit.PERCENTAGE);
 
         /**
          * construct the main layout
@@ -149,32 +170,109 @@ public class BusinessServiceEditWindow extends Window {
         /**
          * instantiate the input fields
          */
-        m_nameTextField = new TextField();
+        m_nameTextField = new TextField("Business Service Name");
         m_nameTextField.setId("nameField");
         m_nameTextField.setValue(businessServiceDTO.getName());
-        m_nameTextField.setWidth(100.0f, Unit.PERCENTAGE);
-        verticalLayout.addComponent(new Panel("Name", m_nameTextField));
+        m_nameTextField.setWidth(100, Unit.PERCENTAGE);
+        verticalLayout.addComponent(m_nameTextField);
+
+        /**
+         * create the IP-Services selection box
+         */
 
         m_ipServicesTwinColSelect = new TwinColSelect();
         m_ipServicesTwinColSelect.setId("ipServiceSelect");
-        m_ipServicesTwinColSelect.setWidth(100.0f, Unit.PERCENTAGE);
-        m_ipServicesTwinColSelect.setSizeFull();
+        m_ipServicesTwinColSelect.setWidth(99.0f, Unit.PERCENTAGE);
+        m_ipServicesTwinColSelect.setLeftColumnCaption("Available IP-Services");
+        m_ipServicesTwinColSelect.setRightColumnCaption("Selected IP-Services");
+        m_ipServicesTwinColSelect.setRows(8);
 
-        m_ipServicesTwinColSelect.setContainerDataSource(m_beanItemContainer);
+        m_ipServicesTwinColSelect.setContainerDataSource(m_ipServicesContainer);
         m_ipServicesTwinColSelect.setValue(businessServiceDTO.getIpServices());
 
         /**
-         * wrap the IP selection box in a Vaadin Panel
+         * create the Business Services selection box
          */
-        Panel ipServiceSelectPanel = new Panel("IP-Services", m_ipServicesTwinColSelect);
-        ipServiceSelectPanel.setSizeFull();
-        verticalLayout.addComponent(ipServiceSelectPanel);
-        verticalLayout.setExpandRatio(ipServiceSelectPanel, 1.0f);
+
+        m_businessServicesTwinColSelect = new TwinColSelect();
+        m_businessServicesTwinColSelect.setId("businessServiceSelect");
+        m_businessServicesTwinColSelect.setWidth(99.0f, Unit.PERCENTAGE);
+        m_businessServicesTwinColSelect.setLeftColumnCaption("Available Business Services");
+        m_businessServicesTwinColSelect.setRightColumnCaption("Selected Business Services");
+        m_businessServicesTwinColSelect.setRows(8);
+
+        m_businessServicesTwinColSelect.setContainerDataSource(m_businessServicesContainer);
+        m_businessServicesTwinColSelect.setValue(businessServiceDTO.getIpServices());
+
+        /**
+         * create the reduction key list box
+         */
+
+        m_reductionKeyListSelect = new ListSelect("Reduction Keys");
+        m_reductionKeyListSelect.setId("reductionKeySelect");
+        m_reductionKeyListSelect.setWidth(98.0f, Unit.PERCENTAGE);
+        m_reductionKeyListSelect.setRows(8);
+        m_reductionKeyListSelect.getContainerDataSource().addItem("Bla");
+        m_reductionKeyListSelect.getContainerDataSource().addItem("Blupp");
+
+        /**
+         * wrap the reduction key list select box in a Vaadin Panel
+         */
+
+        verticalLayout.addComponent(m_ipServicesTwinColSelect);
+        verticalLayout.addComponent(m_businessServicesTwinColSelect);
+
+        HorizontalLayout reductionKeyListAndButtonLayout = new HorizontalLayout();
+
+        reductionKeyListAndButtonLayout.setWidth(100.0f, Unit.PERCENTAGE);
+
+        VerticalLayout reductionKeyButtonLayout = new VerticalLayout();
+        reductionKeyButtonLayout.setWidth(140.0f, Unit.PIXELS);
+
+        Button addReductionKeyBtn = new Button("Add reduction key");
+        addReductionKeyBtn.setWidth(140.0f, Unit.PIXELS);
+        addReductionKeyBtn.addStyleName("small");
+        reductionKeyButtonLayout.addComponent(addReductionKeyBtn);
+        addReductionKeyBtn.addClickListener(new Button.ClickListener() {
+            @Override
+            public void buttonClick(Button.ClickEvent event) {
+                getUI().addWindow(new StringInputDialogWindow("Enter Reduction Key", "Reduction Key", new StringInputDialogWindow.Callback() {
+                    @Override
+                    public void valueEntered(String value) {
+                        m_reductionKeyListSelect.addItem(value);
+                    }
+                }));
+            }
+        });
+
+        Button removeReductionKeyBtn = new Button("Remove reduction key");
+        removeReductionKeyBtn.setWidth(140.0f, Unit.PIXELS);
+        removeReductionKeyBtn.addStyleName("small");
+        reductionKeyButtonLayout.addComponent(removeReductionKeyBtn);
+
+        Button editPropagationRulesBtn = new Button("Edit propagation rules");
+        editPropagationRulesBtn.setWidth(140.0f, Unit.PIXELS);
+        editPropagationRulesBtn.addStyleName("small");
+        reductionKeyButtonLayout.addComponent(editPropagationRulesBtn);
+
+        /**
+         * we're not using this button yet, so disable it
+         */
+        editPropagationRulesBtn.setEnabled(false);
+
+        reductionKeyListAndButtonLayout.addComponent(m_reductionKeyListSelect);
+        reductionKeyListAndButtonLayout.setExpandRatio(m_reductionKeyListSelect, 1.0f);
+        reductionKeyListAndButtonLayout.addComponent(reductionKeyButtonLayout);
+        reductionKeyListAndButtonLayout.setComponentAlignment(reductionKeyButtonLayout, Alignment.BOTTOM_CENTER);
+        verticalLayout.addComponent(reductionKeyListAndButtonLayout);
 
         /**
          * now add the button layout to the main layout
          */
+
         verticalLayout.addComponent(buttonLayout);
+        verticalLayout.setExpandRatio(buttonLayout, 1.0f);
+
         verticalLayout.setComponentAlignment(buttonLayout, Alignment.BOTTOM_RIGHT);
 
         /**
