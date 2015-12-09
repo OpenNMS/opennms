@@ -20,7 +20,7 @@ public interface BridgeTopologyDao {
     void walked(int nodeid);
 
     // Storing is saving data without calculations
-    void loadTopology(List<BridgeElement> bridgeelements, List<BridgeMacLink> bridgemaclinks,List<BridgeBridgeLink> bridgelinks);
+    void loadTopology(List<BridgeElement> bridgeelements, List<BridgeMacLink> bridgemaclinks,List<BridgeBridgeLink> bridgelinks, List<BridgeStpLink> stplinks);
 
     BroadcastDomain getBroadcastDomain(int nodeid);
 

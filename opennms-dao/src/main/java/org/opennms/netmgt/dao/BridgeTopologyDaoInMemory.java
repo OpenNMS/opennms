@@ -2,8 +2,10 @@ package org.opennms.netmgt.dao;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.opennms.netmgt.dao.api.BridgeTopologyDao;
 import org.opennms.netmgt.model.BridgeBridgeLink;
@@ -49,7 +51,10 @@ public class BridgeTopologyDaoInMemory implements BridgeTopologyDao {
     }
 
     @Override
-    public synchronized void loadTopology(List<BridgeElement> bridgeelements, List<BridgeMacLink> links,List<BridgeBridgeLink> bridgelinks) {
+    public synchronized void loadTopology(List<BridgeElement> bridgeelements, 
+            List<BridgeMacLink> links,
+            List<BridgeBridgeLink> bridgelinks,
+            List<BridgeStpLink> stplinks) {
         m_domains.clear();
         List<SharedSegment> segments = new ArrayList<SharedSegment>();
         for (BridgeMacLink link: links) {
@@ -105,6 +110,26 @@ public class BridgeTopologyDaoInMemory implements BridgeTopologyDao {
                 }
             }
         }
+        Map<Integer,List<BridgeStpLink>> stplinkmap=new HashMap<Integer, List<BridgeStpLink>>();
+        for (BridgeStpLink link: stplinks) {
+            Integer nodeid = link.getNode().getId();
+            if (!stplinkmap.containsKey(nodeid))
+                stplinkmap.put(nodeid, new ArrayList<BridgeStpLink>());
+            stplinkmap.get(nodeid).add(link);
+        }
+        Set<Integer> nodeids = new HashSet<Integer>();
+        nodeids.addAll(stplinkmap.keySet());
+        for (Integer nodeid: nodeids ) {
+            for (BroadcastDomain domain: m_domains) {
+                if (domain.containBridgeId(nodeid)) {
+                    domain.loadSTP(nodeid, stplinkmap.remove(nodeid));
+                    break;
+                }
+            }
+        }
+        
+        for (BroadcastDomain domain: m_domains)
+            domain.calculate();
     }
 
     @Override
@@ -136,7 +161,8 @@ public class BridgeTopologyDaoInMemory implements BridgeTopologyDao {
         }
         for (BridgeElement element: m_notYetParsedEleMap.remove(nodeid))
             bftdomain.addBridgeElement(element);
-        bftdomain.loadBFT(nodeid,bft,m_notYetParsedSTPMap.remove(nodeid));
+        bftdomain.loadBFT(nodeid,bft);
+        bftdomain.loadSTP(nodeid,m_notYetParsedSTPMap.remove(nodeid));
 
     }
 

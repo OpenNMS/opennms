@@ -216,12 +216,16 @@ public class BroadcastDomain {
         return macs;
     }
 
-    public synchronized void loadBFT(int nodeId, List<BridgeMacLink> maclinks, List<BridgeStpLink> stplinks) {
+    public synchronized void loadBFT(int nodeId, List<BridgeMacLink> maclinks) {
         m_topologyChanged = true;
         m_notYetParsedBFTMap.put(nodeId, maclinks);
+    }
+
+    public synchronized void loadSTP(int nodeId, List<BridgeStpLink> stplinks) {
         m_notYetParsedSTPMap.put(nodeId, stplinks);
     }
 
+    
     public synchronized boolean checkBridgeOnDomain(List<BridgeMacLink> links) {
         Set<String>incomingSet = new HashSet<String>();
         for (BridgeMacLink link: links)
@@ -266,6 +270,9 @@ public class BroadcastDomain {
     }
     
     //FIXME implement this method
+    //FIXME consider also the case where there is no
+    //       effective BFT, a root bridge must be elected
+    //       in any case
     public synchronized void calculate() {
        //here use the partial algorithm to perform topology calculation
        // do not forget to setNode for objects 
