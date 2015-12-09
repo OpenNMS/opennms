@@ -2662,8 +2662,11 @@ CREATE TABLE bsm_service_ifservices (
     CONSTRAINT bsm_service_ifservices_pkey PRIMARY KEY (bsm_service_id, ifserviceid)
 );
 
-CREATE TABLE bsm_service_reductionkeys (
-  bsm_service_id integer NOT NULL,
-  reductionkey TEXT NOT NULL,
-  CONSTRAINT bsm_service_reductionkeys_pkey PRIMARY KEY (bsm_service_id, reductionkey)
+CREATE TABLE bsm_service_children (
+    bsm_service_parent integer NOT NULL,
+    bsm_service_child integer NOT NULL,
+    CONSTRAINT bsm_service_children_pkey PRIMARY KEY (bsm_service_parent, bsm_service_child),
+    CONSTRAINT fk_bsm_service_parent_service_id FOREIGN KEY (bsm_service_parent) REFERENCES bsm_service (id) ON DELETE CASCADE,
+    CONSTRAINT fk_bsm_service_child_service_id FOREIGN KEY (bsm_service_child) REFERENCES bsm_service (id) ON DELETE CASCADE
 );
+

@@ -45,7 +45,7 @@
 			baseTableName="bsm_service_ifservices" baseColumnNames="ifserviceid"
 			referencedTableName="ifservices" referencedColumnNames="id" />
 	</changeSet>
-	<changeSet author="fooker" id="18.0.0-bsm-child-services">
+	<changeSet author="fooker" id="18.0.0-bsm-service-children">
 		<createTable tableName="bsm_service_children" >
 			<column name="bsm_service_parent" type="integer">
 				<constraints nullable="false"/>
@@ -58,7 +58,7 @@
 		<addForeignKeyConstraint constraintName="fk_bsm_service_parent_service_id"
 								 baseTableName="bsm_service_children" baseColumnNames="bsm_service_parent"
 								 referencedTableName="bsm_service" referencedColumnNames="id" />
-		<addForeignKeyConstraint constraintName="fk_bsm_service_children_service_id"
+		<addForeignKeyConstraint constraintName="fk_bsm_service_child_service_id"
 								 baseTableName="bsm_service_children" baseColumnNames="bsm_service_child"
 								 referencedTableName="bsm_service" referencedColumnNames="id" />
 	</changeSet>

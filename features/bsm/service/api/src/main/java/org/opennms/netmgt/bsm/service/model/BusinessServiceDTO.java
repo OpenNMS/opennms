@@ -69,9 +69,9 @@ public class BusinessServiceDTO {
     @XmlElementWrapper(name="ip-services")
     private Set<IpServiceDTO> m_ipServices = Sets.newLinkedHashSet();
 
-    @XmlElement(name="reductionKey")
-    @XmlElementWrapper(name="reductionKeys")
-    private Set<String> m_reductionKeys = Sets.newHashSet();
+    @XmlElement(name="child-service")
+    @XmlElementWrapper(name="child-services")
+    private Set<BusinessServiceDTO> m_childServices = Sets.newLinkedHashSet();
 
     public Long getId() {
         return m_id;
