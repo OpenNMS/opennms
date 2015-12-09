@@ -66,6 +66,8 @@ public class BusinessService {
 
     private Set<OnmsMonitoredService> m_ipServices = Sets.newLinkedHashSet();
 
+    private Set<BusinessService> m_childServices = Sets.newLinkedHashSet();
+
     @Id
     @SequenceGenerator(name = "opennmsSequence", sequenceName = "opennmsNxtId")
     @GeneratedValue(generator = "opennmsSequence")
@@ -132,6 +134,33 @@ public class BusinessService {
         return m_ipServices.stream()
             .map(ipSvc -> ipSvc.getId())
             .collect(Collectors.toSet());
+    }
+
+    @OneToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "bsm_service_children",
+               joinColumns = @JoinColumn(name = "bsm_service_parent", referencedColumnName = "id"),
+               inverseJoinColumns = @JoinColumn(name="bsm_service_child", referencedColumnName = "id"))
+    public Set<BusinessService> getChildServices() {
+        return m_childServices;
+    }
+
+    public void setChildServices(Set<BusinessService> childServices) {
+        m_childServices = childServices;
+    }
+
+    public void addChildService(BusinessService childService) {
+        m_childServices.add(childService);
+    }
+
+    public void removeChildService(BusinessService childService) {
+        m_childServices.remove(childService);
+    }
+
+    @Transient
+    private Set<Long> getChildServiceIds() {
+        return m_childServices.stream()
+                              .map(svc -> svc.getId())
+                              .collect(Collectors.toSet());
     }
 
     @Override
