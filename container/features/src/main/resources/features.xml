@@ -201,8 +201,16 @@
       <bundle>mvn:commons-net/commons-net/3.3</bundle>
     </feature>
 
+    <feature name="lmax-disruptor" description="LMAX :: Disruptor" version="3.3.2">
+      <bundle>mvn:com.lmax/disruptor/3.3.2</bundle>
+    </feature>
+
     <feature name="dnsjava" description="dnsjava" version="${dnsjavaVersion}">
       <bundle dependency="true">wrap:mvn:org.dnsjava/dnsjava/${dnsjavaVersion}</bundle>
+    </feature>
+
+    <feature name="dropwizard-metrics" description="Dropwizard :: Metrics" version="3.1.2">
+      <bundle>mvn:io.dropwizard.metrics/metrics-core/3.1.2</bundle>
     </feature>
 
     <feature name="fop" description="Apache :: XML Graphics :: FOP" version="1.0">
@@ -616,6 +624,23 @@
       <bundle>mvn:org.opennms.core.snmp/org.opennms.core.snmp.commands/${project.version}</bundle>
       <bundle>mvn:org.opennms.core.snmp/org.opennms.core.snmp.implementations.snmp4j/${project.version}</bundle>
       <bundle>mvn:org.opennms.core.snmp/org.opennms.core.snmp.joesnmp/${project.version}</bundle>
+    </feature>
+
+    <feature name="opennms-syslogd-receiver-camel" description="OpenNMS :: Syslogd :: Receiver :: Camel" version="${project.version}">
+      <feature version="[4.0,4.1)">spring</feature>
+      <feature>camel-core</feature>
+      <feature>camel-netty</feature>
+
+      <feature>dropwizard-metrics</feature>
+      <feature>lmax-disruptor</feature>
+
+      <feature>opennms-core</feature>
+      <feature>opennms-core-db</feature>
+      <feature>opennms-config</feature>
+      <feature>opennms-core-daemon</feature>
+      <feature>opennms-dao-api</feature>
+
+      <bundle>mvn:org.opennms.features.events/org.opennms.features.events.syslog/${project.version}</bundle>
     </feature>
 
     <feature name="opennms-webapp" description="OpenNMS :: Webapp" version="${project.version}">
