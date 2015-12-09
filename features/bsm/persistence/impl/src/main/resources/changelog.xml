@@ -45,15 +45,21 @@
 			baseTableName="bsm_service_ifservices" baseColumnNames="ifserviceid"
 			referencedTableName="ifservices" referencedColumnNames="id" />
 	</changeSet>
-	<changeSet id="18.0.0-bsm-reductionkeys" author="mneumann">
-		<createTable tableName="bsm_service_reductionkeys">
-			<column name="bsm_service_id" type="integer">
+	<changeSet author="fooker" id="18.0.0-bsm-child-services">
+		<createTable tableName="bsm_service_children" >
+			<column name="bsm_service_parent" type="integer">
 				<constraints nullable="false"/>
 			</column>
-			<column name="reductionkey" type="text">
+			<column name="bsm_service_child" type="integer">
 				<constraints nullable="false"/>
 			</column>
 		</createTable>
-		<addPrimaryKey tableName="bsm_service_reductionkeys" columnNames="bsm_service_id, reductionkey" constraintName="bsm_service_reductionkeys_pkey" />
+		<addPrimaryKey tableName="bsm_service_childs" columnNames="bsm_service_parent, bsm_service_child" constraintName="bsm_service_children_pkey" />
+		<addForeignKeyConstraint constraintName="fk_bsm_service_children_service_id"
+								 baseTableName="bsm_service_children" baseColumnNames="bsm_service_parent"
+								 referencedTableName="bsm_service" referencedColumnNames="id" />
+		<addForeignKeyConstraint constraintName="fk_bsm_service_ifservices_ifserviceid"
+								 baseTableName="bsm_service_children" baseColumnNames="bsm_service_child"
+								 referencedTableName="bsm_service" referencedColumnNames="id" />
 	</changeSet>
 </databaseChangeLog>

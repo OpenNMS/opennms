@@ -49,6 +49,10 @@ public interface BusinessServiceManager {
 
     boolean removeIpInterface(Long serviceId, Integer ipServiceId);
 
+    boolean assignChildService(Long serviceId, Long childServiceId);
+
+    boolean removeChildService(Long serviceId, Long childServiceId);
+
     OnmsSeverity getOperationalStatusForBusinessService(Long serviceId);
 
     OnmsSeverity getOperationalStatusForIPService(Integer ipServiceId);

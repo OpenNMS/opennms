@@ -127,6 +127,38 @@ public class BusinessServiceManagerImpl implements BusinessServiceManager {
     }
 
     @Override
+    public boolean assignChildService(Long serviceId, Long childServiceId) {
+        final BusinessService service = getBusinessService(serviceId);
+        final BusinessService childService = getBusinessService(childServiceId);
+
+        // if already exists, no update
+        if (service.getChildServices().contains(childService)) {
+            return false;
+        }
+
+        // add and update
+        service.addChildService(childService);
+        getDao().update(service);
+        return true;
+    }
+
+    @Override
+    public boolean removeChildService(Long serviceId, Long childServiceId) {
+        final BusinessService service = getBusinessService(serviceId);
+        final BusinessService childService = getBusinessService(childServiceId);
+
+        // does not exist, no update necessary
+        if (!service.getChildServices().contains(childService)) {
+            return false;
+        }
+
+        // remove and update
+        service.removeChildService(childService);
+        getDao().update(service);
+        return true;
+    }
+
+    @Override
     public OnmsSeverity getOperationalStatusForBusinessService(Long serviceId) {
         final BusinessService service = getBusinessService(serviceId);
         final OnmsSeverity severity = businessServiceStateMachine.getOperationalStatus(service);
@@ -153,6 +185,10 @@ public class BusinessServiceManagerImpl implements BusinessServiceManager {
             OnmsMonitoredService ipService = getIpService(Integer.valueOf(eachService.getId()));
             service.addIpService(ipService);
         }
+        for (BusinessServiceDTO eachService : dto.getChildServices()) {
+            BusinessService childService = getBusinessService(Long.valueOf(eachService.getId()));
+            service.addChildService(childService);
+        }
         return service;
     }
 
@@ -165,6 +201,12 @@ public class BusinessServiceManagerImpl implements BusinessServiceManager {
             IpServiceDTO ipServiceDTO = transform(eachService);
             if (ipServiceDTO != null) {
                 dto.addIpService(ipServiceDTO);
+            }
+        }
+        for (BusinessService eachService : service.getChildServices()) {
+            BusinessServiceDTO childServiceDTO = transform(eachService);
+            if (childServiceDTO != null) {
+                dto.addChildService(childServiceDTO);
             }
         }
         return dto;

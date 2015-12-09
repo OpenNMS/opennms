@@ -66,7 +66,7 @@ public class BusinessService {
 
     private Set<OnmsMonitoredService> m_ipServices = Sets.newLinkedHashSet();
 
-    private Set<String> m_reductionKeys = Sets.newLinkedHashSet();
+    private Set<BusinessService> m_childServices = Sets.newLinkedHashSet();
 
     @Id
     @SequenceGenerator(name = "opennmsSequence", sequenceName = "opennmsNxtId")
@@ -136,15 +136,31 @@ public class BusinessService {
             .collect(Collectors.toSet());
     }
 
-    @ElementCollection
-    @JoinTable(name = "bsm_service_reductionkeys", joinColumns = @JoinColumn(name = "bsm_service_id", referencedColumnName = "id"))
-    @Column(name = "reductionkey", nullable = false)
-    public Set<String> getReductionKeys() {
-        return m_reductionKeys;
+    @OneToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "bsm_service_children",
+               joinColumns = @JoinColumn(name = "bsm_service_parent", referencedColumnName = "id"),
+               inverseJoinColumns = @JoinColumn(name="bsm_service_child", referencedColumnName = "id"))
+    public Set<BusinessService> getChildServices() {
+        return m_childServices;
     }
 
-    public void setReductionKeys(Set<String> m_reductionKeys) {
-        this.m_reductionKeys = m_reductionKeys;
+    public void setChildServices(Set<BusinessService> childServices) {
+        m_childServices = childServices;
+    }
+
+    public void addChildService(BusinessService childService) {
+        m_childServices.add(childService);
+    }
+
+    public void removeChildService(BusinessService childService) {
+        m_childServices.remove(childService);
+    }
+
+    @Transient
+    private Set<Long> getChildServiceIds() {
+        return m_childServices.stream()
+                              .map(svc -> svc.getId())
+                              .collect(Collectors.toSet());
     }
 
     @Override
