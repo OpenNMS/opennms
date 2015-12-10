@@ -349,6 +349,13 @@
       <bundle>mvn:org.opennms/opennms-util/${project.version}</bundle>
     </feature>
 
+    <feature name="opennms-core-camel" description="OpenNMS :: Core :: Camel" version="${project.version}">
+      <feature>camel-core</feature>
+      <feature>camel-http</feature>
+
+      <bundle>mvn:org.opennms.core/org.opennms.core.camel/${project.version}</bundle>
+    </feature>
+
     <feature name="opennms-core-daemon" description="OpenNMS :: Core :: Daemon" version="${project.version}">
       <feature>opennms-core</feature>
       <feature>opennms-config</feature>
@@ -635,6 +642,7 @@
       <feature>lmax-disruptor</feature>
 
       <feature>opennms-core</feature>
+      <feature>opennms-core-camel</feature>
       <feature>opennms-core-db</feature>
       <feature>opennms-config</feature>
       <feature>opennms-core-daemon</feature>
