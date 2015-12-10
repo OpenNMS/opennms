@@ -54,11 +54,11 @@
 				<constraints nullable="false"/>
 			</column>
 		</createTable>
-		<addPrimaryKey tableName="bsm_service_childs" columnNames="bsm_service_parent, bsm_service_child" constraintName="bsm_service_children_pkey" />
-		<addForeignKeyConstraint constraintName="fk_bsm_service_children_service_id"
+		<addPrimaryKey tableName="bsm_service_children" columnNames="bsm_service_parent, bsm_service_child" constraintName="bsm_service_children_pkey" />
+		<addForeignKeyConstraint constraintName="fk_bsm_service_parent_service_id"
 								 baseTableName="bsm_service_children" baseColumnNames="bsm_service_parent"
 								 referencedTableName="bsm_service" referencedColumnNames="id" />
-		<addForeignKeyConstraint constraintName="fk_bsm_service_ifservices_ifserviceid"
+		<addForeignKeyConstraint constraintName="fk_bsm_service_children_service_id"
 								 baseTableName="bsm_service_children" baseColumnNames="bsm_service_child"
 								 referencedTableName="bsm_service" referencedColumnNames="id" />
 	</changeSet>
