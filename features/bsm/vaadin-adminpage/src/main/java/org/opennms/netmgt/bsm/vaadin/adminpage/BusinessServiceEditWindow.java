@@ -103,13 +103,9 @@ public class BusinessServiceEditWindow extends Window {
         m_ipServicesContainer.addAll(m_businessServiceMainLayout.getBusinessServiceManager().getAllIpServiceDTO());
 
         /**
-         * ...and query for Business Services.
+         * ...and query for Business Services. Only add the Business Services that will not result in a loop...
          */
-        m_businessServicesContainer.addAll(m_businessServiceMainLayout.getBusinessServiceManager().findAll());
-
-        /**
-         * TODO: now remove this DTO and all elements who have this DTO as descendant...
-         */
+        m_businessServicesContainer.addAll(m_businessServiceMainLayout.getBusinessServiceManager().getFeasibleChildServices(businessServiceDTO));
 
         /**
          * ...and basic properties
@@ -138,6 +134,7 @@ public class BusinessServiceEditWindow extends Window {
             public void buttonClick(Button.ClickEvent event) {
                 businessServiceDTO.setName(m_nameTextField.getValue().trim());
                 businessServiceDTO.setIpServices((Set<IpServiceDTO>) m_ipServicesTwinColSelect.getValue());
+                businessServiceDTO.setChildServices((Set<BusinessServiceDTO>) m_businessServicesTwinColSelect.getValue());
                 if (businessServiceDTO.getId() == null) {
                     businessServiceMainLayout.getBusinessServiceManager().save(businessServiceDTO);
                 } else {
@@ -202,7 +199,7 @@ public class BusinessServiceEditWindow extends Window {
         m_businessServicesTwinColSelect.setRows(8);
 
         m_businessServicesTwinColSelect.setContainerDataSource(m_businessServicesContainer);
-        m_businessServicesTwinColSelect.setValue(businessServiceDTO.getIpServices());
+        m_businessServicesTwinColSelect.setValue(businessServiceDTO.getChildServices());
 
         /**
          * create the reduction key list box
