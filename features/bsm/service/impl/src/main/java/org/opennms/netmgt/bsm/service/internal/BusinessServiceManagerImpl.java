@@ -200,16 +200,8 @@ public class BusinessServiceManagerImpl implements BusinessServiceManager {
         BusinessServiceDTO dto = new BusinessServiceDTO();
         dto.setId(service.getId());
         dto.setName(service.getName());
-        if(service.getAttributes() != null) {
-            dto.setAttributes(new HashMap<>(service.getAttributes()));
-        } else {
-            dto.setAttributes(new HashMap<>());
-        }
-        if(service.getReductionKeys() != null) {
-            dto.setReductionKeys(new HashSet<>(service.getReductionKeys()));
-        } else {
-            dto.setReductionKeys(new HashSet<>());
-        }
+        dto.setAttributes(new HashMap<>(service.getAttributes()));
+        dto.setReductionKeys(new HashSet<>(service.getReductionKeys()));
         for (OnmsMonitoredService eachService : service.getIpServices()) {
             IpServiceDTO ipServiceDTO = transform(eachService);
             if (ipServiceDTO != null) {

@@ -32,6 +32,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -85,14 +86,9 @@ public class JAXBMapAdapter extends XmlAdapter<JAXBMapAdapter.JAXBMap, Map<Strin
 
     @Override
     public JAXBMap marshal(Map<String, String> v) throws Exception {
-        if (v.isEmpty()) {
-            return null;
-        }
         JAXBMap myMap = new JAXBMap();
         List<JAXBMapEntry> aList = myMap.getA();
-        for (Map.Entry<String, String> e : v.entrySet()) {
-            aList.add(new JAXBMapEntry(e.getKey(), e.getValue()));
-        }
+        aList.addAll(v.entrySet().stream().map(e -> new JAXBMapEntry(e.getKey(), e.getValue())).collect(Collectors.toList()));
         return myMap;
     }
 
