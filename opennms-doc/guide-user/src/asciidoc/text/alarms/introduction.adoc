@@ -1,0 +1,9 @@
+
+// Allow image rendering
+:imagesdir: ../../images
+
+In _OpenNMS_ an _Alarm_ is used to allow more complex workflows dealing with issues for monitoring.
+An _Alarm_ has his own life cycle and can be generated or cleared based on an _Event_.
+
+.States and State Changes of an Alarm
+image::alarms/01_alarm-states.png[]
