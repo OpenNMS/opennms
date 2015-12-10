@@ -204,6 +204,7 @@ public class BusinessServiceManagerImplIT {
     @Test
     public void testLoopCreation() {
         thrown.expect(IllegalArgumentException.class);
+        thrown.expectMessage("Service will form a loop");
 
         BusinessService service1 = createService("Business Service #1");
         BusinessService service2 = createService("Business Service #2");
