@@ -163,6 +163,24 @@ public class BusinessService {
                               .collect(Collectors.toSet());
     }
 
+    public void addReductionKey(String reductionKey) {
+        m_reductionKeys.add(reductionKey);
+    }
+
+    public void addReductionKeys(Set<String> reductionKeys) {
+        m_reductionKeys.addAll(reductionKeys);
+    }
+
+    @Transient
+    public Set<String> getAllReductionKeys() {
+        Set<String> allReductionKeys = Sets.newHashSet();
+        for (OnmsMonitoredService ipService : getIpServices()) {
+            allReductionKeys.addAll(ipService.getReductionKeys());
+        }
+        allReductionKeys.addAll(getReductionKeys());
+        return allReductionKeys;
+    }
+
     @Override
     public boolean equals(Object obj) {
         if (obj == null) {

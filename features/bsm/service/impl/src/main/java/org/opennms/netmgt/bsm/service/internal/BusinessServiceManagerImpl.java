@@ -30,6 +30,7 @@ package org.opennms.netmgt.bsm.service.internal;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -93,6 +94,8 @@ public class BusinessServiceManagerImpl implements BusinessServiceManager {
         BusinessService service = getBusinessService(id);
         getDao().delete(service);
     }
+
+
 
     @Override
     public boolean assignIpInterface(Long serviceId, Integer ipServiceId) {
@@ -181,6 +184,7 @@ public class BusinessServiceManagerImpl implements BusinessServiceManager {
         service.setId(dto.getId());
         service.setName(dto.getName());
         service.setAttributes(new HashMap<>(dto.getAttributes()));
+        service.setReductionKeys(new HashSet<>(dto.getReductionKeys()));
         for (IpServiceDTO eachService : dto.getIpServices()) {
             OnmsMonitoredService ipService = getIpService(Integer.valueOf(eachService.getId()));
             service.addIpService(ipService);
@@ -196,7 +200,16 @@ public class BusinessServiceManagerImpl implements BusinessServiceManager {
         BusinessServiceDTO dto = new BusinessServiceDTO();
         dto.setId(service.getId());
         dto.setName(service.getName());
-        dto.setAttributes(new HashMap<>(service.getAttributes()));
+        if(service.getAttributes() != null) {
+            dto.setAttributes(new HashMap<>(service.getAttributes()));
+        } else {
+            dto.setAttributes(new HashMap<>());
+        }
+        if(service.getReductionKeys() != null) {
+            dto.setReductionKeys(new HashSet<>(service.getReductionKeys()));
+        } else {
+            dto.setReductionKeys(new HashSet<>());
+        }
         for (OnmsMonitoredService eachService : service.getIpServices()) {
             IpServiceDTO ipServiceDTO = transform(eachService);
             if (ipServiceDTO != null) {

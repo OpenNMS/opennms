@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.bsm.service.model;
 
+import java.util.Collection;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -39,11 +40,11 @@ import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
-import org.opennms.web.rest.api.JAXBResourceLocationAdapter;
-import org.opennms.web.rest.api.ResourceLocation;
-
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+
+import org.opennms.web.rest.api.JAXBResourceLocationAdapter;
+import org.opennms.web.rest.api.ResourceLocation;
 
 
 @XmlRootElement(name = "business-service")
@@ -68,9 +69,9 @@ public class BusinessServiceDTO {
     @XmlElementWrapper(name="ip-services")
     private Set<IpServiceDTO> m_ipServices = Sets.newLinkedHashSet();
 
-    @XmlElement(name="child-service")
-    @XmlElementWrapper(name="child-services")
-    private Set<BusinessServiceDTO> m_childServices = Sets.newLinkedHashSet();
+    @XmlElement(name="reductionKey")
+    @XmlElementWrapper(name="reductionKeys")
+    private Set<String> m_reductionKeys = Sets.newHashSet();
 
     public Long getId() {
         return m_id;
@@ -96,12 +97,46 @@ public class BusinessServiceDTO {
         m_attributes = attributes;
     }
 
-    public void setAttribute(String key, String value) {
+    public void addAttribute(String key, String value) {
         m_attributes.put(key, value);
+    }
+
+    public void addAttributes(Map<String, String> attributes) {
+        m_attributes.putAll(attributes);
     }
 
     public String removeAttribute(String key) {
         return m_attributes.remove(key);
+    }
+
+    public void removeAttributes(Collection<String> attributeKeys) {
+        for (String attributeKey : attributeKeys) {
+            m_attributes.remove(attributeKey);
+        }
+    }
+
+    public Set<String> getReductionKeys() {
+        return m_reductionKeys;
+    }
+
+    public void setReductionKeys(Set<String> reductionKeys) {
+        m_reductionKeys = reductionKeys;
+    }
+
+    public void addReductionKey(String reductionKey) {
+        m_reductionKeys.add(reductionKey);
+    }
+
+    public void addReductionKeys(Collection<String> reductionKeys) {
+        m_reductionKeys.addAll(reductionKeys);
+    }
+
+    public void removeReductionKey(String reductionKey) {
+        m_reductionKeys.remove(reductionKey);
+    }
+
+    public void removeReductionKeys(Collection<String> reductionKeys) {
+        m_reductionKeys.removeAll(reductionKeys);
     }
 
     public Set<IpServiceDTO> getIpServices() {
