@@ -58,6 +58,10 @@
     </dependency>
     <dependency>
       <groupId>org.opennms.core</groupId>
+      <artifactId>org.opennms.core.camel</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.core</groupId>
       <artifactId>org.opennms.core.daemon</artifactId>
     </dependency>
     <dependency>
@@ -71,12 +75,12 @@
     <dependency>
         <groupId>io.dropwizard.metrics</groupId>
         <artifactId>metrics-core</artifactId>
-        <version>3.1.2</version>
+        <version>${dropwizardMetricsVersion}</version>
     </dependency>
     <dependency>
       <groupId>com.lmax</groupId>
       <artifactId>disruptor</artifactId>
-      <version>3.3.2</version>
+      <version>${lmaxDisruptorVersion}</version>
     </dependency>
     <dependency>
       <groupId>junit</groupId>

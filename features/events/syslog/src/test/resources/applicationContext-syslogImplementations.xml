@@ -18,17 +18,27 @@
 
   <bean id="executorFactoryJava" class="org.opennms.core.concurrent.ExecutorFactoryJavaImpl"/>
 
+  <bean id="executorFactoryCassandraSEP" class="org.opennms.core.concurrent.cassandra.ExecutorFactoryCassandraSEPImpl"/>
+
+  <bean id="syslogReceiverNio" class="org.opennms.netmgt.syslogd.SyslogReceiverNioThreadPoolImpl">
+    <constructor-arg ref="syslogdConfigFactory"/>
+  </bean>
+
+  <bean id="syslogReceiverNioDisruptor" class="org.opennms.netmgt.syslogd.SyslogReceiverNioDisruptorImpl">
+    <constructor-arg ref="syslogdConfigFactory"/>
+  </bean>
+
+  <bean id="syslogReceiverNioDisruptorSEP" class="org.opennms.netmgt.syslogd.SyslogReceiverNioDisruptorImpl">
+    <constructor-arg ref="syslogdConfigFactory"/>
+    <property name="executorFactory" ref="executorFactoryCassandraSEP"/>
+  </bean>
+
   <bean id="syslogReceiverJavaNet" class="org.opennms.netmgt.syslogd.SyslogReceiverJavaNetImpl">
     <constructor-arg ref="syslogdConfigFactory"/>
   </bean>
 
-  <!-- Expose one particular implementation as the chosen implementation -->
-  <onmsgi:service interface="org.opennms.netmgt.syslogd.SyslogReceiver" ref="syslogReceiverJavaNet"/>
-
-  <bean id="daemon" class="org.opennms.netmgt.syslogd.Syslogd">
-    <property name="syslogReceiver">
-      <onmsgi:reference interface="org.opennms.netmgt.syslogd.SyslogReceiver"/>
-    </property>
+  <bean id="syslogReceiverCamelNetty" class="org.opennms.netmgt.syslogd.SyslogReceiverCamelNettyImpl">
+    <constructor-arg ref="syslogdConfigFactory"/>
   </bean>
 
 </beans>
