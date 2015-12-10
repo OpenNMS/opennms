@@ -28,10 +28,13 @@
 
 package org.opennms.netmgt.bsm.service.internal;
 
+import com.google.common.collect.ImmutableSet;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
@@ -71,6 +74,9 @@ import com.google.common.collect.Lists;
 @JUnitTemporaryDatabase
 @Transactional
 public class BusinessServiceManagerImplIT {
+
+    @Rule
+    public ExpectedException thrown = ExpectedException.none();
 
     @Autowired
     private BusinessServiceManager businessServiceManager;
@@ -151,6 +157,65 @@ public class BusinessServiceManagerImplIT {
         Assert.assertEquals(OnmsSeverity.CRITICAL, businessServiceManager.getOperationalStatusForIPService(5));
         Assert.assertEquals(OnmsSeverity.CRITICAL, businessServiceManager.getOperationalStatusForBusinessService(serviceId1));
         Assert.assertEquals(OnmsSeverity.NORMAL, businessServiceManager.getOperationalStatusForBusinessService(serviceId2));
+    }
+
+    @Test
+    public void testLoopDetection() {
+        BusinessService service1 = createService("Business Service #1");
+        BusinessService service2 = createService("Business Service #2");
+        BusinessService service3 = createService("Business Service #3");
+
+        Long serviceId1 = businessServiceDao.save(service1);
+        Long serviceId2 = businessServiceDao.save(service2);
+        Long serviceId3 = businessServiceDao.save(service3);
+
+        Assert.assertEquals(ImmutableSet.of(businessServiceManager.getById(serviceId2),
+                                            businessServiceManager.getById(serviceId3)),
+                            businessServiceManager.getFeasibleChildServices(businessServiceManager.getById(serviceId1)));
+        Assert.assertEquals(ImmutableSet.of(businessServiceManager.getById(serviceId1),
+                                            businessServiceManager.getById(serviceId3)),
+                            businessServiceManager.getFeasibleChildServices(businessServiceManager.getById(serviceId2)));
+        Assert.assertEquals(ImmutableSet.of(businessServiceManager.getById(serviceId1),
+                                            businessServiceManager.getById(serviceId2)),
+                            businessServiceManager.getFeasibleChildServices(businessServiceManager.getById(serviceId3)));
+
+        businessServiceManager.assignChildService(serviceId1, serviceId2);
+
+        Assert.assertEquals(ImmutableSet.of(businessServiceManager.getById(serviceId2),
+                                            businessServiceManager.getById(serviceId3)),
+                            businessServiceManager.getFeasibleChildServices(businessServiceManager.getById(serviceId1)));
+        Assert.assertEquals(ImmutableSet.of(businessServiceManager.getById(serviceId3)),
+                            businessServiceManager.getFeasibleChildServices(businessServiceManager.getById(serviceId2)));
+        Assert.assertEquals(ImmutableSet.of(businessServiceManager.getById(serviceId1),
+                                            businessServiceManager.getById(serviceId2)),
+                            businessServiceManager.getFeasibleChildServices(businessServiceManager.getById(serviceId3)));
+
+        businessServiceManager.assignChildService(serviceId2, serviceId3);
+
+        Assert.assertEquals(ImmutableSet.of(businessServiceManager.getById(serviceId2),
+                                            businessServiceManager.getById(serviceId3)),
+                            businessServiceManager.getFeasibleChildServices(businessServiceManager.getById(serviceId1)));
+        Assert.assertEquals(ImmutableSet.of(businessServiceManager.getById(serviceId3)),
+                            businessServiceManager.getFeasibleChildServices(businessServiceManager.getById(serviceId2)));
+        Assert.assertEquals(ImmutableSet.of(),
+                            businessServiceManager.getFeasibleChildServices(businessServiceManager.getById(serviceId3)));
+    }
+
+    @Test
+    public void testLoopCreation() {
+        thrown.expect(IllegalArgumentException.class);
+
+        BusinessService service1 = createService("Business Service #1");
+        BusinessService service2 = createService("Business Service #2");
+        BusinessService service3 = createService("Business Service #3");
+
+        Long serviceId1 = businessServiceDao.save(service1);
+        Long serviceId2 = businessServiceDao.save(service2);
+        Long serviceId3 = businessServiceDao.save(service3);
+
+        businessServiceManager.assignChildService(serviceId1, serviceId2);
+        businessServiceManager.assignChildService(serviceId2, serviceId3);
+        businessServiceManager.assignChildService(serviceId3, serviceId1);
     }
 
     private BusinessService createService(String serviceName) {

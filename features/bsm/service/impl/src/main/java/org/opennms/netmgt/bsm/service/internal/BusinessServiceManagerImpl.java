@@ -33,6 +33,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.opennms.netmgt.bsm.persistence.api.BusinessService;
 import org.opennms.netmgt.bsm.persistence.api.BusinessServiceDao;
@@ -134,6 +136,10 @@ public class BusinessServiceManagerImpl implements BusinessServiceManager {
         final BusinessService service = getBusinessService(serviceId);
         final BusinessService childService = getBusinessService(childServiceId);
 
+        if (this.checkDescendantForLoop(service, childService)) {
+            throw new IllegalArgumentException("Service will form a loop");
+        }
+
         // if already exists, no update
         if (service.getChildServices().contains(childService)) {
             return false;
@@ -159,6 +165,29 @@ public class BusinessServiceManagerImpl implements BusinessServiceManager {
         service.removeChildService(childService);
         getDao().update(service);
         return true;
+    }
+
+    private boolean checkDescendantForLoop(final BusinessService parent,
+                                           final BusinessService descendant) {
+        if (parent.equals(descendant)) {
+            return true;
+        }
+
+        for (BusinessService s : descendant.getChildServices()) {
+            return this.checkDescendantForLoop(parent, s);
+        }
+
+        return false;
+    }
+
+    @Override
+    public Set<BusinessServiceDTO> getFeasibleChildServices(final BusinessServiceDTO serviceDTO) {
+        final BusinessService service = transform(serviceDTO);
+        return getDao().findAll()
+                       .stream()
+                       .filter(s -> !this.checkDescendantForLoop(service, s))
+                       .map(this::transform)
+                       .collect(Collectors.toSet());
     }
 
     @Override
