@@ -33,10 +33,20 @@
 		<route id="handle">
 			<from uri="seda:handleMessage" />
 			<convertBodyTo type="org.opennms.netmgt.syslogd.SyslogConnection"/>
-			<log message="address:       ${body.sourceAddress}"/>
+			<setHeader headerName="kafka.PARTITION_KEY">
+				<!-- TODO: Partition by remote address -->
+				<!-- <simple>${body.remoteAddress}</simple> -->
+				<simple>${body.hostname}</simple>
+			</setHeader>
+ 			<log message="address:       ${body.sourceAddress}"/>
 			<log message="port:          ${body.port}"/>
-			<log message="bytes:         ${body.byteBuffer}"/>
-			<!--<to uri="kafka:127.0.0.1:9092"/>-->
+ 			<transform>
+				<simple>${body.byteBuffer}</simple>
+			</transform>
+			<convertBodyTo type="java.lang.String"/>
+			<log message="bytes:         ${body}"/>
+			<!-- Have to use StringEncoder because of camel bug CAMEL-8790 -->
+			<to uri="kafka:{{kafkahost}}:{{kafkaport}}?topic={{kafkatopic}}&amp;serializerClass=kafka.serializer.StringEncoder"/>
 		</route>
 	</camelContext>
 
