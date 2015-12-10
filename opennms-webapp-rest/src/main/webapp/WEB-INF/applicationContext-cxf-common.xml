@@ -20,6 +20,8 @@
     <bean id="lenientJaxbProvider"     class="org.opennms.web.rest.support.ValidatingMessageBodyReader"/>
     <bean id="jaxbProvider"            class="org.apache.cxf.jaxrs.provider.JAXBElementProvider"/>
 
+    <bean id="noSuchElementProvider"   class="org.opennms.web.rest.support.NoSuchElementProvider"/>
+
     <!-- JSON Serialization @Provider classes -->
     <!-- Jettison JSON provider -->
     <!-- <bean id="jsonProvider"            class="org.apache.cxf.jaxrs.provider.json.JSONProvider"/> -->

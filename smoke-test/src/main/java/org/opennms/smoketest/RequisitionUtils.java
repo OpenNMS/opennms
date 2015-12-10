@@ -27,12 +27,19 @@
  *******************************************************************************/
 package org.opennms.smoketest;
 
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
+
+import com.google.common.base.Throwables;
+import com.google.common.net.HttpHeaders;
+import com.google.common.net.MediaType;
 
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPut;
+import org.apache.http.client.methods.HttpRequestBase;
 import org.opennms.core.web.HttpClientWrapper;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.model.OnmsNode;
@@ -41,10 +48,6 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.common.base.Throwables;
-import com.google.common.net.HttpHeaders;
-import com.google.common.net.MediaType;
 
 /**
  * Utility functions for dealing with provisioning requisitions.
@@ -62,6 +65,27 @@ public class RequisitionUtils {
 
     public RequisitionUtils(OpenNMSSeleniumTestCase testCase) {
         m_testCase = testCase;
+    }
+
+    protected void createNode(String nodeXML) throws IOException, InterruptedException {
+        m_testCase.sendPost("/rest/nodes", nodeXML);
+    }
+
+    protected void setupTestRequisition(String requisitionXML, String foreignSourceXML) throws IOException, InterruptedException {
+        m_testCase.sendPost("/rest/requisitions/", requisitionXML);
+        if (foreignSourceXML != null && !"".equals(foreignSourceXML)) {
+            m_testCase.sendPost("/rest/foreignSources", foreignSourceXML);
+        }
+        HttpRequestBase request = new HttpPut(OpenNMSSeleniumTestCase.BASE_URL + "/opennms/rest/requisitions/" + m_testCase.REQUISITION_NAME + "/import");
+        m_testCase.doRequest(request);
+    }
+
+    protected void deleteNode(final String foreignId) throws IOException, InterruptedException {
+        m_testCase.sendDelete("/rest/nodes/" + m_testCase.REQUISITION_NAME + ":" + foreignId);
+    }
+
+    protected void deleteForeignSource() throws IOException, InterruptedException {
+        m_testCase.sendDelete("/rest/foreignSources/" + m_testCase.REQUISITION_NAME);
     }
 
     protected void deleteTestRequisition() throws Exception {

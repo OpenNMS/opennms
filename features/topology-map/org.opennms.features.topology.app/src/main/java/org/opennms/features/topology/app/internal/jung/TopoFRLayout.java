@@ -28,6 +28,12 @@
 
 package org.opennms.features.topology.app.internal.jung;
 
+import java.awt.Dimension;
+import java.awt.geom.Point2D;
+import java.util.ConcurrentModificationException;
+import java.util.HashMap;
+import java.util.Map;
+
 import edu.uci.ics.jung.algorithms.layout.AbstractLayout;
 import edu.uci.ics.jung.algorithms.layout.util.RandomLocationTransformer;
 import edu.uci.ics.jung.algorithms.util.IterativeContext;
@@ -35,12 +41,6 @@ import edu.uci.ics.jung.graph.Graph;
 import edu.uci.ics.jung.graph.util.Pair;
 import org.apache.commons.collections15.Factory;
 import org.apache.commons.collections15.map.LazyMap;
-
-import java.awt.*;
-import java.awt.geom.Point2D;
-import java.util.ConcurrentModificationException;
-import java.util.HashMap;
-import java.util.Map;
 
 public class TopoFRLayout<V, E>  extends AbstractLayout<V, E> implements IterativeContext {
     private static double PERCENTAGE = 0.25;
@@ -76,14 +76,6 @@ public class TopoFRLayout<V, E>  extends AbstractLayout<V, E> implements Iterati
         super(g);
     }
 
-    /**
-     * Creates an instance of size {@code d} for the specified graph.
-     */
-    public TopoFRLayout(Graph<V, E> g, Dimension d) {
-        super(g, new RandomLocationTransformer<V>(d), d);
-        initialize();
-        max_dimension = Math.max(d.height, d.width);
-    }
 
     @Override
     public void setSize(Dimension size) {
@@ -146,7 +138,6 @@ public class TopoFRLayout<V, E>  extends AbstractLayout<V, E> implements Iterati
          * Calculate repulsion
          */
         while(true) {
-
             try {
                 for(V v1 : getGraph().getVertices()) {
                     calcRepulsion(v1);
@@ -170,12 +161,6 @@ public class TopoFRLayout<V, E>  extends AbstractLayout<V, E> implements Iterati
 
         while(true) {
             try {
-                /*for(V v : getGraph().getVertices()) {
-
-                    FRVertexData frData = getFRData(v);
-                    System.out.println("v :: " + v + " x: " + frData.getX() + " y: " + frData.getY() + " norm: " + frData.norm());
-                    //calcPositions(v);
-                }*/
                 for(V v : getGraph().getVertices()) {
                     if (isLocked(v)) continue;
                     calcPositions(v);
@@ -200,9 +185,7 @@ public class TopoFRLayout<V, E>  extends AbstractLayout<V, E> implements Iterati
             throw new IllegalArgumentException(
                     "Unexpected mathematical result in FRLayout:calcPositions [xdisp]"); }
 
-        double newYDisp = fvd.getY() * percentage() / deltaLength
-                * Math.min(deltaLength, temperature);
-//        System.out.printf("v: %s at %s: offset %s norm: %f  newxDisp: %s \n", v, xyd, fvd, fvd.norm(), newXDisp);
+        double newYDisp = fvd.getY() * percentage() / deltaLength * Math.min(deltaLength, temperature);
         xyd.setLocation(xyd.getX() + newXDisp, xyd.getY() + newYDisp);
 
         double borderWidth = getSize().getWidth() / 50.0;
@@ -210,8 +193,7 @@ public class TopoFRLayout<V, E>  extends AbstractLayout<V, E> implements Iterati
         if (newXPos < borderWidth) {
             newXPos = borderWidth + Math.random() * borderWidth * 2.0;
         } else if (newXPos > (getSize().getWidth() - borderWidth)) {
-            newXPos = getSize().getWidth() - borderWidth - Math.random()
-                    * borderWidth * 2.0;
+            newXPos = getSize().getWidth() - borderWidth - Math.random() * borderWidth * 2.0;
         }
 
         double newYPos = xyd.getY();
@@ -258,19 +240,18 @@ public class TopoFRLayout<V, E>  extends AbstractLayout<V, E> implements Iterati
 
         double force = (deltaLength * deltaLength) / attraction_constant;
 
-        if (Double.isNaN(force)) { throw new IllegalArgumentException(
-                "Unexpected mathematical result in FRLayout:calcPositions [force]"); }
+        if (Double.isNaN(force)) {
+            throw new IllegalArgumentException("Unexpected mathematical result in FRLayout:calcPositions [force]");
+        }
 
         double dx = (xDelta / deltaLength) * force;
         double dy = (yDelta / deltaLength) * force;
         if(v1_locked == false) {
             FRVertexData fvd1 = getFRData(v1);
-            //System.out.println("calcAttraction :: v1: " + v1 + " x: " + (-dx) + " y: " + (-dy));
             fvd1.offset(-dx, -dy);
         }
         if(v2_locked == false) {
             FRVertexData fvd2 = getFRData(v2);
-            //System.out.println("calcAttraction :: v2: " + v1 + " x: " + dx + " y: " + dy);
             fvd2.offset(dx, dy);
         }
     }
@@ -283,8 +264,6 @@ public class TopoFRLayout<V, E>  extends AbstractLayout<V, E> implements Iterati
 
         try {
             for(V v2 : getGraph().getVertices()) {
-
-//                if (isLocked(v2)) continue;
                 if (v1 != v2) {
                     Point2D p1 = transform(v1);
                     Point2D p2 = transform(v2);
@@ -299,11 +278,10 @@ public class TopoFRLayout<V, E>  extends AbstractLayout<V, E> implements Iterati
 
                     double force = (repulsion_constant * repulsion_constant) / deltaLength;
 
-                    if (Double.isNaN(force)) { throw new RuntimeException(
-                            "Unexpected mathematical result in FRLayout:calcPositions [repulsion]"); }
-//                    System.out.println("calcRepulsion :: offset v: " + v1 + " x: " + ((xDelta / deltaLength) * force) + " y: " + ((yDelta / deltaLength) * force));
-                    fvd1.offset((xDelta / deltaLength) * force,
-                            (yDelta / deltaLength) * force);
+                    if (Double.isNaN(force)) {
+                        throw new RuntimeException("Unexpected mathematical result in FRLayout:calcPositions [repulsion]");
+                    }
+                    fvd1.offset((xDelta / deltaLength) * force, (yDelta / deltaLength) * force);
                 }
             }
         } catch(ConcurrentModificationException cme) {
@@ -338,17 +316,14 @@ public class TopoFRLayout<V, E>  extends AbstractLayout<V, E> implements Iterati
      * <tt>MAX_ITERATIONS</tt>.
      */
     public boolean done() {
-        if (currentIteration > mMaxIterations || temperature < 1.0/max_dimension)
-        {
+        if (currentIteration > mMaxIterations || temperature < 1.0/max_dimension) {
             return true;
         }
         return false;
     }
 
-    protected static class FRVertexData extends Point2D.Double
-    {
-        protected void offset(double x, double y)
-        {
+    protected static class FRVertexData extends Point2D.Double {
+        protected void offset(double x, double y) {
             this.x += x;
             this.y += y;
         }

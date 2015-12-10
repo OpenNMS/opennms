@@ -31,18 +31,18 @@ package org.opennms.features.topology.api;
 import java.util.Collection;
 import java.util.Set;
 
+import com.vaadin.data.Property;
+
 import org.opennms.features.topology.api.topo.Criteria;
 import org.opennms.features.topology.api.topo.EdgeStatusProvider;
 import org.opennms.features.topology.api.topo.GraphProvider;
 import org.opennms.features.topology.api.topo.StatusProvider;
 import org.opennms.features.topology.api.topo.VertexRef;
 
-import com.vaadin.data.Property;
-
 public interface GraphContainer extends DisplayState {
 
-    public interface ChangeListener {
-        public void graphChanged(GraphContainer graphContainer);
+    interface ChangeListener {
+        void graphChanged(GraphContainer graphContainer);
     }
 
     GraphProvider getBaseTopology();
@@ -93,4 +93,23 @@ public interface GraphContainer extends DisplayState {
     void setDirty(boolean dirty);
     
     void fireGraphChanged();
+
+    /**
+     * Allows queriing the {@link GraphContainer} for specific types of criteria.
+     *
+     * @param criteriaType The type to look for. May not be null.
+     * @param <T> The criteria class.
+     * @return All criteria assigned to this {@link GraphContainer} which are of the same type (or a sub type) of <code>criteriaType</code>.
+     */
+    <T extends Criteria> Set<T> findCriteria(Class<T> criteriaType);
+
+    /**
+     * Does the same as {@link #findCriteria(Class)}, but only returns one Criteria. If multiple criteria for the same
+     * type are found, the first one is returned. No exception is thrown in that case.
+     *
+     * @param criteriaType The type to look for.
+     * @param <T> The criteria class.
+     * @return The first found criteria, or null if none is found.
+     */
+    <T extends Criteria> T findSingleCriteria(Class<T> criteriaType);
 }

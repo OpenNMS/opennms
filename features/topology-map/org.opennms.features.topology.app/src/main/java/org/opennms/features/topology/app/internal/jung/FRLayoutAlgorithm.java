@@ -28,21 +28,21 @@
 
 package org.opennms.features.topology.app.internal.jung;
 
-import java.awt.*;
+import java.awt.Dimension;
 import java.awt.geom.Point2D;
 import java.util.Collection;
 
+import edu.uci.ics.jung.algorithms.layout.FRLayout;
+import edu.uci.ics.jung.graph.SparseGraph;
 import org.apache.commons.collections15.Transformer;
 import org.opennms.features.topology.api.Graph;
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.Layout;
+import org.opennms.features.topology.api.Point;
 import org.opennms.features.topology.api.topo.Edge;
 import org.opennms.features.topology.api.topo.EdgeRef;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
-
-import edu.uci.ics.jung.algorithms.layout.FRLayout;
-import edu.uci.ics.jung.graph.SparseGraph;
 
 public class FRLayoutAlgorithm extends AbstractLayoutAlgorithm {
 
@@ -80,7 +80,7 @@ public class FRLayoutAlgorithm extends AbstractLayoutAlgorithm {
 
 		// Store the new positions in the layout
 		for(Vertex v : vertices) {
-			graphLayout.setLocation(v, (int)layout.getX(v) - (size.getWidth()/2), (int)layout.getY(v) - (size.getHeight()/2));
+			graphLayout.setLocation(v, new Point(layout.getX(v) - (size.getWidth()/2), (int)layout.getY(v) - (size.getHeight()/2)));
 		}
 	}
 

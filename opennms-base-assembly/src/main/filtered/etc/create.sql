@@ -2638,3 +2638,35 @@ CREATE TABLE subcomponents (
 
 ALTER TABLE subcomponents ADD CONSTRAINT subcomponents_pkey PRIMARY KEY (component_id, subcomponent_id);
 ALTER TABLE subcomponents ADD CONSTRAINT subcomponents_component_id_subcomponent_id_key UNIQUE (component_id, subcomponent_id);
+
+--##################################################################
+--# Business Service Monitor (BSM) tables
+--##################################################################
+
+CREATE TABLE bsm_service (
+    id integer NOT NULL,
+    name text NOT NULL,
+    CONSTRAINT bsm_services_pkey PRIMARY KEY (id)
+);
+
+CREATE TABLE bsm_service_attributes (
+    bsm_service_id integer NOT NULL,
+    key character varying(255) NOT NULL,
+    value TEXT NOT NULL,
+    CONSTRAINT bsm_service_attributes_pkey PRIMARY KEY (bsm_service_id, key)
+);
+
+CREATE TABLE bsm_service_ifservices (
+    bsm_service_id integer NOT NULL,
+    ifserviceid integer NOT NULL,
+    CONSTRAINT bsm_service_ifservices_pkey PRIMARY KEY (bsm_service_id, ifserviceid)
+);
+
+CREATE TABLE bsm_service_children (
+    bsm_service_parent integer NOT NULL,
+    bsm_service_child integer NOT NULL,
+    CONSTRAINT bsm_service_children_pkey PRIMARY KEY (bsm_service_parent, bsm_service_child),
+    CONSTRAINT fk_bsm_service_parent_service_id FOREIGN KEY (bsm_service_parent) REFERENCES bsm_service (id) ON DELETE CASCADE,
+    CONSTRAINT fk_bsm_service_child_service_id FOREIGN KEY (bsm_service_child) REFERENCES bsm_service (id) ON DELETE CASCADE
+);
+

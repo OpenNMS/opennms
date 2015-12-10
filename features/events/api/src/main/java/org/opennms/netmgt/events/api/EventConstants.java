@@ -1070,6 +1070,33 @@ public abstract class EventConstants {
     public static final String PARM_ENDPOINT2 = "endPoint2";
 
     //
+    // for Alarmd
+    //
+
+    // Sent when an alarm is created
+    public static final String ALARM_CREATED_UEI   = "uei.opennms.org/alarms/alarmCreated";
+    // Sent when an alarm is escalated, either by a user action or an automation
+    public static final String ALARM_ESCALATED_UEI   = "uei.opennms.org/alarms/alarmEscalated";
+    // Sent when an alarm is cleared, either by a user action or an automation
+    public static final String ALARM_CLEARED_UEI = "uei.opennms.org/alarms/alarmCleared";
+    // Sent when an alarm is un-cleared, either by a user action or an automation
+    public static final String ALARM_UNCLEARED_UEI = "uei.opennms.org/alarms/alarmUncleared";
+    // Sent when an alarm is updated with a reduce event
+    public static final String ALARM_UPDATED_WITH_REDUCED_EVENT_UEI = "uei.opennms.org/alarms/alarmUpdatedWithReducedEvent";
+
+    //
+    // for Bsmd
+    //
+    public static final String BUSINESS_SERVICE_OPERATIONAL_STATUS_CHANGED_UEI = "uei.opennms.org/bsmd/serviceOperationalStatusChanged";
+
+    public static final String PARM_BUSINESS_SERVICE_ID = "businessServiceId";
+    public static final String PARM_BUSINESS_SERVICE_NAME = "businessServiceName";
+    public static final String PARM_NEW_SEVERITY_ID = "newSeverityId";
+    public static final String PARM_NEW_SEVERITY_LABEL = "newSeverityLabel";
+    public static final String PARM_PREV_SEVERITY_ID = "prevSeverityId";
+    public static final String PARM_PREV_SEVERITY_LABEL = "prevSeverityLabel";
+
+    //
     // for NCS service
     //
     public static final String COMPONENT_ADDED_UEI   = "uei.opennms.org/internal/ncs/componentAdded";

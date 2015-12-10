@@ -166,6 +166,7 @@
         <KeyValuePair key="alarmd"               value="DEBUG" />
         <KeyValuePair key="asterisk-gateway"     value="DEBUG" />
         <KeyValuePair key="archiver"             value="DEBUG" />
+        <KeyValuePair key="bsmd"                 value="DEBUG" />
         <KeyValuePair key="collectd"             value="DEBUG" />
         <KeyValuePair key="correlator"           value="DEBUG" />
         <KeyValuePair key="dhcpd"                value="DEBUG" />
