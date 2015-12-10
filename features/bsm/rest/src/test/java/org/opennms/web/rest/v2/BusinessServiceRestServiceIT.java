@@ -29,6 +29,7 @@
 package org.opennms.web.rest.v2;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 
@@ -176,6 +177,8 @@ public class BusinessServiceRestServiceIT extends AbstractSpringJerseyRestTestCa
         // Add business services to the DB
         BusinessService bs = new BusinessService();
         bs.setName("Application Servers");
+        String reductionKey = "MyReductionKey";
+        bs.addReductionKey(reductionKey);
         Long id = m_businessServiceDao.save(bs);
         m_businessServiceDao.flush();
 
@@ -190,6 +193,7 @@ public class BusinessServiceRestServiceIT extends AbstractSpringJerseyRestTestCa
         bsDTO.setName(bs.getName());
         bsDTO.setId(id);
         assertEquals(bsDTO, businessServices.get(0));
+        assertTrue("canRetrieveReductionKey", businessServices.get(0).getReductionKeys().contains(reductionKey));
     }
 
     @Test
@@ -198,14 +202,26 @@ public class BusinessServiceRestServiceIT extends AbstractSpringJerseyRestTestCa
     public void canCreateBusinessService() throws Exception {
         final String businessServiceJson = "{" +
                 "\"name\":\"some-name\"," +
-                "\"attributes\":{\"attribute\":[{\"key\":\"some-key\",\"value\":\"some-value\"}]}" +
+                "\"attributes\":{\"attribute\":[{\"key\":\"some-key\",\"value\":\"some-value\"}]}," +
+                "\"reductionKeys\": [\n" +
+                "        \"key1\", \"key2\", \"key3\"\n" +
+                "      ]" +
                 "}";
         final String businessServiceXml = "<business-service>" +
                 "    <name>some-name2</name>" +
+                "    <reductionKeys>" +
+                "        <reductionKey>key1</reductionKey>" +
+                "        <reductionKey>key2</reductionKey>" +
+                "        <reductionKey>key3</reductionKey>" +
+                "    </reductionKeys>" +
                 "</business-service>";
         sendData(POST, MediaType.APPLICATION_JSON, "/business-services", businessServiceJson, 201);
         sendData(POST, MediaType.APPLICATION_XML, "/business-services", businessServiceXml, 201);
         Assert.assertEquals(2, m_businessServiceDao.findAll().size());
+        assertTrue("createBusinessServiceWithReductionKeys", m_businessServiceDao.findAll().get(0).getReductionKeys().contains("key1"));
+        assertTrue("createBusinessServiceWithReductionKeys", m_businessServiceDao.findAll().get(0).getReductionKeys().contains("key2"));
+        assertTrue("createBusinessServiceWithReductionKeys", m_businessServiceDao.findAll().get(0).getReductionKeys().contains("key3"));
+        assertEquals("createBusinessServiceWithReductionKeys", 3, m_businessServiceDao.findAll().get(1).getReductionKeys().size());
     }
 
 
@@ -215,12 +231,21 @@ public class BusinessServiceRestServiceIT extends AbstractSpringJerseyRestTestCa
     public void canUpdateBusinessService() throws Exception {
         BusinessService service = new BusinessService();
         service.setName("Dummy Service");
+        service.addReductionKey("key1");
+        service.addReductionKey("key2-deleteMe");
         final Long serviceId = m_businessServiceDao.save(service);
         m_businessServiceDao.flush();
         final String businessServiceDtoXml = "<business-service>" +
                 "    <id>" + serviceId + "</id>" +
                 "    <name>Dummy Service Updated</name>" +
+                "    <reductionKeys>" +
+                "        <reductionKey>key1updated</reductionKey>" +
+                "    </reductionKeys>" +
                 "</business-service>";
         sendData(PUT, MediaType.APPLICATION_XML, "/business-services/" + serviceId, businessServiceDtoXml, 204);
+        assertEquals(1, m_businessServiceDao.findAll().size());
+        assertEquals("Dummy Service Updated", m_businessServiceDao.findAll().get(0).getName());
+        assertEquals(1, m_businessServiceDao.findAll().get(0).getReductionKeys().size());
+        assertTrue(m_businessServiceDao.findAll().get(0).getReductionKeys().contains("key1updated"));
     }
 }

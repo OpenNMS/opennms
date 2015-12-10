@@ -137,6 +137,7 @@ public class BusinessServiceRestService {
         return Response.ok().build();
     }
 
+    //TODO ipServiceId is not mapped into the method
     @GET
     @Path("{id}/ip-service/operational-status/{ipServiceId}")
     public Response getOperationStatusForIPServiceById(@PathParam("id") Integer ipServiceId) {

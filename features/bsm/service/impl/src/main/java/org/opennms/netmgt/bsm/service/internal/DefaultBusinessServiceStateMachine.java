@@ -75,11 +75,8 @@ public class DefaultBusinessServiceStateMachine implements BusinessServiceStateM
             // Rebuild
             for (BusinessService businessService : businessServices) {
                 m_businessServiceSeverity.put(businessService, DEFAULT_SEVERITY);
-                for (OnmsMonitoredService ipService : businessService.getIpServices()) {
-                    m_ipServiceIds.add(ipService.getId());
-                    for (String reductionKey : ipService.getReductionKeys()) {
-                        addReductionKey(reductionKey, businessService);
-                    }
+                for (String reductionKey : businessService.getAllReductionKeys()) {
+                    addReductionKey(reductionKey, businessService);
                 }
             }
         } finally {
@@ -146,12 +143,10 @@ public class DefaultBusinessServiceStateMachine implements BusinessServiceStateM
 
     private OnmsSeverity calculateCurrentSeverity(BusinessService businessService) {
         OnmsSeverity maxSeverity = DEFAULT_SEVERITY;
-        for (OnmsMonitoredService ipService : businessService.getIpServices()) {
-            for (String reductionKey : ipService.getReductionKeys()) {
-                final OnmsSeverity ipServiceSeverity = m_reductionKeyToSeverity.get(reductionKey);
-                if (ipServiceSeverity != null && ipServiceSeverity.isGreaterThan(maxSeverity)) {
-                    maxSeverity = ipServiceSeverity;
-                }
+        for (String reductionKey : businessService.getAllReductionKeys()) {
+            final OnmsSeverity ipServiceSeverity = m_reductionKeyToSeverity.get(reductionKey);
+            if (ipServiceSeverity != null && ipServiceSeverity.isGreaterThan(maxSeverity)) {
+                maxSeverity = ipServiceSeverity;
             }
         }
         return maxSeverity;
@@ -167,6 +162,7 @@ public class DefaultBusinessServiceStateMachine implements BusinessServiceStateM
         }
     }
 
+    //TODO how does this method relate to reductionkeys on businessservices and ipservices on businessservices
     @Override
     public OnmsSeverity getOperationalStatus(OnmsMonitoredService ipService) {
         m_rwLock.readLock().lock();
