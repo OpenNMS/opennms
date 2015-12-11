@@ -144,17 +144,48 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
         }
 	}
 
-	@Override
-	public void delete(int nodeId) {
-		Date now = new Date();
-		reconcileLldp(nodeId, now);
-		reconcileCdp(nodeId, now);
-		reconcileOspf(nodeId, now);
-		reconcileIpNetToMedia(nodeId, now);
-		reconcileBridge(nodeId, now);
-		m_bridgeTopologyDao.delete(nodeId);
-	}
-
+        @Override
+        public void delete(int nodeId) {
+            m_bridgeTopologyDao.delete(nodeId);
+    
+            m_lldpElementDao.deleteByNodeId(nodeId);
+            m_lldpLinkDao.deleteByNodeId(nodeId);
+            m_lldpElementDao.flush();
+            m_lldpLinkDao.flush();
+    
+            m_cdpElementDao.deleteByNodeId(nodeId);
+            m_cdpLinkDao.deleteByNodeId(nodeId);
+            m_cdpElementDao.flush();
+            m_cdpLinkDao.flush();
+    
+            m_ospfElementDao.deleteByNodeId(nodeId);
+            m_ospfLinkDao.deleteByNodeId(nodeId);
+            m_ospfElementDao.flush();
+            m_ospfLinkDao.flush();
+    
+            m_isisElementDao.deleteByNodeId(nodeId);
+            m_isisLinkDao.deleteByNodeId(nodeId);
+            m_isisElementDao.flush();
+            m_isisLinkDao.flush();
+    
+            m_ipNetToMediaDao.deleteBySourceNodeId(nodeId);
+            m_ipNetToMediaDao.flush();
+    
+            m_bridgeElementDao.deleteByNodeId(nodeId);
+            m_bridgeElementDao.flush();
+    
+            m_bridgeBridgeLinkDao.deleteByDesignatedNodeId(nodeId);
+            m_bridgeBridgeLinkDao.deleteByNodeId(nodeId);
+            m_bridgeBridgeLinkDao.flush();
+    
+            m_bridgeMacLinkDao.deleteByNodeId(nodeId);
+            m_bridgeMacLinkDao.flush();
+    
+            m_bridgeStpLinkDao.deleteByNodeId(nodeId);
+            m_bridgeStpLinkDao.flush();
+    
+        }
+    
 	@Override
 	public void reconcileLldp(int nodeId, Date now) {
 		LldpElement element = m_lldpElementDao.findByNodeId(nodeId);
@@ -461,7 +492,10 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
 		if (bridge == null)
 			return;
 		saveBridgeElement(nodeId, bridge);
-		m_bridgeTopologyDao.parse(nodeId,bridge);
+		OnmsNode node = new OnmsNode();
+		node.setId(nodeId);
+		bridge.setNode(node);
+		m_bridgeTopologyDao.parse(bridge);
 	}
 
 	@Transactional
@@ -501,7 +535,10 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
 		if (link == null)
 			return;
 		saveBridgeStpLink(nodeId, link);
-		m_bridgeTopologyDao.parse(nodeId,link);
+	              OnmsNode node = new OnmsNode();
+	                node.setId(nodeId);
+	                link.setNode(node);
+		m_bridgeTopologyDao.parse(link);
 		
 	}
 
@@ -541,7 +578,10 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
 	public void store(int nodeId, BridgeMacLink link) {
 		if (link == null)
 			return;
-		m_bridgeTopologyDao.parse(nodeId,link);
+                OnmsNode node = new OnmsNode();
+                node.setId(nodeId);
+                link.setNode(node);
+		m_bridgeTopologyDao.parse(link);
 	}
 
 	@Override

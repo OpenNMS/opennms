@@ -45,4 +45,6 @@ public interface OspfElementDao extends OnmsDao<OspfElement, Integer> {
 
     public List<OspfElement> findAllByRouterId(InetAddress routerId);
 
+    public void deleteByNodeId(Integer nodeId);
+
 }

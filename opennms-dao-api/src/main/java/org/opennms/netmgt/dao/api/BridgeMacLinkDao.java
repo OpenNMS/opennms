@@ -52,4 +52,6 @@ public interface BridgeMacLinkDao extends OnmsDao<BridgeMacLink, Integer> {
 
     public List<BridgeMacTopologyLink> getAllBridgeLinksToBridgeNodes();
 
+    void deleteByNodeId(Integer nodeiId);
+
 }
