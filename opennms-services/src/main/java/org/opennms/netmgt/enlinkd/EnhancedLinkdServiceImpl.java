@@ -696,7 +696,8 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
 	public void loadBridgeTopology() {
 	        m_bridgeTopologyDao.loadTopology(m_bridgeElementDao.findAll(),
 	                                         m_bridgeMacLinkDao.findAll(), 
-	                                         m_bridgeBridgeLinkDao.findAll());	}
+	                                         m_bridgeBridgeLinkDao.findAll(),m_bridgeStpLinkDao.findAll());
+	        }
 
 	public CdpLinkDao getCdpLinkDao() {
 		return m_cdpLinkDao;
