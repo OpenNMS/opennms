@@ -261,6 +261,7 @@ public class BusinessServiceManagerImpl implements BusinessServiceManager {
                 output.setNodeLabel(nodeDao.get(input.getNodeId()).getLabel());
                 output.setServiceName(input.getServiceName());
                 output.setIpAddress(input.getIpAddress().toString());
+                output.setReductionKeys(input.getReductionKeys());
                 output.setLocation(ResourceLocationFactory.createIpServiceLocation(output.getId()));
                 return output;
             }
