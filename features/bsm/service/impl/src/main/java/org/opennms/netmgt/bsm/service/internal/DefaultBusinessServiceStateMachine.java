@@ -74,6 +74,9 @@ public class DefaultBusinessServiceStateMachine implements BusinessServiceStateM
 
             // Rebuild
             for (BusinessService businessService : businessServices) {
+                for (OnmsMonitoredService monitoredService : businessService.getIpServices()) {
+                    m_ipServiceIds.add(monitoredService.getId());
+                }
                 m_businessServiceSeverity.put(businessService, DEFAULT_SEVERITY);
                 for (String reductionKey : businessService.getAllReductionKeys()) {
                     addReductionKey(reductionKey, businessService);
