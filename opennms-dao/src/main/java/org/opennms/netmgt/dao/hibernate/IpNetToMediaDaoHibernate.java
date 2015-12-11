@@ -61,6 +61,13 @@ public class IpNetToMediaDaoHibernate extends AbstractDaoHibernate<IpNetToMedia,
 		}
 	}
 
+        @Override
+        public void deleteBySourceNodeId(Integer nodeId) {
+                for (IpNetToMedia elem: find("from IpNetToMedia rec where rec.sourceNode.id = ? ",nodeId)) {
+                        delete(elem);
+                }
+        }
+        
 	@Override
 	public List<IpNetToMedia> findByPhysAddress(String physAddress) {
 		return find("from IpNetToMedia rec where rec.physAddress = ?",  physAddress);

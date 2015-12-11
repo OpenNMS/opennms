@@ -22,7 +22,7 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
 
         BroadcastDomain domain = m_linkd.getQueryManager().getBridgeTopologyBroadcastDomain(getNodeId());
         if (domain == null ) {
-            LOG.warn("run: no broadcast domain found fir node: {}", getNodeId());
+            LOG.warn("run: no broadcast domain found for node: {}", getNodeId());
             return;
         }
         if (!domain.topologyChanged()) {

@@ -2,10 +2,8 @@ package org.opennms.netmgt.dao;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.opennms.netmgt.dao.api.BridgeTopologyDao;
 import org.opennms.netmgt.model.BridgeBridgeLink;
@@ -27,24 +25,27 @@ public class BridgeTopologyDaoInMemory implements BridgeTopologyDao {
         if (domain != null)
             domain.deleteBridge(nodeid);
     }
+    
     @Override
-    public synchronized void parse(int nodeid,BridgeElement element) {
+    public synchronized void parse(BridgeElement element) {
+        Integer nodeid = element.getNode().getId();
         if (!m_notYetParsedEleMap.containsKey(nodeid))
             m_notYetParsedEleMap.put(nodeid, new ArrayList<BridgeElement>());
         m_notYetParsedEleMap.get(nodeid).add(element);
         
     }
-
     
     @Override
-    public synchronized void parse(int nodeid,BridgeMacLink maclink) {
+    public synchronized void parse(BridgeMacLink maclink) {
+        Integer nodeid = maclink.getNode().getId();
         if (!m_notYetParsedBFTMap.containsKey(nodeid))
             m_notYetParsedBFTMap.put(nodeid, new ArrayList<BridgeMacLink>());
         m_notYetParsedBFTMap.get(nodeid).add(maclink);
     }
 
     @Override
-    public synchronized void parse(int nodeid, BridgeStpLink stplink) {
+    public synchronized void parse(BridgeStpLink stplink) {
+        Integer nodeid = stplink.getNode().getId();
         if (!m_notYetParsedSTPMap.containsKey(nodeid))
             m_notYetParsedSTPMap.put(nodeid, new ArrayList<BridgeStpLink>());
         m_notYetParsedSTPMap.get(nodeid).add(stplink);
@@ -55,7 +56,10 @@ public class BridgeTopologyDaoInMemory implements BridgeTopologyDao {
             List<BridgeMacLink> links,
             List<BridgeBridgeLink> bridgelinks,
             List<BridgeStpLink> stplinks) {
+        
+        //clear all the topology for all domains
         m_domains.clear();
+        
         List<SharedSegment> segments = new ArrayList<SharedSegment>();
         for (BridgeMacLink link: links) {
             for (SharedSegment segment: segments) {
@@ -88,6 +92,8 @@ public class BridgeTopologyDaoInMemory implements BridgeTopologyDao {
             segment.add(link);
             segments.add(segment);
         }
+        
+        // Assign the segment to domain
         for (SharedSegment segment: segments) {
             BroadcastDomain domain = null;
             for (BroadcastDomain curdomain: m_domains) {
@@ -102,6 +108,7 @@ public class BridgeTopologyDaoInMemory implements BridgeTopologyDao {
             }
             domain.addTopologyEntry(segment);
         }
+       
         for (BridgeElement element: bridgeelements) {
             for (BroadcastDomain domain: m_domains) {
                 if (domain.containBridgeId(element.getNode().getId())) {
@@ -110,22 +117,15 @@ public class BridgeTopologyDaoInMemory implements BridgeTopologyDao {
                 }
             }
         }
-        Map<Integer,List<BridgeStpLink>> stplinkmap=new HashMap<Integer, List<BridgeStpLink>>();
+        
         for (BridgeStpLink link: stplinks) {
-            Integer nodeid = link.getNode().getId();
-            if (!stplinkmap.containsKey(nodeid))
-                stplinkmap.put(nodeid, new ArrayList<BridgeStpLink>());
-            stplinkmap.get(nodeid).add(link);
-        }
-        Set<Integer> nodeids = new HashSet<Integer>();
-        nodeids.addAll(stplinkmap.keySet());
-        for (Integer nodeid: nodeids ) {
             for (BroadcastDomain domain: m_domains) {
-                if (domain.containBridgeId(nodeid)) {
-                    domain.loadSTP(nodeid, stplinkmap.remove(nodeid));
+                if (domain.containBridgeId(link.getNode().getId())) {
+                    domain.addSTPEntry(link);
                     break;
                 }
             }
+            
         }
         
         for (BroadcastDomain domain: m_domains)
@@ -161,8 +161,7 @@ public class BridgeTopologyDaoInMemory implements BridgeTopologyDao {
         }
         for (BridgeElement element: m_notYetParsedEleMap.remove(nodeid))
             bftdomain.addBridgeElement(element);
-        bftdomain.loadBFT(nodeid,bft);
-        bftdomain.loadSTP(nodeid,m_notYetParsedSTPMap.remove(nodeid));
+        bftdomain.loadBFT(nodeid,bft,m_notYetParsedSTPMap.remove(nodeid));
 
     }
 

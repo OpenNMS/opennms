@@ -84,12 +84,21 @@ public class IsIsLinkDaoHibernate extends AbstractDaoHibernate<IsIsLink, Integer
         return find("from IsIsLink isisLink where isisLink.node.id = ?", nodeId);
     }
 
-	@Override
-	public void deleteByNodeIdOlderThen(Integer nodeId, Date now) {
-		for (IsIsLink link: find("from IsIsLink isisLink where isisLink.node.id = ? and isisLinkLastPollTime < ?",nodeId,now)) {
-			delete(link);
-		}
-	}
+    @Override
+    public void deleteByNodeIdOlderThen(Integer nodeId, Date now) {
+        for (IsIsLink link : find("from IsIsLink isisLink where isisLink.node.id = ? and isisLinkLastPollTime < ?",
+                                  nodeId, now)) {
+            delete(link);
+        }
+    }
+
+    @Override
+    public void deleteByNodeId(Integer nodeId) {
+        for (IsIsLink link : find("from IsIsLink isisLink where isisLink.node.id = ? ",
+                                  nodeId)) {
+            delete(link);
+        }
+    }
 
 	private final static String SQL_GET_ISIS_LINKS=
                 "select distinct on (distinct_id) " +
@@ -166,6 +175,7 @@ public class IsIsLinkDaoHibernate extends AbstractDaoHibernate<IsIsLink, Integer
         return getHibernateTemplate().execute(new HibernateCallback<List<IsisTopologyLink>>() {
 
             @Override
+            @SuppressWarnings("unchecked")
             public List<IsisTopologyLink> doInHibernate(Session session) throws HibernateException, SQLException {
                 return convertObjectToTopologyLink(session.createSQLQuery(SQL_GET_ISIS_LINKS).list());
             }

@@ -68,5 +68,12 @@ public class LldpElementDaoHibernate extends AbstractDaoHibernate<LldpElement, I
         return findUnique("from LldpElement rec where rec.lldpSysname = ?", sysname);
 	}
 
+	@Override
+	public void deleteByNodeId(Integer nodeId) {
+	           for (LldpElement rec: find("from LldpElement rec where rec.node.id = ? ",nodeId)) {
+                       delete(rec);
+               }
+
+	}
 
 }

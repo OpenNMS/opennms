@@ -18,12 +18,14 @@ public class BroadcastDomain {
     List<SharedSegment> m_topology = new ArrayList<SharedSegment>();
     boolean m_topologyChanged = false;
     volatile Map<Integer, List<BridgeMacLink>> m_notYetParsedBFTMap = new HashMap<Integer, List<BridgeMacLink>>();
-    volatile Map<Integer, List<BridgeStpLink>> m_notYetParsedSTPMap = new HashMap<Integer, List<BridgeStpLink>>();
+    volatile List<BridgeStpLink> m_STPLinks = new ArrayList<BridgeStpLink>();
     Integer m_rootBridgeId;
     volatile List<BridgeMacLink> m_rootBridgeBFT = new ArrayList<BridgeMacLink>();
 
     //FIXME here you have to find the links...
+    
     private class BridgeTopologyHelper {
+        
         final Integer m_xBridge;
         final Integer m_yBridge;
         final List<BridgeMacLink> m_xBFT;
@@ -44,6 +46,7 @@ public class BroadcastDomain {
         public Integer getYXPort() {
             return null;
         }
+        
     }
     
     private class Bridge {
@@ -191,6 +194,12 @@ public class BroadcastDomain {
         }
     }
     
+    public synchronized void addSTPEntry(BridgeStpLink stplink ) {
+        m_STPLinks.add(stplink);
+    }
+
+
+    
     public synchronized boolean containsAtleastOne(Set<Integer> nodeids) {
         for (Bridge bridge: m_bridges) {
             for (Integer nodeid:nodeids) {
@@ -216,15 +225,11 @@ public class BroadcastDomain {
         return macs;
     }
 
-    public synchronized void loadBFT(int nodeId, List<BridgeMacLink> maclinks) {
+    public synchronized void loadBFT(int nodeId, List<BridgeMacLink> maclinks,List<BridgeStpLink> stplinks) {
         m_topologyChanged = true;
         m_notYetParsedBFTMap.put(nodeId, maclinks);
+        m_STPLinks.addAll(stplinks);
     }
-
-    public synchronized void loadSTP(int nodeId, List<BridgeStpLink> stplinks) {
-        m_notYetParsedSTPMap.put(nodeId, stplinks);
-    }
-
     
     public synchronized boolean checkBridgeOnDomain(List<BridgeMacLink> links) {
         Set<String>incomingSet = new HashSet<String>();

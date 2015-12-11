@@ -108,16 +108,16 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
         Assert.state(m_eventForwarder != null,
                      "must set the eventForwarder property");
 
+        LOG.info("init: Loading nodes.....");
         m_nodes = m_queryMgr.getSnmpNodeList();
+        LOG.info("init: Nodes loaded.");
+        LOG.info("init: Loading Bridge Topology.....");
+        m_queryMgr.loadBridgeTopology();
+        LOG.info("init: Bridge Topology loaded.");
 
         Assert.notNull(m_nodes);
         scheduleCollection();
-        loadBridgeTopology();
         LOG.info("init: ENHANCED LINKD INITIALIZED");
-    }
-
-    private void loadBridgeTopology() {
-        
     }
 
     private void scheduleCollection() {
