@@ -86,6 +86,8 @@
             <!-- Vaadin Surveillance Views Feature-->
             <repository>mvn:org.opennms.features/vaadin-surveillance-views/${project.version}/xml/features</repository>
 
+            <!-- Ticketing Features-->
+            <repository>mvn:org.opennms.features/jira-troubleticketer/${project.version}/xml/features</repository>
           </repositories>
 
           <!-- 
@@ -224,6 +226,7 @@
             <feature>vaadin-node-maps</feature>
             <feature>vaadin-snmp-events-and-metrics</feature>
             <feature>vaadin-surveillance-views</feature>
+            <feature>jira-troubleticketer</feature>
           </features>
         </configuration>
       </plugin>
@@ -389,6 +392,13 @@
     <dependency>
       <groupId>org.opennms.features</groupId>
       <artifactId>vaadin-components</artifactId>
+      <version>${project.version}</version>
+      <type>pom</type>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features</groupId>
+      <artifactId>jira-troubleticketer</artifactId>
       <version>${project.version}</version>
       <type>pom</type>
       <scope>provided</scope>
