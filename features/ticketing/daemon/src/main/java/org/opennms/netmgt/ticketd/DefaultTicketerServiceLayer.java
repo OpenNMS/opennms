@@ -29,6 +29,7 @@
 package org.opennms.netmgt.ticketd;
 
 import java.util.Map;
+import java.util.Objects;
 
 import org.opennms.api.integration.ticketing.Plugin;
 import org.opennms.api.integration.ticketing.PluginException;
@@ -45,8 +46,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.orm.ObjectRetrievalFailureException;
-import org.springframework.util.Assert;
 
 /**
  * OpenNMS Trouble Ticket API implementation.
@@ -83,17 +82,6 @@ public class DefaultTicketerServiceLayer implements TicketerServiceLayer, Initia
     }
 
     /**
-     * Needs access to the ticketer Plugin API implementation for
-     * communication with the HelpDesk.
-     *
-     * @param ticketerPlugin a {@link org.opennms.api.integration.ticketing.Plugin} object.
-     */
-    @Override
-    public void setTicketerPlugin(Plugin ticketerPlugin) {
-        m_ticketerPlugin = ticketerPlugin;
-    }
-
-    /**
      * Spring functionality implemented to validate the state of the trouble ticket
      * plugin API.
      *
@@ -101,8 +89,8 @@ public class DefaultTicketerServiceLayer implements TicketerServiceLayer, Initia
      */
     @Override
     public void afterPropertiesSet() throws Exception {
-        Assert.state(m_alarmDao != null, "alarmDao property must be set");
-        Assert.state(m_ticketerPlugin != null, "ticketPlugin property must be set");
+        Objects.requireNonNull(m_alarmDao, "alarmDao property must be set");
+        Objects.requireNonNull(m_ticketerPlugin, "ticketerPlugin property must be set");
     }
 
     /*
@@ -114,16 +102,16 @@ public class DefaultTicketerServiceLayer implements TicketerServiceLayer, Initia
     public void cancelTicketForAlarm(int alarmId, String ticketId) {
         OnmsAlarm alarm = m_alarmDao.get(alarmId);
         if (alarm == null) {
-            throw new ObjectRetrievalFailureException("Unable to locate Alarm with ID: "+alarmId, null);
+            LOG.error("No alarm with id {} was found. Ticket with id '{}' will not be canceled.", alarmId, ticketId);
+            return;
         }
-
 
         try {
             setTicketState(ticketId, Ticket.State.CANCELLED);
             alarm.setTTicketState(TroubleTicketState.CANCELLED);
         } catch (PluginException e) {
             alarm.setTTicketState(TroubleTicketState.CANCEL_FAILED);
-            LOG.error("Unable to cancel ticket for alarm: {}", e.getMessage());
+            LOG.error("Unable to cancel ticket for alarm: {}", e.getMessage(), e);
             m_eventIpcManager.sendNow(createEvent(e.getMessage()));
         }
 
@@ -151,13 +139,17 @@ public class DefaultTicketerServiceLayer implements TicketerServiceLayer, Initia
     @Override
     public void closeTicketForAlarm(int alarmId, String ticketId) {
         OnmsAlarm alarm = m_alarmDao.get(alarmId);
+        if (alarm == null) {
+            LOG.error("No alarm with id {} was found. Ticket with id '{}' will not be closed.", alarmId, ticketId);
+            return;
+        }
 
         try {
             setTicketState(ticketId, State.CLOSED);
             alarm.setTTicketState(TroubleTicketState.CLOSED);
         } catch (PluginException e) {
             alarm.setTTicketState(TroubleTicketState.CLOSE_FAILED);
-            LOG.error("Unable to close ticket for alarm: {}", e.getMessage());
+            LOG.error("Unable to close ticket for alarm: {}", e.getMessage(), e);
             m_eventIpcManager.sendNow(createEvent(e.getMessage()));
         }
 
@@ -173,6 +165,10 @@ public class DefaultTicketerServiceLayer implements TicketerServiceLayer, Initia
     public void createTicketForAlarm(int alarmId, Map<String,String> attributes) {
 
         OnmsAlarm alarm = m_alarmDao.get(alarmId);
+        if (alarm == null) {
+            LOG.error("No alarm with id {} was found. No ticket will be created.", alarmId);
+            return;
+        }
 
         Ticket ticket = createTicketFromAlarm(alarm);
         if (attributes.containsKey("user"))
@@ -185,7 +181,7 @@ public class DefaultTicketerServiceLayer implements TicketerServiceLayer, Initia
             alarm.setTTicketState(TroubleTicketState.OPEN);
         } catch (PluginException e) {
             alarm.setTTicketState(TroubleTicketState.CREATE_FAILED);
-            LOG.error("Unable to create ticket for alarm: {}", e.getMessage());
+            LOG.error("Unable to create ticket for alarm: {}", e.getMessage(), e);
             m_eventIpcManager.sendNow(createEvent(e.getMessage()));
         }
 
@@ -221,12 +217,11 @@ public class DefaultTicketerServiceLayer implements TicketerServiceLayer, Initia
     /** {@inheritDoc} */
     @Override
     public void updateTicketForAlarm(int alarmId, String ticketId) {
-
-        //      ticket.setState(State.OPEN);
-        //      ticket.setDetails(alarm.getDescription());
-        //      m_ticketerPlugin.saveOrUpdate(ticket);
-
         OnmsAlarm alarm = m_alarmDao.get(alarmId);
+        if (alarm == null) {
+            LOG.error("No alarm with id {} was found. Ticket with id '{}' will not be updated.", alarmId, ticketId);
+            return;
+        }
 
         Ticket ticket = null;
 
@@ -286,4 +281,11 @@ public class DefaultTicketerServiceLayer implements TicketerServiceLayer, Initia
         m_eventIpcManager = ipcManager;
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void setTicketerPlugin(Plugin plugin) {
+        m_ticketerPlugin = Objects.requireNonNull(plugin, "plugin cannot be null");
+    }
 }

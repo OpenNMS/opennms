@@ -154,3 +154,10 @@ include::text/operation/newts/introduction.adoc[]
 include::text/operation/newts/configuration.adoc[]
 include::text/operation/newts/cassandra21x.adoc[]
 include::text/operation/newts/newts.adoc[]
+
+[[ga-ticketing]]
+== Ticketing
+include::text/ticketing/introduction.adoc[]
+
+// JIRA Ticketer
+include::text/ticketing/jira.adoc[]
