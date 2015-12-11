@@ -33,6 +33,7 @@ import java.util.Set;
 import org.opennms.netmgt.bsm.service.model.BusinessServiceDTO;
 import org.opennms.netmgt.bsm.service.model.IpServiceDTO;
 
+import com.vaadin.data.Property;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
@@ -209,6 +210,8 @@ public class BusinessServiceEditWindow extends Window {
         m_reductionKeyListSelect.setId("reductionKeySelect");
         m_reductionKeyListSelect.setWidth(98.0f, Unit.PERCENTAGE);
         m_reductionKeyListSelect.setRows(8);
+        m_reductionKeyListSelect.setNullSelectionAllowed(false);
+        m_reductionKeyListSelect.setMultiSelect(false);
         m_reductionKeyListSelect.getContainerDataSource().addItem("Bla");
         m_reductionKeyListSelect.getContainerDataSource().addItem("Blupp");
 
@@ -242,10 +245,28 @@ public class BusinessServiceEditWindow extends Window {
             }
         });
 
-        Button removeReductionKeyBtn = new Button("Remove reduction key");
+        final Button removeReductionKeyBtn = new Button("Remove reduction key");
+        removeReductionKeyBtn.setEnabled(false);
         removeReductionKeyBtn.setWidth(140.0f, Unit.PIXELS);
         removeReductionKeyBtn.addStyleName("small");
         reductionKeyButtonLayout.addComponent(removeReductionKeyBtn);
+
+        m_reductionKeyListSelect.addValueChangeListener(new Property.ValueChangeListener() {
+            @Override
+            public void valueChange(Property.ValueChangeEvent event) {
+                removeReductionKeyBtn.setEnabled(event.getProperty().getValue() != null);
+            }
+        });
+
+        removeReductionKeyBtn.addClickListener(new Button.ClickListener() {
+            @Override
+            public void buttonClick(Button.ClickEvent event) {
+                if (m_reductionKeyListSelect.getValue()!=null) {
+                    m_reductionKeyListSelect.removeItem(m_reductionKeyListSelect.getValue());
+                    removeReductionKeyBtn.setEnabled(false);
+                }
+            }
+        });
 
         Button editPropagationRulesBtn = new Button("Edit propagation rules");
         editPropagationRulesBtn.setWidth(140.0f, Unit.PIXELS);
