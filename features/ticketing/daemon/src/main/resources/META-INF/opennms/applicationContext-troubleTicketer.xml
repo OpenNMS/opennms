@@ -15,7 +15,6 @@
   http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.0.xsd
   http://xmlns.opennms.org/xsd/spring/onms-osgi http://xmlns.opennms.org/xsd/spring/onms-osgi.xsd
 ">
-
 	<context:annotation-config />
 	<tx:annotation-driven/>
 
@@ -29,18 +28,25 @@
 		<property name="order" value="0" />
     	<property name="systemPropertiesModeName" value="SYSTEM_PROPERTIES_MODE_OVERRIDE" />
 	</bean>
-	
-	<bean name="ticketerPlugin" class="org.opennms.netmgt.ticketd.TicketerPluginFactory">
-		<property name="pluginClass" value="${opennms.ticketer.plugin}"/>
-	</bean>
-   
+
+    <bean name="ticketerPlugin" class="org.opennms.netmgt.ticketd.TicketerPluginFactory">
+         <property name="pluginClass" value="${opennms.ticketer.plugin}"/>
+    </bean>
+
 	<bean name="ticketerServiceLayer" class="${opennms.ticketer.servicelayer}">
-		<property name="ticketerPlugin" ref="ticketerPlugin" />
-	</bean>
+         <property name="ticketerPlugin" ref="ticketerPlugin"/>
+    </bean>
+
+    <onmsgi:service interface="org.opennms.netmgt.ticketd.TicketerServiceLayer" ref="ticketerServiceLayer" />
+
+    <!-- If the OSGi ticketer plugin is enabled, this will pull in an additional context that will
+         register the plugin for service reference updates.
+    -->
+    <bean class="org.opennms.netmgt.ticketd.ConditionalOSGiTicketerPluginContext"/>
 
 	<bean name="daemon" class="org.opennms.netmgt.ticketd.TroubleTicketer">
 	  <property name="eventIpcManager" ref="eventIpcManager"/>
 	  <property name="ticketerServiceLayer" ref="ticketerServiceLayer" />
 	</bean>
-	
+
 </beans>
