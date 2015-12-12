@@ -2,8 +2,10 @@ package org.opennms.netmgt.dao;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.opennms.netmgt.dao.api.BridgeTopologyDao;
 import org.opennms.netmgt.model.BridgeBridgeLink;
@@ -19,13 +21,6 @@ public class BridgeTopologyDaoInMemory implements BridgeTopologyDao {
     volatile Map<Integer, List<BridgeStpLink>> m_notYetParsedSTPMap = new HashMap<Integer, List<BridgeStpLink>>();
     volatile Map<Integer, List<BridgeElement>> m_notYetParsedEleMap = new HashMap<Integer, List<BridgeElement>>();
 
-    @Override
-    public synchronized void delete(int nodeid) {
-        BroadcastDomain domain = getBroadcastDomain(nodeid);
-        if (domain != null)
-            domain.deleteBridge(nodeid);
-    }
-    
     @Override
     public synchronized void parse(BridgeElement element) {
         Integer nodeid = element.getNode().getId();
@@ -125,9 +120,7 @@ public class BridgeTopologyDaoInMemory implements BridgeTopologyDao {
                     break;
                 }
             }
-            
         }
-        
         for (BroadcastDomain domain: m_domains)
             domain.calculate();
     }
@@ -142,7 +135,7 @@ public class BridgeTopologyDaoInMemory implements BridgeTopologyDao {
             }
         }
         if (elemdomain != null) {
-            elemdomain.deleteBridge(nodeid);
+            elemdomain.removeBridge(nodeid);
             if (elemdomain.isEmpty())
                 m_domains.remove(elemdomain);
         }        
@@ -150,10 +143,18 @@ public class BridgeTopologyDaoInMemory implements BridgeTopologyDao {
         List<BridgeMacLink> bft = m_notYetParsedBFTMap.remove(nodeid);
         BroadcastDomain bftdomain = null;
         for (BroadcastDomain domain: m_domains) {
-            if (domain.checkBridgeOnDomain(bft)) {
-                bftdomain = domain;
-                break;
-            }
+            Set<String>incomingSet = new HashSet<String>();
+            for (BridgeMacLink link: bft)
+                incomingSet.add(link.getMacAddress());
+            
+            Set<String>retainedSet = new HashSet<String>();
+            retainedSet.addAll(domain.getMacsOnDomain());
+            retainedSet.retainAll(incomingSet);
+            // should contain at list 50% of the all size
+            if (retainedSet.size() <= incomingSet.size()*0.5 )
+                continue;          
+            bftdomain = domain;
+            break;
         }
         if (bftdomain == null) {
             bftdomain = new BroadcastDomain();
@@ -165,6 +166,13 @@ public class BridgeTopologyDaoInMemory implements BridgeTopologyDao {
 
     }
 
+    @Override
+    public synchronized void delete(int nodeid) {
+        BroadcastDomain domain = getBroadcastDomain(nodeid);
+        if (domain != null)
+            domain.removeBridge(nodeid);
+    }
+    
     @Override
     public synchronized BroadcastDomain getBroadcastDomain(int nodeid) {
         for (BroadcastDomain domain: m_domains) {

@@ -25,6 +25,14 @@ public class SharedSegment {
     }
     
     
+    public void setDesignatedBridge(Integer designatedBridge) {
+        m_designatedBridge = designatedBridge;
+    }
+
+    public void setDesignatedPort(Integer designatedPort) {
+        m_designatedPort = designatedPort;
+    }
+
     public Integer getDesignatedBridge() {
         return m_designatedBridge;
     }
@@ -41,12 +49,22 @@ public class SharedSegment {
         return m_bridgeportsOnSegment.isEmpty();
     }
     
-    public void delete(int nodeid) {
+    //FIXME
+    public void mergeBridge(SharedSegment shared, Integer bridgeId) {
+        
+    }
+
+    //FIXME
+    public void assign(List<BridgeMacLink> links) {
+        
+    }
+
+    public void removeBridge(int bridgeId) {
         if (noMacsOnSegment()) {
             List<BridgeBridgeLink> curlist = new ArrayList<BridgeBridgeLink>();
             for (BridgeBridgeLink link: m_bridgeportsOnLink) {
-                if (link.getNode().getId().intValue() == nodeid ||
-                        link.getDesignatedNode().getId().intValue() == nodeid)
+                if (link.getNode().getId().intValue() == bridgeId ||
+                        link.getDesignatedNode().getId().intValue() == bridgeId)
                     continue;
                 curlist.add(link);
             }
@@ -55,12 +73,23 @@ public class SharedSegment {
         }
         List<BridgeMacLink> curlist = new ArrayList<BridgeMacLink>();
         for (BridgeMacLink link: m_bridgeportsOnSegment) {
-            if (link.getNode().getId().intValue() == nodeid )
+            if (link.getNode().getId().intValue() == bridgeId ) {
                 continue;
+            }
+            curlist.add(link);
+                
         }
         m_bridgeportsOnSegment=curlist;
     }
     
+    public Integer getFirstNoDesignatedBridge() {
+        for (Integer bridgeId: getBridgeIdsOnSegment()) {
+            if (m_designatedBridge == null || bridgeId != m_designatedBridge)
+                return bridgeId;
+        }
+        return null;
+    }
+
     public List<BridgeBridgeLink> getBridgeBridgeLinks() {
         return m_bridgeportsOnLink;
     }
@@ -129,6 +158,23 @@ public class SharedSegment {
                 return true;
         }
         return false;
+    }
+    
+    public Integer getPortForBridge(Integer nodeid) {
+        if (noMacsOnSegment()) {
+            for (BridgeBridgeLink link: m_bridgeportsOnLink) {
+                if (link.getNode().getId() == nodeid )
+                    return link.getBridgePort();
+                if (link.getDesignatedNode().getId() == nodeid )
+                    return link.getDesignatedPort() ;
+            }
+            return null;
+        }
+        for (BridgeMacLink link: m_bridgeportsOnSegment) {
+            if (link.getNode().getId() == nodeid) 
+                return link.getBridgePort();
+        }
+        return null;
     }
 
     

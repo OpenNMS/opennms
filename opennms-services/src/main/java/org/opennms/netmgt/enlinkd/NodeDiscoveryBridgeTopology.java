@@ -25,12 +25,11 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
             LOG.warn("run: no broadcast domain found for node: {}", getNodeId());
             return;
         }
-        if (!domain.topologyChanged()) {
+        if (!domain.isCalculating()) {
             LOG.info("run: broadcast domain with no topology change found for node: {}. exiting...", getNodeId());
             return;
         }
-        LOG.info("run: calculating broadcast domain with topology change found for node: {}. nodes in domain {}", getNodeId(),
-                 domain.getUpdatedNodes());
+        LOG.info("run: calculating broadcast domain with topology change found for node: {}.", getNodeId());
         domain.calculate();
         LOG.info("run: broadcast domain topology for node: {}. calculated.", getNodeId());
         LOG.info("run: saving broadcast domain topology for node: {}.", getNodeId());
