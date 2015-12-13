@@ -25,7 +25,25 @@ public class BroadcastDomain {
     volatile Map<Integer, List<BridgeMacLink>> m_notYetParsedBFTMap = new HashMap<Integer, List<BridgeMacLink>>();
     volatile List<BridgeStpLink> m_STPLinks = new ArrayList<BridgeStpLink>();
     
+    private class SimpleConnection {
+        final List<BridgeMacLink> m_links;
+        final BridgeBridgeLink m_dlink;
+        
+        SimpleConnection(List<BridgeMacLink> links, BridgeBridgeLink dlink){
+            m_links = links;
+            m_dlink = dlink;
+        }
 
+        public List<BridgeMacLink> getLinks() {
+            return m_links;
+        }
+
+        public BridgeBridgeLink getDlink() {
+            return m_dlink;
+        }
+    }
+
+    //FIXME
     private class BridgeTopologyHelper {
         
         final Integer m_xBridge;
@@ -41,22 +59,18 @@ public class BroadcastDomain {
             m_yBFT = yBFT;
         }
         
-        //FIXME
         public Integer getFirstBridgeDesignatedPort() {
             return null;
         }
         
-        //FIXME
         public Integer getSecondBridgePort() {
             return null;
         }
         
-        //FIXME
-        public List<BridgeMacLink> getBFT() {
-            return null;
+        public SimpleConnection getSimpleConnection() {
+            return new SimpleConnection(null, null);
         }
-        
-        //FIXME
+
         public Map<Integer,List<BridgeMacLink>> getTroughSet() {
             return null;
         }
@@ -316,12 +330,23 @@ public class BroadcastDomain {
         selectRootBridge();
         hierarchySetUp();
 
+        // the root bridge is the only bridge in topology
+        if (m_topology.isEmpty() && m_notYetParsedBFTMap.isEmpty() && m_rootBridgeBFT != null) {
+            Map<Integer, SharedSegment> rootleafs=new HashMap<Integer, SharedSegment>();
+            for (BridgeMacLink link: m_rootBridgeBFT) {
+                if (!rootleafs.containsKey(link.getBridgePort()))
+                    rootleafs.put(link.getBridgePort(), new SharedSegment());
+                rootleafs.get(link.getBridgePort()).add(link);
+            }
+            for (SharedSegment rootleaf: rootleafs.values()) 
+                m_topology.add(rootleaf);
+            return;
+        }
         Set<Integer> nodeids = new HashSet<Integer>();
         nodeids.addAll(m_notYetParsedBFTMap.keySet());
         for (Integer nodeid: nodeids) 
             findBridgesTopo(m_rootBridgeId, m_rootBridgeBFT, nodeid, m_notYetParsedBFTMap.remove(nodeid));
        
-        m_calculating = false;
     }
     
     private void findBridgesTopo(Integer rBridgeId, List<BridgeMacLink> rBFT, Integer xBridgeId, List<BridgeMacLink> xBFT) {
@@ -333,7 +358,7 @@ public class BroadcastDomain {
         SharedSegment topSegment = getSharedSegment(rBridgeId,rxDesignatedPort);
         if (topSegment == null) {
             topSegment = new SharedSegment(rBridgeId,rxDesignatedPort);
-            topSegment.assign(rx.getBFT());
+            topSegment.assign(rx.getSimpleConnection().getLinks(),rx.getSimpleConnection().getDlink());
             m_topology.add(topSegment);
         }
 
@@ -352,11 +377,11 @@ public class BroadcastDomain {
             if (xyDesignatedPort != xrDesignatedPort && yxDesignatedPort == yrDesignatedPort) {
                 //create a SharedSegment with root port
                 SharedSegment leafSegment = new SharedSegment(xBridgeId, xyDesignatedPort);
-                leafSegment.assign(xy.getBFT());
+                leafSegment.assign(xy.getSimpleConnection().getLinks(),xy.getSimpleConnection().getDlink());
                 m_topology.add(leafSegment);
                 topSegment.removeBridge(yBridge.getId());
             }            
-            // this is a clear violation  of the root rule
+            // this is a clear violation  of the topology tree rule
             if (xyDesignatedPort != xrDesignatedPort && yxDesignatedPort != yrDesignatedPort) {
                 m_topology.clear();
                 return;
@@ -364,11 +389,11 @@ public class BroadcastDomain {
         }
         // if we are here is because X is NOT a leaf of any bridge found
         // on topSegment so X is connected to top Segment by it's root 
-        // port
-        topSegment.assign(rx.getBFT());
-        for (Integer bridgePort: rx.getTroughSet().keySet()) {
-            SharedSegment xleafSegment = new SharedSegment(xBridgeId, bridgePort);
-            xleafSegment.assign(rx.getTroughSet().get(bridgePort));
+        // port or rx is a direct connection
+        topSegment.assign(rx.getSimpleConnection().getLinks(),rx.getSimpleConnection().getDlink());
+        for (Integer xbridgePort: rx.getTroughSet().keySet()) {
+            SharedSegment xleafSegment = new SharedSegment(xBridgeId, xbridgePort);
+            xleafSegment.setBridgeMacLinks(rx.getTroughSet().get(xbridgePort));
             m_topology.add(xleafSegment);
         }
         
