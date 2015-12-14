@@ -54,6 +54,7 @@ public class IpServiceDTOJaxbTest extends XmlTestNoCastor<IpServiceDTO> {
                 "<ip-service>" +
                         "<id>1</id>" +
                         "<location>/rest/ifservices/1</location>" +
+                        "<reductionKeys/>" +
                         "</ip-service>",
                 null
         }});
