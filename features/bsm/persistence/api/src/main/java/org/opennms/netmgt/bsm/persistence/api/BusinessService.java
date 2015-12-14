@@ -157,10 +157,13 @@ public class BusinessService {
     }
 
     @Transient
-    private Set<Long> getChildServiceIds() {
-        return m_childServices.stream()
-                              .map(svc -> svc.getId())
-                              .collect(Collectors.toSet());
+    public Set<String> getAllReductionKeys() {
+        Set<String> allReductionKeys = Sets.newHashSet();
+        for (OnmsMonitoredService ipService : getIpServices()) {
+            allReductionKeys.addAll(OnmsMonitoredServiceHelper.getReductionKeys(ipService));
+        }
+        allReductionKeys.addAll(getReductionKeys());
+        return allReductionKeys;
     }
 
     @Override

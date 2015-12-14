@@ -40,6 +40,7 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
 import org.opennms.netmgt.bsm.persistence.api.BusinessService;
+import org.opennms.netmgt.bsm.persistence.api.OnmsMonitoredServiceHelper;
 import org.opennms.netmgt.bsm.service.BusinessServiceStateChangeHandler;
 import org.opennms.netmgt.bsm.service.BusinessServiceStateMachine;
 import org.opennms.netmgt.model.OnmsAlarm;
@@ -165,7 +166,6 @@ public class DefaultBusinessServiceStateMachine implements BusinessServiceStateM
         }
     }
 
-    //TODO how does this method relate to reductionkeys on businessservices and ipservices on businessservices
     @Override
     public OnmsSeverity getOperationalStatus(OnmsMonitoredService ipService) {
         m_rwLock.readLock().lock();
@@ -177,7 +177,7 @@ public class DefaultBusinessServiceStateMachine implements BusinessServiceStateM
 
             // The IP-Service resolves to multiple reduction keys, we use the one with the highest severity
             OnmsSeverity highestSeverity = DEFAULT_SEVERITY;
-            for (String reductionKey : ipService.getReductionKeys()) {
+            for (String reductionKey : OnmsMonitoredServiceHelper.getReductionKeys(ipService)) {
                 final OnmsSeverity severity = m_reductionKeyToSeverity.get(reductionKey);
                 if (severity != null) {
                     if (highestSeverity == null) {
