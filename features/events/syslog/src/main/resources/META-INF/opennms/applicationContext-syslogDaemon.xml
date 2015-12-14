@@ -16,10 +16,20 @@
   <context:annotation-config />
   <tx:annotation-driven/>
 
-  <bean id="executorFactoryJava" class="org.opennms.core.concurrent.ExecutorFactoryJavaImpl"/>
+  <bean id="executorFactory" class="org.opennms.core.concurrent.ExecutorFactoryJavaImpl"/>
+
+  <bean id="syslogConnectionHandler" class="org.opennms.netmgt.syslogd.SyslogConnectionHandlerDefaultImpl">
+    <constructor-arg>
+      <bean factory-bean="executorFactoryJava" factory-method="newExecutor">
+        <constructor-arg value="OpenNMS.Syslogd"/>
+        <constructor-arg value="SyslogConnectionHandler"/>
+      </bean>
+    </constructor-arg>
+  </bean>
 
   <bean id="syslogReceiverJavaNet" class="org.opennms.netmgt.syslogd.SyslogReceiverJavaNetImpl">
     <constructor-arg ref="syslogdConfigFactory"/>
+    <property name="syslogConnectionHandlers" ref="syslogConnectionHandler"/>
   </bean>
 
   <!-- Expose one particular implementation as the chosen implementation -->
