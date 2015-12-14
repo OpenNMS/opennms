@@ -48,6 +48,53 @@
           </execution>
         </executions>
       </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>build-helper-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>attach-artifacts</id>
+            <phase>package</phase>
+            <goals>
+              <goal>attach-artifact</goal>
+            </goals>
+            <configuration>
+              <artifacts>
+                <artifact>
+                  <file>blueprint-syslog-handler-default.xml</file>
+                  <type>xml</type>
+                  <classifier>blueprint-syslog-handler-default</classifier>
+                </artifact>
+                <artifact>
+                  <file>blueprint-syslog-handler-kafka.xml</file>
+                  <type>xml</type>
+                  <classifier>blueprint-syslog-handler-kafka</classifier>
+                </artifact>
+                <artifact>
+                  <file>blueprint-syslog-handler-minion.xml</file>
+                  <type>xml</type>
+                  <classifier>blueprint-syslog-handler-minion</classifier>
+                </artifact>
+                <artifact>
+                  <file>blueprint-syslog-listener-javanet.xml</file>
+                  <type>xml</type>
+                  <classifier>blueprint-syslog-listener-javanet</classifier>
+                </artifact>
+                <artifact>
+                  <file>blueprint-syslog-listener-camel-netty.xml</file>
+                  <type>xml</type>
+                  <classifier>blueprint-syslog-listener-camel-netty</classifier>
+                </artifact>
+                <artifact>
+                  <file>blueprint-syslog-listener-nio.xml</file>
+                  <type>xml</type>
+                  <classifier>blueprint-syslog-listener-nio</classifier>
+                </artifact>
+              </artifacts>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
     </plugins>
   </build>
   <dependencies>
