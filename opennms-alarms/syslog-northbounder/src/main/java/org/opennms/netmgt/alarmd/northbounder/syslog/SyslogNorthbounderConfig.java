@@ -69,6 +69,9 @@ public class SyslogNorthbounderConfig implements Serializable {
     @XmlElement(name = "uei", required = false)
     private List<String> m_ueis;
 
+    @XmlElement(name = "filter", required = false)
+    private List<SyslogFilter> m_filters;
+
     // Getters & Setters
     public List<SyslogDestination> getDestinations() {
         return m_destinations;
@@ -124,6 +127,14 @@ public class SyslogNorthbounderConfig implements Serializable {
 
     public void setEnabled(Boolean enabled) {
         m_enabled = enabled;
+    }
+
+    public List<SyslogFilter> getFilters() {
+        return m_filters;
+    }
+
+    public void setFilters(List<SyslogFilter> filters) {
+        this.m_filters = filters;
     }
 
     public SyslogDestination getDestination(String destinationName) {

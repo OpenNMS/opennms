@@ -68,7 +68,6 @@ public class SyslogNorthbounderManager implements InitializingBean,
         for (SyslogDestination syslogDestination : destinations) {
             SyslogNorthbounder nbi = new SyslogNorthbounder(config,
                                                             syslogDestination);
-            nbi.setNodeDao(m_nodeDao);
             nbi.afterPropertiesSet();
             m_registrations.put(nbi.getName(),
                                 m_serviceRegistry.register(nbi,

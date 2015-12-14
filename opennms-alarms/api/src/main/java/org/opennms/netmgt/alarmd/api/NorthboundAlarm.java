@@ -29,14 +29,18 @@
 package org.opennms.netmgt.alarmd.api;
 
 import java.net.InetAddress;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+import org.opennms.netmgt.events.api.EventParameterUtils;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.TroubleTicketState;
+import org.opennms.netmgt.xml.event.Parm;
 
 /**
  * Wraps the OnmsAlarm into a more generic Alarm instance
@@ -280,7 +284,11 @@ public class NorthboundAlarm implements Preservable {
 	
     private final Integer m_id;
     private final String m_uei;
-	private Integer m_nodeId;
+    private Integer m_nodeId;
+    private String m_nodeLabel;
+    private String m_nodeSysObjectId;
+    private String m_foreignSource;
+    private String m_foreignId;
     private final Date m_ackTime;
     private final String m_ackUser;
     private final AlarmType m_alarmType;
@@ -309,7 +317,8 @@ public class NorthboundAlarm implements Preservable {
     private final String m_x733Type;
     private final int m_x733Cause;
 
-	private final String m_eventParms;
+    private final Map<String,String> m_eventParmetersMap = new HashMap<String,String>();
+    private final List<Parm> m_eventParmetersCollection = new ArrayList<Parm>();
 	
 	private volatile boolean m_preserved = false;
     
@@ -327,7 +336,6 @@ public class NorthboundAlarm implements Preservable {
         m_count = null;
         m_desc = null;
         m_poller = null;
-        m_eventParms = null;
         //alarm.getFirstAutomationTime();
         m_firstOccurrence = null;
         //alarm.getIfIndex();
@@ -372,7 +380,6 @@ public class NorthboundAlarm implements Preservable {
         m_count = alarm.getCounter();
         m_desc = alarm.getDescription();
         m_poller = alarm.getDistPoller();
-        m_eventParms = alarm.getEventParms();
         //alarm.getFirstAutomationTime();
         m_firstOccurrence = alarm.getFirstEventTime();
         m_id = alarm.getId();
@@ -402,6 +409,19 @@ public class NorthboundAlarm implements Preservable {
         m_uei = alarm.getUei();
         m_x733Type = alarm.getX733AlarmType();
         m_x733Cause = alarm.getX733ProbableCause();
+        if (alarm.getNode() != null) {
+            m_foreignSource = alarm.getNode().getForeignSource();
+            m_foreignId = alarm.getNode().getForeignId();
+            m_nodeLabel = alarm.getNode().getLabel();
+            m_nodeSysObjectId = alarm.getNode().getSysObjectId();
+        }
+
+        if (alarm.getEventParms() != null) {
+            m_eventParmetersCollection.addAll(EventParameterUtils.decode(alarm.getEventParms()));
+            for (Parm parm : m_eventParmetersCollection) {
+                m_eventParmetersMap.put(parm.getParmName(), parm.getValue().getContent());
+            }
+        }
     }
     
     public Integer getId() {
@@ -520,8 +540,12 @@ public class NorthboundAlarm implements Preservable {
 		return m_x733Cause;
 	}
 
-	public String getEventParms() {
-		return m_eventParms;
+	public Map<String,String> getParameters() {
+		return m_eventParmetersMap;
+	}
+
+	public List<Parm> getEventParametersCollection() {
+	    return m_eventParmetersCollection;
 	}
 
         @Override
@@ -538,7 +562,23 @@ public class NorthboundAlarm implements Preservable {
 		return m_nodeId;
 	}
 
-	@Override
+	public String getNodeLabel() {
+	    return m_nodeLabel;
+	}
+
+	public String getNodeSysObjectId() {
+	    return m_nodeSysObjectId;
+	}
+
+	public String getForeignSource() {
+	    return m_foreignSource;
+	}
+
+	public String getForeignId() {
+	    return m_foreignId;
+	}
+
+    @Override
 	public String toString() {
 	    return String.format("NorthboundAlarm[id=%d, uei='%s', nodeId=%d]", m_id, m_uei, m_nodeId);
 	}

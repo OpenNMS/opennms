@@ -126,7 +126,6 @@ public class JmsNorthBounderTest {
                                                       config,
                                                       m_jmsNorthbounderConnectionFactory,
                                                       jmsDestination);
-            nbi.setNodeDao(m_nodeDao);
             nbi.afterPropertiesSet();
             nbis.add(nbi);
         }

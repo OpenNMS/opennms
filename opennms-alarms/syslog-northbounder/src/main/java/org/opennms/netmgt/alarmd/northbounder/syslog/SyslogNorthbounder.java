@@ -38,7 +38,6 @@ import org.opennms.netmgt.alarmd.api.NorthbounderException;
 import org.opennms.netmgt.alarmd.api.support.AbstractNorthbounder;
 import org.opennms.netmgt.alarmd.northbounder.syslog.SyslogDestination.SyslogFacility;
 import org.opennms.netmgt.alarmd.northbounder.syslog.SyslogDestination.SyslogProtocol;
-import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.productivity.java.syslog4j.Syslog;
 import org.productivity.java.syslog4j.SyslogConfigIF;
@@ -66,11 +65,22 @@ public class SyslogNorthbounder extends AbstractNorthbounder implements
 
     private SyslogDestination m_destination;
 
+    private String m_messageFormat;
+
     public SyslogNorthbounder(SyslogNorthbounderConfig config,
             SyslogDestination destination) {
         super(NBI_NAME + ":" + destination);
         m_config = config;
         m_destination = destination;
+        m_messageFormat = config.getMessageFormat();
+        if (config.getFilters() != null) {
+            for (SyslogFilter filter : config.getFilters()) {
+                if (filter.getDestination().equals(destination.getName()) && filter.getMessageFormat() != null) {
+                    m_messageFormat = filter.getMessageFormat();
+                    break;
+                }
+            }
+        }
     }
 
     @Override
@@ -105,10 +115,20 @@ public class SyslogNorthbounder extends AbstractNorthbounder implements
 
         LOG.debug("Validating UEI of alarm: {}", alarm.getUei());
 
-        if (getConfig().getUeis() == null
-                || getConfig().getUeis().contains(alarm.getUei())) {
+        if (getConfig().getUeis() == null || getConfig().getUeis().contains(alarm.getUei())) {
             LOG.debug("UEI: {}, accepted.", alarm.getUei());
-            return true;
+            if (getConfig().getFilters() == null) {
+                return true;
+            }
+            boolean passed = false;
+            for (SyslogFilter filter : getConfig().getFilters()) {
+                if (filter.getDestination().equals(m_destination.getName()) && filter.passFilter(alarm)) {
+                    passed = true;
+                    break;
+                }
+            }
+            LOG.debug("Filters: {}, passed ? {}.", alarm.getUei(), passed);
+            return passed;
         }
 
         LOG.debug("UEI: {}, rejected.", alarm.getUei());
@@ -175,7 +195,7 @@ public class SyslogNorthbounder extends AbstractNorthbounder implements
 
                 LOG.debug("Making substitutions for tokens in message format for alarm: {}.",
                           alarm.getId());
-                syslogMessage = PropertiesUtils.substitute(m_config.getMessageFormat(),
+                syslogMessage = PropertiesUtils.substitute(m_messageFormat,
                                                            mapping);
 
                 LOG.debug("Determining LOG_LEVEL for alarm: {}",
@@ -363,14 +383,6 @@ public class SyslogNorthbounder extends AbstractNorthbounder implements
             throw new IllegalStateException(string);
         }
 
-    }
-
-    public NodeDao getNodeDao() {
-        return m_nodeDao;
-    }
-
-    public void setNodeDao(final NodeDao nodeDao) {
-        m_nodeDao = nodeDao;
     }
 
 }

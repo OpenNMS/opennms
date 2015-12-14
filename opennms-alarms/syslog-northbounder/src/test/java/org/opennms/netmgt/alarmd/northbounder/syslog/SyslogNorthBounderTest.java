@@ -200,7 +200,6 @@ public class SyslogNorthBounderTest {
         
         for (SyslogDestination syslogDestination : destinations) {
             SyslogNorthbounder nbi = new SyslogNorthbounder(config, syslogDestination);
-            nbi.setNodeDao(m_nodeDao);
             nbi.afterPropertiesSet();
             nbis.add(nbi);
         }
