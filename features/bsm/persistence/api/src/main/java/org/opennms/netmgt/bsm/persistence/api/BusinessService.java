@@ -159,7 +159,7 @@ public class BusinessService {
     public Set<String> getAllReductionKeys() {
         Set<String> allReductionKeys = Sets.newHashSet();
         for (OnmsMonitoredService ipService : getIpServices()) {
-            allReductionKeys.addAll(ipService.getReductionKeys());
+            allReductionKeys.addAll(OnmsMonitoredServiceHelper.getReductionKeys(ipService));
         }
         allReductionKeys.addAll(getReductionKeys());
         return allReductionKeys;

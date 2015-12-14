@@ -37,6 +37,7 @@ import java.util.stream.Collectors;
 
 import org.opennms.netmgt.bsm.persistence.api.BusinessService;
 import org.opennms.netmgt.bsm.persistence.api.BusinessServiceDao;
+import org.opennms.netmgt.bsm.persistence.api.OnmsMonitoredServiceHelper;
 import org.opennms.netmgt.bsm.service.BusinessServiceManager;
 import org.opennms.netmgt.bsm.service.BusinessServiceStateMachine;
 import org.opennms.netmgt.bsm.service.model.BusinessServiceDTO;
@@ -98,8 +99,6 @@ public class BusinessServiceManagerImpl implements BusinessServiceManager {
         BusinessService service = getBusinessService(id);
         getDao().delete(service);
     }
-
-
 
     @Override
     public boolean assignIpInterface(Long serviceId, Integer ipServiceId) {
@@ -199,7 +198,7 @@ public class BusinessServiceManagerImpl implements BusinessServiceManager {
                 output.setNodeLabel(nodeDao.get(input.getNodeId()).getLabel());
                 output.setServiceName(input.getServiceName());
                 output.setIpAddress(input.getIpAddress().toString());
-                output.setReductionKeys(input.getReductionKeys());
+                output.setReductionKeys(OnmsMonitoredServiceHelper.getReductionKeys(input));
                 output.setLocation(ResourceLocationFactory.createIpServiceLocation(output.getId()));
                 return output;
             }
