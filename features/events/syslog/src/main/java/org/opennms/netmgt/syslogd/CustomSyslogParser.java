@@ -39,7 +39,10 @@ import org.slf4j.LoggerFactory;
 public class CustomSyslogParser extends SyslogParser {
     private static final Logger LOG = LoggerFactory.getLogger(CustomSyslogParser.class);
     private static final Pattern m_messageIdPattern = Pattern.compile("^((\\S+):\\s*)");
-    private static final Pattern m_datePattern = Pattern.compile("^((\\d\\d\\d\\d-\\d\\d-\\d\\d)\\s+)");
+    // date pattern has been updated to support space at start and end of
+    // the message due to which the date match failed and current system date
+    // used to be passed which cause 3ms more time in parsing message
+    private static final Pattern m_datePattern = Pattern.compile("^\\s*((\\d\\d\\d\\d-\\d\\d-\\d\\d)\\s*)");
     private static final Pattern m_oldDatePattern = Pattern.compile("^\\s*(\\S\\S\\S\\s+\\d{1,2}\\s+\\d\\d:\\d\\d:\\d\\d)\\s+");
 
     private final Pattern m_forwardingPattern;
@@ -98,18 +101,17 @@ public class CustomSyslogParser extends SyslogParser {
         }
 
         LOG.trace("message = {}", message);
-        
-        Matcher oldDateMatcher = m_oldDatePattern.matcher(message);
-        if (!oldDateMatcher.find()) {
-            oldDateMatcher = null;
-        }
-        LOG.trace("stdMsg = {}", Boolean.toString(oldDateMatcher != null));
 
         String timestamp;
-
-        if (oldDateMatcher == null) {
+        Matcher oldDateMatcher = m_oldDatePattern.matcher(message);
+        if (oldDateMatcher.find()) {
+            LOG.trace("stdMsg = {}", "true");
+            timestamp = oldDateMatcher.group(1);
+            message = oldDateMatcher.replaceFirst("");
+        } else {
             final Matcher stampMatcher = m_datePattern.matcher(message);
             if (stampMatcher.find()) {
+                LOG.trace("stdMsg = {}", "false");
                 timestamp = stampMatcher.group(2);
                 LOG.trace("found timestamp '{}'", timestamp);
 //                message = message.substring(stampMatcher.group(1).length());
@@ -121,14 +123,11 @@ public class CustomSyslogParser extends SyslogParser {
                     timestamp = "";
                 }
             }
-        } else {
-            timestamp = oldDateMatcher.group(1);
-            message = oldDateMatcher.replaceFirst("");
         }
 
         LOG.trace("timestamp = {}", timestamp);
         syslogMessage.setDate(parseDate(timestamp));
-        
+
         // These 2 debugs will aid in analyzing the regexes as syslog seems
         // to differ a lot depending on implementation or message structure.
 
@@ -163,7 +162,7 @@ public class CustomSyslogParser extends SyslogParser {
             LOG.trace("Found message '{}'", matchedMessage);
 
             syslogMessage.setHostName(m.group(m_matchingGroupHost));
-            
+
             message = matchedMessage;
         } else {
             LOG.debug("Regexp not matched: {}", message);
@@ -179,7 +178,13 @@ public class CustomSyslogParser extends SyslogParser {
         String processName = "";
         String processIdStr = "";
 
-        if (lbIdx < (rbIdx - 1) && colonIdx == (rbIdx + 1) && spaceIdx == (colonIdx + 1)) {
+        // If statement has been reversed in order to make the decision faster
+        // rather than always calculating lbIdx < (rbIdx - 1) which might fail
+
+        if (lbIdx < 0 && rbIdx < 0 && colonIdx > 0 && spaceIdx == (colonIdx + 1)) {
+            processName = message.substring(0, colonIdx);
+            message = message.substring(colonIdx + 2);
+        } else if (lbIdx < (rbIdx - 1) && colonIdx == (rbIdx + 1) && spaceIdx == (colonIdx + 1)) {
             processName = message.substring(0, lbIdx);
             processIdStr = message.substring(lbIdx + 1, rbIdx);
             message = message.substring(colonIdx + 2);
@@ -190,9 +195,6 @@ public class CustomSyslogParser extends SyslogParser {
                 LOG.debug("Bad process id '{}'", processIdStr);
                 processId = 0;
             }
-        } else if (lbIdx < 0 && rbIdx < 0 && colonIdx > 0 && spaceIdx == (colonIdx + 1)) {
-            processName = message.substring(0, colonIdx);
-            message = message.substring(colonIdx + 2);
         }
 
         syslogMessage.setProcessId(processId);

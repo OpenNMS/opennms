@@ -136,28 +136,26 @@ public class SyslogParser {
     }
 
     protected static Date parseDate(final String dateString) {
-        Date date;
         try {
             final DateFormat df = new SimpleDateFormat("yyyy-MM-dd", Locale.ROOT);
             df.setTimeZone(TimeZone.getTimeZone("UTC"));
-            date = df.parse(dateString);
+            return df.parse(dateString);
         } catch (final Exception e) {
             try {
-                final DateFormat df = new SimpleDateFormat("MMM d HH:mm:ss", Locale.ROOT);
+                final DateFormat df = new SimpleDateFormat("MMM dd HH:mm:ss", Locale.ROOT);
                 df.setTimeZone(TimeZone.getTimeZone("UTC"));
                 
                 // Ugh, what's a non-lame way of forcing it to parse to "this year"?
-                date = df.parse(dateString);
+                Date date = df.parse(dateString);
                 final Calendar c = df.getCalendar();
                 c.setTime(date);
                 c.set(Calendar.YEAR, Calendar.getInstance().get(Calendar.YEAR));
-                date = c.getTime();
+                return c.getTime();
             } catch (final Exception e2) {
                 LOG.debug("Unable to parse date '{}'", dateString, e2);
-                date = null;
+                return null;
             }
         }
-        return date;
     }
 
 }
