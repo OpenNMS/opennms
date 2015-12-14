@@ -418,7 +418,9 @@ public class ConvertToEvent {
                         if (traceEnabled) LOG.trace("Added parm 'group{}' with value '{}' to Syslogd event based on regex match group", groupNum, msgMat.group(groupNum));
                         bldr.addParam("group"+groupNum, msgMat.group(groupNum));
                     }
-                } else if (uei.getParameterAssignmentCount() > 0) {
+                } 
+
+                if (uei.getParameterAssignmentCount() > 0) {
                     if (traceEnabled) LOG.trace("Doing user-specified parameter assignments for this regex match.");
                     for (ParameterAssignment assignment : uei.getParameterAssignmentCollection()) {
                         String parmName = assignment.getParameterName();
