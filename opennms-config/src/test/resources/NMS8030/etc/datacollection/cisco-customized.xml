@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<datacollection-group name="Custom-Cisco">
+
+      <group name="cisco-memory-pool" ifType="all">
+        <mibObj oid=".1.3.6.1.4.1.9.9.48.1.1.1.2" instance="ciscoMemoryPoolType" alias="cscoMemoryPoolName" type="string"/>
+        <mibObj oid=".1.3.6.1.4.1.9.9.48.1.1.1.5" instance="ciscoMemoryPoolType" alias="cscoMemoryPoolUsed" type="gauge"/>
+        <mibObj oid=".1.3.6.1.4.1.9.9.48.1.1.1.6" instance="ciscoMemoryPoolType" alias="cscoMemoryPoolFree" type="gauge" />
+      </group>
+
+      <systemDef name="Cisco Routers">
+        <sysoidMask>.1.3.6.1.4.1.9.1.</sysoidMask>
+        <collect>
+          <includeGroup>cisco-memory-pool</includeGroup>
+          <includeGroup>cisco-router</includeGroup>
+          <includeGroup>cisco-temperature</includeGroup>
+          <includeGroup>cisco-voltage</includeGroup>
+          <includeGroup>cisco-router-interface</includeGroup>
+        </collect>
+      </systemDef>
+
+</datacollection-group>
