@@ -64,7 +64,6 @@ import org.opennms.netmgt.xml.event.Parm;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -134,7 +133,9 @@ public class SyslogdIT implements InitializingBean {
         assertTrue(foundMalt);
 
         m_syslogd = new Syslogd();
-        m_syslogd.setSyslogReceiver(new SyslogReceiverJavaNetImpl(m_config));
+        SyslogReceiverJavaNetImpl receiver = new SyslogReceiverJavaNetImpl(m_config);
+        receiver.setSyslogConnectionHandlers(new SyslogConnectionHandlerDefaultImpl(m_executorService));
+        m_syslogd.setSyslogReceiver(receiver);
         m_syslogd.init();
         SyslogdTestUtils.startSyslogdGracefully(m_syslogd);
     }
