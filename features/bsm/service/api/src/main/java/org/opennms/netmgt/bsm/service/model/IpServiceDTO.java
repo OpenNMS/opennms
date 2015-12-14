@@ -34,6 +34,7 @@ import java.util.Set;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlID;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
@@ -61,8 +62,8 @@ public class IpServiceDTO {
 
     private String ipAddress;
 
-//    @XmlElement(name="reductionKey")
-//    @XmlElementWrapper(name="reductionKeys")
+    @XmlElement(name="reductionKey")
+    @XmlElementWrapper(name="reductionKeys")
     private Set<String> reductionKeys = new HashSet<>();
 
     public ResourceLocation getLocation() {
