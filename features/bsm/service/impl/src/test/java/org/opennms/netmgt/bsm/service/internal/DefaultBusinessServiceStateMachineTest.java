@@ -34,6 +34,9 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.List;
 
+import com.google.common.base.Throwables;
+import com.google.common.collect.Lists;
+
 import org.junit.Test;
 import org.opennms.netmgt.bsm.persistence.api.BusinessService;
 import org.opennms.netmgt.bsm.service.BusinessServiceStateChangeHandler;
@@ -42,19 +45,19 @@ import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsSeverity;
 
-import com.google.common.base.Throwables;
-import com.google.common.collect.Lists;
-
 public class DefaultBusinessServiceStateMachineTest {
 
     @Test
     public void canMaintainState() {
+        String explicitReductionKey = "explicitReductionKey";
+
         // Create a simple hierarchy
         OnmsMonitoredService svc1 = createService(1, "192.168.1.1", "ICMP");
         BusinessService bs1 = new BusinessService();
         bs1.addIpService(svc1);
         bs1.setName("BS1");
- 
+        bs1.addReductionKey(explicitReductionKey);
+
         BusinessService bs2 = new BusinessService();
         bs2.setName("BS2");
         List<BusinessService> bss = Lists.newArrayList(bs1, bs2);
@@ -70,7 +73,7 @@ public class DefaultBusinessServiceStateMachineTest {
         assertEquals(DefaultBusinessServiceStateMachine.DEFAULT_SEVERITY, stateMachine.getOperationalStatus(bs1));
         assertEquals(DefaultBusinessServiceStateMachine.DEFAULT_SEVERITY, stateMachine.getOperationalStatus(bs2));
 
-        // Now create an alarm
+        // Now create an alarm matching the reductionKey of the ip-service
         OnmsAlarm alarm = new OnmsAlarm();
         alarm.setUei(EventConstants.NODE_LOST_SERVICE_EVENT_UEI);
         alarm.setSeverity(OnmsSeverity.MINOR);
@@ -84,6 +87,19 @@ public class DefaultBusinessServiceStateMachineTest {
         assertEquals(OnmsSeverity.MINOR, stateMachine.getOperationalStatus(svc1));
         assertEquals(OnmsSeverity.MINOR, stateMachine.getOperationalStatus(bs1));
         assertEquals(DefaultBusinessServiceStateMachine.DEFAULT_SEVERITY, stateMachine.getOperationalStatus(bs2));
+
+        // Now create an alarm matching the explicit reductionKey
+        alarm = new OnmsAlarm();
+        alarm.setUei(EventConstants.NODE_LOST_SERVICE_EVENT_UEI);
+        alarm.setSeverity(OnmsSeverity.MAJOR);
+        alarm.setReductionKey(explicitReductionKey);
+
+        // Pass the alarm to the state machine
+        stateMachine.handleNewOrUpdatedAlarm(alarm);
+
+        // Verify the updated state regarding the explicit reductionKey
+        assertEquals(2, handler.getStateChanges().size());
+        assertEquals(OnmsSeverity.MAJOR, stateMachine.getOperationalStatus(bs1));
     }
 
     private static OnmsMonitoredService createService(final int nodeId, final String ipAddress, final String serviceName) {
