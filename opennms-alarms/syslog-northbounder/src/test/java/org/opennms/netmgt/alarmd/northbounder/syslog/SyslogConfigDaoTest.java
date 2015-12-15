@@ -30,10 +30,17 @@ package org.opennms.netmgt.alarmd.northbounder.syslog;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+
+import java.io.File;
+import java.io.FileWriter;
+
+import static org.junit.Assert.assertFalse;
 
 import org.junit.Test;
 import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 
 public class SyslogConfigDaoTest {
@@ -89,6 +96,40 @@ public class SyslogConfigDaoTest {
 			"</syslog-northbounder-config>\n" +
 			"";
 
+	 String xmlWithFilters = "" +
+                       "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" + 
+                       "<syslog-northbounder-config>" +
+                       "  <enabled>true</enabled>" +
+                       "  <nagles-delay>10000</nagles-delay>" +
+                       "  <batch-size>10</batch-size>" +
+                       "  <queue-size>100</queue-size>" +
+                       "  <message-format>ALARM ID:${alarmId} NODE:${nodeLabel}</message-format>" +
+                       ">\n" +
+                       "  <destination>" +
+                       "    <destination-name>test-host</destination-name>" +
+                       "    <host>127.0.0.2</host>" +
+                       "    <port>10514</port>" +
+                       "    <ip-protocol>TCP</ip-protocol>" +
+                       "    <facility>LOCAL0</facility>" +
+                       "    <max-message-length>512</max-message-length>" +
+                       "    <send-local-name>false</send-local-name>" +
+                       "    <send-local-time>false</send-local-time>" +
+                       "    <truncate-message>true</truncate-message>" +
+                       "    <first-occurrence-only>true</first-occurrence-only>" +
+                       ">\n" +
+                       "   </destination>" +
+                       "   <filter>" +
+                       "     <name>filter-1</name>" +
+                       "     <destination>test-host</destination>" +
+                       "     <message-format>ALARM ${alarmId} ON node ${nodeLabel}@${foreignSource}</message-format>" +
+                       "   </filter>" +
+                       "   <filter enabled=\"false\">" +
+                       "     <name>filter-2</name>" +
+                       "     <destination>test-host</destination>" +
+                       "   </filter>" +
+                       "</syslog-northbounder-config>\n" +
+                       "";
+
 	@Test
 	public void testLoad() throws InterruptedException {
 		
@@ -143,5 +184,34 @@ public class SyslogConfigDaoTest {
 		assertTrue(config.getDestinations().get(0).isFirstOccurrenceOnly());
 		
 	}
-	
+
+	@Test
+	public void testFiltersAndReload() throws Exception {
+	    File configFile = new File("target/syslog-northbounder-test.xml");
+	    FileWriter writer = new FileWriter(configFile);
+	    writer.write(xmlWithFilters);
+	    writer.close();
+	    Resource resource = new FileSystemResource(configFile);
+
+	    SyslogNorthbounderConfigDao dao = new SyslogNorthbounderConfigDao();
+	    dao.setConfigResource(resource);
+
+	    dao.afterPropertiesSet();
+
+	    assertNotNull(dao.getConfig());
+	    assertEquals(2, dao.getConfig().getFilters().size());
+	    assertEquals(true, dao.getConfig().getFilters().get(0).isEnabled());
+	    assertEquals(false, dao.getConfig().getFilters().get(1).isEnabled());
+	    assertTrue(dao.getConfig().getMessageFormatForDestination("test-host").contains("foreignSource"));
+	    assertFalse(dao.getConfig().getMessageFormatForDestination("blah-blah").contains("foreignSource"));
+
+	    writer = new FileWriter(configFile);
+	    writer.write(xmlNoUeis);
+	    writer.close();
+	    dao.reload();
+
+	    assertNull(dao.getConfig().getFilters());
+	    configFile.delete();
+	}
+
 }

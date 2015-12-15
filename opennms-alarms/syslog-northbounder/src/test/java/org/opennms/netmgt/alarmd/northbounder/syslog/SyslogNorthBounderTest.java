@@ -89,7 +89,7 @@ public class SyslogNorthBounderTest {
     private static final String FACILITY = "LOCAL0";
 
     @Autowired
-    private MockNodeDao m_nodeDao;
+    protected MockNodeDao m_nodeDao;
 
     public SyslogServerIF m_server;
     public TestPrintStream m_logStream;
