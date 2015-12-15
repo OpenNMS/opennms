@@ -93,6 +93,17 @@ public class SyslogNorthbounderConfig implements Serializable {
         return m_messageFormat;
     }
 
+    public String getMessageFormatForDestination(String destinationName) {
+        if (getFilters() != null) {
+            for (SyslogFilter filter : getFilters()) {
+                if (filter.getDestination().equals(destinationName) && filter.getMessageFormat() != null) {
+                    return filter.getMessageFormat();
+                }
+            }
+        }
+        return getMessageFormat();
+    }
+
     public void setMessageFormat(String messageFormat) {
         m_messageFormat = messageFormat;
     }

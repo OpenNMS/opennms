@@ -135,6 +135,10 @@ public abstract class AbstractNorthbounder implements Northbounder, Runnable,
     protected void onStop() {
     }
 
+    /** Override this to perform actions when reloading the configuration. **/
+    public void reloadConfig() {
+    }
+
     @Override
     public final void stop() throws NorthbounderException {
         this.onStop();

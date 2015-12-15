@@ -55,12 +55,12 @@ import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.model.PrimaryType;
 import org.opennms.test.JUnitConfigurationEnvironment;
-import org.productivity.java.syslog4j.server.SyslogServer;
-import org.productivity.java.syslog4j.server.SyslogServerConfigIF;
-import org.productivity.java.syslog4j.server.SyslogServerEventHandlerIF;
-import org.productivity.java.syslog4j.server.SyslogServerIF;
-import org.productivity.java.syslog4j.server.impl.event.printstream.PrintStreamSyslogServerEventHandler;
-import org.productivity.java.syslog4j.server.impl.net.udp.UDPNetSyslogServerConfig;
+import org.graylog2.syslog4j.server.SyslogServer;
+import org.graylog2.syslog4j.server.SyslogServerConfigIF;
+import org.graylog2.syslog4j.server.SyslogServerEventHandlerIF;
+import org.graylog2.syslog4j.server.SyslogServerIF;
+import org.graylog2.syslog4j.server.impl.event.printstream.PrintStreamSyslogServerEventHandler;
+import org.graylog2.syslog4j.server.impl.net.udp.UDPNetSyslogServerConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
@@ -193,13 +193,11 @@ public class SyslogNorthBounderTest {
         dao.afterPropertiesSet();
 
         SyslogNorthbounderConfig config = dao.getConfig();
-        
-        List<SyslogDestination> destinations = config.getDestinations();
 
         List<SyslogNorthbounder> nbis = new LinkedList<SyslogNorthbounder>();
         
-        for (SyslogDestination syslogDestination : destinations) {
-            SyslogNorthbounder nbi = new SyslogNorthbounder(config, syslogDestination);
+        for (SyslogDestination syslogDestination : config.getDestinations()) {
+            SyslogNorthbounder nbi = new SyslogNorthbounder(dao, syslogDestination.getName());
             nbi.afterPropertiesSet();
             nbis.add(nbi);
         }

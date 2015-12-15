@@ -118,6 +118,7 @@ public class Alarmd implements SpringServiceDaemon, DisposableBean {
     				if (parm.getValue().getContent().contains(nbi.getName())) {
     					LOG.debug("Handling reload event for NBI: {}", nbi.getName());
     					LOG.debug("Reloading NBI configuration for interface {} not yet implemented.", nbi.getName());
+    					nbi.reloadConfig();
     					return;
     				}
     			}

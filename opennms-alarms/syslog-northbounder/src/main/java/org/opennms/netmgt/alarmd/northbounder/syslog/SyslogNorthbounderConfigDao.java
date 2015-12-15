@@ -49,4 +49,16 @@ public class SyslogNorthbounderConfigDao
         return getContainer().getObject();
     }
 
+    public SyslogDestination getSyslogDestination(String syslogDestinationName) {
+        for (SyslogDestination dest : getConfig().getDestinations()) {
+            if (dest.getName().equals(syslogDestinationName)) {
+                return dest;
+            }
+        }
+        return null;
+    }
+
+    public void reload() {
+        getContainer().reload();
+    }
 }

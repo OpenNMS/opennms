@@ -48,4 +48,5 @@ public interface Northbounder {
     
     public String getName();
     
+    public void reloadConfig();
 }

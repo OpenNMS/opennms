@@ -39,13 +39,13 @@ import org.opennms.netmgt.alarmd.api.support.AbstractNorthbounder;
 import org.opennms.netmgt.alarmd.northbounder.syslog.SyslogDestination.SyslogFacility;
 import org.opennms.netmgt.alarmd.northbounder.syslog.SyslogDestination.SyslogProtocol;
 import org.opennms.netmgt.model.OnmsSeverity;
-import org.productivity.java.syslog4j.Syslog;
-import org.productivity.java.syslog4j.SyslogConfigIF;
-import org.productivity.java.syslog4j.SyslogConstants;
-import org.productivity.java.syslog4j.SyslogIF;
-import org.productivity.java.syslog4j.SyslogRuntimeException;
-import org.productivity.java.syslog4j.impl.net.tcp.TCPNetSyslogConfig;
-import org.productivity.java.syslog4j.impl.net.udp.UDPNetSyslogConfig;
+import org.graylog2.syslog4j.Syslog;
+import org.graylog2.syslog4j.SyslogConfigIF;
+import org.graylog2.syslog4j.SyslogConstants;
+import org.graylog2.syslog4j.SyslogIF;
+import org.graylog2.syslog4j.SyslogRuntimeException;
+import org.graylog2.syslog4j.impl.net.tcp.TCPNetSyslogConfig;
+import org.graylog2.syslog4j.impl.net.udp.UDPNetSyslogConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -61,32 +61,21 @@ public class SyslogNorthbounder extends AbstractNorthbounder implements
 
     private static final String NBI_NAME = "SyslogNBI";
 
-    private SyslogNorthbounderConfig m_config;
+    private SyslogNorthbounderConfigDao m_configDao;
 
     private SyslogDestination m_destination;
 
-    private String m_messageFormat;
-
-    public SyslogNorthbounder(SyslogNorthbounderConfig config,
-            SyslogDestination destination) {
+    public SyslogNorthbounder(SyslogNorthbounderConfigDao configDao,
+            String destination) {
         super(NBI_NAME + ":" + destination);
-        m_config = config;
-        m_destination = destination;
-        m_messageFormat = config.getMessageFormat();
-        if (config.getFilters() != null) {
-            for (SyslogFilter filter : config.getFilters()) {
-                if (filter.getDestination().equals(destination.getName()) && filter.getMessageFormat() != null) {
-                    m_messageFormat = filter.getMessageFormat();
-                    break;
-                }
-            }
-        }
+        m_configDao = configDao;
+        m_destination = configDao.getSyslogDestination(destination);
     }
 
     @Override
     public void afterPropertiesSet() throws Exception {
 
-        if (m_config == null) {
+        if (m_configDao == null) {
 
             LOG.info("Syslog Northbounder is currently disabled, rejecting alarm.");
 
@@ -97,9 +86,9 @@ public class SyslogNorthbounder extends AbstractNorthbounder implements
         }
 
         createNorthboundInstance();
-        setNaglesDelay(m_config.getNaglesDelay());
-        setMaxBatchSize(m_config.getBatchSize());
-        setMaxPreservedAlarms(m_config.getQueueSize());
+        setNaglesDelay(getConfig().getNaglesDelay());
+        setMaxBatchSize(getConfig().getBatchSize());
+        setMaxPreservedAlarms(getConfig().getQueueSize());
     }
 
     /**
@@ -109,7 +98,7 @@ public class SyslogNorthbounder extends AbstractNorthbounder implements
     @Override
     public boolean accepts(NorthboundAlarm alarm) {
 
-        if (!m_config.isEnabled()) {
+        if (!getConfig().isEnabled()) {
             return false;
         }
 
@@ -195,7 +184,7 @@ public class SyslogNorthbounder extends AbstractNorthbounder implements
 
                 LOG.debug("Making substitutions for tokens in message format for alarm: {}.",
                           alarm.getId());
-                syslogMessage = PropertiesUtils.substitute(m_messageFormat,
+                syslogMessage = PropertiesUtils.substitute(getConfig().getMessageFormatForDestination(m_destination.getName()),
                                                            mapping);
 
                 LOG.debug("Determining LOG_LEVEL for alarm: {}",
@@ -211,6 +200,18 @@ public class SyslogNorthbounder extends AbstractNorthbounder implements
                           m_destination.getName(), e1);
             }
         }
+    }
+
+    /* (non-Javadoc)
+     * @see org.opennms.netmgt.alarmd.api.support.AbstractNorthbounder#reloadConfig()
+     */
+    @Override
+    public void reloadConfig() {
+        m_configDao.reload();
+        final String destinationName = m_destination.getName();
+        m_destination = getConfig().getDestination(destinationName);
+        Syslog.destroyInstance(destinationName);
+        createNorthboundInstance();
     }
 
     /**
@@ -366,23 +367,7 @@ public class SyslogNorthbounder extends AbstractNorthbounder implements
     }
 
     public SyslogNorthbounderConfig getConfig() {
-
-        if (m_config == null) {
-            String errMsg = "Syslog Northbounder configuration is not set.";
-            LOG.error(errMsg);
-            throw new IllegalStateException(errMsg);
-        }
-        return m_config;
-    }
-
-    public void setConfig(final SyslogNorthbounderConfig config) {
-
-        if (config == null) {
-            String string = "Syslog Northbounder configuration cannot be set null";
-            LOG.error(string);
-            throw new IllegalStateException(string);
-        }
-
+        return m_configDao.getConfig();
     }
 
 }
