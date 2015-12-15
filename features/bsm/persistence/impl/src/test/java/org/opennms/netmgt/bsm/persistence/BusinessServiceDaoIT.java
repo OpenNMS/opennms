@@ -30,6 +30,10 @@ package org.opennms.netmgt.bsm.persistence;
 
 import static org.junit.Assert.assertEquals;
 
+import java.util.HashSet;
+
+import com.google.common.collect.Sets;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -82,12 +86,16 @@ public class BusinessServiceDaoIT {
         BusinessService bs = new BusinessService();
         bs.setName("Web Servers");
         bs.setAttribute("dc", "RDU");
-
+        HashSet<String> reductionKeys = Sets.newHashSet();
+        reductionKeys.add("TestReductionKeyA");
+        reductionKeys.add("TestReductionKeyB");
+        bs.setReductionKeys(reductionKeys);
         m_businessServiceDao.save(bs);
         m_businessServiceDao.flush();
 
         // Read a business service
         assertEquals(bs, m_businessServiceDao.get(bs.getId()));
+        assertEquals( reductionKeys.size(), m_businessServiceDao.get(bs.getId()).getReductionKeys().size());
 
         // Update a business service
         bs.setName("Application Servers");
