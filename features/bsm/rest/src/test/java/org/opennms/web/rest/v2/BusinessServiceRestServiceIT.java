@@ -193,35 +193,45 @@ public class BusinessServiceRestServiceIT extends AbstractSpringJerseyRestTestCa
         bsDTO.setName(bs.getName());
         bsDTO.setId(id);
         assertEquals(bsDTO, businessServices.get(0));
-        assertTrue("canRetrieveReductionKey", businessServices.get(0).getReductionKeys().contains(reductionKey));
+        assertTrue("Expect reductionkey '" + reductionKey + "' to be present in retrieved BusinessService.", businessServices.get(0).getReductionKeys().contains(reductionKey));
     }
 
     @Test
     @JUnitTemporaryDatabase
     @Transactional
     public void canCreateBusinessService() throws Exception {
+
+        String key1 = "reductionKey-1";
+        String key2 = "reductionKey-2";
+        String key3 = "reductionKey-3";
+
         final String businessServiceJson = "{" +
                 "\"name\":\"some-name\"," +
                 "\"attributes\":{\"attribute\":[{\"key\":\"some-key\",\"value\":\"some-value\"}]}," +
                 "\"reductionKeys\": [\n" +
-                "        \"key1\", \"key2\", \"key3\"\n" +
+                "        \"" + key1 + "\", \""+ key2 +"\", \""+ key3 +"\"\n" +
                 "      ]" +
                 "}";
         final String businessServiceXml = "<business-service>" +
                 "    <name>some-name2</name>" +
                 "    <reductionKeys>" +
-                "        <reductionKey>key1</reductionKey>" +
-                "        <reductionKey>key2</reductionKey>" +
-                "        <reductionKey>key3</reductionKey>" +
+                "        <reductionKey>" + key1 + "</reductionKey>" +
+                "        <reductionKey>" + key2 + "</reductionKey>" +
+                "        <reductionKey>" + key3 + "</reductionKey>" +
                 "    </reductionKeys>" +
                 "</business-service>";
         sendData(POST, MediaType.APPLICATION_JSON, "/business-services", businessServiceJson, 201);
         sendData(POST, MediaType.APPLICATION_XML, "/business-services", businessServiceXml, 201);
         Assert.assertEquals(2, m_businessServiceDao.findAll().size());
-        assertTrue("createBusinessServiceWithReductionKeys", m_businessServiceDao.findAll().get(0).getReductionKeys().contains("key1"));
-        assertTrue("createBusinessServiceWithReductionKeys", m_businessServiceDao.findAll().get(0).getReductionKeys().contains("key2"));
-        assertTrue("createBusinessServiceWithReductionKeys", m_businessServiceDao.findAll().get(0).getReductionKeys().contains("key3"));
-        assertEquals("createBusinessServiceWithReductionKeys", 3, m_businessServiceDao.findAll().get(1).getReductionKeys().size());
+
+        for (BusinessService bs : m_businessServiceDao.findAll()) {
+            assertTrue("Expect reductionkey '" + key1 + "' to be present in retrieved BusinessService.", bs.getReductionKeys().contains(key1));
+            assertTrue("Expect reductionkey '" + key2 + "' to be present in retrieved BusinessService.", bs.getReductionKeys().contains(key2));
+            assertTrue("Expect reductionkey '" + key3 + "' to be present in retrieved BusinessService.", bs.getReductionKeys().contains(key3));
+
+            assertEquals("Check amount of reductionkeys in BusinessService.", 3, bs.getReductionKeys().size());
+        }
+
     }
 
 
