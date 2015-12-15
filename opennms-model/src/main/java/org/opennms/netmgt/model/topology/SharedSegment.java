@@ -50,7 +50,6 @@ public class SharedSegment {
         return m_bridgeportsOnSegment.isEmpty();
     }
     
-    //this is sed to expand
     //   this=topSegment {tmac...} {(tbridge,tport)....}U{bridgeId, bridgeIdPortId} 
     //        |
     //     bridge Id
@@ -237,36 +236,44 @@ public class SharedSegment {
 
     }
 
-    // what does this means?
-    // we are assigning links to a segment
-    // if no macs on segment: add if not null
-    // if macs on segment: 
-    // the set of link must be ...merged, this means that
-    // only intersection is saved to segment
-    // this means removing other mac referentiated
-    // if intersection is null then move to BridgeBridgeLink    
     public void assign(List<BridgeMacLink> links, BridgeBridgeLink dlink) {
+        // if there is not yet links on segment add it
         if (isEmpty() && !links.isEmpty()) {
             m_bridgeportsOnSegment = links;
             return;
         }
+        // if there are no macs on segment...just add the BridgeBridgeLink
         if (noMacsOnSegment() && dlink != null) {
             m_bridgeportsOnLink.add(dlink);
             return;
         }
         
+        // we are assigning links to a segment that has mac address
+        // the set of link must be ...merged using mac address, 
+        // this means that
+        // only intersection of common macs is
+        // must be saved to segment
+        
         Set<String> macsonLinks=new HashSet<String>();
         for (BridgeMacLink link: links)
             macsonLinks.add(link.getMacAddress());
+        
         Set<String> retained = new HashSet<String>();
         retained.addAll(getMacsOnSegment());
         retained.retainAll(macsonLinks);
+        // intersection is null
+        // we need to convert all the 
+        // local links to BridgeBridgeLink
+        // and add the BridgeBridgeLink
         if (retained.isEmpty()) {
             convertSegmentToLink();
             m_bridgeportsOnLink.add(dlink);
+            m_bridgeportsOnSegment.clear();
             return;
         }
         
+        //intersection is not null, then we have to add all the BridgeMacLink
+        // for each mac address
         List<BridgeMacLink> linksonsegment = new ArrayList<BridgeMacLink>();
         for (String mac: retained) {
             for (BridgeMacLink link: m_bridgeportsOnSegment) {
@@ -279,6 +286,7 @@ public class SharedSegment {
             }
         }
         m_bridgeportsOnSegment = linksonsegment;
+        m_bridgeportsOnLink.clear();
     }
 
     private void convertSegmentToLink() {

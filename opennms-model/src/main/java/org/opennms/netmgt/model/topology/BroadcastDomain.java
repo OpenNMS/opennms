@@ -13,17 +13,21 @@ import org.opennms.netmgt.model.BridgeElement;
 import org.opennms.netmgt.model.BridgeMacLink;
 import org.opennms.netmgt.model.BridgeStpLink;
 
+// FIXME
+// check synchronized and volatile
+// 
 public class BroadcastDomain {
 
     Set<Bridge> m_bridges = new HashSet<Bridge>();
     List<SharedSegment> m_topology = new ArrayList<SharedSegment>();
+    
     Integer m_rootBridgeId;
-    volatile List<BridgeMacLink> m_rootBridgeBFT = new ArrayList<BridgeMacLink>();
+    List<BridgeMacLink> m_rootBridgeBFT = new ArrayList<BridgeMacLink>();
     
     boolean m_calculating = false;
     
-    volatile Map<Integer, List<BridgeMacLink>> m_notYetParsedBFTMap = new HashMap<Integer, List<BridgeMacLink>>();
-    volatile List<BridgeStpLink> m_STPLinks = new ArrayList<BridgeStpLink>();
+    Map<Integer, List<BridgeMacLink>> m_notYetParsedBFTMap = new HashMap<Integer, List<BridgeMacLink>>();
+    List<BridgeStpLink> m_STPLinks = new ArrayList<BridgeStpLink>();
     
     private class SimpleConnection {
         final List<BridgeMacLink> m_links;
@@ -44,6 +48,41 @@ public class BroadcastDomain {
     }
 
     //FIXME
+    // least condition theorem for simple connections
+    // X and Y are bridges
+    // m_1 m_2 m_3 are mac addresses
+    // m_x is a mac address of bridge X
+    // piX, pjX are port on bridgeX
+    // FDB(pi,X) is the Bridge Forwarding Set for port pi on bridge X
+    // TS(pi,X) is the Through Set for port pi on bridge X
+    // minimun requiremnt:
+    // X and Y are simple connected by xy on X and yx on Y
+    // condition 1
+    // if exists m_x and m_y :     m_x belongs FDB(yx,Y) 
+    //                             m_y belongs FDB(xy,X)
+    //
+    // condition 2
+    // if exists m_x, m_1 and m_2, p1 and p2 on Y : m_x belongs to FDB(yx,Y) 
+    //                                              m_1 belongs to FDB(p1,Y) FDB(xy,X)
+    //                                              m_2 belongs to FDB(p2,Y) FDB(xy,X)
+    //
+    // condition 3
+    // if exist m_1,m_2,m_3 and p1,p2 on Y and p3 on X: m_1 belongs to FDB(p1,Y) FDB(xy,X) 
+    //                                                  m_2 belongs to FDB(p2,Y) FDB(xy,X) 
+    //                                                  m_3 belongs to FDB(yx,Y) FDB(p3,X)
+    //
+    // condition 4
+    // if exist m_1,m_k,m_3 and p1 on Y and p3 on X: m_1 belongs to FDB(p1,Y) FDB(xy,X)
+    //                                               m_k belongs to FDB(yx,Y) FDB(xy,X) 
+    //                                               m_3 belongs to FDB(yx,Y) FDB(p3,X)
+    //
+    // condition 5
+    // intersection is made only by macs living on xy of X and yx of Y
+    // these is no other common forwarding port
+    // first step is to find the common macs.
+    // then we work on this set (if the size is only 2......no way)
+    // get m_1 m_2 m_3 and check the ports on the two bridges...to match rules
+    // 
     private class BridgeTopologyHelper {
         
         final Integer m_xBridge;
@@ -80,7 +119,6 @@ public class BroadcastDomain {
 
         final Integer m_id;
         Set<BridgeElement> m_bridgeIds = new HashSet<BridgeElement>();
-        Set<String> m_portMacs = new HashSet<String>();
         Integer m_rootPort;
         boolean m_isRootBridge=false;
 
@@ -147,14 +185,6 @@ public class BroadcastDomain {
             m_bridgeIds.add(bridgeElement);
         }
 
-        public Set<String> getMacs() {
-            return m_portMacs;
-        }
-
-        public void addMacs(Set<String> portMacs) {
-            m_portMacs.addAll(portMacs);
-        }
-
         public Integer getId() {
             return m_id;
         }
@@ -194,14 +224,14 @@ public class BroadcastDomain {
         
     }
     
-    public synchronized Set<String> getMacsOnDomain() {
+    public Set<String> getMacsOnDomain() {
         Set<String>macs = new HashSet<String>();
         for (SharedSegment segment: m_topology) 
             macs.addAll(segment.getMacsOnSegment());
         return macs;
     }
 
-    public synchronized void addBridgeElement(BridgeElement bridgeElement) {
+    public void addBridgeElement(BridgeElement bridgeElement) {
         for (Bridge bridge: m_bridges) {
             if (bridge.getId() == bridgeElement.getNode().getId()) {
                 bridge.addBridgeElement(bridgeElement);
@@ -211,18 +241,18 @@ public class BroadcastDomain {
         m_bridges.add(new Bridge(bridgeElement));
     }
 
-    public synchronized void addTopologyEntry(SharedSegment segment) {
+    public void addTopologyEntry(SharedSegment segment) {
         m_topology.add(segment);
         for (Integer nodeId : segment.getBridgeIdsOnSegment()) {
             m_bridges.add(new Bridge(nodeId));
         }
     }
     
-    public synchronized void addSTPEntry(BridgeStpLink stplink ) {
+    public void addSTPEntry(BridgeStpLink stplink ) {
         m_STPLinks.add(stplink);
     }
     
-    public synchronized boolean containsAtleastOne(Set<Integer> nodeids) {
+    public boolean containsAtleastOne(Set<Integer> nodeids) {
         for (Bridge bridge: m_bridges) {
             for (Integer nodeid:nodeids) {
                 if (bridge.getId().intValue() == nodeid.intValue())
@@ -232,7 +262,7 @@ public class BroadcastDomain {
         return false;
     }
     
-    public synchronized boolean containBridgeId(Integer nodeid) {
+    public boolean containBridgeId(Integer nodeid) {
         for (Bridge bridge: m_bridges) {
             if (bridge.getId().intValue() == nodeid.intValue())
                 return true;
@@ -240,7 +270,7 @@ public class BroadcastDomain {
         return false;
     }
 
-    public synchronized void loadBFT(int nodeId, List<BridgeMacLink> maclinks,List<BridgeStpLink> stplinks) {
+    public void loadBFT(int nodeId, List<BridgeMacLink> maclinks,List<BridgeStpLink> stplinks) {
         m_notYetParsedBFTMap.put(nodeId, maclinks);
         List<BridgeStpLink> allstplinks = new ArrayList<BridgeStpLink>();
         //remove all stp link in the list to let them
@@ -254,11 +284,11 @@ public class BroadcastDomain {
         m_STPLinks=allstplinks;
     }
     
-    public synchronized List<SharedSegment> getTopology() {
+    public List<SharedSegment> getTopology() {
         return m_topology;
     }
         
-    public synchronized void removeBridge(int bridgeId) {
+    public void removeBridge(int bridgeId) {
         Bridge bridge = null;
         for (Bridge curbridge: m_bridges) {
             if (curbridge.getId() == bridgeId) {
