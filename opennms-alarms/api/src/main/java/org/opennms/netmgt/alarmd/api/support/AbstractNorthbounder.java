@@ -68,6 +68,7 @@ public abstract class AbstractNorthbounder implements Northbounder, Runnable,
     protected AbstractNorthbounder(String name) {
         m_name = name;
         m_queue = new AlarmQueue<NorthboundAlarm>(this);
+        LOG.debug("Creating Northbounder instance {}", getName());
     }
 
     @Override

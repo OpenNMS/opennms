@@ -58,8 +58,8 @@ public class SyslogFilter {
     @XmlAttribute(name="enabled", required=false)
     private boolean m_enabled = true;
 
-    @XmlElement(name="name", required=true)
-    private String m_name;
+    @XmlElement(name="name", required=false)
+    private String m_name = "Undefined";
 
     @XmlElement(name="rule", required=true)
     private String m_rule = "localhost";
@@ -67,7 +67,7 @@ public class SyslogFilter {
     @XmlElement(name="destination", required=true)
     private String m_destination;
 
-    @XmlElement(name="message-format", required=true)
+    @XmlElement(name="message-format", required=false)
     private String m_messageFormat;
 
     public SyslogFilter() {

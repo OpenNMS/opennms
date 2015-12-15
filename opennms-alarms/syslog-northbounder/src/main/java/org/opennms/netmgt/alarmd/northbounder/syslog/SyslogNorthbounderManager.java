@@ -34,7 +34,6 @@ import java.util.Map;
 import org.opennms.core.soa.Registration;
 import org.opennms.core.soa.ServiceRegistry;
 import org.opennms.netmgt.alarmd.api.Northbounder;
-import org.opennms.netmgt.dao.api.NodeDao;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,15 +48,11 @@ public class SyslogNorthbounderManager implements InitializingBean,
     @Autowired
     private SyslogNorthbounderConfigDao m_configDao;
 
-    @Autowired
-    private NodeDao m_nodeDao;
-
     private Map<String, Registration> m_registrations = new HashMap<String, Registration>();
 
     @Override
     public void afterPropertiesSet() throws Exception {
 
-        Assert.notNull(m_nodeDao);
         Assert.notNull(m_configDao);
         Assert.notNull(m_serviceRegistry);
 

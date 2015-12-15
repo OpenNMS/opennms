@@ -205,11 +205,14 @@ public class SyslogNorthbounder extends AbstractNorthbounder implements
     /* (non-Javadoc)
      * @see org.opennms.netmgt.alarmd.api.support.AbstractNorthbounder#reloadConfig()
      */
+    // TODO If the content of the destination was not changed, ignore the request and log a message
     @Override
     public void reloadConfig() {
+        LOG.info("Reloading configuration for {}.", getName());
         m_configDao.reload();
         final String destinationName = m_destination.getName();
         m_destination = getConfig().getDestination(destinationName);
+        LOG.info("Destroying Syslog Northbound Instance {}.", destinationName);
         Syslog.destroyInstance(destinationName);
         createNorthboundInstance();
     }
@@ -222,7 +225,7 @@ public class SyslogNorthbounder extends AbstractNorthbounder implements
      */
     private void createNorthboundInstance() throws SyslogRuntimeException {
 
-        LOG.info("Creating Syslog Northbound Instance:{}",
+        LOG.info("Creating Syslog Northbound Instance {}",
                  m_destination.getName());
 
         String instName = m_destination.getName();
