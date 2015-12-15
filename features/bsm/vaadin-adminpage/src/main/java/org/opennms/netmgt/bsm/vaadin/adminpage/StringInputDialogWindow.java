@@ -38,21 +38,61 @@ import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 
+/**
+ * Vaadin dialog window to query for a single String value.
+ *
+ * @author Christian Pape
+ */
 public class StringInputDialogWindow extends Window {
 
-    public interface Callback {
-        void valueEntered(String value);
+    /**
+     * Callback method
+     */
+    public interface InputCallback {
+        void inputConfirmed(String value);
+
+        void inputCancelled();
+
     }
 
-    public StringInputDialogWindow(String windowTitle, String fieldName, Callback callback) {
+    /**
+     * Callback adapter class
+     */
+    public static class InputCallbackAdapter implements InputCallback {
+        @Override
+        public void inputConfirmed(String value) {
+        }
+
+        @Override
+        public void inputCancelled() {
+        }
+    }
+
+    /**
+     * Constructor responsible for creating new instances of this class
+     *
+     * @param windowTitle the window's title
+     * @param fieldName the title of the input field
+     * @param inputCallback the callback instance
+     */
+    public StringInputDialogWindow(String windowTitle, String fieldName, InputCallback inputCallback) {
         super(windowTitle);
 
+        /**
+         * set window properties
+         */
         setModal(true);
         setClosable(false);
         setResizable(false);
 
+        /**
+         * create the main layout
+         */
         VerticalLayout verticalLayout = new VerticalLayout();
 
+        /**
+         * add the input field
+         */
         final TextField inputField = new TextField(fieldName);
 
         inputField.setValue("");
@@ -67,23 +107,36 @@ public class StringInputDialogWindow extends Window {
             }
         });
 
+        /**
+         * create nested FormLayout instance
+         */
         FormLayout formLayout = new FormLayout();
         formLayout.setSizeUndefined();
         formLayout.setMargin(true);
         formLayout.addComponent(inputField);
 
+        /**
+         * add the buttons in a horizontal layout
+         */
         HorizontalLayout horizontalLayout = new HorizontalLayout();
 
         horizontalLayout.setMargin(true);
         horizontalLayout.setSpacing(true);
         horizontalLayout.setWidth("100%");
 
+        /**
+         * create cancel button
+         */
         Button cancel = new Button("Cancel");
         cancel.setDescription("Cancel editing");
         cancel.addClickListener(new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent event) {
                 StringInputDialogWindow.this.close();
+                /**
+                 * call the cancel method of the callback instance...
+                 */
+                inputCallback.inputCancelled();
             }
         });
 
@@ -93,6 +146,9 @@ public class StringInputDialogWindow extends Window {
         horizontalLayout.setExpandRatio(cancel, 1);
         horizontalLayout.setComponentAlignment(cancel, Alignment.TOP_RIGHT);
 
+        /**
+         * create ok button
+         */
         Button ok = new Button("Save");
         ok.setDescription("Save configuration");
         ok.addClickListener(new Button.ClickListener() {
@@ -100,7 +156,10 @@ public class StringInputDialogWindow extends Window {
             public void buttonClick(Button.ClickEvent event) {
                 if (inputField.isValid()) {
                     StringInputDialogWindow.this.close();
-                    callback.valueEntered(inputField.getValue());
+                    /**
+                     * call the confirmed method of the callback...
+                     */
+                    inputCallback.inputConfirmed(inputField.getValue());
                 }
             }
         });
@@ -111,6 +170,9 @@ public class StringInputDialogWindow extends Window {
         formLayout.addComponent(horizontalLayout);
         verticalLayout.addComponent(formLayout);
 
+        /**
+         * set the content
+         */
         setContent(verticalLayout);
     }
 }

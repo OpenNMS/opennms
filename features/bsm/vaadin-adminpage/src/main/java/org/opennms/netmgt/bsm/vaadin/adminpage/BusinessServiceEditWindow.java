@@ -35,6 +35,7 @@ import org.opennms.netmgt.bsm.service.model.IpServiceDTO;
 
 import com.vaadin.data.Property;
 import com.vaadin.data.util.BeanItemContainer;
+import com.vaadin.ui.AbstractSelect;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
@@ -202,6 +203,9 @@ public class BusinessServiceEditWindow extends Window {
         m_businessServicesTwinColSelect.setContainerDataSource(m_businessServicesContainer);
         m_businessServicesTwinColSelect.setValue(businessServiceDTO.getChildServices());
 
+        m_businessServicesTwinColSelect.setItemCaptionMode(AbstractSelect.ItemCaptionMode.PROPERTY);
+        m_businessServicesTwinColSelect.setItemCaptionPropertyId("name");
+
         /**
          * create the reduction key list box
          */
@@ -236,9 +240,9 @@ public class BusinessServiceEditWindow extends Window {
         addReductionKeyBtn.addClickListener(new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent event) {
-                getUI().addWindow(new StringInputDialogWindow("Enter Reduction Key", "Reduction Key", new StringInputDialogWindow.Callback() {
+                getUI().addWindow(new StringInputDialogWindow("Enter Reduction Key", "Reduction Key", new StringInputDialogWindow.InputCallbackAdapter() {
                     @Override
-                    public void valueEntered(String value) {
+                    public void inputConfirmed(String value) {
                         m_reductionKeyListSelect.addItem(value);
                     }
                 }));
