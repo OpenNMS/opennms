@@ -146,4 +146,26 @@ public class BusinessServiceRestService {
         }
         return Response.noContent().build();
     }
+
+    @POST
+    @Path("{id}/child-service/{childServiceId}")
+    public Response attachChildService(@PathParam("id") final Long serviceId,
+                                       @PathParam("childServiceId") final Long childServiceId) {
+        boolean changed = getManager().assignChildService(serviceId, childServiceId);
+        if (!changed) {
+            return Response.notModified().build();
+        }
+        return Response.ok().build();
+    }
+
+    @DELETE
+    @Path("{id}/child-service/{childServiceId}")
+    public Response detachChildService(@PathParam("id") final Long serviceId,
+                                       @PathParam("ipServiceId") final Long childServiceId) {
+        boolean changed = getManager().removeChildService(serviceId, childServiceId);
+        if (!changed) {
+            return Response.notModified().build();
+        }
+        return Response.ok().build();
+    }
 }
