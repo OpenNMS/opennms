@@ -4,10 +4,10 @@
 	   xsi:schemaLocation=
 	   "http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
 	   http://www.springframework.org/schema/lang http://www.springframework.org/schema/lang/spring-lang.xsd">
-      
+
 
       <bean id="pollerView" class="org.opennms.groovy.poller.remote.GroovyPollerView">
         <property name="pollerFrontEnd" ref="pollerFrontEnd" />
       </bean>
-      
+
 </beans>
