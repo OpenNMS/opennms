@@ -60,6 +60,20 @@ public class BSMAdminIT extends OpenNMSSeleniumTestCase {
     private final String IP_SERVICE_2_XPATH_SELECTED = IP_Service_Select_XPATH + "/select[2]/option[2]";
     private final String IP_SERVICE_2_XPATH_SELECTED_NOT = IP_Service_Select_XPATH + "/select[1]/option[2]";
 
+    private final String BUSINESS_SERVICE_1 = BASIC_SERVICE_NAME + "1";
+    private final String BUSINESS_SERVICE_2 = BASIC_SERVICE_NAME + "2";
+    private final String BUSINESS_SERVICE_3 = BASIC_SERVICE_NAME + "3";
+
+    private final String Business_Service_Select_XPATH = "//*[@id=\"businessServiceSelect\"]";
+    private final String BUSINESS_SERVICE_ADD_BUTTON_XPATH = Business_Service_Select_XPATH + "/div[2]/div[1]/span/span";
+    private final String BUSINESS_SERVICE_REMOVE_BUTTON_XPATH =  Business_Service_Select_XPATH + "/div[2]/div[3]/span/span";
+
+    private final String BUSINESS_SERVICE_1_XPATH_SELECTED = Business_Service_Select_XPATH + "/select[2]/option[1]";
+    private final String BUSINESS_SERVICE_1_XPATH_SELECTED_NOT = Business_Service_Select_XPATH + "/select[1]/option[1]";
+
+    private final String BUSINESS_SERVICE_2_XPATH_SELECTED = Business_Service_Select_XPATH + "/select[2]/option[2]";
+    private final String BUSINESS_SERVICE_2_XPATH_SELECTED_NOT = Business_Service_Select_XPATH + "/select[1]/option[2]";
+
     private final RequisitionUtils requisitionUtils = new RequisitionUtils(this);
 
     private void createTestSetup() throws Exception {
@@ -186,6 +200,60 @@ public class BSMAdminIT extends OpenNMSSeleniumTestCase {
         findElementById("deleteButton-BasicService").click();
 
         removeTestSetup();
+    }
+
+    @Test
+    public void testCanHandelBusinessServicesDuringEdit() throws Exception {
+        findElementById("createTextField").sendKeys(BUSINESS_SERVICE_1);
+        findElementById("createButton").click();
+
+        wait.until(pageContainsText("Save"));
+        findElementById("saveButton").click();
+        wait.until(pageContainsText(BUSINESS_SERVICE_1));
+
+        findElementById("createTextField").sendKeys(BUSINESS_SERVICE_2);
+        findElementById("createButton").click();
+
+        wait.until(pageContainsText("Save"));
+        findElementById("saveButton").click();
+        wait.until(pageContainsText(BUSINESS_SERVICE_2));
+
+        findElementById("createTextField").sendKeys(BUSINESS_SERVICE_3);
+        findElementById("createButton").click();
+
+        wait.until(pageContainsText("Save"));
+        findElementById("saveButton").click();
+        wait.until(pageContainsText(BUSINESS_SERVICE_3));
+
+        findElementById("editButton-" + BUSINESS_SERVICE_1).click();
+        wait.until(pageContainsText("Business Service Edit"));
+
+        //Locate relevant components
+        findElementById("businessServiceSelect");
+        WebElement addButton = findElementByXpath(BUSINESS_SERVICE_ADD_BUTTON_XPATH);
+        findElementByXpath(BUSINESS_SERVICE_REMOVE_BUTTON_XPATH);
+
+        //Check for not selected ipServices
+        findElementByXpath(BUSINESS_SERVICE_1_XPATH_SELECTED_NOT);
+        findElementByXpath(BUSINESS_SERVICE_2_XPATH_SELECTED_NOT);
+
+        //Add Business Services to selection
+        addButton.click();
+        addButton.click();
+        addButton.click();
+
+        //Check for selected ipServices
+        findElementByXpath(BUSINESS_SERVICE_1_XPATH_SELECTED);
+        findElementByXpath(BUSINESS_SERVICE_2_XPATH_SELECTED);
+
+        findElementById("saveButton").click();
+
+        findElementById("deleteButton-" + BUSINESS_SERVICE_1).click();
+        ExpectedConditions.invisibilityOfElementLocated(By.id("deleteButton-" + BUSINESS_SERVICE_1));
+        findElementById("deleteButton-" + BUSINESS_SERVICE_2).click();
+        ExpectedConditions.invisibilityOfElementLocated(By.id("deleteButton-" + BUSINESS_SERVICE_2));
+        findElementById("deleteButton-" + BUSINESS_SERVICE_3).click();
+        ExpectedConditions.invisibilityOfElementLocated(By.id("deleteButton-" + BUSINESS_SERVICE_3));
     }
 
     // switches to the embedded vaadin iframe

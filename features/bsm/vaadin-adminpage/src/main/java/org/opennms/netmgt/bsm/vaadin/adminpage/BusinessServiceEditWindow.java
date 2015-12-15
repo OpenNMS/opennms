@@ -216,8 +216,6 @@ public class BusinessServiceEditWindow extends Window {
         m_reductionKeyListSelect.setRows(8);
         m_reductionKeyListSelect.setNullSelectionAllowed(false);
         m_reductionKeyListSelect.setMultiSelect(false);
-        m_reductionKeyListSelect.getContainerDataSource().addItem("Bla");
-        m_reductionKeyListSelect.getContainerDataSource().addItem("Blupp");
 
         /**
          * wrap the reduction key list select box in a Vaadin Panel
