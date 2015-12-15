@@ -254,8 +254,8 @@ public class BusinessServiceRestServiceIT extends AbstractSpringJerseyRestTestCa
                 "</business-service>";
         sendData(PUT, MediaType.APPLICATION_XML, "/business-services/" + serviceId, businessServiceDtoXml, 204);
         assertEquals(1, m_businessServiceDao.findAll().size());
-        assertEquals("Dummy Service Updated", m_businessServiceDao.findAll().get(0).getName());
-        assertEquals(1, m_businessServiceDao.findAll().get(0).getReductionKeys().size());
-        assertTrue(m_businessServiceDao.findAll().get(0).getReductionKeys().contains("key1updated"));
+        assertEquals("Expected that the update BusinessService name is present.", "Dummy Service Updated", m_businessServiceDao.findAll().get(0).getName());
+        assertEquals("Expected that there is exactly one reductionkey on the BusinessService.", 1, m_businessServiceDao.findAll().get(0).getReductionKeys().size());
+        assertTrue("Expected that the update reductionkey is present.", m_businessServiceDao.findAll().get(0).getReductionKeys().contains("key1updated"));
     }
 }
