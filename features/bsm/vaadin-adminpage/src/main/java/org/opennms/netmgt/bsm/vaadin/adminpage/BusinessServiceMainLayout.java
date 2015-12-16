@@ -168,29 +168,45 @@ public class BusinessServiceMainLayout extends VerticalLayout {
          * ...and deletion of entries
          */
         m_table.addGeneratedColumn("delete", new Table.ColumnGenerator() {
-            @Override
-            public Object generateCell(Table source, Object itemId, Object columnId) {
-                Button deleteButton = new Button("delete");
-                deleteButton.addStyleName("small");
-                deleteButton.setId("deleteButton-" + ((BusinessServiceDTO) itemId).getName());
-                deleteButton.addClickListener((Button.ClickListener) event -> {
-                    businessServiceManager.delete(((BusinessServiceDTO) itemId).getId());
-                    refreshTable();
-                });
-                return deleteButton;
-            }
-        });
+                    @Override
+                    public Object generateCell(Table source, Object itemId, Object columnId) {
+                        Button deleteButton = new Button("delete");
+                        deleteButton.addStyleName("small");
+                        BusinessServiceDTO businessServiceDTO = (BusinessServiceDTO) itemId;
+                        deleteButton.setId("deleteButton-" + businessServiceDTO.getName());
+                        deleteButton.addClickListener((Button.ClickListener) event -> {
+                                    if (businessServiceDTO.getParentServices().isEmpty() && businessServiceDTO.getChildServices().isEmpty()) {
+                                        businessServiceManager.delete(businessServiceDTO.getId());
+                                        refreshTable();
+                                    } else {
+                                        getUI().addWindow(new ConfirmationDialog("Warning", "This entry is referencing or is referenced by other Business Services! Do you really to delete this entry?", "Delete anyway", "Cancel", new ConfirmationDialog.ConfirmationDialogCallbackAdapter() {
+                                            @Override
+                                            public void confirmed() {
+                                                businessServiceManager.delete(businessServiceDTO.getId());
+                                                refreshTable();
+                                            }
+                                        }));
+                                    }
+                                }
+
+                        );
+                        return deleteButton;
+                    }
+                }
+        );
 
         /**
          * add the table to the layout
          */
         addComponent(m_table);
+
         setExpandRatio(m_table, 1.0f);
 
         /**
          * initial refresh of table
          */
         refreshTable();
+
     }
 
     /**
