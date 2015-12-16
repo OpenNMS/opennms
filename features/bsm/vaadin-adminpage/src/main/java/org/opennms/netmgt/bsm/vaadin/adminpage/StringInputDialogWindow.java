@@ -41,7 +41,7 @@ import com.vaadin.ui.Window;
 /**
  * Vaadin dialog window to query for a single String value.
  *
- * @author Christian Pape
+ * @author Christian Pape <christian@opennms.org>
  */
 public class StringInputDialogWindow extends Window {
 
