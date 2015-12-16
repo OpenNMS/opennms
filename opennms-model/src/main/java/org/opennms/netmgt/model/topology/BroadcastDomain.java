@@ -11,7 +11,9 @@ import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.model.BridgeBridgeLink;
 import org.opennms.netmgt.model.BridgeElement;
 import org.opennms.netmgt.model.BridgeMacLink;
+import org.opennms.netmgt.model.BridgeMacLink.BridgeDot1qTpFdbStatus;
 import org.opennms.netmgt.model.BridgeStpLink;
+import org.opennms.netmgt.model.OnmsNode;
 
 // FIXME
 // check synchronized and volatile
@@ -61,23 +63,34 @@ public class BroadcastDomain {
     // if exists m_x and m_y :     m_x belongs FDB(yx,Y) 
     //                             m_y belongs FDB(xy,X)
     //
-    // condition 2
+    // condition 2X
     // if exists m_x, m_1 and m_2, p1 and p2 on Y : m_x belongs to FDB(yx,Y) 
     //                                              m_1 belongs to FDB(p1,Y) FDB(xy,X)
     //                                              m_2 belongs to FDB(p2,Y) FDB(xy,X)
+    // condition 2Y
+    // if exists m_y, m_1 and m_2, p1 and p2 on X : m_y belongs to FDB(xy,X) 
+    //                                              m_1 belongs to FDB(p1,X) FDB(yx,Y)
+    //                                              m_2 belongs to FDB(p2,X) FDB(yx,Y)
     //
-    // condition 3
+    //
+    // condition 3X
     // if exist m_1,m_2,m_3 and p1,p2 on Y and p3 on X: m_1 belongs to FDB(p1,Y) FDB(xy,X) 
     //                                                  m_2 belongs to FDB(p2,Y) FDB(xy,X) 
-    //                                                  m_3 belongs to FDB(yx,Y) FDB(p3,X)
+    //                                                  m_3 belongs to FDB(yx,Y) FDB(p3,X)      
     //
-    // condition 4
+    // condition 3Y
+    // if exist m_1,m_2,m_3 and p1,p2 on Y and p3 on X: m_1 belongs to FDB(p1,X) FDB(yx,Y) 
+    //                                                  m_2 belongs to FDB(p2,X) FDB(yx,Y) 
+    //                                                  m_3 belongs to FDB(xy,X) FDB(p3,Y)
+    //
+    // condition 3XY
     // if exist m_1,m_k,m_3 and p1 on Y and p3 on X: m_1 belongs to FDB(p1,Y) FDB(xy,X)
     //                                               m_k belongs to FDB(yx,Y) FDB(xy,X) 
     //                                               m_3 belongs to FDB(yx,Y) FDB(p3,X)
     //
-    // condition 5
+    // condition 4
     // intersection is made only by macs living on xy of X and yx of Y
+    // only one common port on X and Y
     // these is no other common forwarding port
     // first step is to find the common macs.
     // then we work on this set (if the size is only 2......no way)
@@ -85,34 +98,208 @@ public class BroadcastDomain {
     // 
     private class BridgeTopologyHelper {
         
-        final Integer m_xBridge;
-        final Integer m_yBridge;
-        final List<BridgeMacLink> m_xBFT;
-        final List<BridgeMacLink> m_yBFT;
-        public BridgeTopologyHelper(Integer xBridge, Integer yBridge,
-                List<BridgeMacLink> xBFT, List<BridgeMacLink> yBFT) {
+        Integer m_xy;
+        Integer m_yx;
+        Map<String,BridgeMacLink> xmactoport = new HashMap<String, BridgeMacLink>();
+        Map<String,BridgeMacLink> ymactoport = new HashMap<String, BridgeMacLink>();
+        Set<String> xmacs = new HashSet<String>();
+        Set<String> ymacs = new HashSet<String>();
+        Map<Integer, List<BridgeMacLink>> m_throughSet = new HashMap<Integer, List<BridgeMacLink>>();
+        List<BridgeMacLink> simpleconnection = new ArrayList<BridgeMacLink>();
+        BridgeBridgeLink blink = new BridgeBridgeLink();
+        
+        public BridgeTopologyHelper(Bridge xBridge, List<BridgeMacLink> xBFT, Integer yBridgeId, List<BridgeMacLink> yBFT) {
             super();
-            m_xBridge = xBridge;
-            m_yBridge = yBridge;
-            m_xBFT = xBFT;
-            m_yBFT = yBFT;
+
+            for (BridgeMacLink xlink: xBFT) {
+                if (xBridge.getId() == xlink.getNode().getId() && xlink.getBridgeDot1qTpFdbStatus() == BridgeDot1qTpFdbStatus.DOT1D_TP_FDB_STATUS_LEARNED) 
+                    xmactoport.put(xlink.getMacAddress(), xlink);
+                if (xBridge.getId() == xlink.getNode().getId() && xlink.getBridgeDot1qTpFdbStatus() == BridgeDot1qTpFdbStatus.DOT1D_TP_FDB_STATUS_SELF) 
+                    xmacs.add(xlink.getMacAddress());
+            }                
+            for (BridgeMacLink ylink: yBFT) {
+                if (yBridgeId == ylink.getNode().getId()) {
+                    ymactoport.put(ylink.getMacAddress(), ylink);
+                    if (!m_throughSet.containsKey(ylink.getBridgePort()))
+                        m_throughSet.put(ylink.getBridgePort(), new ArrayList<BridgeMacLink>());
+                    m_throughSet.get(ylink.getBridgePort()).add(ylink);
+                }
+                if (yBridgeId == ylink.getNode().getId() && ylink.getBridgeDot1qTpFdbStatus() == BridgeDot1qTpFdbStatus.DOT1D_TP_FDB_STATUS_SELF) 
+                    ymacs.add(ylink.getMacAddress());
+            }
+            Set<String> commonlearnedmacs = new HashSet<String>(); 
+            commonlearnedmacs.addAll(xmactoport.keySet());
+            commonlearnedmacs.retainAll(ymactoport.entrySet());
+
+            boolean cond1X = condition1BridgeX();
+            boolean cond1Y = condition1BridgeY();
+            if (cond1X && !cond1Y)
+                condition2BridgeX(commonlearnedmacs);
+            if (!cond1X && cond1Y)
+                condition2BridgeY(commonlearnedmacs);
+            if (!cond1X && !cond1Y)
+                condition3(commonlearnedmacs);
+            
+            if (m_xy == null || m_xy == null)
+                return;
+            
+            BridgeMacLink xylink = null;
+            BridgeMacLink yxlink = null;
+            for (String mac: commonlearnedmacs) {
+                if (xmactoport.get(mac).getBridgePort() == m_xy) {
+                    simpleconnection.add(xmactoport.get(mac));
+                    if (xylink == null)
+                        xylink = xmactoport.get(mac);
+                }
+                if (ymactoport.get(mac).getBridgePort() == m_yx) {
+                    simpleconnection.add(ymactoport.get(mac));
+                    if (yxlink == null)
+                        yxlink = ymactoport.get(mac);
+                }
+            }
+            if (xylink != null && yxlink != null ) {
+                blink.setNode(xylink.getNode());
+                blink.setBridgePort(xylink.getBridgePort());
+                blink.setBridgePortIfIndex(xylink.getBridgePortIfIndex());
+                blink.setBridgePortIfName(xylink.getBridgePortIfName());
+                
+                blink.setDesignatedNode(yxlink.getNode());
+                blink.setDesignatedPort(yxlink.getBridgePort());
+                blink.setDesignatedPortIfIndex(yxlink.getBridgePortIfIndex());
+                blink.setDesignatedPortIfName(yxlink.getBridgePortIfName());
+            }
+            m_throughSet.remove(m_yx);            
+        }
+
+        private void condition3(Set<String> commonlearnedmacs) {
+            if (condition3X(commonlearnedmacs))
+                return;
+            condition3Y(commonlearnedmacs);
         }
         
-        public Integer getFirstBridgeDesignatedPort() {
-            return null;
+        // condition 3X
+        // if exist m_1,m_2,m_3 and p1,p2 on Y and p3 on X: m_1 belongs to FDB(p1,Y) FDB(xy,X) 
+        //                                                  m_2 belongs to FDB(p2,Y) FDB(xy,X) 
+        //                                                  m_3 belongs to FDB(yx,Y) FDB(p3,X)      
+        //
+        // condition 3XY
+        // if exist m_1,m_k,m_3 and p1 on Y and p3 on X: m_1 belongs to FDB(p1,Y) FDB(xy,X)
+        //                                               m_k belongs to FDB(yx,Y) FDB(xy,X) 
+        //                                               m_3 belongs to FDB(yx,Y) FDB(p3,X)
+        private boolean condition3X(Set<String> commonlearnedmacs) {
+            return true;
         }
         
-        public Integer getSecondBridgePort() {
-            return null;
+        // condition 3Y
+        // if exist m_1,m_2,m_3 and p1,p2 on Y and p3 on X: m_1 belongs to FDB(p1,X) FDB(yx,Y) 
+        //                                                  m_2 belongs to FDB(p2,X) FDB(yx,Y) 
+        //                                                  m_3 belongs to FDB(xy,X) FDB(p3,Y)
+        //
+        // condition 3XY
+        // if exist m_1,m_k,m_3 and p1 on Y and p3 on X: m_1 belongs to FDB(p1,Y) FDB(xy,X)
+        //                                               m_k belongs to FDB(yx,Y) FDB(xy,X) 
+        //                                               m_3 belongs to FDB(yx,Y) FDB(p3,X)
+        private boolean condition3Y(Set<String> commonlearnedmacs) {
+            return true;
+        }
+        // condition 2X
+        // if exists m_x, m_1 and m_2, p1 and p2 on Y : m_x belongs to FDB(yx,Y) 
+        //                                              m_1 belongs to FDB(p1,Y) FDB(xy,X)
+        //                                              m_2 belongs to FDB(p2,Y) FDB(xy,X)
+        private void condition2BridgeX(Set<String> commonlearnedmacs) {
+            String mac1=null;
+            Integer p1=null;
+            Integer xy1=null;
+            boolean allmaconthesameport=true;
+            for (String mac: commonlearnedmacs) {
+                if (mac1 == null) {
+                    mac1 = mac;
+                    p1 = ymactoport.get(mac).getBridgePort();
+                    xy1= xmactoport.get(mac).getBridgePort();
+                    continue;
+                }
+                if (ymactoport.get(mac).getBridgePort() == p1)
+                    continue;
+                if (xmactoport.get(mac).getBridgePort() == xy1) {
+                    m_xy=xy1;
+                    return;
+                }
+                allmaconthesameport=false;
+            }
+            if (allmaconthesameport)
+                m_xy=xy1;
+        }
+        
+        // condition 2Y
+        // if exists m_y, m_1 and m_2, p1 and p2 on X : m_y belongs to FDB(xy,X) 
+        //                                              m_1 belongs to FDB(p1,X) FDB(yx,Y)
+        //                                              m_2 belongs to FDB(p2,X) FDB(yx,Y)
+        private void condition2BridgeY(Set<String> commonlearnedmacs) {
+            String mac1=null;
+            Integer p1=null;
+            Integer yx1=null;
+            boolean allmaconthesameport=true;
+            for (String mac: commonlearnedmacs) {
+                if (mac1 == null) {
+                    mac1 = mac;
+                    p1 = xmactoport.get(mac).getBridgePort();
+                    yx1= ymactoport.get(mac).getBridgePort();
+                    continue;
+                }
+                if (xmactoport.get(mac).getBridgePort() == p1)
+                    continue;
+                if (ymactoport.get(mac).getBridgePort() == yx1) {
+                    m_yx=yx1;
+                    return;
+                }
+                allmaconthesameport=false;
+            }
+            if (allmaconthesameport)
+                m_yx=yx1;
+        }
+        
+        private boolean condition1BridgeX() {
+            // Check if there are any common mac...
+            
+            for (String xmac: xmacs) {
+                if (ymactoport.containsKey(xmac)) {
+                    m_yx = ymactoport.get(xmac).getBridgePort();
+                    return true;
+                }
+            }
+            return false;
+        }
+            
+        private boolean condition1BridgeY() {
+            for (String ymac: ymacs) {
+                if (xmactoport.containsKey(ymac)) {
+                    m_xy = xmactoport.get(ymac).getBridgePort();
+                    return true;
+                }
+            }
+            return false;
+            // case 1 both have been found            
+            
+
+            // final result            
+        }
+        
+        public Integer getFirstBridgeConnectionPort() {
+            return m_xy;
+        }
+        
+        public Integer getSecondBridgeConnectionPort() {
+            return m_yx;
         }
         
         public SimpleConnection getSimpleConnection() {
-            return new SimpleConnection(null, null);
+            return new SimpleConnection(simpleconnection, blink); 
+        }
+        
+        public Map<Integer,List<BridgeMacLink>> getSecondBridgeTroughSet() {
+            return m_throughSet;
         }
 
-        public Map<Integer,List<BridgeMacLink>> getTroughSet() {
-            return null;
-        }
     }
     
     private class Bridge {
@@ -356,7 +543,7 @@ public class BroadcastDomain {
     }
 
     public synchronized void calculate() {
-        m_calculating = false;
+        m_calculating = true;
         selectRootBridge();
         hierarchySetUp();
 
@@ -375,39 +562,40 @@ public class BroadcastDomain {
         Set<Integer> nodeids = new HashSet<Integer>();
         nodeids.addAll(m_notYetParsedBFTMap.keySet());
         for (Integer nodeid: nodeids) 
-            findBridgesTopo(m_rootBridgeId, m_rootBridgeBFT, nodeid, m_notYetParsedBFTMap.remove(nodeid));
+            findBridgesTopo(getRootBridge(), m_rootBridgeBFT, nodeid, m_notYetParsedBFTMap.remove(nodeid));
        
+        m_calculating = false;
     }
     
-    private void findBridgesTopo(Integer rBridgeId, List<BridgeMacLink> rBFT, Integer xBridgeId, List<BridgeMacLink> xBFT) {
-        BridgeTopologyHelper rx = new BridgeTopologyHelper(rBridgeId, xBridgeId, rBFT, xBFT);
-        Integer rxDesignatedPort = rx.getFirstBridgeDesignatedPort();
-        Integer xrDesignatedPort = rx.getSecondBridgePort();
+    private void findBridgesTopo(Bridge rBridge, List<BridgeMacLink> rBFT, Integer xBridgeId, List<BridgeMacLink> xBFT) {
+        BridgeTopologyHelper rx = new BridgeTopologyHelper(rBridge, rBFT, xBridgeId,xBFT);
+        Integer rxDesignatedPort = rx.getFirstBridgeConnectionPort();
+        Integer xrDesignatedPort = rx.getSecondBridgeConnectionPort();
         //get the starting point shared segment of the top bridge
         // where the bridge is learned should not be null
-        SharedSegment topSegment = getSharedSegment(rBridgeId,rxDesignatedPort);
+        SharedSegment topSegment = getSharedSegment(rBridge.getId(),rxDesignatedPort);
         if (topSegment == null) {
-            topSegment = new SharedSegment(rBridgeId,rxDesignatedPort);
+            topSegment = new SharedSegment(rBridge.getId(),rxDesignatedPort);
             topSegment.assign(rx.getSimpleConnection().getLinks(),rx.getSimpleConnection().getDlink());
             m_topology.add(topSegment);
         }
 
         for (Bridge yBridge: getBridgeOnSharedSegment(topSegment)) {
             Integer yBridgeId = yBridge.getId();
-            BridgeTopologyHelper xy = new BridgeTopologyHelper(xBridgeId, yBridgeId, xBFT, getEffectiveBFT(yBridgeId));
-            Integer xyDesignatedPort = xy.getFirstBridgeDesignatedPort();
-            Integer yxDesignatedPort = xy.getSecondBridgePort();
+            BridgeTopologyHelper yx = new BridgeTopologyHelper(yBridge, getEffectiveBFT(yBridgeId),xBridgeId, xBFT);
+            Integer xyDesignatedPort = yx.getSecondBridgeConnectionPort();
+            Integer yxDesignatedPort = yx.getFirstBridgeConnectionPort();
             Integer yrDesignatedPort = yBridge.getRootPort();
             // X is a leaf of Y
             if (xyDesignatedPort == xrDesignatedPort && yxDesignatedPort != yrDesignatedPort) {
-                findBridgesTopo(yBridge.getId(), getEffectiveBFT(yBridge.getId()), xBridgeId, xBFT);
+                findBridgesTopo(yBridge, getEffectiveBFT(yBridge.getId()), xBridgeId, xBFT);
                 return;
             }
             // Y is a leaf of X
             if (xyDesignatedPort != xrDesignatedPort && yxDesignatedPort == yrDesignatedPort) {
                 //create a SharedSegment with root port
                 SharedSegment leafSegment = new SharedSegment(xBridgeId, xyDesignatedPort);
-                leafSegment.assign(xy.getSimpleConnection().getLinks(),xy.getSimpleConnection().getDlink());
+                leafSegment.assign(yx.getSimpleConnection().getLinks(),yx.getSimpleConnection().getDlink());
                 m_topology.add(leafSegment);
                 topSegment.removeBridge(yBridge.getId());
             }            
@@ -421,9 +609,9 @@ public class BroadcastDomain {
         // on topSegment so X is connected to top Segment by it's root 
         // port or rx is a direct connection
         topSegment.assign(rx.getSimpleConnection().getLinks(),rx.getSimpleConnection().getDlink());
-        for (Integer xbridgePort: rx.getTroughSet().keySet()) {
+        for (Integer xbridgePort: rx.getSecondBridgeTroughSet().keySet()) {
             SharedSegment xleafSegment = new SharedSegment(xBridgeId, xbridgePort);
-            xleafSegment.setBridgeMacLinks(rx.getTroughSet().get(xbridgePort));
+            xleafSegment.setBridgeMacLinks(rx.getSecondBridgeTroughSet().get(xbridgePort));
             m_topology.add(xleafSegment);
         }
         
@@ -544,8 +732,17 @@ public class BroadcastDomain {
             m_rootBridgeBFT = getEffectiveBFT(rootBridge.getId());
     }
         
+    private Bridge getRootBridge() {
+        for (Bridge bridge: m_bridges) {
+            if (bridge.isRootBridge())
+                return bridge;
+        }
+        return null;
+    }
+    
     private List<BridgeMacLink> getEffectiveBFT(Integer bridgeId) {
         List<BridgeMacLink> links = new ArrayList<BridgeMacLink>();
+        OnmsNode node=new OnmsNode();
         for (SharedSegment segment: getSharedSegmentOnBridge(bridgeId)) {
             Integer bridgePort = null;
             if (segment.noMacsOnSegment()) {
@@ -570,6 +767,7 @@ public class BroadcastDomain {
             
             for (String mac: getForwardingSet(segment, bridgeId)) {
                 BridgeMacLink link = new BridgeMacLink();
+                link.setNode(node);
                 link.setBridgePort(bridgePort);
                 link.setMacAddress(mac);
                 links.add(link);
