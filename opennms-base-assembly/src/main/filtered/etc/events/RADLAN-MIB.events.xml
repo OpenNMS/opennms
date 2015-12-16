@@ -36,7 +36,7 @@ interface number.&lt;/p>&lt;table>
 			rxOverflowHWFault trap received 
 			rndErrorDesc=%parm[#1]% 
 			rndErrorSeverity=%parm[#2]%&lt;/p></logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Major</severity>
    </event>
    <event>
       <mask>
@@ -74,7 +74,7 @@ The bound variable rndErrorDesc provides the interface number.&lt;/p>&lt;table>
 			txOverflowHWFault trap received 
 			rndErrorDesc=%parm[#1]% 
 			rndErrorSeverity=%parm[#2]%&lt;/p></logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Major</severity>
    </event>
    <event>
       <mask>
@@ -112,7 +112,7 @@ Table is used for IP routing algorithm (RIP).&lt;/p>&lt;table>
 			routeTableOverflow trap received 
 			rndErrorDesc=%parm[#1]% 
 			rndErrorSeverity=%parm[#2]%&lt;/p></logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Major</severity>
    </event>
    <event>
       <mask>
@@ -152,7 +152,7 @@ using the variable rndAction.&lt;/p>&lt;table>
 			resetRequired trap received 
 			rndErrorDesc=%parm[#1]% 
 			rndErrorSeverity=%parm[#2]%&lt;/p></logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Warning</severity>
    </event>
    <event>
       <mask>
@@ -192,7 +192,7 @@ text and severity respectively.&lt;/p>&lt;table>
 			endTftp trap received 
 			rndErrorDesc=%parm[#1]% 
 			rndErrorSeverity=%parm[#2]%&lt;/p></logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Warning</severity>
    </event>
    <event>
       <mask>
@@ -231,7 +231,7 @@ provides the actual  message text  and severity  respectively.&lt;/p>&lt;table>
 			abortTftp trap received 
 			rndErrorDesc=%parm[#1]% 
 			rndErrorSeverity=%parm[#2]%&lt;/p></logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Warning</severity>
    </event>
    <event>
       <mask>
@@ -270,7 +270,7 @@ question&lt;/p>&lt;table>
 			startTftp trap received 
 			rndErrorDesc=%parm[#1]% 
 			rndErrorSeverity=%parm[#2]%&lt;/p></logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Warning</severity>
    </event>
    <event>
       <mask>
@@ -307,7 +307,7 @@ question&lt;/p>&lt;table>
 			faultBackUp trap received 
 			rndErrorDesc=%parm[#1]% 
 			rndErrorSeverity=%parm[#2]%&lt;/p></logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Minor</severity>
    </event>
    <event>
       <mask>
@@ -344,7 +344,7 @@ question&lt;/p>&lt;table>
 			mainLinkUp trap received 
 			rndErrorDesc=%parm[#1]% 
 			rndErrorSeverity=%parm[#2]%&lt;/p></logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Normal</severity>
    </event>
    <event>
       <mask>
@@ -383,7 +383,7 @@ provides the actual  message text and severity respectively.&lt;/p>&lt;table>
 			ipxRipTblOverflow trap received 
 			rndErrorDesc=%parm[#1]% 
 			rndErrorSeverity=%parm[#2]%&lt;/p></logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Major</severity>
    </event>
    <event>
       <mask>
@@ -422,7 +422,7 @@ provides the actual  message text and severity respectively.&lt;/p>&lt;table>
 			ipxSapTblOverflow trap received 
 			rndErrorDesc=%parm[#1]% 
 			rndErrorSeverity=%parm[#2]%&lt;/p></logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Major</severity>
    </event>
    <event>
       <mask>
@@ -462,7 +462,7 @@ interface Number.&lt;/p>&lt;table>
 			facsAccessVoilation trap received 
 			rndErrorDesc=%parm[#1]% 
 			rndErrorSeverity=%parm[#2]%&lt;/p></logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Major</severity>
    </event>
    <event>
       <mask>
@@ -500,7 +500,7 @@ The bound variable rndErrorDesc, rndErrorSeverity(== info )&lt;/p>&lt;table>
 			autoConfigurationCompleted trap received 
 			rndErrorDesc=%parm[#1]% 
 			rndErrorSeverity=%parm[#2]%&lt;/p></logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Warning</severity>
    </event>
    <event>
       <mask>
@@ -539,7 +539,7 @@ The bound variable rndErrorDesc, rndErrorSeverity(== warning )&lt;/p>&lt;table>
 			forwardingTabOverflow trap received 
 			rndErrorDesc=%parm[#1]% 
 			rndErrorSeverity=%parm[#2]%&lt;/p></logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Major</severity>
    </event>
    <event>
       <mask>
@@ -578,7 +578,7 @@ The bound variable rndErrorDesc, rndErrorSeverity(== warning )&lt;/p>&lt;table>
 			framRelaySwitchConnectionUp trap received 
 			rndErrorDesc=%parm[#1]% 
 			rndErrorSeverity=%parm[#2]%&lt;/p></logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Normal</severity>
    </event>
    <event>
       <mask>
@@ -617,7 +617,7 @@ The bound variable rndErrorDesc, rndErrorSeverity(== warning )&lt;/p>&lt;table>
 			framRelaySwitchConnectionDown trap received 
 			rndErrorDesc=%parm[#1]% 
 			rndErrorSeverity=%parm[#2]%&lt;/p></logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Minor</severity>
    </event>
    <event>
       <mask>
@@ -655,7 +655,7 @@ The bound variable rndErrorDesc, rndErrorSeverity(== error )&lt;/p>&lt;table>
 			errorsDuringInit trap received 
 			rndErrorDesc=%parm[#1]% 
 			rndErrorSeverity=%parm[#2]%&lt;/p></logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Minor</severity>
    </event>
    <event>
       <mask>
@@ -692,7 +692,7 @@ The bound variable rndErrorDesc, rndErrorSeverity(== error )&lt;/p>&lt;table>
 			vlanDynPortAdded trap received 
 			rndErrorDesc=%parm[#1]% 
 			rndErrorSeverity=%parm[#2]%&lt;/p></logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Warning</severity>
    </event>
    <event>
       <mask>
@@ -729,7 +729,7 @@ The bound variable rndErrorDesc, rndErrorSeverity(== error )&lt;/p>&lt;table>
 			vlanDynPortRemoved trap received 
 			rndErrorDesc=%parm[#1]% 
 			rndErrorSeverity=%parm[#2]%&lt;/p></logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Warning</severity>
    </event>
    <event>
       <mask>
@@ -766,7 +766,7 @@ The bound variable rndErrorDesc, rndErrorSeverity(== error )&lt;/p>&lt;table>
 			rsSDclientsTableOverflow trap received 
 			rndErrorDesc=%parm[#1]% 
 			rndErrorSeverity=%parm[#2]%&lt;/p></logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Major</severity>
    </event>
    <event>
       <mask>
@@ -804,7 +804,7 @@ and is thought to be inactive.&lt;/p>&lt;table>
 			rsSDinactiveServer trap received 
 			rndErrorDesc=%parm[#1]% 
 			rndErrorSeverity=%parm[#2]%&lt;/p></logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Warning</severity>
    </event>
    <event>
       <mask>
@@ -841,7 +841,7 @@ and is thought to be inactive.&lt;/p>&lt;table>
 			rsIpZhrConnectionsTableOverflow trap received 
 			rndErrorDesc=%parm[#1]% 
 			rndErrorSeverity=%parm[#2]%&lt;/p></logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Major</severity>
    </event>
    <event>
       <mask>
@@ -879,7 +879,7 @@ no available IP virtual address to allocate to it.&lt;/p>&lt;table>
 			rsIpZhrReqStaticConnNotAccepted trap received 
 			rndErrorDesc=%parm[#1]% 
 			rndErrorSeverity=%parm[#2]%&lt;/p></logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Minor</severity>
    </event>
    <event>
       <mask>
@@ -918,7 +918,7 @@ it will not be further allocated to new connections.&lt;/p>&lt;table>
 			rsIpZhrVirtualIpAsSource trap received 
 			rndErrorDesc=%parm[#1]% 
 			rndErrorSeverity=%parm[#2]%&lt;/p></logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Minor</severity>
    </event>
    <event>
       <mask>
@@ -958,7 +958,7 @@ specific source IP.&lt;/p>&lt;table>
 			rsIpZhrNotAllocVirtualIp trap received 
 			rndErrorDesc=%parm[#1]% 
 			rndErrorSeverity=%parm[#2]%&lt;/p></logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Minor</severity>
    </event>
    <event>
       <mask>
@@ -998,7 +998,7 @@ configuration to an NMS.&lt;/p>&lt;table>
 			rsSnmpSetRequestInSpecialCfgState trap received 
 			rndErrorDesc=%parm[#1]% 
 			rndErrorSeverity=%parm[#2]%&lt;/p></logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Warning</severity>
    </event>
    <event>
       <mask>
@@ -1045,7 +1045,7 @@ if any responses were received:
 			rsPingCompletion trap received 
 			rndErrorDesc=%parm[#1]% 
 			rndErrorSeverity=%parm[#2]%&lt;/p></logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Warning</severity>
    </event>
    <event>
       <mask>
@@ -1084,7 +1084,7 @@ rndErrorSeverity(== warning ), interface Number. and pppSecurityIdentity&lt;/p>&
 			pppSecurityViolation trap received 
 			rndErrorDesc=%parm[#1]% 
 			rndErrorSeverity=%parm[#2]%&lt;/p></logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Warning</severity>
    </event>
    <event>
       <mask>
@@ -1121,7 +1121,7 @@ rndErrorSeverity(== warning ), interface Number. and pppSecurityIdentity&lt;/p>&
 			frDLCIStatudChange trap received 
 			rndErrorDesc=%parm[#1]% 
 			rndErrorSeverity=%parm[#2]%&lt;/p></logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Warning</severity>
    </event>
    <event>
       <mask>
@@ -1158,7 +1158,7 @@ rndErrorSeverity(== warning ), interface Number. and pppSecurityIdentity&lt;/p>&
 			papFailedCommunication trap received 
 			rndErrorDesc=%parm[#1]% 
 			rndErrorSeverity=%parm[#2]%&lt;/p></logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Warning</severity>
    </event>
    <event>
       <mask>
@@ -1195,7 +1195,7 @@ rndErrorSeverity(== warning ), interface Number. and pppSecurityIdentity&lt;/p>&
 			chapFailedCommunication trap received 
 			rndErrorDesc=%parm[#1]% 
 			rndErrorSeverity=%parm[#2]%&lt;/p></logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Warning</severity>
    </event>
    <event>
       <mask>
@@ -1233,7 +1233,7 @@ up after failure a trap of this type is issued.&lt;/p>&lt;table>
 			rsWSDRedundancySwitch trap received 
 			rndErrorDesc=%parm[#1]% 
 			rndErrorSeverity=%parm[#2]%&lt;/p></logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Warning</severity>
    </event>
    <event>
       <mask>
@@ -1272,7 +1272,7 @@ available IP addresses.&lt;/p>&lt;table>
 			rsDhcpAllocationFailure trap received 
 			rndErrorDesc=%parm[#1]% 
 			rndErrorSeverity=%parm[#2]%&lt;/p></logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Warning</severity>
    </event>
    <event>
       <mask>
@@ -1309,7 +1309,7 @@ available IP addresses.&lt;/p>&lt;table>
 			rlIpFftStnOverflow trap received 
 			rndErrorDesc=%parm[#1]% 
 			rndErrorSeverity=%parm[#2]%&lt;/p></logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Major</severity>
    </event>
    <event>
       <mask>
@@ -1346,7 +1346,7 @@ available IP addresses.&lt;/p>&lt;table>
 			rlIpFftSubOverflow trap received 
 			rndErrorDesc=%parm[#1]% 
 			rndErrorSeverity=%parm[#2]%&lt;/p></logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Major</severity>
    </event>
    <event>
       <mask>
@@ -1383,7 +1383,7 @@ available IP addresses.&lt;/p>&lt;table>
 			rlIpxFftStnOverflow trap received 
 			rndErrorDesc=%parm[#1]% 
 			rndErrorSeverity=%parm[#2]%&lt;/p></logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Major</severity>
    </event>
    <event>
       <mask>
@@ -1420,7 +1420,7 @@ available IP addresses.&lt;/p>&lt;table>
 			rlIpxFftSubOverflow trap received 
 			rndErrorDesc=%parm[#1]% 
 			rndErrorSeverity=%parm[#2]%&lt;/p></logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Major</severity>
    </event>
    <event>
       <mask>
@@ -1457,7 +1457,7 @@ available IP addresses.&lt;/p>&lt;table>
 			rlIpmFftOverflow trap received 
 			rndErrorDesc=%parm[#1]% 
 			rndErrorSeverity=%parm[#2]%&lt;/p></logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Major</severity>
    </event>
    <event>
       <mask>
@@ -1495,7 +1495,7 @@ changed&lt;/p>&lt;table>
 			rlPhysicalDescriptionChanged trap received 
 			rndErrorDesc=%parm[#1]% 
 			rndErrorSeverity=%parm[#2]%&lt;/p></logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Warning</severity>
    </event>
    <event>
       <mask>
@@ -1543,7 +1543,7 @@ transitions from the Learning state to the Forwarding state.&lt;/p>&lt;table>
 			rndErrorSeverity=%parm[#2]% 
 			rldot1dStpTrapVrblifIndex=%parm[#3]% 
 			rldot1dStpTrapVrblVID=%parm[#4]%&lt;/p></logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Normal</severity>
    </event>
    <event>
       <mask>
@@ -1591,7 +1591,7 @@ transitions from the Forwarding state to the Blocking state.&lt;/p>&lt;table>
 			rndErrorSeverity=%parm[#2]% 
 			rldot1dStpTrapVrblifIndex=%parm[#3]% 
 			rldot1dStpTrapVrblVID=%parm[#4]%&lt;/p></logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Minor</severity>
    </event>
    <event>
       <mask>
@@ -1628,7 +1628,7 @@ transitions from the Forwarding state to the Blocking state.&lt;/p>&lt;table>
 			rlPolicyDropPacketTrap trap received 
 			rndErrorDesc=%parm[#1]% 
 			rndErrorSeverity=%parm[#2]%&lt;/p></logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Warning</severity>
    </event>
    <event>
       <mask>
@@ -1665,7 +1665,7 @@ transitions from the Forwarding state to the Blocking state.&lt;/p>&lt;table>
 			rlPolicyForwardPacketTrap trap received 
 			rndErrorDesc=%parm[#1]% 
 			rndErrorSeverity=%parm[#2]%&lt;/p></logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Warning</severity>
    </event>
    <event>
       <mask>
@@ -1702,7 +1702,7 @@ transitions from the Forwarding state to the Blocking state.&lt;/p>&lt;table>
 			rlIgmpProxyTableOverflow trap received 
 			rndErrorDesc=%parm[#1]% 
 			rndErrorSeverity=%parm[#2]%&lt;/p></logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Major</severity>
    </event>
    <event>
       <mask>
@@ -1739,7 +1739,7 @@ transitions from the Forwarding state to the Blocking state.&lt;/p>&lt;table>
 			rlIgmpV1MsgReceived trap received 
 			rndErrorDesc=%parm[#1]% 
 			rndErrorSeverity=%parm[#2]%&lt;/p></logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Warning</severity>
    </event>
    <event>
       <mask>
@@ -1776,7 +1776,7 @@ transitions from the Forwarding state to the Blocking state.&lt;/p>&lt;table>
 			rlVrrpEntriesDeleted trap received 
 			rndErrorDesc=%parm[#1]% 
 			rndErrorSeverity=%parm[#2]%&lt;/p></logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Warning</severity>
    </event>
    <event>
       <mask>
@@ -1813,7 +1813,7 @@ transitions from the Forwarding state to the Blocking state.&lt;/p>&lt;table>
 			rlHotSwapTrap trap received 
 			rndErrorDesc=%parm[#1]% 
 			rndErrorSeverity=%parm[#2]%&lt;/p></logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Warning</severity>
    </event>
    <event>
       <mask>
@@ -1850,7 +1850,7 @@ transitions from the Forwarding state to the Blocking state.&lt;/p>&lt;table>
 			rlTrunkPortAddedTrap trap received 
 			rndErrorDesc=%parm[#1]% 
 			rndErrorSeverity=%parm[#2]%&lt;/p></logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Warning</severity>
    </event>
    <event>
       <mask>
@@ -1887,7 +1887,7 @@ transitions from the Forwarding state to the Blocking state.&lt;/p>&lt;table>
 			rlTrunkPortRemovedTrap trap received 
 			rndErrorDesc=%parm[#1]% 
 			rndErrorSeverity=%parm[#2]%&lt;/p></logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Warning</severity>
    </event>
    <event>
       <mask>
@@ -1925,7 +1925,7 @@ a trunk because of device limitations or diffrent swIfType.&lt;/p>&lt;table>
 			rlTrunkPortNotCapableTrap trap received 
 			rndErrorDesc=%parm[#1]% 
 			rndErrorSeverity=%parm[#2]%&lt;/p></logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Warning</severity>
    </event>
    <event>
       <mask>
@@ -1963,7 +1963,7 @@ a frame with new source Mac Address.&lt;/p>&lt;table>
 			rlLockPortTrap trap received 
 			rndErrorDesc=%parm[#1]% 
 			rndErrorSeverity=%parm[#2]%&lt;/p></logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Warning</severity>
    </event>
    <event>
       <mask>
@@ -2000,7 +2000,7 @@ a frame with new source Mac Address.&lt;/p>&lt;table>
 			vlanDynVlanAdded trap received 
 			rndErrorDesc=%parm[#1]% 
 			rndErrorSeverity=%parm[#2]%&lt;/p></logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Warning</severity>
    </event>
    <event>
       <mask>
@@ -2037,7 +2037,7 @@ a frame with new source Mac Address.&lt;/p>&lt;table>
 			vlanDynVlanRemoved trap received 
 			rndErrorDesc=%parm[#1]% 
 			rndErrorSeverity=%parm[#2]%&lt;/p></logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Warning</severity>
    </event>
    <event>
       <mask>
@@ -2074,7 +2074,7 @@ a frame with new source Mac Address.&lt;/p>&lt;table>
 			vlanDynamicToStatic trap received 
 			rndErrorDesc=%parm[#1]% 
 			rndErrorSeverity=%parm[#2]%&lt;/p></logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Warning</severity>
    </event>
    <event>
       <mask>
@@ -2111,7 +2111,7 @@ a frame with new source Mac Address.&lt;/p>&lt;table>
 			vlanStaticToDynamic trap received 
 			rndErrorDesc=%parm[#1]% 
 			rndErrorSeverity=%parm[#2]%&lt;/p></logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Warning</severity>
    </event>
    <event>
       <mask>
@@ -2148,7 +2148,7 @@ a frame with new source Mac Address.&lt;/p>&lt;table>
 			dstrSysLog trap received 
 			rndErrorDesc=%parm[#1]% 
 			rndErrorSeverity=%parm[#2]%&lt;/p></logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Warning</severity>
    </event>
    <event>
       <mask>
@@ -2191,7 +2191,7 @@ The error text will specify the fan index, fan description and the exact fan sta
 			rlEnvMonFanStateChange trap received 
 			rndErrorDesc=%parm[#1]% 
 			rndErrorSeverity=%parm[#2]%&lt;/p></logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Warning</severity>
    </event>
    <event>
       <mask>
@@ -2234,7 +2234,7 @@ The error text will specify the power supply index, power supply description and
 			rlEnvMonPowerSupplyStateChange trap received 
 			rndErrorDesc=%parm[#1]% 
 			rndErrorSeverity=%parm[#2]%&lt;/p></logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Warning</severity>
    </event>
    <event>
       <mask>
@@ -2273,7 +2273,7 @@ The error text will specify the power supply index, power supply description and
 			rlStackStateChange trap received 
 			rndErrorDesc=%parm[#1]% 
 			rndErrorSeverity=%parm[#2]%&lt;/p></logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Warning</severity>
    </event>
    <event>
       <mask>
@@ -2311,7 +2311,7 @@ device specific safe temperature threshold.&lt;/p>&lt;table>
 			rlEnvMonTemperatureRisingAlarm trap received 
 			rndErrorDesc=%parm[#1]% 
 			rndErrorSeverity=%parm[#2]%&lt;/p></logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Minor</severity>
    </event>
    <event>
       <mask>
@@ -2349,7 +2349,7 @@ a copy operation successfully.&lt;/p>&lt;table>
 			rlCopyFinished trap received 
 			rndErrorDesc=%parm[#1]% 
 			rndErrorSeverity=%parm[#2]%&lt;/p></logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Normal</severity>
    </event>
    <event>
       <mask>
@@ -2386,7 +2386,7 @@ a copy operation successfully.&lt;/p>&lt;table>
 			rlCopyFailed trap received 
 			rndErrorDesc=%parm[#1]% 
 			rndErrorSeverity=%parm[#2]%&lt;/p></logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Warning</severity>
    </event>
    <event>
       <mask>
@@ -2424,7 +2424,7 @@ failed due to full hash chain.&lt;/p>&lt;table>
 			rlBrgMacAddFailedTrap trap received 
 			rndErrorDesc=%parm[#1]% 
 			rndErrorSeverity=%parm[#2]%&lt;/p></logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Minor</severity>
    </event>
    <event>
       <mask>
@@ -2461,7 +2461,7 @@ failed due to full hash chain.&lt;/p>&lt;table>
 			rldot1xPortStatusAuthorizedTrap trap received 
 			rndErrorDesc=%parm[#1]% 
 			rndErrorSeverity=%parm[#2]%&lt;/p></logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Warning</severity>
    </event>
    <event>
       <mask>
@@ -2498,7 +2498,7 @@ failed due to full hash chain.&lt;/p>&lt;table>
 			rldot1xPortStatusUnauthorizedTrap trap received 
 			rndErrorDesc=%parm[#1]% 
 			rndErrorSeverity=%parm[#2]%&lt;/p></logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Warning</severity>
    </event>
    <event>
       <mask>
@@ -2535,7 +2535,7 @@ failed due to full hash chain.&lt;/p>&lt;table>
 			swIfTablePortLock trap received 
 			rndErrorDesc=%parm[#1]% 
 			rndErrorSeverity=%parm[#2]%&lt;/p></logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Warning</severity>
    </event>
    <event>
       <mask>
@@ -2572,7 +2572,7 @@ failed due to full hash chain.&lt;/p>&lt;table>
 			swIfTablePortUnLock trap received 
 			rndErrorDesc=%parm[#1]% 
 			rndErrorSeverity=%parm[#2]%&lt;/p></logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Warning</severity>
    </event>
    <event>
       <mask>
@@ -2610,6 +2610,6 @@ number of consecutives unsuccessful login attempts.&lt;/p>&lt;table>
 			rlAAAUserLocked trap received 
 			rndErrorDesc=%parm[#1]% 
 			rndErrorSeverity=%parm[#2]%&lt;/p></logmsg>
-      <severity>Indeterminate</severity>
+      <severity>Warning</severity>
    </event>
 </events>

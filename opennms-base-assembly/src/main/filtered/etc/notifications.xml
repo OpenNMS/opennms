@@ -10,8 +10,7 @@
         <rule>IPADDR != '0.0.0.0'</rule>
         <destinationPath>Email-Admin</destinationPath>
         <text-message>All services are down on interface %interfaceresolve% (%interface%) 
-on node %nodelabel%.  New Outage records have been created and service level availability calculations will be impacted 
-until this outage is resolved.</text-message>
+on node %nodelabel%.  New Outage records have been created and service level availability calculations will be impacted until this outage is resolved.</text-message>
         <subject>Notice #%noticeid%: %interfaceresolve% (%interface%) on node %nodelabel% down.</subject>
         <numeric-message>111-%noticeid%</numeric-message>
     </notification>
