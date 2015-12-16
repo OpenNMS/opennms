@@ -52,30 +52,27 @@ public class DefaultPollerSettings implements InitializingBean, PollerSettings {
 	
 	private static final Logger LOG = LoggerFactory.getLogger(DefaultPollerSettings.class);
     
-    private static final String MONITOR_ID_KEY = "locationMonitorId";
+    private static final String MONITORING_SYSTEM_ID_KEY = "locationMonitorId";
     
     private Resource m_configResource;
     
     private Properties m_settings;
 
-    /**
-     * <p>getMonitorId</p>
-     *
-     * @return a {@link java.lang.Integer} object.
-     */
+    /** {@inheritDoc} */
     @Override
-    public String getMonitorId() {
-        return m_settings.getProperty(MONITOR_ID_KEY);
+    public String getMonitoringSystemId() {
+        return m_settings.getProperty(MONITORING_SYSTEM_ID_KEY);
     }
 
     /** {@inheritDoc} */
     @Override
-    public void setMonitorId(String monitorId) {
-        if (monitorId == null)
-            m_settings.remove(MONITOR_ID_KEY);
-        else
-            m_settings.setProperty(MONITOR_ID_KEY, monitorId.toString());
-        
+    public void setMonitoringSystemId(String monitorId) {
+        if (monitorId == null) {
+            m_settings.remove(MONITORING_SYSTEM_ID_KEY);
+        } else {
+            m_settings.setProperty(MONITORING_SYSTEM_ID_KEY, monitorId.toString());
+        }
+
         save();
     }
     
@@ -124,7 +121,4 @@ public class DefaultPollerSettings implements InitializingBean, PollerSettings {
         }
         
     }
-    
-    
-
 }

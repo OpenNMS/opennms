@@ -131,7 +131,7 @@ public class PollerFrontEndIT implements InitializingBean {
         // Start up the remote poller
         m_frontEnd.register("RDU");
         assertTrue(m_frontEnd.isStarted());
-        String monitorId = m_settings.getMonitorId();
+        String monitorId = m_settings.getMonitoringSystemId();
 
         assertTrue(m_frontEnd.isRegistered());
         // Make sure there is a total of one remote poller
