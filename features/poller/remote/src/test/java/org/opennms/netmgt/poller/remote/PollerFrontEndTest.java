@@ -57,7 +57,7 @@ import org.opennms.test.mock.EasyMockUtils;
 
 public class PollerFrontEndTest extends TestCase {
 
-    public static final String LOCATION_MONITOR_ID = UUID.randomUUID().toString();
+    public static final String MONITORING_SYSTEM_ID = UUID.randomUUID().toString();
 
     public static class PolledServiceChangeEventEquals implements IArgumentMatcher {
 
@@ -157,7 +157,7 @@ public class PollerFrontEndTest extends TestCase {
     }
 
     public void testAfterPropertiesSetWhenRegistered() throws Exception {
-        testAfterPropertiesSetWithRegisteredId(LOCATION_MONITOR_ID);
+        testAfterPropertiesSetWithRegisteredId(MONITORING_SYSTEM_ID);
     }
 
     public void testAlreadyRegistered() throws Exception {
@@ -526,11 +526,11 @@ public class PollerFrontEndTest extends TestCase {
     }
 
     private void anticipateGetConfiguration() {
-        expect(m_backEnd.getPollerConfiguration(LOCATION_MONITOR_ID)).andReturn(pollConfig());
+        expect(m_backEnd.getPollerConfiguration(MONITORING_SYSTEM_ID)).andReturn(pollConfig());
     }
 
     private void anticipateGetMonitorId() {
-        expect(m_settings.getMonitorId()).andReturn(getRegisteredId());
+        expect(m_settings.getMonitoringSystemId()).andReturn(getRegisteredId());
     }
 
     private void anticipateGetPolledService() {
@@ -561,7 +561,7 @@ public class PollerFrontEndTest extends TestCase {
             }
         }
         
-        expect(m_backEnd.pollerCheckingIn(LOCATION_MONITOR_ID, oldTimestamp)).andReturn(m_monitorStatus);
+        expect(m_backEnd.pollerCheckingIn(MONITORING_SYSTEM_ID, oldTimestamp)).andReturn(m_monitorStatus);
 
     }
 
@@ -593,7 +593,7 @@ public class PollerFrontEndTest extends TestCase {
     private void anticipateRegisterLocationMonitor() {
         setRegistered();
         expect(m_backEnd.registerLocationMonitor("OAK")).andReturn(getRegisteredId());
-        m_settings.setMonitorId(getRegisteredId());
+        m_settings.setMonitoringSystemId(getRegisteredId());
     }
 
     private void anticipateReportResult() {
@@ -659,7 +659,7 @@ public class PollerFrontEndTest extends TestCase {
     }
 
     private void setRegistered() {
-        setRegisteredId(LOCATION_MONITOR_ID);
+        setRegisteredId(MONITORING_SYSTEM_ID);
     }
 
     private void setRegisteredId(String registeredId) {

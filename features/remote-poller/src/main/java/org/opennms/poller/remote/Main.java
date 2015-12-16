@@ -79,6 +79,12 @@ public class Main implements Runnable {
     protected boolean m_gui = false;
     protected boolean m_disableIcmp = false;
 
+    private static enum SpringExportSchemes {
+        rmi,
+        http,
+        https
+    }
+
     private Main(String[] args) {
         // Give us some time to attach a debugger if necessary
         //try { Thread.sleep(20000); } catch (InterruptedException e) {}
@@ -117,18 +123,32 @@ public class Main implements Runnable {
     }
 
     private void getAuthenticationInfo() {
-        if (m_uri == null || m_uri.getScheme() == null) {
-            throw new RuntimeException("no URI specified!");
+        if (m_uri == null) {
+            throw new IllegalArgumentException("no URI specified!");
+        } else if (m_uri.getScheme() == null) {
+            throw new IllegalArgumentException("no URI scheme specified!");
         }
-        if (m_uri.getScheme().equals("rmi")) {
+
+        // Make sure that the URI is a valid value
+        SpringExportSchemes.valueOf(m_uri.getScheme());
+
+        if (SpringExportSchemes.rmi.toString().equals(m_uri.getScheme())) {
             // RMI doesn't have authentication
             return;
         }
 
         if (m_username == null) {
+            // Display a screen where the username and password are entered
             GroovyGui gui = createGui();
             gui.createAndShowGui();
+
+            /*
+             * This call pauses on a {@link CountDownLatch} that is
+             * signaled when the user hits the 'OK' button on the GroovyGui
+             * screen.
+             */
             AuthenticationBean auth = gui.getAuthenticationBean();
+
             m_username = auth.getUsername();
             m_password = auth.getPassword();
         }
@@ -139,6 +159,12 @@ public class Main implements Runnable {
         }
     }
 
+    /**
+     * Create the username and password form GUI so that the credentials can be input
+     * by the user.
+     * 
+     * @return GroovyGui that will display a username and password form.
+     */
     private static GroovyGui createGui() {
         try {
             return (GroovyGui)Class.forName("org.opennms.groovy.poller.remote.ConfigurationGui").newInstance();

@@ -381,7 +381,9 @@ public class DefaultPollerFrontEnd implements PollerFrontEnd, InitializingBean, 
     // current configuration
     private PollerConfiguration m_pollerConfiguration;
 
-    // current state of polled services
+    /**
+     * Current state of polled services. The map key is the monitored service ID.
+     */
     private Map<Integer, ServicePollState> m_pollState = new LinkedHashMap<Integer, ServicePollState>();
 
     /** {@inheritDoc} */
@@ -461,14 +463,14 @@ public class DefaultPollerFrontEnd implements PollerFrontEnd, InitializingBean, 
      * @return a {@link org.opennms.netmgt.model.OnmsLocationMonitor.MonitorStatus} object.
      */
     private MonitorStatus doCheckIn() {
-        return m_backEnd.pollerCheckingIn(getMonitorId(), getCurrentConfigTimestamp());
+        return m_backEnd.pollerCheckingIn(getMonitoringSystemId(), getCurrentConfigTimestamp());
     }
 
     /**
      * <p>doDelete</p>
      */
     private void doDelete() {
-        setMonitorId(null);
+        setMonitoringSystemId(null);
     }
 
     /**
@@ -481,7 +483,7 @@ public class DefaultPollerFrontEnd implements PollerFrontEnd, InitializingBean, 
         assertNotNull(m_pollService, "pollService");
         assertNotNull(m_pollerSettings, "pollerSettings");
 
-        return getMonitorId();
+        return getMonitoringSystemId();
     }
 
     /**
@@ -491,7 +493,7 @@ public class DefaultPollerFrontEnd implements PollerFrontEnd, InitializingBean, 
      */
     private boolean doPollerStart() {
 
-        if (!m_backEnd.pollerStarting(getMonitorId(), getDetails())) {
+        if (!m_backEnd.pollerStarting(getMonitoringSystemId(), getDetails())) {
             // the monitor has been deleted on the server
             return false;
         }
@@ -514,7 +516,7 @@ public class DefaultPollerFrontEnd implements PollerFrontEnd, InitializingBean, 
 
         updateServicePollState(polledServiceId, result);
 
-        m_backEnd.reportResult(getMonitorId(), polledServiceId, result);
+        m_backEnd.reportResult(getMonitoringSystemId(), polledServiceId, result);
     }
 
     /**
@@ -524,8 +526,8 @@ public class DefaultPollerFrontEnd implements PollerFrontEnd, InitializingBean, 
      */
     private void doRegister(final String location) {
 
-        String monitorId = m_backEnd.registerLocationMonitor(location);
-        setMonitorId(monitorId);
+        String monitoringSystemId = m_backEnd.registerLocationMonitor(location);
+        setMonitoringSystemId(monitoringSystemId);
 
         doPollerStart();
 
@@ -535,7 +537,7 @@ public class DefaultPollerFrontEnd implements PollerFrontEnd, InitializingBean, 
      * <p>doStop</p>
      */
     private void doStop() {
-        m_backEnd.pollerStopping(getMonitorId());
+        m_backEnd.pollerStopping(getMonitoringSystemId());
     }
 
     /**
@@ -565,8 +567,8 @@ public class DefaultPollerFrontEnd implements PollerFrontEnd, InitializingBean, 
      *
      * @return a {@link java.lang.Integer} object.
      */
-    private String getMonitorId() {
-        return m_pollerSettings.getMonitorId();
+    private String getMonitoringSystemId() {
+        return m_pollerSettings.getMonitoringSystemId();
     }
 
     /**
@@ -587,7 +589,7 @@ public class DefaultPollerFrontEnd implements PollerFrontEnd, InitializingBean, 
      */
     @Override
     public String getMonitorName() {
-        return (isRegistered() ? m_backEnd.getMonitorName(getMonitorId()) : "");
+        return (isRegistered() ? m_backEnd.getMonitorName(getMonitoringSystemId()) : "");
     }
 
     /**
@@ -696,8 +698,8 @@ public class DefaultPollerFrontEnd implements PollerFrontEnd, InitializingBean, 
      *
      * @param monitorId a {@link java.lang.Integer} object.
      */
-    private void setMonitorId(final String monitorId) {
-        m_pollerSettings.setMonitorId(monitorId);
+    private void setMonitoringSystemId(final String monitorId) {
+        m_pollerSettings.setMonitoringSystemId(monitorId);
     }
 
     /**
@@ -778,7 +780,7 @@ public class DefaultPollerFrontEnd implements PollerFrontEnd, InitializingBean, 
     }
 
     private PollerConfiguration retrieveLatestConfiguration() {
-        PollerConfiguration config = m_backEnd.getPollerConfiguration(getMonitorId());
+        PollerConfiguration config = m_backEnd.getPollerConfiguration(getMonitoringSystemId());
         m_timeAdjustment.setMasterTime(config.getServerTime());
         return config;
     }
