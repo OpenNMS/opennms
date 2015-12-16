@@ -250,7 +250,13 @@
       <parameter key="timeout" value="3000"/>
       <parameter key="ignoreStandBy" value="false"/>
     </service>
-
+    <service name="MS-RDP" interval="300000" user-defined="false" status="on">
+      <parameter key="retry" value="1" />
+      <parameter key="banner" value="*" />
+      <parameter key="port" value="3389" />
+      <parameter key="timeout" value="3000" />
+    </service>
+ 
     <downtime interval="30000" begin="0" end="300000" /><!-- 30s, 0, 5m -->
     <downtime interval="300000" begin="300000" end="43200000" /><!-- 5m, 5m, 12h -->
     <downtime interval="600000" begin="43200000" end="432000000" /><!-- 10m, 12h, 5d -->
@@ -315,4 +321,5 @@
   <monitor service="OpenNMS-JVM" class-name="org.opennms.netmgt.poller.monitors.Jsr160Monitor" />
   <monitor service="VMwareCim-HostSystem" class-name="org.opennms.netmgt.poller.monitors.VmwareCimMonitor"/>
   <monitor service="VMware-ManagedEntity" class-name="org.opennms.netmgt.poller.monitors.VmwareMonitor"/>
+  <monitor service="MS-RDP" class-name="org.opennms.netmgt.poller.monitors.TcpMonitor" />
 </poller-configuration>
