@@ -29,6 +29,7 @@
 package org.opennms.netmgt.bsm.service.internal;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -96,6 +97,13 @@ public class BusinessServiceManagerImpl implements BusinessServiceManager {
     @Override
     public void delete(Long id) {
         BusinessService service = getBusinessService(id);
+
+        service.getParentServices().forEach(p -> p.removeChildService(service));
+        service.setParentServices(Collections.emptySet());
+
+        service.getChildServices().forEach(p -> p.removeParentService(service));
+        service.setChildServices(Collections.emptySet());
+
         getDao().delete(service);
     }
 
@@ -147,7 +155,9 @@ public class BusinessServiceManagerImpl implements BusinessServiceManager {
 
         // add and update
         service.addChildService(childService);
+        childService.addParentService(service);
         getDao().update(service);
+        getDao().update(childService);
         return true;
     }
 
@@ -163,7 +173,9 @@ public class BusinessServiceManagerImpl implements BusinessServiceManager {
 
         // remove and update
         service.removeChildService(childService);
+        childService.removeParentService(service);
         getDao().update(service);
+        getDao().update(childService);
         return true;
     }
 
@@ -188,6 +200,15 @@ public class BusinessServiceManagerImpl implements BusinessServiceManager {
                        .filter(s -> !this.checkDescendantForLoop(service, s))
                        .map(this::transform)
                        .collect(Collectors.toSet());
+    }
+
+    @Override
+    public Set<BusinessServiceDTO> getParentServices(BusinessServiceDTO childServiceDTO) {
+        final BusinessService childService = transform(childServiceDTO);
+        return childService.getParentServices()
+                           .stream()
+                           .map(this::transform)
+                           .collect(Collectors.toSet());
     }
 
     @Override
