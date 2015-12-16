@@ -78,6 +78,7 @@ public class BusinessServiceDTOJaxbTest extends XmlTestNoCastor<BusinessServiceD
                    "</ip-service>" +
                "</ip-services>" +
                "<child-services/>" +
+               "<parent-services/>" +
             "</business-service>",
             null
         }});
