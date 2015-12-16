@@ -73,6 +73,10 @@ public class BusinessServiceDTO {
     @XmlElementWrapper(name="child-services")
     private Set<BusinessServiceDTO> m_childServices = Sets.newLinkedHashSet();
 
+    @XmlElement(name="parent-service")
+    @XmlElementWrapper(name="parent-services")
+    private Set<BusinessServiceDTO> m_parentServices = Sets.newLinkedHashSet();
+
     public Long getId() {
         return m_id;
     }
@@ -169,6 +173,22 @@ public class BusinessServiceDTO {
 
     public void removeChildService(BusinessServiceDTO childService) {
         m_childServices.remove(childService);
+    }
+
+    public Set<BusinessServiceDTO> getParentServices() {
+        return m_parentServices;
+    }
+
+    public void setParentServices(Set<BusinessServiceDTO> parentServices) {
+        m_parentServices = parentServices;
+    }
+
+    public void addParentService(BusinessServiceDTO parentService) {
+        m_parentServices.add(parentService);
+    }
+
+    public void removeParentService(BusinessServiceDTO parentService) {
+        m_parentServices.remove(parentService);
     }
 
     public void setLocation(ResourceLocation location) {

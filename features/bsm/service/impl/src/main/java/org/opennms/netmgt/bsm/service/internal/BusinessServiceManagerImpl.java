@@ -242,6 +242,10 @@ public class BusinessServiceManagerImpl implements BusinessServiceManager {
             BusinessService childService = getBusinessService(Long.valueOf(eachService.getId()));
             service.addChildService(childService);
         }
+        for (BusinessServiceDTO eachService : dto.getParentServices()) {
+            BusinessService parentService = getBusinessService(Long.valueOf(eachService.getId()));
+            service.addParentService(parentService);
+        }
         return service;
     }
 
@@ -261,6 +265,12 @@ public class BusinessServiceManagerImpl implements BusinessServiceManager {
             BusinessServiceDTO childServiceDTO = transform(eachService);
             if (childServiceDTO != null) {
                 dto.addChildService(childServiceDTO);
+            }
+        }
+        for (BusinessService eachService : service.getChildServices()) {
+            BusinessServiceDTO parentServiceDTO = transform(eachService);
+            if (parentServiceDTO != null) {
+                dto.addParentService(parentServiceDTO);
             }
         }
         return dto;
