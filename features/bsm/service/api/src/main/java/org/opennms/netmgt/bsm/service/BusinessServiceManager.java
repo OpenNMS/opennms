@@ -56,6 +56,8 @@ public interface BusinessServiceManager {
 
     Set<BusinessServiceDTO> getFeasibleChildServices(BusinessServiceDTO service);
 
+    Set<BusinessServiceDTO> getParentServices(BusinessServiceDTO service);
+
     OnmsSeverity getOperationalStatusForBusinessService(Long serviceId);
 
     OnmsSeverity getOperationalStatusForIPService(Integer ipServiceId);

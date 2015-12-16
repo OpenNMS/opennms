@@ -32,6 +32,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
@@ -42,6 +43,7 @@ import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.MapKeyColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
@@ -67,6 +69,8 @@ public class BusinessService {
     private Set<OnmsMonitoredService> m_ipServices = Sets.newLinkedHashSet();
 
     private Set<BusinessService> m_childServices = Sets.newLinkedHashSet();
+
+    private Set<BusinessService> m_parentServices = Sets.newLinkedHashSet();
 
     @Id
     @SequenceGenerator(name = "opennmsSequence", sequenceName = "opennmsNxtId")
@@ -111,8 +115,8 @@ public class BusinessService {
 
     @OneToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "bsm_service_ifservices",
-        joinColumns = @JoinColumn(name = "bsm_service_id", referencedColumnName = "id"),
-        inverseJoinColumns = @JoinColumn(name="ifserviceid"))
+               joinColumns = @JoinColumn(name = "bsm_service_id", referencedColumnName = "id"),
+               inverseJoinColumns = @JoinColumn(name="ifserviceid"))
     public Set<OnmsMonitoredService> getIpServices() {
         return m_ipServices;
     }
@@ -136,7 +140,8 @@ public class BusinessService {
             .collect(Collectors.toSet());
     }
 
-    @OneToMany(fetch = FetchType.LAZY)
+    @ManyToMany(fetch = FetchType.EAGER,
+                cascade = CascadeType.ALL)
     @JoinTable(name = "bsm_service_children",
                joinColumns = @JoinColumn(name = "bsm_service_parent", referencedColumnName = "id"),
                inverseJoinColumns = @JoinColumn(name="bsm_service_child", referencedColumnName = "id"))
@@ -156,14 +161,23 @@ public class BusinessService {
         m_childServices.remove(childService);
     }
 
-    @Transient
-    public Set<String> getAllReductionKeys() {
-        Set<String> allReductionKeys = Sets.newHashSet();
-        for (OnmsMonitoredService ipService : getIpServices()) {
-            allReductionKeys.addAll(OnmsMonitoredServiceHelper.getReductionKeys(ipService));
-        }
-        allReductionKeys.addAll(getReductionKeys());
-        return allReductionKeys;
+    @ManyToMany(fetch = FetchType.EAGER,
+                cascade = CascadeType.ALL,
+                mappedBy = "childServices")
+    public Set<BusinessService> getParentServices() {
+        return m_parentServices;
+    }
+
+    public void setParentServices(Set<BusinessService> parentServices) {
+        m_parentServices = parentServices;
+    }
+
+    public void addParentService(BusinessService parentService) {
+        m_parentServices.add(parentService);
+    }
+
+    public void removeParentService(BusinessService parentService) {
+        m_parentServices.remove(parentService);
     }
 
     @Override

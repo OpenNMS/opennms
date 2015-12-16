@@ -59,6 +59,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.google.common.collect.Lists;
 
+import java.util.Collections;
+
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {
         "classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
@@ -157,6 +159,50 @@ public class BusinessServiceManagerImplIT {
         Assert.assertEquals(OnmsSeverity.CRITICAL, businessServiceManager.getOperationalStatusForIPService(5));
         Assert.assertEquals(OnmsSeverity.CRITICAL, businessServiceManager.getOperationalStatusForBusinessService(serviceId1));
         Assert.assertEquals(OnmsSeverity.NORMAL, businessServiceManager.getOperationalStatusForBusinessService(serviceId2));
+    }
+
+    @Test
+    public void testChildMapping() {
+        BusinessService service_p_1 = createService("Business Service #p1");
+        BusinessService service_p_2 = createService("Business Service #p2");
+        BusinessService service_c_1 = createService("Business Service #c1");
+        BusinessService service_c_2 = createService("Business Service #c2");
+
+        businessServiceDao.save(service_p_1);
+        businessServiceDao.save(service_p_2);
+        businessServiceDao.save(service_c_1);
+        businessServiceDao.save(service_c_2);
+
+        businessServiceManager.assignChildService(service_p_1.getId(), service_c_1.getId());
+        businessServiceManager.assignChildService(service_p_1.getId(), service_c_2.getId());
+
+        businessServiceManager.assignChildService(service_p_2.getId(), service_c_1.getId());
+        businessServiceManager.assignChildService(service_p_2.getId(), service_c_2.getId());
+
+        Assert.assertEquals(ImmutableSet.of(service_p_1, service_p_2),
+                            service_c_1.getParentServices());
+
+        Assert.assertEquals(ImmutableSet.of(service_p_1, service_p_2),
+                            service_c_2.getParentServices());
+    }
+
+    @Test
+    public void testChildDeletion() {
+        BusinessService service_p = createService("Business Service #p");
+        BusinessService service_c_1 = createService("Business Service #c1");
+        BusinessService service_c_2 = createService("Business Service #c2");
+
+        businessServiceDao.save(service_p);
+        businessServiceDao.save(service_c_1);
+        businessServiceDao.save(service_c_2);
+
+        businessServiceManager.assignChildService(service_p.getId(), service_c_1.getId());
+        businessServiceManager.assignChildService(service_p.getId(), service_c_2.getId());
+
+        businessServiceManager.delete(service_c_1.getId());
+
+        Assert.assertEquals(ImmutableSet.of(service_c_2),
+                            service_p.getChildServices());
     }
 
     @Test
