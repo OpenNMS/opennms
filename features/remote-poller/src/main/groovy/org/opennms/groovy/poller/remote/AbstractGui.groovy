@@ -8,6 +8,7 @@ import java.awt.Font
 import java.awt.GraphicsEnvironment
 import java.awt.font.TextAttribute
 
+import javax.swing.JButton
 import javax.swing.JFrame
 import javax.swing.JPanel
 import javax.swing.ListCellRenderer
@@ -23,6 +24,7 @@ import org.opennms.poller.remote.GroovyGui
 
 public abstract class AbstractGui implements GroovyGui {
     private def m_gui
+    private def m_defaultButton
 
     private def m_headerFont
     private def m_labelFont
@@ -153,6 +155,17 @@ public abstract class AbstractGui implements GroovyGui {
         return m_listCellRenderer
     }
 
+    protected JButton getDefaultButton() {
+        return m_defaultButton
+    }
+
+    protected void setDefaultButton(final JButton button) {
+        m_defaultButton = button
+        if (button.rootPane != null) {
+            button.rootPane.defaultButton = button
+        }
+    }
+
     @Override
     public final void createAndShowGui() {
         m_gui = swing.frame(title:'Scan', size:[750,550], pack:true, visible:false, background:getBackgroundColor(), defaultCloseOperation:WindowConstants.DISPOSE_ON_CLOSE)
@@ -177,8 +190,11 @@ public abstract class AbstractGui implements GroovyGui {
         m_gui.add(rootPanel)
         m_gui.pack()
         m_gui.setLocationRelativeTo(null)
+        if (m_defaultButton) {
+            rootPanel.rootPane.defaultButton = m_defaultButton
+        }
         m_gui.setVisible(true)
-        m_gui.show()
+        //m_gui.show()
     }
 
     protected Font getFont(final String fontName) {
