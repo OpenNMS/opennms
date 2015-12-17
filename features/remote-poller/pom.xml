@@ -11,6 +11,9 @@
   <packaging>jar</packaging>
   <name>OpenNMS Features Remote Poller</name>
   <url>http://maven.apache.org</url>
+  <properties>
+    <swt.version>4.5.1</swt.version>
+  </properties>
   <build>
     <plugins>
       <plugin>
@@ -123,6 +126,48 @@ groovy.compiler.output.path=target/classes
     </plugins>
   </build>
   <dependencies>
+    <dependency>
+      <groupId>com.miglayout</groupId>
+      <artifactId>miglayout-ideutil</artifactId>
+      <version>5.0</version>
+    </dependency>
+    <dependency>
+      <groupId>com.miglayout</groupId>
+      <artifactId>miglayout-swing</artifactId>
+      <version>5.0</version>
+    </dependency>
+    <!--
+    <dependency>
+        <groupId>org.eclipse.swt</groupId>
+        <artifactId>org.eclipse.swt.win32.win32.x86</artifactId>
+        <version>${swt.version}</version>
+    </dependency>
+    <dependency>
+        <groupId>org.eclipse.swt</groupId>
+        <artifactId>org.eclipse.swt.win32.win32.x86_64</artifactId>
+        <version>${swt.version}</version>
+    </dependency>
+    <dependency>
+        <groupId>org.eclipse.swt</groupId>
+        <artifactId>org.eclipse.swt.gtk.linux.x86</artifactId>
+        <version>${swt.version}</version>
+    </dependency>
+    <dependency>
+        <groupId>org.eclipse.swt</groupId>
+        <artifactId>org.eclipse.swt.gtk.linux.x86_64</artifactId>
+        <version>${swt.version}</version>
+    </dependency>
+    <dependency>
+        <groupId>org.eclipse.swt</groupId>
+        <artifactId>org.eclipse.swt.cocoa.macosx.x86_64</artifactId>
+        <version>${swt.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.miglayout</groupId>
+      <artifactId>miglayout-swt</artifactId>
+      <version>5.0</version>
+    </dependency>
+    -->
     <dependency>
       <groupId>org.opennms.core.build</groupId>
       <artifactId>org.opennms.core.build.keystore</artifactId>
@@ -293,6 +338,12 @@ groovy.compiler.output.path=target/classes
       <name>OpenNMS Maven Repository</name>
       <url>http://maven.opennms.org/content/groups/opennms.org-release</url>
     </repository>
+    <!--
+    <repository>
+        <id>maven-eclipse-repo</id>
+        <url>http://maven-eclipse.github.io/maven</url>
+    </repository>
+    -->
   </repositories>
 
 </project>
