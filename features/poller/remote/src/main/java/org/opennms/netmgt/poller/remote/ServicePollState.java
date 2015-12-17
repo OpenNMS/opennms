@@ -173,6 +173,7 @@ public class ServicePollState implements Comparable<ServicePollState>, Serializa
         return new CompareToBuilder()
             .append(thisService.getNodeLabel(), thatService.getNodeLabel())
             .append(thisService.getIpAddr(), thatService.getIpAddr())
+            // TODO: getLastPoll() can return null so this seems dangerous...
             .append(this.getLastPoll().getStatusName(), that.getLastPoll().getStatusName())
             .append(thisService.getServiceId(), thatService.getServiceId())
             .append(thisService.getNodeId(), thatService.getNodeId())

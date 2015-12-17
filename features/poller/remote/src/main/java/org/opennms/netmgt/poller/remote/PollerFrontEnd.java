@@ -42,14 +42,15 @@ import org.opennms.netmgt.config.monitoringLocations.LocationDef;
  * @version $Id: $
  */
 public interface PollerFrontEnd {
-    
-    /**
-     * <p>getMonitoringLocations</p>
-     *
-     * @return a {@link java.util.Collection} object.
-     */
-    Collection<LocationDef> getMonitoringLocations();
-    
+
+    public static enum PollerFrontEndStates {
+        exitNecessary,
+        started,
+        registered,
+        paused,
+        disconnected
+    }
+
     /**
      * <p>getPolledServices</p>
      *

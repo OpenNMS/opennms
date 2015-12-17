@@ -51,8 +51,8 @@ import org.opennms.netmgt.poller.DistributionContext;
 import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.poller.ServiceMonitor;
 import org.opennms.netmgt.poller.ServiceMonitorLocator;
+import org.opennms.netmgt.poller.remote.PollerFrontEnd.PollerFrontEndStates;
 import org.opennms.netmgt.poller.remote.support.DefaultPollerFrontEnd;
-import org.opennms.netmgt.poller.remote.support.DefaultPollerFrontEnd.PollerFrontEndStates;
 import org.opennms.test.mock.EasyMockUtils;
 
 public class PollerFrontEndTest extends TestCase {
