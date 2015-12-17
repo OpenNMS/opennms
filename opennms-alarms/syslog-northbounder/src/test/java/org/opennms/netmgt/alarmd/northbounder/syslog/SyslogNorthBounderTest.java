@@ -102,10 +102,10 @@ public class SyslogNorthBounderTest {
     protected MockNodeDao m_nodeDao;
 
     /** The Syslog Server. */
-    public SyslogServerIF m_server;
+    private SyslogServerIF m_server;
 
     /** The Test LOG stream. */
-    public TestPrintStream m_logStream;
+    protected TestPrintStream m_logStream;
 
     /**
      * Needed a String based OutputStream class for the Syslog4j eventhandler interface.

@@ -61,16 +61,12 @@ public class SyslogFilter {
     private boolean m_enabled = true;
 
     /** The filter name. */
-    @XmlElement(name="name", required=false)
+    @XmlAttribute(name="name", required=false)
     private String m_name = "Undefined";
 
     /** The filter rule. */
     @XmlElement(name="rule", required=true)
     private String m_rule = "localhost";
-
-    /** The target destination name. */
-    @XmlElement(name="destination", required=true)
-    private String m_destination;
 
     /** The m_message format. */
     @XmlElement(name="message-format", required=false)
@@ -87,13 +83,13 @@ public class SyslogFilter {
      *
      * @param name the name
      * @param rule the rule
-     * @param destination the destination
+     * @param messageFormat the message format
      */
-    public SyslogFilter(String name, String rule, String destination) {
+    public SyslogFilter(String name, String rule, String messageFormat) {
         super();
         this.m_name = name;
         this.m_rule = rule;
-        this.m_destination = destination;
+        this.m_messageFormat = messageFormat;
     }
 
     /**
@@ -121,15 +117,6 @@ public class SyslogFilter {
      */
     public String getRule() {
         return m_rule;
-    }
-
-    /**
-     * Gets the target destination.
-     *
-     * @return the target destination
-     */
-    public String getDestination() {
-        return m_destination;
     }
 
     /**
@@ -166,15 +153,6 @@ public class SyslogFilter {
      */
     public void setRule(String rule) {
         this.m_rule = rule;
-    }
-
-    /**
-     * Sets the target destination.
-     *
-     * @param m_destination the new target destination
-     */
-    public void setDestination(String destination) {
-        this.m_destination = destination;
     }
 
     /**

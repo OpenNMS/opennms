@@ -134,24 +134,6 @@ public class SyslogNorthBounderWithFiltersTest extends SyslogNorthBounderTest {
         Assert.assertTrue(messages.get(1).contains("ALARM 10 FROM INTERFACE /10.0.1.1"));
         reader.close();
 
-        // Replace the configuration (to test the reload operation)
-        FileUtils.copyFile(new File("src/test/resources/syslog-northbounder-config2.xml"), configFile);
-
-        // Verify filters and send alarms to the northbound interfaces if they accept the alarms
-        for (SyslogNorthbounder nbi : nbis) {
-            nbi.reloadConfig();
-            if (nbi.accepts(nbAlarm)) {
-                nbi.forwardAlarms(alarms);
-            }
-        }
-
-        // Extract the log messages and verify the content
-        reader = new BufferedReader(new StringReader(m_logStream.readStream()));
-        messages = getMessagesFromBuffer(reader);
-        Assert.assertTrue("Log messages sent: 1, Log messages received: " + messages.size(), 1 == messages.size());
-        Assert.assertTrue(messages.get(0).contains("ALARM ID:10 NODE:agalue;"));
-        reader.close();
-
         // Remove the temporary configuration file
         configFile.delete();
     }

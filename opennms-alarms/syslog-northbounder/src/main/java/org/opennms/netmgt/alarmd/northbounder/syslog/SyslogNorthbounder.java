@@ -116,16 +116,10 @@ InitializingBean {
         LOG.debug("Validating UEI of alarm: {}", alarm.getUei());
         if (getConfig().getUeis() == null || getConfig().getUeis().contains(alarm.getUei())) {
             LOG.debug("UEI: {}, accepted.", alarm.getUei());
-            if (getConfig().getFilters() == null) {
+            if (m_destination.getFilters() == null) {
                 return true;
             }
-            boolean passed = false;
-            for (SyslogFilter filter : getConfig().getFilters()) {
-                if (filter.getDestination().equals(m_destination.getName()) && filter.passFilter(alarm)) {
-                    passed = true;
-                    break;
-                }
-            }
+            boolean passed = m_destination.passFilter(alarm);
             LOG.debug("Filters: {}, passed ? {}.", alarm.getUei(), passed);
             return passed;
         }
@@ -181,8 +175,13 @@ InitializingBean {
                 if (mapping == null) {
                     mapping = createMapping(alarmMappings, alarm);
                 }
+
                 LOG.debug("Making substitutions for tokens in message format for alarm: {}.", alarm.getId());
-                syslogMessage = PropertiesUtils.substitute(getConfig().getMessageFormatForDestination(m_destination.getName()), mapping);
+                String msgFormat = m_destination.getCustomMessageFormat(alarm);
+                if (msgFormat == null) {
+                    msgFormat = getConfig().getMessageFormat();
+                }
+                syslogMessage = PropertiesUtils.substitute(msgFormat, mapping);
 
                 LOG.debug("Determining LOG_LEVEL for alarm: {}", alarm.getId());
                 level = determineLogLevel(alarm.getSeverity());

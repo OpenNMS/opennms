@@ -76,10 +76,6 @@ public class SyslogNorthbounderConfig implements Serializable {
     @XmlElement(name = "uei", required = false)
     private List<String> m_ueis;
 
-    /** The filters. */
-    @XmlElement(name = "filter", required = false)
-    private List<SyslogFilter> m_filters;
-
     /**
      * Gets the destinations.
      *
@@ -123,23 +119,6 @@ public class SyslogNorthbounderConfig implements Serializable {
      */
     public String getMessageFormat() {
         return m_messageFormat;
-    }
-
-    /**
-     * Gets the message format for destination.
-     *
-     * @param destinationName the destination name
-     * @return the message format for destination
-     */
-    public String getMessageFormatForDestination(String destinationName) {
-        if (getFilters() != null) {
-            for (SyslogFilter filter : getFilters()) {
-                if (filter.getDestination().equals(destinationName) && filter.getMessageFormat() != null) {
-                    return filter.getMessageFormat();
-                }
-            }
-        }
-        return getMessageFormat();
     }
 
     /**
@@ -221,24 +200,6 @@ public class SyslogNorthbounderConfig implements Serializable {
      */
     public void setEnabled(Boolean enabled) {
         m_enabled = enabled;
-    }
-
-    /**
-     * Gets the filters.
-     *
-     * @return the filters
-     */
-    public List<SyslogFilter> getFilters() {
-        return m_filters;
-    }
-
-    /**
-     * Sets the filters.
-     *
-     * @param filters the new filters
-     */
-    public void setFilters(List<SyslogFilter> filters) {
-        this.m_filters = filters;
     }
 
     /**

@@ -28,6 +28,8 @@
 
 package org.opennms.netmgt.alarmd.northbounder.syslog;
 
+import java.util.List;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
@@ -36,6 +38,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
 import org.opennms.netmgt.alarmd.api.Destination;
+import org.opennms.netmgt.alarmd.api.NorthboundAlarm;
 
 /**
  * Configuration for the various Syslog hosts to receive alarms via Syslog.
@@ -196,6 +199,10 @@ public class SyslogDestination implements Destination {
     /** The first occurrence only flag. */
     @XmlElement(name = "first-occurrence-only", defaultValue = "false", required = false)
     private boolean m_firstOccurrenceOnly = false;
+
+    /** The filters. */
+    @XmlElement(name = "filter", required = false)
+    private List<SyslogFilter> m_filters;
 
     /**
      * Instantiates a new Syslog destination.
@@ -401,4 +408,55 @@ public class SyslogDestination implements Destination {
         m_firstOccurrenceOnly = firstOccurrenceOnly;
     }
 
+    /**
+     * Gets the filters.
+     *
+     * @return the filters
+     */
+    public List<SyslogFilter> getFilters() {
+        return m_filters;
+    }
+
+    /**
+     * Sets the filters.
+     *
+     * @param filters the new filters
+     */
+    public void setFilters(List<SyslogFilter> filters) {
+        this.m_filters = filters;
+    }
+
+    /**
+     * Pass filter.
+     *
+     * @param alarm the alarm
+     * @return true, if successful
+     */
+    public boolean passFilter(NorthboundAlarm alarm) {
+        if (m_filters != null) {
+            for (SyslogFilter filter : m_filters) {
+                if (filter.passFilter(alarm)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Gets the custom message format.
+     *
+     * @param alarm the alarm
+     * @return the custom message format
+     */
+    public String getCustomMessageFormat(NorthboundAlarm alarm) {
+        if (m_filters != null) {
+            for (SyslogFilter filter : m_filters) {
+                if (filter.getMessageFormat() != null && filter.passFilter(alarm)) {
+                    return filter.getMessageFormat();
+                }
+            }
+        }
+        return null;
+    }
 }

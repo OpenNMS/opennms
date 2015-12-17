@@ -36,8 +36,6 @@ import static org.junit.Assert.assertTrue;
 import java.io.File;
 import java.io.FileWriter;
 
-import static org.junit.Assert.assertFalse;
-
 import org.junit.Test;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.FileSystemResource;
@@ -122,17 +120,15 @@ public class SyslogConfigDaoTest {
             "    <send-local-time>false</send-local-time>" +
             "    <truncate-message>true</truncate-message>" +
             "    <first-occurrence-only>true</first-occurrence-only>" +
+            "    <filter name=\"filter-1\">" +
+            "      <rule>uei matches '^.*traps.*'</rule>" +
+            "      <message-format>ALARM ${alarmId} ON node ${nodeLabel}@${foreignSource}</message-format>" +
+            "    </filter>" +
+            "    <filter name=\"filter-2\" enabled=\"false\">" +
+            "      <rule>uei matches '^.*traps.*'</rule>" +
+            "    </filter>" +
             ">\n" +
-            "   </destination>" +
-            "   <filter>" +
-            "     <name>filter-1</name>" +
-            "     <destination>test-host</destination>" +
-            "     <message-format>ALARM ${alarmId} ON node ${nodeLabel}@${foreignSource}</message-format>" +
-            "   </filter>" +
-            "   <filter enabled=\"false\">" +
-            "     <name>filter-2</name>" +
-            "     <destination>test-host</destination>" +
-            "   </filter>" +
+            "  </destination>" +
             "</syslog-northbounder-config>\n" +
             "";
 
@@ -211,18 +207,20 @@ public class SyslogConfigDaoTest {
         dao.afterPropertiesSet();
 
         assertNotNull(dao.getConfig());
-        assertEquals(2, dao.getConfig().getFilters().size());
-        assertEquals(true, dao.getConfig().getFilters().get(0).isEnabled());
-        assertEquals(false, dao.getConfig().getFilters().get(1).isEnabled());
-        assertTrue(dao.getConfig().getMessageFormatForDestination("test-host").contains("foreignSource"));
-        assertFalse(dao.getConfig().getMessageFormatForDestination("blah-blah").contains("foreignSource"));
+        SyslogDestination dst = dao.getConfig().getDestination("test-host");
+        assertNotNull(dst);
+        assertEquals(2, dst.getFilters().size());
+        assertEquals(true, dst.getFilters().get(0).isEnabled());
+        assertEquals(false,dst.getFilters().get(1).isEnabled());
 
         writer = new FileWriter(configFile);
         writer.write(xmlNoUeis);
         writer.close();
         dao.reload();
 
-        assertNull(dao.getConfig().getFilters());
+        dst = dao.getConfig().getDestination("test-host");
+        assertNotNull(dst);
+        assertNull(dst.getFilters());
         configFile.delete();
     }
 
