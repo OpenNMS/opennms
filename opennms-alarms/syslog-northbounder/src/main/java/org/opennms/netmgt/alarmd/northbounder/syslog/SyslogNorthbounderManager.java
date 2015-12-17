@@ -103,9 +103,7 @@ public class SyslogNorthbounderManager implements InitializingBean, Northbounder
      */
     @Override
     public void destroy() throws Exception {
-        for (Registration r : m_registrations.values()) {
-            r.unregister();
-        }
+        m_registrations.values().forEach(r -> unregister(r));
     }
 
     /**
@@ -156,7 +154,7 @@ public class SyslogNorthbounderManager implements InitializingBean, Northbounder
     public void reloadConfig() {
         m_configDao.reload();
         LOG.info("Reloading syslog northbound configuration.");
-        m_registrations.forEach((k,v) -> { if (k != getName()) v.unregister();});
+        m_registrations.forEach((k,v) -> { if (k != getName()) unregister(v);});
         try {
             registerNorthnounders();
         } catch (Exception e) {
@@ -164,4 +162,16 @@ public class SyslogNorthbounderManager implements InitializingBean, Northbounder
         }
     }
 
+    /**
+     * Unregister.
+     *
+     * @param reg the registration object
+     */
+    public void unregister(Registration reg) {
+        // Invalidate the Northbounder implementation (to be sure it won't listen for more alarms).
+        reg.unregister();
+
+        // Shutdown the Syslog target
+        reg.getProvider(Northbounder.class).stop();
+    }
 }

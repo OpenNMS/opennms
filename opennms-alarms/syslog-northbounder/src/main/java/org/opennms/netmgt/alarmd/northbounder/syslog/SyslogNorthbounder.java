@@ -55,8 +55,7 @@ import org.springframework.beans.factory.InitializingBean;
  * 
  * @author <a href="mailto:david@opennms.org>David Hustace</a>
  */
-public class SyslogNorthbounder extends AbstractNorthbounder implements
-InitializingBean {
+public class SyslogNorthbounder extends AbstractNorthbounder implements InitializingBean {
 
     /** The Constant LOG. */
     private static final Logger LOG = LoggerFactory.getLogger(SyslogNorthbounder.class);
@@ -98,6 +97,15 @@ InitializingBean {
         setNaglesDelay(getConfig().getNaglesDelay());
         setMaxBatchSize(getConfig().getBatchSize());
         setMaxPreservedAlarms(getConfig().getQueueSize());
+    }
+
+    /* (non-Javadoc)
+     * @see org.opennms.netmgt.alarmd.api.support.AbstractNorthbounder#onStop()
+     */
+    @Override
+    protected void onStop() {
+        Syslog.destroyInstance(getName());
+        super.onStop();
     }
 
     /**
