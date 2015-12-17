@@ -51,7 +51,7 @@ import org.opennms.netmgt.icmp.NullPinger;
 import org.opennms.netmgt.icmp.Pinger;
 import org.opennms.netmgt.icmp.PingerFactory;
 import org.opennms.netmgt.poller.remote.PollerFrontEnd;
-import org.opennms.netmgt.poller.remote.support.DefaultPollerFrontEnd.PollerFrontEndStates;
+import org.opennms.netmgt.poller.remote.PollerFrontEnd.PollerFrontEndStates;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 import org.slf4j.Logger;
