@@ -167,7 +167,7 @@ public class Main implements Runnable {
      */
     private static AuthenticationGui createGui() {
         try {
-            return (AuthenticationGui)Class.forName("org.opennms.groovy.poller.remote.ConfigurationGui").newInstance();
+            return (AuthenticationGui)Class.forName("org.opennms.groovy.poller.remote.LoginGui").newInstance();
         } catch (Throwable e) {
             throw new RuntimeException("Unable to find Configuration GUI!", e);
         }
