@@ -139,7 +139,7 @@ public class Main implements Runnable {
 
         if (m_username == null) {
             // Display a screen where the username and password are entered
-            GroovyGui gui = createGui();
+            AuthenticationGui gui = createGui();
             gui.createAndShowGui();
 
             /*
@@ -165,9 +165,9 @@ public class Main implements Runnable {
      * 
      * @return GroovyGui that will display a username and password form.
      */
-    private static GroovyGui createGui() {
+    private static AuthenticationGui createGui() {
         try {
-            return (GroovyGui)Class.forName("org.opennms.groovy.poller.remote.ConfigurationGui").newInstance();
+            return (AuthenticationGui)Class.forName("org.opennms.groovy.poller.remote.ConfigurationGui").newInstance();
         } catch (Throwable e) {
             throw new RuntimeException("Unable to find Configuration GUI!", e);
         }

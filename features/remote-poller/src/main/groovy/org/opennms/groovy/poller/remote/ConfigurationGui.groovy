@@ -43,9 +43,9 @@ import javax.swing.JPasswordField;
 import javax.swing.text.DefaultStyledDocument;
 
 import org.opennms.poller.remote.AuthenticationBean;
-import org.opennms.poller.remote.GroovyGui;
+import org.opennms.poller.remote.AuthenticationGui;
 
-class ConfigurationGui implements GroovyGui {
+class ConfigurationGui implements AuthenticationGui {
     def m_authenticationBean = new AuthenticationBean();
     def swing = new SwingBuilder();
     def gui;
