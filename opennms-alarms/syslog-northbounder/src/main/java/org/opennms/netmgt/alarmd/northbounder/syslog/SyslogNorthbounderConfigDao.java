@@ -41,16 +41,14 @@ public class SyslogNorthbounderConfigDao extends AbstractJaxbConfigDao<SyslogNor
      * Instantiates a new Syslog northbounder configiguration DAO.
      */
     public SyslogNorthbounderConfigDao() {
-        super(SyslogNorthbounderConfig.class,
-              "Config for Syslog Northbounder");
+        super(SyslogNorthbounderConfig.class, "Config for Syslog Northbounder");
     }
 
     /* (non-Javadoc)
      * @see org.opennms.core.xml.AbstractJaxbConfigDao#translateConfig(java.lang.Object)
      */
     @Override
-    protected SyslogNorthbounderConfig translateConfig(
-            SyslogNorthbounderConfig config) {
+    protected SyslogNorthbounderConfig translateConfig( SyslogNorthbounderConfig config) {
         return config;
     }
 

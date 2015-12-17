@@ -66,7 +66,7 @@ public class SyslogFilter {
 
     /** The filter rule. */
     @XmlElement(name="rule", required=true)
-    private String m_rule = "localhost";
+    private String m_rule;
 
     /** The m_message format. */
     @XmlElement(name="message-format", required=false)
