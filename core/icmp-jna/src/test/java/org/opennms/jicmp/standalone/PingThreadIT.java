@@ -35,6 +35,7 @@ import java.net.InetAddress;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.sun.jna.Platform;
@@ -46,6 +47,7 @@ import com.sun.jna.Platform;
  * @author brozow
  */
 
+@Ignore
 public class PingThreadIT {
     
     @Before
