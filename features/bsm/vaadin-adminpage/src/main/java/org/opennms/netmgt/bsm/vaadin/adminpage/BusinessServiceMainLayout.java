@@ -174,18 +174,25 @@ public class BusinessServiceMainLayout extends VerticalLayout {
                         deleteButton.addStyleName("small");
                         BusinessServiceDTO businessServiceDTO = (BusinessServiceDTO) itemId;
                         deleteButton.setId("deleteButton-" + businessServiceDTO.getName());
+
                         deleteButton.addClickListener((Button.ClickListener) event -> {
                                     if (businessServiceDTO.getParentServices().isEmpty() && businessServiceDTO.getChildServices().isEmpty()) {
                                         businessServiceManager.delete(businessServiceDTO.getId());
                                         refreshTable();
                                     } else {
-                                        getUI().addWindow(new ConfirmationDialog("Warning", "This entry is referencing or is referenced by other Business Services! Do you really to delete this entry?", "Delete anyway", "Cancel", new ConfirmationDialog.ConfirmationDialogCallbackAdapter() {
-                                            @Override
-                                            public void confirmed() {
-                                                businessServiceManager.delete(businessServiceDTO.getId());
-                                                refreshTable();
-                                            }
-                                        }));
+                                        new org.opennms.netmgt.vaadin.core.ConfirmationDialog()
+                                                .withOkAction(new org.opennms.netmgt.vaadin.core.ConfirmationDialog.Action() {
+                                                    @Override
+                                                    public void execute(org.opennms.netmgt.vaadin.core.ConfirmationDialog window) {
+                                                        businessServiceManager.delete(businessServiceDTO.getId());
+                                                        refreshTable();
+                                                    }
+                                                })
+                                                .withOkLabel("Delete anyway")
+                                                .withCancelLabel("Cancel")
+                                                .withCaption("Warning")
+                                                .withDescription("This entry is referencing or is referenced by other Business Services! Do you really to delete this entry?")
+                                                .open();
                                     }
                                 }
 
