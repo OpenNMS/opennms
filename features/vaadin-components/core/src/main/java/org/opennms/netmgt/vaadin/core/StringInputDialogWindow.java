@@ -26,7 +26,7 @@
  * http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.bsm.vaadin.adminpage;
+package org.opennms.netmgt.vaadin.core;
 
 import com.vaadin.data.validator.AbstractStringValidator;
 import com.vaadin.event.ShortcutAction;

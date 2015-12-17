@@ -32,6 +32,7 @@ import java.util.Set;
 
 import org.opennms.netmgt.bsm.service.model.BusinessServiceDTO;
 import org.opennms.netmgt.bsm.service.model.IpServiceDTO;
+import org.opennms.netmgt.vaadin.core.StringInputDialogWindow;
 
 import com.vaadin.data.Property;
 import com.vaadin.data.util.BeanItemContainer;
