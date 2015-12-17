@@ -45,7 +45,7 @@ import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
 
 /**
- * Configuration for the various filters to change the behavior of the forrwarder.
+ * Configuration for the various filters to change the behavior of the forwarder.
  * 
  * @author <a href="agalue@opennms.org>Alejandro Galue</a>
  */
@@ -53,26 +53,42 @@ import org.springframework.expression.spel.support.StandardEvaluationContext;
 @XmlAccessorType(XmlAccessType.FIELD)
 public class SyslogFilter {
 
+    /** The Constant LOG. */
     private static final Logger LOG = LoggerFactory.getLogger(SyslogFilter.class);
 
+    /** The enabled flag. */
     @XmlAttribute(name="enabled", required=false)
     private boolean m_enabled = true;
 
+    /** The filter name. */
     @XmlElement(name="name", required=false)
     private String m_name = "Undefined";
 
+    /** The filter rule. */
     @XmlElement(name="rule", required=true)
     private String m_rule = "localhost";
 
+    /** The target destination name. */
     @XmlElement(name="destination", required=true)
     private String m_destination;
 
+    /** The m_message format. */
     @XmlElement(name="message-format", required=false)
     private String m_messageFormat;
 
+    /**
+     * Instantiates a new Syslog filter.
+     */
     public SyslogFilter() {
     }
 
+    /**
+     * Instantiates a new Syslog filter.
+     *
+     * @param name the name
+     * @param rule the rule
+     * @param destination the destination
+     */
     public SyslogFilter(String name, String rule, String destination) {
         super();
         this.m_name = name;
@@ -80,46 +96,102 @@ public class SyslogFilter {
         this.m_destination = destination;
     }
 
+    /**
+     * Checks if the rule is enabled.
+     *
+     * @return true, if is enabled
+     */
     public boolean isEnabled() {
         return m_enabled;
     }
 
+    /**
+     * Gets the filter name.
+     *
+     * @return the filter name
+     */
     public String getName() {
         return m_name;
     }
 
+    /**
+     * Gets the filter rule.
+     *
+     * @return the filter rule
+     */
     public String getRule() {
         return m_rule;
     }
 
+    /**
+     * Gets the target destination.
+     *
+     * @return the target destination
+     */
     public String getDestination() {
         return m_destination;
     }
 
-    public void setEnabled(boolean m_enabled) {
-        this.m_enabled = m_enabled;
-    }
-
-    public void setName(String m_name) {
-        this.m_name = m_name;
-    }
-
-    public void seRule(String m_rule) {
-        this.m_rule = m_rule;
-    }
-
-    public void setDestination(String m_destination) {
-        this.m_destination = m_destination;
-    }
-
+    /**
+     * Gets the message format.
+     *
+     * @return the message format
+     */
     public String getMessageFormat() {
         return m_messageFormat;
     }
 
+    /**
+     * Sets the enabled flag.
+     *
+     * @param enabled the new enabled
+     */
+    public void setEnabled(boolean enabled) {
+        this.m_enabled = enabled;
+    }
+
+    /**
+     * Sets the filter name.
+     *
+     * @param name the new name
+     */
+    public void setName(String name) {
+        this.m_name = name;
+    }
+
+    /**
+     * Sets the filter rule.
+     *
+     * @param rule the rule
+     */
+    public void setRule(String rule) {
+        this.m_rule = rule;
+    }
+
+    /**
+     * Sets the target destination.
+     *
+     * @param m_destination the new target destination
+     */
+    public void setDestination(String destination) {
+        this.m_destination = destination;
+    }
+
+    /**
+     * Sets the message format.
+     *
+     * @param messageFormat the new message format
+     */
     public void setMessageFormat(String messageFormat) {
         this.m_messageFormat = messageFormat;
     }
 
+    /**
+     * Pass filter.
+     *
+     * @param alarm the alarm
+     * @return true, if successful
+     */
     public boolean passFilter(NorthboundAlarm alarm) {
         if (!isEnabled()) {
             return false;

@@ -56,35 +56,44 @@ import org.springframework.beans.factory.InitializingBean;
  * @author <a href="mailto:david@opennms.org>David Hustace</a>
  */
 public class SyslogNorthbounder extends AbstractNorthbounder implements
-        InitializingBean {
+InitializingBean {
+
+    /** The Constant LOG. */
     private static final Logger LOG = LoggerFactory.getLogger(SyslogNorthbounder.class);
 
-    private static final String NBI_NAME = "SyslogNBI";
+    /** The Constant NBI_NAME. */
+    protected static final String NBI_NAME = "SyslogNBI";
 
+    /** The Syslog Configuration DAO. */
     private SyslogNorthbounderConfigDao m_configDao;
 
+    /** The Syslog Destination. */
     private SyslogDestination m_destination;
 
-    public SyslogNorthbounder(SyslogNorthbounderConfigDao configDao,
-            String destination) {
+    /**
+     * Instantiates a new Syslog northbounder.
+     *
+     * @param configDao the Syslog configuration DAO
+     * @param destination the destination
+     */
+    public SyslogNorthbounder(SyslogNorthbounderConfigDao configDao, String destination) {
         super(NBI_NAME + ":" + destination);
         m_configDao = configDao;
         m_destination = configDao.getSyslogDestination(destination);
     }
 
+    /* (non-Javadoc)
+     * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
+     */
     @Override
     public void afterPropertiesSet() throws Exception {
-
         if (m_configDao == null) {
-
             LOG.info("Syslog Northbounder is currently disabled, rejecting alarm.");
-
             String msg = "Syslog forwarding configuration is not initialized.";
             IllegalStateException e = new IllegalStateException(msg);
             LOG.error(msg, e);
             throw e;
         }
-
         createNorthboundInstance();
         setNaglesDelay(getConfig().getNaglesDelay());
         setMaxBatchSize(getConfig().getBatchSize());
@@ -94,16 +103,17 @@ public class SyslogNorthbounder extends AbstractNorthbounder implements
     /**
      * The abstraction makes a call here to determine if the alarm should be
      * placed on the queue of alarms to be sent northerly.
+     *
+     * @param alarm the alarm
+     * @return true, if successful
      */
     @Override
     public boolean accepts(NorthboundAlarm alarm) {
-
         if (!getConfig().isEnabled()) {
             return false;
         }
 
         LOG.debug("Validating UEI of alarm: {}", alarm.getUei());
-
         if (getConfig().getUeis() == null || getConfig().getUeis().contains(alarm.getUei())) {
             LOG.debug("UEI: {}, accepted.", alarm.getUei());
             if (getConfig().getFilters() == null) {
@@ -128,11 +138,12 @@ public class SyslogNorthbounder extends AbstractNorthbounder implements
      * Each implementation of the AbstractNorthbounder has a nice queue
      * (Nagle's algorithmic) and the worker thread that processes the queue
      * calls this method to send alarms to the northern NMS.
+     *
+     * @param alarms the alarms
+     * @throws NorthbounderException the northbounder exception
      */
     @Override
-    public void forwardAlarms(List<NorthboundAlarm> alarms)
-            throws NorthbounderException {
-
+    public void forwardAlarms(List<NorthboundAlarm> alarms) throws NorthbounderException {
         if (alarms == null) {
             String errorMsg = "No alarms in alarms list for syslog forwarding.";
             IllegalStateException e = new IllegalStateException(errorMsg);
@@ -140,17 +151,13 @@ public class SyslogNorthbounder extends AbstractNorthbounder implements
             throw e;
         }
 
-        LOG.info("Forwarding {} alarms to destination:{}", alarms.size(),
-                 m_destination.getName());
-
+        LOG.info("Forwarding {} alarms to destination:{}", alarms.size(), m_destination.getName());
         Map<Integer, Map<String, Object>> alarmMappings = new HashMap<Integer, Map<String, Object>>();
-
         SyslogIF instance;
         try {
             instance = Syslog.getInstance(m_destination.getName());
         } catch (SyslogRuntimeException e) {
-            LOG.error("Could not find Syslog instance for destination: '{}': {}",
-                      m_destination.getName(), e);
+            LOG.error("Could not find Syslog instance for destination: '{}': {}", m_destination.getName(), e);
             throw e;
         }
 
@@ -158,68 +165,35 @@ public class SyslogNorthbounder extends AbstractNorthbounder implements
          * Iterate over the list of alarms to be forwarded N.
          */
         for (NorthboundAlarm alarm : alarms) {
-
             Integer count = alarm.getCount();
             if (count > 1 && m_destination.isFirstOccurrenceOnly()) {
-                LOG.debug("Destination {} is configured for new alarm instances only.  Alarm has count of {}.",
-                          m_destination.getName(), count);
+                LOG.debug("Destination {} is configured for new alarm instances only.  Alarm has count of {}.", m_destination.getName(), count);
                 continue;
             }
-
-            LOG.debug("Creating formatted log message for alarm: {}.",
-                      alarm.getId());
-
+            LOG.debug("Creating formatted log message for alarm: {}.", alarm.getId());
             Map<String, Object> mapping = null;
-
             String syslogMessage;
             int level;
             try {
                 if (alarmMappings != null) {
                     mapping = alarmMappings.get(alarm.getId());
                 }
-
                 if (mapping == null) {
                     mapping = createMapping(alarmMappings, alarm);
                 }
+                LOG.debug("Making substitutions for tokens in message format for alarm: {}.", alarm.getId());
+                syslogMessage = PropertiesUtils.substitute(getConfig().getMessageFormatForDestination(m_destination.getName()), mapping);
 
-                LOG.debug("Making substitutions for tokens in message format for alarm: {}.",
-                          alarm.getId());
-                syslogMessage = PropertiesUtils.substitute(getConfig().getMessageFormatForDestination(m_destination.getName()),
-                                                           mapping);
-
-                LOG.debug("Determining LOG_LEVEL for alarm: {}",
-                          alarm.getId());
+                LOG.debug("Determining LOG_LEVEL for alarm: {}", alarm.getId());
                 level = determineLogLevel(alarm.getSeverity());
 
-                LOG.debug("Forwarding alarm: {} via syslog to destination: {}",
-                          alarm.getId(), m_destination.getName());
+                LOG.debug("Forwarding alarm: {} via syslog to destination: {}", alarm.getId(), m_destination.getName());
                 instance.log(level, syslogMessage);
 
-            } catch (Exception e1) {
-                LOG.error("Caught exception sending to destination: '{}': {}",
-                          m_destination.getName(), e1);
+            } catch (Exception ex) {
+                LOG.error("Caught exception sending to destination: '{}': {}", m_destination.getName(), ex);
             }
         }
-    }
-
-    /* (non-Javadoc)
-     * @see org.opennms.netmgt.alarmd.api.support.AbstractNorthbounder#reloadConfig()
-     */
-    // TODO If the content of the destination was not changed, ignore the request and log a message
-    @Override
-    public void reloadConfig() {
-        LOG.info("Reloading configuration for {}.", getName());
-        m_configDao.reload();
-        final String destinationName = m_destination.getName();
-        SyslogDestination destination = getConfig().getDestination(destinationName);
-        if (destination == null) {
-            LOG.error("Aborting the reload operation because the destination {} can't be found on the configuration file.", destinationName);
-            return;
-        }
-        m_destination = destination;
-        LOG.info("Destroying Syslog Northbound Instance {}.", destinationName);
-        Syslog.destroyInstance(destinationName);
-        createNorthboundInstance();
     }
 
     /**
@@ -227,18 +201,17 @@ public class SyslogNorthbounder extends AbstractNorthbounder implements
      * configuration can be created. This allows generic 127.0.0.1:UDP/514 to
      * work with OpenNMS having no configuration. This is trickery in its
      * finest hour.
+     *
+     * @throws SyslogRuntimeException the syslog runtime exception
      */
     private void createNorthboundInstance() throws SyslogRuntimeException {
 
-        LOG.info("Creating Syslog Northbound Instance {}",
-                 m_destination.getName());
+        LOG.info("Creating Syslog Northbound Instance {}", m_destination.getName());
 
         String instName = m_destination.getName();
         int facility = convertFacility(m_destination.getFacility());
         SyslogProtocol protocol = m_destination.getProtocol();
-        SyslogConfigIF instanceConfiguration = createConfig(m_destination,
-                                                            protocol,
-                                                            facility);
+        SyslogConfigIF instanceConfiguration = createConfig(m_destination, protocol, facility);
         instanceConfiguration.setIdent("OpenNMS");
         instanceConfiguration.setCharSet(m_destination.getCharSet());
         instanceConfiguration.setMaxMessageLength(m_destination.getMaxMessageLength());
@@ -250,24 +223,27 @@ public class SyslogNorthbounder extends AbstractNorthbounder implements
         try {
             Syslog.createInstance(instName, instanceConfiguration);
         } catch (SyslogRuntimeException e) {
-            LOG.error("Could not create northbound instance, '{}': {}",
-                      instName, e);
+            LOG.error("Could not create northbound instance, '{}': {}", instName, e);
             throw e;
         }
-
     }
 
-    private SyslogConfigIF createConfig(final SyslogDestination dest,
-            final SyslogProtocol protocol, int fac) {
+    /**
+     * Creates the Syslog Config object.
+     *
+     * @param dest the destination
+     * @param protocol the protocol
+     * @param fac the facility
+     * @return the SyslogConfigIf object
+     */
+    private SyslogConfigIF createConfig(final SyslogDestination dest, final SyslogProtocol protocol, int fac) {
         SyslogConfigIF config;
         switch (protocol) {
         case UDP:
-            config = new UDPNetSyslogConfig(fac, dest.getHost(),
-                                            dest.getPort());
+            config = new UDPNetSyslogConfig(fac, dest.getHost(), dest.getPort());
             break;
         case TCP:
-            config = new TCPNetSyslogConfig(fac, dest.getHost(),
-                                            dest.getPort());
+            config = new TCPNetSyslogConfig(fac, dest.getHost(), dest.getPort());
             break;
         default:
             config = new UDPNetSyslogConfig(fac, "localhost", 514);
@@ -275,6 +251,12 @@ public class SyslogNorthbounder extends AbstractNorthbounder implements
         return config;
     }
 
+    /**
+     * Convert facility.
+     *
+     * @param facility the facility
+     * @return the integer version of the facility
+     */
     private int convertFacility(final SyslogFacility facility) {
         int fac;
         switch (facility) {
@@ -344,6 +326,12 @@ public class SyslogNorthbounder extends AbstractNorthbounder implements
         return fac;
     }
 
+    /**
+     * Determine log level.
+     *
+     * @param severity the severity
+     * @return the integer version of the severity
+     */
     private int determineLogLevel(final OnmsSeverity severity) {
         int level;
         switch (severity) {
@@ -374,6 +362,11 @@ public class SyslogNorthbounder extends AbstractNorthbounder implements
         return level;
     }
 
+    /**
+     * Gets the Syslog configuration.
+     *
+     * @return the Syslog configuration
+     */
     public SyslogNorthbounderConfig getConfig() {
         return m_configDao.getConfig();
     }
