@@ -45,7 +45,7 @@ import javax.swing.text.DefaultStyledDocument;
 import org.opennms.poller.remote.AuthenticationBean;
 import org.opennms.poller.remote.AuthenticationGui;
 
-class ConfigurationGui implements AuthenticationGui {
+class LoginGui implements AuthenticationGui {
     def m_authenticationBean = new AuthenticationBean();
     def swing = new SwingBuilder();
     def gui;
@@ -87,7 +87,7 @@ class ConfigurationGui implements AuthenticationGui {
     }
 
     public static void main(String[] args) {
-        def configGui = new ConfigurationGui();
+        def configGui = new LoginGui();
         configGui.createAndShowGui();
     }
 }
