@@ -544,6 +544,12 @@ public class ConfigTesterTest {
     }
 
     @Test
+    public void testWSManConfigFiles() {
+        testConfigFile("wsman-config.xml");
+        testConfigFile("wsman-datacollection-config.xml");
+    }
+
+    @Test
     @Ignore
     public void testXmpConfig() {
         testConfigFile("xmp-config.xml");
