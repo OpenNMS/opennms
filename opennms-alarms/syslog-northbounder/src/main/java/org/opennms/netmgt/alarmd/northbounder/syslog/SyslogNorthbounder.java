@@ -211,7 +211,12 @@ public class SyslogNorthbounder extends AbstractNorthbounder implements
         LOG.info("Reloading configuration for {}.", getName());
         m_configDao.reload();
         final String destinationName = m_destination.getName();
-        m_destination = getConfig().getDestination(destinationName);
+        SyslogDestination destination = getConfig().getDestination(destinationName);
+        if (destination == null) {
+            LOG.error("Aborting the reload operation because the destination {} can't be found on the configuration file.", destinationName);
+            return;
+        }
+        m_destination = destination;
         LOG.info("Destroying Syslog Northbound Instance {}.", destinationName);
         Syslog.destroyInstance(destinationName);
         createNorthboundInstance();
