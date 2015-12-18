@@ -36,6 +36,7 @@ import org.opennms.netmgt.vaadin.core.StringInputDialogWindow;
 
 import com.vaadin.data.Property;
 import com.vaadin.data.util.BeanItemContainer;
+import com.vaadin.data.validator.AbstractStringValidator;
 import com.vaadin.ui.AbstractSelect;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
@@ -239,12 +240,24 @@ public class BusinessServiceEditWindow extends Window {
         addReductionKeyBtn.addClickListener(new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent event) {
-                getUI().addWindow(new StringInputDialogWindow("Enter Reduction Key", "Reduction Key", new StringInputDialogWindow.InputCallbackAdapter() {
-                    @Override
-                    public void inputConfirmed(String value) {
-                        m_reductionKeyListSelect.addItem(value);
-                    }
-                }));
+
+                new StringInputDialogWindow()
+                        .withCaption("Enter Reduction Key")
+                        .withFieldName("Reduction Key")
+                        .withOkLabel("Save")
+                        .withCancelLabel("Cancel")
+                        .withValidator(new AbstractStringValidator("Input must not be empty") {
+                            @Override
+                            protected boolean isValidValue(String s) {
+                                return (!"".equals(s));
+                            }
+                        })
+                        .withOkAction(new StringInputDialogWindow.Action() {
+                            @Override
+                            public void execute(StringInputDialogWindow window) {
+                                m_reductionKeyListSelect.addItem(window.getValue());
+                            }
+                        }).open();
             }
         });
 
@@ -264,7 +277,7 @@ public class BusinessServiceEditWindow extends Window {
         removeReductionKeyBtn.addClickListener(new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent event) {
-                if (m_reductionKeyListSelect.getValue()!=null) {
+                if (m_reductionKeyListSelect.getValue() != null) {
                     m_reductionKeyListSelect.removeItem(m_reductionKeyListSelect.getValue());
                     removeReductionKeyBtn.setEnabled(false);
                 }
