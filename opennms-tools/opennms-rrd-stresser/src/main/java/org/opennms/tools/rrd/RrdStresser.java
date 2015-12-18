@@ -40,7 +40,6 @@ import java.util.List;
 
 import org.opennms.netmgt.rrd.RrdDataSource;
 import org.opennms.netmgt.rrd.RrdStrategy;
-import org.opennms.netmgt.rrd.RrdUtils;
 
 public class RrdStresser {
 	

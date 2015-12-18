@@ -6,7 +6,7 @@
         <relativePath>../../poms/compiled/</relativePath>
         <groupId>org.opennms.features.topology.build</groupId>
         <artifactId>compiled-bundle-settings</artifactId>
-        <version>17.0.1-SNAPSHOT</version>
+        <version>18.0.0-SNAPSHOT</version>
     </parent>
 
     <properties>
@@ -35,12 +35,6 @@
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.opennms.osgi</groupId>
-            <artifactId>opennms-osgi-core</artifactId>
-            <version>${project.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -79,7 +73,7 @@
             <type>pom</type>
         </dependency>
         <dependency>
-            <groupId>org.opennms.osgi.features.topology</groupId>
+            <groupId>org.opennms.features</groupId>
             <artifactId>vaadin</artifactId>
             <type>pom</type>
         </dependency>

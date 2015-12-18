@@ -30,8 +30,6 @@ package org.opennms.netmgt.dao.api;
 
 import java.util.Collection;
 import java.util.Date;
-import java.util.List;
-
 import org.opennms.netmgt.config.monitoringLocations.LocationDef;
 import org.opennms.netmgt.model.LocationMonitorIpInterface;
 import org.opennms.netmgt.model.OnmsApplication;

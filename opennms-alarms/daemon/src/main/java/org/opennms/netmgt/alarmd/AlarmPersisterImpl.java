@@ -77,7 +77,7 @@ public class AlarmPersisterImpl implements AlarmPersister {
         LOG.debug("addOrReduceEventAsAlarm: looking for existing reduction key: {}", reductionKey);
         OnmsAlarm alarm = m_alarmDao.findByReductionKey(reductionKey);
     
-        if (alarm == null) {
+        if (alarm == null || (OnmsSeverity.CLEARED == alarm.getSeverity() && alarm.isAcknowledged())) {
             LOG.debug("addOrReduceEventAsAlarm: reductionKey:{} not found, instantiating new alarm", reductionKey);
             alarm = createNewAlarm(e, event);
             
