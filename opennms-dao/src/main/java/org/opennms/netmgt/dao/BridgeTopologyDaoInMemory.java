@@ -160,9 +160,7 @@ public class BridgeTopologyDaoInMemory implements BridgeTopologyDao {
             bftdomain = new BroadcastDomain();
             m_domains.add(bftdomain);
         }
-        for (BridgeElement element: m_notYetParsedEleMap.remove(nodeid))
-            bftdomain.addBridgeElement(element);
-        bftdomain.loadBFT(nodeid,bft,m_notYetParsedSTPMap.remove(nodeid));
+        bftdomain.loadBFT(nodeid,bft,m_notYetParsedSTPMap.remove(nodeid),m_notYetParsedEleMap.remove(nodeid));
 
     }
 

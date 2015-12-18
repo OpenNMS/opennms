@@ -12,6 +12,7 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
 
     public NodeDiscoveryBridgeTopology(EnhancedLinkd linkd, Node node) {
         super(linkd, node);
+        setInitialSleepTime(linkd.getInitialSleepTime()+180000);
     }
 
     @Override
@@ -25,7 +26,11 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
             LOG.warn("run: no broadcast domain found for node: {}", getNodeId());
             return;
         }
-        if (!domain.isCalculating()) {
+        if (domain.isCalculating()) {
+            LOG.info("run: broadcast domain is calculating either on node {}....", getNodeId());
+            return;
+        }
+        if (!domain.isTopologyChanged()) {
             LOG.info("run: broadcast domain with no topology change found for node: {}. exiting...", getNodeId());
             return;
         }

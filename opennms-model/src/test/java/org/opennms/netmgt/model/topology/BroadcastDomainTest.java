@@ -31,20 +31,20 @@ package org.opennms.netmgt.model.topology;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.opennms.core.test.MockLogAppender;
-import org.opennms.netmgt.model.BridgeBridgeLink;
-import org.opennms.netmgt.model.BridgeElement;
-import org.opennms.netmgt.model.BridgeMacLink;
-import org.opennms.netmgt.model.BridgeMacLink.BridgeDot1qTpFdbStatus;
-import org.opennms.netmgt.model.OnmsNode;
-public class DefaultBridgeTopologyTest {
+import org.opennms.netmgt.model.topology.BridgeTopology.BridgeTopologyLink;
+import org.opennms.netmgt.model.topology.BridgeTopology.BridgeTopologyPort;
+public class BroadcastDomainTest {
 
     @Before
     public void setUp() throws Exception {
@@ -54,68 +54,48 @@ public class DefaultBridgeTopologyTest {
 
     }
 
-    private void printBridgeTopology(List<SharedSegment> shareds) {
-        for (SharedSegment shared: shareds)
-            printSharedSegment(shared);
-    }
-    
-    private void printSharedSegment(SharedSegment shared) {
-        System.err.println("");
-        System.err.println("------shared Segment-----");
-        System.err.println("designated bridge: " + shared.getDesignatedBridge());
-        System.err.println("designated port: " + shared.getDesignatedPort());
-        System.err.println("macs on segment: " + shared.getMacsOnSegment());
-        System.err.println("bridge ids on segment: " + shared.getBridgeIdsOnSegment());
-        if (shared.noMacsOnSegment()) {
-            for (BridgeBridgeLink blink:  shared.getBridgeBridgeLinks())
-                printBridgeBridgeLink(blink);
-        } else {
-        for (BridgeMacLink mlink: shared.getBridgeMacLinks()) 
-            printBridgeMacLink(mlink);
+    protected List<BridgeTopologyLink> printBridgeTopologyLinks(List<BridgeTopologyLink> paths) {
+        for (final BridgeTopologyLink path: paths) {
+            printBridgeTopologyLink(path);
         }
-        System.err.println("------shared Segment-----");
+        return paths;
     }
 
-    private void printBridgeMacLink(BridgeMacLink mlink) {
-        System.err.println("------BridgeMacLink-----");
-        System.err.println("nodeid: " + mlink.getNode().getId());
-        System.err.println("bridgeport: " + mlink.getBridgePort());
-        System.err.println("mac: " + mlink.getMacAddress());
-        System.err.println("status: " + BridgeDot1qTpFdbStatus.getTypeString(mlink.getBridgeDot1qTpFdbStatus().getValue()));
-        System.err.println("------BridgeMacLink-----");
-        
+    protected void printBridgeTopologyLink(BridgeTopologyLink path) {
+        System.err.println("");
+        System.err.println("------link-----");
+        System.err.println("macs on link: " + path.getMacs());
+        System.err.println("------bridge port-----");
+        printBridgeTopologyPort(path.getBridgeTopologyPort());
+        if (path.getDesignateBridgePort() != null ) {
+            System.err.println("------designated port-----");
+            printBridgeTopologyPort(path.getDesignateBridgePort());
+        }
     }
-    private void printBridgeBridgeLink(BridgeBridgeLink blink) {
-        System.err.println("------BridgeBridgeLink-----");
-        System.err.println("nodeid: " + blink.getNode().getId());
-        System.err.println("bridgeport: " + blink.getBridgePort());
-        System.err.println("designatednodeid: " + blink.getDesignatedNode().getId());
-        System.err.println("designatedbridgeport: " + blink.getDesignatedPort());
-        System.err.println("------BridgeBridgeLink-----");        
+
+    protected void printBridgeTopologyPort(BridgeTopologyPort port) {
+        System.err.println("nodeid: " + port.getNodeid());
+        System.err.println("bridgeport: " + port.getBridgePort());
+        System.err.println("learned macs: " + port.getMacs());
     }
-    
-    private List<BridgeMacLink> addBridgeForwardingTableEntry(OnmsNode node, Integer bridgeport, String mac, List<BridgeMacLink> bft) {
-        BridgeMacLink link = new BridgeMacLink();
-        link.setNode(node);
-        link.setBridgePort(bridgeport);
-        link.setMacAddress(mac);
-        link.setBridgeDot1qTpFdbStatus(BridgeDot1qTpFdbStatus.DOT1D_TP_FDB_STATUS_LEARNED);
-        bft.add(link);
+
+    private Map<Integer,Set<String>> addBridgeForwardingTableEntry(Integer bridgeport, String mac, Map<Integer,Set<String>> bft) {
+        Set<String> macs = new HashSet<String>();
+        if (bft.containsKey(bridgeport)) {
+            macs = bft.get(bridgeport);
+        }
+        macs.add(mac);
+
+        bft.put(bridgeport, macs);
         return bft;
     }
 
     @Test
     public void testOneBridgeOnePortOneMac() throws Exception {
 
-        Integer nodeAId  = 10;
-        OnmsNode nodeA= new OnmsNode();
-        nodeA.setId(nodeAId);
-        BridgeElement element = new BridgeElement();
-        element.setNode(nodeA);
-        element.setBaseBridgeAddress("aaaaaaaaaaaa");
-        List<BridgeElement> elemlist = new ArrayList<BridgeElement>();
-        elemlist.add(element);
-        List<BridgeMacLink> bftA = new ArrayList<BridgeMacLink>();
+        Integer nodeA  = 10;
+
+        Map<Integer,Set<String>> bftA = new HashMap<Integer, Set<String>>();
 
         Integer portA1 = 1;
         Integer portA2 = 2;
@@ -129,61 +109,46 @@ public class DefaultBridgeTopologyTest {
         String mac4 = "000daaaa0004"; // learned on port A2 
         String mac5 = "000daaaa0005"; // learned on port A2 
 
-        bftA = addBridgeForwardingTableEntry(nodeA,portA1, mac1, bftA);
-        bftA = addBridgeForwardingTableEntry(nodeA,portA2, mac2, bftA);
-        bftA = addBridgeForwardingTableEntry(nodeA,portA3, mac3, bftA);
-        bftA = addBridgeForwardingTableEntry(nodeA,portA4, mac4, bftA);
-        bftA = addBridgeForwardingTableEntry(nodeA,portA5, mac5, bftA);
+        bftA = addBridgeForwardingTableEntry(portA1, mac1, bftA);
+        bftA = addBridgeForwardingTableEntry(portA2, mac2, bftA);
+        bftA = addBridgeForwardingTableEntry(portA3, mac3, bftA);
+        bftA = addBridgeForwardingTableEntry(portA4, mac4, bftA);
+        bftA = addBridgeForwardingTableEntry(portA5, mac5, bftA);
 
-        BroadcastDomain bridgeTopology = new BroadcastDomain();
+        BridgeTopology bridgeTopology = new BridgeTopology();
 
-        bridgeTopology.loadBFT(nodeAId,bftA,null,elemlist);
-        
-        assertTrue(bridgeTopology.isTopologyChanged());
-        assertTrue(!bridgeTopology.isCalculating());
+        bridgeTopology.parseBFT(nodeA,bftA);
 
-        bridgeTopology.calculate();
-        List<SharedSegment> links = bridgeTopology.getTopology();
-        printBridgeTopology(links);
+        List<BridgeTopologyLink> links = bridgeTopology.getTopology();
+        printBridgeTopologyLinks(links);
         assertEquals(5, links.size());
-        for (SharedSegment shared: links) {
-            assertTrue(!shared.noMacsOnSegment());
-            assertEquals(nodeAId,shared.getDesignatedBridge());
-            assertEquals(1, shared.getBridgeIdsOnSegment().size());
-            assertEquals(1, shared.getMacsOnSegment().size());
-            for (BridgeMacLink link: shared.getBridgeMacLinks()) {
-                assertEquals(link.getBridgePort(),shared.getDesignatedPort());
-            if (link.getBridgePort() == portA1) {
-                assertEquals(mac1, link.getMacAddress());
-            } else if (link.getBridgePort() == portA2) {
-                assertEquals(mac2, link.getMacAddress());
-            } else if (link.getBridgePort() == portA3) {
-                assertEquals(mac3, link.getMacAddress());
-            } else if (link.getBridgePort() == portA4) {
-                assertEquals(mac4, link.getMacAddress());
-            } else if (link.getBridgePort() == portA5) {
-                assertEquals(mac5, link.getMacAddress());
+        for (BridgeTopologyLink link: links) {
+            assertEquals(null,link.getDesignateBridgePort());
+            BridgeTopologyPort port = link.getBridgeTopologyPort();
+            assertEquals(nodeA, port.getNodeid());
+            assertEquals(1, link.getMacs().size());
+            assertEquals(1, port.getMacs().size());
+            assertEquals(port.getMacs().iterator().next(),link.getMacs().iterator().next());
+            if (link.getBridgeTopologyPort().getBridgePort() == portA1) {
+                assertEquals(mac1, link.getMacs().iterator().next());
+            } else if (link.getBridgeTopologyPort().getBridgePort() == portA2) {
+                assertEquals(mac2, link.getMacs().iterator().next());
+            } else if (link.getBridgeTopologyPort().getBridgePort() == portA3) {
+                assertEquals(mac3, link.getMacs().iterator().next());
+            } else if (link.getBridgeTopologyPort().getBridgePort() == portA4) {
+                assertEquals(mac4, link.getMacs().iterator().next());
+            } else if (link.getBridgeTopologyPort().getBridgePort() == portA5) {
+                assertEquals(mac5, link.getMacs().iterator().next());
             } else {
                 assertEquals(-1, 1);
             }
-            }
         }
-        assertTrue(!bridgeTopology.isTopologyChanged());
-        assertTrue(!bridgeTopology.isCalculating());
-
     }
+
     @Test
     public void testOneBridgeMoreMacOnePort() throws Exception {
 
-        Integer nodeAId  = 20;
-        OnmsNode nodeA= new OnmsNode();
-        nodeA.setId(nodeAId);
-        BridgeElement element = new BridgeElement();
-        element.setNode(nodeA);
-        element.setBaseBridgeAddress("aaaaaaaaaaaa");
-        List<BridgeElement> elemlist = new ArrayList<BridgeElement>();
-        elemlist.add(element);
-        List<BridgeMacLink> bftA = new ArrayList<BridgeMacLink>();
+        Integer nodeA  = 20;
 
         Integer portA1 = 1;
 
@@ -192,36 +157,34 @@ public class DefaultBridgeTopologyTest {
         String mac3 = "000daaaa0003"; // port A1
         String mac4 = "000daaaa0004"; // port A1
 
+        Map<Integer,Set<String>> bftA = new HashMap<Integer, Set<String>>();
 
-        bftA = addBridgeForwardingTableEntry(nodeA,portA1, mac1,bftA);
-        bftA = addBridgeForwardingTableEntry(nodeA,portA1, mac2,bftA);
-        bftA = addBridgeForwardingTableEntry(nodeA,portA1, mac3,bftA);
-        bftA = addBridgeForwardingTableEntry(nodeA,portA1, mac4,bftA);
+        bftA = addBridgeForwardingTableEntry(portA1, mac1,bftA);
+        bftA =addBridgeForwardingTableEntry(portA1, mac2,bftA);
+        bftA =addBridgeForwardingTableEntry(portA1, mac3,bftA);
+        bftA =addBridgeForwardingTableEntry(portA1, mac4,bftA);
 
-        BroadcastDomain bridgeTopology = new BroadcastDomain();
+        BridgeTopology bridgeTopology = new BridgeTopology();
 
-        bridgeTopology.loadBFT(nodeAId,bftA,null,elemlist);
-        assertTrue(bridgeTopology.isTopologyChanged());
-        assertTrue(!bridgeTopology.isCalculating());
+        bridgeTopology.parseBFT(nodeA,bftA);
 
-        bridgeTopology.calculate();
-        List<SharedSegment> links = bridgeTopology.getTopology();
-        printBridgeTopology(links);
-
+        List<BridgeTopologyLink> links = bridgeTopology.getTopology();
+        printBridgeTopologyLinks(links);
         assertEquals(1, links.size());
-        for (SharedSegment shared: links) {
-            assertTrue(!shared.noMacsOnSegment());
-            assertEquals(nodeAId,shared.getDesignatedBridge());
-            assertEquals(portA1,shared.getDesignatedPort());
-            assertEquals(1, shared.getBridgeIdsOnSegment().size());
-            assertEquals(4, shared.getMacsOnSegment().size());
-            final Set<String> macs = shared.getMacsOnSegment();
-            assertTrue(macs.contains(mac1));
-            assertTrue(macs.contains(mac2));
-            assertTrue(macs.contains(mac3));
-            assertTrue(macs.contains(mac4));
-            for (BridgeMacLink link: shared.getBridgeMacLinks())
-                assertEquals(portA1, link.getBridgePort());
+        for (BridgeTopologyLink link: links) {
+            BridgeTopologyPort port = link.getBridgeTopologyPort();
+            assertEquals(port.getMacs(),link.getMacs());
+            assertEquals(null,link.getDesignateBridgePort());
+            if (link.getBridgeTopologyPort().getBridgePort() == portA1) {
+                final Set<String> macs = link.getMacs();
+                assertEquals(4, macs.size());
+                assertTrue(macs.contains(mac1));
+                assertTrue(macs.contains(mac2));
+                assertTrue(macs.contains(mac3));
+                assertTrue(macs.contains(mac4));
+            } else {
+                assertEquals(-1, 1);
+            }
         }
 
     }
@@ -229,15 +192,7 @@ public class DefaultBridgeTopologyTest {
     @Test
     public void testOneBridgeComplete() throws Exception {
 
-        Integer nodeAId = 30;
-        OnmsNode nodeA= new OnmsNode();
-        nodeA.setId(nodeAId);
-        BridgeElement element = new BridgeElement();
-        element.setNode(nodeA);
-        element.setBaseBridgeAddress("aaaaaaaaaaaa");
-        List<BridgeElement> elemlist = new ArrayList<BridgeElement>();
-        elemlist.add(element);
-        List<BridgeMacLink> bftA = new ArrayList<BridgeMacLink>();
+        Integer nodeA = 30;
 
         Integer portA1 = 1;
         Integer portA2 = 2;
@@ -268,80 +223,79 @@ public class DefaultBridgeTopologyTest {
         String mac252 = "000daaaa0252"; // port A25
         String mac253 = "000daaaa0253"; // port A25
 
+        Map<Integer,Set<String>> bftA = new HashMap<Integer, Set<String>>();
 
-        bftA =addBridgeForwardingTableEntry(nodeA,portA1, mac1,bftA);
-        bftA =addBridgeForwardingTableEntry(nodeA,portA2, mac2,bftA);
-        bftA =addBridgeForwardingTableEntry(nodeA,portA3, mac3,bftA);
-        bftA =addBridgeForwardingTableEntry(nodeA,portA4, mac4,bftA);
+        bftA =addBridgeForwardingTableEntry(portA1, mac1,bftA);
+        bftA =addBridgeForwardingTableEntry(portA2, mac2,bftA);
+        bftA =addBridgeForwardingTableEntry(portA3, mac3,bftA);
+        bftA =addBridgeForwardingTableEntry(portA4, mac4,bftA);
 
-        bftA =addBridgeForwardingTableEntry(nodeA,portA23, mac231,bftA);
-        bftA =addBridgeForwardingTableEntry(nodeA,portA23, mac232,bftA);
-        bftA =addBridgeForwardingTableEntry(nodeA,portA23, mac233,bftA);
-        bftA =addBridgeForwardingTableEntry(nodeA,portA23, mac234,bftA);
+        bftA =addBridgeForwardingTableEntry(portA23, mac231,bftA);
+        bftA =addBridgeForwardingTableEntry(portA23, mac232,bftA);
+        bftA =addBridgeForwardingTableEntry(portA23, mac233,bftA);
+        bftA =addBridgeForwardingTableEntry(portA23, mac234,bftA);
 
-        bftA =addBridgeForwardingTableEntry(nodeA,portA24, mac241,bftA);
-        bftA =addBridgeForwardingTableEntry(nodeA,portA24, mac242,bftA);
-        bftA =addBridgeForwardingTableEntry(nodeA,portA24, mac243,bftA);
-        bftA =addBridgeForwardingTableEntry(nodeA,portA24, mac244,bftA);
-        bftA =addBridgeForwardingTableEntry(nodeA,portA24, mac245,bftA);
+        bftA =addBridgeForwardingTableEntry(portA24, mac241,bftA);
+        bftA =addBridgeForwardingTableEntry(portA24, mac242,bftA);
+        bftA =addBridgeForwardingTableEntry(portA24, mac243,bftA);
+        bftA =addBridgeForwardingTableEntry(portA24, mac244,bftA);
+        bftA =addBridgeForwardingTableEntry(portA24, mac245,bftA);
 
-        bftA =addBridgeForwardingTableEntry(nodeA,portA25, mac251,bftA);
-        bftA =addBridgeForwardingTableEntry(nodeA,portA25, mac252,bftA);
-        bftA =addBridgeForwardingTableEntry(nodeA,portA25, mac253,bftA);
+        bftA =addBridgeForwardingTableEntry(portA25, mac251,bftA);
+        bftA =addBridgeForwardingTableEntry(portA25, mac252,bftA);
+        bftA =addBridgeForwardingTableEntry(portA25, mac253,bftA);
 
 
-        BroadcastDomain bridgeTopology = new BroadcastDomain();
+        BridgeTopology bridgeTopology = new BridgeTopology();
 
-        bridgeTopology.loadBFT(nodeAId,bftA,null,elemlist);
-        assertTrue(bridgeTopology.isTopologyChanged());
-        assertTrue(!bridgeTopology.isCalculating());
+        bridgeTopology.parseBFT(nodeA,bftA);
 
-        bridgeTopology.calculate();
-        List<SharedSegment> links = bridgeTopology.getTopology();
-        printBridgeTopology(links);
+        List<BridgeTopologyLink> links = bridgeTopology.getTopology();
+        printBridgeTopologyLinks(links);
         assertEquals(7, links.size());
-        for (SharedSegment shared: links) {
-            assertTrue(!shared.noMacsOnSegment());
-            assertEquals(nodeAId,shared.getDesignatedBridge());
-            assertEquals(1, shared.getBridgeIdsOnSegment().size());
-            for (BridgeMacLink link: shared.getBridgeMacLinks()) {
-                assertEquals(link.getBridgePort(),shared.getDesignatedPort());
-                if (link.getBridgePort() == portA1) {
-                    assertEquals(1, shared.getMacsOnSegment().size());
-                    assertEquals(mac1, link.getMacAddress());
-                } else if (link.getBridgePort() == portA2) {
-                    assertEquals(1, shared.getMacsOnSegment().size());
-                    assertEquals(mac2, link.getMacAddress());
-                } else if (link.getBridgePort() == portA3) {
-                    assertEquals(1, shared.getMacsOnSegment().size());
-                    assertEquals(mac3, link.getMacAddress());
-                } else if (link.getBridgePort() == portA4) {
-                    assertEquals(1, shared.getMacsOnSegment().size());
-                    assertEquals(mac4, link.getMacAddress());
-                } else if (link.getBridgePort() == portA23) {
-                    final Set<String> macs = shared.getMacsOnSegment();
-                    assertEquals(4, macs.size());
-                    assertTrue(macs.contains(mac231));
-                    assertTrue(macs.contains(mac232));
-                    assertTrue(macs.contains(mac233));
-                    assertTrue(macs.contains(mac234));
-                } else if (link.getBridgePort() == portA24) {
-                    final Set<String> macs = shared.getMacsOnSegment();
-                    assertEquals(5, macs.size());
-                    assertTrue(macs.contains(mac241));
-                    assertTrue(macs.contains(mac242));
-                    assertTrue(macs.contains(mac243));
-                    assertTrue(macs.contains(mac244));
-                    assertTrue(macs.contains(mac245));
-                } else if (link.getBridgePort() == portA25) {
-                    final Set<String> macs = shared.getMacsOnSegment();
-                    assertEquals(3, macs.size());
-                    assertTrue(macs.contains(mac251));
-                    assertTrue(macs.contains(mac252));
-                    assertTrue(macs.contains(mac253));
-                } else {
-                    assertEquals(-1, 1);
-                }
+        for (BridgeTopologyLink link: links) {
+            BridgeTopologyPort port = link.getBridgeTopologyPort();
+            assertEquals(port.getMacs(),link.getMacs());
+            assertEquals(null,link.getDesignateBridgePort());
+            if (link.getBridgeTopologyPort().getBridgePort() == portA1) {
+                assertEquals(1, link.getMacs().size());
+                Iterator<String> macs = link.getMacs().iterator();
+                assertEquals(mac1, macs.next());
+            } else if (link.getBridgeTopologyPort().getBridgePort() == portA2) {
+                assertEquals(1, link.getMacs().size());
+                Iterator<String> macs = link.getMacs().iterator();
+                assertEquals(mac2, macs.next());
+            } else if (link.getBridgeTopologyPort().getBridgePort() == portA3) {
+                assertEquals(1, link.getMacs().size());
+                Iterator<String> macs = link.getMacs().iterator();
+                assertEquals(mac3, macs.next());
+            } else if (link.getBridgeTopologyPort().getBridgePort() == portA4) {
+                assertEquals(1, link.getMacs().size());
+                Iterator<String> macs = link.getMacs().iterator();
+                assertEquals(mac4, macs.next());
+            } else if (link.getBridgeTopologyPort().getBridgePort() == portA23) {
+                final Set<String> macs = link.getMacs();
+                assertEquals(4, macs.size());
+                assertTrue(macs.contains(mac231));
+                assertTrue(macs.contains(mac232));
+                assertTrue(macs.contains(mac233));
+                assertTrue(macs.contains(mac234));
+            } else if (link.getBridgeTopologyPort().getBridgePort() == portA24) {
+                final Set<String> macs = link.getMacs();
+                assertEquals(5, macs.size());
+                assertTrue(macs.contains(mac241));
+                assertTrue(macs.contains(mac242));
+                assertTrue(macs.contains(mac243));
+                assertTrue(macs.contains(mac244));
+                assertTrue(macs.contains(mac245));
+            } else if (link.getBridgeTopologyPort().getBridgePort() == portA25) {
+                final Set<String> macs = link.getMacs();
+                assertEquals(3, macs.size());
+                assertTrue(macs.contains(mac251));
+                assertTrue(macs.contains(mac252));
+                assertTrue(macs.contains(mac253));
+            } else {
+                assertEquals(-1, 1);
             }
         }
 
@@ -350,25 +304,8 @@ public class DefaultBridgeTopologyTest {
     @Test
     public void testTwoConnectedBridgeTopology() throws Exception {
 
-        Integer nodeAId  = 1111;
-        Integer nodeBId = 2222;
-        OnmsNode nodeA= new OnmsNode();
-        nodeA.setId(nodeAId);
-        BridgeElement elementA = new BridgeElement();
-        elementA.setNode(nodeA);
-        elementA.setBaseBridgeAddress("aaaaaaaaaaaa");
-        List<BridgeElement> elemAlist = new ArrayList<BridgeElement>();
-        elemAlist.add(elementA);
-        List<BridgeMacLink> bftA = new ArrayList<BridgeMacLink>();
-
-        OnmsNode nodeB= new OnmsNode();
-        nodeB.setId(nodeBId);
-        BridgeElement elementB = new BridgeElement();
-        elementB.setNode(nodeB);
-        elementB.setBaseBridgeAddress("bbbbbbbbbbbb");
-        List<BridgeElement> elemBlist = new ArrayList<BridgeElement>();
-        elemBlist.add(elementB);
-        List<BridgeMacLink> bftB = new ArrayList<BridgeMacLink>();
+        Integer nodeA  = 1111;
+        Integer nodeB  = 2222;
 
         Integer portA1 = 1;
         Integer portA2 = 2;
@@ -392,80 +329,85 @@ public class DefaultBridgeTopologyTest {
         String mac8 = "000daaaa0008"; // port AB ---port B8
         String mac9 = "000daaaa0009"; // port AB ---port B9
 
-        bftA =addBridgeForwardingTableEntry(nodeA,portA1, mac1,bftA);
-        bftA =addBridgeForwardingTableEntry(nodeA,portA2, mac2,bftA);
-        bftA =addBridgeForwardingTableEntry(nodeA,portA3, mac3,bftA);
-        bftA =addBridgeForwardingTableEntry(nodeA,portA4, mac4,bftA);
-        bftA =addBridgeForwardingTableEntry(nodeA,portA5, mac5,bftA);
+        Map<Integer,Set<String>> bftA = new HashMap<Integer, Set<String>>();
 
-        bftA =addBridgeForwardingTableEntry(nodeA,portAB, mac6,bftA);
-        bftA =addBridgeForwardingTableEntry(nodeA,portAB, mac7,bftA);
-        bftA =addBridgeForwardingTableEntry(nodeA,portAB, mac8,bftA);
-        bftA =addBridgeForwardingTableEntry(nodeA,portAB, mac9,bftA);
+        bftA =addBridgeForwardingTableEntry(portA1, mac1,bftA);
+        bftA =addBridgeForwardingTableEntry(portA2, mac2,bftA);
+        bftA =addBridgeForwardingTableEntry(portA3, mac3,bftA);
+        bftA =addBridgeForwardingTableEntry(portA4, mac4,bftA);
+        bftA =addBridgeForwardingTableEntry(portA5, mac5,bftA);
 
+        bftA =addBridgeForwardingTableEntry(portAB, mac6,bftA);
+        bftA =addBridgeForwardingTableEntry(portAB, mac7,bftA);
+        bftA =addBridgeForwardingTableEntry(portAB, mac8,bftA);
+        bftA =addBridgeForwardingTableEntry(portAB, mac9,bftA);
 
-        bftB =addBridgeForwardingTableEntry(nodeB,portBA, mac1,bftB);
-        bftB =addBridgeForwardingTableEntry(nodeB,portBA, mac2,bftB);
-        bftB =addBridgeForwardingTableEntry(nodeB,portBA, mac3,bftB);
-        bftB =addBridgeForwardingTableEntry(nodeB,portBA, mac4,bftB);
-        bftB =addBridgeForwardingTableEntry(nodeB,portBA, mac5,bftB);
+        Map<Integer,Set<String>> bftB = new HashMap<Integer, Set<String>>();
 
-        bftB =addBridgeForwardingTableEntry(nodeB,portB6, mac6,bftB);
-        bftB =addBridgeForwardingTableEntry(nodeB,portB7, mac7,bftB);
-        bftB =addBridgeForwardingTableEntry(nodeB,portB8, mac8,bftB);
-        bftB =addBridgeForwardingTableEntry(nodeB,portB9, mac9,bftB);
+        bftB =addBridgeForwardingTableEntry(portBA, mac1,bftB);
+        bftB =addBridgeForwardingTableEntry(portBA, mac2,bftB);
+        bftB =addBridgeForwardingTableEntry(portBA, mac3,bftB);
+        bftB =addBridgeForwardingTableEntry(portBA, mac4,bftB);
+        bftB =addBridgeForwardingTableEntry(portBA, mac5,bftB);
 
-        BroadcastDomain bridgeTopology = new BroadcastDomain();
+        bftB =addBridgeForwardingTableEntry(portB6, mac6,bftB);
+        bftB =addBridgeForwardingTableEntry(portB7, mac7,bftB);
+        bftB =addBridgeForwardingTableEntry(portB8, mac8,bftB);
+        bftB =addBridgeForwardingTableEntry(portB9, mac9,bftB);
 
-        bridgeTopology.loadBFT(nodeAId,bftA,null,elemAlist);
-        bridgeTopology.loadBFT(nodeBId,bftB,null,elemBlist);
-        assertTrue(bridgeTopology.isTopologyChanged());
-        assertTrue(!bridgeTopology.isCalculating());
+        BridgeTopology bridgeTopology = new BridgeTopology();
 
-        bridgeTopology.calculate();
-        List<SharedSegment> shsegs = bridgeTopology.getTopology();
-        printBridgeTopology(shsegs);
+        bridgeTopology.parseBFT(nodeA,bftA);
+        bridgeTopology.parseBFT(nodeB,bftB);
 
-        assertEquals(10, shsegs.size());
-        for (SharedSegment shared: shsegs) {
-            if (shared.noMacsOnSegment()) {
-                assertEquals(0, shared.getBridgeMacLinks().size());
-                assertEquals(1, shared.getBridgeBridgeLinks().size());
-                BridgeBridgeLink link=shared.getBridgeBridgeLinks().iterator().next();
-                assertEquals(nodeAId, link.getNode().getId());
-                assertEquals(portAB,link.getBridgePort());
-                assertEquals(nodeBId, link.getDesignatedNode().getId());
-                assertEquals(portBA,link.getDesignatedPort());
+        List<BridgeTopologyLink> links = bridgeTopology.getTopology();
+        printBridgeTopologyLinks(links);
+        assertEquals(10, links.size());
+        for (BridgeTopologyLink link: links) {
+            if (link.getMacs().isEmpty()) {
+                assertEquals(nodeA, link.getBridgeTopologyPort().getNodeid());
+                assertEquals(portAB,link.getBridgeTopologyPort().getBridgePort());
+                assertEquals(nodeB, link.getDesignateBridgePort().getNodeid());
+                assertEquals(portBA,link.getDesignateBridgePort().getBridgePort());
             } else {
-                assertEquals(1, shared.getMacsOnSegment().size());
-                BridgeMacLink link = shared.getBridgeMacLinks().iterator().next();
-                if (link.getMacAddress().equals(mac1)) {
-                    assertEquals(nodeAId, link.getNode().getId());
-                    assertEquals(portA1,link.getBridgePort());
-                } else if (link.getMacAddress().equals(mac2)) {
-                    assertEquals(nodeAId, link.getNode().getId());
-                    assertEquals(portA2,link.getBridgePort());
-                } else if (link.getMacAddress().equals(mac3)) {
-                    assertEquals(nodeAId, link.getNode().getId());
-                    assertEquals(portA3,link.getBridgePort());
-                } else if (link.getMacAddress().equals(mac4)) {
-                    assertEquals(nodeAId, link.getNode().getId());
-                    assertEquals(portA4,link.getBridgePort());
-                } else if (link.getMacAddress().equals(mac5)) {
-                    assertEquals(nodeAId, link.getNode().getId());
-                    assertEquals(portA5,link.getBridgePort());
-                } else if (link.getMacAddress().equals(mac6)) {
-                    assertEquals(nodeBId, link.getNode().getId());
-                    assertEquals(portB6,link.getBridgePort());
-                } else if (link.getMacAddress().equals(mac7)) {
-                    assertEquals(nodeBId, link.getNode().getId());
-                    assertEquals(portB7,link.getBridgePort());
-                } else if (link.getMacAddress().equals(mac8)) {
-                    assertEquals(nodeBId, link.getNode().getId());
-                    assertEquals(portB8,link.getBridgePort());
-                } else if (link.getMacAddress().equals(mac9)) {
-                    assertEquals(nodeBId, link.getNode().getId());
-                    assertEquals(portB9,link.getBridgePort());
+                assertEquals(1, link.getMacs().size());
+                String mac = link.getMacs().iterator().next();
+                if (mac.equals(mac1)) {
+                    assertEquals(nodeA, link.getBridgeTopologyPort().getNodeid());
+                    assertEquals(portA1,link.getBridgeTopologyPort().getBridgePort());
+                    assertEquals(null, link.getDesignateBridgePort());
+                } else if (mac.equals(mac2)) {
+                    assertEquals(nodeA, link.getBridgeTopologyPort().getNodeid());
+                    assertEquals(portA2,link.getBridgeTopologyPort().getBridgePort());
+                    assertEquals(null, link.getDesignateBridgePort());
+                } else if (mac.equals(mac3)) {
+                    assertEquals(nodeA, link.getBridgeTopologyPort().getNodeid());
+                    assertEquals(portA3,link.getBridgeTopologyPort().getBridgePort());
+                    assertEquals(null, link.getDesignateBridgePort());
+                } else if (mac.equals(mac4)) {
+                    assertEquals(nodeA, link.getBridgeTopologyPort().getNodeid());
+                    assertEquals(portA4,link.getBridgeTopologyPort().getBridgePort());
+                    assertEquals(null, link.getDesignateBridgePort());
+                } else if (mac.equals(mac5)) {
+                    assertEquals(nodeA, link.getBridgeTopologyPort().getNodeid());
+                    assertEquals(portA5,link.getBridgeTopologyPort().getBridgePort());
+                    assertEquals(null, link.getDesignateBridgePort());
+                } else if (mac.equals(mac6)) {
+                    assertEquals(nodeB, link.getBridgeTopologyPort().getNodeid());
+                    assertEquals(portB6,link.getBridgeTopologyPort().getBridgePort());
+                    assertEquals(null, link.getDesignateBridgePort());
+                } else if (mac.equals(mac7)) {
+                    assertEquals(nodeB, link.getBridgeTopologyPort().getNodeid());
+                    assertEquals(portB7,link.getBridgeTopologyPort().getBridgePort());
+                    assertEquals(null, link.getDesignateBridgePort());
+                } else if (mac.equals(mac8)) {
+                    assertEquals(nodeB, link.getBridgeTopologyPort().getNodeid());
+                    assertEquals(portB8,link.getBridgeTopologyPort().getBridgePort());
+                    assertEquals(null, link.getDesignateBridgePort());
+                } else if (mac.equals(mac9)) {
+                    assertEquals(nodeB, link.getBridgeTopologyPort().getNodeid());
+                    assertEquals(portB9,link.getBridgeTopologyPort().getBridgePort());
+                    assertEquals(null, link.getDesignateBridgePort());
                 } else {
                     assertEquals(false, true);
                 }
@@ -477,26 +419,8 @@ public class DefaultBridgeTopologyTest {
     @Test
     public void testTwoMergeBridgeTopology() throws Exception {
 
-        Integer nodeAId  = 1111;
-        Integer nodeBId  = 2222;
-
-        OnmsNode nodeA= new OnmsNode();
-        nodeA.setId(nodeAId);
-        BridgeElement elementA = new BridgeElement();
-        elementA.setNode(nodeA);
-        elementA.setBaseBridgeAddress("aaaaaaaaaaaa");
-        List<BridgeElement> elemAlist = new ArrayList<BridgeElement>();
-        elemAlist.add(elementA);
-        List<BridgeMacLink> bftA = new ArrayList<BridgeMacLink>();
-
-        OnmsNode nodeB= new OnmsNode();
-        nodeB.setId(nodeBId);
-        BridgeElement elementB = new BridgeElement();
-        elementB.setNode(nodeB);
-        elementB.setBaseBridgeAddress("bbbbbbbbbbbb");
-        List<BridgeElement> elemBlist = new ArrayList<BridgeElement>();
-        elemBlist.add(elementB);
-        List<BridgeMacLink> bftB = new ArrayList<BridgeMacLink>();
+        Integer nodeA  = 1111;
+        Integer nodeB  = 2222;
 
         Integer portA8 = 8;
         Integer portAB = 16;
@@ -513,79 +437,67 @@ public class DefaultBridgeTopologyTest {
         String mac8 = "000daaaa0008"; // port A8 ---port BA
         String mac9 = "000daaaa0009"; // port AB ---port BA
 
+        Map<Integer,Set<String>> bftA = new HashMap<Integer, Set<String>>();
 
-        bftA =addBridgeForwardingTableEntry(nodeA,portAB, mac1,bftA);
-        bftA =addBridgeForwardingTableEntry(nodeA,portAB, mac2,bftA);
-        bftA =addBridgeForwardingTableEntry(nodeA,portAB, mac3,bftA);
-        bftA =addBridgeForwardingTableEntry(nodeA,portAB, mac4,bftA);
-        bftA =addBridgeForwardingTableEntry(nodeA,portAB, mac5,bftA);
+        bftA =addBridgeForwardingTableEntry(portAB, mac1,bftA);
+        bftA =addBridgeForwardingTableEntry(portAB, mac2,bftA);
+        bftA =addBridgeForwardingTableEntry(portAB, mac3,bftA);
+        bftA =addBridgeForwardingTableEntry(portAB, mac4,bftA);
+        bftA =addBridgeForwardingTableEntry(portAB, mac5,bftA);
 
-        bftA =addBridgeForwardingTableEntry(nodeA,portAB, mac6,bftA);
-        bftA =addBridgeForwardingTableEntry(nodeA,portAB, mac7,bftA);
-        bftA =addBridgeForwardingTableEntry(nodeA,portA8, mac8,bftA);
-        bftA =addBridgeForwardingTableEntry(nodeA,portAB, mac9,bftA);
+        bftA =addBridgeForwardingTableEntry(portAB, mac6,bftA);
+        bftA =addBridgeForwardingTableEntry(portAB, mac7,bftA);
+        bftA =addBridgeForwardingTableEntry(portA8, mac8,bftA);
+        bftA =addBridgeForwardingTableEntry(portAB, mac9,bftA);
 
+        Map<Integer,Set<String>> bftB = new HashMap<Integer, Set<String>>();
 
-        bftB =addBridgeForwardingTableEntry(nodeB,portBA, mac1,bftB);
-        bftB =addBridgeForwardingTableEntry(nodeB,portBA, mac2,bftB);
-        bftB =addBridgeForwardingTableEntry(nodeB,portBA, mac3,bftB);
-        bftB =addBridgeForwardingTableEntry(nodeB,portBA, mac4,bftB);
-        bftB =addBridgeForwardingTableEntry(nodeB,portBA, mac5,bftB);
+        bftB =addBridgeForwardingTableEntry(portBA, mac1,bftB);
+        bftB =addBridgeForwardingTableEntry(portBA, mac2,bftB);
+        bftB =addBridgeForwardingTableEntry(portBA, mac3,bftB);
+        bftB =addBridgeForwardingTableEntry(portBA, mac4,bftB);
+        bftB =addBridgeForwardingTableEntry(portBA, mac5,bftB);
 
-        bftB =addBridgeForwardingTableEntry(nodeB,portB6, mac6,bftB);
-        bftB =addBridgeForwardingTableEntry(nodeB,portBA, mac7,bftB);
-        bftB =addBridgeForwardingTableEntry(nodeB,portBA, mac8,bftB);
-        bftB =addBridgeForwardingTableEntry(nodeB,portBA, mac9,bftB);
+        bftB =addBridgeForwardingTableEntry(portB6, mac6,bftB);
+        bftB =addBridgeForwardingTableEntry(portBA, mac7,bftB);
+        bftB =addBridgeForwardingTableEntry(portBA, mac8,bftB);
+        bftB =addBridgeForwardingTableEntry(portBA, mac9,bftB);
 
-        BroadcastDomain bridgeTopology = new BroadcastDomain();
+        BridgeTopology bridgeTopology = new BridgeTopology();
 
-        bridgeTopology.loadBFT(nodeAId,bftA,null,elemAlist);
-        bridgeTopology.loadBFT(nodeBId,bftB,null,elemBlist);
-        assertTrue(bridgeTopology.isTopologyChanged());
-        assertTrue(!bridgeTopology.isCalculating());
+        bridgeTopology.parseBFT(nodeA,bftA);
+        bridgeTopology.parseBFT(nodeB,bftB);
 
-        bridgeTopology.calculate();
-        List<SharedSegment> shsegs = bridgeTopology.getTopology();
-        printBridgeTopology(shsegs);
-        assertEquals(3, shsegs.size());
+        List<BridgeTopologyLink> links = bridgeTopology.getTopology();
+        printBridgeTopologyLinks(links);
+        assertEquals(3, links.size());
 
-        for (SharedSegment shared: shsegs) {
-            assertEquals(false, shared.noMacsOnSegment());
-            if (shared.getMacsOnSegment().contains(mac1)) {
-                assertEquals(7, shared.getMacsOnSegment().size());
-                assertEquals(true,  shared.getMacsOnSegment().contains(mac2));
-                assertEquals(true,  shared.getMacsOnSegment().contains(mac3));
-                assertEquals(true,  shared.getMacsOnSegment().contains(mac4));
-                assertEquals(true,  shared.getMacsOnSegment().contains(mac5));
-                assertEquals(false, shared.getMacsOnSegment().contains(mac6));
-                assertEquals(true,  shared.getMacsOnSegment().contains(mac7));
-                assertEquals(false, shared.getMacsOnSegment().contains(mac8));
-                assertEquals(true,  shared.getMacsOnSegment().contains(mac9));
-                for (BridgeMacLink link: shared.getBridgeMacLinks()) {
-                    if (link.getNode().getId() == nodeAId) {
-                        assertEquals(portAB,link.getBridgePort());
-                    } else if (link.getNode().getId() == nodeBId) {
-                        assertEquals(portBA,link.getBridgePort());
-                    } else {
-                        assertTrue(false);
-                    }
-                }
-            } else if (shared.getMacsOnSegment().contains(mac6)) {
-                assertEquals(1, shared.getMacsOnSegment().size());
-                assertEquals(nodeBId, shared.getDesignatedBridge());
-                assertEquals(portB6,shared.getDesignatedPort());
-                BridgeMacLink link = shared.getBridgeMacLinks().iterator().next();
-                assertEquals(mac6, link.getMacAddress());
-                assertEquals(nodeBId,link.getNode().getId());
-                assertEquals(portB6,link.getBridgePort());
-            } else if (shared.getMacsOnSegment().contains(mac8)) {
-                assertEquals(1, shared.getMacsOnSegment().size());
-                assertEquals(nodeAId, shared.getDesignatedBridge());
-                assertEquals(portA8,shared.getDesignatedPort());
-                BridgeMacLink link = shared.getBridgeMacLinks().iterator().next();
-                assertEquals(mac8, link.getMacAddress());
-                assertEquals(nodeAId,link.getNode().getId());
-                assertEquals(portA8,link.getBridgePort());
+        for (BridgeTopologyLink link: links) {
+            assertEquals(false, link.getMacs().isEmpty());
+            if (link.getMacs().contains(mac1)) {
+                assertEquals(7, link.getMacs().size());
+                assertEquals(true, link.getMacs().contains(mac2));
+                assertEquals(true, link.getMacs().contains(mac3));
+                assertEquals(true, link.getMacs().contains(mac4));
+                assertEquals(true, link.getMacs().contains(mac5));
+                assertEquals(false, link.getMacs().contains(mac6));
+                assertEquals(true, link.getMacs().contains(mac7));
+                assertEquals(false, link.getMacs().contains(mac8));
+                assertEquals(true, link.getMacs().contains(mac9));
+                assertEquals(nodeA, link.getBridgeTopologyPort().getNodeid());
+                assertEquals(portAB,link.getBridgeTopologyPort().getBridgePort());
+                assertEquals(nodeB, link.getDesignateBridgePort().getNodeid());
+                assertEquals(portBA,link.getDesignateBridgePort().getBridgePort());
+            } else if (link.getMacs().contains(mac6)) {
+                assertEquals(1, link.getMacs().size());
+                assertEquals(nodeB, link.getBridgeTopologyPort().getNodeid());
+                assertEquals(portB6,link.getBridgeTopologyPort().getBridgePort());
+                assertEquals(null, link.getDesignateBridgePort());
+            } else if (link.getMacs().contains(mac8)) {
+                assertEquals(1, link.getMacs().size());
+                assertEquals(nodeA, link.getBridgeTopologyPort().getNodeid());
+                assertEquals(portA8,link.getBridgeTopologyPort().getBridgePort());
+                assertEquals(null, link.getDesignateBridgePort());
             } else {
                 assertEquals(false, true);
             }
@@ -594,7 +506,6 @@ public class DefaultBridgeTopologyTest {
 
     }
 
-    /*
     @Test 
     public void testTwoBridgeWithBackbonePorts() {
         Integer nodeA = 1101;
@@ -943,8 +854,7 @@ public class DefaultBridgeTopologyTest {
          *     mac3 --  ||portC|        |
          *              -----------------
          *               
-         */  
-    /*
+         */                   
         public ABCTopology() {
 
             bftA =addBridgeForwardingTableEntry(portA, mac1,bftA);
@@ -1135,7 +1045,7 @@ public class DefaultBridgeTopologyTest {
          *              |       |portEE||-----||portGE|     |
          *              -----------------     |-------------|
          */
-/*        public DEFGTopology() {
+        public DEFGTopology() {
             bftD =addBridgeForwardingTableEntry(portD,  mac1,bftD);
             bftD =addBridgeForwardingTableEntry(portD,  mac2,bftD);
             bftD =addBridgeForwardingTableEntry(portDD, mac3,bftD);
@@ -1317,6 +1227,6 @@ public class DefaultBridgeTopologyTest {
             assertEquals(8, links.size());
         }
     }
-*/
+
 
 }
