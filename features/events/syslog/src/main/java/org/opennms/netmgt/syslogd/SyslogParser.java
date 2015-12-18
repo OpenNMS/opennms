@@ -137,25 +137,28 @@ public class SyslogParser {
 
     protected static Date parseDate(final String dateString) {
         try {
-        	final DateFormat df = new SimpleDateFormat("yyyy-MM-dd",Locale.ROOT);
-            df.setTimeZone(TimeZone.getTimeZone("UTC"));
-            return df.parse(dateString);
-        } catch (final Exception e) {
-            try {
-                Date date;
-                final DateFormat df = new SimpleDateFormat("MMM dd HH:mm:ss",Locale.ROOT);
+            if (dateString.matches("((19|20)\\d{2})-([1-9]|0[1-9]|1[0-2])-(0[1-9]|[1-9]|[12][0-9]|3[01])")) {
+                final DateFormat df = new SimpleDateFormat("yyyy-MM-dd",
+                                                           Locale.ROOT);
                 df.setTimeZone(TimeZone.getTimeZone("UTC"));
-                
-                // Ugh, what's a non-lame way of forcing it to parse to "this year"?
+                return df.parse(dateString);
+            } else {
+                Date date;
+                final DateFormat df = new SimpleDateFormat("YYYY MMM dd HH:mm:ss",
+                                                           Locale.ROOT);
+                df.setTimeZone(TimeZone.getTimeZone("UTC"));
+                // Ugh, what's a non-lame way of forcing it to parse to
+                // "this year"?
                 date = df.parse(dateString);
                 final Calendar c = df.getCalendar();
                 c.setTime(date);
-                c.set(Calendar.YEAR, Calendar.getInstance().get(Calendar.YEAR));
+                c.set(Calendar.YEAR,
+                      Calendar.getInstance().get(Calendar.YEAR));
                 return c.getTime();
-            } catch (final Exception e2) {
-                LOG.debug("Unable to parse date '{}'", dateString, e2);
-                return null;
             }
+        } catch (final Exception e) {
+            LOG.debug("Unable to parse date '{}'", dateString, e);
+            return null;
         }
     }
 
