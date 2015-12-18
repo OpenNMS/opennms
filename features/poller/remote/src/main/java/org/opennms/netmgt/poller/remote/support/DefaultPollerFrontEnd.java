@@ -87,8 +87,8 @@ public class DefaultPollerFrontEnd implements PollerFrontEnd, InitializingBean, 
 
         @Override
         protected void onConfigChanged() {
-            doLoadConfig();
             setState(new Running());
+            doLoadConfig();
         }
 
         @Override
@@ -99,8 +99,8 @@ public class DefaultPollerFrontEnd implements PollerFrontEnd, InitializingBean, 
 
         @Override
         protected void onStarted() {
-            doLoadConfig();
             setState(new Running());
+            doLoadConfig();
         }
 
     }
@@ -123,6 +123,7 @@ public class DefaultPollerFrontEnd implements PollerFrontEnd, InitializingBean, 
                     setState(new Registering());
                 } else if (doPollerStart()) {
                     setState(new Running());
+                    doLoadConfig();
                 } else {
                     // the poller has been deleted
                     doDelete();
@@ -178,8 +179,14 @@ public class DefaultPollerFrontEnd implements PollerFrontEnd, InitializingBean, 
         @Override
         public void register(final String location) {
             try {
+                // Create the location entry
                 doRegister(location);
+                // TODO: Check return value?
+                doPollerStart();
+                // Change the state to running so we're ready to execute polls
                 setState(new Running());
+                // Load the configuration for the scheduler
+                doLoadConfig();
             } catch (final Throwable e) {
                 LOG.warn("Unable to register.", e);
                 setState(new Disconnected());
@@ -482,16 +489,8 @@ public class DefaultPollerFrontEnd implements PollerFrontEnd, InitializingBean, 
      * @return a boolean.
      */
     private boolean doPollerStart() {
-
-        if (!m_backEnd.pollerStarting(getMonitoringSystemId(), getDetails())) {
-            // the monitor has been deleted on the server
-            return false;
-        }
-
-        doLoadConfig();
-
-        return true;
-
+        // True if the monitor exists, false if the monitor has been deleted on the server
+        return m_backEnd.pollerStarting(getMonitoringSystemId(), getDetails());
     }
 
     /**
@@ -517,10 +516,13 @@ public class DefaultPollerFrontEnd implements PollerFrontEnd, InitializingBean, 
     private void doRegister(final String location) {
 
         String monitoringSystemId = m_backEnd.registerLocationMonitor(location);
-        setMonitoringSystemId(monitoringSystemId);
 
-        // TODO: Check return value?
-        doPollerStart();
+        try {
+            setMonitoringSystemId(monitoringSystemId);
+        } catch (Throwable e) {
+            // TODO: Should we start anyway? I guess so.
+            LOG.warn("Unable to set monitoring system ID: " + e.getMessage(), e);
+        }
 
     }
 
@@ -739,7 +741,7 @@ public class DefaultPollerFrontEnd implements PollerFrontEnd, InitializingBean, 
             }
 
             fireConfigurationChange(oldTime, getCurrentConfigTimestamp());
-        } catch (final Exception e) {
+        } catch (final Throwable e) {
             LOG.warn("Unable to get updated poller configuration.", e);
             if (m_pollerConfiguration == null) {
                 m_pollerConfiguration = new EmptyPollerConfiguration();
