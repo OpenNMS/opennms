@@ -28,13 +28,14 @@
 
 package org.opennms.netmgt.vaadin.core;
 
-import com.vaadin.data.validator.AbstractStringValidator;
+import com.vaadin.data.Validator;
 import com.vaadin.event.ShortcutAction;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.TextField;
+import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 
@@ -43,40 +44,52 @@ import com.vaadin.ui.Window;
  *
  * @author Christian Pape <christian@opennms.org>
  */
-public class StringInputDialogWindow extends Window {
+public class StringInputDialogWindow extends Window implements Window.CloseListener, Button.ClickListener {
 
     /**
-     * Callback method
+     * The callback interface
      */
-    public interface InputCallback {
-        void inputConfirmed(String value);
-
-        void inputCancelled();
-
+    public interface Action {
+        void execute(StringInputDialogWindow window);
     }
 
     /**
-     * Callback adapter class
+     * the actions
      */
-    public static class InputCallbackAdapter implements InputCallback {
-        @Override
-        public void inputConfirmed(String value) {
-        }
+    private Action m_okAction;
+    private Action m_cancelAction;
 
-        @Override
-        public void inputCancelled() {
-        }
+    /**
+     * the buttons
+     */
+    private final Button m_cancelButton;
+    private final Button m_okButton;
+
+    /**
+     * the input field
+     */
+    private final TextField m_inputField;
+
+    /**
+     * flag whether ok was pressed
+     */
+    private boolean m_okPressed;
+
+    /**
+     * Default constructor
+     */
+    public StringInputDialogWindow() {
+        this("Input required", "Input");
     }
 
     /**
      * Constructor responsible for creating new instances of this class
      *
-     * @param windowTitle the window's title
+     * @param caption   the window's title
      * @param fieldName the title of the input field
-     * @param inputCallback the callback instance
      */
-    public StringInputDialogWindow(String windowTitle, String fieldName, InputCallback inputCallback) {
-        super(windowTitle);
+    public StringInputDialogWindow(String caption, String fieldName) {
+        super(caption);
 
         /**
          * set window properties
@@ -93,19 +106,12 @@ public class StringInputDialogWindow extends Window {
         /**
          * add the input field
          */
-        final TextField inputField = new TextField(fieldName);
+        m_inputField = new TextField(fieldName);
 
-        inputField.setValue("");
-        inputField.focus();
-        inputField.selectAll();
-        inputField.setImmediate(true);
-
-        inputField.addValidator(new AbstractStringValidator("Input must not be empty") {
-            @Override
-            protected boolean isValidValue(String s) {
-                return (!"".equals(s));
-            }
-        });
+        m_inputField.setValue("");
+        m_inputField.focus();
+        m_inputField.selectAll();
+        m_inputField.setImmediate(true);
 
         /**
          * create nested FormLayout instance
@@ -113,7 +119,7 @@ public class StringInputDialogWindow extends Window {
         FormLayout formLayout = new FormLayout();
         formLayout.setSizeUndefined();
         formLayout.setMargin(true);
-        formLayout.addComponent(inputField);
+        formLayout.addComponent(m_inputField);
 
         /**
          * add the buttons in a horizontal layout
@@ -127,52 +133,144 @@ public class StringInputDialogWindow extends Window {
         /**
          * create cancel button
          */
-        Button cancel = new Button("Cancel");
-        cancel.setDescription("Cancel editing");
-        cancel.addClickListener(new Button.ClickListener() {
-            @Override
-            public void buttonClick(Button.ClickEvent event) {
-                StringInputDialogWindow.this.close();
-                /**
-                 * call the cancel method of the callback instance...
-                 */
-                inputCallback.inputCancelled();
-            }
-        });
+        m_cancelButton = new Button("Cancel");
+        m_cancelButton.setClickShortcut(ShortcutAction.KeyCode.ESCAPE, null);
+        m_cancelButton.addClickListener(this);
 
-        cancel.setClickShortcut(ShortcutAction.KeyCode.ESCAPE, null);
-
-        horizontalLayout.addComponent(cancel);
-        horizontalLayout.setExpandRatio(cancel, 1);
-        horizontalLayout.setComponentAlignment(cancel, Alignment.TOP_RIGHT);
+        horizontalLayout.addComponent(m_cancelButton);
+        horizontalLayout.setExpandRatio(m_cancelButton, 1);
+        horizontalLayout.setComponentAlignment(m_cancelButton, Alignment.TOP_RIGHT);
 
         /**
          * create ok button
          */
-        Button ok = new Button("Save");
-        ok.setDescription("Save configuration");
-        ok.addClickListener(new Button.ClickListener() {
-            @Override
-            public void buttonClick(Button.ClickEvent event) {
-                if (inputField.isValid()) {
-                    StringInputDialogWindow.this.close();
-                    /**
-                     * call the confirmed method of the callback...
-                     */
-                    inputCallback.inputConfirmed(inputField.getValue());
-                }
-            }
-        });
+        m_okButton = new Button("OK");
+        m_okButton.setClickShortcut(ShortcutAction.KeyCode.ENTER, null);
+        m_okButton.addClickListener(this);
 
-        ok.setClickShortcut(ShortcutAction.KeyCode.ENTER, null);
-        horizontalLayout.addComponent(ok);
-
+        horizontalLayout.addComponent(m_okButton);
         formLayout.addComponent(horizontalLayout);
         verticalLayout.addComponent(formLayout);
+
+        /**
+         * the close listener
+         */
+        addCloseListener(this);
 
         /**
          * set the content
          */
         setContent(verticalLayout);
+    }
+
+    /**
+     * Sets the validator to be used.
+     * @param validator the validator
+     * @return the instance itself
+     */
+    public StringInputDialogWindow withValidator(Validator validator) {
+        m_inputField.addValidator(validator);
+        return this;
+    }
+
+    /**
+     * Returns the value of the input field.
+     *
+     * @return the current value
+     */
+    public String getValue() {
+        return m_inputField.getValue();
+    }
+
+    /**
+     * Sets the caption of the window.
+     *
+     * @param caption the caption to be used
+     * @return the instance itself
+     */
+    public StringInputDialogWindow withCaption(String caption) {
+        setCaption(caption);
+        return this;
+    }
+
+    /**
+     * Sets the label of the input field.
+     *
+     * @param fieldName the field name to be used
+     * @return the instance itself
+     */
+    public StringInputDialogWindow withFieldName(String fieldName) {
+        m_inputField.setCaption(fieldName);
+        return this;
+    }
+
+    /**
+     * Sets the action to be performed when the dialog is confirmed.
+     *
+     * @param okAction the action to be executed
+     * @return the instance itself
+     */
+    public StringInputDialogWindow withOkAction(Action okAction) {
+        this.m_okAction = okAction;
+        return this;
+    }
+
+    /**
+     * Sets the action to be performed when the dialog is cancelled.
+     *
+     * @param cancelAction the action to be executed
+     * @return the instance itself
+     */
+    public StringInputDialogWindow withCancelAction(Action cancelAction) {
+        this.m_cancelAction = cancelAction;
+        return this;
+    }
+
+    public void open() {
+        UI.getCurrent().addWindow(this);
+    }
+
+    /**
+     * Sets the label of the ok button.
+     *
+     * @param okLabel the label to be used
+     * @return the instance itself
+     */
+    public StringInputDialogWindow withOkLabel(String okLabel) {
+        m_okButton.setCaption(okLabel);
+        return this;
+    }
+
+    /**
+     * Sets the label of the cancel button.
+     *
+     * @param cancelLabel the label to be used
+     * @return the instance itself
+     */
+    public StringInputDialogWindow withCancelLabel(String cancelLabel) {
+        m_cancelButton.setCaption(cancelLabel);
+        return this;
+    }
+
+    @Override
+    public void windowClose(CloseEvent e) {
+        if (m_okPressed) {
+            if (m_okAction != null) {
+                m_okAction.execute(this);
+            }
+        } else {
+            if (m_cancelAction != null) {
+                m_cancelAction.execute(this);
+            }
+        }
+    }
+
+    @Override
+    public void buttonClick(Button.ClickEvent event) {
+        m_okPressed = event.getSource() == m_okButton;
+
+        if ((m_okPressed && m_inputField.isValid()) || !m_okPressed) {
+            close();
+        }
     }
 }
