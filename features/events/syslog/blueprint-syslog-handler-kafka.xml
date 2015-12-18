@@ -31,12 +31,17 @@
 			location="blueprint:syslogProperties" />
 		<route id="handle">
 			<from uri="seda:handleMessage" />
+<<<<<<< HEAD
 			<convertBodyTo type="org.opennms.netmgt.syslogd.SyslogConnection" />
+=======
+			<convertBodyTo type="org.opennms.netmgt.syslogd.SyslogConnection"/>
+>>>>>>> 4955fbd0e371715bde04b1a5b50a2f3561b24061
 			<setHeader headerName="kafka.PARTITION_KEY">
 				<!-- TODO: Partition by remote address -->
 				<!-- <simple>${body.remoteAddress}</simple> -->
 				<simple>${body.hostname}</simple>
 			</setHeader>
+<<<<<<< HEAD
  			<log message="address:       ${body.sourceAddress}" />
 			<log message="port:          ${body.port}" />
  			<transform>
@@ -49,6 +54,17 @@
 				uri="kafka:{{kafkahost}}:{{kafkaport}}?topic={{kafkatopic}}&amp;serializerClass=kafka.serializer.StringEncoder" />
 			<!-- &amp;zookeeperHost=taspmoosskafka111.cernerasp.com&amp;zookeeperPort=2181&amp;serializerClass=kafka.serializer.StringEncoder" 
 				/> -->
+=======
+ 			<log message="address:       ${body.sourceAddress}"/>
+			<log message="port:          ${body.port}"/>
+ 			<transform>
+				<simple>${body.byteBuffer}</simple>
+			</transform>
+			<convertBodyTo type="java.lang.String"/>
+			<log message="bytes:         ${body}"/>
+			<!-- Have to use StringEncoder because of camel bug CAMEL-8790 -->
+			<to uri="kafka:{{kafkahost}}:{{kafkaport}}?topic={{kafkatopic}}&amp;serializerClass=kafka.serializer.StringEncoder"/>
+>>>>>>> 4955fbd0e371715bde04b1a5b50a2f3561b24061
 		</route>
 	</camelContext>
 

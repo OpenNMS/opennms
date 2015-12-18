@@ -2,7 +2,7 @@
  * This file is part of OpenNMS(R).
  *
  * Copyright (C) 2015-2015 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2015 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,36 +26,37 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.core.concurrent;
+package org.opennms.netmgt.syslogd;
 
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
 
-import org.opennms.core.concurrent.LogPreservingThreadFactory;
+import org.opennms.core.concurrent.WaterfallExecutor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-public class ExecutorFactoryJavaImpl implements ExecutorFactory {
+public class SyslogConnectionHandlerDefaultImpl implements SyslogConnectionHandler {
+	private static final Logger LOG = LoggerFactory.getLogger(SyslogReceiverJavaNetImpl.class);
 
-	@Override
-	public ExecutorService newExecutor(String daemonName, String executorName) {
-		return newExecutor(Runtime.getRuntime().availableProcessors(), Integer.MAX_VALUE, daemonName, executorName);
+	private final ExecutorService m_executor;
+
+	public SyslogConnectionHandlerDefaultImpl(ExecutorService executor) {
+		m_executor = executor;
 	}
 
+	/**
+	 * Send the incoming {@link SyslogConnection} message into the Camel route
+	 * specified by the {@link #m_endpointUri} property.
+	 */
 	@Override
-	public ExecutorService newExecutor(int threads, String daemonName, String executorName) {
-		return newExecutor(threads, Integer.MAX_VALUE, daemonName, executorName);
-	}
-
-	@Override
-	public ExecutorService newExecutor(int threads, int queueSize, String daemonName, String executorName) {
-		return new ThreadPoolExecutor(
-			threads,
-			threads,
-			1000L,
-			TimeUnit.MILLISECONDS,
-			new LinkedBlockingQueue<Runnable>(queueSize),
-			new LogPreservingThreadFactory(daemonName + "-" + executorName, Integer.MAX_VALUE)
-		);
+	public void handleSyslogConnection(final SyslogConnection message) {
+		//SyslogConnection *Must* copy packet data and InetAddress as DatagramPacket is a mutable type
+		try {
+			WaterfallExecutor.waterfall(m_executor, message);
+		} catch (ExecutionException e) {
+			LOG.error("Task execution failed in {}", this.getClass().getSimpleName(), e);
+		} catch (InterruptedException e) {
+			LOG.error("Task interrupted in {}", this.getClass().getSimpleName(), e);
+		}
 	}
 }
