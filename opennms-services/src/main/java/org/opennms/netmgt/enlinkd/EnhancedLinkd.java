@@ -295,12 +295,27 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
             final Node node = m_queryMgr.getSnmpNode(nodeId);
 
             for (final NodeDiscovery snmpColl : getSnmpCollections(node)) {
+                if (snmpColl instanceof NodeDiscoveryBridgeTopology)
+                    continue;
                 snmpColl.setScheduler(m_scheduler);
                 snmpColl.run();
             }
 
             return true;
     }
+
+    public boolean runTopologyDiscovery(final int nodeId) {
+        final Node node = m_queryMgr.getSnmpNode(nodeId);
+
+        for (final NodeDiscovery snmpColl : getSnmpCollections(node)) {
+            if (snmpColl instanceof NodeDiscoveryBridgeTopology) {
+                snmpColl.setScheduler(m_scheduler);
+                snmpColl.run();
+                return true;
+            }
+        }
+        return false;
+}
 
     void wakeUpNodeCollection(int nodeid) {
 

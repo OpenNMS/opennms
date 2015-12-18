@@ -120,12 +120,16 @@ public class Nms4930EnIT extends EnLinkdBuilderITCase {
         assertEquals(0,m_bridgeMacLinkDao.countAll());
         
         assertTrue(m_linkd.runSingleSnmpCollection(dlink1.getId()));
+        assertTrue(m_linkd.runTopologyDiscovery(dlink1.getId()));
+
         assertEquals(0,m_bridgeBridgeLinkDao.countAll());
         assertEquals(58,m_bridgeMacLinkDao.countAll());
         assertEquals(2,m_bridgeMacLinkDao.getAllBridgeLinksToIpAddrToNodes().size());
         assertEquals(0,m_bridgeMacLinkDao.getAllBridgeLinksToBridgeNodes().size());
 
         assertTrue(m_linkd.runSingleSnmpCollection(dlink2.getId()));
+        assertTrue(m_linkd.runTopologyDiscovery(dlink2.getId()));
+        
         assertEquals(0,m_bridgeBridgeLinkDao.countAll());
         assertEquals(659,m_bridgeMacLinkDao.countAll());
         // we have 3 that links "real mac nodes" to bridge.
@@ -235,12 +239,14 @@ public class Nms4930EnIT extends EnLinkdBuilderITCase {
         assertEquals(0,m_bridgeMacLinkDao.countAll());
 
         assertTrue(m_linkd.runSingleSnmpCollection(dlink2.getId()));
+        assertTrue(m_linkd.runTopologyDiscovery(dlink2.getId()));
         assertEquals(0,m_bridgeBridgeLinkDao.countAll());
         assertEquals(977,m_bridgeMacLinkDao.countAll());
         assertEquals(0,m_bridgeMacLinkDao.getAllBridgeLinksToIpAddrToNodes().size());
         assertEquals(0,m_bridgeMacLinkDao.getAllBridgeLinksToBridgeNodes().size());
 
         assertTrue(m_linkd.runSingleSnmpCollection(dlink1.getId()));
+        assertTrue(m_linkd.runTopologyDiscovery(dlink1.getId()));
         assertEquals(0,m_bridgeBridgeLinkDao.countAll());
         assertEquals(659,m_bridgeMacLinkDao.countAll());
         assertEquals(0,m_bridgeMacLinkDao.getAllBridgeLinksToIpAddrToNodes().size());
