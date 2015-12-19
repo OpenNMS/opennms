@@ -284,17 +284,20 @@ public class SharedSegment {
         //intersection is not null, then we have to add all the BridgeMacLink
         // for each mac address
         List<BridgeMacLink> sharedsegmentmaclinks = new ArrayList<BridgeMacLink>();
-        for (String  mac: retained) {
-            for (BridgeMacLink link: links) {
-                if (retained.contains(link.getMacAddress()))
-                    sharedsegmentmaclinks.add(link);
+        Set<Integer> nodeidadding = new HashSet<Integer>();
+        for (BridgeMacLink link: links) {
+            if (retained.contains(link.getMacAddress())) {
+                sharedsegmentmaclinks.add(link);
+                nodeidadding.add(link.getNode().getId());
             }
-            for (BridgeMacLink link: m_bridgeportsOnSegment) {
-                if (retained.contains(link.getMacAddress()))
-                    sharedsegmentmaclinks.add(link);
-            }
-
         }
+        for (BridgeMacLink link: m_bridgeportsOnSegment) {
+            if (nodeidadding.contains(link.getNode().getId()))
+                    continue;
+            if (retained.contains(link.getMacAddress()))
+                sharedsegmentmaclinks.add(link);
+        }
+
         m_bridgeportsOnSegment = sharedsegmentmaclinks;
         m_bridgeportsOnLink.clear();
     }
