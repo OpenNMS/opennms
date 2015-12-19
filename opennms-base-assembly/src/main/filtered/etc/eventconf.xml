@@ -10,6 +10,7 @@
     </security>
   </global>
 
+  <!-- Be cautious changing the order of event files as events are processed in top-to-bottom file list order with the first found event match winning; blank lines are present to divide up the logical sections of the events -->
   <event-file>events/opennms.events.xml</event-file>
   <event-file>events/Translator.default.events.xml</event-file>
   
