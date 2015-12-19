@@ -101,7 +101,7 @@ public final class NodeDiscoveryBridge extends NodeDiscovery {
 			getPeer().setReadCommunity(community);
 		}
 		LOG.debug("run: found on node: '{}' bridge ifindex map {}",getNodeId(), bridgeifindex);
-		walkDot1qTpFdp(bridgeifindex);
+		walkDot1qTpFdb(bridgeifindex);
 		m_linkd.getQueryManager().reconcileBridge(getNodeId(), now);
 	}
 	
@@ -279,12 +279,16 @@ public final class NodeDiscoveryBridge extends NodeDiscovery {
 			public void processDot1dTpFdbRow(final Dot1dTpFdbRow row) {
 				BridgeMacLink link = row.getLink();
 				Integer ifindex = bridgeifindex.get(link.getBridgePort());
-				LOG.debug("processDot1dTpFdbRow: found mac {}: vlan {}: on port {} ifindex {}", row.getDot1dTpFdbAddress(), vlan, row.getDot1dTpFdbPort(),ifindex);
+				LOG.debug("processDot1dTpFdbRow: found mac {}: vlan {}: on port {} ifindex {} status {}", 
+				          row.getDot1dTpFdbAddress(), vlan, row.getDot1dTpFdbPort(),ifindex,link.getBridgeDot1qTpFdbStatus());
 				link.setVlan(vlan);
 				link.setBridgePortIfIndex(ifindex);
-				if (isValidBridgeAddress(link.getMacAddress())
-						&& link.getBridgeDot1qTpFdbStatus() == BridgeMacLink.BridgeDot1qTpFdbStatus.DOT1D_TP_FDB_STATUS_LEARNED)
+				if (isValidBridgeAddress(link.getMacAddress()))
 					m_linkd.getQueryManager().store(getNodeId(), link);
+				else
+	                            LOG.warn("processDot1dTpFdbRow: invalid mac {}: vlan {}: on port {} ifindex {} status {}",  
+                                         row.getDot1dTpFdbAddress(), vlan, row.getDot1dTpFdbPort(),ifindex,link.getBridgeDot1qTpFdbStatus());
+
 			}
 		};
 		SnmpWalker walker = SnmpUtils.createWalker(getPeer(), trackerName,
@@ -308,7 +312,7 @@ public final class NodeDiscoveryBridge extends NodeDiscovery {
 		}
 	}
 
-	private void walkDot1qTpFdp(final Map<Integer,Integer> bridgeifindex) {
+	private void walkDot1qTpFdb(final Map<Integer,Integer> bridgeifindex) {
 
 		String trackerName = "dot1qTbFdbPortTable";
 
@@ -318,11 +322,15 @@ public final class NodeDiscoveryBridge extends NodeDiscovery {
 			public void processDot1qTpFdbRow(final Dot1qTpFdbRow row) {
 				BridgeMacLink link = row.getLink();
                                 Integer ifindex = bridgeifindex.get(link.getBridgePort());
-                                LOG.debug("processDot1qTpFdbRow: found mac {}: on port {} ifindex {} ", row.getDot1qTpFdbAddress(), row.getDot1qTpFdbPort(),ifindex);
+                                LOG.debug("processDot1qTpFdbRow: found mac {}: on port {} ifindex {} status {} ", 
+                                          row.getDot1qTpFdbAddress(), row.getDot1qTpFdbPort(),ifindex, link.getBridgeDot1qTpFdbStatus());
 				link.setBridgePortIfIndex(ifindex);
-				if (isValidBridgeAddress(link.getMacAddress()) && link.getBridgePort() != null
-						&& link.getBridgeDot1qTpFdbStatus() == BridgeMacLink.BridgeDot1qTpFdbStatus.DOT1D_TP_FDB_STATUS_LEARNED)
+				if (isValidBridgeAddress(link.getMacAddress()) && link.getBridgePort() != null)
 					m_linkd.getQueryManager().store(getNodeId(), link);
+				else
+				    LOG.warn("processDot1qTpFdbRow: found mac {}: on port {} ifindex {} status {} ", 
+	                                          row.getDot1qTpFdbAddress(), row.getDot1qTpFdbPort(),ifindex, link.getBridgeDot1qTpFdbStatus());
+	                                
 			}
 
 		};

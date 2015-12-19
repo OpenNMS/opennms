@@ -20,7 +20,6 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
         
         final Date now = new Date();
 
-
         BroadcastDomain domain = m_linkd.getQueryManager().getBridgeTopologyBroadcastDomain(getNodeId());
         if (domain == null ) {
             LOG.warn("run: no broadcast domain found for node: {}", getNodeId());

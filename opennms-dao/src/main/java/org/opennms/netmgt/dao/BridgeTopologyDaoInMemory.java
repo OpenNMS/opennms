@@ -14,8 +14,13 @@ import org.opennms.netmgt.model.BridgeMacLink;
 import org.opennms.netmgt.model.BridgeStpLink;
 import org.opennms.netmgt.model.topology.BroadcastDomain;
 import org.opennms.netmgt.model.topology.SharedSegment;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class BridgeTopologyDaoInMemory implements BridgeTopologyDao {
+    
+    private static final Logger LOG = LoggerFactory.getLogger(BridgeTopologyDaoInMemory.class);
+
     volatile List<BroadcastDomain> m_domains = new ArrayList<BroadcastDomain>();
     volatile Map<Integer, List<BridgeMacLink>> m_notYetParsedBFTMap = new HashMap<Integer, List<BridgeMacLink>>();
     volatile Map<Integer, List<BridgeStpLink>> m_notYetParsedSTPMap = new HashMap<Integer, List<BridgeStpLink>>();
@@ -141,17 +146,18 @@ public class BridgeTopologyDaoInMemory implements BridgeTopologyDao {
         }        
 
         List<BridgeMacLink> bft = m_notYetParsedBFTMap.remove(nodeid);
+        Set<String>incomingSet = new HashSet<String>();
+        for (BridgeMacLink link: bft)
+            incomingSet.add(link.getMacAddress());
+        LOG.debug("walked: parsing BFT with macs: {}, size {}", incomingSet, incomingSet.size());
         BroadcastDomain bftdomain = null;
         for (BroadcastDomain domain: m_domains) {
-            Set<String>incomingSet = new HashSet<String>();
-            for (BridgeMacLink link: bft)
-                incomingSet.add(link.getMacAddress());
-            
-            Set<String>retainedSet = new HashSet<String>();
-            retainedSet.addAll(domain.getMacsOnDomain());
+            Set<String>retainedSet = new HashSet<String>(domain.getMacsOnDomain());
+            LOG.debug("walked: checking against BroadcastDomain with macs: {}, size {}", retainedSet,retainedSet.size());
             retainedSet.retainAll(incomingSet);
+            LOG.debug("walked: BFT and BroadcastDomain cross macs: {}, size {}", retainedSet,retainedSet.size());
             // should contain at list 50% of the all size
-            if (retainedSet.size() <= incomingSet.size()*0.5 )
+            if (retainedSet.size() >= 10 || retainedSet.size() <= incomingSet.size()*0.2 )
                 continue;          
             bftdomain = domain;
             break;

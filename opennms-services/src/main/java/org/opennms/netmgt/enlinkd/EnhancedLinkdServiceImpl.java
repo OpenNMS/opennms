@@ -71,6 +71,8 @@ import org.opennms.netmgt.model.OspfLink;
 import org.opennms.netmgt.model.PrimaryType;
 import org.opennms.netmgt.model.topology.BroadcastDomain;
 import org.opennms.netmgt.model.topology.SharedSegment;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.Transactional;
@@ -108,6 +110,8 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
 	private BridgeStpLinkDao m_bridgeStpLinkDao; 
 	
 	private BridgeTopologyDao m_bridgeTopologyDao;
+
+	private static final Logger LOG = LoggerFactory.getLogger(EnhancedLinkdServiceImpl.class);
 
     @Override
 	public List<Node> getSnmpNodeList() {
@@ -604,14 +608,16 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
         @Override
         public void  store(BroadcastDomain domain, Date now) {
             for (SharedSegment segment: domain.getTopology()) {
+                LOG.debug("store: shared segment designated root: {}, designated port: {}", segment.getDesignatedBridge(),segment.getDesignatedPort());
                 if (segment.noMacsOnSegment()) {
                     for (BridgeBridgeLink link: segment.getBridgeBridgeLinks()) {
-                        link.setBridgeBridgeLinkLastPollTime(now);
+                        link.setBridgeBridgeLinkLastPollTime(new Date());
                         saveBridgeBridgeLink(link);
                     }
                 } else {
                     for (BridgeMacLink link: segment.getBridgeMacLinks()) {
-                        link.setBridgeMacLinkLastPollTime(now);
+                        LOG.debug("store: link: node: {}, port: {}, mac: {}", link.getNode().getId(),link.getBridgePort(), link.getMacAddress());
+                        link.setBridgeMacLinkLastPollTime(new Date());
                         saveBridgeMacLink(link);
                     }
                 }
