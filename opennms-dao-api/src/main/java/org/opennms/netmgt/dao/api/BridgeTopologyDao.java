@@ -1,6 +1,7 @@
 package org.opennms.netmgt.dao.api;
 
 
+import java.util.Date;
 import java.util.List;
 
 import org.opennms.netmgt.model.BridgeBridgeLink;
@@ -17,7 +18,7 @@ public interface BridgeTopologyDao {
     void parse(BridgeElement element);
     void parse(BridgeMacLink maclink);
     void parse(BridgeStpLink stpLink);
-    void walked(int nodeid);
+    void walked(int nodeid, Date now);
 
     // Storing is saving data without calculations
     void loadTopology(List<BridgeElement> bridgeelements, List<BridgeMacLink> bridgemaclinks,List<BridgeBridgeLink> bridgelinks, List<BridgeStpLink> stplinks);

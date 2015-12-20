@@ -596,7 +596,7 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
 		m_bridgeStpLinkDao.deleteByNodeIdOlderThen(nodeId, now);
 		m_bridgeStpLinkDao.flush();
 
-		m_bridgeTopologyDao.walked(nodeId);
+		m_bridgeTopologyDao.walked(nodeId,now);
 
 	}
 
@@ -606,9 +606,11 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
         }
 
         @Override
-        public void  store(BroadcastDomain domain, Date now) {
+        public void  store(BroadcastDomain domain) {
             for (SharedSegment segment: domain.getTopology()) {
-                LOG.debug("store: shared segment designated root: {}, designated port: {}", segment.getDesignatedBridge(),segment.getDesignatedPort());
+                LOG.info("store: shared segment designated root: {}, designated port: {}, macs size: {}, mac link size: {}, bridge link size: {}", 
+                          segment.getDesignatedBridge(),segment.getDesignatedPort(), segment.getMacsOnSegment().size(),
+                          segment.getBridgeMacLinks().size(), segment.getBridgeBridgeLinks().size());
                 if (segment.noMacsOnSegment()) {
                     for (BridgeBridgeLink link: segment.getBridgeBridgeLinks()) {
                         link.setBridgeBridgeLinkLastPollTime(new Date());
@@ -616,7 +618,6 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
                     }
                 } else {
                     for (BridgeMacLink link: segment.getBridgeMacLinks()) {
-                        LOG.debug("store: link: node: {}, port: {}, mac: {}", link.getNode().getId(),link.getBridgePort(), link.getMacAddress());
                         link.setBridgeMacLinkLastPollTime(new Date());
                         saveBridgeMacLink(link);
                     }
@@ -624,10 +625,10 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
             }
             
             for (Integer curNodeId: domain.getUpdatedNodes()) {
-                m_bridgeMacLinkDao.deleteByNodeIdOlderThen(curNodeId, now);
+                m_bridgeMacLinkDao.deleteByNodeIdOlderThen(curNodeId, domain.getLastUpdate(curNodeId));
                 m_bridgeMacLinkDao.flush();
-                m_bridgeBridgeLinkDao.deleteByNodeIdOlderThen(curNodeId, now);
-                m_bridgeBridgeLinkDao.deleteByDesignatedNodeIdOlderThen(curNodeId, now);
+                m_bridgeBridgeLinkDao.deleteByNodeIdOlderThen(curNodeId, domain.getLastUpdate(curNodeId));
+                m_bridgeBridgeLinkDao.deleteByDesignatedNodeIdOlderThen(curNodeId, domain.getLastUpdate(curNodeId));
                 m_bridgeBridgeLinkDao.flush();
             }
 
@@ -657,6 +658,8 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
                             if ( node == null )
                                     return null;
                             saveMe.setNode(node);
+                            if (saveMe.getBridgeMacLinkLastPollTime() == null)
+                                saveMe.setBridgeMacLinkLastPollTime(saveMe.getBridgeMacLinkCreateTime());
                             m_dao.saveOrUpdate(saveMe);
                             m_dao.flush();
                             return saveMe;
@@ -688,6 +691,8 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
                             if ( node == null )
                                     return null;
                             saveMe.setNode(node);
+                            if (saveMe.getBridgeBridgeLinkLastPollTime() == null)
+                                saveMe.setBridgeBridgeLinkLastPollTime(saveMe.getBridgeBridgeLinkCreateTime());
                             m_dao.saveOrUpdate(saveMe);
                             m_dao.flush();
                             return saveMe;

@@ -1,7 +1,5 @@
 package org.opennms.netmgt.enlinkd;
 
-import java.util.Date;
-
 import org.opennms.netmgt.model.topology.BroadcastDomain;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,8 +16,6 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
     @Override
     protected void runCollection() {
         
-        final Date now = new Date();
-
         BroadcastDomain domain = m_linkd.getQueryManager().getBridgeTopologyBroadcastDomain(getNodeId());
         if (domain == null ) {
             LOG.warn("run: no broadcast domain found for node: {}", getNodeId());
@@ -37,7 +33,7 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
         domain.calculate();
         LOG.info("run: broadcast domain topology for node: {}. calculated.", getNodeId());
         LOG.info("run: saving broadcast domain topology for node: {}.", getNodeId());
-        m_linkd.getQueryManager().store(domain, now);
+        m_linkd.getQueryManager().store(domain);
         LOG.info("run: saved broadcast domain topology for node: {}.", getNodeId());
     }
 
