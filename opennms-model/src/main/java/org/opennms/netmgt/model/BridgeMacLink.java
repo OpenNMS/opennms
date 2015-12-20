@@ -268,7 +268,10 @@ public class BridgeMacLink {
 		setBridgePortIfIndex(element.getBridgePortIfIndex());
 		setBridgePortIfName(element.getBridgePortIfName());
 		setVlan(element.getVlan());
-		setBridgeMacLinkLastPollTime(element.getBridgeMacLinkCreateTime());
+		if (element.getBridgeMacLinkLastPollTime() == null)
+		    setBridgeMacLinkLastPollTime(element.getBridgeMacLinkCreateTime());
+		else 
+		    setBridgeMacLinkLastPollTime(element.getBridgeMacLinkLastPollTime());
 	}
 
 

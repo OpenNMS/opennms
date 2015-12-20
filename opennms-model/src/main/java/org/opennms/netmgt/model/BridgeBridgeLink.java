@@ -238,8 +238,10 @@ public class BridgeBridgeLink {
 		setDesignatedPortIfIndex(element.getDesignatedPortIfIndex());
 		setDesignatedPortIfName(element.getDesignatedPortIfName());
 		setDesignatedVlan(element.getDesignatedVlan());
-		
-		setBridgeBridgeLinkLastPollTime(element.getBridgeBridgeLinkCreateTime());
+		if (element.getBridgeBridgeLinkLastPollTime() == null)
+		    setBridgeBridgeLinkLastPollTime(element.getBridgeBridgeLinkCreateTime());
+		else
+		   setBridgeBridgeLinkLastPollTime(element.getBridgeBridgeLinkLastPollTime()); 
 	}
 
 	@Transient

@@ -1,6 +1,7 @@
 package org.opennms.netmgt.model.topology;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -22,6 +23,9 @@ import org.slf4j.LoggerFactory;
 // 
 //FIXME 
 // use spanning tree when there is no way of finding link...
+//FIXME
+// getEffectiveBFT is broken
+//
 public class BroadcastDomain {
 
     private static final Logger LOG = LoggerFactory.getLogger(BroadcastDomain.class);
@@ -31,7 +35,7 @@ public class BroadcastDomain {
     
     Integer m_rootBridgeId;
     List<BridgeMacLink> m_rootBridgeBFT = new ArrayList<BridgeMacLink>();
-    
+    Map<Integer,Date> m_lastUpdate = new HashMap<Integer, Date>();
     boolean m_calculating = false;
     boolean m_topologyChanged = false;
     
@@ -117,9 +121,9 @@ public class BroadcastDomain {
             Set<String> ymacs = new HashSet<String>();
      
             for (BridgeMacLink xlink: xBFT) {
-                if (xBridge.getId() == xlink.getNode().getId() && xlink.getBridgeDot1qTpFdbStatus() == BridgeDot1qTpFdbStatus.DOT1D_TP_FDB_STATUS_LEARNED) 
+                if (xBridge.getId().intValue() == xlink.getNode().getId().intValue() && xlink.getBridgeDot1qTpFdbStatus() == BridgeDot1qTpFdbStatus.DOT1D_TP_FDB_STATUS_LEARNED) 
                     xmactoport.put(xlink.getMacAddress(), xlink);
-                if (xBridge.getId() == xlink.getNode().getId() && xlink.getBridgeDot1qTpFdbStatus() == BridgeDot1qTpFdbStatus.DOT1D_TP_FDB_STATUS_SELF) 
+                if (xBridge.getId().intValue() == xlink.getNode().getId().intValue() && xlink.getBridgeDot1qTpFdbStatus() == BridgeDot1qTpFdbStatus.DOT1D_TP_FDB_STATUS_SELF) 
                     xmacs.add(xlink.getMacAddress());
             }
             for (BridgeMacLink ylink: yBFT) {
@@ -129,7 +133,7 @@ public class BroadcastDomain {
                         m_throughSet.put(ylink.getBridgePort(), new ArrayList<BridgeMacLink>());
                     m_throughSet.get(ylink.getBridgePort()).add(ylink);
                 }
-                if (yBridgeId == ylink.getNode().getId() && ylink.getBridgeDot1qTpFdbStatus() == BridgeDot1qTpFdbStatus.DOT1D_TP_FDB_STATUS_SELF) 
+                if (yBridgeId.intValue() == ylink.getNode().getId().intValue() && ylink.getBridgeDot1qTpFdbStatus() == BridgeDot1qTpFdbStatus.DOT1D_TP_FDB_STATUS_SELF) 
                     ymacs.add(ylink.getMacAddress());
             }
             
@@ -139,6 +143,7 @@ public class BroadcastDomain {
             if (!cond1X || !cond1Y) {
                 Set<String> commonlearnedmacs = new HashSet<String>(xmactoport.keySet()); 
                 commonlearnedmacs.retainAll(new HashSet<String>(ymactoport.keySet()));
+                LOG.debug("BridgeTopologyHelper: common (learned mac) size: {} ",commonlearnedmacs.size());
                 if (cond1X && !cond1Y) 
                     condition2BridgeX(commonlearnedmacs);
                 if (!cond1X && cond1Y)
@@ -146,10 +151,12 @@ public class BroadcastDomain {
                 if (!cond1X && !cond1Y)
                     condition3(commonlearnedmacs);
                 if (m_xy == null || m_xy == null)
+                    condition3(commonlearnedmacs);
+                if (m_xy == null || m_xy == null)
                     return;
             }    
-            LOG.debug("m_xy: {}", m_xy);
-            LOG.debug("m_yx: {}", m_yx);
+            LOG.debug("BridgeTopologyHelper: m_xy: {}", m_xy);
+            LOG.debug("BridgeTopologyHelper: m_yx: {}", m_yx);
             
             BridgeMacLink xylink = null;
             BridgeMacLink yxlink = null;
@@ -162,6 +169,8 @@ public class BroadcastDomain {
                         xylink = xlink;
                 }
             }
+            int ylinks = connectionsOnSegment.size();
+            LOG.debug("BridgeTopologyHelper: added {}, Y links on segment", ylinks);
             for (BridgeMacLink ylink: yBFT) {
                 if (ylink.getBridgePort() == m_yx) {
                     if (!xmactoport.containsKey(ylink.getMacAddress()) || m_xy == xmactoport.get(ylink.getMacAddress()).getBridgePort())
@@ -170,6 +179,8 @@ public class BroadcastDomain {
                         yxlink = ylink;
                 }
             }
+            int xlinks = connectionsOnSegment.size() - ylinks;
+            LOG.debug("BridgeTopologyHelper: added {}, X links on segment", xlinks);
     
             BridgeBridgeLink blink = new BridgeBridgeLink();
             if (xylink != null && yxlink != null ) {
@@ -205,7 +216,6 @@ public class BroadcastDomain {
             Integer yp2=null;
             Integer xp1=null;
             Integer xp2=null;
-            LOG.debug("condition3: intersection of BFT (learned mac) {} ",commonlearnedmacs);
 
             for (String mac: commonlearnedmacs) {
                 LOG.debug("condition3: parsing common BFT mac: {}",mac);
@@ -398,7 +408,7 @@ public class BroadcastDomain {
     private class Bridge {
 
         final Integer m_id;
-        Set<BridgeElement> m_bridgeIds = new HashSet<BridgeElement>();
+        List<BridgeElement> m_bridgeIds = new ArrayList<BridgeElement>();
         Integer m_rootPort;
         boolean m_isRootBridge=false;
 
@@ -407,9 +417,14 @@ public class BroadcastDomain {
             m_id = id;
         }
 
-        public Set<BridgeElement> getBridgeElements() {
+        public List<BridgeElement> getBridgeElements() {
             return m_bridgeIds;
         }
+        
+        public void setBridgeElements(List<BridgeElement> bridgeIds) {
+            m_bridgeIds = bridgeIds;
+        }
+        
         public boolean hasBridgeId(String bridgeId) {
             if (bridgeId == null)
                 return false;
@@ -558,30 +573,48 @@ public class BroadcastDomain {
         m_topologyChanged=true;
         LOG.info("loadBFT: start: loading bridge forwarding table for node: {}, with size: {}", nodeId, maclinks.size());
         m_notYetParsedBFTMap.put(nodeId, maclinks);
-        LOG.info("loadBFT: loading bridge elements for node {}", nodeId);
-        for (BridgeElement element: elements)
-            addBridgeElement(element);
-        if (stplinks != null && !stplinks.isEmpty()) {
-        //remove all stp link in the list to let them
-        // substituted with the new incoming list
-        List<BridgeStpLink> allstplinks = new ArrayList<BridgeStpLink>();
-        for (BridgeStpLink link: m_STPLinks) {
-            if (link.getNode().getId().intValue() == nodeId)
-                continue;
-            allstplinks.add(link);
+        LOG.info("loadBFT: set bridge elements on node {}", nodeId);
+        Bridge added = null;
+        for (Bridge bridge: m_bridges) {
+            if (bridge.getId().intValue() == nodeId) {
+                added = bridge;
+            }
         }
-        allstplinks.addAll(stplinks);
-        m_STPLinks=allstplinks;
+        if (added == null) {
+            added = new Bridge(nodeId);
+            m_bridges.add(added);
+        }
+        added.setBridgeElements(elements);
+
+        if (stplinks != null && !stplinks.isEmpty()) {
+            //remove all stp link in the list to let them
+            // substituted with the new incoming list
+            List<BridgeStpLink> allstplinks = new ArrayList<BridgeStpLink>();
+            for (BridgeStpLink link: m_STPLinks) {
+                if (link.getNode().getId().intValue() == nodeId)
+                    continue;
+                allstplinks.add(link);
+            }
+            allstplinks.addAll(stplinks);
+            m_STPLinks=allstplinks;
         }
         LOG.info("loadBFT: stop: loaded bridge forwarding table for node {}", nodeId);
 
     }
     
-    public List<SharedSegment> getTopology() {
+    public synchronized Date getLastUpdate(Integer nodeid) {
+        return m_lastUpdate.get(nodeid);
+    }
+    
+    public synchronized void setLastUpdate(Integer nodeid, Date now) {
+        m_lastUpdate.put(nodeid, now);
+    }
+
+    public synchronized List<SharedSegment> getTopology() {
         return m_topology;
     }
         
-    public void removeBridge(int bridgeId) {
+    public synchronized void removeBridge(int bridgeId) {
         Bridge bridge = null;
         for (Bridge curbridge: m_bridges) {
             if (curbridge.getId() == bridgeId) {
@@ -602,6 +635,20 @@ public class BroadcastDomain {
             return;
         }
         
+        cleanTopologyForBridge(bridge);
+        Set<Bridge> bridges = new HashSet<Bridge>();
+        for (Bridge cur: m_bridges) {
+            if (cur.getId().intValue() == bridgeId) 
+                continue;
+            bridges.add(bridge);
+        }
+        m_bridges = bridges;
+        m_lastUpdate.remove(bridgeId);
+
+    }
+    
+    private synchronized void cleanTopologyForBridge(Bridge bridge) {
+        Integer bridgeId = bridge.getId();
         // if is root: rearrange topology with a new root before deleting.
         if (bridge.isRootBridge()) {
             for (SharedSegment segment: getSharedSegmentOnBridge(bridgeId)) {
@@ -610,6 +657,12 @@ public class BroadcastDomain {
                     continue;
                 m_rootBridgeBFT = getEffectiveBFT(newRootId);
                 m_rootBridgeId = newRootId;
+                for (Bridge curBridge: m_bridges) {
+                    if (curBridge.getId().intValue() == m_rootBridgeId.intValue()) {
+                        curBridge.setRootBridge(true);
+                        curBridge.setRootPort(null);
+                    }
+                }
                 hierarchySetUp();
                 break;
             }
@@ -623,15 +676,7 @@ public class BroadcastDomain {
         for (SharedSegment segment: removeSharedSegmentOnBridge(bridgeId)) {
             if (topsegment != null)
                 topsegment.mergeBridge(segment,bridgeId);
-        }
-        
-        Set<Bridge> bridges = new HashSet<Bridge>();
-        for (Bridge cur: m_bridges) {
-            if (cur.getId().intValue() == bridgeId) 
-                continue;
-            bridges.add(bridge);
-        }
-        m_bridges = bridges;
+        }        
     }
     
     public synchronized boolean isEmpty() {
@@ -647,41 +692,68 @@ public class BroadcastDomain {
     }
 
     public synchronized Set<Integer> getUpdatedNodes() {
-        Set<Integer> updatedNodes = new HashSet<Integer>();
-        for (Bridge bridge: m_bridges)
-            updatedNodes.add(bridge.getId());
-        return updatedNodes;
+        return m_lastUpdate.keySet();
     }
 
     public synchronized void calculate() {
         LOG.info("calculate: start:  calculate topology");
         m_calculating = true;
         m_topologyChanged=false;
-        selectRootBridge();
+        
+        for (Bridge curbridge: m_bridges) {
+            if (m_notYetParsedBFTMap.keySet().contains(curbridge.getId()) ) {
+                LOG.info("calculate: clean topology for bridge:  {}", curbridge.getId());
+                cleanTopologyForBridge(curbridge);
+            }
+        }
+        
+        Bridge electedRoot = selectRootBridge();
+        List<BridgeMacLink> electedRootBFT = m_notYetParsedBFTMap.remove(electedRoot.getId()); 
+        if (electedRootBFT != null) {
+            LOG.info("calculate: elected root bridge: {}, has new bft", electedRoot.getId());
+            if (m_topology.isEmpty()) {
+                LOG.info("calculate: creating shared segment for root bridge in empty topology:  {}", electedRoot.getId());
+                Map<Integer, SharedSegment> rootleafs=new HashMap<Integer, SharedSegment>();
+                for (BridgeMacLink link: electedRootBFT) {
+                    if (link.getBridgeDot1qTpFdbStatus() != BridgeDot1qTpFdbStatus.DOT1D_TP_FDB_STATUS_LEARNED)
+                        continue;
+                    if (!rootleafs.containsKey(link.getBridgePort()))
+                        rootleafs.put(link.getBridgePort(), new SharedSegment(link.getNode().getId(),link.getBridgePort()));
+                    rootleafs.get(link.getBridgePort()).add(link);
+                }
+                for (SharedSegment rootleaf: rootleafs.values()) {
+                    LOG.info("calculate: adding shared segment to topology: root bridge {} port: {}, mac size: {}, bft size: {}",rootleaf.getDesignatedBridge(),
+                             rootleaf.getDesignatedPort(), rootleaf.getMacsOnSegment().size(), rootleaf.getBridgeMacLinks().size());
+                    m_topology.add(rootleaf);
+                }
+                LOG.info("calculate: created: shared segment for root bridge in topology:  {}", electedRoot.getId());
+            } else {
+                LOG.info("calculate: find topology for elected root bridge:  {}", electedRoot.getId());
+                findBridgesTopo(getRootBridge(), m_rootBridgeBFT, electedRoot.getId(),electedRootBFT);
+            }
+            m_rootBridgeBFT = electedRootBFT;
+            LOG.info("calculate: set root bridge {} bft size:  {}", electedRoot.getId(), m_rootBridgeBFT.size());
+        } 
+        m_rootBridgeId = electedRoot.getId();
+        electedRoot.setRootBridge(true);
+        electedRoot.setRootPort(null);
         hierarchySetUp();
 
-        // the root bridge is the only bridge in topology
-        if (m_topology.isEmpty() && m_notYetParsedBFTMap.isEmpty() && m_rootBridgeBFT != null) {
-            LOG.info("calculate: only root bridge in topology:  {}", m_rootBridgeId);
-            m_calculating = false;
-            LOG.info("calculate: stop:  calculate topology for nodeids {}", m_bridges);
-            return;
-        }
-        Set<Integer> nodeids = new HashSet<Integer>();
-        nodeids.addAll(m_notYetParsedBFTMap.keySet());
-        for (Integer nodeid: nodeids) 
+        for (Integer nodeid: m_notYetParsedBFTMap.keySet()) 
             findBridgesTopo(getRootBridge(), m_rootBridgeBFT, nodeid, m_notYetParsedBFTMap.remove(nodeid));
        
         m_calculating = false;
         LOG.info("calculate: stop:  calculate topology");
 
     }
-    
+        
+    // here we assume that rbridge exists in topology
+    // while xBridge is to be added
     private void findBridgesTopo(Bridge rBridge, List<BridgeMacLink> rBFT, Integer xBridgeId, List<BridgeMacLink> xBFT) {
         LOG.info("findBridgesTopo: calculate topology for nodeid {}, against {}", xBridgeId,rBridge.getId());
         Bridge xBridge = null;
         for (Bridge bridge: m_bridges) {
-            if (bridge.getId() == xBridgeId) {
+            if (bridge.getId().intValue() == xBridgeId.intValue()) {
                 xBridge=bridge;
                 break;
             }
@@ -689,7 +761,6 @@ public class BroadcastDomain {
         if (xBridge == null) {
             LOG.error("findBridgesTopo: not found bridge for nodeid {} exiting....", xBridgeId);
         }
-        //LOG.debug("findBridgesTopo: found bridge for nodeid {}, with address {}", xBridgeId,xBridge.getBridgeElements().iterator().next().getBaseBridgeAddress());
         
         BridgeTopologyHelper rx = new BridgeTopologyHelper(rBridge, rBFT, xBridgeId,xBFT);
         Integer rxDesignatedPort = rx.getFirstBridgeConnectionPort();
@@ -698,22 +769,21 @@ public class BroadcastDomain {
             return;
         }
         Integer xrDesignatedPort = rx.getSecondBridgeConnectionPort();
-         if (xrDesignatedPort == null) {
+        if (xrDesignatedPort == null) {
              LOG.info("findBridgesTopo: cannot found bottom simple connection:  nodeid {}",xBridgeId);
              return;
         }
         LOG.info("findBridgesTopo: found simple connection:  nodeid {}, port {} <--> nodeid {}, port {}",rBridge.getId(),rxDesignatedPort,xBridgeId,xrDesignatedPort);
         LOG.info("findBridgesTopo: set root port {} for nodeid {}",xrDesignatedPort,xBridgeId);
-//        xBridge.setRootPort(xrDesignatedPort);
-//        xBridge.setRootBridge(false);
+        xBridge.setRootPort(xrDesignatedPort);
+        xBridge.setRootBridge(false);
         //get the starting point shared segment of the top bridge
         // where the bridge is learned should not be null
         SharedSegment topSegment = getSharedSegment(rBridge.getId(),rxDesignatedPort);
         if (topSegment == null) {
-            LOG.info("findBridgesTopo: created top segment:  for nodeid {}, port {}",rBridge.getId(),rxDesignatedPort);
-            topSegment = new SharedSegment(rBridge.getId(),rxDesignatedPort);
-            topSegment.assign(rx.getSimpleConnection().getLinks(),rx.getSimpleConnection().getDlink());
-            m_topology.add(topSegment);
+            LOG.warn("findBridgesTopo: not found: top segment:  for nodeid {}, port {}",rBridge.getId(),rxDesignatedPort);
+            m_topology.clear();
+            return;
         }
 
         for (Bridge yBridge: getBridgeOnSharedSegment(topSegment)) {
@@ -756,9 +826,14 @@ public class BroadcastDomain {
         // on topSegment so X is connected to top Segment by it's root 
         // port or rx is a direct connection
         topSegment.assign(rx.getSimpleConnection().getLinks(),rx.getSimpleConnection().getDlink());
-        for (Integer xbridgePort: rx.getSecondBridgeTroughSet().keySet()) {
+        LOG.info("findBridgesTopo: updating top segment to topology: bridge {} port: {}, mac size: {}, bft size: {}",topSegment.getDesignatedBridge(),
+                 topSegment.getDesignatedPort(), topSegment.getMacsOnSegment().size(), topSegment.getBridgeMacLinks().size());
+       for (Integer xbridgePort: rx.getSecondBridgeTroughSet().keySet()) {
             SharedSegment xleafSegment = new SharedSegment(xBridgeId, xbridgePort);
             xleafSegment.setBridgeMacLinks(rx.getSecondBridgeTroughSet().get(xbridgePort));
+            LOG.info("findBridgesTopo: adding shared segment to topology: root bridge {} port: {}, mac size: {}, bft size: {}",xleafSegment.getDesignatedBridge(),
+                     xleafSegment.getDesignatedPort(), xleafSegment.getMacsOnSegment().size(), xleafSegment.getBridgeMacLinks().size());
+
             m_topology.add(xleafSegment);
         }
         LOG.info("findBridgesTopo: topology calculated for nodeid: {}", xBridgeId);
@@ -816,15 +891,17 @@ public class BroadcastDomain {
         return null;
     }
     
-    private void selectRootBridge() {
+    private Bridge selectRootBridge() {
         LOG.info("selectRootBridge: start");
         Bridge rootBridge= null;
         //if there is only one bridge....
         if (m_bridges.size() == 1) {
+            LOG.debug("selectRootBridge: only one bridge in topology set root");
             rootBridge = m_bridges.iterator().next();
         }
         //if null try set the stp roots
         if (rootBridge == null) {
+            LOG.debug("selectRootBridge: searching for stp root in topology");
             Set<String> rootBridgeIds=new HashSet<String>();
             for (Bridge bridge: m_bridges) {
                 rootBridgeIds.addAll(bridge.getOtherStpRoots());
@@ -835,8 +912,11 @@ public class BroadcastDomain {
             //manage multi stp domains...
             //ignoring for the moment....
             for (String rootBridgeId: rootBridgeIds) {
+                LOG.debug("selectRootBridge: searching for stp root found: {}", rootBridgeId);
                 for (Bridge bridge: m_bridges) {
+                    LOG.debug("selectRootBridge: searching for stp root found: {}, parsing bridge {}", rootBridgeId,bridge.getId());
                     if (bridge.hasBridgeId(rootBridgeId)) {
+                        LOG.debug("selectRootBridge: found stp root bridge: {}", bridge.getId());
                         rootBridge = bridge;
                         break;
                     }
@@ -847,6 +927,13 @@ public class BroadcastDomain {
         // no spanning tree root?
         // then find root among switches with
         // updated bft with max bft size
+        if (m_rootBridgeId != null) {
+            LOG.debug("selectRootBridge: mantaining old root bridge: {}", m_rootBridgeId);
+            return getRootBridge();
+        }
+        // why I'm here?
+        // not root bridge defined (this mean no calculation yet done...
+        // so checking the best into not parsed
         if (rootBridge == null) {
             int size = 0;
             Integer rootNodeid = null;
@@ -871,28 +958,8 @@ public class BroadcastDomain {
         if (rootBridge == null)
             rootBridge=m_bridges.iterator().next();
         
-        m_rootBridgeId = rootBridge.getId();
-        rootBridge.setRootBridge(true);
-        rootBridge.setRootPort(null);
-        if (m_notYetParsedBFTMap.containsKey(m_rootBridgeId)) {
-            m_rootBridgeBFT = m_notYetParsedBFTMap.remove(m_rootBridgeId); 
-            LOG.info("selectRootBridge: creating shared segment for root bridge in topology:  {}", m_rootBridgeId);
-            Map<Integer, SharedSegment> rootleafs=new HashMap<Integer, SharedSegment>();
-            for (BridgeMacLink link: m_rootBridgeBFT) {
-                if (link.getBridgeDot1qTpFdbStatus() != BridgeDot1qTpFdbStatus.DOT1D_TP_FDB_STATUS_LEARNED)
-                    continue;
-                if (!rootleafs.containsKey(link.getBridgePort()))
-                    rootleafs.put(link.getBridgePort(), new SharedSegment(link.getNode().getId(),link.getBridgePort()));
-                LOG.info("selectRootBridge: adding mac {} to shared segment for root bridge {} on port: {}", 
-                         link.getMacAddress(),m_rootBridgeId,link.getBridgePort());
-                rootleafs.get(link.getBridgePort()).add(link);
-            }
-            for (SharedSegment rootleaf: rootleafs.values()) 
-                m_topology.add(rootleaf);
-            LOG.info("selectRootBridge: created: shared segment for root bridge in topology:  {}", m_rootBridgeId);
-        }  else
-            m_rootBridgeBFT = getEffectiveBFT(rootBridge.getId());
-        LOG.info("selectRootBridge: rootBridge is {}", m_rootBridgeId);
+        LOG.info("selectRootBridge: rootBridge is {}", rootBridge.getId());
+        return rootBridge;
 
     }
         
@@ -960,20 +1027,25 @@ public class BroadcastDomain {
     private void hierarchySetUp() {
         //top level
         for (SharedSegment segment: getSharedSegmentOnBridge(m_rootBridgeId)) {
+            LOG.debug("hierarchySetUp: set up tree with root: {}",m_rootBridgeId);
             segment.setDesignatedBridge(m_rootBridgeId);
             segment.setDesignatedPort(segment.getPortForBridge(m_rootBridgeId));
+            LOG.debug("hierarchySetUp: set up tree with root: {} port: {}",
+                      segment.getDesignatedBridge(),segment.getDesignatedPort());
             tier(segment, m_rootBridgeId);
         }
     }
     
     private void tier(SharedSegment segment, Integer rootid) {
-        for (Bridge bridge: getBridgeOnSharedSegment(segment)) {
-            if (bridge.getId() == rootid)
+        LOG.debug("tier: tier one level under bridge: {}, segment: {}",rootid,segment);
+        for (Integer bridgeid: segment.getBridgeIdsOnSegment()) {
+            LOG.debug("tier: found bridge: {}",bridgeid);
+            if (bridgeid.intValue() == rootid.intValue())
                 continue;
-            for (SharedSegment s2: getSharedSegmentOnBridge(bridge.getId())) {
-                s2.setDesignatedBridge(bridge.getId());
-                s2.setDesignatedPort(s2.getPortForBridge(bridge.getId()));
-                tier(s2,bridge.getId());
+            for (SharedSegment s2: getSharedSegmentOnBridge(bridgeid)) {
+                s2.setDesignatedBridge(bridgeid);
+                s2.setDesignatedPort(s2.getPortForBridge(bridgeid));
+                tier(s2,bridgeid);
             }
         }
     }

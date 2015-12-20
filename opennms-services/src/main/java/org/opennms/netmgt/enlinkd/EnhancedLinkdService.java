@@ -91,7 +91,7 @@ public interface EnhancedLinkdService {
 
     BroadcastDomain getBridgeTopologyBroadcastDomain(int nodeId);
     
-    void store(BroadcastDomain domain, Date now);
+    void store(BroadcastDomain domain);
 
     void store(int nodeId, LldpLink link);
 

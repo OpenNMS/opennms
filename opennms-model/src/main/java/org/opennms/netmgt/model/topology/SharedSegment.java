@@ -8,12 +8,9 @@ import java.util.Set;
 import org.opennms.netmgt.model.BridgeBridgeLink;
 import org.opennms.netmgt.model.BridgeMacLink;
 import org.opennms.netmgt.model.BridgeMacLink.BridgeDot1qTpFdbStatus;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class SharedSegment {
     
-    private static final Logger LOG = LoggerFactory.getLogger(SharedSegment.class);
     Integer m_designatedBridge;
     Integer m_designatedPort;
     List<BridgeMacLink> m_bridgeportsOnSegment = new ArrayList<BridgeMacLink>();
@@ -242,59 +239,44 @@ public class SharedSegment {
     public void assign(List<BridgeMacLink> links, BridgeBridgeLink dlink) {
         // if there is not yet links on segment add it
        if (isEmpty() && !links.isEmpty()) {
-            LOG.debug("assign: shared segment is empty and maclinks not empty");
             m_bridgeportsOnSegment = links;
             return;
         }
         // if there are no macs on segment...just add the BridgeBridgeLink
         if (noMacsOnSegment() && links.isEmpty()) {
-            LOG.debug("assign: no macs on shared and bridge not null");
             m_bridgeportsOnLink.add(dlink);
             return;
         }
         
         // we are assigning links to a segment that has mac address
         // the set of link must be ...merged using mac address, 
-        // this means that
-        // only intersection of common macs is
-        // must be saved to segment
-        
-        Set<String> macsonLinks=new HashSet<String>();
-        for (BridgeMacLink link: links)
-            macsonLinks.add(link.getMacAddress());
-        LOG.debug("macs to add on segment: {}", macsonLinks);
-
-        Set<String> macsonSegment=new HashSet<String>(getMacsOnSegment());
-        LOG.debug("macs found on segment: {}",macsonSegment);
-        
-        Set<String> retained = new HashSet<String>(macsonSegment);
-        retained.retainAll(macsonLinks);
-        LOG.debug("macs retained on segment: {}", retained);
+        // this means that only incoming macs 
+        // must be saved to the segment
         // intersection is null
         // we need to convert all the 
         // local links to BridgeBridgeLink
         // and add the BridgeBridgeLink
-        if (retained.isEmpty()) {
+        if (links.isEmpty()) {
             convertSegmentToLink();
             m_bridgeportsOnLink.add(dlink);
             m_bridgeportsOnSegment.clear();
             return;
         }
         
-        //intersection is not null, then we have to add all the BridgeMacLink
-        // for each mac address
+        Set<String> macsonLinks=new HashSet<String>();
         List<BridgeMacLink> sharedsegmentmaclinks = new ArrayList<BridgeMacLink>();
         Set<Integer> nodeidadding = new HashSet<Integer>();
         for (BridgeMacLink link: links) {
-            if (retained.contains(link.getMacAddress())) {
-                sharedsegmentmaclinks.add(link);
-                nodeidadding.add(link.getNode().getId());
-            }
+            sharedsegmentmaclinks.add(link);
+            nodeidadding.add(link.getNode().getId());
+            macsonLinks.add(link.getMacAddress());
         }
+
+        //intersection is not null, then we have to add all the BridgeMacLink
+        // for each mac address
         for (BridgeMacLink link: m_bridgeportsOnSegment) {
             if (nodeidadding.contains(link.getNode().getId()))
                     continue;
-            if (retained.contains(link.getMacAddress()))
                 sharedsegmentmaclinks.add(link);
         }
 
@@ -423,15 +405,18 @@ public class SharedSegment {
     public boolean containsPort(Integer nodeid, Integer bridgeport) {
         if (noMacsOnSegment()) {
             for (BridgeBridgeLink link: m_bridgeportsOnLink) {
-                if (link.getNode().getId() == nodeid && link.getBridgePort() == bridgeport)
+                if (link.getNode().getId().intValue() == nodeid.intValue() && 
+                        link.getBridgePort().intValue() == bridgeport.intValue())
                     return true;
-                if (link.getDesignatedNode().getId() == nodeid && link.getDesignatedPort() == bridgeport)
+                if (link.getDesignatedNode().getId().intValue() == nodeid.intValue() 
+                        && link.getDesignatedPort().intValue() == bridgeport.intValue())
                     return true;
             }
             return false;
         }
         for (BridgeMacLink link: m_bridgeportsOnSegment) {
-            if (link.getNode().getId() == nodeid && link.getBridgePort() == bridgeport) 
+            if (link.getNode().getId().intValue() == nodeid.intValue() 
+                    && link.getBridgePort().intValue() == bridgeport.intValue()) 
                 return true;
         }
         return false;
@@ -440,15 +425,15 @@ public class SharedSegment {
     public Integer getPortForBridge(Integer nodeid) {
         if (noMacsOnSegment()) {
             for (BridgeBridgeLink link: m_bridgeportsOnLink) {
-                if (link.getNode().getId() == nodeid )
+                if (link.getNode().getId().intValue() == nodeid.intValue() )
                     return link.getBridgePort();
-                if (link.getDesignatedNode().getId() == nodeid )
+                if (link.getDesignatedNode().getId().intValue() == nodeid.intValue() )
                     return link.getDesignatedPort() ;
             }
             return null;
         }
         for (BridgeMacLink link: m_bridgeportsOnSegment) {
-            if (link.getNode().getId() == nodeid) 
+            if (link.getNode().getId().intValue() == nodeid.intValue()) 
                 return link.getBridgePort();
         }
         return null;
