@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<snmptrap-northbounder-config>
+
+    <!--
+     The following are set to the default values.
+     -->
+	<enabled>false</enabled>
+	<nagles-delay>1000</nagles-delay>
+	<batch-size>100</batch-size>
+	<queue-size>300000</queue-size>
+
+	<snmp-trap-sink>
+		<name>localTest1</name>
+		<ip-address>127.0.0.1</ip-address>
+		<port>162</port> <!-- defaults to 162 if it is not specified -->
+		<version>v1</version> <!-- v1 or v2c -->
+		<community>public</community>
+		<mapping-group name="My Mappings">
+			<rule>foreignSource matches '^Server.*'</rule> <!-- SPEL Expression against org.opennms.netmgt.alarmd.api.NorthboundAlarm -->
+			<mapping name="trap01">
+				<rule>uei == 'uei.opennms.org/trap/myTrap1'</rule> <!-- SPEL Expression against org.opennms.netmgt.alarmd.api.NorthboundAlarm -->
+				<enterprise-oid>.1.2.3.4.5.6.7.8.100</enterprise-oid>
+				<specific>1</specific>
+				<varbind>
+					<oid>.1.2.3.4.5.6.7.8.1</oid>
+					<type>Int32</type> <!-- OctetString, Int32, ObjectIdentifier, IpAddress, TimeTicks, Counter32, Gauge32, Opaque, Counter64 -->
+					<value>eventParametersCollection[0].value.content</value> <!-- SPEL Expression against org.opennms.netmgt.alarmd.api.NorthboundAlarm -->
+				</varbind>
+				<varbind>
+					<oid>.1.2.3.4.5.6.7.8.2</oid>
+					<type>OctetString</type>
+					<value>parameters['alarmMessage']</value>
+					<max>48</max> <!-- If specified, and the type is OctetString, the value will be truncated if it has more than 'max' characters -->
+				</varbind>
+			</mapping>
+			<mapping name="trap02">
+				<rule>uei == 'uei.opennms.org/trap/myTrap2'</rule>
+				<enterprise-oid>.1.2.3.4.5.6.7.8.101</enterprise-oid>
+				<varbind>
+					<oid>.1.2.3.4.5.6.7.8.2</oid>
+					<type>OctetString</type>
+					<value>parameters['myMessage']</value>
+					<instance>parameters['myId']</instance> <!-- SPEL Expression against org.opennms.netmgt.alarmd.api.NorthboundAlarm -->
+				</varbind>
+			</mapping>
+		</mapping-group>
+	</snmp-trap-sink>
+
+    <!-- It is possible to define the mapping groups on a external file:
+
+	<snmp-trap-sink>
+		<name>localTest2</name>
+		<ip-address>127.0.0.2</ip-address>
+		<port>162</port>
+		<version>v2c</version>
+		<community>public</community>
+		<import-mappings>snmptrap-northbound/my-mappings-01.xml</import-mappings>
+	</snmp-trap-sink>
+
+    -->
+
+</snmptrap-northbounder-config>
