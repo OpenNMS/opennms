@@ -29,17 +29,15 @@
 package org.opennms.netmgt.alarmd.api.support;
 
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang.StringUtils;
 import org.opennms.netmgt.alarmd.api.NorthboundAlarm;
 import org.opennms.netmgt.alarmd.api.NorthboundAlarm.AlarmType;
 import org.opennms.netmgt.alarmd.api.NorthboundAlarm.x733ProbableCause;
 import org.opennms.netmgt.alarmd.api.Northbounder;
 import org.opennms.netmgt.alarmd.api.NorthbounderException;
-import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.xml.event.Parm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -62,7 +60,6 @@ public abstract class AbstractNorthbounder implements Northbounder, Runnable,
     private static final Logger LOG = LoggerFactory.getLogger(AbstractNorthbounder.class);
     private final String m_name;
     private final AlarmQueue<NorthboundAlarm> m_queue;
-    protected NodeDao m_nodeDao;
     
     private volatile boolean m_stopped = true;
 
@@ -71,14 +68,7 @@ public abstract class AbstractNorthbounder implements Northbounder, Runnable,
     protected AbstractNorthbounder(String name) {
         m_name = name;
         m_queue = new AlarmQueue<NorthboundAlarm>(this);
-    }
-
-    public NodeDao getNodeDao() {
-        return m_nodeDao;
-    }
-
-    public void setNodeDao(NodeDao nodeDao) {
-        m_nodeDao = nodeDao;
+        LOG.debug("Creating Northbounder instance {}", getName());
     }
 
     @Override
@@ -144,6 +134,10 @@ public abstract class AbstractNorthbounder implements Northbounder, Runnable,
 
     /** Override this to perform actions when stopping. **/
     protected void onStop() {
+    }
+
+    /** Override this to perform actions when reloading the configuration. **/
+    public void reloadConfig() {
     }
 
     @Override
@@ -222,11 +216,16 @@ public abstract class AbstractNorthbounder implements Northbounder, Runnable,
         if (alarm.getNodeId() != null) {
             LOG.debug("Adding nodeId: " + alarm.getNodeId().toString());
             mapping.put("nodeId", alarm.getNodeId().toString());
-            String nodeLabel = m_nodeDao.getLabelForId(alarm.getNodeId());
-            mapping.put("nodeLabel", nodeLabel == null ? "?" : nodeLabel);
+            mapping.put("nodeLabel", alarm.getNodeLabel() == null ? "?" : alarm.getNodeLabel());
+            mapping.put("nodeSysObjectId", alarm.getNodeSysObjectId() == null ? "?" : alarm.getNodeSysObjectId());
+            mapping.put("foreignSource", alarm.getForeignSource() == null ? "?" : alarm.getForeignSource());
+            mapping.put("foreignId", alarm.getForeignId() == null ? "?" : alarm.getForeignId());
         } else {
             mapping.put("nodeId", "");
             mapping.put("nodeLabel", "");
+            mapping.put("nodeSysObjectId", "");
+            mapping.put("foreignSource", "");
+            mapping.put("foreignId", "");
         }
 
         String poller = alarm.getPoller() == null ? "localhost"
@@ -265,54 +264,16 @@ public abstract class AbstractNorthbounder implements Northbounder, Runnable,
         return defaultString;
     }
 
-    private void buildParmMappings(final NorthboundAlarm alarm,
-            final Map<String, Object> mapping) {
-        List<EventParm<?>> parmCollection = new LinkedList<EventParm<?>>();
-        String parms = alarm.getEventParms();
-        if (parms == null)
+    private void buildParmMappings(final NorthboundAlarm alarm, final Map<String, Object> mapping) {
+        if (alarm.getParameters().isEmpty()) {
             return;
-
-        char separator = ';';
-        String[] parmArray = StringUtils.split(parms, separator);
-        for (String string : parmArray) {
-
-            char nameValueDelim = '=';
-            String[] nameValueArray = StringUtils.split(string,
-                                                        nameValueDelim);
-            String parmName = nameValueArray[0];
-            String parmValue = StringUtils.split(nameValueArray[1], '(')[0];
-
-            EventParm<String> eventParm = new EventParm<String>(parmName,
-                                                                parmValue);
-            parmCollection.add(eventParm);
         }
-
-        for (int i = 0; i < parmCollection.size(); i++) {
-            EventParm<?> parm = parmCollection.get(i);
-            Integer parmOffset = i + 1;
+        int parmOffset = 1;
+        for (Parm parm : alarm.getEventParametersCollection()) {
             mapping.put("parm[name-#" + parmOffset + "]", parm.getParmName());
-            mapping.put("parm[#" + parmOffset + "]",
-                        parm.getParmValue().toString());
-            mapping.put("parm[" + parm.getParmName() + "]",
-                        parm.getParmValue().toString());
-        }
-    }
-
-    private static class EventParm<T extends Object> {
-        private String m_parmName;
-        private T m_parmValue;
-
-        EventParm(String name, T value) {
-            m_parmName = name;
-            m_parmValue = value;
-        }
-
-        public String getParmName() {
-            return m_parmName;
-        }
-
-        public T getParmValue() {
-            return (T) m_parmValue;
+            mapping.put("parm[#" + parmOffset + "]", parm.getValue().getContent());
+            mapping.put("parm[" + parm.getParmName() + "]", parm.getValue().getContent());
+            parmOffset++;
         }
     }
 
