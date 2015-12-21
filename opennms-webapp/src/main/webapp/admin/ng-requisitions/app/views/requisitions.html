@@ -16,21 +16,21 @@
     <form class="form-inline pull-right" role="search">
       <div class="input-group">
         <span class="input-group-addon"><span class="glyphicon glyphicon-search"/></span>
-        <input class="form-control" type="text" placeholder="Search/Filter Requisitions" ng-model="reqFilter"></input>
+        <input class="form-control" type="text" placeholder="Search/Filter Requisitions" ng-model="reqFilter" id="search-requisitions"></input>
       </div>
       <div class="input-group">
-        <button class="btn btn-default" ng-click="editDefaultForeignSource()">
+        <button class="btn btn-default" ng-click="editDefaultForeignSource()" id="edit-default-foreign-source">
           <span class="glyphicon glyphicon-edit"/> Edit Default FS
         </button>
         <!-- Not implemented
-          <button class="btn btn-default navbar-btn" ng-click="resetDefaultForeignSource()">
+          <button class="btn btn-default navbar-btn" ng-click="resetDefaultForeignSource()" id="reset-default">
             <span class="glyphicon glyphicon-retweet"/> Reset Default
           </button>
         -->
-        <button class="btn btn-default" ng-click="refresh()">
+        <button class="btn btn-default" ng-click="refresh()" id="refresh">
           <span class="glyphicon glyphicon-refresh"/> Refresh
         </button>
-        <button class="btn btn-default" ng-click="add()">
+        <button class="btn btn-default" ng-click="add()" id="add-requisition">
           <span class="glyphicon glyphicon-plus"/> Add Requisition
         </button>
       </div>
@@ -83,35 +83,35 @@
             <td>{{ requisition.nodesDefined }}</td>
             <td>{{ requisition.nodesInDatabase }}</td>
             <td>
-              <button class="btn btn-default btn-xs"
+              <button class="btn btn-default btn-xs edit-requisition"
                 tooltip="Edit the {{requisition.foreignSource}} Requisition"
                 ng-click="edit(requisition.foreignSource)">
                 <span class="glyphicon glyphicon-pencil"></span>
               </button>
-              <button class="btn btn-default btn-xs"
+              <button class="btn btn-default btn-xs edit-foreign-source"
                 tooltip="Edit detectors and policies of the {{requisition.foreignSource}} Requisition"
                 ng-click="editForeignSource(requisition.foreignSource)">
                 <span class="glyphicon glyphicon-edit"></span>
               </button>
               <!-- Not implemented
-              <button class="btn btn-default btn-xs"
+              <button class="btn btn-default btn-xs clone-foreign-source"
                 tooltip="Clone the set detectors and policies of the {{requisition.foreignSource}} Requisition"
                 ng-click="clone(requisition.foreignSource)">
                 <span class="glyphicon glyphicon-link"></span>
               </button>
               -->
-              <button class="btn btn-default btn-xs"
+              <button class="btn btn-default btn-xs synchronize"
                 tooltip="Synchronize the {{requisition.foreignSource}} Requisition"
                 ng-disabled="timingStatus.isRunning"
                 ng-click="synchronize(requisition.foreignSource)">
                 <span class="glyphicon glyphicon-refresh"></span>
               </button>
-              <button class="btn btn-default btn-xs" ng-show="requisition.nodesInDatabase > 0"
+              <button class="btn btn-default btn-xs remove-nodes" ng-show="requisition.nodesInDatabase > 0"
                 tooltip="Remove all nodes from the {{requisition.foreignSource}} Requisition"
                 ng-click="removeAllNodes(requisition.foreignSource)">
                 <span class="glyphicon glyphicon-remove-circle"></span>
               </button>
-              <button class="btn btn-default btn-xs" ng-show="requisition.nodesInDatabase == 0"
+              <button class="btn btn-default btn-xs remove-requisition" ng-show="requisition.nodesInDatabase == 0"
                 tooltip="Remove the {{requisition.foreignSource}} Requisition"
                 ng-click="delete(requisition.foreignSource)">
                 <span class="glyphicon glyphicon-remove"></span>
