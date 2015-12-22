@@ -122,7 +122,7 @@ public class SnmpTrapNorthbounder extends AbstractNorthbounder implements Initia
     public void forwardAlarms(List<NorthboundAlarm> alarms) throws NorthbounderException {
         if (alarms == null) {
             String errorMsg = "No alarms in alarms list for SNMP Trap forwarding.";
-            IllegalStateException e = new IllegalStateException(errorMsg);
+            NorthbounderException e = new NorthbounderException(errorMsg);
             LOG.error(errorMsg, e);
             throw e;
         }
