@@ -1,0 +1,15 @@
+<email-northbounder-config>
+
+  <enabled>true</enabled>
+  <nagles-delay>1000</nagles-delay>
+  <batch-size>100</batch-size>
+  <queue-size>300000</queue-size>
+
+    <destination>
+        <name>google</name> <!-- Have to match an sendmail-config's entry on javamail-configuration.xml -->
+        <filter name="Only Servers">
+            <rule>foreignSource matches '^Servers.*'</rule>
+        </filter>
+    </destination>
+
+</email-northbounder-config>
