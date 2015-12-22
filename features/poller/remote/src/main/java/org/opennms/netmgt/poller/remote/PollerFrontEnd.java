@@ -170,6 +170,7 @@ public interface PollerFrontEnd {
      * @param l a {@link org.opennms.netmgt.poller.remote.ServicePollStateChangedListener} object.
      */
     void removeServicePollStateChangedListener(ServicePollStateChangedListener l);
-	
+
+    String getMonitoringSystemId();
 
 }
