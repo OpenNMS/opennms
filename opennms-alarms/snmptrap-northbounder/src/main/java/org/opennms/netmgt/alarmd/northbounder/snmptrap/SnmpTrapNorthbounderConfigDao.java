@@ -37,7 +37,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The Class SyslogNorthbounderConfigDao.
+ * The Class SnmpTrapNorthbounderConfigDao.
  * 
  * @author <a href="mailto:agalue@opennms.org>Alejandro Galue</a>
  */
@@ -50,7 +50,7 @@ public class SnmpTrapNorthbounderConfigDao extends AbstractJaxbConfigDao<SnmpTra
     private File m_configDirectory;
 
     /**
-     * Instantiates a new Syslog northbounder configuration DAO.
+     * Instantiates a new SNMP Trap northbounder configuration DAO.
      */
     public SnmpTrapNorthbounderConfigDao() {
         super(SnmpTrapNorthbounderConfig.class, "Config for SNMP Trap Northbounder");
@@ -97,7 +97,7 @@ public class SnmpTrapNorthbounderConfigDao extends AbstractJaxbConfigDao<SnmpTra
     }
 
     /**
-     * Gets the Syslog northbounder configuration.
+     * Gets the SNMP Trap northbounder configuration.
      *
      * @return the configuration object
      */

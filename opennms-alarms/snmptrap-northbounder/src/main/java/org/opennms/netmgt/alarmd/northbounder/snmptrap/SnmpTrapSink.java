@@ -41,7 +41,7 @@ import org.opennms.netmgt.alarmd.api.Destination;
 import org.opennms.netmgt.alarmd.api.NorthboundAlarm;
 
 /**
- * Configuration for the various Syslog hosts to receive alarms via Syslog.
+ * Configuration for the various SNMP Trap hosts to receive alarms via Traps.
  *
  * @author <a href="mailto:agalue@opennms.org>Alejandro Galue</a>
  */

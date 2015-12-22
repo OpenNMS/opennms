@@ -44,7 +44,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.Assert;
 
 /**
- * The Class SyslogNorthbounderManager.
+ * The Class SnmpTrapNorthbounderManager.
  * 
  * @author <a href="mailto:agalue@opennms.org>Alejandro Galue</a>
  */
@@ -87,9 +87,9 @@ public class SnmpTrapNorthbounderManager implements InitializingBean, Northbound
      * @throws Exception the exception
      */
     private void registerNorthnounders() throws Exception {
-        for (SnmpTrapSink syslogDestination : m_configDao.getConfig().getSnmpTrapSinks()) {
-            LOG.info("Registering SNMP Trap northbound configuration for sink {}.", syslogDestination.getName());
-            SnmpTrapNorthbounder nbi = new SnmpTrapNorthbounder(m_configDao, syslogDestination.getName());
+        for (SnmpTrapSink sink : m_configDao.getConfig().getSnmpTrapSinks()) {
+            LOG.info("Registering SNMP Trap northbound configuration for sink {}.", sink.getName());
+            SnmpTrapNorthbounder nbi = new SnmpTrapNorthbounder(m_configDao, sink.getName());
             nbi.afterPropertiesSet();
             m_registrations.put(nbi.getName(), m_serviceRegistry.register(nbi, Northbounder.class));
         }
