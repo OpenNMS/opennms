@@ -68,6 +68,7 @@
         <entry key="snmp-config.xml" value="snmpPeerFactory"/>
         <entry key="snmp-graph.properties" value="snmpPrefabGraph"/>
         <!-- <entry key="snmp-interface-poller-configuration.xml" value="snmpInterfacePollerConfigFactory"/> --><!-- database access -->
+        <entry key="snmptrap-northbounder-configuration.xml" value="snmpTrapNorthbounderConfigDao"/>
         <entry key="statsd-configuration.xml" value="statisticsDaemonConfigDao"/>
         <entry key="surveillance-views.xml" value="surveillanceViewConfigDao"/>
         <entry key="syslogd-configuration.xml" value="syslogdConfigFactory"/>
@@ -486,6 +487,10 @@ org.opennms.netmgt.filter.FilterParseException: SQL Exception occurred getting I
   </bean>
 
   <bean id="snmpPeerFactory" class="org.opennms.netmgt.config.SnmpPeerFactory" depends-on="snmpPeerFactory-init" factory-method="getInstance"/>
+
+  <bean name="snmpTrapNorthbounderConfigDao" class="org.opennms.netmgt.alarmd.northbounder.snmptrap.SnmpTrapNorthbounderConfigDao">
+    <property name="configResource" value="file:${opennms.home}/etc/snmptrap-northbounder-configuration.xml" />
+  </bean>
 
   <bean id="statisticsDaemonConfigDao" class="org.opennms.netmgt.dao.castor.DefaultStatisticsDaemonConfigDao">
     <property name="configResource" value="file:${opennms.home}/etc/statsd-configuration.xml"/>
