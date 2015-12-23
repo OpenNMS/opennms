@@ -29,58 +29,149 @@
 package org.opennms.netmgt.alarmd.northbounder.syslog;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.opennms.core.soa.Registration;
 import org.opennms.core.soa.ServiceRegistry;
+import org.opennms.netmgt.alarmd.api.NorthboundAlarm;
 import org.opennms.netmgt.alarmd.api.Northbounder;
-import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.alarmd.api.NorthbounderException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.Assert;
 
-public class SyslogNorthbounderManager implements InitializingBean, DisposableBean {
+/**
+ * The Class SyslogNorthbounderManager.
+ * 
+ * @author <a href="mailto:david@opennms.org>David Hustace</a>
+ * @author <a href="agalue@opennms.org>Alejandro Galue</a>
+ */
+public class SyslogNorthbounderManager implements InitializingBean, Northbounder, DisposableBean {
 
+    /** The Constant LOG. */
+    private static final Logger LOG = LoggerFactory.getLogger(SyslogNorthbounderManager.class);
+
+    /** The service registry. */
     @Autowired
     private ServiceRegistry m_serviceRegistry;
 
+    /** The Syslog northbounder configuration DAO. */
     @Autowired
     private SyslogNorthbounderConfigDao m_configDao;
 
-    @Autowired
-    private NodeDao m_nodeDao;
-
+    /** The registrations map. */
     private Map<String, Registration> m_registrations = new HashMap<String, Registration>();
 
+    /**
+     * After properties set.
+     *
+     * @throws Exception the exception
+     */
     @Override
     public void afterPropertiesSet() throws Exception {
-
-        Assert.notNull(m_nodeDao);
         Assert.notNull(m_configDao);
         Assert.notNull(m_serviceRegistry);
 
-        SyslogNorthbounderConfig config = m_configDao.getConfig();
+        // Registering itself as a northbounder
+        m_registrations.put(getName(), m_serviceRegistry.register(this, Northbounder.class));
 
-        List<SyslogDestination> destinations = config.getDestinations();
-        for (SyslogDestination syslogDestination : destinations) {
-            SyslogNorthbounder nbi = new SyslogNorthbounder(config,
-                                                            syslogDestination);
-            nbi.setNodeDao(m_nodeDao);
-            nbi.afterPropertiesSet();
-            m_registrations.put(nbi.getName(),
-                                m_serviceRegistry.register(nbi,
-                                                           Northbounder.class));
-        }
-
+        // Registering each destination as a northbounder
+        registerNorthnounders();
     }
 
+    /**
+     * Register northnounders.
+     *
+     * @throws Exception the exception
+     */
+    private void registerNorthnounders() throws Exception {
+        for (SyslogDestination syslogDestination : m_configDao.getConfig().getDestinations()) {
+            LOG.info("Registering syslog northbound configuration for destination {}.", syslogDestination.getName());
+            SyslogNorthbounder nbi = new SyslogNorthbounder(m_configDao, syslogDestination.getName());
+            nbi.afterPropertiesSet();
+            m_registrations.put(nbi.getName(), m_serviceRegistry.register(nbi, Northbounder.class));
+        }
+    }
+
+    /**
+     * Destroy.
+     *
+     * @throws Exception the exception
+     */
     @Override
     public void destroy() throws Exception {
-        for (Registration r : m_registrations.values()) {
-            r.unregister();
+        m_registrations.values().forEach(r -> unregister(r));
+    }
+
+    /**
+     * Start.
+     *
+     * @throws NorthbounderException the northbounder exception
+     */
+    @Override
+    public void start() throws NorthbounderException {
+        // There is no need to do something here. Only the reload method will be implemented
+    }
+
+    /**
+     * On alarm.
+     *
+     * @param alarm the alarm
+     * @throws NorthbounderException the northbounder exception
+     */
+    @Override
+    public void onAlarm(NorthboundAlarm alarm) throws NorthbounderException {
+        // There is no need to do something here. Only the reload method will be implemented        
+    }
+
+    /**
+     * Stop.
+     *
+     * @throws NorthbounderException the northbounder exception
+     */
+    @Override
+    public void stop() throws NorthbounderException {
+        // There is no need to do something here. Only the reload method will be implemented
+    }
+
+    /**
+     * Gets the name.
+     *
+     * @return the name
+     */
+    @Override
+    public String getName() {
+        return SyslogNorthbounder.NBI_NAME;
+    }
+
+    /**
+     * Reloads the configuration.
+     */
+    @Override
+    public void reloadConfig() {
+        m_configDao.reload();
+        LOG.info("Reloading syslog northbound configuration.");
+        m_registrations.forEach((k,v) -> { if (k != getName()) unregister(v);});
+        try {
+            registerNorthnounders();
+        } catch (Exception e) {
+            LOG.error("Can't reload the syslog northbound configuration", e);
         }
     }
 
+    /**
+     * Unregister.
+     *
+     * @param reg the registration object
+     */
+    public void unregister(Registration reg) {
+        // Invalidate the Northbounder implementation (to be sure it won't listen for more alarms).
+        reg.unregister();
+
+        // Shutdown the Syslog target
+        reg.getProvider(Northbounder.class).stop();
+    }
 }

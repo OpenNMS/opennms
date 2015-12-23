@@ -77,7 +77,6 @@ public class JmsNorthbounderManager implements InitializingBean,
                                                       config,
                                                       m_jmsNorthbounderConnectionFactory,
                                                       jmsDestination);
-            nbi.setNodeDao(m_nodeDao);
             nbi.afterPropertiesSet();
             m_registrations.put(nbi.getName(),
                                 m_serviceRegistry.register(nbi,

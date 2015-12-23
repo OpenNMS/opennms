@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2013-2015 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2015 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -25,28 +25,33 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  *******************************************************************************/
+package org.opennms.netmgt.alarmd.northbounder.syslog;
 
-package org.opennms.netmgt.alarmd.api;
-
-
-
+import org.junit.Assert;
+import org.junit.Test;
+import org.opennms.netmgt.alarmd.api.NorthboundAlarm;
+import org.opennms.netmgt.model.OnmsAlarm;
 
 /**
- * North bound Interface API
+ * The Class SyslogFilterTest.
  * 
- * @author <a href="mailto:david@opennms.org">David Hustace</a>
- * @version $Id: $
+ * @author <a href="agalue@opennms.org>Alejandro Galue</a>
  */
+public class SyslogFilterTest {
 
-public interface Northbounder {
+    /**
+     * Test filter parsing.
+     *
+     * @throws Exception the exception
+     */
+    @Test
+    public void testFilterParsing() throws Exception {
+        OnmsAlarm onmsAlarm = new OnmsAlarm();
+        onmsAlarm.setEventParms("user=agalue(string,text);passwd=0nmsRules(string,text);");
+        onmsAlarm.setUei("uei.opennms.org/junit/test");
+        NorthboundAlarm alarm = new NorthboundAlarm(onmsAlarm);
+        SyslogFilter filter = new SyslogFilter("test", "uei matches '^uei\\.opennms\\.org.*' and parameters['user'] == 'agalue'", "localhost");
+        Assert.assertTrue(filter.passFilter(alarm));
+    }
 
-    public void start() throws NorthbounderException;
-    
-    public void onAlarm(NorthboundAlarm alarm) throws NorthbounderException;
-    
-    public void stop() throws NorthbounderException;
-    
-    public String getName();
-    
-    public void reloadConfig();
 }
