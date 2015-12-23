@@ -197,13 +197,14 @@ public class ProvisioningNewUIIT extends OpenNMSSeleniumTestCase {
     private void clickId(final String id) throws InterruptedException {
         WebElement element = wait.until(ExpectedConditions.elementToBeClickable(By.id(id)));
         final long waitUntil = System.currentTimeMillis() + 60000;
-        while (element.getAttribute("disabled") != null) {
+        while (element.getAttribute("disabled") != null || !element.isDisplayed() || !element.isEnabled()) {
             Thread.sleep(1000);
             if (System.currentTimeMillis() >= waitUntil) {
                 break;
             }
             element = findElementById(id);
         }
+        Thread.sleep(1000);
         element.click();
     }
 

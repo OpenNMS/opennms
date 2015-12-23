@@ -28,10 +28,25 @@
 
 package org.opennms.netmgt.alarmd.api;
 
+/**
+ * The Interface Preservable.
+ * 
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ */
 public interface Preservable {
-	
-	public boolean isPreserved();
-	
-	public void setPreserved(boolean preserved);
+
+    /**
+     * Checks if is preserved.
+     *
+     * @return true, if is preserved
+     */
+    public boolean isPreserved();
+
+    /**
+     * Sets the preserved.
+     *
+     * @param preserved the new preserved
+     */
+    public void setPreserved(boolean preserved);
 
 }
