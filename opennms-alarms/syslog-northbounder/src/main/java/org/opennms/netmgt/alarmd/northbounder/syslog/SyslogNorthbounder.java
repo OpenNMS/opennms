@@ -28,9 +28,7 @@
 
 package org.opennms.netmgt.alarmd.northbounder.syslog;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.opennms.core.utils.PropertiesUtils;
 import org.opennms.netmgt.alarmd.api.NorthboundAlarm;
@@ -86,7 +84,7 @@ public class SyslogNorthbounder extends AbstractNorthbounder implements Initiali
      */
     @Override
     public void afterPropertiesSet() throws Exception {
-        if (m_configDao == null) {
+        if (m_destination == null) {
             LOG.info("Syslog Northbounder is currently disabled, rejecting alarm.");
             String msg = "Syslog forwarding configuration is not initialized.";
             IllegalStateException e = new IllegalStateException(msg);
@@ -154,7 +152,6 @@ public class SyslogNorthbounder extends AbstractNorthbounder implements Initiali
         }
 
         LOG.info("Forwarding {} alarms to destination:{}", alarms.size(), m_destination.getName());
-        Map<Integer, Map<String, Object>> alarmMappings = new HashMap<Integer, Map<String, Object>>();
         SyslogIF instance;
         try {
             instance = Syslog.getInstance(m_destination.getName());
@@ -173,23 +170,15 @@ public class SyslogNorthbounder extends AbstractNorthbounder implements Initiali
                 continue;
             }
             LOG.debug("Creating formatted log message for alarm: {}.", alarm.getId());
-            Map<String, Object> mapping = null;
             String syslogMessage;
             int level;
             try {
-                if (alarmMappings != null) {
-                    mapping = alarmMappings.get(alarm.getId());
-                }
-                if (mapping == null) {
-                    mapping = createMapping(alarmMappings, alarm);
-                }
-
                 LOG.debug("Making substitutions for tokens in message format for alarm: {}.", alarm.getId());
                 String msgFormat = m_destination.getCustomMessageFormat(alarm);
                 if (msgFormat == null) {
                     msgFormat = getConfig().getMessageFormat();
                 }
-                syslogMessage = PropertiesUtils.substitute(msgFormat, mapping);
+                syslogMessage = PropertiesUtils.substitute(msgFormat, createMapping(alarm));
 
                 LOG.debug("Determining LOG_LEVEL for alarm: {}", alarm.getId());
                 level = determineLogLevel(alarm.getSeverity());
