@@ -102,7 +102,7 @@ public class EmailNorthbounderTest {
         Assert.assertTrue(nbi.accepts(alarm));
         SendmailConfig sendmail = nbi.getSendmailConfig(alarm);
         Assert.assertEquals("ALARM 100 FROM NODE my-test-server@Servers-MacOS", sendmail.getSendmailMessage().getSubject());
-        Assert.assertEquals("ALARM 100 FROM NODE my-test-server@Servers-MacOS: Test log message", sendmail.getSendmailMessage().getBody());
+        Assert.assertEquals("ALARM 100 FROM NODE my-test-server@Servers-MacOS: Test log message\nDescription: Test description", sendmail.getSendmailMessage().getBody());
     }
 
 }
