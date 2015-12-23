@@ -28,7 +28,6 @@
 
 package org.opennms.netmgt.alarmd.northbounder.email;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -163,7 +162,7 @@ public class EmailNorthbounder extends AbstractNorthbounder implements Initializ
      * @return the sendmail configuration
      */
     protected SendmailConfig getSendmailConfig(NorthboundAlarm alarm) {
-        Map<String, Object> mapping = createMapping(new HashMap<Integer, Map<String, Object>>(), alarm);
+        Map<String, Object> mapping = createMapping(alarm);
         final String subject = PropertiesUtils.substitute(m_emailSubjectFormat, mapping);
         m_sendmail.getSendmailMessage().setSubject(subject);
         final String body = PropertiesUtils.substitute(m_emailBodyFormat, mapping);
