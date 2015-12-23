@@ -28,11 +28,22 @@
 
 package org.opennms.netmgt.alarmd.api.support;
 
-
 import org.opennms.netmgt.alarmd.api.Preservable;
 
+/**
+ * A factory for creating Status objects.
+ *
+ * @param <T> the generic type
+ * 
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ */
 public interface StatusFactory<T extends Preservable> {
-	
+
+    /**
+     * Creates a new Status object.
+     *
+     * @return the generic type object
+     */
     public T createSyncLostMessage();
 
 }

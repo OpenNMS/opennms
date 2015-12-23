@@ -1,3 +1,30 @@
+/*******************************************************************************
+ * This file is part of OpenNMS(R).
+ *
+ * Copyright (C) 2013-2015 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2015 The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published
+ * by the Free Software Foundation, either version 3 of the License,
+ * or (at your option) any later version.
+ *
+ * OpenNMS(R) is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with OpenNMS(R).  If not, see:
+ *      http://www.gnu.org/licenses/
+ *
+ * For more information contact:
+ *     OpenNMS(R) Licensing <license@opennms.org>
+ *     http://www.opennms.org/
+ *     http://www.opennms.com/
+ *******************************************************************************/
 package org.opennms.netmgmt.alarmd.northbounder.jms;
 /*******************************************************************************
  * This file is part of OpenNMS(R).
@@ -38,8 +65,12 @@ import org.opennms.netmgt.alarmd.northbounder.jms.JmsNorthbounderConfigDao;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 
+/**
+ * The Class JmsConfigDaoTest.
+ */
 public class JmsConfigDaoTest {
 
+    /** The XML as XML first only some UEIs. */
     String xmlAsXmlFirstOnlySomeUeis = ""
             + "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n"
             + "<jms-northbounder-config>"
@@ -54,12 +85,15 @@ public class JmsConfigDaoTest {
             + "	<uei>uei.opennms.org/nodes/nodeUp</uei>\n"
             + "</jms-northbounder-config>\n" + "";
 
+    /**
+     * Test as XML queue first alarm some UEIs.
+     *
+     * @throws InterruptedException the interrupted exception
+     */
     @Test
-    public void testAsXmlQueueFirstAlarmSomeUeis()
-            throws InterruptedException {
+    public void testAsXmlQueueFirstAlarmSomeUeis() throws InterruptedException {
 
-        Resource resource = new ByteArrayResource(
-                                                  xmlAsXmlFirstOnlySomeUeis.getBytes());
+        Resource resource = new ByteArrayResource(xmlAsXmlFirstOnlySomeUeis.getBytes());
 
         JmsNorthbounderConfigDao dao = new JmsNorthbounderConfigDao();
         dao.setConfigResource(resource);
@@ -73,8 +107,7 @@ public class JmsConfigDaoTest {
         assertEquals(new Integer("1000"), config.getNaglesDelay());
         assertEquals(new Integer(100), config.getBatchSize());
         assertEquals(new Integer(300000), config.getQueueSize());
-        assertEquals("ALARM ID:${alarmId} NODE:${nodeLabel}",
-                     config.getMessageFormat());
+        assertEquals("ALARM ID:${alarmId} NODE:${nodeLabel}", config.getMessageFormat());
 
         JmsDestination jmsDestination = config.getDestinations().get(0);
         assertNotNull(jmsDestination);
@@ -84,12 +117,11 @@ public class JmsConfigDaoTest {
         assertEquals(false, jmsDestination.isSendAsObjectMessageEnabled());
         assertEquals(null, jmsDestination.getMessageFormat());
 
-        assertEquals("uei.opennms.org/nodes/nodeDown",
-                     config.getUeis().get(0));
+        assertEquals("uei.opennms.org/nodes/nodeDown", config.getUeis().get(0));
         assertEquals("uei.opennms.org/nodes/nodeUp", config.getUeis().get(1));
-
     }
 
+    /** The XML as object message topic all alarms no UEIs. */
     String xmlAsObjectMessageTopicAllAlarmsNoUeis = ""
             + "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n"
             + "<jms-northbounder-config>" + "  <enabled>false</enabled>"
@@ -103,10 +135,12 @@ public class JmsConfigDaoTest {
             + ">\n" + "   </destination>" + "</jms-northbounder-config>\n"
             + "";
 
+    /**
+     * Test as object message topic all alarms no UEIs.
+     */
     @Test
     public void testAsObjectMessageTopicAllAlarmsNoUeis() {
-        Resource resource = new ByteArrayResource(
-                                                  xmlAsObjectMessageTopicAllAlarmsNoUeis.getBytes());
+        Resource resource = new ByteArrayResource(xmlAsObjectMessageTopicAllAlarmsNoUeis.getBytes());
 
         JmsNorthbounderConfigDao dao = new JmsNorthbounderConfigDao();
         dao.setConfigResource(resource);
@@ -118,10 +152,8 @@ public class JmsConfigDaoTest {
         assertNotNull(config);
         assertEquals(null, config.getUeis());
         assertTrue(!config.getDestinations().get(0).isFirstOccurrenceOnly());
-        assertEquals(true,
-                     config.getDestinations().get(0).isSendAsObjectMessageEnabled());
-        assertEquals("TOPIC",
-                     config.getDestinations().get(0).getDestinationType().toString());
+        assertEquals(true, config.getDestinations().get(0).isSendAsObjectMessageEnabled());
+        assertEquals("TOPIC", config.getDestinations().get(0).getDestinationType().toString());
         assertEquals(false, config.isEnabled());
         assertEquals(new Integer("10000"), config.getNaglesDelay());
         assertEquals(new Integer(10), config.getBatchSize());
