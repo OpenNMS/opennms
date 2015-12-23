@@ -1,6 +1,6 @@
 <email-northbounder-config>
 
-  <enabled>true</enabled>
+  <enabled>false</enabled>
   <nagles-delay>1000</nagles-delay>
   <batch-size>100</batch-size>
   <queue-size>300000</queue-size>
@@ -8,7 +8,7 @@
   <destination>
     <name>google</name> <!-- Have to match the name of a sendmail-config's entry on javamail-configuration.xml -->
     <filter name="Only Servers">
-      <rule>foreignSource matches '^Servers.*'</rule>
+      <rule>foreignSource matches '^Servers.*'</rule> <!-- SPEL Expression against org.opennms.netmgt.alarmd.api.NorthboundAlarm -->
     </filter>
   </destination>
 

@@ -25,6 +25,7 @@
         <entry key="eventconf.xml" value="eventConfDao"/>
         <entry key="eventd-configuration.xml" value="eventdConfigFactory"/>
         <entry key="exclude-ueis.properties" value="excludeUeisProperties"/>
+        <entry key="email-northbounder-configuration.xml" value="emailNorthbounderConfigDao"/>
         <entry key="groups.xml" value="groupFactory"/>
         <entry key="http-datacollection-config.xml" value="httpCollectionConfigFactory"/>
         <entry key="jasper-reports.xml" value="jasperReportConfigDao"/>
@@ -188,6 +189,10 @@ org.opennms.netmgt.filter.FilterParseException: SQL Exception occurred getting I
   <bean id="eventdConfigFactory" class="org.opennms.netmgt.config.EventdConfigManager"/>
   
   <bean id="excludeUeisProperties" class="org.opennms.netmgt.config.tester.support.ExcludeUeisProperties"/>
+  
+  <bean name="emailNorthbounderConfigDao" class="org.opennms.netmgt.alarmd.northbounder.email.EmailNorthbounderConfigDao">
+    <property name="configResource" value="file:${opennms.home}/etc/email-northbounder-configuration.xml" />
+  </bean>
   
   <bean id="groupFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
     <property name="staticMethod"><value>org.opennms.netmgt.config.GroupFactory.init</value></property>

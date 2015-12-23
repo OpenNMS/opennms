@@ -170,6 +170,11 @@ public class ConfigTesterTest {
     }
 
     @Test
+    public void testEmailNorthbounderConfiguration() {
+        testConfigFile("email-northbounder-configuration.xml");
+    }
+
+    @Test
     public void testEventConf() {
         testConfigFile("eventconf.xml");
     }
