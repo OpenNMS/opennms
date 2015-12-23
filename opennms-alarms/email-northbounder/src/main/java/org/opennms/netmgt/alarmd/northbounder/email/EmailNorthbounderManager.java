@@ -94,7 +94,7 @@ public class EmailNorthbounderManager implements InitializingBean, Northbounder,
     private void registerNorthnounders() throws Exception {
         for (EmailDestination destination : m_configDao.getConfig().getEmailDestinations()) {
             LOG.info("Registering Email northbound configuration for destination {}.", destination.getName());
-            EmailTrapNorthbounder nbi = new EmailTrapNorthbounder(m_configDao, m_javaMailDao, destination.getName());
+            EmailNorthbounder nbi = new EmailNorthbounder(m_configDao, m_javaMailDao, destination.getName());
             nbi.afterPropertiesSet();
             m_registrations.put(nbi.getName(), m_serviceRegistry.register(nbi, Northbounder.class));
         }
@@ -148,7 +148,7 @@ public class EmailNorthbounderManager implements InitializingBean, Northbounder,
      */
     @Override
     public String getName() {
-        return EmailTrapNorthbounder.NBI_NAME;
+        return EmailNorthbounder.NBI_NAME;
     }
 
     /**

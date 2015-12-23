@@ -3,7 +3,7 @@
 	xmlns:this="http://xmlns.opennms.org/xsd/config/javamail-configuration"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://xmlns.opennms.org/xsd/config/javamail-configuration "
-	default-read-config-name="gmail" default-send-config-name="gmail">
+	default-read-config-name="google" default-send-config-name="google">
 
 	<sendmail-config name="google" attempt-interval="3000" use-authentication="true" use-jmta="true" debug="true">
 		<sendmail-host host="smtp.gmail.com" port="465" />
@@ -11,8 +11,8 @@
 			message-content-type="text/plain" message-encoding="7-bit" quit-wait="true"
 			ssl-enable="true" start-tls="false" transport="smtps" />
 		<sendmail-message to="noc@networksRus.com" from="networksRusNOC@gmail.com"
-			subject="ALARM ${alarmId} FROM NODE ${nodeLabel}@${foreignSource}: ${logMsg}"
-			   body="ALARM ${alarmId} FROM NODE ${nodeLabel}@${foreignSource}: ${logMsg}\nDescription:\n${descr}" />
+			subject="ALARM ${alarmId} FROM NODE ${nodeLabel}@${foreignSource}"
+			   body="ALARM ${alarmId} FROM NODE ${nodeLabel}@${foreignSource}: ${logMsg}" />
 		<user-auth user-name="networksRusNOC" password="w00t" />
 	</sendmail-config>
 
@@ -22,5 +22,7 @@
 		</readmail-host>
 		<user-auth user-name="networksRusNOC" password="w00t" />
 	</readmail-config>
+
+    <end2end-mail-config name="google" readmail-config-name="google" sendmail-config-name="google" />
 
 </javamail-configuration>

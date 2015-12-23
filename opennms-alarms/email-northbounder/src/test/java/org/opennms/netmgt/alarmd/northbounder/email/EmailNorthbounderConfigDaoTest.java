@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2013-2015 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2015 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -25,52 +25,36 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  *******************************************************************************/
-
 package org.opennms.netmgt.alarmd.northbounder.email;
 
-import org.opennms.core.xml.AbstractJaxbConfigDao;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.io.File;
+
+import org.junit.Assert;
+import org.junit.Test;
+import org.springframework.core.io.FileSystemResource;
 
 /**
- * The Class EmailNorthbounderConfigDao.
+ * The Class EmailNorthbounderConfigDaoTest.
  * 
  * @author <a href="mailto:agalue@opennms.org>Alejandro Galue</a>
  */
-public class EmailNorthbounderConfigDao extends AbstractJaxbConfigDao<EmailNorthbounderConfig, EmailNorthbounderConfig> {
-
-    /** The Constant LOG. */
-    public static final Logger LOG = LoggerFactory.getLogger(EmailNorthbounderConfigDao.class);
+public class EmailNorthbounderConfigDaoTest {
 
     /**
-     * Instantiates a new Email northbounder configuration DAO.
-     */
-    public EmailNorthbounderConfigDao() {
-        super(EmailNorthbounderConfig.class, "Config for E-mail Northbounder");
-    }
-
-    /* (non-Javadoc)
-     * @see org.opennms.core.xml.AbstractJaxbConfigDao#translateConfig(java.lang.Object)
-     */
-    @Override
-    protected EmailNorthbounderConfig translateConfig(EmailNorthbounderConfig config) {
-        return config;
-    }
-
-    /**
-     * Gets the Email northbounder configuration.
+     * Test configuration.
      *
-     * @return the configuration object
+     * @throws Exception the exception
      */
-    public EmailNorthbounderConfig getConfig() {
-        return getContainer().getObject();
+    @Test
+    public void testConfiguration() throws Exception {
+        FileSystemResource resource = new FileSystemResource(new File("src/test/resources/etc/email-northbounder-config.xml"));
+        EmailNorthbounderConfigDao configDao = new EmailNorthbounderConfigDao();
+        configDao.setConfigResource(resource);
+        configDao.afterPropertiesSet();
+        
+        EmailNorthbounderConfig config = configDao.getConfig();
+        Assert.assertNotNull(config);
+        Assert.assertNotNull(config.getEmailDestination("google"));
     }
 
-    /**
-     * Reload.
-     */
-    public void reload() {
-        getContainer().reload();
-    }
-    
 }

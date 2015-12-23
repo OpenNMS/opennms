@@ -45,14 +45,14 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 
 /**
- * Forwards alarms via SNMP Trap.
+ * Forwards alarms via Email.
  * 
  * @author <a href="mailto:agalue@opennms.org>Alejandro Galue</a>
  */
-public class EmailTrapNorthbounder extends AbstractNorthbounder implements InitializingBean {
+public class EmailNorthbounder extends AbstractNorthbounder implements InitializingBean {
 
     /** The Constant LOG. */
-    private static final Logger LOG = LoggerFactory.getLogger(EmailTrapNorthbounder.class);
+    private static final Logger LOG = LoggerFactory.getLogger(EmailNorthbounder.class);
 
     /** The Constant NBI_NAME. */
     protected static final String NBI_NAME = "EmailNBI";
@@ -79,7 +79,7 @@ public class EmailTrapNorthbounder extends AbstractNorthbounder implements Initi
      * @param javaMailDao the java mail DAO
      * @param destinationName the destination name
      */
-    public EmailTrapNorthbounder(EmailNorthbounderConfigDao configDao, JavaMailConfigurationDao javaMailDao, String destinationName) {
+    public EmailNorthbounder(EmailNorthbounderConfigDao configDao, JavaMailConfigurationDao javaMailDao, String destinationName) {
         super(NBI_NAME + ":" + destinationName);
         m_configDao = configDao;
         m_destination = configDao.getConfig().getEmailDestination(destinationName);
@@ -95,7 +95,7 @@ public class EmailTrapNorthbounder extends AbstractNorthbounder implements Initi
      */
     @Override
     public void afterPropertiesSet() throws Exception {
-        if (m_configDao == null || m_destination == null || m_sendmail == null || m_emailSubjectFormat == null || m_emailBodyFormat == null) {
+        if (m_destination == null || m_sendmail == null || m_emailSubjectFormat == null || m_emailBodyFormat == null) {
             LOG.info("Email Northbounder is currently disabled, rejecting alarm.");
             String msg = "Email forwarding configuration is not initialized.";
             IllegalStateException e = new IllegalStateException(msg);
@@ -145,21 +145,9 @@ public class EmailTrapNorthbounder extends AbstractNorthbounder implements Initi
             throw e;
         }
         LOG.info("Forwarding {} alarms to destination {}", alarms.size(), m_destination.getName());
-        Map<Integer, Map<String, Object>> alarmMappings = new HashMap<Integer, Map<String, Object>>();
         for (NorthboundAlarm alarm : alarms) {
             try {
-                Map<String, Object> mapping = null;
-                if (alarmMappings != null) {
-                    mapping = alarmMappings.get(alarm.getId());
-                }
-                if (mapping == null) {
-                    mapping = createMapping(alarmMappings, alarm);
-                }
-                final String subject = PropertiesUtils.substitute(m_emailSubjectFormat, mapping);
-                m_sendmail.getSendmailMessage().setSubject(subject);
-                final String body = PropertiesUtils.substitute(m_emailBodyFormat, mapping);
-                m_sendmail.getSendmailMessage().setBody(body);
-                JavaSendMailer mailer = new JavaSendMailer(m_sendmail, false);
+                JavaSendMailer mailer = new JavaSendMailer(getSendmailConfig(alarm), false);
                 mailer.setDebug(true); // FIXME ?
                 mailer.send();
             } catch (JavaMailerException e) {
@@ -169,11 +157,26 @@ public class EmailTrapNorthbounder extends AbstractNorthbounder implements Initi
     }
 
     /**
+     * Gets the sendmail configuration.
+     *
+     * @param alarm the northbound alarm
+     * @return the sendmail configuration
+     */
+    protected SendmailConfig getSendmailConfig(NorthboundAlarm alarm) {
+        Map<String, Object> mapping = createMapping(new HashMap<Integer, Map<String, Object>>(), alarm);
+        final String subject = PropertiesUtils.substitute(m_emailSubjectFormat, mapping);
+        m_sendmail.getSendmailMessage().setSubject(subject);
+        final String body = PropertiesUtils.substitute(m_emailBodyFormat, mapping);
+        m_sendmail.getSendmailMessage().setBody(body);
+        return m_sendmail;
+    }
+
+    /**
      * Gets the configuration.
      *
      * @return the configuration
      */
-    public EmailTrapNorthbounderConfig getConfig() {
+    protected EmailNorthbounderConfig getConfig() {
         return m_configDao.getConfig();
     }
 

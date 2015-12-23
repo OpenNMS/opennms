@@ -43,7 +43,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlRootElement(name = "email-northbounder-config")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class EmailTrapNorthbounderConfig implements Serializable {
+public class EmailNorthbounderConfig implements Serializable {
 
     /** The Constant serialVersionUID. */
     private static final long serialVersionUID = 1L;
