@@ -37,7 +37,6 @@ import java.util.Properties;
 import java.util.Set;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.netmgt.model.BridgeBridgeLink;
@@ -1118,7 +1117,6 @@ public class BroadcastDomainTest {
     }
 
     @Test
-    @Ignore
     public void testThreeConnectedBridgeTopologyABC() {
         ABCTopology topology = new ABCTopology();
 
@@ -1134,7 +1132,6 @@ public class BroadcastDomainTest {
     }
 
     @Test
-    @Ignore
     public void testThreeConnectedBridgeTopologyACB() {
         ABCTopology topology = new ABCTopology();
 
@@ -1150,7 +1147,6 @@ public class BroadcastDomainTest {
     }
 
     @Test
-    @Ignore
     public void testThreeConnectedBridgeTopologyBAC() {
         ABCTopology topology = new ABCTopology();
 
@@ -1166,7 +1162,6 @@ public class BroadcastDomainTest {
     }
 
     @Test
-    @Ignore
     public void testThreeConnectedBridgeTopologyBCA() {
         ABCTopology topology = new ABCTopology();
 
@@ -1181,7 +1176,6 @@ public class BroadcastDomainTest {
     }
 
     @Test
-    @Ignore
     public void testThreeConnectedBridgeTopologyCAB() {
         ABCTopology topology = new ABCTopology();
 
@@ -1196,7 +1190,6 @@ public class BroadcastDomainTest {
     }
 
     @Test
-    @Ignore
     public void testThreeConnectedBridgeTopologyCBA() {
         ABCTopology topology = new ABCTopology();
 

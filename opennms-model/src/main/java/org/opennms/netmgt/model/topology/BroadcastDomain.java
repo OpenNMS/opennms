@@ -1,7 +1,6 @@
 package org.opennms.netmgt.model.topology;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -18,29 +17,82 @@ import org.opennms.netmgt.model.OnmsNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-// FIXME
-// check synchronized and volatile
-// 
 //FIXME 
 // use spanning tree when there is no way of finding link...
-//FIXME
-// getEffectiveBFT is broken
-//
 public class BroadcastDomain {
 
     private static final Logger LOG = LoggerFactory.getLogger(BroadcastDomain.class);
 
-    Set<Bridge> m_bridges = new HashSet<Bridge>();
-    List<SharedSegment> m_topology = new ArrayList<SharedSegment>();
+    volatile Set<Bridge> m_bridges = new HashSet<Bridge>();
+    volatile List<SharedSegment> m_topology = new ArrayList<SharedSegment>();
     
     Integer m_rootBridgeId;
-    List<BridgeMacLink> m_rootBridgeBFT = new ArrayList<BridgeMacLink>();
-    Map<Integer,Date> m_lastUpdate = new HashMap<Integer, Date>();
+    volatile List<BridgeMacLink> m_rootBridgeBFT = new ArrayList<BridgeMacLink>();
     boolean m_calculating = false;
     boolean m_topologyChanged = false;
     
-    Map<Integer, List<BridgeMacLink>> m_notYetParsedBFTMap = new HashMap<Integer, List<BridgeMacLink>>();
-    List<BridgeStpLink> m_STPLinks = new ArrayList<BridgeStpLink>();
+    volatile Map<Integer, Set<BridgeMacLink>> m_notYetParsedBFTMap = new HashMap<Integer, Set<BridgeMacLink>>();
+    volatile List<BridgeStpLink> m_STPLinks = new ArrayList<BridgeStpLink>();
+    
+    private class BridgeMacLinkHash {
+
+        final Integer nodeid;
+        final Integer bridgeport;
+        final String mac;
+        public BridgeMacLinkHash(BridgeMacLink maclink) {
+            super();
+            nodeid = maclink.getNode().getId();
+            bridgeport = maclink.getBridgePort();
+            mac = maclink.getMacAddress();
+        }
+        @Override
+        public int hashCode() {
+            final int prime = 31;
+            int result = 1;
+            result = prime * result + getOuterType().hashCode();
+            result = prime * result
+                    + ((bridgeport == null) ? 0 : bridgeport.hashCode());
+            result = prime * result + ((mac == null) ? 0 : mac.hashCode());
+            result = prime * result
+                    + ((nodeid == null) ? 0 : nodeid.hashCode());
+            return result;
+        }
+        @Override
+        public boolean equals(Object obj) {
+            if (this == obj)
+                return true;
+            if (obj == null)
+                return false;
+            if (getClass() != obj.getClass())
+                return false;
+            BridgeMacLinkHash other = (BridgeMacLinkHash) obj;
+            if (!getOuterType().equals(other.getOuterType()))
+                return false;
+            if (bridgeport == null) {
+                if (other.bridgeport != null)
+                    return false;
+            } else if (!bridgeport.equals(other.bridgeport))
+                return false;
+            if (mac == null) {
+                if (other.mac != null)
+                    return false;
+            } else if (!mac.equals(other.mac))
+                return false;
+            if (nodeid == null) {
+                if (other.nodeid != null)
+                    return false;
+            } else if (!nodeid.equals(other.nodeid))
+                return false;
+            return true;
+        }
+        private BroadcastDomain getOuterType() {
+            return BroadcastDomain.this;
+        }
+        
+        
+        
+        
+    }
     
     private class SimpleConnection {
         final List<BridgeMacLink> m_links;
@@ -115,30 +167,30 @@ public class BroadcastDomain {
         Map<Integer, List<BridgeMacLink>> m_throughSet = new HashMap<Integer, List<BridgeMacLink>>();
         SimpleConnection m_simpleconnection; 
         
-        public BridgeTopologyHelper(Bridge xBridge, List<BridgeMacLink> xBFT, Integer yBridgeId, List<BridgeMacLink> yBFT) {
+        public BridgeTopologyHelper(Bridge xBridge, List<BridgeMacLink> xBFT, Bridge yBridge, List<BridgeMacLink> yBFT) {
             super();
-            Set<String> xmacs = new HashSet<String>();
-            Set<String> ymacs = new HashSet<String>();
-     
+            LOG.debug("BridgeTopologyHelper: find simple cnnection for X: {} with bft size: {}",xBridge.getId(),xBFT.size());
+            LOG.debug("BridgeTopologyHelper: find simple cnnection for Y: {} with bft size: {}",yBridge.getId(),yBFT.size());
+            
             for (BridgeMacLink xlink: xBFT) {
                 if (xBridge.getId().intValue() == xlink.getNode().getId().intValue() && xlink.getBridgeDot1qTpFdbStatus() == BridgeDot1qTpFdbStatus.DOT1D_TP_FDB_STATUS_LEARNED) 
                     xmactoport.put(xlink.getMacAddress(), xlink);
                 if (xBridge.getId().intValue() == xlink.getNode().getId().intValue() && xlink.getBridgeDot1qTpFdbStatus() == BridgeDot1qTpFdbStatus.DOT1D_TP_FDB_STATUS_SELF) 
-                    xmacs.add(xlink.getMacAddress());
+                    xBridge.addMac(xlink.getMacAddress());
             }
             for (BridgeMacLink ylink: yBFT) {
-                if (yBridgeId.intValue() == ylink.getNode().getId().intValue() && ylink.getBridgeDot1qTpFdbStatus() == BridgeDot1qTpFdbStatus.DOT1D_TP_FDB_STATUS_LEARNED) {
+                if (yBridge.getId().intValue() == ylink.getNode().getId().intValue() && ylink.getBridgeDot1qTpFdbStatus() == BridgeDot1qTpFdbStatus.DOT1D_TP_FDB_STATUS_LEARNED) {
                     ymactoport.put(ylink.getMacAddress(), ylink);
                     if (!m_throughSet.containsKey(ylink.getBridgePort()))
                         m_throughSet.put(ylink.getBridgePort(), new ArrayList<BridgeMacLink>());
                     m_throughSet.get(ylink.getBridgePort()).add(ylink);
                 }
-                if (yBridgeId.intValue() == ylink.getNode().getId().intValue() && ylink.getBridgeDot1qTpFdbStatus() == BridgeDot1qTpFdbStatus.DOT1D_TP_FDB_STATUS_SELF) 
-                    ymacs.add(ylink.getMacAddress());
+                if (yBridge.getId().intValue() == ylink.getNode().getId().intValue() && ylink.getBridgeDot1qTpFdbStatus() == BridgeDot1qTpFdbStatus.DOT1D_TP_FDB_STATUS_SELF) 
+                    yBridge.addMac(ylink.getMacAddress());
             }
             
-            boolean cond1X = condition1BridgeX(xmacs);
-            boolean cond1Y = condition1BridgeY(ymacs);
+            boolean cond1X = condition1BridgeX(xBridge.getBridgeMacs());
+            boolean cond1Y = condition1BridgeY(yBridge.getBridgeMacs());
             
             if (!cond1X || !cond1Y) {
                 Set<String> commonlearnedmacs = new HashSet<String>(xmactoport.keySet()); 
@@ -153,34 +205,37 @@ public class BroadcastDomain {
                 if (m_xy == null || m_xy == null)
                     condition3(commonlearnedmacs);
                 if (m_xy == null || m_xy == null)
+                    checkStp( xBridge,  yBridge);
+                if (m_xy == null || m_xy == null)
                     return;
             }    
-            LOG.debug("BridgeTopologyHelper: m_xy: {}", m_xy);
-            LOG.debug("BridgeTopologyHelper: m_yx: {}", m_yx);
+            LOG.info("BridgeTopologyHelper: m_xy: {}", m_xy);
+            LOG.info("BridgeTopologyHelper: m_yx: {}", m_yx);
             
             BridgeMacLink xylink = null;
             BridgeMacLink yxlink = null;
             List<BridgeMacLink> connectionsOnSegment=new ArrayList<BridgeMacLink>();
             for (BridgeMacLink xlink: xBFT) {
-                if (xlink.getBridgePort() == m_xy) {
+                if (xlink.getBridgePort() == m_xy && xlink.getBridgeDot1qTpFdbStatus() == BridgeDot1qTpFdbStatus.DOT1D_TP_FDB_STATUS_LEARNED) {
                     if (!ymactoport.containsKey(xlink.getMacAddress()) || m_yx == ymactoport.get(xlink.getMacAddress()).getBridgePort())
                         connectionsOnSegment.add(xlink);
                     if (xylink == null)
                         xylink = xlink;
                 }
             }
-            int ylinks = connectionsOnSegment.size();
-            LOG.debug("BridgeTopologyHelper: added {}, Y links on segment", ylinks);
+            int xlinks = connectionsOnSegment.size();
+            LOG.info("BridgeTopologyHelper: added {}, X links on segment", xlinks);
+            
             for (BridgeMacLink ylink: yBFT) {
-                if (ylink.getBridgePort() == m_yx) {
+                if (ylink.getBridgePort() == m_yx && ylink.getBridgeDot1qTpFdbStatus() == BridgeDot1qTpFdbStatus.DOT1D_TP_FDB_STATUS_LEARNED) {
                     if (!xmactoport.containsKey(ylink.getMacAddress()) || m_xy == xmactoport.get(ylink.getMacAddress()).getBridgePort())
                         connectionsOnSegment.add(ylink);
                     if (yxlink == null)
                         yxlink = ylink;
                 }
             }
-            int xlinks = connectionsOnSegment.size() - ylinks;
-            LOG.debug("BridgeTopologyHelper: added {}, X links on segment", xlinks);
+            int ylinks = connectionsOnSegment.size() - xlinks;
+            LOG.info("BridgeTopologyHelper: added {}, Y links on segment", ylinks);
     
             BridgeBridgeLink blink = new BridgeBridgeLink();
             if (xylink != null && yxlink != null ) {
@@ -198,6 +253,27 @@ public class BroadcastDomain {
             m_throughSet.remove(m_yx);            
         }
 
+        private void checkStp(Bridge xbridge, Bridge ybridge) {
+            /*
+            if (xbridge.getOtherStpRoots().isEmpty() && ybridge.getOtherStpRoots().isEmpty())
+                return;
+            // find a common root...
+            Set<String> commonroots = new HashSet<String>();
+            if (xbridge.getOtherStpRoots().isEmpty()) {
+                commonroots.addAll(new HashSet<String>(xbridge.getBridgeMacs()));
+                commonroots.retainAll(new HashSet<String>(ybridge.getOtherStpRoots()));
+            }
+            if (ybridge.getOtherStpRoots().isEmpty())
+                commonroots.addAll(new HashSet<String>(ybridge.getBridgeMacs()));
+                
+            for (String xroot: xbridge.getOtherStpRoots())
+            */
+            //for (BridgeStpLink stplink: m_STPLinks) {
+            //    stplink.getDesignatedBridgeAddress()
+           // }
+            
+        }
+        
         private void condition3(Set<String> commonlearnedmacs) {
         
         //
@@ -310,22 +386,40 @@ public class BroadcastDomain {
         //                                              m_1 belongs to FDB(p1,Y) FDB(xy,X)
         //                                              m_2 belongs to FDB(p2,Y) FDB(xy,X)
         private void condition2BridgeX(Set<String> commonlearnedmacs) {
-            LOG.debug("condition2BridgeX: checking m_xy common macs {} ", commonlearnedmacs );
+            LOG.info("condition2BridgeX: found m_yx: {}, search m_xy using common macs size: {} ", m_yx, commonlearnedmacs.size() );
             String mac1=null;
+            String mac2=null;
             Integer p1=null;
             Integer xy1=null;
+            Integer p2=null;
+            Integer xy2=null;
             boolean allmaconthesameport=true;
             for (String mac: commonlearnedmacs) {
+                LOG.debug("condition2BridgeX: parsing common BFT mac: {}",mac);
                 if (mac1 == null) {
                     mac1 = mac;
                     p1 = ymactoport.get(mac).getBridgePort();
                     xy1= xmactoport.get(mac).getBridgePort();
+                    LOG.debug("condition2BridgeX: mac1: {} xy1: {} p1: {} ", mac1,xy1,p1);
                     continue;
                 }
-                if (ymactoport.get(mac).getBridgePort() == p1)
+                if (ymactoport.get(mac).getBridgePort().intValue() == p1.intValue())
                     continue;
-                if (xmactoport.get(mac).getBridgePort() == xy1) {
+                if (xmactoport.get(mac).getBridgePort().intValue() == xy1.intValue()) {
                     m_xy=xy1;
+                    return;
+                }
+                if (mac2 == null) {
+                    mac2 = mac;
+                    p2 = ymactoport.get(mac).getBridgePort();
+                    xy2= xmactoport.get(mac).getBridgePort();
+                    LOG.debug("condition2BridgeX: mac2: {} xy2: {} p2: {} ", mac2,xy2,p2);
+                    continue;
+                }
+                if (ymactoport.get(mac).getBridgePort().intValue() == p2.intValue())
+                    continue;
+                if (xmactoport.get(mac).getBridgePort().intValue() == xy2.intValue()) {
+                    m_xy=xy2;
                     return;
                 }
                 allmaconthesameport=false;
@@ -339,16 +433,22 @@ public class BroadcastDomain {
         //                                              m_1 belongs to FDB(p1,X) FDB(yx,Y)
         //                                              m_2 belongs to FDB(p2,X) FDB(yx,Y)
         private void condition2BridgeY(Set<String> commonlearnedmacs) {
-            LOG.debug("condition2BridgeY: checking m_yx common macs {} ", commonlearnedmacs );
+            LOG.info("condition2BridgeX: found m_xy: {}, search m_yx using common macs size: {} ", m_xy, commonlearnedmacs.size() );
             String mac1=null;
+            String mac2=null;
             Integer p1=null;
             Integer yx1=null;
+            Integer p2=null;
+            Integer yx2=null;
+
             boolean allmaconthesameport=true;
             for (String mac: commonlearnedmacs) {
+                LOG.debug("condition2BridgeY: parsing common BFT mac: {}",mac);
                 if (mac1 == null) {
                     mac1 = mac;
                     p1 = xmactoport.get(mac).getBridgePort();
                     yx1= ymactoport.get(mac).getBridgePort();
+                    LOG.debug("condition2BridgeX: mac1: {} yx1: {} p1: {} ", mac1,yx1,p1);
                     continue;
                 }
                 if (xmactoport.get(mac).getBridgePort() == p1)
@@ -357,6 +457,20 @@ public class BroadcastDomain {
                     m_yx=yx1;
                     return;
                 }
+                if (mac2 == null) {
+                    mac2 = mac;
+                    p2 = xmactoport.get(mac).getBridgePort();
+                    yx2= ymactoport.get(mac).getBridgePort();
+                    LOG.debug("condition2BridgeY: mac2: {} yx2: {} p2: {} ", mac2,yx2,p2);
+                    continue;
+                }
+                if (xmactoport.get(mac).getBridgePort().intValue() == p2.intValue())
+                    continue;
+                if (ymactoport.get(mac).getBridgePort().intValue() == yx2.intValue()) {
+                    m_yx=yx2;
+                    return;
+                }
+
                 allmaconthesameport=false;
             }
             if (allmaconthesameport)
@@ -365,10 +479,12 @@ public class BroadcastDomain {
         
         // there is a mac of X found on Y BFT
         private boolean condition1BridgeX(Set<String> xmacs) {
-            LOG.debug("condition1BridgeX: bridge X macs {} ", xmacs );
+            LOG.info("condition1BridgeX: bridge X macs size {} ", xmacs.size() );
             for (String xmac: xmacs) {
+                LOG.debug("condition1BridgeX: bridge X mac: {} ", xmac );
                 if (ymactoport.containsKey(xmac)) {
                     m_yx = ymactoport.get(xmac).getBridgePort();
+                    LOG.info("condition1BridgeX: found X mac: {} on Y port: {}", xmac,m_yx);
                     return true;
                 }
             }
@@ -377,10 +493,12 @@ public class BroadcastDomain {
             
         // there is a mac of Y found on X BFT
         private boolean condition1BridgeY(Set<String> ymacs) {
-            LOG.debug("condition1BridgeY: bridge Y macs {} ", ymacs );
+            LOG.info("condition1BridgeY: bridge Y macs size {} ", ymacs.size() );
             for (String ymac: ymacs) {
+                LOG.debug("condition1BridgeY: bridge Y mac: {} ", ymac );
                 if (xmactoport.containsKey(ymac)) {
                     m_xy = xmactoport.get(ymac).getBridgePort();
+                    LOG.info("condition1BridgeY: found Y mac: {} on X port: {}", ymac,m_xy);
                     return true;
                 }
             }
@@ -408,50 +526,56 @@ public class BroadcastDomain {
     private class Bridge {
 
         final Integer m_id;
-        List<BridgeElement> m_bridgeIds = new ArrayList<BridgeElement>();
         Integer m_rootPort;
         boolean m_isRootBridge=false;
+        Set<String> m_bridgeIds=new HashSet<String>();
+        Set<String> m_otherStpRoots=new HashSet<String>();
+
+        public Bridge(BridgeElement bridgeElement) {
+            super();
+            m_id = bridgeElement.getNode().getId();
+            m_bridgeIds.add(bridgeElement.getBaseBridgeAddress());
+            if (InetAddressUtils.isValidStpBridgeId(bridgeElement.getStpDesignatedRoot())) {
+                String stpRoot = InetAddressUtils.getBridgeAddressFromStpBridgeId(bridgeElement.getStpDesignatedRoot());
+                if (!stpRoot.equals(bridgeElement.getBaseBridgeAddress()))
+                    m_otherStpRoots.add(stpRoot);
+            } 
+        }
 
         public Bridge(Integer id) {
             super();
             m_id = id;
         }
 
-        public List<BridgeElement> getBridgeElements() {
-            return m_bridgeIds;
+
+        public void addMac(String mac) {
+            m_bridgeIds.add(mac);
         }
         
+        public Set<String> getBridgeMacs() {
+            return m_bridgeIds;
+        }
+
         public void setBridgeElements(List<BridgeElement> bridgeIds) {
-            m_bridgeIds = bridgeIds;
+            m_bridgeIds.clear();
+            m_otherStpRoots.clear();
+            for (BridgeElement elem: bridgeIds) {
+                m_bridgeIds.add(elem.getBaseBridgeAddress());
+                if (InetAddressUtils.isValidStpBridgeId(elem.getStpDesignatedRoot())) {
+                    String stpRoot = InetAddressUtils.getBridgeAddressFromStpBridgeId(elem.getStpDesignatedRoot());
+                    if ( stpRoot.equals(elem.getBaseBridgeAddress()))
+                            continue;
+                    m_otherStpRoots.add(stpRoot);
+                }
+            }
         }
         
         public boolean hasBridgeId(String bridgeId) {
-            if (bridgeId == null)
-                return false;
-            for (BridgeElement element: m_bridgeIds) {
-                if (bridgeId.equals(element.getBaseBridgeAddress()))
-                        return true;
-            }
-            return false;
+            return m_bridgeIds.contains(bridgeId);
         }
                 
         public Set<String> getOtherStpRoots() {
-            Set<String> stpRoots = new HashSet<String>();
-            for (BridgeElement element: m_bridgeIds) {
-                if (InetAddressUtils.isValidStpBridgeId(element.getStpDesignatedRoot())) {
-                    String stpRoot = InetAddressUtils.getBridgeAddressFromStpBridgeId(element.getStpDesignatedRoot());
-                    if ( stpRoot.equals(element.getBaseBridgeAddress()))
-                            continue;
-                    stpRoots.add(stpRoot);
-                }
-            }
-            return stpRoots;
-        }
-
-        public Bridge(BridgeElement bridgeElement) {
-            super();
-            m_id = bridgeElement.getNode().getId();
-            m_bridgeIds.add(bridgeElement);
+            return m_otherStpRoots;
         }
 
 
@@ -474,13 +598,12 @@ public class BroadcastDomain {
         public void addBridgeElement(BridgeElement bridgeElement) {
             if (bridgeElement.getNode().getId() != m_id)
                 return; 
-            for (BridgeElement curBridgeElement: m_bridgeIds) {
-                if (curBridgeElement.getBaseBridgeAddress().equals(bridgeElement.getBaseBridgeAddress())) {
-                    curBridgeElement = bridgeElement;
-                    return;
-                }
-            }
-            m_bridgeIds.add(bridgeElement);
+            m_bridgeIds.add(bridgeElement.getBaseBridgeAddress());
+            if (InetAddressUtils.isValidStpBridgeId(bridgeElement.getStpDesignatedRoot())) {
+                String stpRoot = InetAddressUtils.getBridgeAddressFromStpBridgeId(bridgeElement.getStpDesignatedRoot());
+                if (!stpRoot.equals(bridgeElement.getBaseBridgeAddress()))
+                    m_otherStpRoots.add(stpRoot);
+            }            
         }
 
         public Integer getId() {
@@ -522,14 +645,14 @@ public class BroadcastDomain {
         
     }
     
-    public Set<String> getMacsOnDomain() {
+    public synchronized Set<String> getMacsOnDomain() {
         Set<String>macs = new HashSet<String>();
         for (SharedSegment segment: m_topology) 
             macs.addAll(segment.getMacsOnSegment());
         return macs;
     }
 
-    public void addBridgeElement(BridgeElement bridgeElement) {
+    public synchronized void addBridgeElement(BridgeElement bridgeElement) {
         LOG.info("addBridgeElement: loading element with address {} on node {}", bridgeElement.getBaseBridgeAddress(),bridgeElement.getNode().getId());
         for (Bridge bridge: m_bridges) {
             if (bridge.getId() == bridgeElement.getNode().getId()) {
@@ -540,18 +663,18 @@ public class BroadcastDomain {
         m_bridges.add(new Bridge(bridgeElement));
     }
 
-    public void addTopologyEntry(SharedSegment segment) {
+    public synchronized void addTopologyEntry(SharedSegment segment) {
         m_topology.add(segment);
         for (Integer nodeId : segment.getBridgeIdsOnSegment()) {
             m_bridges.add(new Bridge(nodeId));
         }
     }
     
-    public void addSTPEntry(BridgeStpLink stplink ) {
+    public synchronized void addSTPEntry(BridgeStpLink stplink ) {
         m_STPLinks.add(stplink);
     }
     
-    public boolean containsAtleastOne(Set<Integer> nodeids) {
+    public synchronized boolean containsAtleastOne(Set<Integer> nodeids) {
         for (Bridge bridge: m_bridges) {
             for (Integer nodeid:nodeids) {
                 if (bridge.getId().intValue() == nodeid.intValue())
@@ -561,7 +684,7 @@ public class BroadcastDomain {
         return false;
     }
     
-    public boolean containBridgeId(Integer nodeid) {
+    public synchronized boolean containBridgeId(Integer nodeid) {
         for (Bridge bridge: m_bridges) {
             if (bridge.getId().intValue() == nodeid.intValue())
                 return true;
@@ -569,10 +692,15 @@ public class BroadcastDomain {
         return false;
     }
 
-    public void loadBFT(int nodeId, List<BridgeMacLink> maclinks,List<BridgeStpLink> stplinks, List<BridgeElement> elements) {
+    public synchronized void loadBFT(int nodeId, List<BridgeMacLink> maclinks,List<BridgeStpLink> stplinks, List<BridgeElement> elements) {
         m_topologyChanged=true;
+        Map<BridgeMacLinkHash,BridgeMacLink> effectiveBFT=new HashMap<BridgeMacLinkHash,BridgeMacLink>();
         LOG.info("loadBFT: start: loading bridge forwarding table for node: {}, with size: {}", nodeId, maclinks.size());
-        m_notYetParsedBFTMap.put(nodeId, maclinks);
+        for (BridgeMacLink maclink: maclinks) {
+            effectiveBFT.put(new BridgeMacLinkHash(maclink), maclink);
+        }
+        LOG.info("loadBFT: start: effective bridge forwarding table for node: {}, with size: {}", nodeId, effectiveBFT.size());
+        m_notYetParsedBFTMap.put(nodeId, new HashSet<BridgeMacLink>(effectiveBFT.values()));
         LOG.info("loadBFT: set bridge elements on node {}", nodeId);
         Bridge added = null;
         for (Bridge bridge: m_bridges) {
@@ -602,14 +730,6 @@ public class BroadcastDomain {
 
     }
     
-    public synchronized Date getLastUpdate(Integer nodeid) {
-        return m_lastUpdate.get(nodeid);
-    }
-    
-    public synchronized void setLastUpdate(Integer nodeid, Date now) {
-        m_lastUpdate.put(nodeid, now);
-    }
-
     public synchronized List<SharedSegment> getTopology() {
         return m_topology;
     }
@@ -643,8 +763,6 @@ public class BroadcastDomain {
             bridges.add(bridge);
         }
         m_bridges = bridges;
-        m_lastUpdate.remove(bridgeId);
-
     }
     
     private synchronized void cleanTopologyForBridge(Bridge bridge) {
@@ -655,14 +773,19 @@ public class BroadcastDomain {
                 Integer newRootId = segment.getFirstNoDesignatedBridge();
                 if (newRootId == null)
                     continue;
-                m_rootBridgeBFT = getEffectiveBFT(newRootId);
-                m_rootBridgeId = newRootId;
+                Bridge newRootBridge=null;
                 for (Bridge curBridge: m_bridges) {
-                    if (curBridge.getId().intValue() == m_rootBridgeId.intValue()) {
-                        curBridge.setRootBridge(true);
-                        curBridge.setRootPort(null);
+                    if (curBridge.getId().intValue() == newRootId.intValue()) {
+                        newRootBridge=curBridge;
+                        break;
                     }
                 }
+                if (newRootBridge == null)
+                    continue;
+                m_rootBridgeBFT = getEffectiveBFT(newRootBridge);
+                m_rootBridgeId = newRootId;
+                newRootBridge.setRootBridge(true);
+                newRootBridge.setRootPort(null);
                 hierarchySetUp();
                 break;
             }
@@ -692,7 +815,10 @@ public class BroadcastDomain {
     }
 
     public synchronized Set<Integer> getUpdatedNodes() {
-        return m_lastUpdate.keySet();
+        Set<Integer> bridgeIds = new HashSet<Integer>();
+        for (Bridge bridge: m_bridges) 
+            bridgeIds.add(bridge.getId());
+        return bridgeIds;
     }
 
     public synchronized void calculate() {
@@ -708,7 +834,8 @@ public class BroadcastDomain {
         }
         
         Bridge electedRoot = selectRootBridge();
-        List<BridgeMacLink> electedRootBFT = m_notYetParsedBFTMap.remove(electedRoot.getId()); 
+        if (!electedRoot.isRootBridge()) {
+        List<BridgeMacLink> electedRootBFT = new ArrayList<BridgeMacLink>(m_notYetParsedBFTMap.remove(electedRoot.getId())); 
         if (electedRootBFT != null) {
             LOG.info("calculate: elected root bridge: {}, has new bft", electedRoot.getId());
             if (m_topology.isEmpty()) {
@@ -734,13 +861,15 @@ public class BroadcastDomain {
             m_rootBridgeBFT = electedRootBFT;
             LOG.info("calculate: set root bridge {} bft size:  {}", electedRoot.getId(), m_rootBridgeBFT.size());
         } 
-        m_rootBridgeId = electedRoot.getId();
-        electedRoot.setRootBridge(true);
-        electedRoot.setRootPort(null);
-        hierarchySetUp();
+            m_rootBridgeId = electedRoot.getId();
+            electedRoot.setRootBridge(true);
+            electedRoot.setRootPort(null);
+            hierarchySetUp();
+        }
 
-        for (Integer nodeid: m_notYetParsedBFTMap.keySet()) 
-            findBridgesTopo(getRootBridge(), m_rootBridgeBFT, nodeid, m_notYetParsedBFTMap.remove(nodeid));
+        Set<Integer> nodetobeparsed=new HashSet<Integer>(m_notYetParsedBFTMap.keySet());
+        for (Integer nodeid: nodetobeparsed) 
+            findBridgesTopo(getRootBridge(), m_rootBridgeBFT, nodeid, new ArrayList<BridgeMacLink>(m_notYetParsedBFTMap.remove(nodeid)));
        
         m_calculating = false;
         LOG.info("calculate: stop:  calculate topology");
@@ -762,7 +891,7 @@ public class BroadcastDomain {
             LOG.error("findBridgesTopo: not found bridge for nodeid {} exiting....", xBridgeId);
         }
         
-        BridgeTopologyHelper rx = new BridgeTopologyHelper(rBridge, rBFT, xBridgeId,xBFT);
+        BridgeTopologyHelper rx = new BridgeTopologyHelper(rBridge, rBFT, xBridge,xBFT);
         Integer rxDesignatedPort = rx.getFirstBridgeConnectionPort();
         if (rxDesignatedPort == null) {
             LOG.info("findBridgesTopo: cannot found top simple connection:  nodeid {}",rBridge.getId());
@@ -796,14 +925,14 @@ public class BroadcastDomain {
             } 
             Integer yrDesignatedPort = yBridge.getRootPort();
             LOG.info("findBridgesTopo: found Y designated port:  nodeid {}, port {}",yBridgeId,yrDesignatedPort);
-            BridgeTopologyHelper   yx = new BridgeTopologyHelper(yBridge, getEffectiveBFT(yBridgeId),xBridgeId, xBFT);
+            BridgeTopologyHelper   yx = new BridgeTopologyHelper(yBridge, getEffectiveBFT(yBridge),xBridge, xBFT);
             Integer  xyDesignatedPort = yx.getSecondBridgeConnectionPort();
             Integer  yxDesignatedPort = yx.getFirstBridgeConnectionPort();
             LOG.info("findBridgesTopo: found simple connection:  nodeid {}, port {} <--> nodeid {}, port {}",xBridgeId,xyDesignatedPort,yBridgeId,yxDesignatedPort);
             // X is a leaf of Y then iterate
             if (xyDesignatedPort == xrDesignatedPort && yxDesignatedPort != yrDesignatedPort) {
                 LOG.info("findBridgesTopo: nodeid {} is a leaf of {}, going down",xBridgeId,yBridge.getId());
-                findBridgesTopo(yBridge, getEffectiveBFT(yBridge.getId()), xBridgeId, xBFT);
+                findBridgesTopo(yBridge, getEffectiveBFT(yBridge), xBridgeId, xBFT);
                 return;
             }
             // Y is a leaf of X then remove Y from topSegment
@@ -971,56 +1100,59 @@ public class BroadcastDomain {
         return null;
     }
     
-    private List<BridgeMacLink> getEffectiveBFT(Integer bridgeId) {
+    private List<BridgeMacLink> getEffectiveBFT(Bridge bridge) {
+        Map<Integer,Set<String>> bft = new HashMap<Integer, Set<String>>();
+        Integer bridgeId = bridge.getId();
+        LOG.info("getEffectiveBFT: loading BFT for node: {}",bridgeId);
         List<BridgeMacLink> links = new ArrayList<BridgeMacLink>();
         OnmsNode node=new OnmsNode();
         node.setId(bridgeId);
-        for (SharedSegment segment: getSharedSegmentOnBridge(bridgeId)) {
-          //  if (segment.getDesignatedBridge() != bridgeId)
-          //      continue;
-            Integer bridgePort = null;
-            if (segment.noMacsOnSegment()) {
-                for (BridgeBridgeLink link: segment.getBridgeBridgeLinks()) {
-                    if (link.getNode().getId() == bridgeId) {
-                        bridgePort = link.getBridgePort();
-                        break;
-                    }
-                    if (link.getDesignatedNode().getId() == bridgeId) {
-                        bridgePort = link.getDesignatedPort();
-                        break;
-                    }
-                }
-            } else {
-                for (BridgeMacLink link: segment.getBridgeMacLinks()) {
-                    if (link.getNode().getId() == bridgeId) {
-                        bridgePort = link.getBridgePort();
-                        links.add(link);
-                    }
-                }
-            }
+        for (SharedSegment segment: m_topology) {
+            if (segment.getMacsOnSegment().isEmpty())
+                continue;
+            LOG.debug("getEffectiveBFT: parsing segment: designated node {}, designated port {}", segment.getDesignatedBridge(), segment.getDesignatedPort());
+            Integer bridgeport = getTopLevelPortUpBridge(segment,bridge);
+            LOG.debug("getEffectiveBFT: assigning macs to node {}, port {}", bridgeId, bridgeport);
+            if (!bft.containsKey(bridgeport))
+                bft.put(bridgeport, new HashSet<String>());
+            bft.get(bridgeport).addAll(segment.getMacsOnSegment());
+       }
             
-            for (String mac: getForwardingSet(segment, bridgeId)) {
+        for (Integer bridgePort: bft.keySet()) {
+            for (String mac: bft.get(bridgePort)) {
+                LOG.debug("getEffectiveBFT: assigning mac {} to node {}, port {}",mac, bridgeId, bridgePort);
                 BridgeMacLink link = new BridgeMacLink();
                 link.setNode(node);
                 link.setBridgePort(bridgePort);
                 link.setMacAddress(mac);
+                link.setBridgeDot1qTpFdbStatus(BridgeDot1qTpFdbStatus.DOT1D_TP_FDB_STATUS_LEARNED);
                 links.add(link);
             }
         }
+        LOG.info("getEffectiveBFT: BFT for node: {}, with size: {}",bridgeId, links.size());
         return links;
     }
 
-    private Set<String> getForwardingSet(SharedSegment segment, Integer bridgeId) {
-        Set<String> macs = new HashSet<String>();
-        for (Bridge bridge: getBridgeOnSharedSegment(segment)) {
-            if (bridge.getId() == bridgeId)
-                continue;
-            for (SharedSegment s2: getSharedSegmentOnBridge(bridge.getId())) {
-                macs.addAll(s2.getMacsOnSegment());
-                macs.addAll(getForwardingSet(s2, bridge.getId()));
+    private Integer getTopLevelPortUpBridge(SharedSegment down,Bridge bridge) {
+            Integer upBridgeId = down.getDesignatedBridge();
+            // if segment is on the bridge then...
+            if (upBridgeId.intValue() == bridge.getId().intValue())
+                return down.getDesignatedPort();
+            // if segment is a root segment add mac on port
+            if (upBridgeId.intValue() == m_rootBridgeId.intValue())
+                return bridge.getRootPort();
+            // iterate until you got it
+            Bridge upBridge = null;
+            for (Bridge cbridge: m_bridges) {
+                if (cbridge.getId().intValue() == upBridgeId.intValue()) {
+                    upBridge=cbridge;
+                    break;
+                }
             }
-        }
-       return macs;
+            if (upBridge == null)
+                return null;
+            getSharedSegment(upBridgeId,upBridge.getRootPort());
+        return getTopLevelPortUpBridge(getSharedSegment(upBridgeId,upBridge.getRootPort()), bridge);
     }
 
     

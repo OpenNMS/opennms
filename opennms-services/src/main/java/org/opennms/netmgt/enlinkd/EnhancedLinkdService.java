@@ -89,8 +89,12 @@ public interface EnhancedLinkdService {
 
     void reconcileBridge(int nodeId, Date now);
 
+    void reconcileBridgeTopology(int nodeId, Date now);
+
     BroadcastDomain getBridgeTopologyBroadcastDomain(int nodeId);
     
+    void updateBridgeTopology(int nodeId);
+
     void store(BroadcastDomain domain);
 
     void store(int nodeId, LldpLink link);
