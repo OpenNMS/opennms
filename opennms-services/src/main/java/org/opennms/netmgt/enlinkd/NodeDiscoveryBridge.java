@@ -103,6 +103,7 @@ public final class NodeDiscoveryBridge extends NodeDiscovery {
 		LOG.debug("run: found on node: '{}' bridge ifindex map {}",getNodeId(), bridgeifindex);
 		walkDot1qTpFdb(bridgeifindex);
 		m_linkd.getQueryManager().reconcileBridge(getNodeId(), now);
+		m_linkd.getQueryManager().updateBridgeTopology(getNodeId());
 	}
 	
 	private Map<Integer,String> getVtpVlanMap() {

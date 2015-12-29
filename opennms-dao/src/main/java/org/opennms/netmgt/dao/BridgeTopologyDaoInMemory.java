@@ -1,7 +1,6 @@
 package org.opennms.netmgt.dao;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -28,7 +27,7 @@ public class BridgeTopologyDaoInMemory implements BridgeTopologyDao {
     volatile Map<Integer, List<BridgeElement>> m_notYetParsedEleMap = new HashMap<Integer, List<BridgeElement>>();
 
     @Override
-    public synchronized void parse(BridgeElement element) {
+    public synchronized void store(BridgeElement element) {
         Integer nodeid = element.getNode().getId();
         if (!m_notYetParsedEleMap.containsKey(nodeid))
             m_notYetParsedEleMap.put(nodeid, new ArrayList<BridgeElement>());
@@ -37,7 +36,7 @@ public class BridgeTopologyDaoInMemory implements BridgeTopologyDao {
     }
     
     @Override
-    public synchronized void parse(BridgeMacLink maclink) {
+    public synchronized void store(BridgeMacLink maclink) {
         Integer nodeid = maclink.getNode().getId();
         if (!m_notYetParsedBFTMap.containsKey(nodeid))
             m_notYetParsedBFTMap.put(nodeid, new ArrayList<BridgeMacLink>());
@@ -45,7 +44,7 @@ public class BridgeTopologyDaoInMemory implements BridgeTopologyDao {
     }
 
     @Override
-    public synchronized void parse(BridgeStpLink stplink) {
+    public synchronized void store(BridgeStpLink stplink) {
         Integer nodeid = stplink.getNode().getId();
         if (!m_notYetParsedSTPMap.containsKey(nodeid))
             m_notYetParsedSTPMap.put(nodeid, new ArrayList<BridgeStpLink>());
@@ -132,7 +131,7 @@ public class BridgeTopologyDaoInMemory implements BridgeTopologyDao {
     }
 
     @Override
-    public synchronized void walked(int nodeid, Date now) {
+    public synchronized void update(int nodeid) {
  
         List<BridgeMacLink> bft = m_notYetParsedBFTMap.remove(nodeid);
         Set<String>incomingSet = new HashSet<String>();
@@ -159,7 +158,6 @@ public class BridgeTopologyDaoInMemory implements BridgeTopologyDao {
             m_domains.add(bftdomain);
         }
         bftdomain.loadBFT(nodeid,bft,m_notYetParsedSTPMap.remove(nodeid),m_notYetParsedEleMap.remove(nodeid));
-        bftdomain.setLastUpdate(nodeid,now);
         
         List<BroadcastDomain> domains = new ArrayList<BroadcastDomain>();
         for (BroadcastDomain domain: m_domains) {

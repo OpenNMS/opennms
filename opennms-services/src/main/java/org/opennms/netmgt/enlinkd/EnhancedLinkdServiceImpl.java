@@ -499,7 +499,7 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
 		OnmsNode node = new OnmsNode();
 		node.setId(nodeId);
 		bridge.setNode(node);
-		m_bridgeTopologyDao.parse(bridge);
+		m_bridgeTopologyDao.store(bridge);
 	}
 
 	@Transactional
@@ -542,7 +542,7 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
 	              OnmsNode node = new OnmsNode();
 	                node.setId(nodeId);
 	                link.setNode(node);
-		m_bridgeTopologyDao.parse(link);
+		m_bridgeTopologyDao.store(link);
 		
 	}
 
@@ -585,19 +585,17 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
                 OnmsNode node = new OnmsNode();
                 node.setId(nodeId);
                 link.setNode(node);
-		m_bridgeTopologyDao.parse(link);
+		m_bridgeTopologyDao.store(link);
 	}
 
 	@Override
 	public synchronized void reconcileBridge(int nodeId, Date now) {
+            LOG.info("reconcileBridge: deleting bridge element and stplink entries older then {} for node {}", now,nodeId);
 		m_bridgeElementDao.deleteByNodeIdOlderThen(nodeId, now);
 		m_bridgeElementDao.flush();
 
 		m_bridgeStpLinkDao.deleteByNodeIdOlderThen(nodeId, now);
 		m_bridgeStpLinkDao.flush();
-
-		m_bridgeTopologyDao.walked(nodeId,now);
-
 	}
 
         @Override
@@ -606,9 +604,14 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
         }
 
         @Override
+        public void updateBridgeTopology(int nodeId) {
+            m_bridgeTopologyDao.update(nodeId);
+        }
+
+        @Override
         public void  store(BroadcastDomain domain) {
             for (SharedSegment segment: domain.getTopology()) {
-                LOG.info("store: shared segment designated root: {}, designated port: {}, macs size: {}, mac link size: {}, bridge link size: {}", 
+                LOG.info("store: shared segment: designated root: {}, designated port: {}, macs size: {}, mac link size: {}, bridge link size: {}", 
                           segment.getDesignatedBridge(),segment.getDesignatedPort(), segment.getMacsOnSegment().size(),
                           segment.getBridgeMacLinks().size(), segment.getBridgeBridgeLinks().size());
                 if (segment.noMacsOnSegment()) {
@@ -623,15 +626,16 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
                     }
                 }
             }
+        }
             
-            for (Integer curNodeId: domain.getUpdatedNodes()) {
-                m_bridgeMacLinkDao.deleteByNodeIdOlderThen(curNodeId, domain.getLastUpdate(curNodeId));
-                m_bridgeMacLinkDao.flush();
-                m_bridgeBridgeLinkDao.deleteByNodeIdOlderThen(curNodeId, domain.getLastUpdate(curNodeId));
-                m_bridgeBridgeLinkDao.deleteByDesignatedNodeIdOlderThen(curNodeId, domain.getLastUpdate(curNodeId));
-                m_bridgeBridgeLinkDao.flush();
-            }
-
+        @Override 
+        public void reconcileBridgeTopology(int nodeid, Date now) {
+            LOG.info("store: deleting shared segment entries older then {} for node {}", now,nodeid);
+            m_bridgeMacLinkDao.deleteByNodeIdOlderThen(nodeid, now);
+            m_bridgeMacLinkDao.flush();
+            m_bridgeBridgeLinkDao.deleteByNodeIdOlderThen(nodeid, now);
+            m_bridgeBridgeLinkDao.deleteByDesignatedNodeIdOlderThen(nodeid, now);
+            m_bridgeBridgeLinkDao.flush();
         }
         
 
