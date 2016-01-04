@@ -58,7 +58,6 @@ public class SnmpTrapNorthbounderTest extends AbstractTrapReceiverTest {
     @Test
     public void testNorthbounder() throws Exception {
         // Setup the configuration DAO
-        System.setProperty("opennms.home", "src/test/resources");
         FileSystemResource resource = new FileSystemResource(new File("src/test/resources/etc/snmptrap-northbounder-config.xml"));
         SnmpTrapNorthbounderConfigDao configDao = new SnmpTrapNorthbounderConfigDao();
         configDao.setConfigResource(resource);

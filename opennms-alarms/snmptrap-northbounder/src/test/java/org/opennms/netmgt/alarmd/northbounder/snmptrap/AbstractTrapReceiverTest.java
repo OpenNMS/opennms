@@ -36,6 +36,7 @@ import org.junit.Before;
 
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.TrapNotification;
 import org.opennms.netmgt.snmp.TrapNotificationListener;
@@ -63,21 +64,19 @@ public abstract class AbstractTrapReceiverTest implements TrapNotificationListen
     private int trapsReceived;
 
     /**
-     * Sets up the test (initialize a trap listener)
+     * Sets up the test (initialize a trap listener).
+     *
+     * @throws Exception the exception
      */
     @Before
-    public void setUp()  {
+    public void setUp() throws Exception {
         MockLogAppender.setupLogging();
-        //trapReceiverAddress = InetAddressUtils.getLocalHostAddress();
+        System.setProperty("opennms.home", "src/test/resources");
+        SnmpPeerFactory.init();
         trapsReceived = 0;
         Assert.assertEquals("Snmp4JStrategy", SnmpUtils.getStrategy().getClass().getSimpleName());
-        try {
-            SnmpUtils.registerForTraps(this, new NullTrapProcessorFactory(), TRAP_DESTINATION, TRAP_PORT);
-            LOG.info("Registered Trap Listener for {} on port {}", TRAP_DESTINATION, TRAP_PORT);
-        } catch (IOException e) {
-            LOG.error("Can't register Trap Listener for {} on port {}", TRAP_DESTINATION, TRAP_PORT, e);
-            Assert.fail();
-        }
+        SnmpUtils.registerForTraps(this, new NullTrapProcessorFactory(), TRAP_DESTINATION, TRAP_PORT);
+        LOG.info("Registered Trap Listener for {} on port {}", TRAP_DESTINATION, TRAP_PORT);
     }
 
     /**
