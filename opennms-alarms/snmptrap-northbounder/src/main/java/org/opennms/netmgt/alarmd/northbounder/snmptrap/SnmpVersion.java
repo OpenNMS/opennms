@@ -46,7 +46,19 @@ public enum SnmpVersion {
 
     /** The V2c. */
     @XmlEnumValue("v2c")
-    V2c("v2c");
+    V2c("v2c"),
+
+    /** The V3. */
+    @XmlEnumValue("v3")
+    V3("v3"),
+
+    /** The V2_ inform. */
+    @XmlEnumValue("v2-inform")
+    V2_INFORM("v2-inform"),
+
+    /** The V3_ inform. */
+    @XmlEnumValue("v3-inform")
+    V3_INFORM("v3-inform");
 
     /** The id. */
     private String m_version;
@@ -67,6 +79,24 @@ public enum SnmpVersion {
      */
     public String value() {
         return m_version;
+    }
+
+    /**
+     * Checks if is v1.
+     *
+     * @return true, if is v1
+     */
+    public boolean isV1() {
+        return m_version.startsWith("v1");
+    }
+
+    /**
+     * Checks if is v2.
+     *
+     * @return true, if is v2
+     */
+    public boolean isV2() {
+        return m_version.startsWith("v2");
     }
 
 }

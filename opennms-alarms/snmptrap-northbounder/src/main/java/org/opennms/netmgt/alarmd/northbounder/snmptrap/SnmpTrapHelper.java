@@ -36,10 +36,13 @@ import java.util.Map;
 import org.opennms.core.utils.Base64;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.events.api.EventConstants;
+import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpTrapBuilder;
 import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpV1TrapBuilder;
+import org.opennms.netmgt.snmp.SnmpV2TrapBuilder;
+import org.opennms.netmgt.snmp.SnmpV3TrapBuilder;
 import org.opennms.netmgt.xml.event.Parm;
 import org.opennms.netmgt.xml.event.Value;
 import org.slf4j.Logger;
@@ -365,6 +368,27 @@ public class SnmpTrapHelper {
     }
 
     /**
+     * Adds the parameters.
+     *
+     * @param builder the trap builder object
+     * @param trapConfig the trap configuration object
+     * @throws SnmpTrapException the SNMP trap exception
+     */
+    private void addParameters(SnmpTrapBuilder builder, SnmpTrapConfig trapConfig) throws SnmpTrapException {
+        int i = 0;
+        for (Parm parm : trapConfig.getParameters()) {
+            try {
+                Value value = parm.getValue();
+                addVarBinding(builder, parm.getParmName(), value.getType(), value.getEncoding(), value.getContent());
+            } catch (SnmpTrapException e) {
+                throw new SnmpTrapException(e.getMessage() + " in event parm[" + i + "]");
+            } finally {
+                i++;
+            }
+        }
+    }
+
+    /**
      * Create an SNMP V1 trap based on the content of the specified trap configuration, and send it to the appropriate destination.
      * 
      * @param trapConfig The trap configuration mapping object
@@ -381,18 +405,33 @@ public class SnmpTrapHelper {
             trap.setSpecific(trapConfig.getSpecific());
         }
         trap.setTimeStamp(System.currentTimeMillis() / 1000);
-        int i = 0;
-        for (Parm parm : trapConfig.getParameters()) {
-            try {
-                Value value = parm.getValue();
-                addVarBinding(trap, parm.getParmName(), value.getType(), value.getEncoding(), value.getContent());
-            } catch (SnmpTrapException e) {
-                throw new SnmpTrapException(e.getMessage() + " in event parm[" + i + "]");
-            } finally {
-                i++;
-            }
+        addParameters(trap, trapConfig);
+        try {
+            SnmpAgentConfig config = trapConfig.getAgentConfig();
+            LOG.debug("Sending SNMPv1 Trap using {}", config);
+            trap.send(config.getAddress().getHostAddress(), config.getPort(), config.getReadCommunity());
+        } catch (Throwable e) {
+            throw new SnmpTrapException("Failed to send trap "+e.getMessage(), e);
         }
-        sendTrap(trapConfig, trap);
+    }
+
+    /**
+     * Populates a trap builder for v2 or v3.
+     *
+     * @param builder the trap builder object
+     * @param trapConfig the trap configuration object
+     * @throws SnmpTrapException the SNMP trap exception
+     */
+    private void populateTrapBuilder(SnmpTrapBuilder builder, SnmpTrapConfig trapConfig) throws SnmpTrapException {
+        addVarBinding(builder, SNMP_SYSUPTIME_OID, EventConstants.TYPE_SNMP_TIMETICKS, Long.toString(System.currentTimeMillis()/1000));
+        String oid;
+        if (trapConfig.getGeneric() == ENTERPRISE_SPECIFIC) {
+            oid = trapConfig.getEnterpriseId() + "." + trapConfig.getSpecific();
+        } else {
+            oid = SNMP_TRAPS + '.' + (trapConfig.getGeneric() + 1);
+        }
+        addVarBinding(builder, SNMP_TRAP_OID, EventConstants.TYPE_SNMP_OBJECT_IDENTIFIER, oid);
+        addParameters(builder, trapConfig);
     }
 
     /**
@@ -403,38 +442,65 @@ public class SnmpTrapHelper {
      */
     private void forwardV2Trap(SnmpTrapConfig trapConfig) throws SnmpTrapException {
         SnmpTrapBuilder trap = SnmpUtils.getV2TrapBuilder();
-        addVarBinding(trap, SNMP_SYSUPTIME_OID, EventConstants.TYPE_SNMP_TIMETICKS, Long.toString(System.currentTimeMillis()/1000));
-        String oid;
-        if (trapConfig.getGeneric() == ENTERPRISE_SPECIFIC) {
-            oid = trapConfig.getEnterpriseId() + "." + trapConfig.getSpecific();
-        } else {
-            oid = SNMP_TRAPS + '.' + (trapConfig.getGeneric() + 1);
+        populateTrapBuilder(trap, trapConfig);
+        try {
+            SnmpAgentConfig config = trapConfig.getAgentConfig();
+            LOG.debug("Sending SNMPv2 Trap using {}", config);
+            trap.send(config.getAddress().getHostAddress(), config.getPort(), config.getReadCommunity());
+        } catch (Throwable e) {
+            throw new SnmpTrapException("Failed to send trap "+e.getMessage(), e);
         }
-        addVarBinding(trap, SNMP_TRAP_OID, EventConstants.TYPE_SNMP_OBJECT_IDENTIFIER, oid);
-        int i = 0;
-        for (Parm parm : trapConfig.getParameters()) {
-            Value value = parm.getValue();
-            try {
-                addVarBinding(trap, parm.getParmName(), value.getType(), value.getEncoding(), value.getContent());
-            } catch (SnmpTrapException e) {
-                throw new SnmpTrapException(e.getMessage() + " in event parm[" + i + "]");
-            }
-            i++;
-        }
-        sendTrap(trapConfig, trap);
     }
 
     /**
-     * Sends an SNMP trap.
+     * Create an SNMP V2 inform based on the content of the specified trap configuration, and send it to the appropriate destination.
      *
      * @param trapConfig The trap configuration mapping object
-     * @param trap The trap builder object
      * @throws SnmpTrapException if any.
      */
-    private void sendTrap(SnmpTrapConfig trapConfig, SnmpTrapBuilder trap) throws SnmpTrapException {
+    private void forwardV2Inform(SnmpTrapConfig trapConfig) throws SnmpTrapException {
+        SnmpV2TrapBuilder trap = SnmpUtils.getV2InformBuilder();
+        populateTrapBuilder(trap, trapConfig);
         try {
-            LOG.debug("Sending SNMP Trap using {}", trapConfig);
-            trap.send(trapConfig.getDestinationAddress().getHostAddress(), trapConfig.getDestinationPort(), trapConfig.getCommunity());
+            SnmpAgentConfig config = trapConfig.getAgentConfig();
+            LOG.debug("Sending SNMPv2 Inform using {}", config);
+            trap.sendInform(config.getAddress().getHostName(), config.getPort(), config.getTimeout(), config.getRetries(), config.getReadCommunity());
+        } catch (Throwable e) {
+            throw new SnmpTrapException("Failed to send trap "+e.getMessage(), e);
+        }
+    }
+
+    /**
+     * Create an SNMP V3 trap based on the content of the specified trap configuration, and send it to the appropriate destination.
+     *
+     * @param trapConfig The trap configuration mapping object
+     * @throws SnmpTrapException if any.
+     */
+    private void forwardV3Trap(SnmpTrapConfig trapConfig) throws SnmpTrapException {
+        SnmpV3TrapBuilder trap = SnmpUtils.getV3TrapBuilder();
+        populateTrapBuilder(trap, trapConfig);
+        try {
+            SnmpAgentConfig config = trapConfig.getAgentConfig();
+            LOG.debug("Sending SNMPv3 Trap using {}", config);
+            trap.send(config.getAddress().getHostAddress(), config.getPort(), config.getSecurityLevel(), config.getSecurityName(), config.getAuthPassPhrase(), config.getAuthProtocol(), config.getPrivPassPhrase(), config.getPrivProtocol());
+        } catch (Throwable e) {
+            throw new SnmpTrapException("Failed to send trap "+e.getMessage(), e);
+        }
+    }
+
+    /**
+     * Create an SNMP V3 inform based on the content of the specified trap configuration, and send it to the appropriate destination.
+     *
+     * @param trapConfig The trap configuration mapping object
+     * @throws SnmpTrapException if any.
+     */
+    private void forwardV3Inform(SnmpTrapConfig trapConfig) throws SnmpTrapException {
+        SnmpV3TrapBuilder trap = SnmpUtils.getV3InformBuilder();
+        populateTrapBuilder(trap, trapConfig);
+        try {
+            SnmpAgentConfig config = trapConfig.getAgentConfig();
+            LOG.debug("Sending SNMPv3 Inform using {}", config);
+            trap.sendInform(config.getAddress().getHostAddress(), config.getPort(), config.getTimeout(), config.getTimeout(), config.getSecurityLevel(), config.getSecurityName(), config.getAuthPassPhrase(), config.getAuthProtocol(), config.getPrivPassPhrase(), config.getPrivProtocol());
         } catch (Throwable e) {
             throw new SnmpTrapException("Failed to send trap "+e.getMessage(), e);
         }
@@ -448,12 +514,24 @@ public class SnmpTrapHelper {
      */
     public void forwardTrap(SnmpTrapConfig trapConfig) throws SnmpTrapException {
         SnmpVersion version = trapConfig.getVersion();
-        if (SnmpVersion.V1.equals(version)) {
-            forwardV1Trap(trapConfig);
-        } else if (SnmpVersion.V2c.equals(version)) {
-            forwardV2Trap(trapConfig);
-        } else {
-            throw new SnmpTrapException("Invalid SNMP version: " + version);
+        switch (version) {
+        case V1: {
+            forwardV1Trap(trapConfig); break;
+        }
+        case V2c: {
+            forwardV2Trap(trapConfig); break;
+        }
+        case V3: {
+            forwardV3Trap(trapConfig); break;
+        }
+        case V2_INFORM: {
+            forwardV2Inform(trapConfig); break;
+        }
+        case V3_INFORM: {
+            forwardV3Inform(trapConfig); break;
+        }
+        default:
+            throw new SnmpTrapException("Invalid SNMP version " + version);
         }
     }
 

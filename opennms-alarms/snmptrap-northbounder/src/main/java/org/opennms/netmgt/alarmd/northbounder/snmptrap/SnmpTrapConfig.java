@@ -31,6 +31,8 @@ import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.opennms.netmgt.config.SnmpPeerFactory;
+import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.xml.event.Parm;
 
 /**
@@ -53,7 +55,7 @@ public class SnmpTrapConfig {
     private SnmpVersion version = SnmpVersion.V1;
 
     /** The community. */
-    private String community = "public";
+    private String community;
 
     /** The host address. */
     private InetAddress hostAddress;
@@ -62,7 +64,7 @@ public class SnmpTrapConfig {
     private InetAddress destinationAddress;
 
     /** The destination port. */
-    private int destinationPort;
+    private int destinationPort = 0;
 
     /** The parameters. */
     private List<Parm> parameters = new ArrayList<Parm>();
@@ -275,6 +277,24 @@ public class SnmpTrapConfig {
         parameters.add(p);
     }
 
+    /**
+     * Gets the SNMP agent configuration.
+     *
+     * @return the SNMP agent configuration
+     */
+    public SnmpAgentConfig getAgentConfig() {
+        SnmpAgentConfig config = SnmpPeerFactory.getInstance().getAgentConfig(destinationAddress);
+        if (version.isV1() || version.isV2()) {
+            if (community != null) {
+                config.setReadCommunity(community);
+            }
+            if (destinationPort > 0) {
+                config.setPort(destinationPort);
+            }
+        }
+        return config;
+    }
+
     /* (non-Javadoc)
      * @see java.lang.Object#toString()
      */
@@ -300,6 +320,5 @@ public class SnmpTrapConfig {
         sb.append("}]");
         return sb.toString();
     }
-
 
 }
