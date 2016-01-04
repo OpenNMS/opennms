@@ -29,6 +29,7 @@ package org.opennms.netmgt.alarmd.northbounder.snmptrap;
 
 import java.io.IOException;
 import java.net.InetAddress;
+import java.util.Collections;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -37,7 +38,9 @@ import org.junit.Before;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.SnmpPeerFactory;
+import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpUtils;
+import org.opennms.netmgt.snmp.SnmpV3User;
 import org.opennms.netmgt.snmp.TrapNotification;
 import org.opennms.netmgt.snmp.TrapNotificationListener;
 
@@ -75,7 +78,10 @@ public abstract class AbstractTrapReceiverTest implements TrapNotificationListen
         SnmpPeerFactory.init();
         trapsReceived = 0;
         Assert.assertEquals("Snmp4JStrategy", SnmpUtils.getStrategy().getClass().getSimpleName());
-        SnmpUtils.registerForTraps(this, new NullTrapProcessorFactory(), TRAP_DESTINATION, TRAP_PORT);
+
+        SnmpAgentConfig config = SnmpPeerFactory.getInstance().getAgentConfig(TRAP_DESTINATION);
+        SnmpV3User user = new SnmpV3User(config.getSecurityName(), config.getAuthProtocol(), config.getAuthPassPhrase(), config.getPrivProtocol(), config.getPrivPassPhrase());
+        SnmpUtils.registerForTraps(this, new NullTrapProcessorFactory(), TRAP_DESTINATION, TRAP_PORT, Collections.singletonList(user));
         LOG.info("Registered Trap Listener for {} on port {}", TRAP_DESTINATION, TRAP_PORT);
     }
 
@@ -120,4 +126,10 @@ public abstract class AbstractTrapReceiverTest implements TrapNotificationListen
         return trapsReceived;
     }
 
+    /**
+     * Reset traps received.
+     */
+    protected void resetTrapsReceived() {
+        trapsReceived = 0;
+    }
 }

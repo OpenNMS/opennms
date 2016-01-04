@@ -39,13 +39,15 @@ import org.opennms.core.utils.InetAddressUtils;
  */
 public class SnmpTrapHelperTest extends AbstractTrapReceiverTest {
 
+    private SnmpTrapHelper trapHelper = new SnmpTrapHelper();
+
     /**
-     * Test forward trap.
+     * Test forward traps and informs.
      *
      * @throws Exception the exception
      */
     @Test
-    public void testForwardTrap() throws Exception {
+    public void testForwarding() throws Exception {
         // Create a sample trap configuration
         SnmpTrapConfig config = new SnmpTrapConfig();
         config.setDestinationAddress(TRAP_DESTINATION);
@@ -55,20 +57,38 @@ public class SnmpTrapHelperTest extends AbstractTrapReceiverTest {
         config.setHostAddress(InetAddressUtils.addr("10.0.0.1"));
         config.addParameter(".1.3.6.1.2.1.2.2.1.1.3", "3", VarbindType.TYPE_SNMP_INT32.value());
 
-        // Create a trap helper instance
-        SnmpTrapHelper trapHelper = new SnmpTrapHelper();
-
         // Send a V1 Trap
         config.setVersion(SnmpVersion.V1);
-        trapHelper.forwardTrap(config);
-        Thread.sleep(5000); // Introduce a delay to make sure the trap was sent and received.
-        Assert.assertEquals(1, getTrapsReceivedCount());
+        forwardTrap(config);
 
         // Send a V2c Trap
         config.setVersion(SnmpVersion.V2c);
+        forwardTrap(config);
+
+        // Send a V3 Trap
+        config.setVersion(SnmpVersion.V3);
+        forwardTrap(config);
+
+        // Send a V2 Inform
+        config.setVersion(SnmpVersion.V2_INFORM);
+        forwardTrap(config);
+
+        // Send a V3 Inform
+        config.setVersion(SnmpVersion.V3_INFORM);
+        forwardTrap(config);
+    }
+
+    /**
+     * Forwards a trap.
+     *
+     * @param config the SNMP Trap configuration
+     * @throws Exception the exception
+     */
+    private void forwardTrap(SnmpTrapConfig config) throws Exception {
+        resetTrapsReceived();
         trapHelper.forwardTrap(config);
         Thread.sleep(5000); // Introduce a delay to make sure the trap was sent and received.
-        Assert.assertEquals(2, getTrapsReceivedCount());
+        Assert.assertEquals(1, getTrapsReceivedCount());
     }
 
 }

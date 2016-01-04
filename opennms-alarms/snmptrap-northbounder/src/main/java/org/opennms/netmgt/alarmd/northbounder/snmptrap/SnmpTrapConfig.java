@@ -284,12 +284,12 @@ public class SnmpTrapConfig {
      */
     public SnmpAgentConfig getAgentConfig() {
         SnmpAgentConfig config = SnmpPeerFactory.getInstance().getAgentConfig(destinationAddress);
+        if (destinationPort > 0) {
+            config.setPort(destinationPort);
+        }
         if (version.isV1() || version.isV2()) {
             if (community != null) {
                 config.setReadCommunity(community);
-            }
-            if (destinationPort > 0) {
-                config.setPort(destinationPort);
             }
         }
         return config;
