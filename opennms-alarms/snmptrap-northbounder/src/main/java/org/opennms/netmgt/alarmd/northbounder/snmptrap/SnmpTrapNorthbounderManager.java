@@ -36,6 +36,7 @@ import org.opennms.core.soa.ServiceRegistry;
 import org.opennms.netmgt.alarmd.api.NorthboundAlarm;
 import org.opennms.netmgt.alarmd.api.Northbounder;
 import org.opennms.netmgt.alarmd.api.NorthbounderException;
+import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
@@ -73,6 +74,9 @@ public class SnmpTrapNorthbounderManager implements InitializingBean, Northbound
     public void afterPropertiesSet() throws Exception {
         Assert.notNull(m_configDao);
         Assert.notNull(m_serviceRegistry);
+
+        // Initialize the SNMP peer factory, required to send traps.
+        SnmpPeerFactory.init();
 
         // Registering itself as a northbounder
         m_registrations.put(getName(), m_serviceRegistry.register(this, Northbounder.class));
