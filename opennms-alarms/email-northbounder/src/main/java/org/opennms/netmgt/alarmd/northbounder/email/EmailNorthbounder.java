@@ -28,10 +28,13 @@
 
 package org.opennms.netmgt.alarmd.northbounder.email;
 
+import java.io.ByteArrayInputStream;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.io.IOUtils;
 import org.opennms.core.utils.PropertiesUtils;
+import org.opennms.core.xml.CastorUtils;
 import org.opennms.javamail.JavaMailerException;
 import org.opennms.javamail.JavaSendMailer;
 import org.opennms.netmgt.alarmd.api.NorthboundAlarm;
@@ -82,7 +85,23 @@ public class EmailNorthbounder extends AbstractNorthbounder implements Initializ
         super(NBI_NAME + ":" + destinationName);
         m_configDao = configDao;
         m_destination = configDao.getConfig().getEmailDestination(destinationName);
-        m_sendmail = javaMailDao.getSendMailConfig(destinationName);
+
+        // Creating a local copy of the SendmailConfig object, to avoid potential thread contention issues.
+        ByteArrayInputStream is = null;
+        try {
+            final SendmailConfig sendmail = javaMailDao.getSendMailConfig(destinationName);
+            if (sendmail != null) {
+                final String sendmailText = CastorUtils.marshal(sendmail);
+                is = new ByteArrayInputStream(sendmailText.getBytes());
+                m_sendmail = CastorUtils.unmarshal(SendmailConfig.class, is);
+            }
+        } catch (Exception e) {
+            LOG.error("Can't create a copy of the SendmailConfig object named {}.", destinationName, e);
+        } finally {
+            IOUtils.closeQuietly(is);
+        }
+
+        // Saving a local copy of the templates, as they will be overridden every time a new email has to be sent.
         if (m_sendmail != null && m_sendmail.getSendmailMessage() != null) {
             m_emailSubjectFormat = m_sendmail.getSendmailMessage().getSubject();
             m_emailBodyFormat = m_sendmail.getSendmailMessage().getBody();
