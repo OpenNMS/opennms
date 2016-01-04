@@ -1258,9 +1258,9 @@
     <oldAsmVersion>99.99.99-exclude-and-use-org.ow2.asm.asm-all-instead</oldAsmVersion>
     <args4jVersion>2.32</args4jVersion>
     <asmVersion>5.0.4</asmVersion>
-    <asciidoctorVersion>1.5.2.1</asciidoctorVersion>
-    <asciidoctorjVersion>1.5.2</asciidoctorjVersion>
-    <asciidoctorjPdfVersion>1.5.0-alpha.6</asciidoctorjPdfVersion>
+    <asciidoctorVersion>1.5.3</asciidoctorVersion>
+    <asciidoctorjVersion>1.5.3.2</asciidoctorjVersion>
+    <asciidoctorjPdfVersion>1.5.0-alpha.10.1</asciidoctorjPdfVersion>
     <activemqVersion>5.10.0</activemqVersion>
     <atomikosVersion>3.9.2</atomikosVersion>
     <camelVersion>2.14.1</camelVersion>
@@ -1298,7 +1298,7 @@
     <jfreechartVersion>1.0.19</jfreechartVersion>
     <jcommonVersion>1.0.23</jcommonVersion>
     <jodaTimeVersion>2.1</jodaTimeVersion>
-    <jrubyVersion>9.0.0.0</jrubyVersion>
+    <jrubyVersion>9.0.4.0</jrubyVersion>
     <jsoupVersion>1.7.2</jsoupVersion>
     <karafVersion>2.4.0</karafVersion>
     <karafPaxExamVersion>2.3.9</karafPaxExamVersion>
