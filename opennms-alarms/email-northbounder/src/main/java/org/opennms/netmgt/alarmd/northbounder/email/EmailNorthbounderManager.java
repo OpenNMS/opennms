@@ -157,6 +157,7 @@ public class EmailNorthbounderManager implements InitializingBean, Northbounder,
     @Override
     public void reloadConfig() {
         m_configDao.reload();
+        m_javaMailDao.reloadConfiguration();
         LOG.info("Reloading SNMP trap northbound configuration.");
         m_registrations.forEach((k,v) -> { if (k != getName()) unregister(v);});
         try {
