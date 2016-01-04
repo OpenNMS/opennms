@@ -194,34 +194,6 @@ public class ProvisioningNewUIIT extends OpenNMSSeleniumTestCase {
         findElementByLink("HTTP-8980");
     }
 
-    private void clickId(final String id) throws InterruptedException {
-        WebElement element = null;
-        try {
-            m_driver.manage().timeouts().implicitlyWait(0, TimeUnit.MILLISECONDS);
-
-            try {
-                element = findElementById(id);
-            } catch (final Throwable t) {
-            }
-
-            final long waitUntil = System.currentTimeMillis() + 60000;
-            while (element == null || element.getAttribute("disabled") != null || !element.isDisplayed() || !element.isEnabled()) {
-                if (System.currentTimeMillis() >= waitUntil) {
-                    break;
-                }
-                Thread.sleep(1000);
-                try {
-                    element = findElementById(id);
-                } catch (final Throwable t) {
-                }
-            }
-            Thread.sleep(1000);
-            element.click();
-        } finally {
-            m_driver.manage().timeouts().implicitlyWait(LOAD_TIMEOUT, TimeUnit.MILLISECONDS);
-        }
-    }
-
     private WebElement findModal() {
         final String xpath = "//div[contains(@class, 'modal-dialog')]";
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath(xpath)));
