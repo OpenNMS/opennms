@@ -46,7 +46,7 @@ import org.slf4j.LoggerFactory;
 /**
  * The Test Class for SnmpTrapNorthbounder.
  * 
- * @author <a href="mailto:agalue@opennms.org>Alejandro Galue</a>
+ * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
 public abstract class AbstractTrapReceiverTest implements TrapNotificationListener {
 

@@ -46,7 +46,7 @@ import org.springframework.util.Assert;
 /**
  * The Class SnmpTrapNorthbounderManager.
  * 
- * @author <a href="mailto:agalue@opennms.org>Alejandro Galue</a>
+ * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
 public class SnmpTrapNorthbounderManager implements InitializingBean, Northbounder, DisposableBean {
 

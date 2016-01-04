@@ -39,7 +39,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 /**
  * Configuration for SNMP Trap NBI implementation.
  * 
- * @author <a href="mailto:agalue@opennms.org>Alejandro Galue</a>
+ * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
 @XmlRootElement(name = "snmptrap-northbounder-config")
 @XmlAccessorType(XmlAccessType.FIELD)

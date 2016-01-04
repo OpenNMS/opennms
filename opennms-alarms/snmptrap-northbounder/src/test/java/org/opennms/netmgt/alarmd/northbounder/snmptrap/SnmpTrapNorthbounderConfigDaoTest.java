@@ -43,7 +43,7 @@ import org.springframework.core.io.FileSystemResource;
 /**
  * The Test Class for SnmpTrapNorthbounderConfigDao.
  * 
- * @author <a href="mailto:agalue@opennms.org>Alejandro Galue</a>
+ * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
 public class SnmpTrapNorthbounderConfigDaoTest {
 

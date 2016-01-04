@@ -45,7 +45,7 @@ import junit.framework.Assert;
 /**
  * The Test Class for SnmpTrapNorthbounder.
  * 
- * @author <a href="mailto:agalue@opennms.org>Alejandro Galue</a>
+ * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
 public class SnmpTrapNorthbounderTest extends AbstractTrapReceiverTest {
 
@@ -54,6 +54,7 @@ public class SnmpTrapNorthbounderTest extends AbstractTrapReceiverTest {
      *
      * @throws Exception the exception
      */
+    // FIXME Verify the content of the trap sent.
     @Test
     public void testNorthbounder() throws Exception {
         // Setup the configuration DAO

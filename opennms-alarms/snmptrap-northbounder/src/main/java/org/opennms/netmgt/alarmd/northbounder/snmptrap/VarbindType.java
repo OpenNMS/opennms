@@ -8,6 +8,8 @@ import org.opennms.netmgt.events.api.EventConstants;
 
 /**
  * The Enumeration VarbindType.
+ * 
+ * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
 @XmlType
 @XmlEnum(String.class)

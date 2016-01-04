@@ -35,7 +35,7 @@ import org.opennms.core.utils.InetAddressUtils;
 /**
  * The Test Class for SnmpTrapNorthbounder.
  * 
- * @author <a href="mailto:agalue@opennms.org>Alejandro Galue</a>
+ * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
 public class SnmpTrapHelperTest extends AbstractTrapReceiverTest {
 

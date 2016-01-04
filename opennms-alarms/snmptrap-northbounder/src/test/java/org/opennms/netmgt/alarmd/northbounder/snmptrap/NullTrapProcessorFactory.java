@@ -38,7 +38,7 @@ import org.opennms.netmgt.snmp.TrapProcessorFactory;
 /**
  * A factory for creating TrapProcessor objects.
  * 
- * @author <a href="mailto:agalue@opennms.org>Alejandro Galue</a>
+ * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
 public class NullTrapProcessorFactory implements TrapProcessorFactory {
 

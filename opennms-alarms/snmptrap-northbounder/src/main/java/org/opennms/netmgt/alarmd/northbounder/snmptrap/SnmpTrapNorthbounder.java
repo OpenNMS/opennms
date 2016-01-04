@@ -40,7 +40,7 @@ import org.springframework.beans.factory.InitializingBean;
 /**
  * Forwards alarms via SNMP Trap.
  * 
- * @author <a href="mailto:agalue@opennms.org>Alejandro Galue</a>
+ * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
 public class SnmpTrapNorthbounder extends AbstractNorthbounder implements InitializingBean {
 

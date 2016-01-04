@@ -45,7 +45,7 @@ import org.springframework.expression.spel.support.StandardEvaluationContext;
 /**
  * The Class VarbindMapping.
  * 
- * @author <a href="mailto:agalue@opennms.org>Alejandro Galue</a>
+ * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
 @XmlRootElement(name = "varbind")
 @XmlAccessorType(XmlAccessType.FIELD)

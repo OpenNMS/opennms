@@ -36,7 +36,7 @@ import org.opennms.netmgt.xml.event.Parm;
 /**
  * The Class SnmpTrapConfig.
  * 
- * @author <a href="mailto:agalue@opennms.org>Alejandro Galue</a>
+ * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
 public class SnmpTrapConfig {
 

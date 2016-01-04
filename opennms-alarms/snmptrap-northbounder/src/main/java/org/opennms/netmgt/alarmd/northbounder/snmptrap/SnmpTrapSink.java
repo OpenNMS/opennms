@@ -43,7 +43,7 @@ import org.opennms.netmgt.alarmd.api.NorthboundAlarm;
 /**
  * Configuration for the various SNMP Trap hosts to receive alarms via Traps.
  *
- * @author <a href="mailto:agalue@opennms.org>Alejandro Galue</a>
+ * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
 // TODO Extend org.opennms.netmgt.config.snmp.Configuration to get all the SNMP configuration variables for v3.
 @XmlRootElement(name = "snmp-trap-sink")

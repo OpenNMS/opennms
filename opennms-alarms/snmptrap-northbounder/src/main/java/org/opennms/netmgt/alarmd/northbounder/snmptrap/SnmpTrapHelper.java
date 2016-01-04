@@ -47,8 +47,9 @@ import org.slf4j.LoggerFactory;
 
 /**
  * The Class SnmpTrapHelper.
+ * <p>Inspired by <code>org.opennms.netmgt.scriptd.helper.SnmpTrapHelper</code> from <code>opennms-services</code>
  * 
- * @author <a href="mailto:agalue@opennms.org>Alejandro Galue</a>
+ * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
 public class SnmpTrapHelper {
 

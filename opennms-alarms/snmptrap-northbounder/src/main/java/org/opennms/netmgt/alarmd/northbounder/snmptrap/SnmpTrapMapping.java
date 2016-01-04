@@ -48,7 +48,7 @@ import org.springframework.expression.spel.support.StandardEvaluationContext;
 /**
  * The Class SnmpTrapMapping.
  * 
- * @author <a href="mailto:agalue@opennms.org>Alejandro Galue</a>
+ * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
 @XmlRootElement(name = "mapping")
 @XmlAccessorType(XmlAccessType.FIELD)

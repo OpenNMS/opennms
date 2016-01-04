@@ -33,6 +33,8 @@ import javax.xml.bind.annotation.XmlType;
 
 /**
  * The Enumeration SnmpVersion.
+ * 
+ * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
 @XmlType
 @XmlEnum(String.class)

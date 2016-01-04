@@ -39,7 +39,7 @@ import org.slf4j.LoggerFactory;
 /**
  * The Class SnmpTrapNorthbounderConfigDao.
  * 
- * @author <a href="mailto:agalue@opennms.org>Alejandro Galue</a>
+ * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
 public class SnmpTrapNorthbounderConfigDao extends AbstractJaxbConfigDao<SnmpTrapNorthbounderConfig, SnmpTrapNorthbounderConfig> {
 

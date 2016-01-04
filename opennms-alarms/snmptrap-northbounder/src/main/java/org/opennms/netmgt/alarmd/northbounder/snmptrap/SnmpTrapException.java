@@ -30,7 +30,7 @@ package org.opennms.netmgt.alarmd.northbounder.snmptrap;
 /**
  * The Class SnmpTrapHelperException.
  * 
- * @author <a href="mailto:agalue@opennms.org>Alejandro Galue</a>
+ * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
 public class SnmpTrapException extends Exception {
 
