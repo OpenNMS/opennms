@@ -195,17 +195,31 @@ public class ProvisioningNewUIIT extends OpenNMSSeleniumTestCase {
     }
 
     private void clickId(final String id) throws InterruptedException {
-        WebElement element = findElementById(id);
-        final long waitUntil = System.currentTimeMillis() + 60000;
-        while (element.getAttribute("disabled") != null || !element.isDisplayed() || !element.isEnabled()) {
-            if (System.currentTimeMillis() >= waitUntil) {
-                break;
+        WebElement element = null;
+        try {
+            m_driver.manage().timeouts().implicitlyWait(0, TimeUnit.MILLISECONDS);
+
+            try {
+                element = findElementById(id);
+            } catch (final Throwable t) {
+            }
+
+            final long waitUntil = System.currentTimeMillis() + 60000;
+            while (element == null || element.getAttribute("disabled") != null || !element.isDisplayed() || !element.isEnabled()) {
+                if (System.currentTimeMillis() >= waitUntil) {
+                    break;
+                }
+                Thread.sleep(1000);
+                try {
+                    element = findElementById(id);
+                } catch (final Throwable t) {
+                }
             }
             Thread.sleep(1000);
-            element = findElementById(id);
+            element.click();
+        } finally {
+            m_driver.manage().timeouts().implicitlyWait(LOAD_TIMEOUT, TimeUnit.MILLISECONDS);
         }
-        Thread.sleep(1000);
-        element.click();
     }
 
     private WebElement findModal() {
