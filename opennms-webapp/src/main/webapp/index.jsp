@@ -48,6 +48,8 @@
            if (Boolean.parseBoolean(showNodesWithOutages)) { %>
 		<jsp:include page="/outage/servicesdown-box.htm" flush="false" />
         <% } %>
+		<!-- Threshold event box -->
+		<jsp:include page="/includes/threshold-alarms-box.jsp" flush="false" />
 	</div>
 
 	<!-- Middle Column -->
