@@ -20,7 +20,7 @@
 
   <bean id="syslogConnectionHandler" class="org.opennms.netmgt.syslogd.SyslogConnectionHandlerDefaultImpl">
     <constructor-arg>
-      <bean factory-bean="executorFactoryJava" factory-method="newExecutor">
+      <bean factory-bean="executorFactory" factory-method="newExecutor">
         <constructor-arg value="OpenNMS.Syslogd"/>
         <constructor-arg value="SyslogConnectionHandler"/>
       </bean>
