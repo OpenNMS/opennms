@@ -1343,14 +1343,14 @@
       <uei>uei.opennms.org/internal/linkd/nodeLinkDiscoveryStarted</uei>
       <event-label>OpenNMS-defined Linkd Event: nodeLinkDiscoveryStarted</event-label>
       <descr>&lt;p>The Linkd process has started its attempt to discover links for this node.&lt;/p></descr>
-      <logmsg dest="logndisplay">&lt;p>Linkd %parm[runnable]% started.&lt;/p></logmsg>
+      <logmsg dest="donotpersist">&lt;p>Linkd %parm[runnable]% started.&lt;/p></logmsg>
       <severity>Normal</severity>
    </event>
    <event>
       <uei>uei.opennms.org/internal/linkd/nodeLinkDiscoveryCompleted</uei>
       <event-label>OpenNMS-defined Linkd Event: nodeLinkDiscoveryCompleted</event-label>
       <descr>&lt;p>The Linkd process has finished its attempt to discover links for this node.&lt;/p></descr>
-      <logmsg dest="logndisplay">&lt;p>Linkd %parm[runnable]% completed.&lt;/p></logmsg>
+      <logmsg dest="donotpersist">&lt;p>Linkd %parm[runnable]% completed.&lt;/p></logmsg>
       <severity>Normal</severity>
    </event>
    <event>
