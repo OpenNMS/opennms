@@ -180,10 +180,14 @@ public class EmailNorthbounder extends AbstractNorthbounder implements Initializ
      * @return the sendmail configuration
      */
     protected SendmailConfig getSendmailConfig(NorthboundAlarm alarm) {
+        LOG.debug("getSendmailConfig: from = {}", m_sendmail.getSendmailMessage().getFrom());
+        LOG.debug("getSendmailConfig: to = {}", m_sendmail.getSendmailMessage().getTo());
         Map<String, Object> mapping = createMapping(alarm);
         final String subject = PropertiesUtils.substitute(m_emailSubjectFormat, mapping);
+        LOG.debug("getSendmailConfig: subject = {}", subject);
         m_sendmail.getSendmailMessage().setSubject(subject);
         final String body = PropertiesUtils.substitute(m_emailBodyFormat, mapping);
+        LOG.debug("getSendmailConfig: body = {}", body);
         m_sendmail.getSendmailMessage().setBody(body);
         return m_sendmail;
     }
