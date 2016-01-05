@@ -9,28 +9,91 @@
 	<batch-size>100</batch-size>
 	<queue-size>300000</queue-size>
 
+    <!-- The following fields expects a SPEL Expression based on NorthboundAlarm:
+         https://github.com/OpenNMS/opennms/blob/master/opennms-alarms/api/src/main/java/org/opennms/netmgt/alarmd/api/NorthboundAlarm.java
+
+         * mapping-group/rule
+         * mapping/rule
+         * varbind/value
+         * varbind/instance
+
+         Here are the most important fields from the NorthboundAlarm class are:
+
+         * id (Integer)
+         * uei (String)
+         * nodeId (Integer)
+         * nodeLabel (String)
+         * nodeSysObjectId (String)
+         * foreignSource (String)
+         * foreignId (String)
+         * ackTime (Date)
+         * ackUser (String)
+         * alarmType (enumeration of AlarmType: PROBLEM, RESOLUTION, NOTIFICATION)
+         * clearKey (String)
+         * count (Integer)
+         * desc (String)
+         * firstOccurrence (Date)
+         * ipAddr (InetAddress)
+         * lastOccurrence (Date)
+         * logMsg (Date)
+         * operInst (String)
+         * service (String)
+         * severity (enumeration of OnmsSeverity:  INDETERMINATE(1), CLEARED(2), NORMAL(3), WARNING(4), MINOR(5), MAJOR(6), CRITICAL(7))
+         * ticketId (String)
+         * ticketState (enumeration of TroubleTicketState)
+         * eventParametersMap (Map; using parameter name as the key, and parameter value as the value)
+         * eventParametersCollection (List of Parm)
+
+         The varbind value expect one of the following values:
+
+         * OctetString
+         * Int32
+         * ObjectIdentifier
+         * IpAddress
+         * TimeTicks
+         * Counter32
+         * Gauge32
+         * Opaque
+         * Counter64
+
+         For more information about SPEL Expressions:
+         http://docs.spring.io/spring/docs/current/spring-framework-reference/html/expressions.html
+
+         The SNMP Settings are obtained at runtime from snmp-config.xml based on the sink's ip-address field.
+         You can override the following fields:
+
+         * port
+         * community
+         * version
+
+         The version field can be one of the following:
+
+         * v1
+         * v2c
+         * v3
+         * v2-inform
+         * v3-inform
+    -->
+
 	<snmp-trap-sink>
 		<name>localTest1</name>
 		<ip-address>127.0.0.1</ip-address>
-		<port>162</port> <!-- defaults to 162 if it is not specified -->
-		<version>v1</version> <!-- v1 or v2c -->
-		<community>public</community>
 		<mapping-group name="My Mappings">
-			<rule>foreignSource matches '^Server.*'</rule> <!-- SPEL Expression against org.opennms.netmgt.alarmd.api.NorthboundAlarm -->
+			<rule>foreignSource matches '^Server.*'</rule>
 			<mapping name="trap01">
-				<rule>uei == 'uei.opennms.org/trap/myTrap1'</rule> <!-- SPEL Expression against org.opennms.netmgt.alarmd.api.NorthboundAlarm -->
+				<rule>uei == 'uei.opennms.org/trap/myTrap1'</rule>
 				<enterprise-oid>.1.2.3.4.5.6.7.8.100</enterprise-oid>
 				<specific>1</specific>
 				<varbind>
 					<oid>.1.2.3.4.5.6.7.8.1</oid>
-					<type>Int32</type> <!-- OctetString, Int32, ObjectIdentifier, IpAddress, TimeTicks, Counter32, Gauge32, Opaque, Counter64 -->
-					<value>eventParametersCollection[0].value.content</value> <!-- SPEL Expression against org.opennms.netmgt.alarmd.api.NorthboundAlarm -->
+					<type>Int32</type>
+					<value>eventParametersCollection[2].value.content</value> <!-- Value of the third parameter -->
 				</varbind>
 				<varbind>
 					<oid>.1.2.3.4.5.6.7.8.2</oid>
 					<type>OctetString</type>
-					<value>parameters['alarmMessage']</value>
-					<max>48</max> <!-- If specified, and the type is OctetString, the value will be truncated if it has more than 'max' characters -->
+					<value>parameters['alarmMessage']</value> <!-- Value of the parameter named alarmMessage -->
+					<max>48</max> <!-- Maximum length for OctetString varibinds -->
 				</varbind>
 			</mapping>
 			<mapping name="trap02">
@@ -39,22 +102,21 @@
 				<varbind>
 					<oid>.1.2.3.4.5.6.7.8.2</oid>
 					<type>OctetString</type>
-					<value>parameters['myMessage']</value>
-					<instance>parameters['myId']</instance> <!-- SPEL Expression against org.opennms.netmgt.alarmd.api.NorthboundAlarm -->
+					<value>parameters['myMessage']</value> <!-- Value of the parameter named myMessage -->
+					<instance>parameters['myId']</instance> <!-- Value of the parameter named myId -->
 				</varbind>
 			</mapping>
 		</mapping-group>
 	</snmp-trap-sink>
 
-    <!-- It is possible to define the mapping groups on a external file:
+    <!-- It is possible to define the mapping groups on a external file.
+         The file my-mappings.xml should contain "mapping-group" as its root tag:
 
 	<snmp-trap-sink>
 		<name>localTest2</name>
 		<ip-address>127.0.0.2</ip-address>
-		<port>162</port>
-		<version>v2c</version>
-		<community>public</community>
-		<import-mappings>snmptrap-northbound/my-mappings-01.xml</import-mappings>
+		<version>v3</version>
+		<import-mappings>snmptrap-northbound/my-mappings.xml</import-mappings>
 	</snmp-trap-sink>
 
     -->
