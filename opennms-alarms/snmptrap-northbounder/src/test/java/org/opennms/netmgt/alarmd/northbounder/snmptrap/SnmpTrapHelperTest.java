@@ -89,6 +89,11 @@ public class SnmpTrapHelperTest extends AbstractTrapReceiverTest {
         trapHelper.forwardTrap(config);
         Thread.sleep(5000); // Introduce a delay to make sure the trap was sent and received.
         Assert.assertEquals(1, getTrapsReceivedCount());
+        TrapData data = getTrapsReceived().get(0);
+        LOG.debug("Received: {}", data);
+        Assert.assertEquals(".1.3.6.1.4.1.5813", data.getEnterpriseOid());
+        Assert.assertEquals(6, data.getGeneric());
+        Assert.assertEquals(2, data.getSpecific());
     }
 
 }

@@ -29,7 +29,9 @@ package org.opennms.netmgt.alarmd.northbounder.snmptrap;
 
 import java.io.IOException;
 import java.net.InetAddress;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -43,7 +45,7 @@ import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpV3User;
 import org.opennms.netmgt.snmp.TrapNotification;
 import org.opennms.netmgt.snmp.TrapNotificationListener;
-
+import org.opennms.netmgt.snmp.snmp4j.TrapUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -55,7 +57,7 @@ import org.slf4j.LoggerFactory;
 public abstract class AbstractTrapReceiverTest implements TrapNotificationListener {
 
     /** The Constant LOG. */
-    private static final Logger LOG = LoggerFactory.getLogger(AbstractTrapReceiverTest.class);
+    protected static final Logger LOG = LoggerFactory.getLogger(AbstractTrapReceiverTest.class);
 
     /** The Constant TRAP_PORT. */
     protected static final int TRAP_PORT = 1162;
@@ -63,8 +65,8 @@ public abstract class AbstractTrapReceiverTest implements TrapNotificationListen
     /** The trap receiver address. */
     protected static final InetAddress TRAP_DESTINATION = InetAddressUtils.getLocalHostAddress();
 
-    /** The traps received. */
-    private int trapsReceived;
+    /** The received trap notification. */
+    private List<TrapData> trapNotifications = new ArrayList<TrapData>();
 
     /**
      * Sets up the test (initialize a trap listener).
@@ -74,9 +76,9 @@ public abstract class AbstractTrapReceiverTest implements TrapNotificationListen
     @Before
     public void setUp() throws Exception {
         MockLogAppender.setupLogging();
+        resetTrapsReceived();
         System.setProperty("opennms.home", "src/test/resources");
         SnmpPeerFactory.init();
-        trapsReceived = 0;
         Assert.assertEquals("Snmp4JStrategy", SnmpUtils.getStrategy().getClass().getSimpleName());
 
         SnmpAgentConfig config = SnmpPeerFactory.getInstance().getAgentConfig(TRAP_DESTINATION);
@@ -106,7 +108,12 @@ public abstract class AbstractTrapReceiverTest implements TrapNotificationListen
      */
     @Override
     public void trapReceived(TrapNotification trapNotification) {
-        trapsReceived++;
+        TrapData data = TrapUtils.getTrapData(trapNotification);
+        if (data == null) {
+            Assert.fail();
+        } else {
+            trapNotifications.add(data);
+        }
     }
 
     /* (non-Javadoc)
@@ -118,18 +125,28 @@ public abstract class AbstractTrapReceiverTest implements TrapNotificationListen
     }
 
     /**
+     * Gets the traps received.
+     *
+     * @return the traps received
+     */
+    protected List<TrapData> getTrapsReceived() {
+        return trapNotifications;
+    }
+
+    /**
      * Gets the traps received count.
      *
      * @return the traps received count
      */
     protected int getTrapsReceivedCount() {
-        return trapsReceived;
+        return trapNotifications.size();
     }
 
     /**
      * Reset traps received.
      */
     protected void resetTrapsReceived() {
-        trapsReceived = 0;
+        trapNotifications.clear();
     }
+
 }
