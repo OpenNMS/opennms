@@ -50,7 +50,7 @@ import org.springframework.beans.factory.InitializingBean;
 /**
  * Forwards alarms via Email.
  * 
- * @author <a href="mailto:agalue@opennms.org>Alejandro Galue</a>
+ * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
 public class EmailNorthbounder extends AbstractNorthbounder implements InitializingBean {
 

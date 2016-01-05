@@ -36,7 +36,7 @@ import org.springframework.core.io.FileSystemResource;
 /**
  * The Class EmailNorthbounderConfigDaoTest.
  * 
- * @author <a href="mailto:agalue@opennms.org>Alejandro Galue</a>
+ * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
 public class EmailNorthbounderConfigDaoTest {
 
@@ -51,7 +51,7 @@ public class EmailNorthbounderConfigDaoTest {
         EmailNorthbounderConfigDao configDao = new EmailNorthbounderConfigDao();
         configDao.setConfigResource(resource);
         configDao.afterPropertiesSet();
-        
+
         EmailNorthbounderConfig config = configDao.getConfig();
         Assert.assertNotNull(config);
         Assert.assertNotNull(config.getEmailDestination("google"));

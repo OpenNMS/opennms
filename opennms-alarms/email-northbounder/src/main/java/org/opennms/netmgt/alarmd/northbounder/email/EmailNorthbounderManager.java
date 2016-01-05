@@ -47,7 +47,7 @@ import org.springframework.util.Assert;
 /**
  * The Class EmailNorthbounderManager.
  * 
- * @author <a href="mailto:agalue@opennms.org>Alejandro Galue</a>
+ * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
 public class EmailNorthbounderManager implements InitializingBean, Northbounder, DisposableBean {
 

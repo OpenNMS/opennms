@@ -39,7 +39,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 /**
  * Configuration for Email NBI implementation.
  * 
- * @author <a href="mailto:agalue@opennms.org>Alejandro Galue</a>
+ * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
 @XmlRootElement(name = "email-northbounder-config")
 @XmlAccessorType(XmlAccessType.FIELD)

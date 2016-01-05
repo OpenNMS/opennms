@@ -41,7 +41,7 @@ import org.opennms.netmgt.alarmd.api.NorthboundAlarm;
 /**
  * Configuration for the various Email hosts to receive alarms via Email.
  *
- * @author <a href="mailto:agalue@opennms.org>Alejandro Galue</a>
+ * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
 @XmlRootElement(name = "email-destination")
 @XmlAccessorType(XmlAccessType.FIELD)

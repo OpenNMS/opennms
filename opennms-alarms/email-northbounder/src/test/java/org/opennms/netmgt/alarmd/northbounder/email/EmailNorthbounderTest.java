@@ -48,7 +48,7 @@ import org.springframework.core.io.FileSystemResource;
 /**
  * The Class EmailNorthbounderTest.
  * 
- * @author <a href="mailto:agalue@opennms.org>Alejandro Galue</a>
+ * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
 public class EmailNorthbounderTest {
 

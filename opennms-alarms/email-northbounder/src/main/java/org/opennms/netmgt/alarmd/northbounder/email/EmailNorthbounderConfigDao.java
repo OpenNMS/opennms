@@ -35,7 +35,7 @@ import org.slf4j.LoggerFactory;
 /**
  * The Class EmailNorthbounderConfigDao.
  * 
- * @author <a href="mailto:agalue@opennms.org>Alejandro Galue</a>
+ * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
 public class EmailNorthbounderConfigDao extends AbstractJaxbConfigDao<EmailNorthbounderConfig, EmailNorthbounderConfig> {
 
