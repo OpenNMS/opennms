@@ -38,46 +38,85 @@ import javax.xml.bind.annotation.XmlType;
 
 import org.opennms.netmgt.alarmd.api.Destination;
 
+/**
+ * The Class JmsDestination.
+ */
 @XmlRootElement(name = "jms-destination")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class JmsDestination implements Destination {
+
+    /** The Constant serialVersionUID. */
     private static final long serialVersionUID = 1L;
 
+    /**
+     * The Enumeration DestinationType.
+     */
     @XmlType(name = "destination-type")
     @XmlEnum
     public enum DestinationType {
-        QUEUE, TOPIC;
+
+        /** The queue. */
+        QUEUE, 
+        /** The topic. */
+        TOPIC;
+
+        /**
+         * Value.
+         *
+         * @return the string
+         */
         public String value() {
             return name();
         }
 
+        /**
+         * From value.
+         *
+         * @param v the type as string
+         * @return the destination type
+         */
         public static DestinationType fromValue(String v) {
             return valueOf(v);
         }
     }
 
+    /** The destination name. */
     @XmlTransient
     private String m_destinationName;
 
+    /** The first occurrence only. */
     @XmlElement(name = "first-occurence-only", required = false, defaultValue = "false")
     private boolean m_firstOccurrenceOnly = false;
 
+    /** The send as object message enabled. */
     @XmlElement(name = "send-as-object-message", required = false, defaultValue = "false")
     private boolean m_sendAsObjectMessageEnabled = false;
 
+    /** The destination type. */
     @XmlElement(name = "destination-type", required = true, defaultValue = "QUEUE")
     private DestinationType m_destinationType = DestinationType.QUEUE;
 
+    /** The destination. */
     @XmlElement(name = "jms-destination", required = true)
     private String m_destination;
 
+    /** The message format. */
     @XmlElement(name = "message-format", required = false)
     private String m_messageFormat;
 
+    /**
+     * Instantiates a new JMS destination.
+     */
     public JmsDestination() {
         super();
     }
 
+    /**
+     * Instantiates a new JMS destination.
+     *
+     * @param destinationType the destination type
+     * @param destination the destination
+     */
     public JmsDestination(DestinationType destinationType, String destination) {
         super();
         m_destinationType = destinationType;
@@ -87,47 +126,94 @@ public class JmsDestination implements Destination {
         m_destinationName = sb.toString();
     }
 
-    public JmsDestination(DestinationType destinationType,
-            String destination, boolean firstOccurrenceOnly,
-            boolean sendAsObjectMessage) {
+    /**
+     * Instantiates a new JMS destination.
+     *
+     * @param destinationType the destination type
+     * @param destination the destination
+     * @param firstOccurrenceOnly the first occurrence only
+     * @param sendAsObjectMessage the send as object message
+     */
+    public JmsDestination(DestinationType destinationType, String destination, boolean firstOccurrenceOnly, boolean sendAsObjectMessage) {
         this(destinationType, destination);
         m_firstOccurrenceOnly = firstOccurrenceOnly;
         m_sendAsObjectMessageEnabled = sendAsObjectMessage;
     }
 
+    /* (non-Javadoc)
+     * @see org.opennms.netmgt.alarmd.api.Destination#getName()
+     */
     public String getName() {
         return m_destinationName;
     }
 
+    /**
+     * Sets the name.
+     *
+     * @param destinationName the new name
+     */
     public void setName(String destinationName) {
         m_destinationName = destinationName;
     }
 
+    /* (non-Javadoc)
+     * @see org.opennms.netmgt.alarmd.api.Destination#isFirstOccurrenceOnly()
+     */
     @Override
     public boolean isFirstOccurrenceOnly() {
         return m_firstOccurrenceOnly;
     }
 
+    /**
+     * Sets the first occurrence only.
+     *
+     * @param firstOccurrenceOnly the new first occurrence only
+     */
     public void setFirstOccurrenceOnly(boolean firstOccurrenceOnly) {
         m_firstOccurrenceOnly = firstOccurrenceOnly;
     }
 
+    /**
+     * Gets the JMS destination.
+     *
+     * @return the JMS destination
+     */
     public String getJmsDestination() {
         return m_destination;
     }
 
+    /**
+     * Checks if is send as object message enabled.
+     *
+     * @return true, if is send as object message enabled
+     */
     public boolean isSendAsObjectMessageEnabled() {
         return m_sendAsObjectMessageEnabled;
     }
 
+    /**
+     * Gets the destination type.
+     *
+     * @return the destination type
+     */
     public DestinationType getDestinationType() {
         return m_destinationType;
     }
 
+    /**
+     * Sets the destination type.
+     *
+     * @param destinationType the new destination type
+     */
     public void setDestinationType(DestinationType destinationType) {
         m_destinationType = destinationType;
     }
 
+    /**
+     * Gets the message format.
+     *
+     * @return the message format
+     */
     public String getMessageFormat() {
         return m_messageFormat;
     }
