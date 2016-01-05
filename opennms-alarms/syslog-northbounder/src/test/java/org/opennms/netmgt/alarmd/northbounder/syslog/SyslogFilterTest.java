@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2013-2015 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2015 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -25,46 +25,33 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  *******************************************************************************/
+package org.opennms.netmgt.alarmd.northbounder.syslog;
 
-package org.opennms.netmgt.alarmd.api;
+import org.junit.Assert;
+import org.junit.Test;
+import org.opennms.netmgt.alarmd.api.NorthboundAlarm;
+import org.opennms.netmgt.model.OnmsAlarm;
 
 /**
- * North bound Interface API Exception
- * <p>Intention is to wrap all throwables as a Runtime Exception.</p>
- *
- * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * The Class SyslogFilterTest.
+ * 
+ * @author <a href="agalue@opennms.org>Alejandro Galue</a>
  */
-public class NorthbounderException extends RuntimeException {
-
-    /** The Constant serialVersionUID. */
-    private static final long serialVersionUID = 1L;
+public class SyslogFilterTest {
 
     /**
-     * Instantiates a new northbounder exception.
+     * Test filter parsing.
      *
-     * @param t the throwable
+     * @throws Exception the exception
      */
-    public NorthbounderException(Throwable t) {
-        super(t);
-    }
-
-    /**
-     * Instantiates a new northbounder exception.
-     *
-     * @param message the message
-     */
-    public NorthbounderException(String message) {
-        super(message);
-    }
-
-    /**
-     * Instantiates a new northbounder exception.
-     *
-     * @param message the message
-     * @param t the t
-     */
-    public NorthbounderException(String message, Throwable t) {
-        super(message, t);
+    @Test
+    public void testFilterParsing() throws Exception {
+        OnmsAlarm onmsAlarm = new OnmsAlarm();
+        onmsAlarm.setEventParms("user=agalue(string,text);passwd=0nmsRules(string,text);");
+        onmsAlarm.setUei("uei.opennms.org/junit/test");
+        NorthboundAlarm alarm = new NorthboundAlarm(onmsAlarm);
+        SyslogFilter filter = new SyslogFilter("test", "uei matches '^uei\\.opennms\\.org.*' and parameters['user'] == 'agalue'", "localhost");
+        Assert.assertTrue(filter.passFilter(alarm));
     }
 
 }
