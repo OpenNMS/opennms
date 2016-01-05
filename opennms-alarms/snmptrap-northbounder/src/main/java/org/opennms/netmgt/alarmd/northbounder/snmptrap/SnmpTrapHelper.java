@@ -407,8 +407,7 @@ public class SnmpTrapHelper {
         trap.setTimeStamp(System.currentTimeMillis() / 1000);
         addParameters(trap, trapConfig);
         try {
-            SnmpAgentConfig config = trapConfig.getAgentConfig();
-            LOG.debug("Sending SNMPv1 Trap using {}", config);
+            SnmpAgentConfig config = getAgentConfig(trapConfig);
             trap.send(config.getAddress().getHostAddress(), config.getPort(), config.getReadCommunity());
         } catch (Throwable e) {
             throw new SnmpTrapException("Failed to send trap "+e.getMessage(), e);
@@ -444,8 +443,7 @@ public class SnmpTrapHelper {
         SnmpTrapBuilder trap = SnmpUtils.getV2TrapBuilder();
         populateTrapBuilder(trap, trapConfig);
         try {
-            SnmpAgentConfig config = trapConfig.getAgentConfig();
-            LOG.debug("Sending SNMPv2 Trap using {}", config);
+            SnmpAgentConfig config = getAgentConfig(trapConfig);
             trap.send(config.getAddress().getHostAddress(), config.getPort(), config.getReadCommunity());
         } catch (Throwable e) {
             throw new SnmpTrapException("Failed to send trap "+e.getMessage(), e);
@@ -462,8 +460,7 @@ public class SnmpTrapHelper {
         SnmpV2TrapBuilder trap = SnmpUtils.getV2InformBuilder();
         populateTrapBuilder(trap, trapConfig);
         try {
-            SnmpAgentConfig config = trapConfig.getAgentConfig();
-            LOG.debug("Sending SNMPv2 Inform using {}", config);
+            SnmpAgentConfig config = getAgentConfig(trapConfig);
             trap.sendInform(config.getAddress().getHostName(), config.getPort(), config.getTimeout(), config.getRetries(), config.getReadCommunity());
         } catch (Throwable e) {
             throw new SnmpTrapException("Failed to send trap "+e.getMessage(), e);
@@ -480,8 +477,7 @@ public class SnmpTrapHelper {
         SnmpV3TrapBuilder trap = SnmpUtils.getV3TrapBuilder();
         populateTrapBuilder(trap, trapConfig);
         try {
-            SnmpAgentConfig config = trapConfig.getAgentConfig();
-            LOG.debug("Sending SNMPv3 Trap using {}", config);
+            SnmpAgentConfig config = getAgentConfig(trapConfig);
             trap.send(config.getAddress().getHostAddress(), config.getPort(), config.getSecurityLevel(), config.getSecurityName(), config.getAuthPassPhrase(), config.getAuthProtocol(), config.getPrivPassPhrase(), config.getPrivProtocol());
         } catch (Throwable e) {
             throw new SnmpTrapException("Failed to send trap "+e.getMessage(), e);
@@ -498,12 +494,84 @@ public class SnmpTrapHelper {
         SnmpV3TrapBuilder trap = SnmpUtils.getV3InformBuilder();
         populateTrapBuilder(trap, trapConfig);
         try {
-            SnmpAgentConfig config = trapConfig.getAgentConfig();
-            LOG.debug("Sending SNMPv3 Inform using {}", config);
+            SnmpAgentConfig config = getAgentConfig(trapConfig);
             trap.sendInform(config.getAddress().getHostAddress(), config.getPort(), config.getTimeout(), config.getTimeout(), config.getSecurityLevel(), config.getSecurityName(), config.getAuthPassPhrase(), config.getAuthProtocol(), config.getPrivPassPhrase(), config.getPrivProtocol());
         } catch (Throwable e) {
             throw new SnmpTrapException("Failed to send trap "+e.getMessage(), e);
         }
+    }
+
+    /**
+     * Gets the SNMP agent configuration.
+     *
+     * @param trapConfig The trap configuration mapping object
+     * @return the SNMP agent configuration
+     * @throws SnmpTrapException if any.
+     */
+    // TODO Compare the estimated size with a maximum value:
+    //      If the estimated is lower than the maximum in X percentage, log a warning.
+    //      Otherwise, log an error and throw an exception
+    private SnmpAgentConfig getAgentConfig(SnmpTrapConfig trapConfig) throws SnmpTrapException {
+        SnmpAgentConfig agentConfig = trapConfig.getAgentConfig();
+        if (trapConfig.getVersion().intValue() != agentConfig.getVersion()) {
+            throw new SnmpTrapException("SNMP Version mismatch for " + trapConfig);
+        }
+        int estimatedSize = getEstimatedPacketSize(trapConfig, agentConfig);
+        LOG.info("Sending SNMP{} using {}. The estimated packet size is {} bytes", trapConfig.getVersion().stringValue(), trapConfig, estimatedSize);
+        return agentConfig;
+    }
+
+    /**
+     * Gets the estimated packet size.
+     *
+     * @param trapConfig the trap configuration object
+     * @param agentConfig the agent configuration object
+     * @return the estimated packet size
+     */
+    public int getEstimatedPacketSize(SnmpTrapConfig trapConfig, SnmpAgentConfig agentConfig) {
+        // Calculating the preamble overhead
+        int preamble = 0;
+        if (trapConfig.getVersion().isV1()) {
+            preamble = 42;
+        }
+        if (trapConfig.getVersion().isV2()) {
+            preamble = 43;
+        }
+        if (trapConfig.getVersion().isV3()) {
+            preamble = 41;
+        }
+        // Calculating the version overhead
+        int version = 3;
+        // Calculating the community overhead
+        int community = 0;
+        if (trapConfig.getVersion().isV1() || trapConfig.getVersion().isV2()) {
+            community = agentConfig.getReadCommunity().length() + 2;
+        }
+        // Calculating the basic packet overhead
+        int overhead = 0;
+        if (trapConfig.getVersion().isV1()) {
+            overhead = trapConfig.getEnterpriseId().length() + 1;
+            overhead += trapConfig.getHostAddress().getHostAddress().length() + 2;
+            overhead += 13; // GenericType(3) + Specific-Type(4) + Timestamp(6)
+        } else {
+            overhead = 21; // Basic varbind overhead (2) + sysUpTime Varbind (19)
+            overhead += trapConfig.getEnterpriseId().length() + 14; // Trap-OID Varbind 
+            if (trapConfig.getVersion().isV3()) {
+                switch (agentConfig.getSecurityLevel()) {
+                case 1: overhead += 92; break;
+                case 2: overhead += 120; break;
+                case 3: overhead += 130; break;
+                }
+                overhead += agentConfig.getSecurityName().length() + 2;
+            }
+        }
+        // Calculating additional varbinds overhead
+        int varbinds = 0;
+        for (Parm p : trapConfig.getParameters()) {
+            varbinds += p.getParmName().length() + p.getValue().getContent().length() + 4;
+        }
+        // Calculating the estimated packet size;
+        return preamble + version + community + overhead + varbinds;
     }
 
     /**
@@ -513,6 +581,9 @@ public class SnmpTrapHelper {
      * @throws SnmpTrapException if any.
      */
     public void forwardTrap(SnmpTrapConfig trapConfig) throws SnmpTrapException {
+        if (!trapConfig.isValid()) {
+            throw new SnmpTrapException("The current configuration is not valid: " + trapConfig);
+        }
         SnmpVersion version = trapConfig.getVersion();
         switch (version) {
         case V1: {

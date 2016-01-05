@@ -77,8 +77,23 @@ public enum SnmpVersion {
      *
      * @return the SNMP version as string
      */
-    public String value() {
+    public String stringValue() {
         return m_version;
+    }
+
+    /**
+     * Gets the integer representation of the SNMP version.
+     *
+     * @return the SNMP version as integer
+     */
+    public int intValue() {
+        if (isV1())
+            return 1;
+        if (isV2())
+            return 2;
+        if (isV3())
+            return 3;
+        return 0;
     }
 
     /**
@@ -97,6 +112,15 @@ public enum SnmpVersion {
      */
     public boolean isV2() {
         return m_version.startsWith("v2");
+    }
+
+    /**
+     * Checks if is v3.
+     *
+     * @return true, if is v3
+     */
+    public boolean isV3() {
+        return m_version.startsWith("v3");
     }
 
 }

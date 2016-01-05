@@ -66,7 +66,7 @@ public class SnmpTrapSink implements Destination {
     private int m_port = 162;
 
     /** The SNMP version. */
-    @XmlElement(name = "version", required = false)
+    @XmlElement(name = "version", required = true)
     private SnmpVersion m_version = SnmpVersion.V1;
 
     /** The SNMP community. */

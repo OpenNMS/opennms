@@ -295,6 +295,23 @@ public class SnmpTrapConfig {
         return config;
     }
 
+    /**
+     * Checks if is valid.
+     *
+     * @return true, if is valid
+     */
+    public boolean isValid() {
+        if (version.isV1()) {
+            for (Parm p : parameters) {
+                if (p.getValue().getType().equals(VarbindType.TYPE_SNMP_COUNTER64.toString())) {
+                    return false;
+                }
+            }
+
+        }
+        return true;
+    }
+
     /* (non-Javadoc)
      * @see java.lang.Object#toString()
      */

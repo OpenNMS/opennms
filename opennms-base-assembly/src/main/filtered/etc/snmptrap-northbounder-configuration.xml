@@ -63,21 +63,24 @@
          You can override the following fields:
 
          * port
-         * community
          * version
 
-         The version field can be one of the following:
+         The version field is mandatory and should have one of the following values:
 
          * v1
          * v2c
          * v3
          * v2-inform
          * v3-inform
+
+         The numeric representation of the selected version, and the version configured on snmp-config.xml for
+         the ip-address must match. Otherwise, an exception will be thrown.
     -->
 
 	<snmp-trap-sink>
 		<name>localTest1</name>
 		<ip-address>127.0.0.1</ip-address>
+		<version>v2c</version>
 		<mapping-group name="My Mappings">
 			<rule>foreignSource matches '^Server.*'</rule>
 			<mapping name="trap01">
