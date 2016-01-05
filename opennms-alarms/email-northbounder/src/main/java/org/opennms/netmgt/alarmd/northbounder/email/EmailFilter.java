@@ -35,7 +35,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.opennms.netmgt.alarmd.api.NorthboundAlarm;
-
+import org.opennms.netmgt.config.javamail.SendmailMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -67,6 +67,22 @@ public class EmailFilter {
     /** The filter rule. */
     @XmlElement(name="rule", required=true)
     private String m_rule;
+
+    /** The email message field: from. */
+    @XmlElement(name="from", required=false)
+    private String m_from;
+
+    /** The email message field: to. */
+    @XmlElement(name="to", required=false)
+    private String m_to;
+
+    /** The template for the email message field: subject. */
+    @XmlElement(name="subject", required=false)
+    private String m_subject;
+
+    /** The template for the email message field: body. */
+    @XmlElement(name="body", required=false)
+    private String m_body;
 
     /**
      * Instantiates a new Email filter.
@@ -114,6 +130,42 @@ public class EmailFilter {
     }
 
     /**
+     * Gets the email message field: from.
+     *
+     * @return the from field
+     */
+    public String getFrom() {
+        return m_from;
+    }
+
+    /**
+     * Gets the email message field: to.
+     *
+     * @return the to field
+     */
+    public String getTo() {
+        return m_to;
+    }
+
+    /**
+     * Gets the template of the email message field: subject.
+     *
+     * @return the subject field template
+     */
+    public String getSubject() {
+        return m_subject;
+    }
+
+    /**
+     * Gets the template of the email message field: body.
+     *
+     * @return the body field template
+     */
+    public String getBody() {
+        return m_body;
+    }
+
+    /**
      * Sets the enabled flag.
      *
      * @param enabled the new enabled
@@ -141,6 +193,42 @@ public class EmailFilter {
     }
 
     /**
+     * Sets the from.
+     *
+     * @param from the new from
+     */
+    public void setFrom(String from) {
+        this.m_from = from;
+    }
+
+    /**
+     * Sets the to.
+     *
+     * @param to the new to
+     */
+    public void setTo(String to) {
+        this.m_to = to;
+    }
+
+    /**
+     * Sets the subject.
+     *
+     * @param subject the new subject
+     */
+    public void setSubject(String subject) {
+        this.m_subject = subject;
+    }
+
+    /**
+     * Sets the body.
+     *
+     * @param body the new body
+     */
+    public void setBody(String body) {
+        this.m_body = body;
+    }
+
+    /**
      * Checks if the alarm is accepted by the filter.
      * 
      * @param alarm the northbound alarm
@@ -161,5 +249,25 @@ public class EmailFilter {
         }
         LOG.debug("accepts: checking {} ? {}", getRule(), passed);
         return passed;
+    }
+
+    /**
+     * Updates the sendmail message object
+     *
+     * @param message the message object
+     */
+    public void update(SendmailMessage message) {
+        if (m_from != null) {
+            message.setFrom(m_from);
+        }
+        if (m_to != null) {
+            message.setTo(m_to);
+        }
+        if (m_subject != null) {
+            message.setSubject(m_subject);
+        }
+        if (m_body != null) {
+            message.setBody(m_body);
+        }
     }
 }

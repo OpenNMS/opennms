@@ -41,6 +41,7 @@ import org.opennms.netmgt.alarmd.api.NorthboundAlarm;
 import org.opennms.netmgt.alarmd.api.NorthbounderException;
 import org.opennms.netmgt.alarmd.api.support.AbstractNorthbounder;
 import org.opennms.netmgt.config.javamail.SendmailConfig;
+import org.opennms.netmgt.config.javamail.SendmailMessage;
 import org.opennms.netmgt.dao.api.JavaMailConfigurationDao;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -67,6 +68,12 @@ public class EmailNorthbounder extends AbstractNorthbounder implements Initializ
 
     /** The Sendmail Configuration. */
     private SendmailConfig m_sendmail;
+
+    /** The Email from field. */
+    private String m_emailFrom;
+
+    /** The Email to field. */
+    private String m_emailTo;
 
     /** The Email subject format. */
     private String m_emailSubjectFormat;
@@ -105,6 +112,8 @@ public class EmailNorthbounder extends AbstractNorthbounder implements Initializ
         if (m_sendmail != null && m_sendmail.getSendmailMessage() != null) {
             m_emailSubjectFormat = m_sendmail.getSendmailMessage().getSubject();
             m_emailBodyFormat = m_sendmail.getSendmailMessage().getBody();
+            m_emailFrom = m_sendmail.getSendmailMessage().getFrom();
+            m_emailTo = m_sendmail.getSendmailMessage().getTo();
         }
     }
 
@@ -113,7 +122,7 @@ public class EmailNorthbounder extends AbstractNorthbounder implements Initializ
      */
     @Override
     public void afterPropertiesSet() throws Exception {
-        if (m_destination == null || m_sendmail == null || m_emailSubjectFormat == null || m_emailBodyFormat == null) {
+        if (m_destination == null || m_sendmail == null) {
             LOG.info("Email Northbounder is currently disabled, rejecting alarm.");
             String msg = "Email forwarding configuration is not initialized.";
             IllegalStateException e = new IllegalStateException(msg);
@@ -180,15 +189,27 @@ public class EmailNorthbounder extends AbstractNorthbounder implements Initializ
      * @return the sendmail configuration
      */
     protected SendmailConfig getSendmailConfig(NorthboundAlarm alarm) {
-        LOG.debug("getSendmailConfig: from = {}", m_sendmail.getSendmailMessage().getFrom());
-        LOG.debug("getSendmailConfig: to = {}", m_sendmail.getSendmailMessage().getTo());
+        SendmailMessage message = new SendmailMessage();
+        message.setFrom(m_emailFrom);
+        message.setTo(m_emailTo);
+        message.setSubject(m_emailSubjectFormat);
+        message.setBody(m_emailBodyFormat);
+        for (EmailFilter filter : m_destination.getFilters()) {
+            if (filter.accepts(alarm)) {
+                filter.update(message);
+                continue;
+            }
+        }
+        LOG.debug("getSendmailConfig: from = {}", message.getFrom());
+        LOG.debug("getSendmailConfig: to = {}", message.getTo());
         Map<String, Object> mapping = createMapping(alarm);
-        final String subject = PropertiesUtils.substitute(m_emailSubjectFormat, mapping);
+        final String subject = PropertiesUtils.substitute(message.getSubject(), mapping);
         LOG.debug("getSendmailConfig: subject = {}", subject);
-        m_sendmail.getSendmailMessage().setSubject(subject);
-        final String body = PropertiesUtils.substitute(m_emailBodyFormat, mapping);
+        message.setSubject(subject);
+        final String body = PropertiesUtils.substitute(message.getBody(), mapping);
         LOG.debug("getSendmailConfig: body = {}", body);
-        m_sendmail.getSendmailMessage().setBody(body);
+        message.setBody(body);
+        m_sendmail.setSendmailMessage(message);
         return m_sendmail;
     }
 
