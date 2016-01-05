@@ -166,7 +166,6 @@ public class EmailNorthbounder extends AbstractNorthbounder implements Initializ
         for (NorthboundAlarm alarm : alarms) {
             try {
                 JavaSendMailer mailer = new JavaSendMailer(getSendmailConfig(alarm), false);
-                mailer.setDebug(true); // FIXME ?
                 mailer.send();
             } catch (JavaMailerException e) {
                 LOG.error("Can't send email for {}", alarm, e);
