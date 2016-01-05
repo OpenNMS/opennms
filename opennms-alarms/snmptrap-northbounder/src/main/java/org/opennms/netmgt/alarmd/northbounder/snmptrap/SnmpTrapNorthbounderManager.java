@@ -173,8 +173,5 @@ public class SnmpTrapNorthbounderManager implements InitializingBean, Northbound
     public void unregister(Registration reg) {
         // Invalidate the Northbounder implementation (to be sure it won't listen for more alarms).
         reg.unregister();
-
-        // Shutdown the SNMP sink target
-        reg.getProvider(Northbounder.class).stop();
     }
 }
