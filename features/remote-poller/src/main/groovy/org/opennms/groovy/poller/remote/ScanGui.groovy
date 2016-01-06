@@ -35,6 +35,8 @@ import java.awt.event.ComponentEvent
 
 import javax.swing.JPanel
 
+import org.opennms.netmgt.poller.remote.PollerBackEnd;
+import org.opennms.netmgt.poller.remote.support.ScanReportPollerFrontEnd;
 
 class ScanGui extends AbstractGui {
     def m_metadataFields = ['Company Name', 'Shoe Size', 'Hat Size']
