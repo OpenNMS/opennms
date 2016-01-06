@@ -103,6 +103,14 @@ public class ScanReportPollerFrontEndIT implements InitializingBean {
         assertEquals(0, m_jdbcTemplate.queryForInt("select count(*) from monitoringsystemsproperties"));
         assertTrue("There were unexpected poll results", 0 == m_jdbcTemplate.queryForInt("select count(*) from location_specific_status_changes"));
 
+        m_frontEnd.initialize();
+
+        // Initialization shouldn't change anything since we're unregistered
+        assertFalse(m_frontEnd.isRegistered());
+        assertEquals(1, m_jdbcTemplate.queryForInt("select count(*) from monitoringsystems"));
+        assertEquals(0, m_jdbcTemplate.queryForInt("select count(*) from monitoringsystemsproperties"));
+        assertTrue("There were unexpected poll results", 0 == m_jdbcTemplate.queryForInt("select count(*) from location_specific_status_changes"));
+
         // Start up the remote poller
         m_frontEnd.register("RDU");
         assertTrue(m_frontEnd.isStarted());

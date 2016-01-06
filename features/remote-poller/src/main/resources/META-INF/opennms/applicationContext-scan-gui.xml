@@ -5,7 +5,6 @@
 	   "http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
 	   http://www.springframework.org/schema/lang http://www.springframework.org/schema/lang/spring-lang-4.0.xsd">
 
-      <!-- TODO: Change this to a bean that will start up ScanGui.groovy -->
       <bean id="pollerView" class="org.opennms.groovy.poller.remote.ScanGui">
         <lookup-method name="createPollerFrontEnd" bean="pollerFrontEnd"/> 
         <property name="pollerBackEnd" ref="pollerBackEnd" />
