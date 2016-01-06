@@ -109,6 +109,12 @@ public interface PollerFrontEnd {
     boolean isExitNecessary();
     
     /**
+     * Initialize the poller front end.  This will include reading the 
+     * configuration and then starting up the front end.
+     */
+    void initialize();
+    
+    /**
      * Stop polling.  This should be called before the system exits.
      */
     void stop();

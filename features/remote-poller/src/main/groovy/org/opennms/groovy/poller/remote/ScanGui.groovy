@@ -39,13 +39,27 @@ import javax.swing.JPanel
 class ScanGui extends AbstractGui {
     def m_metadataFields = ['Company Name', 'Shoe Size', 'Hat Size']
 
+    def m_backEnd;
+
     public ScanGui() {
         super()
+    }
+
+    public void setPollerBackEnd(PollerBackEnd pollerBackEnd) {
+        m_backEnd = pollerBackEnd;
     }
 
     @Override
     protected String getHeaderText() {
         return "Network Scanner"
+    }
+
+    /**
+     * This method is injected by Spring by using a <lookup-method>.
+     *
+     * @see applicationContext-scan-gui.xml
+     */
+    protected ScanReportPollerFrontEnd createPollerFrontEnd() {
     }
 
     @Override
