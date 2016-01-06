@@ -46,6 +46,7 @@ import java.util.Properties;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.poller.DistributionContext;
 import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.poller.remote.ConfigurationChangedListener;
@@ -73,6 +74,10 @@ import org.springframework.util.ObjectUtils;
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  */
 public class ScanReportPollerFrontEnd implements PollerFrontEnd, InitializingBean, DisposableBean {
+
+    public static enum ScanReportProperties {
+        percentageComplete
+    }
 
     private static final Logger LOG = LoggerFactory.getLogger(ScanReportPollerFrontEnd.class);
 
@@ -161,7 +166,7 @@ public class ScanReportPollerFrontEnd implements PollerFrontEnd, InitializingBea
     private PollerSettings m_pollerSettings;
 
     private PollService m_pollService;
-    
+
     private TimeAdjustment m_timeAdjustment;
 
     // listeners
@@ -197,8 +202,6 @@ public class ScanReportPollerFrontEnd implements PollerFrontEnd, InitializingBea
         assertNotNull(m_backEnd, "pollerBackEnd");
         assertNotNull(m_pollService, "pollService");
         assertNotNull(m_pollerSettings, "pollerSettings");
-
-        m_state.initialize();
     }
 
     /**
@@ -394,13 +397,18 @@ public class ScanReportPollerFrontEnd implements PollerFrontEnd, InitializingBea
      */
     private void performServiceScans() {
 
+        firePropertyChange(ScanReportProperties.percentageComplete.toString(), null, 0.0);
+
         ScanReport scanReport = new ScanReport();
 
         try {
             m_pollService.setServiceMonitorLocators(m_backEnd.getServiceMonitorLocators(DistributionContext.REMOTE_MONITOR));
             m_pollerConfiguration = retrieveLatestConfiguration();
 
-            for (final PolledService service : getPolledServices()) {
+            PolledService[] services = getPolledServices().toArray(new PolledService[0]);
+            for (int i = 0; i < services.length; i++) {
+                PolledService service = services[i];
+
                 // Initialize the monitor for the service
                 m_pollService.initialize(service);
 
@@ -421,10 +429,20 @@ public class ScanReportPollerFrontEnd implements PollerFrontEnd, InitializingBea
                     LOG.error("Unexpected exception occurred while polling service ID {}", service.getServiceId(), e);
                     setState(new FatalExceptionOccurred(e));
                 }
+
+                firePropertyChange(ScanReportProperties.percentageComplete.toString(), null, ((double)i / (double)services.length));
             }
         } catch (final Throwable e) {
             LOG.error("Error while performing scan", e);
         }
+
+        // Set the percentage complete to 100%
+        firePropertyChange(ScanReportProperties.percentageComplete.toString(), null, 1.0);
+
+        LOG.debug("Returning scan report: " + JaxbUtils.marshal(scanReport));
+
+        // Fire an exitNecessary event with the scanReport as the parameter
+        firePropertyChange(PollerFrontEndStates.exitNecessary.toString(), null, scanReport);
     }
 
     private PollerConfiguration retrieveLatestConfiguration() {
@@ -461,6 +479,11 @@ public class ScanReportPollerFrontEnd implements PollerFrontEnd, InitializingBea
         firePropertyChange(PollerFrontEndStates.started.toString(), started, isStarted());
         firePropertyChange(PollerFrontEndStates.registered.toString(), registered, isRegistered());
 
+    }
+
+    @Override
+    public void initialize() {
+        m_state.initialize();
     }
 
     @Override

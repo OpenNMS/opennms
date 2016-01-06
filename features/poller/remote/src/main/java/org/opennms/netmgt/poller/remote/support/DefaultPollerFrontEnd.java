@@ -381,8 +381,6 @@ public class DefaultPollerFrontEnd implements PollerFrontEnd, InitializingBean, 
         assertNotNull(m_backEnd, "pollerBackEnd");
         assertNotNull(m_pollService, "pollService");
         assertNotNull(m_pollerSettings, "pollerSettings");
-
-        m_state.initialize();
     }
 
     /**
@@ -657,6 +655,11 @@ public class DefaultPollerFrontEnd implements PollerFrontEnd, InitializingBean, 
      */
     public void setPollService(final PollService pollService) {
         m_pollService = pollService;
+    }
+
+    @Override
+    public void initialize() {
+        m_state.initialize();
     }
 
     /**
