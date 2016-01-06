@@ -62,7 +62,11 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.context.SecurityContextHolder;
 
 /**
- * <p>Main class.</p>
+ * This class launches the Remote Poller by reading command-line arguments,
+ * collecting authentication information so that the system can connect to the
+ * OpenNMS system, and instantiating a Spring context containing beans for the 
+ * {@link PollerFrontEnd} and (optionally) the UI. The context initialization will
+ * launch the Remote Poller process.
  *
  * @author <a href="mailto:ranger@opennms.org">Benjamin Reed</a>
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
@@ -78,11 +82,57 @@ public class Main implements Runnable {
     protected String m_password = null;
     protected boolean m_gui = false;
     protected boolean m_disableIcmp = false;
+    protected boolean m_singleScan = false;
 
     private static enum SpringExportSchemes {
         rmi,
         http,
         https
+    }
+
+    /**
+     * This {@link PropertyChangeListener} listens for {@link PollerFrontEnd}
+     * events and if the {@link PollerFrontEnd} is ready to exit, it shuts the
+     * Spring context down.
+     */
+    private static class ShouldExitPropertyChangeListener implements PropertyChangeListener {
+
+        private final AbstractApplicationContext m_context;
+
+        public ShouldExitPropertyChangeListener(AbstractApplicationContext context) {
+            m_context = context;
+        }
+
+        /**
+         * Examine the event to see if it should trigger a shutdown.
+         */
+        private static boolean shouldExit(PropertyChangeEvent e) {
+            LOG.info("shouldExit: received property change event for property: {}; oldvalue: {}; newvalue: {}", e.getPropertyName(), e.getOldValue(), e.getNewValue());
+            String propName = e.getPropertyName();
+            Object newValue = e.getNewValue();
+
+            // if exitNecessary becomes true.. then return true
+            if (PollerFrontEndStates.exitNecessary.toString().equals(propName) && Boolean.TRUE.equals(newValue)) {
+                LOG.info("shouldExit: Exiting because exitNecessary is TRUE");
+                return true;
+            }
+
+            // if started becomes false the we should exit
+            if (PollerFrontEndStates.started.toString().equals(propName) && Boolean.FALSE.equals(newValue)) {
+                LOG.info("shouldExit: Exiting because started is now false");
+                return true;
+            }
+
+            LOG.info("shouldExit: not exiting");
+            return false;
+        }
+
+        @Override
+        public void propertyChange(PropertyChangeEvent e) {
+            if (shouldExit(e)) {
+                shutdownContextAndExit(m_context);
+            }
+        }
     }
 
     private Main(String[] args) {
@@ -196,7 +246,7 @@ public class Main implements Runnable {
             if (!m_gui) {
                 if (!frontEnd.isRegistered()) {
                     if (m_locationName == null) {
-                        LOG.error("No location name provided.  You must pass a location name the first time you start the remote poller!");
+                        LOG.error("No location name provided.  You must pass a location name the first time you start the Remote Poller!");
                         System.exit(27);
                     } else {
                         frontEnd.register(m_locationName);
@@ -223,6 +273,7 @@ public class Main implements Runnable {
         options.addOption("u", "url", true, "the URL for OpenNMS (example: https://server-name/opennms-remoting)");
         options.addOption("n", "name", true, "the name of the user to connect as");
         options.addOption("p", "password", true, "the password to use when connecting");
+        options.addOption("s", "single-scan", true, "perform a single scan instead of running the polling engine");
 
         CommandLineParser parser = new PosixParser();
         CommandLine cl = parser.parse(options, args);
@@ -258,6 +309,10 @@ public class Main implements Runnable {
 
         if (cl.hasOption("g")) {
             m_gui = true;
+        }
+
+        if (cl.hasOption("s")) {
+            m_singleScan = true;
         }
 
         if (cl.hasOption("n")) {
@@ -313,7 +368,17 @@ public class Main implements Runnable {
         configs.add("classpath:/META-INF/opennms/applicationContext-remotePollerBackEnd-" + m_uri.getScheme() + ".xml");
         configs.add("classpath:/META-INF/opennms/applicationContext-pollerFrontEnd.xml");
 
-        if (m_gui) {
+        // Choose a PollerFrontEnd implementation
+        if (m_singleScan) {
+            configs.add("classpath:/META-INF/opennms/applicationContext-pollerFrontEnd-scanReport.xml");
+        } else {
+            configs.add("classpath:/META-INF/opennms/applicationContext-pollerFrontEnd.xml");
+        }
+
+        // Choose a GUI implementation (if in single-scan or gui mode)
+        if (m_singleScan) {
+            configs.add("classpath:/META-INF/opennms/applicationContext-scan-gui.xml");
+        } else if (m_gui) {
             configs.add("classpath:/META-INF/opennms/applicationContext-ws-gui.xml");
         }
 
@@ -334,36 +399,7 @@ public class Main implements Runnable {
     private PollerFrontEnd getPollerFrontEnd(final AbstractApplicationContext context) {
         PollerFrontEnd frontEnd = (PollerFrontEnd) context.getBean("pollerFrontEnd");
 
-        frontEnd.addPropertyChangeListener(new PropertyChangeListener() {
-
-            private boolean shouldExit(PropertyChangeEvent e) {
-                LOG.info("shouldExit: received property change event for property: {}; oldvalue: {}; newvalue: {}", e.getPropertyName(), e.getOldValue(), e.getNewValue());
-                String propName = e.getPropertyName();
-                Object newValue = e.getNewValue();
-
-                // if exitNecessary becomes true.. then return true
-                if (PollerFrontEndStates.exitNecessary.toString().equals(propName) && Boolean.TRUE.equals(newValue)) {
-                    LOG.info("shouldExit: Exiting because exitNecessary is TRUE");
-                    return true;
-                }
-
-                // if started becomes false the we should exit
-                if (PollerFrontEndStates.started.toString().equals(propName) && Boolean.FALSE.equals(newValue)) {
-                    LOG.info("shouldExit: Exiting because started is now false");
-                    return true;
-                }
-
-                LOG.info("shouldExit: not exiting");
-                return false;
-            }
-
-            @Override
-            public void propertyChange(PropertyChangeEvent e) {
-                if (shouldExit(e)) {
-                    shutdownContextAndExit(context);
-                }
-            }
-        });
+        frontEnd.addPropertyChangeListener(new ShouldExitPropertyChangeListener(context));
 
         return frontEnd;
     }
@@ -374,14 +410,19 @@ public class Main implements Runnable {
         // MVR: gracefully shutdown scheduler, otherwise context.close() will raise
         // an exception. See #NMS-6966 for more details.
         if (context.isActive()) {
-            try {
-                LOG.info("Shutting down PollerFrontEnd scheduler");
-                ((Scheduler)context.getBean("scheduler")).shutdown();
-            } catch (SchedulerException ex) {
-                LOG.warn("Shutting down PollerFrontEnd scheduler failed", ex);
-                returnCode = 10;
+
+            // If there is a scheduler in the context, then shut it down
+            Scheduler scheduler = (Scheduler)context.getBean("scheduler");
+            if (scheduler != null) {
+                try {
+                    LOG.info("Shutting down PollerFrontEnd scheduler");
+                    scheduler.shutdown();
+                    LOG.info("PollerFrontEnd scheduler shutdown complete");
+                } catch (SchedulerException ex) {
+                    LOG.warn("Shutting down PollerFrontEnd scheduler failed", ex);
+                    returnCode = 10;
+                }
             }
-            LOG.info("PollerFrontEnd scheduler shutdown complete");
 
             // Now close the application context. This will invoke
             // {@link DefaultPollerFrontEnd#destroy()} which will mark the
@@ -396,6 +437,7 @@ public class Main implements Runnable {
                 // Sleep for a couple of seconds so that the other
                 // PropertyChangeListeners get a chance to fire
                 try { Thread.sleep(5000); } catch (InterruptedException e) {}
+                // Exit
                 System.exit(returnCodeValue);
             }
         }.start();
