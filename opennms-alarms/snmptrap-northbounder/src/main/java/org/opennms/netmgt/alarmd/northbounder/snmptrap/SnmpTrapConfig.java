@@ -287,10 +287,8 @@ public class SnmpTrapConfig {
         if (destinationPort > 0) {
             config.setPort(destinationPort);
         }
-        if (version.isV1() || version.isV2()) {
-            if (community != null) {
-                config.setReadCommunity(community);
-            }
+        if ((version.isV1() || version.isV2()) && community != null) {
+            config.setReadCommunity(community);
         }
         return config;
     }
