@@ -43,7 +43,7 @@ import org.opennms.netmgt.alarmd.api.NorthboundAlarm;
 /**
  * Configuration for the various Syslog hosts to receive alarms via Syslog.
  *
- * @author <a href="mailto:david@opennms.org>David Hustace</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
  */
 @XmlRootElement(name = "syslog-destination")
 @XmlAccessorType(XmlAccessType.FIELD)
