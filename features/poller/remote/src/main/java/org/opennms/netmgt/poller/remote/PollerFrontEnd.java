@@ -49,6 +49,8 @@ public interface PollerFrontEnd {
         disconnected
     }
 
+    public void checkConfig();
+
     /**
      * <p>getPolledServices</p>
      *

@@ -175,6 +175,8 @@ public class ScanReportPollerFrontEnd implements PollerFrontEnd, InitializingBea
     // current configuration
     private PollerConfiguration m_pollerConfiguration;
 
+    private Map<String, String> m_metadata = Collections.emptyMap();
+
     /** {@inheritDoc} */
     @Override
     public void addConfigurationChangedListener(ConfigurationChangedListener l) {
@@ -400,6 +402,10 @@ public class ScanReportPollerFrontEnd implements PollerFrontEnd, InitializingBea
         firePropertyChange(ScanReportProperties.percentageComplete.toString(), null, 0.0);
 
         ScanReport scanReport = new ScanReport();
+        System.err.println("metadata: " + m_metadata);
+        scanReport.setCustomerAccountNumber(m_metadata.get("customer-account-number"));
+        scanReport.setCustomerName(m_metadata.get("customer-name"));
+        scanReport.setReferenceId(m_metadata.get("reference-id"));
 
         try {
             m_pollService.setServiceMonitorLocators(m_backEnd.getServiceMonitorLocators(DistributionContext.REMOTE_MONITOR));
@@ -418,11 +424,11 @@ public class ScanReportPollerFrontEnd implements PollerFrontEnd, InitializingBea
                         LOG.warn("Null poll result for service {}", service.getServiceId());
                     } else {
                         LOG.info(
-                            new ToStringBuilder(this)
-                            .append("statusName", result.getStatusName())
-                            .append("reason", result.getReason())
-                            .toString()
-                        );
+                                 new ToStringBuilder(this)
+                                 .append("statusName", result.getStatusName())
+                                 .append("reason", result.getReason())
+                                 .toString()
+                                );
                         scanReport.addPollStatus(result);
                     }
                 } catch (Throwable e) {
@@ -481,6 +487,14 @@ public class ScanReportPollerFrontEnd implements PollerFrontEnd, InitializingBea
 
     }
 
+    public void setMetadata(final Map<String,String> metadata) {
+        m_metadata = metadata;
+    }
+
+    @Override
+    public void checkConfig() {
+    }
+
     @Override
     public void initialize() {
         m_state.initialize();
@@ -495,5 +509,4 @@ public class ScanReportPollerFrontEnd implements PollerFrontEnd, InitializingBea
     public void stop() {
         // Do nothing
     }
-
 }

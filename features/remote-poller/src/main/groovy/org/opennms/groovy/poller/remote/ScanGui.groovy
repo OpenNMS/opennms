@@ -28,27 +28,43 @@
 
 package org.opennms.groovy.poller.remote
 
-import java.awt.Color as C
+import java.awt.Color
 import java.awt.Dimension
 import java.awt.event.ComponentAdapter
 import java.awt.event.ComponentEvent
+import java.beans.PropertyChangeEvent
+import java.beans.PropertyChangeListener
 
 import javax.swing.JPanel
+import javax.swing.JTextField
+import javax.swing.SwingUtilities
 
-import org.opennms.netmgt.poller.remote.PollerBackEnd;
-import org.opennms.netmgt.poller.remote.support.ScanReportPollerFrontEnd;
+import org.opennms.netmgt.config.monitoringLocations.LocationDef
+import org.opennms.netmgt.poller.remote.PollerBackEnd
+import org.opennms.netmgt.poller.remote.PollerFrontEnd.PollerFrontEndStates
+import org.opennms.netmgt.poller.remote.support.ScanReportPollerFrontEnd
+import org.opennms.netmgt.poller.remote.support.ScanReportPollerFrontEnd.ScanReportProperties
+import org.springframework.beans.factory.InitializingBean
+import org.springframework.util.Assert
 
-class ScanGui extends AbstractGui {
-    def m_metadataFields = ['Company Name', 'Shoe Size', 'Hat Size']
+import com.jgoodies.validation.ValidationResultModel
+import com.jgoodies.validation.util.DefaultValidationResultModel
 
-    def m_backEnd;
+class ScanGui extends AbstractGui implements InitializingBean, PropertyChangeListener {
+    def m_metadataFieldNames = ['Customer Account Number', 'Reference ID', 'Customer Name']
+    def m_locations = new ArrayList<String>()
+
+    def m_backEnd
+
+    def m_metadataFields = new HashMap<String, JTextField>()
+    def m_progressBar
 
     public ScanGui() {
         super()
     }
 
-    public void setPollerBackEnd(PollerBackEnd pollerBackEnd) {
-        m_backEnd = pollerBackEnd;
+    public void setPollerBackEnd(final PollerBackEnd pollerBackEnd) {
+        m_backEnd = pollerBackEnd
     }
 
     @Override
@@ -64,8 +80,58 @@ class ScanGui extends AbstractGui {
     protected ScanReportPollerFrontEnd createPollerFrontEnd() {
     }
 
+    public void afterPropertiesSet() {
+        Assert.notNull(m_backEnd)
+        Collection<LocationDef> monitoringLocations = m_backEnd.getMonitoringLocations()
+        for (final LocationDef d : monitoringLocations) {
+            m_locations.add(d.getLocationName())
+        }
+        SwingUtilities.invokeLater( { createAndShowGui() } )
+    }
+
+    public String validateFields() {
+        for (final String key : m_metadataFieldNames) {
+            final String fieldKey = getFieldKey(key);
+            final JTextField field = m_metadataFields.get(fieldKey);
+            if (field != null) {
+                if (field.getText() == null || "".equals(field.getText())) {
+                    return key + " is required!"
+                }
+            }
+        }
+        return null
+    }
+
+    protected String getFieldKey(final String name) {
+        if (name == null) {
+            return null
+        }
+        return name.replace(" ", "-").toLowerCase()
+    }
+
     @Override
     public JPanel getMainPanel() {
+        def errorLabel
+
+        def updateValidation = {
+            def errorMessage = validateFields()
+            System.err.println("error message: " + errorMessage)
+            if (errorLabel != null) {
+                if (errorMessage == null) {
+                    errorLabel.setText("")
+                    errorLabel.setVisible(false)
+                    return false
+                } else {
+                    errorLabel.setText(errorMessage)
+                    errorLabel.setVisible(true)
+                    return true
+                }
+            } else {
+                return true
+            }
+        }
+
+
         return swing.panel(background:getBackgroundColor(), opaque:true, constraints:"grow") {
             migLayout(
                     layoutConstraints:"fill" + debugString,
@@ -81,8 +147,31 @@ class ScanGui extends AbstractGui {
                         )
 
                 label(text:"Location:", font:getLabelFont())
-                comboBox(items:["US", "Europe", "Other"], toolTipText:"Choose your location.", foreground:getForegroundColor(), background:getBackgroundColor(), renderer:getRenderer())
-                button(text:'Go', font:getLabelFont(), foreground:getBackgroundColor(), background:getDetailColor(), opaque:true, constraints:"wrap")
+                def locationCombo = comboBox(items:m_locations, toolTipText:"Choose your location.", foreground:getForegroundColor(), background:getBackgroundColor(), renderer:getRenderer())
+                button(text:'Go', font:getLabelFont(), foreground:getBackgroundColor(), background:getDetailColor(), opaque:true, constraints:"wrap", actionPerformed:{
+                    if (updateValidation()) {
+                        return
+                    }
+
+                    m_progressBar.setValue(0)
+                    m_progressBar.setStringPainted(true)
+                    m_progressBar.setString("0%")
+                    m_progressBar.setVisible(true)
+                    m_progressBar.updateUI()
+                    final ScanReportPollerFrontEnd fe = createPollerFrontEnd()
+
+                    final Map<String,String> metadata = new HashMap<>()
+                    for (final Map.Entry<String,JTextField> field : m_metadataFields) {
+                        metadata.put(field.getKey(), field.getValue().getText())
+                    }
+                    fe.setMetadata(metadata)
+
+                    fe.addPropertyChangeListener(this)
+                    fe.initialize()
+                    fe.register(locationCombo.getSelectedItem())
+                })
+
+                m_progressBar = progressBar(borderPainted:false, visible:false, value:0, constraints:"grow, spanx 3, wrap")
 
                 label(text:"Yes/No", font:getHeaderFont(), constraints:"center, spanx 3, spany 2, height 200!, wrap")
             }
@@ -93,10 +182,14 @@ class ScanGui extends AbstractGui {
                         rowConstraints:""
                         )
 
-                for (def field : m_metadataFields) {
+                for (def field : m_metadataFieldNames) {
+                    final String key = getFieldKey(field)
                     label(text:field, font:getLabelFont(), constraints:"")
-                    textField(toolTipText:"Enter your " + field.toLowerCase() + ".", columns:25, constraints:"wrap")
+                    def textField = textField(toolTipText:"Enter your " + field.toLowerCase() + ".", columns:25, constraints:"wrap", actionPerformed:updateValidation, focusGained:updateValidation, focusLost:updateValidation)
+                    m_metadataFields.put(key, textField)
                 }
+
+                errorLabel = label(text:"", visible:false, foreground:Color.RED, constraints:"grow, skip 1, wrap")
             }
 
             def detailsOpen = false
@@ -191,6 +284,21 @@ class ScanGui extends AbstractGui {
     public static void main(String[] args) {
         def g = new ScanGui()
         g.createAndShowGui()
+    }
+
+    @Override
+    public void propertyChange(final PropertyChangeEvent evt) {
+        if (evt.getPropertyName().equals(ScanReportProperties.percentageComplete.toString())) {
+            final Double percentComplete = (Double)evt.getNewValue()
+            System.out.println("Percent complete: " + (percentComplete * 100));
+            def intPercent = new Double(percentComplete * 100).intValue()
+            m_progressBar.setValue(intPercent)
+            m_progressBar.setString(intPercent + "%")
+        } else if (evt.getPropertyName().equals(PollerFrontEndStates.exitNecessary.toString())) {
+            System.out.println("Finished scan: " + evt.getNewValue())
+        } else {
+            System.err.println("Unhandled property change event: " + evt.getPropertyName())
+        }
     }
 }
 
