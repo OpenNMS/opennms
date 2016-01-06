@@ -48,7 +48,7 @@ import org.opennms.netmgt.xml.event.Parm;
  * FIXME: Improve this alarm to support TIP and 3GPP collaboration.
  * FIXME: Most of these fields are not implemented waiting on above fix to be completed.
  * 
- * @author <a mailto:david@opennms.org>David Hustace</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
  */
 public class NorthboundAlarm implements Preservable {
 
