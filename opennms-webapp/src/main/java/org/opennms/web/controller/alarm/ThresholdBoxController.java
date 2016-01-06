@@ -69,15 +69,7 @@ public class ThresholdBoxController extends AbstractController implements Initia
     @Override
     protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
 
-        int rows = DEFAULT_ROWS;
-
-        if (System.getProperty(THRESHOLD_ALARM_COUNT_PROPERTY) != null) {
-            try {
-                rows = Integer.valueOf(System.getProperty(THRESHOLD_ALARM_COUNT_PROPERTY));
-            } catch (NumberFormatException e) {
-                // ignore, and let it fall back to the defaults
-            }
-        }
+        int rows = Integer.getInteger(THRESHOLD_ALARM_COUNT_PROPERTY, DEFAULT_ROWS);
 
         String ueiFilter = System.getProperty(UEI_FILTER_PROPERTY, UEI_DEFAULT_FILTER);
 
