@@ -85,7 +85,7 @@ public class EmailNorthbounder extends AbstractNorthbounder implements Initializ
      * Instantiates a new SNMP Trap northbounder.
      *
      * @param configDao the SNMP Trap configuration DAO
-     * @param javaMailDao the java mail DAO
+     * @param javaMailDao the JavaMail configuration DAO
      * @param destinationName the destination name
      */
     public EmailNorthbounder(EmailNorthbounderConfigDao configDao, JavaMailConfigurationDao javaMailDao, String destinationName) {

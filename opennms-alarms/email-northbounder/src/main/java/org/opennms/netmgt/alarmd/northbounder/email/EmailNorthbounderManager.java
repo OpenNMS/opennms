@@ -62,7 +62,7 @@ public class EmailNorthbounderManager implements InitializingBean, Northbounder,
     @Autowired
     private EmailNorthbounderConfigDao m_configDao;
 
-    /** The m_java mail dao. */
+    /** The JavaMail configuration DAO. */
     @Autowired
     private JavaMailConfigurationDao m_javaMailDao;
 
@@ -107,7 +107,7 @@ public class EmailNorthbounderManager implements InitializingBean, Northbounder,
      */
     @Override
     public void destroy() throws Exception {
-        m_registrations.values().forEach(r -> unregister(r));
+        m_registrations.values().forEach(r -> r.unregister());
     }
 
     /**
@@ -159,7 +159,7 @@ public class EmailNorthbounderManager implements InitializingBean, Northbounder,
         m_configDao.reload();
         m_javaMailDao.reloadConfiguration();
         LOG.info("Reloading SNMP trap northbound configuration.");
-        m_registrations.forEach((k,v) -> { if (k != getName()) unregister(v);});
+        m_registrations.forEach((k,v) -> { if (k != getName()) v.unregister();});
         try {
             registerNorthnounders();
         } catch (Exception e) {
@@ -167,13 +167,4 @@ public class EmailNorthbounderManager implements InitializingBean, Northbounder,
         }
     }
 
-    /**
-     * Unregister.
-     *
-     * @param reg the registration object
-     */
-    public void unregister(Registration reg) {
-        // Invalidate the Northbounder implementation (to be sure it won't listen for more alarms).
-        reg.unregister();
-    }
 }
