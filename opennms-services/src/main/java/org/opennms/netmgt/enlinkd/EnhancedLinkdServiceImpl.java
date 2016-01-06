@@ -71,8 +71,6 @@ import org.opennms.netmgt.model.OspfLink;
 import org.opennms.netmgt.model.PrimaryType;
 import org.opennms.netmgt.model.topology.BroadcastDomain;
 import org.opennms.netmgt.model.topology.SharedSegment;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.Transactional;
@@ -110,8 +108,6 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
 	private BridgeStpLinkDao m_bridgeStpLinkDao; 
 	
 	private BridgeTopologyDao m_bridgeTopologyDao;
-
-	private static final Logger LOG = LoggerFactory.getLogger(EnhancedLinkdServiceImpl.class);
 
     @Override
 	public List<Node> getSnmpNodeList() {
@@ -589,8 +585,7 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
 	}
 
 	@Override
-	public synchronized void reconcileBridge(int nodeId, Date now) {
-            LOG.info("reconcileBridge: deleting bridge element and stplink entries older then {} for node {}", now,nodeId);
+	public void reconcileBridge(int nodeId, Date now) {
 		m_bridgeElementDao.deleteByNodeIdOlderThen(nodeId, now);
 		m_bridgeElementDao.flush();
 
@@ -611,26 +606,19 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
         @Override
         public void  store(BroadcastDomain domain) {
             for (SharedSegment segment: domain.getTopology()) {
-                LOG.info("store: shared segment: designated root: {}, designated port: {}, macs size: {}, mac link size: {}, bridge link size: {}", 
-                          segment.getDesignatedBridge(),segment.getDesignatedPort(), segment.getMacsOnSegment().size(),
-                          segment.getBridgeMacLinks().size(), segment.getBridgeBridgeLinks().size());
-                if (segment.noMacsOnSegment()) {
-                    for (BridgeBridgeLink link: segment.getBridgeBridgeLinks()) {
-                        link.setBridgeBridgeLinkLastPollTime(new Date());
-                        saveBridgeBridgeLink(link);
-                    }
-                } else {
-                    for (BridgeMacLink link: segment.getBridgeMacLinks()) {
-                        link.setBridgeMacLinkLastPollTime(new Date());
-                        saveBridgeMacLink(link);
-                    }
+                for (BridgeBridgeLink link: segment.getBridgeBridgeLinks()) {
+                    link.setBridgeBridgeLinkLastPollTime(new Date());
+                    saveBridgeBridgeLink(link);
+                }
+                for (BridgeMacLink link: segment.getBridgeMacLinks()) {
+                    link.setBridgeMacLinkLastPollTime(new Date());
+                    saveBridgeMacLink(link);
                 }
             }
         }
             
         @Override 
         public void reconcileBridgeTopology(int nodeid, Date now) {
-            LOG.info("store: deleting shared segment entries older then {} for node {}", now,nodeid);
             m_bridgeMacLinkDao.deleteByNodeIdOlderThen(nodeid, now);
             m_bridgeMacLinkDao.flush();
             m_bridgeBridgeLinkDao.deleteByNodeIdOlderThen(nodeid, now);
