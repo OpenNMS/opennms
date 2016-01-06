@@ -26,10 +26,11 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.dao.castor;
+package org.opennms.netmgt.dao.jaxb;
 
 import java.util.List;
 
+import org.opennms.core.xml.AbstractJaxbConfigDao;
 import org.opennms.netmgt.config.javamail.End2endMailConfig;
 import org.opennms.netmgt.config.javamail.JavamailConfiguration;
 import org.opennms.netmgt.config.javamail.ReadmailConfig;
@@ -43,7 +44,7 @@ import org.springframework.dao.DataAccessResourceFailureException;
  * @author ranger
  * @version $Id: $
  */
-public class DefaultJavamailConfigurationDao extends AbstractCastorConfigDao<JavamailConfiguration, JavamailConfiguration> implements JavaMailConfigurationDao {
+public class DefaultJavamailConfigurationDao extends AbstractJaxbConfigDao<JavamailConfiguration, JavamailConfiguration> implements JavaMailConfigurationDao {
 
     /**
      * <p>Constructor for DefaultJavamailConfigurationDao.</p>
