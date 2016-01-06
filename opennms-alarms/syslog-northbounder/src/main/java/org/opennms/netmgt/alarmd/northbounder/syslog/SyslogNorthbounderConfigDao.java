@@ -33,7 +33,7 @@ import org.opennms.core.xml.AbstractJaxbConfigDao;
 /**
  * The Class SyslogNorthbounderConfigDao.
  * 
- * @author <a href="mailto:david@opennms.org>David Hustace</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
  */
 public class SyslogNorthbounderConfigDao extends AbstractJaxbConfigDao<SyslogNorthbounderConfig, SyslogNorthbounderConfig> {
 
