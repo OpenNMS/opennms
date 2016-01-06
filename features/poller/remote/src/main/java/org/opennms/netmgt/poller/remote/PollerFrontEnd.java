@@ -33,8 +33,6 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
-import org.opennms.netmgt.config.monitoringLocations.LocationDef;
-
 /**
  * <p>PollerFrontEnd interface.</p>
  *

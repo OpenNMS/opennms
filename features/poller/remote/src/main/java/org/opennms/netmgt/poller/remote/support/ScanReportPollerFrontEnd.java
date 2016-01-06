@@ -39,12 +39,12 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import org.apache.commons.lang.builder.ToStringBuilder;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.poller.DistributionContext;
 import org.opennms.netmgt.poller.PollStatus;
@@ -57,7 +57,6 @@ import org.opennms.netmgt.poller.remote.PollerConfiguration;
 import org.opennms.netmgt.poller.remote.PollerFrontEnd;
 import org.opennms.netmgt.poller.remote.PollerSettings;
 import org.opennms.netmgt.poller.remote.ServicePollState;
-import org.opennms.netmgt.poller.remote.ServicePollStateChangedEvent;
 import org.opennms.netmgt.poller.remote.ServicePollStateChangedListener;
 import org.opennms.netmgt.poller.remote.TimeAdjustment;
 import org.slf4j.Logger;
@@ -98,7 +97,7 @@ public class ScanReportPollerFrontEnd implements PollerFrontEnd, InitializingBea
                     // Change the state to running so we're ready to execute polls
                     setState(new Running());
                     // TODO: Execute the scan
-                    doLoadConfig();
+                    performServiceScans();
                 }
             } catch (final Throwable e) {
                 setState(new FatalExceptionOccurred(e));
@@ -133,7 +132,7 @@ public class ScanReportPollerFrontEnd implements PollerFrontEnd, InitializingBea
                 // Change the state to running so we're ready to execute polls
                 setState(new Running());
                 // TODO: Execute the scan
-                doLoadConfig();
+                performServiceScans();
             } catch (final Throwable e) {
                 LOG.warn("Unable to register.", e);
                 setState(new FatalExceptionOccurred(e));
@@ -150,14 +149,8 @@ public class ScanReportPollerFrontEnd implements PollerFrontEnd, InitializingBea
 
         @Override
         public void pollService(final Integer polledServiceId) {
-            try {
-                doPollService(polledServiceId);
-            } catch (Throwable e) {
-                LOG.error("Unexpected exception occurred while polling service ID {}.", polledServiceId, e);
-                setState(new FatalExceptionOccurred(e));
-            }
+            // Don't do scheduled polls
         }
-
     }
 
     private PollerFrontEndState m_state = new Initial();
@@ -174,22 +167,12 @@ public class ScanReportPollerFrontEnd implements PollerFrontEnd, InitializingBea
     // listeners
     private List<PropertyChangeListener> m_propertyChangeListeners = new LinkedList<PropertyChangeListener>();
 
-    private List<ServicePollStateChangedListener> m_servicePollStateChangedListeners = new LinkedList<ServicePollStateChangedListener>();
-
-    private List<ConfigurationChangedListener> m_configChangeListeners = new LinkedList<ConfigurationChangedListener>();
-
     // current configuration
     private PollerConfiguration m_pollerConfiguration;
-
-    /**
-     * Current state of polled services. The map key is the monitored service ID.
-     */
-    private Map<Integer, ServicePollState> m_pollState = new LinkedHashMap<Integer, ServicePollState>();
 
     /** {@inheritDoc} */
     @Override
     public void addConfigurationChangedListener(ConfigurationChangedListener l) {
-        m_configChangeListeners.add(0, l);
     }
 
     /** {@inheritDoc} */
@@ -201,7 +184,6 @@ public class ScanReportPollerFrontEnd implements PollerFrontEnd, InitializingBea
     /** {@inheritDoc} */
     @Override
     public void addServicePollStateChangedListener(final ServicePollStateChangedListener listener) {
-        m_servicePollStateChangedListeners.add(0, listener);
     }
 
     /**
@@ -227,21 +209,6 @@ public class ScanReportPollerFrontEnd implements PollerFrontEnd, InitializingBea
     @Override
     public void destroy() {
         // Do nothing
-    }
-
-    /**
-     * <p>doPollService</p>
-     *
-     * @param polledServiceId a {@link java.lang.Integer} object.
-     */
-    private void doPollService(final Integer polledServiceId) {
-        final PollStatus result = doPoll(polledServiceId);
-        if (result == null)
-            return;
-
-        updateServicePollState(polledServiceId, result);
-
-        m_backEnd.reportResult(getMonitoringSystemId(), polledServiceId, result);
     }
 
     /**
@@ -321,17 +288,13 @@ public class ScanReportPollerFrontEnd implements PollerFrontEnd, InitializingBea
      */
     @Override
     public List<ServicePollState> getPollerPollState() {
-        synchronized (m_pollState) {
-            return new LinkedList<ServicePollState>(m_pollState.values());
-        }
+        return Collections.emptyList();
     }
 
     /** {@inheritDoc} */
     @Override
     public ServicePollState getServicePollState(int polledServiceId) {
-        synchronized (m_pollState) {
-            return m_pollState.get(polledServiceId);
-        }
+        return null;
     }
 
     /**
@@ -369,7 +332,6 @@ public class ScanReportPollerFrontEnd implements PollerFrontEnd, InitializingBea
     /** {@inheritDoc} */
     @Override
     public void removeConfigurationChangedListener(final ConfigurationChangedListener listener) {
-        m_configChangeListeners.remove(listener);
     }
 
     /** {@inheritDoc} */
@@ -381,13 +343,11 @@ public class ScanReportPollerFrontEnd implements PollerFrontEnd, InitializingBea
     /** {@inheritDoc} */
     @Override
     public void removeServicePollStateChangedListener(final ServicePollStateChangedListener listener) {
-        m_servicePollStateChangedListeners.remove(listener);
     }
 
     /** {@inheritDoc} */
     @Override
     public void setInitialPollTime(final Integer polledServiceId, final Date initialPollTime) {
-        // Do nothing
     }
 
     /**
@@ -432,30 +392,38 @@ public class ScanReportPollerFrontEnd implements PollerFrontEnd, InitializingBea
      * TODO: Change this method so that instead of loading the config and firing configuration
      * changes to a {@link Poller}, we actually initiate the single scan.
      */
-    private void doLoadConfig() {
-        Date oldTime = getCurrentConfigTimestamp();
+    private void performServiceScans() {
+
+        ScanReport scanReport = new ScanReport();
 
         try {
             m_pollService.setServiceMonitorLocators(m_backEnd.getServiceMonitorLocators(DistributionContext.REMOTE_MONITOR));
             m_pollerConfiguration = retrieveLatestConfiguration();
 
-            synchronized (m_pollState) {
+            for (final PolledService service : getPolledServices()) {
+                // Initialize the monitor for the service
+                m_pollService.initialize(service);
 
-                int i = 0;
-                m_pollState.clear();
-                for (final PolledService service : getPolledServices()) {
-                    // Initialize the monitor for the service
-                    m_pollService.initialize(service);
-                    m_pollState.put(service.getServiceId(), new ServicePollState(service, i++));
+                try {
+                    final PollStatus result = doPoll(service);
+                    if (result == null) {
+                        LOG.warn("Null poll result for service {}", service.getServiceId());
+                    } else {
+                        LOG.info(
+                            new ToStringBuilder(this)
+                            .append("statusName", result.getStatusName())
+                            .append("reason", result.getReason())
+                            .toString()
+                        );
+                        scanReport.addPollStatus(result);
+                    }
+                } catch (Throwable e) {
+                    LOG.error("Unexpected exception occurred while polling service ID {}", service.getServiceId(), e);
+                    setState(new FatalExceptionOccurred(e));
                 }
             }
-
-            fireConfigurationChange(oldTime, getCurrentConfigTimestamp());
         } catch (final Throwable e) {
-            LOG.warn("Unable to get updated poller configuration.", e);
-            if (m_pollerConfiguration == null) {
-                m_pollerConfiguration = new EmptyPollerConfiguration();
-            }
+            LOG.error("Error while performing scan", e);
         }
     }
 
@@ -465,20 +433,8 @@ public class ScanReportPollerFrontEnd implements PollerFrontEnd, InitializingBea
         return config;
     }
 
-    private PollStatus doPoll(final Integer polledServiceId) {
-
-        final PolledService polledService = getPolledService(polledServiceId);
-        if (polledService == null) {
-            return null;
-        }
+    private PollStatus doPoll(final PolledService polledService) {
         return m_pollService.poll(polledService);
-    }
-
-    private void fireConfigurationChange(final Date oldTime, final Date newTime) {
-        final PropertyChangeEvent e = new PropertyChangeEvent(this, "configuration", oldTime, newTime);
-        for (final ConfigurationChangedListener listener : m_configChangeListeners) {
-            listener.configurationChanged(e);
-        }
     }
 
     private void firePropertyChange(final String propertyName, final Object oldValue, final Object newValue) {
@@ -498,23 +454,6 @@ public class ScanReportPollerFrontEnd implements PollerFrontEnd, InitializingBea
         return (oldValue == newValue ? true : ObjectUtils.nullSafeEquals(oldValue, newValue));
     }
 
-    private void fireServicePollStateChanged(final PolledService polledService, final int index) {
-        final ServicePollStateChangedEvent event = new ServicePollStateChangedEvent(polledService, index);
-
-        for (final ServicePollStateChangedListener listener : m_servicePollStateChangedListeners) {
-            listener.pollStateChange(event);
-        }
-    }
-
-    private Date getCurrentConfigTimestamp() {
-        return (m_pollerConfiguration == null ? null : m_pollerConfiguration.getConfigurationTimestamp());
-    }
-
-    private PolledService getPolledService(final Integer polledServiceId) {
-        final ServicePollState servicePollState = getServicePollState(polledServiceId);
-        return (servicePollState == null ? null : servicePollState.getPolledService());
-    }
-
     private void setState(final PollerFrontEndState newState) {
         final boolean started = isStarted();
         final boolean registered = isRegistered();
@@ -522,15 +461,6 @@ public class ScanReportPollerFrontEnd implements PollerFrontEnd, InitializingBea
         firePropertyChange(PollerFrontEndStates.started.toString(), started, isStarted());
         firePropertyChange(PollerFrontEndStates.registered.toString(), registered, isRegistered());
 
-    }
-
-    private void updateServicePollState(final Integer polledServiceId, final PollStatus result) {
-        final ServicePollState pollState = getServicePollState(polledServiceId);
-        if (pollState == null) {
-            return;
-        }
-        pollState.setLastPoll(result);
-        fireServicePollStateChanged(pollState.getPolledService(), pollState.getIndex());
     }
 
     @Override
