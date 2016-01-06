@@ -40,15 +40,24 @@ import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.alarmd.api.Destination;
 import org.opennms.netmgt.alarmd.api.NorthboundAlarm;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.expression.Expression;
+import org.springframework.expression.ExpressionParser;
+import org.springframework.expression.spel.standard.SpelExpressionParser;
+import org.springframework.expression.spel.support.StandardEvaluationContext;
+
 /**
  * Configuration for the various SNMP Trap hosts to receive alarms via Traps.
  *
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
-// TODO Extend org.opennms.netmgt.config.snmp.Configuration to get all the SNMP configuration variables for v3.
 @XmlRootElement(name = "snmp-trap-sink")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class SnmpTrapSink implements Destination {
+
+    /** The Constant LOG. */
+    private static final Logger LOG = LoggerFactory.getLogger(SnmpTrapSink.class);
 
     /** The Constant serialVersionUID. */
     private static final long serialVersionUID = 1L;
@@ -57,13 +66,17 @@ public class SnmpTrapSink implements Destination {
     @XmlElement(name = "name", required = true)
     private String m_name;
 
-    /** The port. */
+    /** The target IP address. */
     @XmlElement(name = "ip-address", required = true)
     private String m_ipAddress = "127.0.0.1";
 
-    /** The port. */
+    /** The target port. */
     @XmlElement(name = "port", required = false)
     private int m_port = 162;
+
+    /** The SPEL expression that returns a string, to obtain the IP address used for the V1 Agent Address field (defaults to the alarm's IP address). */
+    @XmlElement(name = "v1-agent-address", required = false)
+    private String m_v1AgentAddress = null;
 
     /** The SNMP version. */
     @XmlElement(name = "version", required = true)
@@ -113,6 +126,15 @@ public class SnmpTrapSink implements Destination {
      */
     public int getPort() {
         return m_port;
+    }
+
+    /**
+     * Gets the v1 agent IP address.
+     *
+     * @return the v1 agent IP address
+     */
+    public String getV1AgentIpAddress() {
+        return m_v1AgentAddress;
     }
 
     /**
@@ -176,6 +198,15 @@ public class SnmpTrapSink implements Destination {
      */
     public void setPort(int port) {
         this.m_port = port;
+    }
+
+    /**
+     * Sets the v1 agent IP address.
+     *
+     * @param v1AgentIpAddress the new v1 agent IP address
+     */
+    public void setV1AgentIpAddress(String v1AgentIpAddress) {
+        this.m_v1AgentAddress = v1AgentIpAddress;
     }
 
     /**
@@ -246,7 +277,20 @@ public class SnmpTrapSink implements Destination {
         config.setDestinationPort(m_port);
         config.setVersion(m_version);
         config.setCommunity(m_community);
-        config.setHostAddress(alarm.getIpAddr());
+        if (m_v1AgentAddress == null) {
+            config.setHostAddress(alarm.getIpAddr());
+        } else {
+            StandardEvaluationContext context = new StandardEvaluationContext(alarm);
+            ExpressionParser parser = new SpelExpressionParser();
+            Expression exp = parser.parseExpression(m_v1AgentAddress);
+            try {
+                String v1AgentAddress = (String) exp.getValue(context, String.class);
+                config.setHostAddress(InetAddressUtils.addr(v1AgentAddress));
+            } catch (Exception e) {
+                LOG.warn("Can't evaluate expression for v1-agent-address. Using the IP address present on the alarm object.");
+                config.setHostAddress(alarm.getIpAddr());
+            }
+        }
         config.setEnterpriseId(mapping.getEnterpriseOid());
         config.setGeneric(mapping.getGeneric());
         config.setSpecific(mapping.getSpecific());
