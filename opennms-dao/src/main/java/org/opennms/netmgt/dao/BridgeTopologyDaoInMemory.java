@@ -14,13 +14,9 @@ import org.opennms.netmgt.model.BridgeMacLink;
 import org.opennms.netmgt.model.BridgeStpLink;
 import org.opennms.netmgt.model.topology.BroadcastDomain;
 import org.opennms.netmgt.model.topology.SharedSegment;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class BridgeTopologyDaoInMemory implements BridgeTopologyDao {
     
-    private static final Logger LOG = LoggerFactory.getLogger(BridgeTopologyDaoInMemory.class);
-
     volatile List<BroadcastDomain> m_domains = new ArrayList<BroadcastDomain>();
     volatile Map<Integer, List<BridgeMacLink>> m_notYetParsedBFTMap = new HashMap<Integer, List<BridgeMacLink>>();
     volatile Map<Integer, List<BridgeStpLink>> m_notYetParsedSTPMap = new HashMap<Integer, List<BridgeStpLink>>();
@@ -106,7 +102,7 @@ public class BridgeTopologyDaoInMemory implements BridgeTopologyDao {
                 domain = new BroadcastDomain(); 
                 m_domains.add(domain);
             }
-            domain.addTopologyEntry(segment);
+            domain.loadTopologyEntry(segment);
         }
        
         for (BridgeElement element: bridgeelements) {
@@ -126,8 +122,6 @@ public class BridgeTopologyDaoInMemory implements BridgeTopologyDao {
                 }
             }
         }
-        for (BroadcastDomain domain: m_domains)
-            domain.calculate();
     }
 
     @Override
@@ -137,19 +131,15 @@ public class BridgeTopologyDaoInMemory implements BridgeTopologyDao {
         Set<String>incomingSet = new HashSet<String>();
         for (BridgeMacLink link: bft)
             incomingSet.add(link.getMacAddress());
-        LOG.debug("walked: parsing BFT with {} incoming macs", incomingSet.size());
         BroadcastDomain bftdomain = null;
         for (BroadcastDomain domain: m_domains) {
             Set<String>retainedSet = new HashSet<String>(domain.getMacsOnDomain());
-            LOG.debug("walked: checking against BroadcastDomain with macs size {}", retainedSet.size());
             retainedSet.retainAll(incomingSet);
-            LOG.debug("walked: BFT and BroadcastDomain cross macs size {}", retainedSet.size());
-            // should contain at list 50% of the all size
+            // should contain at list 10 or 10% of the all size
             if (retainedSet.size() < 10 && retainedSet.size() <= incomingSet.size()*0.1 ) {
                 domain.removeBridge(nodeid);
                 continue;          
             }
-            LOG.info("walked: BFT and BroadcastDomain matches, saving bft to domain");
             bftdomain = domain;
             break;
         }
@@ -171,9 +161,10 @@ public class BridgeTopologyDaoInMemory implements BridgeTopologyDao {
 
     @Override
     public synchronized void delete(int nodeid) {
-        BroadcastDomain domain = getBroadcastDomain(nodeid);
-        if (domain != null)
-            domain.removeBridge(nodeid);
+        for (BroadcastDomain domain: m_domains) {
+            if (domain.containBridgeId(nodeid))
+                domain.removeBridge(nodeid);
+        }
     }
     
     @Override

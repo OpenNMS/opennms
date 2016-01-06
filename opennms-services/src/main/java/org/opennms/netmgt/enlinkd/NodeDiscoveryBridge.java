@@ -82,6 +82,7 @@ public final class NodeDiscoveryBridge extends NodeDiscovery {
 	
 	protected void runCollection() {
 
+	        LOG.info("run: start: node discovery operations for bridge: '{}'",getNodeId());
 		final Date now = new Date();
 
 		LOG.debug("run: collecting: {}", getPeer());
@@ -102,8 +103,11 @@ public final class NodeDiscoveryBridge extends NodeDiscovery {
 		}
 		LOG.debug("run: found on node: '{}' bridge ifindex map {}",getNodeId(), bridgeifindex);
 		walkDot1qTpFdb(bridgeifindex);
+                LOG.debug("run: reconciling bridge: '{}' time {}",getNodeId(), now);
 		m_linkd.getQueryManager().reconcileBridge(getNodeId(), now);
+                LOG.debug("run: updating topology bridge: '{}'",getNodeId());
 		m_linkd.getQueryManager().updateBridgeTopology(getNodeId());
+                LOG.info("run: end: node discovery operations for bridge: '{}'",getNodeId());
 	}
 	
 	private Map<Integer,String> getVtpVlanMap() {
