@@ -49,7 +49,10 @@
 		<jsp:include page="/outage/servicesdown-box.htm" flush="false" />
         <% } %>
 		<!-- Threshold event box -->
-		<jsp:include page="/includes/threshold-alarms-box.jsp" flush="false" />
+		<% String showAlarmThresholds = System.getProperty("opennms.alarmThresholds.show", "false");
+			if (Boolean.parseBoolean(showAlarmThresholds)) { %>
+		<jsp:include page="/alarm/threshold-box.htm" flush="false" />
+		<% } %>
 	</div>
 
 	<!-- Middle Column -->
