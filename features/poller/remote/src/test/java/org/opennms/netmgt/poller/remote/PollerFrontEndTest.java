@@ -169,6 +169,7 @@ public class PollerFrontEndTest extends TestCase {
         m_mock.replayAll();
 
         m_frontEnd.afterPropertiesSet();
+        m_frontEnd.initialize();
 
         assertTrue(m_frontEnd.isRegistered());
 
@@ -186,6 +187,7 @@ public class PollerFrontEndTest extends TestCase {
         m_mock.replayAll();
 
         m_frontEnd.afterPropertiesSet();
+        m_frontEnd.initialize();
 
         m_frontEnd.checkConfig();
 
@@ -206,6 +208,7 @@ public class PollerFrontEndTest extends TestCase {
         m_mock.replayAll();
 
         m_frontEnd.afterPropertiesSet();
+        m_frontEnd.initialize();
 
         assertTrue(m_frontEnd.isRegistered());
 
@@ -220,6 +223,7 @@ public class PollerFrontEndTest extends TestCase {
         m_mock.replayAll();
 
         m_frontEnd.afterPropertiesSet();
+        m_frontEnd.initialize();
 
         assertFalse(m_frontEnd.isRegistered());
 
@@ -239,6 +243,7 @@ public class PollerFrontEndTest extends TestCase {
         m_mock.replayAll();
 
         m_frontEnd.afterPropertiesSet();
+        m_frontEnd.initialize();
 
         m_frontEnd.pollService(pollConfig().getFirstId());
 
@@ -261,6 +266,7 @@ public class PollerFrontEndTest extends TestCase {
         m_mock.replayAll();
 
         m_frontEnd.afterPropertiesSet();
+        m_frontEnd.initialize();
 
         assertFalse(m_frontEnd.isRegistered());
 
@@ -295,6 +301,7 @@ public class PollerFrontEndTest extends TestCase {
         m_mock.replayAll();
 
         m_frontEnd.afterPropertiesSet();
+        m_frontEnd.initialize();
 
 
         m_frontEnd.setInitialPollTime(polledServiceId, start);
@@ -316,6 +323,7 @@ public class PollerFrontEndTest extends TestCase {
         m_mock.replayAll();
 
         m_frontEnd.afterPropertiesSet();
+        m_frontEnd.initialize();
 
         assertTrue(m_frontEnd.isStarted());
 
@@ -342,6 +350,7 @@ public class PollerFrontEndTest extends TestCase {
         m_mock.replayAll();
         
         m_frontEnd.afterPropertiesSet();
+        m_frontEnd.initialize();
         
         m_frontEnd.checkConfig();
         
@@ -366,6 +375,7 @@ public class PollerFrontEndTest extends TestCase {
         m_mock.replayAll();
         
         m_frontEnd.afterPropertiesSet();
+        m_frontEnd.initialize();
         
         m_frontEnd.checkConfig();
         
@@ -674,6 +684,7 @@ public class PollerFrontEndTest extends TestCase {
         m_mock.replayAll();
 
         m_frontEnd.afterPropertiesSet();
+        m_frontEnd.initialize();
 
         m_mock.verifyAll();
     }
