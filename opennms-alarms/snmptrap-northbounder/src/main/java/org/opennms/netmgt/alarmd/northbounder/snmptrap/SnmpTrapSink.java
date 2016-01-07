@@ -40,13 +40,6 @@ import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.alarmd.api.Destination;
 import org.opennms.netmgt.alarmd.api.NorthboundAlarm;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.expression.Expression;
-import org.springframework.expression.ExpressionParser;
-import org.springframework.expression.spel.standard.SpelExpressionParser;
-import org.springframework.expression.spel.support.StandardEvaluationContext;
-
 /**
  * Configuration for the various SNMP Trap hosts to receive alarms via Traps.
  *
@@ -55,9 +48,6 @@ import org.springframework.expression.spel.support.StandardEvaluationContext;
 @XmlRootElement(name = "snmp-trap-sink")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class SnmpTrapSink implements Destination {
-
-    /** The Constant LOG. */
-    private static final Logger LOG = LoggerFactory.getLogger(SnmpTrapSink.class);
 
     /** The Constant serialVersionUID. */
     private static final long serialVersionUID = 1L;
@@ -277,20 +267,7 @@ public class SnmpTrapSink implements Destination {
         config.setDestinationPort(m_port);
         config.setVersion(m_version);
         config.setCommunity(m_community);
-        if (m_v1AgentAddress == null) {
-            config.setHostAddress(alarm.getIpAddr());
-        } else {
-            StandardEvaluationContext context = new StandardEvaluationContext(alarm);
-            ExpressionParser parser = new SpelExpressionParser();
-            Expression exp = parser.parseExpression(m_v1AgentAddress);
-            try {
-                String v1AgentAddress = (String) exp.getValue(context, String.class);
-                config.setHostAddress(InetAddressUtils.addr(v1AgentAddress));
-            } catch (Exception e) {
-                LOG.warn("Can't evaluate expression for v1-agent-address. Using the IP address present on the alarm object.");
-                config.setHostAddress(alarm.getIpAddr());
-            }
-        }
+        config.setHostAddress(m_v1AgentAddress == null ? alarm.getIpAddr() : InetAddressUtils.addr(m_v1AgentAddress));
         config.setEnterpriseId(mapping.getEnterpriseOid());
         config.setGeneric(mapping.getGeneric());
         config.setSpecific(mapping.getSpecific());
