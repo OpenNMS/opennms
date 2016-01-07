@@ -124,6 +124,12 @@
       <artifactId>opennms-alarm-northbounder-syslog</artifactId>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>org.opennms.features.ticketing</groupId>
+      <artifactId>org.opennms.features.ticketing.daemon</artifactId>
+      <version>${project.version}</version>
+      <scope>test</scope>
+    </dependency>
     <!--
     <dependency>
       <groupId>org.opennms.features</groupId>

@@ -41,54 +41,51 @@ import com.sun.jna.Native;
  * @author brozow
  */
 public class BSDV6NativeSocket extends NativeDatagramSocket {
-    
-    static {
-        Native.register((String)null);
-    }
 
-    private int m_sock;
-    
-    public BSDV6NativeSocket(int family, int type, int protocol) throws Exception {
-        m_sock = socket(family, type, protocol);
-    }
-    
-    public native int socket(int family, int type, int protocol) throws LastErrorException;
+	static {
+		Native.register((String)null);
+	}
 
-    public native int sendto(int socket, Buffer buffer, int buflen, int flags, bsd_sockaddr_in6 dest_addr, int dest_addr_len) throws LastErrorException;
-    
-    public native int recvfrom(int socket, Buffer buffer, int buflen, int flags, bsd_sockaddr_in6 in_addr, int[] in_addr_len) throws LastErrorException;
+	private int m_sock;
 
-    public native int close(int socket) throws LastErrorException;
+	public BSDV6NativeSocket(final int family, final int type, final int protocol) throws Exception {
+		m_sock = socket(family, type, protocol);
+	}
 
-    @Override
-    public int receive(NativeDatagramPacket p) {
-        bsd_sockaddr_in6 in_addr = new bsd_sockaddr_in6();
-        int[] szRef = new int[] { in_addr.size() };
-        
-        ByteBuffer buf = p.getContent();
-        
-        int n = recvfrom(getSock(), buf, buf.capacity(), 0, in_addr, szRef);
-        p.setLength(n);
-        p.setAddress(in_addr.getAddress());
-        p.setPort(in_addr.getPort());
-        
-        return n;
-    }
+	public native int socket(int family, int type, int protocol) throws LastErrorException;
+	public native int sendto(int socket, Buffer buffer, int buflen, int flags, bsd_sockaddr_in6 dest_addr, int dest_addr_len) throws LastErrorException;
+	public native int recvfrom(int socket, Buffer buffer, int buflen, int flags, bsd_sockaddr_in6 in_addr, int[] in_addr_len) throws LastErrorException;
+	public native int close(int socket) throws LastErrorException;
 
-    @Override
-    public int send(NativeDatagramPacket p) {
-        ByteBuffer buf = p.getContent();
-        bsd_sockaddr_in6 destAddr = new bsd_sockaddr_in6(p.getAddress(), p.getPort());
-        return sendto(getSock(), buf, buf.remaining(), 0, destAddr, destAddr.size());
-    }
+	@Override
+	public int receive(final NativeDatagramPacket p) {
+		final bsd_sockaddr_in6 in_addr = new bsd_sockaddr_in6();
+		final int[] szRef = new int[] { in_addr.size() };
 
-    @Override
-    public int close() {
-        return close(getSock());
-    }
+		final ByteBuffer buf = p.getContent();
 
-    private int getSock() {
-        return m_sock;
-    }
+		SocketUtils.assertSocketValid(m_sock);
+		final int n = recvfrom(m_sock, buf, buf.capacity(), 0, in_addr, szRef);
+		p.setLength(n);
+		p.setAddress(in_addr.getAddress());
+		p.setPort(in_addr.getPort());
+
+		return n;
+	}
+
+	@Override
+	public int send(final NativeDatagramPacket p) {
+		final ByteBuffer buf = p.getContent();
+		final bsd_sockaddr_in6 destAddr = new bsd_sockaddr_in6(p.getAddress(), p.getPort());
+		SocketUtils.assertSocketValid(m_sock);
+		return sendto(m_sock, buf, buf.remaining(), 0, destAddr, destAddr.size());
+	}
+
+	@Override
+	public int close() {
+		final int ret = close(m_sock);
+		m_sock = -1;
+		return ret;
+	}
 
 }

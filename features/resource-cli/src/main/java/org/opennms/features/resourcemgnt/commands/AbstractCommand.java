@@ -1,12 +1,14 @@
 package org.opennms.features.resourcemgnt.commands;
 
+import org.opennms.features.resourcemgnt.ResourceCli;
+
 import com.google.common.base.Strings;
 import com.google.common.net.UrlEscapers;
 import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.api.json.JSONConfiguration;
 import com.sun.jersey.client.apache.ApacheHttpClient;
+import com.sun.jersey.client.apache.config.ApacheHttpClientConfig;
 import com.sun.jersey.client.apache.config.DefaultApacheHttpClientConfig;
-import org.opennms.features.resourcemgnt.ResourceCli;
 
 public abstract class AbstractCommand implements Command {
 
@@ -14,7 +16,7 @@ public abstract class AbstractCommand implements Command {
         // Initialize the REST client
         final DefaultApacheHttpClientConfig defaultApacheHttpClientConfig = new DefaultApacheHttpClientConfig();
         defaultApacheHttpClientConfig.getFeatures().put(JSONConfiguration.FEATURE_POJO_MAPPING, Boolean.TRUE);
-        defaultApacheHttpClientConfig.getProperties().put(defaultApacheHttpClientConfig.PROPERTY_PREEMPTIVE_AUTHENTICATION, Boolean.TRUE);
+        defaultApacheHttpClientConfig.getProperties().put(ApacheHttpClientConfig.PROPERTY_PREEMPTIVE_AUTHENTICATION, Boolean.TRUE);
         defaultApacheHttpClientConfig.getState().setCredentials(null, null, -1, resourceCli.getUsername(), resourceCli.getPassword());
         final ApacheHttpClient apacheHttpClient = ApacheHttpClient.create(defaultApacheHttpClientConfig);
 

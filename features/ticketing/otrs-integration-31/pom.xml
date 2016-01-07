@@ -10,7 +10,7 @@
 	<name>OpenNMS OTRS 3.1 Integration</name>
 	<packaging>bundle</packaging>
 	<properties>
-		<cxfVersion>3.1.1</cxfVersion>
+		<cxfVersion>3.1.4</cxfVersion>
 	</properties>
 	<build>
 		<plugins>

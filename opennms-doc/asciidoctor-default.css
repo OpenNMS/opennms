@@ -328,6 +328,20 @@ select {
     width: 100%;
 }
 
+object, svg {
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.center {
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.spread {
+    width: 100%;
+}
+
 p.lead, .paragraph.lead > p, #preamble > .sectionbody > .paragraph:first-of-type p {
     font-size: 1.21875em;
     line-height: 1.6;
@@ -860,6 +874,11 @@ p a > code:hover {
     list-style-type: none;
 }
 
+#toc li {
+    line-height: 1.3334;
+    margin-top: 0.3334em;
+}
+
 #toc a {
     text-decoration: none;
 }
@@ -901,6 +920,7 @@ p a > code:hover {
 
     #toc.toc2 #toctitle {
         margin-top: 0;
+        margin-bottom: 0.8rem;
         font-size: 1.2em;
     }
 
@@ -1385,10 +1405,6 @@ table.tableblock td > .paragraph:last-child p > p:last-child, table.tableblock t
     margin-bottom: 0;
 }
 
-table.spread {
-    width: 100%;
-}
-
 table.tableblock, th.tableblock, td.tableblock {
     border: 0 solid #dedede;
 }
@@ -1586,13 +1602,14 @@ ol.lowergreek {
     background: none;
 }
 
-td.hdlist1 {
-    padding-right: .75em;
-    font-weight: bold;
-}
-
 td.hdlist1, td.hdlist2 {
     vertical-align: top;
+    padding: 0 0.625em;
+}
+
+td.hdlist1 {
+    font-weight: bold;
+    padding-bottom: 1.25em;
 }
 
 .literalblock + .colist, .listingblock + .colist {
@@ -1653,18 +1670,24 @@ td.hdlist1, td.hdlist2 {
 
 a.image {
     text-decoration: none;
+    display: inline-block;
 }
 
-span.footnote, span.footnoteref {
-    vertical-align: super;
+a.image object {
+    pointer-events: none;
+}
+
+sup.footnote, sup.footnoteref {
     font-size: 0.875em;
+    position: static;
+    vertical-align: super;
 }
 
-span.footnote a, span.footnoteref a {
+sup.footnote a, sup.footnoteref a {
     text-decoration: none;
 }
 
-span.footnote a:active, span.footnoteref a:active {
+sup.footnote a:active, sup.footnoteref a:active {
     text-decoration: underline;
 }
 
@@ -1677,17 +1700,17 @@ span.footnote a:active, span.footnoteref a:active {
 #footnotes hr {
     width: 20%;
     min-width: 6.25em;
-    margin: -.25em 0 .75em 0;
+    margin: -0.25em 0 0.75em 0;
     border-width: 1px 0 0 0;
 }
 
 #footnotes .footnote {
-    padding: 0 0.375em;
-    line-height: 1.3;
+    padding: 0 0.375em 0 0.225em;
+    line-height: 1.3334;
     font-size: 0.875em;
     margin-left: 1.2em;
-    text-indent: -1.2em;
-    margin-bottom: .2em;
+    text-indent: -1.05em;
+    margin-bottom: 0.2em;
 }
 
 #footnotes .footnote a:first-of-type {
@@ -1945,23 +1968,19 @@ b.conum * {
     display: none;
 }
 
-h1, h2 {
-    letter-spacing: -0.01em;
-}
-
-dt, th.tableblock, td.content {
+dt, th.tableblock, td.content, div.footnote {
     text-rendering: optimizeLegibility;
 }
 
-p, td.content {
+h1, h2, p, td.content, span.alt {
     letter-spacing: -0.01em;
 }
 
-p strong, td.content strong {
+p strong, td.content strong, div.footnote strong {
     letter-spacing: -0.005em;
 }
 
-p, blockquote, dt, td.content {
+p, blockquote, dt, td.content, span.alt {
     font-size: 1.0625rem;
 }
 
@@ -2015,7 +2034,7 @@ p {
         content: " (" attr(title) ")";
     }
 
-    pre, blockquote, tr, img {
+    pre, blockquote, tr, img, object, svg {
         page-break-inside: avoid;
     }
 
@@ -2023,8 +2042,8 @@ p {
         display: table-header-group;
     }
 
-    img {
-        max-width: 100% !important;
+    svg {
+        max-width: 100%;
     }
 
     p, blockquote, dt, td.content {
