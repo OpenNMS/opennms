@@ -47,9 +47,6 @@ import org.opennms.netmgt.poller.remote.support.ScanReportPollerFrontEnd.ScanRep
 import org.springframework.beans.factory.InitializingBean
 import org.springframework.util.Assert
 
-import com.jgoodies.validation.ValidationResultModel
-import com.jgoodies.validation.util.DefaultValidationResultModel
-
 class ScanGui extends AbstractGui implements InitializingBean, PropertyChangeListener {
     def m_metadataFieldNames = ['Customer Account Number', 'Reference ID', 'Customer Name']
     def m_locations = new ArrayList<String>()
