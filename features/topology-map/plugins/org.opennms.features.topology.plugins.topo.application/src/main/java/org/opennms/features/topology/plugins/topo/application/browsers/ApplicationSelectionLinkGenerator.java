@@ -43,13 +43,11 @@ public class ApplicationSelectionLinkGenerator implements Table.ColumnGenerator 
 
     public ApplicationSelectionLinkGenerator(String idPropertyName, GraphContainer graphContainer) {
 		this.idPropertyName = idPropertyName;
-		this.graphContainer = graphContainer;
 		this.columnGenerator = new ToStringColumnGenerator();
 	}
 
 	private final String idPropertyName;
 	private final Table.ColumnGenerator columnGenerator;
-	private final GraphContainer graphContainer;
 
 	@Override
 	public Object generateCell(final Table source, final Object itemId, Object columnId) {
@@ -64,6 +62,7 @@ public class ApplicationSelectionLinkGenerator implements Table.ColumnGenerator 
 				Button button = new Button(cellValue.toString());
 				button.setStyleName(BaseTheme.BUTTON_LINK);
 				button.setDescription(idProperty.getValue().toString());
+				/*
 				button.addClickListener(new Button.ClickListener() {
 					@Override
 					public void buttonClick(Button.ClickEvent event) {
@@ -79,6 +78,7 @@ public class ApplicationSelectionLinkGenerator implements Table.ColumnGenerator 
 							}
 					}
 				});
+				*/
 				return button;
 			}
 		}
