@@ -33,15 +33,17 @@ import java.util.Objects;
 import com.vaadin.data.Property;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Table;
+import com.vaadin.ui.UI;
 import com.vaadin.ui.themes.BaseTheme;
 
 import org.opennms.features.topology.api.GraphContainer;
+import org.opennms.features.topology.api.WidgetContext;
 import org.opennms.features.topology.plugins.browsers.ToStringColumnGenerator;
 import org.opennms.features.topology.plugins.topo.application.ApplicationCriteria;
 
 public class ApplicationSelectionLinkGenerator implements Table.ColumnGenerator {
 
-    public ApplicationSelectionLinkGenerator(String idPropertyName, GraphContainer graphContainer) {
+    public ApplicationSelectionLinkGenerator(String idPropertyName) {
 		this.idPropertyName = idPropertyName;
 		this.columnGenerator = new ToStringColumnGenerator();
 	}
@@ -62,23 +64,27 @@ public class ApplicationSelectionLinkGenerator implements Table.ColumnGenerator 
 				Button button = new Button(cellValue.toString());
 				button.setStyleName(BaseTheme.BUTTON_LINK);
 				button.setDescription(idProperty.getValue().toString());
-				/*
 				button.addClickListener(new Button.ClickListener() {
 					@Override
 					public void buttonClick(Button.ClickEvent event) {
-							ApplicationCriteria applicationCriteria = graphContainer.findSingleCriteria(ApplicationCriteria.class);
-							if (applicationCriteria == null) {
-								applicationCriteria = new ApplicationCriteria();
-								graphContainer.addCriteria(applicationCriteria);
-							}
-							if (!Objects.equals(applicationCriteria.getApplicationId(), String.valueOf(idProperty.getValue()))) {
-								applicationCriteria.setApplicationId(String.valueOf(idProperty.getValue()));
-								graphContainer.setDirty(true);
-								graphContainer.redoLayout();
-							}
+						// Retrieve the graph container associated with the current application context
+						UI ui = UI.getCurrent();
+						WidgetContext context = (WidgetContext)ui;
+						GraphContainer graphContainer = context.getGraphContainer();
+
+						ApplicationCriteria applicationCriteria = graphContainer.findSingleCriteria(ApplicationCriteria.class);
+						if (applicationCriteria == null) {
+							applicationCriteria = new ApplicationCriteria();
+						}
+
+						String applicationId = String.valueOf(idProperty.getValue());
+						if (!Objects.equals(applicationCriteria.getApplicationId(), applicationId)) {
+							applicationCriteria.setApplicationId(applicationId);
+							graphContainer.setDirty(true);
+							graphContainer.redoLayout();
+						}
 					}
 				});
-				*/
 				return button;
 			}
 		}
