@@ -243,7 +243,7 @@ public class Main implements Runnable {
             AbstractApplicationContext context = createAppContext();
             PollerFrontEnd frontEnd = getPollerFrontEnd(context);
 
-            if (!m_gui) {
+            if (!m_gui && !m_singleScan) {
                 if (!frontEnd.isRegistered()) {
                     if (m_locationName == null) {
                         LOG.error("No location name provided.  You must pass a location name the first time you start the Remote Poller!");
