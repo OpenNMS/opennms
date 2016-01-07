@@ -66,34 +66,29 @@ public class ApplicationTopologyProvider extends AbstractTopologyProvider implem
     
     private void load() {
         resetContainer();
-        List<OnmsApplication> applications = applicationDao.findAll();
-        if (!applications.isEmpty()) {
-            // TODO MVR consider all applications, not just the first one
-            OnmsApplication application = applications.get(0);
-//            for (OnmsApplication application : applications) {
-                ApplicationVertex applicationVertex = new ApplicationVertex(String.valueOf(application.getId()));
-                applicationVertex.setLabel(application.getName());
-                applicationVertex.setTooltipText(String.format("Application '%s'", application.getName()));
-                applicationVertex.setIconKey("application");
-                addVertices(applicationVertex);
+        for (OnmsApplication application : applicationDao.findAll()) {
+            ApplicationVertex applicationVertex = new ApplicationVertex(String.valueOf(application.getId()));
+            applicationVertex.setLabel(application.getName());
+            applicationVertex.setTooltipText(String.format("Application '%s'", application.getName()));
+            applicationVertex.setIconKey("application");
+            addVertices(applicationVertex);
 
-                for (OnmsMonitoredService eachMonitoredService : application.getMonitoredServices()) {
-                    final ApplicationVertex serviceVertex = new ApplicationVertex(String.valueOf(eachMonitoredService.getId()));
-                    serviceVertex.setIpAddress(eachMonitoredService.getIpAddress().toString());
-                    serviceVertex.setLabel(eachMonitoredService.getServiceName());
-                    serviceVertex.setTooltipText(String.format("Service '%s', IP: %s", eachMonitoredService.getServiceName(), eachMonitoredService.getIpAddress().toString()));
-                    serviceVertex.setNodeID(eachMonitoredService.getNodeId());
-                    serviceVertex.setServiceType(eachMonitoredService.getServiceType());
-                    applicationVertex.addChildren(serviceVertex);
-                    addVertices(serviceVertex);
+            for (OnmsMonitoredService eachMonitoredService : application.getMonitoredServices()) {
+                final ApplicationVertex serviceVertex = new ApplicationVertex(String.valueOf(eachMonitoredService.getId()));
+                serviceVertex.setIpAddress(eachMonitoredService.getIpAddress().toString());
+                serviceVertex.setLabel(eachMonitoredService.getServiceName());
+                serviceVertex.setTooltipText(String.format("Service '%s', IP: %s", eachMonitoredService.getServiceName(), eachMonitoredService.getIpAddress().toString()));
+                serviceVertex.setNodeID(eachMonitoredService.getNodeId());
+                serviceVertex.setServiceType(eachMonitoredService.getServiceType());
+                applicationVertex.addChildren(serviceVertex);
+                addVertices(serviceVertex);
 
-                    // connect with application
-                    String id = String.format("connection:%s:%s", applicationVertex.getId(), serviceVertex.getId());
-                    Edge edge = new AbstractEdge(getEdgeNamespace(), id, applicationVertex, serviceVertex);
-                    edge.setTooltipText("LINK");
-                    addEdges(edge);
-                }
-//            }
+                // connect with application
+                String id = String.format("connection:%s:%s", applicationVertex.getId(), serviceVertex.getId());
+                Edge edge = new AbstractEdge(getEdgeNamespace(), id, applicationVertex, serviceVertex);
+                edge.setTooltipText("LINK");
+                addEdges(edge);
+            }
         }
     }
 
@@ -104,6 +99,11 @@ public class ApplicationTopologyProvider extends AbstractTopologyProvider implem
 
     @Override
     public Criteria getDefaultCriteria() {
+        // Only show the first application by default
+        List<OnmsApplication> applications = applicationDao.findAll();
+        if (!applications.isEmpty()) {
+            return new ApplicationCriteria(String.valueOf(applications.get(0).getId()));
+        }
         return null;
     }
 
