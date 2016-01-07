@@ -4,7 +4,6 @@ xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0 http://www.osgi.o
 
 	<reference id="applicationDao"  interface="org.opennms.netmgt.dao.api.ApplicationDao" availability="mandatory" />
 	<reference id="sessionFactoryWrapper" interface="org.opennms.netmgt.dao.api.SessionFactoryWrapper" availability="mandatory"/>
-	<reference id="graphContainer" interface="org.opennms.features.topology.api.GraphContainer" availability="mandatory"/>
 
 	<!-- Topology Provider -->
 	<bean id="applicationTopologyProvider" scope="prototype" class="org.opennms.features.topology.plugins.topo.application.ApplicationTopologyProvider">
@@ -46,7 +45,6 @@ xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0 http://www.osgi.o
 	<!-- Application Table -->
 	<bean id="applicationTableSelectionLinkGenerator" class="org.opennms.features.topology.plugins.topo.application.browsers.ApplicationSelectionLinkGenerator">
 		<argument value="id" />
-		<argument ref="graphContainer"/>
 	</bean>
 	<bean id="applicationDaoContainer" class="org.opennms.features.topology.plugins.topo.application.browsers.ApplicationDaoContainer">
 		<argument ref="applicationDao"/>
