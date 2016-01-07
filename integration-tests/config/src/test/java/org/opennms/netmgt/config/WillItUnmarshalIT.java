@@ -51,8 +51,10 @@ import org.opennms.core.xml.JaxbUtils;
 import org.opennms.features.reporting.model.basicreport.LegacyLocalReportsDefinition;
 import org.opennms.features.reporting.model.jasperreport.LocalJasperReports;
 import org.opennms.features.reporting.model.remoterepository.RemoteRepositoryConfig;
+import org.opennms.netmgt.alarmd.northbounder.email.EmailNorthbounderConfig;
 import org.opennms.netmgt.alarmd.northbounder.jms.JmsNorthbounderConfig;
 import org.opennms.netmgt.alarmd.northbounder.syslog.SyslogNorthbounderConfig;
+import org.opennms.netmgt.alarmd.northbounder.snmptrap.SnmpTrapNorthbounderConfig;
 import org.opennms.netmgt.config.ackd.AckdConfiguration;
 import org.opennms.netmgt.config.actiond.ActiondConfiguration;
 import org.opennms.netmgt.config.ami.AmiConfig;
@@ -202,6 +204,7 @@ public class WillItUnmarshalIT {
         addFile(Source.EXAMPLE, "discovery-configuration.xml", DiscoveryConfiguration.class, Impl.CASTOR);
         addFile(Source.CONFIG, "eventconf.xml", Events.class, Impl.JAXB);
         addFile(Source.CONFIG, "eventconf.xml", Events.class, Impl.CASTOR);
+        addFile(Source.CONFIG, "email-northbounder-configuration.xml", EmailNorthbounderConfig.class, Impl.JAXB);
         addFile(Source.CONFIG, "groups.xml", Groupinfo.class, Impl.CASTOR);
         addFile(Source.EXAMPLE, "groups.xml", Groupinfo.class, Impl.CASTOR);
         addFile(Source.CONFIG, "http-datacollection-config.xml", HttpDatacollectionConfig.class, Impl.CASTOR);
@@ -230,6 +233,7 @@ public class WillItUnmarshalIT {
         addFile(Source.CONFIG, "rtc-configuration.xml", RTCConfiguration.class, Impl.CASTOR);
         addFile(Source.CONFIG, "scriptd-configuration.xml", ScriptdConfiguration.class, Impl.CASTOR);
         addFile(Source.CONFIG, "syslog-northbounder-configuration.xml", SyslogNorthbounderConfig.class, Impl.JAXB);
+        addFile(Source.CONFIG, "snmptrap-northbounder-configuration.xml", SnmpTrapNorthbounderConfig.class, Impl.JAXB);
         addFile(Source.EXAMPLE, "scriptd-configuration.xml", ScriptdConfiguration.class, Impl.CASTOR);
         addFile(Source.EXAMPLE, "event-proxy/Proxy.events.xml", Events.class, Impl.JAXB);
         addFile(Source.EXAMPLE, "event-proxy/scriptd-configuration.xml", ScriptdConfiguration.class, Impl.CASTOR);

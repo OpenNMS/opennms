@@ -1899,7 +1899,17 @@
       </dependency>
       <dependency>
         <groupId>org.opennms</groupId>
+        <artifactId>opennms-alarm-northbounder-email</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms</groupId>
         <artifactId>opennms-alarm-northbounder-syslog</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms</groupId>
+        <artifactId>opennms-alarm-northbounder-snmptrap</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
