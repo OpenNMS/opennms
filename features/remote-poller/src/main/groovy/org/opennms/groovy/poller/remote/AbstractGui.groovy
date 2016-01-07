@@ -91,6 +91,10 @@ public abstract class AbstractGui implements GroovyGui {
         UIManager.put("Label.foreground", foreground)
         //UIManager.put("textHighlight", detail)
         //UIManager.put("textHighlightText", background)
+        UIManager.put("ProgressBar.selectionBackground", Color.TRANSLUCENT)
+        UIManager.put("ProgressBar.selectionForeground", foreground)
+        //UIManager.put("ProgressBar.foreground", Color.TRANSLUCENT)
+        //UIManager.put("ProgressBar.background", foreground)
 
         swing.registerBeanFactory('migLayout', MigLayout.class)
 
@@ -222,6 +226,7 @@ public abstract class AbstractGui implements GroovyGui {
             rootPanel.rootPane.defaultButton = m_defaultButton
         }
         m_gui.setVisible(true)
+        m_gui.setResizable(false)
         //m_gui.show()
     }
 

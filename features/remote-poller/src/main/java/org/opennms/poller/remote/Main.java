@@ -273,7 +273,7 @@ public class Main implements Runnable {
         options.addOption("u", "url", true, "the URL for OpenNMS (example: https://server-name/opennms-remoting)");
         options.addOption("n", "name", true, "the name of the user to connect as");
         options.addOption("p", "password", true, "the password to use when connecting");
-        options.addOption("s", "single-scan", true, "perform a single scan instead of running the polling engine");
+        options.addOption("s", "single-scan", false, "perform a single scan instead of running the polling engine");
 
         CommandLineParser parser = new PosixParser();
         CommandLine cl = parser.parse(options, args);
