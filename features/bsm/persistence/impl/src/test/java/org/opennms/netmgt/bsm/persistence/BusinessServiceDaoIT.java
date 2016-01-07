@@ -29,8 +29,11 @@
 package org.opennms.netmgt.bsm.persistence;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 import java.util.HashSet;
+import java.util.Set;
 
 import com.google.common.collect.Sets;
 
@@ -41,9 +44,11 @@ import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.MockDatabase;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
-import org.opennms.netmgt.bsm.persistence.api.BusinessServiceDao;
 import org.opennms.netmgt.bsm.persistence.api.BusinessService;
+import org.opennms.netmgt.bsm.persistence.api.BusinessServiceDao;
 import org.opennms.netmgt.dao.DatabasePopulator;
+import org.opennms.netmgt.dao.api.MonitoredServiceDao;
+import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -71,6 +76,12 @@ public class BusinessServiceDaoIT {
     @Autowired
     private BusinessServiceDao m_businessServiceDao;
 
+    @Autowired
+    private NodeDao m_nodeDao;
+
+    @Autowired
+    private MonitoredServiceDao m_monitoredServiceDao;
+
     @Before
     public void setUp() {
         BeanUtils.assertAutowiring(this);
@@ -80,7 +91,7 @@ public class BusinessServiceDaoIT {
     @Test
     public void canCreateReadUpdateAndDeleteBusinessServices() {
         // Initially there should be no business services
-        assertEquals(0, m_businessServiceDao.countAll());
+        assertEquals("Check that there are no initial BusinessServices", 0, m_businessServiceDao.countAll());
 
         // Create a business service
         BusinessService bs = new BusinessService();
@@ -112,6 +123,23 @@ public class BusinessServiceDaoIT {
         m_businessServiceDao.flush();
 
         // Verify the update
+        assertEquals(bs, m_businessServiceDao.get(bs.getId()));
+        assertEquals(1, m_businessServiceDao.get(bs.getId()).getIpServices().size());
+
+        int nodeId1 = m_databasePopulator.getNode1().getId();
+        assertNotNull(m_nodeDao.get(nodeId1));
+        m_nodeDao.delete(nodeId1);
+        m_nodeDao.flush();
+        assertNull(m_nodeDao.get(nodeId1));
+
+        Set<OnmsMonitoredService> ipServices = m_businessServiceDao.get(bs.getId()).getIpServices();
+        for (OnmsMonitoredService monitoredService : ipServices) {
+            System.out.println("9247 " + monitoredService.toString());
+        }
+        assertEquals("Expect that there are no IpServices on the BusinessService.", 0, m_businessServiceDao.get(bs.getId()).getIpServices().size());
+
+        // has to fail
+        bs.removeIpService(ipService);
         assertEquals(bs, m_businessServiceDao.get(bs.getId()));
 
         // Delete
