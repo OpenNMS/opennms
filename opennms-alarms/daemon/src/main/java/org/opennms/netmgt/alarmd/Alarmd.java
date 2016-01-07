@@ -75,7 +75,8 @@ public class Alarmd implements SpringServiceDaemon, DisposableBean {
     public void onEvent(Event e) {
     	
     	if (e.getUei().equals("uei.opennms.org/internal/reloadDaemonConfig")) {
-    		return;
+           handleReloadEvent(e);
+           return;
     	}
     	
         OnmsAlarm alarm = m_persister.persist(e);
@@ -90,7 +91,6 @@ public class Alarmd implements SpringServiceDaemon, DisposableBean {
         
     }
 
-    @EventHandler(uei = "uei.opennms.org/internal/reloadDaemonConfig")
     private void handleReloadEvent(Event e) {
     	LOG.info("Received reload configuration event: {}", e);
 
@@ -112,6 +112,7 @@ public class Alarmd implements SpringServiceDaemon, DisposableBean {
     				if (parm.getValue().getContent().contains(nbi.getName())) {
     					LOG.debug("Handling reload event for NBI: {}", nbi.getName());
     					LOG.debug("Reloading NBI configuration for interface {} not yet implemented.", nbi.getName());
+    					nbi.reloadConfig();
     					return;
     				}
     			}

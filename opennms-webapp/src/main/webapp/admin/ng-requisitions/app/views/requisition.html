@@ -17,19 +17,19 @@
     <form class="form-inline pull-right" role="search">
       <div class="input-group">
         <span class="input-group-addon"><span class="glyphicon glyphicon-search"/></span>
-        <input class="form-control" type="text" placeholder="Search/Filter Nodes" ng-model="reqFilter"></input>
+        <input class="form-control" id="search-nodes" type="text" placeholder="Search/Filter Nodes" ng-model="reqFilter"></input>
       </div>
       <div class="input-group">
-        <button class="btn btn-default" ng-click="editForeignSource()">
+        <button class="btn btn-default" id="edit-foreign-source" ng-click="editForeignSource()">
           <span class="glyphicon glyphicon-edit"/> Edit Definition
         </button>
-        <button class="btn btn-default" ng-disabled="timingStatus.isRunning" ng-click="synchronize()">
+        <button class="btn btn-default" id="synchronize" ng-disabled="timingStatus.isRunning" ng-click="synchronize()">
           <span class="glyphicon glyphicon-refresh"/> Synchronize
         </button>
-        <button class="btn btn-default" ng-click="addNode()">
+        <button class="btn btn-default" id="add-node" ng-click="addNode()">
           <span class="glyphicon glyphicon-plus"/> Add Node
         </button>
-        <button class="btn btn-default" ng-click="goBack()">
+        <button class="btn btn-default" id="go-back" ng-click="goBack()">
           <span class="glyphicon glyphicon-remove"/> Return
         </button>
       </div>
