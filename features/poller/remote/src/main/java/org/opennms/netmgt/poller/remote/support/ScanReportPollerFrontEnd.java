@@ -43,6 +43,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.opennms.core.utils.InetAddressUtils;
@@ -176,6 +177,8 @@ public class ScanReportPollerFrontEnd implements PollerFrontEnd, InitializingBea
     private PollerConfiguration m_pollerConfiguration;
 
     private Map<String, String> m_metadata = Collections.emptyMap();
+
+    private Set<String> m_selectedApplications = null;
 
     /** {@inheritDoc} */
     @Override
@@ -415,6 +418,23 @@ public class ScanReportPollerFrontEnd implements PollerFrontEnd, InitializingBea
             for (int i = 0; i < services.length; i++) {
                 PolledService service = services[i];
 
+                // Check to see if we should filter by selected applications
+                if (m_selectedApplications != null) {
+                    boolean foundApplication = false;
+                    for (String application : service.getApplications()) {
+                       if (m_selectedApplications.contains(application)) {
+                           foundApplication = true;
+                           break;
+                       }
+                    }
+
+                    // If we didn't find the applicaton in the list...
+                    if (!foundApplication) {
+                        // Skip this service
+                        continue;
+                    }
+                }
+
                 // Initialize the monitor for the service
                 m_pollService.initialize(service);
 
@@ -489,6 +509,10 @@ public class ScanReportPollerFrontEnd implements PollerFrontEnd, InitializingBea
 
     public void setMetadata(final Map<String,String> metadata) {
         m_metadata = metadata;
+    }
+
+    public void setSelectedApplications(final Set<String> applications) {
+        m_selectedApplications = applications;
     }
 
     @Override
