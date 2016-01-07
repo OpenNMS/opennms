@@ -28,64 +28,70 @@
 
 package org.opennms.netmgt.dao.jaxb;
 
+import java.io.FileWriter;
 import java.util.List;
 
 import org.opennms.core.xml.AbstractJaxbConfigDao;
+import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.config.javamail.End2endMailConfig;
 import org.opennms.netmgt.config.javamail.JavamailConfiguration;
 import org.opennms.netmgt.config.javamail.ReadmailConfig;
 import org.opennms.netmgt.config.javamail.SendmailConfig;
 import org.opennms.netmgt.dao.api.JavaMailConfigurationDao;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataAccessResourceFailureException;
 
 /**
- * <p>DefaultJavamailConfigurationDao class.</p>
- *
- * @author ranger
- * @version $Id: $
+ * The Class DefaultJavamailConfigurationDao.
  */
 public class DefaultJavamailConfigurationDao extends AbstractJaxbConfigDao<JavamailConfiguration, JavamailConfiguration> implements JavaMailConfigurationDao {
 
+    /** The Constant LOG. */
+    private static final Logger LOG = LoggerFactory.getLogger(DefaultJavamailConfigurationDao.class);
+
     /**
-     * <p>Constructor for DefaultJavamailConfigurationDao.</p>
+     * Instantiates a new default javamail configuration DAO.
      */
     public DefaultJavamailConfigurationDao() {
         super(JavamailConfiguration.class, "Javamail configuration");
     }
-    
+
     /**
-     * <p>Constructor for DefaultJavamailConfigurationDao.</p>
+     * Instantiates a new default javamail configuration DAO.
      *
-     * @param entityClass a {@link java.lang.Class} object.
-     * @param description a {@link java.lang.String} object.
+     * @param entityClass the entity class
+     * @param description the description
      */
     public DefaultJavamailConfigurationDao(Class<JavamailConfiguration> entityClass, String description) {
         super(entityClass, description);
     }
 
-    /** {@inheritDoc} */
+    /* (non-Javadoc)
+     * @see org.opennms.core.xml.AbstractJaxbConfigDao#translateConfig(java.lang.Object)
+     */
     @Override
     public JavamailConfiguration translateConfig(JavamailConfiguration castorConfig) {
         return castorConfig;
     }
-    
-    /**
-     * <p>getDefaultReadmailConfig</p>
-     *
-     * @return a {@link org.opennms.netmgt.config.javamail.ReadmailConfig} object.
+
+    /* (non-Javadoc)
+     * @see org.opennms.netmgt.dao.api.JavaMailConfigurationDao#getDefaultReadmailConfig()
      */
     @Override
     public ReadmailConfig getDefaultReadmailConfig() {
         String name = getContainer().getObject().getDefaultReadConfigName();
         return getReadMailConfig(name);
     }
-    
-    /** {@inheritDoc} */
+
+    /* (non-Javadoc)
+     * @see org.opennms.netmgt.dao.api.JavaMailConfigurationDao#getReadMailConfig(java.lang.String)
+     */
     @Override
     public ReadmailConfig getReadMailConfig(String name) {
         ReadmailConfig config = null;
         List<ReadmailConfig> configs = getReadmailConfigs();
-        
+
         for (ReadmailConfig readmailConfig : configs) {
             if (readmailConfig.getName().equals(name)) {
                 config = readmailConfig;
@@ -94,20 +100,16 @@ public class DefaultJavamailConfigurationDao extends AbstractJaxbConfigDao<Javam
         return config;
     }
 
-    /**
-     * <p>getReadmailConfigs</p>
-     *
-     * @return a {@link java.util.List} object.
+    /* (non-Javadoc)
+     * @see org.opennms.netmgt.dao.api.JavaMailConfigurationDao#getReadmailConfigs()
      */
     @Override
     public List<ReadmailConfig> getReadmailConfigs() {
         return getContainer().getObject().getReadmailConfigCollection();
     }
 
-    /**
-     * <p>getDefaultSendmailConfig</p>
-     *
-     * @return a {@link org.opennms.netmgt.config.javamail.SendmailConfig} object.
+    /* (non-Javadoc)
+     * @see org.opennms.netmgt.dao.api.JavaMailConfigurationDao#getDefaultSendmailConfig()
      */
     @Override
     public SendmailConfig getDefaultSendmailConfig() {
@@ -115,12 +117,14 @@ public class DefaultJavamailConfigurationDao extends AbstractJaxbConfigDao<Javam
         return getSendMailConfig(name);
     }
 
-    /** {@inheritDoc} */
+    /* (non-Javadoc)
+     * @see org.opennms.netmgt.dao.api.JavaMailConfigurationDao#getSendMailConfig(java.lang.String)
+     */
     @Override
     public SendmailConfig getSendMailConfig(String name) {
         SendmailConfig config = null;
         List<SendmailConfig> configs = getSendmailConfigs();
-        
+
         for (SendmailConfig sendmailConfig : configs) {
             if (sendmailConfig.getName().equals(name)) {
                 config = sendmailConfig;
@@ -129,22 +133,43 @@ public class DefaultJavamailConfigurationDao extends AbstractJaxbConfigDao<Javam
         return config;
     }
 
-    /**
-     * <p>getSendmailConfigs</p>
-     *
-     * @return a {@link java.util.List} object.
+    /* (non-Javadoc)
+     * @see org.opennms.netmgt.dao.api.JavaMailConfigurationDao#addSendMailConfig(org.opennms.netmgt.config.javamail.SendmailConfig)
+     */
+    @Override
+    public void addSendMailConfig(SendmailConfig sendmailConfig) {
+        int index = -1;
+        List<SendmailConfig> configs = getSendmailConfigs();
+        for (int i = 0; i < configs.size(); i++) {
+            if (configs.get(i).getName().equals(sendmailConfig.getName())) {
+                index = i;
+                break;
+            }
+        }
+        if (index > -1) {
+            configs.remove(index);
+            configs.add(index, sendmailConfig);
+        } else {
+            configs.add(sendmailConfig);
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see org.opennms.netmgt.dao.api.JavaMailConfigurationDao#getSendmailConfigs()
      */
     @Override
     public List<SendmailConfig> getSendmailConfigs() {
         return getContainer().getObject().getSendmailConfigCollection();
     }
 
-    /** {@inheritDoc} */
+    /* (non-Javadoc)
+     * @see org.opennms.netmgt.dao.api.JavaMailConfigurationDao#getEnd2EndConfig(java.lang.String)
+     */
     @Override
     public End2endMailConfig getEnd2EndConfig(String name) {
         End2endMailConfig config = null;
         List<End2endMailConfig> configs = getEnd2EndConfigs();
-        
+
         for (End2endMailConfig end2endMailConfig : configs) {
             if (end2endMailConfig.getName().equals(name)) {
                 config = end2endMailConfig;
@@ -152,38 +177,84 @@ public class DefaultJavamailConfigurationDao extends AbstractJaxbConfigDao<Javam
         }
         return config;
     }
-    
-    /**
-     * <p>getEnd2EndConfigs</p>
-     *
-     * @return a {@link java.util.List} object.
+
+    /* (non-Javadoc)
+     * @see org.opennms.netmgt.dao.api.JavaMailConfigurationDao#addReadMailConfig(org.opennms.netmgt.config.javamail.ReadmailConfig)
+     */
+    @Override
+    public void addReadMailConfig(ReadmailConfig readmailConfig) {
+        int index = -1;
+        List<ReadmailConfig> configs = getReadmailConfigs();
+        for (int i = 0; i < configs.size(); i++) {
+            if (configs.get(i).getName().equals(readmailConfig.getName())) {
+                index = i;
+                break;
+            }
+        }
+        if (index > -1) {
+            configs.remove(index);
+            configs.add(index, readmailConfig);
+        } else {
+            configs.add(readmailConfig);
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see org.opennms.netmgt.dao.api.JavaMailConfigurationDao#getEnd2EndConfigs()
      */
     @Override
     public List<End2endMailConfig> getEnd2EndConfigs() {
         return getContainer().getObject().getEnd2endMailConfigCollection();
     }
-    
-    /**
-     * <p>verifyMarshaledConfiguration</p>
-     *
-     * @throws java.lang.IllegalStateException if any.
+
+    /* (non-Javadoc)
+     * @see org.opennms.netmgt.dao.api.JavaMailConfigurationDao#addEnd2endMailConfig(org.opennms.netmgt.config.javamail.End2endMailConfig)
+     */
+    @Override
+    public void addEnd2endMailConfig(End2endMailConfig end2endConfig) {
+        int index = -1;
+        List<End2endMailConfig> configs = getEnd2EndConfigs();
+        for (int i = 0; i < configs.size(); i++) {
+            if (configs.get(i).getName().equals(end2endConfig.getName())) {
+                index = i;
+                break;
+            }
+        }
+        if (index > -1) {
+            configs.remove(index);
+            configs.add(index, end2endConfig);
+        } else {
+            configs.add(end2endConfig);
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see org.opennms.netmgt.dao.api.JavaMailConfigurationDao#verifyMarshaledConfiguration()
      */
     @Override
     public void verifyMarshaledConfiguration() throws IllegalStateException {
         // TODO verify that the default config names match as specified in javamail configuration element
         // TODO verify that the config names match as specified in all the end2end configuration elements
-        
     }
 
-    /**
-     * <p>reloadConfiguration</p>
-     *
-     * @throws org.springframework.dao.DataAccessResourceFailureException if any.
+    /* (non-Javadoc)
+     * @see org.opennms.netmgt.dao.api.JavaMailConfigurationDao#reloadConfiguration()
      */
     @Override
     public void reloadConfiguration() throws DataAccessResourceFailureException {
         getContainer().reload();
         this.verifyMarshaledConfiguration();
+    }
+
+    /* (non-Javadoc)
+     * @see org.opennms.netmgt.dao.api.JavaMailConfigurationDao#saveConfiguration()
+     */
+    public synchronized void saveConfiguration() {
+        try {
+            JaxbUtils.marshal(getContainer().getObject(), new FileWriter(getContainer().getFile()));
+        } catch (Exception e) {
+            LOG.error("Can't save JavaMail configuration.", e);
+        }
     }
 
 }

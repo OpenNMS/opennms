@@ -89,13 +89,31 @@ public class MockJavaMailConfigurationDao implements JavaMailConfigurationDao {
     @Override
     public void verifyMarshaledConfiguration() throws IllegalStateException {
         // TODO Auto-generated method stub
-        
     }
 
     @Override
     public void reloadConfiguration() throws DataAccessResourceFailureException {
         // TODO Auto-generated method stub
-        
+    }
+
+    @Override
+    public void addSendMailConfig(SendmailConfig sendmailConfig) {
+        // TODO Auto-generated method stub
+    }
+
+    @Override
+    public void addReadMailConfig(ReadmailConfig readmailConfig) {
+        // TODO Auto-generated method stub
+    }
+
+    @Override
+    public void addEnd2endMailConfig(End2endMailConfig end2endConfig) {
+        // TODO Auto-generated method stub
+    }
+
+    @Override
+    public void saveConfiguration() {
+        // TODO Auto-generated method stub
     }
 
 }

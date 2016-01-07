@@ -36,6 +36,7 @@ import org.opennms.core.config.api.ConfigurationResourceException;
 import org.opennms.web.rest.v1.config.AgentConfigurationResource;
 import org.opennms.web.rest.v1.config.CollectionConfigurationResource;
 import org.opennms.web.rest.v1.config.DataCollectionConfigResource;
+import org.opennms.web.rest.v1.config.JavamailConfigurationResource;
 import org.opennms.web.rest.v1.config.JmxDataCollectionConfigResource;
 import org.opennms.web.rest.v1.config.PollerConfigurationResource;
 import org.opennms.web.rest.v1.config.SnmpConfigurationResource;
@@ -78,4 +79,10 @@ public class ConfigRestService extends OnmsRestService {
     public JmxDataCollectionConfigResource getJmxDataCollectionConfigResource(@Context final ResourceContext context) throws ConfigurationResourceException {
         return context.getResource(JmxDataCollectionConfigResource.class);
     }
+
+    @Path("javamail")
+    public JavamailConfigurationResource getJavamailConfigurationResource(@Context final ResourceContext context) throws ConfigurationResourceException {
+        return context.getResource(JavamailConfigurationResource.class);
+    }
+
 }
