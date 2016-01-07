@@ -47,7 +47,7 @@ import org.springframework.expression.spel.support.StandardEvaluationContext;
 /**
  * Configuration for the various filters to change the behavior of the forwarder.
  * 
- * @author <a href="agalue@opennms.org>Alejandro Galue</a>
+ * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
 @XmlRootElement(name = "syslog-filter")
 @XmlAccessorType(XmlAccessType.FIELD)
