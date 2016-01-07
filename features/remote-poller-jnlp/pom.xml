@@ -157,6 +157,29 @@
             </configuration>
           </execution>
           <execution>
+            <id>single-scan</id>
+            <goals>
+              <goal>jnlp-download-servlet</goal>
+            </goals>
+            <phase>compile</phase>
+            <configuration>
+              <jnlpFiles>
+                <jnlpFile>
+                  <inputTemplate>single-scan.vm</inputTemplate>
+                  <outputFilename>single-scan.jnlp</outputFilename>
+                  <jarResources>
+                    <jarResource>
+                      <groupId>org.opennms.features</groupId>
+                      <artifactId>org.opennms.features.remote-poller</artifactId>
+                      <version>${project.version}</version>
+                      <mainClass>org.opennms.poller.remote.Main</mainClass>
+                    </jarResource>
+                  </jarResources>
+                </jnlpFile>
+              </jnlpFiles>
+            </configuration>
+          </execution>
+          <execution>
             <id>headless-app</id>
             <goals>
               <goal>jnlp-download-servlet</goal>
