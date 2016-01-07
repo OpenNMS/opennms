@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2015 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2015 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2016 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,25 +26,14 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.cassandraunit;
+@XmlSchema(
+    namespace="http://xmlns.opennms.org/xsd/northbound-alarms",
+    elementFormDefault=javax.xml.bind.annotation.XmlNsForm.QUALIFIED,
+    xmlns={
+        @XmlNs(prefix="", namespaceURI="http://xmlns.opennms.org/xsd/northbound-alarms")
+    }
+)
+package org.opennms.netmgt.alarmd.api;
+import javax.xml.bind.annotation.XmlNs;
+import javax.xml.bind.annotation.XmlSchema;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-
-/**
- * Annotation used to request an instance of Cassandra provisioned
- * with the Newts keyspace.
- *
- * The host and port of the Cassandra instance are read from the
- * given configuration file.
- *
- * @author jwhite
- */
-@Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.METHOD,ElementType.TYPE})
-public @interface JUnitNewtsCassandra {
-    String configurationFileName() default "cassandra.yaml";
-    String keyspace() default "newts";
-}
