@@ -33,7 +33,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
 import java.util.HashSet;
-import java.util.Set;
 
 import com.google.common.collect.Sets;
 
@@ -93,6 +92,10 @@ public class BusinessServiceDaoIT {
         // Initially there should be no business services
         assertEquals("Check that there are no initial BusinessServices", 0, m_businessServiceDao.countAll());
 
+
+        assertEquals(6, m_nodeDao.findAll().size());
+        assertEquals(31, m_monitoredServiceDao.findAll().size());
+
         // Create a business service
         BusinessService bs = new BusinessService();
         bs.setName("Web Servers");
@@ -123,7 +126,10 @@ public class BusinessServiceDaoIT {
         m_businessServiceDao.flush();
 
         // Verify the update
-        assertEquals(bs, m_businessServiceDao.get(bs.getId()));
+        assertEquals("Application Servers", m_businessServiceDao.get(bs.getId()).getName());
+        OnmsMonitoredService myIpService = m_monitoredServiceDao.get(2);
+        assertEquals(myIpService, m_businessServiceDao.get(bs.getId()).getIpServices().iterator().next());
+
         assertEquals(1, m_businessServiceDao.get(bs.getId()).getIpServices().size());
 
         int nodeId1 = m_databasePopulator.getNode1().getId();
@@ -132,15 +138,13 @@ public class BusinessServiceDaoIT {
         m_nodeDao.flush();
         assertNull(m_nodeDao.get(nodeId1));
 
-        Set<OnmsMonitoredService> ipServices = m_businessServiceDao.get(bs.getId()).getIpServices();
-        for (OnmsMonitoredService monitoredService : ipServices) {
-            System.out.println("9247 " + monitoredService.toString());
-        }
-        assertEquals("Expect that there are no IpServices on the BusinessService.", 0, m_businessServiceDao.get(bs.getId()).getIpServices().size());
+        assertNull(m_monitoredServiceDao.get(2));
 
-        // has to fail
-        bs.removeIpService(ipService);
-        assertEquals(bs, m_businessServiceDao.get(bs.getId()));
+        assertEquals(5, m_nodeDao.findAll().size());
+
+        assertEquals(25, m_monitoredServiceDao.findAll().size());
+
+        assertEquals("Expect that there are no IpServices on the BusinessService.", 0, m_businessServiceDao.get(bs.getId()).getIpServices().size());
 
         // Delete
         m_businessServiceDao.delete(bs);
