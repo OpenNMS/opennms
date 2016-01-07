@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2016 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,13 +28,20 @@
 
 package org.opennms.netmgt.alarmd.api;
 
-import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+
+import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.core.xml.ValidateUsing;
 import org.opennms.netmgt.events.api.EventParameterUtils;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsDistPoller;
@@ -50,6 +57,9 @@ import org.opennms.netmgt.xml.event.Parm;
  * 
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
  */
+@XmlRootElement(name="northbound-alarm")
+@ValidateUsing("northbound-alarm.xsd")
+@XmlAccessorType(XmlAccessType.NONE)
 public class NorthboundAlarm implements Preservable {
 
     /** The Constant SYNC_LOST_ALARM. */
@@ -521,115 +531,153 @@ public class NorthboundAlarm implements Preservable {
     }
 
     /** The ID. */
-    private final Integer m_id;
+    @XmlAttribute(name="id")
+    private Integer m_id;
 
     /** The UEI. */
-    private final String m_uei;
+    @XmlElement(name="uei")
+    private String m_uei;
 
     /** The Node id. */
+    @XmlElement(name="node-id")
     private Integer m_nodeId;
 
     /** The Node label. */
+    @XmlElement(name="node-label")
     private String m_nodeLabel;
 
     /** The Node System Object ID. */
+    @XmlElement(name="node-sysobjectid")
     private String m_nodeSysObjectId;
 
     /** The Node Foreign source. */
+    @XmlElement(name="node-foreignsource")
     private String m_foreignSource;
 
     /** The Node Foreign ID. */
+    @XmlElement(name="node-foreignid")
     private String m_foreignId;
 
     /** The acknowledge time. */
-    private final Date m_ackTime;
+    @XmlElement(name="ack-time")
+    private Date m_ackTime;
 
     /** The acknowledge user. */
-    private final String m_ackUser;
+    @XmlElement(name="ack-user")
+    private String m_ackUser;
 
     /** The alarm type. */
-    private final AlarmType m_alarmType;
+    @XmlElement(name="alarm-type")
+    private AlarmType m_alarmType;
 
     /** The App DN. */
-    private final String m_appDn;
+    @XmlElement(name="app-dn")
+    private String m_appDn;
 
     /** The clear key. */
-    private final String m_clearKey;
+    @XmlElement(name="clear-key")
+    private String m_clearKey;
 
     /** The count. */
-    private final Integer m_count;
+    @XmlElement(name="count")
+    private Integer m_count;
 
     /** The description. */
-    private final String m_desc;
+    @XmlElement(name="description")
+    private String m_desc;
 
     /** The distributed poller object. */
-    private final OnmsDistPoller m_poller;
+    private OnmsDistPoller m_poller;
 
     /** The first occurrence date. */
-    private final Date m_firstOccurrence;
+    @XmlElement(name="first-occurrence")
+    private Date m_firstOccurrence;
 
     /** The IP address. */
-    private final InetAddress m_ipAddr;
+    @XmlElement(name="ip-address")
+    private String m_ipAddr;
 
     /** The last occurrence date. */
-    private final Date m_lastOccurrence;
+    @XmlElement(name="last-occurrence")
+    private Date m_lastOccurrence;
 
     /** The LOG message. */
-    private final String m_logMsg;
+    @XmlElement(name="log-messsage")
+    private String m_logMsg;
 
     /** The object instance. */
-    private final String m_objectInstance;
+    @XmlElement(name="object-instance")
+    private String m_objectInstance;
 
     /** The object type. */
-    private final String m_objectType;
+    @XmlElement(name="object-type")
+    private String m_objectType;
 
     /** The operator instructions */
-    private final String m_operInst;
+    @XmlElement(name="operator-instructions")
+    private String m_operInst;
 
     /** The OSS key. */
-    private final String m_ossKey;
+    @XmlElement(name="oss-key")
+    private String m_ossKey;
 
     /** The OSS state. */
-    private final String m_ossState;
+    @XmlElement(name="oss-state")
+    private String m_ossState;
 
     /** The alarm key. */
-    private final String m_alarmKey;
+    @XmlElement(name="alarm-key")
+    private String m_alarmKey;
 
     /** The service. */
-    private final String m_service;
+    @XmlElement(name="service")
+    private String m_service;
 
     /** The severity. */
-    private final OnmsSeverity m_severity;
+    @XmlElement(name="severity")
+    private OnmsSeverity m_severity;
 
     /** The suppressed date. */
-    private final Date m_suppressed;
+    @XmlElement(name="suppressed")
+    private Date m_suppressed;
 
     /** The suppressed until date. */
-    private final Date m_suppressedUntil;
+    @XmlElement(name="suppressed-until")
+    private Date m_suppressedUntil;
 
     /** The suppressed by. */
-    private final String m_suppressedBy;
+    @XmlElement(name="suppressed-by")
+    private String m_suppressedBy;
 
     /** The ticket ID. */
-    private final String m_ticketId;
+    @XmlElement(name="ticket-id")
+    private String m_ticketId;
 
     /** The ticket state. */
-    private final TroubleTicketState m_ticketState;
+    @XmlElement(name="ticket-state")
+    private TroubleTicketState m_ticketState;
 
     /** The x733 type. */
-    private final String m_x733Type;
+    @XmlElement(name="x733-type")
+    private String m_x733Type;
 
     /** The x733 cause. */
-    private final int m_x733Cause;
+    @XmlElement(name="x733-cause")
+    private int m_x733Cause;
 
     /** The event parameters map. */
-    private final Map<String,String> m_eventParametersMap = new HashMap<String,String>();
+    private Map<String,String> m_eventParametersMap = new HashMap<String,String>();
 
     /** The m_event parameters collection. */
-    private final List<Parm> m_eventParametersCollection = new ArrayList<Parm>();
+    private List<Parm> m_eventParametersCollection = new ArrayList<Parm>();
 
     /** The preserved flag. */
+    @XmlElement(name="preserved", defaultValue="false")
     private volatile boolean m_preserved = false;
+
+    public NorthboundAlarm() {
+        // No-arg constructore required by JAXB
+    }
 
     /**
      * Instantiates a new northbound alarm.
@@ -689,7 +737,7 @@ public class NorthboundAlarm implements Preservable {
         m_poller = alarm.getDistPoller();
         m_firstOccurrence = alarm.getFirstEventTime();
         m_id = alarm.getId();
-        m_ipAddr = alarm.getIpAddr();
+        m_ipAddr = alarm.getIpAddr() != null ? InetAddressUtils.toIpAddrString(alarm.getIpAddr()) : null;
         m_lastOccurrence = alarm.getLastEventTime();
         m_logMsg = alarm.getLogMsg();
         m_objectInstance = alarm.getManagedObjectInstance();
@@ -828,7 +876,7 @@ public class NorthboundAlarm implements Preservable {
      *
      * @return the IP address
      */
-    public InetAddress getIpAddr() {
+    public String getIpAddr() {
         return m_ipAddr;
     }
 
@@ -1064,12 +1112,382 @@ public class NorthboundAlarm implements Preservable {
         return m_foreignId;
     }
 
+    public void setId(Integer id) {
+        m_id = id;
+    }
+
+    public void setUei(String uei) {
+        m_uei = uei;
+    }
+
+    public void setNodeId(Integer nodeId) {
+        m_nodeId = nodeId;
+    }
+
+    public void setNodeLabel(String nodeLabel) {
+        m_nodeLabel = nodeLabel;
+    }
+
+    public void setNodeSysObjectId(String nodeSysObjectId) {
+        m_nodeSysObjectId = nodeSysObjectId;
+    }
+
+    public void setForeignSource(String foreignSource) {
+        m_foreignSource = foreignSource;
+    }
+
+    public void setForeignId(String foreignId) {
+        m_foreignId = foreignId;
+    }
+
+    public void setAckTime(Date ackTime) {
+        m_ackTime = ackTime;
+    }
+
+    public void setAckUser(String ackUser) {
+        m_ackUser = ackUser;
+    }
+
+    public void setAlarmType(AlarmType alarmType) {
+        m_alarmType = alarmType;
+    }
+
+    public void setAppDn(String appDn) {
+        m_appDn = appDn;
+    }
+
+    public void setClearKey(String clearKey) {
+        m_clearKey = clearKey;
+    }
+
+    public void setCount(Integer count) {
+        m_count = count;
+    }
+
+    public void setDesc(String desc) {
+       m_desc = desc;
+    }
+
+    public void setPoller(OnmsDistPoller poller) {
+        m_poller = poller;
+    }
+
+    public void setFirstOccurrence(Date firstOccurrence) {
+        m_firstOccurrence = firstOccurrence;
+    }
+
+    public void setIpAddr(String ipAddr) {
+        m_ipAddr = ipAddr;
+    }
+
+    public void setLastOccurrence(Date lastOccurrence) {
+        m_lastOccurrence = lastOccurrence;
+    }
+
+    public void setLogMsg(String logMsg) {
+        m_logMsg = logMsg;
+    }
+
+    public void setObjectInstance(String objectInstance) {
+        m_objectInstance = objectInstance;
+    }
+
+    public void setObjectType(String objectType) {
+        m_objectType = objectType;
+    }
+
+    public void setOperInst(String operInst) {
+        m_operInst = operInst;
+    }
+
+    public void setOssKey(String ossKey) {
+        m_ossKey = ossKey;
+    }
+
+    public void setOssState(String ossState) {
+        m_ossState = ossState;
+    }
+
+    public void setAlarmKey(String alarmKey) {
+        m_alarmKey = alarmKey;
+    }
+
+    public void setService(String service) {
+        m_service = service;
+    }
+
+    public void setSeverity(OnmsSeverity severity) {
+        m_severity = severity;
+    }
+
+    public void setSuppressed(Date suppressed) {
+        m_suppressed = suppressed;
+    }
+
+    public void setSuppressedUntil(Date suppressedUntil) {
+        m_suppressedUntil = suppressedUntil;
+    }
+
+    public void setSuppressedBy(String suppressedBy) {
+        m_suppressedBy = suppressedBy;
+    }
+
+    public void setTicketId(String ticketId) {
+        m_ticketId = ticketId;
+    }
+
+    public void setTicketState(TroubleTicketState ticketState) {
+        m_ticketState = ticketState;
+    }
+
+    public void setx733Type(String x733Type) {
+        m_x733Type = x733Type;
+    }
+
+    public void setx733Cause(int x733Cause) {
+        m_x733Cause = x733Cause;
+    }
+
+    public void setEventParametersMap(Map<String, String> eventParametersMap) {
+        m_eventParametersMap = eventParametersMap;
+    }
+
+    public void setEventParametersCollection(List<Parm> eventParametersCollection) {
+        m_eventParametersCollection = eventParametersCollection;
+    }
+
     /* (non-Javadoc)
      * @see java.lang.Object#toString()
      */
     @Override
     public String toString() {
         return String.format("NorthboundAlarm[id=%d, uei='%s', nodeId=%d]", m_id, m_uei, m_nodeId);
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((m_ackTime == null) ? 0 : m_ackTime.hashCode());
+        result = prime * result + ((m_ackUser == null) ? 0 : m_ackUser.hashCode());
+        result = prime * result + ((m_alarmKey == null) ? 0 : m_alarmKey.hashCode());
+        result = prime * result + ((m_alarmType == null) ? 0 : m_alarmType.hashCode());
+        result = prime * result + ((m_appDn == null) ? 0 : m_appDn.hashCode());
+        result = prime * result + ((m_clearKey == null) ? 0 : m_clearKey.hashCode());
+        result = prime * result + ((m_count == null) ? 0 : m_count.hashCode());
+        result = prime * result + ((m_desc == null) ? 0 : m_desc.hashCode());
+        result = prime * result + ((m_eventParametersCollection == null) ? 0 : m_eventParametersCollection.hashCode());
+        result = prime * result + ((m_eventParametersMap == null) ? 0 : m_eventParametersMap.hashCode());
+        result = prime * result + ((m_firstOccurrence == null) ? 0 : m_firstOccurrence.hashCode());
+        result = prime * result + ((m_foreignId == null) ? 0 : m_foreignId.hashCode());
+        result = prime * result + ((m_foreignSource == null) ? 0 : m_foreignSource.hashCode());
+        result = prime * result + ((m_id == null) ? 0 : m_id.hashCode());
+        result = prime * result + ((m_ipAddr == null) ? 0 : m_ipAddr.hashCode());
+        result = prime * result + ((m_lastOccurrence == null) ? 0 : m_lastOccurrence.hashCode());
+        result = prime * result + ((m_logMsg == null) ? 0 : m_logMsg.hashCode());
+        result = prime * result + ((m_nodeId == null) ? 0 : m_nodeId.hashCode());
+        result = prime * result + ((m_nodeLabel == null) ? 0 : m_nodeLabel.hashCode());
+        result = prime * result + ((m_nodeSysObjectId == null) ? 0 : m_nodeSysObjectId.hashCode());
+        result = prime * result + ((m_objectInstance == null) ? 0 : m_objectInstance.hashCode());
+        result = prime * result + ((m_objectType == null) ? 0 : m_objectType.hashCode());
+        result = prime * result + ((m_operInst == null) ? 0 : m_operInst.hashCode());
+        result = prime * result + ((m_ossKey == null) ? 0 : m_ossKey.hashCode());
+        result = prime * result + ((m_ossState == null) ? 0 : m_ossState.hashCode());
+        result = prime * result + ((m_poller == null) ? 0 : m_poller.hashCode());
+        result = prime * result + (m_preserved ? 1231 : 1237);
+        result = prime * result + ((m_service == null) ? 0 : m_service.hashCode());
+        result = prime * result + ((m_severity == null) ? 0 : m_severity.hashCode());
+        result = prime * result + ((m_suppressed == null) ? 0 : m_suppressed.hashCode());
+        result = prime * result + ((m_suppressedBy == null) ? 0 : m_suppressedBy.hashCode());
+        result = prime * result + ((m_suppressedUntil == null) ? 0 : m_suppressedUntil.hashCode());
+        result = prime * result + ((m_ticketId == null) ? 0 : m_ticketId.hashCode());
+        result = prime * result + ((m_ticketState == null) ? 0 : m_ticketState.hashCode());
+        result = prime * result + ((m_uei == null) ? 0 : m_uei.hashCode());
+        result = prime * result + m_x733Cause;
+        result = prime * result + ((m_x733Type == null) ? 0 : m_x733Type.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        NorthboundAlarm other = (NorthboundAlarm) obj;
+        if (m_ackTime == null) {
+            if (other.m_ackTime != null)
+                return false;
+        } else if (!m_ackTime.equals(other.m_ackTime))
+            return false;
+        if (m_ackUser == null) {
+            if (other.m_ackUser != null)
+                return false;
+        } else if (!m_ackUser.equals(other.m_ackUser))
+            return false;
+        if (m_alarmKey == null) {
+            if (other.m_alarmKey != null)
+                return false;
+        } else if (!m_alarmKey.equals(other.m_alarmKey))
+            return false;
+        if (m_alarmType != other.m_alarmType)
+            return false;
+        if (m_appDn == null) {
+            if (other.m_appDn != null)
+                return false;
+        } else if (!m_appDn.equals(other.m_appDn))
+            return false;
+        if (m_clearKey == null) {
+            if (other.m_clearKey != null)
+                return false;
+        } else if (!m_clearKey.equals(other.m_clearKey))
+            return false;
+        if (m_count == null) {
+            if (other.m_count != null)
+                return false;
+        } else if (!m_count.equals(other.m_count))
+            return false;
+        if (m_desc == null) {
+            if (other.m_desc != null)
+                return false;
+        } else if (!m_desc.equals(other.m_desc))
+            return false;
+        if (m_eventParametersCollection == null) {
+            if (other.m_eventParametersCollection != null)
+                return false;
+        } else if (!m_eventParametersCollection.equals(other.m_eventParametersCollection))
+            return false;
+        if (m_eventParametersMap == null) {
+            if (other.m_eventParametersMap != null)
+                return false;
+        } else if (!m_eventParametersMap.equals(other.m_eventParametersMap))
+            return false;
+        if (m_firstOccurrence == null) {
+            if (other.m_firstOccurrence != null)
+                return false;
+        } else if (!m_firstOccurrence.equals(other.m_firstOccurrence))
+            return false;
+        if (m_foreignId == null) {
+            if (other.m_foreignId != null)
+                return false;
+        } else if (!m_foreignId.equals(other.m_foreignId))
+            return false;
+        if (m_foreignSource == null) {
+            if (other.m_foreignSource != null)
+                return false;
+        } else if (!m_foreignSource.equals(other.m_foreignSource))
+            return false;
+        if (m_id == null) {
+            if (other.m_id != null)
+                return false;
+        } else if (!m_id.equals(other.m_id))
+            return false;
+        if (m_ipAddr == null) {
+            if (other.m_ipAddr != null)
+                return false;
+        } else if (!m_ipAddr.equals(other.m_ipAddr))
+            return false;
+        if (m_lastOccurrence == null) {
+            if (other.m_lastOccurrence != null)
+                return false;
+        } else if (!m_lastOccurrence.equals(other.m_lastOccurrence))
+            return false;
+        if (m_logMsg == null) {
+            if (other.m_logMsg != null)
+                return false;
+        } else if (!m_logMsg.equals(other.m_logMsg))
+            return false;
+        if (m_nodeId == null) {
+            if (other.m_nodeId != null)
+                return false;
+        } else if (!m_nodeId.equals(other.m_nodeId))
+            return false;
+        if (m_nodeLabel == null) {
+            if (other.m_nodeLabel != null)
+                return false;
+        } else if (!m_nodeLabel.equals(other.m_nodeLabel))
+            return false;
+        if (m_nodeSysObjectId == null) {
+            if (other.m_nodeSysObjectId != null)
+                return false;
+        } else if (!m_nodeSysObjectId.equals(other.m_nodeSysObjectId))
+            return false;
+        if (m_objectInstance == null) {
+            if (other.m_objectInstance != null)
+                return false;
+        } else if (!m_objectInstance.equals(other.m_objectInstance))
+            return false;
+        if (m_objectType == null) {
+            if (other.m_objectType != null)
+                return false;
+        } else if (!m_objectType.equals(other.m_objectType))
+            return false;
+        if (m_operInst == null) {
+            if (other.m_operInst != null)
+                return false;
+        } else if (!m_operInst.equals(other.m_operInst))
+            return false;
+        if (m_ossKey == null) {
+            if (other.m_ossKey != null)
+                return false;
+        } else if (!m_ossKey.equals(other.m_ossKey))
+            return false;
+        if (m_ossState == null) {
+            if (other.m_ossState != null)
+                return false;
+        } else if (!m_ossState.equals(other.m_ossState))
+            return false;
+        if (m_poller == null) {
+            if (other.m_poller != null)
+                return false;
+        } else if (!m_poller.equals(other.m_poller))
+            return false;
+        if (m_preserved != other.m_preserved)
+            return false;
+        if (m_service == null) {
+            if (other.m_service != null)
+                return false;
+        } else if (!m_service.equals(other.m_service))
+            return false;
+        if (m_severity != other.m_severity)
+            return false;
+        if (m_suppressed == null) {
+            if (other.m_suppressed != null)
+                return false;
+        } else if (!m_suppressed.equals(other.m_suppressed))
+            return false;
+        if (m_suppressedBy == null) {
+            if (other.m_suppressedBy != null)
+                return false;
+        } else if (!m_suppressedBy.equals(other.m_suppressedBy))
+            return false;
+        if (m_suppressedUntil == null) {
+            if (other.m_suppressedUntil != null)
+                return false;
+        } else if (!m_suppressedUntil.equals(other.m_suppressedUntil))
+            return false;
+        if (m_ticketId == null) {
+            if (other.m_ticketId != null)
+                return false;
+        } else if (!m_ticketId.equals(other.m_ticketId))
+            return false;
+        if (m_ticketState != other.m_ticketState)
+            return false;
+        if (m_uei == null) {
+            if (other.m_uei != null)
+                return false;
+        } else if (!m_uei.equals(other.m_uei))
+            return false;
+        if (m_x733Cause != other.m_x733Cause)
+            return false;
+        if (m_x733Type == null) {
+            if (other.m_x733Type != null)
+                return false;
+        } else if (!m_x733Type.equals(other.m_x733Type))
+            return false;
+        return true;
     }
 
 }
