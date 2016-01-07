@@ -16,5 +16,6 @@
     <module>http-northbounder</module>
     <module>jms-northbounder</module>
     <module>syslog-northbounder</module>
+    <module>snmptrap-northbounder</module>
   </modules>
 </project>
