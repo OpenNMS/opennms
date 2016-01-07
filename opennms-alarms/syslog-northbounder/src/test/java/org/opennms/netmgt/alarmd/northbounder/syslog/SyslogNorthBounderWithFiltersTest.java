@@ -131,7 +131,7 @@ public class SyslogNorthBounderWithFiltersTest extends SyslogNorthBounderTest {
         List<String> messages = getMessagesFromBuffer(reader);
         Assert.assertTrue("Log messages sent: 2, Log messages received: " + messages.size(), 2 == messages.size());
         Assert.assertTrue(messages.get(0).contains("ALARM 10 FROM NODE agalue@TestGroup"));
-        Assert.assertTrue(messages.get(1).contains("ALARM 10 FROM INTERFACE /10.0.1.1"));
+        Assert.assertTrue(messages.get(1).contains("ALARM 10 FROM INTERFACE 10.0.1.1"));
         reader.close();
 
         // Remove the temporary configuration file
