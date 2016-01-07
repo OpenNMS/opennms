@@ -267,7 +267,7 @@ public class SnmpTrapSink implements Destination {
         config.setDestinationPort(m_port);
         config.setVersion(m_version);
         config.setCommunity(m_community);
-        config.setHostAddress(m_v1AgentAddress == null ? alarm.getIpAddr() : InetAddressUtils.addr(m_v1AgentAddress));
+        config.setHostAddress(m_v1AgentAddress == null ? InetAddressUtils.addr(alarm.getIpAddr()) : InetAddressUtils.addr(m_v1AgentAddress));
         config.setEnterpriseId(mapping.getEnterpriseOid());
         config.setGeneric(mapping.getGeneric());
         config.setSpecific(mapping.getSpecific());

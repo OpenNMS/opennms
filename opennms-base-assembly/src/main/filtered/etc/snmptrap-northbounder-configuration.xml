@@ -33,7 +33,7 @@
          * count (Integer)
          * desc (String)
          * firstOccurrence (Date)
-         * ipAddr (InetAddress)
+         * ipAddr (String)
          * lastOccurrence (Date)
          * logMsg (Date)
          * operInst (String)
