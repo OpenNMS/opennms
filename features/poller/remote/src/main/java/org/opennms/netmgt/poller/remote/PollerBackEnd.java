@@ -55,7 +55,7 @@ public interface PollerBackEnd {
     /**
      * Return the set of available MonitoringLocationDefinitions
      *
-     * @returns the set of monitoring loat
+     * @returns the set of monitoring locations
      * @return a {@link java.util.Collection} object.
      */
     Collection<LocationDef> getMonitoringLocations();
