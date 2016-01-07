@@ -39,7 +39,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 /**
  * Configuration for Syslog NBI implementation.
  * 
- * @author <a mailto:david@opennms.org>David Hustace</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
  */
 @XmlRootElement(name = "syslog-northbounder-config")
 @XmlAccessorType(XmlAccessType.FIELD)
