@@ -39,9 +39,13 @@ import javax.swing.JPanel
 import javax.swing.JTextField
 import javax.swing.SwingUtilities
 
+import org.apache.batik.swing.JSVGCanvas
+import org.apache.batik.swing.svg.JSVGComponent;
 import org.opennms.netmgt.config.monitoringLocations.LocationDef
+import org.opennms.netmgt.poller.PollStatus
 import org.opennms.netmgt.poller.remote.PollerBackEnd
 import org.opennms.netmgt.poller.remote.PollerFrontEnd.PollerFrontEndStates
+import org.opennms.netmgt.poller.remote.support.ScanReport
 import org.opennms.netmgt.poller.remote.support.ScanReportPollerFrontEnd
 import org.opennms.netmgt.poller.remote.support.ScanReportPollerFrontEnd.ScanReportProperties
 import org.springframework.beans.factory.InitializingBean
@@ -55,6 +59,7 @@ class ScanGui extends AbstractGui implements InitializingBean, PropertyChangeLis
 
     def m_metadataFields = new HashMap<String, JTextField>()
     def m_progressBar
+    def m_passFailPanel
 
     public ScanGui() {
         super()
@@ -112,7 +117,7 @@ class ScanGui extends AbstractGui implements InitializingBean, PropertyChangeLis
 
         def updateValidation = {
             def errorMessage = validateFields()
-            System.err.println("error message: " + errorMessage)
+            //System.err.println("error message: " + errorMessage)
             if (errorLabel != null) {
                 if (errorMessage == null) {
                     errorLabel.setText("")
@@ -144,7 +149,13 @@ class ScanGui extends AbstractGui implements InitializingBean, PropertyChangeLis
                         )
 
                 label(text:"Location:", font:getLabelFont())
-                def locationCombo = comboBox(items:m_locations, toolTipText:"Choose your location.", foreground:getForegroundColor(), background:getBackgroundColor(), renderer:getRenderer())
+                def locationCombo = comboBox(items:m_locations, toolTipText:"Choose your location.", foreground:getForegroundColor(), background:getBackgroundColor(), renderer:getRenderer(), actionPerformed:{
+                    m_progressBar.setValue(0)
+                    m_progressBar.setString("0%")
+                    m_progressBar.setVisible(false)
+                    m_passFailPanel.removeAll()
+                    m_passFailPanel.updateUI()
+                })
                 button(text:'Go', font:getLabelFont(), foreground:getBackgroundColor(), background:getDetailColor(), opaque:true, constraints:"wrap", actionPerformed:{
                     if (updateValidation()) {
                         return
@@ -170,7 +181,15 @@ class ScanGui extends AbstractGui implements InitializingBean, PropertyChangeLis
 
                 m_progressBar = progressBar(borderPainted:false, visible:false, value:0, constraints:"grow, spanx 3, wrap")
 
-                label(text:"Yes/No", font:getHeaderFont(), constraints:"center, spanx 3, spany 2, height 200!, wrap")
+                m_passFailPanel = panel(background:getBackgroundColor(), constraints:"center, spanx 3, spany 2, height 200!, grow, wrap") {
+                    migLayout(
+                            layoutConstraints:"fill" + debugString,
+                            columnConstraints:"[center grow,fill]",
+                            rowConstraints:"[center grow,fill]"
+                            )
+
+                }
+                //label(text:"Yes/No", font:getHeaderFont(), constraints:"center, spanx 3, spany 2, height 200!, wrap")
             }
             panel(constraints:"top", opaque:false) {
                 migLayout(
@@ -286,13 +305,29 @@ class ScanGui extends AbstractGui implements InitializingBean, PropertyChangeLis
     @Override
     public void propertyChange(final PropertyChangeEvent evt) {
         if (evt.getPropertyName().equals(ScanReportProperties.percentageComplete.toString())) {
-            final Double percentComplete = (Double)evt.getNewValue()
+            def percentComplete = (Double)evt.getNewValue()
             System.out.println("Percent complete: " + (percentComplete * 100));
             def intPercent = new Double(percentComplete * 100).intValue()
             m_progressBar.setValue(intPercent)
             m_progressBar.setString(intPercent + "%")
         } else if (evt.getPropertyName().equals(PollerFrontEndStates.exitNecessary.toString())) {
-            System.out.println("Finished scan: " + evt.getNewValue())
+            def report = (ScanReport)evt.getNewValue()
+            System.out.println("Finished scan: " + report)
+            def passed = true
+            for (final PollStatus status : report.getPollStatuses()) {
+                if (!status.isUp()) {
+                    passed = false
+                    break
+                }
+            }
+            m_passFailPanel.removeAll()
+            def svg = new JSVGCanvas()
+            //final JSVGComponent svg = new JSVGComponent()
+            def uri = this.getClass().getResource(passed? "/passed.svg":"/failed.svg")
+            svg.setURI(uri.toString())
+            m_passFailPanel.add(svg)
+            m_passFailPanel.revalidate()
+            getGui().repaint()
         } else {
             System.err.println("Unhandled property change event: " + evt.getPropertyName())
         }

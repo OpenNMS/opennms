@@ -226,6 +226,7 @@ public abstract class AbstractGui implements GroovyGui {
             rootPanel.rootPane.defaultButton = m_defaultButton
         }
         m_gui.setVisible(true)
+        m_gui.setResizable(false)
         //m_gui.show()
     }
 
