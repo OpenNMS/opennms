@@ -9,7 +9,7 @@
 		<name>localTest1</name>
 		<ip-address>127.0.0.1</ip-address>
 		<port>162</port>
-		<version>v1</version>
+		<version>v2c</version>
 		<community>public</community>
 		<mapping-group name="My Mappings">
 			<rule>foreignSource matches '^Server.*'</rule>
@@ -46,7 +46,7 @@
 		<name>localTest2</name>
 		<ip-address>127.0.0.2</ip-address>
 		<port>162</port>
-		<version>v2c</version>
+		<version>v1</version>
 		<community>public</community>
 		<import-mappings>snmptrap-northbound/my-mappings-01.xml</import-mappings>
 	</snmp-trap-sink>

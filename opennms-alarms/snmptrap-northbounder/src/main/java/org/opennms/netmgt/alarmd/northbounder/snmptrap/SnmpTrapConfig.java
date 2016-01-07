@@ -283,7 +283,7 @@ public class SnmpTrapConfig {
      * @return the SNMP agent configuration
      */
     public SnmpAgentConfig getAgentConfig() {
-        SnmpAgentConfig config = SnmpPeerFactory.getInstance().getAgentConfig(destinationAddress);
+        SnmpAgentConfig config = SnmpPeerFactory.getInstance().getAgentConfig(destinationAddress, version.intValue());
         if (destinationPort > 0) {
             config.setPort(destinationPort);
         }

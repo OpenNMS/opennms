@@ -27,6 +27,8 @@
  *******************************************************************************/
 package org.opennms.netmgt.alarmd.northbounder.snmptrap;
 
+import java.net.InetAddress;
+
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -39,7 +41,24 @@ import org.opennms.core.utils.InetAddressUtils;
  */
 public class SnmpTrapHelperTest extends AbstractTrapReceiverTest {
 
+    /** The SNMP trap helper. */
     private SnmpTrapHelper trapHelper = new SnmpTrapHelper();
+
+    /** The SNMP trap configuration. */
+    private SnmpTrapConfig config;
+
+    /** The host address. */
+    private InetAddress hostAddress;
+
+    /* (non-Javadoc)
+     * @see org.opennms.netmgt.alarmd.northbounder.snmptrap.AbstractTrapReceiverTest#setUp()
+     */
+    @Override
+    public void setUp() throws Exception {
+        super.setUp();
+        config = new SnmpTrapConfig();
+        hostAddress = InetAddressUtils.addr("10.0.0.1");
+    }
 
     /**
      * Test forward traps and informs.
@@ -49,12 +68,11 @@ public class SnmpTrapHelperTest extends AbstractTrapReceiverTest {
     @Test
     public void testForwarding() throws Exception {
         // Create a sample trap configuration
-        SnmpTrapConfig config = new SnmpTrapConfig();
         config.setDestinationAddress(TRAP_DESTINATION);
         config.setDestinationPort(TRAP_PORT);
         config.setEnterpriseId(".1.3.6.1.4.1.5813");
         config.setSpecific(2);
-        config.setHostAddress(InetAddressUtils.addr("10.0.0.1"));
+        config.setHostAddress(hostAddress);
         config.addParameter(".1.3.6.1.2.1.2.2.1.1.3", "3", VarbindType.TYPE_SNMP_INT32.value());
 
         // Send a V1 Trap
