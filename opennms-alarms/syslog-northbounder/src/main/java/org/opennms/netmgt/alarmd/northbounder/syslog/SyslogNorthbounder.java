@@ -49,9 +49,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 
 /**
- * Forwards alarms, N, via Syslog.
+ * Forwards alarms via Syslog.
  * 
- * @author <a href="mailto:david@opennms.org>David Hustace</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
  */
 public class SyslogNorthbounder extends AbstractNorthbounder implements InitializingBean {
 
@@ -95,15 +95,6 @@ public class SyslogNorthbounder extends AbstractNorthbounder implements Initiali
         setNaglesDelay(getConfig().getNaglesDelay());
         setMaxBatchSize(getConfig().getBatchSize());
         setMaxPreservedAlarms(getConfig().getQueueSize());
-    }
-
-    /* (non-Javadoc)
-     * @see org.opennms.netmgt.alarmd.api.support.AbstractNorthbounder#onStop()
-     */
-    @Override
-    protected void onStop() {
-        Syslog.destroyInstance(getName());
-        super.onStop();
     }
 
     /**
@@ -201,10 +192,8 @@ public class SyslogNorthbounder extends AbstractNorthbounder implements Initiali
      * @throws SyslogRuntimeException the syslog runtime exception
      */
     private void createNorthboundInstance() throws SyslogRuntimeException {
-
         LOG.info("Creating Syslog Northbound Instance {}", m_destination.getName());
 
-        String instName = m_destination.getName();
         int facility = convertFacility(m_destination.getFacility());
         SyslogProtocol protocol = m_destination.getProtocol();
         SyslogConfigIF instanceConfiguration = createConfig(m_destination, protocol, facility);
@@ -217,15 +206,15 @@ public class SyslogNorthbounder extends AbstractNorthbounder implements Initiali
         instanceConfiguration.setUseStructuredData(SyslogConstants.USE_STRUCTURED_DATA_DEFAULT);
 
         try {
-            Syslog.createInstance(instName, instanceConfiguration);
+            Syslog.createInstance(m_destination.getName(), instanceConfiguration);
         } catch (SyslogRuntimeException e) {
-            LOG.error("Could not create northbound instance, '{}': {}", instName, e);
+            LOG.error("Could not create northbound instance, '{}': {}", m_destination.getName(), e);
             throw e;
         }
     }
 
     /**
-     * Creates the Syslog Config object.
+     * Creates the Syslog configuration object.
      *
      * @param dest the destination
      * @param protocol the protocol

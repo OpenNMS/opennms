@@ -53,7 +53,7 @@ import org.springframework.core.io.FileSystemResource;
 /**
  * Tests the Syslog North Bound Interface with filters.
  *
- * @author <a href="agalue@opennms.org">Alejandro Galue</a>
+ * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
 public class SyslogNorthBounderWithFiltersTest extends SyslogNorthBounderTest {
 

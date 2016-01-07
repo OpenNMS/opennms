@@ -31,6 +31,7 @@ package org.opennms.netmgt.alarmd.northbounder.syslog;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.graylog2.syslog4j.Syslog;
 import org.opennms.core.soa.Registration;
 import org.opennms.core.soa.ServiceRegistry;
 import org.opennms.netmgt.alarmd.api.NorthboundAlarm;
@@ -46,8 +47,8 @@ import org.springframework.util.Assert;
 /**
  * The Class SyslogNorthbounderManager.
  * 
- * @author <a href="mailto:david@opennms.org>David Hustace</a>
- * @author <a href="agalue@opennms.org>Alejandro Galue</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
 public class SyslogNorthbounderManager implements InitializingBean, Northbounder, DisposableBean {
 
@@ -103,7 +104,7 @@ public class SyslogNorthbounderManager implements InitializingBean, Northbounder
      */
     @Override
     public void destroy() throws Exception {
-        m_registrations.values().forEach(r -> unregister(r));
+        m_registrations.values().forEach(r -> r.unregister());
     }
 
     /**
@@ -154,24 +155,12 @@ public class SyslogNorthbounderManager implements InitializingBean, Northbounder
     public void reloadConfig() {
         m_configDao.reload();
         LOG.info("Reloading syslog northbound configuration.");
-        m_registrations.forEach((k,v) -> { if (k != getName()) unregister(v);});
+        m_registrations.forEach((k,v) -> { if (k != getName()) v.unregister();}); // Unregistering Syslog destinations
         try {
-            registerNorthnounders();
+            Syslog.shutdown(); // Shutdown all Syslog instances.
+            registerNorthnounders(); // Re-registering all Syslog destinations.
         } catch (Exception e) {
             LOG.error("Can't reload the syslog northbound configuration", e);
         }
-    }
-
-    /**
-     * Unregister.
-     *
-     * @param reg the registration object
-     */
-    public void unregister(Registration reg) {
-        // Invalidate the Northbounder implementation (to be sure it won't listen for more alarms).
-        reg.unregister();
-
-        // Shutdown the Syslog target
-        reg.getProvider(Northbounder.class).stop();
     }
 }
