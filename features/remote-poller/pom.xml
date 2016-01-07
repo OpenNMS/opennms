@@ -12,7 +12,7 @@
   <name>OpenNMS Features Remote Poller</name>
   <url>http://maven.apache.org</url>
   <properties>
-    <swt.version>4.5.1</swt.version>
+    <migVersion>5.0</migVersion>
   </properties>
   <build>
     <plugins>
@@ -80,6 +80,7 @@
             <id>add-groovy-source</id>
             <phase>generate-sources</phase>
             <goals>
+            
               <goal>add-source</goal>
             </goals>
             <configuration>
@@ -129,45 +130,32 @@ groovy.compiler.output.path=target/classes
     <dependency>
       <groupId>com.miglayout</groupId>
       <artifactId>miglayout-ideutil</artifactId>
-      <version>5.0</version>
+      <version>${migVersion}</version>
     </dependency>
     <dependency>
       <groupId>com.miglayout</groupId>
       <artifactId>miglayout-swing</artifactId>
-      <version>5.0</version>
-    </dependency>
-    <!--
-    <dependency>
-        <groupId>org.eclipse.swt</groupId>
-        <artifactId>org.eclipse.swt.win32.win32.x86</artifactId>
-        <version>${swt.version}</version>
+      <version>${migVersion}</version>
     </dependency>
     <dependency>
-        <groupId>org.eclipse.swt</groupId>
-        <artifactId>org.eclipse.swt.win32.win32.x86_64</artifactId>
-        <version>${swt.version}</version>
+      <groupId>org.apache.xmlgraphics</groupId>
+      <artifactId>batik-swing</artifactId>
     </dependency>
     <dependency>
-        <groupId>org.eclipse.swt</groupId>
-        <artifactId>org.eclipse.swt.gtk.linux.x86</artifactId>
-        <version>${swt.version}</version>
+      <groupId>org.apache.xmlgraphics</groupId>
+      <artifactId>xmlgraphics-commons</artifactId>
+      <version>2.0.1</version>
+      <exclusions>
+        <exclusion>
+          <groupId>commons-logging</groupId>
+          <artifactId>commons-logging</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>javax.ws.rs</groupId>
+          <artifactId>jsr311-api</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
-    <dependency>
-        <groupId>org.eclipse.swt</groupId>
-        <artifactId>org.eclipse.swt.gtk.linux.x86_64</artifactId>
-        <version>${swt.version}</version>
-    </dependency>
-    <dependency>
-        <groupId>org.eclipse.swt</groupId>
-        <artifactId>org.eclipse.swt.cocoa.macosx.x86_64</artifactId>
-        <version>${swt.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>com.miglayout</groupId>
-      <artifactId>miglayout-swt</artifactId>
-      <version>5.0</version>
-    </dependency>
-    -->
     <dependency>
       <groupId>org.opennms.core.build</groupId>
       <artifactId>org.opennms.core.build.keystore</artifactId>

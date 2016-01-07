@@ -1263,6 +1263,7 @@
     <asciidoctorjPdfVersion>1.5.0-alpha.10.1</asciidoctorjPdfVersion>
     <activemqVersion>5.10.0</activemqVersion>
     <atomikosVersion>3.9.2</atomikosVersion>
+    <batikVersion>1.8</batikVersion>
     <camelVersion>2.14.1</camelVersion>
     <elasticsearchVersion>1.0.0_4</elasticsearchVersion>
     <cloverVersion>3.2.0</cloverVersion>
@@ -2732,27 +2733,32 @@
       <dependency>
         <groupId>org.apache.xmlgraphics</groupId>
         <artifactId>batik-dom</artifactId>
-        <version>1.7</version>
+        <version>${batikVersion}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.xmlgraphics</groupId>
         <artifactId>batik-svg-dom</artifactId>
-        <version>1.7</version>
+        <version>${batikVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.xmlgraphics</groupId>
+        <artifactId>batik-swing</artifactId>
+        <version>${batikVersion}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.xmlgraphics</groupId>
         <artifactId>batik-transcoder</artifactId>
-        <version>1.7</version>
+        <version>${batikVersion}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.xmlgraphics</groupId>
         <artifactId>batik-xml</artifactId>
-        <version>1.7</version>
+        <version>${batikVersion}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.xmlgraphics</groupId>
         <artifactId>batik-util</artifactId>
-        <version>1.7</version>
+        <version>${batikVersion}</version>
       </dependency>
       <dependency>
         <groupId>bsf</groupId>
