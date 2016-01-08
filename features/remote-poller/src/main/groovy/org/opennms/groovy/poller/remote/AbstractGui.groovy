@@ -156,7 +156,9 @@ public abstract class AbstractGui implements GroovyGui {
     }
 
     protected void repaint() {
-        m_gui.repaint(repaintDelay)
+        if (m_gui != null) {
+            m_gui.repaint(repaintDelay)
+        }
     }
 
     protected void setWindowSize(final Dimension d) {
