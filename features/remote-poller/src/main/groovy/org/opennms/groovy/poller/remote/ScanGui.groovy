@@ -65,6 +65,7 @@ class ScanGui extends AbstractGui implements InitializingBean, PropertyChangeLis
     def m_progressBar
     def m_passFailPanel
     def updateDetails
+    def detailsPanel
 
     public ScanGui() {
         super()
@@ -165,12 +166,17 @@ class ScanGui extends AbstractGui implements InitializingBean, PropertyChangeLis
                     if (updateValidation()) {
                         return
                     }
-
+                    m_scanResult = null
                     m_progressBar.setValue(0)
                     m_progressBar.setStringPainted(true)
                     m_progressBar.setString("0%")
                     m_progressBar.setVisible(true)
                     m_progressBar.updateUI()
+
+                    if (updateDetails != null) {
+                        updateDetails()
+                    }
+
                     final ScanReportPollerFrontEnd fe = createPollerFrontEnd()
 
                     final Map<String,String> metadata = new HashMap<>()
@@ -217,13 +223,14 @@ class ScanGui extends AbstractGui implements InitializingBean, PropertyChangeLis
             def pendingResize = true
             def detailsButton
             def detailsParent
-            def detailsPanel
 
             updateDetails = {
                 if (detailsButton == null || detailsParent == null) {
                     return
                 }
-                def oldDetailsPanel = detailsPanel
+                if (detailsParent != null && detailsPanel != null) {
+                    detailsParent.remove(detailsPanel)
+                }
 
                 if (detailsOpen) {
                     detailsButton.setText("Details \u25BC")
@@ -241,22 +248,16 @@ class ScanGui extends AbstractGui implements InitializingBean, PropertyChangeLis
                                 propertyColumn(header:"Service", propertyName:"serviceName", editable:false)
                                 propertyColumn(header:"Node", propertyName:"nodeLabel", editable:false)
                                 propertyColumn(header:"IP Address", propertyName:"ipAddress", editable:false)
-                                propertyColumn(header:"Success", propertyName:"up", preferredWidth:25, editable:false)
+                                propertyColumn(header:"Result", propertyName:"result", editable:false)
                             }
                         }
                         widget(constraints:"dock north, grow, wrap", tab.tableHeader)
                     }
-                    detailsPanel.setVisible(false)
-                    // println "detailsPanel size = " + detailsPanel.getSize()
-                    if (oldDetailsPanel != null) {
-                        detailsParent.remove(oldDetailsPanel)
-                    }
+                    detailsPanel.setVisible(true)
                     detailsParent.add(detailsPanel)
                 } else {
                     detailsButton.setText("Details \u25B2")
                     if (detailsParent != null && detailsPanel != null) {
-                        detailsPanel.setVisible(false)
-                        detailsPanel.repaint(repaintDelay)
                         detailsParent.remove(detailsPanel)
                         detailsPanel = null
                     }
@@ -362,4 +363,3 @@ class ScanGui extends AbstractGui implements InitializingBean, PropertyChangeLis
         }
     }
 }
-
