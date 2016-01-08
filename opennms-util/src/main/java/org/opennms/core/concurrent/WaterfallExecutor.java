@@ -29,10 +29,13 @@
 package org.opennms.core.concurrent;
 
 import java.util.concurrent.Callable;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executor;
 
 /**
+ * @deprecated Replace usage of this class with Java 8's {@link CompletableFuture}.
+ * 
  * @author Seth
  */
 public abstract class WaterfallExecutor {

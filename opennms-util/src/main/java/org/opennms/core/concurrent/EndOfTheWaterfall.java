@@ -29,9 +29,12 @@
 package org.opennms.core.concurrent;
 
 import java.util.concurrent.Callable;
+import java.util.concurrent.CompletableFuture;
 
 /**
  * This interface is used to denote a WaterfallCallable that terminates the chain of 
  * execution by not returning a subsequent Callable&lt;Callable&lt;?&gt;&gt; value.
+ * 
+ * @deprecated Replace usage of this class with Java 8's {@link CompletableFuture}.
  */
 public interface EndOfTheWaterfall extends Callable<Callable<Void>> {}

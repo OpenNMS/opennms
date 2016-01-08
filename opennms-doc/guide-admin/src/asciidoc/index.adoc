@@ -166,3 +166,10 @@ include::text/operation/newts/newts.adoc[]
 [[ga-opennms-system-properties]]
 == System Properties
 include::text/system-properties/introduction.adoc[]
+
+[[ga-ticketing]]
+== Ticketing
+include::text/ticketing/introduction.adoc[]
+
+// JIRA Ticketer
+include::text/ticketing/jira.adoc[]
