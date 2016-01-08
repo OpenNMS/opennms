@@ -170,6 +170,11 @@ public class ConfigTesterTest {
     }
 
     @Test
+    public void testEmailNorthbounderConfiguration() {
+        testConfigFile("email-northbounder-configuration.xml");
+    }
+
+    @Test
     public void testEventConf() {
         testConfigFile("eventconf.xml");
     }
@@ -443,6 +448,11 @@ public class ConfigTesterTest {
      */
     public void testSnmpInterfacePollerConfiguration() {
         ignoreConfigFile("snmp-interface-poller-configuration.xml");
+    }
+
+    @Test
+    public void testSnmpTrapNorthbounderConfiguration() {
+        testConfigFile("snmptrap-northbounder-configuration.xml");
     }
 
     @Test
