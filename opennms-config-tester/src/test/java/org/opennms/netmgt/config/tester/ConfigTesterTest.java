@@ -226,7 +226,7 @@ public class ConfigTesterTest {
 
     @Test
     public void testJmsNorthbounderConfiguration() {
-        testConfigFile("jms-northbounder-configuration.xml");
+        ignoreConfigFile("jms-northbounder-configuration.xml");
     }
 
     @Test
