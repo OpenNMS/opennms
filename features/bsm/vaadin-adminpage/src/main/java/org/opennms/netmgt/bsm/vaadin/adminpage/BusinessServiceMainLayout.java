@@ -30,6 +30,9 @@ package org.opennms.netmgt.bsm.vaadin.adminpage;
 
 import java.util.Objects;
 
+import org.opennms.netmgt.bsm.service.BusinessServiceManager;
+import org.opennms.netmgt.bsm.service.model.BusinessServiceDTO;
+
 import com.google.common.base.Strings;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.ui.Alignment;
@@ -38,9 +41,6 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
-
-import org.opennms.netmgt.bsm.service.BusinessServiceManager;
-import org.opennms.netmgt.bsm.service.model.BusinessServiceDTO;
 
 /**
  * This class represents the main  Vaadin component for editing Business Service definitions.
@@ -90,6 +90,7 @@ public class BusinessServiceMainLayout extends VerticalLayout {
          * add the input field...
          */
         final TextField createTextField = new TextField();
+        createTextField.setWidth(300.0f, Unit.PIXELS);
         createTextField.setInputPrompt("Business Service Name");
         createTextField.setId("createTextField");
 
@@ -152,6 +153,7 @@ public class BusinessServiceMainLayout extends VerticalLayout {
             @Override
             public Object generateCell(Table source, Object itemId, Object columnId) {
                 Button editButton = new Button("edit");
+                editButton.addStyleName("small");
                 editButton.setId("editButton-" + ((BusinessServiceDTO) itemId).getName());
 
                 editButton.addClickListener((Button.ClickListener) event -> {
@@ -166,28 +168,52 @@ public class BusinessServiceMainLayout extends VerticalLayout {
          * ...and deletion of entries
          */
         m_table.addGeneratedColumn("delete", new Table.ColumnGenerator() {
-            @Override
-            public Object generateCell(Table source, Object itemId, Object columnId) {
-                Button deleteButton = new Button("delete");
-                deleteButton.setId("deleteButton-" + ((BusinessServiceDTO) itemId).getName());
-                deleteButton.addClickListener((Button.ClickListener) event -> {
-                    businessServiceManager.delete(((BusinessServiceDTO) itemId).getId());
-                    refreshTable();
-                });
-                return deleteButton;
-            }
-        });
+                    @Override
+                    public Object generateCell(Table source, Object itemId, Object columnId) {
+                        Button deleteButton = new Button("delete");
+                        deleteButton.addStyleName("small");
+                        BusinessServiceDTO businessServiceDTO = (BusinessServiceDTO) itemId;
+                        deleteButton.setId("deleteButton-" + businessServiceDTO.getName());
+
+                        deleteButton.addClickListener((Button.ClickListener) event -> {
+                                    if (businessServiceDTO.getParentServices().isEmpty() && businessServiceDTO.getChildServices().isEmpty()) {
+                                        businessServiceManager.delete(businessServiceDTO.getId());
+                                        refreshTable();
+                                    } else {
+                                        new org.opennms.netmgt.vaadin.core.ConfirmationDialog()
+                                                .withOkAction(new org.opennms.netmgt.vaadin.core.ConfirmationDialog.Action() {
+                                                    @Override
+                                                    public void execute(org.opennms.netmgt.vaadin.core.ConfirmationDialog window) {
+                                                        businessServiceManager.delete(businessServiceDTO.getId());
+                                                        refreshTable();
+                                                    }
+                                                })
+                                                .withOkLabel("Delete anyway")
+                                                .withCancelLabel("Cancel")
+                                                .withCaption("Warning")
+                                                .withDescription("This entry is referencing or is referenced by other Business Services! Do you really to delete this entry?")
+                                                .open();
+                                    }
+                                }
+
+                        );
+                        return deleteButton;
+                    }
+                }
+        );
 
         /**
          * add the table to the layout
          */
         addComponent(m_table);
+
         setExpandRatio(m_table, 1.0f);
 
         /**
          * initial refresh of table
          */
         refreshTable();
+
     }
 
     /**
