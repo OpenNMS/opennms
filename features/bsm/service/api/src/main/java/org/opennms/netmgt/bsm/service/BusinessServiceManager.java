@@ -29,6 +29,7 @@
 package org.opennms.netmgt.bsm.service;
 
 import java.util.List;
+import java.util.Set;
 
 import org.opennms.netmgt.bsm.service.model.BusinessServiceDTO;
 import org.opennms.netmgt.bsm.service.model.IpServiceDTO;
@@ -49,6 +50,14 @@ public interface BusinessServiceManager {
     boolean assignIpInterface(Long serviceId, Integer ipServiceId);
 
     boolean removeIpInterface(Long serviceId, Integer ipServiceId);
+
+    boolean assignChildService(Long serviceId, Long childServiceId);
+
+    boolean removeChildService(Long serviceId, Long childServiceId);
+
+    Set<BusinessServiceDTO> getFeasibleChildServices(BusinessServiceDTO service);
+
+    Set<BusinessServiceDTO> getParentServices(BusinessServiceDTO service);
 
     OnmsSeverity getOperationalStatusForBusinessService(Long serviceId);
 
