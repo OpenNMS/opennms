@@ -69,6 +69,16 @@ public class PollResult implements Serializable {
         return m_status;
     }
 
+    public String getResult() {
+        if (m_status == null) {
+            return "Unknown";
+        }
+        if (m_status.isUp()) {
+            return "Success";
+        } else {
+            return "Failed: " + m_status.getReason();
+        }
+    }
     public boolean isUp() {
         if (m_status != null) {
             return m_status.isUp();
