@@ -218,6 +218,7 @@ public class SyslogEventForwarderTest {
         Assert.assertTrue(messages.get(0).contains("EVENT 100 FOR NODE p-brane IN TestGroup: something is wrong"));
 
         forwarder.reload();
+        forwarder.shutdown();
     }
 
 }

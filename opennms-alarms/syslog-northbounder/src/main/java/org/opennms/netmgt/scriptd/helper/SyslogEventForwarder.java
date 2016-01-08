@@ -81,7 +81,9 @@ public class SyslogEventForwarder {
     public void initialize(String destinationName) {
         File configFile = getConfigFile(destinationName);
         if (configFile != null && configFile.exists()) {
+            LOG.info("Initializing Syslog instance for destination: '{}'", destinationName);
             destination = JaxbUtils.unmarshal(SyslogDestination.class, configFile);
+            destination.setName(destinationName); // To avoid potential conflicts.
             int facility = convertFacility(destination.getFacility());
             SyslogProtocol protocol = destination.getProtocol();
             SyslogConfigIF instanceConfiguration = createConfig(destination, protocol, facility);
@@ -103,21 +105,30 @@ public class SyslogEventForwarder {
         }
     }
 
+    public void shutdown() {
+        if (initialized) {
+            try {
+                LOG.info("Shutting down Syslog instance for destination: '{}'", destination.getName());
+                initialized = false;
+                SyslogIF instance = Syslog.getInstance(destination.getName());
+                Syslog.destroyInstance(instance);
+            } catch (SyslogRuntimeException e) {
+                LOG.error("Could not find Syslog instance for destination: '{}': {}", destination.getName(), e);
+                return;
+            }
+        } else {
+            LOG.error("Can't shutdown a SYslog instance for an uninitialized forwarder.");
+        }
+    }
+
     /**
      * Reloads the forwarder.
      */
     public void reload() {
         if (initialized) {
-            try {
-                LOG.info("Reloading Syslog instance for destination: '{}'", destination.getName());
-                initialized = false;
-                SyslogIF instance = Syslog.getInstance(destination.getName());
-                Syslog.destroyInstance(instance);
-                initialize(destination.getName());
-            } catch (SyslogRuntimeException e) {
-                LOG.error("Could not find Syslog instance for destination: '{}': {}", destination.getName(), e);
-                return;
-            }
+            LOG.info("Reloading Syslog instance for destination: '{}'", destination.getName());
+            shutdown();
+            initialize(destination.getName());
         } else {
             LOG.error("Can't reload configuration for an uninitialized forwarder.");
         }
