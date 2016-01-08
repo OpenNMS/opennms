@@ -36,6 +36,7 @@ import java.awt.Font
 import java.awt.GraphicsEnvironment
 import java.awt.font.TextAttribute
 
+import javax.swing.BorderFactory;
 import javax.swing.JButton
 import javax.swing.JFrame
 import javax.swing.JPanel
@@ -79,23 +80,6 @@ public abstract class AbstractGui implements GroovyGui {
         def detail = new ColorUIResource(m_detailColor)
         def buttonBorder = new BorderUIResource.LineBorderUIResource(m_foregroundColor)
 
-        UIManager.put("Button.background", detail)
-        UIManager.put("Button.foreground", background)
-        //UIManager.put("ComboBox.background", background)
-        //UIManager.put("ComboBox.foreground", foreground)
-        //UIManager.put("ComboBox.listBackground", background)
-        //UIManager.put("ComboBox.listForeground", foreground)
-        UIManager.put("ComboBox.selectionBackground", background)
-        UIManager.put("ComboBox.selectionForeground", foreground)
-        UIManager.put("Label.background", background)
-        UIManager.put("Label.foreground", foreground)
-        //UIManager.put("textHighlight", detail)
-        //UIManager.put("textHighlightText", background)
-        UIManager.put("ProgressBar.selectionBackground", Color.TRANSLUCENT)
-        UIManager.put("ProgressBar.selectionForeground", foreground)
-        //UIManager.put("ProgressBar.foreground", Color.TRANSLUCENT)
-        //UIManager.put("ProgressBar.background", foreground)
-
         swing.registerBeanFactory('migLayout', MigLayout.class)
 
         def fontNames = new TreeSet<String>()
@@ -127,6 +111,30 @@ public abstract class AbstractGui implements GroovyGui {
         //println "Main font: " + m_mainFont
 
         setUIFont(new FontUIResource(m_mainFont))
+
+        UIManager.put("Button.background", detail)
+        UIManager.put("Button.foreground", background)
+        //UIManager.put("ComboBox.background", background)
+        //UIManager.put("ComboBox.foreground", foreground)
+        //UIManager.put("ComboBox.listBackground", background)
+        //UIManager.put("ComboBox.listForeground", foreground)
+        UIManager.put("ComboBox.selectionBackground", background)
+        UIManager.put("ComboBox.selectionForeground", foreground)
+        UIManager.put("Label.background", background)
+        UIManager.put("Label.foreground", foreground)
+        //UIManager.put("textHighlight", detail)
+        //UIManager.put("textHighlightText", background)
+        UIManager.put("ProgressBar.selectionBackground", Color.TRANSLUCENT)
+        UIManager.put("ProgressBar.selectionForeground", foreground)
+        //UIManager.put("ProgressBar.foreground", Color.TRANSLUCENT)
+        //UIManager.put("ProgressBar.background", foreground)
+        UIManager.put("Table.font", new FontUIResource(m_mainFont))
+        UIManager.put("Table.foreground", foreground)
+        UIManager.put("Table.textForeground", foreground)
+        UIManager.put("Table.showGrid", true)
+        UIManager.put("TableHeader.background", detail)
+        UIManager.put("TableHeader.foreground", background)
+        UIManager.put("TableHeader.font", new FontUIResource(m_mainFont))
     }
 
     public static void setUIFont (final FontUIResource f){
