@@ -35,7 +35,6 @@
     <dependency>
       <groupId>org.opennms.features.measurements</groupId>
       <artifactId>org.opennms.features.measurements.api</artifactId>
-      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.opennms.features.collection</groupId>
@@ -56,7 +55,7 @@
     <dependency>
       <groupId>com.lmax</groupId>
       <artifactId>disruptor</artifactId>
-      <version>3.3.2</version>
+      <version>${lmaxDisruptorVersion}</version>
     </dependency>
     <dependency>
       <groupId>args4j</groupId>
@@ -105,6 +104,10 @@
         <exclusion>
           <groupId>ch.qos.logback</groupId>
           <artifactId>logback-classic</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>io.netty</groupId>
+          <artifactId>netty-all</artifactId>
         </exclusion>
       </exclusions>
     </dependency>

@@ -1,0 +1,190 @@
+<?xml version="1.0"?>
+<datacollection-group name="MIB2">
+
+    <resourceType name="hrStorageIndex" label="Storage (SNMP MIB-2 Host Resources)"
+                  resourceLabel="${hrStorageDescr}">
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.dao.support.SiblingColumnStorageStrategy">
+          <parameter key="sibling-column-name" value="hrStorageDescr" />
+          <parameter key="replace-first" value="s/^-$/_root_fs/" />
+          <parameter key="replace-all" value="s/^-//" />
+          <parameter key="replace-all" value="s/\s//" />
+          <parameter key="replace-all" value="s/:\\.*//" />
+      </storageStrategy>
+    </resourceType>
+
+    <resourceType name="hrStorageNonUnique" label="Storage (SNMP MIB-2 Host Resources, non-unique descriptions)"
+                  resourceLabel="${hrStorageDescr} (index ${index})">
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
+    </resourceType>
+
+    <!-- HOST-RESOURCES hrDeviceTable / hrProcessorTable resource type -->
+    <resourceType name="hrDeviceEntry" label="Host Resources Device"
+                  resourceLabel="${hrDeviceDescr} (${index})">
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistRegexSelectorStrategy">
+        <parameter key="match-expression" value="(#hrDeviceType == '.1.3.6.1.2.1.25.3.1.3')" />
+      </persistenceSelectorStrategy>
+      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
+    </resourceType>
+
+    <resourceType name="pethMainPseGroupIndex" label="Power Ethernet (MIB-2 powerEthernet)">
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
+    </resourceType>
+
+      <!-- data from standard (mib-2) sources -->
+      <group name="mib2-interfaces" ifType="all">
+        <mibObj oid=".1.3.6.1.2.1.2.2.1.2" instance="ifIndex"  alias="ifDescr"         type="string"  />
+        <mibObj oid=".1.3.6.1.2.1.2.2.1.5" instance="ifIndex"  alias="ifSpeed"         type="string"  />
+        <mibObj oid=".1.3.6.1.2.1.2.2.1.10" instance="ifIndex" alias="ifInOctets"      type="counter" />
+        <mibObj oid=".1.3.6.1.2.1.2.2.1.11" instance="ifIndex" alias="ifInUcastpkts"   type="counter" />
+        <mibObj oid=".1.3.6.1.2.1.2.2.1.12" instance="ifIndex" alias="ifInNUcastpkts"  type="counter" />
+        <mibObj oid=".1.3.6.1.2.1.2.2.1.13" instance="ifIndex" alias="ifInDiscards"    type="counter" />
+        <mibObj oid=".1.3.6.1.2.1.2.2.1.14" instance="ifIndex" alias="ifInErrors"      type="counter" />
+        <mibObj oid=".1.3.6.1.2.1.2.2.1.16" instance="ifIndex" alias="ifOutOctets"     type="counter" />
+        <mibObj oid=".1.3.6.1.2.1.2.2.1.17" instance="ifIndex" alias="ifOutUcastPkts"  type="counter" />
+        <mibObj oid=".1.3.6.1.2.1.2.2.1.18" instance="ifIndex" alias="ifOutNUcastPkts" type="counter" />
+        <mibObj oid=".1.3.6.1.2.1.2.2.1.19" instance="ifIndex" alias="ifOutDiscards"   type="counter" />
+        <mibObj oid=".1.3.6.1.2.1.2.2.1.20" instance="ifIndex" alias="ifOutErrors"     type="counter" />
+      </group>
+
+      <group name="mib2-X-interfaces" ifType="all">
+        <mibObj oid=".1.3.6.1.2.1.31.1.1.1.1"  instance="ifIndex" alias="ifName"        type="string"  />
+        <mibObj oid=".1.3.6.1.2.1.31.1.1.1.15" instance="ifIndex" alias="ifHighSpeed"   type="string"  />
+        <mibObj oid=".1.3.6.1.2.1.31.1.1.1.6"  instance="ifIndex" alias="ifHCInOctets"  type="Counter64" />
+        <mibObj oid=".1.3.6.1.2.1.31.1.1.1.10" instance="ifIndex" alias="ifHCOutOctets" type="Counter64" />
+      </group>
+
+      <group name="mib2-X-interfaces-pkts" ifType="all">
+        <mibObj oid=".1.3.6.1.2.1.31.1.1.1.7"  instance="ifIndex" alias="ifHCInUcastPkts"     type="Counter64"  />
+        <mibObj oid=".1.3.6.1.2.1.31.1.1.1.8"  instance="ifIndex" alias="ifHCInMulticastPkts" type="Counter64"  />
+        <mibObj oid=".1.3.6.1.2.1.31.1.1.1.9"  instance="ifIndex" alias="ifHCInBroadcastPkts" type="Counter64"  />
+        <mibObj oid=".1.3.6.1.2.1.31.1.1.1.11" instance="ifIndex" alias="ifHCOutUcastPkts"    type="Counter64"  />
+        <mibObj oid=".1.3.6.1.2.1.31.1.1.1.12" instance="ifIndex" alias="ifHCOutMulticastPkt" type="Counter64"  />
+        <mibObj oid=".1.3.6.1.2.1.31.1.1.1.13" instance="ifIndex" alias="ifHCOutBroadcastPkt" type="Counter64"  />
+      </group>
+
+      <group name="mib2-icmp" ifType="ignore">
+        <mibObj oid=".1.3.6.1.2.1.5.2"  instance="0" alias="icmpInErrors"        type="counter" />
+        <mibObj oid=".1.3.6.1.2.1.5.3"  instance="0" alias="icmpInDestUnreachs"  type="counter" />
+        <mibObj oid=".1.3.6.1.2.1.5.4"  instance="0" alias="icmpInTimeExcds"     type="counter" />
+        <mibObj oid=".1.3.6.1.2.1.5.6"  instance="0" alias="icmpInSrcQuenchs"    type="counter" />
+        <mibObj oid=".1.3.6.1.2.1.5.7"  instance="0" alias="icmpInRedirects"     type="counter" />
+        <mibObj oid=".1.3.6.1.2.1.5.8"  instance="0" alias="icmpInEchos"         type="counter" />
+        <mibObj oid=".1.3.6.1.2.1.5.15" instance="0" alias="icmpOutErrors"       type="counter" />
+        <mibObj oid=".1.3.6.1.2.1.5.16" instance="0" alias="icmpOutDestUnreachs" type="counter" />
+        <mibObj oid=".1.3.6.1.2.1.5.17" instance="0" alias="icmpOutTimeExcds"    type="counter" />
+        <mibObj oid=".1.3.6.1.2.1.5.19" instance="0" alias="icmpOutSrcQuenchs"   type="counter" />
+        <mibObj oid=".1.3.6.1.2.1.5.20" instance="0" alias="icmpOutRedirects"    type="counter" />
+        <mibObj oid=".1.3.6.1.2.1.5.21" instance="0" alias="icmpOutEchos"        type="counter" />
+        <mibObj oid=".1.3.6.1.2.1.5.22" instance="0" alias="icmpOutEchoReps"     type="counter" />
+        <mibObj oid=".1.3.6.1.2.1.5.1"  instance="0" alias="icmpInMsgs"          type="counter" />
+        <mibObj oid=".1.3.6.1.2.1.5.5"  instance="0" alias="icmpInParmProbs"     type="counter" />
+        <mibObj oid=".1.3.6.1.2.1.5.9"  instance="0" alias="icmpInEchoReps"      type="counter" />
+        <mibObj oid=".1.3.6.1.2.1.5.10" instance="0" alias="icmpInTimestamps"    type="counter" />
+        <mibObj oid=".1.3.6.1.2.1.5.11" instance="0" alias="icmpInTimestampReps" type="counter" />
+        <mibObj oid=".1.3.6.1.2.1.5.12" instance="0" alias="icmpInAddrMasks"     type="counter" />
+        <mibObj oid=".1.3.6.1.2.1.5.13" instance="0" alias="icmpInAddrMaskReps"  type="counter" />
+        <mibObj oid=".1.3.6.1.2.1.5.14" instance="0" alias="icmpOutMsgs"         type="counter" />
+        <mibObj oid=".1.3.6.1.2.1.5.18" instance="0" alias="icmpOutParmProbs"    type="counter" />
+        <mibObj oid=".1.3.6.1.2.1.5.23" instance="0" alias="icmpOutTimestamps"   type="counter" />
+        <mibObj oid=".1.3.6.1.2.1.5.24" instance="0" alias="icmpOutTimestmpReps" type="counter" />
+        <mibObj oid=".1.3.6.1.2.1.5.25" instance="0" alias="icmpOutAddrMasks"    type="counter" />
+        <mibObj oid=".1.3.6.1.2.1.5.26" instance="0" alias="icmpOutAddrMaskReps" type="counter" />
+      </group>
+
+      <group name="mib2-coffee-rfc2325" ifType="ignore">
+        <mibObj oid=".1.3.6.1.2.1.10.132.2"     instance="0" alias="coffeePotCapacity" type="integer" />
+        <mibObj oid=".1.3.6.1.2.1.10.132.4.1.2" instance="0" alias="coffeePotLevel"    type="integer" />
+        <mibObj oid=".1.3.6.1.2.1.10.132.4.1.6" instance="0" alias="coffeePotTemp"     type="integer" />
+      </group>
+
+      <group name="mib2-powerethernet" ifType="all">
+        <mibObj oid="1.3.6.1.2.1.105.1.3.1.1.2" instance="pethMainPseGroupIndex" alias="pethMainPsePower" type="gauge" />
+        <mibObj oid="1.3.6.1.2.1.105.1.3.1.1.4" instance="pethMainPseGroupIndex" alias="pethMainPseConPower" type="gauge" />
+      </group>
+
+      <group name="mib2-tcp" ifType="ignore">
+        <mibObj oid=".1.3.6.1.2.1.6.5"  instance="0" alias="tcpActiveOpens"  type="Counter32" />
+        <mibObj oid=".1.3.6.1.2.1.6.6"  instance="0" alias="tcpPassiveOpens" type="Counter32" />
+        <mibObj oid=".1.3.6.1.2.1.6.7"  instance="0" alias="tcpAttemptFails" type="Counter32" />
+        <mibObj oid=".1.3.6.1.2.1.6.8"  instance="0" alias="tcpEstabResets"  type="Counter32" />
+        <mibObj oid=".1.3.6.1.2.1.6.9"  instance="0" alias="tcpCurrEstab"    type="Gauge32" />
+        <mibObj oid=".1.3.6.1.2.1.6.10" instance="0" alias="tcpInSegs"       type="Counter32" />
+        <mibObj oid=".1.3.6.1.2.1.6.11" instance="0" alias="tcpOutSegs"      type="Counter32" />
+        <mibObj oid=".1.3.6.1.2.1.6.12" instance="0" alias="tcpRetransSegs"  type="Counter32" />
+        <mibObj oid=".1.3.6.1.2.1.6.14" instance="0" alias="tcpInErrors"     type="Counter32" />
+        <mibObj oid=".1.3.6.1.2.1.6.15" instance="0" alias="tcpOutRsts"      type="Counter32" />
+      </group>
+
+      <group name="mib2-ups-rfc1628" ifType="ignore">
+        <mibObj oid=".1.3.6.1.2.1.33.1.2.2"     instance="0" alias="upsSecondsOnBattery" type="Integer32" />
+        <mibObj oid=".1.3.6.1.2.1.33.1.2.3"     instance="0" alias="upsEstMinsRemain"    type="Integer32" />
+        <mibObj oid=".1.3.6.1.2.1.33.1.2.4"     instance="0" alias="upsEstChargeRemain"  type="Integer32" />
+        <mibObj oid=".1.3.6.1.2.1.33.1.2.5"     instance="0" alias="upsBatteryVoltage"   type="Integer32" />
+        <mibObj oid=".1.3.6.1.2.1.33.1.2.6"     instance="0" alias="upsBatteryCurrent"   type="Integer32" />
+        <mibObj oid=".1.3.6.1.2.1.33.1.2.7"     instance="0" alias="upsBatteryTemp"      type="Integer32" />
+        <mibObj oid=".1.3.6.1.2.1.33.1.3.3.1.2" instance="1" alias="upsInputFrequency1"  type="Integer32" />
+        <mibObj oid=".1.3.6.1.2.1.33.1.3.3.1.3" instance="1" alias="upsInputVoltage1"    type="Integer32" />
+        <mibObj oid=".1.3.6.1.2.1.33.1.4.1"     instance="0" alias="upsOutputSource"     type="Integer32" />
+        <mibObj oid=".1.3.6.1.2.1.33.1.4.2"     instance="0" alias="upsOutputFrequency"  type="Integer32" />
+        <mibObj oid=".1.3.6.1.2.1.33.1.4.4.1.2" instance="1" alias="upsOutputVoltage1"   type="Integer32" />
+        <mibObj oid=".1.3.6.1.2.1.33.1.4.4.1.3" instance="1" alias="upsOutputCurrent1"   type="Integer32" />
+        <mibObj oid=".1.3.6.1.2.1.33.1.4.4.1.4" instance="1" alias="upsOutputPower1"     type="Integer32" />
+        <mibObj oid=".1.3.6.1.2.1.33.1.4.4.1.5" instance="1" alias="upsOutputLoad1"      type="Integer32" />
+      </group>
+
+      <group name="mib2-host-resources-storage" ifType="all">
+        <mibObj oid=".1.3.6.1.2.1.25.2.3.1.2" instance="hrStorageIndex" alias="hrStorageType"       type="string" />
+        <mibObj oid=".1.3.6.1.2.1.25.2.3.1.3" instance="hrStorageIndex" alias="hrStorageDescr"      type="string" />
+        <mibObj oid=".1.3.6.1.2.1.25.2.3.1.4" instance="hrStorageIndex" alias="hrStorageAllocUnits" type="gauge" />
+        <mibObj oid=".1.3.6.1.2.1.25.2.3.1.5" instance="hrStorageIndex" alias="hrStorageSize"       type="gauge" />
+        <mibObj oid=".1.3.6.1.2.1.25.2.3.1.6" instance="hrStorageIndex" alias="hrStorageUsed"       type="gauge" />
+      </group>
+
+      <!-- A copy of mib2-host-resources-storage, but using a different resource type to work around
+           certain agents (notably AS/400) whose hrStorageTable entries have non-unique values of
+           hrStorageDescr and are therefore unsuitable for the HostFileSystemStorageStrategy -->
+      <group name="mib2-host-resources-storage-non-unique" ifType="all">
+        <mibObj oid=".1.3.6.1.2.1.25.2.3.1.2" instance="hrStorageNonUnique" alias="hrStorageType"       type="string" />
+        <mibObj oid=".1.3.6.1.2.1.25.2.3.1.3" instance="hrStorageNonUnique" alias="hrStorageDescr"      type="string" />
+        <mibObj oid=".1.3.6.1.2.1.25.2.3.1.4" instance="hrStorageNonUnique" alias="hrStorageAllocUnits" type="gauge" />
+        <mibObj oid=".1.3.6.1.2.1.25.2.3.1.5" instance="hrStorageNonUnique" alias="hrStorageSize"       type="gauge" />
+        <mibObj oid=".1.3.6.1.2.1.25.2.3.1.6" instance="hrStorageNonUnique" alias="hrStorageUsed"       type="gauge" />
+      </group>
+
+      <group name="mib2-host-resources-system" ifType="ignore">
+        <mibObj oid=".1.3.6.1.2.1.25.1.1" instance="0" alias="hrSystemUptime"    type="timeticks" />
+        <mibObj oid=".1.3.6.1.2.1.25.1.5" instance="0" alias="hrSystemNumUsers"  type="gauge" />
+        <mibObj oid=".1.3.6.1.2.1.25.1.6" instance="0" alias="hrSystemProcesses" type="gauge" />
+      </group>
+
+      <group name="mib2-host-resources-memory" ifType="ignore">
+        <mibObj oid=".1.3.6.1.2.1.25.2.2" instance="0" alias="hrMemorySize" type="integer" />
+      </group>
+
+      <group name="mib2-host-resources-processor" ifType="all">
+        <mibObj oid=".1.3.6.1.2.1.25.3.2.1.1" instance="hrDeviceEntry" alias="hrDeviceIndex" type="string" />
+        <mibObj oid=".1.3.6.1.2.1.25.3.2.1.2" instance="hrDeviceEntry" alias="hrDeviceType" type="string" />
+        <mibObj oid=".1.3.6.1.2.1.25.3.2.1.3" instance="hrDeviceEntry" alias="hrDeviceDescr" type="string" />
+        <mibObj oid=".1.3.6.1.2.1.25.3.3.1.2" instance="hrDeviceEntry" alias="hrProcessorLoad" type="Gauge32" />
+      </group>
+
+      <group name="mib2-udp" ifType="ignore">
+        <mibObj oid=".1.3.6.1.2.1.7.1" instance="0" alias="udpInDatagrams"  type="counter" />
+        <mibObj oid=".1.3.6.1.2.1.7.2" instance="0" alias="udpNoPorts"      type="counter" />
+        <mibObj oid=".1.3.6.1.2.1.7.3" instance="0" alias="udpInErrors"     type="counter" />
+        <mibObj oid=".1.3.6.1.2.1.7.4" instance="0" alias="udpOutDatagrams" type="counter" />
+      </group>
+
+      <systemDef name="Enterprise">
+        <sysoidMask>.1.3.6.1.4.1.</sysoidMask>
+        <collect>
+          <includeGroup>mib2-interfaces</includeGroup>
+          <includeGroup>mib2-tcp</includeGroup>
+          <includeGroup>mib2-powerethernet</includeGroup>
+        </collect>
+      </systemDef>
+
+</datacollection-group>
