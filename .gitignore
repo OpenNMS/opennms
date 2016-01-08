@@ -23,3 +23,4 @@ build.properties
 nb-configuration.xml
 .idea
 features/topology-map/org.opennms.features.topology.app/www-test/
+dependency-reduced-pom.xml

@@ -18,10 +18,10 @@
   </div>
   <div class="col-md-6">
     <div class="input-group pull-right">
-      <button class="btn btn-danger" ng-click="save()" ng-show="nodeForm.$dirty && nodeForm.$valid" ng-disabled="timingStatus.isRunning">
+      <button class="btn btn-danger" id="save-node" ng-click="save()" ng-show="nodeForm.$dirty &amp;&amp; nodeForm.$valid" ng-disabled="timingStatus.isRunning">
         <span class="glyphicon glyphicon-save"></span> Save
       </button>
-      <button class="btn btn-default" ng-click="goBack()">
+      <button class="btn btn-default" id="go-back" ng-click="goBack()">
         <span class="glyphicon glyphicon-remove"></span> Return
       </button>
     </div>
@@ -38,7 +38,7 @@
       <tabset justified="true">
 
         <!-- Basic Information Tab -->
-        <tab heading="Basic Information">
+        <tab heading="Basic Information" id="tab-basic-information">
           <a ng-show="isNew" ng-click="generateForeignId(nodeForm.foreignId)" class="btn"><span class="glyphicon glyphicon-plus"/> Auto-generate the Foreign ID</a>
           <br/>
           <br/>
@@ -63,7 +63,7 @@
         </tab>
 
         <!-- Path Outage Tab -->
-        <tab heading="Path Outage">
+        <tab heading="Path Outage" id="tab-path-outage">
           <br/>
           <div class="form-group">
             <label class="control-label" for="parentForeignSource">Parent Foreign Source</label>
@@ -80,7 +80,7 @@
         </tab>
 
         <!-- Interfaces Tab -->
-        <tab heading="Interfaces">
+        <tab heading="Interfaces" id="tab-interfaces">
           <a ng-click="addInterface()" class="btn"><span class="glyphicon glyphicon-plus"/> Add Interface</a>
           <br/>
           <div class="table-responsive">
@@ -122,7 +122,7 @@
         </tab>
 
         <!-- Assets Tab -->
-        <tab heading="Assets">
+        <tab heading="Assets" id="tab-assets">
           <a ng-click="addAsset()" class="btn"><span class="glyphicon glyphicon-plus"/> Add Asset</a>
           <br/>
           <div class="table-responsive">
@@ -155,7 +155,7 @@
         </tab>
 
         <!-- Categories Tab -->
-        <tab heading="Categories">
+        <tab heading="Categories" id="tab-categories">
           <a ng-click="addCategory()" class="btn"><span class="glyphicon glyphicon-plus"/> Add Category</a>
           <br/>
           <ng-form name="categoryForm" ng-repeat="category in node.categories">

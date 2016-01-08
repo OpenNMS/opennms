@@ -30,23 +30,56 @@ package org.opennms.netmgt.alarmd.northbounder.syslog;
 
 import org.opennms.core.xml.AbstractJaxbConfigDao;
 
-public class SyslogNorthbounderConfigDao
-        extends
-        AbstractJaxbConfigDao<SyslogNorthbounderConfig, SyslogNorthbounderConfig> {
+/**
+ * The Class SyslogNorthbounderConfigDao.
+ * 
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ */
+public class SyslogNorthbounderConfigDao extends AbstractJaxbConfigDao<SyslogNorthbounderConfig, SyslogNorthbounderConfig> {
 
+    /**
+     * Instantiates a new Syslog northbounder configiguration DAO.
+     */
     public SyslogNorthbounderConfigDao() {
-        super(SyslogNorthbounderConfig.class,
-              "Config for Syslog Northbounder");
+        super(SyslogNorthbounderConfig.class, "Config for Syslog Northbounder");
     }
 
+    /* (non-Javadoc)
+     * @see org.opennms.core.xml.AbstractJaxbConfigDao#translateConfig(java.lang.Object)
+     */
     @Override
-    protected SyslogNorthbounderConfig translateConfig(
-            SyslogNorthbounderConfig config) {
+    protected SyslogNorthbounderConfig translateConfig( SyslogNorthbounderConfig config) {
         return config;
     }
 
+    /**
+     * Gets the Syslog northbounder configuration.
+     *
+     * @return the configuration object
+     */
     public SyslogNorthbounderConfig getConfig() {
         return getContainer().getObject();
     }
 
+    /**
+     * Gets the Syslog destination.
+     *
+     * @param syslogDestinationName the Syslog destination name
+     * @return the Syslog destination
+     */
+    public SyslogDestination getSyslogDestination(String syslogDestinationName) {
+        for (SyslogDestination dest : getConfig().getDestinations()) {
+            if (dest.getName().equals(syslogDestinationName)) {
+                return dest;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Reload.
+     */
+    public void reload() {
+        getContainer().reload();
+    }
 }

@@ -215,6 +215,12 @@ if (grep { $_ =~ /^-Dbuild.profile=/ } @ARGS) {
 	unshift(@ARGS, "-Dbuild.profile=$BUILD_PROFILE");
 }
 
+if (not grep { $_ =~ /^-Dbuild.skip.tarball=/ } @ARGS) {
+	if (abs_path(getcwd()) ne abs_path($PREFIX)) {
+		debug("not building in the root directory, passing -Dbuild.skip.tarball=true");
+		unshift(@ARGS, "-Dbuild.skip.tarball=true");
+	}
+}
 
 if (-r File::Spec->catfile($ENV{'HOME'}, '.opennms-buildrc')) {
 	if (open(FILEIN, File::Spec->catfile($ENV{'HOME'}, '/.opennms-buildrc'))) {

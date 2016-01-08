@@ -37,6 +37,9 @@ import java.lang.annotation.Target;
  * Annotation used to request an instance of Cassandra provisioned
  * with the Newts keyspace.
  *
+ * The host and port of the Cassandra instance are read from the
+ * given configuration file.
+ *
  * @author jwhite
  */
 @Retention(RetentionPolicy.RUNTIME)
@@ -44,6 +47,4 @@ import java.lang.annotation.Target;
 public @interface JUnitNewtsCassandra {
     String configurationFileName() default "cassandra.yaml";
     String keyspace() default "newts";
-    String host() default "localhost";
-    int port() default 9043;
 }

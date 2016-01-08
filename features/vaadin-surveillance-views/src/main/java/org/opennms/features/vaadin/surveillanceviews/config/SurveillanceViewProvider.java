@@ -27,13 +27,16 @@
  *******************************************************************************/
 package org.opennms.features.vaadin.surveillanceviews.config;
 
+import java.io.File;
+import java.io.IOException;
+
+import javax.xml.bind.JAXB;
+
+import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.features.vaadin.surveillanceviews.model.SurveillanceViewConfiguration;
 import org.opennms.features.vaadin.surveillanceviews.model.View;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import javax.xml.bind.JAXB;
-import java.io.File;
 
 /**
  * This class is used for loading, holding and saving of {@link SurveillanceViewConfiguration} definitions.
@@ -48,7 +51,7 @@ public class SurveillanceViewProvider {
     /**
      * Instance variable for this singleton object
      */
-    private static SurveillanceViewProvider m_surveillanceViewProvider = new SurveillanceViewProvider();
+    private static SurveillanceViewProvider m_surveillanceViewProvider;
     /**
      * A variable fro holding a {@link SurveillanceViewConfiguration} instance
      */
@@ -56,7 +59,7 @@ public class SurveillanceViewProvider {
     /**
      * The configuration {@link java.io.File} to be used.
      */
-    private File m_cfgFile = new File("etc/surveillance-views.xml");
+    private File m_cfgFile;
 
     /**
      * Private default constructor used to instantiate this class.
@@ -71,6 +74,9 @@ public class SurveillanceViewProvider {
      * @return the singleton instance
      */
     public static SurveillanceViewProvider getInstance() {
+        if (m_surveillanceViewProvider == null) {
+            m_surveillanceViewProvider = new SurveillanceViewProvider();
+        }
         return m_surveillanceViewProvider;
     }
 
@@ -89,11 +95,23 @@ public class SurveillanceViewProvider {
      * This method loads the configuration data from disk.
      */
     public synchronized void load() {
+        LOG.debug("Loading surveillance view configuration.");
+        if (m_cfgFile == null) {
+            try {
+                m_cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.SURVEILLANCE_VIEWS_FILE_NAME);
+            } catch (final IOException e) {
+                LOG.error("Unable to load {}", ConfigFileConstants.SURVEILLANCE_VIEWS_FILE_NAME);
+                m_cfgFile = new File(System.getProperty("opennms.home") + File.separator + "etc" + File.separator + "surveillance-views.xml");
+            }
+        }
+        LOG.debug("Using surveillance view file: {}", m_cfgFile);
         if (!m_cfgFile.exists()) {
+            LOG.warn("Surveillance view configuration {} does not exist!", m_cfgFile);
             m_surveillanceViewConfiguration = new SurveillanceViewConfiguration();
         } else {
             m_surveillanceViewConfiguration = JAXB.unmarshal(m_cfgFile, SurveillanceViewConfiguration.class);
         }
+        LOG.debug("Surveillance view configuration loaded: {}", m_surveillanceViewConfiguration);
     }
 
     /**
@@ -119,7 +137,7 @@ public class SurveillanceViewProvider {
      * @return the {@link View} instance if found, null otherwise
      */
     public synchronized View getView(String name) {
-        for (View view : m_surveillanceViewConfiguration.getViews()) {
+        for (final View view : m_surveillanceViewConfiguration.getViews()) {
             if (view.getName().equals(name)) {
                 return view;
             }
@@ -157,7 +175,8 @@ public class SurveillanceViewProvider {
      * @return the {@link View} instance if found, null otherwise
      */
     public synchronized View getDefaultView() {
-        return getView(m_surveillanceViewConfiguration.getDefaultView());
+        final String defaultView = m_surveillanceViewConfiguration.getDefaultView();
+		return getView(defaultView);
     }
 
     /**
