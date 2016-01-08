@@ -44,25 +44,35 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.Assert;
 
 /**
+ * The Class JmsNorthbounderManager.
+ *
  * @author <a href="mailto:dschlenk@converge-one.com">David Schlenk</a>
  */
 public class JmsNorthbounderManager implements InitializingBean,
         DisposableBean {
 
+    /** The m_service registry. */
     @Autowired
     private ServiceRegistry m_serviceRegistry;
 
+    /** The m_jms northbounder connection factory. */
     @Autowired
     private ConnectionFactory m_jmsNorthbounderConnectionFactory;
 
+    /** The m_config dao. */
     @Autowired
     private JmsNorthbounderConfigDao m_configDao;
 
+    /** The m_node dao. */
     @Autowired
     private NodeDao m_nodeDao;
 
+    /** The m_registrations. */
     private Map<String, Registration> m_registrations = new HashMap<String, Registration>();
 
+    /* (non-Javadoc)
+     * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
+     */
     @Override
     public void afterPropertiesSet() throws Exception {
 
@@ -77,7 +87,6 @@ public class JmsNorthbounderManager implements InitializingBean,
                                                       config,
                                                       m_jmsNorthbounderConnectionFactory,
                                                       jmsDestination);
-            nbi.setNodeDao(m_nodeDao);
             nbi.afterPropertiesSet();
             m_registrations.put(nbi.getName(),
                                 m_serviceRegistry.register(nbi,
@@ -85,6 +94,9 @@ public class JmsNorthbounderManager implements InitializingBean,
         }
     }
 
+    /* (non-Javadoc)
+     * @see org.springframework.beans.factory.DisposableBean#destroy()
+     */
     @Override
     public void destroy() throws Exception {
         for (Registration r : m_registrations.values()) {
