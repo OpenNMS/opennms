@@ -39,8 +39,6 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.opennms.netmgt.poller.PollStatus;
-
 
 /**
  * @author Seth
@@ -73,9 +71,9 @@ public class ScanReport {
 	@XmlAttribute(name="timestamp")
 	private Date m_timestamp;
 
-	@XmlElementWrapper(name="poll-statuses")
-	@XmlElement(name="poll-status")
-	private List<PollStatus> m_pollStatuses = new ArrayList<PollStatus>();
+	@XmlElementWrapper(name="poll-results")
+	@XmlElement(name="poll-result")
+	private List<PollResult> m_pollResults = new ArrayList<>();
 
 	public ScanReport() {
 	}
@@ -91,7 +89,7 @@ public class ScanReport {
 		m_locale = pkg.getLocale();
 		m_location = pkg.getLocation();
 		m_monitoringSystem = pkg.getMonitoringSystem();
-		m_pollStatuses = pkg.getPollStatuses();
+		m_pollResults = pkg.getPollResults();
 		m_referenceId = pkg.getReferenceId();
 		m_timestamp = pkg.getTimestamp();
 		m_timeZone = pkg.getTimeZone();
@@ -161,15 +159,26 @@ public class ScanReport {
 		this.m_timestamp = m_timestamp;
 	}
 
-	public List<PollStatus> getPollStatuses() {
-		return m_pollStatuses;
+	public List<PollResult> getPollResults() {
+		return m_pollResults;
 	}
 
-	public void setPollStatuses(List<PollStatus> m_pollStatuses) {
-		this.m_pollStatuses = m_pollStatuses;
+	public void setPollResults(final List<PollResult> pollResults) {
+		this.m_pollResults = pollResults;
 	}
 
-	public boolean addPollStatus(PollStatus pollStatus) {
-		return m_pollStatuses.add(pollStatus);
+	public boolean addPollResult(final PollResult pollResult) {
+		return m_pollResults.add(pollResult);
+	}
+
+	public boolean isUp() {
+	    if (m_pollResults != null) {
+	        for (final PollResult result : m_pollResults) {
+	            if (!result.isUp()) {
+	                return false;
+	            }
+	        }
+	    }
+	    return true;
 	}
 }

@@ -36,6 +36,7 @@ import java.util.UUID;
 import org.junit.Test;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.poller.PollStatus;
+import org.opennms.netmgt.poller.remote.support.PollResult;
 import org.opennms.netmgt.poller.remote.support.ScanReport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -60,7 +61,7 @@ public class ScanReportTest {
 		for (int i = 0; i < 5; i++) {
 			PollStatus status = PollStatus.get(PollStatus.SERVICE_AVAILABLE, "Anything is possible", 4.5d);
 			status.setProperty("whatever", 2.0);
-			report.addPollStatus(status);
+			report.addPollResult(new PollResult("Foo", 1, "zombonode", 1, "1.2.3.4", status));
 		}
 
 		String reportString = JaxbUtils.marshal(report);

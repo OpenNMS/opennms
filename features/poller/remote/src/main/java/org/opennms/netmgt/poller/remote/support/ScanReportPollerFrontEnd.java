@@ -449,7 +449,7 @@ public class ScanReportPollerFrontEnd implements PollerFrontEnd, InitializingBea
                                  .append("reason", result.getReason())
                                  .toString()
                                 );
-                        scanReport.addPollStatus(result);
+                        scanReport.addPollResult(new PollResult(service.getSvcName(), service.getServiceId(), service.getNodeLabel(), service.getNodeId(), service.getIpAddr(), result));
                     }
                 } catch (Throwable e) {
                     LOG.error("Unexpected exception occurred while polling service ID {}", service.getServiceId(), e);
