@@ -56,6 +56,7 @@ import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.PosixParser;
+import org.apache.commons.io.IOUtils;
 import org.opennms.bootstrap.Bootstrap;
 import org.opennms.core.db.DataSourceConfigurationFactory;
 import org.opennms.core.db.install.InstallerDb;
@@ -313,6 +314,8 @@ public class Installer {
             System.setProperty("opennms.manager.class", "org.opennms.upgrade.support.Upgrade");
             Bootstrap.main(new String[] {});
         }
+
+        context.close();
     }
 
 	private void checkIPv6() {
@@ -408,12 +411,15 @@ public class Installer {
         m_etc_dir = fetchProperty("install.etc.dir");
         
         loadEtcPropertiesFile("opennms.properties");
-        loadEtcPropertiesFile("model-importer.properties");
         // Used to retrieve 'org.opennms.rrd.strategyClass'
         loadEtcPropertiesFile("rrd-configuration.properties");
         
         m_install_servletdir = fetchProperty("install.servlet.dir");
-        m_import_dir = fetchProperty("importer.requisition.dir");
+        try {
+            m_import_dir = fetchProperty("importer.requisition.dir");
+        } catch (Exception e) {
+            m_import_dir = m_opennms_home + File.separator + "etc" + File.separator + "imports";
+        }
 
         final String pg_lib_dir = m_properties.getProperty("install.postgresql.dir");
 
@@ -805,20 +811,22 @@ public class Installer {
             throw new Exception("unable to create file: " + destinationFile);
         }
         FileChannel from = null;
+        FileInputStream fisFrom = null;
         FileChannel to = null;
+        FileOutputStream fisTo = null;
         try {
-            from = new FileInputStream(sourceFile).getChannel();
-            to = new FileOutputStream(destinationFile).getChannel();
+            fisFrom = new FileInputStream(sourceFile);
+            from = fisFrom.getChannel();
+            fisTo = new FileOutputStream(destinationFile);
+            to = fisTo.getChannel();
             to.transferFrom(from, 0, from.size());
         } catch (FileNotFoundException e) {
             throw new Exception("unable to copy " + sourceFile + " to " + destinationFile, e);
         } finally {
-            if (from != null) {
-                from.close();
-            }
-            if (to != null) {
-                to.close();
-            }
+            IOUtils.closeQuietly(fisTo);
+            IOUtils.closeQuietly(to);
+            IOUtils.closeQuietly(fisFrom);
+            IOUtils.closeQuietly(from);
         }
         System.out.println("DONE");
     }
