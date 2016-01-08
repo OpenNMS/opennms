@@ -2657,9 +2657,13 @@ CREATE TABLE bsm_service_attributes (
 );
 
 CREATE TABLE bsm_service_ifservices (
-    bsm_service_id integer NOT NULL,
-    ifserviceid integer NOT NULL,
-    CONSTRAINT bsm_service_ifservices_pkey PRIMARY KEY (bsm_service_id, ifserviceid)
+  bsm_service_id integer NOT NULL,
+  ifserviceid integer NOT NULL,
+  CONSTRAINT bsm_service_ifservices_pkey PRIMARY KEY (bsm_service_id, ifserviceid),
+  CONSTRAINT fk_bsm_service_ifservices_ifserviceid FOREIGN KEY (ifserviceid)
+  REFERENCES ifservices (id) ON DELETE CASCADE,
+  CONSTRAINT fk_bsm_service_ifservices_service_id FOREIGN KEY (bsm_service_id)
+  REFERENCES bsm_service (id) ON DELETE CASCADE
 );
 
 CREATE TABLE bsm_service_children (
