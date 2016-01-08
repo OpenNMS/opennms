@@ -88,7 +88,7 @@ public class BusinessService {
     }
 
     @ElementCollection
-    @JoinTable(name = "bsm_service_attributes", joinColumns = @JoinColumn(name = "bsm_service_id", referencedColumnName = "id") )
+    @JoinTable(name = "bsm_service_attributes", joinColumns = @JoinColumn(name = "bsm_service_id", referencedColumnName = "id"))
     @MapKeyColumn(name = "key")
     @Column(name = "value", nullable = false)
     public Map<String, String> getAttributes() {
@@ -107,7 +107,7 @@ public class BusinessService {
         return m_attributes.remove(key);
     }
 
-    @OneToMany(fetch = FetchType.LAZY)
+    @OneToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "bsm_service_ifservices",
         joinColumns = @JoinColumn(name = "bsm_service_id", referencedColumnName = "id"),
         inverseJoinColumns = @JoinColumn(name="ifserviceid"))
