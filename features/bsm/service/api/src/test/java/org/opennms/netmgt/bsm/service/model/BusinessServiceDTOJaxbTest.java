@@ -48,7 +48,9 @@ public class BusinessServiceDTOJaxbTest extends XmlTestNoCastor<BusinessServiceD
         BusinessServiceDTO bs = new BusinessServiceDTO();
         bs.setId(1L);
         bs.setName("Web Servers");
-        bs.setAttribute("dc", "RDU");
+        bs.addAttribute("dc", "RDU");
+        bs.addReductionKey("myReductionKeyA");
+        bs.addReductionKey("myReductionKeyB");
         bs.setLocation(new ResourceLocation(ApiVersion.Version2, "business-services", "1"));
 
         IpServiceDTO ipService = new IpServiceDTO();
@@ -72,8 +74,13 @@ public class BusinessServiceDTOJaxbTest extends XmlTestNoCastor<BusinessServiceD
                    "<ip-service>" +
                       "<id>1</id>" +
                       "<location>/rest/ifservices/1</location>" +
+                      "<reductionKeys/>" +
                    "</ip-service>" +
                "</ip-services>" +
+               "<reductionKeys>" +
+                    "<reductionKey>myReductionKeyB</reductionKey>" +
+                    "<reductionKey>myReductionKeyA</reductionKey>" +
+               "</reductionKeys>" +
                "<child-services/>" +
                "<parent-services/>" +
             "</business-service>",

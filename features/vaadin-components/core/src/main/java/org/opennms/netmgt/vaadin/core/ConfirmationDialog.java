@@ -78,6 +78,7 @@ public class ConfirmationDialog extends Window implements Window.CloseListener, 
 
         layout.setSpacing(true);
         layout.setMargin(true);
+        layout.setSizeFull();
         layout.addComponent(label);
         layout.addComponent(buttonLayout);
         layout.setComponentAlignment(buttonLayout, Alignment.BOTTOM_RIGHT);

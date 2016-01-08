@@ -31,6 +31,7 @@ package org.opennms.netmgt.bsm.service.internal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Set;
@@ -38,6 +39,7 @@ import java.util.stream.Collectors;
 
 import org.opennms.netmgt.bsm.persistence.api.BusinessService;
 import org.opennms.netmgt.bsm.persistence.api.BusinessServiceDao;
+import org.opennms.netmgt.bsm.persistence.api.OnmsMonitoredServiceHelper;
 import org.opennms.netmgt.bsm.service.BusinessServiceManager;
 import org.opennms.netmgt.bsm.service.BusinessServiceStateMachine;
 import org.opennms.netmgt.bsm.service.model.BusinessServiceDTO;
@@ -239,6 +241,7 @@ public class BusinessServiceManagerImpl implements BusinessServiceManager {
         service.setId(dto.getId());
         service.setName(dto.getName());
         service.setAttributes(new HashMap<>(dto.getAttributes()));
+        service.setReductionKeys(new HashSet<>(dto.getReductionKeys()));
         for (IpServiceDTO eachService : dto.getIpServices()) {
             OnmsMonitoredService ipService = getIpService(Integer.valueOf(eachService.getId()));
             service.addIpService(ipService);
@@ -259,6 +262,7 @@ public class BusinessServiceManagerImpl implements BusinessServiceManager {
         dto.setId(service.getId());
         dto.setName(service.getName());
         dto.setAttributes(new HashMap<>(service.getAttributes()));
+        dto.setReductionKeys(new HashSet<>(service.getReductionKeys()));
         for (OnmsMonitoredService eachService : service.getIpServices()) {
             IpServiceDTO ipServiceDTO = transform(eachService);
             if (ipServiceDTO != null) {
@@ -295,6 +299,7 @@ public class BusinessServiceManagerImpl implements BusinessServiceManager {
                 output.setNodeLabel(nodeDao.get(input.getNodeId()).getLabel());
                 output.setServiceName(input.getServiceName());
                 output.setIpAddress(input.getIpAddress().toString());
+                output.setReductionKeys(OnmsMonitoredServiceHelper.getReductionKeys(input));
                 output.setLocation(ResourceLocationFactory.createIpServiceLocation(output.getId()));
                 return output;
             }

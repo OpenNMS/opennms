@@ -28,9 +28,13 @@
 
 package org.opennms.netmgt.bsm.service.model;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlID;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
@@ -57,6 +61,10 @@ public class IpServiceDTO {
     private String nodeLabel;
 
     private String ipAddress;
+
+    @XmlElement(name="reductionKey")
+    @XmlElementWrapper(name="reductionKeys")
+    private Set<String> reductionKeys = new HashSet<>();
 
     public ResourceLocation getLocation() {
         return location;
@@ -113,6 +121,14 @@ public class IpServiceDTO {
 
     public void setIpAddress(String ipAddress) {
         this.ipAddress = ipAddress;
+    }
+
+    public Set<String> getReductionKeys() {
+        return reductionKeys;
+    }
+
+    public void setReductionKeys(Set<String> reductionKeys) {
+        this.reductionKeys = reductionKeys;
     }
 
     @Override

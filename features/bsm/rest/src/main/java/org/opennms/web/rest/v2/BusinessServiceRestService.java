@@ -139,7 +139,7 @@ public class BusinessServiceRestService {
 
     @GET
     @Path("{id}/ip-service/operational-status/{ipServiceId}")
-    public Response getOperationStatusForIPServiceById(@PathParam("id") Integer ipServiceId) {
+    public Response getOperationStatusForIPServiceById(@PathParam("id") Integer businessServiceId, @PathParam("ipServiceId") Integer ipServiceId) {
         final OnmsSeverity severity = getManager().getOperationalStatusForIPService(ipServiceId);
         if (severity != null) {
             return Response.ok(severity.toString()).type(MediaType.TEXT_PLAIN).build();
