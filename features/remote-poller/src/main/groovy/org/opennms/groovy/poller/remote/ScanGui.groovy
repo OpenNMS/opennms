@@ -60,8 +60,10 @@ class ScanGui extends AbstractGui implements InitializingBean, PropertyChangeLis
     def m_scanReport;
 
     def m_backEnd
+    def m_frontEnd
 
     def m_metadataFields = new HashMap<String, JTextField>()
+    def m_progressPanel
     def m_progressBar
     def m_passFailPanel
     def updateDetails
@@ -147,7 +149,7 @@ class ScanGui extends AbstractGui implements InitializingBean, PropertyChangeLis
                     rowConstraints:"[grow]"
                     )
 
-            panel(constraints:"top", opaque:false) {
+            m_progressPanel = panel(constraints:"top", opaque:false) {
                 migLayout(
                         layoutConstraints:"fill" + debugString,
                         columnConstraints:"[right,grow][left][left]",
@@ -177,17 +179,17 @@ class ScanGui extends AbstractGui implements InitializingBean, PropertyChangeLis
                         updateDetails()
                     }
 
-                    final ScanReportPollerFrontEnd fe = createPollerFrontEnd()
+                    m_frontEnd = createPollerFrontEnd()
 
                     final Map<String,String> metadata = new HashMap<>()
                     for (final Map.Entry<String,JTextField> field : m_metadataFields) {
                         metadata.put(field.getKey(), field.getValue().getText())
                     }
-                    fe.setMetadata(metadata)
+                    m_frontEnd.setMetadata(metadata)
 
-                    fe.addPropertyChangeListener(this)
-                    fe.initialize()
-                    fe.register(locationCombo.getSelectedItem())
+                    m_frontEnd.addPropertyChangeListener(this)
+                    m_frontEnd.initialize()
+                    m_frontEnd.register(locationCombo.getSelectedItem())
                 })
 
                 m_progressBar = progressBar(borderPainted:false, visible:false, value:0, constraints:"grow, spanx 3, wrap")
@@ -265,12 +267,8 @@ class ScanGui extends AbstractGui implements InitializingBean, PropertyChangeLis
 
                 pendingResize = true
 
-                def gui = getGui()
-                if (gui != null) {
-                    repaint()
-                } else {
-                    detailsParent.repaint(repaintDelay)
-                }
+                //detailsParent.repaint(repaintDelay)
+                repaint()
             }
 
             detailsParent = panel(constraints:"bottom, center, spanx 2, shrinky 1000, dock south", opaque:false) {
@@ -328,11 +326,12 @@ class ScanGui extends AbstractGui implements InitializingBean, PropertyChangeLis
     @Override
     public void propertyChange(final PropertyChangeEvent evt) {
         if (evt.getPropertyName().equals(ScanReportProperties.percentageComplete.toString())) {
-            def percentComplete = (Double)evt.getNewValue()
-            System.out.println("Percent complete: " + (percentComplete * 100));
-            def intPercent = new Double(percentComplete * 100).intValue()
-            m_progressBar.setValue(intPercent)
-            m_progressBar.setString(intPercent + "%")
+            def percentComplete = Long.valueOf(Math.round((Double)evt.getNewValue() * 100.0)).intValue()
+            System.out.println("Percent complete: " + percentComplete);
+            m_progressBar.setValue(percentComplete)
+            m_progressBar.setString(percentComplete + "%")
+            m_progressBar.setVisible(true)
+            repaint()
         } else if (evt.getPropertyName().equals(PollerFrontEndStates.exitNecessary.toString())) {
             def report = (ScanReport)evt.getNewValue()
             System.out.println("Finished scan: " + report)
