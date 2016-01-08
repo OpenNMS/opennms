@@ -205,7 +205,7 @@ public class LatencyStoringServiceMonitorAdaptor implements ServiceMonitor {
         LatencyCollectionResource latencyResource = new LatencyCollectionResource(service.getSvcName(), service.getIpAddr());
         for (final Entry<String, Number> entry : entries.entrySet()) {
             final String ds = entry.getKey();
-            final Number value = entry.getValue();
+            final Number value = entry.getValue() != null ? entry.getValue() : Double.NaN;
             LatencyCollectionAttributeType latencyType = new LatencyCollectionAttributeType(rrdBaseName, ds);
             latencyResource.addAttribute(new LatencyCollectionAttribute(latencyResource, latencyType, ds, value.doubleValue()));
         }

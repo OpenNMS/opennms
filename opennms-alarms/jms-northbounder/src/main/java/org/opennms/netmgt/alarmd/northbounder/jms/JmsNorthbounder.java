@@ -28,7 +28,6 @@
 
 package org.opennms.netmgt.alarmd.northbounder.jms;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -53,48 +52,64 @@ import org.springframework.jms.core.MessageCreator;
 /**
  * Northbound Interface JMS Implementation
  * 
- * Allows alarms to be automatically forwarded to a JMS destination. JMS
+ * <p>Allows alarms to be automatically forwarded to a JMS destination. JMS
  * implementation neutral, defaults to ActiveMQ. To change,
  * add a Spring bean that implements javax.jms.ConnectionFactory
  * and change OpenNMS property opennms.alarms.northbound.jms.connectionFactoryImplRef
  * to that bean's ID. It will be wrapped in the Spring's CachingConnectionFactory
- * so your bean does not need to handle caching or pooling itself.
+ * so your bean does not need to handle caching or pooling itself.</p>
  *
- * Configuration is done in $ONMS_HOME/etc/jms-northbounder-configuration.xml
+ * <p>Configuration is done in $ONMS_HOME/etc/jms-northbounder-configuration.xml
  * and is similar to the syslog NBI config file. See JmsNorthbounderConfig
- * or the appropriate schema file for details.
+ * or the appropriate schema file for details.</p>
  *
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
  * @author <a href="mailto:dschlenk@converge-one.com">David Schlenk</a>
- * @version $Id: $
  */
-public class JmsNorthbounder extends AbstractNorthbounder implements
-        InitializingBean {
+public class JmsNorthbounder extends AbstractNorthbounder implements InitializingBean {
+
+    /** The Constant LOG. */
     private static final Logger LOG = LoggerFactory.getLogger(JmsNorthbounder.class);
 
+    /** The Constant NBI_NAME. */
     public static final String NBI_NAME = "JmsNorthbounder";
 
+    /** The m_jms northbounder connection factory. */
     private ConnectionFactory m_jmsNorthbounderConnectionFactory;
 
+    /** The m_config. */
     private JmsNorthbounderConfig m_config;
 
+    /** The m_jms destination. */
     private JmsDestination m_jmsDestination;
 
+    /** The m_template. */
     private JmsTemplate m_template;
 
-    public JmsNorthbounder(JmsNorthbounderConfig config,
-            ConnectionFactory jmsNorthbounderConnectionFactory,
-            JmsDestination destination) {
+    /**
+     * Instantiates a new JMS northbounder.
+     *
+     * @param config the configuration
+     * @param jmsNorthbounderConnectionFactory the JMS northbounder connection factory
+     * @param destination the destination
+     */
+    public JmsNorthbounder(JmsNorthbounderConfig config, ConnectionFactory jmsNorthbounderConnectionFactory, JmsDestination destination) {
         super(NBI_NAME + ":" + destination);
         m_config = config;
         m_jmsNorthbounderConnectionFactory = jmsNorthbounderConnectionFactory;
         m_jmsDestination = destination;
     }
 
+    /**
+     * Instantiates a new JMS northbounder.
+     */
     protected JmsNorthbounder() {
         super(NBI_NAME);
     }
 
+    /* (non-Javadoc)
+     * @see org.opennms.netmgt.alarmd.api.support.AbstractNorthbounder#accepts(org.opennms.netmgt.alarmd.api.NorthboundAlarm)
+     */
     @Override
     public boolean accepts(NorthboundAlarm alarm) {
         if (!m_config.isEnabled()) {
@@ -102,8 +117,7 @@ public class JmsNorthbounder extends AbstractNorthbounder implements
         }
         LOG.debug("Validating UEI of alarm: {}", alarm.getUei());
 
-        if (getConfig().getUeis() == null
-                || getConfig().getUeis().contains(alarm.getUei())) {
+        if (getConfig().getUeis() == null || getConfig().getUeis().contains(alarm.getUei())) {
             LOG.debug("UEI: {}, accepted.", alarm.getUei());
             return true;
         }
@@ -112,11 +126,13 @@ public class JmsNorthbounder extends AbstractNorthbounder implements
         return false;
     }
 
+    /* (non-Javadoc)
+     * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
+     */
     @Override
     public void afterPropertiesSet() throws Exception {
         BeanUtils.assertAutowiring(this);
-        LOG.debug("creating new JmsTemplate with connection to "
-                + m_jmsDestination.getJmsDestination());
+        LOG.debug("creating new JmsTemplate with connection to {}",m_jmsDestination.getJmsDestination());
         m_template = new JmsTemplate(m_jmsNorthbounderConnectionFactory);
         if (m_jmsDestination.getDestinationType().equals(DestinationType.TOPIC)) {
             m_template.setPubSubDomain(true);
@@ -126,81 +142,84 @@ public class JmsNorthbounder extends AbstractNorthbounder implements
         setMaxPreservedAlarms(m_config.getQueueSize());
     }
 
+    /* (non-Javadoc)
+     * @see org.opennms.netmgt.alarmd.api.support.AbstractNorthbounder#forwardAlarms(java.util.List)
+     */
     @Override
-    public void forwardAlarms(List<NorthboundAlarm> alarms)
-            throws NorthbounderException {
+    public void forwardAlarms(List<NorthboundAlarm> alarms) throws NorthbounderException {
         if (m_jmsDestination.isSendAsObjectMessageEnabled()) {
             for (NorthboundAlarm alarm : alarms) {
                 m_template.convertAndSend(alarm);
             }
         } else {
-            Map<Integer, Map<String, Object>> alarmMappings = new HashMap<Integer, Map<String, Object>>();
             for (final NorthboundAlarm alarm : alarms) {
-                LOG.debug("Attempting to send a message to "
-                        + m_jmsDestination.getJmsDestination() + " of type "
-                        + m_jmsDestination.getDestinationType());
+                LOG.debug("Attempting to send a message to {} of type {}", m_jmsDestination.getJmsDestination(), m_jmsDestination.getDestinationType());
                 try {
-                    m_template.send(m_jmsDestination.getJmsDestination(),
-                                    new MessageCreator() {
-
-                                        @Override
-                                        public Message createMessage(
-                                                Session session)
-                                                throws JMSException {
-                                            return session.createTextMessage(convertAlarmToText(alarmMappings,
-                                                                                                alarm));
-                                        }
-
-                                    });
+                    m_template.send(m_jmsDestination.getJmsDestination(), new MessageCreator() {
+                        @Override
+                        public Message createMessage(Session session) throws JMSException {
+                            return session.createTextMessage(convertAlarmToText(alarm));
+                        }
+                    });
                     LOG.debug("Sent message.");
                 } catch (JmsException e) {
-                    LOG.error("Unable to send alarm to JMS NB because "
-                            + e.getLocalizedMessage());
+                    LOG.error("Unable to send alarm to JMS NB because {}", e.getLocalizedMessage());
                 }
             }
         }
     }
 
-    private String convertAlarmToText(
-            Map<Integer, Map<String, Object>> alarmMappings,
-            NorthboundAlarm alarm) {
-
+    /**
+     * Convert alarm to text.
+     *
+     * @param alarm the alarm
+     * @return the string
+     */
+    private String convertAlarmToText(NorthboundAlarm alarm) {
         String alarmXml = null;
-        Map<String, Object> mapping = null;
-        if (alarmMappings != null) {
-            mapping = alarmMappings.get(alarm.getId());
-        }
-
-        if (mapping == null) {
-            mapping = createMapping(alarmMappings, alarm);
-        }
-
-        LOG.debug("Making substitutions for tokens in message format for alarm: {}.",
-                  alarm.getId());
+        Map<String, Object> mapping = createMapping(alarm);
+        LOG.debug("Making substitutions for tokens in message format for alarm: {}.", alarm.getId());
         if (m_jmsDestination.getMessageFormat() != null) {
-            alarmXml = PropertiesUtils.substitute(m_jmsDestination.getMessageFormat(),
-                                                  mapping);
+            alarmXml = PropertiesUtils.substitute(m_jmsDestination.getMessageFormat(), mapping);
         } else {
-            alarmXml = PropertiesUtils.substitute(m_config.getMessageFormat(),
-                                                  mapping);
+            alarmXml = PropertiesUtils.substitute(m_config.getMessageFormat(), mapping);
         }
         return alarmXml;
     }
 
+    /**
+     * Gets the destination.
+     *
+     * @return the destination
+     */
     public JmsDestination getDestination() {
         return m_jmsDestination;
     }
 
+    /**
+     * Gets the configuration.
+     *
+     * @return the configuration
+     */
     public JmsNorthbounderConfig getConfig() {
         return m_config;
     }
 
+    /**
+     * Gets the JMS northbounder connection factory.
+     *
+     * @return the JMS northbounder connection factory
+     */
     public ConnectionFactory getJmsNorthbounderConnectionFactory() {
         return m_jmsNorthbounderConnectionFactory;
     }
 
-    public void setJmsNorthbounderConnectionFactory(
-            ConnectionFactory jmsNorthbounderConnectionFactory) {
+    /**
+     * Sets the JMS northbounder connection factory.
+     *
+     * @param jmsNorthbounderConnectionFactory the new JMS northbounder connection factory
+     */
+    public void setJmsNorthbounderConnectionFactory(ConnectionFactory jmsNorthbounderConnectionFactory) {
         m_jmsNorthbounderConnectionFactory = jmsNorthbounderConnectionFactory;
     }
 

@@ -2,7 +2,7 @@
 // Allow GitHub image rendering
 :imagesdir: ../../images
 
-[[ga-pollerd-configuration]]
+[[ga-service-assurance-path-outage]]
 === Path Outages
 
 To reduce the amount of alarms and notifications a _Path Outage_ can be configured.

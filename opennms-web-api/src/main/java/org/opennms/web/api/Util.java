@@ -164,9 +164,13 @@ public abstract class Util extends Object {
      */
     public static String getHostHeader(final HttpServletRequest request) {
         for (int i = 0; i < hostHeaders.length; ++i) {
-        	final String ret = request.getHeader(hostHeaders[i]);
-            if (ret != null) {
-                return ret;
+            // Get the first value in the header (support for proxy-chaining)
+            final String header = request.getHeader(hostHeaders[i]);
+            if (header != null) {
+                final String[] values = header.split(", *");
+                if (values.length >= 1) {
+                    return values[0];
+                }
             }
         }
         return request.getServerName() + ":" + Integer.toString(request.getServerPort());
