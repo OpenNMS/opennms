@@ -1,0 +1,281 @@
+NORTEL-NMI-CONFIG-NOTI-MIB 
+
+DEFINITIONS ::= BEGIN
+
+   IMPORTS
+       nortelNMInotificationsMIB,
+       nortelNMIcurrentTxNotificationSequenceNum,
+       nortelNMInotifyNeType,
+       nortelNMInotifyNeName,
+       nortelNMInotifyNeAdminState,
+       nortelNMInotifyNeOperState,
+       nortelNMInotifyNeUnknownStatus
+           FROM  NORTEL-NMI-NOTIFICATIONS-MIB 
+                                   
+       NortelNMItimeStampDef
+           FROM NORTEL-NMI-TC-MIB
+
+       nortelNMInotificationGroups
+           FROM NORTEL-NMI-GROUPS-MIB
+       DisplayString
+           FROM SNMPv2-TC
+       NOTIFICATION-GROUP
+           FROM SNMPv2-CONF
+       MODULE-IDENTITY, OBJECT-IDENTITY, 
+       OBJECT-TYPE, NOTIFICATION-TYPE,
+       IpAddress
+           FROM SNMPv2-SMI;
+
+
+   nortelNMIconfigNotiMIB  MODULE-IDENTITY
+       LAST-UPDATED "9906240000Z"
+       ORGANIZATION "Nortel Networks"
+       CONTACT-INFO
+              "   Jingdong Liu
+
+                Postal: Nortel Networks
+                        P. O. Box 3511, Station C
+                        Ottawa, Ontario
+                        CANADA
+                        K1Y 4H7
+
+                Email:  jingdong@nortelnetworks.com"
+
+
+       DESCRIPTION
+               "This module contains the configuration management related
+                notifications for the Nortel NMI."
+
+       -- Revision history
+
+
+       REVISION "9906240000Z"
+       DESCRIPTION
+                " The fourth version of this MIB module.
+                  Module-identity oid assignment changed.
+                  NE IP address added as a varbind to the
+                  attribute change notification.
+
+                  Revisions introduced by Shobana Sundaram."
+
+       REVISION "9905310000Z"
+       DESCRIPTION
+                " The third version of this MIB module.
+                  Contact info updated and Revision history added.
+                "
+
+
+       REVISION "9904120000Z"
+       DESCRIPTION
+                " The second version of this MIB module.
+                  Contact info updated and Revision history added."
+
+       REVISION "9903220000Z"
+       DESCRIPTION
+                " The first version of this MIB module."
+
+
+       ::= { nortelNMInotificationsMIB 3  }
+
+  -- all notifications OIDs would be prefixed with a zero OID to 
+  -- facilate snmp v1<->v2 conversion
+
+  nortelNMIconfigNotiPrefix  OBJECT-IDENTITY
+           STATUS         current
+           DESCRIPTION
+                  "This OID represents the prefix branch for all Nortel NMI 
+                   configuration  Notifications.
+                   The last but one sub identifier in the OID of any 
+                   Notification must have the value zero to facilitate 
+                   v2<-->v1 conversion." 
+           ::=  {nortelNMIconfigNotiMIB  0 }
+ 
+
+   nortelNMIconfigNotiVarbinds OBJECT-IDENTITY
+           STATUS         current
+           DESCRIPTION
+                  "This OID represents the branch which contains varbinds to 
+                   configuration management related notifications." 
+           ::=  {nortelNMIconfigNotiMIB  1 }
+
+
+  -- The following variables belong to the accessible-for-notify clause and
+  -- are defined here mainly to be included as varbinds to notifications.
+  -- No other protocol operations will be supported for these
+
+ 
+          nortelNMInotifyNeDeEnrolTime  OBJECT-TYPE
+              SYNTAX NortelNMItimeStampDef 
+              MAX-ACCESS  accessible-for-notify
+              STATUS  current
+              DESCRIPTION
+                 "This variable represents the time at which the NE for 
+                  formally deenrolled. 
+                  NortelNMItimeStampDef textual convention is defined at the
+                  NORTEL-NMI-TC-MIB."
+
+              ::= { nortelNMIconfigNotiVarbinds  1 }
+
+
+         nortelNMInotifyNeEnrolTime  OBJECT-TYPE
+              SYNTAX   NortelNMItimeStampDef 
+              MAX-ACCESS  accessible-for-notify
+              STATUS  current
+              DESCRIPTION
+                 "This variable represents the time at which the NE was formally
+                  enrolled in the EMS management domain.
+                  NortelNMItimeStampDef textual convention is defined at the
+                  NORTEL-NMI-TC-MIB."
+
+              ::= { nortelNMIconfigNotiVarbinds  2 }
+
+
+
+         nortelNMInotifyNeIPaddress OBJECT-TYPE
+              SYNTAX  IpAddress
+              MAX-ACCESS  accessible-for-notify 
+              STATUS  current
+              DESCRIPTION
+                "This variable represents the IP address of the Network Element,
+                 with which an NMS can reach through to the Network element
+                 directly."
+
+              ::= { nortelNMIconfigNotiVarbinds 3 }
+
+
+         nortelNMInotifyNeVersionInfo OBJECT-TYPE
+              SYNTAX  DisplayString (SIZE(1..255))
+              MAX-ACCESS  accessible-for-notify 
+              STATUS  current
+              DESCRIPTION
+                 "This variable contains the version information of Network Element.
+                  Software / Hardware version data can be filled in as values as
+                  appropriate to the NE in context."
+
+              ::= { nortelNMIconfigNotiVarbinds  4 }
+
+
+         nortelNMInotifyNeVendorName OBJECT-TYPE
+              SYNTAX  DisplayString  (SIZE(1..255))
+              MAX-ACCESS  accessible-for-notify 
+              STATUS  current
+              DESCRIPTION
+                  "This variable contains the Network Element vendor name."
+
+              ::= { nortelNMIconfigNotiVarbinds  5 }
+
+
+         nortelNMInotifyNeLocationName OBJECT-TYPE
+              SYNTAX  DisplayString  (SIZE(1..255))
+              MAX-ACCESS  accessible-for-notify 
+              STATUS  current
+              DESCRIPTION
+                  "This variable represents the location information of 
+                   Network Element. An example could be the Common
+                   Language Location Identifier (CLLI) of the NE." 
+
+              ::= { nortelNMIconfigNotiVarbinds  6 }
+
+
+          nortelNMInotifyNeDataChangeTime  OBJECT-TYPE
+              SYNTAX NortelNMItimeStampDef 
+              MAX-ACCESS  accessible-for-notify
+              STATUS  current
+              DESCRIPTION
+                 "This variable represents the time at which a certain
+                  NE attribute was modified. "
+
+              ::= { nortelNMIconfigNotiVarbinds 7 }
+
+           
+
+       -- Configuration events 
+
+         nortelNMIneEnrolNotification  NOTIFICATION-TYPE
+                          OBJECTS { nortelNMIcurrentTxNotificationSequenceNum, 
+                                    nortelNMInotifyNeType,
+                                    nortelNMInotifyNeName,
+                                    nortelNMInotifyNeEnrolTime,
+
+                                    nortelNMInotifyNeIPaddress,
+                                    nortelNMInotifyNeVersionInfo,
+                                    nortelNMInotifyNeVendorName,
+                                    nortelNMInotifyNeLocationName,
+                                   
+                                    nortelNMInotifyNeAdminState,
+                                    nortelNMInotifyNeOperState,
+                                    nortelNMInotifyNeUnknownStatus                         
+                                  }
+            STATUS  current
+            DESCRIPTION
+              "This notification indicates that an NE has been enrolled into the 
+               EMS management domain. The varbinds include all the 
+               key attributes required by the NMS."
+
+          ::= { nortelNMIconfigNotiPrefix  11 }
+
+
+
+         nortelNMIneDeEnrolNotification  NOTIFICATION-TYPE
+                          OBJECTS { nortelNMIcurrentTxNotificationSequenceNum, 
+                                    nortelNMInotifyNeType,
+                                    nortelNMInotifyNeName,
+                                    nortelNMInotifyNeDeEnrolTime
+                                  }
+            STATUS  current
+            DESCRIPTION
+              "This notification indicates that an NE has been deenrolled from the 
+               EMS management domain."
+
+          ::= { nortelNMIconfigNotiPrefix  12 }
+
+
+         nortelNMIneAttributeChangeNotification NOTIFICATION-TYPE
+                          OBJECTS { nortelNMIcurrentTxNotificationSequenceNum,
+                                    nortelNMInotifyNeType,
+                                    nortelNMInotifyNeName,
+                                    nortelNMInotifyNeDataChangeTime,
+
+                                    nortelNMInotifyNeVersionInfo,
+                                    nortelNMInotifyNeVendorName,
+                                    nortelNMInotifyNeLocationName,
+                                    nortelNMInotifyNeIPaddress
+                                  }
+            STATUS  current
+            DESCRIPTION
+              "This notification indicates that an NE attribute has been changed. 
+               The modified value of the specific attribute would be included as 
+               the varbind in the actual Notification PDU. We currently support 
+               changes to version information, vendor name and location name and
+               the NE Reach through IP address."
+
+          ::= { nortelNMIconfigNotiPrefix  13 }
+
+-- Notification group definitions
+
+     nortelNMIneRegistrationNotificationGroup  NOTIFICATION-GROUP
+           NOTIFICATIONS  {
+                          nortelNMIneEnrolNotification,
+                          nortelNMIneDeEnrolNotification
+                          }
+           STATUS   current
+           DESCRIPTION
+                " Nortel NMI NE registration notifications group."
+           ::= { nortelNMInotificationGroups 1}
+
+
+     nortelNMIneAttrChangeNotificationGroup  NOTIFICATION-GROUP
+           NOTIFICATIONS  {
+                          nortelNMIneAttributeChangeNotification
+                          }
+           STATUS   current
+           DESCRIPTION
+                " Nortel NMI NE attribute change notification group."
+           ::= { nortelNMInotificationGroups 2}
+
+
+
+
+END
+
+
