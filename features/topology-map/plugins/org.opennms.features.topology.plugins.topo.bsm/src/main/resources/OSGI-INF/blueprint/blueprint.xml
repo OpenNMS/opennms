@@ -1,0 +1,105 @@
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0 http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd">
+
+	<reference id="businessServiceDao"  interface="org.opennms.netmgt.bsm.persistence.api.BusinessServiceDao" availability="mandatory" />
+	<reference id="transactionOperations" interface="org.springframework.transaction.support.TransactionOperations" availability="mandatory"/>
+	<reference id="businessServiceManager" interface="org.opennms.netmgt.bsm.service.BusinessServiceManager" availability="mandatory"/>
+
+	<!-- TransactionAwareBeanProxyFactory -->
+	<bean id="transactionAwareBeanProxyFactory" class="org.opennms.netmgt.vaadin.core.TransactionAwareBeanProxyFactory">
+		<argument ref="transactionOperations"/>
+	</bean>
+
+	<!-- Topology Provider -->
+	<bean id="bsmTopologyProvider" scope="prototype" class="org.opennms.features.topology.plugins.topo.bsm.BusinessServicesTopologyProvider">
+		<argument ref="transactionAwareBeanProxyFactory"/>
+		<property name="businessServiceManager" ref="businessServiceManager"/>
+	</bean>
+	<service interface="org.opennms.features.topology.api.topo.VertexProvider" ref="bsmTopologyProvider">
+		<service-properties>
+			<entry key="label" value="Business Services"/>
+		</service-properties>
+	</service>
+	<service interface="org.opennms.features.topology.api.topo.EdgeProvider" ref="bsmTopologyProvider">
+		<service-properties>
+			<entry key="label" value="Business Services"/>
+		</service-properties>
+	</service>
+	<service interface="org.opennms.features.topology.api.topo.GraphProvider" ref="bsmTopologyProvider">
+		<service-properties>
+			<entry key="label" value="Business Services"/>
+		</service-properties>
+	</service>
+
+	<!-- status provider -->
+	<bean id="bsmStatusProvider" class="org.opennms.features.topology.plugins.topo.bsm.BusinessServicesStatusProvider">
+		<!--<argument ref="sessionFactoryWrapper"/>-->
+	</bean>
+	<service interface="org.opennms.features.topology.api.CheckedOperation" >
+		<service-properties>
+			<entry key="operation.menuLocation" value="View"/>
+			<entry key="operation.label" value="Business Services Status?group=status"/>
+		</service-properties>
+		<bean class="org.opennms.features.topology.plugins.topo.bsm.AlarmStatusToggleOperation">
+			<property name="statusProvider" ref="bsmStatusProvider"/>
+		</bean>
+	</service>
+
+	<!-- Business Services Table Table -->
+	<bean id="businessServiceSelectionLinkGenerator" class="org.opennms.features.topology.plugins.topo.bsm.browsers.BusinessServicesSelectionLinkGenerator">
+		<argument value="id" />
+	</bean>
+	<bean id="businessServicesDaoContainer" class="org.opennms.features.topology.plugins.topo.bsm.browsers.BusinessServicesDaoContainer" scope="prototype">
+		<argument ref="businessServiceDao"/>
+	</bean>
+	<bean id="businessServicesTable" class="org.opennms.features.topology.plugins.topo.bsm.browsers.BusinessServicesTable" scope="prototype">
+		<argument value="Business Services"/>
+		<argument ref="businessServicesDaoContainer"/>
+		<property name="columnReorderingAllowed" value="true" />
+		<property name="columnCollapsingAllowed" value="true" />
+		<property name="sortContainerPropertyId" value="name" />
+		<property name="columnGenerators">
+			<map>
+				<entry key="id" value-ref="businessServiceSelectionLinkGenerator" />
+				<entry key="name" value-ref="businessServiceSelectionLinkGenerator" />
+			</map>
+		</property>
+		<property name="visibleColumns">
+			<array>
+				<value>id</value>
+				<value>name</value>
+			</array>
+		</property>
+		<property name="columnHeaders">
+			<array>
+				<value>ID</value>
+				<value>Name</value>
+			</array>
+		</property>
+	</bean>
+	<bean id="businessServiceContribution" class="org.opennms.features.topology.api.support.BlueprintIViewContribution">
+		<argument ref="blueprintContainer" />
+		<argument value="businessServicesTable" />
+		<property name="title" value="Business Services" />
+	</bean>
+	<service interface="org.opennms.features.topology.api.IViewContribution" ref="businessServiceContribution">
+		<description>Business Services table IViewContribution service.</description>
+		<service-properties>
+			<entry key="location" value="bottom" />
+			<entry key="name" value="businessServicesView" />
+		</service-properties>
+	</service>
+
+	<!-- Icon definition -->
+	<service interface="org.opennms.features.topology.api.IconRepository">
+		<bean class="org.opennms.features.topology.api.support.DefaultIconRepository">
+			<property name="iconMap">
+				<map>
+					<entry key="business-service" value="vmware-network"/>
+				</map>
+			</property>
+		</bean>
+	</service>
+</blueprint>
+
