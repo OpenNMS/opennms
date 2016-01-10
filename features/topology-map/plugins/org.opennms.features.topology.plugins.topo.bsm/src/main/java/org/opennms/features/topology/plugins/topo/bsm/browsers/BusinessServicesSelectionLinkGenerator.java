@@ -26,14 +26,14 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.plugins.topo.application.browsers;
+package org.opennms.features.topology.plugins.topo.bsm.browsers;
 
 import java.util.Objects;
 
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.WidgetContext;
 import org.opennms.features.topology.plugins.browsers.ToStringColumnGenerator;
-import org.opennms.features.topology.plugins.topo.application.ApplicationCriteria;
+import org.opennms.features.topology.plugins.topo.bsm.BusinessServiceCriteria;
 
 import com.vaadin.data.Property;
 import com.vaadin.ui.Button;
@@ -41,9 +41,9 @@ import com.vaadin.ui.Table;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.themes.BaseTheme;
 
-public class ApplicationSelectionLinkGenerator implements Table.ColumnGenerator {
+public class BusinessServicesSelectionLinkGenerator implements Table.ColumnGenerator {
 
-    public ApplicationSelectionLinkGenerator(String idPropertyName) {
+    public BusinessServicesSelectionLinkGenerator(String idPropertyName) {
 		this.idPropertyName = idPropertyName;
 		this.columnGenerator = new ToStringColumnGenerator();
 	}
@@ -53,7 +53,8 @@ public class ApplicationSelectionLinkGenerator implements Table.ColumnGenerator 
 
 	@Override
 	public Object generateCell(final Table source, final Object itemId, Object columnId) {
-		final Property<Integer> idProperty = source.getContainerProperty(itemId, idPropertyName);
+		// TODO MVR this is exactly the same code as ApplicationSElectionLinkGenerator -> generalize
+		final Property<Long> idProperty = source.getContainerProperty(itemId, idPropertyName);
 		Object cellValue = columnGenerator.generateCell(source, itemId, columnId);
 		if (cellValue == null) {
 			return null;
@@ -72,14 +73,14 @@ public class ApplicationSelectionLinkGenerator implements Table.ColumnGenerator 
 						WidgetContext context = (WidgetContext)ui;
 						GraphContainer graphContainer = context.getGraphContainer();
 
-						ApplicationCriteria applicationCriteria = graphContainer.findSingleCriteria(ApplicationCriteria.class);
-						if (applicationCriteria == null) {
-							applicationCriteria = new ApplicationCriteria();
+						BusinessServiceCriteria businessServiceCriteria = graphContainer.findSingleCriteria(BusinessServiceCriteria.class);
+						if (businessServiceCriteria == null) {
+							businessServiceCriteria = new BusinessServiceCriteria();
 						}
 
-						String applicationId = String.valueOf(idProperty.getValue());
-						if (!Objects.equals(applicationCriteria.getApplicationId(), applicationId)) {
-							applicationCriteria.setApplicationId(applicationId);
+						String businessServiceId = String.valueOf(idProperty.getValue());
+						if (!Objects.equals(businessServiceCriteria.getBusinessServiceId(), businessServiceId)) {
+							businessServiceCriteria.setBusinessServiceId(businessServiceId);
 							graphContainer.setDirty(true);
 							graphContainer.redoLayout();
 						}
