@@ -1,5 +1,7 @@
 
-:imagedir: ../../images
+// Allow image rendering
+:imagesdir: ../../images
+
 === Jasper Report Guideline
 
 Building and contributing JasperReports is a way to contribute to the project.
@@ -17,3 +19,5 @@ The following formatting can be applied:
 | _Report Range_ | Report Begin: ${startDate} Report End: ${endDate}
 | _Paging_       | Page ${current} of ${total}
 |===
+
+TIP: Based on this template definition there exist a link:https://github.com/opennms-forge/jasper-template[GitHub repository] which contains a JasperReport template.
