@@ -32,6 +32,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.net.InetAddress;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -40,6 +41,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -172,7 +174,7 @@ public class Main implements Runnable {
         }
     }
 
-    private void getAuthenticationInfo() {
+    private void getAuthenticationInfo() throws InvocationTargetException, InterruptedException {
         if (m_uri == null) {
             throw new IllegalArgumentException("no URI specified!");
         } else if (m_uri.getScheme() == null) {
@@ -189,8 +191,12 @@ public class Main implements Runnable {
 
         if (m_username == null) {
             // Display a screen where the username and password are entered
-            AuthenticationGui gui = createGui();
-            gui.createAndShowGui();
+            final AuthenticationGui gui = createGui();
+            SwingUtilities.invokeAndWait(new Runnable() {
+                @Override public void run() {
+                    gui.createAndShowGui();
+                }
+            });
 
             /*
              * This call pauses on a {@link CountDownLatch} that is

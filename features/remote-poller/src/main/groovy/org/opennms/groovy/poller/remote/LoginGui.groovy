@@ -41,6 +41,7 @@ import javax.swing.JPanel;
 import javax.swing.JFrame;
 import javax.swing.JTextField;
 import javax.swing.JPasswordField;
+import javax.swing.SwingUtilities;
 import javax.swing.text.DefaultStyledDocument;
 
 import org.opennms.poller.remote.AuthenticationBean;
@@ -101,7 +102,9 @@ class LoginGui extends AbstractGui implements AuthenticationGui {
     }
 
     public static void main(String[] args) {
-        def configGui = new LoginGui();
-        configGui.createAndShowGui();
+        def configGui = new LoginGui()
+        SwingUtilities.invokeLater({
+            configGui.createAndShowGui()
+        })
     }
 }
