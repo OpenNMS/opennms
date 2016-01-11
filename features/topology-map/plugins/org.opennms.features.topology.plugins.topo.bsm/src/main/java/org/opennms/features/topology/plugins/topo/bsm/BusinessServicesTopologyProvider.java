@@ -113,7 +113,8 @@ public class BusinessServicesTopologyProvider extends AbstractTopologyProvider i
         // Only show the first application by default
         List<BusinessServiceDTO> businessServices = businessServiceManager.findAll();
         if (!businessServices.isEmpty()) {
-            return new BusinessServiceCriteria(String.valueOf(businessServices.get(0).getId()));
+            BusinessServiceDTO businessService = businessServices.iterator().next();
+            return new BusinessServiceCriteria(String.valueOf(businessService.getId()), businessService.getName());
         }
         return null;
     }
