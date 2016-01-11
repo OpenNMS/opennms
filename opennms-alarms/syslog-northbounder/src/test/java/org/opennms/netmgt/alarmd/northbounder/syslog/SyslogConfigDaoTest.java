@@ -207,7 +207,7 @@ public class SyslogConfigDaoTest {
         dao.afterPropertiesSet();
 
         assertNotNull(dao.getConfig());
-        SyslogDestination dst = dao.getConfig().getDestination("test-host");
+        SyslogDestination dst = dao.getConfig().getSyslogDestination("test-host");
         assertNotNull(dst);
         assertEquals(2, dst.getFilters().size());
         assertEquals(true, dst.getFilters().get(0).isEnabled());
@@ -218,7 +218,7 @@ public class SyslogConfigDaoTest {
         writer.close();
         dao.reload();
 
-        dst = dao.getConfig().getDestination("test-host");
+        dst = dao.getConfig().getSyslogDestination("test-host");
         assertNotNull(dst);
         assertNull(dst.getFilters());
         configFile.delete();

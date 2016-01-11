@@ -65,11 +65,11 @@ public class SnmpTrapNorthbounderConfigDaoTest {
         SnmpTrapNorthbounderConfig config = configDao.getConfig();
         Assert.assertNotNull(config);
         Assert.assertEquals(2, config.getSnmpTrapSinks().size());
-        SnmpTrapSink sink1 = config.getTrapSink("localTest1");
+        SnmpTrapSink sink1 = config.getSnmpTrapSink("localTest1");
         Assert.assertNotNull(sink1);
         Assert.assertEquals(1, sink1.getMappings().size());
         Assert.assertEquals(2, sink1.getMappings().get(0).getMappings().size());
-        SnmpTrapSink sink2 = config.getTrapSink("localTest2");
+        SnmpTrapSink sink2 = config.getSnmpTrapSink("localTest2");
         Assert.assertNotNull(sink2);
         Assert.assertEquals(1, sink2.getMappings().size());
         Assert.assertEquals(1, sink2.getMappings().get(0).getMappings().size());

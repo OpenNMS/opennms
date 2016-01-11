@@ -195,4 +195,25 @@ public class EmailNorthbounderConfig implements Serializable {
         return null;
     }
 
+    /**
+     * Adds the email destination.
+     *
+     * @param destination the destination
+     */
+    public void addEmailDestination(EmailDestination destination) {
+        int index = -1;
+        for (int i = 0; i < m_destinations.size(); i++) {
+            if (m_destinations.get(i).getName().equals(destination.getName())) {
+                index = i;
+                break;
+            }
+        }
+        if (index > -1) {
+            m_destinations.remove(index);
+            m_destinations.add(index, destination);
+        } else {
+            m_destinations.add(destination);
+        }
+    }
+
 }

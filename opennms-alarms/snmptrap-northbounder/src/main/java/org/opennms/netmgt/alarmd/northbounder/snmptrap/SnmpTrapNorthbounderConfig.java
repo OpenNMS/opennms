@@ -186,13 +186,34 @@ public class SnmpTrapNorthbounderConfig implements Serializable {
      * @param trapSinkName the trap sink name
      * @return the trap sink object
      */
-    public SnmpTrapSink getTrapSink(String trapSinkName) {
+    public SnmpTrapSink getSnmpTrapSink(String trapSinkName) {
         for (SnmpTrapSink sink : m_snmpTrapSinks) {
             if (sink.getName().equals(trapSinkName)) {
                 return sink;
             }
         }
         return null;
+    }
+
+    /**
+     * Adds the SNMP trap sink.
+     *
+     * @param snmpTrapSink the SNMP trap sink
+     */
+    public void addSnmpTrapSink(SnmpTrapSink snmpTrapSink) {
+        int index = -1;
+        for (int i = 0; i < m_snmpTrapSinks.size(); i++) {
+            if (m_snmpTrapSinks.get(i).getName().equals(snmpTrapSink.getName())) {
+                index = i;
+                break;
+            }
+        }
+        if (index > -1) {
+            m_snmpTrapSinks.remove(index);
+            m_snmpTrapSinks.add(index, snmpTrapSink);
+        } else {
+            m_snmpTrapSinks.add(snmpTrapSink);
+        }
     }
 
 }

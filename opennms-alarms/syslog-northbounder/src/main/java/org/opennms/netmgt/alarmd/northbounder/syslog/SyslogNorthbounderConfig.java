@@ -203,19 +203,39 @@ public class SyslogNorthbounderConfig implements Serializable {
     }
 
     /**
-     * Gets the destination.
+     * Gets the Syslog destination.
      *
-     * @param destinationName the destination name
-     * @return the destination
+     * @param syslogDestinationName the Syslog destination name
+     * @return the Syslog destination
      */
-    public SyslogDestination getDestination(String destinationName) {
-        SyslogDestination destination = null;
+    public SyslogDestination getSyslogDestination(String syslogDestinationName) {
         for (SyslogDestination dest : m_destinations) {
-            if (dest.getName().equals(destinationName)) {
-                destination = dest;
+            if (dest.getName().equals(syslogDestinationName)) {
+                return dest;
             }
         }
-        return destination;
+        return null;
+    }
+
+    /**
+     * Adds the Syslog destination.
+     *
+     * @param destination the destination
+     */
+    public void addSyslogDestination(SyslogDestination destination) {
+        int index = -1;
+        for (int i = 0; i < m_destinations.size(); i++) {
+            if (m_destinations.get(i).getName().equals(destination.getName())) {
+                index = i;
+                break;
+            }
+        }
+        if (index > -1) {
+            m_destinations.remove(index);
+            m_destinations.add(index, destination);
+        } else {
+            m_destinations.add(destination);
+        }
     }
 
 }
