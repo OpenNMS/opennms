@@ -29,9 +29,11 @@
 package org.opennms.netmgt.bsm.service.internal;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.opennms.netmgt.bsm.persistence.api.BusinessService;
@@ -95,6 +97,13 @@ public class BusinessServiceManagerImpl implements BusinessServiceManager {
     @Override
     public void delete(Long id) {
         BusinessService service = getBusinessService(id);
+
+        service.getParentServices().forEach(p -> p.removeChildService(service));
+        service.setParentServices(Collections.emptySet());
+
+        service.getChildServices().forEach(p -> p.removeParentService(service));
+        service.setChildServices(Collections.emptySet());
+
         getDao().delete(service);
     }
 
@@ -131,6 +140,78 @@ public class BusinessServiceManagerImpl implements BusinessServiceManager {
     }
 
     @Override
+    public boolean assignChildService(Long serviceId, Long childServiceId) {
+        final BusinessService service = getBusinessService(serviceId);
+        final BusinessService childService = getBusinessService(childServiceId);
+
+        if (this.checkDescendantForLoop(service, childService)) {
+            throw new IllegalArgumentException("Service will form a loop");
+        }
+
+        // if already exists, no update
+        if (service.getChildServices().contains(childService)) {
+            return false;
+        }
+
+        // add and update
+        service.addChildService(childService);
+        childService.addParentService(service);
+        getDao().update(service);
+        getDao().update(childService);
+        return true;
+    }
+
+    @Override
+    public boolean removeChildService(Long serviceId, Long childServiceId) {
+        final BusinessService service = getBusinessService(serviceId);
+        final BusinessService childService = getBusinessService(childServiceId);
+
+        // does not exist, no update necessary
+        if (!service.getChildServices().contains(childService)) {
+            return false;
+        }
+
+        // remove and update
+        service.removeChildService(childService);
+        childService.removeParentService(service);
+        getDao().update(service);
+        getDao().update(childService);
+        return true;
+    }
+
+    private boolean checkDescendantForLoop(final BusinessService parent,
+                                           final BusinessService descendant) {
+        if (parent.equals(descendant)) {
+            return true;
+        }
+
+        for (BusinessService s : descendant.getChildServices()) {
+            return this.checkDescendantForLoop(parent, s);
+        }
+
+        return false;
+    }
+
+    @Override
+    public Set<BusinessServiceDTO> getFeasibleChildServices(final BusinessServiceDTO serviceDTO) {
+        final BusinessService service = transform(serviceDTO);
+        return getDao().findAll()
+                       .stream()
+                       .filter(s -> !this.checkDescendantForLoop(service, s))
+                       .map(this::transform)
+                       .collect(Collectors.toSet());
+    }
+
+    @Override
+    public Set<BusinessServiceDTO> getParentServices(BusinessServiceDTO childServiceDTO) {
+        final BusinessService childService = transform(childServiceDTO);
+        return childService.getParentServices()
+                           .stream()
+                           .map(this::transform)
+                           .collect(Collectors.toSet());
+    }
+
+    @Override
     public OnmsSeverity getOperationalStatusForBusinessService(Long serviceId) {
         final BusinessService service = getBusinessService(serviceId);
         final OnmsSeverity severity = businessServiceStateMachine.getOperationalStatus(service);
@@ -162,6 +243,14 @@ public class BusinessServiceManagerImpl implements BusinessServiceManager {
             OnmsMonitoredService ipService = getIpService(Integer.valueOf(eachService.getId()));
             service.addIpService(ipService);
         }
+        for (BusinessServiceDTO eachService : dto.getChildServices()) {
+            BusinessService childService = getBusinessService(Long.valueOf(eachService.getId()));
+            service.addChildService(childService);
+        }
+        for (BusinessServiceDTO eachService : dto.getParentServices()) {
+            BusinessService parentService = getBusinessService(Long.valueOf(eachService.getId()));
+            service.addParentService(parentService);
+        }
         return service;
     }
 
@@ -174,6 +263,18 @@ public class BusinessServiceManagerImpl implements BusinessServiceManager {
             IpServiceDTO ipServiceDTO = transform(eachService);
             if (ipServiceDTO != null) {
                 dto.addIpService(ipServiceDTO);
+            }
+        }
+        for (BusinessService eachService : service.getChildServices()) {
+            BusinessServiceDTO childServiceDTO = transform(eachService);
+            if (childServiceDTO != null) {
+                dto.addChildService(childServiceDTO);
+            }
+        }
+        for (BusinessService eachService : service.getChildServices()) {
+            BusinessServiceDTO parentServiceDTO = transform(eachService);
+            if (parentServiceDTO != null) {
+                dto.addParentService(parentServiceDTO);
             }
         }
         return dto;
