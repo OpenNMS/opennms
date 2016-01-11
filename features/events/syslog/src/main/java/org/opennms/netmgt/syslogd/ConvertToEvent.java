@@ -145,9 +145,7 @@ public class ConvertToEvent {
         }
         SyslogMessage message;
         try {
-                LOG.debug("Parse method start call");
                 message = parser.parse();
-                LOG.debug("Parse method calling end");
         } catch (final SyslogParserException ex) {
             LOG.debug("Unable to parse '{}'", syslogString, ex);
             throw new MessageDiscardedException(ex);
