@@ -346,7 +346,7 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
                 } catch (ClassCastException e) {}
             }
         }
-        //Initialize the Base Topology provider just in case
+        // Refresh the topology provider, triggering the vertices to load if they have not yet loaded
         getGraphContainer().getBaseTopology().refresh();
     }
 

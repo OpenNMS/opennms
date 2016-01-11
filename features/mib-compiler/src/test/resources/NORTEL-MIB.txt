@@ -1,0 +1,23 @@
+NORTEL-MIB DEFINITIONS ::= BEGIN
+   IMPORTS 
+       enterprises, MODULE-IDENTITY
+	   FROM SNMPv2-SMI;
+
+   nortel MODULE-IDENTITY
+       LAST-UPDATED "9903010000Z"
+       ORGANIZATION "Northern Telecom Ltd."
+       CONTACT-INFO
+               "        Edward Ersil
+
+	        Postal: Bell-Northern Research Ltd.
+		        P. O. Box 3511, Station C
+		        Ottawa, Ontario
+		        CANADA
+		        K1Y 4H7
+		
+		Email:  eersil@nortelnetworks.com"
+       DESCRIPTION
+               "The Northern Telecom top-level MIB definition."
+       ::= { enterprises 562 } 
+END
+
