@@ -34,6 +34,7 @@ import org.opennms.features.topology.plugins.browsers.ToStringColumnGenerator;
 import org.opennms.features.topology.plugins.topo.bsm.BusinessServiceCriteria;
 import org.opennms.netmgt.bsm.persistence.api.BusinessService;
 import org.opennms.netmgt.bsm.persistence.api.BusinessServiceDao;
+import org.opennms.netmgt.bsm.service.BusinessServiceManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,6 +49,7 @@ public class BusinessServicesSelectionLinkGenerator implements Table.ColumnGener
     private static final Logger LOG = LoggerFactory.getLogger(BusinessServicesSelectionLinkGenerator.class);
 
     private BusinessServiceDao m_businessServiceDao;
+    private BusinessServiceManager m_businessServiceManager;
 
     private final String m_idPropertyName;
     private final Table.ColumnGenerator m_columnGenerator;
@@ -91,7 +93,7 @@ public class BusinessServicesSelectionLinkGenerator implements Table.ColumnGener
 						GraphContainer graphContainer = context.getGraphContainer();
 
 						// Add criteria use to filter for the selected application
-						BusinessServiceCriteria businessServiceCriteria = new BusinessServiceCriteria(businessServiceId, businessService.getName());
+						BusinessServiceCriteria businessServiceCriteria = new BusinessServiceCriteria(businessServiceId, businessService.getName(), m_businessServiceManager);
 						graphContainer.addCriteria(businessServiceCriteria);
                         graphContainer.setDirty(true);
                         graphContainer.redoLayout();
@@ -104,5 +106,9 @@ public class BusinessServicesSelectionLinkGenerator implements Table.ColumnGener
 
 	public void setBusinessServiceDao(BusinessServiceDao businessServiceDao) {
 	    m_businessServiceDao = businessServiceDao;
+	}
+
+	public void setBusinessServiceManager(BusinessServiceManager businessServiceManager) {
+	    m_businessServiceManager = businessServiceManager;
 	}
 }

@@ -40,7 +40,6 @@ import org.opennms.features.topology.api.topo.VertexRef;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
 
-// TODO MVR this is almost the same implementation as ApplicatinVertexProvider and maybe SimpleVertexProvider. Generalize please.
 public class BusinessServiceVertexProvider extends SimpleVertexProvider {
     public BusinessServiceVertexProvider(String namespace) {
         super(namespace);
@@ -76,21 +75,11 @@ public class BusinessServiceVertexProvider extends SimpleVertexProvider {
     }
 
     private <T extends VertexRef> T filter(T refToFilter, Criteria... criteria) {
-        for (BusinessServiceCriteria eachCriteria : getBusinessServiceCriteria(criteria)) {
-            if (eachCriteria.apply(refToFilter)) {
-                return refToFilter;
-            }
-        }
-        return null;
-    }
+        // The BusinessServiceCriteria objects are used to indicate focal points and
+        // aren't actually used to filter the result set
 
-    private List<BusinessServiceCriteria> getBusinessServiceCriteria(Criteria... criteria) {
-        List<BusinessServiceCriteria> returnList = new ArrayList<>();
-        for (Criteria eachCriteria : criteria) {
-            if (eachCriteria instanceof BusinessServiceCriteria) {
-                returnList.add((BusinessServiceCriteria) eachCriteria);
-            }
-        }
-        return returnList;
+        // At this point in time we don't support any additional Criteria types so
+        // we just return the original set of vertices
+        return refToFilter;
     }
 }

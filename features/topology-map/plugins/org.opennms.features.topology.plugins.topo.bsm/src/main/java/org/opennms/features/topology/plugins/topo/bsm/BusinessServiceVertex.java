@@ -33,10 +33,15 @@ import java.util.List;
 
 import org.opennms.features.topology.api.topo.AbstractVertex;
 import org.opennms.features.topology.api.topo.VertexRef;
+import org.opennms.netmgt.bsm.service.model.BusinessServiceDTO;
 
 class BusinessServiceVertex extends AbstractVertex {
 
     private List<VertexRef> children = new ArrayList<>();
+
+    public BusinessServiceVertex(BusinessServiceDTO businessService) {
+        this(String.valueOf(businessService.getId()), businessService.getName());
+    }
 
     /**
      * Creates a new {@link BusinessServiceVertex}.

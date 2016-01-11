@@ -43,6 +43,7 @@ import org.opennms.features.topology.api.topo.GraphProvider;
 import org.opennms.features.topology.api.topo.SimpleEdgeProvider;
 import org.opennms.netmgt.bsm.persistence.api.BusinessService;
 import org.opennms.netmgt.bsm.persistence.api.BusinessServiceDao;
+import org.opennms.netmgt.bsm.service.BusinessServiceManager;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.vaadin.core.TransactionAwareBeanProxyFactory;
 import org.slf4j.Logger;
@@ -58,6 +59,7 @@ public class BusinessServicesTopologyProvider extends AbstractTopologyProvider i
 
     private static final Logger LOG = LoggerFactory.getLogger(BusinessServicesTopologyProvider.class);
 
+    private BusinessServiceManager businessServiceManager;
     // TODO MVR use BusinessServiceManager and the BusinessService model from the service layer
     private BusinessServiceDao businessServiceDao;
 
@@ -148,6 +150,10 @@ public class BusinessServicesTopologyProvider extends AbstractTopologyProvider i
         this.businessServiceDao = transactionAwareBeanProxyFactory.createProxy(businessServiceDao);
     }
 
+    public void setBusinessServiceManager(BusinessServiceManager businessServiceManager) {
+        this.businessServiceManager =  Objects.requireNonNull(businessServiceManager);
+    }
+
     @Override
     public void refresh() {
        load();
@@ -159,7 +165,7 @@ public class BusinessServicesTopologyProvider extends AbstractTopologyProvider i
         List<BusinessService> businessServices = businessServiceDao.findAll();
         if (!businessServices.isEmpty()) {
             BusinessService businessService = businessServices.iterator().next();
-            return new BusinessServiceCriteria(String.valueOf(businessService.getId()), businessService.getName());
+            return new BusinessServiceCriteria(String.valueOf(businessService.getId()), businessService.getName(), businessServiceManager);
         }
         return null;
     }
