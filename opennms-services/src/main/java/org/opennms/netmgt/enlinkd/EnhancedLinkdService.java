@@ -19,6 +19,7 @@ package org.opennms.netmgt.enlinkd;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import org.opennms.netmgt.model.BridgeElement;
 import org.opennms.netmgt.model.BridgeMacLink;
@@ -32,6 +33,7 @@ import org.opennms.netmgt.model.LldpElement;
 import org.opennms.netmgt.model.LldpLink;
 import org.opennms.netmgt.model.OspfElement;
 import org.opennms.netmgt.model.OspfLink;
+import org.opennms.netmgt.model.topology.Bridge;
 import org.opennms.netmgt.model.topology.BroadcastDomain;
 
 /**
@@ -88,15 +90,7 @@ public interface EnhancedLinkdService {
     void reconcileIpNetToMedia(int nodeId, Date now);
 
     void reconcileBridge(int nodeId, Date now);
-
-    void reconcileBridgeTopology(int nodeId, Date now);
-
-    BroadcastDomain getBridgeTopologyBroadcastDomain(int nodeId);
     
-    void updateBridgeTopology(int nodeId);
-
-    void store(BroadcastDomain domain);
-
     void store(int nodeId, LldpLink link);
 
     void store(int nodeId, LldpElement element);
@@ -122,5 +116,23 @@ public interface EnhancedLinkdService {
     void store(int nodeId, BridgeMacLink link);
     
     void loadBridgeTopology();
+    
+    void reconcileBridgeTopology(int nodeId, Date now);
+
+    BroadcastDomain getBridgeTopologyBroadcastDomain(int nodeId);
+
+    Map<Bridge,List<BridgeMacLink>> getBridgeTopologyUpdateBFT(BroadcastDomain domain);
+
+    Integer getBridgeTopologyRootId(BroadcastDomain domain);
+    
+    List<BridgeMacLink> getBridgeTopologyRootBFT(BroadcastDomain domain);
+    
+    List<BridgeElement> getBridgeElements(BroadcastDomain domain);
+
+    void updateBridgeTopology(int nodeId);
+
+    void store(BroadcastDomain domain, Integer rootId, List<BridgeMacLink> rootBFT);
+
+
 
 }

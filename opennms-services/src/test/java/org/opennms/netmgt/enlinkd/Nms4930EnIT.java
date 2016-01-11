@@ -401,7 +401,7 @@ public class Nms4930EnIT extends EnLinkdBuilderITCase {
         assertEquals(12, m_bridgeMacLinkDao.findByNodeIdBridgePort(dlink1.getId(), 24).size());
         assertEquals(341, m_bridgeMacLinkDao.findByNodeIdBridgePort(dlink2.getId(), 10).size());
 
-        assertEquals(0,m_bridgeBridgeLinkDao.countAll());        
+        assertEquals(1,m_bridgeBridgeLinkDao.countAll());        
         assertEquals(996,m_bridgeMacLinkDao.countAll());
         // we have 3 that links "real mac nodes" to bridge.
         // we have 8 macs on bridge cloud between dlink1 and dlink2
@@ -557,7 +557,7 @@ public class Nms4930EnIT extends EnLinkdBuilderITCase {
         assertEquals(12, m_bridgeMacLinkDao.findByNodeIdBridgePort(dlink1.getId(), 24).size());
         assertEquals(341, m_bridgeMacLinkDao.findByNodeIdBridgePort(dlink2.getId(), 10).size());
 
-        assertEquals(0,m_bridgeBridgeLinkDao.countAll());
+        assertEquals(1,m_bridgeBridgeLinkDao.countAll());
         assertEquals(996,m_bridgeMacLinkDao.countAll());
         assertEquals(0,m_bridgeMacLinkDao.getAllBridgeLinksToIpAddrToNodes().size());
         assertEquals(8,m_bridgeMacLinkDao.getAllBridgeLinksToBridgeNodes().size());
