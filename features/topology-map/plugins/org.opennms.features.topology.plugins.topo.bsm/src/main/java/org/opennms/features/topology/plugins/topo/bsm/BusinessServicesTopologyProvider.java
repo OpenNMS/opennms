@@ -29,6 +29,7 @@
 package org.opennms.features.topology.plugins.topo.bsm;
 
 import java.net.MalformedURLException;
+import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 
@@ -40,12 +41,15 @@ import org.opennms.features.topology.api.topo.Criteria;
 import org.opennms.features.topology.api.topo.Edge;
 import org.opennms.features.topology.api.topo.GraphProvider;
 import org.opennms.features.topology.api.topo.SimpleEdgeProvider;
-import org.opennms.netmgt.bsm.service.BusinessServiceManager;
-import org.opennms.netmgt.bsm.service.model.BusinessServiceDTO;
-import org.opennms.netmgt.bsm.service.model.IpServiceDTO;
+import org.opennms.netmgt.bsm.persistence.api.BusinessService;
+import org.opennms.netmgt.bsm.persistence.api.BusinessServiceDao;
+import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.vaadin.core.TransactionAwareBeanProxyFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.common.base.Predicate;
+import com.google.common.collect.Collections2;
 
 
 public class BusinessServicesTopologyProvider extends AbstractTopologyProvider implements GraphProvider {
@@ -54,7 +58,8 @@ public class BusinessServicesTopologyProvider extends AbstractTopologyProvider i
 
     private static final Logger LOG = LoggerFactory.getLogger(BusinessServicesTopologyProvider.class);
 
-    private BusinessServiceManager businessServiceManager;
+    // TODO MVR use BusinessServiceManager and the BusinessService model from the service layer
+    private BusinessServiceDao businessServiceDao;
 
     private final TransactionAwareBeanProxyFactory transactionAwareBeanProxyFactory;
 
@@ -71,36 +76,76 @@ public class BusinessServicesTopologyProvider extends AbstractTopologyProvider i
     
     private void load() {
         resetContainer();
-        List<BusinessServiceDTO> businessServices = businessServiceManager.findAll();
-        for (BusinessServiceDTO businessService : businessServices) {
-            BusinessServiceVertex businessServiceVertex = new BusinessServiceVertex(String.valueOf(businessService.getId()), businessService.getName());
-            businessServiceVertex.setLabel(businessService.getName());
-            businessServiceVertex.setTooltipText(String.format("BusinessService '%s'", businessService.getName()));
-            businessServiceVertex.setIconKey("business-service");
-            addVertices(businessServiceVertex);
-
-            for (IpServiceDTO eachIpService : businessService.getIpServices()) {
-                final BusinessServiceVertex serviceVertex = new BusinessServiceVertex(businessServiceVertex.getId() + ":" + String.valueOf(eachIpService.getId()), eachIpService.getServiceName());
-                serviceVertex.setIpAddress(eachIpService.getIpAddress().toString());
-                serviceVertex.setLabel(eachIpService.getServiceName());
-                serviceVertex.setTooltipText(String.format("Service '%s', IP: %s", eachIpService.getServiceName(), eachIpService.getIpAddress().toString()));
-//                    serviceVertex.setNodeID(eachIpService.getNodeId());
-//                    serviceVertex.setServiceType(eachIpService.getServiceType());
-                businessServiceVertex.addChildren(serviceVertex);
-                addVertices(serviceVertex);
-
-                // connect with businessService
-                String id = String.format("connection:%s:%s", businessServiceVertex.getId(), serviceVertex.getId());
-                Edge edge = new AbstractEdge(getEdgeNamespace(), id, businessServiceVertex, serviceVertex);
-                edge.setTooltipText("LINK");
-                addEdges(edge);
+        // we only consider root business services to build the graph
+        Collection<BusinessService> businessServices = Collections2.filter(businessServiceDao.findAll(), new Predicate<BusinessService>() {
+            @Override
+            public boolean apply(BusinessService input) {
+                return input.getParentServices().isEmpty();
             }
+        });
+        addBusinessServices(null, businessServices);
+    }
+
+    private void addBusinessServices(BusinessServiceVertex parentVertex, Collection<BusinessService> businessServices) {
+        for (BusinessService eachBusinessService : businessServices) {
+            addBusinessService(parentVertex, eachBusinessService);
         }
     }
 
-    public void setBusinessServiceManager(BusinessServiceManager businessServiceManager) {
-        Objects.requireNonNull(businessServiceManager);
-        this.businessServiceManager = transactionAwareBeanProxyFactory.createProxy(businessServiceManager);
+    private void addBusinessService(BusinessServiceVertex parentVertex, BusinessService businessService) {
+        // create the vertex itself
+        BusinessServiceVertex businessServiceVertex = createVertex(businessService);
+        addVertices(businessServiceVertex);
+
+        // if we have a parent, connect the parent at the current business service vertex as well
+        if (parentVertex != null) {
+            parentVertex.addChildren(businessServiceVertex);
+            addEdges(createConnection(parentVertex, businessServiceVertex));
+        }
+
+        // add ip services
+        for (OnmsMonitoredService eachIpService : businessService.getIpServices()) {
+            BusinessServiceVertex serviceVertex = createVertex(businessService, eachIpService);
+            businessServiceVertex.addChildren(serviceVertex);
+            addVertices(serviceVertex);
+
+            // connect with businessService
+            Edge edge = createConnection(businessServiceVertex, serviceVertex);
+            addEdges(edge);
+        }
+
+        // add children to the hierarchy as well
+        addBusinessServices(businessServiceVertex, businessService.getChildServices());
+    }
+
+    private Edge createConnection(BusinessServiceVertex v1, BusinessServiceVertex v2) {
+        String id = String.format("connection:%s:%s", v1.getId(), v2.getId());
+        Edge edge = new AbstractEdge(getEdgeNamespace(), id, v1, v2);
+        edge.setTooltipText("LINK");
+        return edge;
+    }
+
+    private BusinessServiceVertex createVertex(BusinessService parentBusinessService, OnmsMonitoredService monitoredService) {
+        final BusinessServiceVertex serviceVertex = new BusinessServiceVertex(parentBusinessService.getId() + ":" + String.valueOf(monitoredService.getId()), monitoredService.getServiceName());
+        serviceVertex.setIpAddress(monitoredService.getIpAddress().toString());
+        serviceVertex.setLabel(monitoredService.getServiceName());
+        serviceVertex.setTooltipText(String.format("Service '%s', IP: %s", monitoredService.getServiceName(), monitoredService.getIpAddress().toString()));
+//      serviceVertex.setNodeID(eachIpService.getNodeId());
+//      serviceVertex.setServiceType(eachIpService.getServiceType());
+        return serviceVertex;
+    }
+
+    private BusinessServiceVertex createVertex(BusinessService businessService) {
+        BusinessServiceVertex businessServiceVertex = new BusinessServiceVertex(String.valueOf(businessService.getId()), businessService.getName());
+        businessServiceVertex.setLabel(businessService.getName());
+        businessServiceVertex.setTooltipText(String.format("BusinessService '%s'", businessService.getName()));
+        businessServiceVertex.setIconKey("business-service");
+        return businessServiceVertex;
+    }
+
+    public void setBusinessServiceDao(BusinessServiceDao businessServiceDao) {
+        Objects.requireNonNull(businessServiceDao);
+        this.businessServiceDao = transactionAwareBeanProxyFactory.createProxy(businessServiceDao);
     }
 
     @Override
@@ -111,9 +156,9 @@ public class BusinessServicesTopologyProvider extends AbstractTopologyProvider i
     @Override
     public Criteria getDefaultCriteria() {
         // Only show the first application by default
-        List<BusinessServiceDTO> businessServices = businessServiceManager.findAll();
+        List<BusinessService> businessServices = businessServiceDao.findAll();
         if (!businessServices.isEmpty()) {
-            BusinessServiceDTO businessService = businessServices.iterator().next();
+            BusinessService businessService = businessServices.iterator().next();
             return new BusinessServiceCriteria(String.valueOf(businessService.getId()), businessService.getName());
         }
         return null;
