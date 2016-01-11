@@ -41,6 +41,7 @@ import javax.swing.JButton
 import javax.swing.JFrame
 import javax.swing.JPanel
 import javax.swing.ListCellRenderer
+import javax.swing.SwingUtilities;
 import javax.swing.UIManager
 import javax.swing.WindowConstants
 import javax.swing.plaf.BorderUIResource
@@ -237,7 +238,6 @@ public abstract class AbstractGui implements GroovyGui {
         }
         m_gui.setVisible(true)
         m_gui.setResizable(false)
-        //m_gui.show()
     }
 
     protected Font getFont(final String fontName) {

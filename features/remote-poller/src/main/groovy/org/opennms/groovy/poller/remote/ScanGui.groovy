@@ -28,9 +28,7 @@
 
 package org.opennms.groovy.poller.remote
 
-import groovy.model.DefaultTableModel
 import java.awt.Color
-import java.awt.Component;
 import java.awt.Dimension
 import java.awt.event.ComponentAdapter
 import java.awt.event.ComponentEvent
@@ -38,26 +36,24 @@ import java.beans.PropertyChangeEvent
 import java.beans.PropertyChangeListener
 
 import javax.swing.JPanel
-import javax.swing.JTable;
 import javax.swing.JTextField
 import javax.swing.SwingUtilities
-import javax.swing.table.TableCellRenderer
 
 import org.apache.batik.swing.JSVGCanvas
 import org.opennms.netmgt.config.monitoringLocations.LocationDef
 import org.opennms.netmgt.poller.remote.PollerBackEnd
-import org.opennms.netmgt.poller.remote.PollerFrontEnd.PollerFrontEndStates
 import org.opennms.netmgt.poller.remote.support.PollResult
 import org.opennms.netmgt.poller.remote.support.ScanReport
 import org.opennms.netmgt.poller.remote.support.ScanReportPollerFrontEnd
-import org.opennms.netmgt.poller.remote.support.ScanReportPollerFrontEnd.ScanReportProperties
+import org.opennms.poller.remote.FrontEndInvoker
+import org.opennms.poller.remote.ScanReportHandler
 import org.springframework.beans.factory.InitializingBean
 import org.springframework.util.Assert
 
-class ScanGui extends AbstractGui implements InitializingBean, PropertyChangeListener {
+class ScanGui extends AbstractGui implements ScanReportHandler, PropertyChangeListener, InitializingBean {
     def m_metadataFieldNames = ['Customer Account Number', 'Reference ID', 'Customer Name']
     def m_locations = new ArrayList<String>()
-    def m_scanReport;
+    def m_scanReport
 
     def m_backEnd
     def m_frontEnd
@@ -66,8 +62,8 @@ class ScanGui extends AbstractGui implements InitializingBean, PropertyChangeLis
     def m_progressPanel
     def m_progressBar
     def m_passFailPanel
-    def updateDetails
-    def detailsPanel
+    def m_updateDetails
+    def m_detailsPanel
 
     public ScanGui() {
         super()
@@ -96,13 +92,13 @@ class ScanGui extends AbstractGui implements InitializingBean, PropertyChangeLis
         for (final LocationDef d : monitoringLocations) {
             m_locations.add(d.getLocationName())
         }
-        SwingUtilities.invokeLater( { createAndShowGui() } )
+        createAndShowGui()
     }
 
     public String validateFields() {
         for (final String key : m_metadataFieldNames) {
-            final String fieldKey = getFieldKey(key);
-            final JTextField field = m_metadataFields.get(fieldKey);
+            final String fieldKey = getFieldKey(key)
+            final JTextField field = m_metadataFields.get(fieldKey)
             if (field != null) {
                 if (field.getText() == null || "".equals(field.getText())) {
                     return key + " is required!"
@@ -175,8 +171,8 @@ class ScanGui extends AbstractGui implements InitializingBean, PropertyChangeLis
                     m_progressBar.setVisible(true)
                     m_progressBar.updateUI()
 
-                    if (updateDetails != null) {
-                        updateDetails()
+                    if (m_updateDetails != null) {
+                        m_updateDetails()
                     }
 
                     m_frontEnd = createPollerFrontEnd()
@@ -187,9 +183,9 @@ class ScanGui extends AbstractGui implements InitializingBean, PropertyChangeLis
                     }
                     m_frontEnd.setMetadata(metadata)
 
-                    m_frontEnd.addPropertyChangeListener(this)
-                    m_frontEnd.initialize()
-                    m_frontEnd.register(locationCombo.getSelectedItem())
+                    final FrontEndInvoker invoker = new FrontEndInvoker(m_frontEnd, this, locationCombo.getSelectedItem())
+                    invoker.addPropertyChangeListener(this)
+                    invoker.execute()
                 })
 
                 m_progressBar = progressBar(borderPainted:false, visible:false, value:0, constraints:"grow, spanx 3, wrap")
@@ -202,7 +198,6 @@ class ScanGui extends AbstractGui implements InitializingBean, PropertyChangeLis
                             )
 
                 }
-                //label(text:"Yes/No", font:getHeaderFont(), constraints:"center, spanx 3, spany 2, height 200!, wrap")
             }
             panel(constraints:"top", opaque:false) {
                 migLayout(
@@ -226,17 +221,17 @@ class ScanGui extends AbstractGui implements InitializingBean, PropertyChangeLis
             def detailsButton
             def detailsParent
 
-            updateDetails = {
+            m_updateDetails = {
                 if (detailsButton == null || detailsParent == null) {
                     return
                 }
-                if (detailsParent != null && detailsPanel != null) {
-                    detailsParent.remove(detailsPanel)
+                if (detailsParent != null && m_detailsPanel != null) {
+                    detailsParent.remove(m_detailsPanel)
                 }
 
                 if (detailsOpen) {
                     detailsButton.setText("Details \u25BC")
-                    detailsPanel = panel(opaque:false) {
+                    m_detailsPanel = panel(opaque:false) {
                         migLayout(
                                 layoutConstraints:"fill" + debugString,
                                 columnConstraints:"[center grow,fill]",
@@ -255,13 +250,13 @@ class ScanGui extends AbstractGui implements InitializingBean, PropertyChangeLis
                         }
                         widget(constraints:"dock north, grow, wrap", tab.tableHeader)
                     }
-                    detailsPanel.setVisible(true)
-                    detailsParent.add(detailsPanel)
+                    m_detailsPanel.setVisible(true)
+                    detailsParent.add(m_detailsPanel)
                 } else {
                     detailsButton.setText("Details \u25B2")
-                    if (detailsParent != null && detailsPanel != null) {
-                        detailsParent.remove(detailsPanel)
-                        detailsPanel = null
+                    if (detailsParent != null && m_detailsPanel != null) {
+                        detailsParent.remove(m_detailsPanel)
+                        m_detailsPanel = null
                     }
                 }
 
@@ -280,8 +275,8 @@ class ScanGui extends AbstractGui implements InitializingBean, PropertyChangeLis
 
                 detailsButton = button(text:"Details \u25BC", font:getLabelFont(), foreground:getDetailColor(), background:getBackgroundColor(), opaque:false, border:null, constraints:"wrap", actionPerformed:{
                     detailsOpen = !detailsOpen
-                    if (updateDetails != null) {
-                        updateDetails()
+                    if (m_updateDetails != null) {
+                        m_updateDetails()
                     }
                 })
             }
@@ -304,61 +299,63 @@ class ScanGui extends AbstractGui implements InitializingBean, PropertyChangeLis
                             lastDimension = newDimension
                             pendingResize = false
 
-                            if (detailsPanel != null) {
-                                detailsPanel.setVisible(true)
+                            if (m_detailsPanel != null) {
+                                m_detailsPanel.setVisible(true)
                             }
                             setWindowSize(newSize)
                         }
                     })
 
-            if (updateDetails != null) {
-                updateDetails()
+            if (m_updateDetails != null) {
+                m_updateDetails()
             }
 
         }
     }
 
+    public void setProgress(final Integer progress) {
+    }
+
+    public void scanComplete(final ScanReport report) {
+        System.err.println("scanComplete()")
+        m_scanReport = report
+
+        boolean passed = true
+        for (final PollResult result : report.getPollResults()) {
+            if (!result.getPollStatus().isUp()) {
+                passed = false
+                break
+            }
+        }
+        m_passFailPanel.removeAll()
+        def svg = new JSVGCanvas()
+        def uri = this.getClass().getResource(passed? "/passed.svg":"/failed.svg")
+        svg.setURI(uri.toString())
+        m_passFailPanel.add(svg)
+        m_passFailPanel.revalidate()
+
+        //m_passFailPanel.updateUI()
+        if (m_updateDetails == null) {
+            System.err.println("Can't update details!")
+        } else {
+            m_updateDetails()
+        }
+    }
+
     public static void main(String[] args) {
         def g = new ScanGui()
-        g.createAndShowGui()
+        SwingUtilities.invokeAndWait({
+            g.createAndShowGui()
+        })
     }
 
     @Override
     public void propertyChange(final PropertyChangeEvent evt) {
-        if (evt.getPropertyName().equals(ScanReportProperties.percentageComplete.toString())) {
-            def percentComplete = Long.valueOf(Math.round((Double)evt.getNewValue() * 100.0)).intValue()
-            System.out.println("Percent complete: " + percentComplete);
-            m_progressBar.setValue(percentComplete)
-            m_progressBar.setString(percentComplete + "%")
-            m_progressBar.setVisible(true)
-            repaint()
-        } else if (evt.getPropertyName().equals(PollerFrontEndStates.exitNecessary.toString())) {
-            def report = (ScanReport)evt.getNewValue()
-            System.out.println("Finished scan: " + report)
-            def passed = true
-            for (final PollResult result : report.getPollResults()) {
-                if (!result.getPollStatus().isUp()) {
-                    passed = false;
-                    break;
-                }
-            }
-            m_passFailPanel.removeAll()
-            def svg = new JSVGCanvas()
-            //final JSVGComponent svg = new JSVGComponent()
-            def uri = this.getClass().getResource(passed? "/passed.svg":"/failed.svg")
-            svg.setURI(uri.toString())
-            m_passFailPanel.add(svg)
-            m_passFailPanel.revalidate()
-            m_scanReport = report;
-
-            m_progressBar.updateUI()
-            m_passFailPanel.updateUI()
-            if (updateDetails != null) {
-                updateDetails()
-            }
-            //getGui().repaint()
-        } else {
-            System.err.println("Unhandled property change event: " + evt.getPropertyName())
+        if ("progress".equals(evt.getPropertyName())) {
+            def value = (Integer)evt.getNewValue()
+            System.err.println("progress: " + value)
+            m_progressBar.setValue(value)
+            m_progressBar.setString(value + "%")
         }
     }
 }
