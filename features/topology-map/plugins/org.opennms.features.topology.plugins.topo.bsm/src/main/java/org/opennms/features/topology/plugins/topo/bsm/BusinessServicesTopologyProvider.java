@@ -73,14 +73,14 @@ public class BusinessServicesTopologyProvider extends AbstractTopologyProvider i
         resetContainer();
         List<BusinessServiceDTO> businessServices = businessServiceManager.findAll();
         for (BusinessServiceDTO businessService : businessServices) {
-            BusinessServiceVertex businessServiceVertex = new BusinessServiceVertex(String.valueOf(businessService.getId()));
+            BusinessServiceVertex businessServiceVertex = new BusinessServiceVertex(String.valueOf(businessService.getId()), businessService.getName());
             businessServiceVertex.setLabel(businessService.getName());
             businessServiceVertex.setTooltipText(String.format("BusinessService '%s'", businessService.getName()));
             businessServiceVertex.setIconKey("business-service");
             addVertices(businessServiceVertex);
 
             for (IpServiceDTO eachIpService : businessService.getIpServices()) {
-                final BusinessServiceVertex serviceVertex = new BusinessServiceVertex(businessServiceVertex.getId() + ":" + String.valueOf(eachIpService.getId()));
+                final BusinessServiceVertex serviceVertex = new BusinessServiceVertex(businessServiceVertex.getId() + ":" + String.valueOf(eachIpService.getId()), eachIpService.getServiceName());
                 serviceVertex.setIpAddress(eachIpService.getIpAddress().toString());
                 serviceVertex.setLabel(eachIpService.getServiceName());
                 serviceVertex.setTooltipText(String.format("Service '%s', IP: %s", eachIpService.getServiceName(), eachIpService.getIpAddress().toString()));

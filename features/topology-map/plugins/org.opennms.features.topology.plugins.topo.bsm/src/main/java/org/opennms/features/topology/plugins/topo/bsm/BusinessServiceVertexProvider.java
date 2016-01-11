@@ -55,14 +55,14 @@ public class BusinessServiceVertexProvider extends SimpleVertexProvider {
     @Override
     public List<Vertex> getVertices(Criteria... criteria) {
         List<Vertex> vertices = super.getVertices(criteria);
-        Collection filter = filter(vertices, criteria);
+        Collection<Vertex> filter = filter(vertices, criteria);
         return new ArrayList<>(filter);
     }
 
     @Override
     public List<Vertex> getVertices(Collection<? extends VertexRef> references, Criteria... criteria) {
         List<Vertex> vertices = super.getVertices(references, criteria);
-        Collection filteredVertices =  filter(vertices, criteria);
+        Collection<Vertex> filteredVertices =  filter(vertices, criteria);
         return new ArrayList<>(filteredVertices);
     }
 

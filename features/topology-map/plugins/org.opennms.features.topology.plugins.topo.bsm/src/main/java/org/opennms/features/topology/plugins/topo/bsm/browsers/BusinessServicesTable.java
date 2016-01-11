@@ -34,7 +34,10 @@ import org.opennms.features.topology.plugins.browsers.OnmsDaoContainer;
 
 import com.vaadin.ui.Table;
 
+@SuppressWarnings("rawtypes")
 public class BusinessServicesTable extends Table {
+    private static final long serialVersionUID = 1L;
+
     /**
      *  Leave OnmsDaoContainer without generics; the Aries blueprint code cannot match up
      *  the arguments if you put the generic types in.
@@ -48,6 +51,5 @@ public class BusinessServicesTable extends Table {
             addGeneratedColumn(key, (ColumnGenerator)generators.get(key));
         }
     }
-
 
 }

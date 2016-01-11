@@ -34,6 +34,7 @@ import org.opennms.netmgt.bsm.persistence.api.BusinessService;
 import org.opennms.netmgt.bsm.persistence.api.BusinessServiceDao;
 
 public class BusinessServicesDaoContainer extends OnmsDaoContainer<BusinessService, Long> {
+    private static final long serialVersionUID = 1L;
 
     public BusinessServicesDaoContainer(BusinessServiceDao businessServiceDao) {
         super(BusinessService.class, businessServiceDao);
