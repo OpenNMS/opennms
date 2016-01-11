@@ -14,6 +14,7 @@ import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.netmgt.config.discovery.DiscoveryConfiguration;
 import org.opennms.netmgt.config.discovery.Specific;
+import org.opennms.netmgt.dao.mock.MockEventIpcManager;
 import org.opennms.netmgt.discovery.actors.Discoverer;
 import org.opennms.netmgt.discovery.actors.EventWriter;
 import org.opennms.netmgt.discovery.actors.RangeChunker;
@@ -32,7 +33,7 @@ public class DiscoveryRoutingTest extends CamelTestSupport
 
         registry.bind( "rangeChunker", new RangeChunker() );
         registry.bind( "discoverer", new Discoverer( new NullPinger() ) );
-        registry.bind( "eventWriter", new EventWriter( null ) );
+        registry.bind( "eventWriter", new EventWriter( new MockEventIpcManager() ) );
 
         return registry;
     }
