@@ -62,7 +62,7 @@ public class BusinessServiceVertexProvider extends SimpleVertexProvider {
     @Override
     public List<Vertex> getVertices(Collection<? extends VertexRef> references, Criteria... criteria) {
         List<Vertex> vertices = super.getVertices(references, criteria);
-        Collection<Vertex> filteredVertices =  filter(vertices, criteria);
+        Collection<Vertex> filteredVertices = filter(vertices, criteria);
         return new ArrayList<>(filteredVertices);
     }
 
@@ -77,11 +77,11 @@ public class BusinessServiceVertexProvider extends SimpleVertexProvider {
 
     private <T extends VertexRef> T filter(T refToFilter, Criteria... criteria) {
         for (BusinessServiceCriteria eachCriteria : getBusinessServiceCriteria(criteria)) {
-            if (!eachCriteria.apply(refToFilter)) {
-                return null;
+            if (eachCriteria.apply(refToFilter)) {
+                return refToFilter;
             }
         }
-        return refToFilter; // at this point we are good to go
+        return null;
     }
 
     private List<BusinessServiceCriteria> getBusinessServiceCriteria(Criteria... criteria) {

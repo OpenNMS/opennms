@@ -28,27 +28,20 @@
 
 package org.opennms.features.topology.plugins.topo.bsm;
 
+import java.util.Collections;
 import java.util.Objects;
+import java.util.Set;
 
 import org.opennms.features.topology.api.NamespaceAware;
-import org.opennms.features.topology.api.topo.Criteria;
+import org.opennms.features.topology.api.support.VertexHopGraphProvider.VertexHopCriteria;
 import org.opennms.features.topology.api.topo.VertexRef;
 
-public class BusinessServiceCriteria extends Criteria implements NamespaceAware {
+public class BusinessServiceCriteria extends VertexHopCriteria implements NamespaceAware {
+    private final String businessServiceId;
 
-    private String businessServiceId;
-
-    public BusinessServiceCriteria() {
-
-    }
-
-    protected BusinessServiceCriteria(String businessServiceId) {
+    public BusinessServiceCriteria(String businessServiceId, String businessServiceName) {
+        super(businessServiceId, businessServiceName);
         this.businessServiceId = businessServiceId;
-    }
-
-    @Override
-    public ElementType getType() {
-        return ElementType.VERTEX;
     }
 
     @Override
@@ -89,11 +82,18 @@ public class BusinessServiceCriteria extends Criteria implements NamespaceAware 
         return Objects.equals(businessServiceId, other.businessServiceId);
     }
 
-    public void setBusinessServiceId(String businessServiceId) {
-        this.businessServiceId = businessServiceId;
+    @Override
+    public String toString() {
+        return String.format("BusinessServiceCriteria[id=%s]", businessServiceId);
     }
 
     public String getBusinessServiceId() {
         return businessServiceId;
+    }
+
+    @Override
+    public Set<VertexRef> getVertices() {
+        // TODO: When is this called?
+        return Collections.emptySet();
     }
 }
