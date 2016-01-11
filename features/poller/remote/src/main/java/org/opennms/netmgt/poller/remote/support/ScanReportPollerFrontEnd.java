@@ -409,6 +409,14 @@ public class ScanReportPollerFrontEnd implements PollerFrontEnd, InitializingBea
         scanReport.setCustomerAccountNumber(m_metadata.get("customer-account-number"));
         scanReport.setCustomerName(m_metadata.get("customer-name"));
         scanReport.setReferenceId(m_metadata.get("reference-id"));
+        scanReport.setExternalIpAddress(InetAddressUtils.addr(m_metadata.get("externalIpAddress")));
+        scanReport.setCountryCode(m_metadata.get("countryCode"));
+        scanReport.setRegionCode(m_metadata.get("regionCode"));
+        scanReport.setCity(m_metadata.get("city"));
+        scanReport.setZipCode(m_metadata.get("zipCode"));
+        scanReport.setTimeZone(m_metadata.get("timeZone"));
+        scanReport.setLatitude(Double.valueOf(m_metadata.get("latitude")));
+        scanReport.setLongitude(Double.valueOf(m_metadata.get("longitude")));
 
         try {
             m_pollService.setServiceMonitorLocators(m_backEnd.getServiceMonitorLocators(DistributionContext.REMOTE_MONITOR));
