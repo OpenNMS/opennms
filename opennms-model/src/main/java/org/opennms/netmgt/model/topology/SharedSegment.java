@@ -9,7 +9,6 @@ import java.util.Set;
 
 import org.opennms.netmgt.model.BridgeBridgeLink;
 import org.opennms.netmgt.model.BridgeMacLink;
-import org.opennms.netmgt.model.topology.BroadcastDomain.BridgeMacLinkHash;
 
 public class SharedSegment {
     
@@ -154,11 +153,11 @@ public class SharedSegment {
                 
         Map<BridgeMacLinkHash,BridgeMacLink> sharedsegmentmaclinks = new HashMap<BridgeMacLinkHash,BridgeMacLink>();
         for (BridgeMacLink link: links)
-            sharedsegmentmaclinks.put(m_domain.new BridgeMacLinkHash(link),link);
+            sharedsegmentmaclinks.put(new BridgeMacLinkHash(link),link);
         //intersection is not null, then we have to add all the BridgeMacLink
         // for each mac address
         for (BridgeMacLink link: m_bridgeportsOnSegment)
-            sharedsegmentmaclinks.put(m_domain.new BridgeMacLinkHash(link),link);
+            sharedsegmentmaclinks.put(new BridgeMacLinkHash(link),link);
 
         m_bridgeportsOnSegment = new ArrayList<BridgeMacLink>(sharedsegmentmaclinks.values());
     }

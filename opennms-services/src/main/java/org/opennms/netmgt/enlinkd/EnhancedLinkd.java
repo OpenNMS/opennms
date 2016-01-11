@@ -42,6 +42,7 @@ import org.opennms.netmgt.daemon.AbstractServiceDaemon;
 import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.enlinkd.scheduler.ReadyRunnable;
 import org.opennms.netmgt.enlinkd.scheduler.Scheduler;
+import org.opennms.netmgt.model.topology.BroadcastDomain;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -349,8 +350,9 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
         LOG.info("deleteNode: deleting LinkableNode for node {}",
                         nodeid);
 
-            m_queryMgr.delete(nodeid);
+        BroadcastDomain domain = m_queryMgr.getBridgeTopologyBroadcastDomain(nodeid);
 
+        // must be calculated the topology for nodeid...
         Node node = removeNode(nodeid);
 
         if (node == null) {
@@ -366,12 +368,24 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
                     LOG.warn("deleteNode: found null ReadyRunnable");
                     continue;
                 } else {
+                    if (rr instanceof NodeDiscoveryBridgeTopology && domain.getBridgeNodesOnDomain().size() > 1) {
+                        domain.getLock();
+                        LOG.info("deleteNode: node: {}, start: calculating topology for braodcast domain",nodeid);
+                        NodeDiscoveryBridgeTopology ndbt= (NodeDiscoveryBridgeTopology) rr;
+                        ndbt.clearTopologyForBridge(domain.getBridge(nodeid));
+                        LOG.info("deleteNode: node: {}, end: calculating topology for braodcast domain",nodeid);
+                        LOG.info("deleteNode: node: {}, start: save topology for braodcast domain",nodeid);
+                        m_queryMgr.store(domain, ndbt.getRootBridgeId(),ndbt.getRootBridgeBFT());
+                        LOG.info("deleteNode: node: {}, end: save topology for braodcast domain",nodeid);
+                        domain.releaseLock();
+                    }
                     rr.unschedule();
                 }
 
             }
 
         }
+        m_queryMgr.delete(nodeid);
 
     }
 
