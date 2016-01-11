@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.model.discovery;
 
+import java.io.Serializable;
 import java.math.BigInteger;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -52,9 +53,11 @@ import org.slf4j.LoggerFactory;
  * @author <A HREF="mailto:sowmya@opennms.org">Sowmya </A>
  * @author <A HREF="mailto:weave@oculan.com">Brian Weaver </A>
  */
-public final class IPAddrRange implements Iterable<InetAddress> {
-	
-	private static final Logger LOG = LoggerFactory.getLogger(IPAddrRange.class);
+public final class IPAddrRange implements Iterable<InetAddress>, Serializable {
+
+    private static final long serialVersionUID = -106414771861377679L;
+
+    private static final Logger LOG = LoggerFactory.getLogger(IPAddrRange.class);
 
     /**
      * The starting address for the object.
