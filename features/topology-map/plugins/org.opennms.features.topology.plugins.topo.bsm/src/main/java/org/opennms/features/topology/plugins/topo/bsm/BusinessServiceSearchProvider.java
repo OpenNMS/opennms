@@ -15,6 +15,7 @@ import org.opennms.features.topology.api.topo.SearchResult;
 import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.netmgt.bsm.persistence.api.BusinessService;
 import org.opennms.netmgt.bsm.persistence.api.BusinessServiceDao;
+import org.opennms.netmgt.bsm.service.BusinessServiceManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,6 +25,7 @@ public class BusinessServiceSearchProvider extends AbstractSearchProvider implem
     private static final Logger LOG = LoggerFactory.getLogger(BusinessServiceSearchProvider.class);
 
     private BusinessServiceDao m_businessServiceDao;
+    private BusinessServiceManager m_businessServiceManager;
 
     @Override
     public String getSearchProviderNamespace() {
@@ -75,7 +77,7 @@ public class BusinessServiceSearchProvider extends AbstractSearchProvider implem
     public void addVertexHopCriteria(SearchResult searchResult, GraphContainer container) {
         LOG.debug("BusinessServiceSearchProvider->addVertexHopCriteria: called with search result: '{}'", searchResult);
 
-        BusinessServiceCriteria criterion = new BusinessServiceCriteria(searchResult.getId(), searchResult.getLabel());
+        BusinessServiceCriteria criterion = new BusinessServiceCriteria(searchResult.getId(), searchResult.getLabel(), m_businessServiceManager);
         container.addCriteria(criterion);
 
         LOG.debug("BusinessServiceSearchProvider->addVertexHop: adding hop criteria {}.", criterion);
@@ -86,7 +88,7 @@ public class BusinessServiceSearchProvider extends AbstractSearchProvider implem
     public void removeVertexHopCriteria(SearchResult searchResult, GraphContainer container) {
         LOG.debug("BusinessServiceSearchProvider->removeVertexHopCriteria: called with search result: '{}'", searchResult);
 
-        BusinessServiceCriteria criterion = new BusinessServiceCriteria(searchResult.getId(), searchResult.getLabel());
+        BusinessServiceCriteria criterion = new BusinessServiceCriteria(searchResult.getId(), searchResult.getLabel(), m_businessServiceManager);
         container.removeCriteria(criterion);
 
         LOG.debug("BusinessServiceSearchProvider->removeVertexHopCriteria: current criteria {}.", Arrays.toString(container.getCriteria()));
@@ -94,5 +96,9 @@ public class BusinessServiceSearchProvider extends AbstractSearchProvider implem
 
     public void setBusinessServiceDao(BusinessServiceDao businessServiceDao) {
         m_businessServiceDao = businessServiceDao;
+    }
+
+    public void setBusinessServiceManager(BusinessServiceManager businessServiceManager) {
+        m_businessServiceManager = businessServiceManager;
     }
 }

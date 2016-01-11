@@ -4,8 +4,8 @@ xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0 http://www.osgi.o
 
 	<reference id="businessServiceDao"  interface="org.opennms.netmgt.bsm.persistence.api.BusinessServiceDao" availability="mandatory" />
 	<reference id="transactionOperations" interface="org.springframework.transaction.support.TransactionOperations" availability="mandatory"/>
-	<!--<reference id="businessServiceManager" interface="org.opennms.netmgt.bsm.service.BusinessServiceManager" availability="mandatory"/>-->
-
+	<reference id="businessServiceManager" interface="org.opennms.netmgt.bsm.service.BusinessServiceManager" availability="mandatory"/>
+ 
 	<!-- TransactionAwareBeanProxyFactory -->
 	<bean id="transactionAwareBeanProxyFactory" class="org.opennms.netmgt.vaadin.core.TransactionAwareBeanProxyFactory">
 		<argument ref="transactionOperations"/>
@@ -15,18 +15,22 @@ xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0 http://www.osgi.o
 	<bean id="bsmTopologyProvider" scope="prototype" class="org.opennms.features.topology.plugins.topo.bsm.BusinessServicesTopologyProvider">
 		<argument ref="transactionAwareBeanProxyFactory"/>
 		<property name="businessServiceDao" ref="businessServiceDao"/>
+        <property name="businessServiceManager" ref="businessServiceManager" />
 	</bean>
-	<service interface="org.opennms.features.topology.api.topo.VertexProvider" ref="bsmTopologyProvider">
+     <bean id="bsmTopologyHopProvider" class="org.opennms.features.topology.api.support.VertexHopGraphProvider">
+        <argument ref="bsmTopologyProvider"/>
+    </bean>
+	<service interface="org.opennms.features.topology.api.topo.VertexProvider" ref="bsmTopologyHopProvider">
 		<service-properties>
 			<entry key="label" value="Business Services"/>
 		</service-properties>
 	</service>
-	<service interface="org.opennms.features.topology.api.topo.EdgeProvider" ref="bsmTopologyProvider">
+	<service interface="org.opennms.features.topology.api.topo.EdgeProvider" ref="bsmTopologyHopProvider">
 		<service-properties>
 			<entry key="label" value="Business Services"/>
 		</service-properties>
 	</service>
-	<service interface="org.opennms.features.topology.api.topo.GraphProvider" ref="bsmTopologyProvider">
+	<service interface="org.opennms.features.topology.api.topo.GraphProvider" ref="bsmTopologyHopProvider">
 		<service-properties>
 			<entry key="label" value="Business Services"/>
 		</service-properties>
@@ -49,6 +53,7 @@ xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0 http://www.osgi.o
     <!-- Search Provider -->
     <bean id="bsmSearchProvider" class="org.opennms.features.topology.plugins.topo.bsm.BusinessServiceSearchProvider">
         <property name="businessServiceDao" ref="businessServiceDao" />
+        <property name="businessServiceManager" ref="businessServiceManager" />
     </bean>
 
     <service interface="org.opennms.features.topology.api.topo.SearchProvider" ref="bsmSearchProvider"/>
@@ -57,6 +62,7 @@ xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0 http://www.osgi.o
 	<bean id="businessServiceSelectionLinkGenerator" class="org.opennms.features.topology.plugins.topo.bsm.browsers.BusinessServicesSelectionLinkGenerator">
 		<argument value="id" />
         <property name="businessServiceDao" ref="businessServiceDao" />
+        <property name="businessServiceManager" ref="businessServiceManager" />
 	</bean>
 
 	<bean id="businessServicesDaoContainer" class="org.opennms.features.topology.plugins.topo.bsm.browsers.BusinessServicesDaoContainer" scope="prototype">

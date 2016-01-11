@@ -28,20 +28,24 @@
 
 package org.opennms.features.topology.plugins.topo.bsm;
 
-import java.util.Collections;
+import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
 import org.opennms.features.topology.api.NamespaceAware;
 import org.opennms.features.topology.api.support.VertexHopGraphProvider.VertexHopCriteria;
 import org.opennms.features.topology.api.topo.VertexRef;
+import org.opennms.netmgt.bsm.service.BusinessServiceManager;
+import org.opennms.netmgt.bsm.service.model.BusinessServiceDTO;
 
 public class BusinessServiceCriteria extends VertexHopCriteria implements NamespaceAware {
     private final String businessServiceId;
+    private final BusinessServiceManager businessServiceManager;
 
-    public BusinessServiceCriteria(String businessServiceId, String businessServiceName) {
+    public BusinessServiceCriteria(String businessServiceId, String businessServiceName, BusinessServiceManager businessServiceManager) {
         super(businessServiceId, businessServiceName);
         this.businessServiceId = businessServiceId;
+        this.businessServiceManager = Objects.requireNonNull(businessServiceManager);
     }
 
     @Override
@@ -91,9 +95,19 @@ public class BusinessServiceCriteria extends VertexHopCriteria implements Namesp
         return businessServiceId;
     }
 
+    /**
+     * This is called by the VertexHopGraphProvider in order to get the set
+     * of vertices that are in focus.
+     */
     @Override
     public Set<VertexRef> getVertices() {
-        // TODO: When is this called?
-        return Collections.emptySet();
+        Set<VertexRef> vertices = new HashSet<>();
+
+        BusinessServiceDTO businessService = businessServiceManager.getById(Long.parseLong(businessServiceId));
+        if (businessService != null) {
+            vertices.add(new BusinessServiceVertex(businessService));
+        }
+
+        return vertices;
     }
 }
