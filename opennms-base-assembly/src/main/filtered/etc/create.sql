@@ -2665,4 +2665,3 @@ CREATE TABLE bsm_service_ifservices (
   CONSTRAINT fk_bsm_service_ifservices_service_id FOREIGN KEY (bsm_service_id)
   REFERENCES bsm_service (id) ON DELETE CASCADE
 );
-
