@@ -32,11 +32,6 @@ package org.opennms.features.topology.app.internal.jung;
 import java.awt.geom.Point2D;
 import java.util.Collection;
 
-import edu.uci.ics.jung.algorithms.layout.TreeLayout;
-import edu.uci.ics.jung.algorithms.shortestpath.MinimumSpanningForest;
-import edu.uci.ics.jung.graph.DelegateForest;
-import edu.uci.ics.jung.graph.Forest;
-import edu.uci.ics.jung.graph.SparseGraph;
 import org.opennms.features.topology.api.Graph;
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.Layout;
@@ -44,6 +39,11 @@ import org.opennms.features.topology.api.Point;
 import org.opennms.features.topology.api.topo.Edge;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
+
+import edu.uci.ics.jung.algorithms.layout.TreeLayout;
+import edu.uci.ics.jung.algorithms.shortestpath.MinimumSpanningForest;
+import edu.uci.ics.jung.graph.DelegateForest;
+import edu.uci.ics.jung.graph.SparseGraph;
 
 /**
  * <p>
@@ -77,18 +77,15 @@ public class HierarchyLayoutAlgorithm extends AbstractLayoutAlgorithm {
      */
     @Override
     public void updateLayout(final GraphContainer graphContainer) {
-        final Graph g = graphContainer.getGraph();
-        final Layout graphLayout = g.getLayout();
-        final edu.uci.ics.jung.algorithms.layout.Layout<VertexRef, Edge> treeLayout = createTreeLayout(g);
+        final Graph graph = graphContainer.getGraph();
+        final Layout graphLayout = graph.getLayout();
+        final edu.uci.ics.jung.algorithms.layout.Layout<VertexRef, Edge> treeLayout = createTreeLayout(graph);
 
-        treeLayout.setInitializer(initializer(g.getLayout()));
-
-        transformLayout(g.getDisplayVertices(), treeLayout, graphLayout);
+        applyLayoutPositions(graph.getDisplayVertices(), treeLayout, graphLayout);
     }
 
     private edu.uci.ics.jung.graph.Graph<VertexRef, Edge> convert(final Graph g) {
         final SparseGraph<VertexRef, Edge> sparseGraph = new SparseGraph<VertexRef, Edge>();
-
         for(VertexRef v : g.getDisplayVertices()) {
             sparseGraph.addVertex(v);
         }
@@ -98,7 +95,7 @@ public class HierarchyLayoutAlgorithm extends AbstractLayoutAlgorithm {
         return sparseGraph;
     }
 
-    private void transformLayout(final Collection<? extends Vertex> vertices, final edu.uci.ics.jung.algorithms.layout.Layout<VertexRef, Edge> layout, final Layout graphLayout) {
+    private void applyLayoutPositions(final Collection<? extends Vertex> vertices, final edu.uci.ics.jung.algorithms.layout.Layout<VertexRef, Edge> layout, final Layout graphLayout) {
         for(VertexRef v : vertices) {
             Point2D p = layout.transform(v);
             graphLayout.setLocation(v, new Point(p.getX(), p.getY()));
@@ -114,11 +111,10 @@ public class HierarchyLayoutAlgorithm extends AbstractLayoutAlgorithm {
         return null;
     }
 
-    public Forest createMinForest(final Graph g) {
-        return new MinimumSpanningForest(convert(g), new DelegateForest(), getRoot(g)).getForest();
-    }
-
-    public edu.uci.ics.jung.algorithms.layout.Layout<VertexRef, Edge> createTreeLayout(final Graph g) {
-        return new TreeLayout<>(createMinForest(g));
+    private edu.uci.ics.jung.algorithms.layout.Layout<VertexRef, Edge> createTreeLayout(final Graph g) {
+        final MinimumSpanningForest minimumSpanningForest = new MinimumSpanningForest(convert(g), new DelegateForest(), getRoot(g));
+        final TreeLayout<VertexRef, Edge> treeLayout =  new TreeLayout<>(minimumSpanningForest.getForest(), ELBOW_ROOM * 2, ELBOW_ROOM * 2);
+        treeLayout.setInitializer(initializer(g.getLayout()));
+        return treeLayout;
     }
 }
