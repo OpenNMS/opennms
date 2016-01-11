@@ -42,8 +42,8 @@ class BusinessServiceVertex extends AbstractVertex {
      * Creates a new {@link BusinessServiceVertex}.
      * @param id the unique id of this vertex. Must be unique overall the namespace.
      */
-    public BusinessServiceVertex(String id) {
-        super(BusinessServicesTopologyProvider.TOPOLOGY_NAMESPACE, id);
+    public BusinessServiceVertex(String id, String label) {
+        super(BusinessServicesTopologyProvider.TOPOLOGY_NAMESPACE, id, label);
         setIconKey(null);
         setLocked(false);
         setSelected(false);

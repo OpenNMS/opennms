@@ -42,6 +42,7 @@ import com.vaadin.ui.UI;
 import com.vaadin.ui.themes.BaseTheme;
 
 public class BusinessServicesSelectionLinkGenerator implements Table.ColumnGenerator {
+    private static final long serialVersionUID = 1L;
 
     public BusinessServicesSelectionLinkGenerator(String idPropertyName) {
 		this.idPropertyName = idPropertyName;
@@ -54,6 +55,7 @@ public class BusinessServicesSelectionLinkGenerator implements Table.ColumnGener
 	@Override
 	public Object generateCell(final Table source, final Object itemId, Object columnId) {
 		// TODO MVR this is exactly the same code as ApplicationSElectionLinkGenerator -> generalize
+		@SuppressWarnings("unchecked")
 		final Property<Long> idProperty = source.getContainerProperty(itemId, idPropertyName);
 		Object cellValue = columnGenerator.generateCell(source, itemId, columnId);
 		if (cellValue == null) {
@@ -66,6 +68,8 @@ public class BusinessServicesSelectionLinkGenerator implements Table.ColumnGener
 				button.setStyleName(BaseTheme.BUTTON_LINK);
 				button.setDescription(idProperty.getValue().toString());
 				button.addClickListener(new Button.ClickListener() {
+				private static final long serialVersionUID = 1L;
+
 					@Override
 					public void buttonClick(Button.ClickEvent event) {
 						// Retrieve the graph container associated with the current application context
