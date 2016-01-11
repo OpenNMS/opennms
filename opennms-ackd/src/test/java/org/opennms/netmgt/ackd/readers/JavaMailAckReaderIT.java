@@ -320,11 +320,24 @@ public class JavaMailAckReaderIT implements InitializingBean {
         }
 
         @Override
-        public void reloadConfiguration()
-                throws DataAccessResourceFailureException {
-            
+        public void reloadConfiguration() throws DataAccessResourceFailureException {
         }
-        
+
+        @Override
+        public void addSendMailConfig(SendmailConfig sendmailConfig) {
+        }
+
+        @Override
+        public void addReadMailConfig(ReadmailConfig readmailConfig) {
+        }
+
+        @Override
+        public void addEnd2endMailConfig(End2endMailConfig end2endConfig) {
+        }
+
+        @Override
+        public void saveConfiguration() {
+        }        
     }
     
     @Ignore
