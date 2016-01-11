@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.poller.remote.support;
 
+import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -38,6 +39,9 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+
+import org.opennms.netmgt.snmp.InetAddrXmlAdapter;
 
 
 /**
@@ -47,138 +51,223 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlAccessorType(XmlAccessType.NONE)
 public class ScanReport {
 
-	@XmlAttribute(name="customer-account-number")
-	private String m_customerAccountNumber;
+    @XmlAttribute(name="customer-account-number")
+    private String m_customerAccountNumber;
 
-	@XmlAttribute(name="reference-id")
-	private String m_referenceId;
+    @XmlAttribute(name="reference-id")
+    private String m_referenceId;
 
-	@XmlAttribute(name="customer-name")
-	private String m_customerName;
+    @XmlAttribute(name="customer-name")
+    private String m_customerName;
 
-	@XmlAttribute(name="location")
-	private String m_location;
+    @XmlAttribute(name="location")
+    private String m_location;
 
-	@XmlAttribute(name="monitoring-system")
-	private String m_monitoringSystem;
+    @XmlAttribute(name="monitoring-system")
+    private String m_monitoringSystem;
 
-	@XmlAttribute(name="time-zone")
-	private String m_timeZone;
+    @XmlAttribute(name="external-ip-address")
+    @XmlJavaTypeAdapter(InetAddrXmlAdapter.class)
+    private InetAddress m_externalIpAddress;
 
-	@XmlAttribute(name="locale")
-	private String m_locale;
+    @XmlAttribute(name="country-code")
+    private String m_countryCode;
 
-	@XmlAttribute(name="timestamp")
-	private Date m_timestamp;
+    @XmlAttribute(name="region-code")
+    private String m_regionCode;
 
-	@XmlElementWrapper(name="poll-results")
-	@XmlElement(name="poll-result")
-	private List<PollResult> m_pollResults = new ArrayList<>();
+    @XmlAttribute(name="city")
+    private String m_city;
 
-	public ScanReport() {
-	}
+    @XmlAttribute(name="zip-code")
+    private String m_zipCode;
 
-	/**
-	 * Copy constructor.
-	 * 
-	 * @param pkg
-	 */
-	public ScanReport(ScanReport pkg) {
-		m_customerAccountNumber = pkg.getCustomerAccountNumber();
-		m_customerName = pkg.getCustomerName();
-		m_locale = pkg.getLocale();
-		m_location = pkg.getLocation();
-		m_monitoringSystem = pkg.getMonitoringSystem();
-		m_pollResults = pkg.getPollResults();
-		m_referenceId = pkg.getReferenceId();
-		m_timestamp = pkg.getTimestamp();
-		m_timeZone = pkg.getTimeZone();
-	}
+    @XmlAttribute(name="time-zone")
+    private String m_timeZone;
 
-	public String getCustomerAccountNumber() {
-		return m_customerAccountNumber;
-	}
+    @XmlAttribute(name="latitude")
+    private Double m_latitude;
 
-	public void setCustomerAccountNumber(String m_customerAccountNumber) {
-		this.m_customerAccountNumber = m_customerAccountNumber;
-	}
+    @XmlAttribute(name="longitude")
+    private Double m_longitude;
 
-	public String getReferenceId() {
-		return m_referenceId;
-	}
+    @XmlAttribute(name="locale")
+    private String m_locale;
 
-	public void setReferenceId(String m_referenceId) {
-		this.m_referenceId = m_referenceId;
-	}
+    @XmlAttribute(name="timestamp")
+    private Date m_timestamp;
 
-	public String getCustomerName() {
-		return m_customerName;
-	}
+    @XmlElementWrapper(name="poll-results")
+    @XmlElement(name="poll-result")
+    private List<PollResult> m_pollResults = new ArrayList<>();
 
-	public void setCustomerName(String m_customerName) {
-		this.m_customerName = m_customerName;
-	}
+    public ScanReport() {
+    }
 
-	public String getLocation() {
-		return m_location;
-	}
+    /**
+     * Copy constructor.
+     *
+     * @param pkg
+     */
+    public ScanReport(final ScanReport pkg) {
+        m_city = pkg.getCity();
+        m_countryCode = pkg.getCountryCode();
+        m_customerAccountNumber = pkg.getCustomerAccountNumber();
+        m_customerName = pkg.getCustomerName();
+        m_externalIpAddress = pkg.getExternalIpAddress();
+        m_latitude = pkg.getLatitude();
+        m_locale = pkg.getLocale();
+        m_location = pkg.getLocation();
+        m_longitude = pkg.getLongitude();
+        m_monitoringSystem = pkg.getMonitoringSystem();
+        m_pollResults = pkg.getPollResults();
+        m_referenceId = pkg.getReferenceId();
+        m_regionCode = pkg.getRegionCode();
+        m_timestamp = pkg.getTimestamp();
+        m_timeZone = pkg.getTimeZone();
+        m_zipCode = pkg.getZipCode();
+    }
 
-	public void setLocation(String m_location) {
-		this.m_location = m_location;
-	}
+    public String getCustomerAccountNumber() {
+        return m_customerAccountNumber;
+    }
 
-	public String getMonitoringSystem() {
-		return m_monitoringSystem;
-	}
+    public void setCustomerAccountNumber(final String customerAccountNumber) {
+        m_customerAccountNumber = customerAccountNumber;
+    }
 
-	public void setMonitoringSystem(String m_monitoringSystem) {
-		this.m_monitoringSystem = m_monitoringSystem;
-	}
+    public String getReferenceId() {
+        return m_referenceId;
+    }
 
-	public String getTimeZone() {
-		return m_timeZone;
-	}
+    public void setReferenceId(final String referenceId) {
+        m_referenceId = referenceId;
+    }
 
-	public void setTimeZone(String m_timeZone) {
-		this.m_timeZone = m_timeZone;
-	}
+    public String getCustomerName() {
+        return m_customerName;
+    }
 
-	public String getLocale() {
-		return m_locale;
-	}
+    public void setCustomerName(final String customerName) {
+        m_customerName = customerName;
+    }
 
-	public void setLocale(String m_locale) {
-		this.m_locale = m_locale;
-	}
+    public String getLocation() {
+        return m_location;
+    }
 
-	public Date getTimestamp() {
-		return m_timestamp;
-	}
+    public void setLocation(final String location) {
+        m_location = location;
+    }
 
-	public void setTimestamp(Date m_timestamp) {
-		this.m_timestamp = m_timestamp;
-	}
+    public String getMonitoringSystem() {
+        return m_monitoringSystem;
+    }
 
-	public List<PollResult> getPollResults() {
-		return m_pollResults;
-	}
+    public void setMonitoringSystem(final String monitoringSystem) {
+        m_monitoringSystem = monitoringSystem;
+    }
 
-	public void setPollResults(final List<PollResult> pollResults) {
-		this.m_pollResults = pollResults;
-	}
+    public InetAddress getExternalIpAddress() {
+        return m_externalIpAddress;
+    }
 
-	public boolean addPollResult(final PollResult pollResult) {
-		return m_pollResults.add(pollResult);
-	}
+    public void setExternalIpAddress(final InetAddress inetAddress) {
+        m_externalIpAddress = inetAddress;
+    }
 
-	public boolean isUp() {
-	    if (m_pollResults != null) {
-	        for (final PollResult result : m_pollResults) {
-	            if (!result.isUp()) {
-	                return false;
-	            }
-	        }
-	    }
-	    return true;
-	}
+    public String getCountryCode() {
+        return m_countryCode;
+    }
+
+    public void setCountryCode(final String countryCode) {
+        m_countryCode = countryCode;
+    }
+
+    public String getRegionCode() {
+        return m_regionCode;
+    }
+
+    public void setRegionCode(final String regionCode) {
+        m_regionCode = regionCode;
+    }
+
+    public String getCity() {
+        return m_city;
+    }
+
+    public void setCity(final String city) {
+        m_city = city;
+    }
+
+    public String getZipCode() {
+        return m_zipCode;
+    }
+
+    public void setZipCode(final String zipCode) {
+        m_zipCode = zipCode;
+    }
+
+    public String getTimeZone() {
+        return m_timeZone;
+    }
+
+    public void setTimeZone(String m_timeZone) {
+        this.m_timeZone = m_timeZone;
+    }
+
+    public Double getLatitude() {
+        return m_latitude;
+    }
+
+    public void setLatitude(final Double latitude) {
+        m_latitude = latitude;
+    }
+
+    public Double getLongitude() {
+        return m_longitude;
+    }
+
+    public void setLongitude(final Double longitude) {
+        m_longitude = longitude;
+    }
+
+    public String getLocale() {
+        return m_locale;
+    }
+
+    public void setLocale(String m_locale) {
+        this.m_locale = m_locale;
+    }
+
+    public Date getTimestamp() {
+        return m_timestamp;
+    }
+
+    public void setTimestamp(Date m_timestamp) {
+        this.m_timestamp = m_timestamp;
+    }
+
+    public List<PollResult> getPollResults() {
+        return m_pollResults;
+    }
+
+    public void setPollResults(final List<PollResult> pollResults) {
+        this.m_pollResults = pollResults;
+    }
+
+    public boolean addPollResult(final PollResult pollResult) {
+        return m_pollResults.add(pollResult);
+    }
+
+    public boolean isUp() {
+        if (m_pollResults != null) {
+            for (final PollResult result : m_pollResults) {
+                if (!result.isUp()) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
 }

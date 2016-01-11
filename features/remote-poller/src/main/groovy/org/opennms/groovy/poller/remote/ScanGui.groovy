@@ -46,6 +46,7 @@ import org.opennms.netmgt.poller.remote.support.PollResult
 import org.opennms.netmgt.poller.remote.support.ScanReport
 import org.opennms.netmgt.poller.remote.support.ScanReportPollerFrontEnd
 import org.opennms.poller.remote.FrontEndInvoker
+import org.opennms.poller.remote.GeodataFetcher
 import org.opennms.poller.remote.ScanReportHandler
 import org.springframework.beans.factory.InitializingBean
 import org.springframework.util.Assert
@@ -53,10 +54,12 @@ import org.springframework.util.Assert
 class ScanGui extends AbstractGui implements ScanReportHandler, PropertyChangeListener, InitializingBean {
     def m_metadataFieldNames = ['Customer Account Number', 'Reference ID', 'Customer Name']
     def m_locations = new ArrayList<String>()
+    def m_geoMetadata
     def m_scanReport
 
     def m_backEnd
     def m_frontEnd
+    def m_geoFetcher = new GeodataFetcher()
 
     def m_metadataFields = new HashMap<String, JTextField>()
     def m_progressPanel
@@ -92,6 +95,7 @@ class ScanGui extends AbstractGui implements ScanReportHandler, PropertyChangeLi
         for (final LocationDef d : monitoringLocations) {
             m_locations.add(d.getLocationName())
         }
+        m_geoMetadata = m_geoFetcher.fetchGeodata()
         createAndShowGui()
     }
 
@@ -177,7 +181,7 @@ class ScanGui extends AbstractGui implements ScanReportHandler, PropertyChangeLi
 
                     m_frontEnd = createPollerFrontEnd()
 
-                    final Map<String,String> metadata = new HashMap<>()
+                    final Map<String,String> metadata = new HashMap<>(m_geoMetadata)
                     for (final Map.Entry<String,JTextField> field : m_metadataFields) {
                         metadata.put(field.getKey(), field.getValue().getText())
                     }
