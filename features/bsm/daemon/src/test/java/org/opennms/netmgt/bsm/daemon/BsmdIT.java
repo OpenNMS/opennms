@@ -31,6 +31,7 @@ package org.opennms.netmgt.bsm.daemon;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Collection;
+import java.util.concurrent.TimeUnit;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -49,6 +50,7 @@ import org.opennms.netmgt.dao.mock.EventAnticipator;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.model.OnmsAlarm;
+import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.events.EventBuilder;
@@ -56,7 +58,10 @@ import org.opennms.netmgt.xml.event.Event;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionCallbackWithoutResult;
+import org.springframework.transaction.support.TransactionOperations;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations={
@@ -75,7 +80,6 @@ import org.springframework.transaction.annotation.Transactional;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase(reuseDatabase = false)
-@Transactional
 public class BsmdIT {
 
     @Autowired
@@ -96,11 +100,15 @@ public class BsmdIT {
     @Autowired
     private Bsmd m_bsmd;
 
+    @Autowired
+    private TransactionOperations template;
+
     private EventAnticipator m_anticipator;
 
     @Before
     public void setUp() throws Exception {
         BeanUtils.assertAutowiring(this);
+        System.setProperty(Bsmd.POLL_INTERVAL_KEY, String.valueOf(Bsmd.DEFAULT_POLL_INTERVAL));
 
         // We don't have a full blown event configuration, so don't validate these during the integration tests
         m_bsmd.setVerifyReductionKeys(false);
@@ -125,6 +133,7 @@ public class BsmdIT {
      * @throws Exception
      */
     @Test
+    @Transactional
     public void canSendEventsOnOperationalStatusChanged() throws Exception {
         // Create a business service
         BusinessService simpleBs = createSimpleBusinessService();
@@ -138,13 +147,7 @@ public class BsmdIT {
         m_anticipator.anticipateEvent(ebldr.getEvent());
 
         // Create the alarm
-        OnmsAlarm alarm = new OnmsAlarm();
-        alarm.setUei(EventConstants.NODE_LOST_SERVICE_EVENT_UEI);
-        alarm.setSeverity(OnmsSeverity.CRITICAL);
-        alarm.setAlarmType(1);
-        alarm.setCounter(1);
-        alarm.setDistPoller(m_distPollerDao.whoami());
-        alarm.setReductionKey(String.format("%s::1:192.168.1.1:ICMP", EventConstants.NODE_LOST_SERVICE_EVENT_UEI));
+        OnmsAlarm alarm = createAlarm();
         m_alarmDao.save(alarm);
 
         // Send alarm created event
@@ -158,24 +161,45 @@ public class BsmdIT {
     }
 
     /**
-     * Verifies that a reload of the Bsmd works as expected.
+     * Verifies that the daemon polls the alarm table on a regular basis. This is done to ensure that all alarms are
+     * considered, because the appropriate alarm created/changed/deleted/updated event may not have been sent.
+     *
      */
     @Test
-    public void verifyReloadBsmd() throws Exception {
-        BusinessService businessService1 = createBusinessService("service1");
+    public void verifyAlarmPollingIsEnabled() throws Exception {
+        System.setProperty(Bsmd.POLL_INTERVAL_KEY, "10");
+        BusinessService simpleBs = createSimpleBusinessService();
         m_bsmd.start();
-        Assert.assertEquals(OnmsSeverity.NORMAL, m_bsmd.getBusinessServiceStateMachine().getOperationalStatus(businessService1));
 
-        // verify reload of business services works when event is send
-        BusinessService businessService2 = createBusinessService("service2");
-        Assert.assertNull(m_bsmd.getBusinessServiceStateMachine().getOperationalStatus(businessService2));
-        EventBuilder ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_UEI, "test");
-        ebldr.addParam(EventConstants.PARM_DAEMON_NAME, "bsmd");
-        m_eventMgr.sendNow(ebldr.getEvent());
-        Assert.assertEquals(OnmsSeverity.NORMAL, m_bsmd.getBusinessServiceStateMachine().getOperationalStatus(businessService2));
+        // Create an alarm and do NOT send the alarm
+        template.execute(new TransactionCallbackWithoutResult() {
+            @Override
+            protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
+                Assert.assertEquals(OnmsSeverity.NORMAL, m_bsmd.getBusinessServiceStateMachine().getOperationalStatus(simpleBs));
+                OnmsAlarm alarm = createAlarm();
+                m_alarmDao.save(alarm);
+                m_alarmDao.flush();
+                Assert.assertEquals(OnmsSeverity.NORMAL, m_bsmd.getBusinessServiceStateMachine().getOperationalStatus(simpleBs));
+            }
+        });
+
+        // wait n seconds and try again
+        Thread.sleep(20*1000);
+        Assert.assertEquals(OnmsSeverity.CRITICAL, m_bsmd.getBusinessServiceStateMachine().getOperationalStatus(simpleBs));
     }
 
-    private BusinessService createBusinessService(String name) {
+    private OnmsAlarm createAlarm() {
+        OnmsAlarm alarm = new OnmsAlarm();
+        alarm.setUei(EventConstants.NODE_LOST_SERVICE_EVENT_UEI);
+        alarm.setSeverity(OnmsSeverity.CRITICAL);
+        alarm.setAlarmType(1);
+        alarm.setCounter(1);
+        alarm.setDistPoller(m_distPollerDao.whoami());
+        alarm.setReductionKey(String.format("%s::1:192.168.1.1:ICMP", EventConstants.NODE_LOST_SERVICE_EVENT_UEI));
+        return alarm;
+    }
+
+    private BusinessService createSimpleBusinessService() {
         BusinessService bs = new BusinessService();
         bs.setName(name);
 
