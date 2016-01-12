@@ -49,6 +49,8 @@ import org.opennms.core.test.rest.AbstractSpringJerseyRestTestCase;
 import org.opennms.netmgt.bsm.service.model.BusinessServiceDTO;
 import org.opennms.netmgt.bsm.persistence.api.BusinessService;
 import org.opennms.netmgt.bsm.persistence.api.BusinessServiceDao;
+import org.opennms.netmgt.bsm.persistence.api.MostCritical;
+import org.opennms.netmgt.bsm.persistence.api.ReductionFunctionDao;
 import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
 import org.opennms.test.JUnitConfigurationEnvironment;
@@ -79,16 +81,25 @@ public class BusinessServiceRestServiceIT extends AbstractSpringJerseyRestTestCa
     private BusinessServiceDao m_businessServiceDao;
 
     @Autowired
+    private ReductionFunctionDao m_reductionFunctionDao;
+
+    @Autowired
     private DatabasePopulator populator;
 
     @Autowired
     private MonitoredServiceDao monitoredServiceDao;
+
+    private MostCritical m_mostCritical;
 
     @Before
     public void setUp() throws Throwable {
         super.setUp();
         BeanUtils.assertAutowiring(this);
         populator.populateDatabase();
+
+        // Create the reduction function
+        m_mostCritical = new MostCritical();
+        m_reductionFunctionDao.save(m_mostCritical);
     }
 
     @After
@@ -116,6 +127,7 @@ public class BusinessServiceRestServiceIT extends AbstractSpringJerseyRestTestCa
     public void canAddIpService() throws Exception {
         BusinessService service = new BusinessService();
         service.setName("Dummy Service");
+        service.setReductionFunction(m_mostCritical);
         final Long serviceId = m_businessServiceDao.save(service);
         m_businessServiceDao.flush();
 
@@ -141,6 +153,7 @@ public class BusinessServiceRestServiceIT extends AbstractSpringJerseyRestTestCa
     public void canRemoveIpService() throws Exception {
         BusinessService service = new BusinessService();
         service.setName("Dummy Service");
+        service.setReductionFunction(m_mostCritical);
         final Long serviceId = m_businessServiceDao.save(service);
         service.addIpService(monitoredServiceDao.get(17));
         service.addIpService(monitoredServiceDao.get(18));
@@ -176,6 +189,7 @@ public class BusinessServiceRestServiceIT extends AbstractSpringJerseyRestTestCa
         // Add business services to the DB
         BusinessService bs = new BusinessService();
         bs.setName("Application Servers");
+        bs.setReductionFunction(m_mostCritical);
         Long id = m_businessServiceDao.save(bs);
         m_businessServiceDao.flush();
 
@@ -208,13 +222,13 @@ public class BusinessServiceRestServiceIT extends AbstractSpringJerseyRestTestCa
         Assert.assertEquals(2, m_businessServiceDao.findAll().size());
     }
 
-
     @Test
     @JUnitTemporaryDatabase
     @Transactional
     public void canUpdateBusinessService() throws Exception {
         BusinessService service = new BusinessService();
         service.setName("Dummy Service");
+        service.setReductionFunction(m_mostCritical);
         final Long serviceId = m_businessServiceDao.save(service);
         m_businessServiceDao.flush();
         final String businessServiceDtoXml = "<business-service>" +

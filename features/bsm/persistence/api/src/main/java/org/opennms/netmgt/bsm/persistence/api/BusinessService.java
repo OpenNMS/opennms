@@ -42,6 +42,7 @@ import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
+import javax.persistence.ManyToOne;
 import javax.persistence.MapKeyColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
@@ -65,6 +66,8 @@ public class BusinessService {
     private Map<String, String> m_attributes = Maps.newLinkedHashMap();
 
     private Set<OnmsMonitoredService> m_ipServices = Sets.newLinkedHashSet();
+
+    private AbstractReductionFunction m_reductionFunction;
 
     @Id
     @SequenceGenerator(name = "opennmsSequence", sequenceName = "opennmsNxtId")
@@ -132,6 +135,16 @@ public class BusinessService {
         return m_ipServices.stream()
             .map(ipSvc -> ipSvc.getId())
             .collect(Collectors.toSet());
+    }
+
+    @ManyToOne
+    @JoinColumn(name = "bsm_reduce_id")
+    public AbstractReductionFunction getReductionFunction() {
+        return m_reductionFunction;
+    }
+
+    public void setReductionFunction(AbstractReductionFunction reductionFunction) {
+        m_reductionFunction = reductionFunction;
     }
 
     @Override

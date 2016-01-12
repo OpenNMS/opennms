@@ -39,6 +39,8 @@ import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.bsm.persistence.api.BusinessService;
 import org.opennms.netmgt.bsm.persistence.api.BusinessServiceDao;
+import org.opennms.netmgt.bsm.persistence.api.MostCritical;
+import org.opennms.netmgt.bsm.persistence.api.ReductionFunctionDao;
 import org.opennms.netmgt.bsm.service.BusinessServiceManager;
 import org.opennms.netmgt.bsm.service.BusinessServiceStateMachine;
 import org.opennms.netmgt.dao.DatabasePopulator;
@@ -93,10 +95,19 @@ public class BusinessServiceManagerImplIT {
     @Autowired
     private DatabasePopulator populator;
 
+    @Autowired
+    private ReductionFunctionDao reductionFunctionDao;
+
+    MostCritical mostCritical;
+
     @Before
     public void before() {
         BeanUtils.assertAutowiring(this);
         populator.populateDatabase();
+        
+        mostCritical = new MostCritical();
+        reductionFunctionDao.save(mostCritical);
+        reductionFunctionDao.flush();
     }
 
     @After
@@ -156,6 +167,7 @@ public class BusinessServiceManagerImplIT {
     private BusinessService createService(String serviceName) {
         BusinessService service = new BusinessService();
         service.setName(serviceName);
+        service.setReductionFunction(mostCritical);
         return service;
     }
 

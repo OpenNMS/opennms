@@ -42,6 +42,8 @@ import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.netmgt.bsm.persistence.api.BusinessService;
 import org.opennms.netmgt.bsm.persistence.api.BusinessServiceDao;
+import org.opennms.netmgt.bsm.persistence.api.MostCritical;
+import org.opennms.netmgt.bsm.persistence.api.ReductionFunctionDao;
 import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.dao.api.DistPollerDao;
@@ -91,6 +93,9 @@ public class BsmdIT {
 
     @Autowired
     private BusinessServiceDao m_businessServiceDao;
+
+    @Autowired
+    private ReductionFunctionDao m_reductionFunctionDao;
 
     @Autowired
     private MockEventIpcManager m_eventMgr;
@@ -217,8 +222,13 @@ public class BsmdIT {
     }
 
     private BusinessService createBusinessService(String name) {
+        // Create the reduction function
+        MostCritical mostCritical = new MostCritical();
+        m_reductionFunctionDao.save(mostCritical);
+
         BusinessService bs = new BusinessService();
         bs.setName(name);
+        bs.setReductionFunction(mostCritical);
 
         // Grab the first monitored service from node 1
         OnmsMonitoredService ipService = m_databasePopulator.getNode1()

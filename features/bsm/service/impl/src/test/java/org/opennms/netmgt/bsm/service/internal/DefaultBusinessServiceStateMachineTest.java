@@ -36,6 +36,7 @@ import java.util.List;
 
 import org.junit.Test;
 import org.opennms.netmgt.bsm.persistence.api.BusinessService;
+import org.opennms.netmgt.bsm.persistence.api.MostCritical;
 import org.opennms.netmgt.bsm.service.BusinessServiceStateChangeHandler;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.model.OnmsAlarm;
@@ -54,9 +55,11 @@ public class DefaultBusinessServiceStateMachineTest {
         BusinessService bs1 = new BusinessService();
         bs1.addIpService(svc1);
         bs1.setName("BS1");
+        bs1.setReductionFunction(new MostCritical());
  
         BusinessService bs2 = new BusinessService();
         bs2.setName("BS2");
+        bs2.setReductionFunction(new MostCritical());
         List<BusinessService> bss = Lists.newArrayList(bs1, bs2);
 
         // Setup the state machine
