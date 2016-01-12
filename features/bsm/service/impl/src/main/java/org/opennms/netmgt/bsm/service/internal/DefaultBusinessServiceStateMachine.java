@@ -146,14 +146,21 @@ public class DefaultBusinessServiceStateMachine implements BusinessServiceStateM
     }
 
     private OnmsSeverity calculateCurrentSeverity(BusinessService businessService) {
-        OnmsSeverity maxSeverity = DEFAULT_SEVERITY;
-        for (String reductionKey : businessService.getAllReductionKeys()) {
-            final OnmsSeverity ipServiceSeverity = m_reductionKeyToSeverity.get(reductionKey);
-            if (ipServiceSeverity != null && ipServiceSeverity.isGreaterThan(maxSeverity)) {
-                maxSeverity = ipServiceSeverity;
+        List<OnmsSeverity> severities = Lists.newArrayList();
+        for (OnmsMonitoredService ipService : businessService.getIpServices()) {
+            for (String reductionKey : getReductionKeysFor(ipService)) {
+                final OnmsSeverity ipServiceSeverity = m_reductionKeyToSeverity.get(reductionKey);
+                if (ipServiceSeverity == null) {
+                    continue;
+                }
+                severities.add(ipServiceSeverity);
             }
         }
-        return maxSeverity;
+        OnmsSeverity severity = businessService.getReductionFunction().reduce(severities).orElse(DEFAULT_SEVERITY);
+        if (severity.isLessThan(DEFAULT_SEVERITY)) {
+            severity = DEFAULT_SEVERITY;
+        }
+        return severity;
     }
 
     @Override

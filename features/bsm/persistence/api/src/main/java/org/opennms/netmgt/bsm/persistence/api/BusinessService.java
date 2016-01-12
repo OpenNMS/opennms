@@ -43,7 +43,7 @@ import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
 import javax.persistence.MapKeyColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
@@ -68,9 +68,7 @@ public class BusinessService {
 
     private Set<OnmsMonitoredService> m_ipServices = Sets.newLinkedHashSet();
 
-    private Set<BusinessService> m_childServices = Sets.newLinkedHashSet();
-
-    private Set<BusinessService> m_parentServices = Sets.newLinkedHashSet();
+    private AbstractReductionFunction m_reductionFunction;
 
     @Id
     @SequenceGenerator(name = "opennmsSequence", sequenceName = "opennmsNxtId")
@@ -140,44 +138,14 @@ public class BusinessService {
             .collect(Collectors.toSet());
     }
 
-    @ManyToMany(fetch = FetchType.EAGER,
-                cascade = CascadeType.ALL)
-    @JoinTable(name = "bsm_service_children",
-               joinColumns = @JoinColumn(name = "bsm_service_parent", referencedColumnName = "id"),
-               inverseJoinColumns = @JoinColumn(name="bsm_service_child", referencedColumnName = "id"))
-    public Set<BusinessService> getChildServices() {
-        return m_childServices;
+    @ManyToOne
+    @JoinColumn(name = "bsm_reduce_id")
+    public AbstractReductionFunction getReductionFunction() {
+        return m_reductionFunction;
     }
 
-    public void setChildServices(Set<BusinessService> childServices) {
-        m_childServices = childServices;
-    }
-
-    public void addChildService(BusinessService childService) {
-        m_childServices.add(childService);
-    }
-
-    public void removeChildService(BusinessService childService) {
-        m_childServices.remove(childService);
-    }
-
-    @ManyToMany(fetch = FetchType.EAGER,
-                cascade = CascadeType.ALL,
-                mappedBy = "childServices")
-    public Set<BusinessService> getParentServices() {
-        return m_parentServices;
-    }
-
-    public void setParentServices(Set<BusinessService> parentServices) {
-        m_parentServices = parentServices;
-    }
-
-    public void addParentService(BusinessService parentService) {
-        m_parentServices.add(parentService);
-    }
-
-    public void removeParentService(BusinessService parentService) {
-        m_parentServices.remove(parentService);
+    public void setReductionFunction(AbstractReductionFunction reductionFunction) {
+        m_reductionFunction = reductionFunction;
     }
 
     @Override

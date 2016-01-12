@@ -45,23 +45,34 @@
 			baseTableName="bsm_service_ifservices" baseColumnNames="ifserviceid"
 			referencedTableName="ifservices" referencedColumnNames="id" onDelete="CASCADE"/>
 	</changeSet>
-	<changeSet author="fooker" id="18.0.0-bsm-service-children">
-		<createTable tableName="bsm_service_children" >
-			<column name="bsm_service_parent" type="integer">
-				<constraints nullable="false"/>
+	<changeSet author="jwhite" id="18.0.0-bsm-map-reduce">
+		<createTable tableName="bsm_reduce" >
+			<column name="id" type="integer">
+			  <constraints nullable="false"/>
 			</column>
-			<column name="bsm_service_child" type="integer">
-				<constraints nullable="false"/>
+			<column name="type" type="varchar(32)">
+			  <constraints nullable="false"/>
 			</column>
+			<column name="threshold" type="float" />
 		</createTable>
-		<addPrimaryKey tableName="bsm_service_children" columnNames="bsm_service_parent, bsm_service_child" constraintName="bsm_service_children_pkey" />
-		<addForeignKeyConstraint constraintName="fk_bsm_service_parent_service_id"
-								 baseTableName="bsm_service_children" baseColumnNames="bsm_service_parent"
-								 referencedTableName="bsm_service" referencedColumnNames="id"
-                                 onDelete="CASCADE" />
-		<addForeignKeyConstraint constraintName="fk_bsm_service_child_service_id"
-								 baseTableName="bsm_service_children" baseColumnNames="bsm_service_child"
-								 referencedTableName="bsm_service" referencedColumnNames="id"
-                                 onDelete="CASCADE" />
+		<addPrimaryKey tableName="bsm_reduce" columnNames="id" constraintName="bsm_reduce_pkey" />
+		<createTable tableName="bsm_map" >
+			<column name="id" type="integer">
+			  <constraints nullable="false"/>
+			</column>
+			<column name="type" type="varchar(32)">
+			  <constraints nullable="false"/>
+			</column>
+			<column name="severity" type="integer" />
+		</createTable>
+		<addPrimaryKey tableName="bsm_map" columnNames="id" constraintName="bsm_map_pkey" />
+        <addColumn tableName="bsm_service">
+          <column name="bsm_reduce_id" type="integer">
+            <constraints nullable="false"/>
+		  </column>
+        </addColumn>
+		<addForeignKeyConstraint constraintName="fk_bsm_service_reduce_id"
+			baseTableName="bsm_service" baseColumnNames="bsm_reduce_id"
+			referencedTableName="bsm_reduce" referencedColumnNames="id"/>
 	</changeSet>
 </databaseChangeLog>

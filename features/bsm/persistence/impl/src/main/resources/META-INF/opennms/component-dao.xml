@@ -20,4 +20,16 @@
 
   <onmsgi:service interface="org.opennms.netmgt.bsm.persistence.api.BusinessServiceDao" ref="businessServiceDao" />
 
+  <bean id="reductionFunctionDao" class="org.opennms.netmgt.bsm.persistence.impl.ReductionFunctionDaoImpl">
+    <property name="sessionFactory" ref="sessionFactory" />
+  </bean>
+
+  <onmsgi:service interface="org.opennms.netmgt.bsm.persistence.api.ReductionFunctionDao" ref="reductionFunctionDao" />
+
+  <bean id="mapFunctionDao" class="org.opennms.netmgt.bsm.persistence.impl.MapFunctionDaoImpl">
+    <property name="sessionFactory" ref="sessionFactory" />
+  </bean>
+
+  <onmsgi:service interface="org.opennms.netmgt.bsm.persistence.api.MapFunctionDao" ref="mapFunctionDao" />
+
 </beans>

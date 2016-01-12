@@ -43,6 +43,8 @@ import org.opennms.core.test.db.MockDatabase;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.netmgt.bsm.persistence.api.BusinessService;
 import org.opennms.netmgt.bsm.persistence.api.BusinessServiceDao;
+import org.opennms.netmgt.bsm.persistence.api.MostCritical;
+import org.opennms.netmgt.bsm.persistence.api.ReductionFunctionDao;
 import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.OnmsMonitoredService;
@@ -73,12 +75,21 @@ public class BusinessServiceDaoIT {
     private BusinessServiceDao m_businessServiceDao;
 
     @Autowired
+    private ReductionFunctionDao m_reductionFunctionDao;
+
+    @Autowired
     private NodeDao m_nodeDao;
+
+    MostCritical m_mostCritical;
 
     @Before
     public void setUp() {
         BeanUtils.assertAutowiring(this);
         m_databasePopulator.populateDatabase();
+
+        m_mostCritical = new MostCritical();
+        m_reductionFunctionDao.save(m_mostCritical);
+        m_reductionFunctionDao.flush();
     }
 
     @Test
@@ -91,10 +102,8 @@ public class BusinessServiceDaoIT {
         BusinessService bs = new BusinessService();
         bs.setName("Web Servers");
         bs.setAttribute("dc", "RDU");
-        HashSet<String> reductionKeys = Sets.newHashSet();
-        reductionKeys.add("TestReductionKeyA");
-        reductionKeys.add("TestReductionKeyB");
-        bs.setReductionKeys(reductionKeys);
+        bs.setReductionFunction(m_mostCritical);
+
         m_businessServiceDao.save(bs);
         m_businessServiceDao.flush();
 
@@ -135,6 +144,7 @@ public class BusinessServiceDaoIT {
         // Create a business service with an associated IP Service
         BusinessService bs = new BusinessService();
         bs.setName("Mont Cascades");
+        bs.setReductionFunction(m_mostCritical);
         OnmsNode node = m_databasePopulator.getNode1();
         OnmsMonitoredService ipService = node
                 .getIpInterfaces().iterator().next()

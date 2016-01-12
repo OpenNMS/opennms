@@ -40,7 +40,8 @@ import java.util.stream.Collectors;
 import org.opennms.core.criteria.Criteria;
 import org.opennms.netmgt.bsm.persistence.api.BusinessService;
 import org.opennms.netmgt.bsm.persistence.api.BusinessServiceDao;
-import org.opennms.netmgt.bsm.persistence.api.OnmsMonitoredServiceHelper;
+import org.opennms.netmgt.bsm.persistence.api.MostCritical;
+import org.opennms.netmgt.bsm.persistence.api.ReductionFunctionDao;
 import org.opennms.netmgt.bsm.service.BusinessServiceManager;
 import org.opennms.netmgt.bsm.service.BusinessServiceStateMachine;
 import org.opennms.netmgt.bsm.service.model.BusinessServiceDTO;
@@ -61,6 +62,9 @@ import org.springframework.transaction.annotation.Transactional;
 public class BusinessServiceManagerImpl implements BusinessServiceManager {
     @Autowired
     private BusinessServiceDao businessServiceDao;
+
+    @Autowired
+    private ReductionFunctionDao reductionFunctionDao;
 
     @Autowired
     private MonitoredServiceDao monitoredServiceDao;
@@ -95,6 +99,15 @@ public class BusinessServiceManagerImpl implements BusinessServiceManager {
     @Override
     public Long save(BusinessServiceDTO newObject) {
         BusinessService service = transform(newObject);
+
+        // TODO: FIXME: HACK: The reduction function is required, but not exposed via the
+        // DTOs yet, so we set a default one here, pending the development of BSM-97
+        if (service.getReductionFunction() == null) {
+            MostCritical mostCritical = new MostCritical();
+            reductionFunctionDao.save(mostCritical);
+            service.setReductionFunction(mostCritical);
+        }
+
         return getDao().save(service);
     }
 
@@ -102,6 +115,15 @@ public class BusinessServiceManagerImpl implements BusinessServiceManager {
     public void update(BusinessServiceDTO objectToUpdate) {
         final BusinessService existingBusinessService = getBusinessService(objectToUpdate.getId());
         BeanUtils.copyProperties(transform(objectToUpdate), existingBusinessService);
+
+        // TODO: FIXME: HACK: The reduction function is required, but not exposed via the
+        // DTOs yet, so we set a default one here, pending the development of BSM-97
+        if (existingBusinessService.getReductionFunction() == null) {
+            MostCritical mostCritical = new MostCritical();
+            reductionFunctionDao.save(mostCritical);
+            existingBusinessService.setReductionFunction(mostCritical);
+        }
+
         getDao().update(existingBusinessService);
     }
 

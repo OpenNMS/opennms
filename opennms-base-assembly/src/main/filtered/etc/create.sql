@@ -2643,10 +2643,27 @@ ALTER TABLE subcomponents ADD CONSTRAINT subcomponents_component_id_subcomponent
 --# Business Service Monitor (BSM) tables
 --##################################################################
 
+CREATE TABLE bsm_reduce (
+    id integer NOT NULL,
+    type character varying(32) NOT NULL,
+    threshold float,
+    CONSTRAINT bsm_reduce_pkey PRIMARY KEY (id)
+);
+
+CREATE TABLE bsm_map (
+    id integer NOT NULL,
+    type character varying(32) NOT NULL,
+    severity integer,
+    CONSTRAINT bsm_map_pkey PRIMARY KEY (id)
+);
+
 CREATE TABLE bsm_service (
     id integer NOT NULL,
     name text NOT NULL,
-    CONSTRAINT bsm_services_pkey PRIMARY KEY (id)
+    bsm_reduce_id integer NOT NULL,
+    CONSTRAINT bsm_services_pkey PRIMARY KEY (id),
+    CONSTRAINT fk_bsm_service_reduce_id FOREIGN KEY (bsm_reduce_id)
+    REFERENCES bsm_reduce (id)
 );
 
 CREATE TABLE bsm_service_attributes (
