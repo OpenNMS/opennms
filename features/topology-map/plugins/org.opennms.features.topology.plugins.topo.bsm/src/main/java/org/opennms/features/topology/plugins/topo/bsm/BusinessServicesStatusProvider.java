@@ -40,7 +40,7 @@ import org.opennms.features.topology.api.topo.VertexRef;
 
 public class BusinessServicesStatusProvider implements StatusProvider {
 
-//    private BusinessServiceManager businessServiceManager;
+    // private BusinessServiceManager businessServiceManager;
 
     @Override
     public Map<VertexRef, Status> getStatusForVertices(VertexProvider vertexProvider, Collection<VertexRef> vertices, Criteria[] criteria) {

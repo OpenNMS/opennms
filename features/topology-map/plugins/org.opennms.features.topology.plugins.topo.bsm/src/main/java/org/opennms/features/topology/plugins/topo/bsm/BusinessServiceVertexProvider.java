@@ -75,11 +75,10 @@ public class BusinessServiceVertexProvider extends SimpleVertexProvider {
     }
 
     private <T extends VertexRef> T filter(T refToFilter, Criteria... criteria) {
-        // The BusinessServiceCriteria objects are used to indicate focal points and
-        // aren't actually used to filter the result set
-
+        // The BusinessServiceCriteria objects are used to indicate focal points
+        // and aren't actually used to filter the result set.
         // At this point in time we don't support any additional Criteria types so
-        // we just return the original set of vertices
+        // we just return the original set of vertices.
         return refToFilter;
     }
 }

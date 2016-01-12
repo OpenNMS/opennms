@@ -63,7 +63,7 @@ public class AlarmStatusToggleOperation extends AbstractCheckedOperation {
     }
 
     @Override
-    public Map<String, String> createHistory(GraphContainer container){
+    public Map<String, String> createHistory(GraphContainer container) {
         return Collections.singletonMap(getClass().getName(), Boolean.toString(isChecked(container)));
     }
 
@@ -71,7 +71,8 @@ public class AlarmStatusToggleOperation extends AbstractCheckedOperation {
     public void applyHistory(GraphContainer container, Map<String, String> settings) {
         String historyValue = settings.get(getClass().getName());
         if (historyValue == null || historyValue.isEmpty()) {
-            container.setVertexStatusProvider(m_statusProvider); // no history value set, use default
+            container.setVertexStatusProvider(m_statusProvider);
+            // no history value set, use default
         } else {
             // an history value is set, decide what to do
             boolean alarmStatusEnabled = Boolean.TRUE.toString().equals(historyValue);

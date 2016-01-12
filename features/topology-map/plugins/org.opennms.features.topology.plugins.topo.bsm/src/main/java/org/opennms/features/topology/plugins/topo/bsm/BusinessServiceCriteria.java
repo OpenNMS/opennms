@@ -96,8 +96,8 @@ public class BusinessServiceCriteria extends VertexHopCriteria implements Namesp
     }
 
     /**
-     * This is called by the VertexHopGraphProvider in order to get the set
-     * of vertices that are in focus.
+     * This is called by the VertexHopGraphProvider in order to get the set of
+     * vertices that are in focus.
      */
     @Override
     public Set<VertexRef> getVertices() {
