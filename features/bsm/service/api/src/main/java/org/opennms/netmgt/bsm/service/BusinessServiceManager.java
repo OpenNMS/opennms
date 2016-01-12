@@ -31,6 +31,7 @@ package org.opennms.netmgt.bsm.service;
 import java.util.List;
 import java.util.Set;
 
+import org.opennms.core.criteria.Criteria;
 import org.opennms.netmgt.bsm.service.model.BusinessServiceDTO;
 import org.opennms.netmgt.bsm.service.model.IpServiceDTO;
 import org.opennms.netmgt.model.OnmsSeverity;
@@ -38,6 +39,8 @@ import org.opennms.netmgt.model.OnmsSeverity;
 public interface BusinessServiceManager {
 
     List<BusinessServiceDTO> findAll();
+
+    List<BusinessServiceDTO> findMatching(Criteria criteria);
 
     Long save(BusinessServiceDTO newObject);
 
