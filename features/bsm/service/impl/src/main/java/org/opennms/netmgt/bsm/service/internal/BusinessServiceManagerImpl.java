@@ -46,8 +46,11 @@ import org.opennms.netmgt.bsm.service.model.BusinessServiceDTO;
 import org.opennms.netmgt.bsm.service.model.IpServiceDTO;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
 import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.events.api.EventConstants;
+import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsSeverity;
+import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.web.rest.api.ResourceLocationFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -63,6 +66,12 @@ public class BusinessServiceManagerImpl implements BusinessServiceManager {
 
     @Autowired
     private BusinessServiceStateMachine businessServiceStateMachine;
+
+    @Autowired
+    private NodeDao nodeDao;
+
+    @Autowired
+    private EventForwarder eventForwarder;
 
     @Override
     public List<BusinessServiceDTO> findAll() {
@@ -222,6 +231,18 @@ public class BusinessServiceManagerImpl implements BusinessServiceManager {
         final OnmsMonitoredService ipService = getIpService(ipServiceId);
         final OnmsSeverity severity = businessServiceStateMachine.getOperationalStatus(ipService);
         return severity != null ? severity : OnmsSeverity.INDETERMINATE;
+    }
+
+    @Override
+    public List<IpServiceDTO> getAllIpServiceDTO() {
+        return transformAll(monitoredServiceDao.findAll());
+    }
+
+    @Override
+    public void triggerDaemonReload() {
+        EventBuilder eventBuilder = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_UEI, "BSM Master Page");
+        eventBuilder.addParam(EventConstants.PARM_DAEMON_NAME, "bsmd");
+        eventForwarder.sendNow(eventBuilder.getEvent());
     }
 
     private BusinessServiceDao getDao() {
