@@ -28,6 +28,9 @@
 
 package org.opennms.web.rest.v1.config;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.annotation.Resource;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -35,13 +38,24 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
+import javax.ws.rs.core.Response.Status;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 
 import org.opennms.netmgt.config.javamail.End2endMailConfig;
 import org.opennms.netmgt.config.javamail.ReadmailConfig;
 import org.opennms.netmgt.config.javamail.SendmailConfig;
 import org.opennms.netmgt.dao.api.JavaMailConfigurationDao;
+import org.opennms.netmgt.events.api.EventConstants;
+import org.opennms.netmgt.events.api.EventProxy;
+import org.opennms.netmgt.model.events.EventBuilder;
+import org.opennms.web.rest.v1.OnmsRestService;
+
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
@@ -52,28 +66,158 @@ import org.springframework.util.Assert;
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
 @Component
-public class JavamailConfigurationResource implements InitializingBean {
+public class JavamailConfigurationResource extends OnmsRestService implements InitializingBean {
 
     /** The Javamail configuration DAO. */
     @Resource(name="javamailConfigDao")
     private JavaMailConfigurationDao m_javamailConfigurationDao;
 
+    /** The event proxy. */
+    @Resource(name="eventProxy")
+    private EventProxy m_eventProxy;
+
+    /**
+     * The Class SendmailConfigList.
+     */
+    @SuppressWarnings("serial")
+    @XmlRootElement(name="sendmail-configs")
+    public static class SendmailConfigList extends ArrayList<String> {
+
+        /**
+         * Instantiates a new sendmail configuration list.
+         *
+         * @param sendmailConfigs the sendmail configurations
+         */
+        public SendmailConfigList(List<SendmailConfig> sendmailConfigs) {
+            sendmailConfigs.forEach(d -> add(d.getName()));
+        }
+
+        /**
+         * Gets the sendmail configurations.
+         *
+         * @return the sendmail configurations
+         */
+        @XmlElement(name="sendmail-config")
+        public List<String> getSendmailConfigs() {
+            return this;
+        }
+    }
+
+    /**
+     * The Class ReadmailConfigList.
+     */
+    @SuppressWarnings("serial")
+    @XmlRootElement(name="sendmail-configs")
+    public static class ReadmailConfigList extends ArrayList<String> {
+
+        /**
+         * Instantiates a new readmail configuration list.
+         *
+         * @param sendmailConfigs the sendmail configurations
+         */
+        public ReadmailConfigList(List<ReadmailConfig> sendmailConfigs) {
+            sendmailConfigs.forEach(d -> add(d.getName()));
+        }
+
+        /**
+         * Gets the readmail configurations.
+         *
+         * @return the readmail configurations
+         */
+        @XmlElement(name="readmail-config")
+        public List<String> getReadmailConfigs() {
+            return this;
+        }
+    }
+
+    /**
+     * The Class End2endConfigList.
+     */
+    @SuppressWarnings("serial")
+    @XmlRootElement(name="end2end-configs")
+    public static class End2endConfigList extends ArrayList<String> {
+
+        /**
+         * Instantiates a new end2end configuration list.
+         *
+         * @param end2endConfigs the end2end configurations
+         */
+        public End2endConfigList(List<End2endMailConfig> end2endConfigs) {
+            end2endConfigs.forEach(d -> add(d.getName()));
+        }
+
+        /**
+         * Gets the end2end configurations.
+         *
+         * @return the end2end configurations
+         */
+        @XmlElement(name="end2end-config")
+        public List<String> getEnd2endConfigs() {
+            return this;
+        }
+    }
+
+    /**
+     * After properties set.
+     *
+     * @throws Exception the exception
+     */
     /* (non-Javadoc)
      * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
      */
     @Override
     public void afterPropertiesSet() throws Exception {
         Assert.notNull(m_javamailConfigurationDao, "javamailConfigurationDao must be set!");
+        Assert.notNull(m_eventProxy, "eventProxy must be set!");
     }
 
     /**
-     * Gets the readmail configuration.
+     * Gets all the readmail configurations.
+     *
+     * @return the readmail configuration list
+     */
+    @GET
+    @Path("readmails")
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
+    public Response getReadmailConfigurations() {
+        ReadmailConfigList readmails = new ReadmailConfigList(m_javamailConfigurationDao.getReadmailConfigs());
+        return Response.ok(readmails).build();
+    }
+
+    /**
+     * Gets all the sendmail configurations.
+     *
+     * @return the sendmail configuration list
+     */
+    @GET
+    @Path("sendmails")
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
+    public Response getSendmailConfigurations() {
+        SendmailConfigList sendmails = new SendmailConfigList(m_javamailConfigurationDao.getSendmailConfigs());
+        return Response.ok(sendmails).build();
+    }
+
+    /**
+     * Gets all the end2end configurations.
+     *
+     * @return the end2end configuration list
+     */
+    @GET
+    @Path("end2ends")
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
+    public Response getEnd2endConfigurations() {
+        End2endConfigList sendmails = new End2endConfigList(m_javamailConfigurationDao.getEnd2EndConfigs());
+        return Response.ok(sendmails).build();
+    }
+
+    /**
+     * Gets a specific readmail configuration.
      *
      * @param readmailConfig the readmail configuration
      * @return the readmail configuration
      */
     @GET
-    @Path("readmail/{readmailConfig}")
+    @Path("readmails/{readmailConfig}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     public Response getReadmailConfiguration(@PathParam("readmailConfig") String readmailConfig) {
         ReadmailConfig readmail = m_javamailConfigurationDao.getReadMailConfig(readmailConfig);
@@ -84,13 +228,13 @@ public class JavamailConfigurationResource implements InitializingBean {
     }
 
     /**
-     * Gets the sendmail configuration.
+     * Gets a specific sendmail configuration.
      *
      * @param sendmailConfig the sendmail configuration
      * @return the sendmail configuration
      */
     @GET
-    @Path("sendmail/{sendmailConfig}")
+    @Path("sendmails/{sendmailConfig}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     public Response getSendmailConfiguration(@PathParam("sendmailConfig") String sendmailConfig) {
         SendmailConfig sendmail = m_javamailConfigurationDao.getSendMailConfig(sendmailConfig);
@@ -101,13 +245,13 @@ public class JavamailConfigurationResource implements InitializingBean {
     }
 
     /**
-     * Gets the end2 end mail configuration.
+     * Gets a specific end2end mail configuration.
      *
      * @param end2endConfig the end2end configuration
-     * @return the end2 end mail configuration
+     * @return the end2end mail configuration
      */
     @GET
-    @Path("end2end/{end2endConfig}")
+    @Path("end2ends/{end2endConfig}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     public Response getEnd2EndMailConfiguration(@PathParam("end2endConfig") String end2endConfig) {
         End2endMailConfig end2end = m_javamailConfigurationDao.getEnd2EndConfig(end2endConfig);
@@ -119,47 +263,89 @@ public class JavamailConfigurationResource implements InitializingBean {
 
     /**
      * Sets the readmail configuration.
+     * <p>If there is a readmail configuration with the same name, the existing one will be overridden.</p>
      *
+     * @param uriInfo the URI info
      * @param readmailConfig the readmail configuration
      * @return the response
      */
     @POST
-    @Path("readmail/{readmailConfig}")
+    @Path("readmails/{readmailConfig}")
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
-    public Response setReadmailConfiguration(ReadmailConfig readmailConfig) {
-        m_javamailConfigurationDao.addReadMailConfig(readmailConfig);
-        m_javamailConfigurationDao.saveConfiguration();
-        return Response.ok().build();
+    public Response setReadmailConfiguration(@Context final UriInfo uriInfo, final ReadmailConfig readmailConfig) {
+        writeLock();
+        try {
+            m_javamailConfigurationDao.addReadMailConfig(readmailConfig);
+            saveConfiguration();
+            return Response.seeOther(getRedirectUri(uriInfo)).build();
+        } finally {
+            writeUnlock();
+        }
     }
 
     /**
      * Sets the sendmail configuration.
+     * <p>If there is a sendmail configuration with the same name, the existing one will be overridden.</p>
      *
+     * @param uriInfo the URI info
      * @param sendmailConfig the sendmail configuration
      * @return the response
      */
     @POST
-    @Path("sendmail/{sendmailConfig}")
+    @Path("sendmails/{sendmailConfig}")
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
-    public Response setSendmailConfiguration(SendmailConfig sendmailConfig) {
-        m_javamailConfigurationDao.addSendMailConfig(sendmailConfig);
-        m_javamailConfigurationDao.saveConfiguration();
-        return Response.ok().build();
+    public Response setSendmailConfiguration(@Context final UriInfo uriInfo, final SendmailConfig sendmailConfig) {
+        writeLock();
+        try {
+            m_javamailConfigurationDao.addSendMailConfig(sendmailConfig);
+            saveConfiguration();
+            return Response.seeOther(getRedirectUri(uriInfo)).build();
+        } finally {
+            writeUnlock();
+        }
     }
 
     /**
-     * Sets the end2 end mail configuration.
+     * Sets the end2end mail configuration.
+     * <p>If there is a end2end configuration with the same name, the existing one will be overridden.</p>
      *
+     * @param uriInfo the URI info
      * @param end2endMailConfig the end2end mail configuration
      * @return the response
      */
     @POST
-    @Path("end2end/{end2endConfig}")
+    @Path("end2ends/{end2endConfig}")
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
-    public Response setEnd2EndMailConfiguration(End2endMailConfig end2endMailConfig) {
-        m_javamailConfigurationDao.addEnd2endMailConfig(end2endMailConfig);
-        m_javamailConfigurationDao.saveConfiguration();
-        return Response.ok().build();
+    public Response setEnd2EndMailConfiguration(@Context final UriInfo uriInfo, final End2endMailConfig end2endMailConfig) {
+        writeLock();
+        try {
+            m_javamailConfigurationDao.addEnd2endMailConfig(end2endMailConfig);
+            saveConfiguration();
+            return Response.seeOther(getRedirectUri(uriInfo)).build();
+        } finally {
+            writeUnlock();
+        }
+    }
+
+    /**
+     * Saves the configuration.
+     *
+     * @return the response
+     */
+    public Response saveConfiguration() {
+        writeLock();
+        try {
+            // FIXME Validate configuration.
+            m_javamailConfigurationDao.saveConfiguration();
+            EventBuilder eb = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_UEI, "ReST");
+            eb.addParam(EventConstants.PARM_DAEMON_NAME, "EmailNBI");
+            m_eventProxy.send(eb.getEvent());
+            return Response.ok().build();
+        } catch (Throwable t) {
+            throw new WebApplicationException(Response.status(Status.INTERNAL_SERVER_ERROR).type(MediaType.TEXT_PLAIN).entity(t.getMessage()).build());
+        } finally {
+            writeUnlock();            
+        }
     }
 
 }

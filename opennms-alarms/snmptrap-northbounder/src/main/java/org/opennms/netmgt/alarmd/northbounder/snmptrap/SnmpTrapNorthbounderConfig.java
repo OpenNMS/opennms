@@ -197,6 +197,7 @@ public class SnmpTrapNorthbounderConfig implements Serializable {
 
     /**
      * Adds the SNMP trap sink.
+     * <p>If there is a trap sink with the same name, the existing one will be overridden.</p>
      *
      * @param snmpTrapSink the SNMP trap sink
      */
@@ -214,6 +215,27 @@ public class SnmpTrapNorthbounderConfig implements Serializable {
         } else {
             m_snmpTrapSinks.add(snmpTrapSink);
         }
+    }
+
+    /**
+     * Removes a specific SNMP trap sink.
+     *
+     * @param trapSinkName the trap sink name
+     * @return true, if successful
+     */
+    public boolean removeSnmpTrapSink(String trapSinkName) {
+        int index = -1;
+        for (int i = 0; i < m_snmpTrapSinks.size(); i++) {
+            if (m_snmpTrapSinks.get(i).getName().equals(trapSinkName)) {
+                index = i;
+                break;
+            }
+        }
+        if (index > -1) {
+            m_snmpTrapSinks.remove(index);
+            return true;
+        }
+        return false;
     }
 
 }

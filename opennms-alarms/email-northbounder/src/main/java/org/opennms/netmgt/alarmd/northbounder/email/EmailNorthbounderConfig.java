@@ -196,24 +196,46 @@ public class EmailNorthbounderConfig implements Serializable {
     }
 
     /**
-     * Adds the email destination.
+     * Adds a specific email destination.
+     * <p>If there is a destination with the same name, the existing one will be overridden.</p>
      *
-     * @param destination the destination
+     * @param emailDestination the Email destination object
      */
-    public void addEmailDestination(EmailDestination destination) {
+    public void addEmailDestination(EmailDestination emailDestination) {
         int index = -1;
         for (int i = 0; i < m_destinations.size(); i++) {
-            if (m_destinations.get(i).getName().equals(destination.getName())) {
+            if (m_destinations.get(i).getName().equals(emailDestination.getName())) {
                 index = i;
                 break;
             }
         }
         if (index > -1) {
             m_destinations.remove(index);
-            m_destinations.add(index, destination);
+            m_destinations.add(index, emailDestination);
         } else {
-            m_destinations.add(destination);
+            m_destinations.add(emailDestination);
         }
+    }
+
+    /**
+     * Removes a specific email destination.
+     *
+     * @param destinationName the destination name
+     * @return true, if successful
+     */
+    public boolean removeEmailDestination(String destinationName) {
+        int index = -1;
+        for (int i = 0; i < m_destinations.size(); i++) {
+            if (m_destinations.get(i).getName().equals(destinationName)) {
+                index = i;
+                break;
+            }
+        }
+        if (index > -1) {
+            m_destinations.remove(index);
+            return true;
+        }
+        return false;
     }
 
 }

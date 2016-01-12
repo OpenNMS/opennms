@@ -28,8 +28,12 @@
 
 package org.opennms.web.rest.v1.config;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.annotation.Resource;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
@@ -43,9 +47,14 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.core.Response.Status;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 
 import org.opennms.netmgt.alarmd.northbounder.snmptrap.SnmpTrapNorthbounderConfigDao;
 import org.opennms.netmgt.alarmd.northbounder.snmptrap.SnmpTrapSink;
+import org.opennms.netmgt.events.api.EventConstants;
+import org.opennms.netmgt.events.api.EventProxy;
+import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.web.rest.support.MultivaluedMapImpl;
 import org.opennms.web.rest.v1.OnmsRestService;
 
@@ -67,12 +76,44 @@ public class SnmpTrapNorthbounderConfigurationResource extends OnmsRestService i
     @Resource(name="snmpTrapNorthbounderConfigDao")
     private SnmpTrapNorthbounderConfigDao m_snmpTrapNorthbounderConfigDao;
 
+    /** The event proxy. */
+    @Resource(name="eventProxy")
+    private EventProxy m_eventProxy;
+
+    /**
+     * The Class SnmpTrapSinkList.
+     */
+    @SuppressWarnings("serial")
+    @XmlRootElement(name="trap-sinks")
+    public static class SnmpTrapSinkList extends ArrayList<String> {
+
+        /**
+         * Instantiates a new snmp trap sink list.
+         *
+         * @param trapSinks the trap sinks
+         */
+        public SnmpTrapSinkList(List<SnmpTrapSink> trapSinks) {
+            trapSinks.forEach(d -> add(d.getName()));
+        }
+
+        /**
+         * Gets the destinations.
+         *
+         * @return the destinations
+         */
+        @XmlElement(name="trap-sink")
+        public List<String> getDestinations() {
+            return this;
+        }
+    }
+
     /* (non-Javadoc)
      * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
      */
     @Override
     public void afterPropertiesSet() throws Exception {
         Assert.notNull(m_snmpTrapNorthbounderConfigDao, "snmpTrapNorthbounderConfigDao must be set!");
+        Assert.notNull(m_eventProxy, "eventProxy must be set!");
     }
 
     /**
@@ -97,17 +138,27 @@ public class SnmpTrapNorthbounderConfigurationResource extends OnmsRestService i
     @PUT
     @Path("status")
     @Produces(MediaType.TEXT_PLAIN)
-    public Response getStatus(@QueryParam("enabled") Boolean enabled) throws WebApplicationException {
+    public Response getStatus(@QueryParam("enabled") final Boolean enabled) throws WebApplicationException {
         writeLock();
         try {
             m_snmpTrapNorthbounderConfigDao.getConfig().setEnabled(enabled);
-            m_snmpTrapNorthbounderConfigDao.save();
-            return Response.ok().build();
-        } catch (Throwable t) {
-            throw new WebApplicationException(Response.status(Status.INTERNAL_SERVER_ERROR).type(MediaType.TEXT_PLAIN).entity(t.getMessage()).build());
+            return saveConfiguration();
         } finally {
             writeUnlock();
         }
+    }
+
+    /**
+     * Gets all the SNMP trap sinks.
+     *
+     * @return the SNMP trap sinks
+     */
+    @GET
+    @Path("trapsinks")
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
+    public Response getSnmpTrapSinks() {
+        SnmpTrapSinkList trapSinks = new SnmpTrapSinkList(m_snmpTrapNorthbounderConfigDao.getConfig().getSnmpTrapSinks());
+        return Response.ok(trapSinks).build();
     }
 
     /**
@@ -117,9 +168,9 @@ public class SnmpTrapNorthbounderConfigurationResource extends OnmsRestService i
      * @return the SNMP trap sink
      */
     @GET
-    @Path("trapsink/{trapsinkName}")
+    @Path("trapsinks/{trapsinkName}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
-    public Response getSnmpTrapSink(@PathParam("trapsinkName") String trapSinkName) {
+    public Response getSnmpTrapSink(@PathParam("trapsinkName") final String trapSinkName) {
         SnmpTrapSink trapSink = m_snmpTrapNorthbounderConfigDao.getConfig().getSnmpTrapSink(trapSinkName);
         if (trapSink == null) {
             return Response.status(404).build();
@@ -128,29 +179,28 @@ public class SnmpTrapNorthbounderConfigurationResource extends OnmsRestService i
     }
 
     /**
-     * Sets the SNMP trap sink.
+     * Sets a SNMP trap sink.
+     * <p>If there is a trap sunk with the same name, the existing one will be overridden.</p>
      *
      * @param snmpTrapSink the SNMP trap sink
      * @return the response
      */
     @POST
-    @Path("trapsink")
+    @Path("trapsinks")
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
-    public Response setSnmpTrapSink(SnmpTrapSink snmpTrapSink) {
+    public Response setSnmpTrapSink(@Context final UriInfo uriInfo, final SnmpTrapSink snmpTrapSink) {
         writeLock();
         try {
             m_snmpTrapNorthbounderConfigDao.getConfig().addSnmpTrapSink(snmpTrapSink);
-            m_snmpTrapNorthbounderConfigDao.save();
-            return Response.ok().build();
-        } catch (Throwable t) {
-            throw new WebApplicationException(Response.status(Status.INTERNAL_SERVER_ERROR).type(MediaType.TEXT_PLAIN).entity(t.getMessage()).build());
+            saveConfiguration();
+            return Response.seeOther(getRedirectUri(uriInfo)).build();
         } finally {
             writeUnlock();
         }
     }
 
     /**
-     * Update SNMP trap sink.
+     * Update a specific SNMP trap sink.
      *
      * @param uriInfo the URI info
      * @param trapSinkName the trap sink name
@@ -159,28 +209,65 @@ public class SnmpTrapNorthbounderConfigurationResource extends OnmsRestService i
      */
     @PUT
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-    @Path("trapsink/{trapsinkName}")
-    public Response updateSnmpTrapSink(@Context final UriInfo uriInfo, @PathParam("trapsinkName") String trapSinkName, final MultivaluedMapImpl params) {
+    @Path("trapsinks/{trapsinkName}")
+    public Response updateSnmpTrapSink(@Context final UriInfo uriInfo, @PathParam("trapsinkName") final String trapSinkName, final MultivaluedMapImpl params) {
         writeLock();
         try {
+            boolean changed = false;
             SnmpTrapSink trapSink = m_snmpTrapNorthbounderConfigDao.getConfig().getSnmpTrapSink(trapSinkName);
             if (trapSink == null) {
                 return Response.status(404).build();
             }
             final BeanWrapper wrapper = PropertyAccessorFactory.forBeanPropertyAccess(trapSink);
-            for(final String key : params.keySet()) {
+            for (final String key : params.keySet()) {
                 if (wrapper.isWritableProperty(key)) {
                     final String stringValue = params.getFirst(key);
                     final Object value = wrapper.convertIfNecessary(stringValue, (Class<?>)wrapper.getPropertyType(key));
                     wrapper.setPropertyValue(key, value);
                 }
             }
-            m_snmpTrapNorthbounderConfigDao.save();
-            return Response.seeOther(getRedirectUri(uriInfo)).build();
+            if (changed) {
+                saveConfiguration();
+                return Response.seeOther(getRedirectUri(uriInfo)).build();
+            }
+            return Response.notModified().build();
         } catch (Throwable t) {
             throw new WebApplicationException(Response.status(Status.INTERNAL_SERVER_ERROR).type(MediaType.TEXT_PLAIN).entity(t.getMessage()).build());
         } finally {
             writeUnlock();
+        }
+    }
+
+    /**
+     * Removes a specific SNMP trap sink.
+     *
+     * @param trapSinkName the trap sink name
+     * @return the response
+     */
+    @DELETE
+    @Path("trapsinks/{trapsinkName}")
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
+    public Response removeSnmpTrapSink(@PathParam("trapsinkName") final String trapSinkName) {
+        if (m_snmpTrapNorthbounderConfigDao.getConfig().removeSnmpTrapSink(trapSinkName)) {
+            return saveConfiguration();
+        }
+        return Response.status(404).build();
+    }
+
+    /**
+     * Saves the configuration.
+     *
+     * @return the response
+     */
+    private Response saveConfiguration() {
+        try {
+            m_snmpTrapNorthbounderConfigDao.save();
+            EventBuilder eb = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_UEI, "ReST");
+            eb.addParam(EventConstants.PARM_DAEMON_NAME, "SnmpTrapNBI");
+            m_eventProxy.send(eb.getEvent());
+            return Response.ok().build();
+        } catch (Throwable t) {
+            throw new WebApplicationException(Response.status(Status.INTERNAL_SERVER_ERROR).type(MediaType.TEXT_PLAIN).entity(t.getMessage()).build());
         }
     }
 

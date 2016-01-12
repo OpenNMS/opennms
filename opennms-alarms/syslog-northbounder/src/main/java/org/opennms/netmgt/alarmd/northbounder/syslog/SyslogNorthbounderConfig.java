@@ -203,7 +203,7 @@ public class SyslogNorthbounderConfig implements Serializable {
     }
 
     /**
-     * Gets the Syslog destination.
+     * Gets a specific Syslog destination.
      *
      * @param syslogDestinationName the Syslog destination name
      * @return the Syslog destination
@@ -218,24 +218,46 @@ public class SyslogNorthbounderConfig implements Serializable {
     }
 
     /**
-     * Adds the Syslog destination.
+     * Adds a specific Syslog destination.
+     * <p>If there is a destination with the same name, the existing one will be overridden.</p>
      *
-     * @param destination the destination
+     * @param syslogDestination the Syslog destination object
      */
-    public void addSyslogDestination(SyslogDestination destination) {
+    public void addSyslogDestination(SyslogDestination syslogDestination) {
         int index = -1;
         for (int i = 0; i < m_destinations.size(); i++) {
-            if (m_destinations.get(i).getName().equals(destination.getName())) {
+            if (m_destinations.get(i).getName().equals(syslogDestination.getName())) {
                 index = i;
                 break;
             }
         }
         if (index > -1) {
             m_destinations.remove(index);
-            m_destinations.add(index, destination);
+            m_destinations.add(index, syslogDestination);
         } else {
-            m_destinations.add(destination);
+            m_destinations.add(syslogDestination);
         }
+    }
+
+    /**
+     * Removes a specific syslog destination.
+     *
+     * @param syslogDestinationName the Syslog destination name
+     * @return true, if successful
+     */
+    public boolean removeSyslogDestination(String syslogDestinationName) {
+        int index = -1;
+        for (int i = 0; i < m_destinations.size(); i++) {
+            if (m_destinations.get(i).getName().equals(syslogDestinationName)) {
+                index = i;
+                break;
+            }
+        }
+        if (index > -1) {
+            m_destinations.remove(index);
+            return true;
+        }
+        return false;
     }
 
 }
