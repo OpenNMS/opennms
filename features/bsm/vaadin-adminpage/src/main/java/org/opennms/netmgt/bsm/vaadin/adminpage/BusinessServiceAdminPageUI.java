@@ -31,6 +31,7 @@ package org.opennms.netmgt.bsm.vaadin.adminpage;
 import java.util.Objects;
 
 import org.opennms.netmgt.bsm.service.BusinessServiceManager;
+import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.vaadin.core.TransactionAwareBeanProxyFactory;
 
 import com.vaadin.annotations.Theme;
@@ -60,6 +61,8 @@ public class BusinessServiceAdminPageUI extends UI {
      */
     private BusinessServiceManager m_businessServiceManager;
 
+    private EventForwarder m_eventForwarder;
+
     /**
      * Constructor
      *
@@ -74,7 +77,7 @@ public class BusinessServiceAdminPageUI extends UI {
      */
     @Override
     protected void init(VaadinRequest request) {
-        setContent(new BusinessServiceMainLayout(m_businessServiceManager));
+        setContent(new BusinessServiceMainLayout(m_businessServiceManager, m_eventForwarder));
     }
 
     /**
@@ -84,6 +87,10 @@ public class BusinessServiceAdminPageUI extends UI {
      */
     public void setBusinessServiceManager(BusinessServiceManager businessServiceManager) {
         Objects.requireNonNull(businessServiceManager);
-        this.m_businessServiceManager = m_transactionAwareBeanProxyFactory.createProxy(businessServiceManager);
+        m_businessServiceManager = m_transactionAwareBeanProxyFactory.createProxy(businessServiceManager);
+    }
+
+    public void setEventForwarder(EventForwarder eventForwarder) {
+        m_eventForwarder = Objects.requireNonNull(eventForwarder);
     }
 }

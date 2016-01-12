@@ -33,13 +33,13 @@ import static org.junit.Assert.assertTrue;
 import java.util.Collection;
 
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
-import org.opennms.netmgt.bsm.daemon.Bsmd;
 import org.opennms.netmgt.bsm.persistence.api.BusinessService;
 import org.opennms.netmgt.bsm.persistence.api.BusinessServiceDao;
 import org.opennms.netmgt.dao.DatabasePopulator;
@@ -74,7 +74,7 @@ import org.springframework.transaction.annotation.Transactional;
         "classpath:/META-INF/opennms/applicationContext-bsmd.xml"
 })
 @JUnitConfigurationEnvironment
-@JUnitTemporaryDatabase
+@JUnitTemporaryDatabase(reuseDatabase = false)
 @Transactional
 public class BsmdIT {
 
@@ -157,9 +157,27 @@ public class BsmdIT {
         assertTrue("Expected events not forthcoming " + stillWaitingFor, stillWaitingFor.isEmpty());
     }
 
-    private BusinessService createSimpleBusinessService() {
+    /**
+     * Verifies that a reload of the Bsmd works as expected.
+     */
+    @Test
+    public void verifyReloadBsmd() throws Exception {
+        BusinessService businessService1 = createBusinessService("service1");
+        m_bsmd.start();
+        Assert.assertEquals(OnmsSeverity.NORMAL, m_bsmd.getBusinessServiceStateMachine().getOperationalStatus(businessService1));
+
+        // verify reload of business services works when event is send
+        BusinessService businessService2 = createBusinessService("service2");
+        Assert.assertNull(m_bsmd.getBusinessServiceStateMachine().getOperationalStatus(businessService2));
+        EventBuilder ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_UEI, "test");
+        ebldr.addParam(EventConstants.PARM_DAEMON_NAME, "bsmd");
+        m_eventMgr.sendNow(ebldr.getEvent());
+        Assert.assertEquals(OnmsSeverity.NORMAL, m_bsmd.getBusinessServiceStateMachine().getOperationalStatus(businessService2));
+    }
+
+    private BusinessService createBusinessService(String name) {
         BusinessService bs = new BusinessService();
-        bs.setName("MyBusinessService");
+        bs.setName(name);
 
         // Grab the first monitored service from node 1
         OnmsMonitoredService ipService = m_databasePopulator.getNode1()
@@ -170,7 +188,11 @@ public class BsmdIT {
         // Persist
         m_businessServiceDao.save(bs);
         m_businessServiceDao.flush();
-        
+
         return bs;
+    }
+
+    private BusinessService createSimpleBusinessService() {
+        return createBusinessService("MyBusinessService");
     }
 }

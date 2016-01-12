@@ -32,6 +32,10 @@ import java.util.Objects;
 
 import org.opennms.netmgt.bsm.service.BusinessServiceManager;
 import org.opennms.netmgt.bsm.service.model.BusinessServiceDTO;
+import org.opennms.netmgt.events.api.EventConstants;
+import org.opennms.netmgt.events.api.EventForwarder;
+import org.opennms.netmgt.model.events.EventBuilder;
+import org.opennms.netmgt.vaadin.core.UIHelper;
 
 import com.google.common.base.Strings;
 import com.vaadin.data.util.BeanItemContainer;
@@ -52,7 +56,9 @@ public class BusinessServiceMainLayout extends VerticalLayout {
     /**
      * the Business Service Manager instance
      */
-    private BusinessServiceManager m_businessServiceManager;
+    private final BusinessServiceManager m_businessServiceManager;
+
+    private final EventForwarder m_eventForwarder;
 
     /**
      * the table instance
@@ -64,39 +70,29 @@ public class BusinessServiceMainLayout extends VerticalLayout {
      */
     private final BeanItemContainer<BusinessServiceDTO> m_beanItemContainer = new BeanItemContainer<>(BusinessServiceDTO.class);
 
-    /**
-     * Constrcutor
-     *
-     * @param businessServiceManager the Business Service Manager instance to be used
-     */
-    public BusinessServiceMainLayout(BusinessServiceManager businessServiceManager) {
-        /**
-         * check for valid arguments and set the member field
-         */
-        Objects.requireNonNull(businessServiceManager);
-        this.m_businessServiceManager = businessServiceManager;
+    public BusinessServiceMainLayout(BusinessServiceManager businessServiceManager, EventForwarder eventForwarder) {
+        m_businessServiceManager = Objects.requireNonNull(businessServiceManager);
+        m_eventForwarder = Objects.requireNonNull(eventForwarder);
 
-        /**
-         * set the component's properties
-         */
         setSizeFull();
 
-        /**
-         * construct the upper layout for the create button and field
-         */
+        // construct the upper layout for the create button and field
         HorizontalLayout upperLayout = new HorizontalLayout();
 
-        /**
-         * add the input field...
-         */
+        // Reload button to allow manual reloads of the state machine
+        final Button reloadButton = UIHelper.createButton("Reload", "Reloads the Business Service State Machine", null, (Button.ClickListener) event -> {
+            EventBuilder eventBuilder = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_UEI, "BSM Master Page");
+            eventBuilder.addParam(EventConstants.PARM_DAEMON_NAME, "bsmd");
+            m_eventForwarder.sendNow(eventBuilder.getEvent());
+        });
+
+        // business service input field
         final TextField createTextField = new TextField();
         createTextField.setWidth(300.0f, Unit.PIXELS);
         createTextField.setInputPrompt("Business Service Name");
         createTextField.setId("createTextField");
 
-        /**
-         * ...and the button
-         */
+        // create button
         final Button createButton = new Button("Create");
         createButton.setId("createButton");
         createButton.addClickListener((Button.ClickListener) event -> {
@@ -126,6 +122,7 @@ public class BusinessServiceMainLayout extends VerticalLayout {
         /**
          * add to the upper layout
          */
+        upperLayout.addComponent(reloadButton);
         upperLayout.addComponent(createTextField);
         upperLayout.addComponent(createButton);
         addComponent(upperLayout);
