@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.alarmd.northbounder.syslog;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -202,7 +203,7 @@ public class SyslogDestination implements Destination {
 
     /** The filters. */
     @XmlElement(name = "filter", required = false)
-    private List<SyslogFilter> m_filters;
+    private List<SyslogFilter> m_filters = new ArrayList<SyslogFilter>();
 
     /**
      * Instantiates a new Syslog destination.

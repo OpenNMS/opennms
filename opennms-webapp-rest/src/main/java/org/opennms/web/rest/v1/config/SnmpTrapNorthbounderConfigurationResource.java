@@ -218,7 +218,7 @@ public class SnmpTrapNorthbounderConfigurationResource extends OnmsRestService i
     public Response updateSnmpTrapSink(@Context final UriInfo uriInfo, @PathParam("trapsinkName") final String trapSinkName, final MultivaluedMapImpl params) {
         writeLock();
         try {
-            boolean changed = false;
+            boolean modified = false;
             SnmpTrapSink trapSink = m_snmpTrapNorthbounderConfigDao.getConfig().getSnmpTrapSink(trapSinkName);
             if (trapSink == null) {
                 return Response.status(404).build();
@@ -229,9 +229,10 @@ public class SnmpTrapNorthbounderConfigurationResource extends OnmsRestService i
                     final String stringValue = params.getFirst(key);
                     final Object value = wrapper.convertIfNecessary(stringValue, (Class<?>)wrapper.getPropertyType(key));
                     wrapper.setPropertyValue(key, value);
+                    modified = true;
                 }
             }
-            if (changed) {
+            if (modified) {
                 saveConfiguration();
                 return Response.seeOther(getRedirectUri(uriInfo)).build();
             }

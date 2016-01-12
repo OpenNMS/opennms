@@ -29,6 +29,7 @@
 package org.opennms.netmgt.alarmd.northbounder.snmptrap;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -66,7 +67,7 @@ public class SnmpTrapNorthbounderConfig implements Serializable {
 
     /** The SNMP trap sinks. */
     @XmlElement(name = "snmp-trap-sink")
-    private List<SnmpTrapSink> m_snmpTrapSinks;
+    private List<SnmpTrapSink> m_snmpTrapSinks = new ArrayList<SnmpTrapSink>();
 
     /** The UEIs. */
     @XmlElement(name = "uei", required = false)

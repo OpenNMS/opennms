@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.alarmd.northbounder.email;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -56,7 +57,7 @@ public class EmailDestination implements Destination {
 
     /** The filters. */
     @XmlElement(name = "filter", required = false)
-    private List<EmailFilter> m_filters;
+    private List<EmailFilter> m_filters = new ArrayList<EmailFilter>();
 
     /* (non-Javadoc)
      * @see org.opennms.netmgt.alarmd.api.Destination#isFirstOccurrenceOnly()

@@ -29,6 +29,7 @@
 package org.opennms.netmgt.alarmd.northbounder.syslog;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -70,7 +71,7 @@ public class SyslogNorthbounderConfig implements Serializable {
 
     /** The destinations. */
     @XmlElement(name = "destination")
-    private List<SyslogDestination> m_destinations;
+    private List<SyslogDestination> m_destinations = new ArrayList<SyslogDestination>();
 
     /** The UEIs. */
     @XmlElement(name = "uei", required = false)

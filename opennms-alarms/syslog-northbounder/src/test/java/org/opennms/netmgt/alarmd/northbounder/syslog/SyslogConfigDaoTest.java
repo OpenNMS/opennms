@@ -224,4 +224,32 @@ public class SyslogConfigDaoTest {
         configFile.delete();
     }
 
+    /**
+     * Test modify configuration.
+     *
+     * @throws Exception the exception
+     */
+    @Test
+    public void testModifyConfiguration() throws Exception {
+        File configFile = new File("target/syslog-northbounder-test.xml");
+        FileWriter writer = new FileWriter(configFile);
+        writer.write(xmlWithFilters);
+        writer.close();
+        Resource resource = new FileSystemResource(configFile);
+
+        SyslogNorthbounderConfigDao dao = new SyslogNorthbounderConfigDao();
+        dao.setConfigResource(resource);
+        dao.afterPropertiesSet();
+
+        assertNotNull(dao.getConfig());
+        SyslogDestination dst = dao.getConfig().getSyslogDestination("test-host");
+        assertNotNull(dst);
+        dst.setHost("192.168.0.1");
+        dao.save();
+        dao.reload();
+
+        assertEquals("192.168.0.1", dao.getConfig().getSyslogDestination("test-host").getHost());
+        configFile.delete();
+    }
+
 }

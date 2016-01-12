@@ -29,6 +29,7 @@
 package org.opennms.netmgt.alarmd.northbounder.email;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -66,7 +67,7 @@ public class EmailNorthbounderConfig implements Serializable {
 
     /** The Email destination. */
     @XmlElement(name = "destination")
-    private List<EmailDestination> m_destinations;
+    private List<EmailDestination> m_destinations = new ArrayList<EmailDestination>();
 
     /** The UEIs. */
     @XmlElement(name = "uei", required = false)

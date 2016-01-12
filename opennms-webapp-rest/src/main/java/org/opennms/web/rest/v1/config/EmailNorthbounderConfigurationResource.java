@@ -219,7 +219,7 @@ public class EmailNorthbounderConfigurationResource extends OnmsRestService impl
     public Response updateEmailDestination(@Context final UriInfo uriInfo, @PathParam("destinationName") final String destinationName, final MultivaluedMapImpl params) {
         writeLock();
         try {
-            boolean changed = false;
+            boolean modified = false;
             EmailDestination destination = m_emailNorthbounderConfigDao.getConfig().getEmailDestination(destinationName);
             if (destination == null) {
                 return Response.status(404).build();
@@ -230,10 +230,10 @@ public class EmailNorthbounderConfigurationResource extends OnmsRestService impl
                     final String stringValue = params.getFirst(key);
                     final Object value = wrapper.convertIfNecessary(stringValue, (Class<?>)wrapper.getPropertyType(key));
                     wrapper.setPropertyValue(key, value);
-                    changed = true;
+                    modified = true;
                 }
             }
-            if (changed) {
+            if (modified) {
                 saveConfiguration();
                 return Response.seeOther(getRedirectUri(uriInfo)).build();
             }
