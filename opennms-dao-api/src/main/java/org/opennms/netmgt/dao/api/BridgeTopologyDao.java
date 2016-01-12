@@ -20,6 +20,6 @@ public interface BridgeTopologyDao {
     // getting BroacastDomain for calculation
     BroadcastDomain get(int nodeid);
     
-    Set<BroadcastDomain> get();
+    Set<BroadcastDomain> getAll();
 
 }

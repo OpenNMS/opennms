@@ -33,8 +33,10 @@ import static org.opennms.core.utils.InetAddressUtils.isValidBridgeAddress;
 import static org.opennms.core.utils.InetAddressUtils.isValidStpBridgeId;
 import static org.opennms.core.utils.InetAddressUtils.getBridgeAddressFromStpBridgeId;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -88,6 +90,7 @@ public final class NodeDiscoveryBridge extends NodeDiscovery {
 		LOG.debug("run: collecting: {}", getPeer());
 		Map<Integer,String> vlanmap = getVtpVlanMap();
 		Map<Integer,Integer> bridgeifindex = new HashMap<Integer, Integer>();
+		List<BridgeMacLink> bft = new ArrayList<BridgeMacLink>();
 		
 		if (vlanmap.isEmpty())
 			bridgeifindex.putAll(walkDot1d(null,null));
@@ -98,15 +101,17 @@ public final class NodeDiscoveryBridge extends NodeDiscovery {
 						community, entry.getKey());
 				getPeer().setReadCommunity(community + "@" + entry.getKey());
 				bridgeifindex.putAll(walkDot1d(entry.getKey(), entry.getValue()));
+			        bft = walkDot1dTpFdp(entry.getKey(),bridgeifindex,bft);
+
 			}
 			getPeer().setReadCommunity(community);
 		}
 		LOG.debug("run: found on node: '{}' bridge ifindex map {}",getNodeId(), bridgeifindex);
-		walkDot1qTpFdb(bridgeifindex);
+		bft = walkDot1qTpFdb(bridgeifindex,bft);
+		m_linkd.getQueryManager().store(getNodeId(), bft);
                 LOG.debug("run: reconciling bridge: '{}' time {}",getNodeId(), now);
 		m_linkd.getQueryManager().reconcileBridge(getNodeId(), now);
                 LOG.debug("run: updating topology bridge: '{}'",getNodeId());
-		m_linkd.getQueryManager().updateBridgeTopology(getNodeId());
                 LOG.info("run: end: node discovery operations for bridge: '{}'",getNodeId());
 	}
 	
@@ -242,7 +247,6 @@ public final class NodeDiscoveryBridge extends NodeDiscovery {
 		} else {
 			walkSpanningTree(bridge.getBaseBridgeAddress(),vlan, bridgetoifindex);
 		}
-		walkDot1dTpFdp(vlan,bridgetoifindex);
 		return bridgetoifindex;
 	}
 
@@ -275,7 +279,7 @@ public final class NodeDiscoveryBridge extends NodeDiscovery {
 		return bridgetoifindex;
 	}
 	
-	private void walkDot1dTpFdp(final Integer vlan, final Map<Integer,Integer> bridgeifindex) {
+	private List<BridgeMacLink> walkDot1dTpFdp(final Integer vlan, final Map<Integer,Integer> bridgeifindex,List<BridgeMacLink> bft) {
 		String trackerName = "dot1dTbFdbPortTable";
 
 		Dot1dTpFdbTableTracker stpPortTableTracker = new Dot1dTpFdbTableTracker() {
@@ -289,7 +293,7 @@ public final class NodeDiscoveryBridge extends NodeDiscovery {
 				link.setVlan(vlan);
 				link.setBridgePortIfIndex(ifindex);
 				if (isValidBridgeAddress(link.getMacAddress()))
-					m_linkd.getQueryManager().store(getNodeId(), link);
+					bft.add(link);
 				else
 	                            LOG.warn("processDot1dTpFdbRow: invalid mac {}: vlan {}: on port {} ifindex {} status {}",  
                                          row.getDot1dTpFdbAddress(), vlan, row.getDot1dTpFdbPort(),ifindex,link.getBridgeDot1qTpFdbStatus());
@@ -305,19 +309,20 @@ public final class NodeDiscoveryBridge extends NodeDiscovery {
 			if (walker.timedOut()) {
 				LOG.info("run:Aborting Bridge Linkd node scan : Agent timed out while scanning the {} table",
 						trackerName);
-				return;
+				return bft;
 			} else if (walker.failed()) {
 				LOG.info("run:Aborting Bridge Linkd node scan : Agent failed while scanning the {} table: {}",
 						trackerName, walker.getErrorMessage());
-				return;
+				return bft;
 			}
 		} catch (final InterruptedException e) {
 			LOG.error("run: Bridge Linkd node collection interrupted, exiting",e);
-			return;
+			return bft;
 		}
+		return bft;
 	}
 
-	private void walkDot1qTpFdb(final Map<Integer,Integer> bridgeifindex) {
+	private List<BridgeMacLink> walkDot1qTpFdb(final Map<Integer,Integer> bridgeifindex, final List<BridgeMacLink> bft) {
 
 		String trackerName = "dot1qTbFdbPortTable";
 
@@ -331,7 +336,7 @@ public final class NodeDiscoveryBridge extends NodeDiscovery {
                                           row.getDot1qTpFdbAddress(), row.getDot1qTpFdbPort(),ifindex, link.getBridgeDot1qTpFdbStatus());
 				link.setBridgePortIfIndex(ifindex);
 				if (isValidBridgeAddress(link.getMacAddress()) && link.getBridgePort() != null)
-					m_linkd.getQueryManager().store(getNodeId(), link);
+					bft.add(link);
 				else
 				    LOG.warn("processDot1qTpFdbRow: found mac {}: on port {} ifindex {} status {} ", 
 	                                          row.getDot1qTpFdbAddress(), row.getDot1qTpFdbPort(),ifindex, link.getBridgeDot1qTpFdbStatus());
@@ -354,7 +359,9 @@ public final class NodeDiscoveryBridge extends NodeDiscovery {
 			}
 		} catch (final InterruptedException e) {
 			LOG.error("run: Bridge Linkd node collection interrupted, exiting",e);
+			return bft;
 		}
+		return bft;
 	}
 
 	private void walkSpanningTree(final String baseBridgeAddress, final Integer vlan, final Map<Integer,Integer> bridgeifindex) {
@@ -391,6 +398,7 @@ public final class NodeDiscoveryBridge extends NodeDiscovery {
 			LOG.error("run: Bridge Linkd node collection interrupted, exiting",e);
 		}
 	}
+
 
 	@Override
 	public String getInfo() {
