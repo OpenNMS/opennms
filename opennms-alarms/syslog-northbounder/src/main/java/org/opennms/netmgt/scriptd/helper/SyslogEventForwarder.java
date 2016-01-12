@@ -81,6 +81,7 @@ public class SyslogEventForwarder {
             destination = JaxbUtils.unmarshal(SyslogDestination.class, configFile);
             destination.setName(destinationName); // To avoid potential conflicts.
             SyslogUtils.createNorthboundInstance(destination);
+            initialized = true;
         } else {
             LOG.error("Can't load configuration from {}", configFile);
         }
@@ -156,7 +157,7 @@ public class SyslogEventForwarder {
             }
 
         } else {
-            LOG.error("Can't forward event {} because the facility as not been initialized.", event.getUei());
+            LOG.error("Can't forward event {} because the facility has not been initialized.", event.getUei());
         }
     }
 
