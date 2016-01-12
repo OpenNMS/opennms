@@ -155,6 +155,26 @@ public class DefaultJavamailConfigurationDao extends AbstractJaxbConfigDao<Javam
     }
 
     /* (non-Javadoc)
+     * @see org.opennms.netmgt.dao.api.JavaMailConfigurationDao#removeSendMailConfig(java.lang.String)
+     */
+    @Override
+    public boolean removeSendMailConfig(String sendmailConfig) {
+        int index = -1;
+        List<SendmailConfig> configs = getSendmailConfigs();
+        for (int i = 0; i < configs.size(); i++) {
+            if (configs.get(i).getName().equals(sendmailConfig)) {
+                index = i;
+                break;
+            }
+        }
+        if (index > -1) {
+            configs.remove(index);
+            return true;
+        }
+        return false;
+    }
+
+    /* (non-Javadoc)
      * @see org.opennms.netmgt.dao.api.JavaMailConfigurationDao#getSendmailConfigs()
      */
     @Override
@@ -163,10 +183,10 @@ public class DefaultJavamailConfigurationDao extends AbstractJaxbConfigDao<Javam
     }
 
     /* (non-Javadoc)
-     * @see org.opennms.netmgt.dao.api.JavaMailConfigurationDao#getEnd2EndConfig(java.lang.String)
+     * @see org.opennms.netmgt.dao.api.JavaMailConfigurationDao#getEnd2endConfig(java.lang.String)
      */
     @Override
-    public End2endMailConfig getEnd2EndConfig(String name) {
+    public End2endMailConfig getEnd2endConfig(String name) {
         End2endMailConfig config = null;
         List<End2endMailConfig> configs = getEnd2EndConfigs();
 
@@ -200,6 +220,26 @@ public class DefaultJavamailConfigurationDao extends AbstractJaxbConfigDao<Javam
     }
 
     /* (non-Javadoc)
+     * @see org.opennms.netmgt.dao.api.JavaMailConfigurationDao#removeReadMailConfig(java.lang.String)
+     */
+    @Override
+    public boolean removeReadMailConfig(String readmailConfig) {
+        int index = -1;
+        List<ReadmailConfig> configs = getReadmailConfigs();
+        for (int i = 0; i < configs.size(); i++) {
+            if (configs.get(i).getName().equals(readmailConfig)) {
+                index = i;
+                break;
+            }
+        }
+        if (index > -1) {
+            configs.remove(index);
+            return true;
+        }
+        return false;
+    }
+
+    /* (non-Javadoc)
      * @see org.opennms.netmgt.dao.api.JavaMailConfigurationDao#getEnd2EndConfigs()
      */
     @Override
@@ -226,6 +266,26 @@ public class DefaultJavamailConfigurationDao extends AbstractJaxbConfigDao<Javam
         } else {
             configs.add(end2endConfig);
         }
+    }
+
+    /* (non-Javadoc)
+     * @see org.opennms.netmgt.dao.api.JavaMailConfigurationDao#removeEnd2endConfig(java.lang.String)
+     */
+    @Override
+    public boolean removeEnd2endConfig(String end2endConfig) {
+        int index = -1;
+        List<End2endMailConfig> configs = getEnd2EndConfigs();
+        for (int i = 0; i < configs.size(); i++) {
+            if (configs.get(i).getName().equals(end2endConfig)) {
+                index = i;
+                break;
+            }
+        }
+        if (index > -1) {
+            configs.remove(index);
+            return true;
+        }
+        return false;
     }
 
     /* (non-Javadoc)

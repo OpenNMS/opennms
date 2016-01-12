@@ -33,8 +33,10 @@ import java.util.List;
 
 import javax.annotation.Resource;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -54,8 +56,11 @@ import org.opennms.netmgt.dao.api.JavaMailConfigurationDao;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventProxy;
 import org.opennms.netmgt.model.events.EventBuilder;
+import org.opennms.web.rest.support.MultivaluedMapImpl;
 import org.opennms.web.rest.v1.OnmsRestService;
 
+import org.springframework.beans.BeanWrapper;
+import org.springframework.beans.PropertyAccessorFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
@@ -219,7 +224,7 @@ public class JavamailConfigurationResource extends OnmsRestService implements In
     @GET
     @Path("readmails/{readmailConfig}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
-    public Response getReadmailConfiguration(@PathParam("readmailConfig") String readmailConfig) {
+    public Response getReadmailConfiguration(@PathParam("readmailConfig") final String readmailConfig) {
         ReadmailConfig readmail = m_javamailConfigurationDao.getReadMailConfig(readmailConfig);
         if (readmail == null) {
             return Response.status(404).build();
@@ -236,7 +241,7 @@ public class JavamailConfigurationResource extends OnmsRestService implements In
     @GET
     @Path("sendmails/{sendmailConfig}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
-    public Response getSendmailConfiguration(@PathParam("sendmailConfig") String sendmailConfig) {
+    public Response getSendmailConfiguration(@PathParam("sendmailConfig") final String sendmailConfig) {
         SendmailConfig sendmail = m_javamailConfigurationDao.getSendMailConfig(sendmailConfig);
         if (sendmail == null) {
             return Response.status(404).build();
@@ -253,8 +258,8 @@ public class JavamailConfigurationResource extends OnmsRestService implements In
     @GET
     @Path("end2ends/{end2endConfig}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
-    public Response getEnd2EndMailConfiguration(@PathParam("end2endConfig") String end2endConfig) {
-        End2endMailConfig end2end = m_javamailConfigurationDao.getEnd2EndConfig(end2endConfig);
+    public Response getEnd2EndMailConfiguration(@PathParam("end2endConfig") final String end2endConfig) {
+        End2endMailConfig end2end = m_javamailConfigurationDao.getEnd2endConfig(end2endConfig);
         if (end2end == null) {
             return Response.status(404).build();
         }
@@ -270,7 +275,7 @@ public class JavamailConfigurationResource extends OnmsRestService implements In
      * @return the response
      */
     @POST
-    @Path("readmails/{readmailConfig}")
+    @Path("readmails")
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     public Response setReadmailConfiguration(@Context final UriInfo uriInfo, final ReadmailConfig readmailConfig) {
         writeLock();
@@ -292,7 +297,7 @@ public class JavamailConfigurationResource extends OnmsRestService implements In
      * @return the response
      */
     @POST
-    @Path("sendmails/{sendmailConfig}")
+    @Path("sendmails")
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     public Response setSendmailConfiguration(@Context final UriInfo uriInfo, final SendmailConfig sendmailConfig) {
         writeLock();
@@ -314,7 +319,7 @@ public class JavamailConfigurationResource extends OnmsRestService implements In
      * @return the response
      */
     @POST
-    @Path("end2ends/{end2endConfig}")
+    @Path("end2ends")
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     public Response setEnd2EndMailConfiguration(@Context final UriInfo uriInfo, final End2endMailConfig end2endMailConfig) {
         writeLock();
@@ -325,6 +330,165 @@ public class JavamailConfigurationResource extends OnmsRestService implements In
         } finally {
             writeUnlock();
         }
+    }
+
+    /**
+     * Update readmail configuration.
+     *
+     * @param uriInfo the URI info
+     * @param readmailConfigName the readmail configuration name
+     * @param params the parameters map
+     * @return the response
+     */
+    @PUT
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    @Path("readmails/{readmailConfig}")
+    public Response updateReadmailConfiguration(@Context final UriInfo uriInfo, @PathParam("readmailConfig") final String readmailConfigName, final MultivaluedMapImpl params) {
+        writeLock();
+        try {
+            ReadmailConfig readmailConfig = m_javamailConfigurationDao.getReadMailConfig(readmailConfigName);
+            if (readmailConfig == null) {
+                return Response.status(404).build();
+            }
+            if (updateConfiguration(readmailConfig, params)) {
+                saveConfiguration();
+                return Response.seeOther(getRedirectUri(uriInfo)).build();
+            }
+            return Response.notModified().build();
+        } catch (Throwable t) {
+            throw new WebApplicationException(Response.status(Status.INTERNAL_SERVER_ERROR).type(MediaType.TEXT_PLAIN).entity(t.getMessage()).build());
+        } finally {
+            writeUnlock();
+        }
+    }
+
+    /**
+     * Update sendmail configuration.
+     *
+     * @param uriInfo the URI info
+     * @param sendmailConfigName the sendmail configuration name
+     * @param params the parameters map
+     * @return the response
+     */
+    @PUT
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    @Path("sendmails/{sendmailConfig}")
+    public Response updateSendmailConfiguration(@Context final UriInfo uriInfo, @PathParam("sendmailConfig") final String sendmailConfigName, final MultivaluedMapImpl params) {
+        writeLock();
+        try {
+            SendmailConfig sendmailConfig = m_javamailConfigurationDao.getSendMailConfig(sendmailConfigName);
+            if (sendmailConfig == null) {
+                return Response.status(404).build();
+            }
+            if (updateConfiguration(sendmailConfig, params)) {
+                saveConfiguration();
+                return Response.seeOther(getRedirectUri(uriInfo)).build();
+            }
+            return Response.notModified().build();
+        } catch (Throwable t) {
+            throw new WebApplicationException(Response.status(Status.INTERNAL_SERVER_ERROR).type(MediaType.TEXT_PLAIN).entity(t.getMessage()).build());
+        } finally {
+            writeUnlock();
+        }
+    }
+
+    /**
+     * Update end2end configuration.
+     *
+     * @param uriInfo the URI info
+     * @param end2endConfigName the end2end configuration name
+     * @param params the parameters map
+     * @return the response
+     */
+    @PUT
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    @Path("end2ends/{end2endConfig}")
+    public Response updateEnd2endConfiguration(@Context final UriInfo uriInfo, @PathParam("end2endConfig") final String end2endConfigName, final MultivaluedMapImpl params) {
+        writeLock();
+        try {
+            End2endMailConfig end2endConfig = m_javamailConfigurationDao.getEnd2endConfig(end2endConfigName);
+            if (end2endConfig == null) {
+                return Response.status(404).build();
+            }
+            if (updateConfiguration(end2endConfig, params)) {
+                saveConfiguration();
+                return Response.seeOther(getRedirectUri(uriInfo)).build();
+            }
+            return Response.notModified().build();
+        } catch (Throwable t) {
+            throw new WebApplicationException(Response.status(Status.INTERNAL_SERVER_ERROR).type(MediaType.TEXT_PLAIN).entity(t.getMessage()).build());
+        } finally {
+            writeUnlock();
+        }
+    }
+
+    /**
+     * Removes the readmail configuration.
+     *
+     * @param readmailConfig the readmail configuration name
+     * @return the response
+     */
+    @DELETE
+    @Path("readmails/{readmailConfig}")
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
+    public Response removeReadmailConfig(@PathParam("readmailConfig") final String readmailConfig) {
+        if (m_javamailConfigurationDao.removeReadMailConfig(readmailConfig)) {
+            return saveConfiguration();
+        }
+        return Response.status(404).build();
+    }
+
+    /**
+     * Removes the sendmail configuration.
+     *
+     * @param sendmailConfig the sendmail configuration name
+     * @return the response
+     */
+    @DELETE
+    @Path("sendmails/{sendmailConfig}")
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
+    public Response removeSendmailConfig(@PathParam("sendmailConfig") final String sendmailConfig) {
+        if (m_javamailConfigurationDao.removeSendMailConfig(sendmailConfig)) {
+            return saveConfiguration();
+        }
+        return Response.status(404).build();
+    }
+
+    /**
+     * Removes the end2end configuration.
+     *
+     * @param end2endConfig the end2end configuration name
+     * @return the response
+     */
+    @DELETE
+    @Path("end2ends/{end2endConfig}")
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
+    public Response removeEnd2endConfig(@PathParam("end2endConfig") final String end2endConfig) {
+        if (m_javamailConfigurationDao.removeEnd2endConfig(end2endConfig)) {
+            return saveConfiguration();
+        }
+        return Response.status(404).build();
+    }
+
+    /**
+     * Update configuration.
+     *
+     * @param config the configuration object
+     * @param params the parameters
+     * @return true, if successful
+     */
+    private boolean updateConfiguration(final Object config, final MultivaluedMapImpl params) {
+        boolean modified = false;
+        final BeanWrapper wrapper = PropertyAccessorFactory.forBeanPropertyAccess(config);
+        for (final String key : params.keySet()) {
+            if (wrapper.isWritableProperty(key)) {
+                final String stringValue = params.getFirst(key);
+                final Object value = wrapper.convertIfNecessary(stringValue, (Class<?>)wrapper.getPropertyType(key));
+                wrapper.setPropertyValue(key, value);
+                modified = true;
+            }
+        }
+        return modified;
     }
 
     /**

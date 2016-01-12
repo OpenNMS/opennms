@@ -50,12 +50,19 @@ public interface JavaMailConfigurationDao {
     SendmailConfig getDefaultSendmailConfig();
 
     /**
+     * Gets the default readmail configuration.
+     *
+     * @return the default readmail configuration
+     */
+    ReadmailConfig getDefaultReadmailConfig();
+
+    /**
      * Gets the send mail configuration.
      *
-     * @param name the name
+     * @param sendmailConfigName the sendmail configuration name
      * @return the send mail configuration
      */
-    SendmailConfig getSendMailConfig(String name);
+    SendmailConfig getSendMailConfig(String sendmailConfigName);
 
     /**
      * Adds the send mail configuration.
@@ -66,6 +73,14 @@ public interface JavaMailConfigurationDao {
     void addSendMailConfig(SendmailConfig sendmailConfig);
 
     /**
+     * Removes the sendmail configuration.
+     *
+     * @param sendmailConfigName the sendmail configuration name
+     * @return true, if successful
+     */
+    boolean removeSendMailConfig(String sendmailConfigName);
+
+    /**
      * Gets the sendmail configurations.
      *
      * @return the sendmail configurations
@@ -73,19 +88,12 @@ public interface JavaMailConfigurationDao {
     List<SendmailConfig> getSendmailConfigs();
 
     /**
-     * Gets the default readmail configuration.
-     *
-     * @return the default readmail configuration
-     */
-    ReadmailConfig getDefaultReadmailConfig();
-
-    /**
      * Gets the read mail configuration.
      *
-     * @param name the name
+     * @param readmailConfigName the readmail configuration name
      * @return the read mail configuration
      */
-    ReadmailConfig getReadMailConfig(String name);
+    ReadmailConfig getReadMailConfig(String readmailConfigName);
 
     /**
      * Adds the read mail configuration.
@@ -94,6 +102,14 @@ public interface JavaMailConfigurationDao {
      * @param readmailConfig the readmail configuration
      */
     void addReadMailConfig(ReadmailConfig readmailConfig);
+
+    /**
+     * Removes the readmail configuration.
+     *
+     * @param readmailConfigName the readmail configuration name
+     * @return true, if successful
+     */
+    boolean removeReadMailConfig(String readmailConfigName);
 
     /**
      * Gets the readmail configurations.
@@ -105,10 +121,10 @@ public interface JavaMailConfigurationDao {
     /**
      * Gets the end2end mail configuration.
      *
-     * @param name the name
+     * @param end2endConfigName the end2end configuration name
      * @return the end2end configuration
      */
-    End2endMailConfig getEnd2EndConfig(String name);
+    End2endMailConfig getEnd2endConfig(String end2endConfigName);
 
     /**
      * Adds the end2end mail configuration.
@@ -117,6 +133,14 @@ public interface JavaMailConfigurationDao {
      * @param end2endConfig the end2end configuration
      */
     void addEnd2endMailConfig(End2endMailConfig end2endConfig);
+
+    /**
+     * Removes the end2 end configuration.
+     *
+     * @param end2endConfigName the end2end configuration name
+     * @return true, if successful
+     */
+    boolean removeEnd2endConfig(String end2endConfigName);
 
     /**
      * Gets the end2end mail configurations.

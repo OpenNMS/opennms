@@ -280,7 +280,7 @@ public class JavaMailAckReaderIT implements InitializingBean {
         }
 
         @Override
-        public End2endMailConfig getEnd2EndConfig(String name) {
+        public End2endMailConfig getEnd2endConfig(String name) {
             return m_e2eConfig;
         }
 
@@ -337,6 +337,21 @@ public class JavaMailAckReaderIT implements InitializingBean {
 
         @Override
         public void saveConfiguration() {
+        }
+
+        @Override
+        public boolean removeSendMailConfig(String sendmailConfigName) {
+            return false;
+        }
+
+        @Override
+        public boolean removeReadMailConfig(String readmailConfigName) {
+            return false;
+        }
+
+        @Override
+        public boolean removeEnd2endConfig(String end2endConfigName) {
+            return false;
         }        
     }
     
