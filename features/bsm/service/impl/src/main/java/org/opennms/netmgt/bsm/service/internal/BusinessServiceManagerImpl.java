@@ -281,6 +281,10 @@ public class BusinessServiceManagerImpl implements BusinessServiceManager {
     }
 
     private BusinessServiceDTO transform(BusinessService service) {
+        return transform(service, true);
+    }
+
+    private BusinessServiceDTO transform(BusinessService service, boolean recurse) {
         BusinessServiceDTO dto = new BusinessServiceDTO();
         dto.setId(service.getId());
         dto.setName(service.getName());
@@ -292,16 +296,22 @@ public class BusinessServiceManagerImpl implements BusinessServiceManager {
                 dto.addIpService(ipServiceDTO);
             }
         }
-        for (BusinessService eachService : service.getChildServices()) {
-            BusinessServiceDTO childServiceDTO = transform(eachService);
-            if (childServiceDTO != null) {
-                dto.addChildService(childServiceDTO);
+        // TODO: JW: This should not be be merged into features/bsm
+        if (recurse) {
+            for (BusinessService eachService : service.getChildServices()) {
+                BusinessServiceDTO childServiceDTO = transform(eachService, false);
+                if (childServiceDTO != null) {
+                    dto.addChildService(childServiceDTO);
+                }
             }
         }
-        for (BusinessService eachService : service.getChildServices()) {
-            BusinessServiceDTO parentServiceDTO = transform(eachService);
-            if (parentServiceDTO != null) {
-                dto.addParentService(parentServiceDTO);
+        // TODO: JW: This should not be be merged into features/bsm
+        if (recurse) {
+            for (BusinessService eachService : service.getParentServices()) {
+                BusinessServiceDTO parentServiceDTO = transform(eachService, false);
+                if (parentServiceDTO != null) {
+                    dto.addParentService(parentServiceDTO);
+                }
             }
         }
         return dto;
