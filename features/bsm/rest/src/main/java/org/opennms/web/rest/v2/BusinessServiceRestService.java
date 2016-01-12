@@ -146,4 +146,11 @@ public class BusinessServiceRestService {
         }
         return Response.noContent().build();
     }
+
+    @POST
+    @Path("daemon/reload")
+    public Response reload() {
+        getManager().triggerDaemonReload();
+        return Response.ok().build();
+    }
 }

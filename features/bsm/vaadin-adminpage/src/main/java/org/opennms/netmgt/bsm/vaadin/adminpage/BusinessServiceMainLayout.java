@@ -32,9 +32,6 @@ import java.util.Objects;
 
 import org.opennms.netmgt.bsm.service.BusinessServiceManager;
 import org.opennms.netmgt.bsm.service.model.BusinessServiceDTO;
-import org.opennms.netmgt.events.api.EventConstants;
-import org.opennms.netmgt.events.api.EventForwarder;
-import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.vaadin.core.UIHelper;
 
 import com.google.common.base.Strings;
@@ -58,8 +55,6 @@ public class BusinessServiceMainLayout extends VerticalLayout {
      */
     private final BusinessServiceManager m_businessServiceManager;
 
-    private final EventForwarder m_eventForwarder;
-
     /**
      * the table instance
      */
@@ -70,9 +65,8 @@ public class BusinessServiceMainLayout extends VerticalLayout {
      */
     private final BeanItemContainer<BusinessServiceDTO> m_beanItemContainer = new BeanItemContainer<>(BusinessServiceDTO.class);
 
-    public BusinessServiceMainLayout(BusinessServiceManager businessServiceManager, EventForwarder eventForwarder) {
+    public BusinessServiceMainLayout(BusinessServiceManager businessServiceManager) {
         m_businessServiceManager = Objects.requireNonNull(businessServiceManager);
-        m_eventForwarder = Objects.requireNonNull(eventForwarder);
 
         setSizeFull();
 
@@ -81,9 +75,7 @@ public class BusinessServiceMainLayout extends VerticalLayout {
 
         // Reload button to allow manual reloads of the state machine
         final Button reloadButton = UIHelper.createButton("Reload", "Reloads the Business Service State Machine", null, (Button.ClickListener) event -> {
-            EventBuilder eventBuilder = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_UEI, "BSM Master Page");
-            eventBuilder.addParam(EventConstants.PARM_DAEMON_NAME, "bsmd");
-            m_eventForwarder.sendNow(eventBuilder.getEvent());
+            m_businessServiceManager.triggerDaemonReload();
         });
 
         // business service input field
