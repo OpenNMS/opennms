@@ -36,7 +36,9 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
+import java.util.TreeSet;
 
 import org.opennms.core.criteria.Criteria;
 import org.opennms.core.criteria.Order;
@@ -463,11 +465,16 @@ public abstract class OnmsDaoContainer<T,K extends Serializable> implements Cont
         for (int i=startIndex; i<endIndex; i++) {
             itemIds.add(getIdByIndex(i));
         }
-        // Ensure that the number of items expected matches with the actual ones. See issue NMS-8079 fore more details.
-        if (itemIds.size() != numberOfItems) {
-            throw new IllegalStateException("The container is supposed to carry " + numberOfItems + " but only contains " + itemIds.size() + " items.");
+
+        // TODO: Hack to remove nulls and remove duplicates. MVR will fix :)
+        Set<K> ids = new TreeSet<K>();
+        for (K itemId : itemIds) {
+            if (itemId == null) {
+                continue;
+            }
+            ids.add(itemId);
         }
-        return itemIds;
+        return new ArrayList<K>(ids);
     }
 
     @Override
