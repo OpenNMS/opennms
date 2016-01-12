@@ -34,7 +34,7 @@
     <send-local-time>true</send-local-time>
     <truncate-message>false</truncate-message>
     <filter name="Filter 2 : Match Interface">
-      <rule>ipAddr.hostAddress == '10.0.1.1'</rule>
+      <rule>ipAddr == '10.0.1.1'</rule>
       <message-format>ALARM ${alarmId} FROM INTERFACE ${ipAddr}: ${logMsg}</message-format>
     </filter>
     <filter name="Disabled Filter" enabled="false">

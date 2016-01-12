@@ -41,10 +41,12 @@ import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.MockDatabase;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
-import org.opennms.netmgt.bsm.persistence.api.BusinessServiceDao;
 import org.opennms.netmgt.bsm.persistence.api.BusinessService;
+import org.opennms.netmgt.bsm.persistence.api.BusinessServiceDao;
 import org.opennms.netmgt.dao.DatabasePopulator;
+import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.OnmsMonitoredService;
+import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -61,8 +63,7 @@ import org.springframework.transaction.annotation.Transactional;
     "classpath:/META-INF/opennms/applicationContext-setupIpLike-enabled.xml",
     "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml" })
 @JUnitConfigurationEnvironment
-@JUnitTemporaryDatabase(dirtiesContext = false, tempDbClass = MockDatabase.class)
-@Transactional
+@JUnitTemporaryDatabase(reuseDatabase = false, tempDbClass = MockDatabase.class)
 public class BusinessServiceDaoIT {
 
     @Autowired
@@ -71,6 +72,9 @@ public class BusinessServiceDaoIT {
     @Autowired
     private BusinessServiceDao m_businessServiceDao;
 
+    @Autowired
+    private NodeDao m_nodeDao;
+
     @Before
     public void setUp() {
         BeanUtils.assertAutowiring(this);
@@ -78,6 +82,7 @@ public class BusinessServiceDaoIT {
     }
 
     @Test
+    @Transactional
     public void canCreateReadUpdateAndDeleteBusinessServices() {
         // Initially there should be no business services
         assertEquals(0, m_businessServiceDao.countAll());
@@ -120,5 +125,36 @@ public class BusinessServiceDaoIT {
 
         // There should be no business services after the delete
         assertEquals(0, m_businessServiceDao.countAll());
+    }
+
+    @Test
+    public void businessServicesWithRelatedIpServicesAreDeletedOnCascade() throws InterruptedException {
+        // Initially there should be no business services
+        assertEquals("Check that there are no initial BusinessServices", 0, m_businessServiceDao.countAll());
+
+        // Create a business service with an associated IP Service
+        BusinessService bs = new BusinessService();
+        bs.setName("Mont Cascades");
+        OnmsNode node = m_databasePopulator.getNode1();
+        OnmsMonitoredService ipService = node
+                .getIpInterfaces().iterator().next()
+                .getMonitoredServices().iterator().next();
+        bs.addIpService(ipService);
+
+        m_businessServiceDao.save(bs);
+        m_businessServiceDao.flush();
+
+        // We should have a single business service with a single IP service associated
+        assertEquals(1, m_businessServiceDao.countAll());
+        assertEquals(1, m_businessServiceDao.get(bs.getId()).getIpServices().size());
+
+        // Now delete the node
+        m_nodeDao.delete(node);
+        m_nodeDao.flush();
+
+        // The business service should still be present, but the IP service should have been deleted
+        // by the foreign key constraint
+        assertEquals(1, m_businessServiceDao.countAll());
+        assertEquals(0, m_businessServiceDao.get(bs.getId()).getIpServices().size());
     }
 }
