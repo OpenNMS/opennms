@@ -279,7 +279,7 @@ public class Bsmd implements SpringServiceDaemon, BusinessServiceStateChangeHand
 
                 ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_SUCCESSFUL_UEI, NAME);
                 ebldr.addParam(EventConstants.PARM_DAEMON_NAME, NAME);
-                LOG.info("Reload succesful.");
+                LOG.info("Reload successful.");
             } catch (Throwable t) {
                 ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_FAILED_UEI, NAME);
                 ebldr.addParam(EventConstants.PARM_REASON, t.getLocalizedMessage().substring(0, 128));
