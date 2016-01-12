@@ -39,7 +39,8 @@
 
     <!-- Status provider -->
     <bean id="bsmStatusProvider" class="org.opennms.features.topology.plugins.topo.bsm.BusinessServicesStatusProvider">
-        <!--<argument ref="sessionFactoryWrapper"/> -->
+		<argument ref="transactionAwareBeanProxyFactory" />
+		<property name="businessServiceManager" ref="businessServiceManager" />
     </bean>
     <service interface="org.opennms.features.topology.api.CheckedOperation">
         <service-properties>
