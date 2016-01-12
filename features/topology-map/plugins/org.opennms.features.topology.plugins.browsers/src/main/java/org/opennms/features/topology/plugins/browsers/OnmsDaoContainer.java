@@ -591,9 +591,7 @@ public abstract class OnmsDaoContainer<T,K extends Serializable> implements Cont
     }
 
     protected List<T> getItemsForCache(final OnmsDao<T, K> dao, final Page page) {
-        // TODO MVR use findMatching instead. Somehow this returns a wrong numbrer of Business Services if used.
-//        return dao.findMatching(getCriteria(page, true));
-        return dao.findAll();
+        return dao.findMatching(getCriteria(page, true));
     }
 
     protected Cache getCache() {
