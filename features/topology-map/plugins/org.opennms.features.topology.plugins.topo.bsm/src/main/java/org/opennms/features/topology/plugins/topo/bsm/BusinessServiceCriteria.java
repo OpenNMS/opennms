@@ -55,7 +55,7 @@ public class BusinessServiceCriteria extends VertexHopCriteria implements Namesp
 
     public boolean apply(VertexRef vertexRef) {
         if (contributesTo(vertexRef.getNamespace())) {
-            final BusinessServiceVertex businessServiceVertex = (BusinessServiceVertex) vertexRef;
+            final AbstractBusinessServiceVertex businessServiceVertex = (AbstractBusinessServiceVertex) vertexRef;
             return businessServiceVertex.isPartOf(businessServiceId);
         }
         return false;

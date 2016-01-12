@@ -95,7 +95,7 @@ public class BusinessServicesTopologyProvider extends AbstractTopologyProvider i
 
     private void addBusinessService(BusinessServiceVertex parentVertex, BusinessServiceDTO businessService) {
         // create the vertex itself
-        BusinessServiceVertex businessServiceVertex = createVertex(businessService);
+        BusinessServiceVertex businessServiceVertex = new BusinessServiceVertex(businessService);
         addVertices(businessServiceVertex);
 
         // if we have a parent, connect the parent at the current business
@@ -107,7 +107,7 @@ public class BusinessServicesTopologyProvider extends AbstractTopologyProvider i
 
         // add ip services
         for (IpServiceDTO eachIpService : businessService.getIpServices()) {
-            BusinessServiceVertex serviceVertex = createVertex(businessService, eachIpService);
+            AbstractBusinessServiceVertex serviceVertex = new IpServiceVertex(businessService, eachIpService);
             businessServiceVertex.addChildren(serviceVertex);
             addVertices(serviceVertex);
 
@@ -120,28 +120,11 @@ public class BusinessServicesTopologyProvider extends AbstractTopologyProvider i
         addBusinessServices(businessServiceVertex, businessService.getChildServices());
     }
 
-    private Edge createConnection(BusinessServiceVertex v1, BusinessServiceVertex v2) {
+    private Edge createConnection(AbstractBusinessServiceVertex v1, AbstractBusinessServiceVertex v2) {
         String id = String.format("connection:%s:%s", v1.getId(), v2.getId());
         Edge edge = new AbstractEdge(getEdgeNamespace(), id, v1, v2);
         edge.setTooltipText("LINK");
         return edge;
-    }
-
-    private BusinessServiceVertex createVertex(BusinessServiceDTO parentBusinessService, IpServiceDTO ipService) {
-        final BusinessServiceVertex serviceVertex = new BusinessServiceVertex(parentBusinessService.getId() + ":" + String.valueOf(ipService.getId()), ipService.getServiceName());
-        serviceVertex.setIpAddress(ipService.getIpAddress().toString());
-        serviceVertex.setLabel(ipService.getServiceName());
-        serviceVertex.setTooltipText(
-                String.format("Service '%s', IP: %s", ipService.getServiceName(), ipService.getIpAddress().toString()));
-        return serviceVertex;
-    }
-
-    private BusinessServiceVertex createVertex(BusinessServiceDTO businessService) {
-        BusinessServiceVertex businessServiceVertex = new BusinessServiceVertex(String.valueOf(businessService.getId()), businessService.getName());
-        businessServiceVertex.setLabel(businessService.getName());
-        businessServiceVertex.setTooltipText(String.format("BusinessService '%s'", businessService.getName()));
-        businessServiceVertex.setIconKey("business-service");
-        return businessServiceVertex;
     }
 
     public void setBusinessServiceManager(BusinessServiceManager businessServiceManager) {
