@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2012-2016 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -41,17 +41,15 @@ import org.opennms.features.topology.api.topo.Criteria;
 import org.opennms.features.topology.api.topo.Edge;
 import org.opennms.features.topology.api.topo.GraphProvider;
 import org.opennms.features.topology.api.topo.SimpleEdgeProvider;
-import org.opennms.netmgt.bsm.persistence.api.BusinessService;
-import org.opennms.netmgt.bsm.persistence.api.BusinessServiceDao;
 import org.opennms.netmgt.bsm.service.BusinessServiceManager;
-import org.opennms.netmgt.model.OnmsMonitoredService;
+import org.opennms.netmgt.bsm.service.model.BusinessServiceDTO;
+import org.opennms.netmgt.bsm.service.model.IpServiceDTO;
 import org.opennms.netmgt.vaadin.core.TransactionAwareBeanProxyFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
-
 
 public class BusinessServicesTopologyProvider extends AbstractTopologyProvider implements GraphProvider {
 
@@ -60,8 +58,6 @@ public class BusinessServicesTopologyProvider extends AbstractTopologyProvider i
     private static final Logger LOG = LoggerFactory.getLogger(BusinessServicesTopologyProvider.class);
 
     private BusinessServiceManager businessServiceManager;
-    // TODO MVR use BusinessServiceManager and the BusinessService model from the service layer
-    private BusinessServiceDao businessServiceDao;
 
     private final TransactionAwareBeanProxyFactory transactionAwareBeanProxyFactory;
 
@@ -79,22 +75,22 @@ public class BusinessServicesTopologyProvider extends AbstractTopologyProvider i
     private void load() {
         resetContainer();
         // we only consider root business services to build the graph
-        Collection<BusinessService> businessServices = Collections2.filter(businessServiceDao.findAll(), new Predicate<BusinessService>() {
+        Collection<BusinessServiceDTO> businessServices = Collections2.filter(businessServiceManager.findAll(), new Predicate<BusinessServiceDTO>() {
             @Override
-            public boolean apply(BusinessService input) {
+            public boolean apply(BusinessServiceDTO input) {
                 return input.getParentServices().isEmpty();
             }
         });
         addBusinessServices(null, businessServices);
     }
 
-    private void addBusinessServices(BusinessServiceVertex parentVertex, Collection<BusinessService> businessServices) {
-        for (BusinessService eachBusinessService : businessServices) {
+    private void addBusinessServices(BusinessServiceVertex parentVertex, Collection<BusinessServiceDTO> businessServices) {
+        for (BusinessServiceDTO eachBusinessService : businessServices) {
             addBusinessService(parentVertex, eachBusinessService);
         }
     }
 
-    private void addBusinessService(BusinessServiceVertex parentVertex, BusinessService businessService) {
+    private void addBusinessService(BusinessServiceVertex parentVertex, BusinessServiceDTO businessService) {
         // create the vertex itself
         BusinessServiceVertex businessServiceVertex = createVertex(businessService);
         addVertices(businessServiceVertex);
@@ -106,7 +102,7 @@ public class BusinessServicesTopologyProvider extends AbstractTopologyProvider i
         }
 
         // add ip services
-        for (OnmsMonitoredService eachIpService : businessService.getIpServices()) {
+        for (IpServiceDTO eachIpService : businessService.getIpServices()) {
             BusinessServiceVertex serviceVertex = createVertex(businessService, eachIpService);
             businessServiceVertex.addChildren(serviceVertex);
             addVertices(serviceVertex);
@@ -127,17 +123,15 @@ public class BusinessServicesTopologyProvider extends AbstractTopologyProvider i
         return edge;
     }
 
-    private BusinessServiceVertex createVertex(BusinessService parentBusinessService, OnmsMonitoredService monitoredService) {
-        final BusinessServiceVertex serviceVertex = new BusinessServiceVertex(parentBusinessService.getId() + ":" + String.valueOf(monitoredService.getId()), monitoredService.getServiceName());
-        serviceVertex.setIpAddress(monitoredService.getIpAddress().toString());
-        serviceVertex.setLabel(monitoredService.getServiceName());
-        serviceVertex.setTooltipText(String.format("Service '%s', IP: %s", monitoredService.getServiceName(), monitoredService.getIpAddress().toString()));
-//      serviceVertex.setNodeID(eachIpService.getNodeId());
-//      serviceVertex.setServiceType(eachIpService.getServiceType());
+    private BusinessServiceVertex createVertex(BusinessServiceDTO parentBusinessService, IpServiceDTO ipService) {
+        final BusinessServiceVertex serviceVertex = new BusinessServiceVertex(parentBusinessService.getId() + ":" + String.valueOf(ipService.getId()), ipService.getServiceName());
+        serviceVertex.setIpAddress(ipService.getIpAddress().toString());
+        serviceVertex.setLabel(ipService.getServiceName());
+        serviceVertex.setTooltipText(String.format("Service '%s', IP: %s", ipService.getServiceName(), ipService.getIpAddress().toString()));
         return serviceVertex;
     }
 
-    private BusinessServiceVertex createVertex(BusinessService businessService) {
+    private BusinessServiceVertex createVertex(BusinessServiceDTO businessService) {
         BusinessServiceVertex businessServiceVertex = new BusinessServiceVertex(String.valueOf(businessService.getId()), businessService.getName());
         businessServiceVertex.setLabel(businessService.getName());
         businessServiceVertex.setTooltipText(String.format("BusinessService '%s'", businessService.getName()));
@@ -145,13 +139,9 @@ public class BusinessServicesTopologyProvider extends AbstractTopologyProvider i
         return businessServiceVertex;
     }
 
-    public void setBusinessServiceDao(BusinessServiceDao businessServiceDao) {
-        Objects.requireNonNull(businessServiceDao);
-        this.businessServiceDao = transactionAwareBeanProxyFactory.createProxy(businessServiceDao);
-    }
-
     public void setBusinessServiceManager(BusinessServiceManager businessServiceManager) {
-        this.businessServiceManager =  Objects.requireNonNull(businessServiceManager);
+        Objects.requireNonNull(businessServiceManager);
+        this.businessServiceManager = transactionAwareBeanProxyFactory.createProxy(businessServiceManager);
     }
 
     @Override
@@ -162,9 +152,9 @@ public class BusinessServicesTopologyProvider extends AbstractTopologyProvider i
     @Override
     public Criteria getDefaultCriteria() {
         // Only show the first application by default
-        List<BusinessService> businessServices = businessServiceDao.findAll();
+        List<BusinessServiceDTO> businessServices = businessServiceManager.findAll();
         if (!businessServices.isEmpty()) {
-            BusinessService businessService = businessServices.iterator().next();
+            BusinessServiceDTO businessService = businessServices.iterator().next();
             return new BusinessServiceCriteria(String.valueOf(businessService.getId()), businessService.getName(), businessServiceManager);
         }
         return null;

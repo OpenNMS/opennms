@@ -40,10 +40,6 @@ import com.vaadin.ui.Table;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.themes.BaseTheme;
 
-/**
- * TODO: MVR this is (almost) the same code as ApplicationSElectionLinkGenerator
- * -> generalize
- */
 public class BusinessServicesSelectionLinkGenerator implements Table.ColumnGenerator {
     private static final long serialVersionUID = 1L;
 
