@@ -28,7 +28,6 @@
 
 package org.opennms.web.rest.v1.config;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.Resource;
@@ -50,6 +49,7 @@ import javax.ws.rs.core.Response.Status;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.opennms.core.config.api.JaxbListWrapper;
 import org.opennms.netmgt.alarmd.northbounder.syslog.SyslogDestination;
 import org.opennms.netmgt.alarmd.northbounder.syslog.SyslogNorthbounderConfigDao;
 import org.opennms.netmgt.events.api.EventConstants;
@@ -85,10 +85,15 @@ public class SyslogNorthbounderConfigurationResource extends OnmsRestService imp
      */
     @SuppressWarnings("serial")
     @XmlRootElement(name="syslog-destinations")
-    public static class SyslogDestinationList extends ArrayList<String> {
+    public static class SyslogDestinationList extends JaxbListWrapper<String> {
 
         /**
-         * Instantiates a new email destination list.
+         * Instantiates a new syslog destination list.
+         */
+        public SyslogDestinationList() {}
+
+        /**
+         * Instantiates a new syslog destination list.
          *
          * @param destinations the destinations
          */
@@ -103,7 +108,7 @@ public class SyslogNorthbounderConfigurationResource extends OnmsRestService imp
          */
         @XmlElement(name="destination")
         public List<String> getDestinations() {
-            return this;
+            return getObjects();
         }
     }
 

@@ -28,7 +28,6 @@
 
 package org.opennms.web.rest.v1.config;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.Resource;
@@ -50,6 +49,7 @@ import javax.ws.rs.core.Response.Status;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.opennms.core.config.api.JaxbListWrapper;
 import org.opennms.netmgt.alarmd.northbounder.snmptrap.SnmpTrapNorthbounderConfigDao;
 import org.opennms.netmgt.alarmd.northbounder.snmptrap.SnmpTrapSink;
 import org.opennms.netmgt.events.api.EventConstants;
@@ -85,10 +85,15 @@ public class SnmpTrapNorthbounderConfigurationResource extends OnmsRestService i
      */
     @SuppressWarnings("serial")
     @XmlRootElement(name="trap-sinks")
-    public static class SnmpTrapSinkList extends ArrayList<String> {
+    public static class SnmpTrapSinkList extends JaxbListWrapper<String> {
 
         /**
-         * Instantiates a new snmp trap sink list.
+         * Instantiates a new SNMP trap sink list.
+         */
+        public SnmpTrapSinkList() {}
+
+        /**
+         * Instantiates a new SNMP trap sink list.
          *
          * @param trapSinks the trap sinks
          */
@@ -103,7 +108,7 @@ public class SnmpTrapNorthbounderConfigurationResource extends OnmsRestService i
          */
         @XmlElement(name="trap-sink")
         public List<String> getDestinations() {
-            return this;
+            return getObjects();
         }
     }
 

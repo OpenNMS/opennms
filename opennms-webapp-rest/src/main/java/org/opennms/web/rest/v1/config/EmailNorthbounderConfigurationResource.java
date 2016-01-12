@@ -28,7 +28,6 @@
 
 package org.opennms.web.rest.v1.config;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.Resource;
@@ -50,6 +49,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.ws.rs.core.Response.Status;
 
+import org.opennms.core.config.api.JaxbListWrapper;
 import org.opennms.netmgt.alarmd.northbounder.email.EmailDestination;
 import org.opennms.netmgt.alarmd.northbounder.email.EmailNorthbounderConfigDao;
 import org.opennms.netmgt.events.api.EventConstants;
@@ -85,7 +85,12 @@ public class EmailNorthbounderConfigurationResource extends OnmsRestService impl
      */
     @SuppressWarnings("serial")
     @XmlRootElement(name="email-destinations")
-    public static class EmailDestinationList extends ArrayList<String> {
+    public static class EmailDestinationList extends JaxbListWrapper<String> {
+
+        /**
+         * Instantiates a new email destination list.
+         */
+        public EmailDestinationList() {}
 
         /**
          * Instantiates a new email destination list.
@@ -103,7 +108,7 @@ public class EmailNorthbounderConfigurationResource extends OnmsRestService impl
          */
         @XmlElement(name="destination")
         public List<String> getDestinations() {
-            return this;
+            return getObjects();
         }
     }
 
