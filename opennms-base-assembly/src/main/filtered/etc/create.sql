@@ -2673,4 +2673,3 @@ CREATE TABLE bsm_service_children (
     CONSTRAINT fk_bsm_service_parent_service_id FOREIGN KEY (bsm_service_parent) REFERENCES bsm_service (id) ON DELETE CASCADE,
     CONSTRAINT fk_bsm_service_child_service_id FOREIGN KEY (bsm_service_child) REFERENCES bsm_service (id) ON DELETE CASCADE
 );
-
