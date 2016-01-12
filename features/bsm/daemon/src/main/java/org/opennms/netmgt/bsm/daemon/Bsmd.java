@@ -30,6 +30,9 @@ package org.opennms.netmgt.bsm.daemon;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import org.opennms.netmgt.bsm.persistence.api.BusinessService;
 import org.opennms.netmgt.bsm.persistence.api.BusinessServiceDao;
@@ -71,6 +74,10 @@ import org.springframework.transaction.support.TransactionTemplate;
 public class Bsmd implements SpringServiceDaemon, BusinessServiceStateChangeHandler  {
     private static final Logger LOG = LoggerFactory.getLogger(Bsmd.class);
 
+    protected static final long DEFAULT_POLL_INTERVAL = 30; // seconds
+
+    protected static final String POLL_INTERVAL_KEY = "org.opennms.features.bsm.pollInterval";
+
     public static final String NAME = "Bsmd";
 
     @Autowired
@@ -94,6 +101,8 @@ public class Bsmd implements SpringServiceDaemon, BusinessServiceStateChangeHand
 
     private boolean m_verifyReductionKeys = true;
 
+    final ScheduledExecutorService alarmPoller = Executors.newScheduledThreadPool(1);
+
     @Override
     public void afterPropertiesSet() throws Exception {
         Objects.requireNonNull(m_stateMachine, "stateMachine cannot be null");
@@ -110,6 +119,46 @@ public class Bsmd implements SpringServiceDaemon, BusinessServiceStateChangeHand
         Objects.requireNonNull(m_eventConfDao, "eventConfDao cannot be null");
 
         handleConfigurationChanged();
+        startAlarmPolling();
+    }
+
+    private void startAlarmPolling() {
+        final long pollInterval = getPollInterval();
+        alarmPoller.scheduleWithFixedDelay(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    LOG.debug("Polling alarm table...");
+                    m_template.execute(new TransactionCallbackWithoutResult() {
+                        @Override
+                        protected void doInTransactionWithoutResult(TransactionStatus status) {
+                            m_alarmDao.findAll().forEach(alarm -> handleAlarm(alarm));
+                        }
+                    });
+                } catch (Exception ex) {
+                    LOG.error("Error while polling alarm table", ex);
+                } finally {
+                    LOG.debug("Polling alarm table DONE");
+                }
+            }
+        }, pollInterval, pollInterval, TimeUnit.SECONDS);
+
+    }
+
+    protected long getPollInterval() {
+        final String pollIntervalProperty = System.getProperty(POLL_INTERVAL_KEY, Long.toString(DEFAULT_POLL_INTERVAL));
+        try {
+            long pollInterval = Long.valueOf(pollIntervalProperty);
+            if (pollInterval <= 0) {
+                LOG.warn("Defined pollInterval must be greater than 0, but was {}. Falling back to default: {}", pollInterval, DEFAULT_POLL_INTERVAL);
+                return DEFAULT_POLL_INTERVAL;
+            }
+            LOG.debug("Using poll interval {}", pollInterval);
+            return pollInterval;
+        } catch (Exception ex) {
+            LOG.warn("The defined pollInterval {} could not be interpreted as long value. Falling back to default: {}", pollIntervalProperty, DEFAULT_POLL_INTERVAL);
+            return DEFAULT_POLL_INTERVAL;
+        }
     }
 
     /**
@@ -184,11 +233,15 @@ public class Bsmd implements SpringServiceDaemon, BusinessServiceStateChangeHand
                     return;
                 }
 
-                LOG.debug("Handling alarm with id: {}, reduction key: {} and severity: {}",
-                        alarm.getId(), alarm.getReductionKey(), alarm.getSeverity());
-                m_stateMachine.handleNewOrUpdatedAlarm(alarm);
+                handleAlarm(alarm);
             }
         });
+    }
+
+    private void handleAlarm(OnmsAlarm alarm) {
+        LOG.debug("Handling alarm with id: {}, reduction key: {} and severity: {}",
+                alarm.getId(), alarm.getReductionKey(), alarm.getSeverity());
+        m_stateMachine.handleNewOrUpdatedAlarm(alarm);
     }
 
     /**
@@ -241,6 +294,7 @@ public class Bsmd implements SpringServiceDaemon, BusinessServiceStateChangeHand
     @Override
     public void destroy() throws Exception {
         LOG.info("Stopping bsmd...");
+        alarmPoller.shutdown();
     }
 
     public void setBusinessServiceDao(BusinessServiceDao businessServiceDao) {
