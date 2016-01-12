@@ -75,7 +75,7 @@ public class BusinessServiceSearchProvider extends AbstractSearchProvider implem
         LOG.info("BusinessServiceSearchProvider->query: called with search query: '{}'", searchQuery);
         List<SearchResult> results = Lists.newArrayList();
 
-        String queryString = searchQuery.getQueryString();        
+        String queryString = searchQuery.getQueryString();
         CriteriaBuilder bldr = new CriteriaBuilder(BusinessService.class);
         if (queryString != null && queryString.length() > 0) {
             bldr.ilike("name", String.format("%%%s%%", queryString));
@@ -84,7 +84,7 @@ public class BusinessServiceSearchProvider extends AbstractSearchProvider implem
         bldr.limit(10);
         Criteria dbQueryCriteria = bldr.toCriteria();
 
-        for (BusinessServiceDTO bs: businessServiceManager.findMatching(dbQueryCriteria)) {
+        for (BusinessServiceDTO bs : businessServiceManager.findMatching(dbQueryCriteria)) {
             SearchResult searchResult = new SearchResult(getSearchProviderNamespace(), String.valueOf(bs.getId()), bs.getName(), queryString);
             searchResult.setCollapsed(false);
             searchResult.setCollapsible(true);

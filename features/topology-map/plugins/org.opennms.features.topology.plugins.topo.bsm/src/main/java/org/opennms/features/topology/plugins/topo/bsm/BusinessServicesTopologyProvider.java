@@ -69,18 +69,19 @@ public class BusinessServicesTopologyProvider extends AbstractTopologyProvider i
 
     @Override
     public void save() {
-       // we do not support save at the moment
+        // we do not support save at the moment
     }
-    
+
     private void load() {
         resetContainer();
         // we only consider root business services to build the graph
-        Collection<BusinessServiceDTO> businessServices = Collections2.filter(businessServiceManager.findAll(), new Predicate<BusinessServiceDTO>() {
-            @Override
-            public boolean apply(BusinessServiceDTO input) {
-                return input.getParentServices().isEmpty();
-            }
-        });
+        Collection<BusinessServiceDTO> businessServices = Collections2.filter(businessServiceManager.findAll(),
+                new Predicate<BusinessServiceDTO>() {
+                    @Override
+                    public boolean apply(BusinessServiceDTO input) {
+                        return input.getParentServices().isEmpty();
+                    }
+                });
         addBusinessServices(null, businessServices);
     }
 
@@ -95,7 +96,8 @@ public class BusinessServicesTopologyProvider extends AbstractTopologyProvider i
         BusinessServiceVertex businessServiceVertex = createVertex(businessService);
         addVertices(businessServiceVertex);
 
-        // if we have a parent, connect the parent at the current business service vertex as well
+        // if we have a parent, connect the parent at the current business
+        // service vertex as well
         if (parentVertex != null) {
             parentVertex.addChildren(businessServiceVertex);
             addEdges(createConnection(parentVertex, businessServiceVertex));
@@ -127,7 +129,8 @@ public class BusinessServicesTopologyProvider extends AbstractTopologyProvider i
         final BusinessServiceVertex serviceVertex = new BusinessServiceVertex(parentBusinessService.getId() + ":" + String.valueOf(ipService.getId()), ipService.getServiceName());
         serviceVertex.setIpAddress(ipService.getIpAddress().toString());
         serviceVertex.setLabel(ipService.getServiceName());
-        serviceVertex.setTooltipText(String.format("Service '%s', IP: %s", ipService.getServiceName(), ipService.getIpAddress().toString()));
+        serviceVertex.setTooltipText(
+                String.format("Service '%s', IP: %s", ipService.getServiceName(), ipService.getIpAddress().toString()));
         return serviceVertex;
     }
 
@@ -146,7 +149,7 @@ public class BusinessServicesTopologyProvider extends AbstractTopologyProvider i
 
     @Override
     public void refresh() {
-       load();
+        load();
     }
 
     @Override
@@ -162,7 +165,7 @@ public class BusinessServicesTopologyProvider extends AbstractTopologyProvider i
 
     @Override
     public void load(String filename) throws MalformedURLException, JAXBException {
-      load();
+        load();
     }
 
     @Override

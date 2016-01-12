@@ -45,6 +45,7 @@ class BusinessServiceVertex extends AbstractVertex {
 
     /**
      * Creates a new {@link BusinessServiceVertex}.
+     * 
      * @param id the unique id of this vertex. Must be unique overall the namespace.
      */
     public BusinessServiceVertex(String id, String label) {
@@ -73,7 +74,6 @@ class BusinessServiceVertex extends AbstractVertex {
         return children;
     }
 
-
     public boolean isPartOf(String serviceId) {
         return serviceId != null && serviceId.equals(getRoot().getId());
     }
@@ -82,6 +82,6 @@ class BusinessServiceVertex extends AbstractVertex {
         if (isRoot()) {
             return this;
         }
-        return ((BusinessServiceVertex)getParent()).getRoot();
+        return ((BusinessServiceVertex) getParent()).getRoot();
     }
 }
