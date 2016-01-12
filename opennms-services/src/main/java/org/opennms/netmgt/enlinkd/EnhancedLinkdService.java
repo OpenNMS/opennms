@@ -66,6 +66,8 @@ public interface EnhancedLinkdService {
      */
     Node getSnmpNode(int nodeid);
 
+    void loadBridgeTopology();
+
     /**
      * <p>
      * delete
@@ -91,6 +93,8 @@ public interface EnhancedLinkdService {
 
     void reconcileBridge(int nodeId, Date now);
     
+    void reconcileBridgeTopology(int nodeId, Date now);
+
     void store(int nodeId, LldpLink link);
 
     void store(int nodeId, LldpElement element);
@@ -113,12 +117,10 @@ public interface EnhancedLinkdService {
 
     void store(int nodeId, BridgeStpLink link);
 
-    void store(int nodeId, BridgeMacLink link);
+    void store(int nodeId, List<BridgeMacLink> link);
     
-    void loadBridgeTopology();
+    void store(BroadcastDomain domain, Integer rootId, List<BridgeMacLink> rootBFT);
     
-    void reconcileBridgeTopology(int nodeId, Date now);
-
     BroadcastDomain getBridgeTopologyBroadcastDomain(int nodeId);
 
     Map<Bridge,List<BridgeMacLink>> getBridgeTopologyUpdateBFT(BroadcastDomain domain);
@@ -128,11 +130,5 @@ public interface EnhancedLinkdService {
     List<BridgeMacLink> getBridgeTopologyRootBFT(BroadcastDomain domain);
     
     List<BridgeElement> getBridgeElements(BroadcastDomain domain);
-
-    void updateBridgeTopology(int nodeId);
-
-    void store(BroadcastDomain domain, Integer rootId, List<BridgeMacLink> rootBFT);
-
-
 
 }

@@ -105,19 +105,10 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
 
     private BridgeTopologyDao m_bridgeTopologyDao;
 
-    volatile Map<Integer, List<BridgeMacLink>> m_notYetParsedBFTMap = new HashMap<Integer, List<BridgeMacLink>>();
-
     volatile Map<Bridge, List<BridgeMacLink>> m_nodetoBroadcastDomainMap= new HashMap<Bridge, List<BridgeMacLink>>();
 
     volatile Map<BroadcastDomain,Integer> m_broadcastDomainToRootIdMap = new HashMap<BroadcastDomain, Integer>();
     volatile Map<BroadcastDomain, List<BridgeMacLink>> m_broadcastDomainToRootBFTMap= new HashMap<BroadcastDomain, List<BridgeMacLink>>();
-
-    synchronized void storeInMemory(BridgeMacLink maclink) {
-        Integer nodeid = maclink.getNode().getId();
-        if (!m_notYetParsedBFTMap.containsKey(nodeid))
-            m_notYetParsedBFTMap.put(nodeid, new ArrayList<BridgeMacLink>());
-        m_notYetParsedBFTMap.get(nodeid).add(maclink);
-    }
 
     @Override
     public List<Node> getSnmpNodeList() {
@@ -201,7 +192,7 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
         m_bridgeStpLinkDao.deleteByNodeId(nodeId);
         m_bridgeStpLinkDao.flush();
         
-        for (BroadcastDomain domain : m_bridgeTopologyDao.get()) {
+        for (BroadcastDomain domain : m_bridgeTopologyDao.getAll()) {
             synchronized(domain) {
                 if (domain.containBridgeId(nodeId)) {
                     domain.removeBridge(nodeId);
@@ -530,9 +521,6 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
         if (bridge == null)
             return;
         saveBridgeElement(nodeId, bridge);
-        OnmsNode node = new OnmsNode();
-        node.setId(nodeId);
-        bridge.setNode(node);
     }
 
     @Transactional
@@ -575,9 +563,6 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
         if (link == null)
             return;
         saveBridgeStpLink(nodeId, link);
-        OnmsNode node = new OnmsNode();
-        node.setId(nodeId);
-        link.setNode(node);
     }
 
     @Transactional
@@ -617,32 +602,7 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
     }
 
     @Override
-    public void store(int nodeId, BridgeMacLink link) {
-        if (link == null)
-            return;
-        OnmsNode node = new OnmsNode();
-        node.setId(nodeId);
-        link.setNode(node);
-        storeInMemory(link);
-    }
-
-    @Override
-    public void reconcileBridge(int nodeId, Date now) {
-        m_bridgeElementDao.deleteByNodeIdOlderThen(nodeId, now);
-        m_bridgeElementDao.flush();
-
-        m_bridgeStpLinkDao.deleteByNodeIdOlderThen(nodeId, now);
-        m_bridgeStpLinkDao.flush();
-    }
-
-    @Override
-    public BroadcastDomain getBridgeTopologyBroadcastDomain(int nodeId) {
-        return m_bridgeTopologyDao.get(nodeId);
-    }
-
-    @Override
-    public void updateBridgeTopology(int nodeId) {
-        List<BridgeMacLink> bft = m_notYetParsedBFTMap.remove(nodeId);
+    public void store(int nodeId, List<BridgeMacLink> bft) {
         Map<BridgeMacLinkHash,BridgeMacLink> effectiveBFT=new HashMap<BridgeMacLinkHash,BridgeMacLink>();        Set<String> incomingSet = new HashSet<String>();
         for (BridgeMacLink link : bft) {
             effectiveBFT.put(new BridgeMacLinkHash(link), link);
@@ -650,7 +610,7 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
         }
         BroadcastDomain bftdomain = null;
         
-        for (BroadcastDomain domain : m_bridgeTopologyDao.get()) {
+        for (BroadcastDomain domain : m_bridgeTopologyDao.getAll()) {
             Set<String>retainedSet = new HashSet<String>(
                                                           domain.getMacsOnDomain());
             retainedSet.retainAll(incomingSet);
@@ -669,8 +629,22 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
         }
         bftdomain.addBridge(new Bridge(nodeId));
         m_bridgeTopologyDao.save(bftdomain);
-        m_nodetoBroadcastDomainMap.put(bftdomain.getBridge(nodeId), new ArrayList<BridgeMacLink>(effectiveBFT.values()));
         m_bridgeTopologyDao.clear();
+        m_nodetoBroadcastDomainMap.put(bftdomain.getBridge(nodeId), new ArrayList<BridgeMacLink>(effectiveBFT.values()));
+    }
+
+    @Override
+    public void reconcileBridge(int nodeId, Date now) {
+        m_bridgeElementDao.deleteByNodeIdOlderThen(nodeId, now);
+        m_bridgeElementDao.flush();
+
+        m_bridgeStpLinkDao.deleteByNodeIdOlderThen(nodeId, now);
+        m_bridgeStpLinkDao.flush();
+    }
+
+    @Override
+    public BroadcastDomain getBridgeTopologyBroadcastDomain(int nodeId) {
+        return m_bridgeTopologyDao.get(nodeId);
     }
 
     @Override

@@ -33,7 +33,7 @@ public class BridgeTopologyDaoInMemory implements BridgeTopologyDao {
         return null;
     }
 
-    public synchronized Set<BroadcastDomain> get() {
+    public synchronized Set<BroadcastDomain> getAll() {
         return m_domains;
     }
 
