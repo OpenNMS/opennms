@@ -35,9 +35,9 @@ import java.util.UUID;
 
 import org.junit.Test;
 import org.opennms.core.xml.JaxbUtils;
+import org.opennms.netmgt.model.ScanReport;
+import org.opennms.netmgt.model.ScanReportPollResult;
 import org.opennms.netmgt.poller.PollStatus;
-import org.opennms.netmgt.poller.remote.support.PollResult;
-import org.opennms.netmgt.poller.remote.support.ScanReport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,30 +45,31 @@ public class ScanReportTest {
 	private static final Logger LOG = LoggerFactory.getLogger(ScanReportTest.class);
 
 	/**
-	 * Test the JAXB marshalling of the {@link ScanReport} class.
+	 * Test the JAXB marshaling of the {@link ScanReport} class.
 	 */
 	@Test
 	public void testSerialization() throws Exception {
 		ScanReport report = new ScanReport();
-		report.setCustomerAccountNumber("12345");
-		report.setCustomerName("Zombo.com");
+		report.addProperty("customer-account-number", "12345");
+		report.addProperty("customer-name", "Zombo.com");
+		report.addProperty("reference-id", "ABZ135");
+		report.addProperty("time-zone", "-5:00");
 		report.setLocale("en-US");
 		report.setLocation("RDU");
-		report.setMonitoringSystem(UUID.randomUUID().toString());
-		report.setReferenceId("ABZ135");
 		report.setTimestamp(new Date());
-		report.setTimeZone("-5:00");
 		for (int i = 0; i < 5; i++) {
 			PollStatus status = PollStatus.get(PollStatus.SERVICE_AVAILABLE, "Anything is possible", 4.5d);
 			status.setProperty("whatever", 2.0);
-			report.addPollResult(new PollResult("Foo", 1, "zombonode", 1, "1.2.3.4", status));
+			report.addPollResult(new ScanReportPollResult("Foo", 1, "zombonode", 1, "1.2.3.4", status));
 		}
 
 		String reportString = JaxbUtils.marshal(report);
 		LOG.debug("Report string: \n " + reportString);
 
-		assertTrue(reportString.contains("customer-account-number=\"12345\""));
-		assertTrue(reportString.contains("customer-name=\"Zombo.com\""));
+                assertTrue(reportString.contains("<key>customer-account-number</key>"));
+                assertTrue(reportString.contains("<value>12345</value>"));
+                assertTrue(reportString.contains("<key>customer-name</key>"));
+                assertTrue(reportString.contains("<value>Zombo.com</value>"));
 		assertTrue(reportString.contains("response-time=\"4.5\""));
 	}
 }

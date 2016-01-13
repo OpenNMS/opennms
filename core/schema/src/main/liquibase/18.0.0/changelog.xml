@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+  xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd" >
+
+  <changeSet author="ranger" id="18.0.0-add-scanreports-tables">
+    <createTable tableName="scanreports">
+      <column name="id" type="TEXT">
+        <constraints nullable="false" primaryKey="true" primaryKeyName="scanreports_pkey" />
+      </column>
+      <column name="location" type="TEXT">
+        <constraints nullable="false" foreignKeyName="scanreports_monitoringlocations_fkey" references="monitoringlocations(id)" deleteCascade="true"/>
+      </column>
+      <column name="locale" type="TEXT"/>
+      <column name="timestamp" type="DATETIME"/>
+    </createTable>
+
+    <sql>
+      CREATE UNIQUE INDEX scanreports_id_idx on scanreports(id);
+    </sql>
+
+    <createTable tableName="scanreportproperties">
+      <column name="scanreportid" type="TEXT">
+        <constraints nullable="false" foreignKeyName="scanreportproperties_fkey" references="scanreports(id)" deleteCascade="true"/>
+      </column>
+      <column name="property" type="TEXT">
+        <constraints nullable="false" />
+      </column>
+      <column name="propertyvalue" type="TEXT"/>
+    </createTable>
+
+    <sql>
+      CREATE INDEX scanreportproperties_id_idx on scanreportproperties(scanreportid);
+      CREATE UNIQUE INDEX scanreportproperties_id_property_idx on scanreportproperties(scanreportid, property);
+    </sql>
+
+    <createTable tableName="scanreportpollresults">
+      <column name="id" type="TEXT">
+        <constraints nullable="false" primaryKey="true" primaryKeyName="scanreportpollresults_pkey" />
+      </column>
+      <column name="scanreportid" type="TEXT">
+        <constraints nullable="false" foreignKeyName="scanreportpollresults_fkey" references="scanreports(id)" deleteCascade="true"/>
+      </column>
+      <column name="servicename" type="TEXT">
+        <constraints nullable="false" />
+      </column>
+      <column name="serviceid" type="INTEGER">
+        <constraints nullable="false" />
+      </column>
+      <column name="nodelabel" type="TEXT">
+        <constraints nullable="false" />
+      </column>
+      <column name="nodeid" type="INTEGER">
+        <constraints nullable="false" />
+      </column>
+      <column name="ipaddress" type="TEXT" />
+      <column name="statusreason" type="TEXT" />
+      <column name="responsetime" type="DOUBLE PRECISION" />
+      <column name="statuscode" type="INTEGER">
+        <constraints nullable="false" />
+      </column>
+      <column name="statustime" type="DATETIME"/>
+    </createTable>
+
+    <sql>
+      CREATE UNIQUE INDEX scanreportpollresults_id_idx on scanreportpollresults(id);
+      CREATE UNIQUE INDEX scanreportpollresults_id_scanreportid_idx on scanreportpollresults(id, scanreportid);
+    </sql>
+  </changeSet>
+
+</databaseChangeLog>
