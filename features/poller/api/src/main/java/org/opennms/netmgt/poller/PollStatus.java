@@ -42,6 +42,7 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 
 /**
@@ -456,6 +457,7 @@ public class PollStatus implements Serializable {
      * @return a {@link java.lang.Double} object.
      */
     @XmlAttribute(name="response-time")
+    @XmlJavaTypeAdapter(DoubleXmlAdapter.class)
     @Column(name="responseTime", nullable=true)
     public Double getResponseTime() {
         Number val = getProperty(PROPERTY_RESPONSE_TIME);
