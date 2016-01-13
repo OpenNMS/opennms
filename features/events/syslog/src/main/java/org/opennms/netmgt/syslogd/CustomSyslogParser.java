@@ -81,12 +81,7 @@ public class CustomSyslogParser extends SyslogParser {
         int priCode = 0;
         String priStr = message.substring(lbIdx + 1, rbIdx);
 
-        try {
-            priCode = Integer.parseInt(priStr);
-        } catch (final NumberFormatException ex) {
-            LOG.debug("ERROR Bad priority code '{}'", priStr);
-
-        }
+        priCode=parseInt(priStr, "ERROR Bad priority code '{}'");
 
         LOG.trace("priority code = {}", priCode);
 
@@ -195,13 +190,7 @@ public class CustomSyslogParser extends SyslogParser {
             processName = message.substring(0, lbIdx);
             processIdStr = message.substring(lbIdx + 1, rbIdx);
             message = message.substring(colonIdx + 2);
-
-            try {
-                processId = Integer.parseInt(processIdStr);
-            } catch (final NumberFormatException ex) {
-                LOG.debug("Bad process id '{}'", processIdStr);
-                processId = 0;
-            }
+            processId=parseInt(processIdStr, "Bad process id '{}'");
         }
 
         syslogMessage.setProcessId(processId);
@@ -211,4 +200,14 @@ public class CustomSyslogParser extends SyslogParser {
         LOG.info("Message Parse End");
         return syslogMessage;
     }
+    
+	private int parseInt(String stringToInt, String logMessage) {
+		int integerValue = 0;
+		try {
+			integerValue = Integer.parseInt(stringToInt);
+		} catch (final NumberFormatException ex) {
+			LOG.debug(logMessage, stringToInt);
+		}
+		return integerValue;
+	}
 }

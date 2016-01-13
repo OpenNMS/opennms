@@ -209,8 +209,8 @@ public class ConvertToEvent {
             LOG.warn("No ueiList configured.");
         } else {
             for (final UeiMatch uei : ueiMatch) {
-                final boolean otherStuffMatches = matchFacility(uei.getFacilityCollection(), facilityTxt) &&
-                                                  matchSeverity(uei.getSeverityCollection(), priorityTxt) &&
+                final boolean otherStuffMatches = matchUei(uei.getFacilityCollection(), facilityTxt) &&
+                								  matchUei(uei.getSeverityCollection(), priorityTxt) &&
                                                   matchProcess(uei.getProcessMatch(), message.getProcessName()) && 
                                                   matchHostname(uei.getHostnameMatch(), message.getHostName()) &&
                                                   matchHostAddr(uei.getHostaddrMatch(), message.getHostAddress());
@@ -336,21 +336,14 @@ public class ConvertToEvent {
         }
         return false;
     }
-
-    private static boolean matchSeverity(List<String> severities, String priorityTxt) {
-        if (severities.size() == 0) return true;
-        for (String severity : severities) {
-            if (severity.equalsIgnoreCase(priorityTxt)) return true;
-        }
-        return false;
-    }
-
-    private static boolean matchFacility(List<String> facilities, String facilityTxt) {
-        if (facilities.size() == 0) return true;
-        for (String facility : facilities) {
-            if (facility.equalsIgnoreCase(facilityTxt)) return true;
-        }
-        return false;
+    
+    private static boolean matchUei(List<String> ueis, String priorityTxt)
+    {
+    	 if (ueis.size() == 0) return true;
+         for (String facility : ueis) {
+             if (facility.equalsIgnoreCase(priorityTxt)) return true;
+         }
+         return false;
     }
 
     private static Pattern getPattern(final String expression) {
