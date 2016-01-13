@@ -40,13 +40,33 @@ import org.opennms.netmgt.model.discovery.IPPollRange;
 
 import com.google.common.collect.Lists;
 
+/**
+ * <p>This class generates a list of {@link DiscoveryJob} instances that
+ * are based on a "chunk" of a number of IP addresses that should be
+ * polled as part of each job.</p>
+ *
+ * <ul>
+ * <li>Input: {@link DiscoveryConfiguration}</li>
+ * <li>Input: {@link List<DiscoveryJob>}</li>
+ * </ul>
+ */
 public class RangeChunker
 {
     public static final int DEFAULT_CHUNK_SIZE = 100;
+    
+    private final int m_defaultChunkSize;
 
-    public List<DiscoveryJob> chunk( DiscoveryConfiguration config )
+    public RangeChunker() {
+        this(DEFAULT_CHUNK_SIZE);
+    }
+
+    public RangeChunker(final int defaultChunkSize) {
+        m_defaultChunkSize = defaultChunkSize;
+    }
+
+    public List<DiscoveryJob> chunk( final DiscoveryConfiguration config )
     {
-        int chunkSize = (config.getChunkSize() > 0) ? config.getChunkSize() : DEFAULT_CHUNK_SIZE;
+        int chunkSize = (config.getChunkSize() > 0) ? config.getChunkSize() : m_defaultChunkSize;
         DiscoveryConfigFactory configFactory = new DiscoveryConfigFactory( config );
 
         List<IPPollRange> ranges = new ArrayList<IPPollRange>();
@@ -57,9 +77,17 @@ public class RangeChunker
             ranges.add( range );
         }
 
+        // If the foreign source for the discovery config is not set than use 
+        // the default foreign source
+        String foreignSource = (config.getForeignSource() == null || "".equals(config.getForeignSource().trim())) ? "default" : config.getForeignSource().trim();
+
+        // If the monitoring location for the discovery config is not set than use 
+        // the default localhost location
+        String location = (config.getLocation() == null || "".equals(config.getLocation().trim())) ? "localhost" : config.getLocation().trim();
+
         return Lists.partition( ranges, chunkSize ).stream().map(
-                        r -> new DiscoveryJob( new ArrayList<IPPollRange>( r ), config.getForeignSource(),
-                                        config.getLocation() ) ).collect( Collectors.toList() );
+                        r -> new DiscoveryJob( new ArrayList<IPPollRange>( r ), foreignSource,
+                                        location ) ).collect( Collectors.toList() );
 
     }
 }

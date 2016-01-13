@@ -50,6 +50,16 @@ import com.google.common.base.Throwables;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
+/**
+ * <p>This class processes a {@link DiscoveryJob} by executing ICMP pings against
+ * the targets of the job and returns the results in a {@link DiscoveryResults}
+ * message.</p>
+ * 
+ * <ul>
+ * <li>Input: {@link DiscoveryJob}</li>
+ * <li>Input: {@link DiscoveryResults}</li>
+ * </ul>
+ */
 public class Discoverer {
 
     private static final Logger LOG = LoggerFactory.getLogger(Discoverer.class);
