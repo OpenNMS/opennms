@@ -29,6 +29,7 @@
 package org.opennms.netmgt.bsm.persistence.api;
 
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -66,7 +67,7 @@ public class BusinessService {
 
     private Map<String, String> m_attributes = Maps.newLinkedHashMap();
 
-    private Set<OnmsMonitoredService> m_ipServices = Sets.newLinkedHashSet();
+    private Set<AbstractBusinessServiceEdge> m_edges = Sets.newLinkedHashSet();
 
     private AbstractReductionFunction m_reductionFunction;
 
@@ -111,31 +112,30 @@ public class BusinessService {
         return m_attributes.remove(key);
     }
 
-    @OneToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "bsm_service_ifservices",
-               joinColumns = @JoinColumn(name = "bsm_service_id", referencedColumnName = "id"),
-               inverseJoinColumns = @JoinColumn(name="ifserviceid"))
-    public Set<OnmsMonitoredService> getIpServices() {
-        return m_ipServices;
+    @OneToMany(fetch = FetchType.EAGER, mappedBy="businessService")
+    public Set<AbstractBusinessServiceEdge> getEdges() {
+        return m_edges;
     }
 
-    public void setIpServices(Set<OnmsMonitoredService> ipServices) {
-        m_ipServices = ipServices;
+    public void setEdges(Set<AbstractBusinessServiceEdge> edges) {
+        m_edges = edges;
     }
 
-    public void addIpService(OnmsMonitoredService ipService) {
-        m_ipServices.add(ipService);
+    public void addEdge(AbstractBusinessServiceEdge edge) {
+        m_edges.add(edge);
     }
 
-    public void removeIpService(OnmsMonitoredService ipService) {
-        m_ipServices.remove(ipService);
+    public void removeEdge(AbstractBusinessServiceEdge edge) {
+        m_edges.remove(edge);
     }
 
     @Transient
-    private Set<Integer> getIpServiceIds() {
-        return m_ipServices.stream()
-            .map(ipSvc -> ipSvc.getId())
-            .collect(Collectors.toSet());
+    @SuppressWarnings("unchecked")
+    public <T extends AbstractBusinessServiceEdge> Set<T> getEdges(Class<T> type) {
+        return getEdges().stream()
+                .filter(e -> type.isInstance(e))
+                .map(e -> (T)e)
+                .collect(Collectors.toSet());
     }
 
     @ManyToOne
@@ -145,7 +145,7 @@ public class BusinessService {
     }
 
     public void setReductionFunction(AbstractReductionFunction reductionFunction) {
-        m_reductionFunction = reductionFunction;
+        m_reductionFunction = Objects.requireNonNull(reductionFunction);
     }
 
     @Override
@@ -161,21 +161,19 @@ public class BusinessService {
         return com.google.common.base.Objects.equal(m_id, other.m_id)
                 && com.google.common.base.Objects.equal(m_name, other.m_name)
                 && com.google.common.base.Objects.equal(m_attributes, other.m_attributes)
-                // OnmsMonitoredService objects don't properly support the equals() and hashCode() methods
-                // so we resort to comparing their IDs, which is sufficient in the case of the Business Service
-                && com.google.common.base.Objects.equal(getIpServiceIds(), other.getIpServiceIds());
+                && com.google.common.base.Objects.equal(m_edges, other.m_edges);
     }
 
     @Override
     public int hashCode() {
-        return com.google.common.base.Objects.hashCode(m_id, m_name, m_attributes, getIpServiceIds());
+        return com.google.common.base.Objects.hashCode(m_id, m_name, m_attributes, m_edges);
     }
 
     @Override
     public String toString() {
         return com.google.common.base.Objects.toStringHelper(this).add("id", m_id).add("name", m_name)
                 .add("attributes", m_attributes)
-                .add("ipServices", m_ipServices)
+                .add("edges", m_edges)
                 .toString();
     }
 }

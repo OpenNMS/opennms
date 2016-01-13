@@ -152,6 +152,7 @@ public class BusinessServiceManagerImpl implements BusinessServiceManager {
         final BusinessService service = getBusinessService(serviceId);
         final OnmsMonitoredService monitoredService = getIpService(ipServiceId);
 
+        /* TODO: FIXME: HACK: JW, MVR
         // if already exists, no update
         if (service.getIpServices().contains(monitoredService)) {
             return false;
@@ -159,6 +160,7 @@ public class BusinessServiceManagerImpl implements BusinessServiceManager {
 
         // add and update
         service.addIpService(monitoredService);
+        */
         getDao().update(service);
         return true;
     }
@@ -168,6 +170,7 @@ public class BusinessServiceManagerImpl implements BusinessServiceManager {
         final BusinessService service = getBusinessService(serviceId);
         final OnmsMonitoredService monitoredService = getIpService(ipServiceId);
 
+        /* TODO: FIXME: HACK: JW, MVR
         // does not exist, no update necessary
         if (!service.getIpServices().contains(monitoredService)) {
             return false;
@@ -175,6 +178,7 @@ public class BusinessServiceManagerImpl implements BusinessServiceManager {
 
         // remove and update
         service.removeIpService(monitoredService);
+        */
         getDao().update(service);
         return true;
     }
@@ -286,19 +290,12 @@ public class BusinessServiceManagerImpl implements BusinessServiceManager {
         service.setId(dto.getId());
         service.setName(dto.getName());
         service.setAttributes(new HashMap<>(dto.getAttributes()));
-        service.setReductionKeys(new HashSet<>(dto.getReductionKeys()));
+        /* TODO: FIXME: HACK: JW, MVR
         for (IpServiceDTO eachService : dto.getIpServices()) {
             OnmsMonitoredService ipService = getIpService(Integer.valueOf(eachService.getId()));
             service.addIpService(ipService);
         }
-        for (BusinessServiceDTO eachService : dto.getChildServices()) {
-            BusinessService childService = getBusinessService(Long.valueOf(eachService.getId()));
-            service.addChildService(childService);
-        }
-        for (BusinessServiceDTO eachService : dto.getParentServices()) {
-            BusinessService parentService = getBusinessService(Long.valueOf(eachService.getId()));
-            service.addParentService(parentService);
-        }
+        */
         return service;
     }
 
@@ -311,31 +308,14 @@ public class BusinessServiceManagerImpl implements BusinessServiceManager {
         dto.setId(service.getId());
         dto.setName(service.getName());
         dto.setAttributes(new HashMap<>(service.getAttributes()));
-        dto.setReductionKeys(new HashSet<>(service.getReductionKeys()));
+        /* TODO: FIXME: HACK: JW, MVR
         for (OnmsMonitoredService eachService : service.getIpServices()) {
             IpServiceDTO ipServiceDTO = transform(eachService);
             if (ipServiceDTO != null) {
                 dto.addIpService(ipServiceDTO);
             }
         }
-        // TODO: JW: This should not be be merged into features/bsm
-        if (recurse) {
-            for (BusinessService eachService : service.getChildServices()) {
-                BusinessServiceDTO childServiceDTO = transform(eachService, false);
-                if (childServiceDTO != null) {
-                    dto.addChildService(childServiceDTO);
-                }
-            }
-        }
-        // TODO: JW: This should not be be merged into features/bsm
-        if (recurse) {
-            for (BusinessService eachService : service.getParentServices()) {
-                BusinessServiceDTO parentServiceDTO = transform(eachService, false);
-                if (parentServiceDTO != null) {
-                    dto.addParentService(parentServiceDTO);
-                }
-            }
-        }
+        */
         return dto;
     }
 

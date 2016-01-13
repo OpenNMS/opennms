@@ -52,8 +52,6 @@ import org.opennms.netmgt.dao.mock.EventAnticipator;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.model.OnmsAlarm;
-import org.opennms.netmgt.model.OnmsDistPoller;
-import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
@@ -212,12 +210,6 @@ public class BsmdIT {
         BusinessService bs = new BusinessService();
         bs.setName(name);
         bs.setReductionFunction(mostCritical);
-
-        // Grab the first monitored service from node 1
-        OnmsMonitoredService ipService = m_databasePopulator.getNode1()
-                .getIpInterfaces().iterator().next()
-                .getMonitoredServices().iterator().next();
-        bs.addIpService(ipService);
 
         // Persist
         m_businessServiceDao.save(bs);

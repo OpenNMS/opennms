@@ -40,7 +40,7 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
 import org.opennms.netmgt.bsm.persistence.api.BusinessService;
-import org.opennms.netmgt.bsm.persistence.api.OnmsMonitoredServiceHelper;
+import org.opennms.netmgt.bsm.persistence.api.AbstractBusinessServiceEdge;
 import org.opennms.netmgt.bsm.service.BusinessServiceStateChangeHandler;
 import org.opennms.netmgt.bsm.service.BusinessServiceStateMachine;
 import org.opennms.netmgt.model.OnmsAlarm;
@@ -54,6 +54,7 @@ public class DefaultBusinessServiceStateMachine implements BusinessServiceStateM
 
     private ReadWriteLock m_rwLock = new ReentrantReadWriteLock();
     public static final OnmsSeverity DEFAULT_SEVERITY = OnmsSeverity.NORMAL;
+    public static final OnmsSeverity MIN_SEVERITY = OnmsSeverity.NORMAL;
 
     private final List<BusinessServiceStateChangeHandler> m_handlers = Lists.newArrayList();
     private final Map<String, Set<BusinessService>> m_reductionKeys = Maps.newHashMap();
@@ -73,6 +74,7 @@ public class DefaultBusinessServiceStateMachine implements BusinessServiceStateM
             m_reductionKeyToSeverity.clear();
             m_ipServiceIds.clear();
 
+            /* TODO: FIXME: HACK: JW, MVR
             // Rebuild
             for (BusinessService businessService : businessServices) {
                 for (OnmsMonitoredService monitoredService : businessService.getIpServices()) {
@@ -83,6 +85,7 @@ public class DefaultBusinessServiceStateMachine implements BusinessServiceStateM
                     addReductionKey(reductionKey, businessService);
                 }
             }
+            */
         } finally {
             m_rwLock.writeLock().unlock();
         }
@@ -146,21 +149,24 @@ public class DefaultBusinessServiceStateMachine implements BusinessServiceStateM
     }
 
     private OnmsSeverity calculateCurrentSeverity(BusinessService businessService) {
+        /* TODO: FIXME: HACK: JW, MVR
         List<OnmsSeverity> severities = Lists.newArrayList();
-        for (OnmsMonitoredService ipService : businessService.getIpServices()) {
-            for (String reductionKey : getReductionKeysFor(ipService)) {
-                final OnmsSeverity ipServiceSeverity = m_reductionKeyToSeverity.get(reductionKey);
-                if (ipServiceSeverity == null) {
+        for (AbstractBusinessServiceEdge edge : businessService.getChildEdges()) {
+            for (String reductionKey : edge.getReductionKeys()) {
+                final OnmsSeverity severity = m_reductionKeyToSeverity.get(reductionKey);
+                if (severity == null) {
                     continue;
                 }
-                severities.add(ipServiceSeverity);
+                // Map
+                edge.getMapFunction().map(severity).ifPresent(s -> severities.add(s));
             }
         }
+        // Reduce
         OnmsSeverity severity = businessService.getReductionFunction().reduce(severities).orElse(DEFAULT_SEVERITY);
-        if (severity.isLessThan(DEFAULT_SEVERITY)) {
-            severity = DEFAULT_SEVERITY;
-        }
-        return severity;
+        // Apply lower bound, severity states like INDETERMINE and CLEARED don't always make sense
+        return severity.isLessThan(MIN_SEVERITY) ? MIN_SEVERITY : severity;
+        */
+        return DEFAULT_SEVERITY;
     }
 
     @Override
@@ -184,7 +190,8 @@ public class DefaultBusinessServiceStateMachine implements BusinessServiceStateM
 
             // The IP-Service resolves to multiple reduction keys, we use the one with the highest severity
             OnmsSeverity highestSeverity = DEFAULT_SEVERITY;
-            for (String reductionKey : OnmsMonitoredServiceHelper.getReductionKeys(ipService)) {
+            /* TODO: FIXME: HACK: JW, MVR
+            for (String reductionKey : getReductionKeysFor(ipService)) {
                 final OnmsSeverity severity = m_reductionKeyToSeverity.get(reductionKey);
                 if (severity != null) {
                     if (highestSeverity == null) {
@@ -194,6 +201,7 @@ public class DefaultBusinessServiceStateMachine implements BusinessServiceStateM
                     }
                 }
             }
+            */
             return highestSeverity;
         } finally {
             m_rwLock.readLock().unlock();

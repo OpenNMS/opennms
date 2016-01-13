@@ -32,4 +32,10 @@
 
   <onmsgi:service interface="org.opennms.netmgt.bsm.persistence.api.MapFunctionDao" ref="mapFunctionDao" />
 
+  <bean id="businessServiceEdgeDao" class="org.opennms.netmgt.bsm.persistence.impl.BusinessServiceEdgeDaoImpl">
+    <property name="sessionFactory" ref="sessionFactory" />
+  </bean>
+
+  <onmsgi:service interface="org.opennms.netmgt.bsm.persistence.api.BusinessServiceEdgeDao" ref="businessServiceEdgeDao" />
+
 </beans>

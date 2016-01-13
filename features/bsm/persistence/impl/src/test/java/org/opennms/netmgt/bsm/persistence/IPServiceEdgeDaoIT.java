@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012-2015 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2015 The OpenNMS Group, Inc.
+ * Copyright (C) 2012-2016 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,21 +28,22 @@
 
 package org.opennms.netmgt.bsm.persistence;
 
-import static org.junit.Assert.assertEquals;
-
-import java.util.HashSet;
-
-import com.google.common.collect.Sets;
+import java.util.Properties;
 
 import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.spring.BeanUtils;
+import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.MockDatabase;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
-import org.opennms.netmgt.bsm.persistence.api.BusinessService;
 import org.opennms.netmgt.bsm.persistence.api.BusinessServiceDao;
+import org.opennms.netmgt.bsm.persistence.api.BusinessServiceEdgeDao;
+import org.opennms.netmgt.bsm.persistence.api.Identity;
+import org.opennms.netmgt.bsm.persistence.api.MapFunctionDao;
 import org.opennms.netmgt.bsm.persistence.api.MostCritical;
 import org.opennms.netmgt.bsm.persistence.api.ReductionFunctionDao;
 import org.opennms.netmgt.dao.DatabasePopulator;
@@ -63,7 +64,8 @@ import org.springframework.transaction.annotation.Transactional;
     "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml" })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase(reuseDatabase = false, tempDbClass = MockDatabase.class)
-public class BusinessServiceDaoIT {
+@Transactional
+public class IPServiceEdgeDaoIT {
 
     @Autowired
     private DatabasePopulator m_databasePopulator;
@@ -72,9 +74,23 @@ public class BusinessServiceDaoIT {
     private BusinessServiceDao m_businessServiceDao;
 
     @Autowired
+    private BusinessServiceEdgeDao m_businessServiceEdgeDao;
+
+    @Autowired
     private ReductionFunctionDao m_reductionFunctionDao;
 
+    @Autowired
+    private MapFunctionDao m_mapFunctionDao;
+
     MostCritical m_mostCritical;
+
+    Identity m_identity;
+
+    @BeforeClass
+    public static void classSetUp() {
+        final Properties props = new Properties();
+        MockLogAppender.setupLogging(true, "TRACE", props);
+    }
 
     @Before
     public void setUp() {
@@ -84,42 +100,44 @@ public class BusinessServiceDaoIT {
         m_mostCritical = new MostCritical();
         m_reductionFunctionDao.save(m_mostCritical);
         m_reductionFunctionDao.flush();
+
+        m_identity = new Identity();
+        m_mapFunctionDao.save(m_identity);
+        m_mapFunctionDao.flush();
     }
 
+    @Ignore
     @Test
-    @Transactional
-    public void canCreateReadUpdateAndDeleteBusinessServices() {
-        // Initially there should be no business services
-        assertEquals(0, m_businessServiceDao.countAll());
+    public void businessServicesWithRelatedIpServicesAreDeletedOnCascade() throws InterruptedException {
+        // TODO: MVR please :)
+        /*// Initially there should be no business services
+        assertEquals("Check that there are no initial BusinessServices", 0, m_businessServiceDao.countAll());
 
-        // Create a business service
+        // Create a business service with an associated IP Service
         BusinessService bs = new BusinessService();
-        bs.setName("Web Servers");
-        bs.setAttribute("dc", "RDU");
+        bs.setName("Mont Cascades");
         bs.setReductionFunction(m_mostCritical);
+        OnmsNode node = m_databasePopulator.getNode1();
+        OnmsMonitoredService ipService = node
+                .getIpInterfaces().iterator().next()
+                .getMonitoredServices().iterator().next();
+        bs.addIpService(ipService);
+
         m_businessServiceDao.save(bs);
         m_businessServiceDao.flush();
 
-        // Read a business service
-        assertEquals(bs, m_businessServiceDao.get(bs.getId()));
-        assertEquals( reductionKeys.size(), m_businessServiceDao.get(bs.getId()).getReductionKeys().size());
+        // We should have a single business service with a single IP service associated
+        assertEquals(1, m_businessServiceDao.countAll());
+        assertEquals(1, m_businessServiceDao.get(bs.getId()).getIpServices().size());
 
-        // Update a business service
-        bs.setName("Application Servers");
-        bs.setAttribute("dc", "!RDU");
-        bs.setAttribute("cd", "/");
+        // Now delete the node
+        m_nodeDao.delete(node);
+        m_nodeDao.flush();
 
-        m_businessServiceDao.update(bs);
-        m_businessServiceDao.flush();
-
-        // Verify the update
-        assertEquals(bs, m_businessServiceDao.get(bs.getId()));
-
-        // Delete
-        m_businessServiceDao.delete(bs);
-        m_businessServiceDao.flush();
-
-        // There should be no business services after the delete
-        assertEquals(0, m_businessServiceDao.countAll());
+        // The business service should still be present, but the IP service should have been deleted
+        // by the foreign key constraint
+        assertEquals(1, m_businessServiceDao.countAll());
+        assertEquals(0, m_businessServiceDao.get(bs.getId()).getIpServices().size());
+        */
     }
 }

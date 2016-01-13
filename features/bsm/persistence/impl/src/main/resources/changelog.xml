@@ -74,5 +74,23 @@
 		<addForeignKeyConstraint constraintName="fk_bsm_service_reduce_id"
 			baseTableName="bsm_service" baseColumnNames="bsm_reduce_id"
 			referencedTableName="bsm_reduce" referencedColumnNames="id"/>
+		<createTable tableName="bsm_service_edge" >
+			<column name="id" type="integer">
+			  <constraints nullable="false"/>
+			</column>
+			<column name="enabled" type="boolean">
+			  <constraints nullable="false"/>
+			</column>
+			<column name="weight" type="integer">
+			  <constraints nullable="false"/>
+			</column>
+			<column name="bsm_map_id" type="integer">
+			  <constraints nullable="false"/>
+			</column>
+		</createTable>
+		<addPrimaryKey tableName="bsm_service_edge" columnNames="id" constraintName="bsm_service_edge_pkey" />
+		<addForeignKeyConstraint constraintName="fk_bsm_service_edge_map_id"
+			baseTableName="bsm_service_edge" baseColumnNames="bsm_map_id"
+			referencedTableName="bsm_map" referencedColumnNames="id"/>
 	</changeSet>
 </databaseChangeLog>

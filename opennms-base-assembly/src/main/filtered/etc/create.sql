@@ -2673,12 +2673,25 @@ CREATE TABLE bsm_service_attributes (
     CONSTRAINT bsm_service_attributes_pkey PRIMARY KEY (bsm_service_id, key)
 );
 
+CREATE TABLE bsm_service_edge (
+    id integer NOT NULL,
+    enabled boolean NOT NULL,
+    weight integer NOT NULL,
+    bsm_map_id integer NOT NULL,
+    bsm_service_id integer NOT NULL,
+    CONSTRAINT bsm_service_edge_pkey PRIMARY KEY (id),
+    CONSTRAINT fk_bsm_service_edge_map_id FOREIGN KEY (bsm_map_id)
+    REFERENCES bsm_map (id),
+    CONSTRAINT fk_bsm_service_edge_service_id FOREIGN KEY (bsm_service_id)
+    REFERENCES bsm_service (id) ON DELETE CASCADE
+);
+
 CREATE TABLE bsm_service_ifservices (
-  bsm_service_id integer NOT NULL,
-  ifserviceid integer NOT NULL,
-  CONSTRAINT bsm_service_ifservices_pkey PRIMARY KEY (bsm_service_id, ifserviceid),
-  CONSTRAINT fk_bsm_service_ifservices_ifserviceid FOREIGN KEY (ifserviceid)
-  REFERENCES ifservices (id) ON DELETE CASCADE,
-  CONSTRAINT fk_bsm_service_ifservices_service_id FOREIGN KEY (bsm_service_id)
-  REFERENCES bsm_service (id) ON DELETE CASCADE
+    id integer NOT NULL,
+    ifserviceid integer NOT NULL,
+    CONSTRAINT bsm_service_ifservices_pkey PRIMARY KEY (id),
+    CONSTRAINT fk_bsm_service_ifservices_edge_id FOREIGN KEY (id)
+    REFERENCES bsm_service_edge (id) ON DELETE CASCADE
+--    CONSTRAINT fk_bsm_service_ifservices_ifserviceid FOREIGN KEY (ifserviceid)
+--    REFERENCES ifservices (id) ON DELETE CASCADE
 );

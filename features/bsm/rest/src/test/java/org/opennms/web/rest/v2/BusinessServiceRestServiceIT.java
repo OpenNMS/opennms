@@ -50,10 +50,15 @@ import org.opennms.core.test.rest.AbstractSpringJerseyRestTestCase;
 import org.opennms.netmgt.bsm.service.model.BusinessServiceDTO;
 import org.opennms.netmgt.bsm.persistence.api.BusinessService;
 import org.opennms.netmgt.bsm.persistence.api.BusinessServiceDao;
+import org.opennms.netmgt.bsm.persistence.api.BusinessServiceEdgeDao;
+import org.opennms.netmgt.bsm.persistence.api.IPServiceEdge;
+import org.opennms.netmgt.bsm.persistence.api.Identity;
+import org.opennms.netmgt.bsm.persistence.api.MapFunctionDao;
 import org.opennms.netmgt.bsm.persistence.api.MostCritical;
 import org.opennms.netmgt.bsm.persistence.api.ReductionFunctionDao;
 import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
+import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.opennms.web.rest.v2.bsm.model.BusinessServiceListDTO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -82,7 +87,13 @@ public class BusinessServiceRestServiceIT extends AbstractSpringJerseyRestTestCa
     private BusinessServiceDao m_businessServiceDao;
 
     @Autowired
+    private BusinessServiceEdgeDao m_businessServiceEdgeDao;
+
+    @Autowired
     private ReductionFunctionDao m_reductionFunctionDao;
+
+    @Autowired
+    private MapFunctionDao m_mapFunctionDao;
 
     @Autowired
     private DatabasePopulator populator;
@@ -91,6 +102,8 @@ public class BusinessServiceRestServiceIT extends AbstractSpringJerseyRestTestCa
     private MonitoredServiceDao monitoredServiceDao;
 
     private MostCritical m_mostCritical;
+
+    private Identity m_identity;
 
     @Before
     public void setUp() throws Throwable {
@@ -101,6 +114,11 @@ public class BusinessServiceRestServiceIT extends AbstractSpringJerseyRestTestCa
         // Create the reduction function
         m_mostCritical = new MostCritical();
         m_reductionFunctionDao.save(m_mostCritical);
+
+        // Create the map function
+        m_identity = new Identity();
+        m_mapFunctionDao.save(m_identity);
+        m_mapFunctionDao.flush();
     }
 
     @After
@@ -137,15 +155,15 @@ public class BusinessServiceRestServiceIT extends AbstractSpringJerseyRestTestCa
 
         // verify adding of existing ip service is possible
         sendPost(getIpServiceUrl(serviceId, 10), "", 200, null);
-        Assert.assertEquals(1, m_businessServiceDao.get(serviceId).getIpServices().size());
+        Assert.assertEquals(1, m_businessServiceDao.get(serviceId).getEdges(IPServiceEdge.class).size());
 
         // verify adding twice possible, but not modified
         sendPost(getIpServiceUrl(serviceId, 10), "", 304, null);
-        Assert.assertEquals(1, m_businessServiceDao.get(serviceId).getIpServices().size());
+        Assert.assertEquals(1, m_businessServiceDao.get(serviceId).getEdges(IPServiceEdge.class).size());
 
         // verify adding of existing ip service is possible
         sendPost(getIpServiceUrl(serviceId, 17), "", 200, null);
-        Assert.assertEquals(2, m_businessServiceDao.get(serviceId).getIpServices().size());
+        Assert.assertEquals(2, m_businessServiceDao.get(serviceId).getEdges(IPServiceEdge.class).size());
     }
 
     @Test
@@ -156,26 +174,38 @@ public class BusinessServiceRestServiceIT extends AbstractSpringJerseyRestTestCa
         service.setName("Dummy Service");
         service.setReductionFunction(m_mostCritical);
         final Long serviceId = m_businessServiceDao.save(service);
-        service.addIpService(monitoredServiceDao.get(17));
-        service.addIpService(monitoredServiceDao.get(18));
-        service.addIpService(monitoredServiceDao.get(20));
-        m_businessServiceDao.saveOrUpdate(service);
-        m_businessServiceDao.flush();
+        
+        // Create the IP services edges
+        addIpServiceEdge(service, monitoredServiceDao.get(17));
+        addIpServiceEdge(service,monitoredServiceDao.get(18));
+        addIpServiceEdge(service,monitoredServiceDao.get(20));
 
         // verify removing not existing ip service not possible
         sendData(DELETE, MediaType.APPLICATION_XML, getIpServiceUrl(serviceId, -1), "", 404);
 
         // verify removing of existing ip service is possible
         sendData(DELETE, MediaType.APPLICATION_XML, getIpServiceUrl(serviceId, 17), "", 200);
-        Assert.assertEquals(2, m_businessServiceDao.get(serviceId).getIpServices().size());
+        Assert.assertEquals(2, m_businessServiceDao.get(serviceId).getEdges(IPServiceEdge.class).size());
 
         // verify removing twice possible, but not modified
         sendData(DELETE, MediaType.APPLICATION_XML, getIpServiceUrl(serviceId, 17), "", 304);
-        Assert.assertEquals(2, m_businessServiceDao.get(serviceId).getIpServices().size());
+        Assert.assertEquals(2, m_businessServiceDao.get(serviceId).getEdges(IPServiceEdge.class).size());
 
         // verify removing of existing ip service is possible
         sendData(DELETE, MediaType.APPLICATION_XML, getIpServiceUrl(serviceId, 18), "", 200);
-        Assert.assertEquals(1, m_businessServiceDao.get(serviceId).getIpServices().size());
+        Assert.assertEquals(1, m_businessServiceDao.get(serviceId).getEdges(IPServiceEdge.class).size());
+    }
+
+    private void addIpServiceEdge(BusinessService bservice, OnmsMonitoredService ipservice) {
+        IPServiceEdge edge = new IPServiceEdge();
+        edge.setMapFunction(m_identity);
+        edge.setIpService(ipservice);
+        edge.setBusinessService(bservice);
+        m_businessServiceEdgeDao.save(edge);
+
+        bservice.addEdge(edge);
+        m_businessServiceDao.saveOrUpdate(bservice);
+        m_businessServiceDao.flush();
     }
 
     private String getIpServiceUrl(Long servieId, int ipServiceId) {

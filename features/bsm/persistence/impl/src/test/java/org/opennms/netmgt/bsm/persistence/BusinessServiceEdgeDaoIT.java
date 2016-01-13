@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012-2015 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2015 The OpenNMS Group, Inc.
+ * Copyright (C) 2012-2016 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -30,10 +30,6 @@ package org.opennms.netmgt.bsm.persistence;
 
 import static org.junit.Assert.assertEquals;
 
-import java.util.HashSet;
-
-import com.google.common.collect.Sets;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -41,11 +37,17 @@ import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.MockDatabase;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
+import org.opennms.netmgt.bsm.persistence.api.AbstractBusinessServiceEdge;
 import org.opennms.netmgt.bsm.persistence.api.BusinessService;
 import org.opennms.netmgt.bsm.persistence.api.BusinessServiceDao;
+import org.opennms.netmgt.bsm.persistence.api.BusinessServiceEdgeDao;
+import org.opennms.netmgt.bsm.persistence.api.IPServiceEdge;
+import org.opennms.netmgt.bsm.persistence.api.Identity;
+import org.opennms.netmgt.bsm.persistence.api.MapFunctionDao;
 import org.opennms.netmgt.bsm.persistence.api.MostCritical;
 import org.opennms.netmgt.bsm.persistence.api.ReductionFunctionDao;
 import org.opennms.netmgt.dao.DatabasePopulator;
+import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -63,7 +65,8 @@ import org.springframework.transaction.annotation.Transactional;
     "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml" })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase(reuseDatabase = false, tempDbClass = MockDatabase.class)
-public class BusinessServiceDaoIT {
+@Transactional
+public class BusinessServiceEdgeDaoIT {
 
     @Autowired
     private DatabasePopulator m_databasePopulator;
@@ -72,9 +75,17 @@ public class BusinessServiceDaoIT {
     private BusinessServiceDao m_businessServiceDao;
 
     @Autowired
+    private BusinessServiceEdgeDao m_businessServiceEdgeDao;
+
+    @Autowired
     private ReductionFunctionDao m_reductionFunctionDao;
 
-    MostCritical m_mostCritical;
+    @Autowired
+    private MapFunctionDao m_mapFunctionDao;
+
+    private MostCritical m_mostCritical;
+
+    private Identity m_identity;
 
     @Before
     public void setUp() {
@@ -84,14 +95,14 @@ public class BusinessServiceDaoIT {
         m_mostCritical = new MostCritical();
         m_reductionFunctionDao.save(m_mostCritical);
         m_reductionFunctionDao.flush();
+
+        m_identity = new Identity();
+        m_mapFunctionDao.save(m_identity);
+        m_mapFunctionDao.flush();
     }
 
     @Test
-    @Transactional
-    public void canCreateReadUpdateAndDeleteBusinessServices() {
-        // Initially there should be no business services
-        assertEquals(0, m_businessServiceDao.countAll());
-
+    public void canCreateReadUpdateAndDeleteEdges() {
         // Create a business service
         BusinessService bs = new BusinessService();
         bs.setName("Web Servers");
@@ -100,26 +111,36 @@ public class BusinessServiceDaoIT {
         m_businessServiceDao.save(bs);
         m_businessServiceDao.flush();
 
-        // Read a business service
-        assertEquals(bs, m_businessServiceDao.get(bs.getId()));
-        assertEquals( reductionKeys.size(), m_businessServiceDao.get(bs.getId()).getReductionKeys().size());
+        // Initially there should be no edge
+        assertEquals(0, m_businessServiceEdgeDao.countAll());
 
-        // Update a business service
-        bs.setName("Application Servers");
-        bs.setAttribute("dc", "!RDU");
-        bs.setAttribute("cd", "/");
+        // Create an edge
+        IPServiceEdge edge = new IPServiceEdge();
+        edge.setMapFunction(m_identity);
+        edge.setBusinessService(bs);
 
-        m_businessServiceDao.update(bs);
-        m_businessServiceDao.flush();
+        // Grab the first monitored service from node 1
+        OnmsMonitoredService ipService = m_databasePopulator.getNode1()
+                .getIpInterfaces().iterator().next()
+                .getMonitoredServices().iterator().next();
+        edge.setIpService(ipService);
+        m_businessServiceEdgeDao.save(edge);
+        m_businessServiceEdgeDao.flush();
 
-        // Verify the update
-        assertEquals(bs, m_businessServiceDao.get(bs.getId()));
+        // Read an edge
+        assertEquals(edge, m_businessServiceEdgeDao.get(edge.getId()));
 
-        // Delete
-        m_businessServiceDao.delete(bs);
-        m_businessServiceDao.flush();
+        // Update an edge
+        edge.setWeight(2);
+        m_businessServiceEdgeDao.save(edge);
+        m_businessServiceEdgeDao.flush();
 
-        // There should be no business services after the delete
-        assertEquals(0, m_businessServiceDao.countAll());
+        AbstractBusinessServiceEdge otherEdge = m_businessServiceEdgeDao.get(edge.getId());
+        assertEquals(edge, otherEdge);
+        assertEquals(1, m_businessServiceEdgeDao.countAll());
+
+        // Delete an edge
+        m_businessServiceEdgeDao.delete(edge);
+        assertEquals(0, m_businessServiceEdgeDao.countAll()); 
     }
 }
