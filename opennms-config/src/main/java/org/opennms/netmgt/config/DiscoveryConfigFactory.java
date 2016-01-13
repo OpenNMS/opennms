@@ -153,6 +153,7 @@ public class DiscoveryConfigFactory implements DiscoveryConfigurationFactory {
      *
      * @return a {@link org.opennms.netmgt.config.discovery.DiscoveryConfiguration} object.
      */
+    @Override
     public synchronized DiscoveryConfiguration getConfiguration() {
         return m_config;
     }
