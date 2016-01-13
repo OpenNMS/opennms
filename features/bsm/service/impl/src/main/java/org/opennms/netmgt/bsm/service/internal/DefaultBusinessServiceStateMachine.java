@@ -37,6 +37,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.bsm.persistence.api.BusinessService;
+import org.opennms.netmgt.bsm.persistence.api.AbstractBusinessServiceEdge;
 import org.opennms.netmgt.bsm.service.BusinessServiceStateChangeHandler;
 import org.opennms.netmgt.bsm.service.BusinessServiceStateMachine;
 import org.opennms.netmgt.events.api.EventConstants;
@@ -55,8 +56,7 @@ public class DefaultBusinessServiceStateMachine implements BusinessServiceStateM
 
     private ReadWriteLock m_rwLock = new ReentrantReadWriteLock();
     public static final OnmsSeverity DEFAULT_SEVERITY = OnmsSeverity.NORMAL;
-    // TODO: The distributed poller name (now monitoring system name?) should be part of the edge details
-    public static final String DEFAULT_DISTRIBUTED_POLLER_NAME = "";
+    public static final OnmsSeverity MIN_SEVERITY = OnmsSeverity.NORMAL;
 
     private final List<BusinessServiceStateChangeHandler> m_handlers = Lists.newArrayList();
     private final Map<String, Set<BusinessService>> m_reductionKeys = Maps.newHashMap();
@@ -76,6 +76,7 @@ public class DefaultBusinessServiceStateMachine implements BusinessServiceStateM
             m_reductionKeyToSeverity.clear();
             m_ipServiceIds.clear();
 
+            /* TODO: FIXME: HACK: JW, MVR
             // Rebuild
             for (BusinessService businessService : businessServices) {
                 m_businessServiceSeverity.put(businessService, DEFAULT_SEVERITY);
@@ -86,6 +87,7 @@ public class DefaultBusinessServiceStateMachine implements BusinessServiceStateM
                     }
                 }
             }
+            */
         } finally {
             m_rwLock.writeLock().unlock();
         }
@@ -149,21 +151,24 @@ public class DefaultBusinessServiceStateMachine implements BusinessServiceStateM
     }
 
     private OnmsSeverity calculateCurrentSeverity(BusinessService businessService) {
+        /* TODO: FIXME: HACK: JW, MVR
         List<OnmsSeverity> severities = Lists.newArrayList();
-        for (OnmsMonitoredService ipService : businessService.getIpServices()) {
-            for (String reductionKey : getReductionKeysFor(ipService)) {
-                final OnmsSeverity ipServiceSeverity = m_reductionKeyToSeverity.get(reductionKey);
-                if (ipServiceSeverity == null) {
+        for (AbstractBusinessServiceEdge edge : businessService.getChildEdges()) {
+            for (String reductionKey : edge.getReductionKeys()) {
+                final OnmsSeverity severity = m_reductionKeyToSeverity.get(reductionKey);
+                if (severity == null) {
                     continue;
                 }
-                severities.add(ipServiceSeverity);
+                // Map
+                edge.getMapFunction().map(severity).ifPresent(s -> severities.add(s));
             }
         }
+        // Reduce
         OnmsSeverity severity = businessService.getReductionFunction().reduce(severities).orElse(DEFAULT_SEVERITY);
-        if (severity.isLessThan(DEFAULT_SEVERITY)) {
-            severity = DEFAULT_SEVERITY;
-        }
-        return severity;
+        // Apply lower bound, severity states like INDETERMINE and CLEARED don't always make sense
+        return severity.isLessThan(MIN_SEVERITY) ? MIN_SEVERITY : severity;
+        */
+        return DEFAULT_SEVERITY;
     }
 
     @Override
@@ -187,6 +192,7 @@ public class DefaultBusinessServiceStateMachine implements BusinessServiceStateM
 
             // The IP-Service resolves to multiple reduction keys, we use the one with the highest severity
             OnmsSeverity highestSeverity = DEFAULT_SEVERITY;
+            /* TODO: FIXME: HACK: JW, MVR
             for (String reductionKey : getReductionKeysFor(ipService)) {
                 final OnmsSeverity severity = m_reductionKeyToSeverity.get(reductionKey);
                 if (severity != null) {
@@ -197,6 +203,7 @@ public class DefaultBusinessServiceStateMachine implements BusinessServiceStateM
                     }
                 }
             }
+            */
             return highestSeverity;
         } finally {
             m_rwLock.readLock().unlock();
@@ -232,19 +239,5 @@ public class DefaultBusinessServiceStateMachine implements BusinessServiceStateM
         } finally {
             m_rwLock.writeLock().unlock();
         }
-    }
-
-    private static Set<String> getReductionKeysFor(OnmsMonitoredService ipService) {
-        final String nodeLostServiceReductionKey = String.format("%s:%s:%d:%s:%s",
-                EventConstants.NODE_LOST_SERVICE_EVENT_UEI, DEFAULT_DISTRIBUTED_POLLER_NAME,
-                ipService.getNodeId(), InetAddressUtils.toIpAddrString(ipService.getIpAddress()),
-                ipService.getServiceName());
-
-        // When node processing is enabled, we may get node down instead of node lost service events
-        final String nodeDownReductionKey = String.format("%s:%s:%d",
-                EventConstants.NODE_DOWN_EVENT_UEI, DEFAULT_DISTRIBUTED_POLLER_NAME,
-                ipService.getNodeId());
-
-        return Sets.newHashSet(nodeLostServiceReductionKey, nodeDownReductionKey);
     }
 }
