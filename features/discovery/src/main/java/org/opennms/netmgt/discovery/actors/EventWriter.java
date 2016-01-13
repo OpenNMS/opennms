@@ -33,7 +33,7 @@ import java.net.InetAddress;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.discovery.messages.DiscoveryResults;
 import org.opennms.netmgt.events.api.EventConstants;
-import org.opennms.netmgt.events.api.EventIpcManager;
+import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,9 +44,9 @@ public class EventWriter
 {
     private static final Logger LOG = LoggerFactory.getLogger( EventWriter.class );
 
-    private final EventIpcManager m_ipc_manager;
+    private final EventForwarder m_ipc_manager;
 
-    public EventWriter ( EventIpcManager ipcManager )
+    public EventWriter ( EventForwarder ipcManager )
     {
         m_ipc_manager = Preconditions.checkNotNull( ipcManager, "ipcManager argument" );
     }

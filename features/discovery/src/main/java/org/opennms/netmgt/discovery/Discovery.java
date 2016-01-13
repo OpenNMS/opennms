@@ -42,6 +42,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.locks.Lock;
 
+import org.apache.camel.CamelContext;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.db.DataSourceFactory;
@@ -61,6 +62,7 @@ import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.Assert;
 
 /**
@@ -106,7 +108,10 @@ public class Discovery extends AbstractServiceDaemon {
     private volatile EventForwarder m_eventForwarder;
 
     private Pinger m_pinger;
-    
+
+    @Autowired
+    private CamelContext m_camelContext;
+
     /**
      * <p>setEventForwarder</p>
      *
@@ -290,8 +295,12 @@ public class Discovery extends AbstractServiceDaemon {
      */
     @Override
     protected void onStart() {
-    	syncAlreadyDiscovered();
-        startTimer();
+        syncAlreadyDiscovered();
+        try {
+            m_camelContext.start();
+        } catch (Exception e) {
+            LOG.error("Discovery startup failed: " + e.getMessage(), e);
+        }
     }
 
     /**
@@ -299,7 +308,11 @@ public class Discovery extends AbstractServiceDaemon {
      */
     @Override
     protected void onStop() {
-        stopTimer();
+        try {
+            m_camelContext.stop();
+        } catch (Exception e) {
+            LOG.error("Discovery shutdown failed: " + e.getMessage(), e);
+        }
     }
 
     /**
@@ -307,7 +320,11 @@ public class Discovery extends AbstractServiceDaemon {
      */
     @Override
     protected void onPause() {
-        stopTimer();
+        try {
+            m_camelContext.stop();
+        } catch (Exception e) {
+            LOG.error("Discovery pause failed: " + e.getMessage(), e);
+        }
     }
 
     /**
@@ -315,9 +332,13 @@ public class Discovery extends AbstractServiceDaemon {
      */
     @Override
     protected void onResume() {
-        startTimer();
+        try {
+            m_camelContext.start();
+        } catch (Exception e) {
+            LOG.error("Discovery resume failed: " + e.getMessage(), e);
+        }
     }
-    
+
     /**
      * <p>syncAlreadyDiscovered</p>
      */

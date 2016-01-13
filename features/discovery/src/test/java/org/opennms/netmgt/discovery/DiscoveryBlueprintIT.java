@@ -35,17 +35,24 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.activemq.broker.BrokerService;
 import org.apache.camel.test.blueprint.CamelBlueprintTestSupport;
 import org.apache.camel.util.KeyValueHolder;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.netmgt.config.DiscoveryConfigFactory;
+import org.opennms.netmgt.config.api.DiscoveryConfigurationFactory;
 import org.opennms.netmgt.config.discovery.DiscoveryConfiguration;
+import org.opennms.netmgt.config.discovery.IncludeRange;
 import org.opennms.netmgt.config.discovery.Specific;
 import org.opennms.netmgt.dao.mock.EventAnticipator;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
 import org.opennms.netmgt.events.api.EventConstants;
+import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.events.api.EventIpcManager;
 import org.opennms.netmgt.icmp.EchoPacket;
 import org.opennms.netmgt.icmp.PingResponseCallback;
@@ -63,6 +70,8 @@ public class DiscoveryBlueprintIT extends CamelBlueprintTestSupport
                     DiscoveryBlueprintIT.class );
     private static final MockEventIpcManager IPC_MANAGER_INSTANCE = new MockEventIpcManager();
     private static final EventAnticipator    ANTICIPATOR          = new EventAnticipator();
+
+    private BrokerService m_broker = null;
 
     /**
      * Use Aries Blueprint synchronous mode to avoid a blueprint deadlock bug.
@@ -220,8 +229,22 @@ public class DiscoveryBlueprintIT extends CamelBlueprintTestSupport
 
         }, new Properties() ) );
 
+        services.put( EventForwarder.class.getName(),
+                new KeyValueHolder<Object, Dictionary>( IPC_MANAGER_INSTANCE, new Properties() ) );
         services.put( EventIpcManager.class.getName(),
-                        new KeyValueHolder<Object, Dictionary>( IPC_MANAGER_INSTANCE, new Properties() ) );
+                new KeyValueHolder<Object, Dictionary>( IPC_MANAGER_INSTANCE, new Properties() ) );
+        
+        DiscoveryConfiguration config = new DiscoveryConfiguration();
+        IncludeRange range = new IncludeRange();
+        range.setBegin("127.0.1.1");
+        range.setEnd("127.0.1.20");
+        config.setChunkSize(1);
+        config.setIncludeRange(new IncludeRange[] { range });
+        config.setInitialSleepTime(0);
+        config.setRestartSleepTime(3000);
+        DiscoveryConfigFactory configFactory = new DiscoveryConfigFactory(config);
+        services.put( DiscoveryConfigurationFactory.class.getName(),
+                new KeyValueHolder<Object, Dictionary>(configFactory, new Properties() ) );
     }
 
     // The location of our Blueprint XML file to be used for testing
@@ -229,6 +252,20 @@ public class DiscoveryBlueprintIT extends CamelBlueprintTestSupport
     protected String getBlueprintDescriptor()
     {
         return "file:src/main/resources/OSGI-INF/blueprint/blueprint.xml";
+    }
+
+    @Before
+    public void startActiveMQ() throws Exception {
+        m_broker = new BrokerService();
+        m_broker.addConnector("tcp://127.0.0.1:61616");
+        m_broker.start();
+    }
+
+    @After
+    public void stopActiveMQ() throws Exception {
+        if (m_broker != null) {
+            m_broker.stop();
+        }
     }
 
     @Test
