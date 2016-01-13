@@ -41,6 +41,7 @@ import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
+import org.opennms.netmgt.poller.DoubleXmlAdapter;
 import org.opennms.netmgt.snmp.InetAddrXmlAdapter;
 
 
@@ -86,9 +87,11 @@ public class ScanReport {
     private String m_timeZone;
 
     @XmlAttribute(name="latitude")
+    @XmlJavaTypeAdapter(DoubleXmlAdapter.class)
     private Double m_latitude;
 
     @XmlAttribute(name="longitude")
+    @XmlJavaTypeAdapter(DoubleXmlAdapter.class)
     private Double m_longitude;
 
     @XmlAttribute(name="locale")
