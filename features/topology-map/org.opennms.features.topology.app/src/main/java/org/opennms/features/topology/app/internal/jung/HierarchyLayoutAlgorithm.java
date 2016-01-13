@@ -30,12 +30,16 @@ package org.opennms.features.topology.app.internal.jung;
 
 
 import java.awt.geom.Point2D;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 import org.opennms.features.topology.api.Graph;
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.Layout;
 import org.opennms.features.topology.api.Point;
+import org.opennms.features.topology.api.topo.AbstractEdge;
+import org.opennms.features.topology.api.topo.AbstractVertex;
 import org.opennms.features.topology.api.topo.Edge;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
@@ -102,19 +106,56 @@ public class HierarchyLayoutAlgorithm extends AbstractLayoutAlgorithm {
         }
     }
 
-    private Vertex getRoot(Graph g) {
+    // we may have 1 to n root vertices
+    private List<Vertex> getRoots(Graph g) {
+        List<Vertex> rootList = new ArrayList<Vertex>();
         for (Vertex eachVertex : g.getDisplayVertices()) {
             if (eachVertex.getParent() == null) {
-                return eachVertex;
+                rootList.add(eachVertex);
             }
         }
-        return null;
+        return rootList;
     }
 
     private edu.uci.ics.jung.algorithms.layout.Layout<VertexRef, Edge> createTreeLayout(final Graph g) {
-        final MinimumSpanningForest minimumSpanningForest = new MinimumSpanningForest(convert(g), new DelegateForest(), getRoot(g));
+        final edu.uci.ics.jung.graph.Graph<VertexRef, Edge> jungGraph = convert(g);
+        final List<Vertex> rootVertices = getRoots(g);
+
+        // Vertex to be used as a dummy root element, if more than 1 root element exists in the provided graph
+        final Vertex dummyRootVertex = new AbstractVertex(getClass().getName(), "$ROOT", "$ROOT");
+
+        // If no rootVertices exist in the graph, null is used.
+        // If only one root element exists, that vertex is used.
+        // If more than 1 root element exist, the dummyRootVertex is used
+        final Vertex rootVertex = rootVertices.isEmpty() ? null : rootVertices.size() > 1 ? dummyRootVertex : rootVertices.iterator().next();
+
+        // If more than 1 root vertices exist, we add a dummy root to have
+        // the tree layout set the positions correctly. However the dummy root and its vertices do not show up in the ui.
+        // They are only used for the positioning
+
+        if (rootVertices.size() > 1) {
+            List<Edge> dummyRootEdges = createRootDummyEdges(rootVertices, dummyRootVertex);
+            jungGraph.addVertex(dummyRootVertex);
+            for (Edge e : dummyRootEdges) {
+                jungGraph.addEdge(e, e.getSource().getVertex(), e.getTarget().getVertex());
+            }
+        }
+
+        final MinimumSpanningForest minimumSpanningForest = new MinimumSpanningForest(jungGraph, new DelegateForest(), rootVertex);
         final TreeLayout<VertexRef, Edge> treeLayout =  new TreeLayout<>(minimumSpanningForest.getForest(), ELBOW_ROOM * 2, ELBOW_ROOM * 2);
         treeLayout.setInitializer(initializer(g.getLayout()));
         return treeLayout;
+    }
+
+    private List<Edge> createRootDummyEdges(List<Vertex> realRootVertices, Vertex dummyRootVertex) {
+        List<Edge> edges = new ArrayList<>();
+        for (Vertex eachRealRootVertex : realRootVertices) {
+            Edge edge = new AbstractEdge(
+                    getClass().getSimpleName(),
+                    dummyRootVertex.getId() + ":" + eachRealRootVertex.getId(),
+                    dummyRootVertex, eachRealRootVertex);
+            edges.add(edge);
+        }
+        return edges;
     }
 }
