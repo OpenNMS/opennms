@@ -85,4 +85,10 @@ public class PollResult implements Serializable {
         }
         return true;
     }
+
+    @Override
+    public String toString() {
+        return "PollResult [service=" + m_service + ", serviceId=" + m_serviceId + ", nodeLabel=" + m_nodeLabel + ", nodeId=" + m_nodeId + ", ipAddress=" + m_ipAddress + ", status="
+                + m_status + "]";
+    }
 }

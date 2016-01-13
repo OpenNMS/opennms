@@ -273,4 +273,12 @@ public class ScanReport {
         }
         return true;
     }
+
+    @Override
+    public String toString() {
+        return "ScanReport [customerAccountNumber=" + m_customerAccountNumber + ", referenceId=" + m_referenceId + ", customerName=" + m_customerName + ", location=" + m_location
+                + ", monitoringSystem=" + m_monitoringSystem + ", externalIpAddress=" + m_externalIpAddress + ", countryCode=" + m_countryCode + ", regionCode=" + m_regionCode + ", city="
+                + m_city + ", zipCode=" + m_zipCode + ", timeZone=" + m_timeZone + ", latitude=" + m_latitude + ", longitude=" + m_longitude + ", locale=" + m_locale + ", timestamp="
+                + m_timestamp + ", pollResults=" + m_pollResults + "]";
+    }
 }
