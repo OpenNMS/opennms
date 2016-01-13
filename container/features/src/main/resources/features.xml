@@ -315,9 +315,9 @@
       <bundle>wrap:mvn:org.springframework.webflow/spring-webflow/${springWebFlowVersion}</bundle>
     </feature>
 
-    <feature name="net.java.dev.jna" description="Java Native Access (JNA)" version="3.2.7-ONMS">
-      <bundle>wrap:mvn:net.java.dev.jna/jna/3.2.7-ONMS$Export-Package=com.sun.jna</bundle>
-      <bundle>wrap:mvn:net.java.dev.jna/platform/3.2.7-ONMS$Export-Package=com.sun.jna.platform</bundle>
+    <feature name="net.java.dev.jna" description="Java Native Access (JNA)" version="4.2.1">
+      <bundle>wrap:mvn:net.java.dev.jna/jna/4.2.1$Export-Package=com.sun.jna</bundle>
+      <bundle>wrap:mvn:net.java.dev.jna/jna-platform/4.2.1$Export-Package=com.sun.jna.platform</bundle>
     </feature>
 
     <feature name="jicmp" description="jicmp" version="1.4.4">
