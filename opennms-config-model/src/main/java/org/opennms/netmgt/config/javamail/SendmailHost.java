@@ -34,7 +34,6 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
 
 /**
  * The Class SendmailHost.
@@ -54,15 +53,11 @@ public class SendmailHost implements Serializable {
 
     /** The host. */
     @XmlAttribute(name="host")
-    private String _host = "127.0.0.1";
+    private String _host;
 
     /** The port. */
     @XmlAttribute(name="port")
-    private long _port = 25;
-
-    /** keeps track of state for field: _port. */
-    @XmlTransient
-    private boolean _has_port;
+    private Integer _port;
 
     //----------------/
     //- Constructors -/
@@ -73,19 +68,11 @@ public class SendmailHost implements Serializable {
      */
     public SendmailHost() {
         super();
-        setHost("127.0.0.1");
     }
 
     //-----------/
     //- Methods -/
     //-----------/
-
-    /**
-     * Delete port.
-     */
-    public void deletePort() {
-        this._has_port= false;
-    }
 
     /* (non-Javadoc)
      * @see java.lang.Object#equals(java.lang.Object)
@@ -108,8 +95,6 @@ public class SendmailHost implements Serializable {
                 return false;
             if (this._port != temp._port)
                 return false;
-            if (this._has_port != temp._has_port)
-                return false;
             return true;
         }
         return false;
@@ -120,9 +105,8 @@ public class SendmailHost implements Serializable {
      * 
      * @return the value of field 'Host'.
      */
-    public String getHost(
-            ) {
-        return this._host;
+    public String getHost() {
+        return this._host == null ? "127.0.0.1" : this._host;
     }
 
     /**
@@ -130,19 +114,8 @@ public class SendmailHost implements Serializable {
      * 
      * @return the value of field 'Port'.
      */
-    public long getPort(
-            ) {
-        return this._port;
-    }
-
-    /**
-     * Method hasPort.
-     * 
-     * @return true if at least one Port has been added
-     */
-    public boolean hasPort(
-            ) {
-        return this._has_port;
+    public Integer getPort() {
+        return this._port == null ? 25 : this._port;
     }
 
     /* (non-Javadoc)
@@ -172,9 +145,8 @@ public class SendmailHost implements Serializable {
      * 
      * @param port the value of field 'port'.
      */
-    public void setPort(final long port) {
+    public void setPort(final Integer port) {
         this._port = port;
-        this._has_port = true;
     }
 
 }

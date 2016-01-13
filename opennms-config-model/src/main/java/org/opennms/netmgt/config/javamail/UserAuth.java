@@ -51,11 +51,11 @@ public class UserAuth implements java.io.Serializable {
 
     /** The user name. */
     @XmlAttribute(name="user-name")
-    private String _userName = "opennms";
+    private String _userName;
 
     /** The password. */
     @XmlAttribute(name="password")
-    private String _password = "opennms";
+    private String _password;
 
     //----------------/
     //- Constructors -/
@@ -66,8 +66,6 @@ public class UserAuth implements java.io.Serializable {
      */
     public UserAuth() {
         super();
-        setUserName("opennms");
-        setPassword("opennms");
     }
 
     //-----------/
@@ -108,7 +106,7 @@ public class UserAuth implements java.io.Serializable {
      * @return the value of field 'Password'.
      */
     public String getPassword() {
-        return this._password;
+        return this._password == null ? "opennms" : this._password;
     }
 
     /**
@@ -117,7 +115,7 @@ public class UserAuth implements java.io.Serializable {
      * @return the value of field 'UserName'.
      */
     public String getUserName() {
-        return this._userName;
+        return this._userName == null ? "opennms" : this._userName;
     }
 
     /* (non-Javadoc)

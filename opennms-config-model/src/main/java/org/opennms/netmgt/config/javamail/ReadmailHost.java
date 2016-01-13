@@ -35,7 +35,6 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
 
 /**
  * The Class ReadmailHost.
@@ -51,15 +50,11 @@ public class ReadmailHost implements Serializable {
 
     /** The host. */
     @XmlAttribute(name="host")
-    private String _host = "127.0.0.1";
+    private String _host;
 
     /** The port. */
     @XmlAttribute(name="port")
-    private long _port = 110;
-
-    /** keeps track of state for field: _port. */
-    @XmlTransient
-    private boolean _has_port;
+    private Integer _port;
 
     /**
      * Basically any attributes that help setup the javamailer's confusing set of properties.
@@ -76,19 +71,11 @@ public class ReadmailHost implements Serializable {
      */
     public ReadmailHost() {
         super();
-        setHost("127.0.0.1");
     }
 
     //-----------/
     //- Methods -/
     //-----------/
-
-    /**
-     * Delete port.
-     */
-    public void deletePort() {
-        this._has_port= false;
-    }
 
     /* (non-Javadoc)
      * @see java.lang.Object#equals(java.lang.Object)
@@ -108,8 +95,6 @@ public class ReadmailHost implements Serializable {
                 return false;
             if (this._port != temp._port)
                 return false;
-            if (this._has_port != temp._has_port)
-                return false;
             if (this._readmailProtocol != null) {
                 if (temp._readmailProtocol == null) return false;
                 else if (!(this._readmailProtocol.equals(temp._readmailProtocol))) 
@@ -128,7 +113,7 @@ public class ReadmailHost implements Serializable {
      * @return the value of field 'Host'.
      */
     public String getHost() {
-        return this._host;
+        return this._host == null ? "127.0.0.1" : this._host;
     }
 
     /**
@@ -136,8 +121,8 @@ public class ReadmailHost implements Serializable {
      * 
      * @return the value of field 'Port'.
      */
-    public long getPort() {
-        return this._port;
+    public Integer getPort() {
+        return this._port == null ? 110 : this._port;
     }
 
     /**
@@ -148,15 +133,6 @@ public class ReadmailHost implements Serializable {
      */
     public ReadmailProtocol getReadmailProtocol() {
         return this._readmailProtocol;
-    }
-
-    /**
-     * Method hasPort.
-     * 
-     * @return true if at least one Port has been added
-     */
-    public boolean hasPort() {
-        return this._has_port;
     }
 
     /* (non-Javadoc)
@@ -189,9 +165,8 @@ public class ReadmailHost implements Serializable {
      * 
      * @param port the value of field 'port'.
      */
-    public void setPort(final long port) {
+    public void setPort(final Integer port) {
         this._port = port;
-        this._has_port = true;
     }
 
     /**

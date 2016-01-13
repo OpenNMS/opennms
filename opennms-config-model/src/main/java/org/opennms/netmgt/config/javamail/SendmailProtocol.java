@@ -34,7 +34,6 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
 
 /**
  * The Class SendmailProtocol.
@@ -54,47 +53,35 @@ public class SendmailProtocol implements Serializable {
 
     /** The char set. */
     @XmlAttribute(name="char-set")
-    private String _charSet = "us-ascii";
+    private String _charSet;
 
     /** The mailer. */
     @XmlAttribute(name="mailer")
-    private String _mailer = "smtpsend";
+    private String _mailer;
 
     /** The message content type. */
     @XmlAttribute(name="message-content-type")
-    private String _messageContentType = "text/plain";
+    private String _messageContentType;
 
     /** The message encoding. */
     @XmlAttribute(name="message-encoding")
-    private String _messageEncoding = "7-bit";
+    private String _messageEncoding;
 
     /** The quit wait flag. */
     @XmlAttribute(name="quit-wait")
-    private boolean _quitWait = true;
-
-    /** keeps track of state for field: _quitWait. */
-    @XmlTransient
-    private boolean _has_quitWait;
+    private Boolean _quitWait;
 
     /** The transport. */
     @XmlAttribute(name="transport")
-    private String _transport = "smtp";
+    private String _transport;
 
     /** The SSL enable flag. */
     @XmlAttribute(name="ssl-enable")
-    private boolean _sslEnable = false;
-
-    /** keeps track of state for field: _sslEnable. */
-    @XmlTransient
-    private boolean _has_sslEnable;
+    private Boolean _sslEnable;
 
     /** The start TLS flag. */
     @XmlAttribute(name="start-tls")
-    private boolean _startTls = false;
-
-    /** keeps track of state for field: _startTls. */
-    @XmlTransient
-    private boolean _has_startTls;
+    private Boolean _startTls;
 
     //----------------/
     //- Constructors -/
@@ -116,27 +103,6 @@ public class SendmailProtocol implements Serializable {
     //-----------/
     //- Methods -/
     //-----------/
-
-    /**
-     * Delete quit wait.
-     */
-    public void deleteQuitWait() {
-        this._has_quitWait= false;
-    }
-
-    /**
-     * Delete SSL enable.
-     */
-    public void deleteSslEnable() {
-        this._has_sslEnable= false;
-    }
-
-    /**
-     * Delete start TLS.
-     */
-    public void deleteStartTls() {
-        this._has_startTls= false;
-    }
 
     /* (non-Javadoc)
      * @see java.lang.Object#equals(java.lang.Object)
@@ -177,8 +143,6 @@ public class SendmailProtocol implements Serializable {
                 return false;
             if (this._quitWait != temp._quitWait)
                 return false;
-            if (this._has_quitWait != temp._has_quitWait)
-                return false;
             if (this._transport != null) {
                 if (temp._transport == null) return false;
                 else if (!(this._transport.equals(temp._transport))) 
@@ -188,11 +152,7 @@ public class SendmailProtocol implements Serializable {
                 return false;
             if (this._sslEnable != temp._sslEnable)
                 return false;
-            if (this._has_sslEnable != temp._has_sslEnable)
-                return false;
             if (this._startTls != temp._startTls)
-                return false;
-            if (this._has_startTls != temp._has_startTls)
                 return false;
             return true;
         }
@@ -205,7 +165,7 @@ public class SendmailProtocol implements Serializable {
      * @return the value of field 'CharSet'.
      */
     public String getCharSet() {
-        return this._charSet;
+        return this._charSet == null ? "us-ascii" : this._charSet;
     }
 
     /**
@@ -214,7 +174,7 @@ public class SendmailProtocol implements Serializable {
      * @return the value of field 'Mailer'.
      */
     public String getMailer() {
-        return this._mailer;
+        return this._mailer == null ? "smtpsend" : this._mailer;
     }
 
     /**
@@ -223,7 +183,7 @@ public class SendmailProtocol implements Serializable {
      * @return the value of field 'MessageContentType'.
      */
     public String getMessageContentType() {
-        return this._messageContentType;
+        return this._messageContentType == null ? "text/plain" : this._messageContentType;
     }
 
     /**
@@ -232,7 +192,7 @@ public class SendmailProtocol implements Serializable {
      * @return the value of field 'MessageEncoding'.
      */
     public String getMessageEncoding() {
-        return this._messageEncoding;
+        return this._messageEncoding == null ? "7-bit" : this._messageEncoding;
     }
 
     /**
@@ -240,8 +200,8 @@ public class SendmailProtocol implements Serializable {
      * 
      * @return the value of field 'QuitWait'.
      */
-    public boolean getQuitWait() {
-        return this._quitWait;
+    public Boolean isQuitWait() {
+        return this._quitWait == null ? Boolean.TRUE : this._quitWait;
     }
 
     /**
@@ -249,8 +209,8 @@ public class SendmailProtocol implements Serializable {
      * 
      * @return the value of field 'SslEnable'.
      */
-    public boolean getSslEnable() {
-        return this._sslEnable;
+    public Boolean isSslEnable() {
+        return this._sslEnable == null ? Boolean.FALSE : this._sslEnable;
     }
 
     /**
@@ -258,8 +218,8 @@ public class SendmailProtocol implements Serializable {
      * 
      * @return the value of field 'StartTls'.
      */
-    public boolean getStartTls() {
-        return this._startTls;
+    public Boolean isStartTls() {
+        return this._startTls == null ? Boolean.FALSE : this._startTls;
     }
 
     /**
@@ -268,34 +228,7 @@ public class SendmailProtocol implements Serializable {
      * @return the value of field 'Transport'.
      */
     public String getTransport() {
-        return this._transport;
-    }
-
-    /**
-     * Method hasQuitWait.
-     * 
-     * @return true if at least one QuitWait has been added
-     */
-    public boolean hasQuitWait() {
-        return this._has_quitWait;
-    }
-
-    /**
-     * Method hasSslEnable.
-     * 
-     * @return true if at least one SslEnable has been added
-     */
-    public boolean hasSslEnable() {
-        return this._has_sslEnable;
-    }
-
-    /**
-     * Method hasStartTls.
-     * 
-     * @return true if at least one StartTls has been added
-     */
-    public boolean hasStartTls() {
-        return this._has_startTls;
+        return this._transport == null ? "smtp" : this._transport;
     }
 
     /* (non-Javadoc)
@@ -323,33 +256,6 @@ public class SendmailProtocol implements Serializable {
         result = 37 * result + (_sslEnable?0:1);
         result = 37 * result + (_startTls?0:1);
         return result;
-    }
-
-    /**
-     * Returns the value of field 'quitWait'.
-     * 
-     * @return the value of field 'QuitWait'.
-     */
-    public boolean isQuitWait() {
-        return this._quitWait;
-    }
-
-    /**
-     * Returns the value of field 'sslEnable'.
-     * 
-     * @return the value of field 'SslEnable'.
-     */
-    public boolean isSslEnable() {
-        return this._sslEnable;
-    }
-
-    /**
-     * Returns the value of field 'startTls'.
-     * 
-     * @return the value of field 'StartTls'.
-     */
-    public boolean isStartTls() {
-        return this._startTls;
     }
 
     /**
@@ -393,9 +299,8 @@ public class SendmailProtocol implements Serializable {
      * 
      * @param quitWait the value of field 'quitWait'.
      */
-    public void setQuitWait(final boolean quitWait) {
+    public void setQuitWait(final Boolean quitWait) {
         this._quitWait = quitWait;
-        this._has_quitWait = true;
     }
 
     /**
@@ -403,9 +308,8 @@ public class SendmailProtocol implements Serializable {
      * 
      * @param sslEnable the value of field 'sslEnable'.
      */
-    public void setSslEnable(final boolean sslEnable) {
+    public void setSslEnable(final Boolean sslEnable) {
         this._sslEnable = sslEnable;
-        this._has_sslEnable = true;
     }
 
     /**
@@ -413,9 +317,8 @@ public class SendmailProtocol implements Serializable {
      * 
      * @param startTls the value of field 'startTls'.
      */
-    public void setStartTls(final boolean startTls) {
+    public void setStartTls(final Boolean startTls) {
         this._startTls = startTls;
-        this._has_startTls = true;
     }
 
     /**

@@ -40,7 +40,6 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
 
 /**
  * The Class SendmailConfig.
@@ -60,35 +59,19 @@ public class SendmailConfig implements Serializable {
 
     /** The debug flag. */
     @XmlAttribute(name="debug")
-    private boolean _debug = true;
-
-    /** keeps track of state for field: _debug. */
-    @XmlTransient
-    private boolean _has_debug;
+    private Boolean _debug;
 
     /** The use authentication flag. */
     @XmlAttribute(name="use-authentication")
-    private boolean _useAuthentication = false;
-
-    /** keeps track of state for field: _useAuthentication. */
-    @XmlTransient
-    private boolean _has_useAuthentication;
+    private Boolean _useAuthentication;
 
     /** The use JMTA flag. */
     @XmlAttribute(name="use-jmta")
-    private boolean _useJmta = true;
-
-    /** keeps track of state for field: _useJmta. */
-    @XmlTransient
-    private boolean _has_useJmta;
+    private Boolean _useJmta;
 
     /** The attempt interval. */
     @XmlAttribute(name="attempt-interval")
-    private long _attemptInterval = 3000;
-
-    /** keeps track of state for field: _attemptInterval. */
-    @XmlTransient
-    private boolean _has_attemptInterval;
+    private Long _attemptInterval;
 
     /** The name. */
     @XmlAttribute(name="name")
@@ -160,34 +143,6 @@ public class SendmailConfig implements Serializable {
     }
 
     /**
-     * Delete attempt interval.
-     */
-    public void deleteAttemptInterval() {
-        this._has_attemptInterval= false;
-    }
-
-    /**
-     * Delete debug.
-     */
-    public void deleteDebug() {
-        this._has_debug= false;
-    }
-
-    /**
-     * Delete use authentication.
-     */
-    public void deleteUseAuthentication() {
-        this._has_useAuthentication= false;
-    }
-
-    /**
-     * Delete use JMTA.
-     */
-    public void deleteUseJmta() {
-        this._has_useJmta= false;
-    }
-
-    /**
      * Method enumerateJavamailProperty.
      * 
      * @return an Enumeration over all possible elements of this
@@ -208,19 +163,11 @@ public class SendmailConfig implements Serializable {
             SendmailConfig temp = (SendmailConfig)obj;
             if (this._debug != temp._debug)
                 return false;
-            if (this._has_debug != temp._has_debug)
-                return false;
             if (this._useAuthentication != temp._useAuthentication)
-                return false;
-            if (this._has_useAuthentication != temp._has_useAuthentication)
                 return false;
             if (this._useJmta != temp._useJmta)
                 return false;
-            if (this._has_useJmta != temp._has_useJmta)
-                return false;
             if (this._attemptInterval != temp._attemptInterval)
-                return false;
-            if (this._has_attemptInterval != temp._has_attemptInterval)
                 return false;
             if (this._name != null) {
                 if (temp._name == null) return false;
@@ -274,8 +221,8 @@ public class SendmailConfig implements Serializable {
      * 
      * @return the value of field 'AttemptInterval'.
      */
-    public long getAttemptInterval() {
-        return this._attemptInterval;
+    public Long getAttemptInterval() {
+        return this._attemptInterval == null ? 3000 : this._attemptInterval;
     }
 
     /**
@@ -283,8 +230,8 @@ public class SendmailConfig implements Serializable {
      * 
      * @return the value of field 'Debug'.
      */
-    public boolean getDebug() {
-        return this._debug;
+    public Boolean isDebug() {
+        return this._debug == null ? Boolean.TRUE : this._debug;
     }
 
     /**
@@ -377,8 +324,8 @@ public class SendmailConfig implements Serializable {
      * 
      * @return the value of field 'UseAuthentication'.
      */
-    public boolean getUseAuthentication() {
-        return this._useAuthentication;
+    public Boolean isUseAuthentication() {
+        return this._useAuthentication == null ? Boolean.FALSE : this._useAuthentication;
     }
 
     /**
@@ -386,8 +333,8 @@ public class SendmailConfig implements Serializable {
      * 
      * @return the value of field 'UseJmta'.
      */
-    public boolean getUseJmta() {
-        return this._useJmta;
+    public Boolean isUseJmta() {
+        return this._useJmta == null ? Boolean.TRUE : this._useJmta;
     }
 
     /**
@@ -397,42 +344,6 @@ public class SendmailConfig implements Serializable {
      */
     public UserAuth getUserAuth() {
         return this._userAuth;
-    }
-
-    /**
-     * Method hasAttemptInterval.
-     * 
-     * @return true if at least one AttemptInterval has been added
-     */
-    public boolean hasAttemptInterval() {
-        return this._has_attemptInterval;
-    }
-
-    /**
-     * Method hasDebug.
-     * 
-     * @return true if at least one Debug has been added
-     */
-    public boolean hasDebug() {
-        return this._has_debug;
-    }
-
-    /**
-     * Method hasUseAuthentication.
-     * 
-     * @return true if at least one UseAuthentication has been added
-     */
-    public boolean hasUseAuthentication() {
-        return this._has_useAuthentication;
-    }
-
-    /**
-     * Method hasUseJmta.
-     * 
-     * @return true if at least one UseJmta has been added
-     */
-    public boolean hasUseJmta() {
-        return this._has_useJmta;
     }
 
     /* (non-Javadoc)
@@ -464,33 +375,6 @@ public class SendmailConfig implements Serializable {
             result = 37 * result + _userAuth.hashCode();
         }
         return result;
-    }
-
-    /**
-     * Returns the value of field 'debug'.
-     * 
-     * @return the value of field 'Debug'.
-     */
-    public boolean isDebug() {
-        return this._debug;
-    }
-
-    /**
-     * Returns the value of field 'useAuthentication'.
-     * 
-     * @return the value of field 'UseAuthentication'.
-     */
-    public boolean isUseAuthentication() {
-        return this._useAuthentication;
-    }
-
-    /**
-     * Returns the value of field 'useJmta'.
-     * 
-     * @return the value of field 'UseJmta'.
-     */
-    public boolean isUseJmta() {
-        return this._useJmta;
     }
 
     /**
@@ -534,9 +418,8 @@ public class SendmailConfig implements Serializable {
      * 
      * @param attemptInterval the value of field 'attemptInterval'.
      */
-    public void setAttemptInterval(final long attemptInterval) {
+    public void setAttemptInterval(final Long attemptInterval) {
         this._attemptInterval = attemptInterval;
-        this._has_attemptInterval = true;
     }
 
     /**
@@ -544,9 +427,8 @@ public class SendmailConfig implements Serializable {
      * 
      * @param debug the value of field 'debug'.
      */
-    public void setDebug(final boolean debug) {
+    public void setDebug(final Boolean debug) {
         this._debug = debug;
-        this._has_debug = true;
     }
 
     /**
@@ -643,7 +525,6 @@ public class SendmailConfig implements Serializable {
      */
     public void setUseAuthentication(final boolean useAuthentication) {
         this._useAuthentication = useAuthentication;
-        this._has_useAuthentication = true;
     }
 
     /**
@@ -651,9 +532,8 @@ public class SendmailConfig implements Serializable {
      * 
      * @param useJmta the value of field 'useJmta'.
      */
-    public void setUseJmta(final boolean useJmta) {
+    public void setUseJmta(final Boolean useJmta) {
         this._useJmta = useJmta;
-        this._has_useJmta = true;
     }
 
     /**

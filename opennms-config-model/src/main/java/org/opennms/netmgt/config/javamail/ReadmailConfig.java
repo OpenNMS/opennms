@@ -40,7 +40,6 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
 
 /**
  * The Class ReadmailConfig.
@@ -60,31 +59,19 @@ public class ReadmailConfig implements Serializable {
 
     /** The debug flag. */
     @XmlAttribute(name="debug")
-    private boolean _debug = true;
-
-    /** keeps track of state for field: _debug. */
-    @XmlTransient
-    private boolean _has_debug;
+    private Boolean _debug;
 
     /** The mail folder. */
     @XmlAttribute(name="mail-folder")
-    private String _mailFolder = "INBOX";
+    private String _mailFolder;
 
     /** The attempt interval. */
     @XmlAttribute(name="attempt-interval")
-    private long _attemptInterval = 1000;
-
-    /** keeps track of state for field: _attemptInterval. */
-    @XmlTransient
-    private boolean _has_attemptInterval;
+    private Long _attemptInterval;
 
     /** The delete all mail flag. */
     @XmlAttribute(name="delete-all-mail")
-    private boolean _deleteAllMail = false;
-
-    /** keeps track of state for field: _deleteAllMail. */
-    @XmlTransient
-    private boolean _has_deleteAllMail;
+    private Boolean _deleteAllMail;
 
     /** The name. */
     @XmlAttribute(name="name")
@@ -117,10 +104,8 @@ public class ReadmailConfig implements Serializable {
      */
     public ReadmailConfig() {
         super();
-        setMailFolder("INBOX");
         this._javamailPropertyList = new ArrayList<JavamailProperty>();
     }
-
 
     //-----------/
     //- Methods -/
@@ -148,27 +133,6 @@ public class ReadmailConfig implements Serializable {
     }
 
     /**
-     * Delete attempt interval.
-     */
-    public void deleteAttemptInterval() {
-        this._has_attemptInterval= false;
-    }
-
-    /**
-     * Delete debug.
-     */
-    public void deleteDebug() {
-        this._has_debug= false;
-    }
-
-    /**
-     * Delete delete all mail.
-     */
-    public void deleteDeleteAllMail() {
-        this._has_deleteAllMail= false;
-    }
-
-    /**
      * Method enumerateJavamailProperty.
      * 
      * @return an Enumeration over all possible elements of this collection
@@ -188,8 +152,6 @@ public class ReadmailConfig implements Serializable {
             ReadmailConfig temp = (ReadmailConfig)obj;
             if (this._debug != temp._debug)
                 return false;
-            if (this._has_debug != temp._has_debug)
-                return false;
             if (this._mailFolder != null) {
                 if (temp._mailFolder == null) return false;
                 else if (!(this._mailFolder.equals(temp._mailFolder))) 
@@ -199,11 +161,7 @@ public class ReadmailConfig implements Serializable {
                 return false;
             if (this._attemptInterval != temp._attemptInterval)
                 return false;
-            if (this._has_attemptInterval != temp._has_attemptInterval)
-                return false;
             if (this._deleteAllMail != temp._deleteAllMail)
-                return false;
-            if (this._has_deleteAllMail != temp._has_deleteAllMail)
                 return false;
             if (this._name != null) {
                 if (temp._name == null) return false;
@@ -243,8 +201,8 @@ public class ReadmailConfig implements Serializable {
      * 
      * @return the value of field 'AttemptInterval'.
      */
-    public long getAttemptInterval() {
-        return this._attemptInterval;
+    public Long getAttemptInterval() {
+        return this._attemptInterval == null ? 1000 : this._attemptInterval;
     }
 
     /**
@@ -252,8 +210,8 @@ public class ReadmailConfig implements Serializable {
      * 
      * @return the value of field 'Debug'.
      */
-    public boolean getDebug() {
-        return this._debug;
+    public Boolean isDebug() {
+        return this._debug == null ? Boolean.TRUE : this._debug;
     }
 
     /**
@@ -261,8 +219,8 @@ public class ReadmailConfig implements Serializable {
      * 
      * @return the value of field 'DeleteAllMail'.
      */
-    public boolean getDeleteAllMail() {
-        return this._deleteAllMail;
+    public Boolean isDeleteAllMail() {
+        return this._deleteAllMail ? Boolean.FALSE : this._deleteAllMail;
     }
 
     /**
@@ -316,7 +274,7 @@ public class ReadmailConfig implements Serializable {
      * @return the value of field 'MailFolder'.
      */
     public String getMailFolder() {
-        return this._mailFolder;
+        return this._mailFolder == null ? "INBOX" : this._mailFolder;
     }
 
     /**
@@ -346,33 +304,6 @@ public class ReadmailConfig implements Serializable {
         return this._userAuth;
     }
 
-    /**
-     * Method hasAttemptInterval.
-     * 
-     * @return true if at least one AttemptInterval has been added
-     */
-    public boolean hasAttemptInterval() {
-        return this._has_attemptInterval;
-    }
-
-    /**
-     * Method hasDebug.
-     * 
-     * @return true if at least one Debug has been added
-     */
-    public boolean hasDebug() {
-        return this._has_debug;
-    }
-
-    /**
-     * Method hasDeleteAllMail.
-     * 
-     * @return true if at least one DeleteAllMail has been added
-     */
-    public boolean hasDeleteAllMail() {
-        return this._has_deleteAllMail;
-    }
-
     /* (non-Javadoc)
      * @see java.lang.Object#hashCode()
      */
@@ -398,24 +329,6 @@ public class ReadmailConfig implements Serializable {
             result = 37 * result + _userAuth.hashCode();
         }
         return result;
-    }
-
-    /**
-     * Returns the value of field 'debug'.
-     * 
-     * @return the value of field 'Debug'.
-     */
-    public boolean isDebug() {
-        return this._debug;
-    }
-
-    /**
-     * Returns the value of field 'deleteAllMail'.
-     * 
-     * @return the value of field 'DeleteAllMail'.
-     */
-    public boolean isDeleteAllMail() {
-        return this._deleteAllMail;
     }
 
     /**
@@ -459,9 +372,8 @@ public class ReadmailConfig implements Serializable {
      * 
      * @param attemptInterval the value of field 'attemptInterval'.
      */
-    public void setAttemptInterval(final long attemptInterval) {
+    public void setAttemptInterval(final Long attemptInterval) {
         this._attemptInterval = attemptInterval;
-        this._has_attemptInterval = true;
     }
 
     /**
@@ -469,9 +381,8 @@ public class ReadmailConfig implements Serializable {
      * 
      * @param debug the value of field 'debug'.
      */
-    public void setDebug(final boolean debug) {
+    public void setDebug(final Boolean debug) {
         this._debug = debug;
-        this._has_debug = true;
     }
 
     /**
@@ -479,9 +390,8 @@ public class ReadmailConfig implements Serializable {
      * 
      * @param deleteAllMail the value of field 'deleteAllMail'.
      */
-    public void setDeleteAllMail(final boolean deleteAllMail) {
+    public void setDeleteAllMail(final Boolean deleteAllMail) {
         this._deleteAllMail = deleteAllMail;
-        this._has_deleteAllMail = true;
     }
 
     /**

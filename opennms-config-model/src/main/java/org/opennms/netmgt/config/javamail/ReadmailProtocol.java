@@ -34,7 +34,6 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
 
 /**
  * The Class ReadmailProtocol.
@@ -54,23 +53,15 @@ public class ReadmailProtocol implements Serializable {
 
     /** The transport. */
     @XmlAttribute(name="transport")
-    private String _transport = "pop3";
+    private String _transport;
 
     /** The SSL enable flag. */
     @XmlAttribute(name="ssl-enable")
-    private boolean _sslEnable = false;
-
-    /** keeps track of state for field: _sslEnable. */
-    @XmlTransient
-    private boolean _has_sslEnable;
+    private Boolean _sslEnable;
 
     /** The start TLS flag. */
     @XmlAttribute(name="start-tls")
-    private boolean _startTls = false;
-
-    /** keeps track of state for field: _startTls. */
-    @XmlTransient
-    private boolean _has_startTls;
+    private Boolean _startTls;
 
     //----------------/
     //- Constructors -/
@@ -81,26 +72,11 @@ public class ReadmailProtocol implements Serializable {
      */
     public ReadmailProtocol() {
         super();
-        setTransport("pop3");
     }
 
     //-----------/
     //- Methods -/
     //-----------/
-
-    /**
-     * Delete SSL enable.
-     */
-    public void deleteSslEnable() {
-        this._has_sslEnable= false;
-    }
-
-    /**
-     * Delete start TLS.
-     */
-    public void deleteStartTls() {
-        this._has_startTls= false;
-    }
 
     /* (non-Javadoc)
      * @see java.lang.Object#equals(java.lang.Object)
@@ -120,11 +96,7 @@ public class ReadmailProtocol implements Serializable {
                 return false;
             if (this._sslEnable != temp._sslEnable)
                 return false;
-            if (this._has_sslEnable != temp._has_sslEnable)
-                return false;
             if (this._startTls != temp._startTls)
-                return false;
-            if (this._has_startTls != temp._has_startTls)
                 return false;
             return true;
         }
@@ -136,8 +108,8 @@ public class ReadmailProtocol implements Serializable {
      * 
      * @return the value of field 'SslEnable'.
      */
-    public boolean getSslEnable() {
-        return this._sslEnable;
+    public Boolean isSslEnable() {
+        return this._sslEnable == null ? Boolean.FALSE : this._sslEnable;
     }
 
     /**
@@ -145,8 +117,8 @@ public class ReadmailProtocol implements Serializable {
      * 
      * @return the value of field 'StartTls'.
      */
-    public boolean getStartTls() {
-        return this._startTls;
+    public Boolean isStartTls() {
+        return this._startTls == null ? Boolean.FALSE : this._startTls;
     }
 
     /**
@@ -155,25 +127,7 @@ public class ReadmailProtocol implements Serializable {
      * @return the value of field 'Transport'.
      */
     public String getTransport() {
-        return this._transport;
-    }
-
-    /**
-     * Method hasSslEnable.
-     * 
-     * @return true if at least one SslEnable has been added
-     */
-    public boolean hasSslEnable() {
-        return this._has_sslEnable;
-    }
-
-    /**
-     * Method hasStartTls.
-     * 
-     * @return true if at least one StartTls has been added
-     */
-    public boolean hasStartTls() {
-        return this._has_startTls;
+        return this._transport == null ? "pop3" : this._transport;
     }
 
     /* (non-Javadoc)
@@ -191,31 +145,12 @@ public class ReadmailProtocol implements Serializable {
     }
 
     /**
-     * Returns the value of field 'sslEnable'.
-     * 
-     * @return the value of field 'SslEnable'.
-     */
-    public boolean isSslEnable() {
-        return this._sslEnable;
-    }
-
-    /**
-     * Returns the value of field 'startTls'.
-     * 
-     * @return the value of field 'StartTls'.
-     */
-    public boolean isStartTls() {
-        return this._startTls;
-    }
-
-    /**
      * Sets the value of field 'sslEnable'.
      * 
      * @param sslEnable the value of field 'sslEnable'.
      */
-    public void setSslEnable(final boolean sslEnable) {
+    public void setSslEnable(final Boolean sslEnable) {
         this._sslEnable = sslEnable;
-        this._has_sslEnable = true;
     }
 
     /**
@@ -223,9 +158,8 @@ public class ReadmailProtocol implements Serializable {
      * 
      * @param startTls the value of field 'startTls'.
      */
-    public void setStartTls(final boolean startTls) {
+    public void setStartTls(final Boolean startTls) {
         this._startTls = startTls;
-        this._has_startTls = true;
     }
 
     /**

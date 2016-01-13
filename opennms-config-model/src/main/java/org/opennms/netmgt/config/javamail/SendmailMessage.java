@@ -53,19 +53,19 @@ public class SendmailMessage implements Serializable {
 
     /** The to. */
     @XmlAttribute(name="to")
-    private String _to = "root@localhost";
+    private String _to;
 
     /** The from. */
     @XmlAttribute(name="from")
-    private String _from = "root@[127.0.0.1]";
+    private String _from;
 
     /** The subject. */
     @XmlAttribute(name="subject")
-    private String _subject = "OpenNMS Test Message";
+    private String _subject;
 
     /** The body. */
     @XmlAttribute(name="body")
-    private String _body = "This is an OpenNMS test message.";
+    private String _body;
 
     //----------------/
     //- Constructors -/
@@ -135,7 +135,7 @@ public class SendmailMessage implements Serializable {
      * @return the value of field 'Body'.
      */
     public String getBody() {
-        return this._body;
+        return this._body == null ? "This is an OpenNMS test message." : this._body;
     }
 
     /**
@@ -144,7 +144,7 @@ public class SendmailMessage implements Serializable {
      * @return the value of field 'From'.
      */
     public String getFrom() {
-        return this._from;
+        return this._from == null ? "root@[127.0.0.1]" : this._from;
     }
 
     /**
@@ -153,7 +153,7 @@ public class SendmailMessage implements Serializable {
      * @return the value of field 'Subject'.
      */
     public String getSubject() {
-        return this._subject;
+        return this._subject == null ? "OpenNMS Test Message" : this._subject;
     }
 
     /**
@@ -162,7 +162,7 @@ public class SendmailMessage implements Serializable {
      * @return the value of field 'To'.
      */
     public String getTo() {
-        return this._to;
+        return this._to == null ? "root@localhost" : this._to;
     }
 
     /* (non-Javadoc)
