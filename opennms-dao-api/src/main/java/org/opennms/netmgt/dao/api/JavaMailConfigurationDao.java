@@ -50,11 +50,25 @@ public interface JavaMailConfigurationDao {
     SendmailConfig getDefaultSendmailConfig();
 
     /**
+     * Sets the default sendmail configuration.
+     *
+     * @param sendmailConfigName the new default sendmail configuration
+     */
+    void setDefaultSendmailConfig(String sendmailConfigName);
+
+    /**
      * Gets the default readmail configuration.
      *
      * @return the default readmail configuration
      */
     ReadmailConfig getDefaultReadmailConfig();
+
+    /**
+     * Sets the default readmail configuration.
+     *
+     * @param readmailConfigName the new default readmail configuration
+     */
+    void setDefaultReadmailConfig(String readmailConfigName);
 
     /**
      * Gets the send mail configuration.

@@ -352,6 +352,14 @@ public class JavaMailAckReaderIT implements InitializingBean {
         @Override
         public boolean removeEnd2endConfig(String end2endConfigName) {
             return false;
+        }
+
+        @Override
+        public void setDefaultSendmailConfig(String sendmailConfigName) {
+        }
+
+        @Override
+        public void setDefaultReadmailConfig(String sendmailConfigName) {
         }        
     }
     

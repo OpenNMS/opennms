@@ -85,6 +85,16 @@ public class DefaultJavamailConfigurationDao extends AbstractJaxbConfigDao<Javam
     }
 
     /* (non-Javadoc)
+     * @see org.opennms.netmgt.dao.api.JavaMailConfigurationDao#setDefaultReadmailConfig(java.lang.String)
+     */
+    @Override
+    public void setDefaultReadmailConfig(String readmailConfigName) {
+        if (getReadMailConfig(readmailConfigName) != null) {
+            getContainer().getObject().setDefaultReadConfigName(readmailConfigName);
+        }
+    }
+
+    /* (non-Javadoc)
      * @see org.opennms.netmgt.dao.api.JavaMailConfigurationDao#getReadMailConfig(java.lang.String)
      */
     @Override
@@ -115,6 +125,16 @@ public class DefaultJavamailConfigurationDao extends AbstractJaxbConfigDao<Javam
     public SendmailConfig getDefaultSendmailConfig() {
         String name = getContainer().getObject().getDefaultSendConfigName();
         return getSendMailConfig(name);
+    }
+
+    /* (non-Javadoc)
+     * @see org.opennms.netmgt.dao.api.JavaMailConfigurationDao#setDefaultSendmailConfig(java.lang.String)
+     */
+    @Override
+    public void setDefaultSendmailConfig(String sendmailConfigName) {
+        if (getSendMailConfig(sendmailConfigName) != null) {
+            getContainer().getObject().setDefaultSendConfigName(sendmailConfigName);
+        }
     }
 
     /* (non-Javadoc)

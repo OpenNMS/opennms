@@ -28,7 +28,6 @@
 
 package org.opennms.web.rest.v1.config;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.Resource;
@@ -49,6 +48,7 @@ import javax.ws.rs.core.Response.Status;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.opennms.core.config.api.JaxbListWrapper;
 import org.opennms.netmgt.config.javamail.End2endMailConfig;
 import org.opennms.netmgt.config.javamail.ReadmailConfig;
 import org.opennms.netmgt.config.javamail.SendmailConfig;
@@ -86,7 +86,12 @@ public class JavamailConfigurationResource extends OnmsRestService implements In
      */
     @SuppressWarnings("serial")
     @XmlRootElement(name="sendmail-configs")
-    public static class SendmailConfigList extends ArrayList<String> {
+    public static class SendmailConfigList extends JaxbListWrapper<String> {
+
+        /**
+         * Instantiates a new sendmail configuration list.
+         */
+        public SendmailConfigList() {}
 
         /**
          * Instantiates a new sendmail configuration list.
@@ -104,7 +109,7 @@ public class JavamailConfigurationResource extends OnmsRestService implements In
          */
         @XmlElement(name="sendmail-config")
         public List<String> getSendmailConfigs() {
-            return this;
+            return getObjects();
         }
     }
 
@@ -113,7 +118,12 @@ public class JavamailConfigurationResource extends OnmsRestService implements In
      */
     @SuppressWarnings("serial")
     @XmlRootElement(name="sendmail-configs")
-    public static class ReadmailConfigList extends ArrayList<String> {
+    public static class ReadmailConfigList extends JaxbListWrapper<String> {
+
+        /**
+         * Instantiates a new readmail configuration list.
+         */
+        public ReadmailConfigList() {}
 
         /**
          * Instantiates a new readmail configuration list.
@@ -131,7 +141,7 @@ public class JavamailConfigurationResource extends OnmsRestService implements In
          */
         @XmlElement(name="readmail-config")
         public List<String> getReadmailConfigs() {
-            return this;
+            return getObjects();
         }
     }
 
@@ -140,7 +150,12 @@ public class JavamailConfigurationResource extends OnmsRestService implements In
      */
     @SuppressWarnings("serial")
     @XmlRootElement(name="end2end-configs")
-    public static class End2endConfigList extends ArrayList<String> {
+    public static class End2endConfigList extends JaxbListWrapper<String> {
+
+        /**
+         * Instantiates a new end2end configuration list.
+         */
+        public End2endConfigList() {}
 
         /**
          * Instantiates a new end2end configuration list.
@@ -158,7 +173,7 @@ public class JavamailConfigurationResource extends OnmsRestService implements In
          */
         @XmlElement(name="end2end-config")
         public List<String> getEnd2endConfigs() {
-            return this;
+            return getObjects();
         }
     }
 
@@ -174,6 +189,64 @@ public class JavamailConfigurationResource extends OnmsRestService implements In
     public void afterPropertiesSet() throws Exception {
         Assert.notNull(m_javamailConfigurationDao, "javamailConfigurationDao must be set!");
         Assert.notNull(m_eventProxy, "eventProxy must be set!");
+    }
+
+    /**
+     * Gets the default readmail configuration.
+     *
+     * @return the default readmail configuration
+     */
+    @GET
+    @Path("default/readmail")
+    @Produces(MediaType.TEXT_PLAIN)
+    public Response getDefaultReadmailConfiguration() {
+        ReadmailConfig config = m_javamailConfigurationDao.getDefaultReadmailConfig();
+        if (config == null) {
+            return Response.status(Status.NOT_FOUND).build();
+        }
+        return Response.ok(config.getName()).build();
+    }
+
+    /**
+     * Gets the default sendmail configuration.
+     *
+     * @return the default sendmail configuration
+     */
+    @GET
+    @Path("default/sendmail")
+    @Produces(MediaType.TEXT_PLAIN)
+    public Response getDefaultSendmailConfiguration() {
+        SendmailConfig config = m_javamailConfigurationDao.getDefaultSendmailConfig();
+        if (config == null) {
+            return Response.status(Status.NOT_FOUND).build();
+        }
+        return Response.ok(config.getName()).build();
+    }
+
+    /**
+     * Sets the default readmail configuration.
+     *
+     * @param readmailConfigName the readmail configuration name
+     * @return the response
+     */
+    @PUT
+    @Path("default/readmail/{readmailConfig}")
+    public Response setDefaultReadmailConfiguration(@PathParam("readmailConfig") final String readmailConfigName) {
+        m_javamailConfigurationDao.setDefaultReadmailConfig(readmailConfigName);
+        return saveConfiguration();
+    }
+
+    /**
+     * Sets the default sendmail configuration.
+     *
+     * @param sendmailConfigName the sendmail configuration name
+     * @return the response
+     */
+    @PUT
+    @Path("default/sendmail/{sendmailConfig}")
+    public Response setDefaultSendmailConfiguration(@PathParam("sendmailConfig") final String sendmailConfigName) {
+        m_javamailConfigurationDao.setDefaultSendmailConfig(sendmailConfigName);
+        return saveConfiguration();
     }
 
     /**
@@ -225,7 +298,7 @@ public class JavamailConfigurationResource extends OnmsRestService implements In
     @Path("readmails/{readmailConfig}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     public Response getReadmailConfiguration(@PathParam("readmailConfig") final String readmailConfig) {
-        ReadmailConfig readmail = m_javamailConfigurationDao.getReadMailConfig(readmailConfig);
+        ReadmailConfig readmail = "default".equals(readmailConfig) ? m_javamailConfigurationDao.getDefaultReadmailConfig() : m_javamailConfigurationDao.getReadMailConfig(readmailConfig);
         if (readmail == null) {
             return Response.status(404).build();
         }
@@ -242,7 +315,7 @@ public class JavamailConfigurationResource extends OnmsRestService implements In
     @Path("sendmails/{sendmailConfig}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     public Response getSendmailConfiguration(@PathParam("sendmailConfig") final String sendmailConfig) {
-        SendmailConfig sendmail = m_javamailConfigurationDao.getSendMailConfig(sendmailConfig);
+        SendmailConfig sendmail = "default".equals(sendmailConfig) ? m_javamailConfigurationDao.getDefaultSendmailConfig() : m_javamailConfigurationDao.getSendMailConfig(sendmailConfig);
         if (sendmail == null) {
             return Response.status(404).build();
         }

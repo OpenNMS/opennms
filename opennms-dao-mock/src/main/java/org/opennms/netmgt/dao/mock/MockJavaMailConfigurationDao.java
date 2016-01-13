@@ -134,4 +134,14 @@ public class MockJavaMailConfigurationDao implements JavaMailConfigurationDao {
         return false;
     }
 
+    @Override
+    public void setDefaultSendmailConfig(String sendmailConfigName) {
+        // TODO Auto-generated method stub
+    }
+
+    @Override
+    public void setDefaultReadmailConfig(String sendmailConfigName) {
+        // TODO Auto-generated method stub
+    }
+
 }
