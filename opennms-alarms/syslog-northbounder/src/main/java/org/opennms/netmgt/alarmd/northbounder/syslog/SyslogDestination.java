@@ -429,19 +429,23 @@ public class SyslogDestination implements Destination {
 
     /**
      * Pass filter.
+     * <p>If the destination doesn't have filter, the method will return true.</p>
+     * <p>If the method has filters, they will be evaluated. If no filters are satisfied, the method will return false.
+     * Otherwise, the method will return true as soon as one filter is satisfied.</p>
      *
      * @param alarm the alarm
      * @return true, if successful
      */
     public boolean passFilter(NorthboundAlarm alarm) {
-        if (m_filters != null) {
+        if (m_filters != null && m_filters.isEmpty() == false) {
             for (SyslogFilter filter : m_filters) {
                 if (filter.passFilter(alarm)) {
                     return true;
                 }
             }
+            return false;
         }
-        return false;
+        return true;
     }
 
     /**

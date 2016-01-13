@@ -30,7 +30,6 @@ package org.opennms.netmgt.alarmd.northbounder.syslog;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
@@ -220,7 +219,7 @@ public class SyslogConfigDaoTest {
 
         dst = dao.getConfig().getSyslogDestination("test-host");
         assertNotNull(dst);
-        assertNull(dst.getFilters());
+        assertTrue(dst.getFilters().isEmpty());
         configFile.delete();
     }
 
