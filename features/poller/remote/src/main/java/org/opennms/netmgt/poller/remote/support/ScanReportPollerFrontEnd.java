@@ -47,7 +47,6 @@ import java.util.Set;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.poller.DistributionContext;
 import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.poller.remote.ConfigurationChangedListener;
@@ -473,7 +472,7 @@ public class ScanReportPollerFrontEnd implements PollerFrontEnd, InitializingBea
         // Set the percentage complete to 100%
         firePropertyChange(ScanReportProperties.percentageComplete.toString(), null, 1.0);
 
-        LOG.debug("Returning scan report: " + JaxbUtils.marshal(scanReport));
+        LOG.debug("Returning scan report: {}", scanReport);
 
         // Fire an exitNecessary event with the scanReport as the parameter
         firePropertyChange(PollerFrontEndStates.exitNecessary.toString(), null, scanReport);
