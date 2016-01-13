@@ -41,9 +41,9 @@ import javax.swing.SwingUtilities
 
 import org.apache.batik.swing.JSVGCanvas
 import org.opennms.netmgt.config.monitoringLocations.LocationDef
+import org.opennms.netmgt.model.ScanReport;
+import org.opennms.netmgt.model.ScanReportPollResult;
 import org.opennms.netmgt.poller.remote.PollerBackEnd
-import org.opennms.netmgt.poller.remote.support.PollResult
-import org.opennms.netmgt.poller.remote.support.ScanReport
 import org.opennms.netmgt.poller.remote.support.ScanReportPollerFrontEnd
 import org.opennms.poller.remote.FrontEndInvoker
 import org.opennms.poller.remote.GeodataFetcher
@@ -325,7 +325,7 @@ class ScanGui extends AbstractGui implements ScanReportHandler, PropertyChangeLi
         m_scanReport = report
 
         boolean passed = true
-        for (final PollResult result : report.getPollResults()) {
+        for (final ScanReportPollResult result : report.getPollResults()) {
             if (!result.getPollStatus().isUp()) {
                 passed = false
                 break
@@ -344,6 +344,7 @@ class ScanGui extends AbstractGui implements ScanReportHandler, PropertyChangeLi
         } else {
             m_updateDetails()
         }
+        m_backEnd.reportSingleScan(report)
     }
 
     public static void main(String[] args) {

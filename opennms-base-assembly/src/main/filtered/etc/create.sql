@@ -50,6 +50,7 @@ drop table alarms cascade;
 drop table memos cascade;
 drop table node cascade;
 drop table service cascade;
+drop table scanreport cascade;
 drop table monitoringlocations cascade;
 drop table monitoringlocationspollingpackages cascade;
 drop table monitoringlocationscollectionpackages cascade;
@@ -318,6 +319,50 @@ CREATE UNIQUE INDEX monitoringsystemsproperties_id_property_idx on monitoringsys
 --##################################################################
 INSERT INTO monitoringsystems (id, label, location, type) values ('00000000-0000-0000-0000-000000000000', 'localhost', 'localhost', 'OpenNMS');
 
+
+--#####################################################
+--# scanreport Table - Contains a list of OpenNMS remote poller scan reports
+--#
+--# This table contains the following information:
+--#
+--# id               : The UUID of the report
+--# location         : The monitoring location name
+--# locale           : The locale the scan was run from
+--# timestamp        : The start time of the scan
+--#
+--#####################################################
+
+CREATE TABLE scanreport (
+    id TEXT NOT NULL,
+    location TEXT NOT NULL,
+    locale TEXT,
+    timestamp TIMESTAMP WITH TIME ZONE,
+
+    CONSTRAINT scanreport_pkey PRIMARY KEY (id),
+    CONSTRAINT scanreport_monitoringlocations_fkey FOREIGN KEY (location) REFERENCES monitoringlocations (id) ON DELETE CASCADE
+);
+
+CREATE UNIQUE INDEX scanreport_id_idx on scanreport(id);
+
+CREATE TABLE scanreportpollresults (
+    id TEXT NOT NULL,
+    scanReportId TEXT NOT NULL,
+    serviceName TEXT NOT NULL,
+    serviceId INTEGER NOT NULL,
+    nodeLabel TEXT NOT NULL,
+    nodeId INTEGER NOT NULL,
+    ipaddress TEXT,
+    statusReason TEXT,
+    responseTime DOUBLE PRECISION,
+    statusCode INTEGER NOT NULL,
+    statusTime TIMESTAMP WITH TIME ZONE,
+
+    CONSTRAINT scanreportpollresults_pkey PRIMARY KEY (id),
+    CONSTRAINT scanreportpollresults_fkey FOREIGN KEY (scanReportId) REFERENCES scanreport (id) ON DELETE CASCADE
+);
+
+CREATE UNIQUE INDEX scanreportpollresults_id_idx on scanreportpollresults(id);
+CREATE UNIQUE INDEX scanreportpollresults_id_scanreportid_idx on scanreportpollresults(id, scanreportid);
 
 --########################################################################
 --# node Table - Contains information on nodes discovered and potentially

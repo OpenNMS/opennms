@@ -69,12 +69,14 @@ import org.opennms.netmgt.daemon.SpringServiceDaemon;
 import org.opennms.netmgt.dao.api.LocationMonitorDao;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
 import org.opennms.netmgt.dao.api.MonitoringLocationDao;
+import org.opennms.netmgt.dao.api.ScanReportDao;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventIpcManager;
 import org.opennms.netmgt.model.OnmsLocationMonitor;
 import org.opennms.netmgt.model.OnmsLocationMonitor.MonitorStatus;
 import org.opennms.netmgt.model.OnmsLocationSpecificStatus;
 import org.opennms.netmgt.model.OnmsMonitoredService;
+import org.opennms.netmgt.model.ScanReport;
 import org.opennms.netmgt.model.ServiceSelector;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.poller.DistributionContext;
@@ -174,6 +176,7 @@ public class DefaultPollerBackEnd implements PollerBackEnd, SpringServiceDaemon 
     private MonitoringLocationDao m_monitoringLocationDao;
     private LocationMonitorDao m_locMonDao;
     private MonitoredServiceDao m_monSvcDao;
+    private ScanReportDao m_scanReportDao;
     private EventIpcManager m_eventIpcManager;
     private PollerConfig m_pollerConfig;
     private TimeKeeper m_timeKeeper;
@@ -825,6 +828,10 @@ public class DefaultPollerBackEnd implements PollerBackEnd, SpringServiceDaemon 
         m_monSvcDao = monSvcDao;
     }
 
+    public void setScanReportDao(final ScanReportDao scanReportDao) {
+        m_scanReportDao = scanReportDao;
+    }
+
     /**
      * <p>setPollerConfig</p>
      *
@@ -877,5 +884,14 @@ public class DefaultPollerBackEnd implements PollerBackEnd, SpringServiceDaemon 
             updateConnectionHostDetails(mon, mon.getProperties());
             m_locMonDao.update(mon);
         }
+    }
+
+    @Override
+    public void reportSingleScan(final ScanReport report) {
+        LOG.info("Single scan complete: {}", report);
+        m_scanReportDao.save(report);
+        /*
+        final OnmsLocationMonitor monitor = m_locMonDao.get(report.getMonitoringSystem());
+        */
     }
 }

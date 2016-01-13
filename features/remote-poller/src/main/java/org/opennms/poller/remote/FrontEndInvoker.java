@@ -7,9 +7,9 @@ import java.util.concurrent.CountDownLatch;
 import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 
+import org.opennms.netmgt.model.ScanReport;
 import org.opennms.netmgt.poller.remote.PollerFrontEnd;
 import org.opennms.netmgt.poller.remote.PollerFrontEnd.PollerFrontEndStates;
-import org.opennms.netmgt.poller.remote.support.ScanReport;
 import org.opennms.netmgt.poller.remote.support.ScanReportPollerFrontEnd.ScanReportProperties;
 
 public class FrontEndInvoker extends SwingWorker<ScanReport, Integer> implements PropertyChangeListener {

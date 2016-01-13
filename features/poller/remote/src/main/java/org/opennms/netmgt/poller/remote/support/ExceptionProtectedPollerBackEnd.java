@@ -37,6 +37,7 @@ import org.opennms.netmgt.config.monitoringLocations.LocationDef;
 import org.opennms.netmgt.config.poller.Package;
 import org.opennms.netmgt.model.OnmsLocationMonitor.MonitorStatus;
 import org.opennms.netmgt.model.OnmsMonitoredService;
+import org.opennms.netmgt.model.ScanReport;
 import org.opennms.netmgt.poller.DistributionContext;
 import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.poller.ServiceMonitorLocator;
@@ -229,4 +230,13 @@ public class ExceptionProtectedPollerBackEnd implements PollerBackEnd {
         }
     }
 
+    @Override
+    public void reportSingleScan(final ScanReport report) {
+        try {
+            m_delegate.reportSingleScan(report);
+        } catch (Throwable t) {
+            LOG.error("Unexpected exception thrown in remote poller backend.", t);
+            throw new RemoteAccessException("Unexpected Exception Occurred on the server.", t);
+        }
+    }
 }

@@ -50,6 +50,9 @@
     <property name="monitoredServiceDao">
       <onmsgi:reference interface="org.opennms.netmgt.dao.api.MonitoredServiceDao"/>
     </property>
+    <property name="scanReportDao">
+      <onmsgi:reference interface="org.opennms.netmgt.dao.api.ScanReportDao"/>
+    </property>
     <property name="pollerConfig" ref="pollerConfig" />
     <property name="timeKeeper" ref="timeKeeper" />
     <property name="eventIpcManager">

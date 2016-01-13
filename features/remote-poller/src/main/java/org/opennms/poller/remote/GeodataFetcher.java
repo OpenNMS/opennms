@@ -34,12 +34,12 @@ public class GeodataFetcher {
             final String xml = EntityUtils.toString(entity);
             System.err.println("xml = " + xml);
             final GeodataResponse geoResponse = JaxbUtils.unmarshal(GeodataResponse.class, xml);
-            ret.put("externalIpAddress", InetAddressUtils.str(geoResponse.getIp()));
-            ret.put("countryCode", geoResponse.getCountryCode());
-            ret.put("regionCode", geoResponse.getRegionCode());
+            ret.put("external-ip-address", InetAddressUtils.str(geoResponse.getIp()));
+            ret.put("country-code", geoResponse.getCountryCode());
+            ret.put("region-code", geoResponse.getRegionCode());
             ret.put("city", geoResponse.getCity());
-            ret.put("zipCode", geoResponse.getZipCode());
-            ret.put("timeZone", geoResponse.getTimeZone());
+            ret.put("zip-code", geoResponse.getZipCode());
+            ret.put("time-zone", geoResponse.getTimeZone());
             ret.put("latitude", geoResponse.getLatitude() == null? null : geoResponse.getLatitude().toString());
             ret.put("longitude", geoResponse.getLongitude() == null? null : geoResponse.getLongitude().toString());
             EntityUtils.consumeQuietly(entity);

@@ -38,6 +38,7 @@ import org.opennms.netmgt.config.monitoringLocations.LocationDef;
 import org.opennms.netmgt.config.poller.Package;
 import org.opennms.netmgt.model.OnmsLocationMonitor.MonitorStatus;
 import org.opennms.netmgt.model.OnmsMonitoredService;
+import org.opennms.netmgt.model.ScanReport;
 import org.opennms.netmgt.poller.DistributionContext;
 import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.poller.ServiceMonitorLocator;
@@ -239,6 +240,16 @@ public class ServerUnreachableAdaptor implements PollerBackEnd {
     public void saveResponseTimeData(String locationMonitor, OnmsMonitoredService monSvc, double responseTime, Package pkg) {
         try {
             m_remoteBackEnd.saveResponseTimeData(locationMonitor, monSvc, responseTime, pkg);
+        } catch (RemoteAccessException e) {
+            m_serverUnresponsive = true;
+            LOG.warn("Server is unable to respond due to the following exception.", e);
+        }
+    }
+
+    @Override
+    public void reportSingleScan(final ScanReport report) {
+        try {
+            m_remoteBackEnd.reportSingleScan(report);
         } catch (RemoteAccessException e) {
             m_serverUnresponsive = true;
             LOG.warn("Server is unable to respond due to the following exception.", e);

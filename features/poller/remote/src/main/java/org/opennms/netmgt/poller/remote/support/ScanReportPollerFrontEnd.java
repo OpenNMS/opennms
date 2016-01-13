@@ -47,6 +47,8 @@ import java.util.Set;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.netmgt.model.ScanReport;
+import org.opennms.netmgt.model.ScanReportPollResult;
 import org.opennms.netmgt.poller.DistributionContext;
 import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.poller.remote.ConfigurationChangedListener;
@@ -74,6 +76,8 @@ import org.springframework.util.ObjectUtils;
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  */
 public class ScanReportPollerFrontEnd implements PollerFrontEnd, InitializingBean, DisposableBean {
+
+    private static final PolledService[] POLLED_SERVICE_ARRAY = new PolledService[0];
 
     public static enum ScanReportProperties {
         percentageComplete
@@ -179,6 +183,8 @@ public class ScanReportPollerFrontEnd implements PollerFrontEnd, InitializingBea
 
     private Set<String> m_selectedApplications = null;
 
+    private String m_location;
+
     /** {@inheritDoc} */
     @Override
     public void addConfigurationChangedListener(ConfigurationChangedListener l) {
@@ -224,7 +230,7 @@ public class ScanReportPollerFrontEnd implements PollerFrontEnd, InitializingBea
      * @param location a {@link java.lang.String} object.
      */
     private void doRegister(final String location) {
-
+        m_location = location;
         String monitoringSystemId = m_backEnd.registerLocationMonitor(location);
 
         try {
@@ -404,24 +410,20 @@ public class ScanReportPollerFrontEnd implements PollerFrontEnd, InitializingBea
         firePropertyChange(ScanReportProperties.percentageComplete.toString(), null, 0.0);
 
         ScanReport scanReport = new ScanReport();
-        System.err.println("metadata: " + m_metadata);
-        scanReport.setCustomerAccountNumber(m_metadata.get("customer-account-number"));
-        scanReport.setCustomerName(m_metadata.get("customer-name"));
-        scanReport.setReferenceId(m_metadata.get("reference-id"));
-        scanReport.setExternalIpAddress(InetAddressUtils.addr(m_metadata.get("externalIpAddress")));
-        scanReport.setCountryCode(m_metadata.get("countryCode"));
-        scanReport.setRegionCode(m_metadata.get("regionCode"));
-        scanReport.setCity(m_metadata.get("city"));
-        scanReport.setZipCode(m_metadata.get("zipCode"));
-        scanReport.setTimeZone(m_metadata.get("timeZone"));
-        if (m_metadata.containsKey("latitude")) { scanReport.setLatitude(Double.valueOf(m_metadata.get("latitude"))); }
-        if (m_metadata.containsKey("longitude")) { scanReport.setLongitude(Double.valueOf(m_metadata.get("longitude"))); }
+        scanReport.setLocation(m_location);
+        scanReport.addProperty("monitoring-system-id", getMonitoringSystemId());
+        scanReport.setTimestamp(new Date());
+
+        for (final Map.Entry<String,String> entry : m_metadata.entrySet()) {
+            scanReport.addProperty(entry);
+        }
 
         try {
             m_pollService.setServiceMonitorLocators(m_backEnd.getServiceMonitorLocators(DistributionContext.REMOTE_MONITOR));
             m_pollerConfiguration = retrieveLatestConfiguration();
 
-            PolledService[] services = getPolledServices().toArray(new PolledService[0]);
+
+            PolledService[] services = getPolledServices().toArray(POLLED_SERVICE_ARRAY);
             for (int i = 0; i < services.length; i++) {
                 PolledService service = services[i];
 
@@ -429,10 +431,10 @@ public class ScanReportPollerFrontEnd implements PollerFrontEnd, InitializingBea
                 if (m_selectedApplications != null) {
                     boolean foundApplication = false;
                     for (String application : service.getApplications()) {
-                       if (m_selectedApplications.contains(application)) {
-                           foundApplication = true;
-                           break;
-                       }
+                        if (m_selectedApplications.contains(application)) {
+                            foundApplication = true;
+                            break;
+                        }
                     }
 
                     // If we didn't find the applicaton in the list...
@@ -456,7 +458,7 @@ public class ScanReportPollerFrontEnd implements PollerFrontEnd, InitializingBea
                                  .append("reason", result.getReason())
                                  .toString()
                                 );
-                        scanReport.addPollResult(new PollResult(service.getSvcName(), service.getServiceId(), service.getNodeLabel(), service.getNodeId(), service.getIpAddr(), result));
+                        scanReport.addPollResult(new ScanReportPollResult(service.getSvcName(), service.getServiceId(), service.getNodeLabel(), service.getNodeId(), service.getIpAddr(), result));
                     }
                 } catch (Throwable e) {
                     LOG.error("Unexpected exception occurred while polling service ID {}", service.getServiceId(), e);

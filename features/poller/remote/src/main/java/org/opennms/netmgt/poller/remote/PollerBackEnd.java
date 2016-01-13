@@ -37,6 +37,7 @@ import org.opennms.netmgt.config.monitoringLocations.LocationDef;
 import org.opennms.netmgt.config.poller.Package;
 import org.opennms.netmgt.model.OnmsLocationMonitor.MonitorStatus;
 import org.opennms.netmgt.model.OnmsMonitoredService;
+import org.opennms.netmgt.model.ScanReport;
 import org.opennms.netmgt.poller.DistributionContext;
 import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.poller.ServiceMonitorLocator;
@@ -152,6 +153,10 @@ public interface PollerBackEnd {
      */
     void reportResult(String locationMonitorID, int serviceId, PollStatus status);
 
+    /**
+     * Report a single scan from the client to the server.
+     */
+    void reportSingleScan(ScanReport report);
 
     /**
      * <p>configurationUpdated</p>
