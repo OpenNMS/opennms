@@ -37,50 +37,47 @@ import org.opennms.core.test.xml.XmlTestNoCastor;
 import org.opennms.web.rest.api.ApiVersion;
 import org.opennms.web.rest.api.ResourceLocation;
 
-public class BusinessServiceDTOJaxbTest extends XmlTestNoCastor<BusinessServiceDTO> {
+public class BusinessServiceDTOJaxbTest extends XmlTestNoCastor<BusinessService> {
 
-    public BusinessServiceDTOJaxbTest(BusinessServiceDTO sampleObject, Object sampleXml, String schemaFile) {
+    public BusinessServiceDTOJaxbTest(BusinessService sampleObject, Object sampleXml, String schemaFile) {
         super(sampleObject, sampleXml, schemaFile);
     }
 
-    @Parameterized.Parameters
-    public static Collection<Object[]> data() throws ParseException {
-        BusinessServiceDTO bs = new BusinessServiceDTO();
-        bs.setId(1L);
-        bs.setName("Web Servers");
-        bs.addAttribute("dc", "RDU");
-        bs.addReductionKey("myReductionKeyA");
-        bs.addReductionKey("myReductionKeyB");
-        bs.setLocation(new ResourceLocation(ApiVersion.Version2, "business-services", "1"));
-
-        IpServiceDTO ipService = new IpServiceDTO();
-        ipService.setId("1");
-        ipService.setLocation(new ResourceLocation(ApiVersion.Version1, "ifservices", "1"));
-        bs.addIpService(ipService);
-
-        return Arrays.asList(new Object[][]{{
-            bs,
-            "<business-service>" +
-               "<id>1</id>" +
-               "<name>Web Servers</name>" +
-               "<location>/api/v2/business-services/1</location>" +
-               "<attributes>" +
-                 "<attribute>" +
-                   "<key>dc</key>" +
-                   "<value>RDU</value>" +
-                 "</attribute>" +
-               "</attributes>" +
-               "<ip-services>" +
-                   "<ip-service>" +
-                      "<id>1</id>" +
-                      "<location>/rest/ifservices/1</location>" +
-                      "<reductionKeys/>" +
-                   "</ip-service>" +
-               "</ip-services>" +
-               "<child-services/>" +
-               "<parent-services/>" +
-            "</business-service>",
-            null
-        }});
-    }
+//    @Parameterized.Parameters
+//    public static Collection<Object[]> data() throws ParseException {
+//        BusinessService bs = new BusinessService();
+//        bs.setId(1L);
+//        bs.setName("Web Servers");
+//        bs.addAttribute("dc", "RDU");
+//        bs.setLocation(new ResourceLocation(ApiVersion.Version2, "business-services", "1"));
+//
+//        IpService ipService = new IpService();
+//        ipService.setId("1");
+//        ipService.setLocation(new ResourceLocation(ApiVersion.Version1, "ifservices", "1"));
+//        bs.addIpService(ipService);
+//
+//        return Arrays.asList(new Object[][]{{
+//            bs,
+//            "<business-service>" +
+//               "<id>1</id>" +
+//               "<name>Web Servers</name>" +
+//               "<location>/api/v2/business-services/1</location>" +
+//               "<attributes>" +
+//                 "<attribute>" +
+//                   "<key>dc</key>" +
+//                   "<value>RDU</value>" +
+//                 "</attribute>" +
+//               "</attributes>" +
+//               "<ip-services>" +
+//                   "<ip-service>" +
+//                      "<id>1</id>" +
+//                      "<location>/rest/ifservices/1</location>" +
+//                   "</ip-service>" +
+//               "</ip-services>" +
+//               "<child-services/>" +
+//               "<parent-services/>" +
+//            "</business-service>",
+//            null
+//        }});
+//    }
 }

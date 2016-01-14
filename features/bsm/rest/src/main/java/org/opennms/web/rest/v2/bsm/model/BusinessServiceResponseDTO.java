@@ -26,12 +26,11 @@
  * http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.bsm.service.model;
+package org.opennms.web.rest.v2.bsm.model;
 
-import java.util.Collection;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
+import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
+import org.opennms.netmgt.model.OnmsSeverity;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -39,9 +38,9 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
-
-import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 
 import org.opennms.web.rest.api.JAXBResourceLocationAdapter;
 import org.opennms.web.rest.api.ResourceLocation;
@@ -49,7 +48,7 @@ import org.opennms.web.rest.api.ResourceLocation;
 
 @XmlRootElement(name = "business-service")
 @XmlAccessorType(XmlAccessType.NONE)
-public class BusinessServiceDTO {
+public class BusinessServiceResponseDTO {
     
     @XmlElement(name = "id")
     private Long m_id;
@@ -57,31 +56,30 @@ public class BusinessServiceDTO {
     @XmlElement(name = "name")
     private String m_name;
 
-    @XmlElement(name="location")
-    @XmlJavaTypeAdapter(JAXBResourceLocationAdapter.class)
-    private ResourceLocation location;
-
     @XmlElement(name = "attributes", required = false)
     @XmlJavaTypeAdapter(JAXBMapAdapter.class)
     private Map<String, String> m_attributes = Maps.newLinkedHashMap();
 
     @XmlElement(name="ip-service")
     @XmlElementWrapper(name="ip-services")
-    private Set<IpServiceDTO> m_ipServices = Sets.newLinkedHashSet();
+    private Set<IpServiceResponseDTO> m_ipServices = Sets.newLinkedHashSet();
 
     @XmlElement(name="child-service")
     @XmlElementWrapper(name="child-services")
-    private Set<BusinessServiceDTO> m_childServices = Sets.newLinkedHashSet();
+    private Set<Long> m_childServices = Sets.newLinkedHashSet();
 
     @XmlElement(name="parent-service")
     @XmlElementWrapper(name="parent-services")
-    private Set<BusinessServiceDTO> m_parentServices = Sets.newLinkedHashSet();
+    private Set<Long> m_parentServices = Sets.newLinkedHashSet();
 
-    public Long getId() {
+    @XmlElement(name="operational-status")
+    OnmsSeverity m_operationalStatus;
+
+    public long getId() {
         return m_id;
     }
 
-    public void setId(Long id) {
+    public void setId(long id) {
         m_id = id;
     }
 
@@ -101,102 +99,36 @@ public class BusinessServiceDTO {
         m_attributes = attributes;
     }
 
-    public void addAttribute(String key, String value) {
-        m_attributes.put(key, value);
-    }
-
-    public void addAttributes(Map<String, String> attributes) {
-        m_attributes.putAll(attributes);
-    }
-
-    public String removeAttribute(String key) {
-        return m_attributes.remove(key);
-    }
-
-    public void removeAttributes(Collection<String> attributeKeys) {
-        for (String attributeKey : attributeKeys) {
-            m_attributes.remove(attributeKey);
-        }
-    }
-
-    public Set<String> getReductionKeys() {
-        return m_reductionKeys;
-    }
-
-    public void setReductionKeys(Set<String> reductionKeys) {
-        m_reductionKeys = reductionKeys;
-    }
-
-    public void addReductionKey(String reductionKey) {
-        m_reductionKeys.add(reductionKey);
-    }
-
-    public void addReductionKeys(Collection<String> reductionKeys) {
-        m_reductionKeys.addAll(reductionKeys);
-    }
-
-    public void removeReductionKey(String reductionKey) {
-        m_reductionKeys.remove(reductionKey);
-    }
-
-    public void removeReductionKeys(Collection<String> reductionKeys) {
-        m_reductionKeys.removeAll(reductionKeys);
-    }
-
-    public Set<IpServiceDTO> getIpServices() {
+    public Set<IpServiceResponseDTO> getIpServices() {
         return m_ipServices;
     }
 
-    public void setIpServices(Set<IpServiceDTO> ipServices) {
+    public void setIpServices(Set<IpServiceResponseDTO> ipServices) {
         m_ipServices = ipServices;
     }
 
-    public void addIpService(IpServiceDTO ipService) {
-        m_ipServices.add(ipService);
-    }
-
-    public void removeIpService(IpServiceDTO ipService) {
-        m_ipServices.remove(ipService);
-    }
-
-    public Set<BusinessServiceDTO> getChildServices() {
+    public Set<Long> getChildServices() {
         return m_childServices;
     }
 
-    public void setChildServices(Set<BusinessServiceDTO> childServices) {
+    public void setChildServices(Set<Long> childServices) {
         m_childServices = childServices;
     }
 
-    public void addChildService(BusinessServiceDTO childService) {
-        m_childServices.add(childService);
-    }
-
-    public void removeChildService(BusinessServiceDTO childService) {
-        m_childServices.remove(childService);
-    }
-
-    public Set<BusinessServiceDTO> getParentServices() {
+    public Set<Long> getParentServices() {
         return m_parentServices;
     }
 
-    public void setParentServices(Set<BusinessServiceDTO> parentServices) {
+    public void setParentServices(Set<Long> parentServices) {
         m_parentServices = parentServices;
     }
 
-    public void addParentService(BusinessServiceDTO parentService) {
-        m_parentServices.add(parentService);
+    public OnmsSeverity getOperationalStatus() {
+        return this.m_operationalStatus;
     }
 
-    public void removeParentService(BusinessServiceDTO parentService) {
-        m_parentServices.remove(parentService);
-    }
-
-    public void setLocation(ResourceLocation location) {
-        this.location = location;
-    }
-
-    public ResourceLocation getLocation() {
-        return location;
+    public void setOperationalStatus(final OnmsSeverity operationalStatus) {
+        this.m_operationalStatus = operationalStatus;
     }
 
     @Override
@@ -207,14 +139,13 @@ public class BusinessServiceDTO {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        final BusinessServiceDTO other = (BusinessServiceDTO) obj;
+        final BusinessServiceResponseDTO other = (BusinessServiceResponseDTO) obj;
 
         return Objects.equals(m_id, other.m_id)
                 && Objects.equals(m_name, other.m_name)
                 && Objects.equals(m_attributes, other.m_attributes)
                 && Objects.equals(m_ipServices, other.m_ipServices)
-                && Objects.equals(m_childServices, other.m_childServices)
-                && Objects.equals(location, other.location);
+                && Objects.equals(m_childServices, other.m_childServices);
     }
 
     @Override
@@ -224,11 +155,12 @@ public class BusinessServiceDTO {
 
     @Override
     public String toString() {
-        return com.google.common.base.Objects.toStringHelper(this).add("id", m_id).add("name", m_name)
+        return com.google.common.base.Objects.toStringHelper(this)
+                .add("id", m_id)
+                .add("name", m_name)
                 .add("attributes", m_attributes)
                 .add("ipServices", m_ipServices)
                 .add("childServices", m_childServices)
-                .add("location", location)
                 .toString();
     }
 }

@@ -37,26 +37,25 @@ import org.opennms.core.test.xml.XmlTestNoCastor;
 import org.opennms.web.rest.api.ApiVersion;
 import org.opennms.web.rest.api.ResourceLocation;
 
-public class IpServiceDTOJaxbTest extends XmlTestNoCastor<IpServiceDTO> {
+public class IpServiceDTOJaxbTest extends XmlTestNoCastor<IpService> {
 
-    public IpServiceDTOJaxbTest(IpServiceDTO sampleObject, Object sampleXml, String schemaFile) {
+    public IpServiceDTOJaxbTest(IpService sampleObject, Object sampleXml, String schemaFile) {
         super(sampleObject, sampleXml, schemaFile);
     }
 
-    @Parameterized.Parameters
-    public static Collection<Object[]> data() throws ParseException {
-        IpServiceDTO ipService = new IpServiceDTO();
-        ipService.setId("1");
-        ipService.setLocation(new ResourceLocation(ApiVersion.Version1, "ifservices", "1"));
-
-        return Arrays.asList(new Object[][]{{
-                ipService,
-                "<ip-service>" +
-                        "<id>1</id>" +
-                        "<location>/rest/ifservices/1</location>" +
-                        "<reductionKeys/>" +
-                        "</ip-service>",
-                null
-        }});
-    }
+//    @Parameterized.Parameters
+//    public static Collection<Object[]> data() throws ParseException {
+//        IpService ipService = new IpService();
+//        ipService.setId("1");
+//        ipService.setLocation(new ResourceLocation(ApiVersion.Version1, "ifservices", "1"));
+//
+//        return Arrays.asList(new Object[][]{{
+//                ipService,
+//                "<ip-service>" +
+//                        "<id>1</id>" +
+//                        "<location>/rest/ifservices/1</location>" +
+//                        "</ip-service>",
+//                null
+//        }});
+//    }
 }

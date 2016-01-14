@@ -32,7 +32,7 @@ import java.util.List;
 import java.util.Objects;
 
 import org.opennms.netmgt.bsm.service.BusinessServiceManager;
-import org.opennms.netmgt.bsm.service.model.BusinessServiceDTO;
+import org.opennms.netmgt.bsm.service.model.BusinessService;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.vaadin.core.TransactionAwareBeanProxyFactory;
 
@@ -63,11 +63,11 @@ public class BusinessServiceMasterPageUI extends UI {
 		final VerticalLayout mainLayout = new VerticalLayout();
 		mainLayout.setMargin(true);
 
-		final List<BusinessServiceDTO> serviceDTOs = businessServiceManager.findAll();
+		final List<BusinessService> serviceDTOs = businessServiceManager.getAllBusinessServices();
 		if (serviceDTOs.isEmpty()) {
 			mainLayout.addComponent(new Label("There are no Business Services defined."));
 		} else {
-			for (BusinessServiceDTO eachService : serviceDTOs) {
+			for (BusinessService eachService : serviceDTOs) {
 				mainLayout.addComponent(createRow(eachService));
 			}
 		}
@@ -82,12 +82,12 @@ public class BusinessServiceMasterPageUI extends UI {
 		this.businessServiceManager = transactionAwareBeanProxyFactory.createProxy(businessServiceManager);
 	}
 
-	private HorizontalLayout createRow(BusinessServiceDTO serviceDTO) {
+	private HorizontalLayout createRow(BusinessService serviceDTO) {
 		HorizontalLayout rowLayout = new HorizontalLayout();
 		rowLayout.setSizeFull();
 		rowLayout.setSpacing(true);
 
-		final OnmsSeverity severity = businessServiceManager.getOperationalStatusForBusinessService(serviceDTO.getId());
+		final OnmsSeverity severity = businessServiceManager.getOperationalStatusForBusinessService(serviceDTO);
 		Label nameLabel = new Label(serviceDTO.getName());
 		nameLabel.setSizeFull();
 		nameLabel.setStyleName("h1");

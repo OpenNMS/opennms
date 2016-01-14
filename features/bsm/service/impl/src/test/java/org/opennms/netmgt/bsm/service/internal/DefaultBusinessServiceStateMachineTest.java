@@ -38,8 +38,7 @@ import com.google.common.base.Throwables;
 import com.google.common.collect.Lists;
 
 import org.junit.Test;
-import org.opennms.netmgt.bsm.persistence.api.BusinessService;
-import org.opennms.netmgt.bsm.persistence.api.MostCritical;
+import org.opennms.netmgt.bsm.persistence.api.BusinessServiceEntity;
 import org.opennms.netmgt.bsm.service.BusinessServiceStateChangeHandler;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.model.OnmsAlarm;
@@ -55,15 +54,14 @@ public class DefaultBusinessServiceStateMachineTest {
 
         // Create a simple hierarchy
         OnmsMonitoredService svc1 = createService(1, "192.168.1.1", "ICMP");
-        BusinessService bs1 = new BusinessService();
-        bs1.addIpService(svc1);
+        BusinessServiceEntity bs1 = new BusinessServiceEntity();
+        bs1.getIpServices().add(svc1);
         bs1.setName("BS1");
         bs1.setReductionFunction(new MostCritical());
  
-        BusinessService bs2 = new BusinessService();
+        BusinessServiceEntity bs2 = new BusinessServiceEntity();
         bs2.setName("BS2");
-        bs2.setReductionFunction(new MostCritical());
-        List<BusinessService> bss = Lists.newArrayList(bs1, bs2);
+        List<BusinessServiceEntity> bss = Lists.newArrayList(bs1, bs2);
 
         // Setup the state machine
         LoggingStateChangeHandler handler = new LoggingStateChangeHandler();
@@ -76,7 +74,7 @@ public class DefaultBusinessServiceStateMachineTest {
         assertEquals(DefaultBusinessServiceStateMachine.DEFAULT_SEVERITY, stateMachine.getOperationalStatus(bs1));
         assertEquals(DefaultBusinessServiceStateMachine.DEFAULT_SEVERITY, stateMachine.getOperationalStatus(bs2));
 
-        // Now create an alarm matching the reductionKey of the ip-service
+        // Now createBusinessService an alarm
         OnmsAlarm alarm = new OnmsAlarm();
         alarm.setUei(EventConstants.NODE_LOST_SERVICE_EVENT_UEI);
         alarm.setSeverity(OnmsSeverity.MINOR);
@@ -135,17 +133,17 @@ public class DefaultBusinessServiceStateMachineTest {
     public static class LoggingStateChangeHandler implements BusinessServiceStateChangeHandler {
         
         public static class StateChange {
-            private final BusinessService m_businessService;
+            private final BusinessServiceEntity m_businessService;
             private final OnmsSeverity m_newSeverity;
             private final OnmsSeverity m_prevSeverity;
 
-            public StateChange(BusinessService businessService, OnmsSeverity newSeverity, OnmsSeverity prevSeverity) {
+            public StateChange(BusinessServiceEntity businessService, OnmsSeverity newSeverity, OnmsSeverity prevSeverity) {
                 m_businessService = businessService;
                 m_newSeverity = newSeverity;
                 m_prevSeverity = prevSeverity;
             }
 
-            public BusinessService getBusinessService() {
+            public BusinessServiceEntity getBusinessService() {
                 return m_businessService;
             }
 
@@ -161,8 +159,8 @@ public class DefaultBusinessServiceStateMachineTest {
         private final List<StateChange> m_stateChanges = Lists.newArrayList();
 
         @Override
-        public void handleBusinessServiceStateChanged(BusinessService businessService, OnmsSeverity newSeverity,
-                OnmsSeverity prevSeverity) {
+        public void handleBusinessServiceStateChanged(BusinessServiceEntity businessService, OnmsSeverity newSeverity,
+                                                      OnmsSeverity prevSeverity) {
             m_stateChanges.add(new StateChange(businessService, newSeverity, prevSeverity));
         }
 

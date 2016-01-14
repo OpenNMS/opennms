@@ -29,6 +29,8 @@
 package org.opennms.web.rest.v2;
 
 import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.stream.Collectors;
 
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -43,11 +45,12 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
 import org.opennms.netmgt.bsm.service.BusinessServiceManager;
-import org.opennms.netmgt.bsm.service.model.BusinessServiceDTO;
-import org.opennms.netmgt.model.OnmsSeverity;
-import org.opennms.web.rest.api.ResourceLocationFactory;
+import org.opennms.netmgt.bsm.service.model.BusinessService;
 import org.opennms.web.rest.support.RedirectHelper;
 import org.opennms.web.rest.v2.bsm.model.BusinessServiceListDTO;
+import org.opennms.web.rest.v2.bsm.model.BusinessServiceRequestDTO;
+import org.opennms.web.rest.v2.bsm.model.BusinessServiceResponseDTO;
+import org.opennms.web.rest.v2.bsm.model.IpServiceResponseDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -67,90 +70,157 @@ public class BusinessServiceRestService {
 
     @GET
     public Response list() {
-        List<BusinessServiceDTO> services = getManager().findAll();
+        List<BusinessService> services = getManager().getAllBusinessServices();
         if (services == null || services.isEmpty()) {
             return Response.noContent().build();
         }
-        BusinessServiceListDTO serviceList = new BusinessServiceListDTO(services, ResourceLocationFactory.createBusinessServiceLocation());
+        BusinessServiceListDTO serviceList = new BusinessServiceListDTO(services);
         return Response.ok(serviceList).build();
     }
 
     @GET
     @Path("{id}")
     public Response getById(@PathParam("id") Long id) {
-        BusinessServiceDTO entity = getManager().getById(id);
-        return Response.ok(entity).build();
+        BusinessService service = getManager().getBusinessServiceById(id);
+
+        final BusinessServiceResponseDTO response = new BusinessServiceResponseDTO();
+        response.setId(service.getId());
+        response.setName(service.getName());
+        response.setAttributes(service.getAttributes());
+        response.setIpServices(service.getIpServices().stream()
+                                      .map(s -> {
+                                          final IpServiceResponseDTO r = new IpServiceResponseDTO();
+                                          r.setId(s.getId());
+                                          r.setNodeLabel(s.getNodeLabel());
+                                          r.setServiceName(s.getServiceName());
+                                          r.setIpAddress(s.getIpAddress());
+                                          r.setOperationalStatus(getManager().getOperationalStatusForIPService(s));
+                                          return r;
+                                      }).collect(Collectors.toSet()));
+        response.setChildServices(service.getChildServices().stream().map(BusinessService::getId).collect(Collectors.toSet()));
+        response.setParentServices(service.getParentServices().stream().map(BusinessService::getId).collect(Collectors.toSet()));
+        response.setOperationalStatus(getManager().getOperationalStatusForBusinessService(service));
+
+        return Response.ok(response).build();
     }
 
     @POST
-    public Response create(@Context final UriInfo uriInfo, BusinessServiceDTO objectToCreate) {
-        Long id = getManager().save(objectToCreate);
-        return Response.created(RedirectHelper.getRedirectUri(uriInfo, id)).build();
+    public Response create(@Context final UriInfo uriInfo,
+                           final BusinessServiceRequestDTO request) {
+        final BusinessService service = getManager().createBusinessService();
+        service.setName(request.getName());
+        service.setAttributes(request.getAttributes());
+        service.setIpServices(request.getIpServices().stream()
+                                     .map(serviceId -> getManager().getIpServiceById(serviceId))
+                                     .collect(Collectors.toSet()));
+        service.setChildServices(request.getChildServices().stream()
+                                        .map(serviceId -> getManager().getBusinessServiceById(serviceId))
+                                        .collect(Collectors.toSet()));
+        getManager().saveBusinessService(service);
+
+        return Response.created(RedirectHelper.getRedirectUri(uriInfo, service.getId())).build();
     }
 
     @DELETE
     @Path("{id}")
     public Response delete(@PathParam("id") Long id) {
-        getManager().delete(id);
+        final BusinessService service;
+        try {
+            service = getManager().getBusinessServiceById(id);
+        } catch (final NoSuchElementException e) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+
+        getManager().deleteBusinessService(service);
+
         return Response.ok().build();
     }
 
     @PUT
     @Path("{id}")
-    public Response update(@PathParam("id") Long id, BusinessServiceDTO dto) {
-        if (!id.equals(dto.getId())) {
-            return Response.status(Response.Status.BAD_REQUEST).build();
+    public Response update(@PathParam("id") final Long id,
+                           final BusinessServiceRequestDTO request) {
+        final BusinessService service;
+        try {
+            service = getManager().getBusinessServiceById(id);
+        } catch (final NoSuchElementException e) {
+            return Response.status(Response.Status.NOT_FOUND).build();
         }
-        getManager().update(dto);
+
+        service.setName(request.getName());
+        service.setAttributes(request.getAttributes());
+        service.setIpServices(request.getIpServices().stream()
+                                     .map(serviceId -> getManager().getIpServiceById(serviceId))
+                                     .collect(Collectors.toSet()));
+        service.setChildServices(request.getChildServices().stream()
+                                        .map(serviceId -> getManager().getBusinessServiceById(serviceId))
+                                        .collect(Collectors.toSet()));
+        getManager().saveBusinessService(service);
+
         return Response.noContent().build();
     }
 
-    @GET
-    @Path("{id}/operational-status")
-    public Response getOperationStatusForBusinessServiceById(@PathParam("id") Long id) {
-        final OnmsSeverity severity = getManager().getOperationalStatusForBusinessService(id);
-        if (severity != null) {
-            return Response.ok(severity.toString()).type(MediaType.TEXT_PLAIN).build();
-        }
-        return Response.noContent().build();
-    }
+//    @GET
+//    @Path("{id}/operational-status")
+//    public Response getOperationStatusForBusinessServiceById(@PathParam("id") Long id) {
+//        final OnmsSeverity severity = getManager().getOperationalStatusForBusinessService(id);
+//        if (severity != null) {
+//            return Response.ok(severity.toString()).type(MediaType.TEXT_PLAIN).build();
+//        }
+//        return Response.noContent().build();
+//    }
 
-    @POST
-    @Path("{id}/ip-service/{ipServiceId}")
-    public Response attachIpService(@PathParam("id") final Long serviceId,
-                                    @PathParam("ipServiceId") final Integer ipServiceId) {
-        boolean changed = getManager().assignIpInterface(serviceId, ipServiceId);
-        if (!changed) {
-            return Response.notModified().build();
-        }
-        return Response.ok().build();
-    }
+//    @POST
+//    @Path("{id}/ip-service/{ipServiceId}")
+//    public Response attachIpService(@PathParam("id") final Long serviceId,
+//                                    @PathParam("ipServiceId") final Integer ipServiceId) {
+//        boolean changed = getManager().assignIpService(serviceId, ipServiceId);
+//        if (!changed) {
+//            return Response.notModified().build();
+//        }
+//        return Response.ok().build();
+//    }
+//
+//    @DELETE
+//    @Path("{id}/ip-service/{ipServiceId}")
+//    public Response detachIpService(@PathParam("id") final Long serviceId,
+//                                    @PathParam("ipServiceId") final Integer ipServiceId) {
+//        boolean changed = getManager().removeIpService(serviceId, ipServiceId);
+//        if (!changed) {
+//            return Response.notModified().build();
+//        }
+//        return Response.ok().build();
+//    }
 
-    @DELETE
-    @Path("{id}/ip-service/{ipServiceId}")
-    public Response detachIpService(@PathParam("id") final Long serviceId,
-                                    @PathParam("ipServiceId") final Integer ipServiceId) {
-        boolean changed = getManager().removeIpInterface(serviceId, ipServiceId);
-        if (!changed) {
-            return Response.notModified().build();
-        }
-        return Response.ok().build();
-    }
+//    @GET
+//    @Path("{id}/ip-service/{ipServiceId}/operational-status")
+//    public Response getOperationStatusForIPServiceById(@PathParam("id") Integer ipServiceId) {
+//        final OnmsSeverity severity = getManager().getOperationalStatusForIPService(ipServiceId);
+//        if (severity != null) {
+//            return Response.ok(severity.toString()).type(MediaType.TEXT_PLAIN).build();
+//        }
+//        return Response.noContent().build();
+//    }
 
-    @GET
-    @Path("{id}/ip-service/operational-status/{ipServiceId}")
-    public Response getOperationStatusForIPServiceById(@PathParam("id") Integer businessServiceId, @PathParam("ipServiceId") Integer ipServiceId) {
-        final OnmsSeverity severity = getManager().getOperationalStatusForIPService(ipServiceId);
-        if (severity != null) {
-            return Response.ok(severity.toString()).type(MediaType.TEXT_PLAIN).build();
-        }
-        return Response.noContent().build();
-    }
-
-    @POST
-    @Path("daemon/reload")
-    public Response reload() {
-        getManager().triggerDaemonReload();
-        return Response.ok().build();
-    }
+//    @POST
+//    @Path("{id}/child-service/{childServiceId}")
+//    public Response attachChildService(@PathParam("id") final Long serviceId,
+//                                       @PathParam("childServiceId") final Long childServiceId) {
+//        boolean changed = getManager().assignChildService(serviceId, childServiceId);
+//        if (!changed) {
+//            return Response.notModified().build();
+//        }
+//        return Response.ok().build();
+//    }
+//
+//    @DELETE
+//    @Path("{id}/child-service/{childServiceId}")
+//    public Response detachChildService(@PathParam("id") final Long serviceId,
+//                                       @PathParam("ipServiceId") final Long childServiceId) {
+//        boolean changed = getManager().removeChildService(serviceId, childServiceId);
+//        if (!changed) {
+//            return Response.notModified().build();
+//        }
+//        return Response.ok().build();
+//    }
 }

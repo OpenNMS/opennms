@@ -59,7 +59,7 @@ import org.opennms.netmgt.model.OnmsMonitoredService;
 @Entity
 @Table(name = "bsm_service")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-public class BusinessService {
+public class BusinessServiceEntity {
 
     private Long m_id;
 
@@ -67,9 +67,11 @@ public class BusinessService {
 
     private Map<String, String> m_attributes = Maps.newLinkedHashMap();
 
-    private Set<BusinessServiceEdge> m_edges = Sets.newLinkedHashSet();
+    private Set<OnmsMonitoredService> m_ipServices = Sets.newLinkedHashSet();
 
-    private AbstractReductionFunction m_reductionFunction;
+    private Set<BusinessServiceEntity> m_childServices = Sets.newLinkedHashSet();
+
+    private Set<BusinessServiceEntity> m_parentServices = Sets.newLinkedHashSet();
 
     @Id
     @SequenceGenerator(name = "opennmsSequence", sequenceName = "opennmsNxtId")
@@ -93,7 +95,7 @@ public class BusinessService {
     }
 
     @ElementCollection(fetch = FetchType.EAGER)
-    @JoinTable(name = "bsm_service_attributes", joinColumns = @JoinColumn(name = "bsm_service_id", referencedColumnName = "id"))
+    @JoinTable(name = "bsm_service_attributes", joinColumns = @JoinColumn(name = "bsm_service_id", referencedColumnName = "id") )
     @MapKeyColumn(name = "key")
     @Column(name = "value", nullable = false)
     public Map<String, String> getAttributes() {
@@ -104,69 +106,69 @@ public class BusinessService {
         m_attributes = attributes;
     }
 
-    public void setAttribute(String key, String value) {
-        m_attributes.put(key, value);
-    }
-
-    public String removeAttribute(String key) {
-        return m_attributes.remove(key);
-    }
-
-    @OneToMany(fetch = FetchType.EAGER, mappedBy="businessService")
-    public Set<BusinessServiceEdge> getEdges() {
-        return m_edges;
+    @OneToMany(fetch = FetchType.EAGER,
+               cascade = CascadeType.ALL)
+    @JoinTable(name = "bsm_service_ifservices",
+               joinColumns = @JoinColumn(name = "bsm_service_id", referencedColumnName = "id"),
+               inverseJoinColumns = @JoinColumn(name="ifserviceid"))
+    public Set<OnmsMonitoredService> getIpServices() {
+        return m_ipServices;
     }
 
     public void setEdges(Set<BusinessServiceEdge> edges) {
         m_edges = edges;
     }
 
-    public void addEdge(BusinessServiceEdge edge) {
-        m_edges.add(edge);
-    }
-
-    public void removeEdge(BusinessServiceEdge edge) {
-        m_edges.remove(edge);
-    }
-
     @Transient
-    @SuppressWarnings("unchecked")
-    public <T extends BusinessServiceEdge> Set<T> getEdges(Class<T> type) {
-        return getEdges().stream()
-                .filter(e -> type.isInstance(e))
-                .map(e -> (T)e)
-                .collect(Collectors.toSet());
+    private Set<Integer> getIpServiceIds() {
+        return m_ipServices.stream()
+            .map(ipSvc -> ipSvc.getId())
+            .collect(Collectors.toSet());
     }
 
-    @ManyToOne
-    @JoinColumn(name = "bsm_reduce_id")
-    public AbstractReductionFunction getReductionFunction() {
-        return m_reductionFunction;
+    @ManyToMany(fetch = FetchType.EAGER,
+                cascade = CascadeType.ALL)
+    @JoinTable(name = "bsm_service_children",
+               joinColumns = @JoinColumn(name = "bsm_service_parent", referencedColumnName = "id"),
+               inverseJoinColumns = @JoinColumn(name="bsm_service_child", referencedColumnName = "id"))
+    public Set<BusinessServiceEntity> getChildServices() {
+        return m_childServices;
     }
 
-    public void setReductionFunction(AbstractReductionFunction reductionFunction) {
-        m_reductionFunction = Objects.requireNonNull(reductionFunction);
+    public void setChildServices(Set<BusinessServiceEntity> childServices) {
+        m_childServices = childServices;
+    }
+
+    @ManyToMany(fetch = FetchType.EAGER,
+                cascade = CascadeType.ALL,
+                mappedBy = "childServices")
+    public Set<BusinessServiceEntity> getParentServices() {
+        return m_parentServices;
+    }
+
+    public void setParentServices(Set<BusinessServiceEntity> parentServices) {
+        m_parentServices = parentServices;
     }
 
     @Override
     public boolean equals(Object obj) {
+        if (this == obj) return true;
+
         if (obj == null) {
             return false;
         }
         if (getClass() != obj.getClass()) {
             return false;
         }
-        final BusinessService other = (BusinessService) obj;
+        final BusinessServiceEntity other = (BusinessServiceEntity) obj;
 
         return com.google.common.base.Objects.equal(m_id, other.m_id)
-                && com.google.common.base.Objects.equal(m_name, other.m_name)
-                && com.google.common.base.Objects.equal(m_attributes, other.m_attributes)
-                && com.google.common.base.Objects.equal(m_edges, other.m_edges);
+                && com.google.common.base.Objects.equal(m_name, other.m_name);
     }
 
     @Override
     public int hashCode() {
-        return com.google.common.base.Objects.hashCode(m_id, m_name, m_attributes, m_edges);
+        return com.google.common.base.Objects.hashCode(m_id, m_name);
     }
 
     @Override

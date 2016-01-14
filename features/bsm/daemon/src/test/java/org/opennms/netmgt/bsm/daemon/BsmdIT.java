@@ -41,7 +41,7 @@ import org.junit.runner.RunWith;
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
-import org.opennms.netmgt.bsm.persistence.api.BusinessService;
+import org.opennms.netmgt.bsm.persistence.api.BusinessServiceEntity;
 import org.opennms.netmgt.bsm.persistence.api.BusinessServiceDao;
 import org.opennms.netmgt.bsm.persistence.api.MostCritical;
 import org.opennms.netmgt.bsm.persistence.api.ReductionFunctionDao;
@@ -139,7 +139,7 @@ public class BsmdIT {
     @Transactional
     public void canSendEventsOnOperationalStatusChanged() throws Exception {
         // Create a business service
-        BusinessService simpleBs = createSimpleBusinessService();
+        BusinessServiceEntity simpleBs = createSimpleBusinessService();
 
         // Start the daemon
         m_bsmd.start();
@@ -163,53 +163,15 @@ public class BsmdIT {
         assertTrue("Expected events not forthcoming " + stillWaitingFor, stillWaitingFor.isEmpty());
     }
 
-    /**
-     * Verifies that the daemon polls the alarm table on a regular basis. This is done to ensure that all alarms are
-     * considered, because the appropriate alarm created/changed/deleted/updated event may not have been sent.
-     *
-     */
-    @Test
-    public void verifyAlarmPollingIsEnabled() throws Exception {
-        System.setProperty(Bsmd.POLL_INTERVAL_KEY, "10");
-        BusinessService simpleBs = createSimpleBusinessService();
-        m_bsmd.start();
+    private BusinessServiceEntity createSimpleBusinessService() {
+        BusinessServiceEntity bs = new BusinessServiceEntity();
+        bs.setName("MyBusinessService");
 
-        // Create an alarm and do NOT send the alarm
-        template.execute(new TransactionCallbackWithoutResult() {
-            @Override
-            protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
-                Assert.assertEquals(OnmsSeverity.NORMAL, m_bsmd.getBusinessServiceStateMachine().getOperationalStatus(simpleBs));
-                OnmsAlarm alarm = createAlarm();
-                m_alarmDao.save(alarm);
-                m_alarmDao.flush();
-                Assert.assertEquals(OnmsSeverity.NORMAL, m_bsmd.getBusinessServiceStateMachine().getOperationalStatus(simpleBs));
-            }
-        });
-
-        // wait n seconds and try again
-        Thread.sleep(20*1000);
-        Assert.assertEquals(OnmsSeverity.CRITICAL, m_bsmd.getBusinessServiceStateMachine().getOperationalStatus(simpleBs));
-    }
-
-    private OnmsAlarm createAlarm() {
-        OnmsAlarm alarm = new OnmsAlarm();
-        alarm.setUei(EventConstants.NODE_LOST_SERVICE_EVENT_UEI);
-        alarm.setSeverity(OnmsSeverity.CRITICAL);
-        alarm.setAlarmType(1);
-        alarm.setCounter(1);
-        alarm.setDistPoller(m_distPollerDao.whoami());
-        alarm.setReductionKey(String.format("%s::1:192.168.1.1:ICMP", EventConstants.NODE_LOST_SERVICE_EVENT_UEI));
-        return alarm;
-    }
-
-    private BusinessService createBusinessService(String name) {
-        // Create the reduction function
-        MostCritical mostCritical = new MostCritical();
-        m_reductionFunctionDao.save(mostCritical);
-
-        BusinessService bs = new BusinessService();
-        bs.setName(name);
-        bs.setReductionFunction(mostCritical);
+        // Grab the first monitored service from node 1
+        OnmsMonitoredService ipService = m_databasePopulator.getNode1()
+                .getIpInterfaces().iterator().next()
+                .getMonitoredServices().iterator().next();
+        bs.getIpServices().add(ipService);
 
         // Persist
         m_businessServiceDao.save(bs);
