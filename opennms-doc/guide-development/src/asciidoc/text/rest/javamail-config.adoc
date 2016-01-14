@@ -10,7 +10,7 @@
 | `/config/javamail/default/sendmail` | Get the name of the default sendmail config.
 | `/config/javamail/readmails` | Get the name of all the existing readmail configurations.
 | `/config/javamail/sendmails` | Get the name of all the existing sendmail configurations.
-| `/config/javamail/end2ends ` | Get the name of all the existing end2end mail configurations.
+| `/config/javamail/end2ends` | Get the name of all the existing end2end mail configurations.
 | `/config/javamail/readmails/{name}` | Get the content of the readmail configuration named {name}
 | `/config/javamail/sendmails/{name}` | Get the content of the sendmail configuration named {name}
 | `/config/javamail/end2ends/{name}` | Get the content of the end2end mail configuration named {name}
