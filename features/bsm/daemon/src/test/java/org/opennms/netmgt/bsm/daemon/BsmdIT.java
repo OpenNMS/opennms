@@ -31,7 +31,6 @@ package org.opennms.netmgt.bsm.daemon;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Collection;
-import java.util.concurrent.TimeUnit;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -50,7 +49,6 @@ import org.opennms.netmgt.dao.mock.EventAnticipator;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.model.OnmsAlarm;
-import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.events.EventBuilder;
@@ -161,6 +159,25 @@ public class BsmdIT {
     }
 
     /**
+     * Verifies that a reload of the Bsmd works as expected.
+     */
+    @Test
+    @Transactional
+    public void verifyReloadBsmd() throws Exception {
+        BusinessService businessService1 = createBusinessService("service1");
+        m_bsmd.start();
+        Assert.assertEquals(OnmsSeverity.NORMAL, m_bsmd.getBusinessServiceStateMachine().getOperationalStatus(businessService1));
+
+        // verify reload of business services works when event is send
+        BusinessService businessService2 = createBusinessService("service2");
+        Assert.assertNull(m_bsmd.getBusinessServiceStateMachine().getOperationalStatus(businessService2));
+        EventBuilder ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_UEI, "test");
+        ebldr.addParam(EventConstants.PARM_DAEMON_NAME, "bsmd");
+        m_eventMgr.sendNow(ebldr.getEvent());
+        Assert.assertEquals(OnmsSeverity.NORMAL, m_bsmd.getBusinessServiceStateMachine().getOperationalStatus(businessService2));
+    }
+
+    /**
      * Verifies that the daemon polls the alarm table on a regular basis. This is done to ensure that all alarms are
      * considered, because the appropriate alarm created/changed/deleted/updated event may not have been sent.
      *
@@ -199,9 +216,9 @@ public class BsmdIT {
         return alarm;
     }
 
-    private BusinessService createSimpleBusinessService() {
+    private BusinessService createBusinessService(String name) {
         BusinessService bs = new BusinessService();
-        bs.setName("MyBusinessService");
+        bs.setName(name);
 
         // Grab the first monitored service from node 1
         OnmsMonitoredService ipService = m_databasePopulator.getNode1()
@@ -212,7 +229,11 @@ public class BsmdIT {
         // Persist
         m_businessServiceDao.save(bs);
         m_businessServiceDao.flush();
-        
+
         return bs;
+    }
+
+    private BusinessService createSimpleBusinessService() {
+        return createBusinessService("MyBusinessService");
     }
 }

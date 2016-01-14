@@ -32,7 +32,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -67,7 +66,6 @@ public abstract class OnmsDaoContainer<T,K extends Serializable> implements Cont
     private static final long serialVersionUID = -9131723065433979979L;
 
     protected static final int DEFAULT_PAGE_SIZE = 200; // items per page/cache
-    protected static final int DEFAULT_SIZE_RELOAD_TIME = 10000; // ms
     private static final Logger LOG = LoggerFactory.getLogger(OnmsDaoContainer.class);
 
     protected static class Page {
@@ -99,32 +97,20 @@ public abstract class OnmsDaoContainer<T,K extends Serializable> implements Cont
     }
 
     protected static class Size {
-        private Date lastUpdate = null;
         private int value;
-        private int reloadTimer; // in ms
         private final SizeReloadStrategy reloadStrategy;
 
-        protected Size(int reloadTimer, SizeReloadStrategy reloadStrategy) {
-            this.reloadTimer = reloadTimer == 0 ? DEFAULT_SIZE_RELOAD_TIME : reloadTimer;
+        protected Size(SizeReloadStrategy reloadStrategy) {
             this.reloadStrategy = reloadStrategy;
         }
 
         public synchronized int getValue() {
-            if (isOutdated()) reloadSize();
+            reloadSize();
             return value;
-        }
-
-        private boolean isOutdated() {
-            return lastUpdate == null || lastUpdate.getTime() + reloadTimer < new Date().getTime();
         }
 
         private synchronized void reloadSize() {
             value = reloadStrategy.reload();
-            lastUpdate = new Date();
-        }
-
-        private void setOutdated() {
-            lastUpdate = null;
         }
     }
 
@@ -195,7 +181,6 @@ public abstract class OnmsDaoContainer<T,K extends Serializable> implements Cont
         }
 
         public void reload(Page page) {
-            size.setOutdated(); // force to be outdated
             reset();
             List<T> beans = getItemsForCache(m_dao, page);
             if (beans == null) return;
@@ -238,7 +223,7 @@ public abstract class OnmsDaoContainer<T,K extends Serializable> implements Cont
     public OnmsDaoContainer(Class<T> itemClass, OnmsDao<T,K> dao) {
         m_itemClass = itemClass;
         m_dao = dao;
-        size = new Size(DEFAULT_SIZE_RELOAD_TIME, new SizeReloadStrategy() {
+        size = new Size(new SizeReloadStrategy() {
             @Override
             public int reload() {
                 return m_dao.countMatching(getCriteria(null, false));  // no paging!!!!
@@ -460,11 +445,23 @@ public abstract class OnmsDaoContainer<T,K extends Serializable> implements Cont
 
     @Override
     public List<K> getItemIds(int startIndex, int numberOfItems) {
+        // if we do not have all items in cache, we have to reload the cache
+        boolean needsReload = !cache.containsIndex(startIndex) || !cache.containsIndex(startIndex + numberOfItems -1);
+        if (needsReload) {
+            page.updateOffset(startIndex);
+            cache.reload(page);
+            fireItemSetChangedEvent();
+        }
+        // now all items should be in the cache
         int endIndex = startIndex + numberOfItems;
         if (endIndex > size()) endIndex = size() - 1;
         List<K> itemIds = new ArrayList<K>();
         for (int i=startIndex; i<endIndex; i++) {
             itemIds.add(getIdByIndex(i));
+        }
+        // Ensure that the number of items expected matches with the actual ones. See issue NMS-8079 fore more details.
+        if (itemIds.size() != numberOfItems) {
+            throw new IllegalStateException("The container is supposed to carry " + numberOfItems + " but only contains " + itemIds.size() + " items.");
         }
         return itemIds;
     }

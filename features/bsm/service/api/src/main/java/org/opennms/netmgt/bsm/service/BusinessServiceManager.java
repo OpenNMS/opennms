@@ -64,4 +64,9 @@ public interface BusinessServiceManager {
     OnmsSeverity getOperationalStatusForIPService(Integer ipServiceId);
 
     List<IpServiceDTO> getAllIpServiceDTO();
+
+    /**
+     * Triggers a reload of the Business Service Daemon.
+     */
+    void triggerDaemonReload();
 }
