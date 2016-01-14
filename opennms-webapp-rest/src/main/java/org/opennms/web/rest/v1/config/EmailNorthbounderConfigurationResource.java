@@ -28,6 +28,8 @@
 
 package org.opennms.web.rest.v1.config;
 
+import java.io.File;
+import java.io.FileWriter;
 import java.util.List;
 
 import javax.annotation.Resource;
@@ -50,7 +52,9 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.ws.rs.core.Response.Status;
 
 import org.opennms.core.config.api.JaxbListWrapper;
+import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.alarmd.northbounder.email.EmailDestination;
+import org.opennms.netmgt.alarmd.northbounder.email.EmailNorthbounderConfig;
 import org.opennms.netmgt.alarmd.northbounder.email.EmailNorthbounderConfigDao;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventProxy;
@@ -119,6 +123,39 @@ public class EmailNorthbounderConfigurationResource extends OnmsRestService impl
     public void afterPropertiesSet() throws Exception {
         Assert.notNull(m_emailNorthbounderConfigDao, "emailNorthbounderConfigDao must be set!");
         Assert.notNull(m_eventProxy, "eventProxy must be set!");
+    }
+
+    /**
+     * Gets the configuration.
+     *
+     * @return the configuration
+     */
+    @GET
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
+    public Response getConfiguration() {
+        return Response.ok(m_emailNorthbounderConfigDao.getConfig()).build();
+    }
+
+    /**
+     * Sets the configuration.
+     *
+     * @param uriInfo the UEI info
+     * @param config the full configuration object
+     * @return the response
+     */
+    @POST
+    public Response setConfiguration(@Context final UriInfo uriInfo, final EmailNorthbounderConfig config) {
+        writeLock();
+        try {
+            File configFile = m_emailNorthbounderConfigDao.getConfigResource().getFile();
+            JaxbUtils.marshal(config, new FileWriter(configFile));
+            notifyDaemons();
+            return Response.seeOther(getRedirectUri(uriInfo)).build();
+        } catch (Throwable t) {
+            throw new WebApplicationException(Response.status(Status.INTERNAL_SERVER_ERROR).type(MediaType.TEXT_PLAIN).entity(t.getMessage()).build());
+        } finally {
+            writeUnlock();
+        }
     }
 
     /**
@@ -192,7 +229,7 @@ public class EmailNorthbounderConfigurationResource extends OnmsRestService impl
      * @return the response
      */
     @POST
-    @Path("destinations/{destinationName}")
+    @Path("destinations")
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     public Response setEmailDestination(@Context final UriInfo uriInfo, final EmailDestination destination) {
         writeLock();
@@ -269,13 +306,22 @@ public class EmailNorthbounderConfigurationResource extends OnmsRestService impl
     private Response saveConfiguration() {
         try {
             m_emailNorthbounderConfigDao.save();
-            EventBuilder eb = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_UEI, "ReST");
-            eb.addParam(EventConstants.PARM_DAEMON_NAME, "EmailNBI");
-            m_eventProxy.send(eb.getEvent());
+            notifyDaemons();
             return Response.ok().build();
         } catch (Throwable t) {
             throw new WebApplicationException(Response.status(Status.INTERNAL_SERVER_ERROR).type(MediaType.TEXT_PLAIN).entity(t.getMessage()).build());
         }
+    }
+
+    /**
+     * Notify daemons.
+     *
+     * @throws Exception the exception
+     */
+    private void notifyDaemons() throws Exception {
+        EventBuilder eb = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_UEI, "ReST");
+        eb.addParam(EventConstants.PARM_DAEMON_NAME, "EmailNBI");
+        m_eventProxy.send(eb.getEvent());
     }
 
 }

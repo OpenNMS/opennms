@@ -28,6 +28,8 @@
 
 package org.opennms.web.rest.v1.config;
 
+import java.io.File;
+import java.io.FileWriter;
 import java.util.List;
 
 import javax.annotation.Resource;
@@ -50,6 +52,8 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.opennms.core.config.api.JaxbListWrapper;
+import org.opennms.core.xml.JaxbUtils;
+import org.opennms.netmgt.alarmd.northbounder.snmptrap.SnmpTrapNorthbounderConfig;
 import org.opennms.netmgt.alarmd.northbounder.snmptrap.SnmpTrapNorthbounderConfigDao;
 import org.opennms.netmgt.alarmd.northbounder.snmptrap.SnmpTrapSink;
 import org.opennms.netmgt.events.api.EventConstants;
@@ -122,6 +126,39 @@ public class SnmpTrapNorthbounderConfigurationResource extends OnmsRestService i
     }
 
     /**
+     * Gets the configuration.
+     *
+     * @return the configuration
+     */
+    @GET
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
+    public Response getConfiguration() {
+        return Response.ok(m_snmpTrapNorthbounderConfigDao.getConfig()).build();
+    }
+
+    /**
+     * Sets the configuration.
+     *
+     * @param uriInfo the UEI info
+     * @param config the full configuration object
+     * @return the response
+     */
+    @POST
+    public Response setConfiguration(@Context final UriInfo uriInfo, final SnmpTrapNorthbounderConfig config) {
+        writeLock();
+        try {
+            File configFile = m_snmpTrapNorthbounderConfigDao.getConfigResource().getFile();
+            JaxbUtils.marshal(config, new FileWriter(configFile));
+            notifyDaemons();
+            return Response.seeOther(getRedirectUri(uriInfo)).build();
+        } catch (Throwable t) {
+            throw new WebApplicationException(Response.status(Status.INTERNAL_SERVER_ERROR).type(MediaType.TEXT_PLAIN).entity(t.getMessage()).build());
+        } finally {
+            writeUnlock();
+        }
+    }
+
+    /**
      * Gets the status.
      *
      * @return the status
@@ -187,6 +224,7 @@ public class SnmpTrapNorthbounderConfigurationResource extends OnmsRestService i
      * Sets a SNMP trap sink.
      * <p>If there is a trap sunk with the same name, the existing one will be overridden.</p>
      *
+     * @param uriInfo the uri info
      * @param snmpTrapSink the SNMP trap sink
      * @return the response
      */
@@ -268,13 +306,22 @@ public class SnmpTrapNorthbounderConfigurationResource extends OnmsRestService i
     private Response saveConfiguration() {
         try {
             m_snmpTrapNorthbounderConfigDao.save();
-            EventBuilder eb = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_UEI, "ReST");
-            eb.addParam(EventConstants.PARM_DAEMON_NAME, "SnmpTrapNBI");
-            m_eventProxy.send(eb.getEvent());
+            notifyDaemons();
             return Response.ok().build();
         } catch (Throwable t) {
             throw new WebApplicationException(Response.status(Status.INTERNAL_SERVER_ERROR).type(MediaType.TEXT_PLAIN).entity(t.getMessage()).build());
         }
+    }
+
+    /**
+     * Notify daemons.
+     *
+     * @throws Exception the exception
+     */
+    private void notifyDaemons() throws Exception {
+        EventBuilder eb = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_UEI, "ReST");
+        eb.addParam(EventConstants.PARM_DAEMON_NAME, "SnmpTrapNBI");
+        m_eventProxy.send(eb.getEvent());
     }
 
 }

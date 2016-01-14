@@ -6,9 +6,10 @@
 [options="header", cols="5,10"]
 |===
 | Resource        | Description
-| `/config/snmptrap-nbi/status` | Get the status of the SNMP Trap NBI (returns either true or false).
-| `/config/snmptrap-nbi/destinations` | Get the name of all the existing destinations.
-| `/config/snmptrap-nbi/destinations/{name}` | Get the content of the destination named {name}
+| `/config/snmptrap-nbi` | Gets full content of the configuration.
+| `/config/snmptrap-nbi/status` | Gets the status of the SNMP Trap NBI (returns either true or false).
+| `/config/snmptrap-nbi/destinations` | Gets the name of all the existing destinations.
+| `/config/snmptrap-nbi/destinations/{name}` | Gets the content of the destination named {name}
 |===
 
 ===== PUTs (Update defaults)
@@ -30,6 +31,7 @@ On a successful request, the SNMP Trap NBI will be notified about the configurat
 [options="header", cols="5,10"]
 |===
 | Resource        | Description
+| `/config/snmptrap-nbi` | Updates the full content of the configuration.
 | `/config/snmptrap-nbi/destinations` | Adds a new or overrides an existing destination.
 |===
 
