@@ -86,39 +86,20 @@ public class BusinessServiceMainLayout extends VerticalLayout {
          */
         HorizontalLayout upperLayout = new HorizontalLayout();
 
-        /**
-         * add the input field...
-         */
+        // input field
         final TextField createTextField = new TextField();
         createTextField.setWidth(300.0f, Unit.PIXELS);
         createTextField.setInputPrompt("Business Service Name");
         createTextField.setId("createTextField");
 
-        /**
-         * ...and the button
-         */
+        // create Button
         final Button createButton = new Button("Create");
         createButton.setId("createButton");
         createButton.addClickListener((Button.ClickListener) event -> {
-            /**
-             * check for valid value
-             */
             if (!"".equals(Strings.nullToEmpty(createTextField.getValue()).trim())) {
-                /**
-                 * create new DTO instance
-                 */
                 final BusinessServiceDTO businessServiceDTO = new BusinessServiceDTO();
-                /**
-                 * add the title
-                 */
                 businessServiceDTO.setName(createTextField.getValue().trim());
-                /**
-                 * create the modal configuration dialog
-                 */
                 getUI().addWindow(new BusinessServiceEditWindow(businessServiceDTO, BusinessServiceMainLayout.this));
-                /**
-                 * clear the textfield value
-                 */
                 createTextField.setValue("");
             }
         });
@@ -191,7 +172,7 @@ public class BusinessServiceMainLayout extends VerticalLayout {
                                                 .withOkLabel("Delete anyway")
                                                 .withCancelLabel("Cancel")
                                                 .withCaption("Warning")
-                                                .withDescription("This entry is referencing or is referenced by other Business Services! Do you really to delete this entry?")
+                                                .withDescription("This entry is referencing or is referenced by other Business Services! Do you really want to delete this entry?")
                                                 .open();
                                     }
                                 }
@@ -206,14 +187,12 @@ public class BusinessServiceMainLayout extends VerticalLayout {
          * add the table to the layout
          */
         addComponent(m_table);
-
         setExpandRatio(m_table, 1.0f);
 
         /**
          * initial refresh of table
          */
         refreshTable();
-
     }
 
     /**
@@ -229,13 +208,7 @@ public class BusinessServiceMainLayout extends VerticalLayout {
      * Refreshes the entries of the table used for listing the DTO instances.
      */
     public void refreshTable() {
-        /**
-         * remove all...
-         */
         m_beanItemContainer.removeAllItems();
-        /**
-         * ...and add all DTOs found by the service instance.
-         */
         m_beanItemContainer.addAll(m_businessServiceManager.findAll());
     }
 }
