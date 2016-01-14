@@ -47,10 +47,18 @@ import org.opennms.netmgt.bsm.mapreduce.api.Edge;
 
 import com.google.common.base.Preconditions;
 
+/**
+ * Base edges that includes properties common to all edge types.
+ *
+ * Ideally this class would be abstract, but in some cases Hibernate may
+ * try to instantiate this class.
+ *
+ * @author jwhite
+ */
 @Entity
 @Table(name = "bsm_service_edge")
 @Inheritance(strategy = InheritanceType.JOINED)
-public class AbstractBusinessServiceEdge implements Edge {
+public class BusinessServiceEdge implements Edge {
 
     public static final int DEFAULT_WEIGHT = 1;
 
@@ -129,7 +137,7 @@ public class AbstractBusinessServiceEdge implements Edge {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        final AbstractBusinessServiceEdge other = (AbstractBusinessServiceEdge) obj;
+        final BusinessServiceEdge other = (BusinessServiceEdge) obj;
 
         return Objects.equals(m_id, other.m_id)
                 && Objects.equals(m_businessService, other.m_businessService)
