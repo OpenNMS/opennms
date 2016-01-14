@@ -29,6 +29,7 @@
 package org.opennms.netmgt.bsm.persistence.api;
 
 import java.util.Objects;
+import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -40,6 +41,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import org.opennms.netmgt.bsm.mapreduce.api.Edge;
 
@@ -48,7 +50,7 @@ import com.google.common.base.Preconditions;
 @Entity
 @Table(name = "bsm_service_edge")
 @Inheritance(strategy = InheritanceType.JOINED)
-public abstract class AbstractBusinessServiceEdge implements Edge {
+public class AbstractBusinessServiceEdge implements Edge {
 
     public static final int DEFAULT_WEIGHT = 1;
 
@@ -114,6 +116,12 @@ public abstract class AbstractBusinessServiceEdge implements Edge {
     }
 
     @Override
+    @Transient
+    public Set<String> getReductionKeys() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
     public boolean equals(Object obj) {
         if (obj == null) {
             return false;
@@ -132,7 +140,7 @@ public abstract class AbstractBusinessServiceEdge implements Edge {
 
     @Override
     public int hashCode() {
-        return Objects.hash(m_id, m_businessService, m_enabled, m_weight, m_weight);
+        return Objects.hash(m_id, m_enabled, m_weight, m_weight);
     }
 
     @Override

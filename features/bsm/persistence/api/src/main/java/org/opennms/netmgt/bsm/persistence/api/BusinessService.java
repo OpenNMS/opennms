@@ -92,7 +92,7 @@ public class BusinessService {
         m_name = name;
     }
 
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
     @JoinTable(name = "bsm_service_attributes", joinColumns = @JoinColumn(name = "bsm_service_id", referencedColumnName = "id"))
     @MapKeyColumn(name = "key")
     @Column(name = "value", nullable = false)
