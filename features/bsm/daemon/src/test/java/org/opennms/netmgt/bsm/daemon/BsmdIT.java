@@ -39,8 +39,7 @@ import org.junit.runner.RunWith;
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
-import org.opennms.netmgt.bsm.daemon.Bsmd;
-import org.opennms.netmgt.bsm.persistence.api.BusinessService;
+import org.opennms.netmgt.bsm.persistence.api.BusinessServiceEntity;
 import org.opennms.netmgt.bsm.persistence.api.BusinessServiceDao;
 import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.netmgt.dao.api.AlarmDao;
@@ -127,7 +126,7 @@ public class BsmdIT {
     @Test
     public void canSendEventsOnOperationalStatusChanged() throws Exception {
         // Create a business service
-        BusinessService simpleBs = createSimpleBusinessService();
+        BusinessServiceEntity simpleBs = createSimpleBusinessService();
 
         // Start the daemon
         m_bsmd.start();
@@ -157,15 +156,15 @@ public class BsmdIT {
         assertTrue("Expected events not forthcoming " + stillWaitingFor, stillWaitingFor.isEmpty());
     }
 
-    private BusinessService createSimpleBusinessService() {
-        BusinessService bs = new BusinessService();
+    private BusinessServiceEntity createSimpleBusinessService() {
+        BusinessServiceEntity bs = new BusinessServiceEntity();
         bs.setName("MyBusinessService");
 
         // Grab the first monitored service from node 1
         OnmsMonitoredService ipService = m_databasePopulator.getNode1()
                 .getIpInterfaces().iterator().next()
                 .getMonitoredServices().iterator().next();
-        bs.addIpService(ipService);
+        bs.getIpServices().add(ipService);
 
         // Persist
         m_businessServiceDao.save(bs);

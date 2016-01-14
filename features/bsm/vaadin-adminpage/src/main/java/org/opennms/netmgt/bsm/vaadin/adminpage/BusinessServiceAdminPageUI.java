@@ -36,7 +36,8 @@ import org.opennms.netmgt.vaadin.core.TransactionAwareBeanProxyFactory;
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.Title;
 import com.vaadin.server.VaadinRequest;
-import com.vaadin.ui.UI;
+import org.opennms.netmgt.vaadin.core.TransactionAwareUI;
+import org.springframework.transaction.support.TransactionOperations;
 
 /**
  * Business Service Admin Vaadin UI: this class is the main entry point for the Vaadin application
@@ -48,7 +49,7 @@ import com.vaadin.ui.UI;
 @Theme("opennms")
 @Title("Business Service Admin Page")
 @SuppressWarnings("serial")
-public class BusinessServiceAdminPageUI extends UI {
+public class BusinessServiceAdminPageUI extends TransactionAwareUI {
 
     /**
      * wrapper for transaction-based service instances
@@ -60,13 +61,9 @@ public class BusinessServiceAdminPageUI extends UI {
      */
     private BusinessServiceManager m_businessServiceManager;
 
-    /**
-     * Constructor
-     *
-     * @param transactionAwareBeanProxyFactory the instance of the transaction wrapper
-     */
-    public BusinessServiceAdminPageUI(TransactionAwareBeanProxyFactory transactionAwareBeanProxyFactory) {
-        this.m_transactionAwareBeanProxyFactory = Objects.requireNonNull(transactionAwareBeanProxyFactory);
+    public BusinessServiceAdminPageUI(final TransactionOperations transactionOperations) {
+        super(transactionOperations);
+        this.m_transactionAwareBeanProxyFactory = new TransactionAwareBeanProxyFactory(transactionOperations);
     }
 
     /**

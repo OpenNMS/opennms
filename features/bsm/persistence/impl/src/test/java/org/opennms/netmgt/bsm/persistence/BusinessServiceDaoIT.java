@@ -38,7 +38,7 @@ import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.MockDatabase;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.netmgt.bsm.persistence.api.BusinessServiceDao;
-import org.opennms.netmgt.bsm.persistence.api.BusinessService;
+import org.opennms.netmgt.bsm.persistence.api.BusinessServiceEntity;
 import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.test.JUnitConfigurationEnvironment;
@@ -79,9 +79,9 @@ public class BusinessServiceDaoIT {
         assertEquals(0, m_businessServiceDao.countAll());
 
         // Create a business service
-        BusinessService bs = new BusinessService();
+        BusinessServiceEntity bs = new BusinessServiceEntity();
         bs.setName("Web Servers");
-        bs.setAttribute("dc", "RDU");
+        bs.getAttributes().put("dc", "RDU");
 
         m_businessServiceDao.save(bs);
         m_businessServiceDao.flush();
@@ -91,14 +91,14 @@ public class BusinessServiceDaoIT {
 
         // Update a business service
         bs.setName("Application Servers");
-        bs.setAttribute("dc", "!RDU");
-        bs.setAttribute("cd", "/");
+        bs.getAttributes().put("dc", "!RDU");
+        bs.getAttributes().put("cd", "/");
 
         // Grab the first monitored service from node 1
         OnmsMonitoredService ipService = m_databasePopulator.getNode1()
                 .getIpInterfaces().iterator().next()
                 .getMonitoredServices().iterator().next();
-        bs.addIpService(ipService);
+        bs.getIpServices().add(ipService);
 
         m_businessServiceDao.update(bs);
         m_businessServiceDao.flush();

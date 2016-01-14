@@ -30,6 +30,6 @@ package org.opennms.netmgt.bsm.persistence.api;
 
 import org.opennms.netmgt.dao.api.OnmsDao;
 
-public interface BusinessServiceDao extends OnmsDao<BusinessService, Long> {
+public interface BusinessServiceDao extends OnmsDao<BusinessServiceEntity, Long> {
    
 }

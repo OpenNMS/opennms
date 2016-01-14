@@ -31,7 +31,7 @@ package org.opennms.netmgt.bsm.daemon;
 import java.util.List;
 import java.util.Objects;
 
-import org.opennms.netmgt.bsm.persistence.api.BusinessService;
+import org.opennms.netmgt.bsm.persistence.api.BusinessServiceEntity;
 import org.opennms.netmgt.bsm.persistence.api.BusinessServiceDao;
 import org.opennms.netmgt.bsm.service.BusinessServiceStateChangeHandler;
 import org.opennms.netmgt.bsm.service.BusinessServiceStateMachine;
@@ -128,7 +128,7 @@ public class Bsmd implements SpringServiceDaemon, BusinessServiceStateChangeHand
         m_template.execute(new TransactionCallbackWithoutResult() {
             @Override
             protected void doInTransactionWithoutResult(TransactionStatus status) {
-                final List<BusinessService> businessServices = m_businessServiceDao.findAll();
+                final List<BusinessServiceEntity> businessServices = m_businessServiceDao.findAll();
                 LOG.debug("Adding business services to state machine {}: {}", m_stateMachine, businessServices);
                 m_stateMachine.setBusinessServices(m_businessServiceDao.findAll());
             }
@@ -195,8 +195,8 @@ public class Bsmd implements SpringServiceDaemon, BusinessServiceStateChangeHand
      * Called when the operational status of a business service was changed.
      */
     @Override
-    public void handleBusinessServiceStateChanged(BusinessService businessService, OnmsSeverity newSeverity,
-            OnmsSeverity prevSeverity) {
+    public void handleBusinessServiceStateChanged(BusinessServiceEntity businessService, OnmsSeverity newSeverity,
+                                                  OnmsSeverity prevSeverity) {
         EventBuilder ebldr = new EventBuilder(EventConstants.BUSINESS_SERVICE_OPERATIONAL_STATUS_CHANGED_UEI, NAME);
         ebldr.addParam(EventConstants.PARM_BUSINESS_SERVICE_ID, businessService.getId());
         ebldr.addParam(EventConstants.PARM_BUSINESS_SERVICE_NAME, businessService.getName());

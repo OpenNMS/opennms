@@ -46,8 +46,8 @@ import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.test.rest.AbstractSpringJerseyRestTestCase;
-import org.opennms.netmgt.bsm.service.model.BusinessServiceDTO;
-import org.opennms.netmgt.bsm.persistence.api.BusinessService;
+import org.opennms.netmgt.bsm.service.model.BusinessService;
+import org.opennms.netmgt.bsm.persistence.api.BusinessServiceEntity;
 import org.opennms.netmgt.bsm.persistence.api.BusinessServiceDao;
 import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
@@ -96,7 +96,7 @@ public class BusinessServiceRestServiceIT extends AbstractSpringJerseyRestTestCa
     public void tearDown() throws Exception {
         super.tearDown();
         populator.resetDatabase();
-        for (BusinessService eachService : m_businessServiceDao.findAll()) {
+        for (BusinessServiceEntity eachService : m_businessServiceDao.findAll()) {
             m_businessServiceDao.delete(eachService);
         }
     }
@@ -114,7 +114,7 @@ public class BusinessServiceRestServiceIT extends AbstractSpringJerseyRestTestCa
     @JUnitTemporaryDatabase
     @Transactional
     public void canAddIpService() throws Exception {
-        BusinessService service = new BusinessService();
+        BusinessServiceEntity service = new BusinessServiceEntity();
         service.setName("Dummy Service");
         final Long serviceId = m_businessServiceDao.save(service);
         m_businessServiceDao.flush();
@@ -139,12 +139,12 @@ public class BusinessServiceRestServiceIT extends AbstractSpringJerseyRestTestCa
     @JUnitTemporaryDatabase
     @Transactional
     public void canRemoveIpService() throws Exception {
-        BusinessService service = new BusinessService();
+        BusinessServiceEntity service = new BusinessServiceEntity();
         service.setName("Dummy Service");
         final Long serviceId = m_businessServiceDao.save(service);
-        service.addIpService(monitoredServiceDao.get(17));
-        service.addIpService(monitoredServiceDao.get(18));
-        service.addIpService(monitoredServiceDao.get(20));
+        service.getIpServices().add(monitoredServiceDao.get(17));
+        service.getIpServices().add(monitoredServiceDao.get(18));
+        service.getIpServices().add(monitoredServiceDao.get(20));
         m_businessServiceDao.saveOrUpdate(service);
         m_businessServiceDao.flush();
 
@@ -174,22 +174,20 @@ public class BusinessServiceRestServiceIT extends AbstractSpringJerseyRestTestCa
     @SuppressWarnings("unchecked")
     public void canRetrieveBusinessServices() throws Exception {
         // Add business services to the DB
-        BusinessService bs = new BusinessService();
+        BusinessServiceEntity bs = new BusinessServiceEntity();
         bs.setName("Application Servers");
         Long id = m_businessServiceDao.save(bs);
         m_businessServiceDao.flush();
 
         // Retrieve the list of business services
         String url = "/business-services";
-        JAXBContext context = JAXBContext.newInstance(BusinessServiceListDTO.class, BusinessServiceDTO.class);
-        List<BusinessServiceDTO> businessServices = getXmlObject(context, url, 200, JaxbListWrapper.class).getObjects();
+        JAXBContext context = JAXBContext.newInstance(BusinessServiceListDTO.class, BusinessService.class);
+        List<BusinessService> businessServices = getXmlObject(context, url, 200, JaxbListWrapper.class).getObjects();
 
         // Verify
         assertEquals(1, businessServices.size());
-        BusinessServiceDTO bsDTO = new BusinessServiceDTO();
-        bsDTO.setName(bs.getName());
-        bsDTO.setId(id);
-        assertEquals(bsDTO, businessServices.get(0));
+        assertEquals(bs.getId(), businessServices.get(0).getId());
+        assertEquals(bs.getName(), businessServices.get(0).getName());
     }
 
     @Test
@@ -213,7 +211,7 @@ public class BusinessServiceRestServiceIT extends AbstractSpringJerseyRestTestCa
     @JUnitTemporaryDatabase
     @Transactional
     public void canUpdateBusinessService() throws Exception {
-        BusinessService service = new BusinessService();
+        BusinessServiceEntity service = new BusinessServiceEntity();
         service.setName("Dummy Service");
         final Long serviceId = m_businessServiceDao.save(service);
         m_businessServiceDao.flush();

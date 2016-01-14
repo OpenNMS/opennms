@@ -30,6 +30,8 @@ package org.opennms.web.rest.v2.bsm.model;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -38,40 +40,34 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.codehaus.jackson.map.annotate.JsonRootName;
 import org.opennms.core.config.api.JaxbListWrapper;
-import org.opennms.netmgt.bsm.service.model.BusinessServiceDTO;
+import org.opennms.netmgt.bsm.service.model.BusinessService;
 import org.opennms.web.rest.api.JAXBResourceLocationAdapter;
 import org.opennms.web.rest.api.ResourceLocation;
+import org.opennms.web.rest.api.ResourceLocationFactory;
 
 @XmlRootElement(name = "business-services")
 @JsonRootName("business-services")
-public class BusinessServiceListDTO extends JaxbListWrapper<BusinessServiceDTO> {
-
-    private ResourceLocation location;
-
+public class BusinessServiceListDTO {
     private static final long serialVersionUID = 1L;
 
-    public BusinessServiceListDTO() {
+    private List<ResourceLocation> services;
 
+    public BusinessServiceListDTO() {
     }
 
-    public BusinessServiceListDTO(final Collection<? extends BusinessServiceDTO> services, ResourceLocation location) {
-        super(services);
-        this.location = location;
+    public BusinessServiceListDTO(final Collection<? extends BusinessService> services) {
+        this.services = services.stream()
+        .map(service -> ResourceLocationFactory.createBusinessServiceLocation(Long.toString(service.getId())))
+        .collect(Collectors.toList());
     }
 
     @XmlElement(name = "business-service")
     @JsonProperty("business-service")
-    public List<BusinessServiceDTO> getObjects() {
-        return super.getObjects();
+    public List<ResourceLocation> getServices() {
+        return this.services;
     }
 
-    @XmlElement(name = "location")
-    @XmlJavaTypeAdapter(JAXBResourceLocationAdapter.class)
-    public ResourceLocation getLocation() {
-        return location;
-    }
-
-    public void setLocation(ResourceLocation location) {
-        this.location = location;
+    public void setServices(final List<ResourceLocation> services) {
+        this.services = services;
     }
 }

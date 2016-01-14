@@ -31,37 +31,41 @@ package org.opennms.netmgt.bsm.service;
 import java.util.List;
 import java.util.Set;
 
-import org.opennms.netmgt.bsm.service.model.BusinessServiceDTO;
-import org.opennms.netmgt.bsm.service.model.IpServiceDTO;
+import org.opennms.netmgt.bsm.service.model.BusinessService;
+import org.opennms.netmgt.bsm.service.model.IpService;
 import org.opennms.netmgt.model.OnmsSeverity;
 
 public interface BusinessServiceManager {
 
-    List<BusinessServiceDTO> findAll();
+    List<BusinessService> getAllBusinessServices();
 
-    Long save(BusinessServiceDTO newObject);
+    BusinessService createBusinessService();
 
-    void update(BusinessServiceDTO objectToUpdate);
+    void saveBusinessService(BusinessService newObject);
 
-    BusinessServiceDTO getById(Long id);
+    void deleteBusinessService(BusinessService service);
 
-    void delete(Long id);
+    BusinessService getBusinessServiceById(Long id);
 
-    boolean assignIpInterface(Long serviceId, Integer ipServiceId);
+    boolean assignIpService(BusinessService service, IpService ipService);
 
-    boolean removeIpInterface(Long serviceId, Integer ipServiceId);
+    boolean removeIpService(BusinessService service, IpService ipService);
 
-    boolean assignChildService(Long serviceId, Long childServiceId);
+    boolean assignChildService(BusinessService service, BusinessService childService);
 
-    boolean removeChildService(Long serviceId, Long childServiceId);
+    boolean removeChildService(BusinessService service, BusinessService childService);
 
-    Set<BusinessServiceDTO> getFeasibleChildServices(BusinessServiceDTO service);
+    Set<BusinessService> getFeasibleChildServices(BusinessService service);
 
-    Set<BusinessServiceDTO> getParentServices(BusinessServiceDTO service);
+    OnmsSeverity getOperationalStatusForBusinessService(BusinessService service);
 
-    OnmsSeverity getOperationalStatusForBusinessService(Long serviceId);
+    OnmsSeverity getOperationalStatusForIPService(IpService ipService);
 
-    OnmsSeverity getOperationalStatusForIPService(Integer ipServiceId);
+    List<IpService> getAllIpServices();
 
-    List<IpServiceDTO> getAllIpServiceDTO();
+    IpService getIpServiceById(Integer id);
+
+    void setIpServices(BusinessService service, Set<IpService> ipServices);
+
+    void setChildServices(BusinessService service, Set<BusinessService> childServices);
 }
