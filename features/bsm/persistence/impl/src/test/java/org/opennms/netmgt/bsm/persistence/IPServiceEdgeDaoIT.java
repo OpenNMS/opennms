@@ -28,11 +28,12 @@
 
 package org.opennms.netmgt.bsm.persistence;
 
+import static org.junit.Assert.assertEquals;
+
 import java.util.Properties;
 
 import org.junit.Before;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.spring.BeanUtils;
@@ -40,17 +41,21 @@ import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.MockDatabase;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
+import org.opennms.netmgt.bsm.persistence.api.BusinessService;
 import org.opennms.netmgt.bsm.persistence.api.BusinessServiceDao;
 import org.opennms.netmgt.bsm.persistence.api.BusinessServiceEdgeDao;
+import org.opennms.netmgt.bsm.persistence.api.IPServiceEdge;
 import org.opennms.netmgt.bsm.persistence.api.Identity;
 import org.opennms.netmgt.bsm.persistence.api.MapFunctionDao;
 import org.opennms.netmgt.bsm.persistence.api.MostCritical;
 import org.opennms.netmgt.bsm.persistence.api.ReductionFunctionDao;
 import org.opennms.netmgt.dao.DatabasePopulator;
+import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.model.OnmsMonitoredService;
+import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.transaction.annotation.Transactional;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {
@@ -64,7 +69,6 @@ import org.springframework.transaction.annotation.Transactional;
     "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml" })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase(reuseDatabase = false, tempDbClass = MockDatabase.class)
-@Transactional
 public class IPServiceEdgeDaoIT {
 
     @Autowired
@@ -81,6 +85,9 @@ public class IPServiceEdgeDaoIT {
 
     @Autowired
     private MapFunctionDao m_mapFunctionDao;
+
+    @Autowired
+    private NodeDao m_nodeDao;
 
     MostCritical m_mostCritical;
 
@@ -106,29 +113,39 @@ public class IPServiceEdgeDaoIT {
         m_mapFunctionDao.flush();
     }
 
-    @Ignore
     @Test
-    public void businessServicesWithRelatedIpServicesAreDeletedOnCascade() throws InterruptedException {
-        // TODO: MVR please :)
-        /*// Initially there should be no business services
-        assertEquals("Check that there are no initial BusinessServices", 0, m_businessServiceDao.countAll());
-
-        // Create a business service with an associated IP Service
+    public void ipServiceEdgesWithRelatedIpServicesAreDeletedOnCascade() throws InterruptedException {
+        // Create a business service
         BusinessService bs = new BusinessService();
         bs.setName("Mont Cascades");
+        bs.setAttribute("dc", "RDU");
         bs.setReductionFunction(m_mostCritical);
-        OnmsNode node = m_databasePopulator.getNode1();
-        OnmsMonitoredService ipService = node
-                .getIpInterfaces().iterator().next()
-                .getMonitoredServices().iterator().next();
-        bs.addIpService(ipService);
-
         m_businessServiceDao.save(bs);
+        m_businessServiceDao.flush();
+
+        // Initially there should be no edges
+        assertEquals(0, m_businessServiceEdgeDao.countAll());
+
+        // Create an edge
+        IPServiceEdge edge = new IPServiceEdge();
+        edge.setMapFunction(m_identity);
+        edge.setBusinessService(bs);
+
+        // Grab the first monitored service from node 1
+        OnmsNode node = m_databasePopulator.getNode1();
+        OnmsMonitoredService ipService = node.getIpInterfaces().iterator().next()
+                .getMonitoredServices().iterator().next();
+        edge.setIpService(ipService);
+        m_businessServiceEdgeDao.save(edge);
+        m_businessServiceEdgeDao.flush();
+
+        bs.addEdge(edge);
+        m_businessServiceDao.update(bs);
         m_businessServiceDao.flush();
 
         // We should have a single business service with a single IP service associated
         assertEquals(1, m_businessServiceDao.countAll());
-        assertEquals(1, m_businessServiceDao.get(bs.getId()).getIpServices().size());
+        assertEquals(1, m_businessServiceDao.get(bs.getId()).getEdges(IPServiceEdge.class).size());
 
         // Now delete the node
         m_nodeDao.delete(node);
@@ -137,7 +154,6 @@ public class IPServiceEdgeDaoIT {
         // The business service should still be present, but the IP service should have been deleted
         // by the foreign key constraint
         assertEquals(1, m_businessServiceDao.countAll());
-        assertEquals(0, m_businessServiceDao.get(bs.getId()).getIpServices().size());
-        */
+        assertEquals(0, m_businessServiceDao.get(bs.getId()).getEdges(IPServiceEdge.class).size());
     }
 }

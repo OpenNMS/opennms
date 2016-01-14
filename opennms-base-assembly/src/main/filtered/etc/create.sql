@@ -2691,7 +2691,7 @@ CREATE TABLE bsm_service_ifservices (
     ifserviceid integer NOT NULL,
     CONSTRAINT bsm_service_ifservices_pkey PRIMARY KEY (id),
     CONSTRAINT fk_bsm_service_ifservices_edge_id FOREIGN KEY (id)
-    REFERENCES bsm_service_edge (id) ON DELETE CASCADE
---    CONSTRAINT fk_bsm_service_ifservices_ifserviceid FOREIGN KEY (ifserviceid)
---    REFERENCES ifservices (id) ON DELETE CASCADE
+    REFERENCES bsm_service_edge (id) ON DELETE CASCADE,
+    CONSTRAINT fk_bsm_service_ifservices_ifserviceid FOREIGN KEY (ifserviceid)
+    REFERENCES ifservices (id) ON DELETE CASCADE
 );
