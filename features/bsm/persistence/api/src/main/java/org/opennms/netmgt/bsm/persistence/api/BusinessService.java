@@ -67,7 +67,7 @@ public class BusinessService {
 
     private Map<String, String> m_attributes = Maps.newLinkedHashMap();
 
-    private Set<AbstractBusinessServiceEdge> m_edges = Sets.newLinkedHashSet();
+    private Set<BusinessServiceEdge> m_edges = Sets.newLinkedHashSet();
 
     private AbstractReductionFunction m_reductionFunction;
 
@@ -113,25 +113,25 @@ public class BusinessService {
     }
 
     @OneToMany(fetch = FetchType.EAGER, mappedBy="businessService")
-    public Set<AbstractBusinessServiceEdge> getEdges() {
+    public Set<BusinessServiceEdge> getEdges() {
         return m_edges;
     }
 
-    public void setEdges(Set<AbstractBusinessServiceEdge> edges) {
+    public void setEdges(Set<BusinessServiceEdge> edges) {
         m_edges = edges;
     }
 
-    public void addEdge(AbstractBusinessServiceEdge edge) {
+    public void addEdge(BusinessServiceEdge edge) {
         m_edges.add(edge);
     }
 
-    public void removeEdge(AbstractBusinessServiceEdge edge) {
+    public void removeEdge(BusinessServiceEdge edge) {
         m_edges.remove(edge);
     }
 
     @Transient
     @SuppressWarnings("unchecked")
-    public <T extends AbstractBusinessServiceEdge> Set<T> getEdges(Class<T> type) {
+    public <T extends BusinessServiceEdge> Set<T> getEdges(Class<T> type) {
         return getEdges().stream()
                 .filter(e -> type.isInstance(e))
                 .map(e -> (T)e)

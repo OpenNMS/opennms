@@ -41,7 +41,7 @@ import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.MockDatabase;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
-import org.opennms.netmgt.bsm.persistence.api.AbstractBusinessServiceEdge;
+import org.opennms.netmgt.bsm.persistence.api.BusinessServiceEdge;
 import org.opennms.netmgt.bsm.persistence.api.BusinessService;
 import org.opennms.netmgt.bsm.persistence.api.BusinessServiceDao;
 import org.opennms.netmgt.bsm.persistence.api.BusinessServiceEdgeDao;
@@ -144,7 +144,7 @@ public class BusinessServiceEdgeDaoIT {
         m_businessServiceEdgeDao.save(edge);
         m_businessServiceEdgeDao.flush();
 
-        AbstractBusinessServiceEdge otherEdge = m_businessServiceEdgeDao.get(edge.getId());
+        BusinessServiceEdge otherEdge = m_businessServiceEdgeDao.get(edge.getId());
         assertEquals(edge, otherEdge);
         assertEquals(1, m_businessServiceEdgeDao.countAll());
 

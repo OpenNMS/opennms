@@ -40,7 +40,7 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
 import org.opennms.netmgt.bsm.persistence.api.BusinessService;
-import org.opennms.netmgt.bsm.persistence.api.AbstractBusinessServiceEdge;
+import org.opennms.netmgt.bsm.persistence.api.BusinessServiceEdge;
 import org.opennms.netmgt.bsm.service.BusinessServiceStateChangeHandler;
 import org.opennms.netmgt.bsm.service.BusinessServiceStateMachine;
 import org.opennms.netmgt.model.OnmsAlarm;
