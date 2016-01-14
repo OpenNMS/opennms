@@ -375,7 +375,8 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
                         ndbt.clearTopologyForBridge(domain.getBridge(nodeid));
                         LOG.info("deleteNode: node: {}, end: calculating topology for braodcast domain",nodeid);
                         LOG.info("deleteNode: node: {}, start: save topology for braodcast domain",nodeid);
-                        m_queryMgr.store(domain, ndbt.getRootBridgeId(),ndbt.getRootBridgeBFT());
+                        m_queryMgr.store(domain);
+                        m_queryMgr.save(ndbt.getDomain().getRootBridgeId(),ndbt.getRootBridgeBFT());
                         LOG.info("deleteNode: node: {}, end: save topology for braodcast domain",nodeid);
                         domain.releaseLock();
                     }

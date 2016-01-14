@@ -73,6 +73,8 @@ public class BroadcastDomain {
     }
 
     public void addBridge(Bridge bridge) {
+        if (m_bridges.contains(bridge))
+            return;
         m_bridges.add(bridge);
     }
 

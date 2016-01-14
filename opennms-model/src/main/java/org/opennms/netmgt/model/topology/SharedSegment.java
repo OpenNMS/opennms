@@ -13,7 +13,6 @@ import org.opennms.netmgt.model.BridgeMacLink;
 public class SharedSegment {
     
     Integer m_designatedBridge;
-    Integer m_designatedPort;
     List<BridgeMacLink> m_bridgeportsOnSegment = new ArrayList<BridgeMacLink>();
     List<BridgeBridgeLink> m_bridgeportsOnLink = new ArrayList<BridgeBridgeLink>();
     BroadcastDomain m_domain;
@@ -35,20 +34,17 @@ public class SharedSegment {
     public SharedSegment(BroadcastDomain domain, BridgeMacLink link) {
         m_domain =domain;
         m_designatedBridge = link.getNode().getId();
-        m_designatedPort = link.getBridgePort();
         m_bridgeportsOnSegment.add(link);
     }
 
     public SharedSegment(BroadcastDomain domain, Integer designatedBridge,Integer designatedPort) {
         m_domain =domain;
         m_designatedBridge=designatedBridge;
-        m_designatedPort = designatedPort;
     }
     
     
     public void setDesignatedBridge(Integer designatedBridge) {
         m_designatedBridge = designatedBridge;
-        m_designatedPort = getPortForBridge(designatedBridge);
     }
 
     public Integer getDesignatedBridge() {
@@ -57,7 +53,7 @@ public class SharedSegment {
 
 
     public Integer getDesignatedPort() {
-        return m_designatedPort;
+        return getPortForBridge(m_designatedBridge);
     }
 
 

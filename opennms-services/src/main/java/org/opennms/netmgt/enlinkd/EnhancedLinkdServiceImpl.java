@@ -105,10 +105,9 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
 
     private BridgeTopologyDao m_bridgeTopologyDao;
 
-    volatile Map<Bridge, List<BridgeMacLink>> m_nodetoBroadcastDomainMap= new HashMap<Bridge, List<BridgeMacLink>>();
+    volatile Map<Integer, List<BridgeMacLink>> m_nodetoBroadcastDomainMap= new HashMap<Integer, List<BridgeMacLink>>();
 
-    volatile Map<BroadcastDomain,Integer> m_broadcastDomainToRootIdMap = new HashMap<BroadcastDomain, Integer>();
-    volatile Map<BroadcastDomain, List<BridgeMacLink>> m_broadcastDomainToRootBFTMap= new HashMap<BroadcastDomain, List<BridgeMacLink>>();
+    volatile Map<Integer, List<BridgeMacLink>> m_broadcastDomainToRootBFTMap= new HashMap<Integer, List<BridgeMacLink>>();
 
     @Override
     public List<Node> getSnmpNodeList() {
@@ -605,6 +604,9 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
     public void store(int nodeId, List<BridgeMacLink> bft) {
         Map<BridgeMacLinkHash,BridgeMacLink> effectiveBFT=new HashMap<BridgeMacLinkHash,BridgeMacLink>();        Set<String> incomingSet = new HashSet<String>();
         for (BridgeMacLink link : bft) {
+            OnmsNode node = new OnmsNode();
+            node.setId(nodeId);
+            link.setNode(node);
             effectiveBFT.put(new BridgeMacLinkHash(link), link);
             incomingSet.add(link.getMacAddress());
         }
@@ -630,7 +632,7 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
         bftdomain.addBridge(new Bridge(nodeId));
         m_bridgeTopologyDao.save(bftdomain);
         m_bridgeTopologyDao.clear();
-        m_nodetoBroadcastDomainMap.put(bftdomain.getBridge(nodeId), new ArrayList<BridgeMacLink>(effectiveBFT.values()));
+        m_nodetoBroadcastDomainMap.put(nodeId, new ArrayList<BridgeMacLink>(effectiveBFT.values()));
     }
 
     @Override
@@ -648,19 +650,16 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
     }
 
     @Override
-    public synchronized Map<Bridge,List<BridgeMacLink>> getBridgeTopologyUpdateBFT(BroadcastDomain domain) {
-        Map<Bridge,List<BridgeMacLink>> map = new HashMap<Bridge, List<BridgeMacLink>>();
-        Set<Bridge> updatedbridges = m_nodetoBroadcastDomainMap.keySet(); 
-        for (Bridge bridge: updatedbridges) {
-            map.put(bridge, new ArrayList<BridgeMacLink>(m_nodetoBroadcastDomainMap.remove(bridge)));
-        }
-        return map;
+    public synchronized List<BridgeMacLink> getBridgeTopologyUpdateBFT(int nodeid) {
+        return m_nodetoBroadcastDomainMap.remove(nodeid);
     }    
 
     @Override
-    public void store(BroadcastDomain domain, Integer rootId, List<BridgeMacLink> rootBFT) {
-        m_broadcastDomainToRootIdMap.put(domain, rootId);
-        m_broadcastDomainToRootBFTMap.put(domain, rootBFT);
+    public void save(int rootid, List<BridgeMacLink> rootBFT) {
+        m_broadcastDomainToRootBFTMap.put(rootid, rootBFT);
+    }
+    @Override
+    public void store(BroadcastDomain domain) {
         for (SharedSegment segment : domain.getTopology()) {
             for (BridgeBridgeLink link : segment.getBridgeBridgeLinks()) {
                 link.setBridgeBridgeLinkLastPollTime(new Date());
@@ -981,20 +980,16 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
         m_bridgeTopologyDao = bridgeTopologyDao;
     }
 
+
     @Override
-    public synchronized Integer getBridgeTopologyRootId(BroadcastDomain domain) {
-        return m_broadcastDomainToRootIdMap.get(domain);
+    public List<BridgeMacLink> getBridgeTopologyRootBFT(int nodeid) {
+        return m_broadcastDomainToRootBFTMap.remove(nodeid);
     }
 
     @Override
-    public List<BridgeMacLink> getBridgeTopologyRootBFT(BroadcastDomain domain) {
-        return m_broadcastDomainToRootBFTMap.get(domain);
-    }
-
-    @Override
-    public List<BridgeElement> getBridgeElements(BroadcastDomain domain) {
+    public List<BridgeElement> getBridgeElements(Set<Integer> nodes) {
         List<BridgeElement> elems = new ArrayList<BridgeElement>();
-        for (Integer nodeid: domain.getBridgeNodesOnDomain())
+        for (Integer nodeid: nodes)
             elems.addAll(m_bridgeElementDao.findByNodeId(nodeid));
         return elems;
     }
