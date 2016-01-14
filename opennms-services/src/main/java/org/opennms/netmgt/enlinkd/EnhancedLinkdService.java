@@ -19,7 +19,7 @@ package org.opennms.netmgt.enlinkd;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
+import java.util.Set;
 
 import org.opennms.netmgt.model.BridgeElement;
 import org.opennms.netmgt.model.BridgeMacLink;
@@ -33,7 +33,6 @@ import org.opennms.netmgt.model.LldpElement;
 import org.opennms.netmgt.model.LldpLink;
 import org.opennms.netmgt.model.OspfElement;
 import org.opennms.netmgt.model.OspfLink;
-import org.opennms.netmgt.model.topology.Bridge;
 import org.opennms.netmgt.model.topology.BroadcastDomain;
 
 /**
@@ -119,16 +118,15 @@ public interface EnhancedLinkdService {
 
     void store(int nodeId, List<BridgeMacLink> link);
     
-    void store(BroadcastDomain domain, Integer rootId, List<BridgeMacLink> rootBFT);
+    void store(BroadcastDomain domain);
+    void save(int rootId, List<BridgeMacLink> rootBFT);
     
     BroadcastDomain getBridgeTopologyBroadcastDomain(int nodeId);
 
-    Map<Bridge,List<BridgeMacLink>> getBridgeTopologyUpdateBFT(BroadcastDomain domain);
-
-    Integer getBridgeTopologyRootId(BroadcastDomain domain);
+    List<BridgeMacLink> getBridgeTopologyUpdateBFT(int nodeid);
+   
+    List<BridgeMacLink> getBridgeTopologyRootBFT(int nodeid);
     
-    List<BridgeMacLink> getBridgeTopologyRootBFT(BroadcastDomain domain);
-    
-    List<BridgeElement> getBridgeElements(BroadcastDomain domain);
+    List<BridgeElement> getBridgeElements(Set<Integer> nodeids);
 
 }

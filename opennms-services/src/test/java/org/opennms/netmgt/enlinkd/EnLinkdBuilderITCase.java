@@ -46,6 +46,7 @@ import org.opennms.netmgt.dao.api.BridgeMacLinkDao;
 import org.opennms.netmgt.dao.api.IsIsLinkDao;
 import org.opennms.netmgt.dao.api.LldpLinkDao;
 import org.opennms.netmgt.dao.api.OspfLinkDao;
+import org.opennms.netmgt.model.BridgeBridgeLink;
 import org.opennms.netmgt.model.IpNetToMedia;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.test.JUnitConfigurationEnvironment;
@@ -121,6 +122,9 @@ public abstract class EnLinkdBuilderITCase extends EnLinkdTestHelper implements 
         for (final IpNetToMedia at: m_ipNetToMediaDao.findAll())
             m_ipNetToMediaDao.delete(at);
         m_ipNetToMediaDao.flush();
+        for (final BridgeBridgeLink bb: m_bridgeBridgeLinkDao.findAll())
+            m_bridgeBridgeLinkDao.delete(bb);
+        m_bridgeBridgeLinkDao.flush();
         for (final OnmsNode node : m_nodeDao.findAll())
             m_nodeDao.delete(node);
         m_nodeDao.flush();

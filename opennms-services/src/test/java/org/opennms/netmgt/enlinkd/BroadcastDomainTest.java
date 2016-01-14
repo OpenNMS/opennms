@@ -33,9 +33,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
@@ -56,7 +54,6 @@ import org.opennms.netmgt.model.topology.BroadcastDomain;
 import org.opennms.netmgt.model.topology.SharedSegment;
 import org.opennms.netmgt.model.OnmsNode;
 //FIXME test Clean topology for bridge
-//FIXME test SetUpHierarchy 
 //FIXME test Clean topology for root
 public class BroadcastDomainTest {
 
@@ -153,8 +150,10 @@ public class BroadcastDomainTest {
     public void testOneBridgeOnePortOneMac() throws Exception {
         OneBridgeOnePortOneMacTopology topology = new OneBridgeOnePortOneMacTopology();
         NodeDiscoveryBridgeTopology ndbt= new NodeDiscoveryBridgeTopology(linkd, null);
-        ndbt.setDomain(new BroadcastDomain());
-        ndbt.setNotYetParsedBFTMap(topology.getBFT());;
+        BroadcastDomain domain = new BroadcastDomain();
+        domain.addBridge(new Bridge(topology.nodeAId));
+        ndbt.setDomain(domain);
+        ndbt.addUpdatedBFT(domain.getBridge(topology.nodeAId),topology.bftA);
         ndbt.setBridgeElements(topology.elemlist);
         ndbt.calculate();
         topology.check(ndbt.getDomain().getTopology());
@@ -165,8 +164,10 @@ public class BroadcastDomainTest {
 
         OneBridgeMoreMacOnePortTopology topology = new OneBridgeMoreMacOnePortTopology();
         NodeDiscoveryBridgeTopology ndbt= new NodeDiscoveryBridgeTopology(linkd, null);
-        ndbt.setDomain(new BroadcastDomain());
-        ndbt.setNotYetParsedBFTMap(topology.getBFT());;
+        BroadcastDomain domain = new BroadcastDomain();
+        domain.addBridge(new Bridge(topology.nodeAId));
+        ndbt.setDomain(domain);
+        ndbt.addUpdatedBFT(domain.getBridge(topology.nodeAId),topology.bftA);
         ndbt.setBridgeElements(topology.elemlist);
         ndbt.calculate();
         topology.check(ndbt.getDomain().getTopology());
@@ -177,8 +178,10 @@ public class BroadcastDomainTest {
 
         OneBridgeCompleteTopology topology = new OneBridgeCompleteTopology();        
         NodeDiscoveryBridgeTopology ndbt= new NodeDiscoveryBridgeTopology(linkd, null);
-        ndbt.setDomain(new BroadcastDomain());
-        ndbt.setNotYetParsedBFTMap(topology.getBFT());;
+        BroadcastDomain domain = new BroadcastDomain();
+        domain.addBridge(new Bridge(topology.nodeAId));
+        ndbt.setDomain(domain);
+        ndbt.addUpdatedBFT(domain.getBridge(topology.nodeAId),topology.bftA);
         ndbt.setBridgeElements(topology.elemlist);
         ndbt.calculate();
         topology.check(ndbt.getDomain().getTopology());
@@ -190,8 +193,12 @@ public class BroadcastDomainTest {
         TwoConnectedBridgeTopology topology = new TwoConnectedBridgeTopology();
 
         NodeDiscoveryBridgeTopology ndbt= new NodeDiscoveryBridgeTopology(linkd, null);
-        ndbt.setDomain(new BroadcastDomain());
-        ndbt.setNotYetParsedBFTMap(topology.getBFT());;
+        BroadcastDomain domain = new BroadcastDomain();
+        domain.addBridge(new Bridge(topology.nodeAId));
+        domain.addBridge(new Bridge(topology.nodeBId));
+        ndbt.setDomain(domain);
+        ndbt.addUpdatedBFT(domain.getBridge(topology.nodeAId),topology.bftA);
+        ndbt.addUpdatedBFT(domain.getBridge(topology.nodeBId),topology.bftB);
         ndbt.setBridgeElements(topology.elemlist);
         ndbt.calculate();
         topology.check(ndbt.getDomain().getTopology());
@@ -201,8 +208,12 @@ public class BroadcastDomainTest {
     public void testTwoMergeBridge() throws Exception {
         TwoMergeBridgeTopology topology = new TwoMergeBridgeTopology();
         NodeDiscoveryBridgeTopology ndbt= new NodeDiscoveryBridgeTopology(linkd, null);
-        ndbt.setDomain(new BroadcastDomain());
-        ndbt.setNotYetParsedBFTMap(topology.getBFT());;
+        BroadcastDomain domain = new BroadcastDomain();
+        domain.addBridge(new Bridge(topology.nodeAId));
+        domain.addBridge(new Bridge(topology.nodeBId));
+        ndbt.setDomain(domain);
+        ndbt.addUpdatedBFT(domain.getBridge(topology.nodeAId),topology.bftA);
+        ndbt.addUpdatedBFT(domain.getBridge(topology.nodeBId),topology.bftB);
         ndbt.setBridgeElements(topology.elemlist);
         ndbt.calculate();
         topology.check(ndbt.getDomain().getTopology());
@@ -212,8 +223,12 @@ public class BroadcastDomainTest {
     public void testTwoBridgeWithBackbonePorts() {
         TwoBridgeWithBackbonePortsTopology topology = new TwoBridgeWithBackbonePortsTopology();
         NodeDiscoveryBridgeTopology ndbt= new NodeDiscoveryBridgeTopology(linkd, null);
-        ndbt.setDomain(new BroadcastDomain());
-        ndbt.setNotYetParsedBFTMap(topology.getBFT());;
+        BroadcastDomain domain = new BroadcastDomain();
+        domain.addBridge(new Bridge(topology.nodeAId));
+        domain.addBridge(new Bridge(topology.nodeBId));
+        ndbt.setDomain(domain);
+        ndbt.addUpdatedBFT(domain.getBridge(topology.nodeAId),topology.bftA);
+        ndbt.addUpdatedBFT(domain.getBridge(topology.nodeBId),topology.bftB);
         ndbt.setBridgeElements(topology.elemlist);
         ndbt.calculate();
         topology.check(ndbt.getDomain().getTopology());
@@ -223,8 +238,12 @@ public class BroadcastDomainTest {
     public void testTwoBridgeWithBackbonePortsUsingBridgeAddressInBft() {
         TwoBridgeWithBackbonePortsTopologyWithBridgeinBft topology = new TwoBridgeWithBackbonePortsTopologyWithBridgeinBft();
         NodeDiscoveryBridgeTopology ndbt= new NodeDiscoveryBridgeTopology(linkd, null);
-        ndbt.setDomain(new BroadcastDomain());
-        ndbt.setNotYetParsedBFTMap(topology.getBFT());;
+        BroadcastDomain domain = new BroadcastDomain();
+        domain.addBridge(new Bridge(topology.nodeAId));
+        domain.addBridge(new Bridge(topology.nodeBId));
+        ndbt.setDomain(domain);
+        ndbt.addUpdatedBFT(domain.getBridge(topology.nodeAId),topology.bftA);
+        ndbt.addUpdatedBFT(domain.getBridge(topology.nodeBId),topology.bftB);
         ndbt.setBridgeElements(topology.elemlist);
         ndbt.calculate();
         topology.check(ndbt.getDomain().getTopology());
@@ -235,11 +254,16 @@ public class BroadcastDomainTest {
 
         TwoNodeTopology topology = new TwoNodeTopology();
         NodeDiscoveryBridgeTopology ndbt= new NodeDiscoveryBridgeTopology(linkd, null);
-        ndbt.setDomain(new BroadcastDomain());
-        ndbt.setNotYetParsedBFTMap(topology.getBFT());;
+        BroadcastDomain domain = new BroadcastDomain();
+        domain.addBridge(new Bridge(topology.nodeAId));
+        domain.addBridge(new Bridge(topology.nodeBId));
+        ndbt.setDomain(domain);
+        ndbt.addUpdatedBFT(domain.getBridge(topology.nodeAId),topology.bftA);
+        ndbt.addUpdatedBFT(domain.getBridge(topology.nodeBId),topology.bftB);
         ndbt.setBridgeElements(topology.elemlist);
         ndbt.calculate();
         topology.check2nodeTopology(ndbt.getDomain().getTopology(),false);
+        assertEquals(topology.nodeBId, ndbt.getDomain().getRootBridgeId());
     }
     
 
@@ -248,18 +272,22 @@ public class BroadcastDomainTest {
 
         TwoNodeTopology topology = new TwoNodeTopology();
         NodeDiscoveryBridgeTopology ndbt= new NodeDiscoveryBridgeTopology(linkd, null);
-        ndbt.setDomain(new BroadcastDomain());
-        ndbt.setNotYetParsedBFTMap(topology.getBFTB());;
+        BroadcastDomain domain = new BroadcastDomain();
+        domain.addBridge(new Bridge(topology.nodeBId));
+        ndbt.setDomain(domain);
+        ndbt.addUpdatedBFT(domain.getBridge(topology.nodeBId),topology.bftB);
         ndbt.setBridgeElements(topology.elemlist);
         ndbt.calculate();
         List<SharedSegment> shsegs = ndbt.getDomain().getTopology();
         printBridgeTopology(shsegs);
         assertEquals(3, shsegs.size());
         
-        ndbt.setNotYetParsedBFTMap(topology.getBFTA());;
+        domain.addBridge(new Bridge(topology.nodeAId));
+        ndbt.addUpdatedBFT(domain.getBridge(topology.nodeAId),topology.bftA);
         ndbt.calculate();
 
         topology.check2nodeTopology(ndbt.getDomain().getTopology(),false);
+        assertEquals(topology.nodeBId, domain.getRootBridgeId());
     }
 
     @Test 
@@ -267,18 +295,22 @@ public class BroadcastDomainTest {
 
         TwoNodeTopology topology = new TwoNodeTopology();
         NodeDiscoveryBridgeTopology ndbt= new NodeDiscoveryBridgeTopology(linkd, null);
-        ndbt.setDomain(new BroadcastDomain());
-        ndbt.setNotYetParsedBFTMap(topology.getBFTA());;
+        BroadcastDomain domain = new BroadcastDomain();
+        domain.addBridge(new Bridge(topology.nodeAId));
+        ndbt.setDomain(domain);
+        ndbt.addUpdatedBFT(domain.getBridge(topology.nodeAId),topology.bftA);
         ndbt.setBridgeElements(topology.elemlist);
         ndbt.calculate();
         List<SharedSegment> shsegs = ndbt.getDomain().getTopology();
         printBridgeTopology(shsegs);
         assertEquals(3, shsegs.size());
         
-        ndbt.setNotYetParsedBFTMap(topology.getBFTB());;
+        domain.addBridge(new Bridge(topology.nodeBId));
+        ndbt.addUpdatedBFT(domain.getBridge(topology.nodeBId),topology.bftB);
         ndbt.calculate();
 
         topology.check2nodeTopology(ndbt.getDomain().getTopology(),true);
+        assertEquals(topology.nodeBId, domain.getRootBridgeId());
     }
 
     @Test
@@ -286,8 +318,12 @@ public class BroadcastDomainTest {
         ABCTopology topology = new ABCTopology();
 
         NodeDiscoveryBridgeTopology ndbt= new NodeDiscoveryBridgeTopology(linkd, null);
-        ndbt.setDomain(new BroadcastDomain());
-        ndbt.setNotYetParsedBFTMap(topology.getBFTAB());;
+        BroadcastDomain domain = new BroadcastDomain();
+        domain.addBridge(new Bridge(topology.nodeAId));
+        domain.addBridge(new Bridge(topology.nodeBId));
+        ndbt.setDomain(domain);
+        ndbt.addUpdatedBFT(domain.getBridge(topology.nodeAId),topology.bftA);
+        ndbt.addUpdatedBFT(domain.getBridge(topology.nodeBId),topology.bftB);
         ndbt.setBridgeElements(topology.elemlist);
         ndbt.calculate();
 
@@ -300,8 +336,12 @@ public class BroadcastDomainTest {
         ABCTopology topology = new ABCTopology();
 
         NodeDiscoveryBridgeTopology ndbt= new NodeDiscoveryBridgeTopology(linkd, null);
-        ndbt.setDomain(new BroadcastDomain());
-        ndbt.setNotYetParsedBFTMap(topology.getBFTBA());;
+        BroadcastDomain domain = new BroadcastDomain();
+        domain.addBridge(new Bridge(topology.nodeBId));
+        domain.addBridge(new Bridge(topology.nodeAId));
+        ndbt.setDomain(domain);
+        ndbt.addUpdatedBFT(domain.getBridge(topology.nodeBId),topology.bftB);
+        ndbt.addUpdatedBFT(domain.getBridge(topology.nodeAId),topology.bftA);
         ndbt.setBridgeElements(topology.elemlist);
         ndbt.calculate();
 
@@ -314,8 +354,12 @@ public class BroadcastDomainTest {
         ABCTopology topology = new ABCTopology();
 
         NodeDiscoveryBridgeTopology ndbt= new NodeDiscoveryBridgeTopology(linkd, null);
-        ndbt.setDomain(new BroadcastDomain());
-        ndbt.setNotYetParsedBFTMap(topology.getBFTAC());;
+        BroadcastDomain domain = new BroadcastDomain();
+        domain.addBridge(new Bridge(topology.nodeAId));
+        domain.addBridge(new Bridge(topology.nodeCId));
+        ndbt.setDomain(domain);
+        ndbt.addUpdatedBFT(domain.getBridge(topology.nodeAId),topology.bftA);
+        ndbt.addUpdatedBFT(domain.getBridge(topology.nodeCId),topology.bftC);
         ndbt.setBridgeElements(topology.elemlist);
         ndbt.calculate();
 
@@ -328,8 +372,12 @@ public class BroadcastDomainTest {
         ABCTopology topology = new ABCTopology();
 
         NodeDiscoveryBridgeTopology ndbt= new NodeDiscoveryBridgeTopology(linkd, null);
-        ndbt.setDomain(new BroadcastDomain());
-        ndbt.setNotYetParsedBFTMap(topology.getBFTCA());;
+        BroadcastDomain domain = new BroadcastDomain();
+        domain.addBridge(new Bridge(topology.nodeCId));
+        domain.addBridge(new Bridge(topology.nodeAId));
+        ndbt.setDomain(domain);
+        ndbt.addUpdatedBFT(domain.getBridge(topology.nodeCId),topology.bftC);
+        ndbt.addUpdatedBFT(domain.getBridge(topology.nodeAId),topology.bftA);
         ndbt.setBridgeElements(topology.elemlist);
         ndbt.calculate();
 
@@ -341,8 +389,12 @@ public class BroadcastDomainTest {
         ABCTopology topology = new ABCTopology();
 
         NodeDiscoveryBridgeTopology ndbt= new NodeDiscoveryBridgeTopology(linkd, null);
-        ndbt.setDomain(new BroadcastDomain());
-        ndbt.setNotYetParsedBFTMap(topology.getBFTBC());;
+        BroadcastDomain domain = new BroadcastDomain();
+        domain.addBridge(new Bridge(topology.nodeBId));
+        domain.addBridge(new Bridge(topology.nodeCId));
+        ndbt.setDomain(domain);
+        ndbt.addUpdatedBFT(domain.getBridge(topology.nodeBId),topology.bftB);
+        ndbt.addUpdatedBFT(domain.getBridge(topology.nodeCId),topology.bftC);
         ndbt.setBridgeElements(topology.elemlist);
         ndbt.calculate();
 
@@ -354,8 +406,12 @@ public class BroadcastDomainTest {
         ABCTopology topology = new ABCTopology();
 
         NodeDiscoveryBridgeTopology ndbt= new NodeDiscoveryBridgeTopology(linkd, null);
-        ndbt.setDomain(new BroadcastDomain());
-        ndbt.setNotYetParsedBFTMap(topology.getBFTCB());;
+        BroadcastDomain domain = new BroadcastDomain();
+        domain.addBridge(new Bridge(topology.nodeCId));
+        domain.addBridge(new Bridge(topology.nodeBId));
+        ndbt.setDomain(domain);
+        ndbt.addUpdatedBFT(domain.getBridge(topology.nodeCId),topology.bftC);
+        ndbt.addUpdatedBFT(domain.getBridge(topology.nodeBId),topology.bftB);
         ndbt.setBridgeElements(topology.elemlist);
         ndbt.calculate();
 
@@ -367,8 +423,14 @@ public class BroadcastDomainTest {
         ABCTopology topology = new ABCTopology();
 
         NodeDiscoveryBridgeTopology ndbt= new NodeDiscoveryBridgeTopology(linkd, null);
-        ndbt.setDomain(new BroadcastDomain());
-        ndbt.setNotYetParsedBFTMap(topology.getBFT());;
+        BroadcastDomain domain = new BroadcastDomain();
+        domain.addBridge(new Bridge(topology.nodeAId));
+        domain.addBridge(new Bridge(topology.nodeBId));
+        domain.addBridge(new Bridge(topology.nodeCId));
+        ndbt.setDomain(domain);
+        ndbt.addUpdatedBFT(domain.getBridge(topology.nodeAId),topology.bftA);
+        ndbt.addUpdatedBFT(domain.getBridge(topology.nodeBId),topology.bftB);
+        ndbt.addUpdatedBFT(domain.getBridge(topology.nodeCId),topology.bftC);
         ndbt.setBridgeElements(topology.elemlist);
         ndbt.calculate();
 
@@ -381,12 +443,17 @@ public class BroadcastDomainTest {
         ABCTopology topology = new ABCTopology();
 
         NodeDiscoveryBridgeTopology ndbt= new NodeDiscoveryBridgeTopology(linkd, null);
-        ndbt.setDomain(new BroadcastDomain());
-        ndbt.setNotYetParsedBFTMap(topology.getBFTA());;
+        BroadcastDomain domain = new BroadcastDomain();
+        domain.addBridge(new Bridge(topology.nodeAId));
+        ndbt.setDomain(domain);
+        ndbt.addUpdatedBFT(domain.getBridge(topology.nodeAId),topology.bftA);
         ndbt.setBridgeElements(topology.elemlist);
         ndbt.calculate();
 
-        ndbt.setNotYetParsedBFTMap(topology.getBFTBC());
+        domain.addBridge(new Bridge(topology.nodeBId));
+        domain.addBridge(new Bridge(topology.nodeCId));
+        ndbt.addUpdatedBFT(domain.getBridge(topology.nodeBId),topology.bftB);
+        ndbt.addUpdatedBFT(domain.getBridge(topology.nodeCId),topology.bftC);
         ndbt.calculate();
 
         topology.check(ndbt.getDomain().getTopology());
@@ -397,14 +464,19 @@ public class BroadcastDomainTest {
         ABCTopology topology = new ABCTopology();
 
         NodeDiscoveryBridgeTopology ndbt= new NodeDiscoveryBridgeTopology(linkd, null);
-        ndbt.setDomain(new BroadcastDomain());
-        ndbt.setNotYetParsedBFTMap(topology.getBFTAC());;
+        BroadcastDomain domain = new BroadcastDomain();
+        domain.addBridge(new Bridge(topology.nodeAId));
+        domain.addBridge(new Bridge(topology.nodeCId));
+        ndbt.setDomain(domain);
+        ndbt.addUpdatedBFT(domain.getBridge(topology.nodeAId),topology.bftA);
+        ndbt.addUpdatedBFT(domain.getBridge(topology.nodeCId),topology.bftC);
         ndbt.setBridgeElements(topology.elemlist);
         ndbt.calculate();
 
         topology.checkAC(ndbt.getDomain().getTopology());
 
-        ndbt.setNotYetParsedBFTMap(topology.getBFTB());
+        domain.addBridge(new Bridge(topology.nodeBId));
+        ndbt.addUpdatedBFT(domain.getBridge(topology.nodeBId),topology.bftB);
         ndbt.calculate();
 
         topology.check(ndbt.getDomain().getTopology());
@@ -416,13 +488,18 @@ public class BroadcastDomainTest {
         ABCTopology topology = new ABCTopology();
 
         NodeDiscoveryBridgeTopology ndbt= new NodeDiscoveryBridgeTopology(linkd, null);
-        ndbt.setDomain(new BroadcastDomain());
-        ndbt.setNotYetParsedBFTMap(topology.getBFTAB());;
+        BroadcastDomain domain = new BroadcastDomain();
+        domain.addBridge(new Bridge(topology.nodeBId));
+        domain.addBridge(new Bridge(topology.nodeAId));
+        ndbt.setDomain(domain);
+        ndbt.addUpdatedBFT(domain.getBridge(topology.nodeBId),topology.bftB);
+        ndbt.addUpdatedBFT(domain.getBridge(topology.nodeAId),topology.bftA);
         ndbt.setBridgeElements(topology.elemlist);
         ndbt.calculate();
         topology.checkAB(ndbt.getDomain().getTopology());
 
-        ndbt.setNotYetParsedBFTMap(topology.getBFTC());
+        domain.addBridge(new Bridge(topology.nodeCId));
+        ndbt.addUpdatedBFT(domain.getBridge(topology.nodeCId),topology.bftC);
         ndbt.calculate();
 
         topology.check(ndbt.getDomain().getTopology());
@@ -434,12 +511,17 @@ public class BroadcastDomainTest {
         ABCTopology topology = new ABCTopology();
 
         NodeDiscoveryBridgeTopology ndbt= new NodeDiscoveryBridgeTopology(linkd, null);
-        ndbt.setDomain(new BroadcastDomain());
-        ndbt.setNotYetParsedBFTMap(topology.getBFTB());;
+        BroadcastDomain domain = new BroadcastDomain();
+        domain.addBridge(new Bridge(topology.nodeBId));
+        ndbt.setDomain(domain);
+        ndbt.addUpdatedBFT(domain.getBridge(topology.nodeBId),topology.bftB);
         ndbt.setBridgeElements(topology.elemlist);
         ndbt.calculate();
 
-        ndbt.setNotYetParsedBFTMap(topology.getBFTAC());;
+        domain.addBridge(new Bridge(topology.nodeCId));
+        domain.addBridge(new Bridge(topology.nodeAId));
+        ndbt.addUpdatedBFT(domain.getBridge(topology.nodeCId),topology.bftC);
+        ndbt.addUpdatedBFT(domain.getBridge(topology.nodeAId),topology.bftA);
         ndbt.calculate();
 
         topology.check(ndbt.getDomain().getTopology());
@@ -450,12 +532,17 @@ public class BroadcastDomainTest {
         ABCTopology topology = new ABCTopology();
 
         NodeDiscoveryBridgeTopology ndbt= new NodeDiscoveryBridgeTopology(linkd, null);
-        ndbt.setDomain(new BroadcastDomain());
-        ndbt.setNotYetParsedBFTMap(topology.getBFTC());;
+        BroadcastDomain domain = new BroadcastDomain();
+        domain.addBridge(new Bridge(topology.nodeCId));
+        ndbt.setDomain(domain);
+        ndbt.addUpdatedBFT(domain.getBridge(topology.nodeCId),topology.bftC);
         ndbt.setBridgeElements(topology.elemlist);
         ndbt.calculate();
 
-        ndbt.setNotYetParsedBFTMap(topology.getBFTAB());;
+        domain.addBridge(new Bridge(topology.nodeAId));
+        domain.addBridge(new Bridge(topology.nodeBId));
+        ndbt.addUpdatedBFT(domain.getBridge(topology.nodeAId),topology.bftA);
+        ndbt.addUpdatedBFT(domain.getBridge(topology.nodeBId),topology.bftB);
         ndbt.calculate();
 
         topology.check(ndbt.getDomain().getTopology());
@@ -466,13 +553,18 @@ public class BroadcastDomainTest {
         ABCTopology topology = new ABCTopology();
 
         NodeDiscoveryBridgeTopology ndbt= new NodeDiscoveryBridgeTopology(linkd, null);
-        ndbt.setDomain(new BroadcastDomain());
-        ndbt.setNotYetParsedBFTMap(topology.getBFTBC());;
+        BroadcastDomain domain = new BroadcastDomain();
+        domain.addBridge(new Bridge(topology.nodeCId));
+        domain.addBridge(new Bridge(topology.nodeBId));
+        ndbt.setDomain(domain);
+        ndbt.addUpdatedBFT(domain.getBridge(topology.nodeCId),topology.bftC);
+        ndbt.addUpdatedBFT(domain.getBridge(topology.nodeBId),topology.bftB);
         ndbt.setBridgeElements(topology.elemlist);
         ndbt.calculate();
         topology.checkBC(ndbt.getDomain().getTopology());
 
-        ndbt.setNotYetParsedBFTMap(topology.getBFTA());
+        domain.addBridge(new Bridge(topology.nodeAId));
+        ndbt.addUpdatedBFT(domain.getBridge(topology.nodeAId),topology.bftA);
         ndbt.calculate();
 
         topology.check(ndbt.getDomain().getTopology());
@@ -481,11 +573,15 @@ public class BroadcastDomainTest {
 
     @Test
     public void testDE() {
-        DEFGTopology topology = new DEFGTopology();
+        DEFGHILTopology topology = new DEFGHILTopology();
 
         NodeDiscoveryBridgeTopology ndbt= new NodeDiscoveryBridgeTopology(linkd, null);
-        ndbt.setDomain(new BroadcastDomain());
-        ndbt.setNotYetParsedBFTMap(topology.getBFTDE());;
+        BroadcastDomain domain = new BroadcastDomain();
+        domain.addBridge(new Bridge(topology.nodeDId));
+        domain.addBridge(new Bridge(topology.nodeEId));
+        ndbt.setDomain(domain);
+        ndbt.addUpdatedBFT(domain.getBridge(topology.nodeDId),topology.bftD);
+        ndbt.addUpdatedBFT(domain.getBridge(topology.nodeEId),topology.bftE);
         ndbt.setBridgeElements(topology.elemlist);
         ndbt.calculate();
         
@@ -494,11 +590,15 @@ public class BroadcastDomainTest {
 
     @Test
     public void testDF() {
-        DEFGTopology topology = new DEFGTopology();
+        DEFGHILTopology topology = new DEFGHILTopology();
 
         NodeDiscoveryBridgeTopology ndbt= new NodeDiscoveryBridgeTopology(linkd, null);
-        ndbt.setDomain(new BroadcastDomain());
-        ndbt.setNotYetParsedBFTMap(topology.getBFTDF());;
+        BroadcastDomain domain = new BroadcastDomain();
+        domain.addBridge(new Bridge(topology.nodeDId));
+        domain.addBridge(new Bridge(topology.nodeFId));
+        ndbt.setDomain(domain);
+        ndbt.addUpdatedBFT(domain.getBridge(topology.nodeDId),topology.bftD);
+        ndbt.addUpdatedBFT(domain.getBridge(topology.nodeFId),topology.bftF);
         ndbt.setBridgeElements(topology.elemlist);
         ndbt.calculate();
         
@@ -507,11 +607,15 @@ public class BroadcastDomainTest {
 
     @Test
     public void testEF() {
-        DEFGTopology topology = new DEFGTopology();
+        DEFGHILTopology topology = new DEFGHILTopology();
 
         NodeDiscoveryBridgeTopology ndbt= new NodeDiscoveryBridgeTopology(linkd, null);
-        ndbt.setDomain(new BroadcastDomain());
-        ndbt.setNotYetParsedBFTMap(topology.getBFTEF());;
+        BroadcastDomain domain = new BroadcastDomain();
+        domain.addBridge(new Bridge(topology.nodeEId));
+        domain.addBridge(new Bridge(topology.nodeFId));
+        ndbt.setDomain(domain);
+        ndbt.addUpdatedBFT(domain.getBridge(topology.nodeEId),topology.bftE);
+        ndbt.addUpdatedBFT(domain.getBridge(topology.nodeFId),topology.bftF);
         ndbt.setBridgeElements(topology.elemlist);
         ndbt.calculate();
         
@@ -520,11 +624,15 @@ public class BroadcastDomainTest {
 
     @Test
     public void testDG() {
-        DEFGTopology topology = new DEFGTopology();
+        DEFGHILTopology topology = new DEFGHILTopology();
 
         NodeDiscoveryBridgeTopology ndbt= new NodeDiscoveryBridgeTopology(linkd, null);
-        ndbt.setDomain(new BroadcastDomain());
-        ndbt.setNotYetParsedBFTMap(topology.getBFTDG());;
+        BroadcastDomain domain = new BroadcastDomain();
+        domain.addBridge(new Bridge(topology.nodeDId));
+        domain.addBridge(new Bridge(topology.nodeGId));
+        ndbt.setDomain(domain);
+        ndbt.addUpdatedBFT(domain.getBridge(topology.nodeDId),topology.bftD);
+        ndbt.addUpdatedBFT(domain.getBridge(topology.nodeGId),topology.bftG);
         ndbt.setBridgeElements(topology.elemlist);
         ndbt.calculate();
         
@@ -534,11 +642,17 @@ public class BroadcastDomainTest {
     @Test
     public void testDEF() {
 
-        DEFGTopology topology = new DEFGTopology();
+        DEFGHILTopology topology = new DEFGHILTopology();
 
         NodeDiscoveryBridgeTopology ndbt= new NodeDiscoveryBridgeTopology(linkd, null);
-        ndbt.setDomain(new BroadcastDomain());
-        ndbt.setNotYetParsedBFTMap(topology.getBFTDEF());;
+        BroadcastDomain domain = new BroadcastDomain();
+        domain.addBridge(new Bridge(topology.nodeDId));
+        domain.addBridge(new Bridge(topology.nodeEId));
+        domain.addBridge(new Bridge(topology.nodeFId));
+        ndbt.setDomain(domain);
+        ndbt.addUpdatedBFT(domain.getBridge(topology.nodeDId),topology.bftD);
+        ndbt.addUpdatedBFT(domain.getBridge(topology.nodeEId),topology.bftE);
+        ndbt.addUpdatedBFT(domain.getBridge(topology.nodeFId),topology.bftF);
         ndbt.setBridgeElements(topology.elemlist);
         ndbt.calculate();
         
@@ -548,17 +662,22 @@ public class BroadcastDomainTest {
 
     @Test
     public void testDFThenE() {
-        DEFGTopology topology = new DEFGTopology();
+        DEFGHILTopology topology = new DEFGHILTopology();
 
         NodeDiscoveryBridgeTopology ndbt= new NodeDiscoveryBridgeTopology(linkd, null);
-        ndbt.setDomain(new BroadcastDomain());
-        ndbt.setNotYetParsedBFTMap(topology.getBFTDF());;
+        BroadcastDomain domain = new BroadcastDomain();
+        domain.addBridge(new Bridge(topology.nodeDId));
+        domain.addBridge(new Bridge(topology.nodeFId));
+        ndbt.setDomain(domain);
+        ndbt.addUpdatedBFT(domain.getBridge(topology.nodeDId),topology.bftD);
+        ndbt.addUpdatedBFT(domain.getBridge(topology.nodeFId),topology.bftF);
         ndbt.setBridgeElements(topology.elemlist);
         ndbt.calculate();
         
         topology.checkDF(ndbt.getDomain().getTopology());
         
-        ndbt.setNotYetParsedBFTMap(topology.getBFTE());;
+        domain.addBridge(new Bridge(topology.nodeEId));
+        ndbt.addUpdatedBFT(domain.getBridge(topology.nodeEId),topology.bftE);
         ndbt.calculate();
         
         topology.checkDEF(ndbt.getDomain().getTopology());
@@ -567,15 +686,98 @@ public class BroadcastDomainTest {
 
     @Test 
     public void testDEFG() {
-        DEFGTopology topology = new DEFGTopology();
+        DEFGHILTopology topology = new DEFGHILTopology();
 
         NodeDiscoveryBridgeTopology ndbt= new NodeDiscoveryBridgeTopology(linkd, null);
-        ndbt.setDomain(new BroadcastDomain());
-        ndbt.setNotYetParsedBFTMap(topology.getBFT());;
+        BroadcastDomain domain = new BroadcastDomain();
+        domain.addBridge(new Bridge(topology.nodeDId));
+        domain.addBridge(new Bridge(topology.nodeEId));
+        domain.addBridge(new Bridge(topology.nodeFId));
+        domain.addBridge(new Bridge(topology.nodeGId));
+        ndbt.setDomain(domain);
+        ndbt.addUpdatedBFT(domain.getBridge(topology.nodeDId),topology.bftD);
+        ndbt.addUpdatedBFT(domain.getBridge(topology.nodeEId),topology.bftE);
+        ndbt.addUpdatedBFT(domain.getBridge(topology.nodeFId),topology.bftF);
+        ndbt.addUpdatedBFT(domain.getBridge(topology.nodeGId),topology.bftG);
+               ndbt.setBridgeElements(topology.elemlist);
+        ndbt.calculate();
+        
+        topology.checkDEFG(ndbt.getDomain().getTopology());
+
+    }
+
+    @Test 
+    public void testDEFGHIL() {
+        DEFGHILTopology topology = new DEFGHILTopology();
+
+        NodeDiscoveryBridgeTopology ndbt= new NodeDiscoveryBridgeTopology(linkd, null);
+        BroadcastDomain domain = new BroadcastDomain();
+        domain.addBridge(new Bridge(topology.nodeDId));
+        domain.addBridge(new Bridge(topology.nodeEId));
+        domain.addBridge(new Bridge(topology.nodeFId));
+        domain.addBridge(new Bridge(topology.nodeGId));
+        domain.addBridge(new Bridge(topology.nodeHId));
+        domain.addBridge(new Bridge(topology.nodeIId));
+        domain.addBridge(new Bridge(topology.nodeLId));
+        ndbt.setDomain(domain);
+        ndbt.addUpdatedBFT(domain.getBridge(topology.nodeDId),topology.bftD);
+        ndbt.addUpdatedBFT(domain.getBridge(topology.nodeEId),topology.bftE);
+        ndbt.addUpdatedBFT(domain.getBridge(topology.nodeFId),topology.bftF);
+        ndbt.addUpdatedBFT(domain.getBridge(topology.nodeGId),topology.bftG);
+        ndbt.addUpdatedBFT(domain.getBridge(topology.nodeHId),topology.bftH);
+        ndbt.addUpdatedBFT(domain.getBridge(topology.nodeIId),topology.bftI);
+        ndbt.addUpdatedBFT(domain.getBridge(topology.nodeLId),topology.bftL);
         ndbt.setBridgeElements(topology.elemlist);
         ndbt.calculate();
         
         topology.check(ndbt.getDomain().getTopology());
+
+    }
+
+    @Test 
+    public void testHierarchySetUp() {
+        DEFGHILTopology topology = new DEFGHILTopology();
+
+        NodeDiscoveryBridgeTopology ndbt= new NodeDiscoveryBridgeTopology(linkd, null);
+        BroadcastDomain domain = new BroadcastDomain();
+        domain.addBridge(new Bridge(topology.nodeDId));
+        domain.addBridge(new Bridge(topology.nodeEId));
+        domain.addBridge(new Bridge(topology.nodeFId));
+        domain.addBridge(new Bridge(topology.nodeGId));
+        domain.addBridge(new Bridge(topology.nodeHId));
+        domain.addBridge(new Bridge(topology.nodeIId));
+        domain.addBridge(new Bridge(topology.nodeLId));
+        ndbt.setDomain(domain);
+        ndbt.addUpdatedBFT(domain.getBridge(topology.nodeDId),topology.bftD);
+        ndbt.addUpdatedBFT(domain.getBridge(topology.nodeEId),topology.bftE);
+        ndbt.addUpdatedBFT(domain.getBridge(topology.nodeFId),topology.bftF);
+        ndbt.addUpdatedBFT(domain.getBridge(topology.nodeGId),topology.bftG);
+        ndbt.addUpdatedBFT(domain.getBridge(topology.nodeHId),topology.bftH);
+        ndbt.addUpdatedBFT(domain.getBridge(topology.nodeIId),topology.bftI);
+        ndbt.addUpdatedBFT(domain.getBridge(topology.nodeLId),topology.bftL);
+        ndbt.setBridgeElements(topology.elemlist);
+        ndbt.calculate();
+        
+        topology.check(ndbt.getDomain().getTopology());
+        
+        ndbt.hierarchySetUp(domain.getBridge(topology.nodeGId));
+        assertEquals(topology.nodeGId, ndbt.getDomain().getRootBridgeId());
+        assertEquals(true, ndbt.getDomain().getBridge(topology.nodeGId).isRootBridge());
+        assertEquals(null, ndbt.getDomain().getBridge(topology.nodeGId).getRootPort());
+        assertEquals(false, ndbt.getDomain().getBridge(topology.nodeDId).isRootBridge());
+        assertEquals(topology.portDD, ndbt.getDomain().getBridge(topology.nodeDId).getRootPort());
+        assertEquals(false, ndbt.getDomain().getBridge(topology.nodeEId).isRootBridge());
+        assertEquals(topology.portEE, ndbt.getDomain().getBridge(topology.nodeEId).getRootPort());
+        assertEquals(false, ndbt.getDomain().getBridge(topology.nodeFId).isRootBridge());
+        assertEquals(topology.portFF, ndbt.getDomain().getBridge(topology.nodeFId).getRootPort());
+        assertEquals(false, ndbt.getDomain().getBridge(topology.nodeHId).isRootBridge());
+        assertEquals(topology.portHH, ndbt.getDomain().getBridge(topology.nodeHId).getRootPort());
+        assertEquals(false, ndbt.getDomain().getBridge(topology.nodeIId).isRootBridge());
+        assertEquals(topology.portII, ndbt.getDomain().getBridge(topology.nodeIId).getRootPort());
+        assertEquals(false, ndbt.getDomain().getBridge(topology.nodeLId).isRootBridge());
+        assertEquals(topology.portLL, ndbt.getDomain().getBridge(topology.nodeLId).getRootPort());
+
+        printBridgeTopology(ndbt.getDomain().getTopology());
 
     }
 
@@ -663,74 +865,6 @@ public class BroadcastDomainTest {
             bftC =addBridgeForwardingTableEntry(nodeC,portCB, mac1,bftC);
             bftC =addBridgeForwardingTableEntry(nodeC,portCB, mac2,bftC);
             bftC =addBridgeForwardingTableEntry(nodeC,portC, mac3,bftC);
-        }
-
-        public Map<Bridge,List<BridgeMacLink>> getBFT() {
-            Map<Bridge,List<BridgeMacLink>> map = new HashMap<Bridge, List<BridgeMacLink>>();
-            map.put(new Bridge(elementA.getNode().getId()), bftA);
-            map.put(new Bridge(elementB.getNode().getId()), bftB);
-            map.put(new Bridge(elementC.getNode().getId()), bftC);
-            return map;
-        }
-
-        public Map<Bridge,List<BridgeMacLink>> getBFTAB() {
-            Map<Bridge,List<BridgeMacLink>> map = new HashMap<Bridge, List<BridgeMacLink>>();
-            map.put(new Bridge(elementA.getNode().getId()), bftA);
-            map.put(new Bridge(elementB.getNode().getId()), bftB);
-            return map;
-        }
-
-        public Map<Bridge,List<BridgeMacLink>> getBFTBA() {
-            Map<Bridge,List<BridgeMacLink>> map = new HashMap<Bridge, List<BridgeMacLink>>();
-            map.put(new Bridge(elementB.getNode().getId()), bftB);
-            map.put(new Bridge(elementA.getNode().getId()), bftA);
-            return map;
-        }
-
-        public Map<Bridge,List<BridgeMacLink>> getBFTAC() {
-            Map<Bridge,List<BridgeMacLink>> map = new HashMap<Bridge, List<BridgeMacLink>>();
-            map.put(new Bridge(elementA.getNode().getId()), bftA);
-            map.put(new Bridge(elementC.getNode().getId()), bftC);
-            return map;
-        }
-
-        public Map<Bridge,List<BridgeMacLink>> getBFTCA() {
-            Map<Bridge,List<BridgeMacLink>> map = new HashMap<Bridge, List<BridgeMacLink>>();
-            map.put(new Bridge(elementC.getNode().getId()), bftC);
-            map.put(new Bridge(elementA.getNode().getId()), bftA);
-            return map;
-        }
-
-        public Map<Bridge,List<BridgeMacLink>> getBFTBC() {
-            Map<Bridge,List<BridgeMacLink>> map = new HashMap<Bridge, List<BridgeMacLink>>();
-            map.put(new Bridge(elementB.getNode().getId()), bftB);
-            map.put(new Bridge(elementC.getNode().getId()), bftC);
-            return map;
-        }
-
-        public Map<Bridge,List<BridgeMacLink>> getBFTCB() {
-            Map<Bridge,List<BridgeMacLink>> map = new HashMap<Bridge, List<BridgeMacLink>>();
-            map.put(new Bridge(elementC.getNode().getId()), bftC);
-            map.put(new Bridge(elementB.getNode().getId()), bftB);
-            return map;
-        }
-
-        public Map<Bridge,List<BridgeMacLink>> getBFTA() {
-            Map<Bridge,List<BridgeMacLink>> map = new HashMap<Bridge, List<BridgeMacLink>>();
-            map.put(new Bridge(elementA.getNode().getId()), bftA);
-            return map;
-        }
-        
-        public Map<Bridge,List<BridgeMacLink>> getBFTB() {
-            Map<Bridge,List<BridgeMacLink>> map = new HashMap<Bridge, List<BridgeMacLink>>();
-            map.put(new Bridge(elementB.getNode().getId()), bftB);
-            return map;
-        }
-
-        public Map<Bridge,List<BridgeMacLink>> getBFTC() {
-            Map<Bridge,List<BridgeMacLink>> map = new HashMap<Bridge, List<BridgeMacLink>>();
-            map.put(new Bridge(elementC.getNode().getId()), bftC);
-            return map;
         }
 
         public void checkAC(List<SharedSegment> shsegms) {
@@ -946,19 +1080,23 @@ public class BroadcastDomainTest {
             }
         }
     }
-
-
-    private class DEFGTopology {
+    
+    private class DEFGHILTopology {
         Integer nodeDId = 104;
         Integer nodeEId = 105;
         Integer nodeFId = 106;
         Integer nodeGId = 107;
+        Integer nodeHId = 108;
+        Integer nodeIId = 109;
+        Integer nodeLId = 110;
 
-        Integer portD  = 4;
+        Integer portD  = 44;
         Integer portDD = 40;
-        Integer portE  = 5;
+        
+        Integer portE  = 55;
         Integer portEE = 50;
-        Integer portF  = 6;
+
+        Integer portF  = 66;
         Integer portFF = 60;
 
         Integer portG7 = 7;
@@ -966,25 +1104,43 @@ public class BroadcastDomainTest {
         Integer portGD = 74;
         Integer portGE = 75;
         Integer portGF = 76;
+        
+        Integer portH1 = 1;
+        Integer portH2 = 2;
+        Integer portHH = 80;
 
-        String mac1 = "000daaaa0401"; // port D  ---port EE ---port FF ---portGD
-        String mac2 = "000daaaa0402"; // port D  ---port EE ---port FF ---portGD
-        String mac3 = "000daaaa0603"; // port DD ---port EE ---port F  ---portGF
-        String mac4 = "000daaaa0604"; // port DD ---port EE ---port F  ---portGF
-        String mac5 = "000daaaa0505"; // port DD ---port E ---port FF  ---portGE 
-        String mac6 = "000daaaa0506"; // port DD ---port E ---port FF  ---portGE
-        String mac7 = "000daaaa0707"; // port DD ---port EE ---port FF ---portG7
-        String mac8 = "000daaaa0808"; // port DD ---port EE ---port FF ---portG8
+        Integer portI3 = 3;
+        Integer portI4 = 4;
+        Integer portII = 90;
+
+        Integer portL5 = 3;
+        Integer portL6 = 4;
+        Integer portLL = 20;
+
+        String mac1 = "000daaaa0441"; // port D  ---port EE ---port FF ---portGD --portH1 --portII --portLL
+        String mac2 = "000daaaa0442"; // port D  ---port EE ---port FF ---portGD --portH2 --portII --portLL
+        String mac3 = "000daaaa0663"; // port DD ---port EE ---port F  ---portGF --portHH --portI3 --portLL
+        String mac4 = "000daaaa0664"; // port DD ---port EE ---port F  ---portGF --portHH --portI4 --portLL
+        String mac5 = "000daaaa0555"; // port DD ---port E ---port FF  ---portGE --portHH --portII --portL5
+        String mac6 = "000daaaa0556"; // port DD ---port E ---port FF  ---portGE --portHH --portII --portL6
+        String mac7 = "000daaaa0707"; // port DD ---port EE ---port FF ---portG7 --portHH --portII --portLL
+        String mac8 = "000daaaa0808"; // port DD ---port EE ---port FF ---portG8 --portHH --portII --portLL
 
         OnmsNode nodeD= new OnmsNode();
         OnmsNode nodeE= new OnmsNode();
         OnmsNode nodeF= new OnmsNode();
         OnmsNode nodeG= new OnmsNode();
+        OnmsNode nodeH= new OnmsNode();
+        OnmsNode nodeI= new OnmsNode();
+        OnmsNode nodeL= new OnmsNode();
 
         BridgeElement elementD = new BridgeElement();
         BridgeElement elementE = new BridgeElement();
         BridgeElement elementF = new BridgeElement();
         BridgeElement elementG = new BridgeElement();
+        BridgeElement elementH = new BridgeElement();
+        BridgeElement elementI = new BridgeElement();
+        BridgeElement elementL = new BridgeElement();
 
         List<BridgeElement> elemlist = new ArrayList<BridgeElement>();
 
@@ -992,28 +1148,31 @@ public class BroadcastDomainTest {
         List<BridgeMacLink> bftE = new ArrayList<BridgeMacLink>();
         List<BridgeMacLink> bftF = new ArrayList<BridgeMacLink>();
         List<BridgeMacLink> bftG = new ArrayList<BridgeMacLink>();
+        List<BridgeMacLink> bftH = new ArrayList<BridgeMacLink>();
+        List<BridgeMacLink> bftI = new ArrayList<BridgeMacLink>();
+        List<BridgeMacLink> bftL = new ArrayList<BridgeMacLink>();
 
         /*
-         *              -----------------
-         *mac1/mac2 --  ||portD|        |
-         *              |   "Bridge D"  |     |-------------
-         *              |       |portDD||-----||portGD|     |
-         *              -----------------     |             |
-         *                                    |             |
-         *              -----------------     |    |port G7||---mac7
-         *mac3/mac4 --  ||portF|        |     |             |
-         *              |   "Bridge F"  |     |             |
-         *              |       |portFF||-----||portGF|     |
-         *              -----------------     |             |
-         *                                    | "Bridge G"  |
-         *              -----------------     |             |
-         *mac5/mac6 --  ||portE|        |     |    |port G8||---mac8
-         *              |   "Bridge E"  |     |             |
-         *              |       |portEE||-----||portGE|     |
-         *              -----------------     |-------------|
+         *         -----------------     -----------------
+         *  mac1---||portH1| portHH| --  ||portD|        |
+         *         |   "Bridge H"  |     |   "Bridge D"  |     |-------------
+         *  mac2---||portH2|       |     |       |portDD||-----||portGD|     |
+         *         -----------------     -----------------     |             |
+         *                                                     |             |
+         *         -----------------     -----------------     |    |port G7||---mac7
+         *  mac3---||portI3| portII| --  ||portF|        |     |             |
+         *         |   "Bridge I"  |     |   "Bridge F"  |     |             |
+         *  mac4---||portI4|       |     |       |portFF||-----||portGF|     |
+         *         -----------------     -----------------     |             |
+         *                                                     | "Bridge G"  |
+         *         -----------------     -----------------     |             |
+         *  mac5---||portL5| portLL| --  ||portE|        |     |    |port G8||---mac8
+         *         |   "Bridge E"  |     |   "Bridge E"  |     |             |
+         *  mac6---||portL6|       |     |       |portEE||-----||portGE|     |
+         *         -----------------     -----------------     |-------------|
          */
     
-        public DEFGTopology() {
+        public DEFGHILTopology() {
             nodeD.setId(nodeDId);
             elementD.setNode(nodeD);
             elementD.setBaseBridgeAddress("dddddddddddd");
@@ -1033,6 +1192,21 @@ public class BroadcastDomainTest {
             elementG.setNode(nodeG);
             elementG.setBaseBridgeAddress("ddddddd1dddd");
             elemlist.add(elementG);
+
+            nodeI.setId(nodeIId);
+            elementI.setNode(nodeI);
+            elementI.setBaseBridgeAddress("ddddddd2dddd");
+            elemlist.add(elementI);
+
+            nodeH.setId(nodeHId);
+            elementH.setNode(nodeH);
+            elementH.setBaseBridgeAddress("ddddddd3dddd");
+            elemlist.add(elementH);
+            
+            nodeL.setId(nodeLId);
+            elementL.setNode(nodeL);
+            elementL.setBaseBridgeAddress("ddddddd4dddd");
+            elemlist.add(elementL);
 
             bftD =addBridgeForwardingTableEntry(nodeD,portD,  mac1,bftD);
             bftD =addBridgeForwardingTableEntry(nodeD,portD,  mac2,bftD);
@@ -1070,103 +1244,34 @@ public class BroadcastDomainTest {
             bftG =addBridgeForwardingTableEntry(nodeG,portG7, mac7,bftG);
             bftG =addBridgeForwardingTableEntry(nodeG,portG8, mac8,bftG);
 
-        }
+            bftH =addBridgeForwardingTableEntry(nodeH,portH1, mac1,bftH);
+            bftH =addBridgeForwardingTableEntry(nodeH,portH2, mac2,bftH);
+            bftH =addBridgeForwardingTableEntry(nodeH,portHH, mac3,bftH);
+            bftH =addBridgeForwardingTableEntry(nodeH,portHH, mac4,bftH);
+            bftH =addBridgeForwardingTableEntry(nodeH,portHH, mac5,bftH);
+            bftH =addBridgeForwardingTableEntry(nodeH,portHH, mac6,bftH);
+            bftH =addBridgeForwardingTableEntry(nodeH,portHH, mac7,bftH);
+            bftH =addBridgeForwardingTableEntry(nodeH,portHH, mac8,bftH);
 
-        public Map<Bridge,List<BridgeMacLink>> getBFTD() {
-            Map<Bridge,List<BridgeMacLink>> map = new HashMap<Bridge, List<BridgeMacLink>>();
-            map.put(new Bridge(elementD.getNode().getId()), bftD);
-            return map;
-        }
+            bftI =addBridgeForwardingTableEntry(nodeI,portII, mac1,bftI);
+            bftI =addBridgeForwardingTableEntry(nodeI,portII, mac2,bftI);
+            bftI =addBridgeForwardingTableEntry(nodeI,portI3, mac3,bftI);
+            bftI =addBridgeForwardingTableEntry(nodeI,portI4, mac4,bftI);
+            bftI =addBridgeForwardingTableEntry(nodeI,portII, mac5,bftI);
+            bftI =addBridgeForwardingTableEntry(nodeI,portII, mac6,bftI);
+            bftI =addBridgeForwardingTableEntry(nodeI,portII, mac7,bftI);
+            bftI =addBridgeForwardingTableEntry(nodeI,portII, mac8,bftI);
 
-        public Map<Bridge,List<BridgeMacLink>> getBFTE() {
-            Map<Bridge,List<BridgeMacLink>> map = new HashMap<Bridge, List<BridgeMacLink>>();
-            map.put(new Bridge(elementE.getNode().getId()), bftE);
-            return map;
-        }
-
-        public Map<Bridge,List<BridgeMacLink>> getBFTF() {
-            Map<Bridge,List<BridgeMacLink>> map = new HashMap<Bridge, List<BridgeMacLink>>();
-            map.put(new Bridge(elementD.getNode().getId()), bftF);
-            return map;
-        }
-
-        public Map<Bridge,List<BridgeMacLink>> getBFTG() {
-            Map<Bridge,List<BridgeMacLink>> map = new HashMap<Bridge, List<BridgeMacLink>>();
-            map.put(new Bridge(elementG.getNode().getId()), bftG);
-            return map;
-        }
-
-        public Map<Bridge,List<BridgeMacLink>> getBFTDE() {
-            Map<Bridge,List<BridgeMacLink>> map = new HashMap<Bridge, List<BridgeMacLink>>();
-            map.put(new Bridge(elementD.getNode().getId()), bftD);
-            map.put(new Bridge(elementE.getNode().getId()), bftE);
-            return map;
-        }
-
-        public Map<Bridge,List<BridgeMacLink>> getBFTDF() {
-            Map<Bridge,List<BridgeMacLink>> map = new HashMap<Bridge, List<BridgeMacLink>>();
-            map.put(new Bridge(elementD.getNode().getId()), bftD);
-            map.put(new Bridge(elementF.getNode().getId()), bftF);
-            return map;
-        }
-
-        public Map<Bridge,List<BridgeMacLink>> getBFTEF() {
-            Map<Bridge,List<BridgeMacLink>> map = new HashMap<Bridge, List<BridgeMacLink>>();
-            map.put(new Bridge(elementE.getNode().getId()), bftF);
-            map.put(new Bridge(elementF.getNode().getId()), bftF);
-            return map;
-        }
-
-        public Map<Bridge,List<BridgeMacLink>> getBFTDG() {
-            Map<Bridge,List<BridgeMacLink>> map = new HashMap<Bridge, List<BridgeMacLink>>();
-            map.put(new Bridge(elementD.getNode().getId()), bftD);
-            map.put(new Bridge(elementG.getNode().getId()), bftG);
-            return map;
-        }
-
-        public Map<Bridge,List<BridgeMacLink>> getBFTDEF() {
-            Map<Bridge,List<BridgeMacLink>> map = new HashMap<Bridge, List<BridgeMacLink>>();
-            map.put(new Bridge(elementD.getNode().getId()), bftD);
-            map.put(new Bridge(elementE.getNode().getId()), bftE);
-            map.put(new Bridge(elementF.getNode().getId()), bftF);
-            return map;
-        }
-
-        public Map<Bridge,List<BridgeMacLink>> getBFTDEG() {
-            Map<Bridge,List<BridgeMacLink>> map = new HashMap<Bridge, List<BridgeMacLink>>();
-            map.put(new Bridge(elementD.getNode().getId()), bftD);
-            map.put(new Bridge(elementE.getNode().getId()), bftE);
-            map.put(new Bridge(elementG.getNode().getId()), bftG);
-            return map;
-        }
-
-        public Map<Bridge,List<BridgeMacLink>> getBFTDFG() {
-            Map<Bridge,List<BridgeMacLink>> map = new HashMap<Bridge, List<BridgeMacLink>>();
-            map.put(new Bridge(elementD.getNode().getId()), bftD);
-            map.put(new Bridge(elementF.getNode().getId()), bftF);
-            map.put(new Bridge(elementG.getNode().getId()), bftG);
-            return map;
-        }
-
-        public Map<Bridge,List<BridgeMacLink>> getBFTEFG() {
-            Map<Bridge,List<BridgeMacLink>> map = new HashMap<Bridge, List<BridgeMacLink>>();
-            map.put(new Bridge(elementE.getNode().getId()), bftE);
-            map.put(new Bridge(elementF.getNode().getId()), bftF);
-            map.put(new Bridge(elementG.getNode().getId()), bftG);
-            return map;
-        }
+            bftL =addBridgeForwardingTableEntry(nodeL,portLL, mac1,bftL);
+            bftL =addBridgeForwardingTableEntry(nodeL,portLL, mac2,bftL);
+            bftL =addBridgeForwardingTableEntry(nodeL,portLL, mac3,bftL);
+            bftL =addBridgeForwardingTableEntry(nodeL,portLL, mac4,bftL);
+            bftL =addBridgeForwardingTableEntry(nodeL,portL5, mac5,bftL);
+            bftL =addBridgeForwardingTableEntry(nodeL,portL6, mac6,bftL);
+            bftL =addBridgeForwardingTableEntry(nodeL,portLL, mac7,bftL);
+            bftL =addBridgeForwardingTableEntry(nodeL,portLL, mac8,bftL);
+          }
         
-        public Map<Bridge,List<BridgeMacLink>> getBFT() {
-            Map<Bridge,List<BridgeMacLink>> map = new HashMap<Bridge, List<BridgeMacLink>>();
-            map.put(new Bridge(elementD.getNode().getId()), bftD);
-            map.put(new Bridge(elementE.getNode().getId()), bftE);
-            map.put(new Bridge(elementF.getNode().getId()), bftF);
-            map.put(new Bridge(elementG.getNode().getId()), bftG);
-            return map;
-        }
-
-
-
         public void checkDE(List<SharedSegment> shsegs) {
             printBridgeTopology(shsegs);
             assertEquals(3, shsegs.size());
@@ -1468,12 +1573,10 @@ public class BroadcastDomainTest {
                 }            }
         }
 
-        public void check(List<SharedSegment> shsegs) {
-            printBridgeTopology(shsegs);
-            return;
-            /* FIXME
+        public void checkDEFG(List<SharedSegment> shsegs) {
             assertEquals(8, shsegs.size());
             for (SharedSegment shared: shsegs) {
+                printSharedSegment(shared);
                 if (shared.noMacsOnSegment()) {
                     assertEquals(2, shared.getBridgeIdsOnSegment().size());
                     assertEquals(true, shared.getBridgeIdsOnSegment().contains(nodeGId));
@@ -1561,8 +1664,154 @@ public class BroadcastDomainTest {
                     assertEquals(false, true);
                 }            
                 }
-            }*/
+            }
         }
+        
+        public void check(List<SharedSegment> shsegs) {
+            //printBridgeTopology(shsegs);
+            assertEquals(14, shsegs.size());
+            for (SharedSegment shared: shsegs) {
+                printSharedSegment(shared);
+                if (shared.noMacsOnSegment()) {
+                    assertEquals(2, shared.getBridgeIdsOnSegment().size());
+                    assertEquals(1, shared.getBridgeBridgeLinks().size());
+                    assertEquals(0, shared.getBridgeMacLinks().size());
+                    BridgeBridgeLink link = shared.getBridgeBridgeLinks().iterator().next();
+                    if (shared.getBridgeIdsOnSegment().contains(nodeDId) && shared.getDesignatedPort().intValue() == portDD.intValue()) {
+                        assertEquals(nodeDId.intValue(),link.getNode().getId().intValue());
+                        assertEquals(portDD,link.getBridgePort());
+                        assertEquals(nodeGId.intValue(),link.getDesignatedNode().getId().intValue());
+                        assertEquals(portGD,link.getDesignatedPort());
+                    } else if (shared.getBridgeIdsOnSegment().contains(nodeDId) && shared.getDesignatedPort().intValue() == portD.intValue()) {
+                            assertEquals(nodeDId.intValue(),link.getNode().getId().intValue());
+                            assertEquals(portD,link.getBridgePort());
+                            assertEquals(nodeHId.intValue(),link.getDesignatedNode().getId().intValue());
+                            assertEquals(portHH,link.getDesignatedPort());
+                    } else if (shared.getBridgeIdsOnSegment().contains(nodeGId) && shared.getDesignatedPort().intValue() == portGE.intValue()) {
+                        assertEquals(nodeEId.intValue(),link.getNode().getId().intValue());
+                        assertEquals(portEE,link.getBridgePort());
+                        assertEquals(nodeGId.intValue(),link.getDesignatedNode().getId().intValue());
+                        assertEquals(portGE,link.getDesignatedPort());
+                    } else if (shared.getBridgeIdsOnSegment().contains(nodeEId) && shared.getDesignatedPort().intValue() == portE.intValue()) {
+                        assertEquals(nodeEId.intValue(),link.getNode().getId().intValue());
+                        assertEquals(portE,link.getBridgePort());
+                        assertEquals(nodeLId.intValue(),link.getDesignatedNode().getId().intValue());
+                        assertEquals(portLL,link.getDesignatedPort());
+                    } else if (shared.getBridgeIdsOnSegment().contains(nodeGId) && shared.getDesignatedPort().intValue() == portGF.intValue()) {
+                        assertEquals(nodeFId.intValue(),link.getNode().getId().intValue());
+                        assertEquals(portFF,link.getBridgePort());
+                        assertEquals(nodeGId.intValue(),link.getDesignatedNode().getId().intValue());
+                        assertEquals(portGF,link.getDesignatedPort());
+                    } else if (shared.getBridgeIdsOnSegment().contains(nodeFId) && shared.getDesignatedPort().intValue() == portF.intValue()) {
+                        assertEquals(nodeFId.intValue(),link.getNode().getId().intValue());
+                        assertEquals(portF,link.getBridgePort());
+                        assertEquals(nodeIId.intValue(),link.getDesignatedNode().getId().intValue());
+                        assertEquals(portII,link.getDesignatedPort());
+                    } else {
+                        assertEquals(false, true);
+                    }
+                } else {
+                if (shared.getMacsOnSegment().contains(mac1)) {
+                    assertEquals(1, shared.getBridgeIdsOnSegment().size());
+                    assertEquals(true,shared.getBridgeIdsOnSegment().contains(nodeHId));
+                    assertEquals(1, shared.getMacsOnSegment().size());
+                    assertEquals(1, shared.getBridgeMacLinks().size());
+                    assertEquals(0, shared.getBridgeBridgeLinks().size());
+                    assertEquals(nodeHId.intValue(), shared.getDesignatedBridge().intValue());
+                    assertEquals(portH1.intValue(), shared.getDesignatedPort().intValue());
+                    BridgeMacLink link = shared.getBridgeMacLinks().iterator().next();
+                    assertEquals(nodeHId.intValue(), link.getNode().getId().intValue());
+                    assertEquals(portH1,link.getBridgePort());
+                    assertEquals(mac1,link.getMacAddress());
+                } else if (shared.getMacsOnSegment().contains(mac2)) {
+                    assertEquals(1, shared.getBridgeIdsOnSegment().size());
+                    assertEquals(true,shared.getBridgeIdsOnSegment().contains(nodeHId));
+                    assertEquals(1, shared.getMacsOnSegment().size());
+                    assertEquals(1, shared.getBridgeMacLinks().size());
+                    assertEquals(0, shared.getBridgeBridgeLinks().size());
+                    assertEquals(nodeHId.intValue(), shared.getDesignatedBridge().intValue());
+                    assertEquals(portH2.intValue(), shared.getDesignatedPort().intValue());
+                    BridgeMacLink link = shared.getBridgeMacLinks().iterator().next();
+                    assertEquals(nodeHId.intValue(), link.getNode().getId().intValue());
+                    assertEquals(portH2,link.getBridgePort());
+                    assertEquals(mac2,link.getMacAddress());
+                } else if (shared.getMacsOnSegment().contains(mac3)) {
+                    assertEquals(1, shared.getBridgeIdsOnSegment().size());
+                    assertEquals(true,shared.getBridgeIdsOnSegment().contains(nodeIId));
+                    assertEquals(1, shared.getMacsOnSegment().size());
+                    assertEquals(1, shared.getBridgeMacLinks().size());
+                    assertEquals(0, shared.getBridgeBridgeLinks().size());
+                    assertEquals(nodeIId.intValue(), shared.getDesignatedBridge().intValue());
+                    assertEquals(portI3.intValue(), shared.getDesignatedPort().intValue());
+                    BridgeMacLink link = shared.getBridgeMacLinks().iterator().next();
+                    assertEquals(nodeIId.intValue(), link.getNode().getId().intValue());
+                    assertEquals(portI3,link.getBridgePort());
+                    assertEquals(mac3,link.getMacAddress());
+                } else if (shared.getMacsOnSegment().contains(mac4)) {
+                    assertEquals(1, shared.getBridgeIdsOnSegment().size());
+                    assertEquals(true,shared.getBridgeIdsOnSegment().contains(nodeIId));
+                    assertEquals(1, shared.getMacsOnSegment().size());
+                    assertEquals(1, shared.getBridgeMacLinks().size());
+                    assertEquals(0, shared.getBridgeBridgeLinks().size());
+                    assertEquals(nodeIId.intValue(), shared.getDesignatedBridge().intValue());
+                    assertEquals(portI4.intValue(), shared.getDesignatedPort().intValue());
+                    BridgeMacLink link = shared.getBridgeMacLinks().iterator().next();
+                    assertEquals(nodeIId.intValue(), link.getNode().getId().intValue());
+                    assertEquals(portI4,link.getBridgePort());
+                    assertEquals(mac4,link.getMacAddress());
+                } else if (shared.getMacsOnSegment().contains(mac5)) {
+                    assertEquals(1, shared.getBridgeIdsOnSegment().size());
+                    assertEquals(true,shared.getBridgeIdsOnSegment().contains(nodeLId));
+                    assertEquals(1, shared.getMacsOnSegment().size());
+                    assertEquals(1, shared.getBridgeMacLinks().size());
+                    assertEquals(0, shared.getBridgeBridgeLinks().size());
+                    assertEquals(nodeLId.intValue(), shared.getDesignatedBridge().intValue());
+                    assertEquals(portL5.intValue(), shared.getDesignatedPort().intValue());
+                    BridgeMacLink link = shared.getBridgeMacLinks().iterator().next();
+                    assertEquals(nodeLId.intValue(), link.getNode().getId().intValue());
+                    assertEquals(portL5,link.getBridgePort());
+                    assertEquals(mac5,link.getMacAddress());
+                } else if (shared.getMacsOnSegment().contains(mac6)) {
+                    assertEquals(1, shared.getBridgeIdsOnSegment().size());
+                    assertEquals(true,shared.getBridgeIdsOnSegment().contains(nodeLId));
+                    assertEquals(1, shared.getMacsOnSegment().size());
+                    assertEquals(1, shared.getBridgeMacLinks().size());
+                    assertEquals(0, shared.getBridgeBridgeLinks().size());
+                    assertEquals(nodeLId.intValue(), shared.getDesignatedBridge().intValue());
+                    assertEquals(portL6.intValue(), shared.getDesignatedPort().intValue());
+                    BridgeMacLink link = shared.getBridgeMacLinks().iterator().next();
+                    assertEquals(nodeLId.intValue(), link.getNode().getId().intValue());
+                    assertEquals(portL6,link.getBridgePort());
+                    assertEquals(mac6,link.getMacAddress());
+                 } else if (shared.getMacsOnSegment().contains(mac7)) {
+                    assertEquals(1, shared.getBridgeIdsOnSegment().size());
+                    assertEquals(true,shared.getBridgeIdsOnSegment().contains(nodeGId));
+                    assertEquals(1,shared.getMacsOnSegment().size());
+                    assertEquals(1, shared.getBridgeMacLinks().size());
+                    assertEquals(0, shared.getBridgeBridgeLinks().size());
+                    for (BridgeMacLink link: shared.getBridgeMacLinks()) {
+                        assertEquals(nodeGId.intValue(), link.getNode().getId().intValue());
+                        assertEquals(portG7.intValue(), link.getBridgePort().intValue());
+                        assertEquals(mac7, link.getMacAddress());
+                    }
+                 } else if (shared.getMacsOnSegment().contains(mac8)) {
+                     assertEquals(1, shared.getBridgeIdsOnSegment().size());
+                     assertEquals(true,shared.getBridgeIdsOnSegment().contains(nodeGId));
+                     assertEquals(1,shared.getMacsOnSegment().size());
+                     assertEquals(1, shared.getBridgeMacLinks().size());
+                     assertEquals(0, shared.getBridgeBridgeLinks().size());
+                     for (BridgeMacLink link: shared.getBridgeMacLinks()) {
+                         assertEquals(nodeGId.intValue(), link.getNode().getId().intValue());
+                         assertEquals(portG8.intValue(), link.getBridgePort().intValue());
+                         assertEquals(mac8, link.getMacAddress());
+                     }
+                 } else {
+                    assertEquals(false, true);
+                }            
+                }
+            }
+        }
+
     }
     
     private class TwoNodeTopology {
@@ -1668,25 +1917,6 @@ public class BroadcastDomainTest {
 
         }
         
-        public Map<Bridge,List<BridgeMacLink>> getBFTA() {
-            Map<Bridge,List<BridgeMacLink>> map = new HashMap<Bridge, List<BridgeMacLink>>();
-            map.put(new Bridge(elementA.getNode().getId()), bftA);
-            return map;
-        }
-
-        public Map<Bridge,List<BridgeMacLink>> getBFTB() {
-            Map<Bridge,List<BridgeMacLink>> map = new HashMap<Bridge, List<BridgeMacLink>>();
-            map.put(new Bridge(elementB.getNode().getId()), bftB);
-            return map;
-        }
-
-        public Map<Bridge,List<BridgeMacLink>> getBFT() {
-            Map<Bridge,List<BridgeMacLink>> map = new HashMap<Bridge, List<BridgeMacLink>>();
-            map.put(new Bridge(elementA.getNode().getId()), bftA);
-            map.put(new Bridge(elementB.getNode().getId()), bftB);
-            return map;
-        }
-
     private void check2nodeTopology(List<SharedSegment> shsegs, boolean revertedbblink) {
         assertEquals(5, shsegs.size());
         for (SharedSegment shared: shsegs) {
@@ -1695,7 +1925,9 @@ public class BroadcastDomainTest {
             Set<Integer> nodeidsOnSegment = shared.getBridgeIdsOnSegment();
             List<BridgeMacLink> links = shared.getBridgeMacLinks();
             Set<String> macs = shared.getMacsOnSegment();
-            if (shared.getDesignatedBridge().intValue() == nodeBId.intValue() && shared.getDesignatedPort() == portBA) {
+            if (shared.getDesignatedBridge().intValue() == nodeBId.intValue() && shared.getDesignatedPort() == portBA
+                    || shared.getDesignatedBridge().intValue() == nodeAId.intValue() && shared.getDesignatedPort() == portAB
+                    ) {
                 assertEquals(2, nodeidsOnSegment.size());
                 assertEquals(9, macs.size());
                 assertEquals(12, links.size());
@@ -1826,11 +2058,6 @@ public class BroadcastDomainTest {
             
         }
         
-        public Map<Bridge,List<BridgeMacLink>> getBFT() {
-            Map<Bridge,List<BridgeMacLink>> map = new HashMap<Bridge, List<BridgeMacLink>>();
-            map.put(new Bridge(element.getNode().getId()), bftA);
-            return map;
-        }
         public void check(List<SharedSegment> links) {
             printBridgeTopology(links);
             assertEquals(5, links.size());
@@ -1888,11 +2115,6 @@ public class BroadcastDomainTest {
             bftA = addBridgeForwardingTableEntry(nodeA,portA1, mac3,bftA);
             bftA = addBridgeForwardingTableEntry(nodeA,portA1, mac4,bftA);
 
-        }
-        public Map<Bridge,List<BridgeMacLink>> getBFT() {
-            Map<Bridge,List<BridgeMacLink>> map = new HashMap<Bridge, List<BridgeMacLink>>();
-            map.put(new Bridge(element.getNode().getId()), bftA);
-            return map;
         }
         
         public void check(List<SharedSegment> links) {
@@ -1985,12 +2207,6 @@ public class BroadcastDomainTest {
 
         }
         
-        public Map<Bridge,List<BridgeMacLink>> getBFT() {
-            Map<Bridge,List<BridgeMacLink>> map = new HashMap<Bridge, List<BridgeMacLink>>();
-            map.put(new Bridge(element.getNode().getId()), bftA);
-            return map;
-        }
-
         public void check(List<SharedSegment> links) {
             printBridgeTopology(links);
             assertEquals(7, links.size());
@@ -2112,13 +2328,6 @@ public class BroadcastDomainTest {
 
         }
         
-        public Map<Bridge,List<BridgeMacLink>> getBFT() {
-            Map<Bridge,List<BridgeMacLink>> map = new HashMap<Bridge, List<BridgeMacLink>>();
-            map.put(new Bridge(elementA.getNode().getId()), bftA);
-            map.put(new Bridge(elementB.getNode().getId()), bftB);
-            return map;
-        }
-
         public void check(List<SharedSegment> shsegs) {
             printBridgeTopology(shsegs);
 
@@ -2236,13 +2445,6 @@ public class BroadcastDomainTest {
 
         }
         
-        public Map<Bridge,List<BridgeMacLink>> getBFT() {
-            Map<Bridge,List<BridgeMacLink>> map = new HashMap<Bridge, List<BridgeMacLink>>();
-            map.put(new Bridge(elementA.getNode().getId()), bftA);
-            map.put(new Bridge(elementB.getNode().getId()), bftB);
-            return map;
-        }
-
         public void check(List<SharedSegment> shsegs) {
             printBridgeTopology(shsegs);
             assertEquals(3, shsegs.size());
@@ -2360,13 +2562,6 @@ public class BroadcastDomainTest {
 
         }
         
-        public Map<Bridge,List<BridgeMacLink>> getBFT() {
-            Map<Bridge,List<BridgeMacLink>> map = new HashMap<Bridge, List<BridgeMacLink>>();
-            map.put(new Bridge(elementA.getNode().getId()), bftA);
-            map.put(new Bridge(elementB.getNode().getId()), bftB);
-            return map;
-        }
-
         public void check(List<SharedSegment> shsegs) {
             printBridgeTopology(shsegs);
             assertEquals(3, shsegs.size());
@@ -2495,13 +2690,6 @@ public class BroadcastDomainTest {
             
         }
         
-        public Map<Bridge,List<BridgeMacLink>> getBFT() {
-            Map<Bridge,List<BridgeMacLink>> map = new HashMap<Bridge, List<BridgeMacLink>>();
-            map.put(new Bridge(elementA.getNode().getId()), bftA);
-            map.put(new Bridge(elementB.getNode().getId()), bftB);
-            return map;
-        }
-
         public void check(List<SharedSegment> shsegs) {
             printBridgeTopology(shsegs);
             assertEquals(3, shsegs.size());
