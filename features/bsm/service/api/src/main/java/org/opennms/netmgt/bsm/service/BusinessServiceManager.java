@@ -68,4 +68,9 @@ public interface BusinessServiceManager {
     void setIpServices(BusinessService service, Set<IpService> ipServices);
 
     void setChildServices(BusinessService service, Set<BusinessService> childServices);
+
+    /**
+     * Triggers a reload of the Business Service Daemon.
+     */
+    void triggerDaemonReload();
 }

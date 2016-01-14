@@ -249,7 +249,7 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
         return getAgentConfig(agentAddress, VERSION_UNSPECIFIED);
     }
 
-    private SnmpAgentConfig getAgentConfig(final InetAddress agentInetAddress, final int requestedSnmpVersion) {
+    public SnmpAgentConfig getAgentConfig(final InetAddress agentInetAddress, final int requestedSnmpVersion) {
         SnmpPeerFactory.getReadLock().lock();
         try {
             if (getSnmpConfig() == null) {

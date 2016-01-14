@@ -232,43 +232,33 @@ public class SearchBox extends AbstractComponent implements SelectionListener, G
 
     private void removeIfSuggMapEmpty(SearchResult searchResult, GraphContainer graphContainer) {
         Criteria[] criterias = graphContainer.getCriteria();
-        for(Criteria criteria : criterias){
-            try{
-                VertexHopCriteria crit = (VertexHopCriteria) criteria;
-                
-                if (crit == null) {
-                    return;
-                }
-                
-                String critNameSpace = crit.getNamespace();
-                
-                if (critNameSpace == null) {
-                    return;
-                }
-                
-                String critId = crit.getId();
-                
-                if (critId == null) {
-                    return;
-                }
+        for (Criteria criteria : criterias) {
+            if (criteria == null || !(criteria instanceof VertexHopCriteria)) {
+                continue;
+            }
+            VertexHopCriteria crit = (VertexHopCriteria) criteria;
 
-                String critLabel = crit.getLabel();
-
-                if (critLabel == null) {
-                    return;
-                }
-                
-                String resultNameSpace = searchResult.getNamespace();
-                String resultId = searchResult.getId();
-                String resultLabel = searchResult.getLabel();
-                if ( critNameSpace.equals(resultNameSpace) && critId.equals(resultId) && critLabel.equals(resultLabel) ) {
-                    graphContainer.removeCriteria(crit);
-                }
-                
-            } catch (Exception e) {
-                LOG.error("SearchBox->removeIfSuggMapEmpty: caught exception: '{}'.", e);
+            String critNameSpace = crit.getNamespace();
+            if (critNameSpace == null) {
+                continue;
             }
 
+            String critId = crit.getId();
+            if (critId == null) {
+                continue;
+            }
+
+            String critLabel = crit.getLabel();
+            if (critLabel == null) {
+                continue;
+            }
+
+            String resultNameSpace = searchResult.getNamespace();
+            String resultId = searchResult.getId();
+            String resultLabel = searchResult.getLabel();
+            if (critNameSpace.equals(resultNameSpace) && critId.equals(resultId) && critLabel.equals(resultLabel)) {
+                graphContainer.removeCriteria(crit);
+            }
         }
     }
 

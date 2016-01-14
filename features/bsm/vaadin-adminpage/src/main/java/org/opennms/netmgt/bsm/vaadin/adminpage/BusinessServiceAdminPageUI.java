@@ -81,6 +81,6 @@ public class BusinessServiceAdminPageUI extends TransactionAwareUI {
      */
     public void setBusinessServiceManager(BusinessServiceManager businessServiceManager) {
         Objects.requireNonNull(businessServiceManager);
-        this.m_businessServiceManager = m_transactionAwareBeanProxyFactory.createProxy(businessServiceManager);
+        m_businessServiceManager = m_transactionAwareBeanProxyFactory.createProxy(businessServiceManager);
     }
 }

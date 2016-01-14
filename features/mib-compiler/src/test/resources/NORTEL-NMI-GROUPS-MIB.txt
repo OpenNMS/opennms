@@ -1,0 +1,62 @@
+
+NORTEL-NMI-GROUPS-MIB 
+
+DEFINITIONS ::= BEGIN
+
+   IMPORTS
+       nortelNMIconformanceMIBs 
+           FROM NORTEL-NMI-CONFORMANCE-MIB 
+
+       MODULE-IDENTITY, OBJECT-IDENTITY
+           FROM SNMPv2-SMI;
+
+   nortelNMImibGroups  MODULE-IDENTITY
+       LAST-UPDATED "9906240000Z"
+       ORGANIZATION "Nortel Networks"
+       CONTACT-INFO
+              "   Jingdong Liu
+
+                Postal: Nortel Networks
+                        P. O. Box 3511, Station C
+                        Ottawa, Ontario
+                        CANADA
+                        K1Y 4H7
+
+                Email:  jingdong@nortelnetworks.com"
+
+
+       DESCRIPTION
+               "This module contains the object group definitions 
+                for the Network Management Interface (NMI) MIBs. " 
+   
+       -- Revision history
+
+       REVISION "9906240000Z"
+       DESCRIPTION
+                " The first version of this MIB module.
+
+                  Revisions introduced by Shobana Sundaram."
+
+
+       ::= { nortelNMIconformanceMIBs 1 }
+
+
+     nortelNMIobjectGroups OBJECT-IDENTITY
+           STATUS         current
+           DESCRIPTION
+                  "This OID represents the branch for the object 
+                   group definitions."
+           ::=  { nortelNMImibGroups 1 }
+
+
+     nortelNMInotificationGroups OBJECT-IDENTITY
+           STATUS         current
+           DESCRIPTION
+                  "This OID represents the branch for the notification 
+                   group definitions."
+           ::=  { nortelNMImibGroups 2 }
+
+
+END
+
+

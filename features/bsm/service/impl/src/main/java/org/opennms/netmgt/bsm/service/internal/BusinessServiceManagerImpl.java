@@ -36,8 +36,11 @@ import org.opennms.netmgt.bsm.service.model.BusinessService;
 import org.opennms.netmgt.bsm.service.model.IpService;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
 import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.events.api.EventConstants;
+import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsSeverity;
+import org.opennms.netmgt.model.events.EventBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -60,6 +63,9 @@ public class BusinessServiceManagerImpl implements BusinessServiceManager {
 
     @Autowired
     private NodeDao nodeDao;
+
+    @Autowired
+    private EventForwarder eventForwarder;
 
     @Override
     public List<BusinessService> getAllBusinessServices() {
@@ -256,6 +262,13 @@ public class BusinessServiceManagerImpl implements BusinessServiceManager {
     public IpService getIpServiceById(Integer id) {
         OnmsMonitoredService entity = getMonitoredService(id);
         return new IpServiceImpl(this, entity);
+    }
+
+    @Override
+    public void triggerDaemonReload() {
+        EventBuilder eventBuilder = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_UEI, "BSM Master Page");
+        eventBuilder.addParam(EventConstants.PARM_DAEMON_NAME, "bsmd");
+        eventForwarder.sendNow(eventBuilder.getEvent());
     }
 
     BusinessServiceDao getDao() {

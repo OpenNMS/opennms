@@ -107,6 +107,15 @@ public class BusinessServiceEntity {
 
     @OneToMany(fetch = FetchType.EAGER,
                cascade = CascadeType.ALL)
+    public void setAttribute(String key, String value) {
+        m_attributes.put(key, value);
+    }
+
+    public String removeAttribute(String key) {
+        return m_attributes.remove(key);
+    }
+
+    @OneToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "bsm_service_ifservices",
                joinColumns = @JoinColumn(name = "bsm_service_id", referencedColumnName = "id"),
                inverseJoinColumns = @JoinColumn(name="ifserviceid"))

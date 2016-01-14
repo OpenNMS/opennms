@@ -160,67 +160,10 @@ public class BusinessServiceRestService {
         return Response.noContent().build();
     }
 
-//    @GET
-//    @Path("{id}/operational-status")
-//    public Response getOperationStatusForBusinessServiceById(@PathParam("id") Long id) {
-//        final OnmsSeverity severity = getManager().getOperationalStatusForBusinessService(id);
-//        if (severity != null) {
-//            return Response.ok(severity.toString()).type(MediaType.TEXT_PLAIN).build();
-//        }
-//        return Response.noContent().build();
-//    }
-
-//    @POST
-//    @Path("{id}/ip-service/{ipServiceId}")
-//    public Response attachIpService(@PathParam("id") final Long serviceId,
-//                                    @PathParam("ipServiceId") final Integer ipServiceId) {
-//        boolean changed = getManager().assignIpService(serviceId, ipServiceId);
-//        if (!changed) {
-//            return Response.notModified().build();
-//        }
-//        return Response.ok().build();
-//    }
-//
-//    @DELETE
-//    @Path("{id}/ip-service/{ipServiceId}")
-//    public Response detachIpService(@PathParam("id") final Long serviceId,
-//                                    @PathParam("ipServiceId") final Integer ipServiceId) {
-//        boolean changed = getManager().removeIpService(serviceId, ipServiceId);
-//        if (!changed) {
-//            return Response.notModified().build();
-//        }
-//        return Response.ok().build();
-//    }
-
-//    @GET
-//    @Path("{id}/ip-service/{ipServiceId}/operational-status")
-//    public Response getOperationStatusForIPServiceById(@PathParam("id") Integer ipServiceId) {
-//        final OnmsSeverity severity = getManager().getOperationalStatusForIPService(ipServiceId);
-//        if (severity != null) {
-//            return Response.ok(severity.toString()).type(MediaType.TEXT_PLAIN).build();
-//        }
-//        return Response.noContent().build();
-//    }
-
-//    @POST
-//    @Path("{id}/child-service/{childServiceId}")
-//    public Response attachChildService(@PathParam("id") final Long serviceId,
-//                                       @PathParam("childServiceId") final Long childServiceId) {
-//        boolean changed = getManager().assignChildService(serviceId, childServiceId);
-//        if (!changed) {
-//            return Response.notModified().build();
-//        }
-//        return Response.ok().build();
-//    }
-//
-//    @DELETE
-//    @Path("{id}/child-service/{childServiceId}")
-//    public Response detachChildService(@PathParam("id") final Long serviceId,
-//                                       @PathParam("ipServiceId") final Long childServiceId) {
-//        boolean changed = getManager().removeChildService(serviceId, childServiceId);
-//        if (!changed) {
-//            return Response.notModified().build();
-//        }
-//        return Response.ok().build();
-//    }
+    @POST
+    @Path("daemon/reload")
+    public Response reload() {
+        getManager().triggerDaemonReload();
+        return Response.ok().build();
+    }
 }
