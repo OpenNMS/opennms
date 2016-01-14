@@ -37,7 +37,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.bsm.persistence.api.BusinessService;
-import org.opennms.netmgt.bsm.persistence.api.AbstractBusinessServiceEdge;
+import org.opennms.netmgt.bsm.persistence.api.BusinessServiceEdge;
 import org.opennms.netmgt.bsm.service.BusinessServiceStateChangeHandler;
 import org.opennms.netmgt.bsm.service.BusinessServiceStateMachine;
 import org.opennms.netmgt.events.api.EventConstants;
