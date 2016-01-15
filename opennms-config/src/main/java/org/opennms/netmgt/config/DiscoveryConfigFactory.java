@@ -95,7 +95,7 @@ public class DiscoveryConfigFactory implements DiscoveryConfigurationFactory {
         return BeanUtils.getBean("commonContext", "discoveryFactory", DiscoveryConfigFactory.class);
     }
 
-    public DiscoveryConfigFactory() {
+    public DiscoveryConfigFactory() throws MarshalException, ValidationException, IOException {
         reload();
     }
 
@@ -113,6 +113,7 @@ public class DiscoveryConfigFactory implements DiscoveryConfigurationFactory {
 
     /**
      * Reload the config from the default config file.
+     * @throws MarshalException, ValidationException, IOException 
      *
      * @exception java.io.IOException
      *                Thrown if the specified config file cannot be read/loaded
@@ -124,7 +125,7 @@ public class DiscoveryConfigFactory implements DiscoveryConfigurationFactory {
      * @throws org.exolab.castor.xml.MarshalException if any.
      * @throws org.exolab.castor.xml.ValidationException if any.
      */
-    public synchronized void reload() {
+    public synchronized void reload() throws MarshalException, ValidationException, IOException {
         try {
             File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.DISCOVERY_CONFIG_FILE_NAME);
             LOG.debug("reload: config file path {}", cfgFile.getPath());
@@ -139,12 +140,9 @@ public class DiscoveryConfigFactory implements DiscoveryConfigurationFactory {
             } catch (final Throwable e) {
                 throw new ValidationException("An error occurred while validating the configuration: " + e.getMessage(), e);
             }
-        } catch (MarshalException e) {
-            LOG.error("Could unmarshal configuration file: " + ConfigFileConstants.DISCOVERY_CONFIG_FILE_NAME, e);
-        } catch (ValidationException e) {
-            LOG.error("Could unmarshal configuration file: " + ConfigFileConstants.DISCOVERY_CONFIG_FILE_NAME, e);
-        } catch (IOException e) {
-            LOG.error("Could unmarshal configuration file: " + ConfigFileConstants.DISCOVERY_CONFIG_FILE_NAME, e);
+        } catch (MarshalException | ValidationException | IOException e) {
+            LOG.error("Could not unmarshal configuration file: " + ConfigFileConstants.getFileName(ConfigFileConstants.DISCOVERY_CONFIG_FILE_NAME), e);
+            throw e;
         }
     }
 
