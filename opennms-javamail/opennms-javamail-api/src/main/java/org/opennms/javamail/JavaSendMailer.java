@@ -89,7 +89,7 @@ public class JavaSendMailer extends JavaMailer2 {
             if (m_config.isDebug()) {
                 m_session.setDebugOut(new PrintStream(new LoggingByteArrayOutputStream()));
             }
-            m_session.setDebug(m_config.getDebug());
+            m_session.setDebug(m_config.isDebug());
 
         } catch (IOException e) {
             throw new JavaMailerException("IO problem creating session", e);
@@ -185,13 +185,13 @@ public class JavaSendMailer extends JavaMailer2 {
              * FIXME: if using a valid sendmail config, it probably doesn't make sense to use any of these properties
              */
             if (useJmProps) {
-                m_config.setDebug(PropertiesUtils.getProperty(props, "org.opennms.core.utils.debug", m_config.getDebug()));
+                m_config.setDebug(PropertiesUtils.getProperty(props, "org.opennms.core.utils.debug", m_config.isDebug()));
                 m_config.getSendmailHost().setHost(PropertiesUtils.getProperty(props, "org.opennms.core.utils.mailHost", m_config.getSendmailHost().getHost()));
-                m_config.setUseJmta(PropertiesUtils.getProperty(props, "org.opennms.core.utils.useJMTA", m_config.getUseJmta()));
+                m_config.setUseJmta(PropertiesUtils.getProperty(props, "org.opennms.core.utils.useJMTA", m_config.isUseJmta()));
                 m_config.getSendmailProtocol().setMailer(PropertiesUtils.getProperty(props, "org.opennms.core.utils.mailer", m_config.getSendmailProtocol().getMailer()));
                 m_config.getSendmailProtocol().setTransport(PropertiesUtils.getProperty(props, "org.opennms.core.utils.transport", m_config.getSendmailProtocol().getTransport()));
                 m_config.getSendmailMessage().setFrom(PropertiesUtils.getProperty(props, "org.opennms.core.utils.fromAddress", m_config.getSendmailMessage().getFrom()));
-                m_config.setUseAuthentication(PropertiesUtils.getProperty(props, "org.opennms.core.utils.authenticate", m_config.getUseAuthentication()));
+                m_config.setUseAuthentication(PropertiesUtils.getProperty(props, "org.opennms.core.utils.authenticate", m_config.isUseAuthentication()));
                 m_config.getUserAuth().setUserName(PropertiesUtils.getProperty(props, "org.opennms.core.utils.authenticateUser", m_config.getUserAuth().getUserName()));
                 m_config.getUserAuth().setPassword(PropertiesUtils.getProperty(props, "org.opennms.core.utils.authenticatePassword", m_config.getUserAuth().getPassword()));
                 m_config.getSendmailProtocol().setMessageContentType(PropertiesUtils.getProperty(props, "org.opennms.core.utils.messageContentType", m_config.getSendmailProtocol().getMessageContentType()));
@@ -268,10 +268,10 @@ public class JavaSendMailer extends JavaMailer2 {
                 LOG.debug("transport is 'mta', not trying to connect()");
             } else if (m_config.isUseAuthentication()) {
                 LOG.debug("authenticating to {}", m_config.getSendmailHost().getHost());
-                t.connect(m_config.getSendmailHost().getHost(), (int)m_config.getSendmailHost().getPort(), m_config.getUserAuth().getUserName(), m_config.getUserAuth().getPassword());
+                t.connect(m_config.getSendmailHost().getHost(), m_config.getSendmailHost().getPort(), m_config.getUserAuth().getUserName(), m_config.getUserAuth().getPassword());
             } else {
                 LOG.debug("not authenticating to {}", m_config.getSendmailHost().getHost());
-                t.connect(m_config.getSendmailHost().getHost(), (int)m_config.getSendmailHost().getPort(), null, null);
+                t.connect(m_config.getSendmailHost().getHost(), m_config.getSendmailHost().getPort(), null, null);
             }
 
             t.sendMessage(message.getMimeMessage(), message.getMimeMessage().getAllRecipients());
