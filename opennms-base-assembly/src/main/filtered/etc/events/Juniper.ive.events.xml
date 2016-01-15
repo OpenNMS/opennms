@@ -1,0 +1,892 @@
+<events>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.12532.251</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>4</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/mib2events/iveLogNearlyFull</uei>
+        <event-label>JUNIPER-IVE-MIB defined trap event: iveLogNearlyFull</event-label>
+        <descr>
+            &lt;p&gt;Log file nearly full&lt;/p&gt;&lt;table&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+            logFullPercent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+            logName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+        </descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+            iveLogNearlyFull trap received
+            logFullPercent=%parm[#1]%
+            logName=%parm[#2]%&lt;/p&gt;
+        </logmsg>
+        <severity>Warning</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.12532.251</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>5</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/mib2events/iveLogFull</uei>
+        <event-label>JUNIPER-IVE-MIB defined trap event: iveLogFull</event-label>
+        <descr>
+            &lt;p&gt;Log file full&lt;/p&gt;&lt;table&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+            logName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+        </descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+            iveLogFull trap received
+            logName=%parm[#1]%&lt;/p&gt;
+        </logmsg>
+        <severity>Minor</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.12532.251</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/mib2events/iveMaxConcurrentUsersSignedIn</uei>
+        <event-label>JUNIPER-IVE-MIB defined trap event: iveMaxConcurrentUsersSignedIn</event-label>
+        <descr>
+            &lt;p&gt;Maximum number of concurrent users signed in&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+        </descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+            iveMaxConcurrentUsersSignedIn trap received&lt;/p&gt;
+        </logmsg>
+        <severity>Minor</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.12532.251</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>7</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/mib2events/iveTooManyFailedLoginAttempts</uei>
+        <event-label>JUNIPER-IVE-MIB defined trap event: iveTooManyFailedLoginAttempts</event-label>
+        <descr>
+            &lt;p&gt;Too many failed login attempts&lt;/p&gt;&lt;table&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+            blockedIP&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+        </descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+            iveTooManyFailedLoginAttempts trap received
+            blockedIP=%parm[#1]%&lt;/p&gt;
+        </logmsg>
+        <severity>Minor</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.12532.251</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>8</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/mib2events/externalAuthServerUnreachable</uei>
+        <event-label>JUNIPER-IVE-MIB defined trap event: externalAuthServerUnreachable</event-label>
+        <descr>
+            &lt;p&gt;External authentication server is not responding&lt;/p&gt;&lt;table&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+            authServerName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+        </descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+            externalAuthServerUnreachable trap received
+            authServerName=%parm[#1]%&lt;/p&gt;
+        </logmsg>
+        <severity>Minor</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.12532.251</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>9</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/mib2events/iveStart</uei>
+        <event-label>JUNIPER-IVE-MIB defined trap event: iveStart</event-label>
+        <descr>
+            &lt;p&gt;IVE startup&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+        </descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+            iveStart trap received&lt;/p&gt;
+        </logmsg>
+        <severity>Normal</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.12532.251</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>10</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/mib2events/iveShutdown</uei>
+        <event-label>JUNIPER-IVE-MIB defined trap event: iveShutdown</event-label>
+        <descr>
+            &lt;p&gt;IVE shutdown&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+        </descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+            iveShutdown trap received&lt;/p&gt;
+        </logmsg>
+        <severity>Warning</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.12532.251</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>11</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/mib2events/iveReboot</uei>
+        <event-label>JUNIPER-IVE-MIB defined trap event: iveReboot</event-label>
+        <descr>
+            &lt;p&gt;IVE reboot&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+        </descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+            iveReboot trap received&lt;/p&gt;
+        </logmsg>
+        <severity>Warning</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.12532.251</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>12</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/mib2events/archiveServerUnreachable</uei>
+        <event-label>JUNIPER-IVE-MIB defined trap event: archiveServerUnreachable</event-label>
+        <descr>
+            &lt;p&gt;Archive server is not responding&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+        </descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+            archiveServerUnreachable trap received&lt;/p&gt;
+        </logmsg>
+        <severity>Warning</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.12532.251</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>13</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/mib2events/archiveServerLoginFailed</uei>
+        <event-label>JUNIPER-IVE-MIB defined trap event: archiveServerLoginFailed</event-label>
+        <descr>
+            &lt;p&gt;Could not login into archive server. Verify FTP username and password.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+        </descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+            archiveServerLoginFailed trap received&lt;/p&gt;
+        </logmsg>
+        <severity>Warning</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.12532.251</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>14</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/mib2events/archiveFileTransferFailed</uei>
+        <event-label>JUNIPER-IVE-MIB defined trap event: archiveFileTransferFailed</event-label>
+        <descr>
+            &lt;p&gt;Could not store file on archive server&lt;/p&gt;&lt;table&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+            fileName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+        </descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+            archiveFileTransferFailed trap received
+            fileName=%parm[#1]%&lt;/p&gt;
+        </logmsg>
+        <severity>Warning</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.12532.251</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>15</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/mib2events/meetingUserLimit</uei>
+        <event-label>JUNIPER-IVE-MIB defined trap event: meetingUserLimit</event-label>
+        <descr>
+            &lt;p&gt;Concurrent user count over license limit&lt;/p&gt;&lt;table&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+            meetingUserCount&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+        </descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+            meetingUserLimit trap received
+            meetingUserCount=%parm[#1]%&lt;/p&gt;
+        </logmsg>
+        <severity>Minor</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.12532.251</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>16</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/mib2events/iveRestart</uei>
+        <event-label>JUNIPER-IVE-MIB defined trap event: iveRestart</event-label>
+        <descr>
+            &lt;p&gt;IVE has restarted under administrator's instruction.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+        </descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+            iveRestart trap received&lt;/p&gt;
+        </logmsg>
+        <severity>Normal</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.12532.251</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>17</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/mib2events/meetingLimit</uei>
+        <event-label>JUNIPER-IVE-MIB defined trap event: meetingLimit</event-label>
+        <descr>
+            &lt;p&gt;Concurrent meeting count over license limit&lt;/p&gt;&lt;table&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+            meetingCount&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+        </descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+            meetingLimit trap received
+            meetingCount=%parm[#1]%&lt;/p&gt;
+        </logmsg>
+        <severity>Minor</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.12532.251</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>18</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/mib2events/iveDiskNearlyFull</uei>
+        <event-label>JUNIPER-IVE-MIB defined trap event: iveDiskNearlyFull</event-label>
+        <descr>
+            &lt;p&gt;Disk space nearly full&lt;/p&gt;&lt;table&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+            diskFullPercent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+        </descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+            iveDiskNearlyFull trap received
+            diskFullPercent=%parm[#1]%&lt;/p&gt;
+        </logmsg>
+        <severity>Warning</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.12532.251</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>19</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/mib2events/iveDiskFull</uei>
+        <event-label>JUNIPER-IVE-MIB defined trap event: iveDiskFull</event-label>
+        <descr>
+            &lt;p&gt;Disk space full&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+        </descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+            iveDiskFull trap received&lt;/p&gt;
+        </logmsg>
+        <severity>Minor</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.12532.251</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>20</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/mib2events/logMessageTrap</uei>
+        <event-label>JUNIPER-IVE-MIB defined trap event: logMessageTrap</event-label>
+        <descr>
+            &lt;p&gt;The TRAP generated from a log message.&lt;/p&gt;&lt;table&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+            logID&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+            logType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+            logDescription&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+        </descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+            logMessageTrap trap received
+            logID=%parm[#1]%
+            logType=%parm[#2]%
+            logDescription=%parm[#3]%&lt;/p&gt;
+        </logmsg>
+        <severity>Warning</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.12532.251</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>21</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/mib2events/memUtilNotify</uei>
+        <event-label>JUNIPER-IVE-MIB defined trap event: memUtilNotify</event-label>
+        <descr>
+            &lt;p&gt;IVE memory utilization above threshold&lt;/p&gt;&lt;table&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+            iveMemoryUtil&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+        </descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+            memUtilNotify trap received
+            iveMemoryUtil=%parm[#1]%&lt;/p&gt;
+        </logmsg>
+        <severity>Warning</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.12532.251</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>22</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/mib2events/cpuUtilNotify</uei>
+        <event-label>JUNIPER-IVE-MIB defined trap event: cpuUtilNotify</event-label>
+        <descr>
+            &lt;p&gt;IVE CPU utilization above threshold&lt;/p&gt;&lt;table&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+            iveCpuUtil&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+        </descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+            cpuUtilNotify trap received
+            iveCpuUtil=%parm[#1]%&lt;/p&gt;
+        </logmsg>
+        <severity>Warning</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.12532.251</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>23</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/mib2events/swapUtilNotify</uei>
+        <event-label>JUNIPER-IVE-MIB defined trap event: swapUtilNotify</event-label>
+        <descr>
+            &lt;p&gt;IVE swap utilization above threshold&lt;/p&gt;&lt;table&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+            iveSwapUtil&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+        </descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+            swapUtilNotify trap received
+            iveSwapUtil=%parm[#1]%&lt;/p&gt;
+        </logmsg>
+        <severity>Warning</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.12532.251</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>24</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/mib2events/iveMaxConcurrentUsersVirtualSystem</uei>
+        <event-label>JUNIPER-IVE-MIB defined trap event: iveMaxConcurrentUsersVirtualSystem</event-label>
+        <descr>
+            &lt;p&gt;Maximum number of concurrent Virtual System users signed in&lt;/p&gt;&lt;table&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+            ivsName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+        </descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+            iveMaxConcurrentUsersVirtualSystem trap received
+            ivsName=%parm[#1]%&lt;/p&gt;
+        </logmsg>
+        <severity>Warning</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.12532.251</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>25</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/mib2events/ocspResponderUnreachable</uei>
+        <event-label>JUNIPER-IVE-MIB defined trap event: ocspResponderUnreachable</event-label>
+        <descr>
+            &lt;p&gt;OCSP Responder is not responding&lt;/p&gt;&lt;table&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+            ocspResponderURL&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+        </descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+            ocspResponderUnreachable trap received
+            ocspResponderURL=%parm[#1]%&lt;/p&gt;
+        </logmsg>
+        <severity>Minor</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.12532.251</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>26</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/mib2events/iveFanNotify</uei>
+        <event-label>JUNIPER-IVE-MIB defined trap event: iveFanNotify</event-label>
+        <descr>
+            &lt;p&gt;The status of the fans has changed&lt;/p&gt;&lt;table&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+            fanDescription&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+        </descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+            iveFanNotify trap received
+            fanDescription=%parm[#1]%&lt;/p&gt;
+        </logmsg>
+        <severity>Warning</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.12532.251</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>27</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/mib2events/ivePowerSupplyNotify</uei>
+        <event-label>JUNIPER-IVE-MIB defined trap event: ivePowerSupplyNotify</event-label>
+        <descr>
+            &lt;p&gt;The status of the power supplies has changed&lt;/p&gt;&lt;table&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+            psDescription&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+        </descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+            ivePowerSupplyNotify trap received
+            psDescription=%parm[#1]%&lt;/p&gt;
+        </logmsg>
+        <severity>Warning</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.12532.251</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>28</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/mib2events/iveRaidNotify</uei>
+        <event-label>JUNIPER-IVE-MIB defined trap event: iveRaidNotify</event-label>
+        <descr>
+            &lt;p&gt;The status of the RAID has changed&lt;/p&gt;&lt;table&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+            raidDescription&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+        </descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+            iveRaidNotify trap received
+            raidDescription=%parm[#1]%&lt;/p&gt;
+        </logmsg>
+        <severity>Warning</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.12532.251</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>29</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/mib2events/iveClusterDisableNodeTrap</uei>
+        <event-label>JUNIPER-IVE-MIB defined trap event: iveClusterDisableNodeTrap</event-label>
+        <descr>
+            &lt;p&gt;A Given node(s) in a cluster has(have) been disabled&lt;/p&gt;&lt;table&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+            clusterName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+            nodeList&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+        </descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+            iveClusterDisableNodeTrap trap received
+            clusterName=%parm[#1]%
+            nodeList=%parm[#2]%&lt;/p&gt;
+        </logmsg>
+        <severity>Warning</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.12532.251</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>30</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/mib2events/iveClusterChangedVIPTrap</uei>
+        <event-label>JUNIPER-IVE-MIB defined trap event: iveClusterChangedVIPTrap</event-label>
+        <descr>
+            &lt;p&gt;A external/internal VIP has changed from its current value to a new one&lt;/p&gt;&lt;table&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+            vipType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+            currentVIP&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+            newVIP&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+        </descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+            iveClusterChangedVIPTrap trap received
+            vipType=%parm[#1]%
+            currentVIP=%parm[#2]%
+            newVIP=%parm[#3]%&lt;/p&gt;
+        </logmsg>
+        <severity>Normal</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.12532.251</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>31</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/mib2events/iveNetExternalInterfaceDownTrap</uei>
+        <event-label>JUNIPER-IVE-MIB defined trap event: iveNetExternalInterfaceDownTrap</event-label>
+        <descr>
+            &lt;p&gt;The External interface has gone down, reason is in nicEvent&lt;/p&gt;&lt;table&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+            nicEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+        </descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+            iveNetExternalInterfaceDownTrap trap received
+            nicEvent=%parm[#1]%&lt;/p&gt;
+        </logmsg>
+        <severity>Minor</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.12532.251</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>32</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/mib2events/iveClusterDeleteTrap</uei>
+        <event-label>JUNIPER-IVE-MIB defined trap event: iveClusterDeleteTrap</event-label>
+        <descr>
+            &lt;p&gt;Cluster delete inititaed by nodeName&lt;/p&gt;&lt;table&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+            nodeName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+        </descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+            iveClusterDeleteTrap trap received
+            nodeName=%parm[#1]%&lt;/p&gt;
+        </logmsg>
+        <severity>Normal</severity>
+    </event>
+    <event>
+        <mask>
+            <maskelement>
+                <mename>id</mename>
+                <mevalue>.1.3.6.1.4.1.12532.251</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>generic</mename>
+                <mevalue>6</mevalue>
+            </maskelement>
+            <maskelement>
+                <mename>specific</mename>
+                <mevalue>33</mevalue>
+            </maskelement>
+        </mask>
+        <uei>uei.opennms.org/mib2events/iveNetInternalInterfaceDownTrap</uei>
+        <event-label>JUNIPER-IVE-MIB defined trap event: iveNetInternalInterfaceDownTrap</event-label>
+        <descr>
+            &lt;p&gt;The Internal interface has gone down, reason is in nicEvent&lt;/p&gt;&lt;table&gt;
+            &lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+            nicEvent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+            %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+        </descr>
+        <logmsg dest="logndisplay">&lt;p&gt;
+            iveNetInternalInterfaceDownTrap trap received
+            nicEvent=%parm[#1]%&lt;/p&gt;
+        </logmsg>
+        <severity>Warning</severity>
+    </event>
+</events>

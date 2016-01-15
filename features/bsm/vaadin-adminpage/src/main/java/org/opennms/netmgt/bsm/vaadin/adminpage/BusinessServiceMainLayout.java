@@ -31,7 +31,7 @@ package org.opennms.netmgt.bsm.vaadin.adminpage;
 import java.util.Objects;
 
 import org.opennms.netmgt.bsm.service.BusinessServiceManager;
-import org.opennms.netmgt.bsm.service.model.BusinessServiceDTO;
+import org.opennms.netmgt.bsm.service.model.BusinessService;
 
 import com.google.common.base.Strings;
 import com.vaadin.data.util.BeanItemContainer;
@@ -41,6 +41,8 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
+import org.opennms.netmgt.vaadin.core.TransactionAwareUI;
+import org.opennms.netmgt.vaadin.core.UIHelper;
 
 /**
  * This class represents the main  Vaadin component for editing Business Service definitions.
@@ -52,7 +54,7 @@ public class BusinessServiceMainLayout extends VerticalLayout {
     /**
      * the Business Service Manager instance
      */
-    private BusinessServiceManager m_businessServiceManager;
+    private final BusinessServiceManager m_businessServiceManager;
 
     /**
      * the table instance
@@ -62,41 +64,28 @@ public class BusinessServiceMainLayout extends VerticalLayout {
     /**
      * the bean item container for the listed Business Service DTOs
      */
-    private final BeanItemContainer<BusinessServiceDTO> m_beanItemContainer = new BeanItemContainer<>(BusinessServiceDTO.class);
+    private final BeanItemContainer<BusinessService> m_beanItemContainer = new BeanItemContainer<>(BusinessService.class);
 
-    /**
-     * Constrcutor
-     *
-     * @param businessServiceManager the Business Service Manager instance to be used
-     */
     public BusinessServiceMainLayout(BusinessServiceManager businessServiceManager) {
-        /**
-         * check for valid arguments and set the member field
-         */
-        Objects.requireNonNull(businessServiceManager);
-        this.m_businessServiceManager = businessServiceManager;
+        m_businessServiceManager = Objects.requireNonNull(businessServiceManager);
 
-        /**
-         * set the component's properties
-         */
         setSizeFull();
 
-        /**
-         * construct the upper layout for the create button and field
-         */
+        // construct the upper layout for the create button and field
         HorizontalLayout upperLayout = new HorizontalLayout();
 
-        /**
-         * add the input field...
-         */
+        // Reload button to allow manual reloads of the state machine
+        final Button reloadButton = UIHelper.createButton("Reload", "Reloads the Business Service State Machine", null, (Button.ClickListener) event -> {
+            m_businessServiceManager.triggerDaemonReload();
+        });
+
+        // business service input field
         final TextField createTextField = new TextField();
         createTextField.setWidth(300.0f, Unit.PIXELS);
         createTextField.setInputPrompt("Business Service Name");
         createTextField.setId("createTextField");
 
-        /**
-         * ...and the button
-         */
+        // create button
         final Button createButton = new Button("Create");
         createButton.setId("createButton");
         createButton.addClickListener((Button.ClickListener) event -> {
@@ -105,17 +94,17 @@ public class BusinessServiceMainLayout extends VerticalLayout {
              */
             if (!"".equals(Strings.nullToEmpty(createTextField.getValue()).trim())) {
                 /**
-                 * create new DTO instance
+                 * createBusinessService new DTO instance
                  */
-                final BusinessServiceDTO businessServiceDTO = new BusinessServiceDTO();
+                final BusinessService businessService = m_businessServiceManager.createBusinessService();
                 /**
                  * add the title
                  */
-                businessServiceDTO.setName(createTextField.getValue().trim());
+                businessService.setName(createTextField.getValue().trim());
                 /**
-                 * create the modal configuration dialog
+                 * createBusinessService the modal configuration dialog
                  */
-                getUI().addWindow(new BusinessServiceEditWindow(businessServiceDTO, BusinessServiceMainLayout.this));
+                getUI().addWindow(new BusinessServiceEditWindow(businessService, BusinessServiceMainLayout.this));
                 /**
                  * clear the textfield value
                  */
@@ -126,6 +115,7 @@ public class BusinessServiceMainLayout extends VerticalLayout {
         /**
          * add to the upper layout
          */
+        upperLayout.addComponent(reloadButton);
         upperLayout.addComponent(createTextField);
         upperLayout.addComponent(createButton);
         addComponent(upperLayout);
@@ -147,17 +137,17 @@ public class BusinessServiceMainLayout extends VerticalLayout {
         m_table.setVisibleColumns("id", "name");
 
         /**
-         * create generated columns for modification of entries...
+         * createBusinessService generated columns for modification of entries...
          */
         m_table.addGeneratedColumn("edit", new Table.ColumnGenerator() {
             @Override
             public Object generateCell(Table source, Object itemId, Object columnId) {
                 Button editButton = new Button("edit");
                 editButton.addStyleName("small");
-                editButton.setId("editButton-" + ((BusinessServiceDTO) itemId).getName());
+                editButton.setId("editButton-" + ((BusinessService) itemId).getName());
 
                 editButton.addClickListener((Button.ClickListener) event -> {
-                    getUI().addWindow(new BusinessServiceEditWindow((BusinessServiceDTO) itemId, BusinessServiceMainLayout.this));
+                    getUI().addWindow(new BusinessServiceEditWindow((BusinessService) itemId, BusinessServiceMainLayout.this));
                     refreshTable();
                 });
                 return editButton;
@@ -172,22 +162,24 @@ public class BusinessServiceMainLayout extends VerticalLayout {
                     public Object generateCell(Table source, Object itemId, Object columnId) {
                         Button deleteButton = new Button("delete");
                         deleteButton.addStyleName("small");
-                        BusinessServiceDTO businessServiceDTO = (BusinessServiceDTO) itemId;
-                        deleteButton.setId("deleteButton-" + businessServiceDTO.getName());
+                        BusinessService businessService = (BusinessService) itemId;
+                        deleteButton.setId("deleteButton-" + businessService.getName());
 
-                        deleteButton.addClickListener((Button.ClickListener) event -> {
-                                    if (businessServiceDTO.getParentServices().isEmpty() && businessServiceDTO.getChildServices().isEmpty()) {
-                                        businessServiceManager.delete(businessServiceDTO.getId());
-                                        refreshTable();
+                        deleteButton.addClickListener((Button.ClickListener)event -> {
+                                    if (businessService.getParentServices().isEmpty() && businessService.getChildServices().isEmpty()) {
+                                        UIHelper.getCurrent(TransactionAwareUI.class).runInTransaction(() -> {
+                                            businessService.delete();
+                                            refreshTable();
+                                        });
                                     } else {
                                         new org.opennms.netmgt.vaadin.core.ConfirmationDialog()
-                                                .withOkAction(new org.opennms.netmgt.vaadin.core.ConfirmationDialog.Action() {
+                                                .withOkAction(UIHelper.getCurrent(TransactionAwareUI.class).wrapInTransactionProxy(new org.opennms.netmgt.vaadin.core.ConfirmationDialog.Action() {
                                                     @Override
                                                     public void execute(org.opennms.netmgt.vaadin.core.ConfirmationDialog window) {
-                                                        businessServiceManager.delete(businessServiceDTO.getId());
+                                                        businessService.delete();
                                                         refreshTable();
                                                     }
-                                                })
+                                                }))
                                                 .withOkLabel("Delete anyway")
                                                 .withCancelLabel("Cancel")
                                                 .withCaption("Warning")
@@ -236,6 +228,6 @@ public class BusinessServiceMainLayout extends VerticalLayout {
         /**
          * ...and add all DTOs found by the service instance.
          */
-        m_beanItemContainer.addAll(m_businessServiceManager.findAll());
+        m_beanItemContainer.addAll(m_businessServiceManager.getAllBusinessServices());
     }
 }

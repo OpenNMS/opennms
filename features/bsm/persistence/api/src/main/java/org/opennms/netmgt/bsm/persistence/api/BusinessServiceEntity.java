@@ -58,7 +58,7 @@ import com.google.common.collect.Sets;
 @Entity
 @Table(name = "bsm_service")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-public class BusinessService {
+public class BusinessServiceEntity {
 
     private Long m_id;
 
@@ -68,9 +68,9 @@ public class BusinessService {
 
     private Set<OnmsMonitoredService> m_ipServices = Sets.newLinkedHashSet();
 
-    private Set<BusinessService> m_childServices = Sets.newLinkedHashSet();
+    private Set<BusinessServiceEntity> m_childServices = Sets.newLinkedHashSet();
 
-    private Set<BusinessService> m_parentServices = Sets.newLinkedHashSet();
+    private Set<BusinessServiceEntity> m_parentServices = Sets.newLinkedHashSet();
 
     @Id
     @SequenceGenerator(name = "opennmsSequence", sequenceName = "opennmsNxtId")
@@ -93,8 +93,8 @@ public class BusinessService {
         m_name = name;
     }
 
-    @ElementCollection
-    @JoinTable(name = "bsm_service_attributes", joinColumns = @JoinColumn(name = "bsm_service_id", referencedColumnName = "id"))
+    @ElementCollection(fetch = FetchType.EAGER)
+    @JoinTable(name = "bsm_service_attributes", joinColumns = @JoinColumn(name = "bsm_service_id", referencedColumnName = "id") )
     @MapKeyColumn(name = "key")
     @Column(name = "value", nullable = false)
     public Map<String, String> getAttributes() {
@@ -105,6 +105,8 @@ public class BusinessService {
         m_attributes = attributes;
     }
 
+    @OneToMany(fetch = FetchType.EAGER,
+               cascade = CascadeType.ALL)
     public void setAttribute(String key, String value) {
         m_attributes.put(key, value);
     }
@@ -125,14 +127,6 @@ public class BusinessService {
         m_ipServices = ipServices;
     }
 
-    public void addIpService(OnmsMonitoredService ipService) {
-        m_ipServices.add(ipService);
-    }
-
-    public void removeIpService(OnmsMonitoredService ipService) {
-        m_ipServices.remove(ipService);
-    }
-
     @Transient
     private Set<Integer> getIpServiceIds() {
         return m_ipServices.stream()
@@ -145,62 +139,44 @@ public class BusinessService {
     @JoinTable(name = "bsm_service_children",
                joinColumns = @JoinColumn(name = "bsm_service_parent", referencedColumnName = "id"),
                inverseJoinColumns = @JoinColumn(name="bsm_service_child", referencedColumnName = "id"))
-    public Set<BusinessService> getChildServices() {
+    public Set<BusinessServiceEntity> getChildServices() {
         return m_childServices;
     }
 
-    public void setChildServices(Set<BusinessService> childServices) {
+    public void setChildServices(Set<BusinessServiceEntity> childServices) {
         m_childServices = childServices;
-    }
-
-    public void addChildService(BusinessService childService) {
-        m_childServices.add(childService);
-    }
-
-    public void removeChildService(BusinessService childService) {
-        m_childServices.remove(childService);
     }
 
     @ManyToMany(fetch = FetchType.EAGER,
                 cascade = CascadeType.ALL,
                 mappedBy = "childServices")
-    public Set<BusinessService> getParentServices() {
+    public Set<BusinessServiceEntity> getParentServices() {
         return m_parentServices;
     }
 
-    public void setParentServices(Set<BusinessService> parentServices) {
+    public void setParentServices(Set<BusinessServiceEntity> parentServices) {
         m_parentServices = parentServices;
-    }
-
-    public void addParentService(BusinessService parentService) {
-        m_parentServices.add(parentService);
-    }
-
-    public void removeParentService(BusinessService parentService) {
-        m_parentServices.remove(parentService);
     }
 
     @Override
     public boolean equals(Object obj) {
+        if (this == obj) return true;
+
         if (obj == null) {
             return false;
         }
         if (getClass() != obj.getClass()) {
             return false;
         }
-        final BusinessService other = (BusinessService) obj;
+        final BusinessServiceEntity other = (BusinessServiceEntity) obj;
 
         return com.google.common.base.Objects.equal(m_id, other.m_id)
-                && com.google.common.base.Objects.equal(m_name, other.m_name)
-                && com.google.common.base.Objects.equal(m_attributes, other.m_attributes)
-                // OnmsMonitoredService objects don't properly support the equals() and hashCode() methods
-                // so we resort to comparing their IDs, which is sufficient in the case of the Business Service
-                && com.google.common.base.Objects.equal(getIpServiceIds(), other.getIpServiceIds());
+                && com.google.common.base.Objects.equal(m_name, other.m_name);
     }
 
     @Override
     public int hashCode() {
-        return com.google.common.base.Objects.hashCode(m_id, m_name, m_attributes, getIpServiceIds());
+        return com.google.common.base.Objects.hashCode(m_id, m_name);
     }
 
     @Override

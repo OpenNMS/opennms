@@ -31,7 +31,6 @@ package org.opennms.netmgt.bsm.daemon;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Collection;
-import java.util.concurrent.TimeUnit;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -41,7 +40,7 @@ import org.junit.runner.RunWith;
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
-import org.opennms.netmgt.bsm.persistence.api.BusinessService;
+import org.opennms.netmgt.bsm.persistence.api.BusinessServiceEntity;
 import org.opennms.netmgt.bsm.persistence.api.BusinessServiceDao;
 import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.netmgt.dao.api.AlarmDao;
@@ -50,7 +49,6 @@ import org.opennms.netmgt.dao.mock.EventAnticipator;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.model.OnmsAlarm;
-import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.events.EventBuilder;
@@ -136,7 +134,7 @@ public class BsmdIT {
     @Transactional
     public void canSendEventsOnOperationalStatusChanged() throws Exception {
         // Create a business service
-        BusinessService simpleBs = createSimpleBusinessService();
+        BusinessServiceEntity simpleBs = createSimpleBusinessService();
 
         // Start the daemon
         m_bsmd.start();
@@ -161,6 +159,25 @@ public class BsmdIT {
     }
 
     /**
+     * Verifies that a reload of the Bsmd works as expected.
+     */
+    @Test
+    @Transactional
+    public void verifyReloadBsmd() throws Exception {
+        BusinessServiceEntity businessService1 = createBusinessService("service1");
+        m_bsmd.start();
+        Assert.assertEquals(OnmsSeverity.NORMAL, m_bsmd.getBusinessServiceStateMachine().getOperationalStatus(businessService1));
+
+        // verify reload of business services works when event is send
+        BusinessServiceEntity businessService2 = createBusinessService("service2");
+        Assert.assertNull(m_bsmd.getBusinessServiceStateMachine().getOperationalStatus(businessService2));
+        EventBuilder ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_UEI, "test");
+        ebldr.addParam(EventConstants.PARM_DAEMON_NAME, "bsmd");
+        m_eventMgr.sendNow(ebldr.getEvent());
+        Assert.assertEquals(OnmsSeverity.NORMAL, m_bsmd.getBusinessServiceStateMachine().getOperationalStatus(businessService2));
+    }
+
+    /**
      * Verifies that the daemon polls the alarm table on a regular basis. This is done to ensure that all alarms are
      * considered, because the appropriate alarm created/changed/deleted/updated event may not have been sent.
      *
@@ -168,7 +185,7 @@ public class BsmdIT {
     @Test
     public void verifyAlarmPollingIsEnabled() throws Exception {
         System.setProperty(Bsmd.POLL_INTERVAL_KEY, "10");
-        BusinessService simpleBs = createSimpleBusinessService();
+        BusinessServiceEntity simpleBs = createSimpleBusinessService();
         m_bsmd.start();
 
         // Create an alarm and do NOT send the alarm
@@ -199,20 +216,24 @@ public class BsmdIT {
         return alarm;
     }
 
-    private BusinessService createSimpleBusinessService() {
-        BusinessService bs = new BusinessService();
-        bs.setName("MyBusinessService");
+    private BusinessServiceEntity createBusinessService(String name) {
+        BusinessServiceEntity bs = new BusinessServiceEntity();
+        bs.setName(name);
 
         // Grab the first monitored service from node 1
         OnmsMonitoredService ipService = m_databasePopulator.getNode1()
                 .getIpInterfaces().iterator().next()
                 .getMonitoredServices().iterator().next();
-        bs.addIpService(ipService);
+        bs.getIpServices().add(ipService);
 
         // Persist
         m_businessServiceDao.save(bs);
         m_businessServiceDao.flush();
-        
+
         return bs;
+    }
+
+    private BusinessServiceEntity createSimpleBusinessService() {
+        return createBusinessService("MyBusinessService");
     }
 }
