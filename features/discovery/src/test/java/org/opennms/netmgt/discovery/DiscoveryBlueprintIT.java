@@ -240,8 +240,8 @@ public class DiscoveryBlueprintIT extends CamelBlueprintTestSupport
         range.setEnd("127.0.1.20");
         config.setChunkSize(1);
         config.setIncludeRange(new IncludeRange[] { range });
-        config.setInitialSleepTime(0);
-        config.setRestartSleepTime(3000);
+        config.setInitialSleepTime(30000);
+        config.setRestartSleepTime(30000);
         DiscoveryConfigFactory configFactory = new DiscoveryConfigFactory(config);
         services.put( DiscoveryConfigurationFactory.class.getName(),
                 new KeyValueHolder<Object, Dictionary>(configFactory, new Properties() ) );
