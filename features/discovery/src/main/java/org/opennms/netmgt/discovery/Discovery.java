@@ -29,7 +29,6 @@
 package org.opennms.netmgt.discovery;
 
 import java.io.IOException;
-import java.net.InetAddress;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -44,7 +43,6 @@ import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.db.DataSourceFactory;
 import org.opennms.core.utils.DBUtils;
-import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.DiscoveryConfigFactory;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
 import org.opennms.netmgt.events.api.EventConstants;
@@ -88,7 +86,7 @@ public class Discovery extends AbstractServiceDaemon {
 
     private EventForwarder m_eventForwarder;
 
-    private final ManagedInterfaceFilter m_interfaceFilter = new ManagedInterfaceFilter();
+    private UnmanagedInterfaceFilter m_interfaceFilter= null;
 
     @Autowired
     private CamelContext m_camelContext;
@@ -130,6 +128,20 @@ public class Discovery extends AbstractServiceDaemon {
     }
 
     /**
+     * <p>setUnmanagedInterfaceFilter</p>
+     */
+    public void setUnmanagedInterfaceFilter(UnmanagedInterfaceFilter filter) {
+    	m_interfaceFilter = filter;
+    }
+
+    /**
+     * <p>getUnmanagedInterfaceFilter</p>
+     */
+    public UnmanagedInterfaceFilter getUnmanagedInterfaceFilter() {
+        return m_interfaceFilter;
+    }
+
+    /**
      * Constructs a new discovery instance.
      */
     public Discovery() {
@@ -152,66 +164,13 @@ public class Discovery extends AbstractServiceDaemon {
         
         try {
         	LOG.debug("Initializing configuration...");
-            initializeConfiguration();
+        	m_discoveryFactory.reload();
         	LOG.debug("Configuration initialized.  Init the factory...");
             EventIpcManagerFactory.init();
         	LOG.debug("Factory init'd.");
         } catch (Throwable e) {
             LOG.debug("onInit: initialization failed", e);
             throw new IllegalStateException("Could not initialize discovery configuration.", e);
-        }
-    }
-
-    private void initializeConfiguration() throws MarshalException, ValidationException, IOException {
-        m_discoveryFactory.reload();
-    }
-
-    private interface IpAddressFilter {
-        boolean matches(InetAddress address);
-        boolean matches(String address);
-    }
-
-    private static class ManagedInterfaceFilter implements IpAddressFilter {
-        /**
-         * a set of addresses to skip discovery on
-         */
-        private Set<String> m_managedAddresses = Collections.synchronizedSet(new HashSet<String>());
-
-        public void addManagedAddress(String address) {
-            synchronized(m_managedAddresses) {
-                m_managedAddresses.add(address);
-            }
-        }
-
-        public void removeManagedAddress(String address) {
-            synchronized(m_managedAddresses) {
-                m_managedAddresses.remove(address);
-            }
-        }
-
-        public int size() {
-            synchronized(m_managedAddresses) {
-                return m_managedAddresses.size();
-            }
-        }
-
-        public void setManagedAddresses(Set<String> addresses) {
-            synchronized(m_managedAddresses) {
-                m_managedAddresses.clear();
-                m_managedAddresses.addAll(addresses);
-            }
-        }
-
-        @Override
-        public boolean matches(InetAddress address) {
-            return matches(InetAddressUtils.str(address));
-        }
-
-        @Override
-        public boolean matches(String address) {
-            synchronized(m_managedAddresses) {
-                return m_managedAddresses.contains(address);
-            }
         }
     }
 
@@ -314,7 +273,7 @@ public class Discovery extends AbstractServiceDaemon {
     private void reloadAndReStart() {
         EventBuilder ebldr = null;
         try {
-            initializeConfiguration();
+            m_discoveryFactory.reload();
             ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_SUCCESSFUL_UEI, getName());
             ebldr.addParam(EventConstants.PARM_DAEMON_NAME, "Discovery");
             this.stop();

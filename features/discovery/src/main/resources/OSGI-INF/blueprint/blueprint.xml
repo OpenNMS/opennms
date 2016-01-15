@@ -40,8 +40,16 @@
 		</cm:default-properties>
 	</cm:property-placeholder>
 
+	<!--
+		TODO: Hook this filter into DAO/event channel so that it can provide an up-to-date
+		list of managed IP addresses like the legacy Discovery process did.
+	-->
+	<bean id="unmanagedInterfaceFilter" class="org.opennms.netmgt.discovery.UnmanagedInterfaceFilter"/>
+
 	<!-- This processor generates a list of DiscoveryJobs from a DiscoveryConfiguration -->
-	<bean id="rangeChunker" class="org.opennms.netmgt.discovery.actors.RangeChunker" />
+	<bean id="rangeChunker" class="org.opennms.netmgt.discovery.actors.RangeChunker">
+		<property name="ipAddressFilter" ref="unmanagedInterfaceFilter"/>
+	</bean>
 
 	<!-- This processor performs ICMP pings and reports the results -->
 	<bean id="discoverer" class="org.opennms.netmgt.discovery.actors.Discoverer">
