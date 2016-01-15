@@ -16,6 +16,46 @@
 
   <context:annotation-config />
 
+  <!-- Pinger service -->
+  <onmsgi:reference id="pinger" interface="org.opennms.netmgt.icmp.Pinger" />
+
+  <!-- Event IPC manager service -->
+  <onmsgi:reference id="eventForwarder" interface="org.opennms.netmgt.events.api.EventForwarder" />
+
+  <!-- Persistent DiscoveryConfiguration -->
+  <onmsgi:reference id="discoveryConfigFactory" interface="org.opennms.netmgt.config.api.DiscoveryConfigurationFactory"/>
+
+  <!--
+    TODO: Hook this filter into DAO/event channel so that it can provide an up-to-date
+    list of managed IP addresses like the legacy Discovery process did.
+  -->
+  <bean id="unmanagedInterfaceFilter" class="org.opennms.netmgt.discovery.UnmanagedInterfaceFilter"/>
+
+  <!-- This processor generates a list of DiscoveryJobs from a DiscoveryConfiguration -->
+  <bean id="rangeChunker" class="org.opennms.netmgt.discovery.actors.RangeChunker">
+    <property name="ipAddressFilter" ref="unmanagedInterfaceFilter"/>
+  </bean>
+
+  <!-- This processor performs ICMP pings and reports the results -->
+  <bean id="discoverer" class="org.opennms.netmgt.discovery.actors.Discoverer">
+    <constructor-arg ref="pinger" />
+  </bean>
+
+  <!-- This processor sends newSuspect events for IP addresses reported in a DiscoveryResult -->
+  <bean id="eventWriter" class="org.opennms.netmgt.discovery.actors.EventWriter">
+    <constructor-arg ref="eventForwarder" />
+  </bean>
+
+  <bean id="activemq" class="org.apache.activemq.camel.component.ActiveMQComponent">
+    <!-- TODO: HZN-490 Add configurable ActiveMQ URI -->
+    <property name="brokerURL" value="tcp://localhost:61616" />
+    <!-- TODO: HZN-490 Add configurable authentication -->
+    <!--
+    <property name="userName" value="karaf" />
+    <property name="password" value="karaf" />
+    -->
+  </bean>
+
   <bean id="daemonListener" class="org.opennms.netmgt.events.api.AnnotationBasedEventListenerAdapter">
     <property name="annotatedListener" ref="daemon" />
     <property name="eventSubscriptionService" ref="eventSubscriptionService" />
@@ -23,7 +63,8 @@
 
   <bean id="daemon" class="org.opennms.netmgt.discovery.Discovery">
     <property name="discoveryFactory" ref="discoveryFactory" />
-    <property name="eventForwarder" ref="eventForwarder"/>
+    <property name="eventForwarder" ref="eventForwarder" />
+    <property name="unmanagedInterfaceFilter" ref="unmanagedInterfaceFilter" />
   </bean>
 
   <camelContext id="discoveryCamelContext" xmlns="http://camel.apache.org/schema/spring">

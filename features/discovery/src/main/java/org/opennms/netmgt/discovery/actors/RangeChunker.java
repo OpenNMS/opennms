@@ -34,6 +34,7 @@ import java.util.stream.Collectors;
 
 import org.opennms.netmgt.config.DiscoveryConfigFactory;
 import org.opennms.netmgt.config.discovery.DiscoveryConfiguration;
+import org.opennms.netmgt.discovery.IpAddressFilter;
 import org.opennms.netmgt.discovery.messages.DiscoveryJob;
 import org.opennms.netmgt.model.discovery.IPPollAddress;
 import org.opennms.netmgt.model.discovery.IPPollRange;
@@ -55,6 +56,7 @@ public class RangeChunker
     public static final int DEFAULT_CHUNK_SIZE = 100;
     
     private final int m_defaultChunkSize;
+    private IpAddressFilter m_ipAddressFilter;
 
     public RangeChunker() {
         this(DEFAULT_CHUNK_SIZE);
@@ -62,6 +64,10 @@ public class RangeChunker
 
     public RangeChunker(final int defaultChunkSize) {
         m_defaultChunkSize = defaultChunkSize;
+    }
+
+    public void setIpAddressFilter(IpAddressFilter ipAddressFilter) {
+        m_ipAddressFilter = ipAddressFilter;
     }
 
     public List<DiscoveryJob> chunk( final DiscoveryConfiguration config )
@@ -72,6 +78,15 @@ public class RangeChunker
         List<IPPollRange> ranges = new ArrayList<IPPollRange>();
         for ( IPPollAddress address : configFactory.getConfiguredAddresses() )
         {
+            // If there is an IP address filter set
+            if (m_ipAddressFilter != null) {
+                // If the filter doesn't match the address
+                if (!m_ipAddressFilter.matches(address.getAddress())) {
+                    // Skip it
+                    continue;
+                }
+            }
+
             IPPollRange range = new IPPollRange( address.getAddress(), address.getAddress(), address.getTimeout(),
                             address.getRetries() );
             ranges.add( range );
