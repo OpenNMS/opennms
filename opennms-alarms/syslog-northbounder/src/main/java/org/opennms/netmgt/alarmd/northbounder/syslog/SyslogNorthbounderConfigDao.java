@@ -28,7 +28,11 @@
 
 package org.opennms.netmgt.alarmd.northbounder.syslog;
 
+import java.io.FileWriter;
+import java.io.IOException;
+
 import org.opennms.core.xml.AbstractJaxbConfigDao;
+import org.opennms.core.xml.JaxbUtils;
 
 /**
  * The Class SyslogNorthbounderConfigDao.
@@ -61,20 +65,6 @@ public class SyslogNorthbounderConfigDao extends AbstractJaxbConfigDao<SyslogNor
         return getContainer().getObject();
     }
 
-    /**
-     * Gets the Syslog destination.
-     *
-     * @param syslogDestinationName the Syslog destination name
-     * @return the Syslog destination
-     */
-    public SyslogDestination getSyslogDestination(String syslogDestinationName) {
-        for (SyslogDestination dest : getConfig().getDestinations()) {
-            if (dest.getName().equals(syslogDestinationName)) {
-                return dest;
-            }
-        }
-        return null;
-    }
 
     /**
      * Reload.
@@ -82,4 +72,14 @@ public class SyslogNorthbounderConfigDao extends AbstractJaxbConfigDao<SyslogNor
     public void reload() {
         getContainer().reload();
     }
+
+    /**
+     * Save.
+     *
+     * @throws IOException Signals that an I/O exception has occurred.
+     */
+    public void save() throws IOException {
+        JaxbUtils.marshal(getConfig(), new FileWriter(getConfigResource().getFile()));
+    }
+
 }
