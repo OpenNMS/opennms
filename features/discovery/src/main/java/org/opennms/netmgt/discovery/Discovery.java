@@ -38,9 +38,6 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.Timer;
-import java.util.TimerTask;
-import java.util.concurrent.locks.Lock;
 
 import org.apache.camel.CamelContext;
 import org.exolab.castor.xml.MarshalException;
@@ -55,8 +52,6 @@ import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.events.api.EventIpcManagerFactory;
 import org.opennms.netmgt.events.api.annotations.EventHandler;
 import org.opennms.netmgt.events.api.annotations.EventListener;
-import org.opennms.netmgt.icmp.Pinger;
-import org.opennms.netmgt.model.discovery.IPPollAddress;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
@@ -84,30 +79,16 @@ public class Discovery extends AbstractServiceDaemon {
 
     private static final String LOG4J_CATEGORY = "discovery";
 
-
-    private static final int PING_IDLE = 0;
-    private static final int PING_RUNNING = 1;
-    private static final int PING_FINISHING = 2;
-    
     /**
      * The SQL query used to get the list of managed IP addresses from the database
      */
     private static final String ALL_IP_ADDRS_SQL = "SELECT DISTINCT ipAddr FROM ipInterface WHERE isManaged <> 'D'";
-    
-    /**
-     * a set of devices to skip discovery on
-     */
-    private Set<String> m_alreadyDiscovered = Collections.synchronizedSet(new HashSet<String>());
 
     private DiscoveryConfigFactory m_discoveryFactory;
 
-    private Timer m_timer;
+    private EventForwarder m_eventForwarder;
 
-    private int m_xstatus = PING_IDLE;
-    
-    private volatile EventForwarder m_eventForwarder;
-
-    private Pinger m_pinger;
+    private final ManagedInterfaceFilter m_interfaceFilter = new ManagedInterfaceFilter();
 
     @Autowired
     private CamelContext m_camelContext;
@@ -119,15 +100,6 @@ public class Discovery extends AbstractServiceDaemon {
      */
     public void setEventForwarder(EventForwarder eventForwarder) {
         m_eventForwarder = eventForwarder;
-    }
-
-    /**
-     * <p>setPinger</p>
-     *
-     * @param pinger a {@link JniPinger} object.
-     */
-    public void setPinger(Pinger pinger) {
-        m_pinger = pinger;
     }
 
     /**
@@ -193,100 +165,53 @@ public class Discovery extends AbstractServiceDaemon {
     private void initializeConfiguration() throws MarshalException, ValidationException, IOException {
         m_discoveryFactory.reload();
     }
-    
-    private void doPings() {
-        LOG.info("starting ping sweep");
-        
-        try {
-            initializeConfiguration();
-        } catch (Throwable e) {
-            LOG.error("doPings: could not re-init configuration, continuing with in memory configuration.", e);
-        }
 
-
-        m_xstatus = PING_RUNNING;
-
-        getDiscoveryFactory().getReadLock().lock();
-        try {
-            for (IPPollAddress pollAddress : getDiscoveryFactory().getConfiguredAddresses()) {
-                if (m_xstatus == PING_FINISHING || m_timer == null) {
-                    m_xstatus = PING_IDLE;
-                    return;
-                }
-                LOG.debug("Pinging: {} of foreign source {}", pollAddress.getAddress().toString(), m_discoveryFactory.getForeignSource(pollAddress.getAddress()));
-                ping(pollAddress);
-                try {
-                    Thread.sleep(getDiscoveryFactory().getIntraPacketDelay());
-                } catch (InterruptedException e) {
-                    LOG.info("interrupting discovery sweep");
-                    break;
-                }
-            }
-        } finally {
-            getDiscoveryFactory().getReadLock().unlock();
-        }
-
-        LOG.info("finished discovery sweep");
-        m_xstatus = PING_IDLE;
+    private interface IpAddressFilter {
+        boolean matches(InetAddress address);
+        boolean matches(String address);
     }
 
-    private void ping(IPPollAddress pollAddress) {
-        InetAddress address = pollAddress.getAddress();
-        if (address != null) {
-            if (!isAlreadyDiscovered(address)) {
-                try {
-                    m_pinger.ping(address, pollAddress.getTimeout(), pollAddress.getRetries(), (short) 1, cb);
-                } catch (Throwable e) {
-                    LOG.debug("error pinging {}", address.getAddress(), e);
-                }
-            } else {
-            	LOG.debug("{} already discovered.", address.toString());
+    private static class ManagedInterfaceFilter implements IpAddressFilter {
+        /**
+         * a set of addresses to skip discovery on
+         */
+        private Set<String> m_managedAddresses = Collections.synchronizedSet(new HashSet<String>());
+
+        public void addManagedAddress(String address) {
+            synchronized(m_managedAddresses) {
+                m_managedAddresses.add(address);
             }
         }
-    }
 
-    private boolean isAlreadyDiscovered(InetAddress address) {
-        if (m_alreadyDiscovered.contains(InetAddressUtils.str(address))) {
-            return true;
-        }
-        return false;
-    }
-
-    private void startTimer() {
-        if (m_timer != null) {
-            LOG.debug("startTimer() called, but a previous timer exists; making sure it's cleaned up");
-            m_xstatus = PING_FINISHING;
-            m_timer.cancel();
-        }
-        
-        LOG.debug("scheduling new discovery timer");
-        m_timer = new Timer("Discovery.Pinger", true);
-
-        TimerTask task = new TimerTask() {
-
-            @Override
-            public void run() {
-                doPings();
+        public void removeManagedAddress(String address) {
+            synchronized(m_managedAddresses) {
+                m_managedAddresses.remove(address);
             }
-
-        };
-        final Lock readLock = getDiscoveryFactory().getReadLock();
-        readLock.lock();
-        try {
-            m_timer.scheduleAtFixedRate(task, getDiscoveryFactory().getInitialSleepTime(), getDiscoveryFactory().getRestartSleepTime());
-        } finally {
-            readLock.unlock();
         }
-    }
 
-    private void stopTimer() {
-        if (m_timer != null) {
-            LOG.debug("stopping existing timer");
-            m_xstatus = PING_FINISHING;
-            m_timer.cancel();
-            m_timer = null;
-        } else {
-            LOG.debug("stopTimer() called, but there is no existing timer");
+        public int size() {
+            synchronized(m_managedAddresses) {
+                return m_managedAddresses.size();
+            }
+        }
+
+        public void setManagedAddresses(Set<String> addresses) {
+            synchronized(m_managedAddresses) {
+                m_managedAddresses.clear();
+                m_managedAddresses.addAll(addresses);
+            }
+        }
+
+        @Override
+        public boolean matches(InetAddress address) {
+            return matches(InetAddressUtils.str(address));
+        }
+
+        @Override
+        public boolean matches(String address) {
+            synchronized(m_managedAddresses) {
+                return m_managedAddresses.contains(address);
+            }
         }
     }
 
@@ -366,13 +291,13 @@ public class Discovery extends AbstractServiceDaemon {
     		} else {
     			LOG.warn("Got null ResultSet from query for all IP addresses");
     		}
-    		m_alreadyDiscovered = newAlreadyDiscovered;
+    		m_interfaceFilter.setManagedAddresses(newAlreadyDiscovered);
     	} catch (SQLException sqle) {
 		LOG.warn("Caught SQLException while trying to query for all IP addresses: {}", sqle.getMessage());
     	} finally {
     	    d.cleanUp();
     	}
-	LOG.info("syncAlreadyDiscovered initialized list of managed IP addresses with {} members", m_alreadyDiscovered.size());
+    	LOG.info("syncAlreadyDiscovered initialized list of managed IP addresses with {} members", m_interfaceFilter.size());
     }
 
     /**
@@ -453,9 +378,9 @@ public class Discovery extends AbstractServiceDaemon {
         if(event.getInterface() != null) {
             // remove from known nodes
             final String iface = event.getInterface();
-            m_alreadyDiscovered.remove(iface);
+            m_interfaceFilter.removeManagedAddress(iface);
 
-            LOG.debug("Removed {} from known node list", iface);
+            LOG.debug("Removed {} from known interface list", iface);
         }
     }
 
@@ -494,9 +419,9 @@ public class Discovery extends AbstractServiceDaemon {
     public void handleNodeGainedInterface(Event event) {
         // add to known nodes
         final String iface = event.getInterface();
-        m_alreadyDiscovered.add(iface);
+        m_interfaceFilter.addManagedAddress(iface);
 
-        LOG.debug("Added {} as discovered", iface);
+        LOG.debug("Added interface {} as discovered", iface);
     }
 
     public static String getLoggingCategory() {
