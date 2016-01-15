@@ -24,7 +24,6 @@
   <bean id="daemon" class="org.opennms.netmgt.discovery.Discovery">
     <property name="discoveryFactory" ref="discoveryFactory" />
     <property name="eventForwarder" ref="eventForwarder"/>
-    <property name="pinger" ref="pinger"/>
   </bean>
 
   <camelContext id="discoveryCamelContext" xmlns="http://camel.apache.org/schema/spring">
