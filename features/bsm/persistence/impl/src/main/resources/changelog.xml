@@ -45,10 +45,10 @@
 			baseTableName="bsm_service_ifservices" baseColumnNames="ifserviceid"
 			referencedTableName="ifservices" referencedColumnNames="id" onDelete="CASCADE"/>
 	</changeSet>
-	<changeSet author="jwhite" id="18.0.0-bsm-map-reduce">
-		<createTable tableName="bsm_reduce" >
-			<column name="id" type="integer">
-			  <constraints nullable="false"/>
+	<changeSet author="mneumann" id="18.0.0-bsm-reductionkeys">
+		<createTable tableName="bsm_service_reductionkeys">
+			<column name="bsm_service_id" type="integer">
+				<constraints nullable="false"/>
 			</column>
 			<column name="type" type="varchar(32)">
 			  <constraints nullable="false"/>
