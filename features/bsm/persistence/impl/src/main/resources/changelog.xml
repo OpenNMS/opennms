@@ -45,7 +45,7 @@
 			baseTableName="bsm_service_ifservices" baseColumnNames="ifserviceid"
 			referencedTableName="ifservices" referencedColumnNames="id" onDelete="CASCADE"/>
 	</changeSet>
-	<changeSet id="18.0.0-bsm-reductionkeys" author="mneumann">
+	<changeSet author="mneumann" id="18.0.0-bsm-reductionkeys">
 		<createTable tableName="bsm_service_reductionkeys">
 			<column name="bsm_service_id" type="integer">
 				<constraints nullable="false"/>

@@ -97,6 +97,7 @@ public abstract class AbstractDaoHibernate<T, K extends Serializable> extends Hi
     /** {@inheritDoc} */
     @Override
     public void clear() {
+        getHibernateTemplate().flush(); // always flush before clearing, otherwise pending updates/saves are not executed
         getHibernateTemplate().clear();
     }
 
