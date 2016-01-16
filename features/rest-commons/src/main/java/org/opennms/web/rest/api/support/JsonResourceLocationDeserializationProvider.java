@@ -42,4 +42,26 @@ public class JsonResourceLocationDeserializationProvider extends JsonDeserialize
     public ResourceLocation deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException, JsonProcessingException {
         return ResourceLocation.parse(jp.readValueAs(String.class));
     }
+
+    @Parameterized.Parameters
+    public static Collection<Object[]> data() throws ParseException {
+        IpServiceDTO ipService = new IpServiceDTO();
+        ipService.setId("1");
+        ipService.getReductionKeys().add("key1");
+        ipService.getReductionKeys().add("key2");
+        ipService.setLocation(new ResourceLocation(ApiVersion.Version1, "ifservices", "1"));
+
+        return Arrays.asList(new Object[][]{{
+                ipService,
+                "<ip-service>" +
+                        "<id>1</id>" +
+                        "<location>/rest/ifservices/1</location>" +
+                        "<reductionKeys>" + 
+                            "<reductionKey>key1</reductionKey>" +
+                            "<reductionKey>key2</reductionKey>" +
+                        "</reductionKeys>" +
+                "</ip-service>",
+                null
+        }});
+    }
 }

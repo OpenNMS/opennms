@@ -29,6 +29,7 @@
 package org.opennms.netmgt.bsm.vaadin.adminpage;
 
 import java.util.Set;
+import java.util.function.Consumer;
 
 import org.opennms.netmgt.bsm.service.model.BusinessService;
 import org.opennms.netmgt.bsm.service.model.IpService;
@@ -179,21 +180,27 @@ public class BusinessServiceEditWindow extends Window {
         /**
          * create the IP-Services selection box
          */
-
         m_ipServicesTwinColSelect = new TwinColSelect();
         m_ipServicesTwinColSelect.setId("ipServiceSelect");
         m_ipServicesTwinColSelect.setWidth(99.0f, Unit.PERCENTAGE);
         m_ipServicesTwinColSelect.setLeftColumnCaption("Available IP-Services");
         m_ipServicesTwinColSelect.setRightColumnCaption("Selected IP-Services");
         m_ipServicesTwinColSelect.setRows(8);
-
+        m_ipServicesTwinColSelect.setNewItemsAllowed(false);
         m_ipServicesTwinColSelect.setContainerDataSource(m_ipServicesContainer);
-        m_ipServicesTwinColSelect.setValue(businessService.getIpServices());
+        m_ipServicesTwinColSelect.setValue(businessServiceDTO.getIpServices());
+        // manually set the item caption, otherwiese .toString() is used which looks weired
+        m_ipServicesTwinColSelect.setItemCaptionMode(AbstractSelect.ItemCaptionMode.EXPLICIT_DEFAULTS_ID);
+        m_ipServicesContainer.getItemIds().forEach(new Consumer<IpServiceDTO>() {
+            @Override
+            public void accept(IpServiceDTO ipServiceDTO) {
+                m_ipServicesTwinColSelect.setItemCaption(ipServiceDTO, String.format("%s/%s/%s", ipServiceDTO.getNodeLabel(), ipServiceDTO.getIpAddress(), ipServiceDTO.getServiceName()));
+            }
+        });
 
         /**
          * create the Business Services selection box
          */
-
         m_businessServicesTwinColSelect = new TwinColSelect();
         m_businessServicesTwinColSelect.setId("businessServiceSelect");
         m_businessServicesTwinColSelect.setWidth(99.0f, Unit.PERCENTAGE);
@@ -210,7 +217,6 @@ public class BusinessServiceEditWindow extends Window {
         /**
          * create the reduction key list box
          */
-
         m_reductionKeyListSelect = new ListSelect("Reduction Keys");
         m_reductionKeyListSelect.setId("reductionKeySelect");
         m_reductionKeyListSelect.setWidth(98.0f, Unit.PERCENTAGE);
@@ -221,7 +227,6 @@ public class BusinessServiceEditWindow extends Window {
         /**
          * wrap the reduction key list select box in a Vaadin Panel
          */
-
         verticalLayout.addComponent(m_ipServicesTwinColSelect);
         verticalLayout.addComponent(m_businessServicesTwinColSelect);
 
@@ -302,7 +307,6 @@ public class BusinessServiceEditWindow extends Window {
         /**
          * now add the button layout to the main layout
          */
-
         verticalLayout.addComponent(buttonLayout);
         verticalLayout.setExpandRatio(buttonLayout, 1.0f);
 

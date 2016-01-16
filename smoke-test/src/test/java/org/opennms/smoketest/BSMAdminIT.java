@@ -189,6 +189,7 @@ public class BSMAdminIT extends OpenNMSSeleniumTestCase {
 
             // Open the BusinessService and check the ipServices are in place
             wait.until(pageContainsText("edit"));
+            Thread.sleep(200); // wait for vaadin
             findEditButton(serviceName).click();
 
             // Verify that the previously added ip services are still selected

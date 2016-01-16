@@ -46,9 +46,12 @@ import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.test.rest.AbstractSpringJerseyRestTestCase;
-import org.opennms.core.test.xml.MarshalAndUnmarshalTest;
+import org.opennms.netmgt.bsm.persistence.api.OnmsMonitoredServiceHelper;
+import org.opennms.netmgt.bsm.service.model.BusinessServiceDTO;
+import org.opennms.netmgt.bsm.persistence.api.BusinessService;
 import org.opennms.netmgt.bsm.persistence.api.BusinessServiceDao;
-import org.opennms.netmgt.bsm.persistence.api.BusinessServiceEntity;
+import org.opennms.netmgt.bsm.service.model.IpServiceDTO;
+import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.test.JUnitConfigurationEnvironment;
@@ -206,7 +209,13 @@ public class BusinessServiceRestServiceIT extends AbstractSpringJerseyRestTestCa
         List<ResourceLocation> businessServices = getXmlObject(context, url, 200, BusinessServiceListDTO.class).getServices();
 
         // Verify
-        assertEquals(databasePopulator.expectedBsCount(1), businessServices.size());
+        assertEquals(1, businessServices.size());
+        BusinessServiceDTO bsDTO = new BusinessServiceDTO();
+        bsDTO.setName(bs.getName());
+        bsDTO.setId(id);
+        bsDTO.getReductionKeys().add("MyReductionKey");
+        assertEquals(bsDTO, businessServices.get(0));
+        assertTrue("Expect reductionkey '" + reductionKey + "' to be present in retrieved BusinessService.", businessServices.get(0).getReductionKeys().contains(reductionKey));
     }
 
     @Test
