@@ -30,9 +30,7 @@ package org.opennms.web.rest.api;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.opennms.web.rest.api.ApiVersion;
-import org.opennms.web.rest.api.JAXBResourceLocationAdapter;
-import org.opennms.web.rest.api.ResourceLocation;
+import org.opennms.web.rest.api.support.JAXBResourceLocationAdapter;
 
 public class JAXBResourceLocationAdapterTest {
 

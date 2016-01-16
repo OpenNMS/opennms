@@ -28,9 +28,9 @@
 
 package org.opennms.web.rest.v2.bsm.model;
 
-import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
-import org.opennms.netmgt.model.OnmsSeverity;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -38,9 +38,17 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
+
+import org.codehaus.jackson.map.annotate.JsonDeserialize;
+import org.codehaus.jackson.map.annotate.JsonSerialize;
+import org.opennms.netmgt.model.OnmsSeverity;
+import org.opennms.web.rest.api.support.JAXBResourceLocationAdapter;
+import org.opennms.web.rest.api.ResourceLocation;
+import org.opennms.web.rest.api.support.JsonResourceLocationDeserializationProvider;
+import org.opennms.web.rest.api.support.JsonResourceLocationSerializationProvider;
+
+import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 
 import org.opennms.web.rest.api.JAXBResourceLocationAdapter;
 import org.opennms.web.rest.api.ResourceLocation;
@@ -73,7 +81,13 @@ public class BusinessServiceResponseDTO {
     private Set<Long> m_parentServices = Sets.newLinkedHashSet();
 
     @XmlElement(name="operational-status")
-    OnmsSeverity m_operationalStatus;
+    private OnmsSeverity m_operationalStatus;
+
+    @XmlElement(name="location")
+    @XmlJavaTypeAdapter(JAXBResourceLocationAdapter.class)
+    @JsonSerialize(using = JsonResourceLocationSerializationProvider.class)
+    @JsonDeserialize(using = JsonResourceLocationDeserializationProvider.class)
+    private ResourceLocation location;
 
     public long getId() {
         return m_id;
@@ -95,6 +109,10 @@ public class BusinessServiceResponseDTO {
         return m_attributes;
     }
 
+    protected void addAttribute(String key, String value) {
+        getAttributes().put(key, value);
+    }
+
     public void setAttributes(Map<String, String> attributes) {
         m_attributes = attributes;
     }
@@ -107,8 +125,16 @@ public class BusinessServiceResponseDTO {
         m_ipServices = ipServices;
     }
 
+    protected void addIpService(IpServiceResponseDTO ipService) {
+        getIpServices().add(ipService);
+    }
+
     public Set<Long> getChildServices() {
         return m_childServices;
+    }
+
+    protected void addChildService(Long childService) {
+        getChildServices().add(childService);
     }
 
     public void setChildServices(Set<Long> childServices) {
@@ -117,6 +143,10 @@ public class BusinessServiceResponseDTO {
 
     public Set<Long> getParentServices() {
         return m_parentServices;
+    }
+
+    protected void addParentService(Long parentService) {
+        getParentServices().add(parentService);
     }
 
     public void setParentServices(Set<Long> parentServices) {
@@ -129,6 +159,14 @@ public class BusinessServiceResponseDTO {
 
     public void setOperationalStatus(final OnmsSeverity operationalStatus) {
         this.m_operationalStatus = operationalStatus;
+    }
+
+    public void setLocation(ResourceLocation location) {
+        this.location = location;
+    }
+
+    public ResourceLocation getLocation() {
+        return location;
     }
 
     @Override

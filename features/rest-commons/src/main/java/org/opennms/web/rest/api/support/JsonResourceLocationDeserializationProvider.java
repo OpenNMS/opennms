@@ -26,26 +26,20 @@
  * http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.web.rest.api;
+package org.opennms.web.rest.api.support;
 
-/**
- * Factory to create {@link ResourceLocation} objects for certain REST endpoints.
- */
-public class ResourceLocationFactory {
+import java.io.IOException;
 
-    public static ResourceLocation createIpServiceLocation(String id) {
-        return new ResourceLocation(ApiVersion.Version1, "ifservices", id);
-    }
+import org.codehaus.jackson.JsonParser;
+import org.codehaus.jackson.JsonProcessingException;
+import org.codehaus.jackson.map.DeserializationContext;
+import org.codehaus.jackson.map.JsonDeserializer;
+import org.opennms.web.rest.api.ResourceLocation;
 
-    public static ResourceLocation createBusinessServiceLocation(String id) {
-        return new ResourceLocation(ApiVersion.Version2, "business-services", id);
-    }
+public class JsonResourceLocationDeserializationProvider extends JsonDeserializer<ResourceLocation> {
 
-    public static ResourceLocation createBusinessServiceLocation() {
-        return new ResourceLocation(ApiVersion.Version2, "business-services");
-    }
-
-    public static ResourceLocation createBusinessServiceIpServiceLocation(int ipServiceId) {
-        return new ResourceLocation(ApiVersion.Version2, "business-services", "ip-services", String.valueOf(ipServiceId));
+    @Override
+    public ResourceLocation deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException, JsonProcessingException {
+        return ResourceLocation.parse(jp.readValueAs(String.class));
     }
 }

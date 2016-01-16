@@ -28,8 +28,9 @@
 
 package org.opennms.web.rest.v2.bsm.model;
 
-import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -37,9 +38,9 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
+
+import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 
 
 @XmlRootElement(name = "business-service")
@@ -73,6 +74,10 @@ public class BusinessServiceRequestDTO {
         return m_attributes;
     }
 
+    protected void addAttribute(String key, String value) {
+        getAttributes().put(key, value);
+    }
+
     public void setAttributes(Map<String, String> attributes) {
         m_attributes = attributes;
     }
@@ -85,8 +90,16 @@ public class BusinessServiceRequestDTO {
         m_ipServices = ipServices;
     }
 
+    protected void addIpService(Integer ipServiceId) {
+        getIpServices().add(ipServiceId);
+    }
+
     public Set<Long> getChildServices() {
         return m_childServices;
+    }
+
+    protected void addChildService(Long bsChildId) {
+        getChildServices().add(bsChildId);
     }
 
     public void setChildServices(Set<Long> childServices) {

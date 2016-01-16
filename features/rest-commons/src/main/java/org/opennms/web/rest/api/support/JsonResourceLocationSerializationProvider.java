@@ -26,36 +26,20 @@
  * http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.bsm.service.model;
+package org.opennms.web.rest.api.support;
 
-import java.text.ParseException;
-import java.util.Arrays;
-import java.util.Collection;
+import java.io.IOException;
 
-import org.junit.runners.Parameterized;
-import org.opennms.core.test.xml.XmlTestNoCastor;
-import org.opennms.web.rest.api.ApiVersion;
+import org.codehaus.jackson.JsonGenerator;
+import org.codehaus.jackson.JsonProcessingException;
+import org.codehaus.jackson.map.JsonSerializer;
+import org.codehaus.jackson.map.SerializerProvider;
 import org.opennms.web.rest.api.ResourceLocation;
 
-public class IpServiceDTOJaxbTest extends XmlTestNoCastor<IpService> {
+public class JsonResourceLocationSerializationProvider extends JsonSerializer<ResourceLocation> {
 
-    public IpServiceDTOJaxbTest(IpService sampleObject, Object sampleXml, String schemaFile) {
-        super(sampleObject, sampleXml, schemaFile);
+    @Override
+    public void serialize(ResourceLocation value, JsonGenerator jgen, SerializerProvider provider) throws IOException, JsonProcessingException {
+        jgen.writeString(value == null ? null : value.toString());
     }
-
-//    @Parameterized.Parameters
-//    public static Collection<Object[]> data() throws ParseException {
-//        IpService ipService = new IpService();
-//        ipService.setId("1");
-//        ipService.setLocation(new ResourceLocation(ApiVersion.Version1, "ifservices", "1"));
-//
-//        return Arrays.asList(new Object[][]{{
-//                ipService,
-//                "<ip-service>" +
-//                        "<id>1</id>" +
-//                        "<location>/rest/ifservices/1</location>" +
-//                        "</ip-service>",
-//                null
-//        }});
-//    }
 }
