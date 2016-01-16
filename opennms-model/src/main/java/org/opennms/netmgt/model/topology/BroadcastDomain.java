@@ -13,16 +13,13 @@ public class BroadcastDomain {
     
     boolean m_lock = false;
 
+    Object m_locker;
     public void clearTopology() {
         m_topology.clear();
     }
     
     public boolean isEmpty() {
         return m_bridges.isEmpty();
-    }
-        
-    public boolean isLocked() {
-        return m_lock;
     }
 
     public Set<Integer> getBridgeNodesOnDomain() {
@@ -32,12 +29,27 @@ public class BroadcastDomain {
         return bridgeIds;
     }
     
-    public synchronized void getLock() {
-        m_lock = true;
+    public synchronized boolean getLock(Object locker) {
+        if (m_lock)
+            return false;
+        if (locker == null)
+            return false;
+        m_lock=true;
+        m_locker=locker;
+        return true;
     }
 
-    public synchronized void releaseLock() {
-        m_lock = false;
+    public synchronized boolean releaseLock(Object locker) {
+        if (locker == null)
+            return false;
+        if (!m_lock )
+            return false;
+        if (!m_locker.equals(locker))
+            return false;
+        m_locker = null;
+        m_lock=false; 
+        return true;
+                
     }
 
     public Set<Bridge> getBridges() {
