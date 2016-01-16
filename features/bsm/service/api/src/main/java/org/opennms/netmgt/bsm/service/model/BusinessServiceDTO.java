@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.bsm.service.model;
 
+import java.util.Collection;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -68,6 +69,18 @@ public class BusinessServiceDTO {
     @XmlElementWrapper(name="ip-services")
     private Set<IpServiceDTO> m_ipServices = Sets.newLinkedHashSet();
 
+    @XmlElement(name="reductionKey")
+    @XmlElementWrapper(name="reductionKeys")
+    private Set<String> m_reductionKeys = Sets.newHashSet();
+
+    @XmlElement(name="child-service")
+    @XmlElementWrapper(name="child-services")
+    private Set<BusinessServiceDTO> m_childServices = Sets.newLinkedHashSet();
+
+    @XmlElement(name="parent-service")
+    @XmlElementWrapper(name="parent-services")
+    private Set<BusinessServiceDTO> m_parentServices = Sets.newLinkedHashSet();
+
     public Long getId() {
         return m_id;
     }
@@ -92,12 +105,46 @@ public class BusinessServiceDTO {
         m_attributes = attributes;
     }
 
-    public void setAttribute(String key, String value) {
+    public void addAttribute(String key, String value) {
         m_attributes.put(key, value);
+    }
+
+    public void addAttributes(Map<String, String> attributes) {
+        m_attributes.putAll(attributes);
     }
 
     public String removeAttribute(String key) {
         return m_attributes.remove(key);
+    }
+
+    public void removeAttributes(Collection<String> attributeKeys) {
+        for (String attributeKey : attributeKeys) {
+            m_attributes.remove(attributeKey);
+        }
+    }
+
+    public Set<String> getReductionKeys() {
+        return m_reductionKeys;
+    }
+
+    public void setReductionKeys(Set<String> reductionKeys) {
+        m_reductionKeys = reductionKeys;
+    }
+
+    public void addReductionKey(String reductionKey) {
+        m_reductionKeys.add(reductionKey);
+    }
+
+    public void addReductionKeys(Collection<String> reductionKeys) {
+        m_reductionKeys.addAll(reductionKeys);
+    }
+
+    public void removeReductionKey(String reductionKey) {
+        m_reductionKeys.remove(reductionKey);
+    }
+
+    public void removeReductionKeys(Collection<String> reductionKeys) {
+        m_reductionKeys.removeAll(reductionKeys);
     }
 
     public Set<IpServiceDTO> getIpServices() {
@@ -114,6 +161,38 @@ public class BusinessServiceDTO {
 
     public void removeIpService(IpServiceDTO ipService) {
         m_ipServices.remove(ipService);
+    }
+
+    public Set<BusinessServiceDTO> getChildServices() {
+        return m_childServices;
+    }
+
+    public void setChildServices(Set<BusinessServiceDTO> childServices) {
+        m_childServices = childServices;
+    }
+
+    public void addChildService(BusinessServiceDTO childService) {
+        m_childServices.add(childService);
+    }
+
+    public void removeChildService(BusinessServiceDTO childService) {
+        m_childServices.remove(childService);
+    }
+
+    public Set<BusinessServiceDTO> getParentServices() {
+        return m_parentServices;
+    }
+
+    public void setParentServices(Set<BusinessServiceDTO> parentServices) {
+        m_parentServices = parentServices;
+    }
+
+    public void addParentService(BusinessServiceDTO parentService) {
+        m_parentServices.add(parentService);
+    }
+
+    public void removeParentService(BusinessServiceDTO parentService) {
+        m_parentServices.remove(parentService);
     }
 
     public void setLocation(ResourceLocation location) {
@@ -133,24 +212,31 @@ public class BusinessServiceDTO {
             return false;
         }
         final BusinessServiceDTO other = (BusinessServiceDTO) obj;
-
+        // TODO MVR parent services are missing in equals
         return Objects.equals(m_id, other.m_id)
                 && Objects.equals(m_name, other.m_name)
                 && Objects.equals(m_attributes, other.m_attributes)
                 && Objects.equals(m_ipServices, other.m_ipServices)
+                && Objects.equals(m_childServices, other.m_childServices)
+                && Objects.equals(m_reductionKeys, other.m_reductionKeys)
                 && Objects.equals(location, other.location);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(m_id, m_name, m_attributes, m_ipServices);
+        // TODO MVR parent services are missing in hashCode
+        return Objects.hash(m_id, m_name, m_attributes, m_ipServices, m_childServices, m_reductionKeys, location);
     }
 
     @Override
     public String toString() {
-        return com.google.common.base.Objects.toStringHelper(this).add("id", m_id).add("name", m_name)
+        return com.google.common.base.Objects.toStringHelper(this)
+                .add("id", m_id)
+                .add("name", m_name)
                 .add("attributes", m_attributes)
                 .add("ipServices", m_ipServices)
+                .add("childServices", m_childServices)
+                .add("reductionKeys", m_reductionKeys)
                 .add("location", location)
                 .toString();
     }

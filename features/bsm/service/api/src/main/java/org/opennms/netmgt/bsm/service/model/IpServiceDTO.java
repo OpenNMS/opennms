@@ -28,17 +28,21 @@
 
 package org.opennms.netmgt.bsm.service.model;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlID;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
-import com.google.common.base.Objects;
-
 import org.opennms.web.rest.api.JAXBResourceLocationAdapter;
 import org.opennms.web.rest.api.ResourceLocation;
+
+import com.google.common.base.Objects;
 
 @XmlRootElement(name = "ip-service")
 @XmlAccessorType(XmlAccessType.NONE)
@@ -57,6 +61,10 @@ public class IpServiceDTO {
     private String nodeLabel;
 
     private String ipAddress;
+
+    @XmlElement(name="reductionKey")
+    @XmlElementWrapper(name="reductionKeys")
+    private Set<String> reductionKeys = new HashSet<>();
 
     public ResourceLocation getLocation() {
         return location;
@@ -87,7 +95,11 @@ public class IpServiceDTO {
         }
         final IpServiceDTO other = (IpServiceDTO) obj;
         final boolean equals = Objects.equal(id, other.id)
-                && Objects.equal(location, other.location);
+                && Objects.equal(serviceName, other.serviceName)
+                && Objects.equal(nodeLabel, other.nodeLabel)
+                && Objects.equal(ipAddress, other.ipAddress)
+                && Objects.equal(location, other.location)
+                && Objects.equal(reductionKeys, other.reductionKeys);
         return equals;
     }
 
@@ -115,13 +127,28 @@ public class IpServiceDTO {
         this.ipAddress = ipAddress;
     }
 
+    public Set<String> getReductionKeys() {
+        return reductionKeys;
+    }
+
+    public void setReductionKeys(Set<String> reductionKeys) {
+        this.reductionKeys = reductionKeys;
+    }
+
     @Override
     public int hashCode() {
-        return Objects.hashCode(id, location);
+        return Objects.hashCode(id, serviceName, nodeLabel,ipAddress, location, reductionKeys);
     }
 
     @Override
     public String toString() {
-        return getNodeLabel()+"/"+getIpAddress()+"/"+getServiceName();
+        return com.google.common.base.Objects.toStringHelper(this)
+                .add("id", id)
+                .add("serviceName", serviceName)
+                .add("nodeLabel", nodeLabel)
+                .add("ipAddress", ipAddress)
+                .add("location", location)
+                .add("reductionKeys", reductionKeys)
+                .toString();
     }
 }
