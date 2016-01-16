@@ -30,7 +30,6 @@ package org.opennms.web.rest.v2.bsm.model;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 import javax.xml.bind.annotation.XmlElement;
@@ -38,12 +37,15 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.codehaus.jackson.annotate.JsonProperty;
+import org.codehaus.jackson.map.annotate.JsonDeserialize;
 import org.codehaus.jackson.map.annotate.JsonRootName;
-import org.opennms.core.config.api.JaxbListWrapper;
+import org.codehaus.jackson.map.annotate.JsonSerialize;
 import org.opennms.netmgt.bsm.service.model.BusinessService;
-import org.opennms.web.rest.api.JAXBResourceLocationAdapter;
 import org.opennms.web.rest.api.ResourceLocation;
 import org.opennms.web.rest.api.ResourceLocationFactory;
+import org.opennms.web.rest.api.support.JAXBResourceLocationAdapter;
+import org.opennms.web.rest.api.support.JsonResourceLocationDeserializationProvider;
+import org.opennms.web.rest.api.support.JsonResourceLocationSerializationProvider;
 
 @XmlRootElement(name = "business-services")
 @JsonRootName("business-services")
@@ -63,6 +65,9 @@ public class BusinessServiceListDTO {
 
     @XmlElement(name = "business-service")
     @JsonProperty("business-service")
+    @JsonSerialize(using = JsonResourceLocationSerializationProvider.class)
+    @JsonDeserialize(using = JsonResourceLocationDeserializationProvider.class)
+    @XmlJavaTypeAdapter(JAXBResourceLocationAdapter.class)
     public List<ResourceLocation> getServices() {
         return this.services;
     }

@@ -26,10 +26,12 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.web.rest.api;
+package org.opennms.web.rest.api.support;
 
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.adapters.XmlAdapter;
+
+import org.opennms.web.rest.api.ResourceLocation;
 
 @XmlTransient
 public class JAXBResourceLocationAdapter extends XmlAdapter<String, ResourceLocation> {

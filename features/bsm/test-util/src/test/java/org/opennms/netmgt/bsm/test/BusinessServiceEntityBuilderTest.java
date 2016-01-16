@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  * <p>
- * Copyright (C) 2015 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2015 The OpenNMS Group, Inc.
+ * Copyright (C) 2016 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
  * <p>
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  * <p>
@@ -26,26 +26,17 @@
  * http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.web.rest.api;
+package org.opennms.netmgt.bsm.test;
 
-/**
- * Factory to create {@link ResourceLocation} objects for certain REST endpoints.
- */
-public class ResourceLocationFactory {
+public class BusinessServiceEntityBuilderTest {
 
-    public static ResourceLocation createIpServiceLocation(String id) {
-        return new ResourceLocation(ApiVersion.Version1, "ifservices", id);
-    }
-
-    public static ResourceLocation createBusinessServiceLocation(String id) {
-        return new ResourceLocation(ApiVersion.Version2, "business-services", id);
-    }
-
-    public static ResourceLocation createBusinessServiceLocation() {
-        return new ResourceLocation(ApiVersion.Version2, "business-services");
-    }
-
-    public static ResourceLocation createBusinessServiceIpServiceLocation(int ipServiceId) {
-        return new ResourceLocation(ApiVersion.Version2, "business-services", "ip-services", String.valueOf(ipServiceId));
-    }
+    // TODO what to do with this?
+//    @Test
+//    public void verifyBuild() {
+//        Assert.assertNotNull(new BusinessServiceEntityBuilder()
+//                .name("Business Service 1")
+//                .addAttribute("location", "Pittsboro")
+//                .addAttribute("email", "a@b.com")
+//                .toEntity());
+//    }
 }

@@ -29,7 +29,6 @@
 package org.opennms.web.rest.v2;
 
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 import javax.ws.rs.DELETE;
@@ -46,6 +45,8 @@ import javax.ws.rs.core.UriInfo;
 
 import org.opennms.netmgt.bsm.service.BusinessServiceManager;
 import org.opennms.netmgt.bsm.service.model.BusinessService;
+import org.opennms.netmgt.bsm.service.model.IpService;
+import org.opennms.web.rest.api.ResourceLocationFactory;
 import org.opennms.web.rest.support.RedirectHelper;
 import org.opennms.web.rest.v2.bsm.model.BusinessServiceListDTO;
 import org.opennms.web.rest.v2.bsm.model.BusinessServiceRequestDTO;
@@ -88,16 +89,9 @@ public class BusinessServiceRestService {
         response.setName(service.getName());
         response.setAttributes(service.getAttributes());
         response.setIpServices(service.getIpServices().stream()
-                                      .map(s -> {
-                                          final IpServiceResponseDTO r = new IpServiceResponseDTO();
-                                          r.setId(s.getId());
-                                          r.setNodeLabel(s.getNodeLabel());
-                                          r.setServiceName(s.getServiceName());
-                                          r.setIpAddress(s.getIpAddress());
-                                          r.setOperationalStatus(getManager().getOperationalStatusForIPService(s));
-                                          return r;
-                                      }).collect(Collectors.toSet()));
+                                      .map(s -> transform(s)).collect(Collectors.toSet()));
         response.setChildServices(service.getChildServices().stream().map(BusinessService::getId).collect(Collectors.toSet()));
+        response.setLocation(ResourceLocationFactory.createBusinessServiceLocation(service.getId().toString()));
         response.setParentServices(service.getParentServices().stream().map(BusinessService::getId).collect(Collectors.toSet()));
         response.setOperationalStatus(getManager().getOperationalStatusForBusinessService(service));
 
@@ -105,8 +99,7 @@ public class BusinessServiceRestService {
     }
 
     @POST
-    public Response create(@Context final UriInfo uriInfo,
-                           final BusinessServiceRequestDTO request) {
+    public Response create(@Context final UriInfo uriInfo, final BusinessServiceRequestDTO request) {
         final BusinessService service = getManager().createBusinessService();
         service.setName(request.getName());
         service.setAttributes(request.getAttributes());
@@ -124,13 +117,7 @@ public class BusinessServiceRestService {
     @DELETE
     @Path("{id}")
     public Response delete(@PathParam("id") Long id) {
-        final BusinessService service;
-        try {
-            service = getManager().getBusinessServiceById(id);
-        } catch (final NoSuchElementException e) {
-            return Response.status(Response.Status.NOT_FOUND).build();
-        }
-
+        final BusinessService service = getManager().getBusinessServiceById(id);
         getManager().deleteBusinessService(service);
 
         return Response.ok().build();
@@ -138,15 +125,8 @@ public class BusinessServiceRestService {
 
     @PUT
     @Path("{id}")
-    public Response update(@PathParam("id") final Long id,
-                           final BusinessServiceRequestDTO request) {
-        final BusinessService service;
-        try {
-            service = getManager().getBusinessServiceById(id);
-        } catch (final NoSuchElementException e) {
-            return Response.status(Response.Status.NOT_FOUND).build();
-        }
-
+    public Response update(@PathParam("id") final Long id, final BusinessServiceRequestDTO request) {
+        final BusinessService service = getManager().getBusinessServiceById(id);
         service.setName(request.getName());
         service.setAttributes(request.getAttributes());
         service.setIpServices(request.getIpServices().stream()
@@ -160,10 +140,28 @@ public class BusinessServiceRestService {
         return Response.noContent().build();
     }
 
+    @GET
+    @Path("/ip-services/{ipServiceId}")
+    public Response getIpService(@PathParam("ipServiceId") final Integer ipServiceId) {
+        IpService ipService = getManager().getIpServiceById(ipServiceId);
+        return Response.ok().entity(transform(ipService)).build();
+    }
+
     @POST
     @Path("daemon/reload")
     public Response reload() {
         getManager().triggerDaemonReload();
         return Response.ok().build();
+    }
+
+    private IpServiceResponseDTO transform(IpService ipService) {
+        final IpServiceResponseDTO response = new IpServiceResponseDTO();
+        response.setId(ipService.getId());
+        response.setNodeLabel(ipService.getNodeLabel());
+        response.setServiceName(ipService.getServiceName());
+        response.setIpAddress(ipService.getIpAddress());
+        response.setOperationalStatus(getManager().getOperationalStatusForIPService(ipService));
+        response.setLocation(ResourceLocationFactory.createBusinessServiceIpServiceLocation(ipService.getId()));
+        return response;
     }
 }

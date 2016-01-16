@@ -28,14 +28,22 @@
 
 package org.opennms.web.rest.v2.bsm.model;
 
-import com.google.common.base.Objects;
-import org.opennms.netmgt.model.OnmsSeverity;
-
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlID;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+
+import org.codehaus.jackson.map.annotate.JsonDeserialize;
+import org.codehaus.jackson.map.annotate.JsonSerialize;
+import org.opennms.netmgt.model.OnmsSeverity;
+import org.opennms.web.rest.api.support.JAXBResourceLocationAdapter;
+import org.opennms.web.rest.api.ResourceLocation;
+import org.opennms.web.rest.api.support.JsonResourceLocationDeserializationProvider;
+import org.opennms.web.rest.api.support.JsonResourceLocationSerializationProvider;
+
+import com.google.common.base.Objects;
 
 @XmlRootElement(name = "ip-service")
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -55,7 +63,13 @@ public class IpServiceResponseDTO {
     private String m_ipAddress;
 
     @XmlElement(name="operational-status")
-    OnmsSeverity m_operationalStatus;
+    private OnmsSeverity m_operationalStatus;
+
+    @XmlElement(name="location")
+    @XmlJavaTypeAdapter(JAXBResourceLocationAdapter.class)
+    @JsonSerialize(using = JsonResourceLocationSerializationProvider.class)
+    @JsonDeserialize(using = JsonResourceLocationDeserializationProvider.class)
+    private ResourceLocation location;
 
     public int getId() {
         return m_id;
@@ -97,6 +111,14 @@ public class IpServiceResponseDTO {
         this.m_operationalStatus = operationalStatus;
     }
 
+    public ResourceLocation getLocation() {
+        return location;
+    }
+
+    public void setLocation(ResourceLocation location) {
+        this.location = location;
+    }
+
     @Override
     public boolean equals(Object obj) {
         if (obj == null) {
@@ -112,7 +134,8 @@ public class IpServiceResponseDTO {
         final boolean equals = Objects.equal(m_id, other.m_id)
                                && Objects.equal(m_serviceName, other.m_serviceName)
                                && Objects.equal(m_nodeLabel, other.m_nodeLabel)
-                               && Objects.equal(m_ipAddress, other.m_ipAddress);
+                               && Objects.equal(m_ipAddress, other.m_ipAddress)
+                               && Objects.equal(m_operationalStatus, other.m_operationalStatus);
         return equals;
     }
 
@@ -121,7 +144,8 @@ public class IpServiceResponseDTO {
         return Objects.hashCode(m_id,
                                 m_serviceName,
                                 m_nodeLabel,
-                                m_ipAddress);
+                                m_ipAddress,
+                                m_operationalStatus);
     }
 
     @Override
@@ -131,6 +155,7 @@ public class IpServiceResponseDTO {
                                              .add("serviceName", m_serviceName)
                                              .add("nodeLabel", m_nodeLabel)
                                              .add("ipAddress", m_ipAddress)
+                                             .add("operationalStatus", m_operationalStatus)
                                              .toString();
     }
 }
