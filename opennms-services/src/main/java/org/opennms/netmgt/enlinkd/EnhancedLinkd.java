@@ -369,7 +369,7 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
                     continue;
                 } else {
                     if (rr instanceof NodeDiscoveryBridgeTopology && domain.getBridgeNodesOnDomain().size() > 1) {
-                        domain.getLock();
+                        domain.getLock(this);
                         LOG.info("deleteNode: node: {}, start: calculating topology for braodcast domain",nodeid);
                         NodeDiscoveryBridgeTopology ndbt= (NodeDiscoveryBridgeTopology) rr;
                         ndbt.clearTopologyForBridge(domain.getBridge(nodeid));
@@ -378,7 +378,7 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
                         m_queryMgr.store(domain);
                         m_queryMgr.save(ndbt.getDomain().getRootBridgeId(),ndbt.getRootBridgeBFT());
                         LOG.info("deleteNode: node: {}, end: save topology for braodcast domain",nodeid);
-                        domain.releaseLock();
+                        domain.releaseLock(this);
                     }
                     rr.unschedule();
                 }

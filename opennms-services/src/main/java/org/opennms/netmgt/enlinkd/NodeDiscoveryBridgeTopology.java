@@ -493,7 +493,8 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
             LOG.warn("run: no broadcast domain found for node: {}", getNodeId());
             return;
         }
-        if (m_domain.isLocked()) {
+        try {
+        if (!m_domain.getLock(this)) {
             LOG.info("run: broadcast domain: is locked for calculation either on node {}....", getNodeId());
             return;
         }
@@ -524,7 +525,6 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
         }
         
         LOG.info("run: node: {}, getLock broadcast domain with topology change found.", getNodeId());
-        m_domain.getLock();
         LOG.info("run: node: {}, start: broadcast domain topology calculation.", getNodeId());
         calculate();
         LOG.info("run: node: {}, stop: broadcast domain topology calculated.", getNodeId());
@@ -540,8 +540,13 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
            LOG.info("run: reconcile topology for node: {} on Broadcast Domain",nodeid);
            m_linkd.getQueryManager().reconcileBridgeTopology(nodeid, now);
         }
-        m_domain.releaseLock();
-        LOG.info("run: node: {}, releaseLock broadcast domain.", getNodeId());
+        } catch (Exception e) {
+            LOG.error("run: node: {}, got exception",e);
+           
+        } finally {
+            m_domain.releaseLock(this);
+            LOG.info("run: node: {}, releaseLock broadcast domain.", getNodeId());
+        }
     }
 
     @Override

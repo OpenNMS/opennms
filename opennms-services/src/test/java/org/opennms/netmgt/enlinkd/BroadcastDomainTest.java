@@ -138,12 +138,13 @@ public class BroadcastDomainTest {
     
     @Test
     public void testLock() throws Exception {
+        Object locker = new Object();
+        Object notlocker = new Object();
         BroadcastDomain domain = new BroadcastDomain();
-        assertTrue(!domain.isLocked());
-        domain.getLock();
-        assertTrue(domain.isLocked());
-        domain.releaseLock();
-        assertTrue(!domain.isLocked());
+        assertTrue(domain.getLock(locker));
+        assertTrue(!domain.getLock(notlocker));
+        assertTrue(!domain.releaseLock(notlocker));
+        assertTrue(domain.releaseLock(locker));
     }
 
     @Test
