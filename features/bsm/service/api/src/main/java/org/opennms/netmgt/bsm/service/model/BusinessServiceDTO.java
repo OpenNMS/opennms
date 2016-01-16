@@ -40,11 +40,11 @@ import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
-import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
-
 import org.opennms.web.rest.api.JAXBResourceLocationAdapter;
 import org.opennms.web.rest.api.ResourceLocation;
+
+import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 
 
 @XmlRootElement(name = "business-service")
@@ -212,26 +212,31 @@ public class BusinessServiceDTO {
             return false;
         }
         final BusinessServiceDTO other = (BusinessServiceDTO) obj;
-
+        // TODO MVR parent services are missing in equals
         return Objects.equals(m_id, other.m_id)
                 && Objects.equals(m_name, other.m_name)
                 && Objects.equals(m_attributes, other.m_attributes)
                 && Objects.equals(m_ipServices, other.m_ipServices)
                 && Objects.equals(m_childServices, other.m_childServices)
+                && Objects.equals(m_reductionKeys, other.m_reductionKeys)
                 && Objects.equals(location, other.location);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(m_id, m_name, m_attributes, m_ipServices);
+        // TODO MVR parent services are missing in hashCode
+        return Objects.hash(m_id, m_name, m_attributes, m_ipServices, m_childServices, m_reductionKeys, location);
     }
 
     @Override
     public String toString() {
-        return com.google.common.base.Objects.toStringHelper(this).add("id", m_id).add("name", m_name)
+        return com.google.common.base.Objects.toStringHelper(this)
+                .add("id", m_id)
+                .add("name", m_name)
                 .add("attributes", m_attributes)
                 .add("ipServices", m_ipServices)
                 .add("childServices", m_childServices)
+                .add("reductionKeys", m_reductionKeys)
                 .add("location", location)
                 .toString();
     }
