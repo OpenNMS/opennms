@@ -29,6 +29,7 @@
 package org.opennms.netmgt.alarmd.northbounder.email;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -66,7 +67,7 @@ public class EmailNorthbounderConfig implements Serializable {
 
     /** The Email destination. */
     @XmlElement(name = "destination")
-    private List<EmailDestination> m_destinations;
+    private List<EmailDestination> m_destinations = new ArrayList<EmailDestination>();
 
     /** The UEIs. */
     @XmlElement(name = "uei", required = false)
@@ -193,6 +194,49 @@ public class EmailNorthbounderConfig implements Serializable {
             }
         }
         return null;
+    }
+
+    /**
+     * Adds a specific email destination.
+     * <p>If there is a destination with the same name, the existing one will be overridden.</p>
+     *
+     * @param emailDestination the Email destination object
+     */
+    public void addEmailDestination(EmailDestination emailDestination) {
+        int index = -1;
+        for (int i = 0; i < m_destinations.size(); i++) {
+            if (m_destinations.get(i).getName().equals(emailDestination.getName())) {
+                index = i;
+                break;
+            }
+        }
+        if (index > -1) {
+            m_destinations.remove(index);
+            m_destinations.add(index, emailDestination);
+        } else {
+            m_destinations.add(emailDestination);
+        }
+    }
+
+    /**
+     * Removes a specific email destination.
+     *
+     * @param destinationName the destination name
+     * @return true, if successful
+     */
+    public boolean removeEmailDestination(String destinationName) {
+        int index = -1;
+        for (int i = 0; i < m_destinations.size(); i++) {
+            if (m_destinations.get(i).getName().equals(destinationName)) {
+                index = i;
+                break;
+            }
+        }
+        if (index > -1) {
+            m_destinations.remove(index);
+            return true;
+        }
+        return false;
     }
 
 }

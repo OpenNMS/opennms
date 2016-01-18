@@ -29,6 +29,8 @@
 package org.opennms.netmgt.alarmd.northbounder.snmptrap;
 
 import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 
 import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.core.xml.AbstractJaxbConfigDao;
@@ -106,24 +108,19 @@ public class SnmpTrapNorthbounderConfigDao extends AbstractJaxbConfigDao<SnmpTra
     }
 
     /**
-     * Gets the SNMP Trap sinks.
-     * 
-     * @param snmpTrapSinkName the SNMP Trap sink name
-     * @return the SNMP Trap sink
-     */
-    public SnmpTrapSink getSnmpTrapSink(String snmpTrapSinkName) {
-        for (SnmpTrapSink dest : getConfig().getSnmpTrapSinks()) {
-            if (dest.getName().equals(snmpTrapSinkName)) {
-                return dest;
-            }
-        }
-        return null;
-    }
-
-    /**
      * Reload.
      */
     public void reload() {
         getContainer().reload();
     }
+
+    /**
+     * Save.
+     *
+     * @throws IOException Signals that an I/O exception has occurred.
+     */
+    public void save() throws IOException {
+        JaxbUtils.marshal(getConfig(), new FileWriter(getConfigResource().getFile()));
+    }
+
 }

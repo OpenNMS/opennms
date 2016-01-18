@@ -37,7 +37,7 @@ import org.junit.Test;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.netmgt.alarmd.api.NorthboundAlarm;
 import org.opennms.netmgt.config.javamail.SendmailConfig;
-import org.opennms.netmgt.dao.castor.DefaultJavamailConfigurationDao;
+import org.opennms.netmgt.dao.jaxb.DefaultJavamailConfigurationDao;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;

@@ -29,15 +29,23 @@ package org.opennms.netmgt.alarmd.northbounder.snmptrap;
 
 import java.io.File;
 import java.net.InetAddress;
+import java.util.HashMap;
+import java.util.Map;
 
+import org.apache.commons.io.FileUtils;
 import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 import org.opennms.netmgt.alarmd.api.NorthboundAlarm;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.model.PrimaryType;
+import org.springframework.beans.BeanWrapper;
+import org.springframework.beans.PropertyAccessorFactory;
 import org.springframework.core.io.FileSystemResource;
 
 /**
@@ -47,6 +55,30 @@ import org.springframework.core.io.FileSystemResource;
  */
 public class SnmpTrapNorthbounderConfigDaoTest {
 
+    /** The temporary folder. */
+    @Rule
+    public TemporaryFolder tempFolder = new TemporaryFolder();
+
+    /** The configuration DAO. */
+    private SnmpTrapNorthbounderConfigDao configDao;
+
+    /**
+     * Sets up the test.
+     *
+     * @throws Exception the exception
+     */
+    @Before
+    public void setUp() throws Exception {
+        FileUtils.copyDirectory(new File("src/test/resources/etc"), tempFolder.newFolder("etc"));
+        System.setProperty("opennms.home", tempFolder.getRoot().getAbsolutePath());
+
+        // Setup the configuration DAO
+        FileSystemResource resource = new FileSystemResource(new File(tempFolder.getRoot(), "etc/snmptrap-northbounder-config.xml"));
+        configDao = new SnmpTrapNorthbounderConfigDao();
+        configDao.setConfigResource(resource);
+        configDao.afterPropertiesSet();
+    }
+
     /**
      * Test configuration.
      *
@@ -54,22 +86,15 @@ public class SnmpTrapNorthbounderConfigDaoTest {
      */
     @Test
     public void testConfiguration() throws Exception {
-        // Setup the configuration DAO
-        System.setProperty("opennms.home", "src/test/resources");
-        FileSystemResource resource = new FileSystemResource(new File("src/test/resources/etc/snmptrap-northbounder-config.xml"));
-        SnmpTrapNorthbounderConfigDao configDao = new SnmpTrapNorthbounderConfigDao();
-        configDao.setConfigResource(resource);
-        configDao.afterPropertiesSet();
-
         // Perform a basic check, specially for the external mapping
         SnmpTrapNorthbounderConfig config = configDao.getConfig();
         Assert.assertNotNull(config);
         Assert.assertEquals(2, config.getSnmpTrapSinks().size());
-        SnmpTrapSink sink1 = config.getTrapSink("localTest1");
+        SnmpTrapSink sink1 = config.getSnmpTrapSink("localTest1");
         Assert.assertNotNull(sink1);
         Assert.assertEquals(1, sink1.getMappings().size());
         Assert.assertEquals(2, sink1.getMappings().get(0).getMappings().size());
-        SnmpTrapSink sink2 = config.getTrapSink("localTest2");
+        SnmpTrapSink sink2 = config.getSnmpTrapSink("localTest2");
         Assert.assertNotNull(sink2);
         Assert.assertEquals(1, sink2.getMappings().size());
         Assert.assertEquals(1, sink2.getMappings().get(0).getMappings().size());
@@ -117,6 +142,49 @@ public class SnmpTrapNorthbounderConfigDaoTest {
         Assert.assertEquals(2, trapConfig.getParameters().size());
         Assert.assertEquals("99", trapConfig.getParameterValue(".1.2.3.4.5.6.7.8.1"));
         Assert.assertEquals("this is just a test", trapConfig.getParameterValue(".1.2.3.4.5.6.7.8.2"));
+    }
+
+    /**
+     * Test modify configuration.
+     *
+     * @throws Exception the exception
+     */
+    @Test
+    public void testModifyConfiguration() throws Exception {
+        SnmpTrapSink sink = configDao.getConfig().getSnmpTrapSink("localTest2");
+        Assert.assertNotNull(sink);
+        sink.setIpAddress("192.168.0.1");
+        configDao.save();
+        configDao.reload();
+        Assert.assertEquals("192.168.0.1", configDao.getConfig().getSnmpTrapSink("localTest2").getIpAddress());
+    }
+
+    /**
+     * Test bean wrapper.
+     *
+     * @throws Exception the exception
+     */
+    @Test
+    public void testBeanWrapper() throws Exception {
+        SnmpTrapSink sink = configDao.getConfig().getSnmpTrapSink("localTest2");
+        final BeanWrapper wrapper = PropertyAccessorFactory.forBeanPropertyAccess(sink);
+        Map<String,String> params = new HashMap<String,String>();
+        params.put("ipAddress", "192.168.0.1");
+        Assert.assertEquals("127.0.0.2", sink.getIpAddress());
+        boolean modified = false;
+        for (final String key : params.keySet()) {
+            if (wrapper.isWritableProperty(key)) {
+                final String stringValue = params.get(key);
+                final Object value = wrapper.convertIfNecessary(stringValue, (Class<?>)wrapper.getPropertyType(key));
+                wrapper.setPropertyValue(key, value);
+                modified = true;
+            }
+        }
+        Assert.assertTrue(modified);
+        Assert.assertEquals("192.168.0.1", sink.getIpAddress());
+        configDao.save();
+        configDao.reload();
+        Assert.assertEquals("192.168.0.1", configDao.getConfig().getSnmpTrapSink("localTest2").getIpAddress());
     }
 
 }
