@@ -68,7 +68,7 @@ public class SnmpTrapNorthbounder extends AbstractNorthbounder implements Initia
     public SnmpTrapNorthbounder(SnmpTrapNorthbounderConfigDao configDao, String trapSink) {
         super(NBI_NAME + ":" + trapSink);
         m_configDao = configDao;
-        m_trapSink = configDao.getSnmpTrapSink(trapSink);
+        m_trapSink = configDao.getConfig().getSnmpTrapSink(trapSink);
         m_trapHelper = new SnmpTrapHelper();
     }
 

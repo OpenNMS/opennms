@@ -36,9 +36,13 @@ import org.opennms.core.config.api.ConfigurationResourceException;
 import org.opennms.web.rest.v1.config.AgentConfigurationResource;
 import org.opennms.web.rest.v1.config.CollectionConfigurationResource;
 import org.opennms.web.rest.v1.config.DataCollectionConfigResource;
+import org.opennms.web.rest.v1.config.EmailNorthbounderConfigurationResource;
+import org.opennms.web.rest.v1.config.JavamailConfigurationResource;
 import org.opennms.web.rest.v1.config.JmxDataCollectionConfigResource;
 import org.opennms.web.rest.v1.config.PollerConfigurationResource;
 import org.opennms.web.rest.v1.config.SnmpConfigurationResource;
+import org.opennms.web.rest.v1.config.SnmpTrapNorthbounderConfigurationResource;
+import org.opennms.web.rest.v1.config.SyslogNorthbounderConfigurationResource;
 import org.springframework.stereotype.Component;
 
 /**
@@ -78,4 +82,25 @@ public class ConfigRestService extends OnmsRestService {
     public JmxDataCollectionConfigResource getJmxDataCollectionConfigResource(@Context final ResourceContext context) throws ConfigurationResourceException {
         return context.getResource(JmxDataCollectionConfigResource.class);
     }
+
+    @Path("javamail")
+    public JavamailConfigurationResource getJavamailConfigurationResource(@Context final ResourceContext context) throws ConfigurationResourceException {
+        return context.getResource(JavamailConfigurationResource.class);
+    }
+
+    @Path("syslog-nbi")
+    public SyslogNorthbounderConfigurationResource getSyslogNorthbounderConfigurationResource(@Context final ResourceContext context) throws ConfigurationResourceException {
+        return context.getResource(SyslogNorthbounderConfigurationResource.class);
+    }
+
+    @Path("snmptrap-nbi")
+    public SnmpTrapNorthbounderConfigurationResource getSnmpTrapNorthbounderConfigurationResource(@Context final ResourceContext context) throws ConfigurationResourceException {
+        return context.getResource(SnmpTrapNorthbounderConfigurationResource.class);
+    }
+
+    @Path("email-nbi")
+    public EmailNorthbounderConfigurationResource getEmailNorthbounderConfigurationResource(@Context final ResourceContext context) throws ConfigurationResourceException {
+        return context.getResource(EmailNorthbounderConfigurationResource.class);
+    }
+
 }
