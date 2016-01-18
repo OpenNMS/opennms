@@ -51,6 +51,9 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import org.opennms.netmgt.model.OnmsMonitoredService;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
@@ -72,6 +75,23 @@ public class BusinessServiceEntity {
     private Set<BusinessServiceEntity> m_childServices = Sets.newLinkedHashSet();
 
     private Set<BusinessServiceEntity> m_parentServices = Sets.newLinkedHashSet();
+
+    /** The level in the hierarchy.
+     * If 0 the business service should not have any parents. */
+    private Integer level;
+
+    @Transactional
+    public void setLevel(int level) {
+        this.level = level;
+    }
+
+    public Integer getLevel() {
+        return level;
+    }
+
+    public boolean isRoot() {
+        return getParentServices().isEmpty();
+    }
 
     @Id
     @SequenceGenerator(name = "opennmsSequence", sequenceName = "opennmsNxtId")
