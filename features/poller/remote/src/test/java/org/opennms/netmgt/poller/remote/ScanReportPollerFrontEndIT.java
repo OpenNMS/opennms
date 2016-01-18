@@ -117,7 +117,7 @@ public class ScanReportPollerFrontEndIT implements InitializingBean {
         String monitorId = m_frontEnd.getMonitoringSystemId();
 
         assertTrue(m_frontEnd.isRegistered());
-        for (Map.Entry entry : ((ScanReportPollerFrontEnd)m_frontEnd).getDetails().entrySet()) {
+        for (Map.Entry<String,String> entry : ((ScanReportPollerFrontEnd)m_frontEnd).getDetails().entrySet()) {
             LOG.info("Front end detail: " + entry.getKey() + " -> " + entry.getValue());
         }
         // Make sure there is a total of one remote poller

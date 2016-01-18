@@ -31,6 +31,7 @@ package org.opennms.netmgt.poller.remote;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Map;
+import java.util.Set;
 
 import org.opennms.netmgt.config.monitoringLocations.LocationDef;
 import org.opennms.netmgt.config.poller.Package;
@@ -114,12 +115,33 @@ public interface PollerBackEnd {
     MonitorStatus pollerCheckingIn(String locationMonitorId, Date currentConfigurationVersion);
     
     /**
-     * Gets the poller configuration assigned to this monitoring location
+     * Gets the poller configuration assigned to this location monitor.
      *
+     * @deprecated Use {@link #getPollerConfigurationForLocation(String)} instead.
+     * 
+     * @see http://issues.opennms.org/browse/PB-36
+     * 
      * @param locationMonitorId the id of the requesting location monitor
-     * @return the PollerConfiguration for the indicicated location monitor
+     * @return the PollerConfiguration for the indicated location monitor
      */
     PollerConfiguration getPollerConfiguration(String locationMonitorId);
+    
+    /**
+     * Gets the poller configuration assigned to this monitoring location
+     *
+     * @param location the location
+     * @return the PollerConfiguration for the indicated location
+     */
+    PollerConfiguration getPollerConfigurationForLocation(String location);
+    
+    /**
+     * Gets all applications associated with {@link OnmsMonitoredService}
+     * objects managed by this monitoring location.
+     *
+     * @param location the location
+     * @return a Set of application names for this location
+     */
+    Set<String> getApplicationsForLocation(String location);
     
     /**
      * Report a poll result from the client to the server.
