@@ -173,6 +173,8 @@
   <event-file>events/NetApp.events.xml</event-file>
   <event-file>events/Netbotz.events.xml</event-file>
   <event-file>events/Netgear.events.xml</event-file>
+  <event-file>events/NetgearProsafeSmartSwitch.events.xml</event-file>
+  <event-file>events/NetgearProsafeSmartSwitch.syslog.events.xml</event-file>
   <event-file>events/Netscreen.events.xml</event-file>
   <event-file>events/NetSNMP.events.xml</event-file>
   <event-file>events/Nokia.events.xml</event-file>
