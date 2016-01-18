@@ -31,6 +31,7 @@ package org.opennms.netmgt.poller.remote.support;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Map;
+import java.util.Set;
 
 import org.opennms.netmgt.config.monitoringLocations.LocationDef;
 import org.opennms.netmgt.config.poller.Package;
@@ -123,6 +124,28 @@ public class ExceptionProtectedPollerBackEnd implements PollerBackEnd {
     public PollerConfiguration getPollerConfiguration(String locationMonitorId) {
         try {
             return m_delegate.getPollerConfiguration(locationMonitorId);
+        } catch (Throwable t) {
+            LOG.error("Unexpected exception thrown in remote poller backend.", t);
+            throw new RemoteAccessException("Unexpected Exception Occurred on the server.", t);
+        }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public PollerConfiguration getPollerConfigurationForLocation(String location) {
+        try {
+            return m_delegate.getPollerConfigurationForLocation(location);
+        } catch (Throwable t) {
+            LOG.error("Unexpected exception thrown in remote poller backend.", t);
+            throw new RemoteAccessException("Unexpected Exception Occurred on the server.", t);
+        }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public Set<String> getApplicationsForLocation(final String location) {
+        try {
+            return m_delegate.getApplicationsForLocation(location);
         } catch (Throwable t) {
             LOG.error("Unexpected exception thrown in remote poller backend.", t);
             throw new RemoteAccessException("Unexpected Exception Occurred on the server.", t);

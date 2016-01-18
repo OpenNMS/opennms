@@ -48,6 +48,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 import java.util.TreeMap;
 import java.util.UUID;
 
@@ -74,6 +75,7 @@ import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventIpcManager;
 import org.opennms.netmgt.mock.MockPersisterFactory;
 import org.opennms.netmgt.model.NetworkBuilder;
+import org.opennms.netmgt.model.OnmsApplication;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsLocationMonitor;
 import org.opennms.netmgt.model.OnmsLocationMonitor.MonitorStatus;
@@ -93,6 +95,7 @@ import org.opennms.test.mock.EasyMockUtils;
 public class PollerBackEndTest extends TestCase {
 
     private static final String LOCATION_MONITOR_ID = UUID.randomUUID().toString();
+    private static final String APPLICATION_NAME = "AwesomeApp";
 
     private EasyMockUtils m_mocks = new EasyMockUtils();
 
@@ -382,13 +385,17 @@ public class PollerBackEndTest extends TestCase {
         m_locationMonitor.setId(LOCATION_MONITOR_ID);
         m_locationMonitor.setLocation(m_locationDefinition.getLocationName());
 
+        OnmsApplication application = new OnmsApplication();
+        application.setName(APPLICATION_NAME);
         NetworkBuilder builder = new NetworkBuilder();
         builder.addNode("testNode").setId(1);
         builder.addInterface("192.168.1.1").setId(1);
         m_httpService = builder.addService(new OnmsServiceType("HTTP"));
         m_httpService.setId(1);
+        m_httpService.setApplications(Collections.singleton(application));
         m_dnsService = builder.addService(new OnmsServiceType("DNS"));
         m_dnsService.setId(2);
+        m_dnsService.setApplications(Collections.singleton(application));
 
         m_monServices = new OnmsMonitoredService[] { m_httpService, m_dnsService };
 
@@ -579,6 +586,19 @@ public class PollerBackEndTest extends TestCase {
 
         m_mocks.replayAll();
         m_backEnd.reportResult(LOCATION_MONITOR_ID, 1, null);
+    }
+
+    public void testGetApplicationsForLocation() {
+        expect(m_monitoringLocationDao.get(m_locationDefinition.getLocationName())).andReturn(m_locationDefinition);
+        expect(m_pollerConfig.getPackage(m_package.getName())).andReturn(m_package);
+        expect(m_pollerConfig.getServiceSelectorForPackage(m_package)).andReturn(m_serviceSelector);
+        expect(m_monSvcDao.findMatchingServices(m_serviceSelector)).andReturn(Arrays.asList(m_monServices));
+        expect(m_pollerConfig.getServiceInPackage("HTTP", m_package)).andReturn(m_httpSvcConfig).anyTimes();
+        expect(m_pollerConfig.getServiceInPackage("DNS", m_package)).andReturn(m_dnsSvcConfig).anyTimes();
+        m_mocks.replayAll();
+
+        Set<String> apps = m_backEnd.getApplicationsForLocation(m_locationDefinition.getLocationName());
+        assertEquals(Collections.singleton(APPLICATION_NAME), apps);
     }
 
     public void testStatusChangeFromDownToUp() {

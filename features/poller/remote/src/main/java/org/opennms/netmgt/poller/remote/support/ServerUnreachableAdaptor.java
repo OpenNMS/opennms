@@ -32,6 +32,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Map;
+import java.util.Set;
 
 import org.opennms.netmgt.config.monitoringLocations.LocationDef;
 import org.opennms.netmgt.config.poller.Package;
@@ -110,6 +111,40 @@ public class ServerUnreachableAdaptor implements PollerBackEnd {
             m_serverUnresponsive = true;
             LOG.warn("Server is unable to respond due to the following exception.", e);
             return new EmptyPollerConfiguration();
+        }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public PollerConfiguration getPollerConfigurationForLocation(final String location) {
+        if (m_serverUnresponsive) {
+            return new EmptyPollerConfiguration();
+        }
+        try {
+            final PollerConfiguration config = m_remoteBackEnd.getPollerConfigurationForLocation(location);
+            m_serverUnresponsive = false;
+            return config;
+        } catch (final RemoteAccessException e) {
+            m_serverUnresponsive = true;
+            LOG.warn("Server is unable to respond due to the following exception.", e);
+            return new EmptyPollerConfiguration();
+        }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public Set<String> getApplicationsForLocation(final String location) {
+        if (m_serverUnresponsive) {
+            return Collections.emptySet();
+        }
+        try {
+            final Set<String> applications = m_remoteBackEnd.getApplicationsForLocation(location);
+            m_serverUnresponsive = false;
+            return applications;
+        } catch (final RemoteAccessException e) {
+            m_serverUnresponsive = true;
+            LOG.warn("Server is unable to respond due to the following exception.", e);
+            return Collections.emptySet();
         }
     }
 

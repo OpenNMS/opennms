@@ -37,6 +37,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -344,27 +345,37 @@ public class DefaultPollerBackEnd implements PollerBackEnd, SpringServiceDaemon 
         return paramMap;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * @deprecated Use {@link #getPoller(LocationDef)} instead.
+     * 
+     * @see http://issues.opennms.org/browse/PB-36
+     */
     @Transactional(readOnly=true)
     @Override
     public PollerConfiguration getPollerConfiguration(final String locationMonitorId) {
-        try {
-			final OnmsLocationMonitor mon = m_locMonDao.get(locationMonitorId);
-			if (mon == null) {
-			    LOG.warn("No location monitor found for location monitor ID {}", locationMonitorId);
-			    // the monitor has been deleted we'll pick this in up on the next config check
-			    return new EmptyPollerConfiguration();
-			}
+        final OnmsLocationMonitor mon = m_locMonDao.get(locationMonitorId);
+        if (mon == null) {
+            LOG.warn("No location monitor found for location monitor ID {}", locationMonitorId);
+            // the monitor has been deleted we'll pick this in up on the next config check
+            return new EmptyPollerConfiguration();
+        }
 
-            List<String> pollingPackageNames = getPackageName(mon);
-            LOG.debug("Location monitor ID {} has polling packages: {}", locationMonitorId, pollingPackageNames);
+        return getPollerConfigurationForLocation(mon.getLocation());
+    }
+
+    @Transactional(readOnly=true)
+    @Override
+    public PollerConfiguration getPollerConfigurationForLocation(final String location) {
+        try {
+            List<String> pollingPackageNames = getPackageNameForLocation(location);
+            LOG.debug("Location {} has polling packages: {}", location, pollingPackageNames);
 
             List<SimplePollerConfiguration> addMe = new ArrayList<SimplePollerConfiguration>();
             for (String pollingPackageName : pollingPackageNames) {
                 ConcurrentHashMap<String, SimplePollerConfiguration> cache = m_configCache.get();
                 SimplePollerConfiguration pollerConfiguration = cache.get(pollingPackageName);
                 if (pollerConfiguration == null) {
-                    pollerConfiguration = createPollerConfiguration(mon, pollingPackageName);
+                    pollerConfiguration = createPollerConfiguration(pollingPackageName);
                     SimplePollerConfiguration configInCache = cache.putIfAbsent(pollingPackageName, pollerConfiguration);
                     // Make sure that we get the up-to-date value out of the ConcurrentHashMap
                     if (configInCache != null) {
@@ -376,21 +387,31 @@ public class DefaultPollerBackEnd implements PollerBackEnd, SpringServiceDaemon 
 
             // construct a copy so the serverTime gets updated (and avoid threading issues)
             return new SimplePollerConfiguration(addMe.toArray(new SimplePollerConfiguration[0]));
-		} catch (final Exception e) {
-			LOG.warn("An error occurred retrieving the poller configuration for location monitor ID {}", locationMonitorId, e);
-			return new EmptyPollerConfiguration();
-		}
+        } catch (final Exception e) {
+            LOG.warn("An error occurred retrieving the poller configuration for location {}", location, e);
+            return new EmptyPollerConfiguration();
+        }
     }
 
-    private SimplePollerConfiguration createPollerConfiguration(
-            final OnmsLocationMonitor mon, String pollingPackageName) {
-        final Package pkg = getPollingPackage(pollingPackageName, mon.getLocation());
-        
+    @Transactional(readOnly=true)
+    @Override
+    public Set<String> getApplicationsForLocation(final String location) {
+        final Set<String> retval = new HashSet<>();
+        PollerConfiguration config = getPollerConfigurationForLocation(location);
+        for (PolledService service : config.getPolledServices()) {
+            retval.addAll(service.getApplications());
+        }
+        return Collections.unmodifiableSet(retval);
+    }
+
+    private SimplePollerConfiguration createPollerConfiguration(String pollingPackageName) {
+        final Package pkg = getPollingPackage(pollingPackageName);
+
         final ServiceSelector selector = m_pollerConfig.getServiceSelectorForPackage(pkg);
         final Collection<OnmsMonitoredService> services = m_monSvcDao.findMatchingServices(selector);
         final List<PolledService> configs = new ArrayList<PolledService>(services.size());
 
-        LOG.debug("Found {} services for monitor {} in polling package {}", services.size(), mon, pollingPackageName);
+        LOG.debug("Found {} services in polling package {}", services.size(), pollingPackageName);
 
         for (final OnmsMonitoredService monSvc : services) {
             final Service serviceConfig = m_pollerConfig.getServiceInPackage(monSvc.getServiceName(), pkg);
@@ -413,9 +434,8 @@ public class DefaultPollerBackEnd implements PollerBackEnd, SpringServiceDaemon 
 
     private Package getPollingPackageForMonitorAndService(final OnmsLocationMonitor mon, OnmsMonitoredService monSvc) {
         List<String> pollingPackageNames = getPackageName(mon);
-        String definitionName = mon.getLocation();
         for (String pollingPackageName : pollingPackageNames) {
-            Package pkg = getPollingPackage(pollingPackageName, definitionName);
+            Package pkg = getPollingPackage(pollingPackageName);
             if (m_pollerConfig.getServiceInPackage(monSvc.getServiceName(), pkg) != null) {
                 return pkg;
             }
@@ -423,19 +443,27 @@ public class DefaultPollerBackEnd implements PollerBackEnd, SpringServiceDaemon 
         throw new IllegalStateException("Could not find package from monitor " + mon.getName() + " that contains service " + monSvc.getServiceName());
     }
 
-    private Package getPollingPackage(String pollingPackageName,
-            String definitionName) {
+    private Package getPollingPackage(String pollingPackageName) {
         final Package pkg = m_pollerConfig.getPackage(pollingPackageName);
         if (pkg == null) {
-            throw new IllegalStateException("Package "+pollingPackageName+" does not exist as defined for monitoring location "+definitionName);
+            throw new IllegalStateException("Package "+pollingPackageName+" does not exist");
         }
         return pkg;
     }
 
+    /**
+     * @deprecated Use {@link #getPackageName(LocationDef)} instead.
+     * 
+     * @see http://issues.opennms.org/browse/PB-36
+     */
     private List<String> getPackageName(final OnmsLocationMonitor mon) {
-        final LocationDef def = m_monitoringLocationDao.get(mon.getLocation());
+        return getPackageNameForLocation(mon.getLocation());
+    }
+
+    private List<String> getPackageNameForLocation(final String location) {
+        final LocationDef def = m_monitoringLocationDao.get(location);
         if (def == null) {
-            throw new IllegalStateException("Location definition '" + mon.getLocation() + "' could not be found for location monitor ID " + mon.getId());
+            throw new IllegalStateException("Location definition '" + location + "' could not be found");
         }
         return def.getPollingPackageNames();
     }
