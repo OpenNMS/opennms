@@ -43,6 +43,7 @@ public class BsmDatabasePopulator {
 
     @Autowired
     private BusinessServiceDao businessServiceDao;
+
     private List<BsmTestData> testDatas;
 
     /**

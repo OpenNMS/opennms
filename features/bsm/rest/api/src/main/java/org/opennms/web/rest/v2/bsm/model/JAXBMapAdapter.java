@@ -28,22 +28,26 @@
 
 package org.opennms.web.rest.v2.bsm.model;
 
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.adapters.XmlAdapter;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+
+import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 
 @XmlTransient
 public class JAXBMapAdapter extends XmlAdapter<JAXBMapAdapter.JAXBMap, Map<String, String>> {
 
-    @XmlAccessorType(XmlAccessType.FIELD)
+    @XmlAccessorType(XmlAccessType.NONE)
     @XmlRootElement(name = "attributes")
+    @JsonIgnoreProperties(ignoreUnknown = true)
     public static class JAXBMap {
         @XmlElement(name = "attribute", required = true)
         private final List<JAXBMapEntry> a = new ArrayList<JAXBMapEntry>();
@@ -53,8 +57,9 @@ public class JAXBMapAdapter extends XmlAdapter<JAXBMapAdapter.JAXBMap, Map<Strin
         }
     }
 
-    @XmlAccessorType(XmlAccessType.FIELD)
+    @XmlAccessorType(XmlAccessType.NONE)
     @XmlRootElement(name = "attribute")
+    @JsonIgnoreProperties(ignoreUnknown = true)
     public static class JAXBMapEntry {
 
         @XmlElement(name = "key", required = true)

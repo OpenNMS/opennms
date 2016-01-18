@@ -31,15 +31,14 @@ package org.opennms.web.rest.v2.bsm.model;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlID;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.codehaus.jackson.map.annotate.JsonDeserialize;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 import org.opennms.netmgt.model.OnmsSeverity;
-import org.opennms.web.rest.api.support.JAXBResourceLocationAdapter;
 import org.opennms.web.rest.api.ResourceLocation;
+import org.opennms.web.rest.api.support.JAXBResourceLocationAdapter;
 import org.opennms.web.rest.api.support.JsonResourceLocationDeserializationProvider;
 import org.opennms.web.rest.api.support.JsonResourceLocationSerializationProvider;
 
@@ -49,7 +48,6 @@ import com.google.common.base.Objects;
 @XmlAccessorType(XmlAccessType.FIELD)
 public class IpServiceResponseDTO {
 
-    @XmlID
     @XmlElement(name="id")
     private int m_id;
 

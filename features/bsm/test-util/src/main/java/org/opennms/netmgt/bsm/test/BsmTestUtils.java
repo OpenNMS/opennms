@@ -36,6 +36,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.codehaus.jackson.map.ObjectMapper;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.bsm.persistence.api.BusinessServiceEntity;
 import org.opennms.netmgt.events.api.EventConstants;
@@ -77,7 +78,7 @@ public class BsmTestUtils {
     public static OnmsAlarm createAlarm(OnmsMonitoredService monitoredService, OnmsSeverity severity) {
         return createAlarm(
                 Objects.requireNonNull(monitoredService.getNodeId()),
-                Objects.requireNonNull(monitoredService.getIpAddress().toString()).substring(1),
+                Objects.requireNonNull(InetAddressUtils.toIpAddrString(monitoredService.getIpAddress())),
                 Objects.requireNonNull(monitoredService.getServiceName()),
                 Objects.requireNonNull(severity));
     }
@@ -90,7 +91,7 @@ public class BsmTestUtils {
         return alarm;
     }
 
-    public static OnmsMonitoredService createService(final int nodeId, final String ipAddress, final String serviceName) {
+    public static OnmsMonitoredService createMonitoredService(final int nodeId, final String ipAddress, final String serviceName) {
         return new OnmsMonitoredService() {
             private static final long serialVersionUID = 8510675581667310365L;
 
@@ -122,12 +123,12 @@ public class BsmTestUtils {
         // Create a simple hierarchy
         BusinessServiceEntity child1 = new BusinessServiceEntityBuilder()
                 .name("Child 1")
-                .addIpService(createService(1, "192.168.1.1", "ICMP"))
+                .addIpService(createMonitoredService(1, "192.168.1.1", "ICMP"))
                 .toEntity();
 
         BusinessServiceEntity child2 = new BusinessServiceEntityBuilder()
                 .name("Child 2")
-                .addIpService(createService(2, "192.168.1.2", "SNMP"))
+                .addIpService(createMonitoredService(2, "192.168.1.2", "SNMP"))
                 .toEntity();
 
         BusinessServiceEntity root = new BusinessServiceEntityBuilder()
@@ -140,6 +141,12 @@ public class BsmTestUtils {
         child2.getParentServices().add(root);
 
         return new BsmTestData(child1, child2, root);
+    }
+
+    public static BusinessServiceEntity createDummyBusinessService(String serviceName) {
+        return new BusinessServiceEntityBuilder()
+                .name(serviceName)
+                .toEntity();
     }
 
 }

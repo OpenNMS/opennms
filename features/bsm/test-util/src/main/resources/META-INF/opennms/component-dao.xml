@@ -16,5 +16,4 @@
     <cache:annotation-driven />
 
     <bean id="bsmDatabasePopulator" class="org.opennms.netmgt.bsm.test.BsmDatabasePopulator" scope="singleton"/>
-    <bean id="bsmTestSpecification" class="org.opennms.netmgt.bsm.test.BsmTestData" scope="singleton"/>
 </beans>

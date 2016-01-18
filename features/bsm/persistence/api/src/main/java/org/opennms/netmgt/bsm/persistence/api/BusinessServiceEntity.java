@@ -51,7 +51,6 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 
 import org.opennms.netmgt.model.OnmsMonitoredService;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
@@ -77,15 +76,16 @@ public class BusinessServiceEntity {
      * If 0 the business service should not have any parents. */
     private Integer level;
 
-    @Transactional
     public void setLevel(int level) {
         this.level = level;
     }
 
+    @Transient
     public Integer getLevel() {
         return level;
     }
 
+    @Transient
     public boolean isRoot() {
         return getParentServices().isEmpty();
     }
