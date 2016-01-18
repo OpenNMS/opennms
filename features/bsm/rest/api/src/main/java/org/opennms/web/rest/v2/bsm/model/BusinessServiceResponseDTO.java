@@ -39,7 +39,11 @@ import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
-import org.opennms.web.rest.api.JAXBResourceLocationAdapter;
+import org.codehaus.jackson.annotate.JsonIgnoreProperties;
+import org.codehaus.jackson.map.annotate.JsonDeserialize;
+import org.codehaus.jackson.map.annotate.JsonSerialize;
+import org.opennms.netmgt.model.OnmsSeverity;
+import org.opennms.web.rest.api.support.JAXBResourceLocationAdapter;
 import org.opennms.web.rest.api.ResourceLocation;
 
 import com.google.common.collect.Maps;
@@ -48,6 +52,7 @@ import com.google.common.collect.Sets;
 
 @XmlRootElement(name = "business-service")
 @XmlAccessorType(XmlAccessType.NONE)
+@JsonIgnoreProperties(ignoreUnknown=true)
 public class BusinessServiceResponseDTO {
     
     @XmlElement(name = "id")

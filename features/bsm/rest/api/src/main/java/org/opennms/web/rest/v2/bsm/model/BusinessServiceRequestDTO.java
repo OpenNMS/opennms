@@ -39,12 +39,15 @@ import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
+import org.codehaus.jackson.annotate.JsonIgnoreProperties;
+
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
 
 @XmlRootElement(name = "business-service")
 @XmlAccessorType(XmlAccessType.NONE)
+@JsonIgnoreProperties(ignoreUnknown=true)
 public class BusinessServiceRequestDTO {
     
     @XmlElement(name = "name")

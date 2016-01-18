@@ -28,7 +28,11 @@
 
 package org.opennms.netmgt.bsm.service.internal;
 
-import com.google.common.collect.ImmutableSet;
+import static org.opennms.netmgt.bsm.test.BsmTestUtils.createAlarm;
+import static org.opennms.netmgt.bsm.test.BsmTestUtils.createDummyBusinessService;
+
+import java.util.Objects;
+
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -39,26 +43,21 @@ import org.junit.runner.RunWith;
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
-import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.netmgt.bsm.persistence.api.BusinessServiceEntity;
 import org.opennms.netmgt.bsm.persistence.api.BusinessServiceDao;
-import org.opennms.netmgt.bsm.persistence.api.MostCritical;
-import org.opennms.netmgt.bsm.persistence.api.ReductionFunctionDao;
+import org.opennms.netmgt.bsm.persistence.api.BusinessServiceEntity;
 import org.opennms.netmgt.bsm.service.BusinessServiceManager;
 import org.opennms.netmgt.bsm.service.BusinessServiceStateMachine;
+import org.opennms.netmgt.bsm.service.model.BusinessService;
+import org.opennms.netmgt.bsm.service.model.IpService;
 import org.opennms.netmgt.dao.DatabasePopulator;
-import org.opennms.netmgt.dao.api.DistPollerDao;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
-import org.opennms.netmgt.dao.api.NodeDao;
-import org.opennms.netmgt.events.api.EventConstants;
-import org.opennms.netmgt.model.OnmsAlarm;
-import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
@@ -93,12 +92,6 @@ public class BusinessServiceManagerImplIT {
     private MonitoredServiceDao monitoredServiceDao;
 
     @Autowired
-    private DistPollerDao distPollerDao;
-
-    @Autowired
-    private NodeDao nodeDao;
-
-    @Autowired
     private DatabasePopulator populator;
 
     @Autowired
@@ -124,175 +117,184 @@ public class BusinessServiceManagerImplIT {
         }
     }
 
-//    @Test
-//    public void testGetOperationalStatusForBusinessService() {
-//        BusinessServiceEntity service = createService("Dummy Business Service");
-//        BusinessServiceEntity service2 = createService("Another Dummy Business Service");
-//        Long serviceId1 = businessServiceDao.save(service);
-//        Long serviceId2 = businessServiceDao.save(service2);
-//        businessServiceStateMachine.setBusinessServices(Lists.newArrayList(service, service2));
-//
-//        // no ip services attached
-//        Assert.assertEquals(OnmsSeverity.NORMAL, businessServiceManager.getOperationalStatusForBusinessService(serviceId1));
-//        Assert.assertEquals(OnmsSeverity.NORMAL, businessServiceManager.getOperationalStatusForBusinessService(serviceId2));
-//
-//        // ip services attached
-//        businessServiceManager.assignIpService(serviceId1, 5);
-//        businessServiceManager.assignIpService(serviceId1, 6);
-//        businessServiceStateMachine.setBusinessServices(Lists.newArrayList(service, service2));
-//
-//        // should not have any effect
-//        Assert.assertEquals(OnmsSeverity.NORMAL, businessServiceManager.getOperationalStatusForBusinessService(serviceId1));
-//        Assert.assertEquals(OnmsSeverity.NORMAL, businessServiceManager.getOperationalStatusForBusinessService(serviceId2));
-//
-//        // attach NORMAL alarm to service 1
-//        businessServiceStateMachine.handleNewOrUpdatedAlarm(createAlarm(monitoredServiceDao.get(5), OnmsSeverity.NORMAL));
-//        Assert.assertEquals(OnmsSeverity.NORMAL, businessServiceManager.getOperationalStatusForIPService(5));
-//        Assert.assertEquals(OnmsSeverity.NORMAL, businessServiceManager.getOperationalStatusForBusinessService(serviceId1));
-//        Assert.assertEquals(OnmsSeverity.NORMAL, businessServiceManager.getOperationalStatusForBusinessService(serviceId2));
-//
-//        // attach INDETERMINATE alarm to service 1
-//        businessServiceStateMachine.handleNewOrUpdatedAlarm(createAlarm(monitoredServiceDao.get(5), OnmsSeverity.INDETERMINATE));
-//        Assert.assertEquals(OnmsSeverity.NORMAL, businessServiceManager.getOperationalStatusForIPService(5));
-//        Assert.assertEquals(OnmsSeverity.NORMAL, businessServiceManager.getOperationalStatusForBusinessService(serviceId1));
-//        Assert.assertEquals(OnmsSeverity.NORMAL, businessServiceManager.getOperationalStatusForBusinessService(serviceId2));
-//
-//        // attach WARNING alarm to service 1
-//        businessServiceStateMachine.handleNewOrUpdatedAlarm(createAlarm(monitoredServiceDao.get(5), OnmsSeverity.WARNING));
-//        Assert.assertEquals(OnmsSeverity.WARNING, businessServiceManager.getOperationalStatusForIPService(5));
-//        Assert.assertEquals(OnmsSeverity.WARNING, businessServiceManager.getOperationalStatusForBusinessService(serviceId1));
-//        Assert.assertEquals(OnmsSeverity.NORMAL, businessServiceManager.getOperationalStatusForBusinessService(serviceId2));
-//
-//        // attach CRITICAL alarm to service 1
-//        businessServiceStateMachine.handleNewOrUpdatedAlarm(createAlarm(monitoredServiceDao.get(5), OnmsSeverity.CRITICAL));
-//        Assert.assertEquals(OnmsSeverity.CRITICAL, businessServiceManager.getOperationalStatusForIPService(5));
-//        Assert.assertEquals(OnmsSeverity.CRITICAL, businessServiceManager.getOperationalStatusForBusinessService(serviceId1));
-//        Assert.assertEquals(OnmsSeverity.NORMAL, businessServiceManager.getOperationalStatusForBusinessService(serviceId2));
-//    }
-//
-//    @Test
-//    public void testChildMapping() {
-//        BusinessServiceEntity service_p_1 = createService("Business Service #p1");
-//        BusinessServiceEntity service_p_2 = createService("Business Service #p2");
-//        BusinessServiceEntity service_c_1 = createService("Business Service #c1");
-//        BusinessServiceEntity service_c_2 = createService("Business Service #c2");
-//
-//        businessServiceDao.save(service_p_1);
-//        businessServiceDao.save(service_p_2);
-//        businessServiceDao.save(service_c_1);
-//        businessServiceDao.save(service_c_2);
-//
-//        businessServiceManager.assignChildService(service_p_1.getId(), service_c_1.getId());
-//        businessServiceManager.assignChildService(service_p_1.getId(), service_c_2.getId());
-//
-//        businessServiceManager.assignChildService(service_p_2.getId(), service_c_1.getId());
-//        businessServiceManager.assignChildService(service_p_2.getId(), service_c_2.getId());
-//
-//        Assert.assertEquals(ImmutableSet.of(service_p_1, service_p_2),
-//                            service_c_1.getParentServices());
-//
-//        Assert.assertEquals(ImmutableSet.of(service_p_1, service_p_2),
-//                            service_c_2.getParentServices());
-//    }
-//
-//    @Test
-//    public void testChildDeletion() {
-//        BusinessServiceEntity service_p = createService("Business Service #p");
-//        BusinessServiceEntity service_c_1 = createService("Business Service #c1");
-//        BusinessServiceEntity service_c_2 = createService("Business Service #c2");
-//
-//        businessServiceDao.save(service_p);
-//        businessServiceDao.save(service_c_1);
-//        businessServiceDao.save(service_c_2);
-//
-//        businessServiceManager.assignChildService(service_p.getId(), service_c_1.getId());
-//        businessServiceManager.assignChildService(service_p.getId(), service_c_2.getId());
-//
-//        businessServiceManager.deleteBusinessService(service_c_1.getId());
-//
-//        Assert.assertEquals(ImmutableSet.of(service_c_2),
-//                            service_p.getChildServices());
-//    }
-//
-//    @Test
-//    public void testLoopDetection() {
-//        BusinessServiceEntity service1 = createService("Business Service #1");
-//        BusinessServiceEntity service2 = createService("Business Service #2");
-//        BusinessServiceEntity service3 = createService("Business Service #3");
-//
-//        Long serviceId1 = businessServiceDao.save(service1);
-//        Long serviceId2 = businessServiceDao.save(service2);
-//        Long serviceId3 = businessServiceDao.save(service3);
-//
-//        Assert.assertEquals(ImmutableSet.of(businessServiceManager.getBusinessServiceById(serviceId2),
-//                                            businessServiceManager.getBusinessServiceById(serviceId3)),
-//                            businessServiceManager.getFeasibleChildServices(businessServiceManager.getBusinessServiceById(serviceId1)));
-//        Assert.assertEquals(ImmutableSet.of(businessServiceManager.getBusinessServiceById(serviceId1),
-//                                            businessServiceManager.getBusinessServiceById(serviceId3)),
-//                            businessServiceManager.getFeasibleChildServices(businessServiceManager.getBusinessServiceById(serviceId2)));
-//        Assert.assertEquals(ImmutableSet.of(businessServiceManager.getBusinessServiceById(serviceId1),
-//                                            businessServiceManager.getBusinessServiceById(serviceId2)),
-//                            businessServiceManager.getFeasibleChildServices(businessServiceManager.getBusinessServiceById(serviceId3)));
-//
-//        businessServiceManager.assignChildService(serviceId1, serviceId2);
-//
-//        Assert.assertEquals(ImmutableSet.of(businessServiceManager.getBusinessServiceById(serviceId2),
-//                                            businessServiceManager.getBusinessServiceById(serviceId3)),
-//                            businessServiceManager.getFeasibleChildServices(businessServiceManager.getBusinessServiceById(serviceId1)));
-//        Assert.assertEquals(ImmutableSet.of(businessServiceManager.getBusinessServiceById(serviceId3)),
-//                            businessServiceManager.getFeasibleChildServices(businessServiceManager.getBusinessServiceById(serviceId2)));
-//        Assert.assertEquals(ImmutableSet.of(businessServiceManager.getBusinessServiceById(serviceId1),
-//                                            businessServiceManager.getBusinessServiceById(serviceId2)),
-//                            businessServiceManager.getFeasibleChildServices(businessServiceManager.getBusinessServiceById(serviceId3)));
-//
-//        businessServiceManager.assignChildService(serviceId2, serviceId3);
-//
-//        Assert.assertEquals(ImmutableSet.of(businessServiceManager.getBusinessServiceById(serviceId2),
-//                                            businessServiceManager.getBusinessServiceById(serviceId3)),
-//                            businessServiceManager.getFeasibleChildServices(businessServiceManager.getBusinessServiceById(serviceId1)));
-//        Assert.assertEquals(ImmutableSet.of(businessServiceManager.getBusinessServiceById(serviceId3)),
-//                            businessServiceManager.getFeasibleChildServices(businessServiceManager.getBusinessServiceById(serviceId2)));
-//        Assert.assertEquals(ImmutableSet.of(),
-//                            businessServiceManager.getFeasibleChildServices(businessServiceManager.getBusinessServiceById(serviceId3)));
-//    }
-//
-//    @Test
-//    public void testLoopCreation() {
-//        thrown.expect(IllegalArgumentException.class);
-//        thrown.expectMessage("Service will form a loop");
-//
-//        BusinessServiceEntity service1 = createService("Business Service #1");
-//        BusinessServiceEntity service2 = createService("Business Service #2");
-//        BusinessServiceEntity service3 = createService("Business Service #3");
-//
-//        Long serviceId1 = businessServiceDao.save(service1);
-//        Long serviceId2 = businessServiceDao.save(service2);
-//        Long serviceId3 = businessServiceDao.save(service3);
-//
-//        businessServiceManager.assignChildService(serviceId1, serviceId2);
-//        businessServiceManager.assignChildService(serviceId2, serviceId3);
-//        businessServiceManager.assignChildService(serviceId3, serviceId1);
-//    }
-//
-//    private BusinessServiceEntity createService(String serviceName) {
-//        BusinessServiceEntity service = new BusinessServiceEntity();
-//        service.setName(serviceName);
-//        return service;
-//    }
-//
-//    private OnmsAlarm createAlarm(OnmsMonitoredService monitoredService, OnmsSeverity severity) {
-//        OnmsAlarm alarm = new OnmsAlarm();
-//        alarm.setUei(EventConstants.NODE_LOST_SERVICE_EVENT_UEI);
-//        alarm.setCounter(1);
-//        alarm.setDistPoller(distPollerDao.whoami());
-//        alarm.setNode(nodeDao.get(monitoredService.getNodeId()));
-//        alarm.setServiceType(monitoredService.getServiceType());
-//        alarm.setIpAddr(monitoredService.getIpAddress());
-//        alarm.setSeverity(severity);
-//        alarm.setReductionKey(String.format("%s::%d:%s:%s",
-//                        EventConstants.NODE_LOST_SERVICE_EVENT_UEI, monitoredService.getNodeId(),
-//                        InetAddressUtils.toIpAddrString(monitoredService.getIpAddress()),
-//                        monitoredService.getServiceName()));
-//        return alarm;
-//    }
+    @Test
+    public void testGetOperationalStatusForBusinessService() {
+        final BusinessServiceEntity bsServiceEntity = createDummyBusinessService("Dummy Business Service");
+        final BusinessServiceEntity bsServiceEntity2 = createDummyBusinessService("Another Dummy Business Service");
+        Long serviceId1 = businessServiceDao.save(bsServiceEntity);
+        Long serviceId2 = businessServiceDao.save(bsServiceEntity2);
+        businessServiceStateMachine.setBusinessServices(Lists.newArrayList(bsServiceEntity, bsServiceEntity2));
+
+        final BusinessService bsService1 = getBusinessService(serviceId1);
+        final BusinessService bsService2 = getBusinessService(serviceId2);
+        final IpService ipServiceWithId5 = getIpService(5);
+        final IpService ipServiceWithId6 = getIpService(6);
+
+        // no ip services attached
+        Assert.assertEquals(OnmsSeverity.NORMAL, businessServiceManager.getOperationalStatusForBusinessService(bsService1));
+        Assert.assertEquals(OnmsSeverity.NORMAL, businessServiceManager.getOperationalStatusForBusinessService(bsService2));
+
+        // ip services attached
+        businessServiceManager.assignIpService(getBusinessService(serviceId1), ipServiceWithId5);
+        businessServiceManager.assignIpService(getBusinessService(serviceId2), ipServiceWithId6);
+        bsService1.save();
+        bsService2.save();
+        Assert.assertFalse("Services are equal but should not", Objects.equals(bsService1, bsService2));
+        businessServiceStateMachine.setBusinessServices(Lists.newArrayList(bsServiceEntity, bsServiceEntity2));
+
+        // should not have any effect
+        Assert.assertEquals(OnmsSeverity.NORMAL, businessServiceManager.getOperationalStatusForBusinessService(bsService1));
+        Assert.assertEquals(OnmsSeverity.NORMAL, businessServiceManager.getOperationalStatusForBusinessService(bsService2));
+
+        // attach NORMAL alarm to service 1
+        businessServiceStateMachine.handleNewOrUpdatedAlarm(createAlarm(monitoredServiceDao.get(5), OnmsSeverity.NORMAL));
+        Assert.assertEquals(OnmsSeverity.NORMAL, businessServiceManager.getOperationalStatusForIPService(ipServiceWithId5));
+        Assert.assertEquals(OnmsSeverity.NORMAL, businessServiceManager.getOperationalStatusForBusinessService(bsService1));
+        Assert.assertEquals(OnmsSeverity.NORMAL, businessServiceManager.getOperationalStatusForBusinessService(bsService2));
+
+        // attach INDETERMINATE alarm to service 1
+        businessServiceStateMachine.handleNewOrUpdatedAlarm(createAlarm(monitoredServiceDao.get(5), OnmsSeverity.INDETERMINATE));
+        Assert.assertEquals(OnmsSeverity.NORMAL, businessServiceManager.getOperationalStatusForIPService(ipServiceWithId5));
+        Assert.assertEquals(OnmsSeverity.NORMAL, businessServiceManager.getOperationalStatusForBusinessService(bsService1));
+        Assert.assertEquals(OnmsSeverity.NORMAL, businessServiceManager.getOperationalStatusForBusinessService(bsService2));
+
+        // attach WARNING alarm to service 1
+        businessServiceStateMachine.handleNewOrUpdatedAlarm(createAlarm(monitoredServiceDao.get(5), OnmsSeverity.WARNING));
+        Assert.assertEquals(OnmsSeverity.WARNING, businessServiceManager.getOperationalStatusForIPService(ipServiceWithId5));
+        Assert.assertEquals(OnmsSeverity.WARNING, businessServiceManager.getOperationalStatusForBusinessService(bsService1));
+        Assert.assertEquals(OnmsSeverity.NORMAL, businessServiceManager.getOperationalStatusForBusinessService(bsService2));
+
+        // attach CRITICAL alarm to service 1
+        businessServiceStateMachine.handleNewOrUpdatedAlarm(createAlarm(monitoredServiceDao.get(5), OnmsSeverity.CRITICAL));
+        Assert.assertEquals(OnmsSeverity.CRITICAL, businessServiceManager.getOperationalStatusForIPService(ipServiceWithId5));
+        Assert.assertEquals(OnmsSeverity.CRITICAL, businessServiceManager.getOperationalStatusForBusinessService(bsService1));
+        Assert.assertEquals(OnmsSeverity.NORMAL, businessServiceManager.getOperationalStatusForBusinessService(bsService2));
+    }
+
+    @Test
+    public void testChildMapping() {
+        BusinessServiceEntity service_p_1 = createDummyBusinessService("Business Service #p1");
+        BusinessServiceEntity service_p_2 = createDummyBusinessService("Business Service #p2");
+        BusinessServiceEntity service_c_1 = createDummyBusinessService("Business Service #c1");
+        BusinessServiceEntity service_c_2 = createDummyBusinessService("Business Service #c2");
+
+        businessServiceDao.save(service_p_1);
+        businessServiceDao.save(service_p_2);
+        businessServiceDao.save(service_c_1);
+        businessServiceDao.save(service_c_2);
+
+        businessServiceManager.assignChildService(getBusinessService(service_p_1.getId()), getBusinessService(service_c_1.getId()));
+        businessServiceManager.assignChildService(getBusinessService(service_p_1.getId()), getBusinessService(service_c_2.getId()));
+
+        businessServiceManager.assignChildService(getBusinessService(service_p_2.getId()), getBusinessService(service_c_1.getId()));
+        businessServiceManager.assignChildService(getBusinessService(service_p_2.getId()), getBusinessService(service_c_2.getId()));
+
+        Assert.assertEquals(ImmutableSet.of(service_p_1, service_p_2),
+                            service_c_1.getParentServices());
+
+        Assert.assertEquals(ImmutableSet.of(service_p_1, service_p_2),
+                            service_c_2.getParentServices());
+    }
+
+    @Test
+    public void testChildDeletion() {
+        BusinessServiceEntity service_p = createDummyBusinessService("Business Service #p");
+        BusinessServiceEntity service_c_1 = createDummyBusinessService("Business Service #c1");
+        BusinessServiceEntity service_c_2 = createDummyBusinessService("Business Service #c2");
+
+        businessServiceDao.save(service_p);
+        businessServiceDao.save(service_c_1);
+        businessServiceDao.save(service_c_2);
+
+        BusinessService parentBs = getBusinessService(service_p.getId());
+        BusinessService child1Bs = getBusinessService(service_c_1.getId());
+        BusinessService child2Bs = getBusinessService(service_c_2.getId());
+
+        businessServiceManager.assignChildService(parentBs, child1Bs);
+        businessServiceManager.assignChildService(parentBs, child2Bs);
+        parentBs.save();
+        child1Bs.save();
+        child2Bs.save();
+
+        child1Bs.delete();
+
+        Assert.assertEquals(ImmutableSet.of(service_c_2),
+                            service_p.getChildServices());
+    }
+
+    @Test
+    public void testLoopDetection() {
+        BusinessServiceEntity service1 = createDummyBusinessService("Business Service #1");
+        BusinessServiceEntity service2 = createDummyBusinessService("Business Service #2");
+        BusinessServiceEntity service3 = createDummyBusinessService("Business Service #3");
+
+        Long serviceId1 = businessServiceDao.save(service1);
+        Long serviceId2 = businessServiceDao.save(service2);
+        Long serviceId3 = businessServiceDao.save(service3);
+
+        BusinessService bs1 = getBusinessService(serviceId1);
+        BusinessService bs2 = getBusinessService(serviceId2);
+        BusinessService bs3 = getBusinessService(serviceId3);
+
+        Assert.assertEquals(ImmutableSet.of(businessServiceManager.getBusinessServiceById(serviceId2),
+                                            businessServiceManager.getBusinessServiceById(serviceId3)),
+                            businessServiceManager.getFeasibleChildServices(businessServiceManager.getBusinessServiceById(serviceId1)));
+        Assert.assertEquals(ImmutableSet.of(businessServiceManager.getBusinessServiceById(serviceId1),
+                                            businessServiceManager.getBusinessServiceById(serviceId3)),
+                            businessServiceManager.getFeasibleChildServices(businessServiceManager.getBusinessServiceById(serviceId2)));
+        Assert.assertEquals(ImmutableSet.of(businessServiceManager.getBusinessServiceById(serviceId1),
+                                            businessServiceManager.getBusinessServiceById(serviceId2)),
+                            businessServiceManager.getFeasibleChildServices(businessServiceManager.getBusinessServiceById(serviceId3)));
+
+        businessServiceManager.assignChildService(bs1, bs2);
+        bs1.save();
+        bs2.save();
+
+        Assert.assertEquals(ImmutableSet.of(businessServiceManager.getBusinessServiceById(serviceId2),
+                                            businessServiceManager.getBusinessServiceById(serviceId3)),
+                            businessServiceManager.getFeasibleChildServices(businessServiceManager.getBusinessServiceById(serviceId1)));
+        Assert.assertEquals(ImmutableSet.of(businessServiceManager.getBusinessServiceById(serviceId3)),
+                            businessServiceManager.getFeasibleChildServices(businessServiceManager.getBusinessServiceById(serviceId2)));
+        Assert.assertEquals(ImmutableSet.of(businessServiceManager.getBusinessServiceById(serviceId1),
+                                            businessServiceManager.getBusinessServiceById(serviceId2)),
+                            businessServiceManager.getFeasibleChildServices(businessServiceManager.getBusinessServiceById(serviceId3)));
+
+        businessServiceManager.assignChildService(bs2, bs3);
+        bs2.save();
+        bs3.save();
+
+        Assert.assertEquals(ImmutableSet.of(businessServiceManager.getBusinessServiceById(serviceId2),
+                                            businessServiceManager.getBusinessServiceById(serviceId3)),
+                            businessServiceManager.getFeasibleChildServices(businessServiceManager.getBusinessServiceById(serviceId1)));
+        Assert.assertEquals(ImmutableSet.of(businessServiceManager.getBusinessServiceById(serviceId3)),
+                            businessServiceManager.getFeasibleChildServices(businessServiceManager.getBusinessServiceById(serviceId2)));
+        Assert.assertEquals(ImmutableSet.of(),
+                            businessServiceManager.getFeasibleChildServices(businessServiceManager.getBusinessServiceById(serviceId3)));
+    }
+
+    @Test
+    public void testLoopCreation() {
+        thrown.expect(IllegalArgumentException.class);
+        thrown.expectMessage("Service will form a loop");
+
+        BusinessServiceEntity service1 = createDummyBusinessService("Business Service #1");
+        BusinessServiceEntity service2 = createDummyBusinessService("Business Service #2");
+        BusinessServiceEntity service3 = createDummyBusinessService("Business Service #3");
+
+        Long serviceId1 = businessServiceDao.save(service1);
+        Long serviceId2 = businessServiceDao.save(service2);
+        Long serviceId3 = businessServiceDao.save(service3);
+
+        businessServiceManager.assignChildService(getBusinessService(serviceId1), getBusinessService(serviceId2));
+        businessServiceManager.assignChildService(getBusinessService(serviceId2), getBusinessService(serviceId3));
+        businessServiceManager.assignChildService(getBusinessService(serviceId3), getBusinessService(serviceId1));
+    }
+
+    private BusinessService getBusinessService(long serviceId) {
+        return new BusinessServiceImpl((BusinessServiceManagerImpl) businessServiceManager, businessServiceDao.get(serviceId));
+    }
+
+    private IpService getIpService(int ipServiceId) {
+        return new IpServiceImpl((BusinessServiceManagerImpl) businessServiceManager, monitoredServiceDao.get(ipServiceId));
+    }
 }

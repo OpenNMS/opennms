@@ -29,6 +29,7 @@
 package org.opennms.web.rest.v2;
 
 import static org.junit.Assert.assertEquals;
+import static org.opennms.netmgt.bsm.test.BsmTestUtils.toJson;
 import static org.opennms.netmgt.bsm.test.BsmTestUtils.toRequestDto;
 import static org.opennms.netmgt.bsm.test.BsmTestUtils.toXml;
 
@@ -50,16 +51,21 @@ import org.opennms.core.test.rest.AbstractSpringJerseyRestTestCase;
 import org.opennms.netmgt.bsm.persistence.api.BusinessServiceDao;
 import org.opennms.netmgt.bsm.persistence.api.BusinessServiceEntity;
 import org.opennms.netmgt.bsm.test.BsmDatabasePopulator;
+import org.opennms.netmgt.bsm.test.BsmTestUtils;
 import org.opennms.netmgt.bsm.test.BusinessServiceEntityBuilder;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.opennms.web.rest.api.ResourceLocation;
 import org.opennms.web.rest.v2.bsm.model.BusinessServiceListDTO;
+import org.opennms.web.rest.v2.bsm.model.BusinessServiceRequestDTO;
+import org.opennms.web.rest.v2.bsm.model.BusinessServiceResponseDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.transaction.annotation.Transactional;
+
+import com.google.common.collect.Sets;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @WebAppConfiguration
@@ -72,8 +78,8 @@ import org.springframework.transaction.annotation.Transactional;
     "classpath*:/META-INF/opennms/component-dao.xml",
     "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml",
     "classpath:/META-INF/opennms/mockEventIpcManager.xml",
-    "file:../../../opennms-webapp-rest/src/main/webapp/WEB-INF/applicationContext-svclayer.xml",
-    "file:../../../opennms-webapp-rest/src/main/webapp/WEB-INF/applicationContext-cxf-common.xml" })
+    "file:../../../../opennms-webapp-rest/src/main/webapp/WEB-INF/applicationContext-svclayer.xml",
+    "file:../../../../opennms-webapp-rest/src/main/webapp/WEB-INF/applicationContext-cxf-common.xml" })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
 public class BusinessServiceRestServiceIT extends AbstractSpringJerseyRestTestCase {
@@ -106,7 +112,7 @@ public class BusinessServiceRestServiceIT extends AbstractSpringJerseyRestTestCa
     }
 
     public BusinessServiceRestServiceIT() {
-        super("file:../../../opennms-webapp-rest/src/main/webapp/WEB-INF/applicationContext-cxf-rest-v2.xml");
+        super("file:../../../../opennms-webapp-rest/src/main/webapp/WEB-INF/applicationContext-cxf-rest-v2.xml");
     }
 
     @Override
@@ -222,31 +228,41 @@ public class BusinessServiceRestServiceIT extends AbstractSpringJerseyRestTestCa
                 .addAttribute("some-key", "some-value")
                 .toEntity();
 
-        // TODO MVR somehow the rest API does not accept json anymore.
-//        sendData(POST, MediaType.APPLICATION_JSON, "/business-services", toJson(toRequestDto(bs), 201);
-        sendData(POST, MediaType.APPLICATION_XML, "/business-services", toXml(toRequestDto(bs)), 201);
-        Assert.assertEquals(databasePopulator.expectedBsCount(1), m_businessServiceDao.findAll().size());
+        sendData(POST, MediaType.APPLICATION_JSON, "/business-services", toJson(toRequestDto(bs)), 201);
+        sendData(POST, MediaType.APPLICATION_XML, "/business-services", toXml(toRequestDto(bs)) , 201);
+        Assert.assertEquals(databasePopulator.expectedBsCount(2), m_businessServiceDao.findAll().size());
     }
 
     @Test
     @JUnitTemporaryDatabase
     @Transactional
     public void canUpdateBusinessService() throws Exception {
-        BusinessServiceEntity service = new BusinessServiceEntity();
-        service.setName("Dummy Service");
-        service.setReductionFunction(m_mostCritical);
-        final Long serviceId = m_businessServiceDao.save(service);
+        // initialize
+        BusinessServiceEntity bs = new BusinessServiceEntityBuilder()
+                .name("Dummy Service")
+                .addAttribute("some-key", "some-value")
+                .toEntity();
+
+        final Long serviceId = m_businessServiceDao.save(bs);
         m_businessServiceDao.flush();
-        final String businessServiceDtoXml = "<business-service>" +
-                "    <name>Dummy Service Updated</name>" +
-                "    <reductionKeys>" +
-                "        <reductionKey>key1updated</reductionKey>" +
-                "    </reductionKeys>" +
-                "</business-service>";
-        sendData(PUT, MediaType.APPLICATION_XML, "/business-services/" + serviceId, businessServiceDtoXml, 204);
-        assertEquals(1, m_businessServiceDao.findAll().size());
-        assertEquals("Expected that the update BusinessService name is present.", "Dummy Service Updated", m_businessServiceDao.findAll().get(0).getName());
-        assertEquals("Expected that there is exactly one reductionkey on the BusinessService.", 1, m_businessServiceDao.findAll().get(0).getReductionKeys().size());
-        assertTrue("Expected that the update reductionkey is present.", m_businessServiceDao.findAll().get(0).getReductionKeys().contains("key1updated"));
+
+        // update
+        BusinessServiceRequestDTO requestDTO = toRequestDto(bs);
+        requestDTO.setName("New Name");
+        requestDTO.getAttributes().put("key", "value");
+
+        sendData(PUT, MediaType.APPLICATION_JSON, "/business-services/" + serviceId, toJson(requestDTO), 204);
+        sendData(PUT, MediaType.APPLICATION_XML, "/business-services/" + serviceId, toXml(requestDTO), 204);
+
+        // verify
+        BusinessServiceResponseDTO responseDTO = getXmlObject(
+                JAXBContext.newInstance(BusinessServiceResponseDTO.class, ResourceLocation.class),
+                "/business-services/" + serviceId,
+                200,
+                BusinessServiceResponseDTO.class);
+        Assert.assertEquals(requestDTO.getName(), responseDTO.getName());
+        Assert.assertEquals(Sets.newHashSet(), responseDTO.getIpServices());
+        Assert.assertEquals(requestDTO.getAttributes(), responseDTO.getAttributes());
+        Assert.assertEquals(requestDTO.getChildServices(), responseDTO.getChildServices());
     }
 }

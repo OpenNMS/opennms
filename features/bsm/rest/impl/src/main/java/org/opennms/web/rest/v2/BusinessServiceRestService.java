@@ -31,6 +31,7 @@ package org.opennms.web.rest.v2;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -60,6 +61,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Path("business-services")
 @Transactional
 @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_ATOM_XML})
+@Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_ATOM_XML})
 public class BusinessServiceRestService {
 
     @Autowired
@@ -145,6 +147,34 @@ public class BusinessServiceRestService {
     public Response getIpService(@PathParam("ipServiceId") final Integer ipServiceId) {
         IpService ipService = getManager().getIpServiceById(ipServiceId);
         return Response.ok().entity(transform(ipService)).build();
+    }
+
+    @POST
+    @Path("{id}/ip-service/{ipServiceId}")
+    public Response attachIpService(@PathParam("id") final Long serviceId,
+                                    @PathParam("ipServiceId") final Integer ipServiceId) {
+        final BusinessService service = getManager().getBusinessServiceById(serviceId);
+        final IpService ipService = getManager().getIpServiceById(ipServiceId);
+        boolean changed = getManager().assignIpService(service, ipService);
+        if (!changed) {
+            return Response.notModified().build();
+        }
+        service.save();
+        return Response.ok().build();
+    }
+
+    @DELETE
+    @Path("{id}/ip-service/{ipServiceId}")
+    public Response detachIpService(@PathParam("id") final Long serviceId,
+                                    @PathParam("ipServiceId") final Integer ipServiceId) {
+        final BusinessService service = getManager().getBusinessServiceById(serviceId);
+        final IpService ipService = getManager().getIpServiceById(ipServiceId);
+        boolean changed = getManager().removeIpService(service, ipService);
+        if (!changed) {
+            return Response.notModified().build();
+        }
+        service.save();
+        return Response.ok().build();
     }
 
     @POST

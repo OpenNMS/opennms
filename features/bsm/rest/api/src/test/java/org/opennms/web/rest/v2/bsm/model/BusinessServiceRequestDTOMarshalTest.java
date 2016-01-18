@@ -46,6 +46,7 @@ public class BusinessServiceRequestDTOMarshalTest extends MarshalAndUnmarshalTes
         BusinessServiceRequestDTO requestDTO = new BusinessServiceRequestDTO();
         requestDTO.setName("Web Servers");
         requestDTO.addAttribute("dc", "RDU");
+        requestDTO.addAttribute("some-key", "some-value");
         requestDTO.addChildService(2L);
         requestDTO.addChildService(3L);
         // TODO MVR what to do with parent services? Are they set automatically?
@@ -59,7 +60,8 @@ public class BusinessServiceRequestDTOMarshalTest extends MarshalAndUnmarshalTes
             "{" +
             "  \"name\" : \"Web Servers\"," +
             "  \"attributes\" : {" +
-            "    \"dc\" : \"RDU\"" +
+            "    \"dc\" : \"RDU\"," +
+            "    \"some-key\" : \"some-value\"" +
             "  }," +
             "  \"childServices\" : [ 2, 3 ]," +
             "  \"ipServices\" : [ 1 ]" +
@@ -71,6 +73,10 @@ public class BusinessServiceRequestDTOMarshalTest extends MarshalAndUnmarshalTes
                    "<key>dc</key>" +
                    "<value>RDU</value>" +
                  "</attribute>" +
+                "<attribute>" +
+                  "<key>some-key</key>" +
+                  "<value>some-value</value>" +
+                "</attribute>" +
                "</attributes>" +
                "<ip-services>" +
                    "<ip-service>1</ip-service>" +

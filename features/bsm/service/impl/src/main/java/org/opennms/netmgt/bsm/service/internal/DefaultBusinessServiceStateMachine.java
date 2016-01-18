@@ -29,6 +29,7 @@
 package org.opennms.netmgt.bsm.service.internal;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -59,6 +60,7 @@ public class DefaultBusinessServiceStateMachine implements BusinessServiceStateM
     private final Map<BusinessServiceEntity, OnmsSeverity> m_businessServiceSeverity = Maps.newHashMap();
     private final Map<String, OnmsSeverity> m_reductionKeyToSeverity = Maps.newHashMap();
     private final Set<Integer> m_ipServiceIds = Sets.newHashSet();
+    private final HashMap<Integer, Set<BusinessServiceEntity>> m_levelToBusinessServiceMapping = Maps.newHashMap();
 
     @Override
     public void setBusinessServices(List<BusinessServiceEntity> businessServices) {
@@ -71,6 +73,7 @@ public class DefaultBusinessServiceStateMachine implements BusinessServiceStateM
             m_businessServiceSeverity.clear();
             m_reductionKeyToSeverity.clear();
             m_ipServiceIds.clear();
+            m_levelToBusinessServiceMapping.clear();
 
             // Rebuild the reduction Key set
             for (BusinessServiceEntity businessService : businessServices) {
@@ -89,16 +92,19 @@ public class DefaultBusinessServiceStateMachine implements BusinessServiceStateM
     }
 
     protected void determineHierarchyLevel(int level, List<BusinessServiceEntity> elements) {
-        elements.forEach(s -> {
+        elements.forEach(bs -> {
             // elements can be children of multiple parents, we use the maximum level
-            s.setLevel(Math.max(s.getLevel() == null ? 0 : s.getLevel(), level));
+            bs.setLevel(Math.max(bs.getLevel() == null ? 0 : bs.getLevel(), level));
             // Afterwards move to next level
-            determineHierarchyLevel(level + 1, new ArrayList<>(s.getChildServices()));
+            determineHierarchyLevel(level + 1, new ArrayList<>(bs.getChildServices()));
         });
     }
 
     protected List<BusinessServiceEntity> getRoots(List<BusinessServiceEntity> businessServiceEntities) {
-        return businessServiceEntities.stream().filter(eachService -> eachService.isRoot()).collect(Collectors.toList());
+        return businessServiceEntities
+                .stream()
+                .filter(eachService -> eachService.isRoot())
+                .collect(Collectors.toList());
     }
 
     private void addReductionKey(String reductionKey, BusinessServiceEntity bs) {
