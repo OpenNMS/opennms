@@ -28,15 +28,17 @@
 
 package org.opennms.netmgt.bsm.test;
 
+import org.junit.Assert;
+import org.junit.Test;
+
 public class BusinessServiceEntityBuilderTest {
 
-    // TODO what to do with this?
-//    @Test
-//    public void verifyBuild() {
-//        Assert.assertNotNull(new BusinessServiceEntityBuilder()
-//                .name("Business Service 1")
-//                .addAttribute("location", "Pittsboro")
-//                .addAttribute("email", "a@b.com")
-//                .toEntity());
-//    }
+    @Test
+    public void verifyBuild() {
+        Assert.assertNotNull(new BusinessServiceEntityBuilder()
+                .name("Business Service 1")
+                .addAttribute("location", "Pittsboro")
+                .addAttribute("email", "a@b.com")
+                .toEntity());
+    }
 }

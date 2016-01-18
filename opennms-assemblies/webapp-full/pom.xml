@@ -103,7 +103,7 @@
   <dependencies>
     <dependency>
       <groupId>org.opennms.features.bsm</groupId>
-      <artifactId>org.opennms.features.bsm.rest</artifactId>
+      <artifactId>org.opennms.features.bsm.rest.impl</artifactId>
       <version>${project.version}</version>
       <exclusions>
         <exclusion>
