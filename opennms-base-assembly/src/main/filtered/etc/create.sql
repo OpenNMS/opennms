@@ -931,7 +931,7 @@ create table alarms (
     nodeID                  INTEGER, CONSTRAINT fk_alarms_nodeid FOREIGN KEY (nodeID) REFERENCES node (nodeID) ON DELETE CASCADE,
     ipaddr                  VARCHAR(39),
     serviceID               INTEGER,
-    reductionKey            VARCHAR(256),
+    reductionKey            TEXT,
     alarmType               INTEGER,
     counter                 INTEGER NOT NULL,
     severity                INTEGER NOT NULL,
@@ -2694,4 +2694,18 @@ CREATE TABLE bsm_service_ifservices (
   REFERENCES ifservices (id) ON DELETE CASCADE,
   CONSTRAINT fk_bsm_service_ifservices_service_id FOREIGN KEY (bsm_service_id)
   REFERENCES bsm_service (id) ON DELETE CASCADE
+);
+
+CREATE TABLE bsm_service_reductionkeys (
+  bsm_service_id integer NOT NULL,
+  reductionkey TEXT NOT NULL,
+  CONSTRAINT bsm_service_reductionkeys_pkey PRIMARY KEY (bsm_service_id, reductionkey)
+);
+
+CREATE TABLE bsm_service_children (
+    bsm_service_parent integer NOT NULL,
+    bsm_service_child integer NOT NULL,
+    CONSTRAINT bsm_service_children_pkey PRIMARY KEY (bsm_service_parent, bsm_service_child),
+    CONSTRAINT fk_bsm_service_parent_service_id FOREIGN KEY (bsm_service_parent) REFERENCES bsm_service (id) ON DELETE CASCADE,
+    CONSTRAINT fk_bsm_service_child_service_id FOREIGN KEY (bsm_service_child) REFERENCES bsm_service (id) ON DELETE CASCADE
 );
