@@ -84,7 +84,8 @@ public class BusinessServicesStatusProvider implements StatusProvider {
 
     private OnmsSeverity getOperationalStatus(AbstractBusinessServiceVertex vertex) {
         if (vertex instanceof BusinessServiceVertex) {
-            return businessServiceManager.getOperationalStatusForBusinessService(((BusinessServiceVertex) vertex).getServiceId());
+            BusinessServiceVertex bsVertex = (BusinessServiceVertex) vertex;
+            return businessServiceManager.getBusinessServiceById(bsVertex.getServiceId()).getOperationalStatus();
         }
         if (vertex instanceof IpServiceVertex) {
             IpServiceVertex ipServiceVertex = (IpServiceVertex) vertex;

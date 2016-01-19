@@ -42,7 +42,7 @@ import org.opennms.features.topology.api.topo.Criteria;
 import org.opennms.features.topology.api.topo.Edge;
 import org.opennms.features.topology.api.topo.GraphProvider;
 import org.opennms.features.topology.api.topo.SimpleEdgeProvider;
-import org.opennms.netmgt.bsm.persistence.api.BusinessService;
+import org.opennms.netmgt.bsm.persistence.api.BusinessServiceEntity;
 import org.opennms.netmgt.bsm.service.BusinessServiceManager;
 import org.opennms.netmgt.bsm.service.model.BusinessServiceDTO;
 import org.opennms.netmgt.bsm.service.model.IpServiceDTO;
@@ -140,7 +140,7 @@ public class BusinessServicesTopologyProvider extends AbstractTopologyProvider i
     @Override
     public Criteria getDefaultCriteria() {
         // Grab the business service with the smallest id
-        List<BusinessServiceDTO> businessServices = businessServiceManager.findMatching(new CriteriaBuilder(BusinessService.class).orderBy("id", true).limit(1).toCriteria());
+        List<BusinessService> businessServices = businessServiceManager.findMatching(new CriteriaBuilder(BusinessServiceEntity.class).orderBy("id", true).limit(1).toCriteria());
 
         // If one was found, use it for the default focus
         if (!businessServices.isEmpty()) {
