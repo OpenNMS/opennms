@@ -29,6 +29,7 @@
 package org.opennms.netmgt.bsm.persistence;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -37,13 +38,17 @@ import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.MockDatabase;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
-import org.opennms.netmgt.bsm.persistence.api.BusinessService;
 import org.opennms.netmgt.bsm.persistence.api.BusinessServiceDao;
+import org.opennms.netmgt.bsm.persistence.api.BusinessServiceEntity;
+import org.opennms.netmgt.bsm.test.BusinessServiceEntityBuilder;
 import org.opennms.netmgt.dao.DatabasePopulator;
+import org.opennms.netmgt.dao.api.MonitoredServiceDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.test.JUnitConfigurationEnvironment;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.annotation.Transactional;
@@ -62,6 +67,8 @@ import org.springframework.transaction.annotation.Transactional;
 @JUnitTemporaryDatabase(reuseDatabase = false, tempDbClass = MockDatabase.class)
 public class BusinessServiceDaoIT {
 
+    private static final Logger LOG = LoggerFactory.getLogger(BusinessServiceDaoIT.class);
+
     @Autowired
     private DatabasePopulator m_databasePopulator;
 
@@ -69,41 +76,50 @@ public class BusinessServiceDaoIT {
     private BusinessServiceDao m_businessServiceDao;
 
     @Autowired
+    private MonitoredServiceDao m_monitoredServiceDao;
+
+    @Autowired
     private NodeDao m_nodeDao;
 
     @Before
     public void setUp() {
         BeanUtils.assertAutowiring(this);
+        m_databasePopulator.setPopulateInSeparateTransaction(false);
         m_databasePopulator.populateDatabase();
     }
 
     @Test
     @Transactional
     public void canCreateReadUpdateAndDeleteBusinessServices() {
+        final int ifServiceCount = m_monitoredServiceDao.countAll();
+
         // Initially there should be no business services
         assertEquals(0, m_businessServiceDao.countAll());
 
         // Create a business service
-        BusinessService bs = new BusinessService();
-        bs.setName("Web Servers");
-        bs.setAttribute("dc", "RDU");
-
+        BusinessServiceEntity bs = new BusinessServiceEntityBuilder()
+                .name("Web Servers")
+                .addAttribute("dc", "RDU")
+                .addReductionKey("TestReductionKeyA")
+                .addReductionKey("TestReductionKeyB")
+                .toEntity();
         m_businessServiceDao.save(bs);
         m_businessServiceDao.flush();
 
         // Read a business service
         assertEquals(bs, m_businessServiceDao.get(bs.getId()));
+        assertEquals(2, m_businessServiceDao.get(bs.getId()).getReductionKeys().size());
 
         // Update a business service
         bs.setName("Application Servers");
-        bs.setAttribute("dc", "!RDU");
-        bs.setAttribute("cd", "/");
+        bs.getAttributes().put("dc", "!RDU");
+        bs.getAttributes().put("cd", "/");
 
         // Grab the first monitored service from node 1
         OnmsMonitoredService ipService = m_databasePopulator.getNode1()
                 .getIpInterfaces().iterator().next()
                 .getMonitoredServices().iterator().next();
-        bs.addIpService(ipService);
+        bs.getIpServices().add(ipService);
 
         m_businessServiceDao.update(bs);
         m_businessServiceDao.flush();
@@ -117,21 +133,25 @@ public class BusinessServiceDaoIT {
 
         // There should be no business services after the delete
         assertEquals(0, m_businessServiceDao.countAll());
+
+        // No if service should have been deleted
+        assertEquals(ifServiceCount, m_monitoredServiceDao.countAll());
     }
 
     @Test
-    public void businessServicesWithRelatedIpServicesAreDeletedOnCascade() throws InterruptedException {
+    @Transactional
+    public void verifyBusinessServicesWithRelatedIpServicesAreDeletedOnCascade() throws InterruptedException {
         // Initially there should be no business services
         assertEquals("Check that there are no initial BusinessServices", 0, m_businessServiceDao.countAll());
 
         // Create a business service with an associated IP Service
-        BusinessService bs = new BusinessService();
+        BusinessServiceEntity bs = new BusinessServiceEntity();
         bs.setName("Mont Cascades");
         OnmsNode node = m_databasePopulator.getNode1();
         OnmsMonitoredService ipService = node
                 .getIpInterfaces().iterator().next()
                 .getMonitoredServices().iterator().next();
-        bs.addIpService(ipService);
+        bs.getIpServices().add(ipService);
 
         m_businessServiceDao.save(bs);
         m_businessServiceDao.flush();
@@ -139,13 +159,15 @@ public class BusinessServiceDaoIT {
         // We should have a single business service with a single IP service associated
         assertEquals(1, m_businessServiceDao.countAll());
         assertEquals(1, m_businessServiceDao.get(bs.getId()).getIpServices().size());
+        assertNotNull(m_monitoredServiceDao.get(ipService.getId()));
 
         // Now delete the node
         m_nodeDao.delete(node);
         m_nodeDao.flush();
 
-        // The business service should still be present, but the IP service should have been deleted
-        // by the foreign key constraint
+        // The business service should still be present, but the IP service should have been deleted by the foreign
+        // key constraint. We have to clear the session, otherwise hibernate does not know about the node deletion
+        m_businessServiceDao.clear();
         assertEquals(1, m_businessServiceDao.countAll());
         assertEquals(0, m_businessServiceDao.get(bs.getId()).getIpServices().size());
     }

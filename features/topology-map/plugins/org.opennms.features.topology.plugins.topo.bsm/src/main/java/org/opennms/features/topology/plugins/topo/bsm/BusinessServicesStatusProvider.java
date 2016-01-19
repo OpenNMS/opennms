@@ -84,11 +84,12 @@ public class BusinessServicesStatusProvider implements StatusProvider {
 
     private OnmsSeverity getOperationalStatus(AbstractBusinessServiceVertex vertex) {
         if (vertex instanceof BusinessServiceVertex) {
-            return businessServiceManager.getOperationalStatusForBusinessService(((BusinessServiceVertex) vertex).getServiceId());
+            BusinessServiceVertex bsVertex = (BusinessServiceVertex) vertex;
+            businessServiceManager.getBusinessServiceById(bsVertex.getServiceId()).getOperationalStatus();
         }
         if (vertex instanceof IpServiceVertex) {
             IpServiceVertex ipServiceVertex = (IpServiceVertex) vertex;
-            return businessServiceManager.getOperationalStatusForIPService(ipServiceVertex.getIpServiceId());
+            return businessServiceManager.getIpServiceById(ipServiceVertex.getIpServiceId()).getOperationalStatus();
         }
         throw new IllegalStateException("Unsupported BusinessServiceVertex type: " + vertex.getClass());
     }

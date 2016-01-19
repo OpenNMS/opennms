@@ -28,15 +28,14 @@
 
 package org.opennms.features.topology.plugins.topo.bsm;
 
-import org.opennms.netmgt.bsm.service.model.BusinessServiceDTO;
+import org.opennms.netmgt.bsm.service.model.BusinessService;
 
 class BusinessServiceVertex extends AbstractBusinessServiceVertex {
 
     private final Long serviceId;
 
-    public BusinessServiceVertex(BusinessServiceDTO businessService) {
+    public BusinessServiceVertex(BusinessService businessService) {
         this(String.valueOf(businessService.getId()), businessService.getName(), businessService.getId());
-
     }
 
     private BusinessServiceVertex(String id, String name, Long serviceId) {

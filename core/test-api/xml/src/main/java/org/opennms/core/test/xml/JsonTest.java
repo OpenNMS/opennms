@@ -1,5 +1,10 @@
 package org.opennms.core.test.xml;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+
+import org.apache.commons.io.IOUtils;
 import org.codehaus.jackson.map.AnnotationIntrospector;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.xc.JaxbAnnotationIntrospector;
@@ -8,8 +13,6 @@ import org.junit.Assert;
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.io.IOException;
 
 
 public final class JsonTest {
@@ -31,6 +34,18 @@ public final class JsonTest {
         String json = DEFAULT_OBJECT_MAPPER.writerWithDefaultPrettyPrinter().writeValueAsString(object);
         LOG.debug("JSON: {}", json);
         return json;
+    }
+
+    public static <T> T unmarshalFromJson(String json, Class<T> expectedResultType) throws IOException {
+        return DEFAULT_OBJECT_MAPPER.readValue(json, expectedResultType);
+    }
+
+    // reads all data from the given input stream
+    public static String read(InputStream inputStream) throws IOException {
+        try (ByteArrayOutputStream output = new ByteArrayOutputStream()) {
+            IOUtils.copy(inputStream, output);
+            return output.toString();
+        }
     }
 
     public static void assertJsonEquals(String expected, String actual) {

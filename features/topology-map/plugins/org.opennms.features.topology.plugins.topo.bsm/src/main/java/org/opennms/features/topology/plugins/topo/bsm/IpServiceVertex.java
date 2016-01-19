@@ -28,8 +28,8 @@
 
 package org.opennms.features.topology.plugins.topo.bsm;
 
-import org.opennms.netmgt.bsm.service.model.BusinessServiceDTO;
-import org.opennms.netmgt.bsm.service.model.IpServiceDTO;
+import org.opennms.netmgt.bsm.service.model.BusinessService;
+import org.opennms.netmgt.bsm.service.model.IpService;
 
 public class IpServiceVertex extends AbstractBusinessServiceVertex {
 
@@ -37,7 +37,7 @@ public class IpServiceVertex extends AbstractBusinessServiceVertex {
 
     private final Integer ipServiceId;
 
-    public IpServiceVertex(BusinessServiceDTO businessService, IpServiceDTO ipServiceDTO) {
+    public IpServiceVertex(BusinessService businessService, IpService ipServiceDTO) {
         this(businessService.getId() + ":" + ipServiceDTO.getId(),
                 ipServiceDTO.getServiceName(),
                 businessService.getId(),

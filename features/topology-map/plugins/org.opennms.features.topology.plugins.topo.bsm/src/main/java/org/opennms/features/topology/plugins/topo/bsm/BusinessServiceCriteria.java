@@ -36,7 +36,7 @@ import org.opennms.features.topology.api.NamespaceAware;
 import org.opennms.features.topology.api.support.VertexHopGraphProvider.VertexHopCriteria;
 import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.netmgt.bsm.service.BusinessServiceManager;
-import org.opennms.netmgt.bsm.service.model.BusinessServiceDTO;
+import org.opennms.netmgt.bsm.service.model.BusinessService;
 
 public class BusinessServiceCriteria extends VertexHopCriteria implements NamespaceAware {
     private final String businessServiceId;
@@ -103,7 +103,7 @@ public class BusinessServiceCriteria extends VertexHopCriteria implements Namesp
     public Set<VertexRef> getVertices() {
         Set<VertexRef> vertices = new HashSet<>();
 
-        BusinessServiceDTO businessService = businessServiceManager.getById(Long.parseLong(businessServiceId));
+        BusinessService businessService = businessServiceManager.getBusinessServiceById(Long.parseLong(businessServiceId));
         if (businessService != null) {
             vertices.add(new BusinessServiceVertex(businessService));
         }

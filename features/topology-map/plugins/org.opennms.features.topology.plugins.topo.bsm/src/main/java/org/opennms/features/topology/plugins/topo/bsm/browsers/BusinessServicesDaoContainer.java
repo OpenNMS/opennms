@@ -30,18 +30,18 @@ package org.opennms.features.topology.plugins.topo.bsm.browsers;
 
 import org.opennms.features.topology.api.VerticesUpdateManager;
 import org.opennms.features.topology.plugins.browsers.OnmsDaoContainer;
-import org.opennms.netmgt.bsm.persistence.api.BusinessService;
 import org.opennms.netmgt.bsm.persistence.api.BusinessServiceDao;
+import org.opennms.netmgt.bsm.persistence.api.BusinessServiceEntity;
 
-public class BusinessServicesDaoContainer extends OnmsDaoContainer<BusinessService, Long> {
+public class BusinessServicesDaoContainer extends OnmsDaoContainer<BusinessServiceEntity, Long> {
     private static final long serialVersionUID = 1L;
 
     public BusinessServicesDaoContainer(BusinessServiceDao businessServiceDao) {
-        super(BusinessService.class, businessServiceDao);
+        super(BusinessServiceEntity.class, businessServiceDao);
     }
 
     @Override
-    protected Long getId(BusinessService bean) {
+    protected Long getId(BusinessServiceEntity bean) {
         return bean == null ? null : bean.getId();
     }
 
@@ -49,5 +49,4 @@ public class BusinessServicesDaoContainer extends OnmsDaoContainer<BusinessServi
     public void verticesUpdated(VerticesUpdateManager.VerticesUpdateEvent event) {
 
     }
-
 }

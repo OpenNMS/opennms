@@ -42,10 +42,9 @@ import org.opennms.features.topology.api.topo.Criteria;
 import org.opennms.features.topology.api.topo.Edge;
 import org.opennms.features.topology.api.topo.GraphProvider;
 import org.opennms.features.topology.api.topo.SimpleEdgeProvider;
-import org.opennms.netmgt.bsm.persistence.api.BusinessService;
 import org.opennms.netmgt.bsm.service.BusinessServiceManager;
-import org.opennms.netmgt.bsm.service.model.BusinessServiceDTO;
-import org.opennms.netmgt.bsm.service.model.IpServiceDTO;
+import org.opennms.netmgt.bsm.service.model.BusinessService;
+import org.opennms.netmgt.bsm.service.model.IpService;
 import org.opennms.netmgt.vaadin.core.TransactionAwareBeanProxyFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -77,23 +76,23 @@ public class BusinessServicesTopologyProvider extends AbstractTopologyProvider i
     private void load() {
         resetContainer();
         // we only consider root business services to build the graph
-        Collection<BusinessServiceDTO> businessServices = Collections2.filter(businessServiceManager.findAll(),
-                new Predicate<BusinessServiceDTO>() {
+        Collection<BusinessService> businessServices = Collections2.filter(businessServiceManager.getAllBusinessServices(),
+                new Predicate<BusinessService>() {
                     @Override
-                    public boolean apply(BusinessServiceDTO input) {
+                    public boolean apply(BusinessService input) {
                         return input.getParentServices().isEmpty();
                     }
                 });
         addBusinessServices(null, businessServices);
     }
 
-    private void addBusinessServices(BusinessServiceVertex parentVertex, Collection<BusinessServiceDTO> businessServices) {
-        for (BusinessServiceDTO eachBusinessService : businessServices) {
+    private void addBusinessServices(BusinessServiceVertex parentVertex, Collection<BusinessService> businessServices) {
+        for (BusinessService eachBusinessService : businessServices) {
             addBusinessService(parentVertex, eachBusinessService);
         }
     }
 
-    private void addBusinessService(BusinessServiceVertex parentVertex, BusinessServiceDTO businessService) {
+    private void addBusinessService(BusinessServiceVertex parentVertex, BusinessService businessService) {
         // create the vertex itself
         BusinessServiceVertex businessServiceVertex = new BusinessServiceVertex(businessService);
         addVertices(businessServiceVertex);
@@ -106,7 +105,7 @@ public class BusinessServicesTopologyProvider extends AbstractTopologyProvider i
         }
 
         // add ip services
-        for (IpServiceDTO eachIpService : businessService.getIpServices()) {
+        for (IpService eachIpService : businessService.getIpServices()) {
             AbstractBusinessServiceVertex serviceVertex = new IpServiceVertex(businessService, eachIpService);
             businessServiceVertex.addChildren(serviceVertex);
             addVertices(serviceVertex);
@@ -140,11 +139,11 @@ public class BusinessServicesTopologyProvider extends AbstractTopologyProvider i
     @Override
     public Criteria getDefaultCriteria() {
         // Grab the business service with the smallest id
-        List<BusinessServiceDTO> businessServices = businessServiceManager.findMatching(new CriteriaBuilder(BusinessService.class).orderBy("id", true).limit(1).toCriteria());
+        List<BusinessService> businessServices = businessServiceManager.findMatching(new CriteriaBuilder(BusinessService.class).orderBy("id", true).limit(1).toCriteria());
 
         // If one was found, use it for the default focus
         if (!businessServices.isEmpty()) {
-            BusinessServiceDTO businessService = businessServices.iterator().next();
+            BusinessService businessService = businessServices.iterator().next();
             return new BusinessServiceCriteria(String.valueOf(businessService.getId()), businessService.getName(), businessServiceManager);
         }
         return null;
