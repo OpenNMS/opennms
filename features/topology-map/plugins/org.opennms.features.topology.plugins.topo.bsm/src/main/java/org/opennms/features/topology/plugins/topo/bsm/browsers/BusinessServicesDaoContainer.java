@@ -28,10 +28,15 @@
 
 package org.opennms.features.topology.plugins.topo.bsm.browsers;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+
 import org.opennms.features.topology.api.VerticesUpdateManager;
 import org.opennms.features.topology.plugins.browsers.OnmsDaoContainer;
 import org.opennms.netmgt.bsm.persistence.api.BusinessServiceDao;
 import org.opennms.netmgt.bsm.persistence.api.BusinessServiceEntity;
+import org.opennms.netmgt.dao.api.OnmsDao;
 
 public class BusinessServicesDaoContainer extends OnmsDaoContainer<BusinessServiceEntity, Long> {
     private static final long serialVersionUID = 1L;
@@ -48,5 +53,13 @@ public class BusinessServicesDaoContainer extends OnmsDaoContainer<BusinessServi
     @Override
     public void verticesUpdated(VerticesUpdateManager.VerticesUpdateEvent event) {
 
+    }
+
+    @Override
+    protected List<BusinessServiceEntity> getItemsForCache(OnmsDao<BusinessServiceEntity, Long> dao, Page page) {
+        // TODO MVR somehow hibernate returns more objects than there are actually. Probably a hashCode(), equals() thing
+        // see BSM-104 for more details. We use the following work around to get past that problem for now
+        List<BusinessServiceEntity> itemsForCache = super.getItemsForCache(dao, page);
+        return new ArrayList<>(new HashSet<>(itemsForCache));
     }
 }
