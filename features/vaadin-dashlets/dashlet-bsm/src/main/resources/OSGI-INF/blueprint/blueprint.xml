@@ -1,24 +1,37 @@
 <blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0 http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd">
 
-    <bean id="businessServiceManager" class="org.opennms.netmgt.bsm.service.internal.BusinessServiceManagerImpl" />
+    <reference id="businessServiceManager" interface="org.opennms.netmgt.bsm.service.BusinessServiceManager" availability="mandatory"/>
 
     <bean id="bsmDashletFactory" class="org.opennms.features.vaadin.dashboard.dashlets.BSMDashletFactory" scope="singleton">
         <argument ref="businessServiceManager"/>
 
         <property name="name" value="BSM"/>
-        <property name="boostable" value="true"/>
+        <property name="boostable" value="false"/>
         <property name="dashboardSuitable" value="true"/>
 
         <property name="requiredParameters">
             <map>
-                <entry key="param1" value="bla1"/>
-                <entry key="param2" value="bla2"/>
+                <entry key="filterByName" value="no"/>
+                <entry key="nameValue" value=".*"/>
+                <entry key="filterByAttribute" value="no"/>
+                <entry key="attributeKey" value="key"/>
+                <entry key="attributeValue" value=".*"/>
+                <entry key="filterBySeverity" value="yes"/>
+                <entry key="severityValue" value="WARNING"/>
+                <entry key="resultsLimit" value="10"/>
             </map>
         </property>
+
         <property name="requiredParameterDescriptions">
             <map>
-                <entry key="param1" value="Bla bla blupp"/>
-                <entry key="param2" value="Bla bla blupp"/>
+                <entry key="filterByName" value="Indicates whether results should be filtered by name"/>
+                <entry key="nameValue" value="A regular expression for matching the name value"/>
+                <entry key="filterByAttribute" value="Indicates whether results should be filtered by attribute "/>
+                <entry key="attributeKey" value="The attribute key to search for"/>
+                <entry key="attributeValue" value="A regular expression for matching the attribute value"/>
+                <entry key="filterBySeverity" value="Indicates whether results should be filtered by severity "/>
+                <entry key="severityValue" value="The severity filter value"/>
+                <entry key="resultsLimit" value="The results limit"/>
             </map>
         </property>
     </bean>
