@@ -82,7 +82,7 @@ public class BSMAdminIT extends OpenNMSSeleniumTestCase {
 
     private void removeTestSetup() throws Exception {
         requisitionUtils.deleteNode("NodeA");
-        requisitionUtils.deleteForeignSource();
+        requisitionUtils.deleteDeployedForeignSource();
     }
 
     private void createBusinessService(String businessServiceName) throws InterruptedException {
