@@ -253,9 +253,12 @@ public class BSMAdminIT extends OpenNMSSeleniumTestCase {
 
         // Verify that business service are gone
         // we have to delete backwards
-        for (int i = serviceNames.length - 1 ; i >= 0; i--) {
+        for (int i = 0; i < serviceNames.length; i++) {
             String eachServiceName = serviceNames[i];
             findDeleteButton(eachServiceName).click();
+            if (i == 0) { // we remove the parent element first, the confirm dialog must be present
+                findElementById("confirmationDialog.button.ok").click();
+            }
             verifyElementNotPresent(By.id("deleteButton-" + eachServiceName));
         }
     }

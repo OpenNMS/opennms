@@ -134,7 +134,7 @@ public class BusinessServiceEntity {
         return m_attributes.remove(key);
     }
 
-    @OneToMany(fetch = FetchType.LAZY)
+    @OneToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "bsm_service_ifservices",
                joinColumns = @JoinColumn(name = "bsm_service_id", referencedColumnName = "id"),
                inverseJoinColumns = @JoinColumn(name="ifserviceid"))
@@ -151,6 +151,31 @@ public class BusinessServiceEntity {
         return m_ipServices.stream()
             .map(ipSvc -> ipSvc.getId())
             .collect(Collectors.toSet());
+    }
+
+    @ElementCollection(fetch = FetchType.EAGER)
+    @JoinTable(name = "bsm_service_reductionkeys", joinColumns = @JoinColumn(name = "bsm_service_id", referencedColumnName = "id"))
+    @Column(name = "reductionkey", nullable = false)
+    public Set<String> getReductionKeys() {
+        return m_reductionKeys;
+    }
+
+    public void setReductionKeys(Set<String> m_reductionKeys) {
+        this.m_reductionKeys = m_reductionKeys;
+    }
+
+    public void addReductionKey(String reductionKey) {
+        m_reductionKeys.add(reductionKey);
+    }
+
+    @Transient
+    public Set<String> getAllReductionKeys() {
+        Set<String> allReductionKeys = Sets.newHashSet();
+        for (OnmsMonitoredService ipService : getIpServices()) {
+            allReductionKeys.addAll(OnmsMonitoredServiceHelper.getReductionKeys(ipService));
+        }
+        allReductionKeys.addAll(getReductionKeys());
+        return allReductionKeys;
     }
 
     @ManyToMany(fetch = FetchType.EAGER,
@@ -188,32 +213,22 @@ public class BusinessServiceEntity {
             return false;
         }
         final BusinessServiceEntity other = (BusinessServiceEntity) obj;
-
-        return Objects.equals(m_id, other.m_id)
-                && Objects.equals(m_name, other.m_name)
-                && Objects.equals(m_attributes, other.m_attributes)
-                && Objects.equals(m_childServices, other.m_childServices)
-                && Objects.equals(getIpServicesIds(), other.getIpServicesIds())
-                && Objects.equals(m_reductionKeys, other.m_reductionKeys);
-    }
-
-    @Transient
-    private Set<Integer> getIpServicesIds() {
-        return m_ipServices.stream().map(e -> e.getId()).collect(Collectors.toSet());
+        return Objects.equals(getId(), other.getId())
+                && Objects.equals(getName(), other.getName());
     }
 
     @Override
     public int hashCode() {
-        return com.google.common.base.Objects.hashCode(m_id, m_name, m_attributes, m_childServices, getIpServiceIds(), m_reductionKeys);
+        return Objects.hash(m_id, m_name);
     }
 
     @Override
     public String toString() {
+        // we do not include ip services here, otherwise we cannot use this object properly
         return com.google.common.base.Objects.toStringHelper(this)
                 .add("id", m_id)
                 .add("name", m_name)
                 .add("attributes", m_attributes)
-                .add("ipServices", m_ipServices)
                 .add("childServices", m_childServices)
                 .add("reductionKeys", m_reductionKeys)
                 .toString();
