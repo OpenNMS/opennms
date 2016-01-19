@@ -103,7 +103,7 @@ drop sequence filternextid;
 
 drop index filternamesidx;
 
---# Begin quartz persistence
+--# Begin quartz persistence 
 
 drop table qrtz_job_listeners;
 drop table qrtz_trigger_listeners;
@@ -120,10 +120,10 @@ drop table qrtz_calendars;
 
 --# End quartz persistence
 
-CREATE FUNCTION plpgsql_call_handler ()
+CREATE FUNCTION plpgsql_call_handler () 
     RETURNS OPAQUE AS '$libdir/plpgsql.so' LANGUAGE 'c';
 
-CREATE TRUSTED PROCEDURAL LANGUAGE 'plpgsql'
+CREATE TRUSTED PROCEDURAL LANGUAGE 'plpgsql' 
     HANDLER plpgsql_call_handler LANCOMPILER 'PL/pgSQL';
 
 --##################################################################
@@ -283,7 +283,7 @@ CREATE UNIQUE INDEX monitoringlocationstags_id_pkg_idx on monitoringlocationstag
 --# id           : The UUID of the system
 --# label        : Human-readable label for the system
 --# location     : The monitoring location associated with the system
---# type         : The type of monitoring system, one of "OpenNMS",
+--# type         : The type of monitoring system, one of "OpenNMS", 
 --#                "Remote Poller" or "Minion"
 --# status       : The status of the system
 --# last_updated : The last time the system reported in
@@ -424,7 +424,7 @@ create unique index node_foreign_unique_idx on node(foreignSource, foreignId);
 --#                         ipinterface table
 --#  snmpLastCapsdPoll  : Date and time of last poll by capsd or provisiond
 --#  snmpPoll           : 'P' means polled 'N' means not polled (interface admin and oper status)
---#  snmpLastSnmpPoll   : Date and time of last snmp poll
+--#  snmpLastSnmpPoll   : Date and time of last snmp poll 
 --#
 --# NOTE:  Although not marked as "not null" the snmpIfIndex field
 --#        should never be null.  This table is considered to be uniquely
@@ -588,7 +588,7 @@ create table ifServices (
 	notify          char(1),
 	ipInterfaceId	integer not null,
 
-	CONSTRAINT ifservices_pkey PRIMARY KEY (id),
+	CONSTRAINT ifservices_pkey PRIMARY KEY (id), 
 	CONSTRAINT ipinterface_fkey FOREIGN KEY (ipInterfaceId) REFERENCES ipInterface (id) ON DELETE CASCADE,
 	constraint fk_serviceID1 foreign key (serviceID) references service ON DELETE CASCADE
 );
@@ -637,7 +637,7 @@ create index ifservicves_ipInterfaceId_idx on ifservices(ipInterfaceId);
 --#			   5 = Minor
 --#			   6 = Major
 --#			   7 = Critical
---#  eventPathOutage	: Event Path outage information
+--#  eventPathOutage	: Event Path outage information	
 --#  eventCorrelation	: The event correlation configured for this event
 --#			  (stored as an XML string)
 --#  eventSuppressedCount	: The number of times the event was suppressed
@@ -860,7 +860,7 @@ create index notifications_eventuei_idx on notifications (eventuei);
 --########################################################################
 
 create table usersNotified (
-		id				integer not null,
+		id				integer not null, 
         userID          varchar(256) not null,
         notifyID        integer,
         notifyTime      timestamp with time zone,
@@ -931,7 +931,7 @@ create table alarms (
     nodeID                  INTEGER, CONSTRAINT fk_alarms_nodeid FOREIGN KEY (nodeID) REFERENCES node (nodeID) ON DELETE CASCADE,
     ipaddr                  VARCHAR(39),
     serviceID               INTEGER,
-    reductionKey            TEXT,
+    reductionKey            VARCHAR(256),
     alarmType               INTEGER,
     counter                 INTEGER NOT NULL,
     severity                INTEGER NOT NULL,
@@ -1257,13 +1257,13 @@ create table demandPolls (
 	requestTime	timestamp with time zone,
 	username	varchar(32),
 	description varchar(128),
-
+	
 	constraint demandpoll_pkey primary key (id)
-
+	
 );
 
 create index demandpoll_request_time on demandPolls(requestTime);
-
+	
 --########################################################################
 --# pollResults Table - contains a list of requested polls
 --#
@@ -1290,7 +1290,7 @@ create table pollResults (
 	statusCode	integer,
 	statusName	varchar(32),
 	reason		varchar(128),
-
+	
 	constraint pollresult_pkey primary key (id),
 	constraint fk_demandPollId foreign key (pollID) references demandPolls (id) ON DELETE CASCADE
 
@@ -1310,7 +1310,7 @@ create index pollresults_service on pollResults(nodeId, ipAddr, ifIndex, service
 --#  locationMonitorId : foreign key referencing a specific
 --#                      monitor in a remote location
 --#  serviceId         : foreign key referencing a specific monitored services
---#  statusTime        : time of reported status from remote location monitor
+--#  statusTime        : time of reported status from remote location monitor 
 --#  reason            : description of status change
 --#  responseTime      : data for latency reporting
 --#
@@ -1387,14 +1387,14 @@ CREATE UNIQUE INDEX appid_ifserviceid_idex on application_service_map(appid,ifse
 --# creato il file e le tabelle
 --# rev. rssntn67@yahoo.it
 --#
---# 18/08/04
+--# 18/08/04 
 --# eliminato createtime dalle tabelle
 --# sufficiente il createtime della tabella node
 --#
 --# 11/07/05
 --# modificata la tabella stpnode aggiunto campo vlanname
 --# definita primary key
---# per la tabella atinterface,
+--# per la tabella atinterface, 
 --# Modified: 2007-01-09
 --# Note: Added vlan table, Modified Stpnode Table
 --#
@@ -1403,14 +1403,14 @@ CREATE UNIQUE INDEX appid_ifserviceid_idex on application_service_map(appid,ifse
 
 --########################################################################
 --#
---# atInterface table -- This table maintains a record of ip address to mac
+--# atInterface table -- This table maintains a record of ip address to mac 
 --#                  address among  interfaces. It reflect information from mib-2
 --#                  arp table
 --#	at interface is now deprecated .iso.org.dod.internet.mgmt.mib-2.at.atTable.atEntry
 --#                  OID: .1.3.6.1.2.1.3.1.1
---#	so support is for .iso.org.dod.internet.mgmt.mib-2.ip.ipNetToMediaTable.ipNetToMediaEntry
---#                  OID: .1.3.6.1.2.1.4.22.1
---#
+--#	so support is for .iso.org.dod.internet.mgmt.mib-2.ip.ipNetToMediaTable.ipNetToMediaEntry 
+--#                  OID: .1.3.6.1.2.1.4.22.1	
+--#					
 --# This table provides the following information:
 --#
 --#  nodeid            : Unique integer identifier of the node
@@ -1449,12 +1449,12 @@ create index atinterface_atphysaddr_idx on atinterface(atphysaddr);
 --########################################################################
 --#
 --# vlan table  --   This table maintains a record of generic vlan table
---#
+--#					
 --# This table provides the following information:
 --#
 --#  nodeid   	              : Unique integer identifier of the node
 --#  vlanid                   : The vlan identifier to be referred to in a unique fashion.
---#  vlanname                 : the name the vlan
+--#  vlanname                 : the name the vlan 
 --#  vlantype           	  : Indicates what type of vlan is this:
 --#						        '1' ethernet
 --#						        '2' FDDI
@@ -1462,7 +1462,7 @@ create index atinterface_atphysaddr_idx on atinterface(atphysaddr);
 --#                             '4' FDDINet
 --#                             '5' TRNet
 --#                             '6' Deprecated
---#  vlanstatus               : An indication of what is the Vlan Status:
+--#  vlanstatus               : An indication of what is the Vlan Status: 
 --#						        '1' operational
 --#						        '2' suspendid
 --#						        '3' mtuTooBigForDevice
@@ -1496,10 +1496,10 @@ create index vlan_vlanname_idx on vlan(vlanname);
 --########################################################################
 --#
 --# stpNode table -- This table maintains a record of general bridge interface.
---#                  It reflect information from the mib-2 bridge mib
+--#                  It reflect information from the mib-2 bridge mib 
 --# 		         support .iso.org.dod.internet.mgmt.mib-2.dot1dBridge
---#                  OID: .1.3.6.1.2.1.17
---#
+--#                  OID: .1.3.6.1.2.1.17	
+--#					
 --# This table provides the following information:
 --#
 --#  nodeid   	              : Unique integer identifier of the node
@@ -1513,7 +1513,7 @@ create index vlan_vlanname_idx on vlan(vlanname);
 --#						        '3' sourceroute-only
 --#                             '4' srt
 --#  stpProtocolSpecification : An indication of what version of the Spanning
---#                             Tree Protocol is being run.
+--#                             Tree Protocol is being run. 
 --#						        '1' unknown
 --#						        '2' decLb100
 --#						        '3' ieee8011d
@@ -1568,8 +1568,8 @@ create index stpnode_stpdesignatedroot_idx on stpnode(stpdesignatedroot);
 --#                  It reflect information from mib-2
 --#                  bridge mib and subinterface STP table
 --#					 support .iso.org.dod.internet.mgmt.mib-2.dot1dBridge
---#                  OID: .1.3.6.1.2.1.17
---#
+--#                  OID: .1.3.6.1.2.1.17	
+--#					
 --# This table provides the following information:
 --#
 --#  nodeid   	              : Unique integer identifier of the node
@@ -1588,7 +1588,7 @@ create index stpnode_stpdesignatedroot_idx on stpnode(stpdesignatedroot);
 --#  stpPortDesignatedRoot    : the unique Bridge Identifier of the Bridge
 --#                             recorded as the Root in the Configuration BPDUs
 --#                             transmitted by the Designated Bridge for the
---#                             segment to which the port is attached.
+--#                             segment to which the port is attached.  
 --#  stpPortDesignatedCost    : The path cost of the Designated Port of the
 --#                             segment connected to this port. This value is
 --#                             compared to the Root Path Cost field in received
@@ -1637,10 +1637,10 @@ create index stpinterface_stpdesbridge_idx on stpinterface(stpportdesignatedbrid
 --#
 --# ipRouteInterface table -- This table maintains a record of ip route info on routers.
 --#                           It reflect information from mib-2
---#                           ipRouteTable mib
+--#                           ipRouteTable mib 
 --#					          support .iso.org.dod.internet.mgmt.mib-2.ip.ipRouteTable.ipRouteEntry
---#                           OID: .1.3.6.1.2.1.4.21.1
---#
+--#                           OID: .1.3.6.1.2.1.4.21.1	
+--#					
 --# This table provides the following information:
 --#
 --#  nodeid   	       : Unique integer identifier of the node
@@ -1656,7 +1656,7 @@ create index stpinterface_stpdesbridge_idx on stpinterface(stpportdesignatedbrid
 --#                      interface.)
 --#  routeifIndex      : The index value which uniquely identifies the
 --#                      local interface through which the next hop of this
---#                      route should be reached.
+--#                      route should be reached. 
 --#  routeMetric1      : The primary routing metric for this route. The
 --#                      semantics of this metric are determined by the
 --#                      routing-protocol specified in the route's
@@ -1671,7 +1671,7 @@ create index stpinterface_stpdesbridge_idx on stpinterface(stpportdesignatedbrid
 --#						 '2' invalid
 --#						 '3' direct
 --#						 '4' indirect
---#  routeProto        : The routing mechanism via which this route was learned.
+--#  routeProto        : The routing mechanism via which this route was learned. 
 --#						 '1' other
 --#						 '2' local
 --#						 '3' netmgmt
@@ -1723,13 +1723,13 @@ create index iprouteinterface_rnh_idx on iprouteinterface(routenexthop);
 
 --########################################################################
 --#
---# dataLinkInterface table -- This table maintains a record of data link info
---#                            among  the interfaces.
+--# dataLinkInterface table -- This table maintains a record of data link info 
+--#                            among  the interfaces. 
 --#
 --# This table provides the following information:
 --#
---#  nodeid            : Unique integer identifier for the linked node
---#  IfIndex           : SNMP index of interface connected to the link on the node,
+--#  nodeid            : Unique integer identifier for the linked node 
+--#  IfIndex           : SNMP index of interface connected to the link on the node, 
 --# 		             is -1 if it doesn't support SNMP.
 --#  nodeparentid      : Unique integer identifier for linking node
 --#  parentIfIndex     : SNMP index of interface linked on the parent node.
@@ -1741,8 +1741,8 @@ create index iprouteinterface_rnh_idx on iprouteinterface(routenexthop);
 --#                      'G' - Good
 --#                      'B' - Bad
 --#                      'X' - Admin Down
---#  protocol          : the protocol used to discover the link (bridge,iproute,isis,ospf,cdp,lldp)
---#  linkTypeId        : An Integer (corresponding at iftype for cables links) indicating the type
+--#  protocol          : the protocol used to discover the link (bridge,iproute,isis,ospf,cdp,lldp)  
+--#  linkTypeId        : An Integer (corresponding at iftype for cables links) indicating the type  
 --#  lastPollTime      : The last time when this information was retrived
 --#  source            : The source of the data link.  Defaults to 'linkd', but can be different
 --#                      when created from the ReST interface.
@@ -1773,12 +1773,12 @@ create index dlint_nodeparent_paifindex_idx on datalinkinterface(nodeparentid,pa
 
 --########################################################################
 --#
---# linkState table -- This table maintains the state of the link.
+--# linkState table -- This table maintains the state of the link. 
 --#
 --# This table provides the following information:
 --#
---#  nodeid            : Unique integer identifier for the linked node
---#  IfIndex           : SNMP index of interface connected to the link on the node,
+--#  nodeid            : Unique integer identifier for the linked node 
+--#  IfIndex           : SNMP index of interface connected to the link on the node, 
 --#                      is -1 if it doesn't support SNMP.
 --#  nodeparentid      : Unique integer identifier for linking node
 --#  parentIfIndex     : SNMP index of interface linked on the parent node.
@@ -1790,14 +1790,14 @@ create index dlint_nodeparent_paifindex_idx on datalinkinterface(nodeparentid,pa
 --#                      'G' - Good
 --#                      'B' - Bad
 --#                      'X' - Admin Down
---#  linkTypeId        : An Integer (corresponding at iftype for cables links) indicating the type
+--#  linkTypeId        : An Integer (corresponding at iftype for cables links) indicating the type  
 --#  lastPollTime      : The last time when this information was retrived
 --#
 --########################################################################
 
 create table linkstate (
     id                      integer default nextval('opennmsNxtId') not null,
-    datalinkinterfaceid     integer not null,
+    datalinkinterfaceid     integer not null, 
     linkstate               varchar(30) default 'LINK_UP' not null,
 
     constraint pk_linkstate primary key (id),
@@ -1808,12 +1808,12 @@ create unique index linkstate_datalinkinterfaceid_index on linkstate (datalinkin
 
 --########################################################################
 --#
---# inventory table -- This table maintains inventories
+--# inventory table -- This table maintains inventories 
 --#                  of switch nodes.
 --#
 --# This table provides the following information:
 --#
---#  nodeid            : Unique integer identifier for the linked node.
+--#  nodeid            : Unique integer identifier for the linked node. 
 --#  name			   : Name that describes the category of the inventory.
 --#  createtime        : The timestamp of the creation of the inventory.
 --#  lastpolltime      : The timestamp of last download of the inventory.
@@ -1821,7 +1821,7 @@ create unique index linkstate_datalinkinterfaceid_index on linkstate (datalinkin
 --#  status            : Flag indicating the status of the entry.
 --#                      'A' - Active
 --#                      'N' - Not Active
---#                      'D' - Deleted: when the status of the node associated
+--#                      'D' - Deleted: when the status of the node associated 
 --# 						   is Deleted
 --#
 --########################################################################
@@ -1845,7 +1845,7 @@ create index inventory_status_idx on inventory(status);
 --########################################################################
 --#
 --# map table     -- This table maintains a record of map definede in opennms
---#
+--#					
 --# This table provides the following information:
 --#
 --#  mapId             : Unique integer identifier of the map
@@ -1892,13 +1892,13 @@ create table map (
 --########################################################################
 --#
 --# element table     -- This table maintains a record of elements beloging to maps
---#
+--#					
 --# This table provides the following information:
 --#
 --#  mapId             : Identifier of the parent map
 --#  elementId         : Identifier of the element map
 --#  elemenType        : Flag indicating the type of the element.
---#                      'M' - Element is a Map
+--#                      'M' - Element is a Map 
 --#                      'N' - Element is a Node
 --#  elementLabel      : element label
 --#  elementIcon       : image assocated with element
@@ -1916,7 +1916,7 @@ create table element (
     elementIcon 	 varchar(256),
     elementX         integer,
 	elementY         integer,
-
+	
 	constraint pk_element primary key (mapId,elementId,elementType),
 	constraint fk_mapID foreign key (mapId) references map on delete cascade
 );
@@ -1931,7 +1931,7 @@ create index element_mapid_elementid on element(mapId,elementId);
 --#
 --# reportLocator table     -- This table contains a record of availability
 --#                            reports and their location on disk
---#
+--#					
 --# This table provides the following information:
 --#
 --#  id                	: Unique integer identifier for the report
@@ -1963,7 +1963,7 @@ create sequence reportNxtId minvalue 1;
 --#
 --# reportcatalog table     -- report catalog data
 --#                            reports and their location on disk
---#
+--#					
 --# This table provides the following information:
 --#
 --#  id                	: Unique integer identifier for the report
@@ -1992,7 +1992,7 @@ create sequence reportCatalogNxtId minvalue 1;
 --#
 --# statisticsReport table -- This table contains a record of statistics
 --#                           reports
---#
+--#					
 --# This table provides the following information:
 --#
 --#  id                	: Unique integer identifier for the report
@@ -2033,7 +2033,7 @@ create index statisticsReport_purgeDate on statisticsReport(purgeDate);
 --#                            resourceIds. This will help keep the relatively
 --#                            long (tens of characters) string resource IDs
 --#                            out of the statistics table.
---#
+--#					
 --# This table provides the following information:
 --#
 --#  id                	: Unique integer identifier for the resource
@@ -2055,7 +2055,7 @@ create unique index resourceReference_resourceId on resourceReference (resourceI
 --#
 --# statisticsReportData table -- This table contains individual data points
 --#                               (aggregated or not) for statistics reports.
---#
+--#					
 --# This table provides the following information:
 --#
 --#  id                	: Unique integer identifier for the data
@@ -2070,7 +2070,7 @@ create table statisticsReportData (
 	reportId			integer not null,
 	resourceId			integer not null,
 	value				float8 not null,
-
+	
 	constraint pk_statsData_id primary key (id),
 	constraint fk_statsData_reportId foreign key (reportId) references statisticsReport (id) on delete cascade,
 	constraint fk_statsData_resourceId foreign key (resourceId) references resourceReference (id) on delete cascade
@@ -2084,7 +2084,7 @@ create unique index statsData_unique on statisticsReportData(reportId, resourceI
 --########################################################################
 --#
 --# acks table -- This table contains each acknowledgment
---#
+--# 
 --#  id                 : Unique ID
 --#  ackTime            : Time of the Acknowledgment
 --#  ackUser            : User ID of the Acknowledgment
@@ -2103,7 +2103,7 @@ CREATE TABLE acks (
     ackAction integer not null default 1,
     log       varchar(128),
     refId     integer,
-
+    
     constraint pk_acks_id primary key (id)
 );
 
@@ -2114,7 +2114,7 @@ create index ack_user_idx on acks(ackUser);
 --#
 --#  categories to groups mapping table -- This table used for maintaining a many-to-many
 --#     relationship between categories and groups
---#
+--# 
 --#  categoryId       : References foreign key in the groups table
 --#  groupId          : References foreign key in the users table
 --########################################################################
@@ -2278,7 +2278,7 @@ create table ipNetToMedia (
     createTime     timestamp not null,
     lastPollTime   timestamp not null,
     constraint pk_ipnettomedia_id primary key (id),
-    constraint fk_sourcenodeid_ipnettomedia foreign key (sourcenodeid) references node (nodeid)
+    constraint fk_sourcenodeid_ipnettomedia foreign key (sourcenodeid) references node (nodeid) 
 );
 
 create table bridgeElement (
@@ -2330,7 +2330,7 @@ create table bridgeBridgeLink (
     bridgeBridgeLinkLastPollTime   timestamp not null,
     constraint pk_bridgebridgelink_id primary key (id),
     constraint fk_nodeIDbridgebridgelink foreign key (nodeid) references node on delete cascade,
-    constraint fk_desnodeIDbridgemaclink foreign key (designatednodeid) references node (nodeid)
+    constraint fk_desnodeIDbridgemaclink foreign key (designatednodeid) references node (nodeid) 
 );
 
 create table bridgeStpLink (
@@ -2569,7 +2569,7 @@ create table hwEntity (
     entPhysicalSoftwareRev  varchar(128),
     entPhysicalSerialNum    varchar(128),
     entPhysicalAssetID      varchar(128),
-    entPhysicalIsFRU        bool,
+    entPhysicalIsFRU        bool, 
     entPhysicalMfgDate      timestamp,
     entPhysicalUris         varchar(256),
     constraint pk_hwEntity_id primary key (id),
@@ -2664,18 +2664,4 @@ CREATE TABLE bsm_service_ifservices (
   REFERENCES ifservices (id) ON DELETE CASCADE,
   CONSTRAINT fk_bsm_service_ifservices_service_id FOREIGN KEY (bsm_service_id)
   REFERENCES bsm_service (id) ON DELETE CASCADE
-);
-
-CREATE TABLE bsm_service_reductionkeys (
-  bsm_service_id integer NOT NULL,
-  reductionkey TEXT NOT NULL,
-  CONSTRAINT bsm_service_reductionkeys_pkey PRIMARY KEY (bsm_service_id, reductionkey)
-);
-
-CREATE TABLE bsm_service_children (
-    bsm_service_parent integer NOT NULL,
-    bsm_service_child integer NOT NULL,
-    CONSTRAINT bsm_service_children_pkey PRIMARY KEY (bsm_service_parent, bsm_service_child),
-    CONSTRAINT fk_bsm_service_parent_service_id FOREIGN KEY (bsm_service_parent) REFERENCES bsm_service (id) ON DELETE CASCADE,
-    CONSTRAINT fk_bsm_service_child_service_id FOREIGN KEY (bsm_service_child) REFERENCES bsm_service (id) ON DELETE CASCADE
 );
