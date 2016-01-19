@@ -60,10 +60,7 @@ import org.slf4j.LoggerFactory;
  * <AlarmHopCriteria> supports adding all the nodes having the selected UEI or Severity.
  * 
  * TODO: Improve the label to support showing how many vertices are supported
- * TODO: Add support for severity searching and collapsing
- * 
- * FIXME:  
- * by each <SearchResult>
+ * TODO: Add support for severity searching and collapsing by each <SearchResult>
  * 
  * @author <a href=mailto:david@opennms.org>David Hustace</a>
  *
@@ -272,13 +269,13 @@ public class AlarmSearchProvider extends AbstractSearchProvider implements Searc
     
     @Override
     public void onCenterSearchResult(SearchResult searchResult, GraphContainer graphContainer) {
-    	LOG.trace("SearchProvider.onCenterSearchResult: called with search result: '{}'", searchResult);
+    	LOG.debug("SearchProvider->onCenterSearchResult: called with search result: '{}'", searchResult);
     	super.onCenterSearchResult(searchResult, graphContainer);
     }
     
     @Override
     public void onFocusSearchResult(SearchResult searchResult, OperationContext operationContext) {
-    	LOG.trace("SearchProvider.onFocusSearchResult: called with search result: '{}'", searchResult);
+    	LOG.debug("SearchProvider->onFocusSearchResult: called with search result: '{}'", searchResult);
     	super.onFocusSearchResult(searchResult, operationContext);
 
     }

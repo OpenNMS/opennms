@@ -154,6 +154,7 @@
           </tr>
         </c:forEach>
      </table>
+   </div>
 </form>
 
 <jsp:include page="/includes/bootstrap-footer.jsp" flush="false" />

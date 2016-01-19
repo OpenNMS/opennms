@@ -90,7 +90,7 @@
     <td><%=System.getProperty( "java.version" )%> (<%=System.getProperty( "java.vendor" )%>)</td>
   </tr>
   <tr>
-    <th>Java Runtime:</td>
+    <th>Java Runtime:</th>
     <td><%=System.getProperty( "java.runtime.name" )%> (<%=System.getProperty( "java.runtime.version" )%>)</td>
   </tr>
   <tr>
