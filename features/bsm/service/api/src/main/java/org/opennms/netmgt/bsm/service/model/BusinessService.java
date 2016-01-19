@@ -5,6 +5,8 @@ import org.opennms.web.rest.api.ResourceLocation;
 import java.util.Map;
 import java.util.Set;
 
+import org.opennms.netmgt.model.OnmsSeverity;
+
 public interface BusinessService {
     Long getId();
 
@@ -41,4 +43,10 @@ public interface BusinessService {
     void save();
 
     void delete();
+
+    void setReductionKeys(Set<String> reductionKeySet);
+
+    Set<String> getReductionKeys();
+
+    OnmsSeverity getOperationalStatus();
 }

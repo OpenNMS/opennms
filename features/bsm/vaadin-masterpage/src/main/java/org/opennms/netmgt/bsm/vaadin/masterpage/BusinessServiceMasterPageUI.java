@@ -82,13 +82,13 @@ public class BusinessServiceMasterPageUI extends UI {
 		this.businessServiceManager = transactionAwareBeanProxyFactory.createProxy(businessServiceManager);
 	}
 
-	private HorizontalLayout createRow(BusinessService serviceDTO) {
+	private HorizontalLayout createRow(BusinessService service) {
 		HorizontalLayout rowLayout = new HorizontalLayout();
 		rowLayout.setSizeFull();
 		rowLayout.setSpacing(true);
 
-		final OnmsSeverity severity = businessServiceManager.getOperationalStatusForBusinessService(serviceDTO);
-		Label nameLabel = new Label(serviceDTO.getName());
+		final OnmsSeverity severity = service.getOperationalStatus();
+		Label nameLabel = new Label(service.getName());
 		nameLabel.setSizeFull();
 		nameLabel.setStyleName("h1");
 		nameLabel.addStyleName("bright");

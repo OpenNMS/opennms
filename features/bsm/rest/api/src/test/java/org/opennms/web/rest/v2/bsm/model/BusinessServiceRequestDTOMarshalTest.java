@@ -49,9 +49,8 @@ public class BusinessServiceRequestDTOMarshalTest extends MarshalAndUnmarshalTes
         requestDTO.addAttribute("some-key", "some-value");
         requestDTO.addChildService(2L);
         requestDTO.addChildService(3L);
-        // TODO MVR what to do with parent services? Are they set automatically?
-//        requestDTO.addParentService(11L);
-//        requestDTO.addParentService(12L);
+        requestDTO.getReductionKeys().add("myReductionKeyA");
+        requestDTO.getReductionKeys().add("myReductionKeyB");
         requestDTO.addIpService(1);
 
         return Arrays.asList(new Object[][]{{

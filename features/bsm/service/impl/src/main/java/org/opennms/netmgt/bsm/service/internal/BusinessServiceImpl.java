@@ -36,6 +36,7 @@ import java.util.stream.Collectors;
 import org.opennms.netmgt.bsm.persistence.api.BusinessServiceEntity;
 import org.opennms.netmgt.bsm.service.model.BusinessService;
 import org.opennms.netmgt.bsm.service.model.IpService;
+import org.opennms.netmgt.model.OnmsSeverity;
 
 
 public class BusinessServiceImpl implements BusinessService {
@@ -152,6 +153,22 @@ public class BusinessServiceImpl implements BusinessService {
     }
 
     @Override
+    public Set<String> getReductionKeys() {
+        return m_entity.getReductionKeys();
+
+    }
+
+    @Override
+    public void setReductionKeys(Set<String> reductionKeySet) {
+        m_entity.setReductionKeys(reductionKeySet);
+    }
+
+    @Override
+    public OnmsSeverity getOperationalStatus() {
+        return m_manager.getOperationalStatusForBusinessService(this);
+    }
+
+    @Override
     public boolean equals(Object obj) {
         if (obj == null) {
             return false;
@@ -189,6 +206,8 @@ public class BusinessServiceImpl implements BusinessService {
                 .add("attributes", this.getAttributes())
                 .add("ipServices", this.getIpServices())
                 .add("childServices", this.getChildServices())
+                .add("reductionKeys", this.getReductionKeys())
+                .add("operationalStatus", this.getOperationalStatus())
                 .toString();
     }
 }

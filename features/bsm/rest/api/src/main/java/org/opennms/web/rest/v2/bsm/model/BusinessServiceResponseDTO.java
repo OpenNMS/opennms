@@ -174,21 +174,20 @@ public class BusinessServiceResponseDTO {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        final BusinessServiceDTO other = (BusinessServiceDTO) obj;
-        // TODO MVR parent services are missing in equals
+        final BusinessServiceResponseDTO other = (BusinessServiceResponseDTO) obj;
         return Objects.equals(m_id, other.m_id)
                 && Objects.equals(m_name, other.m_name)
                 && Objects.equals(m_attributes, other.m_attributes)
                 && Objects.equals(m_ipServices, other.m_ipServices)
                 && Objects.equals(m_childServices, other.m_childServices)
+                && Objects.equals(m_parentServices, other.m_parentServices)
                 && Objects.equals(m_reductionKeys, other.m_reductionKeys)
                 && Objects.equals(location, other.location);
     }
 
     @Override
     public int hashCode() {
-        // TODO MVR parent services are missing in hashCode
-        return Objects.hash(m_id, m_name, m_attributes, m_ipServices, m_childServices, m_reductionKeys, location);
+        return Objects.hash(m_id, m_name, m_attributes, m_ipServices, m_childServices, m_parentServices, m_reductionKeys, location);
     }
 
     @Override
@@ -199,6 +198,7 @@ public class BusinessServiceResponseDTO {
                 .add("attributes", m_attributes)
                 .add("ipServices", m_ipServices)
                 .add("childServices", m_childServices)
+                .add("parentServices", m_parentServices)
                 .add("reductionKeys", m_reductionKeys)
                 .add("location", location)
                 .toString();

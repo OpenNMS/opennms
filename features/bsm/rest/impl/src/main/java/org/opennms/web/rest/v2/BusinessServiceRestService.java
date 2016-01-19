@@ -95,7 +95,8 @@ public class BusinessServiceRestService {
         response.setChildServices(service.getChildServices().stream().map(BusinessService::getId).collect(Collectors.toSet()));
         response.setLocation(ResourceLocationFactory.createBusinessServiceLocation(service.getId().toString()));
         response.setParentServices(service.getParentServices().stream().map(BusinessService::getId).collect(Collectors.toSet()));
-        response.setOperationalStatus(getManager().getOperationalStatusForBusinessService(service));
+        response.setOperationalStatus(service.getOperationalStatus());
+        response.setReductionKeys(service.getReductionKeys());
 
         return Response.ok(response).build();
     }
@@ -190,7 +191,7 @@ public class BusinessServiceRestService {
         response.setNodeLabel(ipService.getNodeLabel());
         response.setServiceName(ipService.getServiceName());
         response.setIpAddress(ipService.getIpAddress());
-        response.setOperationalStatus(getManager().getOperationalStatusForIPService(ipService));
+        response.setOperationalStatus(ipService.getOperationalStatus());
         response.setLocation(ResourceLocationFactory.createBusinessServiceIpServiceLocation(ipService.getId()));
         return response;
     }

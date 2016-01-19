@@ -31,6 +31,7 @@ package org.opennms.netmgt.bsm.service.internal;
 import com.google.common.base.Objects;
 import org.opennms.netmgt.bsm.service.model.IpService;
 import org.opennms.netmgt.model.OnmsMonitoredService;
+import org.opennms.netmgt.model.OnmsSeverity;
 
 public class IpServiceImpl implements IpService {
 
@@ -65,6 +66,16 @@ public class IpServiceImpl implements IpService {
     }
 
     @Override
+    public Set<String> getReductionKeys() {
+        return Collections.unmodifiableSet(OnmsMonitoredServiceHelper.getReductionKeys(m_entity));
+    }
+
+    @Override
+    public OnmsSeverity getOperationalStatus() {
+        return m_manager.getOperationalStatusForIPService(this);
+    }
+
+    @Override
     public boolean equals(Object obj) {
         if (obj == null) {
             return false;
@@ -88,6 +99,13 @@ public class IpServiceImpl implements IpService {
 
     @Override
     public String toString() {
-        return getNodeLabel()+"/"+getIpAddress()+"/"+getServiceName();
+        return com.google.common.base.Objects.toStringHelper(this)
+                .add("id", this.getId())
+                .add("serviceName", this.getServiceName())
+                .add("nodeLabel", this.getNodeLabel())
+                .add("ipAddress", this.getIpAddress())
+                .add("reductionKeys", this.getReductionKeys())
+                .add("operationalStatus", this.getOperationalStatus())
+                .toString();
     }
 }

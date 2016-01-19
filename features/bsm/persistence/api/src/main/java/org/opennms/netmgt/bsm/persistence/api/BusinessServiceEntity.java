@@ -189,20 +189,38 @@ public class BusinessServiceEntity {
         }
         final BusinessServiceEntity other = (BusinessServiceEntity) obj;
 
-        return com.google.common.base.Objects.equal(m_id, other.m_id)
-                && com.google.common.base.Objects.equal(m_name, other.m_name);
+        return Objects.equals(m_id, other.m_id)
+                && Objects.equals(m_name, other.m_name)
+                && Objects.equals(m_attributes, other.m_attributes)
+                && Objects.equals(m_childServices, other.m_childServices)
+                && Objects.equals(getIpServicesIds(), other.getIpServicesIds())
+                && Objects.equals(m_reductionKeys, other.m_reductionKeys);
+    }
+
+    @Transient
+    private Set<Integer> getIpServicesIds() {
+        return m_ipServices.stream().map(e -> e.getId()).collect(Collectors.toSet());
     }
 
     @Override
     public int hashCode() {
-        return com.google.common.base.Objects.hashCode(m_id, m_name);
+        return com.google.common.base.Objects.hashCode(m_id, m_name, m_attributes, m_childServices, getIpServiceIds(), m_reductionKeys);
     }
 
     @Override
     public String toString() {
-        return com.google.common.base.Objects.toStringHelper(this).add("id", m_id).add("name", m_name)
+        return com.google.common.base.Objects.toStringHelper(this)
+                .add("id", m_id)
+                .add("name", m_name)
                 .add("attributes", m_attributes)
-                .add("edges", m_edges)
+                .add("ipServices", m_ipServices)
+                .add("childServices", m_childServices)
+                .add("reductionKeys", m_reductionKeys)
                 .toString();
+    }
+
+    public BusinessServiceEntity addChildren(BusinessServiceEntity children) {
+        getChildServices().add(Objects.requireNonNull(children));
+        return this;
     }
 }
