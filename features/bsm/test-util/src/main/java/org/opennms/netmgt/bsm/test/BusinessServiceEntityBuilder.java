@@ -43,6 +43,7 @@ public class BusinessServiceEntityBuilder {
     private Set<BusinessServiceEntity> children = new HashSet<>();
     private Set<BusinessServiceEntity> parents = new HashSet<>();
     private Set<OnmsMonitoredService> ipServices = new HashSet<>();
+    private Set<String> reductionKeys = new HashSet<>();
     private Long id;
 
     public BusinessServiceEntityBuilder name(String name) {
@@ -78,11 +79,17 @@ public class BusinessServiceEntityBuilder {
         entity.setAttributes(attributes);
         entity.setChildServices(children);
         entity.setParentServices(parents);
+        entity.setReductionKeys(reductionKeys);
         return entity;
     }
 
     public BusinessServiceEntityBuilder addIpService(OnmsMonitoredService ipService) {
         ipServices.add(ipService);
+        return this;
+    }
+
+    public BusinessServiceEntityBuilder addReductionKey(String reductionKey) {
+        reductionKeys.add(reductionKey);
         return this;
     }
 }

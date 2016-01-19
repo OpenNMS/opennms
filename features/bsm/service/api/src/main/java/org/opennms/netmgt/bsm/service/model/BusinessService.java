@@ -1,7 +1,5 @@
 package org.opennms.netmgt.bsm.service.model;
 
-import org.opennms.web.rest.api.ResourceLocation;
-
 import java.util.Map;
 import java.util.Set;
 
@@ -41,4 +39,8 @@ public interface BusinessService {
     void save();
 
     void delete();
+
+    void setReductionKeys(Set<String> reductionKeySet);
+
+    Set<String> getReductionKeys();
 }

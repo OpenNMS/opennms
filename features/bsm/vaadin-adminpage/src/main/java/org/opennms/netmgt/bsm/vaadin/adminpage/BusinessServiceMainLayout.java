@@ -32,6 +32,8 @@ import java.util.Objects;
 
 import org.opennms.netmgt.bsm.service.BusinessServiceManager;
 import org.opennms.netmgt.bsm.service.model.BusinessService;
+import org.opennms.netmgt.vaadin.core.TransactionAwareUI;
+import org.opennms.netmgt.vaadin.core.UIHelper;
 
 import com.google.common.base.Strings;
 import com.vaadin.data.util.BeanItemContainer;
@@ -41,8 +43,6 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
-import org.opennms.netmgt.vaadin.core.TransactionAwareUI;
-import org.opennms.netmgt.vaadin.core.UIHelper;
 
 /**
  * This class represents the main  Vaadin component for editing Business Service definitions.
@@ -85,29 +85,14 @@ public class BusinessServiceMainLayout extends VerticalLayout {
         createTextField.setInputPrompt("Business Service Name");
         createTextField.setId("createTextField");
 
-        // create button
+        // create Button
         final Button createButton = new Button("Create");
         createButton.setId("createButton");
         createButton.addClickListener((Button.ClickListener) event -> {
-            /**
-             * check for valid value
-             */
             if (!"".equals(Strings.nullToEmpty(createTextField.getValue()).trim())) {
-                /**
-                 * createBusinessService new DTO instance
-                 */
                 final BusinessService businessService = m_businessServiceManager.createBusinessService();
-                /**
-                 * add the title
-                 */
                 businessService.setName(createTextField.getValue().trim());
-                /**
-                 * createBusinessService the modal configuration dialog
-                 */
                 getUI().addWindow(new BusinessServiceEditWindow(businessService, BusinessServiceMainLayout.this));
-                /**
-                 * clear the textfield value
-                 */
                 createTextField.setValue("");
             }
         });
@@ -183,7 +168,7 @@ public class BusinessServiceMainLayout extends VerticalLayout {
                                                 .withOkLabel("Delete anyway")
                                                 .withCancelLabel("Cancel")
                                                 .withCaption("Warning")
-                                                .withDescription("This entry is referencing or is referenced by other Business Services! Do you really to delete this entry?")
+                                                .withDescription("This entry is referencing or is referenced by other Business Services! Do you really want to delete this entry?")
                                                 .open();
                                     }
                                 }
@@ -198,14 +183,12 @@ public class BusinessServiceMainLayout extends VerticalLayout {
          * add the table to the layout
          */
         addComponent(m_table);
-
         setExpandRatio(m_table, 1.0f);
 
         /**
          * initial refresh of table
          */
         refreshTable();
-
     }
 
     /**
@@ -221,13 +204,7 @@ public class BusinessServiceMainLayout extends VerticalLayout {
      * Refreshes the entries of the table used for listing the DTO instances.
      */
     public void refreshTable() {
-        /**
-         * remove all...
-         */
         m_beanItemContainer.removeAllItems();
-        /**
-         * ...and add all DTOs found by the service instance.
-         */
         m_beanItemContainer.addAll(m_businessServiceManager.getAllBusinessServices());
     }
 }

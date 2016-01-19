@@ -39,12 +39,11 @@ import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
-import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.codehaus.jackson.map.annotate.JsonDeserialize;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 import org.opennms.netmgt.model.OnmsSeverity;
-import org.opennms.web.rest.api.support.JAXBResourceLocationAdapter;
 import org.opennms.web.rest.api.ResourceLocation;
+import org.opennms.web.rest.api.support.JAXBResourceLocationAdapter;
 import org.opennms.web.rest.api.support.JsonResourceLocationDeserializationProvider;
 import org.opennms.web.rest.api.support.JsonResourceLocationSerializationProvider;
 
@@ -54,7 +53,6 @@ import com.google.common.collect.Sets;
 
 @XmlRootElement(name = "business-service")
 @XmlAccessorType(XmlAccessType.NONE)
-@JsonIgnoreProperties(ignoreUnknown=true)
 public class BusinessServiceResponseDTO {
     
     @XmlElement(name = "id")
@@ -70,6 +68,10 @@ public class BusinessServiceResponseDTO {
     @XmlElement(name="ip-service")
     @XmlElementWrapper(name="ip-services")
     private Set<IpServiceResponseDTO> m_ipServices = Sets.newLinkedHashSet();
+
+    @XmlElement(name="reductionKey")
+    @XmlElementWrapper(name="reductionKeys")
+    private Set<String> m_reductionKeys = Sets.newHashSet();
 
     @XmlElement(name="child-service")
     @XmlElementWrapper(name="child-services")
@@ -118,6 +120,18 @@ public class BusinessServiceResponseDTO {
 
     public Set<IpServiceResponseDTO> getIpServices() {
         return m_ipServices;
+    }
+
+    public Set<String> getReductionKeys() {
+        return m_reductionKeys;
+    }
+
+    public void setReductionKeys(Set<String> reductionKeys) {
+        m_reductionKeys = reductionKeys;
+    }
+
+    public void addReductionKey(String reductionKey) {
+        m_reductionKeys.add(reductionKey);
     }
 
     public void setIpServices(Set<IpServiceResponseDTO> ipServices) {
@@ -177,17 +191,20 @@ public class BusinessServiceResponseDTO {
             return false;
         }
         final BusinessServiceResponseDTO other = (BusinessServiceResponseDTO) obj;
-
+        // TODO MVR parent services are missing in equals
         return Objects.equals(m_id, other.m_id)
                 && Objects.equals(m_name, other.m_name)
                 && Objects.equals(m_attributes, other.m_attributes)
                 && Objects.equals(m_ipServices, other.m_ipServices)
-                && Objects.equals(m_childServices, other.m_childServices);
+                && Objects.equals(m_childServices, other.m_childServices)
+                && Objects.equals(m_reductionKeys, other.m_reductionKeys)
+                && Objects.equals(location, other.location);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(m_id, m_name, m_attributes, m_ipServices);
+        // TODO MVR parent services are missing in hashCode
+        return Objects.hash(m_id, m_name, m_attributes, m_ipServices, m_childServices, m_reductionKeys, location);
     }
 
     @Override
@@ -198,6 +215,8 @@ public class BusinessServiceResponseDTO {
                 .add("attributes", m_attributes)
                 .add("ipServices", m_ipServices)
                 .add("childServices", m_childServices)
+                .add("reductionKeys", m_reductionKeys)
+                .add("location", location)
                 .toString();
     }
 }

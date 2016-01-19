@@ -52,6 +52,8 @@ public class BusinessServiceResponseDTOMarshalTest extends MarshalAndUnmarshalTe
         bs.addAttribute("dc", "RDU");
         bs.setLocation(new ResourceLocation(ApiVersion.Version2, "business-services", "1"));
         bs.setOperationalStatus(OnmsSeverity.CRITICAL);
+        bs.addReductionKey("myReductionKeyA");
+        bs.addReductionKey("myReductionKeyB");
 
         bs.addChildService(2L);
         bs.addChildService(3L);
@@ -80,10 +82,12 @@ public class BusinessServiceResponseDTOMarshalTest extends MarshalAndUnmarshalTe
             "    \"serviceName\" : null,\n" +
             "    \"nodeLabel\" : null,\n" +
             "    \"ipAddress\" : null,\n" +
-            "    \"operationalStatus\" : \"WARNING\"\n" +
+            "    \"operationalStatus\" : \"WARNING\",\n" +
+            "    \"reductionKeys\" : []\n" +
             "  } ],\n" +
             "  \"childServices\" : [ 2, 3 ],\n" +
             "  \"parentServices\" : [ 11, 12 ],\n" +
+            "  \"reductionKeys\" : [ \"myReductionKeyB\", \"myReductionKeyA\"],\n" +
             "  \"operationalStatus\" : CRITICAL\n" +
             "}",
             "<business-service>" +
@@ -100,8 +104,13 @@ public class BusinessServiceResponseDTOMarshalTest extends MarshalAndUnmarshalTe
                       "<id>1</id>" +
                       "<operational-status>WARNING</operational-status>" +
                       "<location>/api/v2/business-services/ip-services/1</location>" +
+                      "<reductionKeys/>" +
                    "</ip-service>" +
                "</ip-services>" +
+               "<reductionKeys>" +
+                   "<reductionKey>myReductionKeyB</reductionKey>" +
+                   "<reductionKey>myReductionKeyA</reductionKey>" +
+               "</reductionKeys>" +
                "<child-services>" +
                     "<child-service>2</child-service>" +
                     "<child-service>3</child-service>" +

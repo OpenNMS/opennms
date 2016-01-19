@@ -40,14 +40,11 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.adapters.XmlAdapter;
 
-import org.codehaus.jackson.annotate.JsonIgnoreProperties;
-
 @XmlTransient
 public class JAXBMapAdapter extends XmlAdapter<JAXBMapAdapter.JAXBMap, Map<String, String>> {
 
     @XmlAccessorType(XmlAccessType.NONE)
     @XmlRootElement(name = "attributes")
-    @JsonIgnoreProperties(ignoreUnknown = true)
     public static class JAXBMap {
         @XmlElement(name = "attribute", required = true)
         private final List<JAXBMapEntry> a = new ArrayList<JAXBMapEntry>();
@@ -59,7 +56,6 @@ public class JAXBMapAdapter extends XmlAdapter<JAXBMapAdapter.JAXBMap, Map<Strin
 
     @XmlAccessorType(XmlAccessType.NONE)
     @XmlRootElement(name = "attribute")
-    @JsonIgnoreProperties(ignoreUnknown = true)
     public static class JAXBMapEntry {
 
         @XmlElement(name = "key", required = true)
@@ -89,9 +85,6 @@ public class JAXBMapAdapter extends XmlAdapter<JAXBMapAdapter.JAXBMap, Map<Strin
 
     @Override
     public JAXBMap marshal(Map<String, String> v) throws Exception {
-        if (v.isEmpty()) {
-            return null;
-        }
         JAXBMap myMap = new JAXBMap();
         List<JAXBMapEntry> aList = myMap.getA();
         for (Map.Entry<String, String> e : v.entrySet()) {

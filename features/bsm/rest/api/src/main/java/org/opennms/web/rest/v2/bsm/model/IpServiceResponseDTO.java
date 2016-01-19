@@ -28,9 +28,13 @@
 
 package org.opennms.web.rest.v2.bsm.model;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
@@ -68,6 +72,10 @@ public class IpServiceResponseDTO {
     @JsonSerialize(using = JsonResourceLocationSerializationProvider.class)
     @JsonDeserialize(using = JsonResourceLocationDeserializationProvider.class)
     private ResourceLocation location;
+
+    @XmlElement(name="reductionKey")
+    @XmlElementWrapper(name="reductionKeys")
+    private Set<String> m_reductionKeys = new HashSet<>();
 
     public int getId() {
         return m_id;
@@ -117,6 +125,14 @@ public class IpServiceResponseDTO {
         this.location = location;
     }
 
+    public Set<String> getReductionKeys() {
+        return m_reductionKeys;
+    }
+
+    public void setReductionKeys(Set<String> reductionKeys) {
+        m_reductionKeys = reductionKeys;
+    }
+
     @Override
     public boolean equals(Object obj) {
         if (obj == null) {
@@ -133,7 +149,8 @@ public class IpServiceResponseDTO {
                                && Objects.equal(m_serviceName, other.m_serviceName)
                                && Objects.equal(m_nodeLabel, other.m_nodeLabel)
                                && Objects.equal(m_ipAddress, other.m_ipAddress)
-                               && Objects.equal(m_operationalStatus, other.m_operationalStatus);
+                               && Objects.equal(m_operationalStatus, other.m_operationalStatus)
+                               && Objects.equal(m_reductionKeys, other.m_reductionKeys);
         return equals;
     }
 
@@ -154,6 +171,7 @@ public class IpServiceResponseDTO {
                                              .add("nodeLabel", m_nodeLabel)
                                              .add("ipAddress", m_ipAddress)
                                              .add("operationalStatus", m_operationalStatus)
+                                             .add("reductionKeys", m_reductionKeys)
                                              .toString();
     }
 }

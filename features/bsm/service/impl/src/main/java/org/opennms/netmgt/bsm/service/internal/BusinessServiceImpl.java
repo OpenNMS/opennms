@@ -29,7 +29,6 @@
 package org.opennms.netmgt.bsm.service.internal;
 
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -149,6 +148,17 @@ public class BusinessServiceImpl implements BusinessService {
     @Override
     public void delete() {
         this.m_manager.deleteBusinessService(this);
+    }
+
+    @Override
+    public Set<String> getReductionKeys() {
+        return m_entity.getReductionKeys();
+
+    }
+
+    @Override
+    public void setReductionKeys(Set<String> reductionKeySet) {
+        m_entity.getReductionKeys();
     }
 
     @Override

@@ -70,6 +70,8 @@ public class BusinessServiceEntity {
 
     private Set<BusinessServiceEntity> m_childServices = Sets.newLinkedHashSet();
 
+    private Set<String> m_reductionKeys = Sets.newLinkedHashSet();
+
     private Set<BusinessServiceEntity> m_parentServices = Sets.newLinkedHashSet();
 
     /** The level in the hierarchy.
@@ -133,7 +135,7 @@ public class BusinessServiceEntity {
         return m_attributes.remove(key);
     }
 
-    @OneToMany(fetch = FetchType.EAGER)
+    @OneToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "bsm_service_ifservices",
                joinColumns = @JoinColumn(name = "bsm_service_id", referencedColumnName = "id"),
                inverseJoinColumns = @JoinColumn(name="ifserviceid"))
@@ -150,6 +152,31 @@ public class BusinessServiceEntity {
         return m_ipServices.stream()
             .map(ipSvc -> ipSvc.getId())
             .collect(Collectors.toSet());
+    }
+
+    @ElementCollection
+    @JoinTable(name = "bsm_service_reductionkeys", joinColumns = @JoinColumn(name = "bsm_service_id", referencedColumnName = "id"))
+    @Column(name = "reductionkey", nullable = false)
+    public Set<String> getReductionKeys() {
+        return m_reductionKeys;
+    }
+
+    public void setReductionKeys(Set<String> m_reductionKeys) {
+        this.m_reductionKeys = m_reductionKeys;
+    }
+
+    public void addReductionKey(String reductionKey) {
+        m_reductionKeys.add(reductionKey);
+    }
+
+    @Transient
+    public Set<String> getAllReductionKeys() {
+        Set<String> allReductionKeys = Sets.newHashSet();
+        for (OnmsMonitoredService ipService : getIpServices()) {
+            allReductionKeys.addAll(OnmsMonitoredServiceHelper.getReductionKeys(ipService));
+        }
+        allReductionKeys.addAll(getReductionKeys());
+        return allReductionKeys;
     }
 
     @ManyToMany(fetch = FetchType.EAGER,

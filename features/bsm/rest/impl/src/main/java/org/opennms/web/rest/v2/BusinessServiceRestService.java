@@ -96,6 +96,7 @@ public class BusinessServiceRestService {
         response.setLocation(ResourceLocationFactory.createBusinessServiceLocation(service.getId().toString()));
         response.setParentServices(service.getParentServices().stream().map(BusinessService::getId).collect(Collectors.toSet()));
         response.setOperationalStatus(getManager().getOperationalStatusForBusinessService(service));
+        response.setReductionKeys(service.getReductionKeys());
 
         return Response.ok(response).build();
     }
@@ -111,6 +112,7 @@ public class BusinessServiceRestService {
         service.setChildServices(request.getChildServices().stream()
                                         .map(serviceId -> getManager().getBusinessServiceById(serviceId))
                                         .collect(Collectors.toSet()));
+        service.setReductionKeys(request.getReductionKeys());
         getManager().saveBusinessService(service);
 
         return Response.created(RedirectHelper.getRedirectUri(uriInfo, service.getId())).build();
@@ -137,6 +139,7 @@ public class BusinessServiceRestService {
         service.setChildServices(request.getChildServices().stream()
                                         .map(serviceId -> getManager().getBusinessServiceById(serviceId))
                                         .collect(Collectors.toSet()));
+        service.setReductionKeys(request.getReductionKeys());
         getManager().saveBusinessService(service);
 
         return Response.noContent().build();
@@ -192,6 +195,7 @@ public class BusinessServiceRestService {
         response.setIpAddress(ipService.getIpAddress());
         response.setOperationalStatus(getManager().getOperationalStatusForIPService(ipService));
         response.setLocation(ResourceLocationFactory.createBusinessServiceIpServiceLocation(ipService.getId()));
+        response.setReductionKeys(ipService.getReductionKeys());
         return response;
     }
 }

@@ -39,6 +39,8 @@ import org.opennms.netmgt.bsm.persistence.api.BusinessServiceEntity;
 import org.opennms.netmgt.bsm.service.BusinessServiceStateChangeHandler;
 import org.opennms.netmgt.bsm.test.BsmTestData;
 import org.opennms.netmgt.bsm.test.BsmTestUtils;
+import org.opennms.netmgt.events.api.EventConstants;
+import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsSeverity;
 
@@ -50,6 +52,15 @@ public class DefaultBusinessServiceStateMachineTest {
     public void canMaintainState() {
         BsmTestData testSpecification = createSimpleHierarchy();
         List<BusinessServiceEntity> bss = testSpecification.getServices();
+
+        BusinessServiceEntity bsChild1 = testSpecification.findByName("Child 1");
+        BusinessServiceEntity bsChild2 = testSpecification.findByName("Child 2");
+        BusinessServiceEntity bsParent = testSpecification.findByName("Parent");
+        OnmsMonitoredService svc1 = testSpecification.findIpService("192.168.1.1", "ICMP");
+        OnmsMonitoredService svc2 = testSpecification.findIpService("192.168.1.2", "SNMP");
+
+        // manually add a reduction key to a business service to verify that this also works
+        bsChild1.addReductionKey("explicitReductionKey");
 
         // Setup the state machine
         LoggingStateChangeHandler handler = new LoggingStateChangeHandler();
@@ -63,13 +74,7 @@ public class DefaultBusinessServiceStateMachineTest {
             assertEquals(DefaultBusinessServiceStateMachine.DEFAULT_SEVERITY, stateMachine.getOperationalStatus(eachBs));
         }
 
-        BusinessServiceEntity bsChild1 = testSpecification.findByName("Child 1");
-        BusinessServiceEntity bsChild2 = testSpecification.findByName("Child 2");
-        BusinessServiceEntity bsParent = testSpecification.findByName("Parent");
-        OnmsMonitoredService svc1 = testSpecification.findIpService("192.168.1.1", "ICMP");
-        OnmsMonitoredService svc2 = testSpecification.findIpService("192.168.1.2", "SNMP");
-
-        // Pass the alarm to the state machine
+        // Pass alarm to the state machine
         stateMachine.handleNewOrUpdatedAlarm(createAlarm(svc1, OnmsSeverity.MINOR));
 
         // Verify the updated state
@@ -80,7 +85,7 @@ public class DefaultBusinessServiceStateMachineTest {
         assertEquals(DefaultBusinessServiceStateMachine.DEFAULT_SEVERITY, stateMachine.getOperationalStatus(bsChild2));
         assertEquals(OnmsSeverity.MINOR, stateMachine.getOperationalStatus(bsParent));
 
-        // Verify that hierarchy also works
+        // Verify that hierarchy works
         stateMachine.handleNewOrUpdatedAlarm(BsmTestUtils.createAlarm(svc2, OnmsSeverity.MAJOR));
         assertEquals(4, handler.getStateChanges().size());
         assertEquals(OnmsSeverity.MINOR, stateMachine.getOperationalStatus(svc1));
@@ -88,6 +93,19 @@ public class DefaultBusinessServiceStateMachineTest {
         assertEquals(OnmsSeverity.MAJOR, stateMachine.getOperationalStatus(svc2));
         assertEquals(OnmsSeverity.MAJOR, stateMachine.getOperationalStatus(bsChild2));
         assertEquals(OnmsSeverity.MAJOR, stateMachine.getOperationalStatus(bsParent));
+
+        // Verify that explicit reductionKeys work as well
+        OnmsAlarm customAlarm = new OnmsAlarm();
+        customAlarm.setUei(EventConstants.NODE_LOST_SERVICE_EVENT_UEI);
+        customAlarm.setSeverity(OnmsSeverity.CRITICAL);
+        customAlarm.setReductionKey("explicitReductionKey");
+        stateMachine.handleNewOrUpdatedAlarm(customAlarm);
+        assertEquals(6, handler.getStateChanges().size());
+        assertEquals(OnmsSeverity.MINOR, stateMachine.getOperationalStatus(svc1));
+        assertEquals(OnmsSeverity.MAJOR, stateMachine.getOperationalStatus(svc2));
+        assertEquals(OnmsSeverity.CRITICAL, stateMachine.getOperationalStatus(bsChild1));
+        assertEquals(OnmsSeverity.MAJOR, stateMachine.getOperationalStatus(bsChild2));
+        assertEquals(OnmsSeverity.CRITICAL, stateMachine.getOperationalStatus(bsParent));
     }
 
     public static class LoggingStateChangeHandler implements BusinessServiceStateChangeHandler {

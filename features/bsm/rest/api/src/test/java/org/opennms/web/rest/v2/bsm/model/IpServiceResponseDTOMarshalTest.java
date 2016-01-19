@@ -53,6 +53,8 @@ public class IpServiceResponseDTOMarshalTest extends MarshalAndUnmarshalTest<IpS
         ipService.setNodeLabel("dummy");
         ipService.setOperationalStatus(OnmsSeverity.WARNING);
         ipService.setServiceName("ICMP");
+        ipService.getReductionKeys().add("key1");
+        ipService.getReductionKeys().add("key2");
 
         return Arrays.asList(new Object[][]{{
                 IpServiceResponseDTO.class,
@@ -63,6 +65,7 @@ public class IpServiceResponseDTOMarshalTest extends MarshalAndUnmarshalTest<IpS
                 "  \"ipAddress\" : \"1.1.1.1\"," +
                 "  \"nodeLabel\" : \"dummy\"," +
                 "  \"operationalStatus\" : \"WARNING\"," +
+                "  \"reductionKeys\": [ \"key1\", \"key2\" ]," +
                 "  \"serviceName\" : \"ICMP\"" +
                 "}",
                 "<ip-service>" +
@@ -72,6 +75,10 @@ public class IpServiceResponseDTOMarshalTest extends MarshalAndUnmarshalTest<IpS
                         "<ip-address>1.1.1.1</ip-address>" +
                         "<operational-status>WARNING</operational-status>" +
                         "<location>/api/v2/business-services/ip-services/1</location>" +
+                        "<reductionKeys>" +
+                            "<reductionKey>key1</reductionKey>" +
+                            "<reductionKey>key2</reductionKey>" +
+                        "</reductionKeys>" +
                 "</ip-service>"
         }});
     }

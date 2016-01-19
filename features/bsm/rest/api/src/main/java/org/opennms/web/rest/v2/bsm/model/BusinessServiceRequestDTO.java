@@ -39,15 +39,12 @@ import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
-import org.codehaus.jackson.annotate.JsonIgnoreProperties;
-
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
 
 @XmlRootElement(name = "business-service")
 @XmlAccessorType(XmlAccessType.NONE)
-@JsonIgnoreProperties(ignoreUnknown=true)
 public class BusinessServiceRequestDTO {
     
     @XmlElement(name = "name")
@@ -64,6 +61,10 @@ public class BusinessServiceRequestDTO {
     @XmlElement(name="child-service")
     @XmlElementWrapper(name="child-services")
     private Set<Long> m_childServices = Sets.newLinkedHashSet();
+
+    @XmlElement(name="reductionKey")
+    @XmlElementWrapper(name="reductionKeys")
+    private Set<String> m_reductionKeys = Sets.newHashSet();
 
     public String getName() {
         return m_name;
@@ -109,6 +110,14 @@ public class BusinessServiceRequestDTO {
         m_childServices = childServices;
     }
 
+    public Set<String> getReductionKeys() {
+        return m_reductionKeys;
+    }
+
+    public void setReductionKeys(Set<String> reductionKeys) {
+        m_reductionKeys = reductionKeys;
+    }
+
     @Override
     public boolean equals(Object obj) {
         if (obj == null) {
@@ -122,12 +131,13 @@ public class BusinessServiceRequestDTO {
         return Objects.equals(m_name, other.m_name)
                 && Objects.equals(m_attributes, other.m_attributes)
                 && Objects.equals(m_ipServices, other.m_ipServices)
-                && Objects.equals(m_childServices, other.m_childServices);
+                && Objects.equals(m_childServices, other.m_childServices)
+                && Objects.equals(m_reductionKeys, other.m_reductionKeys);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(m_name, m_attributes, m_ipServices);
+        return Objects.hash(m_name, m_attributes, m_ipServices, m_childServices, m_reductionKeys);
     }
 
     @Override
@@ -137,6 +147,7 @@ public class BusinessServiceRequestDTO {
                 .add("attributes", m_attributes)
                 .add("ipServices", m_ipServices)
                 .add("childServices", m_childServices)
+                .add("reductionKeys", m_reductionKeys)
                 .toString();
     }
 }

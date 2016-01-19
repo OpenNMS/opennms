@@ -32,6 +32,7 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
@@ -39,11 +40,14 @@ import org.codehaus.jackson.map.ObjectMapper;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.bsm.persistence.api.BusinessServiceEntity;
+import org.opennms.netmgt.bsm.persistence.api.OnmsMonitoredServiceHelper;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.web.rest.v2.bsm.model.BusinessServiceRequestDTO;
+import org.opennms.web.rest.v2.bsm.model.BusinessServiceResponseDTO;
+import org.opennms.web.rest.v2.bsm.model.IpServiceResponseDTO;
 
 import com.google.common.base.Throwables;
 
@@ -58,7 +62,30 @@ public class BsmTestUtils {
         request.setAttributes(new HashMap<>(input.getAttributes()));
         request.setChildServices(input.getChildServices().stream().map(s -> s.getId()).collect(Collectors.toSet()));
         request.setIpServices(input.getIpServices().stream().map(s -> s.getId()).collect(Collectors.toSet()));
+        request.setReductionKeys(new HashSet<>(input.getReductionKeys()));
         return request;
+    }
+
+    public static BusinessServiceResponseDTO toResponseDto(BusinessServiceEntity input) {
+        BusinessServiceResponseDTO response = new BusinessServiceResponseDTO();
+        response.setId(input.getId());
+        response.setName(input.getName());
+        response.setReductionKeys(new HashSet<>(input.getReductionKeys()));
+        response.setOperationalStatus(null); // do not know that here
+        response.setAttributes(input.getAttributes());
+        response.setIpServices(input.getIpServices().stream().map(it -> {
+            IpServiceResponseDTO ipService = new IpServiceResponseDTO();
+            ipService.setReductionKeys(OnmsMonitoredServiceHelper.getReductionKeys(it));
+            ipService.setOperationalStatus(null); // do not know that here
+            ipService.setNodeLabel("dummy"); // do not know that here
+            ipService.setServiceName(it.getServiceName());
+            ipService.setId(it.getId());
+            ipService.setIpAddress(InetAddressUtils.toIpAddrString(it.getIpAddress()));
+            return ipService;
+        }).collect(Collectors.toSet()));
+        response.setChildServices(input.getChildServices().stream().map(it -> it.getId()).collect(Collectors.toSet()));
+        response.setParentServices(input.getParentServices().stream().map(it -> it.getId()).collect(Collectors.toSet()));
+        return response;
     }
 
     // convert to json

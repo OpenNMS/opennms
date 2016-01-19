@@ -28,9 +28,14 @@
 
 package org.opennms.netmgt.bsm.service.internal;
 
-import com.google.common.base.Objects;
+import java.util.Collections;
+import java.util.Set;
+
+import org.opennms.netmgt.bsm.persistence.api.OnmsMonitoredServiceHelper;
 import org.opennms.netmgt.bsm.service.model.IpService;
 import org.opennms.netmgt.model.OnmsMonitoredService;
+
+import com.google.common.base.Objects;
 
 public class IpServiceImpl implements IpService {
 
@@ -48,20 +53,29 @@ public class IpServiceImpl implements IpService {
         return m_entity;
     }
 
-    @Override public int getId() {
+    @Override
+    public int getId() {
         return m_entity.getId();
     }
 
-    @Override public String getServiceName() {
+    @Override
+    public String getServiceName() {
         return m_entity.getServiceName();
     }
 
-    @Override public String getNodeLabel() {
+    @Override
+    public String getNodeLabel() {
         return m_manager.getNodeDao().get(m_entity.getNodeId()).getLabel();
     }
 
-    @Override public String getIpAddress() {
+    @Override
+    public String getIpAddress() {
         return m_entity.getIpAddress().toString();
+    }
+
+    @Override
+    public Set<String> getReductionKeys() {
+        return Collections.unmodifiableSet(OnmsMonitoredServiceHelper.getReductionKeys(m_entity));
     }
 
     @Override

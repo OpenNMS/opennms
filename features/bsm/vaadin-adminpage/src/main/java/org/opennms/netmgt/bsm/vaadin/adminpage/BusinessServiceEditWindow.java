@@ -28,11 +28,16 @@
 
 package org.opennms.netmgt.bsm.vaadin.adminpage;
 
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.Set;
+import java.util.function.Consumer;
 
 import org.opennms.netmgt.bsm.service.model.BusinessService;
 import org.opennms.netmgt.bsm.service.model.IpService;
 import org.opennms.netmgt.vaadin.core.StringInputDialogWindow;
+import org.opennms.netmgt.vaadin.core.TransactionAwareUI;
+import org.opennms.netmgt.vaadin.core.UIHelper;
 
 import com.vaadin.data.Property;
 import com.vaadin.data.util.BeanItemContainer;
@@ -46,9 +51,6 @@ import com.vaadin.ui.TextField;
 import com.vaadin.ui.TwinColSelect;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
-
-import org.opennms.netmgt.vaadin.core.TransactionAwareUI;
-import org.opennms.netmgt.vaadin.core.UIHelper;
 
 /**
  * Modal dialog window used to edit the properties of a Business Service definition. This class will be
@@ -142,6 +144,7 @@ public class BusinessServiceEditWindow extends Window {
                 businessService.setName(m_nameTextField.getValue().trim());
                 businessService.setIpServices((Set<IpService>) m_ipServicesTwinColSelect.getValue());
                 businessService.setChildServices((Set<BusinessService>) m_businessServicesTwinColSelect.getValue());
+                businessService.setReductionKeys(new HashSet<>((Collection<String>)m_reductionKeyListSelect.getItemIds()));
                 businessService.save();
                 close();
                 businessServiceMainLayout.refreshTable();
@@ -179,21 +182,27 @@ public class BusinessServiceEditWindow extends Window {
         /**
          * create the IP-Services selection box
          */
-
         m_ipServicesTwinColSelect = new TwinColSelect();
         m_ipServicesTwinColSelect.setId("ipServiceSelect");
         m_ipServicesTwinColSelect.setWidth(99.0f, Unit.PERCENTAGE);
         m_ipServicesTwinColSelect.setLeftColumnCaption("Available IP-Services");
         m_ipServicesTwinColSelect.setRightColumnCaption("Selected IP-Services");
         m_ipServicesTwinColSelect.setRows(8);
-
+        m_ipServicesTwinColSelect.setNewItemsAllowed(false);
         m_ipServicesTwinColSelect.setContainerDataSource(m_ipServicesContainer);
         m_ipServicesTwinColSelect.setValue(businessService.getIpServices());
+        // manually set the item caption, otherwise .toString() is used which looks weired
+        m_ipServicesTwinColSelect.setItemCaptionMode(AbstractSelect.ItemCaptionMode.EXPLICIT_DEFAULTS_ID);
+        m_ipServicesContainer.getItemIds().forEach(new Consumer<IpService>() {
+            @Override
+            public void accept(IpService ipServiceDTO) {
+                m_ipServicesTwinColSelect.setItemCaption(ipServiceDTO, String.format("%s/%s/%s", ipServiceDTO.getNodeLabel(), ipServiceDTO.getIpAddress(), ipServiceDTO.getServiceName()));
+            }
+        });
 
         /**
          * create the Business Services selection box
          */
-
         m_businessServicesTwinColSelect = new TwinColSelect();
         m_businessServicesTwinColSelect.setId("businessServiceSelect");
         m_businessServicesTwinColSelect.setWidth(99.0f, Unit.PERCENTAGE);
@@ -210,18 +219,17 @@ public class BusinessServiceEditWindow extends Window {
         /**
          * create the reduction key list box
          */
-
         m_reductionKeyListSelect = new ListSelect("Reduction Keys");
         m_reductionKeyListSelect.setId("reductionKeySelect");
         m_reductionKeyListSelect.setWidth(98.0f, Unit.PERCENTAGE);
         m_reductionKeyListSelect.setRows(8);
         m_reductionKeyListSelect.setNullSelectionAllowed(false);
         m_reductionKeyListSelect.setMultiSelect(false);
+        m_reductionKeyListSelect.addItems(businessService.getReductionKeys());
 
         /**
          * wrap the reduction key list select box in a Vaadin Panel
          */
-
         verticalLayout.addComponent(m_ipServicesTwinColSelect);
         verticalLayout.addComponent(m_businessServicesTwinColSelect);
 
@@ -302,7 +310,6 @@ public class BusinessServiceEditWindow extends Window {
         /**
          * now add the button layout to the main layout
          */
-
         verticalLayout.addComponent(buttonLayout);
         verticalLayout.setExpandRatio(buttonLayout, 1.0f);
 

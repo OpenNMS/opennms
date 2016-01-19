@@ -28,12 +28,13 @@
 
 package org.opennms.web.rest.v2;
 
-import static org.junit.Assert.assertEquals;
 import static org.opennms.netmgt.bsm.test.BsmTestUtils.toJson;
 import static org.opennms.netmgt.bsm.test.BsmTestUtils.toRequestDto;
+import static org.opennms.netmgt.bsm.test.BsmTestUtils.toResponseDto;
 import static org.opennms.netmgt.bsm.test.BsmTestUtils.toXml;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.ws.rs.core.MediaType;
 import javax.xml.bind.JAXBContext;
@@ -51,11 +52,13 @@ import org.opennms.core.test.rest.AbstractSpringJerseyRestTestCase;
 import org.opennms.netmgt.bsm.persistence.api.BusinessServiceDao;
 import org.opennms.netmgt.bsm.persistence.api.BusinessServiceEntity;
 import org.opennms.netmgt.bsm.test.BsmDatabasePopulator;
-import org.opennms.netmgt.bsm.test.BsmTestUtils;
 import org.opennms.netmgt.bsm.test.BusinessServiceEntityBuilder;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
+import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.test.JUnitConfigurationEnvironment;
+import org.opennms.web.rest.api.ApiVersion;
 import org.opennms.web.rest.api.ResourceLocation;
+import org.opennms.web.rest.api.ResourceLocationFactory;
 import org.opennms.web.rest.v2.bsm.model.BusinessServiceListDTO;
 import org.opennms.web.rest.v2.bsm.model.BusinessServiceRequestDTO;
 import org.opennms.web.rest.v2.bsm.model.BusinessServiceResponseDTO;
@@ -125,18 +128,18 @@ public class BusinessServiceRestServiceIT extends AbstractSpringJerseyRestTestCa
         m_businessServiceDao.flush();
 
         // verify adding not existing ip service not possible
-        sendPost(getIpServiceUrl(serviceId, -1), "", 404, null);
+        sendPost(buildIpServiceUrl(serviceId, -1), "", 404, null);
 
         // verify adding of existing ip service is possible
-        sendPost(getIpServiceUrl(serviceId, 10), "", 200, null);
+        sendPost(buildIpServiceUrl(serviceId, 10), "", 200, null);
         Assert.assertEquals(1, m_businessServiceDao.get(serviceId).getIpServices().size());
 
         // verify adding twice possible, but not modified
-        sendPost(getIpServiceUrl(serviceId, 10), "", 304, null);
+        sendPost(buildIpServiceUrl(serviceId, 10), "", 304, null);
         Assert.assertEquals(1, m_businessServiceDao.get(serviceId).getIpServices().size());
 
         // verify adding of existing ip service is possible
-        sendPost(getIpServiceUrl(serviceId, 17), "", 200, null);
+        sendPost(buildIpServiceUrl(serviceId, 17), "", 200, null);
         Assert.assertEquals(2, m_businessServiceDao.get(serviceId).getIpServices().size());
     }
 
@@ -154,23 +157,40 @@ public class BusinessServiceRestServiceIT extends AbstractSpringJerseyRestTestCa
         m_businessServiceDao.flush();
 
         // verify removing not existing ip service not possible
-        sendData(DELETE, MediaType.APPLICATION_XML, getIpServiceUrl(serviceId, -1), "", 404);
+        sendData(DELETE, MediaType.APPLICATION_XML, buildIpServiceUrl(serviceId, -1), "", 404);
 
         // verify removing of existing ip service is possible
-        sendData(DELETE, MediaType.APPLICATION_XML, getIpServiceUrl(serviceId, 17), "", 200);
+        sendData(DELETE, MediaType.APPLICATION_XML, buildIpServiceUrl(serviceId, 17), "", 200);
         Assert.assertEquals(2, m_businessServiceDao.get(serviceId).getIpServices().size());
 
         // verify removing twice possible, but not modified
-        sendData(DELETE, MediaType.APPLICATION_XML, getIpServiceUrl(serviceId, 17), "", 304);
+        sendData(DELETE, MediaType.APPLICATION_XML, buildIpServiceUrl(serviceId, 17), "", 304);
         Assert.assertEquals(2, m_businessServiceDao.get(serviceId).getIpServices().size());
 
         // verify removing of existing ip service is possible
-        sendData(DELETE, MediaType.APPLICATION_XML, getIpServiceUrl(serviceId, 18), "", 200);
+        sendData(DELETE, MediaType.APPLICATION_XML, buildIpServiceUrl(serviceId, 18), "", 200);
         Assert.assertEquals(1, m_businessServiceDao.get(serviceId).getIpServices().size());
     }
 
-    private String getIpServiceUrl(Long servieId, int ipServiceId) {
-        return String.format("/business-services/%s/ip-service/%s", servieId, ipServiceId);
+    private String buildIpServiceUrl(Long serviceId, int ipServiceId) {
+        return String.format("/business-services/%s/ip-service/%s", serviceId, ipServiceId);
+    }
+
+    private String buildServiceUrl(Long serviceId) {
+        return String.format("/business-services/%s", serviceId);
+    }
+
+    private List<ResourceLocation> listBusinessServices() throws Exception {
+        JAXBContext context = JAXBContext.newInstance(BusinessServiceListDTO.class, ResourceLocation.class);
+        List<ResourceLocation> services = getXmlObject(context, "/business-services", 200, BusinessServiceListDTO.class).getServices();
+        return services;
+    }
+
+    /**
+     * Verifies that the given reduction key is atached to the provided Business Service
+     */
+    private void verifyReductionKey(String reductionKey, BusinessServiceResponseDTO responseDTO) {
+        Assert.assertTrue("Expect reduction key '" + reductionKey + "' to be present in retrieved BusinessServiceResponseDTO.", responseDTO.getReductionKeys().contains(reductionKey));
     }
 
     @Test
@@ -179,32 +199,67 @@ public class BusinessServiceRestServiceIT extends AbstractSpringJerseyRestTestCa
     @SuppressWarnings("unchecked")
     public void canRetrieveBusinessServices() throws Exception {
         // Add business services to the DB
-        BusinessServiceEntity bs = new BusinessServiceEntity();
-        bs.setName("Application Servers");
+        BusinessServiceEntity bs = new BusinessServiceEntityBuilder()
+                .name("Application Servers")
+                .addReductionKey("MyReductionKey")
+                .toEntity();
         Long id = m_businessServiceDao.save(bs);
         m_businessServiceDao.flush();
 
         // Retrieve the list of business services
-        String url = "/business-services";
-        JAXBContext context = JAXBContext.newInstance(BusinessServiceListDTO.class, ResourceLocation.class);
-        List<ResourceLocation> businessServices = getXmlObject(context, url, 200, BusinessServiceListDTO.class).getServices();
+        List<ResourceLocation> businessServices = listBusinessServices();
 
         // Verify
-        assertEquals(databasePopulator.expectedBsCount(1), businessServices.size());
+        Assert.assertEquals(databasePopulator.expectedBsCount(1), businessServices.size());
+        BusinessServiceResponseDTO expectedResponseDTO = toResponseDto(bs);
+        expectedResponseDTO.setLocation(ResourceLocationFactory.createBusinessServiceLocation(id.toString()));
+        expectedResponseDTO.setOperationalStatus(OnmsSeverity.INDETERMINATE);
+        BusinessServiceResponseDTO actualResponseDTO = getXmlObject(
+                JAXBContext.newInstance(BusinessServiceResponseDTO.class, ResourceLocation.class),
+                buildServiceUrl(id),
+                200, BusinessServiceResponseDTO.class);
+        Assert.assertEquals(expectedResponseDTO, actualResponseDTO);
+        verifyReductionKey("MyReductionKey", actualResponseDTO);
     }
 
     @Test
     @JUnitTemporaryDatabase
     @Transactional
     public void canCreateBusinessService() throws Exception {
-        BusinessServiceEntity bs = new BusinessServiceEntityBuilder()
+        final BusinessServiceEntity bs = new BusinessServiceEntityBuilder()
                 .name("some-service")
                 .addAttribute("some-key", "some-value")
+                .addReductionKey("reductionKey-1")
+                .addReductionKey("reductionKey-2")
+                .addReductionKey("reductionKey-3")
                 .toEntity();
 
         sendData(POST, MediaType.APPLICATION_JSON, "/business-services", toJson(toRequestDto(bs)), 201);
         sendData(POST, MediaType.APPLICATION_XML, "/business-services", toXml(toRequestDto(bs)) , 201);
-        Assert.assertEquals(databasePopulator.expectedBsCount(2), m_businessServiceDao.findAll().size());
+        Assert.assertEquals(databasePopulator.expectedBsCount(2), m_businessServiceDao.countAll());
+
+        for (BusinessServiceEntity eachEntity : m_businessServiceDao.findAll()) {
+            BusinessServiceResponseDTO responseDTO = getXmlObject(
+                    JAXBContext.newInstance(BusinessServiceResponseDTO.class),
+                    buildServiceUrl(eachEntity.getId()),
+                    200,
+                    BusinessServiceResponseDTO.class);
+            Assert.assertEquals(eachEntity.getId(), Long.valueOf(responseDTO.getId()));
+            Assert.assertEquals(eachEntity.getName(), responseDTO.getName());
+            Assert.assertEquals(eachEntity.getAttributes(), responseDTO.getAttributes());
+            Assert.assertEquals(eachEntity.getReductionKeys(), responseDTO.getReductionKeys());
+            Assert.assertEquals(OnmsSeverity.INDETERMINATE, responseDTO.getOperationalStatus());
+            Assert.assertEquals(eachEntity.getChildServices()
+                    .stream()
+                    .map(e -> e.getId())
+                    .collect(Collectors.toSet()), responseDTO.getChildServices());
+            Assert.assertEquals(eachEntity.getParentServices()
+                    .stream()
+                    .map(e -> e.getId())
+                    .collect(Collectors.toSet()), responseDTO.getChildServices());
+            Assert.assertEquals(eachEntity.getName(), responseDTO.getName());
+            Assert.assertEquals(3, responseDTO.getReductionKeys().size());
+        }
     }
 
     @Test
@@ -215,8 +270,9 @@ public class BusinessServiceRestServiceIT extends AbstractSpringJerseyRestTestCa
         BusinessServiceEntity bs = new BusinessServiceEntityBuilder()
                 .name("Dummy Service")
                 .addAttribute("some-key", "some-value")
+                .addReductionKey("key1")
+                .addReductionKey("key2-deleteMe")
                 .toEntity();
-
         final Long serviceId = m_businessServiceDao.save(bs);
         m_businessServiceDao.flush();
 
@@ -224,6 +280,8 @@ public class BusinessServiceRestServiceIT extends AbstractSpringJerseyRestTestCa
         BusinessServiceRequestDTO requestDTO = toRequestDto(bs);
         requestDTO.setName("New Name");
         requestDTO.getAttributes().put("key", "value");
+        requestDTO.getReductionKeys().clear();
+        requestDTO.getReductionKeys().add("key1updated");
 
         sendData(PUT, MediaType.APPLICATION_JSON, "/business-services/" + serviceId, toJson(requestDTO), 204);
         sendData(PUT, MediaType.APPLICATION_XML, "/business-services/" + serviceId, toXml(requestDTO), 204);
@@ -231,12 +289,15 @@ public class BusinessServiceRestServiceIT extends AbstractSpringJerseyRestTestCa
         // verify
         BusinessServiceResponseDTO responseDTO = getXmlObject(
                 JAXBContext.newInstance(BusinessServiceResponseDTO.class, ResourceLocation.class),
-                "/business-services/" + serviceId,
+                buildServiceUrl(serviceId),
                 200,
                 BusinessServiceResponseDTO.class);
+        Assert.assertEquals(1, m_businessServiceDao.findAll().size());
         Assert.assertEquals(requestDTO.getName(), responseDTO.getName());
         Assert.assertEquals(Sets.newHashSet(), responseDTO.getIpServices());
         Assert.assertEquals(requestDTO.getAttributes(), responseDTO.getAttributes());
         Assert.assertEquals(requestDTO.getChildServices(), responseDTO.getChildServices());
+        Assert.assertEquals(1, m_businessServiceDao.get(serviceId).getReductionKeys().size());
+        verifyReductionKey("key1updated", responseDTO);
     }
 }
