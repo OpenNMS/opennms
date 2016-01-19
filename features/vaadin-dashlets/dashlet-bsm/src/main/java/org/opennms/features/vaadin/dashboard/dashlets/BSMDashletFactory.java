@@ -30,6 +30,7 @@ package org.opennms.features.vaadin.dashboard.dashlets;
 
 import org.opennms.features.vaadin.dashboard.model.AbstractDashletFactory;
 import org.opennms.features.vaadin.dashboard.model.Dashlet;
+import org.opennms.features.vaadin.dashboard.model.DashletConfigurationWindow;
 import org.opennms.features.vaadin.dashboard.model.DashletSpec;
 import org.opennms.netmgt.bsm.service.BusinessServiceManager;
 
@@ -71,5 +72,16 @@ public class BSMDashletFactory extends AbstractDashletFactory {
     @Override
     public String getHelpContentHTML() {
         return "This Dashlet displays the status of selected Business Services.";
+    }
+
+    /**
+     * Returns a custom configuration window.
+     *
+     * @param dashletSpec the {@link DashletSpec} to use
+     * @return the configuration window
+     */
+    @Override
+    public DashletConfigurationWindow configurationWindow(DashletSpec dashletSpec) {
+        return new BSMConfigurationWindow(dashletSpec);
     }
 }
