@@ -2,6 +2,8 @@ package org.opennms.netmgt.bsm.service.model;
 
 import java.util.Set;
 
+import org.opennms.netmgt.model.OnmsSeverity;
+
 public interface IpService {
 
     int getId();
@@ -13,4 +15,6 @@ public interface IpService {
     String getIpAddress();
 
     Set<String> getReductionKeys();
+
+    OnmsSeverity getOperationalStatus();
 }

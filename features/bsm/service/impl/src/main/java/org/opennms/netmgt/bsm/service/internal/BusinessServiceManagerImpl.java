@@ -86,13 +86,6 @@ public class BusinessServiceManagerImpl implements BusinessServiceManager {
         getDao().saveOrUpdate(entity);
     }
 
-//    @Override
-//    public void update(BusinessService objectToUpdate) {
-//        final BusinessServiceEntity existingBusinessService = getBusinessServiceEntity(objectToUpdate);
-//        BeanUtils.copyProperties(transform(objectToUpdate), existingBusinessService);
-//        getDao().update(existingBusinessService);
-//    }
-
     @Override
     public BusinessService getBusinessServiceById(Long id) {
         BusinessServiceEntity entity = getBusinessServiceEntity(id);
@@ -119,8 +112,6 @@ public class BusinessServiceManagerImpl implements BusinessServiceManager {
         entity.setIpServices(ipServices.stream()
                                        .map(this::getMonitoredService)
                                        .collect(Collectors.toSet()));
-//
-//        getDao().update(entity);
     }
 
     @Override
@@ -135,7 +126,6 @@ public class BusinessServiceManagerImpl implements BusinessServiceManager {
 
         // add and update
         entity.getIpServices().add(monitoredService);
-//        getDao().update(entity);
         return true;
     }
 
@@ -151,8 +141,6 @@ public class BusinessServiceManagerImpl implements BusinessServiceManager {
 
         // remove and update
         entity.getIpServices().remove(monitoredService);
-//        getDao().update(entity);
-
         return true;
     }
 
@@ -171,8 +159,6 @@ public class BusinessServiceManagerImpl implements BusinessServiceManager {
         for (final BusinessServiceEntity e : parentEntity.getChildServices()) {
             e.getParentServices().add(parentEntity);
         }
-
-//        getDao().update(parentEntity);
     }
 
     @Override
@@ -192,8 +178,6 @@ public class BusinessServiceManagerImpl implements BusinessServiceManager {
         // add and update
         parentEntity.getChildServices().add(childEntity);
         childEntity.getParentServices().add(parentEntity);
-//        getDao().update(parentEntity);
-//        getDao().update(childEntity);
         return true;
     }
 
@@ -210,8 +194,6 @@ public class BusinessServiceManagerImpl implements BusinessServiceManager {
         // remove and update
         parentEntity.getChildServices().remove(childEntity);
         childEntity.getParentServices().remove(parentEntity);
-//        getDao().update(parentEntity);
-//        getDao().update(childEntity);
         return true;
     }
 
@@ -281,7 +263,6 @@ public class BusinessServiceManagerImpl implements BusinessServiceManager {
     }
 
     private BusinessServiceEntity getBusinessServiceEntity(BusinessService service) throws NoSuchElementException {
-//        return getBusinessServiceEntity(service.getId());
         return ((BusinessServiceImpl) service).getEntity();
     }
 
@@ -294,7 +275,6 @@ public class BusinessServiceManagerImpl implements BusinessServiceManager {
     }
 
     private OnmsMonitoredService getMonitoredService(IpService ipService) throws NoSuchElementException {
-//        return this.getMonitoredService(ipService.getId());
         return ((IpServiceImpl) ipService).getEntity();
     }
 

@@ -103,6 +103,17 @@
   <dependencies>
     <dependency>
       <groupId>org.opennms.features.bsm</groupId>
+      <artifactId>org.opennms.features.bsm.rest.api</artifactId>
+      <version>${project.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>*</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.bsm</groupId>
       <artifactId>org.opennms.features.bsm.rest.impl</artifactId>
       <version>${project.version}</version>
       <exclusions>
@@ -146,7 +157,7 @@
       <scope>runtime</scope>
     </dependency>
   </dependencies>
-    
+
   <pluginRepositories>
     <pluginRepository>
       <snapshots><enabled>false</enabled></snapshots>
