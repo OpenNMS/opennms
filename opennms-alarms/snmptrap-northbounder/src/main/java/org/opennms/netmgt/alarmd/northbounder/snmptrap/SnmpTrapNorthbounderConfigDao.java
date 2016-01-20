@@ -71,7 +71,7 @@ public class SnmpTrapNorthbounderConfigDao extends AbstractJaxbConfigDao<SnmpTra
                         try {
                             LOG.debug("Parsing file {}", configFile);
                             SnmpTrapMappingGroup group = JaxbUtils.unmarshal(SnmpTrapMappingGroup.class, configFile);
-                            sink.getMappings().add(group);
+                            sink.addMappingGroup(group);
                         } catch (Exception e) {
                             LOG.error("Can't parse {}", link, e);
                         }
@@ -120,7 +120,9 @@ public class SnmpTrapNorthbounderConfigDao extends AbstractJaxbConfigDao<SnmpTra
      * @throws IOException Signals that an I/O exception has occurred.
      */
     public void save() throws IOException {
-        JaxbUtils.marshal(getConfig(), new FileWriter(getConfigResource().getFile()));
+        SnmpTrapNorthbounderConfig cfg = getConfig();
+        cfg.getSnmpTrapSinks().forEach(s -> s.cleanMappingGroups());
+        JaxbUtils.marshal(cfg, new FileWriter(getConfigResource().getFile()));
     }
 
 }
