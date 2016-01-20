@@ -56,6 +56,8 @@ import javax.xml.bind.annotation.XmlID;
 import javax.xml.bind.annotation.XmlIDREF;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.codehaus.jackson.annotate.JsonManagedReference;
+
 /**
  * @author Seth
  */
@@ -85,6 +87,7 @@ public class ScanReport implements Serializable {
 
     @XmlElementWrapper(name="poll-results")
     @XmlElement(name="poll-result")
+    @JsonManagedReference
     private List<ScanReportPollResult> m_scanReportPollResults = new ArrayList<>();
 
     public ScanReport() {
