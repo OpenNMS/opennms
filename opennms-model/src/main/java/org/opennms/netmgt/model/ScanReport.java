@@ -191,6 +191,18 @@ public class ScanReport implements Serializable {
         return true;
     }
 
+    @Transient
+    public boolean isAvailable() {
+        if (m_scanReportPollResults != null) {
+            for (final ScanReportPollResult result : m_scanReportPollResults) {
+                if (!result.isAvailable()) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
     @Override
     public String toString() {
         return "ScanReport [id=" + m_id + ", location=" + m_location + ", locale=" + m_locale + ", timestamp=" + m_timestamp + ", properties="
