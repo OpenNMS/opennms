@@ -28,6 +28,8 @@
 
 package org.opennms.netmgt.alarmd.northbounder.snmptrap;
 
+import java.io.File;
+import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,7 +38,9 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.alarmd.api.Destination;
 import org.opennms.netmgt.alarmd.api.NorthboundAlarm;
 
@@ -48,6 +52,8 @@ import org.opennms.netmgt.alarmd.api.NorthboundAlarm;
 @XmlRootElement(name = "snmp-trap-sink")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class SnmpTrapSink implements Destination {
+
+    public static final String MAPPINGS_DIRECTORY_NAME = "snmptrap-northbounder-mappings.d";
 
     /** The Constant serialVersionUID. */
     private static final long serialVersionUID = 1L;
@@ -236,6 +242,84 @@ public class SnmpTrapSink implements Destination {
     }
 
     /**
+     * Adds the mapping group.
+     * <p>If there is a mapping group with the same name, the existing one will be overridden.</p>
+     *
+     * @param mappingGroup the mapping group
+     */
+    public void addMappingGroup(SnmpTrapMappingGroup mappingGroup) {
+        int index = -1;
+        for (int i = 0; i < m_mappings.size(); i++) {
+            if (m_mappings.get(i).getName().equals(mappingGroup.getName())) {
+                index = i;
+                break;
+            }
+        }
+        if (index > -1) {
+            m_mappings.remove(index);
+            m_mappings.add(index, mappingGroup);
+        } else {
+            m_mappings.add(mappingGroup);
+        }
+    }
+
+    public String getMappingGroupFileName(String mappingName) {
+        return MAPPINGS_DIRECTORY_NAME + File.separator + mappingName;
+    }
+
+    public File getMappingGroupFile(String mappingFileName) {
+        return new File(ConfigFileConstants.getHome(), "etc" + File.separator + mappingFileName);
+    }
+
+    /**
+     * Gets the import mapping.
+     *
+     * @param mappingName the mapping name
+     * @return the import mapping
+     * @throws Exception the exception
+     */
+    public SnmpTrapMappingGroup getImportMapping(String mappingName) throws Exception {
+        final String fileName = getMappingGroupFileName(mappingName);
+        if (m_importMappings.contains(fileName)) {
+            return JaxbUtils.unmarshal(SnmpTrapMappingGroup.class, getMappingGroupFile(fileName));
+        }
+        return null;
+    }
+
+    /**
+     * Adds the import mapping.
+     *
+     * @param mappingGroup the mapping group
+     * @param fileName the file name
+     * @return true, if successful
+     */
+    public void addImportMapping(SnmpTrapMappingGroup mappingGroup) throws Exception {
+        final String fileName = getMappingGroupFileName(mappingGroup.getName());
+        if (!m_importMappings.contains(fileName)) {
+            m_importMappings.add(fileName);
+        }
+        JaxbUtils.marshal(mappingGroup, new FileWriter(getMappingGroupFile(fileName)));
+    }
+
+    /**
+     * Removes the import mapping.
+     *
+     * @param mappingName the mapping name
+     * @return true, if successful
+     */
+    public boolean removeImportMapping(String mappingName) {
+        final String fileName = getMappingGroupFileName(mappingName);
+        if (m_importMappings.contains(fileName)) {
+            m_importMappings.remove(fileName);
+            final File file = getMappingGroupFile(fileName);
+            if (file.exists()) {
+                return file.delete();
+            }
+        }
+        return false;
+    }
+
+    /**
      * Verifies if the sink accepts a given northbound alarm.
      *
      * @param alarm the northbound alarm
@@ -273,6 +357,21 @@ public class SnmpTrapSink implements Destination {
         config.setSpecific(mapping.getSpecific());
         config.setParameters(mapping.getParams(alarm));
         return config;
+    }
+
+    /**
+     * Clean mapping groups.
+     * <p>This is intended to be used when saving the configuration on a file.</p>
+     * <p>All the groups that currently exist on the mappings list and also on the import-mappings list will be removed from the mapping list to avoid duplicates.</p>
+     */
+    public void cleanMappingGroups() {
+        final List<Integer> deleteList = new ArrayList<Integer>();
+        for (int i = 0; i < m_mappings.size(); i++) {
+            if (m_importMappings.contains(getMappingGroupFileName(m_mappings.get(i).getName()))) {
+                deleteList.add(i);
+            }
+        }
+        deleteList.forEach(i -> m_mappings.remove(i));
     }
 
     /**
