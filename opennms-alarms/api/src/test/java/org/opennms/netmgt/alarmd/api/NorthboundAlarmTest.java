@@ -87,6 +87,7 @@ public class NorthboundAlarmTest extends XmlTestNoCastor<NorthboundAlarm> {
                      "<ticket-state>OPEN</ticket-state>\n" +
                      "<x733-type>type</x733-type>\n" +
                      "<x733-cause>1</x733-cause>\n" +
+                     "<parameters/>\n" +
                      "<preserved>true</preserved>\n" +
                     "</northbound-alarm>"
                 }
