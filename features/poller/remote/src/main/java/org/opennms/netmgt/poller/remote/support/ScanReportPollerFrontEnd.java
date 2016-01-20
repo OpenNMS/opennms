@@ -46,6 +46,8 @@ import java.util.Properties;
 import java.util.Set;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.model.ScanReport;
 import org.opennms.netmgt.model.ScanReportPollResult;
@@ -418,12 +420,18 @@ public class ScanReportPollerFrontEnd implements PollerFrontEnd, InitializingBea
             scanReport.addProperty(entry);
         }
 
+        // Create a log appender that will capture log output to the root logger
+        Log4j2StringAppender appender = Log4j2StringAppender.createAppender();
+
         try {
             m_pollService.setServiceMonitorLocators(m_backEnd.getServiceMonitorLocators(DistributionContext.REMOTE_MONITOR));
             m_pollerConfiguration = retrieveLatestConfiguration();
 
 
             PolledService[] services = getPolledServices().toArray(POLLED_SERVICE_ARRAY);
+
+            appender.addToLogger(LogManager.ROOT_LOGGER_NAME, Level.DEBUG);
+
             for (int i = 0; i < services.length; i++) {
                 PolledService service = services[i];
 
@@ -469,12 +477,19 @@ public class ScanReportPollerFrontEnd implements PollerFrontEnd, InitializingBea
             }
         } catch (final Throwable e) {
             LOG.error("Error while performing scan", e);
+
+            // Remove the log appender from the root logger
+            appender.removeFromLogger(LogManager.ROOT_LOGGER_NAME);
         }
 
         // Set the percentage complete to 100%
         firePropertyChange(ScanReportProperties.percentageComplete.toString(), null, 1.0);
 
         LOG.debug("Returning scan report: {}", scanReport);
+
+        LOG.debug("=============== Scan report log START ===============");
+        LOG.debug("Scan report log: \n" + appender.getOutput());
+        LOG.debug("=============== Scan report log END ===============");
 
         // Fire an exitNecessary event with the scanReport as the parameter
         firePropertyChange(PollerFrontEndStates.exitNecessary.toString(), null, scanReport);
