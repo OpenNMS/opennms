@@ -54,6 +54,7 @@ import org.springframework.util.Assert
 class ScanGui extends AbstractGui implements ScanReportHandler, PropertyChangeListener, InitializingBean {
     def m_metadataFieldNames = ['Customer Account Number', 'Reference ID', 'Customer Name']
     def m_locations = new ArrayList<String>()
+    def m_applications = new HashMap<Set<String>>()
     def m_geoMetadata
     def m_scanReport
 
@@ -93,7 +94,11 @@ class ScanGui extends AbstractGui implements ScanReportHandler, PropertyChangeLi
         Assert.notNull(m_backEnd)
         Collection<LocationDef> monitoringLocations = m_backEnd.getMonitoringLocations()
         for (final LocationDef d : monitoringLocations) {
-            m_locations.add(d.getLocationName())
+            def name = d.getLocationName()
+            m_locations.add(name)
+            def apps = m_backEnd.getApplicationsForLocation(name)
+            System.err.println("location=" + name + ", applications=" + apps)
+            m_applications.put(name, apps)
         }
         m_geoMetadata = m_geoFetcher.fetchGeodata()
         createAndShowGui()
@@ -156,15 +161,46 @@ class ScanGui extends AbstractGui implements ScanReportHandler, PropertyChangeLi
                         rowConstraints:"[grow]"
                         )
 
+                def resetProgressBar = {
+                    if (m_progressBar != null) {
+                        m_progressBar.setValue(0)
+                        m_progressBar.setString("0%")
+                        m_progressBar.setVisible(false)
+                    }
+                    if (m_passFailPanel != null) {
+                        m_passFailPanel.removeAll()
+                        m_passFailPanel.updateUI()
+                    }
+                }
+
+                def currentLocation = m_locations.get(0)
+                def currentApplications = m_applications.get(currentLocation)
+                def applicationCombo
+                def locationCombo
+                def updateApplicationCombo = {
+                    System.err.println("Updating application combo. currentLocation=" + currentLocation + ", currentApplications=" + currentApplications);
+                    if (applicationCombo != null && locationCombo != null) {
+                        def model = applicationCombo.getModel()
+                        currentLocation = locationCombo.getSelectedItem()
+                        currentApplications = m_applications.get(currentLocation)
+                        model.removeAllElements()
+                        if (currentApplications == null) {
+                            System.err.println("Location combo changed, but no applications found!");
+                        } else {
+                            for (final String app : currentApplications) {
+                                model.addElement(app);
+                            }
+                        }
+                    }
+                    applicationCombo.updateUI()
+                }
+
                 label(text:"Location:", font:getLabelFont())
-                def locationCombo = comboBox(items:m_locations, toolTipText:"Choose your location.", foreground:getForegroundColor(), background:getBackgroundColor(), renderer:getRenderer(), actionPerformed:{
-                    m_progressBar.setValue(0)
-                    m_progressBar.setString("0%")
-                    m_progressBar.setVisible(false)
-                    m_passFailPanel.removeAll()
-                    m_passFailPanel.updateUI()
+                locationCombo = comboBox(items:m_locations, toolTipText:"Choose your location.", foreground:getForegroundColor(), background:getBackgroundColor(), renderer:getRenderer(), actionPerformed:{
+                    updateApplicationCombo()
+                    resetProgressBar()
                 })
-                button(text:'Go', font:getLabelFont(), foreground:getBackgroundColor(), background:getDetailColor(), opaque:true, constraints:"wrap", actionPerformed:{
+                button(text:'Go', font:getLabelFont(), foreground:getBackgroundColor(), background:getDetailColor(), opaque:true, constraints:"top, spany 2, wrap", actionPerformed:{
                     if (updateValidation()) {
                         return
                     }
@@ -186,11 +222,18 @@ class ScanGui extends AbstractGui implements ScanReportHandler, PropertyChangeLi
                         metadata.put(field.getKey(), field.getValue().getText())
                     }
                     m_frontEnd.setMetadata(metadata)
+                    m_frontEnd.setSelectedApplications(Collections.singleton(applicationCombo.getSelectedItem()))
 
-                    final FrontEndInvoker invoker = new FrontEndInvoker(m_frontEnd, this, locationCombo.getSelectedItem())
+                    final FrontEndInvoker invoker = new FrontEndInvoker(m_frontEnd, this, currentLocation)
                     invoker.addPropertyChangeListener(this)
                     invoker.execute()
                 })
+
+                label(text:"Application:", font:getLabelFont())
+                applicationCombo = comboBox(toolTipText:"Choose your application.", foreground:getForegroundColor(), background:getBackgroundColor(), renderer:getRenderer(), constraints:"wrap", actionPerformed:{
+                    resetProgressBar()
+                })
+                updateApplicationCombo()
 
                 m_progressBar = progressBar(borderPainted:false, visible:false, value:0, constraints:"grow, spanx 3, wrap")
 
@@ -325,12 +368,19 @@ class ScanGui extends AbstractGui implements ScanReportHandler, PropertyChangeLi
         m_scanReport = report
 
         boolean passed = true
-        for (final ScanReportPollResult result : report.getPollResults()) {
-            if (!result.getPollStatus().isUp()) {
-                passed = false
-                break
+
+        if (report == null) {
+            System.err.println("Something went wrong.  ScanReport is null!")
+            passed = false
+        } else {
+            for (final ScanReportPollResult result : report.getPollResults()) {
+                if (!result.getPollStatus().isUp()) {
+                    passed = false
+                    break
+                }
             }
         }
+
         m_passFailPanel.removeAll()
         def svg = new JSVGCanvas()
         def uri = this.getClass().getResource(passed? "/passed.svg":"/failed.svg")
