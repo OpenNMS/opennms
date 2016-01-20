@@ -50,7 +50,7 @@ drop table alarms cascade;
 drop table memos cascade;
 drop table node cascade;
 drop table service cascade;
-drop table scanreport cascade;
+drop table scanreports cascade;
 drop table monitoringlocations cascade;
 drop table monitoringlocationspollingpackages cascade;
 drop table monitoringlocationscollectionpackages cascade;
@@ -321,7 +321,7 @@ INSERT INTO monitoringsystems (id, label, location, type) values ('00000000-0000
 
 
 --#####################################################
---# scanreport Table - Contains a list of OpenNMS remote poller scan reports
+--# scanreports Table - Contains a list of OpenNMS remote poller scan reports
 --#
 --# This table contains the following information:
 --#
@@ -332,17 +332,28 @@ INSERT INTO monitoringsystems (id, label, location, type) values ('00000000-0000
 --#
 --#####################################################
 
-CREATE TABLE scanreport (
+CREATE TABLE scanreports (
     id TEXT NOT NULL,
     location TEXT NOT NULL,
     locale TEXT,
     timestamp TIMESTAMP WITH TIME ZONE,
 
-    CONSTRAINT scanreport_pkey PRIMARY KEY (id),
-    CONSTRAINT scanreport_monitoringlocations_fkey FOREIGN KEY (location) REFERENCES monitoringlocations (id) ON DELETE CASCADE
+    CONSTRAINT scanreports_pkey PRIMARY KEY (id),
+    CONSTRAINT scanreports_monitoringlocations_fkey FOREIGN KEY (location) REFERENCES monitoringlocations (id) ON DELETE CASCADE
 );
 
-CREATE UNIQUE INDEX scanreport_id_idx on scanreport(id);
+CREATE UNIQUE INDEX scanreports_id_idx on scanreport(id);
+
+CREATE TABLE scanreportproperties (
+    scanReportId TEXT NOT NULL,
+    property TEXT NOT NULL,
+    propertyValue TEXT,
+
+    CONSTRAINT scanreportproperties_fkey FOREIGN KEY (scanReportId) REFERENCES scanreports (id) ON DELETE CASCADE
+);
+
+CREATE INDEX scanreportproperties_id_idx on scanreportproperties(scanreportid);
+CREATE UNIQUE INDEX scanreportproperties_id_property_idx on scanreportproperties(scanreportid, property);
 
 CREATE TABLE scanreportpollresults (
     id TEXT NOT NULL,
@@ -358,7 +369,7 @@ CREATE TABLE scanreportpollresults (
     statusTime TIMESTAMP WITH TIME ZONE,
 
     CONSTRAINT scanreportpollresults_pkey PRIMARY KEY (id),
-    CONSTRAINT scanreportpollresults_fkey FOREIGN KEY (scanReportId) REFERENCES scanreport (id) ON DELETE CASCADE
+    CONSTRAINT scanreportpollresults_fkey FOREIGN KEY (scanReportId) REFERENCES scanreports (id) ON DELETE CASCADE
 );
 
 CREATE UNIQUE INDEX scanreportpollresults_id_idx on scanreportpollresults(id);
