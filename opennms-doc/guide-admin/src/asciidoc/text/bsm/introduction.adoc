@@ -1,0 +1,233 @@
+
+// Allow GitHub image rendering
+:imagesdir: ../../../images
+
+OpenNMS provides very powerful and fine grained service assurance layer based on the PollerDaemon.
+The service assurance layer monitors and tracks the status of nodes, interfaces and services.
+Events, alarms and outages are used to track and document the status of the managed elements.
+The status of a managed element can be determined based on events, alarms and outages.
+This approach treats every element of the system individually.
+There is no concept of relations between different nodes or relations between services.
+
+The Business Service Monitoring feature adds the ability to model relations between managed elements.
+It composes many managed elements into a hierarchically structured Business Service.
+A Business Services represents the status of all its managed elements.
+They provide a high level view of a composed service based on several managed elements.
+The Business Service Monitoring feature does not affect the service assurance layer at all.
+The alarm status of the managed elements is provided by the service assurance layer.
+Business Services determine the status of the contained managed elements based on the alarm status provided by the service assurance layer.
+The alarm status of the contained managed elements is correlated by the Business Service into its own operational-status.
+The operational-status of a Business Service can be checked at any time.
+If the operational-status of a Business Service is changing corresponding events are fired.
+
+////
+TODO check for useful parts and work them into the introduction.
+=== Business Service general use
+A Business Service represents a high level view on a specific service.
+This service is build up by many components of the IT-Infrastructure.
+The operational-status of a Business Services depends on the individual status of all its components.
+
+Business Services are modeled on top of monitored IT-Infrastructure.
+The service assurance it self is not affected by the Business Service.
+To use Business Services the monitoring of the components has to be good to have a good Business Service representation.
+The status of the components of a Business Service is determined by the OpenNMS core service assurance features.
+The OpenNMS _Alarm_ concept is used to represent the status of the components.
+Based on the _Alarms_ of its components the status of the Business Service is calculated.
+////
+
+////
+TODO check for useful parts and work them into the introduction
+The Business Service Monitoring feature adds the ability to model logical structures on top of the existing monitoring.
+Business Services correlate the status of managed elements into a higher level view.
+Business Services can be composed by multiple monitored services or other Business Services.
+////
+
+
+==== The structure of a Business Service
+Business Services can contain attributes, reductionkeys, references to monitored-services and other Business Services.
+
+
+===== Reductionkeys as part of a Business Service
+Business Services are built to correlate the alarm based status of managed elements into its operational-status.
+Business Services can contain a list of reductionkeys that are used to identify the relevant alarms to correlate.
+Reductionkeys can be added to Business Services as plain text.
+
+
+====== Monitored Services / IP-Services as part of a Business Service
+Business Services can contain references to Monitored-Services (Node/Interface/Service combination).
+A referenced Monitored-Service is called IP-Service in the Business Service.
+IP-Serivces of a Business Service are interpreted as two reductionkeys:
+
+* `uei.opennms.org/nodes/nodeLostService::%nodeID%:%ipAddress%:%serviceName%`
+-- This reductionkey matches the alarms fired if the monitored-service goes down.
+* `uei.opennms.org/nodes/nodeDown::%nodeID%`
+-- This reductionkey matches the alarms fired if the entire node providing the monitored-service goes down.
+
+
+===== Attributes as part of Business Services
+////
+TODO add this part as soon as the attributes are used.
+Each Business Services can contain a set of key value attributes.
+////
+
+
+==== The operational-status of a Business Service
+//TODO this will change drastically during the 5th development sprint.
+The operational-status of a Business Service is correlated to the highest alarm status of the elements it contains.
+This approach of state calculation is called `Most Critical`.
+If a Business Service contains another Business Service the operational-status of the included Business Service is interpreted as an alarm status.
+The set of status for the operational-status is defined by the OpenNMS severities.
+
+.State calculation _reduce functions_
+[options="header, autowidth"]
+|===
+| Name            | Description
+| `Most Critical` | Uses the value of the most critical severity.
+|===
+////
+TODO not implemented for now (part of the upper table)
+| `Threshold`     | Uses the highest severity found more often than the given threshold.
+////
+
+////
+TODO not implemented for now
+.State calculation _map functions_
+[options="header, autowidth"]
+|===
+| Name       | Description
+| `Identity` | Uses the severity `as-is`
+| `Increase` | Increases the severity one level
+| `Decrease` | Decreases the severity one level
+| `Set To`   | Uses a constant severity
+| `Ignore`   | Ignores the severity of the managed element
+|===
+////
+
+
+===== Operational-status changes
+If a Business Service changes its operational-status, an OpenNMS _Event_ is fired.
+The _Event_ is of the type `uei.opennms.org/bsmd/serviceOperationalStatusChanged`.
+The _Log Message_ of the _Event_ contains the name of the Business Service.
+Additionally the previous operational-status and the new operational-status are included.
+This _Event_ has no _Node_, _Interface_ or _Service_ associated.
+It also does not contain a _Reductionkey_ to cause any _Alarms_.
+
+
+===== Reload the BusinessServiceDaemon
+//TODO What situations require a reload?
+
+A config reload is always initiated by an _uei.opennms.org/internal/reloadDaemonConfig_ event with the parameter `daemonName` set to `bsmd`.
+If the reload of the config is done an _uei.opennms.org/internal/reloadDaemonConfigSuccessful_ event is fired.
+
+.List of ways to trigger the config reload event
+- Use the `Reload` button on the `Manage Business Services` page in the admin section of the WebUI.
+- Send the  _reloadDaemonConfig_ event directly to trigger the reload
+* Use the send-event script
+[source,shell]
+----
+$OPENNMS_HOME/bin/send-event.pl -p 'daemonName bsmd' uei.opennms.org/internal/reloadDaemonConfig
+----
+* Use the `Manually Send an Event` page of the WebUI located in the admin section to send the event.
+
+- TODO Rest-API??
+
+==== Business Service Rest-API
+Every aspect of the Business Service Monitoring feature can be controlled via a Rest-API.
+The Rest-API for Business Services is located at `opennms/api/v2/business-services`.
+It supports _JSON_ and _XML_ content to represent the Business Services.
+TIP: Please check `http://www.opennms.org/wiki/ReST` for an overview of the OpenNMS Rest-API.
+
+The Business Service model for the Rest-API has the following basic structure:
+
+.Business Service Rest-API representation as JSON
+[source,JSON]
+----
+{
+  "id": 22,
+  "name": "MinimalBusinessServiceNameOnly",
+  "attributes": {
+    "attribute": []
+  },
+  "ip-services": [],
+  "reductionKeys": [],
+  "child-services": [],
+  "parent-services": []
+}
+----
+
+.Business Service Rest-API representation as XML
+[source,XML]
+----
+<business-service>
+  <id>22</id>
+  <name>MinimalBusinessServiceNameOnly</name>
+  <attributes/>
+  <ip-services/>
+  <reductionKeys/>
+  <child-services/>
+  <parent-services/>
+</business-service>
+----
+
+===== Show via Rest-API
+`GET opennms/api/v2/business-services`
+Provides a pageable list of Business Services.
+JSON/XML
+
+`GET opennms/api/v2/business-services/$business-service-id`
+Provides the Business Service selected by the provided business-service-id.
+JSON/XML
+
+===== Create via Rest-API
+`POST opennms/api/v2/business-services`
+`Business Service as JSON or XML{"name": "MinimalBusinessServiceNameOnly"}`
+
+===== Delete via Rest-API
+`DELETE opennms/api/v2/business-services/$business-service-id`
+Deletes the Business Services selected by the provided business-service-id.
+
+===== Edit via Rest-API
+
+====== Add a _Monitored Service_ to a Business Service via Rest-API
+`PUT opennms/api/v2/business-services/$business-service-id`
+
+.A minimal Business Service with an assigned _ip-service_
+[source:JSON]
+----
+{
+"id": 22,
+"name": "MinimalBusinessService",
+"attributes": {
+  "attribute": []
+},
+"ip-services": ["id": "$monitored-service-id"],
+"reductionKeys": [],
+"child-services": [],
+"parent-services": []
+}
+----
+This request adds the _ip-serivce_ selected by its `monitored-service-id` to the Business Service.
+Just the `monitored-service-id` is handed over.
+The request should not include values for _location_ or _Reductionkeys_ as part of the _ip-service_ element.
+This kind of _PUT Request_ can be used to change the Business Service in general.
+The `business-service-id` used in the `url` has to match the `business-service-id` used in the body of the request.
+
+TIP: The list of Monitored-Services including ids can be queried via the Rest-API form `opennms/rest/ifservices`
+
+===== Check operational-state
+`GET opennms/api/v2/business-services/$business-service-id/operational-status`
+This call provides the _operational-status_ of the business service.
+The result is on of the OpenNMS _severities_ in text representation.
+//TODO can Cleared or Indeterminate happen?
+(Critical, Major, Minor, Warning, Normal, Cleared, Indeterminate)
+
+==== Business Service based on _Monitored Services_
+The most basic way to use a Business Service is to assign multiple Monitored-Services to it.
+The alarm based status of the Monitored-Services is then the basis of the Business Services status.
+The status of the Business Service then depends on the highest _severity_ of the _Alarms_.
+
+==== Business Service based on _Reductionkeys_
+Add a Monitored Service
+Remove a Monitored Service
+
+==== Business Service based on Business Services

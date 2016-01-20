@@ -156,6 +156,14 @@ include::text/provisioning/single-node.adoc[]
 include::text/provisioning/fine-grained.adoc[]
 include::text/provisioning/api-examples.adoc[]
 
+[ga-business-service-monitoring]
+== Business Service Monitoring
+include::text/bsm/introduction.adoc[]
+
+[ga-severity]
+== Severity
+include::text/bsm/severity.adoc[]
+
 [[ga-database-reports]]
 == Database Reports
 include::text/database-reports/database.adoc[]
