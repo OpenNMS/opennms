@@ -170,6 +170,15 @@ public class ScanReportPollResult implements Serializable {
         return true;
     }
 
+    @Transient
+    @XmlTransient
+    public boolean isAvailable() {
+        if (m_status != null) {
+            return m_status.isAvailable();
+        }
+        return true;
+    }
+
     @Override
     public String toString() {
         return "ScanReportPollResult [service=" + m_service + ", serviceId=" + m_serviceId + ", nodeLabel=" + m_nodeLabel + ", nodeId=" + m_nodeId + ", ipAddress=" + m_ipAddress
