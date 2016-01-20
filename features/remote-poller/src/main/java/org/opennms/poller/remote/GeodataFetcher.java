@@ -1,6 +1,5 @@
 package org.opennms.poller.remote;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -30,6 +29,7 @@ public class GeodataFetcher {
 
         try {
             response = httpclient.execute(get);
+
             final HttpEntity entity = response.getEntity();
             final String xml = EntityUtils.toString(entity);
             System.err.println("xml = " + xml);
@@ -43,7 +43,7 @@ public class GeodataFetcher {
             ret.put("latitude", geoResponse.getLatitude() == null? null : geoResponse.getLatitude().toString());
             ret.put("longitude", geoResponse.getLongitude() == null? null : geoResponse.getLongitude().toString());
             EntityUtils.consumeQuietly(entity);
-        } catch (IOException e) {
+        } catch (final Exception e) {
             LOG.debug("Failed to get GeoIP data from " + url, e);
         } finally {
             IOUtils.closeQuietly(response);
