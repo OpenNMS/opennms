@@ -107,6 +107,10 @@ public class DefaultPollerBackEnd implements PollerBackEnd, SpringServiceDaemon 
 
     public static final int HEARTBEAT_STEP_MULTIPLIER = 2;
 
+    public static final String PARM_SCAN_REPORT_ID = "scanReportId";
+    public static final String PARM_SCAN_REPORT_LOCATION = "scanReportLocation";
+    public static final String PARM_SCAN_REPORT_FAILURE_MESSAGE = "scanReportFailureMessage";
+
     private static class SimplePollerConfiguration implements PollerConfiguration, Serializable {
 
         /**
@@ -765,6 +769,23 @@ public class DefaultPollerBackEnd implements PollerBackEnd, SpringServiceDaemon 
         sendEvent(mon, EventConstants.LOCATION_MONITOR_RECONNECTED_UEI);
     }
 
+    private void sendSuccessfulScanReportEvent(final String reportId, final String locationName) {
+        final EventBuilder eventBuilder = new EventBuilder(EventConstants.REMOTE_SUCCESSFUL_SCAN_REPORT_UEI, "PollerBackEnd");
+        eventBuilder.addParam(PARM_SCAN_REPORT_ID, reportId);
+        eventBuilder.addParam(PARM_SCAN_REPORT_LOCATION, locationName);
+
+        m_eventIpcManager.sendNow(eventBuilder.getEvent());
+    }
+
+    private void sendUnsuccessfulScanReportEvent(final String reportId, final String locationName, final String failureMessage) {
+        final EventBuilder eventBuilder = new EventBuilder(EventConstants.REMOTE_UNSUCCESSFUL_SCAN_REPORT_UEI, "PollerBackEnd");
+        eventBuilder.addParam(PARM_SCAN_REPORT_ID, reportId);
+        eventBuilder.addParam(PARM_SCAN_REPORT_LOCATION, locationName);
+        eventBuilder.addParam(PARM_SCAN_REPORT_FAILURE_MESSAGE, failureMessage);
+
+        m_eventIpcManager.sendNow(eventBuilder.getEvent());
+    }
+
     private void sendRegainedOrLostServiceEvent(final OnmsLocationSpecificStatus newStatus, final PollStatus pollResult) {
         final String uei = pollResult.isAvailable() ? EventConstants.REMOTE_NODE_REGAINED_SERVICE_UEI : EventConstants.REMOTE_NODE_LOST_SERVICE_UEI;
 
@@ -890,8 +911,17 @@ public class DefaultPollerBackEnd implements PollerBackEnd, SpringServiceDaemon 
     public void reportSingleScan(final ScanReport report) {
         LOG.info("Single scan complete: {}", report);
         m_scanReportDao.save(report);
+
         /*
         final OnmsLocationMonitor monitor = m_locMonDao.get(report.getMonitoringSystem());
         */
+
+        if (report.getPollResults().stream().allMatch(a -> { return a.getPollStatus().isAvailable(); } )) {
+            // If all polls returned 'available' then send the success event
+            sendSuccessfulScanReportEvent(report.getId(), report.getLocation());
+        } else {
+            // Otherwise send the unsuccessful event
+            sendUnsuccessfulScanReportEvent(report.getId(), report.getLocation(), "Something failed.");
+        }
     }
 }

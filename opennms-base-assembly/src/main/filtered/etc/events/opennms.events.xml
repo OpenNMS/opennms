@@ -2,7 +2,7 @@
 <events>
   <event>
     <uei>MATCH-ANY-UEI</uei>
-    <event-label>OpenNMS defined event: MATCH-ANY-UEI</event-label>
+    <event-label>OpenNMS-defined event: MATCH-ANY-UEI</event-label>
     <descr>
                         &lt;p&gt;This UEI will never be generated, but exists
                         so that notifications can match any UEI for a
@@ -1366,7 +1366,7 @@
   <!-- Remote Poller Events -->
   <event>
     <uei>uei.opennms.org/remote/nodes/nodeLostService</uei>
-    <event-label>OpenNMS defined remote poller event: A remote poller detected a node lost service</event-label>
+    <event-label>OpenNMS-defined remote poller event: A remote poller detected a node lost service</event-label>
     <descr>
       &lt;p&gt;A %service% outage was identified on interface
     %interface% from remote poller %parm[locationMonitorId]% from location: %parm[location]%.
@@ -1381,7 +1381,7 @@
   </event>
   <event>
     <uei>uei.opennms.org/remote/nodes/nodeRegainedService</uei>
-    <event-label>OpenNMS defined remote poller event: A remote poller detected a node regained service</event-label>
+    <event-label>OpenNMS-defined remote poller event: A remote poller detected a node regained service</event-label>
     <descr>
       &lt;p&gt;The %service% service on interface %interface% was
     previously down as viewed by remote poller
@@ -1399,7 +1399,7 @@
   </event>
   <event>
     <uei>uei.opennms.org/remote/locationMonitorRegistered</uei>
-    <event-label>OpenNMS defined remote poller event: A remote poller has registered</event-label>
+    <event-label>OpenNMS-defined remote poller event: A remote poller has registered</event-label>
     <descr>
       This event is sent by the remote poller server side API when
       a remote poller is created. 
@@ -1411,7 +1411,7 @@
   </event>
   <event>
     <uei>uei.opennms.org/remote/locationMonitorStarted</uei>
-    <event-label>OpenNMS defined remote poller event: A remote poller has started polling</event-label>
+    <event-label>OpenNMS-defined remote poller event: A remote poller has started polling</event-label>
     <descr>
       This event is sent when a registered remote poller begins
       monitoring services defined in its configuration.
@@ -1423,7 +1423,7 @@
   </event>
   <event>
     <uei>uei.opennms.org/remote/locationMonitorPaused</uei>
-    <event-label>OpenNMS defined remote poller event: A remote poller has been paused</event-label>
+    <event-label>OpenNMS-defined remote poller event: A remote poller has been paused</event-label>
     <descr>
       This event is sent when a registered remote poller is configured with
       a polling package containing no services to poll. (experimental)
@@ -1439,7 +1439,7 @@
   </event>
   <event>
     <uei>uei.opennms.org/remote/locationMonitorStopped</uei>
-    <event-label>OpenNMS defined remote poller event: A remote poller has been shutdown.</event-label>
+    <event-label>OpenNMS-defined remote poller event: A remote poller has been shutdown.</event-label>
     <descr>
       This event is sent when a registered remote poller is
       shutdown by the remote system.
@@ -1451,7 +1451,7 @@
   </event>
   <event>
     <uei>uei.opennms.org/remote/locationMonitorDisconnected</uei>
-    <event-label>OpenNMS defined remote poller event: A remote poller has disconnected</event-label>
+    <event-label>OpenNMS-defined remote poller event: A remote poller has disconnected</event-label>
     <descr>
       This event is sent when a registered remote location fails to report
       status and check for configuration changes at the required interval.
@@ -1464,7 +1464,7 @@
   </event>
   <event>
     <uei>uei.opennms.org/remote/locationMonitorReconnected</uei>
-    <event-label>OpenNMS defined remote poller event: A disconnected remote poller has reconnected</event-label>
+    <event-label>OpenNMS-defined remote poller event: A disconnected remote poller has reconnected</event-label>
     <descr>
       This event is sent when a disconnected remote poller reconnects
       and reports status changes and checks for configuration changes.
@@ -1477,7 +1477,7 @@
   </event>
   <event>
     <uei>uei.opennms.org/remote/configurationChangeDetected</uei>
-    <event-label>OpenNMS defined remote poller event: A remote poller's configuration has been changed</event-label>
+    <event-label>OpenNMS-defined remote poller event: A remote poller's configuration has been changed</event-label>
     <descr>
       This event is sent when a remote poller's configuration has been
       changed and was detected by the monitor.
@@ -1489,7 +1489,7 @@
   </event>
   <event>
     <uei>uei.opennms.org/remote/locationMonitorConnectionAddressChanged</uei>
-    <event-label>OpenNMS defined remote poller event: A remote poller's connection IP address has changed</event-label>
+    <event-label>OpenNMS-defined remote poller event: A remote poller's connection IP address has changed</event-label>
     <descr>
       This event is sent when a remote poller's connection IP address has changed.
     </descr>
@@ -1500,8 +1500,36 @@
     <severity>Warning</severity>
   </event>
   <event>
+    <uei>uei.opennms.org/remote/successfulScanReport</uei>
+    <event-label>OpenNMS-defined remote poller event: Scan report completed successfully</event-label>
+    <descr>
+      &lt;p&gt;A remote poller has submitted a successful scan report:&lt;/p&gt;
+      &lt;p&gt;Report ID: &lt;a href="scanreports/index.jsp?id=%parm[scanReportId]%"&gt;%parm[scanReportId]%&lt;/a&gt;&lt;/p&gt;
+      &lt;p&gt;Location: %parm[scanReportLocation]%&lt;/p&gt;
+    </descr>
+    <logmsg dest="logndisplay">
+      A remote poller has submitted a scan report for a successful scan for location %parm[scanReportLocation]%.
+    </logmsg>
+    <severity>Normal</severity>
+  </event>
+  <event>
+    <uei>uei.opennms.org/remote/unsuccessfulScanReport</uei>
+    <event-label>OpenNMS-defined remote poller event: Scan report did not complete successfully</event-label>
+    <descr>
+      &lt;p&gt;A remote poller has submitted a scan report:&lt;/p&gt;
+      &lt;p&gt;Report ID: &lt;a href="scanreports/index.jsp?id=%parm[scanReportId]%"&gt;%parm[scanReportId]%&lt;/a&gt;&lt;/p&gt;
+      &lt;p&gt;Location: %parm[scanReportLocation]%&lt;/p&gt;
+      &lt;p&gt;Failure Message: %parm[scanReportFailureMessage]%&lt;/p&gt;
+    </descr>
+    <logmsg dest="logndisplay">
+      A remote poller has submitted a scan report for an unsuccessful scan for location %parm[scanReportLocation]%.
+    </logmsg>
+    <severity>Minor</severity>
+  </event>
+
+  <event>
     <uei>uei.opennms.org/correlation/remote/wideSpreadOutage</uei>
-    <event-label>OpenNMS defined correlator event: A widespread outage has been detected</event-label>
+    <event-label>OpenNMS-defined correlator event: A widespread outage has been detected</event-label>
     <descr>
       This event is sent when a widespread outage is detected.  Typically used in correlation rules
       that detected a threshold # of monitors have detected the same outage.
@@ -1514,7 +1542,7 @@
   </event>
   <event>
     <uei>uei.opennms.org/correlation/remote/wideSpreadOutageResolved</uei>
-    <event-label>OpenNMS defined correlator event: A widespread outage has been resolved</event-label>
+    <event-label>OpenNMS-defined correlator event: A widespread outage has been resolved</event-label>
     <descr>
       This event is sent when a widespread outage has been cleared.  Typically used in correlation rules
       that have detected that a wide spread outage has been cleared.
@@ -1527,7 +1555,7 @@
   </event>
   <event>
     <uei>uei.opennms.org/correlation/serviceFlapping</uei>
-    <event-label>OpenNMS defined correlator event: A service has been detected to be in a flapping state</event-label>
+    <event-label>OpenNMS-defined correlator event: A service has been detected to be in a flapping state</event-label>
     <descr>
       This event is sent when a correlation rule has detected that a service is flapping.
     </descr>
@@ -1583,7 +1611,7 @@
   </event>
   <event>
     <uei>uei.opennms.org/troubleTicket/create</uei>
-    <event-label>OpenNMS defined trouble ticket event: A request has been made to create a trouble ticket</event-label>
+    <event-label>OpenNMS-defined trouble ticket event: A request has been made to create a trouble ticket</event-label>
     <descr>
       This event is generated to invoke the asynchronous Trouble Ticket API in OpenNMS
       for creating a new trouble ticket.
@@ -1595,7 +1623,7 @@
   </event>
   <event>
     <uei>uei.opennms.org/troubleTicket/update</uei>
-    <event-label>OpenNMS defined trouble ticket event: A request has been made to update a trouble ticket</event-label>
+    <event-label>OpenNMS-defined trouble ticket event: A request has been made to update a trouble ticket</event-label>
     <descr>
       This event is generated to invoke the asynchronous Trouble Ticket API in OpenNMS
       for updating an existing trouble ticket.
@@ -1607,7 +1635,7 @@
   </event>
   <event>
     <uei>uei.opennms.org/troubleTicket/close</uei>
-    <event-label>OpenNMS defined trouble ticket event: A request has been made to close a trouble ticket</event-label>
+    <event-label>OpenNMS-defined trouble ticket event: A request has been made to close a trouble ticket</event-label>
     <descr>
       This event is generated to invoke the asynchronous Trouble Ticket API in OpenNMS
       for closing an existing trouble ticket.
@@ -1619,7 +1647,7 @@
   </event>
   <event>
     <uei>uei.opennms.org/troubleTicket/cancel</uei>
-    <event-label>OpenNMS defined trouble ticket event: A request has been made to cancel a trouble ticket</event-label>
+    <event-label>OpenNMS-defined trouble ticket event: A request has been made to cancel a trouble ticket</event-label>
     <descr>
       This event is generated to invoke the asynchronous Trouble Ticket API in OpenNMS
       for canceling an existing trouble ticket.
@@ -1631,7 +1659,7 @@
   </event>
   <event>
     <uei>uei.opennms.org/troubleTicket/communicationError</uei>
-    <event-label>OpenNMS defined trouble ticket event: A communication error occurred</event-label>
+    <event-label>OpenNMS-defined trouble ticket event: A communication error occurred</event-label>
     <descr>
       This event is generated when OpenNMS is unable to retrive, save or update a ticket
       via the Trouble Ticket API.
@@ -1644,7 +1672,7 @@
   </event>
   <event>
     <uei>uei.opennms.org/internal/promoteQueueData</uei>
-    <event-label>OpenNMS defined event: A request has been made promote data from the RRD Queue</event-label>
+    <event-label>OpenNMS-defined event: A request has been made promote data from the RRD Queue</event-label>
     <descr>
       This event is generated to invoke the promotion data of the Queueing RRD Strategy.
     </descr>
@@ -1655,7 +1683,7 @@
   </event>
   <event>
     <uei>uei.opennms.org/internal/translator/hypericAlert</uei>
-    <event-label>OpenNMS defined event: An event received from Hyperic has been translated</event-label>
+    <event-label>OpenNMS-defined event: An event received from Hyperic has been translated</event-label>
     <descr>
       This is a translated Hyperic Alert to associate with OpenNMS entity..&lt;p&gt;
 

@@ -32,6 +32,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.Map;
 
 import org.junit.Before;
@@ -42,6 +44,8 @@ import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.netmgt.model.OnmsLocationMonitor.MonitorStatus;
+import org.opennms.netmgt.model.ScanReport;
+import org.opennms.netmgt.poller.remote.PollerFrontEnd.PollerFrontEndStates;
 import org.opennms.netmgt.poller.remote.support.ScanReportPollerFrontEnd;
 import org.opennms.test.FileAnticipator;
 import org.opennms.test.JUnitConfigurationEnvironment;
@@ -49,6 +53,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ContextConfiguration;
 
@@ -80,6 +85,10 @@ public class ScanReportPollerFrontEndIT implements InitializingBean {
     @Autowired
     private PollerFrontEnd m_frontEnd;
 
+    @Autowired
+    @Qualifier("backend")
+    private PollerBackEnd m_backEnd;
+
     private static FileAnticipator m_fileAnticipator;
 
     @Autowired
@@ -110,6 +119,19 @@ public class ScanReportPollerFrontEndIT implements InitializingBean {
         assertEquals(1, m_jdbcTemplate.queryForInt("select count(*) from monitoringsystems"));
         assertEquals(0, m_jdbcTemplate.queryForInt("select count(*) from monitoringsystemsproperties"));
         assertTrue("There were unexpected poll results", 0 == m_jdbcTemplate.queryForInt("select count(*) from location_specific_status_changes"));
+
+        // Add a PropertyChangeListener that will report the scan result to
+        // the PollerBackEnd
+        m_frontEnd.addPropertyChangeListener(new PropertyChangeListener() {
+            @Override
+            public void propertyChange(PropertyChangeEvent evt) {
+                if (evt.getPropertyName().equals(PollerFrontEndStates.exitNecessary.toString())) {
+                    final ScanReport report = (ScanReport)evt.getNewValue();
+                    System.out.println("Finished scan: " + report);
+                    m_backEnd.reportSingleScan(report);
+                }
+            }
+        });
 
         // Start up the remote poller
         m_frontEnd.register("RDU");
