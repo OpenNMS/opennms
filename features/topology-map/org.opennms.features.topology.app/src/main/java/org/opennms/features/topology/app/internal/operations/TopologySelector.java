@@ -77,6 +77,8 @@ public class TopologySelector {
 
             // only change if provider changed
     		if(!container.getBaseTopology().equals(m_topologyProvider)) {
+                // Refresh the topology provider, triggering the vertices to load  if they have not yet loaded
+                m_topologyProvider.refresh();
                 container.setBaseTopology(m_topologyProvider);
                 container.clearCriteria(); // remove all criteria
                 container.setSemanticZoomLevel(1); // reset to 1

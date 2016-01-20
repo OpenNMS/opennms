@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2015-2015 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2015 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2016 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -25,32 +25,57 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  *******************************************************************************/
+package org.opennms.netmgt.alarmd.northbounder.snmptrap;
 
-package org.opennms.web.rest.v1;
+/**
+ * The Class TrapParameter.
+ * 
+ * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
+ */
+public class TrapParameter {
 
-import java.util.Collection;
-import java.util.List;
+    /** The name. */
+    private String name;
 
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
+    /** The value. */
+    private String value;
 
-import org.opennms.core.config.api.JaxbListWrapper;
-
-@XmlRootElement(name = "resources")
-public final class ResourceDTOCollection extends JaxbListWrapper<ResourceDTO> {
-
-    private static final long serialVersionUID = 1L;
-
-    public ResourceDTOCollection() {
+    /**
+     * Instantiates a new trap parameter.
+     *
+     * @param name the name
+     * @param value the value
+     */
+    public TrapParameter(String name, String value) {
         super();
+        this.name = name;
+        this.value = value;
     }
 
-    public ResourceDTOCollection(Collection<? extends ResourceDTO> resources) {
-        super(resources);
+    /**
+     * Gets the name.
+     *
+     * @return the name
+     */
+    public String getName() {
+        return name;
     }
 
-    @XmlElement(name = "resource")
-    public List<ResourceDTO> getObjects() {
-        return super.getObjects();
+    /**
+     * Gets the value.
+     *
+     * @return the value
+     */
+    public String getValue() {
+        return value;
     }
+
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        return "{name=" + name + ", value=" + value + "}";
+    }
+
 }
