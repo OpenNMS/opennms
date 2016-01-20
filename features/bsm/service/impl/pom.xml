@@ -37,12 +37,6 @@
       <artifactId>guava</artifactId>
       <scope>provided</scope>
     </dependency>
-    <dependency>
-      <groupId>org.opennms.features</groupId>
-      <artifactId>org.opennms.features.rest-commons</artifactId>
-      <version>${project.version}</version>
-      <scope>provided</scope>
-    </dependency>
 
     <!-- Test Dependencies -->
     <dependency>
@@ -94,6 +88,12 @@
     <dependency>
       <groupId>org.opennms.features.bsm</groupId>
       <artifactId>org.opennms.features.bsm.persistence.impl</artifactId>
+      <version>${project.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.bsm</groupId>
+      <artifactId>test-util</artifactId>
       <version>${project.version}</version>
       <scope>test</scope>
     </dependency>

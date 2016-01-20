@@ -1,49 +1,45 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
- * <p>
+ *
  * Copyright (C) 2015 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2015 The OpenNMS Group, Inc.
- * <p>
+ *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
- * <p>
+ *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
- * <p>
+ *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Affero General Public License for more details.
- * <p>
+ *
  * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
  * http://www.gnu.org/licenses/
- * <p>
+ *
  * For more information contact:
- * OpenNMS(R) Licensing <license@opennms.org>
- * http://www.opennms.org/
- * http://www.opennms.com/
+ *     OpenNMS(R) Licensing <license@opennms.org>
+ *     http://www.opennms.org/
+ *     http://www.opennms.com/
  *******************************************************************************/
 
 package org.opennms.netmgt.bsm.service.internal;
 
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.opennms.netmgt.bsm.persistence.api.BusinessService;
 import org.opennms.netmgt.bsm.persistence.api.BusinessServiceDao;
-import org.opennms.netmgt.bsm.persistence.api.OnmsMonitoredServiceHelper;
+import org.opennms.netmgt.bsm.persistence.api.BusinessServiceEntity;
 import org.opennms.netmgt.bsm.service.BusinessServiceManager;
 import org.opennms.netmgt.bsm.service.BusinessServiceStateMachine;
-import org.opennms.netmgt.bsm.service.model.BusinessServiceDTO;
-import org.opennms.netmgt.bsm.service.model.IpServiceDTO;
+import org.opennms.netmgt.bsm.service.model.BusinessService;
+import org.opennms.netmgt.bsm.service.model.IpService;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.events.api.EventConstants;
@@ -51,10 +47,9 @@ import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.events.EventBuilder;
-import org.opennms.web.rest.api.ResourceLocationFactory;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
+
 
 @Transactional
 public class BusinessServiceManagerImpl implements BusinessServiceManager {
@@ -74,126 +69,141 @@ public class BusinessServiceManagerImpl implements BusinessServiceManager {
     private EventForwarder eventForwarder;
 
     @Override
-    public List<BusinessServiceDTO> findAll() {
-        List<BusinessService> all = getDao().findAll();
-        if (all == null) {
-            return null;
-        }
-        return transform(all);
+    public List<BusinessService> getAllBusinessServices() {
+        return getDao().findAll().stream()
+                .map(s -> new BusinessServiceImpl(this, s))
+                .collect(Collectors.toList());
     }
 
     @Override
-    public Long save(BusinessServiceDTO newObject) {
-        BusinessService service = transform(newObject);
-        return getDao().save(service);
+    public BusinessService createBusinessService() {
+        return new BusinessServiceImpl(this, new BusinessServiceEntity());
     }
 
     @Override
-    public void update(BusinessServiceDTO objectToUpdate) {
-        final BusinessService existingBusinessService = getBusinessService(objectToUpdate.getId());
-        BeanUtils.copyProperties(transform(objectToUpdate), existingBusinessService);
-        getDao().update(existingBusinessService);
+    public void saveBusinessService(BusinessService service) {
+        BusinessServiceEntity entity = getBusinessServiceEntity(service);
+        getDao().saveOrUpdate(entity);
     }
 
     @Override
-    public BusinessServiceDTO getById(Long id) {
-        BusinessService service = getBusinessService(id);
-        BusinessServiceDTO entity = transform(service);
-        return entity;
+    public BusinessService getBusinessServiceById(Long id) {
+        BusinessServiceEntity entity = getBusinessServiceEntity(id);
+        return new BusinessServiceImpl(this, entity);
     }
 
     @Override
-    public void delete(Long id) {
-        BusinessService service = getBusinessService(id);
+    public void deleteBusinessService(BusinessService businessService) {
+        BusinessServiceEntity entity = getBusinessServiceEntity(businessService);
 
-        service.getParentServices().forEach(p -> p.removeChildService(service));
-        service.setParentServices(Collections.emptySet());
+        entity.getParentServices().forEach(p -> p.getChildServices().remove(entity));
+        entity.setParentServices(Collections.emptySet());
 
-        service.getChildServices().forEach(p -> p.removeParentService(service));
-        service.setChildServices(Collections.emptySet());
+        entity.getChildServices().forEach(p -> p.getChildServices().remove(entity));
+        entity.setChildServices(Collections.emptySet());
 
-        getDao().delete(service);
+        getDao().delete(entity);
     }
 
     @Override
-    public boolean assignIpInterface(Long serviceId, Integer ipServiceId) {
-        final BusinessService service = getBusinessService(serviceId);
-        final OnmsMonitoredService monitoredService = getIpService(ipServiceId);
+    public void setIpServices(final BusinessService businessService, final Set<IpService> ipServices) {
+        final BusinessServiceEntity entity = getBusinessServiceEntity(businessService);
+
+        entity.setIpServices(ipServices.stream()
+                                       .map(this::getMonitoredService)
+                                       .collect(Collectors.toSet()));
+    }
+
+    @Override
+    public boolean assignIpService(BusinessService businessService, IpService ipService) {
+        final BusinessServiceEntity entity = getBusinessServiceEntity(businessService);
+        final OnmsMonitoredService monitoredService = getMonitoredService(ipService);
 
         // if already exists, no update
-        if (service.getIpServices().contains(monitoredService)) {
+        if (entity.getIpServices().contains(monitoredService)) {
             return false;
         }
 
         // add and update
-        service.addIpService(monitoredService);
-        getDao().update(service);
+        entity.getIpServices().add(monitoredService);
         return true;
     }
 
     @Override
-    public boolean removeIpInterface(Long serviceId, Integer ipServiceId) {
-        final BusinessService service = getBusinessService(serviceId);
-        final OnmsMonitoredService monitoredService = getIpService(ipServiceId);
+    public boolean removeIpService(BusinessService businessService, IpService ipService) {
+        final BusinessServiceEntity entity = getBusinessServiceEntity(businessService);
+        final OnmsMonitoredService monitoredService = getMonitoredService(ipService);
 
         // does not exist, no update necessary
-        if (!service.getIpServices().contains(monitoredService)) {
+        if (!entity.getIpServices().contains(monitoredService)) {
             return false;
         }
 
         // remove and update
-        service.removeIpService(monitoredService);
-        getDao().update(service);
+        entity.getIpServices().remove(monitoredService);
         return true;
     }
 
     @Override
-    public boolean assignChildService(Long serviceId, Long childServiceId) {
-        final BusinessService service = getBusinessService(serviceId);
-        final BusinessService childService = getBusinessService(childServiceId);
+    public void setChildServices(BusinessService parentService, Set<BusinessService> childServices) {
+        final BusinessServiceEntity parentEntity = getBusinessServiceEntity(parentService);
 
-        if (this.checkDescendantForLoop(service, childService)) {
+        for (final BusinessServiceEntity e : parentEntity.getChildServices()) {
+            e.getParentServices().remove(parentEntity);
+        }
+
+        parentEntity.setChildServices(childServices.stream()
+                                                   .map(s -> getBusinessServiceEntity(s))
+                                                   .collect(Collectors.toSet()));
+
+        for (final BusinessServiceEntity e : parentEntity.getChildServices()) {
+            e.getParentServices().add(parentEntity);
+        }
+    }
+
+    @Override
+    public boolean assignChildService(BusinessService parentService, BusinessService childService) {
+        final BusinessServiceEntity parentEntity = getBusinessServiceEntity(parentService);
+        final BusinessServiceEntity childEntity = getBusinessServiceEntity(childService);
+
+        if (this.checkDescendantForLoop(parentEntity, childEntity)) {
             throw new IllegalArgumentException("Service will form a loop");
         }
 
         // if already exists, no update
-        if (service.getChildServices().contains(childService)) {
+        if (parentEntity.getChildServices().contains(childEntity)) {
             return false;
         }
 
         // add and update
-        service.addChildService(childService);
-        childService.addParentService(service);
-        getDao().update(service);
-        getDao().update(childService);
+        parentEntity.getChildServices().add(childEntity);
+        childEntity.getParentServices().add(parentEntity);
         return true;
     }
 
     @Override
-    public boolean removeChildService(Long serviceId, Long childServiceId) {
-        final BusinessService service = getBusinessService(serviceId);
-        final BusinessService childService = getBusinessService(childServiceId);
+    public boolean removeChildService(BusinessService parentService, BusinessService childService) {
+        final BusinessServiceEntity parentEntity = getBusinessServiceEntity(parentService);
+        final BusinessServiceEntity childEntity = getBusinessServiceEntity(childService);
 
         // does not exist, no update necessary
-        if (!service.getChildServices().contains(childService)) {
+        if (!parentEntity.getChildServices().contains(childEntity)) {
             return false;
         }
 
         // remove and update
-        service.removeChildService(childService);
-        childService.removeParentService(service);
-        getDao().update(service);
-        getDao().update(childService);
+        parentEntity.getChildServices().remove(childEntity);
+        childEntity.getParentServices().remove(parentEntity);
         return true;
     }
 
-    private boolean checkDescendantForLoop(final BusinessService parent,
-                                           final BusinessService descendant) {
+    private boolean checkDescendantForLoop(final BusinessServiceEntity parent,
+                                           final BusinessServiceEntity descendant) {
         if (parent.equals(descendant)) {
             return true;
         }
 
-        for (BusinessService s : descendant.getChildServices()) {
+        for (BusinessServiceEntity s : descendant.getChildServices()) {
             return this.checkDescendantForLoop(parent, s);
         }
 
@@ -201,41 +211,40 @@ public class BusinessServiceManagerImpl implements BusinessServiceManager {
     }
 
     @Override
-    public Set<BusinessServiceDTO> getFeasibleChildServices(final BusinessServiceDTO serviceDTO) {
-        final BusinessService service = transform(serviceDTO);
+    public Set<BusinessService> getFeasibleChildServices(final BusinessService service) {
+        final BusinessServiceEntity entity = getBusinessServiceEntity(service);
         return getDao().findAll()
                        .stream()
-                       .filter(s -> !this.checkDescendantForLoop(service, s))
-                       .map(this::transform)
-                       .collect(Collectors.toSet());
+                       .filter(s -> !this.checkDescendantForLoop(entity, s))
+                       .map(s -> new BusinessServiceImpl(this, s))
+                       .collect(Collectors.<BusinessService>toSet());
     }
 
     @Override
-    public Set<BusinessServiceDTO> getParentServices(BusinessServiceDTO childServiceDTO) {
-        final BusinessService childService = transform(childServiceDTO);
-        return childService.getParentServices()
-                           .stream()
-                           .map(this::transform)
-                           .collect(Collectors.toSet());
-    }
-
-    @Override
-    public OnmsSeverity getOperationalStatusForBusinessService(Long serviceId) {
-        final BusinessService service = getBusinessService(serviceId);
-        final OnmsSeverity severity = businessServiceStateMachine.getOperationalStatus(service);
+    public OnmsSeverity getOperationalStatusForBusinessService(BusinessService service) {
+        final BusinessServiceEntity entity = getBusinessServiceEntity(service);
+        final OnmsSeverity severity = businessServiceStateMachine.getOperationalStatus(entity);
         return severity != null ? severity : OnmsSeverity.INDETERMINATE;
     }
 
     @Override
-    public OnmsSeverity getOperationalStatusForIPService(Integer ipServiceId) {
-        final OnmsMonitoredService ipService = getIpService(ipServiceId);
-        final OnmsSeverity severity = businessServiceStateMachine.getOperationalStatus(ipService);
+    public OnmsSeverity getOperationalStatusForIPService(IpService ipService) {
+        final OnmsMonitoredService monitoredService = getMonitoredService(ipService);
+        final OnmsSeverity severity = businessServiceStateMachine.getOperationalStatus(monitoredService);
         return severity != null ? severity : OnmsSeverity.INDETERMINATE;
     }
 
     @Override
-    public List<IpServiceDTO> getAllIpServiceDTO() {
-        return transformAll(monitoredServiceDao.findAll());
+    public List<IpService> getAllIpServices() {
+        return monitoredServiceDao.findAll().stream()
+                                  .map(s -> new IpServiceImpl(this, s))
+                                  .collect(Collectors.toList());
+    }
+
+    @Override
+    public IpService getIpServiceById(Integer id) {
+        OnmsMonitoredService entity = getMonitoredService(id);
+        return new IpServiceImpl(this, entity);
     }
 
     @Override
@@ -245,104 +254,31 @@ public class BusinessServiceManagerImpl implements BusinessServiceManager {
         eventForwarder.sendNow(eventBuilder.getEvent());
     }
 
-    private BusinessServiceDao getDao() {
-        return businessServiceDao;
+    BusinessServiceDao getDao() {
+        return this.businessServiceDao;
     }
 
-    private BusinessService transform(BusinessServiceDTO dto) {
-        BusinessService service = new BusinessService();
-        service.setId(dto.getId());
-        service.setName(dto.getName());
-        service.setAttributes(new HashMap<>(dto.getAttributes()));
-        service.setReductionKeys(new HashSet<>(dto.getReductionKeys()));
-        for (IpServiceDTO eachService : dto.getIpServices()) {
-            OnmsMonitoredService ipService = getIpService(Integer.valueOf(eachService.getId()));
-            service.addIpService(ipService);
-        }
-        for (BusinessServiceDTO eachService : dto.getChildServices()) {
-            BusinessService childService = getBusinessService(Long.valueOf(eachService.getId()));
-            service.addChildService(childService);
-        }
-        for (BusinessServiceDTO eachService : dto.getParentServices()) {
-            BusinessService parentService = getBusinessService(Long.valueOf(eachService.getId()));
-            service.addParentService(parentService);
-        }
-        return service;
+    NodeDao getNodeDao() {
+        return this.nodeDao;
     }
 
-    private BusinessServiceDTO transform(BusinessService service) {
-        BusinessServiceDTO dto = new BusinessServiceDTO();
-        dto.setId(service.getId());
-        dto.setName(service.getName());
-        dto.setAttributes(new HashMap<>(service.getAttributes()));
-        dto.setReductionKeys(new HashSet<>(service.getReductionKeys()));
-        for (OnmsMonitoredService eachService : service.getIpServices()) {
-            IpServiceDTO ipServiceDTO = transform(eachService);
-            if (ipServiceDTO != null) {
-                dto.addIpService(ipServiceDTO);
-            }
-        }
-        for (BusinessService eachService : service.getChildServices()) {
-            BusinessServiceDTO childServiceDTO = transform(eachService);
-            if (childServiceDTO != null) {
-                dto.addChildService(childServiceDTO);
-            }
-        }
-        for (BusinessService eachService : service.getChildServices()) {
-            BusinessServiceDTO parentServiceDTO = transform(eachService);
-            if (parentServiceDTO != null) {
-                dto.addParentService(parentServiceDTO);
-            }
-        }
-        return dto;
+    private BusinessServiceEntity getBusinessServiceEntity(BusinessService service) throws NoSuchElementException {
+        return ((BusinessServiceImpl) service).getEntity();
     }
 
-    private List<IpServiceDTO> transformAll(List<OnmsMonitoredService> all) {
-        if (all != null) {
-            return all.stream().map(this::transform).collect(Collectors.toList());
-        }
-        return null;
-    }
-
-    private IpServiceDTO transform(OnmsMonitoredService input) {
-        if (input != null) {
-            IpServiceDTO output = new IpServiceDTO();
-            if (input.getId() != null) {
-                output.setId(String.valueOf(input.getId()));
-                output.setNodeLabel(nodeDao.get(input.getNodeId()).getLabel());
-                output.setServiceName(input.getServiceName());
-                output.setIpAddress(input.getIpAddress().toString());
-                output.setReductionKeys(OnmsMonitoredServiceHelper.getReductionKeys(input));
-                output.setLocation(ResourceLocationFactory.createIpServiceLocation(output.getId()));
-                return output;
-            }
-        }
-        return null;
-    }
-
-    private List<BusinessServiceDTO> transform(List<BusinessService> all) {
-        if (all != null) {
-            List<BusinessServiceDTO> transformedList = new ArrayList<>();
-            for (BusinessService eachService : all) {
-                BusinessServiceDTO serviceDTO = transform(eachService);
-                if (serviceDTO != null) {
-                    transformedList.add(serviceDTO);
-                }
-            }
-            return transformedList;
-        }
-        return null;
-    }
-
-    private BusinessService getBusinessService(Long serviceId) throws NoSuchElementException {
-        final BusinessService service = getDao().get(serviceId);
-        if (service == null) {
+    private BusinessServiceEntity getBusinessServiceEntity(Long serviceId) throws NoSuchElementException {
+        final BusinessServiceEntity entity = getDao().get(serviceId);
+        if (entity == null) {
             throw new NoSuchElementException();
         }
-        return service;
+        return entity;
     }
 
-    private OnmsMonitoredService getIpService(Integer serviceId) throws NoSuchElementException {
+    private OnmsMonitoredService getMonitoredService(IpService ipService) throws NoSuchElementException {
+        return ((IpServiceImpl) ipService).getEntity();
+    }
+
+    private OnmsMonitoredService getMonitoredService(Integer serviceId) throws NoSuchElementException {
         final OnmsMonitoredService monitoredService = monitoredServiceDao.get(serviceId);
         if (monitoredService == null) {
             throw new NoSuchElementException();

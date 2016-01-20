@@ -44,4 +44,8 @@ public class ResourceLocationFactory {
     public static ResourceLocation createBusinessServiceLocation() {
         return new ResourceLocation(ApiVersion.Version2, "business-services");
     }
+
+    public static ResourceLocation createBusinessServiceIpServiceLocation(int ipServiceId) {
+        return new ResourceLocation(ApiVersion.Version2, "business-services", "ip-services", String.valueOf(ipServiceId));
+    }
 }
