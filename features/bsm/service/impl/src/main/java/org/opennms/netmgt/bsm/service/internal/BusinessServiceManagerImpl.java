@@ -34,6 +34,7 @@ import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.opennms.core.criteria.Criteria;
 import org.opennms.netmgt.bsm.persistence.api.BusinessServiceDao;
 import org.opennms.netmgt.bsm.persistence.api.BusinessServiceEntity;
 import org.opennms.netmgt.bsm.service.BusinessServiceManager;
@@ -76,6 +77,14 @@ public class BusinessServiceManagerImpl implements BusinessServiceManager {
     }
 
     @Override
+    public List<BusinessService> findMatching(Criteria criteria) {
+        List<BusinessServiceEntity> all = getDao().findMatching(criteria);
+        if (all == null) {
+            return null;
+        }
+        return all.stream().map(e -> new BusinessServiceImpl(this, e)).collect(Collectors.toList());
+    }
+
     public BusinessService createBusinessService() {
         return new BusinessServiceImpl(this, new BusinessServiceEntity());
     }
