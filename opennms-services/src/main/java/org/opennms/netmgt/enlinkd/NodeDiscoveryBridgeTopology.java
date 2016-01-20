@@ -432,7 +432,6 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
 
     Map<Bridge,List<BridgeMacLink>> m_notYetParsedBFTMap;
     BroadcastDomain m_domain;
-//    Integer m_rootBridgeId;
     List<BridgeMacLink> m_rootBridgeBFT = new ArrayList<BridgeMacLink>();
     //List<BridgeStpLink> m_STPLinks = new ArrayList<BridgeStpLink>();
     List<BridgeElement> m_bridgeelements = new ArrayList<BridgeElement>();
@@ -485,21 +484,34 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
     }
 
     @Override
-    protected void runCollection() {
-        m_notYetParsedBFTMap = new HashMap<Bridge, List<BridgeMacLink>>();
-        Date now = new Date();
+    public void run() {
         m_domain = m_linkd.getQueryManager().getBridgeTopologyBroadcastDomain(getNodeId());
         if (m_domain == null ) {
             LOG.warn("run: no broadcast domain found for node: {}", getNodeId());
             return;
         }
-        try {
         if (!m_domain.getLock(this)) {
-            LOG.info("run: broadcast domain: is locked for calculation either on node {}....", getNodeId());
+            LOG.info("run: broadcast domain: is locked for calculation either on node {}....scheduling with time interval {}", 
+                     getNodeId(), getInitialSleepTime());
+            schedule();
             return;
         }
-        
+        LOG.info("run: node: {}, getLock broadcast domain.", getNodeId());
         setBridgeElements(m_linkd.getQueryManager().getBridgeElements(m_domain.getBridgeNodesOnDomain()));
+        super.run();
+        m_domain.releaseLock(this);
+        LOG.info("run: node: {}, releaseLock broadcast domain.", getNodeId());
+
+    }
+    
+    @Override
+    protected void runCollection() {
+        if (m_domain == null) {
+            LOG.error("run: node: {}, broadcast domain is null", getNodeId());
+            return;
+        }
+        m_notYetParsedBFTMap = new HashMap<Bridge, List<BridgeMacLink>>();
+        Date now = new Date();
         
         if (!m_domain.hasRootBridge()) {
             LOG.info("run: node: {}, broadcast domain has no root bridge.", getNodeId());
@@ -526,7 +538,11 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
         
         LOG.info("run: node: {}, getLock broadcast domain with topology change found.", getNodeId());
         LOG.info("run: node: {}, start: broadcast domain topology calculation.", getNodeId());
-        calculate();
+        try {
+            calculate();
+        } catch (Exception e) {
+            LOG.error("run: node: {}, got exception",e);           
+        }
         LOG.info("run: node: {}, stop: broadcast domain topology calculated.", getNodeId());
 
         LOG.info("run: node: {}, saving broadcast domain root bridge: {} bft.", getNodeId(),m_domain.getRootBridgeId());
@@ -539,13 +555,6 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
         for (Integer nodeid: m_domain.getBridgeNodesOnDomain()) {
            LOG.info("run: reconcile topology for node: {} on Broadcast Domain",nodeid);
            m_linkd.getQueryManager().reconcileBridgeTopology(nodeid, now);
-        }
-        } catch (Exception e) {
-            LOG.error("run: node: {}, got exception",e);
-           
-        } finally {
-            m_domain.releaseLock(this);
-            LOG.info("run: node: {}, releaseLock broadcast domain.", getNodeId());
         }
     }
 

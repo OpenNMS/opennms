@@ -119,6 +119,7 @@ public interface EnhancedLinkdService {
     void store(int nodeId, List<BridgeMacLink> link);
     
     void store(BroadcastDomain domain);
+    
     void save(int rootId, List<BridgeMacLink> rootBFT);
     
     BroadcastDomain getBridgeTopologyBroadcastDomain(int nodeId);
