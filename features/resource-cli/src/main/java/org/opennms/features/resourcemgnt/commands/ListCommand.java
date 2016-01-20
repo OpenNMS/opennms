@@ -2,8 +2,8 @@ package org.opennms.features.resourcemgnt.commands;
 
 import com.google.common.base.Strings;
 import org.opennms.features.resourcemgnt.ResourceCli;
-import org.opennms.web.rest.v1.ResourceDTO;
-import org.opennms.web.rest.v1.ResourceDTOCollection;
+import org.opennms.netmgt.model.resource.ResourceDTO;
+import org.opennms.netmgt.model.resource.ResourceDTOCollection;
 
 public class ListCommand extends AbstractCommand {
 
