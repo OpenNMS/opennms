@@ -422,6 +422,7 @@ public class ScanReportPollerFrontEnd implements PollerFrontEnd, InitializingBea
 
         // Create a log appender that will capture log output to the root logger
         Log4j2StringAppender appender = Log4j2StringAppender.createAppender();
+        appender.start();
 
         try {
             m_pollService.setServiceMonitorLocators(m_backEnd.getServiceMonitorLocators(DistributionContext.REMOTE_MONITOR));
