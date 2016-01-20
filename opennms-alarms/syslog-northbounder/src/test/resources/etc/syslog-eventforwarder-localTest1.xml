@@ -11,6 +11,6 @@
 	<truncate-message>false</truncate-message>
 	<filter>
 		<rule>getParm('forwardEventToActivitySyslog')?.value.content == 'true'</rule>
-		<message-format>EVENT #{dbid} FOR NODE #{#node.label} IN #{#node.foreignSource}: #{logmsg.content}</message-format>
+		<message-format>EVENT ${dbid} FOR NODE ${#node.label} IN ${#node.foreignSource}: ${logmsg.content}</message-format>
 	</filter>
 </destination>

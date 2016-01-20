@@ -210,7 +210,7 @@ public class SyslogEventForwarder {
             context.setVariable("node", node);
         }
         ExpressionParser parser = new SpelExpressionParser();
-        Expression exp = parser.parseExpression(msgFormat, new TemplateParserContext());
+        Expression exp = parser.parseExpression(msgFormat, new TemplateParserContext("${", "}"));
         try {
             final String msg = (String) exp.getValue(context, String.class);
             LOG.debug("getTranslatedMessage: {} ==> {}", msgFormat, msg);

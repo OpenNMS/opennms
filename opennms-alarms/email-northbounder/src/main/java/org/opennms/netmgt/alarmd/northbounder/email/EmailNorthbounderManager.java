@@ -92,6 +92,10 @@ public class EmailNorthbounderManager implements InitializingBean, Northbounder,
      * @throws Exception the exception
      */
     private void registerNorthnounders() throws Exception {
+        if (! m_configDao.getConfig().isEnabled()) {
+            LOG.warn("The Email NBI is globally disabled, the destinations won't be registered which means all the alarms will be rejected.");
+            return;
+        }
         for (EmailDestination destination : m_configDao.getConfig().getEmailDestinations()) {
             LOG.info("Registering Email northbound configuration for destination {}.", destination.getName());
             EmailNorthbounder nbi = new EmailNorthbounder(m_configDao, m_javaMailDao, destination.getName());
@@ -156,11 +160,11 @@ public class EmailNorthbounderManager implements InitializingBean, Northbounder,
      */
     @Override
     public void reloadConfig() {
-        m_configDao.reload();
-        m_javaMailDao.reloadConfiguration();
-        LOG.info("Reloading SNMP trap northbound configuration.");
-        m_registrations.forEach((k,v) -> { if (k != getName()) v.unregister();});
+        LOG.info("Reloading Email northbound configuration.");
         try {
+            m_configDao.reload();
+            m_javaMailDao.reloadConfiguration();
+            m_registrations.forEach((k,v) -> { if (k != getName()) v.unregister();});
             registerNorthnounders();
         } catch (Exception e) {
             LOG.error("Can't reload the SNMP trap northbound configuration", e);
