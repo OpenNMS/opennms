@@ -38,13 +38,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-import com.google.gwt.thirdparty.guava.common.base.Function;
-import com.google.gwt.thirdparty.guava.common.collect.Collections2;
-import com.vaadin.data.Container;
-import com.vaadin.data.Item;
-import com.vaadin.data.Property;
-import com.vaadin.data.util.BeanItem;
-
 import org.opennms.core.criteria.Criteria;
 import org.opennms.core.criteria.Order;
 import org.opennms.core.criteria.restrictions.Restriction;
@@ -55,6 +48,13 @@ import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.netmgt.dao.api.OnmsDao;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.gwt.thirdparty.guava.common.base.Function;
+import com.google.gwt.thirdparty.guava.common.collect.Collections2;
+import com.vaadin.data.Container;
+import com.vaadin.data.Item;
+import com.vaadin.data.Property;
+import com.vaadin.data.util.BeanItem;
 
 
 /**

@@ -21,9 +21,9 @@
  * http://www.gnu.org/licenses/
  *
  * For more information contact:
- * OpenNMS(R) Licensing <license@opennms.org>
- * http://www.opennms.org/
- * http://www.opennms.com/
+ *     OpenNMS(R) Licensing <license@opennms.org>
+ *     http://www.opennms.org/
+ *     http://www.opennms.com/
  *******************************************************************************/
 
 package org.opennms.netmgt.bsm.vaadin.adminpage;
@@ -33,9 +33,11 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.function.Consumer;
 
-import org.opennms.netmgt.bsm.service.model.BusinessServiceDTO;
-import org.opennms.netmgt.bsm.service.model.IpServiceDTO;
+import org.opennms.netmgt.bsm.service.model.BusinessService;
+import org.opennms.netmgt.bsm.service.model.IpService;
 import org.opennms.netmgt.vaadin.core.StringInputDialogWindow;
+import org.opennms.netmgt.vaadin.core.TransactionAwareUI;
+import org.opennms.netmgt.vaadin.core.UIHelper;
 
 import com.vaadin.data.Property;
 import com.vaadin.data.util.BeanItemContainer;
@@ -77,11 +79,11 @@ public class BusinessServiceEditWindow extends Window {
     /**
      * bean item container for IP services DTOs
      */
-    private BeanItemContainer<IpServiceDTO> m_ipServicesContainer = new BeanItemContainer<>(IpServiceDTO.class);
+    private BeanItemContainer<IpService> m_ipServicesContainer = new BeanItemContainer<>(IpService.class);
     /**
      * bean item container for Business Services DTOs
      */
-    private BeanItemContainer<BusinessServiceDTO> m_businessServicesContainer = new BeanItemContainer<>(BusinessServiceDTO.class);
+    private BeanItemContainer<BusinessService> m_businessServicesContainer = new BeanItemContainer<>(BusinessService.class);
     /**
      * list of reduction keys
      */
@@ -90,10 +92,10 @@ public class BusinessServiceEditWindow extends Window {
     /**
      * Constructor
      *
-     * @param businessServiceDTO        the Business Service DTO instance to be configured
+     * @param businessService the Business Service DTO instance to be configured
      * @param businessServiceMainLayout the parent main layout
      */
-    public BusinessServiceEditWindow(BusinessServiceDTO businessServiceDTO, BusinessServiceMainLayout businessServiceMainLayout) {
+    public BusinessServiceEditWindow(BusinessService businessService, BusinessServiceMainLayout businessServiceMainLayout) {
         /**
          * set window title...
          */
@@ -107,12 +109,12 @@ public class BusinessServiceEditWindow extends Window {
         /**
          * ...and query for IP services.
          */
-        m_ipServicesContainer.addAll(m_businessServiceMainLayout.getBusinessServiceManager().getAllIpServiceDTO());
+        m_ipServicesContainer.addAll(m_businessServiceMainLayout.getBusinessServiceManager().getAllIpServices());
 
         /**
          * ...and query for Business Services. Only add the Business Services that will not result in a loop...
          */
-        m_businessServicesContainer.addAll(m_businessServiceMainLayout.getBusinessServiceManager().getFeasibleChildServices(businessServiceDTO));
+        m_businessServicesContainer.addAll(m_businessServiceMainLayout.getBusinessServiceManager().getFeasibleChildServices(businessService));
 
         /**
          * ...and basic properties
@@ -132,28 +134,22 @@ public class BusinessServiceEditWindow extends Window {
         verticalLayout.setMargin(true);
 
         /**
-         * add save button
+         * add saveBusinessService button
          */
         Button saveButton = new Button("Save");
         saveButton.setId("saveButton");
-        saveButton.addClickListener(new Button.ClickListener() {
+        saveButton.addClickListener(UIHelper.getCurrent(TransactionAwareUI.class).wrapInTransactionProxy(new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent event) {
-                businessServiceDTO.setName(m_nameTextField.getValue().trim());
-                businessServiceDTO.setIpServices((Set<IpServiceDTO>) m_ipServicesTwinColSelect.getValue());
-                businessServiceDTO.setChildServices((Set<BusinessServiceDTO>) m_businessServicesTwinColSelect.getValue());
-                Set<String> reductionKeySet = new HashSet<String>();
-                reductionKeySet.addAll((Collection<String>) m_reductionKeyListSelect.getItemIds());
-                businessServiceDTO.setReductionKeys(reductionKeySet);
-                if (businessServiceDTO.getId() == null) {
-                    businessServiceMainLayout.getBusinessServiceManager().save(businessServiceDTO);
-                } else {
-                    businessServiceMainLayout.getBusinessServiceManager().update(businessServiceDTO);
-                }
+                businessService.setName(m_nameTextField.getValue().trim());
+                businessService.setIpServices((Set<IpService>) m_ipServicesTwinColSelect.getValue());
+                businessService.setChildServices((Set<BusinessService>) m_businessServicesTwinColSelect.getValue());
+                businessService.setReductionKeys(new HashSet<>((Collection<String>)m_reductionKeyListSelect.getItemIds()));
+                businessService.save();
                 close();
                 businessServiceMainLayout.refreshTable();
             }
-        });
+        }));
 
         /**
          * add the cancel button
@@ -179,7 +175,7 @@ public class BusinessServiceEditWindow extends Window {
          */
         m_nameTextField = new TextField("Business Service Name");
         m_nameTextField.setId("nameField");
-        m_nameTextField.setValue(businessServiceDTO.getName());
+        m_nameTextField.setValue(businessService.getName());
         m_nameTextField.setWidth(100, Unit.PERCENTAGE);
         verticalLayout.addComponent(m_nameTextField);
 
@@ -194,12 +190,12 @@ public class BusinessServiceEditWindow extends Window {
         m_ipServicesTwinColSelect.setRows(8);
         m_ipServicesTwinColSelect.setNewItemsAllowed(false);
         m_ipServicesTwinColSelect.setContainerDataSource(m_ipServicesContainer);
-        m_ipServicesTwinColSelect.setValue(businessServiceDTO.getIpServices());
-        // manually set the item caption, otherwiese .toString() is used which looks weired
+        m_ipServicesTwinColSelect.setValue(businessService.getIpServices());
+        // manually set the item caption, otherwise .toString() is used which looks weired
         m_ipServicesTwinColSelect.setItemCaptionMode(AbstractSelect.ItemCaptionMode.EXPLICIT_DEFAULTS_ID);
-        m_ipServicesContainer.getItemIds().forEach(new Consumer<IpServiceDTO>() {
+        m_ipServicesContainer.getItemIds().forEach(new Consumer<IpService>() {
             @Override
-            public void accept(IpServiceDTO ipServiceDTO) {
+            public void accept(IpService ipServiceDTO) {
                 m_ipServicesTwinColSelect.setItemCaption(ipServiceDTO, String.format("%s/%s/%s", ipServiceDTO.getNodeLabel(), ipServiceDTO.getIpAddress(), ipServiceDTO.getServiceName()));
             }
         });
@@ -215,7 +211,7 @@ public class BusinessServiceEditWindow extends Window {
         m_businessServicesTwinColSelect.setRows(8);
 
         m_businessServicesTwinColSelect.setContainerDataSource(m_businessServicesContainer);
-        m_businessServicesTwinColSelect.setValue(businessServiceDTO.getChildServices());
+        m_businessServicesTwinColSelect.setValue(businessService.getChildServices());
 
         m_businessServicesTwinColSelect.setItemCaptionMode(AbstractSelect.ItemCaptionMode.PROPERTY);
         m_businessServicesTwinColSelect.setItemCaptionPropertyId("name");
@@ -229,7 +225,7 @@ public class BusinessServiceEditWindow extends Window {
         m_reductionKeyListSelect.setRows(8);
         m_reductionKeyListSelect.setNullSelectionAllowed(false);
         m_reductionKeyListSelect.setMultiSelect(false);
-        m_reductionKeyListSelect.addItems(businessServiceDTO.getReductionKeys());
+        m_reductionKeyListSelect.addItems(businessService.getReductionKeys());
 
         /**
          * wrap the reduction key list select box in a Vaadin Panel

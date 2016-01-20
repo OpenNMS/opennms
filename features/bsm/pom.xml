@@ -18,6 +18,7 @@
     <module>persistence</module>
     <module>rest</module>
     <module>service</module>
+    <module>test-util</module>
     <module>vaadin-masterpage</module>
     <module>vaadin-adminpage</module>
   </modules>

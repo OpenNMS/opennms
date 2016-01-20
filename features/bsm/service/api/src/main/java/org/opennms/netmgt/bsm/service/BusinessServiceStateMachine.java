@@ -31,7 +31,7 @@ package org.opennms.netmgt.bsm.service;
 import java.util.List;
 import java.util.Map;
 
-import org.opennms.netmgt.bsm.persistence.api.BusinessService;
+import org.opennms.netmgt.bsm.persistence.api.BusinessServiceEntity;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsSeverity;
@@ -43,14 +43,14 @@ public interface BusinessServiceStateMachine {
      *
      * @param businessServices list of services to manage
      */
-    public void setBusinessServices(List<BusinessService> businessServices);
+    public void setBusinessServices(List<BusinessServiceEntity> businessServices);
 
     /**
      * Retrieves the list of Business Services that are currently managed by the state machine.
      *
      * @return list of managed services
      */
-    public List<BusinessService> getBusinessServices();
+    public List<BusinessServiceEntity> getBusinessServices();
 
     /**
      * Retrieves the current operational status of a Business Service.
@@ -58,7 +58,7 @@ public interface BusinessServiceStateMachine {
      * @param businessService service to query for
      * @return the current operational status, or null if the service if not managed by the state machine
      */
-    public OnmsSeverity getOperationalStatus(BusinessService businessService);
+    public OnmsSeverity getOperationalStatus(BusinessServiceEntity businessService);
 
     /**
      * Retrieves the current operational status of an IP-Service associated with a Business Service.
