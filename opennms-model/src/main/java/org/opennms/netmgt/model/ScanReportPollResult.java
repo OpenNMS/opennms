@@ -21,6 +21,7 @@ import javax.xml.bind.annotation.XmlIDREF;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
+import org.codehaus.jackson.annotate.JsonBackReference;
 import org.opennms.netmgt.poller.PollStatus;
 
 @Entity
@@ -35,6 +36,7 @@ public class ScanReportPollResult implements Serializable {
     private String m_id = UUID.randomUUID().toString();
 
     @XmlIDREF
+    @JsonBackReference
     private ScanReport m_scanReport;
 
     @XmlAttribute(name="service-name")

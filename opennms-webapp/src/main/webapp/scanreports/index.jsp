@@ -42,9 +42,9 @@
 	<jsp:param name="script" value='<script type="text/javascript" src="js/angular-resource-1.4.8.min.js"></script>' />
 
 	<jsp:param name="script" value='<script type="text/javascript" src="js/angular-onmsList.js"></script>' />
-	<jsp:param name="script" value='<script type="text/javascript" src="js/angular-onmsList-notification.js"></script>' />
+	<jsp:param name="script" value='<script type="text/javascript" src="js/angular-onmsList-scanreport.js"></script>' />
 </jsp:include>
 
-<ng-include src="'notification/main.html'"></ng-include>
+<ng-include src="'scanreports/main.html'"></ng-include>
 
 <jsp:include page="/includes/bootstrap-footer.jsp" flush="false"/>
