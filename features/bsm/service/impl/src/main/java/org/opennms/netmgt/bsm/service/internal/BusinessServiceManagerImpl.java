@@ -41,6 +41,7 @@ import org.opennms.netmgt.bsm.persistence.api.BusinessService;
 import org.opennms.netmgt.bsm.persistence.api.BusinessServiceDao;
 import org.opennms.netmgt.bsm.persistence.api.OnmsMonitoredServiceHelper;
 import org.opennms.netmgt.bsm.service.BusinessServiceManager;
+import org.opennms.netmgt.bsm.service.BusinessServiceSearchCriteria;
 import org.opennms.netmgt.bsm.service.BusinessServiceStateMachine;
 import org.opennms.netmgt.bsm.service.model.BusinessServiceDTO;
 import org.opennms.netmgt.bsm.service.model.IpServiceDTO;
@@ -348,5 +349,14 @@ public class BusinessServiceManagerImpl implements BusinessServiceManager {
             throw new NoSuchElementException();
         }
         return monitoredService;
+    }
+
+    @Override
+    public List<BusinessServiceDTO> search(BusinessServiceSearchCriteria businessServiceSearchCriteria) {
+        if (businessServiceSearchCriteria == null) {
+            throw new IllegalArgumentException("Search criteria must not be null");
+        }
+
+        return businessServiceSearchCriteria.apply(this, findAll());
     }
 }

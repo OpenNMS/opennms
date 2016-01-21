@@ -39,6 +39,8 @@ public interface BusinessServiceManager {
 
     List<BusinessServiceDTO> findAll();
 
+    List<BusinessServiceDTO> search(BusinessServiceSearchCriteria businessServiceSearchCriteria);
+
     Long save(BusinessServiceDTO newObject);
 
     void update(BusinessServiceDTO objectToUpdate);
