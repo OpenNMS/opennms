@@ -25,11 +25,6 @@
             <artifactId>org.opennms.core.api</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.opennms</groupId>
-            <artifactId>opennms-webapp-rest</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
             <groupId>org.opennms.dependencies</groupId>
             <artifactId>jersey-client-dependencies</artifactId>
             <type>pom</type>
