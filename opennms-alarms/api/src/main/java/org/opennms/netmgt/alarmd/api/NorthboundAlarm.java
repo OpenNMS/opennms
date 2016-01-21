@@ -616,7 +616,7 @@ public class NorthboundAlarm implements Preservable {
     @XmlElement(name="object-type")
     private String m_objectType;
 
-    /**  The operator instructions. */
+    /** The operator instructions. */
     @XmlElement(name="operator-instructions")
     private String m_operInst;
 
@@ -1130,9 +1130,9 @@ public class NorthboundAlarm implements Preservable {
     }
 
     /**
-     * Sets the uei.
+     * Sets the UEI.
      *
-     * @param uei the new uei
+     * @param uei the new UEI
      */
     public void setUei(String uei) {
         m_uei = uei;
@@ -1184,18 +1184,18 @@ public class NorthboundAlarm implements Preservable {
     }
 
     /**
-     * Sets the ack time.
+     * Sets the acknowledge time.
      *
-     * @param ackTime the new ack time
+     * @param ackTime the new acknowledge time
      */
     public void setAckTime(Date ackTime) {
         m_ackTime = ackTime;
     }
 
     /**
-     * Sets the ack user.
+     * Sets the acknowledge user.
      *
-     * @param ackUser the new ack user
+     * @param ackUser the new acknowledge user
      */
     public void setAckUser(String ackUser) {
         m_ackUser = ackUser;
@@ -1211,9 +1211,9 @@ public class NorthboundAlarm implements Preservable {
     }
 
     /**
-     * Sets the app dn.
+     * Sets the App DN.
      *
-     * @param appDn the new app dn
+     * @param appDn the new App DN
      */
     public void setAppDn(String appDn) {
         m_appDn = appDn;
@@ -1238,9 +1238,9 @@ public class NorthboundAlarm implements Preservable {
     }
 
     /**
-     * Sets the desc.
+     * Sets the description.
      *
-     * @param desc the new desc
+     * @param desc the new description
      */
     public void setDesc(String desc) {
         m_desc = desc;
@@ -1265,9 +1265,9 @@ public class NorthboundAlarm implements Preservable {
     }
 
     /**
-     * Sets the ip addr.
+     * Sets the IP address.
      *
-     * @param ipAddr the new ip addr
+     * @param ipAddr the new IP address
      */
     public void setIpAddr(String ipAddr) {
         m_ipAddr = ipAddr;
@@ -1283,9 +1283,9 @@ public class NorthboundAlarm implements Preservable {
     }
 
     /**
-     * Sets the log msg.
+     * Sets the log message.
      *
-     * @param logMsg the new log msg
+     * @param logMsg the new log message
      */
     public void setLogMsg(String logMsg) {
         m_logMsg = logMsg;
@@ -1310,27 +1310,27 @@ public class NorthboundAlarm implements Preservable {
     }
 
     /**
-     * Sets the oper inst.
+     * Sets the operator instructions.
      *
-     * @param operInst the new oper inst
+     * @param operInst the new operator instructions
      */
     public void setOperInst(String operInst) {
         m_operInst = operInst;
     }
 
     /**
-     * Sets the oss key.
+     * Sets the OSS key.
      *
-     * @param ossKey the new oss key
+     * @param ossKey the new OSS key
      */
     public void setOssKey(String ossKey) {
         m_ossKey = ossKey;
     }
 
     /**
-     * Sets the oss state.
+     * Sets the OSS state.
      *
-     * @param ossState the new oss state
+     * @param ossState the new OSS state
      */
     public void setOssState(String ossState) {
         m_ossState = ossState;

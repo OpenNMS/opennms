@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<xs:schema version="1.0" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+  <xs:element name="mapping" type="snmpTrapMapping"/>
+
+  <xs:element name="mapping-group" type="snmpTrapMappingGroup"/>
+
+  <xs:element name="snmp-trap-sink" type="snmpTrapSink"/>
+
+  <xs:element name="snmptrap-northbounder-config" type="snmpTrapNorthbounderConfig"/>
+
+  <xs:element name="varbind" type="varbindMapping"/>
+
+  <xs:complexType name="snmpTrapNorthbounderConfig">
+    <xs:sequence>
+      <xs:element name="enabled" type="xs:boolean" default="false" minOccurs="0"/>
+      <xs:element name="nagles-delay" type="xs:int" default="1000" minOccurs="0"/>
+      <xs:element name="batch-size" type="xs:int" default="100" minOccurs="0"/>
+      <xs:element name="queue-size" type="xs:int" default="300000" minOccurs="0"/>
+      <xs:element ref="snmp-trap-sink" minOccurs="0" maxOccurs="unbounded"/>
+      <xs:element name="uei" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="snmpTrapSink">
+    <xs:sequence>
+      <xs:element name="name" type="xs:string"/>
+      <xs:element name="ip-address" type="xs:string" default="127.0.0.1"/>
+      <xs:element name="port" type="xs:int" default="162" minOccurs="0"/>
+      <xs:element name="v1-agent-address" type="xs:string" minOccurs="0"/>
+      <xs:element name="version" type="snmpVersion" default="V1"/>
+      <xs:element name="community" type="xs:string" default="public" minOccurs="0"/>
+      <xs:element ref="mapping-group" minOccurs="0" maxOccurs="unbounded"/>
+      <xs:element name="import-mappings" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="snmpTrapMappingGroup">
+    <xs:sequence>
+      <xs:element name="rule" type="xs:string"/>
+      <xs:element ref="mapping" maxOccurs="unbounded"/>
+    </xs:sequence>
+    <xs:attribute name="name" type="xs:string"/>
+  </xs:complexType>
+
+  <xs:complexType name="snmpTrapMapping">
+    <xs:sequence>
+      <xs:element name="rule" type="xs:string"/>
+      <xs:element name="enterprise-oid" type="xs:string"/>
+      <xs:element name="generic" type="xs:int" default="6" minOccurs="0"/>
+      <xs:element name="specific" type="xs:int" minOccurs="0"/>
+      <xs:element ref="varbind" maxOccurs="unbounded"/>
+    </xs:sequence>
+    <xs:attribute name="name" type="xs:string"/>
+  </xs:complexType>
+
+  <xs:complexType name="varbindMapping">
+    <xs:sequence>
+      <xs:element name="oid" type="xs:string"/>
+      <xs:element name="type" type="varbindType"/>
+      <xs:element name="value" type="xs:string"/>
+      <xs:element name="max" type="xs:int"/>
+      <xs:element name="instance" type="xs:string" minOccurs="0"/>
+    </xs:sequence>
+    <xs:attribute name="name" type="xs:string"/>
+  </xs:complexType>
+
+  <xs:simpleType name="snmpVersion">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="v1"/>
+      <xs:enumeration value="v2c"/>
+      <xs:enumeration value="v3"/>
+      <xs:enumeration value="v2-inform"/>
+      <xs:enumeration value="v3-inform"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="varbindType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="OctetString"/>
+      <xs:enumeration value="Int32"/>
+      <xs:enumeration value="Null"/>
+      <xs:enumeration value="ObjectIdentifier"/>
+      <xs:enumeration value="IpAddress"/>
+      <xs:enumeration value="TimeTicks"/>
+      <xs:enumeration value="Counter32"/>
+      <xs:enumeration value="Gauge32"/>
+      <xs:enumeration value="Opaque"/>
+      <xs:enumeration value="Counter64"/>
+    </xs:restriction>
+  </xs:simpleType>
+</xs:schema>
+
