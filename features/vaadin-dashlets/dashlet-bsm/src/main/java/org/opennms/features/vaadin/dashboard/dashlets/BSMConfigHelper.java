@@ -18,12 +18,12 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
- * http://www.gnu.org/licenses/
+ *      http://www.gnu.org/licenses/
  *
  * For more information contact:
- * OpenNMS(R) Licensing <license@opennms.org>
- * http://www.opennms.org/
- * http://www.opennms.com/
+ *     OpenNMS(R) Licensing <license@opennms.org>
+ *     http://www.opennms.org/
+ *     http://www.opennms.com/
  *******************************************************************************/
 
 package org.opennms.features.vaadin.dashboard.dashlets;
@@ -34,6 +34,8 @@ import org.opennms.netmgt.bsm.service.BusinessServiceSearchCriteria;
 import org.opennms.netmgt.bsm.service.BusinessServiceSearchCriteriaBuilder;
 import org.opennms.netmgt.model.OnmsSeverity;
 
+import com.google.common.base.Strings;
+
 /**
  * Small helper class for loading search criteria from the dashlet's parameter map.
  *
@@ -41,7 +43,7 @@ import org.opennms.netmgt.model.OnmsSeverity;
  */
 public class BSMConfigHelper {
     /**
-     * Returns a boolean value for a given key from the map where "1", "true" and "yes"
+     * Returns a boolean value for a given key from the map where "1", "true", "yes" and "on"
      * are interpeted as boolean true, otherwise false.
      *
      * @param map the map to be used
@@ -50,12 +52,13 @@ public class BSMConfigHelper {
      */
     public static boolean getBooleanForKey(Map<String, String> map, String key) {
         String value = map.get(key);
-        return ("true".equals(value) || "yes".equals(value) || "1".equals(value));
+        return ("true".equalsIgnoreCase(value) || "yes".equalsIgnoreCase(value) || "1".equalsIgnoreCase(value) || "on".equalsIgnoreCase(value));
     }
 
     /**
      * Returns the string value for a given key. Null values will be returned as empty
      * strings.
+     *
      * @param map the map to use
      * @param key the key
      * @return the string value
@@ -99,8 +102,26 @@ public class BSMConfigHelper {
 
         String severityValue = getStringForKey(map, "severityValue");
 
-        if (severityValue == null || "".equals(severityValue)) {
+        if (Strings.isNullOrEmpty(severityValue)) {
             severityValue = OnmsSeverity.WARNING.getLabel();
+        }
+
+        String severityCompareOperator = BSMConfigHelper.getStringForKey(map, "severityCompareOperator");
+
+        if (Strings.isNullOrEmpty(severityCompareOperator)) {
+            severityCompareOperator = BusinessServiceSearchCriteriaBuilder.CompareOperator.GreaterOrEqual.name();
+        }
+
+        String orderBy = BSMConfigHelper.getStringForKey(map, "orderBy");
+
+        if (Strings.isNullOrEmpty(orderBy)) {
+            orderBy = BusinessServiceSearchCriteriaBuilder.Order.Name.name();
+        }
+
+        String orderSequence = BSMConfigHelper.getStringForKey(map, "orderSequence");
+
+        if (Strings.isNullOrEmpty(orderSequence)) {
+            orderSequence = BusinessServiceSearchCriteriaBuilder.Sequence.Ascending.name();
         }
 
         int resultsLimit = getIntForKey(map, "resultsLimit");
@@ -114,10 +135,12 @@ public class BSMConfigHelper {
             b.attribute(attributeKey, attributeValue);
         }
         if (filterBySeverity) {
-            b.greaterOrEqualSeverity(OnmsSeverity.get(severityValue));
+            b.filterSeverity(BusinessServiceSearchCriteriaBuilder.CompareOperator.valueOf(severityCompareOperator), OnmsSeverity.get(severityValue));
         }
 
-        return b.limit(resultsLimit)
+        return b.order(BusinessServiceSearchCriteriaBuilder.Order.valueOf(orderBy))
+                .order(BusinessServiceSearchCriteriaBuilder.Sequence.valueOf(orderSequence))
+                .limit(resultsLimit)
                 .order(BusinessServiceSearchCriteriaBuilder.Order.Name);
     }
 }

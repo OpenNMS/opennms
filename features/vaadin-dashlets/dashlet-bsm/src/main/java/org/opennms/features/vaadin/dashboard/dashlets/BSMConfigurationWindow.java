@@ -18,12 +18,12 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
- * http://www.gnu.org/licenses/
+ *      http://www.gnu.org/licenses/
  *
  * For more information contact:
- * OpenNMS(R) Licensing <license@opennms.org>
- * http://www.opennms.org/
- * http://www.opennms.com/
+ *     OpenNMS(R) Licensing <license@opennms.org>
+ *     http://www.opennms.org/
+ *     http://www.opennms.com/
  *******************************************************************************/
 
 package org.opennms.features.vaadin.dashboard.dashlets;
@@ -32,8 +32,10 @@ import org.opennms.features.vaadin.dashboard.config.ui.WallboardConfigUI;
 import org.opennms.features.vaadin.dashboard.config.ui.WallboardProvider;
 import org.opennms.features.vaadin.dashboard.model.DashletConfigurationWindow;
 import org.opennms.features.vaadin.dashboard.model.DashletSpec;
+import org.opennms.netmgt.bsm.service.BusinessServiceSearchCriteriaBuilder;
 import org.opennms.netmgt.model.OnmsSeverity;
 
+import com.google.common.base.Strings;
 import com.vaadin.data.Property;
 import com.vaadin.data.validator.AbstractStringValidator;
 import com.vaadin.event.ShortcutAction;
@@ -59,6 +61,9 @@ public class BSMConfigurationWindow extends DashletConfigurationWindow {
     private CheckBox m_filterByNameCheckBox, m_filterByAttributeCheckBox, m_filterBySeverityCheckBox;
     private TextField m_nameTextField, m_attributeKeyTextField, m_attributeValueTextField, m_limitTextField;
     private NativeSelect m_severitySelect;
+    private NativeSelect m_compareOperatorSelect;
+    private NativeSelect m_orderBy;
+    private NativeSelect m_orderSequence;
 
     /**
      * Constructor for instantiating new objects of this class.
@@ -75,7 +80,7 @@ public class BSMConfigurationWindow extends DashletConfigurationWindow {
          * Setting up the base layouts
          */
 
-        setHeight(80, Unit.PERCENTAGE);
+        setHeight(85, Unit.PERCENTAGE);
         setWidth(60, Unit.PERCENTAGE);
 
         /**
@@ -93,8 +98,25 @@ public class BSMConfigurationWindow extends DashletConfigurationWindow {
 
         String severityValue = BSMConfigHelper.getStringForKey(getDashletSpec().getParameters(), "severityValue");
 
-        if (severityValue == null || "".equals(severityValue)) {
-            severityValue = OnmsSeverity.WARNING.getLabel();
+        if (Strings.isNullOrEmpty(severityValue)) {
+            severityValue = OnmsSeverity.WARNING.name();
+        }
+
+        String severityCompareOperator = BSMConfigHelper.getStringForKey(getDashletSpec().getParameters(), "severityCompareOperator");
+
+        if (Strings.isNullOrEmpty(severityCompareOperator)) {
+            severityCompareOperator = BusinessServiceSearchCriteriaBuilder.CompareOperator.GreaterOrEqual.name();
+        }
+
+        String orderBy = BSMConfigHelper.getStringForKey(getDashletSpec().getParameters(), "orderBy");
+        if (Strings.isNullOrEmpty(orderBy)) {
+            orderBy = BusinessServiceSearchCriteriaBuilder.Order.Name.name();
+        }
+
+        String orderSequence = BSMConfigHelper.getStringForKey(getDashletSpec().getParameters(), "orderSequence");
+
+        if (Strings.isNullOrEmpty(orderSequence)) {
+            orderSequence = BusinessServiceSearchCriteriaBuilder.Sequence.Ascending.name();
         }
 
         int resultsLimit = BSMConfigHelper.getIntForKey(getDashletSpec().getParameters(), "resultsLimit");
@@ -190,8 +212,21 @@ public class BSMConfigurationWindow extends DashletConfigurationWindow {
         for (String name : OnmsSeverity.names()) {
             m_severitySelect.addItem(name);
         }
+
+        m_compareOperatorSelect = new NativeSelect("Comparator");
+        m_compareOperatorSelect.setEnabled(false);
+        m_compareOperatorSelect.setNullSelectionAllowed(false);
+        m_compareOperatorSelect.setMultiSelect(false);
+
+        m_compareOperatorSelect.addItem(BusinessServiceSearchCriteriaBuilder.CompareOperator.Lower.name());
+        m_compareOperatorSelect.addItem(BusinessServiceSearchCriteriaBuilder.CompareOperator.LowerOrEqual.name());
+        m_compareOperatorSelect.addItem(BusinessServiceSearchCriteriaBuilder.CompareOperator.Equal.name());
+        m_compareOperatorSelect.addItem(BusinessServiceSearchCriteriaBuilder.CompareOperator.GreaterOrEqual.name());
+        m_compareOperatorSelect.addItem(BusinessServiceSearchCriteriaBuilder.CompareOperator.Greater.name());
+
         addToComponent(severityLayout, m_filterBySeverityCheckBox);
         addToComponent(severityLayout, m_severitySelect);
+        addToComponent(severityLayout, m_compareOperatorSelect);
 
         Panel severityPanel = new Panel();
         severityPanel.setCaption("Filter by Severity");
@@ -201,14 +236,16 @@ public class BSMConfigurationWindow extends DashletConfigurationWindow {
             @Override
             public void valueChange(Property.ValueChangeEvent event) {
                 m_severitySelect.setEnabled(m_filterBySeverityCheckBox.getValue());
+                m_compareOperatorSelect.setEnabled(m_filterBySeverityCheckBox.getValue());
             }
         });
 
         m_severitySelect.setValue(severityValue);
+        m_compareOperatorSelect.setValue(severityCompareOperator);
         m_filterBySeverityCheckBox.setValue(filterBySeverity);
 
         /**
-         * Adding the "Limit" panel
+         * Adding the "Results" panel
          */
 
         VerticalLayout limitLayout = new VerticalLayout();
@@ -217,20 +254,40 @@ public class BSMConfigurationWindow extends DashletConfigurationWindow {
         limitLayout.setSizeFull();
 
         m_limitTextField = new TextField("Limit");
+
+        m_orderBy = new NativeSelect("Order by");
+        m_orderBy.setNullSelectionAllowed(false);
+        m_orderBy.setMultiSelect(false);
+
+        m_orderBy.addItem(BusinessServiceSearchCriteriaBuilder.Order.Name.name());
+        m_orderBy.addItem(BusinessServiceSearchCriteriaBuilder.Order.Severity.name());
+
+        m_orderSequence = new NativeSelect("Asc/Desc ");
+        m_orderSequence.setNullSelectionAllowed(false);
+        m_orderSequence.setMultiSelect(false);
+
+        m_orderSequence.addItem("Ascending");
+        m_orderSequence.addItem("Descending");
+
         addToComponent(limitLayout, m_limitTextField);
+        addToComponent(limitLayout, m_orderBy);
+        addToComponent(limitLayout, m_orderSequence);
 
         Panel limitPanel = new Panel();
         limitPanel.setSizeFull();
-        limitPanel.setCaption("Limit Results");
+        limitPanel.setCaption("Results");
         limitPanel.setContent(limitLayout);
 
         m_limitTextField.setValue(String.valueOf(resultsLimit));
-        m_limitTextField.addValidator(new AbstractStringValidator("Number greater zero expected") {
+        m_orderBy.setValue(orderBy);
+        m_orderSequence.setValue(orderSequence);
+
+        m_limitTextField.addValidator(new AbstractStringValidator("Number greater or equal zero expected") {
             @Override
             protected boolean isValidValue(String value) {
                 try {
                     int i = Integer.parseInt(value);
-                    return i > 0;
+                    return i >= 0;
                 } catch (NumberFormatException e) {
                     return false;
                 }
@@ -253,6 +310,7 @@ public class BSMConfigurationWindow extends DashletConfigurationWindow {
         HorizontalLayout bottomLayout = new HorizontalLayout(severityPanel, limitPanel);
         bottomLayout.setSpacing(true);
         bottomLayout.setWidth(100, Unit.PERCENTAGE);
+
         verticalLayout.addComponent(bottomLayout);
 
         /**
@@ -263,6 +321,11 @@ public class BSMConfigurationWindow extends DashletConfigurationWindow {
         buttonLayout.setMargin(true);
         buttonLayout.setSpacing(true);
         buttonLayout.setWidth("100%");
+
+        Label label = new Label("Note: Multiple enabled filter constraints will be combined by a logical AND.");
+        buttonLayout.addComponent(label);
+        buttonLayout.setExpandRatio(label, 1.0f);
+
         /**
          * Adding the cancel button...
          */
@@ -277,7 +340,6 @@ public class BSMConfigurationWindow extends DashletConfigurationWindow {
 
         cancel.setClickShortcut(ShortcutAction.KeyCode.ESCAPE, null);
         buttonLayout.addComponent(cancel);
-        buttonLayout.setExpandRatio(cancel, 1.0f);
         buttonLayout.setComponentAlignment(cancel, Alignment.TOP_RIGHT);
 
         /**
@@ -316,6 +378,24 @@ public class BSMConfigurationWindow extends DashletConfigurationWindow {
                     m_dashletSpec.getParameters().put("severityValue", m_severitySelect.getValue().toString());
                 } else {
                     m_dashletSpec.getParameters().put("severityValue", OnmsSeverity.WARNING.getLabel());
+                }
+
+                if (m_filterBySeverityCheckBox.getValue() && m_compareOperatorSelect.getValue() != null) {
+                    m_dashletSpec.getParameters().put("severityCompareOperator", m_compareOperatorSelect.getValue().toString());
+                } else {
+                    m_dashletSpec.getParameters().put("severityCompareOperator", BusinessServiceSearchCriteriaBuilder.CompareOperator.GreaterOrEqual.name());
+                }
+
+                if (m_orderBy.getValue() != null) {
+                    m_dashletSpec.getParameters().put("orderBy", m_orderBy.getValue().toString());
+                } else {
+                    m_dashletSpec.getParameters().put("orderBy", BusinessServiceSearchCriteriaBuilder.Order.Name.name());
+                }
+
+                if (m_orderSequence.getValue() != null) {
+                    m_dashletSpec.getParameters().put("orderSequence", m_orderSequence.getValue().toString());
+                } else {
+                    m_dashletSpec.getParameters().put("orderSequence", "Ascending");
                 }
 
                 m_dashletSpec.getParameters().put("resultsLimit", m_limitTextField.getValue().toString());
