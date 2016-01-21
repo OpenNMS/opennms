@@ -18,12 +18,12 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
- * http://www.gnu.org/licenses/
+ *      http://www.gnu.org/licenses/
  *
  * For more information contact:
- * OpenNMS(R) Licensing <license@opennms.org>
- * http://www.opennms.org/
- * http://www.opennms.com/
+ *     OpenNMS(R) Licensing <license@opennms.org>
+ *     http://www.opennms.org/
+ *     http://www.opennms.com/
  *******************************************************************************/
 
 package org.opennms.features.vaadin.dashboard.dashlets;
@@ -38,11 +38,12 @@ import org.opennms.netmgt.bsm.service.BusinessServiceManager;
 import org.opennms.netmgt.bsm.service.BusinessServiceSearchCriteria;
 import org.opennms.netmgt.bsm.service.model.BusinessServiceDTO;
 import org.opennms.netmgt.model.OnmsSeverity;
+import org.opennms.netmgt.vaadin.core.TransactionAwareBeanProxyFactory;
 
 import com.vaadin.ui.Component;
+import com.vaadin.ui.GridLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
-import com.vaadin.ui.VerticalLayout;
 
 /**
  * This class represents a Alert Dashlet with minimum details.
@@ -77,12 +78,12 @@ public class BSMDashlet extends AbstractDashlet {
      * @param dashletSpec            the {@link DashletSpec} to be used
      * @param businessServiceManager the {@link BusinessServiceManager} to be used
      */
-    public BSMDashlet(String name, DashletSpec dashletSpec, BusinessServiceManager businessServiceManager) {
+    public BSMDashlet(String name, DashletSpec dashletSpec, BusinessServiceManager businessServiceManager, TransactionAwareBeanProxyFactory transactionAwareBeanProxyFactory) {
         super(name, dashletSpec);
         /**
          * Setting the member fields
          */
-        m_businessServiceManager = businessServiceManager;
+        m_businessServiceManager = transactionAwareBeanProxyFactory.createProxy(businessServiceManager);
 
         /**
          * Retrieve the config...
@@ -95,24 +96,25 @@ public class BSMDashlet extends AbstractDashlet {
     public DashletComponent getWallboardComponent() {
         if (m_wallboardComponent == null) {
             m_wallboardComponent = new AbstractDashletComponent() {
-                private VerticalLayout m_verticalLayout = new VerticalLayout();
+                private GridLayout m_gridLayout = new GridLayout(10, 1);
 
                 {
-                    m_verticalLayout.setCaption(getName());
-                    m_verticalLayout.setWidth("100%");
+                    m_gridLayout.setCaption(getName());
+                    m_gridLayout.setWidth("100%");
                     refresh();
                 }
 
                 @Override
                 public void refresh() {
-                    m_verticalLayout.removeAllComponents();
+                    m_gridLayout.removeAllComponents();
 
-                    final List<BusinessServiceDTO> serviceDTOs = m_businessServiceManager.search(m_businessServiceSearchCriteria);
-                    if (serviceDTOs.isEmpty()) {
-                        m_verticalLayout.addComponent(new Label("There are no Business Services with matching criterias found."));
+                    final List<BusinessService> services = m_businessServiceManager.search(m_businessServiceSearchCriteria);
+
+                    if (services.isEmpty()) {
+                        m_gridLayout.addComponent(new Label("There are no Business Services with matching criterias found."));
                     } else {
-                        for (BusinessServiceDTO eachService : serviceDTOs) {
-                            m_verticalLayout.addComponent(createRow(eachService));
+                        for (BusinessService eachService : services) {
+                            m_gridLayout.addComponent(createRow(eachService));//, i%10,i/10);
                         }
                     }
                     boosted = false;
@@ -120,7 +122,7 @@ public class BSMDashlet extends AbstractDashlet {
 
                 @Override
                 public Component getComponent() {
-                    return m_verticalLayout;
+                    return m_gridLayout;
                 }
             };
         }
@@ -131,24 +133,25 @@ public class BSMDashlet extends AbstractDashlet {
     public DashletComponent getDashboardComponent() {
         if (m_dashboardComponent == null) {
             m_dashboardComponent = new AbstractDashletComponent() {
-                private VerticalLayout m_verticalLayout = new VerticalLayout();
+                private GridLayout m_gridLayout = new GridLayout(5, 1);
 
                 {
-                    m_verticalLayout.setCaption(getName());
-                    m_verticalLayout.setWidth("100%");
+                    m_gridLayout.setCaption(getName());
+                    m_gridLayout.setWidth("100%");
                     refresh();
                 }
 
                 @Override
                 public void refresh() {
-                    m_verticalLayout.removeAllComponents();
+                    m_gridLayout.removeAllComponents();
 
-                    final List<BusinessServiceDTO> serviceDTOs = m_businessServiceManager.search(m_businessServiceSearchCriteria);
-                    if (serviceDTOs.isEmpty()) {
-                        m_verticalLayout.addComponent(new Label("There are no Business Services with matching criterias found."));
+                    final List<BusinessService> services = m_businessServiceManager.search(m_businessServiceSearchCriteria);
+
+                    if (services.isEmpty()) {
+                        m_gridLayout.addComponent(new Label("There are no Business Services with matching criterias found."));
                     } else {
-                        for (BusinessServiceDTO eachService : serviceDTOs) {
-                            m_verticalLayout.addComponent(createRow(eachService));
+                        for (BusinessService eachService : services) {
+                            m_gridLayout.addComponent(createRow(eachService));
                         }
                     }
                     boosted = false;
@@ -156,15 +159,14 @@ public class BSMDashlet extends AbstractDashlet {
 
                 @Override
                 public Component getComponent() {
-                    return m_verticalLayout;
+                    return m_gridLayout;
                 }
             };
         }
         return m_dashboardComponent;
     }
 
-
-    private HorizontalLayout createRow(BusinessServiceDTO serviceDTO) {
+    private HorizontalLayout createRow(BusinessService service) {
         HorizontalLayout rowLayout = new HorizontalLayout();
         rowLayout.setSizeFull();
         rowLayout.setSpacing(true);
@@ -172,7 +174,7 @@ public class BSMDashlet extends AbstractDashlet {
         final OnmsSeverity severity = m_businessServiceManager.getOperationalStatusForBusinessService(serviceDTO.getId());
         Label nameLabel = new Label(serviceDTO.getName());
         nameLabel.setSizeFull();
-        nameLabel.setStyleName("h1");
+        nameLabel.setStyleName("h3");
         nameLabel.addStyleName("bright");
         nameLabel.addStyleName("severity");
         nameLabel.addStyleName(severity.getLabel());

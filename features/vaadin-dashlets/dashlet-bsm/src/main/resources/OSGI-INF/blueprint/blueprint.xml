@@ -1,8 +1,14 @@
 <blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0 http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd">
 
+    <reference id="transactionOperations" interface="org.springframework.transaction.support.TransactionOperations" availability="mandatory"/>
     <reference id="businessServiceManager" interface="org.opennms.netmgt.bsm.service.BusinessServiceManager" availability="mandatory"/>
 
+    <bean id="transactionAwareBeanProxyFactory" class="org.opennms.netmgt.vaadin.core.TransactionAwareBeanProxyFactory">
+        <argument ref="transactionOperations"/>
+    </bean>
+
     <bean id="bsmDashletFactory" class="org.opennms.features.vaadin.dashboard.dashlets.BSMDashletFactory" scope="singleton">
+        <argument ref="transactionAwareBeanProxyFactory"/>
         <argument ref="businessServiceManager"/>
 
         <property name="name" value="BSM"/>
@@ -19,6 +25,9 @@
                 <entry key="filterBySeverity" value="yes"/>
                 <entry key="severityValue" value="WARNING"/>
                 <entry key="resultsLimit" value="10"/>
+                <entry key="severityCompareOperator" value="GreaterOrEqual"/>
+                <entry key="orderBy" value="Name"/>
+                <entry key="orderAsc" value="true"/>
             </map>
         </property>
 
@@ -32,6 +41,9 @@
                 <entry key="filterBySeverity" value="Indicates whether results should be filtered by severity "/>
                 <entry key="severityValue" value="The severity filter value"/>
                 <entry key="resultsLimit" value="The results limit"/>
+                <entry key="severityCompareOperator" value="Comparator for the severity value"/>
+                <entry key="orderBy" value="Order of results"/>
+                <entry key="orderAsc" value="Ascending or descending order"/>
             </map>
         </property>
     </bean>

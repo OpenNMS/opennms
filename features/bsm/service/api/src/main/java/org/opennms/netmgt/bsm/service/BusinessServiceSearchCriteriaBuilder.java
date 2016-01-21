@@ -18,12 +18,12 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
- * http://www.gnu.org/licenses/
+ *      http://www.gnu.org/licenses/
  *
  * For more information contact:
- * OpenNMS(R) Licensing <license@opennms.org>
- * http://www.opennms.org/
- * http://www.opennms.com/
+ *     OpenNMS(R) Licensing <license@opennms.org>
+ *     http://www.opennms.org/
+ *     http://www.opennms.com/
  *******************************************************************************/
 
 package org.opennms.netmgt.bsm.service;
@@ -74,7 +74,6 @@ public class BusinessServiceSearchCriteriaBuilder implements BusinessServiceSear
             }
         };
 
-
         public abstract boolean check(int a);
     }
 
@@ -84,6 +83,14 @@ public class BusinessServiceSearchCriteriaBuilder implements BusinessServiceSear
     public enum Order {
         Name,
         Severity;
+    }
+
+    /**
+     * the sequence of the ordered results
+     */
+    public enum Sequence {
+        Ascending,
+        Descending;
     }
 
     /**
@@ -138,6 +145,7 @@ public class BusinessServiceSearchCriteriaBuilder implements BusinessServiceSear
 
         /**
          * Returns the first associated object.
+         *
          * @return the object
          */
         public A getA() {
@@ -146,6 +154,7 @@ public class BusinessServiceSearchCriteriaBuilder implements BusinessServiceSear
 
         /**
          * Returns the second associated object.
+         *
          * @return the object
          */
         public B getB() {
@@ -154,8 +163,9 @@ public class BusinessServiceSearchCriteriaBuilder implements BusinessServiceSear
 
         /**
          * Constructs an instance for two given objects.
-         * @param a the object
-         * @param b another object
+         *
+         * @param a   the object
+         * @param b   another object
          * @param <A> the type of the first object
          * @param <B> the type of the second object
          * @return the instance created
@@ -188,7 +198,7 @@ public class BusinessServiceSearchCriteriaBuilder implements BusinessServiceSear
     /**
      * ascending or descending?
      */
-    private boolean m_ascending = true;
+    private Sequence m_sequence = Sequence.Ascending;
 
     /**
      * Default constructor
@@ -203,7 +213,6 @@ public class BusinessServiceSearchCriteriaBuilder implements BusinessServiceSear
         for (String nameRegexp : m_nameFilters) {
             s = s.filter(p -> p.getName().matches(nameRegexp));
         }
-
 
         for (Pair<String, String> pair : m_attributeFilters) {
             s = s.filter(p -> p.getAttributes().containsKey(pair.getA()) && p.getAttributes().get(pair.getA()).matches(pair.getB()));
@@ -229,7 +238,7 @@ public class BusinessServiceSearchCriteriaBuilder implements BusinessServiceSear
             }
         };
 
-        if (!m_ascending) {
+        if (m_sequence.equals(Sequence.Descending)) {
             comparator = comparator.reversed();
         }
 
@@ -244,25 +253,21 @@ public class BusinessServiceSearchCriteriaBuilder implements BusinessServiceSear
 
     public BusinessServiceSearchCriteriaBuilder attribute(String key, String valueRegexp) {
         m_attributeFilters.add(Pair.of(key, valueRegexp));
-
         return this;
     }
 
     public BusinessServiceSearchCriteriaBuilder name(String nameRegexp) {
         m_nameFilters.add(nameRegexp);
-
         return this;
     }
 
     public BusinessServiceSearchCriteriaBuilder order(Order order) {
         m_order = order;
-
         return this;
     }
 
     public BusinessServiceSearchCriteriaBuilder filterSeverity(CompareOperator compareOperator, OnmsSeverity severity) {
         m_severityFilters.add(Pair.of(compareOperator, severity));
-
         return this;
     }
 
@@ -296,13 +301,18 @@ public class BusinessServiceSearchCriteriaBuilder implements BusinessServiceSear
         return this;
     }
 
+    public BusinessServiceSearchCriteriaBuilder order(Sequence sequence) {
+        m_sequence = sequence;
+        return this;
+    }
+
     public BusinessServiceSearchCriteriaBuilder asc() {
-        m_ascending = true;
+        m_sequence = Sequence.Ascending;
         return this;
     }
 
     public BusinessServiceSearchCriteriaBuilder desc() {
-        m_ascending = false;
+        m_sequence = Sequence.Descending;
         return this;
     }
 }

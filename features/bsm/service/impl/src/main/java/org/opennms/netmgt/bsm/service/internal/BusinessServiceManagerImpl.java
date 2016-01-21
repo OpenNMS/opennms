@@ -397,16 +397,9 @@ public class BusinessServiceManagerImpl implements BusinessServiceManager {
         return monitoredService;
     }
 
-    /**
-     * The criteria is build on BusinessService classes.
-     * However we want to use the dao to filter. Therefore we have to perform a mapping from BusinessService to BusinessServiceEntity.
-     *
-     * @param input
-     * @return
-     */
-    private Criteria transform(Criteria input) {
-        Criteria criteria = input.clone();
-        criteria.setClass(BusinessServiceEntity.class);
-        return criteria;
+    @Override
+    public List<BusinessService> search(BusinessServiceSearchCriteria businessServiceSearchCriteria) {
+        Objects.requireNonNull(businessServiceSearchCriteria);
+        return businessServiceSearchCriteria.apply(this, getAllBusinessServices());
     }
 }

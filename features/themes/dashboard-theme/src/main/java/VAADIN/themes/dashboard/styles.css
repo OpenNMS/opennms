@@ -347,16 +347,13 @@ td.onms { font-size: 100%; }
     overflow:hidden;
 }
 
-.novscroll {
-    overflow-y: hidden;
-    overflow-x: auto;
-}
-.v-panel-content.v-panel-content-novscroll {
-    overflow-y: hidden !important;
-    overflow-x: auto;
-}
-
-.v-panel-caption,
-.v-panel-caption-light {
-    color: #464f52;
-}
+.severity { color:#000000; padding-left: 20px; background-position: top left; background-repeat: repeat-y; }
+.severity.Critical{ background-color: #F5CDCD; border-top: 2px solid #CC0000 !important; background-image: url(../bsm/images/bgCritical.png); }
+.severity.Major{ background-color: #FFD7CD; border-top: 2px solid #FF3300 !important; background-image: url(../bsm/images/bgMajor.png); }
+.severity.Minor{ background-color: #FFEBCD; border-top: 2px solid #FF9900 !important; background-image: url(../bsm/images/bgMinor.png); }
+.severity.Warning{ background-color: #FFF5CD; border-top: 2px solid #FFCC00 !important; background-image: url(../bsm/images/bgWarning.png); }
+.severity.Indeterminate{ background-color: #EBEBCD; border-top: 2px solid #999000 !important; background-image: url(../bsm/images/bgIndeterminate.png); }
+.severity.Normal{ background-color: #D7E1CD; border-top: 2px solid #336600 !important; background-image: url(../bsm/images/bgNormal.png); }
+.severity.Cleared { background-color: #EEEEEE; border-top: 2px solid #999999 !important; background-image: url(../bsm/images/bgCleared.png); }
+.severity.bright { padding-left: 20px; background-position: top left; background-repeat: repeat-y; }
+.severity.nobright { background-image: none;}

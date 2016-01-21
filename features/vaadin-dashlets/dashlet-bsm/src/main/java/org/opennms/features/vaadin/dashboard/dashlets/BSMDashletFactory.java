@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2013-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2016 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -33,6 +33,7 @@ import org.opennms.features.vaadin.dashboard.model.Dashlet;
 import org.opennms.features.vaadin.dashboard.model.DashletConfigurationWindow;
 import org.opennms.features.vaadin.dashboard.model.DashletSpec;
 import org.opennms.netmgt.bsm.service.BusinessServiceManager;
+import org.opennms.netmgt.vaadin.core.TransactionAwareBeanProxyFactory;
 
 /**
  * This class implements a factory used for instantiating new dashlet instances.
@@ -46,12 +47,18 @@ public class BSMDashletFactory extends AbstractDashletFactory {
     private BusinessServiceManager m_businessServiceManager;
 
     /**
+     * The {@link TransactionAwareBeanProxyFactory} used
+     */
+    private TransactionAwareBeanProxyFactory m_transactionAwareBeanProxyFactory;
+
+    /**
      * Constructor used for instantiating a new factory.
      *
      * @param businessServiceManager the {@link BusinessServiceManager} to be used
      */
-    public BSMDashletFactory(BusinessServiceManager businessServiceManager) {
+    public BSMDashletFactory(BusinessServiceManager businessServiceManager, TransactionAwareBeanProxyFactory transactionAwareBeanProxyFactory) {
         m_businessServiceManager = businessServiceManager;
+        m_transactionAwareBeanProxyFactory = transactionAwareBeanProxyFactory;
     }
 
     /**
@@ -61,7 +68,7 @@ public class BSMDashletFactory extends AbstractDashletFactory {
      * @return a new {@link Dashlet} instance
      */
     public Dashlet newDashletInstance(DashletSpec dashletSpec) {
-        return new BSMDashlet(getName(), dashletSpec, m_businessServiceManager);
+        return new BSMDashlet(getName(), dashletSpec, m_businessServiceManager, m_transactionAwareBeanProxyFactory);
     }
 
     /**
