@@ -163,43 +163,43 @@ public class SyslogDestination implements Destination {
 
     /** The target Syslog receiver host. */
     @XmlElement(name = "host", defaultValue = "localhost", required = false)
-    private String m_host = "localhost";
+    private String m_host;
 
     /** The target Syslog receiver port. */
     @XmlElement(name = "port", defaultValue = "514", required = false)
-    private int m_port = 514;
+    private Integer m_port;
 
     /** The target Syslog receiver protocol. */
     @XmlElement(name = "ip-protocol", defaultValue = "udp", required = false)
-    private SyslogProtocol m_protocol = SyslogProtocol.UDP;
+    private SyslogProtocol m_protocol;
 
     /** The target Syslog receiver facility. */
     @XmlElement(name = "facility", defaultValue = "USER", required = false)
-    private SyslogFacility m_facility = SyslogFacility.USER;
+    private SyslogFacility m_facility;
 
     /** The message char set. */
     @XmlElement(name = "char-set", defaultValue = "UTF-8", required = false)
-    private String m_charSet = "UTF-8";
+    private String m_charSet;
 
     /** The max message length. */
     @XmlElement(name = "max-message-length", defaultValue = "1024", required = false)
-    private int m_maxMessageLength = 1024;
+    private Integer m_maxMessageLength = 1024;
 
     /** The send local name flag. */
     @XmlElement(name = "send-local-name", defaultValue = "true", required = false)
-    private boolean m_sendLocalName = true;
+    private Boolean m_sendLocalName;
 
     /** The send local time flag. */
     @XmlElement(name = "send-local-time", defaultValue = "true", required = false)
-    private boolean m_sendLocalTime = true;
+    private Boolean m_sendLocalTime;
 
     /** The truncate message flag. */
     @XmlElement(name = "truncate-message", defaultValue = "false", required = false)
-    private boolean m_truncateMessage = false;
+    private Boolean m_truncateMessage;
 
     /** The first occurrence only flag. */
     @XmlElement(name = "first-occurrence-only", defaultValue = "false", required = false)
-    private boolean m_firstOccurrenceOnly = false;
+    private Boolean m_firstOccurrenceOnly;
 
     /** The filters. */
     @XmlElement(name = "filter", required = false)
@@ -246,7 +246,7 @@ public class SyslogDestination implements Destination {
      * @return the host
      */
     public String getHost() {
-        return m_host;
+        return m_host == null ? "localhost" : m_host;
     }
 
     /**
@@ -263,8 +263,8 @@ public class SyslogDestination implements Destination {
      *
      * @return the port
      */
-    public int getPort() {
-        return m_port;
+    public Integer getPort() {
+        return m_port == null ? 514 : m_port;
     }
 
     /**
@@ -272,7 +272,7 @@ public class SyslogDestination implements Destination {
      *
      * @param m_port the new port
      */
-    public void setPort(int m_port) {
+    public void setPort(Integer m_port) {
         this.m_port = m_port;
     }
 
@@ -282,7 +282,7 @@ public class SyslogDestination implements Destination {
      * @return the protocol
      */
     public SyslogProtocol getProtocol() {
-        return m_protocol;
+        return m_protocol == null ? SyslogProtocol.UDP : m_protocol;
     }
 
     /**
@@ -300,7 +300,7 @@ public class SyslogDestination implements Destination {
      * @return the facility
      */
     public SyslogFacility getFacility() {
-        return m_facility;
+        return m_facility == null ? SyslogFacility.USER : m_facility;
     }
 
     /**
@@ -309,7 +309,7 @@ public class SyslogDestination implements Destination {
      * @return the char set
      */
     public String getCharSet() {
-        return m_charSet;
+        return m_charSet == null ? "UTF-8" : m_charSet;
     }
 
     /**
@@ -326,8 +326,8 @@ public class SyslogDestination implements Destination {
      *
      * @return the max message length
      */
-    public int getMaxMessageLength() {
-        return m_maxMessageLength;
+    public Integer getMaxMessageLength() {
+        return m_maxMessageLength == null ? 1024 : m_maxMessageLength;
     }
 
     /**
@@ -335,7 +335,7 @@ public class SyslogDestination implements Destination {
      *
      * @param maxMessageLength the new max message length
      */
-    public void setMaxMessageLength(int maxMessageLength) {
+    public void setMaxMessageLength(Integer maxMessageLength) {
         m_maxMessageLength = maxMessageLength;
     }
 
@@ -344,8 +344,8 @@ public class SyslogDestination implements Destination {
      *
      * @return true, if is send local name flag
      */
-    public boolean isSendLocalName() {
-        return m_sendLocalName;
+    public Boolean isSendLocalName() {
+        return m_sendLocalName == null ? Boolean.TRUE : m_sendLocalName;
     }
 
     /**
@@ -353,7 +353,7 @@ public class SyslogDestination implements Destination {
      *
      * @param sendLocalName the new send local name flag
      */
-    public void setSendLocalName(boolean sendLocalName) {
+    public void setSendLocalName(Boolean sendLocalName) {
         m_sendLocalName = sendLocalName;
     }
 
@@ -362,8 +362,8 @@ public class SyslogDestination implements Destination {
      *
      * @return true, if is send local time flag
      */
-    public boolean isSendLocalTime() {
-        return m_sendLocalTime;
+    public Boolean isSendLocalTime() {
+        return m_sendLocalTime == null ? Boolean.TRUE : m_sendLocalTime;
     }
 
     /**
@@ -371,7 +371,7 @@ public class SyslogDestination implements Destination {
      *
      * @param sendLocalTime the new send local time flag
      */
-    public void setSendLocalTime(boolean sendLocalTime) {
+    public void setSendLocalTime(Boolean sendLocalTime) {
         m_sendLocalTime = sendLocalTime;
     }
 
@@ -380,8 +380,8 @@ public class SyslogDestination implements Destination {
      *
      * @return true, if is truncate message flag
      */
-    public boolean isTruncateMessage() {
-        return m_truncateMessage;
+    public Boolean isTruncateMessage() {
+        return m_truncateMessage == null ? Boolean.FALSE : m_truncateMessage;
     }
 
     /**
@@ -389,7 +389,7 @@ public class SyslogDestination implements Destination {
      *
      * @param truncateMessage the new truncate message flag
      */
-    public void setTruncateMessage(boolean truncateMessage) {
+    public void setTruncateMessage(Boolean truncateMessage) {
         m_truncateMessage = truncateMessage;
     }
 
@@ -397,7 +397,7 @@ public class SyslogDestination implements Destination {
      * @see org.opennms.netmgt.alarmd.api.Destination#isFirstOccurrenceOnly()
      */
     public boolean isFirstOccurrenceOnly() {
-        return m_firstOccurrenceOnly;
+        return m_firstOccurrenceOnly == null ? Boolean.FALSE : m_firstOccurrenceOnly;
     }
 
     /**
@@ -405,7 +405,7 @@ public class SyslogDestination implements Destination {
      *
      * @param firstOccurrenceOnly the new first occurrence only
      */
-    public void setFirstOccurrenceOnly(boolean firstOccurrenceOnly) {
+    public void setFirstOccurrenceOnly(Boolean firstOccurrenceOnly) {
         m_firstOccurrenceOnly = firstOccurrenceOnly;
     }
 
