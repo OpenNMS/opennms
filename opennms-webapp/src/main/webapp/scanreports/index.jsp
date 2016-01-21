@@ -35,9 +35,9 @@
 <c:set var="baseHref" value="<%=Util.calculateUrlBase(request)%>"/>
 
 <jsp:include page="/includes/bootstrap.jsp" flush="false">
-	<jsp:param name="title" value="Notifications" />
-	<jsp:param name="headTitle" value="Notifications" />
-	<jsp:param name="breadcrumb" value="Notifications" />
+	<jsp:param name="title" value="Remote Poller Scan Reports" />
+	<jsp:param name="headTitle" value="Remote Poller Scan Reports" />
+	<jsp:param name="breadcrumb" value="Remote Poller Scan Reports" />
 	<jsp:param name="script" value='<script type="text/javascript" src="js/angular-1.4.8.min.js"></script>' />
 	<jsp:param name="script" value='<script type="text/javascript" src="js/angular-resource-1.4.8.min.js"></script>' />
 

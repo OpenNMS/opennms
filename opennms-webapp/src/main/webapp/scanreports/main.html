@@ -11,11 +11,9 @@
 					<form class="form-inline" onSubmit="$('#filterModal').modal('hide')" ng-submit="addSearchClause(clause)">
 						<div class="form-group">
 						<select class="form-control" ng-model="clause.property" ng-init="clause.property = 'notifyId'">
-							<option value="notifyId">ID</option>
-							<option value="label">Label</option>
+							<option value="id">ID</option>
+							<option value="timestamp">Timestamp</option>
 							<option value="location">Location</option>
-							<option value="status">Status</option>
-							<option value="lastUpdated">Last Updated</option>
 						</select>
 						<select class="form-control" ng-model="clause.operator" ng-init="clause.operator = 'EQ'">
 							<option value="EQ">=</option>
@@ -178,7 +176,7 @@
 						<i ng-show="query.orderBy === 'location' &amp;&amp; query.order === 'desc'" class="fa fa-sort-desc"/>
 					</th>
 					<th class="col-sm-1 text-nowrap">
-						<a ng-click="changeOrderBy('pageTime')">Scan Time</a>
+						<a ng-click="changeOrderBy('timestamp')">Scan Time</a>
 						<i ng-show="query.orderBy === 'timestamp' &amp;&amp; query.order === 'asc'" class="fa fa-sort-asc"/>
 						<i ng-show="query.orderBy === 'timestamp' &amp;&amp; query.order === 'desc'" class="fa fa-sort-desc"/>
 					</th>
@@ -221,7 +219,7 @@
 					-->
 				</tr>
 
-				<tr ng-repeat-start="item in items track by item.id">
+				<tr ng-repeat="item in items track by item.id">
 					<td class="text-nowrap" style="line-height:24px;" rowspan="2">
 						{{item.id}}
 						<a style="text-decoration: none;" ng-click="addSearchClause({property:'id',operator:'EQ',value:item.id})"><i class="fa fa-plus-square-o fa-lg"/></a>
@@ -233,12 +231,10 @@
 						<a style="text-decoration: none;" ng-click="addSearchClause({property:'location',operator:'NE',value:item.location})"><i class="fa fa-minus-square-o fa-lg"/></a>
 					</td>
 					<td class="text-nowrap" style="line-height:24px;">
-						<span ng-show="item.pageTime !== null">
+						<span ng-show="item.timestamp !== null">
 							{{item.timestamp | date:'MMM d, yyyy h:mm:ss a'}}
-							<!--
 							<a style="text-decoration: none;" ng-click="addEpochTimestampSearchClause({property:'timestamp',operator:'GE',value:item.timestamp})"><i class="fa fa-toggle-left fa-lg"/></a>
 							<a style="text-decoration: none;" ng-click="addEpochTimestampSearchClause({property:'timestamp',operator:'LE',value:item.timestamp})"><i class="fa fa-toggle-right fa-lg"/></a>
-							-->
 						</span>
 					</td>
 					<!--
@@ -295,8 +291,6 @@
 						</span>
 					</td>
 					-->
-				</tr>
-				<tr ng-repeat-end>
 				</tr>
 				<!--
 				<tr ng-repeat-end class="{{getSeverityClass(item.severity)}}">

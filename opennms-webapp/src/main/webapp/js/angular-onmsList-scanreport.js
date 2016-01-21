@@ -52,8 +52,12 @@
 							return [];
 						}
 						*/
-						// Always return the data as an array
-						return angular.isArray(data.scanreport) ? data.scanreport : [ data.scanreport ];
+						if (status === 204) { // No content
+							return [];
+						} else {
+							// Always return the data as an array
+							return angular.isArray(data.scanreport) ? data.scanreport : [ data.scanreport ];
+						}
 					})
 				},
 				'update': { 
