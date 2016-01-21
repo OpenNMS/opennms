@@ -81,6 +81,9 @@ public class EmailNorthbounder extends AbstractNorthbounder implements Initializ
     /** The Email body format. */
     private String m_emailBodyFormat;
 
+    /** The initialized flag (it will be true when the NBI is properly initialized). */
+    private boolean initialized = false;
+
     /**
      * Instantiates a new SNMP Trap northbounder.
      *
@@ -123,15 +126,14 @@ public class EmailNorthbounder extends AbstractNorthbounder implements Initializ
     @Override
     public void afterPropertiesSet() throws Exception {
         if (m_destination == null || m_sendmail == null) {
-            LOG.info("Email Northbounder is currently disabled, rejecting alarm.");
-            String msg = "Email forwarding configuration is not initialized.";
-            IllegalStateException e = new IllegalStateException(msg);
-            LOG.error(msg, e);
-            throw e;
+            LOG.error("Emai Northbounder {} is currently disabled because it has not been initialized correctly or there is a problem with the configuration.", getName());
+            initialized = false;
+            return;
         }
         setNaglesDelay(getConfig().getNaglesDelay());
         setMaxBatchSize(getConfig().getBatchSize());
         setMaxPreservedAlarms(getConfig().getQueueSize());
+        initialized = true;
     }
 
     /**
@@ -142,9 +144,15 @@ public class EmailNorthbounder extends AbstractNorthbounder implements Initializ
      */
     @Override
     public boolean accepts(NorthboundAlarm alarm) {
-        if (!getConfig().isEnabled()) {
+        if (!initialized) {
+            LOG.warn("Email Northbounder {} has not been properly initialized, rejecting alarm {}.", getName(), alarm.getUei());
             return false;
         }
+        if (!getConfig().isEnabled()) {
+            LOG.warn("Email Northbounder {} is currently disabled, rejecting alarm {}.", getName(), alarm.getUei());
+            return false;
+        }
+
         LOG.debug("Validating UEI of alarm: {}", alarm.getUei());
         if (getConfig().getUeis() == null || getConfig().getUeis().contains(alarm.getUei())) {
             LOG.debug("UEI: {}, accepted.", alarm.getUei());
@@ -152,6 +160,7 @@ public class EmailNorthbounder extends AbstractNorthbounder implements Initializ
             LOG.debug("Filters: {}, passed ? {}.", alarm.getUei(), passed);
             return passed;
         }
+
         LOG.debug("UEI: {}, rejected.", alarm.getUei());
         return false;
     }
