@@ -31,8 +31,6 @@ package org.opennms.netmgt.bsm.persistence;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-import java.util.HashSet;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -40,8 +38,9 @@ import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.MockDatabase;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
-import org.opennms.netmgt.bsm.persistence.api.BusinessService;
 import org.opennms.netmgt.bsm.persistence.api.BusinessServiceDao;
+import org.opennms.netmgt.bsm.persistence.api.BusinessServiceEntity;
+import org.opennms.netmgt.bsm.test.BusinessServiceEntityBuilder;
 import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
 import org.opennms.netmgt.dao.api.NodeDao;
@@ -53,8 +52,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.annotation.Transactional;
-
-import com.google.common.collect.Sets;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {
@@ -100,30 +97,29 @@ public class BusinessServiceDaoIT {
         assertEquals(0, m_businessServiceDao.countAll());
 
         // Create a business service
-        BusinessService bs = new BusinessService();
-        bs.setName("Web Servers");
-        bs.setAttribute("dc", "RDU");
-        HashSet<String> reductionKeys = Sets.newHashSet();
-        reductionKeys.add("TestReductionKeyA");
-        reductionKeys.add("TestReductionKeyB");
-        bs.setReductionKeys(reductionKeys);
+        BusinessServiceEntity bs = new BusinessServiceEntityBuilder()
+                .name("Web Servers")
+                .addAttribute("dc", "RDU")
+                .addReductionKey("TestReductionKeyA")
+                .addReductionKey("TestReductionKeyB")
+                .toEntity();
         m_businessServiceDao.save(bs);
         m_businessServiceDao.flush();
 
         // Read a business service
         assertEquals(bs, m_businessServiceDao.get(bs.getId()));
-        assertEquals(reductionKeys.size(), m_businessServiceDao.get(bs.getId()).getReductionKeys().size());
+        assertEquals(2, m_businessServiceDao.get(bs.getId()).getReductionKeys().size());
 
         // Update a business service
         bs.setName("Application Servers");
-        bs.setAttribute("dc", "!RDU");
-        bs.setAttribute("cd", "/");
+        bs.getAttributes().put("dc", "!RDU");
+        bs.getAttributes().put("cd", "/");
 
         // Grab the first monitored service from node 1
         OnmsMonitoredService ipService = m_databasePopulator.getNode1()
                 .getIpInterfaces().iterator().next()
                 .getMonitoredServices().iterator().next();
-        bs.addIpService(ipService);
+        bs.getIpServices().add(ipService);
 
         m_businessServiceDao.update(bs);
         m_businessServiceDao.flush();
@@ -149,13 +145,13 @@ public class BusinessServiceDaoIT {
         assertEquals("Check that there are no initial BusinessServices", 0, m_businessServiceDao.countAll());
 
         // Create a business service with an associated IP Service
-        BusinessService bs = new BusinessService();
+        BusinessServiceEntity bs = new BusinessServiceEntity();
         bs.setName("Mont Cascades");
         OnmsNode node = m_databasePopulator.getNode1();
         OnmsMonitoredService ipService = node
                 .getIpInterfaces().iterator().next()
                 .getMonitoredServices().iterator().next();
-        bs.addIpService(ipService);
+        bs.getIpServices().add(ipService);
 
         m_businessServiceDao.save(bs);
         m_businessServiceDao.flush();

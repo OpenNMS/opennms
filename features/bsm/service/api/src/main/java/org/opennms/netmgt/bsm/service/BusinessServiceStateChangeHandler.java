@@ -28,11 +28,11 @@
 
 package org.opennms.netmgt.bsm.service;
 
-import org.opennms.netmgt.bsm.persistence.api.BusinessService;
+import org.opennms.netmgt.bsm.persistence.api.BusinessServiceEntity;
 import org.opennms.netmgt.model.OnmsSeverity;
 
 public interface BusinessServiceStateChangeHandler {
 
-    public void handleBusinessServiceStateChanged(BusinessService businessService,
+    public void handleBusinessServiceStateChanged(BusinessServiceEntity businessService,
             OnmsSeverity newSeverity, OnmsSeverity prevSeverity);
 }

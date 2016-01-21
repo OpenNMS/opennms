@@ -29,38 +29,38 @@
 package org.opennms.netmgt.bsm.service.internal;
 
 import static org.junit.Assert.assertEquals;
+import static org.opennms.netmgt.bsm.test.BsmTestUtils.createAlarm;
+import static org.opennms.netmgt.bsm.test.BsmTestUtils.createSimpleHierarchy;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.List;
 
-import com.google.common.base.Throwables;
-import com.google.common.collect.Lists;
-
 import org.junit.Test;
-import org.opennms.netmgt.bsm.persistence.api.BusinessService;
+import org.opennms.netmgt.bsm.persistence.api.BusinessServiceEntity;
 import org.opennms.netmgt.bsm.service.BusinessServiceStateChangeHandler;
+import org.opennms.netmgt.bsm.test.BsmTestData;
+import org.opennms.netmgt.bsm.test.BsmTestUtils;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsSeverity;
 
+import com.google.common.collect.Lists;
+
 public class DefaultBusinessServiceStateMachineTest {
 
     @Test
     public void canMaintainState() {
-        String explicitReductionKey = "explicitReductionKey";
+        BsmTestData testSpecification = createSimpleHierarchy();
+        List<BusinessServiceEntity> bss = testSpecification.getServices();
 
-        // Create a simple hierarchy
-        OnmsMonitoredService svc1 = createService(1, "192.168.1.1", "ICMP");
-        BusinessService bs1 = new BusinessService();
-        bs1.addIpService(svc1);
-        bs1.setName("BS1");
-        bs1.addReductionKey(explicitReductionKey);
+        BusinessServiceEntity bsChild1 = testSpecification.findByName("Child 1");
+        BusinessServiceEntity bsChild2 = testSpecification.findByName("Child 2");
+        BusinessServiceEntity bsParent = testSpecification.findByName("Parent");
+        OnmsMonitoredService svc1 = testSpecification.findIpService("192.168.1.1", "ICMP");
+        OnmsMonitoredService svc2 = testSpecification.findIpService("192.168.1.2", "SNMP");
 
-        BusinessService bs2 = new BusinessService();
-        bs2.setName("BS2");
-        List<BusinessService> bss = Lists.newArrayList(bs1, bs2);
+        // manually add a reduction key to a business service to verify that this also works
+        bsChild1.addReductionKey("explicitReductionKey");
 
         // Setup the state machine
         LoggingStateChangeHandler handler = new LoggingStateChangeHandler();
@@ -70,78 +70,58 @@ public class DefaultBusinessServiceStateMachineTest {
 
         // Verify the initial state
         assertEquals(0, handler.getStateChanges().size());
-        assertEquals(DefaultBusinessServiceStateMachine.DEFAULT_SEVERITY, stateMachine.getOperationalStatus(bs1));
-        assertEquals(DefaultBusinessServiceStateMachine.DEFAULT_SEVERITY, stateMachine.getOperationalStatus(bs2));
+        for (BusinessServiceEntity eachBs : bss) {
+            assertEquals(DefaultBusinessServiceStateMachine.DEFAULT_SEVERITY, stateMachine.getOperationalStatus(eachBs));
+        }
 
-        // Now create an alarm matching the reductionKey of the ip-service
-        OnmsAlarm alarm = new OnmsAlarm();
-        alarm.setUei(EventConstants.NODE_LOST_SERVICE_EVENT_UEI);
-        alarm.setSeverity(OnmsSeverity.MINOR);
-        alarm.setReductionKey(String.format("%s::1:192.168.1.1:ICMP", EventConstants.NODE_LOST_SERVICE_EVENT_UEI));
-
-        // Pass the alarm to the state machine
-        stateMachine.handleNewOrUpdatedAlarm(alarm);
+        // Pass alarm to the state machine
+        stateMachine.handleNewOrUpdatedAlarm(createAlarm(svc1, OnmsSeverity.MINOR));
 
         // Verify the updated state
-        assertEquals(1, handler.getStateChanges().size());
-        assertEquals(OnmsSeverity.MINOR, stateMachine.getOperationalStatus(svc1));
-        assertEquals(OnmsSeverity.MINOR, stateMachine.getOperationalStatus(bs1));
-        assertEquals(DefaultBusinessServiceStateMachine.DEFAULT_SEVERITY, stateMachine.getOperationalStatus(bs2));
-
-        // Now create an alarm matching the explicit reductionKey
-        alarm = new OnmsAlarm();
-        alarm.setUei(EventConstants.NODE_LOST_SERVICE_EVENT_UEI);
-        alarm.setSeverity(OnmsSeverity.MAJOR);
-        alarm.setReductionKey(explicitReductionKey);
-
-        // Pass the alarm to the state machine
-        stateMachine.handleNewOrUpdatedAlarm(alarm);
-
-        // Verify the updated state regarding the explicit reductionKey
         assertEquals(2, handler.getStateChanges().size());
-        assertEquals(OnmsSeverity.MAJOR, stateMachine.getOperationalStatus(bs1));
-    }
+        assertEquals(OnmsSeverity.MINOR, stateMachine.getOperationalStatus(svc1));
+        assertEquals(OnmsSeverity.MINOR, stateMachine.getOperationalStatus(bsChild1));
+        assertEquals(DefaultBusinessServiceStateMachine.DEFAULT_SEVERITY, stateMachine.getOperationalStatus(svc2));
+        assertEquals(DefaultBusinessServiceStateMachine.DEFAULT_SEVERITY, stateMachine.getOperationalStatus(bsChild2));
+        assertEquals(OnmsSeverity.MINOR, stateMachine.getOperationalStatus(bsParent));
 
-    private static OnmsMonitoredService createService(final int nodeId, final String ipAddress, final String serviceName) {
-        return new OnmsMonitoredService() {
-            private static final long serialVersionUID = 8510675581667310365L;
+        // Verify that hierarchy works
+        stateMachine.handleNewOrUpdatedAlarm(BsmTestUtils.createAlarm(svc2, OnmsSeverity.MAJOR));
+        assertEquals(4, handler.getStateChanges().size());
+        assertEquals(OnmsSeverity.MINOR, stateMachine.getOperationalStatus(svc1));
+        assertEquals(OnmsSeverity.MINOR, stateMachine.getOperationalStatus(bsChild1));
+        assertEquals(OnmsSeverity.MAJOR, stateMachine.getOperationalStatus(svc2));
+        assertEquals(OnmsSeverity.MAJOR, stateMachine.getOperationalStatus(bsChild2));
+        assertEquals(OnmsSeverity.MAJOR, stateMachine.getOperationalStatus(bsParent));
 
-            public Integer getNodeId() {
-                return nodeId;
-            }
-
-            public InetAddress getIpAddress() {
-                try {
-                    return InetAddress.getByName(ipAddress);
-                } catch (UnknownHostException e) {
-                    throw Throwables.propagate(e);
-                }
-            }
-
-            public String getServiceName() {
-                return serviceName;
-            }
-
-            public String toString() {
-                return getServiceName();
-            }
-        };
+        // Verify that explicit reductionKeys work as well
+        OnmsAlarm customAlarm = new OnmsAlarm();
+        customAlarm.setUei(EventConstants.NODE_LOST_SERVICE_EVENT_UEI);
+        customAlarm.setSeverity(OnmsSeverity.CRITICAL);
+        customAlarm.setReductionKey("explicitReductionKey");
+        stateMachine.handleNewOrUpdatedAlarm(customAlarm);
+        assertEquals(6, handler.getStateChanges().size());
+        assertEquals(OnmsSeverity.MINOR, stateMachine.getOperationalStatus(svc1));
+        assertEquals(OnmsSeverity.MAJOR, stateMachine.getOperationalStatus(svc2));
+        assertEquals(OnmsSeverity.CRITICAL, stateMachine.getOperationalStatus(bsChild1));
+        assertEquals(OnmsSeverity.MAJOR, stateMachine.getOperationalStatus(bsChild2));
+        assertEquals(OnmsSeverity.CRITICAL, stateMachine.getOperationalStatus(bsParent));
     }
 
     public static class LoggingStateChangeHandler implements BusinessServiceStateChangeHandler {
         
         public static class StateChange {
-            private final BusinessService m_businessService;
+            private final BusinessServiceEntity m_businessService;
             private final OnmsSeverity m_newSeverity;
             private final OnmsSeverity m_prevSeverity;
 
-            public StateChange(BusinessService businessService, OnmsSeverity newSeverity, OnmsSeverity prevSeverity) {
+            public StateChange(BusinessServiceEntity businessService, OnmsSeverity newSeverity, OnmsSeverity prevSeverity) {
                 m_businessService = businessService;
                 m_newSeverity = newSeverity;
                 m_prevSeverity = prevSeverity;
             }
 
-            public BusinessService getBusinessService() {
+            public BusinessServiceEntity getBusinessService() {
                 return m_businessService;
             }
 
@@ -157,8 +137,8 @@ public class DefaultBusinessServiceStateMachineTest {
         private final List<StateChange> m_stateChanges = Lists.newArrayList();
 
         @Override
-        public void handleBusinessServiceStateChanged(BusinessService businessService, OnmsSeverity newSeverity,
-                OnmsSeverity prevSeverity) {
+        public void handleBusinessServiceStateChanged(BusinessServiceEntity businessService, OnmsSeverity newSeverity,
+                                                      OnmsSeverity prevSeverity) {
             m_stateChanges.add(new StateChange(businessService, newSeverity, prevSeverity));
         }
 

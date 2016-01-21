@@ -36,7 +36,7 @@ import org.opennms.features.vaadin.dashboard.model.DashletComponent;
 import org.opennms.features.vaadin.dashboard.model.DashletSpec;
 import org.opennms.netmgt.bsm.service.BusinessServiceManager;
 import org.opennms.netmgt.bsm.service.BusinessServiceSearchCriteria;
-import org.opennms.netmgt.bsm.service.model.BusinessServiceDTO;
+import org.opennms.netmgt.bsm.service.model.BusinessService;
 import org.opennms.netmgt.model.OnmsSeverity;
 
 import com.vaadin.ui.Component;
@@ -107,11 +107,11 @@ public class BSMDashlet extends AbstractDashlet {
                 public void refresh() {
                     m_verticalLayout.removeAllComponents();
 
-                    final List<BusinessServiceDTO> serviceDTOs = m_businessServiceManager.search(m_businessServiceSearchCriteria);
-                    if (serviceDTOs.isEmpty()) {
+                    final List<BusinessService> services = m_businessServiceManager.search(m_businessServiceSearchCriteria);
+                    if (services.isEmpty()) {
                         m_verticalLayout.addComponent(new Label("There are no Business Services with matching criterias found."));
                     } else {
-                        for (BusinessServiceDTO eachService : serviceDTOs) {
+                        for (BusinessService eachService : services) {
                             m_verticalLayout.addComponent(createRow(eachService));
                         }
                     }
@@ -143,11 +143,11 @@ public class BSMDashlet extends AbstractDashlet {
                 public void refresh() {
                     m_verticalLayout.removeAllComponents();
 
-                    final List<BusinessServiceDTO> serviceDTOs = m_businessServiceManager.search(m_businessServiceSearchCriteria);
-                    if (serviceDTOs.isEmpty()) {
+                    final List<BusinessService> services = m_businessServiceManager.search(m_businessServiceSearchCriteria);
+                    if (services.isEmpty()) {
                         m_verticalLayout.addComponent(new Label("There are no Business Services with matching criterias found."));
                     } else {
-                        for (BusinessServiceDTO eachService : serviceDTOs) {
+                        for (BusinessService eachService : services) {
                             m_verticalLayout.addComponent(createRow(eachService));
                         }
                     }
@@ -164,13 +164,13 @@ public class BSMDashlet extends AbstractDashlet {
     }
 
 
-    private HorizontalLayout createRow(BusinessServiceDTO serviceDTO) {
+    private HorizontalLayout createRow(BusinessService service) {
         HorizontalLayout rowLayout = new HorizontalLayout();
         rowLayout.setSizeFull();
         rowLayout.setSpacing(true);
 
-        final OnmsSeverity severity = m_businessServiceManager.getOperationalStatusForBusinessService(serviceDTO.getId());
-        Label nameLabel = new Label(serviceDTO.getName());
+        final OnmsSeverity severity = m_businessServiceManager.getOperationalStatusForBusinessService(service);
+        Label nameLabel = new Label(service.getName());
         nameLabel.setSizeFull();
         nameLabel.setStyleName("h1");
         nameLabel.addStyleName("bright");

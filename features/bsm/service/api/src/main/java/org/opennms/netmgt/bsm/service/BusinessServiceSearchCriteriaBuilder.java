@@ -34,7 +34,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.opennms.netmgt.bsm.service.model.BusinessServiceDTO;
+import org.opennms.netmgt.bsm.service.model.BusinessService;
 import org.opennms.netmgt.model.OnmsSeverity;
 
 /**
@@ -197,8 +197,8 @@ public class BusinessServiceSearchCriteriaBuilder implements BusinessServiceSear
     }
 
     @Override
-    public List<BusinessServiceDTO> apply(BusinessServiceManager businessServiceManager, List<BusinessServiceDTO> businessServiceDTOs) {
-        Stream<BusinessServiceDTO> s = businessServiceDTOs.stream();
+    public List<BusinessService> apply(BusinessServiceManager businessServiceManager, List<BusinessService> businessServiceDTOs) {
+        Stream<BusinessService> s = businessServiceDTOs.stream();
 
         for (String nameRegexp : m_nameFilters) {
             s = s.filter(p -> p.getName().matches(nameRegexp));
@@ -210,18 +210,18 @@ public class BusinessServiceSearchCriteriaBuilder implements BusinessServiceSear
         }
 
         for (Pair<CompareOperator, String> pair : m_severityFilters) {
-            s = s.filter(p -> pair.getA().check(businessServiceManager.getOperationalStatusForBusinessService(p.getId()).compareTo(OnmsSeverity.get(pair.getB()))));
+            s = s.filter(p -> pair.getA().check(businessServiceManager.getOperationalStatusForBusinessService(p).compareTo(OnmsSeverity.get(pair.getB()))));
         }
 
-        Comparator<BusinessServiceDTO> comparator = new Comparator<BusinessServiceDTO>() {
+        Comparator<BusinessService> comparator = new Comparator<BusinessService>() {
             @Override
-            public int compare(BusinessServiceDTO p1, BusinessServiceDTO p2) {
+            public int compare(BusinessService p1, BusinessService p2) {
                 switch (m_order) {
                     case Name: {
                         return p1.getName().compareTo(p2.getName());
                     }
                     case Severity: {
-                        return businessServiceManager.getOperationalStatusForBusinessService(p1.getId()).compareTo(businessServiceManager.getOperationalStatusForBusinessService(p2.getId()));
+                        return businessServiceManager.getOperationalStatusForBusinessService(p1).compareTo(businessServiceManager.getOperationalStatusForBusinessService(p2));
                     }
                     default:
                         throw new IllegalArgumentException("Order not set");

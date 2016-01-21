@@ -30,7 +30,7 @@ package org.opennms.netmgt.bsm.service;
 
 import java.util.List;
 
-import org.opennms.netmgt.bsm.service.model.BusinessServiceDTO;
+import org.opennms.netmgt.bsm.service.model.BusinessService;
 
 /**
  * Criteria for searching for business services
@@ -42,8 +42,8 @@ public interface BusinessServiceSearchCriteria {
      * This will apply the criteria represented by an instance of this interface to a list of business services and will
      * return a subset of these business services.
      * @param businessServiceManager the business service manager (required to gather the operational status)
-     * @param businessServiceDTOs the list of business services
+     * @param businessServices the list of business services
      * @return a subset of business services
      */
-    List<BusinessServiceDTO> apply(BusinessServiceManager businessServiceManager, List<BusinessServiceDTO> businessServiceDTOs);
+    List<BusinessService> apply(BusinessServiceManager businessServiceManager, List<BusinessService> businessServices);
 }
