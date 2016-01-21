@@ -55,19 +55,19 @@ public class SyslogNorthbounderConfig implements Serializable {
 
     /** The nagles delay. */
     @XmlElement(name = "nagles-delay", required = false, defaultValue = "1000")
-    private Integer m_naglesDelay = 1000;
+    private Integer m_naglesDelay;
 
     /** The batch size. */
     @XmlElement(name = "batch-size", required = false, defaultValue = "100")
-    private Integer m_batchSize = 100;
+    private Integer m_batchSize;
 
     /** The queue size. */
     @XmlElement(name = "queue-size", required = false, defaultValue = "300000")
-    private Integer m_queueSize = 300000;
+    private Integer m_queueSize;
 
     /** The message format. */
     @XmlElement(name = "message-format", required = false, defaultValue = "ALARM ID:${alarmId} NODE:${nodeLabel} ${logMsg}")
-    private String m_messageFormat = "ALARM ID:${alarmId} NODE:${nodeLabel} ${logMsg}";
+    private String m_messageFormat;
 
     /** The destinations. */
     @XmlElement(name = "destination")
@@ -119,7 +119,7 @@ public class SyslogNorthbounderConfig implements Serializable {
      * @return the message format
      */
     public String getMessageFormat() {
-        return m_messageFormat;
+        return m_messageFormat == null ? "ALARM ID:${alarmId} NODE:${nodeLabel} ${logMsg}" : m_messageFormat;
     }
 
     /**
@@ -137,7 +137,7 @@ public class SyslogNorthbounderConfig implements Serializable {
      * @return the nagles delay
      */
     public Integer getNaglesDelay() {
-        return m_naglesDelay;
+        return m_naglesDelay == null ? 1000 : m_naglesDelay;
     }
 
     /**
@@ -155,7 +155,7 @@ public class SyslogNorthbounderConfig implements Serializable {
      * @return the batch size
      */
     public Integer getBatchSize() {
-        return m_batchSize;
+        return m_batchSize == null ? 100 : m_batchSize;
     }
 
     /**
@@ -173,7 +173,7 @@ public class SyslogNorthbounderConfig implements Serializable {
      * @return the queue size
      */
     public Integer getQueueSize() {
-        return m_queueSize;
+        return m_queueSize == null ? 300000 : m_queueSize;
     }
 
     /**
@@ -191,7 +191,7 @@ public class SyslogNorthbounderConfig implements Serializable {
      * @return the boolean
      */
     public Boolean isEnabled() {
-        return m_enabled;
+        return m_enabled == null ? Boolean.FALSE : m_enabled;
     }
 
     /**
