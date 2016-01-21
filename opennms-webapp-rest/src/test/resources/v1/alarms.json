@@ -20,7 +20,9 @@
                 "logMessage": "Test Event Log Message", 
                 "nodeId": 1, 
                 "nodeLabel": "node1", 
-                "parms": "testParm=HelloWorld(string,text)", 
+                "parameters": [
+                    {"name": "testParm", "value": "HelloWorld", "type":"string" }
+                ],
                 "serviceType": {
                     "id": 1, 
                     "name": "ICMP"
@@ -37,7 +39,9 @@
             "nodeId": 1, 
             "nodeLabel": "node1", 
             "ossPrimaryKey": null, 
-            "parms": "testParm=HelloWorld(string,text)", 
+            "parameters": [
+                {"name": "testParm", "value": "HelloWorld", "type":"string" }
+            ],
             "qosAlarmState": null, 
             "serviceType": {
                 "id": 1, 
