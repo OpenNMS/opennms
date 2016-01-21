@@ -157,10 +157,10 @@ public class SyslogConfigDaoTest {
         assertNotNull(syslogDestination);
         assertEquals("test-host", syslogDestination.getName());
         assertEquals("127.0.0.2", syslogDestination.getHost());
-        assertEquals(10514, syslogDestination.getPort());
+        assertEquals(new Integer(10514), syslogDestination.getPort());
         assertEquals(SyslogDestination.SyslogProtocol.TCP, syslogDestination.getProtocol());
         assertEquals(SyslogDestination.SyslogFacility.LOCAL0, syslogDestination.getFacility());
-        assertEquals(512, syslogDestination.getMaxMessageLength());
+        assertEquals(new Integer(512), syslogDestination.getMaxMessageLength());
         assertEquals(false, syslogDestination.isSendLocalName());
         assertEquals(false, syslogDestination.isSendLocalTime());
         assertEquals(true, syslogDestination.isTruncateMessage());

@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<xs:schema version="1.0" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+  <xs:element name="email-destination" type="emailDestination"/>
+
+  <xs:element name="email-filter" type="emailFilter"/>
+
+  <xs:element name="email-northbounder-config" type="emailNorthbounderConfig"/>
+
+  <xs:complexType name="emailNorthbounderConfig">
+    <xs:sequence>
+      <xs:element name="enabled" type="xs:boolean" default="false" minOccurs="0"/>
+      <xs:element name="nagles-delay" type="xs:int" default="1000" minOccurs="0"/>
+      <xs:element name="batch-size" type="xs:int" default="100" minOccurs="0"/>
+      <xs:element name="queue-size" type="xs:int" default="300000" minOccurs="0"/>
+      <xs:element name="destination" type="emailDestination" minOccurs="0" maxOccurs="unbounded"/>
+      <xs:element name="uei" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="emailDestination">
+    <xs:sequence>
+      <xs:element name="name" type="xs:string"/>
+      <xs:element name="filter" type="emailFilter" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="emailFilter">
+    <xs:sequence>
+      <xs:element name="rule" type="xs:string"/>
+      <xs:element name="from" type="xs:string" minOccurs="0"/>
+      <xs:element name="to" type="xs:string" minOccurs="0"/>
+      <xs:element name="subject" type="xs:string" minOccurs="0"/>
+      <xs:element name="body" type="xs:string" minOccurs="0"/>
+    </xs:sequence>
+    <xs:attribute name="enabled" type="xs:boolean"/>
+    <xs:attribute name="name" type="xs:string"/>
+  </xs:complexType>
+</xs:schema>
+

@@ -58,11 +58,11 @@ public class EmailFilter {
 
     /** The enabled flag. */
     @XmlAttribute(name="enabled", required=false)
-    private boolean m_enabled = true;
+    private Boolean m_enabled;
 
     /** The filter name. */
     @XmlAttribute(name="name", required=false)
-    private String m_name = "Undefined";
+    private String m_name;
 
     /** The filter rule. */
     @XmlElement(name="rule", required=true)
@@ -107,8 +107,8 @@ public class EmailFilter {
      *
      * @return true, if is enabled
      */
-    public boolean isEnabled() {
-        return m_enabled;
+    public Boolean isEnabled() {
+        return m_enabled == null ? Boolean.TRUE : m_enabled;
     }
 
     /**
@@ -170,7 +170,7 @@ public class EmailFilter {
      *
      * @param enabled the new enabled
      */
-    public void setEnabled(boolean enabled) {
+    public void setEnabled(Boolean enabled) {
         this.m_enabled = enabled;
     }
 
