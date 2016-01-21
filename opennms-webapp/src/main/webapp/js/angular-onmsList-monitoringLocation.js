@@ -58,8 +58,12 @@
 							return [];
 						}
 						*/
-						// Always return the data as an array
-						return angular.isArray(data.location) ? data.location : [ data.location ];
+						if (status === 204) { // No content
+							return [];
+						} else {
+							// Always return the data as an array
+							return angular.isArray(data.location) ? data.location : [ data.location ];
+						}
 					})
 				},
 				'update': { 
