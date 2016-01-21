@@ -26,8 +26,9 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.web.rest.v1;
+package org.opennms.netmgt.model.resource;
 
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -40,8 +41,6 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.RrdGraphAttribute;
-
-import com.google.common.collect.Lists;
 
 @XmlRootElement(name = "resource")
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -160,7 +159,7 @@ public class ResourceDTO {
         return m_rrdGraphAttributes;
     }
 
-    void setGraphNames(final List<String> graphNames) {
+    public void setGraphNames(final List<String> graphNames) {
         m_graphNames = graphNames;
     }
 
@@ -183,7 +182,7 @@ public class ResourceDTO {
         if (depth == 0) {
             dto.setChildren(null);
         } else {
-            List<ResourceDTO> children = Lists.newLinkedList();
+            List<ResourceDTO> children = new LinkedList<>();
             for (final OnmsResource child : resource.getChildResources()) {
                 children.add(ResourceDTO.fromResource(child, depth - 1));
             }
