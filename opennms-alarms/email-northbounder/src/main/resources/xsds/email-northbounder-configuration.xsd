@@ -33,7 +33,7 @@
       <xs:element name="subject" type="xs:string" minOccurs="0"/>
       <xs:element name="body" type="xs:string" minOccurs="0"/>
     </xs:sequence>
-    <xs:attribute name="enabled" type="xs:boolean" use="required"/>
+    <xs:attribute name="enabled" type="xs:boolean"/>
     <xs:attribute name="name" type="xs:string"/>
   </xs:complexType>
 </xs:schema>

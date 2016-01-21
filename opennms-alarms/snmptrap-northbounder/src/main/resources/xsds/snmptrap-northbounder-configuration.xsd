@@ -25,11 +25,11 @@
   <xs:complexType name="snmpTrapSink">
     <xs:sequence>
       <xs:element name="name" type="xs:string"/>
-      <xs:element name="ip-address" type="xs:string"/>
-      <xs:element name="port" type="xs:int"/>
+      <xs:element name="ip-address" type="xs:string" default="127.0.0.1"/>
+      <xs:element name="port" type="xs:int" default="162" minOccurs="0"/>
       <xs:element name="v1-agent-address" type="xs:string" minOccurs="0"/>
-      <xs:element name="version" type="snmpVersion"/>
-      <xs:element name="community" type="xs:string" minOccurs="0"/>
+      <xs:element name="version" type="snmpVersion" default="V1"/>
+      <xs:element name="community" type="xs:string" default="public" minOccurs="0"/>
       <xs:element ref="mapping-group" minOccurs="0" maxOccurs="unbounded"/>
       <xs:element name="import-mappings" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
     </xs:sequence>
@@ -47,8 +47,8 @@
     <xs:sequence>
       <xs:element name="rule" type="xs:string"/>
       <xs:element name="enterprise-oid" type="xs:string"/>
-      <xs:element name="generic" type="xs:int"/>
-      <xs:element name="specific" type="xs:int"/>
+      <xs:element name="generic" type="xs:int" default="6" minOccurs="0"/>
+      <xs:element name="specific" type="xs:int" minOccurs="0"/>
       <xs:element ref="varbind" maxOccurs="unbounded"/>
     </xs:sequence>
     <xs:attribute name="name" type="xs:string"/>
