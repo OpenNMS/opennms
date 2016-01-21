@@ -172,7 +172,7 @@ public class BusinessServiceSearchCriteriaBuilder implements BusinessServiceSear
     /**
      * the severity filters
      */
-    private List<Pair<CompareOperator, String>> m_severityFilters = new ArrayList<>();
+    private List<Pair<CompareOperator, OnmsSeverity>> m_severityFilters = new ArrayList<>();
     /**
      * the attribute filters
      */
@@ -209,8 +209,8 @@ public class BusinessServiceSearchCriteriaBuilder implements BusinessServiceSear
             s = s.filter(p -> p.getAttributes().containsKey(pair.getA()) && p.getAttributes().get(pair.getA()).matches(pair.getB()));
         }
 
-        for (Pair<CompareOperator, String> pair : m_severityFilters) {
-            s = s.filter(p -> pair.getA().check(businessServiceManager.getOperationalStatusForBusinessService(p.getId()).compareTo(OnmsSeverity.get(pair.getB()))));
+        for (Pair<CompareOperator, OnmsSeverity> pair : m_severityFilters) {
+            s = s.filter(p -> pair.getA().check(businessServiceManager.getOperationalStatusForBusinessService(p).compareTo(pair.getB())));
         }
 
         Comparator<BusinessServiceDTO> comparator = new Comparator<BusinessServiceDTO>() {
@@ -260,33 +260,33 @@ public class BusinessServiceSearchCriteriaBuilder implements BusinessServiceSear
         return this;
     }
 
-    public BusinessServiceSearchCriteriaBuilder filterSeverity(CompareOperator compareOperator, String severity) {
+    public BusinessServiceSearchCriteriaBuilder filterSeverity(CompareOperator compareOperator, OnmsSeverity severity) {
         m_severityFilters.add(Pair.of(compareOperator, severity));
 
         return this;
     }
 
-    public BusinessServiceSearchCriteriaBuilder greaterOrEqualSeverity(String severity) {
+    public BusinessServiceSearchCriteriaBuilder greaterOrEqualSeverity(OnmsSeverity severity) {
         filterSeverity(CompareOperator.GreaterOrEqual, severity);
         return this;
     }
 
-    public BusinessServiceSearchCriteriaBuilder equalSeverity(String severity) {
+    public BusinessServiceSearchCriteriaBuilder equalSeverity(OnmsSeverity severity) {
         filterSeverity(CompareOperator.Equal, severity);
         return this;
     }
 
-    public BusinessServiceSearchCriteriaBuilder lowerOrEqualSeverity(String severity) {
+    public BusinessServiceSearchCriteriaBuilder lowerOrEqualSeverity(OnmsSeverity severity) {
         filterSeverity(CompareOperator.LowerOrEqual, severity);
         return this;
     }
 
-    public BusinessServiceSearchCriteriaBuilder lowerSeverity(String severity) {
+    public BusinessServiceSearchCriteriaBuilder lowerSeverity(OnmsSeverity severity) {
         filterSeverity(CompareOperator.Lower, severity);
         return this;
     }
 
-    public BusinessServiceSearchCriteriaBuilder greaterSeverity(String severity) {
+    public BusinessServiceSearchCriteriaBuilder greaterSeverity(OnmsSeverity severity) {
         filterSeverity(CompareOperator.Greater, severity);
         return this;
     }
