@@ -114,7 +114,7 @@ public class BSMConfigHelper {
             b.attribute(attributeKey, attributeValue);
         }
         if (filterBySeverity) {
-            b.greaterOrEqualSeverity(severityValue);
+            b.greaterOrEqualSeverity(OnmsSeverity.get(severityValue));
         }
 
         return b.limit(resultsLimit)
