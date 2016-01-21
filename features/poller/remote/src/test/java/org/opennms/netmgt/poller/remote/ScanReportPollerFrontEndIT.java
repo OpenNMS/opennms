@@ -41,8 +41,12 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
+import org.opennms.core.test.db.MockDatabase;
+import org.opennms.core.test.db.TemporaryDatabase;
+import org.opennms.core.test.db.TemporaryDatabaseAware;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.netmgt.dao.DatabasePopulator;
+import org.opennms.netmgt.dao.mock.MockEventIpcManager;
 import org.opennms.netmgt.model.OnmsLocationMonitor.MonitorStatus;
 import org.opennms.netmgt.model.ScanReport;
 import org.opennms.netmgt.poller.remote.PollerFrontEnd.PollerFrontEndStates;
@@ -75,8 +79,8 @@ import org.springframework.test.context.ContextConfiguration;
     "opennms.pollerBackend.monitorCheckInterval=500",
     "opennms.pollerBackend.disconnectedTimeout=3000"
 })
-@JUnitTemporaryDatabase
-public class ScanReportPollerFrontEndIT implements InitializingBean {
+@JUnitTemporaryDatabase(dirtiesContext=false,tempDbClass=MockDatabase.class)
+public class ScanReportPollerFrontEndIT implements TemporaryDatabaseAware<MockDatabase>, InitializingBean {
     private static final Logger LOG = LoggerFactory.getLogger(ScanReportPollerFrontEndIT.class);
 
     @Autowired
@@ -89,19 +93,30 @@ public class ScanReportPollerFrontEndIT implements InitializingBean {
     @Qualifier("backend")
     private PollerBackEnd m_backEnd;
 
+    @Autowired
+    private MockEventIpcManager m_eventIpcManager;
+
     private static FileAnticipator m_fileAnticipator;
 
     @Autowired
     private JdbcTemplate m_jdbcTemplate;
+
+    private MockDatabase m_db;
 
     @Override
     public void afterPropertiesSet() throws Exception {
         BeanUtils.assertAutowiring(this);
     }
 
+    @Override
+    public void setTemporaryDatabase(MockDatabase database) {
+        m_db = database;
+    }
+
     @Before
     public void setUp() throws Exception {
         m_populator.populateDatabase();
+        m_eventIpcManager.setEventWriter(m_db);
     }
 
     @Test
@@ -168,6 +183,14 @@ public class ScanReportPollerFrontEndIT implements InitializingBean {
         assertEquals(1, getMonitorCount(monitorId));
         assertEquals(1, getDisconnectedCount(monitorId));
 
+        // uei.opennms.org/test <-- Standard test event
+        // uei.opennms.org/remote/locationMonitorRegistered
+        // uei.opennms.org/remote/locationMonitorStarted
+        // uei.opennms.org/remote/unsuccessfulScanReport
+        // uei.opennms.org/remote/locationMonitorDisconnected
+        assertEquals(5, getEventCount());
+        queryEvents();
+
         m_frontEnd.stop();
     }
 
@@ -181,5 +204,13 @@ public class ScanReportPollerFrontEndIT implements InitializingBean {
 
     protected int getMonitorCount(String monitorId) {
         return m_jdbcTemplate.queryForInt("select count(*) from monitoringsystems where id=?", monitorId);
+    }
+
+    protected int getEventCount() {
+        return m_jdbcTemplate.queryForInt("select count(*) from events");
+    }
+
+    protected void queryEvents() {
+        System.out.println(m_jdbcTemplate.queryForList("select * from events"));
     }
 }

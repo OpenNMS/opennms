@@ -921,6 +921,8 @@ public class DefaultPollerBackEnd implements PollerBackEnd, SpringServiceDaemon 
             sendSuccessfulScanReportEvent(report.getId(), report.getLocation());
         } else {
             // Otherwise send the unsuccessful event
+            // TODO: Construct a failure message
+            // http://issues.opennms.org/browse/PB-30
             sendUnsuccessfulScanReportEvent(report.getId(), report.getLocation(), "Something failed.");
         }
     }
