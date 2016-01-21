@@ -63,24 +63,24 @@ public class SnmpTrapSink implements Destination {
     private String m_name;
 
     /** The target IP address. */
-    @XmlElement(name = "ip-address", required = true)
-    private String m_ipAddress = "127.0.0.1";
+    @XmlElement(name = "ip-address", required = true, defaultValue = "127.0.0.1")
+    private String m_ipAddress;
 
     /** The target port. */
-    @XmlElement(name = "port", required = false)
-    private int m_port = 162;
+    @XmlElement(name = "port", required = false, defaultValue = "162")
+    private Integer m_port;
 
     /** The SPEL expression that returns a string, to obtain the IP address used for the V1 Agent Address field (defaults to the alarm's IP address). */
     @XmlElement(name = "v1-agent-address", required = false)
-    private String m_v1AgentAddress = null;
+    private String m_v1AgentAddress;
 
     /** The SNMP version. */
-    @XmlElement(name = "version", required = true)
-    private SnmpVersion m_version = SnmpVersion.V1;
+    @XmlElement(name = "version", required = true, defaultValue = "V1")
+    private SnmpVersion m_version;
 
     /** The SNMP community. */
-    @XmlElement(name = "community", required = false)
-    private String m_community = "public";
+    @XmlElement(name = "community", required = false, defaultValue = "public")
+    private String m_community;
 
     /** The mapping groups. */
     @XmlElement(name = "mapping-group", required = false)
@@ -112,7 +112,7 @@ public class SnmpTrapSink implements Destination {
      * @return the IP address
      */
     public String getIpAddress() {
-        return m_ipAddress;
+        return m_ipAddress == null ? "127.0.0.1" : m_ipAddress;
     }
 
     /**
@@ -120,8 +120,8 @@ public class SnmpTrapSink implements Destination {
      *
      * @return the port
      */
-    public int getPort() {
-        return m_port;
+    public Integer getPort() {
+        return m_port == null ? 162 : m_port;
     }
 
     /**
@@ -139,7 +139,7 @@ public class SnmpTrapSink implements Destination {
      * @return the version
      */
     public SnmpVersion getVersion() {
-        return m_version;
+        return m_version == null ? SnmpVersion.V1 : m_version;
     }
 
     /**
@@ -148,7 +148,7 @@ public class SnmpTrapSink implements Destination {
      * @return the community
      */
     public String getCommunity() {
-        return m_community;
+        return m_community == null ? "public" : m_community;
     }
 
     /**
