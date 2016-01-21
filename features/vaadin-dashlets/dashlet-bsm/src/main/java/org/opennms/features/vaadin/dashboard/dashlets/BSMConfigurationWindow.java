@@ -54,7 +54,7 @@ public class BSMConfigurationWindow extends DashletConfigurationWindow {
      */
     private DashletSpec m_dashletSpec;
     /**
-     * The field for storing the parameters
+     * The fields for storing the parameters
      */
     private CheckBox m_filterByNameCheckBox, m_filterByAttributeCheckBox, m_filterBySeverityCheckBox;
     private TextField m_nameTextField, m_attributeKeyTextField, m_attributeValueTextField, m_limitTextField;
@@ -82,22 +82,22 @@ public class BSMConfigurationWindow extends DashletConfigurationWindow {
          * Retrieve the config...
          */
 
-        boolean filterByName = BSMConfigHelper.getBooleanForKey(getDashletSpec(), "filterByName");
-        String nameValue = BSMConfigHelper.getStringForKey(getDashletSpec(), "nameValue");
+        boolean filterByName = BSMConfigHelper.getBooleanForKey(getDashletSpec().getParameters(), "filterByName");
+        String nameValue = BSMConfigHelper.getStringForKey(getDashletSpec().getParameters(), "nameValue");
 
-        boolean filterByAttribute = BSMConfigHelper.getBooleanForKey(getDashletSpec(), "filterByAttribute");
-        String attributeKey = BSMConfigHelper.getStringForKey(getDashletSpec(), "attributeKey");
-        String attributeValue = BSMConfigHelper.getStringForKey(getDashletSpec(), "attributeValue");
+        boolean filterByAttribute = BSMConfigHelper.getBooleanForKey(getDashletSpec().getParameters(), "filterByAttribute");
+        String attributeKey = BSMConfigHelper.getStringForKey(getDashletSpec().getParameters(), "attributeKey");
+        String attributeValue = BSMConfigHelper.getStringForKey(getDashletSpec().getParameters(), "attributeValue");
 
-        boolean filterBySeverity = BSMConfigHelper.getBooleanForKey(getDashletSpec(), "filterBySeverity");
+        boolean filterBySeverity = BSMConfigHelper.getBooleanForKey(getDashletSpec().getParameters(), "filterBySeverity");
 
-        String severityValue = BSMConfigHelper.getStringForKey(getDashletSpec(), "severityValue");
+        String severityValue = BSMConfigHelper.getStringForKey(getDashletSpec().getParameters(), "severityValue");
 
         if (severityValue == null || "".equals(severityValue)) {
             severityValue = OnmsSeverity.WARNING.getLabel();
         }
 
-        int resultsLimit = BSMConfigHelper.getIntForKey(getDashletSpec(), "resultsLimit");
+        int resultsLimit = BSMConfigHelper.getIntForKey(getDashletSpec().getParameters(), "resultsLimit");
 
         /**
          * Adding the "Filter By Name" panel
@@ -338,6 +338,11 @@ public class BSMConfigurationWindow extends DashletConfigurationWindow {
         setContent(verticalLayout);
     }
 
+    /**
+     * Adds a component to a given vertical layout and applies some sizing and formatting options.
+     * @param verticalLayout the vertical layout
+     * @param component the component to be added
+     */
     private void addToComponent(VerticalLayout verticalLayout, Component component) {
         HorizontalLayout horizontalLayout = new HorizontalLayout();
         horizontalLayout.setWidth(100, Unit.PERCENTAGE);
@@ -351,6 +356,10 @@ public class BSMConfigurationWindow extends DashletConfigurationWindow {
         verticalLayout.addComponent(horizontalLayout);
     }
 
+    /**
+     * Returns the associated dashlet specification.
+     * @return the dashlet specification
+     */
     private DashletSpec getDashletSpec() {
         return m_dashletSpec;
     }

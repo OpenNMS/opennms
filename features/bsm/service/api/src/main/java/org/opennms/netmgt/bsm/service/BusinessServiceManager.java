@@ -39,7 +39,9 @@ public interface BusinessServiceManager {
 
     List<BusinessService> getAllBusinessServices();
 
-    BusinessService createBusinessService();
+    List<BusinessServiceDTO> search(BusinessServiceSearchCriteria businessServiceSearchCriteria);
+
+    Long save(BusinessServiceDTO newObject);
 
     void saveBusinessService(BusinessService newObject);
 
