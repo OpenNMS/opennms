@@ -37,7 +37,7 @@ import org.opennms.netmgt.alarmd.api.NorthboundAlarm.AlarmType;
 import org.opennms.netmgt.alarmd.api.NorthboundAlarm.x733ProbableCause;
 import org.opennms.netmgt.alarmd.api.Northbounder;
 import org.opennms.netmgt.alarmd.api.NorthbounderException;
-import org.opennms.netmgt.xml.event.Parm;
+import org.opennms.netmgt.model.OnmsEventParameter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -340,10 +340,10 @@ public abstract class AbstractNorthbounder implements Northbounder, Runnable, St
             return;
         }
         int parmOffset = 1;
-        for (Parm parm : alarm.getEventParametersCollection()) {
-            mapping.put("parm[name-#" + parmOffset + "]", parm.getParmName());
-            mapping.put("parm[#" + parmOffset + "]", parm.getValue().getContent());
-            mapping.put("parm[" + parm.getParmName() + "]", parm.getValue().getContent());
+        for (OnmsEventParameter parm : alarm.getEventParametersCollection()) {
+            mapping.put("parm[name-#" + parmOffset + "]", parm.getName());
+            mapping.put("parm[#" + parmOffset + "]", parm.getValue());
+            mapping.put("parm[" + parm.getName() + "]", parm.getValue());
             parmOffset++;
         }
     }
