@@ -40,10 +40,10 @@ import org.junit.runner.RunWith;
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
-import org.opennms.netmgt.bsm.persistence.api.BusinessService;
 import org.opennms.netmgt.bsm.persistence.api.BusinessServiceDao;
+import org.opennms.netmgt.bsm.persistence.api.BusinessServiceEntity;
+import org.opennms.netmgt.bsm.persistence.api.Identity;
 import org.opennms.netmgt.bsm.persistence.api.MostCritical;
-import org.opennms.netmgt.bsm.persistence.api.ReductionFunctionDao;
 import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.dao.api.DistPollerDao;
@@ -51,6 +51,7 @@ import org.opennms.netmgt.dao.mock.EventAnticipator;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.model.OnmsAlarm;
+import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
@@ -94,9 +95,6 @@ public class BsmdIT {
     private BusinessServiceDao m_businessServiceDao;
 
     @Autowired
-    private ReductionFunctionDao m_reductionFunctionDao;
-
-    @Autowired
     private MockEventIpcManager m_eventMgr;
 
     @Autowired
@@ -138,7 +136,7 @@ public class BsmdIT {
     @Transactional
     public void canSendEventsOnOperationalStatusChanged() throws Exception {
         // Create a business service
-        BusinessService simpleBs = createSimpleBusinessService();
+        BusinessServiceEntity simpleBs = createSimpleBusinessService();
 
         // Start the daemon
         m_bsmd.start();
@@ -168,12 +166,12 @@ public class BsmdIT {
     @Test
     @Transactional
     public void verifyReloadBsmd() throws Exception {
-        BusinessService businessService1 = createBusinessService("service1");
+        BusinessServiceEntity businessService1 = createBusinessService("service1");
         m_bsmd.start();
         Assert.assertEquals(OnmsSeverity.NORMAL, m_bsmd.getBusinessServiceStateMachine().getOperationalStatus(businessService1));
 
         // verify reload of business services works when event is send
-        BusinessService businessService2 = createBusinessService("service2");
+        BusinessServiceEntity businessService2 = createBusinessService("service2");
         Assert.assertNull(m_bsmd.getBusinessServiceStateMachine().getOperationalStatus(businessService2));
         EventBuilder ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_UEI, "test");
         ebldr.addParam(EventConstants.PARM_DAEMON_NAME, "bsmd");
@@ -189,7 +187,7 @@ public class BsmdIT {
     @Test
     public void verifyAlarmPollingIsEnabled() throws Exception {
         System.setProperty(Bsmd.POLL_INTERVAL_KEY, "10");
-        BusinessService simpleBs = createSimpleBusinessService();
+        BusinessServiceEntity simpleBs = createSimpleBusinessService();
         m_bsmd.start();
 
         // Create an alarm and do NOT send the alarm
@@ -220,14 +218,16 @@ public class BsmdIT {
         return alarm;
     }
 
-    private BusinessService createBusinessService(String name) {
-        // Create the reduction function
-        MostCritical mostCritical = new MostCritical();
-        m_reductionFunctionDao.save(mostCritical);
-
-        BusinessService bs = new BusinessService();
+    private BusinessServiceEntity createBusinessService(String name) {
+        BusinessServiceEntity bs = new BusinessServiceEntity();
         bs.setName(name);
-        bs.setReductionFunction(mostCritical);
+        bs.setReductionFunction(new MostCritical());
+
+        // Grab the first monitored service from node 1
+        OnmsMonitoredService ipService = m_databasePopulator.getNode1()
+                .getIpInterfaces().iterator().next()
+                .getMonitoredServices().iterator().next();
+        bs.addIpService(ipService, new Identity()); // TODO MVR really idetity?
 
         // Persist
         m_businessServiceDao.save(bs);
@@ -236,7 +236,7 @@ public class BsmdIT {
         return bs;
     }
 
-    private BusinessService createSimpleBusinessService() {
+    private BusinessServiceEntity createSimpleBusinessService() {
         return createBusinessService("MyBusinessService");
     }
 }

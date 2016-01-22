@@ -30,16 +30,16 @@ package org.opennms.features.topology.plugins.topo.application.browsers;
 
 import java.util.Objects;
 
+import org.opennms.features.topology.api.GraphContainer;
+import org.opennms.features.topology.api.WidgetContext;
+import org.opennms.features.topology.plugins.browsers.ToStringColumnGenerator;
+import org.opennms.features.topology.plugins.topo.application.ApplicationCriteria;
+
 import com.vaadin.data.Property;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.themes.BaseTheme;
-
-import org.opennms.features.topology.api.GraphContainer;
-import org.opennms.features.topology.api.WidgetContext;
-import org.opennms.features.topology.plugins.browsers.ToStringColumnGenerator;
-import org.opennms.features.topology.plugins.topo.application.ApplicationCriteria;
 
 public class ApplicationSelectionLinkGenerator implements Table.ColumnGenerator {
 

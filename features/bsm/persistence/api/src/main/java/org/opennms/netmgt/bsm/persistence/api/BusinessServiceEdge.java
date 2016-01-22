@@ -31,7 +31,11 @@ package org.opennms.netmgt.bsm.persistence.api;
 import java.util.Objects;
 import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
+import javax.persistence.DiscriminatorColumn;
+import javax.persistence.DiscriminatorType;
+import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -46,10 +50,13 @@ import javax.persistence.Transient;
 import org.opennms.netmgt.bsm.mapreduce.api.Edge;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.Sets;
 
 /**
  * Base edges that includes properties common to all edge types.
  *
+ * // TODO MVR it must work. There is something else wrong. We must fix this (e.g. if this class is abstract sometimes edgeDao.findAll() works, sometimes it does not)
+ * // The wiered thing is, that it only breaks after values are stored. So maybe it is a missing/wrong annotation.
  * Ideally this class would be abstract, but in some cases Hibernate may
  * try to instantiate this class.
  *
@@ -58,13 +65,16 @@ import com.google.common.base.Preconditions;
 @Entity
 @Table(name = "bsm_service_edge")
 @Inheritance(strategy = InheritanceType.JOINED)
+@DiscriminatorColumn(name="type", discriminatorType= DiscriminatorType.STRING)
+@DiscriminatorValue(value="")
 public class BusinessServiceEdge implements Edge {
 
     public static final int DEFAULT_WEIGHT = 1;
 
     private Long m_id;
 
-    private BusinessService m_businessService;
+    // The Business Service reference where this edge belongs to!
+    private BusinessServiceEntity m_businessService;
 
     private boolean m_enabled = true;
 
@@ -86,11 +96,11 @@ public class BusinessServiceEdge implements Edge {
 
     @ManyToOne(optional=false)
     @JoinColumn(name="bsm_service_id")
-    public BusinessService getBusinessService() {
+    public BusinessServiceEntity getBusinessService() {
         return m_businessService;
     }
 
-    public void setBusinessService(BusinessService service) {
+    public void setBusinessService(BusinessServiceEntity service) {
         m_businessService = Objects.requireNonNull(service);
     }
 
@@ -108,12 +118,20 @@ public class BusinessServiceEdge implements Edge {
         return m_weight;
     }
 
+    @Override
+    @Transient
+    public Set<String> getReductionKeys() {
+        // TODO MVR ???
+        return Sets.newHashSet();
+    }
+
     public void setWeight(int weight) {
         Preconditions.checkArgument(weight > 0, "weight must be strictly positive.");
         m_weight = weight;
     }
 
-    @ManyToOne
+    // TODO MVR verify cascadetype
+    @ManyToOne(cascade = {CascadeType.ALL})
     @JoinColumn(name = "bsm_map_id")
     public AbstractMapFunction getMapFunction() {
         return m_mapFunction;
@@ -121,12 +139,6 @@ public class BusinessServiceEdge implements Edge {
 
     public void setMapFunction(AbstractMapFunction mapFunction) {
         m_mapFunction = Objects.requireNonNull(mapFunction);
-    }
-
-    @Override
-    @Transient
-    public Set<String> getReductionKeys() {
-        throw new UnsupportedOperationException();
     }
 
     @Override
@@ -155,7 +167,7 @@ public class BusinessServiceEdge implements Edge {
     public String toString() {
         return com.google.common.base.Objects.toStringHelper(this)
                 .add("id", m_id)
-                .add("businessService", m_businessService)
+//                .add("businessService", m_businessService) // TODO MVR this results in a stack overflow exception
                 .add("enabled", m_enabled)
                 .add("weight", m_weight)
                 .add("mapFunction", m_mapFunction)

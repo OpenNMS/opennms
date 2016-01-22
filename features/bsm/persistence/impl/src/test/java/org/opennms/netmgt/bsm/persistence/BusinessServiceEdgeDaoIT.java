@@ -41,10 +41,10 @@ import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.MockDatabase;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
-import org.opennms.netmgt.bsm.persistence.api.BusinessServiceEdge;
-import org.opennms.netmgt.bsm.persistence.api.BusinessService;
 import org.opennms.netmgt.bsm.persistence.api.BusinessServiceDao;
+import org.opennms.netmgt.bsm.persistence.api.BusinessServiceEdge;
 import org.opennms.netmgt.bsm.persistence.api.BusinessServiceEdgeDao;
+import org.opennms.netmgt.bsm.persistence.api.BusinessServiceEntity;
 import org.opennms.netmgt.bsm.persistence.api.IPServiceEdge;
 import org.opennms.netmgt.bsm.persistence.api.Identity;
 import org.opennms.netmgt.bsm.persistence.api.MapFunctionDao;
@@ -113,7 +113,7 @@ public class BusinessServiceEdgeDaoIT {
     @Test
     public void canCreateReadUpdateAndDeleteEdges() {
         // Create a business service
-        BusinessService bs = new BusinessService();
+        BusinessServiceEntity bs = new BusinessServiceEntity();
         bs.setName("Web Servers");
         bs.setAttribute("dc", "RDU");
         bs.setReductionFunction(m_mostCritical);

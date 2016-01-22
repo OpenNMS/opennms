@@ -28,19 +28,22 @@
 
 package org.opennms.netmgt.bsm.service.internal;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.stream.Collectors;
 
-import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.netmgt.bsm.persistence.api.BusinessService;
+import org.opennms.netmgt.bsm.persistence.api.BusinessServiceChildEdge;
 import org.opennms.netmgt.bsm.persistence.api.BusinessServiceEdge;
+import org.opennms.netmgt.bsm.persistence.api.BusinessServiceEntity;
+import org.opennms.netmgt.bsm.persistence.api.IPServiceEdge;
+import org.opennms.netmgt.bsm.persistence.api.OnmsMonitoredServiceHelper;
 import org.opennms.netmgt.bsm.service.BusinessServiceStateChangeHandler;
 import org.opennms.netmgt.bsm.service.BusinessServiceStateMachine;
-import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsSeverity;
@@ -59,13 +62,15 @@ public class DefaultBusinessServiceStateMachine implements BusinessServiceStateM
     public static final OnmsSeverity MIN_SEVERITY = OnmsSeverity.NORMAL;
 
     private final List<BusinessServiceStateChangeHandler> m_handlers = Lists.newArrayList();
-    private final Map<String, Set<BusinessService>> m_reductionKeys = Maps.newHashMap();
-    private final Map<BusinessService, OnmsSeverity> m_businessServiceSeverity = Maps.newHashMap();
+    private final Map<String, Set<BusinessServiceEntity>> m_reductionKeys = Maps.newHashMap();
+    private final Map<BusinessServiceEntity, OnmsSeverity> m_businessServiceSeverity = Maps.newHashMap();
     private final Map<String, OnmsSeverity> m_reductionKeyToSeverity = Maps.newHashMap();
     private final Set<Integer> m_ipServiceIds = Sets.newHashSet();
+    private final HashMap<Integer, Set<BusinessServiceEntity>> m_levelToBusinessServiceMapping = Maps.newHashMap();
+    private final Map<BusinessServiceEntity, Set<BusinessServiceEntity>> m_rootMap = Maps.newHashMap();
 
     @Override
-    public void setBusinessServices(List<BusinessService> businessServices) {
+    public void setBusinessServices(List<BusinessServiceEntity> businessServices) {
         Objects.requireNonNull(businessServices, "businessServices cannot be null");
 
         m_rwLock.writeLock().lock();
@@ -75,25 +80,55 @@ public class DefaultBusinessServiceStateMachine implements BusinessServiceStateM
             m_businessServiceSeverity.clear();
             m_reductionKeyToSeverity.clear();
             m_ipServiceIds.clear();
+            m_levelToBusinessServiceMapping.clear();
+            m_rootMap.clear();
 
-            /* TODO: FIXME: HACK: JW, MVR
-            // Rebuild
-            for (BusinessService businessService : businessServices) {
+            // Rebuild the reduction Key set
+            for (BusinessServiceEntity businessService : businessServices) {
+                for (IPServiceEdge ipServiceEdge : businessService.getEdges(IPServiceEdge.class)) {
+                    m_ipServiceIds.add(ipServiceEdge.getIpService().getId());
+                }
                 m_businessServiceSeverity.put(businessService, DEFAULT_SEVERITY);
-                for (OnmsMonitoredService ipService : businessService.getIpServices()) {
-                    m_ipServiceIds.add(ipService.getId());
-                    for (String reductionKey : getReductionKeysFor(ipService)) {
-                        addReductionKey(reductionKey, businessService);
-                    }
+                for (String reductionKey : businessService.getAllReductionKeys()) {
+                    addReductionKey(reductionKey, businessService);
                 }
             }
-            */
+
+            // Rebuild root structure
+            businessServices.forEach(bs -> bs.getEdges(BusinessServiceChildEdge.class)
+                    .forEach(edge -> {
+                        if (m_rootMap.get(edge.getChild()) == null) {
+                            m_rootMap.put(edge.getChild(), Sets.newHashSet());
+                        }
+                        m_rootMap.get(edge.getChild()).add(edge.getBusinessService());
+                    })
+            );
+
+            // Rebuild the hierarchy
+            Set<BusinessServiceEntity> roots = getRoots(businessServices);
+            determineHierarchyLevel(0, roots);
         } finally {
             m_rwLock.writeLock().unlock();
         }
     }
 
-    private void addReductionKey(String reductionKey, BusinessService bs) {
+    protected void determineHierarchyLevel(int level, Set<BusinessServiceEntity> elements) {
+        elements.forEach(bs -> {
+            // elements can be children of multiple parents, we use the maximum level
+            bs.setLevel(Math.max(bs.getLevel() == null ? 0 : bs.getLevel(), level));
+            // Afterwards move to next level
+            determineHierarchyLevel(level + 1, bs.getChildServices());
+        });
+    }
+
+    protected Set<BusinessServiceEntity> getRoots(List<BusinessServiceEntity> businessServiceEntities) {
+        return businessServiceEntities
+                .stream()
+                .filter(eachService -> m_rootMap.get(eachService) == null || m_rootMap.get(eachService).isEmpty())
+                .collect(Collectors.toSet());
+    }
+
+    private void addReductionKey(String reductionKey, BusinessServiceEntity bs) {
         if (m_reductionKeys.containsKey(reductionKey)) {
             m_reductionKeys.get(reductionKey).add(bs);
         } else {
@@ -109,7 +144,7 @@ public class DefaultBusinessServiceStateMachine implements BusinessServiceStateM
         m_rwLock.writeLock().lock();
         try {
             // Are there any business services referencing this alarm?
-            Set<BusinessService> affectedBusinessServices = m_reductionKeys.get(alarm.getReductionKey());
+            Set<BusinessServiceEntity> affectedBusinessServices = m_reductionKeys.get(alarm.getReductionKey());
             if (affectedBusinessServices == null || affectedBusinessServices.isEmpty()) {
                 if (LOG.isDebugEnabled()) {
                     LOG.debug("No Business Service depends on alarm with reduction key: '{}'. "
@@ -122,57 +157,72 @@ public class DefaultBusinessServiceStateMachine implements BusinessServiceStateM
             LOG.debug("Alarm with id: {} and reduction key: {} has severity: {}", alarm.getId(), alarm.getReductionKey(), alarm.getSeverity());
             m_reductionKeyToSeverity.put(alarm.getReductionKey(), alarm.getSeverity());
 
+            // Get the maximum level
+            Integer maxLevel = affectedBusinessServices.stream().mapToInt(s -> s.getLevel()).max().getAsInt();
             // Propagate to the affected business services
-            for (BusinessService businessService : affectedBusinessServices) {
-                // Calculate the new severity
-                OnmsSeverity newSeverity = calculateCurrentSeverity(businessService);
-
-                // Did the severity change?
-                OnmsSeverity prevSeverity = m_businessServiceSeverity.get(businessService);
-                if (newSeverity.equals(prevSeverity)) {
-                    // The severity hasn't changed, we're done
-                    continue;
-                }
-
-                // Update the severity
-                LOG.debug("Updating state on {} from {} to {}.", businessService, prevSeverity, newSeverity);
-                m_businessServiceSeverity.put(businessService, newSeverity);
-
-                // Notify
-                synchronized(m_handlers) {
-                    for (BusinessServiceStateChangeHandler handler : m_handlers) {
-                        handler.handleBusinessServiceStateChanged(businessService, newSeverity, prevSeverity);
-                    }
-                }
+            for (int eachLevel = maxLevel; eachLevel>=0; eachLevel--) {
+                calculateStatus(eachLevel);
             }
         } finally {
             m_rwLock.writeLock().unlock();
         }
     }
 
-    private OnmsSeverity calculateCurrentSeverity(BusinessService businessService) {
-        /* TODO: FIXME: HACK: JW, MVR
-        List<OnmsSeverity> severities = Lists.newArrayList();
-        for (AbstractBusinessServiceEdge edge : businessService.getChildEdges()) {
+    private OnmsSeverity calculateCurrentSeverity(BusinessServiceEntity businessService) {
+        final List<OnmsSeverity> severities = Lists.newArrayList();
+
+        // Map
+        // TODO MVR rename to getChildEdges() ?
+        for (BusinessServiceEdge edge : businessService.getEdges()) {
             for (String reductionKey : edge.getReductionKeys()) {
                 final OnmsSeverity severity = m_reductionKeyToSeverity.get(reductionKey);
-                if (severity == null) {
-                    continue;
-                }
-                // Map
                 edge.getMapFunction().map(severity).ifPresent(s -> severities.add(s));
             }
         }
+        for (BusinessServiceChildEdge edge : businessService.getEdges(BusinessServiceChildEdge.class)) {
+            final OnmsSeverity bsSeverity = m_businessServiceSeverity.get(edge.getChild());
+            edge.getMapFunction().map(bsSeverity).ifPresent(s -> severities.add(s));
+        }
+
         // Reduce
-        OnmsSeverity severity = businessService.getReductionFunction().reduce(severities).orElse(DEFAULT_SEVERITY);
+        final OnmsSeverity severity = businessService.getReductionFunction().reduce(severities).orElse(DEFAULT_SEVERITY);
+
         // Apply lower bound, severity states like INDETERMINE and CLEARED don't always make sense
         return severity.isLessThan(MIN_SEVERITY) ? MIN_SEVERITY : severity;
-        */
-        return DEFAULT_SEVERITY;
+    }
+
+    // calculates the status for all business services on a certain level
+    private void calculateStatus(int level) {
+        Set<BusinessServiceEntity> businessServiceEntities = m_businessServiceSeverity.keySet().stream().filter(bs -> bs.getLevel() == level).collect(Collectors.toSet());
+        for (BusinessServiceEntity eachEntity : businessServiceEntities) {
+            doBusinessServiceStatusCalculation(eachEntity);
+        }
+    }
+
+    private void doBusinessServiceStatusCalculation(BusinessServiceEntity businessServiceEntity) {
+        // Calculate the new severity
+        OnmsSeverity newSeverity = calculateCurrentSeverity(businessServiceEntity);
+
+        // Did the severity change?
+        OnmsSeverity prevSeverity = m_businessServiceSeverity.get(businessServiceEntity);
+        if (newSeverity.equals(prevSeverity)) {
+            return; // The severity hasn't changed, we're done
+        }
+
+        // Update the severity
+        LOG.debug("Updating state on {} from {} to {}.", businessServiceEntity, prevSeverity, newSeverity);
+        m_businessServiceSeverity.put(businessServiceEntity, newSeverity);
+
+        // Notify
+        synchronized(m_handlers) {
+            for (BusinessServiceStateChangeHandler handler : m_handlers) {
+                handler.handleBusinessServiceStateChanged(businessServiceEntity, newSeverity, prevSeverity);
+            }
+        }
     }
 
     @Override
-    public OnmsSeverity getOperationalStatus(BusinessService businessService) {
+    public OnmsSeverity getOperationalStatus(BusinessServiceEntity businessService) {
         m_rwLock.readLock().lock();
         try {
             return m_businessServiceSeverity.get(businessService);
@@ -192,18 +242,12 @@ public class DefaultBusinessServiceStateMachine implements BusinessServiceStateM
 
             // The IP-Service resolves to multiple reduction keys, we use the one with the highest severity
             OnmsSeverity highestSeverity = DEFAULT_SEVERITY;
-            /* TODO: FIXME: HACK: JW, MVR
-            for (String reductionKey : getReductionKeysFor(ipService)) {
+            for (String reductionKey : OnmsMonitoredServiceHelper.getReductionKeys(ipService)) {
                 final OnmsSeverity severity = m_reductionKeyToSeverity.get(reductionKey);
-                if (severity != null) {
-                    if (highestSeverity == null) {
-                        highestSeverity = severity;
-                    } else if (severity.isGreaterThan(highestSeverity)) {
-                        highestSeverity = severity;
-                    }
+                if (severity != null && severity.isGreaterThan(highestSeverity)) {
+                    highestSeverity = severity;
                 }
             }
-            */
             return highestSeverity;
         } finally {
             m_rwLock.readLock().unlock();
@@ -211,7 +255,7 @@ public class DefaultBusinessServiceStateMachine implements BusinessServiceStateM
     }
 
     @Override
-    public List<BusinessService> getBusinessServices() {
+    public List<BusinessServiceEntity> getBusinessServices() {
         m_rwLock.readLock().lock();
         try {
             // Return a shallow copy
