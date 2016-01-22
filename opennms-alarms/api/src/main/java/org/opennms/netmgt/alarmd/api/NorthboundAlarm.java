@@ -38,6 +38,7 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.opennms.core.utils.InetAddressUtils;
@@ -45,6 +46,7 @@ import org.opennms.core.xml.ValidateUsing;
 import org.opennms.netmgt.events.api.EventParameterUtils;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsDistPoller;
+import org.opennms.netmgt.model.OnmsEventParameter;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.TroubleTicketState;
 import org.opennms.netmgt.xml.event.Parm;
@@ -56,6 +58,7 @@ import org.opennms.netmgt.xml.event.Parm;
  * FIXME: Most of these fields are not implemented waiting on above fix to be completed.
  * 
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
 @XmlRootElement(name="northbound-alarm")
 @ValidateUsing("northbound-alarm.xsd")
@@ -668,8 +671,10 @@ public class NorthboundAlarm implements Preservable {
     /** The event parameters map. */
     private Map<String,String> m_eventParametersMap = new HashMap<String,String>();
 
-    /** The m_event parameters collection. */
-    private List<Parm> m_eventParametersCollection = new ArrayList<Parm>();
+    /** The event parameters collection. */
+    @XmlElementWrapper(name="parameters")
+    @XmlElement(name="parameter")
+    private List<OnmsEventParameter> m_eventParametersCollection = new ArrayList<OnmsEventParameter>();
 
     /** The preserved flag. */
     @XmlElement(name="preserved", defaultValue="false")
@@ -768,8 +773,8 @@ public class NorthboundAlarm implements Preservable {
         }
 
         if (alarm.getEventParms() != null) {
-            m_eventParametersCollection.addAll(EventParameterUtils.decode(alarm.getEventParms()));
-            for (Parm parm : m_eventParametersCollection) {
+            for (Parm parm : EventParameterUtils.decode(alarm.getEventParms())) {
+                m_eventParametersCollection.add(new OnmsEventParameter(parm));
                 m_eventParametersMap.put(parm.getParmName(), parm.getValue().getContent());
             }
         }
@@ -1050,7 +1055,7 @@ public class NorthboundAlarm implements Preservable {
      *
      * @return the event parameters collection
      */
-    public List<Parm> getEventParametersCollection() {
+    public List<OnmsEventParameter> getEventParametersCollection() {
         return m_eventParametersCollection;
     }
 
@@ -1435,7 +1440,7 @@ public class NorthboundAlarm implements Preservable {
      *
      * @param eventParametersCollection the new event parameters collection
      */
-    public void setEventParametersCollection(List<Parm> eventParametersCollection) {
+    public void setEventParametersCollection(List<OnmsEventParameter> eventParametersCollection) {
         m_eventParametersCollection = eventParametersCollection;
     }
 
