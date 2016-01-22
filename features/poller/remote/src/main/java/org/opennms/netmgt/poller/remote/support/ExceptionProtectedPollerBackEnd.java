@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2010-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2010-2016 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -43,6 +43,7 @@ import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.poller.ServiceMonitorLocator;
 import org.opennms.netmgt.poller.remote.PollerBackEnd;
 import org.opennms.netmgt.poller.remote.PollerConfiguration;
+import org.opennms.netmgt.poller.remote.metadata.MetadataField;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.remoting.RemoteAccessException;
@@ -234,6 +235,16 @@ public class ExceptionProtectedPollerBackEnd implements PollerBackEnd {
     public void reportSingleScan(final ScanReport report) {
         try {
             m_delegate.reportSingleScan(report);
+        } catch (Throwable t) {
+            LOG.error("Unexpected exception thrown in remote poller backend.", t);
+            throw new RemoteAccessException("Unexpected Exception Occurred on the server.", t);
+        }
+    }
+
+    @Override
+    public Set<MetadataField> getMetadataFields() {
+        try {
+            return m_delegate.getMetadataFields();
         } catch (Throwable t) {
             LOG.error("Unexpected exception thrown in remote poller backend.", t);
             throw new RemoteAccessException("Unexpected Exception Occurred on the server.", t);

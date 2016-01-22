@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2016 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -87,6 +87,8 @@ import org.opennms.netmgt.poller.remote.PolledService;
 import org.opennms.netmgt.poller.remote.PollerBackEnd;
 import org.opennms.netmgt.poller.remote.PollerConfiguration;
 import org.opennms.netmgt.poller.remote.RemoteHostThreadLocal;
+import org.opennms.netmgt.poller.remote.metadata.MetadataField;
+import org.opennms.netmgt.poller.remote.metadata.MetadataFieldReader;
 import org.opennms.netmgt.rrd.RrdRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -924,6 +926,17 @@ public class DefaultPollerBackEnd implements PollerBackEnd, SpringServiceDaemon 
             // TODO: Construct a failure message
             // http://issues.opennms.org/browse/PB-30
             sendUnsuccessfulScanReportEvent(report.getId(), report.getLocation(), "Something failed.");
+        }
+    }
+
+    @Override
+    public Set<MetadataField> getMetadataFields() {
+        final MetadataFieldReader reader = new MetadataFieldReader();
+        try {
+            return reader.getMetadataFields();
+        } catch (final ClassNotFoundException | InstantiationException | IllegalAccessException e) {
+            LOG.warn("Failed to read metadata fields.", e);
+            return Collections.emptySet();
         }
     }
 }

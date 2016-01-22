@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2016 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -41,9 +41,10 @@ import javax.swing.SwingUtilities
 
 import org.apache.batik.swing.JSVGCanvas
 import org.opennms.netmgt.config.monitoringLocations.LocationDef
-import org.opennms.netmgt.model.ScanReport;
-import org.opennms.netmgt.model.ScanReportPollResult;
+import org.opennms.netmgt.model.ScanReport
+import org.opennms.netmgt.model.ScanReportPollResult
 import org.opennms.netmgt.poller.remote.PollerBackEnd
+import org.opennms.netmgt.poller.remote.metadata.MetadataField
 import org.opennms.netmgt.poller.remote.support.ScanReportPollerFrontEnd
 import org.opennms.poller.remote.FrontEndInvoker
 import org.opennms.poller.remote.GeodataFetcher
@@ -52,7 +53,8 @@ import org.springframework.beans.factory.InitializingBean
 import org.springframework.util.Assert
 
 class ScanGui extends AbstractGui implements ScanReportHandler, PropertyChangeListener, InitializingBean {
-    def m_metadataFieldNames = ['Customer Account Number', 'Reference ID', 'Customer Name']
+    //def m_metadataFieldNames = ['Customer Account Number', 'Reference ID', 'Customer Name']
+    def m_metadataFieldTypes = new TreeSet<MetadataField>();
     def m_locations = new ArrayList<String>()
     def m_applications = new HashMap<Set<String>>()
     def m_geoMetadata
@@ -100,17 +102,29 @@ class ScanGui extends AbstractGui implements ScanReportHandler, PropertyChangeLi
             System.err.println("location=" + name + ", applications=" + apps)
             m_applications.put(name, apps)
         }
+        m_metadataFieldTypes = m_backEnd.getMetadataFields()
         m_geoMetadata = m_geoFetcher.fetchGeodata()
         createAndShowGui()
     }
 
     public String validateFields() {
-        for (final String key : m_metadataFieldNames) {
-            final String fieldKey = getFieldKey(key)
-            final JTextField field = m_metadataFields.get(fieldKey)
-            if (field != null) {
-                if (field.getText() == null || "".equals(field.getText())) {
-                    return key + " is required!"
+        for (final MetadataField fieldType : m_metadataFieldTypes) {
+            final JTextField field = m_metadataFields.get(fieldType.getKey())
+            if (field == null) {
+                System.err.println("WARNING: missing field control for " + fieldType.getKey())
+            } else {
+                def fieldText = field.getText()
+                if (fieldType.isRequired()) {
+                    if (fieldText == null || fieldText.trim().isEmpty()) {
+                        return fieldType.description + " is required!"
+                    }
+                }
+                if (fieldType.validator != null) {
+                    def isValid = fieldType.validator.isValid(fieldText)
+                    System.err.println("validator=" + fieldType.validator.getClass().getName() + ", text=" + fieldText + ", valid=" + isValid)
+                    if (!isValid) {
+                        return fieldType.description + " is invalid!"
+                    }
                 }
             }
         }
@@ -253,12 +267,19 @@ class ScanGui extends AbstractGui implements ScanReportHandler, PropertyChangeLi
                         rowConstraints:""
                         )
 
+                for (def fieldType : m_metadataFieldTypes) {
+                    label(text:fieldType.description, font:getLabelFont(), constraints:"")
+                    def textField = textField(columns:25, constraints:"wrap", actionPerformed:updateValidation, focusGained:updateValidation, focusLost:updateValidation)
+                    m_metadataFields.put(fieldType.key, textField)
+                }
+                /*
                 for (def field : m_metadataFieldNames) {
                     final String key = getFieldKey(field)
                     label(text:field, font:getLabelFont(), constraints:"")
                     def textField = textField(toolTipText:"Enter your " + field.toLowerCase() + ".", columns:25, constraints:"wrap", actionPerformed:updateValidation, focusGained:updateValidation, focusLost:updateValidation)
                     m_metadataFields.put(key, textField)
                 }
+                */
 
                 errorLabel = label(text:"", visible:false, foreground:Color.RED, constraints:"grow, skip 1, wrap")
             }
