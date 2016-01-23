@@ -33,7 +33,7 @@ import java.util.Objects;
 
 import org.opennms.netmgt.bsm.service.BusinessServiceManager;
 import org.opennms.netmgt.bsm.service.model.BusinessService;
-import org.opennms.netmgt.model.OnmsSeverity;
+import org.opennms.netmgt.bsm.service.model.Status;
 import org.opennms.netmgt.vaadin.core.TransactionAwareBeanProxyFactory;
 
 import com.vaadin.annotations.Theme;
@@ -87,7 +87,7 @@ public class BusinessServiceMasterPageUI extends UI {
 		rowLayout.setSizeFull();
 		rowLayout.setSpacing(true);
 
-		final OnmsSeverity severity = service.getOperationalStatus();
+		final Status severity = service.getOperationalStatus();
 		Label nameLabel = new Label(service.getName());
 		nameLabel.setSizeFull();
 		nameLabel.setStyleName("h1");

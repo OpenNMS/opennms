@@ -18,7 +18,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
- * http://www.gnu.org/licenses/
+ *      http://www.gnu.org/licenses/
  *
  * For more information contact:
  *     OpenNMS(R) Licensing <license@opennms.org>
@@ -31,23 +31,75 @@ package org.opennms.netmgt.bsm.test;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.stream.Collectors;
+import java.util.Objects;
 
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.bsm.persistence.api.BusinessServiceEntity;
+import org.opennms.netmgt.bsm.persistence.api.functions.map.IdentityEntity;
+import org.opennms.netmgt.bsm.persistence.api.functions.reduce.MostCriticalEntity;
+import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 
+// TODO MVR merge better with BsmDatabasePopulator...
+// creates a simple hierarchy with 1 parent and 2 childs.
+// Each children has one ip service atached. The parent has not.
 public class BsmTestData {
 
-    private List<BusinessServiceEntity> businessServices = new ArrayList<>();
+    private final DatabasePopulator databasePopulator;
+    private final List<BusinessServiceEntity> businessServices = new ArrayList<>();
 
-    public BsmTestData(BusinessServiceEntity... entities) {
-        if (entities != null) {
-            for (BusinessServiceEntity eachEntity : entities) {
-                businessServices.add(eachEntity);
-            }
-        }
+    public BsmTestData(DatabasePopulator databasePopulator) {
+        this.databasePopulator = Objects.requireNonNull(databasePopulator);
+        createSimpleHierarchy();
+    }
+
+    private void createSimpleHierarchy() {
+        // Create a simple hierarchy
+        BusinessServiceEntity child1 = new BusinessServiceEntityBuilder()
+                .name("Child 1")
+                .addIpService(databasePopulator.getMonitoredServiceDao().get(databasePopulator.getNode1().getId(), InetAddressUtils.addr("192.168.1.1"), "SNMP"))
+                .reduceFunction(new MostCriticalEntity())
+                .toEntity();
+
+        BusinessServiceEntity child2 = new BusinessServiceEntityBuilder()
+                .name("Child 2")
+                .addIpService(databasePopulator.getMonitoredServiceDao().get(databasePopulator.getNode1().getId(), InetAddressUtils.addr("192.168.1.2"), "ICMP"))
+                .reduceFunction(new MostCriticalEntity())
+                .toEntity();
+
+        BusinessServiceEntity root = new BusinessServiceEntityBuilder()
+                .name("Parent")
+                .addChildren(child1)
+                .addChildren(child2)
+                .reduceFunction(new MostCriticalEntity())
+                .toEntity();
+
+        root.addChildServiceEdge(child1, new IdentityEntity());
+        root.addChildServiceEdge(child2, new IdentityEntity());
+
+        businessServices.add(child1);
+        businessServices.add(child2);
+        businessServices.add(root);
+    }
+
+    public BusinessServiceEntity getRoot() {
+        return businessServices.get(2);
+    }
+
+    public BusinessServiceEntity getChild1() {
+        return businessServices.get(0);
+    }
+
+    public BusinessServiceEntity getChild2() {
+        return businessServices.get(1);
+    }
+
+    public OnmsMonitoredService getServiceChild1() {
+        return getChild1().getIpServices().iterator().next();
+    }
+
+    public OnmsMonitoredService getServiceChild2() {
+        return getChild2().getIpServices().iterator().next();
     }
 
     public int getServiceCount() {
@@ -56,31 +108,5 @@ public class BsmTestData {
 
     public List<BusinessServiceEntity> getServices() {
         return Collections.unmodifiableList(businessServices);
-    }
-
-    public BusinessServiceEntity findByName(final String name) {
-        List<BusinessServiceEntity> entities = businessServices.stream().filter(s -> name.equals(s.getName())).collect(Collectors.toList());
-        if (entities.isEmpty()) {
-            throw new NoSuchElementException("No Business Service with name " + name + " found in Test Data");
-        }
-        if (entities.size() > 1) {
-            throw new IllegalArgumentException("More than one Business Service with name " + name + " found in Test Data");
-        }
-        return entities.get(0);
-    }
-
-    public OnmsMonitoredService findIpService(String ipAddress, String serviceName) {
-        List<OnmsMonitoredService> entities = businessServices
-                .stream()
-                .flatMap(eachEntity -> eachEntity.getIpServices().stream())
-                .filter(eachService -> InetAddressUtils.addr(ipAddress).equals(eachService.getIpAddress()) && eachService.getServiceName().equals(serviceName))
-                .collect(Collectors.toList());
-        if (entities.isEmpty()) {
-            throw new NoSuchElementException("No IpService with criteria found");
-        }
-        if (entities.size() > 1) {
-            throw new IllegalArgumentException("More than one IpService with criteria found");
-        }
-        return entities.get(0);
     }
 }

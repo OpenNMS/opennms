@@ -28,14 +28,40 @@
 
 package org.opennms.netmgt.bsm.persistence.impl;
 
-import org.opennms.netmgt.bsm.persistence.api.BusinessServiceEntity;
+import java.sql.SQLException;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import org.hibernate.HibernateException;
+import org.hibernate.Query;
+import org.hibernate.Session;
 import org.opennms.netmgt.bsm.persistence.api.BusinessServiceDao;
+import org.opennms.netmgt.bsm.persistence.api.BusinessServiceEdge;
+import org.opennms.netmgt.bsm.persistence.api.BusinessServiceEntity;
 import org.opennms.netmgt.dao.hibernate.AbstractDaoHibernate;
+import org.springframework.orm.hibernate3.HibernateCallback;
 
 public class BusinessServiceDaoImpl extends AbstractDaoHibernate<BusinessServiceEntity, Long> implements BusinessServiceDao {
 
     public BusinessServiceDaoImpl() {
         super(BusinessServiceEntity.class);
+    }
+
+    @Override
+    public Set<BusinessServiceEntity> findParents(BusinessServiceEntity child) {
+        final long childId =  Objects.requireNonNull(child).getId();
+        Set<BusinessServiceEntity> parents = getHibernateTemplate().execute(new HibernateCallback<Set<BusinessServiceEntity>>() {
+            @Override
+            public Set<BusinessServiceEntity> doInHibernate(Session session) throws HibernateException, SQLException {
+                Query query = session.createQuery("select edge from BusinessServiceEdge edge where type(edge) = BusinessServiceChildEdge and edge.child.id = :childId");
+                query.setParameter("childId", childId);
+                List<BusinessServiceEdge> list = query.list();
+                return list.stream().map(e -> e.getBusinessService()).collect(Collectors.toSet());
+            }
+        });
+        return parents;
     }
 
 }

@@ -38,9 +38,12 @@
   </build>
   <dependencies>
     <dependency>
-      <groupId>org.opennms.features.bsm</groupId>
-      <artifactId>org.opennms.features.bsm.persistence.api</artifactId>
-      <version>${project.version}</version>
+      <groupId>org.opennms.core</groupId>
+      <artifactId>org.opennms.core.criteria</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.google.guava</groupId>
+      <artifactId>guava</artifactId>
     </dependency>
     <!-- Test Dependencies -->
     <dependency>

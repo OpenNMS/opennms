@@ -18,7 +18,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
- * http://www.gnu.org/licenses/
+ *      http://www.gnu.org/licenses/
  *
  * For more information contact:
  *     OpenNMS(R) Licensing <license@opennms.org>
@@ -33,7 +33,10 @@ import java.util.Set;
 
 import org.opennms.netmgt.bsm.service.model.BusinessService;
 import org.opennms.netmgt.bsm.service.model.IpService;
-import org.opennms.netmgt.model.OnmsSeverity;
+import org.opennms.netmgt.bsm.service.model.Status;
+import org.opennms.netmgt.bsm.service.model.edge.Edge;
+import org.opennms.netmgt.bsm.service.model.mapreduce.MapFunction;
+import org.opennms.netmgt.bsm.service.model.mapreduce.ReductionFunction;
 
 public interface BusinessServiceManager {
 
@@ -42,6 +45,8 @@ public interface BusinessServiceManager {
     List<BusinessServiceDTO> search(BusinessServiceSearchCriteria businessServiceSearchCriteria);
 
     Long save(BusinessServiceDTO newObject);
+
+    <T extends Edge> T createEdge(Class<T> type, BusinessService child, MapFunction mapFunction);
 
     void saveBusinessService(BusinessService newObject);
 
@@ -59,9 +64,9 @@ public interface BusinessServiceManager {
 
     Set<BusinessService> getFeasibleChildServices(BusinessService service);
 
-    OnmsSeverity getOperationalStatusForBusinessService(BusinessService service);
+    Status getOperationalStatusForBusinessService(BusinessService service);
 
-    OnmsSeverity getOperationalStatusForIPService(IpService ipService);
+    Status getOperationalStatusForIPService(IpService ipService);
 
     List<IpService> getAllIpServices();
 
@@ -70,4 +75,17 @@ public interface BusinessServiceManager {
     void setIpServices(BusinessService service, Set<IpService> ipServices);
 
     void setChildServices(BusinessService service, Set<BusinessService> childServices);
+
+    /**
+     * Triggers a reload of the Business Service Daemon.
+     */
+    void triggerDaemonReload();
+
+    Set<BusinessService> getParentServices(Long id);
+
+    Status getOperationalStatusForReductionKey(String reductionKey);
+
+    List<MapFunction> listMapFunctions();
+
+    List<ReductionFunction> listReduceFunctions();
 }

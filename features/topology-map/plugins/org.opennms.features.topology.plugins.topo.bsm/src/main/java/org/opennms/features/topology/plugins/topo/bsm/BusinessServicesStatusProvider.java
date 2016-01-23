@@ -40,7 +40,6 @@ import org.opennms.features.topology.api.topo.StatusProvider;
 import org.opennms.features.topology.api.topo.VertexProvider;
 import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.netmgt.bsm.service.BusinessServiceManager;
-import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.vaadin.core.TransactionAwareBeanProxyFactory;
 
 import com.google.common.base.Function;
@@ -76,13 +75,13 @@ public class BusinessServicesStatusProvider implements StatusProvider {
 
         final Map<VertexRef, Status> statusMap = new HashMap<>();
         for (AbstractBusinessServiceVertex eachVertex : businessServiceVertices) {
-            final OnmsSeverity operationalStatus = getOperationalStatus(eachVertex);
+            final org.opennms.netmgt.bsm.service.model.Status operationalStatus = getOperationalStatus(eachVertex);
             statusMap.put(eachVertex, new DefaultStatus(operationalStatus.getLabel(), 0));
         }
         return statusMap;
     }
 
-    private OnmsSeverity getOperationalStatus(AbstractBusinessServiceVertex vertex) {
+    private org.opennms.netmgt.bsm.service.model.Status getOperationalStatus(AbstractBusinessServiceVertex vertex) {
         if (vertex instanceof BusinessServiceVertex) {
             BusinessServiceVertex bsVertex = (BusinessServiceVertex) vertex;
             return businessServiceManager.getBusinessServiceById(bsVertex.getServiceId()).getOperationalStatus();
@@ -90,6 +89,10 @@ public class BusinessServicesStatusProvider implements StatusProvider {
         if (vertex instanceof IpServiceVertex) {
             IpServiceVertex ipServiceVertex = (IpServiceVertex) vertex;
             return businessServiceManager.getOperationalStatusForIPService(ipServiceVertex.getIpServiceId());
+        }
+        if (vertex instanceof ReductionKeyVertex) {
+            ReductionKeyVertex rkVertex = (ReductionKeyVertex) vertex;
+            return businessServiceManager.getOperationalStatusForReductionKey(rkVertex.getReductionKey());
         }
         throw new IllegalStateException("Unsupported BusinessServiceVertex type: " + vertex.getClass());
     }

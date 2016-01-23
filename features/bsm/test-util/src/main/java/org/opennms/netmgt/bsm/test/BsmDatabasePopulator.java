@@ -18,7 +18,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
- * http://www.gnu.org/licenses/
+ *      http://www.gnu.org/licenses/
  *
  * For more information contact:
  *     OpenNMS(R) Licensing <license@opennms.org>
@@ -80,5 +80,9 @@ public class BsmDatabasePopulator {
                 .mapToInt(BsmTestData::getServiceCount)
                 .sum();
         return sum + createdCount;
+    }
+
+    public DatabasePopulator getDatabasePopulator() {
+        return databasePopulator;
     }
 }

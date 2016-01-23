@@ -18,7 +18,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
- * http://www.gnu.org/licenses/
+ *      http://www.gnu.org/licenses/
  *
  * For more information contact:
  *     OpenNMS(R) Licensing <license@opennms.org>
@@ -30,9 +30,12 @@ package org.opennms.netmgt.bsm.vaadin.adminpage;
 
 import java.util.Set;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 import org.opennms.netmgt.bsm.service.model.BusinessService;
 import org.opennms.netmgt.bsm.service.model.IpService;
+import org.opennms.netmgt.bsm.service.model.functions.map.Identity;
+import org.opennms.netmgt.bsm.service.model.functions.reduce.MostCritical;
 import org.opennms.netmgt.vaadin.core.StringInputDialogWindow;
 
 import com.vaadin.data.Property;
@@ -141,8 +144,15 @@ public class BusinessServiceEditWindow extends Window {
             @Override
             public void buttonClick(Button.ClickEvent event) {
                 businessService.setName(m_nameTextField.getValue().trim());
-                businessService.setIpServices((Set<IpService>) m_ipServicesTwinColSelect.getValue());
-                businessService.setChildServices((Set<BusinessService>) m_businessServicesTwinColSelect.getValue());
+
+                // TODO BSM-98: Set according to ui selection
+                ((Set<IpService>) m_ipServicesTwinColSelect.getValue())
+                        .forEach(ipService -> businessService.addIpServiceEdge(ipService, new Identity()));
+                ((Set<BusinessService>) m_businessServicesTwinColSelect.getValue())
+                        .forEach(child -> businessService.addChildEdge(child, new Identity()));
+                new HashSet<>((Collection<String>)m_reductionKeyListSelect.getItemIds())
+                        .forEach(reductionKey -> businessService.addReductionKeyEdge(reductionKey, new Identity()));
+                businessService.setReduceFunction(new MostCritical());
                 businessService.save();
                 close();
                 businessServiceMainLayout.refreshTable();
@@ -188,8 +198,8 @@ public class BusinessServiceEditWindow extends Window {
         m_ipServicesTwinColSelect.setRows(8);
         m_ipServicesTwinColSelect.setNewItemsAllowed(false);
         m_ipServicesTwinColSelect.setContainerDataSource(m_ipServicesContainer);
-        m_ipServicesTwinColSelect.setValue(businessServiceDTO.getIpServices());
-        // manually set the item caption, otherwiese .toString() is used which looks weired
+        m_ipServicesTwinColSelect.setValue(businessService.getIpServiceEdges().stream().map(edge -> edge.getIpService()).collect(Collectors.toSet()));
+        // manually set the item caption, otherwise .toString() is used which looks weired
         m_ipServicesTwinColSelect.setItemCaptionMode(AbstractSelect.ItemCaptionMode.EXPLICIT_DEFAULTS_ID);
         m_ipServicesContainer.getItemIds().forEach(new Consumer<IpServiceDTO>() {
             @Override
@@ -209,7 +219,7 @@ public class BusinessServiceEditWindow extends Window {
         m_businessServicesTwinColSelect.setRows(8);
 
         m_businessServicesTwinColSelect.setContainerDataSource(m_businessServicesContainer);
-        m_businessServicesTwinColSelect.setValue(businessService.getChildServices());
+        m_businessServicesTwinColSelect.setValue(businessService.getChildEdges().stream().map(edge -> edge.getChild()).collect(Collectors.toSet()));
 
         m_businessServicesTwinColSelect.setItemCaptionMode(AbstractSelect.ItemCaptionMode.PROPERTY);
         m_businessServicesTwinColSelect.setItemCaptionPropertyId("name");
@@ -223,6 +233,7 @@ public class BusinessServiceEditWindow extends Window {
         m_reductionKeyListSelect.setRows(8);
         m_reductionKeyListSelect.setNullSelectionAllowed(false);
         m_reductionKeyListSelect.setMultiSelect(false);
+        m_reductionKeyListSelect.addItems(businessService.getReductionKeyEdges().stream().map(edge -> edge.getReductionKey()).collect(Collectors.toSet()));
 
         /**
          * wrap the reduction key list select box in a Vaadin Panel

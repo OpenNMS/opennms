@@ -18,7 +18,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
- * http://www.gnu.org/licenses/
+ *      http://www.gnu.org/licenses/
  *
  * For more information contact:
  *     OpenNMS(R) Licensing <license@opennms.org>
@@ -30,8 +30,8 @@ package org.opennms.netmgt.bsm.service.internal;
 
 import com.google.common.base.Objects;
 import org.opennms.netmgt.bsm.service.model.IpService;
+import org.opennms.netmgt.bsm.service.model.Status;
 import org.opennms.netmgt.model.OnmsMonitoredService;
-import org.opennms.netmgt.model.OnmsSeverity;
 
 public class IpServiceImpl implements IpService {
 
@@ -71,7 +71,7 @@ public class IpServiceImpl implements IpService {
     }
 
     @Override
-    public OnmsSeverity getOperationalStatus() {
+    public Status getOperationalStatus() {
         return m_manager.getOperationalStatusForIPService(this);
     }
 
@@ -88,7 +88,6 @@ public class IpServiceImpl implements IpService {
         }
 
         final IpServiceImpl other = (IpServiceImpl) obj;
-
         return Objects.equal(this.getId(), other.getId());
     }
 

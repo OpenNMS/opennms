@@ -47,12 +47,25 @@ import javax.ws.rs.core.UriInfo;
 import org.opennms.netmgt.bsm.service.BusinessServiceManager;
 import org.opennms.netmgt.bsm.service.model.BusinessService;
 import org.opennms.netmgt.bsm.service.model.IpService;
+import org.opennms.netmgt.bsm.service.model.edge.ChildEdge;
+import org.opennms.netmgt.bsm.service.model.edge.IpServiceEdge;
+import org.opennms.netmgt.bsm.service.model.edge.ReductionKeyEdge;
+import org.opennms.netmgt.bsm.service.model.mapreduce.MapFunction;
+import org.opennms.netmgt.bsm.service.model.mapreduce.ReductionFunction;
 import org.opennms.web.rest.api.ResourceLocationFactory;
 import org.opennms.web.rest.support.RedirectHelper;
+import org.opennms.web.rest.v2.bsm.model.edge.ChildEdgeResponseDTO;
 import org.opennms.web.rest.v2.bsm.model.BusinessServiceListDTO;
 import org.opennms.web.rest.v2.bsm.model.BusinessServiceRequestDTO;
 import org.opennms.web.rest.v2.bsm.model.BusinessServiceResponseDTO;
-import org.opennms.web.rest.v2.bsm.model.IpServiceResponseDTO;
+import org.opennms.web.rest.v2.bsm.model.edge.EdgeRequestDTO;
+import org.opennms.web.rest.v2.bsm.model.edge.IpServiceEdgeResponseDTO;
+import org.opennms.web.rest.v2.bsm.model.MapFunctionDTO;
+import org.opennms.web.rest.v2.bsm.model.MapFunctionListDTO;
+import org.opennms.web.rest.v2.bsm.model.ReduceFunctionDTO;
+import org.opennms.web.rest.v2.bsm.model.ReduceFunctionListDTO;
+import org.opennms.web.rest.v2.bsm.model.edge.IpServiceResponseDTO;
+import org.opennms.web.rest.v2.bsm.model.edge.ReductionKeyEdgeResponseDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -90,14 +103,22 @@ public class BusinessServiceRestService {
         response.setId(service.getId());
         response.setName(service.getName());
         response.setAttributes(service.getAttributes());
-        response.setIpServices(service.getIpServices().stream()
-                                      .map(s -> transform(s)).collect(Collectors.toSet()));
-        response.setChildServices(service.getChildServices().stream().map(BusinessService::getId).collect(Collectors.toSet()));
         response.setLocation(ResourceLocationFactory.createBusinessServiceLocation(service.getId().toString()));
         response.setParentServices(service.getParentServices().stream().map(BusinessService::getId).collect(Collectors.toSet()));
         response.setOperationalStatus(service.getOperationalStatus());
-        response.setReductionKeys(service.getReductionKeys());
-
+        response.setReduceFunction(transform(service.getReduceFunction()));
+        response.setIpServices(service.getIpServiceEdges()
+                .stream()
+                .map(edge -> transform(edge))
+                .collect(Collectors.toSet()));
+        response.setChildren(service.getChildEdges()
+                .stream()
+                .map(edge -> transform(edge))
+                .collect(Collectors.toSet()));
+        response.setReductionKeys(service.getReductionKeyEdges()
+                .stream()
+                .map(edge -> transform(edge))
+                .collect(Collectors.toSet()));
         return Response.ok(response).build();
     }
 
@@ -106,12 +127,16 @@ public class BusinessServiceRestService {
         final BusinessService service = getManager().createBusinessService();
         service.setName(request.getName());
         service.setAttributes(request.getAttributes());
-        service.setIpServices(request.getIpServices().stream()
-                                     .map(serviceId -> getManager().getIpServiceById(serviceId))
-                                     .collect(Collectors.toSet()));
-        service.setChildServices(request.getChildServices().stream()
-                                        .map(serviceId -> getManager().getBusinessServiceById(serviceId))
-                                        .collect(Collectors.toSet()));
+        service.setReduceFunction(transform(request.getReduceFunction()));
+        request.getReductionKeys()
+                .stream()
+                .forEach(rkEdge -> service.addReductionKeyEdge(rkEdge.getValue(),transform(rkEdge.getMapFunction())));
+        request.getIpServices()
+                .stream()
+                .forEach(ipEdge -> service.addIpServiceEdge(getManager().getIpServiceById(ipEdge.getValue()), transform(ipEdge.getMapFunction())));
+        request.getChildServices()
+                .stream()
+                .forEach(childEdge -> service.addChildEdge(getManager().getBusinessServiceById(childEdge.getValue()), transform(childEdge.getMapFunction())));
         getManager().saveBusinessService(service);
 
         return Response.created(RedirectHelper.getRedirectUri(uriInfo, service.getId())).build();
@@ -132,50 +157,80 @@ public class BusinessServiceRestService {
         final BusinessService service = getManager().getBusinessServiceById(id);
         service.setName(request.getName());
         service.setAttributes(request.getAttributes());
-        service.setIpServices(request.getIpServices().stream()
-                                     .map(serviceId -> getManager().getIpServiceById(serviceId))
-                                     .collect(Collectors.toSet()));
-        service.setChildServices(request.getChildServices().stream()
-                                        .map(serviceId -> getManager().getBusinessServiceById(serviceId))
-                                        .collect(Collectors.toSet()));
+        service.setReduceFunction(transform(request.getReduceFunction()));
+        service.setReductionKeyEdges(
+                request.getReductionKeys()
+                    .stream()
+                    .map(rkEdge -> {
+                        // TODO MVR this code is already in BusinessServiceImpl and may be reused (move to business service manager?)
+                        ReductionKeyEdge edge = getManager().createEdge(ReductionKeyEdge.class, service, transform(rkEdge.getMapFunction()));
+                        edge.setReductionKey(rkEdge.getValue());
+                        return edge;
+                    })
+                    .collect(Collectors.toSet()));
+        service.setIpServiceEdges(
+                request.getIpServices()
+                        .stream()
+                        .map(ipEdge -> {
+                            // TODO MVR this code is already in BusinessServiceImpl and may be reused (move to business service manager?)
+                            IpServiceEdge edge = getManager().createEdge(IpServiceEdge.class, service, transform(ipEdge.getMapFunction()));
+                            edge.setIpService(getManager().getIpServiceById(ipEdge.getValue()));
+                            return edge;
+                        })
+                        .collect(Collectors.toSet()));
+        service.setChildEdges(
+                request.getChildServices()
+                        .stream()
+                        // TODO MVR this code is already in BusinessServiceImpl and may be reused (move to business service manager?)
+                        .map(childEdge -> {
+                            ChildEdge edge = getManager().createEdge(ChildEdge.class, service, transform(childEdge.getMapFunction()));
+                            edge.setChild(getManager().getBusinessServiceById(childEdge.getValue()));
+                            return edge;
+                        })
+                        .collect(Collectors.toSet()));
         getManager().saveBusinessService(service);
 
         return Response.noContent().build();
     }
 
     @GET
-    @Path("/ip-services/{ipServiceId}")
-    public Response getIpService(@PathParam("ipServiceId") final Integer ipServiceId) {
-        IpService ipService = getManager().getIpServiceById(ipServiceId);
-        return Response.ok().entity(transform(ipService)).build();
+    @Path("/edges/{edgeId}")
+    public Response getEdge(@PathParam("edgeId") final Integer edgeId) {
+        // TODO MVR implement me
+//        Edge edge = getManager().getEdgeById(edgeId);
+//        return Response.ok().entity(transform(edge)).build();
+        return Response.status(Response.Status.BAD_REQUEST).entity("NOT IMPLEMENTED YET").build();
     }
 
     @POST
-    @Path("{id}/ip-service/{ipServiceId}")
-    public Response attachIpService(@PathParam("id") final Long serviceId,
-                                    @PathParam("ipServiceId") final Integer ipServiceId) {
-        final BusinessService service = getManager().getBusinessServiceById(serviceId);
-        final IpService ipService = getManager().getIpServiceById(ipServiceId);
-        boolean changed = getManager().assignIpService(service, ipService);
-        if (!changed) {
-            return Response.notModified().build();
-        }
-        service.save();
-        return Response.ok().build();
+    @Path("{id}/edges")
+    public Response addEdge(@PathParam("id") final Long serviceId,
+                            final EdgeRequestDTO edgeRequest) {
+        // TODO MVR implement me
+//        final IpService ipService = getManager().getEdgeById(edgeId);
+//        boolean changed = getManager().assignIpService(service, ipService);
+//        if (!changed) {
+//            return Response.notModified().build();
+//        }
+//        service.save();
+//        return Response.ok().build();
+        return Response.status(Response.Status.BAD_REQUEST).entity("NOT IMPLEMENTED YET").build();
     }
 
     @DELETE
-    @Path("{id}/ip-service/{ipServiceId}")
-    public Response detachIpService(@PathParam("id") final Long serviceId,
-                                    @PathParam("ipServiceId") final Integer ipServiceId) {
-        final BusinessService service = getManager().getBusinessServiceById(serviceId);
-        final IpService ipService = getManager().getIpServiceById(ipServiceId);
-        boolean changed = getManager().removeIpService(service, ipService);
-        if (!changed) {
-            return Response.notModified().build();
-        }
-        service.save();
-        return Response.ok().build();
+    @Path("{id}/edges/{edgeId}")
+    public Response removeEdge(@PathParam("id") final Long serviceId,
+                                    @PathParam("edgeId") final Integer edgeId) {
+        // TODO MVR implement me
+//        final BusinessService service = getManager().getBusinessServiceById(serviceId);
+//        final IpService ipService = getManager().getEdgeById(edgeId);
+//        boolean changed = getManager().removeEdge(service, ipService);
+//        if (!changed) {
+//            return Response.notModified().build();
+//        }
+//        service.save();
+//        return Response.ok().build();
+        return Response.status(Response.Status.BAD_REQUEST).entity("NOT IMPLEMENTED YET").build();
     }
 
     @POST
@@ -185,14 +240,86 @@ public class BusinessServiceRestService {
         return Response.ok().build();
     }
 
-    private IpServiceResponseDTO transform(IpService ipService) {
-        final IpServiceResponseDTO response = new IpServiceResponseDTO();
-        response.setId(ipService.getId());
-        response.setNodeLabel(ipService.getNodeLabel());
-        response.setServiceName(ipService.getServiceName());
-        response.setIpAddress(ipService.getIpAddress());
-        response.setOperationalStatus(ipService.getOperationalStatus());
-        response.setLocation(ResourceLocationFactory.createBusinessServiceIpServiceLocation(ipService.getId()));
+    @GET
+    @Path("functions/map")
+    public Response listMapFunctions() {
+        List<MapFunction> mapFunctions = getManager().listMapFunctions();
+        if (mapFunctions == null || mapFunctions.isEmpty()) {
+            return Response.noContent().build();
+        }
+        List<MapFunctionDTO> functionList = mapFunctions.stream().map(m -> transform(m)).collect(Collectors.toList());
+        return Response.ok().entity(new MapFunctionListDTO(functionList)).build();
+    }
+
+    @GET
+    @Path("functions/reduce")
+    public Response listReduceFunctions() {
+        List<ReductionFunction> reduceFunctions = getManager().listReduceFunctions();
+        if (reduceFunctions == null || reduceFunctions.isEmpty()) {
+            return Response.noContent().build();
+        }
+        List<ReduceFunctionDTO> functionList = reduceFunctions.stream().map(r -> transform(r)).collect(Collectors.toList());
+        return Response.ok().entity(new ReduceFunctionListDTO(functionList)).build();
+    }
+
+    private IpServiceResponseDTO transform(IpService input) {
+        IpServiceResponseDTO response = new IpServiceResponseDTO();
+        response.setId(input.getId());
+        response.setNodeLabel(input.getNodeLabel());
+        response.setServiceName(input.getServiceName());
+        response.setReductionKeys(input.getReductionKeys());
+        response.setIpAddress(input.getIpAddress());
         return response;
+    }
+
+    private IpServiceEdgeResponseDTO transform(IpServiceEdge edge) {
+        final IpServiceEdgeResponseDTO response = new IpServiceEdgeResponseDTO();
+        response.setId(edge.getId());
+        response.setOperationalStatus(edge.getOperationalStatus());
+        response.setLocation(ResourceLocationFactory.createBusinessServiceEdgeLocation(edge.getSource().getId(), edge.getId()));
+        response.setReductionKeys(edge.getReductionKeys());
+        response.setMapFunction(transform(edge.getMapFunction()));
+        response.setIpService(transform(edge.getIpService()));
+        return response;
+    }
+
+    private ChildEdgeResponseDTO transform(ChildEdge edge) {
+        final ChildEdgeResponseDTO response = new ChildEdgeResponseDTO();
+        response.setId(edge.getId());
+        response.setChildId(edge.getChild().getId());
+        response.setOperationalStatus(edge.getOperationalStatus());
+        response.setLocation(ResourceLocationFactory.createBusinessServiceEdgeLocation(edge.getSource().getId(), edge.getId()));
+        response.setReductionKeys(edge.getReductionKeys());
+        response.setMapFunction(transform(edge.getMapFunction()));
+        return response;
+    }
+
+    private ReductionKeyEdgeResponseDTO transform(ReductionKeyEdge edge) {
+        final ReductionKeyEdgeResponseDTO response = new ReductionKeyEdgeResponseDTO();
+        response.setId(edge.getId());
+        response.setOperationalStatus(edge.getOperationalStatus());
+        response.setReductionKey(edge.getReductionKey());
+        response.setLocation(ResourceLocationFactory.createBusinessServiceEdgeLocation(edge.getSource().getId(), edge.getId()));
+        response.setReductionKeys(edge.getReductionKeys());
+        response.setMapFunction(transform(edge.getMapFunction()));
+        return response;
+    }
+
+    private MapFunction transform(MapFunctionDTO input) {
+        return input.getType().fromDTO(input);
+    }
+
+    private MapFunctionDTO transform(MapFunction input) {
+        MapFunctionDTO.Type type = MapFunctionDTO.Type.valueOf(input.getClass());
+        return type.toDTO(input);
+    }
+
+    private ReduceFunctionDTO transform(ReductionFunction input) {
+        ReduceFunctionDTO.Type type = ReduceFunctionDTO.Type.valueOf(input.getClass());
+        return type.toDTO(input);
+    }
+
+    private ReductionFunction transform(ReduceFunctionDTO input) {
+        return input.getType().fromDTO(input);
     }
 }

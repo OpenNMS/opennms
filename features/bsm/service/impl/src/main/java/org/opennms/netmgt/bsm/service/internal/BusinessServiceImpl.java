@@ -18,7 +18,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
- * http://www.gnu.org/licenses/
+ *      http://www.gnu.org/licenses/
  *
  * For more information contact:
  *     OpenNMS(R) Licensing <license@opennms.org>
@@ -28,15 +28,29 @@
 
 package org.opennms.netmgt.bsm.service.internal;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.opennms.netmgt.bsm.persistence.api.BusinessServiceChildEdge;
+import org.opennms.netmgt.bsm.persistence.api.BusinessServiceEdge;
 import org.opennms.netmgt.bsm.persistence.api.BusinessServiceEntity;
+import org.opennms.netmgt.bsm.persistence.api.functions.reduce.AbstractReductionFunctionEntity;
+import org.opennms.netmgt.bsm.service.internal.edge.AbstractEdge;
+import org.opennms.netmgt.bsm.service.internal.edge.ChildEdgeImpl;
+import org.opennms.netmgt.bsm.service.internal.edge.IpServiceEdgeImpl;
+import org.opennms.netmgt.bsm.service.internal.edge.ReductionKeyEdgeImpl;
 import org.opennms.netmgt.bsm.service.model.BusinessService;
 import org.opennms.netmgt.bsm.service.model.IpService;
-import org.opennms.netmgt.model.OnmsSeverity;
+import org.opennms.netmgt.bsm.service.model.Status;
+import org.opennms.netmgt.bsm.service.model.edge.ChildEdge;
+import org.opennms.netmgt.bsm.service.model.edge.Edge;
+import org.opennms.netmgt.bsm.service.model.edge.IpServiceEdge;
+import org.opennms.netmgt.bsm.service.model.edge.ReductionKeyEdge;
+import org.opennms.netmgt.bsm.service.model.mapreduce.MapFunction;
+import org.opennms.netmgt.bsm.service.model.mapreduce.ReductionFunction;
 
 
 public class BusinessServiceImpl implements BusinessService {
@@ -81,65 +95,13 @@ public class BusinessServiceImpl implements BusinessService {
     }
 
     @Override
-    public void addAttribute(String key, String value) {
-        this.getAttributes().put(key, value);
-    }
-
-    @Override
-    public String removeAttribute(String key) {
-        return this.getAttributes().remove(key);
-    }
-
-    @Override
-    public Set<IpService> getIpServices() {
-        return m_entity.getIpServices().stream()
-                       .map(s -> new IpServiceImpl(m_manager, s))
-                       .collect(Collectors.toSet());
-    }
-
-    @Override
-    public void setIpServices(Set<IpService> ipServices) {
-        m_manager.setIpServices(this, ipServices);
-    }
-
-    @Override
-    public void addIpService(IpService ipService) {
-        m_manager.assignIpService(this, ipService);
-    }
-
-    @Override
-    public void removeIpService(IpService ipService) {
-        m_manager.removeIpService(this, ipService);
-    }
-
-    @Override
     public Set<BusinessService> getChildServices() {
-        return m_entity.getChildServices().stream()
-                       .map(s -> new BusinessServiceImpl(m_manager, s))
-                       .collect(Collectors.toSet());
+        return getChildEdges().stream().map(edge -> edge.getChild()).collect(Collectors.toSet());
     }
-
-    @Override
-    public void setChildServices(final Set<BusinessService> childServices) {
-        m_manager.setChildServices(this, childServices);
-    }
-
-    @Override
-    public void addChildService(BusinessService childService) {
-        m_manager.assignChildService(this, childService);
-    }
-
-    @Override
-    public void removeChildService(BusinessService childService) {
-        m_manager.removeChildService(this, childService);
-    }
-
 
     @Override
     public Set<BusinessService> getParentServices() {
-        return m_entity.getParentServices().stream()
-                       .map(s -> new BusinessServiceImpl(m_manager, s))
-                       .collect(Collectors.toSet());
+        return m_manager.getParentServices(getId());
     }
 
     @Override
@@ -153,19 +115,115 @@ public class BusinessServiceImpl implements BusinessService {
     }
 
     @Override
-    public Set<String> getReductionKeys() {
-        return m_entity.getReductionKeys();
-
-    }
-
-    @Override
-    public void setReductionKeys(Set<String> reductionKeySet) {
-        m_entity.setReductionKeys(reductionKeySet);
-    }
-
-    @Override
-    public OnmsSeverity getOperationalStatus() {
+    public Status getOperationalStatus() {
         return m_manager.getOperationalStatusForBusinessService(this);
+    }
+
+    @Override
+    public void setLevel(int level) {
+        getEntity().setLevel(level);
+    }
+
+    public int getLevel() {
+        return getEntity().getLevel();
+    }
+
+    @Override
+    public ReductionFunction getReduceFunction() {
+        return new ReduceFunctionMapper().toServiceFunction(getEntity().getReductionFunction());
+    }
+
+    @Override
+    public void setReduceFunction(ReductionFunction reductionFunction) {
+        AbstractReductionFunctionEntity reductionFunctionEntity = new ReduceFunctionMapper().toPersistenceFunction(reductionFunction);
+        getEntity().setReductionFunction(reductionFunctionEntity);
+    }
+
+    @Override
+    public Set<Edge> getEdges() {
+        Set<org.opennms.netmgt.bsm.service.model.edge.Edge> edges = Sets.newHashSet();
+        edges.addAll(getIpServiceEdges());
+        edges.addAll(getReductionKeyEdges());
+        edges.addAll(getChildEdges());
+        return edges;
+    }
+
+    @Override
+    public Set<org.opennms.netmgt.bsm.service.model.edge.IpServiceEdge> getIpServiceEdges() {
+        return m_entity.getIpServiceEdges()
+                .stream()
+                .map(edge -> new IpServiceEdgeImpl(m_manager, edge))
+                .collect(Collectors.toSet());
+    }
+
+    @Override
+    public void setIpServiceEdges(Set<IpServiceEdge> ipServiceEdges) {
+        Set<BusinessServiceEdge> allEdges = m_entity.getEdges();
+        allEdges.removeAll(m_entity.getIpServiceEdges());
+        allEdges.addAll(ipServiceEdges.stream().map(edge -> ((IpServiceEdgeImpl) edge).getEntity()).collect(Collectors.toSet()));
+        m_entity.setEdges(allEdges);
+    }
+
+    @Override
+    public void addIpServiceEdge(IpService ipService, MapFunction mapFunction) {
+        IpServiceEdge edge = addEdge(IpServiceEdge.class, mapFunction);
+        edge.setIpService(ipService);
+    }
+
+    @Override
+    public Set<ReductionKeyEdge> getReductionKeyEdges() {
+        return m_entity.getReductionKeyEdges()
+                .stream()
+                .map(edge -> new ReductionKeyEdgeImpl(m_manager, edge))
+                .collect(Collectors.toSet());
+    }
+
+    @Override
+    public void setReductionKeyEdges(Set<ReductionKeyEdge> reductionKeyEdges) {
+        Set<BusinessServiceEdge> allEdges = m_entity.getEdges();
+        allEdges.removeAll(m_entity.getReductionKeyEdges());
+        allEdges.addAll(reductionKeyEdges.stream().map(edge -> ((ReductionKeyEdgeImpl) edge).getEntity()).collect(Collectors.toSet()));
+        m_entity.setEdges(allEdges);
+    }
+
+    @Override
+    public void addReductionKeyEdge(String reductionKey, MapFunction mapFunction) {
+        ReductionKeyEdge edge = addEdge(ReductionKeyEdge.class, mapFunction);
+        edge.setReductionKey(reductionKey);
+    }
+
+    @Override
+    public Set<ChildEdge> getChildEdges() {
+        return m_entity.getChildEdges()
+                .stream()
+                .map(edge -> new ChildEdgeImpl(m_manager, edge))
+                .collect(Collectors.toSet());
+    }
+
+    @Override
+    public void setChildEdges(Set<ChildEdge> childEdges) {
+        Set<BusinessServiceEdge> allEdges = m_entity.getEdges();
+        allEdges.removeAll(m_entity.getChildEdges());
+        allEdges.addAll(childEdges.stream().map(edge -> ((ChildEdgeImpl) edge).getEntity()).collect(Collectors.toSet()));
+        m_entity.setEdges(allEdges);
+    }
+
+    @Override
+    public void addChildEdge(BusinessService child, MapFunction mapFunction) {
+        ChildEdge childEdge = addEdge(ChildEdge.class, mapFunction);
+        childEdge.setChild(child);
+    }
+
+    @Override
+    public void removeChildEdge(BusinessService childService) {
+        Set<BusinessServiceChildEdge> childEdges = getEntity().getChildEdges();
+        List<BusinessServiceChildEdge> abc = childEdges
+                .stream()
+                .filter(edge -> edge.getChild().equals(((BusinessServiceImpl) childService).getEntity()))
+                .collect(Collectors.toList());
+        for (BusinessServiceChildEdge e : abc) {
+            getEntity().getEdges().remove(e);
+        }
     }
 
     @Override
@@ -204,10 +262,14 @@ public class BusinessServiceImpl implements BusinessService {
                 .add("id", this.getId())
                 .add("name", this.getName())
                 .add("attributes", this.getAttributes())
-                .add("ipServices", this.getIpServices())
-                .add("childServices", this.getChildServices())
-                .add("reductionKeys", this.getReductionKeys())
+                .add("edges", this.getEdges())
                 .add("operationalStatus", this.getOperationalStatus())
                 .toString();
+    }
+
+    private <T extends Edge> T addEdge(Class<T> type, MapFunction mapFunction) {
+        T edge = m_manager.createEdge(type, this, mapFunction);
+        m_entity.getEdges().add(((AbstractEdge)edge).getEntity());
+        return edge;
     }
 }

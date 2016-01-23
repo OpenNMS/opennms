@@ -45,10 +45,10 @@ import org.opennms.netmgt.bsm.persistence.api.BusinessService;
 import org.opennms.netmgt.bsm.persistence.api.BusinessServiceDao;
 import org.opennms.netmgt.bsm.persistence.api.BusinessServiceEdgeDao;
 import org.opennms.netmgt.bsm.persistence.api.IPServiceEdge;
-import org.opennms.netmgt.bsm.persistence.api.Identity;
-import org.opennms.netmgt.bsm.persistence.api.MapFunctionDao;
-import org.opennms.netmgt.bsm.persistence.api.MostCritical;
-import org.opennms.netmgt.bsm.persistence.api.ReductionFunctionDao;
+import org.opennms.netmgt.bsm.persistence.api.functions.map.IdentityEntity;
+import org.opennms.netmgt.bsm.persistence.api.functions.map.MapFunctionDao;
+import org.opennms.netmgt.bsm.persistence.api.functions.reduce.MostCriticalEntity;
+import org.opennms.netmgt.bsm.persistence.api.functions.reduce.ReductionFunctionDao;
 import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.OnmsMonitoredService;
@@ -89,9 +89,9 @@ public class IPServiceEdgeDaoIT {
     @Autowired
     private NodeDao m_nodeDao;
 
-    MostCritical m_mostCritical;
+    private MostCriticalEntity m_mostCritical;
 
-    Identity m_identity;
+    private IdentityEntity m_identity;
 
     @BeforeClass
     public static void classSetUp() {
@@ -104,11 +104,11 @@ public class IPServiceEdgeDaoIT {
         BeanUtils.assertAutowiring(this);
         m_databasePopulator.populateDatabase();
 
-        m_mostCritical = new MostCritical();
+        m_mostCritical = new MostCriticalEntity();
         m_reductionFunctionDao.save(m_mostCritical);
         m_reductionFunctionDao.flush();
 
-        m_identity = new Identity();
+        m_identity = new IdentityEntity();
         m_mapFunctionDao.save(m_identity);
         m_mapFunctionDao.flush();
     }
@@ -145,7 +145,7 @@ public class IPServiceEdgeDaoIT {
 
         // We should have a single business service with a single IP service associated
         assertEquals(1, m_businessServiceDao.countAll());
-        assertEquals(1, m_businessServiceDao.get(bs.getId()).getEdges(IPServiceEdge.class).size());
+        assertEquals(1, m_businessServiceDao.get(bs.getId()).getIpServiceEdges().size());
 
         // Now delete the node
         m_nodeDao.delete(node);
@@ -154,6 +154,6 @@ public class IPServiceEdgeDaoIT {
         // The business service should still be present, but the IP service should have been deleted
         // by the foreign key constraint
         assertEquals(1, m_businessServiceDao.countAll());
-        assertEquals(0, m_businessServiceDao.get(bs.getId()).getEdges(IPServiceEdge.class).size());
+        assertEquals(0, m_businessServiceDao.get(bs.getId()).getIpServiceEdges().size());
     }
 }

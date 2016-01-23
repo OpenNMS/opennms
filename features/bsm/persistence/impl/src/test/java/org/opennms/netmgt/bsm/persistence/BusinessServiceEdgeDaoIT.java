@@ -46,10 +46,10 @@ import org.opennms.netmgt.bsm.persistence.api.BusinessService;
 import org.opennms.netmgt.bsm.persistence.api.BusinessServiceDao;
 import org.opennms.netmgt.bsm.persistence.api.BusinessServiceEdgeDao;
 import org.opennms.netmgt.bsm.persistence.api.IPServiceEdge;
-import org.opennms.netmgt.bsm.persistence.api.Identity;
-import org.opennms.netmgt.bsm.persistence.api.MapFunctionDao;
-import org.opennms.netmgt.bsm.persistence.api.MostCritical;
-import org.opennms.netmgt.bsm.persistence.api.ReductionFunctionDao;
+import org.opennms.netmgt.bsm.persistence.api.functions.map.IdentityEntity;
+import org.opennms.netmgt.bsm.persistence.api.functions.map.MapFunctionDao;
+import org.opennms.netmgt.bsm.persistence.api.functions.reduce.MostCriticalEntity;
+import org.opennms.netmgt.bsm.persistence.api.functions.reduce.ReductionFunctionDao;
 import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.test.JUnitConfigurationEnvironment;
@@ -87,9 +87,9 @@ public class BusinessServiceEdgeDaoIT {
     @Autowired
     private MapFunctionDao m_mapFunctionDao;
 
-    private MostCritical m_mostCritical;
+    private MostCriticalEntity m_mostCritical;
 
-    private Identity m_identity;
+    private IdentityEntity m_identity;
 
     @BeforeClass
     public static void setUpClass() {
@@ -101,11 +101,11 @@ public class BusinessServiceEdgeDaoIT {
         BeanUtils.assertAutowiring(this);
         m_databasePopulator.populateDatabase();
 
-        m_mostCritical = new MostCritical();
+        m_mostCritical = new MostCriticalEntity();
         m_reductionFunctionDao.save(m_mostCritical);
         m_reductionFunctionDao.flush();
 
-        m_identity = new Identity();
+        m_identity = new IdentityEntity();
         m_mapFunctionDao.save(m_identity);
         m_mapFunctionDao.flush();
     }

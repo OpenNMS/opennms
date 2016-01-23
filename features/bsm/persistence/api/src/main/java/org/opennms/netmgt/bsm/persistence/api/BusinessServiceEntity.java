@@ -51,6 +51,8 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import org.opennms.netmgt.bsm.persistence.api.functions.map.AbstractMapFunctionEntity;
+import org.opennms.netmgt.bsm.persistence.api.functions.reduce.AbstractReductionFunctionEntity;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 
 import com.google.common.collect.Maps;
@@ -71,20 +73,19 @@ public class BusinessServiceEntity {
 
     private Set<OnmsMonitoredService> m_ipServices = Sets.newLinkedHashSet();
 
-    private Set<BusinessServiceEntity> m_childServices = Sets.newLinkedHashSet();
-
-    private Set<BusinessServiceEntity> m_parentServices = Sets.newLinkedHashSet();
+    private AbstractReductionFunctionEntity m_reductionFunction;
 
     /** The level in the hierarchy.
-     * If 0 the business service should not have any parents. */
-    private Integer level;
+     * If 0 the business service should not have any parents.
+     * If -1 the business service level has not been initialized*/
+    private int level = -1;
 
     public void setLevel(int level) {
         this.level = level;
     }
 
     @Transient
-    public Integer getLevel() {
+    public int getLevel() {
         return level;
     }
 
@@ -130,8 +131,10 @@ public class BusinessServiceEntity {
         m_attributes.put(key, value);
     }
 
-    public String removeAttribute(String key) {
-        return m_attributes.remove(key);
+    // TODO MVR verify the cascade type
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy="businessService", orphanRemoval = true)
+    public Set<BusinessServiceEdge> getEdges() {
+        return m_edges;
     }
 
     @OneToMany(fetch = FetchType.EAGER)
@@ -153,36 +156,38 @@ public class BusinessServiceEntity {
             .collect(Collectors.toSet());
     }
 
-    @ElementCollection(fetch = FetchType.EAGER)
-    @JoinTable(name = "bsm_service_reductionkeys", joinColumns = @JoinColumn(name = "bsm_service_id", referencedColumnName = "id"))
-    @Column(name = "reductionkey", nullable = false)
-    public Set<String> getReductionKeys() {
-        return m_reductionKeys;
-    }
-
-    public void setReductionKeys(Set<String> m_reductionKeys) {
-        this.m_reductionKeys = m_reductionKeys;
-    }
-
-    public void addReductionKey(String reductionKey) {
-        m_reductionKeys.add(reductionKey);
+    @Transient
+    public Set<BusinessServiceChildEdge> getChildEdges() {
+        return getEdges(BusinessServiceChildEdge.class);
     }
 
     @Transient
-    public Set<String> getAllReductionKeys() {
-        Set<String> allReductionKeys = Sets.newHashSet();
-        for (OnmsMonitoredService ipService : getIpServices()) {
-            allReductionKeys.addAll(OnmsMonitoredServiceHelper.getReductionKeys(ipService));
-        }
-        allReductionKeys.addAll(getReductionKeys());
-        return allReductionKeys;
+    public Set<SingleReductionKeyEdge> getReductionKeyEdges() {
+        return getEdges(SingleReductionKeyEdge.class);
     }
 
-    @ManyToMany(fetch = FetchType.EAGER,
-                cascade = CascadeType.ALL)
-    @JoinTable(name = "bsm_service_children",
-               joinColumns = @JoinColumn(name = "bsm_service_parent", referencedColumnName = "id"),
-               inverseJoinColumns = @JoinColumn(name="bsm_service_child", referencedColumnName = "id"))
+    @Transient
+    @SuppressWarnings("unchecked")
+    private <T extends BusinessServiceEdge> Set<T> getEdges(Class<T> type) {
+        return getEdges().stream()
+                .filter(e -> type.isInstance(e))
+                .map(e -> (T)e)
+                .collect(Collectors.toSet());
+    }
+
+    // TODO MVR verify the cascade type
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "bsm_reduce_id")
+    public AbstractReductionFunctionEntity getReductionFunction() {
+        return m_reductionFunction;
+    }
+
+    public void setReductionFunction(AbstractReductionFunctionEntity reductionFunction) {
+        m_reductionFunction = Objects.requireNonNull(reductionFunction);
+    }
+
+    // Convenient method to retrieve all Business Services children
+    @Transient
     public Set<BusinessServiceEntity> getChildServices() {
         return m_childServices;
     }
@@ -213,13 +218,15 @@ public class BusinessServiceEntity {
             return false;
         }
         final BusinessServiceEntity other = (BusinessServiceEntity) obj;
-        return Objects.equals(getId(), other.getId())
-                && Objects.equals(getName(), other.getName());
+        return Objects.equals(m_id, other.m_id)
+                && Objects.equals(m_name, other.m_name)
+                && Objects.equals(m_attributes, other.m_attributes)
+                && Objects.equals(m_edges, other.m_edges);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(m_id, m_name);
+        return com.google.common.base.Objects.hashCode(m_id, m_name, m_attributes, m_edges);
     }
 
     @Override
@@ -229,13 +236,37 @@ public class BusinessServiceEntity {
                 .add("id", m_id)
                 .add("name", m_name)
                 .add("attributes", m_attributes)
-                .add("childServices", m_childServices)
-                .add("reductionKeys", m_reductionKeys)
+                .add("edges", m_edges)
                 .toString();
     }
 
-    public BusinessServiceEntity addChildren(BusinessServiceEntity children) {
-        getChildServices().add(Objects.requireNonNull(children));
+    // Convinent method to add a child edge
+    public BusinessServiceEntity addChildServiceEdge(BusinessServiceEntity children, AbstractMapFunctionEntity mapFunction) {
+        BusinessServiceChildEdge edge = new BusinessServiceChildEdge();
+        edge.setBusinessService(this);
+        edge.setChild(children);
+        edge.setMapFunction(Objects.requireNonNull(mapFunction));
+        addEdge(edge);
+        return this;
+    }
+
+    // Convinent method to add an ipservice edge
+    public BusinessServiceEntity addIpServiceEdge(OnmsMonitoredService ipService, AbstractMapFunctionEntity mapFunction) {
+        IPServiceEdge edge = new IPServiceEdge();
+        edge.setBusinessService(this);
+        edge.setIpService(ipService);
+        edge.setMapFunction(Objects.requireNonNull(mapFunction));
+        addEdge(edge);
+        return this;
+    }
+
+    // Convinent method to add a reduction key edge
+    public BusinessServiceEntity addReductionKeyEdge(String reductionKey, AbstractMapFunctionEntity mapFunction) {
+        SingleReductionKeyEdge edge = new SingleReductionKeyEdge();
+        edge.setBusinessService(this);
+        edge.setReductionKey(reductionKey);
+        edge.setMapFunction(Objects.requireNonNull(mapFunction));
+        addEdge(edge);
         return this;
     }
 }

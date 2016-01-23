@@ -44,8 +44,9 @@ import org.opennms.features.topology.api.topo.GraphProvider;
 import org.opennms.features.topology.api.topo.SimpleEdgeProvider;
 import org.opennms.netmgt.bsm.persistence.api.BusinessServiceEntity;
 import org.opennms.netmgt.bsm.service.BusinessServiceManager;
-import org.opennms.netmgt.bsm.service.model.BusinessServiceDTO;
-import org.opennms.netmgt.bsm.service.model.IpServiceDTO;
+import org.opennms.netmgt.bsm.service.model.BusinessService;
+import org.opennms.netmgt.bsm.service.model.edge.IpServiceEdge;
+import org.opennms.netmgt.bsm.service.model.edge.ReductionKeyEdge;
 import org.opennms.netmgt.vaadin.core.TransactionAwareBeanProxyFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -106,13 +107,24 @@ public class BusinessServicesTopologyProvider extends AbstractTopologyProvider i
         }
 
         // add ip services
-        for (IpServiceDTO eachIpService : businessService.getIpServices()) {
-            AbstractBusinessServiceVertex serviceVertex = new IpServiceVertex(businessService, eachIpService);
+        for (IpServiceEdge eachIpEdge : businessService.getIpServiceEdges()) {
+            AbstractBusinessServiceVertex serviceVertex = new IpServiceVertex(businessService, eachIpEdge.getIpService());
             businessServiceVertex.addChildren(serviceVertex);
             addVertices(serviceVertex);
 
             // connect with businessService
             Edge edge = createConnection(businessServiceVertex, serviceVertex);
+            addEdges(edge);
+        }
+
+        // add reduction keys
+        for (ReductionKeyEdge eachRkEdge : businessService.getReductionKeyEdges()) {
+            AbstractBusinessServiceVertex rkVertex = new ReductionKeyVertex(businessService, eachRkEdge.getReductionKey());
+            businessServiceVertex.addChildren(rkVertex);
+            addVertices(rkVertex);
+
+            // connect with businessService
+            Edge edge = createConnection(businessServiceVertex, rkVertex);
             addEdges(edge);
         }
 
@@ -141,7 +153,6 @@ public class BusinessServicesTopologyProvider extends AbstractTopologyProvider i
     public Criteria getDefaultCriteria() {
         // Grab the business service with the smallest id
         List<BusinessService> businessServices = businessServiceManager.findMatching(new CriteriaBuilder(BusinessServiceEntity.class).orderBy("id", true).limit(1).toCriteria());
-
         // If one was found, use it for the default focus
         if (!businessServices.isEmpty()) {
             BusinessServiceDTO businessService = businessServices.iterator().next();

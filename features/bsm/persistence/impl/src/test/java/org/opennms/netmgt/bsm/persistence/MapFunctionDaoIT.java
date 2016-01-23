@@ -34,8 +34,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
-import org.opennms.netmgt.bsm.persistence.api.MapFunctionDao;
-import org.opennms.netmgt.bsm.persistence.api.SetTo;
+import org.opennms.netmgt.bsm.persistence.api.functions.map.MapFunctionDao;
+import org.opennms.netmgt.bsm.persistence.api.functions.map.SetToEntity;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -66,7 +66,7 @@ public class MapFunctionDaoIT {
         assertEquals(0, m_mapFunctionDao.countAll());
 
         // Create a map function
-        SetTo setTo = new SetTo();
+        SetToEntity setTo = new SetToEntity();
         setTo.setSeverity(OnmsSeverity.CRITICAL);
 
         m_mapFunctionDao.save(setTo);
@@ -80,7 +80,7 @@ public class MapFunctionDaoIT {
         m_mapFunctionDao.save(setTo);
         m_mapFunctionDao.flush();
 
-        SetTo otherSetTo = (SetTo)m_mapFunctionDao.get(setTo.getId());
+        SetToEntity otherSetTo = (SetToEntity)m_mapFunctionDao.get(setTo.getId());
         assertEquals(setTo, otherSetTo);
         assertEquals(1, m_mapFunctionDao.countAll());
 

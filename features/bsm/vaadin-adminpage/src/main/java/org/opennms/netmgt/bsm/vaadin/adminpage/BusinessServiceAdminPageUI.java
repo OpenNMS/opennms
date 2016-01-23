@@ -18,7 +18,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
- * http://www.gnu.org/licenses/
+ *      http://www.gnu.org/licenses/
  *
  * For more information contact:
  *     OpenNMS(R) Licensing <license@opennms.org>
@@ -32,12 +32,12 @@ import java.util.Objects;
 
 import org.opennms.netmgt.bsm.service.BusinessServiceManager;
 import org.opennms.netmgt.vaadin.core.TransactionAwareBeanProxyFactory;
+import org.opennms.netmgt.vaadin.core.TransactionAwareUI;
+import org.springframework.transaction.support.TransactionOperations;
 
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.Title;
 import com.vaadin.server.VaadinRequest;
-import org.opennms.netmgt.vaadin.core.TransactionAwareUI;
-import org.springframework.transaction.support.TransactionOperations;
 
 /**
  * Business Service Admin Vaadin UI: this class is the main entry point for the Vaadin application

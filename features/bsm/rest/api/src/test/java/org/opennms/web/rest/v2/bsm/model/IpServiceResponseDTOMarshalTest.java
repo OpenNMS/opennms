@@ -18,7 +18,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
- * http://www.gnu.org/licenses/
+ *      http://www.gnu.org/licenses/
  *
  * For more information contact:
  *     OpenNMS(R) Licensing <license@opennms.org>
@@ -34,29 +34,36 @@ import java.util.Collection;
 
 import org.junit.runners.Parameterized;
 import org.opennms.core.test.xml.MarshalAndUnmarshalTest;
-import org.opennms.netmgt.model.OnmsSeverity;
+import org.opennms.netmgt.bsm.service.model.Status;
 import org.opennms.web.rest.api.ApiVersion;
 import org.opennms.web.rest.api.ResourceLocation;
+import org.opennms.web.rest.v2.bsm.model.edge.IpServiceEdgeResponseDTO;
+import org.opennms.web.rest.v2.bsm.model.edge.IpServiceResponseDTO;
 
-public class IpServiceResponseDTOMarshalTest extends MarshalAndUnmarshalTest<IpServiceResponseDTO> {
+public class IpServiceResponseDTOMarshalTest extends MarshalAndUnmarshalTest<IpServiceEdgeResponseDTO> {
 
-    public IpServiceResponseDTOMarshalTest(Class<IpServiceResponseDTO> clazz, IpServiceResponseDTO sampleObject, String sampleJson, String sampleXml) {
+    public IpServiceResponseDTOMarshalTest(Class<IpServiceEdgeResponseDTO> clazz, IpServiceEdgeResponseDTO sampleObject, String sampleJson, String sampleXml) {
         super(clazz, sampleObject, sampleJson, sampleXml);
     }
 
     @Parameterized.Parameters
     public static Collection<Object[]> data() throws IOException {
         IpServiceResponseDTO ipService = new IpServiceResponseDTO();
-        ipService.setLocation(new ResourceLocation(ApiVersion.Version2, "business-services", "ip-services", "1"));
-        ipService.setId(1);
         ipService.setIpAddress("1.1.1.1");
         ipService.setNodeLabel("dummy");
-        ipService.setOperationalStatus(OnmsSeverity.WARNING);
         ipService.setServiceName("ICMP");
 
+        IpServiceEdgeResponseDTO edge = new IpServiceEdgeResponseDTO();
+        edge.setLocation(new ResourceLocation(ApiVersion.Version2, "business-services", "ip-services", "1"));
+        edge.setIpService(ipService);
+        edge.setOperationalStatus(Status.WARNING);
+        edge.getReductionKeys().add("key1");
+        edge.getReductionKeys().add("key2");
+        edge.setId(1);
+
         return Arrays.asList(new Object[][]{{
-                IpServiceResponseDTO.class,
-                ipService,
+                IpServiceEdgeResponseDTO.class,
+                edge,
                 "{" +
                 "  \"location\" : \"/api/v2/business-services/ip-services/1\"," +
                 "  \"id\" : 1," +

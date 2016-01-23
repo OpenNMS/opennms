@@ -31,6 +31,8 @@ package org.opennms.web.rest.v2.bsm.model;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.junit.runners.Parameterized;
 import org.opennms.core.test.xml.MarshalAndUnmarshalTest;
@@ -43,15 +45,24 @@ public class BusinessServiceRequestDTOMarshalTest extends MarshalAndUnmarshalTes
 
     @Parameterized.Parameters
     public static Collection<Object[]> data() throws IOException {
+        MapFunctionDTO increaseDto = new MapFunctionDTO();
+        increaseDto.setType(MapFunctionDTO.Type.Increase);
+
+        MapFunctionDTO setToDto = new MapFunctionDTO();
+        setToDto.setType(MapFunctionDTO.Type.SetTo);
+        Map<String, String> properties = new HashMap<>();
+        properties.put("status", "Critical");
+        setToDto.setProperties(properties);
+
         BusinessServiceRequestDTO requestDTO = new BusinessServiceRequestDTO();
         requestDTO.setName("Web Servers");
         requestDTO.addAttribute("dc", "RDU");
         requestDTO.addAttribute("some-key", "some-value");
-        requestDTO.addChildService(2L);
-        requestDTO.addChildService(3L);
-        requestDTO.getReductionKeys().add("myReductionKeyA");
-        requestDTO.getReductionKeys().add("myReductionKeyB");
-        requestDTO.addIpService(1);
+        requestDTO.addChildService(2L, increaseDto);
+        requestDTO.addChildService(3L, setToDto);
+        requestDTO.addReductionKey("myReductionKeyA", increaseDto);
+        requestDTO.addReductionKey("myReductionKeyB", increaseDto);
+        requestDTO.addIpService(1, increaseDto);
 
         return Arrays.asList(new Object[][]{{
             BusinessServiceRequestDTO.class,

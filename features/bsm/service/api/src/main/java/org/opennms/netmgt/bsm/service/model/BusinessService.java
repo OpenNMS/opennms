@@ -33,7 +33,12 @@ import org.opennms.web.rest.api.ResourceLocation;
 import java.util.Map;
 import java.util.Set;
 
-import org.opennms.netmgt.model.OnmsSeverity;
+import org.opennms.netmgt.bsm.service.model.edge.ChildEdge;
+import org.opennms.netmgt.bsm.service.model.edge.Edge;
+import org.opennms.netmgt.bsm.service.model.edge.IpServiceEdge;
+import org.opennms.netmgt.bsm.service.model.edge.ReductionKeyEdge;
+import org.opennms.netmgt.bsm.service.model.mapreduce.MapFunction;
+import org.opennms.netmgt.bsm.service.model.mapreduce.ReductionFunction;
 
 public interface BusinessService {
     Long getId();
@@ -46,25 +51,7 @@ public interface BusinessService {
 
     void setAttributes(Map<String, String> attributes);
 
-    void addAttribute(String key, String value);
-
-    String removeAttribute(String key);
-
-    Set<IpService> getIpServices();
-
-    void setIpServices(Set<IpService> ipServices);
-
-    void addIpService(IpService ipService);
-
-    void removeIpService(IpService ipService);
-
     Set<BusinessService> getChildServices();
-
-    void setChildServices(Set<BusinessService> childServices);
-
-    void addChildService(BusinessService childService);
-
-    void removeChildService(BusinessService childService);
 
     Set<BusinessService> getParentServices();
 
@@ -72,9 +59,35 @@ public interface BusinessService {
 
     void delete();
 
-    void setReductionKeys(Set<String> reductionKeySet);
+    Status getOperationalStatus();
 
-    Set<String> getReductionKeys();
+    void setReduceFunction(ReductionFunction reductionFunction);
 
-    OnmsSeverity getOperationalStatus();
+    ReductionFunction getReduceFunction();
+
+    Set<Edge> getEdges();
+
+    Set<IpServiceEdge> getIpServiceEdges();
+
+    void setIpServiceEdges(Set<IpServiceEdge> ipServiceEdges);
+
+    void addIpServiceEdge(IpService ipService, MapFunction mapFunction);
+
+    Set<ReductionKeyEdge> getReductionKeyEdges();
+
+    void setReductionKeyEdges(Set<ReductionKeyEdge> reductionKeyEdges);
+
+    void addReductionKeyEdge(String reductionKey, MapFunction mapFunction);
+
+    Set<ChildEdge> getChildEdges();
+
+    void setChildEdges(Set<ChildEdge> childEdges);
+
+    void addChildEdge(BusinessService child, MapFunction mapFunction);
+
+    void removeChildEdge(BusinessService childService);
+
+    void setLevel(int level);
+
+    int getLevel();
 }

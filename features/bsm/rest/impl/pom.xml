@@ -30,6 +30,12 @@
     <!-- All of this projects dependencies should have either a 'provided' or 'test' scope, since
          this .jar gets pull into jetty-webapps/opennmns/WEB-INF/lib -->
     <dependency>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>spring-dependencies</artifactId>
+      <type>pom</type>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
       <groupId>org.opennms.features.bsm</groupId>
       <artifactId>org.opennms.features.bsm.rest.api</artifactId>
       <version>${project.version}</version>

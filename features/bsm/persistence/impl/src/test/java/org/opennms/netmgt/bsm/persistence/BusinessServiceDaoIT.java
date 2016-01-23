@@ -31,7 +31,7 @@ package org.opennms.netmgt.bsm.persistence;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-import java.util.HashSet;
+import java.util.Objects;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -41,7 +41,13 @@ import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.MockDatabase;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.netmgt.bsm.persistence.api.BusinessServiceDao;
+import org.opennms.netmgt.bsm.persistence.api.BusinessServiceEdgeDao;
 import org.opennms.netmgt.bsm.persistence.api.BusinessServiceEntity;
+import org.opennms.netmgt.bsm.persistence.api.functions.map.IgnoreEntity;
+import org.opennms.netmgt.bsm.persistence.api.functions.map.MapFunctionDao;
+import org.opennms.netmgt.bsm.persistence.api.functions.reduce.MostCriticalEntity;
+import org.opennms.netmgt.bsm.persistence.api.functions.reduce.ReductionFunctionDao;
+import org.opennms.netmgt.bsm.test.BusinessServiceEntityBuilder;
 import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
 import org.opennms.netmgt.dao.api.NodeDao;
@@ -68,6 +74,7 @@ import com.google.common.collect.Sets;
     "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml" })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase(reuseDatabase = false, tempDbClass = MockDatabase.class)
+// TODO MVR write a test that verifies that the the reduction function is properly deleted if not anymore referenced
 public class BusinessServiceDaoIT {
 
     private static final Logger LOG = LoggerFactory.getLogger(BusinessServiceDaoIT.class);
@@ -84,15 +91,26 @@ public class BusinessServiceDaoIT {
     @Autowired
     private NodeDao m_nodeDao;
 
+    @Autowired
+    private ReductionFunctionDao m_reductionFunctionDao;
+
+    @Autowired
+    private BusinessServiceEdgeDao m_edgeDao;
+
+    @Autowired
+    private MapFunctionDao mapFunctionDao;
+
+    private MostCriticalEntity m_mostCritical;
+
+    private IgnoreEntity m_ignore;
+
     @Before
     public void setUp() {
         BeanUtils.assertAutowiring(this);
         m_databasePopulator.setPopulateInSeparateTransaction(false);
         m_databasePopulator.populateDatabase();
-
-        m_mostCritical = new MostCritical();
-        m_reductionFunctionDao.save(m_mostCritical);
-        m_reductionFunctionDao.flush();
+        m_mostCritical = new MostCriticalEntity();
+        m_ignore = new IgnoreEntity();
     }
 
     @Test
@@ -113,7 +131,7 @@ public class BusinessServiceDaoIT {
 
         // Read a business service
         assertEquals(bs, m_businessServiceDao.get(bs.getId()));
-        assertEquals(reductionKeys.size(), m_businessServiceDao.get(bs.getId()).getReductionKeys().size());
+        assertEquals(2, m_businessServiceDao.get(bs.getId()).getReductionKeyEdges().size());
 
         // Update a business service
         bs.setName("Application Servers");
@@ -124,8 +142,7 @@ public class BusinessServiceDaoIT {
         OnmsMonitoredService ipService = m_databasePopulator.getNode1()
                 .getIpInterfaces().iterator().next()
                 .getMonitoredServices().iterator().next();
-        bs.getIpServices().add(ipService);
-
+        bs.addIpServiceEdge(ipService, m_ignore);
         m_businessServiceDao.update(bs);
         m_businessServiceDao.flush();
 
@@ -150,13 +167,12 @@ public class BusinessServiceDaoIT {
         assertEquals("Check that there are no initial BusinessServices", 0, m_businessServiceDao.countAll());
 
         // Create a business service with an associated IP Service
-        BusinessService bs = new BusinessService();
+        final BusinessServiceEntity bs = new BusinessServiceEntity();
         bs.setName("Mont Cascades");
-        OnmsNode node = m_databasePopulator.getNode1();
-        OnmsMonitoredService ipService = node
-                .getIpInterfaces().iterator().next()
-                .getMonitoredServices().iterator().next();
-        bs.addIpService(ipService);
+        bs.setReductionFunction(m_mostCritical);
+        final OnmsNode node = m_databasePopulator.getNode1();
+        final OnmsMonitoredService ipService = getMonitoredServiceFromNode1();
+        bs.addIpServiceEdge(ipService, m_ignore);
 
         m_businessServiceDao.save(bs);
         m_businessServiceDao.flush();
@@ -175,5 +191,48 @@ public class BusinessServiceDaoIT {
         m_businessServiceDao.clear();
         assertEquals(1, m_businessServiceDao.countAll());
         assertEquals(0, m_businessServiceDao.get(bs.getId()).getIpServices().size());
+    }
+
+    // TODO MVR write a test that verifies that if a child is deleted, the edge pointing to that child is also deleted
+    @Test
+    public void verifyDeleteOnCascade() {
+        BusinessServiceEntity child = new BusinessServiceEntityBuilder()
+                .name("Child2")
+                .reduceFunction(new MostCriticalEntity())
+                .toEntity();
+
+        BusinessServiceEntity parent = new BusinessServiceEntityBuilder()
+                .name("Web Servers")
+                .addAttribute("dc", "RDU")
+                .addReductionKey("TestReductionKeyA")
+                .addReductionKey("TestReductionKeyB")
+                .addIpService(getMonitoredServiceFromNode1())
+                .reduceFunction(m_mostCritical)
+                .addChildren(child)
+                .toEntity();
+
+        m_businessServiceDao.save(child);
+        m_businessServiceDao.save(parent);
+
+        assertEquals(2, m_businessServiceDao.countAll());
+        assertEquals(2, m_reductionFunctionDao.countAll());
+        assertEquals(3, m_edgeDao.countAll());
+
+        m_businessServiceDao.delete(child);
+        assertEquals(1, m_businessServiceDao.countAll());
+        assertEquals(1, m_reductionFunctionDao.countAll());
+        assertEquals(2, m_edgeDao.countAll()); // TODO MVR deleting a child does not delete the edge, should be fixed
+
+        m_businessServiceDao.delete(parent);
+        assertEquals(0, m_businessServiceDao.countAll());
+        assertEquals(0, m_reductionFunctionDao.countAll());
+        assertEquals(0, m_edgeDao.countAll());
+    }
+
+    private OnmsMonitoredService getMonitoredServiceFromNode1() {
+        final OnmsMonitoredService ipService = m_databasePopulator.getNode1()
+                .getIpInterfaces().iterator().next()
+                .getMonitoredServices().iterator().next();
+        return Objects.requireNonNull(ipService);
     }
 }

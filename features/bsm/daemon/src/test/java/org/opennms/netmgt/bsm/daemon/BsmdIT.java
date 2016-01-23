@@ -42,9 +42,11 @@ import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.netmgt.bsm.persistence.api.BusinessServiceEntity;
-import org.opennms.netmgt.bsm.persistence.api.BusinessServiceDao;
-import org.opennms.netmgt.bsm.persistence.api.MostCritical;
-import org.opennms.netmgt.bsm.persistence.api.ReductionFunctionDao;
+import org.opennms.netmgt.bsm.persistence.api.functions.map.IdentityEntity;
+import org.opennms.netmgt.bsm.persistence.api.functions.reduce.MostCriticalEntity;
+import org.opennms.netmgt.bsm.service.internal.BusinessServiceImpl;
+import org.opennms.netmgt.bsm.service.internal.BusinessServiceManagerImpl;
+import org.opennms.netmgt.bsm.service.model.BusinessService;
 import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.dao.api.DistPollerDao;
@@ -102,6 +104,9 @@ public class BsmdIT {
 
     @Autowired
     private Bsmd m_bsmd;
+
+    @Autowired
+    private BusinessServiceManagerImpl businessServiceManager;
 
     @Autowired
     private TransactionOperations template;
@@ -163,15 +168,74 @@ public class BsmdIT {
         assertTrue("Expected events not forthcoming " + stillWaitingFor, stillWaitingFor.isEmpty());
     }
 
-    private BusinessServiceEntity createSimpleBusinessService() {
+    /**
+     * Verifies that a reload of the Bsmd works as expected.
+     */
+    @Test
+    @Transactional
+    public void verifyReloadBsmd() throws Exception {
+        BusinessServiceEntity businessService1 = createBusinessService("service1");
+        m_bsmd.start();
+        Assert.assertEquals(OnmsSeverity.NORMAL, m_bsmd.getBusinessServiceStateMachine().getOperationalStatus(wrap(businessService1)));
+
+        // verify reload of business services works when event is send
+        BusinessServiceEntity businessService2 = createBusinessService("service2");
+        Assert.assertNull(m_bsmd.getBusinessServiceStateMachine().getOperationalStatus(wrap(businessService2)));
+        EventBuilder ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_UEI, "test");
+        ebldr.addParam(EventConstants.PARM_DAEMON_NAME, "bsmd");
+        m_eventMgr.sendNow(ebldr.getEvent());
+        Assert.assertEquals(OnmsSeverity.NORMAL, m_bsmd.getBusinessServiceStateMachine().getOperationalStatus(wrap(businessService2)));
+    }
+
+    /**
+     * Verifies that the daemon polls the alarm table on a regular basis. This is done to ensure that all alarms are
+     * considered, because the appropriate alarm created/changed/deleted/updated event may not have been sent.
+     *
+     */
+    @Test
+    public void verifyAlarmPollingIsEnabled() throws Exception {
+        System.setProperty(Bsmd.POLL_INTERVAL_KEY, "10");
+        BusinessServiceEntity simpleBs = createSimpleBusinessService();
+        m_bsmd.start();
+
+        // Create an alarm and do NOT send the alarm
+        template.execute(new TransactionCallbackWithoutResult() {
+            @Override
+            protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
+                Assert.assertEquals(OnmsSeverity.NORMAL, m_bsmd.getBusinessServiceStateMachine().getOperationalStatus(wrap(simpleBs)));
+                OnmsAlarm alarm = createAlarm();
+                m_alarmDao.save(alarm);
+                m_alarmDao.flush();
+                Assert.assertEquals(OnmsSeverity.NORMAL, m_bsmd.getBusinessServiceStateMachine().getOperationalStatus(wrap(simpleBs)));
+            }
+        });
+
+        // wait n seconds and try again
+        Thread.sleep(20*1000);
+        Assert.assertEquals(OnmsSeverity.CRITICAL, m_bsmd.getBusinessServiceStateMachine().getOperationalStatus(wrap(simpleBs)));
+    }
+
+    private OnmsAlarm createAlarm() {
+        OnmsAlarm alarm = new OnmsAlarm();
+        alarm.setUei(EventConstants.NODE_LOST_SERVICE_EVENT_UEI);
+        alarm.setSeverity(OnmsSeverity.CRITICAL);
+        alarm.setAlarmType(1);
+        alarm.setCounter(1);
+        alarm.setDistPoller(m_distPollerDao.whoami());
+        alarm.setReductionKey(String.format("%s::1:192.168.1.1:ICMP", EventConstants.NODE_LOST_SERVICE_EVENT_UEI));
+        return alarm;
+    }
+
+    private BusinessServiceEntity createBusinessService(String name) {
         BusinessServiceEntity bs = new BusinessServiceEntity();
-        bs.setName("MyBusinessService");
+        bs.setName(name);
+        bs.setReductionFunction(new MostCriticalEntity());
 
         // Grab the first monitored service from node 1
         OnmsMonitoredService ipService = m_databasePopulator.getNode1()
                 .getIpInterfaces().iterator().next()
                 .getMonitoredServices().iterator().next();
-        bs.getIpServices().add(ipService);
+        bs.addIpServiceEdge(ipService, new IdentityEntity());
 
         // Persist
         m_businessServiceDao.save(bs);
@@ -182,5 +246,9 @@ public class BsmdIT {
 
     private BusinessService createSimpleBusinessService() {
         return createBusinessService("MyBusinessService");
+    }
+
+    private BusinessService wrap(BusinessServiceEntity entity) {
+        return new BusinessServiceImpl(businessServiceManager, entity);
     }
 }

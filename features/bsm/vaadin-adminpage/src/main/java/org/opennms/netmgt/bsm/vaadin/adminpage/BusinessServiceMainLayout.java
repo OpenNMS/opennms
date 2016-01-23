@@ -18,7 +18,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
- * http://www.gnu.org/licenses/
+ *      http://www.gnu.org/licenses/
  *
  * For more information contact:
  *     OpenNMS(R) Licensing <license@opennms.org>
@@ -149,7 +149,7 @@ public class BusinessServiceMainLayout extends VerticalLayout {
                         deleteButton.setId("deleteButton-" + businessService.getName());
 
                         deleteButton.addClickListener((Button.ClickListener)event -> {
-                                    if (businessService.getParentServices().isEmpty() && businessService.getChildServices().isEmpty()) {
+                                    if (businessService.getParentServices().isEmpty() && businessService.getChildEdges().isEmpty()) {
                                         UIHelper.getCurrent(TransactionAwareUI.class).runInTransaction(() -> {
                                             businessService.delete();
                                             refreshTable();
