@@ -37,6 +37,7 @@ import org.opennms.netmgt.bsm.persistence.api.BusinessServiceChildEdge;
 import org.opennms.netmgt.bsm.persistence.api.BusinessServiceEdge;
 import org.opennms.netmgt.bsm.persistence.api.BusinessServiceEntity;
 import org.opennms.netmgt.bsm.persistence.api.functions.reduce.AbstractReductionFunctionEntity;
+import org.opennms.netmgt.bsm.service.BusinessServiceManager;
 import org.opennms.netmgt.bsm.service.internal.edge.AbstractEdge;
 import org.opennms.netmgt.bsm.service.internal.edge.ChildEdgeImpl;
 import org.opennms.netmgt.bsm.service.internal.edge.IpServiceEdgeImpl;
@@ -56,11 +57,11 @@ import com.google.common.collect.Sets;
 
 public class BusinessServiceImpl implements BusinessService {
 
-    private final BusinessServiceManagerImpl m_manager;
+    private final BusinessServiceManager m_manager;
 
     private final BusinessServiceEntity m_entity;
 
-    public BusinessServiceImpl(final BusinessServiceManagerImpl manager,
+    public BusinessServiceImpl(final BusinessServiceManager manager,
                                final BusinessServiceEntity entity) {
         this.m_manager = manager;
         this.m_entity = entity;

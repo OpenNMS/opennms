@@ -37,11 +37,11 @@ import java.util.stream.Collectors;
 
 import org.opennms.netmgt.bsm.persistence.api.BusinessServiceDao;
 import org.opennms.netmgt.bsm.persistence.api.BusinessServiceEntity;
+import org.opennms.netmgt.bsm.service.BusinessServiceManager;
 import org.opennms.netmgt.bsm.service.BusinessServiceStateChangeHandler;
 import org.opennms.netmgt.bsm.service.BusinessServiceStateMachine;
 import org.opennms.netmgt.bsm.service.internal.AlarmWrapperImpl;
 import org.opennms.netmgt.bsm.service.internal.BusinessServiceImpl;
-import org.opennms.netmgt.bsm.service.internal.BusinessServiceManagerImpl;
 import org.opennms.netmgt.bsm.service.internal.SeverityMapper;
 import org.opennms.netmgt.bsm.service.model.BusinessService;
 import org.opennms.netmgt.bsm.service.model.Status;
@@ -106,7 +106,7 @@ public class Bsmd implements SpringServiceDaemon, BusinessServiceStateChangeHand
     private BusinessServiceStateMachine m_stateMachine;
 
     @Autowired
-    private BusinessServiceManagerImpl m_manager;
+    private BusinessServiceManager m_manager;
 
     private boolean m_verifyReductionKeys = true;
 

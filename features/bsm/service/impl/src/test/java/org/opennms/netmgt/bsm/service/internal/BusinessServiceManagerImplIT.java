@@ -45,6 +45,7 @@ import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.netmgt.bsm.persistence.api.BusinessServiceDao;
 import org.opennms.netmgt.bsm.persistence.api.BusinessServiceEntity;
+import org.opennms.netmgt.bsm.service.BusinessServiceManager;
 import org.opennms.netmgt.bsm.service.BusinessServiceStateMachine;
 import org.opennms.netmgt.bsm.service.model.BusinessService;
 import org.opennms.netmgt.bsm.service.model.IpService;
@@ -80,7 +81,7 @@ public class BusinessServiceManagerImplIT {
     public ExpectedException thrown = ExpectedException.none();
 
     @Autowired
-    private BusinessServiceManagerImpl businessServiceManager;
+    private BusinessServiceManager businessServiceManager;
 
     @Autowired
     private BusinessServiceStateMachine businessServiceStateMachine;

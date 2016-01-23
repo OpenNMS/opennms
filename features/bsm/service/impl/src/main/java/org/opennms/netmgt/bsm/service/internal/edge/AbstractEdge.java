@@ -30,8 +30,8 @@ package org.opennms.netmgt.bsm.service.internal.edge;
 
 import org.opennms.netmgt.bsm.persistence.api.BusinessServiceEdge;
 import org.opennms.netmgt.bsm.persistence.api.functions.map.AbstractMapFunctionEntity;
+import org.opennms.netmgt.bsm.service.BusinessServiceManager;
 import org.opennms.netmgt.bsm.service.internal.BusinessServiceImpl;
-import org.opennms.netmgt.bsm.service.internal.BusinessServiceManagerImpl;
 import org.opennms.netmgt.bsm.service.internal.MapFunctionMapper;
 import org.opennms.netmgt.bsm.service.model.BusinessService;
 import org.opennms.netmgt.bsm.service.model.Status;
@@ -42,9 +42,9 @@ public abstract class AbstractEdge<T extends BusinessServiceEdge> implements Edg
 
     private final T m_entity;
 
-    private final BusinessServiceManagerImpl m_manager;
+    private final BusinessServiceManager m_manager;
 
-    public AbstractEdge(BusinessServiceManagerImpl manager, T entity) {
+    public AbstractEdge(BusinessServiceManager manager, T entity) {
         m_manager = manager;
         m_entity = entity;
     }
@@ -84,7 +84,7 @@ public abstract class AbstractEdge<T extends BusinessServiceEdge> implements Edg
         return new MapFunctionMapper().toServiceFunction(getEntity().getMapFunction());
     }
 
-    protected BusinessServiceManagerImpl getManager() {
+    protected BusinessServiceManager getManager() {
         return m_manager;
     }
 

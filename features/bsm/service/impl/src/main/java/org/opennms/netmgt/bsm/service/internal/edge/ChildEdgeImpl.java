@@ -32,14 +32,14 @@ import java.util.Collections;
 import java.util.Set;
 
 import org.opennms.netmgt.bsm.persistence.api.BusinessServiceChildEdge;
+import org.opennms.netmgt.bsm.service.BusinessServiceManager;
 import org.opennms.netmgt.bsm.service.internal.BusinessServiceImpl;
-import org.opennms.netmgt.bsm.service.internal.BusinessServiceManagerImpl;
 import org.opennms.netmgt.bsm.service.model.BusinessService;
 import org.opennms.netmgt.bsm.service.model.edge.ChildEdge;
 
 public class ChildEdgeImpl extends AbstractEdge<BusinessServiceChildEdge> implements ChildEdge {
 
-    public ChildEdgeImpl(BusinessServiceManagerImpl manager, BusinessServiceChildEdge entity) {
+    public ChildEdgeImpl(BusinessServiceManager manager, BusinessServiceChildEdge entity) {
         super(manager, entity);
     }
 

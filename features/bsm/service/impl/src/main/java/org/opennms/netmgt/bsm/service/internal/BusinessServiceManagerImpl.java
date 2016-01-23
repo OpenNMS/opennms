@@ -61,6 +61,8 @@ import org.opennms.netmgt.bsm.service.model.functions.reduce.MostCritical;
 import org.opennms.netmgt.bsm.service.model.functions.reduce.Threshold;
 import org.opennms.netmgt.bsm.service.model.mapreduce.MapFunction;
 import org.opennms.netmgt.bsm.service.model.mapreduce.ReductionFunction;
+import org.opennms.netmgt.core.service.Node;
+import org.opennms.netmgt.core.service.internal.NodeImpl;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.events.api.EventConstants;
@@ -345,10 +347,6 @@ public class BusinessServiceManagerImpl implements BusinessServiceManager {
         return this.businessServiceDao;
     }
 
-    protected NodeDao getNodeDao() {
-        return this.nodeDao;
-    }
-
     private BusinessServiceEntity getBusinessServiceEntity(BusinessService service) throws NoSuchElementException {
         return ((BusinessServiceImpl) service).getEntity();
     }
@@ -371,5 +369,10 @@ public class BusinessServiceManagerImpl implements BusinessServiceManager {
             throw new NoSuchElementException();
         }
         return monitoredService;
+    }
+
+    @Override
+    public Node getNodeById(int nodeId) {
+        return new NodeImpl(this, nodeDao.get(nodeId));
     }
 }
