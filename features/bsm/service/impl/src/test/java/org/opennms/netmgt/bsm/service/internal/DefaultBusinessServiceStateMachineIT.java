@@ -42,6 +42,7 @@ import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.netmgt.bsm.persistence.api.BusinessServiceDao;
 import org.opennms.netmgt.bsm.persistence.api.BusinessServiceEntity;
+import org.opennms.netmgt.bsm.service.BusinessServiceManager;
 import org.opennms.netmgt.bsm.service.BusinessServiceStateChangeHandler;
 import org.opennms.netmgt.bsm.service.model.BusinessService;
 import org.opennms.netmgt.bsm.service.model.Status;
@@ -76,7 +77,7 @@ import com.google.common.collect.Lists;
 public class DefaultBusinessServiceStateMachineIT {
 
     @Autowired
-    private BusinessServiceManagerImpl businessServiceManager;
+    private BusinessServiceManager businessServiceManager;
 
     @Autowired
     private BsmDatabasePopulator populator;

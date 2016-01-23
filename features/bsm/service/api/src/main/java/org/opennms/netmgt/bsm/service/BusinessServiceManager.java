@@ -37,8 +37,9 @@ import org.opennms.netmgt.bsm.service.model.Status;
 import org.opennms.netmgt.bsm.service.model.edge.Edge;
 import org.opennms.netmgt.bsm.service.model.mapreduce.MapFunction;
 import org.opennms.netmgt.bsm.service.model.mapreduce.ReductionFunction;
+import org.opennms.netmgt.core.service.NodeManager;
 
-public interface BusinessServiceManager {
+public interface BusinessServiceManager extends NodeManager {
 
     List<BusinessService> getAllBusinessServices();
 
