@@ -28,8 +28,11 @@
 
 package org.opennms.netmgt.bsm.persistence.api;
 
+import java.util.Set;
+
 import org.opennms.netmgt.dao.api.OnmsDao;
 
 public interface BusinessServiceDao extends OnmsDao<BusinessServiceEntity, Long> {
-   
+
+    Set<BusinessServiceEntity> findParents(BusinessServiceEntity child);
 }

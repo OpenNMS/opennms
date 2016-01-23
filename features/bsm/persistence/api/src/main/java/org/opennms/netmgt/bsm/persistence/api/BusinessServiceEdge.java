@@ -47,7 +47,7 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import org.opennms.netmgt.bsm.mapreduce.api.Edge;
+import org.opennms.netmgt.bsm.persistence.api.functions.map.AbstractMapFunctionEntity;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Sets;
@@ -80,7 +80,7 @@ public class BusinessServiceEdge implements Edge {
 
     private int m_weight = DEFAULT_WEIGHT;
 
-    private AbstractMapFunction m_mapFunction;
+    private AbstractMapFunctionEntity m_mapFunction;
 
     @Id
     @SequenceGenerator(name = "opennmsSequence", sequenceName = "opennmsNxtId")
@@ -133,11 +133,11 @@ public class BusinessServiceEdge implements Edge {
     // TODO MVR verify cascadetype
     @ManyToOne(cascade = {CascadeType.ALL})
     @JoinColumn(name = "bsm_map_id")
-    public AbstractMapFunction getMapFunction() {
+    public AbstractMapFunctionEntity getMapFunction() {
         return m_mapFunction;
     }
 
-    public void setMapFunction(AbstractMapFunction mapFunction) {
+    public void setMapFunction(AbstractMapFunctionEntity mapFunction) {
         m_mapFunction = Objects.requireNonNull(mapFunction);
     }
 

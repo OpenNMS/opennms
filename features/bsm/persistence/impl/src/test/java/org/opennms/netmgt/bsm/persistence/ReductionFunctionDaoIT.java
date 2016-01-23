@@ -34,8 +34,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
-import org.opennms.netmgt.bsm.persistence.api.ReductionFunctionDao;
-import org.opennms.netmgt.bsm.persistence.api.Threshold;
+import org.opennms.netmgt.bsm.persistence.api.functions.reduce.ReductionFunctionDao;
+import org.opennms.netmgt.bsm.persistence.api.functions.reduce.ThresholdEntity;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -65,7 +65,7 @@ public class ReductionFunctionDaoIT {
         assertEquals(0, m_reductionFunctionDao.countAll());
 
         // Create a reduction function
-        Threshold threshold = new Threshold();
+        ThresholdEntity threshold = new ThresholdEntity();
         threshold.setThreshold(0.75f);
 
         m_reductionFunctionDao.save(threshold);
@@ -79,7 +79,7 @@ public class ReductionFunctionDaoIT {
         m_reductionFunctionDao.save(threshold);
         m_reductionFunctionDao.flush();
 
-        Threshold otherThreshold = (Threshold)m_reductionFunctionDao.get(threshold.getId());
+        ThresholdEntity otherThreshold = (ThresholdEntity)m_reductionFunctionDao.get(threshold.getId());
         assertEquals(threshold, otherThreshold);
         assertEquals(1, m_reductionFunctionDao.countAll());
 

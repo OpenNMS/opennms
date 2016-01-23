@@ -42,8 +42,11 @@ import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.netmgt.bsm.persistence.api.BusinessServiceDao;
 import org.opennms.netmgt.bsm.persistence.api.BusinessServiceEntity;
-import org.opennms.netmgt.bsm.persistence.api.Identity;
-import org.opennms.netmgt.bsm.persistence.api.MostCritical;
+import org.opennms.netmgt.bsm.persistence.api.functions.map.IdentityEntity;
+import org.opennms.netmgt.bsm.persistence.api.functions.reduce.MostCriticalEntity;
+import org.opennms.netmgt.bsm.service.internal.BusinessServiceImpl;
+import org.opennms.netmgt.bsm.service.internal.BusinessServiceManagerImpl;
+import org.opennms.netmgt.bsm.service.model.BusinessService;
 import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.dao.api.DistPollerDao;
@@ -99,6 +102,9 @@ public class BsmdIT {
 
     @Autowired
     private Bsmd m_bsmd;
+
+    @Autowired
+    private BusinessServiceManagerImpl businessServiceManager;
 
     @Autowired
     private TransactionOperations template;
@@ -168,15 +174,15 @@ public class BsmdIT {
     public void verifyReloadBsmd() throws Exception {
         BusinessServiceEntity businessService1 = createBusinessService("service1");
         m_bsmd.start();
-        Assert.assertEquals(OnmsSeverity.NORMAL, m_bsmd.getBusinessServiceStateMachine().getOperationalStatus(businessService1));
+        Assert.assertEquals(OnmsSeverity.NORMAL, m_bsmd.getBusinessServiceStateMachine().getOperationalStatus(wrap(businessService1)));
 
         // verify reload of business services works when event is send
         BusinessServiceEntity businessService2 = createBusinessService("service2");
-        Assert.assertNull(m_bsmd.getBusinessServiceStateMachine().getOperationalStatus(businessService2));
+        Assert.assertNull(m_bsmd.getBusinessServiceStateMachine().getOperationalStatus(wrap(businessService2)));
         EventBuilder ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_UEI, "test");
         ebldr.addParam(EventConstants.PARM_DAEMON_NAME, "bsmd");
         m_eventMgr.sendNow(ebldr.getEvent());
-        Assert.assertEquals(OnmsSeverity.NORMAL, m_bsmd.getBusinessServiceStateMachine().getOperationalStatus(businessService2));
+        Assert.assertEquals(OnmsSeverity.NORMAL, m_bsmd.getBusinessServiceStateMachine().getOperationalStatus(wrap(businessService2)));
     }
 
     /**
@@ -194,17 +200,17 @@ public class BsmdIT {
         template.execute(new TransactionCallbackWithoutResult() {
             @Override
             protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
-                Assert.assertEquals(OnmsSeverity.NORMAL, m_bsmd.getBusinessServiceStateMachine().getOperationalStatus(simpleBs));
+                Assert.assertEquals(OnmsSeverity.NORMAL, m_bsmd.getBusinessServiceStateMachine().getOperationalStatus(wrap(simpleBs)));
                 OnmsAlarm alarm = createAlarm();
                 m_alarmDao.save(alarm);
                 m_alarmDao.flush();
-                Assert.assertEquals(OnmsSeverity.NORMAL, m_bsmd.getBusinessServiceStateMachine().getOperationalStatus(simpleBs));
+                Assert.assertEquals(OnmsSeverity.NORMAL, m_bsmd.getBusinessServiceStateMachine().getOperationalStatus(wrap(simpleBs)));
             }
         });
 
         // wait n seconds and try again
         Thread.sleep(20*1000);
-        Assert.assertEquals(OnmsSeverity.CRITICAL, m_bsmd.getBusinessServiceStateMachine().getOperationalStatus(simpleBs));
+        Assert.assertEquals(OnmsSeverity.CRITICAL, m_bsmd.getBusinessServiceStateMachine().getOperationalStatus(wrap(simpleBs)));
     }
 
     private OnmsAlarm createAlarm() {
@@ -221,13 +227,13 @@ public class BsmdIT {
     private BusinessServiceEntity createBusinessService(String name) {
         BusinessServiceEntity bs = new BusinessServiceEntity();
         bs.setName(name);
-        bs.setReductionFunction(new MostCritical());
+        bs.setReductionFunction(new MostCriticalEntity());
 
         // Grab the first monitored service from node 1
         OnmsMonitoredService ipService = m_databasePopulator.getNode1()
                 .getIpInterfaces().iterator().next()
                 .getMonitoredServices().iterator().next();
-        bs.addIpService(ipService, new Identity()); // TODO MVR really idetity?
+        bs.addIpServiceEdge(ipService, new IdentityEntity());
 
         // Persist
         m_businessServiceDao.save(bs);
@@ -238,5 +244,9 @@ public class BsmdIT {
 
     private BusinessServiceEntity createSimpleBusinessService() {
         return createBusinessService("MyBusinessService");
+    }
+
+    private BusinessService wrap(BusinessServiceEntity entity) {
+        return new BusinessServiceImpl(businessServiceManager, entity);
     }
 }

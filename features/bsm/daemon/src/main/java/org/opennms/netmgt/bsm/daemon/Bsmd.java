@@ -33,11 +33,18 @@ import java.util.Objects;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
-import org.opennms.netmgt.bsm.persistence.api.BusinessServiceEntity;
 import org.opennms.netmgt.bsm.persistence.api.BusinessServiceDao;
+import org.opennms.netmgt.bsm.persistence.api.BusinessServiceEntity;
 import org.opennms.netmgt.bsm.service.BusinessServiceStateChangeHandler;
 import org.opennms.netmgt.bsm.service.BusinessServiceStateMachine;
+import org.opennms.netmgt.bsm.service.internal.AlarmWrapperImpl;
+import org.opennms.netmgt.bsm.service.internal.BusinessServiceImpl;
+import org.opennms.netmgt.bsm.service.internal.BusinessServiceManagerImpl;
+import org.opennms.netmgt.bsm.service.internal.SeverityMapper;
+import org.opennms.netmgt.bsm.service.model.BusinessService;
+import org.opennms.netmgt.bsm.service.model.Status;
 import org.opennms.netmgt.config.api.EventConfDao;
 import org.opennms.netmgt.daemon.SpringServiceDaemon;
 import org.opennms.netmgt.dao.api.AlarmDao;
@@ -46,7 +53,6 @@ import org.opennms.netmgt.events.api.EventIpcManager;
 import org.opennms.netmgt.events.api.annotations.EventHandler;
 import org.opennms.netmgt.events.api.annotations.EventListener;
 import org.opennms.netmgt.model.OnmsAlarm;
-import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
@@ -98,6 +104,9 @@ public class Bsmd implements SpringServiceDaemon, BusinessServiceStateChangeHand
 
     @Autowired
     private BusinessServiceStateMachine m_stateMachine;
+
+    @Autowired
+    private BusinessServiceManagerImpl m_manager;
 
     private boolean m_verifyReductionKeys = true;
 
@@ -179,7 +188,11 @@ public class Bsmd implements SpringServiceDaemon, BusinessServiceStateChangeHand
             protected void doInTransactionWithoutResult(TransactionStatus status) {
                 final List<BusinessServiceEntity> businessServices = m_businessServiceDao.findAll();
                 LOG.debug("Adding business services to state machine {}: {}", m_stateMachine, businessServices);
-                m_stateMachine.setBusinessServices(m_businessServiceDao.findAll());
+                m_stateMachine.setBusinessServices(m_businessServiceDao
+                        .findAll()
+                        .stream()
+                        .map(entity -> new BusinessServiceImpl(m_manager, entity))
+                        .collect(Collectors.toList()));
             }
         });
     }
@@ -239,24 +252,23 @@ public class Bsmd implements SpringServiceDaemon, BusinessServiceStateChangeHand
     }
 
     private void handleAlarm(OnmsAlarm alarm) {
-        LOG.debug("Handling alarm with id: {}, reduction key: {} and severity: {}",
-                alarm.getId(), alarm.getReductionKey(), alarm.getSeverity());
-        m_stateMachine.handleNewOrUpdatedAlarm(alarm);
+        AlarmWrapperImpl alarmWrapper = new AlarmWrapperImpl(alarm);
+        LOG.debug("Handling alarm with id: {}, reduction key: {} and severity: {} and status: {}", alarm.getId(), alarm.getReductionKey(), alarm.getSeverity(), alarmWrapper.getStatus());
+        m_stateMachine.handleNewOrUpdatedAlarm(alarmWrapper);
     }
 
     /**
      * Called when the operational status of a business service was changed.
      */
     @Override
-    public void handleBusinessServiceStateChanged(BusinessServiceEntity businessService, OnmsSeverity newSeverity,
-                                                  OnmsSeverity prevSeverity) {
+    public void handleBusinessServiceStateChanged(BusinessService businessService, Status newStatus, Status prevStatus) {
         EventBuilder ebldr = new EventBuilder(EventConstants.BUSINESS_SERVICE_OPERATIONAL_STATUS_CHANGED_UEI, NAME);
         ebldr.addParam(EventConstants.PARM_BUSINESS_SERVICE_ID, businessService.getId());
         ebldr.addParam(EventConstants.PARM_BUSINESS_SERVICE_NAME, businessService.getName());
-        ebldr.addParam(EventConstants.PARM_PREV_SEVERITY_ID, prevSeverity.getId());
-        ebldr.addParam(EventConstants.PARM_PREV_SEVERITY_LABEL, prevSeverity.getLabel());
-        ebldr.addParam(EventConstants.PARM_NEW_SEVERITY_ID, newSeverity.getId());
-        ebldr.addParam(EventConstants.PARM_NEW_SEVERITY_LABEL, newSeverity.getLabel());
+        ebldr.addParam(EventConstants.PARM_PREV_SEVERITY_ID, SeverityMapper.toSeverity(prevStatus).getId());
+        ebldr.addParam(EventConstants.PARM_PREV_SEVERITY_LABEL, SeverityMapper.toSeverity(prevStatus).getLabel());
+        ebldr.addParam(EventConstants.PARM_NEW_SEVERITY_ID, SeverityMapper.toSeverity(newStatus).getId());
+        ebldr.addParam(EventConstants.PARM_NEW_SEVERITY_LABEL, SeverityMapper.toSeverity(newStatus).getLabel());
         m_eventIpcManager.sendNow(ebldr.getEvent());
     }
 

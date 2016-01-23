@@ -36,6 +36,12 @@
       <!--<scope>provided</scope>-->
     </dependency>
     <dependency>
+      <groupId>org.opennms.features.bsm</groupId>
+      <artifactId>org.opennms.features.bsm.persistence.api</artifactId>
+      <version>${project.version}</version>
+      <!--<scope>provided</scope>-->
+    </dependency>
+    <dependency>
       <groupId>org.opennms.features.vaadin-components</groupId>
       <artifactId>core</artifactId>
       <version>${project.version}</version>

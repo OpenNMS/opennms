@@ -18,7 +18,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
- * http://www.gnu.org/licenses/
+ *      http://www.gnu.org/licenses/
  *
  * For more information contact:
  *     OpenNMS(R) Licensing <license@opennms.org>
@@ -34,24 +34,43 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.opennms.core.criteria.Criteria;
+import org.opennms.netmgt.bsm.persistence.api.BusinessServiceChildEdge;
 import org.opennms.netmgt.bsm.persistence.api.BusinessServiceDao;
+import org.opennms.netmgt.bsm.persistence.api.BusinessServiceEdgeDao;
 import org.opennms.netmgt.bsm.persistence.api.BusinessServiceEntity;
-import org.opennms.netmgt.bsm.persistence.api.MostCritical;
-import org.opennms.netmgt.bsm.persistence.api.ReductionFunctionDao;
+import org.opennms.netmgt.bsm.persistence.api.SingleReductionKeyEdge;
+import org.opennms.netmgt.bsm.persistence.api.functions.reduce.ReductionFunctionDao;
 import org.opennms.netmgt.bsm.service.BusinessServiceManager;
 import org.opennms.netmgt.bsm.service.BusinessServiceStateMachine;
+import org.opennms.netmgt.bsm.service.internal.edge.ChildEdgeImpl;
+import org.opennms.netmgt.bsm.service.internal.edge.IpServiceEdgeImpl;
+import org.opennms.netmgt.bsm.service.internal.edge.ReductionKeyEdgeImpl;
 import org.opennms.netmgt.bsm.service.model.BusinessService;
 import org.opennms.netmgt.bsm.service.model.IpService;
+import org.opennms.netmgt.bsm.service.model.Status;
+import org.opennms.netmgt.bsm.service.model.edge.ChildEdge;
+import org.opennms.netmgt.bsm.service.model.edge.Edge;
+import org.opennms.netmgt.bsm.service.model.edge.IpServiceEdge;
+import org.opennms.netmgt.bsm.service.model.edge.ReductionKeyEdge;
+import org.opennms.netmgt.bsm.service.model.functions.map.Decrease;
+import org.opennms.netmgt.bsm.service.model.functions.map.Identity;
+import org.opennms.netmgt.bsm.service.model.functions.map.Ignore;
+import org.opennms.netmgt.bsm.service.model.functions.map.Increase;
+import org.opennms.netmgt.bsm.service.model.functions.map.SetTo;
+import org.opennms.netmgt.bsm.service.model.functions.reduce.MostCritical;
+import org.opennms.netmgt.bsm.service.model.functions.reduce.Threshold;
+import org.opennms.netmgt.bsm.service.model.mapreduce.MapFunction;
+import org.opennms.netmgt.bsm.service.model.mapreduce.ReductionFunction;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.model.OnmsMonitoredService;
-import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.google.common.collect.Lists;
 
 @Transactional
 public class BusinessServiceManagerImpl implements BusinessServiceManager {
@@ -60,6 +79,9 @@ public class BusinessServiceManagerImpl implements BusinessServiceManager {
 
     @Autowired
     private ReductionFunctionDao reductionFunctionDao;
+
+    @Autowired
+    private BusinessServiceEdgeDao edgeDao;
 
     @Autowired
     private MonitoredServiceDao monitoredServiceDao;
@@ -95,16 +117,39 @@ public class BusinessServiceManagerImpl implements BusinessServiceManager {
     }
 
     @Override
+    public <T extends Edge> T createEdge(Class<T> type, BusinessService source, MapFunction mapFunction) {
+        T edge = null;
+        // TODO MVR do differently maybe enum
+        if (type == IpServiceEdge.class) {
+            edge = (T) new IpServiceEdgeImpl(this, new org.opennms.netmgt.bsm.persistence.api.IPServiceEdge());
+        }
+        if (type == ChildEdge.class) {
+            edge = (T) new ChildEdgeImpl(this, new BusinessServiceChildEdge());
+        }
+        if (type == ReductionKeyEdge.class) {
+            edge = (T) new ReductionKeyEdgeImpl(this, new SingleReductionKeyEdge());
+        }
+        if (edge != null) {
+            edge.setSource(source);
+            edge.setMapFunction(mapFunction);
+            return edge;
+        }
+        throw new IllegalArgumentException("Could not create edge for type " + type);
+    }
+
+    @Override
     public void saveBusinessService(BusinessService service) {
         BusinessServiceEntity entity = getBusinessServiceEntity(service);
-        // TODO: FIXME: HACK: The reduction function is required, but not exposed via the
-        // DTOs yet, so we set a default one here, pending the development of BSM-97
-        if (entity.getReductionFunction() == null) {
-            MostCritical mostCritical = new MostCritical();
-            reductionFunctionDao.save(mostCritical);
-            entity.setReductionFunction(mostCritical);
-        }
         getDao().saveOrUpdate(entity);
+    }
+
+    @Override
+    public Set<BusinessService> getParentServices(Long id) {
+        BusinessServiceEntity entity = getBusinessServiceEntity(id);
+        return businessServiceDao.findParents(entity)
+            .stream()
+            .map(bs -> new BusinessServiceImpl(this, bs))
+            .collect(Collectors.toSet());
     }
 
     @Override
@@ -116,6 +161,11 @@ public class BusinessServiceManagerImpl implements BusinessServiceManager {
     @Override
     public void deleteBusinessService(BusinessService businessService) {
         BusinessServiceEntity entity = getBusinessServiceEntity(businessService);
+        // remove all parent -> child associations
+        for (BusinessService eachParent : businessService.getParentServices()) {
+            eachParent.removeChildEdge(businessService);
+            eachParent.save();
+        }
         getDao().delete(entity);
     }
 
@@ -198,10 +248,7 @@ public class BusinessServiceManagerImpl implements BusinessServiceManager {
             return false;
         }
 
-        // add and update
-        parentEntity.getChildServices().add(childEntity);
-        // TODO MVR fix me
-//        childEntity.getParentServices().add(parentEntity);
+        parentService.addChildEdge(childService, new Identity()); // TODO MVR set Function
         return true;
     }
 
@@ -246,17 +293,17 @@ public class BusinessServiceManagerImpl implements BusinessServiceManager {
     }
 
     @Override
-    public OnmsSeverity getOperationalStatusForBusinessService(BusinessService service) {
-        final BusinessServiceEntity entity = getBusinessServiceEntity(service);
-        final OnmsSeverity severity = businessServiceStateMachine.getOperationalStatus(entity);
-        return severity != null ? severity : OnmsSeverity.INDETERMINATE;
+    public Status getOperationalStatusForBusinessService(BusinessService service) {
+        final BusinessServiceEntity entity = getBusinessServiceEntity(service); // verify the entity exists
+        final Status status = businessServiceStateMachine.getOperationalStatus(service);
+        return status != null ? status : Status.INDETERMINATE;
     }
 
     @Override
-    public OnmsSeverity getOperationalStatusForIPService(IpService ipService) {
-        final OnmsMonitoredService monitoredService = getMonitoredService(ipService);
-        final OnmsSeverity severity = businessServiceStateMachine.getOperationalStatus(monitoredService);
-        return severity != null ? severity : OnmsSeverity.INDETERMINATE;
+    public Status getOperationalStatusForIPService(IpService ipService) {
+        final OnmsMonitoredService monitoredService = getMonitoredService(ipService); // verify the entity exists
+        final Status status = businessServiceStateMachine.getOperationalStatus(ipService);
+        return status != null ? status : Status.INDETERMINATE;
     }
 
     @Override
@@ -279,11 +326,26 @@ public class BusinessServiceManagerImpl implements BusinessServiceManager {
         eventForwarder.sendNow(eventBuilder.getEvent());
     }
 
-    BusinessServiceDao getDao() {
+    @Override
+    public Status getOperationalStatusForReductionKey(String reductionKey) {
+        return Status.INDETERMINATE; // TODO MVR implement... probably getOperationalStatus(Edge edge...)
+    }
+
+    @Override
+    public List<MapFunction> listMapFunctions() {
+        return Lists.newArrayList(new Identity(), new Increase(), new Decrease(), new SetTo(), new Ignore());
+    }
+
+    @Override
+    public List<ReductionFunction> listReduceFunctions() {
+        return Lists.newArrayList(new MostCritical(), new Threshold());
+    }
+
+    protected BusinessServiceDao getDao() {
         return this.businessServiceDao;
     }
 
-    NodeDao getNodeDao() {
+    protected NodeDao getNodeDao() {
         return this.nodeDao;
     }
 

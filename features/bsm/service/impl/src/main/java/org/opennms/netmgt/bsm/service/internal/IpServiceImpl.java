@@ -18,7 +18,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
- * http://www.gnu.org/licenses/
+ *      http://www.gnu.org/licenses/
  *
  * For more information contact:
  *     OpenNMS(R) Licensing <license@opennms.org>
@@ -33,8 +33,8 @@ import java.util.Set;
 
 import org.opennms.netmgt.bsm.persistence.api.OnmsMonitoredServiceHelper;
 import org.opennms.netmgt.bsm.service.model.IpService;
+import org.opennms.netmgt.bsm.service.model.Status;
 import org.opennms.netmgt.model.OnmsMonitoredService;
-import org.opennms.netmgt.model.OnmsSeverity;
 
 import com.google.common.base.Objects;
 
@@ -76,12 +76,11 @@ public class IpServiceImpl implements IpService {
 
     @Override
     public Set<String> getReductionKeys() {
-        // TODO MVR use ipServiceEdge of this ipService instead
         return Collections.unmodifiableSet(OnmsMonitoredServiceHelper.getReductionKeys(m_entity));
     }
 
     @Override
-    public OnmsSeverity getOperationalStatus() {
+    public Status getOperationalStatus() {
         return m_manager.getOperationalStatusForIPService(this);
     }
 
@@ -98,7 +97,6 @@ public class IpServiceImpl implements IpService {
         }
 
         final IpServiceImpl other = (IpServiceImpl) obj;
-
         return Objects.equal(this.getId(), other.getId());
     }
 

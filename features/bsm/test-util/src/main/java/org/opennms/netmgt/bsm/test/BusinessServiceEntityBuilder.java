@@ -18,7 +18,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
- * http://www.gnu.org/licenses/
+ *      http://www.gnu.org/licenses/
  *
  * For more information contact:
  *     OpenNMS(R) Licensing <license@opennms.org>
@@ -33,9 +33,9 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import org.opennms.netmgt.bsm.persistence.api.AbstractReductionFunction;
 import org.opennms.netmgt.bsm.persistence.api.BusinessServiceEntity;
-import org.opennms.netmgt.bsm.persistence.api.Identity;
+import org.opennms.netmgt.bsm.persistence.api.functions.map.IdentityEntity;
+import org.opennms.netmgt.bsm.persistence.api.functions.reduce.AbstractReductionFunctionEntity;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 
 public class BusinessServiceEntityBuilder {
@@ -43,11 +43,10 @@ public class BusinessServiceEntityBuilder {
     private String name;
     private final Map<String, String> attributes = new HashMap<>();
     private Set<BusinessServiceEntity> children = new HashSet<>();
-    private Set<BusinessServiceEntity> parents = new HashSet<>();
     private Set<OnmsMonitoredService> ipServices = new HashSet<>();
     private Set<String> reductionKeys = new HashSet<>();
     private Long id;
-    private AbstractReductionFunction reduceFunction;
+    private AbstractReductionFunctionEntity reduceFunction;
 
     public BusinessServiceEntityBuilder name(String name) {
         this.name = name;
@@ -56,11 +55,6 @@ public class BusinessServiceEntityBuilder {
 
     public BusinessServiceEntityBuilder addAttribute(String key, String value) {
         attributes.put(key, value);
-        return this;
-    }
-
-    public BusinessServiceEntityBuilder addParent(BusinessServiceEntity parent) {
-        parents.add(parent);
         return this;
     }
 
@@ -84,14 +78,9 @@ public class BusinessServiceEntityBuilder {
         }
 
         // TODO MVR we have to deal with the map function stuff
-        ipServices.forEach(e -> entity.addIpService(e, new Identity()));
-        children.forEach(e -> entity.addChildren(e, new Identity()));
-        reductionKeys.forEach(e -> entity.addReductionKey(e, new Identity()));
-
-        // TODO MVR deal with this
-        if (!parents.isEmpty()) {
-            throw new RuntimeException("This is not supported anymore");
-        }
+        ipServices.forEach(e -> entity.addIpServiceEdge(e, new IdentityEntity()));
+        children.forEach(e -> entity.addChildServiceEdge(e, new IdentityEntity()));
+        reductionKeys.forEach(e -> entity.addReductionKeyEdge(e, new IdentityEntity()));
         return entity;
     }
 
@@ -105,7 +94,7 @@ public class BusinessServiceEntityBuilder {
         return this;
     }
 
-    public BusinessServiceEntityBuilder reduceFunction(AbstractReductionFunction reductionFunction) {
+    public BusinessServiceEntityBuilder reduceFunction(AbstractReductionFunctionEntity reductionFunction) {
         this.reduceFunction = reductionFunction;
         return this;
     }
