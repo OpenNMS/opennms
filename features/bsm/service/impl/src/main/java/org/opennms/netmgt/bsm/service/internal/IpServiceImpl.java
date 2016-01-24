@@ -29,9 +29,10 @@
 package org.opennms.netmgt.bsm.service.internal;
 
 import java.util.Collections;
+import java.util.Objects;
 import java.util.Set;
 
-import org.opennms.netmgt.bsm.persistence.api.OnmsMonitoredServiceHelper;
+import org.opennms.netmgt.bsm.persistence.api.ReductionKeyHelper;
 import org.opennms.netmgt.bsm.service.BusinessServiceManager;
 import org.opennms.netmgt.bsm.service.model.IpService;
 import org.opennms.netmgt.bsm.service.model.Status;
@@ -63,7 +64,7 @@ public class IpServiceImpl implements IpService {
 
     @Override
     public String getNodeLabel() {
-        return m_manager.getNodeById(m_entity.getNodeId()).getLabel();
+        return "TODO MVR"; // TODO MVR no class def found exception when used within spring?! m_manager.getNodeById(m_entity.getNodeId()).getLabel();
     }
 
     @Override public String getIpAddress() {
@@ -72,7 +73,7 @@ public class IpServiceImpl implements IpService {
 
     @Override
     public Set<String> getReductionKeys() {
-        return Collections.unmodifiableSet(OnmsMonitoredServiceHelper.getReductionKeys(m_entity));
+        return Collections.unmodifiableSet(ReductionKeyHelper.getReductionKeys(m_entity));
     }
 
     @Override
@@ -82,23 +83,16 @@ public class IpServiceImpl implements IpService {
 
     @Override
     public boolean equals(Object obj) {
-        if (obj == null) {
-            return false;
-        }
-        if (obj == this) {
-            return true;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-
+        if (obj == null) return false;
+        if (obj == this) return true;
+        if (getClass() != obj.getClass()) return false;
         final IpServiceImpl other = (IpServiceImpl) obj;
-        return Objects.equal(this.getId(), other.getId());
+        return Objects.equals(getEntity(), other.getEntity());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(this.getId());
+        return getEntity().hashCode();
     }
 
     @Override

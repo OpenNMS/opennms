@@ -28,8 +28,6 @@
 
 package org.opennms.netmgt.bsm.persistence.api.functions.reduce;
 
-import java.util.Objects;
-
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
@@ -54,26 +52,9 @@ public class ThresholdEntity extends AbstractReductionFunctionEntity {
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        final ThresholdEntity other = (ThresholdEntity) obj;
-
-        return Objects.equals(m_threshold, other.m_threshold) && super.equals(obj);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(getId(), m_threshold);
-    }
-
-    @Override
     public String toString() {
-        return com.google.common.base.Objects.toStringHelper(this).add("id", getId())
+        return com.google.common.base.Objects.toStringHelper(this)
+                .add("id", getId())
                 .add("threshold", m_threshold)
                 .toString();
     }

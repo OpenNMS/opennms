@@ -13,7 +13,7 @@
 
     <context:annotation-config />
 
-    <!-- The stateMachine bean is in component-dao instead of component-service because we require
+    <!-- The stateMachine/businessServiceManager bean is in component-dao instead of component-service because we require
          the bean to be same throughout the contexts. Beans in component-service are currently initialized
          multiple times, i.e. once for the bsmd and again for web -->
     <bean id="stateMachine" class="org.opennms.netmgt.bsm.service.internal.DefaultBusinessServiceStateMachine" />
@@ -21,4 +21,6 @@
     <onmsgi:list id="stateChangeHandlerList" interface="org.opennms.netmgt.bsm.service.BusinessServiceStateChangeHandler">
         <onmsgi:listener ref="stateMachine" bind-method="addHandler" unbind-method="removeHandler" />
     </onmsgi:list>
+    <bean id="businessServiceManager" class="org.opennms.netmgt.bsm.service.internal.BusinessServiceManagerImpl" />
+    <onmsgi:service ref="businessServiceManager" interface="org.opennms.netmgt.bsm.service.BusinessServiceManager" />
 </beans>

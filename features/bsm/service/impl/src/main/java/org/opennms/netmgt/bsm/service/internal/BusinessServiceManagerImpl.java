@@ -38,6 +38,7 @@ import org.opennms.netmgt.bsm.persistence.api.BusinessServiceChildEdge;
 import org.opennms.netmgt.bsm.persistence.api.BusinessServiceDao;
 import org.opennms.netmgt.bsm.persistence.api.BusinessServiceEdgeDao;
 import org.opennms.netmgt.bsm.persistence.api.BusinessServiceEntity;
+import org.opennms.netmgt.bsm.persistence.api.IPServiceEdge;
 import org.opennms.netmgt.bsm.persistence.api.SingleReductionKeyEdge;
 import org.opennms.netmgt.bsm.persistence.api.functions.reduce.ReductionFunctionDao;
 import org.opennms.netmgt.bsm.service.BusinessServiceManager;
@@ -62,8 +63,6 @@ import org.opennms.netmgt.bsm.service.model.functions.reduce.MostCritical;
 import org.opennms.netmgt.bsm.service.model.functions.reduce.Threshold;
 import org.opennms.netmgt.bsm.service.model.mapreduce.MapFunction;
 import org.opennms.netmgt.bsm.service.model.mapreduce.ReductionFunction;
-import org.opennms.netmgt.core.service.Node;
-import org.opennms.netmgt.core.service.internal.NodeImpl;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.events.api.EventConstants;
@@ -113,7 +112,6 @@ public class BusinessServiceManagerImpl implements BusinessServiceManager {
     @Override
     public <T extends Edge> T createEdge(Class<T> type, BusinessService source, MapFunction mapFunction) {
         T edge = null;
-        // TODO MVR do differently maybe enum
         if (type == IpServiceEdge.class) {
             edge = (T) new IpServiceEdgeImpl(this, new org.opennms.netmgt.bsm.persistence.api.IPServiceEdge());
         }
@@ -156,102 +154,98 @@ public class BusinessServiceManagerImpl implements BusinessServiceManager {
     public void deleteBusinessService(BusinessService businessService) {
         BusinessServiceEntity entity = getBusinessServiceEntity(businessService);
         // remove all parent -> child associations
-        for (BusinessService eachParent : businessService.getParentServices()) {
-            eachParent.removeChildEdge(businessService);
-            eachParent.save();
+        for(BusinessServiceEntity parent : getDao().findParents(entity)) {
+            List<BusinessServiceChildEdge> collect = parent.getChildEdges().stream().filter(e -> entity.equals(e.getChild())).collect(Collectors.toList());
+            collect.forEach(x -> {
+                parent.removeEdge(x);
+                edgeDao.delete(x); // we need to delete this edge manually as they cannot be deleted automatically
+            });
         }
+        // edges need not to be deleted manually, deletes will be cascaded
         getDao().delete(entity);
     }
 
     @Override
-    public void setIpServices(final BusinessService businessService, final Set<IpService> ipServices) {
-        final BusinessServiceEntity entity = getBusinessServiceEntity(businessService);
-
-        entity.setIpServices(ipServices.stream()
-                                       .map(this::getMonitoredService)
-                                       .collect(Collectors.toSet()));
+    public void setReductionKeyEdges(BusinessService businessService, Set<ReductionKeyEdge> reductionKeyEdges) {
+        final BusinessServiceEntity parentEntity = getBusinessServiceEntity(businessService);
+        for (final SingleReductionKeyEdge e : parentEntity.getReductionKeyEdges()) {
+            parentEntity.removeEdge(e);
+        }
+        reductionKeyEdges.forEach(e -> parentEntity.addEdge(((ReductionKeyEdgeImpl) e).getEntity()));
     }
 
     @Override
-    public boolean assignIpService(BusinessService businessService, IpService ipService) {
-        final BusinessServiceEntity entity = getBusinessServiceEntity(businessService);
-        final OnmsMonitoredService monitoredService = getMonitoredService(ipService);
+    public boolean addReductionKeyEdge(BusinessService businessService, String reductionKey, MapFunction mapFunction) {
+        final BusinessServiceEntity parentEntity = getBusinessServiceEntity(businessService);
 
-        /* TODO: FIXME: HACK: JW, MVR
+        // Create the edge
+        ReductionKeyEdgeImpl edge = (ReductionKeyEdgeImpl) createEdge(ReductionKeyEdge.class, businessService, mapFunction);
+        edge.setReductionKey(reductionKey);
+
         // if already exists, no update
-        if (entity.getIpServices().contains(monitoredService)) {
+        if (parentEntity.getIpServiceEdges().contains(edge.getEntity())) {
             return false;
         }
 
-        // add and update
-        entity.getIpServices().add(monitoredService);
+        parentEntity.addEdge(edge.getEntity());
         return true;
     }
 
     @Override
-    public boolean removeIpService(BusinessService businessService, IpService ipService) {
+    public void setIpServiceEdges(BusinessService businessService, Set<IpServiceEdge> ipServiceEdges) {
         final BusinessServiceEntity entity = getBusinessServiceEntity(businessService);
+        for (final IPServiceEdge e : entity.getIpServiceEdges()) {
+            entity.removeEdge(e);
+        }
+        ipServiceEdges.forEach(e -> entity.addEdge(((IpServiceEdgeImpl) e).getEntity()));
+    }
+
+    @Override
+    public boolean addIpServiceEdge(BusinessService businessService, IpService ipService, MapFunction mapFunction) {
+        // verify that exists
+        final BusinessServiceEntity parentEntity = getBusinessServiceEntity(businessService);
         final OnmsMonitoredService monitoredService = getMonitoredService(ipService);
 
-        /* TODO: FIXME: HACK: JW, MVR
-        // does not exist, no update necessary
-        if (!entity.getIpServices().contains(monitoredService)) {
+        // Create the edge
+        IpServiceEdge edge = createEdge(IpServiceEdge.class, businessService, mapFunction);
+        edge.setIpService(ipService);
+
+        // if already exists, no update
+        if (parentEntity.getIpServiceEdges().contains(((IpServiceEdgeImpl)edge).getEntity())) {
             return false;
         }
-
-        // remove and update
-        entity.getIpServices().remove(monitoredService);
+        parentEntity.addEdge(((IpServiceEdgeImpl)edge).getEntity());
         return true;
     }
 
     @Override
-    public void setChildServices(BusinessService parentService, Set<BusinessService> childServices) {
+    public void setChildEdges(BusinessService parentService, Set<ChildEdge> childEdges) {
         final BusinessServiceEntity parentEntity = getBusinessServiceEntity(parentService);
-
-        for (final BusinessServiceEntity e : parentEntity.getChildServices()) {
-            e.getParentServices().remove(parentEntity);
+        for (final BusinessServiceChildEdge e : parentEntity.getChildEdges()) {
+            parentEntity.removeEdge(e);
         }
-
-        parentEntity.setChildServices(childServices.stream()
-                                                   .map(s -> getBusinessServiceEntity(s))
-                                                   .collect(Collectors.toSet()));
-
-        for (final BusinessServiceEntity e : parentEntity.getChildServices()) {
-            e.getParentServices().add(parentEntity);
-        }
+        childEdges.forEach(e -> parentEntity.addEdge(((ChildEdgeImpl) e).getEntity()));
     }
 
     @Override
-    public boolean assignChildService(BusinessService parentService, BusinessService childService) {
+    public boolean addChildEdge(BusinessService parentService, BusinessService childService, MapFunction mapFunction) {
+        // verify that exists
         final BusinessServiceEntity parentEntity = getBusinessServiceEntity(parentService);
         final BusinessServiceEntity childEntity = getBusinessServiceEntity(childService);
 
+        // Create the edge
+        ChildEdge childEdge = createEdge(ChildEdge.class, parentService, mapFunction);
+        childEdge.setChild(childService);
+
+        // Verify no loop
         if (this.checkDescendantForLoop(parentEntity, childEntity)) {
             throw new IllegalArgumentException("Service will form a loop");
         }
-
         // if already exists, no update
-        if (parentEntity.getChildServices().contains(childEntity)) {
+        if (parentEntity.getEdges().contains(((ChildEdgeImpl)childEdge).getEntity())) {
             return false;
         }
-
-        parentService.addChildEdge(childService, new Identity()); // TODO MVR set Function
-        return true;
-    }
-
-    @Override
-    public boolean removeChildService(BusinessService parentService, BusinessService childService) {
-        final BusinessServiceEntity parentEntity = getBusinessServiceEntity(parentService);
-        final BusinessServiceEntity childEntity = getBusinessServiceEntity(childService);
-
-        // does not exist, no update necessary
-        if (!parentEntity.getChildServices().contains(childEntity)) {
-            return false;
-        }
-
-        // remove and update
-        parentEntity.getChildServices().remove(childEntity);
-        childEntity.getParentServices().remove(parentEntity);
+        parentEntity.addEdge(((ChildEdgeImpl)childEdge).getEntity());
         return true;
     }
 
@@ -261,8 +255,8 @@ public class BusinessServiceManagerImpl implements BusinessServiceManager {
             return true;
         }
 
-        for (BusinessServiceEntity s : descendant.getChildServices()) {
-            return this.checkDescendantForLoop(parent, s);
+        for (BusinessServiceChildEdge eachChildEdge : descendant.getChildEdges()) {
+            return this.checkDescendantForLoop(parent, eachChildEdge.getChild());
         }
 
         return false;
@@ -355,8 +349,8 @@ public class BusinessServiceManagerImpl implements BusinessServiceManager {
         return monitoredService;
     }
 
-    @Override
-    public Node getNodeById(int nodeId) {
-        return new NodeImpl(this, nodeDao.get(nodeId));
-    }
+//    @Override
+//    public Node getNodeById(int nodeId) {
+//        return new NodeImpl(this, nodeDao.get(nodeId));
+//    }
 }

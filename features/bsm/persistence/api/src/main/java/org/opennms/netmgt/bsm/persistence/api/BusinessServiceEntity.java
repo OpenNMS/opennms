@@ -149,6 +149,10 @@ public class BusinessServiceEntity {
         m_edges = edges;
     }
 
+    public void removeEdge(BusinessServiceEdge edge) {
+        m_edges.remove(edge);
+    }
+
     @Transient
     private Set<Integer> getIpServiceIds() {
         return m_ipServices.stream()
@@ -184,49 +188,6 @@ public class BusinessServiceEntity {
 
     public void setReductionFunction(AbstractReductionFunctionEntity reductionFunction) {
         m_reductionFunction = Objects.requireNonNull(reductionFunction);
-    }
-
-    // Convenient method to retrieve all Business Services children
-    @Transient
-    public Set<BusinessServiceEntity> getChildServices() {
-        return m_childServices;
-    }
-
-    public void setChildServices(Set<BusinessServiceEntity> childServices) {
-        m_childServices = childServices;
-    }
-
-    @ManyToMany(fetch = FetchType.EAGER,
-                cascade = CascadeType.ALL,
-                mappedBy = "childServices")
-    public Set<BusinessServiceEntity> getParentServices() {
-        return m_parentServices;
-    }
-
-    public void setParentServices(Set<BusinessServiceEntity> parentServices) {
-        m_parentServices = parentServices;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) return true;
-
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        final BusinessServiceEntity other = (BusinessServiceEntity) obj;
-        return Objects.equals(m_id, other.m_id)
-                && Objects.equals(m_name, other.m_name)
-                && Objects.equals(m_attributes, other.m_attributes)
-                && Objects.equals(m_edges, other.m_edges);
-    }
-
-    @Override
-    public int hashCode() {
-        return com.google.common.base.Objects.hashCode(m_id, m_name, m_attributes, m_edges);
     }
 
     @Override

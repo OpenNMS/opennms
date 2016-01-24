@@ -54,4 +54,12 @@ public class ReductionKeyEdgeImpl extends AbstractEdge<SingleReductionKeyEdge> i
     public void setReductionKey(String reductionKey) {
         getEntity().setReductionKey(reductionKey);
     }
+
+    @Override
+    public String toString() {
+        return com.google.common.base.Objects.toStringHelper(this)
+                .add("parent", super.toString())
+                .add("reductionKey", getReductionKey())
+                .toString();
+    }
 }

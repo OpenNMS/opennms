@@ -301,11 +301,11 @@ public class BusinessServiceRestServiceIT extends AbstractSpringJerseyRestTestCa
         BusinessServiceEntity child1Entity = findEntityByName("Child 1");
         BusinessServiceEntity child2Entity = findEntityByName("Child 2");
         Assert.assertEquals(0, m_businessServiceDao.findParents(parentEntity).size());
-        Assert.assertEquals(2, parentEntity.getChildServices().size());
+        Assert.assertEquals(2, parentEntity.getChildEdges().size());
         Assert.assertEquals(1, m_businessServiceDao.findParents(child1Entity).size());
-        Assert.assertEquals(0, child1Entity.getChildServices().size());
+        Assert.assertEquals(0, child1Entity.getChildEdges().size());
         Assert.assertEquals(1, m_businessServiceDao.findParents(child2Entity).size());
-        Assert.assertEquals(0, child2Entity.getChildServices().size());
+        Assert.assertEquals(0, child2Entity.getChildEdges().size());
         verifyResponse(parentEntity);
         verifyResponse(child1Entity);
         verifyResponse(child2Entity);
@@ -323,17 +323,17 @@ public class BusinessServiceRestServiceIT extends AbstractSpringJerseyRestTestCa
         Assert.assertEquals(entity.getReductionKeyEdges().size(), responseDTO.getReductionKeys().size()); // TODO MVR we should verify the content not only the size
         Assert.assertEquals(responseDTO.getReductionKeys(), responseDTO.getReductionKeys());
         Assert.assertEquals(Status.INDETERMINATE, responseDTO.getOperationalStatus());
-        Assert.assertEquals(entity.getChildServices()
+        Assert.assertEquals(entity.getChildEdges()
                 .stream()
-                .map(e -> e.getId())
+                .map(e -> e.getChild().getId())
                 .collect(Collectors.toSet()), responseDTO.getChildren()); // TODO MVR this is going to fail...
         Assert.assertEquals(m_businessServiceDao.findParents(entity)
                 .stream()
                 .map(e -> e.getId())
                 .collect(Collectors.toSet()), responseDTO.getParentServices()); // TODO MVR this is going to fail..
-        Assert.assertEquals(entity.getIpServices()
+        Assert.assertEquals(entity.getIpServiceEdges()
                 .stream()
-                .map(e -> e.getId())
+                .map(e -> e.getIpService())
                 .collect(Collectors.toSet()), responseDTO.getIpServices());
         return responseDTO;
     }

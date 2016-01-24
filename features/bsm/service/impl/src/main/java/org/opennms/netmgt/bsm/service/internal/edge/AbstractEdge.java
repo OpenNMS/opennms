@@ -28,6 +28,8 @@
 
 package org.opennms.netmgt.bsm.service.internal.edge;
 
+import java.util.Objects;
+
 import org.opennms.netmgt.bsm.persistence.api.BusinessServiceEdge;
 import org.opennms.netmgt.bsm.persistence.api.functions.map.AbstractMapFunctionEntity;
 import org.opennms.netmgt.bsm.service.BusinessServiceManager;
@@ -75,7 +77,7 @@ public abstract class AbstractEdge<T extends BusinessServiceEdge> implements Edg
 
     @Override
     public void setMapFunction(MapFunction mapFunction) {
-        AbstractMapFunctionEntity mapFunctionEntity = new MapFunctionMapper().toPersistenceFunction(getMapFunction());
+        AbstractMapFunctionEntity mapFunctionEntity = new MapFunctionMapper().toPersistenceFunction(mapFunction);
         getEntity().setMapFunction(mapFunctionEntity);
     }
 
@@ -90,33 +92,16 @@ public abstract class AbstractEdge<T extends BusinessServiceEdge> implements Edg
 
     @Override
     public boolean equals(Object obj) {
-        if (obj == null) {
-            return false;
-        }
-        if (obj == this) {
-            return true;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
+        if (obj == null) return false;
+        if (obj == this) return true;
+        if (getClass() != obj.getClass()) return false;
         final AbstractEdge other = (AbstractEdge) obj;
-        if (getId() != null) {
-            return getId().equals(other.getId());
-        }
-        return super.equals(obj);
-//        return Objects.equals(getMapFunction(), other.getMapFunction())
-//                && Objects.equals(getSource(), other.getSource())
-//                && Objects.equals(getReductionKeys(), other.getReductionKeys())
-//                && Objects.equals(getOperationalStatus(), other.getOperationalStatus());
+        return Objects.equals(getEntity(), other.getEntity());
     }
 
     @Override
     public int hashCode() {
-        if (getId() != null) {
-            return getId().hashCode();
-        }
-        return super.hashCode();
-//        return super.hashCode(); .hash(getMapFunction(), getSource(), getReductionKeys(), getOperationalStatus());
+        return getEntity().hashCode();
     }
 
     @Override
@@ -126,7 +111,7 @@ public abstract class AbstractEdge<T extends BusinessServiceEdge> implements Edg
                 .add("reductionKeys", this.getReductionKeys())
                 .add("status", this.getOperationalStatus())
                 .add("mapFunction", this.getMapFunction())
-                .add("source", this.getSource())
+                .add("source", this.getSource() == null ? getSource() : getSource().getId())
                 .toString();
     }
 }

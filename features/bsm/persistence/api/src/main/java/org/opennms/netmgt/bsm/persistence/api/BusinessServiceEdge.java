@@ -124,38 +124,10 @@ public class BusinessServiceEdge implements Edge {
     }
 
     @Override
-    @Transient
-    public Set<String> getReductionKeys() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        final BusinessServiceEdge other = (BusinessServiceEdge) obj;
-
-        return Objects.equals(m_id, other.m_id)
-                && Objects.equals(m_businessService, other.m_businessService)
-                && Objects.equals(m_enabled, other.m_enabled)
-                && Objects.equals(m_weight, other.m_weight)
-                && Objects.equals(m_mapFunction, other.m_mapFunction);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(m_id, m_enabled, m_weight, m_weight);
-    }
-
-    @Override
     public String toString() {
         return com.google.common.base.Objects.toStringHelper(this)
                 .add("id", m_id)
-                .add("businessService", m_businessService)
+                .add("businessService", m_businessService == null ? null : m_businessService.getId())
                 .add("enabled", m_enabled)
                 .add("weight", m_weight)
                 .add("mapFunction", m_mapFunction)

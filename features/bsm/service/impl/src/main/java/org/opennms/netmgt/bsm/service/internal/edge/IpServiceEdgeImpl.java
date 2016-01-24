@@ -58,36 +58,10 @@ public class IpServiceEdgeImpl extends AbstractEdge<IPServiceEdge> implements Ip
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if (obj == null) {
-            return false;
-        }
-        if (obj == this) {
-            return true;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        final IpServiceEdge other = (IpServiceEdge) obj;
-        if (getId() != null) {
-            return getId().equals(other.getId());
-        }
-        return super.equals(obj); // && Objects.equals(getIpService(), other.getIpService());
-    }
-
-    @Override
-    public int hashCode() {
-        if (getId() != null) {
-            return getId().hashCode();
-        }
-        return super.hashCode(); //Objects.hash(getIpService(), super.hashCode());
-    }
-
-    @Override
     public String toString() {
         return com.google.common.base.Objects.toStringHelper(this)
                 .add("parent", super.toString())
-                .add("ipService", this.getIpService())
+                .add("ipService", getIpService())
                 .toString();
     }
 

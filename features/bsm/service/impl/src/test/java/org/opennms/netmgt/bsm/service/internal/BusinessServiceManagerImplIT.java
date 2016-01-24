@@ -44,12 +44,16 @@ import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.netmgt.bsm.persistence.api.BusinessServiceDao;
+import org.opennms.netmgt.bsm.persistence.api.BusinessServiceEdgeDao;
 import org.opennms.netmgt.bsm.persistence.api.BusinessServiceEntity;
+import org.opennms.netmgt.bsm.persistence.api.functions.map.MapFunctionDao;
+import org.opennms.netmgt.bsm.persistence.api.functions.reduce.ReductionFunctionDao;
 import org.opennms.netmgt.bsm.service.BusinessServiceManager;
 import org.opennms.netmgt.bsm.service.BusinessServiceStateMachine;
 import org.opennms.netmgt.bsm.service.model.BusinessService;
 import org.opennms.netmgt.bsm.service.model.IpService;
 import org.opennms.netmgt.bsm.service.model.Status;
+import org.opennms.netmgt.bsm.service.model.functions.map.Identity;
 import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
 import org.opennms.netmgt.model.OnmsSeverity;
@@ -93,6 +97,15 @@ public class BusinessServiceManagerImplIT {
     private MonitoredServiceDao monitoredServiceDao;
 
     @Autowired
+    private MapFunctionDao mapFunctionDao;
+
+    @Autowired
+    private ReductionFunctionDao reduceFunctionDao;
+
+    @Autowired
+    private BusinessServiceEdgeDao edgeDao;
+
+    @Autowired
     private DatabasePopulator populator;
 
     @Before
@@ -122,8 +135,8 @@ public class BusinessServiceManagerImplIT {
         Assert.assertEquals(Status.NORMAL, businessServiceManager.getOperationalStatusForBusinessService(bsService2));
 
         // ip services attached
-        businessServiceManager.assignIpService(bsService1, ipServiceWithId5);
-        businessServiceManager.assignIpService(bsService2, ipServiceWithId6);
+        businessServiceManager.addIpServiceEdge(bsService1, ipServiceWithId5, new Identity());
+        businessServiceManager.addIpServiceEdge(bsService2, ipServiceWithId6, new Identity());
         bsService1.save();
         bsService2.save();
         Assert.assertFalse("Services are equal but should not", Objects.equals(bsService1, bsService2));
@@ -165,10 +178,10 @@ public class BusinessServiceManagerImplIT {
         BusinessService service_c_1 = createBusinessService("Business Service #c1");
         BusinessService service_c_2 = createBusinessService("Business Service #c2");
 
-        businessServiceManager.assignChildService(service_p_1, service_c_1);
-        businessServiceManager.assignChildService(service_p_1, service_c_2);
-        businessServiceManager.assignChildService(service_p_2, service_c_1);
-        businessServiceManager.assignChildService(service_p_2, service_c_2);
+        businessServiceManager.addChildEdge(service_p_1, service_c_1, new Identity());
+        businessServiceManager.addChildEdge(service_p_1, service_c_2, new Identity());
+        businessServiceManager.addChildEdge(service_p_2, service_c_1, new Identity());
+        businessServiceManager.addChildEdge(service_p_2, service_c_2, new Identity());
 
         Assert.assertEquals(ImmutableSet.of(service_p_1, service_p_2),
                             service_c_1.getParentServices());
@@ -182,15 +195,17 @@ public class BusinessServiceManagerImplIT {
         BusinessService service_c_1 = createBusinessService("Business Service #c1");
         BusinessService service_c_2 = createBusinessService("Business Service #c2");
 
-        businessServiceManager.assignChildService(service_p, service_c_1);
-        businessServiceManager.assignChildService(service_p, service_c_2);
+        businessServiceManager.addChildEdge(service_p, service_c_1, new Identity());
+        businessServiceManager.addChildEdge(service_p, service_c_2, new Identity());
         service_p.save();
         service_c_1.save();
         service_c_2.save();
+        Assert.assertEquals(2, edgeDao.countAll()); // ensure the edges are there before deleting
 
         service_c_1.delete();
         Assert.assertEquals(ImmutableSet.of(service_c_2),
                             service_p.getChildServices());
+        Assert.assertEquals(1, edgeDao.countAll()); // verify that the edge is also gone
     }
 
     @Test
@@ -217,7 +232,7 @@ public class BusinessServiceManagerImplIT {
                                             businessServiceManager.getBusinessServiceById(serviceId2)),
                             businessServiceManager.getFeasibleChildServices(businessServiceManager.getBusinessServiceById(serviceId3)));
 
-        businessServiceManager.assignChildService(bs1, bs2);
+        businessServiceManager.addChildEdge(bs1, bs2, new Identity());
         bs1.save();
         bs2.save();
 
@@ -230,7 +245,7 @@ public class BusinessServiceManagerImplIT {
                                             businessServiceManager.getBusinessServiceById(serviceId2)),
                             businessServiceManager.getFeasibleChildServices(businessServiceManager.getBusinessServiceById(serviceId3)));
 
-        businessServiceManager.assignChildService(bs2, bs3);
+        businessServiceManager.addChildEdge(bs2, bs3, new Identity());
         bs2.save();
         bs3.save();
 
@@ -256,9 +271,9 @@ public class BusinessServiceManagerImplIT {
         Long serviceId2 = businessServiceDao.save(service2);
         Long serviceId3 = businessServiceDao.save(service3);
 
-        businessServiceManager.assignChildService(getBusinessService(serviceId1), getBusinessService(serviceId2));
-        businessServiceManager.assignChildService(getBusinessService(serviceId2), getBusinessService(serviceId3));
-        businessServiceManager.assignChildService(getBusinessService(serviceId3), getBusinessService(serviceId1));
+        businessServiceManager.addChildEdge(getBusinessService(serviceId1), getBusinessService(serviceId2), new Identity());
+        businessServiceManager.addChildEdge(getBusinessService(serviceId2), getBusinessService(serviceId3), new Identity());
+        businessServiceManager.addChildEdge(getBusinessService(serviceId3), getBusinessService(serviceId1), new Identity());
     }
 
     private BusinessService createBusinessService(String serviceName) {

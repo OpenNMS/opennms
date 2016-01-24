@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2016 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -21,60 +21,53 @@
  *      http://www.gnu.org/licenses/
  *
  * For more information contact:
- *     OpenNMS(R) Licensing <license@opennms.org>
- *     http://www.opennms.org/
- *     http://www.opennms.com/
+ * OpenNMS(R) Licensing <license@opennms.org>
+ *      http://www.opennms.org/
+ *      http://www.opennms.com/
  *******************************************************************************/
 
 package org.opennms.netmgt.bsm.persistence.api;
 
 import java.util.Set;
 
+import javax.persistence.Column;
+import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.netmgt.events.api.EventConstants;
-import org.opennms.netmgt.model.OnmsMonitoredService;
-
 import com.google.common.collect.Sets;
 
 @Entity
-@Table(name = "bsm_service_ifservices")
+@Table(name = "bsm_service_reductionkeys")
 @PrimaryKeyJoinColumn(name="id")
-public class IPServiceEdge extends BusinessServiceEdge  {
-    // TODO: The distributed poller name (now monitoring system name?) should be part of the edge details
-    public static final String DEFAULT_DISTRIBUTED_POLLER_NAME = "";
+@DiscriminatorValue("reductionkeys")
+public class SingleReductionKeyEdge extends BusinessServiceEdge {
 
-    private OnmsMonitoredService m_ipService;
+    private String reductionKey;
 
-    // NOTE: When we use @Column on this field, Hibernate attempts to serialize the objects as a byte array
-    // Instead, we resort to use @ManyToOne
-    @ManyToOne(optional=false)
-    @JoinColumn(name="ifserviceid", nullable=false)
-    public OnmsMonitoredService getIpService() {
-        return m_ipService;
+    public void setReductionKey(String reductionKey) {
+        this.reductionKey = reductionKey;
     }
 
-    public void setIpService(OnmsMonitoredService ipService) {
-        m_ipService = ipService;
+    // TODO MVR add a constraint that the reductionkey must be unique
+    @Column(name = "reductionkey", nullable = false)
+    public String getReductionKey() {
+        return reductionKey;
     }
 
     @Override
     @Transient
     public Set<String> getReductionKeys() {
-        return ReductionKeyHelper.getReductionKeys(m_ipService);
+        return Sets.newHashSet(reductionKey);
     }
 
     @Override
     public String toString() {
         return com.google.common.base.Objects.toStringHelper(this)
                 .add("super", super.toString())
-                .add("ipService", m_ipService)
+                .add("reductionKey", reductionKey)
                 .toString();
     }
 }

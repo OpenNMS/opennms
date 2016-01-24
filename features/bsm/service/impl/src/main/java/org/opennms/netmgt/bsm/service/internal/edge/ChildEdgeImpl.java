@@ -59,38 +59,10 @@ public class ChildEdgeImpl extends AbstractEdge<BusinessServiceChildEdge> implem
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if (obj == null) {
-            return false;
-        }
-        if (obj == this) {
-            return true;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        final ChildEdge other = (ChildEdge) obj;
-        if (getId() != null) {
-            return getId().equals(other.getId());
-        }
-        return super.equals(obj);
-//        return super.equals(obj) && Objects.equals(getChild(), other.getChild());
-    }
-
-    @Override
-    public int hashCode() {
-        if (getId() != null) {
-            return getId().hashCode();
-        }
-        return super.hashCode();
-//        .hash(getChild(), super.hashCode());
-    }
-
-    @Override
     public String toString() {
         return com.google.common.base.Objects.toStringHelper(this)
                 .add("parent", super.toString())
-                .add("child", this.getChild())
+                .add("child", getChild() == null ? null : getChild().getId())
                 .toString();
     }
 }

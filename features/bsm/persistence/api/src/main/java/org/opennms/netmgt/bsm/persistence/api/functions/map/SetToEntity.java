@@ -56,26 +56,9 @@ public class SetToEntity extends AbstractMapFunctionEntity {
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        final SetToEntity other = (SetToEntity) obj;
-
-        return Objects.equals(m_severity, other.m_severity) && super.equals(obj);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(getId(), m_severity);
-    }
-
-    @Override
     public String toString() {
-        return com.google.common.base.Objects.toStringHelper(this).add("id", getId())
+        return com.google.common.base.Objects.toStringHelper(this)
+                .add("id", getId())
                 .add("severity", getSeverity())
                 .toString();
     }

@@ -35,7 +35,7 @@ import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 
-public class OnmsMonitoredServiceHelper {
+public class ReductionKeyHelper {
 
     // TODO: The distributed poller name (now monitoring system name?) should be part of the edge details
     public static final String DEFAULT_DISTRIBUTED_POLLER_NAME = "";

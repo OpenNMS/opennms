@@ -34,12 +34,14 @@ import java.util.Set;
 import org.opennms.netmgt.bsm.service.model.BusinessService;
 import org.opennms.netmgt.bsm.service.model.IpService;
 import org.opennms.netmgt.bsm.service.model.Status;
+import org.opennms.netmgt.bsm.service.model.edge.ChildEdge;
 import org.opennms.netmgt.bsm.service.model.edge.Edge;
+import org.opennms.netmgt.bsm.service.model.edge.IpServiceEdge;
+import org.opennms.netmgt.bsm.service.model.edge.ReductionKeyEdge;
 import org.opennms.netmgt.bsm.service.model.mapreduce.MapFunction;
 import org.opennms.netmgt.bsm.service.model.mapreduce.ReductionFunction;
-import org.opennms.netmgt.core.service.NodeManager;
 
-public interface BusinessServiceManager extends NodeManager {
+public interface BusinessServiceManager {
 
     List<BusinessService> getAllBusinessServices();
 
@@ -55,14 +57,6 @@ public interface BusinessServiceManager extends NodeManager {
 
     BusinessService getBusinessServiceById(Long id);
 
-    boolean assignIpService(BusinessService service, IpService ipService);
-
-    boolean removeIpService(BusinessService service, IpService ipService);
-
-    boolean assignChildService(BusinessService service, BusinessService childService);
-
-    boolean removeChildService(BusinessService service, BusinessService childService);
-
     Set<BusinessService> getFeasibleChildServices(BusinessService service);
 
     Status getOperationalStatusForBusinessService(BusinessService service);
@@ -72,10 +66,6 @@ public interface BusinessServiceManager extends NodeManager {
     List<IpService> getAllIpServices();
 
     IpService getIpServiceById(Integer id);
-
-    void setIpServices(BusinessService service, Set<IpService> ipServices);
-
-    void setChildServices(BusinessService service, Set<BusinessService> childServices);
 
     /**
      * Triggers a reload of the Business Service Daemon.
@@ -89,4 +79,17 @@ public interface BusinessServiceManager extends NodeManager {
     List<MapFunction> listMapFunctions();
 
     List<ReductionFunction> listReduceFunctions();
+
+    void setChildEdges(BusinessService parentService, Set<ChildEdge> childEdges);
+
+    boolean addChildEdge(BusinessService parent, BusinessService child, MapFunction mapFunction);
+
+    void setIpServiceEdges(BusinessService businessService, Set<IpServiceEdge> ipServiceEdges);
+
+    boolean addIpServiceEdge(BusinessService businessService, IpService ipService, MapFunction mapFunction);
+
+    boolean addReductionKeyEdge(BusinessService businessService, String reductionKey, MapFunction mapFunction);
+
+    void setReductionKeyEdges(BusinessService businessService, Set<ReductionKeyEdge> reductionKeyEdges);
+
 }
