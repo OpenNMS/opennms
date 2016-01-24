@@ -15,8 +15,6 @@
 
   <bean id="daemon" class="org.opennms.netmgt.bsm.daemon.Bsmd" />
 
-  <bean id="businessServiceManager" class="org.opennms.netmgt.bsm.service.internal.BusinessServiceManagerImpl"/>
-
   <bean id="daemonListener" class="org.opennms.netmgt.events.api.AnnotationBasedEventListenerAdapter">
     <property name="annotatedListener" ref="daemon" />
     <property name="eventSubscriptionService" ref="eventSubscriptionService" />

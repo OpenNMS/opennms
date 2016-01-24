@@ -95,11 +95,11 @@ public class BsmTestData {
     }
 
     public OnmsMonitoredService getServiceChild1() {
-        return getChild1().getIpServices().iterator().next();
+        return getChild1().getIpServiceEdges().iterator().next().getIpService();
     }
 
     public OnmsMonitoredService getServiceChild2() {
-        return getChild2().getIpServices().iterator().next();
+        return getChild2().getIpServiceEdges().iterator().next().getIpService();
     }
 
     public int getServiceCount() {

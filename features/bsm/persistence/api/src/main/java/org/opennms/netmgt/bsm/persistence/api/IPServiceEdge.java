@@ -28,7 +28,6 @@
 
 package org.opennms.netmgt.bsm.persistence.api;
 
-import java.util.Objects;
 import java.util.Set;
 
 import javax.persistence.DiscriminatorValue;
@@ -64,35 +63,7 @@ public class IPServiceEdge extends BusinessServiceEdge  {
     @Override
     @Transient
     public Set<String> getReductionKeys() {
-        return OnmsMonitoredServiceHelper.getReductionKeys(m_ipService);
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        final IPServiceEdge other = (IPServiceEdge) obj;
-
-        // OnmsMonitoredService objects don't properly support the equals() and hashCode() methods
-        // so we resort to comparing their IDs, which is sufficient in the case
-        if (!super.equals(obj)) {
-            return false;
-        } else if (m_ipService == null && other.m_ipService != null) {
-            return false;
-        } else if (m_ipService != null && other.m_ipService == null) {
-            return false;
-        }
-
-        return Objects.equals(m_ipService.getId(), other.m_ipService.getId());
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(m_ipService == null ? null : m_ipService.getId());
+        return ReductionKeyHelper.getReductionKeys(m_ipService);
     }
 
     @Override

@@ -28,7 +28,6 @@
 
 package org.opennms.netmgt.bsm.persistence.api;
 
-import java.util.Objects;
 import java.util.Set;
 
 import javax.persistence.DiscriminatorValue;
@@ -67,30 +66,10 @@ public class BusinessServiceChildEdge extends BusinessServiceEdge {
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        final BusinessServiceChildEdge other = (BusinessServiceChildEdge) obj;
-        if (!super.equals(obj)) {
-            return false;
-        }
-        return Objects.equals(child, other.child);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(getId(), child);
-    }
-
-    @Override
     public String toString() {
         return com.google.common.base.Objects.toStringHelper(this)
                 .add("super", super.toString())
-                .add("child", child)
+                .add("child", child == null ? null : child.getId())
                 .toString();
     }
 }

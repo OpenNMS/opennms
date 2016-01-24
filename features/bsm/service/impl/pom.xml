@@ -20,7 +20,7 @@
             <Bundle-RequiredExecutionEnvironment>JavaSE-1.8</Bundle-RequiredExecutionEnvironment>
             <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
             <Bundle-Version>${project.version}</Bundle-Version>
-            <Private-Package>org.opennms.netmgt.bsm.service.internal.*</Private-Package>
+            <Private-Package>org.opennms.netmgt.bsm.service.internal.*,org.opennms.netmgt.core.service.internal.*</Private-Package>
           </instructions>
         </configuration>
       </plugin>

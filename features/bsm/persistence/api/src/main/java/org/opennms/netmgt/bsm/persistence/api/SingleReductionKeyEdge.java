@@ -28,7 +28,6 @@
 
 package org.opennms.netmgt.bsm.persistence.api;
 
-import java.util.Objects;
 import java.util.Set;
 
 import javax.persistence.Column;
@@ -62,26 +61,6 @@ public class SingleReductionKeyEdge extends BusinessServiceEdge {
     @Transient
     public Set<String> getReductionKeys() {
         return Sets.newHashSet(reductionKey);
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        final SingleReductionKeyEdge other = (SingleReductionKeyEdge) obj;
-        if (!super.equals(obj)) {
-            return false;
-        }
-        return Objects.equals(reductionKey, other.reductionKey);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(getId(), getReductionKey());
     }
 
     @Override

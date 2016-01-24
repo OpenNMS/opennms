@@ -141,6 +141,10 @@ public class BusinessServiceEntity {
         m_edges.add(edge);
     }
 
+    public void removeEdge(BusinessServiceEdge edge) {
+        m_edges.remove(edge);
+    }
+
     @Transient
     public Set<IPServiceEdge> getIpServiceEdges() {
         return getEdges(IPServiceEdge.class);
@@ -174,48 +178,6 @@ public class BusinessServiceEntity {
 
     public void setReductionFunction(AbstractReductionFunctionEntity reductionFunction) {
         m_reductionFunction = Objects.requireNonNull(reductionFunction);
-    }
-
-    // Convenient method to retrieve all Business Services children
-    @Transient
-    public Set<BusinessServiceEntity> getChildServices() {
-        Set<BusinessServiceEntity> childServices = Sets.newHashSet();
-        for (BusinessServiceChildEdge eachEdge : getEdges(BusinessServiceChildEdge.class)) {
-            childServices.add(eachEdge.getChild());
-        }
-        return childServices;
-    }
-
-    // Convenient method to retrieve all Ip Services
-    @Transient
-    public Set<OnmsMonitoredService> getIpServices() {
-        Set<OnmsMonitoredService> monitoredServices = Sets.newHashSet();
-        for (IPServiceEdge eachEdge : getEdges(IPServiceEdge.class)) {
-            monitoredServices.add(eachEdge.getIpService());
-        }
-        return monitoredServices;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) return true;
-
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        final BusinessServiceEntity other = (BusinessServiceEntity) obj;
-        return Objects.equals(m_id, other.m_id)
-                && Objects.equals(m_name, other.m_name)
-                && Objects.equals(m_attributes, other.m_attributes)
-                && Objects.equals(m_edges, other.m_edges);
-    }
-
-    @Override
-    public int hashCode() {
-        return com.google.common.base.Objects.hashCode(m_id, m_name, m_attributes, m_edges);
     }
 
     @Override

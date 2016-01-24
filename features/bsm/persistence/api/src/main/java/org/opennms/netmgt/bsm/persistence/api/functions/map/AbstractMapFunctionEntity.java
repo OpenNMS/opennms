@@ -28,8 +28,6 @@
 
 package org.opennms.netmgt.bsm.persistence.api.functions.map;
 
-import java.util.Objects;
-
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorColumn;
 import javax.persistence.DiscriminatorType;
@@ -64,26 +62,9 @@ public abstract class AbstractMapFunctionEntity {
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        final AbstractMapFunctionEntity other = (AbstractMapFunctionEntity) obj;
-
-        return Objects.equals(m_id, other.m_id);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(m_id);
-    }
-
-    @Override
     public String toString() {
-        return com.google.common.base.Objects.toStringHelper(this).add("id", m_id)
+        return com.google.common.base.Objects.toStringHelper(this)
+                .add("id", m_id)
                 .toString();
     }
 }

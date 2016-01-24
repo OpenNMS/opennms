@@ -39,7 +39,7 @@ import org.codehaus.jackson.map.ObjectMapper;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.bsm.persistence.api.BusinessServiceEntity;
-import org.opennms.netmgt.bsm.persistence.api.OnmsMonitoredServiceHelper;
+import org.opennms.netmgt.bsm.persistence.api.ReductionKeyHelper;
 import org.opennms.netmgt.bsm.persistence.api.functions.map.AbstractMapFunctionEntity;
 import org.opennms.netmgt.bsm.persistence.api.functions.reduce.AbstractReductionFunctionEntity;
 import org.opennms.netmgt.bsm.persistence.api.functions.reduce.MostCriticalEntity;
@@ -125,14 +125,14 @@ public class BsmTestUtils {
         }).collect(Collectors.toSet()));
         response.setIpServices(input.getIpServiceEdges().stream().map(it -> {
             IpServiceResponseDTO ipService = new IpServiceResponseDTO();
-            ipService.setReductionKeys(OnmsMonitoredServiceHelper.getReductionKeys(it.getIpService()));
+            ipService.setReductionKeys(ReductionKeyHelper.getReductionKeys(it.getIpService()));
             ipService.setNodeLabel("dummy"); // do not know that here
             ipService.setServiceName(it.getIpService().getServiceName());
             ipService.setId(it.getIpService().getId());
             ipService.setIpAddress(InetAddressUtils.toIpAddrString(it.getIpService().getIpAddress()));
 
             IpServiceEdgeResponseDTO edge = new IpServiceEdgeResponseDTO();
-            edge.setReductionKeys(OnmsMonitoredServiceHelper.getReductionKeys(it.getIpService()));
+            edge.setReductionKeys(ReductionKeyHelper.getReductionKeys(it.getIpService()));
             edge.setIpService(ipService);
             edge.setMapFunction(transform(it.getMapFunction()));
             edge.setId(it.getId());

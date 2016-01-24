@@ -83,7 +83,7 @@ public interface BusinessService {
 
     void addChildEdge(BusinessService child, MapFunction mapFunction);
 
-    void removeChildEdge(BusinessService childService);
+//    void removeChildEdge(BusinessService childService);
 
     void setLevel(int level);
 
