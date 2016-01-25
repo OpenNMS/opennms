@@ -46,7 +46,7 @@ import org.opennms.features.topology.plugins.browsers.AlarmDaoContainer;
 import org.opennms.features.topology.plugins.browsers.AlarmIdColumnLinkGenerator;
 import org.opennms.features.topology.plugins.browsers.AlarmTable;
 import org.opennms.features.topology.plugins.browsers.AlarmTableCellStyleGenerator;
-import org.opennms.features.topology.plugins.browsers.OnmsDaoContainer;
+import org.opennms.features.topology.plugins.browsers.OnmsVaadinContainer;
 import org.opennms.features.topology.plugins.browsers.SeverityGenerator;
 import org.opennms.features.vaadin.dashboard.config.ui.editors.CriteriaBuilderHelper;
 import org.opennms.features.vaadin.dashboard.model.AbstractDashlet;
@@ -247,7 +247,7 @@ public class AlarmDetailsDashlet extends AbstractDashlet {
                     List<Restriction> restrictions = new LinkedList<Restriction>();
                     restrictions.add(new InRestriction("id", alarmIds));
 
-                    ((OnmsDaoContainer<?, ?>) m_alarmTable.getContainerDataSource()).setRestrictions(restrictions);
+                    ((OnmsVaadinContainer<?, ?>) m_alarmTable.getContainerDataSource()).setRestrictions(restrictions);
 
                     setBoosted(checkBoosted(alarms));
 

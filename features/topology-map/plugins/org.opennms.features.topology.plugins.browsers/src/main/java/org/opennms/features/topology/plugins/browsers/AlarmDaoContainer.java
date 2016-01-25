@@ -46,12 +46,12 @@ import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.osgi.EventConsumer;
 
-public class AlarmDaoContainer extends OnmsDaoContainer<OnmsAlarm,Integer> {
+public class AlarmDaoContainer extends OnmsVaadinContainer<OnmsAlarm,Integer> {
 
     private static final long serialVersionUID = -4026870931086916312L;
 
     public AlarmDaoContainer(AlarmDao dao) {
-        super(OnmsAlarm.class, dao);
+        super(OnmsAlarm.class, new OnmsDaoContainerDatasource<>(dao));
         addBeanToHibernatePropertyMapping("nodeLabel", "node.label");
     }
 

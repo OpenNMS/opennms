@@ -86,7 +86,7 @@ public class OnmsDaoContainerIT {
 
     @Test
     public void verifyCacheIsReloadedCorrectly() {
-        OnmsDaoContainer<OnmsAlarm, Integer> container = new OnmsDaoContainer<OnmsAlarm, Integer>(OnmsAlarm.class, m_alarmDao) {
+        OnmsVaadinContainer<OnmsAlarm, Integer> container = new OnmsVaadinContainer<OnmsAlarm, Integer>(OnmsAlarm.class, new OnmsDaoContainerDatasource<>(m_alarmDao)) {
             @Override
             protected Integer getId(OnmsAlarm bean) {
                 return bean == null ? null : bean.getId();

@@ -47,7 +47,9 @@ public interface BusinessServiceManager extends NodeManager {
 
     List<BusinessServiceDTO> search(BusinessServiceSearchCriteria businessServiceSearchCriteria);
 
-    Long save(BusinessServiceDTO newObject);
+    int countMatching(Criteria criteria);
+
+    BusinessService createBusinessService();
 
     <T extends Edge> T createEdge(Class<T> type, BusinessService child, MapFunction mapFunction);
 

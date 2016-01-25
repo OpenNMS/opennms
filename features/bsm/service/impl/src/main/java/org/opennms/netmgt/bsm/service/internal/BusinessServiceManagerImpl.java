@@ -70,6 +70,7 @@ import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.model.OnmsMonitoredService;
+import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
@@ -104,6 +105,22 @@ public class BusinessServiceManagerImpl implements BusinessServiceManager {
         return getDao().findAll().stream()
                 .map(s -> new BusinessServiceImpl(this, s))
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<BusinessService> findMatching(Criteria criteria) {
+        criteria = transform(criteria);
+        List<BusinessServiceEntity> all = getDao().findMatching(criteria);
+        if (all == null) {
+            return null;
+        }
+        return all.stream().map(e -> new BusinessServiceImpl(this, e)).collect(Collectors.toList());
+    }
+
+    @Override
+    public int countMatching(Criteria criteria) {
+        criteria = transform(criteria);
+        return getDao().countMatching(criteria);
     }
 
     @Override
@@ -339,8 +356,21 @@ public class BusinessServiceManagerImpl implements BusinessServiceManager {
         return Lists.newArrayList(new MostCritical(), new Threshold());
     }
 
+    @Override
+    public Node getNodeById(int nodeId) {
+        return new NodeImpl(this, getNodeEntity(nodeId));
+    }
+
     protected BusinessServiceDao getDao() {
         return this.businessServiceDao;
+    }
+
+    private OnmsNode getNodeEntity(int nodeId) {
+        final OnmsNode entity = nodeDao.get(nodeId);
+        if (entity == null) {
+            throw new NoSuchElementException();
+        }
+        return null;
     }
 
     private BusinessServiceEntity getBusinessServiceEntity(BusinessService service) throws NoSuchElementException {
@@ -367,8 +397,16 @@ public class BusinessServiceManagerImpl implements BusinessServiceManager {
         return monitoredService;
     }
 
-    @Override
-    public Node getNodeById(int nodeId) {
-        return new NodeImpl(this, nodeDao.get(nodeId));
+    /**
+     * The criteria is build on BusinessService classes.
+     * However we want to use the dao to filter. Therefore we have to perform a mapping from BusinessService to BusinessServiceEntity.
+     *
+     * @param input
+     * @return
+     */
+    private Criteria transform(Criteria input) {
+        Criteria criteria = input.clone();
+        criteria.setClass(BusinessServiceEntity.class);
+        return criteria;
     }
 }

@@ -177,10 +177,10 @@ public class AlarmTable extends SelectionAwareTable implements HasExtraComponent
 	private Set<ItemSetChangeListener> m_itemSetChangeListeners = new HashSet<ItemSetChangeListener>();
 
 	/**
-	 *  Leave OnmsDaoContainer without generics; the Aries blueprint code cannot match up
+	 *  Leave OnmsVaadinContainer without generics; the Aries blueprint code cannot match up
 	 *  the arguments if you put the generic types in.
 	 */
-	public AlarmTable(final String caption, final OnmsDaoContainer container, final AlarmRepository alarmRepo) {
+	public AlarmTable(final String caption, final OnmsVaadinContainer container, final AlarmRepository alarmRepo) {
 		super(caption, container);
 		m_alarmRepo = alarmRepo;
 

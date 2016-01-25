@@ -36,7 +36,7 @@ public class PageTest {
 
     @Test
     public void testUpdateOffset() {
-        OnmsDaoContainer.Page p = new OnmsDaoContainer.Page(30, new OnmsDaoContainer.Size(new OnmsDaoContainer.SizeReloadStrategy() {
+        OnmsVaadinContainer.Page p = new OnmsVaadinContainer.Page(30, new OnmsVaadinContainer.Size(new OnmsVaadinContainer.SizeReloadStrategy() {
             @Override
             public int reload() {
                 return 400;

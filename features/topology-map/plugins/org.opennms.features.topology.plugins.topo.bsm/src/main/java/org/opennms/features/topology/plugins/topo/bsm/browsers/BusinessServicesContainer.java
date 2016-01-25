@@ -33,17 +33,15 @@ import java.util.HashSet;
 import java.util.List;
 
 import org.opennms.features.topology.api.VerticesUpdateManager;
-import org.opennms.features.topology.plugins.browsers.OnmsDaoContainer;
-import org.opennms.netmgt.bsm.persistence.api.BusinessService;
-import org.opennms.netmgt.bsm.persistence.api.BusinessServiceDao;
-import org.opennms.netmgt.bsm.persistence.api.BusinessServiceEntity;
-import org.opennms.netmgt.dao.api.OnmsDao;
+import org.opennms.features.topology.plugins.browsers.OnmsContainerDatasource;
+import org.opennms.features.topology.plugins.browsers.OnmsVaadinContainer;
+import org.opennms.netmgt.bsm.service.model.BusinessService;
 
-public class BusinessServicesDaoContainer extends OnmsDaoContainer<BusinessService, Long> {
+public class BusinessServicesContainer extends OnmsVaadinContainer<BusinessService, Long> {
     private static final long serialVersionUID = 1L;
 
-    public BusinessServicesDaoContainer(BusinessServiceDao businessServiceDao) {
-        super(BusinessService.class, businessServiceDao);
+    public BusinessServicesContainer(BusinessServiceContainerDatasource datasource) {
+        super(BusinessService.class, datasource);
     }
 
     @Override
@@ -57,10 +55,10 @@ public class BusinessServicesDaoContainer extends OnmsDaoContainer<BusinessServi
     }
 
     @Override
-    protected List<BusinessServiceEntity> getItemsForCache(OnmsDao<BusinessServiceEntity, Long> dao, Page page) {
+    protected List<BusinessService> getItemsForCache(OnmsContainerDatasource<BusinessService, Long> datasource, Page page) {
         // TODO MVR somehow hibernate returns more objects than there are actually. Probably a hashCode(), equals() thing
         // see BSM-104 for more details. We use the following work around to get past that problem for now
-        List<BusinessServiceEntity> itemsForCache = super.getItemsForCache(dao, page);
+        List<BusinessService> itemsForCache = super.getItemsForCache(datasource, page);
         return new ArrayList<>(new HashSet<>(itemsForCache));
     }
 }

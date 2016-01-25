@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  * <p>
- * Copyright (C) 2015 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2015 The OpenNMS Group, Inc.
+ * Copyright (C) 2016 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
  * <p>
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  * <p>
@@ -26,28 +26,45 @@
  * http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.plugins.topo.application.browsers;
+package org.opennms.features.topology.plugins.browsers;
 
-import org.opennms.features.topology.api.VerticesUpdateManager;
-import org.opennms.features.topology.plugins.browsers.OnmsVaadinContainer;
-import org.opennms.features.topology.plugins.browsers.OnmsDaoContainerDatasource;
-import org.opennms.netmgt.dao.api.ApplicationDao;
-import org.opennms.netmgt.model.OnmsApplication;
+import java.io.Serializable;
+import java.util.List;
+import java.util.Objects;
 
-public class ApplicationDaoContainer extends OnmsVaadinContainer<OnmsApplication, Integer> {
+import org.opennms.core.criteria.Criteria;
+import org.opennms.netmgt.dao.api.OnmsDao;
 
-    public ApplicationDaoContainer(ApplicationDao applicationDao) {
-        super(OnmsApplication.class, new OnmsDaoContainerDatasource<>(applicationDao));
+public class OnmsDaoContainerDatasource<T, K extends Serializable> implements OnmsContainerDatasource<T, K> {
+
+    private final OnmsDao<T, K> dao;
+
+    public OnmsDaoContainerDatasource(OnmsDao<T, K> dao) {
+        this.dao = Objects.requireNonNull(dao);
     }
 
     @Override
-    protected Integer getId(OnmsApplication bean) {
-        return bean == null ? null : bean.getId();
+    public void clear() {
+        dao.clear();
     }
 
     @Override
-    public void verticesUpdated(VerticesUpdateManager.VerticesUpdateEvent event) {
-
+    public void delete(K itemId) {
+        dao.delete(itemId);
     }
 
+    @Override
+    public List<T> findMatching(Criteria criteria) {
+        return dao.findMatching(criteria);
+    }
+
+    @Override
+    public int countMatching(Criteria criteria) {
+        return dao.countMatching(criteria);
+    }
+
+    @Override
+    public T createInstance(Class<T> itemClass) throws IllegalAccessException, InstantiationException {
+        return itemClass.newInstance();
+    }
 }

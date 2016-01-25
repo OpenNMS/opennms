@@ -47,7 +47,6 @@ import org.opennms.features.topology.api.VerticesUpdateManager;
 import org.opennms.features.topology.api.topo.GroupRef;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
-import org.opennms.netmgt.dao.api.OnmsDao;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -64,11 +63,11 @@ import com.vaadin.data.util.BeanItem;
  * @param <T> The type of the elements in the container.
  * @param <K> the key of the elements in the container.
  */
-public abstract class OnmsDaoContainer<T,K extends Serializable> implements Container, Container.Sortable, Container.Ordered, Container.Indexed, Container.ItemSetChangeNotifier, VerticesUpdateManager.VerticesUpdateListener {
+public abstract class OnmsVaadinContainer<T,K extends Serializable> implements Container, Container.Sortable, Container.Ordered, Container.Indexed, Container.ItemSetChangeNotifier, VerticesUpdateManager.VerticesUpdateListener {
     private static final long serialVersionUID = -9131723065433979979L;
 
     protected static final int DEFAULT_PAGE_SIZE = 200; // items per page/cache
-    private static final Logger LOG = LoggerFactory.getLogger(OnmsDaoContainer.class);
+    private static final Logger LOG = LoggerFactory.getLogger(OnmsVaadinContainer.class);
 
     protected static class Page {
         protected int length;
@@ -184,7 +183,7 @@ public abstract class OnmsDaoContainer<T,K extends Serializable> implements Cont
 
         public void reload(Page page) {
             reset();
-            List<T> beans = getItemsForCache(m_dao, page);
+            List<T> beans = getItemsForCache(m_datasource, page);
             if (beans == null) return;
             int rowNumber = page.getStart();
             for (T eachBean : beans) {
@@ -199,7 +198,7 @@ public abstract class OnmsDaoContainer<T,K extends Serializable> implements Cont
         }
     }
 
-    private final OnmsDao<T,K> m_dao;
+    private final OnmsContainerDatasource<T,K> m_datasource;
 
     // ORDER/SORTING
     private final List<Order> m_orders = new ArrayList<Order>();
@@ -226,13 +225,13 @@ public abstract class OnmsDaoContainer<T,K extends Serializable> implements Cont
 
     private Map<Object,Class<?>> m_properties;
 
-    public OnmsDaoContainer(Class<T> itemClass, OnmsDao<T,K> dao) {
+    public OnmsVaadinContainer(Class<T> itemClass, OnmsContainerDatasource<T,K> datasource) {
         m_itemClass = itemClass;
-        m_dao = dao;
+        m_datasource = datasource;
         size = new Size(new SizeReloadStrategy() {
             @Override
             public int reload() {
-                return m_dao.countMatching(getCriteria(null, false));  // no paging!!!!
+                return m_datasource.countMatching(getCriteria(null, false));  // no paging!!!!
             }
         });
         page = new Page(DEFAULT_PAGE_SIZE, size);
@@ -290,13 +289,13 @@ public abstract class OnmsDaoContainer<T,K extends Serializable> implements Cont
 
     @Override
     public boolean removeAllItems() throws UnsupportedOperationException {
-        m_dao.clear();
+        m_datasource.clear();
         return true;
     }
 
     @Override
     public boolean removeItem(Object itemId) throws UnsupportedOperationException {
-        m_dao.delete((K)itemId);
+        m_datasource.delete((K)itemId);
         return true;
     }
 
@@ -421,7 +420,7 @@ public abstract class OnmsDaoContainer<T,K extends Serializable> implements Cont
             private static final long serialVersionUID = -2796401359570611938L;
             @Override
             public Container getContainer() {
-                return OnmsDaoContainer.this;
+                return OnmsVaadinContainer.this;
             }
         };
         for (ItemSetChangeListener listener : m_itemSetChangeListeners) {
@@ -597,8 +596,8 @@ public abstract class OnmsDaoContainer<T,K extends Serializable> implements Cont
 
     }
 
-    protected List<T> getItemsForCache(final OnmsDao<T, K> dao, final Page page) {
-        return dao.findMatching(getCriteria(page, true));
+    protected List<T> getItemsForCache(final OnmsContainerDatasource<T, K> datasource, final Page page) {
+        return datasource.findMatching(getCriteria(page, true));
     }
 
     protected Cache getCache() {
@@ -614,7 +613,7 @@ public abstract class OnmsDaoContainer<T,K extends Serializable> implements Cont
             m_properties = new TreeMap<Object,Class<?>>();
             BeanItem<T> item = null;
             try {
-                item = new BeanItem<T>(m_itemClass.newInstance());
+                item = new BeanItem<T>(m_datasource.createInstance(m_itemClass));
             } catch (InstantiationException e) {
                 LoggerFactory.getLogger(getClass()).error("Class {} does not have a default constructor. Cannot create an instance.", getItemClass());
             } catch (IllegalAccessException e) {
