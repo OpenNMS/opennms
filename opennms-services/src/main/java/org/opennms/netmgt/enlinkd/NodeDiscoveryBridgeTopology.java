@@ -497,7 +497,6 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
             return;
         }
         LOG.info("run: node: {}, getLock broadcast domain.", getNodeId());
-        setBridgeElements(m_linkd.getQueryManager().getBridgeElements(m_domain.getBridgeNodesOnDomain()));
         super.run();
         m_domain.releaseLock(this);
         LOG.info("run: node: {}, releaseLock broadcast domain.", getNodeId());
@@ -521,6 +520,7 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
             m_rootBridgeBFT = m_linkd.getQueryManager().getBridgeTopologyRootBFT(rootBridgeId);
             LOG.info("run: node: {}, broadcast domain has root bridge with bft size: {}.", getNodeId(),m_rootBridgeBFT.size());
         }        
+        setBridgeElements(m_linkd.getQueryManager().getBridgeElements(m_domain.getBridgeNodesOnDomain()));
         
         for (Integer nodeid: m_domain.getBridgeNodesOnDomain()) {
             LOG.debug("run: node: {}, getting update bft for node {} on domain", getNodeId(),nodeid);
@@ -536,7 +536,6 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
             return;
         }
         
-        LOG.info("run: node: {}, getLock broadcast domain with topology change found.", getNodeId());
         LOG.info("run: node: {}, start: broadcast domain topology calculation.", getNodeId());
         try {
             calculate();
@@ -822,7 +821,7 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
                          electedRoot.getId(),m_domain.getRootBridgeId());
                 calculate(m_domain.getRootBridge(), m_rootBridgeBFT,
                                 electedRoot, electedRootBFT);
-                hierarchySetUp(electedRoot);
+                m_domain.hierarchySetUp(electedRoot);
            }
            m_rootBridgeBFT = electedRootBFT;
            LOG.debug("calculate: set bft for root bridge {}  size:  {}",
@@ -830,7 +829,7 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
         } else if (!electedRoot.isRootBridge() && !m_notYetParsedBFTMap.containsKey(electedRoot)){
             LOG.info("calculate: elected root bridge: {}, is new root bridge with old bft",
                      electedRoot.getId());
-            hierarchySetUp(electedRoot);
+            m_domain.hierarchySetUp(electedRoot);
             m_rootBridgeBFT =getBFT(electedRoot);
             LOG.debug("calculate: set bft for root bridge {}  size:  {}",
                            electedRoot.getId(), m_rootBridgeBFT.size());
@@ -854,7 +853,7 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
                 if (newRootBridge == null)
                     continue;
                 m_rootBridgeBFT = getBFT(newRootBridge);
-                hierarchySetUp(newRootBridge);
+                m_domain.hierarchySetUp(newRootBridge);
                 break;
             }
         }
@@ -947,37 +946,6 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
                 return null;
             }
         return goUp(up, bridge,++level);
-    }
-
-    public void hierarchySetUp(Bridge root) {
-        LOG.debug("calculate: hierarchySetUp: setting segments order with root bridge: {}.", 
-                  root.getId());
-        if (root.isRootBridge())
-            return;
-        root.setRootBridge(true);
-        root.setRootPort(null);
-        if (m_domain.getBridges().size() == 1)
-            return;
-        for (SharedSegment segment: m_domain.getSharedSegmentOnTopologyForBridge(root.getId())) {
-            segment.setDesignatedBridge(root.getId());
-            tier(segment, root.getId());
-        }
-    }
-    
-    private void tier(SharedSegment segment, Integer rootid) {
-        for (Integer bridgeid: segment.getBridgeIdsOnSegment()) {
-            if (bridgeid.intValue() == rootid.intValue())
-                continue;
-            Bridge bridge = m_domain.getBridge(bridgeid);
-            bridge.setRootPort(segment.getPortForBridge(bridgeid));
-            bridge.setRootBridge(false);
-            for (SharedSegment s2: m_domain.getSharedSegmentOnTopologyForBridge(bridgeid)) {
-                if (s2.getDesignatedBridge().intValue() == rootid.intValue())
-                    continue;
-                s2.setDesignatedBridge(bridgeid);
-                tier(s2,bridgeid);
-            }
-        }
     }
 }
 

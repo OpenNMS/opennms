@@ -49,6 +49,7 @@ import org.opennms.netmgt.dao.support.UpsertTemplate;
 import org.opennms.netmgt.model.BridgeBridgeLink;
 import org.opennms.netmgt.model.BridgeElement;
 import org.opennms.netmgt.model.BridgeMacLink;
+import org.opennms.netmgt.model.BridgeMacLink.BridgeDot1qTpFdbStatus;
 import org.opennms.netmgt.model.BridgeStpLink;
 import org.opennms.netmgt.model.CdpElement;
 import org.opennms.netmgt.model.CdpLink;
@@ -602,7 +603,8 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
 
     @Override
     public void store(int nodeId, List<BridgeMacLink> bft) {
-        Map<BridgeMacLinkHash,BridgeMacLink> effectiveBFT=new HashMap<BridgeMacLinkHash,BridgeMacLink>();        Set<String> incomingSet = new HashSet<String>();
+        Map<BridgeMacLinkHash,BridgeMacLink> effectiveBFT=new HashMap<BridgeMacLinkHash,BridgeMacLink>();        
+        Set<String> incomingSet = new HashSet<String>();
         for (BridgeMacLink link : bft) {
             OnmsNode node = new OnmsNode();
             node.setId(nodeId);
@@ -803,17 +805,13 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
 
     @Override
     public void loadBridgeTopology() {
-        Set<BroadcastDomain> domains = new HashSet<BroadcastDomain>();
-
         List<SharedSegment> segments = new ArrayList<SharedSegment>();
         for (BridgeMacLink link : m_bridgeMacLinkDao.findAll()) {
+            link.setBridgeDot1qTpFdbStatus(BridgeDot1qTpFdbStatus.DOT1D_TP_FDB_STATUS_LEARNED);
             for (SharedSegment segment : segments) {
-                if (segment.containsMac(link.getMacAddress())) {
-                    segment.add(link);
-                    break;
-                }
-                if (segment.containsPort(link.getNode().getId(),
-                                         link.getBridgePort())) {
+                if (segment.containsMac(link.getMacAddress())
+                        || segment.containsPort(link.getNode().getId(),
+                                                link.getBridgePort())) {
                     segment.add(link);
                     break;
                 }
@@ -826,12 +824,9 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
         for (BridgeBridgeLink link : m_bridgeBridgeLinkDao.findAll()) {
             for (SharedSegment segment : segments) {
                 if (segment.containsPort(link.getNode().getId(),
-                                         link.getBridgePort())) {
-                    segment.add(link);
-                    break;
-                }
-                if (segment.containsPort(link.getDesignatedNode().getId(),
-                                         link.getDesignatedPort())) {
+                                         link.getBridgePort())
+                     || segment.containsPort(link.getDesignatedNode().getId(),
+                                             link.getDesignatedPort())) {
                     segment.add(link);
                     break;
                 }
@@ -840,13 +835,46 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
             segment.add(link);
             segments.add(segment);
         }
-
-        // Assign the segment to domain
+        Set<Set<Integer>> nodelinked = new HashSet<Set<Integer>>();
+        for (SharedSegment segmentA: segments) {
+            if (segmentA.getBridgeIdsOnSegment().size() == 1)
+                continue;
+            System.out.println("--------");
+            System.out.println("nodelinked: "+nodelinked);
+            System.out.println("nodes on segment: " + segmentA.getBridgeIdsOnSegment());
+            boolean tobeadded = true;
+            Set<Integer> intersection=new HashSet<Integer>(segmentA.getBridgeIdsOnSegment());
+            for (Set<Integer> nodes : nodelinked) {
+                System.out.println("nodes on set: " + nodes);
+                intersection.retainAll(nodes);
+                System.out.println("intersection: "+intersection);
+                if (!intersection.isEmpty()) {
+                    nodes.addAll(segmentA.getBridgeIdsOnSegment());
+                    tobeadded=false;
+                    break;
+                }
+            }
+            if (tobeadded)
+                nodelinked.add(new HashSet<Integer>(segmentA.getBridgeIdsOnSegment()));
+        }
+        
+        System.out.println(nodelinked);
+        Set<BroadcastDomain> domains = new HashSet<BroadcastDomain>();
+        for (Set<Integer> nodes : nodelinked) {
+            BroadcastDomain domain = new BroadcastDomain();
+            for (Integer nodeid: nodes)
+                domain.addBridge(new Bridge(nodeid));
+            domains.add(domain);
+        }
+        // Assign the segment to domain and add to single nodes
         for (SharedSegment segment : segments) {
+            System.out.println("Adding segment: " + segment.getBridgeIdsOnSegment());
             BroadcastDomain domain = null;
-            for (BroadcastDomain curdomain : domains) {
-                if (curdomain.containsAtleastOne(segment.getBridgeIdsOnSegment())) {
-                    domain = curdomain;
+            for (BroadcastDomain cdomain: domains) {
+                System.out.println("Parsing domain: " + cdomain.getBridgeNodesOnDomain());
+                if (cdomain.containsAtleastOne(segment.getBridgeIdsOnSegment())) {
+                    domain = cdomain;
+                    System.out.println("Matched domain: "+cdomain.getBridgeNodesOnDomain());
                     break;
                 }
             }

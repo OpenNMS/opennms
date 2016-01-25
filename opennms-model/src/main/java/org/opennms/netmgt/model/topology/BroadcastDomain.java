@@ -112,9 +112,6 @@ public class BroadcastDomain {
     public void loadTopologyEntry(SharedSegment segment) {
         segment.setBroadcastDomain(this);
         m_topology.add(segment);
-        for (Integer nodeId : segment.getBridgeIdsOnSegment()) {
-            m_bridges.add(new Bridge(nodeId));
-        }
     }
         
     public boolean containsAtleastOne(Set<Integer> nodeids) {
@@ -127,9 +124,11 @@ public class BroadcastDomain {
         return false;
     }
     
-    public boolean containBridgeId(Integer nodeid) {
+    public boolean containBridgeId(int nodeid) {
+        System.out.println("getting domain for bridge: " + nodeid);
         for (Bridge bridge: m_bridges) {
-            if (bridge.getId().intValue() == nodeid.intValue())
+            System.out.println("parsing bridge: " + bridge.getId());
+            if (bridge.getId().intValue() == nodeid)
                 return true;
         }
         return false;
@@ -203,4 +202,34 @@ public class BroadcastDomain {
         }
         return null;
     }    
+    
+    public void hierarchySetUp(Bridge root) {
+        if (root.isRootBridge())
+            return;
+        root.setRootBridge(true);
+        root.setRootPort(null);
+        if (m_bridges.size() == 1)
+            return;
+        for (SharedSegment segment: getSharedSegmentOnTopologyForBridge(root.getId())) {
+            segment.setDesignatedBridge(root.getId());
+            tier(segment, root.getId());
+        }
+    }
+    
+    private void tier(SharedSegment segment, Integer rootid) {
+        for (Integer bridgeid: segment.getBridgeIdsOnSegment()) {
+            if (bridgeid.intValue() == rootid.intValue())
+                continue;
+            Bridge bridge = getBridge(bridgeid);
+            bridge.setRootPort(segment.getPortForBridge(bridgeid));
+            bridge.setRootBridge(false);
+            for (SharedSegment s2: getSharedSegmentOnTopologyForBridge(bridgeid)) {
+                if (s2.getDesignatedBridge() != null && s2.getDesignatedBridge().intValue() == rootid.intValue())
+                    continue;
+                s2.setDesignatedBridge(bridgeid);
+                tier(s2,bridgeid);
+            }
+        }
+    }
+
 }

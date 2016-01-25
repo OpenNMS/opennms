@@ -46,8 +46,6 @@ import org.opennms.netmgt.config.enlinkd.EnlinkdConfiguration;
 import org.opennms.netmgt.model.topology.Bridge;
 import org.opennms.netmgt.model.topology.BroadcastDomain;
 import org.opennms.netmgt.model.topology.SharedSegment;
-//FIXME test Clean topology for bridge
-//FIXME test Clean topology for root
 public class BroadcastDomainTest extends EnLinkdTestHelper {
 
     EnhancedLinkd linkd;
@@ -681,6 +679,17 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
 
     }
 
+    //FIXME test Clean topology for bridge
+    @Test
+    public void testCleanTopology() {
+        
+    }
+    
+    //FIXME test Clean topology for root
+    @Test 
+    public void testCleanTopologyRoot() {
+    }
+
     @Test 
     public void testHierarchySetUp() {
         DEFGHILTopology topology = new DEFGHILTopology();
@@ -707,7 +716,7 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
         
         topology.check(ndbt.getDomain().getTopology());
         
-        ndbt.hierarchySetUp(domain.getBridge(topology.nodeGId));
+        domain.hierarchySetUp(domain.getBridge(topology.nodeGId));
         assertEquals(topology.nodeGId, ndbt.getDomain().getRootBridgeId());
         assertEquals(true, ndbt.getDomain().getBridge(topology.nodeGId).isRootBridge());
         assertEquals(null, ndbt.getDomain().getBridge(topology.nodeGId).getRootPort());

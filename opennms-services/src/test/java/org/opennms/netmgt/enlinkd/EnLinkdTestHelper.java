@@ -197,7 +197,19 @@ public abstract class EnLinkdTestHelper {
         System.err.println("------BridgeMacLink-----");
         
     }
-    
+
+    public static void printStoredBridgeMacLink(BridgeMacLink mlink) {
+        System.err.println("------BridgeMacLink-----");
+        System.err.println("Create time: " + mlink.getBridgeMacLinkCreateTime());
+        System.err.println("Last poll time: " + mlink.getBridgeMacLinkLastPollTime());
+        System.err.println("nodeid: " + mlink.getNode().getId());
+        System.err.println("bridgeport: " + mlink.getBridgePort());
+        System.err.println("ifindex: " + mlink.getBridgePortIfIndex());
+        System.err.println("mac: " + mlink.getMacAddress());
+        System.err.println("------BridgeMacLink-----");
+        
+    }
+
 
     
     public static void printBridgeBridgeLink(BridgeBridgeLink blink) {
@@ -350,6 +362,7 @@ public abstract class EnLinkdTestHelper {
                     assertEquals(portA,shared.getDesignatedPort());
                     assertTrue(!shared.noMacsOnSegment());
                     BridgeMacLink link = links.iterator().next();
+                    assertEquals(BridgeDot1qTpFdbStatus.DOT1D_TP_FDB_STATUS_LEARNED, link.getBridgeDot1qTpFdbStatus());
                     assertEquals(nodeAId, link.getNode().getId());
                     assertEquals(portA,link.getBridgePort());
                     assertEquals(mac1, link.getMacAddress());
@@ -359,6 +372,7 @@ public abstract class EnLinkdTestHelper {
                     assertEquals(2, links.size());
                     assertTrue(!shared.noMacsOnSegment());
                     for (BridgeMacLink link: links) {
+                        assertEquals(BridgeDot1qTpFdbStatus.DOT1D_TP_FDB_STATUS_LEARNED, link.getBridgeDot1qTpFdbStatus());
                         assertEquals(mac2, link.getMacAddress());
                         boolean pass1 = true;
                         boolean pass2 = true;
@@ -378,6 +392,7 @@ public abstract class EnLinkdTestHelper {
                     assertEquals(portC,shared.getDesignatedPort());
                     assertTrue(!shared.noMacsOnSegment());
                     BridgeMacLink link = links.iterator().next();
+                    assertEquals(BridgeDot1qTpFdbStatus.DOT1D_TP_FDB_STATUS_LEARNED, link.getBridgeDot1qTpFdbStatus());
                     assertEquals(nodeCId, link.getNode().getId());
                     assertEquals(portC,link.getBridgePort());
                     assertEquals(mac3, link.getMacAddress());
@@ -409,6 +424,7 @@ public abstract class EnLinkdTestHelper {
                     assertEquals(portA,shared.getDesignatedPort());
                     assertTrue(!shared.noMacsOnSegment());
                     BridgeMacLink link = links.iterator().next();
+                    assertEquals(BridgeDot1qTpFdbStatus.DOT1D_TP_FDB_STATUS_LEARNED, link.getBridgeDot1qTpFdbStatus());
                     assertEquals(nodeAId, link.getNode().getId());
                     assertEquals(portA,link.getBridgePort());
                     assertEquals(mac1, link.getMacAddress());
@@ -429,6 +445,7 @@ public abstract class EnLinkdTestHelper {
                     assertEquals(portBC,shared.getDesignatedPort());
                     assertTrue(!shared.noMacsOnSegment());
                     BridgeMacLink link = links.iterator().next();
+                    assertEquals(BridgeDot1qTpFdbStatus.DOT1D_TP_FDB_STATUS_LEARNED, link.getBridgeDot1qTpFdbStatus());
                     assertEquals(nodeBId, link.getNode().getId());
                     assertEquals(portBC,link.getBridgePort());
                     assertEquals(mac3, link.getMacAddress());
@@ -461,6 +478,7 @@ public abstract class EnLinkdTestHelper {
                     assertEquals(portBA,shared.getDesignatedPort());
                     assertTrue(!shared.noMacsOnSegment());
                     BridgeMacLink link = links.iterator().next();
+                    assertEquals(BridgeDot1qTpFdbStatus.DOT1D_TP_FDB_STATUS_LEARNED, link.getBridgeDot1qTpFdbStatus());
                     assertEquals(nodeBId, link.getNode().getId());
                     assertEquals(portBA,link.getBridgePort());
                     assertEquals(mac1, link.getMacAddress());
@@ -471,6 +489,7 @@ public abstract class EnLinkdTestHelper {
                     assertEquals(portB,shared.getDesignatedPort());
                     assertTrue(!shared.noMacsOnSegment());
                     BridgeMacLink link = links.iterator().next();
+                    assertEquals(BridgeDot1qTpFdbStatus.DOT1D_TP_FDB_STATUS_LEARNED, link.getBridgeDot1qTpFdbStatus());
                     assertEquals(nodeBId, link.getNode().getId());
                     assertEquals(portB,link.getBridgePort());
                     assertEquals(mac2, link.getMacAddress());
@@ -481,6 +500,7 @@ public abstract class EnLinkdTestHelper {
                     assertEquals(portC,shared.getDesignatedPort());
                     assertTrue(!shared.noMacsOnSegment());
                     BridgeMacLink link = links.iterator().next();
+                    assertEquals(BridgeDot1qTpFdbStatus.DOT1D_TP_FDB_STATUS_LEARNED, link.getBridgeDot1qTpFdbStatus());
                     assertEquals(nodeCId, link.getNode().getId());
                     assertEquals(portC,link.getBridgePort());
                     assertEquals(mac3, link.getMacAddress());
@@ -519,6 +539,7 @@ public abstract class EnLinkdTestHelper {
                     assertEquals(portA,shared.getDesignatedPort());
                     assertTrue(!shared.noMacsOnSegment());
                     BridgeMacLink link = links.iterator().next();
+                    assertEquals(BridgeDot1qTpFdbStatus.DOT1D_TP_FDB_STATUS_LEARNED, link.getBridgeDot1qTpFdbStatus());
                     assertEquals(nodeAId, link.getNode().getId());
                     assertEquals(portA,link.getBridgePort());
                     assertEquals(mac1, link.getMacAddress());
@@ -529,6 +550,7 @@ public abstract class EnLinkdTestHelper {
                     assertEquals(portB,shared.getDesignatedPort());
                     assertTrue(!shared.noMacsOnSegment());
                     BridgeMacLink link = links.iterator().next();
+                    assertEquals(BridgeDot1qTpFdbStatus.DOT1D_TP_FDB_STATUS_LEARNED, link.getBridgeDot1qTpFdbStatus());
                     assertEquals(nodeBId, link.getNode().getId());
                     assertEquals(portB,link.getBridgePort());
                     assertEquals(mac2, link.getMacAddress());
@@ -539,6 +561,7 @@ public abstract class EnLinkdTestHelper {
                     assertEquals(portC,shared.getDesignatedPort());
                     assertTrue(!shared.noMacsOnSegment());
                     BridgeMacLink link = links.iterator().next();
+                    assertEquals(BridgeDot1qTpFdbStatus.DOT1D_TP_FDB_STATUS_LEARNED, link.getBridgeDot1qTpFdbStatus());
                     assertEquals(nodeCId, link.getNode().getId());
                     assertEquals(portC,link.getBridgePort());
                     assertEquals(mac3, link.getMacAddress());
@@ -753,6 +776,7 @@ public abstract class EnLinkdTestHelper {
                     assertEquals(nodeDId.intValue(), shared.getDesignatedBridge().intValue());
                     assertEquals(portD.intValue(), shared.getDesignatedPort().intValue());
                     for (BridgeMacLink link: shared.getBridgeMacLinks()) {
+                        assertEquals(BridgeDot1qTpFdbStatus.DOT1D_TP_FDB_STATUS_LEARNED, link.getBridgeDot1qTpFdbStatus());
                        assertEquals(nodeDId.intValue(), link.getNode().getId().intValue());
                        assertEquals(portD,link.getBridgePort());
                     }
@@ -765,6 +789,7 @@ public abstract class EnLinkdTestHelper {
                         assertEquals(nodeEId.intValue(), shared.getDesignatedBridge().intValue());
                         assertEquals(portE.intValue(), shared.getDesignatedPort().intValue());
                         for (BridgeMacLink link: shared.getBridgeMacLinks()) {
+                            assertEquals(BridgeDot1qTpFdbStatus.DOT1D_TP_FDB_STATUS_LEARNED, link.getBridgeDot1qTpFdbStatus());
                             assertEquals(nodeEId.intValue(), link.getNode().getId().intValue());
                             assertEquals(portE,link.getBridgePort());
                          }
@@ -779,6 +804,7 @@ public abstract class EnLinkdTestHelper {
                     assertEquals(8, shared.getBridgeMacLinks().size());
                     assertEquals(1, shared.getBridgeBridgeLinks().size());
                     for (BridgeMacLink link: shared.getBridgeMacLinks()) {
+                        assertEquals(BridgeDot1qTpFdbStatus.DOT1D_TP_FDB_STATUS_LEARNED, link.getBridgeDot1qTpFdbStatus());
                         if (nodeDId.intValue() == link.getNode().getId().intValue())
                             assertEquals(portDD,link.getBridgePort());
                         else if (nodeEId.intValue() == link.getNode().getId().intValue())
@@ -806,6 +832,7 @@ public abstract class EnLinkdTestHelper {
                     assertEquals(nodeDId.intValue(), shared.getDesignatedBridge().intValue());
                     assertEquals(portD.intValue(), shared.getDesignatedPort().intValue());
                     for (BridgeMacLink link: shared.getBridgeMacLinks()) {
+                        assertEquals(BridgeDot1qTpFdbStatus.DOT1D_TP_FDB_STATUS_LEARNED, link.getBridgeDot1qTpFdbStatus());
                        assertEquals(nodeDId.intValue(), link.getNode().getId().intValue());
                        assertEquals(portD,link.getBridgePort());
                     }
@@ -818,6 +845,7 @@ public abstract class EnLinkdTestHelper {
                         assertEquals(nodeFId.intValue(), shared.getDesignatedBridge().intValue());
                         assertEquals(portF.intValue(), shared.getDesignatedPort().intValue());
                         for (BridgeMacLink link: shared.getBridgeMacLinks()) {
+                            assertEquals(BridgeDot1qTpFdbStatus.DOT1D_TP_FDB_STATUS_LEARNED, link.getBridgeDot1qTpFdbStatus());
                             assertEquals(nodeFId.intValue(), link.getNode().getId().intValue());
                             assertEquals(portF,link.getBridgePort());
                          }
@@ -832,6 +860,7 @@ public abstract class EnLinkdTestHelper {
                     assertEquals(8, shared.getBridgeMacLinks().size());
                     assertEquals(1, shared.getBridgeBridgeLinks().size());
                     for (BridgeMacLink link: shared.getBridgeMacLinks()) {
+                        assertEquals(BridgeDot1qTpFdbStatus.DOT1D_TP_FDB_STATUS_LEARNED, link.getBridgeDot1qTpFdbStatus());
                         if (nodeDId.intValue() == link.getNode().getId().intValue())
                             assertEquals(portDD,link.getBridgePort());
                         else if (nodeFId.intValue() == link.getNode().getId().intValue())
@@ -870,6 +899,7 @@ public abstract class EnLinkdTestHelper {
                     assertEquals(nodeDId.intValue(), shared.getDesignatedBridge().intValue());
                     assertEquals(portD.intValue(), shared.getDesignatedPort().intValue());
                     for (BridgeMacLink link: shared.getBridgeMacLinks()) {
+                        assertEquals(BridgeDot1qTpFdbStatus.DOT1D_TP_FDB_STATUS_LEARNED, link.getBridgeDot1qTpFdbStatus());
                        assertEquals(nodeDId.intValue(), link.getNode().getId().intValue());
                        assertEquals(portD,link.getBridgePort());
                     }
@@ -882,6 +912,7 @@ public abstract class EnLinkdTestHelper {
                         assertEquals(nodeGId.intValue(), shared.getDesignatedBridge().intValue());
                         assertEquals(portGF.intValue(), shared.getDesignatedPort().intValue());
                         for (BridgeMacLink link: shared.getBridgeMacLinks()) {
+                            assertEquals(BridgeDot1qTpFdbStatus.DOT1D_TP_FDB_STATUS_LEARNED, link.getBridgeDot1qTpFdbStatus());
                             assertEquals(nodeGId.intValue(), link.getNode().getId().intValue());
                             assertEquals(portGF,link.getBridgePort());
                          }
@@ -894,6 +925,7 @@ public abstract class EnLinkdTestHelper {
                     assertEquals(nodeGId.intValue(), shared.getDesignatedBridge().intValue());
                     assertEquals(portGE.intValue(), shared.getDesignatedPort().intValue());
                     for (BridgeMacLink link: shared.getBridgeMacLinks()) {
+                        assertEquals(BridgeDot1qTpFdbStatus.DOT1D_TP_FDB_STATUS_LEARNED, link.getBridgeDot1qTpFdbStatus());
                         assertEquals(nodeGId.intValue(), link.getNode().getId().intValue());
                         assertEquals(portGE,link.getBridgePort());
                      }
@@ -904,6 +936,7 @@ public abstract class EnLinkdTestHelper {
                     assertEquals(nodeGId.intValue(), shared.getDesignatedBridge().intValue());
                     assertEquals(portG7.intValue(), shared.getDesignatedPort().intValue());
                     for (BridgeMacLink link: shared.getBridgeMacLinks()) {
+                        assertEquals(BridgeDot1qTpFdbStatus.DOT1D_TP_FDB_STATUS_LEARNED, link.getBridgeDot1qTpFdbStatus());
                             assertEquals(portG7,link.getBridgePort());
                             assertEquals(nodeGId, link.getNode().getId());
                     }
@@ -914,6 +947,7 @@ public abstract class EnLinkdTestHelper {
                      assertEquals(nodeGId.intValue(), shared.getDesignatedBridge().intValue());
                      assertEquals(portG8.intValue(), shared.getDesignatedPort().intValue());
                      for (BridgeMacLink link: shared.getBridgeMacLinks()) {
+                         assertEquals(BridgeDot1qTpFdbStatus.DOT1D_TP_FDB_STATUS_LEARNED, link.getBridgeDot1qTpFdbStatus());
                              assertEquals(portG8,link.getBridgePort());
                              assertEquals(nodeGId, link.getNode().getId());
                      }
@@ -937,6 +971,7 @@ public abstract class EnLinkdTestHelper {
                     assertEquals(nodeFId.intValue(), shared.getDesignatedBridge().intValue());
                     assertEquals(portF.intValue(), shared.getDesignatedPort().intValue());
                     for (BridgeMacLink link: shared.getBridgeMacLinks()) {
+                        assertEquals(BridgeDot1qTpFdbStatus.DOT1D_TP_FDB_STATUS_LEARNED, link.getBridgeDot1qTpFdbStatus());
                         assertEquals(nodeFId.intValue(), link.getNode().getId().intValue());
                         assertEquals(portF,link.getBridgePort());
                     }
@@ -949,6 +984,7 @@ public abstract class EnLinkdTestHelper {
                         assertEquals(nodeEId.intValue(), shared.getDesignatedBridge().intValue());
                         assertEquals(portE.intValue(), shared.getDesignatedPort().intValue());
                         for (BridgeMacLink link: shared.getBridgeMacLinks()) {
+                            assertEquals(BridgeDot1qTpFdbStatus.DOT1D_TP_FDB_STATUS_LEARNED, link.getBridgeDot1qTpFdbStatus());
                             assertEquals(nodeEId.intValue(), link.getNode().getId().intValue());
                             assertEquals(portE,link.getBridgePort());
                          }
@@ -963,6 +999,7 @@ public abstract class EnLinkdTestHelper {
                     assertEquals(8, shared.getBridgeMacLinks().size());
                     assertEquals(1, shared.getBridgeBridgeLinks().size());
                     for (BridgeMacLink link: shared.getBridgeMacLinks()) {
+                        assertEquals(BridgeDot1qTpFdbStatus.DOT1D_TP_FDB_STATUS_LEARNED, link.getBridgeDot1qTpFdbStatus());
                         if (nodeFId.intValue() == link.getNode().getId().intValue())
                             assertEquals(portFF,link.getBridgePort());
                         else if (nodeEId.intValue() == link.getNode().getId().intValue())
@@ -990,6 +1027,7 @@ public abstract class EnLinkdTestHelper {
                     assertEquals(nodeDId.intValue(), shared.getDesignatedBridge().intValue());
                     assertEquals(portD.intValue(), shared.getDesignatedPort().intValue());
                     for (BridgeMacLink link: shared.getBridgeMacLinks()) {
+                        assertEquals(BridgeDot1qTpFdbStatus.DOT1D_TP_FDB_STATUS_LEARNED, link.getBridgeDot1qTpFdbStatus());
                        assertEquals(nodeDId.intValue(), link.getNode().getId().intValue());
                        assertEquals(portD,link.getBridgePort());
                     }
@@ -1002,6 +1040,7 @@ public abstract class EnLinkdTestHelper {
                     assertEquals(nodeEId.intValue(), shared.getDesignatedBridge().intValue());
                     assertEquals(portE.intValue(), shared.getDesignatedPort().intValue());
                     for (BridgeMacLink link: shared.getBridgeMacLinks()) {
+                        assertEquals(BridgeDot1qTpFdbStatus.DOT1D_TP_FDB_STATUS_LEARNED, link.getBridgeDot1qTpFdbStatus());
                         assertEquals(nodeEId.intValue(), link.getNode().getId().intValue());
                         assertEquals(portE,link.getBridgePort());
                      }
@@ -1014,6 +1053,7 @@ public abstract class EnLinkdTestHelper {
                         assertEquals(nodeFId.intValue(), shared.getDesignatedBridge().intValue());
                         assertEquals(portF.intValue(), shared.getDesignatedPort().intValue());
                         for (BridgeMacLink link: shared.getBridgeMacLinks()) {
+                            assertEquals(BridgeDot1qTpFdbStatus.DOT1D_TP_FDB_STATUS_LEARNED, link.getBridgeDot1qTpFdbStatus());
                             assertEquals(nodeFId.intValue(), link.getNode().getId().intValue());
                             assertEquals(portF,link.getBridgePort());
                          }
@@ -1027,6 +1067,7 @@ public abstract class EnLinkdTestHelper {
                     assertEquals(6, shared.getBridgeMacLinks().size());
                     assertEquals(2, shared.getBridgeBridgeLinks().size());
                     for (BridgeMacLink link: shared.getBridgeMacLinks()) {
+                        assertEquals(BridgeDot1qTpFdbStatus.DOT1D_TP_FDB_STATUS_LEARNED, link.getBridgeDot1qTpFdbStatus());
                         if (nodeDId.intValue() == link.getNode().getId().intValue())
                             assertEquals(portDD,link.getBridgePort());
                         else if (nodeEId.intValue() == link.getNode().getId().intValue())
@@ -1079,6 +1120,7 @@ public abstract class EnLinkdTestHelper {
                     assertEquals(nodeDId.intValue(), shared.getDesignatedBridge().intValue());
                     assertEquals(portD.intValue(), shared.getDesignatedPort().intValue());
                     for (BridgeMacLink link: shared.getBridgeMacLinks()) {
+                        assertEquals(BridgeDot1qTpFdbStatus.DOT1D_TP_FDB_STATUS_LEARNED, link.getBridgeDot1qTpFdbStatus());
                        assertEquals(nodeDId.intValue(), link.getNode().getId().intValue());
                        assertEquals(portD,link.getBridgePort());
                     }
@@ -1091,6 +1133,7 @@ public abstract class EnLinkdTestHelper {
                     assertEquals(nodeEId.intValue(), shared.getDesignatedBridge().intValue());
                     assertEquals(portE.intValue(), shared.getDesignatedPort().intValue());
                     for (BridgeMacLink link: shared.getBridgeMacLinks()) {
+                        assertEquals(BridgeDot1qTpFdbStatus.DOT1D_TP_FDB_STATUS_LEARNED, link.getBridgeDot1qTpFdbStatus());
                         assertEquals(nodeEId.intValue(), link.getNode().getId().intValue());
                         assertEquals(portE,link.getBridgePort());
                      }
@@ -1103,6 +1146,7 @@ public abstract class EnLinkdTestHelper {
                         assertEquals(nodeFId.intValue(), shared.getDesignatedBridge().intValue());
                         assertEquals(portF.intValue(), shared.getDesignatedPort().intValue());
                         for (BridgeMacLink link: shared.getBridgeMacLinks()) {
+                            assertEquals(BridgeDot1qTpFdbStatus.DOT1D_TP_FDB_STATUS_LEARNED, link.getBridgeDot1qTpFdbStatus());
                             assertEquals(nodeFId.intValue(), link.getNode().getId().intValue());
                             assertEquals(portF,link.getBridgePort());
                          }
@@ -1113,6 +1157,7 @@ public abstract class EnLinkdTestHelper {
                     assertEquals(1, shared.getBridgeMacLinks().size());
                     assertEquals(0, shared.getBridgeBridgeLinks().size());
                     for (BridgeMacLink link: shared.getBridgeMacLinks()) {
+                        assertEquals(BridgeDot1qTpFdbStatus.DOT1D_TP_FDB_STATUS_LEARNED, link.getBridgeDot1qTpFdbStatus());
                         assertEquals(nodeGId.intValue(), link.getNode().getId().intValue());
                         assertEquals(portG7.intValue(), link.getBridgePort().intValue());
                         assertEquals(mac7, link.getMacAddress());
@@ -1124,6 +1169,7 @@ public abstract class EnLinkdTestHelper {
                      assertEquals(1, shared.getBridgeMacLinks().size());
                      assertEquals(0, shared.getBridgeBridgeLinks().size());
                      for (BridgeMacLink link: shared.getBridgeMacLinks()) {
+                         assertEquals(BridgeDot1qTpFdbStatus.DOT1D_TP_FDB_STATUS_LEARNED, link.getBridgeDot1qTpFdbStatus());
                          assertEquals(nodeGId.intValue(), link.getNode().getId().intValue());
                          assertEquals(portG8.intValue(), link.getBridgePort().intValue());
                          assertEquals(mac8, link.getMacAddress());
@@ -1188,6 +1234,7 @@ public abstract class EnLinkdTestHelper {
                     assertEquals(nodeHId.intValue(), shared.getDesignatedBridge().intValue());
                     assertEquals(portH1.intValue(), shared.getDesignatedPort().intValue());
                     BridgeMacLink link = shared.getBridgeMacLinks().iterator().next();
+                    assertEquals(BridgeDot1qTpFdbStatus.DOT1D_TP_FDB_STATUS_LEARNED, link.getBridgeDot1qTpFdbStatus());
                     assertEquals(nodeHId.intValue(), link.getNode().getId().intValue());
                     assertEquals(portH1,link.getBridgePort());
                     assertEquals(mac1,link.getMacAddress());
@@ -1200,6 +1247,7 @@ public abstract class EnLinkdTestHelper {
                     assertEquals(nodeHId.intValue(), shared.getDesignatedBridge().intValue());
                     assertEquals(portH2.intValue(), shared.getDesignatedPort().intValue());
                     BridgeMacLink link = shared.getBridgeMacLinks().iterator().next();
+                    assertEquals(BridgeDot1qTpFdbStatus.DOT1D_TP_FDB_STATUS_LEARNED, link.getBridgeDot1qTpFdbStatus());
                     assertEquals(nodeHId.intValue(), link.getNode().getId().intValue());
                     assertEquals(portH2,link.getBridgePort());
                     assertEquals(mac2,link.getMacAddress());
@@ -1212,6 +1260,7 @@ public abstract class EnLinkdTestHelper {
                     assertEquals(nodeIId.intValue(), shared.getDesignatedBridge().intValue());
                     assertEquals(portI3.intValue(), shared.getDesignatedPort().intValue());
                     BridgeMacLink link = shared.getBridgeMacLinks().iterator().next();
+                    assertEquals(BridgeDot1qTpFdbStatus.DOT1D_TP_FDB_STATUS_LEARNED, link.getBridgeDot1qTpFdbStatus());
                     assertEquals(nodeIId.intValue(), link.getNode().getId().intValue());
                     assertEquals(portI3,link.getBridgePort());
                     assertEquals(mac3,link.getMacAddress());
@@ -1224,6 +1273,7 @@ public abstract class EnLinkdTestHelper {
                     assertEquals(nodeIId.intValue(), shared.getDesignatedBridge().intValue());
                     assertEquals(portI4.intValue(), shared.getDesignatedPort().intValue());
                     BridgeMacLink link = shared.getBridgeMacLinks().iterator().next();
+                    assertEquals(BridgeDot1qTpFdbStatus.DOT1D_TP_FDB_STATUS_LEARNED, link.getBridgeDot1qTpFdbStatus());
                     assertEquals(nodeIId.intValue(), link.getNode().getId().intValue());
                     assertEquals(portI4,link.getBridgePort());
                     assertEquals(mac4,link.getMacAddress());
@@ -1236,6 +1286,7 @@ public abstract class EnLinkdTestHelper {
                     assertEquals(nodeLId.intValue(), shared.getDesignatedBridge().intValue());
                     assertEquals(portL5.intValue(), shared.getDesignatedPort().intValue());
                     BridgeMacLink link = shared.getBridgeMacLinks().iterator().next();
+                    assertEquals(BridgeDot1qTpFdbStatus.DOT1D_TP_FDB_STATUS_LEARNED, link.getBridgeDot1qTpFdbStatus());
                     assertEquals(nodeLId.intValue(), link.getNode().getId().intValue());
                     assertEquals(portL5,link.getBridgePort());
                     assertEquals(mac5,link.getMacAddress());
@@ -1248,6 +1299,7 @@ public abstract class EnLinkdTestHelper {
                     assertEquals(nodeLId.intValue(), shared.getDesignatedBridge().intValue());
                     assertEquals(portL6.intValue(), shared.getDesignatedPort().intValue());
                     BridgeMacLink link = shared.getBridgeMacLinks().iterator().next();
+                    assertEquals(BridgeDot1qTpFdbStatus.DOT1D_TP_FDB_STATUS_LEARNED, link.getBridgeDot1qTpFdbStatus());
                     assertEquals(nodeLId.intValue(), link.getNode().getId().intValue());
                     assertEquals(portL6,link.getBridgePort());
                     assertEquals(mac6,link.getMacAddress());
@@ -1258,6 +1310,7 @@ public abstract class EnLinkdTestHelper {
                     assertEquals(1, shared.getBridgeMacLinks().size());
                     assertEquals(0, shared.getBridgeBridgeLinks().size());
                     for (BridgeMacLink link: shared.getBridgeMacLinks()) {
+                        assertEquals(BridgeDot1qTpFdbStatus.DOT1D_TP_FDB_STATUS_LEARNED, link.getBridgeDot1qTpFdbStatus());
                         assertEquals(nodeGId.intValue(), link.getNode().getId().intValue());
                         assertEquals(portG7.intValue(), link.getBridgePort().intValue());
                         assertEquals(mac7, link.getMacAddress());
@@ -1269,6 +1322,7 @@ public abstract class EnLinkdTestHelper {
                      assertEquals(1, shared.getBridgeMacLinks().size());
                      assertEquals(0, shared.getBridgeBridgeLinks().size());
                      for (BridgeMacLink link: shared.getBridgeMacLinks()) {
+                         assertEquals(BridgeDot1qTpFdbStatus.DOT1D_TP_FDB_STATUS_LEARNED, link.getBridgeDot1qTpFdbStatus());
                          assertEquals(nodeGId.intValue(), link.getNode().getId().intValue());
                          assertEquals(portG8.intValue(), link.getBridgePort().intValue());
                          assertEquals(mac8, link.getMacAddress());
@@ -1536,6 +1590,7 @@ public abstract class EnLinkdTestHelper {
                 assertEquals(1, shared.getMacsOnSegment().size());
                 assertEquals(0, shared.getBridgeBridgeLinks().size());
                 for (BridgeMacLink link: shared.getBridgeMacLinks()) {
+                    assertEquals(BridgeDot1qTpFdbStatus.DOT1D_TP_FDB_STATUS_LEARNED, link.getBridgeDot1qTpFdbStatus());
                     assertEquals(link.getBridgePort(),shared.getDesignatedPort());
                 if (link.getBridgePort() == portA1) {
                     assertEquals(mac1, link.getMacAddress());
@@ -1601,8 +1656,10 @@ public abstract class EnLinkdTestHelper {
                 assertTrue(macs.contains(mac2));
                 assertTrue(macs.contains(mac3));
                 assertTrue(macs.contains(mac4));
-                for (BridgeMacLink link: shared.getBridgeMacLinks())
+                for (BridgeMacLink link: shared.getBridgeMacLinks()) {
                     assertEquals(portA1, link.getBridgePort());
+                    assertEquals(BridgeDot1qTpFdbStatus.DOT1D_TP_FDB_STATUS_LEARNED, link.getBridgeDot1qTpFdbStatus());
+                }
             }
 
         }
@@ -1684,6 +1741,7 @@ public abstract class EnLinkdTestHelper {
                 assertEquals(1, shared.getBridgeIdsOnSegment().size());
                 assertEquals(0, shared.getBridgeBridgeLinks().size());
                 for (BridgeMacLink link: shared.getBridgeMacLinks()) {
+                    assertEquals(BridgeDot1qTpFdbStatus.DOT1D_TP_FDB_STATUS_LEARNED, link.getBridgeDot1qTpFdbStatus());
                     assertEquals(link.getBridgePort(),shared.getDesignatedPort());
                     if (link.getBridgePort() == portA1) {
                         assertEquals(1, shared.getMacsOnSegment().size());
@@ -1812,6 +1870,7 @@ public abstract class EnLinkdTestHelper {
                 } else {
                     assertEquals(1, shared.getMacsOnSegment().size());
                     BridgeMacLink link = shared.getBridgeMacLinks().iterator().next();
+                    assertEquals(BridgeDot1qTpFdbStatus.DOT1D_TP_FDB_STATUS_LEARNED, link.getBridgeDot1qTpFdbStatus());
                     if (link.getMacAddress().equals(mac1)) {
                         assertEquals(nodeAId, link.getNode().getId());
                         assertEquals(portA1,link.getBridgePort());
@@ -1935,6 +1994,7 @@ public abstract class EnLinkdTestHelper {
                     assertEquals(false, shared.getMacsOnSegment().contains(mac8));
                     assertEquals(true,  shared.getMacsOnSegment().contains(mac9));
                     for (BridgeMacLink link: shared.getBridgeMacLinks()) {
+                        assertEquals(BridgeDot1qTpFdbStatus.DOT1D_TP_FDB_STATUS_LEARNED, link.getBridgeDot1qTpFdbStatus());
                         assertTrue(shared.getMacsOnSegment().contains(link.getMacAddress()));
                         if (link.getNode().getId() == nodeAId) {
                             assertEquals(portAB,link.getBridgePort());
@@ -1956,6 +2016,7 @@ public abstract class EnLinkdTestHelper {
                     assertEquals(nodeBId, shared.getDesignatedBridge());
                     assertEquals(portB6,shared.getDesignatedPort());
                     BridgeMacLink link = shared.getBridgeMacLinks().iterator().next();
+                    assertEquals(BridgeDot1qTpFdbStatus.DOT1D_TP_FDB_STATUS_LEARNED, link.getBridgeDot1qTpFdbStatus());
                     assertEquals(mac6, link.getMacAddress());
                     assertEquals(nodeBId,link.getNode().getId());
                     assertEquals(portB6,link.getBridgePort());
@@ -1966,6 +2027,7 @@ public abstract class EnLinkdTestHelper {
                     assertEquals(nodeAId, shared.getDesignatedBridge());
                     assertEquals(portA8,shared.getDesignatedPort());
                     BridgeMacLink link = shared.getBridgeMacLinks().iterator().next();
+                    assertEquals(BridgeDot1qTpFdbStatus.DOT1D_TP_FDB_STATUS_LEARNED, link.getBridgeDot1qTpFdbStatus());
                     assertEquals(mac8, link.getMacAddress());
                     assertEquals(nodeAId,link.getNode().getId());
                     assertEquals(portA8,link.getBridgePort());
@@ -2043,6 +2105,7 @@ public abstract class EnLinkdTestHelper {
                     List<BridgeMacLink> links = shared.getBridgeMacLinks();
                     assertEquals(2, links.size());
                     for (BridgeMacLink link: links) {
+                        assertEquals(BridgeDot1qTpFdbStatus.DOT1D_TP_FDB_STATUS_LEARNED, link.getBridgeDot1qTpFdbStatus());
                         assertEquals(macAB, link.getMacAddress());
                         if (link.getNode().getId() == nodeAId) 
                             assertEquals(portAB,link.getBridgePort());
@@ -2066,6 +2129,7 @@ public abstract class EnLinkdTestHelper {
                     List<BridgeMacLink> links = shared.getBridgeMacLinks();
                     assertEquals(2, links.size());
                     for (BridgeMacLink link: links) {
+                        assertEquals(BridgeDot1qTpFdbStatus.DOT1D_TP_FDB_STATUS_LEARNED, link.getBridgeDot1qTpFdbStatus());
                         assertEquals(nodeAId, link.getNode().getId());
                         assertEquals(portA1, link.getBridgePort());
                         boolean pass1 = true;
@@ -2089,6 +2153,7 @@ public abstract class EnLinkdTestHelper {
                     List<BridgeMacLink> links = shared.getBridgeMacLinks();
                     assertEquals(2, links.size());
                     for (BridgeMacLink link: links) {
+                        assertEquals(BridgeDot1qTpFdbStatus.DOT1D_TP_FDB_STATUS_LEARNED, link.getBridgeDot1qTpFdbStatus());
                         assertEquals(nodeBId, link.getNode().getId());
                         assertEquals(portB2, link.getBridgePort());
                         boolean pass1 = true;
@@ -2171,6 +2236,7 @@ public abstract class EnLinkdTestHelper {
                     List<BridgeMacLink> links = shared.getBridgeMacLinks();
                     assertEquals(2, links.size());
                     for (BridgeMacLink link: links) {
+                        assertEquals(BridgeDot1qTpFdbStatus.DOT1D_TP_FDB_STATUS_LEARNED, link.getBridgeDot1qTpFdbStatus());
                         if (link.getNode().getId() == nodeAId) {
                             assertEquals("bbbbbbbbbbbb", link.getMacAddress());
                             assertEquals(portAB,link.getBridgePort());
@@ -2195,6 +2261,7 @@ public abstract class EnLinkdTestHelper {
                     List<BridgeMacLink> links = shared.getBridgeMacLinks();
                     assertEquals(2, links.size());
                     for (BridgeMacLink link: links) {
+                        assertEquals(BridgeDot1qTpFdbStatus.DOT1D_TP_FDB_STATUS_LEARNED, link.getBridgeDot1qTpFdbStatus());
                         assertEquals(nodeAId, link.getNode().getId());
                         assertEquals(portA1, link.getBridgePort());
                         boolean pass1 = true;
@@ -2218,6 +2285,7 @@ public abstract class EnLinkdTestHelper {
                     List<BridgeMacLink> links = shared.getBridgeMacLinks();
                     assertEquals(2, links.size());
                     for (BridgeMacLink link: links) {
+                        assertEquals(BridgeDot1qTpFdbStatus.DOT1D_TP_FDB_STATUS_LEARNED, link.getBridgeDot1qTpFdbStatus());
                         assertEquals(nodeBId, link.getNode().getId());
                         assertEquals(portB2, link.getBridgePort());
                         boolean pass1 = true;

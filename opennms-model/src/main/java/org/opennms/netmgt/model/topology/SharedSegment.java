@@ -266,6 +266,8 @@ public class SharedSegment {
     }
     
     public Integer getPortForBridge(Integer nodeid) {
+        if (nodeid == null)
+            return null;
         if (m_bridgeportsOnSegment.isEmpty()) {
             for (BridgeBridgeLink link: m_bridgeportsOnLink) {
                 if (link.getNode().getId().intValue() == nodeid.intValue() )
