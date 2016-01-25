@@ -99,7 +99,6 @@ public abstract class AbstractGui implements GroovyGui {
         }
 
         if (m_mainFont == null) {
-            //m_mainFont = new Font("SansSerif", Font.PLAIN, 12.0)
             def fontAttributes = new HashMap<TextAttribute,Object>()
             fontAttributes.put(TextAttribute.FAMILY, Font.SANS_SERIF)
             fontAttributes.put(TextAttribute.WEIGHT, TextAttribute.WEIGHT_REGULAR)
@@ -108,27 +107,17 @@ public abstract class AbstractGui implements GroovyGui {
         }
         m_labelFont = m_mainFont.deriveFont(Font.BOLD)
         m_headerFont = m_mainFont.deriveFont(Font.BOLD, 24.0)
-        //println "Header font:  " + m_headerFont
-        //println "Main font: " + m_mainFont
 
         setUIFont(new FontUIResource(m_mainFont))
 
         UIManager.put("Button.background", detail)
         UIManager.put("Button.foreground", background)
-        //UIManager.put("ComboBox.background", background)
-        //UIManager.put("ComboBox.foreground", foreground)
-        //UIManager.put("ComboBox.listBackground", background)
-        //UIManager.put("ComboBox.listForeground", foreground)
         UIManager.put("ComboBox.selectionBackground", background)
         UIManager.put("ComboBox.selectionForeground", foreground)
         UIManager.put("Label.background", background)
         UIManager.put("Label.foreground", foreground)
-        //UIManager.put("textHighlight", detail)
-        //UIManager.put("textHighlightText", background)
         UIManager.put("ProgressBar.selectionBackground", Color.TRANSLUCENT)
         UIManager.put("ProgressBar.selectionForeground", foreground)
-        //UIManager.put("ProgressBar.foreground", Color.TRANSLUCENT)
-        //UIManager.put("ProgressBar.background", foreground)
         UIManager.put("Table.font", new FontUIResource(m_mainFont))
         UIManager.put("Table.foreground", foreground)
         UIManager.put("Table.textForeground", foreground)
@@ -229,7 +218,6 @@ public abstract class AbstractGui implements GroovyGui {
         }
         def mainPanel = getMainPanel()
         rootPanel.add(mainPanel, "dock south, width 100%, height 100%")
-        //rootPanel.add(mainPanel)
         m_gui.add(rootPanel)
         m_gui.pack()
         m_gui.setLocationRelativeTo(null)
@@ -237,7 +225,6 @@ public abstract class AbstractGui implements GroovyGui {
             rootPanel.rootPane.defaultButton = m_defaultButton
         }
         m_gui.setVisible(true)
-        m_gui.setResizable(false)
     }
 
     protected Font getFont(final String fontName) {

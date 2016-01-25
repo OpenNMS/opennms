@@ -73,6 +73,8 @@ class LoginGui extends AbstractGui implements AuthenticationGui {
     }
 
     public JPanel getMainPanel() {
+        getGui().setResizable(false)
+
         return swing.panel(background:getBackgroundColor(), opaque:true, constraints:"grow") {
             migLayout(
                     layoutConstraints:"fill" + debugString,
