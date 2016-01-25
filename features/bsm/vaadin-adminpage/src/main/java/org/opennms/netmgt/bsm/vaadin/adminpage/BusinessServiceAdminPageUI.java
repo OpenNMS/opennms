@@ -81,8 +81,6 @@ public class BusinessServiceAdminPageUI extends TransactionAwareUI {
      */
     public void setBusinessServiceManager(BusinessServiceManager businessServiceManager) {
         Objects.requireNonNull(businessServiceManager);
-        // TODO MVR somehow this throws a LinkageError. Disabling for now, but should be investigated
-//        m_businessServiceManager = m_transactionAwareBeanProxyFactory.createProxy(businessServiceManager);
-        m_businessServiceManager = businessServiceManager;
+        m_businessServiceManager = m_transactionAwareBeanProxyFactory.createProxy(businessServiceManager);
     }
 }
