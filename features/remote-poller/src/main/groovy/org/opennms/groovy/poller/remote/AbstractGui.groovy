@@ -37,6 +37,7 @@ import java.awt.GraphicsEnvironment
 import java.awt.font.TextAttribute
 
 import javax.swing.JButton
+import javax.swing.JComponent;
 import javax.swing.JFrame
 import javax.swing.JPanel
 import javax.swing.ListCellRenderer
@@ -54,6 +55,8 @@ import org.opennms.poller.remote.OpenNMSLookAndFeel
 public abstract class AbstractGui implements GroovyGui {
     private def m_gui
     private def m_defaultButton
+    private def m_headerPanel
+    protected JComponent m_logoComponent
 
     private def m_headerFont
     private def m_labelFont
@@ -136,7 +139,18 @@ public abstract class AbstractGui implements GroovyGui {
         }
     }
 
-    protected abstract String getHeaderText()
+    protected abstract String getApplicationTitle()
+
+    protected void setLogoComponent(final JComponent component) {
+        if (m_headerPanel != null) {
+            m_headerPanel.remove(1)
+            if (component != null) {
+                m_headerPanel.add(component)
+            }
+        } else {
+            m_logoComponent = component
+        }
+    }
 
     protected abstract JPanel getMainPanel()
 
@@ -206,13 +220,16 @@ public abstract class AbstractGui implements GroovyGui {
                     columnConstraints:"[grow, center]",
                     rowConstraints:"[grow 0]u[fill, grow]"
                     )
-            panel(opaque:true, background:getDetailColor(), constraints:"dock north, wrap") {
+            m_headerPanel = panel(opaque:true, background:getDetailColor(), constraints:"dock north, wrap") {
                 migLayout(
                         layoutConstraints:"fill" + debugString,
-                        columnConstraints:"10[grow]10",
+                        columnConstraints:"10[left,grow]10[right]10",
                         rowConstraints:"10[grow]10"
                         )
-                label(text:getHeaderText(), font:getHeaderFont(), foreground:getBackgroundColor())
+                label(text:getApplicationTitle(), font:getHeaderFont(), foreground:getBackgroundColor())
+            }
+            if (m_logoComponent != null) {
+                m_headerPanel.add(m_logoComponent)
             }
         }
         def mainPanel = getMainPanel()
@@ -220,6 +237,7 @@ public abstract class AbstractGui implements GroovyGui {
         m_gui.add(rootPanel)
         m_gui.pack()
         m_gui.setLocationRelativeTo(null)
+        m_gui.setTitle(getApplicationTitle())
         if (m_defaultButton) {
             rootPanel.rootPane.defaultButton = m_defaultButton
         }

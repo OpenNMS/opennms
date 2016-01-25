@@ -32,6 +32,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
+import java.net.URL;
 import java.util.LinkedHashSet;
 import java.util.Map.Entry;
 import java.util.Properties;
@@ -92,9 +93,51 @@ public class MetadataFieldReader {
                     fields.add(new MetadataField(name, description, validator == null? null : validator.newInstance(), required));
                 }
             } catch (final IOException e) {
+                LOG.warn("Failed to get metadata fields.", e);
+            } finally {
                 IOUtils.closeQuietly(r);
             }
         }
         return fields;
+    }
+
+    public String getTitle() {
+        if (m_propertyFile.exists() && m_propertyFile.canRead()) {
+            final Properties p = new Properties();
+            Reader r = null;
+            try {
+                r = new FileReader(m_propertyFile);
+                p.load(r);
+                final String title = p.getProperty("gui.title");
+                if (title != null && !title.trim().isEmpty()) {
+                    return title;
+                }
+            } catch (final IOException e) {
+                LOG.warn("Failed to get report title.", e);
+            } finally {
+                IOUtils.closeQuietly(r);
+            }
+        }
+        return "On-Demand Scan Report";
+    }
+
+    public URL getImage() {
+        if (m_propertyFile.exists() && m_propertyFile.canRead()) {
+            final Properties p = new Properties();
+            Reader r = null;
+            try {
+                r = new FileReader(m_propertyFile);
+                p.load(r);
+                final String image = p.getProperty("gui.image");
+                if (image != null && image.startsWith("http")) {
+                    return new URL(image);
+                }
+            } catch (final IOException e) {
+                LOG.warn("Failed to get report title.", e);
+            } finally {
+                IOUtils.closeQuietly(r);
+            }
+        }
+        return null;
     }
 }

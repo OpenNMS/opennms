@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.poller.remote.support;
 
+import java.net.URL;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Map;
@@ -245,6 +246,26 @@ public class ExceptionProtectedPollerBackEnd implements PollerBackEnd {
     public Set<MetadataField> getMetadataFields() {
         try {
             return m_delegate.getMetadataFields();
+        } catch (Throwable t) {
+            LOG.error("Unexpected exception thrown in remote poller backend.", t);
+            throw new RemoteAccessException("Unexpected Exception Occurred on the server.", t);
+        }
+    }
+
+    @Override
+    public String getScanReportTitle() {
+        try {
+            return m_delegate.getScanReportTitle();
+        } catch (Throwable t) {
+            LOG.error("Unexpected exception thrown in remote poller backend.", t);
+            throw new RemoteAccessException("Unexpected Exception Occurred on the server.", t);
+        }
+    }
+
+    @Override
+    public URL getScanReportImage() {
+        try {
+            return m_delegate.getScanReportImage();
         } catch (Throwable t) {
             LOG.error("Unexpected exception thrown in remote poller backend.", t);
             throw new RemoteAccessException("Unexpected Exception Occurred on the server.", t);

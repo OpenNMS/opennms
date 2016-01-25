@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.poller.remote.support;
 
+import java.net.URL;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
@@ -266,6 +267,30 @@ public class ServerUnreachableAdaptor implements PollerBackEnd {
             m_serverUnresponsive = true;
             LOG.warn("Server is unable to respond due to the following exception.", e);
             return Collections.emptySet();
+        }
+    }
+
+
+    @Override
+    public String getScanReportTitle() {
+        try {
+            return m_remoteBackEnd.getScanReportTitle();
+        } catch (final RemoteAccessException e) {
+            m_serverUnresponsive = true;
+            LOG.warn("Server is unable to respond due to the following exception.", e);
+            return null;
+        }
+    }
+
+
+    @Override
+    public URL getScanReportImage() {
+        try {
+            return m_remoteBackEnd.getScanReportImage();
+        } catch (final RemoteAccessException e) {
+            m_serverUnresponsive = true;
+            LOG.warn("Server is unable to respond due to the following exception.", e);
+            return null;
         }
     }
 
