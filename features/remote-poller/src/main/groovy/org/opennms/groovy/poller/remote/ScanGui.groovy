@@ -35,6 +35,7 @@ import java.awt.event.ComponentEvent
 import java.beans.PropertyChangeEvent
 import java.beans.PropertyChangeListener
 
+import javax.swing.JFrame
 import javax.swing.JPanel
 import javax.swing.JTextField
 import javax.swing.SwingUtilities
@@ -47,7 +48,7 @@ import org.opennms.netmgt.poller.remote.PollerBackEnd
 import org.opennms.netmgt.poller.remote.metadata.MetadataField
 import org.opennms.netmgt.poller.remote.support.ScanReportPollerFrontEnd
 import org.opennms.poller.remote.FrontEndInvoker
-import org.opennms.poller.remote.GeodataFetcher
+import org.opennms.poller.remote.MetadataUtils
 import org.opennms.poller.remote.ScanReportHandler
 import org.springframework.beans.factory.InitializingBean
 import org.springframework.util.Assert
@@ -61,7 +62,6 @@ class ScanGui extends AbstractGui implements ScanReportHandler, PropertyChangeLi
 
     def m_backEnd
     def m_frontEnd
-    def m_geoFetcher = new GeodataFetcher()
 
     def m_metadataFields = new HashMap<String, JTextField>()
     def m_progressPanel
@@ -79,7 +79,11 @@ class ScanGui extends AbstractGui implements ScanReportHandler, PropertyChangeLi
     }
 
     @Override
-    protected String getHeaderText() {
+    protected String getApplicationTitle() {
+        def title = m_backEnd.getScanReportTitle()
+        if (title != null && !title.trim().isEmpty()) {
+            return title;
+        }
         return "Network Scanner"
     }
 
@@ -89,6 +93,16 @@ class ScanGui extends AbstractGui implements ScanReportHandler, PropertyChangeLi
      * @see applicationContext-scan-gui.xml
      */
     protected ScanReportPollerFrontEnd createPollerFrontEnd() {
+    }
+
+    protected void updateImage() {
+        final URL imageUrl = m_backEnd.getScanReportImage()
+        if (imageUrl != null) {
+            def image = MetadataUtils.getImageFromURL(imageUrl)
+            if (image != null) {
+                super.setLogoComponent(image)
+            }
+        }
     }
 
     public void afterPropertiesSet() {
@@ -102,7 +116,8 @@ class ScanGui extends AbstractGui implements ScanReportHandler, PropertyChangeLi
             m_applications.put(name, apps)
         }
         m_metadataFieldTypes = m_backEnd.getMetadataFields()
-        m_geoMetadata = m_geoFetcher.fetchGeodata()
+        m_geoMetadata = MetadataUtils.fetchGeodata()
+        updateImage()
         createAndShowGui()
     }
 
@@ -159,6 +174,7 @@ class ScanGui extends AbstractGui implements ScanReportHandler, PropertyChangeLi
         }
 
         getGui().setMinimumSize(new Dimension(750, 550))
+        getGui().setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE)
 
         return swing.panel(background:getBackgroundColor(), opaque:true, constraints:"grow") {
             migLayout(

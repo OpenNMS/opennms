@@ -1,7 +1,15 @@
 package org.opennms.poller.remote;
 
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.Image;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
+
+import javax.imageio.ImageIO;
+import javax.swing.JPanel;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpEntity;
@@ -16,10 +24,19 @@ import org.opennms.netmgt.poller.remote.support.GeodataResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class GeodataFetcher {
-    private static final Logger LOG = LoggerFactory.getLogger(GeodataFetcher.class);
+public abstract class MetadataUtils {
+    private static final Logger LOG = LoggerFactory.getLogger(MetadataUtils.class);
 
-    public Map<String,String> fetchGeodata() {
+    public static ImageComponent getImageFromURL(final URL url) {
+        try {
+            return new ImageComponent(ImageIO.read(url));
+        } catch (final Exception e) {
+            LOG.warn("Unable to ready image: {}", url, e);
+            return null;
+        }
+    }
+
+    public static Map<String,String> fetchGeodata() {
         final Map<String,String> ret = new HashMap<>();
         final String url = "http://freegeoip.net/xml/";
 
@@ -52,4 +69,23 @@ public class GeodataFetcher {
         return ret;
     }
 
+    public static class ImageComponent extends JPanel {
+        private static final long serialVersionUID = 1L;
+        private Image m_image;
+        public ImageComponent(final Image image) {
+            m_image = image;
+            Dimension size = new Dimension(image.getWidth(null), image.getHeight(null));
+            setPreferredSize(size);
+            setMinimumSize(size);
+            setMaximumSize(size);
+            setSize(size);
+            setLayout(null);
+            setBackground(new Color(0,0,0,0));
+        }
+
+        @Override protected void paintComponent(final Graphics g) {
+            super.paintComponent(g);
+            g.drawImage(m_image, 0, 0, null);
+        }
+    }
 }

@@ -68,7 +68,7 @@ class LoginGui extends AbstractGui implements AuthenticationGui {
         m_authenticationBean = bean;
     }
 
-    public String getHeaderText() {
+    protected String getApplicationTitle() {
         return "Authentication"
     }
 
