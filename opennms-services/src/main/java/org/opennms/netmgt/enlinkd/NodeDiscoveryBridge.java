@@ -92,9 +92,10 @@ public final class NodeDiscoveryBridge extends NodeDiscovery {
 		Map<Integer,Integer> bridgeifindex = new HashMap<Integer, Integer>();
 		List<BridgeMacLink> bft = new ArrayList<BridgeMacLink>();
 		
-		if (vlanmap.isEmpty())
+		if (vlanmap.isEmpty()) {
 			bridgeifindex.putAll(walkDot1d(null,null));
-		else {
+                        bft = walkDot1dTpFdp(null,bridgeifindex,bft);
+		} else {
 			String community = getPeer().getReadCommunity();
 			for (Entry<Integer, String> entry: vlanmap.entrySet()) {
 				LOG.debug("run: cisco vlan collection setting peer community: {} with VLAN {}",
@@ -287,17 +288,26 @@ public final class NodeDiscoveryBridge extends NodeDiscovery {
 			@Override
 			public void processDot1dTpFdbRow(final Dot1dTpFdbRow row) {
 				BridgeMacLink link = row.getLink();
-				Integer ifindex = bridgeifindex.get(link.getBridgePort());
-				LOG.debug("processDot1dTpFdbRow: found mac {}: vlan {}: on port {} ifindex {} status {}", 
-				          row.getDot1dTpFdbAddress(), vlan, row.getDot1dTpFdbPort(),ifindex,link.getBridgeDot1qTpFdbStatus());
-				link.setVlan(vlan);
-				link.setBridgePortIfIndex(ifindex);
-				if (isValidBridgeAddress(link.getMacAddress()))
-					bft.add(link);
-				else
-	                            LOG.warn("processDot1dTpFdbRow: invalid mac {}: vlan {}: on port {} ifindex {} status {}",  
-                                         row.getDot1dTpFdbAddress(), vlan, row.getDot1dTpFdbPort(),ifindex,link.getBridgeDot1qTpFdbStatus());
-
+                                if (link.getBridgeDot1qTpFdbStatus() == null) {
+                                    LOG.warn("processDot1dTpFdbRow: row has null status. mac {}: vlan {}: on port {}",  
+                                             row.getDot1dTpFdbAddress(), vlan, row.getDot1dTpFdbPort());
+                                    return;
+                                }
+				if (link.getBridgePort() == null) {
+                                    LOG.warn("processDot1dTpFdbRow: row has null bridge port.  mac {}: vlan {}: on port {} status {}",  
+                                             row.getDot1dTpFdbAddress(), vlan, row.getDot1dTpFdbPort(),link.getBridgeDot1qTpFdbStatus());
+                                    return;
+				}
+				if (link.getMacAddress() == null || !isValidBridgeAddress(link.getMacAddress())) {
+	                            LOG.warn("processDot1dTpFdbRow: row has invalid mac. mac {}: vlan {}: on port {} ifindex {} status {}",  
+                                         row.getDot1dTpFdbAddress(), vlan, row.getDot1dTpFdbPort(),link.getBridgePortIfIndex(),link.getBridgeDot1qTpFdbStatus());
+	                            return;
+				}
+                                link.setVlan(vlan);
+                                link.setBridgePortIfIndex(bridgeifindex.get(link.getBridgePort()));
+                                LOG.info("processDot1dTpFdbRow: row processed: mac {}: vlan {}: on port {} ifindex {} status {}",  
+                                         link.getMacAddress(), link.getVlan(), link.getBridgePort() ,link.getBridgePortIfIndex(),link.getBridgeDot1qTpFdbStatus());
+                                bft.add(link);
 			}
 		};
 		SnmpWalker walker = SnmpUtils.createWalker(getPeer(), trackerName,
@@ -330,17 +340,26 @@ public final class NodeDiscoveryBridge extends NodeDiscovery {
 
 			@Override
 			public void processDot1qTpFdbRow(final Dot1qTpFdbRow row) {
-				BridgeMacLink link = row.getLink();
-                                Integer ifindex = bridgeifindex.get(link.getBridgePort());
-                                LOG.debug("processDot1qTpFdbRow: found mac {}: on port {} ifindex {} status {} ", 
-                                          row.getDot1qTpFdbAddress(), row.getDot1qTpFdbPort(),ifindex, link.getBridgeDot1qTpFdbStatus());
-				link.setBridgePortIfIndex(ifindex);
-				if (isValidBridgeAddress(link.getMacAddress()) && link.getBridgePort() != null)
-					bft.add(link);
-				else
-				    LOG.warn("processDot1qTpFdbRow: found mac {}: on port {} ifindex {} status {} ", 
-	                                          row.getDot1qTpFdbAddress(), row.getDot1qTpFdbPort(),ifindex, link.getBridgeDot1qTpFdbStatus());
-	                                
+                            BridgeMacLink link = row.getLink();
+                            if (link.getBridgeDot1qTpFdbStatus() == null) {
+                                LOG.warn("processDot1qTpFdbRow: row has null status. mac {}: on port {}",  
+                                         row.getDot1qTpFdbAddress(),row.getDot1qTpFdbPort());
+                                return;
+                            }
+                            if (link.getBridgePort() == null) {
+                                LOG.warn("processDot1qTpFdbRow: row has null bridge port.  mac {}: on port {} status {}",  
+                                         row.getDot1qTpFdbAddress(), row.getDot1qTpFdbPort(),link.getBridgeDot1qTpFdbStatus());
+                                return;
+                            }
+                            if (link.getMacAddress() == null || !isValidBridgeAddress(link.getMacAddress())) {
+                                LOG.warn("processDot1qTpFdbRow: row has invalid mac. mac {}: on port {} ifindex {} status {}",  
+                                     row.getDot1qTpFdbAddress(),row.getDot1qTpFdbPort(),link.getBridgePortIfIndex(),link.getBridgeDot1qTpFdbStatus());
+                                return;
+                            }
+                            link.setBridgePortIfIndex(bridgeifindex.get(link.getBridgePort()));
+                            LOG.info("processDot1qTpFdbRow: row processed: mac {}: vlan {}: on port {} ifindex {} status {}",  
+                                     link.getMacAddress(), link.getVlan(), link.getBridgePort() ,link.getBridgePortIfIndex(),link.getBridgeDot1qTpFdbStatus());
+                            bft.add(link);
 			}
 
 		};

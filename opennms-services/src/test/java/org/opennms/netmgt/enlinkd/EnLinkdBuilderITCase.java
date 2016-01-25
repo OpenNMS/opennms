@@ -38,6 +38,7 @@ import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.netmgt.config.EnhancedLinkdConfig;
+import org.opennms.netmgt.dao.api.BridgeTopologyDao;
 import org.opennms.netmgt.dao.api.CdpLinkDao;
 import org.opennms.netmgt.dao.api.IpNetToMediaDao;
 import org.opennms.netmgt.dao.api.NodeDao;
@@ -95,6 +96,9 @@ public abstract class EnLinkdBuilderITCase extends EnLinkdTestHelper implements 
 
     @Autowired
     protected IpNetToMediaDao m_ipNetToMediaDao;
+
+    @Autowired
+    protected BridgeTopologyDao m_bridgeTopologyDao;
 
     @Override
     public void afterPropertiesSet() throws Exception {
