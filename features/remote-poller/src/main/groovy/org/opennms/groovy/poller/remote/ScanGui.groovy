@@ -272,13 +272,13 @@ class ScanGui extends AbstractGui implements ScanReportHandler, PropertyChangeLi
                     m_metadataFields.put(fieldType.key, textField)
                 }
                 /*
-                for (def field : m_metadataFieldNames) {
-                    final String key = getFieldKey(field)
-                    label(text:field, font:getLabelFont(), constraints:"")
-                    def textField = textField(toolTipText:"Enter your " + field.toLowerCase() + ".", columns:25, constraints:"wrap", actionPerformed:updateValidation, focusGained:updateValidation, focusLost:updateValidation)
-                    m_metadataFields.put(key, textField)
-                }
-                */
+                 for (def field : m_metadataFieldNames) {
+                 final String key = getFieldKey(field)
+                 label(text:field, font:getLabelFont(), constraints:"")
+                 def textField = textField(toolTipText:"Enter your " + field.toLowerCase() + ".", columns:25, constraints:"wrap", actionPerformed:updateValidation, focusGained:updateValidation, focusLost:updateValidation)
+                 m_metadataFields.put(key, textField)
+                 }
+                 */
 
                 errorLabel = label(text:"", visible:false, foreground:Color.RED, constraints:"grow, skip 1, wrap")
             }
@@ -296,6 +296,13 @@ class ScanGui extends AbstractGui implements ScanReportHandler, PropertyChangeLi
                     detailsParent.remove(m_detailsPanel)
                 }
 
+                if (m_scanReport == null) {
+                    detailsButton.setVisible(false)
+                    return
+                }
+
+                detailsButton.setVisible(true)
+
                 if (detailsOpen) {
                     detailsButton.setText("Details \u25BC")
                     m_detailsPanel = panel(opaque:false) {
@@ -305,7 +312,7 @@ class ScanGui extends AbstractGui implements ScanReportHandler, PropertyChangeLi
                                 rowConstraints:""
                                 )
 
-                        def results = m_scanReport == null? [] : m_scanReport.getPollResults()
+                        def results = m_scanReport.getPollResults()
 
                         def tab = table(constraints:"grow, wrap", gridColor:getDetailColor()) {
                             tableModel( list : results) {
