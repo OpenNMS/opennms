@@ -191,6 +191,26 @@ public class BusinessServiceEntity {
     }
 
     @Override
+    public boolean equals(Object obj) {
+        if (obj == null) return false;
+        if (obj == this) return true;
+        if (getClass() != obj.getClass()) return false;
+        BusinessServiceEntity other = (BusinessServiceEntity) obj;
+        if (getId() != null) {
+            return getId().equals(other.getId());
+        }
+        return super.equals(obj);
+    }
+
+    @Override
+    public int hashCode() {
+        if (getId() != null) {
+            return getId().hashCode();
+        }
+        return super.hashCode();
+    }
+
+    @Override
     public String toString() {
         // we do not include ip services here, otherwise we cannot use this object properly
         return com.google.common.base.Objects.toStringHelper(this)

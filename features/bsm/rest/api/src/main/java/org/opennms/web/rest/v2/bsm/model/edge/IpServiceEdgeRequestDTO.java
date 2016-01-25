@@ -28,27 +28,56 @@
 
 package org.opennms.web.rest.v2.bsm.model.edge;
 
-import java.io.Serializable;
+import java.util.Objects;
+
+import javax.xml.bind.annotation.XmlElement;
 
 import org.opennms.web.rest.v2.bsm.model.MapFunctionDTO;
 
-// TODO MVR make marshal/unmarshable with json/xml
-// TODO MVR implement me
-public class EdgeRequestDTO<Key extends Serializable> {
+public class IpServiceEdgeRequestDTO {
 
-    public Key getValue() {
-        return null;
+    private Integer value;
+
+    private MapFunctionDTO mapFunction;
+
+    @XmlElement(name="value",required = true)
+    public Integer getValue() {
+        return value;
     }
 
+    @XmlElement(name="mapFunction", required= true)
     public MapFunctionDTO getMapFunction() {
-        return null;
+        return mapFunction;
     }
 
-    public void setValue(Key value) {
-
+    public void setValue(Integer value) {
+        this.value = value;
     }
 
     public void setMapFunction(MapFunctionDTO mapFunction) {
-        ;
+        this.mapFunction = mapFunction;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) { return false; }
+        if (obj == this) { return true; }
+        if (getClass() != obj.getClass()) { return false; }
+        IpServiceEdgeRequestDTO other = (IpServiceEdgeRequestDTO) obj;
+        return Objects.equals(value, other.value)
+                && Objects.equals(mapFunction, other.mapFunction);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(value, mapFunction);
+    }
+
+    @Override
+    public String toString() {
+        return com.google.common.base.Objects.toStringHelper(this)
+                .add("value", value)
+                .add("mapFunction", mapFunction)
+                .toString();
     }
 }

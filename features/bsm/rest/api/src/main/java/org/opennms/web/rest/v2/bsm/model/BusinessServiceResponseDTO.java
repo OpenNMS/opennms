@@ -28,6 +28,7 @@
 
 package org.opennms.web.rest.v2.bsm.model;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -51,6 +52,7 @@ import org.opennms.web.rest.v2.bsm.model.edge.ChildEdgeResponseDTO;
 import org.opennms.web.rest.v2.bsm.model.edge.IpServiceEdgeResponseDTO;
 import org.opennms.web.rest.v2.bsm.model.edge.ReductionKeyEdgeResponseDTO;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
@@ -72,15 +74,15 @@ public class BusinessServiceResponseDTO {
 
     @XmlElement(name="ip-service")
     @XmlElementWrapper(name="ip-service-edges")
-    private Set<IpServiceEdgeResponseDTO> m_ipServices = Sets.newLinkedHashSet();
+    private List<IpServiceEdgeResponseDTO> m_ipServices = Lists.newArrayList();
 
     @XmlElement(name="reductionKey")
     @XmlElementWrapper(name="reductionKey-edges")
-    private Set<ReductionKeyEdgeResponseDTO> m_reductionKeys = Sets.newHashSet();
+    private List<ReductionKeyEdgeResponseDTO> m_reductionKeys = Lists.newArrayList();
 
     @XmlElement(name="child")
     @XmlElementWrapper(name="child-edges")
-    private Set<ChildEdgeResponseDTO> m_children = Sets.newHashSet();
+    private List<ChildEdgeResponseDTO> m_children = Lists.newArrayList();;
 
     @XmlElement(name="parent-service")
     @XmlElementWrapper(name="parent-services")
@@ -126,19 +128,19 @@ public class BusinessServiceResponseDTO {
         m_attributes = attributes;
     }
 
-    public Set<IpServiceEdgeResponseDTO> getIpServices() {
+    public List<IpServiceEdgeResponseDTO> getIpServices() {
         return m_ipServices;
     }
 
-    public void setReductionKeys(Set<ReductionKeyEdgeResponseDTO> reductionKeys) {
+    public void setReductionKeys(List<ReductionKeyEdgeResponseDTO> reductionKeys) {
         m_reductionKeys = reductionKeys;
     }
 
-    public Set<ReductionKeyEdgeResponseDTO> getReductionKeys() {
+    public List<ReductionKeyEdgeResponseDTO> getReductionKeys() {
         return m_reductionKeys;
     }
 
-    public void setIpServices(Set<IpServiceEdgeResponseDTO> ipServices) {
+    public void setIpServices(List<IpServiceEdgeResponseDTO> ipServices) {
         m_ipServices = ipServices;
     }
 
@@ -158,11 +160,11 @@ public class BusinessServiceResponseDTO {
         this.m_operationalStatus = operationalStatus;
     }
 
-    public void setChildren(Set<ChildEdgeResponseDTO> m_children) {
+    public void setChildren(List<ChildEdgeResponseDTO> m_children) {
         this.m_children = m_children;
     }
 
-    public Set<ChildEdgeResponseDTO> getChildren() {
+    public List<ChildEdgeResponseDTO> getChildren() {
         return m_children;
     }
 
@@ -195,14 +197,16 @@ public class BusinessServiceResponseDTO {
                 && Objects.equals(m_name, other.m_name)
                 && Objects.equals(m_attributes, other.m_attributes)
                 && Objects.equals(m_ipServices, other.m_ipServices)
+                && Objects.equals(m_children, other.m_children)
                 && Objects.equals(m_parentServices, other.m_parentServices)
                 && Objects.equals(m_reductionKeys, other.m_reductionKeys)
+                && Objects.equals(m_operationalStatus, other.m_operationalStatus)
                 && Objects.equals(location, other.location);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(m_id, m_name, m_attributes, m_ipServices, m_parentServices, m_reductionKeys, location);
+        return Objects.hash(m_id, m_name, m_children, m_attributes, m_ipServices, m_parentServices, m_reductionKeys, location, m_operationalStatus);
     }
 
     @Override
@@ -212,7 +216,8 @@ public class BusinessServiceResponseDTO {
                 .add("name", m_name)
                 .add("attributes", m_attributes)
                 .add("ipServices", m_ipServices)
-//                .add("childServices", m_childServices)
+                .add("operationalStatus", m_operationalStatus)
+                .add("childServices", m_children)
                 .add("parentServices", m_parentServices)
                 .add("reductionKeys", m_reductionKeys)
                 .add("location", location)

@@ -193,8 +193,8 @@ public class BusinessServiceDaoIT {
         assertEquals(0, m_businessServiceDao.get(bs.getId()).getIpServices().size());
     }
 
-    // TODO MVR write a test that verifies that if a child is deleted, the edge pointing to that child is also deleted
     @Test
+    @Transactional
     public void verifyDeleteOnCascade() {
         BusinessServiceEntity child = new BusinessServiceEntityBuilder()
                 .name("Child2")
@@ -216,13 +216,23 @@ public class BusinessServiceDaoIT {
 
         assertEquals(2, m_businessServiceDao.countAll());
         assertEquals(2, m_reductionFunctionDao.countAll());
-        assertEquals(3, m_edgeDao.countAll());
+        assertEquals(4, m_edgeDao.countAll());
 
+        // Deletion of child does not delete the edges referencing to that child
         m_businessServiceDao.delete(child);
         assertEquals(1, m_businessServiceDao.countAll());
         assertEquals(1, m_reductionFunctionDao.countAll());
-        assertEquals(2, m_edgeDao.countAll()); // TODO MVR deleting a child does not delete the edge, should be fixed
+        assertEquals(4, m_edgeDao.countAll());
 
+        // TODO MVR is there any way to do this automatically with hibernate annotations?
+        // we have to manually delete the edge, than we are good
+        parent.removeEdge(parent.getChildEdges().iterator().next());
+        m_businessServiceDao.update(parent);
+        assertEquals(1, m_businessServiceDao.countAll());
+        assertEquals(1, m_reductionFunctionDao.countAll());
+        assertEquals(3, m_edgeDao.countAll());
+
+        // Deletion of parent should delete all references
         m_businessServiceDao.delete(parent);
         assertEquals(0, m_businessServiceDao.countAll());
         assertEquals(0, m_reductionFunctionDao.countAll());

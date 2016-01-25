@@ -49,6 +49,7 @@ import org.opennms.netmgt.bsm.service.internal.edge.IpServiceEdgeImpl;
 import org.opennms.netmgt.bsm.service.internal.edge.ReductionKeyEdgeImpl;
 import org.opennms.netmgt.bsm.service.model.BusinessService;
 import org.opennms.netmgt.bsm.service.model.IpService;
+import org.opennms.netmgt.bsm.service.model.Node;
 import org.opennms.netmgt.bsm.service.model.Status;
 import org.opennms.netmgt.bsm.service.model.edge.ChildEdge;
 import org.opennms.netmgt.bsm.service.model.edge.Edge;
@@ -349,8 +350,8 @@ public class BusinessServiceManagerImpl implements BusinessServiceManager {
         return monitoredService;
     }
 
-//    @Override
-//    public Node getNodeById(int nodeId) {
-//        return new NodeImpl(this, nodeDao.get(nodeId));
-//    }
+    @Override
+    public Node getNodeById(int nodeId) {
+        return new NodeImpl(this, nodeDao.get(nodeId));
+    }
 }

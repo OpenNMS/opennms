@@ -28,7 +28,6 @@
 
 package org.opennms.web.rest.api;
 
-import java.util.Arrays;
 import java.util.Objects;
 
 /**
@@ -38,7 +37,7 @@ import java.util.Objects;
 public class ResourceLocation {
 
     private ApiVersion version;
-    private String[] path;
+    private String path;
 
     public ResourceLocation() {
 
@@ -46,18 +45,25 @@ public class ResourceLocation {
 
     public ResourceLocation(ApiVersion version, String... path) {
         this.version = Objects.requireNonNull(version);
-        this.path = Objects.requireNonNull(path);
+        setPath(path);
+    }
+
+    private void setPath(String... path) {
+        Objects.requireNonNull(path);
+        StringBuilder pathBuilder = new StringBuilder();
+        for (String eachPath : path) {
+            pathBuilder.append(eachPath);
+            if (!eachPath.endsWith("/")) {
+                pathBuilder.append("/");
+            }
+        }
+        this.path = pathBuilder.toString();
     }
 
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder(version.getContextPath());
-        for (String eachPath : path) {
-            builder.append(eachPath);
-            if (!eachPath.endsWith("/")) {
-                builder.append("/");
-            }
-        }
+        builder.append(path);
         String pathString = builder.toString();
         if (pathString.endsWith("/")) {
             pathString = pathString.substring(0, pathString.length()-1);
@@ -82,13 +88,13 @@ public class ResourceLocation {
             return false;
         }
         final ResourceLocation other = (ResourceLocation) obj;
-        final boolean equals = Objects.equals(version, other.version) && Arrays.equals(path, other.path);
+        final boolean equals = Objects.equals(version, other.version) && Objects.equals(path, other.path);
         return equals;
     }
 
     public static ResourceLocation parse(String locationString) {
         ApiVersion version = Objects.requireNonNull(getApiVersion(locationString));
-        String[] path = Objects.requireNonNull(locationString.replaceFirst(version.getContextPath(), "").split("/"));
+        String path = locationString.replaceFirst(version.getContextPath(), "");
         return new ResourceLocation(version, path);
     }
 

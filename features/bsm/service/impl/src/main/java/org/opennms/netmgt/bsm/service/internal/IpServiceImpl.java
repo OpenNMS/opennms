@@ -64,7 +64,7 @@ public class IpServiceImpl implements IpService {
 
     @Override
     public String getNodeLabel() {
-        return "TODO MVR"; // TODO MVR no class def found exception when used within spring?! m_manager.getNodeById(m_entity.getNodeId()).getLabel();
+        return m_manager.getNodeById(m_entity.getNodeId()).getLabel();
     }
 
     @Override public String getIpAddress() {

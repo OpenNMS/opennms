@@ -72,7 +72,7 @@ public abstract class AbstractEdge<T extends BusinessServiceEdge> implements Edg
 
     @Override
     public Status getOperationalStatus() {
-        return null;
+        return Status.INDETERMINATE; // TODO MVR implement me
     }
 
     @Override

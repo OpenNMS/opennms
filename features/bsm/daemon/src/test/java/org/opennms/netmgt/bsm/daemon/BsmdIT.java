@@ -47,6 +47,7 @@ import org.opennms.netmgt.bsm.persistence.api.functions.reduce.MostCriticalEntit
 import org.opennms.netmgt.bsm.service.BusinessServiceManager;
 import org.opennms.netmgt.bsm.service.internal.BusinessServiceImpl;
 import org.opennms.netmgt.bsm.service.model.BusinessService;
+import org.opennms.netmgt.bsm.service.model.Status;
 import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.dao.api.DistPollerDao;
@@ -176,7 +177,7 @@ public class BsmdIT {
     public void verifyReloadBsmd() throws Exception {
         BusinessServiceEntity businessService1 = createBusinessService("service1");
         m_bsmd.start();
-        Assert.assertEquals(OnmsSeverity.NORMAL, m_bsmd.getBusinessServiceStateMachine().getOperationalStatus(wrap(businessService1)));
+        Assert.assertEquals(Status.NORMAL, m_bsmd.getBusinessServiceStateMachine().getOperationalStatus(wrap(businessService1)));
 
         // verify reload of business services works when event is send
         BusinessServiceEntity businessService2 = createBusinessService("service2");
@@ -184,7 +185,7 @@ public class BsmdIT {
         EventBuilder ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_UEI, "test");
         ebldr.addParam(EventConstants.PARM_DAEMON_NAME, "bsmd");
         m_eventMgr.sendNow(ebldr.getEvent());
-        Assert.assertEquals(OnmsSeverity.NORMAL, m_bsmd.getBusinessServiceStateMachine().getOperationalStatus(wrap(businessService2)));
+        Assert.assertEquals(Status.NORMAL, m_bsmd.getBusinessServiceStateMachine().getOperationalStatus(wrap(businessService2)));
     }
 
     /**
@@ -202,17 +203,17 @@ public class BsmdIT {
         template.execute(new TransactionCallbackWithoutResult() {
             @Override
             protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
-                Assert.assertEquals(OnmsSeverity.NORMAL, m_bsmd.getBusinessServiceStateMachine().getOperationalStatus(wrap(simpleBs)));
+                Assert.assertEquals(Status.NORMAL, m_bsmd.getBusinessServiceStateMachine().getOperationalStatus(wrap(simpleBs)));
                 OnmsAlarm alarm = createAlarm();
                 m_alarmDao.save(alarm);
                 m_alarmDao.flush();
-                Assert.assertEquals(OnmsSeverity.NORMAL, m_bsmd.getBusinessServiceStateMachine().getOperationalStatus(wrap(simpleBs)));
+                Assert.assertEquals(Status.NORMAL, m_bsmd.getBusinessServiceStateMachine().getOperationalStatus(wrap(simpleBs)));
             }
         });
 
         // wait n seconds and try again
         Thread.sleep(20*1000);
-        Assert.assertEquals(OnmsSeverity.CRITICAL, m_bsmd.getBusinessServiceStateMachine().getOperationalStatus(wrap(simpleBs)));
+        Assert.assertEquals(Status.CRITICAL, m_bsmd.getBusinessServiceStateMachine().getOperationalStatus(wrap(simpleBs)));
     }
 
     private OnmsAlarm createAlarm() {

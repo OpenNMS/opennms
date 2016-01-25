@@ -28,9 +28,9 @@
 
 package org.opennms.web.rest.v2.bsm.model;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Set;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -39,10 +39,12 @@ import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
-import org.opennms.web.rest.v2.bsm.model.edge.EdgeRequestDTO;
+import org.opennms.web.rest.v2.bsm.model.edge.ChildEdgeRequestDTO;
+import org.opennms.web.rest.v2.bsm.model.edge.IpServiceEdgeRequestDTO;
+import org.opennms.web.rest.v2.bsm.model.edge.ReductionKeyEdgeRequestDTO;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
 
 
 @XmlRootElement(name = "business-service")
@@ -59,18 +61,18 @@ public class BusinessServiceRequestDTO {
 
     @XmlElement(name="ip-service-edge")
     @XmlElementWrapper(name="ip-services-edges")
-    private Set<EdgeRequestDTO<Integer>> m_ipServices = Sets.newLinkedHashSet();
+    private List<IpServiceEdgeRequestDTO> m_ipServices = Lists.newArrayList();
 
     @XmlElement(name="child-edge")
     @XmlElementWrapper(name="child-edges")
-    private Set<EdgeRequestDTO<Long>> m_childServices = Sets.newLinkedHashSet();
+    private List<ChildEdgeRequestDTO> m_childServices = Lists.newArrayList();
 
     @XmlElement(name="reductionkey-edge")
     @XmlElementWrapper(name="reductionkey-edges")
-    private Set<EdgeRequestDTO<String>> m_reductionKeys = Sets.newHashSet();
+    private List<ReductionKeyEdgeRequestDTO> reductionKeys = Lists.newArrayList();
 
     @XmlElement(name="reduce-function")
-    private ReduceFunctionDTO m_reduceFunction;
+    private ReduceFunctionDTO reduceFunction;
 
     public String getName() {
         return m_name;
@@ -92,36 +94,36 @@ public class BusinessServiceRequestDTO {
         m_attributes = attributes;
     }
 
-    public Set<EdgeRequestDTO<Integer>> getIpServices() {
+    public List<IpServiceEdgeRequestDTO> getIpServices() {
         return m_ipServices;
     }
 
-    public void setIpServices(Set<EdgeRequestDTO<Integer>> ipServices) {
+    public void setIpServices(List<IpServiceEdgeRequestDTO> ipServices) {
         m_ipServices = ipServices;
     }
 
-    public Set<EdgeRequestDTO<Long>> getChildServices() {
+    public List<ChildEdgeRequestDTO> getChildServices() {
         return m_childServices;
     }
 
-    public void setChildServices(Set<EdgeRequestDTO<Long>> childServices) {
+    public void setChildServices(List<ChildEdgeRequestDTO> childServices) {
         m_childServices = childServices;
     }
 
-    public Set<EdgeRequestDTO<String>> getReductionKeys() {
-        return m_reductionKeys;
+    public List<ReductionKeyEdgeRequestDTO> getReductionKeys() {
+        return reductionKeys;
     }
 
-    public void setReductionKeys(Set<EdgeRequestDTO<String>> reductionKeys) {
-        m_reductionKeys = reductionKeys;
+    public void setReductionKeys(List<ReductionKeyEdgeRequestDTO> reductionKeys) {
+        this.reductionKeys = reductionKeys;
     }
 
     public void setReduceFunction(ReduceFunctionDTO reduceFunction) {
-        this.m_reduceFunction = reduceFunction;
+        this.reduceFunction = reduceFunction;
     }
 
     public ReduceFunctionDTO getReduceFunction() {
-        return m_reduceFunction;
+        return reduceFunction;
     }
 
     @Override
@@ -136,14 +138,15 @@ public class BusinessServiceRequestDTO {
 
         return Objects.equals(m_name, other.m_name)
                 && Objects.equals(m_attributes, other.m_attributes)
-                && Objects.equals(m_reduceFunction, other.m_reduceFunction)
+                && Objects.equals(reduceFunction, other.reduceFunction)
                 && Objects.equals(m_ipServices, other.m_ipServices)
-                && Objects.equals(m_childServices, other.m_childServices);
+                && Objects.equals(m_childServices, other.m_childServices)
+                && Objects.equals(reductionKeys, other.reductionKeys);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(m_name, m_attributes, m_ipServices, m_childServices, m_reductionKeys, m_reduceFunction);
+        return Objects.hash(m_name, m_attributes, m_ipServices, m_childServices, reductionKeys, reduceFunction);
     }
 
     @Override
@@ -151,28 +154,29 @@ public class BusinessServiceRequestDTO {
         return com.google.common.base.Objects.toStringHelper(this)
                 .add("name", m_name)
                 .add("attributes", m_attributes)
-                .add("reduceFunction", m_reduceFunction)
+                .add("reduceFunction", reduceFunction)
                 .add("ipServices", m_ipServices)
                 .add("childServices", m_childServices)
+                .add("reductionKeys", reductionKeys)
                 .toString();
     }
 
     public void addChildService(long childId, MapFunctionDTO mapFunction) {
-        EdgeRequestDTO<Long> edge = new EdgeRequestDTO<>();
+        ChildEdgeRequestDTO edge = new ChildEdgeRequestDTO();
         edge.setValue(childId);
         edge.setMapFunction(mapFunction);
         getChildServices().add(edge);
     }
 
     public void addReductionKey(String reductionKey, MapFunctionDTO mapFunction) {
-        EdgeRequestDTO<String> edge = new EdgeRequestDTO<>();
+        ReductionKeyEdgeRequestDTO edge = new ReductionKeyEdgeRequestDTO();
         edge.setValue(reductionKey);
         edge.setMapFunction(mapFunction);
         getReductionKeys().add(edge);
     }
 
     public void addIpService(int ipServiceId, MapFunctionDTO mapFunction) {
-        EdgeRequestDTO<Integer> edge = new EdgeRequestDTO<>();
+        IpServiceEdgeRequestDTO edge = new IpServiceEdgeRequestDTO();
         edge.setValue(ipServiceId);
         edge.setMapFunction(mapFunction);
         getIpServices().add(edge);

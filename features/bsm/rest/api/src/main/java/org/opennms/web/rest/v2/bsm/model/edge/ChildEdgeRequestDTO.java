@@ -26,65 +26,58 @@
  *      http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.web.rest.v2.bsm.model;
+package org.opennms.web.rest.v2.bsm.model.edge;
 
-import java.util.Map;
 import java.util.Objects;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
 
-@XmlRootElement(name = "reduce-function")
-@XmlAccessorType(XmlAccessType.FIELD)
-// TODO MVR MapFunctionDTO and ReduceFunctionDTO are pretty much the same, please consolidate
-public class ReduceFunctionDTO {
+import org.opennms.web.rest.v2.bsm.model.MapFunctionDTO;
 
-    @XmlElement(name="type", required = true)
-    private ReduceFunctionType type;
+public class ChildEdgeRequestDTO {
 
-    @XmlElement(name="properties", required = true)
-    private Map<String, String> properties;
+    private Long value;
 
-    public ReduceFunctionType getType() {
-        return type;
+    private MapFunctionDTO mapFunction;
+
+    @XmlElement(name="value",required = true)
+    public Long getValue() {
+        return value;
     }
 
-    public void setType(ReduceFunctionType type) {
-        this.type = type;
+    @XmlElement(name="mapFunction", required= true)
+    public MapFunctionDTO getMapFunction() {
+        return mapFunction;
     }
 
-    public Map<String, String> getProperties() {
-        return properties;
+    public void setValue(Long value) {
+        this.value = value;
     }
 
-    public void setProperties(Map<String, String> properties) {
-        this.properties = properties;
+    public void setMapFunction(MapFunctionDTO mapFunction) {
+        this.mapFunction = mapFunction;
     }
-
 
     @Override
     public boolean equals(Object obj) {
-        if (obj == null) return false;
-        if (obj == this) return true;
-        if (getClass() != obj.getClass()) return false;
-
-        ReduceFunctionDTO other = (ReduceFunctionDTO)obj;
-        return Objects.equals(getType(), other.getType())
-                && Objects.equals(getProperties(), other.getProperties());
+        if (obj == null) { return false; }
+        if (obj == this) { return true; }
+        if (getClass() != obj.getClass()) { return false; }
+        ChildEdgeRequestDTO other = (ChildEdgeRequestDTO) obj;
+        return Objects.equals(value, other.value)
+                && Objects.equals(mapFunction, other.mapFunction);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(type, properties);
+        return Objects.hash(value, mapFunction);
     }
 
     @Override
     public String toString() {
         return com.google.common.base.Objects.toStringHelper(this)
-                .add("type", type)
-                .add("properties", properties)
+                .add("value", value)
+                .add("mapFunction", mapFunction)
                 .toString();
     }
 }
