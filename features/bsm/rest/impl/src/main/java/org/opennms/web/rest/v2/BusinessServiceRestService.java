@@ -54,11 +54,13 @@ import org.opennms.netmgt.bsm.service.model.mapreduce.MapFunction;
 import org.opennms.netmgt.bsm.service.model.mapreduce.ReductionFunction;
 import org.opennms.web.rest.api.ResourceLocationFactory;
 import org.opennms.web.rest.support.RedirectHelper;
+import org.opennms.web.rest.v2.bsm.model.MapFunctionType;
+import org.opennms.web.rest.v2.bsm.model.ReduceFunctionType;
 import org.opennms.web.rest.v2.bsm.model.edge.ChildEdgeResponseDTO;
 import org.opennms.web.rest.v2.bsm.model.BusinessServiceListDTO;
 import org.opennms.web.rest.v2.bsm.model.BusinessServiceRequestDTO;
 import org.opennms.web.rest.v2.bsm.model.BusinessServiceResponseDTO;
-import org.opennms.web.rest.v2.bsm.model.edge.EdgeRequestDTO;
+import org.opennms.web.rest.v2.bsm.model.edge.AbstractEdgeRequestDTO;
 import org.opennms.web.rest.v2.bsm.model.edge.IpServiceEdgeResponseDTO;
 import org.opennms.web.rest.v2.bsm.model.MapFunctionDTO;
 import org.opennms.web.rest.v2.bsm.model.MapFunctionListDTO;
@@ -69,6 +71,8 @@ import org.opennms.web.rest.v2.bsm.model.edge.ReductionKeyEdgeResponseDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+
+import com.google.common.collect.Sets;
 
 @Component
 @Path("business-services")
@@ -110,15 +114,15 @@ public class BusinessServiceRestService {
         response.setIpServices(service.getIpServiceEdges()
                 .stream()
                 .map(edge -> transform(edge))
-                .collect(Collectors.toSet()));
+                .collect(Collectors.toList()));
         response.setChildren(service.getChildEdges()
                 .stream()
                 .map(edge -> transform(edge))
-                .collect(Collectors.toSet()));
+                .collect(Collectors.toList()));
         response.setReductionKeys(service.getReductionKeyEdges()
                 .stream()
                 .map(edge -> transform(edge))
-                .collect(Collectors.toSet()));
+                .collect(Collectors.toList()));
         return Response.ok(response).build();
     }
 
@@ -158,36 +162,23 @@ public class BusinessServiceRestService {
         service.setName(request.getName());
         service.setAttributes(request.getAttributes());
         service.setReduceFunction(transform(request.getReduceFunction()));
-        service.setReductionKeyEdges(
+        service.setReductionKeyEdges(Sets.newHashSet());
                 request.getReductionKeys()
-                    .stream()
-                    .map(rkEdge -> {
-                        // TODO MVR this code is already in BusinessServiceImpl and may be reused (move to business service manager?)
-                        ReductionKeyEdge edge = getManager().createEdge(ReductionKeyEdge.class, service, transform(rkEdge.getMapFunction()));
-                        edge.setReductionKey(rkEdge.getValue());
-                        return edge;
-                    })
-                    .collect(Collectors.toSet()));
-        service.setIpServiceEdges(
+                    .forEach(rkEdge -> getManager().addReductionKeyEdge(service, rkEdge.getValue(), transform(rkEdge.getMapFunction())));
+        service.setIpServiceEdges(Sets.newHashSet());
                 request.getIpServices()
-                        .stream()
-                        .map(ipEdge -> {
-                            // TODO MVR this code is already in BusinessServiceImpl and may be reused (move to business service manager?)
-                            IpServiceEdge edge = getManager().createEdge(IpServiceEdge.class, service, transform(ipEdge.getMapFunction()));
-                            edge.setIpService(getManager().getIpServiceById(ipEdge.getValue()));
-                            return edge;
-                        })
-                        .collect(Collectors.toSet()));
-        service.setChildEdges(
+                        .forEach(ipEdge ->
+                            getManager().addIpServiceEdge(
+                                    service,
+                                    getManager().getIpServiceById(ipEdge.getValue()),
+                                    transform(ipEdge.getMapFunction())));
+        service.setChildEdges(Sets.newHashSet());
                 request.getChildServices()
-                        .stream()
-                        // TODO MVR this code is already in BusinessServiceImpl and may be reused (move to business service manager?)
-                        .map(childEdge -> {
-                            ChildEdge edge = getManager().createEdge(ChildEdge.class, service, transform(childEdge.getMapFunction()));
-                            edge.setChild(getManager().getBusinessServiceById(childEdge.getValue()));
-                            return edge;
-                        })
-                        .collect(Collectors.toSet()));
+                        .forEach(childEdge ->
+                            getManager().addChildEdge(
+                                    service,
+                                    getManager().getBusinessServiceById(childEdge.getValue()),
+                                    transform(childEdge.getMapFunction())));
         getManager().saveBusinessService(service);
 
         return Response.noContent().build();
@@ -205,7 +196,7 @@ public class BusinessServiceRestService {
     @POST
     @Path("{id}/edges")
     public Response addEdge(@PathParam("id") final Long serviceId,
-                            final EdgeRequestDTO edgeRequest) {
+                            final AbstractEdgeRequestDTO edgeRequest) {
         // TODO MVR implement me
 //        final IpService ipService = getManager().getEdgeById(edgeId);
 //        boolean changed = getManager().assignIpService(service, ipService);
@@ -267,8 +258,8 @@ public class BusinessServiceRestService {
         response.setId(input.getId());
         response.setNodeLabel(input.getNodeLabel());
         response.setServiceName(input.getServiceName());
-        response.setReductionKeys(input.getReductionKeys());
         response.setIpAddress(input.getIpAddress());
+        response.setLocation(ResourceLocationFactory.createIpServiceLocation(String.valueOf(input.getId())));
         return response;
     }
 
@@ -310,12 +301,12 @@ public class BusinessServiceRestService {
     }
 
     private MapFunctionDTO transform(MapFunction input) {
-        MapFunctionDTO.Type type = MapFunctionDTO.Type.valueOf(input.getClass());
+        MapFunctionType type = MapFunctionType.valueOf(input.getClass());
         return type.toDTO(input);
     }
 
     private ReduceFunctionDTO transform(ReductionFunction input) {
-        ReduceFunctionDTO.Type type = ReduceFunctionDTO.Type.valueOf(input.getClass());
+        ReduceFunctionType type = ReduceFunctionType.valueOf(input.getClass());
         return type.toDTO(input);
     }
 

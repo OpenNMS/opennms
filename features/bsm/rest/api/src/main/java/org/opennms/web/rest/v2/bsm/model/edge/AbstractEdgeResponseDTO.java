@@ -31,6 +31,8 @@ package org.opennms.web.rest.v2.bsm.model.edge;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
@@ -44,16 +46,19 @@ import org.opennms.web.rest.api.support.JsonResourceLocationDeserializationProvi
 import org.opennms.web.rest.api.support.JsonResourceLocationSerializationProvider;
 import org.opennms.web.rest.v2.bsm.model.MapFunctionDTO;
 
+import com.google.common.base.Objects;
+
+@XmlAccessorType(XmlAccessType.NONE)
 public abstract class AbstractEdgeResponseDTO {
 
     @XmlElement(name="id")
-    private long m_id;
+    private long id;
 
     @XmlElement(name="operational-status")
-    private Status m_operationalStatus;
+    private Status operationalStatus;
 
     @XmlElement(name="map-function")
-    private MapFunctionDTO m_mapFunction;
+    private MapFunctionDTO mapFunction;
 
     @XmlElement(name="location")
     @XmlJavaTypeAdapter(JAXBResourceLocationAdapter.class)
@@ -63,14 +68,14 @@ public abstract class AbstractEdgeResponseDTO {
 
     @XmlElement(name="reductionKey")
     @XmlElementWrapper(name="reductionKeys")
-    private Set<String> m_reductionKeys = new HashSet<>();
+    private Set<String> reductionKeys = new HashSet<>();
 
     public Status getOperationalStatus() {
-        return this.m_operationalStatus;
+        return this.operationalStatus;
     }
 
     public void setOperationalStatus(final Status operationalStatus) {
-        this.m_operationalStatus = operationalStatus;
+        this.operationalStatus = operationalStatus;
     }
 
     public ResourceLocation getLocation() {
@@ -82,26 +87,58 @@ public abstract class AbstractEdgeResponseDTO {
     }
 
     public long getId() {
-        return m_id;
+        return id;
     }
 
     public void setId(long id) {
-        this.m_id = id;
+        this.id = id;
     }
 
     public Set<String> getReductionKeys() {
-        return m_reductionKeys;
+        return reductionKeys;
     }
 
     public void setReductionKeys(Set<String> reductionKeys) {
-        m_reductionKeys = reductionKeys;
+        this.reductionKeys = reductionKeys;
     }
 
     public void setMapFunction(MapFunctionDTO mapFunction) {
-        this.m_mapFunction = mapFunction;
+        this.mapFunction = mapFunction;
     }
 
     public MapFunctionDTO getMapFunction() {
-        return m_mapFunction;
+        return mapFunction;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) return false;
+        if (obj == this) return true;
+        if (getClass() != obj.getClass()) return false;
+        final AbstractEdgeResponseDTO other = (AbstractEdgeResponseDTO) obj;
+        final boolean equals = Objects.equal(id, other.id)
+                && Objects.equal(operationalStatus, other.operationalStatus)
+                && Objects.equal(mapFunction, other.mapFunction)
+                && Objects.equal(reductionKeys, other.reductionKeys)
+                && Objects.equal(location, other.location);
+        return equals;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(id,
+                operationalStatus,
+                location);
+    }
+
+    @Override
+    public String toString() {
+        return Objects.toStringHelper(this)
+                .add("id", id)
+                .add("operationalStatus", operationalStatus)
+                .add("mapFunction", mapFunction)
+                .add("location", location)
+                .add("reductionKeys", reductionKeys)
+                .toString();
     }
 }

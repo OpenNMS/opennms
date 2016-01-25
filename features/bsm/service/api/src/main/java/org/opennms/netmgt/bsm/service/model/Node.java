@@ -26,9 +26,8 @@
  * http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.core.service;
+package org.opennms.netmgt.bsm.service.model;
 
-public interface NodeManager {
-
-    Node getNodeById(int nodeId);
+public interface Node {
+    String getLabel();
 }

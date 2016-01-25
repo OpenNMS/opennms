@@ -28,14 +28,18 @@
 
 package org.opennms.web.rest.v2.bsm.model.edge;
 
-import java.util.HashSet;
-import java.util.Set;
-
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+
+import org.codehaus.jackson.map.annotate.JsonDeserialize;
+import org.codehaus.jackson.map.annotate.JsonSerialize;
+import org.opennms.web.rest.api.ResourceLocation;
+import org.opennms.web.rest.api.support.JAXBResourceLocationAdapter;
+import org.opennms.web.rest.api.support.JsonResourceLocationDeserializationProvider;
+import org.opennms.web.rest.api.support.JsonResourceLocationSerializationProvider;
 
 import com.google.common.base.Objects;
 
@@ -55,9 +59,11 @@ public class IpServiceResponseDTO {
     @XmlElement(name="ip-address")
     private String m_ipAddress;
 
-    @XmlElement(name="reductionKey")
-    @XmlElementWrapper(name="reductionKeys")
-    private Set<String> m_reductionKeys = new HashSet<>();
+    @XmlElement(name="location")
+    @XmlJavaTypeAdapter(JAXBResourceLocationAdapter.class)
+    @JsonSerialize(using = JsonResourceLocationSerializationProvider.class)
+    @JsonDeserialize(using = JsonResourceLocationDeserializationProvider.class)
+    private ResourceLocation location;
 
     public int getId() {
         return m_id;
@@ -65,6 +71,14 @@ public class IpServiceResponseDTO {
 
     public void setId(int id) {
         this.m_id = id;
+    }
+
+    public ResourceLocation getLocation() {
+        return location;
+    }
+
+    public void setLocation(ResourceLocation location) {
+        this.location = location;
     }
 
     public String getServiceName() {
@@ -91,14 +105,6 @@ public class IpServiceResponseDTO {
         this.m_ipAddress = ipAddress;
     }
 
-    public Set<String> getReductionKeys() {
-        return m_reductionKeys;
-    }
-
-    public void setReductionKeys(Set<String> reductionKeys) {
-        m_reductionKeys = reductionKeys;
-    }
-
     @Override
     public boolean equals(Object obj) {
         if (obj == null) {
@@ -115,7 +121,7 @@ public class IpServiceResponseDTO {
                 && Objects.equal(m_serviceName, other.m_serviceName)
                 && Objects.equal(m_nodeLabel, other.m_nodeLabel)
                 && Objects.equal(m_ipAddress, other.m_ipAddress)
-                && Objects.equal(m_reductionKeys, other.m_reductionKeys);
+                && Objects.equal(location, other.location);
         return equals;
     }
 
@@ -124,7 +130,8 @@ public class IpServiceResponseDTO {
         return Objects.hashCode(m_id,
                 m_serviceName,
                 m_nodeLabel,
-                m_ipAddress);
+                m_ipAddress,
+                location);
     }
 
     @Override
@@ -134,7 +141,7 @@ public class IpServiceResponseDTO {
                 .add("serviceName", m_serviceName)
                 .add("nodeLabel", m_nodeLabel)
                 .add("ipAddress", m_ipAddress)
-                .add("reductionKeys", m_reductionKeys)
+                .add("location", location)
                 .toString();
     }
 }

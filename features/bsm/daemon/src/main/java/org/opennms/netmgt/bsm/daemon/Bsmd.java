@@ -53,6 +53,7 @@ import org.opennms.netmgt.events.api.EventIpcManager;
 import org.opennms.netmgt.events.api.annotations.EventHandler;
 import org.opennms.netmgt.events.api.annotations.EventListener;
 import org.opennms.netmgt.model.OnmsAlarm;
+import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
@@ -262,13 +263,16 @@ public class Bsmd implements SpringServiceDaemon, BusinessServiceStateChangeHand
      */
     @Override
     public void handleBusinessServiceStateChanged(BusinessService businessService, Status newStatus, Status prevStatus) {
-        EventBuilder ebldr = new EventBuilder(EventConstants.BUSINESS_SERVICE_OPERATIONAL_STATUS_CHANGED_UEI, NAME);
+        final OnmsSeverity newSeverity = SeverityMapper.toSeverity(newStatus);
+        final OnmsSeverity prevSeverity = SeverityMapper.toSeverity(prevStatus);
+
+        final EventBuilder ebldr = new EventBuilder(EventConstants.BUSINESS_SERVICE_OPERATIONAL_STATUS_CHANGED_UEI, NAME);
         ebldr.addParam(EventConstants.PARM_BUSINESS_SERVICE_ID, businessService.getId());
         ebldr.addParam(EventConstants.PARM_BUSINESS_SERVICE_NAME, businessService.getName());
-        ebldr.addParam(EventConstants.PARM_PREV_SEVERITY_ID, SeverityMapper.toSeverity(prevStatus).getId());
-        ebldr.addParam(EventConstants.PARM_PREV_SEVERITY_LABEL, SeverityMapper.toSeverity(prevStatus).getLabel());
-        ebldr.addParam(EventConstants.PARM_NEW_SEVERITY_ID, SeverityMapper.toSeverity(newStatus).getId());
-        ebldr.addParam(EventConstants.PARM_NEW_SEVERITY_LABEL, SeverityMapper.toSeverity(newStatus).getLabel());
+        ebldr.addParam(EventConstants.PARM_PREV_SEVERITY_ID, prevSeverity.getId());
+        ebldr.addParam(EventConstants.PARM_PREV_SEVERITY_LABEL, prevSeverity.getLabel());
+        ebldr.addParam(EventConstants.PARM_NEW_SEVERITY_ID, newSeverity.getId());
+        ebldr.addParam(EventConstants.PARM_NEW_SEVERITY_LABEL, newSeverity.getLabel());
         m_eventIpcManager.sendNow(ebldr.getEvent());
     }
 

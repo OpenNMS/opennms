@@ -28,15 +28,60 @@
 
 package org.opennms.web.rest.v2.bsm.model.edge;
 
+import java.io.Serializable;
+import java.util.Objects;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlElement;
 
-@XmlRootElement(name="reduction-key-edge")
+import org.opennms.web.rest.v2.bsm.model.MapFunctionDTO;
+
 @XmlAccessorType(XmlAccessType.NONE)
-public class ReductionKeyEdgeResponseDTO extends AbstractEdgeResponseDTO {
+public abstract class AbstractEdgeRequestDTO<T extends Serializable> {
 
-    public void setReductionKey(String reductionKey) {
-        getReductionKeys().add(reductionKey);
+    private T value;
+
+    private MapFunctionDTO mapFunction;
+
+    @XmlElement(name="value")
+    public T getValue() {
+        return value;
+    }
+
+    @XmlElement(name="mapFunction")
+    public MapFunctionDTO getMapFunction() {
+        return mapFunction;
+    }
+
+    public void setValue(T value) {
+        this.value = value;
+    }
+
+    public void setMapFunction(MapFunctionDTO mapFunction) {
+        this.mapFunction = mapFunction;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) { return false; }
+        if (obj == this) { return true; }
+        if (getClass() != obj.getClass()) { return false; }
+        AbstractEdgeRequestDTO other = (AbstractEdgeRequestDTO) obj;
+        return Objects.equals(value, other.value)
+                && Objects.equals(mapFunction, other.mapFunction);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(value, mapFunction);
+    }
+
+    @Override
+    public String toString() {
+        return com.google.common.base.Objects.toStringHelper(this)
+                .add("value", value)
+                .add("mapFunction", mapFunction)
+                .toString();
     }
 }

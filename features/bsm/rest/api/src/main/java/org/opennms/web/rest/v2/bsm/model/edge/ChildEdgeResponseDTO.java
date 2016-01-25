@@ -37,7 +37,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlAccessorType(XmlAccessType.NONE)
 public class ChildEdgeResponseDTO extends AbstractEdgeResponseDTO {
 
-    @XmlElement(name="child")
+    @XmlElement(name="childId")
     private Long childId;
 
     public void setChildId(Long childId) {
@@ -46,5 +46,21 @@ public class ChildEdgeResponseDTO extends AbstractEdgeResponseDTO {
 
     public Long getChildId() {
         return childId;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) { return false; }
+        if (getClass() != obj.getClass()) { return false; }
+        if (!super.equals(obj)) {
+            return false;
+        }
+        // compare subclass fields
+        return java.util.Objects.equals(childId, ((ChildEdgeResponseDTO) obj).childId);
+    }
+
+    @Override
+    public int hashCode() {
+        return super.hashCode() + java.util.Objects.hash(childId);
     }
 }

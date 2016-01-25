@@ -28,7 +28,6 @@
 
 package org.opennms.web.rest.v2.bsm.model;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
@@ -37,105 +36,21 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.opennms.netmgt.bsm.service.model.Status;
-import org.opennms.netmgt.bsm.service.model.functions.map.Decrease;
-import org.opennms.netmgt.bsm.service.model.functions.map.Identity;
-import org.opennms.netmgt.bsm.service.model.functions.map.Ignore;
-import org.opennms.netmgt.bsm.service.model.functions.map.Increase;
-import org.opennms.netmgt.bsm.service.model.functions.map.SetTo;
-import org.opennms.netmgt.bsm.service.model.mapreduce.MapFunction;
-
 @XmlRootElement(name = "map-function")
 @XmlAccessorType(XmlAccessType.NONE)
 public class MapFunctionDTO {
 
-    public enum Type {
-
-        SetTo(SetTo.class) {
-            @Override
-            public MapFunction fromDTO(MapFunctionDTO input) {
-                SetTo setTo = new SetTo();
-                String status = Objects.requireNonNull(input.getProperties().get("status"));
-                setTo.setStatus(Status.valueOf(status));
-                return setTo;
-            }
-
-            @Override
-            public <T extends MapFunction> MapFunctionDTO toDTO(T input) {
-                org.opennms.netmgt.bsm.service.model.functions.map.SetTo setTo = (org.opennms.netmgt.bsm.service.model.functions.map.SetTo) input;
-                MapFunctionDTO dto = new MapFunctionDTO();
-                dto.setType(this);
-                Map<String, String> properties = new HashMap<>();
-                if (setTo.getStatus() == null) {
-                    properties.put("status", "");
-                } else {
-                    properties.put("status", setTo.getStatus().toString());
-                }
-                dto.setProperties(properties);
-                return dto;
-            }
-        },
-        Ignore(Ignore.class) {
-            @Override
-            public MapFunction fromDTO(MapFunctionDTO input) {
-                return new Ignore();
-            }
-
-        },
-        Decrease(Decrease.class) {
-            @Override
-            public MapFunction fromDTO(MapFunctionDTO input) {
-                return new Decrease();
-            }
-        },
-        Increase(Increase.class) {
-            @Override
-            public MapFunction fromDTO(MapFunctionDTO input) {
-                return new Increase();
-            }
-        },
-        Identity(Identity.class) {
-            @Override
-            public MapFunction fromDTO(MapFunctionDTO input) {
-                return new Identity();
-            }
-        };
-
-        private final Class<? extends MapFunction> clazz;
-
-        Type(Class<? extends MapFunction> clazz) {
-            this.clazz = clazz;
-        }
-
-        public abstract MapFunction fromDTO(MapFunctionDTO input);
-
-        public <T extends MapFunction> MapFunctionDTO toDTO(T input) {
-            MapFunctionDTO dto = new MapFunctionDTO();
-            dto.setType(this);
-            return dto;
-        }
-
-        public static Type valueOf(Class<? extends MapFunction> aClass) {
-            for (Type eachType : values()) {
-                if (eachType.clazz == aClass) {
-                    return eachType;
-                }
-            }
-            throw new IllegalArgumentException("Cannot create Type for map function " + aClass);
-        }
-    }
-
     @XmlElement(name="type", required = true)
-    private Type type;
+    private MapFunctionType type;
 
     @XmlElement(name="properties", required = false)
     private Map<String, String> properties;
 
-    public Type getType() {
+    public MapFunctionType getType() {
         return type;
     }
 
-    public void setType(Type type) {
+    public void setType(MapFunctionType type) {
         this.type = type;
     }
 

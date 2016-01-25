@@ -28,13 +28,15 @@
 
 package org.opennms.web.rest.v2.bsm.model.edge;
 
+import java.util.Objects;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement(name = "ip-service-edge")
-@XmlAccessorType(XmlAccessType.FIELD)
+@XmlAccessorType(XmlAccessType.NONE)
 public class IpServiceEdgeResponseDTO extends AbstractEdgeResponseDTO {
 
     @XmlElement(name="ip-service")
@@ -46,5 +48,21 @@ public class IpServiceEdgeResponseDTO extends AbstractEdgeResponseDTO {
 
     public void setIpService(IpServiceResponseDTO ipService) {
         this.ipService = ipService;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) { return false; }
+        if (getClass() != obj.getClass()) { return false; }
+        if (!super.equals(obj)) {
+            return false;
+        }
+        // compare subclass fields
+        return Objects.equals(ipService, ((IpServiceEdgeResponseDTO) obj).ipService);
+    }
+
+    @Override
+    public int hashCode() {
+        return super.hashCode() + Objects.hash(ipService);
     }
 }

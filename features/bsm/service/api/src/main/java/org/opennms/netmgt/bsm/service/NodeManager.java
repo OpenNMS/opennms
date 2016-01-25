@@ -26,27 +26,11 @@
  * http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.core.service.internal;
+package org.opennms.netmgt.bsm.service;
 
-import java.util.Objects;
+import org.opennms.netmgt.bsm.service.model.Node;
 
-import org.opennms.netmgt.core.service.Node;
-import org.opennms.netmgt.core.service.NodeManager;
-import org.opennms.netmgt.model.OnmsNode;
+public interface NodeManager {
 
-public class NodeImpl implements Node {
-
-    private final NodeManager manager;
-
-    private final OnmsNode entity;
-
-    public NodeImpl(NodeManager manager, OnmsNode entity) {
-        this.manager = Objects.requireNonNull(manager);
-        this.entity = Objects.requireNonNull(entity);
-    }
-
-    @Override
-    public String getLabel() {
-        return entity.getLabel();
-    }
+    Node getNodeById(int nodeId);
 }

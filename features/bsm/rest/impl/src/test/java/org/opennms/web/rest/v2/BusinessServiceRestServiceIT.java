@@ -29,11 +29,13 @@
 package org.opennms.web.rest.v2;
 
 import static org.opennms.netmgt.bsm.test.BsmTestUtils.toRequestDto;
+import static org.opennms.netmgt.bsm.test.BsmTestUtils.toResponseDTO;
 import static org.opennms.netmgt.bsm.test.BsmTestUtils.toResponseDto;
 import static org.opennms.netmgt.bsm.test.BsmTestUtils.toXml;
 
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.ws.rs.core.MediaType;
@@ -54,7 +56,6 @@ import org.opennms.core.test.rest.AbstractSpringJerseyRestTestCase;
 import org.opennms.netmgt.bsm.persistence.api.BusinessServiceDao;
 import org.opennms.netmgt.bsm.persistence.api.BusinessServiceEdgeDao;
 import org.opennms.netmgt.bsm.persistence.api.BusinessServiceEntity;
-import org.opennms.netmgt.bsm.persistence.api.IPServiceEdge;
 import org.opennms.netmgt.bsm.persistence.api.functions.map.IdentityEntity;
 import org.opennms.netmgt.bsm.persistence.api.functions.map.MapFunctionDao;
 import org.opennms.netmgt.bsm.persistence.api.functions.reduce.MostCriticalEntity;
@@ -63,6 +64,7 @@ import org.opennms.netmgt.bsm.service.model.Status;
 import org.opennms.netmgt.bsm.service.model.functions.map.Ignore;
 import org.opennms.netmgt.bsm.test.BsmDatabasePopulator;
 import org.opennms.netmgt.bsm.test.BsmTestData;
+import org.opennms.netmgt.bsm.test.BsmTestUtils;
 import org.opennms.netmgt.bsm.test.BusinessServiceEntityBuilder;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
 import org.opennms.netmgt.model.OnmsMonitoredService;
@@ -74,14 +76,15 @@ import org.opennms.web.rest.v2.bsm.model.BusinessServiceRequestDTO;
 import org.opennms.web.rest.v2.bsm.model.BusinessServiceResponseDTO;
 import org.opennms.web.rest.v2.bsm.model.MapFunctionDTO;
 import org.opennms.web.rest.v2.bsm.model.MapFunctionListDTO;
+import org.opennms.web.rest.v2.bsm.model.MapFunctionType;
 import org.opennms.web.rest.v2.bsm.model.ReduceFunctionDTO;
 import org.opennms.web.rest.v2.bsm.model.ReduceFunctionListDTO;
-import org.opennms.web.rest.v2.bsm.model.edge.ReductionKeyEdgeResponseDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
@@ -109,32 +112,13 @@ public class BusinessServiceRestServiceIT extends AbstractSpringJerseyRestTestCa
     private BsmDatabasePopulator databasePopulator;
 
     @Autowired
-    private ReductionFunctionDao m_reductionFunctionDao;
-
-    @Autowired
-    private BusinessServiceEdgeDao m_businessServiceEdgeDao;
-
-    @Autowired
-    private MapFunctionDao m_mapFunctionDao;
-
-    @Autowired
     private MonitoredServiceDao monitoredServiceDao;
-
-    private MostCriticalEntity m_mostCritical;
-
-    private IdentityEntity m_identity;
 
     @Before
     public void setUp() throws Throwable {
         super.setUp();
         BeanUtils.assertAutowiring(this);
         databasePopulator.populateDatabase();
-
-        // Create the reduction function
-        m_mostCritical = new MostCriticalEntity();
-
-        // Create the map function
-        m_identity = new IdentityEntity();
     }
 
     @After
@@ -156,7 +140,7 @@ public class BusinessServiceRestServiceIT extends AbstractSpringJerseyRestTestCa
     public void canAddIpService() throws Exception {
         BusinessServiceEntity service = new BusinessServiceEntityBuilder()
                 .name("Dummy Service")
-                .reduceFunction(m_mostCritical)
+                .reduceFunction(new MostCriticalEntity())
                 .toEntity();
         final Long serviceId = m_businessServiceDao.save(service);
         m_businessServiceDao.flush();
@@ -181,7 +165,7 @@ public class BusinessServiceRestServiceIT extends AbstractSpringJerseyRestTestCa
     public void canRemoveIpService() throws Exception {
         BusinessServiceEntity service = new BusinessServiceEntityBuilder()
                 .name("Dummy Service")
-                .reduceFunction(m_mostCritical)
+                .reduceFunction(new MostCriticalEntity())
                 .toEntity();
         final Long serviceId = m_businessServiceDao.save(service);
         m_businessServiceDao.saveOrUpdate(service);
@@ -209,7 +193,7 @@ public class BusinessServiceRestServiceIT extends AbstractSpringJerseyRestTestCa
     }
 
     private void addIpServiceEdge(BusinessServiceEntity serviceEntity, OnmsMonitoredService ipService) {
-        serviceEntity.addIpServiceEdge(ipService, m_identity);
+        serviceEntity.addIpServiceEdge(ipService, new IdentityEntity());
         m_businessServiceDao.saveOrUpdate(serviceEntity);
         m_businessServiceDao.flush();
     }
@@ -232,8 +216,9 @@ public class BusinessServiceRestServiceIT extends AbstractSpringJerseyRestTestCa
      * Verifies that the given reduction key is atached to the provided Business Service
      */
     private void verifyReductionKey(String reductionKey, BusinessServiceResponseDTO responseDTO) {
-        List<ReductionKeyEdgeResponseDTO> rkList = responseDTO.getReductionKeys().stream().filter(rkEdge -> rkEdge.getReductionKey().equals(reductionKey)).collect(Collectors.toList());
-        Assert.assertTrue("Expect reduction key '" + reductionKey + "' to be present in retrieved BusinessServiceResponseDTO.", rkList.size() == 1);
+        final Set<String> reductionKeys = Sets.newHashSet();
+        responseDTO.getReductionKeys().forEach(e -> reductionKeys.addAll(e.getReductionKeys()));
+        Assert.assertTrue("Expect reduction key '" + reductionKey + "' to be present in retrieved BusinessServiceResponseDTO.", reductionKeys.contains(reductionKey));
     }
 
     @Test
@@ -243,7 +228,7 @@ public class BusinessServiceRestServiceIT extends AbstractSpringJerseyRestTestCa
         BusinessServiceEntity bs = new BusinessServiceEntityBuilder()
                 .name("Application Servers")
                 .addReductionKey("MyReductionKey")
-                .reduceFunction(m_mostCritical)
+                .reduceFunction(new MostCriticalEntity())
                 .toEntity();
         Long id = m_businessServiceDao.save(bs);
         m_businessServiceDao.flush();
@@ -254,8 +239,6 @@ public class BusinessServiceRestServiceIT extends AbstractSpringJerseyRestTestCa
         // Verify
         Assert.assertEquals(databasePopulator.expectedBsCount(1), businessServices.size());
         BusinessServiceResponseDTO expectedResponseDTO = toResponseDto(bs);
-        expectedResponseDTO.setLocation(ResourceLocationFactory.createBusinessServiceLocation(id.toString()));
-        expectedResponseDTO.setOperationalStatus(Status.INDETERMINATE);
         BusinessServiceResponseDTO actualResponseDTO = getXmlObject(
                 JAXBContext.newInstance(BusinessServiceResponseDTO.class, ResourceLocation.class),
                 buildServiceUrl(id),
@@ -269,6 +252,7 @@ public class BusinessServiceRestServiceIT extends AbstractSpringJerseyRestTestCa
         final BusinessServiceEntity bs = new BusinessServiceEntityBuilder()
                 .name("some-service")
                 .addAttribute("some-key", "some-value")
+                .reduceFunction(new MostCriticalEntity())
                 .addReductionKey("reductionKey-1")
                 .addReductionKey("reductionKey-2")
                 .addReductionKey("reductionKey-3")
@@ -301,8 +285,8 @@ public class BusinessServiceRestServiceIT extends AbstractSpringJerseyRestTestCa
         }
         // set hierarchy
         BusinessServiceEntity parentEntity = findEntityByName("Parent")
-                .addChildServiceEdge(findEntityByName("Child 1"), m_identity)
-                .addChildServiceEdge(findEntityByName("Child 2"), m_identity);
+                .addChildServiceEdge(findEntityByName("Child 1"), new IdentityEntity())
+                .addChildServiceEdge(findEntityByName("Child 2"), new IdentityEntity());
         sendData(PUT, MediaType.APPLICATION_XML, buildServiceUrl(parentEntity.getId()), toXml(toRequestDto(parentEntity)), 204);
 
         // Verify
@@ -330,21 +314,26 @@ public class BusinessServiceRestServiceIT extends AbstractSpringJerseyRestTestCa
         Assert.assertEquals(entity.getId(), Long.valueOf(responseDTO.getId()));
         Assert.assertEquals(entity.getName(), responseDTO.getName());
         Assert.assertEquals(entity.getAttributes(), responseDTO.getAttributes());
-        Assert.assertEquals(entity.getReductionKeyEdges().size(), responseDTO.getReductionKeys().size()); // TODO MVR we should verify the content not only the size
-        Assert.assertEquals(responseDTO.getReductionKeys(), responseDTO.getReductionKeys());
         Assert.assertEquals(Status.INDETERMINATE, responseDTO.getOperationalStatus());
+        Assert.assertEquals(entity.getReductionKeyEdges().size(), responseDTO.getReductionKeys().size());
+        Assert.assertEquals(entity.getReductionKeyEdges()
+                .stream()
+                .map(it -> toResponseDTO(it))
+                .collect(Collectors.toList()), responseDTO.getReductionKeys());
+        Assert.assertEquals(entity.getChildEdges().size(), responseDTO.getChildren().size());
         Assert.assertEquals(entity.getChildEdges()
                 .stream()
-                .map(e -> e.getChild().getId())
-                .collect(Collectors.toSet()), responseDTO.getChildren()); // TODO MVR this is going to fail...
+                .map(e -> toResponseDTO(e))
+                .collect(Collectors.toList()), responseDTO.getChildren());
+        Assert.assertEquals(entity.getIpServiceEdges().size(), responseDTO.getIpServices().size());
+        Assert.assertEquals(entity.getIpServiceEdges()
+                .stream()
+                .map(e -> toResponseDTO(e))
+                .collect(Collectors.toList()), responseDTO.getIpServices());
         Assert.assertEquals(m_businessServiceDao.findParents(entity)
                 .stream()
                 .map(e -> e.getId())
-                .collect(Collectors.toSet()), responseDTO.getParentServices()); // TODO MVR this is going to fail..
-        Assert.assertEquals(entity.getIpServiceEdges()
-                .stream()
-                .map(e -> e.getIpService())
-                .collect(Collectors.toSet()), responseDTO.getIpServices());
+                .collect(Collectors.toSet()), responseDTO.getParentServices());
         return responseDTO;
     }
 
@@ -365,7 +354,7 @@ public class BusinessServiceRestServiceIT extends AbstractSpringJerseyRestTestCa
                 .addAttribute("some-key", "some-value")
                 .addReductionKey("key1")
                 .addReductionKey("key2-deleteMe")
-                .reduceFunction(m_mostCritical)
+                .reduceFunction(new MostCriticalEntity())
                 .toEntity();
         final Long serviceId = m_businessServiceDao.save(bs);
         m_businessServiceDao.flush();
@@ -375,24 +364,21 @@ public class BusinessServiceRestServiceIT extends AbstractSpringJerseyRestTestCa
         requestDTO.setName("New Name");
         requestDTO.getAttributes().put("key", "value");
         requestDTO.getReductionKeys().clear();
-        requestDTO.addReductionKey("key1updated", MapFunctionDTO.Type.Ignore.toDTO(new Ignore()));
+        requestDTO.addReductionKey("key1updated", MapFunctionType.Ignore.toDTO(new Ignore()));
 
         // TODO JSON cannot be de-serialized by the rest service. Fix me.
 //        sendData(PUT, MediaType.APPLICATION_JSON, "/business-services/" + serviceId, toJson(requestDTO), 204);
         sendData(PUT, MediaType.APPLICATION_XML, "/business-services/" + serviceId, toXml(requestDTO), 204);
 
-        // verify
-        BusinessServiceResponseDTO responseDTO = getXmlObject(
-                JAXBContext.newInstance(BusinessServiceResponseDTO.class, ResourceLocation.class),
-                buildServiceUrl(serviceId),
-                200,
-                BusinessServiceResponseDTO.class);
+        // Reload from database and verify changes
+        bs = m_businessServiceDao.get(serviceId);
+        Assert.assertEquals(requestDTO.getName(), bs.getName());
+        Assert.assertEquals(requestDTO.getAttributes(), bs.getAttributes());
+        Assert.assertEquals(1, bs.getReductionKeyEdges().size());
+        Assert.assertEquals(1, bs.getEdges().size());
         Assert.assertEquals(1, m_businessServiceDao.findAll().size());
-        Assert.assertEquals(requestDTO.getName(), responseDTO.getName());
-        Assert.assertEquals(Sets.newHashSet(), responseDTO.getIpServices());
-        Assert.assertEquals(requestDTO.getAttributes(), responseDTO.getAttributes());
-        Assert.assertEquals(requestDTO.getChildServices().size(), responseDTO.getChildren().size()); // TODO MVR verify content instead of list size
-        Assert.assertEquals(1, m_businessServiceDao.get(serviceId).getReductionKeyEdges().size()); // TODO MVR verify content instead of list size
+        Assert.assertEquals(Sets.newHashSet(), bs.getIpServiceEdges());
+        BusinessServiceResponseDTO responseDTO = verifyResponse(bs);
         verifyReductionKey("key1updated", responseDTO);
     }
 
