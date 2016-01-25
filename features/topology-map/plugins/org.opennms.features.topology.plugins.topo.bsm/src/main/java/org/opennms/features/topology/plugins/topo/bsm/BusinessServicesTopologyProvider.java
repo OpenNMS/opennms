@@ -141,9 +141,7 @@ public class BusinessServicesTopologyProvider extends AbstractTopologyProvider i
 
     public void setBusinessServiceManager(BusinessServiceManager businessServiceManager) {
         Objects.requireNonNull(businessServiceManager);
-        // TODO MVR somehow this throws a LinkageError. Disabling for now, but should be investigated
-//        this.businessServiceManager = transactionAwareBeanProxyFactory.createProxy(businessServiceManager);
-        this.businessServiceManager = businessServiceManager;
+        this.businessServiceManager = transactionAwareBeanProxyFactory.createProxy(businessServiceManager);
     }
 
     @Override

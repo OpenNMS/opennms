@@ -109,8 +109,6 @@ public class BusinessServicesStatusProvider implements StatusProvider {
 
     public void setBusinessServiceManager(BusinessServiceManager serviceManager) {
         Objects.requireNonNull(serviceManager);
-        // TODO MVR somehow this throws a LinkageError. Disabling for now, but should be investigated
-//        this.businessServiceManager = transactionAwareBeanProxyFactory.createProxy(serviceManager);
-        this.businessServiceManager = serviceManager;
+        this.businessServiceManager = transactionAwareBeanProxyFactory.createProxy(serviceManager);
     }
 }
