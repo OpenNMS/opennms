@@ -36,12 +36,10 @@ import java.awt.Font
 import java.awt.GraphicsEnvironment
 import java.awt.font.TextAttribute
 
-import javax.swing.BorderFactory;
 import javax.swing.JButton
 import javax.swing.JFrame
 import javax.swing.JPanel
 import javax.swing.ListCellRenderer
-import javax.swing.SwingUtilities;
 import javax.swing.UIManager
 import javax.swing.WindowConstants
 import javax.swing.plaf.BorderUIResource
@@ -51,6 +49,7 @@ import javax.swing.plaf.FontUIResource
 import net.miginfocom.swing.MigLayout
 
 import org.opennms.poller.remote.GroovyGui
+import org.opennms.poller.remote.OpenNMSLookAndFeel
 
 public abstract class AbstractGui implements GroovyGui {
     private def m_gui
@@ -74,7 +73,7 @@ public abstract class AbstractGui implements GroovyGui {
     public AbstractGui() {
         //debugString = ", debug 100"
 
-        UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName())
+        UIManager.setLookAndFeel(new OpenNMSLookAndFeel());
 
         def background = new ColorUIResource(m_backgroundColor)
         def foreground = new ColorUIResource(m_foregroundColor)
