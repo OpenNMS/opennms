@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.web.rest.v1;
+package org.opennms.netmgt.model.resource;
 
 import java.util.Collection;
 import java.util.List;
