@@ -28,14 +28,14 @@
 
 package org.opennms.netmgt.bsm.persistence.impl;
 
-import org.opennms.netmgt.bsm.persistence.api.BusinessServiceEdge;
+import org.opennms.netmgt.bsm.persistence.api.BusinessServiceEdgeEntity;
 import org.opennms.netmgt.bsm.persistence.api.BusinessServiceEdgeDao;
 import org.opennms.netmgt.dao.hibernate.AbstractDaoHibernate;
 
-public class BusinessServiceEdgeDaoImpl extends AbstractDaoHibernate<BusinessServiceEdge, Long> implements BusinessServiceEdgeDao {
+public class BusinessServiceEdgeDaoImpl extends AbstractDaoHibernate<BusinessServiceEdgeEntity, Long> implements BusinessServiceEdgeDao {
 
     public BusinessServiceEdgeDaoImpl() {
-        super(BusinessServiceEdge.class);
+        super(BusinessServiceEdgeEntity.class);
     }
 
 }

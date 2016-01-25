@@ -33,15 +33,11 @@ import java.util.Objects;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 
-import org.opennms.netmgt.bsm.persistence.api.BusinessServiceDao;
-import org.opennms.netmgt.bsm.persistence.api.BusinessServiceEntity;
 import org.opennms.netmgt.bsm.service.BusinessServiceManager;
 import org.opennms.netmgt.bsm.service.BusinessServiceStateChangeHandler;
 import org.opennms.netmgt.bsm.service.BusinessServiceStateMachine;
 import org.opennms.netmgt.bsm.service.internal.AlarmWrapperImpl;
-import org.opennms.netmgt.bsm.service.internal.BusinessServiceImpl;
 import org.opennms.netmgt.bsm.service.internal.SeverityMapper;
 import org.opennms.netmgt.bsm.service.model.BusinessService;
 import org.opennms.netmgt.bsm.service.model.Status;
@@ -88,9 +84,6 @@ public class Bsmd implements SpringServiceDaemon, BusinessServiceStateChangeHand
     public static final String NAME = "Bsmd";
 
     @Autowired
-    private BusinessServiceDao m_businessServiceDao;
-
-    @Autowired
     private AlarmDao m_alarmDao;
 
     @Autowired
@@ -123,7 +116,7 @@ public class Bsmd implements SpringServiceDaemon, BusinessServiceStateChangeHand
 
     @Override
     public void start() throws Exception {
-        Objects.requireNonNull(m_businessServiceDao, "businessServiceDao cannot be null");
+        Objects.requireNonNull(m_manager, "businessServiceDao cannot be null");
         Objects.requireNonNull(m_alarmDao, "alarmDao cannot be null");
         Objects.requireNonNull(m_eventIpcManager, "eventIpcManager cannot be null");
         Objects.requireNonNull(m_eventConfDao, "eventConfDao cannot be null");
@@ -187,13 +180,9 @@ public class Bsmd implements SpringServiceDaemon, BusinessServiceStateChangeHand
         m_template.execute(new TransactionCallbackWithoutResult() {
             @Override
             protected void doInTransactionWithoutResult(TransactionStatus status) {
-                final List<BusinessServiceEntity> businessServices = m_businessServiceDao.findAll();
+                final List<BusinessService> businessServices = m_manager.getAllBusinessServices();
                 LOG.debug("Adding business services to state machine {}: {}", m_stateMachine, businessServices);
-                m_stateMachine.setBusinessServices(m_businessServiceDao
-                        .findAll()
-                        .stream()
-                        .map(entity -> new BusinessServiceImpl(m_manager, entity))
-                        .collect(Collectors.toList()));
+                m_stateMachine.setBusinessServices(businessServices);
             }
         });
     }
@@ -311,14 +300,6 @@ public class Bsmd implements SpringServiceDaemon, BusinessServiceStateChangeHand
     public void destroy() throws Exception {
         LOG.info("Stopping bsmd...");
         alarmPoller.shutdown();
-    }
-
-    public void setBusinessServiceDao(BusinessServiceDao businessServiceDao) {
-        m_businessServiceDao = businessServiceDao;
-    }
-
-    public BusinessServiceDao getBusinessServiceDao() {
-        return m_businessServiceDao;
     }
 
     public void setAlarmDao(AlarmDao alarmDao) {

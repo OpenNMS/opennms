@@ -41,11 +41,11 @@ import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.MockDatabase;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
-import org.opennms.netmgt.bsm.persistence.api.BusinessServiceEdge;
-import org.opennms.netmgt.bsm.persistence.api.BusinessService;
 import org.opennms.netmgt.bsm.persistence.api.BusinessServiceDao;
+import org.opennms.netmgt.bsm.persistence.api.BusinessServiceEdgeEntity;
 import org.opennms.netmgt.bsm.persistence.api.BusinessServiceEdgeDao;
-import org.opennms.netmgt.bsm.persistence.api.IPServiceEdge;
+import org.opennms.netmgt.bsm.persistence.api.BusinessServiceEntity;
+import org.opennms.netmgt.bsm.persistence.api.IPServiceEdgeEntity;
 import org.opennms.netmgt.bsm.persistence.api.functions.map.IdentityEntity;
 import org.opennms.netmgt.bsm.persistence.api.functions.map.MapFunctionDao;
 import org.opennms.netmgt.bsm.persistence.api.functions.reduce.MostCriticalEntity;
@@ -124,7 +124,7 @@ public class BusinessServiceEdgeDaoIT {
         assertEquals(0, m_businessServiceEdgeDao.countAll());
 
         // Create an edge
-        IPServiceEdge edge = new IPServiceEdge();
+        IPServiceEdgeEntity edge = new IPServiceEdgeEntity();
         edge.setMapFunction(m_identity);
         edge.setBusinessService(bs);
 
@@ -144,7 +144,7 @@ public class BusinessServiceEdgeDaoIT {
         m_businessServiceEdgeDao.save(edge);
         m_businessServiceEdgeDao.flush();
 
-        BusinessServiceEdge otherEdge = m_businessServiceEdgeDao.get(edge.getId());
+        BusinessServiceEdgeEntity otherEdge = m_businessServiceEdgeDao.get(edge.getId());
         assertEquals(edge, otherEdge);
         assertEquals(1, m_businessServiceEdgeDao.countAll());
 

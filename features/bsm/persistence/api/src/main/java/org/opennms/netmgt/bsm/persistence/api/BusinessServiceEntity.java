@@ -40,8 +40,6 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.Inheritance;
-import javax.persistence.InheritanceType;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToOne;
@@ -62,7 +60,6 @@ import org.opennms.netmgt.model.OnmsMonitoredService;
 
 @Entity
 @Table(name = "bsm_service")
-@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 public class BusinessServiceEntity {
 
     private Long m_id;
@@ -71,7 +68,7 @@ public class BusinessServiceEntity {
 
     private Map<String, String> m_attributes = Maps.newLinkedHashMap();
 
-    private Set<OnmsMonitoredService> m_ipServices = Sets.newLinkedHashSet();
+    private Set<BusinessServiceEdgeEntity> m_edges = Sets.newLinkedHashSet();
 
     private AbstractReductionFunctionEntity m_reductionFunction;
 
@@ -131,55 +128,47 @@ public class BusinessServiceEntity {
         m_attributes.put(key, value);
     }
 
-    // TODO MVR verify the cascade type
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy="businessService", orphanRemoval = true)
-    public Set<BusinessServiceEdge> getEdges() {
+    public Set<BusinessServiceEdgeEntity> getEdges() {
         return m_edges;
     }
 
-    @OneToMany(fetch = FetchType.EAGER)
-    @JoinTable(name = "bsm_service_ifservices",
-               joinColumns = @JoinColumn(name = "bsm_service_id", referencedColumnName = "id"),
-               inverseJoinColumns = @JoinColumn(name="ifserviceid"))
-    public Set<OnmsMonitoredService> getIpServices() {
-        return m_ipServices;
-    }
-
-    public void setEdges(Set<BusinessServiceEdge> edges) {
+    public void setEdges(Set<BusinessServiceEdgeEntity> edges) {
         m_edges = edges;
     }
 
-    public void removeEdge(BusinessServiceEdge edge) {
+    public void addEdge(BusinessServiceEdgeEntity edge) {
+        m_edges.add(edge);
+    }
+
+    public void removeEdge(BusinessServiceEdgeEntity edge) {
         m_edges.remove(edge);
     }
 
     @Transient
-    private Set<Integer> getIpServiceIds() {
-        return m_ipServices.stream()
-            .map(ipSvc -> ipSvc.getId())
-            .collect(Collectors.toSet());
+    public Set<IPServiceEdgeEntity> getIpServiceEdges() {
+        return getEdges(IPServiceEdgeEntity.class);
     }
 
     @Transient
-    public Set<BusinessServiceChildEdge> getChildEdges() {
-        return getEdges(BusinessServiceChildEdge.class);
+    public Set<BusinessServiceChildEdgeEntity> getChildEdges() {
+        return getEdges(BusinessServiceChildEdgeEntity.class);
     }
 
     @Transient
-    public Set<SingleReductionKeyEdge> getReductionKeyEdges() {
-        return getEdges(SingleReductionKeyEdge.class);
+    public Set<SingleReductionKeyEdgeEntity> getReductionKeyEdges() {
+        return getEdges(SingleReductionKeyEdgeEntity.class);
     }
 
     @Transient
     @SuppressWarnings("unchecked")
-    private <T extends BusinessServiceEdge> Set<T> getEdges(Class<T> type) {
+    private <T extends BusinessServiceEdgeEntity> Set<T> getEdges(Class<T> type) {
         return getEdges().stream()
                 .filter(e -> type.isInstance(e))
                 .map(e -> (T)e)
                 .collect(Collectors.toSet());
     }
 
-    // TODO MVR verify the cascade type
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "bsm_reduce_id")
     public AbstractReductionFunctionEntity getReductionFunction() {
@@ -223,7 +212,7 @@ public class BusinessServiceEntity {
 
     // Convinent method to add a child edge
     public BusinessServiceEntity addChildServiceEdge(BusinessServiceEntity children, AbstractMapFunctionEntity mapFunction) {
-        BusinessServiceChildEdge edge = new BusinessServiceChildEdge();
+        BusinessServiceChildEdgeEntity edge = new BusinessServiceChildEdgeEntity();
         edge.setBusinessService(this);
         edge.setChild(children);
         edge.setMapFunction(Objects.requireNonNull(mapFunction));
@@ -233,7 +222,7 @@ public class BusinessServiceEntity {
 
     // Convinent method to add an ipservice edge
     public BusinessServiceEntity addIpServiceEdge(OnmsMonitoredService ipService, AbstractMapFunctionEntity mapFunction) {
-        IPServiceEdge edge = new IPServiceEdge();
+        IPServiceEdgeEntity edge = new IPServiceEdgeEntity();
         edge.setBusinessService(this);
         edge.setIpService(ipService);
         edge.setMapFunction(Objects.requireNonNull(mapFunction));
@@ -243,7 +232,7 @@ public class BusinessServiceEntity {
 
     // Convinent method to add a reduction key edge
     public BusinessServiceEntity addReductionKeyEdge(String reductionKey, AbstractMapFunctionEntity mapFunction) {
-        SingleReductionKeyEdge edge = new SingleReductionKeyEdge();
+        SingleReductionKeyEdgeEntity edge = new SingleReductionKeyEdgeEntity();
         edge.setBusinessService(this);
         edge.setReductionKey(reductionKey);
         edge.setMapFunction(Objects.requireNonNull(mapFunction));

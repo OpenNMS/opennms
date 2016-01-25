@@ -62,9 +62,16 @@ public interface BusinessServiceStateMachine {
     Status getOperationalStatus(IpService ipService);
 
     /**
+     * Retrieves the current operational status of any defined reduction key.
+     *
+     * @param reductionKey the reduction key to query for
+     * @return the current operational status, or null if the reduction key is not monitored by the state machine
+     */
+    Status getOperationalStatus(String reductionKey);
+
+    /**
      * Updates the states of the Business Services.
      */
-    // TODO MVR ... (Was OnmsAlarm before)
     void handleNewOrUpdatedAlarm(AlarmWrapper alarm);
 
     /**

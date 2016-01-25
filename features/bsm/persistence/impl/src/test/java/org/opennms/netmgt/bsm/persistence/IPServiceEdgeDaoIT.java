@@ -44,7 +44,8 @@ import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.netmgt.bsm.persistence.api.BusinessService;
 import org.opennms.netmgt.bsm.persistence.api.BusinessServiceDao;
 import org.opennms.netmgt.bsm.persistence.api.BusinessServiceEdgeDao;
-import org.opennms.netmgt.bsm.persistence.api.IPServiceEdge;
+import org.opennms.netmgt.bsm.persistence.api.BusinessServiceEntity;
+import org.opennms.netmgt.bsm.persistence.api.IPServiceEdgeEntity;
 import org.opennms.netmgt.bsm.persistence.api.functions.map.IdentityEntity;
 import org.opennms.netmgt.bsm.persistence.api.functions.map.MapFunctionDao;
 import org.opennms.netmgt.bsm.persistence.api.functions.reduce.MostCriticalEntity;
@@ -127,7 +128,7 @@ public class IPServiceEdgeDaoIT {
         assertEquals(0, m_businessServiceEdgeDao.countAll());
 
         // Create an edge
-        IPServiceEdge edge = new IPServiceEdge();
+        IPServiceEdgeEntity edge = new IPServiceEdgeEntity();
         edge.setMapFunction(m_identity);
         edge.setBusinessService(bs);
 

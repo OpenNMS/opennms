@@ -28,13 +28,14 @@
 
 package org.opennms.netmgt.bsm.test;
 
+import java.util.AbstractMap;
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.opennms.netmgt.bsm.persistence.api.BusinessServiceEntity;
-import org.opennms.netmgt.bsm.persistence.api.functions.map.IdentityEntity;
+import org.opennms.netmgt.bsm.persistence.api.functions.map.AbstractMapFunctionEntity;
 import org.opennms.netmgt.bsm.persistence.api.functions.reduce.AbstractReductionFunctionEntity;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 
@@ -42,8 +43,9 @@ public class BusinessServiceEntityBuilder {
 
     private String name;
     private final Map<String, String> attributes = new HashMap<>();
-    private Set<BusinessServiceEntity> children = new HashSet<>();
-    private Set<OnmsMonitoredService> ipServices = new HashSet<>();
+    private List<AbstractMap.SimpleEntry<BusinessServiceEntity, AbstractMapFunctionEntity>> children = new ArrayList<>();
+    private List<AbstractMap.SimpleEntry<OnmsMonitoredService, AbstractMapFunctionEntity>> ipServices = new ArrayList<>();
+    private List<AbstractMap.SimpleEntry<String, AbstractMapFunctionEntity>> reductionKeys = new ArrayList<>();
     private Long id;
     private AbstractReductionFunctionEntity reduceFunction;
 
@@ -57,8 +59,8 @@ public class BusinessServiceEntityBuilder {
         return this;
     }
 
-    public BusinessServiceEntityBuilder addChildren(BusinessServiceEntity children) {
-       this.children.add(children);
+    public BusinessServiceEntityBuilder addChildren(BusinessServiceEntity children, AbstractMapFunctionEntity mapFunctionEntity) {
+       this.children.add(new AbstractMap.SimpleEntry<>(children, mapFunctionEntity));
         return this;
     }
 
@@ -76,21 +78,19 @@ public class BusinessServiceEntityBuilder {
         if (reduceFunction != null) {
             entity.setReductionFunction(reduceFunction);
         }
-
-        // TODO MVR we have to deal with the map function stuff
-        ipServices.forEach(e -> entity.addIpServiceEdge(e, new IdentityEntity()));
-        children.forEach(e -> entity.addChildServiceEdge(e, new IdentityEntity()));
-        reductionKeys.forEach(e -> entity.addReductionKeyEdge(e, new IdentityEntity()));
+        ipServices.forEach(e -> entity.addIpServiceEdge(e.getKey(), e.getValue()));
+        children.forEach(e -> entity.addChildServiceEdge(e.getKey(), e.getValue()));
+        reductionKeys.forEach(e -> entity.addReductionKeyEdge(e.getKey(), e.getValue()));
         return entity;
     }
 
-    public BusinessServiceEntityBuilder addIpService(OnmsMonitoredService ipService) {
-        ipServices.add(ipService);
+    public BusinessServiceEntityBuilder addIpService(OnmsMonitoredService ipService, AbstractMapFunctionEntity mapFunctionEntity) {
+        ipServices.add(new AbstractMap.SimpleEntry<>(ipService, mapFunctionEntity));
         return this;
     }
 
-    public BusinessServiceEntityBuilder addReductionKey(String reductionKey) {
-        reductionKeys.add(reductionKey);
+    public BusinessServiceEntityBuilder addReductionKey(String reductionKey, AbstractMapFunctionEntity mapFunctionEntity) {
+        reductionKeys.add(new AbstractMap.SimpleEntry<>(reductionKey, mapFunctionEntity));
         return this;
     }
 

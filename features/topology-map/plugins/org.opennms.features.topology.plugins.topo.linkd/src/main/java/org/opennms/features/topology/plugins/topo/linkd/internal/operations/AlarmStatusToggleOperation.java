@@ -38,7 +38,6 @@ import org.opennms.features.topology.api.OperationContext;
 import org.opennms.features.topology.api.topo.StatusProvider;
 import org.opennms.features.topology.api.topo.VertexRef;
 
-// TODO MVR was moved from internal.app and should be generalized shouldnt it?
 public class AlarmStatusToggleOperation extends AbstractCheckedOperation {
 
     private StatusProvider m_statusProvider;

@@ -28,8 +28,6 @@
 
 package org.opennms.netmgt.bsm.service.internal;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -59,10 +57,9 @@ public class DefaultBusinessServiceStateMachine implements BusinessServiceStateM
 
     private final List<BusinessServiceStateChangeHandler> m_handlers = Lists.newArrayList();
     private final Map<String, Set<BusinessService>> m_reductionKeys = Maps.newHashMap();
-    private final Map<BusinessService, Status> m_businessServiceSeverity = Maps.newHashMap();
-    private final Map<String, Status> m_reductionKeyToStatus = Maps.newHashMap();
+    private final Map<BusinessService, Status> m_businessServiceStatus = Maps.newHashMap();
+    private final Map<String, Status> m_reductionKeyStatus = Maps.newHashMap();
     private final Set<Integer> m_ipServiceIds = Sets.newHashSet();
-    private final HashMap<Integer, Set<BusinessService>> m_levelToBusinessServiceMapping = Maps.newHashMap();
 
     // children -> parent
     private final Map<BusinessService, Set<BusinessService>> m_rootMap = Maps.newHashMap();
@@ -75,17 +72,17 @@ public class DefaultBusinessServiceStateMachine implements BusinessServiceStateM
         try {
             // Clear previous state
             m_reductionKeys.clear();
-            m_businessServiceSeverity.clear();
-            m_reductionKeyToStatus.clear();
+            m_businessServiceStatus.clear();
+            m_reductionKeyStatus.clear();
             m_ipServiceIds.clear();
-            m_levelToBusinessServiceMapping.clear();
+            m_rootMap.clear();
 
             // Rebuild the reduction Key set
             for (BusinessService businessService : businessServices) {
                 for (IpServiceEdge ipServiceEdge : businessService.getIpServiceEdges()) {
                     m_ipServiceIds.add(ipServiceEdge.getIpService().getId());
                 }
-                m_businessServiceSeverity.put(businessService, DEFAULT_SEVERITY);
+                m_businessServiceStatus.put(businessService, DEFAULT_SEVERITY);
                 for (Edge edge : businessService.getEdges()) {
                     for (String eachRk : edge.getReductionKeys()) {
                         addReductionKey(eachRk, businessService);
@@ -153,7 +150,7 @@ public class DefaultBusinessServiceStateMachine implements BusinessServiceStateM
             }
 
             // Maintain the last known status for the reduction key
-            m_reductionKeyToStatus.put(alarmWrapper.getReductionKey(), alarmWrapper.getStatus());
+            m_reductionKeyStatus.put(alarmWrapper.getReductionKey(), alarmWrapper.getStatus());
 
             // Get the maximum level
             Integer maxLevel = affectedBusinessServices.stream().mapToInt(s -> s.getLevel()).max().getAsInt();
@@ -170,15 +167,14 @@ public class DefaultBusinessServiceStateMachine implements BusinessServiceStateM
         final List<Status> statusList = Lists.newArrayList();
 
         // Map
-        // TODO MVR rename to getChildEdges() ?
         for (Edge edge : businessService.getEdges()) {
             for (String reductionKey : edge.getReductionKeys()) {
-                final Status rkStatus = m_reductionKeyToStatus.get(reductionKey);
+                final Status rkStatus = m_reductionKeyStatus.get(reductionKey);
                 edge.getMapFunction().map(rkStatus).ifPresent(s -> statusList.add(s));
             }
         }
         for (ChildEdge edge : businessService.getChildEdges()) {
-            final Status bsStatus = m_businessServiceSeverity.get(edge.getChild());
+            final Status bsStatus = m_businessServiceStatus.get(edge.getChild());
             edge.getMapFunction().map(bsStatus).ifPresent(s -> statusList.add(s));
         }
 
@@ -191,7 +187,7 @@ public class DefaultBusinessServiceStateMachine implements BusinessServiceStateM
 
     // calculates the status for all business services on a certain level
     private void calculateStatus(int level) {
-        Set<BusinessService> businessServiceEntities = m_businessServiceSeverity.keySet().stream().filter(bs -> bs.getLevel() == level).collect(Collectors.toSet());
+        Set<BusinessService> businessServiceEntities = m_businessServiceStatus.keySet().stream().filter(bs -> bs.getLevel() == level).collect(Collectors.toSet());
         for (BusinessService eachEntity : businessServiceEntities) {
             doBusinessServiceStatusCalculation(eachEntity);
         }
@@ -202,14 +198,14 @@ public class DefaultBusinessServiceStateMachine implements BusinessServiceStateM
         Status newStatus = calculateCurrentStatus(businessService);
 
         // Did the severity change?
-        Status prevStatus = m_businessServiceSeverity.get(businessService);
+        Status prevStatus = m_businessServiceStatus.get(businessService);
         if (newStatus.equals(prevStatus)) {
             return; // The status hasn't changed, we're done
         }
 
         // Update the severity
         LOG.debug("Updating state on {} from {} to {}.", businessService, prevStatus, newStatus);
-        m_businessServiceSeverity.put(businessService, newStatus);
+        m_businessServiceStatus.put(businessService, newStatus);
 
         // Notify
         synchronized(m_handlers) {
@@ -223,7 +219,7 @@ public class DefaultBusinessServiceStateMachine implements BusinessServiceStateM
     public Status getOperationalStatus(BusinessService businessService) {
         m_rwLock.readLock().lock();
         try {
-            return m_businessServiceSeverity.get(businessService);
+            return m_businessServiceStatus.get(businessService);
         } finally {
             m_rwLock.readLock().unlock();
         }
@@ -241,12 +237,22 @@ public class DefaultBusinessServiceStateMachine implements BusinessServiceStateM
             // The IP-Service resolves to multiple reduction keys, we use the one with the highest severity
             Status maxStatus = DEFAULT_SEVERITY;
             for (String reductionKey : ipService.getReductionKeys()) {
-                final Status rkStatus = m_reductionKeyToStatus.get(reductionKey);
+                final Status rkStatus = m_reductionKeyStatus.get(reductionKey);
                 if (rkStatus != null && rkStatus.isGreaterThan(maxStatus)) {
                     maxStatus = rkStatus;
                 }
             }
             return maxStatus;
+        } finally {
+            m_rwLock.readLock().unlock();
+        }
+    }
+
+    @Override
+    public Status getOperationalStatus(String reductionKey) {
+        m_rwLock.readLock().lock();
+        try {
+            return m_reductionKeyStatus.get(reductionKey);
         } finally {
             m_rwLock.readLock().unlock();
         }

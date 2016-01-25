@@ -46,9 +46,8 @@ import com.google.common.collect.Sets;
 @Entity
 @Table(name = "bsm_service_ifservices")
 @PrimaryKeyJoinColumn(name="id")
-public class IPServiceEdge extends BusinessServiceEdge  {
-    // TODO: The distributed poller name (now monitoring system name?) should be part of the edge details
-    public static final String DEFAULT_DISTRIBUTED_POLLER_NAME = "";
+@DiscriminatorValue("ipservices")
+public class IPServiceEdgeEntity extends BusinessServiceEdgeEntity {
 
     private OnmsMonitoredService m_ipService;
 

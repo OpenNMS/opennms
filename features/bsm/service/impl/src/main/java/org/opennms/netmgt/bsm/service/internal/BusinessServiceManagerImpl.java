@@ -30,16 +30,17 @@ package org.opennms.netmgt.bsm.service.internal;
 
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.opennms.core.criteria.Criteria;
-import org.opennms.netmgt.bsm.persistence.api.BusinessServiceChildEdge;
+import org.opennms.netmgt.bsm.persistence.api.BusinessServiceChildEdgeEntity;
 import org.opennms.netmgt.bsm.persistence.api.BusinessServiceDao;
 import org.opennms.netmgt.bsm.persistence.api.BusinessServiceEdgeDao;
 import org.opennms.netmgt.bsm.persistence.api.BusinessServiceEntity;
-import org.opennms.netmgt.bsm.persistence.api.IPServiceEdge;
-import org.opennms.netmgt.bsm.persistence.api.SingleReductionKeyEdge;
+import org.opennms.netmgt.bsm.persistence.api.IPServiceEdgeEntity;
+import org.opennms.netmgt.bsm.persistence.api.SingleReductionKeyEdgeEntity;
 import org.opennms.netmgt.bsm.persistence.api.functions.reduce.ReductionFunctionDao;
 import org.opennms.netmgt.bsm.service.BusinessServiceManager;
 import org.opennms.netmgt.bsm.service.BusinessServiceSearchCriteria;
@@ -114,13 +115,13 @@ public class BusinessServiceManagerImpl implements BusinessServiceManager {
     public <T extends Edge> T createEdge(Class<T> type, BusinessService source, MapFunction mapFunction) {
         T edge = null;
         if (type == IpServiceEdge.class) {
-            edge = (T) new IpServiceEdgeImpl(this, new org.opennms.netmgt.bsm.persistence.api.IPServiceEdge());
+            edge = (T) new IpServiceEdgeImpl(this, new IPServiceEdgeEntity());
         }
         if (type == ChildEdge.class) {
-            edge = (T) new ChildEdgeImpl(this, new BusinessServiceChildEdge());
+            edge = (T) new ChildEdgeImpl(this, new BusinessServiceChildEdgeEntity());
         }
         if (type == ReductionKeyEdge.class) {
-            edge = (T) new ReductionKeyEdgeImpl(this, new SingleReductionKeyEdge());
+            edge = (T) new ReductionKeyEdgeImpl(this, new SingleReductionKeyEdgeEntity());
         }
         if (edge != null) {
             edge.setSource(source);
@@ -156,7 +157,7 @@ public class BusinessServiceManagerImpl implements BusinessServiceManager {
         BusinessServiceEntity entity = getBusinessServiceEntity(businessService);
         // remove all parent -> child associations
         for(BusinessServiceEntity parent : getDao().findParents(entity)) {
-            List<BusinessServiceChildEdge> collect = parent.getChildEdges().stream().filter(e -> entity.equals(e.getChild())).collect(Collectors.toList());
+            List<BusinessServiceChildEdgeEntity> collect = parent.getChildEdges().stream().filter(e -> entity.equals(e.getChild())).collect(Collectors.toList());
             collect.forEach(x -> {
                 parent.removeEdge(x);
                 edgeDao.delete(x); // we need to delete this edge manually as they cannot be deleted automatically
@@ -169,7 +170,7 @@ public class BusinessServiceManagerImpl implements BusinessServiceManager {
     @Override
     public void setReductionKeyEdges(BusinessService businessService, Set<ReductionKeyEdge> reductionKeyEdges) {
         final BusinessServiceEntity parentEntity = getBusinessServiceEntity(businessService);
-        for (final SingleReductionKeyEdge e : parentEntity.getReductionKeyEdges()) {
+        for (final SingleReductionKeyEdgeEntity e : parentEntity.getReductionKeyEdges()) {
             parentEntity.removeEdge(e);
         }
         reductionKeyEdges.forEach(e -> parentEntity.addEdge(((ReductionKeyEdgeImpl) e).getEntity()));
@@ -195,7 +196,7 @@ public class BusinessServiceManagerImpl implements BusinessServiceManager {
     @Override
     public void setIpServiceEdges(BusinessService businessService, Set<IpServiceEdge> ipServiceEdges) {
         final BusinessServiceEntity entity = getBusinessServiceEntity(businessService);
-        for (final IPServiceEdge e : entity.getIpServiceEdges()) {
+        for (final IPServiceEdgeEntity e : entity.getIpServiceEdges()) {
             entity.removeEdge(e);
         }
         ipServiceEdges.forEach(e -> entity.addEdge(((IpServiceEdgeImpl) e).getEntity()));
@@ -222,7 +223,7 @@ public class BusinessServiceManagerImpl implements BusinessServiceManager {
     @Override
     public void setChildEdges(BusinessService parentService, Set<ChildEdge> childEdges) {
         final BusinessServiceEntity parentEntity = getBusinessServiceEntity(parentService);
-        for (final BusinessServiceChildEdge e : parentEntity.getChildEdges()) {
+        for (final BusinessServiceChildEdgeEntity e : parentEntity.getChildEdges()) {
             parentEntity.removeEdge(e);
         }
         childEdges.forEach(e -> parentEntity.addEdge(((ChildEdgeImpl) e).getEntity()));
@@ -256,7 +257,7 @@ public class BusinessServiceManagerImpl implements BusinessServiceManager {
             return true;
         }
 
-        for (BusinessServiceChildEdge eachChildEdge : descendant.getChildEdges()) {
+        for (BusinessServiceChildEdgeEntity eachChildEdge : descendant.getChildEdges()) {
             return this.checkDescendantForLoop(parent, eachChildEdge.getChild());
         }
 
@@ -309,7 +310,23 @@ public class BusinessServiceManagerImpl implements BusinessServiceManager {
 
     @Override
     public Status getOperationalStatusForReductionKey(String reductionKey) {
-        return Status.INDETERMINATE; // TODO MVR implement... probably getOperationalStatus(Edge edge...)
+        final Status status = businessServiceStateMachine.getOperationalStatus(reductionKey);
+        return status != null ? status : Status.INDETERMINATE;
+    }
+
+    @Override
+    public Status getOperationalStatusForEdge(Edge edge) {
+        Objects.requireNonNull(edge);
+        if (edge instanceof ReductionKeyEdge) {
+            return getOperationalStatusForReductionKey(((ReductionKeyEdge) edge).getReductionKey());
+        }
+        if (edge instanceof ChildEdge) {
+            return getOperationalStatusForBusinessService(((ChildEdge) edge).getChild());
+        }
+        if (edge instanceof IpServiceEdge) {
+            return getOperationalStatusForIPService(((IpServiceEdge) edge).getIpService());
+        }
+        throw new IllegalArgumentException("Could not determine status for edge of type " + edge.getClass());
     }
 
     @Override

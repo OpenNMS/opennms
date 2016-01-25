@@ -58,7 +58,9 @@ import com.google.common.base.Preconditions;
 @Entity
 @Table(name = "bsm_service_edge")
 @Inheritance(strategy = InheritanceType.JOINED)
-public class BusinessServiceEdge implements Edge {
+@DiscriminatorColumn(name="type", discriminatorType= DiscriminatorType.STRING)
+@DiscriminatorValue(value="")
+public class BusinessServiceEdgeEntity implements EdgeEntity {
 
     public static final int DEFAULT_WEIGHT = 1;
 
@@ -108,12 +110,19 @@ public class BusinessServiceEdge implements Edge {
         return m_weight;
     }
 
+    // TODO MVR make abstract (see class TODO above)
+    @Override
+    @Transient
+    public Set<String> getReductionKeys() {
+        return Sets.newHashSet();
+    }
+
     public void setWeight(int weight) {
         Preconditions.checkArgument(weight > 0, "weight must be strictly positive.");
         m_weight = weight;
     }
 
-    @ManyToOne
+    @ManyToOne(cascade = {CascadeType.ALL})
     @JoinColumn(name = "bsm_map_id")
     public AbstractMapFunctionEntity getMapFunction() {
         return m_mapFunction;

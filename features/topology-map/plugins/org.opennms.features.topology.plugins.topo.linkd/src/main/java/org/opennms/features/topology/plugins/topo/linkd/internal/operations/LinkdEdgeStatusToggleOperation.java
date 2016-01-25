@@ -40,7 +40,6 @@ import org.opennms.features.topology.api.topo.EdgeStatusProvider;
 import org.opennms.features.topology.api.topo.VertexRef;
 import org.osgi.framework.ServiceReference;
 
-// TODO MVR in general it might be a good idea to get ALL registered EdgeStatusProvider instead of only the onces provided here
 public class LinkStatusToggleOperation extends AbstractCheckedOperation {
 
     private EdgeStatusProvider m_edgeStatusProvider;

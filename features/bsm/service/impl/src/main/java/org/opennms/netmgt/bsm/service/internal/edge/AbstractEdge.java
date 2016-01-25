@@ -30,7 +30,7 @@ package org.opennms.netmgt.bsm.service.internal.edge;
 
 import java.util.Objects;
 
-import org.opennms.netmgt.bsm.persistence.api.BusinessServiceEdge;
+import org.opennms.netmgt.bsm.persistence.api.BusinessServiceEdgeEntity;
 import org.opennms.netmgt.bsm.persistence.api.functions.map.AbstractMapFunctionEntity;
 import org.opennms.netmgt.bsm.service.BusinessServiceManager;
 import org.opennms.netmgt.bsm.service.internal.BusinessServiceImpl;
@@ -40,7 +40,7 @@ import org.opennms.netmgt.bsm.service.model.Status;
 import org.opennms.netmgt.bsm.service.model.edge.Edge;
 import org.opennms.netmgt.bsm.service.model.mapreduce.MapFunction;
 
-public abstract class AbstractEdge<T extends BusinessServiceEdge> implements Edge {
+public abstract class AbstractEdge<T extends BusinessServiceEdgeEntity> implements Edge {
 
     private final T m_entity;
 
@@ -72,7 +72,7 @@ public abstract class AbstractEdge<T extends BusinessServiceEdge> implements Edg
 
     @Override
     public Status getOperationalStatus() {
-        return Status.INDETERMINATE; // TODO MVR implement me
+        return getManager().getOperationalStatusForEdge(this);
     }
 
     @Override
