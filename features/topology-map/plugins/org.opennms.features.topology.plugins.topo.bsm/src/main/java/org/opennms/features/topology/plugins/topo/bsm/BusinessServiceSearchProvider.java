@@ -42,7 +42,6 @@ import org.opennms.features.topology.api.topo.SearchProvider;
 import org.opennms.features.topology.api.topo.SearchQuery;
 import org.opennms.features.topology.api.topo.SearchResult;
 import org.opennms.features.topology.api.topo.VertexRef;
-import org.opennms.netmgt.bsm.persistence.api.BusinessServiceEntity;
 import org.opennms.netmgt.bsm.service.BusinessServiceManager;
 import org.opennms.netmgt.bsm.service.model.BusinessService;
 import org.slf4j.Logger;
@@ -76,7 +75,7 @@ public class BusinessServiceSearchProvider extends AbstractSearchProvider implem
         List<SearchResult> results = Lists.newArrayList();
 
         String queryString = searchQuery.getQueryString();
-        CriteriaBuilder bldr = new CriteriaBuilder(BusinessServiceEntity.class);
+        CriteriaBuilder bldr = new CriteriaBuilder(BusinessService.class);
         if (queryString != null && queryString.length() > 0) {
             bldr.ilike("name", String.format("%%%s%%", queryString));
         }

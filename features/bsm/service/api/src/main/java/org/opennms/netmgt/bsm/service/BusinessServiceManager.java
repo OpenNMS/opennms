@@ -48,6 +48,8 @@ public interface BusinessServiceManager extends NodeManager {
 
     List<BusinessService> findMatching(Criteria criteria);
 
+    int countMatching(Criteria criteria);
+
     BusinessService createBusinessService();
 
     <T extends Edge> T createEdge(Class<T> type, BusinessService child, MapFunction mapFunction);

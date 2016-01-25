@@ -2,7 +2,6 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0 http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd">
 
-    <reference id="businessServiceDao" interface="org.opennms.netmgt.bsm.persistence.api.BusinessServiceDao" availability="mandatory" />
     <reference id="transactionOperations" interface="org.springframework.transaction.support.TransactionOperations" availability="mandatory" />
     <reference id="businessServiceManager" interface="org.opennms.netmgt.bsm.service.BusinessServiceManager" availability="mandatory" />
 
@@ -67,13 +66,14 @@
         <property name="businessServiceManager" ref="businessServiceManager" />
     </bean>
 
-    <bean id="businessServicesDaoContainer" class="org.opennms.features.topology.plugins.topo.bsm.browsers.BusinessServicesDaoContainer" scope="prototype">
-        <argument ref="businessServiceDao" />
+    <bean id="businessServicesContainer" class="org.opennms.features.topology.plugins.topo.bsm.browsers.BusinessServicesContainer" scope="prototype">
+        <argument ref="transactionAwareBeanProxyFactory" />
+        <property name="businessServiceManager" ref="businessServiceManager"/>
     </bean>
 
     <bean id="businessServicesTable" class="org.opennms.features.topology.plugins.topo.bsm.browsers.BusinessServicesTable" scope="prototype">
         <argument value="Business Services" />
-        <argument ref="businessServicesDaoContainer" />
+        <argument ref="businessServicesContainer" />
         <property name="columnReorderingAllowed" value="true" />
         <property name="columnCollapsingAllowed" value="true" />
         <property name="sortContainerPropertyId" value="name" />

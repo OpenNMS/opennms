@@ -47,7 +47,7 @@ public class SelectionAwareTable extends Table implements VerticesUpdateManager.
 
 	private static final long serialVersionUID = 2761774077365441249L;
 
-	private final OnmsDaoContainer<?,? extends Serializable> m_container;
+	private final OnmsVaadinContainer<?,? extends Serializable> m_container;
 	private final Set<SelectionNotifier> m_selectionNotifiers = new CopyOnWriteArraySet<SelectionNotifier>();
 	private List<String> nonCollapsibleColumns = new ArrayList<String>();
 	private EventProxy eventProxy;
@@ -58,10 +58,10 @@ public class SelectionAwareTable extends Table implements VerticesUpdateManager.
     private boolean m_disableRowCacheRefresh = false;
 
 	/**
-	 *  Leave OnmsDaoContainer without generics; the Aries blueprint code cannot match up
+	 *  Leave OnmsVaadinContainer without generics; the Aries blueprint code cannot match up
 	 *  the arguments if you put the generic types in.
 	 */
-	public SelectionAwareTable(String caption, OnmsDaoContainer container) {
+	public SelectionAwareTable(String caption, OnmsVaadinContainer container) {
 		super(caption, container);
 		m_container = container;
 	}
@@ -147,7 +147,7 @@ public class SelectionAwareTable extends Table implements VerticesUpdateManager.
     }
 
     /**
-     * Make sure that the OnmsDaoContainer cache is reset.
+     * Make sure that the OnmsVaadinContainer cache is reset.
      */
     @Override
     public void resetPageBuffer() {

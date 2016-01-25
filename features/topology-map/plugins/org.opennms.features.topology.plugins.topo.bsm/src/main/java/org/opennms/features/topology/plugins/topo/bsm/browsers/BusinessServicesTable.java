@@ -30,7 +30,7 @@ package org.opennms.features.topology.plugins.topo.bsm.browsers;
 
 import java.util.Map;
 
-import org.opennms.features.topology.plugins.browsers.OnmsDaoContainer;
+import org.opennms.features.topology.plugins.browsers.OnmsVaadinContainer;
 
 import com.vaadin.ui.Table;
 
@@ -39,10 +39,10 @@ public class BusinessServicesTable extends Table {
     private static final long serialVersionUID = 1L;
 
     /**
-     * Leave OnmsDaoContainer without generics; the Aries blueprint code cannot
+     * Leave OnmsVaadinContainer without generics; the Aries blueprint code cannot
      * match up the arguments if you put the generic types in.
      */
-    public BusinessServicesTable(final String caption, final OnmsDaoContainer container) {
+    public BusinessServicesTable(final String caption, final OnmsVaadinContainer container) {
         super(caption, container);
     }
 
