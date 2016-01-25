@@ -53,7 +53,6 @@ import org.springframework.beans.factory.InitializingBean
 import org.springframework.util.Assert
 
 class ScanGui extends AbstractGui implements ScanReportHandler, PropertyChangeListener, InitializingBean {
-    //def m_metadataFieldNames = ['Customer Account Number', 'Reference ID', 'Customer Name']
     def m_metadataFieldTypes = new TreeSet<MetadataField>();
     def m_locations = new ArrayList<String>()
     def m_applications = new HashMap<Set<String>>()
@@ -144,7 +143,6 @@ class ScanGui extends AbstractGui implements ScanReportHandler, PropertyChangeLi
 
         def updateValidation = {
             def errorMessage = validateFields()
-            //System.err.println("error message: " + errorMessage)
             if (errorLabel != null) {
                 if (errorMessage == null) {
                     errorLabel.setText("")
@@ -160,6 +158,7 @@ class ScanGui extends AbstractGui implements ScanReportHandler, PropertyChangeLi
             }
         }
 
+        getGui().setMinimumSize(new Dimension(750, 550))
 
         return swing.panel(background:getBackgroundColor(), opaque:true, constraints:"grow") {
             migLayout(
@@ -330,7 +329,6 @@ class ScanGui extends AbstractGui implements ScanReportHandler, PropertyChangeLi
 
                 pendingResize = true
 
-                //detailsParent.repaint(repaintDelay)
                 repaint()
             }
 
@@ -409,7 +407,6 @@ class ScanGui extends AbstractGui implements ScanReportHandler, PropertyChangeLi
         m_passFailPanel.add(svg)
         m_passFailPanel.revalidate()
 
-        //m_passFailPanel.updateUI()
         if (m_updateDetails == null) {
             System.err.println("Can't update details!")
         } else {
