@@ -67,7 +67,7 @@ import com.google.common.collect.Sets;
 @Inheritance(strategy = InheritanceType.JOINED)
 @DiscriminatorColumn(name="type", discriminatorType= DiscriminatorType.STRING)
 @DiscriminatorValue(value="")
-public class BusinessServiceEdge implements Edge {
+public class BusinessServiceEdgeEntity implements EdgeEntity {
 
     public static final int DEFAULT_WEIGHT = 1;
 
@@ -118,10 +118,10 @@ public class BusinessServiceEdge implements Edge {
         return m_weight;
     }
 
+    // TODO MVR make abstract (see class TODO above)
     @Override
     @Transient
     public Set<String> getReductionKeys() {
-        // TODO MVR ???
         return Sets.newHashSet();
     }
 
@@ -130,7 +130,6 @@ public class BusinessServiceEdge implements Edge {
         m_weight = weight;
     }
 
-    // TODO MVR verify cascadetype
     @ManyToOne(cascade = {CascadeType.ALL})
     @JoinColumn(name = "bsm_map_id")
     public AbstractMapFunctionEntity getMapFunction() {

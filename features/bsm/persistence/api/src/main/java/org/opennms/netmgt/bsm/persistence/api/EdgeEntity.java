@@ -4,7 +4,7 @@ import java.util.Set;
 
 import org.opennms.netmgt.bsm.persistence.api.functions.map.AbstractMapFunctionEntity;
 
-public interface Edge {
+public interface EdgeEntity {
 
     boolean isEnabled();
 

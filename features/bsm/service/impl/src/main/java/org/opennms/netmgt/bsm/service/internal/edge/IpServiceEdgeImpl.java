@@ -30,15 +30,15 @@ package org.opennms.netmgt.bsm.service.internal.edge;
 
 import java.util.Set;
 
-import org.opennms.netmgt.bsm.persistence.api.IPServiceEdge;
+import org.opennms.netmgt.bsm.persistence.api.IPServiceEdgeEntity;
 import org.opennms.netmgt.bsm.service.BusinessServiceManager;
 import org.opennms.netmgt.bsm.service.internal.IpServiceImpl;
 import org.opennms.netmgt.bsm.service.model.IpService;
 import org.opennms.netmgt.bsm.service.model.edge.IpServiceEdge;
 
-public class IpServiceEdgeImpl extends AbstractEdge<IPServiceEdge> implements IpServiceEdge {
+public class IpServiceEdgeImpl extends AbstractEdge<IPServiceEdgeEntity> implements IpServiceEdge {
 
-    public IpServiceEdgeImpl(BusinessServiceManager manager, IPServiceEdge entity) {
+    public IpServiceEdgeImpl(BusinessServiceManager manager, IPServiceEdgeEntity entity) {
         super(manager, entity);
     }
 

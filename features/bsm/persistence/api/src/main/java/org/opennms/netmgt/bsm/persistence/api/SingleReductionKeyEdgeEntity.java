@@ -30,10 +30,9 @@ package org.opennms.netmgt.bsm.persistence.api;
 
 import java.util.Set;
 
+import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.Table;
 import javax.persistence.Transient;
@@ -41,35 +40,34 @@ import javax.persistence.Transient;
 import com.google.common.collect.Sets;
 
 @Entity
-@Table(name = "bsm_service_children")
+@Table(name = "bsm_service_reductionkeys")
 @PrimaryKeyJoinColumn(name="id")
-@DiscriminatorValue(value="children")
-public class BusinessServiceChildEdge extends BusinessServiceEdge {
+@DiscriminatorValue("reductionkeys")
+public class SingleReductionKeyEdgeEntity extends BusinessServiceEdgeEntity {
 
-    // The Business Service Entity where the parent points to (child relationship)
-    private BusinessServiceEntity child;
+    private String reductionKey;
 
-    public void setChild(BusinessServiceEntity child) {
-        this.child = child;
+    public void setReductionKey(String reductionKey) {
+        this.reductionKey = reductionKey;
     }
 
-    @ManyToOne(optional=false)
-    @JoinColumn(name="bsm_service_child_id", nullable=false)
-    public BusinessServiceEntity getChild() {
-        return child;
+    // TODO MVR add a constraint that the reductionkey must be unique
+    @Column(name = "reductionkey", nullable = false)
+    public String getReductionKey() {
+        return reductionKey;
     }
 
-    @Transient
     @Override
+    @Transient
     public Set<String> getReductionKeys() {
-        return Sets.newHashSet();
+        return Sets.newHashSet(reductionKey);
     }
 
     @Override
     public String toString() {
         return com.google.common.base.Objects.toStringHelper(this)
                 .add("super", super.toString())
-                .add("child", child == null ? null : child.getId())
+                .add("reductionKey", reductionKey)
                 .toString();
     }
 }

@@ -38,13 +38,12 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement(name = "reduce-function")
 @XmlAccessorType(XmlAccessType.FIELD)
-// TODO MVR MapFunctionDTO and ReduceFunctionDTO are pretty much the same, please consolidate
 public class ReduceFunctionDTO {
 
     @XmlElement(name="type", required = true)
     private ReduceFunctionType type;
 
-    @XmlElement(name="properties", required = true)
+    @XmlElement(name="properties")
     private Map<String, String> properties;
 
     public ReduceFunctionType getType() {

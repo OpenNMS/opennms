@@ -43,6 +43,7 @@ import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.netmgt.bsm.persistence.api.BusinessServiceDao;
 import org.opennms.netmgt.bsm.persistence.api.BusinessServiceEdgeDao;
 import org.opennms.netmgt.bsm.persistence.api.BusinessServiceEntity;
+import org.opennms.netmgt.bsm.persistence.api.functions.map.IdentityEntity;
 import org.opennms.netmgt.bsm.persistence.api.functions.map.IgnoreEntity;
 import org.opennms.netmgt.bsm.persistence.api.functions.map.MapFunctionDao;
 import org.opennms.netmgt.bsm.persistence.api.functions.reduce.MostCriticalEntity;
@@ -123,8 +124,8 @@ public class BusinessServiceDaoIT {
         BusinessServiceEntity bs = new BusinessServiceEntityBuilder()
                 .name("Web Servers")
                 .addAttribute("dc", "RDU")
-                .addReductionKey("TestReductionKeyA")
-                .addReductionKey("TestReductionKeyB")
+                .addReductionKey("TestReductionKeyA", new IdentityEntity())
+                .addReductionKey("TestReductionKeyB", new IdentityEntity())
                 .reduceFunction(m_mostCritical)
                 .toEntity();
         m_businessServiceDao.save(bs);
@@ -205,11 +206,11 @@ public class BusinessServiceDaoIT {
         BusinessServiceEntity parent = new BusinessServiceEntityBuilder()
                 .name("Web Servers")
                 .addAttribute("dc", "RDU")
-                .addReductionKey("TestReductionKeyA")
-                .addReductionKey("TestReductionKeyB")
-                .addIpService(getMonitoredServiceFromNode1())
+                .addReductionKey("TestReductionKeyA", new IdentityEntity())
+                .addReductionKey("TestReductionKeyB", new IdentityEntity())
+                .addIpService(getMonitoredServiceFromNode1(), new IdentityEntity())
                 .reduceFunction(m_mostCritical)
-                .addChildren(child)
+                .addChildren(child, new IdentityEntity())
                 .toEntity();
 
         m_businessServiceDao.save(child);

@@ -57,20 +57,20 @@ public class BsmTestData {
         // Create a simple hierarchy
         BusinessServiceEntity child1 = new BusinessServiceEntityBuilder()
                 .name("Child 1")
-                .addIpService(databasePopulator.getMonitoredServiceDao().get(databasePopulator.getNode1().getId(), InetAddressUtils.addr("192.168.1.1"), "SNMP"))
+                .addIpService(databasePopulator.getMonitoredServiceDao().get(databasePopulator.getNode1().getId(), InetAddressUtils.addr("192.168.1.1"), "SNMP"), new IdentityEntity())
                 .reduceFunction(new MostCriticalEntity())
                 .toEntity();
 
         BusinessServiceEntity child2 = new BusinessServiceEntityBuilder()
                 .name("Child 2")
-                .addIpService(databasePopulator.getMonitoredServiceDao().get(databasePopulator.getNode1().getId(), InetAddressUtils.addr("192.168.1.2"), "ICMP"))
+                .addIpService(databasePopulator.getMonitoredServiceDao().get(databasePopulator.getNode1().getId(), InetAddressUtils.addr("192.168.1.2"), "ICMP"), new IdentityEntity())
                 .reduceFunction(new MostCriticalEntity())
                 .toEntity();
 
         BusinessServiceEntity root = new BusinessServiceEntityBuilder()
                 .name("Parent")
-                .addChildren(child1)
-                .addChildren(child2)
+                .addChildren(child1, new IdentityEntity())
+                .addChildren(child2, new IdentityEntity())
                 .reduceFunction(new MostCriticalEntity())
                 .toEntity();
 

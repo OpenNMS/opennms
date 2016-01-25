@@ -64,6 +64,10 @@ public interface BusinessServiceManager extends NodeManager {
 
     Status getOperationalStatusForIPService(IpService ipService);
 
+    Status getOperationalStatusForReductionKey(String reductionKey);
+
+    Status getOperationalStatusForEdge(Edge edge);
+
     List<IpService> getAllIpServices();
 
     IpService getIpServiceById(Integer id);
@@ -74,8 +78,6 @@ public interface BusinessServiceManager extends NodeManager {
     void triggerDaemonReload();
 
     Set<BusinessService> getParentServices(Long id);
-
-    Status getOperationalStatusForReductionKey(String reductionKey);
 
     List<MapFunction> listMapFunctions();
 
@@ -92,5 +94,4 @@ public interface BusinessServiceManager extends NodeManager {
     boolean addReductionKeyEdge(BusinessService businessService, String reductionKey, MapFunction mapFunction);
 
     void setReductionKeyEdges(BusinessService businessService, Set<ReductionKeyEdge> reductionKeyEdges);
-
 }

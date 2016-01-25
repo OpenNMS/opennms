@@ -227,7 +227,7 @@ public class BusinessServiceRestServiceIT extends AbstractSpringJerseyRestTestCa
         // Add business services to the DB
         BusinessServiceEntity bs = new BusinessServiceEntityBuilder()
                 .name("Application Servers")
-                .addReductionKey("MyReductionKey")
+                .addReductionKey("MyReductionKey", new IdentityEntity())
                 .reduceFunction(new MostCriticalEntity())
                 .toEntity();
         Long id = m_businessServiceDao.save(bs);
@@ -253,9 +253,9 @@ public class BusinessServiceRestServiceIT extends AbstractSpringJerseyRestTestCa
                 .name("some-service")
                 .addAttribute("some-key", "some-value")
                 .reduceFunction(new MostCriticalEntity())
-                .addReductionKey("reductionKey-1")
-                .addReductionKey("reductionKey-2")
-                .addReductionKey("reductionKey-3")
+                .addReductionKey("reductionKey-1", new IdentityEntity())
+                .addReductionKey("reductionKey-2", new IdentityEntity())
+                .addReductionKey("reductionKey-3", new IdentityEntity())
                 .toEntity();
 
         // TODO JSON cannot be deserialized by the rest service. Fix me.
@@ -352,8 +352,8 @@ public class BusinessServiceRestServiceIT extends AbstractSpringJerseyRestTestCa
         BusinessServiceEntity bs = new BusinessServiceEntityBuilder()
                 .name("Dummy Service")
                 .addAttribute("some-key", "some-value")
-                .addReductionKey("key1")
-                .addReductionKey("key2-deleteMe")
+                .addReductionKey("key1", new IdentityEntity())
+                .addReductionKey("key2-deleteMe", new IdentityEntity())
                 .reduceFunction(new MostCriticalEntity())
                 .toEntity();
         final Long serviceId = m_businessServiceDao.save(bs);

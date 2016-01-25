@@ -38,11 +38,11 @@ import java.util.stream.Collectors;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.xml.JaxbUtils;
-import org.opennms.netmgt.bsm.persistence.api.BusinessServiceChildEdge;
+import org.opennms.netmgt.bsm.persistence.api.BusinessServiceChildEdgeEntity;
 import org.opennms.netmgt.bsm.persistence.api.BusinessServiceEntity;
-import org.opennms.netmgt.bsm.persistence.api.IPServiceEdge;
+import org.opennms.netmgt.bsm.persistence.api.IPServiceEdgeEntity;
 import org.opennms.netmgt.bsm.persistence.api.ReductionKeyHelper;
-import org.opennms.netmgt.bsm.persistence.api.SingleReductionKeyEdge;
+import org.opennms.netmgt.bsm.persistence.api.SingleReductionKeyEdgeEntity;
 import org.opennms.netmgt.bsm.persistence.api.functions.map.AbstractMapFunctionEntity;
 import org.opennms.netmgt.bsm.persistence.api.functions.reduce.AbstractReductionFunctionEntity;
 import org.opennms.netmgt.bsm.persistence.api.functions.reduce.MostCriticalEntity;
@@ -112,11 +112,11 @@ public class BsmTestUtils {
         response.setReductionKeys(input.getReductionKeyEdges().stream().map(it -> toResponseDTO(it)).collect(Collectors.toList()));
         response.setIpServices(input.getIpServiceEdges().stream().map(it -> toResponseDTO(it)).collect(Collectors.toList()));
         response.setChildren(input.getChildEdges().stream().map(it -> toResponseDTO(it)).collect(Collectors.toList()));
-        response.setParentServices(Sets.newHashSet()); // do not know that here // TODO MVR we have tos et that here somehow
+        response.setParentServices(Sets.newHashSet()); // do not know that here
         return response;
     }
 
-    public static ChildEdgeResponseDTO toResponseDTO(BusinessServiceChildEdge it) {
+    public static ChildEdgeResponseDTO toResponseDTO(BusinessServiceChildEdgeEntity it) {
         ChildEdgeResponseDTO edge = new ChildEdgeResponseDTO();
         edge.setLocation(ResourceLocationFactory.createBusinessServiceEdgeLocation(it.getBusinessService().getId(), it.getId()));
         edge.setReductionKeys(edge.getReductionKeys());
@@ -127,7 +127,7 @@ public class BsmTestUtils {
         return edge;
     }
 
-    public static IpServiceEdgeResponseDTO toResponseDTO(IPServiceEdge input) {
+    public static IpServiceEdgeResponseDTO toResponseDTO(IPServiceEdgeEntity input) {
         IpServiceResponseDTO ipService = new IpServiceResponseDTO();
         ipService.setNodeLabel("dummy"); // do not know that here
         ipService.setServiceName(input.getIpService().getServiceName());
@@ -144,7 +144,7 @@ public class BsmTestUtils {
         return edge;
     }
 
-    public static ReductionKeyEdgeResponseDTO toResponseDTO(SingleReductionKeyEdge input) {
+    public static ReductionKeyEdgeResponseDTO toResponseDTO(SingleReductionKeyEdgeEntity input) {
         ReductionKeyEdgeResponseDTO edge = new ReductionKeyEdgeResponseDTO();
         edge.setLocation(ResourceLocationFactory.createBusinessServiceEdgeLocation(input.getBusinessService().getId(), input.getId()));
         edge.setReductionKeys(input.getReductionKeys());

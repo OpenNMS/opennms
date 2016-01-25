@@ -44,7 +44,7 @@ import org.opennms.netmgt.model.OnmsMonitoredService;
 @Table(name = "bsm_service_ifservices")
 @PrimaryKeyJoinColumn(name="id")
 @DiscriminatorValue("ipservices")
-public class IPServiceEdge extends BusinessServiceEdge  {
+public class IPServiceEdgeEntity extends BusinessServiceEdgeEntity {
 
     private OnmsMonitoredService m_ipService;
 

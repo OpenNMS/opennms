@@ -43,7 +43,7 @@ public class MapFunctionDTO {
     @XmlElement(name="type", required = true)
     private MapFunctionType type;
 
-    @XmlElement(name="properties", required = false)
+    @XmlElement(name="properties")
     private Map<String, String> properties;
 
     public MapFunctionType getType() {

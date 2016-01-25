@@ -38,7 +38,7 @@ public interface Edge {
 
     Long getId();
 
-    Set<String> getReductionKeys(); // TODO MVR ?!
+    Set<String> getReductionKeys();
 
     MapFunction getMapFunction();
 

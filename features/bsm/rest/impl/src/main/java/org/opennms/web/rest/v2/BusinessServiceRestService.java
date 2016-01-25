@@ -188,7 +188,7 @@ public class BusinessServiceRestService {
     @Path("/edges/{edgeId}")
     public Response getEdge(@PathParam("edgeId") final Integer edgeId) {
         // TODO MVR implement me
-//        Edge edge = getManager().getEdgeById(edgeId);
+//        EdgeEntity edge = getManager().getEdgeById(edgeId);
 //        return Response.ok().entity(transform(edge)).build();
         return Response.status(Response.Status.BAD_REQUEST).entity("NOT IMPLEMENTED YET").build();
     }
