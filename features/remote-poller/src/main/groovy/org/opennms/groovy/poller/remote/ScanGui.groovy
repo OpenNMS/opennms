@@ -188,21 +188,26 @@ class ScanGui extends AbstractGui implements ScanReportHandler, PropertyChangeLi
 
                 def currentLocation = m_locations.get(0)
                 def currentApplications = m_applications.get(currentLocation)
+                def applicationLabel
                 def applicationCombo
                 def locationCombo
                 def updateApplicationCombo = {
-                    System.err.println("Updating application combo. currentLocation=" + currentLocation + ", currentApplications=" + currentApplications);
                     if (applicationCombo != null && locationCombo != null) {
                         def model = applicationCombo.getModel()
                         currentLocation = locationCombo.getSelectedItem()
                         currentApplications = m_applications.get(currentLocation)
+                        System.err.println("Updating application combo. currentLocation=" + currentLocation + ", currentApplications=" + currentApplications);
                         model.removeAllElements()
-                        if (currentApplications == null) {
+                        if (currentApplications == null || currentApplications.size() < 1) {
                             System.err.println("Location combo changed, but no applications found!");
+                            applicationLabel.setVisible(false);
+                            applicationCombo.setVisible(false);
                         } else {
                             for (final String app : currentApplications) {
                                 model.addElement(app);
                             }
+                            applicationLabel.setVisible(true);
+                            applicationCombo.setVisible(true);
                         }
                     }
                     applicationCombo.updateUI()
@@ -242,8 +247,8 @@ class ScanGui extends AbstractGui implements ScanReportHandler, PropertyChangeLi
                     invoker.execute()
                 })
 
-                label(text:"Application:", font:getLabelFont())
-                applicationCombo = comboBox(toolTipText:"Choose your application.", foreground:getForegroundColor(), background:getBackgroundColor(), renderer:getRenderer(), constraints:"wrap", actionPerformed:{
+                applicationLabel = label(text:"Application:", font:getLabelFont(), visible:false)
+                applicationCombo = comboBox(toolTipText:"Choose your application.", foreground:getForegroundColor(), background:getBackgroundColor(), renderer:getRenderer(), constraints:"wrap", visible: false, actionPerformed:{
                     resetProgressBar()
                 })
                 updateApplicationCombo()
