@@ -47,7 +47,7 @@ public class MetadataFieldReader {
     private File m_propertyFile;
 
     public MetadataFieldReader() {
-        m_propertyFile = new File(System.getProperty("opennms.home") + File.separator + "etc" + File.separator + "metadata.properties");
+        m_propertyFile = new File(System.getProperty("opennms.home") + File.separator + "etc" + File.separator + "scan-report-metadata.properties");
     }
 
     public MetadataFieldReader(final File propertyFile) {
