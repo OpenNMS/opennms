@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2016 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -41,6 +41,7 @@ import org.opennms.netmgt.model.ScanReport;
 import org.opennms.netmgt.poller.DistributionContext;
 import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.poller.ServiceMonitorLocator;
+import org.opennms.netmgt.poller.remote.metadata.MetadataField;
 
 /**
  * <p>PollerBackEnd interface.</p>
@@ -53,7 +54,7 @@ public interface PollerBackEnd {
     public static final String HOST_NAME_KEY = "org.opennms.netmgt.poller.remote.hostName";
     public static final String CONNECTION_HOST_ADDRESS_KEY = "org.opennms.netmgt.poller.remote.connectionHostAddress";
     public static final String CONNECTION_HOST_NAME_KEY = "org.opennms.netmgt.poller.remote.connectionHostName";
-    
+
     /**
      * Return the set of available MonitoringLocationDefinitions
      *
@@ -61,7 +62,7 @@ public interface PollerBackEnd {
      * @return a {@link java.util.Collection} object.
      */
     Collection<LocationDef> getMonitoringLocations();
-    
+
     /**
      * Register a new location monitor
      *
@@ -70,7 +71,7 @@ public interface PollerBackEnd {
      * @return the id of the new locations monitor
      */
     String registerLocationMonitor(String monitoringLocationId);
-    
+
     /**
      * Get monitor name
      *
@@ -78,7 +79,7 @@ public interface PollerBackEnd {
      * @return a {@link java.lang.String} object.
      */
     String getMonitorName(String locationMonitorId);
-    
+
     /**
      * Get service monitor locators for creating serviceMonitors for the poller.
      *
@@ -96,15 +97,15 @@ public interface PollerBackEnd {
      * @return a boolean.
      */
     boolean pollerStarting(String locationMonitorId, Map<String, String> pollerDetails);
-    
+
     /**
      * Notifies the backend that a registered poller is stopping
      *
      * @param locationMonitorId the id of the requesting location monitor
      */
     void pollerStopping(String locationMonitorId);
-    
- 
+
+
     /**
      * Checkin with the backend to let it know that the poller is still alive and to find
      * out if there are any configuration changes.
@@ -114,7 +115,7 @@ public interface PollerBackEnd {
      * @return true if the configuration should be updated.
      */
     MonitorStatus pollerCheckingIn(String locationMonitorId, Date currentConfigurationVersion);
-    
+
     /**
      * Gets the poller configuration assigned to this location monitor.
      *
@@ -126,7 +127,7 @@ public interface PollerBackEnd {
      * @return the PollerConfiguration for the indicated location monitor
      */
     PollerConfiguration getPollerConfiguration(String locationMonitorId);
-    
+
     /**
      * Gets the poller configuration assigned to this monitoring location
      *
@@ -134,7 +135,7 @@ public interface PollerBackEnd {
      * @return the PollerConfiguration for the indicated location
      */
     PollerConfiguration getPollerConfigurationForLocation(String location);
-    
+
     /**
      * Gets all applications associated with {@link OnmsMonitoredService}
      * objects managed by this monitoring location.
@@ -143,7 +144,15 @@ public interface PollerBackEnd {
      * @return a Set of application names for this location
      */
     Set<String> getApplicationsForLocation(String location);
-    
+
+    /**
+     * Gets all of the metadata fields to be used and optionally reported by
+     * the poller frontend.
+     * 
+     * @return a Set of metadata fields
+     */
+    Set<MetadataField> getMetadataFields();
+
     /**
      * Report a poll result from the client to the server.
      *

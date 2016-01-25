@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2016 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -44,6 +44,7 @@ import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.poller.ServiceMonitorLocator;
 import org.opennms.netmgt.poller.remote.PollerBackEnd;
 import org.opennms.netmgt.poller.remote.PollerConfiguration;
+import org.opennms.netmgt.poller.remote.metadata.MetadataField;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.remoting.RemoteAccessException;
@@ -253,6 +254,18 @@ public class ServerUnreachableAdaptor implements PollerBackEnd {
         } catch (RemoteAccessException e) {
             m_serverUnresponsive = true;
             LOG.warn("Server is unable to respond due to the following exception.", e);
+        }
+    }
+
+
+    @Override
+    public Set<MetadataField> getMetadataFields() {
+        try {
+            return m_remoteBackEnd.getMetadataFields();
+        } catch (final RemoteAccessException e) {
+            m_serverUnresponsive = true;
+            LOG.warn("Server is unable to respond due to the following exception.", e);
+            return Collections.emptySet();
         }
     }
 
