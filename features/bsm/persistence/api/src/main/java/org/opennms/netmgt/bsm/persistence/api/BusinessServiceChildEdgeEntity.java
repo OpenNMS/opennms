@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.bsm.persistence.api;
 
+import java.util.Objects;
 import java.util.Set;
 
 import javax.persistence.DiscriminatorValue;
