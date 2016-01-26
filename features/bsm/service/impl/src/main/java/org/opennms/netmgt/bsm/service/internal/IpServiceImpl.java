@@ -66,7 +66,10 @@ public class IpServiceImpl implements IpService {
 
     @Override
     public String getNodeLabel() {
-        return m_manager.getNodeById(m_entity.getNodeId()).getLabel();
+        if (m_entity.getNodeId() != null) {
+            return m_manager.getNodeById(m_entity.getNodeId()).getLabel();
+        }
+        return null;
     }
 
     @Override

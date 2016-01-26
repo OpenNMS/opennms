@@ -30,19 +30,24 @@ package org.opennms.web.rest.v2.bsm.model.edge;
 
 import java.util.Objects;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 
 import org.opennms.web.rest.v2.bsm.model.MapFunctionDTO;
 
+@XmlRootElement(name="child-edge")
+@XmlAccessorType(XmlAccessType.NONE)
 public class ChildEdgeRequestDTO {
 
-    private Long value;
+    private Long childId;
 
     private MapFunctionDTO mapFunction;
 
-    @XmlElement(name="value",required = true)
-    public Long getValue() {
-        return value;
+    @XmlElement(name="childId",required = true)
+    public Long getChildId() {
+        return childId;
     }
 
     @XmlElement(name="mapFunction", required= true)
@@ -50,8 +55,8 @@ public class ChildEdgeRequestDTO {
         return mapFunction;
     }
 
-    public void setValue(Long value) {
-        this.value = value;
+    public void setChildId(Long childId) {
+        this.childId = childId;
     }
 
     public void setMapFunction(MapFunctionDTO mapFunction) {
@@ -64,19 +69,19 @@ public class ChildEdgeRequestDTO {
         if (obj == this) { return true; }
         if (getClass() != obj.getClass()) { return false; }
         ChildEdgeRequestDTO other = (ChildEdgeRequestDTO) obj;
-        return Objects.equals(value, other.value)
+        return Objects.equals(childId, other.childId)
                 && Objects.equals(mapFunction, other.mapFunction);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(value, mapFunction);
+        return Objects.hash(childId, mapFunction);
     }
 
     @Override
     public String toString() {
         return com.google.common.base.Objects.toStringHelper(this)
-                .add("value", value)
+                .add("childId", childId)
                 .add("mapFunction", mapFunction)
                 .toString();
     }

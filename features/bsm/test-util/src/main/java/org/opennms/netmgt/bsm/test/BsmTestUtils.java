@@ -156,19 +156,19 @@ public class BsmTestUtils {
     }
 
     // convert to json
-    public static String toJson(BusinessServiceRequestDTO request) {
-        Objects.requireNonNull(request);
+    public static <T> String toJson(T input) {
+        Objects.requireNonNull(input);
         try {
-            return new ObjectMapper().writeValueAsString(request);
+            return new ObjectMapper().writeValueAsString(input);
         } catch (IOException io) {
             throw Throwables.propagate(io);
         }
     }
 
     // convert to xml
-    public static String toXml(BusinessServiceRequestDTO request) {
-        Objects.requireNonNull(request);
-        return JaxbUtils.marshal(request);
+    public static <T> String toXml(T input) {
+        Objects.requireNonNull(input);
+        return JaxbUtils.marshal(input);
     }
 
     private static OnmsAlarm createAlarm(OnmsMonitoredService monitoredService, OnmsSeverity severity) {

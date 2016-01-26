@@ -30,18 +30,23 @@ package org.opennms.web.rest.v2.bsm.model.edge;
 
 import java.util.Objects;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 
 import org.opennms.web.rest.v2.bsm.model.MapFunctionDTO;
 
+@XmlRootElement(name="reduction-key-edge")
+@XmlAccessorType(XmlAccessType.NONE)
 public class ReductionKeyEdgeRequestDTO {
-    private String value;
+    private String reductionKey;
 
     private MapFunctionDTO mapFunction;
 
-    @XmlElement(name="value",required = true)
-    public String getValue() {
-        return value;
+    @XmlElement(name="reduction-key",required = true)
+    public String getReductionKey() {
+        return reductionKey;
     }
 
     @XmlElement(name="mapFunction", required= true)
@@ -49,8 +54,8 @@ public class ReductionKeyEdgeRequestDTO {
         return mapFunction;
     }
 
-    public void setValue(String value) {
-        this.value = value;
+    public void setReductionKey(String reductionKey) {
+        this.reductionKey = reductionKey;
     }
 
     public void setMapFunction(MapFunctionDTO mapFunction) {
@@ -63,19 +68,19 @@ public class ReductionKeyEdgeRequestDTO {
         if (obj == this) { return true; }
         if (getClass() != obj.getClass()) { return false; }
         ReductionKeyEdgeRequestDTO other = (ReductionKeyEdgeRequestDTO) obj;
-        return Objects.equals(value, other.value)
+        return Objects.equals(reductionKey, other.reductionKey)
                 && Objects.equals(mapFunction, other.mapFunction);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(value, mapFunction);
+        return Objects.hash(reductionKey, mapFunction);
     }
 
     @Override
     public String toString() {
         return com.google.common.base.Objects.toStringHelper(this)
-                .add("value", value)
+                .add("reductionKey", reductionKey)
                 .add("mapFunction", mapFunction)
                 .toString();
     }

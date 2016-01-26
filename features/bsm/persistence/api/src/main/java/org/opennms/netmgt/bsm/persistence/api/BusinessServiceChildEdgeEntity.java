@@ -72,4 +72,13 @@ public class BusinessServiceChildEdgeEntity extends BusinessServiceEdgeEntity {
                 .add("child", child == null ? null : child.getId())
                 .toString();
     }
+
+    @Override
+    public boolean equalsDefinition(BusinessServiceEdgeEntity other) {
+        boolean equalsSuper = super.equalsDefinition(other);
+        if (equalsSuper) {
+            return Objects.equals(child.getId(), ((BusinessServiceChildEdgeEntity) other).getChild().getId());
+        }
+        return false;
+    }
 }

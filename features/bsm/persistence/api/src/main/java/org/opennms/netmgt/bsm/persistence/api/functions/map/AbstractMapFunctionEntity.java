@@ -67,4 +67,14 @@ public abstract class AbstractMapFunctionEntity {
                 .add("id", m_id)
                 .toString();
     }
+
+    /**
+     * Defines if the definition of the map function is equal to the given one.
+     *
+     * @return true if equal, otherwise false
+     */
+    public <T extends AbstractMapFunctionEntity> boolean equalsDefinition(T other) {
+        if (other == null) return false;
+        return other.getClass().equals(getClass());
+    }
 }
