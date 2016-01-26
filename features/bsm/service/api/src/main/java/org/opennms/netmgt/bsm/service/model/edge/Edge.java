@@ -57,4 +57,6 @@ public interface Edge {
     void setMapFunction(MapFunction mapFunction);
 
     void setSource(BusinessService source);
+
+    int getWeight();
 }

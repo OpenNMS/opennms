@@ -28,13 +28,13 @@
 
 package org.opennms.netmgt.bsm.service.model.mapreduce;
 
-import java.util.Collection;
+import java.util.Map;
 import java.util.Optional;
 
 import org.opennms.netmgt.bsm.service.model.Status;
+import org.opennms.netmgt.bsm.service.model.edge.Edge;
 
 public interface ReductionFunction {
 
-    Optional<Status> reduce(Collection<Status> sources);
-
+    Optional<Status> reduce(Map<Edge, Status> edgeStatusMap);
 }
