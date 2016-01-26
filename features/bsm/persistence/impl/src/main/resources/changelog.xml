@@ -129,7 +129,7 @@
                                  onDelete="CASCADE" />
 		<addForeignKeyConstraint constraintName="fk_bsm_service_child_service_id"
 								 baseTableName="bsm_service_children" baseColumnNames="bsm_service_child_id"
-								 referencedTableName="bsm_service_edge" referencedColumnNames="id"
+								 referencedTableName="bsm_service" referencedColumnNames="id"
                                  onDelete="CASCADE" />
 	</changeSet>
 
