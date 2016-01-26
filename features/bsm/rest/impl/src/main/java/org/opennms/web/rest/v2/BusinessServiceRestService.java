@@ -29,6 +29,7 @@
 package org.opennms.web.rest.v2;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import javax.ws.rs.Consumes;
@@ -48,25 +49,29 @@ import org.opennms.netmgt.bsm.service.BusinessServiceManager;
 import org.opennms.netmgt.bsm.service.model.BusinessService;
 import org.opennms.netmgt.bsm.service.model.IpService;
 import org.opennms.netmgt.bsm.service.model.edge.ChildEdge;
+import org.opennms.netmgt.bsm.service.model.edge.Edge;
 import org.opennms.netmgt.bsm.service.model.edge.IpServiceEdge;
 import org.opennms.netmgt.bsm.service.model.edge.ReductionKeyEdge;
 import org.opennms.netmgt.bsm.service.model.mapreduce.MapFunction;
 import org.opennms.netmgt.bsm.service.model.mapreduce.ReductionFunction;
 import org.opennms.web.rest.api.ResourceLocationFactory;
 import org.opennms.web.rest.support.RedirectHelper;
-import org.opennms.web.rest.v2.bsm.model.MapFunctionType;
-import org.opennms.web.rest.v2.bsm.model.ReduceFunctionType;
-import org.opennms.web.rest.v2.bsm.model.edge.ChildEdgeResponseDTO;
 import org.opennms.web.rest.v2.bsm.model.BusinessServiceListDTO;
 import org.opennms.web.rest.v2.bsm.model.BusinessServiceRequestDTO;
 import org.opennms.web.rest.v2.bsm.model.BusinessServiceResponseDTO;
-import org.opennms.web.rest.v2.bsm.model.edge.AbstractEdgeRequestDTO;
-import org.opennms.web.rest.v2.bsm.model.edge.IpServiceEdgeResponseDTO;
 import org.opennms.web.rest.v2.bsm.model.MapFunctionDTO;
 import org.opennms.web.rest.v2.bsm.model.MapFunctionListDTO;
+import org.opennms.web.rest.v2.bsm.model.MapFunctionType;
 import org.opennms.web.rest.v2.bsm.model.ReduceFunctionDTO;
 import org.opennms.web.rest.v2.bsm.model.ReduceFunctionListDTO;
+import org.opennms.web.rest.v2.bsm.model.ReduceFunctionType;
+import org.opennms.web.rest.v2.bsm.model.edge.AbstractEdgeResponseDTO;
+import org.opennms.web.rest.v2.bsm.model.edge.ChildEdgeRequestDTO;
+import org.opennms.web.rest.v2.bsm.model.edge.ChildEdgeResponseDTO;
+import org.opennms.web.rest.v2.bsm.model.edge.IpServiceEdgeRequestDTO;
+import org.opennms.web.rest.v2.bsm.model.edge.IpServiceEdgeResponseDTO;
 import org.opennms.web.rest.v2.bsm.model.edge.IpServiceResponseDTO;
+import org.opennms.web.rest.v2.bsm.model.edge.ReductionKeyEdgeRequestDTO;
 import org.opennms.web.rest.v2.bsm.model.edge.ReductionKeyEdgeResponseDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -134,13 +139,13 @@ public class BusinessServiceRestService {
         service.setReduceFunction(transform(request.getReduceFunction()));
         request.getReductionKeys()
                 .stream()
-                .forEach(rkEdge -> service.addReductionKeyEdge(rkEdge.getValue(),transform(rkEdge.getMapFunction())));
+                .forEach(rkEdge -> service.addReductionKeyEdge(rkEdge.getReductionKey(),transform(rkEdge.getMapFunction())));
         request.getIpServices()
                 .stream()
-                .forEach(ipEdge -> service.addIpServiceEdge(getManager().getIpServiceById(ipEdge.getValue()), transform(ipEdge.getMapFunction())));
+                .forEach(ipEdge -> service.addIpServiceEdge(getManager().getIpServiceById(ipEdge.getIpServiceId()), transform(ipEdge.getMapFunction())));
         request.getChildServices()
                 .stream()
-                .forEach(childEdge -> service.addChildEdge(getManager().getBusinessServiceById(childEdge.getValue()), transform(childEdge.getMapFunction())));
+                .forEach(childEdge -> service.addChildEdge(getManager().getBusinessServiceById(childEdge.getChildId()), transform(childEdge.getMapFunction())));
         getManager().saveBusinessService(service);
 
         return Response.created(RedirectHelper.getRedirectUri(uriInfo, service.getId())).build();
@@ -164,20 +169,20 @@ public class BusinessServiceRestService {
         service.setReduceFunction(transform(request.getReduceFunction()));
         service.setReductionKeyEdges(Sets.newHashSet());
                 request.getReductionKeys()
-                    .forEach(rkEdge -> getManager().addReductionKeyEdge(service, rkEdge.getValue(), transform(rkEdge.getMapFunction())));
+                    .forEach(rkEdge -> getManager().addReductionKeyEdge(service, rkEdge.getReductionKey(), transform(rkEdge.getMapFunction())));
         service.setIpServiceEdges(Sets.newHashSet());
                 request.getIpServices()
                         .forEach(ipEdge ->
                             getManager().addIpServiceEdge(
                                     service,
-                                    getManager().getIpServiceById(ipEdge.getValue()),
+                                    getManager().getIpServiceById(ipEdge.getIpServiceId()),
                                     transform(ipEdge.getMapFunction())));
         service.setChildEdges(Sets.newHashSet());
                 request.getChildServices()
                         .forEach(childEdge ->
                             getManager().addChildEdge(
                                     service,
-                                    getManager().getBusinessServiceById(childEdge.getValue()),
+                                    getManager().getBusinessServiceById(childEdge.getChildId()),
                                     transform(childEdge.getMapFunction())));
         getManager().saveBusinessService(service);
 
@@ -186,42 +191,68 @@ public class BusinessServiceRestService {
 
     @GET
     @Path("/edges/{edgeId}")
-    public Response getEdge(@PathParam("edgeId") final Integer edgeId) {
-        // TODO MVR implement me
-//        EdgeEntity edge = getManager().getEdgeById(edgeId);
-//        return Response.ok().entity(transform(edge)).build();
-        return Response.status(Response.Status.BAD_REQUEST).entity("NOT IMPLEMENTED YET").build();
+    public Response getEdgeById(@PathParam("edgeId") final Long edgeId) {
+        Edge edge = getManager().getEdgeById(edgeId);
+        AbstractEdgeResponseDTO edgeDTO = transform(edge);
+        return Response.ok().entity(edgeDTO).build();
     }
 
     @POST
-    @Path("{id}/edges")
-    public Response addEdge(@PathParam("id") final Long serviceId,
-                            final AbstractEdgeRequestDTO edgeRequest) {
-        // TODO MVR implement me
-//        final IpService ipService = getManager().getEdgeById(edgeId);
-//        boolean changed = getManager().assignIpService(service, ipService);
-//        if (!changed) {
-//            return Response.notModified().build();
-//        }
-//        service.save();
-//        return Response.ok().build();
-        return Response.status(Response.Status.BAD_REQUEST).entity("NOT IMPLEMENTED YET").build();
+    @Path("{id}/ip-service-edge")
+    // Add IpService
+    public Response addIpServiceEdge(@PathParam("id") final Long serviceId,
+                            final IpServiceEdgeRequestDTO edgeRequest) {
+        final BusinessService businessService = getManager().getBusinessServiceById(serviceId);
+        final IpService ipService = getManager().getIpServiceById(edgeRequest.getIpServiceId());
+        boolean changed = getManager().addIpServiceEdge(businessService, ipService, transform(edgeRequest.getMapFunction()));
+        if (!changed) {
+            return Response.notModified().build();
+        }
+        businessService.save();
+        return Response.ok().build();
+    }
+
+    @POST
+    @Path("{id}/reduction-key-edge")
+    // Add Reduction Key
+    public Response addReductionKeyEdge(@PathParam("id") final Long serviceId,
+                            final ReductionKeyEdgeRequestDTO edgeRequest) {
+        final BusinessService businessService = getManager().getBusinessServiceById(serviceId);
+        boolean changed = getManager().addReductionKeyEdge(businessService, edgeRequest.getReductionKey(), transform(edgeRequest.getMapFunction()));
+        if (!changed) {
+            return Response.notModified().build();
+        }
+        businessService.save();
+        return Response.ok().build();
+    }
+
+    @POST
+    @Path("{id}/child-edge")
+    // Add Child Service
+    public Response addChildServiceEdge(@PathParam("id") final Long serviceId,
+                            final ChildEdgeRequestDTO edgeRequest) {
+        final BusinessService parentService = getManager().getBusinessServiceById(serviceId);
+        final BusinessService childService = getManager().getBusinessServiceById(edgeRequest.getChildId());
+        boolean changed = getManager().addChildEdge(parentService, childService, transform(edgeRequest.getMapFunction()));
+        if (!changed) {
+            return Response.notModified().build();
+        }
+        parentService.save();
+        return Response.ok().build();
     }
 
     @DELETE
     @Path("{id}/edges/{edgeId}")
     public Response removeEdge(@PathParam("id") final Long serviceId,
-                                    @PathParam("edgeId") final Integer edgeId) {
-        // TODO MVR implement me
-//        final BusinessService service = getManager().getBusinessServiceById(serviceId);
-//        final IpService ipService = getManager().getEdgeById(edgeId);
-//        boolean changed = getManager().removeEdge(service, ipService);
-//        if (!changed) {
-//            return Response.notModified().build();
-//        }
-//        service.save();
-//        return Response.ok().build();
-        return Response.status(Response.Status.BAD_REQUEST).entity("NOT IMPLEMENTED YET").build();
+                               @PathParam("edgeId") final Long edgeId) {
+        final BusinessService service = getManager().getBusinessServiceById(serviceId);
+        final Edge edge = getManager().getEdgeById(edgeId);
+        boolean changed = getManager().deleteEdge(service, edge);
+        if (!changed) {
+            return Response.notModified().build();
+        }
+        service.save();
+        return Response.ok().build();
     }
 
     @POST
@@ -261,6 +292,20 @@ public class BusinessServiceRestService {
         response.setIpAddress(input.getIpAddress());
         response.setLocation(ResourceLocationFactory.createIpServiceLocation(String.valueOf(input.getId())));
         return response;
+    }
+
+    private AbstractEdgeResponseDTO transform(Edge edge) {
+        Objects.requireNonNull(edge);
+        if (edge instanceof IpServiceEdge) {
+            return transform((IpServiceEdge) edge);
+        }
+        if (edge instanceof ChildEdge) {
+            return transform((ChildEdge) edge);
+        }
+        if (edge instanceof ReductionKeyEdge) {
+            return transform((ReductionKeyEdge) edge);
+        }
+        throw new IllegalArgumentException("Could not find a mapper for edge of type " + edge.getClass());
     }
 
     private IpServiceEdgeResponseDTO transform(IpServiceEdge edge) {

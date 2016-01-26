@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.bsm.persistence.api;
 
+import java.util.Objects;
 import java.util.Set;
 
 import javax.persistence.Entity;
@@ -75,5 +76,14 @@ public class IPServiceEdgeEntity extends BusinessServiceEdgeEntity {
                 .add("super", super.toString())
                 .add("ipService", m_ipService)
                 .toString();
+    }
+
+    @Override
+    public boolean equalsDefinition(BusinessServiceEdgeEntity other) {
+        boolean equalsSuper = super.equalsDefinition(other);
+        if (equalsSuper) {
+            return Objects.equals(m_ipService, ((IPServiceEdgeEntity) other).m_ipService);
+        }
+        return false;
     }
 }

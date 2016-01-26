@@ -32,5 +32,5 @@ import org.opennms.netmgt.bsm.service.model.Node;
 
 public interface NodeManager {
 
-    Node getNodeById(int nodeId);
+    Node getNodeById(Integer nodeId);
 }

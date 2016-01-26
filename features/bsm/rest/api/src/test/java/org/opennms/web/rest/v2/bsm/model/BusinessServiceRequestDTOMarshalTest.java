@@ -49,7 +49,7 @@ public class BusinessServiceRequestDTOMarshalTest extends MarshalAndUnmarshalTes
         final MapFunctionDTO increaseDto = createMapFunctionDTO(MapFunctionType.Increase, null);
         final MapFunctionDTO setToDto = createMapFunctionDTO(MapFunctionType.SetTo, new String[]{"status", "Critical"});
         final BusinessServiceRequestDTO requestDTO = new BusinessServiceRequestDTO();
-        requestDTO.setReduceFunction(createReduceFunctionDTO(ReduceFunctionType.MostCritical));
+        requestDTO.setReduceFunction(createReduceFunctionDTO(ReduceFunctionType.MostCritical, null));
         requestDTO.setName("Web Servers");
         requestDTO.addAttribute("dc", "RDU");
         requestDTO.addAttribute("some-key", "some-value");
@@ -70,7 +70,7 @@ public class BusinessServiceRequestDTOMarshalTest extends MarshalAndUnmarshalTes
             "  }," +
             "  \"reduceFunction\" : {" +
             "       \"type\" : \"MostCritical\"," +
-            "       \"properties\" : {}" +
+            "       \"properties\" : null" +
             "  }," +
             "  \"childServices\" : [" +
             "       {" +
@@ -78,7 +78,7 @@ public class BusinessServiceRequestDTOMarshalTest extends MarshalAndUnmarshalTes
             "               \"type\" : \"Increase\"," +
             "               \"properties\" : null" +
             "           }," +
-            "           \"value\" : 2" +
+            "           \"childId\" : 2" +
             "       }," +
             "       {" +
             "           \"mapFunction\" : {" +
@@ -87,7 +87,7 @@ public class BusinessServiceRequestDTOMarshalTest extends MarshalAndUnmarshalTes
             "                   \"status\" : \"Critical\"" +
             "               }" +
             "           }," +
-            "           \"value\" : 3" +
+            "           \"childId\" : 3" +
             "       }," +
             "   ]," +
             "  \"ipServices\" : [" +
@@ -96,7 +96,7 @@ public class BusinessServiceRequestDTOMarshalTest extends MarshalAndUnmarshalTes
             "               \"type\" : \"Increase\"," +
             "               \"properties\" : null" +
             "           }," +
-            "           \"value\" : 1" +
+            "           \"ipServiceId\" : 1" +
             "       }," +
             "   ]," +
             "  \"reductionKeys\" : [" +
@@ -105,14 +105,14 @@ public class BusinessServiceRequestDTOMarshalTest extends MarshalAndUnmarshalTes
             "               \"type\" : \"Increase\"," +
             "               \"properties\" : null" +
             "           }," +
-            "           \"value\" : \"myReductionKeyA\"" +
+            "           \"reductionKey\" : \"myReductionKeyA\"" +
             "       }," +
             "       {" +
             "            \"mapFunction\" : {" +
             "               \"type\" : \"Increase\"," +
             "               \"properties\" : null" +
             "           }," +
-            "           \"value\" : \"myReductionKeyB\"" +
+            "           \"reductionKey\" : \"myReductionKeyB\"" +
             "       }," +
             "   ]," +
             "}",
@@ -130,20 +130,21 @@ public class BusinessServiceRequestDTOMarshalTest extends MarshalAndUnmarshalTes
             "   </attributes>\n" +
             "    <ip-services-edges>\n" +
             "      <ip-service-edge>\n" +
+            "         <ip-service-id>1</ip-service-id>\n" +
             "         <mapFunction>\n" +
             "            <type>Increase</type>\n" +
             "         </mapFunction>\n" +
-            "         <value>1</value>\n" +
             "      </ip-service-edge>\n" +
             "   </ip-services-edges>\n" +
             "   <child-edges>\n" +
             "      <child-edge>\n" +
+            "         <childId>2</childId>\n" +
             "         <mapFunction>\n" +
             "            <type>Increase</type>\n" +
             "         </mapFunction>\n" +
-            "         <value>2</value>\n" +
             "      </child-edge>\n" +
             "      <child-edge>\n" +
+            "         <childId>3</childId>\n" +
             "         <mapFunction>\n" +
             "            <type>SetTo</type>\n" +
             "            <properties>\n" +
@@ -153,7 +154,6 @@ public class BusinessServiceRequestDTOMarshalTest extends MarshalAndUnmarshalTes
             "               </entry>\n" +
             "            </properties>\n" +
             "         </mapFunction>\n" +
-            "         <value>3</value>\n" +
             "      </child-edge>\n" +
             "   </child-edges>\n" +
             "   <reductionkey-edges>\n" +
@@ -161,13 +161,13 @@ public class BusinessServiceRequestDTOMarshalTest extends MarshalAndUnmarshalTes
             "         <mapFunction>\n" +
             "            <type>Increase</type>\n" +
             "         </mapFunction>\n" +
-            "         <value>myReductionKeyA</value>\n" +
+            "         <reduction-key>myReductionKeyA</reduction-key>\n" +
             "      </reductionkey-edge>\n" +
             "      <reductionkey-edge>\n" +
             "         <mapFunction>\n" +
             "            <type>Increase</type>\n" +
             "         </mapFunction>\n" +
-            "         <value>myReductionKeyB</value>\n" +
+            "         <reduction-key>myReductionKeyB</reduction-key>\n" +
             "      </reductionkey-edge>\n" +
             "   </reductionkey-edges>\n" +
             "   <reduce-function>\n" +

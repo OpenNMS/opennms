@@ -142,4 +142,19 @@ public class BusinessServiceEdgeEntity implements EdgeEntity {
                 .add("mapFunction", m_mapFunction)
                 .toString();
     }
+
+    /**
+     * Defines if the definition of the edge is equal to the given one.
+     * This is quite different than the equals method of the object itself.
+     *
+     * @return true if equal, otherwise false
+     */
+    public boolean equalsDefinition(BusinessServiceEdgeEntity other) {
+        if (other == null) return false;
+        if (!getClass().equals(other.getClass())) return false;
+        boolean equals = Objects.equals(getWeight(), other.getWeight())
+                && Objects.equals(getBusinessService().getId(), other.getBusinessService().getId())
+                && getMapFunction().equalsDefinition(other.getMapFunction());
+        return equals;
+    }
 }

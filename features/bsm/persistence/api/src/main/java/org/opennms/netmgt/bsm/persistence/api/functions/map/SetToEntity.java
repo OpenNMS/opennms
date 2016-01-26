@@ -43,6 +43,14 @@ public class SetToEntity extends AbstractMapFunctionEntity {
     @Column(name="severity", nullable=false)    
     private Integer m_severity;
 
+    public SetToEntity() {
+
+    }
+
+    public SetToEntity(Integer severity) {
+        m_severity = Objects.requireNonNull(severity);
+    }
+
     public void setSeverity(OnmsSeverity severity) {
         m_severity = Objects.requireNonNull(severity).getId();
     }
@@ -61,5 +69,14 @@ public class SetToEntity extends AbstractMapFunctionEntity {
                 .add("id", getId())
                 .add("severity", getSeverity())
                 .toString();
+    }
+
+    @Override
+    public <T extends AbstractMapFunctionEntity> boolean equalsDefinition(T other) {
+        boolean equalsSuper = super.equalsDefinition(other);
+        if (equalsSuper) {
+            return Objects.equals(m_severity, ((SetToEntity)other).m_severity);
+        }
+        return false;
     }
 }

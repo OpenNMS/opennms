@@ -38,6 +38,7 @@ import org.opennms.core.criteria.Criteria;
 import org.opennms.netmgt.bsm.persistence.api.BusinessServiceChildEdgeEntity;
 import org.opennms.netmgt.bsm.persistence.api.BusinessServiceDao;
 import org.opennms.netmgt.bsm.persistence.api.BusinessServiceEdgeDao;
+import org.opennms.netmgt.bsm.persistence.api.BusinessServiceEdgeEntity;
 import org.opennms.netmgt.bsm.persistence.api.BusinessServiceEntity;
 import org.opennms.netmgt.bsm.persistence.api.IPServiceEdgeEntity;
 import org.opennms.netmgt.bsm.persistence.api.SingleReductionKeyEdgeEntity;
@@ -149,6 +150,36 @@ public class BusinessServiceManagerImpl implements BusinessServiceManager {
     }
 
     @Override
+    public Edge getEdgeById(Long edgeId) {
+        BusinessServiceEdgeEntity edgeEntity = getBusinessServiceEdgeEntity(edgeId);
+        if (edgeEntity instanceof BusinessServiceChildEdgeEntity) {
+            return new ChildEdgeImpl(this, (BusinessServiceChildEdgeEntity) edgeEntity);
+        }
+        if (edgeEntity instanceof SingleReductionKeyEdgeEntity) {
+            return new ReductionKeyEdgeImpl(this, (SingleReductionKeyEdgeEntity) edgeEntity);
+        }
+        if (edgeEntity instanceof IPServiceEdgeEntity) {
+            return new IpServiceEdgeImpl(this, (IPServiceEdgeEntity) edgeEntity);
+        }
+        throw new IllegalArgumentException("Could not create edge for entity " + edgeEntity.getClass());
+    }
+
+    @Override
+    public boolean deleteEdge(BusinessService source, Edge edge) {
+        BusinessServiceEdgeEntity edgeEntity = getBusinessServiceEdgeEntity(edge.getId());
+        BusinessServiceEntity businessServiceEntity = getBusinessServiceEntity(source);
+
+        // does not exist, no update necessary
+        if (!businessServiceEntity.getEdges().contains(edgeEntity)) {
+            return false;
+        }
+
+        // remove and update
+        businessServiceEntity.removeEdge(edgeEntity);
+        return true;
+    }
+
+    @Override
     public void saveBusinessService(BusinessService service) {
         BusinessServiceEntity entity = getBusinessServiceEntity(service);
         getDao().saveOrUpdate(entity);
@@ -198,14 +229,15 @@ public class BusinessServiceManagerImpl implements BusinessServiceManager {
         final BusinessServiceEntity parentEntity = getBusinessServiceEntity(businessService);
 
         // Create the edge
-        ReductionKeyEdgeImpl edge = (ReductionKeyEdgeImpl) createEdge(ReductionKeyEdge.class, businessService, mapFunction);
+        final ReductionKeyEdgeImpl edge = (ReductionKeyEdgeImpl) createEdge(ReductionKeyEdge.class, businessService, mapFunction);
         edge.setReductionKey(reductionKey);
 
         // if already exists, no update
-        if (parentEntity.getIpServiceEdges().contains(edge.getEntity())) {
+        final SingleReductionKeyEdgeEntity edgeEntity = getBusinessServiceEdgeEntity(edge);
+        long count = parentEntity.getReductionKeyEdges().stream().filter(e -> e.equalsDefinition(edgeEntity)).count();
+        if (count > 0) {
             return false;
         }
-
         parentEntity.addEdge(edge.getEntity());
         return true;
     }
@@ -221,16 +253,16 @@ public class BusinessServiceManagerImpl implements BusinessServiceManager {
 
     @Override
     public boolean addIpServiceEdge(BusinessService businessService, IpService ipService, MapFunction mapFunction) {
-        // verify that exists
         final BusinessServiceEntity parentEntity = getBusinessServiceEntity(businessService);
-        final OnmsMonitoredService monitoredService = getMonitoredService(ipService);
 
         // Create the edge
-        IpServiceEdge edge = createEdge(IpServiceEdge.class, businessService, mapFunction);
+        final IpServiceEdge edge = createEdge(IpServiceEdge.class, businessService, mapFunction);
         edge.setIpService(ipService);
 
         // if already exists, no update
-        if (parentEntity.getIpServiceEdges().contains(((IpServiceEdgeImpl)edge).getEntity())) {
+        final IPServiceEdgeEntity edgeEntity = getBusinessServiceEdgeEntity(edge);
+        long count = parentEntity.getIpServiceEdges().stream().filter(e -> e.equalsDefinition(edgeEntity)).count();
+        if (count > 0) {
             return false;
         }
         parentEntity.addEdge(((IpServiceEdgeImpl)edge).getEntity());
@@ -261,7 +293,9 @@ public class BusinessServiceManagerImpl implements BusinessServiceManager {
             throw new IllegalArgumentException("Service will form a loop");
         }
         // if already exists, no update
-        if (parentEntity.getEdges().contains(((ChildEdgeImpl)childEdge).getEntity())) {
+        final BusinessServiceChildEdgeEntity edgeEntity = getBusinessServiceEdgeEntity(childEdge);
+        long count = parentEntity.getChildEdges().stream().filter(e -> e.equalsDefinition(edgeEntity)).count();
+        if (count > 0) {
             return false;
         }
         parentEntity.addEdge(((ChildEdgeImpl)childEdge).getEntity());
@@ -293,14 +327,12 @@ public class BusinessServiceManagerImpl implements BusinessServiceManager {
 
     @Override
     public Status getOperationalStatusForBusinessService(BusinessService service) {
-        final BusinessServiceEntity entity = getBusinessServiceEntity(service); // verify the entity exists
         final Status status = businessServiceStateMachine.getOperationalStatus(service);
         return status != null ? status : Status.INDETERMINATE;
     }
 
     @Override
     public Status getOperationalStatusForIPService(IpService ipService) {
-        final OnmsMonitoredService monitoredService = getMonitoredService(ipService); // verify the entity exists
         final Status status = businessServiceStateMachine.getOperationalStatus(ipService);
         return status != null ? status : Status.INDETERMINATE;
     }
@@ -314,7 +346,7 @@ public class BusinessServiceManagerImpl implements BusinessServiceManager {
 
     @Override
     public IpService getIpServiceById(Integer id) {
-        OnmsMonitoredService entity = getMonitoredService(id);
+        OnmsMonitoredService entity = getMonitoredServiceEntity(id);
         return new IpServiceImpl(this, entity);
     }
 
@@ -357,7 +389,7 @@ public class BusinessServiceManagerImpl implements BusinessServiceManager {
     }
 
     @Override
-    public Node getNodeById(int nodeId) {
+    public Node getNodeById(Integer nodeId) {
         return new NodeImpl(this, getNodeEntity(nodeId));
     }
 
@@ -365,12 +397,34 @@ public class BusinessServiceManagerImpl implements BusinessServiceManager {
         return this.businessServiceDao;
     }
 
-    private OnmsNode getNodeEntity(int nodeId) {
+    private OnmsNode getNodeEntity(Integer nodeId) {
+        Objects.requireNonNull(nodeId);
         final OnmsNode entity = nodeDao.get(nodeId);
         if (entity == null) {
             throw new NoSuchElementException();
         }
-        return null;
+        return entity;
+    }
+
+    private BusinessServiceEdgeEntity getBusinessServiceEdgeEntity(Long edgeId) {
+        Objects.requireNonNull(edgeId);
+        BusinessServiceEdgeEntity edgeEntity = edgeDao.get(edgeId);
+        if (edgeEntity == null) {
+            throw new NoSuchElementException();
+        }
+        return edgeEntity;
+    }
+
+    private IPServiceEdgeEntity getBusinessServiceEdgeEntity(IpServiceEdge ipServiceEdge) {
+        return ((IpServiceEdgeImpl) ipServiceEdge).getEntity();
+    }
+
+    private BusinessServiceChildEdgeEntity getBusinessServiceEdgeEntity(ChildEdge childEdge) {
+        return ((ChildEdgeImpl) childEdge).getEntity();
+    }
+
+    private SingleReductionKeyEdgeEntity getBusinessServiceEdgeEntity(ReductionKeyEdge reductionKeyEdge) {
+        return ((ReductionKeyEdgeImpl) reductionKeyEdge).getEntity();
     }
 
     private BusinessServiceEntity getBusinessServiceEntity(BusinessService service) throws NoSuchElementException {
@@ -378,6 +432,7 @@ public class BusinessServiceManagerImpl implements BusinessServiceManager {
     }
 
     private BusinessServiceEntity getBusinessServiceEntity(Long serviceId) throws NoSuchElementException {
+        Objects.requireNonNull(serviceId);
         final BusinessServiceEntity entity = getDao().get(serviceId);
         if (entity == null) {
             throw new NoSuchElementException();
@@ -385,11 +440,12 @@ public class BusinessServiceManagerImpl implements BusinessServiceManager {
         return entity;
     }
 
-    private OnmsMonitoredService getMonitoredService(IpService ipService) throws NoSuchElementException {
+    private OnmsMonitoredService getMonitoredServiceEntity(IpService ipService) throws NoSuchElementException {
         return ((IpServiceImpl) ipService).getEntity();
     }
 
-    private OnmsMonitoredService getMonitoredService(Integer serviceId) throws NoSuchElementException {
+    private OnmsMonitoredService getMonitoredServiceEntity(Integer serviceId) throws NoSuchElementException {
+        Objects.requireNonNull(serviceId);
         final OnmsMonitoredService monitoredService = monitoredServiceDao.get(serviceId);
         if (monitoredService == null) {
             throw new NoSuchElementException();

@@ -56,17 +56,17 @@ import org.opennms.core.test.rest.AbstractSpringJerseyRestTestCase;
 import org.opennms.netmgt.bsm.persistence.api.BusinessServiceDao;
 import org.opennms.netmgt.bsm.persistence.api.BusinessServiceEntity;
 import org.opennms.netmgt.bsm.persistence.api.functions.map.IdentityEntity;
-import org.opennms.netmgt.bsm.persistence.api.functions.map.MapFunctionDao;
+import org.opennms.netmgt.bsm.persistence.api.functions.map.IgnoreEntity;
+import org.opennms.netmgt.bsm.persistence.api.functions.map.IncreaseEntity;
+import org.opennms.netmgt.bsm.persistence.api.functions.map.SetToEntity;
 import org.opennms.netmgt.bsm.persistence.api.functions.reduce.MostCriticalEntity;
-import org.opennms.netmgt.bsm.persistence.api.functions.reduce.ReductionFunctionDao;
 import org.opennms.netmgt.bsm.service.model.Status;
 import org.opennms.netmgt.bsm.service.model.functions.map.Ignore;
 import org.opennms.netmgt.bsm.test.BsmDatabasePopulator;
 import org.opennms.netmgt.bsm.test.BsmTestData;
-import org.opennms.netmgt.bsm.test.BsmTestUtils;
 import org.opennms.netmgt.bsm.test.BusinessServiceEntityBuilder;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
-import org.opennms.netmgt.model.OnmsMonitoredService;
+import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.opennms.web.rest.api.ResourceLocation;
 import org.opennms.web.rest.v2.bsm.model.BusinessServiceListDTO;
@@ -77,12 +77,15 @@ import org.opennms.web.rest.v2.bsm.model.MapFunctionListDTO;
 import org.opennms.web.rest.v2.bsm.model.MapFunctionType;
 import org.opennms.web.rest.v2.bsm.model.ReduceFunctionDTO;
 import org.opennms.web.rest.v2.bsm.model.ReduceFunctionListDTO;
+import org.opennms.web.rest.v2.bsm.model.edge.ChildEdgeRequestDTO;
+import org.opennms.web.rest.v2.bsm.model.edge.ChildEdgeResponseDTO;
+import org.opennms.web.rest.v2.bsm.model.edge.IpServiceEdgeRequestDTO;
+import org.opennms.web.rest.v2.bsm.model.edge.ReductionKeyEdgeRequestDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
@@ -135,7 +138,8 @@ public class BusinessServiceRestServiceIT extends AbstractSpringJerseyRestTestCa
     }
 
     @Test
-    public void canAddIpService() throws Exception {
+    public void canAddIpServiceEdge() throws Exception {
+        // Create a business service without any edges
         BusinessServiceEntity service = new BusinessServiceEntityBuilder()
                 .name("Dummy Service")
                 .reduceFunction(new MostCriticalEntity())
@@ -143,59 +147,164 @@ public class BusinessServiceRestServiceIT extends AbstractSpringJerseyRestTestCa
         final Long serviceId = m_businessServiceDao.save(service);
         m_businessServiceDao.flush();
 
-        // verify adding not existing ip service not possible
-        sendPost(getIpServiceUrl(serviceId, -1), "", 404, null);
+        // The Request to send to create an edge
+        IpServiceEdgeRequestDTO edgeRequestDTO = new IpServiceEdgeRequestDTO();
+        MapFunctionDTO mapFunctionDTO = new MapFunctionDTO();
+        mapFunctionDTO.setType(MapFunctionType.Identity);
+        edgeRequestDTO.setMapFunction(mapFunctionDTO);
+
+        // verify adding of not existing ip service is not possible
+        edgeRequestDTO.setIpServiceId(-1);
+        sendData(POST, MediaType.APPLICATION_XML, buildIpServiceEdgeUrl(serviceId), toXml(edgeRequestDTO), 404);
 
         // verify adding of existing ip service is possible
-        sendPost(getIpServiceUrl(serviceId, 10), "", 200, null);
-        Assert.assertEquals(1, m_businessServiceDao.get(serviceId).getEdges(IPServiceEdge.class).size());
+        edgeRequestDTO.setIpServiceId(10);
+        sendData(POST, MediaType.APPLICATION_XML, buildIpServiceEdgeUrl(serviceId), toXml(edgeRequestDTO), 200);
+        Assert.assertEquals(1, m_businessServiceDao.get(serviceId).getIpServiceEdges().size());
 
         // verify adding twice possible, but not modified
-        sendPost(getIpServiceUrl(serviceId, 10), "", 304, null);
-        Assert.assertEquals(1, m_businessServiceDao.get(serviceId).getEdges(IPServiceEdge.class).size());
+        sendData(POST, MediaType.APPLICATION_XML, buildIpServiceEdgeUrl(serviceId), toXml(edgeRequestDTO), 304);
+        Assert.assertEquals(1, m_businessServiceDao.get(serviceId).getIpServiceEdges().size());
 
         // verify adding of existing ip service is possible
-        sendPost(getIpServiceUrl(serviceId, 17), "", 200, null);
-        Assert.assertEquals(2, m_businessServiceDao.get(serviceId).getEdges(IPServiceEdge.class).size());
+        edgeRequestDTO.setIpServiceId(17);
+        sendData(POST, MediaType.APPLICATION_XML, buildIpServiceEdgeUrl(serviceId), toXml(edgeRequestDTO), 200);
+        Assert.assertEquals(2, m_businessServiceDao.get(serviceId).getIpServiceEdges().size());
     }
 
     @Test
-    public void canRemoveIpService() throws Exception {
+    public void canAddChildServiceEdge() throws Exception {
+        // Create a child and parent Business Service without any edges
+        BusinessServiceEntity childEntity = new BusinessServiceEntityBuilder()
+                .name("Child Service")
+                .reduceFunction(new MostCriticalEntity())
+                .toEntity();
+        BusinessServiceEntity parentEntity = new BusinessServiceEntityBuilder()
+                .name("Parent Service")
+                .reduceFunction(new MostCriticalEntity())
+                .toEntity();
+        final Long parentServiceId = m_businessServiceDao.save(parentEntity);
+        final Long childServiceId = m_businessServiceDao.save(childEntity);
+        m_businessServiceDao.flush();
+
+        // The Request to send to create the edge
+        ChildEdgeRequestDTO edgeRequestDTO = new ChildEdgeRequestDTO();
+        MapFunctionDTO mapFunctionDTO = new MapFunctionDTO();
+        mapFunctionDTO.setType(MapFunctionType.Identity);
+        edgeRequestDTO.setMapFunction(mapFunctionDTO);
+
+        // verify adding of not existing ip parentEntity is not possible
+        edgeRequestDTO.setChildId(-1L);
+        sendData(POST, MediaType.APPLICATION_XML, buildChildServiceEdgeUrl(parentServiceId), toXml(edgeRequestDTO), 404);
+
+        // verify adding of existing ip parentEntity is possible
+        edgeRequestDTO.setChildId(childServiceId);
+        sendData(POST, MediaType.APPLICATION_XML, buildChildServiceEdgeUrl(parentServiceId), toXml(edgeRequestDTO), 200);
+        Assert.assertEquals(1, m_businessServiceDao.get(parentServiceId).getChildEdges().size());
+
+        // verify adding twice possible, but not modified
+        sendData(POST, MediaType.APPLICATION_XML, buildChildServiceEdgeUrl(parentServiceId), toXml(edgeRequestDTO), 304);
+        Assert.assertEquals(1, m_businessServiceDao.get(parentServiceId).getChildEdges().size());
+    }
+
+    @Test
+    public void canAddReductionKeyEdge() throws Exception {
+        // Create a business service without any edges
         BusinessServiceEntity service = new BusinessServiceEntityBuilder()
                 .name("Dummy Service")
                 .reduceFunction(new MostCriticalEntity())
                 .toEntity();
         final Long serviceId = m_businessServiceDao.save(service);
-        service.getIpServices().add(monitoredServiceDao.get(17));
-        service.getIpServices().add(monitoredServiceDao.get(18));
-        service.getIpServices().add(monitoredServiceDao.get(20));
-        m_businessServiceDao.saveOrUpdate(service);
         m_businessServiceDao.flush();
+
+        // The Request to send to create an edge
+        ReductionKeyEdgeRequestDTO edgeRequestDTO = new ReductionKeyEdgeRequestDTO();
+        MapFunctionDTO mapFunctionDTO = new MapFunctionDTO();
+        mapFunctionDTO.setType(MapFunctionType.Identity);
+        edgeRequestDTO.setMapFunction(mapFunctionDTO);
+
+        // verify adding of existing ip service is possible
+        edgeRequestDTO.setReductionKey("1st reduction key");
+        sendData(POST, MediaType.APPLICATION_XML, buildReductionKeyEdgeUrl(serviceId), toXml(edgeRequestDTO), 200);
+        Assert.assertEquals(1, m_businessServiceDao.get(serviceId).getReductionKeyEdges().size());
+
+        // verify adding twice possible, but not modified
+        sendData(POST, MediaType.APPLICATION_XML, buildReductionKeyEdgeUrl(serviceId), toXml(edgeRequestDTO), 304);
+        Assert.assertEquals(1, m_businessServiceDao.get(serviceId).getReductionKeyEdges().size());
+
+        // verify adding of existing ip service is possible
+        edgeRequestDTO.setReductionKey("2nd reduction key");
+        sendData(POST, MediaType.APPLICATION_XML, buildReductionKeyEdgeUrl(serviceId), toXml(edgeRequestDTO), 200);
+        Assert.assertEquals(2, m_businessServiceDao.get(serviceId).getReductionKeyEdges().size());
+    }
+
+    @Test
+    public void canRemoveEdges() throws Exception {
+        BusinessServiceEntity child = new BusinessServiceEntityBuilder()
+                .name("Child Service")
+                .reduceFunction(new MostCriticalEntity())
+                .toEntity();
+        m_businessServiceDao.save(child);
+        BusinessServiceEntity parent = new BusinessServiceEntityBuilder()
+                .name("Parent Service")
+                .reduceFunction(new MostCriticalEntity())
+                // add the IP services edges
+                .addIpService(monitoredServiceDao.get(17), new SetToEntity(OnmsSeverity.CRITICAL.getId()))
+                .addIpService(monitoredServiceDao.get(18), new IgnoreEntity())
+                .addIpService(monitoredServiceDao.get(20), new IdentityEntity())
+                .addReductionKey("abc", new IgnoreEntity())
+                .addReductionKey("abcd", new IgnoreEntity())
+                .addChildren(child, new IncreaseEntity())
+                .toEntity();
+        final Long parentServiceId = m_businessServiceDao.save(parent);
+        m_businessServiceDao.flush();
+
+        // verify that test data is set up correctly
+        Assert.assertEquals(3, parent.getIpServiceEdges().size());
+        Assert.assertEquals(2, parent.getReductionKeyEdges().size());
+        Assert.assertEquals(1, parent.getChildEdges().size());
+        Assert.assertEquals(6, parent.getEdges().size());
+
+        // determine edge ids
+        List<Long> edgeIdList = parent.getEdges().stream().map(e -> e.getId()).sorted().collect(Collectors.toList());
 
         // verify removing not existing ip service not possible
-        sendData(DELETE, MediaType.APPLICATION_XML, getIpServiceUrl(serviceId, -1), "", 404);
+        sendData(DELETE, MediaType.APPLICATION_XML, buildEdgeUrl(parentServiceId, -1), "", 404);
 
         // verify removing of existing ip service is possible
-        sendData(DELETE, MediaType.APPLICATION_XML, getIpServiceUrl(serviceId, 17), "", 200);
-        Assert.assertEquals(2, m_businessServiceDao.get(serviceId).getEdges(IPServiceEdge.class).size());
+        for (int i = 0; i < edgeIdList.size(); i++) {
+            long edgeId = edgeIdList.get(i);
+            int edgesLeftCount = edgeIdList.size() - i - 1;
 
-        // verify removing twice possible, but not modified
-        sendData(DELETE, MediaType.APPLICATION_XML, getIpServiceUrl(serviceId, 17), "", 304);
-        Assert.assertEquals(2, m_businessServiceDao.get(serviceId).getEdges(IPServiceEdge.class).size());
+            // verify removing of existing ip service is possible
+            sendData(DELETE, MediaType.APPLICATION_XML, buildEdgeUrl(parentServiceId, edgeId), "", 200);
+            Assert.assertEquals(edgesLeftCount, m_businessServiceDao.get(parentServiceId).getEdges().size());
 
-        // verify removing of existing ip service is possible
-        sendData(DELETE, MediaType.APPLICATION_XML, getIpServiceUrl(serviceId, 18), "", 200);
-        Assert.assertEquals(1, m_businessServiceDao.get(serviceId).getEdges(IPServiceEdge.class).size());
+            // verify removing twice possible, but not modified
+            sendData(DELETE, MediaType.APPLICATION_XML, buildEdgeUrl(parentServiceId, edgeId), "", 304);
+            Assert.assertEquals(edgesLeftCount, m_businessServiceDao.get(parentServiceId).getEdges().size());
+        }
     }
 
-    private void addIpServiceEdge(BusinessServiceEntity serviceEntity, OnmsMonitoredService ipService) {
-        serviceEntity.addIpServiceEdge(ipService, new IdentityEntity());
-        m_businessServiceDao.saveOrUpdate(serviceEntity);
-        m_businessServiceDao.flush();
+    @Test
+    public void canReloadDaemon() throws Exception {
+        sendPost("business-services/daemon/reload", "", 200, null);
     }
 
-    private String buildIpServiceUrl(Long serviceId, int ipServiceId) {
-        return String.format("/business-services/%s/ip-service/%s", serviceId, ipServiceId);
+    private String buildIpServiceEdgeUrl(Long serviceId) {
+        return String.format("%s/ip-service-edge", buildServiceUrl(serviceId));
+    }
+
+    private String buildReductionKeyEdgeUrl(Long serviceId) {
+        return String.format("%s/reduction-key-edge", buildServiceUrl(serviceId));
+    }
+
+    private String buildChildServiceEdgeUrl(Long serviceId) {
+        return String.format("%s/child-edge", buildServiceUrl(serviceId));
+    }
+
+    private String buildEdgeUrl(Long serviceId, long edgeId) {
+        return String.format("%s/edges/%s", buildServiceUrl(serviceId), edgeId);
     }
 
     private String buildServiceUrl(Long serviceId) {

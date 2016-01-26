@@ -163,21 +163,21 @@ public class BusinessServiceRequestDTO {
 
     public void addChildService(long childId, MapFunctionDTO mapFunction) {
         ChildEdgeRequestDTO edge = new ChildEdgeRequestDTO();
-        edge.setValue(childId);
+        edge.setChildId(childId);
         edge.setMapFunction(mapFunction);
         getChildServices().add(edge);
     }
 
     public void addReductionKey(String reductionKey, MapFunctionDTO mapFunction) {
         ReductionKeyEdgeRequestDTO edge = new ReductionKeyEdgeRequestDTO();
-        edge.setValue(reductionKey);
+        edge.setReductionKey(reductionKey);
         edge.setMapFunction(mapFunction);
         getReductionKeys().add(edge);
     }
 
     public void addIpService(int ipServiceId, MapFunctionDTO mapFunction) {
         IpServiceEdgeRequestDTO edge = new IpServiceEdgeRequestDTO();
-        edge.setValue(ipServiceId);
+        edge.setIpServiceId(ipServiceId);
         edge.setMapFunction(mapFunction);
         getIpServices().add(edge);
     }

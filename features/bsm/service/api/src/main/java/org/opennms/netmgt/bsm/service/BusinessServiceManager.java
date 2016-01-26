@@ -53,6 +53,10 @@ public interface BusinessServiceManager extends NodeManager {
 
     <T extends Edge> T createEdge(Class<T> type, BusinessService child, MapFunction mapFunction);
 
+    Edge getEdgeById(Long edgeId);
+
+    boolean deleteEdge(BusinessService service, Edge edge);
+
     void saveBusinessService(BusinessService newObject);
 
     void deleteBusinessService(BusinessService service);
