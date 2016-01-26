@@ -51,6 +51,7 @@ public class CustomSyslogParser extends SyslogParser {
 
     public CustomSyslogParser(final SyslogdConfig config, final String text) throws SyslogParserException {
         super(config, text);
+
         final String forwardingRegexp = config.getForwardingRegexp();
         if (forwardingRegexp == null || forwardingRegexp.length() == 0) {
             throw new SyslogParserException("no forwarding regular expression defined");
@@ -65,6 +66,7 @@ public class CustomSyslogParser extends SyslogParser {
         LOG.info("Message Parse start");
         final SyslogMessage syslogMessage = new SyslogMessage();
         syslogMessage.setParserClass(getClass());
+
         String message = getText();
 
         int lbIdx = message.indexOf('<');
@@ -118,6 +120,7 @@ public class CustomSyslogParser extends SyslogParser {
                 }
             }
         }
+
         LOG.trace("timestamp = {}", timestamp);
         syslogMessage.setDate(parseDate(timestamp));
 
@@ -171,8 +174,8 @@ public class CustomSyslogParser extends SyslogParser {
         String processName = "";
         String processIdStr = "";
 
-        // If loop has been reversed, in-order to fasten up that decides which
-        // loop to enter rather than calculating lbIdx < (rbIdx - 1) which might fail
+        // If statement has been reversed in order to make the decision faster
+        // rather than always calculating lbIdx < (rbIdx - 1) which might fail
 
         if (lbIdx < 0 && rbIdx < 0 && colonIdx > 0 && spaceIdx == (colonIdx + 1)) {
             processName = message.substring(0, colonIdx);
@@ -181,7 +184,7 @@ public class CustomSyslogParser extends SyslogParser {
             processName = message.substring(0, lbIdx);
             processIdStr = message.substring(lbIdx + 1, rbIdx);
             message = message.substring(colonIdx + 2);
-            processId=parseInt(processIdStr, "Bad process id '{}'");
+            processId = parseInt(processIdStr, "Bad process id '{}'");
         }
 
         syslogMessage.setProcessId(processId);
