@@ -50,17 +50,14 @@ public class CustomSyslogParser extends SyslogParser {
     private final int m_matchingGroupMessage;
     private SyslogMessage syslogMessage = null;
 
-    public CustomSyslogParser(final SyslogdConfig config, final String text)
-            throws SyslogParserException {
+    public CustomSyslogParser(final SyslogdConfig config, final String text) throws SyslogParserException {
         super(config, text);
         syslogMessage = new SyslogMessage();
         final String forwardingRegexp = config.getForwardingRegexp();
         if (forwardingRegexp == null || forwardingRegexp.length() == 0) {
-            throw new SyslogParserException(
-                                            "no forwarding regular expression defined");
+            throw new SyslogParserException("no forwarding regular expression defined");
         }
-        m_forwardingPattern = Pattern.compile(forwardingRegexp,
-                                              Pattern.MULTILINE);
+        m_forwardingPattern = Pattern.compile(forwardingRegexp, Pattern.MULTILINE);
         m_matchingGroupHost = config.getMatchingGroupHost();
         m_matchingGroupMessage = config.getMatchingGroupMessage();
     }
@@ -154,8 +151,7 @@ public class CustomSyslogParser extends SyslogParser {
             final String matchedMessage = m.group(m_matchingGroupMessage);
             syslogMessage.setMatchedMessage(matchedMessage);
 
-            LOG.trace("Syslog message '{}' matched regexp '{}'", message,
-                      m_forwardingPattern);
+            LOG.trace("Syslog message '{}' matched regexp '{}'", message, m_forwardingPattern);
             LOG.trace("Found host '{}'", m.group(m_matchingGroupHost));
             LOG.trace("Found message '{}'", matchedMessage);
 
@@ -177,16 +173,12 @@ public class CustomSyslogParser extends SyslogParser {
         String processIdStr = "";
 
         // If loop has been reversed, in-order to fasten up that decides which
-        // loop to enter rather than calculating lbIdx < (rbIdx - 1) which
-        // might
-        // fail
+        // loop to enter rather than calculating lbIdx < (rbIdx - 1) which might fail
 
-        if (lbIdx < 0 && rbIdx < 0 && colonIdx > 0
-                && spaceIdx == (colonIdx + 1)) {
+        if (lbIdx < 0 && rbIdx < 0 && colonIdx > 0 && spaceIdx == (colonIdx + 1)) {
             processName = message.substring(0, colonIdx);
             message = message.substring(colonIdx + 2);
-        } else if (lbIdx < (rbIdx - 1) && colonIdx == (rbIdx + 1)
-                && spaceIdx == (colonIdx + 1)) {
+        } else if (lbIdx < (rbIdx - 1) && colonIdx == (rbIdx + 1) && spaceIdx == (colonIdx + 1)) {
             processName = message.substring(0, lbIdx);
             processIdStr = message.substring(lbIdx + 1, rbIdx);
             message = message.substring(colonIdx + 2);
