@@ -63,6 +63,7 @@ public class CustomSyslogParser extends SyslogParser {
 
     @Override
     public SyslogMessage parse() throws SyslogParserException {
+        LOG.info("Message Parse start");
         final SyslogMessage syslogMessage = new SyslogMessage();
         syslogMessage.setParserClass(getClass());
 
@@ -78,12 +79,7 @@ public class CustomSyslogParser extends SyslogParser {
         int priCode = 0;
         String priStr = message.substring(lbIdx + 1, rbIdx);
 
-        try {
-            priCode = Integer.parseInt(priStr);
-        } catch (final NumberFormatException ex) {
-            LOG.debug("ERROR Bad priority code '{}'", priStr);
-
-        }
+        priCode = parseInt(priStr, "ERROR Bad priority code '{}'");
 
         LOG.trace("priority code = {}", priCode);
 
@@ -114,7 +110,7 @@ public class CustomSyslogParser extends SyslogParser {
                 LOG.trace("stdMsg = {}", "false");
                 timestamp = stampMatcher.group(2);
                 LOG.trace("found timestamp '{}'", timestamp);
-//                message = message.substring(stampMatcher.group(1).length());
+                // message = message.substring(stampMatcher.group(1).length());
             } else {
                 try {
                     timestamp = SyslogTimeStamp.getInstance().format(new Date());
@@ -188,19 +184,24 @@ public class CustomSyslogParser extends SyslogParser {
             processName = message.substring(0, lbIdx);
             processIdStr = message.substring(lbIdx + 1, rbIdx);
             message = message.substring(colonIdx + 2);
-
-            try {
-                processId = Integer.parseInt(processIdStr);
-            } catch (final NumberFormatException ex) {
-                LOG.debug("Bad process id '{}'", processIdStr);
-                processId = 0;
-            }
+            processId = parseInt(processIdStr, "Bad process id '{}'");
         }
 
         syslogMessage.setProcessId(processId);
         syslogMessage.setProcessName(processName);
         syslogMessage.setMessage(message.trim());
 
+        LOG.info("Message Parse End");
         return syslogMessage;
+    }
+
+    private static int parseInt(String stringToInt, String logMessage) {
+        int integerValue = 0;
+        try {
+            integerValue = Integer.parseInt(stringToInt);
+        } catch (final NumberFormatException e) {
+            LOG.debug(logMessage, stringToInt);
+        }
+        return integerValue;
     }
 }

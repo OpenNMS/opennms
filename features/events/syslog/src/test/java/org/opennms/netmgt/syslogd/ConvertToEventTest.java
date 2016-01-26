@@ -68,7 +68,6 @@ public class ConvertToEventTest {
                                                                pkt.getPort(),
                                                                data, config);
         } catch (MessageDiscardedException e) {
-            // TODO Auto-generated catch block
             LOG.debug("Message Parsing failed: {}");
         }
     }
