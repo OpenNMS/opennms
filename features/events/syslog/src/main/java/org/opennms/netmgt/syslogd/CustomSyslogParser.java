@@ -98,7 +98,11 @@ public class CustomSyslogParser extends SyslogParser {
 
         String timestamp;
         Matcher oldDateMatcher = m_oldDatePattern.matcher(message);
-        if (!oldDateMatcher.find()) {
+        if (oldDateMatcher.find()) {
+            LOG.trace("stdMsg = {}", "true");
+            timestamp = oldDateMatcher.group(1);
+            message = oldDateMatcher.replaceFirst("");
+        } else {
             final Matcher stampMatcher = m_datePattern.matcher(message);
             if (stampMatcher.find()) {
                 LOG.trace("stdMsg = {}", "false");
@@ -113,10 +117,6 @@ public class CustomSyslogParser extends SyslogParser {
                     timestamp = "";
                 }
             }
-        } else {
-            LOG.trace("stdMsg = {}", "true");
-            timestamp = oldDateMatcher.group(1);
-            message = oldDateMatcher.replaceFirst("");
         }
         LOG.trace("timestamp = {}", timestamp);
         syslogMessage.setDate(parseDate(timestamp));
@@ -191,7 +191,7 @@ public class CustomSyslogParser extends SyslogParser {
         LOG.info("Message Parse End");
         return syslogMessage;
     }
-    
+
     private static int parseInt(String stringToInt, String logMessage) {
         int integerValue = 0;
         try {
