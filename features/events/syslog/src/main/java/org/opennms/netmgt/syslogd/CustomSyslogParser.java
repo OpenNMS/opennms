@@ -77,7 +77,7 @@ public class CustomSyslogParser extends SyslogParser {
         int priCode = 0;
         String priStr = message.substring(lbIdx + 1, rbIdx);
 
-        priCode=parseInt(priStr, "ERROR Bad priority code '{}'");
+        priCode = parseInt(priStr, "ERROR Bad priority code '{}'");
 
         LOG.trace("priority code = {}", priCode);
 
@@ -104,8 +104,7 @@ public class CustomSyslogParser extends SyslogParser {
                 LOG.trace("stdMsg = {}", "false");
                 timestamp = stampMatcher.group(2);
                 LOG.trace("found timestamp '{}'", timestamp);
-                // message =
-                // message.substring(stampMatcher.group(1).length());
+                // message = message.substring(stampMatcher.group(1).length());
             } else {
                 try {
                     timestamp = SyslogTimeStamp.getInstance().format(new Date());
@@ -141,8 +140,9 @@ public class CustomSyslogParser extends SyslogParser {
         final Matcher m = pattern.matcher(message);
 
         /*
-         * We matched on a regexp for host/message pair. This can be a
-         * forwarded message as in BSD Style or syslog-ng.
+         * We matched on a regexp for host/message pair.
+         * This can be a forwarded message as in BSD Style
+         * or syslog-ng.
          */
 
         if (m.matches()) {

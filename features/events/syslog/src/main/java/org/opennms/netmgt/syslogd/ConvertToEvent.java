@@ -337,8 +337,7 @@ public class ConvertToEvent {
         return false;
     }
     
-    private static boolean containsIgnoreCase(List<String> collection, String match)
-    {
+    private static boolean containsIgnoreCase(List<String> collection, String match) {
          if (collection.size() == 0) return true;
          for (String string : collection) {
              if (string.equalsIgnoreCase(match)) return true;
