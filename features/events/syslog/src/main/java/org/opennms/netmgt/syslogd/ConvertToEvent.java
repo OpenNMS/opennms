@@ -145,7 +145,7 @@ public class ConvertToEvent {
         }
         SyslogMessage message;
         try {
-                message = parser.parse();
+            message = parser.parse();
         } catch (final SyslogParserException ex) {
             LOG.debug("Unable to parse '{}'", syslogString, ex);
             throw new MessageDiscardedException(ex);
@@ -210,7 +210,7 @@ public class ConvertToEvent {
         } else {
             for (final UeiMatch uei : ueiMatch) {
                 final boolean otherStuffMatches = matchUei(uei.getFacilityCollection(), facilityTxt) &&
-                								  matchUei(uei.getSeverityCollection(), priorityTxt) &&
+                                                  matchUei(uei.getSeverityCollection(), priorityTxt) &&
                                                   matchProcess(uei.getProcessMatch(), message.getProcessName()) && 
                                                   matchHostname(uei.getHostnameMatch(), message.getHostName()) &&
                                                   matchHostAddr(uei.getHostaddrMatch(), message.getHostAddress());
@@ -244,19 +244,19 @@ public class ConvertToEvent {
                     if (fullText.contains(hide.getMatch().getExpression())) {
                         // We should hide the message based on this match
                         doHide = true;
-                    }                   
+                    }
                 } else if (hide.getMatch().getType().equals("regex")) {
-                        try {
+                    try {
                         msgPat = Pattern.compile(hide.getMatch().getExpression(), Pattern.MULTILINE);
-                        msgMat = msgPat.matcher(fullText);                      
-                        } catch (PatternSyntaxException pse) {
-                                LOG.warn("Failed to compile regex pattern '{}'", hide.getMatch().getExpression(), pse);
-                                msgMat = null;
-                        }
-                        if ((msgMat != null) && (msgMat.find())) {
+                        msgMat = msgPat.matcher(fullText);
+                    } catch (PatternSyntaxException pse) {
+                        LOG.warn("Failed to compile regex pattern '{}'", hide.getMatch().getExpression(), pse);
+                        msgMat = null;
+                    }
+                    if ((msgMat != null) && (msgMat.find())) {
                         // We should hide the message based on this match
-                                doHide = true;
-                        }
+                        doHide = true;
+                    }
                 }
                 if (doHide) {
                     LOG.debug("Hiding syslog message from Event - May contain sensitive data");
@@ -355,7 +355,7 @@ public class ConvertToEvent {
                 return newPat;
             } catch(final PatternSyntaxException pse) {
                 LOG.warn("Failed to compile regex pattern '{}'", expression, pse);
-                }
+            }
         }
         return msgPat;
     }
@@ -369,7 +369,7 @@ public class ConvertToEvent {
                 throw new MessageDiscardedException();
             } else {
                 //We can pass a new UEI on this
-                    if (traceEnabled) LOG.trace("Changed the UEI of a Syslogd event, based on substring match, to : {}", uei.getUei());
+                if (traceEnabled) LOG.trace("Changed the UEI of a Syslogd event, based on substring match, to : {}", uei.getUei());
                 bldr.setUei(uei.getUei());
                 // I think we want to stop processing here so the first
                 // ueiMatch wins, right?
@@ -422,9 +422,11 @@ public class ConvertToEvent {
                     String parmValue = msgMat.group(assignment.getMatchingGroup());
                     parmValue = parmValue == null ? "" : parmValue;
                     bldr.addParam(parmName, parmValue);
-                    if (traceEnabled) LOG.trace("Added parm '{}' with value '{}' to Syslogd event based on user-specified parameter assignment", parmName, parmValue);
+                    if (traceEnabled) {
+                        LOG.trace("Added parm '{}' with value '{}' to Syslogd event based on user-specified parameter assignment", parmName, parmValue);
                     }
                 }
+            }
             }
             // I think we want to stop processing here so the first
             // ueiMatch wins, right?
