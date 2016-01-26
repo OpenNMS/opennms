@@ -48,11 +48,9 @@ public class CustomSyslogParser extends SyslogParser {
     private final Pattern m_forwardingPattern;
     private final int m_matchingGroupHost;
     private final int m_matchingGroupMessage;
-    private SyslogMessage syslogMessage = null;
 
     public CustomSyslogParser(final SyslogdConfig config, final String text) throws SyslogParserException {
         super(config, text);
-        syslogMessage = new SyslogMessage();
         final String forwardingRegexp = config.getForwardingRegexp();
         if (forwardingRegexp == null || forwardingRegexp.length() == 0) {
             throw new SyslogParserException("no forwarding regular expression defined");
@@ -65,6 +63,7 @@ public class CustomSyslogParser extends SyslogParser {
     @Override
     public SyslogMessage parse() throws SyslogParserException {
         LOG.info("Message Parse start");
+        final SyslogMessage syslogMessage = new SyslogMessage();
         syslogMessage.setParserClass(getClass());
         String message = getText();
 
@@ -193,13 +192,13 @@ public class CustomSyslogParser extends SyslogParser {
         return syslogMessage;
     }
     
-	private int parseInt(String stringToInt, String logMessage) {
-		int integerValue = 0;
-		try {
-			integerValue = Integer.parseInt(stringToInt);
-		} catch (final NumberFormatException ex) {
-			LOG.debug(logMessage, stringToInt);
-		}
-		return integerValue;
-	}
+    private static int parseInt(String stringToInt, String logMessage) {
+        int integerValue = 0;
+        try {
+            integerValue = Integer.parseInt(stringToInt);
+        } catch (final NumberFormatException e) {
+            LOG.debug(logMessage, stringToInt);
+        }
+        return integerValue;
+    }
 }

@@ -209,8 +209,8 @@ public class ConvertToEvent {
             LOG.warn("No ueiList configured.");
         } else {
             for (final UeiMatch uei : ueiMatch) {
-                final boolean otherStuffMatches = matchUei(uei.getFacilityCollection(), facilityTxt) &&
-                                                  matchUei(uei.getSeverityCollection(), priorityTxt) &&
+                final boolean otherStuffMatches = containsIgnoreCase(uei.getFacilityCollection(), facilityTxt) &&
+                                                  containsIgnoreCase(uei.getSeverityCollection(), priorityTxt) &&
                                                   matchProcess(uei.getProcessMatch(), message.getProcessName()) && 
                                                   matchHostname(uei.getHostnameMatch(), message.getHostName()) &&
                                                   matchHostAddr(uei.getHostaddrMatch(), message.getHostAddress());
@@ -337,11 +337,11 @@ public class ConvertToEvent {
         return false;
     }
     
-    private static boolean matchUei(List<String> ueis, String priorityTxt)
+    private static boolean containsIgnoreCase(List<String> collection, String match)
     {
-    	 if (ueis.size() == 0) return true;
-         for (String facility : ueis) {
-             if (facility.equalsIgnoreCase(priorityTxt)) return true;
+         if (collection.size() == 0) return true;
+         for (String string : collection) {
+             if (string.equalsIgnoreCase(match)) return true;
          }
          return false;
     }
