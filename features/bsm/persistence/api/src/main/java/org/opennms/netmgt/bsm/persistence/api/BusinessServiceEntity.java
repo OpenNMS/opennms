@@ -183,8 +183,8 @@ public class BusinessServiceEntity {
     public boolean equals(Object obj) {
         if (obj == null) return false;
         if (obj == this) return true;
-        if (getClass() != obj.getClass()) return false;
-        BusinessServiceEntity other = (BusinessServiceEntity) obj;
+        if (!(obj instanceof BusinessServiceEntity)) return false;
+        final BusinessServiceEntity other = (BusinessServiceEntity) obj;
         if (getId() != null) {
             return getId().equals(other.getId());
         }
@@ -210,7 +210,7 @@ public class BusinessServiceEntity {
                 .toString();
     }
 
-    // Convinent method to add a child edge
+    // Convenient method to add a child edge
     public BusinessServiceEntity addChildServiceEdge(BusinessServiceEntity children, AbstractMapFunctionEntity mapFunction) {
         BusinessServiceChildEdgeEntity edge = new BusinessServiceChildEdgeEntity();
         edge.setBusinessService(this);
@@ -220,7 +220,7 @@ public class BusinessServiceEntity {
         return this;
     }
 
-    // Convinent method to add an ipservice edge
+    // Convenient method to add an ipservice edge
     public BusinessServiceEntity addIpServiceEdge(OnmsMonitoredService ipService, AbstractMapFunctionEntity mapFunction) {
         IPServiceEdgeEntity edge = new IPServiceEdgeEntity();
         edge.setBusinessService(this);
@@ -230,7 +230,7 @@ public class BusinessServiceEntity {
         return this;
     }
 
-    // Convinent method to add a reduction key edge
+    // Convenient method to add a reduction key edge
     public BusinessServiceEntity addReductionKeyEdge(String reductionKey, AbstractMapFunctionEntity mapFunction) {
         SingleReductionKeyEdgeEntity edge = new SingleReductionKeyEdgeEntity();
         edge.setBusinessService(this);

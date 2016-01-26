@@ -29,7 +29,6 @@
 package org.opennms.netmgt.bsm.vaadin.adminpage;
 
 import java.util.Set;
-import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import org.opennms.netmgt.bsm.service.model.BusinessService;
@@ -38,8 +37,10 @@ import org.opennms.netmgt.bsm.service.model.functions.map.Identity;
 import org.opennms.netmgt.bsm.service.model.functions.reduce.MostCritical;
 import org.opennms.netmgt.vaadin.core.StringInputDialogWindow;
 
+import com.google.common.collect.Sets;
 import com.vaadin.data.Property;
-import com.vaadin.data.util.BeanItemContainer;
+import com.vaadin.data.util.BeanContainer;
+import com.vaadin.data.util.BeanItem;
 import com.vaadin.data.validator.AbstractStringValidator;
 import com.vaadin.ui.AbstractSelect;
 import com.vaadin.ui.Alignment;
@@ -81,11 +82,12 @@ public class BusinessServiceEditWindow extends Window {
     /**
      * bean item container for IP services DTOs
      */
-    private BeanItemContainer<IpService> m_ipServicesContainer = new BeanItemContainer<>(IpService.class);
+    private BeanContainer<Integer, IpService> m_ipServicesContainer = new BeanContainer<>(IpService.class);
+
     /**
      * bean item container for Business Services DTOs
      */
-    private BeanItemContainer<BusinessService> m_businessServicesContainer = new BeanItemContainer<>(BusinessService.class);
+    private BeanContainer<Long, BusinessService> m_businessServicesContainer = new BeanContainer<>(BusinessService.class);
     /**
      * list of reduction keys
      */
@@ -111,11 +113,13 @@ public class BusinessServiceEditWindow extends Window {
         /**
          * ...and query for IP services.
          */
+        m_ipServicesContainer.setBeanIdProperty("id");
         m_ipServicesContainer.addAll(m_businessServiceMainLayout.getBusinessServiceManager().getAllIpServices());
 
         /**
          * ...and query for Business Services. Only add the Business Services that will not result in a loop...
          */
+        m_businessServicesContainer.setBeanIdProperty("id");
         m_businessServicesContainer.addAll(m_businessServiceMainLayout.getBusinessServiceManager().getFeasibleChildServices(businessService));
 
         /**
@@ -145,13 +149,15 @@ public class BusinessServiceEditWindow extends Window {
             public void buttonClick(Button.ClickEvent event) {
                 businessService.setName(m_nameTextField.getValue().trim());
 
+                // First clear
+                businessService.setIpServiceEdges(Sets.newHashSet());
+                businessService.setChildEdges(Sets.newHashSet());
+                businessService.setReductionKeyEdges(Sets.newHashSet());
+
                 // TODO BSM-98: Set according to ui selection
-                ((Set<IpService>) m_ipServicesTwinColSelect.getValue())
-                        .forEach(ipService -> businessService.addIpServiceEdge(ipService, new Identity()));
-                ((Set<BusinessService>) m_businessServicesTwinColSelect.getValue())
-                        .forEach(child -> businessService.addChildEdge(child, new Identity()));
-                new HashSet<>((Collection<String>)m_reductionKeyListSelect.getItemIds())
-                        .forEach(reductionKey -> businessService.addReductionKeyEdge(reductionKey, new Identity()));
+                ((Set<Integer>) m_ipServicesTwinColSelect.getValue()).forEach(itemId -> businessService.addIpServiceEdge(m_ipServicesContainer.getItem(itemId).getBean(), new Identity()));
+                ((Set<Long>) m_businessServicesTwinColSelect.getValue()).forEach(itemId -> businessService.addChildEdge(m_businessServicesContainer.getItem(itemId).getBean(), new Identity()));
+                m_reductionKeyListSelect.getItemIds().forEach(reductionKey -> businessService.addReductionKeyEdge((String) reductionKey, new Identity()));
                 businessService.setReduceFunction(new MostCritical());
                 businessService.save();
                 close();
@@ -198,14 +204,13 @@ public class BusinessServiceEditWindow extends Window {
         m_ipServicesTwinColSelect.setRows(8);
         m_ipServicesTwinColSelect.setNewItemsAllowed(false);
         m_ipServicesTwinColSelect.setContainerDataSource(m_ipServicesContainer);
-        m_ipServicesTwinColSelect.setValue(businessService.getIpServiceEdges().stream().map(edge -> edge.getIpService()).collect(Collectors.toSet()));
+        m_ipServicesTwinColSelect.setValue(businessService.getIpServiceEdges().stream().map(edge -> edge.getIpService().getId()).collect(Collectors.toSet()));
         // manually set the item caption, otherwise .toString() is used which looks weired
         m_ipServicesTwinColSelect.setItemCaptionMode(AbstractSelect.ItemCaptionMode.EXPLICIT_DEFAULTS_ID);
-        m_ipServicesContainer.getItemIds().forEach(new Consumer<IpServiceDTO>() {
-            @Override
-            public void accept(IpServiceDTO ipServiceDTO) {
-                m_ipServicesTwinColSelect.setItemCaption(ipServiceDTO, String.format("%s/%s/%s", ipServiceDTO.getNodeLabel(), ipServiceDTO.getIpAddress(), ipServiceDTO.getServiceName()));
-            }
+        m_ipServicesContainer.getItemIds().forEach(itemId -> {
+            BeanItem<IpService> item = m_ipServicesContainer.getItem(itemId);
+            IpService ipService = item.getBean();
+            m_ipServicesTwinColSelect.setItemCaption(itemId, String.format("%s/%s/%s", ipService.getNodeLabel(), ipService.getIpAddress(), ipService.getServiceName()));
         });
 
         /**
@@ -217,10 +222,8 @@ public class BusinessServiceEditWindow extends Window {
         m_businessServicesTwinColSelect.setLeftColumnCaption("Available Business Services");
         m_businessServicesTwinColSelect.setRightColumnCaption("Selected Business Services");
         m_businessServicesTwinColSelect.setRows(8);
-
         m_businessServicesTwinColSelect.setContainerDataSource(m_businessServicesContainer);
-        m_businessServicesTwinColSelect.setValue(businessService.getChildEdges().stream().map(edge -> edge.getChild()).collect(Collectors.toSet()));
-
+        m_businessServicesTwinColSelect.setValue(businessService.getChildEdges().stream().map(edge -> edge.getChild().getId()).collect(Collectors.toSet()));
         m_businessServicesTwinColSelect.setItemCaptionMode(AbstractSelect.ItemCaptionMode.PROPERTY);
         m_businessServicesTwinColSelect.setItemCaptionPropertyId("name");
 

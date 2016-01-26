@@ -92,5 +92,58 @@
 		<addForeignKeyConstraint constraintName="fk_bsm_service_edge_map_id"
 			baseTableName="bsm_service_edge" baseColumnNames="bsm_map_id"
 			referencedTableName="bsm_map" referencedColumnNames="id"/>
+		<addForeignKeyConstraint constraintName="fk_bsm_service_edge_service_id"
+			baseTableName="bsm_service_edge" baseColumnNames="bsm_service_id"
+			 referencedTableName="bsm_service" referencedColumnNames="id"/>
+	</changeSet>
+	<changeSet author="jwhite" id="18.0.0-bsm-ifservices">
+		<createTable tableName="bsm_service_ifservices" >
+			<column name="id" type="integer">
+				<constraints nullable="false"/>
+			</column>
+			<column name="ifserviceid" type="integer">
+				<constraints nullable="false"/>
+			</column>
+		</createTable>
+		<addPrimaryKey tableName="bsm_service_ifservices" columnNames="id" constraintName="bsm_service_ifservices_pkey" />
+		<addForeignKeyConstraint constraintName="fk_bsm_service_ifservices_edge_id"
+								 baseTableName="bsm_service_ifservices" baseColumnNames="id"
+								 referencedTableName="bsm_service_edge" referencedColumnNames="id" onDelete="CASCADE"/>
+		<addForeignKeyConstraint constraintName="fk_bsm_service_ifservices_ifserviceid"
+								 baseTableName="bsm_service_ifservices" baseColumnNames="ifserviceid"
+								 referencedTableName="ifservices" referencedColumnNames="id" onDelete="CASCADE"/>
+	</changeSet>
+	<changeSet author="mneumann" id="18.0.0-bsm-reductionkeys">
+		<createTable tableName="bsm_service_reductionkeys">
+			<column name="id" type="integer">
+				<constraints nullable="false"/>
+			</column>
+			<column name="reductionkey" type="text">
+				<constraints nullable="false"/>
+			</column>
+		</createTable>
+		<addPrimaryKey tableName="bsm_service_reductionkeys" columnNames="id" constraintName="bsm_service_reductionkeys_pkey" />
+		<addForeignKeyConstraint constraintName="fk_bsm_service_reductionkeys_edge_id"
+								 baseTableName="bsm_service_reductionkeys" baseColumnNames="id"
+								 referencedTableName="bsm_service_edge" referencedColumnNames="id"/>
+	</changeSet>
+	<changeSet author="fooker" id="18.0.0-bsm-service-children">
+		<createTable tableName="bsm_service_children" >
+			<column name="id" type="integer">
+				<constraints nullable="false"/>
+			</column>
+			<column name="bsm_service_child_id" type="integer">
+				<constraints nullable="false"/>
+			</column>
+		</createTable>
+		<addPrimaryKey tableName="bsm_service_children" columnNames="id" constraintName="bsm_service_children_pkey" />
+		<addForeignKeyConstraint constraintName="fk_bsm_service_children_edge_id"
+								 baseTableName="bsm_service_children" baseColumnNames="id"
+								 referencedTableName="bsm_service_edge" referencedColumnNames="id"
+                                 onDelete="CASCADE" />
+		<addForeignKeyConstraint constraintName="fk_bsm_service_child_service_id"
+								 baseTableName="bsm_service_children" baseColumnNames="bsm_service_child_id"
+								 referencedTableName="bsm_service" referencedColumnNames="id"
+                                 onDelete="CASCADE" />
 	</changeSet>
 </databaseChangeLog>

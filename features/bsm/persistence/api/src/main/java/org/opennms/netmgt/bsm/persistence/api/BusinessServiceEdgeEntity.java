@@ -133,6 +133,26 @@ public class BusinessServiceEdgeEntity implements EdgeEntity {
     }
 
     @Override
+    public boolean equals(Object obj) {
+        if (obj == null) return false;
+        if (obj == this) return true;
+        if (!(obj instanceof BusinessServiceEdgeEntity)) return false;
+        final BusinessServiceEdgeEntity other = (BusinessServiceEdgeEntity) obj;
+        if (getId() != null) {
+            return getId().equals(other.getId());
+        }
+        return super.equals(obj);
+    }
+
+    @Override
+    public int hashCode() {
+        if (getId() != null) {
+            return getId().hashCode();
+        }
+        return super.hashCode();
+    }
+
+    @Override
     public String toString() {
         return com.google.common.base.Objects.toStringHelper(this)
                 .add("id", m_id)
