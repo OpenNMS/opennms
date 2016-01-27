@@ -41,6 +41,11 @@ public class ReductionKeyEdgeImpl extends AbstractEdge<SingleReductionKeyEdgeEnt
     }
 
     @Override
+    public Type getType() {
+        return Type.REDUCTION_KEY;
+    }
+
+    @Override
     public Set<String> getReductionKeys() {
         return getEntity().getReductionKeys();
     }

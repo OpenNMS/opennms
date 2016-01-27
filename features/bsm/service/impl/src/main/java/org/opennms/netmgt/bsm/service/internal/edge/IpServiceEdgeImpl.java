@@ -43,6 +43,11 @@ public class IpServiceEdgeImpl extends AbstractEdge<IPServiceEdgeEntity> impleme
     }
 
     @Override
+    public Type getType() {
+        return Type.IP_SERVICE;
+    }
+
+    @Override
     public IpService getIpService() {
         return new IpServiceImpl(getManager(), getEntity().getIpService());
     }

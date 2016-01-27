@@ -208,11 +208,7 @@ public class BusinessServiceEditWindow extends Window {
         addEdgeButton.setWidth(140.0f, Unit.PIXELS);
         addEdgeButton.addStyleName("small");
         edgesButtonLayout.addComponent(addEdgeButton);
-        addEdgeButton.addClickListener(new Button.ClickListener() {
-            @Override
-            public void buttonClick(Button.ClickEvent event) {
-            }
-        });
+        addEdgeButton.addClickListener((Button.ClickListener) event -> this.getUI().addWindow(new BusinessServiceEdgeEditWindow(null, this)));
 
         final Button removeReductionKeyBtn = new Button("Remove");
         removeReductionKeyBtn.setEnabled(false);
