@@ -60,7 +60,7 @@ public class BusinessServiceEntityBuilder {
     }
 
     public BusinessServiceEntityBuilder addChildren(BusinessServiceEntity children, AbstractMapFunctionEntity mapFunctionEntity) {
-       this.children.add(new AbstractMap.SimpleEntry<>(children, mapFunctionEntity));
+        this.children.add(new AbstractMap.SimpleEntry<>(children, mapFunctionEntity));
         return this;
     }
 

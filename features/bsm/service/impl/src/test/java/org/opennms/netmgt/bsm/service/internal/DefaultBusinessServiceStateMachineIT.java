@@ -32,8 +32,10 @@ import static org.junit.Assert.assertEquals;
 import static org.opennms.netmgt.bsm.test.BsmTestUtils.createAlarmWrapper;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -42,15 +44,16 @@ import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.netmgt.bsm.persistence.api.BusinessServiceDao;
 import org.opennms.netmgt.bsm.persistence.api.BusinessServiceEntity;
+import org.opennms.netmgt.bsm.persistence.api.ReductionKeyHelper;
 import org.opennms.netmgt.bsm.service.BusinessServiceManager;
 import org.opennms.netmgt.bsm.service.BusinessServiceStateChangeHandler;
+import org.opennms.netmgt.bsm.service.model.AlarmWrapper;
 import org.opennms.netmgt.bsm.service.model.BusinessService;
 import org.opennms.netmgt.bsm.service.model.Status;
 import org.opennms.netmgt.bsm.service.model.functions.map.Identity;
 import org.opennms.netmgt.bsm.test.BsmDatabasePopulator;
 import org.opennms.netmgt.bsm.test.BsmTestData;
 import org.opennms.netmgt.events.api.EventConstants;
-import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.test.JUnitConfigurationEnvironment;
@@ -85,10 +88,16 @@ public class DefaultBusinessServiceStateMachineIT {
     @Autowired
     private BusinessServiceDao businessServiceDao;
 
+    private BsmTestData testSpecification;
+
     @Before
     public void before() {
         BeanUtils.assertAutowiring(this);
         populator.populateDatabase();
+
+        // setup the test data
+        testSpecification = new BsmTestData(populator.getDatabasePopulator());
+        testSpecification.getServices().forEach( entity -> businessServiceDao.save(entity));
     }
 
     @After
@@ -97,11 +106,55 @@ public class DefaultBusinessServiceStateMachineIT {
     }
 
     @Test
-    public void canMaintainState() {
-        // setup the test data
-        BsmTestData testSpecification = new BsmTestData(populator.getDatabasePopulator());
-        testSpecification.getServices().forEach( entity -> businessServiceDao.save(entity));
+    public void verifyGetOperationalStatusForIpServices() {
+        // Determine reduction keys
+        final OnmsMonitoredService serviceChild1 = testSpecification.getServiceChild1();
+        final OnmsMonitoredService serviceChild2 = testSpecification.getServiceChild2();
+        final BusinessServiceEntity root = testSpecification.getRoot();
+        final String nodeLostServiceReductionKey = ReductionKeyHelper.getNodeLostServiceReductionKey(serviceChild1);
+        final String nodeDownReductionKey = ReductionKeyHelper.getNodeDownReductionKey(serviceChild1);
 
+        // Setup the State Machine
+        DefaultBusinessServiceStateMachine stateMachine = new DefaultBusinessServiceStateMachine();
+        stateMachine.setBusinessServices(
+                testSpecification.getServices().stream().map(s -> wrap(s)).collect(Collectors.toList())
+        );
+
+        // Verify the initial state
+        Assert.assertEquals(null, stateMachine.getOperationalStatus(nodeLostServiceReductionKey));
+        Assert.assertEquals(null, stateMachine.getOperationalStatus(nodeDownReductionKey));
+        Assert.assertEquals(Status.NORMAL, stateMachine.getOperationalStatus(wrap(serviceChild1)));
+        Assert.assertEquals(Status.NORMAL, stateMachine.getOperationalStatus(wrap(serviceChild2)));
+        Assert.assertEquals(Status.NORMAL, stateMachine.getOperationalStatus(wrap(root)));
+        Assert.assertEquals(Lists.newArrayList(Status.NORMAL), stateMachine.getStatusListForReduceFunction(wrap(testSpecification.getChild1())));
+        Assert.assertEquals(Lists.newArrayList(Status.NORMAL, Status.NORMAL), stateMachine.getStatusListForReduceFunction(wrap(testSpecification.getRoot())));
+
+        // node lost service alarm
+        stateMachine.handleNewOrUpdatedAlarm(createAlarmWrapper(EventConstants.NODE_LOST_SERVICE_EVENT_UEI, OnmsSeverity.WARNING, nodeLostServiceReductionKey));
+
+        // verify state
+        Assert.assertEquals(Status.WARNING, stateMachine.getOperationalStatus(nodeLostServiceReductionKey));
+        Assert.assertEquals(null, stateMachine.getOperationalStatus(nodeDownReductionKey));
+        Assert.assertEquals(Status.WARNING, stateMachine.getOperationalStatus(wrap(serviceChild1)));
+        Assert.assertEquals(Status.NORMAL, stateMachine.getOperationalStatus(wrap(serviceChild2)));
+        Assert.assertEquals(Lists.newArrayList(Status.WARNING), stateMachine.getStatusListForReduceFunction(wrap(testSpecification.getChild1())));
+        Assert.assertEquals(Status.WARNING, stateMachine.getOperationalStatus(wrap(root)));
+        Assert.assertEquals(Lists.newArrayList(Status.WARNING, Status.NORMAL), stateMachine.getStatusListForReduceFunction(wrap(testSpecification.getRoot())));
+
+        // node down alarm
+        stateMachine.handleNewOrUpdatedAlarm(createAlarmWrapper(EventConstants.NODE_DOWN_EVENT_UEI, OnmsSeverity.MINOR, nodeDownReductionKey));
+
+        // verify state
+        Assert.assertEquals(Status.WARNING, stateMachine.getOperationalStatus(nodeLostServiceReductionKey));
+        Assert.assertEquals(Status.MINOR, stateMachine.getOperationalStatus(nodeDownReductionKey));
+        Assert.assertEquals(Status.MINOR, stateMachine.getOperationalStatus(wrap(serviceChild1)));
+        Assert.assertEquals(Status.NORMAL, stateMachine.getOperationalStatus(wrap(serviceChild2)));
+        Assert.assertEquals(Status.MINOR, stateMachine.getOperationalStatus(wrap(root)));
+        Assert.assertEquals(Lists.newArrayList(Status.MINOR, Status.NORMAL), stateMachine.getStatusListForReduceFunction(wrap(testSpecification.getRoot())));
+    }
+
+    @Test
+    public void canMaintainState() {
         BusinessServiceImpl bsChild1 = wrap(testSpecification.getChild1());
         BusinessServiceImpl bsChild2 = wrap(testSpecification.getChild2());
         BusinessServiceImpl bsParent = wrap(testSpecification.getRoot());
@@ -148,11 +201,8 @@ public class DefaultBusinessServiceStateMachineIT {
         assertEquals(Status.MAJOR, stateMachine.getOperationalStatus(bsParent));
 
         // Verify that explicit reductionKeys work as well
-        OnmsAlarm customAlarm = new OnmsAlarm();
-        customAlarm.setUei(EventConstants.NODE_LOST_SERVICE_EVENT_UEI);
-        customAlarm.setSeverity(OnmsSeverity.CRITICAL);
-        customAlarm.setReductionKey("explicitReductionKey");
-        stateMachine.handleNewOrUpdatedAlarm(new AlarmWrapperImpl(customAlarm));
+        AlarmWrapper alarmWrapper = createAlarmWrapper(EventConstants.NODE_LOST_SERVICE_EVENT_UEI, OnmsSeverity.CRITICAL, "explicitReductionKey");
+        stateMachine.handleNewOrUpdatedAlarm(alarmWrapper);
         assertEquals(6, handler.getStateChanges().size());
         assertEquals(Status.MINOR, stateMachine.getOperationalStatus(svc1));
         assertEquals(Status.MAJOR, stateMachine.getOperationalStatus(svc2));
@@ -169,9 +219,9 @@ public class DefaultBusinessServiceStateMachineIT {
         return new IpServiceImpl(businessServiceManager, entity);
     }
 
-    public static class LoggingStateChangeHandler implements BusinessServiceStateChangeHandler {
+    public class LoggingStateChangeHandler implements BusinessServiceStateChangeHandler {
         
-        public static class StateChange {
+        public class StateChange {
             private final BusinessService m_businessService;
             private final Status m_newStatus;
             private final Status m_prevStatus;

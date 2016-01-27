@@ -45,6 +45,7 @@ import org.opennms.netmgt.bsm.service.model.Status;
 import org.opennms.netmgt.bsm.service.model.edge.ChildEdge;
 import org.opennms.netmgt.bsm.service.model.edge.Edge;
 import org.opennms.netmgt.bsm.service.model.edge.IpServiceEdge;
+import org.opennms.netmgt.bsm.service.model.edge.ReductionKeyEdge;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -164,25 +165,34 @@ public class DefaultBusinessServiceStateMachine implements BusinessServiceStateM
     }
 
     private Status calculateCurrentStatus(BusinessService businessService) {
-        final List<Status> statusList = Lists.newArrayList();
-
         // Map
-        for (Edge edge : businessService.getEdges()) {
-            for (String reductionKey : edge.getReductionKeys()) {
-                final Status rkStatus = m_reductionKeyStatus.get(reductionKey);
-                edge.getMapFunction().map(rkStatus).ifPresent(s -> statusList.add(s));
-            }
-        }
-        for (ChildEdge edge : businessService.getChildEdges()) {
-            final Status bsStatus = m_businessServiceStatus.get(edge.getChild());
-            edge.getMapFunction().map(bsStatus).ifPresent(s -> statusList.add(s));
-        }
+        final List<Status> statusList = getStatusListForReduceFunction(businessService);
 
         // Reduce
         final Status overallStatus = businessService.getReduceFunction().reduce(statusList).orElse(DEFAULT_SEVERITY);
 
-        // Apply lower bound, severity states like INDETERMINE and CLEARED don't always make sense
+        // Apply lower bound, severity states like INDETERMINATE and CLEARED don't always make sense
         return overallStatus.isLessThan(MIN_SEVERITY) ? MIN_SEVERITY : overallStatus;
+    }
+
+    protected List<Status> getStatusListForReduceFunction(BusinessService businessService) {
+        final List<Status> statusList = Lists.newArrayList();
+        // reduction keys
+        for (ReductionKeyEdge reductionKeyEdge : businessService.getReductionKeyEdges()) {
+            final Status rkStatus = m_reductionKeyStatus.get(reductionKeyEdge.getReductionKey());
+            reductionKeyEdge.getMapFunction().map(rkStatus).ifPresent(s -> statusList.add(s));
+        }
+        // ip services
+        for (IpServiceEdge ipServiceEdge : businessService.getIpServiceEdges()) {
+            final Status ipServiceStatus = getOperationalStatus(ipServiceEdge.getIpService());
+            ipServiceEdge.getMapFunction().map(ipServiceStatus).ifPresent(s -> statusList.add(s));
+        }
+        // business services child edges
+        for (ChildEdge edge : businessService.getChildEdges()) {
+            final Status bsStatus = m_businessServiceStatus.get(edge.getChild());
+            edge.getMapFunction().map(bsStatus).ifPresent(s -> statusList.add(s));
+        }
+        return statusList;
     }
 
     // calculates the status for all business services on a certain level
@@ -234,7 +244,7 @@ public class DefaultBusinessServiceStateMachine implements BusinessServiceStateM
                 return null;
             }
 
-            // The IP-Service resolves to multiple reduction keys, we use the one with the highest severity
+            // The IP-Service resolves to multiple reduction keys, we use the one with the highest severity (Most Critical)
             Status maxStatus = DEFAULT_SEVERITY;
             for (String reductionKey : ipService.getReductionKeys()) {
                 final Status rkStatus = m_reductionKeyStatus.get(reductionKey);
