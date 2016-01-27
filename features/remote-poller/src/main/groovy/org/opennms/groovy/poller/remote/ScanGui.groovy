@@ -64,6 +64,7 @@ class ScanGui extends AbstractGui implements ScanReportHandler, PropertyChangeLi
     def m_frontEnd
 
     def m_metadataFields = new HashMap<String, JTextField>()
+    def m_scanNowButton
     def m_progressPanel
     def m_progressBar
     def m_passFailPanel
@@ -194,10 +195,14 @@ class ScanGui extends AbstractGui implements ScanReportHandler, PropertyChangeLi
                         )
 
                 def resetProgressBar = {
+                    if (m_detailsPanel != null) {
+                        m_detailsPanel.setVisible(false)
+                    }
                     if (m_progressBar != null) {
+                        m_progressBar.setVisible(false)
                         m_progressBar.setValue(0)
                         m_progressBar.setString("0%")
-                        m_progressBar.setVisible(false)
+                        m_progressBar.updateUI()
                     }
                     if (m_passFailPanel != null) {
                         m_passFailPanel.removeAll()
@@ -244,40 +249,56 @@ class ScanGui extends AbstractGui implements ScanReportHandler, PropertyChangeLi
                 })
                 updateApplicationCombo()
 
-                button(text:'Scan Now', font:getLabelFont(), foreground:getBackgroundColor(), background:getDetailColor(), opaque:true, constraints:"height pref+20lp, gapbottom 10lp, center, grow, wrap", actionPerformed:{
-                    if (updateValidation()) {
-                        return
-                    }
-                    m_scanResult = null
-                    m_progressBar.setValue(0)
-                    m_progressBar.setStringPainted(true)
-                    m_progressBar.setString("0%")
-                    m_progressBar.setVisible(true)
-                    m_progressBar.updateUI()
-
-                    if (m_updateDetails != null) {
-                        m_updateDetails()
-                    }
-
-                    m_frontEnd = createPollerFrontEnd()
-
-                    final Map<String,String> metadata = new HashMap<>(m_geoMetadata)
-                    for (final Map.Entry<String,JTextField> field : m_metadataFields) {
-                        metadata.put(field.getKey(), field.getValue().getText())
-                    }
-                    m_frontEnd.setMetadata(metadata)
-                    m_frontEnd.setSelectedApplications(Collections.singleton(applicationCombo.getSelectedItem()))
-
-                    final FrontEndInvoker invoker = new FrontEndInvoker(m_frontEnd, this, currentLocation)
-                    invoker.addPropertyChangeListener(this)
-                    invoker.execute()
-                })
-
-                m_progressBar = progressBar(borderPainted:false, visible:false, value:0, constraints:"grow, wrap")
-
-                m_passFailPanel = panel(background:getBackgroundColor(), constraints:"center, height 200!, grow, wrap") {
+                panel(background:getBackgroundColor(), constraints:"center, grow, wrap") {
                     migLayout(
-                            layoutConstraints:"fill" + debugString,
+                        layoutConstraints:"insets 0, gap 0lp 0lp 0lp 0lp" + debugString,
+                        columnConstraints:"[center, grow, fill]",
+                        rowConstraints:"[center, grow, fill]"
+                    )
+
+                    m_scanNowButton = button(text:'Scan Now', font:getLabelFont(), foreground:getBackgroundColor(), background:getDetailColor(), opaque:true, focusPainted:false, constraints:"gap 0lp 0lp 0lp 0lp, height pref+20lp, center, grow, wrap", actionPerformed:{
+                        if (updateValidation()) {
+                            return
+                        }
+
+                        resetProgressBar()
+                        m_progressBar.setVisible(true)
+                        m_progressBar.updateUI()
+
+                        m_scanResult = null
+
+                        if (m_updateDetails != null) {
+                            m_updateDetails()
+                        }
+
+                        m_frontEnd = createPollerFrontEnd()
+
+                        final Map<String,String> metadata = new HashMap<>(m_geoMetadata)
+                        for (final Map.Entry<String,JTextField> field : m_metadataFields) {
+                            metadata.put(field.getKey(), field.getValue().getText())
+                        }
+                        m_frontEnd.setMetadata(metadata)
+                        m_frontEnd.setSelectedApplications(Collections.singleton(applicationCombo.getSelectedItem()))
+
+                        // Reduce the opacity of the background to create a 'disabled' look
+                        float[] bgColor = new float[3];
+                        bgColor = getDetailColor().getRGBColorComponents(bgColor)
+                        m_scanNowButton.setBackground(new Color(bgColor[0], bgColor[1], bgColor[2], 0.15))
+                        m_scanNowButton.setText("Scanning...");
+                        // Disable the button
+                        m_scanNowButton.setEnabled(false)
+
+                        final FrontEndInvoker invoker = new FrontEndInvoker(m_frontEnd, this, currentLocation)
+                        invoker.addPropertyChangeListener(this)
+                        invoker.execute()
+                    })
+
+                    m_progressBar = progressBar(borderPainted:true, stringPainted:true, visible:false, value:0, constraints:"grow, wrap")
+                }
+
+                m_passFailPanel = panel(background:getBackgroundColor(), constraints:"gaptop 20px, center, height 200!, grow, wrap") {
+                    migLayout(
+                            layoutConstraints:"insets 0, fill" + debugString,
                             columnConstraints:"[center grow,fill]",
                             rowConstraints:"[center grow,fill]"
                             )
@@ -371,7 +392,7 @@ class ScanGui extends AbstractGui implements ScanReportHandler, PropertyChangeLi
                         rowConstraints:"0[]5[]0"
                         )
 
-                detailsButton = button(text:"Details \u25BC", font:getLabelFont(), foreground:getDetailColor(), background:getBackgroundColor(), opaque:false, border:null, constraints:"wrap", actionPerformed:{
+                detailsButton = button(text:"Details \u25BC", font:getLabelFont(), foreground:getDetailColor(), background:getBackgroundColor(), opaque:false, border:null, focusPainted:false, constraints:"wrap", actionPerformed:{
                     detailsOpen = !detailsOpen
                     if (m_updateDetails != null) {
                         m_updateDetails()
@@ -414,6 +435,7 @@ class ScanGui extends AbstractGui implements ScanReportHandler, PropertyChangeLi
     public void setProgress(final Integer progress) {
     }
 
+    @Override
     public void scanComplete(final ScanReport report) {
         System.err.println("scanComplete()")
         m_scanReport = report
@@ -444,7 +466,15 @@ class ScanGui extends AbstractGui implements ScanReportHandler, PropertyChangeLi
         } else {
             m_updateDetails()
         }
+
+        m_scanNowButton.setText("Scan Now");
+        m_scanNowButton.setBackground(getDetailColor())
+        m_scanNowButton.setEnabled(true)
+        // It looks a little jarring to immediately remove the progress bar...
+        //m_progressBar.setVisible(false)
+
         m_backEnd.reportSingleScan(report)
+        // TODO: Report the scan log to the backend
     }
 
     public static void main(String[] args) {
