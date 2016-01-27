@@ -29,8 +29,12 @@ package org.opennms.netmgt.alarmd.northbounder.email;
 
 import java.io.File;
 
+import org.apache.commons.io.FileUtils;
 import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 import org.springframework.core.io.FileSystemResource;
 
 /**
@@ -40,6 +44,30 @@ import org.springframework.core.io.FileSystemResource;
  */
 public class EmailNorthbounderConfigDaoTest {
 
+    /** The temporary folder. */
+    @Rule
+    public TemporaryFolder tempFolder = new TemporaryFolder();
+
+    /** The configuration DAO. */
+    private EmailNorthbounderConfigDao configDao;
+
+    /**
+     * Sets up the test..
+     *
+     * @throws Exception the exception
+     */
+    @Before
+    public void setUp() throws Exception {
+        FileUtils.copyDirectory(new File("src/test/resources/etc"), tempFolder.newFolder("etc"));
+        System.setProperty("opennms.home", tempFolder.getRoot().getAbsolutePath());
+
+        // Setup the configuration DAO
+        FileSystemResource resource = new FileSystemResource(new File(tempFolder.getRoot(), "etc/email-northbounder-config.xml"));
+        configDao = new EmailNorthbounderConfigDao();
+        configDao.setConfigResource(resource);
+        configDao.afterPropertiesSet();
+    }
+
     /**
      * Test configuration.
      *
@@ -47,14 +75,25 @@ public class EmailNorthbounderConfigDaoTest {
      */
     @Test
     public void testConfiguration() throws Exception {
-        FileSystemResource resource = new FileSystemResource(new File("src/test/resources/etc/email-northbounder-config.xml"));
-        EmailNorthbounderConfigDao configDao = new EmailNorthbounderConfigDao();
-        configDao.setConfigResource(resource);
-        configDao.afterPropertiesSet();
-
         EmailNorthbounderConfig config = configDao.getConfig();
         Assert.assertNotNull(config);
         Assert.assertNotNull(config.getEmailDestination("google"));
+    }
+
+    /**
+     * Test modify configuration.
+     *
+     * @throws Exception the exception
+     */
+    @Test
+    public void testModifyConfiguration() throws Exception {
+        EmailDestination dst = configDao.getConfig().getEmailDestination("google");
+        Assert.assertNotNull(dst);
+        Assert.assertEquals(2, dst.getFilters().size());
+        dst.getFilters().clear();
+        configDao.save();
+        configDao.reload();
+        Assert.assertTrue(configDao.getConfig().getEmailDestination("google").getFilters().isEmpty());
     }
 
 }

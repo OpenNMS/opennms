@@ -23,7 +23,9 @@
                 "logMessage": "Test event 2 (log)", 
                 "nodeId": 1, 
                 "nodeLabel": "node1", 
-                "parms": "test=parm(string,text)", 
+                "parameters": [
+                    {"name": "test", "value": "parm", "type":"string" }
+                ],
                 "serviceType": {
                     "id": 1, 
                     "name": "ICMP"
@@ -40,7 +42,9 @@
             "nodeId": 1, 
             "nodeLabel": "node1", 
             "ossPrimaryKey": null, 
-            "parms": "test=parm(string,text)", 
+            "parameters": [
+                {"name": "test", "value": "parm", "type":"string" }
+            ],
             "qosAlarmState": null, 
             "serviceType": {
                 "id": 1, 
@@ -74,7 +78,9 @@
                 "logMessage": "Test event 5 (log)", 
                 "nodeId": 1, 
                 "nodeLabel": "node1", 
-                "parms": "test=parm(string,text)", 
+                "parameters": [
+                    {"name": "test", "value": "parm", "type":"string" }
+                ],
                 "serviceType": {
                     "id": 1, 
                     "name": "ICMP"
@@ -91,7 +97,9 @@
             "nodeId": 1, 
             "nodeLabel": "node1", 
             "ossPrimaryKey": null, 
-            "parms": "test=parm(string,text)", 
+            "parameters": [
+                {"name": "test", "value": "parm", "type":"string" }
+            ],
             "qosAlarmState": null, 
             "serviceType": {
                 "id": 1, 
@@ -127,7 +135,9 @@
                 "logMessage": "Test event 0 (log)", 
                 "nodeId": 1, 
                 "nodeLabel": "node1", 
-                "parms": "test=parm(string,text)", 
+                "parameters": [
+                    {"name": "test", "value": "parm", "type":"string" }
+                ],
                 "serviceType": {
                     "id": 1, 
                     "name": "ICMP"
@@ -144,7 +154,9 @@
             "nodeId": 1, 
             "nodeLabel": "node1", 
             "ossPrimaryKey": null, 
-            "parms": "test=parm(string,text)", 
+            "parameters": [
+                {"name": "test", "value": "parm", "type":"string" }
+            ],
             "qosAlarmState": null, 
             "serviceType": {
                 "id": 1, 
@@ -178,7 +190,9 @@
                 "logMessage": "Test event 3 (log)", 
                 "nodeId": 1, 
                 "nodeLabel": "node1", 
-                "parms": "test=parm(string,text)", 
+                "parameters": [
+                    {"name": "test", "value": "parm", "type":"string" }
+                ],
                 "serviceType": {
                     "id": 1, 
                     "name": "ICMP"
@@ -195,7 +209,9 @@
             "nodeId": 1, 
             "nodeLabel": "node1", 
             "ossPrimaryKey": null, 
-            "parms": "test=parm(string,text)", 
+            "parameters": [
+                {"name": "test", "value": "parm", "type":"string" }
+            ],
             "qosAlarmState": null, 
             "serviceType": {
                 "id": 1, 
