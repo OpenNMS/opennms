@@ -180,15 +180,34 @@ public class BsmTestUtils {
     }
 
     private static OnmsAlarm createAlarm(int nodeId, String ip, String service, OnmsSeverity severity) {
-        OnmsAlarm alarm = new OnmsAlarm();
-        alarm.setUei(EventConstants.NODE_LOST_SERVICE_EVENT_UEI);
-        alarm.setSeverity(severity);
-        alarm.setReductionKey(String.format("%s::%s:%s:%s", EventConstants.NODE_LOST_SERVICE_EVENT_UEI, nodeId, ip, service));
+        OnmsAlarm alarm = createAlarm(
+                EventConstants.NODE_LOST_SERVICE_EVENT_UEI,
+                severity,
+                String.format("%s::%s:%s:%s",
+                        EventConstants.NODE_LOST_SERVICE_EVENT_UEI,
+                        nodeId,
+                        ip,
+                        service));
         return alarm;
     }
 
+    private static OnmsAlarm createAlarm(String uei, OnmsSeverity severity, String reductionKey) {
+        OnmsAlarm customAlarm = new OnmsAlarm();
+        customAlarm.setUei(Objects.requireNonNull(uei));
+        customAlarm.setSeverity(Objects.requireNonNull(severity));
+        customAlarm.setReductionKey(Objects.requireNonNull(reductionKey));
+        return customAlarm;
+    }
+
+    public static AlarmWrapper createAlarmWrapper(String uei, OnmsSeverity severity, String reductionKey) {
+       return createAlarmWrapper(createAlarm(uei, severity, reductionKey));
+    }
+
     public static AlarmWrapper createAlarmWrapper(OnmsMonitoredService monitoredService, OnmsSeverity severity) {
-        final OnmsAlarm alarm = createAlarm(monitoredService, severity);
+        return createAlarmWrapper(createAlarm(monitoredService, severity));
+    }
+
+    private static AlarmWrapper createAlarmWrapper(final OnmsAlarm alarm) {
         return new AlarmWrapper() {
             @Override
             public String getReductionKey() {

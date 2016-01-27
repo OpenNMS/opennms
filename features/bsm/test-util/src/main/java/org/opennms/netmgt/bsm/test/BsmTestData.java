@@ -63,7 +63,7 @@ public class BsmTestData {
 
         BusinessServiceEntity child2 = new BusinessServiceEntityBuilder()
                 .name("Child 2")
-                .addIpService(databasePopulator.getMonitoredServiceDao().get(databasePopulator.getNode1().getId(), InetAddressUtils.addr("192.168.1.2"), "ICMP"), new IdentityEntity())
+                .addIpService(databasePopulator.getMonitoredServiceDao().get(databasePopulator.getNode2().getId(), InetAddressUtils.addr("192.168.2.1"), "ICMP"), new IdentityEntity())
                 .reduceFunction(new MostCriticalEntity())
                 .toEntity();
 
@@ -73,9 +73,6 @@ public class BsmTestData {
                 .addChildren(child2, new IdentityEntity())
                 .reduceFunction(new MostCriticalEntity())
                 .toEntity();
-
-        root.addChildServiceEdge(child1, new IdentityEntity());
-        root.addChildServiceEdge(child2, new IdentityEntity());
 
         businessServices.add(child1);
         businessServices.add(child2);

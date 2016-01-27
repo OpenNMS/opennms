@@ -29,6 +29,7 @@
 package org.opennms.netmgt.bsm.persistence.api;
 
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 import org.opennms.core.utils.InetAddressUtils;
@@ -40,18 +41,28 @@ public class ReductionKeyHelper {
     // TODO: The distributed poller name (now monitoring system name?) should be part of the edge details
     public static final String DEFAULT_DISTRIBUTED_POLLER_NAME = "";
 
-    public static Set<String> getReductionKeys(OnmsMonitoredService monitoredService) {
+    public static Set<String> getReductionKeys(final OnmsMonitoredService monitoredService) {
+        Objects.requireNonNull(monitoredService);
         Set<String> reductionKeys = new HashSet<>();
-        final String nodeLostServiceReductionKey = String.format("%s:%s:%d:%s:%s",
-                EventConstants.NODE_LOST_SERVICE_EVENT_UEI, DEFAULT_DISTRIBUTED_POLLER_NAME,
-                monitoredService.getNodeId(), InetAddressUtils.toIpAddrString(monitoredService.getIpAddress()),
-                monitoredService.getServiceName());
-        reductionKeys.add(nodeLostServiceReductionKey);
-
+        reductionKeys.add(getNodeLostServiceReductionKey(monitoredService));
         // When node processing is enabled, we may get node down instead of node lost service events
-        final String nodeDownReductionKey = String.format("%s:%s:%d",
-                EventConstants.NODE_DOWN_EVENT_UEI, DEFAULT_DISTRIBUTED_POLLER_NAME, monitoredService.getNodeId());
-        reductionKeys.add(nodeDownReductionKey);
+        reductionKeys.add(getNodeDownReductionKey(monitoredService));
         return reductionKeys;
+    }
+
+    public static String getNodeDownReductionKey(final OnmsMonitoredService monitoredService) {
+        return String.format("%s:%s:%d",
+                EventConstants.NODE_DOWN_EVENT_UEI,
+                DEFAULT_DISTRIBUTED_POLLER_NAME,
+                monitoredService.getNodeId());
+    }
+
+    public static String getNodeLostServiceReductionKey(final OnmsMonitoredService monitoredService) {
+        return String.format("%s:%s:%d:%s:%s",
+                EventConstants.NODE_LOST_SERVICE_EVENT_UEI,
+                DEFAULT_DISTRIBUTED_POLLER_NAME,
+                monitoredService.getNodeId(),
+                InetAddressUtils.toIpAddrString(monitoredService.getIpAddress()),
+                monitoredService.getServiceName());
     }
 }
