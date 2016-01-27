@@ -189,8 +189,9 @@ public class BusinessServiceManagerImplIT {
                             service_c_2.getParentServices());
     }
 
+    // 1 parent -> 2 children
     @Test
-    public void testChildDeletion() {
+    public void testChildDeletionSingleLevel() {
         BusinessService service_p = createBusinessService("Business Service #p");
         BusinessService service_c_1 = createBusinessService("Business Service #c1");
         BusinessService service_c_2 = createBusinessService("Business Service #c2");
@@ -206,6 +207,26 @@ public class BusinessServiceManagerImplIT {
         Assert.assertEquals(ImmutableSet.of(service_c_2),
                             service_p.getChildServices());
         Assert.assertEquals(1, edgeDao.countAll()); // verify that the edge is also gone
+    }
+
+    // 1 parent -> 1 Child -> 1 child
+    @Test
+    public void testChildDeletionMultipleLevels() {
+        BusinessService service_p = createBusinessService("Business Service #p");
+        BusinessService service_c_1 = createBusinessService("Business Service #c1");
+        BusinessService service_c_2 = createBusinessService("Business Service #c2");
+
+        businessServiceManager.addChildEdge(service_p, service_c_1, new Identity());
+        businessServiceManager.addChildEdge(service_c_1, service_c_2, new Identity());
+        service_p.save();
+        service_c_1.save();
+        service_c_2.save();
+        Assert.assertEquals(2, edgeDao.countAll()); // ensure the edges are there before deleting
+
+        service_c_1.delete();
+        Assert.assertEquals(ImmutableSet.of(),
+                service_p.getChildServices());
+        Assert.assertEquals(0, edgeDao.countAll()); // verify that the edge is also gon
     }
 
     @Test
