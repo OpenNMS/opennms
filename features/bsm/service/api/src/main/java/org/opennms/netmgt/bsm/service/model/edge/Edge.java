@@ -36,7 +36,15 @@ import org.opennms.netmgt.bsm.service.model.mapreduce.MapFunction;
 
 public interface Edge {
 
+    enum Type {
+        CHILD_SERVICE,
+        IP_SERVICE,
+        REDUCTION_KEY,
+    }
+
     Long getId();
+
+    Type getType();
 
     Set<String> getReductionKeys();
 
