@@ -44,6 +44,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.logging.log4j.Level;
@@ -404,6 +405,25 @@ public class ScanReportPollerFrontEnd implements PollerFrontEnd, InitializingBea
     }
 
     /**
+     * This method can be used to filter PolledServices based on their assigned Applications. 
+     * 
+     * @param service
+     * @param applicationNames
+     * @return
+     */
+    private static boolean matchesApplications(PolledService service, Collection<String> applicationNames) {
+        if (applicationNames == null || applicationNames.size() < 1) {
+            return true;
+        }
+        for (String application : service.getApplications()) {
+            if (applicationNames.contains(application)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
      * TODO: Change this method so that instead of loading the config and firing configuration
      * changes to a {@link Poller}, we actually initiate the single scan.
      */
@@ -429,29 +449,13 @@ public class ScanReportPollerFrontEnd implements PollerFrontEnd, InitializingBea
             m_pollerConfiguration = retrieveLatestConfiguration();
 
 
-            PolledService[] services = getPolledServices().toArray(POLLED_SERVICE_ARRAY);
-
             appender.addToLogger(LogManager.ROOT_LOGGER_NAME, Level.DEBUG);
+
+            Set<PolledService> polledServices = getPolledServices().stream().filter(s -> matchesApplications(s, m_selectedApplications)).collect(Collectors.toSet());
+            PolledService[] services = polledServices.toArray(POLLED_SERVICE_ARRAY);
 
             for (int i = 0; i < services.length; i++) {
                 PolledService service = services[i];
-
-                // Check to see if we should filter by selected applications
-                if (m_selectedApplications != null) {
-                    boolean foundApplication = false;
-                    for (String application : service.getApplications()) {
-                        if (m_selectedApplications.contains(application)) {
-                            foundApplication = true;
-                            break;
-                        }
-                    }
-
-                    // If we didn't find the applicaton in the list...
-                    if (!foundApplication) {
-                        // Skip this service
-                        continue;
-                    }
-                }
 
                 // Initialize the monitor for the service
                 m_pollService.initialize(service);
