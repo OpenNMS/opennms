@@ -28,11 +28,19 @@
 
 package org.opennms.netmgt.bsm.vaadin.adminpage;
 
+import com.google.common.collect.ImmutableList;
 import java.util.stream.Collectors;
 
+import org.opennms.netmgt.bsm.service.BusinessServiceManager;
 import org.opennms.netmgt.bsm.service.model.BusinessService;
 import org.opennms.netmgt.bsm.service.model.edge.Edge;
+import org.opennms.netmgt.bsm.service.model.functions.map.Decrease;
+import org.opennms.netmgt.bsm.service.model.functions.map.Identity;
+import org.opennms.netmgt.bsm.service.model.functions.map.Ignore;
+import org.opennms.netmgt.bsm.service.model.functions.map.Increase;
+import org.opennms.netmgt.bsm.service.model.functions.map.SetTo;
 import org.opennms.netmgt.bsm.service.model.functions.reduce.MostCritical;
+import org.opennms.netmgt.bsm.service.model.functions.reduce.Threshold;
 import org.opennms.netmgt.vaadin.core.TransactionAwareUI;
 import org.opennms.netmgt.vaadin.core.UIHelper;
 
@@ -174,12 +182,24 @@ public class BusinessServiceEditWindow extends Window {
         /**
          * create the reduce function component
          */
-        m_reduceFunctionNativeSelect = new NativeSelect("Reduce Function");
+
+        m_reduceFunctionNativeSelect = new NativeSelect("Reduce Function",
+                                                        ImmutableList.builder()
+                                                                .add(MostCritical.class)
+                                                                .add(Threshold.class)
+                                                                .build());
         m_reduceFunctionNativeSelect.setId("reduceFunctionNativeSelect");
         m_reduceFunctionNativeSelect.setWidth(98.0f, Unit.PERCENTAGE);
         m_reduceFunctionNativeSelect.setNullSelectionAllowed(false);
         m_reduceFunctionNativeSelect.setMultiSelect(false);
-        m_reduceFunctionNativeSelect.addItems("Function1", "Function2", "Function3");
+        m_reduceFunctionNativeSelect.setNewItemsAllowed(false);
+
+        /**
+         * setting the captions for items
+         */
+        m_reduceFunctionNativeSelect.getItemIds().forEach(itemId -> m_reduceFunctionNativeSelect.setItemCaption(itemId, ((Class<?>) itemId).getSimpleName()));
+        m_reduceFunctionNativeSelect.setValue(MostCritical.class);
+
         verticalLayout.addComponent(m_reduceFunctionNativeSelect);
 
         /**
@@ -252,5 +272,9 @@ public class BusinessServiceEditWindow extends Window {
          * set the window's content
          */
         setContent(verticalLayout);
+    }
+
+    public BusinessServiceManager getBusinessServiceManager() {
+        return m_businessServiceMainLayout.getBusinessServiceManager();
     }
 }
