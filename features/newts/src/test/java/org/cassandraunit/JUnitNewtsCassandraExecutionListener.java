@@ -37,6 +37,7 @@ import org.apache.commons.io.IOUtils;
 import org.cassandraunit.CassandraCQLUnit;
 import org.cassandraunit.dataset.CQLDataSet;
 import org.cassandraunit.dataset.cql.FileCQLDataSet;
+import org.cassandraunit.utils.EmbeddedCassandraServerHelper;
 import org.opennms.newts.cassandra.Schema;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -68,6 +69,35 @@ public class JUnitNewtsCassandraExecutionListener extends AbstractTestExecutionL
     private Session m_session;
     private Cluster m_cluster;
 
+    /**
+     * We currently use a newer driver than the one associated with the
+     * cassandra-unit package and need to override the load() method
+     * to make things work.
+     *
+     * This shouldn't be necessary when upgrading to cassandra-unit >= 3.0.0
+     *
+     * @author jwhite
+     */
+    private static class MyCassandraCQLUnit extends CassandraCQLUnit {
+        private final CQLDataSet dataSet;
+
+        public MyCassandraCQLUnit(CQLDataSet dataSet, String configurationFileName) {
+            super(dataSet, configurationFileName);
+            this.dataSet = dataSet;
+        }
+
+        @Override
+        protected void load() {
+            String hostIp = EmbeddedCassandraServerHelper.getHost();
+            int port = EmbeddedCassandraServerHelper.getNativeTransportPort();
+            cluster = new Cluster.Builder().addContactPoint(hostIp).withPort(port).build();
+            session = cluster.connect();
+            CQLDataLoader dataLoader = new CQLDataLoader(session);
+            dataLoader.load(dataSet);
+            session = dataLoader.getSession();
+        }
+    }
+
     @Override
     public void beforeTestClass(TestContext testContext) throws Exception {
         JUnitNewtsCassandra config = findNewtsCassandraAnnotation(testContext);
@@ -75,7 +105,7 @@ public class JUnitNewtsCassandraExecutionListener extends AbstractTestExecutionL
             return;
         }
 
-        m_cassandraUnit = new CassandraCQLUnit(getDataSet(config.keyspace()), config.configurationFileName(), config.host(), config.port());
+        m_cassandraUnit = new MyCassandraCQLUnit(getDataSet(config.keyspace()), config.configurationFileName());
 
         if (!m_initialized) {
             m_cassandraUnit.before();

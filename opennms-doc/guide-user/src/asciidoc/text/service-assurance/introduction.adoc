@@ -1,0 +1,55 @@
+
+// Allow GitHub image rendering
+:imagesdir: ../../images
+
+This section will cover the basic functionalities how _OpenNMS_ monitors availability and latency from applications or management agents.
+To change the behavior of how _OpenNMS_ monitors applications or status information from management agents please see the _Administration Guide_.
+To extend the _Service Monitor_ framework please see the _Development Guide_.
+
+Measuring availability and latency of network services or applications is an important part in fault and performance management.
+In _OpenNMS_ this task is provided by a _Service Monitor_ framework.
+The main component is _Pollerd_ which provides the following functionalities:
+
+* Track the status of a management resource or an application for availability calculations
+* Measure response times for service quality
+* Correlation of node and interface outages based on a <<gu-service-assurance-critical-service, Critical Service>>
+
+The following image shows the model and representation of availability and response time.
+
+.Representation of latency measurement and availability
+image::service-assurance/01_node-model.png[]
+
+This information is based on _Service Monitors_ which are scheduled and executed by _Pollerd_.
+A _Service_ can have any arbitrary name and is associated with a _Service Monitor_.
+For example, we can define two _Services_ with the name _HTTP_ and _HTTP-8080_, both are associated with the _HTTP Service Monitor_ but use a different _TCP port_ configuration parameter.
+The following figure shows how _Pollerd_ interacts with other components in _OpenNMS_ and applications or agents to be monitored.
+
+The availability is calculated over the last 24 hours and is shown in the _Surveillance Views_, _SLA Categories_ and the _Node Detail Page_.
+Response times are displayed as _Resource Graphs_ of the _IP Interface_ on the _Node Detail Page_.
+Configuration parameters of the _Service Monitor_ can be seen in the _Service Page_ by clicking on the _Service Name_ on the _Node Detail Page_.
+The status of a _Service_ can be _Up_ or _Down_.
+
+When a _Service Monitor_ detects an outage, _Pollerd_ sends an _Event_ which is used to create an _Alarm_.
+_Events_ can also be used to generate _Notifications_ for on-call network or server administrators.
+The following images shows the interaction of _Pollerd_ in _OpenNMS_.
+
+.Service assurance with _Pollerd_ in _OpenNMS_ platform
+image::service-assurance/02_service-assurance.png[]
+
+_Pollerd_ can generate the following _Events_ in _OpenNMS_:
+
+[options="header, autowidth"]
+|===
+| Event name | Description
+| `uei.opennms.org/nodes/nodeLostService`     | _Critical Services_ are still up, just this service is lost.
+| `uei.opennms.org/nodes/nodeRegainedService` | Service came back up
+| `uei.opennms.org/nodes/interfaceDown`       | _Critical Service_ on an IP interface is down or all services are down.
+| `uei.opennms.org/nodes/interfaceUp`         | _Critical Service_ on that interface came back up again
+| `uei.opennms.org/nodes/nodeDown`            | All critical services on all IP interfaces are down from node.
+                                                The whole host is unreachable over the network.
+| `uei.opennms.org/nodes/nodeUp`              | Some of the _Critical Services_ came back online.
+|===
+
+The behavior to generate _interfaceDown_ and _nodeDown_ events is described in the <<gu-service-assurance-critical-service, Critical Service>> section.
+
+NOTE: This assumes that node-outage processing is enabled.
