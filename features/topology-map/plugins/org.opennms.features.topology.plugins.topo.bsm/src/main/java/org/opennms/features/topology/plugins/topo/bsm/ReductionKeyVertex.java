@@ -28,14 +28,12 @@
 
 package org.opennms.features.topology.plugins.topo.bsm;
 
-import org.opennms.netmgt.bsm.service.model.BusinessService;
-
 public class ReductionKeyVertex extends AbstractBusinessServiceVertex {
 
     private final String reductionKey;
 
-    protected ReductionKeyVertex(BusinessService businessService, String reductionKey) {
-        this(businessService.getId() + ":" + reductionKey, reductionKey);
+    protected ReductionKeyVertex(String reductionKey) {
+        this("reduction-key:" + reductionKey, reductionKey);
     }
 
     private ReductionKeyVertex(String id, String reductionKey) {

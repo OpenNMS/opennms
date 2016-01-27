@@ -78,6 +78,17 @@
       <artifactId>org.opennms.core.test-api.lib</artifactId>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>org.opennms.features.bsm</groupId>
+      <artifactId>org.opennms.features.bsm.service.impl</artifactId>
+      <version>${project.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.bsm</groupId>
+      <artifactId>test-util</artifactId>
+      <version>${project.version}</version>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
-
 </project>

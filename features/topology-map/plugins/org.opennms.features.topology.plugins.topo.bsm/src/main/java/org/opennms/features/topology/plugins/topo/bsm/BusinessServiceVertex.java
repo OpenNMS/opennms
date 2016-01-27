@@ -35,7 +35,9 @@ class BusinessServiceVertex extends AbstractBusinessServiceVertex {
     private final Long serviceId;
 
     public BusinessServiceVertex(BusinessService businessService) {
-        this(String.valueOf(businessService.getId()), businessService.getName(), businessService.getId());
+        this("business-service:" + String.valueOf(businessService.getId()),
+                businessService.getName(),
+                businessService.getId());
     }
 
     private BusinessServiceVertex(String id, String name, Long serviceId) {

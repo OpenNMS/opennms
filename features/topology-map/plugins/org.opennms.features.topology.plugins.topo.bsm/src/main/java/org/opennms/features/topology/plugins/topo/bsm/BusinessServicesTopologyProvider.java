@@ -107,7 +107,7 @@ public class BusinessServicesTopologyProvider extends AbstractTopologyProvider i
 
         // add ip services
         for (IpServiceEdge eachIpEdge : businessService.getIpServiceEdges()) {
-            AbstractBusinessServiceVertex serviceVertex = new IpServiceVertex(businessService, eachIpEdge.getIpService());
+            AbstractBusinessServiceVertex serviceVertex = new IpServiceVertex(eachIpEdge.getIpService());
             businessServiceVertex.addChildren(serviceVertex);
             addVertices(serviceVertex);
 
@@ -118,7 +118,7 @@ public class BusinessServicesTopologyProvider extends AbstractTopologyProvider i
 
         // add reduction keys
         for (ReductionKeyEdge eachRkEdge : businessService.getReductionKeyEdges()) {
-            AbstractBusinessServiceVertex rkVertex = new ReductionKeyVertex(businessService, eachRkEdge.getReductionKey());
+            AbstractBusinessServiceVertex rkVertex = new ReductionKeyVertex(eachRkEdge.getReductionKey());
             businessServiceVertex.addChildren(rkVertex);
             addVertices(rkVertex);
 
