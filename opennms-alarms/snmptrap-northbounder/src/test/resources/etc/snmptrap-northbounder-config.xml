@@ -10,7 +10,6 @@
 		<ip-address>127.0.0.1</ip-address>
 		<port>162</port>
 		<version>v2c</version>
-		<community>public</community>
 		<mapping-group name="My Mappings">
 			<rule>foreignSource matches '^Server.*'</rule>
 			<mapping name="trap01">

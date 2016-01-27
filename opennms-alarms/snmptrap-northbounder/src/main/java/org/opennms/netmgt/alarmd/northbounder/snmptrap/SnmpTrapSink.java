@@ -30,6 +30,8 @@ package org.opennms.netmgt.alarmd.northbounder.snmptrap;
 
 import java.io.File;
 import java.io.FileWriter;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -39,7 +41,6 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.opennms.core.utils.ConfigFileConstants;
-import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.alarmd.api.Destination;
 import org.opennms.netmgt.alarmd.api.NorthboundAlarm;
@@ -347,11 +348,29 @@ public class SnmpTrapSink implements Destination {
             return null;
         }
         final SnmpTrapConfig config = new SnmpTrapConfig();
-        config.setDestinationAddress(InetAddressUtils.addr(m_ipAddress));
+        try {
+            config.setDestinationAddress(InetAddress.getByName(m_ipAddress));
+        } catch (UnknownHostException e) {
+            throw new SnmpTrapException("Invalid target IP or FQDN", e);
+        }
         config.setDestinationPort(m_port);
         config.setVersion(m_version);
         config.setCommunity(m_community);
-        config.setHostAddress(m_v1AgentAddress == null ? InetAddressUtils.addr(alarm.getIpAddr()) : InetAddressUtils.addr(m_v1AgentAddress));
+        try {
+            InetAddress hostAddress = null;
+            if (m_v1AgentAddress == null) {
+                if (alarm.getIpAddr() == null) {
+                    hostAddress = InetAddress.getLocalHost();
+                } else {
+                    hostAddress = InetAddress.getByName(alarm.getIpAddr());
+                }
+            } else {
+                InetAddress.getByName(m_v1AgentAddress);
+            }
+            config.setHostAddress(hostAddress);
+        } catch (UnknownHostException e) {
+            throw new SnmpTrapException("Invalid host address", e);
+        }
         config.setEnterpriseId(mapping.getEnterpriseOid());
         config.setGeneric(mapping.getGeneric());
         config.setSpecific(mapping.getSpecific());
