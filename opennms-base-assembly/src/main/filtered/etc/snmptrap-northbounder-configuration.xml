@@ -79,7 +79,7 @@
 
 	<snmp-trap-sink>
 		<name>localTest1</name>
-		<ip-address>127.0.0.1</ip-address>
+		<ip-address>127.0.0.1</ip-address> <!-- You could use either an IPv4/IPv6 address or a FQDN -->
 		<version>v2c</version>
 		<mapping-group name="My Mappings">
 			<rule>foreignSource matches '^Server.*'</rule>
