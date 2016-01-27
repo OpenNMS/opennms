@@ -1,29 +1,29 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
- * <p>
+ *
  * Copyright (C) 2015 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2015 The OpenNMS Group, Inc.
- * <p>
+ *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
- * <p>
+ *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
- * <p>
+ *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Affero General Public License for more details.
- * <p>
+ *
  * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
- * http://www.gnu.org/licenses/
- * <p>
+ *      http://www.gnu.org/licenses/
+ *
  * For more information contact:
- * OpenNMS(R) Licensing <license@opennms.org>
- * http://www.opennms.org/
- * http://www.opennms.com/
+ *     OpenNMS(R) Licensing <license@opennms.org>
+ *     http://www.opennms.org/
+ *     http://www.opennms.com/
  *******************************************************************************/
 
 package org.opennms.netmgt.bsm.vaadin.adminpage;
@@ -48,6 +48,7 @@ import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import org.opennms.netmgt.bsm.service.model.BusinessService;
+import org.opennms.netmgt.bsm.service.model.IpService;
 import org.opennms.netmgt.bsm.service.model.Status;
 import org.opennms.netmgt.bsm.service.model.edge.Edge;
 import org.opennms.netmgt.bsm.service.model.functions.map.Decrease;
@@ -75,17 +76,26 @@ public class BusinessServiceEdgeEditWindow extends Window {
      */
     private BusinessServiceEditWindow m_businessServiceEditWindow;
 
+    /**
+     * declaring the components
+     */
     private final NativeSelect m_typeSelect;
-
     private final ListSelect m_childServiceComponent;
     private final ListSelect m_ipServiceComponent;
     private final TextField m_reductionKeyComponent;
-
     private final NativeSelect m_mapFunctionSelect;
-
     private final NativeSelect m_mapFunctionSeveritySelect;
-
     private final TextField m_weightField;
+
+    /**
+     * bean item container for IP services DTOs
+     */
+    private BeanContainer<Integer, IpService> m_ipServicesContainer = new BeanContainer<>(IpService.class);
+
+    /**
+     * bean item container for Business Services DTOs
+     */
+    private BeanContainer<Long, BusinessService> m_businessServicesContainer = new BeanContainer<>(BusinessService.class);
 
     /**
      * Constructor
@@ -99,25 +109,48 @@ public class BusinessServiceEdgeEditWindow extends Window {
 
         this.m_businessServiceEditWindow = businessServiceEditWindow;
 
-        // Basic window setup
+        /**
+         * query for IP services...
+         */
+        m_ipServicesContainer.setBeanIdProperty("id");
+        m_ipServicesContainer.addAll(m_businessServiceEditWindow.getBusinessServiceManager().getAllIpServices());
+
+        /**
+         * ...and query for Business Services. Only add the Business Services that will not result in a loop...
+         */
+        m_businessServicesContainer.setBeanIdProperty("id");
+        // TODO: use only feasible business services
+        // m_businessServicesContainer.addAll(m_businessServiceEditWindow.getBusinessServiceManager().getFeasibleChildServices(businessService));
+        m_businessServicesContainer.addAll(m_businessServiceEditWindow.getBusinessServiceManager().getAllBusinessServices());
+
+        /**
+         * Basic window setup
+         */
         setModal(true);
         setClosable(true);
         setResizable(false);
         setWidth(50, Unit.PERCENTAGE);
         setHeight(85, Unit.PERCENTAGE);
 
+        /**
+         * Creating the root layout...
+         */
         final VerticalLayout rootLayout = new VerticalLayout();
         rootLayout.setSpacing(true);
         rootLayout.setMargin(false);
         rootLayout.setSizeFull();
 
-        // Construct the main layout
+        /**
+         * ...and the nested layout
+         */
         final FormLayout formLayout = new FormLayout();
         formLayout.setSpacing(true);
         formLayout.setMargin(true);
         formLayout.setSizeFull();
 
-        // Add type selector
+        /**
+         * type selector box
+         */
         m_typeSelect = new NativeSelect("Type");
         m_typeSelect.setMultiSelect(false);
         m_typeSelect.setNewItemsAllowed(false);
@@ -132,30 +165,52 @@ public class BusinessServiceEdgeEditWindow extends Window {
         m_typeSelect.setWidth(98.0f, Unit.PERCENTAGE);
         formLayout.addComponent(m_typeSelect);
 
+        /**
+         * child service list
+         */
         m_childServiceComponent = new ListSelect("Child Service");
+        m_childServiceComponent.setMultiSelect(false);
+        m_childServiceComponent.setNewItemsAllowed(false);
+        m_childServiceComponent.setNullSelectionAllowed(false);
         m_childServiceComponent.setWidth(100.0f, Unit.PERCENTAGE);
         m_childServiceComponent.setRows(20);
         m_childServiceComponent.setVisible(false);
+        m_childServiceComponent.setContainerDataSource(m_businessServicesContainer);
         formLayout.addComponent(m_childServiceComponent);
 
+        /**
+         * ip service list
+         */
         m_ipServiceComponent = new ListSelect("IP Service");
+        m_ipServiceComponent.setMultiSelect(false);
+        m_ipServiceComponent.setNewItemsAllowed(false);
+        m_ipServiceComponent.setNullSelectionAllowed(false);
         m_ipServiceComponent.setWidth(100.0f, Unit.PERCENTAGE);
         m_ipServiceComponent.setRows(20);
         m_ipServiceComponent.setVisible(false);
+        m_ipServiceComponent.setContainerDataSource(m_ipServicesContainer);
         formLayout.addComponent(m_ipServiceComponent);
 
+        /**
+         * reduction key input field
+         */
         m_reductionKeyComponent = new TextField("Reduction Key");
         m_reductionKeyComponent.setWidth(100.0f, Unit.PERCENTAGE);
         m_reductionKeyComponent.setVisible(false);
         formLayout.addComponent(m_reductionKeyComponent);
 
+        /**
+         * show and hide components
+         */
         m_typeSelect.addValueChangeListener(event -> {
             m_childServiceComponent.setVisible(m_typeSelect.getValue() == Edge.Type.CHILD_SERVICE);
             m_ipServiceComponent.setVisible(m_typeSelect.getValue() == Edge.Type.IP_SERVICE);
             m_reductionKeyComponent.setVisible(m_typeSelect.getValue() == Edge.Type.REDUCTION_KEY);
         });
 
-        // Add map function selector
+        /**
+         * map function field
+         */
         m_mapFunctionSelect = new NativeSelect("Map Function",
                                                ImmutableList.builder()
                                                             .add(Decrease.class)
@@ -169,9 +224,17 @@ public class BusinessServiceEdgeEditWindow extends Window {
         m_mapFunctionSelect.setNewItemsAllowed(false);
         m_mapFunctionSelect.setRequired(true);
         m_mapFunctionSelect.setWidth(98.0f, Unit.PERCENTAGE);
+
+        /**
+         * setting the captions for items
+         */
         m_mapFunctionSelect.getItemIds().forEach(itemId -> m_mapFunctionSelect.setItemCaption(itemId, ((Class<?>) itemId).getSimpleName()));
+
         formLayout.addComponent(m_mapFunctionSelect);
 
+        /**
+         * severity selection field
+         */
         m_mapFunctionSeveritySelect = new NativeSelect("Severity");
         m_mapFunctionSeveritySelect.setMultiSelect(false);
         m_mapFunctionSeveritySelect.setNewItemsAllowed(false);
@@ -193,11 +256,16 @@ public class BusinessServiceEdgeEditWindow extends Window {
         m_mapFunctionSeveritySelect.setEnabled(false);
         formLayout.addComponent(m_mapFunctionSeveritySelect);
 
+        /**
+         * hide or show additional severity input field
+         */
         m_mapFunctionSelect.addValueChangeListener(event -> {
             m_mapFunctionSeveritySelect.setEnabled(SetTo.class.equals(m_mapFunctionSelect.getValue()));
         });
 
-        // Add weight field
+        /**
+         * the weight input field
+         */
         m_weightField = new TextField("Weight");
         m_weightField.setRequired(true);
         m_weightField.setWidth(100.0f, Unit.PERCENTAGE);
@@ -210,15 +278,27 @@ public class BusinessServiceEdgeEditWindow extends Window {
         });
         formLayout.addComponent(m_weightField);
 
+        /**
+         * setting the defaults
+         */
+        m_typeSelect.setValue(Edge.Type.CHILD_SERVICE);
+        m_mapFunctionSelect.setValue(Identity.class);
+        m_mapFunctionSeveritySelect.setValue(Status.INDETERMINATE);
+        m_weightField.setValue("1");
+
         rootLayout.addComponent(formLayout);
 
-        // Add the button row
+        /**
+         * add the button layout...
+         */
         final HorizontalLayout buttonLayout = new HorizontalLayout();
         buttonLayout.setSpacing(true);
         buttonLayout.setMargin(true);
 
-        // Add save button
-        final Button saveButton = new Button("Save");
+        /**
+         * ...and the save button
+         */
+        final Button saveButton = new Button("Add Edge");
         saveButton.setId("saveButton");
         saveButton.addClickListener(UIHelper.getCurrent(TransactionAwareUI.class).wrapInTransactionProxy((Button.ClickListener) event -> {
             final MapFunction mapFunction;
@@ -253,7 +333,9 @@ public class BusinessServiceEdgeEditWindow extends Window {
         }));
         buttonLayout.addComponent(saveButton);
 
-        // Add the cancel button
+        /**
+         * ...and a cancel button
+         */
         final Button cancelButton = new Button("Cancel");
         cancelButton.setId("cancelButton");
         cancelButton.addClickListener((Button.ClickListener) event -> close());
@@ -262,7 +344,9 @@ public class BusinessServiceEdgeEditWindow extends Window {
         rootLayout.addComponent(buttonLayout);
         rootLayout.setComponentAlignment(buttonLayout, Alignment.BOTTOM_RIGHT);
 
-        // Set the window content
+        /**
+         * now set the root layout
+         */
         setContent(rootLayout);
     }
 }
