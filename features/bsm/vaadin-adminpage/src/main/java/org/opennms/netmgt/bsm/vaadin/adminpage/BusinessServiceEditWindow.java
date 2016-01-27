@@ -28,27 +28,23 @@
 
 package org.opennms.netmgt.bsm.vaadin.adminpage;
 
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.opennms.netmgt.bsm.service.model.BusinessService;
-import org.opennms.netmgt.bsm.service.model.IpService;
-import org.opennms.netmgt.bsm.service.model.functions.map.Identity;
+import org.opennms.netmgt.bsm.service.model.edge.Edge;
 import org.opennms.netmgt.bsm.service.model.functions.reduce.MostCritical;
-import org.opennms.netmgt.vaadin.core.StringInputDialogWindow;
+import org.opennms.netmgt.vaadin.core.TransactionAwareUI;
+import org.opennms.netmgt.vaadin.core.UIHelper;
 
 import com.google.common.collect.Sets;
 import com.vaadin.data.Property;
 import com.vaadin.data.util.BeanContainer;
-import com.vaadin.data.util.BeanItem;
-import com.vaadin.data.validator.AbstractStringValidator;
-import com.vaadin.ui.AbstractSelect;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.ListSelect;
+import com.vaadin.ui.NativeSelect;
 import com.vaadin.ui.TextField;
-import com.vaadin.ui.TwinColSelect;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 
@@ -72,26 +68,17 @@ public class BusinessServiceEditWindow extends Window {
      */
     private TextField m_nameTextField;
     /**
-     * the twin selection box used for selecting or deselecting IP services
-     */
-    private TwinColSelect m_ipServicesTwinColSelect;
-    /**
-     * the Business Services twin selection box
-     */
-    private TwinColSelect m_businessServicesTwinColSelect;
-    /**
-     * bean item container for IP services DTOs
-     */
-    private BeanContainer<Integer, IpService> m_ipServicesContainer = new BeanContainer<>(IpService.class);
-
-    /**
      * bean item container for Business Services DTOs
      */
-    private BeanContainer<Long, BusinessService> m_businessServicesContainer = new BeanContainer<>(BusinessService.class);
+    private BeanContainer<Long, Edge> m_edgesContainer = new BeanContainer<>(Edge.class);
+    /**
+     * Reduce function
+     */
+    private NativeSelect m_reduceFunctionNativeSelect;
     /**
      * list of reduction keys
      */
-    private ListSelect m_reductionKeyListSelect;
+    private ListSelect m_edgesListSelect;
 
     /**
      * Constructor
@@ -110,17 +97,8 @@ public class BusinessServiceEditWindow extends Window {
          */
         this.m_businessServiceMainLayout = businessServiceMainLayout;
 
-        /**
-         * ...and query for IP services.
-         */
-        m_ipServicesContainer.setBeanIdProperty("id");
-        m_ipServicesContainer.addAll(m_businessServiceMainLayout.getBusinessServiceManager().getAllIpServices());
-
-        /**
-         * ...and query for Business Services. Only add the Business Services that will not result in a loop...
-         */
-        m_businessServicesContainer.setBeanIdProperty("id");
-        m_businessServicesContainer.addAll(m_businessServiceMainLayout.getBusinessServiceManager().getFeasibleChildServices(businessService));
+        m_edgesContainer.setBeanIdProperty("id");
+        m_edgesContainer.addAll(businessService.getEdges().stream().collect(Collectors.toList()));
 
         /**
          * ...and basic properties
@@ -128,7 +106,7 @@ public class BusinessServiceEditWindow extends Window {
         setModal(true);
         setClosable(false);
         setResizable(false);
-        setWidth(60, Unit.PERCENTAGE);
+        setWidth(50, Unit.PERCENTAGE);
         setHeight(85, Unit.PERCENTAGE);
 
         /**
@@ -155,9 +133,9 @@ public class BusinessServiceEditWindow extends Window {
                 businessService.setReductionKeyEdges(Sets.newHashSet());
 
                 // TODO BSM-98: Set according to ui selection
-                ((Set<Integer>) m_ipServicesTwinColSelect.getValue()).forEach(itemId -> businessService.addIpServiceEdge(m_ipServicesContainer.getItem(itemId).getBean(), new Identity()));
-                ((Set<Long>) m_businessServicesTwinColSelect.getValue()).forEach(itemId -> businessService.addChildEdge(m_businessServicesContainer.getItem(itemId).getBean(), new Identity()));
-                m_reductionKeyListSelect.getItemIds().forEach(reductionKey -> businessService.addReductionKeyEdge((String) reductionKey, new Identity()));
+//                ((Set<Integer>) m_ipServicesTwinColSelect.getValue()).forEach(itemId -> businessService.addIpServiceEdge(m_ipServicesContainer.getItem(itemId).getBean(), new Identity()));
+//                ((Set<Long>) m_businessServicesTwinColSelect.getValue()).forEach(itemId -> businessService.addChildEdge(m_businessServicesContainer.getItem(itemId).getBean(), new Identity()));
+//                m_reductionKeyListSelect.getItemIds().forEach(reductionKey -> businessService.addReductionKeyEdge((String) reductionKey, new Identity()));
                 businessService.setReduceFunction(new MostCritical());
                 businessService.save();
                 close();
@@ -194,98 +172,55 @@ public class BusinessServiceEditWindow extends Window {
         verticalLayout.addComponent(m_nameTextField);
 
         /**
-         * create the IP-Services selection box
+         * create the reduce function component
          */
-        m_ipServicesTwinColSelect = new TwinColSelect();
-        m_ipServicesTwinColSelect.setId("ipServiceSelect");
-        m_ipServicesTwinColSelect.setWidth(99.0f, Unit.PERCENTAGE);
-        m_ipServicesTwinColSelect.setLeftColumnCaption("Available IP-Services");
-        m_ipServicesTwinColSelect.setRightColumnCaption("Selected IP-Services");
-        m_ipServicesTwinColSelect.setRows(8);
-        m_ipServicesTwinColSelect.setNewItemsAllowed(false);
-        m_ipServicesTwinColSelect.setContainerDataSource(m_ipServicesContainer);
-        m_ipServicesTwinColSelect.setValue(businessService.getIpServiceEdges().stream().map(edge -> edge.getIpService().getId()).collect(Collectors.toSet()));
-        // manually set the item caption, otherwise .toString() is used which looks weired
-        m_ipServicesTwinColSelect.setItemCaptionMode(AbstractSelect.ItemCaptionMode.EXPLICIT_DEFAULTS_ID);
-        m_ipServicesContainer.getItemIds().forEach(itemId -> {
-            BeanItem<IpService> item = m_ipServicesContainer.getItem(itemId);
-            IpService ipService = item.getBean();
-            m_ipServicesTwinColSelect.setItemCaption(itemId, String.format("%s/%s/%s", ipService.getNodeLabel(), ipService.getIpAddress(), ipService.getServiceName()));
-        });
+        m_reduceFunctionNativeSelect = new NativeSelect("Reduce Function");
+        m_reduceFunctionNativeSelect.setId("reduceFunctionNativeSelect");
+        m_reduceFunctionNativeSelect.setWidth(98.0f, Unit.PERCENTAGE);
+        m_reduceFunctionNativeSelect.setNullSelectionAllowed(false);
+        m_reduceFunctionNativeSelect.setMultiSelect(false);
+        m_reduceFunctionNativeSelect.addItems("Function1", "Function2", "Function3");
+        verticalLayout.addComponent(m_reduceFunctionNativeSelect);
 
         /**
-         * create the Business Services selection box
+         * create the edges list box
          */
-        m_businessServicesTwinColSelect = new TwinColSelect();
-        m_businessServicesTwinColSelect.setId("businessServiceSelect");
-        m_businessServicesTwinColSelect.setWidth(99.0f, Unit.PERCENTAGE);
-        m_businessServicesTwinColSelect.setLeftColumnCaption("Available Business Services");
-        m_businessServicesTwinColSelect.setRightColumnCaption("Selected Business Services");
-        m_businessServicesTwinColSelect.setRows(8);
-        m_businessServicesTwinColSelect.setContainerDataSource(m_businessServicesContainer);
-        m_businessServicesTwinColSelect.setValue(businessService.getChildEdges().stream().map(edge -> edge.getChild().getId()).collect(Collectors.toSet()));
-        m_businessServicesTwinColSelect.setItemCaptionMode(AbstractSelect.ItemCaptionMode.PROPERTY);
-        m_businessServicesTwinColSelect.setItemCaptionPropertyId("name");
+        m_edgesListSelect = new ListSelect("Edges");
+        m_edgesListSelect.setId("reductionKeySelect");
+        m_edgesListSelect.setWidth(98.0f, Unit.PERCENTAGE);
+        m_edgesListSelect.setRows(20);
+        m_edgesListSelect.setNullSelectionAllowed(false);
+        m_edgesListSelect.setMultiSelect(false);
+        m_edgesListSelect.addItems(businessService.getReductionKeyEdges().stream().map(edge -> edge.getReductionKey()).collect(Collectors.toSet()));
 
-        /**
-         * create the reduction key list box
-         */
-        m_reductionKeyListSelect = new ListSelect("Reduction Keys");
-        m_reductionKeyListSelect.setId("reductionKeySelect");
-        m_reductionKeyListSelect.setWidth(98.0f, Unit.PERCENTAGE);
-        m_reductionKeyListSelect.setRows(8);
-        m_reductionKeyListSelect.setNullSelectionAllowed(false);
-        m_reductionKeyListSelect.setMultiSelect(false);
-        m_reductionKeyListSelect.addItems(businessService.getReductionKeyEdges().stream().map(edge -> edge.getReductionKey()).collect(Collectors.toSet()));
 
         /**
          * wrap the reduction key list select box in a Vaadin Panel
          */
-        verticalLayout.addComponent(m_ipServicesTwinColSelect);
-        verticalLayout.addComponent(m_businessServicesTwinColSelect);
+        HorizontalLayout edgesListAndButtonLayout = new HorizontalLayout();
 
-        HorizontalLayout reductionKeyListAndButtonLayout = new HorizontalLayout();
+        edgesListAndButtonLayout.setWidth(100.0f, Unit.PERCENTAGE);
 
-        reductionKeyListAndButtonLayout.setWidth(100.0f, Unit.PERCENTAGE);
+        VerticalLayout edgesButtonLayout = new VerticalLayout();
+        edgesButtonLayout.setWidth(140.0f, Unit.PIXELS);
 
-        VerticalLayout reductionKeyButtonLayout = new VerticalLayout();
-        reductionKeyButtonLayout.setWidth(140.0f, Unit.PIXELS);
-
-        Button addReductionKeyBtn = new Button("Add reduction key");
-        addReductionKeyBtn.setWidth(140.0f, Unit.PIXELS);
-        addReductionKeyBtn.addStyleName("small");
-        reductionKeyButtonLayout.addComponent(addReductionKeyBtn);
-        addReductionKeyBtn.addClickListener(new Button.ClickListener() {
+        Button addEdgeButton = new Button("Add");
+        addEdgeButton.setWidth(140.0f, Unit.PIXELS);
+        addEdgeButton.addStyleName("small");
+        edgesButtonLayout.addComponent(addEdgeButton);
+        addEdgeButton.addClickListener(new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent event) {
-
-                new StringInputDialogWindow()
-                        .withCaption("Enter Reduction Key")
-                        .withFieldName("Reduction Key")
-                        .withOkLabel("Save")
-                        .withCancelLabel("Cancel")
-                        .withValidator(new AbstractStringValidator("Input must not be empty") {
-                            @Override
-                            protected boolean isValidValue(String s) {
-                                return (!"".equals(s));
-                            }
-                        })
-                        .withOkAction(new StringInputDialogWindow.Action() {
-                            @Override
-                            public void execute(StringInputDialogWindow window) {
-                                m_reductionKeyListSelect.addItem(window.getValue());
-                            }
-                        }).open();
             }
         });
 
-        final Button removeReductionKeyBtn = new Button("Remove reduction key");
+        final Button removeReductionKeyBtn = new Button("Remove");
         removeReductionKeyBtn.setEnabled(false);
         removeReductionKeyBtn.setWidth(140.0f, Unit.PIXELS);
         removeReductionKeyBtn.addStyleName("small");
-        reductionKeyButtonLayout.addComponent(removeReductionKeyBtn);
+        edgesButtonLayout.addComponent(removeReductionKeyBtn);
 
-        m_reductionKeyListSelect.addValueChangeListener(new Property.ValueChangeListener() {
+        m_edgesListSelect.addValueChangeListener(new Property.ValueChangeListener() {
             @Override
             public void valueChange(Property.ValueChangeEvent event) {
                 removeReductionKeyBtn.setEnabled(event.getProperty().getValue() != null);
@@ -295,28 +230,19 @@ public class BusinessServiceEditWindow extends Window {
         removeReductionKeyBtn.addClickListener(new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent event) {
-                if (m_reductionKeyListSelect.getValue() != null) {
-                    m_reductionKeyListSelect.removeItem(m_reductionKeyListSelect.getValue());
+                if (m_edgesListSelect.getValue() != null) {
+                    m_edgesListSelect.removeItem(m_edgesListSelect.getValue());
                     removeReductionKeyBtn.setEnabled(false);
                 }
             }
         });
 
-        Button editPropagationRulesBtn = new Button("Edit propagation rules");
-        editPropagationRulesBtn.setWidth(140.0f, Unit.PIXELS);
-        editPropagationRulesBtn.addStyleName("small");
-        reductionKeyButtonLayout.addComponent(editPropagationRulesBtn);
+        edgesListAndButtonLayout.addComponent(m_edgesListSelect);
+        edgesListAndButtonLayout.setExpandRatio(m_edgesListSelect, 1.0f);
 
-        /**
-         * we're not using this button yet, so disable it
-         */
-        editPropagationRulesBtn.setEnabled(false);
-
-        reductionKeyListAndButtonLayout.addComponent(m_reductionKeyListSelect);
-        reductionKeyListAndButtonLayout.setExpandRatio(m_reductionKeyListSelect, 1.0f);
-        reductionKeyListAndButtonLayout.addComponent(reductionKeyButtonLayout);
-        reductionKeyListAndButtonLayout.setComponentAlignment(reductionKeyButtonLayout, Alignment.BOTTOM_CENTER);
-        verticalLayout.addComponent(reductionKeyListAndButtonLayout);
+        edgesListAndButtonLayout.addComponent(edgesButtonLayout);
+        edgesListAndButtonLayout.setComponentAlignment(edgesButtonLayout, Alignment.BOTTOM_CENTER);
+        verticalLayout.addComponent(edgesListAndButtonLayout);
 
         /**
          * now add the button layout to the main layout
