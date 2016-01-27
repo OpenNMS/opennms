@@ -33,13 +33,13 @@ import org.opennms.core.xml.AbstractJaxbConfigDao;
 /**
  * The Class JmsNorthbounderConfigDao.
  *
- * @author David Schlenk <dschlenk@converge-one.com>
+ * @author <a href="mailto:dschlenk@converge-one.com">David Schlenk</a>
+ * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
-public class JmsNorthbounderConfigDao extends
-        AbstractJaxbConfigDao<JmsNorthbounderConfig, JmsNorthbounderConfig> {
+public class JmsNorthbounderConfigDao extends AbstractJaxbConfigDao<JmsNorthbounderConfig, JmsNorthbounderConfig> {
 
     /**
-     * Instantiates a new jms northbounder config dao.
+     * Instantiates a new JMX northbounder configuration DAO.
      */
     public JmsNorthbounderConfigDao() {
         super(JmsNorthbounderConfig.class, "Config for JMS Northbounder");
@@ -55,12 +55,19 @@ public class JmsNorthbounderConfigDao extends
     }
 
     /**
-     * Gets the config.
+     * Gets the configuration.
      *
-     * @return the config
+     * @return the configuration
      */
     public JmsNorthbounderConfig getConfig() {
         return getContainer().getObject();
+    }
+
+    /**
+     * Reload.
+     */
+    public void reload() {
+        getContainer().reload();
     }
 
 }

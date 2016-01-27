@@ -59,6 +59,9 @@ public class SnmpTrapNorthbounder extends AbstractNorthbounder implements Initia
     /** The SNMP Trap helper. */
     private SnmpTrapHelper m_trapHelper;
 
+    /** The initialized flag (it will be true when the NBI is properly initialized). */
+    private boolean initialized = false;
+
     /**
      * Instantiates a new SNMP Trap northbounder.
      *
@@ -68,7 +71,7 @@ public class SnmpTrapNorthbounder extends AbstractNorthbounder implements Initia
     public SnmpTrapNorthbounder(SnmpTrapNorthbounderConfigDao configDao, String trapSink) {
         super(NBI_NAME + ":" + trapSink);
         m_configDao = configDao;
-        m_trapSink = configDao.getSnmpTrapSink(trapSink);
+        m_trapSink = configDao.getConfig().getSnmpTrapSink(trapSink);
         m_trapHelper = new SnmpTrapHelper();
     }
 
@@ -77,16 +80,15 @@ public class SnmpTrapNorthbounder extends AbstractNorthbounder implements Initia
      */
     @Override
     public void afterPropertiesSet() throws Exception {
-        if (m_configDao == null) {
-            LOG.info("SNMP Trap Northbounder is currently disabled, rejecting alarm.");
-            String msg = "SNMP Trap forwarding configuration is not initialized.";
-            IllegalStateException e = new IllegalStateException(msg);
-            LOG.error(msg, e);
-            throw e;
+        if (m_configDao == null || m_trapSink == null) {
+            LOG.error("SNMP Trap Northbounder {} is currently disabled because it has not been initialized correctly or there is a problem with the configuration.", getName());
+            initialized = false;
+            return;
         }
         setNaglesDelay(getConfig().getNaglesDelay());
         setMaxBatchSize(getConfig().getBatchSize());
         setMaxPreservedAlarms(getConfig().getQueueSize());
+        initialized = true;
     }
 
     /**
@@ -97,9 +99,15 @@ public class SnmpTrapNorthbounder extends AbstractNorthbounder implements Initia
      */
     @Override
     public boolean accepts(NorthboundAlarm alarm) {
-        if (!getConfig().isEnabled()) {
+        if (!initialized) {
+            LOG.warn("SNMP Trap Northbounder {} has not been properly initialized, rejecting alarm {}.", getName(), alarm.getUei());
             return false;
         }
+        if (!getConfig().isEnabled()) {
+            LOG.warn("SNMP Trap Northbounder {} is currently disabled, rejecting alarm {}.", getName(), alarm.getUei());
+            return false;
+        }
+
         LOG.debug("Validating UEI of alarm: {}", alarm.getUei());
         if (getConfig().getUeis() == null || getConfig().getUeis().contains(alarm.getUei())) {
             LOG.debug("UEI: {}, accepted.", alarm.getUei());
@@ -107,6 +115,7 @@ public class SnmpTrapNorthbounder extends AbstractNorthbounder implements Initia
             LOG.debug("Filters: {}, passed ? {}.", alarm.getUei(), passed);
             return passed;
         }
+
         LOG.debug("UEI: {}, rejected.", alarm.getUei());
         return false;
     }

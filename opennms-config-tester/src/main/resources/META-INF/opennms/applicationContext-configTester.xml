@@ -231,7 +231,7 @@ org.opennms.netmgt.filter.FilterParseException: SQL Exception occurred getting I
     <property name="staticMethod"><value>org.opennms.javamail.JavaMailerConfig.getProperties</value></property>
   </bean>
     
-  <bean id="javamailConfigurationDao" class="org.opennms.netmgt.dao.castor.DefaultJavamailConfigurationDao">
+  <bean id="javamailConfigurationDao" class="org.opennms.netmgt.dao.jaxb.DefaultJavamailConfigurationDao">
     <property name="configResource" value="file:${opennms.home}/etc/javamail-configuration.xml"/>
   </bean>
   
