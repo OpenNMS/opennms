@@ -70,6 +70,8 @@ class ScanGui extends AbstractGui implements ScanReportHandler, PropertyChangeLi
     def m_updateDetails
     def m_detailsPanel
 
+    //def debugString = ", debug"
+
     public ScanGui() {
         super()
     }
@@ -105,6 +107,7 @@ class ScanGui extends AbstractGui implements ScanReportHandler, PropertyChangeLi
         }
     }
 
+    @Override
     public void afterPropertiesSet() {
         Assert.notNull(m_backEnd)
         Collection<LocationDef> monitoringLocations = m_backEnd.getMonitoringLocations()
@@ -145,7 +148,7 @@ class ScanGui extends AbstractGui implements ScanReportHandler, PropertyChangeLi
         return null
     }
 
-    protected String getFieldKey(final String name) {
+    protected static String getFieldKey(final String name) {
         if (name == null) {
             return null
         }
@@ -169,7 +172,7 @@ class ScanGui extends AbstractGui implements ScanReportHandler, PropertyChangeLi
                     return true
                 }
             } else {
-                return true
+                return false
             }
         }
 
@@ -183,10 +186,10 @@ class ScanGui extends AbstractGui implements ScanReportHandler, PropertyChangeLi
                     rowConstraints:"[grow]"
                     )
 
-            m_progressPanel = panel(constraints:"top", opaque:false) {
+            m_progressPanel = panel(constraints:"gapx 20lp 20lp, top, width 50%", opaque:false) {
                 migLayout(
                         layoutConstraints:"fill" + debugString,
-                        columnConstraints:"[right,grow][left][left]",
+                        columnConstraints:"[left,grow]",
                         rowConstraints:"[grow]"
                         )
 
@@ -229,12 +232,19 @@ class ScanGui extends AbstractGui implements ScanReportHandler, PropertyChangeLi
                     applicationCombo.updateUI()
                 }
 
-                label(text:"Location:", font:getLabelFont())
-                locationCombo = comboBox(items:m_locations, toolTipText:"Choose your location.", foreground:getForegroundColor(), background:getBackgroundColor(), renderer:getRenderer(), actionPerformed:{
+                label(text:"Location", font:getLabelFont(), constraints:"grow, wrap")
+                locationCombo = comboBox(items:m_locations, toolTipText:"Choose your location.", foreground:getForegroundColor(), background:getBackgroundColor(), renderer:getRenderer(), constraints:"gapbottom 10lp, grow, wrap", actionPerformed:{
                     updateApplicationCombo()
                     resetProgressBar()
                 })
-                button(text:'Go', font:getLabelFont(), foreground:getBackgroundColor(), background:getDetailColor(), opaque:true, constraints:"top, spany 2, wrap", actionPerformed:{
+
+                applicationLabel = label(text:"Application", font:getLabelFont(), visible:false, constraints:"grow, wrap")
+                applicationCombo = comboBox(toolTipText:"Choose your application.", foreground:getForegroundColor(), background:getBackgroundColor(), renderer:getRenderer(), constraints:"gapbottom 10lp, grow, wrap", visible: false, actionPerformed:{
+                    resetProgressBar()
+                })
+                updateApplicationCombo()
+
+                button(text:'Scan Now', font:getLabelFont(), foreground:getBackgroundColor(), background:getDetailColor(), opaque:true, constraints:"height pref+20lp, gapbottom 10lp, center, grow, wrap", actionPerformed:{
                     if (updateValidation()) {
                         return
                     }
@@ -263,15 +273,9 @@ class ScanGui extends AbstractGui implements ScanReportHandler, PropertyChangeLi
                     invoker.execute()
                 })
 
-                applicationLabel = label(text:"Application:", font:getLabelFont(), visible:false)
-                applicationCombo = comboBox(toolTipText:"Choose your application.", foreground:getForegroundColor(), background:getBackgroundColor(), renderer:getRenderer(), constraints:"wrap", visible: false, actionPerformed:{
-                    resetProgressBar()
-                })
-                updateApplicationCombo()
+                m_progressBar = progressBar(borderPainted:false, visible:false, value:0, constraints:"grow, wrap")
 
-                m_progressBar = progressBar(borderPainted:false, visible:false, value:0, constraints:"grow, spanx 3, wrap")
-
-                m_passFailPanel = panel(background:getBackgroundColor(), constraints:"center, spanx 3, spany 2, height 200!, grow, wrap") {
+                m_passFailPanel = panel(background:getBackgroundColor(), constraints:"center, height 200!, grow, wrap") {
                     migLayout(
                             layoutConstraints:"fill" + debugString,
                             columnConstraints:"[center grow,fill]",
@@ -280,16 +284,16 @@ class ScanGui extends AbstractGui implements ScanReportHandler, PropertyChangeLi
 
                 }
             }
-            panel(constraints:"top", opaque:false) {
+            panel(constraints:"gapx 20lp 20lp, top, width 50%", opaque:false) {
                 migLayout(
                         layoutConstraints:"fill" + debugString,
-                        columnConstraints:"[right][left grow,fill, 200::]",
+                        columnConstraints:"[left grow,fill, 200:pref:]",
                         rowConstraints:""
                         )
 
                 for (def fieldType : m_metadataFieldTypes) {
-                    label(text:fieldType.description, font:getLabelFont(), constraints:"")
-                    def textField = textField(columns:25, constraints:"wrap", actionPerformed:updateValidation, focusGained:updateValidation, focusLost:updateValidation)
+                    label(text:fieldType.description, font:getLabelFont(), constraints:"wrap")
+                    def textField = textField(columns:25, constraints:"gapbottom 10lp, wrap", actionPerformed:updateValidation, focusGained:updateValidation, focusLost:updateValidation)
                     m_metadataFields.put(fieldType.key, textField)
                 }
                 /*
@@ -301,7 +305,7 @@ class ScanGui extends AbstractGui implements ScanReportHandler, PropertyChangeLi
                  }
                  */
 
-                errorLabel = label(text:"", visible:false, foreground:Color.RED, constraints:"grow, skip 1, wrap")
+                errorLabel = label(text:"", visible:false, foreground:Color.RED, constraints:"grow, wrap")
             }
 
             def detailsOpen = false
@@ -326,7 +330,7 @@ class ScanGui extends AbstractGui implements ScanReportHandler, PropertyChangeLi
 
                 if (detailsOpen) {
                     detailsButton.setText("Details \u25BC")
-                    m_detailsPanel = panel(opaque:false) {
+                    m_detailsPanel = panel(constraints:"gapx 20lp 20lp", opaque:false) {
                         migLayout(
                                 layoutConstraints:"fill" + debugString,
                                 columnConstraints:"[center grow,fill]",
@@ -360,7 +364,7 @@ class ScanGui extends AbstractGui implements ScanReportHandler, PropertyChangeLi
                 repaint()
             }
 
-            detailsParent = panel(constraints:"bottom, center, spanx 2, shrinky 1000, dock south", opaque:false) {
+            detailsParent = panel(constraints:"gapx 20lp 20lp, bottom, center, spanx 2, shrinky 1000, dock south", opaque:false) {
                 migLayout(
                         layoutConstraints:"fill" + debugString,
                         columnConstraints:"[center grow, fill]",
