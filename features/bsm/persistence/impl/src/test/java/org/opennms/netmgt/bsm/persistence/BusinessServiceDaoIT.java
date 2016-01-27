@@ -40,6 +40,7 @@ import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.MockDatabase;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
+import org.opennms.netmgt.bsm.persistence.api.BusinessServiceChildEdgeEntity;
 import org.opennms.netmgt.bsm.persistence.api.BusinessServiceDao;
 import org.opennms.netmgt.bsm.persistence.api.BusinessServiceEdgeDao;
 import org.opennms.netmgt.bsm.persistence.api.BusinessServiceEntity;
@@ -75,7 +76,6 @@ import com.google.common.collect.Sets;
     "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml" })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase(reuseDatabase = false, tempDbClass = MockDatabase.class)
-// TODO MVR write a test that verifies that the the reduction function is properly deleted if not anymore referenced
 public class BusinessServiceDaoIT {
 
     private static final Logger LOG = LoggerFactory.getLogger(BusinessServiceDaoIT.class);
@@ -99,7 +99,7 @@ public class BusinessServiceDaoIT {
     private BusinessServiceEdgeDao m_edgeDao;
 
     @Autowired
-    private MapFunctionDao mapFunctionDao;
+    private MapFunctionDao m_mapFunctionDao;
 
     private MostCriticalEntity m_mostCritical;
 
@@ -197,47 +197,62 @@ public class BusinessServiceDaoIT {
         assertEquals(0, m_businessServiceDao.get(bs.getId()).getIpServices().size());
     }
 
+    /**
+     * If we do not explicitly delete the map or reduce function it should be deleted if not referenced anymore.
+     */
     @Test
     @Transactional
     public void verifyDeleteOnCascade() {
-        BusinessServiceEntity child = new BusinessServiceEntityBuilder()
-                .name("Child2")
+        BusinessServiceEntity child2 = new BusinessServiceEntityBuilder()
+                .name("Child 2")
                 .reduceFunction(new MostCriticalEntity())
+                .addReductionKey("some-key", new IdentityEntity())
+                .toEntity();
+
+        BusinessServiceEntity child1 = new BusinessServiceEntityBuilder()
+                .name("Child 1")
+                .reduceFunction(new MostCriticalEntity())
+                .addChildren(child2, new IdentityEntity())
                 .toEntity();
 
         BusinessServiceEntity parent = new BusinessServiceEntityBuilder()
-                .name("Web Servers")
+                .name("Parent Web Servers")
                 .addAttribute("dc", "RDU")
                 .addReductionKey("TestReductionKeyA", new IdentityEntity())
                 .addReductionKey("TestReductionKeyB", new IdentityEntity())
                 .addIpService(getMonitoredServiceFromNode1(), new IdentityEntity())
                 .reduceFunction(m_mostCritical)
-                .addChildren(child, new IdentityEntity())
+                .addChildren(child1, new IdentityEntity())
                 .toEntity();
 
-        m_businessServiceDao.save(child);
+        m_businessServiceDao.save(child2);
+        m_businessServiceDao.save(child1);
         m_businessServiceDao.save(parent);
+        m_businessServiceDao.flush();
 
+        assertEquals(3, m_businessServiceDao.countAll());
+        assertEquals(3, m_reductionFunctionDao.countAll());
+        assertEquals(6, m_edgeDao.countAll());
+
+        // Deletion of child does not delete the edges referencing to that child
+        // remove all parent -> child associations manually
+        BusinessServiceChildEdgeEntity parentToChild1Edge = parent.getChildEdges().iterator().next();
+        parent.removeEdge(parentToChild1Edge);
+        m_edgeDao.delete(parentToChild1Edge);
+        m_businessServiceDao.delete(child1); // edges do not need to be deleted manually, deletes will be cascaded
+        m_businessServiceDao.flush();
         assertEquals(2, m_businessServiceDao.countAll());
         assertEquals(2, m_reductionFunctionDao.countAll());
         assertEquals(4, m_edgeDao.countAll());
 
-        // Deletion of child does not delete the edges referencing to that child
-        m_businessServiceDao.delete(child);
-        assertEquals(1, m_businessServiceDao.countAll());
-        assertEquals(1, m_reductionFunctionDao.countAll());
-        assertEquals(4, m_edgeDao.countAll());
-
-        // TODO MVR is there any way to do this automatically with hibernate annotations?
-        // we have to manually delete the edge, than we are good
-        parent.removeEdge(parent.getChildEdges().iterator().next());
-        m_businessServiceDao.update(parent);
-        assertEquals(1, m_businessServiceDao.countAll());
-        assertEquals(1, m_reductionFunctionDao.countAll());
-        assertEquals(3, m_edgeDao.countAll());
-
         // Deletion of parent should delete all references
         m_businessServiceDao.delete(parent);
+        assertEquals(1, m_businessServiceDao.countAll());
+        assertEquals(1, m_reductionFunctionDao.countAll());
+        assertEquals(1, m_edgeDao.countAll());
+
+        // Deletion of Child 2 should also work
+        m_businessServiceDao.delete(child2);
         assertEquals(0, m_businessServiceDao.countAll());
         assertEquals(0, m_reductionFunctionDao.countAll());
         assertEquals(0, m_edgeDao.countAll());

@@ -211,7 +211,7 @@ public class BusinessServiceManagerImpl implements BusinessServiceManager {
                 edgeDao.delete(x); // we need to delete this edge manually as they cannot be deleted automatically
             });
         }
-        // edges need not to be deleted manually, deletes will be cascaded
+        // edges of the entity are deleted automatically by hibernate
         getDao().delete(entity);
     }
 

@@ -146,10 +146,7 @@ public class BusinessServiceEdgeEntity implements EdgeEntity {
 
     @Override
     public int hashCode() {
-        if (getId() != null) {
-            return getId().hashCode();
-        }
-        return super.hashCode();
+        return 0; // HACK: always return 0, as otherwise Sets etc do not work.
     }
 
     @Override

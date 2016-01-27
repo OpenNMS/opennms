@@ -141,8 +141,8 @@ public class BusinessServiceEntity {
         m_edges.add(edge);
     }
 
-    public void removeEdge(BusinessServiceEdgeEntity edge) {
-        m_edges.remove(edge);
+    public boolean removeEdge(BusinessServiceEdgeEntity edge) {
+        return m_edges.remove(edge);
     }
 
     @Transient
@@ -193,10 +193,7 @@ public class BusinessServiceEntity {
 
     @Override
     public int hashCode() {
-        if (getId() != null) {
-            return getId().hashCode();
-        }
-        return super.hashCode();
+        return 0; // HACK: always return 0, as otherwise Sets etc do not work.
     }
 
     @Override
