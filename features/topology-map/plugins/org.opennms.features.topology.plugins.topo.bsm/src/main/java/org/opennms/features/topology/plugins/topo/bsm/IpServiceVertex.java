@@ -28,34 +28,25 @@
 
 package org.opennms.features.topology.plugins.topo.bsm;
 
-import org.opennms.netmgt.bsm.service.model.BusinessServiceDTO;
-import org.opennms.netmgt.bsm.service.model.IpServiceDTO;
+import org.opennms.netmgt.bsm.service.model.IpService;
 
 public class IpServiceVertex extends AbstractBusinessServiceVertex {
 
-    private final Long businessServiceId;
-
     private final Integer ipServiceId;
 
-    public IpServiceVertex(BusinessServiceDTO businessService, IpServiceDTO ipServiceDTO) {
-        this(businessService.getId() + ":" + ipServiceDTO.getId(),
+    public IpServiceVertex(IpService ipServiceDTO) {
+        this("ip-service:" + ipServiceDTO.getId(),
                 ipServiceDTO.getServiceName(),
-                businessService.getId(),
                 Integer.valueOf(ipServiceDTO.getId()),
                 ipServiceDTO.getIpAddress());
     }
 
-    private IpServiceVertex(String id, String ipServiceName, Long businessServiceId, Integer ipServiceId, String ipAddress) {
+    private IpServiceVertex(String id, String ipServiceName, Integer ipServiceId, String ipAddress) {
         super(id, ipServiceName);
-        this.businessServiceId = businessServiceId;
         this.ipServiceId = ipServiceId;
         setIpAddress(ipAddress);
         setLabel(ipServiceName);
         setTooltipText(String.format("Service '%s', IP: %s", ipServiceName, ipAddress));
-    }
-
-    public Long getBusinessServiceId() {
-        return businessServiceId;
     }
 
     public Integer getIpServiceId() {

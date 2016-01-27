@@ -207,9 +207,14 @@ public class BsmTestUtils {
         };
     }
 
-    public static OnmsMonitoredService createMonitoredService(final int nodeId, final String ipAddress, final String serviceName) {
+    public static OnmsMonitoredService createMonitoredService(final int serviceId, final int nodeId, final String ipAddress, final String serviceName) {
         return new OnmsMonitoredService() {
             private static final long serialVersionUID = 8510675581667310365L;
+
+            @Override
+            public Integer getId() {
+                return serviceId;
+            }
 
             public Integer getNodeId() {
                 return nodeId;

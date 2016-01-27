@@ -56,8 +56,7 @@
         <property name="businessServiceManager" ref="businessServiceManager" />
     </bean>
 
-    <service interface="org.opennms.features.topology.api.topo.SearchProvider"
-        ref="bsmSearchProvider" />
+    <service interface="org.opennms.features.topology.api.topo.SearchProvider" ref="bsmSearchProvider" />
 
     <!-- Business Services Table Table -->
     <bean id="businessServiceSelectionLinkGenerator" class="org.opennms.features.topology.plugins.topo.bsm.browsers.BusinessServicesSelectionLinkGenerator">
@@ -67,6 +66,9 @@
     </bean>
 
     <bean id="businessServicesContainer" class="org.opennms.features.topology.plugins.topo.bsm.browsers.BusinessServicesContainer" scope="prototype">
+       <argument ref="businessServicesContainerDatasource"/>
+    </bean>
+    <bean id="businessServicesContainerDatasource" class="org.opennms.features.topology.plugins.topo.bsm.browsers.BusinessServiceContainerDatasource" scope="prototype">
         <argument ref="transactionAwareBeanProxyFactory" />
         <property name="businessServiceManager" ref="businessServiceManager"/>
     </bean>
