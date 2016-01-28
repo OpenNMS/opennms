@@ -314,18 +314,15 @@ public class BusinessServiceEdgeEditWindow extends Window {
 
             switch ((Edge.Type) m_typeSelect.getValue()) {
                 case CHILD_SERVICE:
-                    businessService.addChildEdge(null,
-                                                 mapFunction);
+                    businessService.addChildEdge(m_businessServicesContainer.getItem(m_childServiceComponent.getValue()).getBean(), mapFunction);
                     break;
 
                 case IP_SERVICE:
-                    businessService.addIpServiceEdge(null,
-                                                     mapFunction);
+                    businessService.addIpServiceEdge(m_ipServicesContainer.getItem(m_ipServiceComponent.getValue()).getBean(), mapFunction);
                     break;
 
                 case REDUCTION_KEY:
-                    businessService.addReductionKeyEdge(m_reductionKeyComponent.getValue(),
-                                                        mapFunction);
+                    businessService.addReductionKeyEdge(m_reductionKeyComponent.getValue(), mapFunction);
                     break;
             }
 
