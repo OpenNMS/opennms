@@ -34,8 +34,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.opennms.netmgt.bsm.service.model.BusinessServiceDTO;
-import org.opennms.netmgt.model.OnmsSeverity;
+import org.opennms.netmgt.bsm.service.model.BusinessService;
+import org.opennms.netmgt.bsm.service.model.Status;
 
 /**
  * Criteria for searching for business services
@@ -182,7 +182,7 @@ public class BusinessServiceSearchCriteriaBuilder implements BusinessServiceSear
     /**
      * the severity filters
      */
-    private List<Pair<CompareOperator, OnmsSeverity>> m_severityFilters = new ArrayList<>();
+    private List<Pair<CompareOperator, Status>> m_severityFilters = new ArrayList<>();
     /**
      * the attribute filters
      */
@@ -218,7 +218,7 @@ public class BusinessServiceSearchCriteriaBuilder implements BusinessServiceSear
             s = s.filter(p -> p.getAttributes().containsKey(pair.getA()) && p.getAttributes().get(pair.getA()).matches(pair.getB()));
         }
 
-        for (Pair<CompareOperator, OnmsSeverity> pair : m_severityFilters) {
+        for (Pair<CompareOperator, Status> pair : m_severityFilters) {
             s = s.filter(p -> pair.getA().check(businessServiceManager.getOperationalStatusForBusinessService(p).compareTo(pair.getB())));
         }
 
@@ -266,32 +266,32 @@ public class BusinessServiceSearchCriteriaBuilder implements BusinessServiceSear
         return this;
     }
 
-    public BusinessServiceSearchCriteriaBuilder filterSeverity(CompareOperator compareOperator, OnmsSeverity severity) {
+    public BusinessServiceSearchCriteriaBuilder filterSeverity(CompareOperator compareOperator, Status severity) {
         m_severityFilters.add(Pair.of(compareOperator, severity));
         return this;
     }
 
-    public BusinessServiceSearchCriteriaBuilder greaterOrEqualSeverity(OnmsSeverity severity) {
+    public BusinessServiceSearchCriteriaBuilder greaterOrEqualSeverity(Status severity) {
         filterSeverity(CompareOperator.GreaterOrEqual, severity);
         return this;
     }
 
-    public BusinessServiceSearchCriteriaBuilder equalSeverity(OnmsSeverity severity) {
+    public BusinessServiceSearchCriteriaBuilder equalSeverity(Status severity) {
         filterSeverity(CompareOperator.Equal, severity);
         return this;
     }
 
-    public BusinessServiceSearchCriteriaBuilder lowerOrEqualSeverity(OnmsSeverity severity) {
+    public BusinessServiceSearchCriteriaBuilder lowerOrEqualSeverity(Status severity) {
         filterSeverity(CompareOperator.LowerOrEqual, severity);
         return this;
     }
 
-    public BusinessServiceSearchCriteriaBuilder lowerSeverity(OnmsSeverity severity) {
+    public BusinessServiceSearchCriteriaBuilder lowerSeverity(Status severity) {
         filterSeverity(CompareOperator.Lower, severity);
         return this;
     }
 
-    public BusinessServiceSearchCriteriaBuilder greaterSeverity(OnmsSeverity severity) {
+    public BusinessServiceSearchCriteriaBuilder greaterSeverity(Status severity) {
         filterSeverity(CompareOperator.Greater, severity);
         return this;
     }

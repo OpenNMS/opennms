@@ -35,7 +35,7 @@ import org.junit.Test;
 import org.opennms.netmgt.bsm.persistence.api.BusinessServiceEntity;
 import org.opennms.netmgt.bsm.service.BusinessServiceSearchCriteriaBuilder;
 import org.opennms.netmgt.bsm.service.model.BusinessService;
-import org.opennms.netmgt.model.OnmsSeverity;
+import org.opennms.netmgt.bsm.service.model.Status;
 
 import com.google.common.collect.ImmutableList;
 
@@ -52,21 +52,20 @@ public class BusinessServiceCriteriaTest {
         }
 
         @Override
-        public OnmsSeverity getOperationalStatusForBusinessService(BusinessService service) {
+        public Status getOperationalStatusForBusinessService(BusinessService service) {
             return service.getOperationalStatus();
         }
     };
-    ;
 
-    private BusinessService bs1 = createDummyBusinessService(7, "BsA", "att1", "fooYes", OnmsSeverity.INDETERMINATE);
-    private BusinessService bs2 = createDummyBusinessService(6, "BsB", "att1", "fooYes", OnmsSeverity.CLEARED);
-    private BusinessService bs3 = createDummyBusinessService(5, "BsC", "att1", "fooNo", OnmsSeverity.NORMAL);
-    private BusinessService bs4 = createDummyBusinessService(4, "BsD", "att1", "fooYes", OnmsSeverity.WARNING);
-    private BusinessService bs5 = createDummyBusinessService(3, "BsE", "att1", "fooYes", OnmsSeverity.MINOR);
-    private BusinessService bs6 = createDummyBusinessService(2, "BsF", "att1", "fooNo", OnmsSeverity.MAJOR);
-    private BusinessService bs7 = createDummyBusinessService(1, "BsG", "att1", "fooYes", OnmsSeverity.CRITICAL);
+    private BusinessService bs1 = createDummyBusinessService(7, "BsA", "att1", "fooYes", Status.INDETERMINATE);
+    private BusinessService bs2 = createDummyBusinessService(6, "BsB", "att1", "fooYes", Status.INDETERMINATE);
+    private BusinessService bs3 = createDummyBusinessService(5, "BsC", "att1", "fooNo", Status.NORMAL);
+    private BusinessService bs4 = createDummyBusinessService(4, "BsD", "att1", "fooYes", Status.WARNING);
+    private BusinessService bs5 = createDummyBusinessService(3, "BsE", "att1", "fooYes", Status.MINOR);
+    private BusinessService bs6 = createDummyBusinessService(2, "BsF", "att1", "fooNo", Status.MAJOR);
+    private BusinessService bs7 = createDummyBusinessService(1, "BsG", "att1", "fooYes", Status.CRITICAL);
 
-    {
+    public BusinessServiceCriteriaTest() {
         businessServices.add(bs1);
         businessServices.add(bs2);
         businessServices.add(bs3);
@@ -92,9 +91,9 @@ public class BusinessServiceCriteriaTest {
         BusinessServiceSearchCriteriaBuilder b = new BusinessServiceSearchCriteriaBuilder()
                 .order(BusinessServiceSearchCriteriaBuilder.Order.Severity)
                 .desc()
-                .limit(6);
+                .limit(5);
         Assert.assertEquals(
-                ImmutableList.<BusinessService>builder().add(bs7, bs6, bs5, bs4, bs3, bs2).build(),
+                ImmutableList.<BusinessService>builder().add(bs7, bs6, bs5, bs4, bs3).build(),
                 businessServiceManager.search(b));
     }
 
@@ -123,7 +122,7 @@ public class BusinessServiceCriteriaTest {
     @Test
     public void testFilterBySeverity() {
         BusinessServiceSearchCriteriaBuilder b = new BusinessServiceSearchCriteriaBuilder()
-                .greaterOrEqualSeverity(OnmsSeverity.WARNING)
+                .greaterOrEqualSeverity(Status.WARNING)
                 .order(BusinessServiceSearchCriteriaBuilder.Order.Severity)
                 .desc();
         Assert.assertEquals(
@@ -131,15 +130,15 @@ public class BusinessServiceCriteriaTest {
                 businessServiceManager.search(b));
     }
 
-    private BusinessService createDummyBusinessService(final long id, final String name, String attributeKey, String attributeValue, final OnmsSeverity onmsSeverity) {
+    private BusinessService createDummyBusinessService(final long id, final String name, String attributeKey, String attributeValue, final Status status) {
         BusinessServiceEntity businessServiceEntity = new BusinessServiceEntity();
         businessServiceEntity.setId(id);
         businessServiceEntity.setAttribute(attributeKey, attributeValue);
         businessServiceEntity.setName(name);
         BusinessService businessService = new BusinessServiceImpl(businessServiceManager, businessServiceEntity) {
             @Override
-            public OnmsSeverity getOperationalStatus() {
-                return onmsSeverity;
+            public Status getOperationalStatus() {
+                return status;
             }
         };
         return businessService;

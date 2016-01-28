@@ -36,8 +36,8 @@ import org.opennms.features.vaadin.dashboard.model.DashletComponent;
 import org.opennms.features.vaadin.dashboard.model.DashletSpec;
 import org.opennms.netmgt.bsm.service.BusinessServiceManager;
 import org.opennms.netmgt.bsm.service.BusinessServiceSearchCriteria;
-import org.opennms.netmgt.bsm.service.model.BusinessServiceDTO;
-import org.opennms.netmgt.model.OnmsSeverity;
+import org.opennms.netmgt.bsm.service.model.BusinessService;
+import org.opennms.netmgt.bsm.service.model.Status;
 import org.opennms.netmgt.vaadin.core.TransactionAwareBeanProxyFactory;
 
 import com.vaadin.ui.Component;
@@ -171,8 +171,8 @@ public class BSMDashlet extends AbstractDashlet {
         rowLayout.setSizeFull();
         rowLayout.setSpacing(true);
 
-        final OnmsSeverity severity = m_businessServiceManager.getOperationalStatusForBusinessService(serviceDTO.getId());
-        Label nameLabel = new Label(serviceDTO.getName());
+        final Status severity = m_businessServiceManager.getOperationalStatusForBusinessService(service);
+        Label nameLabel = new Label(service.getName());
         nameLabel.setSizeFull();
         nameLabel.setStyleName("h3");
         nameLabel.addStyleName("bright");
