@@ -89,6 +89,10 @@ public class Log4j2StringAppender extends AbstractOutputStreamAppender<Log4j2Str
 
 	public void addToLogger(String loggerName, Level level) {
 		LoggerConfig loggerConfig = LOGGER_CONTEXT_CONFIGURATION.getLoggerConfig(loggerName);
+		// Make sure the logger accepts messages at the given level
+		if (level.isLessSpecificThan(loggerConfig.getLevel())) {
+		    loggerConfig.setLevel(level);
+		}
 		loggerConfig.addAppender(this, level, null);
 		LOGGER_CONTEXT.updateLoggers();
 	}
