@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.bsm.service.internal;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -35,6 +36,10 @@ import java.util.Set;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.stream.Collectors;
+
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 
 import org.opennms.netmgt.bsm.service.BusinessServiceStateChangeHandler;
 import org.opennms.netmgt.bsm.service.BusinessServiceStateMachine;
@@ -48,10 +53,6 @@ import org.opennms.netmgt.bsm.service.model.edge.IpServiceEdge;
 import org.opennms.netmgt.bsm.service.model.edge.ReductionKeyEdge;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
 
 public class DefaultBusinessServiceStateMachine implements BusinessServiceStateMachine {
     private static final Logger LOG = LoggerFactory.getLogger(DefaultBusinessServiceStateMachine.class);
@@ -169,11 +170,21 @@ public class DefaultBusinessServiceStateMachine implements BusinessServiceStateM
     }
 
     private Status calculateCurrentStatus(BusinessService businessService) {
+        final HashMap<Edge, Status> edgeStatusMap = new HashMap<>();
         // Map
-        final List<Status> statusList = getStatusListForReduceFunction(businessService);
+        for (Edge edge : businessService.getEdges()) {
+            for (String reductionKey : edge.getReductionKeys()) {
+                final Status rkStatus = m_reductionKeyStatus.get(reductionKey);
+                edge.getMapFunction().map(rkStatus).ifPresent(s -> edgeStatusMap.put(edge, s));
+            }
+        }
+        for (ChildEdge edge : businessService.getChildEdges()) {
+            final Status bsStatus = m_businessServiceStatus.get(edge.getChild());
+            edge.getMapFunction().map(bsStatus).ifPresent(s -> edgeStatusMap.put(edge, s));
+        }
 
         // Reduce
-        final Status overallStatus = businessService.getReduceFunction().reduce(statusList).orElse(DEFAULT_SEVERITY);
+        final Status overallStatus = businessService.getReduceFunction().reduce(edgeStatusMap).orElse(DEFAULT_SEVERITY);
 
         // Apply lower bound, severity states like INDETERMINATE and CLEARED don't always make sense
         return overallStatus.isLessThan(MIN_SEVERITY) ? MIN_SEVERITY : overallStatus;
@@ -202,9 +213,7 @@ public class DefaultBusinessServiceStateMachine implements BusinessServiceStateM
     // calculates the status for all business services on a certain level
     private void calculateStatus(int level) {
         Set<BusinessService> businessServiceEntities = m_businessServiceStatus.keySet().stream().filter(bs -> bs.getLevel() == level).collect(Collectors.toSet());
-        for (BusinessService eachEntity : businessServiceEntities) {
-            doBusinessServiceStatusCalculation(eachEntity);
-        }
+        businessServiceEntities.forEach(this::doBusinessServiceStatusCalculation);
     }
 
     private void doBusinessServiceStatusCalculation(BusinessService businessService) {
