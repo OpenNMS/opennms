@@ -80,9 +80,18 @@ public class BsmTestUtils {
         request.setName(input.getName());
         request.setAttributes(new HashMap<>(input.getAttributes()));
         request.setReduceFunction(transform(input.getReductionFunction()));
-        input.getChildEdges().forEach(e -> request.addChildService(e.getChild().getId(), transform(e.getMapFunction())));
-        input.getIpServiceEdges().forEach(e -> request.addIpService(e.getIpService().getId(), transform(e.getMapFunction())));
-        input.getReductionKeyEdges().forEach(e -> request.addReductionKey(e.getReductionKey(), transform(e.getMapFunction())));
+        input.getChildEdges().forEach(e -> request.addChildService(
+                e.getChild().getId(),
+                transform(e.getMapFunction()),
+                e.getWeight()));
+        input.getIpServiceEdges().forEach(e -> request.addIpService(
+                e.getIpService().getId(),
+                transform(e.getMapFunction()),
+                e.getWeight()));
+        input.getReductionKeyEdges().forEach(e -> request.addReductionKey(
+                e.getReductionKey(),
+                transform(e.getMapFunction()),
+                e.getWeight()));
         return request;
     }
 
@@ -116,13 +125,14 @@ public class BsmTestUtils {
         return response;
     }
 
-    public static ChildEdgeResponseDTO toResponseDTO(BusinessServiceChildEdgeEntity it) {
+    public static ChildEdgeResponseDTO toResponseDTO(BusinessServiceChildEdgeEntity input) {
         ChildEdgeResponseDTO edge = new ChildEdgeResponseDTO();
-        edge.setLocation(ResourceLocationFactory.createBusinessServiceEdgeLocation(it.getBusinessService().getId(), it.getId()));
+        edge.setLocation(ResourceLocationFactory.createBusinessServiceEdgeLocation(input.getBusinessService().getId(), input.getId()));
         edge.setReductionKeys(edge.getReductionKeys());
-        edge.setMapFunction(transform(it.getMapFunction()));
-        edge.setId(it.getId());
-        edge.setChildId(it.getChild().getId());
+        edge.setMapFunction(transform(input.getMapFunction()));
+        edge.setId(input.getId());
+        edge.setChildId(input.getChild().getId());
+        edge.setWeight(input.getWeight());
         edge.setOperationalStatus(Status.INDETERMINATE); // we assume INDETERMINATE
         return edge;
     }
@@ -140,6 +150,7 @@ public class BsmTestUtils {
         edge.setIpService(ipService);
         edge.setMapFunction(transform(input.getMapFunction()));
         edge.setId(input.getId());
+        edge.setWeight(input.getWeight());
         edge.setOperationalStatus(Status.INDETERMINATE); // we assume INDETERMINATE
         return edge;
     }
@@ -151,6 +162,7 @@ public class BsmTestUtils {
         edge.setReductionKey(input.getReductionKey());
         edge.setMapFunction(transform(input.getMapFunction()));
         edge.setId(input.getId());
+        edge.setWeight(input.getWeight());
         edge.setOperationalStatus(Status.INDETERMINATE); // we assume INDETERMINATE
         return edge;
     }

@@ -53,12 +53,14 @@ import org.opennms.netmgt.bsm.service.BusinessServiceStateMachine;
 import org.opennms.netmgt.bsm.service.model.BusinessService;
 import org.opennms.netmgt.bsm.service.model.IpService;
 import org.opennms.netmgt.bsm.service.model.Status;
+import org.opennms.netmgt.bsm.service.model.edge.Edge;
 import org.opennms.netmgt.bsm.service.model.functions.map.Identity;
-import org.opennms.netmgt.dao.DatabasePopulator;
+import org.opennms.netmgt.bsm.test.BsmDatabasePopulator;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -106,7 +108,8 @@ public class BusinessServiceManagerImplIT {
     private BusinessServiceEdgeDao edgeDao;
 
     @Autowired
-    private DatabasePopulator populator;
+    @Qualifier("bsmDatabasePopulator")
+    private BsmDatabasePopulator populator;
 
     @Before
     public void before() {
@@ -116,10 +119,7 @@ public class BusinessServiceManagerImplIT {
 
     @After
     public void after() {
-        populator.resetDatabase();
-        for (BusinessServiceEntity eachService : businessServiceDao.findAll()) {
-            businessServiceDao.delete(eachService);
-        }
+        populator.resetDatabase(true);
     }
 
     @Test
@@ -135,8 +135,8 @@ public class BusinessServiceManagerImplIT {
         Assert.assertEquals(Status.NORMAL, businessServiceManager.getOperationalStatusForBusinessService(bsService2));
 
         // ip services attached
-        businessServiceManager.addIpServiceEdge(bsService1, ipServiceWithId5, new Identity());
-        businessServiceManager.addIpServiceEdge(bsService2, ipServiceWithId6, new Identity());
+        businessServiceManager.addIpServiceEdge(bsService1, ipServiceWithId5, new Identity(), Edge.DEFAULT_WEIGHT);
+        businessServiceManager.addIpServiceEdge(bsService2, ipServiceWithId6, new Identity(), Edge.DEFAULT_WEIGHT);
         bsService1.save();
         bsService2.save();
         Assert.assertFalse("Services are equal but should not", Objects.equals(bsService1, bsService2));
@@ -178,10 +178,10 @@ public class BusinessServiceManagerImplIT {
         BusinessService service_c_1 = createBusinessService("Business Service #c1");
         BusinessService service_c_2 = createBusinessService("Business Service #c2");
 
-        businessServiceManager.addChildEdge(service_p_1, service_c_1, new Identity());
-        businessServiceManager.addChildEdge(service_p_1, service_c_2, new Identity());
-        businessServiceManager.addChildEdge(service_p_2, service_c_1, new Identity());
-        businessServiceManager.addChildEdge(service_p_2, service_c_2, new Identity());
+        businessServiceManager.addChildEdge(service_p_1, service_c_1, new Identity(), Edge.DEFAULT_WEIGHT);
+        businessServiceManager.addChildEdge(service_p_1, service_c_2, new Identity(), Edge.DEFAULT_WEIGHT);
+        businessServiceManager.addChildEdge(service_p_2, service_c_1, new Identity(), Edge.DEFAULT_WEIGHT);
+        businessServiceManager.addChildEdge(service_p_2, service_c_2, new Identity(), Edge.DEFAULT_WEIGHT);
 
         Assert.assertEquals(ImmutableSet.of(service_p_1, service_p_2),
                             service_c_1.getParentServices());
@@ -196,8 +196,8 @@ public class BusinessServiceManagerImplIT {
         BusinessService service_c_1 = createBusinessService("Business Service #c1");
         BusinessService service_c_2 = createBusinessService("Business Service #c2");
 
-        businessServiceManager.addChildEdge(service_p, service_c_1, new Identity());
-        businessServiceManager.addChildEdge(service_p, service_c_2, new Identity());
+        businessServiceManager.addChildEdge(service_p, service_c_1, new Identity(), Edge.DEFAULT_WEIGHT);
+        businessServiceManager.addChildEdge(service_p, service_c_2, new Identity(), Edge.DEFAULT_WEIGHT);
         service_p.save();
         service_c_1.save();
         service_c_2.save();
@@ -216,8 +216,8 @@ public class BusinessServiceManagerImplIT {
         BusinessService service_c_1 = createBusinessService("Business Service #c1");
         BusinessService service_c_2 = createBusinessService("Business Service #c2");
 
-        businessServiceManager.addChildEdge(service_p, service_c_1, new Identity());
-        businessServiceManager.addChildEdge(service_c_1, service_c_2, new Identity());
+        businessServiceManager.addChildEdge(service_p, service_c_1, new Identity(), Edge.DEFAULT_WEIGHT);
+        businessServiceManager.addChildEdge(service_c_1, service_c_2, new Identity(), Edge.DEFAULT_WEIGHT);
         service_p.save();
         service_c_1.save();
         service_c_2.save();
@@ -253,7 +253,7 @@ public class BusinessServiceManagerImplIT {
                                             businessServiceManager.getBusinessServiceById(serviceId2)),
                             businessServiceManager.getFeasibleChildServices(businessServiceManager.getBusinessServiceById(serviceId3)));
 
-        businessServiceManager.addChildEdge(bs1, bs2, new Identity());
+        businessServiceManager.addChildEdge(bs1, bs2, new Identity(), Edge.DEFAULT_WEIGHT);
         bs1.save();
         bs2.save();
 
@@ -266,7 +266,7 @@ public class BusinessServiceManagerImplIT {
                                             businessServiceManager.getBusinessServiceById(serviceId2)),
                             businessServiceManager.getFeasibleChildServices(businessServiceManager.getBusinessServiceById(serviceId3)));
 
-        businessServiceManager.addChildEdge(bs2, bs3, new Identity());
+        businessServiceManager.addChildEdge(bs2, bs3, new Identity(), Edge.DEFAULT_WEIGHT);
         bs2.save();
         bs3.save();
 
@@ -292,9 +292,9 @@ public class BusinessServiceManagerImplIT {
         Long serviceId2 = businessServiceDao.save(service2);
         Long serviceId3 = businessServiceDao.save(service3);
 
-        businessServiceManager.addChildEdge(getBusinessService(serviceId1), getBusinessService(serviceId2), new Identity());
-        businessServiceManager.addChildEdge(getBusinessService(serviceId2), getBusinessService(serviceId3), new Identity());
-        businessServiceManager.addChildEdge(getBusinessService(serviceId3), getBusinessService(serviceId1), new Identity());
+        businessServiceManager.addChildEdge(getBusinessService(serviceId1), getBusinessService(serviceId2), new Identity(), Edge.DEFAULT_WEIGHT);
+        businessServiceManager.addChildEdge(getBusinessService(serviceId2), getBusinessService(serviceId3), new Identity(), Edge.DEFAULT_WEIGHT);
+        businessServiceManager.addChildEdge(getBusinessService(serviceId3), getBusinessService(serviceId1), new Identity(), Edge.DEFAULT_WEIGHT);
     }
 
     private BusinessService createBusinessService(String serviceName) {

@@ -29,6 +29,7 @@
 package org.opennms.netmgt.bsm.service.model.functions.reduce;
 
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 
 import org.opennms.netmgt.bsm.service.model.Status;
@@ -36,13 +37,9 @@ import org.opennms.netmgt.bsm.service.model.edge.Edge;
 import org.opennms.netmgt.bsm.service.model.mapreduce.ReductionFunction;
 
 public class MostCritical implements ReductionFunction {
-//    @Override
-//    public Optional<Status> reduce(Set<Edge> edges, Collection<Status> sources) {
-//        return Objects.requireNonNull(sources).stream().reduce((a, b) -> a.isGreaterThan(b) ? a : b);
-//    }
 
     @Override
     public Optional<Status> reduce(Map<Edge, Status> edgeStatusMap) {
-        return null;
+        return Objects.requireNonNull(edgeStatusMap).values().stream().reduce((a, b) -> a.isGreaterThan(b) ? a : b);
     }
 }

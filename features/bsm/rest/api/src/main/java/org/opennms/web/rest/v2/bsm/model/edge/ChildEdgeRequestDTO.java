@@ -28,61 +28,36 @@
 
 package org.opennms.web.rest.v2.bsm.model.edge;
 
-import java.util.Objects;
-
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.opennms.web.rest.v2.bsm.model.MapFunctionDTO;
-
 @XmlRootElement(name="child-edge")
-@XmlAccessorType(XmlAccessType.NONE)
-public class ChildEdgeRequestDTO {
+public class ChildEdgeRequestDTO extends AbstractEdgeRequestDTO {
 
     private Long childId;
-
-    private MapFunctionDTO mapFunction;
 
     @XmlElement(name="childId",required = true)
     public Long getChildId() {
         return childId;
     }
 
-    @XmlElement(name="mapFunction", required= true)
-    public MapFunctionDTO getMapFunction() {
-        return mapFunction;
-    }
-
     public void setChildId(Long childId) {
         this.childId = childId;
-    }
-
-    public void setMapFunction(MapFunctionDTO mapFunction) {
-        this.mapFunction = mapFunction;
     }
 
     @Override
     public boolean equals(Object obj) {
         if (obj == null) { return false; }
-        if (obj == this) { return true; }
-        if (getClass() != obj.getClass()) { return false; }
-        ChildEdgeRequestDTO other = (ChildEdgeRequestDTO) obj;
-        return Objects.equals(childId, other.childId)
-                && Objects.equals(mapFunction, other.mapFunction);
+        if (!(obj instanceof ChildEdgeRequestDTO)) { return false; }
+        if (!super.equals(obj)) {
+            return false;
+        }
+        // compare subclass fields
+        return java.util.Objects.equals(childId, ((ChildEdgeRequestDTO) obj).childId);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(childId, mapFunction);
-    }
-
-    @Override
-    public String toString() {
-        return com.google.common.base.Objects.toStringHelper(this)
-                .add("childId", childId)
-                .add("mapFunction", mapFunction)
-                .toString();
+        return super.hashCode() + java.util.Objects.hash(childId);
     }
 }

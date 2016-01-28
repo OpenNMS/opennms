@@ -161,8 +161,8 @@ public class BusinessServiceImpl implements BusinessService {
     }
 
     @Override
-    public void addIpServiceEdge(IpService ipService, MapFunction mapFunction) {
-        m_manager.addIpServiceEdge(this, ipService, mapFunction);
+    public void addIpServiceEdge(IpService ipService, MapFunction mapFunction, int weight) {
+        m_manager.addIpServiceEdge(this, ipService, mapFunction, weight);
     }
 
     @Override
@@ -179,8 +179,8 @@ public class BusinessServiceImpl implements BusinessService {
     }
 
     @Override
-    public void addReductionKeyEdge(String reductionKey, MapFunction mapFunction) {
-        m_manager.addReductionKeyEdge(this, reductionKey, mapFunction);
+    public void addReductionKeyEdge(String reductionKey, MapFunction mapFunction, int weight) {
+        m_manager.addReductionKeyEdge(this, reductionKey, mapFunction, weight);
     }
 
     @Override
@@ -197,8 +197,8 @@ public class BusinessServiceImpl implements BusinessService {
     }
 
     @Override
-    public void addChildEdge(BusinessService child, MapFunction mapFunction) {
-        m_manager.addChildEdge(this, child, mapFunction);
+    public void addChildEdge(BusinessService child, MapFunction mapFunction, int weight) {
+        m_manager.addChildEdge(this, child, mapFunction, weight);
     }
 
     @Override
