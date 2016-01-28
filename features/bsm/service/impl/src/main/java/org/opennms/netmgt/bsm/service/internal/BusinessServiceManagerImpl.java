@@ -44,6 +44,7 @@ import org.opennms.netmgt.bsm.persistence.api.IPServiceEdgeEntity;
 import org.opennms.netmgt.bsm.persistence.api.SingleReductionKeyEdgeEntity;
 import org.opennms.netmgt.bsm.persistence.api.functions.reduce.ReductionFunctionDao;
 import org.opennms.netmgt.bsm.service.BusinessServiceManager;
+import org.opennms.netmgt.bsm.service.BusinessServiceSearchCriteria;
 import org.opennms.netmgt.bsm.service.BusinessServiceStateMachine;
 import org.opennms.netmgt.bsm.service.internal.edge.ChildEdgeImpl;
 import org.opennms.netmgt.bsm.service.internal.edge.IpServiceEdgeImpl;
@@ -108,6 +109,12 @@ public class BusinessServiceManagerImpl implements BusinessServiceManager {
     }
 
     @Override
+    public List<BusinessService> search(BusinessServiceSearchCriteria businessServiceSearchCriteria) {
+        Objects.requireNonNull(businessServiceSearchCriteria);
+        return businessServiceSearchCriteria.apply(this, getAllBusinessServices());
+    }
+
+    @Override
     public List<BusinessService> findMatching(Criteria criteria) {
         criteria = transform(criteria);
         List<BusinessServiceEntity> all = getDao().findMatching(criteria);
@@ -120,11 +127,11 @@ public class BusinessServiceManagerImpl implements BusinessServiceManager {
     @Override
     public int countMatching(Criteria criteria) {
         criteria = transform(criteria);
-        return getDao().countMatching(criteria);
-    }
+                return getDao().countMatching(criteria);
+            }
 
-    @Override
-    public BusinessService createBusinessService() {
+            @Override
+            public BusinessService createBusinessService() {
         return new BusinessServiceImpl(this, new BusinessServiceEntity());
     }
 
