@@ -36,7 +36,7 @@ public class ScanReportPollResult implements Serializable {
     private String m_id = UUID.randomUUID().toString();
 
     @XmlIDREF
-    @JsonBackReference
+    @JsonBackReference("scan-report-id")
     private ScanReport m_scanReport;
 
     @XmlAttribute(name="service-name")

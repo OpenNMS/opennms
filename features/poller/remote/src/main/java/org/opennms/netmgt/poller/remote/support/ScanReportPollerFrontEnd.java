@@ -436,8 +436,13 @@ public class ScanReportPollerFrontEnd implements PollerFrontEnd, InitializingBea
         scanReport.addProperty("monitoring-system-id", getMonitoringSystemId());
         scanReport.setTimestamp(new Date());
 
+        // Add all of the metadata to the scan report
         for (final Map.Entry<String,String> entry : m_metadata.entrySet()) {
             scanReport.addProperty(entry);
+        }
+        // Add the selected applications as scan report metadata
+        if (m_selectedApplications != null && m_selectedApplications.size() > 0) {
+            scanReport.addProperty("applications", m_selectedApplications.stream().collect(Collectors.joining(", ")));
         }
 
         // Create a log appender that will capture log output to the root logger

@@ -278,7 +278,9 @@ class ScanGui extends AbstractGui implements ScanReportHandler, PropertyChangeLi
                             metadata.put(field.getKey(), field.getValue().getText())
                         }
                         m_frontEnd.setMetadata(metadata)
-                        m_frontEnd.setSelectedApplications(Collections.singleton(applicationCombo.getSelectedItem()))
+                        if (applicationCombo.getSelectedItem() != null) {
+                            m_frontEnd.setSelectedApplications(Collections.singleton(applicationCombo.getSelectedItem()))
+                        }
 
                         // Reduce the opacity of the background to create a 'disabled' look
                         float[] bgColor = new float[3];
