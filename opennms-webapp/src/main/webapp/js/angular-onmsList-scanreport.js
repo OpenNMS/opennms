@@ -144,7 +144,22 @@
 			}, function(response) {
 				$log.debug(response);
 			});
+		};
 
+		$scope.$parent.deleteItem = function(item) {
+			var saveMe = ScanReports.get({id: item.id}, function() {
+				if ($window.confirm('Are you sure you want to remove scan report \"' + item.id + '\"?')) {
+					saveMe.$delete({id: item.id}, function() {
+						$scope.refresh();
+					});
+				}
+			}, function(response) {
+				if (response.status === 404) {
+					// We didn't find the item so it can't be deleted
+					// Might as well call refresh()
+					$scope.refresh();
+				}
+			});
 		};
 
 		// Refresh the item list;
