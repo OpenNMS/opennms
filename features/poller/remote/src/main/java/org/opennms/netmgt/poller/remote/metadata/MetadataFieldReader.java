@@ -28,17 +28,22 @@
 
 package org.opennms.netmgt.poller.remote.metadata;
 
+import java.awt.Color;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.LinkedHashSet;
 import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.commons.io.IOUtils;
+import org.opennms.netmgt.poller.remote.PollerTheme;
 import org.opennms.netmgt.poller.remote.metadata.MetadataField.Validator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -102,38 +107,70 @@ public class MetadataFieldReader {
     }
 
     public String getTitle() {
-        if (m_propertyFile.exists() && m_propertyFile.canRead()) {
-            final Properties p = new Properties();
-            Reader r = null;
-            try {
-                r = new FileReader(m_propertyFile);
-                p.load(r);
-                final String title = p.getProperty("gui.title");
-                if (title != null && !title.trim().isEmpty()) {
-                    return title;
-                }
-            } catch (final IOException e) {
-                LOG.warn("Failed to get report title.", e);
-            } finally {
-                IOUtils.closeQuietly(r);
-            }
+        final String title = getProperty("gui.title");
+        if (title == null) {
+            return "On-Demand Scan Report";
         }
-        return "On-Demand Scan Report";
+        return title;
     }
 
     public URL getImage() {
+        final String image = getProperty("gui.image");
+        if (image != null && image.startsWith("http")) {
+            try {
+                return new URL(image);
+            } catch (final MalformedURLException e) {
+                LOG.warn("Invalid image URL: {}", image, e);
+            }
+        }
+        return null;
+    }
+
+    private static final Pattern HEX_COLOR = Pattern.compile("^\\s*(\\p{XDigit}\\p{XDigit})(\\p{XDigit}\\p{XDigit})(\\p{XDigit}\\p{XDigit})(\\p{XDigit}\\p{XDigit})?\\s*$");
+
+    public Color getColor(final String key) {
+        final String color = getProperty(key);
+        if (color != null) {
+            final Matcher m = HEX_COLOR.matcher(color);
+            if (m.matches()) {
+                LOG.debug("{} matches", color);
+                Integer red = Integer.valueOf(m.group(1), 16);
+                Integer green = Integer.valueOf(m.group(2), 16);
+                Integer blue = Integer.valueOf(m.group(3), 16);
+                Integer alpha = null;
+                if (m.group(4) != null) {
+                    alpha = Integer.valueOf(m.group(4), 16);
+                }
+                LOG.debug("red={}, green={}, blue={}, alpha={}", red, green, blue, alpha);
+                if (alpha != null) {
+                    return new Color(red, green, blue, alpha);
+                } else {
+                    return new Color(red, green, blue);
+                }
+            } else {
+                LOG.debug("{} does not match", color);
+            }
+        }
+        return null;
+    }
+
+    public PollerTheme getTheme() {
+        return new PollerTheme(getTitle(), getImage(), getColor("gui.foreground-color"), getColor("gui.background-color"), getColor("gui.detail-color"));
+    }
+
+    protected String getProperty(final String key) {
         if (m_propertyFile.exists() && m_propertyFile.canRead()) {
             final Properties p = new Properties();
             Reader r = null;
             try {
                 r = new FileReader(m_propertyFile);
                 p.load(r);
-                final String image = p.getProperty("gui.image");
-                if (image != null && image.startsWith("http")) {
-                    return new URL(image);
+                final String value = p.getProperty(key);
+                if (value != null && !value.trim().isEmpty()) {
+                    return value;
                 }
             } catch (final IOException e) {
-                LOG.warn("Failed to get report title.", e);
+                LOG.warn("Failed to get {} from {}", key, m_propertyFile, e);
             } finally {
                 IOUtils.closeQuietly(r);
             }

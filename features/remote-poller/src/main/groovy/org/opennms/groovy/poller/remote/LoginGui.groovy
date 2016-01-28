@@ -32,6 +32,7 @@ import org.opennms.netmgt.poller.remote.PollerFrontEnd;
 
 import groovy.swing.SwingBuilder;
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.GridBagLayout;
 import java.awt.GridBagConstraints;
 
@@ -58,6 +59,11 @@ class LoginGui extends AbstractGui implements AuthenticationGui {
 
     JTextField m_userTextField;
     JPasswordField m_passwordTextField;
+
+    @Override
+    protected Color getDetailColor() {
+        return Color.GRAY;
+    }
 
     public AuthenticationBean getAuthenticationBean() {
         m_latch.await();

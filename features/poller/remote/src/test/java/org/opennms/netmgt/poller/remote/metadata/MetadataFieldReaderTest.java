@@ -6,12 +6,15 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import java.awt.Color;
 import java.io.File;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.Iterator;
 import java.util.Set;
 
 import org.junit.Test;
+import org.opennms.netmgt.poller.remote.PollerTheme;
 
 public class MetadataFieldReaderTest {
     @Test
@@ -51,6 +54,16 @@ public class MetadataFieldReaderTest {
     @Test(expected=IllegalArgumentException.class)
     public void testMissingDescription() throws Exception {
         getReader("target/test-classes/missing-description.properties").getMetadataFields();
+    }
+
+    @Test
+    public void testValidTheme() throws Exception {
+        final PollerTheme theme = getReader("target/test-classes/metadata.properties").getTheme();
+        assertEquals("Foo", theme.getTitle());
+        assertEquals(new URL("http://blah/"), theme.getImage());
+        assertEquals(new Color(0xffffff), theme.getForegroundColor());
+        assertEquals(new Color(0x000000), theme.getBackgroundColor());
+        assertEquals(new Color(0xff0000), theme.getDetailColor());
     }
 
     private MetadataFieldReader getReader(final String propFile) throws URISyntaxException {

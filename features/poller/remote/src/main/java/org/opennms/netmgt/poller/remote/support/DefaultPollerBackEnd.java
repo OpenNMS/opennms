@@ -31,7 +31,6 @@ package org.opennms.netmgt.poller.remote.support;
 import java.io.File;
 import java.io.Serializable;
 import java.net.InetAddress;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -87,6 +86,7 @@ import org.opennms.netmgt.poller.remote.OnmsPollModel;
 import org.opennms.netmgt.poller.remote.PolledService;
 import org.opennms.netmgt.poller.remote.PollerBackEnd;
 import org.opennms.netmgt.poller.remote.PollerConfiguration;
+import org.opennms.netmgt.poller.remote.PollerTheme;
 import org.opennms.netmgt.poller.remote.RemoteHostThreadLocal;
 import org.opennms.netmgt.poller.remote.metadata.MetadataField;
 import org.opennms.netmgt.poller.remote.metadata.MetadataFieldReader;
@@ -933,13 +933,8 @@ public class DefaultPollerBackEnd implements PollerBackEnd, SpringServiceDaemon 
     }
 
     @Override
-    public String getScanReportTitle() {
-        return m_metadataFieldReader.getTitle();
-    }
-
-    @Override
-    public URL getScanReportImage() {
-        return m_metadataFieldReader.getImage();
+    public PollerTheme getTheme() {
+        return m_metadataFieldReader.getTheme();
     }
 
     @Override
