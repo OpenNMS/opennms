@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.bsm.vaadin.adminpage;
 
+import com.vaadin.data.Validator;
 import org.opennms.netmgt.bsm.service.BusinessServiceManager;
 import org.opennms.netmgt.bsm.service.model.BusinessService;
 import org.opennms.netmgt.bsm.service.model.IpService;
@@ -75,6 +76,10 @@ public class BusinessServiceEditWindow extends Window {
      * Reduce function
      */
     private NativeSelect m_reduceFunctionNativeSelect;
+    /**
+     * the threshold textfield
+     */
+    private TextField m_thresholdTextField;
     /**
      * list of reduction keys
      */
@@ -129,6 +134,10 @@ public class BusinessServiceEditWindow extends Window {
                     throw Throwables.propagate(e);
                 }
 
+                if (reductionFunction instanceof Threshold) {
+                    ((Threshold) reductionFunction).setThreshold(Float.parseFloat(m_thresholdTextField.getValue()));
+                }
+
                 businessService.setReduceFunction(reductionFunction);
                 businessService.save();
                 close();
@@ -176,6 +185,7 @@ public class BusinessServiceEditWindow extends Window {
         m_reduceFunctionNativeSelect.setWidth(98.0f, Unit.PERCENTAGE);
         m_reduceFunctionNativeSelect.setNullSelectionAllowed(false);
         m_reduceFunctionNativeSelect.setMultiSelect(false);
+        m_reduceFunctionNativeSelect.setImmediate(true);
         m_reduceFunctionNativeSelect.setNewItemsAllowed(false);
 
         /**
@@ -185,6 +195,28 @@ public class BusinessServiceEditWindow extends Window {
         m_reduceFunctionNativeSelect.setValue(MostCritical.class);
 
         verticalLayout.addComponent(m_reduceFunctionNativeSelect);
+
+        m_thresholdTextField = new TextField("Threshold");
+        m_thresholdTextField.setRequired(true);
+        m_thresholdTextField.setEnabled(false);
+        m_thresholdTextField.setImmediate(true);
+        m_thresholdTextField.setWidth(100.0f, Unit.PERCENTAGE);
+        m_thresholdTextField.setValue("0.0");
+        m_thresholdTextField.addValidator(v -> {
+            try {
+                if (Float.parseFloat(m_thresholdTextField.getValue()) <= 0.0f) {
+                    throw new NumberFormatException();
+                }
+            } catch (final NumberFormatException e) {
+                throw new Validator.InvalidValueException("Threshold must be a positive number");
+            }
+        });
+
+        verticalLayout.addComponent(m_thresholdTextField);
+
+        m_reduceFunctionNativeSelect.addValueChangeListener(ev -> {
+            m_thresholdTextField.setEnabled(m_reduceFunctionNativeSelect.getValue() == Threshold.class);
+        });
 
         /**
          * create the edges list box
