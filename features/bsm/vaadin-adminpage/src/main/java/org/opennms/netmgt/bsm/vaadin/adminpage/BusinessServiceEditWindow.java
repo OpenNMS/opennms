@@ -28,25 +28,18 @@
 
 package org.opennms.netmgt.bsm.vaadin.adminpage;
 
-import com.google.common.collect.ImmutableList;
 import java.util.stream.Collectors;
 
 import org.opennms.netmgt.bsm.service.BusinessServiceManager;
 import org.opennms.netmgt.bsm.service.model.BusinessService;
-import org.opennms.netmgt.bsm.service.model.edge.Edge;
-import org.opennms.netmgt.bsm.service.model.functions.map.Decrease;
-import org.opennms.netmgt.bsm.service.model.functions.map.Identity;
-import org.opennms.netmgt.bsm.service.model.functions.map.Ignore;
-import org.opennms.netmgt.bsm.service.model.functions.map.Increase;
-import org.opennms.netmgt.bsm.service.model.functions.map.SetTo;
 import org.opennms.netmgt.bsm.service.model.functions.reduce.MostCritical;
 import org.opennms.netmgt.bsm.service.model.functions.reduce.Threshold;
 import org.opennms.netmgt.vaadin.core.TransactionAwareUI;
 import org.opennms.netmgt.vaadin.core.UIHelper;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Sets;
 import com.vaadin.data.Property;
-import com.vaadin.data.util.BeanContainer;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
@@ -76,10 +69,6 @@ public class BusinessServiceEditWindow extends Window {
      */
     private TextField m_nameTextField;
     /**
-     * bean item container for Business Services DTOs
-     */
-    private BeanContainer<Long, Edge> m_edgesContainer = new BeanContainer<>(Edge.class);
-    /**
      * Reduce function
      */
     private NativeSelect m_reduceFunctionNativeSelect;
@@ -104,9 +93,6 @@ public class BusinessServiceEditWindow extends Window {
          * set the member field...
          */
         this.m_businessServiceMainLayout = businessServiceMainLayout;
-
-        m_edgesContainer.setBeanIdProperty("id");
-        m_edgesContainer.addAll(businessService.getEdges().stream().collect(Collectors.toList()));
 
         /**
          * ...and basic properties
