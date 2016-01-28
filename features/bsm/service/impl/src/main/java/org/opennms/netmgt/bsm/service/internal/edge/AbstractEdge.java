@@ -86,6 +86,11 @@ public abstract class AbstractEdge<T extends BusinessServiceEdgeEntity> implemen
         return new MapFunctionMapper().toServiceFunction(getEntity().getMapFunction());
     }
 
+    @Override
+    public int getWeight() {
+        return getEntity().getWeight();
+    }
+
     protected BusinessServiceManager getManager() {
         return m_manager;
     }

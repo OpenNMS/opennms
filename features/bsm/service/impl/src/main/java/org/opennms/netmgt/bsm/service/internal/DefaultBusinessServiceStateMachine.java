@@ -170,15 +170,21 @@ public class DefaultBusinessServiceStateMachine implements BusinessServiceStateM
     }
 
     private Status calculateCurrentStatus(BusinessService businessService) {
+        final HashMap<Edge, Status> edgeStatusMap = new HashMap<>();
         // Map
-        final List<Status> statusList = getStatusListForReduceFunction(businessService);
-
-
-        //
-        HashMap<Edge, Status> edgesToStatus = new HashMap<>();
+        for (Edge edge : businessService.getEdges()) {
+            for (String reductionKey : edge.getReductionKeys()) {
+                final Status rkStatus = m_reductionKeyStatus.get(reductionKey);
+                edge.getMapFunction().map(rkStatus).ifPresent(s -> edgeStatusMap.put(edge, s));
+            }
+        }
+        for (ChildEdge edge : businessService.getChildEdges()) {
+            final Status bsStatus = m_businessServiceStatus.get(edge.getChild());
+            edge.getMapFunction().map(bsStatus).ifPresent(s -> edgeStatusMap.put(edge, s));
+        }
 
         // Reduce
-        final Status overallStatus = businessService.getReduceFunction().reduce(businessService.getEdges(), statusList).orElse(DEFAULT_SEVERITY);
+        final Status overallStatus = businessService.getReduceFunction().reduce(edgeStatusMap).orElse(DEFAULT_SEVERITY);
 
         // Apply lower bound, severity states like INDETERMINATE and CLEARED don't always make sense
         return overallStatus.isLessThan(MIN_SEVERITY) ? MIN_SEVERITY : overallStatus;
@@ -207,9 +213,7 @@ public class DefaultBusinessServiceStateMachine implements BusinessServiceStateM
     // calculates the status for all business services on a certain level
     private void calculateStatus(int level) {
         Set<BusinessService> businessServiceEntities = m_businessServiceStatus.keySet().stream().filter(bs -> bs.getLevel() == level).collect(Collectors.toSet());
-        for (BusinessService eachEntity : businessServiceEntities) {
-            doBusinessServiceStatusCalculation(eachEntity);
-        }
+        businessServiceEntities.forEach(this::doBusinessServiceStatusCalculation);
     }
 
     private void doBusinessServiceStatusCalculation(BusinessService businessService) {
