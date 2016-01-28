@@ -39,8 +39,8 @@ import org.codehaus.jackson.map.annotate.JsonRootName;
 import org.opennms.core.config.api.JaxbListWrapper;
 import org.opennms.netmgt.model.ScanReport;
 
-@XmlRootElement(name="scanreports")
-@JsonRootName("scanreports")
+@XmlRootElement(name="scan-reports")
+@JsonRootName("scan-reports")
 public class ScanReportList extends JaxbListWrapper<ScanReport> {
     private static final long serialVersionUID = 1L;
 
@@ -49,8 +49,8 @@ public class ScanReportList extends JaxbListWrapper<ScanReport> {
         super(definitions);
     }
 
-    @XmlElement(name="scanreport")
-    @JsonProperty("scanreport")
+    @XmlElement(name="scan-report")
+    @JsonProperty("scan-report")
     public List<ScanReport> getObjects() {
         return super.getObjects();
     }

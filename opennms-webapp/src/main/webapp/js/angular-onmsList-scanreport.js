@@ -56,7 +56,7 @@
 							return [];
 						} else {
 							// Always return the data as an array
-							return angular.isArray(data.scanreport) ? data.scanreport : [ data.scanreport ];
+							return angular.isArray(data['scan-report']) ? data['scan-report'] : [ data['scan-report'] ];
 						}
 					})
 				},
