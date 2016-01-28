@@ -88,10 +88,13 @@ public class BusinessServiceMainLayout extends VerticalLayout {
         createButton.setId("createButton");
         createButton.addClickListener((Button.ClickListener) event -> {
             if (!"".equals(Strings.nullToEmpty(createTextField.getValue()).trim())) {
-                final BusinessServiceDTO businessServiceDTO = new BusinessServiceDTO();
-                businessServiceDTO.setName(createTextField.getValue().trim());
-                getUI().addWindow(new BusinessServiceEditWindow(businessServiceDTO, BusinessServiceMainLayout.this));
+                final BusinessService businessService = m_businessServiceManager.createBusinessService();
+                businessService.setName(createTextField.getValue().trim());
                 createTextField.setValue("");
+
+                final BusinessServiceEditWindow window = new BusinessServiceEditWindow(businessService, m_businessServiceManager);
+                window.addCloseListener(e -> refreshTable());
+                getUI().addWindow(window);
             }
         });
 
@@ -131,7 +134,10 @@ public class BusinessServiceMainLayout extends VerticalLayout {
 
                 editButton.addClickListener(UIHelper.getCurrent(TransactionAwareUI.class).wrapInTransactionProxy((Button.ClickListener) event -> {
                     BusinessService businessService = m_businessServiceManager.getBusinessServiceById((Long) itemId);
-                    getUI().addWindow(new BusinessServiceEditWindow(businessService, BusinessServiceMainLayout.this));
+                    final BusinessServiceEditWindow window = new BusinessServiceEditWindow(businessService, m_businessServiceManager);
+                    window.addCloseListener(e -> refreshTable());
+
+                    getUI().addWindow(window);
                 }));
                 return editButton;
             }
@@ -199,7 +205,7 @@ public class BusinessServiceMainLayout extends VerticalLayout {
     /**
      * Refreshes the entries of the table used for listing the DTO instances.
      */
-    public void refreshTable() {
+    private void refreshTable() {
         m_beanContainer.setBeanIdProperty("id");
         m_beanContainer.removeAllItems();
         m_beanContainer.addAll(m_businessServiceManager.getAllBusinessServices());

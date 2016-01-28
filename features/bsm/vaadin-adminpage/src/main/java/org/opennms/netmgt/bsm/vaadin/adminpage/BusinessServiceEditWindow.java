@@ -30,6 +30,7 @@ package org.opennms.netmgt.bsm.vaadin.adminpage;
 
 import org.opennms.netmgt.bsm.service.BusinessServiceManager;
 import org.opennms.netmgt.bsm.service.model.BusinessService;
+import org.opennms.netmgt.bsm.service.model.IpService;
 import org.opennms.netmgt.bsm.service.model.edge.ChildEdge;
 import org.opennms.netmgt.bsm.service.model.edge.Edge;
 import org.opennms.netmgt.bsm.service.model.edge.IpServiceEdge;
@@ -63,10 +64,9 @@ import org.opennms.netmgt.vaadin.core.UIHelper;
  * @author Christian Pape <christian@opennms.org>
  */
 public class BusinessServiceEditWindow extends Window {
-    /**
-     * the parent main layout
-     */
-    private BusinessServiceMainLayout m_businessServiceMainLayout;
+
+    private final BusinessService m_businessService;
+
     /**
      * the name textfield
      */
@@ -84,18 +84,15 @@ public class BusinessServiceEditWindow extends Window {
      * Constructor
      *
      * @param businessService the Business Service DTO instance to be configured
-     * @param businessServiceMainLayout the parent main layout
      */
-    public BusinessServiceEditWindow(BusinessService businessService, BusinessServiceMainLayout businessServiceMainLayout) {
+    public BusinessServiceEditWindow(BusinessService businessService,
+                                     BusinessServiceManager businessServiceManager) {
         /**
          * set window title...
          */
         super("Business Service Edit");
 
-        /**
-         * set the member field...
-         */
-        this.m_businessServiceMainLayout = businessServiceMainLayout;
+        m_businessService = businessService;
 
         /**
          * ...and basic properties
@@ -135,7 +132,6 @@ public class BusinessServiceEditWindow extends Window {
                 businessService.setReduceFunction(reductionFunction);
                 businessService.save();
                 close();
-                businessServiceMainLayout.refreshTable();
             }
         }));
 
@@ -199,30 +195,7 @@ public class BusinessServiceEditWindow extends Window {
         m_edgesListSelect.setRows(20);
         m_edgesListSelect.setNullSelectionAllowed(false);
         m_edgesListSelect.setMultiSelect(false);
-        m_edgesListSelect.addItems(businessService.getEdges());
-        m_edgesListSelect.getItemIds().forEach(item -> {
-            final Edge edge = (Edge) item;
-
-            final String desc;
-            switch (edge.getType()) {
-                case CHILD_SERVICE:
-                    desc = "Child: " + ((ChildEdge) edge).getChild().getName();
-                    break;
-
-                case IP_SERVICE:
-                    desc = "IPSvc: " + ((IpServiceEdge) edge).getIpService().getNodeLabel();
-                    break;
-
-                case REDUCTION_KEY:
-                    desc = "ReKey: " + ((ReductionKeyEdge) edge).getReductionKey();
-                    break;
-
-                default:
-                    throw new IllegalArgumentException();
-            }
-
-            m_edgesListSelect.setItemCaption(edge, desc);
-        });
+        refreshEdges();
 
 
         /**
@@ -239,7 +212,11 @@ public class BusinessServiceEditWindow extends Window {
         addEdgeButton.setWidth(140.0f, Unit.PIXELS);
         addEdgeButton.addStyleName("small");
         edgesButtonLayout.addComponent(addEdgeButton);
-        addEdgeButton.addClickListener((Button.ClickListener) event -> this.getUI().addWindow(new BusinessServiceEdgeEditWindow(businessService, this)));
+        addEdgeButton.addClickListener((Button.ClickListener) event -> {
+            final BusinessServiceEdgeEditWindow window = new BusinessServiceEdgeEditWindow(businessService, businessServiceManager);
+            window.addCloseListener(e -> refreshEdges());
+            this.getUI().addWindow(window);
+        });
 
         final Button removeReductionKeyBtn = new Button("Remove");
         removeReductionKeyBtn.setEnabled(false);
@@ -260,6 +237,8 @@ public class BusinessServiceEditWindow extends Window {
                 if (m_edgesListSelect.getValue() != null) {
                     m_edgesListSelect.removeItem(m_edgesListSelect.getValue());
                     removeReductionKeyBtn.setEnabled(false);
+
+                    refreshEdges();
                 }
             }
         });
@@ -285,7 +264,42 @@ public class BusinessServiceEditWindow extends Window {
         setContent(verticalLayout);
     }
 
-    public BusinessServiceManager getBusinessServiceManager() {
-        return m_businessServiceMainLayout.getBusinessServiceManager();
+    private void refreshEdges() {
+        m_edgesListSelect.removeAllItems();
+        m_edgesListSelect.addItems(m_businessService.getEdges());
+        m_edgesListSelect.getItemIds().forEach(item -> {
+            m_edgesListSelect.setItemCaption(item, describeEdge((Edge) item));
+        });
+    }
+
+    public static String describeBusinessService(final BusinessService businessService) {
+        return businessService.getName();
+    }
+
+    public static String describeIpService(final IpService ipService) {
+        return String.format("%s %s %s",
+                             ipService.getNodeLabel(),
+                             ipService.getIpAddress(),
+                             ipService.getServiceName());
+    }
+
+    public static String describeReductionKey(final String reductionKey) {
+        return reductionKey;
+    }
+
+    public static String describeEdge(final Edge edge) {
+        switch (edge.getType()) {
+            case CHILD_SERVICE:
+                return "Child: " + describeBusinessService(((ChildEdge) edge).getChild());
+
+            case IP_SERVICE:
+                return "IPSvc: " + describeIpService(((IpServiceEdge) edge).getIpService());
+
+            case REDUCTION_KEY:
+                return "ReKey: " + describeReductionKey(((ReductionKeyEdge) edge).getReductionKey());
+
+            default:
+                throw new IllegalArgumentException();
+        }
     }
 }

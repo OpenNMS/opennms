@@ -30,6 +30,7 @@ package org.opennms.netmgt.bsm.vaadin.adminpage;
 
 import java.util.Objects;
 
+import org.opennms.netmgt.bsm.service.BusinessServiceManager;
 import org.opennms.netmgt.bsm.service.model.BusinessService;
 import org.opennms.netmgt.bsm.service.model.IpService;
 import org.opennms.netmgt.bsm.service.model.Status;
@@ -81,44 +82,14 @@ public class BusinessServiceEdgeEditWindow extends Window {
     private final TextField m_weightField;
 
     /**
-     * bean item container for IP services DTOs
-     */
-    private BeanContainer<Integer, IpService> m_ipServicesContainer = new BeanContainer<>(IpService.class);
-
-    /**
-     * bean item container for Business Services DTOs
-     */
-    private BeanContainer<Long, BusinessService> m_businessServicesContainer = new BeanContainer<>(BusinessService.class);
-
-    /**
      * Constructor
      *
-     * @param businessService           the Business Service DTO instance to be configured
-     * @param businessServiceEditWindow the parent main layout
+     * @param businessService        the Business Service DTO instance to be configured
+     * @param businessServiceManager the Business Service Manager
      */
     public BusinessServiceEdgeEditWindow(final BusinessService businessService,
-                                         final BusinessServiceEditWindow businessServiceEditWindow) {
+                                         final BusinessServiceManager businessServiceManager) {
         super("Business Service Edge Edit");
-
-        this.m_businessServiceEditWindow = businessServiceEditWindow;
-
-        /**
-         * query for IP services...
-         */
-        m_ipServicesContainer.setBeanIdProperty("id");
-        m_ipServicesContainer.addAll(m_businessServiceEditWindow.getBusinessServiceManager().getAllIpServices());
-
-        /**
-         * ...and query for Business Services. Only add the Business Services that will not result in a loop...
-         */
-        m_businessServicesContainer.setBeanIdProperty("id");
-
-        if (Objects.isNull(businessService) || Objects.isNull(businessService.getId())) {
-            m_businessServicesContainer.addAll(m_businessServiceEditWindow.getBusinessServiceManager().getAllBusinessServices());
-        } else {
-            m_businessServicesContainer.addAll(m_businessServiceEditWindow.getBusinessServiceManager().getFeasibleChildServices(businessService));
-        }
-
 
         /**
          * Basic window setup
@@ -172,20 +143,25 @@ public class BusinessServiceEdgeEditWindow extends Window {
         m_childServiceComponent.setWidth(100.0f, Unit.PERCENTAGE);
         m_childServiceComponent.setRows(20);
         m_childServiceComponent.setVisible(false);
-        m_childServiceComponent.setContainerDataSource(m_businessServicesContainer);
+//        if (Objects.isNull(businessService) || Objects.isNull(businessService.getId())) {
+//            m_childServiceComponent.addItems(businessServiceManager.getAllBusinessServices());
+//        } else {
+            m_childServiceComponent.addItems(businessServiceManager.getFeasibleChildServices(businessService));
+//        }
+        m_childServiceComponent.getItemIds().forEach(item -> m_childServiceComponent.setItemCaption(item, BusinessServiceEditWindow.describeBusinessService((BusinessService) item)));
         formLayout.addComponent(m_childServiceComponent);
 
         /**
          * ip service list
          */
-        m_ipServiceComponent = new ListSelect("IP Service");
+        m_ipServiceComponent = new ListSelect("IP Service", businessServiceManager.getAllIpServices());
         m_ipServiceComponent.setMultiSelect(false);
         m_ipServiceComponent.setNewItemsAllowed(false);
         m_ipServiceComponent.setNullSelectionAllowed(false);
         m_ipServiceComponent.setWidth(100.0f, Unit.PERCENTAGE);
         m_ipServiceComponent.setRows(20);
         m_ipServiceComponent.setVisible(false);
-        m_ipServiceComponent.setContainerDataSource(m_ipServicesContainer);
+        m_ipServiceComponent.getItemIds().forEach(item -> m_ipServiceComponent.setItemCaption(item, BusinessServiceEditWindow.describeIpService((IpService) item)));
         formLayout.addComponent(m_ipServiceComponent);
 
         /**
@@ -314,11 +290,11 @@ public class BusinessServiceEdgeEditWindow extends Window {
 
             switch ((Edge.Type) m_typeSelect.getValue()) {
                 case CHILD_SERVICE:
-                    businessService.addChildEdge(m_businessServicesContainer.getItem(m_childServiceComponent.getValue()).getBean(), mapFunction, Edge.DEFAULT_WEIGHT);
+                    businessService.addChildEdge((BusinessService) m_childServiceComponent.getValue(), mapFunction, Edge.DEFAULT_WEIGHT);
                     break;
 
                 case IP_SERVICE:
-                    businessService.addIpServiceEdge(m_ipServicesContainer.getItem(m_ipServiceComponent.getValue()).getBean(), mapFunction, Edge.DEFAULT_WEIGHT);
+                    businessService.addIpServiceEdge((IpService) m_ipServiceComponent.getValue(), mapFunction, Edge.DEFAULT_WEIGHT);
                     break;
 
                 case REDUCTION_KEY:
