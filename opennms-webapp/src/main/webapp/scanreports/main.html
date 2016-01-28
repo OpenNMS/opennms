@@ -190,7 +190,7 @@
 
 				<tr ng-repeat="item in items track by item.id">
 					<td class="text-nowrap" style="line-height:24px;">
-						{{item.id}}
+						<samp>{{item.id}}</samp>
 						<a style="text-decoration: none;" ng-click="deleteItem(item)"><i class="fa fa-trash-o fa-lg"/></a>
 						<a style="text-decoration: none;" ng-click="addSearchClause({property:'id',operator:'EQ',value:item.id})"><i class="fa fa-plus-square-o fa-lg"/></a>
 						<a style="text-decoration: none;" ng-click="addSearchClause({property:'id',operator:'NE',value:item.id})"><i class="fa fa-minus-square-o fa-lg"/></a>
