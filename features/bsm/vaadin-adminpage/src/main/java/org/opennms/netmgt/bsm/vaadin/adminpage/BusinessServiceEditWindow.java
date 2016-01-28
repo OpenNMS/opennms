@@ -30,6 +30,10 @@ package org.opennms.netmgt.bsm.vaadin.adminpage;
 
 import org.opennms.netmgt.bsm.service.BusinessServiceManager;
 import org.opennms.netmgt.bsm.service.model.BusinessService;
+import org.opennms.netmgt.bsm.service.model.edge.ChildEdge;
+import org.opennms.netmgt.bsm.service.model.edge.Edge;
+import org.opennms.netmgt.bsm.service.model.edge.IpServiceEdge;
+import org.opennms.netmgt.bsm.service.model.edge.ReductionKeyEdge;
 import org.opennms.netmgt.bsm.service.model.functions.reduce.MostCritical;
 import org.opennms.netmgt.bsm.service.model.functions.reduce.Threshold;
 import org.opennms.netmgt.bsm.service.model.mapreduce.ReductionFunction;
@@ -196,6 +200,29 @@ public class BusinessServiceEditWindow extends Window {
         m_edgesListSelect.setNullSelectionAllowed(false);
         m_edgesListSelect.setMultiSelect(false);
         m_edgesListSelect.addItems(businessService.getEdges());
+        m_edgesListSelect.getItemIds().forEach(item -> {
+            final Edge edge = (Edge) item;
+
+            final String desc;
+            switch (edge.getType()) {
+                case CHILD_SERVICE:
+                    desc = "Child: " + ((ChildEdge) edge).getChild().getName();
+                    break;
+
+                case IP_SERVICE:
+                    desc = "IPSvc: " + ((IpServiceEdge) edge).getIpService().getNodeLabel();
+                    break;
+
+                case REDUCTION_KEY:
+                    desc = "ReKey: " + ((ReductionKeyEdge) edge).getReductionKey();
+                    break;
+
+                default:
+                    throw new IllegalArgumentException();
+            }
+
+            m_edgesListSelect.setItemCaption(edge, desc);
+        });
 
 
         /**
