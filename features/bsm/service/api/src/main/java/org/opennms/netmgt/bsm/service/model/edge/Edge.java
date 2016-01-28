@@ -63,4 +63,6 @@ public interface Edge {
     int getWeight();
 
     void setWeight(int weight);
+
+    void delete();
 }

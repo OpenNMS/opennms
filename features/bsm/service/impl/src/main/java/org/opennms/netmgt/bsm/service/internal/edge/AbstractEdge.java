@@ -96,6 +96,11 @@ public abstract class AbstractEdge<T extends BusinessServiceEdgeEntity> implemen
         getEntity().setWeight(weight);
     }
 
+    @Override
+    public void delete() {
+        getManager().deleteEdge(this.getSource(), this);
+    }
+
     protected BusinessServiceManager getManager() {
         return m_manager;
     }

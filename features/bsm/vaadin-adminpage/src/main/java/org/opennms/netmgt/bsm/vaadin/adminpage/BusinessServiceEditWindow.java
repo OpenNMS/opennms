@@ -218,28 +218,21 @@ public class BusinessServiceEditWindow extends Window {
             this.getUI().addWindow(window);
         });
 
-        final Button removeReductionKeyBtn = new Button("Remove");
-        removeReductionKeyBtn.setEnabled(false);
-        removeReductionKeyBtn.setWidth(140.0f, Unit.PIXELS);
-        removeReductionKeyBtn.addStyleName("small");
-        edgesButtonLayout.addComponent(removeReductionKeyBtn);
+        final Button removeEdgeButton = new Button("Remove");
+        removeEdgeButton.setEnabled(false);
+        removeEdgeButton.setWidth(140.0f, Unit.PIXELS);
+        removeEdgeButton.addStyleName("small");
+        edgesButtonLayout.addComponent(removeEdgeButton);
 
-        m_edgesListSelect.addValueChangeListener(new Property.ValueChangeListener() {
-            @Override
-            public void valueChange(Property.ValueChangeEvent event) {
-                removeReductionKeyBtn.setEnabled(event.getProperty().getValue() != null);
-            }
-        });
+        m_edgesListSelect.addValueChangeListener((Property.ValueChangeListener) event -> removeEdgeButton.setEnabled(event.getProperty().getValue() != null));
 
-        removeReductionKeyBtn.addClickListener(new Button.ClickListener() {
-            @Override
-            public void buttonClick(Button.ClickEvent event) {
-                if (m_edgesListSelect.getValue() != null) {
-                    m_edgesListSelect.removeItem(m_edgesListSelect.getValue());
-                    removeReductionKeyBtn.setEnabled(false);
+        removeEdgeButton.addClickListener((Button.ClickListener) event -> {
+            if (m_edgesListSelect.getValue() != null) {
+                removeEdgeButton.setEnabled(false);
 
-                    refreshEdges();
-                }
+                ((Edge) m_edgesListSelect.getValue()).delete();
+
+                refreshEdges();
             }
         });
 
