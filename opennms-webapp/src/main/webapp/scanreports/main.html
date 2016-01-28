@@ -165,7 +165,7 @@
 		<table class="table table-bordered severity" style="font-size:100%">
 			<tbody>
 				<tr>
-					<th class="col-sm-1 text-nowrap">
+					<th class="col-sm-2 text-nowrap">
 						<a ng-click="changeOrderBy('id')">ID</a>
 						<i ng-show="query.orderBy === 'id' &amp;&amp; query.order === 'asc'" class="fa fa-sort-asc"/>
 						<i ng-show="query.orderBy === 'id' &amp;&amp; query.order === 'desc'" class="fa fa-sort-desc"/>
@@ -176,50 +176,16 @@
 						<i ng-show="query.orderBy === 'location' &amp;&amp; query.order === 'desc'" class="fa fa-sort-desc"/>
 					</th>
 					<th class="col-sm-1 text-nowrap">
-						Application</a>
+						Application
 					</th>
-					<th class="col-sm-1 text-nowrap">
+					<th class="col-sm-2 text-nowrap">
 						<a ng-click="changeOrderBy('timestamp')">Scan Time</a>
 						<i ng-show="query.orderBy === 'timestamp' &amp;&amp; query.order === 'asc'" class="fa fa-sort-asc"/>
 						<i ng-show="query.orderBy === 'timestamp' &amp;&amp; query.order === 'desc'" class="fa fa-sort-desc"/>
 					</th>
-					<!--
-					<th class="col-sm-1 text-nowrap">
-						<a ng-click="changeOrderBy('event.eventSeverity')">Severity</a>
-						<i ng-show="query.orderBy === 'event.eventSeverity' &amp;&amp; query.order === 'asc'" class="fa fa-sort-asc"/>
-						<i ng-show="query.orderBy === 'event.eventSeverity' &amp;&amp; query.order === 'desc'" class="fa fa-sort-desc"/>
+					<th class="col-sm-6 text-nowrap">
+						Properties
 					</th>
-					<th class="col-sm-1 text-nowrap">
-						<a ng-click="changeOrderBy('pageTime')">Sent Time</a>
-						<i ng-show="query.orderBy === 'pageTime' &amp;&amp; query.order === 'asc'" class="fa fa-sort-asc"/>
-						<i ng-show="query.orderBy === 'pageTime' &amp;&amp; query.order === 'desc'" class="fa fa-sort-desc"/>
-					</th>
-					<th class="col-sm-1 text-nowrap">
-						<a ng-click="changeOrderBy('answeredBy')">Responder</a>
-						<i ng-show="query.orderBy === 'answeredBy' &amp;&amp; query.order === 'asc'" class="fa fa-sort-asc"/>
-						<i ng-show="query.orderBy === 'answeredBy' &amp;&amp; query.order === 'desc'" class="fa fa-sort-desc"/>
-					</th>
-					<th class="col-sm-1 text-nowrap">
-						<a ng-click="changeOrderBy('respondTime')">Response Time</a>
-						<i ng-show="query.orderBy === 'respondTime' &amp;&amp; query.order === 'asc'" class="fa fa-sort-asc"/>
-						<i ng-show="query.orderBy === 'respondTime' &amp;&amp; query.order === 'desc'" class="fa fa-sort-desc"/>
-					</th>
-					<th class="col-sm-2 text-nowrap">
-						<a ng-click="changeOrderBy('node.label')">Node</a>
-						<i ng-show="query.orderBy === 'node.label' &amp;&amp; query.order === 'asc'" class="fa fa-sort-asc"/>
-						<i ng-show="query.orderBy === 'node.label' &amp;&amp; query.order === 'desc'" class="fa fa-sort-desc"/>
-					</th>
-					<th class="col-sm-2 text-nowrap">
-						<a ng-click="changeOrderBy('ipAddress')">IP Address</a>
-						<i ng-show="query.orderBy === 'ipAddress' &amp;&amp; query.order === 'asc'" class="fa fa-sort-asc"/>
-						<i ng-show="query.orderBy === 'ipAddress' &amp;&amp; query.order === 'desc'" class="fa fa-sort-desc"/>
-					</th>
-					<th class="col-sm-2 text-nowrap">
-						<a ng-click="changeOrderBy('serviceType.name')">Service</a>
-						<i ng-show="query.orderBy === 'serviceType.name' &amp;&amp; query.order === 'asc'" class="fa fa-sort-asc"/>
-						<i ng-show="query.orderBy === 'serviceType.name' &amp;&amp; query.order === 'desc'" class="fa fa-sort-desc"/>
-					</th>
-					-->
 				</tr>
 
 				<tr ng-repeat="item in items track by item.id">
@@ -244,66 +210,10 @@
 							<a style="text-decoration: none;" ng-click="addEpochTimestampSearchClause({property:'timestamp',operator:'LE',value:item.timestamp})"><i class="fa fa-toggle-right fa-lg"/></a>
 						</span>
 					</td>
-					<!--
-					<td class="text-nowrap" style="line-height:24px;" rowspan="2">
-						{{item.eventId}}
-						<a style="text-decoration: none;" ng-click="addSearchClause({property:'event.id',operator:'EQ',value:item.eventId})"><i class="fa fa-plus-square-o fa-lg"/></a>
-						<a style="text-decoration: none;" ng-click="addSearchClause({property:'event.id',operator:'NE',value:item.eventId})"><i class="fa fa-minus-square-o fa-lg"/></a>
+					<td>
+						<onms-list-edit-map-in-place values="item.properties" value-type="'text'" on-edit="update(item)"/>
 					</td>
-					<td class="text-nowrap bright" style="line-height:24px;" rowspan="2">
-						{{getPrettySeverity(item.severity)}}
-						<a style="text-decoration: none;" ng-click="addSearchClause({property:'event.eventSeverity',operator:'EQ',value:item.severity})"><i class="fa fa-plus-square-o fa-lg"/></a>
-						<a style="text-decoration: none;" ng-click="addSearchClause({property:'event.eventSeverity',operator:'NE',value:item.severity})"><i class="fa fa-minus-square-o fa-lg"/></a>
-					</td>
-					<td class="text-nowrap" style="line-height:24px;">
-						<span ng-show="item.pageTime !== null">
-							{{item.pageTime | date:'MMM d, yyyy h:mm:ss a'}}
-							<a style="text-decoration: none;" ng-click="addEpochTimestampSearchClause({property:'pageTime',operator:'GE',value:item.pageTime})"><i class="fa fa-toggle-left fa-lg"/></a>
-							<a style="text-decoration: none;" ng-click="addEpochTimestampSearchClause({property:'pageTime',operator:'LE',value:item.pageTime})"><i class="fa fa-toggle-right fa-lg"/></a>
-						</span>
-					</td>
-					<td class="text-nowrap" style="line-height:24px;">
-						<span ng-show="item.answeredBy | isNotEmpty">
-							{{item.answeredBy}}
-							<a style="text-decoration: none;" ng-click="addSearchClause({property:'answeredBy',operator:'EQ',value:item.answeredBy})"><i class="fa fa-plus-square-o fa-lg"/></a>
-							<a style="text-decoration: none;" ng-click="addSearchClause({property:'answeredBy',operator:'NE',value:item.answeredBy})"><i class="fa fa-minus-square-o fa-lg"/></a>
-						</span>
-					</td>
-					<td class="text-nowrap" style="line-height:24px;">
-						<span ng-show="item.respondTime !== null">
-							{{item.respondTime | date:'MMM d, yyyy h:mm:ss a'}}
-							<a style="text-decoration: none;" ng-click="addEpochTimestampSearchClause({property:'respondTime',operator:'GE',value:item.respondTime})"><i class="fa fa-toggle-left fa-lg"/></a>
-							<a style="text-decoration: none;" ng-click="addEpochTimestampSearchClause({property:'respondTime',operator:'LE',value:item.respondTime})"><i class="fa fa-toggle-right fa-lg"/></a>
-						</span>
-					</td>
-					<td class="text-nowrap" style="line-height:24px;">
-						<span ng-show="item.nodeLabel !== null">
-							{{item.nodeLabel}}
-							<a style="text-decoration: none;" ng-click="addSearchClause({property:'node.label',operator:'EQ',value:item.nodeLabel})"><i class="fa fa-plus-square-o fa-lg"/></a>
-							<a style="text-decoration: none;" ng-click="addSearchClause({property:'node.label',operator:'NE',value:item.nodeLabel})"><i class="fa fa-minus-square-o fa-lg"/></a>
-						</span>
-					</td>
-					<td class="text-nowrap" style="line-height:24px;">
-						<span ng-show="item.ipAddress | isNotEmpty">
-							{{item.ipAddress}}
-							<a style="text-decoration: none;" ng-click="addSearchClause({property:'ipAddress',operator:'EQ',value:item.ipAddress})"><i class="fa fa-plus-square-o fa-lg"/></a>
-							<a style="text-decoration: none;" ng-click="addSearchClause({property:'ipAddress',operator:'NE',value:item.ipAddress})"><i class="fa fa-minus-square-o fa-lg"/></a>
-						</span>
-					</td>
-					<td class="text-nowrap" style="line-height:24px;">
-						<span ng-show="item.serviceType !== null &amp;&amp; item.serviceType.name !== null">
-							{{item.serviceType.name}}
-							<a style="text-decoration: none;" ng-click="addSearchClause({property:'serviceType.name',operator:'EQ',value:item.serviceType.name})"><i class="fa fa-plus-square-o fa-lg"/></a>
-							<a style="text-decoration: none;" ng-click="addSearchClause({property:'serviceType.name',operator:'NE',value:item.serviceType.name})"><i class="fa fa-minus-square-o fa-lg"/></a>
-						</span>
-					</td>
-					-->
 				</tr>
-				<!--
-				<tr ng-repeat-end class="{{getSeverityClass(item.severity)}}">
-					<td colspan="6">{{item.textMessage}}</td>
-				</tr>
-				-->
 			</tbody>
 		</table>
 	</div>
