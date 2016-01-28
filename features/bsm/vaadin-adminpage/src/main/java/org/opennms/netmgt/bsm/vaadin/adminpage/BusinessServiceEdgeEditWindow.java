@@ -143,11 +143,9 @@ public class BusinessServiceEdgeEditWindow extends Window {
         m_childServiceComponent.setWidth(100.0f, Unit.PERCENTAGE);
         m_childServiceComponent.setRows(20);
         m_childServiceComponent.setVisible(false);
-//        if (Objects.isNull(businessService) || Objects.isNull(businessService.getId())) {
-//            m_childServiceComponent.addItems(businessServiceManager.getAllBusinessServices());
-//        } else {
-            m_childServiceComponent.addItems(businessServiceManager.getFeasibleChildServices(businessService));
-//        }
+        m_childServiceComponent.setImmediate(true);
+        m_childServiceComponent.setValidationVisible(true);
+        m_childServiceComponent.addItems(businessServiceManager.getFeasibleChildServices(businessService));
         m_childServiceComponent.getItemIds().forEach(item -> m_childServiceComponent.setItemCaption(item, BusinessServiceEditWindow.describeBusinessService((BusinessService) item)));
         formLayout.addComponent(m_childServiceComponent);
 
@@ -161,6 +159,8 @@ public class BusinessServiceEdgeEditWindow extends Window {
         m_ipServiceComponent.setWidth(100.0f, Unit.PERCENTAGE);
         m_ipServiceComponent.setRows(20);
         m_ipServiceComponent.setVisible(false);
+        m_ipServiceComponent.setImmediate(true);
+        m_ipServiceComponent.setValidationVisible(true);
         m_ipServiceComponent.getItemIds().forEach(item -> m_ipServiceComponent.setItemCaption(item, BusinessServiceEditWindow.describeIpService((IpService) item)));
         formLayout.addComponent(m_ipServiceComponent);
 
@@ -170,6 +170,8 @@ public class BusinessServiceEdgeEditWindow extends Window {
         m_reductionKeyComponent = new TextField("Reduction Key");
         m_reductionKeyComponent.setWidth(100.0f, Unit.PERCENTAGE);
         m_reductionKeyComponent.setVisible(false);
+        m_reductionKeyComponent.setImmediate(true);
+        m_reductionKeyComponent.setValidationVisible(true);
         formLayout.addComponent(m_reductionKeyComponent);
 
         /**
@@ -215,7 +217,7 @@ public class BusinessServiceEdgeEditWindow extends Window {
         m_mapFunctionSeveritySelect.setMultiSelect(false);
         m_mapFunctionSeveritySelect.setNewItemsAllowed(false);
         m_mapFunctionSeveritySelect.setNullSelectionAllowed(false);
-        m_mapFunctionSeveritySelect.setRequired(true);
+        m_mapFunctionSeveritySelect.setRequired(false);
         m_mapFunctionSeveritySelect.addItem(Status.CRITICAL);
         m_mapFunctionSeveritySelect.setItemCaption(Status.CRITICAL, "Critical");
         m_mapFunctionSeveritySelect.addItem(Status.MAJOR);
@@ -230,6 +232,8 @@ public class BusinessServiceEdgeEditWindow extends Window {
         m_mapFunctionSeveritySelect.setItemCaption(Status.INDETERMINATE, "Indeterminate");
         m_mapFunctionSeveritySelect.setWidth(98.0f, Unit.PERCENTAGE);
         m_mapFunctionSeveritySelect.setEnabled(false);
+        m_mapFunctionSeveritySelect.setImmediate(true);
+        m_mapFunctionSeveritySelect.setValidationVisible(true);
         formLayout.addComponent(m_mapFunctionSeveritySelect);
 
         /**
@@ -237,6 +241,7 @@ public class BusinessServiceEdgeEditWindow extends Window {
          */
         m_mapFunctionSelect.addValueChangeListener(event -> {
             m_mapFunctionSeveritySelect.setEnabled(SetTo.class.equals(m_mapFunctionSelect.getValue()));
+            m_mapFunctionSeveritySelect.setRequired(SetTo.class.equals(m_mapFunctionSelect.getValue()));
         });
 
         /**
@@ -247,11 +252,13 @@ public class BusinessServiceEdgeEditWindow extends Window {
         m_weightField.setWidth(100.0f, Unit.PERCENTAGE);
         m_weightField.addValidator(value -> {
             try {
-                Float.parseFloat((String) value);
+                Integer.parseInt((String) value);
             } catch (final NumberFormatException e) {
                 throw new Validator.InvalidValueException("Weight must be a number");
             }
         });
+        m_weightField.setImmediate(true);
+        m_weightField.setValidationVisible(true);
         formLayout.addComponent(m_weightField);
 
         /**
@@ -260,7 +267,7 @@ public class BusinessServiceEdgeEditWindow extends Window {
         m_typeSelect.setValue(Edge.Type.CHILD_SERVICE);
         m_mapFunctionSelect.setValue(Identity.class);
         m_mapFunctionSeveritySelect.setValue(Status.INDETERMINATE);
-        m_weightField.setValue("1");
+        m_weightField.setValue(Integer.toString(Edge.DEFAULT_WEIGHT));
 
         rootLayout.addComponent(formLayout);
 
@@ -277,6 +284,11 @@ public class BusinessServiceEdgeEditWindow extends Window {
         final Button saveButton = new Button("Add Edge");
         saveButton.setId("saveButton");
         saveButton.addClickListener(UIHelper.getCurrent(TransactionAwareUI.class).wrapInTransactionProxy((Button.ClickListener) event -> {
+            if (!m_weightField.isValid()) return;
+            if (!m_ipServiceComponent.isValid()) return;
+            if (!m_childServiceComponent.isValid()) return;
+            if (!m_reductionKeyComponent.isValid()) return;
+
             final MapFunction mapFunction;
             try {
                 mapFunction = ((Class<? extends MapFunction>) m_mapFunctionSelect.getValue()).newInstance();
@@ -288,17 +300,19 @@ public class BusinessServiceEdgeEditWindow extends Window {
                 ((SetTo) mapFunction).setStatus(null);
             }
 
+            final int weight = Integer.parseInt(m_weightField.getValue());
+
             switch ((Edge.Type) m_typeSelect.getValue()) {
                 case CHILD_SERVICE:
-                    businessService.addChildEdge((BusinessService) m_childServiceComponent.getValue(), mapFunction, Edge.DEFAULT_WEIGHT);
+                    businessService.addChildEdge((BusinessService) m_childServiceComponent.getValue(), mapFunction, weight);
                     break;
 
                 case IP_SERVICE:
-                    businessService.addIpServiceEdge((IpService) m_ipServiceComponent.getValue(), mapFunction, Edge.DEFAULT_WEIGHT);
+                    businessService.addIpServiceEdge((IpService) m_ipServiceComponent.getValue(), mapFunction, weight);
                     break;
 
                 case REDUCTION_KEY:
-                    businessService.addReductionKeyEdge(m_reductionKeyComponent.getValue(), mapFunction, Edge.DEFAULT_WEIGHT);
+                    businessService.addReductionKeyEdge(m_reductionKeyComponent.getValue(), mapFunction, weight);
                     break;
             }
 
