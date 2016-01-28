@@ -129,10 +129,10 @@ public class BusinessServiceMainLayout extends VerticalLayout {
                 editButton.addStyleName("small");
                 editButton.setId("editButton-" + ((BusinessService) itemId).getName());
 
-                editButton.addClickListener((Button.ClickListener) event -> {
+                editButton.addClickListener(UIHelper.getCurrent(TransactionAwareUI.class).wrapInTransactionProxy((Button.ClickListener) event -> {
                     getUI().addWindow(new BusinessServiceEditWindow((BusinessService) itemId, BusinessServiceMainLayout.this));
                     refreshTable();
-                });
+                }));
                 return editButton;
             }
         });

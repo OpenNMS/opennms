@@ -28,17 +28,16 @@
 
 package org.opennms.netmgt.bsm.vaadin.adminpage;
 
-import java.util.stream.Collectors;
-
 import org.opennms.netmgt.bsm.service.BusinessServiceManager;
 import org.opennms.netmgt.bsm.service.model.BusinessService;
 import org.opennms.netmgt.bsm.service.model.functions.reduce.MostCritical;
 import org.opennms.netmgt.bsm.service.model.functions.reduce.Threshold;
+import org.opennms.netmgt.bsm.service.model.mapreduce.ReductionFunction;
 import org.opennms.netmgt.vaadin.core.TransactionAwareUI;
 import org.opennms.netmgt.vaadin.core.UIHelper;
 
+import com.google.common.base.Throwables;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Sets;
 import com.vaadin.data.Property;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
@@ -121,16 +120,15 @@ public class BusinessServiceEditWindow extends Window {
             public void buttonClick(Button.ClickEvent event) {
                 businessService.setName(m_nameTextField.getValue().trim());
 
-                // First clear
-                businessService.setIpServiceEdges(Sets.newHashSet());
-                businessService.setChildEdges(Sets.newHashSet());
-                businessService.setReductionKeyEdges(Sets.newHashSet());
+                final ReductionFunction reductionFunction;
 
-                // TODO BSM-98: Set according to ui selection
-//                ((Set<Integer>) m_ipServicesTwinColSelect.getValue()).forEach(itemId -> businessService.addIpServiceEdge(m_ipServicesContainer.getItem(itemId).getBean(), new Identity()));
-//                ((Set<Long>) m_businessServicesTwinColSelect.getValue()).forEach(itemId -> businessService.addChildEdge(m_businessServicesContainer.getItem(itemId).getBean(), new Identity()));
-//                m_reductionKeyListSelect.getItemIds().forEach(reductionKey -> businessService.addReductionKeyEdge((String) reductionKey, new Identity()));
-                businessService.setReduceFunction(new MostCritical());
+                try {
+                    reductionFunction = ((Class<? extends ReductionFunction>) m_reduceFunctionNativeSelect.getValue()).newInstance();
+                } catch (final InstantiationException | IllegalAccessException e) {
+                    throw Throwables.propagate(e);
+                }
+
+                businessService.setReduceFunction(reductionFunction);
                 businessService.save();
                 close();
                 businessServiceMainLayout.refreshTable();
@@ -197,7 +195,7 @@ public class BusinessServiceEditWindow extends Window {
         m_edgesListSelect.setRows(20);
         m_edgesListSelect.setNullSelectionAllowed(false);
         m_edgesListSelect.setMultiSelect(false);
-        m_edgesListSelect.addItems(businessService.getReductionKeyEdges().stream().map(edge -> edge.getReductionKey()).collect(Collectors.toSet()));
+        m_edgesListSelect.addItems(businessService.getEdges());
 
 
         /**
@@ -214,7 +212,7 @@ public class BusinessServiceEditWindow extends Window {
         addEdgeButton.setWidth(140.0f, Unit.PIXELS);
         addEdgeButton.addStyleName("small");
         edgesButtonLayout.addComponent(addEdgeButton);
-        addEdgeButton.addClickListener((Button.ClickListener) event -> this.getUI().addWindow(new BusinessServiceEdgeEditWindow(null, this)));
+        addEdgeButton.addClickListener((Button.ClickListener) event -> this.getUI().addWindow(new BusinessServiceEdgeEditWindow(businessService, this)));
 
         final Button removeReductionKeyBtn = new Button("Remove");
         removeReductionKeyBtn.setEnabled(false);
