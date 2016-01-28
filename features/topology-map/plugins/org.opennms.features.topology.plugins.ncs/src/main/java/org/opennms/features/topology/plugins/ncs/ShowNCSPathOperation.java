@@ -250,7 +250,6 @@ public class ShowNCSPathOperation implements Operation {
     }
 
     protected void highlightEdgePaths(NCSServicePath path, GraphProvider graphProvider) {
-        // TODO Auto-generated method stub
         Edge edge = graphProvider.getEdge("nodes", path.getEdges().iterator().next().getId());
         edge.setStyleName("ncsSetPath");
     }
