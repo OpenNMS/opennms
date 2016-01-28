@@ -29,6 +29,11 @@
 package org.opennms.netmgt.bsm.service.internal;
 
 import static org.junit.Assert.assertEquals;
+import static org.opennms.netmgt.bsm.test.BambooTestHierarchy.BAMBOO_AGENT_CAROLINA_REDUCTION_KEY;
+import static org.opennms.netmgt.bsm.test.BambooTestHierarchy.BAMBOO_AGENT_DUKE_REDUCTION_KEY;
+import static org.opennms.netmgt.bsm.test.BambooTestHierarchy.BAMBOO_AGENT_NCSTATE_REDUCTION_KEY;
+import static org.opennms.netmgt.bsm.test.BambooTestHierarchy.DISK_USAGE_THRESHOLD_BAMBO_REDUCTION_KEY;
+import static org.opennms.netmgt.bsm.test.BambooTestHierarchy.HTTP_8085_BAMBOO_REDUCTION_KEY;
 import static org.opennms.netmgt.bsm.test.BsmTestUtils.createAlarmWrapper;
 
 import java.util.List;
@@ -50,14 +55,17 @@ import org.opennms.netmgt.bsm.service.BusinessServiceStateChangeHandler;
 import org.opennms.netmgt.bsm.service.model.AlarmWrapper;
 import org.opennms.netmgt.bsm.service.model.BusinessService;
 import org.opennms.netmgt.bsm.service.model.Status;
+import org.opennms.netmgt.bsm.service.model.edge.Edge;
 import org.opennms.netmgt.bsm.service.model.functions.map.Identity;
+import org.opennms.netmgt.bsm.test.BambooTestHierarchy;
 import org.opennms.netmgt.bsm.test.BsmDatabasePopulator;
-import org.opennms.netmgt.bsm.test.BsmTestData;
+import org.opennms.netmgt.bsm.test.SimpleTestHierarchy;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -83,21 +91,16 @@ public class DefaultBusinessServiceStateMachineIT {
     private BusinessServiceManager businessServiceManager;
 
     @Autowired
+    @Qualifier("bsmDatabasePopulator")
     private BsmDatabasePopulator populator;
 
     @Autowired
     private BusinessServiceDao businessServiceDao;
 
-    private BsmTestData testSpecification;
-
     @Before
     public void before() {
         BeanUtils.assertAutowiring(this);
         populator.populateDatabase();
-
-        // setup the test data
-        testSpecification = new BsmTestData(populator.getDatabasePopulator());
-        testSpecification.getServices().forEach( entity -> businessServiceDao.save(entity));
     }
 
     @After
@@ -107,17 +110,21 @@ public class DefaultBusinessServiceStateMachineIT {
 
     @Test
     public void verifyGetOperationalStatusForIpServices() {
+        // setup the test data
+        SimpleTestHierarchy simpleTestHierarchy = new SimpleTestHierarchy(populator);
+        simpleTestHierarchy.getServices().forEach( entity -> businessServiceDao.save(entity));
+
         // Determine reduction keys
-        final OnmsMonitoredService serviceChild1 = testSpecification.getServiceChild1();
-        final OnmsMonitoredService serviceChild2 = testSpecification.getServiceChild2();
-        final BusinessServiceEntity root = testSpecification.getRoot();
+        final OnmsMonitoredService serviceChild1 = simpleTestHierarchy.getServiceChild1();
+        final OnmsMonitoredService serviceChild2 = simpleTestHierarchy.getServiceChild2();
+        final BusinessServiceEntity root = simpleTestHierarchy.getRoot();
         final String nodeLostServiceReductionKey = ReductionKeyHelper.getNodeLostServiceReductionKey(serviceChild1);
         final String nodeDownReductionKey = ReductionKeyHelper.getNodeDownReductionKey(serviceChild1);
 
         // Setup the State Machine
         DefaultBusinessServiceStateMachine stateMachine = new DefaultBusinessServiceStateMachine();
         stateMachine.setBusinessServices(
-                testSpecification.getServices().stream().map(s -> wrap(s)).collect(Collectors.toList())
+                simpleTestHierarchy.getServices().stream().map(s -> wrap(s)).collect(Collectors.toList())
         );
 
         // Verify the initial state
@@ -126,8 +133,12 @@ public class DefaultBusinessServiceStateMachineIT {
         Assert.assertEquals(Status.NORMAL, stateMachine.getOperationalStatus(wrap(serviceChild1)));
         Assert.assertEquals(Status.NORMAL, stateMachine.getOperationalStatus(wrap(serviceChild2)));
         Assert.assertEquals(Status.NORMAL, stateMachine.getOperationalStatus(wrap(root)));
-        Assert.assertEquals(Lists.newArrayList(Status.NORMAL), stateMachine.getStatusListForReduceFunction(wrap(testSpecification.getChild1())));
-        Assert.assertEquals(Lists.newArrayList(Status.NORMAL, Status.NORMAL), stateMachine.getStatusListForReduceFunction(wrap(testSpecification.getRoot())));
+        Assert.assertEquals(
+                Lists.newArrayList(Status.NORMAL),
+                Lists.newArrayList(stateMachine.getStatusMapForReduceFunction(wrap(simpleTestHierarchy.getChild1())).values()));
+        Assert.assertEquals(
+                Lists.newArrayList(Status.NORMAL, Status.NORMAL),
+                Lists.newArrayList(stateMachine.getStatusMapForReduceFunction(wrap(simpleTestHierarchy.getRoot())).values()));
 
         // node lost service alarm
         stateMachine.handleNewOrUpdatedAlarm(createAlarmWrapper(EventConstants.NODE_LOST_SERVICE_EVENT_UEI, OnmsSeverity.WARNING, nodeLostServiceReductionKey));
@@ -137,9 +148,13 @@ public class DefaultBusinessServiceStateMachineIT {
         Assert.assertEquals(null, stateMachine.getOperationalStatus(nodeDownReductionKey));
         Assert.assertEquals(Status.WARNING, stateMachine.getOperationalStatus(wrap(serviceChild1)));
         Assert.assertEquals(Status.NORMAL, stateMachine.getOperationalStatus(wrap(serviceChild2)));
-        Assert.assertEquals(Lists.newArrayList(Status.WARNING), stateMachine.getStatusListForReduceFunction(wrap(testSpecification.getChild1())));
+        Assert.assertEquals(
+                Lists.newArrayList(Status.WARNING),
+                Lists.newArrayList(stateMachine.getStatusMapForReduceFunction(wrap(simpleTestHierarchy.getChild1())).values()));
         Assert.assertEquals(Status.WARNING, stateMachine.getOperationalStatus(wrap(root)));
-        Assert.assertEquals(Lists.newArrayList(Status.WARNING, Status.NORMAL), stateMachine.getStatusListForReduceFunction(wrap(testSpecification.getRoot())));
+        Assert.assertEquals(
+                Lists.newArrayList(Status.WARNING, Status.NORMAL),
+                Lists.newArrayList(stateMachine.getStatusMapForReduceFunction(wrap(simpleTestHierarchy.getRoot())).values()));
 
         // node down alarm
         stateMachine.handleNewOrUpdatedAlarm(createAlarmWrapper(EventConstants.NODE_DOWN_EVENT_UEI, OnmsSeverity.MINOR, nodeDownReductionKey));
@@ -150,19 +165,79 @@ public class DefaultBusinessServiceStateMachineIT {
         Assert.assertEquals(Status.MINOR, stateMachine.getOperationalStatus(wrap(serviceChild1)));
         Assert.assertEquals(Status.NORMAL, stateMachine.getOperationalStatus(wrap(serviceChild2)));
         Assert.assertEquals(Status.MINOR, stateMachine.getOperationalStatus(wrap(root)));
-        Assert.assertEquals(Lists.newArrayList(Status.MINOR, Status.NORMAL), stateMachine.getStatusListForReduceFunction(wrap(testSpecification.getRoot())));
+        Assert.assertEquals(
+                Lists.newArrayList(Status.MINOR, Status.NORMAL),
+                Lists.newArrayList(stateMachine.getStatusMapForReduceFunction(wrap(simpleTestHierarchy.getRoot())).values()));
     }
 
     @Test
-    public void canMaintainState() {
-        BusinessServiceImpl bsChild1 = wrap(testSpecification.getChild1());
-        BusinessServiceImpl bsChild2 = wrap(testSpecification.getChild2());
-        BusinessServiceImpl bsParent = wrap(testSpecification.getRoot());
-        IpServiceImpl svc1 = wrap(testSpecification.getServiceChild1());
-        IpServiceImpl svc2 = wrap(testSpecification.getServiceChild2());
+    public void canMaintainStateBambooHierarchy() {
+        BambooTestHierarchy testHierarchy = new BambooTestHierarchy();
+        testHierarchy.getServices().forEach( entity -> businessServiceDao.save(entity));
+
+        // setup the test data
+        BambooTestHierarchy testSpecification = new BambooTestHierarchy();
+        testSpecification.getServices().forEach( entity -> businessServiceDao.save(entity));
+        final List<String> reductionKeys = Lists.newArrayList(
+                DISK_USAGE_THRESHOLD_BAMBO_REDUCTION_KEY,
+                HTTP_8085_BAMBOO_REDUCTION_KEY,
+                BAMBOO_AGENT_CAROLINA_REDUCTION_KEY,
+                BAMBOO_AGENT_DUKE_REDUCTION_KEY,
+                BAMBOO_AGENT_NCSTATE_REDUCTION_KEY);
+
+        // Setup the State Machine
+        final DefaultBusinessServiceStateMachine stateMachine = new DefaultBusinessServiceStateMachine();
+        stateMachine.setBusinessServices(
+                testSpecification.getServices().stream().map(s -> wrap(s)).collect(Collectors.toList())
+        );
+        LoggingStateChangeHandler handler = new LoggingStateChangeHandler();
+        stateMachine.addHandler(handler, null);
+
+        // Verify the initial state
+        for (String eachKey : reductionKeys) {
+            Assert.assertEquals(null, stateMachine.getOperationalStatus(eachKey));
+        }
+
+        // Pass alarms to the state machine
+        // Business Service "Master"
+        stateMachine.handleNewOrUpdatedAlarm(createAlarmWrapper("uei.opennms.org/dummy", OnmsSeverity.INDETERMINATE, HTTP_8085_BAMBOO_REDUCTION_KEY));
+        assertEquals(0, handler.getStateChanges().size()); // no state change
+        stateMachine.handleNewOrUpdatedAlarm(createAlarmWrapper("uei.opennms.org/dummy", OnmsSeverity.WARNING, DISK_USAGE_THRESHOLD_BAMBO_REDUCTION_KEY));
+        assertEquals(2, handler.getStateChanges().size()); // "Master" and "Bamboo" changed
+        // Business Service "Agents"
+        stateMachine.handleNewOrUpdatedAlarm(createAlarmWrapper("uei.opennms.org/dummy", OnmsSeverity.MINOR, BAMBOO_AGENT_DUKE_REDUCTION_KEY));
+        assertEquals(2 , handler.getStateChanges().size()); // no state change (threshold not met)
+        stateMachine.handleNewOrUpdatedAlarm(createAlarmWrapper("uei.opennms.org/dummy", OnmsSeverity.NORMAL, BAMBOO_AGENT_NCSTATE_REDUCTION_KEY));
+        assertEquals(2 , handler.getStateChanges().size()); // no state change (threshold not met)
+        stateMachine.handleNewOrUpdatedAlarm(createAlarmWrapper("uei.opennms.org/dummy", OnmsSeverity.MAJOR, BAMBOO_AGENT_CAROLINA_REDUCTION_KEY));
+        assertEquals(4 , handler.getStateChanges().size()); // state change (threshold met) for "Agents" and "Bamboo"
+
+
+        // Verify the updated state
+        assertEquals(Status.MINOR, stateMachine.getOperationalStatus(BAMBOO_AGENT_DUKE_REDUCTION_KEY));
+        assertEquals(Status.MAJOR, stateMachine.getOperationalStatus(BAMBOO_AGENT_CAROLINA_REDUCTION_KEY));
+        assertEquals(Status.NORMAL, stateMachine.getOperationalStatus(BAMBOO_AGENT_NCSTATE_REDUCTION_KEY));
+        assertEquals(Status.INDETERMINATE, stateMachine.getOperationalStatus(HTTP_8085_BAMBOO_REDUCTION_KEY));
+        assertEquals(Status.WARNING, stateMachine.getOperationalStatus(DISK_USAGE_THRESHOLD_BAMBO_REDUCTION_KEY));
+        assertEquals(Status.WARNING, stateMachine.getOperationalStatus(wrap(testSpecification.getMasterService()))); // Business Service "Master"
+        assertEquals(Status.MAJOR, stateMachine.getOperationalStatus(wrap(testSpecification.getAgentsService()))); // Business Service "Agents"
+        assertEquals(Status.MAJOR, stateMachine.getOperationalStatus(wrap(testSpecification.getBambooService()))); // Business Service "Bamboo" (root)
+    }
+
+    @Test
+    public void canMaintainStateSimpleHierarchy() {
+        // setup the test data
+        SimpleTestHierarchy testHierarchy = new SimpleTestHierarchy(populator);
+        testHierarchy.getServices().forEach( entity -> businessServiceDao.save(entity));
+
+        BusinessServiceImpl bsChild1 = wrap(testHierarchy.getChild1());
+        BusinessServiceImpl bsChild2 = wrap(testHierarchy.getChild2());
+        BusinessServiceImpl bsParent = wrap(testHierarchy.getRoot());
+        IpServiceImpl svc1 = wrap(testHierarchy.getServiceChild1());
+        IpServiceImpl svc2 = wrap(testHierarchy.getServiceChild2());
 
         // manually add a reduction key to a business service to verify that this also works
-        bsChild1.addReductionKeyEdge("explicitReductionKey", new Identity());
+        bsChild1.addReductionKeyEdge("explicitReductionKey", new Identity(), Edge.DEFAULT_WEIGHT);
 
         // Setup the state machine
         List<BusinessService> bss = Lists.newArrayList(bsChild1, bsChild2, bsParent);

@@ -93,6 +93,7 @@ public class BusinessServiceResponseDTOMarshalTest extends MarshalAndUnmarshalTe
             "      \"type\" : \"Ignore\"," +
             "      \"properties\" : null" +
             "    }," +
+            "    \"weight\" : 9," +
             "    \"location\" : \"/api/v2/test/1\"," +
             "    \"reductionKeys\" : [ \"myReductionKeyA\" ]" +
             "  }, {" +
@@ -102,6 +103,7 @@ public class BusinessServiceResponseDTOMarshalTest extends MarshalAndUnmarshalTe
             "      \"type\" : \"Ignore\"," +
             "      \"properties\" : null" +
             "    }," +
+            "    \"weight\" : 9," +
             "    \"location\" : \"/api/v2/test/2\"," +
             "    \"reductionKeys\" : [ \"myReductionKeyB\" ]" +
             "  } ]," +
@@ -112,6 +114,7 @@ public class BusinessServiceResponseDTOMarshalTest extends MarshalAndUnmarshalTe
             "      \"type\" : \"Ignore\"," +
             "      \"properties\" : null" +
             "    }," +
+            "    \"weight\" : 7," +
             "    \"location\" : \"/api/v2/test/3\"," +
             "    \"reductionKeys\" : [ ]," +
             "    \"childId\" : 2" +
@@ -122,6 +125,7 @@ public class BusinessServiceResponseDTOMarshalTest extends MarshalAndUnmarshalTe
             "      \"type\" : \"Ignore\"," +
             "      \"properties\" : null" +
             "    }," +
+            "    \"weight\" : 7," +
             "    \"location\" : \"/api/v2/test/4\"," +
             "    \"reductionKeys\" : [ ]," +
             "    \"childId\" : 3" +
@@ -133,6 +137,7 @@ public class BusinessServiceResponseDTOMarshalTest extends MarshalAndUnmarshalTe
             "      \"type\" : \"Ignore\"," +
             "      \"properties\" : null" +
             "    }," +
+            "    \"weight\" : 5," +
             "    \"location\" : \"/api/v2/test/5\"," +
             "    \"reductionKeys\" : [ \"key1\", \"key2\" ]," +
             "    \"ipService\" : {" +
@@ -166,6 +171,7 @@ public class BusinessServiceResponseDTOMarshalTest extends MarshalAndUnmarshalTe
             "           <reductionKey>key1</reductionKey>\n" +
             "           <reductionKey>key2</reductionKey>\n" +
             "         </reductionKeys>\n" +
+            "         <weight>5</weight>\n" +
             "         <ip-service>\n" +
             "            <id>17</id>\n" +
             "            <service-name>ICMP</service-name>\n" +
@@ -186,6 +192,7 @@ public class BusinessServiceResponseDTOMarshalTest extends MarshalAndUnmarshalTe
             "         <reductionKeys>\n" +
             "            <reductionKey>myReductionKeyA</reductionKey>\n" +
             "         </reductionKeys>\n" +
+            "         <weight>9</weight>\n" +
             "      </reductionKey>\n" +
             "      <reductionKey>\n" +
             "         <id>2</id>\n" +
@@ -197,6 +204,7 @@ public class BusinessServiceResponseDTOMarshalTest extends MarshalAndUnmarshalTe
             "         <reductionKeys>\n" +
             "            <reductionKey>myReductionKeyB</reductionKey>\n" +
             "         </reductionKeys>\n" +
+            "         <weight>9</weight>\n" +
             "      </reductionKey>\n" +
             "   </reductionKey-edges>\n" +
             "   <child-edges>\n" +
@@ -208,6 +216,7 @@ public class BusinessServiceResponseDTOMarshalTest extends MarshalAndUnmarshalTe
             "         </map-function>\n" +
             "         <location>/api/v2/test/3</location>\n" +
             "         <reductionKeys/>\n" +
+            "         <weight>7</weight>\n" +
             "         <childId>2</childId>\n" +
             "      </child>\n" +
             "      <child>\n" +
@@ -218,6 +227,7 @@ public class BusinessServiceResponseDTOMarshalTest extends MarshalAndUnmarshalTe
             "         </map-function>\n" +
             "         <location>/api/v2/test/4</location>\n" +
             "         <reductionKeys/>\n" +
+            "         <weight>7</weight>\n" +
             "         <childId>3</childId>\n" +
             "      </child>\n" +
             "   </child-edges>\n" +
@@ -252,6 +262,7 @@ public class BusinessServiceResponseDTOMarshalTest extends MarshalAndUnmarshalTe
         responseDTO.getReductionKeys().add("key1");
         responseDTO.getReductionKeys().add("key2");
         responseDTO.setIpService(ipServiceResponseDTO);
+        responseDTO.setWeight(5);
         responseDTO.setMapFunction(mapFunctionDTO);
         return responseDTO;
     }
@@ -262,6 +273,7 @@ public class BusinessServiceResponseDTOMarshalTest extends MarshalAndUnmarshalTe
         responseDTO.setId(id);
         responseDTO.setLocation(location);
         responseDTO.setChildId(childId);
+        responseDTO.setWeight(7);
         responseDTO.setMapFunction(mapFunctionDTO);
         return responseDTO;
     }
@@ -270,6 +282,7 @@ public class BusinessServiceResponseDTOMarshalTest extends MarshalAndUnmarshalTe
         ReductionKeyEdgeResponseDTO responseDTO = new ReductionKeyEdgeResponseDTO();
         responseDTO.setOperationalStatus(status);
         responseDTO.setId(id);
+        responseDTO.setWeight(9);
         responseDTO.setLocation(location);
         responseDTO.setReductionKeys(Sets.newHashSet(reductionKey));
         responseDTO.setMapFunction(mapFunctionDTO);

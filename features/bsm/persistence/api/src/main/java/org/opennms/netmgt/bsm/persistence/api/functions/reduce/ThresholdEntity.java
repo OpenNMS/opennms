@@ -41,6 +41,14 @@ public class ThresholdEntity extends AbstractReductionFunctionEntity {
     @Column(name="threshold", nullable=false)    
     private float m_threshold;
 
+    public ThresholdEntity() {
+
+    }
+
+    public ThresholdEntity(float threshold) {
+        setThreshold(threshold);
+    }
+
     public void setThreshold(float threshold) {
         Preconditions.checkArgument(threshold > 0, "threshold must be strictly positive");
         Preconditions.checkArgument(threshold <= 1, "threshold must be less or equal to 1");

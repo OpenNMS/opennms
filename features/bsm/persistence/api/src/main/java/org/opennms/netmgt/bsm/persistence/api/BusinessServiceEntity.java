@@ -208,10 +208,16 @@ public class BusinessServiceEntity {
     }
 
     // Convenient method to add a child edge
-    public BusinessServiceEntity addChildServiceEdge(BusinessServiceEntity children, AbstractMapFunctionEntity mapFunction) {
+    public BusinessServiceEntity addChildServiceEdge(BusinessServiceEntity child, AbstractMapFunctionEntity mapFunction) {
+        return addChildServiceEdge(child, mapFunction, 1);
+    }
+
+    // Convenient method to add a child edge
+    public BusinessServiceEntity addChildServiceEdge(BusinessServiceEntity child, AbstractMapFunctionEntity mapFunction, int weight) {
         BusinessServiceChildEdgeEntity edge = new BusinessServiceChildEdgeEntity();
         edge.setBusinessService(this);
-        edge.setChild(children);
+        edge.setChild(Objects.requireNonNull(child));
+        edge.setWeight(weight);
         edge.setMapFunction(Objects.requireNonNull(mapFunction));
         addEdge(edge);
         return this;
@@ -219,9 +225,15 @@ public class BusinessServiceEntity {
 
     // Convenient method to add an ipservice edge
     public BusinessServiceEntity addIpServiceEdge(OnmsMonitoredService ipService, AbstractMapFunctionEntity mapFunction) {
+        return addIpServiceEdge(ipService, mapFunction, 1);
+    }
+
+    // Convenient method to add an ipservice edge
+    public BusinessServiceEntity addIpServiceEdge(OnmsMonitoredService ipService, AbstractMapFunctionEntity mapFunction, int weight) {
         IPServiceEdgeEntity edge = new IPServiceEdgeEntity();
         edge.setBusinessService(this);
-        edge.setIpService(ipService);
+        edge.setIpService(Objects.requireNonNull(ipService));
+        edge.setWeight(weight);
         edge.setMapFunction(Objects.requireNonNull(mapFunction));
         addEdge(edge);
         return this;
@@ -229,9 +241,15 @@ public class BusinessServiceEntity {
 
     // Convenient method to add a reduction key edge
     public BusinessServiceEntity addReductionKeyEdge(String reductionKey, AbstractMapFunctionEntity mapFunction) {
+        return addReductionKeyEdge(reductionKey, mapFunction, 1);
+    }
+
+    // Convenient method to add a reduction key edge
+    public BusinessServiceEntity addReductionKeyEdge(String reductionKey, AbstractMapFunctionEntity mapFunction, int weight) {
         SingleReductionKeyEdgeEntity edge = new SingleReductionKeyEdgeEntity();
         edge.setBusinessService(this);
-        edge.setReductionKey(reductionKey);
+        edge.setReductionKey(Objects.requireNonNull(reductionKey));
+        edge.setWeight(weight);
         edge.setMapFunction(Objects.requireNonNull(mapFunction));
         addEdge(edge);
         return this;

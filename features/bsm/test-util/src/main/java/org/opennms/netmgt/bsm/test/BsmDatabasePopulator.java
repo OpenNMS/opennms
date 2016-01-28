@@ -28,61 +28,25 @@
 
 package org.opennms.netmgt.bsm.test;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
 import org.opennms.netmgt.bsm.persistence.api.BusinessServiceDao;
 import org.opennms.netmgt.dao.DatabasePopulator;
 import org.springframework.beans.factory.annotation.Autowired;
 
-public class BsmDatabasePopulator {
-
-    @Autowired
-    private DatabasePopulator databasePopulator;
+public class BsmDatabasePopulator extends DatabasePopulator {
 
     @Autowired
     private BusinessServiceDao businessServiceDao;
 
-    private List<BsmTestData> testDatas;
-
-    /**
-     * Optional set of test data which is pushed to the database in addition to the default
-     * database population.
-     * @param testDatas optional test data.
-     */
-    public void populateDatabase(BsmTestData... testDatas) {
-        this.testDatas = testDatas == null ? new ArrayList<>() : Arrays.asList(testDatas);
-
-        databasePopulator.setPopulateInSeparateTransaction(false);
-        databasePopulator.populateDatabase();
-
-        this.testDatas.forEach(
-            eachSet -> eachSet.getServices().forEach(
-                    eachService -> businessServiceDao.save(eachService)
-            )
-        );
+    @Override
+    public void populateDatabase() {
+        setPopulateInSeparateTransaction(false);
+        super.populateDatabase();
     }
 
     public void resetDatabase(boolean cleanUpNotInitializedBusinessServicesAsWell) {
-        databasePopulator.resetDatabase();
-        testDatas.forEach(eachSet -> eachSet.getServices().forEach(
-                eachService -> businessServiceDao.delete(eachService)
-        ));
+        resetDatabase();
         if (cleanUpNotInitializedBusinessServicesAsWell) {
             businessServiceDao.findAll().forEach(eachBs -> businessServiceDao.delete(eachBs));
         }
-    }
-
-    // Returns the number of expected business services. The total is <initially created ones> + <createdCount>
-    public int expectedBsCount(int createdCount) {
-        int sum = testDatas.stream()
-                .mapToInt(BsmTestData::getServiceCount)
-                .sum();
-        return sum + createdCount;
-    }
-
-    public DatabasePopulator getDatabasePopulator() {
-        return databasePopulator;
     }
 }

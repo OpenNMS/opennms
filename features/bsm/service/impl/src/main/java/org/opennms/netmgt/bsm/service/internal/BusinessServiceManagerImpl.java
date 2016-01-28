@@ -130,7 +130,7 @@ public class BusinessServiceManagerImpl implements BusinessServiceManager {
     }
 
     @Override
-    public <T extends Edge> T createEdge(Class<T> type, BusinessService source, MapFunction mapFunction) {
+    public <T extends Edge> T createEdge(Class<T> type, BusinessService source, MapFunction mapFunction, int weight) {
         T edge = null;
         if (type == IpServiceEdge.class) {
             edge = (T) new IpServiceEdgeImpl(this, new IPServiceEdgeEntity());
@@ -144,6 +144,7 @@ public class BusinessServiceManagerImpl implements BusinessServiceManager {
         if (edge != null) {
             edge.setSource(source);
             edge.setMapFunction(mapFunction);
+            edge.setWeight(weight);
             return edge;
         }
         throw new IllegalArgumentException("Could not create edge for type " + type);
@@ -225,11 +226,11 @@ public class BusinessServiceManagerImpl implements BusinessServiceManager {
     }
 
     @Override
-    public boolean addReductionKeyEdge(BusinessService businessService, String reductionKey, MapFunction mapFunction) {
+    public boolean addReductionKeyEdge(BusinessService businessService, String reductionKey, MapFunction mapFunction, int weight) {
         final BusinessServiceEntity parentEntity = getBusinessServiceEntity(businessService);
 
         // Create the edge
-        final ReductionKeyEdgeImpl edge = (ReductionKeyEdgeImpl) createEdge(ReductionKeyEdge.class, businessService, mapFunction);
+        final ReductionKeyEdgeImpl edge = (ReductionKeyEdgeImpl) createEdge(ReductionKeyEdge.class, businessService, mapFunction, weight);
         edge.setReductionKey(reductionKey);
 
         // if already exists, no update
@@ -252,11 +253,11 @@ public class BusinessServiceManagerImpl implements BusinessServiceManager {
     }
 
     @Override
-    public boolean addIpServiceEdge(BusinessService businessService, IpService ipService, MapFunction mapFunction) {
+    public boolean addIpServiceEdge(BusinessService businessService, IpService ipService, MapFunction mapFunction, int weight) {
         final BusinessServiceEntity parentEntity = getBusinessServiceEntity(businessService);
 
         // Create the edge
-        final IpServiceEdge edge = createEdge(IpServiceEdge.class, businessService, mapFunction);
+        final IpServiceEdge edge = createEdge(IpServiceEdge.class, businessService, mapFunction, weight);
         edge.setIpService(ipService);
 
         // if already exists, no update
@@ -279,13 +280,13 @@ public class BusinessServiceManagerImpl implements BusinessServiceManager {
     }
 
     @Override
-    public boolean addChildEdge(BusinessService parentService, BusinessService childService, MapFunction mapFunction) {
+    public boolean addChildEdge(BusinessService parentService, BusinessService childService, MapFunction mapFunction, int weight) {
         // verify that exists
         final BusinessServiceEntity parentEntity = getBusinessServiceEntity(parentService);
         final BusinessServiceEntity childEntity = getBusinessServiceEntity(childService);
 
         // Create the edge
-        ChildEdge childEdge = createEdge(ChildEdge.class, parentService, mapFunction);
+        ChildEdge childEdge = createEdge(ChildEdge.class, parentService, mapFunction, weight);
         childEdge.setChild(childService);
 
         // Verify no loop

@@ -28,13 +28,18 @@
 
 package org.opennms.web.rest.v2;
 
+import static org.opennms.netmgt.bsm.test.BambooTestHierarchy.BAMBOO_AGENT_CAROLINA_REDUCTION_KEY;
+import static org.opennms.netmgt.bsm.test.BambooTestHierarchy.BAMBOO_AGENT_DUKE_REDUCTION_KEY;
+import static org.opennms.netmgt.bsm.test.BambooTestHierarchy.BAMBOO_AGENT_NCSTATE_REDUCTION_KEY;
 import static org.opennms.netmgt.bsm.test.BsmTestUtils.toRequestDto;
 import static org.opennms.netmgt.bsm.test.BsmTestUtils.toResponseDTO;
 import static org.opennms.netmgt.bsm.test.BsmTestUtils.toResponseDto;
 import static org.opennms.netmgt.bsm.test.BsmTestUtils.toXml;
 
 import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -54,17 +59,21 @@ import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.test.rest.AbstractSpringJerseyRestTestCase;
 import org.opennms.netmgt.bsm.persistence.api.BusinessServiceDao;
+import org.opennms.netmgt.bsm.persistence.api.BusinessServiceEdgeEntity;
 import org.opennms.netmgt.bsm.persistence.api.BusinessServiceEntity;
+import org.opennms.netmgt.bsm.persistence.api.SingleReductionKeyEdgeEntity;
 import org.opennms.netmgt.bsm.persistence.api.functions.map.IdentityEntity;
 import org.opennms.netmgt.bsm.persistence.api.functions.map.IgnoreEntity;
 import org.opennms.netmgt.bsm.persistence.api.functions.map.IncreaseEntity;
 import org.opennms.netmgt.bsm.persistence.api.functions.map.SetToEntity;
 import org.opennms.netmgt.bsm.persistence.api.functions.reduce.MostCriticalEntity;
 import org.opennms.netmgt.bsm.service.model.Status;
+import org.opennms.netmgt.bsm.service.model.edge.Edge;
 import org.opennms.netmgt.bsm.service.model.functions.map.Ignore;
+import org.opennms.netmgt.bsm.test.BambooTestHierarchy;
 import org.opennms.netmgt.bsm.test.BsmDatabasePopulator;
-import org.opennms.netmgt.bsm.test.BsmTestData;
 import org.opennms.netmgt.bsm.test.BusinessServiceEntityBuilder;
+import org.opennms.netmgt.bsm.test.SimpleTestHierarchy;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.test.JUnitConfigurationEnvironment;
@@ -78,14 +87,15 @@ import org.opennms.web.rest.v2.bsm.model.MapFunctionType;
 import org.opennms.web.rest.v2.bsm.model.ReduceFunctionDTO;
 import org.opennms.web.rest.v2.bsm.model.ReduceFunctionListDTO;
 import org.opennms.web.rest.v2.bsm.model.edge.ChildEdgeRequestDTO;
-import org.opennms.web.rest.v2.bsm.model.edge.ChildEdgeResponseDTO;
 import org.opennms.web.rest.v2.bsm.model.edge.IpServiceEdgeRequestDTO;
 import org.opennms.web.rest.v2.bsm.model.edge.ReductionKeyEdgeRequestDTO;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
@@ -110,6 +120,7 @@ public class BusinessServiceRestServiceIT extends AbstractSpringJerseyRestTestCa
     private BusinessServiceDao m_businessServiceDao;
 
     @Autowired
+    @Qualifier("bsmDatabasePopulator")
     private BsmDatabasePopulator databasePopulator;
 
     @Autowired
@@ -344,7 +355,7 @@ public class BusinessServiceRestServiceIT extends AbstractSpringJerseyRestTestCa
         List<ResourceLocation> businessServices = getXmlObject(context, url, 200, BusinessServiceListDTO.class).getServices();
 
         // Verify
-        Assert.assertEquals(databasePopulator.expectedBsCount(1), businessServices.size());
+        Assert.assertEquals(1, businessServices.size());
         BusinessServiceResponseDTO expectedResponseDTO = toResponseDto(bs);
         BusinessServiceResponseDTO actualResponseDTO = getXmlObject(
                 JAXBContext.newInstance(BusinessServiceResponseDTO.class, ResourceLocation.class),
@@ -368,7 +379,7 @@ public class BusinessServiceRestServiceIT extends AbstractSpringJerseyRestTestCa
         // TODO JSON cannot be deserialized by the rest service. Fix me.
 //        sendData(POST, MediaType.APPLICATION_JSON, "/business-services", toJson(toRequestDto(bs)), 201);
         sendData(POST, MediaType.APPLICATION_XML, "/business-services", toXml(toRequestDto(bs)) , 201);
-        Assert.assertEquals(databasePopulator.expectedBsCount(1), m_businessServiceDao.countAll());
+        Assert.assertEquals(1, m_businessServiceDao.countAll());
 
         for (BusinessServiceEntity eachEntity : m_businessServiceDao.findAll()) {
             BusinessServiceResponseDTO responseDTO = verifyResponse(eachEntity);
@@ -380,8 +391,8 @@ public class BusinessServiceRestServiceIT extends AbstractSpringJerseyRestTestCa
      * Verify that the Rest API can deal with setting of a hierarchy
      */
     @Test
-    public void canCreateHierarchy() throws Exception {
-        final BsmTestData testData = new BsmTestData(databasePopulator.getDatabasePopulator());
+    public void canCreateSimpleHierarchy() throws Exception {
+        final SimpleTestHierarchy testData = new SimpleTestHierarchy(databasePopulator);
         // clear hierarchy
         for(BusinessServiceEntity eachEntity : testData.getServices()) {
             eachEntity.getEdges().clear();
@@ -392,8 +403,8 @@ public class BusinessServiceRestServiceIT extends AbstractSpringJerseyRestTestCa
         }
         // set hierarchy
         BusinessServiceEntity parentEntity = findEntityByName("Parent")
-                .addChildServiceEdge(findEntityByName("Child 1"), new IdentityEntity())
-                .addChildServiceEdge(findEntityByName("Child 2"), new IdentityEntity());
+                .addChildServiceEdge(findEntityByName("Child 1"), new IdentityEntity(), 1)
+                .addChildServiceEdge(findEntityByName("Child 2"), new IdentityEntity(), 1);
         sendData(PUT, MediaType.APPLICATION_XML, buildServiceUrl(parentEntity.getId()), toXml(toRequestDto(parentEntity)), 204);
 
         // Verify
@@ -412,36 +423,96 @@ public class BusinessServiceRestServiceIT extends AbstractSpringJerseyRestTestCa
         verifyResponse(child2Entity);
     }
 
-    private BusinessServiceResponseDTO verifyResponse(BusinessServiceEntity entity) throws Exception {
+    @Test
+    public void canCreateBambooHierarchy() throws Exception {
+        final BambooTestHierarchy testData = new BambooTestHierarchy();
+
+        // save hierarchy for later use
+        final Map<BusinessServiceEntity, Set<BusinessServiceEdgeEntity>> edgeMap = Maps.newHashMap();
+        testData.getServices().forEach(eachEntity -> edgeMap.put(eachEntity, Sets.newHashSet(eachEntity.getEdges())));
+        testData.getServices().forEach(eachEntity -> eachEntity.setEdges(Sets.newHashSet())); // clear hierarchy
+
+        // save business services to database
+        for (BusinessServiceEntity eachEntity : testData.getServices()) {
+            sendData(POST, MediaType.APPLICATION_XML, "/business-services", toXml(toRequestDto(eachEntity)), 201);
+        }
+
+        // apply ids (we created objects via rest)
+        edgeMap.keySet().forEach(s -> s.setId(findEntityByName(s.getName()).getId()));
+
+        // set hierarchy
+        for (Map.Entry<BusinessServiceEntity, Set<BusinessServiceEdgeEntity>> eachEntry : edgeMap.entrySet()) {
+            eachEntry.getKey().setEdges(eachEntry.getValue());
+            sendData(PUT, MediaType.APPLICATION_XML, buildServiceUrl(eachEntry.getKey().getId()), toXml(toRequestDto(eachEntry.getKey())), 204);
+        }
+
+        // verify
+        Assert.assertEquals(3, m_businessServiceDao.countAll());
+        BusinessServiceEntity parentEntity = findEntityByName("Bamboo");
+        BusinessServiceEntity mastersBusinessServiceEntity = findEntityByName("Master");
+        BusinessServiceEntity agentsBusinessServiceEntity = findEntityByName("Agents");
+        Assert.assertEquals(0, m_businessServiceDao.findParents(parentEntity).size());
+        Assert.assertEquals(2, parentEntity.getChildEdges().size());
+        Assert.assertEquals(1, m_businessServiceDao.findParents(mastersBusinessServiceEntity).size());
+        Assert.assertEquals(2, mastersBusinessServiceEntity.getReductionKeyEdges().size());
+        Assert.assertEquals(1, m_businessServiceDao.findParents(agentsBusinessServiceEntity).size());
+        Assert.assertEquals(3, agentsBusinessServiceEntity.getReductionKeyEdges().size());
+
+        // Verify Weight
+        Assert.assertEquals(2, getReductionKeyEdge(agentsBusinessServiceEntity, BAMBOO_AGENT_DUKE_REDUCTION_KEY).getWeight());
+        Assert.assertEquals(2, getReductionKeyEdge(agentsBusinessServiceEntity, BAMBOO_AGENT_CAROLINA_REDUCTION_KEY).getWeight());
+        Assert.assertEquals(1, getReductionKeyEdge(agentsBusinessServiceEntity, BAMBOO_AGENT_NCSTATE_REDUCTION_KEY).getWeight());
+
+        // verify rest
+        verifyResponse(parentEntity);
+        verifyResponse(mastersBusinessServiceEntity);
+        verifyResponse(agentsBusinessServiceEntity);
+    }
+
+    /**
+     * Ensures that the given BusinessServiceEntity matches the result returned from the Rest API when asking for the
+     * business service with the Business Service Entities id.
+     * The Verification is done by transforming the given entity to a BusinessServiceResponseDTO and compare it with the
+     * returned one from the Rest API.
+     * @param expectedEntity The values one expects.
+     * @return The returned response from the Rest API.
+     * @throws Exception
+     */
+    private BusinessServiceResponseDTO verifyResponse(BusinessServiceEntity expectedEntity) throws Exception {
         final BusinessServiceResponseDTO responseDTO = getXmlObject(
                 JAXBContext.newInstance(BusinessServiceResponseDTO.class),
-                buildServiceUrl(entity.getId()),
+                buildServiceUrl(expectedEntity.getId()),
                 200,
                 BusinessServiceResponseDTO.class);
-        Assert.assertEquals(entity.getId(), Long.valueOf(responseDTO.getId()));
-        Assert.assertEquals(entity.getName(), responseDTO.getName());
-        Assert.assertEquals(entity.getAttributes(), responseDTO.getAttributes());
+        Assert.assertEquals(expectedEntity.getId(), Long.valueOf(responseDTO.getId()));
+        Assert.assertEquals(expectedEntity.getName(), responseDTO.getName());
+        Assert.assertEquals(expectedEntity.getAttributes(), responseDTO.getAttributes());
         Assert.assertEquals(Status.INDETERMINATE, responseDTO.getOperationalStatus());
-        Assert.assertEquals(entity.getReductionKeyEdges().size(), responseDTO.getReductionKeys().size());
-        Assert.assertEquals(entity.getReductionKeyEdges()
+        Assert.assertEquals(expectedEntity.getReductionKeyEdges().size(), responseDTO.getReductionKeys().size());
+        Assert.assertEquals(expectedEntity.getReductionKeyEdges()
                 .stream()
                 .map(it -> toResponseDTO(it))
                 .collect(Collectors.toList()), responseDTO.getReductionKeys());
-        Assert.assertEquals(entity.getChildEdges().size(), responseDTO.getChildren().size());
-        Assert.assertEquals(entity.getChildEdges()
+        Assert.assertEquals(expectedEntity.getChildEdges().size(), responseDTO.getChildren().size());
+        Assert.assertEquals(expectedEntity.getChildEdges()
                 .stream()
                 .map(e -> toResponseDTO(e))
                 .collect(Collectors.toList()), responseDTO.getChildren());
-        Assert.assertEquals(entity.getIpServiceEdges().size(), responseDTO.getIpServices().size());
-        Assert.assertEquals(entity.getIpServiceEdges()
+        Assert.assertEquals(expectedEntity.getIpServiceEdges().size(), responseDTO.getIpServices().size());
+        Assert.assertEquals(expectedEntity.getIpServiceEdges()
                 .stream()
                 .map(e -> toResponseDTO(e))
                 .collect(Collectors.toList()), responseDTO.getIpServices());
-        Assert.assertEquals(m_businessServiceDao.findParents(entity)
+        Assert.assertEquals(m_businessServiceDao.findParents(expectedEntity)
                 .stream()
                 .map(e -> e.getId())
                 .collect(Collectors.toSet()), responseDTO.getParentServices());
         return responseDTO;
+    }
+
+    private SingleReductionKeyEdgeEntity getReductionKeyEdge(BusinessServiceEntity businessService, String reductionKey) {
+        Optional<SingleReductionKeyEdgeEntity> first = businessService.getReductionKeyEdges().stream().filter(e -> e.getReductionKey().equals(reductionKey)).findFirst();
+        return first.get(); // throws NoSuchElement if not present
     }
 
     private BusinessServiceEntity findEntityByName(String name) {
@@ -472,7 +543,7 @@ public class BusinessServiceRestServiceIT extends AbstractSpringJerseyRestTestCa
         requestDTO.setName("New Name");
         requestDTO.getAttributes().put("key", "value");
         requestDTO.getReductionKeys().clear();
-        requestDTO.addReductionKey("key1updated", MapFunctionType.Ignore.toDTO(new Ignore()));
+        requestDTO.addReductionKey("key1updated", MapFunctionType.Ignore.toDTO(new Ignore()), Edge.DEFAULT_WEIGHT);
 
         // TODO JSON cannot be de-serialized by the rest service. Fix me.
 //        sendData(PUT, MediaType.APPLICATION_JSON, "/business-services/" + serviceId, toJson(requestDTO), 204);

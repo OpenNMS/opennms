@@ -6,7 +6,7 @@
 		http://xmlns.opennms.org/xsd/spring/onms-osgi http://xmlns.opennms.org/xsd/spring/onms-osgi.xsd
 	">
 
-	<bean id="databasePopulator" class="org.opennms.netmgt.dao.DatabasePopulator">
+	<bean id="databasePopulator" primary="true" class="org.opennms.netmgt.dao.DatabasePopulator">
 		<property name="transactionTemplate" ref="transactionTemplate" />
 		<property name="distPollerDao" ref="distPollerDao" />
 		<property name="nodeDao" ref="nodeDao" />

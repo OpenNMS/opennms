@@ -139,13 +139,22 @@ public class BusinessServiceRestService {
         service.setReduceFunction(transform(request.getReduceFunction()));
         request.getReductionKeys()
                 .stream()
-                .forEach(rkEdge -> service.addReductionKeyEdge(rkEdge.getReductionKey(),transform(rkEdge.getMapFunction())));
+                .forEach(rkEdge -> service.addReductionKeyEdge(
+                        rkEdge.getReductionKey(),
+                        transform(rkEdge.getMapFunction()),
+                        rkEdge.getWeight()));
         request.getIpServices()
                 .stream()
-                .forEach(ipEdge -> service.addIpServiceEdge(getManager().getIpServiceById(ipEdge.getIpServiceId()), transform(ipEdge.getMapFunction())));
+                .forEach(ipEdge -> service.addIpServiceEdge(
+                        getManager().getIpServiceById(ipEdge.getIpServiceId()),
+                        transform(ipEdge.getMapFunction()),
+                        ipEdge.getWeight()));
         request.getChildServices()
                 .stream()
-                .forEach(childEdge -> service.addChildEdge(getManager().getBusinessServiceById(childEdge.getChildId()), transform(childEdge.getMapFunction())));
+                .forEach(childEdge -> service.addChildEdge(
+                        getManager().getBusinessServiceById(childEdge.getChildId()),
+                        transform(childEdge.getMapFunction()),
+                        childEdge.getWeight()));
         getManager().saveBusinessService(service);
 
         return Response.created(RedirectHelper.getRedirectUri(uriInfo, service.getId())).build();
@@ -168,22 +177,29 @@ public class BusinessServiceRestService {
         service.setAttributes(request.getAttributes());
         service.setReduceFunction(transform(request.getReduceFunction()));
         service.setReductionKeyEdges(Sets.newHashSet());
-                request.getReductionKeys()
-                    .forEach(rkEdge -> getManager().addReductionKeyEdge(service, rkEdge.getReductionKey(), transform(rkEdge.getMapFunction())));
+        request.getReductionKeys()
+            .forEach(rkEdge ->
+                    getManager().addReductionKeyEdge(
+                            service,
+                            rkEdge.getReductionKey(),
+                            transform(rkEdge.getMapFunction()),
+                            rkEdge.getWeight()));
         service.setIpServiceEdges(Sets.newHashSet());
-                request.getIpServices()
-                        .forEach(ipEdge ->
-                            getManager().addIpServiceEdge(
-                                    service,
-                                    getManager().getIpServiceById(ipEdge.getIpServiceId()),
-                                    transform(ipEdge.getMapFunction())));
+        request.getIpServices()
+                .forEach(ipEdge ->
+                    getManager().addIpServiceEdge(
+                            service,
+                            getManager().getIpServiceById(ipEdge.getIpServiceId()),
+                            transform(ipEdge.getMapFunction()),
+                            ipEdge.getWeight()));
         service.setChildEdges(Sets.newHashSet());
-                request.getChildServices()
-                        .forEach(childEdge ->
-                            getManager().addChildEdge(
-                                    service,
-                                    getManager().getBusinessServiceById(childEdge.getChildId()),
-                                    transform(childEdge.getMapFunction())));
+        request.getChildServices()
+                .forEach(childEdge ->
+                    getManager().addChildEdge(
+                            service,
+                            getManager().getBusinessServiceById(childEdge.getChildId()),
+                            transform(childEdge.getMapFunction()),
+                            childEdge.getWeight()));
         getManager().saveBusinessService(service);
 
         return Response.noContent().build();
@@ -204,7 +220,7 @@ public class BusinessServiceRestService {
                             final IpServiceEdgeRequestDTO edgeRequest) {
         final BusinessService businessService = getManager().getBusinessServiceById(serviceId);
         final IpService ipService = getManager().getIpServiceById(edgeRequest.getIpServiceId());
-        boolean changed = getManager().addIpServiceEdge(businessService, ipService, transform(edgeRequest.getMapFunction()));
+        boolean changed = getManager().addIpServiceEdge(businessService, ipService, transform(edgeRequest.getMapFunction()), edgeRequest.getWeight());
         if (!changed) {
             return Response.notModified().build();
         }
@@ -218,7 +234,7 @@ public class BusinessServiceRestService {
     public Response addReductionKeyEdge(@PathParam("id") final Long serviceId,
                             final ReductionKeyEdgeRequestDTO edgeRequest) {
         final BusinessService businessService = getManager().getBusinessServiceById(serviceId);
-        boolean changed = getManager().addReductionKeyEdge(businessService, edgeRequest.getReductionKey(), transform(edgeRequest.getMapFunction()));
+        boolean changed = getManager().addReductionKeyEdge(businessService, edgeRequest.getReductionKey(), transform(edgeRequest.getMapFunction()), edgeRequest.getWeight());
         if (!changed) {
             return Response.notModified().build();
         }
@@ -233,7 +249,7 @@ public class BusinessServiceRestService {
                             final ChildEdgeRequestDTO edgeRequest) {
         final BusinessService parentService = getManager().getBusinessServiceById(serviceId);
         final BusinessService childService = getManager().getBusinessServiceById(edgeRequest.getChildId());
-        boolean changed = getManager().addChildEdge(parentService, childService, transform(edgeRequest.getMapFunction()));
+        boolean changed = getManager().addChildEdge(parentService, childService, transform(edgeRequest.getMapFunction()), edgeRequest.getWeight());
         if (!changed) {
             return Response.notModified().build();
         }
@@ -315,6 +331,7 @@ public class BusinessServiceRestService {
         response.setLocation(ResourceLocationFactory.createBusinessServiceEdgeLocation(edge.getSource().getId(), edge.getId()));
         response.setReductionKeys(edge.getReductionKeys());
         response.setMapFunction(transform(edge.getMapFunction()));
+        response.setWeight(edge.getWeight());
         response.setIpService(transform(edge.getIpService()));
         return response;
     }
@@ -327,6 +344,7 @@ public class BusinessServiceRestService {
         response.setLocation(ResourceLocationFactory.createBusinessServiceEdgeLocation(edge.getSource().getId(), edge.getId()));
         response.setReductionKeys(edge.getReductionKeys());
         response.setMapFunction(transform(edge.getMapFunction()));
+        response.setWeight(edge.getWeight());
         return response;
     }
 
@@ -338,6 +356,7 @@ public class BusinessServiceRestService {
         response.setLocation(ResourceLocationFactory.createBusinessServiceEdgeLocation(edge.getSource().getId(), edge.getId()));
         response.setReductionKeys(edge.getReductionKeys());
         response.setMapFunction(transform(edge.getMapFunction()));
+        response.setWeight(edge.getWeight());
         return response;
     }
 

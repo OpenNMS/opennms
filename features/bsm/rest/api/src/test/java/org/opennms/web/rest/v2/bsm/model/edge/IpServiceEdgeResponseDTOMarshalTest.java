@@ -62,6 +62,7 @@ public class IpServiceEdgeResponseDTOMarshalTest extends MarshalAndUnmarshalTest
         edge.setOperationalStatus(Status.WARNING);
         edge.getReductionKeys().add("key1");
         edge.getReductionKeys().add("key2");
+        edge.setWeight(20);
         edge.setMapFunction(createMapFunctionDTO(MapFunctionType.SetTo, new String[]{"key1", "value1"}));
         edge.setId(1);
 
@@ -77,10 +78,11 @@ public class IpServiceEdgeResponseDTOMarshalTest extends MarshalAndUnmarshalTest
                 "           \"key1\" : \"value1\"" +
                 "       }" +
                 "   }," +
-                "       \"location\" : \"/api/v2/business-services/edges/1\"," +
+                "  \"location\" : \"/api/v2/business-services/edges/1\"," +
                 "  \"reductionKeys\" : [" +
                 "       \"key1\", \"key2\""+
                 "   ]," +
+                "  \"weight\" : 20," +
                 "  \"ipService\" : {" +
                 "       \"id\" : 17," +
                 "       \"location\" : \"/api/v2/business-services/ip-services/17\"," +
@@ -106,6 +108,7 @@ public class IpServiceEdgeResponseDTOMarshalTest extends MarshalAndUnmarshalTest
                 "       <reductionKey>key1</reductionKey>\n" +
                 "       <reductionKey>key2</reductionKey>\n" +
                 "   </reductionKeys>\n" +
+                "    <weight>20</weight>\n" +
                 "   <ip-service>\n" +
                 "       <id>17</id>\n" +
                 "       <service-name>ICMP</service-name>\n" +

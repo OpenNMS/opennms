@@ -49,8 +49,8 @@ import org.opennms.netmgt.bsm.persistence.api.functions.map.IgnoreEntity;
 import org.opennms.netmgt.bsm.persistence.api.functions.map.MapFunctionDao;
 import org.opennms.netmgt.bsm.persistence.api.functions.reduce.MostCriticalEntity;
 import org.opennms.netmgt.bsm.persistence.api.functions.reduce.ReductionFunctionDao;
+import org.opennms.netmgt.bsm.test.BsmDatabasePopulator;
 import org.opennms.netmgt.bsm.test.BusinessServiceEntityBuilder;
-import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.OnmsMonitoredService;
@@ -59,6 +59,7 @@ import org.opennms.test.JUnitConfigurationEnvironment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -81,7 +82,8 @@ public class BusinessServiceDaoIT {
     private static final Logger LOG = LoggerFactory.getLogger(BusinessServiceDaoIT.class);
 
     @Autowired
-    private DatabasePopulator m_databasePopulator;
+    @Qualifier("bsmDatabasePopulator")
+    private BsmDatabasePopulator m_databasePopulator;
 
     @Autowired
     private BusinessServiceDao m_businessServiceDao;
@@ -108,7 +110,6 @@ public class BusinessServiceDaoIT {
     @Before
     public void setUp() {
         BeanUtils.assertAutowiring(this);
-        m_databasePopulator.setPopulateInSeparateTransaction(false);
         m_databasePopulator.populateDatabase();
         m_mostCritical = new MostCriticalEntity();
         m_ignore = new IgnoreEntity();

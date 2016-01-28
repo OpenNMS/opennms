@@ -161,24 +161,27 @@ public class BusinessServiceRequestDTO {
                 .toString();
     }
 
-    public void addChildService(long childId, MapFunctionDTO mapFunction) {
+    public void addChildService(long childId, MapFunctionDTO mapFunction, int weight) {
         ChildEdgeRequestDTO edge = new ChildEdgeRequestDTO();
         edge.setChildId(childId);
         edge.setMapFunction(mapFunction);
+        edge.setWeight(weight);
         getChildServices().add(edge);
     }
 
-    public void addReductionKey(String reductionKey, MapFunctionDTO mapFunction) {
+    public void addReductionKey(String reductionKey, MapFunctionDTO mapFunction, int weight) {
         ReductionKeyEdgeRequestDTO edge = new ReductionKeyEdgeRequestDTO();
         edge.setReductionKey(reductionKey);
         edge.setMapFunction(mapFunction);
+        edge.setWeight(weight);
         getReductionKeys().add(edge);
     }
 
-    public void addIpService(int ipServiceId, MapFunctionDTO mapFunction) {
+    public void addIpService(int ipServiceId, MapFunctionDTO mapFunction, int weight) {
         IpServiceEdgeRequestDTO edge = new IpServiceEdgeRequestDTO();
         edge.setIpServiceId(ipServiceId);
         edge.setMapFunction(mapFunction);
+        edge.setWeight(weight);
         getIpServices().add(edge);
     }
 }

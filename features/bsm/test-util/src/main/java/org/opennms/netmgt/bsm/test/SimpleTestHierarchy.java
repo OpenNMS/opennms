@@ -40,20 +40,15 @@ import org.opennms.netmgt.bsm.persistence.api.functions.reduce.MostCriticalEntit
 import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 
-// TODO MVR merge better with BsmDatabasePopulator...
-// creates a simple hierarchy with 1 parent and 2 childs.
-// Each children has one ip service atached. The parent has not.
-public class BsmTestData {
+// creates a simple hierarchy with 1 parent and 2 children.
+// Each children has one ip service attached. The parent has not.
+public class SimpleTestHierarchy {
 
-    private final DatabasePopulator databasePopulator;
     private final List<BusinessServiceEntity> businessServices = new ArrayList<>();
 
-    public BsmTestData(DatabasePopulator databasePopulator) {
-        this.databasePopulator = Objects.requireNonNull(databasePopulator);
-        createSimpleHierarchy();
-    }
+    public SimpleTestHierarchy(DatabasePopulator databasePopulator) {
+        Objects.requireNonNull(databasePopulator);
 
-    private void createSimpleHierarchy() {
         // Create a simple hierarchy
         BusinessServiceEntity child1 = new BusinessServiceEntityBuilder()
                 .name("Child 1")
@@ -97,10 +92,6 @@ public class BsmTestData {
 
     public OnmsMonitoredService getServiceChild2() {
         return getChild2().getIpServiceEdges().iterator().next().getIpService();
-    }
-
-    public int getServiceCount() {
-        return businessServices.size();
     }
 
     public List<BusinessServiceEntity> getServices() {

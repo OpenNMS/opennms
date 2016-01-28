@@ -70,6 +70,9 @@ public abstract class AbstractEdgeResponseDTO {
     @XmlElementWrapper(name="reductionKeys")
     private Set<String> reductionKeys = new HashSet<>();
 
+    @XmlElement(name="weight", required = true)
+    private int weight = 1;
+
     public Status getOperationalStatus() {
         return this.operationalStatus;
     }
@@ -110,16 +113,25 @@ public abstract class AbstractEdgeResponseDTO {
         return mapFunction;
     }
 
+    public void setWeight(int weight) {
+        this.weight = weight;
+    }
+
+    public int getWeight() {
+        return weight;
+    }
+
     @Override
     public boolean equals(Object obj) {
         if (obj == null) return false;
         if (obj == this) return true;
-        if (getClass() != obj.getClass()) return false;
+        if (!(obj instanceof AbstractEdgeResponseDTO)) return false;
         final AbstractEdgeResponseDTO other = (AbstractEdgeResponseDTO) obj;
         final boolean equals = Objects.equal(id, other.id)
                 && Objects.equal(operationalStatus, other.operationalStatus)
                 && Objects.equal(mapFunction, other.mapFunction)
                 && Objects.equal(reductionKeys, other.reductionKeys)
+                && Objects.equal(weight, other.weight)
                 && Objects.equal(location, other.location);
         return equals;
     }
@@ -128,6 +140,9 @@ public abstract class AbstractEdgeResponseDTO {
     public int hashCode() {
         return Objects.hashCode(id,
                 operationalStatus,
+                mapFunction,
+                reductionKeys,
+                weight,
                 location);
     }
 
@@ -136,6 +151,7 @@ public abstract class AbstractEdgeResponseDTO {
         return Objects.toStringHelper(this)
                 .add("id", id)
                 .add("operationalStatus", operationalStatus)
+                .add("weight", weight)
                 .add("mapFunction", mapFunction)
                 .add("location", location)
                 .add("reductionKeys", reductionKeys)

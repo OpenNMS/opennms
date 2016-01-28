@@ -71,21 +71,19 @@ public interface BusinessService {
 
     void setIpServiceEdges(Set<IpServiceEdge> ipServiceEdges);
 
-    void addIpServiceEdge(IpService ipService, MapFunction mapFunction);
+    void addIpServiceEdge(IpService ipService, MapFunction mapFunction, int weight);
 
     Set<ReductionKeyEdge> getReductionKeyEdges();
 
     void setReductionKeyEdges(Set<ReductionKeyEdge> reductionKeyEdges);
 
-    void addReductionKeyEdge(String reductionKey, MapFunction mapFunction);
+    void addReductionKeyEdge(String reductionKey, MapFunction mapFunction, int weight);
 
     Set<ChildEdge> getChildEdges();
 
     void setChildEdges(Set<ChildEdge> childEdges);
 
-    void addChildEdge(BusinessService child, MapFunction mapFunction);
-
-//    void removeChildEdge(BusinessService childService);
+    void addChildEdge(BusinessService child, MapFunction mapFunction, int weight);
 
     void setLevel(int level);
 

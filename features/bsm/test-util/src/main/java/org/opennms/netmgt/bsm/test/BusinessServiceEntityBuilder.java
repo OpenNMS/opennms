@@ -28,7 +28,6 @@
 
 package org.opennms.netmgt.bsm.test;
 
-import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -41,11 +40,23 @@ import org.opennms.netmgt.model.OnmsMonitoredService;
 
 public class BusinessServiceEntityBuilder {
 
+    private class EdgeDefinition<V> {
+        private final V value;
+        private final AbstractMapFunctionEntity mapFunction;
+        private final int weight;
+
+        public EdgeDefinition(V value, AbstractMapFunctionEntity mapFunction, int weight) {
+            this.value = value;
+            this.mapFunction = mapFunction;
+            this.weight = weight;
+        }
+    }
+
     private String name;
     private final Map<String, String> attributes = new HashMap<>();
-    private List<AbstractMap.SimpleEntry<BusinessServiceEntity, AbstractMapFunctionEntity>> children = new ArrayList<>();
-    private List<AbstractMap.SimpleEntry<OnmsMonitoredService, AbstractMapFunctionEntity>> ipServices = new ArrayList<>();
-    private List<AbstractMap.SimpleEntry<String, AbstractMapFunctionEntity>> reductionKeys = new ArrayList<>();
+    private List<EdgeDefinition<BusinessServiceEntity>> children = new ArrayList<>();
+    private List<EdgeDefinition<OnmsMonitoredService>> ipServices = new ArrayList<>();
+    private List<EdgeDefinition<String>> reductionKeys = new ArrayList<>();
     private Long id;
     private AbstractReductionFunctionEntity reduceFunction;
 
@@ -56,11 +67,6 @@ public class BusinessServiceEntityBuilder {
 
     public BusinessServiceEntityBuilder addAttribute(String key, String value) {
         attributes.put(key, value);
-        return this;
-    }
-
-    public BusinessServiceEntityBuilder addChildren(BusinessServiceEntity children, AbstractMapFunctionEntity mapFunctionEntity) {
-        this.children.add(new AbstractMap.SimpleEntry<>(children, mapFunctionEntity));
         return this;
     }
 
@@ -78,19 +84,36 @@ public class BusinessServiceEntityBuilder {
         if (reduceFunction != null) {
             entity.setReductionFunction(reduceFunction);
         }
-        ipServices.forEach(e -> entity.addIpServiceEdge(e.getKey(), e.getValue()));
-        children.forEach(e -> entity.addChildServiceEdge(e.getKey(), e.getValue()));
-        reductionKeys.forEach(e -> entity.addReductionKeyEdge(e.getKey(), e.getValue()));
+        ipServices.forEach(e -> entity.addIpServiceEdge(e.value, e.mapFunction, e.weight));
+        children.forEach(e -> entity.addChildServiceEdge(e.value, e.mapFunction, e.weight));
+        reductionKeys.forEach(e -> entity.addReductionKeyEdge(e.value, e.mapFunction, e.weight));
         return entity;
     }
 
     public BusinessServiceEntityBuilder addIpService(OnmsMonitoredService ipService, AbstractMapFunctionEntity mapFunctionEntity) {
-        ipServices.add(new AbstractMap.SimpleEntry<>(ipService, mapFunctionEntity));
+        return addIpService(ipService, mapFunctionEntity, 1);
+    }
+
+    public BusinessServiceEntityBuilder addIpService(OnmsMonitoredService ipService, AbstractMapFunctionEntity mapFunctionEntity, int weight) {
+        ipServices.add(new EdgeDefinition<>(ipService, mapFunctionEntity, weight));
         return this;
     }
 
     public BusinessServiceEntityBuilder addReductionKey(String reductionKey, AbstractMapFunctionEntity mapFunctionEntity) {
-        reductionKeys.add(new AbstractMap.SimpleEntry<>(reductionKey, mapFunctionEntity));
+        return addReductionKey(reductionKey, mapFunctionEntity, 1);
+    }
+
+    public BusinessServiceEntityBuilder addReductionKey(String reductionKey, AbstractMapFunctionEntity mapFunctionEntity, int weight) {
+        reductionKeys.add(new EdgeDefinition<>(reductionKey, mapFunctionEntity, weight));
+        return this;
+    }
+
+    public BusinessServiceEntityBuilder addChildren(BusinessServiceEntity child, AbstractMapFunctionEntity mapFunctionEntity) {
+        return addChildren(child, mapFunctionEntity, 1);
+    }
+
+    public BusinessServiceEntityBuilder addChildren(BusinessServiceEntity child, AbstractMapFunctionEntity mapFunctionEntity, int weight) {
+        children.add(new EdgeDefinition<>(child, mapFunctionEntity, weight));
         return this;
     }
 
