@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2016 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -37,7 +37,7 @@ import java.awt.GraphicsEnvironment
 import java.awt.font.TextAttribute
 
 import javax.swing.JButton
-import javax.swing.JComponent;
+import javax.swing.JComponent
 import javax.swing.JFrame
 import javax.swing.JPanel
 import javax.swing.ListCellRenderer
@@ -61,12 +61,12 @@ public abstract class AbstractGui implements GroovyGui {
     private def m_headerFont
     private def m_labelFont
     private def m_mainFont
-    private def m_preferredFonts = ['Helvetica Neue', 'Roboto Sans', 'Roboto', 'Futura']
+    private def m_preferredFonts = ['San Francisco', 'Helvetica Neue', 'Roboto Sans', 'Roboto', 'Futura']
 
     private def m_backgroundColor = Color.WHITE
     private def m_foregroundColor = Color.BLACK
     private def m_detailColor = new Color(0x005AAA)
-    private def m_listCellRenderer = new CellRenderer(getDetailColor(), getForegroundColor(), getBackgroundColor())
+    private def m_listCellRenderer
 
     protected def debugString = ""
 
@@ -75,15 +75,17 @@ public abstract class AbstractGui implements GroovyGui {
 
     public AbstractGui() {
         //debugString = ", debug 100"
-
-        UIManager.setLookAndFeel(new OpenNMSLookAndFeel());
-
-        def background = new ColorUIResource(m_backgroundColor)
-        def foreground = new ColorUIResource(m_foregroundColor)
-        def detail = new ColorUIResource(m_detailColor)
-        def buttonBorder = new BorderUIResource.LineBorderUIResource(m_foregroundColor)
-
         swing.registerBeanFactory('migLayout', MigLayout.class)
+    }
+
+    public void initUI() {
+        m_listCellRenderer = new CellRenderer(getDetailColor(), getForegroundColor(), getBackgroundColor())
+        UIManager.setLookAndFeel(new OpenNMSLookAndFeel())
+
+        def background = new ColorUIResource(getBackgroundColor())
+        def foreground = new ColorUIResource(getForegroundColor())
+        def detail = new ColorUIResource(getDetailColor())
+        def buttonBorder = new BorderUIResource.LineBorderUIResource(getForegroundColor())
 
         def fontNames = new TreeSet<String>()
         def environment = GraphicsEnvironment.getLocalGraphicsEnvironment()
@@ -213,6 +215,7 @@ public abstract class AbstractGui implements GroovyGui {
 
     @Override
     public final void createAndShowGui() {
+        initUI()
         m_gui = swing.frame(title:'Scan', size:[750,550], pack:true, visible:false, background:getBackgroundColor(), defaultCloseOperation:WindowConstants.DISPOSE_ON_CLOSE)
         def rootPanel = swing.panel(background:getBackgroundColor(), opaque:true) {
             migLayout(

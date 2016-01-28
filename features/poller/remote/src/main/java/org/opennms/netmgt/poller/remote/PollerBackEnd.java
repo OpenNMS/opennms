@@ -28,7 +28,6 @@
 
 package org.opennms.netmgt.poller.remote;
 
-import java.net.URL;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Map;
@@ -155,16 +154,10 @@ public interface PollerBackEnd {
     Set<MetadataField> getMetadataFields();
 
     /**
-     * Gets the title to use in the scan report GUI.
-     * @return the title
+     * Gets the theme (color, title, logo) information to use in poller UIs
+     * @return a poller theme
      */
-    String getScanReportTitle();
-
-    /**
-     * Gets the URL to an image to put in the scan report.
-     * @return the image URL
-     */
-    URL getScanReportImage();
+    PollerTheme getTheme();
 
     /**
      * Report a poll result from the client to the server.

@@ -54,9 +54,10 @@ import org.springframework.beans.factory.InitializingBean
 import org.springframework.util.Assert
 
 class ScanGui extends AbstractGui implements ScanReportHandler, PropertyChangeListener, InitializingBean {
-    def m_metadataFieldTypes = new TreeSet<MetadataField>();
+    def m_metadataFieldTypes = new TreeSet<MetadataField>()
     def m_locations = new ArrayList<String>()
     def m_applications = new HashMap<Set<String>>()
+    def m_theme
     def m_geoMetadata
     def m_scanReport
 
@@ -82,10 +83,37 @@ class ScanGui extends AbstractGui implements ScanReportHandler, PropertyChangeLi
     }
 
     @Override
+    protected Color getForegroundColor() {
+        def color = m_theme.getForegroundColor()
+        if (color != null) {
+            return color
+        }
+        return super.getForegroundColor()
+    }
+
+    @Override
+    protected Color getBackgroundColor() {
+        def color = m_theme.getBackgroundColor()
+        if (color != null) {
+            return color
+        }
+        return super.getBackgroundColor()
+    }
+
+    @Override
+    protected Color getDetailColor() {
+        def color = m_theme.getDetailColor()
+        if (color != null) {
+            return color
+        }
+        return super.getDetailColor()
+    }
+
+    @Override
     protected String getApplicationTitle() {
-        def title = m_backEnd.getScanReportTitle()
+        def title = m_theme.getTitle()
         if (title != null && !title.trim().isEmpty()) {
-            return title;
+            return title
         }
         return "Network Scanner"
     }
@@ -99,7 +127,7 @@ class ScanGui extends AbstractGui implements ScanReportHandler, PropertyChangeLi
     }
 
     protected void updateImage() {
-        final URL imageUrl = m_backEnd.getScanReportImage()
+        final URL imageUrl = m_theme.getImage()
         if (imageUrl != null) {
             def image = MetadataUtils.getImageFromURL(imageUrl)
             if (image != null) {
@@ -110,6 +138,7 @@ class ScanGui extends AbstractGui implements ScanReportHandler, PropertyChangeLi
 
     @Override
     public void afterPropertiesSet() {
+        System.err.println("afterPropertiesSet()")
         Assert.notNull(m_backEnd)
         Collection<LocationDef> monitoringLocations = m_backEnd.getMonitoringLocations()
         for (final LocationDef d : monitoringLocations) {
@@ -119,6 +148,8 @@ class ScanGui extends AbstractGui implements ScanReportHandler, PropertyChangeLi
             System.err.println("location=" + name + ", applications=" + apps)
             m_applications.put(name, apps)
         }
+        m_theme = m_backEnd.getTheme()
+        System.err.println("theme=" + m_theme)
         m_metadataFieldTypes = m_backEnd.getMetadataFields()
         m_geoMetadata = MetadataUtils.fetchGeodata()
         updateImage()
@@ -220,18 +251,18 @@ class ScanGui extends AbstractGui implements ScanReportHandler, PropertyChangeLi
                         def model = applicationCombo.getModel()
                         currentLocation = locationCombo.getSelectedItem()
                         currentApplications = m_applications.get(currentLocation)
-                        System.err.println("Updating application combo. currentLocation=" + currentLocation + ", currentApplications=" + currentApplications);
+                        System.err.println("Updating application combo. currentLocation=" + currentLocation + ", currentApplications=" + currentApplications)
                         model.removeAllElements()
                         if (currentApplications == null || currentApplications.size() < 1) {
-                            System.err.println("Location combo changed, but no applications found!");
-                            applicationLabel.setVisible(false);
-                            applicationCombo.setVisible(false);
+                            System.err.println("Location combo changed, but no applications found!")
+                            applicationLabel.setVisible(false)
+                            applicationCombo.setVisible(false)
                         } else {
                             for (final String app : currentApplications) {
-                                model.addElement(app);
+                                model.addElement(app)
                             }
-                            applicationLabel.setVisible(true);
-                            applicationCombo.setVisible(true);
+                            applicationLabel.setVisible(true)
+                            applicationCombo.setVisible(true)
                         }
                     }
                     applicationCombo.updateUI()
@@ -283,10 +314,10 @@ class ScanGui extends AbstractGui implements ScanReportHandler, PropertyChangeLi
                         }
 
                         // Reduce the opacity of the background to create a 'disabled' look
-                        float[] bgColor = new float[3];
+                        float[] bgColor = new float[3]
                         bgColor = getDetailColor().getRGBColorComponents(bgColor)
                         m_scanNowButton.setBackground(new Color(bgColor[0], bgColor[1], bgColor[2], 0.15))
-                        m_scanNowButton.setText("Scanning...");
+                        m_scanNowButton.setText("Scanning...")
                         // Disable the button
                         m_scanNowButton.setEnabled(false)
 
@@ -459,6 +490,8 @@ class ScanGui extends AbstractGui implements ScanReportHandler, PropertyChangeLi
         m_passFailPanel.removeAll()
         def svg = new JSVGCanvas()
         def uri = this.getClass().getResource(passed? "/passed.svg":"/failed.svg")
+        svg.setOpaque(false)
+        svg.setBackground(new Color(0,0,0,0))
         svg.setURI(uri.toString())
         m_passFailPanel.add(svg)
         m_passFailPanel.revalidate()
@@ -469,7 +502,7 @@ class ScanGui extends AbstractGui implements ScanReportHandler, PropertyChangeLi
             m_updateDetails()
         }
 
-        m_scanNowButton.setText("Scan Now");
+        m_scanNowButton.setText("Scan Now")
         m_scanNowButton.setBackground(getDetailColor())
         m_scanNowButton.setEnabled(true)
         // It looks a little jarring to immediately remove the progress bar...
