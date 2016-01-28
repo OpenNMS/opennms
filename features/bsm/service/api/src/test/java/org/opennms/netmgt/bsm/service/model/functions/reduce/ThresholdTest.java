@@ -58,6 +58,11 @@ public class ThresholdTest {
         }
 
         @Override
+        public Type getType() {
+            return Type.IP_SERVICE;
+        }
+
+        @Override
         public MapFunction getMapFunction() {
             return mapFunction;
         }
@@ -114,6 +119,6 @@ public class ThresholdTest {
         edgeStatusMap.clear();
         edgeStatusMap.put(new TestEdge(1, new Increase()), Status.CRITICAL);
         edgeStatusMap.put(new TestEdge(1, new Increase()), Status.MINOR);
-        Assert.assertEquals(Status.MAJOR, threshold.reduce(edgeStatusMap).get());
+        Assert.assertEquals(Status.MINOR, threshold.reduce(edgeStatusMap).get());
     }
 }
