@@ -28,25 +28,8 @@
 
 package org.opennms.netmgt.bsm.vaadin.adminpage;
 
-import com.google.common.base.Throwables;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Sets;
-import com.vaadin.data.Property;
-import com.vaadin.data.Validator;
-import com.vaadin.data.util.BeanContainer;
-import com.vaadin.data.util.IndexedContainer;
-import com.vaadin.data.util.ObjectProperty;
-import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.FormLayout;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.ListSelect;
-import com.vaadin.ui.NativeSelect;
-import com.vaadin.ui.Panel;
-import com.vaadin.ui.TextField;
-import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.Window;
+import java.util.Objects;
+
 import org.opennms.netmgt.bsm.service.model.BusinessService;
 import org.opennms.netmgt.bsm.service.model.IpService;
 import org.opennms.netmgt.bsm.service.model.Status;
@@ -56,13 +39,23 @@ import org.opennms.netmgt.bsm.service.model.functions.map.Identity;
 import org.opennms.netmgt.bsm.service.model.functions.map.Ignore;
 import org.opennms.netmgt.bsm.service.model.functions.map.Increase;
 import org.opennms.netmgt.bsm.service.model.functions.map.SetTo;
-import org.opennms.netmgt.bsm.service.model.functions.reduce.MostCritical;
 import org.opennms.netmgt.bsm.service.model.mapreduce.MapFunction;
 import org.opennms.netmgt.vaadin.core.TransactionAwareUI;
 import org.opennms.netmgt.vaadin.core.UIHelper;
 
-import java.util.Arrays;
-import java.util.stream.Collectors;
+import com.google.common.base.Throwables;
+import com.google.common.collect.ImmutableList;
+import com.vaadin.data.Validator;
+import com.vaadin.data.util.BeanContainer;
+import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.FormLayout;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.ListSelect;
+import com.vaadin.ui.NativeSelect;
+import com.vaadin.ui.TextField;
+import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Window;
 
 /**
  * Modal dialog window used to edit the properties of a Business Service Edge definition.
@@ -119,9 +112,13 @@ public class BusinessServiceEdgeEditWindow extends Window {
          * ...and query for Business Services. Only add the Business Services that will not result in a loop...
          */
         m_businessServicesContainer.setBeanIdProperty("id");
-        // TODO: use only feasible business services
-        // m_businessServicesContainer.addAll(m_businessServiceEditWindow.getBusinessServiceManager().getFeasibleChildServices(businessService));
-        m_businessServicesContainer.addAll(m_businessServiceEditWindow.getBusinessServiceManager().getAllBusinessServices());
+
+        if (Objects.isNull(businessService) || Objects.isNull(businessService.getId())) {
+            m_businessServicesContainer.addAll(m_businessServiceEditWindow.getBusinessServiceManager().getAllBusinessServices());
+        } else {
+            m_businessServicesContainer.addAll(m_businessServiceEditWindow.getBusinessServiceManager().getFeasibleChildServices(businessService));
+        }
+
 
         /**
          * Basic window setup
@@ -204,8 +201,11 @@ public class BusinessServiceEdgeEditWindow extends Window {
          */
         m_typeSelect.addValueChangeListener(event -> {
             m_childServiceComponent.setVisible(m_typeSelect.getValue() == Edge.Type.CHILD_SERVICE);
+            m_childServiceComponent.setRequired(m_typeSelect.getValue() == Edge.Type.CHILD_SERVICE);
             m_ipServiceComponent.setVisible(m_typeSelect.getValue() == Edge.Type.IP_SERVICE);
+            m_ipServiceComponent.setRequired(m_typeSelect.getValue() == Edge.Type.IP_SERVICE);
             m_reductionKeyComponent.setVisible(m_typeSelect.getValue() == Edge.Type.REDUCTION_KEY);
+            m_reductionKeyComponent.setRequired(m_typeSelect.getValue() == Edge.Type.REDUCTION_KEY);
         });
 
         /**
