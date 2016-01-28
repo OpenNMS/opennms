@@ -30,13 +30,13 @@ package org.opennms.netmgt.bsm.vaadin.adminpage;
 
 import java.util.Objects;
 
+import com.vaadin.data.util.BeanContainer;
 import org.opennms.netmgt.bsm.service.BusinessServiceManager;
 import org.opennms.netmgt.bsm.service.model.BusinessService;
 import org.opennms.netmgt.vaadin.core.TransactionAwareUI;
 import org.opennms.netmgt.vaadin.core.UIHelper;
 
 import com.google.common.base.Strings;
-import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
@@ -64,7 +64,7 @@ public class BusinessServiceMainLayout extends VerticalLayout {
     /**
      * the bean item container for the listed Business Service DTOs
      */
-    private final BeanItemContainer<BusinessService> m_beanItemContainer = new BeanItemContainer<>(BusinessService.class);
+    private final BeanContainer<Long, BusinessService> m_beanContainer = new BeanContainer<>(BusinessService.class);
 
     public BusinessServiceMainLayout(BusinessServiceManager businessServiceManager) {
         m_businessServiceManager = Objects.requireNonNull(businessServiceManager);
@@ -114,7 +114,7 @@ public class BusinessServiceMainLayout extends VerticalLayout {
          */
         m_table = new Table();
         m_table.setSizeFull();
-        m_table.setContainerDataSource(m_beanItemContainer);
+        m_table.setContainerDataSource(m_beanContainer);
 
         /**
          * ...and configure the visible columns
@@ -129,11 +129,11 @@ public class BusinessServiceMainLayout extends VerticalLayout {
             public Object generateCell(Table source, Object itemId, Object columnId) {
                 Button editButton = new Button("edit");
                 editButton.addStyleName("small");
-                editButton.setId("editButton-" + ((BusinessService) itemId).getName());
+                editButton.setId("editButton-" + itemId);
 
                 editButton.addClickListener(UIHelper.getCurrent(TransactionAwareUI.class).wrapInTransactionProxy((Button.ClickListener) event -> {
-                    getUI().addWindow(new BusinessServiceEditWindow((BusinessService) itemId, BusinessServiceMainLayout.this));
-                    refreshTable();
+                    BusinessService businessService = m_businessServiceManager.getBusinessServiceById((Long) itemId);
+                    getUI().addWindow(new BusinessServiceEditWindow(businessService, BusinessServiceMainLayout.this));
                 }));
                 return editButton;
             }
@@ -147,33 +147,31 @@ public class BusinessServiceMainLayout extends VerticalLayout {
                     public Object generateCell(Table source, Object itemId, Object columnId) {
                         Button deleteButton = new Button("delete");
                         deleteButton.addStyleName("small");
-                        BusinessService businessService = (BusinessService) itemId;
-                        deleteButton.setId("deleteButton-" + businessService.getName());
+                        deleteButton.setId("deleteButton-" + itemId);
 
                         deleteButton.addClickListener((Button.ClickListener)event -> {
-                                    if (businessService.getParentServices().isEmpty() && businessService.getChildEdges().isEmpty()) {
-                                        UIHelper.getCurrent(TransactionAwareUI.class).runInTransaction(() -> {
-                                            businessService.delete();
-                                            refreshTable();
-                                        });
-                                    } else {
-                                        new org.opennms.netmgt.vaadin.core.ConfirmationDialog()
-                                                .withOkAction(UIHelper.getCurrent(TransactionAwareUI.class).wrapInTransactionProxy(new org.opennms.netmgt.vaadin.core.ConfirmationDialog.Action() {
-                                                    @Override
-                                                    public void execute(org.opennms.netmgt.vaadin.core.ConfirmationDialog window) {
-                                                        businessService.delete();
-                                                        refreshTable();
-                                                    }
-                                                }))
-                                                .withOkLabel("Delete anyway")
-                                                .withCancelLabel("Cancel")
-                                                .withCaption("Warning")
-                                                .withDescription("This entry is referencing or is referenced by other Business Services! Do you really want to delete this entry?")
-                                                .open();
-                                    }
-                                }
-
-                        );
+                            BusinessService businessService = m_businessServiceManager.getBusinessServiceById((Long) itemId);
+                            if (businessService.getParentServices().isEmpty() && businessService.getChildEdges().isEmpty()) {
+                                UIHelper.getCurrent(TransactionAwareUI.class).runInTransaction(() -> {
+                                    m_businessServiceManager.getBusinessServiceById((Long) itemId).delete();
+                                    refreshTable();
+                                });
+                            } else {
+                                new org.opennms.netmgt.vaadin.core.ConfirmationDialog()
+                                        .withOkAction(UIHelper.getCurrent(TransactionAwareUI.class).wrapInTransactionProxy(new org.opennms.netmgt.vaadin.core.ConfirmationDialog.Action() {
+                                            @Override
+                                            public void execute(org.opennms.netmgt.vaadin.core.ConfirmationDialog window) {
+                                                m_businessServiceManager.getBusinessServiceById((Long) itemId).delete();
+                                                refreshTable();
+                                            }
+                                        }))
+                                        .withOkLabel("Delete anyway")
+                                        .withCancelLabel("Cancel")
+                                        .withCaption("Warning")
+                                        .withDescription("This entry is referencing or is referenced by other Business Services! Do you really want to delete this entry?")
+                                        .open();
+                            }
+                        });
                         return deleteButton;
                     }
                 }
@@ -204,7 +202,8 @@ public class BusinessServiceMainLayout extends VerticalLayout {
      * Refreshes the entries of the table used for listing the DTO instances.
      */
     public void refreshTable() {
-        m_beanItemContainer.removeAllItems();
-        m_beanItemContainer.addAll(m_businessServiceManager.getAllBusinessServices());
+        m_beanContainer.setBeanIdProperty("id");
+        m_beanContainer.removeAllItems();
+        m_beanContainer.addAll(m_businessServiceManager.getAllBusinessServices());
     }
 }
