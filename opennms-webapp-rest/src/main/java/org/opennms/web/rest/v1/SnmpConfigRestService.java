@@ -140,7 +140,7 @@ public class SnmpConfigRestService extends OnmsRestService {
      * @return a {@link javax.ws.rs.core.Response} object.
      */
     @PUT
-    @Consumes(MediaType.APPLICATION_XML)
+    @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     @Path("{ipAddr}")
     public Response setSnmpInfo(@Context final UriInfo uriInfo, @PathParam("ipAddr") final String ipAddress, final SnmpInfo snmpInfo) {
         writeLock();

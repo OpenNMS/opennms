@@ -70,12 +70,12 @@ public class SnmpTrapMapping {
     private String m_enterpriseOid;
 
     /** The m_generic. */
-    @XmlElement(name = "generic", required = false)
-    private int m_generic = 6;
+    @XmlElement(name = "generic", required = false, defaultValue = "6")
+    private Integer m_generic;
 
     /** The m_specific. */
     @XmlElement(name = "specific", required = false)
-    private int m_specific;
+    private Integer m_specific;
 
     /** The varbind mappings. */
     @XmlElement(name = "varbind", required = true)
@@ -113,8 +113,8 @@ public class SnmpTrapMapping {
      *
      * @return the generic
      */
-    public int getGeneric() {
-        return m_generic;
+    public Integer getGeneric() {
+        return m_generic == null ? 6 : m_generic;
     }
 
     /**
@@ -122,7 +122,7 @@ public class SnmpTrapMapping {
      *
      * @return the specific
      */
-    public int getSpecific() {
+    public Integer getSpecific() {
         return m_specific;
     }
 
@@ -167,7 +167,7 @@ public class SnmpTrapMapping {
      *
      * @param generic the new generic
      */
-    public void setGeneric(int generic) {
+    public void setGeneric(Integer generic) {
         this.m_generic = generic;
     }
 
@@ -176,7 +176,7 @@ public class SnmpTrapMapping {
      *
      * @param specific the new specific
      */
-    public void setSpecific(int specific) {
+    public void setSpecific(Integer specific) {
         this.m_specific = specific;
     }
 

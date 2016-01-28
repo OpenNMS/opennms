@@ -29,6 +29,7 @@
 package org.opennms.netmgt.alarmd.northbounder.email;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -54,19 +55,19 @@ public class EmailNorthbounderConfig implements Serializable {
 
     /** The nagles delay. */
     @XmlElement(name = "nagles-delay", required = false, defaultValue = "1000")
-    private Integer m_naglesDelay = 1000;
+    private Integer m_naglesDelay;
 
     /** The batch size. */
     @XmlElement(name = "batch-size", required = false, defaultValue = "100")
-    private Integer m_batchSize = 100;
+    private Integer m_batchSize;
 
     /** The queue size. */
     @XmlElement(name = "queue-size", required = false, defaultValue = "300000")
-    private Integer m_queueSize = 300000;
+    private Integer m_queueSize;
 
     /** The Email destination. */
     @XmlElement(name = "destination")
-    private List<EmailDestination> m_destinations;
+    private List<EmailDestination> m_destinations = new ArrayList<EmailDestination>();
 
     /** The UEIs. */
     @XmlElement(name = "uei", required = false)
@@ -114,7 +115,7 @@ public class EmailNorthbounderConfig implements Serializable {
      * @return the nagles delay
      */
     public Integer getNaglesDelay() {
-        return m_naglesDelay;
+        return m_naglesDelay == null ? 1000 : m_naglesDelay;
     }
 
     /**
@@ -132,7 +133,7 @@ public class EmailNorthbounderConfig implements Serializable {
      * @return the batch size
      */
     public Integer getBatchSize() {
-        return m_batchSize;
+        return m_batchSize == null ? 100 : m_batchSize;
     }
 
     /**
@@ -150,7 +151,7 @@ public class EmailNorthbounderConfig implements Serializable {
      * @return the queue size
      */
     public Integer getQueueSize() {
-        return m_queueSize;
+        return m_queueSize == null ? 300000 : m_queueSize;
     }
 
     /**
@@ -168,7 +169,7 @@ public class EmailNorthbounderConfig implements Serializable {
      * @return the boolean
      */
     public Boolean isEnabled() {
-        return m_enabled;
+        return m_enabled == null ? Boolean.FALSE : m_enabled;
     }
 
     /**
@@ -193,6 +194,49 @@ public class EmailNorthbounderConfig implements Serializable {
             }
         }
         return null;
+    }
+
+    /**
+     * Adds a specific email destination.
+     * <p>If there is a destination with the same name, the existing one will be overridden.</p>
+     *
+     * @param emailDestination the Email destination object
+     */
+    public void addEmailDestination(EmailDestination emailDestination) {
+        int index = -1;
+        for (int i = 0; i < m_destinations.size(); i++) {
+            if (m_destinations.get(i).getName().equals(emailDestination.getName())) {
+                index = i;
+                break;
+            }
+        }
+        if (index > -1) {
+            m_destinations.remove(index);
+            m_destinations.add(index, emailDestination);
+        } else {
+            m_destinations.add(emailDestination);
+        }
+    }
+
+    /**
+     * Removes a specific email destination.
+     *
+     * @param destinationName the destination name
+     * @return true, if successful
+     */
+    public boolean removeEmailDestination(String destinationName) {
+        int index = -1;
+        for (int i = 0; i < m_destinations.size(); i++) {
+            if (m_destinations.get(i).getName().equals(destinationName)) {
+                index = i;
+                break;
+            }
+        }
+        if (index > -1) {
+            m_destinations.remove(index);
+            return true;
+        }
+        return false;
     }
 
 }

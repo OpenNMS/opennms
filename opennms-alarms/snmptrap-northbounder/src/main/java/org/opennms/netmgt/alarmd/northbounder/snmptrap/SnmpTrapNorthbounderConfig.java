@@ -29,6 +29,7 @@
 package org.opennms.netmgt.alarmd.northbounder.snmptrap;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -54,19 +55,19 @@ public class SnmpTrapNorthbounderConfig implements Serializable {
 
     /** The nagles delay. */
     @XmlElement(name = "nagles-delay", required = false, defaultValue = "1000")
-    private Integer m_naglesDelay = 1000;
+    private Integer m_naglesDelay;
 
     /** The batch size. */
     @XmlElement(name = "batch-size", required = false, defaultValue = "100")
-    private Integer m_batchSize = 100;
+    private Integer m_batchSize;
 
     /** The queue size. */
     @XmlElement(name = "queue-size", required = false, defaultValue = "300000")
-    private Integer m_queueSize = 300000;
+    private Integer m_queueSize;
 
     /** The SNMP trap sinks. */
     @XmlElement(name = "snmp-trap-sink")
-    private List<SnmpTrapSink> m_snmpTrapSinks;
+    private List<SnmpTrapSink> m_snmpTrapSinks = new ArrayList<SnmpTrapSink>();
 
     /** The UEIs. */
     @XmlElement(name = "uei", required = false)
@@ -114,7 +115,7 @@ public class SnmpTrapNorthbounderConfig implements Serializable {
      * @return the nagles delay
      */
     public Integer getNaglesDelay() {
-        return m_naglesDelay;
+        return m_naglesDelay == null ? 1000 : m_naglesDelay;
     }
 
     /**
@@ -132,7 +133,7 @@ public class SnmpTrapNorthbounderConfig implements Serializable {
      * @return the batch size
      */
     public Integer getBatchSize() {
-        return m_batchSize;
+        return m_batchSize == null ? 100 : m_batchSize;
     }
 
     /**
@@ -150,7 +151,7 @@ public class SnmpTrapNorthbounderConfig implements Serializable {
      * @return the queue size
      */
     public Integer getQueueSize() {
-        return m_queueSize;
+        return m_queueSize == null ? 300000 : m_queueSize;
     }
 
     /**
@@ -168,7 +169,7 @@ public class SnmpTrapNorthbounderConfig implements Serializable {
      * @return the boolean
      */
     public Boolean isEnabled() {
-        return m_enabled;
+        return m_enabled == null ? Boolean.FALSE : m_enabled;
     }
 
     /**
@@ -186,13 +187,56 @@ public class SnmpTrapNorthbounderConfig implements Serializable {
      * @param trapSinkName the trap sink name
      * @return the trap sink object
      */
-    public SnmpTrapSink getTrapSink(String trapSinkName) {
+    public SnmpTrapSink getSnmpTrapSink(String trapSinkName) {
         for (SnmpTrapSink sink : m_snmpTrapSinks) {
             if (sink.getName().equals(trapSinkName)) {
                 return sink;
             }
         }
         return null;
+    }
+
+    /**
+     * Adds the SNMP trap sink.
+     * <p>If there is a trap sink with the same name, the existing one will be overridden.</p>
+     *
+     * @param snmpTrapSink the SNMP trap sink
+     */
+    public void addSnmpTrapSink(SnmpTrapSink snmpTrapSink) {
+        int index = -1;
+        for (int i = 0; i < m_snmpTrapSinks.size(); i++) {
+            if (m_snmpTrapSinks.get(i).getName().equals(snmpTrapSink.getName())) {
+                index = i;
+                break;
+            }
+        }
+        if (index > -1) {
+            m_snmpTrapSinks.remove(index);
+            m_snmpTrapSinks.add(index, snmpTrapSink);
+        } else {
+            m_snmpTrapSinks.add(snmpTrapSink);
+        }
+    }
+
+    /**
+     * Removes a specific SNMP trap sink.
+     *
+     * @param trapSinkName the trap sink name
+     * @return true, if successful
+     */
+    public boolean removeSnmpTrapSink(String trapSinkName) {
+        int index = -1;
+        for (int i = 0; i < m_snmpTrapSinks.size(); i++) {
+            if (m_snmpTrapSinks.get(i).getName().equals(trapSinkName)) {
+                index = i;
+                break;
+            }
+        }
+        if (index > -1) {
+            m_snmpTrapSinks.remove(index);
+            return true;
+        }
+        return false;
     }
 
 }

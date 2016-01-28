@@ -60,10 +60,7 @@ import org.slf4j.LoggerFactory;
  * <AlarmHopCriteria> supports adding all the nodes having the selected UEI or Severity.
  * 
  * TODO: Improve the label to support showing how many vertices are supported
- * TODO: Add support for severity searching and collapsing
- * 
- * FIXME:  
- * by each <SearchResult>
+ * TODO: Add support for severity searching and collapsing by each <SearchResult>
  * 
  * @author <a href=mailto:david@opennms.org>David Hustace</a>
  *
