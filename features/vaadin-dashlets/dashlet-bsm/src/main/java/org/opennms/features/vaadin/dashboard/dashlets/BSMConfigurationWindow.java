@@ -33,7 +33,7 @@ import org.opennms.features.vaadin.dashboard.config.ui.WallboardProvider;
 import org.opennms.features.vaadin.dashboard.model.DashletConfigurationWindow;
 import org.opennms.features.vaadin.dashboard.model.DashletSpec;
 import org.opennms.netmgt.bsm.service.BusinessServiceSearchCriteriaBuilder;
-import org.opennms.netmgt.model.OnmsSeverity;
+import org.opennms.netmgt.bsm.service.model.Status;
 
 import com.google.common.base.Strings;
 import com.vaadin.data.Property;
@@ -99,7 +99,7 @@ public class BSMConfigurationWindow extends DashletConfigurationWindow {
         String severityValue = BSMConfigHelper.getStringForKey(getDashletSpec().getParameters(), "severityValue");
 
         if (Strings.isNullOrEmpty(severityValue)) {
-            severityValue = OnmsSeverity.WARNING.name();
+            severityValue = Status.WARNING.name();
         }
 
         String severityCompareOperator = BSMConfigHelper.getStringForKey(getDashletSpec().getParameters(), "severityCompareOperator");
@@ -209,8 +209,8 @@ public class BSMConfigurationWindow extends DashletConfigurationWindow {
         m_severitySelect.setNullSelectionAllowed(false);
         m_severitySelect.setMultiSelect(false);
 
-        for (String name : OnmsSeverity.names()) {
-            m_severitySelect.addItem(name);
+        for (Status eachStatus : Status.values()) {
+            m_severitySelect.addItem(eachStatus.name());
         }
 
         m_compareOperatorSelect = new NativeSelect("Comparator");
@@ -377,7 +377,7 @@ public class BSMConfigurationWindow extends DashletConfigurationWindow {
                 if (m_filterBySeverityCheckBox.getValue() && m_severitySelect.getValue() != null) {
                     m_dashletSpec.getParameters().put("severityValue", m_severitySelect.getValue().toString());
                 } else {
-                    m_dashletSpec.getParameters().put("severityValue", OnmsSeverity.WARNING.getLabel());
+                    m_dashletSpec.getParameters().put("severityValue", Status.WARNING.getLabel());
                 }
 
                 if (m_filterBySeverityCheckBox.getValue() && m_compareOperatorSelect.getValue() != null) {

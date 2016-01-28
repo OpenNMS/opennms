@@ -32,7 +32,7 @@ import java.util.Map;
 
 import org.opennms.netmgt.bsm.service.BusinessServiceSearchCriteria;
 import org.opennms.netmgt.bsm.service.BusinessServiceSearchCriteriaBuilder;
-import org.opennms.netmgt.model.OnmsSeverity;
+import org.opennms.netmgt.bsm.service.model.Status;
 
 import com.google.common.base.Strings;
 
@@ -103,7 +103,7 @@ public class BSMConfigHelper {
         String severityValue = getStringForKey(map, "severityValue");
 
         if (Strings.isNullOrEmpty(severityValue)) {
-            severityValue = OnmsSeverity.WARNING.getLabel();
+            severityValue = Status.WARNING.getLabel();
         }
 
         String severityCompareOperator = BSMConfigHelper.getStringForKey(map, "severityCompareOperator");
@@ -135,7 +135,7 @@ public class BSMConfigHelper {
             b.attribute(attributeKey, attributeValue);
         }
         if (filterBySeverity) {
-            b.filterSeverity(BusinessServiceSearchCriteriaBuilder.CompareOperator.valueOf(severityCompareOperator), OnmsSeverity.get(severityValue));
+            b.filterSeverity(BusinessServiceSearchCriteriaBuilder.CompareOperator.valueOf(severityCompareOperator), Status.valueOf(severityValue));
         }
 
         return b.order(BusinessServiceSearchCriteriaBuilder.Order.valueOf(orderBy))
