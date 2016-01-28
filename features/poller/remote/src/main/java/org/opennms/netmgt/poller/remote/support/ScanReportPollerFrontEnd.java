@@ -448,12 +448,12 @@ public class ScanReportPollerFrontEnd implements PollerFrontEnd, InitializingBea
             m_pollService.setServiceMonitorLocators(m_backEnd.getServiceMonitorLocators(DistributionContext.REMOTE_MONITOR));
             m_pollerConfiguration = retrieveLatestConfiguration();
 
-
             appender.addToLogger(LogManager.ROOT_LOGGER_NAME, Level.DEBUG);
 
             Set<PolledService> polledServices = getPolledServices().stream().filter(s -> matchesApplications(s, m_selectedApplications)).collect(Collectors.toSet());
             PolledService[] services = polledServices.toArray(POLLED_SERVICE_ARRAY);
 
+            LOG.debug("Polling {} services.", services.length);
             for (int i = 0; i < services.length; i++) {
                 PolledService service = services[i];
 
@@ -482,7 +482,7 @@ public class ScanReportPollerFrontEnd implements PollerFrontEnd, InitializingBea
             }
         } catch (final Throwable e) {
             LOG.error("Error while performing scan", e);
-
+        } finally {
             // Remove the log appender from the root logger
             appender.removeFromLogger(LogManager.ROOT_LOGGER_NAME);
         }
@@ -493,7 +493,7 @@ public class ScanReportPollerFrontEnd implements PollerFrontEnd, InitializingBea
         LOG.debug("Returning scan report: {}", scanReport);
 
         LOG.debug("=============== Scan report log START ===============");
-        LOG.debug("Scan report log: \n" + appender.getOutput());
+        LOG.debug("Scan report log: '{}'", appender.getOutput());
         LOG.debug("=============== Scan report log END ===============");
 
         // Fire an exitNecessary event with the scanReport as the parameter
