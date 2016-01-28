@@ -40,6 +40,8 @@ public interface BusinessServiceManager {
 
     List<BusinessService> getAllBusinessServices();
 
+    List<BusinessService> search(BusinessServiceSearchCriteria businessServiceSearchCriteria);
+
     List<BusinessService> findMatching(Criteria criteria);
 
     BusinessService createBusinessService();

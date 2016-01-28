@@ -31,6 +31,7 @@ package org.opennms.netmgt.bsm.service.internal;
 import java.util.Collections;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -38,6 +39,7 @@ import org.opennms.core.criteria.Criteria;
 import org.opennms.netmgt.bsm.persistence.api.BusinessServiceDao;
 import org.opennms.netmgt.bsm.persistence.api.BusinessServiceEntity;
 import org.opennms.netmgt.bsm.service.BusinessServiceManager;
+import org.opennms.netmgt.bsm.service.BusinessServiceSearchCriteria;
 import org.opennms.netmgt.bsm.service.BusinessServiceStateMachine;
 import org.opennms.netmgt.bsm.service.model.BusinessService;
 import org.opennms.netmgt.bsm.service.model.IpService;
@@ -293,5 +295,11 @@ public class BusinessServiceManagerImpl implements BusinessServiceManager {
             throw new NoSuchElementException();
         }
         return monitoredService;
+    }
+
+    @Override
+    public List<BusinessService> search(BusinessServiceSearchCriteria businessServiceSearchCriteria) {
+        Objects.requireNonNull(businessServiceSearchCriteria);
+        return businessServiceSearchCriteria.apply(this, getAllBusinessServices());
     }
 }
