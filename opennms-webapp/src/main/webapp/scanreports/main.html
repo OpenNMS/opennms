@@ -176,6 +176,9 @@
 						<i ng-show="query.orderBy === 'location' &amp;&amp; query.order === 'desc'" class="fa fa-sort-desc"/>
 					</th>
 					<th class="col-sm-1 text-nowrap">
+						Application</a>
+					</th>
+					<th class="col-sm-1 text-nowrap">
 						<a ng-click="changeOrderBy('timestamp')">Scan Time</a>
 						<i ng-show="query.orderBy === 'timestamp' &amp;&amp; query.order === 'asc'" class="fa fa-sort-asc"/>
 						<i ng-show="query.orderBy === 'timestamp' &amp;&amp; query.order === 'desc'" class="fa fa-sort-desc"/>
@@ -229,6 +232,9 @@
 						{{item.location}}
 						<a style="text-decoration: none;" ng-click="addSearchClause({property:'location',operator:'EQ',value:item.location})"><i class="fa fa-plus-square-o fa-lg"/></a>
 						<a style="text-decoration: none;" ng-click="addSearchClause({property:'location',operator:'NE',value:item.location})"><i class="fa fa-minus-square-o fa-lg"/></a>
+					</td>
+					<td class="text-nowrap" style="line-height:24px;">
+						{{item.properties.applications}}
 					</td>
 					<td class="text-nowrap" style="line-height:24px;">
 						<span ng-show="item.timestamp !== null">

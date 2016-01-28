@@ -80,7 +80,6 @@ public class ScanReport implements Serializable {
     private Date m_timestamp;
 
     @XmlElementWrapper(name="properties")
-    @XmlElement(name="property")
     private Map<String,String> m_properties = new LinkedHashMap<String,String>();
 
     @XmlElementWrapper(name="poll-results")
