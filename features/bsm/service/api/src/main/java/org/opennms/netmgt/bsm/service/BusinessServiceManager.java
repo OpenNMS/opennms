@@ -52,7 +52,8 @@ public interface BusinessServiceManager extends NodeManager {
 
     BusinessService createBusinessService();
 
-    <T extends Edge> T createEdge(Class<T> type, BusinessService child, MapFunction mapFunction);
+    // TODO MVR should not be public
+    <T extends Edge> T createEdge(Class<T> type, BusinessService child, MapFunction mapFunction, int weight);
 
     Edge getEdgeById(Long edgeId);
 
@@ -91,13 +92,13 @@ public interface BusinessServiceManager extends NodeManager {
 
     void setChildEdges(BusinessService parentService, Set<ChildEdge> childEdges);
 
-    boolean addChildEdge(BusinessService parent, BusinessService child, MapFunction mapFunction);
+    boolean addChildEdge(BusinessService parent, BusinessService child, MapFunction mapFunction, int weight);
 
     void setIpServiceEdges(BusinessService businessService, Set<IpServiceEdge> ipServiceEdges);
 
-    boolean addIpServiceEdge(BusinessService businessService, IpService ipService, MapFunction mapFunction);
+    boolean addIpServiceEdge(BusinessService businessService, IpService ipService, MapFunction mapFunction, int weight);
 
-    boolean addReductionKeyEdge(BusinessService businessService, String reductionKey, MapFunction mapFunction);
+    boolean addReductionKeyEdge(BusinessService businessService, String reductionKey, MapFunction mapFunction, int weight);
 
     void setReductionKeyEdges(BusinessService businessService, Set<ReductionKeyEdge> reductionKeyEdges);
 }

@@ -73,6 +73,11 @@ public class ThresholdTest {
         }
 
         @Override
+        public void setWeight(int weight) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
         public Set<String> getReductionKeys() {
             throw new UnsupportedOperationException();
         }

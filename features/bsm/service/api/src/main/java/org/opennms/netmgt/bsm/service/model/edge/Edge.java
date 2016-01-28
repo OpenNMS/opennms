@@ -36,6 +36,8 @@ import org.opennms.netmgt.bsm.service.model.mapreduce.MapFunction;
 
 public interface Edge {
 
+    int DEFAULT_WEIGHT = 1;
+
     enum Type {
         CHILD_SERVICE,
         IP_SERVICE,
@@ -59,4 +61,6 @@ public interface Edge {
     void setSource(BusinessService source);
 
     int getWeight();
+
+    void setWeight(int weight);
 }

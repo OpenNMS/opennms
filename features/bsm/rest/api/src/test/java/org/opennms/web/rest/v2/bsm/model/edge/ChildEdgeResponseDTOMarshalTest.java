@@ -56,6 +56,7 @@ public class ChildEdgeResponseDTOMarshalTest extends MarshalAndUnmarshalTest<Chi
         edge.getReductionKeys().add("key2");
         edge.setMapFunction(createMapFunctionDTO(MapFunctionType.SetTo, new String[]{"key1", "value1"}));
         edge.setChildId(127L);
+        edge.setWeight(20);
         edge.setId(1);
 
         return Arrays.asList(new Object[][]{{
@@ -74,6 +75,7 @@ public class ChildEdgeResponseDTOMarshalTest extends MarshalAndUnmarshalTest<Chi
                 "  \"reductionKeys\" : [" +
                 "       \"key1\", \"key2\"" +
                 "   ]," +
+                "  \"weight\" : 20," +
                 "  \"childId\" : 127" +
                 "}",
                 "<child-edge>\n" +
@@ -93,6 +95,7 @@ public class ChildEdgeResponseDTOMarshalTest extends MarshalAndUnmarshalTest<Chi
                 "       <reductionKey>key1</reductionKey>\n" +
                 "       <reductionKey>key2</reductionKey>\n" +
                 "   </reductionKeys>\n" +
+                "   <weight>20</weight>\n" +
                 "   <childId>127</childId>" +
                 "</child-edge>"
         }});
