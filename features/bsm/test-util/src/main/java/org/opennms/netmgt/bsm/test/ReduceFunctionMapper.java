@@ -39,7 +39,8 @@ import org.opennms.netmgt.bsm.service.model.mapreduce.ReductionFunction;
 
 import com.google.common.base.Function;
 import com.google.common.collect.Maps;
-// TODO MVR this is copied from service.impl as the dependency on that project would form a cycle. Figure out a way to remove the cycle dependency
+// this is copied from service.impl as the dependency on that project would form a cycle.
+@Deprecated
 class ReduceFunctionMapper {
 
     private static final Map<Class<? extends ReductionFunction>, Function<ReductionFunction, AbstractReductionFunctionEntity>> serviceToPersistenceMapping = Maps.newHashMap();
@@ -71,13 +72,5 @@ class ReduceFunctionMapper {
             throw new IllegalArgumentException("No mapping found");
         }
         return mapping.apply(reductionFunctionEntity);
-    }
-
-    public AbstractReductionFunctionEntity toPersistenceFunction(ReductionFunction reductionFunction) {
-        Function<ReductionFunction, AbstractReductionFunctionEntity> mapping = serviceToPersistenceMapping.get(reductionFunction.getClass());
-        if (mapping == null) {
-            throw new IllegalArgumentException("No mapping found");
-        }
-        return mapping.apply(reductionFunction);
     }
 }

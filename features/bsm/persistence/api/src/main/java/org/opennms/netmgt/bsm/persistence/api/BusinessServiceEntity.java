@@ -117,9 +117,6 @@ public class BusinessServiceEntity {
         m_attributes = attributes;
     }
 
-    @OneToMany(fetch = FetchType.EAGER,
-               cascade = CascadeType.ALL)
-    // TODO MVR we have an annotation at the setter. Why and how does this affect the annotations on the getter?
     public void setAttribute(String key, String value) {
         m_attributes.put(key, value);
     }

@@ -37,11 +37,13 @@ import javax.persistence.Entity;
 import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+import javax.persistence.UniqueConstraint;
 
 import com.google.common.collect.Sets;
 
 @Entity
-@Table(name = "bsm_service_reductionkeys")
+@Table(name = "bsm_service_reductionkeys",
+        uniqueConstraints = @UniqueConstraint(columnNames = {"id", "reductionkey"}))
 @PrimaryKeyJoinColumn(name="id")
 @DiscriminatorValue("reductionkeys")
 public class SingleReductionKeyEdgeEntity extends BusinessServiceEdgeEntity {
@@ -52,7 +54,6 @@ public class SingleReductionKeyEdgeEntity extends BusinessServiceEdgeEntity {
         this.reductionKey = reductionKey;
     }
 
-    // TODO MVR add a constraint that the reductionkey must be unique
     @Column(name = "reductionkey", nullable = false)
     public String getReductionKey() {
         return reductionKey;

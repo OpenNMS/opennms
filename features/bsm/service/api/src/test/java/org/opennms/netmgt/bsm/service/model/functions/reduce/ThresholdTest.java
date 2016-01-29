@@ -78,6 +78,11 @@ public class ThresholdTest {
         }
 
         @Override
+        public void delete() {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
         public Set<String> getReductionKeys() {
             throw new UnsupportedOperationException();
         }

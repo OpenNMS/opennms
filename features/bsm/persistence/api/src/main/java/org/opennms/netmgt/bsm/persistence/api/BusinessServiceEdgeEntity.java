@@ -55,8 +55,6 @@ import com.google.common.collect.Sets;
 /**
  * Base edges that includes properties common to all edge types.
  *
- * // TODO MVR it must work. There is something else wrong. We must fix this (e.g. if this class is abstract sometimes edgeDao.findAll() works, sometimes it does not)
- * // The wiered thing is, that it only breaks after values are stored. So maybe it is a missing/wrong annotation.
  * Ideally this class would be abstract, but in some cases Hibernate may
  * try to instantiate this class.
  *
