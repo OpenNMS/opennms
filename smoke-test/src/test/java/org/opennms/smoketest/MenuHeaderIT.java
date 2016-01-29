@@ -66,8 +66,11 @@ public class MenuHeaderIT extends OpenNMSSeleniumTestCase {
         findElementByXpath("//h3[contains(text(), 'Distributed Status Summary')]");
 
         clickMenuItem("Status", "Surveillance", "surveillance-view.jsp");
-        m_driver.switchTo().frame("surveillance-view-ui");
+        // switchTo() by xpath is much faster than by ID
+        //m_driver.switchTo().frame("surveillance-view-ui");
+        m_driver.switchTo().frame(findElementByXpath("/html/body/div/iframe"));
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//span[text()='Surveillance view: default']")));
+        m_driver.switchTo().defaultContent();
         frontPage();
 
         clickMenuItem("Reports", "Charts", "charts/index.jsp");
@@ -83,8 +86,11 @@ public class MenuHeaderIT extends OpenNMSSeleniumTestCase {
         findElementByXpath("//h3[text()='Statistics Report List']");
 
         clickMenuItem("Dashboards", "Dashboard", "dashboard.jsp");
-        m_driver.switchTo().frame("surveillance-view-ui");
+        // switchTo() by xpath is much faster than by ID
+        //m_driver.switchTo().frame("surveillance-view-ui");
+        m_driver.switchTo().frame(findElementByXpath("/html/body/div/iframe"));
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//span[text()='Surveillance view: default']")));
+        m_driver.switchTo().defaultContent();
         frontPage();
 
         clickMenuItem("Dashboards", "Ops Board", "vaadin-wallboard");
@@ -92,10 +98,13 @@ public class MenuHeaderIT extends OpenNMSSeleniumTestCase {
 
         frontPage();
         clickMenuItem("Maps", "Distributed", "RemotePollerMap/index.jsp");
-        m_driver.switchTo().frame("app");
+        // switchTo() by xpath is much faster than by ID
+        //m_driver.switchTo().frame("app");
+        m_driver.switchTo().frame(findElementByXpath("/html/body/div/iframe"));
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("gwt-uid-1")));
-
+        m_driver.switchTo().defaultContent();
         frontPage();
+
         clickMenuItem("Maps", "Topology", "topology");
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[contains(text(), 'Last update time')]")));
 
