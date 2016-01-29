@@ -65,9 +65,6 @@ public class MenuHeaderIT extends OpenNMSSeleniumTestCase {
         clickMenuItem("Status", "Distributed Status", "distributedStatusSummary.htm");
         findElementByXpath("//h3[contains(text(), 'Distributed Status Summary')]");
 
-        clickMenuItem("Status", "Scan Reports", "scanreports/index.jsp");
-        findElementByXpath("//li[contains(text(), 'Remote Poller Scan Reports')]");
-
         clickMenuItem("Status", "Surveillance", "surveillance-view.jsp");
         m_driver.switchTo().frame("surveillance-view-ui");
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//span[text()='Surveillance view: default']")));
