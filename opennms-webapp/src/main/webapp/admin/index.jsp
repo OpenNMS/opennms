@@ -221,6 +221,7 @@
             <li><a href="locations/index.jsp">Manage Monitoring Locations</a></li>
             <li><a href="admin/applications.htm">Manage Applications</a></li>
             <li><a href="distributed/locationMonitorList.htm">Manage Remote Pollers</a></li>
+            <li><a href="scanreports/index.jsp">View Remote Poller Scan Reports</a></li>
             <li><a href="minion/index.jsp">Manage Minions</a></li>
         </ul>
       </div> <!-- panel-body -->
