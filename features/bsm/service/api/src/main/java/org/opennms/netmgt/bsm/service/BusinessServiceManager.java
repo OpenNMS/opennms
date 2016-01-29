@@ -51,9 +51,6 @@ public interface BusinessServiceManager extends NodeManager {
 
     BusinessService createBusinessService();
 
-    // TODO MVR should not be public
-    <T extends Edge> T createEdge(Class<T> type, BusinessService child, MapFunction mapFunction, int weight);
-
     Edge getEdgeById(Long edgeId);
 
     boolean deleteEdge(BusinessService service, Edge edge);

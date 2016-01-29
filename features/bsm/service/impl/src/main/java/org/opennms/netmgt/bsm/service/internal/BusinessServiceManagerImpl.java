@@ -129,8 +129,7 @@ public class BusinessServiceManagerImpl implements BusinessServiceManager {
         return new BusinessServiceImpl(this, new BusinessServiceEntity());
     }
 
-    @Override
-    public <T extends Edge> T createEdge(Class<T> type, BusinessService source, MapFunction mapFunction, int weight) {
+    private <T extends Edge> T createEdge(Class<T> type, BusinessService source, MapFunction mapFunction, int weight) {
         T edge = null;
         if (type == IpServiceEdge.class) {
             edge = (T) new IpServiceEdgeImpl(this, new IPServiceEdgeEntity());

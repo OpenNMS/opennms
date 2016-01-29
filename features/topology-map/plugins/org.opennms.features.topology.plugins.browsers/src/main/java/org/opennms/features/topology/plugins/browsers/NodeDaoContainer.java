@@ -80,7 +80,7 @@ public class NodeDaoContainer extends OnmsVaadinContainer<OnmsNode,Integer> {
 
     @Override
     protected void doItemAddedCallBack(int rowNumber, Integer id, OnmsNode eachBean) {
-        // eachBean.getPrimaryInterface(); // TODO MVR enable again, this currently does not work
+        eachBean.getPrimaryInterface();
     }
 
     @Override

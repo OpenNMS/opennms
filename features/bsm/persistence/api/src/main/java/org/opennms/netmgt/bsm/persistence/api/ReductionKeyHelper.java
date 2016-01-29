@@ -36,6 +36,7 @@ import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 
+// TODO: we also have to consider interface down reduction keys
 public class ReductionKeyHelper {
 
     // TODO: The distributed poller name (now monitoring system name?) should be part of the edge details

@@ -34,7 +34,8 @@ import java.util.Map;
 import org.opennms.netmgt.bsm.service.model.Status;
 import org.opennms.netmgt.model.OnmsSeverity;
 
-// TODO MVR this is copied from service.impl as the dependency on that project would form a cycle. Figure out a way to remove the cycle dependency
+// this is copied from service.impl as the dependency on that project would form a cycle.
+@Deprecated
 class SeverityMapper {
 
     // Maps the Status to an OnmsSeverity
@@ -46,7 +47,6 @@ class SeverityMapper {
         map.put(Status.MINOR, OnmsSeverity.MINOR);
         map.put(Status.NORMAL, OnmsSeverity.NORMAL);
         map.put(Status.WARNING, OnmsSeverity.WARNING);
-
         return map.get(status);
     }
 

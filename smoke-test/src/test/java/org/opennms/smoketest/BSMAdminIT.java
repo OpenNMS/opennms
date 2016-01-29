@@ -291,7 +291,6 @@ public class BSMAdminIT extends OpenNMSSeleniumTestCase {
      * Verifies that the provided element is not present.
      * @param by
      */
-    // TODO MVR: This should live in OpenNMSSeleniumTestCase
     private void verifyElementNotPresent(final By by) {
         new WebDriverWait(m_driver, 5 /* seconds */).until(
                 ExpectedConditions.not(new ExpectedCondition<Boolean>() {
