@@ -66,6 +66,17 @@
 		</div>
 	</div>
 
+	<!-- Modal details window -->
+	<div id="scanReportDetailsModal" class="modal fade" tabindex="-1">
+		<div class="modal-dialog modal-lg">
+			<div class="modal-content">
+				<div class="modal-body">
+					<scan-report-details report="selectedScanReport"/>
+				</div>
+			</div>
+		</div>
+	</div>
+
 
 	<!-- Filter list -->
 	<div class="well well-sm">
@@ -190,7 +201,7 @@
 
 				<tr ng-repeat="item in items track by item.id">
 					<td class="text-nowrap" style="line-height:24px;">
-						<samp>{{item.id}}</samp>
+						<a ng-click="selectScanReport(item)" onClick="$('#scanReportDetailsModal').modal()"><samp>{{item.id}}</samp></a>
 						<a style="text-decoration: none;" ng-click="deleteItem(item)"><i class="fa fa-trash-o fa-lg"/></a>
 						<a style="text-decoration: none;" ng-click="addSearchClause({property:'id',operator:'EQ',value:item.id})"><i class="fa fa-plus-square-o fa-lg"/></a>
 						<a style="text-decoration: none;" ng-click="addSearchClause({property:'id',operator:'NE',value:item.id})"><i class="fa fa-minus-square-o fa-lg"/></a>

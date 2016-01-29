@@ -28,10 +28,45 @@
 			}
 			return input;
 		}
+	})
+	.filter('prettyProperty', function($filter) {
+		return function(input) {
+			input = input.split('-');
+			var retval = '';
+			var first = true;
+			for (var i = 0; i < input.length; i++) {
+				if (!first) {
+					retval += ' ';
+				}
+				if (input[i] === 'ip') {
+					retval += "IP";
+				} else if (input[i] === 'id') {
+					retval += "ID";
+				} else {
+					retval += input[i].slice(0,1).toUpperCase() + input[i].slice(1);
+				}
+				first = false;
+			}
+			return retval;
+		}
 	});
 
 	// Minion list module
 	angular.module(MODULE_NAME, [ 'ngResource', 'onmsList', 'scanReportListFilters' ])
+
+	.directive('scanReportDetails', function($window) {
+		return {
+			controller: function($scope) {
+				// Do something?
+			},
+			// Use an isolated scope
+			scope: {
+				report: '='
+			},
+			templateUrl: 'js/angular-onmsList-scanreportdetails.html',
+			transclude: true
+		};
+	})
 
 	/**
 	 * ScanReport REST $resource
@@ -72,6 +107,12 @@
 	 */
 	.controller('ScanReportListCtrl', ['$scope', '$location', '$window', '$log', '$filter', 'ScanReports', function($scope, $location, $window, $log, $filter, ScanReports) {
 		$log.debug('ScanReportListCtrl initializing...');
+
+		$scope.selectedScanReport = {};
+
+		$scope.selectScanReport = function(item) {
+			$scope.selectedScanReport = item;
+		}
 
 		// Set the default sort and set it on $scope.$parent.query
 		$scope.$parent.defaults.orderBy = 'timestamp';

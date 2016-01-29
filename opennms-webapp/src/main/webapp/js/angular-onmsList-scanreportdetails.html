@@ -1,0 +1,35 @@
+<h3>Scan Report: {{report.timestamp | date:'MMM d, yyyy h:mm:ss a'}}</h3>
+
+<ul>
+<li><b>Report ID:</b> {{report.id}}</li>
+<li><b>Location:</b> {{report.location}}</li>
+<li><b>Application:</b> {{report.properties.applications}}</li>
+<li ng-repeat="(key,value) in report.properties">
+  <b>{{key | prettyProperty }}:</b> {{value}}
+</li>
+</ul>
+
+<div class="panel panel-default">
+  <div class="panel-heading">Scan Results</div>
+  <!--
+  <div class="panel-body">
+  </div>
+  -->
+  <table class="table">
+    <tr>
+      <th>Node</th>
+      <th>Interface</th>
+      <th>Service</th>
+      <th>Result</th>
+      <th>Latency</th>
+    </tr>
+    <tr ng-repeat="result in report['poll-results']">
+      <td>{{result['node-label']}}</td>
+      <td>{{result['ip-address']}}</td>
+      <td>{{result['service-name']}}</td>
+      <td></td>
+      <td ng-if="result['poll-status']['response-time']">{{result['poll-status']['response-time']}} ms</td>
+      <td ng-if="!result['poll-status']['response-time']"></td>
+    </tr>
+  </table>
+</div>
