@@ -127,14 +127,6 @@ public class ScanReportPollerFrontEndIT implements TemporaryDatabaseAware<MockDa
         assertEquals(0, m_jdbcTemplate.queryForInt("select count(*) from monitoringsystemsproperties"));
         assertTrue("There were unexpected poll results", 0 == m_jdbcTemplate.queryForInt("select count(*) from location_specific_status_changes"));
 
-        m_frontEnd.initialize();
-
-        // Initialization shouldn't change anything since we're unregistered
-        assertFalse(m_frontEnd.isRegistered());
-        assertEquals(1, m_jdbcTemplate.queryForInt("select count(*) from monitoringsystems"));
-        assertEquals(0, m_jdbcTemplate.queryForInt("select count(*) from monitoringsystemsproperties"));
-        assertTrue("There were unexpected poll results", 0 == m_jdbcTemplate.queryForInt("select count(*) from location_specific_status_changes"));
-
         // Add a PropertyChangeListener that will report the scan result to
         // the PollerBackEnd
         m_frontEnd.addPropertyChangeListener(new PropertyChangeListener() {
@@ -144,54 +136,39 @@ public class ScanReportPollerFrontEndIT implements TemporaryDatabaseAware<MockDa
                     final ScanReport report = (ScanReport)evt.getNewValue();
                     System.out.println("Finished scan: " + report);
                     m_backEnd.reportSingleScan(report);
+
+                    // uei.opennms.org/test <-- Standard test event
+                    // uei.opennms.org/remote/unsuccessfulScanReport
+                    assertEquals(2, getEventCount());
+                    queryEvents();
+
+                    // Check to see if the expected metadata was stored in the database
+                    assertEquals(System.getProperty("os.arch"), m_jdbcTemplate.queryForObject("select propertyValue from scanreportproperties where scanreportid = ? and property = ?", String.class, report.getId(), "os.arch"));
+                    assertEquals(System.getProperty("os.name"), m_jdbcTemplate.queryForObject("select propertyValue from scanreportproperties where scanreportid = ? and property = ?", String.class, report.getId(), "os.name"));
+                    assertEquals(System.getProperty("os.version"), m_jdbcTemplate.queryForObject("select propertyValue from scanreportproperties where scanreportid = ? and property = ?", String.class, report.getId(), "os.version"));
+
+                    m_frontEnd.stop();
                 }
             }
         });
 
+        m_frontEnd.initialize();
+
+        // Initialization shouldn't change anything since we're unregistered
+        assertFalse(m_frontEnd.isRegistered());
+        assertEquals(1, m_jdbcTemplate.queryForInt("select count(*) from monitoringsystems"));
+        assertEquals(0, m_jdbcTemplate.queryForInt("select count(*) from monitoringsystemsproperties"));
+        assertTrue("There were unexpected poll results", 0 == m_jdbcTemplate.queryForInt("select count(*) from location_specific_status_changes"));
+
         // Start up the remote poller
         m_frontEnd.register("RDU");
-        assertTrue(m_frontEnd.isStarted());
-        String monitorId = m_frontEnd.getMonitoringSystemId();
+        assertTrue("Front end not started!", m_frontEnd.isStarted());
+        //String monitorId = m_frontEnd.getMonitoringSystemId();
 
         assertTrue(m_frontEnd.isRegistered());
         for (Map.Entry<String,String> entry : ((ScanReportPollerFrontEnd)m_frontEnd).getDetails().entrySet()) {
             LOG.info("Front end detail: " + entry.getKey() + " -> " + entry.getValue());
         }
-        // Make sure there is a total of one remote poller
-        assertEquals(2, m_jdbcTemplate.queryForInt("select count(*) from monitoringsystems"));
-        assertEquals(5, m_jdbcTemplate.queryForInt("select count(*) from monitoringsystemsproperties where monitoringsystemid = ?", monitorId));
-        // Make sure there is a total of one remote poller with the expected ID
-        assertEquals(1, getMonitorCount(monitorId));
-
-        assertEquals(System.getProperty("os.arch"), m_jdbcTemplate.queryForObject("select propertyValue from monitoringsystemsproperties where monitoringsystemid = ? and property = ?", String.class, monitorId, "os.arch"));
-        assertEquals(System.getProperty("os.name"), m_jdbcTemplate.queryForObject("select propertyValue from monitoringsystemsproperties where monitoringsystemid = ? and property = ?", String.class, monitorId, "os.name"));
-        assertEquals(System.getProperty("os.version"), m_jdbcTemplate.queryForObject("select propertyValue from monitoringsystemsproperties where monitoringsystemid = ? and property = ?", String.class, monitorId, "os.version"));
-
-        long wait = 60000L;
-        while (wait > 0) {
-            Thread.sleep(1000L);
-            wait -= 1000L;
-            LOG.debug("wait = {}", wait);
-
-            // If the monitor disconnects, break
-            if (
-              getMonitorCount(monitorId) == 1 &&
-              getDisconnectedCount(monitorId) == 1
-            ) break;
-        }
-
-        assertEquals(1, getMonitorCount(monitorId));
-        assertEquals(1, getDisconnectedCount(monitorId));
-
-        // uei.opennms.org/test <-- Standard test event
-        // uei.opennms.org/remote/locationMonitorRegistered
-        // uei.opennms.org/remote/locationMonitorStarted
-        // uei.opennms.org/remote/unsuccessfulScanReport
-        // uei.opennms.org/remote/locationMonitorDisconnected
-        assertEquals(5, getEventCount());
-        queryEvents();
-
-        m_frontEnd.stop();
     }
 
     protected int getSpecificChangesCount(String monitorId) {

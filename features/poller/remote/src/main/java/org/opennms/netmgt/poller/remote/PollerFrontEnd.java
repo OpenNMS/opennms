@@ -177,6 +177,4 @@ public interface PollerFrontEnd {
      */
     void removeServicePollStateChangedListener(ServicePollStateChangedListener l);
 
-    String getMonitoringSystemId();
-
 }

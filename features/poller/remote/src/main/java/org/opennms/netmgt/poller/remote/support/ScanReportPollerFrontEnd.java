@@ -57,11 +57,9 @@ import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.poller.remote.ConfigurationChangedListener;
 import org.opennms.netmgt.poller.remote.PollService;
 import org.opennms.netmgt.poller.remote.PolledService;
-import org.opennms.netmgt.poller.remote.Poller;
 import org.opennms.netmgt.poller.remote.PollerBackEnd;
 import org.opennms.netmgt.poller.remote.PollerConfiguration;
 import org.opennms.netmgt.poller.remote.PollerFrontEnd;
-import org.opennms.netmgt.poller.remote.PollerSettings;
 import org.opennms.netmgt.poller.remote.ServicePollState;
 import org.opennms.netmgt.poller.remote.ServicePollStateChangedListener;
 import org.opennms.netmgt.poller.remote.TimeAdjustment;
@@ -91,32 +89,8 @@ public class ScanReportPollerFrontEnd implements PollerFrontEnd, InitializingBea
     private class Initial extends PollerFrontEndState {
         @Override
         public void initialize() {
-            try {
-                assertNotNull(m_backEnd, "pollerBackEnd");
-                assertNotNull(m_pollService, "pollService");
-                assertNotNull(m_pollerSettings, "pollerSettings");
-
-                final String monitorId = m_pollerSettings.getMonitoringSystemId();
-
-                // If the monitor isn't registered yet...
-                if (monitorId == null) {
-                    // Change to the 'registering' state
-                    setState(new Registering());
-                } else { 
-                    // TODO: Check return value?
-                    // TODO: Add metadata values to the details
-                    m_backEnd.pollerStarting(getMonitoringSystemId(), getDetails());
-                    // Change the state to running so we're ready to execute polls
-                    setState(new Running());
-                    // TODO: Execute the scan
-                    performServiceScans();
-                }
-            } catch (final Throwable e) {
-                setState(new FatalExceptionOccurred(e));
-
-                // rethrow the exception on initialize so we exit if we fail to initialize
-                throw e;
-            }
+            // Change to the 'registering' state
+            setState(new Registering());
         }
 
         @Override
@@ -136,14 +110,11 @@ public class ScanReportPollerFrontEnd implements PollerFrontEnd, InitializingBea
         @Override
         public void register(final String location) {
             try {
-                // Create the location entry
+                // Set the location value
                 doRegister(location);
-                // TODO: Check return value?
-                // TODO: Add metadata values to the details
-                m_backEnd.pollerStarting(getMonitoringSystemId(), getDetails());
                 // Change the state to running so we're ready to execute polls
                 setState(new Running());
-                // TODO: Execute the scan
+                // Execute the scans
                 performServiceScans();
             } catch (final Throwable e) {
                 LOG.warn("Unable to register.", e);
@@ -169,8 +140,6 @@ public class ScanReportPollerFrontEnd implements PollerFrontEnd, InitializingBea
 
     // injected dependencies
     private PollerBackEnd m_backEnd;
-
-    private PollerSettings m_pollerSettings;
 
     private PollService m_pollService;
 
@@ -214,7 +183,6 @@ public class ScanReportPollerFrontEnd implements PollerFrontEnd, InitializingBea
         assertNotNull(m_timeAdjustment, "timeAdjustment");
         assertNotNull(m_backEnd, "pollerBackEnd");
         assertNotNull(m_pollService, "pollService");
-        assertNotNull(m_pollerSettings, "pollerSettings");
     }
 
     /**
@@ -234,14 +202,6 @@ public class ScanReportPollerFrontEnd implements PollerFrontEnd, InitializingBea
      */
     private void doRegister(final String location) {
         m_location = location;
-        String monitoringSystemId = m_backEnd.registerLocationMonitor(location);
-
-        try {
-            m_pollerSettings.setMonitoringSystemId(monitoringSystemId);
-        } catch (Throwable e) {
-            // TODO: Should we start anyway? I guess so.
-            LOG.warn("Unable to set monitoring system ID: " + e.getMessage(), e);
-        }
     }
 
     /**
@@ -268,23 +228,13 @@ public class ScanReportPollerFrontEnd implements PollerFrontEnd, InitializingBea
     }
 
     /**
-     * <p>getMonitoringSystemId</p>
-     *
-     * @return a {@link java.lang.String} object.
-     */
-    @Override
-    public String getMonitoringSystemId() {
-        return m_pollerSettings.getMonitoringSystemId();
-    }
-
-    /**
      * <p>getMonitorName</p>
      *
      * @return a {@link java.lang.String} object.
      */
     @Override
     public String getMonitorName() {
-        return (isRegistered() ? m_backEnd.getMonitorName(getMonitoringSystemId()) : "");
+        return null;
     }
 
     /**
@@ -376,15 +326,6 @@ public class ScanReportPollerFrontEnd implements PollerFrontEnd, InitializingBea
     }
 
     /**
-     * <p>setPollerSettings</p>
-     *
-     * @param settings a {@link org.opennms.netmgt.poller.remote.PollerSettings} object.
-     */
-    public void setPollerSettings(final PollerSettings settings) {
-        m_pollerSettings = settings;
-    }
-
-    /**
      * @param timeAdjustment the timeAdjustment to set
      */
     public void setTimeAdjustment(TimeAdjustment timeAdjustment) {
@@ -424,8 +365,9 @@ public class ScanReportPollerFrontEnd implements PollerFrontEnd, InitializingBea
     }
 
     /**
-     * TODO: Change this method so that instead of loading the config and firing configuration
-     * changes to a {@link Poller}, we actually initiate the single scan.
+     * Perform all scans for a given location and return the results as a {@link ScanReport}
+     * object. To filter by application, specify the selected applications by using the
+     * {@link #setSelectedApplications(Set)} method.
      */
     private void performServiceScans() {
 
@@ -433,9 +375,13 @@ public class ScanReportPollerFrontEnd implements PollerFrontEnd, InitializingBea
 
         ScanReport scanReport = new ScanReport();
         scanReport.setLocation(m_location);
-        scanReport.addProperty("monitoring-system-id", getMonitoringSystemId());
+        //scanReport.addProperty("monitoring-system-id", getMonitoringSystemId());
         scanReport.setTimestamp(new Date());
 
+        // Add all of the OS and connection metadata to the scan report
+        for (final Map.Entry<String,String> entry : getDetails().entrySet()) {
+            scanReport.addProperty(entry);
+        }
         // Add all of the metadata to the scan report
         for (final Map.Entry<String,String> entry : m_metadata.entrySet()) {
             scanReport.addProperty(entry);
@@ -506,7 +452,7 @@ public class ScanReportPollerFrontEnd implements PollerFrontEnd, InitializingBea
     }
 
     private PollerConfiguration retrieveLatestConfiguration() {
-        PollerConfiguration config = m_backEnd.getPollerConfiguration(getMonitoringSystemId());
+        PollerConfiguration config = m_backEnd.getPollerConfigurationForLocation(m_location);
         m_timeAdjustment.setMasterTime(config.getServerTime());
         return config;
     }
