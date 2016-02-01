@@ -38,6 +38,7 @@ import java.beans.PropertyChangeListener
 import javax.swing.JFrame
 import javax.swing.JPanel
 import javax.swing.JTextField
+import javax.swing.SwingConstants
 import javax.swing.SwingUtilities
 
 import org.apache.batik.swing.JSVGCanvas
@@ -157,6 +158,9 @@ class ScanGui extends AbstractGui implements ScanReportHandler, PropertyChangeLi
     }
 
     public String validateFields() {
+        if (m_locations.size() < 1) {
+            return "There are no locations defined."
+        }
         for (final MetadataField fieldType : m_metadataFieldTypes) {
             final JTextField field = m_metadataFields.get(fieldType.getKey())
             if (field == null) {
@@ -217,6 +221,20 @@ class ScanGui extends AbstractGui implements ScanReportHandler, PropertyChangeLi
                     columnConstraints:"[right,grow][left,grow]",
                     rowConstraints:"[grow]"
                     )
+
+            // If there are no locations configured, alert the user and disable all UI controls
+            if (m_locations == null || m_locations.size() < 1) {
+                panel(constraints:"", opaque:false) {
+                    migLayout(
+                        layoutConstraints:"fill" + debugString,
+                        columnConstraints:"[center,grow]",
+                        rowConstraints:"[center,grow]"
+                    )
+                    label(text:"<html><h1>There are no locations defined.</h1></html>", horizontalAlignment:SwingConstants.CENTER, foreground:Color.RED, constraints:"grow, wrap")
+                    label(text:"<html><h3>Please configure your locations and then retry the scan.</h3></html>", horizontalAlignment:SwingConstants.CENTER, foreground:Color.RED, constraints:"grow, wrap")
+                }
+                return
+            }
 
             m_progressPanel = panel(constraints:"gapx 20lp 20lp, top, width 50%", opaque:false) {
                 migLayout(
