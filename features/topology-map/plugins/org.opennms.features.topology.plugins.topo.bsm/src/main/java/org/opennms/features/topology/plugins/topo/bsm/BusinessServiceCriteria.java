@@ -29,6 +29,7 @@
 package org.opennms.features.topology.plugins.topo.bsm;
 
 import java.util.HashSet;
+import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Set;
 
@@ -36,9 +37,13 @@ import org.opennms.features.topology.api.NamespaceAware;
 import org.opennms.features.topology.api.support.VertexHopGraphProvider.VertexHopCriteria;
 import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.netmgt.bsm.service.BusinessServiceManager;
-import org.opennms.netmgt.bsm.service.model.BusinessServiceDTO;
+import org.opennms.netmgt.bsm.service.model.BusinessService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class BusinessServiceCriteria extends VertexHopCriteria implements NamespaceAware {
+    private static final Logger LOG = LoggerFactory.getLogger(BusinessServiceCriteria.class);
+
     private final String businessServiceId;
     private final BusinessServiceManager businessServiceManager;
 
@@ -102,12 +107,12 @@ public class BusinessServiceCriteria extends VertexHopCriteria implements Namesp
     @Override
     public Set<VertexRef> getVertices() {
         Set<VertexRef> vertices = new HashSet<>();
-
-        BusinessServiceDTO businessService = businessServiceManager.getById(Long.parseLong(businessServiceId));
-        if (businessService != null) {
+        try {
+            BusinessService businessService = businessServiceManager.getBusinessServiceById(Long.parseLong(businessServiceId));
             vertices.add(new BusinessServiceVertex(businessService));
+        } catch (NoSuchElementException ex) {
+            LOG.warn("The Business Service with id {} does not exist anymore but is in focus. Skipping.", businessServiceId);
         }
-
         return vertices;
     }
 }
