@@ -26,10 +26,6 @@
 		<property name="timeAdjustment" ref="timeAdjustment" />
 		<property name="pollerBackEnd" ref="pollerBackEnd" />
 		<property name="pollService" ref="pollService" />
-		<property name="pollerSettings">
-			<!-- This bean will read the current monitoring system ID From the specified properties file -->
-			<bean class="org.opennms.netmgt.poller.remote.support.BasicPollerSettings"/>
-		</property>
 	</bean>
 
 </beans>

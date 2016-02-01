@@ -507,7 +507,6 @@ public class DefaultPollerFrontEnd implements PollerFrontEnd, InitializingBean, 
      *
      * @return a {@link java.lang.String} object.
      */
-    @Override
     public String getMonitoringSystemId() {
         return m_pollerSettings.getMonitoringSystemId();
     }
