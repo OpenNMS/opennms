@@ -29,6 +29,7 @@ package org.opennms.netmgt.alarmd.northbounder.snmptrap;
 
 import java.io.File;
 import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -38,6 +39,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
+import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.alarmd.api.NorthboundAlarm;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsIpInterface;
@@ -99,40 +101,7 @@ public class SnmpTrapNorthbounderConfigDaoTest {
         Assert.assertEquals(1, sink2.getMappings().size());
         Assert.assertEquals(1, sink2.getMappings().get(0).getMappings().size());
 
-        // Build a test node
-        OnmsNode node = new OnmsNode("my-server");
-        node.setForeignSource("Server-MacOS");
-        node.setForeignId("1");
-        node.setId(1);
-
-        // Build a test SNMP interface
-        OnmsSnmpInterface snmpInterface = new OnmsSnmpInterface(node, 1);
-        snmpInterface.setId(1);
-        snmpInterface.setIfAlias("Connection to OpenNMS Wifi");
-        snmpInterface.setIfDescr("en1");
-        snmpInterface.setIfName("en1/0");
-        snmpInterface.setPhysAddr("00:00:00:00:00:01");
-
-        // Build a test IP interface
-        InetAddress address = InetAddress.getByName("10.0.1.1");
-        OnmsIpInterface onmsIf = new OnmsIpInterface(address, node);
-        onmsIf.setSnmpInterface(snmpInterface);
-        onmsIf.setId(1);
-        onmsIf.setIfIndex(1);
-        onmsIf.setIpHostName("p-brane");
-        onmsIf.setIsSnmpPrimary(PrimaryType.PRIMARY);
-        node.addIpInterface(onmsIf);
-
-        // Build a test alarm
-        OnmsAlarm onmsAlarm = new OnmsAlarm();
-        onmsAlarm.setId(10);
-        onmsAlarm.setNode(node);
-        onmsAlarm.setUei("uei.opennms.org/trap/myTrap1");
-        onmsAlarm.setEventParms("alarmId=99(Int32,text);alarmMessage=this is just a test(string,text)");
-
-        // Build a test northbound alarm
-        NorthboundAlarm alarm = new NorthboundAlarm(onmsAlarm);
-        Assert.assertEquals(node.getForeignSource(), alarm.getForeignSource());
+        NorthboundAlarm alarm = createAlarm();
 
         // Verify Filters
         Assert.assertTrue(sink1.accepts(alarm));
@@ -185,6 +154,82 @@ public class SnmpTrapNorthbounderConfigDaoTest {
         configDao.save();
         configDao.reload();
         Assert.assertEquals("192.168.0.1", configDao.getConfig().getSnmpTrapSink("localTest2").getIpAddress());
+    }
+
+    /**
+     * Test SNMP configuration with FQDN.
+     *
+     * @throws Exception the exception
+     */
+    @Test
+    public void testSnmpConfigWithFqdn() throws Exception {
+        SnmpTrapNorthbounderConfig config = configDao.getConfig();
+        SnmpTrapSink sink1 = config.getSnmpTrapSink("localTest1");
+        NorthboundAlarm alarm = createAlarm();
+        sink1.setIpAddress("www.opennms.org");
+        SnmpTrapConfig trapConfig = sink1.createTrapConfig(alarm);
+        Assert.assertNotNull(trapConfig);
+        Assert.assertNotNull(trapConfig.getDestinationAddress());
+        Assert.assertNotNull(trapConfig.getHostAddress());
+    }
+
+    /**
+     * Test SNMP versions.
+     *
+     * @throws Exception the exception
+     */
+    @Test
+    public void testSnmpVersions() throws Exception {
+        String config = "<snmp-trap-sink><name>test</name><ip-address>127.0.0.1</ip-address><version>v1</version></snmp-trap-sink>";
+        SnmpTrapSink sink = JaxbUtils.unmarshal(SnmpTrapSink.class, config);
+        Assert.assertEquals(SnmpVersion.V1, sink.getVersion());
+        config = "<snmp-trap-sink><name>test</name><ip-address>127.0.0.1</ip-address><version>v2-inform</version></snmp-trap-sink>";
+        sink = JaxbUtils.unmarshal(SnmpTrapSink.class, config);
+        Assert.assertEquals(SnmpVersion.V2_INFORM, sink.getVersion());
+    }
+
+    /**
+     * Creates the alarm.
+     *
+     * @return the northbound alarm
+     * @throws UnknownHostException the unknown host exception
+     */
+    private NorthboundAlarm createAlarm() throws UnknownHostException {
+        // Build a test node
+        OnmsNode node = new OnmsNode("my-server");
+        node.setForeignSource("Server-MacOS");
+        node.setForeignId("1");
+        node.setId(1);
+
+        // Build a test SNMP interface
+        OnmsSnmpInterface snmpInterface = new OnmsSnmpInterface(node, 1);
+        snmpInterface.setId(1);
+        snmpInterface.setIfAlias("Connection to OpenNMS Wifi");
+        snmpInterface.setIfDescr("en1");
+        snmpInterface.setIfName("en1/0");
+        snmpInterface.setPhysAddr("00:00:00:00:00:01");
+
+        // Build a test IP interface
+        InetAddress address = InetAddress.getByName("10.0.1.1");
+        OnmsIpInterface onmsIf = new OnmsIpInterface(address, node);
+        onmsIf.setSnmpInterface(snmpInterface);
+        onmsIf.setId(1);
+        onmsIf.setIfIndex(1);
+        onmsIf.setIpHostName("p-brane");
+        onmsIf.setIsSnmpPrimary(PrimaryType.PRIMARY);
+        node.addIpInterface(onmsIf);
+
+        // Build a test alarm
+        OnmsAlarm onmsAlarm = new OnmsAlarm();
+        onmsAlarm.setId(10);
+        onmsAlarm.setNode(node);
+        onmsAlarm.setUei("uei.opennms.org/trap/myTrap1");
+        onmsAlarm.setEventParms("alarmId=99(Int32,text);alarmMessage=this is just a test(string,text)");
+
+        // Build a test northbound alarm
+        NorthboundAlarm alarm = new NorthboundAlarm(onmsAlarm);
+        Assert.assertEquals(node.getForeignSource(), alarm.getForeignSource());
+        return alarm;
     }
 
 }
