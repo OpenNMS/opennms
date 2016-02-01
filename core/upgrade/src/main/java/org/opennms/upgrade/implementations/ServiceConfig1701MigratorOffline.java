@@ -64,13 +64,6 @@ public class ServiceConfig1701MigratorOffline extends AbstractOnmsUpgrade {
      */
     private File configFile;
 
-    final String[] eol = {
-            "OpenNMS:Name=Linkd",
-            "OpenNMS:Name=Xmlrpcd",
-            "OpenNMS:Name=XmlrpcProvisioner",
-            "OpenNMS:Name=AccessPointMonitor"
-    };
-
     /**
      * Instantiates a new Service Configuration migrator offline.
      *
@@ -80,7 +73,7 @@ public class ServiceConfig1701MigratorOffline extends AbstractOnmsUpgrade {
         super();
         try {
             configFile = ConfigFileConstants.getFile(ConfigFileConstants.SERVICE_CONF_FILE_NAME);
-            InputSource src = new InputSource(getClass().getResourceAsStream("/default/service-configuration.xml"));
+            InputSource src = new InputSource(getClass().getResourceAsStream("/default/service-configuration-17.0.1.xml"));
             baseConfig = JaxbUtils.unmarshal(ServiceConfiguration.class, src);
         } catch (IOException e) {
             throw new OnmsUpgradeException("Can't find Services Configuration file", e);
