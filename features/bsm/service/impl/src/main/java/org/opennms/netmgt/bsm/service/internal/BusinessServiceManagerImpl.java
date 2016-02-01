@@ -46,6 +46,7 @@ import org.opennms.netmgt.bsm.persistence.api.functions.reduce.ReductionFunction
 import org.opennms.netmgt.bsm.service.BusinessServiceManager;
 import org.opennms.netmgt.bsm.service.BusinessServiceSearchCriteria;
 import org.opennms.netmgt.bsm.service.BusinessServiceStateMachine;
+import org.opennms.netmgt.bsm.service.internal.edge.AbstractEdge;
 import org.opennms.netmgt.bsm.service.internal.edge.ChildEdgeImpl;
 import org.opennms.netmgt.bsm.service.internal.edge.IpServiceEdgeImpl;
 import org.opennms.netmgt.bsm.service.internal.edge.ReductionKeyEdgeImpl;
@@ -166,7 +167,7 @@ public class BusinessServiceManagerImpl implements BusinessServiceManager {
 
     @Override
     public boolean deleteEdge(BusinessService source, Edge edge) {
-        BusinessServiceEdgeEntity edgeEntity = getBusinessServiceEdgeEntity(edge.getId());
+        BusinessServiceEdgeEntity edgeEntity = getBusinessServiceEdgeEntity(edge);
         BusinessServiceEntity businessServiceEntity = getBusinessServiceEntity(source);
 
         // does not exist, no update necessary
@@ -404,6 +405,10 @@ public class BusinessServiceManagerImpl implements BusinessServiceManager {
             throw new NoSuchElementException();
         }
         return entity;
+    }
+
+    private BusinessServiceEdgeEntity getBusinessServiceEdgeEntity(Edge edge) {
+        return ((AbstractEdge) edge).getEntity();
     }
 
     private BusinessServiceEdgeEntity getBusinessServiceEdgeEntity(Long edgeId) {
