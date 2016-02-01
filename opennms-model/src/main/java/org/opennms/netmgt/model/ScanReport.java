@@ -36,14 +36,18 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.MapKeyColumn;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
+import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlAccessType;
@@ -53,7 +57,9 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlID;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 
+import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonManagedReference;
 
 /**
@@ -87,6 +93,10 @@ public class ScanReport implements Serializable {
     @JsonManagedReference
     private List<ScanReportPollResult> m_scanReportPollResults = new ArrayList<>();
 
+    @XmlTransient
+    @JsonIgnore
+    private ScanReportLog m_logs;
+
     public ScanReport() {
     }
 
@@ -102,6 +112,7 @@ public class ScanReport implements Serializable {
         m_timestamp = pkg.getTimestamp();
         m_properties = pkg.getProperties();
         m_scanReportPollResults = pkg.getPollResults();
+        m_logs = pkg.getLog();
     }
 
     @Id
@@ -163,8 +174,7 @@ public class ScanReport implements Serializable {
         this.m_timestamp = m_timestamp;
     }
 
-    @OneToMany(mappedBy="scanReport",orphanRemoval=true)
-    @org.hibernate.annotations.Cascade(org.hibernate.annotations.CascadeType.ALL)
+    @OneToMany(mappedBy="scanReport",orphanRemoval=true, cascade = CascadeType.ALL)
     public List<ScanReportPollResult> getPollResults() {
         return m_scanReportPollResults;
     }
@@ -176,6 +186,16 @@ public class ScanReport implements Serializable {
     public boolean addPollResult(final ScanReportPollResult scanReportPollResult) {
         scanReportPollResult.setScanReport(this);
         return m_scanReportPollResults.add(scanReportPollResult);
+    }
+
+    @OneToOne(orphanRemoval=true, cascade = CascadeType.ALL, fetch=FetchType.LAZY)
+    @PrimaryKeyJoinColumn
+    public ScanReportLog getLog() {
+        return m_logs;
+    }
+
+    public void setLog(final ScanReportLog logs) {
+        m_logs = logs;
     }
 
     @Transient

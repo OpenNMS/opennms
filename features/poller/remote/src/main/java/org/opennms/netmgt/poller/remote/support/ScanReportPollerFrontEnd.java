@@ -51,6 +51,7 @@ import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.model.ScanReport;
+import org.opennms.netmgt.model.ScanReportLog;
 import org.opennms.netmgt.model.ScanReportPollResult;
 import org.opennms.netmgt.poller.DistributionContext;
 import org.opennms.netmgt.poller.PollStatus;
@@ -441,11 +442,15 @@ public class ScanReportPollerFrontEnd implements PollerFrontEnd, InitializingBea
         // Set the percentage complete to 100%
         firePropertyChange(ScanReportProperties.percentageComplete.toString(), null, 1.0);
 
+        scanReport.setLog(new ScanReportLog(scanReport.getId(), appender.getOutput()));
+
         LOG.debug("Returning scan report: {}", scanReport);
 
+        /*
         LOG.debug("=============== Scan report log START ===============");
         LOG.debug("Scan report log: '{}'", appender.getOutput());
         LOG.debug("=============== Scan report log END ===============");
+        */
 
         // Fire an exitNecessary event with the scanReport as the parameter
         firePropertyChange(PollerFrontEndStates.exitNecessary.toString(), null, scanReport);

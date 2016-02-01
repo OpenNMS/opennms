@@ -45,6 +45,19 @@
 	<jsp:param name="script" value='<script type="text/javascript" src="js/angular-onmsList-scanreport.js"></script>' />
 </jsp:include>
 
+<style>
+@media (min-width: 1439px) {
+	.modal-lg {
+		width: 1400px !important;
+	}
+}
+@media (min-width: 1279px) {
+	.modal-lg {
+		width: 1200px !important;
+	}
+}
+</style>
+
 <ng-include src="'scanreports/main.html'"></ng-include>
 
 <jsp:include page="/includes/bootstrap-footer.jsp" flush="false"/>
