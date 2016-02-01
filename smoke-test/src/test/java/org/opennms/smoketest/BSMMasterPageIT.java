@@ -101,12 +101,13 @@ public class BSMMasterPageIT extends OpenNMSSeleniumTestCase {
             httpClient.addBasicCredentials(BASIC_AUTH_USERNAME, BASIC_AUTH_PASSWORD);
             httpClient.usePreemptiveAuth();
             HttpPost request = new HttpPost(BSM_REST_API_URL);
-            request.setHeader(HttpHeaders.CONTENT_TYPE, MediaType.JSON_UTF_8.toString());
-
-            StringEntity params = new StringEntity("{" +
-                    "\"name\":\"" + prefix + "-name\"," +
-                    "\"attributes\":{\"attribute\":[{\"key\":\"" + prefix + "-key\",\"value\":\"" + prefix + "-value\"}]}" +
-                    "}");
+            request.setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_XML_UTF_8.toString());
+            StringEntity params = new StringEntity("<business-service>\n" +
+                    "   <name>" + prefix + "-name</name>\n" +
+                    "   <reduce-function>\n" +
+                    "      <type>MostCritical</type>\n" +
+                    "   </reduce-function>\n" +
+                    "</business-service>");
             request.setEntity(params);
 
             try (CloseableHttpResponse response = httpClient.execute(request)) {
