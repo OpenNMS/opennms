@@ -437,6 +437,20 @@ public class BSMAdminIT extends OpenNMSSeleniumTestCase {
     }
 
     @Test
+    public void testCanRemoveTransientEdge() throws InterruptedException {
+        // create Business Service with one Edge and persist
+        final String serviceName = createUniqueBusinessServiceName();
+        BsmAdminPageEditWindow bsmAdminPageEditWindow = bsmAdminPage.openNewDialog(serviceName).addReductionKeyEdge("some.reduction.key", "Increase", 1);
+        wait.until(pageContainsText("ReKey: some.reduction.key, Map: Increase, Weight: 1"));
+        // remove transient edge
+        bsmAdminPageEditWindow.removeEdge("ReKey: some.reduction.key, Map: Increase, Weight: 1");
+        verifyElementNotPresent("ReKey: some.reduction.key, Map: Increase, Weight: 1");
+        bsmAdminPageEditWindow.cancel();
+
+        verifyElementNotPresent(serviceName);
+    }
+
+    @Test
     public void testCanCancelEdit() throws InterruptedException {
         // create service to edit
         final String serviceName = createUniqueBusinessServiceName();
