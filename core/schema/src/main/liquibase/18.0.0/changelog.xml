@@ -69,4 +69,20 @@
     </sql>
   </changeSet>
 
+  <changeSet author="ranger" id="18.0.0-add-scanreportlogs-table">
+    <createTable tableName="scanreportlogs">
+      <column name="scanreportid" type="TEXT">
+        <constraints nullable="false" primaryKey="true" primaryKeyName="scanreportlogs_pkey" />
+      </column>
+      <column name="logtext" type="TEXT" />
+    </createTable>
+
+    <addForeignKeyConstraint constraintName="scanreportlogs_scanreports_fkey" onDelete="CASCADE" baseTableName="scanreportlogs" baseColumnNames="scanreportid" referencedTableName="scanreports" referencedColumnNames="id" />
+
+    <sql>
+      CREATE UNIQUE INDEX scanreportlogs_scanReportId_idx on scanreportlogs(scanReportId);
+    </sql>
+
+  </changeSet>
+
 </databaseChangeLog>

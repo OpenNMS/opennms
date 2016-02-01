@@ -77,6 +77,16 @@
 		</div>
 	</div>
 
+	<!-- Modal details window -->
+	<div id="scanReportLogsModal" class="modal fade" tabindex="-1">
+		<div class="modal-dialog modal-lg">
+			<div class="modal-content">
+				<div class="modal-body">
+					<scan-report-logs report="selectedScanReport"/>
+				</div>
+			</div>
+		</div>
+	</div>
 
 	<!-- Filter list -->
 	<div class="well well-sm">
@@ -197,6 +207,9 @@
 					<th class="col-sm-6 text-nowrap">
 						Properties
 					</th>
+					<th class="col-sm-1 text-nowrap">
+						Logs
+					</th>
 				</tr>
 
 				<tr ng-repeat="item in items track by item.id">
@@ -224,6 +237,8 @@
 					<td>
 						<onms-list-edit-map-in-place values="item.properties" value-type="'text'" on-edit="update(item)"/>
 					</td>
+					<td>
+						<button class="btn btn-default" ng-click="selectScanReport(item)" onClick="$('#scanReportLogsModal').modal()">View</button>
 				</tr>
 			</tbody>
 		</table>

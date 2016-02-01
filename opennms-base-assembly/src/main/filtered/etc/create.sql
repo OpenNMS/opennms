@@ -344,6 +344,17 @@ CREATE TABLE scanreports (
 
 CREATE UNIQUE INDEX scanreports_id_idx on scanreport(id);
 
+--#####################################################
+--# scanreportproperties Table - Contains an arbitrary collection of properties associated with a scan report
+--#
+--# This table contains the following information:
+--#
+--# scanReportId     : The ID of the scan report
+--# property         : The property name/key
+--# propertyValue    : The property value
+--#
+--#####################################################
+
 CREATE TABLE scanreportproperties (
     scanReportId TEXT NOT NULL,
     property TEXT NOT NULL,
@@ -354,6 +365,25 @@ CREATE TABLE scanreportproperties (
 
 CREATE INDEX scanreportproperties_id_idx on scanreportproperties(scanreportid);
 CREATE UNIQUE INDEX scanreportproperties_id_property_idx on scanreportproperties(scanreportid, property);
+
+--#####################################################
+--# scanreportpollresults Table - Contains the set of poll results (service up/down) associated with a scan report
+--#
+--# This table contains the following information:
+--#
+--# id               : The UUID of the result
+--# scanReportId     : The ID of the scan report
+--# serviceName      : The name of the monitored service
+--# serviceId        : The ID of the monitored service
+--# nodeLabel        : The node label for display
+--# nodeId           : The ID of the node
+--# ipaddress        : The IP address of the monitored service
+--# statusReason     : A user-displayable description of the response
+--# responseTime     : The response time of the poll
+--# statusCode       : The response code associated with the poll
+--# statusTime       : The timestamp of the poll
+--#
+--#####################################################
 
 CREATE TABLE scanreportpollresults (
     id TEXT NOT NULL,
@@ -374,6 +404,25 @@ CREATE TABLE scanreportpollresults (
 
 CREATE UNIQUE INDEX scanreportpollresults_id_idx on scanreportpollresults(id);
 CREATE UNIQUE INDEX scanreportpollresults_id_scanreportid_idx on scanreportpollresults(id, scanreportid);
+
+--#####################################################
+--# scanreportlogs Table - Contains poll logs associated with a scan report
+--#
+--# This table contains the following information:
+--#
+--# scanReportId     : The ID of the scan report
+--# logText          : The contents of the scan log
+--#
+--#####################################################
+
+CREATE TABLE scanreportlogs (
+    scanReportId PRIMARY KEY TEXT NOT NULL,
+    logText TEXT,
+
+    CONSTRAINT scanreportlogs_fkey FOREIGN KEY (scanReportId) REFERENCES scanreports (id) ON DELETE CASCADE
+);
+
+CREATE UNIQUE INDEX scanreportlogs_scanReportId_idx on scanreportlogs(scanReportId);
 
 --########################################################################
 --# node Table - Contains information on nodes discovered and potentially

@@ -51,8 +51,47 @@
 		}
 	});
 
-	// Minion list module
+	// ScanReport list module
 	angular.module(MODULE_NAME, [ 'ngResource', 'onmsList', 'scanReportListFilters' ])
+
+	.directive('scanReportLogs', function($window) {
+		return {
+			controller: function($log, $scope, ScanReportLogs) {
+				$scope.$watch('report', function(report) {
+					var response = ScanReportLogs.query({
+						id: report.id
+					}, 
+					function() {
+						$log.debug('response = ' + angular.toJson(response));
+						if (response.text) {
+							$scope.logText = response.text;
+						} else {
+							$log.warn('Unknown response: ' + angular.toJson(response));
+						}
+					},
+					function(response) {
+						switch(response.status) {
+						case 404:
+							// If we didn't find any elements, then clear the list
+							$scope.logText = undefined;
+							break;
+						case 401:
+						case 403:
+							// Handle session timeout by reloading page completely
+							$window.location.href = $location.absUrl();
+							break;
+						}
+						// TODO: Handle 500 Server Error by executing an undo callback?
+					});
+				});
+			},
+			scope: {
+				report: '='
+			},
+			templateUrl: 'js/angular-onmsList-scanreportlogs.html',
+			transclude: true
+		};
+	})
 
 	.directive('scanReportDetails', function($window) {
 		return {
@@ -66,6 +105,32 @@
 			templateUrl: 'js/angular-onmsList-scanreportdetails.html',
 			transclude: true
 		};
+	})
+
+	.factory('ScanReportLogs', function($resource, $log, $http, $location) {
+		return $resource(BASE_REST_URL + '/scanreports/:id/logs', { id: '@id' },
+			{
+				'query': { 
+					method: 'GET',
+					transformResponse: function(data, headers, status) {
+						var ret;
+						switch(status) {
+							case 302: // refresh on redirect
+								$window.location.href = $location.absUrl();
+								ret = {};
+								break;
+							case 204: // no content
+								ret = {};
+								break;
+							default:
+								ret = {text:data};
+						}
+						//$log.debug('$resource(logs) returning: ' + angular.toJson(ret));
+						return ret;
+					}
+				}
+			}
+		);
 	})
 
 	/**
@@ -103,7 +168,7 @@
 	})
 
 	/**
-	 * Minion list controller
+	 * ScanReport list controller
 	 */
 	.controller('ScanReportListCtrl', ['$scope', '$location', '$window', '$log', '$filter', 'ScanReports', function($scope, $location, $window, $log, $filter, ScanReports) {
 		$log.debug('ScanReportListCtrl initializing...');

@@ -28,14 +28,15 @@
 
 package org.opennms.netmgt.poller.remote;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Date;
-import java.util.UUID;
 
 import org.junit.Test;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.model.ScanReport;
+import org.opennms.netmgt.model.ScanReportLog;
 import org.opennms.netmgt.model.ScanReportPollResult;
 import org.opennms.netmgt.poller.PollStatus;
 import org.slf4j.Logger;
@@ -57,6 +58,7 @@ public class ScanReportTest {
 		report.setLocale("en-US");
 		report.setLocation("RDU");
 		report.setTimestamp(new Date());
+		report.setLog(new ScanReportLog(report.getId(), "Hey, a log!"));
 		for (int i = 0; i < 5; i++) {
 			PollStatus status = PollStatus.get(PollStatus.SERVICE_AVAILABLE, "Anything is possible", 4.5d);
 			status.setProperty("whatever", 2.0);
@@ -66,10 +68,11 @@ public class ScanReportTest {
 		String reportString = JaxbUtils.marshal(report);
 		LOG.debug("Report string: \n " + reportString);
 
-                assertTrue(reportString.contains("<key>customer-account-number</key>"));
-                assertTrue(reportString.contains("<value>12345</value>"));
-                assertTrue(reportString.contains("<key>customer-name</key>"));
-                assertTrue(reportString.contains("<value>Zombo.com</value>"));
+		assertTrue(reportString.contains("<key>customer-account-number</key>"));
+		assertTrue(reportString.contains("<value>12345</value>"));
+		assertTrue(reportString.contains("<key>customer-name</key>"));
+		assertTrue(reportString.contains("<value>Zombo.com</value>"));
 		assertTrue(reportString.contains("response-time=\"4.5\""));
+		assertFalse(reportString.contains("a log!")); // object is not serialized as JAXB/JSON, only to the database
 	}
 }

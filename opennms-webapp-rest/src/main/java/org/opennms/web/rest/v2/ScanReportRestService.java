@@ -30,7 +30,13 @@ package org.opennms.web.rest.v2;
 
 import java.util.Collection;
 
+import javax.ws.rs.GET;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 
 import org.opennms.core.config.api.JaxbListWrapper;
 import org.opennms.core.criteria.CriteriaBuilder;
@@ -74,5 +80,21 @@ public class ScanReportRestService extends AbstractDaoRestService<ScanReport,Str
 	@Override
 	protected JaxbListWrapper<ScanReport> createListWrapper(Collection<ScanReport> list) {
 		return new ScanReportList(list);
+	}
+
+	@GET
+	@Path("{id}/logs")
+	@Produces({MediaType.TEXT_PLAIN})
+	public Response getLogs(@PathParam("id") final String id) {
+		final ScanReport report = getDao().get(id);
+		if (report == null) {
+			return Response.status(Status.NOT_FOUND).build();
+		} else {
+			if (report.getLog() == null || report.getLog().getLogText() == null) {
+				return Response.status(Status.NO_CONTENT).build();
+			} else {
+				return Response.ok(report.getLog().getLogText()).build();
+			}
+		}
 	}
 }
