@@ -30,11 +30,11 @@ package org.opennms.netmgt.bsm.vaadin.adminpage;
 
 import java.util.Objects;
 
-import com.vaadin.data.util.BeanContainer;
 import org.opennms.netmgt.bsm.service.BusinessServiceManager;
 import org.opennms.netmgt.bsm.service.model.BusinessService;
 
 import com.google.common.base.Strings;
+import com.vaadin.data.util.BeanContainer;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
@@ -130,7 +130,7 @@ public class BusinessServiceMainLayout extends VerticalLayout {
             public Object generateCell(Table source, Object itemId, Object columnId) {
                 Button editButton = new Button("edit");
                 editButton.addStyleName("small");
-                editButton.setId("editButton-" + itemId);
+                editButton.setId("editButton-" + m_beanContainer.getItem(itemId).getBean().getName());
 
                 editButton.addClickListener(UIHelper.getCurrent(TransactionAwareUI.class).wrapInTransactionProxy((Button.ClickListener) event -> {
                     BusinessService businessService = m_businessServiceManager.getBusinessServiceById((Long) itemId);
@@ -151,7 +151,7 @@ public class BusinessServiceMainLayout extends VerticalLayout {
                     public Object generateCell(Table source, Object itemId, Object columnId) {
                         Button deleteButton = new Button("delete");
                         deleteButton.addStyleName("small");
-                        deleteButton.setId("deleteButton-" + itemId);
+                        deleteButton.setId("deleteButton-" + m_beanContainer.getItem(itemId).getBean().getName());
 
                         deleteButton.addClickListener((Button.ClickListener)event -> {
                             BusinessService businessService = m_businessServiceManager.getBusinessServiceById((Long) itemId);

@@ -28,7 +28,6 @@
 
 package org.opennms.netmgt.bsm.vaadin.adminpage;
 
-import com.vaadin.data.Validator;
 import org.opennms.netmgt.bsm.service.BusinessServiceManager;
 import org.opennms.netmgt.bsm.service.model.BusinessService;
 import org.opennms.netmgt.bsm.service.model.IpService;
@@ -45,6 +44,7 @@ import org.opennms.netmgt.vaadin.core.UIHelper;
 import com.google.common.base.Throwables;
 import com.google.common.collect.ImmutableList;
 import com.vaadin.data.Property;
+import com.vaadin.data.Validator;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
@@ -222,7 +222,7 @@ public class BusinessServiceEditWindow extends Window {
          * create the edges list box
          */
         m_edgesListSelect = new ListSelect("Edges");
-        m_edgesListSelect.setId("reductionKeySelect");
+        m_edgesListSelect.setId("edgeList");
         m_edgesListSelect.setWidth(98.0f, Unit.PERCENTAGE);
         m_edgesListSelect.setRows(20);
         m_edgesListSelect.setNullSelectionAllowed(false);
@@ -241,6 +241,7 @@ public class BusinessServiceEditWindow extends Window {
         edgesButtonLayout.setWidth(140.0f, Unit.PIXELS);
 
         Button addEdgeButton = new Button("Add");
+        addEdgeButton.setId("addEdgeButton");
         addEdgeButton.setWidth(140.0f, Unit.PIXELS);
         addEdgeButton.addStyleName("small");
         edgesButtonLayout.addComponent(addEdgeButton);
@@ -251,6 +252,7 @@ public class BusinessServiceEditWindow extends Window {
         });
 
         final Button removeEdgeButton = new Button("Remove");
+        removeEdgeButton.setId("removeEdgeButton");
         removeEdgeButton.setEnabled(false);
         removeEdgeButton.setWidth(140.0f, Unit.PIXELS);
         removeEdgeButton.addStyleName("small");
@@ -308,23 +310,36 @@ public class BusinessServiceEditWindow extends Window {
                              ipService.getServiceName());
     }
 
+    private static String getEdgePrefix(Edge edge) {
+        switch (edge.getType()) {
+            case CHILD_SERVICE: return "Child";
+            case IP_SERVICE:    return "IPSvc";
+            case REDUCTION_KEY: return "ReKey";
+            default: throw new IllegalArgumentException();
+        }
+    }
+
+    private static String getChildDescription(Edge edge) {
+        switch (edge.getType()) {
+            case CHILD_SERVICE: return describeBusinessService(((ChildEdge) edge).getChild());
+            case IP_SERVICE:    return describeIpService(((IpServiceEdge) edge).getIpService());
+            case REDUCTION_KEY: return describeReductionKey(((ReductionKeyEdge) edge).getReductionKey());
+            default: throw new IllegalArgumentException();
+        }
+
+    }
+
     public static String describeReductionKey(final String reductionKey) {
         return reductionKey;
     }
 
     public static String describeEdge(final Edge edge) {
-        switch (edge.getType()) {
-            case CHILD_SERVICE:
-                return "Child: " + describeBusinessService(((ChildEdge) edge).getChild());
-
-            case IP_SERVICE:
-                return "IPSvc: " + describeIpService(((IpServiceEdge) edge).getIpService());
-
-            case REDUCTION_KEY:
-                return "ReKey: " + describeReductionKey(((ReductionKeyEdge) edge).getReductionKey());
-
-            default:
-                throw new IllegalArgumentException();
-        }
+        String edgePrefix = getEdgePrefix(edge);
+        String itemDescription = getChildDescription(edge);
+        return String.format("%s: %s, Map: %s, Weight: %s",
+                edgePrefix,
+                itemDescription,
+                edge.getMapFunction().getClass().getSimpleName(),
+                edge.getWeight());
     }
 }

@@ -45,6 +45,7 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -55,20 +56,179 @@ public class BSMAdminIT extends OpenNMSSeleniumTestCase {
     private static final String BSM_ADMIN_URL = BASE_URL + "opennms/admin/bsm/adminpage.jsp";
     private static final Logger LOG = LoggerFactory.getLogger(BSMAdminIT.class);
 
+    /**
+     * Class to control the inputs of the "Business Service Edit"-Window
+     */
+    private class BsmAdminPageEditWindow {
+        private final String businessServiceName;
+
+        private BsmAdminPageEditWindow(final String businessServiceName) {
+            this.businessServiceName = businessServiceName;
+        }
+
+        public BsmAdminPage save() {
+            findElementById("saveButton").click();
+            wait.until(pageContainsText(businessServiceName));
+            return new BsmAdminPage();
+        }
+
+        public BsmAdminPage cancel() {
+            findElementById("cancelButton").click();
+            return new BsmAdminPage();
+        }
+
+        public BsmAdminPageEditWindow name(String newName) {
+            WebElement nameField = findElementById("nameField");
+            nameField.clear();
+            nameField.sendKeys(newName);
+            return new BsmAdminPageEditWindow(newName);
+        }
+
+        public BsmAdminPageEdgeEditWindow newEdgeWindow() {
+            findElementById("addEdgeButton").click();
+            wait.until(pageContainsText("Business Service Edge Edit"));
+            return new BsmAdminPageEdgeEditWindow();
+        }
+
+        public BsmAdminPageEdgeEditWindow addChildEdge(String childServiceText, String mapFunctionText, int weight) throws InterruptedException {
+            BsmAdminPageEdgeEditWindow editPage = newEdgeWindow()
+                    .selectChildService(childServiceText)
+                    .selectMapFunction(mapFunctionText)
+                    .weight(weight)
+                    .confirm();
+            Thread.sleep(250);
+            return editPage;
+        }
+
+        public BsmAdminPageEditWindow addReductionKeyEdge(String reductionKeyText, String mapFunctionText, int weight) throws InterruptedException {
+            newEdgeWindow()
+                    .reductionKey(reductionKeyText)
+                    .selectMapFunction(mapFunctionText)
+                    .weight(weight)
+                    .confirm();
+            Thread.sleep(250);
+            return this;
+        }
+
+        public BsmAdminPageEditWindow addIpServiceEdge(String ipServiceText, String mapFunctionText, int weight) throws InterruptedException {
+            newEdgeWindow()
+                    .selectIpService(ipServiceText)
+                    .selectMapFunction(mapFunctionText)
+                    .weight(weight)
+                    .confirm();
+            Thread.sleep(250);
+            return this;
+        }
+
+        public BsmAdminPageEditWindow removeEdge(String edgeValueString) {
+            new Select(findElementByXpath("//*[@id=\"edgeList\"]/select")).selectByVisibleText(edgeValueString);
+            findElementById("removeEdgeButton").click();
+            return this;
+        }
+    }
+
+    /**
+     * Class to control the inputs and workflow of the "Business Service Admin" Page
+     */
+    private class BsmAdminPage {
+
+        public BsmAdminPage open() {
+            m_driver.get(BSM_ADMIN_URL);
+            switchToVaadinFrame();
+            return this;
+        }
+
+        public BsmAdminPageEditWindow openNewDialog(String businessServiceName) throws InterruptedException {
+            WebElement createTextField = findElementById("createTextField");
+            createTextField.sendKeys(businessServiceName);
+            Thread.sleep(250); // wait before continuuing
+            findElementById("createButton").click();
+            wait.until(pageContainsText("Business Service Edit")); // we wait until the edit dialog appears
+            return new BsmAdminPageEditWindow(businessServiceName);
+        }
+
+        public BsmAdminPageEditWindow openEditDialog(String businessServiceName) {
+            findElementById("editButton-" + businessServiceName).click();
+            wait.until(pageContainsText("Business Service Edit"));
+            return new BsmAdminPageEditWindow(businessServiceName);
+        }
+
+        public void delete(String businessServiceName) {
+            delete(businessServiceName, false);
+        }
+
+        public void rename(String serviceName, String newServiceName) {
+            openEditDialog(serviceName).name(newServiceName).save();
+        }
+
+        public void delete(String serviceName, boolean withConfirmDialog) {
+            findDeleteButton(serviceName).click();
+            if (withConfirmDialog) { // we remove the parent element first, the confirm dialog must be present
+                findElementById("confirmationDialog.button.ok").click();
+            }
+            verifyElementNotPresent(By.id("deleteButton-" + serviceName));
+        }
+    }
+
+    private class BsmAdminPageEdgeEditWindow {
+        private BsmAdminPageEdgeEditWindow selectEdgeType(String edgeType) {
+            new Select(findElementByXpath("//*[@id=\"edgeTypeSelector\"]/select")).selectByVisibleText(edgeType);
+            return this;
+        }
+
+        public BsmAdminPageEdgeEditWindow selectIpService(String ipServiceText) {
+            selectEdgeType("IP Service");
+            new Select(findElementByXpath("//*[@id=\"ipServiceList\"]/select")).selectByVisibleText(ipServiceText);
+            return this;
+        }
+
+        public BsmAdminPageEdgeEditWindow selectChildService(String childServiceText) {
+            selectEdgeType("Child Service");
+            new Select(findElementByXpath("//*[@id=\"childServiceList\"]/select")).selectByVisibleText(childServiceText);
+            return this;
+        }
+
+        public BsmAdminPageEdgeEditWindow selectMapFunction(String mapFunctionText) {
+            new Select(findElementByXpath("//*[@id=\"mapFunctionSelector\"]/select")).selectByVisibleText(mapFunctionText);
+            return this;
+        }
+
+        public BsmAdminPageEdgeEditWindow reductionKey(String reductionKey) throws InterruptedException {
+            selectEdgeType("Reduction Key");
+            findElementById("reductionKeyField").clear();
+            findElementById("reductionKeyField").sendKeys(reductionKey);
+            return this;
+        }
+
+        public BsmAdminPageEdgeEditWindow weight(int weight) {
+            findElementById("weightField").clear();
+            findElementById("weightField").sendKeys(String.valueOf(weight));
+            return this;
+        }
+
+        public BsmAdminPageEdgeEditWindow confirm() {
+            findElementById("saveButton").click();
+            wait.until(pageContainsText("Business Service Edit"));
+            return new BsmAdminPageEdgeEditWindow();
+        }
+    }
+
     private final RequisitionUtils requisitionUtils = new RequisitionUtils(this);
+
+    private BsmAdminPage bsmAdminPage;
 
     private void createTestSetup() throws Exception {
         String requisitionXML = "<model-import foreign-source=\"" + OpenNMSSeleniumTestCase.REQUISITION_NAME + "\">" +
-                "<node foreign-id=\"NodeA\" node-label=\"NodeA\">" +
-                "<interface ip-addr=\"::1\" status=\"1\" snmp-primary=\"N\">" +
-                "<monitored-service service-name=\"AAA\"/>" +
-                "<monitored-service service-name=\"BBB\"/>" +
-                "</interface>" +
-                "<interface ip-addr=\"127.0.0.1\" status=\"1\" snmp-primary=\"N\">" +
-                "<monitored-service service-name=\"CCC\"/>" +
-                "<monitored-service service-name=\"DDD\"/>" +
-                "</interface>" +
-                "</node>" +
+                "   <node foreign-id=\"NodeA\" node-label=\"NodeA\">" +
+                "       <interface ip-addr=\"::1\" status=\"1\" snmp-primary=\"N\">" +
+                "           <monitored-service service-name=\"AAA\"/>" +
+                "           <monitored-service service-name=\"BBB\"/>" +
+                "       </interface>" +
+                "       <interface ip-addr=\"127.0.0.1\" status=\"1\" snmp-primary=\"N\">" +
+                "           <monitored-service service-name=\"CCC\"/>" +
+                "           <monitored-service service-name=\"DDD\"/>" +
+                "       </interface>" +
+                "   </node>" +
                 "</model-import>";
 
         String foreignSourceXML = "<foreign-source name=\"" + OpenNMSSeleniumTestCase.REQUISITION_NAME + "\">\n" +
@@ -85,21 +245,10 @@ public class BSMAdminIT extends OpenNMSSeleniumTestCase {
         requisitionUtils.deleteForeignSource();
     }
 
-    private void createBusinessService(String businessServiceName) throws InterruptedException {
-        LOG.info("Trying to create BS with name {}", businessServiceName);
-        WebElement createTextField = findElementById("createTextField");
-        createTextField.sendKeys(businessServiceName);
-        Thread.sleep(250); // wait before continuuing
-        findElementById("createButton").click();
-        wait.until(pageContainsText("Business Service Edit")); // we wait until the edit dialog appears
-        findElementById("saveButton").click();
-        wait.until(pageContainsText(businessServiceName));
-    }
-
     @Before
     public void before() throws Exception {
-        m_driver.get(BSM_ADMIN_URL);
-        switchToVaadinFrame();
+        bsmAdminPage = new BsmAdminPage();
+        bsmAdminPage.open();
     }
 
     @After
@@ -110,113 +259,68 @@ public class BSMAdminIT extends OpenNMSSeleniumTestCase {
     @Test
     public void testCanCreateAndDeleteBusinessService() throws InterruptedException {
         final String businessServiceName = createUniqueBusinessServiceName();
-        createBusinessService(businessServiceName);
-        findDeleteButton(businessServiceName).click();
-        verifyElementNotPresent(By.id("deleteButton-" + businessServiceName));
+        bsmAdminPage.openNewDialog(businessServiceName).save();
+        bsmAdminPage.delete(businessServiceName);
     }
 
     @Test
-    public void testCanChangeNameOfBusinessService() throws InterruptedException {
+    public void testCanRenameBusinessService() throws InterruptedException {
         final String serviceName = createUniqueBusinessServiceName();
-        createBusinessService(serviceName);
+        bsmAdminPage.openNewDialog(serviceName).save();
 
         // rename business Service
         final String RENAMED_SERVICE_NAME = "renamed_service" + createUniqueBusinessServiceName();
-        findElementById("editButton-" + serviceName).click();
-        wait.until(pageContainsText("Business Service Edit"));
-        WebElement nameField = findElementById("nameField");
-        serviceName.equals(nameField.getText());
-        nameField.clear();
-        nameField.sendKeys(RENAMED_SERVICE_NAME);
-        findElementById("saveButton").click();
+        bsmAdminPage.rename(serviceName, RENAMED_SERVICE_NAME);
 
         // verify that element was deleted
         verifyElementNotPresent(By.id("deleteButton-" + serviceName));
         pageContainsText(RENAMED_SERVICE_NAME);
-        findElementById("deleteButton-" + RENAMED_SERVICE_NAME).click();
-        verifyElementNotPresent(By.id("deleteButton-" + RENAMED_SERVICE_NAME));
+        bsmAdminPage.delete(RENAMED_SERVICE_NAME);
     }
 
     @Test
-    public void testCanHandleIpServicesDuringEdit() throws Exception {
-        final String IP_Service_Select_XPATH = "//*[@id=\"ipServiceSelect\"]";
-        final String ADD_BUTTON_XPATH = IP_Service_Select_XPATH + "/div[2]/div[1]/span/span";
-        final String REMOVE_BUTTON_XPATH =  IP_Service_Select_XPATH + "/div[2]/div[3]/span/span";
-        final String IP_SERVICE_1_XPATH_SELECTED = IP_Service_Select_XPATH + "/select[2]/option[1]";
-        final String IP_SERVICE_1_XPATH_SELECTED_NOT = IP_Service_Select_XPATH + "/select[1]/option[1]";
-        final String IP_SERVICE_2_XPATH_SELECTED = IP_Service_Select_XPATH + "/select[2]/option[2]";
-        final String IP_SERVICE_2_XPATH_SELECTED_NOT = IP_Service_Select_XPATH + "/select[1]/option[2]";
-
+    public void testCanAddIpServiceEdge() throws Exception {
         try {
             createTestSetup();
 
             // Create a BusinessService and open editor
             final String serviceName = createUniqueBusinessServiceName();
-            createBusinessService(serviceName);
-            findEditButton(serviceName).click();
-            wait.until(pageContainsText("Business Service Edit"));
+            BsmAdminPageEditWindow bsmAdminPageEditWindow = bsmAdminPage.openNewDialog(serviceName);
 
             // Check that the ipServices are known
-            final String IP_SERVICE_1 = "NodeA//0:0:0:0:0:0:0:1/AAA";
-            final String IP_SERVICE_2 = "NodeA//0:0:0:0:0:0:0:1/BBB";
-            final String IP_SERVICE_3 = "NodeA//127.0.0.1/CCC";
-            final String IP_SERVICE_4 = "NodeA//127.0.0.1/DDD";
+            BsmAdminPageEdgeEditWindow bsmAdminPageEdgeEditWindow = bsmAdminPageEditWindow.newEdgeWindow();
+            bsmAdminPageEdgeEditWindow.selectEdgeType("IP Service");
+            final String IP_SERVICE_1 = "NodeA /0:0:0:0:0:0:0:1 AAA";
+            final String IP_SERVICE_2 = "NodeA /0:0:0:0:0:0:0:1 BBB";
+            final String IP_SERVICE_3 = "NodeA /127.0.0.1 CCC";
+            final String IP_SERVICE_4 = "NodeA /127.0.0.1 DDD";
             wait.until(pageContainsText(IP_SERVICE_1));
             wait.until(pageContainsText(IP_SERVICE_2));
             wait.until(pageContainsText(IP_SERVICE_3));
             wait.until(pageContainsText(IP_SERVICE_4));
 
             // Locate relevant components
-            findElementById("ipServiceSelect");
-            WebElement addButton = findElementByXpath(ADD_BUTTON_XPATH);
-            findElementByXpath(REMOVE_BUTTON_XPATH);
-
-            // Check for not selected ipServices
-            findElementByXpath(IP_SERVICE_1_XPATH_SELECTED_NOT);
-            findElementByXpath(IP_SERVICE_2_XPATH_SELECTED_NOT);
-
-            // Add ipServices to selection
-            addButton.click();
-            addButton.click();
-            addButton.click();
-
-            // Check for selected ipServices
-            findElementByXpath(IP_SERVICE_1_XPATH_SELECTED);
-            findElementByXpath(IP_SERVICE_2_XPATH_SELECTED);
+            bsmAdminPageEdgeEditWindow.selectIpService(IP_SERVICE_3);
+            bsmAdminPageEdgeEditWindow.selectMapFunction("Increase");
+            bsmAdminPageEdgeEditWindow.confirm();
 
             // save
-            findElementById("saveButton").click();
+            bsmAdminPageEditWindow.save();
 
-            // Open the BusinessService and check the ipServices are in place
-            wait.until(pageContainsText("edit"));
-            Thread.sleep(200); // wait for vaadin
-            findEditButton(serviceName).click();
-
-            // Verify that the previously added ip services are still selected
-            wait.until(pageContainsText("Business Service Edit"));
-            findElementByXpath(IP_SERVICE_1_XPATH_SELECTED);
-            findElementByXpath(IP_SERVICE_2_XPATH_SELECTED);
+            // Verify
+            bsmAdminPage.openEditDialog(serviceName);
+            wait.until(pageContainsText("IPSvc: NodeA /127.0.0.1 CCC, Map: Increase, Weight: 1"));
 
             // Close dialog and delete BusinessService
-            findElementById("cancelButton").click();
-            findDeleteButton(serviceName).click();
-            verifyElementNotPresent(By.id("deleteButton-" + serviceName));
-
+            bsmAdminPageEditWindow.cancel();
+            bsmAdminPage.delete(serviceName);
         } finally {
             removeTestSetup();
         }
     }
 
     @Test
-    public void testCanHandleBusinessServicesDuringEdit() throws Exception {
-        final String Business_Service_Select_XPATH = "//*[@id=\"businessServiceSelect\"]";
-        final String BUSINESS_SERVICE_ADD_BUTTON_XPATH = Business_Service_Select_XPATH + "/div[2]/div[1]/span/span";
-        final String BUSINESS_SERVICE_REMOVE_BUTTON_XPATH =  Business_Service_Select_XPATH + "/div[2]/div[3]/span/span";
-        final String BUSINESS_SERVICE_1_XPATH_SELECTED = Business_Service_Select_XPATH + "/select[2]/option[1]";
-        final String BUSINESS_SERVICE_1_XPATH_SELECTED_NOT = Business_Service_Select_XPATH + "/select[1]/option[1]";
-        final String BUSINESS_SERVICE_2_XPATH_SELECTED = Business_Service_Select_XPATH + "/select[2]/option[2]";
-        final String BUSINESS_SERVICE_2_XPATH_SELECTED_NOT = Business_Service_Select_XPATH + "/select[1]/option[2]";
-
+    public void testCanAddBusinessServiceEdge() throws Exception {
         // Create a bunch of business services
         final String serviceName = createUniqueBusinessServiceName();
         final String[] serviceNames = new String[]{
@@ -224,43 +328,136 @@ public class BSMAdminIT extends OpenNMSSeleniumTestCase {
                 serviceName + "_2",
                 serviceName + "_3"};
         for (String eachServiceName : serviceNames) {
-            createBusinessService(eachServiceName);
+            bsmAdminPage.openNewDialog(eachServiceName).save();
         }
 
         // Open Edit Dialog for 1st Business Service which was just created
-        findEditButton(serviceNames[0]).click();
-        wait.until(pageContainsText("Business Service Edit"));
+        final BsmAdminPageEditWindow bsmAdminPageEditWindow = bsmAdminPage.openEditDialog(serviceNames[0]);
+        bsmAdminPageEditWindow.addChildEdge(serviceNames[1], "Decrease", 2);
+        bsmAdminPageEditWindow.addChildEdge(serviceNames[2], "Ignore", 3);
 
-        // Locate relevant components
-        findElementById("businessServiceSelect");
-        WebElement addButton = findElementByXpath(BUSINESS_SERVICE_ADD_BUTTON_XPATH);
-        findElementByXpath(BUSINESS_SERVICE_REMOVE_BUTTON_XPATH);
-
-        // Check for not selected business services
-        findElementByXpath(BUSINESS_SERVICE_1_XPATH_SELECTED_NOT);
-        findElementByXpath(BUSINESS_SERVICE_2_XPATH_SELECTED_NOT);
-
-        // Add Business Services to selection
-        addButton.click();
-        addButton.click();
-        addButton.click();
-
-        // Check for selected ipServices
-        findElementByXpath(BUSINESS_SERVICE_1_XPATH_SELECTED);
-        findElementByXpath(BUSINESS_SERVICE_2_XPATH_SELECTED);
-        findElementById("saveButton").click();
+        // verify
+        wait.until(pageContainsText(String.format("Child: %s, Map: Decrease, Weight: 2", serviceNames[1])));
+        wait.until(pageContainsText(String.format("Child: %s, Map: Ignore, Weight: 3", serviceNames[2])));
+        bsmAdminPageEditWindow.save();
         Thread.sleep(500); // pause
 
         // Verify that business service are gone
         // we have to delete backwards
         for (int i = 0; i < serviceNames.length; i++) {
-            String eachServiceName = serviceNames[i];
-            findDeleteButton(eachServiceName).click();
-            if (i == 0) { // we remove the parent element first, the confirm dialog must be present
-                findElementById("confirmationDialog.button.ok").click();
-            }
-            verifyElementNotPresent(By.id("deleteButton-" + eachServiceName));
+            final String eachServiceName = serviceNames[i];
+            bsmAdminPage.delete(eachServiceName, i==0);
         }
+    }
+
+    @Test
+    public void testCanAddReductionKeyEdge() throws InterruptedException {
+        final String serviceName = createUniqueBusinessServiceName();
+        BsmAdminPageEditWindow bsmAdminPageEditWindow = bsmAdminPage.openNewDialog(serviceName);
+        bsmAdminPageEditWindow.addReductionKeyEdge("test.rk.1", "Increase", 17);
+
+        // verify edit
+        wait.until(pageContainsText("ReKey: test.rk.1, Map: Increase, Weight: 17"));
+        bsmAdminPageEditWindow.save();
+
+        // verify save
+        bsmAdminPage.openEditDialog(serviceName);
+        wait.until(pageContainsText("ReKey: test.rk.1, Map: Increase, Weight: 17"));
+        bsmAdminPageEditWindow.cancel();
+
+        // clean up
+        bsmAdminPage.delete(serviceName);
+    }
+
+    @Test
+    public void testCanAddMixedTypeEdges() throws Exception {
+        try {
+            // Initialize services
+            createTestSetup();
+            final String parentServiceName = createUniqueBusinessServiceName();
+            final String child1 = parentServiceName + "_child1";
+            final String child2 = parentServiceName + "_child2";
+            bsmAdminPage.openNewDialog(parentServiceName).save();
+            bsmAdminPage.openNewDialog(child1).save();
+            bsmAdminPage.openNewDialog(child2).save();
+
+            // define edges
+            final BsmAdminPageEditWindow bsmAdminPageEditWindow = bsmAdminPage.openEditDialog(parentServiceName);
+            bsmAdminPageEditWindow.addChildEdge(child1, "Identity", 1);
+            bsmAdminPageEditWindow.addChildEdge(child2, "Ignore", 1);
+            bsmAdminPageEditWindow.addIpServiceEdge("NodeA /0:0:0:0:0:0:0:1 BBB", "Identity", 1);
+            bsmAdminPageEditWindow.addIpServiceEdge("NodeA /127.0.0.1 CCC", "Ignore", 1);
+            bsmAdminPageEditWindow.addReductionKeyEdge("test.rk.1", "Decrease", 1);
+            bsmAdminPageEditWindow.addReductionKeyEdge("test.rk.2", "Increase", 1);
+
+            // verify edit dialog
+            wait.until(pageContainsText(String.format("Child: %s, Map: Identity, Weight: 1", child1)));
+            wait.until(pageContainsText(String.format("Child: %s, Map: Ignore, Weight: 1", child2)));
+            wait.until(pageContainsText("IPSvc: NodeA /0:0:0:0:0:0:0:1 BBB, Map: Identity, Weight: 1"));
+            wait.until(pageContainsText("IPSvc: NodeA /127.0.0.1 CCC, Map: Ignore, Weight: 1"));
+            wait.until(pageContainsText("ReKey: test.rk.1, Map: Decrease, Weight: 1"));
+            wait.until(pageContainsText("ReKey: test.rk.2, Map: Increase, Weight: 1"));
+
+            // verify after save
+            bsmAdminPageEditWindow.save();
+            bsmAdminPage.openEditDialog(parentServiceName);
+            wait.until(pageContainsText(String.format("Child: %s, Map: Identity, Weight: 1", child1)));
+            wait.until(pageContainsText(String.format("Child: %s, Map: Ignore, Weight: 1", child2)));
+            wait.until(pageContainsText("IPSvc: NodeA /0:0:0:0:0:0:0:1 BBB, Map: Identity, Weight: 1"));
+            wait.until(pageContainsText("IPSvc: NodeA /127.0.0.1 CCC, Map: Ignore, Weight: 1"));
+            wait.until(pageContainsText("ReKey: test.rk.1, Map: Decrease, Weight: 1"));
+            wait.until(pageContainsText("ReKey: test.rk.2, Map: Increase, Weight: 1"));
+            bsmAdminPageEditWindow.cancel();
+
+            // cleanup
+            bsmAdminPage.delete(child2, true);
+            bsmAdminPage.delete(child1, true);
+            bsmAdminPage.delete(parentServiceName);
+        } finally {
+            removeTestSetup();
+        }
+    }
+
+    @Test
+    public void testCanRemovePersistedEdge() throws InterruptedException {
+        // create Business Service with one Edge and persist
+        final String serviceName = createUniqueBusinessServiceName();
+        BsmAdminPageEditWindow bsmAdminPageEditWindow = bsmAdminPage.openNewDialog(serviceName).addReductionKeyEdge("some.reduction.key", "Increase", 1);
+        wait.until(pageContainsText("ReKey: some.reduction.key, Map: Increase, Weight: 1"));
+        bsmAdminPageEditWindow.save();
+
+        // remove persisted edge
+        bsmAdminPageEditWindow = bsmAdminPage.openEditDialog(serviceName);
+        bsmAdminPageEditWindow.removeEdge("ReKey: some.reduction.key, Map: Increase, Weight: 1");
+        verifyElementNotPresent("ReKey: some.reduction.key, Map: Increase, Weight: 1");
+        bsmAdminPageEditWindow.save();
+
+        // clean up afterwards
+        bsmAdminPage.delete(serviceName);
+    }
+
+    @Test
+    public void testCanCancelEdit() throws InterruptedException {
+        // create service to edit
+        final String serviceName = createUniqueBusinessServiceName();
+        bsmAdminPage.openNewDialog(serviceName).save();
+
+        // edit
+        BsmAdminPageEditWindow bsmAdminPageEditWindow = bsmAdminPage.openEditDialog(serviceName);
+        bsmAdminPageEditWindow.addReductionKeyEdge("test.rk.1", "Identity", 1);
+        bsmAdminPageEditWindow.addReductionKeyEdge("test.rk.2", "Identity", 1);
+
+        // cancel
+        bsmAdminPageEditWindow.cancel();
+
+        // verify that cancel worked
+        bsmAdminPageEditWindow = bsmAdminPage.openEditDialog(serviceName);
+        verifyElementNotPresent("ReKey: test.rk.1, Map: Identity, Weight: 1");;
+        verifyElementNotPresent("ReKey: test.rk.2, Map: Identity, Weight: 1");
+        bsmAdminPageEditWindow.cancel();
+
+        // clean up
+        bsmAdminPage.delete(serviceName);
     }
 
     // switches to the embedded vaadin iframe
@@ -285,6 +482,12 @@ public class BSMAdminIT extends OpenNMSSeleniumTestCase {
 
     private WebElement findEditButton(String serviceName) {
         return findElementById("editButton-" + serviceName);
+    }
+
+    private void verifyElementNotPresent(String text) {
+        final String escapedText = text.replace("\'", "\\\'");
+        final String xpathExpression = "//*[contains(., \'" + escapedText + "\')]";
+        verifyElementNotPresent(By.xpath(xpathExpression));
     }
 
     /**

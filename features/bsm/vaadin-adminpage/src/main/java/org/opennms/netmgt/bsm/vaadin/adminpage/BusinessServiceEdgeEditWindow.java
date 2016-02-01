@@ -28,8 +28,6 @@
 
 package org.opennms.netmgt.bsm.vaadin.adminpage;
 
-import java.util.Objects;
-
 import org.opennms.netmgt.bsm.service.BusinessServiceManager;
 import org.opennms.netmgt.bsm.service.model.BusinessService;
 import org.opennms.netmgt.bsm.service.model.IpService;
@@ -47,7 +45,6 @@ import org.opennms.netmgt.vaadin.core.UIHelper;
 import com.google.common.base.Throwables;
 import com.google.common.collect.ImmutableList;
 import com.vaadin.data.Validator;
-import com.vaadin.data.util.BeanContainer;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.FormLayout;
@@ -120,6 +117,7 @@ public class BusinessServiceEdgeEditWindow extends Window {
          * type selector box
          */
         m_typeSelect = new NativeSelect("Type");
+        m_typeSelect.setId("edgeTypeSelector");
         m_typeSelect.setMultiSelect(false);
         m_typeSelect.setNewItemsAllowed(false);
         m_typeSelect.setNullSelectionAllowed(false);
@@ -137,6 +135,7 @@ public class BusinessServiceEdgeEditWindow extends Window {
          * child service list
          */
         m_childServiceComponent = new ListSelect("Child Service");
+        m_childServiceComponent.setId("childServiceList");
         m_childServiceComponent.setMultiSelect(false);
         m_childServiceComponent.setNewItemsAllowed(false);
         m_childServiceComponent.setNullSelectionAllowed(false);
@@ -153,6 +152,7 @@ public class BusinessServiceEdgeEditWindow extends Window {
          * ip service list
          */
         m_ipServiceComponent = new ListSelect("IP Service", businessServiceManager.getAllIpServices());
+        m_ipServiceComponent.setId("ipServiceList");
         m_ipServiceComponent.setMultiSelect(false);
         m_ipServiceComponent.setNewItemsAllowed(false);
         m_ipServiceComponent.setNullSelectionAllowed(false);
@@ -168,6 +168,7 @@ public class BusinessServiceEdgeEditWindow extends Window {
          * reduction key input field
          */
         m_reductionKeyComponent = new TextField("Reduction Key");
+        m_reductionKeyComponent.setId("reductionKeyField");
         m_reductionKeyComponent.setWidth(100.0f, Unit.PERCENTAGE);
         m_reductionKeyComponent.setVisible(false);
         m_reductionKeyComponent.setImmediate(true);
@@ -197,6 +198,7 @@ public class BusinessServiceEdgeEditWindow extends Window {
                                                             .add(Increase.class)
                                                             .add(SetTo.class)
                                                             .build());
+        m_mapFunctionSelect.setId("mapFunctionSelector");
         m_mapFunctionSelect.setNullSelectionAllowed(false);
         m_mapFunctionSelect.setMultiSelect(false);
         m_mapFunctionSelect.setNewItemsAllowed(false);
@@ -248,6 +250,7 @@ public class BusinessServiceEdgeEditWindow extends Window {
          * the weight input field
          */
         m_weightField = new TextField("Weight");
+        m_weightField.setId("weightField");
         m_weightField.setRequired(true);
         m_weightField.setWidth(100.0f, Unit.PERCENTAGE);
         m_weightField.addValidator(value -> {
