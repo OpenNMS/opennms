@@ -413,9 +413,9 @@ class ScanGui extends AbstractGui implements ScanReportHandler, PropertyChangeLi
 
                         def tab = table(constraints:"grow, wrap", gridColor:getDetailColor()) {
                             tableModel( list : results) {
-                                propertyColumn(header:"Service", propertyName:"serviceName", editable:false)
                                 propertyColumn(header:"Node", propertyName:"nodeLabel", editable:false)
                                 propertyColumn(header:"IP Address", propertyName:"ipAddress", editable:false)
+                                propertyColumn(header:"Service", propertyName:"serviceName", editable:false)
                                 propertyColumn(header:"Result", propertyName:"result", editable:false)
                             }
                         }
