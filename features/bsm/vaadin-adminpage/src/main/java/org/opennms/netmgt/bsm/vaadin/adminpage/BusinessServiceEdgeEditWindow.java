@@ -95,12 +95,13 @@ public class BusinessServiceEdgeEditWindow extends Window {
         setClosable(false);
         setResizable(false);
         setWidth(50, Unit.PERCENTAGE);
-        setHeight(85, Unit.PERCENTAGE);
+        setHeight(75, Unit.PERCENTAGE);
 
         /**
          * Creating the root layout...
          */
         final VerticalLayout rootLayout = new VerticalLayout();
+        rootLayout.setSizeFull();
         rootLayout.setSpacing(true);
         rootLayout.setMargin(false);
 
@@ -296,7 +297,7 @@ public class BusinessServiceEdgeEditWindow extends Window {
             }
 
             if (mapFunction instanceof SetTo) {
-                ((SetTo) mapFunction).setStatus(null);
+                ((SetTo) mapFunction).setStatus((Status) m_mapFunctionSeveritySelect.getValue());
             }
 
             final int weight = Integer.parseInt(m_weightField.getValue());
@@ -326,7 +327,6 @@ public class BusinessServiceEdgeEditWindow extends Window {
         cancelButton.setId("cancelEdgeButton");
         cancelButton.addClickListener((Button.ClickListener) event -> close());
         buttonLayout.addComponent(cancelButton);
-
 
         /**
          * now set the root layout
