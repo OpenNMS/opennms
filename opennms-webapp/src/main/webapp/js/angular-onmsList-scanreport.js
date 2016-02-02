@@ -31,19 +31,29 @@
 	})
 	.filter('prettyProperty', function($filter) {
 		return function(input) {
-			input = input.split('-');
+			// Strip off remote poller property prefix
+			input = input.replace('org.opennms.netmgt.poller.remote','');
+
+			// Split on dots or dashes
+			input = input.split(/\.|-/);
+
 			var retval = '';
 			var first = true;
 			for (var i = 0; i < input.length; i++) {
 				if (!first) {
 					retval += ' ';
 				}
-				if (input[i] === 'ip') {
-					retval += "IP";
-				} else if (input[i] === 'id') {
-					retval += "ID";
-				} else {
-					retval += input[i].slice(0,1).toUpperCase() + input[i].slice(1);
+				switch(input[i]) {
+					// Fully uppercase abbreviations
+					case 'id':
+					case 'ip':
+					case 'os':
+						retval += input[i].toUpperCase();
+						break;
+					// Otherwise, uppercase first letter only
+					default:
+						retval += input[i].slice(0,1).toUpperCase() + input[i].slice(1);
+						break;
 				}
 				first = false;
 			}

@@ -191,23 +191,25 @@
 						<i ng-show="query.orderBy === 'id' &amp;&amp; query.order === 'asc'" class="fa fa-sort-asc"/>
 						<i ng-show="query.orderBy === 'id' &amp;&amp; query.order === 'desc'" class="fa fa-sort-desc"/>
 					</th>
-					<th class="col-sm-1 text-nowrap">
+					<th class="col-sm-2 text-nowrap">
 						<a ng-click="changeOrderBy('location')">Location</a>
 						<i ng-show="query.orderBy === 'location' &amp;&amp; query.order === 'asc'" class="fa fa-sort-asc"/>
 						<i ng-show="query.orderBy === 'location' &amp;&amp; query.order === 'desc'" class="fa fa-sort-desc"/>
 					</th>
-					<th class="col-sm-1 text-nowrap">
+					<th class="col-sm-2 text-nowrap">
 						Application
 					</th>
-					<th class="col-sm-2 text-nowrap">
+					<th class="col-sm-4 text-nowrap">
 						<a ng-click="changeOrderBy('timestamp')">Scan Time</a>
 						<i ng-show="query.orderBy === 'timestamp' &amp;&amp; query.order === 'asc'" class="fa fa-sort-asc"/>
 						<i ng-show="query.orderBy === 'timestamp' &amp;&amp; query.order === 'desc'" class="fa fa-sort-desc"/>
 					</th>
+					<!--
 					<th class="col-sm-6 text-nowrap">
 						Properties
 					</th>
-					<th class="col-sm-1 text-nowrap">
+					-->
+					<th class="col-sm-2 text-nowrap">
 						Logs
 					</th>
 				</tr>
@@ -234,11 +236,14 @@
 							<a style="text-decoration: none;" ng-click="addEpochTimestampSearchClause({property:'timestamp',operator:'LE',value:item.timestamp})"><i class="fa fa-toggle-right fa-lg"/></a>
 						</span>
 					</td>
+					<!--
 					<td>
 						<onms-list-edit-map-in-place values="item.properties" value-type="'text'" on-edit="update(item)"/>
 					</td>
+					-->
 					<td>
 						<button class="btn btn-default" ng-click="selectScanReport(item)" onClick="$('#scanReportLogsModal').modal()">View</button>
+					</td>
 				</tr>
 			</tbody>
 		</table>
