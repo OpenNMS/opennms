@@ -29,6 +29,7 @@
 package org.opennms.features.topology.plugins.topo.bsm;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
@@ -37,7 +38,6 @@ import org.opennms.features.topology.api.topo.SimpleVertexProvider;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
 
-import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
 
 public class BusinessServiceVertexProvider extends SimpleVertexProvider {
@@ -66,19 +66,23 @@ public class BusinessServiceVertexProvider extends SimpleVertexProvider {
     }
 
     private <T extends VertexRef> Collection<T> filter(List<T> references, final Criteria... criteria) {
-        return Collections2.filter(references, new Predicate<T>() {
-            @Override
-            public boolean apply(T input) {
-                return filter(input, criteria) != null;
-            }
-        });
+        return Collections2.filter(references, input -> filter(input, criteria) != null);
     }
 
     private <T extends VertexRef> T filter(T refToFilter, Criteria... criteria) {
-        // The BusinessServiceCriteria objects are used to indicate focal points
-        // and aren't actually used to filter the result set.
-        // At this point in time we don't support any additional Criteria types so
-        // we just return the original set of vertices.
-        return refToFilter;
+        // if we are supposed to hide leafs...
+        if (hideLeafElement(Arrays.asList(criteria))) {
+            AbstractBusinessServiceVertex vertex = (AbstractBusinessServiceVertex) refToFilter;
+            //... and we are actually a leaf, but no business service
+            if (vertex.isLeaf() && !(vertex instanceof BusinessServiceVertex)) {
+                return null; // ... we filter
+            }
+            return refToFilter; // ... otherwise we do not
+        }
+        return refToFilter; // we are not supposed to filter
+    }
+
+    private boolean hideLeafElement(List<Criteria> criteria) {
+        return criteria.stream().filter(e -> e instanceof BusinessServicesHideLeafsCriteria).findFirst().isPresent();
     }
 }
