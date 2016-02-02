@@ -285,7 +285,7 @@ public class BusinessServiceEdgeEditWindow extends Window {
          * ...and the save button
          */
         final Button saveButton = new Button("Add Edge");
-        saveButton.setId("saveButton");
+        saveButton.setId("saveEdgeButton");
         saveButton.addClickListener(UIHelper.getCurrent(TransactionAwareUI.class).wrapInTransactionProxy((Button.ClickListener) event -> {
             if (!m_weightField.isValid()) return;
             if (!m_ipServiceComponent.isValid()) return;

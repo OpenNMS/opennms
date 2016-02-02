@@ -207,7 +207,7 @@ public class BSMAdminIT extends OpenNMSSeleniumTestCase {
         }
 
         public BsmAdminPageEdgeEditWindow confirm() {
-            findElementById("saveButton").click();
+            findElementById("saveEdgeButton").click();
             wait.until(pageContainsText("Business Service Edit"));
             return new BsmAdminPageEdgeEditWindow();
         }
