@@ -6,7 +6,7 @@
 		<varbind>
 			<oid>.1.2.3.4.5.6.7.8.1</oid>
 			<type>Int32</type>
-			<value>eventParametersCollection[0].value.content</value>
+			<value>eventParametersCollection[0].value</value>
 		</varbind>
 		<varbind>
 			<oid>.1.2.3.4.5.6.7.8.2</oid>

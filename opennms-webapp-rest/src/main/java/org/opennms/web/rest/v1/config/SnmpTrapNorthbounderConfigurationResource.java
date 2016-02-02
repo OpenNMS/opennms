@@ -53,6 +53,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import org.opennms.core.config.api.JaxbListWrapper;
 import org.opennms.core.xml.JaxbUtils;
+import org.opennms.netmgt.alarmd.northbounder.snmptrap.SnmpTrapMappingGroup;
 import org.opennms.netmgt.alarmd.northbounder.snmptrap.SnmpTrapNorthbounderConfig;
 import org.opennms.netmgt.alarmd.northbounder.snmptrap.SnmpTrapNorthbounderConfigDao;
 import org.opennms.netmgt.alarmd.northbounder.snmptrap.SnmpTrapSink;
@@ -106,12 +107,44 @@ public class SnmpTrapNorthbounderConfigurationResource extends OnmsRestService i
         }
 
         /**
-         * Gets the destinations.
+         * Gets the trap sinks.
          *
-         * @return the destinations
+         * @return the trap sinks
          */
         @XmlElement(name="trap-sink")
-        public List<String> getDestinations() {
+        public List<String> getTrapSinks() {
+            return getObjects();
+        }
+    }
+
+    /**
+     * The Class ImportMappings.
+     */
+    @SuppressWarnings("serial")
+    @XmlRootElement(name="import-mappings")
+    public static class ImportMappings extends JaxbListWrapper<String> {
+
+        /**
+         * Instantiates a new import mappings.
+         */
+        public ImportMappings() {}
+
+        /**
+         * Instantiates a new import mappings.
+         *
+         * @param mappings the mappings
+         */
+        public ImportMappings(List<String> mappings) {
+            addAll(mappings);
+        }
+
+        /**
+         * Gets the import mappings.
+         *
+         * @return the import mappings
+         */
+        @XmlElement(name="import-mapping")
+        public List<String> getImportMappings() {
             return getObjects();
         }
     }
@@ -221,10 +254,28 @@ public class SnmpTrapNorthbounderConfigurationResource extends OnmsRestService i
     }
 
     /**
+     * Gets the import mappings.
+     *
+     * @param trapSinkName the trap sink name
+     * @return the import mappings
+     */
+    @GET
+    @Path("trapsinks/{trapsinkName}/import-mappings")
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
+    public Response getImportMappings(@PathParam("trapsinkName") final String trapSinkName) {
+        SnmpTrapSink trapSink = m_snmpTrapNorthbounderConfigDao.getConfig().getSnmpTrapSink(trapSinkName);
+        if (trapSink == null) {
+            return Response.status(404).build();
+        }
+        return Response.ok(new ImportMappings(trapSink.getImportMappings())).build();
+
+    }
+
+    /**
      * Sets a SNMP trap sink.
      * <p>If there is a trap sunk with the same name, the existing one will be overridden.</p>
      *
-     * @param uriInfo the uri info
+     * @param uriInfo the URI info
      * @param snmpTrapSink the SNMP trap sink
      * @return the response
      */
@@ -237,6 +288,34 @@ public class SnmpTrapNorthbounderConfigurationResource extends OnmsRestService i
             m_snmpTrapNorthbounderConfigDao.getConfig().addSnmpTrapSink(snmpTrapSink);
             saveConfiguration();
             return Response.seeOther(getRedirectUri(uriInfo)).build();
+        } finally {
+            writeUnlock();
+        }
+    }
+
+    /**
+     * Sets an import mapping.
+     *
+     * @param uriInfo the UEI info
+     * @param trapSinkName the trap sink name
+     * @param mappingGroup the mapping group
+     * @return the response
+     */
+    @POST
+    @Path("trapsinks/{trapsinkName}/import-mappings")
+    @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
+    public Response setImportMapping(@Context final UriInfo uriInfo, @PathParam("trapsinkName") final String trapSinkName, final SnmpTrapMappingGroup mappingGroup) {
+        writeLock();
+        try {
+            SnmpTrapSink trapSink = m_snmpTrapNorthbounderConfigDao.getConfig().getSnmpTrapSink(trapSinkName);
+            if (trapSink == null) {
+                return Response.status(404).build();
+            }
+            trapSink.addImportMapping(mappingGroup);
+            saveConfiguration();
+            return Response.seeOther(getRedirectUri(uriInfo)).build();
+        } catch (Throwable t) {
+            throw new WebApplicationException(Response.status(Status.INTERNAL_SERVER_ERROR).type(MediaType.TEXT_PLAIN).entity(t.getMessage()).build());
         } finally {
             writeUnlock();
         }
@@ -280,6 +359,74 @@ public class SnmpTrapNorthbounderConfigurationResource extends OnmsRestService i
         } finally {
             writeUnlock();
         }
+    }
+
+    /**
+     * Update import mapping.
+     *
+     * @param uriInfo the UEI info
+     * @param trapSinkName the trap sink name
+     * @param mappingName the mapping name
+     * @param params the parameters map
+     * @return the response
+     */
+    @PUT
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    @Path("trapsinks/{trapsinkName}/import-mappings/{mappingName}")
+    public Response updateImportMapping(@Context final UriInfo uriInfo, @PathParam("trapsinkName") final String trapSinkName, @PathParam("mappingName") final String mappingName, final MultivaluedMapImpl params) {
+        writeLock();
+        try {
+            boolean modified = false;
+            SnmpTrapSink trapSink = m_snmpTrapNorthbounderConfigDao.getConfig().getSnmpTrapSink(trapSinkName);
+            if (trapSink == null) {
+                return Response.status(404).build();
+            }
+            SnmpTrapMappingGroup mappingGroup = trapSink.getImportMapping(mappingName);
+            if (mappingGroup == null) {
+                return Response.status(404).build();
+            }
+            final BeanWrapper wrapper = PropertyAccessorFactory.forBeanPropertyAccess(mappingGroup);
+            for (final String key : params.keySet()) {
+                if (wrapper.isWritableProperty(key)) {
+                    final String stringValue = params.getFirst(key);
+                    final Object value = wrapper.convertIfNecessary(stringValue, (Class<?>)wrapper.getPropertyType(key));
+                    wrapper.setPropertyValue(key, value);
+                    modified = true;
+                }
+            }
+            if (modified) {
+                trapSink.addImportMapping(mappingGroup);
+                saveConfiguration();
+                return Response.seeOther(getRedirectUri(uriInfo)).build();
+            }
+            return Response.notModified().build();
+        } catch (Throwable t) {
+            throw new WebApplicationException(Response.status(Status.INTERNAL_SERVER_ERROR).type(MediaType.TEXT_PLAIN).entity(t.getMessage()).build());
+        } finally {
+            writeUnlock();
+        }
+    }
+
+    /**
+     * Removes the import mapping.
+     *
+     * @param trapSinkName the trap sink name
+     * @param mappingName the mapping name
+     * @return the response
+     */
+    @DELETE
+    @Path("trapsinks/{trapsinkName}/import-mappings/{mappingName}")
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
+    public Response removeImportMapping(@PathParam("trapsinkName") final String trapSinkName, @PathParam("mappingName") final String mappingName) {
+        SnmpTrapSink trapSink = m_snmpTrapNorthbounderConfigDao.getConfig().getSnmpTrapSink(trapSinkName);
+        if (trapSink == null) {
+            return Response.status(404).build();
+        }
+
+        if (trapSink.removeImportMapping(mappingName)) {
+            return saveConfiguration();
+        }
+        return Response.notModified().build();
     }
 
     /**
