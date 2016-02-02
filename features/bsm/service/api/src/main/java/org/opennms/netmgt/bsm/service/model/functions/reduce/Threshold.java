@@ -32,11 +32,11 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-import com.google.common.base.Preconditions;
-
 import org.opennms.netmgt.bsm.service.model.Status;
 import org.opennms.netmgt.bsm.service.model.edge.Edge;
 import org.opennms.netmgt.bsm.service.model.mapreduce.ReductionFunction;
+
+import com.google.common.base.Preconditions;
 
 public class Threshold implements ReductionFunction {
 
@@ -67,14 +67,8 @@ public class Threshold implements ReductionFunction {
             double statusTotal = edgeStatusMap.entrySet().stream().filter(e -> e.getValue().isGreaterThanOrEqual(eachStatus)).mapToDouble(e -> weightMap.get(e.getKey())).sum();
             statusWeightMap.put(eachStatus, statusTotal);
         }
-        // debug output
-        // TODO MN remove me
-        statusWeightMap.entrySet().forEach(e -> {
-            System.out.println(e.getKey() + " -> " + e.getValue());
-        });
-
+        // get maximum severity
         Optional<Status> reducedStatus = statusWeightMap.keySet().stream().sorted((o1, o2) -> -1 * o1.compareTo(o2)).filter(status -> statusWeightMap.get(status).doubleValue() >= m_threshold).findFirst();
-        System.out.println("The reduced status is:" + reducedStatus);
         return reducedStatus;
     }
 

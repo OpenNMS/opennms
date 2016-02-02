@@ -466,7 +466,7 @@ public class BSMAdminIT extends OpenNMSSeleniumTestCase {
 
         // verify that cancel worked
         bsmAdminPageEditWindow = bsmAdminPage.openEditDialog(serviceName);
-        verifyElementNotPresent("ReKey: test.rk.1, Map: Identity, Weight: 1");;
+        verifyElementNotPresent("ReKey: test.rk.1, Map: Identity, Weight: 1");
         verifyElementNotPresent("ReKey: test.rk.2, Map: Identity, Weight: 1");
         bsmAdminPageEditWindow.cancel();
 
