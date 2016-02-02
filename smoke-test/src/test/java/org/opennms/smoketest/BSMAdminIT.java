@@ -38,6 +38,7 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.FixMethodOrder;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
 import org.openqa.selenium.By;
@@ -474,6 +475,7 @@ public class BSMAdminIT extends OpenNMSSeleniumTestCase {
     }
 
     @Test
+    @Ignore
     public void testCanCancelEdit() throws InterruptedException {
         // create service to edit
         final String serviceName = createUniqueBusinessServiceName();
