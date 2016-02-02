@@ -53,6 +53,7 @@ include::text/rest/snmptrapnbi-config.adoc[]
 include::text/rest/emailnbi-config.adoc[]
 include::text/rest/javamail-config.adoc[]
 include::text/rest/syslognbi-config.adoc[]
+include::text/bsm/bsm-development.adoc[]
 
 === ReST API Examples
 include::text/rest/examples.adoc[]
