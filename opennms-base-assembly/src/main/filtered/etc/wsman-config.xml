@@ -1,0 +1,3 @@
+<?xml version="1.0"?>
+<wsman-config retry="3" timeout="1500" ssl="true" strict-ssl="false" path="/wsman" username="root" password="calvin">
+</wsman-config>

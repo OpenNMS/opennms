@@ -65,6 +65,7 @@ import org.opennms.netmgt.config.collectd.jmx.JmxDatacollectionConfig;
 import org.opennms.netmgt.config.collectd.jmx.Mbeans;
 import org.opennms.netmgt.config.datacollection.DatacollectionConfig;
 import org.opennms.netmgt.config.datacollection.DatacollectionGroup;
+import org.opennms.netmgt.config.datacollection.ResourceTypes;
 import org.opennms.netmgt.config.destinationPaths.DestinationPaths;
 import org.opennms.netmgt.config.discovery.DiscoveryConfiguration;
 import org.opennms.netmgt.config.enlinkd.EnlinkdConfiguration;
@@ -114,6 +115,8 @@ import org.opennms.netmgt.config.vmware.cim.VmwareCimDatacollectionConfig;
 import org.opennms.netmgt.config.vmware.vijava.VmwareDatacollectionConfig;
 import org.opennms.netmgt.config.wmi.WmiConfig;
 import org.opennms.netmgt.config.wmi.WmiDatacollectionConfig;
+import org.opennms.netmgt.config.wsman.WsmanConfig;
+import org.opennms.netmgt.config.wsman.WsmanDatacollectionConfig;
 import org.opennms.netmgt.provision.persist.requisition.Requisition;
 import org.opennms.netmgt.xml.eventconf.Events;
 import org.springframework.core.io.FileSystemResource;
@@ -287,6 +290,7 @@ public class WillItUnmarshalIT {
         addFile(Source.EXAMPLE, "jvm-datacollection/jmx-datacollection/OpenNMS/1.10/OpenNMSBasic0.xml", Mbeans.class, Impl.JAXB);
         addFile(Source.EXAMPLE, "jvm-datacollection/jmx-datacollection/OpenNMS/1.10/OpenNMSLegacy.xml", Mbeans.class, Impl.JAXB);
         addFile(Source.CONFIG, "snmp-hardware-inventory-adapter-configuration.xml", HwInventoryAdapterConfiguration.class, Impl.JAXB);
+        addFile(Source.CONFIG, "wsman-config.xml", WsmanConfig.class, Impl.JAXB);
 
         // Add all event files
         for (final File file : FileUtils.listFiles(new File(getDaemonEtcDirectory(), "events"),
@@ -309,6 +313,27 @@ public class WillItUnmarshalIT {
             addFile(Source.ABSOLUTE,
                     file.getPath(),
                     DatacollectionGroup.class,
+                    Impl.JAXB);
+        }
+
+        // Add all wsman-datacollection configuration files
+        addFile(Source.CONFIG, "wsman-datacollection-config.xml", WsmanDatacollectionConfig.class, Impl.JAXB);
+        for (final File file : FileUtils.listFiles(new File(getDaemonEtcDirectory(), "wsman-datacollection"),
+                                                   new String[] { "xml" },
+                                                   true)) {
+            addFile(Source.ABSOLUTE,
+                    file.getPath(),
+                    WsmanDatacollectionConfig.class,
+                    Impl.JAXB);
+        }
+
+        // Add all resource-types configuration files
+        for (final File file : FileUtils.listFiles(new File(getDaemonEtcDirectory(), "resource-types"),
+                                                   new String[] { "xml" },
+                                                   true)) {
+            addFile(Source.ABSOLUTE,
+                    file.getPath(),
+                    ResourceTypes.class,
                     Impl.JAXB);
         }
     }

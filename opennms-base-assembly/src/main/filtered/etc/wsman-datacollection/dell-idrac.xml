@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<wsman-datacollection-config>
+    <group name="drac-system"
+           resource-uri="http://schemas.dell.com/wbem/wscim/1/cim-schema/2/root/dcim/DCIM_ComputerSystem"
+           resource-type="node">
+        <attrib name="OtherIdentifyingInfo" index-of="#IdentifyingDescriptions matches '.*ServiceTag'" alias="serviceTag" type="String"/>
+    </group>
+
+    <group name="drac-power-supply"
+           resource-uri="http://schemas.dmtf.org/wbem/wscim/1/*"
+           dialect="http://schemas.microsoft.com/wbem/wsman/1/WQL"
+           filter="select InputVoltage,InstanceID,PrimaryStatus,SerialNumber,TotalOutputPower from DCIM_PowerSupplyView where DetailedState != 'Absent'"
+           resource-type="dracPowerSupplyIndex">
+        <attrib name="InputVoltage" alias="inputVoltage" type="Gauge"/>
+        <attrib name="InstanceID" alias="instanceId" type="String"/>
+        <attrib name="PrimaryStatus" alias="primaryStatus" type="Gauge"/>
+        <attrib name="SerialNumber" alias="serialNumber" type="String"/>
+        <attrib name="TotalOutputPower" alias="totalOutputPower" type="Gauge"/>
+    </group>
+
+    <system-definition name="Dell iDRAC (All Version)">
+        <!--
+             Dell iDRAC 6 reports productVendor: 'Openwsman Project' and productVersion: '2.0.0' so
+             those devices need to be overriden via wsman-config.xml in order to match here.
+        -->
+        <rule>#productVendor matches '^Dell.*' and #productVersion matches '.*DRAC.*'</rule>
+        <include-group>drac-system</include-group>
+        <include-group>drac-power-supply</include-group>
+    </system-definition>
+</wsman-datacollection-config>
