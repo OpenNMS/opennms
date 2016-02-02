@@ -53,6 +53,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
+@Ignore
 public class BSMAdminIT extends OpenNMSSeleniumTestCase {
 
     private static final String BSM_ADMIN_URL = BASE_URL + "opennms/admin/bsm/adminpage.jsp";
@@ -475,7 +476,6 @@ public class BSMAdminIT extends OpenNMSSeleniumTestCase {
     }
 
     @Test
-    @Ignore
     public void testCanCancelEdit() throws InterruptedException {
         // create service to edit
         final String serviceName = createUniqueBusinessServiceName();
