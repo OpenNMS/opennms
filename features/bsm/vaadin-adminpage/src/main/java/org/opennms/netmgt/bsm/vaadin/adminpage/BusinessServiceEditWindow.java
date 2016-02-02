@@ -28,6 +28,8 @@
 
 package org.opennms.netmgt.bsm.vaadin.adminpage;
 
+import java.util.Objects;
+
 import org.opennms.netmgt.bsm.service.BusinessServiceManager;
 import org.opennms.netmgt.bsm.service.model.BusinessService;
 import org.opennms.netmgt.bsm.service.model.IpService;
@@ -35,6 +37,7 @@ import org.opennms.netmgt.bsm.service.model.edge.ChildEdge;
 import org.opennms.netmgt.bsm.service.model.edge.Edge;
 import org.opennms.netmgt.bsm.service.model.edge.IpServiceEdge;
 import org.opennms.netmgt.bsm.service.model.edge.ReductionKeyEdge;
+import org.opennms.netmgt.bsm.service.model.functions.map.SetTo;
 import org.opennms.netmgt.bsm.service.model.functions.reduce.MostCritical;
 import org.opennms.netmgt.bsm.service.model.functions.reduce.Threshold;
 import org.opennms.netmgt.bsm.service.model.mapreduce.ReductionFunction;
@@ -106,7 +109,7 @@ public class BusinessServiceEditWindow extends Window {
         setClosable(false);
         setResizable(false);
         setWidth(50, Unit.PERCENTAGE);
-        setHeight(85, Unit.PERCENTAGE);
+        setHeight(75, Unit.PERCENTAGE);
 
         /**
          * construct the main layout
@@ -124,6 +127,10 @@ public class BusinessServiceEditWindow extends Window {
         saveButton.addClickListener(UIHelper.getCurrent(TransactionAwareUI.class).wrapInTransactionProxy(new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent event) {
+                if (!m_thresholdTextField.isValid() ||
+                    !m_nameTextField.isValid())
+                    return;
+
                 businessService.setName(m_nameTextField.getValue().trim());
 
                 final ReductionFunction reductionFunction;
@@ -160,6 +167,7 @@ public class BusinessServiceEditWindow extends Window {
          * add the buttons to a HorizontalLayout
          */
         HorizontalLayout buttonLayout = new HorizontalLayout();
+        buttonLayout.setSpacing(true);
         buttonLayout.addComponent(saveButton);
         buttonLayout.addComponent(cancelButton);
 
@@ -170,6 +178,7 @@ public class BusinessServiceEditWindow extends Window {
         m_nameTextField.setId("nameField");
         m_nameTextField.setValue(businessService.getName());
         m_nameTextField.setWidth(100, Unit.PERCENTAGE);
+        m_nameTextField.setRequired(true);
         verticalLayout.addComponent(m_nameTextField);
 
         /**
@@ -192,23 +201,24 @@ public class BusinessServiceEditWindow extends Window {
          * setting the captions for items
          */
         m_reduceFunctionNativeSelect.getItemIds().forEach(itemId -> m_reduceFunctionNativeSelect.setItemCaption(itemId, ((Class<?>) itemId).getSimpleName()));
-        m_reduceFunctionNativeSelect.setValue(MostCritical.class);
 
         verticalLayout.addComponent(m_reduceFunctionNativeSelect);
 
         m_thresholdTextField = new TextField("Threshold");
-        m_thresholdTextField.setRequired(true);
+        m_thresholdTextField.setRequired(false);
         m_thresholdTextField.setEnabled(false);
         m_thresholdTextField.setImmediate(true);
         m_thresholdTextField.setWidth(100.0f, Unit.PERCENTAGE);
         m_thresholdTextField.setValue("0.0");
         m_thresholdTextField.addValidator(v -> {
-            try {
-                if (Float.parseFloat(m_thresholdTextField.getValue()) <= 0.0f) {
-                    throw new NumberFormatException();
+            if (m_thresholdTextField.isEnabled()) {
+                try {
+                    if (Float.parseFloat(m_thresholdTextField.getValue()) <= 0.0f) {
+                        throw new NumberFormatException();
+                    }
+                } catch (final NumberFormatException e) {
+                    throw new Validator.InvalidValueException("Threshold must be a positive number");
                 }
-            } catch (final NumberFormatException e) {
-                throw new Validator.InvalidValueException("Threshold must be a positive number");
             }
         });
 
@@ -216,7 +226,18 @@ public class BusinessServiceEditWindow extends Window {
 
         m_reduceFunctionNativeSelect.addValueChangeListener(ev -> {
             m_thresholdTextField.setEnabled(m_reduceFunctionNativeSelect.getValue() == Threshold.class);
+            m_thresholdTextField.setRequired(m_reduceFunctionNativeSelect.getValue() == Threshold.class);
         });
+
+        if (Objects.isNull(businessService.getReduceFunction())) {
+            m_reduceFunctionNativeSelect.setValue(MostCritical.class);
+        } else {
+            m_reduceFunctionNativeSelect.setValue(businessService.getReduceFunction().getClass());
+
+            if (businessService.getReduceFunction().getClass()==Threshold.class) {
+                m_thresholdTextField.setValue(String.valueOf(((Threshold) businessService.getReduceFunction()).getThreshold()));
+            }
+        }
 
         /**
          * create the edges list box
@@ -229,7 +250,6 @@ public class BusinessServiceEditWindow extends Window {
         m_edgesListSelect.setMultiSelect(false);
         refreshEdges();
 
-
         /**
          * wrap the reduction key list select box in a Vaadin Panel
          */
@@ -238,11 +258,12 @@ public class BusinessServiceEditWindow extends Window {
         edgesListAndButtonLayout.setWidth(100.0f, Unit.PERCENTAGE);
 
         VerticalLayout edgesButtonLayout = new VerticalLayout();
-        edgesButtonLayout.setWidth(140.0f, Unit.PIXELS);
+        edgesButtonLayout.setWidth(100.0f, Unit.PIXELS);
+        edgesButtonLayout.setSpacing(true);
 
-        Button addEdgeButton = new Button("Add");
+        Button addEdgeButton = new Button("Add Edge");
         addEdgeButton.setId("addEdgeButton");
-        addEdgeButton.setWidth(140.0f, Unit.PIXELS);
+        addEdgeButton.setWidth(100.0f, Unit.PIXELS);
         addEdgeButton.addStyleName("small");
         edgesButtonLayout.addComponent(addEdgeButton);
         addEdgeButton.addClickListener((Button.ClickListener) event -> {
@@ -251,10 +272,10 @@ public class BusinessServiceEditWindow extends Window {
             this.getUI().addWindow(window);
         });
 
-        final Button removeEdgeButton = new Button("Remove");
+        final Button removeEdgeButton = new Button("Remove Edge");
         removeEdgeButton.setId("removeEdgeButton");
         removeEdgeButton.setEnabled(false);
-        removeEdgeButton.setWidth(140.0f, Unit.PIXELS);
+        removeEdgeButton.setWidth(100.0f, Unit.PIXELS);
         removeEdgeButton.addStyleName("small");
         edgesButtonLayout.addComponent(removeEdgeButton);
 
@@ -339,7 +360,10 @@ public class BusinessServiceEditWindow extends Window {
         return String.format("%s: %s, Map: %s, Weight: %s",
                 edgePrefix,
                 itemDescription,
-                edge.getMapFunction().getClass().getSimpleName(),
+                edge.getMapFunction().getClass()== SetTo.class
+                        ? String.format("%s (%s)", edge.getMapFunction().getClass().getSimpleName(),
+                                                   ((SetTo)edge.getMapFunction()).getStatus())
+                        : edge.getMapFunction().getClass().getSimpleName(),
                 edge.getWeight());
     }
 }
