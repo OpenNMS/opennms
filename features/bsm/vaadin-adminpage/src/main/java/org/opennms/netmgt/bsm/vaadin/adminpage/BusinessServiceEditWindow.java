@@ -213,7 +213,8 @@ public class BusinessServiceEditWindow extends Window {
         m_thresholdTextField.addValidator(v -> {
             if (m_thresholdTextField.isEnabled()) {
                 try {
-                    if (Float.parseFloat(m_thresholdTextField.getValue()) <= 0.0f) {
+                    final float value = Float.parseFloat(m_thresholdTextField.getValue());
+                    if (0.0f >= value || value > 1.0) {
                         throw new NumberFormatException();
                     }
                 } catch (final NumberFormatException e) {
