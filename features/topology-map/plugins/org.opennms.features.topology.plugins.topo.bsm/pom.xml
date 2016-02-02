@@ -23,7 +23,6 @@
       <version>${project.version}</version>
       <scope>provided</scope>
     </dependency>
-    <!-- TODO MVR generalize the browsers API ? -->
     <dependency>
       <groupId>org.opennms.features.topology.plugins</groupId>
       <artifactId>browsers</artifactId>
@@ -33,7 +32,7 @@
       <groupId>org.opennms.features.bsm</groupId>
       <artifactId>org.opennms.features.bsm.service.api</artifactId>
       <version>${project.version}</version>
-      <!--<scope>provided</scope>-->
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms.features.vaadin-components</groupId>
@@ -78,6 +77,17 @@
       <artifactId>org.opennms.core.test-api.lib</artifactId>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>org.opennms.features.bsm</groupId>
+      <artifactId>org.opennms.features.bsm.service.impl</artifactId>
+      <version>${project.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.bsm</groupId>
+      <artifactId>test-util</artifactId>
+      <version>${project.version}</version>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
-
 </project>

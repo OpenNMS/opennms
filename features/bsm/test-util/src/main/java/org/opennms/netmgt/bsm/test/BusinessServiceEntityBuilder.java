@@ -18,7 +18,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
- * http://www.gnu.org/licenses/
+ *      http://www.gnu.org/licenses/
  *
  * For more information contact:
  *     OpenNMS(R) Licensing <license@opennms.org>
@@ -28,23 +28,37 @@
 
 package org.opennms.netmgt.bsm.test;
 
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.opennms.netmgt.bsm.persistence.api.BusinessServiceEntity;
+import org.opennms.netmgt.bsm.persistence.api.functions.map.AbstractMapFunctionEntity;
+import org.opennms.netmgt.bsm.persistence.api.functions.reduce.AbstractReductionFunctionEntity;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 
 public class BusinessServiceEntityBuilder {
 
+    private class EdgeDefinition<V> {
+        private final V value;
+        private final AbstractMapFunctionEntity mapFunction;
+        private final int weight;
+
+        public EdgeDefinition(V value, AbstractMapFunctionEntity mapFunction, int weight) {
+            this.value = value;
+            this.mapFunction = mapFunction;
+            this.weight = weight;
+        }
+    }
+
     private String name;
     private final Map<String, String> attributes = new HashMap<>();
-    private Set<BusinessServiceEntity> children = new HashSet<>();
-    private Set<BusinessServiceEntity> parents = new HashSet<>();
-    private Set<OnmsMonitoredService> ipServices = new HashSet<>();
-    private Set<String> reductionKeys = new HashSet<>();
+    private List<EdgeDefinition<BusinessServiceEntity>> children = new ArrayList<>();
+    private List<EdgeDefinition<OnmsMonitoredService>> ipServices = new ArrayList<>();
+    private List<EdgeDefinition<String>> reductionKeys = new ArrayList<>();
     private Long id;
+    private AbstractReductionFunctionEntity reduceFunction;
 
     public BusinessServiceEntityBuilder name(String name) {
         this.name = name;
@@ -53,16 +67,6 @@ public class BusinessServiceEntityBuilder {
 
     public BusinessServiceEntityBuilder addAttribute(String key, String value) {
         attributes.put(key, value);
-        return this;
-    }
-
-    public BusinessServiceEntityBuilder addParent(BusinessServiceEntity parent) {
-        parents.add(parent);
-        return this;
-    }
-
-    public BusinessServiceEntityBuilder addChildren(BusinessServiceEntity children) {
-       this.children.add(children);
         return this;
     }
 
@@ -75,21 +79,45 @@ public class BusinessServiceEntityBuilder {
         BusinessServiceEntity entity = new BusinessServiceEntity();
         entity.setName(name);
         entity.setId(id);
-        entity.setIpServices(ipServices);
         entity.setAttributes(attributes);
-        entity.setChildServices(children);
-        entity.setParentServices(parents);
-        entity.setReductionKeys(reductionKeys);
+        if (reduceFunction != null) {
+            entity.setReductionFunction(reduceFunction);
+        }
+        ipServices.forEach(e -> entity.addIpServiceEdge(e.value, e.mapFunction, e.weight));
+        children.forEach(e -> entity.addChildServiceEdge(e.value, e.mapFunction, e.weight));
+        reductionKeys.forEach(e -> entity.addReductionKeyEdge(e.value, e.mapFunction, e.weight));
         return entity;
     }
 
-    public BusinessServiceEntityBuilder addIpService(OnmsMonitoredService ipService) {
-        ipServices.add(ipService);
+    public BusinessServiceEntityBuilder addIpService(OnmsMonitoredService ipService, AbstractMapFunctionEntity mapFunctionEntity) {
+        return addIpService(ipService, mapFunctionEntity, 1);
+    }
+
+    public BusinessServiceEntityBuilder addIpService(OnmsMonitoredService ipService, AbstractMapFunctionEntity mapFunctionEntity, int weight) {
+        ipServices.add(new EdgeDefinition<>(ipService, mapFunctionEntity, weight));
         return this;
     }
 
-    public BusinessServiceEntityBuilder addReductionKey(String reductionKey) {
-        reductionKeys.add(reductionKey);
+    public BusinessServiceEntityBuilder addReductionKey(String reductionKey, AbstractMapFunctionEntity mapFunctionEntity) {
+        return addReductionKey(reductionKey, mapFunctionEntity, 1);
+    }
+
+    public BusinessServiceEntityBuilder addReductionKey(String reductionKey, AbstractMapFunctionEntity mapFunctionEntity, int weight) {
+        reductionKeys.add(new EdgeDefinition<>(reductionKey, mapFunctionEntity, weight));
+        return this;
+    }
+
+    public BusinessServiceEntityBuilder addChildren(BusinessServiceEntity child, AbstractMapFunctionEntity mapFunctionEntity) {
+        return addChildren(child, mapFunctionEntity, 1);
+    }
+
+    public BusinessServiceEntityBuilder addChildren(BusinessServiceEntity child, AbstractMapFunctionEntity mapFunctionEntity, int weight) {
+        children.add(new EdgeDefinition<>(child, mapFunctionEntity, weight));
+        return this;
+    }
+
+    public BusinessServiceEntityBuilder reduceFunction(AbstractReductionFunctionEntity reductionFunction) {
+        this.reduceFunction = reductionFunction;
         return this;
     }
 }

@@ -18,7 +18,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
- * http://www.gnu.org/licenses/
+ *      http://www.gnu.org/licenses/
  *
  * For more information contact:
  *     OpenNMS(R) Licensing <license@opennms.org>
@@ -28,27 +28,32 @@
 
 package org.opennms.netmgt.bsm.vaadin.adminpage;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.function.Consumer;
+import java.util.Objects;
 
+import org.opennms.netmgt.bsm.service.BusinessServiceManager;
 import org.opennms.netmgt.bsm.service.model.BusinessService;
 import org.opennms.netmgt.bsm.service.model.IpService;
-import org.opennms.netmgt.vaadin.core.StringInputDialogWindow;
+import org.opennms.netmgt.bsm.service.model.edge.ChildEdge;
+import org.opennms.netmgt.bsm.service.model.edge.Edge;
+import org.opennms.netmgt.bsm.service.model.edge.IpServiceEdge;
+import org.opennms.netmgt.bsm.service.model.edge.ReductionKeyEdge;
+import org.opennms.netmgt.bsm.service.model.functions.map.SetTo;
+import org.opennms.netmgt.bsm.service.model.functions.reduce.MostCritical;
+import org.opennms.netmgt.bsm.service.model.functions.reduce.Threshold;
+import org.opennms.netmgt.bsm.service.model.mapreduce.ReductionFunction;
 import org.opennms.netmgt.vaadin.core.TransactionAwareUI;
 import org.opennms.netmgt.vaadin.core.UIHelper;
 
+import com.google.common.base.Throwables;
+import com.google.common.collect.ImmutableList;
 import com.vaadin.data.Property;
-import com.vaadin.data.util.BeanItemContainer;
-import com.vaadin.data.validator.AbstractStringValidator;
-import com.vaadin.ui.AbstractSelect;
+import com.vaadin.data.Validator;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.ListSelect;
+import com.vaadin.ui.NativeSelect;
 import com.vaadin.ui.TextField;
-import com.vaadin.ui.TwinColSelect;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 
@@ -60,61 +65,39 @@ import com.vaadin.ui.Window;
  * @author Christian Pape <christian@opennms.org>
  */
 public class BusinessServiceEditWindow extends Window {
-    /**
-     * the parent main layout
-     */
-    private BusinessServiceMainLayout m_businessServiceMainLayout;
+
+    private final BusinessService m_businessService;
+
     /**
      * the name textfield
      */
     private TextField m_nameTextField;
     /**
-     * the twin selection box used for selecting or deselecting IP services
+     * Reduce function
      */
-    private TwinColSelect m_ipServicesTwinColSelect;
+    private NativeSelect m_reduceFunctionNativeSelect;
     /**
-     * the Business Services twin selection box
+     * the threshold textfield
      */
-    private TwinColSelect m_businessServicesTwinColSelect;
-    /**
-     * bean item container for IP services DTOs
-     */
-    private BeanItemContainer<IpService> m_ipServicesContainer = new BeanItemContainer<>(IpService.class);
-    /**
-     * bean item container for Business Services DTOs
-     */
-    private BeanItemContainer<BusinessService> m_businessServicesContainer = new BeanItemContainer<>(BusinessService.class);
+    private TextField m_thresholdTextField;
     /**
      * list of reduction keys
      */
-    private ListSelect m_reductionKeyListSelect;
+    private ListSelect m_edgesListSelect;
 
     /**
      * Constructor
      *
      * @param businessService the Business Service DTO instance to be configured
-     * @param businessServiceMainLayout the parent main layout
      */
-    public BusinessServiceEditWindow(BusinessService businessService, BusinessServiceMainLayout businessServiceMainLayout) {
+    public BusinessServiceEditWindow(BusinessService businessService,
+                                     BusinessServiceManager businessServiceManager) {
         /**
          * set window title...
          */
         super("Business Service Edit");
 
-        /**
-         * set the member field...
-         */
-        this.m_businessServiceMainLayout = businessServiceMainLayout;
-
-        /**
-         * ...and query for IP services.
-         */
-        m_ipServicesContainer.addAll(m_businessServiceMainLayout.getBusinessServiceManager().getAllIpServices());
-
-        /**
-         * ...and query for Business Services. Only add the Business Services that will not result in a loop...
-         */
-        m_businessServicesContainer.addAll(m_businessServiceMainLayout.getBusinessServiceManager().getFeasibleChildServices(businessService));
+        m_businessService = businessService;
 
         /**
          * ...and basic properties
@@ -122,8 +105,8 @@ public class BusinessServiceEditWindow extends Window {
         setModal(true);
         setClosable(false);
         setResizable(false);
-        setWidth(60, Unit.PERCENTAGE);
-        setHeight(85, Unit.PERCENTAGE);
+        setWidth(50, Unit.PERCENTAGE);
+        setHeight(75, Unit.PERCENTAGE);
 
         /**
          * construct the main layout
@@ -141,13 +124,27 @@ public class BusinessServiceEditWindow extends Window {
         saveButton.addClickListener(UIHelper.getCurrent(TransactionAwareUI.class).wrapInTransactionProxy(new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent event) {
+                if (!m_thresholdTextField.isValid() ||
+                    !m_nameTextField.isValid())
+                    return;
+
                 businessService.setName(m_nameTextField.getValue().trim());
-                businessService.setIpServices((Set<IpService>) m_ipServicesTwinColSelect.getValue());
-                businessService.setChildServices((Set<BusinessService>) m_businessServicesTwinColSelect.getValue());
-                businessService.setReductionKeys(new HashSet<>((Collection<String>)m_reductionKeyListSelect.getItemIds()));
+
+                final ReductionFunction reductionFunction;
+
+                try {
+                    reductionFunction = ((Class<? extends ReductionFunction>) m_reduceFunctionNativeSelect.getValue()).newInstance();
+                } catch (final InstantiationException | IllegalAccessException e) {
+                    throw Throwables.propagate(e);
+                }
+
+                if (reductionFunction instanceof Threshold) {
+                    ((Threshold) reductionFunction).setThreshold(Float.parseFloat(m_thresholdTextField.getValue()));
+                }
+
+                businessService.setReduceFunction(reductionFunction);
                 businessService.save();
                 close();
-                businessServiceMainLayout.refreshTable();
             }
         }));
 
@@ -167,6 +164,7 @@ public class BusinessServiceEditWindow extends Window {
          * add the buttons to a HorizontalLayout
          */
         HorizontalLayout buttonLayout = new HorizontalLayout();
+        buttonLayout.setSpacing(true);
         buttonLayout.addComponent(saveButton);
         buttonLayout.addComponent(cancelButton);
 
@@ -177,135 +175,128 @@ public class BusinessServiceEditWindow extends Window {
         m_nameTextField.setId("nameField");
         m_nameTextField.setValue(businessService.getName());
         m_nameTextField.setWidth(100, Unit.PERCENTAGE);
+        m_nameTextField.setRequired(true);
         verticalLayout.addComponent(m_nameTextField);
 
         /**
-         * create the IP-Services selection box
+         * create the reduce function component
          */
-        m_ipServicesTwinColSelect = new TwinColSelect();
-        m_ipServicesTwinColSelect.setId("ipServiceSelect");
-        m_ipServicesTwinColSelect.setWidth(99.0f, Unit.PERCENTAGE);
-        m_ipServicesTwinColSelect.setLeftColumnCaption("Available IP-Services");
-        m_ipServicesTwinColSelect.setRightColumnCaption("Selected IP-Services");
-        m_ipServicesTwinColSelect.setRows(8);
-        m_ipServicesTwinColSelect.setNewItemsAllowed(false);
-        m_ipServicesTwinColSelect.setContainerDataSource(m_ipServicesContainer);
-        m_ipServicesTwinColSelect.setValue(businessService.getIpServices());
-        // manually set the item caption, otherwise .toString() is used which looks weired
-        m_ipServicesTwinColSelect.setItemCaptionMode(AbstractSelect.ItemCaptionMode.EXPLICIT_DEFAULTS_ID);
-        m_ipServicesContainer.getItemIds().forEach(new Consumer<IpService>() {
-            @Override
-            public void accept(IpService ipServiceDTO) {
-                m_ipServicesTwinColSelect.setItemCaption(ipServiceDTO, String.format("%s/%s/%s", ipServiceDTO.getNodeLabel(), ipServiceDTO.getIpAddress(), ipServiceDTO.getServiceName()));
-            }
-        });
+
+        m_reduceFunctionNativeSelect = new NativeSelect("Reduce Function",
+                                                        ImmutableList.builder()
+                                                                .add(MostCritical.class)
+                                                                .add(Threshold.class)
+                                                                .build());
+        m_reduceFunctionNativeSelect.setId("reduceFunctionNativeSelect");
+        m_reduceFunctionNativeSelect.setWidth(100.0f, Unit.PERCENTAGE);
+        m_reduceFunctionNativeSelect.setNullSelectionAllowed(false);
+        m_reduceFunctionNativeSelect.setMultiSelect(false);
+        m_reduceFunctionNativeSelect.setImmediate(true);
+        m_reduceFunctionNativeSelect.setNewItemsAllowed(false);
 
         /**
-         * create the Business Services selection box
+         * setting the captions for items
          */
-        m_businessServicesTwinColSelect = new TwinColSelect();
-        m_businessServicesTwinColSelect.setId("businessServiceSelect");
-        m_businessServicesTwinColSelect.setWidth(99.0f, Unit.PERCENTAGE);
-        m_businessServicesTwinColSelect.setLeftColumnCaption("Available Business Services");
-        m_businessServicesTwinColSelect.setRightColumnCaption("Selected Business Services");
-        m_businessServicesTwinColSelect.setRows(8);
+        m_reduceFunctionNativeSelect.getItemIds().forEach(itemId -> m_reduceFunctionNativeSelect.setItemCaption(itemId, ((Class<?>) itemId).getSimpleName()));
 
-        m_businessServicesTwinColSelect.setContainerDataSource(m_businessServicesContainer);
-        m_businessServicesTwinColSelect.setValue(businessService.getChildServices());
+        verticalLayout.addComponent(m_reduceFunctionNativeSelect);
 
-        m_businessServicesTwinColSelect.setItemCaptionMode(AbstractSelect.ItemCaptionMode.PROPERTY);
-        m_businessServicesTwinColSelect.setItemCaptionPropertyId("name");
-
-        /**
-         * create the reduction key list box
-         */
-        m_reductionKeyListSelect = new ListSelect("Reduction Keys");
-        m_reductionKeyListSelect.setId("reductionKeySelect");
-        m_reductionKeyListSelect.setWidth(98.0f, Unit.PERCENTAGE);
-        m_reductionKeyListSelect.setRows(8);
-        m_reductionKeyListSelect.setNullSelectionAllowed(false);
-        m_reductionKeyListSelect.setMultiSelect(false);
-        m_reductionKeyListSelect.addItems(businessService.getReductionKeys());
-
-        /**
-         * wrap the reduction key list select box in a Vaadin Panel
-         */
-        verticalLayout.addComponent(m_ipServicesTwinColSelect);
-        verticalLayout.addComponent(m_businessServicesTwinColSelect);
-
-        HorizontalLayout reductionKeyListAndButtonLayout = new HorizontalLayout();
-
-        reductionKeyListAndButtonLayout.setWidth(100.0f, Unit.PERCENTAGE);
-
-        VerticalLayout reductionKeyButtonLayout = new VerticalLayout();
-        reductionKeyButtonLayout.setWidth(140.0f, Unit.PIXELS);
-
-        Button addReductionKeyBtn = new Button("Add reduction key");
-        addReductionKeyBtn.setWidth(140.0f, Unit.PIXELS);
-        addReductionKeyBtn.addStyleName("small");
-        reductionKeyButtonLayout.addComponent(addReductionKeyBtn);
-        addReductionKeyBtn.addClickListener(new Button.ClickListener() {
-            @Override
-            public void buttonClick(Button.ClickEvent event) {
-
-                new StringInputDialogWindow()
-                        .withCaption("Enter Reduction Key")
-                        .withFieldName("Reduction Key")
-                        .withOkLabel("Save")
-                        .withCancelLabel("Cancel")
-                        .withValidator(new AbstractStringValidator("Input must not be empty") {
-                            @Override
-                            protected boolean isValidValue(String s) {
-                                return (!"".equals(s));
-                            }
-                        })
-                        .withOkAction(new StringInputDialogWindow.Action() {
-                            @Override
-                            public void execute(StringInputDialogWindow window) {
-                                m_reductionKeyListSelect.addItem(window.getValue());
-                            }
-                        }).open();
-            }
-        });
-
-        final Button removeReductionKeyBtn = new Button("Remove reduction key");
-        removeReductionKeyBtn.setEnabled(false);
-        removeReductionKeyBtn.setWidth(140.0f, Unit.PIXELS);
-        removeReductionKeyBtn.addStyleName("small");
-        reductionKeyButtonLayout.addComponent(removeReductionKeyBtn);
-
-        m_reductionKeyListSelect.addValueChangeListener(new Property.ValueChangeListener() {
-            @Override
-            public void valueChange(Property.ValueChangeEvent event) {
-                removeReductionKeyBtn.setEnabled(event.getProperty().getValue() != null);
-            }
-        });
-
-        removeReductionKeyBtn.addClickListener(new Button.ClickListener() {
-            @Override
-            public void buttonClick(Button.ClickEvent event) {
-                if (m_reductionKeyListSelect.getValue() != null) {
-                    m_reductionKeyListSelect.removeItem(m_reductionKeyListSelect.getValue());
-                    removeReductionKeyBtn.setEnabled(false);
+        m_thresholdTextField = new TextField("Threshold");
+        m_thresholdTextField.setId("thresholdTextField");
+        m_thresholdTextField.setRequired(false);
+        m_thresholdTextField.setEnabled(false);
+        m_thresholdTextField.setImmediate(true);
+        m_thresholdTextField.setWidth(100.0f, Unit.PERCENTAGE);
+        m_thresholdTextField.setValue("0.0");
+        m_thresholdTextField.addValidator(v -> {
+            if (m_thresholdTextField.isEnabled()) {
+                try {
+                    final float value = Float.parseFloat(m_thresholdTextField.getValue());
+                    if (0.0f >= value || value > 1.0) {
+                        throw new NumberFormatException();
+                    }
+                } catch (final NumberFormatException e) {
+                    throw new Validator.InvalidValueException("Threshold must be a positive number");
                 }
             }
         });
 
-        Button editPropagationRulesBtn = new Button("Edit propagation rules");
-        editPropagationRulesBtn.setWidth(140.0f, Unit.PIXELS);
-        editPropagationRulesBtn.addStyleName("small");
-        reductionKeyButtonLayout.addComponent(editPropagationRulesBtn);
+        verticalLayout.addComponent(m_thresholdTextField);
+
+        m_reduceFunctionNativeSelect.addValueChangeListener(ev -> {
+            m_thresholdTextField.setEnabled(m_reduceFunctionNativeSelect.getValue() == Threshold.class);
+            m_thresholdTextField.setRequired(m_reduceFunctionNativeSelect.getValue() == Threshold.class);
+        });
+
+        if (Objects.isNull(businessService.getReduceFunction())) {
+            m_reduceFunctionNativeSelect.setValue(MostCritical.class);
+        } else {
+            m_reduceFunctionNativeSelect.setValue(businessService.getReduceFunction().getClass());
+
+            if (businessService.getReduceFunction().getClass()==Threshold.class) {
+                m_thresholdTextField.setValue(String.valueOf(((Threshold) businessService.getReduceFunction()).getThreshold()));
+            }
+        }
 
         /**
-         * we're not using this button yet, so disable it
+         * create the edges list box
          */
-        editPropagationRulesBtn.setEnabled(false);
+        m_edgesListSelect = new ListSelect("Edges");
+        m_edgesListSelect.setId("edgeList");
+        m_edgesListSelect.setWidth(100.0f, Unit.PERCENTAGE);
+        m_edgesListSelect.setRows(20);
+        m_edgesListSelect.setNullSelectionAllowed(false);
+        m_edgesListSelect.setMultiSelect(false);
+        refreshEdges();
 
-        reductionKeyListAndButtonLayout.addComponent(m_reductionKeyListSelect);
-        reductionKeyListAndButtonLayout.setExpandRatio(m_reductionKeyListSelect, 1.0f);
-        reductionKeyListAndButtonLayout.addComponent(reductionKeyButtonLayout);
-        reductionKeyListAndButtonLayout.setComponentAlignment(reductionKeyButtonLayout, Alignment.BOTTOM_CENTER);
-        verticalLayout.addComponent(reductionKeyListAndButtonLayout);
+        /**
+         * wrap the reduction key list select box in a Vaadin Panel
+         */
+        HorizontalLayout edgesListAndButtonLayout = new HorizontalLayout();
+
+        edgesListAndButtonLayout.setWidth(100.0f, Unit.PERCENTAGE);
+
+        VerticalLayout edgesButtonLayout = new VerticalLayout();
+        edgesButtonLayout.setWidth(100.0f, Unit.PIXELS);
+        edgesButtonLayout.setSpacing(true);
+
+        Button addEdgeButton = new Button("Add Edge");
+        addEdgeButton.setId("addEdgeButton");
+        addEdgeButton.setWidth(100.0f, Unit.PIXELS);
+        addEdgeButton.addStyleName("small");
+        edgesButtonLayout.addComponent(addEdgeButton);
+        addEdgeButton.addClickListener((Button.ClickListener) event -> {
+            final BusinessServiceEdgeEditWindow window = new BusinessServiceEdgeEditWindow(businessService, businessServiceManager);
+            window.addCloseListener(e -> refreshEdges());
+            this.getUI().addWindow(window);
+        });
+
+        final Button removeEdgeButton = new Button("Remove Edge");
+        removeEdgeButton.setId("removeEdgeButton");
+        removeEdgeButton.setEnabled(false);
+        removeEdgeButton.setWidth(100.0f, Unit.PIXELS);
+        removeEdgeButton.addStyleName("small");
+        edgesButtonLayout.addComponent(removeEdgeButton);
+
+        m_edgesListSelect.addValueChangeListener((Property.ValueChangeListener) event -> removeEdgeButton.setEnabled(event.getProperty().getValue() != null));
+
+        removeEdgeButton.addClickListener((Button.ClickListener) event -> {
+            if (m_edgesListSelect.getValue() != null) {
+                removeEdgeButton.setEnabled(false);
+
+                ((Edge) m_edgesListSelect.getValue()).delete();
+
+                refreshEdges();
+            }
+        });
+
+        edgesListAndButtonLayout.setSpacing(true);
+        edgesListAndButtonLayout.addComponent(m_edgesListSelect);
+        edgesListAndButtonLayout.setExpandRatio(m_edgesListSelect, 1.0f);
+
+        edgesListAndButtonLayout.addComponent(edgesButtonLayout);
+        edgesListAndButtonLayout.setComponentAlignment(edgesButtonLayout, Alignment.BOTTOM_CENTER);
+        verticalLayout.addComponent(edgesListAndButtonLayout);
 
         /**
          * now add the button layout to the main layout
@@ -319,5 +310,60 @@ public class BusinessServiceEditWindow extends Window {
          * set the window's content
          */
         setContent(verticalLayout);
+    }
+
+    private void refreshEdges() {
+        m_edgesListSelect.removeAllItems();
+        m_edgesListSelect.addItems(m_businessService.getEdges());
+        m_edgesListSelect.getItemIds().forEach(item -> {
+            m_edgesListSelect.setItemCaption(item, describeEdge((Edge) item));
+        });
+    }
+
+    public static String describeBusinessService(final BusinessService businessService) {
+        return businessService.getName();
+    }
+
+    public static String describeIpService(final IpService ipService) {
+        return String.format("%s %s %s",
+                             ipService.getNodeLabel(),
+                             ipService.getIpAddress(),
+                             ipService.getServiceName());
+    }
+
+    private static String getEdgePrefix(Edge edge) {
+        switch (edge.getType()) {
+            case CHILD_SERVICE: return "Child";
+            case IP_SERVICE:    return "IPSvc";
+            case REDUCTION_KEY: return "ReKey";
+            default: throw new IllegalArgumentException();
+        }
+    }
+
+    private static String getChildDescription(Edge edge) {
+        switch (edge.getType()) {
+            case CHILD_SERVICE: return describeBusinessService(((ChildEdge) edge).getChild());
+            case IP_SERVICE:    return describeIpService(((IpServiceEdge) edge).getIpService());
+            case REDUCTION_KEY: return describeReductionKey(((ReductionKeyEdge) edge).getReductionKey());
+            default: throw new IllegalArgumentException();
+        }
+
+    }
+
+    public static String describeReductionKey(final String reductionKey) {
+        return reductionKey;
+    }
+
+    public static String describeEdge(final Edge edge) {
+        String edgePrefix = getEdgePrefix(edge);
+        String itemDescription = getChildDescription(edge);
+        return String.format("%s: %s, Map: %s, Weight: %s",
+                edgePrefix,
+                itemDescription,
+                edge.getMapFunction().getClass()== SetTo.class
+                        ? String.format("%s (%s)", edge.getMapFunction().getClass().getSimpleName(),
+                                                   ((SetTo)edge.getMapFunction()).getStatus())
+                        : edge.getMapFunction().getClass().getSimpleName(),
+                edge.getWeight());
     }
 }

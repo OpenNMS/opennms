@@ -18,7 +18,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
- * http://www.gnu.org/licenses/
+ *      http://www.gnu.org/licenses/
  *
  * For more information contact:
  *     OpenNMS(R) Licensing <license@opennms.org>
@@ -29,22 +29,22 @@
 package org.opennms.netmgt.bsm.service.internal;
 
 import java.util.Collections;
+import java.util.Objects;
 import java.util.Set;
 
-import org.opennms.netmgt.bsm.persistence.api.OnmsMonitoredServiceHelper;
+import org.opennms.netmgt.bsm.persistence.api.ReductionKeyHelper;
+import org.opennms.netmgt.bsm.service.BusinessServiceManager;
 import org.opennms.netmgt.bsm.service.model.IpService;
+import org.opennms.netmgt.bsm.service.model.Status;
 import org.opennms.netmgt.model.OnmsMonitoredService;
-import org.opennms.netmgt.model.OnmsSeverity;
-
-import com.google.common.base.Objects;
 
 public class IpServiceImpl implements IpService {
 
-    private final BusinessServiceManagerImpl m_manager;
+    private final BusinessServiceManager m_manager;
 
     private final OnmsMonitoredService m_entity;
 
-    public IpServiceImpl(final BusinessServiceManagerImpl manager,
+    public IpServiceImpl(final BusinessServiceManager manager,
                          final OnmsMonitoredService entity) {
         this.m_manager = manager;
         this.m_entity = entity;
@@ -66,7 +66,10 @@ public class IpServiceImpl implements IpService {
 
     @Override
     public String getNodeLabel() {
-        return m_manager.getNodeDao().get(m_entity.getNodeId()).getLabel();
+        if (m_entity.getNodeId() != null) {
+            return m_manager.getNodeById(m_entity.getNodeId()).getLabel();
+        }
+        return null;
     }
 
     @Override
@@ -76,34 +79,26 @@ public class IpServiceImpl implements IpService {
 
     @Override
     public Set<String> getReductionKeys() {
-        return Collections.unmodifiableSet(OnmsMonitoredServiceHelper.getReductionKeys(m_entity));
+        return Collections.unmodifiableSet(ReductionKeyHelper.getReductionKeys(m_entity));
     }
 
     @Override
-    public OnmsSeverity getOperationalStatus() {
+    public Status getOperationalStatus() {
         return m_manager.getOperationalStatusForIPService(this);
     }
 
     @Override
     public boolean equals(Object obj) {
-        if (obj == null) {
-            return false;
-        }
-        if (obj == this) {
-            return true;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-
+        if (obj == null) return false;
+        if (obj == this) return true;
+        if (getClass() != obj.getClass()) return false;
         final IpServiceImpl other = (IpServiceImpl) obj;
-
-        return Objects.equal(this.getId(), other.getId());
+        return Objects.equals(getEntity(), other.getEntity());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(this.getId());
+        return getEntity().hashCode();
     }
 
     @Override

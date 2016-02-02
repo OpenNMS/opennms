@@ -34,10 +34,13 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-import org.opennms.netmgt.bsm.persistence.api.BusinessServiceEntity;
-import org.opennms.netmgt.bsm.persistence.api.BusinessServiceDao;
+import org.opennms.netmgt.bsm.service.BusinessServiceManager;
 import org.opennms.netmgt.bsm.service.BusinessServiceStateChangeHandler;
 import org.opennms.netmgt.bsm.service.BusinessServiceStateMachine;
+import org.opennms.netmgt.bsm.service.internal.AlarmWrapperImpl;
+import org.opennms.netmgt.bsm.service.internal.SeverityMapper;
+import org.opennms.netmgt.bsm.service.model.BusinessService;
+import org.opennms.netmgt.bsm.service.model.Status;
 import org.opennms.netmgt.config.api.EventConfDao;
 import org.opennms.netmgt.daemon.SpringServiceDaemon;
 import org.opennms.netmgt.dao.api.AlarmDao;
@@ -81,9 +84,6 @@ public class Bsmd implements SpringServiceDaemon, BusinessServiceStateChangeHand
     public static final String NAME = "Bsmd";
 
     @Autowired
-    private BusinessServiceDao m_businessServiceDao;
-
-    @Autowired
     private AlarmDao m_alarmDao;
 
     @Autowired
@@ -99,6 +99,9 @@ public class Bsmd implements SpringServiceDaemon, BusinessServiceStateChangeHand
     @Autowired
     private BusinessServiceStateMachine m_stateMachine;
 
+    @Autowired
+    private BusinessServiceManager m_manager;
+
     private boolean m_verifyReductionKeys = true;
 
     final ScheduledExecutorService alarmPoller = Executors.newScheduledThreadPool(1);
@@ -113,7 +116,7 @@ public class Bsmd implements SpringServiceDaemon, BusinessServiceStateChangeHand
 
     @Override
     public void start() throws Exception {
-        Objects.requireNonNull(m_businessServiceDao, "businessServiceDao cannot be null");
+        Objects.requireNonNull(m_manager, "businessServiceDao cannot be null");
         Objects.requireNonNull(m_alarmDao, "alarmDao cannot be null");
         Objects.requireNonNull(m_eventIpcManager, "eventIpcManager cannot be null");
         Objects.requireNonNull(m_eventConfDao, "eventConfDao cannot be null");
@@ -177,9 +180,9 @@ public class Bsmd implements SpringServiceDaemon, BusinessServiceStateChangeHand
         m_template.execute(new TransactionCallbackWithoutResult() {
             @Override
             protected void doInTransactionWithoutResult(TransactionStatus status) {
-                final List<BusinessServiceEntity> businessServices = m_businessServiceDao.findAll();
+                final List<BusinessService> businessServices = m_manager.getAllBusinessServices();
                 LOG.debug("Adding business services to state machine {}: {}", m_stateMachine, businessServices);
-                m_stateMachine.setBusinessServices(m_businessServiceDao.findAll());
+                m_stateMachine.setBusinessServices(businessServices);
             }
         });
     }
@@ -239,18 +242,20 @@ public class Bsmd implements SpringServiceDaemon, BusinessServiceStateChangeHand
     }
 
     private void handleAlarm(OnmsAlarm alarm) {
-        LOG.debug("Handling alarm with id: {}, reduction key: {} and severity: {}",
-                alarm.getId(), alarm.getReductionKey(), alarm.getSeverity());
-        m_stateMachine.handleNewOrUpdatedAlarm(alarm);
+        AlarmWrapperImpl alarmWrapper = new AlarmWrapperImpl(alarm);
+        LOG.debug("Handling alarm with id: {}, reduction key: {} and severity: {} and status: {}", alarm.getId(), alarm.getReductionKey(), alarm.getSeverity(), alarmWrapper.getStatus());
+        m_stateMachine.handleNewOrUpdatedAlarm(alarmWrapper);
     }
 
     /**
      * Called when the operational status of a business service was changed.
      */
     @Override
-    public void handleBusinessServiceStateChanged(BusinessServiceEntity businessService, OnmsSeverity newSeverity,
-                                                  OnmsSeverity prevSeverity) {
-        EventBuilder ebldr = new EventBuilder(EventConstants.BUSINESS_SERVICE_OPERATIONAL_STATUS_CHANGED_UEI, NAME);
+    public void handleBusinessServiceStateChanged(BusinessService businessService, Status newStatus, Status prevStatus) {
+        final OnmsSeverity newSeverity = SeverityMapper.toSeverity(newStatus);
+        final OnmsSeverity prevSeverity = SeverityMapper.toSeverity(prevStatus);
+
+        final EventBuilder ebldr = new EventBuilder(EventConstants.BUSINESS_SERVICE_OPERATIONAL_STATUS_CHANGED_UEI, NAME);
         ebldr.addParam(EventConstants.PARM_BUSINESS_SERVICE_ID, businessService.getId());
         ebldr.addParam(EventConstants.PARM_BUSINESS_SERVICE_NAME, businessService.getName());
         ebldr.addParam(EventConstants.PARM_PREV_SEVERITY_ID, prevSeverity.getId());
@@ -295,14 +300,6 @@ public class Bsmd implements SpringServiceDaemon, BusinessServiceStateChangeHand
     public void destroy() throws Exception {
         LOG.info("Stopping bsmd...");
         alarmPoller.shutdown();
-    }
-
-    public void setBusinessServiceDao(BusinessServiceDao businessServiceDao) {
-        m_businessServiceDao = businessServiceDao;
-    }
-
-    public BusinessServiceDao getBusinessServiceDao() {
-        return m_businessServiceDao;
     }
 
     public void setAlarmDao(AlarmDao alarmDao) {

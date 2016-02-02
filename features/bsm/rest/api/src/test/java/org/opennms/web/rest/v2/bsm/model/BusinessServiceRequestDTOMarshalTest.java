@@ -28,6 +28,9 @@
 
 package org.opennms.web.rest.v2.bsm.model;
 
+import static org.opennms.web.rest.v2.bsm.model.TestHelper.createMapFunctionDTO;
+import static org.opennms.web.rest.v2.bsm.model.TestHelper.createReduceFunctionDTO;
+
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
@@ -43,15 +46,18 @@ public class BusinessServiceRequestDTOMarshalTest extends MarshalAndUnmarshalTes
 
     @Parameterized.Parameters
     public static Collection<Object[]> data() throws IOException {
-        BusinessServiceRequestDTO requestDTO = new BusinessServiceRequestDTO();
+        final MapFunctionDTO increaseDto = createMapFunctionDTO(MapFunctionType.Increase, null);
+        final MapFunctionDTO setToDto = createMapFunctionDTO(MapFunctionType.SetTo, new String[]{"status", "Critical"});
+        final BusinessServiceRequestDTO requestDTO = new BusinessServiceRequestDTO();
+        requestDTO.setReduceFunction(createReduceFunctionDTO(ReduceFunctionType.MostCritical, null));
         requestDTO.setName("Web Servers");
         requestDTO.addAttribute("dc", "RDU");
         requestDTO.addAttribute("some-key", "some-value");
-        requestDTO.addChildService(2L);
-        requestDTO.addChildService(3L);
-        requestDTO.getReductionKeys().add("myReductionKeyA");
-        requestDTO.getReductionKeys().add("myReductionKeyB");
-        requestDTO.addIpService(1);
+        requestDTO.addChildService(2L, increaseDto, 5);
+        requestDTO.addChildService(3L, setToDto, 5);
+        requestDTO.addReductionKey("myReductionKeyA", increaseDto, 7);
+        requestDTO.addReductionKey("myReductionKeyB", increaseDto, 7);
+        requestDTO.addIpService(1, increaseDto, 9);
 
         return Arrays.asList(new Object[][]{{
             BusinessServiceRequestDTO.class,
@@ -62,33 +68,121 @@ public class BusinessServiceRequestDTOMarshalTest extends MarshalAndUnmarshalTes
             "    \"dc\" : \"RDU\"," +
             "    \"some-key\" : \"some-value\"" +
             "  }," +
-            "  \"childServices\" : [ 2, 3 ]," +
-            "  \"reductionKeys\" : [\"myReductionKeyB\", \"myReductionKeyA\"], " +
-            "  \"ipServices\" : [ 1 ]" +
+            "  \"reduceFunction\" : {" +
+            "       \"type\" : \"MostCritical\"," +
+            "       \"properties\" : null" +
+            "  }," +
+            "  \"childServices\" : [" +
+            "       {" +
+            "           \"mapFunction\" : {" +
+            "               \"type\" : \"Increase\"," +
+            "               \"properties\" : null" +
+            "           }," +
+            "           \"weight\" : 5," +
+            "           \"childId\" : 2" +
+            "       }," +
+            "       {" +
+            "           \"mapFunction\" : {" +
+            "               \"type\" : \"SetTo\"," +
+            "               \"properties\" : {" +
+            "                   \"status\" : \"Critical\"" +
+            "               }" +
+            "           }," +
+            "           \"weight\" : 5," +
+            "           \"childId\" : 3" +
+            "       }," +
+            "   ]," +
+            "  \"ipServices\" : [" +
+            "       {" +
+            "           \"mapFunction\" : {" +
+            "               \"type\" : \"Increase\"," +
+            "               \"properties\" : null" +
+            "           }," +
+            "           \"weight\" : 9," +
+            "           \"ipServiceId\" : 1" +
+            "       }," +
+            "   ]," +
+            "  \"reductionKeys\" : [" +
+            "       {" +
+            "           \"mapFunction\" : {" +
+            "               \"type\" : \"Increase\"," +
+            "               \"properties\" : null" +
+            "           }," +
+            "           \"weight\" : 7," +
+            "           \"reductionKey\" : \"myReductionKeyA\"" +
+            "       }," +
+            "       {" +
+            "            \"mapFunction\" : {" +
+            "               \"type\" : \"Increase\"," +
+            "               \"properties\" : null" +
+            "           }," +
+            "           \"weight\" : 7," +
+            "           \"reductionKey\" : \"myReductionKeyB\"" +
+            "       }," +
+            "   ]," +
             "}",
-            "<business-service>" +
-               "<name>Web Servers</name>" +
-               "<attributes>" +
-                 "<attribute>" +
-                   "<key>dc</key>" +
-                   "<value>RDU</value>" +
-                 "</attribute>" +
-                "<attribute>" +
-                  "<key>some-key</key>" +
-                  "<value>some-value</value>" +
-                "</attribute>" +
-               "</attributes>" +
-               "<ip-services>" +
-                   "<ip-service>1</ip-service>" +
-               "</ip-services>" +
-               "<child-services>" +
-                    "<child-service>2</child-service>" +
-                    "<child-service>3</child-service>" +
-               "</child-services>" +
-                "<reductionKeys>" +
-                    "<reductionKey>myReductionKeyB</reductionKey>" +
-                    "<reductionKey>myReductionKeyA</reductionKey>" +
-                "</reductionKeys>" +
+            "<business-service>\n" +
+            "   <name>Web Servers</name>\n" +
+            "   <attributes>\n" +
+            "       <attribute>\n" +
+            "           <key>dc</key>\n" +
+            "           <value>RDU</value>\n" +
+            "       </attribute>\n" +
+            "       <attribute>\n" +
+            "           <key>some-key</key>\n" +
+            "           <value>some-value</value>\n" +
+            "       </attribute>\n" +
+            "   </attributes>\n" +
+            "    <ip-services-edges>\n" +
+            "      <ip-service-edge>\n" +
+            "         <map-function>\n" +
+            "            <type>Increase</type>\n" +
+            "         </map-function>\n" +
+            "         <weight>9</weight>\n" +
+            "         <ip-service-id>1</ip-service-id>\n" +
+            "      </ip-service-edge>\n" +
+            "   </ip-services-edges>\n" +
+            "   <child-edges>\n" +
+            "      <child-edge>\n" +
+            "         <map-function>\n" +
+            "            <type>Increase</type>\n" +
+            "         </map-function>\n" +
+            "         <weight>5</weight>\n" +
+            "         <childId>2</childId>\n" +
+            "      </child-edge>\n" +
+            "      <child-edge>\n" +
+            "         <map-function>\n" +
+            "            <type>SetTo</type>\n" +
+            "            <properties>\n" +
+            "               <entry>\n" +
+            "                  <key>status</key>\n" +
+            "                  <value>Critical</value>\n" +
+            "               </entry>\n" +
+            "            </properties>\n" +
+            "         </map-function>\n" +
+            "         <weight>5</weight>\n" +
+            "         <childId>3</childId>\n" +
+            "      </child-edge>\n" +
+            "   </child-edges>\n" +
+            "   <reductionkey-edges>\n" +
+            "      <reductionkey-edge>\n" +
+            "         <map-function>\n" +
+            "            <type>Increase</type>\n" +
+            "         </map-function>\n" +
+            "         <weight>7</weight>\n" +
+            "         <reduction-key>myReductionKeyA</reduction-key>\n" +
+            "      </reductionkey-edge>\n" +
+            "      <reductionkey-edge>\n" +
+            "         <map-function>\n" +
+            "            <type>Increase</type>\n" +
+            "         </map-function>\n" +
+            "         <weight>7</weight>\n" +
+            "         <reduction-key>myReductionKeyB</reduction-key>\n" +
+            "      </reductionkey-edge>\n" +
+            "   </reductionkey-edges>\n" +
+            "   <reduce-function>\n" +
+            "      <type>MostCritical</type>\n" +
+            "   </reduce-function>\n" +
             "</business-service>"
         }});
     }

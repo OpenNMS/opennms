@@ -18,7 +18,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
- * http://www.gnu.org/licenses/
+ *      http://www.gnu.org/licenses/
  *
  * For more information contact:
  *     OpenNMS(R) Licensing <license@opennms.org>
@@ -32,24 +32,42 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.codehaus.jackson.map.ObjectMapper;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.xml.JaxbUtils;
+import org.opennms.netmgt.bsm.persistence.api.BusinessServiceChildEdgeEntity;
 import org.opennms.netmgt.bsm.persistence.api.BusinessServiceEntity;
-import org.opennms.netmgt.bsm.persistence.api.OnmsMonitoredServiceHelper;
+import org.opennms.netmgt.bsm.persistence.api.IPServiceEdgeEntity;
+import org.opennms.netmgt.bsm.persistence.api.ReductionKeyHelper;
+import org.opennms.netmgt.bsm.persistence.api.SingleReductionKeyEdgeEntity;
+import org.opennms.netmgt.bsm.persistence.api.functions.map.AbstractMapFunctionEntity;
+import org.opennms.netmgt.bsm.persistence.api.functions.reduce.AbstractReductionFunctionEntity;
+import org.opennms.netmgt.bsm.persistence.api.functions.reduce.MostCriticalEntity;
+import org.opennms.netmgt.bsm.service.model.AlarmWrapper;
+import org.opennms.netmgt.bsm.service.model.Status;
+import org.opennms.netmgt.bsm.service.model.mapreduce.MapFunction;
+import org.opennms.netmgt.bsm.service.model.mapreduce.ReductionFunction;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsSeverity;
+import org.opennms.web.rest.api.ResourceLocationFactory;
 import org.opennms.web.rest.v2.bsm.model.BusinessServiceRequestDTO;
 import org.opennms.web.rest.v2.bsm.model.BusinessServiceResponseDTO;
-import org.opennms.web.rest.v2.bsm.model.IpServiceResponseDTO;
+import org.opennms.web.rest.v2.bsm.model.MapFunctionDTO;
+import org.opennms.web.rest.v2.bsm.model.MapFunctionType;
+import org.opennms.web.rest.v2.bsm.model.ReduceFunctionDTO;
+import org.opennms.web.rest.v2.bsm.model.ReduceFunctionType;
+import org.opennms.web.rest.v2.bsm.model.edge.ChildEdgeResponseDTO;
+import org.opennms.web.rest.v2.bsm.model.edge.IpServiceEdgeResponseDTO;
+import org.opennms.web.rest.v2.bsm.model.edge.IpServiceResponseDTO;
+import org.opennms.web.rest.v2.bsm.model.edge.ReductionKeyEdgeResponseDTO;
 
 import com.google.common.base.Throwables;
+import com.google.common.collect.Sets;
 
 /**
  * Helper class to create all kinds of objects for writing BSM tests.
@@ -57,52 +75,115 @@ import com.google.common.base.Throwables;
 public class BsmTestUtils {
 
     public static BusinessServiceRequestDTO toRequestDto(BusinessServiceEntity input) {
+        Objects.requireNonNull(input);
         BusinessServiceRequestDTO request = new BusinessServiceRequestDTO();
         request.setName(input.getName());
         request.setAttributes(new HashMap<>(input.getAttributes()));
-        request.setChildServices(input.getChildServices().stream().map(s -> s.getId()).collect(Collectors.toSet()));
-        request.setIpServices(input.getIpServices().stream().map(s -> s.getId()).collect(Collectors.toSet()));
-        request.setReductionKeys(new HashSet<>(input.getReductionKeys()));
+        request.setReduceFunction(transform(input.getReductionFunction()));
+        input.getChildEdges().forEach(e -> request.addChildService(
+                e.getChild().getId(),
+                transform(e.getMapFunction()),
+                e.getWeight()));
+        input.getIpServiceEdges().forEach(e -> request.addIpService(
+                e.getIpService().getId(),
+                transform(e.getMapFunction()),
+                e.getWeight()));
+        input.getReductionKeyEdges().forEach(e -> request.addReductionKey(
+                e.getReductionKey(),
+                transform(e.getMapFunction()),
+                e.getWeight()));
         return request;
     }
 
+    private static ReduceFunctionDTO transform(AbstractReductionFunctionEntity input) {
+        Objects.requireNonNull(input);
+        ReductionFunction reductionFunction = new ReduceFunctionMapper().toServiceFunction(input);
+        ReduceFunctionType type = ReduceFunctionType.valueOf(reductionFunction.getClass());
+        return type.toDTO(reductionFunction);
+    }
+
+    private static MapFunctionDTO transform(AbstractMapFunctionEntity input) {
+        Objects.requireNonNull(input);
+        MapFunction mapFunction = new MapFunctionMapper().toServiceFunction(input);
+        MapFunctionType type = MapFunctionType.valueOf(mapFunction.getClass());
+        return type.toDTO(mapFunction);
+    }
+
     public static BusinessServiceResponseDTO toResponseDto(BusinessServiceEntity input) {
+        Objects.requireNonNull(input);
         BusinessServiceResponseDTO response = new BusinessServiceResponseDTO();
         response.setId(input.getId());
         response.setName(input.getName());
-        response.setReductionKeys(new HashSet<>(input.getReductionKeys()));
-        response.setOperationalStatus(null); // do not know that here
+        response.setReduceFunction(transform(input.getReductionFunction()));
+        response.setOperationalStatus(Status.INDETERMINATE); // we assume INDETERMINATE
         response.setAttributes(input.getAttributes());
-        response.setIpServices(input.getIpServices().stream().map(it -> {
-            IpServiceResponseDTO ipService = new IpServiceResponseDTO();
-            ipService.setReductionKeys(OnmsMonitoredServiceHelper.getReductionKeys(it));
-            ipService.setOperationalStatus(null); // do not know that here
-            ipService.setNodeLabel("dummy"); // do not know that here
-            ipService.setServiceName(it.getServiceName());
-            ipService.setId(it.getId());
-            ipService.setIpAddress(InetAddressUtils.toIpAddrString(it.getIpAddress()));
-            return ipService;
-        }).collect(Collectors.toSet()));
-        response.setChildServices(input.getChildServices().stream().map(it -> it.getId()).collect(Collectors.toSet()));
-        response.setParentServices(input.getParentServices().stream().map(it -> it.getId()).collect(Collectors.toSet()));
+        response.setLocation(ResourceLocationFactory.createBusinessServiceLocation(input.getId().toString()));
+        response.setReductionKeys(input.getReductionKeyEdges().stream().map(it -> toResponseDTO(it)).collect(Collectors.toList()));
+        response.setIpServices(input.getIpServiceEdges().stream().map(it -> toResponseDTO(it)).collect(Collectors.toList()));
+        response.setChildren(input.getChildEdges().stream().map(it -> toResponseDTO(it)).collect(Collectors.toList()));
+        response.setParentServices(Sets.newHashSet()); // do not know that here
         return response;
     }
 
+    public static ChildEdgeResponseDTO toResponseDTO(BusinessServiceChildEdgeEntity input) {
+        ChildEdgeResponseDTO edge = new ChildEdgeResponseDTO();
+        edge.setLocation(ResourceLocationFactory.createBusinessServiceEdgeLocation(input.getBusinessService().getId(), input.getId()));
+        edge.setReductionKeys(edge.getReductionKeys());
+        edge.setMapFunction(transform(input.getMapFunction()));
+        edge.setId(input.getId());
+        edge.setChildId(input.getChild().getId());
+        edge.setWeight(input.getWeight());
+        edge.setOperationalStatus(Status.INDETERMINATE); // we assume INDETERMINATE
+        return edge;
+    }
+
+    public static IpServiceEdgeResponseDTO toResponseDTO(IPServiceEdgeEntity input) {
+        IpServiceResponseDTO ipService = new IpServiceResponseDTO();
+        ipService.setNodeLabel("dummy"); // do not know that here
+        ipService.setServiceName(input.getIpService().getServiceName());
+        ipService.setId(input.getIpService().getId());
+        ipService.setIpAddress(InetAddressUtils.toIpAddrString(input.getIpService().getIpAddress()));
+
+        IpServiceEdgeResponseDTO edge = new IpServiceEdgeResponseDTO();
+        edge.setLocation(ResourceLocationFactory.createBusinessServiceEdgeLocation(input.getBusinessService().getId(), input.getId()));
+        edge.setReductionKeys(ReductionKeyHelper.getReductionKeys(input.getIpService()));
+        edge.setIpService(ipService);
+        edge.setMapFunction(transform(input.getMapFunction()));
+        edge.setId(input.getId());
+        edge.setWeight(input.getWeight());
+        edge.setOperationalStatus(Status.INDETERMINATE); // we assume INDETERMINATE
+        return edge;
+    }
+
+    public static ReductionKeyEdgeResponseDTO toResponseDTO(SingleReductionKeyEdgeEntity input) {
+        ReductionKeyEdgeResponseDTO edge = new ReductionKeyEdgeResponseDTO();
+        edge.setLocation(ResourceLocationFactory.createBusinessServiceEdgeLocation(input.getBusinessService().getId(), input.getId()));
+        edge.setReductionKeys(input.getReductionKeys());
+        edge.setReductionKey(input.getReductionKey());
+        edge.setMapFunction(transform(input.getMapFunction()));
+        edge.setId(input.getId());
+        edge.setWeight(input.getWeight());
+        edge.setOperationalStatus(Status.INDETERMINATE); // we assume INDETERMINATE
+        return edge;
+    }
+
     // convert to json
-    public static String toJson(BusinessServiceRequestDTO request) {
+    public static <T> String toJson(T input) {
+        Objects.requireNonNull(input);
         try {
-            return new ObjectMapper().writeValueAsString(request);
+            return new ObjectMapper().writeValueAsString(input);
         } catch (IOException io) {
             throw Throwables.propagate(io);
         }
     }
 
     // convert to xml
-    public static String toXml(BusinessServiceRequestDTO request) {
-        return JaxbUtils.marshal(request);
+    public static <T> String toXml(T input) {
+        Objects.requireNonNull(input);
+        return JaxbUtils.marshal(input);
     }
 
-    public static OnmsAlarm createAlarm(OnmsMonitoredService monitoredService, OnmsSeverity severity) {
+    private static OnmsAlarm createAlarm(OnmsMonitoredService monitoredService, OnmsSeverity severity) {
         return createAlarm(
                 Objects.requireNonNull(monitoredService.getNodeId()),
                 Objects.requireNonNull(InetAddressUtils.toIpAddrString(monitoredService.getIpAddress())),
@@ -111,16 +192,60 @@ public class BsmTestUtils {
     }
 
     private static OnmsAlarm createAlarm(int nodeId, String ip, String service, OnmsSeverity severity) {
-        OnmsAlarm alarm = new OnmsAlarm();
-        alarm.setUei(EventConstants.NODE_LOST_SERVICE_EVENT_UEI);
-        alarm.setSeverity(severity);
-        alarm.setReductionKey(String.format("%s::%s:%s:%s", EventConstants.NODE_LOST_SERVICE_EVENT_UEI, nodeId, ip, service));
+        OnmsAlarm alarm = createAlarm(
+                EventConstants.NODE_LOST_SERVICE_EVENT_UEI,
+                severity,
+                String.format("%s::%s:%s:%s",
+                        EventConstants.NODE_LOST_SERVICE_EVENT_UEI,
+                        nodeId,
+                        ip,
+                        service));
         return alarm;
     }
 
-    public static OnmsMonitoredService createMonitoredService(final int nodeId, final String ipAddress, final String serviceName) {
+    private static OnmsAlarm createAlarm(String uei, OnmsSeverity severity, String reductionKey) {
+        OnmsAlarm customAlarm = new OnmsAlarm();
+        customAlarm.setUei(Objects.requireNonNull(uei));
+        customAlarm.setSeverity(Objects.requireNonNull(severity));
+        customAlarm.setReductionKey(Objects.requireNonNull(reductionKey));
+        return customAlarm;
+    }
+
+    public static AlarmWrapper createAlarmWrapper(String uei, OnmsSeverity severity, String reductionKey) {
+       return createAlarmWrapper(createAlarm(uei, severity, reductionKey));
+    }
+
+    public static AlarmWrapper createAlarmWrapper(OnmsMonitoredService monitoredService, OnmsSeverity severity) {
+        return createAlarmWrapper(createAlarm(monitoredService, severity));
+    }
+
+    private static AlarmWrapper createAlarmWrapper(final OnmsAlarm alarm) {
+        return new AlarmWrapper() {
+            @Override
+            public String getReductionKey() {
+                return alarm.getReductionKey();
+            }
+
+            @Override
+            public Status getStatus() {
+                return SeverityMapper.toStatus(alarm.getSeverity());
+            }
+
+            @Override
+            public Integer getId() {
+                return alarm.getId();
+            }
+        };
+    }
+
+    public static OnmsMonitoredService createMonitoredService(final int serviceId, final int nodeId, final String ipAddress, final String serviceName) {
         return new OnmsMonitoredService() {
             private static final long serialVersionUID = 8510675581667310365L;
+
+            @Override
+            public Integer getId() {
+                return serviceId;
+            }
 
             public Integer getNodeId() {
                 return nodeId;
@@ -144,36 +269,10 @@ public class BsmTestUtils {
         };
     }
 
-    // creates a simple hierarchy with 1 parent and 2 childs.
-    // Each children has one ip service atached. The parent has not.
-    public static BsmTestData createSimpleHierarchy() {
-        // Create a simple hierarchy
-        BusinessServiceEntity child1 = new BusinessServiceEntityBuilder()
-                .name("Child 1")
-                .addIpService(createMonitoredService(1, "192.168.1.1", "ICMP"))
-                .toEntity();
-
-        BusinessServiceEntity child2 = new BusinessServiceEntityBuilder()
-                .name("Child 2")
-                .addIpService(createMonitoredService(2, "192.168.1.2", "SNMP"))
-                .toEntity();
-
-        BusinessServiceEntity root = new BusinessServiceEntityBuilder()
-                .name("Parent")
-                .addChildren(child1)
-                .addChildren(child2)
-                .toEntity();
-
-        child1.getParentServices().add(root);
-        child2.getParentServices().add(root);
-
-        return new BsmTestData(child1, child2, root);
-    }
-
     public static BusinessServiceEntity createDummyBusinessService(String serviceName) {
         return new BusinessServiceEntityBuilder()
                 .name(serviceName)
+                .reduceFunction(new MostCriticalEntity())
                 .toEntity();
     }
-
 }

@@ -18,7 +18,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
- * http://www.gnu.org/licenses/
+ *      http://www.gnu.org/licenses/
  *
  * For more information contact:
  *     OpenNMS(R) Licensing <license@opennms.org>
@@ -28,9 +28,9 @@
 
 package org.opennms.web.rest.v2.bsm.model;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Set;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -39,14 +39,18 @@ import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
+import org.opennms.web.rest.v2.bsm.model.edge.ChildEdgeRequestDTO;
+import org.opennms.web.rest.v2.bsm.model.edge.IpServiceEdgeRequestDTO;
+import org.opennms.web.rest.v2.bsm.model.edge.ReductionKeyEdgeRequestDTO;
+
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
 
 
 @XmlRootElement(name = "business-service")
 @XmlAccessorType(XmlAccessType.NONE)
 public class BusinessServiceRequestDTO {
-    
+
     @XmlElement(name = "name")
     private String m_name;
 
@@ -54,17 +58,20 @@ public class BusinessServiceRequestDTO {
     @XmlJavaTypeAdapter(JAXBMapAdapter.class)
     private Map<String, String> m_attributes = Maps.newLinkedHashMap();
 
-    @XmlElement(name="ip-service")
-    @XmlElementWrapper(name="ip-services")
-    private Set<Integer> m_ipServices = Sets.newLinkedHashSet();
+    @XmlElement(name="ip-service-edge")
+    @XmlElementWrapper(name="ip-services-edges")
+    private List<IpServiceEdgeRequestDTO> m_ipServices = Lists.newArrayList();
 
-    @XmlElement(name="child-service")
-    @XmlElementWrapper(name="child-services")
-    private Set<Long> m_childServices = Sets.newLinkedHashSet();
+    @XmlElement(name="child-edge")
+    @XmlElementWrapper(name="child-edges")
+    private List<ChildEdgeRequestDTO> m_childServices = Lists.newArrayList();
 
-    @XmlElement(name="reductionKey")
-    @XmlElementWrapper(name="reductionKeys")
-    private Set<String> m_reductionKeys = Sets.newHashSet();
+    @XmlElement(name="reductionkey-edge")
+    @XmlElementWrapper(name="reductionkey-edges")
+    private List<ReductionKeyEdgeRequestDTO> reductionKeys = Lists.newArrayList();
+
+    @XmlElement(name="reduce-function")
+    private ReduceFunctionDTO reduceFunction;
 
     public String getName() {
         return m_name;
@@ -86,36 +93,36 @@ public class BusinessServiceRequestDTO {
         m_attributes = attributes;
     }
 
-    public Set<Integer> getIpServices() {
+    public List<IpServiceEdgeRequestDTO> getIpServices() {
         return m_ipServices;
     }
 
-    public void setIpServices(Set<Integer> ipServices) {
+    public void setIpServices(List<IpServiceEdgeRequestDTO> ipServices) {
         m_ipServices = ipServices;
     }
 
-    protected void addIpService(Integer ipServiceId) {
-        getIpServices().add(ipServiceId);
-    }
-
-    public Set<Long> getChildServices() {
+    public List<ChildEdgeRequestDTO> getChildServices() {
         return m_childServices;
     }
 
-    protected void addChildService(Long bsChildId) {
-        getChildServices().add(bsChildId);
-    }
-
-    public void setChildServices(Set<Long> childServices) {
+    public void setChildServices(List<ChildEdgeRequestDTO> childServices) {
         m_childServices = childServices;
     }
 
-    public Set<String> getReductionKeys() {
-        return m_reductionKeys;
+    public List<ReductionKeyEdgeRequestDTO> getReductionKeys() {
+        return reductionKeys;
     }
 
-    public void setReductionKeys(Set<String> reductionKeys) {
-        m_reductionKeys = reductionKeys;
+    public void setReductionKeys(List<ReductionKeyEdgeRequestDTO> reductionKeys) {
+        this.reductionKeys = reductionKeys;
+    }
+
+    public void setReduceFunction(ReduceFunctionDTO reduceFunction) {
+        this.reduceFunction = reduceFunction;
+    }
+
+    public ReduceFunctionDTO getReduceFunction() {
+        return reduceFunction;
     }
 
     @Override
@@ -130,14 +137,15 @@ public class BusinessServiceRequestDTO {
 
         return Objects.equals(m_name, other.m_name)
                 && Objects.equals(m_attributes, other.m_attributes)
+                && Objects.equals(reduceFunction, other.reduceFunction)
                 && Objects.equals(m_ipServices, other.m_ipServices)
                 && Objects.equals(m_childServices, other.m_childServices)
-                && Objects.equals(m_reductionKeys, other.m_reductionKeys);
+                && Objects.equals(reductionKeys, other.reductionKeys);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(m_name, m_attributes, m_ipServices, m_childServices, m_reductionKeys);
+        return Objects.hash(m_name, m_attributes, m_ipServices, m_childServices, reductionKeys, reduceFunction);
     }
 
     @Override
@@ -145,9 +153,34 @@ public class BusinessServiceRequestDTO {
         return com.google.common.base.Objects.toStringHelper(this)
                 .add("name", m_name)
                 .add("attributes", m_attributes)
+                .add("reduceFunction", reduceFunction)
                 .add("ipServices", m_ipServices)
                 .add("childServices", m_childServices)
-                .add("reductionKeys", m_reductionKeys)
+                .add("reductionKeys", reductionKeys)
                 .toString();
+    }
+
+    public void addChildService(long childId, MapFunctionDTO mapFunction, int weight) {
+        ChildEdgeRequestDTO edge = new ChildEdgeRequestDTO();
+        edge.setChildId(childId);
+        edge.setMapFunction(mapFunction);
+        edge.setWeight(weight);
+        getChildServices().add(edge);
+    }
+
+    public void addReductionKey(String reductionKey, MapFunctionDTO mapFunction, int weight) {
+        ReductionKeyEdgeRequestDTO edge = new ReductionKeyEdgeRequestDTO();
+        edge.setReductionKey(reductionKey);
+        edge.setMapFunction(mapFunction);
+        edge.setWeight(weight);
+        getReductionKeys().add(edge);
+    }
+
+    public void addIpService(int ipServiceId, MapFunctionDTO mapFunction, int weight) {
+        IpServiceEdgeRequestDTO edge = new IpServiceEdgeRequestDTO();
+        edge.setIpServiceId(ipServiceId);
+        edge.setMapFunction(mapFunction);
+        edge.setWeight(weight);
+        getIpServices().add(edge);
     }
 }

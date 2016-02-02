@@ -28,11 +28,11 @@
 
 package org.opennms.features.topology.app.internal;
 
-import org.opennms.features.topology.api.topo.AbstractEdge;
-import org.opennms.features.topology.api.topo.SimpleConnector;
-
 import com.vaadin.data.Item;
 import com.vaadin.data.util.BeanItem;
+
+import org.opennms.features.topology.api.topo.AbstractEdge;
+import org.opennms.features.topology.api.topo.SimpleConnector;
 
 public class TestEdge extends AbstractEdge {
 	

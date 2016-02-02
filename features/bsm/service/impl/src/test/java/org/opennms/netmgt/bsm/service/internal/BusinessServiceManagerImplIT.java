@@ -18,7 +18,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
- * http://www.gnu.org/licenses/
+ *      http://www.gnu.org/licenses/
  *
  * For more information contact:
  *     OpenNMS(R) Licensing <license@opennms.org>
@@ -28,7 +28,7 @@
 
 package org.opennms.netmgt.bsm.service.internal;
 
-import static org.opennms.netmgt.bsm.test.BsmTestUtils.createAlarm;
+import static org.opennms.netmgt.bsm.test.BsmTestUtils.createAlarmWrapper;
 import static org.opennms.netmgt.bsm.test.BsmTestUtils.createDummyBusinessService;
 
 import java.util.Objects;
@@ -44,16 +44,23 @@ import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.netmgt.bsm.persistence.api.BusinessServiceDao;
+import org.opennms.netmgt.bsm.persistence.api.BusinessServiceEdgeDao;
 import org.opennms.netmgt.bsm.persistence.api.BusinessServiceEntity;
+import org.opennms.netmgt.bsm.persistence.api.functions.map.MapFunctionDao;
+import org.opennms.netmgt.bsm.persistence.api.functions.reduce.ReductionFunctionDao;
 import org.opennms.netmgt.bsm.service.BusinessServiceManager;
 import org.opennms.netmgt.bsm.service.BusinessServiceStateMachine;
 import org.opennms.netmgt.bsm.service.model.BusinessService;
 import org.opennms.netmgt.bsm.service.model.IpService;
-import org.opennms.netmgt.dao.DatabasePopulator;
+import org.opennms.netmgt.bsm.service.model.Status;
+import org.opennms.netmgt.bsm.service.model.edge.Edge;
+import org.opennms.netmgt.bsm.service.model.functions.map.Identity;
+import org.opennms.netmgt.bsm.test.BsmDatabasePopulator;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -72,7 +79,7 @@ import com.google.common.collect.Lists;
         "classpath:/META-INF/opennms/applicationContext-setupIpLike-enabled.xml",
         "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml" })
 @JUnitConfigurationEnvironment
-@JUnitTemporaryDatabase
+@JUnitTemporaryDatabase(reuseDatabase = false)
 @Transactional
 public class BusinessServiceManagerImplIT {
 
@@ -92,7 +99,17 @@ public class BusinessServiceManagerImplIT {
     private MonitoredServiceDao monitoredServiceDao;
 
     @Autowired
-    private DatabasePopulator populator;
+    private MapFunctionDao mapFunctionDao;
+
+    @Autowired
+    private ReductionFunctionDao reduceFunctionDao;
+
+    @Autowired
+    private BusinessServiceEdgeDao edgeDao;
+
+    @Autowired
+    @Qualifier("bsmDatabasePopulator")
+    private BsmDatabasePopulator populator;
 
     @Before
     public void before() {
@@ -102,115 +119,114 @@ public class BusinessServiceManagerImplIT {
 
     @After
     public void after() {
-        populator.resetDatabase();
-        for (BusinessServiceEntity eachService : businessServiceDao.findAll()) {
-            businessServiceDao.delete(eachService);
-        }
+        populator.resetDatabase(true);
     }
 
     @Test
     public void testGetOperationalStatusForBusinessService() {
-        final BusinessServiceEntity bsServiceEntity = createDummyBusinessService("Dummy Business Service");
-        final BusinessServiceEntity bsServiceEntity2 = createDummyBusinessService("Another Dummy Business Service");
-        Long serviceId1 = businessServiceDao.save(bsServiceEntity);
-        Long serviceId2 = businessServiceDao.save(bsServiceEntity2);
-        businessServiceStateMachine.setBusinessServices(Lists.newArrayList(bsServiceEntity, bsServiceEntity2));
-
-        final BusinessService bsService1 = getBusinessService(serviceId1);
-        final BusinessService bsService2 = getBusinessService(serviceId2);
+        BusinessService bsService1 = createBusinessService("Dummy Business Service");
+        BusinessService bsService2 = createBusinessService("Another Dummy Business Service");
+        businessServiceStateMachine.setBusinessServices(Lists.newArrayList(bsService1, bsService2));
         final IpService ipServiceWithId5 = getIpService(5);
         final IpService ipServiceWithId6 = getIpService(6);
 
         // no ip services attached
-        Assert.assertEquals(OnmsSeverity.NORMAL, businessServiceManager.getOperationalStatusForBusinessService(bsService1));
-        Assert.assertEquals(OnmsSeverity.NORMAL, businessServiceManager.getOperationalStatusForBusinessService(bsService2));
+        Assert.assertEquals(Status.NORMAL, businessServiceManager.getOperationalStatusForBusinessService(bsService1));
+        Assert.assertEquals(Status.NORMAL, businessServiceManager.getOperationalStatusForBusinessService(bsService2));
 
         // ip services attached
-        businessServiceManager.assignIpService(getBusinessService(serviceId1), ipServiceWithId5);
-        businessServiceManager.assignIpService(getBusinessService(serviceId2), ipServiceWithId6);
+        businessServiceManager.addIpServiceEdge(bsService1, ipServiceWithId5, new Identity(), Edge.DEFAULT_WEIGHT);
+        businessServiceManager.addIpServiceEdge(bsService2, ipServiceWithId6, new Identity(), Edge.DEFAULT_WEIGHT);
         bsService1.save();
         bsService2.save();
         Assert.assertFalse("Services are equal but should not", Objects.equals(bsService1, bsService2));
-        businessServiceStateMachine.setBusinessServices(Lists.newArrayList(bsServiceEntity, bsServiceEntity2));
+        businessServiceStateMachine.setBusinessServices(Lists.newArrayList(bsService1, bsService2));
 
         // should not have any effect
-        Assert.assertEquals(OnmsSeverity.NORMAL, businessServiceManager.getOperationalStatusForBusinessService(bsService1));
-        Assert.assertEquals(OnmsSeverity.NORMAL, businessServiceManager.getOperationalStatusForBusinessService(bsService2));
+        Assert.assertEquals(Status.NORMAL, businessServiceManager.getOperationalStatusForBusinessService(bsService1));
+        Assert.assertEquals(Status.NORMAL, businessServiceManager.getOperationalStatusForBusinessService(bsService2));
 
         // attach NORMAL alarm to service 1
-        businessServiceStateMachine.handleNewOrUpdatedAlarm(createAlarm(monitoredServiceDao.get(5), OnmsSeverity.NORMAL));
-        Assert.assertEquals(OnmsSeverity.NORMAL, businessServiceManager.getOperationalStatusForIPService(ipServiceWithId5));
-        Assert.assertEquals(OnmsSeverity.NORMAL, businessServiceManager.getOperationalStatusForBusinessService(bsService1));
-        Assert.assertEquals(OnmsSeverity.NORMAL, businessServiceManager.getOperationalStatusForBusinessService(bsService2));
+        businessServiceStateMachine.handleNewOrUpdatedAlarm(createAlarmWrapper(monitoredServiceDao.get(5), OnmsSeverity.NORMAL));
+        Assert.assertEquals(Status.NORMAL, businessServiceManager.getOperationalStatusForIPService(ipServiceWithId5));
+        Assert.assertEquals(Status.NORMAL, businessServiceManager.getOperationalStatusForBusinessService(bsService1));
+        Assert.assertEquals(Status.NORMAL, businessServiceManager.getOperationalStatusForBusinessService(bsService2));
 
         // attach INDETERMINATE alarm to service 1
-        businessServiceStateMachine.handleNewOrUpdatedAlarm(createAlarm(monitoredServiceDao.get(5), OnmsSeverity.INDETERMINATE));
-        Assert.assertEquals(OnmsSeverity.NORMAL, businessServiceManager.getOperationalStatusForIPService(ipServiceWithId5));
-        Assert.assertEquals(OnmsSeverity.NORMAL, businessServiceManager.getOperationalStatusForBusinessService(bsService1));
-        Assert.assertEquals(OnmsSeverity.NORMAL, businessServiceManager.getOperationalStatusForBusinessService(bsService2));
+        businessServiceStateMachine.handleNewOrUpdatedAlarm(createAlarmWrapper(monitoredServiceDao.get(5), OnmsSeverity.INDETERMINATE));
+        Assert.assertEquals(Status.NORMAL, businessServiceManager.getOperationalStatusForIPService(ipServiceWithId5));
+        Assert.assertEquals(Status.NORMAL, businessServiceManager.getOperationalStatusForBusinessService(bsService1));
+        Assert.assertEquals(Status.NORMAL, businessServiceManager.getOperationalStatusForBusinessService(bsService2));
 
         // attach WARNING alarm to service 1
-        businessServiceStateMachine.handleNewOrUpdatedAlarm(createAlarm(monitoredServiceDao.get(5), OnmsSeverity.WARNING));
-        Assert.assertEquals(OnmsSeverity.WARNING, businessServiceManager.getOperationalStatusForIPService(ipServiceWithId5));
-        Assert.assertEquals(OnmsSeverity.WARNING, businessServiceManager.getOperationalStatusForBusinessService(bsService1));
-        Assert.assertEquals(OnmsSeverity.NORMAL, businessServiceManager.getOperationalStatusForBusinessService(bsService2));
+        businessServiceStateMachine.handleNewOrUpdatedAlarm(createAlarmWrapper(monitoredServiceDao.get(5), OnmsSeverity.WARNING));
+        Assert.assertEquals(Status.WARNING, businessServiceManager.getOperationalStatusForIPService(ipServiceWithId5));
+        Assert.assertEquals(Status.WARNING, businessServiceManager.getOperationalStatusForBusinessService(bsService1));
+        Assert.assertEquals(Status.NORMAL, businessServiceManager.getOperationalStatusForBusinessService(bsService2));
 
         // attach CRITICAL alarm to service 1
-        businessServiceStateMachine.handleNewOrUpdatedAlarm(createAlarm(monitoredServiceDao.get(5), OnmsSeverity.CRITICAL));
-        Assert.assertEquals(OnmsSeverity.CRITICAL, businessServiceManager.getOperationalStatusForIPService(ipServiceWithId5));
-        Assert.assertEquals(OnmsSeverity.CRITICAL, businessServiceManager.getOperationalStatusForBusinessService(bsService1));
-        Assert.assertEquals(OnmsSeverity.NORMAL, businessServiceManager.getOperationalStatusForBusinessService(bsService2));
+        businessServiceStateMachine.handleNewOrUpdatedAlarm(createAlarmWrapper(monitoredServiceDao.get(5), OnmsSeverity.CRITICAL));
+        Assert.assertEquals(Status.CRITICAL, businessServiceManager.getOperationalStatusForIPService(ipServiceWithId5));
+        Assert.assertEquals(Status.CRITICAL, businessServiceManager.getOperationalStatusForBusinessService(bsService1));
+        Assert.assertEquals(Status.NORMAL, businessServiceManager.getOperationalStatusForBusinessService(bsService2));
     }
 
     @Test
     public void testChildMapping() {
-        BusinessServiceEntity service_p_1 = createDummyBusinessService("Business Service #p1");
-        BusinessServiceEntity service_p_2 = createDummyBusinessService("Business Service #p2");
-        BusinessServiceEntity service_c_1 = createDummyBusinessService("Business Service #c1");
-        BusinessServiceEntity service_c_2 = createDummyBusinessService("Business Service #c2");
+        BusinessService service_p_1 = createBusinessService("Business Service #p1");
+        BusinessService service_p_2 = createBusinessService("Business Service #p2");
+        BusinessService service_c_1 = createBusinessService("Business Service #c1");
+        BusinessService service_c_2 = createBusinessService("Business Service #c2");
 
-        businessServiceDao.save(service_p_1);
-        businessServiceDao.save(service_p_2);
-        businessServiceDao.save(service_c_1);
-        businessServiceDao.save(service_c_2);
-
-        businessServiceManager.assignChildService(getBusinessService(service_p_1.getId()), getBusinessService(service_c_1.getId()));
-        businessServiceManager.assignChildService(getBusinessService(service_p_1.getId()), getBusinessService(service_c_2.getId()));
-
-        businessServiceManager.assignChildService(getBusinessService(service_p_2.getId()), getBusinessService(service_c_1.getId()));
-        businessServiceManager.assignChildService(getBusinessService(service_p_2.getId()), getBusinessService(service_c_2.getId()));
+        businessServiceManager.addChildEdge(service_p_1, service_c_1, new Identity(), Edge.DEFAULT_WEIGHT);
+        businessServiceManager.addChildEdge(service_p_1, service_c_2, new Identity(), Edge.DEFAULT_WEIGHT);
+        businessServiceManager.addChildEdge(service_p_2, service_c_1, new Identity(), Edge.DEFAULT_WEIGHT);
+        businessServiceManager.addChildEdge(service_p_2, service_c_2, new Identity(), Edge.DEFAULT_WEIGHT);
 
         Assert.assertEquals(ImmutableSet.of(service_p_1, service_p_2),
                             service_c_1.getParentServices());
-
         Assert.assertEquals(ImmutableSet.of(service_p_1, service_p_2),
                             service_c_2.getParentServices());
     }
 
+    // 1 parent -> 2 children
     @Test
-    public void testChildDeletion() {
-        BusinessServiceEntity service_p = createDummyBusinessService("Business Service #p");
-        BusinessServiceEntity service_c_1 = createDummyBusinessService("Business Service #c1");
-        BusinessServiceEntity service_c_2 = createDummyBusinessService("Business Service #c2");
+    public void testChildDeletionSingleLevel() {
+        BusinessService service_p = createBusinessService("Business Service #p");
+        BusinessService service_c_1 = createBusinessService("Business Service #c1");
+        BusinessService service_c_2 = createBusinessService("Business Service #c2");
 
-        businessServiceDao.save(service_p);
-        businessServiceDao.save(service_c_1);
-        businessServiceDao.save(service_c_2);
+        businessServiceManager.addChildEdge(service_p, service_c_1, new Identity(), Edge.DEFAULT_WEIGHT);
+        businessServiceManager.addChildEdge(service_p, service_c_2, new Identity(), Edge.DEFAULT_WEIGHT);
+        service_p.save();
+        service_c_1.save();
+        service_c_2.save();
+        Assert.assertEquals(2, edgeDao.countAll()); // ensure the edges are there before deleting
 
-        BusinessService parentBs = getBusinessService(service_p.getId());
-        BusinessService child1Bs = getBusinessService(service_c_1.getId());
-        BusinessService child2Bs = getBusinessService(service_c_2.getId());
-
-        businessServiceManager.assignChildService(parentBs, child1Bs);
-        businessServiceManager.assignChildService(parentBs, child2Bs);
-        parentBs.save();
-        child1Bs.save();
-        child2Bs.save();
-
-        child1Bs.delete();
-
+        service_c_1.delete();
         Assert.assertEquals(ImmutableSet.of(service_c_2),
                             service_p.getChildServices());
+        Assert.assertEquals(1, edgeDao.countAll()); // verify that the edge is also gone
+    }
+
+    // 1 parent -> 1 Child -> 1 child
+    @Test
+    public void testChildDeletionMultipleLevels() {
+        BusinessService service_p = createBusinessService("Business Service #p");
+        BusinessService service_c_1 = createBusinessService("Business Service #c1");
+        BusinessService service_c_2 = createBusinessService("Business Service #c2");
+
+        businessServiceManager.addChildEdge(service_p, service_c_1, new Identity(), Edge.DEFAULT_WEIGHT);
+        businessServiceManager.addChildEdge(service_c_1, service_c_2, new Identity(), Edge.DEFAULT_WEIGHT);
+        service_p.save();
+        service_c_1.save();
+        service_c_2.save();
+        Assert.assertEquals(2, edgeDao.countAll()); // ensure the edges are there before deleting
+
+        service_c_1.delete();
+        Assert.assertEquals(ImmutableSet.of(),
+                service_p.getChildServices());
+        Assert.assertEquals(0, edgeDao.countAll()); // verify that the edge is also gon
     }
 
     @Test
@@ -237,7 +253,7 @@ public class BusinessServiceManagerImplIT {
                                             businessServiceManager.getBusinessServiceById(serviceId2)),
                             businessServiceManager.getFeasibleChildServices(businessServiceManager.getBusinessServiceById(serviceId3)));
 
-        businessServiceManager.assignChildService(bs1, bs2);
+        businessServiceManager.addChildEdge(bs1, bs2, new Identity(), Edge.DEFAULT_WEIGHT);
         bs1.save();
         bs2.save();
 
@@ -250,7 +266,7 @@ public class BusinessServiceManagerImplIT {
                                             businessServiceManager.getBusinessServiceById(serviceId2)),
                             businessServiceManager.getFeasibleChildServices(businessServiceManager.getBusinessServiceById(serviceId3)));
 
-        businessServiceManager.assignChildService(bs2, bs3);
+        businessServiceManager.addChildEdge(bs2, bs3, new Identity(), Edge.DEFAULT_WEIGHT);
         bs2.save();
         bs3.save();
 
@@ -276,16 +292,22 @@ public class BusinessServiceManagerImplIT {
         Long serviceId2 = businessServiceDao.save(service2);
         Long serviceId3 = businessServiceDao.save(service3);
 
-        businessServiceManager.assignChildService(getBusinessService(serviceId1), getBusinessService(serviceId2));
-        businessServiceManager.assignChildService(getBusinessService(serviceId2), getBusinessService(serviceId3));
-        businessServiceManager.assignChildService(getBusinessService(serviceId3), getBusinessService(serviceId1));
+        businessServiceManager.addChildEdge(getBusinessService(serviceId1), getBusinessService(serviceId2), new Identity(), Edge.DEFAULT_WEIGHT);
+        businessServiceManager.addChildEdge(getBusinessService(serviceId2), getBusinessService(serviceId3), new Identity(), Edge.DEFAULT_WEIGHT);
+        businessServiceManager.addChildEdge(getBusinessService(serviceId3), getBusinessService(serviceId1), new Identity(), Edge.DEFAULT_WEIGHT);
+    }
+
+    private BusinessService createBusinessService(String serviceName) {
+        BusinessService service = new BusinessServiceImpl(businessServiceManager, createDummyBusinessService(serviceName));
+        service.save();
+        return service;
     }
 
     private BusinessService getBusinessService(long serviceId) {
-        return new BusinessServiceImpl((BusinessServiceManagerImpl) businessServiceManager, businessServiceDao.get(serviceId));
+        return new BusinessServiceImpl(businessServiceManager, businessServiceDao.get(serviceId));
     }
 
     private IpService getIpService(int ipServiceId) {
-        return new IpServiceImpl((BusinessServiceManagerImpl) businessServiceManager, monitoredServiceDao.get(ipServiceId));
+        return new IpServiceImpl(businessServiceManager, monitoredServiceDao.get(ipServiceId));
     }
 }

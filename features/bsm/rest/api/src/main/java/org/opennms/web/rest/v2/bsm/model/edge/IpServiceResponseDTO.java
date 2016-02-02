@@ -18,7 +18,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
- * http://www.gnu.org/licenses/
+ *      http://www.gnu.org/licenses/
  *
  * For more information contact:
  *     OpenNMS(R) Licensing <license@opennms.org>
@@ -26,21 +26,16 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.web.rest.v2.bsm.model;
-
-import java.util.HashSet;
-import java.util.Set;
+package org.opennms.web.rest.v2.bsm.model.edge;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.codehaus.jackson.map.annotate.JsonDeserialize;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
-import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.web.rest.api.ResourceLocation;
 import org.opennms.web.rest.api.support.JAXBResourceLocationAdapter;
 import org.opennms.web.rest.api.support.JsonResourceLocationDeserializationProvider;
@@ -64,18 +59,11 @@ public class IpServiceResponseDTO {
     @XmlElement(name="ip-address")
     private String m_ipAddress;
 
-    @XmlElement(name="operational-status")
-    private OnmsSeverity m_operationalStatus;
-
     @XmlElement(name="location")
     @XmlJavaTypeAdapter(JAXBResourceLocationAdapter.class)
     @JsonSerialize(using = JsonResourceLocationSerializationProvider.class)
     @JsonDeserialize(using = JsonResourceLocationDeserializationProvider.class)
     private ResourceLocation location;
-
-    @XmlElement(name="reductionKey")
-    @XmlElementWrapper(name="reductionKeys")
-    private Set<String> m_reductionKeys = new HashSet<>();
 
     public int getId() {
         return m_id;
@@ -83,6 +71,14 @@ public class IpServiceResponseDTO {
 
     public void setId(int id) {
         this.m_id = id;
+    }
+
+    public ResourceLocation getLocation() {
+        return location;
+    }
+
+    public void setLocation(ResourceLocation location) {
+        this.location = location;
     }
 
     public String getServiceName() {
@@ -109,30 +105,6 @@ public class IpServiceResponseDTO {
         this.m_ipAddress = ipAddress;
     }
 
-    public OnmsSeverity getOperationalStatus() {
-        return this.m_operationalStatus;
-    }
-
-    public void setOperationalStatus(final OnmsSeverity operationalStatus) {
-        this.m_operationalStatus = operationalStatus;
-    }
-
-    public ResourceLocation getLocation() {
-        return location;
-    }
-
-    public void setLocation(ResourceLocation location) {
-        this.location = location;
-    }
-
-    public Set<String> getReductionKeys() {
-        return m_reductionKeys;
-    }
-
-    public void setReductionKeys(Set<String> reductionKeys) {
-        m_reductionKeys = reductionKeys;
-    }
-
     @Override
     public boolean equals(Object obj) {
         if (obj == null) {
@@ -146,32 +118,30 @@ public class IpServiceResponseDTO {
         }
         final IpServiceResponseDTO other = (IpServiceResponseDTO) obj;
         final boolean equals = Objects.equal(m_id, other.m_id)
-                               && Objects.equal(m_serviceName, other.m_serviceName)
-                               && Objects.equal(m_nodeLabel, other.m_nodeLabel)
-                               && Objects.equal(m_ipAddress, other.m_ipAddress)
-                               && Objects.equal(m_operationalStatus, other.m_operationalStatus)
-                               && Objects.equal(m_reductionKeys, other.m_reductionKeys);
+                && Objects.equal(m_serviceName, other.m_serviceName)
+                && Objects.equal(m_nodeLabel, other.m_nodeLabel)
+                && Objects.equal(m_ipAddress, other.m_ipAddress)
+                && Objects.equal(location, other.location);
         return equals;
     }
 
     @Override
     public int hashCode() {
         return Objects.hashCode(m_id,
-                                m_serviceName,
-                                m_nodeLabel,
-                                m_ipAddress,
-                                m_operationalStatus);
+                m_serviceName,
+                m_nodeLabel,
+                m_ipAddress,
+                location);
     }
 
     @Override
     public String toString() {
         return com.google.common.base.Objects.toStringHelper(this)
-                                             .add("id", m_id)
-                                             .add("serviceName", m_serviceName)
-                                             .add("nodeLabel", m_nodeLabel)
-                                             .add("ipAddress", m_ipAddress)
-                                             .add("operationalStatus", m_operationalStatus)
-                                             .add("reductionKeys", m_reductionKeys)
-                                             .toString();
+                .add("id", m_id)
+                .add("serviceName", m_serviceName)
+                .add("nodeLabel", m_nodeLabel)
+                .add("ipAddress", m_ipAddress)
+                .add("location", location)
+                .toString();
     }
 }

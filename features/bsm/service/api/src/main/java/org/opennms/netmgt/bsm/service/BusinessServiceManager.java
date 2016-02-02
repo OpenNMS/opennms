@@ -18,7 +18,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
- * http://www.gnu.org/licenses/
+ *      http://www.gnu.org/licenses/
  *
  * For more information contact:
  *     OpenNMS(R) Licensing <license@opennms.org>
@@ -34,9 +34,15 @@ import java.util.Set;
 import org.opennms.core.criteria.Criteria;
 import org.opennms.netmgt.bsm.service.model.BusinessService;
 import org.opennms.netmgt.bsm.service.model.IpService;
-import org.opennms.netmgt.model.OnmsSeverity;
+import org.opennms.netmgt.bsm.service.model.Status;
+import org.opennms.netmgt.bsm.service.model.edge.ChildEdge;
+import org.opennms.netmgt.bsm.service.model.edge.Edge;
+import org.opennms.netmgt.bsm.service.model.edge.IpServiceEdge;
+import org.opennms.netmgt.bsm.service.model.edge.ReductionKeyEdge;
+import org.opennms.netmgt.bsm.service.model.mapreduce.MapFunction;
+import org.opennms.netmgt.bsm.service.model.mapreduce.ReductionFunction;
 
-public interface BusinessServiceManager {
+public interface BusinessServiceManager extends NodeManager {
 
     List<BusinessService> getAllBusinessServices();
 
@@ -44,7 +50,13 @@ public interface BusinessServiceManager {
 
     List<BusinessService> findMatching(Criteria criteria);
 
+    int countMatching(Criteria criteria);
+
     BusinessService createBusinessService();
+
+    Edge getEdgeById(Long edgeId);
+
+    boolean deleteEdge(BusinessService service, Edge edge);
 
     void saveBusinessService(BusinessService newObject);
 
@@ -52,30 +64,40 @@ public interface BusinessServiceManager {
 
     BusinessService getBusinessServiceById(Long id);
 
-    boolean assignIpService(BusinessService service, IpService ipService);
-
-    boolean removeIpService(BusinessService service, IpService ipService);
-
-    boolean assignChildService(BusinessService service, BusinessService childService);
-
-    boolean removeChildService(BusinessService service, BusinessService childService);
-
     Set<BusinessService> getFeasibleChildServices(BusinessService service);
 
-    OnmsSeverity getOperationalStatusForBusinessService(BusinessService service);
+    Status getOperationalStatusForBusinessService(BusinessService service);
 
-    OnmsSeverity getOperationalStatusForIPService(IpService ipService);
+    Status getOperationalStatusForIPService(IpService ipService);
+
+    Status getOperationalStatusForReductionKey(String reductionKey);
+
+    Status getOperationalStatusForEdge(Edge edge);
 
     List<IpService> getAllIpServices();
 
     IpService getIpServiceById(Integer id);
 
-    void setIpServices(BusinessService service, Set<IpService> ipServices);
-
-    void setChildServices(BusinessService service, Set<BusinessService> childServices);
-
     /**
      * Triggers a reload of the Business Service Daemon.
      */
     void triggerDaemonReload();
+
+    Set<BusinessService> getParentServices(Long id);
+
+    List<MapFunction> listMapFunctions();
+
+    List<ReductionFunction> listReduceFunctions();
+
+    void setChildEdges(BusinessService parentService, Set<ChildEdge> childEdges);
+
+    boolean addChildEdge(BusinessService parent, BusinessService child, MapFunction mapFunction, int weight);
+
+    void setIpServiceEdges(BusinessService businessService, Set<IpServiceEdge> ipServiceEdges);
+
+    boolean addIpServiceEdge(BusinessService businessService, IpService ipService, MapFunction mapFunction, int weight);
+
+    boolean addReductionKeyEdge(BusinessService businessService, String reductionKey, MapFunction mapFunction, int weight);
+
+    void setReductionKeyEdges(BusinessService businessService, Set<ReductionKeyEdge> reductionKeyEdges);
 }

@@ -43,12 +43,12 @@ import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.PrimaryType;
 import org.opennms.osgi.EventConsumer;
 
-public class NodeDaoContainer extends OnmsDaoContainer<OnmsNode,Integer> {
+public class NodeDaoContainer extends OnmsVaadinContainer<OnmsNode,Integer> {
 
 	private static final long serialVersionUID = -5697472655705494537L;
 
 	public NodeDaoContainer(NodeDao dao) {
-		super(OnmsNode.class, dao);
+		super(OnmsNode.class, new OnmsDaoContainerDatasource<>(dao));
         addBeanToHibernatePropertyMapping("primaryInterface", "ipInterfaces.ipAddress");
 	}
 
@@ -67,7 +67,7 @@ public class NodeDaoContainer extends OnmsDaoContainer<OnmsNode,Integer> {
 
     @Override
     protected void doItemAddedCallBack(int rowNumber, Integer id, OnmsNode eachBean) {
-        // eachBean.getPrimaryInterface(); // TODO MVR enable again, this currently does not work
+        eachBean.getPrimaryInterface();
     }
 
     @Override

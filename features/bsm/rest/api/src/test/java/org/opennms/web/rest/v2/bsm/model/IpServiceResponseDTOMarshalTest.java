@@ -18,7 +18,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
- * http://www.gnu.org/licenses/
+ *      http://www.gnu.org/licenses/
  *
  * For more information contact:
  *     OpenNMS(R) Licensing <license@opennms.org>
@@ -34,9 +34,9 @@ import java.util.Collection;
 
 import org.junit.runners.Parameterized;
 import org.opennms.core.test.xml.MarshalAndUnmarshalTest;
-import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.web.rest.api.ApiVersion;
 import org.opennms.web.rest.api.ResourceLocation;
+import org.opennms.web.rest.v2.bsm.model.edge.IpServiceResponseDTO;
 
 public class IpServiceResponseDTOMarshalTest extends MarshalAndUnmarshalTest<IpServiceResponseDTO> {
 
@@ -47,38 +47,28 @@ public class IpServiceResponseDTOMarshalTest extends MarshalAndUnmarshalTest<IpS
     @Parameterized.Parameters
     public static Collection<Object[]> data() throws IOException {
         IpServiceResponseDTO ipService = new IpServiceResponseDTO();
-        ipService.setLocation(new ResourceLocation(ApiVersion.Version2, "business-services", "ip-services", "1"));
-        ipService.setId(1);
+        ipService.setId(17);
         ipService.setIpAddress("1.1.1.1");
         ipService.setNodeLabel("dummy");
-        ipService.setOperationalStatus(OnmsSeverity.WARNING);
         ipService.setServiceName("ICMP");
-        ipService.getReductionKeys().add("key1");
-        ipService.getReductionKeys().add("key2");
+        ipService.setLocation(new ResourceLocation(ApiVersion.Version2, "business-services", "ip-services", "17"));
 
         return Arrays.asList(new Object[][]{{
                 IpServiceResponseDTO.class,
                 ipService,
                 "{" +
-                "  \"location\" : \"/api/v2/business-services/ip-services/1\"," +
-                "  \"id\" : 1," +
-                "  \"ipAddress\" : \"1.1.1.1\"," +
-                "  \"nodeLabel\" : \"dummy\"," +
-                "  \"operationalStatus\" : \"WARNING\"," +
-                "  \"reductionKeys\": [ \"key1\", \"key2\" ]," +
-                "  \"serviceName\" : \"ICMP\"" +
+                "   \"id\" : 17," +
+                "   \"location\" : \"/api/v2/business-services/ip-services/17\"," +
+                "   \"ipAddress\" : \"1.1.1.1\"," +
+                "   \"nodeLabel\" : \"dummy\"," +
+                "   \"serviceName\" : \"ICMP\"" +
                 "}",
-                "<ip-service>" +
-                        "<id>1</id>" +
-                        "<service-name>ICMP</service-name>" +
-                        "<node-label>dummy</node-label>" +
-                        "<ip-address>1.1.1.1</ip-address>" +
-                        "<operational-status>WARNING</operational-status>" +
-                        "<location>/api/v2/business-services/ip-services/1</location>" +
-                        "<reductionKeys>" +
-                            "<reductionKey>key1</reductionKey>" +
-                            "<reductionKey>key2</reductionKey>" +
-                        "</reductionKeys>" +
+                "<ip-service>\n" +
+                "   <id>17</id>\n" +
+                "   <service-name>ICMP</service-name>\n" +
+                "   <node-label>dummy</node-label>\n" +
+                "   <ip-address>1.1.1.1</ip-address>\n" +
+                "   <location>/api/v2/business-services/ip-services/17</location>\n" +
                 "</ip-service>"
         }});
     }
