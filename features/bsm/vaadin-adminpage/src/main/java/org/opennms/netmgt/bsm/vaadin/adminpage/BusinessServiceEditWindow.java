@@ -291,6 +291,7 @@ public class BusinessServiceEditWindow extends Window {
             }
         });
 
+        edgesListAndButtonLayout.setSpacing(true);
         edgesListAndButtonLayout.addComponent(m_edgesListSelect);
         edgesListAndButtonLayout.setExpandRatio(m_edgesListSelect, 1.0f);
 
