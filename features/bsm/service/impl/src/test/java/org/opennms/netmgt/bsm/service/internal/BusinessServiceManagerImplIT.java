@@ -79,7 +79,7 @@ import com.google.common.collect.Lists;
         "classpath:/META-INF/opennms/applicationContext-setupIpLike-enabled.xml",
         "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml" })
 @JUnitConfigurationEnvironment
-@JUnitTemporaryDatabase
+@JUnitTemporaryDatabase(reuseDatabase = false)
 @Transactional
 public class BusinessServiceManagerImplIT {
 
