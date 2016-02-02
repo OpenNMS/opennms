@@ -205,6 +205,7 @@ public class BusinessServiceEditWindow extends Window {
         verticalLayout.addComponent(m_reduceFunctionNativeSelect);
 
         m_thresholdTextField = new TextField("Threshold");
+        m_thresholdTextField.setId("thresholdTextField");
         m_thresholdTextField.setRequired(false);
         m_thresholdTextField.setEnabled(false);
         m_thresholdTextField.setImmediate(true);
