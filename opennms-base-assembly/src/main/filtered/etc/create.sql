@@ -416,9 +416,10 @@ CREATE UNIQUE INDEX scanreportpollresults_id_scanreportid_idx on scanreportpollr
 --#####################################################
 
 CREATE TABLE scanreportlogs (
-    scanReportId PRIMARY KEY TEXT NOT NULL,
+    scanReportId TEXT NOT NULL,
     logText TEXT,
 
+    CONSTRAINT scanreportlogs_pkey PRIMARY KEY (scanReportId),
     CONSTRAINT scanreportlogs_fkey FOREIGN KEY (scanReportId) REFERENCES scanreports (id) ON DELETE CASCADE
 );
 
