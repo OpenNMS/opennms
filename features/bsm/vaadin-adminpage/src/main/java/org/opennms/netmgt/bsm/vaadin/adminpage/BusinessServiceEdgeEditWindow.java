@@ -92,7 +92,7 @@ public class BusinessServiceEdgeEditWindow extends Window {
          * Basic window setup
          */
         setModal(true);
-        setClosable(true);
+        setClosable(false);
         setResizable(false);
         setWidth(50, Unit.PERCENTAGE);
         setHeight(85, Unit.PERCENTAGE);
@@ -103,7 +103,6 @@ public class BusinessServiceEdgeEditWindow extends Window {
         final VerticalLayout rootLayout = new VerticalLayout();
         rootLayout.setSpacing(true);
         rootLayout.setMargin(false);
-        rootLayout.setSizeFull();
 
         /**
          * ...and the nested layout
@@ -111,7 +110,6 @@ public class BusinessServiceEdgeEditWindow extends Window {
         final FormLayout formLayout = new FormLayout();
         formLayout.setSpacing(true);
         formLayout.setMargin(true);
-        formLayout.setSizeFull();
 
         /**
          * type selector box
@@ -272,8 +270,6 @@ public class BusinessServiceEdgeEditWindow extends Window {
         m_mapFunctionSeveritySelect.setValue(Status.INDETERMINATE);
         m_weightField.setValue(Integer.toString(Edge.DEFAULT_WEIGHT));
 
-        rootLayout.addComponent(formLayout);
-
         /**
          * add the button layout...
          */
@@ -327,16 +323,17 @@ public class BusinessServiceEdgeEditWindow extends Window {
          * ...and a cancel button
          */
         final Button cancelButton = new Button("Cancel");
-        cancelButton.setId("cancelButton");
+        cancelButton.setId("cancelEdgeButton");
         cancelButton.addClickListener((Button.ClickListener) event -> close());
         buttonLayout.addComponent(cancelButton);
 
-        rootLayout.addComponent(buttonLayout);
-        rootLayout.setComponentAlignment(buttonLayout, Alignment.BOTTOM_RIGHT);
 
         /**
          * now set the root layout
          */
+        rootLayout.addComponent(formLayout);
+        rootLayout.addComponent(buttonLayout);
+        rootLayout.setComponentAlignment(buttonLayout, Alignment.BOTTOM_RIGHT);
         setContent(rootLayout);
     }
 }
