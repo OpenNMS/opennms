@@ -103,6 +103,7 @@ include::text/poller/monitors/SystemExecuteMonitor.adoc[]
 include::text/poller/monitors/VmwareCimMonitor.adoc[]
 include::text/poller/monitors/VmwareMonitor.adoc[]
 include::text/poller/monitors/Win32ServiceMonitor.adoc[]
+include::text/poller/monitors/WsManMonitor.adoc[]
 include::text/poller/monitors/XmpMonitor.adoc[]
 
 [[ga-events]]

@@ -13,6 +13,7 @@
 		<detector name="SMTP" class="org.opennms.netmgt.provision.detector.simple.SmtpDetector" />
 		<detector name="SNMP" class="org.opennms.netmgt.provision.detector.snmp.SnmpDetector" />
 		<detector name="SSH" class="org.opennms.netmgt.provision.detector.ssh.SshDetector" />
+		<detector name="WS-Man" class="org.opennms.netmgt.provision.detector.wsman.WsManDetector" />
 		<detector name="OpenNMS-JVM" class="org.opennms.netmgt.provision.detector.jmx.Jsr160Detector">
 			<parameter key="port" value="18980"/>
 			<parameter key="factory" value="PASSWORD-CLEAR"/>

@@ -316,6 +316,22 @@
     </complexType>
   </element>
 
+  <element name="resource-types">
+    <annotation>
+      <documentation>a collection of custom resource types</documentation>
+    </annotation>
+
+    <complexType>
+      <sequence>
+        <element maxOccurs="unbounded" minOccurs="0" ref="this:resourceType">
+          <annotation>
+            <documentation>Custom resource types</documentation>
+          </annotation>
+        </element>
+      </sequence>
+    </complexType>
+  </element>
+
   <element name="parameter">
     <annotation>
       <documentation>Parameters to be used for configuration this strategy.
