@@ -123,11 +123,6 @@
           </annotation>
         </element>
       </sequence>
-      <attribute name="canonical-name" type="string" use="optional">
-        <annotation>
-          <documentation>Canonical name to use when connecting to the host. Used in conjunction with GSS authentication.</documentation>
-        </annotation>
-      </attribute>
       <attribute name="retry" type="int" use="optional"/>
       <attribute name="timeout" type="int" use="optional"/>
       <attribute name="username" type="string" use="optional"/>
