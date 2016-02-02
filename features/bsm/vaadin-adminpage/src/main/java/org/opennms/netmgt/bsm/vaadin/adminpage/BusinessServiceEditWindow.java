@@ -191,7 +191,7 @@ public class BusinessServiceEditWindow extends Window {
                                                                 .add(Threshold.class)
                                                                 .build());
         m_reduceFunctionNativeSelect.setId("reduceFunctionNativeSelect");
-        m_reduceFunctionNativeSelect.setWidth(98.0f, Unit.PERCENTAGE);
+        m_reduceFunctionNativeSelect.setWidth(100.0f, Unit.PERCENTAGE);
         m_reduceFunctionNativeSelect.setNullSelectionAllowed(false);
         m_reduceFunctionNativeSelect.setMultiSelect(false);
         m_reduceFunctionNativeSelect.setImmediate(true);
@@ -244,7 +244,7 @@ public class BusinessServiceEditWindow extends Window {
          */
         m_edgesListSelect = new ListSelect("Edges");
         m_edgesListSelect.setId("edgeList");
-        m_edgesListSelect.setWidth(98.0f, Unit.PERCENTAGE);
+        m_edgesListSelect.setWidth(100.0f, Unit.PERCENTAGE);
         m_edgesListSelect.setRows(20);
         m_edgesListSelect.setNullSelectionAllowed(false);
         m_edgesListSelect.setMultiSelect(false);

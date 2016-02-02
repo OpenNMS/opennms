@@ -127,7 +127,7 @@ public class BusinessServiceEdgeEditWindow extends Window {
         m_typeSelect.setItemCaption(Edge.Type.IP_SERVICE, "IP Service");
         m_typeSelect.addItem(Edge.Type.REDUCTION_KEY);
         m_typeSelect.setItemCaption(Edge.Type.REDUCTION_KEY, "Reduction Key");
-        m_typeSelect.setWidth(98.0f, Unit.PERCENTAGE);
+        m_typeSelect.setWidth(100.0f, Unit.PERCENTAGE);
         formLayout.addComponent(m_typeSelect);
 
         /**
@@ -202,7 +202,7 @@ public class BusinessServiceEdgeEditWindow extends Window {
         m_mapFunctionSelect.setMultiSelect(false);
         m_mapFunctionSelect.setNewItemsAllowed(false);
         m_mapFunctionSelect.setRequired(true);
-        m_mapFunctionSelect.setWidth(98.0f, Unit.PERCENTAGE);
+        m_mapFunctionSelect.setWidth(100.0f, Unit.PERCENTAGE);
 
         /**
          * setting the captions for items
@@ -231,7 +231,7 @@ public class BusinessServiceEdgeEditWindow extends Window {
         m_mapFunctionSeveritySelect.setItemCaption(Status.NORMAL, "Normal");
         m_mapFunctionSeveritySelect.addItem(Status.INDETERMINATE);
         m_mapFunctionSeveritySelect.setItemCaption(Status.INDETERMINATE, "Indeterminate");
-        m_mapFunctionSeveritySelect.setWidth(98.0f, Unit.PERCENTAGE);
+        m_mapFunctionSeveritySelect.setWidth(100.0f, Unit.PERCENTAGE);
         m_mapFunctionSeveritySelect.setEnabled(false);
         m_mapFunctionSeveritySelect.setImmediate(true);
         m_mapFunctionSeveritySelect.setValidationVisible(true);
