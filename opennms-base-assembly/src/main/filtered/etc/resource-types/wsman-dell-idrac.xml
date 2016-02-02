@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<resource-types>
+    <resourceType name="dracPowerSupplyIndex" label="iDRAC Power Supply"
+                  resourceLabel="Power Supply (${instanceId})">
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.dao.support.SiblingColumnStorageStrategy">
+        <parameter key="sibling-column-name" value="instanceId" />
+      </storageStrategy>
+    </resourceType>
+</resource-types>

@@ -34,15 +34,16 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang.CharEncoding;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.netmgt.config.collectd.Package;
 import org.opennms.netmgt.config.api.CollectdConfigFactory;
-import org.opennms.netmgt.config.api.DataCollectionConfigDao;
+import org.opennms.netmgt.config.api.ResourceTypesDao;
+import org.opennms.netmgt.config.collectd.Package;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.LocationMonitorDao;
 import org.opennms.netmgt.dao.api.NodeDao;
@@ -97,8 +98,8 @@ public class DefaultResourceDao implements ResourceDao, InitializingBean {
     private LocationMonitorDao m_locationMonitorDao;
     private IpInterfaceDao m_ipInterfaceDao;
     private CollectdConfigFactory m_collectdConfig;
-    private DataCollectionConfigDao m_dataCollectionConfigDao;
-    private Date m_lastUpdateDataCollectionConfig;
+    private ResourceTypesDao m_resourceTypesDao;
+    private Date m_lastUpdatedResourceTypesConfig;
 
     private Map<String, OnmsResourceType> m_resourceTypes = Maps.newHashMap();
     private NodeResourceType m_nodeResourceType;
@@ -110,24 +111,14 @@ public class DefaultResourceDao implements ResourceDao, InitializingBean {
     public DefaultResourceDao() {
     }
 
-    /**
-     * <p>getDataCollectionConfig</p>
-     *
-     * @return a {@link org.opennms.netmgt.config.api.DataCollectionConfigDao} object.
-     */
-    public DataCollectionConfigDao getDataCollectionConfigDao() {
-        return m_dataCollectionConfigDao;
+    public ResourceTypesDao getResourceTypesDao() {
+        return m_resourceTypesDao;
     }
 
-    /**
-     * <p>setDataCollectionConfig</p>
-     *
-     * @param dataCollectionConfigDao a {@link org.opennms.netmgt.config.api.DataCollectionConfigDao} object.
-     */
-    public void setDataCollectionConfigDao(DataCollectionConfigDao dataCollectionConfigDao) {
-        m_dataCollectionConfigDao = dataCollectionConfigDao;
+    public void setResourceTypesDao(ResourceTypesDao resourceTypesDao) {
+        m_resourceTypesDao = Objects.requireNonNull(resourceTypesDao);
     }
-    
+
     /**
      * <p>getNodeDao</p>
      *
@@ -214,8 +205,8 @@ public class DefaultResourceDao implements ResourceDao, InitializingBean {
             throw new IllegalStateException("collectdConfig property has not been set");
         }
         
-        if (m_dataCollectionConfigDao == null) {
-            throw new IllegalStateException("dataCollectionConfig property has not been set");
+        if (m_resourceTypesDao == null) {
+            throw new IllegalStateException("resourceTypesDao property has not been set");
         }
 
         if (m_nodeDao == null) {
@@ -249,7 +240,7 @@ public class DefaultResourceDao implements ResourceDao, InitializingBean {
         resourceType = new DistributedStatusResourceType(m_resourceStorageDao, m_locationMonitorDao);
         resourceTypes.put(resourceType.getName(), resourceType);
 
-        resourceTypes.putAll(GenericIndexResourceType.createTypes(m_dataCollectionConfigDao.getConfiguredResourceTypes(), m_resourceStorageDao));
+        resourceTypes.putAll(GenericIndexResourceType.createTypes(m_resourceTypesDao.getResourceTypes(), m_resourceStorageDao));
 
         m_nodeResourceType = new NodeResourceType(this, m_nodeDao);
         resourceTypes.put(m_nodeResourceType.getName(), m_nodeResourceType);
@@ -266,14 +257,14 @@ public class DefaultResourceDao implements ResourceDao, InitializingBean {
         resourceTypes.put(m_nodeSourceResourceType.getName(), m_nodeSourceResourceType);
 
         m_resourceTypes = resourceTypes;
-        m_lastUpdateDataCollectionConfig = m_dataCollectionConfigDao.getLastUpdate();
+        m_lastUpdatedResourceTypesConfig = m_resourceTypesDao.getLastUpdate();
     }
 
     /** {@inheritDoc} */
     @Override
     public Collection<OnmsResourceType> getResourceTypes() {
-        if (isDataCollectionConfigChanged()) {
-            LOG.debug("The data collection configuration has been changed, reloading resource types.");
+        if (isResourceTypesConfigChanged()) {
+            LOG.debug("The resource type configuration has been changed, reloading resource types.");
             initResourceTypes();
         }
         return m_resourceTypes.values();
@@ -460,10 +451,10 @@ public class DefaultResourceDao implements ResourceDao, InitializingBean {
                                       + resource + "' with resource type '" + resourceType + "' on resource '" + resource + "'", null);
     }
 
-    private boolean isDataCollectionConfigChanged() {
-        Date current = m_dataCollectionConfigDao.getLastUpdate();
-        if (current.after(m_lastUpdateDataCollectionConfig)) {
-            m_lastUpdateDataCollectionConfig = current;
+    private boolean isResourceTypesConfigChanged() {
+        Date current = m_resourceTypesDao.getLastUpdate();
+        if (current.after(m_lastUpdatedResourceTypesConfig)) {
+            m_lastUpdatedResourceTypesConfig = current;
             return true;
         }
         return false;
