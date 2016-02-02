@@ -35,8 +35,10 @@
         <entry key="org.apache.cxf.jaxrs.resource.context.provider" value-ref="springResourceContextProvider"/>
         <!-- URL-decode FIQL search values so that reserved characters can be URL-encoded -->
         <entry key="search.decode.values" value="true"/>
-        <!-- NMS-7866: Don't replace 127.0.0.1 with localhost -->
-        <entry key="replace.loopback.address.with.localhost" value="false"/>
+        <!-- Use the ISO-8601 date format (note that the timezone is not exactly ISO-8601) -->
+        <entry key="search.date-format" value="yyyy-MM-dd'T'HH:mm:ss.SSSZ"/>
+        <!-- Do not strip any colons in the timezone (because the timezone is not exactly ISO-8601) -->
+        <entry key="search.timezone.support" value="false"/>
       </jaxrs:properties>
       <jaxrs:extensionMappings>
         <entry key="json" value="application/json" />

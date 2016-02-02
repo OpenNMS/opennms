@@ -6,6 +6,7 @@ var BASE_REST_URL = 'api/v2';
 /**
  * ISO-8601 date format string.
  */
+var ISO_8601_DATE_FORMAT = 'yyyy-MM-ddTHH:mm:ss.sssZ';
 var ISO_8601_DATE_FORMAT_WITHOUT_MILLIS = 'yyyy-MM-ddTHH:mm:ssZ';
 
 /**
@@ -399,8 +400,7 @@ function parseContentRange(contentRange) {
 				// it includes the millisecond portion of the date.
 				//clause.value = new Date(clause.value).toISOString();
 
-				// TODO: Add milliseconds to this timestamp once CXF can parse it
-				clause.value = $filter('date')(new Date(clause.value), ISO_8601_DATE_FORMAT_WITHOUT_MILLIS);
+				clause.value = $filter('date')(new Date(clause.value), ISO_8601_DATE_FORMAT);
 			}
 
 			// Make sure the clause isn't already in the list of search clauses
@@ -437,8 +437,7 @@ function parseContentRange(contentRange) {
 
 		// Convert an epoch timestamp into String format before adding the search clause
 		$scope.addEpochTimestampSearchClause = function(clause) {
-			// TODO: Add milliseconds to this timestamp once CXF can parse it
-			clause.value = $filter('date')(clause.value, ISO_8601_DATE_FORMAT_WITHOUT_MILLIS);
+			clause.value = $filter('date')(clause.value, ISO_8601_DATE_FORMAT);
 			$scope.addSearchClause(clause);
 		}
 
