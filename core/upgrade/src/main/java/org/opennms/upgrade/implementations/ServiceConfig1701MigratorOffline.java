@@ -36,7 +36,6 @@ import java.io.StringWriter;
 import org.apache.commons.io.FileUtils;
 import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.core.xml.JaxbUtils;
-import org.opennms.netmgt.config.service.Attribute;
 import org.opennms.netmgt.config.service.Service;
 import org.opennms.netmgt.config.service.ServiceConfiguration;
 import org.opennms.upgrade.api.AbstractOnmsUpgrade;
@@ -53,7 +52,7 @@ import org.xml.sax.InputSource;
  * 
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a> 
  */
-public class ServiceConfigMigratorOffline extends AbstractOnmsUpgrade {
+public class ServiceConfig1701MigratorOffline extends AbstractOnmsUpgrade {
 
     /**
      * The base configuration object (or configuration reference).
@@ -66,20 +65,15 @@ public class ServiceConfigMigratorOffline extends AbstractOnmsUpgrade {
     private File configFile;
 
     /**
-     * Flag to skip the upgrade if the installed version is 14.0.0 or higher.
-     */
-    private boolean skipMe = false;
-
-    /**
      * Instantiates a new Service Configuration migrator offline.
      *
      * @throws OnmsUpgradeException the OpenNMS upgrade exception
      */
-    public ServiceConfigMigratorOffline() throws OnmsUpgradeException {
+    public ServiceConfig1701MigratorOffline() throws OnmsUpgradeException {
         super();
         try {
             configFile = ConfigFileConstants.getFile(ConfigFileConstants.SERVICE_CONF_FILE_NAME);
-            InputSource src = new InputSource(getClass().getResourceAsStream("/default/service-configuration-14.0.0.xml"));
+            InputSource src = new InputSource(getClass().getResourceAsStream("/default/service-configuration-17.0.1.xml"));
             baseConfig = JaxbUtils.unmarshal(ServiceConfiguration.class, src);
         } catch (IOException e) {
             throw new OnmsUpgradeException("Can't find Services Configuration file", e);
@@ -91,7 +85,7 @@ public class ServiceConfigMigratorOffline extends AbstractOnmsUpgrade {
      */
     @Override
     public int getOrder() {
-        return 6;
+        return 7;
     }
 
     /* (non-Javadoc)
@@ -115,11 +109,6 @@ public class ServiceConfigMigratorOffline extends AbstractOnmsUpgrade {
      */
     @Override
     public void preExecute() throws OnmsUpgradeException {
-        if (isInstalledVersionGreaterOrEqual(14, 0, 0)) {
-            log("This upgrade procedure should only run against systems older than 14.0.0; the current version is " + getOpennmsVersion() + "\n");
-            skipMe = true;
-            return;
-        }
         try {
             log("Backing up %s\n", configFile);
             zipFile(configFile);
@@ -133,7 +122,6 @@ public class ServiceConfigMigratorOffline extends AbstractOnmsUpgrade {
      */
     @Override
     public void postExecute() throws OnmsUpgradeException {
-        if (skipMe) return;
         File zip = new File(configFile.getAbsolutePath() + ZIP_EXT);
         if (zip.exists()) {
             log("Removing backup %s\n", zip);
@@ -146,7 +134,6 @@ public class ServiceConfigMigratorOffline extends AbstractOnmsUpgrade {
      */
     @Override
     public void rollback() throws OnmsUpgradeException {
-        if (skipMe) return;
         log("Restoring backup %s\n", configFile);
         File zip = new File(configFile.getAbsolutePath() + ZIP_EXT);
         FileUtils.deleteQuietly(configFile);
@@ -158,46 +145,25 @@ public class ServiceConfigMigratorOffline extends AbstractOnmsUpgrade {
      */
     @Override
     public void execute() throws OnmsUpgradeException {
-        if (skipMe) return;
         try {
             ServiceConfiguration currentCfg = JaxbUtils.unmarshal(ServiceConfiguration.class, configFile);
-            int index = 0;
-            for (Service baseSvc : baseConfig.getServiceCollection()) {
-                Service localSvc = getService(currentCfg, baseSvc.getName());
-                if (localSvc == null) {
-                    if (baseSvc.isEnabled()) {
-                        log("Adding new service %s\n", baseSvc.getName());
-                    } else {
-                        log("Marking service %s as disabled\n", baseSvc.getName());
-                    }
-                    currentCfg.getServiceCollection().add(index, baseSvc);
-                    continue;
+
+            log("Current configuration: " + currentCfg.getServiceCount() + " services.\n");
+            log("Base configuration: " + baseConfig.getServiceCount() + " services.\n");
+
+            for (int i=currentCfg.getServiceCount() - 1; i >= 0; i--) {
+                final Service localSvc = currentCfg.getService(i);
+                final Service baseSvc = getService(baseConfig, localSvc.getName());
+                if (baseSvc == null) {
+                    log("Removing old service %s\n", localSvc.getName());
+                    currentCfg.getServiceCollection().remove(i);
                 }
-                if (!baseSvc.isEnabled()) {
-                    log("Disabling service %s because it is not on the default list of enabled services\n", localSvc.getName());
-                    localSvc.setEnabled(false);
-                }
-                if (localSvc.getClassName().equals("org.opennms.netmgt.poller.jmx.RemotePollerBackEnd")) {
-                    log("Fixing the class path for RemotePollerBackEnd.\n");
-                    localSvc.setClassName("org.opennms.netmgt.poller.remote.jmx.RemotePollerBackEnd");
-                }
-                if (localSvc.getName().equals("OpenNMS:Name=Linkd")) {
-                    log("Disabling Linkd (to promote EnhancedLinkd)\n");
-                    localSvc.setEnabled(false);
-                }
-                Attribute a = getLoggingPrefix(localSvc);
-                if (a != null) {
-                    String prefix = a.getValue().getContent().toLowerCase();
-                    // If the logging prefix isn't already lower case...
-                    if (!a.getValue().getContent().equals(prefix)) {
-                        // then set it to the lower case value
-                        log("Fixing logging prefix for service %s\n", localSvc.getName());
-                        a.getValue().setContent(prefix);
-                    }
-                }
-                index++;
             }
-            StringWriter sw = new StringWriter();
+
+            log("New configuration: " + currentCfg.getServiceCount() + " services.\n");
+
+            // now remove 
+            final StringWriter sw = new StringWriter();
             sw.write("<?xml version=\"1.0\"?>\n");
             sw.write("<!-- NOTE!!!!!!!!!!!!!!!!!!!\n");
             sw.write("The order in which these services are specified is important - for example, Eventd\n");
@@ -206,7 +172,7 @@ public class ServiceConfigMigratorOffline extends AbstractOnmsUpgrade {
             sw.write("maintained\n");
             sw.write("-->\n");
             JaxbUtils.marshal(currentCfg, sw);
-            FileWriter fw = new FileWriter(configFile);
+            final FileWriter fw = new FileWriter(configFile);
             fw.write(sw.toString());
             fw.close();
         } catch (Exception e) {
@@ -225,21 +191,6 @@ public class ServiceConfigMigratorOffline extends AbstractOnmsUpgrade {
         for(Service s : svcConfig.getServiceCollection()) {
             if (s.getName().equals(serviceName)) {
                 return s;
-            }
-        }
-        return null;
-    }
-
-    /**
-     * Gets the logging prefix.
-     *
-     * @param svc the OpenNMS service
-     * @return the logging prefix attribute
-     */
-    private static Attribute getLoggingPrefix(Service svc) {
-        for (Attribute a : svc.getAttributeCollection()) {
-            if (a.getName().equals("LoggingPrefix")) {
-                return a;
             }
         }
         return null;

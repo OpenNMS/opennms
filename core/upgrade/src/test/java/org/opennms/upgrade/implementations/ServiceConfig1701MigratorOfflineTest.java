@@ -51,12 +51,12 @@ import org.opennms.netmgt.config.service.Service;
 import org.opennms.netmgt.config.service.ServiceConfiguration;
 
 /**
- * The Test Class for EOLServiceConfigMigratorOffline.
+ * The Test Class for ServiceConfig1701MigratorOffline.
  * 
  * @author <a href="mailto:ranger@opennms.org">Benjamin Reed</a>
  */
 @RunWith(Parameterized.class)
-public class EOLServiceConfigMigratorOfflineTest {
+public class ServiceConfig1701MigratorOfflineTest {
     private final String m_testFile;
     private final int m_totalBefore;
     private final int m_totalAfter;
@@ -69,7 +69,7 @@ public class EOLServiceConfigMigratorOfflineTest {
             "OpenNMS:Name=AccessPointMonitor"
     );
 
-    public EOLServiceConfigMigratorOfflineTest(final String testFile, final int totalBefore, final int totalAfter, final int enabledAfter) {
+    public ServiceConfig1701MigratorOfflineTest(final String testFile, final int totalBefore, final int totalAfter, final int enabledAfter) {
         m_testFile = testFile;
         m_totalBefore = totalBefore;
         m_totalAfter = totalAfter;
@@ -102,12 +102,12 @@ public class EOLServiceConfigMigratorOfflineTest {
     public static Collection<Object[]> params() {
         return Arrays.asList(new Object[][] {
             // service config, total, enabled
-            { "target/home/etc/service-configuration-1.8.17.xml",  38, 38, 35 },
-            { "target/home/etc/service-configuration-1.10.14.xml", 38, 38, 35 },
-            { "target/home/etc/service-configuration-1.12.9.xml",  39, 39, 35 },
-            { "target/home/etc/service-configuration-14.0.3.xml",  38, 38, 27 },
-            { "target/home/etc/service-configuration-15.0.2.xml",  38, 38, 27 },
-            { "target/home/etc/service-configuration-16.0.4.xml",  37, 37, 27 }
+            { "target/home/etc/service-configuration-1.8.17.xml",  38, 29, 29 },
+            { "target/home/etc/service-configuration-1.10.14.xml", 38, 29, 29 },
+            { "target/home/etc/service-configuration-1.12.9.xml",  39, 29, 29 },
+            { "target/home/etc/service-configuration-14.0.3.xml",  38, 30, 24 },
+            { "target/home/etc/service-configuration-15.0.2.xml",  38, 30, 24 },
+            { "target/home/etc/service-configuration-16.0.4.xml",  37, 30, 24 }
         });
     }
 
@@ -125,7 +125,7 @@ public class EOLServiceConfigMigratorOfflineTest {
         assertEquals(m_totalBefore, cfg.getServiceCount());
 
         // perform the upgrade
-        final EOLServiceConfigMigratorOffline migrator = new EOLServiceConfigMigratorOffline();
+        final ServiceConfig1701MigratorOffline migrator = new ServiceConfig1701MigratorOffline();
         migrator.execute();
 
         // confirm the total and active services after the upgrade
