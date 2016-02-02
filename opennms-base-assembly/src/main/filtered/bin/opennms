@@ -169,11 +169,11 @@ checkXmlFiles(){
 		find "$OPENNMS_HOME/etc" -type f -name \*.xml | while read "FILE"; do
 			"$XMLLINT" "$FILE" >/dev/null 2>&1
 			if [ $? != 0 ]; then
-				echo "ERROR: XML validation failed: $FILE" >&2
-				echo "	   run '$XMLLINT $FILE' for details" >&2
+				echo "ERROR: XML validation failed: $FILE"
+				echo "	   run '$XMLLINT $FILE' for details"
 			fi
 		done >"$TEMPFILE"
-		cat "$TEMPFILE"
+		cat "$TEMPFILE" >&2
 		FAILCOUNT=`cat "$TEMPFILE" | grep -c 'XML validation failed'`
 		rm "$TEMPFILE"
 		if [ $FAILCOUNT -gt 0 ]; then
