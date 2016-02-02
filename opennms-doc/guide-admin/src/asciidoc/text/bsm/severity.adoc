@@ -1,28 +1,23 @@
 // Allow GitHub image rendering
 :imagesdir: ../../../images
 
-OpenNMS assigns a _Severity_ to every _Events_, _Alarms_ and _Notifications_.
+OpenNMS assigns a _Severity_ to every _Event_, _Alarm_ and _Notification_.
 
 .Severities
 [options="header, autowidth"]
 |===
-| Name        | Numerical code | Color / Code | Description
-| `Critical`      | _7_  | Purple / `#c00`      | This event means that numerous devices on the network are affected by the event.
-  Everyone who can should stop what they are doing and focus on fixing the problem.
-
-| `Major`         | _6_  | Red / `#f30`         | A device is completely down or in danger of going down.
-  Attention needs to be paid to this problem immediately.
-
-| `Minor`         | _5_  | Orange / `#f90`      | A part of a device (a service, an interface, a power supply, etc.) has stopped functioning.
-  The device needs attention.
-
-| `Warning`       | _4_  | Yellow / `#fc0`      | An event has occurred that may require action.
-  This severity can also be used to indicate a condition that should be noted (logged) but does not require immediate action.
-
-| `Normal`        | _3_  | Dark green / `#360`  | Informational message. No action required.
-
-| `Cleared`       | _2_  | Grey / `#eee`        | This severity is reserved for use in Alarms to indicate that an alarm describes a self-clearing error condition has been corrected and service is restored.
-  This severity should never be used in event definitions. Please use "Normal" severity for events that clear an alarm.
-
-| `Indeterminate` | _1_  | Light green / `#990` | No Severity could be associated with this event.
+| Name            | Numerical code  | Color / Code          | Description
+| `Critical`      | _7_             | Purple / `#c00`       | This event means that numerous devices on the network are affected by the event.
+                                                              Everyone who can should stop what they are doing and focus on fixing the problem.
+| `Major`         | _6_             | Red / `#f30`          | A device is completely down or in danger of going down.
+                                                              Attention needs to be paid to this problem immediately.
+| `Minor`         | _5_             | Orange / `#f90`       | A part of a device (a service, an interface, a power supply, etc.) has stopped functioning.
+                                                              The device needs attention.
+| `Warning`       | _4_             | Yellow / `#fc0`       | An event has occurred that may require action.
+                                                              This severity can also be used to indicate a condition that should be noted (logged) but does not require immediate action.
+| `Normal`        | _3_             | Dark green / `#360`   | Informational message. No action required.
+| `Cleared`       | _2_             | Grey / `#eee`         | This severity is reserved for use in Alarms to indicate that an alarm describes a self-clearing error condition has been corrected and service is restored.
+                                                              This severity should never be used in event definitions.
+                                                              Please use "Normal" severity for events that clear an alarm.
+| `Indeterminate` | _1_             | Light green / `#990`  | No Severity could be associated with this event.
 |===
