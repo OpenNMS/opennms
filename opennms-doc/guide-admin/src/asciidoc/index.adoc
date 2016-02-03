@@ -110,6 +110,7 @@ include::text/service-assurance/monitors/SystemExecuteMonitor.adoc[]
 include::text/service-assurance/monitors/VmwareCimMonitor.adoc[]
 include::text/service-assurance/monitors/VmwareMonitor.adoc[]
 include::text/service-assurance/monitors/Win32ServiceMonitor.adoc[]
+include::text/service-assurance/monitors/WsManMonitor.adoc[]
 include::text/service-assurance/monitors/XmpMonitor.adoc[]
 
 [[ga-events]]
@@ -131,6 +132,14 @@ include::text/provisioning/integration.adoc[]
 include::text/provisioning/single-node.adoc[]
 include::text/provisioning/fine-grained.adoc[]
 include::text/provisioning/api-examples.adoc[]
+
+[ga-business-service-monitoring]
+== Business Service Monitoring
+include::text/bsm/introduction.adoc[]
+
+[ga-severity]
+== Severity
+include::text/bsm/severity.adoc[]
 
 [[ga-database-reports]]
 == Database Reports

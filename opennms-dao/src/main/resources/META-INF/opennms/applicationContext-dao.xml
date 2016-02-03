@@ -477,7 +477,7 @@
     <property name="locationMonitorDao" ref="locationMonitorDao" />
     <property name="ipInterfaceDao" ref="ipInterfaceDao" />
     <property name="collectdConfig" ref="collectdConfig" />
-    <property name="dataCollectionConfigDao" ref="dataCollectionConfig" />
+    <property name="resourceTypesDao" ref="resourceTypesDao" />
     <property name="resourceStorageDao" ref="resourceStorageDao" />
   </bean>
 

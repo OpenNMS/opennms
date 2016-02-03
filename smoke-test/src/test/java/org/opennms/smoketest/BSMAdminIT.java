@@ -35,8 +35,10 @@ import java.util.concurrent.TimeUnit;
 import javax.annotation.Nullable;
 
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.FixMethodOrder;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
 import org.openqa.selenium.By;
@@ -51,6 +53,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
+@Ignore
 public class BSMAdminIT extends OpenNMSSeleniumTestCase {
 
     private static final String BSM_ADMIN_URL = BASE_URL + "opennms/admin/bsm/adminpage.jsp";
@@ -123,6 +126,17 @@ public class BSMAdminIT extends OpenNMSSeleniumTestCase {
         public BsmAdminPageEditWindow removeEdge(String edgeValueString) {
             new Select(findElementByXpath("//*[@id=\"edgeList\"]/select")).selectByVisibleText(edgeValueString);
             findElementById("removeEdgeButton").click();
+            return this;
+        }
+
+        public BsmAdminPageEditWindow setReductionFunction(final String reductionFunctionValueString) {
+            new Select(findElementByXpath("//*[@id=\"reduceFunctionNativeSelect\"]/select")).selectByVisibleText(reductionFunctionValueString);
+            return this;
+        }
+
+        public BsmAdminPageEditWindow setThreshold(final float threshold) {
+            findElementById("thresholdTextField").clear();
+            findElementById("thresholdTextField").sendKeys(String.valueOf(threshold));
             return this;
         }
     }
@@ -260,6 +274,17 @@ public class BSMAdminIT extends OpenNMSSeleniumTestCase {
     public void testCanCreateAndDeleteBusinessService() throws InterruptedException {
         final String businessServiceName = createUniqueBusinessServiceName();
         bsmAdminPage.openNewDialog(businessServiceName).save();
+        bsmAdminPage.delete(businessServiceName);
+    }
+
+    @Test
+    public void testCanCreateAndDeleteBusinessServiceWithThreshold() throws InterruptedException {
+        final String businessServiceName = createUniqueBusinessServiceName();
+        bsmAdminPage.openNewDialog(businessServiceName)
+                    .setReductionFunction("Threshold")
+                    .setThreshold(0.25f)
+                    .save();
+
         bsmAdminPage.delete(businessServiceName);
     }
 
