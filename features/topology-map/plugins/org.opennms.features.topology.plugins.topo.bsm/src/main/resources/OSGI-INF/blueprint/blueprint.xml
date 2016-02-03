@@ -111,6 +111,15 @@
         </service-properties>
     </service>
 
+    <!-- Hide Leaf Elements Operation -->
+    <service interface="org.opennms.features.topology.api.CheckedOperation">
+        <service-properties>
+            <entry key="operation.menuLocation" value="View" />
+            <entry key="operation.label" value="Hide Leaf Elements?group=bsm" />
+        </service-properties>
+        <bean class="org.opennms.features.topology.plugins.topo.bsm.HideLeafElementToggleOperation"/>
+    </service>
+
     <!-- Icon definition -->
     <service interface="org.opennms.features.topology.api.IconRepository">
         <bean class="org.opennms.features.topology.api.support.DefaultIconRepository">

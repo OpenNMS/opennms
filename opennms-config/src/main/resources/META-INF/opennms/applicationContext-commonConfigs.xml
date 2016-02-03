@@ -161,7 +161,9 @@
   <bean id="dataCollectionConfigReloadCheckInterval" class="java.lang.Long">
     <constructor-arg value="${org.opennms.snmp.dataCollectionConfig.reloadCheckInterval:30000}" />
   </bean>
-  
-  
-  
+
+  <bean id="resourceTypesDao" class="org.opennms.netmgt.config.DefaultResourceTypesDao" />
+
+  <onmsgi:service interface="org.opennms.netmgt.config.api.ResourceTypesDao" ref="resourceTypesDao" />
+
 </beans>
