@@ -87,7 +87,7 @@ public abstract class AbstractCollectionResource implements CollectionResource {
      *
      * @param attr The Attribute to add
      */
-    protected final void addAttribute(CollectionAttribute attr) {
+    public final void addAttribute(CollectionAttribute attr) {
         AttributeGroup group = getGroup(attr.getAttributeType().getGroupType());
         LOG.debug("Adding attribute {}: {} to group {}", attr.getClass().getName(), attr, group);
         group.addAttribute(attr);
