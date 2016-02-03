@@ -5,7 +5,7 @@
 _OpenNMS_ provides a very powerful and fine grained service assurance layer based on the _Pollerd_ daemon.
 The service assurance layer monitors and tracks the status of nodes, interfaces and services.
 The status of a managed entity is determined based on related events, alarms and outages.
-However, tis approach treats every element of the system individually and there is no concept of relationships between different nodes or services in the service assurance layer.
+However, this approach treats every element of the system individually and there is no concept of relationships between different nodes or services in the service assurance layer.
 
 The _Business Service Monitoring_ (BSM) feature adds the ability to model relationships between managed entities.
 It combines sets of managed entities into hierarchically structured _Business Services_ that represent a high level view on its elements.
