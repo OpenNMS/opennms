@@ -38,6 +38,8 @@ IP Services in a Business Service are interpreted as two reduction keys:
 
 * `uei.opennms.org/nodes/nodeLostService::%nodeID%:%ipAddress%:%serviceName%`
 This reduction key matches the alarms fired if the monitored service goes down.
+* `uei.opennms.org/nodes/interfaceDown::%nodeID%:%ipAddress%`
+This reduction key matches the alarms fired if the interface with the given ip address on the node goes down.
 * `uei.opennms.org/nodes/nodeDown::%nodeID%`
 This reduction key matches the alarms fired if the entire node providing the monitored service goes down.
 

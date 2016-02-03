@@ -174,6 +174,7 @@ public class Bsmd implements SpringServiceDaemon, BusinessServiceStateChangeHand
             // want to verify that the actual values match our assumptions and bail if they don't
             verifyReductionKey(EventConstants.NODE_LOST_SERVICE_EVENT_UEI, "%uei%:%dpname%:%nodeid%:%interface%:%service%");
             verifyReductionKey(EventConstants.NODE_DOWN_EVENT_UEI, "%uei%:%dpname%:%nodeid%");
+            verifyReductionKey(EventConstants.INTERFACE_DOWN_EVENT_UEI, "%uei%:%dpname%:%nodeid%:%interface%");
         }
 
         // Update the state machine with the latest list of business services
