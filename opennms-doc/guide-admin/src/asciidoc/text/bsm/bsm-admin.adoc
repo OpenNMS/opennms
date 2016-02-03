@@ -14,14 +14,17 @@ Of course, the operational status of a _Business Service_ can be checked at any 
 If the operational status of a _Business Service_ is changing corresponding events are fired.
 
 ==== Structure of a Business Service
+
 Business Services can contain attributes, _Reduction Keys_, references to monitored services and/or other business services.
 
 ===== Reduction Keys as part of a Business Service
+
 _Business Services_ enables users to correlate the alarm based status of managed entities into its operational status.
 _Business Services_ can contain a list of _Reduction Keys_ that are used to identify the relevant alarms to summarize.
 _Reduction Keys_ can be added to business services as plain text.
 
 ====== Monitored services as part of a Business Service
+
 _Business Services_ can contain references to monitored services (node/interface/service combination).
 A referenced monitored service is called _IP Service_ in the _Business Service_ architecture.
 _IP Services_ in a business service are interpreted as two _Reduction Keys_:
@@ -32,14 +35,17 @@ _IP Services_ in a business service are interpreted as two _Reduction Keys_:
 -- This _Reduction Key_ matches the alarms fired if the entire node providing the monitored-service goes down.
 
 ====== Business Services as part of Business Services
+
 _Business services_ can form relationships woth other _Business Services_.
 This offers the ability to create hierarchically structures of _Business Services_.
 To determine the operational status of a enclosing _Business Service_ the operational status of all its enclosed _Business Services_ is summarized.
 
 ====== Attributes as part of Business Services
+
 Additionally, each _Business Services_ can contain a set of key value attributes.
 
 ==== Operational status of a Business Service
+
 Every _Business Service_ maintains an operational status that represents the overall status of all the contained elements.
 The set of status are similar to the severities defined by _OpenNMS_ itself.
 
@@ -94,20 +100,22 @@ For this operation the following _Reduce Functions_ are available:
 | `Threshold`     | Uses the highest severity found more often than the given threshold.
 |===
 
-
 ===== Operational status changes
+
 If a _Business Service_ changes its operational status an _OpenNMS_ event of the type `uei.opennms.org/bsmd/serviceOperationalStatusChanged` is fired.
 The log message of the event contains the name of the _Business Service_.
 Additionally, the previous operational status and the new operational status are included.
 Please note, that this event has no node, interface or service associated.
 
 ===== The Business Service Daemon
+
 Internally the _Business Service Monitoring_ feature is driven by the _Business Service Daemon_ (bsmd).
 It is responsible for tracking the operational status of all _Business Services_ and for sending events in case of operational status changes.
 Every time the configuration of a _Business Service_ is changed a reload of the daemon's configuration is required.
 This includes changes like the name of the _Business Service_ or its attributes as well as changes regarding the _Reduction Keys_, contained _Business Services_ or _IP Services_.
 
 ====== Reloading Business Service Daemon configuration
+
 A configuration reload can be initiated by an `uei.opennms.org/internal/reloadDaemonConfig` event with the parameter `daemonName` set to `bsmd`.
 If the reload of the configuration is done an event of type `uei.opennms.org/internal/reloadDaemonConfigSuccessful` is fired.
 The following options to trigger a configuration reload are available:
@@ -115,11 +123,12 @@ The following options to trigger a configuration reload are available:
 - Use the `Reload` button on the `Manage Business Services` page in the administration section of the web UI.
 - Send the `reloadDaemonConfig` event directly to trigger the reload
 * Use the `send-event.pl` script
+
 [source,shell]
 ----
 $OPENNMS_HOME/bin/send-event.pl -p 'daemonName bsmd' uei.opennms.org/internal/reloadDaemonConfig
 ----
+
 * Use the `Manually Send an Event` page of the web UI located in the admin section to send the event.
 - Use the ReST API to perform a `POST` request to `opennms/api/v2/business-services/daemon/reload`.
-
 
