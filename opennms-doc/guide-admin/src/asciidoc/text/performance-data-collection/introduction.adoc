@@ -1,0 +1,5 @@
+
+// Allow GitHub image rendering
+:imagesdir: ../../images
+
+Stub for introduction into OpenNMS performance data collection from an OpenNMS administrator perspective.
