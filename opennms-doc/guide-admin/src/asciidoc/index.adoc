@@ -106,6 +106,16 @@ include::text/poller/monitors/Win32ServiceMonitor.adoc[]
 include::text/poller/monitors/WsManMonitor.adoc[]
 include::text/poller/monitors/XmpMonitor.adoc[]
 
+[[ga-performance-mgmt]]
+== Performance Management
+include::text/performance-data-collection/introduction.adoc[]
+
+[[ga-performance-mgmt-collectors]]
+=== Collectors
+include::text/performance-data-collection/collectors/introduction.adoc[]
+include::text/performance-data-collection/collectors/wsman/ws-management.adoc[]
+include::text/performance-data-collection/collectors/wsman/detector.adoc[]
+
 [[ga-events]]
 == Events
 include::text/events.adoc[]
