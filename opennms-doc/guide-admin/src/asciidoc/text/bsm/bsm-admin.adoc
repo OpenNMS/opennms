@@ -65,14 +65,14 @@ The set of status are similar to the severities defined by _OpenNMS_ itself.
 | `Indeterminate` | _1_            | Light green / `#990` | No Severity could be associated with this event.
 |===
 
-=== Calculation of the operational status
+==== Calculation of the operational status
 
 The operational status of a _Business Service_ is correlated in two steps.
 First, the status of each contained element is mapped to the _Business Service_.
 For _Reduction Keys_ and _IP Services_ the status is based on their alarm status.
 For contained _Business Services_ the operational status is used.
 
-==== Map Functions
+===== Map Functions
 
 The mapping can be performed by one of _Map Functions_ listed below:
 
@@ -87,7 +87,7 @@ The mapping can be performed by one of _Map Functions_ listed below:
 | `Ignore`   | Ignores the severity of the managed entity
 |===
 
-==== Reduce Functions
+===== Reduce Functions
 
 Finally, the list of mapped status values are then aggregated into the operational status of the _Business Service_.
 For this operation the following _Reduce Functions_ are available:
@@ -100,7 +100,7 @@ For this operation the following _Reduce Functions_ are available:
 | `Threshold`     | Uses the highest severity found more often than the given threshold.
 |===
 
-==== Operational status changes
+===== Operational status changes
 
 If a _Business Service_ changes its operational status an _OpenNMS_ event of the type `uei.opennms.org/bsmd/serviceOperationalStatusChanged` is fired.
 The log message of the event contains the name of the _Business Service_.
