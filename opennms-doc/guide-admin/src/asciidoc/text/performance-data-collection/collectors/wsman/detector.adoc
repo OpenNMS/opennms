@@ -1,0 +1,30 @@
+
+// Allow GitHub image rendering
+:imagesdir: ../../../../images
+
+[[ga-performance-mgmt-collectors-wsman-detector]]
+===== Detector
+
+The WS-Management detector attempts to connect to the agent defined in `wsman-config.xml` and issues an Identify command.
+If a valid response is received, the product vendor and product version are stored in the `vendor` and `modelNumber` fields of the associated node`s assets table.
+
+For example, a Windows Server 2008 machine returns:
+
+|===
+| *Product Vendor*  | Microsoft Corporation
+| *Product Version* | OS: 6.1.7601 SP: 1.0 Stack: 2.0
+|===
+
+If these assets field are being used for another purpose, this behavior can be disabled by settings the `updateAssets` parameters to `false` in the detector configuration of the appropriate foreign source.
+
+NOTE: Some agents may respond to the Identify command with generic identities such as `Openwsman` `2.0.0`.
+      These values can be overridden by specifying the `product-vendor` and `product-version` attributes in `wsman-config.xml`.
+
+Example detector configuration:
+
+[source, xml]
+----
+<detector name="WS-Man" class="org.opennms.netmgt.provision.detector.wsman.WsManDetector">
+    <parameter key="updateAssets" value="true"/>
+</detector>
+----

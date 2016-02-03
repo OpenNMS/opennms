@@ -1,0 +1,5 @@
+
+// Allow GitHub image rendering
+:imagesdir: ../../../images
+
+Stub for introduction into here come all available collectors for protocols and agents.
