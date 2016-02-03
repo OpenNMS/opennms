@@ -120,6 +120,7 @@ public class DefaultBusinessServiceStateMachineIT {
         final BusinessServiceEntity root = simpleTestHierarchy.getRoot();
         final String nodeLostServiceReductionKey = ReductionKeyHelper.getNodeLostServiceReductionKey(serviceChild1);
         final String nodeDownReductionKey = ReductionKeyHelper.getNodeDownReductionKey(serviceChild1);
+        final String interfaceDownReductionKey = ReductionKeyHelper.getInterfaceDownReductionKey(serviceChild1);
 
         // Setup the State Machine
         DefaultBusinessServiceStateMachine stateMachine = new DefaultBusinessServiceStateMachine();
@@ -130,6 +131,7 @@ public class DefaultBusinessServiceStateMachineIT {
         // Verify the initial state
         Assert.assertEquals(null, stateMachine.getOperationalStatus(nodeLostServiceReductionKey));
         Assert.assertEquals(null, stateMachine.getOperationalStatus(nodeDownReductionKey));
+        Assert.assertEquals(null, stateMachine.getOperationalStatus(interfaceDownReductionKey));
         Assert.assertEquals(Status.NORMAL, stateMachine.getOperationalStatus(wrap(serviceChild1)));
         Assert.assertEquals(Status.NORMAL, stateMachine.getOperationalStatus(wrap(serviceChild2)));
         Assert.assertEquals(Status.NORMAL, stateMachine.getOperationalStatus(wrap(root)));
@@ -146,6 +148,7 @@ public class DefaultBusinessServiceStateMachineIT {
         // verify state
         Assert.assertEquals(Status.WARNING, stateMachine.getOperationalStatus(nodeLostServiceReductionKey));
         Assert.assertEquals(null, stateMachine.getOperationalStatus(nodeDownReductionKey));
+        Assert.assertEquals(null, stateMachine.getOperationalStatus(interfaceDownReductionKey));
         Assert.assertEquals(Status.WARNING, stateMachine.getOperationalStatus(wrap(serviceChild1)));
         Assert.assertEquals(Status.NORMAL, stateMachine.getOperationalStatus(wrap(serviceChild2)));
         Assert.assertEquals(
@@ -162,11 +165,26 @@ public class DefaultBusinessServiceStateMachineIT {
         // verify state
         Assert.assertEquals(Status.WARNING, stateMachine.getOperationalStatus(nodeLostServiceReductionKey));
         Assert.assertEquals(Status.MINOR, stateMachine.getOperationalStatus(nodeDownReductionKey));
+        Assert.assertEquals(null, stateMachine.getOperationalStatus(interfaceDownReductionKey));
         Assert.assertEquals(Status.MINOR, stateMachine.getOperationalStatus(wrap(serviceChild1)));
         Assert.assertEquals(Status.NORMAL, stateMachine.getOperationalStatus(wrap(serviceChild2)));
         Assert.assertEquals(Status.MINOR, stateMachine.getOperationalStatus(wrap(root)));
         Assert.assertEquals(
                 Lists.newArrayList(Status.MINOR, Status.NORMAL),
+                Lists.newArrayList(stateMachine.getStatusMapForReduceFunction(wrap(simpleTestHierarchy.getRoot())).values()));
+
+        // interface down alarm
+        stateMachine.handleNewOrUpdatedAlarm(createAlarmWrapper(EventConstants.INTERFACE_DOWN_EVENT_UEI, OnmsSeverity.MAJOR, interfaceDownReductionKey));
+
+        // verify state
+        Assert.assertEquals(Status.WARNING, stateMachine.getOperationalStatus(nodeLostServiceReductionKey));
+        Assert.assertEquals(Status.MINOR, stateMachine.getOperationalStatus(nodeDownReductionKey));
+        Assert.assertEquals(Status.MAJOR, stateMachine.getOperationalStatus(interfaceDownReductionKey));
+        Assert.assertEquals(Status.MAJOR, stateMachine.getOperationalStatus(wrap(serviceChild1)));
+        Assert.assertEquals(Status.NORMAL, stateMachine.getOperationalStatus(wrap(serviceChild2)));
+        Assert.assertEquals(Status.MAJOR, stateMachine.getOperationalStatus(wrap(root)));
+        Assert.assertEquals(
+                Lists.newArrayList(Status.MAJOR, Status.NORMAL),
                 Lists.newArrayList(stateMachine.getStatusMapForReduceFunction(wrap(simpleTestHierarchy.getRoot())).values()));
     }
 

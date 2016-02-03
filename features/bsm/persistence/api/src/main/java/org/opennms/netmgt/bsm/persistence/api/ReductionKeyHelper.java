@@ -36,7 +36,6 @@ import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 
-// TODO: we also have to consider interface down reduction keys
 public class ReductionKeyHelper {
 
     // TODO: The distributed poller name (now monitoring system name?) should be part of the edge details
@@ -48,6 +47,8 @@ public class ReductionKeyHelper {
         reductionKeys.add(getNodeLostServiceReductionKey(monitoredService));
         // When node processing is enabled, we may get node down instead of node lost service events
         reductionKeys.add(getNodeDownReductionKey(monitoredService));
+        // We may get interface down instead of node lost service events
+        reductionKeys.add(getInterfaceDownReductionKey(monitoredService));
         return reductionKeys;
     }
 
@@ -65,5 +66,13 @@ public class ReductionKeyHelper {
                 monitoredService.getNodeId(),
                 InetAddressUtils.toIpAddrString(monitoredService.getIpAddress()),
                 monitoredService.getServiceName());
+    }
+
+    public static String getInterfaceDownReductionKey(final OnmsMonitoredService monitoredService) {
+        return String.format("%s:%s:%s:%s",
+                EventConstants.INTERFACE_DOWN_EVENT_UEI,
+                DEFAULT_DISTRIBUTED_POLLER_NAME,
+                monitoredService.getNodeId(),
+                InetAddressUtils.toIpAddrString(monitoredService.getIpAddress()));
     }
 }
