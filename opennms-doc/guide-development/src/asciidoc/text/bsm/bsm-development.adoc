@@ -9,7 +9,7 @@ It supports _XML_ content to represent the _Business Services_. The responses ge
 do also include `location` elements that contain references to other entities managed by the API.
 The _Business Service_ response data model for the ReST API has the following basic structure:
 
-.Sample _Business Service Request_ XML representation
+.Sample _Business Service_ details response XML representation
 [source,XML]
 ----
     <business-service>
@@ -64,6 +64,46 @@ The _Business Service_ response data model for the ReST API has the following ba
       <location>/api/v2/business-services/146</location>
     </business-service>
 ----
+
+.Sample _Business Service_ creation request XML representation
+[source,XML]
+----
+    <business-service>
+      <name>Datacenter North</name>
+      <attributes/>
+      <ip-service-edges>
+        <ip-service>
+          <ip-service-id>99</ip-service-id>
+          <map-function>
+            <type>Identity</type>
+          </map-function>
+          <weight>1</weight>
+        </ip-service>
+      </ip-service-edges>
+      <reductionKey-edges>
+        <reductionKey>
+          <reductionKey>my-reduction-key1</reductionKey>
+          <map-function>
+            <type>Identity</type>
+          </map-function>
+          <weight>1</weight>
+        </reductionKey>
+      </reductionKey-edges>
+      <child-edges>
+        <child>
+          <childId>43</childId>
+          <map-function>
+            <type>Identity</type>
+          </map-function>
+          <weight>1</weight>
+        </child>
+      </child-edges>
+      <reduction-function><type>MostCritical</type></reduction-function>
+    </business-service>
+----
+
+The whole model is defined in `jetty-webapps/opennms/WEB-INF/lib/org.opennms.features.bsm.rest.api-*.jar` which can be
+used as a dependency for a Java program to query the API.
 
 ===== GETs (Reading Data)
 
