@@ -102,6 +102,14 @@ public class BSMDashlet extends AbstractDashlet {
      * the search criteria
      */
     private BusinessServiceSearchCriteria m_businessServiceSearchCriteria;
+    /**
+     * the column count for Ops board
+     */
+    private int m_columnCountBoard;
+    /**
+     * the column count for Ops panel
+     */
+    private int m_columnCountPanel;
 
     /**
      * Constructor for instantiating new objects.
@@ -113,12 +121,16 @@ public class BSMDashlet extends AbstractDashlet {
         super(name, dashletSpec);
         m_businessServiceManager = transactionAwareBeanProxyFactory.createProxy(businessServiceManager);
         m_businessServiceSearchCriteria = BSMConfigHelper.fromMap(getDashletSpec().getParameters());
+
+        m_columnCountBoard = BSMConfigHelper.getIntForKey(getDashletSpec().getParameters(), "columnCountBoard", 10);
+
+        m_columnCountPanel = BSMConfigHelper.getIntForKey(getDashletSpec().getParameters(), "columnCountPanel", 5);
     }
 
     @Override
     public DashletComponent getWallboardComponent() {
         if (m_wallboardComponent == null) {
-            m_wallboardComponent = new BSMDashletComponent(1, 10);
+            m_wallboardComponent = new BSMDashletComponent(1, m_columnCountBoard);
         }
         return m_wallboardComponent;
     }
@@ -126,7 +138,7 @@ public class BSMDashlet extends AbstractDashlet {
     @Override
     public DashletComponent getDashboardComponent() {
         if (m_dashboardComponent == null) {
-            m_dashboardComponent = new BSMDashletComponent(1, 5);
+            m_dashboardComponent = new BSMDashletComponent(1, m_columnCountPanel);
         }
         return m_dashboardComponent;
     }

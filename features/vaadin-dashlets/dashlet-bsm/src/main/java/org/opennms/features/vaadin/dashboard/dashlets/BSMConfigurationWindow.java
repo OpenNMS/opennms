@@ -35,7 +35,6 @@ import org.opennms.features.vaadin.dashboard.model.DashletSpec;
 import org.opennms.netmgt.bsm.service.BusinessServiceSearchCriteriaBuilder;
 import org.opennms.netmgt.bsm.service.model.Status;
 
-import com.google.common.base.Strings;
 import com.vaadin.data.Property;
 import com.vaadin.data.validator.AbstractStringValidator;
 import com.vaadin.event.ShortcutAction;
@@ -59,7 +58,7 @@ public class BSMConfigurationWindow extends DashletConfigurationWindow {
      * The fields for storing the parameters
      */
     private CheckBox m_filterByNameCheckBox, m_filterByAttributeCheckBox, m_filterBySeverityCheckBox;
-    private TextField m_nameTextField, m_attributeKeyTextField, m_attributeValueTextField, m_limitTextField;
+    private TextField m_nameTextField, m_attributeKeyTextField, m_attributeValueTextField, m_limitTextField, m_columnCountBoardTextField, m_columnCountPanelTextField;
     private NativeSelect m_severitySelect;
     private NativeSelect m_compareOperatorSelect;
     private NativeSelect m_orderBy;
@@ -80,7 +79,7 @@ public class BSMConfigurationWindow extends DashletConfigurationWindow {
          * Setting up the base layouts
          */
 
-        setHeight(85, Unit.PERCENTAGE);
+        setHeight(91, Unit.PERCENTAGE);
         setWidth(60, Unit.PERCENTAGE);
 
         /**
@@ -88,38 +87,18 @@ public class BSMConfigurationWindow extends DashletConfigurationWindow {
          */
 
         boolean filterByName = BSMConfigHelper.getBooleanForKey(getDashletSpec().getParameters(), "filterByName");
-        String nameValue = BSMConfigHelper.getStringForKey(getDashletSpec().getParameters(), "nameValue");
-
+        String nameValue = BSMConfigHelper.getStringForKey(getDashletSpec().getParameters(), "nameValue","");
         boolean filterByAttribute = BSMConfigHelper.getBooleanForKey(getDashletSpec().getParameters(), "filterByAttribute");
-        String attributeKey = BSMConfigHelper.getStringForKey(getDashletSpec().getParameters(), "attributeKey");
-        String attributeValue = BSMConfigHelper.getStringForKey(getDashletSpec().getParameters(), "attributeValue");
-
+        String attributeKey = BSMConfigHelper.getStringForKey(getDashletSpec().getParameters(), "attributeKey","");
+        String attributeValue = BSMConfigHelper.getStringForKey(getDashletSpec().getParameters(), "attributeValue","");
         boolean filterBySeverity = BSMConfigHelper.getBooleanForKey(getDashletSpec().getParameters(), "filterBySeverity");
-
-        String severityValue = BSMConfigHelper.getStringForKey(getDashletSpec().getParameters(), "severityValue");
-
-        if (Strings.isNullOrEmpty(severityValue)) {
-            severityValue = Status.WARNING.name();
-        }
-
-        String severityCompareOperator = BSMConfigHelper.getStringForKey(getDashletSpec().getParameters(), "severityCompareOperator");
-
-        if (Strings.isNullOrEmpty(severityCompareOperator)) {
-            severityCompareOperator = BusinessServiceSearchCriteriaBuilder.CompareOperator.GreaterOrEqual.name();
-        }
-
-        String orderBy = BSMConfigHelper.getStringForKey(getDashletSpec().getParameters(), "orderBy");
-        if (Strings.isNullOrEmpty(orderBy)) {
-            orderBy = BusinessServiceSearchCriteriaBuilder.Order.Name.name();
-        }
-
-        String orderSequence = BSMConfigHelper.getStringForKey(getDashletSpec().getParameters(), "orderSequence");
-
-        if (Strings.isNullOrEmpty(orderSequence)) {
-            orderSequence = BusinessServiceSearchCriteriaBuilder.Sequence.Ascending.name();
-        }
-
-        int resultsLimit = BSMConfigHelper.getIntForKey(getDashletSpec().getParameters(), "resultsLimit");
+        String severityValue = BSMConfigHelper.getStringForKey(getDashletSpec().getParameters(), "severityValue",Status.WARNING.name());
+        String severityCompareOperator = BSMConfigHelper.getStringForKey(getDashletSpec().getParameters(), "severityCompareOperator",BusinessServiceSearchCriteriaBuilder.CompareOperator.GreaterOrEqual.name());
+        String orderBy = BSMConfigHelper.getStringForKey(getDashletSpec().getParameters(), "orderBy", BusinessServiceSearchCriteriaBuilder.Order.Name.name());
+        String orderSequence = BSMConfigHelper.getStringForKey(getDashletSpec().getParameters(), "orderSequence",BusinessServiceSearchCriteriaBuilder.Sequence.Ascending.name());
+        int resultsLimit = BSMConfigHelper.getIntForKey(getDashletSpec().getParameters(), "resultsLimit", 10);
+        int columnCountBoard = BSMConfigHelper.getIntForKey(getDashletSpec().getParameters(), "columnCountBoard", 10);
+        int columnCountPanel = BSMConfigHelper.getIntForKey(getDashletSpec().getParameters(), "columnCountPanel", 5);
 
         /**
          * Adding the "Filter By Name" panel
@@ -269,9 +248,37 @@ public class BSMConfigurationWindow extends DashletConfigurationWindow {
         m_orderSequence.addItem("Ascending");
         m_orderSequence.addItem("Descending");
 
+        m_columnCountBoardTextField = new TextField("Ops Board Column Count");
+        m_columnCountBoardTextField.addValidator(new AbstractStringValidator("Number greater zero expected") {
+            @Override
+            protected boolean isValidValue(String value) {
+                try {
+                    int i = Integer.parseInt(value);
+                    return i > 0;
+                } catch (NumberFormatException e) {
+                    return false;
+                }
+            }
+        });
+
+        m_columnCountPanelTextField = new TextField("Ops Panel Column Count");
+        m_columnCountPanelTextField.addValidator(new AbstractStringValidator("Number greater zero expected") {
+            @Override
+            protected boolean isValidValue(String value) {
+                try {
+                    int i = Integer.parseInt(value);
+                    return i > 0;
+                } catch (NumberFormatException e) {
+                    return false;
+                }
+            }
+        });
+
         addToComponent(limitLayout, m_limitTextField);
         addToComponent(limitLayout, m_orderBy);
         addToComponent(limitLayout, m_orderSequence);
+        addToComponent(limitLayout, m_columnCountBoardTextField);
+        addToComponent(limitLayout, m_columnCountPanelTextField);
 
         Panel limitPanel = new Panel();
         limitPanel.setSizeFull();
@@ -281,6 +288,8 @@ public class BSMConfigurationWindow extends DashletConfigurationWindow {
         m_limitTextField.setValue(String.valueOf(resultsLimit));
         m_orderBy.setValue(orderBy);
         m_orderSequence.setValue(orderSequence);
+        m_columnCountBoardTextField.setValue(String.valueOf(columnCountBoard));
+        m_columnCountPanelTextField.setValue(String.valueOf(columnCountPanel));
 
         m_limitTextField.addValidator(new AbstractStringValidator("Number greater or equal zero expected") {
             @Override
@@ -309,6 +318,7 @@ public class BSMConfigurationWindow extends DashletConfigurationWindow {
 
         HorizontalLayout bottomLayout = new HorizontalLayout(severityPanel, limitPanel);
         bottomLayout.setSpacing(true);
+        bottomLayout.setSizeFull();
         bottomLayout.setWidth(100, Unit.PERCENTAGE);
 
         verticalLayout.addComponent(bottomLayout);
@@ -350,7 +360,7 @@ public class BSMConfigurationWindow extends DashletConfigurationWindow {
         ok.addClickListener(new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent event) {
-                if (!m_limitTextField.isValid()) {
+                if (!m_limitTextField.isValid() || !m_columnCountPanelTextField.isValid() || !m_columnCountBoardTextField.isValid()) {
                     return;
                 }
 
@@ -399,6 +409,8 @@ public class BSMConfigurationWindow extends DashletConfigurationWindow {
                 }
 
                 m_dashletSpec.getParameters().put("resultsLimit", m_limitTextField.getValue().toString());
+                m_dashletSpec.getParameters().put("columnCountBoard", m_columnCountBoardTextField.getValue().toString());
+                m_dashletSpec.getParameters().put("columnCountPanel", m_columnCountPanelTextField.getValue().toString());
 
                 WallboardProvider.getInstance().save();
                 ((WallboardConfigUI) getUI()).notifyMessage("Data saved", "Properties");
@@ -420,8 +432,9 @@ public class BSMConfigurationWindow extends DashletConfigurationWindow {
 
     /**
      * Adds a component to a given vertical layout and applies some sizing and formatting options.
+     *
      * @param verticalLayout the vertical layout
-     * @param component the component to be added
+     * @param component      the component to be added
      */
     private void addToComponent(VerticalLayout verticalLayout, Component component) {
         HorizontalLayout horizontalLayout = new HorizontalLayout();
@@ -438,6 +451,7 @@ public class BSMConfigurationWindow extends DashletConfigurationWindow {
 
     /**
      * Returns the associated dashlet specification.
+     *
      * @return the dashlet specification
      */
     private DashletSpec getDashletSpec() {

@@ -52,6 +52,8 @@ public class BSMConfigHelperTest {
         properties.put("resultsLimit", "10");
         properties.put("severityCompareOperator", "GreaterOrEqual");
         properties.put("severityValue", "Warning");
+        properties.put("columnCountBoard", "10");
+        properties.put("columnCountPanel", "5");
 
         BusinessServiceSearchCriteriaBuilder businessServiceSearchCriteria = (BusinessServiceSearchCriteriaBuilder) BSMConfigHelper.fromMap(properties);
         Assert.assertEquals(BusinessServiceSearchCriteriaBuilder.Order.Severity, businessServiceSearchCriteria.getOrder());
