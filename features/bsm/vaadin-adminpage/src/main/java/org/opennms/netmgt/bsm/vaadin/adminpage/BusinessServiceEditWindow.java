@@ -29,7 +29,9 @@
 package org.opennms.netmgt.bsm.vaadin.adminpage;
 
 import java.util.Objects;
+import java.util.stream.Collectors;
 
+import com.google.common.collect.Ordering;
 import org.opennms.netmgt.bsm.service.BusinessServiceManager;
 import org.opennms.netmgt.bsm.service.model.BusinessService;
 import org.opennms.netmgt.bsm.service.model.IpService;
@@ -317,10 +319,12 @@ public class BusinessServiceEditWindow extends Window {
 
     private void refreshEdges() {
         m_edgesListSelect.removeAllItems();
-        m_edgesListSelect.addItems(m_businessService.getEdges());
-        m_edgesListSelect.getItemIds().forEach(item -> {
-            m_edgesListSelect.setItemCaption(item, describeEdge((Edge) item));
-        });
+        m_edgesListSelect.addItems(m_businessService.getEdges().stream()
+                                                    .sorted(Ordering.natural()
+                                                                    .onResultOf(Edge::getType)
+                                                                    .thenComparing(e -> getChildDescription(e)))
+                                                    .collect(Collectors.toList()));
+        m_edgesListSelect.getItemIds().forEach(item -> m_edgesListSelect.setItemCaption(item, describeEdge((Edge) item)));
     }
 
     public static String describeBusinessService(final BusinessService businessService) {

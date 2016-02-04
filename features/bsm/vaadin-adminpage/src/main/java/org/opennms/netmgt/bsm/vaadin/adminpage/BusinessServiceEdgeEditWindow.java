@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.bsm.vaadin.adminpage;
 
+import com.google.common.collect.Ordering;
 import org.opennms.netmgt.bsm.service.BusinessServiceManager;
 import org.opennms.netmgt.bsm.service.model.BusinessService;
 import org.opennms.netmgt.bsm.service.model.IpService;
@@ -54,6 +55,8 @@ import com.vaadin.ui.NativeSelect;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
+
+import java.util.stream.Collectors;
 
 /**
  * Modal dialog window used to edit the properties of a Business Service Edge definition.
@@ -143,14 +146,17 @@ public class BusinessServiceEdgeEditWindow extends Window {
         m_childServiceComponent.setVisible(false);
         m_childServiceComponent.setImmediate(true);
         m_childServiceComponent.setValidationVisible(true);
-        m_childServiceComponent.addItems(businessServiceManager.getFeasibleChildServices(businessService));
+        m_childServiceComponent.addItems(businessServiceManager.getFeasibleChildServices(businessService).stream()
+                                                               .sorted(Ordering.natural()
+                                                                               .onResultOf(s -> BusinessServiceEditWindow.describeBusinessService(s)))
+                                                               .collect(Collectors.toList()));
         m_childServiceComponent.getItemIds().forEach(item -> m_childServiceComponent.setItemCaption(item, BusinessServiceEditWindow.describeBusinessService((BusinessService) item)));
         formLayout.addComponent(m_childServiceComponent);
 
         /**
          * ip service list
          */
-        m_ipServiceComponent = new ListSelect("IP Service", businessServiceManager.getAllIpServices());
+        m_ipServiceComponent = new ListSelect("IP Service");
         m_ipServiceComponent.setId("ipServiceList");
         m_ipServiceComponent.setMultiSelect(false);
         m_ipServiceComponent.setNewItemsAllowed(false);
@@ -160,6 +166,10 @@ public class BusinessServiceEdgeEditWindow extends Window {
         m_ipServiceComponent.setVisible(false);
         m_ipServiceComponent.setImmediate(true);
         m_ipServiceComponent.setValidationVisible(true);
+        m_ipServiceComponent.addItems(businessServiceManager.getAllIpServices().stream()
+                                                            .sorted(Ordering.natural()
+                                                                            .onResultOf(s -> BusinessServiceEditWindow.describeIpService(s)))
+                                                            .collect(Collectors.toList()));
         m_ipServiceComponent.getItemIds().forEach(item -> m_ipServiceComponent.setItemCaption(item, BusinessServiceEditWindow.describeIpService((IpService) item)));
         formLayout.addComponent(m_ipServiceComponent);
 
