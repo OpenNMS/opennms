@@ -29,7 +29,7 @@
 package org.opennms.features.topology.plugins.topo.bsm.browsers;
 
 import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 
 import org.opennms.features.topology.api.VerticesUpdateManager;
@@ -59,6 +59,7 @@ public class BusinessServicesContainer extends OnmsVaadinContainer<BusinessServi
         // TODO MVR somehow hibernate returns more objects than there are actually. Probably a hashCode(), equals() thing
         // see BSM-104 for more details. We use the following work around to get past that problem for now
         List<BusinessService> itemsForCache = super.getItemsForCache(datasource, page);
-        return new ArrayList<>(new HashSet<>(itemsForCache));
+        // Do not use HashSet as this destroys any ordering done by underlying DAOs
+        return new ArrayList<>(new LinkedHashSet<>(itemsForCache));
     }
 }
