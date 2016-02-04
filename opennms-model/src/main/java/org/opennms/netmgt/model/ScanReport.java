@@ -156,9 +156,11 @@ public class ScanReport implements Serializable {
 
     /**
      * This is a transient bean property that is used so that CXF can 
-     * perform FIQL searches on the bean property.
+     * perform FIQL searches on the bean property. Use coalesce() so that
+     * a 'null' value is returned if there is no property with the specified
+     * name.
      */
-    @Formula("(select p.propertyvalue from scanreportproperties p where p.scanreportid = id and p.property = '" + PROPERY_APPLICATIONS + "')")
+    @Formula("(select coalesce((select p.propertyvalue from scanreportproperties p where p.scanreportid = id and p.property = '" + PROPERY_APPLICATIONS + "')))")
     @XmlTransient
     @JsonIgnore
     public String getApplications() {

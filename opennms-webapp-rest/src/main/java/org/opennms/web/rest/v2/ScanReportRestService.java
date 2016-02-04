@@ -29,9 +29,7 @@
 package org.opennms.web.rest.v2;
 
 import java.util.Collection;
-import java.util.Map;
 
-import javax.persistence.ElementCollection;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -63,48 +61,6 @@ public class ScanReportRestService extends AbstractDaoRestService<ScanReport,Str
 
 	private static final Logger LOG = LoggerFactory.getLogger(ScanReportRestService.class);
 
-	/**
-	 * We need to override certain CriteriaBuilder methods so that we can support
-	 * filtering on values in the scanreportproperties table which is mapped as an
-	 * {@link ElementCollection} {@link Map}.
-	 * 
-	 * @see https://hibernate.atlassian.net/browse/HHH-869
-	 * @see https://hibernate.atlassian.net/browse/HHH-6103
-	 */
-	public static class PropertiesHandlerCriteriaBuilder extends CriteriaBuilder {
-
-		public PropertiesHandlerCriteriaBuilder() {
-			this(ScanReport.class);
-		}
-
-		public PropertiesHandlerCriteriaBuilder(Class<?> clazz) {
-			super(clazz);
-			if (clazz != ScanReport.class) {
-				throw new IllegalArgumentException(getClass().getSimpleName() + " can only be used with " + ScanReport.class.getSimpleName());
-			}
-		}
-
-		@Override
-		public CriteriaBuilder eq(final String attribute, final Object comparator) {
-			if (ScanReport.PROPERY_APPLICATIONS.equalsIgnoreCase(attribute)) {
-				// TODO: Escape SQL content in values
-				sql(String.format("{alias}.id IN (SELECT scanreportid FROM scanreportproperties WHERE property = '%s' AND propertyvalue = '%s')", ScanReport.PROPERY_APPLICATIONS, comparator));
-				return this;
-			}
-			return super.eq(attribute, comparator);
-		}
-
-		@Override
-		public CriteriaBuilder ne(final String attribute, final Object comparator) {
-			if (ScanReport.PROPERY_APPLICATIONS.equalsIgnoreCase(attribute)) {
-				// TODO: Escape SQL content in values
-				sql(String.format("{alias}.id NOT IN (SELECT scanreportid FROM scanreportproperties WHERE property = '%s' AND propertyvalue = '%s')", ScanReport.PROPERY_APPLICATIONS, comparator));
-				return this;
-			}
-			return super.ne(attribute, comparator);
-		}
-	}
-
 	@Autowired
 	private ScanReportDao m_dao;
 
@@ -120,7 +76,7 @@ public class ScanReportRestService extends AbstractDaoRestService<ScanReport,Str
 
 	@Override
 	public CriteriaBuilder getCriteriaBuilder() {
-		final CriteriaBuilder builder = new PropertiesHandlerCriteriaBuilder();
+		final CriteriaBuilder builder = new CriteriaBuilder(ScanReport.class);
 
 		// Order by date (descending) by default
 		builder.orderBy("timestamp").desc();
