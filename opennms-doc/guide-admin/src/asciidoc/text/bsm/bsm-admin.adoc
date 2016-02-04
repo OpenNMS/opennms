@@ -10,7 +10,7 @@ However, this approach treats every element of the system individually and there
 The _Business Service Monitoring_ (BSM) feature adds the ability to model relationships between managed entities.
 It combines sets of managed entities into hierarchically structured _Business Services_ that represent a high level view on its elements.
 The _Business Service'_ operational status is calculated from the alarm states of its associated elements determined by the service assurance layer.
-Of course, the operational status of a _Business Service_ can be checked at any time.
+The operational status of a _Business Service_ can be checked at any time.
 If the operational status of a _Business Service_ is changing corresponding events are fired.
 
 === Business Service Definition
@@ -38,7 +38,7 @@ This _Reduction Key_ matches the alarms fired if the entire node providing the m
 
 ==== Business Services
 
-_Business Services_ can form relationships woth other _Business Services_.
+_Business Services_ can form relationships with other _Business Services_.
 This offers the ability to create hierarchically structures of _Business Services_.
 To determine the operational status of a enclosing _Business Service_ the operational status of all its enclosed _Business Services_ is summarized.
 
