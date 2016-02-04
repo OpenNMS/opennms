@@ -77,6 +77,7 @@ public class CriteriaBuilderSearchVisitor<T> extends AbstractSearchConditionVisi
 		setWildcardStringMatch(true);
 	}
 
+	@Override
 	public void visit(SearchCondition<T> sc) {
 		PrimitiveStatement statement = sc.getStatement();
 		if (statement != null) {
@@ -99,6 +100,11 @@ public class CriteriaBuilderSearchVisitor<T> extends AbstractSearchConditionVisi
 						clsValue.setValue(SearchUtils.toSqlWildcardString((String)clsValue.getValue(), isWildcardStringMatch()));
 					}
 				}
+
+				// TODO: Should we get the condition off of the statement instead??
+				// I think they're always identical if the PrimitiveStatement has a
+				// statement.
+				//switch(statement.getCondition()) {
 
 				switch(sc.getConditionType()) {
 				case EQUALS:

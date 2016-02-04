@@ -29,7 +29,9 @@
 package org.opennms.web.rest.v2;
 
 import java.util.Collection;
+import java.util.Map;
 
+import javax.persistence.ElementCollection;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -43,6 +45,8 @@ import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.netmgt.dao.api.ScanReportDao;
 import org.opennms.netmgt.model.ScanReport;
 import org.opennms.web.rest.v1.support.ScanReportList;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -57,19 +61,61 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class ScanReportRestService extends AbstractDaoRestService<ScanReport,String> {
 
+	private static final Logger LOG = LoggerFactory.getLogger(ScanReportRestService.class);
+
+	private static final String PROPERY_APPLICATIONS = "applications";
+
+	/**
+	 * We need to override certain CriteriaBuilder methods so that we can support
+	 * filtering on values in the scanreportproperties table which is mapped as an
+	 * {@link ElementCollection} {@link Map}.
+	 * 
+	 * @see https://hibernate.atlassian.net/browse/HHH-869
+	 * @see https://hibernate.atlassian.net/browse/HHH-6103
+	 */
+	private static class PropertiesHandlerCriteriaBuilder extends CriteriaBuilder {
+
+		public PropertiesHandlerCriteriaBuilder() {
+			super(ScanReport.class);
+		}
+
+		@Override
+		public CriteriaBuilder eq(final String attribute, final Object comparator) {
+			if (PROPERY_APPLICATIONS.equalsIgnoreCase(attribute)) {
+				// TODO: Escape SQL content in values
+				sql(String.format("{alias}.id in (select scanreportid from scanreportproperties where property = '%s' and propertyvalue = '%s')", PROPERY_APPLICATIONS, comparator));
+				return this;
+			}
+			return super.eq(attribute, comparator);
+		}
+
+		@Override
+		public CriteriaBuilder ne(final String attribute, final Object comparator) {
+			if (PROPERY_APPLICATIONS.equalsIgnoreCase(attribute)) {
+				// TODO: Escape SQL content in values
+				sql(String.format("{alias}.id in (select scanreportid from scanreportproperties where property = '%s' and propertyvalue != '%s')", PROPERY_APPLICATIONS, comparator));
+				return this;
+			}
+			return super.ne(attribute, comparator);
+		}
+	}
+
 	@Autowired
 	private ScanReportDao m_dao;
 
+	@Override
 	protected ScanReportDao getDao() {
 		return m_dao;
 	}
 
+	@Override
 	protected Class<ScanReport> getDaoClass() {
 		return ScanReport.class;
 	}
 
-	protected CriteriaBuilder getCriteriaBuilder() {
-		final CriteriaBuilder builder = new CriteriaBuilder(ScanReport.class);
+	@Override
+	public CriteriaBuilder getCriteriaBuilder() {
+		final CriteriaBuilder builder = new PropertiesHandlerCriteriaBuilder();
 
 		// Order by date (descending) by default
 		builder.orderBy("timestamp").desc();

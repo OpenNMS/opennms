@@ -227,7 +227,11 @@
 						<a style="text-decoration: none;" ng-click="addSearchClause({property:'location',operator:'NE',value:item.location})"><i class="fa fa-minus-square-o fa-lg"/></a>
 					</td>
 					<td class="text-nowrap" style="line-height:24px;">
-						{{item.properties.applications}}
+						<span ng-show="item.properties.applications !== undefined &amp;&amp; item.properties.applications !== null &amp;&amp; item.properties.applications !== ''">
+							{{item.properties.applications}}
+							<a style="text-decoration: none;" ng-click="addSearchClause({property:'applications',operator:'EQ',value:item.properties.applications})"><i class="fa fa-plus-square-o fa-lg"/></a>
+							<a style="text-decoration: none;" ng-click="addSearchClause({property:'applications',operator:'NE',value:item.properties.applications})"><i class="fa fa-minus-square-o fa-lg"/></a>
+						</span>
 					</td>
 					<td class="text-nowrap" style="line-height:24px;">
 						<span ng-show="item.timestamp !== null">

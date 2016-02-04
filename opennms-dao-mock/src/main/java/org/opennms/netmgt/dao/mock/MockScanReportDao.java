@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2013-2014 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -26,10 +26,23 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.dao.api;
+package org.opennms.netmgt.dao.mock;
 
+import java.util.UUID;
+
+import org.opennms.netmgt.dao.api.ScanReportDao;
 import org.opennms.netmgt.model.ScanReport;
 
+public class MockScanReportDao extends AbstractMockDao<ScanReport, String> implements ScanReportDao {
 
-public interface ScanReportDao extends OnmsDao<ScanReport, String> {
+    @Override
+    protected void generateId(final ScanReport service) {
+        service.setId(UUID.randomUUID().toString());
+    }
+
+    @Override
+    protected String getId(final ScanReport service) {
+        return service.getId();
+    }
+
 }
