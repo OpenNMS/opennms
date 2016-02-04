@@ -28,6 +28,7 @@
 
 package org.opennms.web.rest.support;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -143,7 +144,17 @@ public class CriteriaBuilderSearchVisitor<T> extends AbstractSearchConditionVisi
 		} else {
 			List<Restriction> subRestrictions = new ArrayList<Restriction>();
 			for (SearchCondition<T> condition : sc.getSearchConditions()) {
-				CriteriaBuilderSearchVisitor<T> newVisitor = new CriteriaBuilderSearchVisitor<T>(new CriteriaBuilder(m_class), m_class);
+				// Create a new CriteriaBuilder
+				CriteriaBuilder builder = null;
+				try {
+					// Try to use the same class as the outside CriteriaBuilder
+					builder = m_criteriaBuilder.getClass().getConstructor(Class.class).newInstance(m_class);
+				} catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException | InstantiationException e) {
+					LOG.warn("Could not create " + m_criteriaBuilder.getClass().getSimpleName() + "; falling back to CriteriaBuilder: " + e.getClass().getSimpleName() + ": " + e.getMessage());
+					builder = new CriteriaBuilder(m_class);
+				}
+				// Create a new visitor for the SearchCondition
+				CriteriaBuilderSearchVisitor<T> newVisitor = new CriteriaBuilderSearchVisitor<T>(builder, m_class);
 
 				// Visit the children
 				condition.accept(newVisitor);

@@ -29,13 +29,14 @@
 
 package org.opennms.web.rest.support;
 
-import static org.junit.Assert.assertEquals;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
+import org.apache.cxf.jaxrs.ext.search.AndSearchCondition;
 import org.apache.cxf.jaxrs.ext.search.ConditionType;
 import org.apache.cxf.jaxrs.ext.search.PrimitiveSearchCondition;
+import org.apache.cxf.jaxrs.ext.search.SearchCondition;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.criteria.Criteria;
@@ -48,7 +49,6 @@ import org.opennms.test.JUnitConfigurationEnvironment;
 import org.opennms.web.rest.v2.ScanReportRestService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
-
 
 /*
 @RunWith(OpenNMSJUnit4ClassRunner.class)
@@ -72,12 +72,31 @@ public class CriteriaBuilderSearchVisitorTest {
 	private ScanReportDao m_dao;
 
 	@Test
-	public void testScanReportPropertySearch() {
+	public void testScanReportAndCondition() {
+		CriteriaBuilder builder = new ScanReportRestService().getCriteriaBuilder();
+		CriteriaBuilderSearchVisitor<ScanReport> visitor = new CriteriaBuilderSearchVisitor<ScanReport>(builder, ScanReport.class);
+
+		// Simulates /opennms/api/v2/scanreports?_s=applications%3D%3DLocal+Access;timestamp%3Dle%3D2016-02-01T15:07:14.340-0500&limit=20&offset=0&order=desc&orderBy=timestamp
+		
+		List<SearchCondition<ScanReport>> conditions = new ArrayList<SearchCondition<ScanReport>>();
+		conditions.add(new PrimitiveSearchCondition<ScanReport>("applications", "blah", String.class, ConditionType.EQUALS, new ScanReport()));
+		conditions.add(new PrimitiveSearchCondition<ScanReport>("timestamp", new Date(), Date.class, ConditionType.LESS_OR_EQUALS, new ScanReport()));
+		SearchCondition<ScanReport> andCondition = new AndSearchCondition<ScanReport>(conditions);
+
+		visitor.visit(andCondition);
+
+		Criteria criteria = visitor.getQuery().toCriteria();
+		System.out.println(criteria.toString());
+		m_dao.countMatching(criteria);
+	}
+
+	@Test
+	public void testScanReportTwoConditions() {
 		CriteriaBuilder builder = new ScanReportRestService().getCriteriaBuilder();
 		CriteriaBuilderSearchVisitor<ScanReport> visitor = new CriteriaBuilderSearchVisitor<ScanReport>(builder, ScanReport.class);
 
 		visitor.visit(new PrimitiveSearchCondition<ScanReport>("applications", "blah", String.class, ConditionType.EQUALS, new ScanReport()));
-		//builder.sql("{alias}.id in (select scanreportid from scanreportproperties where property = 'applications' and propertyvalue = 'hello')");
+		visitor.visit(new PrimitiveSearchCondition<ScanReport>("timestamp", new Date(), Date.class, ConditionType.LESS_OR_EQUALS, new ScanReport()));
 
 		Criteria criteria = visitor.getQuery().toCriteria();
 		System.out.println(criteria.toString());

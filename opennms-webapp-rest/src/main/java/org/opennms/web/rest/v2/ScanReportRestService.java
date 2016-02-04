@@ -63,8 +63,6 @@ public class ScanReportRestService extends AbstractDaoRestService<ScanReport,Str
 
 	private static final Logger LOG = LoggerFactory.getLogger(ScanReportRestService.class);
 
-	private static final String PROPERY_APPLICATIONS = "applications";
-
 	/**
 	 * We need to override certain CriteriaBuilder methods so that we can support
 	 * filtering on values in the scanreportproperties table which is mapped as an
@@ -73,17 +71,24 @@ public class ScanReportRestService extends AbstractDaoRestService<ScanReport,Str
 	 * @see https://hibernate.atlassian.net/browse/HHH-869
 	 * @see https://hibernate.atlassian.net/browse/HHH-6103
 	 */
-	private static class PropertiesHandlerCriteriaBuilder extends CriteriaBuilder {
+	public static class PropertiesHandlerCriteriaBuilder extends CriteriaBuilder {
 
 		public PropertiesHandlerCriteriaBuilder() {
-			super(ScanReport.class);
+			this(ScanReport.class);
+		}
+
+		public PropertiesHandlerCriteriaBuilder(Class<?> clazz) {
+			super(clazz);
+			if (clazz != ScanReport.class) {
+				throw new IllegalArgumentException(getClass().getSimpleName() + " can only be used with " + ScanReport.class.getSimpleName());
+			}
 		}
 
 		@Override
 		public CriteriaBuilder eq(final String attribute, final Object comparator) {
-			if (PROPERY_APPLICATIONS.equalsIgnoreCase(attribute)) {
+			if (ScanReport.PROPERY_APPLICATIONS.equalsIgnoreCase(attribute)) {
 				// TODO: Escape SQL content in values
-				sql(String.format("{alias}.id in (select scanreportid from scanreportproperties where property = '%s' and propertyvalue = '%s')", PROPERY_APPLICATIONS, comparator));
+				sql(String.format("{alias}.id IN (SELECT scanreportid FROM scanreportproperties WHERE property = '%s' AND propertyvalue = '%s')", ScanReport.PROPERY_APPLICATIONS, comparator));
 				return this;
 			}
 			return super.eq(attribute, comparator);
@@ -91,9 +96,9 @@ public class ScanReportRestService extends AbstractDaoRestService<ScanReport,Str
 
 		@Override
 		public CriteriaBuilder ne(final String attribute, final Object comparator) {
-			if (PROPERY_APPLICATIONS.equalsIgnoreCase(attribute)) {
+			if (ScanReport.PROPERY_APPLICATIONS.equalsIgnoreCase(attribute)) {
 				// TODO: Escape SQL content in values
-				sql(String.format("{alias}.id in (select scanreportid from scanreportproperties where property = '%s' and propertyvalue != '%s')", PROPERY_APPLICATIONS, comparator));
+				sql(String.format("{alias}.id NOT IN (SELECT scanreportid FROM scanreportproperties WHERE property = '%s' AND propertyvalue = '%s')", ScanReport.PROPERY_APPLICATIONS, comparator));
 				return this;
 			}
 			return super.ne(attribute, comparator);
