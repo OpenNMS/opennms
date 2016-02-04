@@ -71,6 +71,14 @@ public class BSMDashlet extends AbstractDashlet {
      * the search criteria
      */
     private BusinessServiceSearchCriteria m_businessServiceSearchCriteria;
+    /**
+     * the column count for Ops board
+     */
+    private int m_columnCountBoard;
+    /**
+     * the column count for Ops panel
+     */
+    private int m_columnCountPanel;
 
     /**
      * Constructor for instantiating new objects.
@@ -90,13 +98,17 @@ public class BSMDashlet extends AbstractDashlet {
          */
 
         m_businessServiceSearchCriteria = BSMConfigHelper.fromMap(getDashletSpec().getParameters());
+
+        m_columnCountBoard = BSMConfigHelper.getIntForKey(getDashletSpec().getParameters(), "columnCountBoard", 10);
+
+        m_columnCountPanel = BSMConfigHelper.getIntForKey(getDashletSpec().getParameters(), "columnCountPanel", 5);
     }
 
     @Override
     public DashletComponent getWallboardComponent() {
         if (m_wallboardComponent == null) {
             m_wallboardComponent = new AbstractDashletComponent() {
-                private GridLayout m_gridLayout = new GridLayout(10, 1);
+                private GridLayout m_gridLayout = new GridLayout(m_columnCountBoard, 1);
 
                 {
                     m_gridLayout.setCaption(getName());
@@ -133,7 +145,7 @@ public class BSMDashlet extends AbstractDashlet {
     public DashletComponent getDashboardComponent() {
         if (m_dashboardComponent == null) {
             m_dashboardComponent = new AbstractDashletComponent() {
-                private GridLayout m_gridLayout = new GridLayout(5, 1);
+                private GridLayout m_gridLayout = new GridLayout(m_columnCountPanel, 1);
 
                 {
                     m_gridLayout.setCaption(getName());
