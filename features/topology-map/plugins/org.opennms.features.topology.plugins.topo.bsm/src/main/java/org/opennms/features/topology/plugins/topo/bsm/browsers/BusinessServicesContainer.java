@@ -56,9 +56,6 @@ public class BusinessServicesContainer extends OnmsVaadinContainer<BusinessServi
 
     @Override
     protected List<BusinessService> getItemsForCache(OnmsContainerDatasource<BusinessService, Long> datasource, Page page) {
-        // TODO MVR somehow hibernate returns more objects than there are actually. Probably a hashCode(), equals() thing
-        // see BSM-104 for more details. We use the following work around to get past that problem for now
-        List<BusinessService> itemsForCache = super.getItemsForCache(datasource, page);
-        return new ArrayList<>(new HashSet<>(itemsForCache));
+        return super.getItemsForCache(datasource, page);
     }
 }

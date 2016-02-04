@@ -140,7 +140,6 @@ public class BSMConfigHelper {
 
         return b.order(BusinessServiceSearchCriteriaBuilder.Order.valueOf(orderBy))
                 .order(BusinessServiceSearchCriteriaBuilder.Sequence.valueOf(orderSequence))
-                .limit(resultsLimit)
-                .order(BusinessServiceSearchCriteriaBuilder.Order.Name);
+                .limit(resultsLimit);
     }
 }

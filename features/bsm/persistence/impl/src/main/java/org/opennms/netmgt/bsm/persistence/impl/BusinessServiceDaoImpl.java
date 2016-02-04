@@ -34,6 +34,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.hibernate.Criteria;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
@@ -62,6 +63,17 @@ public class BusinessServiceDaoImpl extends AbstractDaoHibernate<BusinessService
             }
         });
         return parents;
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public List<BusinessServiceEntity> findMatching(final org.opennms.core.criteria.Criteria criteria) {
+        final HibernateCallback<List<BusinessServiceEntity>> callback = session -> {
+            final Criteria hibernateCriteria = m_criteriaConverter.convert(criteria, session);
+            hibernateCriteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
+            return (List<BusinessServiceEntity>)(hibernateCriteria.list());
+        };
+        return getHibernateTemplate().execute(callback);
     }
 
 }

@@ -315,4 +315,12 @@ public class BusinessServiceSearchCriteriaBuilder implements BusinessServiceSear
         m_sequence = Sequence.Descending;
         return this;
     }
+
+    public Order getOrder() {
+        return m_order;
+    }
+
+    public Sequence getSequence() {
+        return m_sequence;
+    }
 }

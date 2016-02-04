@@ -62,7 +62,7 @@ public abstract class AbstractDaoHibernate<T, K extends Serializable> extends Hi
     private static final Logger LOG = LoggerFactory.getLogger(AbstractDaoHibernate.class);
     Class<T> m_entityClass;
     private String m_lockName;
-    private final HibernateCriteriaConverter m_criteriaConverter = new HibernateCriteriaConverter();
+    protected final HibernateCriteriaConverter m_criteriaConverter = new HibernateCriteriaConverter();
     
     public AbstractDaoHibernate(final Class<T> entityClass) {
         super();
