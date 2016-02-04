@@ -70,6 +70,7 @@ public class BusinessServiceDaoImpl extends AbstractDaoHibernate<BusinessService
     public List<BusinessServiceEntity> findMatching(final org.opennms.core.criteria.Criteria criteria) {
         final HibernateCallback<List<BusinessServiceEntity>> callback = session -> {
             final Criteria hibernateCriteria = m_criteriaConverter.convert(criteria, session);
+            // Manually override default. Otherwise for each 1 - n relationship (with n > 1), n entities are returned instead of 1
             hibernateCriteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
             return (List<BusinessServiceEntity>)(hibernateCriteria.list());
         };
