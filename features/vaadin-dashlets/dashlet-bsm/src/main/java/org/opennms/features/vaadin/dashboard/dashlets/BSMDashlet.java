@@ -51,6 +51,37 @@ import com.vaadin.ui.Label;
  * @author Christian Pape
  */
 public class BSMDashlet extends AbstractDashlet {
+
+    private class BSMDashletComponent extends AbstractDashletComponent {
+
+        private final GridLayout m_gridLayout;
+
+        private BSMDashletComponent(int rowCount, int columnCount) {
+            m_gridLayout = new GridLayout(columnCount, rowCount);
+            m_gridLayout.setCaption(getName());
+            m_gridLayout.setWidth("100%");
+            refresh();
+        }
+
+        @Override
+        public void refresh() {
+            m_gridLayout.removeAllComponents();
+            final List<BusinessService> services = m_businessServiceManager.search(m_businessServiceSearchCriteria);
+            if (services.isEmpty()) {
+                m_gridLayout.addComponent(new Label("There are no Business Services with matching criterias found."));
+            } else {
+                for (BusinessService eachService : services) {
+                    m_gridLayout.addComponent(createRow(eachService));
+                }
+            }
+            boosted = false;
+        }
+
+        @Override
+        public Component getComponent() {
+            return m_gridLayout;
+        }
+    };
     /**
      * The {@link BusinessServiceManager} used
      */
@@ -80,51 +111,14 @@ public class BSMDashlet extends AbstractDashlet {
      */
     public BSMDashlet(String name, DashletSpec dashletSpec, BusinessServiceManager businessServiceManager, TransactionAwareBeanProxyFactory transactionAwareBeanProxyFactory) {
         super(name, dashletSpec);
-        /**
-         * Setting the member fields
-         */
         m_businessServiceManager = transactionAwareBeanProxyFactory.createProxy(businessServiceManager);
-
-        /**
-         * Retrieve the config...
-         */
-
         m_businessServiceSearchCriteria = BSMConfigHelper.fromMap(getDashletSpec().getParameters());
     }
 
     @Override
     public DashletComponent getWallboardComponent() {
         if (m_wallboardComponent == null) {
-            m_wallboardComponent = new AbstractDashletComponent() {
-                private GridLayout m_gridLayout = new GridLayout(10, 1);
-
-                {
-                    m_gridLayout.setCaption(getName());
-                    m_gridLayout.setWidth("100%");
-                    refresh();
-                }
-
-                @Override
-                public void refresh() {
-                    m_gridLayout.removeAllComponents();
-
-                    final List<BusinessService> services = m_businessServiceManager.search(m_businessServiceSearchCriteria);
-
-                    if (services.isEmpty()) {
-                        m_gridLayout.addComponent(new Label("There are no Business Services with matching criterias found."));
-                    } else {
-                        for (BusinessService eachService : services) {
-                            m_gridLayout.addComponent(createRow(eachService));//, i%10,i/10);
-                        }
-                    }
-                    boosted = false;
-                }
-
-                @Override
-                public Component getComponent() {
-                    return m_gridLayout;
-                }
-            };
+            m_wallboardComponent = new BSMDashletComponent(1, 10);
         }
         return m_wallboardComponent;
     }
@@ -132,36 +126,7 @@ public class BSMDashlet extends AbstractDashlet {
     @Override
     public DashletComponent getDashboardComponent() {
         if (m_dashboardComponent == null) {
-            m_dashboardComponent = new AbstractDashletComponent() {
-                private GridLayout m_gridLayout = new GridLayout(5, 1);
-
-                {
-                    m_gridLayout.setCaption(getName());
-                    m_gridLayout.setWidth("100%");
-                    refresh();
-                }
-
-                @Override
-                public void refresh() {
-                    m_gridLayout.removeAllComponents();
-
-                    final List<BusinessService> services = m_businessServiceManager.search(m_businessServiceSearchCriteria);
-
-                    if (services.isEmpty()) {
-                        m_gridLayout.addComponent(new Label("There are no Business Services with matching criterias found."));
-                    } else {
-                        for (BusinessService eachService : services) {
-                            m_gridLayout.addComponent(createRow(eachService));
-                        }
-                    }
-                    boosted = false;
-                }
-
-                @Override
-                public Component getComponent() {
-                    return m_gridLayout;
-                }
-            };
+            m_dashboardComponent = new BSMDashletComponent(1, 5);
         }
         return m_dashboardComponent;
     }
