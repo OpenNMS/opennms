@@ -36,6 +36,8 @@ import java.util.Objects;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.core.criteria.Criteria;
+import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.MockDatabase;
@@ -257,6 +259,26 @@ public class BusinessServiceDaoIT {
         assertEquals(0, m_businessServiceDao.countAll());
         assertEquals(0, m_reductionFunctionDao.countAll());
         assertEquals(0, m_edgeDao.countAll());
+    }
+
+    @Test
+    @Transactional
+    public void verifyDistinctObjectLoading() {
+        BusinessServiceEntity entity = new BusinessServiceEntityBuilder()
+                .name("Parent Web Servers")
+                .addReductionKey("TestReductionKeyA", new IdentityEntity())
+                .addReductionKey("TestReductionKeyB", new IdentityEntity())
+                .addReductionKey("TestReductionKeyC", new IdentityEntity())
+                .reduceFunction(m_mostCritical)
+                .toEntity();
+
+        m_businessServiceDao.save(entity);
+        m_businessServiceDao.flush();
+
+        assertEquals(1, m_businessServiceDao.countAll());
+        assertEquals(3, m_edgeDao.countAll());
+
+        assertEquals(1, m_businessServiceDao.findMatching(new CriteriaBuilder(BusinessServiceEntity.class).toCriteria()));
     }
 
     private OnmsMonitoredService getMonitoredServiceFromNode1() {
