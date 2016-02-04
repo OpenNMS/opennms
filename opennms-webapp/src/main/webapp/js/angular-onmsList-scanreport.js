@@ -14,6 +14,8 @@
 				return 'Scan Time';
 			case 'location':
 				return 'Location';
+			case 'applications':
+				return 'Application';
 			}
 			// If no match, return the input
 			return input;

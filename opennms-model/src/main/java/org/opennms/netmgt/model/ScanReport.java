@@ -70,7 +70,10 @@ import org.codehaus.jackson.annotate.JsonManagedReference;
 @XmlRootElement(name="scan-report")
 @XmlAccessorType(XmlAccessType.NONE)
 public class ScanReport implements Serializable {
+
     private static final long serialVersionUID = 1L;
+
+    public static final String PROPERY_APPLICATIONS = "applications";
 
     @XmlID
     @XmlAttribute(name="id", required=true)
@@ -148,6 +151,21 @@ public class ScanReport implements Serializable {
     @Transient
     public String getProperty(final String name) {
         return m_properties.get(name);
+    }
+
+    /**
+     * This is a transient bean property that is used so that CXF can 
+     * perform FIQL searches on the bean property.
+     */
+    @Transient
+    @XmlTransient
+    @JsonIgnore
+    public String getApplications() {
+        return getProperty(PROPERY_APPLICATIONS);
+    }
+
+    public void setApplications(String applications) {
+        addProperty(PROPERY_APPLICATIONS, applications);
     }
 
     public String getLocation() {
