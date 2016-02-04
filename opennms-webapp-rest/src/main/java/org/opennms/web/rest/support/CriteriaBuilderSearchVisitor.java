@@ -31,6 +31,7 @@ package org.opennms.web.rest.support;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -112,26 +113,42 @@ public class CriteriaBuilderSearchVisitor<T> extends AbstractSearchConditionVisi
 					if (isWildcard) {
 						m_criteriaBuilder.like(name, clsValue.getValue());
 					} else {
-						m_criteriaBuilder.eq(name, clsValue.getValue());
+						if (clsValue.getValue() == null) {
+							m_criteriaBuilder.isNull(name);
+						} else {
+							m_criteriaBuilder.eq(name, clsValue.getValue());
+						}
 					}
 					break;
 				case NOT_EQUALS:
 					if (isWildcard) {
 						m_criteriaBuilder.not().like(name, clsValue.getValue());
 					} else {
-						m_criteriaBuilder.ne(name, clsValue.getValue());
+						if (clsValue.getValue() == null) {
+							m_criteriaBuilder.isNotNull(name);
+						} else {
+							// Match any rows that do not match the value or are null
+							m_criteriaBuilder.or(
+								Restrictions.ne(name, clsValue.getValue()),
+								Restrictions.isNull(name)
+							);
+						}
 					}
 					break;
 				case LESS_THAN:
+					// TODO: Check for null?
 					m_criteriaBuilder.lt(name, clsValue.getValue());
 					break;
 				case GREATER_THAN:
+					// TODO: Check for null?
 					m_criteriaBuilder.gt(name, clsValue.getValue());
 					break;
 				case LESS_OR_EQUALS:
+					// TODO: Check for null?
 					m_criteriaBuilder.le(name, clsValue.getValue());
 					break;
 				case GREATER_OR_EQUALS:
+					// TODO: Check for null?
 					m_criteriaBuilder.ge(name, clsValue.getValue());
 					break;
 				case OR:
