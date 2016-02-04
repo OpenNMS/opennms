@@ -29,7 +29,6 @@
 package org.opennms.core.concurrent;
 
 import java.util.concurrent.Callable;
-import java.util.concurrent.CompletableFuture;
 
 /**
  * This interface is used to denote a WaterfallCallable that terminates the chain of 

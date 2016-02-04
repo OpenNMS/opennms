@@ -40,19 +40,19 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public abstract class Ping {
-	
-	private static final Logger LOG = LoggerFactory.getLogger(Ping.class);
 
+    private static final Logger LOG = LoggerFactory.getLogger(Ping.class);
 
     public static class Stuff implements Runnable {
         private IcmpSocket m_socket;
-    private short m_icmpId;
-    
+
+        private short m_icmpId;
+
         public Stuff(IcmpSocket socket, short icmpId) {
             m_socket = socket;
             m_icmpId = icmpId;
         }
-    
+
         @Override
         public void run() {
             try {
@@ -65,17 +65,12 @@ public abstract class Ping {
                         // do nothing but skip this packet
                         continue;
                     }
-            
-                    if (reply.isEchoReply()
-                        && reply.getThreadId() == m_icmpId) {
+
+                    if (reply.isEchoReply()) {
                         double rtt = reply.elapsedTime(TimeUnit.MILLISECONDS);
-                        System.out.println(ICMPEchoPacket.getNetworkSize()
-                                           + " bytes from "
-                                           + InetAddressUtils.str(pkt.getAddress())
-                                           + ": icmp_seq="
-                                           + reply.getIdentifier()
-                                           + ". time="
-                                           + rtt + " ms");
+                        System.out.println(ICMPEchoPacket.getNetworkSize() + " bytes from "
+                                + InetAddressUtils.str(pkt.getAddress()) + ": icmp_seq=" + reply.getIdentifier()
+                                + ". time=" + rtt + " ms");
                     }
                 }
             } catch (final Throwable t) {
@@ -91,73 +86,65 @@ public abstract class Ping {
      * @param argv an array of {@link java.lang.String} objects.
      */
     public static void main(String[] argv) {
-    if (argv.length != 1) {
+        if (argv.length != 1) {
             System.err.println("incorrect number of command-line arguments.");
-            System.err.println("usage: java -cp ... "
-                               + IcmpSocket.class.getName() + " <host>");
+            System.err.println("usage: java -cp ... " + IcmpSocket.class.getName() + " <host>");
             System.exit(1);
         }
-    
+
         String host = argv[0];
-    
+
         IcmpSocket m_socket = null;
-    
+
         try {
             m_socket = new IcmpSocket();
-    } catch (UnsatisfiedLinkError e) {
-            System.err.println("UnsatisfiedLinkError while creating an "
-                               + "IcmpSocket.  Most likely failed to load "
-                               + "libjicmp.so.  Try setting the property "
-                               + "'opennms.library.jicmp' to point at the "
-                               + "full path name of the libjicmp.so shared "
-                               + "library "
-                               + "(e.g. 'java -Dopennms.library.jicmp=/some/path/libjicmp.so ...')");
+        } catch (UnsatisfiedLinkError e) {
+            System.err.println("UnsatisfiedLinkError while creating an " + "IcmpSocket.  Most likely failed to load "
+                    + "libjicmp.so.  Try setting the property " + "'opennms.library.jicmp' to point at the "
+                    + "full path name of the libjicmp.so shared " + "library "
+                    + "(e.g. 'java -Dopennms.library.jicmp=/some/path/libjicmp.so ...')");
             e.printStackTrace();
             System.exit(1);
-    } catch (NoClassDefFoundError e) {
-            System.err.println("NoClassDefFoundError while creating an "
-                               + "IcmpSocket.  Most likely failed to load "
-                               + "libjicmp.so.");
+        } catch (NoClassDefFoundError e) {
+            System.err.println("NoClassDefFoundError while creating an " + "IcmpSocket.  Most likely failed to load "
+                    + "libjicmp.so.");
             e.printStackTrace();
             System.exit(1);
-    } catch (IOException e) {
-            System.err.println("IOException while creating an "
-                               + "IcmpSocket.");
+        } catch (IOException e) {
+            System.err.println("IOException while creating an " + "IcmpSocket.");
             e.printStackTrace();
             System.exit(1);
         }
-    
-    java.net.InetAddress addr = null;
+
+        java.net.InetAddress addr = null;
         try {
-        addr = InetAddress.getByName(host);
+            addr = InetAddress.getByName(host);
         } catch (java.net.UnknownHostException e) {
-            System.err.println("UnknownHostException when looking up "
-                               + host + ".");
+            System.err.println("UnknownHostException when looking up " + host + ".");
             e.printStackTrace();
             System.exit(1);
         }
-    
+
         System.out.println("PING " + host + " (" + InetAddressUtils.str(addr) + "): 56 data bytes");
-    
-    short m_icmpId = 2;
-    
+
+        short m_icmpId = 2;
+
         Ping.Stuff s = new Ping.Stuff(m_socket, m_icmpId);
         Thread t = new Thread(s, Ping.class.getSimpleName());
         t.start();
-    
+
         for (long m_fiberId = 0; true; m_fiberId++) {
-    	    // build a packet
+            // build a packet
             ICMPEchoPacket pingPkt = new ICMPEchoPacket(m_fiberId);
             pingPkt.setIdentity(m_icmpId);
             pingPkt.computeChecksum();
-    
+
             // convert it to a datagram to be sent
             byte[] buf = pingPkt.toBytes();
-            DatagramPacket sendPkt =
-                new DatagramPacket(buf, buf.length, addr, 0);
+            DatagramPacket sendPkt = new DatagramPacket(buf, buf.length, addr, 0);
             buf = null;
             pingPkt = null;
-    
+
             try {
                 m_socket.send(sendPkt);
             } catch (IOException e) {

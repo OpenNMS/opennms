@@ -43,7 +43,6 @@ public class IteratorIterator<T> implements Iterator<T>, Iterable<T> {
      *
      * @param iterators a {@link java.util.Iterator} object.
      */
-    @SafeVarargs
     public IteratorIterator(final Iterator<T>... iterators) {
         /*
          * We create an ArrayList to hold the list of iterators instead of

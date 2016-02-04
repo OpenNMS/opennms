@@ -86,7 +86,8 @@ public class JniPingTest extends TestCase {
         }
 
         super.setUp();
-        m_goodHost = InetAddress.getLocalHost();
+//        m_goodHost = InetAddress.getLocalHost();
+        m_goodHost = InetAddress.getByName("172.18.8.29");
         // 192.0.2.0/24 is reserved for documentation purposes
         m_badHost  = InetAddress.getByName("192.0.2.123");
     }

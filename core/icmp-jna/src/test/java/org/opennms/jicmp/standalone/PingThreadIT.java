@@ -47,12 +47,12 @@ import com.sun.jna.Platform;
  * @author brozow
  */
 
-@Ignore
+
 public class PingThreadIT {
     
     @Before
     public void setUp() throws Exception {
-        assumeTrue(Platform.isMac());
+        assumeTrue(Platform.isWindows());
     }
 
     @After
@@ -66,7 +66,7 @@ public class PingThreadIT {
         try {
         listener.start();
         
-        listener.ping((Inet4Address)InetAddress.getByName("127.0.0.1"), 1000, 0, pingCount, 1000);
+        listener.ping((Inet4Address)InetAddress.getByName("172.18.8.29"), 1000, 0, pingCount, 1000);
         
         } finally {
             listener.stop();
@@ -112,7 +112,7 @@ public class PingThreadIT {
             public void run() {
                 try {
                     Thread.sleep(id/10);
-                    listener.ping((Inet4Address)InetAddress.getByName("127.0.0.1"), id, 0, count, 1000);
+                    listener.ping((Inet4Address)InetAddress.getByName("172.18.8.29"), id, 0, count, 1000);
                 } catch(Throwable e) {
                     e.printStackTrace();
                 }

@@ -29,7 +29,6 @@
 package org.opennms.core.concurrent;
 
 import java.util.concurrent.Callable;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 
 import org.slf4j.Logger;

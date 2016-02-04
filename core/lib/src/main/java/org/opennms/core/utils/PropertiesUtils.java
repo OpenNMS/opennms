@@ -98,7 +98,6 @@ public abstract class PropertiesUtils {
      * @return The string with appropriate substitutions made.
      * @param mapArray a {@link java.util.Map} object.
      */
-    @SafeVarargs
     public static String substitute(final String initialString, final Map<String,Object>... mapArray) {
         for (final Map<String,Object> properties : mapArray) {
             final Map<String,String> convertedProperties = new HashMap<String,String>();
