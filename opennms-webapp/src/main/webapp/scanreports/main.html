@@ -197,7 +197,9 @@
 						<i ng-show="query.orderBy === 'location' &amp;&amp; query.order === 'desc'" class="fa fa-sort-desc"/>
 					</th>
 					<th class="col-sm-2 text-nowrap">
-						Application
+						<a ng-click="changeOrderBy('applications')">Application</a>
+						<i ng-show="query.orderBy === 'applications' &amp;&amp; query.order === 'asc'" class="fa fa-sort-asc"/>
+						<i ng-show="query.orderBy === 'applications' &amp;&amp; query.order === 'desc'" class="fa fa-sort-desc"/>
 					</th>
 					<th class="col-sm-4 text-nowrap">
 						<a ng-click="changeOrderBy('timestamp')">Scan Time</a>
