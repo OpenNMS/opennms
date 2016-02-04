@@ -32,6 +32,8 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.StringWriter;
+import java.util.Arrays;
+import java.util.List;
 
 import org.apache.commons.io.FileUtils;
 import org.opennms.core.utils.ConfigFileConstants;
@@ -40,29 +42,36 @@ import org.opennms.netmgt.config.service.Service;
 import org.opennms.netmgt.config.service.ServiceConfiguration;
 import org.opennms.upgrade.api.AbstractOnmsUpgrade;
 import org.opennms.upgrade.api.OnmsUpgradeException;
-import org.xml.sax.InputSource;
 
 /**
  * The Class Service Configuration Migrator.
  * 
  * <p>Issues fixed:</p>
  * <ul>
- * <li>NMS-6970</li>
+ * <li>HZN-545</li>
  * </ul>
  * 
- * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a> 
+ * @author <a href="mailto:ranger@opennms.org">Benjamin Reed</a>
  */
 public class ServiceConfig1701MigratorOffline extends AbstractOnmsUpgrade {
-
-    /**
-     * The base configuration object (or configuration reference).
-     */
-    private ServiceConfiguration baseConfig;
 
     /** 
      * The services configuration file.
      */
     private File configFile;
+
+    private final List<String> oldServices = Arrays.asList(new String[] {
+            ":Name=HttpAdaptor",
+            ":Name=HttpAdaptorMgmt",
+            ":Name=XSLTProcessor",
+            "OpenNMS:Name=AccessPointMonitor",
+            "OpenNMS:Name=Capsd",
+            "OpenNMS:Name=Importer",
+            "OpenNMS:Name=Linkd",
+            "OpenNMS:Name=Threshd",
+            "OpenNMS:Name=XmlrpcProvisioner",
+            "OpenNMS:Name=Xmlrpcd"
+    });
 
     /**
      * Instantiates a new Service Configuration migrator offline.
@@ -73,9 +82,7 @@ public class ServiceConfig1701MigratorOffline extends AbstractOnmsUpgrade {
         super();
         try {
             configFile = ConfigFileConstants.getFile(ConfigFileConstants.SERVICE_CONF_FILE_NAME);
-            InputSource src = new InputSource(getClass().getResourceAsStream("/default/service-configuration-17.0.1.xml"));
-            baseConfig = JaxbUtils.unmarshal(ServiceConfiguration.class, src);
-        } catch (IOException e) {
+        } catch (final IOException e) {
             throw new OnmsUpgradeException("Can't find Services Configuration file", e);
         }
     }
@@ -149,13 +156,12 @@ public class ServiceConfig1701MigratorOffline extends AbstractOnmsUpgrade {
             ServiceConfiguration currentCfg = JaxbUtils.unmarshal(ServiceConfiguration.class, configFile);
 
             log("Current configuration: " + currentCfg.getServiceCount() + " services.\n");
-            log("Base configuration: " + baseConfig.getServiceCount() + " services.\n");
 
             for (int i=currentCfg.getServiceCount() - 1; i >= 0; i--) {
                 final Service localSvc = currentCfg.getService(i);
-                final Service baseSvc = getService(baseConfig, localSvc.getName());
-                if (baseSvc == null) {
-                    log("Removing old service %s\n", localSvc.getName());
+                final String name = localSvc.getName();
+                if (oldServices.contains(name)) {
+                    log("Removing old service %s\n", name);
                     currentCfg.getServiceCollection().remove(i);
                 }
             }
@@ -178,22 +184,6 @@ public class ServiceConfig1701MigratorOffline extends AbstractOnmsUpgrade {
         } catch (Exception e) {
             throw new OnmsUpgradeException("Can't fix services configuration because " + e.getMessage(), e);
         }
-    }
-
-    /**
-     * Gets the service.
-     *
-     * @param svcConfig the service configuration object
-     * @param serviceName the service name
-     * @return the service
-     */
-    private static Service getService(ServiceConfiguration svcConfig, String serviceName) {
-        for(Service s : svcConfig.getServiceCollection()) {
-            if (s.getName().equals(serviceName)) {
-                return s;
-            }
-        }
-        return null;
     }
 
 }
