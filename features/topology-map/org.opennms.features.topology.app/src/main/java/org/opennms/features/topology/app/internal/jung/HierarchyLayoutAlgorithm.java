@@ -109,8 +109,10 @@ public class HierarchyLayoutAlgorithm extends AbstractLayoutAlgorithm {
     // we may have 1 to n root vertices
     private List<Vertex> getRoots(Graph g) {
         List<Vertex> rootList = new ArrayList<Vertex>();
-        for (Vertex eachVertex : g.getDisplayVertices()) {
-            if (eachVertex.getParent() == null) {
+        Collection<Vertex> displayableVertices = g.getDisplayVertices();
+        for (Vertex eachVertex : displayableVertices) {
+            if (eachVertex.getParent() == null // no parent
+                    || !displayableVertices.contains(eachVertex.getParent())) { // parent is not visible, include it as possible root
                 rootList.add(eachVertex);
             }
         }
