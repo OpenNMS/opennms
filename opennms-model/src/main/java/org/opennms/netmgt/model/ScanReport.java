@@ -61,6 +61,7 @@ import javax.xml.bind.annotation.XmlTransient;
 
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonManagedReference;
+import org.hibernate.annotations.Formula;
 
 /**
  * @author Seth
@@ -157,7 +158,7 @@ public class ScanReport implements Serializable {
      * This is a transient bean property that is used so that CXF can 
      * perform FIQL searches on the bean property.
      */
-    @Transient
+    @Formula("(select p.propertyvalue from scanreportproperties p where p.scanreportid = id and p.property = '" + PROPERY_APPLICATIONS + "')")
     @XmlTransient
     @JsonIgnore
     public String getApplications() {
