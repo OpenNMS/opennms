@@ -61,11 +61,17 @@ public class BSMConfigHelper {
      *
      * @param map the map to use
      * @param key the key
-     * @return the string value
+     * @param defaultValue default value
+     * @return the string value, defaultValue if Null or empty
      */
-    public static String getStringForKey(Map<String, String> map, String key) {
+    public static String getStringForKey(Map<String, String> map, String key, String defaultValue) {
         String value = map.get(key);
-        return (value == null ? "" : value);
+
+        if (Strings.isNullOrEmpty(value)) {
+            value = defaultValue;
+        }
+
+        return value;
     }
 
     /**
@@ -73,14 +79,15 @@ public class BSMConfigHelper {
      *
      * @param map the map to be used
      * @param key the key
-     * @return the int value, 0 if not parsable
+     * @param defaultValue default value
+     * @return the int value, defaultValue if not parsable
      */
-    public static int getIntForKey(Map<String, String> map, String key) {
+    public static int getIntForKey(Map<String, String> map, String key, int defaultValue) {
         String value = map.get(key);
         try {
             return Integer.parseInt(value);
         } catch (NumberFormatException e) {
-            return 0;
+            return defaultValue;
         }
     }
 
@@ -92,39 +99,16 @@ public class BSMConfigHelper {
      */
     public static BusinessServiceSearchCriteria fromMap(Map<String, String> map) {
         boolean filterByName = getBooleanForKey(map, "filterByName");
-        String nameValue = getStringForKey(map, "nameValue");
-
+        String nameValue = getStringForKey(map, "nameValue", "");
         boolean filterByAttribute = getBooleanForKey(map, "filterByAttribute");
-        String attributeKey = getStringForKey(map, "attributeKey");
-        String attributeValue = getStringForKey(map, "attributeValue");
-
+        String attributeKey = getStringForKey(map, "attributeKey", "");
+        String attributeValue = getStringForKey(map, "attributeValue", "");
         boolean filterBySeverity = getBooleanForKey(map, "filterBySeverity");
-
-        String severityValue = getStringForKey(map, "severityValue");
-
-        if (Strings.isNullOrEmpty(severityValue)) {
-            severityValue = Status.WARNING.getLabel();
-        }
-
-        String severityCompareOperator = BSMConfigHelper.getStringForKey(map, "severityCompareOperator");
-
-        if (Strings.isNullOrEmpty(severityCompareOperator)) {
-            severityCompareOperator = BusinessServiceSearchCriteriaBuilder.CompareOperator.GreaterOrEqual.name();
-        }
-
-        String orderBy = BSMConfigHelper.getStringForKey(map, "orderBy");
-
-        if (Strings.isNullOrEmpty(orderBy)) {
-            orderBy = BusinessServiceSearchCriteriaBuilder.Order.Name.name();
-        }
-
-        String orderSequence = BSMConfigHelper.getStringForKey(map, "orderSequence");
-
-        if (Strings.isNullOrEmpty(orderSequence)) {
-            orderSequence = BusinessServiceSearchCriteriaBuilder.Sequence.Ascending.name();
-        }
-
-        int resultsLimit = getIntForKey(map, "resultsLimit");
+        String severityValue = getStringForKey(map, "severityValue", Status.WARNING.getLabel());
+        String severityCompareOperator = BSMConfigHelper.getStringForKey(map, "severityCompareOperator", BusinessServiceSearchCriteriaBuilder.CompareOperator.GreaterOrEqual.name());
+        String orderBy = BSMConfigHelper.getStringForKey(map, "orderBy", BusinessServiceSearchCriteriaBuilder.Order.Name.name());
+        String orderSequence = BSMConfigHelper.getStringForKey(map, "orderSequence", BusinessServiceSearchCriteriaBuilder.Sequence.Ascending.name());
+        int resultsLimit = getIntForKey(map, "resultsLimit", 10);
 
         BusinessServiceSearchCriteriaBuilder b = new BusinessServiceSearchCriteriaBuilder();
 

@@ -28,6 +28,8 @@
                 <entry key="severityCompareOperator" value="GreaterOrEqual"/>
                 <entry key="orderBy" value="Name"/>
                 <entry key="orderAsc" value="true"/>
+                <entry key="columnCountBoard" value="10"/>
+                <entry key="columnCountPanel" value="5"/>
             </map>
         </property>
 
@@ -44,6 +46,8 @@
                 <entry key="severityCompareOperator" value="Comparator for the severity value"/>
                 <entry key="orderBy" value="Order of results"/>
                 <entry key="orderAsc" value="Ascending or descending order"/>
+                <entry key="columnCountBoard" value="Number of columns for displaying elements in the Ops Board"/>
+                <entry key="columnCountPanel" value="Number of columns for displaying elements in the Ops Panel"/>
             </map>
         </property>
     </bean>
