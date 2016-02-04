@@ -355,5 +355,5 @@ td.onms { font-size: 100%; }
 .severity.Indeterminate{ background-color: #EBEBCD; border-top: 2px solid #999000 !important; background-image: url(../bsm/images/bgIndeterminate.png); }
 .severity.Normal{ background-color: #D7E1CD; border-top: 2px solid #336600 !important; background-image: url(../bsm/images/bgNormal.png); }
 .severity.Cleared { background-color: #EEEEEE; border-top: 2px solid #999999 !important; background-image: url(../bsm/images/bgCleared.png); }
-.severity.bright { padding-left: 20px; background-position: top left; background-repeat: repeat-y; }
-.severity.nobright { background-image: none;}
+.severity.bright { text-overflow: ellipsis; white-space: nowrap; padding-left: 20px; background-position: top left; background-repeat: repeat-y; }
+.severity.nobright { text-overflow: ellipsis; white-space: nowrap; background-image: none;}
