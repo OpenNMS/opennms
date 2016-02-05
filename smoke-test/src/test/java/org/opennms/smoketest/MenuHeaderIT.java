@@ -73,17 +73,16 @@ public class MenuHeaderIT extends OpenNMSSeleniumTestCase {
         m_driver.switchTo().parentFrame();
         frontPage();
 
-        final String reportsMenuName = "name=nav-Reports-top";
-        clickMenuItem(reportsMenuName, "Charts", "charts/index.jsp");
+        clickMenuItem("name=nav-Reports-top", "Charts", "charts/index.jsp");
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("include-charts")));
 
-        clickMenuItem(reportsMenuName, "Resource Graphs", "graph/index.jsp");
+        clickMenuItem("name=nav-Reports-top", "Resource Graphs", "graph/index.jsp");
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//h3[contains(text(), 'Standard Resource')]")));
 
-        clickMenuItem(reportsMenuName, "KSC Reports", "KSC/index.htm");
+        clickMenuItem("name=nav-Reports-top", "KSC Reports", "KSC/index.htm");
         findElementByXpath("//h3[text()='Customized Reports']");
 
-        clickMenuItem(reportsMenuName, "Statistics", "statisticsReports/index.htm");
+        clickMenuItem("name=nav-Reports-top", "Statistics", "statisticsReports/index.htm");
         findElementByXpath("//h3[text()='Statistics Report List']");
 
         final String dashboardsMenuName = "name=nav-Dashboards-top";
