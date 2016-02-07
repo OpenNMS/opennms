@@ -851,8 +851,16 @@ case "$COMMAND" in
 
 	configtest)
 		$opennms_echo "Validating XML files: \c"
-		checkXmlFiles || exit $?
-		echo "PASSED"
+		checkXmlFiles
+		ret=$?
+		case $ret in
+			0)
+				echo "PASSED"
+				;;
+			*)
+				# nothing
+				;;
+		esac
 		;;
 
 	pause)
