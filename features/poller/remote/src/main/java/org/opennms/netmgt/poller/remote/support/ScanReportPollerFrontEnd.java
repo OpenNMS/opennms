@@ -450,7 +450,7 @@ public class ScanReportPollerFrontEnd implements PollerFrontEnd, InitializingBea
         LOG.debug("=============== Scan report log START ===============");
         LOG.debug("Scan report log: '{}'", appender.getOutput());
         LOG.debug("=============== Scan report log END ===============");
-        */
+         */
 
         // Fire an exitNecessary event with the scanReport as the parameter
         firePropertyChange(PollerFrontEndStates.exitNecessary.toString(), null, scanReport);
@@ -511,6 +511,16 @@ public class ScanReportPollerFrontEnd implements PollerFrontEnd, InitializingBea
 
     @Override
     public boolean isExitNecessary() {
+        return false;
+    }
+
+    @Override
+    public boolean isDisconnected() {
+        return false;
+    }
+
+    @Override
+    public boolean isPaused() {
         return false;
     }
 

@@ -772,11 +772,13 @@ public class DefaultPollerFrontEnd implements PollerFrontEnd, InitializingBean, 
 
     }
 
-    private boolean isDisconnected() {
+    @Override
+    public boolean isDisconnected() {
         return m_state.isDisconnected();
     }
 
-    private boolean isPaused() {
+    @Override
+    public boolean isPaused() {
         return m_state.isPaused();
     }
 
