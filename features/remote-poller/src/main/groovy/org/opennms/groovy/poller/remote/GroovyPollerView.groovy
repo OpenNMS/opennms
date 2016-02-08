@@ -28,26 +28,24 @@
 
 package org.opennms.groovy.poller.remote;
 
-import groovy.swing.SwingBuilder;
+import java.awt.BorderLayout
+import java.awt.CardLayout
+import java.awt.Color
+import java.awt.Dimension
+import java.text.SimpleDateFormat
 
-import java.awt.BorderLayout;
-import java.awt.CardLayout;
-import java.awt.FlowLayout;
-import java.text.SimpleDateFormat;
+import javax.swing.JFrame
+import javax.swing.JPanel
+import javax.swing.SwingUtilities
+import javax.swing.table.TableModel
 
-import javax.swing.BorderFactory;
-import javax.swing.JFrame;
-import javax.swing.SwingUtilities;
-import javax.swing.table.TableModel;
-
-import org.opennms.netmgt.poller.PollStatus;
-import org.opennms.netmgt.config.monitoringLocations.LocationDef;
-import org.opennms.poller.remote.MonitoringLocationListCellRenderer;
-import org.opennms.netmgt.poller.remote.PollerBackEnd;
-import org.opennms.netmgt.poller.remote.PollerFrontEnd;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.InitializingBean;
+import org.opennms.netmgt.poller.PollStatus
+import org.opennms.netmgt.poller.remote.PollerBackEnd
+import org.opennms.netmgt.poller.remote.PollerFrontEnd
+import org.opennms.poller.remote.MonitoringLocationListCellRenderer
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
+import org.springframework.beans.factory.InitializingBean
 
 /**
  *
@@ -56,7 +54,7 @@ import org.springframework.beans.factory.InitializingBean;
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
  */
 
-class GroovyPollerView implements InitializingBean {
+class GroovyPollerView extends AbstractGui implements InitializingBean {
     private static final Logger LOG = LoggerFactory.getLogger(GroovyPollerView.class);
     private static final String REGISTRATION = "registration";
     private static final String STATUS = "status";
@@ -64,82 +62,128 @@ class GroovyPollerView implements InitializingBean {
     def m_backEnd;
     def m_frontEnd;
 
-    def swing = new SwingBuilder();
+    def m_minimumSize = new Dimension(750, 200)
+
+    def m_theme;
     def m_table;
     def m_frame;
     def m_cardPanel;
     def m_monLocation;
     def m_idLabel;
     def m_statusLabel;
-    SimpleDateFormat m_dateFormat;
+    SimpleDateFormat m_dateFormat = new SimpleDateFormat("K:mm:ss a");
 
     public void setPollerFrontEnd(PollerFrontEnd pollerFrontEnd) {
+        System.err.println("GroovyPollerView: PollerFrontEnd set.");
         m_frontEnd = pollerFrontEnd;
     }
 
     public void setPollerBackEnd(PollerBackEnd pollerBackEnd) {
+        System.err.println("GroovyPollerView: PollerBackEnd set.");
         m_backEnd = pollerBackEnd;
     }
 
     public void afterPropertiesSet() {
-        SwingUtilities.invokeLater( { createAndShowGui() } );
+        SwingUtilities.invokeLater( {
+            System.err.println("Launching GUI.");
+            m_theme = m_backEnd.getTheme()
+            m_table = swing.table(model:createTableModel(), font:getMainFont(), foreground:getForegroundColor(), background:getBackgroundColor(), opaque:true)
+            createAndShowGui()
+            def height = 150 + m_table.getHeight()
+            getGui().setSize(new Dimension(750, height))
+        } );
     }
 
-    private void createAndShowGui() {
+    @Override
+    protected Color getForegroundColor() {
+        def color = m_theme.getForegroundColor()
+        if (color != null) {
+            return color
+        }
+        return super.getForegroundColor()
+    }
 
-        m_dateFormat = new SimpleDateFormat("K:mm:ss a");
+    @Override
+    protected Color getBackgroundColor() {
+        def color = m_theme.getBackgroundColor()
+        if (color != null) {
+            return color
+        }
+        return super.getBackgroundColor()
+    }
 
-        m_table = swing.table(model:createTableModel())
+    @Override
+    protected Color getDetailColor() {
+        def color = m_theme.getDetailColor()
+        if (color != null) {
+            return color
+        }
+        return super.getDetailColor()
+    }
 
+    @Override
+    protected String getApplicationTitle() {
+        return "OpenNMS Remote Poller"
+    }
 
-        def frame = swing.frame(title:'OpenNMS Remote Poller', location:[100,100], size:[900,500], defaultCloseOperation:JFrame.EXIT_ON_CLOSE) {
-            m_cardPanel = panel(layout:new CardLayout(), constraints:BorderLayout.CENTER) {
-                panel(constraints:REGISTRATION) {
-                    tableLayout(cellpadding:5) {
-                        tr {
-                            td(colfill:true) {
-                                label(text:'Current monitoring locations: ')
-                            }
-                            td {
-                                def locations = getCurrentMonitoringLocations()
-                                if (locations.size() > 0) {
-                                    m_monLocation = comboBox(items:locations, renderer:new MonitoringLocationListCellRenderer())
-                                } else {
-                                    label(text:'No monitoring locations found')
-                                }
-                            }
+    protected JPanel getMainPanel() {
+        m_cardPanel = swing.panel(background:getBackgroundColor(), opaque:true, layout:new CardLayout(), constraints:BorderLayout.CENTER) {
+            swing.panel(background:getBackgroundColor(), opaque:true, constraints:REGISTRATION) {
+                tableLayout(cellpadding:5) {
+                    tr {
+                        td(colfill:true) {
+                            label(text:'Current monitoring locations: ', font:getLabelFont(), background:getBackgroundColor())
                         }
-                        tr {
-                            td (colspan:2, align:"CENTER"){
-                                button(text:'Register', constraints:BorderLayout.SOUTH, actionPerformed:{ doRegistration() })
+                        td {
+                            def locations = getCurrentMonitoringLocations()
+                            if (locations.size() > 0) {
+                                m_monLocation = comboBox(items:locations, renderer:new MonitoringLocationListCellRenderer())
+                            } else {
+                                label(text:'No monitoring locations found', font:getLabelFont(), background:getBackgroundColor())
                             }
                         }
                     }
-                }
-                panel(constraints:STATUS, layout:new BorderLayout()) {
-                    panel(constraints:BorderLayout.NORTH, layout:new BorderLayout()) {
-                        m_idLabel = label(constraints:BorderLayout.WEST, text:'Monitor: '+m_frontEnd.getMonitorName())
-                        m_statusLabel = label(constraints:BorderLayout.EAST, text:m_frontEnd.getStatus())
+                    tr {
+                        td (colspan:2, align:"CENTER"){
+                            button(text:'Register', constraints:BorderLayout.SOUTH, actionPerformed:{ doRegistration() }, font:getLabelFont())
+                        }
                     }
-                    scrollPane(constraints:BorderLayout.CENTER, viewportView:m_table)
                 }
             }
-            /*
-            panel(layout:new FlowLayout(), constraints:BorderLayout.SOUTH) {
-                button(text:"Show Registration", actionPerformed:{ setCurrentPanel(REGISTRATION) })
-                button(text:"Show Status", actionPerformed:{ setCurrentPanel(STATUS) })
+            swing.panel(background:getBackgroundColor(), opaque:true, constraints:STATUS, layout:new BorderLayout()) {
+                swing.panel(background:getBackgroundColor(), opaque:true, constraints:BorderLayout.NORTH, layout:new BorderLayout()) {
+                    m_idLabel = label(constraints:BorderLayout.WEST, text:'Monitor: '+m_frontEnd.getMonitorName(), font:getMainFont(), background:getBackgroundColor(), opaque:true)
+                    m_statusLabel = label(constraints:BorderLayout.EAST, text:getStatus(), font:getMainFont(), background:getBackgroundColor(), opaque:true)
+                }
+                scrollPane(background:getBackgroundColor(), opaque:true, constraints:BorderLayout.CENTER, viewportView:m_table)
             }
-            */
         }
 
         updateCurrentPanel();
 
         m_frontEnd.pollStateChange = { updateTable() }
-        m_frontEnd.propertyChange = { updateCurrentPanel(); m_idLabel.text = 'Monitor: '+m_frontEnd.getMonitorName(); m_statusLabel.text = m_frontEnd.getStatus() }
+        m_frontEnd.propertyChange = { updateCurrentPanel(); m_idLabel.text = 'Monitor: '+m_frontEnd.getMonitorName(); m_statusLabel.text = getStatus() }
         m_frontEnd.configurationChanged = { updateTableModel(); m_idLabel.text = m_frontEnd.getMonitorName() }
 
-        frame.show()
+        getGui().setMinimumSize(m_minimumSize)
+        getGui().setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE)
 
+        return m_cardPanel;
+
+    }
+
+    private String getStatus() {
+        if (m_frontEnd.paused) {
+            return "Paused";
+        } else if (m_frontEnd.disconnected) {
+            return "Disconnected";
+        } else if (m_frontEnd.started) {
+            return "Started";
+        } else if (m_frontEnd.exitNecessary) {
+            return "Exit Necessary";
+        } else if (m_frontEnd.registered) {
+            return "Registered";
+        }
     }
 
     private void doRegistration() {

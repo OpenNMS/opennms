@@ -214,9 +214,9 @@ public abstract class AbstractGui implements GroovyGui {
     }
 
     @Override
-    public final void createAndShowGui() {
+    public void createAndShowGui() {
         initUI()
-        m_gui = swing.frame(title:'Scan', size:[750,550], pack:true, visible:false, background:getBackgroundColor(), defaultCloseOperation:WindowConstants.DISPOSE_ON_CLOSE)
+        m_gui = swing.frame(title:getApplicationTitle(), size:[750,550], pack:true, visible:false, background:getBackgroundColor(), defaultCloseOperation:WindowConstants.DISPOSE_ON_CLOSE)
         def rootPanel = swing.panel(background:getBackgroundColor(), opaque:true) {
             migLayout(
                     layoutConstraints:"fill" + debugString,
@@ -240,7 +240,6 @@ public abstract class AbstractGui implements GroovyGui {
         m_gui.add(rootPanel)
         m_gui.pack()
         m_gui.setLocationRelativeTo(null)
-        m_gui.setTitle(getApplicationTitle())
         if (m_defaultButton) {
             rootPanel.rootPane.defaultButton = m_defaultButton
         }
