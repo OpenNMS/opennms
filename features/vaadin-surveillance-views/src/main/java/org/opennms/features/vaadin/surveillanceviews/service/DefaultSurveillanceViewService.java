@@ -486,7 +486,7 @@ public class DefaultSurveillanceViewService implements SurveillanceViewService {
 
         View defaultView = SurveillanceViewProvider.getInstance().getDefaultView();
         if (defaultView == null) {
-            String message = "There is no default surveillance view and we could not find a surviellance view for the user's username ('" + username + "') or any of their groups";
+            String message = "There is no default surveillance view and we could not find a surveillance view for the user's username ('" + username + "') or any of their groups";
             LOG.warn(message);
             throw new ObjectRetrievalFailureException(View.class, message);
         }
