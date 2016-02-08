@@ -16,7 +16,7 @@
 		persistent-id="org.opennms.netmgt.syslog" update-strategy="none">
 		<cm:default-properties>
 			<cm:property name="syslog.listen.interface" value="0.0.0.0" />
-			<cm:property name="syslog.listen.port" value="514" />
+			<cm:property name="syslog.listen.port" value="5150" />
 		</cm:default-properties>
 	</cm:property-placeholder>
 
@@ -25,29 +25,41 @@
 		<property name="listenAddress" value="${syslog.listen.interface}" />
 	</bean>
 
-	<!-- <service interface="org.opennms.netmgt.syslogd.SyslogReceiver" ref="syslogReceiverCamelNetty"/> -->
+	<bean id="syslogConnectionHandlers"
+		class="org.opennms.netmgt.syslogd.SyslogConnectionHandlerCamelImpl">
+		<argument value="seda:handleMessage" />
+	</bean>
 
-	<reference id="syslogConnectionHandlers"
-		interface="org.opennms.netmgt.syslogd.SyslogConnectionHandler" />
+	<service interface="org.opennms.netmgt.syslogd.SyslogConnectionHandler"
+		ref="syslogConnectionHandlers" />
+
+	<service interface="org.opennms.netmgt.syslogd.SyslogReceiver"
+		ref="syslogReceiverCamelNetty" />
 
 	<bean id="syslogReceiverCamelNetty" class="org.opennms.netmgt.syslogd.SyslogReceiverCamelNettyImpl"
 		destroy-method="stop">
 		<argument ref="syslogConfig" />
+		<property name="syslogConnectionHandlers" ref="syslogConnectionHandlers" />
 	</bean>
 
 	<bean class="java.lang.Thread" init-method="start">
 		<argument ref="syslogReceiverCamelNetty" />
 	</bean>
 
-	<camelContext id="syslogConnectionHandler"
+
+	 <!--  <camelContext id="syslog"
 		xmlns="http://camel.apache.org/schema/blueprint">
 		<propertyPlaceholder id="properties"
 			location="blueprint:syslogProperties" />
 		<route id="bootstrap">
-			<from uri="timer:helloWorld?period=1000" />
-			<to uri="log:helloWorld" />
+			<from uri="netty:udp://{{syslog.listen.interface}}:{{syslog.listen.port}}?sync=false" />
+			<convertBodyTo type="org.opennms.netmgt.syslogd.SyslogConnection"/>
+ 			<log message="address:       ${body.sourceAddress}"/>
+			<log message="port:          ${body.port}"/>
+			<convertBodyTo type="org.opennms.netmgt.syslogd.SyslogConnection"/>
+			<log message="bytes:         ${body}"/>
+			<to uri="bean:syslogConnectionHandlers" />
 		</route>
-	</camelContext>
-
-
+	</camelContext>  -->
+	
 </blueprint>
