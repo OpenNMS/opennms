@@ -125,7 +125,9 @@
         <bean class="org.opennms.features.topology.api.support.DefaultIconRepository">
             <property name="iconMap">
                 <map>
-                    <entry key="business-service" value="vmware-network" />
+                    <entry key="business-service" value="business_service" />
+                    <entry key="ip-service" value="IP_service" />
+                    <entry key="reduction-key" value="reduction_key" />
                 </map>
             </property>
         </bean>
