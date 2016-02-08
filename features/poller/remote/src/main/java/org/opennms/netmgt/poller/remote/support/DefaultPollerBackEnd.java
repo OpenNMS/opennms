@@ -77,6 +77,7 @@ import org.opennms.netmgt.model.OnmsLocationMonitor.MonitorStatus;
 import org.opennms.netmgt.model.OnmsLocationSpecificStatus;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.ScanReport;
+import org.opennms.netmgt.model.ScanReportPollResult;
 import org.opennms.netmgt.model.ServiceSelector;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.poller.DistributionContext;
@@ -912,23 +913,40 @@ public class DefaultPollerBackEnd implements PollerBackEnd, SpringServiceDaemon 
         }
     }
 
+    public static final String FAILURE_SUMMARY_MESSAGE_FORMAT = "<p>%d out of %d service polls failed for the following reasons:</p>";
+    public static final String FAILED_POLL_RESULT_MESSAGE_FORMAT = "<li><b>%s: %s: %s:</b> %s</li>";
+
     @Override
     public void reportSingleScan(final ScanReport report) {
+        if (report == null) {
+            throw new IllegalArgumentException("ScanReport cannot be null");
+        }
         LOG.info("Single scan complete: {}", report);
         m_scanReportDao.save(report);
-
-        /*
-        final OnmsLocationMonitor monitor = m_locMonDao.get(report.getMonitoringSystem());
-         */
 
         if (report.getPollResults().stream().allMatch(a -> { return a.getPollStatus().isAvailable(); } )) {
             // If all polls returned 'available' then send the success event
             sendSuccessfulScanReportEvent(report.getId(), report.getLocation());
         } else {
             // Otherwise send the unsuccessful event
-            // TODO: Construct a failure message
-            // http://issues.opennms.org/browse/PB-30
-            sendUnsuccessfulScanReportEvent(report.getId(), report.getLocation(), "Something failed.");
+            int total = 0;
+            int failed = 0;
+            StringBuffer failedPollResults = new StringBuffer();
+            for (ScanReportPollResult result : report.getPollResults()) {
+                total++;
+                if (!result.getPollStatus().isAvailable()) {
+                    failed++;
+                    failedPollResults.append(String.format(FAILED_POLL_RESULT_MESSAGE_FORMAT, result.getNodeLabel(), result.getIpAddress(), result.getServiceName(), result.getPollStatus().getReason()));
+                }
+            }
+
+            StringBuffer finalMessage = new StringBuffer();
+            finalMessage.append(String.format(FAILURE_SUMMARY_MESSAGE_FORMAT, failed, total));
+            finalMessage.append("<ul>");
+            finalMessage.append(failedPollResults);
+            finalMessage.append("</ul>");
+
+            sendUnsuccessfulScanReportEvent(report.getId(), report.getLocation(), finalMessage.toString());
         }
     }
 
