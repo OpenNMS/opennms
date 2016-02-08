@@ -1,7 +1,11 @@
-[releasenotes-1.11]
-=== Release 1.11
 
-[releasenotes-changelog-1.11.94]
+[[releasenotes-1.11]]
+== Release 1.11
+
+[[release-1.11-changelog]]
+=== Changelog
+
+[[releasenotes-changelog-1.11.94]]
 ==== Release 1.11.94
 Release 1.11.94 is the third release candidate for the OpenNMS 1.12 series.
 It contains more bugfixes and cleanups.
@@ -19,7 +23,7 @@ The codename for 1.11.94 is _Dave Grohl_
 * _NCS_ configuration file found in 1.12 branch (Issue http://issues.opennms.org/browse/NMS-5982[NMS-5982])
 * Changed unmarshalling integration test to use parametrized unit tests and a separate coverage test (Issue http://issues.opennms.org/browse/NMS-5966[NMS-5966])
 
-[releasenotes-changelog-1.11.93]
+[[releasenotes-changelog-1.11.93]]
 ==== Release 1.11.93
 Release 1.11.93 is the third release candidate for the OpenNMS 1.12 series.
 It contains more bugfixes, and makes Provisiond the default for answering node newSuspect events, rather than Capsd.
@@ -58,7 +62,7 @@ The codename for 1.11.93 is _Alan Doyle_
 * Fix non-well formatted HTML in order to process it with the XML Collector (Issue http://issues.opennms.org/browse/NMS-5962[NMS-5962])
 * Apply a XSLT transformation to source XML/HTML/TEXT page before processing it with the XML Collector (Issue http://issues.opennms.org/browse/NMS-5963[NMS-5963])
 
-[releasenotes-changelog-1.11.92]
+[[releasenotes-changelog-1.11.92]]
 ==== Release 1.11.92
 Release 1.11.92 is the third release candidate for the OpenNMS 1.12 series.
 It is identical to 1.11.91 except for a fix for reading `eventconf.xml` files that don't have an XML namespace attribute.
@@ -69,7 +73,7 @@ The codename for 1.11.92 is _Steve Vai_
 
 * Regression: New _EventConfDao_ won't unmarshal `eventconf.xml` files without an XML namespace (Issue http://issues.opennms.org/browse/NMS-5935[NMS-5935])
 
-[releasenotes-changelog-1.11.91]
+[[releasenotes-changelog-1.11.91]]
 ==== Release 1.11.91
 Release 1.11.91 is the second release candidate for the OpenNMS 1.12 series.
 
@@ -115,7 +119,7 @@ The codename for 1.11.91 is _Joe Satriani_
 * Rename MIBs after successfully compile them to minimize error with dependencies (Issue http://issues.opennms.org/browse/NMS-5933[NMS-5933])
 * Persist Ipv6 routing table in Linkd (Issue http://issues.opennms.org/browse/NMS-5579[NMS-5579])
 
-[releasenotes-changelog-1.11.90]
+[[releasenotes-changelog-1.11.90]]
 ==== Release 1.11.90
 Release 1.11.90 is the first release candidate for the OpenNMS 1.12 series.
 
@@ -190,7 +194,7 @@ The codename for 1.11.90 is _John Roderick_
 * Syslog Implementation of Northbound Interface (Issue http://issues.opennms.org/browse/NMS-5796[NMS-5796])
 * Merge features/TN branch to master (Issue http://issues.opennms.org/browse/NMS-5723[NMS-5723])
 
-[releasenotes-changelog-1.11.3]
+[[releasenotes-changelog-1.11.3]]
 ==== Release 1.11.3
 Release 1.11.3 is the latest in the unstable series of OpenNMS.
 It contains what will eventually be a part of the OpenNMS 1.12.x stable releases.
@@ -212,7 +216,7 @@ The codename for 1.11.3 is _Jonathan Coulton_
 * add nodeid and foreign source to node list page (Issue http://issues.opennms.org/browse/NMS-5523[NMS-5523])
 * add date format translation mapping for prefab graph command (Issue http://issues.opennms.org/browse/NMS-5533[NMS-5533])
 
-[releasenotes-changelog-1.11.2]
+[[releasenotes-changelog-1.11.2]]
 ==== Release 1.11.2
 Release 1.11.2 is the latest in the unstable series of OpenNMS.
 It contains what will eventually be a part of the OpenNMS 1.12.x stable releases.
@@ -244,7 +248,7 @@ The codename for 1.11.2 is _Damian Hess_
 * Greater flexibility in RelativeTime for Statistics Reports (Issue http://issues.opennms.org/browse/NMS-5422[NMS-5422])
 * OSPF nbr discovery  (Issue http://issues.opennms.org/browse/NMS-5503[NMS-5503])
 
-[releasenotes-changelog-1.11.1]
+[[releasenotes-changelog-1.11.1]]
 ==== Release 1.11.1
 Release 1.11.1 is the latest in the unstable series of OpenNMS.
 It contains what will eventually be a part of the OpenNMS 1.12.x stable releases.
@@ -264,7 +268,7 @@ The codename for 1.11.1 is _Mike Doughty_
 * Snmp Monitor reports Down when the Agent is not responding (Issue http://issues.opennms.org/browse/NMS-4632[NMS-4632])
 * Modify the remote poller to make it friendlier to run multiple instances on the same machine (Issue http://issues.opennms.org/browse/NMS-5072[NMS-5072])
 
-[releasenotes-changelog-1.11.0]
+[[releasenotes-changelog-1.11.0]]
 ==== Release 1.11.0
 Release 1.11.0 is the first in the latest unstable series of OpenNMS.
 It contains what will eventually be a part of the OpenNMS 1.12.x stable releases.
@@ -326,4 +330,3 @@ The codename for 1.11.0 is _MCA_
 * ResponseTimeSummary_Availability_Offenders_subreport (Issue http://issues.opennms.org/browse/NMS-4794[NMS-4794])
 * ResponseTimeSummary_Availability_subreport (Issue http://issues.opennms.org/browse/NMS-4795[NMS-4795])
 * Top25PercentDown_subreport (Issue http://issues.opennms.org/browse/NMS-4796[NMS-4796])
-

@@ -1,7 +1,11 @@
-[releasenotes-1.10]
-=== Release 1.10
 
-[releasenotes-changelog-1.10.14]
+[[releasenotes-1.10]]
+== Release 1.10
+
+[[release-1.10-changelog]]
+=== Changelog
+
+[[releasenotes-changelog-1.10.14]]
 ==== Release 1.10.14
 Release 1.10.14 is the latest in the stable 1.10 series of OpenNMS releases.
 It contains a few small bugfixes including an importantsecurity fix.
@@ -22,7 +26,7 @@ The codename for 1.10.14 is _Chalumeau_.
 * The _Valere_ devices with broken SNMP agents are hanging _Provisiond_. (Issue http://issues.opennms.org/browse/NMS-6484[NMS-6484])
 * Security: _downloadReport_ allow download and view any file in filesystem (Issue http://issues.opennms.org/browse/NMS-6580[NMS-6580])
 
-[releasenotes-changelog-1.10.13]
+[[releasenotes-changelog-1.10.13]]
 ==== Release 1.10.13
 
 Release 1.10.13 is the latest in the stable 1.10 series of OpenNMS releases.
@@ -50,7 +54,7 @@ The codename for 1.10.13 is _Sopila_.
 * Add new `sysOID` to _linkd_ (Issue http://issues.opennms.org/browse/NMS-6034[NMS-6034])
 * SNMP support for _Clavister_ security devices (Issue http://issues.opennms.org/browse/NMS-6107[NMS-6107])
 
-[releasenotes-changelog-1.10.12]
+[[releasenotes-changelog-1.10.12]]
 ==== Release 1.10.12
 Release 1.10.12 is the latest in the stable series of OpenNMS releases.
 It contains a few bugfixes and enhancements, including a fix for thealarm detail page.
@@ -63,7 +67,7 @@ The codename for 1.10.12 is _Arghul_.
 * The report _SerialInterfaceUtilizationSummary_ is showing duplicated data. (Issue http://issues.opennms.org/browse/NMS-5978[NMS-5978])
 * _Serial Interface Utilization Report_ is displaying the wrong start date on the report. (Issue http://issues.opennms.org/browse/NMS-5985[NMS-5985])
 
-[releasenotes-changelog-1.10.11]
+[[releasenotes-changelog-1.10.11]]
 ==== Release 1.10.11
 
 Release 1.10.11 is the latest in the stable series of OpenNMS releases.
@@ -82,7 +86,7 @@ The codename for 1.10.11 is _Nadaswaram_.
 * _Provisiond_ fails with `java.lang.NullPointerException` (Issue http://issues.opennms.org/browse/NMS-5922[NMS-5922])
 * Uncaught exception in webapp when viewing non-existent alarm: "Missing alarm request attribute" (Issue http://issues.opennms.org/browse/NMS-5930[NMS-5930])
 
-[releasenotes-changelog-1.10.10]
+[[releasenotes-changelog-1.10.10]]
 ==== Release 1.10.10
 Release 1.10.10 is the latest in the stable series of OpenNMS releases.
 It contains a number of bugfixes and enhancements.
@@ -108,7 +112,7 @@ The codename for 1.10.10 is _Tumpong_.
 * Make optional the addition of default ports to HTTP Host Header on the _PSM_. (Issue http://issues.opennms.org/browse/NMS-5884[NMS-5884])
 * How can I know which _poller packages_ are actively being used for the services on a given interface? (Issue http://issues.opennms.org/browse/NMS-5893[NMS-5893])
 
-[releasenotes-changelog-1.10.9]
+[[releasenotes-changelog-1.10.9]]
 ==== Release 1.10.9
 Release 1.10.9 is the latest in the stable series of OpenNMS releases.
 It contains a number of bugfixes and enhancements.
@@ -151,7 +155,7 @@ The codename for 1.10.9 is _Nose Flute_.
 * Add a shell wrapper for the ILR (Issue http://issues.opennms.org/browse/NMS-5766[NMS-5766])
 * "Nodes w/Active Problems" : A new box for the home page based on alarms similar to the Outages Box (Issue http://issues.opennms.org/browse/NMS-5807[NMS-5807])
 
-[releasenotes-changelog-1.10.8]
+[[releasenotes-changelog-1.10.8]]
 ==== Release 1.10.8
 Release 1.10.8 is the latest in the stable series of OpenNMS releases.
 It contains a number of bugfixes and enhancements.
@@ -183,7 +187,7 @@ The codename for 1.10.8 is _Trikiti_.
 
 * Improve the ticketer API in order to access more information about the ticket's originator. (Issue http://issues.opennms.org/browse/NMS-5705[NMS-5705])
 
-[releasenotes-changelog-1.10.7]
+[[releasenotes-changelog-1.10.7]]
 ==== Release 1.10.7
 Release 1.10.7 is the latest in the stable series of OpenNMS releases.
 It contains a number of bugfixes and enhancements.
@@ -209,7 +213,7 @@ The codename for 1.10.7 is _Buccina_
 * Allow user documentation on alarms and a class of alarms (Issue http://issues.opennms.org/browse/NMS-5632[NMS-5632])
 * Order of threshold groups (Issue http://issues.opennms.org/browse/NMS-5647[NMS-5647])
 
-[releasenotes-changelog-1.10.6]
+[[releasenotes-changelog-1.10.6]]
 ==== Release 1.10.6
 Release 1.10.6 is the latest in the stable series of OpenNMS releases.
 It contains a number of bugfixes and enhancements.
@@ -231,7 +235,7 @@ The codename for 1.10.6 is _Cornamuse_.
 
 * Add UEI to the notification configuration UI (Issue http://issues.opennms.org/browse/NMS-5559[NMS-5559])
 
-[releasenotes-changelog-1.10.5]
+[[releasenotes-changelog-1.10.5]]
 ==== Release 1.10.5
 Release 1.10.5 is the latest in the stable series of OpenNMS releases.
 It contains a few minor bugfixes and enhancements.
@@ -252,7 +256,7 @@ The codename for 1.10.5 is _Tromboon_.
 * No packaging for _mib2events_, _mibparser_, and _Provisioning Adapters_ (Issue http://issues.opennms.org/browse/NMS-3183[NMS-3183])
 * Greater flexibility in _RelativeTime_ for _Statistics Reports_ (Issue http://issues.opennms.org/browse/NMS-5422[NMS-5422])
 
-[releasenotes-changelog-1.10.4]
+[[releasenotes-changelog-1.10.4]]
 ==== Release 1.10.4
 Release 1.10.4 is the latest in the stable series of OpenNMS releases.
 It contains a few minor bugfixes and enhancements.
@@ -277,7 +281,7 @@ The codename for 1.10.4 is _Archlute_.
 * Add notification ID to NotificationTask.toString() (Issue http://issues.opennms.org/browse/NMS-5377[NMS-5377])
 * Add SNMP data collection and resource graph definitions for pfSense firewall / router (Issue http://issues.opennms.org/browse/NMS-5378[NMS-5378])
 
-[releasenotes-changelog-1.10.3]
+[[releasenotes-changelog-1.10.3]]
 ==== Release 1.10.3
 Release 1.10.3 is the latest in the stable series of OpenNMS releases.
 It contains a few bugfixes, most notably an important deadlock fix whenusing provisiond.
@@ -292,7 +296,7 @@ The codename for 1.10.3 is _Fiscorn_.
 * Scheduled outages applied on latency thresholds are ignored by _Pollerd_. (Issue http://issues.opennms.org/browse/NMS-5357[NMS-5357])
 * Unable to create reports after upgrade from 1.10.1 to 1.10.2 (Issue http://issues.opennms.org/browse/NMS-5359[NMS-5359])
 
-[releasenotes-changelog-1.10.2]
+[[releasenotes-changelog-1.10.2]]
 ==== Release 1.10.2
 Release 1.10.2 is the latest in the stable series of OpenNMS releases.
 It contains bugfixes, including a fix for a filehandle leak regression, Windows installer fixes, and some minor enhancements.
@@ -331,7 +335,7 @@ The codename for 1.10.2 is _Charango_.
 * Events file for websense appliance (Issue http://issues.opennms.org/browse/NMS-5314[NMS-5314])
 * Add the ability to apply the `SiblingColumnStorageStrategy` to resource's instance (Issue http://issues.opennms.org/browse/NMS-5339[NMS-5339])
 
-[releasenotes-changelog-1.10.1]
+[[releasenotes-changelog-1.10.1]]
 ==== Release 1.10.1
 Release 1.10.1 is the second in the latest series of stable releases.
 It contains plenty of bugfixes, as well as a few minor enhancements.
@@ -392,7 +396,7 @@ The codename for 1.10.1 is _Hurdy Gurdy_.
 * Be able to control the filterOperator attribute from the WebUI (Issue http://issues.opennms.org/browse/NMS-5239[NMS-5239])
 * Add any resource graph to a KSC report (Issue http://issues.opennms.org/browse/NMS-5268[NMS-5268])
 
-[releasenotes-changelog-1.10.0]
+[[releasenotes-changelog-1.10.0]]
 ==== Release 1.10.0
 Release 1.10.0 is the first in the latest series of stable releases.
 
@@ -440,4 +444,3 @@ The codename for 1.10.0 is _Alboka_.
 * Making logging from linkd more readable (Issue http://issues.opennms.org/browse/NMS-5081[NMS-5081])
 * Change of log level for certain messages from linkd (Issue http://issues.opennms.org/browse/NMS-5087[NMS-5087])
 * Convert OPENNMS-MIB to SMIv2 (Issue http://issues.opennms.org/browse/NMS-5099[NMS-5099])
-

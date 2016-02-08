@@ -1,11 +1,12 @@
-[releasenotes-17]
-=== OpenNMS 17
 
-[releasenotes-changelog-17.0.0]
+[[release-17-changelog]]
+=== Changelog
+
+[[releasenotes-changelog-17.0.0]]
 ==== Release 17.0.0
 
 Release 17.0.0 is the latest stable release of OpenNMS.  It contains a large number of bug fixes and new features.
-For a high-level overview of what's changed in OpenNMS 17, see https://github.com/OpenNMS/opennms/blob/opennms-17.0.0-1/WHATSNEW.md[What's New in OpenNMS 17].
+For a high-level overview of what's changed in OpenNMS 17, see <<releasenotes-17, major changes in OpenNMS 17>>.
 
 The codename for 17.0.0 is _Glen Moray_.
 
@@ -164,4 +165,3 @@ The codename for 17.0.0 is _Glen Moray_.
 * Flatten and improve web app style (Issue http://issues.opennms.org/browse/NMS-7894[NMS-7894])
 * Document HeatMap ReST services (Issue http://issues.opennms.org/browse/NMS-7929[NMS-7929])
 * Cleanup docs modules (Issue http://issues.opennms.org/browse/NMS-7940[NMS-7940])
-
