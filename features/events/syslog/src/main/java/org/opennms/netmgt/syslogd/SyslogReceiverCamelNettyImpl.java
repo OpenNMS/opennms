@@ -42,14 +42,12 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
-import org.apache.camel.ProducerTemplate;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.netty.NettyComponent;
 import org.apache.camel.component.netty.NettyConstants;
 import org.apache.camel.impl.DefaultCamelContext;
 import org.apache.camel.impl.SimpleRegistry;
 import org.jboss.netty.buffer.ChannelBuffer;
-import org.jboss.netty.buffer.ChannelBuffers;
 import org.opennms.core.concurrent.LogPreservingThreadFactory;
 import org.opennms.core.logging.Logging;
 import org.opennms.core.utils.InetAddressUtils;
