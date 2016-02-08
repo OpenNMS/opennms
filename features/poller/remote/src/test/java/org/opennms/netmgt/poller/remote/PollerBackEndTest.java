@@ -71,8 +71,9 @@ import org.opennms.netmgt.config.poller.Service;
 import org.opennms.netmgt.dao.api.LocationMonitorDao;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
 import org.opennms.netmgt.dao.api.MonitoringLocationDao;
+import org.opennms.netmgt.dao.api.ScanReportDao;
+import org.opennms.netmgt.dao.mock.MockEventIpcManager;
 import org.opennms.netmgt.events.api.EventConstants;
-import org.opennms.netmgt.events.api.EventIpcManager;
 import org.opennms.netmgt.mock.MockPersisterFactory;
 import org.opennms.netmgt.model.NetworkBuilder;
 import org.opennms.netmgt.model.OnmsApplication;
@@ -82,6 +83,8 @@ import org.opennms.netmgt.model.OnmsLocationMonitor.MonitorStatus;
 import org.opennms.netmgt.model.OnmsLocationSpecificStatus;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsServiceType;
+import org.opennms.netmgt.model.ScanReport;
+import org.opennms.netmgt.model.ScanReportPollResult;
 import org.opennms.netmgt.model.ServiceSelector;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventUtils;
@@ -170,11 +173,12 @@ public class PollerBackEndTest extends TestCase {
     // mock objects that the class will call
     private MonitoringLocationDao m_monitoringLocationDao;
     private LocationMonitorDao m_locMonDao;
+    private ScanReportDao m_scanReportDao;
     private MonitoredServiceDao m_monSvcDao;
     private PollerConfig m_pollerConfig;
     private TimeKeeper m_timeKeeper;
 
-    private EventIpcManager m_eventIpcManager;
+    private MockEventIpcManager m_eventIpcManager;
     // helper objects used to respond from the mock objects
     private LocationDef m_locationDefinition;
     private Package m_package;
@@ -226,7 +230,7 @@ public class PollerBackEndTest extends TestCase {
     }
 
     private void anticipateEvent(Event e) {
-        m_eventIpcManager.sendNow(eq(e));
+        m_eventIpcManager.getEventAnticipator().anticipateEvent(e);
     }
 
     private void anticipateMonitorStarted() {
@@ -345,14 +349,16 @@ public class PollerBackEndTest extends TestCase {
 
         m_monitoringLocationDao = m_mocks.createMock(MonitoringLocationDao.class);
         m_locMonDao = m_mocks.createMock(LocationMonitorDao.class);
+        m_scanReportDao = m_mocks.createMock(ScanReportDao.class);
         m_monSvcDao = m_mocks.createMock(MonitoredServiceDao.class);
         m_pollerConfig = m_mocks.createMock(PollerConfig.class);
         m_timeKeeper = m_mocks.createMock(TimeKeeper.class);
-        m_eventIpcManager = m_mocks.createMock(EventIpcManager.class);
+        m_eventIpcManager = new MockEventIpcManager();
 
         m_backEnd = new DefaultPollerBackEnd();
         m_backEnd.setMonitoringLocationDao(m_monitoringLocationDao);
         m_backEnd.setLocationMonitorDao(m_locMonDao);
+        m_backEnd.setScanReportDao(m_scanReportDao);
         m_backEnd.setMonitoredServiceDao(m_monSvcDao);
         m_backEnd.setPollerConfig(m_pollerConfig);
         m_backEnd.setTimeKeeper(m_timeKeeper);
@@ -624,7 +630,7 @@ public class PollerBackEndTest extends TestCase {
         .setMonitoredService(m_dnsService)
         .addParam(EventConstants.PARM_LOCATION_MONITOR_ID, LOCATION_MONITOR_ID);
 
-        m_eventIpcManager.sendNow(eq(eventBuilder.getEvent()));
+        m_eventIpcManager.getEventAnticipator().anticipateEvent(eventBuilder.getEvent());
 
         m_locMonDao.saveStatusChange(isA(OnmsLocationSpecificStatus.class));
         expectLastCall().andAnswer(new StatusChecker(expectedStatus));
@@ -654,7 +660,7 @@ public class PollerBackEndTest extends TestCase {
         .addParam(EventConstants.PARM_LOCATION_MONITOR_ID, LOCATION_MONITOR_ID);
 
 
-        m_eventIpcManager.sendNow(eq(eventBuilder.getEvent()));
+        m_eventIpcManager.getEventAnticipator().anticipateEvent(eventBuilder.getEvent());
 
         final PollStatus newStatus = PollStatus.unavailable("Test Down");
 
@@ -703,7 +709,7 @@ public class PollerBackEndTest extends TestCase {
         .setMonitoredService(m_dnsService)
         .addParam(EventConstants.PARM_LOCATION_MONITOR_ID, LOCATION_MONITOR_ID);
 
-        m_eventIpcManager.sendNow(eq(eventBuilder.getEvent()));
+        m_eventIpcManager.getEventAnticipator().anticipateEvent(eventBuilder.getEvent());
 
         m_mocks.replayAll();
 
@@ -792,6 +798,31 @@ public class PollerBackEndTest extends TestCase {
         m_backEnd.checkForDisconnectedMonitors();
     }
 
+    public void testUnsuccessfulScanReportMessage() {
+        expect(m_scanReportDao.save(EasyMock.anyObject(ScanReport.class))).andReturn("");
+        m_mocks.replayAll();
+
+        List<ScanReportPollResult> scanReportPollResults = new ArrayList<ScanReportPollResult>();
+        scanReportPollResults.add(new ScanReportPollResult("ICMP", 1, "Test Node", 1, "127.0.0.1", PollStatus.available(20.0)));
+        scanReportPollResults.add(new ScanReportPollResult("HTTP", 2, "Test Node", 1, "127.0.0.1", PollStatus.unavailable("Weasels ate my HTTP server")));
+        scanReportPollResults.add(new ScanReportPollResult("SNMP", 3, "Test Node", 1, "127.0.0.1", PollStatus.available(400.0)));
+        scanReportPollResults.add(new ScanReportPollResult("POP3", 3, "Test Node", 1, "127.0.0.1", PollStatus.available(300.0)));
+        scanReportPollResults.add(new ScanReportPollResult("IMAP", 4, "Test Node", 1, "127.0.0.1", PollStatus.unavailable("Kiwis infested my mail server")));
+
+        ScanReport report = new ScanReport();
+        report.setId(UUID.randomUUID().toString());
+        report.setPollResults(scanReportPollResults);
+
+        m_backEnd.reportSingleScan(report);
+
+        // Fetch the event that was sent
+        Event unsuccessfulScanEvent = m_eventIpcManager.getEventAnticipator().unanticipatedEvents().iterator().next();
+        assertTrue(
+            unsuccessfulScanEvent.getParm(DefaultPollerBackEnd.PARM_SCAN_REPORT_FAILURE_MESSAGE).getValue().getContent(),
+            unsuccessfulScanEvent.getParm(DefaultPollerBackEnd.PARM_SCAN_REPORT_FAILURE_MESSAGE).getValue().getContent().contains("2 out of 5 service polls failed")
+        );
+    }
+
     private void verifyPollerCheckingIn(MonitorStatus oldStatus, MonitorStatus newStatus, MonitorStatus result) {
         verifyPollerCheckingIn(oldStatus, newStatus, result, null);
     }
@@ -854,7 +885,7 @@ public class PollerBackEndTest extends TestCase {
         m_backEnd.saveResponseTimeData("Tuvalu", svc, 1.5, pkg);
     }
 
-    private void addParameterToService(Service pkgService, String key, String value) {
+    private static void addParameterToService(Service pkgService, String key, String value) {
         Parameter param = new Parameter();
         param.setKey(key);
         param.setValue(value);
