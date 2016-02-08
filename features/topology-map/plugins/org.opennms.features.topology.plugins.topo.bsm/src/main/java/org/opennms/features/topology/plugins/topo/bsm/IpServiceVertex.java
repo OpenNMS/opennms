@@ -46,7 +46,8 @@ public class IpServiceVertex extends AbstractBusinessServiceVertex {
         this.ipServiceId = ipServiceId;
         setIpAddress(ipAddress);
         setLabel(ipServiceName);
-        setTooltipText(String.format("Service '%s', IP: %s", ipServiceName, ipAddress));
+        setTooltipText(String.format("IP Service '%s' on %s", ipServiceName, ipAddress));
+        setIconKey("ip-service");
     }
 
     public Integer getIpServiceId() {

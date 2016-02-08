@@ -39,6 +39,8 @@ public class ReductionKeyVertex extends AbstractBusinessServiceVertex {
     private ReductionKeyVertex(String id, String reductionKey) {
         super(id, reductionKey);
         this.reductionKey = reductionKey;
+        setTooltipText(String.format("Reduction Key '%s'", reductionKey));
+        setIconKey("reduction-key");
     }
 
     public String getReductionKey() {
