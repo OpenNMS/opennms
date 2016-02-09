@@ -145,7 +145,7 @@ public class ConvertToEvent {
         }
         SyslogMessage message;
         try {
-            message = parser.parse();
+                message = parser.parse();
         } catch (final SyslogParserException ex) {
             LOG.debug("Unable to parse '{}'", syslogString, ex);
             throw new MessageDiscardedException(ex);
@@ -209,19 +209,25 @@ public class ConvertToEvent {
             LOG.warn("No ueiList configured.");
         } else {
             for (final UeiMatch uei : ueiMatch) {
-                final boolean otherStuffMatches = matchFacility(uei.getFacilityCollection(), facilityTxt) &&
-                                                  matchSeverity(uei.getSeverityCollection(), priorityTxt) &&
+                final boolean otherStuffMatches = matchUei(uei.getFacilityCollection(), facilityTxt) &&
+                								  matchUei(uei.getSeverityCollection(), priorityTxt) &&
                                                   matchProcess(uei.getProcessMatch(), message.getProcessName()) && 
                                                   matchHostname(uei.getHostnameMatch(), message.getHostName()) &&
                                                   matchHostAddr(uei.getHostaddrMatch(), message.getHostAddress());
                 
-                if (otherStuffMatches && uei.getMatch().getType().equals("substr")) {
-                    if (matchSubstring(discardUei, bldr, matchedText, uei)) {
-                        break;
-                    }
-                } else if (otherStuffMatches && (uei.getMatch().getType().startsWith("regex"))) {
-                    if (matchRegex(message, uei, bldr, discardUei)) {
-                        break;
+                // Single boolean check is added instead of performing
+                // multiple
+                // boolean check for both if and else if which causes a extra
+                // time
+                if (otherStuffMatches) {
+                    if (uei.getMatch().getType().equals("substr")) {
+                        if (matchSubstring(discardUei, bldr, matchedText, uei)) {
+                            break;
+                        }
+                    } else if ((uei.getMatch().getType().startsWith("regex"))) {
+                        if (matchRegex(message, uei, bldr, discardUei)) {
+                            break;
+                        }
                     }
                 }
             }
@@ -237,20 +243,20 @@ public class ConvertToEvent {
                 if (hide.getMatch().getType().equals("substr")) {
                     if (fullText.contains(hide.getMatch().getExpression())) {
                         // We should hide the message based on this match
-                    	doHide = true;
-                    }            	
+                        doHide = true;
+                    }                   
                 } else if (hide.getMatch().getType().equals("regex")) {
-                	try {
-                    	msgPat = Pattern.compile(hide.getMatch().getExpression(), Pattern.MULTILINE);
-                    	msgMat = msgPat.matcher(fullText);            		
-                	} catch (PatternSyntaxException pse) {
-                		LOG.warn("Failed to compile regex pattern '{}'", hide.getMatch().getExpression(), pse);
-                		msgMat = null;
-                	}
-                	if ((msgMat != null) && (msgMat.find())) {
+                        try {
+                        msgPat = Pattern.compile(hide.getMatch().getExpression(), Pattern.MULTILINE);
+                        msgMat = msgPat.matcher(fullText);                      
+                        } catch (PatternSyntaxException pse) {
+                                LOG.warn("Failed to compile regex pattern '{}'", hide.getMatch().getExpression(), pse);
+                                msgMat = null;
+                        }
+                        if ((msgMat != null) && (msgMat.find())) {
                         // We should hide the message based on this match
-                		doHide = true;
-                	}
+                                doHide = true;
+                        }
                 }
                 if (doHide) {
                     LOG.debug("Hiding syslog message from Event - May contain sensitive data");
@@ -330,21 +336,14 @@ public class ConvertToEvent {
         }
         return false;
     }
-
-    private static boolean matchSeverity(List<String> severities, String priorityTxt) {
-        if (severities.size() == 0) return true;
-        for (String severity : severities) {
-            if (severity.equalsIgnoreCase(priorityTxt)) return true;
-        }
-        return false;
-    }
-
-    private static boolean matchFacility(List<String> facilities, String facilityTxt) {
-        if (facilities.size() == 0) return true;
-        for (String facility : facilities) {
-            if (facility.equalsIgnoreCase(facilityTxt)) return true;
-        }
-        return false;
+    
+    private static boolean matchUei(List<String> ueis, String priorityTxt)
+    {
+    	 if (ueis.size() == 0) return true;
+         for (String facility : ueis) {
+             if (facility.equalsIgnoreCase(priorityTxt)) return true;
+         }
+         return false;
     }
 
     private static Pattern getPattern(final String expression) {
@@ -356,7 +355,7 @@ public class ConvertToEvent {
                 return newPat;
             } catch(final PatternSyntaxException pse) {
                 LOG.warn("Failed to compile regex pattern '{}'", expression, pse);
-        	}
+                }
         }
         return msgPat;
     }
@@ -370,7 +369,7 @@ public class ConvertToEvent {
                 throw new MessageDiscardedException();
             } else {
                 //We can pass a new UEI on this
-		    if (traceEnabled) LOG.trace("Changed the UEI of a Syslogd event, based on substring match, to : {}", uei.getUei());
+                    if (traceEnabled) LOG.trace("Changed the UEI of a Syslogd event, based on substring match, to : {}", uei.getUei());
                 bldr.setUei(uei.getUei());
                 // I think we want to stop processing here so the first
                 // ueiMatch wins, right?
@@ -407,14 +406,16 @@ public class ConvertToEvent {
 
             // We matched a UEI
             bldr.setUei(uei.getUei());
-            if (msgMat.groupCount() > 0 && uei.getMatch().isDefaultParameterMapping()) {
+            // Removed check of count in both if condition which is redundant
+            if (msgMat.groupCount() > 0) {
+            if (uei.getMatch().isDefaultParameterMapping()) {
                 if (traceEnabled) LOG.trace("Doing default parameter mappings for this regex match.");
                 for (int groupNum = 1; groupNum <= msgMat.groupCount(); groupNum++) {
                     if (traceEnabled) LOG.trace("Added parm 'group{}' with value '{}' to Syslogd event based on regex match group", groupNum, msgMat.group(groupNum));
                     bldr.addParam("group"+groupNum, msgMat.group(groupNum));
                 }
             }
-            if (msgMat.groupCount() > 0 && uei.getParameterAssignmentCount() > 0) {
+            if (uei.getParameterAssignmentCount() > 0) {
                 if (traceEnabled) LOG.trace("Doing user-specified parameter assignments for this regex match.");
                 for (ParameterAssignment assignment : uei.getParameterAssignmentCollection()) {
                     String parmName = assignment.getParameterName();
@@ -422,6 +423,7 @@ public class ConvertToEvent {
                     parmValue = parmValue == null ? "" : parmValue;
                     bldr.addParam(parmName, parmValue);
                     if (traceEnabled) LOG.trace("Added parm '{}' with value '{}' to Syslogd event based on user-specified parameter assignment", parmName, parmValue);
+                    }
                 }
             }
             // I think we want to stop processing here so the first

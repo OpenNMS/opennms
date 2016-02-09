@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2015-2015 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -26,36 +26,28 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.core.concurrent;
+package org.opennms.netmgt.syslogd;
 
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
+import org.apache.camel.InOnly;
+import org.apache.camel.Produce;
+import org.opennms.core.camel.DefaultDispatcher;
 
-import org.opennms.core.concurrent.LogPreservingThreadFactory;
+@InOnly
+public class SyslogConnectionHandlerCamelImpl extends DefaultDispatcher implements SyslogConnectionHandler {
 
-public class ExecutorFactoryJavaImpl implements ExecutorFactory {
+	@Produce(property="endpointUri")
+	SyslogConnectionHandler m_proxy;
 
-	@Override
-	public ExecutorService newExecutor(String daemonName, String executorName) {
-		return newExecutor(Runtime.getRuntime().availableProcessors(), Integer.MAX_VALUE, daemonName, executorName);
+	public SyslogConnectionHandlerCamelImpl(final String endpointUri) {
+		super(endpointUri);
 	}
 
+	/**
+	 * Send the incoming {@link SyslogConnection} message into the Camel route
+	 * specified by the {@link #m_endpointUri} property.
+	 */
 	@Override
-	public ExecutorService newExecutor(int threads, String daemonName, String executorName) {
-		return newExecutor(threads, Integer.MAX_VALUE, daemonName, executorName);
-	}
-
-	@Override
-	public ExecutorService newExecutor(int threads, int queueSize, String daemonName, String executorName) {
-		return new ThreadPoolExecutor(
-			threads,
-			threads,
-			1000L,
-			TimeUnit.MILLISECONDS,
-			new LinkedBlockingQueue<Runnable>(queueSize),
-			new LogPreservingThreadFactory(daemonName + "-" + executorName, Integer.MAX_VALUE)
-		);
+	public void handleSyslogConnection(final SyslogConnection message) {
+		m_proxy.handleSyslogConnection(message);
 	}
 }

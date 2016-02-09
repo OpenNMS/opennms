@@ -39,30 +39,36 @@ import org.slf4j.LoggerFactory;
 public class CustomSyslogParser extends SyslogParser {
     private static final Logger LOG = LoggerFactory.getLogger(CustomSyslogParser.class);
     private static final Pattern m_messageIdPattern = Pattern.compile("^((\\S+):\\s*)");
-    private static final Pattern m_datePattern = Pattern.compile("^((\\d\\d\\d\\d-\\d\\d-\\d\\d)\\s+)");
+    // date pattern has been updated to support space at start and end of
+    // the message due to which the date match failed and current system date
+    // used to be passed which cause 3ms more time in parsing message
+    private static final Pattern m_datePattern = Pattern.compile("^\\s*((\\d\\d\\d\\d-\\d\\d-\\d\\d)\\s*)");
     private static final Pattern m_oldDatePattern = Pattern.compile("^\\s*(\\S\\S\\S\\s+\\d{1,2}\\s+\\d\\d:\\d\\d:\\d\\d)\\s+");
 
     private final Pattern m_forwardingPattern;
     private final int m_matchingGroupHost;
     private final int m_matchingGroupMessage;
+    private SyslogMessage syslogMessage = null;
 
-    public CustomSyslogParser(final SyslogdConfig config, final String text) throws SyslogParserException {
+    public CustomSyslogParser(final SyslogdConfig config, final String text)
+            throws SyslogParserException {
         super(config, text);
-
+        syslogMessage = new SyslogMessage();
         final String forwardingRegexp = config.getForwardingRegexp();
         if (forwardingRegexp == null || forwardingRegexp.length() == 0) {
-            throw new SyslogParserException("no forwarding regular expression defined");
+            throw new SyslogParserException(
+                                            "no forwarding regular expression defined");
         }
-        m_forwardingPattern = Pattern.compile(forwardingRegexp, Pattern.MULTILINE);
+        m_forwardingPattern = Pattern.compile(forwardingRegexp,
+                                              Pattern.MULTILINE);
         m_matchingGroupHost = config.getMatchingGroupHost();
         m_matchingGroupMessage = config.getMatchingGroupMessage();
     }
 
     @Override
     public SyslogMessage parse() throws SyslogParserException {
-        final SyslogMessage syslogMessage = new SyslogMessage();
+        LOG.info("Message Parse start");
         syslogMessage.setParserClass(getClass());
-
         String message = getText();
 
         int lbIdx = message.indexOf('<');
@@ -75,12 +81,7 @@ public class CustomSyslogParser extends SyslogParser {
         int priCode = 0;
         String priStr = message.substring(lbIdx + 1, rbIdx);
 
-        try {
-            priCode = Integer.parseInt(priStr);
-        } catch (final NumberFormatException ex) {
-            LOG.debug("ERROR Bad priority code '{}'", priStr);
-
-        }
+        priCode=parseInt(priStr, "ERROR Bad priority code '{}'");
 
         LOG.trace("priority code = {}", priCode);
 
@@ -98,21 +99,17 @@ public class CustomSyslogParser extends SyslogParser {
         }
 
         LOG.trace("message = {}", message);
-        
-        Matcher oldDateMatcher = m_oldDatePattern.matcher(message);
-        if (!oldDateMatcher.find()) {
-            oldDateMatcher = null;
-        }
-        LOG.trace("stdMsg = {}", Boolean.toString(oldDateMatcher != null));
 
         String timestamp;
-
-        if (oldDateMatcher == null) {
+        Matcher oldDateMatcher = m_oldDatePattern.matcher(message);
+        if (!oldDateMatcher.find()) {
             final Matcher stampMatcher = m_datePattern.matcher(message);
             if (stampMatcher.find()) {
+                LOG.trace("stdMsg = {}", "false");
                 timestamp = stampMatcher.group(2);
                 LOG.trace("found timestamp '{}'", timestamp);
-//                message = message.substring(stampMatcher.group(1).length());
+                // message =
+                // message.substring(stampMatcher.group(1).length());
             } else {
                 try {
                     timestamp = SyslogTimeStamp.getInstance().format(new Date());
@@ -122,13 +119,13 @@ public class CustomSyslogParser extends SyslogParser {
                 }
             }
         } else {
+            LOG.trace("stdMsg = {}", "true");
             timestamp = oldDateMatcher.group(1);
             message = oldDateMatcher.replaceFirst("");
         }
-
         LOG.trace("timestamp = {}", timestamp);
         syslogMessage.setDate(parseDate(timestamp));
-        
+
         // These 2 debugs will aid in analyzing the regexes as syslog seems
         // to differ a lot depending on implementation or message structure.
 
@@ -148,9 +145,8 @@ public class CustomSyslogParser extends SyslogParser {
         final Matcher m = pattern.matcher(message);
 
         /*
-         * We matched on a regexp for host/message pair.
-         * This can be a forwarded message as in BSD Style
-         * or syslog-ng.
+         * We matched on a regexp for host/message pair. This can be a
+         * forwarded message as in BSD Style or syslog-ng.
          */
 
         if (m.matches()) {
@@ -158,12 +154,13 @@ public class CustomSyslogParser extends SyslogParser {
             final String matchedMessage = m.group(m_matchingGroupMessage);
             syslogMessage.setMatchedMessage(matchedMessage);
 
-            LOG.trace("Syslog message '{}' matched regexp '{}'", message, m_forwardingPattern);
+            LOG.trace("Syslog message '{}' matched regexp '{}'", message,
+                      m_forwardingPattern);
             LOG.trace("Found host '{}'", m.group(m_matchingGroupHost));
             LOG.trace("Found message '{}'", matchedMessage);
 
             syslogMessage.setHostName(m.group(m_matchingGroupHost));
-            
+
             message = matchedMessage;
         } else {
             LOG.debug("Regexp not matched: {}", message);
@@ -179,26 +176,38 @@ public class CustomSyslogParser extends SyslogParser {
         String processName = "";
         String processIdStr = "";
 
-        if (lbIdx < (rbIdx - 1) && colonIdx == (rbIdx + 1) && spaceIdx == (colonIdx + 1)) {
+        // If loop has been reversed, in-order to fasten up that decides which
+        // loop to enter rather than calculating lbIdx < (rbIdx - 1) which
+        // might
+        // fail
+
+        if (lbIdx < 0 && rbIdx < 0 && colonIdx > 0
+                && spaceIdx == (colonIdx + 1)) {
+            processName = message.substring(0, colonIdx);
+            message = message.substring(colonIdx + 2);
+        } else if (lbIdx < (rbIdx - 1) && colonIdx == (rbIdx + 1)
+                && spaceIdx == (colonIdx + 1)) {
             processName = message.substring(0, lbIdx);
             processIdStr = message.substring(lbIdx + 1, rbIdx);
             message = message.substring(colonIdx + 2);
-
-            try {
-                processId = Integer.parseInt(processIdStr);
-            } catch (final NumberFormatException ex) {
-                LOG.debug("Bad process id '{}'", processIdStr);
-                processId = 0;
-            }
-        } else if (lbIdx < 0 && rbIdx < 0 && colonIdx > 0 && spaceIdx == (colonIdx + 1)) {
-            processName = message.substring(0, colonIdx);
-            message = message.substring(colonIdx + 2);
+            processId=parseInt(processIdStr, "Bad process id '{}'");
         }
 
         syslogMessage.setProcessId(processId);
         syslogMessage.setProcessName(processName);
         syslogMessage.setMessage(message.trim());
 
+        LOG.info("Message Parse End");
         return syslogMessage;
     }
+    
+	private int parseInt(String stringToInt, String logMessage) {
+		int integerValue = 0;
+		try {
+			integerValue = Integer.parseInt(stringToInt);
+		} catch (final NumberFormatException ex) {
+			LOG.debug(logMessage, stringToInt);
+		}
+		return integerValue;
+	}
 }

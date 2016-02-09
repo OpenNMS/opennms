@@ -41,6 +41,17 @@ import java.util.concurrent.ExecutorService;
 public interface ExecutorFactory {
 
 	/**
+	 * Construct a new {@link ExecutorService} with an unbounded queue size and
+	 * a thread pool size equal to the value of {@link Runtime#availableProcessors()}
+	 * so that one thread per core is started.
+	 * 
+	 * @param daemonName
+	 * @param executorName
+	 * @return
+	 */
+	ExecutorService newExecutor(String daemonName, String executorName);
+
+	/**
 	 * Construct a new {@link ExecutorService} with an unbounded queue size 
 	 * ({@link Integer#MAX_VALUE).
 	 * 
