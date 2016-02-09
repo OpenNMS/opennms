@@ -209,5 +209,6 @@ public class BusinessServiceMainLayout extends VerticalLayout {
         m_beanContainer.setBeanIdProperty("id");
         m_beanContainer.removeAllItems();
         m_beanContainer.addAll(m_businessServiceManager.getAllBusinessServices());
+        m_table.sort();
     }
 }
