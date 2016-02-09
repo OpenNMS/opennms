@@ -1,6 +1,6 @@
 <label class="control-label">{{ parameter.key }}</label>
 <input required class="form-control" type="text"
-        placeholder="Select an option for {{ parameter.key }}"
+        placeholder="Select an option for {{ parameter.key }} (hit space bar to see the options)"
         ng-model="parameter.value"
-        ng-focus="onFocus($event)" empty-typeahead typeahead-editable="false"
-        typeahead="param for param in getParameterOptions(parameter.key) | filter:$viewValue:fieldComparator"></input>
+        typeahead-min-length="0" typeahead-editable="false"
+        uib-typeahead="param for param in getParameterOptions(parameter.key) | filter:$viewValue"></input>
