@@ -46,7 +46,7 @@ import org.junit.Test;
 import org.opennms.core.test.ConfigurationTestUtils;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.CollectdConfigFactory;
-import org.opennms.netmgt.config.api.DataCollectionConfigDao;
+import org.opennms.netmgt.config.api.ResourceTypesDao;
 import org.opennms.netmgt.config.datacollection.ResourceType;
 import org.opennms.netmgt.dao.api.LocationMonitorDao;
 import org.opennms.netmgt.dao.api.NodeDao;
@@ -68,7 +68,7 @@ public class FindTopLevelResourcesTest {
     private NodeDao m_nodeDao;
     private LocationMonitorDao m_locationMonitorDao;
     private CollectdConfigFactory m_collectdConfig;
-    private DataCollectionConfigDao m_dataCollectionConfigDao;
+    private ResourceTypesDao m_resourceTypesDao;
     private DefaultResourceDao m_resourceDao;
     private FilesystemResourceStorageDao m_resourceStorageDao = new FilesystemResourceStorageDao();
 
@@ -85,7 +85,7 @@ public class FindTopLevelResourcesTest {
         m_easyMockUtils = new EasyMockUtils();
         m_nodeDao = m_easyMockUtils.createMock(NodeDao.class);
         m_locationMonitorDao = m_easyMockUtils.createMock(LocationMonitorDao.class);
-        m_dataCollectionConfigDao = m_easyMockUtils.createMock(DataCollectionConfigDao.class);
+        m_resourceTypesDao = m_easyMockUtils.createMock(ResourceTypesDao.class);
         m_filterDao = m_easyMockUtils.createMock(FilterDao.class);
 
         FilterDaoFactory.setInstance(m_filterDao);
@@ -107,7 +107,7 @@ public class FindTopLevelResourcesTest {
         m_resourceDao.setNodeDao(m_nodeDao);
         m_resourceDao.setLocationMonitorDao(m_locationMonitorDao);
         m_resourceDao.setCollectdConfig(m_collectdConfig);
-        m_resourceDao.setDataCollectionConfigDao(m_dataCollectionConfigDao);
+        m_resourceDao.setResourceTypesDao(m_resourceTypesDao);
         m_resourceDao.setResourceStorageDao(m_resourceStorageDao);
     }
 
@@ -146,8 +146,8 @@ public class FindTopLevelResourcesTest {
         OnmsNode n2 = createNode(2, "node2", null, null, "10.0.0.2"); // Node on the DB with No RRD Data
         nodes.add(n2);
 
-        expect(m_dataCollectionConfigDao.getLastUpdate()).andReturn(new Date(System.currentTimeMillis())).atLeastOnce();
-        expect(m_dataCollectionConfigDao.getConfiguredResourceTypes()).andReturn(new HashMap<String, ResourceType>());
+        expect(m_resourceTypesDao.getLastUpdate()).andReturn(new Date(System.currentTimeMillis())).atLeastOnce();
+        expect(m_resourceTypesDao.getResourceTypes()).andReturn(new HashMap<String, ResourceType>());
         expect(m_nodeDao.findAll()).andReturn(nodes);
 
         expect(m_locationMonitorDao.findStatusChangesForNodeForUniqueMonitorAndInterface(n1.getId())).andReturn(new ArrayList<LocationMonitorIpInterface>(0));
@@ -213,8 +213,8 @@ public class FindTopLevelResourcesTest {
         OnmsNode n3 = createNode(3, "node3", foreignSource, "node3", "10.0.0.3"); // Node on the DB with No RRD Data or Response Time
         nodes.add(n3);
 
-        expect(m_dataCollectionConfigDao.getLastUpdate()).andReturn(new Date(System.currentTimeMillis())).atLeastOnce();
-        expect(m_dataCollectionConfigDao.getConfiguredResourceTypes()).andReturn(new HashMap<String, ResourceType>());
+        expect(m_resourceTypesDao.getLastUpdate()).andReturn(new Date(System.currentTimeMillis())).atLeastOnce();
+        expect(m_resourceTypesDao.getResourceTypes()).andReturn(new HashMap<String, ResourceType>());
         expect(m_nodeDao.findAll()).andReturn(nodes);
 
         expect(m_locationMonitorDao.findStatusChangesForNodeForUniqueMonitorAndInterface(n1.getId())).andReturn(new ArrayList<LocationMonitorIpInterface>(0));
@@ -322,8 +322,8 @@ public class FindTopLevelResourcesTest {
         OnmsNode n4 = createNode(4, "node4", foreignSource, "node4", "10.0.0.4"); // Requisitioned node on the DB with RRD Data
         nodes.add(n4);
 
-        expect(m_dataCollectionConfigDao.getLastUpdate()).andReturn(new Date(System.currentTimeMillis())).atLeastOnce();
-        expect(m_dataCollectionConfigDao.getConfiguredResourceTypes()).andReturn(new HashMap<String, ResourceType>());
+        expect(m_resourceTypesDao.getLastUpdate()).andReturn(new Date(System.currentTimeMillis())).atLeastOnce();
+        expect(m_resourceTypesDao.getResourceTypes()).andReturn(new HashMap<String, ResourceType>());
         expect(m_nodeDao.findAll()).andReturn(nodes);
 
         expect(m_locationMonitorDao.findStatusChangesForNodeForUniqueMonitorAndInterface(n1.getId())).andReturn(new ArrayList<LocationMonitorIpInterface>(0));

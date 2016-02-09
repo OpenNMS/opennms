@@ -110,7 +110,18 @@ include::text/service-assurance/monitors/SystemExecuteMonitor.adoc[]
 include::text/service-assurance/monitors/VmwareCimMonitor.adoc[]
 include::text/service-assurance/monitors/VmwareMonitor.adoc[]
 include::text/service-assurance/monitors/Win32ServiceMonitor.adoc[]
+include::text/service-assurance/monitors/WsManMonitor.adoc[]
 include::text/service-assurance/monitors/XmpMonitor.adoc[]
+
+[[ga-performance-mgmt]]
+== Performance Management
+include::text/performance-data-collection/introduction.adoc[]
+
+[[ga-performance-mgmt-collectors]]
+=== Collectors
+include::text/performance-data-collection/collectors/introduction.adoc[]
+include::text/performance-data-collection/collectors/wsman/ws-management.adoc[]
+include::text/performance-data-collection/collectors/wsman/detector.adoc[]
 
 [[ga-events]]
 == Events

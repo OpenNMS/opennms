@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<wsman-datacollection-config>
+    <group name="windows-os"
+           resource-uri="http://schemas.microsoft.com/wbem/wsman/1/wmi/root/cimv2/Win32_OperatingSystem"
+           resource-type="node">
+        <attrib name="Name" alias="osName" type="String"/>
+        <attrib name="SerialNumber" alias="serialNumber" type="String"/>
+        <attrib name="TotalSwapSpaceSize" alias="totalSwapSpace" type="Gauge"/>
+        <attrib name="TotalVirtualMemorySize" alias="totalVirtMem" type="Gauge"/>
+        <attrib name="TotalVisibleMemorySize" alias="totalVisibleMem" type="Gauge"/>
+        <attrib name="FreePhysicalMemory" alias="freePhysMem" type="Gauge"/>
+        <attrib name="FreeSpaceInPagingFiles" alias="freeSpaceInPage" type="Gauge"/>
+        <attrib name="FreeVirtualMemory" alias="freeVirtMem" type="Gauge"/>
+    </group>
+
+    <system-definition name="Microsoft Windows (All Versions)">
+        <rule>#productVendor matches '^Microsoft.*' and #productVersion matches '^OS.*'</rule>
+        <include-group>windows-os</include-group>
+    </system-definition>
+</wsman-datacollection-config>
