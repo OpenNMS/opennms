@@ -48,6 +48,7 @@ import org.apache.camel.component.netty.NettyConstants;
 import org.apache.camel.impl.DefaultCamelContext;
 import org.apache.camel.impl.SimpleRegistry;
 import org.jboss.netty.buffer.ChannelBuffer;
+import org.jboss.netty.buffer.ChannelBuffers;
 import org.opennms.core.concurrent.LogPreservingThreadFactory;
 import org.opennms.core.logging.Logging;
 import org.opennms.core.utils.InetAddressUtils;
@@ -73,9 +74,9 @@ public class SyslogReceiverCamelNettyImpl implements SyslogReceiver {
     private final ExecutorService m_executor;
 
     private DefaultCamelContext m_camel;
-
+    
     private List<SyslogConnectionHandler> m_syslogConnectionHandlers = Collections.emptyList();
-
+    
     /**
      * Construct a new receiver
      *
@@ -127,40 +128,49 @@ public class SyslogReceiverCamelNettyImpl implements SyslogReceiver {
         m_executor.shutdown();
     }
 
+    
+    
+    //Getter and setter for syslog handler
+    public SyslogConnectionHandler getSyslogConnectionHandlers() {
+	return m_syslogConnectionHandlers.get(0);
+    }
+
+    public void setSyslogConnectionHandlers(SyslogConnectionHandler handler) {
+	m_syslogConnectionHandlers = Collections.singletonList(handler);
+    }
+    
     /**
      * The execution context.
      */
     @Override
     public void run() {
-
         // Get a log instance
         Logging.putPrefix(Syslogd.LOG4J_CATEGORY);
 
         SimpleRegistry registry = new SimpleRegistry();
-        
-        //Adding netty component to camel inorder to resolve OSGi loading issues
-        NettyComponent nettyComponent=new NettyComponent();
-        m_camel = new DefaultCamelContext(registry);
-        m_camel.addComponent("netty", nettyComponent);
-        String from = String.format("netty:udp://%s:%s?sync=false&allowDefaultCodec=false&receiveBufferSize=%d&connectTimeout=%d",
-                                    InetAddressUtils.str(m_host),
-                                    m_port,
-                                    Integer.MAX_VALUE,
-                                    SOCKET_TIMEOUT
-        	);
-        
+
+	        //Adding netty component to camel inorder to resolve OSGi loading issues
+		NettyComponent nettyComponent=new NettyComponent();
+		m_camel = new DefaultCamelContext(registry);
+		m_camel.addComponent("netty", nettyComponent);
+
         try {
             m_camel.addRoutes(new RouteBuilder() {
                 @Override
                 public void configure() throws Exception {
-                  
+                    String from = String.format("netty:udp://%s:%s?sync=false&textline=true&receiveBufferSize=%d&connectTimeout=%d",
+                        InetAddressUtils.str(m_host),
+                        m_port,
+                        Integer.MAX_VALUE,
+                        SOCKET_TIMEOUT
+                    );
+                    
                     from(from)
                     //.convertBodyTo(java.nio.ByteBuffer.class)
                     .process(new Processor() {
                         @Override
                         public void process(Exchange exchange) throws Exception {
-                            ChannelBuffer buffer = exchange.getIn().getBody(ChannelBuffer.class);
-                            //ChannelBuffer buffer = ChannelBuffers.copiedBuffer(exchange.getIn().getBody().toString().getBytes());
+                            ChannelBuffer buffer = ChannelBuffers.copiedBuffer(exchange.getIn().getBody().toString().getBytes());
                             // NettyConstants.NETTY_REMOTE_ADDRESS is a SocketAddress type but because 
                             // we are listening on an InetAddress, it will always be of type InetAddressSocket
                             InetSocketAddress source = (InetSocketAddress)exchange.getIn().getHeader(NettyConstants.NETTY_REMOTE_ADDRESS); 
@@ -169,27 +179,20 @@ public class SyslogReceiverCamelNettyImpl implements SyslogReceiver {
                             try {
                         	for (SyslogConnectionHandler handler : m_syslogConnectionHandlers) {
                         	    handler.handleSyslogConnection(connection);
+                        	   // System.out.println(new String(connection.getByteBuffer().array(), "ASCII"));
                         	}
                             } catch (Throwable e) {
                         	LOG.error("Handler execution failed in {}", this.getClass().getSimpleName(), e);
                             }
+
                         }
                     });
                 }
             });
-         
+
             m_camel.start();
         } catch (Exception e) {
             LOG.error("Could not configure Camel routes for syslog receiver", e);
         }
-    }
-    
-    //Getter and setter for syslog handler
-    public SyslogConnectionHandler getSyslogConnectionHandlers() {
-        return m_syslogConnectionHandlers.get(0);
-    }
-
-    public void setSyslogConnectionHandlers(SyslogConnectionHandler handler) {
-        m_syslogConnectionHandlers = Collections.singletonList(handler);
     }
 }
