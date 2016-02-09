@@ -84,7 +84,7 @@ public class Main implements Runnable {
     protected String m_password = null;
     protected boolean m_gui = false;
     protected boolean m_disableIcmp = false;
-    protected boolean m_singleScan = false;
+    protected boolean m_scanReport = false;
 
     private static enum SpringExportSchemes {
         rmi,
@@ -249,7 +249,7 @@ public class Main implements Runnable {
             AbstractApplicationContext context = createAppContext();
             PollerFrontEnd frontEnd = getPollerFrontEnd(context);
 
-            if (!m_gui && !m_singleScan) {
+            if (!m_gui && !m_scanReport) {
                 if (!frontEnd.isRegistered()) {
                     if (m_locationName == null) {
                         LOG.error("No location name provided.  You must pass a location name the first time you start the Remote Poller!");
@@ -279,7 +279,7 @@ public class Main implements Runnable {
         options.addOption("u", "url", true, "the URL for OpenNMS (example: https://server-name/opennms-remoting)");
         options.addOption("n", "name", true, "the name of the user to connect as");
         options.addOption("p", "password", true, "the password to use when connecting");
-        options.addOption("s", "single-scan", false, "perform a single scan instead of running the polling engine");
+        options.addOption("s", "scan-report", false, "perform a single scan report instead of running the polling engine");
 
         CommandLineParser parser = new PosixParser();
         CommandLine cl = parser.parse(options, args);
@@ -318,7 +318,7 @@ public class Main implements Runnable {
         }
 
         if (cl.hasOption("s")) {
-            m_singleScan = true;
+            m_scanReport = true;
         }
 
         if (cl.hasOption("n")) {
@@ -375,14 +375,14 @@ public class Main implements Runnable {
         configs.add("classpath:/META-INF/opennms/applicationContext-pollerFrontEnd.xml");
 
         // Choose a PollerFrontEnd implementation
-        if (m_singleScan) {
+        if (m_scanReport) {
             configs.add("classpath:/META-INF/opennms/applicationContext-pollerFrontEnd-scanReport.xml");
         } else {
             configs.add("classpath:/META-INF/opennms/applicationContext-pollerFrontEnd.xml");
         }
 
-        // Choose a GUI implementation (if in single-scan or gui mode)
-        if (m_singleScan) {
+        // Choose a GUI implementation (if in scan-report or gui mode)
+        if (m_scanReport) {
             configs.add("classpath:/META-INF/opennms/applicationContext-scan-gui.xml");
         } else if (m_gui) {
             configs.add("classpath:/META-INF/opennms/applicationContext-ws-gui.xml");
