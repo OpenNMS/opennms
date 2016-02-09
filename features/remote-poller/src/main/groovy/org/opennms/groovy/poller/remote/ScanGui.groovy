@@ -332,10 +332,12 @@ class ScanGui extends AbstractGui implements ScanReportHandler, PropertyChangeLi
                         }
 
                         // Reduce the opacity of the background to create a 'disabled' look
+                        /*
                         float[] bgColor = new float[3]
                         bgColor = getDetailColor().getRGBColorComponents(bgColor)
-                        m_scanNowButton.setBackground(new Color(bgColor[0], bgColor[1], bgColor[2], 0.15))
+                        m_scanNowButton.setBackground(new Color(bgColor[0], bgColor[1], bgColor[2], 0.15f))
                         m_scanNowButton.setText("Scanning...")
+                        */
                         // Disable the button
                         m_scanNowButton.setEnabled(false)
 
