@@ -13,7 +13,7 @@ describe('Controller: PolicyController', function () {
   function createController() {
     return controllerFactory('PolicyController', {
       $scope: scope,
-      $modalInstance: mockModalInstance,
+      $uibModalInstance: mockModalInstance,
       RequisitionsService: mockRequisitionsService,
       policy: policy
     });

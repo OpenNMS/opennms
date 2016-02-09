@@ -15,9 +15,8 @@
   * @module onms-requisitions
   *
   * @requires $scope Angular local scope
-  * @requires $modalInstance Angular modal instance
+  * @requires $uibModalInstance Angular UI modal instance
   * @requires RequisitionsService The Requisitions Servive
-  * @requires EmptyTypeaheadService The empty typeahead Service
   * @requires foreignSource The requisition's name (a.k.a. foreign source)
   * @requires foreignId The foreign ID of the container node
   * @requires requisitionInterface The requisition interface object
@@ -25,7 +24,7 @@
   *
   * @description The controller for manage the modal dialog for add/edit IP interfaces of requisitioned nodes
   */
-  .controller('InterfaceController', ['$scope', '$modalInstance', 'RequisitionsService', 'EmptyTypeaheadService', 'foreignSource', 'foreignId', 'requisitionInterface', 'ipBlackList', function($scope, $modalInstance, RequisitionsService, EmptyTypeaheadService, foreignSource, foreignId, requisitionInterface, ipBlackList) {
+  .controller('InterfaceController', ['$scope', '$uibModalInstance', 'RequisitionsService', 'foreignSource', 'foreignId', 'requisitionInterface', 'ipBlackList', function($scope, $uibModalInstance, RequisitionsService, foreignSource, foreignId, requisitionInterface, ipBlackList) {
 
     /**
     * @description The foreign source (a.k.a the name of the requisition).
@@ -92,24 +91,6 @@
     $scope.availableServices = [];
 
     /**
-    * @description fieldComparator method from EmptyTypeaheadService
-    *
-    * @ngdoc method
-    * @name InterfaceController#fieldComparator
-    * @methodOf AssetController
-    */
-    $scope.fieldComparator = EmptyTypeaheadService.fieldComparator;
-
-    /**
-    * @description onFocus method from EmptyTypeaheadService
-    *
-    * @ngdoc method
-    * @name InterfaceController#onFocus
-    * @methodOf AssetController
-    */
-    $scope.onFocus = EmptyTypeaheadService.onFocus;
-
-    /**
     * @description Saves the current interface
     *
     * @name InterfaceController:save
@@ -117,7 +98,7 @@
     * @methodOf InterfaceController
     */
     $scope.save = function () {
-      $modalInstance.close($scope.requisitionInterface);
+      $uibModalInstance.close($scope.requisitionInterface);
     };
 
     /**
@@ -128,7 +109,7 @@
     * @methodOf InterfaceController
     */
     $scope.cancel = function () {
-      $modalInstance.dismiss('cancel');
+      $uibModalInstance.dismiss('cancel');
     };
 
     /**

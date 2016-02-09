@@ -60,10 +60,10 @@
 
     <!-- Tab Panel -->
     <div class="container-fluid">
-      <tabset>
+      <uib-tabset>
 
         <!-- Detectors Tab -->
-        <tab heading="Detectors">
+        <uib-tab heading="Detectors">
           <div class="row">
             <div class="col-md-3">
               <div class="input-group">
@@ -111,12 +111,12 @@
                 </tr>
               </tbody>
             </table>
-            <pagination total-items="detectorsTotalItems" num-pages="detectorsNumPages" ng-model="detectorsCurrentPage" max-size="detectorsMaxSize" boundary-links="true" class="pagination-sm" previous-text="&lsaquo;" next-text="&rsaquo;" first-text="&laquo;" last-text="&raquo;" ng-show="filteredDetectors.length > detectorsPageSize"></pagination>
+            <uib-pagination total-items="detectorsTotalItems" num-pages="detectorsNumPages" ng-model="detectorsCurrentPage" max-size="detectorsMaxSize" boundary-links="true" class="pagination-sm" previous-text="&lsaquo;" next-text="&rsaquo;" first-text="&laquo;" last-text="&raquo;" ng-show="filteredDetectors.length > detectorsPageSize"></uib-pagination>
             </div>
-        </tab>
+        </uib-tab>
 
         <!-- Policies Tab -->
-        <tab heading="Policies">
+        <uib-tab heading="Policies">
           <div class="row">
             <div class="col-md-3">
               <div class="input-group">
@@ -164,11 +164,11 @@
                 </tr>
               </tbody>
             </table>
-            <pagination total-items="policiesTotalItems" num-pages="policiesNumPages" ng-model="policiesCurrentPage" max-size="policiesMaxSize" boundary-links="true" class="pagination-sm" previous-text="&lsaquo;" next-text="&rsaquo;" first-text="&laquo;" last-text="&raquo;" ng-show="filteredPolicies.length > policiesPageSize"></pagination>
+            <uib-pagination total-items="policiesTotalItems" num-pages="policiesNumPages" ng-model="policiesCurrentPage" max-size="policiesMaxSize" boundary-links="true" class="pagination-sm" previous-text="&lsaquo;" next-text="&rsaquo;" first-text="&laquo;" last-text="&raquo;" ng-show="filteredPolicies.length > policiesPageSize"></uib-pagination>
           </div>
-        </tab>
+        </uib-tab>
 
-      </tabset>
+      </uib-tabset>
     </div> <!-- tab-panel container-fluid -->
 
   </div> <!-- column -->

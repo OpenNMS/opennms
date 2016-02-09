@@ -196,7 +196,7 @@
           <ng-form name="categoryForm" ng-repeat="category in node.categories">
             <div class="form-group" ng-class="{ 'has-error' : categoryForm.categoryName.$invalid }">
               <div class="input-group">
-                <input class="form-control" type="text" name="categoryName" placeholder="Category Name" ng-model="category.name" ng-focus="onFocus($event)" empty-typeahead typeahead-editable="true" typeahead="category for category in getAvailableCategories() | filter:$viewValue:fieldComparator" required valid-category="category"></input>
+                <input class="form-control" type="text" name="categoryName" placeholder="Category Name" ng-model="category.name" typeahead-min-length="0" typeahead-editable="true" uib-typeahead="category for category in getAvailableCategories() | filter:$viewValue:fieldComparator" required valid-category="category"></input>
                 <span class="input-group-btn">
                   <button class="btn btn-default" type="button" ng-click="removeCategory($index)"><span class="glyphicon glyphicon-remove"></span></button>
                 </span>
