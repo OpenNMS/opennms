@@ -921,7 +921,7 @@ public class DefaultPollerBackEnd implements PollerBackEnd, SpringServiceDaemon 
         if (report == null) {
             throw new IllegalArgumentException("ScanReport cannot be null");
         }
-        LOG.info("Single scan complete: {}", report);
+        LOG.info("Scan report complete: {}", report);
         m_scanReportDao.save(report);
 
         if (report.getPollResults().stream().allMatch(a -> { return a.getPollStatus().isAvailable(); } )) {

@@ -157,7 +157,7 @@
             </configuration>
           </execution>
           <execution>
-            <id>single-scan</id>
+            <id>scan-report</id>
             <goals>
               <goal>jnlp-download-servlet</goal>
             </goals>
@@ -165,8 +165,8 @@
             <configuration>
               <jnlpFiles>
                 <jnlpFile>
-                  <inputTemplate>single-scan.vm</inputTemplate>
-                  <outputFilename>single-scan.jnlp</outputFilename>
+                  <inputTemplate>scan-report.vm</inputTemplate>
+                  <outputFilename>scan-report.jnlp</outputFilename>
                   <jarResources>
                     <jarResource>
                       <groupId>org.opennms.features</groupId>
