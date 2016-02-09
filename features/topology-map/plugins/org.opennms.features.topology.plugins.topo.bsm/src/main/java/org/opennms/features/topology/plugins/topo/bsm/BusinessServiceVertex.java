@@ -44,7 +44,7 @@ class BusinessServiceVertex extends AbstractBusinessServiceVertex {
         super(id, name);
         this.serviceId = serviceId;
         setLabel(name);
-        setTooltipText(String.format("BusinessService '%s'", name));
+        setTooltipText(String.format("Business Service '%s'", name));
         setIconKey("business-service");
     }
 
