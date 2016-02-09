@@ -47,6 +47,7 @@ import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
+import org.opennms.core.config.api.JaxbListWrapper;
 import org.opennms.netmgt.provision.persist.ForeignSourceService;
 import org.opennms.netmgt.provision.support.PluginWrapper;
 import org.opennms.web.svclayer.ManualProvisioningService;
@@ -89,7 +90,7 @@ public class ForeignSourceConfigRestService extends OnmsRestService implements I
      */
     @SuppressWarnings("serial")
     @XmlRootElement(name="plugin-configuration")
-    public static class SimplePluginConfigList extends ArrayList<SimplePluginConfig> {
+    public static class SimplePluginConfigList extends JaxbListWrapper<SimplePluginConfig> {
 
         /**
          * Gets the Plugins.
@@ -99,7 +100,7 @@ public class ForeignSourceConfigRestService extends OnmsRestService implements I
         @XmlElement(name="plugin")
         @XmlElementWrapper(name="plugins")
         public List<SimplePluginConfig> getPlugins() {
-            return this;
+            return getObjects();
         }
     }
 
@@ -184,7 +185,7 @@ public class ForeignSourceConfigRestService extends OnmsRestService implements I
      */
     @SuppressWarnings("serial")
     @XmlRootElement(name="elements")
-    public static class ElementList extends ArrayList<String> {
+    public static class ElementList extends JaxbListWrapper<String> {
 
         /**
          * Instantiates a new element list.
@@ -203,13 +204,15 @@ public class ForeignSourceConfigRestService extends OnmsRestService implements I
         }
 
         /**
-         * Gets the services.
+         * Gets the elements.
          *
-         * @return the services
+         * @return the elements
          */
         @XmlElement(name="element")
-        public List<String> getServices() {
-            return this;
+        public List<String> getElements() {
+            List<String> elements = getObjects();
+            Collections.sort(elements);
+            return elements;
         }
     }
 
@@ -261,9 +264,7 @@ public class ForeignSourceConfigRestService extends OnmsRestService implements I
     @Path("services/{groupName}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     public ElementList getServices(@PathParam("groupName") String groupName) {
-        final ElementList list = new ElementList(m_provisioningService.getServiceTypeNames(groupName));
-        Collections.sort(list);
-        return list;
+        return new ElementList(m_provisioningService.getServiceTypeNames(groupName));
     }
 
     /**
@@ -275,9 +276,7 @@ public class ForeignSourceConfigRestService extends OnmsRestService implements I
     @Path("assets")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     public ElementList getAssets() {
-        final ElementList list = new ElementList(m_provisioningService.getAssetFieldNames());
-        Collections.sort(list);
-        return list;
+        return new ElementList(m_provisioningService.getAssetFieldNames());
     }
 
     /**
@@ -289,9 +288,7 @@ public class ForeignSourceConfigRestService extends OnmsRestService implements I
     @Path("categories")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     public ElementList getCategories() {
-        final ElementList list = new ElementList(m_provisioningService.getNodeCategoryNames());
-        Collections.sort(list);
-        return list;
+        return new ElementList(m_provisioningService.getNodeCategoryNames());
     }
 
     /**
