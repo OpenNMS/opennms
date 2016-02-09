@@ -3,4 +3,4 @@
         placeholder="Select an option for {{ parameter.key }}"
         ng-model="parameter.value"
         typeahead-min-length="0" typeahead-editable="false"
-        uib-typeahead="param for param in getParameterOptions(parameter.key) | filter:$viewValue:fieldComparator"></input>
+        uib-typeahead="param for param in getParameterOptions(parameter.key) | filter:$viewValue"></input>

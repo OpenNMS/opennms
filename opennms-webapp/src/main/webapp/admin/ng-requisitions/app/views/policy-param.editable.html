@@ -2,7 +2,7 @@
         placeholder="Parameter Name"
         ng-model="parameter.key"
         typeahead-min-length="0" typeahead-editable="false"
-        uib-typeahead="param for param in getOptionalParameters() | filter:$viewValue:fieldComparator"></input>
+        uib-typeahead="param for param in getOptionalParameters() | filter:$viewValue"></input>
 <div class="input-group">
   <input class="form-control" type="text" placeholder="Parameter Value" ng-model="parameter.value" required></input>
   <span class="input-group-btn">
