@@ -1,5 +1,5 @@
 <input required class="form-control" type="text"
-        placeholder="Parameter Name"
+        placeholder="Parameter Name (hit space bar to see the options)"
         ng-model="parameter.key"
         typeahead-min-length="0" typeahead-editable="false"
         uib-typeahead="param for param in getOptionalParameters() | filter:$viewValue"></input>
