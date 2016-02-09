@@ -62,11 +62,11 @@
     growlProvider.globalPosition('bottom-center');
   }])
 
-  .config(['$tooltipProvider', function($tooltipProvider) {
-    $tooltipProvider.setTriggers({
+  .config(['$uibTooltipProvider', function($uibTooltipProvider) {
+    $uibTooltipProvider.setTriggers({
       'mouseenter': 'mouseleave'
     });
-    $tooltipProvider.options({
+    $uibTooltipProvider.options({
       'placement': 'top',
       'trigger': 'mouseenter'
     });

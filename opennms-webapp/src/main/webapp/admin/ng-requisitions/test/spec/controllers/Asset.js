@@ -7,14 +7,13 @@
 
 describe('Controller: AssetController', function () {
 
-  var scope, $q, controllerFactory, mockModalInstance, mockRequisitionsService = {}, mockEmptyTypeaheadService = [], asset = { key: 'admin', value: 'agalue' };
+  var scope, $q, controllerFactory, mockModalInstance, mockRequisitionsService = {}, asset = { key: 'admin', value: 'agalue' };
 
   function createController() {
     return controllerFactory('AssetController', {
       $scope: scope,
-      $modalInstance: mockModalInstance,
+      $uibModalInstance: mockModalInstance,
       RequisitionsService: mockRequisitionsService,
-      EmptyTypeaheadService: mockEmptyTypeaheadService,
       asset: asset,
       assetsBlackList: []
     });
