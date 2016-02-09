@@ -166,10 +166,7 @@ public class SearchBox extends AbstractComponent implements SelectionListener, G
                 }
             }
 
-            if (m_suggestionMap.size() == 0) {
-                removeIfSuggMapEmpty(searchResult, m_operationContext.getGraphContainer());
-            }
-
+            removeIfSuggMapEmpty(searchResult, m_operationContext.getGraphContainer());
             removeIfSpecialURLCase(searchResult);
             m_operationContext.getGraphContainer().redoLayout();
         }
