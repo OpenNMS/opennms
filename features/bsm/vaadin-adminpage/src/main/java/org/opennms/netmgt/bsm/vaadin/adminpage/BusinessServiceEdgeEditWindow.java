@@ -28,12 +28,18 @@
 
 package org.opennms.netmgt.bsm.vaadin.adminpage;
 
-import com.google.common.collect.Ordering;
+import java.util.Collection;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 import org.opennms.netmgt.bsm.service.BusinessServiceManager;
 import org.opennms.netmgt.bsm.service.model.BusinessService;
 import org.opennms.netmgt.bsm.service.model.IpService;
 import org.opennms.netmgt.bsm.service.model.Status;
+import org.opennms.netmgt.bsm.service.model.edge.ChildEdge;
 import org.opennms.netmgt.bsm.service.model.edge.Edge;
+import org.opennms.netmgt.bsm.service.model.edge.IpServiceEdge;
+import org.opennms.netmgt.bsm.service.model.edge.ReductionKeyEdge;
 import org.opennms.netmgt.bsm.service.model.functions.map.Decrease;
 import org.opennms.netmgt.bsm.service.model.functions.map.Identity;
 import org.opennms.netmgt.bsm.service.model.functions.map.Ignore;
@@ -45,6 +51,7 @@ import org.opennms.netmgt.vaadin.core.UIHelper;
 
 import com.google.common.base.Throwables;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Ordering;
 import com.vaadin.data.Validator;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
@@ -55,8 +62,6 @@ import com.vaadin.ui.NativeSelect;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
-
-import java.util.stream.Collectors;
 
 /**
  * Modal dialog window used to edit the properties of a Business Service Edge definition.
@@ -88,7 +93,8 @@ public class BusinessServiceEdgeEditWindow extends Window {
      * @param businessServiceManager the Business Service Manager
      */
     public BusinessServiceEdgeEditWindow(final BusinessService businessService,
-                                         final BusinessServiceManager businessServiceManager) {
+                                         final BusinessServiceManager businessServiceManager,
+                                         final Edge edge) {
         super("Business Service Edge Edit");
 
         /**
@@ -291,14 +297,14 @@ public class BusinessServiceEdgeEditWindow extends Window {
         /**
          * ...and the save button
          */
-        final Button saveButton = new Button("Add Edge");
+        final Button saveButton = new Button(edge == null ? "Add Edge" : "Update Edge");
         saveButton.setId("saveEdgeButton");
         saveButton.addClickListener(UIHelper.getCurrent(TransactionAwareUI.class).wrapInTransactionProxy((Button.ClickListener) event -> {
             if (!m_weightField.isValid()) return;
             if (!m_ipServiceComponent.isValid()) return;
             if (!m_childServiceComponent.isValid()) return;
             if (!m_reductionKeyComponent.isValid()) return;
-
+            
             final MapFunction mapFunction;
             try {
                 mapFunction = ((Class<? extends MapFunction>) m_mapFunctionSelect.getValue()).newInstance();
@@ -312,6 +318,37 @@ public class BusinessServiceEdgeEditWindow extends Window {
 
             final int weight = Integer.parseInt(m_weightField.getValue());
 
+            /**
+             * in the case edge is not null, remove the old object...
+             */
+            if (edge != null) {
+                switch (edge.getType()) {
+                    case CHILD_SERVICE: {
+                        Set<ChildEdge> edges = businessService.getChildEdges();
+                        edges.remove(edge);
+                        businessService.setChildEdges(edges);
+                        break;
+                    }
+
+                    case IP_SERVICE: {
+                        Set<IpServiceEdge> edges = businessService.getIpServiceEdges();
+                        edges.remove(edge);
+                        businessService.setIpServiceEdges(edges);
+                        break;
+                    }
+
+                    case REDUCTION_KEY: {
+                        Set<ReductionKeyEdge> edges = businessService.getReductionKeyEdges();
+                        edges.remove(edge);
+                        businessService.setReductionKeyEdges(edges);
+                        break;
+                    }
+                }
+            }
+
+            /**
+             * ...and add the new edge
+             */
             switch ((Edge.Type) m_typeSelect.getValue()) {
                 case CHILD_SERVICE:
                     businessService.addChildEdge((BusinessService) m_childServiceComponent.getValue(), mapFunction, weight);
@@ -337,6 +374,47 @@ public class BusinessServiceEdgeEditWindow extends Window {
         cancelButton.setId("cancelEdgeButton");
         cancelButton.addClickListener((Button.ClickListener) event -> close());
         buttonLayout.addComponent(cancelButton);
+
+        /**
+         * when edge is not null, fill the components with values
+         */
+        if (edge != null) {
+            switch (edge.getType()) {
+                case CHILD_SERVICE:
+                    m_typeSelect.setValue(Edge.Type.CHILD_SERVICE);
+                    m_childServiceComponent.setValue(((ChildEdge) edge).getChild());
+                    m_childServiceComponent.setEnabled(false);
+                    break;
+                case IP_SERVICE:
+                    m_typeSelect.setValue(Edge.Type.IP_SERVICE);
+
+                    for(IpService ipService: (Collection<IpService>) m_ipServiceComponent.getItemIds()) {
+                        if (ipService.getId() == ((IpServiceEdge) edge).getIpService().getId()) {
+                            m_ipServiceComponent.setValue(ipService);
+                            break;
+                        }
+                    }
+
+                    m_ipServiceComponent.setEnabled(false);
+                    break;
+                case REDUCTION_KEY:
+                    m_typeSelect.setValue(Edge.Type.REDUCTION_KEY);
+                    m_reductionKeyComponent.setValue(((ReductionKeyEdge) edge).getReductionKey());
+                    m_reductionKeyComponent.setEnabled(false);
+                    break;
+            }
+
+            m_typeSelect.setEnabled(false);
+            m_mapFunctionSelect.setValue(edge.getMapFunction().getClass());
+
+            if (edge.getMapFunction() instanceof SetTo) {
+                m_mapFunctionSeveritySelect.setValue(((SetTo) edge.getMapFunction()).getStatus());
+            } else {
+                m_mapFunctionSeveritySelect.setValue(Status.INDETERMINATE);
+            }
+
+            m_weightField.setValue(String.valueOf(edge.getWeight()));
+        }
 
         /**
          * now set the root layout
