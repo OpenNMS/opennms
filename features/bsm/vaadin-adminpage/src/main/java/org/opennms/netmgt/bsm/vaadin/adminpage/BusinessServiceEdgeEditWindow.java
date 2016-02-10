@@ -322,28 +322,9 @@ public class BusinessServiceEdgeEditWindow extends Window {
              * in the case edge is not null, remove the old object...
              */
             if (edge != null) {
-                switch (edge.getType()) {
-                    case CHILD_SERVICE: {
-                        Set<ChildEdge> edges = businessService.getChildEdges();
-                        edges.remove(edge);
-                        businessService.setChildEdges(edges);
-                        break;
-                    }
-
-                    case IP_SERVICE: {
-                        Set<IpServiceEdge> edges = businessService.getIpServiceEdges();
-                        edges.remove(edge);
-                        businessService.setIpServiceEdges(edges);
-                        break;
-                    }
-
-                    case REDUCTION_KEY: {
-                        Set<ReductionKeyEdge> edges = businessService.getReductionKeyEdges();
-                        edges.remove(edge);
-                        businessService.setReductionKeyEdges(edges);
-                        break;
-                    }
-                }
+                Set<? extends Edge> edges = businessService.getEdges(edge.getType());
+                edges.remove(edge);
+                businessService.setEdges(edge.getType(), edges);
             }
 
             /**
