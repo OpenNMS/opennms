@@ -19,14 +19,13 @@
   * @requires $scope Angular local scope
   * @requires $routeParams Angular route params
   * @requires $window Document window
-  * @requires $modal Angular modal
+  * @requires $uibModal Angular UI modal
   * @requires RequisitionsService The requisitions service
-  * @requires EmptyTypeaheadService The empty typeahead Service
   * @requires growl The growl plugin for instant notifications
   *
   * @description The controller for manage requisitioned nodes (add/edit the nodes on a specific requisition)
   */
-  .controller('NodeController', ['$scope', '$routeParams', '$window', '$modal', 'RequisitionsService', 'EmptyTypeaheadService', 'growl', function($scope, $routeParams, $window, $modal, RequisitionsService, EmptyTypeaheadService, growl) {
+  .controller('NodeController', ['$scope', '$routeParams', '$window', '$uibModal', 'RequisitionsService', 'growl', function($scope, $routeParams, $window, $uibModal, RequisitionsService, growl) {
 
     /**
     * @description The timing status.
@@ -103,24 +102,6 @@
     * @returns {array} The list of black-listed foreign IDs.
     */
     $scope.foreignIdBlackList = [];
-
-    /**
-    * @description fieldComparator method from EmptyTypeaheadService
-    *
-    * @ngdoc method
-    * @name NodeController#fieldComparator
-    * @methodOf AssetController
-    */
-    $scope.fieldComparator = EmptyTypeaheadService.fieldComparator;
-
-    /**
-    * @description onFocus method from EmptyTypeaheadService
-    *
-    * @ngdoc method
-    * @name NodeController#onFocus
-    * @methodOf AssetController
-    */
-    $scope.onFocus = EmptyTypeaheadService.onFocus;
 
     /**
     * @description Goes to specific URL warning about changes if exist.
@@ -219,7 +200,7 @@
         assetsBlackList.push(asset.name);
       });
 
-      var modalInstance = $modal.open({
+      var modalInstance = $uibModal.open({
         backdrop: 'static',
         controller: 'AssetController',
         templateUrl: 'views/asset.html',
@@ -282,7 +263,7 @@
         ipBlackList.push(intf.ipAddress);
       });
 
-      var modalInstance = $modal.open({
+      var modalInstance = $uibModal.open({
         backdrop: 'static',
         controller: 'InterfaceController',
         templateUrl: 'views/interface.html',
