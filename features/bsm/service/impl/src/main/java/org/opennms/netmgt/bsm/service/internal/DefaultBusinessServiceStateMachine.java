@@ -41,6 +41,7 @@ import org.opennms.netmgt.bsm.service.BusinessServiceStateChangeHandler;
 import org.opennms.netmgt.bsm.service.BusinessServiceStateMachine;
 import org.opennms.netmgt.bsm.service.model.AlarmWrapper;
 import org.opennms.netmgt.bsm.service.model.BusinessService;
+import org.opennms.netmgt.bsm.service.model.BusinessServiceHierarchy;
 import org.opennms.netmgt.bsm.service.model.IpService;
 import org.opennms.netmgt.bsm.service.model.Status;
 import org.opennms.netmgt.bsm.service.model.edge.ChildEdge;
@@ -66,9 +67,8 @@ public class DefaultBusinessServiceStateMachine implements BusinessServiceStateM
     private final Map<BusinessService, Status> m_businessServiceStatus = Maps.newHashMap();
     private final Map<String, Status> m_reductionKeyStatus = Maps.newHashMap();
     private final Set<Integer> m_ipServiceIds = Sets.newHashSet();
+    private BusinessServiceHierarchy m_hierarchy = new BusinessServiceHierarchyImpl(Lists.newArrayList());
 
-    // children -> parent
-    private final Map<BusinessService, Set<BusinessService>> m_rootMap = Maps.newHashMap();
 
     @Override
     public void setBusinessServices(List<BusinessService> businessServices) {
@@ -81,7 +81,6 @@ public class DefaultBusinessServiceStateMachine implements BusinessServiceStateM
             m_businessServiceStatus.clear();
             m_reductionKeyStatus.clear();
             m_ipServiceIds.clear();
-            m_rootMap.clear();
 
             // Rebuild the reduction Key set
             for (BusinessService businessService : businessServices) {
@@ -96,38 +95,13 @@ public class DefaultBusinessServiceStateMachine implements BusinessServiceStateM
                 }
             }
 
-            // Rebuild root structure
-            businessServices.forEach(bs -> bs.getChildEdges()
-                    .forEach(edge -> {
-                        if (m_rootMap.get(edge.getChild()) == null) {
-                            m_rootMap.put(edge.getChild(), Sets.newHashSet());
-                        }
-                        m_rootMap.get(edge.getChild()).add(edge.getSource());
-                    })
-            );
-
-            // Rebuild the hierarchy
-            Set<BusinessService> roots = getRoots(businessServices);
-            determineHierarchyLevel(0, roots);
+            // Determine Roots
+            Set<BusinessService> rootServices = BusinessServiceHierarchyUtils.getRoots(businessServices);
+            // Rebuild hierarchy (set level information)
+            BusinessServiceHierarchyUtils.updateHierarchyLevel(rootServices);
         } finally {
             m_rwLock.writeLock().unlock();
         }
-    }
-
-    protected void determineHierarchyLevel(int level, Set<BusinessService> elements) {
-        elements.forEach(bs -> {
-            // elements can be children of multiple parents, we use the maximum level
-            bs.setLevel(Math.max(bs.getLevel(), level));
-            // Afterwards move to next level
-            determineHierarchyLevel(level + 1, new ArrayList<>(bs.getChildServices()));
-        });
-    }
-
-    protected Set<BusinessService> getRoots(List<BusinessService> businessServiceEntities) {
-        return businessServiceEntities
-                .stream()
-                .filter(eachService -> eachService.isRoot())
-                .collect(Collectors.toList());
     }
 
     private void addReductionKey(String reductionKey, BusinessService bs) {

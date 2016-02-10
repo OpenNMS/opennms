@@ -32,7 +32,9 @@ package org.opennms.features.topology.app.internal.jung;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.opennms.features.topology.api.Graph;
 import org.opennms.features.topology.api.GraphContainer;
@@ -41,23 +43,21 @@ import org.opennms.features.topology.api.Point;
 import org.opennms.features.topology.api.topo.AbstractEdge;
 import org.opennms.features.topology.api.topo.AbstractVertex;
 import org.opennms.features.topology.api.topo.Edge;
+import org.opennms.features.topology.api.topo.LevelAware;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
 
-import edu.uci.ics.jung.algorithms.layout.TreeLayout;
-import edu.uci.ics.jung.algorithms.shortestpath.MinimumSpanningForest;
-import edu.uci.ics.jung.graph.DelegateForest;
-import edu.uci.ics.jung.graph.SparseGraph;
+import edu.uci.ics.jung.graph.DirectedOrderedSparseMultigraph;
 
 /**
  * <p>
  * Algorithm to transform a graph of vertices and edges into a hierarchical structure of a 2D plane.
- * It is a geometric transformation which does not change the graph but the x an y position of its vertices.
+ * It is a geometric transformation which does not change the graph but the x and y position of its vertices.
  * </p>
  * <p>
  * The algorithm generates the layout correctly if only one root element exists or if there are no vertices at all
  * If no root element exists, a random vertex from the graph is picked and defined as root.
- * If multiple root elements exist, the first one returned by getDisplayedVertices() which has no parent (= root candidate) is picked as the root element
+ * If multiple root elements exist, a parent of those is created and called dummy root element. This ensures that there is only one root element.
  * </p>
  * <p>
  * The current graph to be transformed is extracted from the {@link org.opennms.features.topology.api.GraphContainer}.
@@ -76,7 +76,7 @@ public class HierarchyLayoutAlgorithm extends AbstractLayoutAlgorithm {
      * Updates the current layout by extracting the containers graph and then perform a (x,y) tranformation
      * of all vertices.
      *
-     * @param graphContainer The container of the current graph. Contains all relevant informations to perform the transformation
+     * @param graphContainer The container of the current graph. Contains all relevant information to perform the transformation
      *                       of the {@link org.opennms.features.topology.api.Graph} by changing its {@link org.opennms.features.topology.api.Layout}
      */
     @Override
@@ -88,15 +88,33 @@ public class HierarchyLayoutAlgorithm extends AbstractLayoutAlgorithm {
         applyLayoutPositions(graph.getDisplayVertices(), treeLayout, graphLayout);
     }
 
-    private edu.uci.ics.jung.graph.Graph<VertexRef, Edge> convert(final Graph g) {
-        final SparseGraph<VertexRef, Edge> sparseGraph = new SparseGraph<VertexRef, Edge>();
-        for(VertexRef v : g.getDisplayVertices()) {
-            sparseGraph.addVertex(v);
+    private edu.uci.ics.jung.graph.DirectedGraph<VertexRef, Edge> convert(final Graph g) {
+        // We need to sort the elements. For this purpose we use the DirectedOrderedSparseMultigraph
+        final edu.uci.ics.jung.graph.DirectedGraph<VertexRef, Edge> jungGraph = new DirectedOrderedSparseMultigraph<>();
+        final Collection<Vertex> displayVertices = g.getDisplayVertices();
+
+        // Sort by level
+        final List<Vertex> sortedVertices = displayVertices.stream().filter(v -> v instanceof LevelAware).sorted(new Comparator<Vertex>() {
+            @Override
+            public int compare(Vertex o1, Vertex o2) {
+                return Integer.compare(((LevelAware) o1).getLevel(), ((LevelAware) o2).getLevel());
+            }
+        }).collect(Collectors.toList());
+
+        // Add all non LevelAware Vertices
+        final List<Vertex> notLevelAwareVertices = displayVertices.stream().filter(v -> !sortedVertices.contains(v)).collect(Collectors.toList());
+        sortedVertices.addAll(notLevelAwareVertices);
+
+        // Build the graph
+        for(VertexRef v : sortedVertices) {
+            jungGraph.addVertex(v);
         }
+
+        // The order of edges does not matter
         for(Edge e : g.getDisplayEdges()) {
-            sparseGraph.addEdge(e, e.getSource().getVertex(), e.getTarget().getVertex());
+            jungGraph.addEdge(e, e.getSource().getVertex(), e.getTarget().getVertex());
         }
-        return sparseGraph;
+        return jungGraph;
     }
 
     private void applyLayoutPositions(final Collection<? extends Vertex> vertices, final edu.uci.ics.jung.algorithms.layout.Layout<VertexRef, Edge> layout, final Layout graphLayout) {
@@ -120,7 +138,7 @@ public class HierarchyLayoutAlgorithm extends AbstractLayoutAlgorithm {
     }
 
     private edu.uci.ics.jung.algorithms.layout.Layout<VertexRef, Edge> createTreeLayout(final Graph g) {
-        final edu.uci.ics.jung.graph.Graph<VertexRef, Edge> jungGraph = convert(g);
+        final edu.uci.ics.jung.graph.DirectedGraph<VertexRef, Edge> jungGraph = convert(g);
         final List<Vertex> rootVertices = getRoots(g);
 
         // Vertex to be used as a dummy root element, if more than 1 root element exists in the provided graph
@@ -134,7 +152,6 @@ public class HierarchyLayoutAlgorithm extends AbstractLayoutAlgorithm {
         // If more than 1 root vertices exist, we add a dummy root to have
         // the tree layout set the positions correctly. However the dummy root and its vertices do not show up in the ui.
         // They are only used for the positioning
-
         if (rootVertices.size() > 1) {
             List<Edge> dummyRootEdges = createRootDummyEdges(rootVertices, dummyRootVertex);
             jungGraph.addVertex(dummyRootVertex);
@@ -142,11 +159,8 @@ public class HierarchyLayoutAlgorithm extends AbstractLayoutAlgorithm {
                 jungGraph.addEdge(e, e.getSource().getVertex(), e.getTarget().getVertex());
             }
         }
-
-        final MinimumSpanningForest minimumSpanningForest = new MinimumSpanningForest(jungGraph, new DelegateForest(), rootVertex);
-        final TreeLayout<VertexRef, Edge> treeLayout =  new TreeLayout<>(minimumSpanningForest.getForest(), ELBOW_ROOM * 2, ELBOW_ROOM * 2);
-        treeLayout.setInitializer(initializer(g.getLayout()));
-        return treeLayout;
+        HierarchyLayout<VertexRef, Edge> layout = new HierarchyLayout<>(jungGraph, rootVertex, ELBOW_ROOM * 2, ELBOW_ROOM * 2);
+        return layout;
     }
 
     private List<Edge> createRootDummyEdges(List<Vertex> realRootVertices, Vertex dummyRootVertex) {

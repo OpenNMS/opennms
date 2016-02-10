@@ -51,6 +51,7 @@ import org.opennms.netmgt.bsm.service.internal.edge.ChildEdgeImpl;
 import org.opennms.netmgt.bsm.service.internal.edge.IpServiceEdgeImpl;
 import org.opennms.netmgt.bsm.service.internal.edge.ReductionKeyEdgeImpl;
 import org.opennms.netmgt.bsm.service.model.BusinessService;
+import org.opennms.netmgt.bsm.service.model.BusinessServiceHierarchy;
 import org.opennms.netmgt.bsm.service.model.IpService;
 import org.opennms.netmgt.bsm.service.model.Node;
 import org.opennms.netmgt.bsm.service.model.Status;
@@ -223,6 +224,11 @@ public class BusinessServiceManagerImpl implements BusinessServiceManager {
             parentEntity.removeEdge(e);
         }
         reductionKeyEdges.forEach(e -> parentEntity.addEdge(((ReductionKeyEdgeImpl) e).getEntity()));
+    }
+
+    @Override
+    public BusinessServiceHierarchy getHierarchy() {
+        return new BusinessServiceHierarchyImpl(getAllBusinessServices());
     }
 
     @Override

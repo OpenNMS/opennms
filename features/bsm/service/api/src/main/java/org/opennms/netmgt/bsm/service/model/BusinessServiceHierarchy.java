@@ -21,29 +21,16 @@
  *      http://www.gnu.org/licenses/
  *
  * For more information contact:
- * OpenNMS(R) Licensing <license@opennms.org>
- *      http://www.opennms.org/
- *      http://www.opennms.com/
+ *     OpenNMS(R) Licensing <license@opennms.org>
+ *     http://www.opennms.org/
+ *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.plugins.topo.bsm;
+package org.opennms.netmgt.bsm.service.model;
 
-public class ReductionKeyVertex extends AbstractBusinessServiceVertex {
+import java.util.Set;
 
-    private final String reductionKey;
+public interface BusinessServiceHierarchy {
 
-    protected ReductionKeyVertex(String reductionKey, int level) {
-        this("reduction-key:" + reductionKey, reductionKey, level);
-    }
-
-    private ReductionKeyVertex(String id, String reductionKey, int level) {
-        super(id, reductionKey, level);
-        this.reductionKey = reductionKey;
-        setTooltipText(String.format("Reduction Key '%s'", reductionKey));
-        setIconKey("reduction-key");
-    }
-
-    public String getReductionKey() {
-        return reductionKey;
-    }
+    Set<BusinessService> getRoots();
 }

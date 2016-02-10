@@ -66,13 +66,13 @@ public class BusinessServiceVertexProviderTest {
         // create 2 ip Service vertices where all of them should be equal
         IpService ipService1 = new IpServiceImpl(managerMock, BsmTestUtils.createMonitoredService(1, 1, "127.0.0.1", "SSH"));
         IpService ipService2 = new IpServiceImpl(managerMock, BsmTestUtils.createMonitoredService(1, 1, "127.0.0.1", "SSH"));
-        IpServiceVertex ipServiceVertex1 = new IpServiceVertex(ipService1);
-        IpServiceVertex ipServiceVertex2 = new IpServiceVertex(ipService2);
+        IpServiceVertex ipServiceVertex1 = new IpServiceVertex(ipService1, 0);
+        IpServiceVertex ipServiceVertex2 = new IpServiceVertex(ipService2, 0);
 
         // create 3 reduction key vertices where 2 of them should be equal
-        ReductionKeyVertex rkVertex1 = new ReductionKeyVertex("key1");
-        ReductionKeyVertex rkVertex2 = new ReductionKeyVertex("key1");
-        ReductionKeyVertex rkVertex3 = new ReductionKeyVertex("key2");
+        ReductionKeyVertex rkVertex1 = new ReductionKeyVertex("key1", 0);
+        ReductionKeyVertex rkVertex2 = new ReductionKeyVertex("key1", 0);
+        ReductionKeyVertex rkVertex3 = new ReductionKeyVertex("key2", 0);
 
         // Add all the above vertices. Some of them even twice to ensure that the getRefId() methods work correctly
         BusinessServiceVertexProvider vertexProvider = new BusinessServiceVertexProvider(BusinessServicesTopologyProvider.TOPOLOGY_NAMESPACE);

@@ -58,13 +58,6 @@ public class BusinessServiceCriteria extends VertexHopCriteria implements Namesp
         return BusinessServicesTopologyProvider.TOPOLOGY_NAMESPACE;
     }
 
-    public boolean apply(VertexRef vertexRef) {
-        if (contributesTo(vertexRef.getNamespace())) {
-            final AbstractBusinessServiceVertex businessServiceVertex = (AbstractBusinessServiceVertex) vertexRef;
-            return businessServiceVertex.isPartOf(businessServiceId);
-        }
-        return false;
-    }
 
     @Override
     public boolean contributesTo(String namespace) {

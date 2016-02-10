@@ -44,14 +44,12 @@ import org.opennms.features.topology.api.topo.GraphProvider;
 import org.opennms.features.topology.api.topo.SimpleEdgeProvider;
 import org.opennms.netmgt.bsm.service.BusinessServiceManager;
 import org.opennms.netmgt.bsm.service.model.BusinessService;
+import org.opennms.netmgt.bsm.service.model.BusinessServiceHierarchy;
 import org.opennms.netmgt.bsm.service.model.edge.IpServiceEdge;
 import org.opennms.netmgt.bsm.service.model.edge.ReductionKeyEdge;
 import org.opennms.netmgt.vaadin.core.TransactionAwareBeanProxyFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.common.base.Predicate;
-import com.google.common.collect.Collections2;
 
 public class BusinessServicesTopologyProvider extends AbstractTopologyProvider implements GraphProvider {
 
@@ -76,15 +74,9 @@ public class BusinessServicesTopologyProvider extends AbstractTopologyProvider i
 
     private void load() {
         resetContainer();
+        BusinessServiceHierarchy hierarchy = businessServiceManager.getHierarchy();
         // we only consider root business services to build the graph
-        Collection<BusinessServiceDTO> businessServices = Collections2.filter(businessServiceManager.findAll(),
-                new Predicate<BusinessServiceDTO>() {
-                    @Override
-                    public boolean apply(BusinessServiceDTO input) {
-                        return input.getParentServices().isEmpty();
-                    }
-                });
-        addBusinessServices(null, businessServices);
+        addBusinessServices(null, hierarchy.getRoots());
     }
 
     private void addBusinessServices(BusinessServiceVertex parentVertex, Collection<BusinessServiceDTO> businessServices) {
@@ -107,7 +99,7 @@ public class BusinessServicesTopologyProvider extends AbstractTopologyProvider i
 
         // add ip services
         for (IpServiceEdge eachIpEdge : businessService.getIpServiceEdges()) {
-            AbstractBusinessServiceVertex serviceVertex = new IpServiceVertex(eachIpEdge.getIpService());
+            AbstractBusinessServiceVertex serviceVertex = new IpServiceVertex(eachIpEdge.getIpService(), businessService.getLevel() + 1);
             businessServiceVertex.addChildren(serviceVertex);
             addVertices(serviceVertex);
 
@@ -118,7 +110,7 @@ public class BusinessServicesTopologyProvider extends AbstractTopologyProvider i
 
         // add reduction keys
         for (ReductionKeyEdge eachRkEdge : businessService.getReductionKeyEdges()) {
-            AbstractBusinessServiceVertex rkVertex = new ReductionKeyVertex(eachRkEdge.getReductionKey());
+            AbstractBusinessServiceVertex rkVertex = new ReductionKeyVertex(eachRkEdge.getReductionKey(), businessService.getLevel() + 1);
             businessServiceVertex.addChildren(rkVertex);
             addVertices(rkVertex);
 
@@ -134,7 +126,6 @@ public class BusinessServicesTopologyProvider extends AbstractTopologyProvider i
     private Edge createConnection(AbstractBusinessServiceVertex v1, AbstractBusinessServiceVertex v2) {
         String id = String.format("connection:%s:%s", v1.getId(), v2.getId());
         Edge edge = new AbstractEdge(getEdgeNamespace(), id, v1, v2);
-        edge.setTooltipText("LINK");
         return edge;
     }
 
