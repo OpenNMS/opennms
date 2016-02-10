@@ -158,7 +158,7 @@ public class SyslogReceiverCamelNettyImpl implements SyslogReceiver {
             m_camel.addRoutes(new RouteBuilder() {
                 @Override
                 public void configure() throws Exception {
-                    String from = String.format("netty:udp://%s:%s?sync=false&textline=true&receiveBufferSize=%d&connectTimeout=%d",
+                    String from = String.format("netty:udp://%s:%s?sync=false&allowDefaultCodec=false&receiveBufferSize=%d&connectTimeout=%d",
                         InetAddressUtils.str(m_host),
                         m_port,
                         Integer.MAX_VALUE,
@@ -170,7 +170,7 @@ public class SyslogReceiverCamelNettyImpl implements SyslogReceiver {
                     .process(new Processor() {
                         @Override
                         public void process(Exchange exchange) throws Exception {
-                            ChannelBuffer buffer = ChannelBuffers.copiedBuffer(exchange.getIn().getBody().toString().getBytes());
+                            ChannelBuffer buffer = exchange.getIn().getBody(ChannelBuffer.class);
                             // NettyConstants.NETTY_REMOTE_ADDRESS is a SocketAddress type but because 
                             // we are listening on an InetAddress, it will always be of type InetAddressSocket
                             InetSocketAddress source = (InetSocketAddress)exchange.getIn().getHeader(NettyConstants.NETTY_REMOTE_ADDRESS); 
@@ -179,7 +179,6 @@ public class SyslogReceiverCamelNettyImpl implements SyslogReceiver {
                             try {
                         	for (SyslogConnectionHandler handler : m_syslogConnectionHandlers) {
                         	    handler.handleSyslogConnection(connection);
-                        	   // System.out.println(new String(connection.getByteBuffer().array(), "ASCII"));
                         	}
                             } catch (Throwable e) {
                         	LOG.error("Handler execution failed in {}", this.getClass().getSimpleName(), e);
