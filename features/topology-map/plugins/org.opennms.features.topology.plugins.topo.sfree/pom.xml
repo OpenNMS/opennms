@@ -75,6 +75,10 @@
       <artifactId>easymock</artifactId>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>org.opennms.core</groupId>
+      <artifactId>org.opennms.core.criteria</artifactId>
+    </dependency>
   </dependencies>
 
 </project>

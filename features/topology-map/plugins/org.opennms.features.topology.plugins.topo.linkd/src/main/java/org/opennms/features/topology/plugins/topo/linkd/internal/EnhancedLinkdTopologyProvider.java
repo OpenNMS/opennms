@@ -44,10 +44,13 @@ import java.util.Map.Entry;
 import javax.xml.bind.JAXBException;
 
 import org.apache.commons.lang.StringUtils;
-import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.core.criteria.restrictions.EqRestriction;
+import org.opennms.core.criteria.restrictions.Restriction;
 import org.opennms.core.utils.LldpUtils.LldpPortIdSubType;
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.OperationContext;
+import org.opennms.features.topology.api.browsers.ContentType;
+import org.opennms.features.topology.api.browsers.SelectionAware;
 import org.opennms.features.topology.api.support.VertexHopGraphProvider;
 import org.opennms.features.topology.api.support.VertexHopGraphProvider.VertexHopCriteria;
 import org.opennms.features.topology.api.topo.AbstractSearchProvider;
@@ -423,8 +426,8 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
     private IsIsLinkDao m_isisLinkDao;
     private BridgeBridgeLinkDao m_bridgeBridgeLinkDao;
     private BridgeMacLinkDao m_bridgeMacLinkDao;
-    private BridgeTopologyDao m_bridgeTopologyDao;
-    private IpNetToMediaDao m_ipNetToMediaDao;
+    private CdpLinkDao m_cdpLinkDao;
+    private SelectionAware selectionAwareDelegate = new EnhancedLinkdSelectionAware();
     public final static String LLDP_EDGE_NAMESPACE = TOPOLOGY_NAMESPACE_LINKD + "::LLDP";
     public final static String OSPF_EDGE_NAMESPACE = TOPOLOGY_NAMESPACE_LINKD + "::OSPF";
     public final static String ISIS_EDGE_NAMESPACE = TOPOLOGY_NAMESPACE_LINKD + "::ISIS";
@@ -1453,6 +1456,16 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
     @Override
     public void onToggleCollapse(SearchResult searchResult, GraphContainer graphContainer) {
         LOG.debug("SearchProvider->onToggleCollapse: called with search result: '{}'", searchResult);
+    }
+
+    @Override
+    public void addRestrictions(List<Restriction> restrictionList, List<VertexRef> selectedVertices, ContentType type) {
+       selectionAwareDelegate.addRestrictions(restrictionList, selectedVertices, type);
+    }
+
+    @Override
+    public boolean contributesTo(ContentType container) {
+        return selectionAwareDelegate.contributesTo(container);
     }
 
     private org.opennms.features.topology.api.topo.Criteria findCriterion(String resultId, GraphContainer container) {

@@ -33,6 +33,7 @@ import java.util.List;
 import java.util.Objects;
 
 import org.opennms.core.criteria.Criteria;
+import org.opennms.features.topology.api.browsers.OnmsContainerDatasource;
 import org.opennms.netmgt.dao.api.OnmsDao;
 
 public class OnmsDaoContainerDatasource<T, K extends Serializable> implements OnmsContainerDatasource<T, K> {

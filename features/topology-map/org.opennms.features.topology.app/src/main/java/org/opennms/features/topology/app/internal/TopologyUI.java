@@ -95,6 +95,8 @@ import org.opennms.features.topology.api.VerticesUpdateManager;
 import org.opennms.features.topology.api.WidgetContext;
 import org.opennms.features.topology.api.WidgetManager;
 import org.opennms.features.topology.api.WidgetUpdateListener;
+import org.opennms.features.topology.api.browsers.ContentType;
+import org.opennms.features.topology.api.browsers.SelectionAwareTable;
 import org.opennms.features.topology.api.support.VertexHopGraphProvider;
 import org.opennms.features.topology.api.support.VertexHopGraphProvider.FocusNodeHopCriteria;
 import org.opennms.features.topology.api.topo.Criteria;
@@ -129,6 +131,7 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
     public static final String PARAMETER_FOCUS_NODES = "focusNodes";
     private static final String PARAMETER_SEMANTIC_ZOOM_LEVEL = "szl";
     private static final String PARAMETER_GRAPH_PROVIDER = "provider";
+    private TabSheet tabSheet;
 
     private class DynamicUpdateRefresher implements Refresher.RefreshListener {
         private final Object lockObject = new Object();
@@ -776,6 +779,7 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
                     bottomLayoutBar.setSizeFull();
                     bottomLayoutBar.setSecondComponent(getTabSheet(widgetManager, this));
                     m_layout.addComponent(bottomLayoutBar);
+                    updateTabVisibility();
                 }
                 m_layout.markAsDirty();
             }
@@ -794,7 +798,7 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
         AbsoluteLayout bottomLayout = new AbsoluteLayout();
         bottomLayout.setSizeFull();
         
-        final TabSheet tabSheet = new TabSheet();
+        tabSheet = new TabSheet();
         tabSheet.setSizeFull();
 
         for(IViewContribution viewContrib : manager.getWidgets()) {
@@ -859,6 +863,17 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
         bottomLayout.addComponent(tabSheet, "top: 0; left: 0; bottom: 0; right: 0;");
 
         return bottomLayout;
+    }
+
+    private void updateTabVisibility() {
+        for (int i=0; i<tabSheet.getComponentCount(); i++) {
+            TabSheet.Tab tab = tabSheet.getTab(i);
+            if (tab.getComponent() instanceof SelectionAwareTable) {
+                ContentType contentType = ((SelectionAwareTable) tab.getComponent()).getContentType();
+                boolean visible = m_graphContainer.getBaseTopology().contributesTo(contentType);
+                tab.setVisible(visible);
+            }
+        }
     }
 
     public void updateTimestamp(long updateTime) {
@@ -991,6 +1006,7 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
 
         m_zoomLevelLabel.setValue(String.valueOf(graphContainer.getSemanticZoomLevel()));
         m_szlOutBtn.setEnabled(graphContainer.getSemanticZoomLevel() > 0);
+        updateTabVisibility();
         updateTimestamp(System.currentTimeMillis());
     }
 

@@ -53,4 +53,6 @@ public interface SelectionContext {
 
 	Collection<EdgeRef> getSelectedEdgeRefs();
 
+	GraphContainer getGraphContainer();
+
 }

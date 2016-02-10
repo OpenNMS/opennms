@@ -82,15 +82,15 @@ public class BusinessServicesStatusProvider implements StatusProvider {
     }
 
     private org.opennms.netmgt.bsm.service.model.Status getOperationalStatus(AbstractBusinessServiceVertex vertex) {
-        if (vertex instanceof BusinessServiceVertex) {
+        if (vertex.getType() == AbstractBusinessServiceVertex.Type.BusinessService) {
             BusinessServiceVertex bsVertex = (BusinessServiceVertex) vertex;
             return businessServiceManager.getBusinessServiceById(bsVertex.getServiceId()).getOperationalStatus();
         }
-        if (vertex instanceof IpServiceVertex) {
+        if (vertex.getType() == AbstractBusinessServiceVertex.Type.IpService) {
             IpServiceVertex ipServiceVertex = (IpServiceVertex) vertex;
             return businessServiceManager.getOperationalStatusForIPService(ipServiceVertex.getIpServiceId());
         }
-        if (vertex instanceof ReductionKeyVertex) {
+        if (vertex.getType() == AbstractBusinessServiceVertex.Type.ReductionKey) {
             ReductionKeyVertex rkVertex = (ReductionKeyVertex) vertex;
             return businessServiceManager.getOperationalStatusForReductionKey(rkVertex.getReductionKey());
         }

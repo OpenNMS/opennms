@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.plugins.browsers;
+package org.opennms.features.topology.api.browsers;
 
 
 import org.junit.Assert;

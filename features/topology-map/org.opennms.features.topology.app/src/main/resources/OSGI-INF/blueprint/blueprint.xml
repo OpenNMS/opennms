@@ -25,7 +25,9 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 http://aries.apache.org/schemas/b
         <argument ref="veGraphContainer" />
         <argument ref="iconRepoManager"/>
         <argument>
-            <bean class="org.opennms.features.topology.app.internal.DefaultSelectionManager"/>
+            <bean class="org.opennms.features.topology.app.internal.DefaultSelectionManager">
+                <argument ref="veGraphContainer" />
+            </bean>
         </argument>
         <property name="widgetManager" ref="widgetManager"/>
         <property name="headerProvider" ref="onmsHeaderProvider" />
@@ -33,7 +35,7 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 http://aries.apache.org/schemas/b
         <property name="serviceManager" ref="blueprintBundleContext"/>
     </bean>
 
-    <bean id="veGraphContainer" class="org.opennms.features.topology.app.internal.VEProviderGraphContainer" scope="prototype">
+    <bean id="veGraphContainer" class="org.opennms.features.topology.app.internal.VEProviderGraphContainer" scope="singleton">
         <argument ref="topologyProvider" />
         <argument ref="providerManager" />
         <property name="bundleContext" ref="blueprintBundleContext" />

@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.plugins.browsers;
+package org.opennms.features.topology.api.browsers;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -44,14 +44,9 @@ import org.opennms.core.criteria.Criteria;
 import org.opennms.core.criteria.Order;
 import org.opennms.core.criteria.restrictions.Restriction;
 import org.opennms.features.topology.api.VerticesUpdateManager;
-import org.opennms.features.topology.api.topo.GroupRef;
-import org.opennms.features.topology.api.topo.Vertex;
-import org.opennms.features.topology.api.topo.VertexRef;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.gwt.thirdparty.guava.common.base.Function;
-import com.google.gwt.thirdparty.guava.common.collect.Collections2;
 import com.vaadin.data.Container;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
@@ -608,6 +603,8 @@ public abstract class OnmsVaadinContainer<T,K extends Serializable> implements C
         return page;
     }
 
+    protected abstract ContentType getContentType();
+
     private synchronized void loadPropertiesIfNull() {
         if (m_properties == null) {
             m_properties = new TreeMap<Object,Class<?>>();
@@ -625,37 +622,23 @@ public abstract class OnmsVaadinContainer<T,K extends Serializable> implements C
         }
     }
 
-    /**
-     * Gets the node ids from the given vertices. A node id can only be extracted from a vertex with a "nodes"' namespace.
-     * For a vertex with namespace "node" the "getId()" method always returns the node id.
-     *
-     * @param vertices
-     * @return
-     */
-    protected List<Integer> extractNodeIds(Collection<VertexRef> vertices) {
-        List<Integer> nodeIdList = new ArrayList<Integer>();
-        for (VertexRef eachRef : vertices) {
-            if ("nodes".equals(eachRef.getNamespace())) {
-                try {
-                    nodeIdList.add(Integer.valueOf(eachRef.getId()));
-                } catch (NumberFormatException e) {
-                    LoggerFactory.getLogger(getClass()).warn("Cannot filter nodes with ID: {}", eachRef.getId());
-                }
-            } else if( ((Vertex)eachRef).isGroup() && "category".equals(eachRef.getNamespace()) ){
-                try{
-                    GroupRef group = (GroupRef) eachRef;
-                    nodeIdList.addAll(Collections2.transform(group.getChildren(), new Function<VertexRef, Integer>(){
-                        @Override
-                        public Integer apply(VertexRef input) {
-                            return Integer.valueOf(input.getId());
-                        }
-                    }));
-                } catch (ClassCastException e){
-                    LoggerFactory.getLogger(getClass()).warn("Cannot filter category with ID: {} children: {}", eachRef.getId(), ((GroupRef) eachRef).getChildren());
+    @Override
+    public void verticesUpdated(final VerticesUpdateManager.VerticesUpdateEvent event) {
+        final List<Restriction> newRestrictions = new ArrayList<>();
 
-                }
-            }
+        if (event.getSource() instanceof SelectionAware) {
+            SelectionAware source = (SelectionAware) event.getSource();
+            source.addRestrictions(
+                    newRestrictions,
+                    new ArrayList<>(event.getVertexRefs()),
+                    getContentType());
         }
-        return nodeIdList;
+
+        // only fire if restrictions have changed
+        if (!getRestrictions().equals(newRestrictions)) {
+            setRestrictions(newRestrictions);
+            getCache().reload(getPage());
+            fireItemSetChangedEvent();
+        }
     }
 }

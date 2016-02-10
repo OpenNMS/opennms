@@ -33,12 +33,17 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 
+import org.opennms.core.criteria.restrictions.Restriction;
+import org.opennms.core.criteria.restrictions.Restrictions;
+import org.opennms.features.topology.api.browsers.ContentType;
 import org.opennms.features.topology.api.topo.AbstractEdge;
 import org.opennms.features.topology.api.topo.AbstractTopologyProvider;
 import org.opennms.features.topology.api.topo.AbstractVertex;
@@ -50,6 +55,7 @@ import org.opennms.features.topology.api.topo.SimpleGroup;
 import org.opennms.features.topology.api.topo.SimpleLeafVertex;
 import org.opennms.features.topology.api.topo.SimpleVertexProvider;
 import org.opennms.features.topology.api.topo.Vertex;
+import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.features.topology.api.topo.WrappedEdge;
 import org.opennms.features.topology.api.topo.WrappedGraph;
 import org.opennms.features.topology.api.topo.WrappedGroup;
@@ -57,6 +63,8 @@ import org.opennms.features.topology.api.topo.WrappedLeafVertex;
 import org.opennms.features.topology.api.topo.WrappedVertex;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.common.collect.Sets;
 
 public class SimpleGraphProvider extends AbstractTopologyProvider implements GraphProvider {
 
@@ -235,5 +243,35 @@ public class SimpleGraphProvider extends AbstractTopologyProvider implements Gra
         } else {
             load(getTopologyLocation());
         }
+    }
+
+
+    protected void addRestrictions(String namespace, List<Restriction> restrictionList, List<VertexRef> selectedVertices, ContentType type) {
+        if (contributesTo(type)) {
+            Set<Integer> nodeIds = selectedVertices.stream()
+                    .filter(v -> namespace.equals(v.getNamespace()))
+                    .filter(v -> v instanceof AbstractVertex)
+                    .map(v -> (AbstractVertex) v)
+                    .map(v -> v.getNodeID())
+                    .filter(nodeId -> nodeId != null)
+                    .collect(Collectors.toSet());
+            if (!nodeIds.isEmpty()) {
+                if (type == ContentType.Alarm) {
+                    restrictionList.add(Restrictions.in("node.id", nodeIds));
+                }
+                if (type == ContentType.Node) {
+                    restrictionList.add(Restrictions.in("id", nodeIds));
+                }
+            }
+        }
+    }
+    @Override
+    public void addRestrictions(List<Restriction> restrictionList, List<VertexRef> selectedVertices, ContentType type) {
+        addRestrictions(TOPOLOGY_NAMESPACE_SIMPLE, restrictionList, selectedVertices, type);
+    }
+
+    @Override
+    public boolean contributesTo(ContentType container) {
+        return Sets.newHashSet(ContentType.Alarm, ContentType.Node).contains(container);
     }
 }

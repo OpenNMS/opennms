@@ -51,6 +51,11 @@ public class BusinessServiceVertexProviderTest {
             public String getLabel() {
                 return "localhost";
             }
+
+            @Override
+            public Integer getId() {
+                return 1;
+            }
         }).anyTimes();
         EasyMock.replay(managerMock);
 

@@ -28,23 +28,28 @@
 
 package org.opennms.features.topology.plugins.topo.bsm;
 
+import java.util.Set;
+
 import org.opennms.netmgt.bsm.service.model.IpService;
 
 public class IpServiceVertex extends AbstractBusinessServiceVertex {
 
     private final Integer ipServiceId;
 
-    public IpServiceVertex(IpService ipServiceDTO, int level) {
+    private final Set<String> reductionKeys;
+
+    public IpServiceVertex(IpService ipServiceDTO) {
         this("ip-service:" + ipServiceDTO.getId(),
                 ipServiceDTO.getServiceName(),
                 Integer.valueOf(ipServiceDTO.getId()),
                 ipServiceDTO.getIpAddress(),
-                level);
+                ipServiceDTO.getReductionKeys());
     }
 
-    private IpServiceVertex(String id, String ipServiceName, Integer ipServiceId, String ipAddress, int level) {
-        super(id, ipServiceName, level);
+    private IpServiceVertex(String id, String ipServiceName, Integer ipServiceId, String ipAddress, Set<String> reductionKeys) {
+        super(id, ipServiceName);
         this.ipServiceId = ipServiceId;
+        this.reductionKeys = reductionKeys;
         setIpAddress(ipAddress);
         setLabel(ipServiceName);
         setTooltipText(String.format("IP Service '%s' on %s", ipServiceName, ipAddress));
@@ -53,5 +58,15 @@ public class IpServiceVertex extends AbstractBusinessServiceVertex {
 
     public Integer getIpServiceId() {
         return ipServiceId;
+    }
+
+    @Override
+    public Type getType() {
+        return Type.IpService;
+    }
+
+    @Override
+    public Set<String> getReductionKeys() {
+        return null;
     }
 }
