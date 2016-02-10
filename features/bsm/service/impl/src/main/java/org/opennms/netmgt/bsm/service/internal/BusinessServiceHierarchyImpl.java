@@ -21,29 +21,37 @@
  *      http://www.gnu.org/licenses/
  *
  * For more information contact:
- * OpenNMS(R) Licensing <license@opennms.org>
- *      http://www.opennms.org/
- *      http://www.opennms.com/
+ *     OpenNMS(R) Licensing <license@opennms.org>
+ *     http://www.opennms.org/
+ *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.plugins.topo.bsm;
+package org.opennms.netmgt.bsm.service.internal;
 
-public class ReductionKeyVertex extends AbstractBusinessServiceVertex {
+import java.util.Collection;
+import java.util.Set;
 
-    private final String reductionKey;
+import org.opennms.netmgt.bsm.service.model.BusinessService;
+import org.opennms.netmgt.bsm.service.model.BusinessServiceHierarchy;
 
-    protected ReductionKeyVertex(String reductionKey, int level) {
-        this("reduction-key:" + reductionKey, reductionKey, level);
+/**
+ * Helper object to wrap any number of Business Service objects.
+ * In this case the hierarchy level is set and the root elements can be determined.
+ * It is kind of a "Business Service Graph" object.
+ */
+class BusinessServiceHierarchyImpl implements BusinessServiceHierarchy {
+
+    // the Root Business Services
+    private final Set<BusinessService> roots;
+
+    BusinessServiceHierarchyImpl(Collection<BusinessService> allBusinessServices) {
+        roots = BusinessServiceHierarchyUtils.getRoots(allBusinessServices);
+        BusinessServiceHierarchyUtils.updateHierarchyLevel(roots);
     }
 
-    private ReductionKeyVertex(String id, String reductionKey, int level) {
-        super(id, reductionKey, level);
-        this.reductionKey = reductionKey;
-        setTooltipText(String.format("Reduction Key '%s'", reductionKey));
-        setIconKey("reduction-key");
+    @Override
+    public Set<BusinessService> getRoots() {
+        return roots;
     }
 
-    public String getReductionKey() {
-        return reductionKey;
-    }
 }
