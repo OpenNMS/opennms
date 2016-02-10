@@ -31,7 +31,6 @@ package org.opennms.netmgt.bsm.vaadin.adminpage;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import com.google.common.collect.Ordering;
 import org.opennms.netmgt.bsm.service.BusinessServiceManager;
 import org.opennms.netmgt.bsm.service.model.BusinessService;
 import org.opennms.netmgt.bsm.service.model.IpService;
@@ -48,6 +47,7 @@ import org.opennms.netmgt.vaadin.core.UIHelper;
 
 import com.google.common.base.Throwables;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Ordering;
 import com.vaadin.data.Property;
 import com.vaadin.data.Validator;
 import com.vaadin.ui.Alignment;
@@ -271,7 +271,19 @@ public class BusinessServiceEditWindow extends Window {
         addEdgeButton.addStyleName("small");
         edgesButtonLayout.addComponent(addEdgeButton);
         addEdgeButton.addClickListener((Button.ClickListener) event -> {
-            final BusinessServiceEdgeEditWindow window = new BusinessServiceEdgeEditWindow(businessService, businessServiceManager);
+            final BusinessServiceEdgeEditWindow window = new BusinessServiceEdgeEditWindow(businessService, businessServiceManager, null);
+            window.addCloseListener(e -> refreshEdges());
+            this.getUI().addWindow(window);
+        });
+
+        Button editEdgeButton = new Button("Edit Edge");
+        editEdgeButton.setId("addEdgeButton");
+        editEdgeButton.setEnabled(false);
+        editEdgeButton.setWidth(100.0f, Unit.PIXELS);
+        editEdgeButton.addStyleName("small");
+        edgesButtonLayout.addComponent(editEdgeButton);
+        editEdgeButton.addClickListener((Button.ClickListener) event -> {
+            final BusinessServiceEdgeEditWindow window = new BusinessServiceEdgeEditWindow(businessService, businessServiceManager, (Edge) m_edgesListSelect.getValue());
             window.addCloseListener(e -> refreshEdges());
             this.getUI().addWindow(window);
         });
@@ -283,7 +295,7 @@ public class BusinessServiceEditWindow extends Window {
         removeEdgeButton.addStyleName("small");
         edgesButtonLayout.addComponent(removeEdgeButton);
 
-        m_edgesListSelect.addValueChangeListener((Property.ValueChangeListener) event -> removeEdgeButton.setEnabled(event.getProperty().getValue() != null));
+        m_edgesListSelect.addValueChangeListener((Property.ValueChangeListener) event -> {removeEdgeButton.setEnabled(event.getProperty().getValue() != null); editEdgeButton.setEnabled(event.getProperty().getValue() != null);});
 
         removeEdgeButton.addClickListener((Button.ClickListener) event -> {
             if (m_edgesListSelect.getValue() != null) {
