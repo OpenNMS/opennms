@@ -28,6 +28,7 @@
 
 package org.opennms.web.rest.v1;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import javax.ws.rs.core.MediaType;
@@ -45,6 +46,7 @@ import org.opennms.netmgt.dao.mock.MockEventIpcManager;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.transaction.annotation.Transactional;
@@ -103,9 +105,10 @@ public class EventRestServiceIT extends AbstractSpringJerseyRestTestCase {
         anticipator.anticipateEvent(e);
 
         // POST the event to the REST API
-        sendData(POST, MediaType.APPLICATION_XML, "/events", JaxbUtils.marshal(e), 204);
+        MockHttpServletResponse response = sendData(POST, MediaType.APPLICATION_XML, "/events", JaxbUtils.marshal(e));
 
         // Verify
+        assertEquals(200, response.getStatus());
         m_eventMgr.finishProcessingEvents();
         anticipator.verifyAnticipated(1000, 0, 0, 0, 0);
     }
