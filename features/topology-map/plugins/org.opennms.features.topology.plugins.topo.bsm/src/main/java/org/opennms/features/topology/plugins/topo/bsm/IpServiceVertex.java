@@ -34,15 +34,16 @@ public class IpServiceVertex extends AbstractBusinessServiceVertex {
 
     private final Integer ipServiceId;
 
-    public IpServiceVertex(IpService ipServiceDTO) {
+    public IpServiceVertex(IpService ipServiceDTO, int level) {
         this("ip-service:" + ipServiceDTO.getId(),
                 ipServiceDTO.getServiceName(),
                 Integer.valueOf(ipServiceDTO.getId()),
-                ipServiceDTO.getIpAddress());
+                ipServiceDTO.getIpAddress(),
+                level);
     }
 
-    private IpServiceVertex(String id, String ipServiceName, Integer ipServiceId, String ipAddress) {
-        super(id, ipServiceName);
+    private IpServiceVertex(String id, String ipServiceName, Integer ipServiceId, String ipAddress, int level) {
+        super(id, ipServiceName, level);
         this.ipServiceId = ipServiceId;
         setIpAddress(ipAddress);
         setLabel(ipServiceName);
