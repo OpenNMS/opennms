@@ -86,4 +86,8 @@ public interface BusinessService {
     void setLevel(int level);
 
     int getLevel();
+
+    Set<? extends Edge> getEdges(Edge.Type edgeType);
+
+    void setEdges(Edge.Type edgeType, Set<? extends Edge> edges);
 }
