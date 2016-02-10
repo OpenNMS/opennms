@@ -271,14 +271,8 @@ public class EventRestService extends OnmsRestService {
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     @Transactional
     public Response publishEvent(final org.opennms.netmgt.xml.event.Event event) {
-        if (event.getSource() == null) {
-            event.setSource("ReST");
-        }
-        if (event.getTime() == null) {
-            event.setTime(new Date());
-        }
         m_eventForwarder.sendNow(event);
-        return Response.noContent().build();
+        return Response.ok().build();
     }
 
     private static CriteriaBuilder getCriteriaBuilder(final MultivaluedMap<String, String> params) {
