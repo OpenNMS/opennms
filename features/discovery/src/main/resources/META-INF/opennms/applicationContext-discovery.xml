@@ -16,6 +16,16 @@
 
   <context:annotation-config />
 
+  <!-- Create a set of Properties that can be used as propertyPlaceholders for Camel -->
+  <bean id="discoveryProperties" class="org.opennms.netmgt.discovery.DiscoveryConfigurationFactoryPropertiesConverter" factory-method="getProperties">
+    <constructor-arg ref="discoveryFactory"/>
+  </bean>
+
+  <!-- Create a Camel PropertiesComponent -->
+  <bean id="properties" class="org.apache.camel.component.properties.PropertiesComponent">
+    <property name="initialProperties" ref="discoveryProperties"/>
+  </bean>
+
   <!-- Pinger service -->
   <onmsgi:reference id="pinger" interface="org.opennms.netmgt.icmp.Pinger" />
 
@@ -23,7 +33,7 @@
   <onmsgi:reference id="eventForwarder" interface="org.opennms.netmgt.events.api.EventForwarder" />
 
   <!-- Persistent DiscoveryConfiguration -->
-  <onmsgi:reference id="discoveryConfigFactory" interface="org.opennms.netmgt.config.api.DiscoveryConfigurationFactory"/>
+  <!-- <onmsgi:reference id="discoveryConfigFactory" interface="org.opennms.netmgt.config.api.DiscoveryConfigurationFactory"/> -->
 
   <!--
     TODO: Hook this filter into DAO/event channel so that it can provide an up-to-date
@@ -68,7 +78,44 @@
   </bean>
 
   <camelContext id="discoveryCamelContext" xmlns="http://camel.apache.org/schema/spring">
-    <!-- TODO: Add the Camel context from the blueprint to this Spring context -->
+
+    <!-- Bootstrap timer -->
+    <route id="startDiscoveryTimer">
+      <!-- <log loggingLevel="INFO" message="blueprint-discovery.xml: Starting Discovery timer" /> -->
+      <from uri="timer:discoveryTimer?period={{restartSleepTime}}&amp;delay={{initialSleepTime}}&amp;fixedRate=true&amp;daemon=true" />
+      <!-- Set the DiscoveryConfiguration as the message body -->
+      <transform><simple>${bean:discoveryFactory.getConfiguration}</simple></transform>
+      <!-- Submit it as a Discovery task -->
+      <to uri="direct:submitDiscoveryTask" />
+    </route>
+
+    <route id="submitDiscoveryTask">
+      <from uri="direct:submitDiscoveryTask" />
+      <!-- 
+        Make sure that this exchange is using an InOut exchange so that the output
+        of each to: endpoint is passed to the next to: endpoint
+      -->
+      <setExchangePattern pattern="InOut"/>
+      <bean ref="rangeChunker" />
+      <split>
+        <!-- Split the DiscoveryJobs -->
+        <simple>${body}</simple>
+        <!-- Use recipientList so that we can have a dynamic to: URI -->
+        <recipientList>
+          <simple>activemq:Location-${body.location}</simple>
+        </recipientList>
+        <!-- Send the DiscoveryResults to the eventWriter -->
+        <bean ref="eventWriter" />
+      </split>
+    </route>
+
+    <!-- Default localhost location queue -->
+    <route id="localhostLocationDiscoveryRoute">
+      <from uri="activemq:Location-localhost" />
+      <log loggingLevel="INFO" message="blueprint-discovery.xml: Executing DiscoveryJob" />
+      <log loggingLevel="INFO" message="blueprint-discovery.xml: ${body}" />
+      <bean ref="discoverer" />
+    </route>
   </camelContext>
 
 </beans>
