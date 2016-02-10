@@ -89,6 +89,12 @@ public class BSMAdminIT extends OpenNMSSeleniumTestCase {
             return new BsmAdminPageEdgeEditWindow();
         }
 
+        public BsmAdminPageEdgeEditWindow editEdgeWindow() {
+            findElementById("editEdgeButton").click();
+            wait.until(pageContainsText("Business Service Edge Edit"));
+            return new BsmAdminPageEdgeEditWindow();
+        }
+
         public BsmAdminPageEdgeEditWindow addChildEdge(String childServiceText, String mapFunctionText, int weight) throws InterruptedException {
             BsmAdminPageEdgeEditWindow editPage = newEdgeWindow()
                     .selectChildService(childServiceText)
@@ -106,6 +112,16 @@ public class BSMAdminIT extends OpenNMSSeleniumTestCase {
                     .weight(weight)
                     .confirm();
             wait.until(ExpectedConditions.elementToBeClickable(By.id("addEdgeButton")));
+            return this;
+        }
+
+        public BsmAdminPageEditWindow editEdge(String edgeValueString, String mapFunctionText, int weight) throws InterruptedException {
+            new Select(findElementByXpath("//*[@id=\"edgeList\"]/select")).selectByVisibleText(edgeValueString);
+            editEdgeWindow()
+                    .selectMapFunction(mapFunctionText)
+                    .weight(weight)
+                    .confirm();
+            wait.until(ExpectedConditions.elementToBeClickable(By.id("editEdgeButton")));
             return this;
         }
 
@@ -558,5 +574,35 @@ public class BSMAdminIT extends OpenNMSSeleniumTestCase {
                     }
                 })
         );
+    }
+
+    @Test
+    public void testCanEditTransientEdge() throws InterruptedException {
+        // create Business Service with one Edge and persist
+        final String serviceName = createUniqueBusinessServiceName();
+        BsmAdminPageEditWindow bsmAdminPageEditWindow = bsmAdminPage.openNewDialog(serviceName).addReductionKeyEdge("some.reduction.key", "Increase", 1);
+        wait.until(pageContainsText("ReKey: some.reduction.key, Map: Increase, Weight: 1"));
+        // remove transient edge
+        bsmAdminPageEditWindow.editEdge("ReKey: some.reduction.key, Map: Increase, Weight: 1", "Decrease", 2);
+        verifyElementPresent("ReKey: some.reduction.key, Map: Decrease, Weight: 2");
+        bsmAdminPageEditWindow.cancel();
+    }
+
+    @Test
+    public void testCanEditPersistedEdge() throws InterruptedException {
+        // create Business Service with one Edge and persist
+        final String serviceName = createUniqueBusinessServiceName();
+        BsmAdminPageEditWindow bsmAdminPageEditWindow = bsmAdminPage.openNewDialog(serviceName).addReductionKeyEdge("some.reduction.key", "Increase", 1);
+        wait.until(pageContainsText("ReKey: some.reduction.key, Map: Increase, Weight: 1"));
+        bsmAdminPageEditWindow.save();
+
+        // remove persisted edge
+        bsmAdminPageEditWindow = bsmAdminPage.openEditDialog(serviceName);
+        bsmAdminPageEditWindow.editEdge("ReKey: some.reduction.key, Map: Increase, Weight: 1", "Decrease", 2);
+        verifyElementPresent("ReKey: some.reduction.key, Map: Decrease, Weight: 2");
+        bsmAdminPageEditWindow.save();
+
+        // clean up afterwards
+        bsmAdminPage.delete(serviceName);
     }
 }
