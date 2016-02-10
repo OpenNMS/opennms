@@ -48,8 +48,8 @@ import edu.uci.ics.jung.graph.Graph;
 
 /**
  * A custom layout to be able to draw a hierarchy.
- * This implementation is inspired by {@link edu.uci.ics.jung.algorithms.layout.TreeLayout}.
- * Unfortunately this implementation only works if 2 parents do not have the same child (see {@link edu.uci.ics.jung.graph.util.TreeUtils#getRoots(Forest)}).
+ * This implementation is inspired by {@link edu.uci.ics.jung.algorithms.layout.TreeLayout}, which only
+ * works if 2 parents do not have the same child (see {@link edu.uci.ics.jung.graph.util.TreeUtils#getRoots(Forest)}).
  *
  * @param <V>
  * @param <E>
