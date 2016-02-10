@@ -32,7 +32,7 @@ import java.util.List;
 import java.util.Objects;
 
 import org.opennms.core.criteria.Criteria;
-import org.opennms.features.topology.plugins.browsers.OnmsContainerDatasource;
+import org.opennms.features.topology.api.browsers.OnmsContainerDatasource;
 import org.opennms.netmgt.bsm.service.BusinessServiceManager;
 import org.opennms.netmgt.bsm.service.model.BusinessService;
 import org.opennms.netmgt.vaadin.core.TransactionAwareBeanProxyFactory;

@@ -39,6 +39,11 @@ import org.opennms.features.topology.api.topo.VertexRef;
 public class DefaultSelectionContext implements SelectionContext {
 	private final Set<VertexRef> m_selectedVertices = Collections.synchronizedSet(new HashSet<VertexRef>());
 	private final Set<EdgeRef> m_selectedEdges = Collections.synchronizedSet(new HashSet<EdgeRef>());
+	private final GraphContainer m_graphContainer;
+
+	public DefaultSelectionContext(GraphContainer graphContainer) {
+		m_graphContainer = graphContainer;
+	}
 
 	@Override
 	public boolean isVertexRefSelected(VertexRef vertexRef) {
@@ -74,6 +79,11 @@ public class DefaultSelectionContext implements SelectionContext {
 	@Override
 	public Collection<EdgeRef> getSelectedEdgeRefs() {
 		return Collections.unmodifiableSet(m_selectedEdges);
+	}
+
+	@Override
+	public GraphContainer getGraphContainer() {
+		return m_graphContainer;
 	}
 
 	@Override

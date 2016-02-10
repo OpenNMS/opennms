@@ -26,15 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.plugins.browsers;
-
-import com.vaadin.ui.Table;
-import org.opennms.features.topology.api.SelectionListener;
-import org.opennms.features.topology.api.SelectionNotifier;
-import org.opennms.features.topology.api.VerticesUpdateManager;
-import org.opennms.osgi.EventConsumer;
-import org.opennms.osgi.EventProxy;
-import org.opennms.osgi.EventProxyAware;
+package org.opennms.features.topology.api.browsers;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -42,6 +34,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
+
+import org.opennms.features.topology.api.SelectionListener;
+import org.opennms.features.topology.api.SelectionNotifier;
+import org.opennms.features.topology.api.VerticesUpdateManager;
+import org.opennms.osgi.EventConsumer;
+import org.opennms.osgi.EventProxy;
+import org.opennms.osgi.EventProxyAware;
+
+import com.vaadin.ui.Table;
 
 public class SelectionAwareTable extends Table implements VerticesUpdateManager.VerticesUpdateListener, EventProxyAware {
 
@@ -143,7 +144,9 @@ public class SelectionAwareTable extends Table implements VerticesUpdateManager.
     @Override
     @EventConsumer
     public void verticesUpdated(VerticesUpdateManager.VerticesUpdateEvent event) {
-        m_container.verticesUpdated(event);
+		if (isAttached()) {
+			m_container.verticesUpdated(event);
+		}
     }
 
     /**
@@ -169,6 +172,13 @@ public class SelectionAwareTable extends Table implements VerticesUpdateManager.
             }
         }
     }
+
+	public ContentType getContentType() {
+		if (m_container != null) {
+			return m_container.getContentType();
+		}
+		return null;
+	}
 
     protected EventProxy getEventProxy() {
         if (eventProxy != null) {

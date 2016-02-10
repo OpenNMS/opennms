@@ -43,7 +43,10 @@ import java.util.TreeSet;
 
 import javax.xml.bind.JAXBException;
 
+import org.opennms.core.criteria.restrictions.Restriction;
 import org.opennms.features.topology.api.GraphContainer;
+import org.opennms.features.topology.api.browsers.SelectionAware;
+import org.opennms.features.topology.api.browsers.ContentType;
 import org.opennms.features.topology.api.topo.DefaultVertexRef;
 import org.opennms.features.topology.api.topo.CollapsibleCriteria;
 import org.opennms.features.topology.api.topo.Criteria;
@@ -65,7 +68,7 @@ import org.slf4j.LoggerFactory;
  * 
  * @author Seth
  */
-public class VertexHopGraphProvider implements GraphProvider {
+public class VertexHopGraphProvider implements GraphProvider, SelectionAware {
     @SuppressWarnings("unused")
     private static final Logger LOG = LoggerFactory.getLogger(VertexHopGraphProvider.class);
 
@@ -713,10 +716,14 @@ public class VertexHopGraphProvider implements GraphProvider {
     public Criteria getDefaultCriteria() {
         return m_delegate.getDefaultCriteria();
     }
-    
+
     @Override
-    public String toString() {
-        // TODO Auto-generated method stub
-        return super.toString();
+    public void addRestrictions(List<Restriction> restrictionList, List<VertexRef> selectedVertices, ContentType type) {
+        m_delegate.addRestrictions(restrictionList, selectedVertices, type);
+    }
+
+    @Override
+    public boolean contributesTo(ContentType container) {
+        return m_delegate.contributesTo(container);
     }
 }

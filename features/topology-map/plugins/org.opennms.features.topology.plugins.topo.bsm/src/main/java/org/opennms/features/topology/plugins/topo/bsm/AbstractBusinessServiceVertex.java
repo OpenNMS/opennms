@@ -30,11 +30,18 @@ package org.opennms.features.topology.plugins.topo.bsm;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import org.opennms.features.topology.api.topo.AbstractVertex;
 import org.opennms.features.topology.api.topo.VertexRef;
 
 abstract class AbstractBusinessServiceVertex extends AbstractVertex {
+
+    enum Type {
+        BusinessService,
+        IpService,
+        ReductionKey,
+    }
 
     private final List<VertexRef> children = new ArrayList<>();
 
@@ -79,4 +86,9 @@ abstract class AbstractBusinessServiceVertex extends AbstractVertex {
         }
         return ((AbstractBusinessServiceVertex) getParent()).getRoot();
     }
+
+    public abstract Type getType();
+
+    public abstract Set<String> getReductionKeys();
+
 }

@@ -81,7 +81,7 @@ public class OsgiVerticesUpdateManager implements VerticesUpdateManager {
             }
         }
 
-        fireVertexRefsUpdated(getVerticesInFocus());
+        fireVertexRefsUpdated(getVerticesInFocus(), graphContainer.getBaseTopology());
 
     }
 
@@ -95,7 +95,7 @@ public class OsgiVerticesUpdateManager implements VerticesUpdateManager {
                 m_selectedVertices.addAll(selectedVertexRefs);
             }
         }
-        fireVertexRefsUpdated(getVerticesInFocus());
+        fireVertexRefsUpdated(getVerticesInFocus(), selectionContext.getGraphContainer().getBaseTopology());
 
     }
 
@@ -119,18 +119,14 @@ public class OsgiVerticesUpdateManager implements VerticesUpdateManager {
      * Notifies all listeners that the focus of the vertices has changed.
      * @param newVertexRefs
      */
-    private synchronized void fireVertexRefsUpdated(Collection<VertexRef> newVertexRefs) {
+    private synchronized void fireVertexRefsUpdated(Collection<VertexRef> newVertexRefs, Object source) {
         if (!hasChanged(newVertexRefs, m_verticesInFocus)) {
             return;
         }
         m_verticesInFocus.clear();
         m_verticesInFocus.addAll(newVertexRefs);
-        boolean displayedSelected = false;
-        if (m_displayableVertexRefs.size() == m_verticesInFocus.size()) {
-            displayedSelected = true;
-        }
-
-        final VerticesUpdateEvent updateEvent = new VerticesUpdateEvent(Collections.unmodifiableSet(m_verticesInFocus), displayedSelected);
+        final boolean displayedSelected = m_displayableVertexRefs.size() == m_verticesInFocus.size();
+        final VerticesUpdateEvent updateEvent = new VerticesUpdateEvent(Collections.unmodifiableSet(m_verticesInFocus), source, displayedSelected);
         m_applicationContext.getEventProxy(m_serviceManager).fireEvent(updateEvent);
     }
 }

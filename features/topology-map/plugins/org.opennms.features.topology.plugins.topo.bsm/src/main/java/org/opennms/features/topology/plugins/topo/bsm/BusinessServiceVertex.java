@@ -28,9 +28,13 @@
 
 package org.opennms.features.topology.plugins.topo.bsm;
 
+import java.util.Set;
+
 import org.opennms.netmgt.bsm.service.model.BusinessService;
 
-class BusinessServiceVertex extends AbstractBusinessServiceVertex {
+import com.google.common.collect.Sets;
+
+public class BusinessServiceVertex extends AbstractBusinessServiceVertex {
 
     private final Long serviceId;
 
@@ -50,5 +54,15 @@ class BusinessServiceVertex extends AbstractBusinessServiceVertex {
 
     public Long getServiceId() {
         return serviceId;
+    }
+
+    @Override
+    public Type getType() {
+        return Type.BusinessService;
+    }
+
+    @Override
+    public Set<String> getReductionKeys() {
+        return Sets.newHashSet();
     }
 }

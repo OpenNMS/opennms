@@ -34,6 +34,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+
+import org.opennms.core.criteria.restrictions.Restriction;
+import org.opennms.features.topology.api.browsers.ContentType;
 import org.opennms.features.topology.api.topo.AbstractEdge;
 import org.opennms.features.topology.api.topo.AbstractTopologyProvider;
 import org.opennms.features.topology.api.topo.Criteria;
@@ -42,6 +45,7 @@ import org.opennms.features.topology.api.topo.GraphProvider;
 import org.opennms.features.topology.api.topo.SimpleConnector;
 import org.opennms.features.topology.api.topo.SimpleLeafVertex;
 import org.opennms.features.topology.api.topo.Vertex;
+import org.opennms.features.topology.api.topo.VertexRef;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -190,5 +194,15 @@ public class SFreeTopologyProvider extends AbstractTopologyProvider implements G
 
         addVertices(nodes.values().toArray(new Vertex[] {}));
         addEdges(edges.toArray(new Edge[] {}));
+    }
+
+    @Override
+    public void addRestrictions(List<Restriction> restrictionList, List<VertexRef> selectedVertices, ContentType type) {
+
+    }
+
+    @Override
+    public boolean contributesTo(ContentType container) {
+        return false;
     }
 }

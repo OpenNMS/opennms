@@ -36,6 +36,8 @@ import com.vaadin.ui.NativeSelect;
 import com.vaadin.ui.themes.BaseTheme;
 import org.apache.commons.lang.ArrayUtils;
 import org.opennms.features.topology.api.HasExtraComponents;
+import org.opennms.features.topology.api.browsers.OnmsVaadinContainer;
+import org.opennms.features.topology.api.browsers.SelectionAwareTable;
 import org.opennms.netmgt.dao.api.AlarmRepository;
 import org.opennms.osgi.EventProxy;
 import org.opennms.osgi.VaadinApplicationContext;

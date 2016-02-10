@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2015 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2015 The OpenNMS Group, Inc.
+ * Copyright (C) 2016 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,25 +26,21 @@
  *      http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.plugins.topo.application.browsers;
+package org.opennms.features.topology.api.browsers;
 
-import java.util.Map;
+import java.io.Serializable;
+import java.util.List;
 
-import org.opennms.features.topology.api.browsers.OnmsVaadinContainer;
-import org.opennms.features.topology.api.browsers.SelectionAwareTable;
+import org.opennms.core.criteria.Criteria;
 
-public class ApplicationTable extends SelectionAwareTable {
-    /**
-     *  Leave OnmsVaadinContainer without generics; the Aries blueprint code cannot match up
-     *  the arguments if you put the generic types in.
-     */
-    public ApplicationTable(final String caption, final OnmsVaadinContainer container) {
-        super(caption, container);
-    }
+public interface OnmsContainerDatasource<T, K extends Serializable> {
+    void clear();
 
-    public void setColumnGenerators(Map generators) {
-        for (Object key : generators.keySet()) {
-            addGeneratedColumn(key, (ColumnGenerator)generators.get(key));
-        }
-    }
+    void delete(K itemId);
+
+    List<T> findMatching(Criteria criteria);
+
+    int countMatching(Criteria criteria);
+
+    T createInstance(Class<T> itemClass) throws IllegalAccessException, InstantiationException;
 }

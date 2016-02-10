@@ -28,13 +28,8 @@
 
 package org.opennms.features.topology.plugins.topo.bsm.browsers;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-
-import org.opennms.features.topology.api.VerticesUpdateManager;
-import org.opennms.features.topology.plugins.browsers.OnmsContainerDatasource;
-import org.opennms.features.topology.plugins.browsers.OnmsVaadinContainer;
+import org.opennms.features.topology.api.browsers.ContentType;
+import org.opennms.features.topology.api.browsers.OnmsVaadinContainer;
 import org.opennms.netmgt.bsm.service.model.BusinessService;
 
 public class BusinessServicesContainer extends OnmsVaadinContainer<BusinessService, Long> {
@@ -50,12 +45,24 @@ public class BusinessServicesContainer extends OnmsVaadinContainer<BusinessServi
     }
 
     @Override
-    public void verticesUpdated(VerticesUpdateManager.VerticesUpdateEvent event) {
-
+    protected ContentType getContentType() {
+        return ContentType.BusinessService;
     }
 
-    @Override
-    protected List<BusinessService> getItemsForCache(OnmsContainerDatasource<BusinessService, Long> datasource, Page page) {
-        return super.getItemsForCache(datasource, page);
-    }
+//    /**
+//     * Gets the Business Services IDs from the given vertices.
+//     * A Business Service ID can only be extracted from a vertex with a "bsm"' namespace.
+//     *
+//     * @param vertices
+//     * @return
+//     */
+//    protected List<Long> extractBusinessServiceIds(Collection<VertexRef> vertices) {
+//        Set<Long> businessServiceIdSet = vertices.stream()
+//                .filter(v -> BusinessServicesTopologyProvider.TOPOLOGY_NAMESPACE.equals(v.getNamespace()))
+//                .filter(v -> v instanceof BusinessServiceVertex) // only Business Services are relevant
+//                .map(v -> (BusinessServiceVertex) v) // cast
+//                .map(v -> v.getServiceId()) // collect Business Service ID
+//                .collect(Collectors.toSet());
+//        return new ArrayList<>(businessServiceIdSet);
+//    }
 }

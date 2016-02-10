@@ -250,7 +250,7 @@ public class OSGiVerticesUpdateManagerTest {
     }
 
     private SelectionContext createContextWithVertRefIds(int... vertIds) {
-        SelectionContext context = new DefaultSelectionManager();
+        SelectionContext context = new DefaultSelectionManager(createGraph());
         List<VertexRef> vertices = createVertexRefsWithIds(vertIds);
 
         context.setSelectedVertexRefs(vertices);

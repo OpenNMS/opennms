@@ -30,15 +30,21 @@ package org.opennms.features.topology.plugins.topo.application;
 
 import java.net.MalformedURLException;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.xml.bind.JAXBException;
 
+import org.opennms.core.criteria.restrictions.Restriction;
+import org.opennms.core.criteria.restrictions.Restrictions;
+import org.opennms.features.topology.api.browsers.ContentType;
 import org.opennms.features.topology.api.topo.AbstractEdge;
 import org.opennms.features.topology.api.topo.AbstractTopologyProvider;
 import org.opennms.features.topology.api.topo.Criteria;
 import org.opennms.features.topology.api.topo.Edge;
 import org.opennms.features.topology.api.topo.GraphProvider;
 import org.opennms.features.topology.api.topo.SimpleEdgeProvider;
+import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.netmgt.dao.api.ApplicationDao;
 import org.opennms.netmgt.model.OnmsApplication;
 import org.opennms.netmgt.model.OnmsMonitoredService;
@@ -115,5 +121,27 @@ public class ApplicationTopologyProvider extends AbstractTopologyProvider implem
     @Override
     public void resetContainer() {
         super.resetContainer();
+    }
+
+    @Override
+    public void addRestrictions(List<Restriction> restrictionList, List<VertexRef> selectedVertices, ContentType type) {
+        if (contributesTo(type)) {
+            Set<ApplicationVertex> filteredVertices = selectedVertices.stream()
+                    .filter(v -> TOPOLOGY_NAMESPACE.equals(v.getNamespace()))
+                    .map(v -> (ApplicationVertex) v)
+                    .filter(v -> v.getServiceType() == null /* Application Vertex, no child */)
+                    .collect(Collectors.toSet());
+            Set<Integer> applicationIds = filteredVertices.stream().map(v -> Integer.valueOf(v.getId())).collect(Collectors.toSet());
+            if (applicationIds.isEmpty()) {
+                restrictionList.add(Restrictions.eq("id", -1));
+            } else {
+                restrictionList.add(Restrictions.in("id", applicationIds));
+            }
+        }
+    }
+
+    @Override
+    public boolean contributesTo(ContentType container) {
+        return ContentType.Application == container;
     }
 }

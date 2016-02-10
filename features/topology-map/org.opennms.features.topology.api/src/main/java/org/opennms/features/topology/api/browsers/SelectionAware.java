@@ -21,15 +21,22 @@
  *      http://www.gnu.org/licenses/
  *
  * For more information contact:
- * OpenNMS(R) Licensing <license@opennms.org>
- *      http://www.opennms.org/
- *      http://www.opennms.com/
+ *     OpenNMS(R) Licensing <license@opennms.org>
+ *     http://www.opennms.org/
+ *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.bsm.service.model;
+package org.opennms.features.topology.api.browsers;
 
-public interface Node {
-    String getLabel();
+import java.util.List;
 
-    Integer getId();
+import org.opennms.core.criteria.restrictions.Restriction;
+import org.opennms.features.topology.api.topo.VertexRef;
+
+public interface SelectionAware {
+
+    void addRestrictions(List<Restriction> restrictionList, List<VertexRef> selectedVertices, ContentType type);
+
+    boolean contributesTo(ContentType container);
+
 }
