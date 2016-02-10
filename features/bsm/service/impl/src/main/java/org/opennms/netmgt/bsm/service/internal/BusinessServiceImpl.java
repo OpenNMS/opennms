@@ -223,4 +223,33 @@ public class BusinessServiceImpl implements BusinessService {
                 .add("operationalStatus", this.getOperationalStatus())
                 .toString();
     }
+
+    @Override
+    public Set<? extends Edge> getEdges(Edge.Type edgeType) {
+        switch (edgeType) {
+            case CHILD_SERVICE:
+                return getChildEdges();
+            case IP_SERVICE:
+                return getIpServiceEdges();
+            case REDUCTION_KEY:
+                return getReductionKeyEdges();
+        }
+
+        return Sets.newTreeSet();
+    }
+
+    @Override
+    public void setEdges(Edge.Type edgeType, Set<? extends Edge> edges) {
+        switch (edgeType) {
+            case CHILD_SERVICE:
+                setChildEdges((Set<ChildEdge>)edges);
+                break;
+            case IP_SERVICE:
+                setIpServiceEdges((Set<IpServiceEdge>)edges);
+                break;
+            case REDUCTION_KEY:
+                setReductionKeyEdges((Set<ReductionKeyEdge>)edges);
+                break;
+        }
+    }
 }

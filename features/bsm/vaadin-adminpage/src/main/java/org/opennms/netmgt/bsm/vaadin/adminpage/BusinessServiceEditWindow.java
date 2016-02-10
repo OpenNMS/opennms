@@ -277,7 +277,7 @@ public class BusinessServiceEditWindow extends Window {
         });
 
         Button editEdgeButton = new Button("Edit Edge");
-        editEdgeButton.setId("addEdgeButton");
+        editEdgeButton.setId("editEdgeButton");
         editEdgeButton.setEnabled(false);
         editEdgeButton.setWidth(100.0f, Unit.PIXELS);
         editEdgeButton.addStyleName("small");
