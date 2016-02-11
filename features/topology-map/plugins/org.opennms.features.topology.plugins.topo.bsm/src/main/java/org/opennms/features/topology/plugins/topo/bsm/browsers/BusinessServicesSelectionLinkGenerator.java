@@ -28,22 +28,17 @@
 
 package org.opennms.features.topology.plugins.topo.bsm.browsers;
 
-import org.opennms.features.topology.api.GraphContainer;
-import org.opennms.features.topology.api.WidgetContext;
+import org.opennms.features.topology.api.browsers.AbstractSelectionLinkGenerator;
 import org.opennms.features.topology.plugins.browsers.ToStringColumnGenerator;
-import org.opennms.features.topology.plugins.topo.bsm.BusinessServiceCriteria;
-import org.opennms.netmgt.bsm.service.BusinessServiceManager;
+import org.opennms.features.topology.plugins.topo.bsm.BusinessServiceVertex;
 
 import com.vaadin.data.Property;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Table;
-import com.vaadin.ui.UI;
 import com.vaadin.ui.themes.BaseTheme;
 
-public class BusinessServicesSelectionLinkGenerator implements Table.ColumnGenerator {
+public class BusinessServicesSelectionLinkGenerator extends AbstractSelectionLinkGenerator {
     private static final long serialVersionUID = 1L;
-
-    private BusinessServiceManager m_businessServiceManager;
 
     private final String m_idPropertyName;
     private final String m_labelPropertyName;
@@ -76,30 +71,14 @@ public class BusinessServicesSelectionLinkGenerator implements Table.ColumnGener
 
                     @Override
                     public void buttonClick(Button.ClickEvent event) {
-                        String businessServiceId = String.valueOf(idProperty.getValue());
+                        Long businessServiceId = idProperty.getValue();
                         String businessServiceLabel = labelProperty.getValue();
-
-                        // Retrieve the graph container associated with the
-                        // current application context
-                        UI ui = UI.getCurrent();
-                        WidgetContext context = (WidgetContext) ui;
-                        GraphContainer graphContainer = context.getGraphContainer();
-
-                        // Add criteria use to filter for the selected
-                        // application
-                        BusinessServiceCriteria businessServiceCriteria = new BusinessServiceCriteria(businessServiceId,
-                                businessServiceLabel, m_businessServiceManager);
-                        graphContainer.addCriteria(businessServiceCriteria);
-                        graphContainer.setDirty(true);
-                        graphContainer.redoLayout();
+                        BusinessServiceVertex vertex = new BusinessServiceVertex(businessServiceId, businessServiceLabel);
+                        fireVertexUpdatedEvent(vertex);
                     }
                 });
                 return button;
             }
         }
-    }
-
-    public void setBusinessServiceManager(BusinessServiceManager businessServiceManager) {
-        m_businessServiceManager = businessServiceManager;
     }
 }

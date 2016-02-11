@@ -28,7 +28,7 @@
 
 package org.opennms.features.topology.plugins.topo.bsm;
 
-import static org.opennms.features.topology.plugins.topo.bsm.AbstractBusinessServiceVertex.*;
+import static org.opennms.features.topology.plugins.topo.bsm.AbstractBusinessServiceVertex.Type;
 
 import java.net.MalformedURLException;
 import java.util.Collection;
@@ -40,9 +40,9 @@ import java.util.stream.Collectors;
 import javax.xml.bind.JAXBException;
 
 import org.opennms.core.criteria.CriteriaBuilder;
-import org.opennms.core.criteria.restrictions.Restriction;
 import org.opennms.core.criteria.restrictions.Restrictions;
 import org.opennms.features.topology.api.browsers.ContentType;
+import org.opennms.features.topology.api.browsers.SelectionChangedListener;
 import org.opennms.features.topology.api.topo.AbstractEdge;
 import org.opennms.features.topology.api.topo.AbstractTopologyProvider;
 import org.opennms.features.topology.api.topo.Criteria;
@@ -61,6 +61,7 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
 public class BusinessServicesTopologyProvider extends AbstractTopologyProvider implements GraphProvider {
@@ -174,7 +175,7 @@ public class BusinessServicesTopologyProvider extends AbstractTopologyProvider i
     }
 
     @Override
-    public void addRestrictions(List<Restriction> restrictionList, List<VertexRef> selectedVertices, ContentType container) {
+    public SelectionChangedListener.Selection getSelection(List<VertexRef> selectedVertices, ContentType contentType) {
         // only consider vertices of our namespace and of the correct type
         final Set<AbstractBusinessServiceVertex> filteredSet = selectedVertices.stream()
                 .filter(e -> TOPOLOGY_NAMESPACE.equals(e.getNamespace()))
@@ -182,21 +183,21 @@ public class BusinessServicesTopologyProvider extends AbstractTopologyProvider i
                 .map(e -> (AbstractBusinessServiceVertex) e)
                 .collect(Collectors.toSet());
         if (filteredSet.isEmpty()) {
-            return;
+            return SelectionChangedListener.Selection.EMPTY;
         }
-        switch (container) {
+        switch (contentType) {
             case Alarm:
                 // show alarms with reduction keys associated with the current selection.
                 final Set<String> reductionKeys = filteredSet.stream()
                         .map(vertex -> vertex.getReductionKeys())
                         .flatMap(rkSet -> rkSet.stream())
                         .collect(Collectors.toSet());
-                if (reductionKeys.isEmpty()) {
-                    restrictionList.add(Restrictions.eq("reductionKey", "-1"));
-                } else {
-                    restrictionList.add(Restrictions.in("reductionKey", reductionKeys));
-                }
-                break;
+                return () -> {
+                    if (reductionKeys != null && !reductionKeys.isEmpty()) {
+                        return Lists.newArrayList(Restrictions.in("reductionKey", reductionKeys));
+                    }
+                    return Lists.newArrayList(Restrictions.isNull("id")); // is always false, so nothing is shown
+                };
             case BusinessService:
                 final Set<Long> businessServiceIds = Sets.newHashSet();
 
@@ -209,28 +210,21 @@ public class BusinessServicesTopologyProvider extends AbstractTopologyProvider i
                 filteredSet.stream()
                         .filter(v -> v.getType() == Type.IpService
                                 || v.getType() == Type.ReductionKey)
-                        .forEach(v -> ((BusinessServiceVertex) v.getParent()).getServiceId());
-
-                if (businessServiceIds.isEmpty()) {
-                    restrictionList.add(Restrictions.eq("id", -1L));
-                } else {
-                    restrictionList.add(Restrictions.in("id", businessServiceIds));
-                }
-                break;
+                        .forEach(v -> businessServiceIds.add(((BusinessServiceVertex) v.getParent()).getServiceId()));
+                return new SelectionChangedListener.IdSelection<>(businessServiceIds);
             case Node:
                 final Set<Integer> nodeIds = filteredSet.stream()
                         .filter(v -> v.getType() == Type.IpService)
                         .map(v -> businessServiceManager.getIpServiceById(((IpServiceVertex) v).getIpServiceId()).getNodeId())
                         .collect(Collectors.toSet());
-                if (nodeIds.isEmpty()) {
-                    restrictionList.add(Restrictions.eq("id", -1));
-                } else {
-                    restrictionList.add(Restrictions.in("id", nodeIds));
-                }
-                break;
-            default:
-                throw new IllegalArgumentException(getClass().getSimpleName() + " does not support filtering vertices for vaadin container " + container);
+                return () -> {
+                    if (nodeIds != null && !nodeIds.isEmpty()) {
+                        return Lists.newArrayList(Restrictions.in("id", nodeIds));
+                    }
+                    return Lists.newArrayList(Restrictions.isNull("id")); // is always false, so nothing is shown
+                };
         }
+        throw new IllegalArgumentException(getClass().getSimpleName() + " does not support filtering vertices for contentType " + contentType);
     }
 
     @Override

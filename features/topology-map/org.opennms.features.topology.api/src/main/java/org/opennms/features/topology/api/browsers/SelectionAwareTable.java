@@ -32,6 +32,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 
@@ -44,13 +45,12 @@ import org.opennms.osgi.EventProxyAware;
 
 import com.vaadin.ui.Table;
 
-public class SelectionAwareTable extends Table implements VerticesUpdateManager.VerticesUpdateListener, EventProxyAware {
+public class SelectionAwareTable extends Table implements VerticesUpdateManager.VerticesUpdateListener, EventProxyAware, SelectionChangedListener {
 
 	private static final long serialVersionUID = 2761774077365441249L;
 
 	private final OnmsVaadinContainer<?,? extends Serializable> m_container;
 	private final Set<SelectionNotifier> m_selectionNotifiers = new CopyOnWriteArraySet<SelectionNotifier>();
-	private List<String> nonCollapsibleColumns = new ArrayList<String>();
 	private EventProxy eventProxy;
 
     /**
@@ -145,11 +145,24 @@ public class SelectionAwareTable extends Table implements VerticesUpdateManager.
     @EventConsumer
     public void verticesUpdated(VerticesUpdateManager.VerticesUpdateEvent event) {
 		if (isAttached()) {
-			m_container.verticesUpdated(event);
+			SelectionAware source = event.getSource();
+			if (source.contributesTo(getContentType())) {
+				SelectionChangedListener.Selection newSelection = source.getSelection(
+						new ArrayList<>(event.getVertexRefs()),
+						getContentType());
+				selectionChanged(newSelection);
+			}
 		}
     }
 
-    /**
+	@Override
+	public void selectionChanged(Selection newSelection) {
+		if (isAttached()) {
+			m_container.selectionChanged(newSelection);
+		}
+	}
+
+	/**
      * Make sure that the OnmsVaadinContainer cache is reset.
      */
     @Override
@@ -181,9 +194,6 @@ public class SelectionAwareTable extends Table implements VerticesUpdateManager.
 	}
 
     protected EventProxy getEventProxy() {
-        if (eventProxy != null) {
-            return eventProxy;
-        }
-        throw new IllegalArgumentException("EventProxy should not be null!");
+		return Objects.requireNonNull(eventProxy, "EventProxy should not be null!");
     }
 }

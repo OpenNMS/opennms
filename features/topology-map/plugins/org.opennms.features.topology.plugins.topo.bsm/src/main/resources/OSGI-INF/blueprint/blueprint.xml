@@ -62,7 +62,6 @@
     <bean id="businessServiceSelectionLinkGenerator" class="org.opennms.features.topology.plugins.topo.bsm.browsers.BusinessServicesSelectionLinkGenerator">
         <argument value="id" />
         <argument value="name" />
-        <property name="businessServiceManager" ref="businessServiceManager" />
     </bean>
 
     <bean id="businessServicesContainer" class="org.opennms.features.topology.plugins.topo.bsm.browsers.BusinessServicesContainer" scope="prototype">

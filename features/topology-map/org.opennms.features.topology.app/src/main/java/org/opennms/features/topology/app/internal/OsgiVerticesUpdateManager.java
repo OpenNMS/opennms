@@ -31,6 +31,7 @@ package org.opennms.features.topology.app.internal;
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.SelectionContext;
 import org.opennms.features.topology.api.VerticesUpdateManager;
+import org.opennms.features.topology.api.topo.GraphProvider;
 import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.osgi.OnmsServiceManager;
 import org.opennms.osgi.VaadinApplicationContext;
@@ -119,7 +120,7 @@ public class OsgiVerticesUpdateManager implements VerticesUpdateManager {
      * Notifies all listeners that the focus of the vertices has changed.
      * @param newVertexRefs
      */
-    private synchronized void fireVertexRefsUpdated(Collection<VertexRef> newVertexRefs, Object source) {
+    private synchronized void fireVertexRefsUpdated(Collection<VertexRef> newVertexRefs, GraphProvider source) {
         if (!hasChanged(newVertexRefs, m_verticesInFocus)) {
             return;
         }

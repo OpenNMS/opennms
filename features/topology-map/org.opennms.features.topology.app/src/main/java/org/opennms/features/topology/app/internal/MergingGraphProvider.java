@@ -38,8 +38,8 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 
-import org.opennms.core.criteria.restrictions.Restriction;
 import org.opennms.features.topology.api.browsers.ContentType;
+import org.opennms.features.topology.api.browsers.SelectionChangedListener;
 import org.opennms.features.topology.api.topo.Criteria;
 import org.opennms.features.topology.api.topo.DefaultVertexRef;
 import org.opennms.features.topology.api.topo.Edge;
@@ -558,8 +558,8 @@ public class MergingGraphProvider implements GraphProvider, VertexListener, Edge
 	}
 
 	@Override
-	public void addRestrictions(List<Restriction> restrictionList, List<VertexRef> selectedVertices, ContentType type) {
-		m_baseGraphProvider.addRestrictions(restrictionList, selectedVertices, type);
+	public SelectionChangedListener.Selection getSelection(List<VertexRef> selectedVertices, ContentType type) {
+		return m_baseGraphProvider.getSelection(selectedVertices, type);
 	}
 
 	@Override
@@ -771,8 +771,8 @@ public class MergingGraphProvider implements GraphProvider, VertexListener, Edge
 		}
 
 		@Override
-		public void addRestrictions(List<Restriction> restrictionList, List<VertexRef> selectedVertices, ContentType type) {
-
+		public SelectionChangedListener.Selection getSelection(List<VertexRef> selectedVertices, ContentType type) {
+			return SelectionChangedListener.Selection.EMPTY;
 		}
 
 		@Override

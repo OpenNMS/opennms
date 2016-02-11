@@ -43,7 +43,6 @@ import java.util.TreeSet;
 import org.opennms.core.criteria.Criteria;
 import org.opennms.core.criteria.Order;
 import org.opennms.core.criteria.restrictions.Restriction;
-import org.opennms.features.topology.api.VerticesUpdateManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -58,7 +57,7 @@ import com.vaadin.data.util.BeanItem;
  * @param <T> The type of the elements in the container.
  * @param <K> the key of the elements in the container.
  */
-public abstract class OnmsVaadinContainer<T,K extends Serializable> implements Container, Container.Sortable, Container.Ordered, Container.Indexed, Container.ItemSetChangeNotifier, VerticesUpdateManager.VerticesUpdateListener {
+public abstract class OnmsVaadinContainer<T,K extends Serializable> implements Container, Container.Sortable, Container.Ordered, Container.Indexed, Container.ItemSetChangeNotifier, SelectionChangedListener {
     private static final long serialVersionUID = -9131723065433979979L;
 
     protected static final int DEFAULT_PAGE_SIZE = 200; // items per page/cache
@@ -424,10 +423,15 @@ public abstract class OnmsVaadinContainer<T,K extends Serializable> implements C
     }
 
     public void setRestrictions(final List<Restriction> newRestrictions) {
-        if (newRestrictions == m_restrictions) return;
-        m_restrictions.clear();
-        if (newRestrictions == null) return;
-        m_restrictions.addAll(newRestrictions);
+        // only fire if restrictions have changed
+        if (!getRestrictions().equals(newRestrictions)) {
+            m_restrictions.clear();
+            if (newRestrictions != null) {
+                m_restrictions.addAll(newRestrictions);
+            }
+            getCache().reload(getPage());
+            fireItemSetChangedEvent();
+        }
     }
 
     public List<Restriction> getRestrictions() {
@@ -554,6 +558,13 @@ public abstract class OnmsVaadinContainer<T,K extends Serializable> implements C
         throw new UnsupportedOperationException("Cannot remove properties from objects in this container");
     }
 
+    @Override
+    public void selectionChanged(Selection newSelection) {
+        if (newSelection != null) {
+            setRestrictions(newSelection.toRestrictions());
+        }
+    }
+
     protected void updateContainerPropertyIds(Map<Object,Class<?>> properties) {
         // by default we do nothing with the properties;
     }
@@ -619,26 +630,6 @@ public abstract class OnmsVaadinContainer<T,K extends Serializable> implements C
             for (Object key : item.getItemPropertyIds()) {
                 m_properties.put(key, item.getItemProperty(key).getType());
             }
-        }
-    }
-
-    @Override
-    public void verticesUpdated(final VerticesUpdateManager.VerticesUpdateEvent event) {
-        final List<Restriction> newRestrictions = new ArrayList<>();
-
-        if (event.getSource() instanceof SelectionAware) {
-            SelectionAware source = (SelectionAware) event.getSource();
-            source.addRestrictions(
-                    newRestrictions,
-                    new ArrayList<>(event.getVertexRefs()),
-                    getContentType());
-        }
-
-        // only fire if restrictions have changed
-        if (!getRestrictions().equals(newRestrictions)) {
-            setRestrictions(newRestrictions);
-            getCache().reload(getPage());
-            fireItemSetChangedEvent();
         }
     }
 }

@@ -31,8 +31,8 @@ package org.opennms.features.topology.app.internal;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.opennms.core.criteria.restrictions.Restriction;
 import org.opennms.features.topology.api.browsers.ContentType;
+import org.opennms.features.topology.api.browsers.SelectionChangedListener;
 import org.opennms.features.topology.api.topo.AbstractTopologyProvider;
 import org.opennms.features.topology.api.topo.Criteria;
 import org.opennms.features.topology.api.topo.Edge;
@@ -101,8 +101,8 @@ public class TestTopologyProvider extends AbstractTopologyProvider implements Gr
     }
 
     @Override
-    public void addRestrictions(List<Restriction> restrictionList, List<VertexRef> selectedVertices, ContentType type) {
-
+    public SelectionChangedListener.Selection getSelection(List<VertexRef> selectedVertices, ContentType type) {
+        return SelectionChangedListener.Selection.EMPTY;
     }
 
     @Override

@@ -39,7 +39,7 @@ public class IpServiceVertex extends AbstractBusinessServiceVertex {
     private final Set<String> reductionKeys;
 
     public IpServiceVertex(IpService ipServiceDTO) {
-        this("ip-service:" + ipServiceDTO.getId(),
+        this(String.valueOf(ipServiceDTO.getId()),
                 ipServiceDTO.getServiceName(),
                 Integer.valueOf(ipServiceDTO.getId()),
                 ipServiceDTO.getIpAddress(),
@@ -47,7 +47,7 @@ public class IpServiceVertex extends AbstractBusinessServiceVertex {
     }
 
     private IpServiceVertex(String id, String ipServiceName, Integer ipServiceId, String ipAddress, Set<String> reductionKeys) {
-        super(id, ipServiceName);
+        super(Type.IpService + ":" + id, ipServiceName);
         this.ipServiceId = ipServiceId;
         this.reductionKeys = reductionKeys;
         setIpAddress(ipAddress);
@@ -67,6 +67,6 @@ public class IpServiceVertex extends AbstractBusinessServiceVertex {
 
     @Override
     public Set<String> getReductionKeys() {
-        return null;
+        return reductionKeys;
     }
 }

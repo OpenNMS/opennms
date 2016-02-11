@@ -33,21 +33,15 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ThreadFactory;
-import java.util.concurrent.TimeUnit;
 
 import org.opennms.features.topology.api.HasExtraComponents;
 import org.opennms.features.topology.api.VerticesUpdateManager.VerticesUpdateEvent;
-import org.opennms.features.topology.api.topo.DefaultVertexRef;
+import org.opennms.features.topology.api.browsers.SelectionAwareTable;
+import org.opennms.features.topology.api.browsers.SelectionChangedListener;
 import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.features.topology.plugins.browsers.AlarmTable;
 import org.opennms.features.topology.plugins.browsers.NodeTable;
-import org.opennms.features.topology.api.browsers.SelectionAwareTable;
 import org.opennms.osgi.EventProxy;
 import org.opennms.osgi.VaadinApplicationContextImpl;
 import org.opennms.web.api.OnmsHeaderProvider;
@@ -379,16 +373,11 @@ public class NodeMapsApplication extends UI {
     }
 
     public void setFocusedNodes(final List<Integer> nodeIds) {
-        for (final SelectionAwareTable table : new SelectionAwareTable[] { m_alarmTable, m_nodeTable }) {
-            final Set<VertexRef> nodeSet = new HashSet<VertexRef>();
-            for (final Integer nodeId : nodeIds) {
-                nodeSet.add(new DefaultVertexRef("nodes", nodeId.toString(), null));
-            }
+        m_alarmTable.selectionChanged(new SelectionChangedListener.AlarmNodeIdSelection(nodeIds));
+        m_nodeTable.selectionChanged(new SelectionChangedListener.IdSelection<Integer>(nodeIds));
 
-            // TODO MVR verify if this still works after refactoring. I assume it does not
-            table.verticesUpdated(new VerticesUpdateEvent(nodeSet, null));
-            table.refreshRowCache();
-        }
+        m_alarmTable.refreshRowCache();
+        m_nodeTable.refreshRowCache();
     }
 
     @Override

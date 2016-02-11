@@ -28,14 +28,15 @@
 
 package org.opennms.features.topology.api.browsers;
 
+import static org.opennms.features.topology.api.browsers.SelectionChangedListener.*;
+
 import java.util.List;
 
-import org.opennms.core.criteria.restrictions.Restriction;
 import org.opennms.features.topology.api.topo.VertexRef;
 
 public interface SelectionAware {
 
-    void addRestrictions(List<Restriction> restrictionList, List<VertexRef> selectedVertices, ContentType type);
+    Selection getSelection(List<VertexRef> selectedVertices, ContentType type);
 
     boolean contributesTo(ContentType container);
 
