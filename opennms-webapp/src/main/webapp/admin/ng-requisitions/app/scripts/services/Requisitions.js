@@ -729,8 +729,8 @@
       $http.get(url)
       .success(function(data) {
         $log.debug('getAvailableDetectors: got available detectors');
-        requisitionsService.internal.cache.put('detectorsConfig', data);
-        deferred.resolve(data);
+        requisitionsService.internal.cache.put('detectorsConfig', data.plugins);
+        deferred.resolve(data.plugins);
       })
       .error(function(error, status) {
         $log.error('getAvailableDetectors: GET ' + url + ' failed:', error, status);
@@ -765,8 +765,8 @@
       $http.get(url)
       .success(function(data) {
         $log.debug('getAvailablePolicies: got available policies');
-        requisitionsService.internal.cache.put('policiesConfig', data);
-        deferred.resolve(data);
+        requisitionsService.internal.cache.put('policiesConfig', data.plugins);
+        deferred.resolve(data.plugins);
       })
       .error(function(error, status) {
         $log.error('getAvailablePolicies: GET ' + url + ' failed:', error, status);
@@ -804,8 +804,8 @@
       $http.get(url)
       .success(function(data) {
         $log.debug('getAvailableServices: got available services');
-        requisitionsService.internal.cache.put('servicesConfig', data);
-        deferred.resolve(data);
+        requisitionsService.internal.cache.put('servicesConfig', data.element);
+        deferred.resolve(data.element);
       })
       .error(function(error, status) {
         $log.error('getAvailableServices: GET ' + url + ' failed:', error, status);
@@ -842,8 +842,8 @@
       $http.get(url)
       .success(function(data) {
         $log.debug('getAvailableAssets: got available assets');
-        requisitionsService.internal.cache.put('assetsConfig', data);
-        deferred.resolve(data);
+        requisitionsService.internal.cache.put('assetsConfig', data.element);
+        deferred.resolve(data.element);
       })
       .error(function(error, status) {
         $log.error('getAvailableAssets: GET ' + url + ' failed:', error, status);
@@ -880,8 +880,8 @@
       $http.get(url)
       .success(function(data) {
         $log.debug('getAvailableCategories: got available categories');
-        requisitionsService.internal.cache.put('categoriesConfig', data);
-        deferred.resolve(data);
+        requisitionsService.internal.cache.put('categoriesConfig', data.element);
+        deferred.resolve(data.element);
       })
       .error(function(error, status) {
         $log.error('getAvailableCategories: GET ' + url + ' failed:', error, status);
