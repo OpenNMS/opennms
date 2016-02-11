@@ -13,7 +13,7 @@ describe('Controller: DetectorController', function () {
   function createController() {
     return controllerFactory('DetectorController', {
       $scope: scope,
-      $modalInstance: mockModalInstance,
+      $uibModalInstance: mockModalInstance,
       RequisitionsService: mockRequisitionsService,
       detector: detector
     });

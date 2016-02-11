@@ -28,10 +28,17 @@
 
 package org.opennms.features.vaadin.dashboard.config.ui;
 
+import org.opennms.features.vaadin.dashboard.model.Wallboard;
+
 import com.vaadin.data.Property;
 import com.vaadin.data.util.BeanItemContainer;
-import com.vaadin.ui.*;
-import org.opennms.features.vaadin.dashboard.model.Wallboard;
+import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.CheckBox;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.Table;
+import com.vaadin.ui.VerticalLayout;
 
 /**
  * This class is used to display an brief overview about existing {@link Wallboard} configurations.
@@ -62,7 +69,6 @@ public class WallboardOverview extends VerticalLayout {
          * Setting the member fields
          */
         this.m_wallboardConfigView = wallboardConfigView;
-        m_beanItemContainer = WallboardProvider.getInstance().getBeanContainer();
 
         /**
          * Setting up the layout component
@@ -94,7 +100,6 @@ public class WallboardOverview extends VerticalLayout {
          * Adding the table with the required {@link Table.ColumnGenerator} objects
          */
         m_table = new Table();
-        m_table.setContainerDataSource(m_beanItemContainer);
         m_table.setSizeFull();
 
         m_table.addGeneratedColumn("Edit", new Table.ColumnGenerator() {
@@ -118,7 +123,9 @@ public class WallboardOverview extends VerticalLayout {
                 button.setStyleName("small");
                 button.addClickListener(new Button.ClickListener() {
                     public void buttonClick(Button.ClickEvent clickEvent) {
+                        m_wallboardConfigView.removeTab(((Wallboard) itemId).getTitle());
                         WallboardProvider.getInstance().removeWallboard((Wallboard) itemId);
+                        refreshTable();
                     }
                 });
                 return button;
@@ -166,8 +173,7 @@ public class WallboardOverview extends VerticalLayout {
             }
         });
 
-        m_table.setVisibleColumns(new Object[]{"title", "Edit", "Remove", "Preview", "Default"});
-        m_table.setColumnHeader("title", "Title");
+        refreshTable();
 
         /**
          * Adding the table
@@ -175,5 +181,16 @@ public class WallboardOverview extends VerticalLayout {
         addComponent(m_table);
 
         setExpandRatio(m_table, 1.0f);
+    }
+
+    void refreshTable() {
+        if (m_table != null) {
+            m_beanItemContainer = WallboardProvider.getInstance().getBeanContainer();
+            m_table.setContainerDataSource(m_beanItemContainer);
+            m_table.setVisibleColumns(new Object[]{"title", "Edit", "Remove", "Preview", "Default"});
+            m_table.setColumnHeader("title", "Title");
+            m_table.sort();
+            m_table.refreshRowCache();
+        }
     }
 }
