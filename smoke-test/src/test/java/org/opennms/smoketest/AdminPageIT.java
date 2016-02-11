@@ -127,7 +127,6 @@ public class AdminPageIT extends OpenNMSSeleniumTestCase {
                 new String[] { "Surveillance Views Configuration", "//div[@id='content']//iframe" },
                 new String[] { "JMX Configuration Generator", "//div[@id='content']//iframe" },
                 new String[] { "Manage Business Services", "//div[@id='content']//iframe" },
-                new String[] { "Business Services Master Page", "//div[@id='content']//iframe" },
 
                 // Node Provisioning
                 new String[] { "Manually Add an Interface", "//h3[text()='Enter IP Address']" },
