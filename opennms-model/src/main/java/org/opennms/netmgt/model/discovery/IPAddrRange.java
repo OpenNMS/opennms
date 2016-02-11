@@ -37,6 +37,7 @@ import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
+import org.apache.commons.lang.builder.ToStringBuilder;
 import org.opennms.core.utils.ByteArrayComparator;
 import org.opennms.core.utils.InetAddressUtils;
 import org.slf4j.Logger;
@@ -333,5 +334,13 @@ public final class IPAddrRange implements Iterable<InetAddress>, Serializable {
      */
     Enumeration<InetAddress> elements() {
         return new IPAddressRangeGenerator(m_begin, m_end);
+    }
+
+    @Override
+    public String toString() {
+        return new ToStringBuilder(this)
+            .append("begin", InetAddressUtils.getInetAddress(m_begin))
+            .append("end", InetAddressUtils.getInetAddress(m_end))
+            .toString();
     }
 }

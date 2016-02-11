@@ -33,6 +33,8 @@ import java.net.InetAddress;
 import java.util.Enumeration;
 import java.util.Iterator;
 
+import org.apache.commons.lang.builder.ToStringBuilder;
+
 /**
  * <p>
  * This class is designed to encapsulate the information about an address range
@@ -292,5 +294,14 @@ public class IPPollRange implements Iterable<IPPollAddress>
     @Override
     public Iterator<IPPollAddress> iterator() {
         return new IPPollRangeGenerator(m_range.elements());
+    }
+
+    @Override
+    public String toString() {
+        return new ToStringBuilder(this)
+            .append("range", m_range)
+            .append("timeout", m_timeout)
+            .append("retries", m_retries)
+            .toString();
     }
 }
