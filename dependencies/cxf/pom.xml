@@ -10,9 +10,6 @@
   <artifactId>cxf-dependencies</artifactId>
   <packaging>pom</packaging>
   <name>OpenNMS Dependencies CXF</name>
-  <properties>
-    <cxfVersion>3.1.4</cxfVersion>
-  </properties>
   <dependencies>
     <!-- JAX-RS front end -->
     <dependency>
