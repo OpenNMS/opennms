@@ -27,7 +27,7 @@
   </bean>
 
   <!-- Pinger service -->
-  <onmsgi:reference id="pinger" interface="org.opennms.netmgt.icmp.Pinger" />
+  <!-- <onmsgi:reference id="pinger" interface="org.opennms.netmgt.icmp.Pinger" /> -->
 
   <!-- Event IPC manager service -->
   <onmsgi:reference id="eventForwarder" interface="org.opennms.netmgt.events.api.EventForwarder" />
@@ -112,8 +112,8 @@
     <!-- Default localhost location queue -->
     <route id="localhostLocationDiscoveryRoute">
       <from uri="activemq:Location-localhost" />
-      <log loggingLevel="INFO" message="blueprint-discovery.xml: Executing DiscoveryJob" />
-      <log loggingLevel="INFO" message="blueprint-discovery.xml: ${body}" />
+      <log loggingLevel="INFO" message="applicationContext-discovery.xml: Executing DiscoveryJob" />
+      <log loggingLevel="INFO" message="applicationContext-discovery.xml: ${body}" />
       <bean ref="discoverer" />
     </route>
   </camelContext>

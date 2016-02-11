@@ -56,8 +56,8 @@ import com.google.common.collect.Sets;
  * message.</p>
  * 
  * <ul>
- * <li>Input: {@link DiscoveryJob}</li>
- * <li>Input: {@link DiscoveryResults}</li>
+ * <li>Input:  {@link DiscoveryJob}</li>
+ * <li>Output: {@link DiscoveryResults}</li>
  * </ul>
  */
 public class Discoverer {
@@ -85,6 +85,7 @@ public class Discoverer {
             .forEach(a -> tracker.expectCallbackFor(a));
 
         // Issue all of the pings
+        // TODO: Add delay of {@link DiscoveryConfigFactory#getIntraPacketDelay()}
         addresses.stream().forEach(a -> ping(a, tracker));
 
         // Don't bother waiting if there aren't any addresses

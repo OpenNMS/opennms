@@ -28,12 +28,24 @@
 
 package org.opennms.netmgt.discovery;
 
+import static org.opennms.core.utils.InetAddressUtils.str;
+
+import java.util.stream.StreamSupport;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.spring.BeanUtils;
+import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
+import org.opennms.netmgt.config.DiscoveryConfigFactory;
+import org.opennms.netmgt.config.discovery.DiscoveryConfiguration;
+import org.opennms.netmgt.config.discovery.IncludeRange;
+import org.opennms.netmgt.dao.mock.EventAnticipator;
+import org.opennms.netmgt.dao.mock.MockEventIpcManager;
+import org.opennms.netmgt.events.api.EventConstants;
+import org.opennms.netmgt.xml.event.Event;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -63,6 +75,12 @@ public class DiscoveryIntegrationIT implements InitializingBean {
     @Autowired
     private Discovery m_discovery;
 
+    @Autowired
+    private DiscoveryConfigFactory m_discoveryConfig;
+
+    @Autowired
+    MockEventIpcManager m_eventIpcManager;
+
     @Override
     public void afterPropertiesSet() throws Exception {
         BeanUtils.assertAutowiring(this);
@@ -70,12 +88,59 @@ public class DiscoveryIntegrationIT implements InitializingBean {
 
     @Before
     public void setUp() throws Exception {
+        MockLogAppender.setupLogging(true, "INFO");
     }
 
     @Test
     public void testDiscovery() throws Exception {
-        m_discovery.init();
+        // Add a range of localhost IP addresses to ping
+        IncludeRange range = new IncludeRange();
+        range.setBegin("127.0.5.1");
+        range.setEnd("127.0.5.254");
+        range.setTimeout(5000);
+        range.setRetries(0);
+
+        DiscoveryConfiguration config = m_discoveryConfig.getConfiguration();
+        // Start immediately
+        // TODO: This doesn't work because the value gets filled in when the
+        // Spring context is parsed, not after the Camel context is started
+        // because it is a property placeholder.
+        config.setInitialSleepTime(0);
+
+        // TODO: This doesn't work yet.
+        config.setPacketsPerSecond(10);
+
+        // Add a discovery range to the config
+        config.removeAllIncludeRange();
+        config.addIncludeRange(range);
+
+        // Don't actually save the config or we'll overwrite the 
+        // opennms-base-assembly XML file
+        //m_discoveryConfig.saveConfiguration(config);
+        //m_discoveryConfig.reload();
+
+        // Anticipate newSuspect events for all of the addresses
+        EventAnticipator anticipator = m_eventIpcManager.getEventAnticipator();
+        StreamSupport.stream(m_discoveryConfig.getConfiguredAddresses().spliterator(), false).forEach(addr -> {
+            System.out.println("ANTICIPATING: " + str(addr.getAddress()));
+            Event event = new Event();
+            event.setUei(EventConstants.NEW_SUSPECT_INTERFACE_EVENT_UEI);
+            event.setInterfaceAddress(addr.getAddress());
+            anticipator.anticipateEvent(event);
+        });
+
+        // Don't re-init Discovery or it will reload the 
+        // DiscoveryConfigFactory and erase our changes to 
+        // the config
+        //m_discovery.init();
+
         m_discovery.start();
+
+        // TODO: We need to wait more than 30 seconds to account for the discovery
+        // startup delay
+        anticipator.waitForAnticipated(60000);
+        anticipator.verifyAnticipated();
+
         m_discovery.stop();
     }
 }
