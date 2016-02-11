@@ -30,4 +30,6 @@ package org.opennms.netmgt.bsm.service.model;
 
 public interface Node {
     String getLabel();
+
+    Integer getId();
 }

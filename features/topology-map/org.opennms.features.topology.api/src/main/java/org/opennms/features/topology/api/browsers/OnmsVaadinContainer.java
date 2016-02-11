@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.plugins.browsers;
+package org.opennms.features.topology.api.browsers;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -41,15 +41,9 @@ import java.util.TreeMap;
 import org.opennms.core.criteria.Criteria;
 import org.opennms.core.criteria.Order;
 import org.opennms.core.criteria.restrictions.Restriction;
-import org.opennms.features.topology.api.VerticesUpdateManager;
-import org.opennms.features.topology.api.topo.GroupRef;
-import org.opennms.features.topology.api.topo.Vertex;
-import org.opennms.features.topology.api.topo.VertexRef;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.gwt.thirdparty.guava.common.base.Function;
-import com.google.gwt.thirdparty.guava.common.collect.Collections2;
 import com.vaadin.data.Container;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
@@ -61,7 +55,7 @@ import com.vaadin.data.util.BeanItem;
  * @param <T> The type of the elements in the container.
  * @param <K> the key of the elements in the container.
  */
-public abstract class OnmsVaadinContainer<T,K extends Serializable> implements Container, Container.Sortable, Container.Ordered, Container.Indexed, Container.ItemSetChangeNotifier, VerticesUpdateManager.VerticesUpdateListener {
+public abstract class OnmsVaadinContainer<T,K extends Serializable> implements Container, Container.Sortable, Container.Ordered, Container.Indexed, Container.ItemSetChangeNotifier, SelectionChangedListener {
     private static final long serialVersionUID = -9131723065433979979L;
 
     protected static final int DEFAULT_PAGE_SIZE = 200; // items per page/cache
@@ -423,10 +417,15 @@ public abstract class OnmsVaadinContainer<T,K extends Serializable> implements C
     }
 
     public void setRestrictions(final List<Restriction> newRestrictions) {
-        if (newRestrictions == m_restrictions) return;
-        m_restrictions.clear();
-        if (newRestrictions == null) return;
-        m_restrictions.addAll(newRestrictions);
+        // only fire if restrictions have changed
+        if (!getRestrictions().equals(newRestrictions)) {
+            m_restrictions.clear();
+            if (newRestrictions != null) {
+                m_restrictions.addAll(newRestrictions);
+            }
+            getCache().reload(getPage());
+            fireItemSetChangedEvent();
+        }
     }
 
     public List<Restriction> getRestrictions() {
@@ -548,6 +547,13 @@ public abstract class OnmsVaadinContainer<T,K extends Serializable> implements C
         throw new UnsupportedOperationException("Cannot remove properties from objects in this container");
     }
 
+    @Override
+    public void selectionChanged(Selection newSelection) {
+        if (newSelection != null) {
+            setRestrictions(newSelection.toRestrictions());
+        }
+    }
+
     protected void updateContainerPropertyIds(Map<Object,Class<?>> properties) {
         // by default we do nothing with the properties;
     }
@@ -597,6 +603,8 @@ public abstract class OnmsVaadinContainer<T,K extends Serializable> implements C
         return page;
     }
 
+    protected abstract ContentType getContentType();
+
     private synchronized void loadPropertiesIfNull() {
         if (m_properties == null) {
             m_properties = new TreeMap<Object,Class<?>>();
@@ -612,39 +620,5 @@ public abstract class OnmsVaadinContainer<T,K extends Serializable> implements C
                 m_properties.put(key, item.getItemProperty(key).getType());
             }
         }
-    }
-
-    /**
-     * Gets the node ids from the given vertices. A node id can only be extracted from a vertex with a "nodes"' namespace.
-     * For a vertex with namespace "node" the "getId()" method always returns the node id.
-     *
-     * @param vertices
-     * @return
-     */
-    protected List<Integer> extractNodeIds(Collection<VertexRef> vertices) {
-        List<Integer> nodeIdList = new ArrayList<Integer>();
-        for (VertexRef eachRef : vertices) {
-            if ("nodes".equals(eachRef.getNamespace())) {
-                try {
-                    nodeIdList.add(Integer.valueOf(eachRef.getId()));
-                } catch (NumberFormatException e) {
-                    LoggerFactory.getLogger(getClass()).warn("Cannot filter nodes with ID: {}", eachRef.getId());
-                }
-            } else if( ((Vertex)eachRef).isGroup() && "category".equals(eachRef.getNamespace()) ){
-                try{
-                    GroupRef group = (GroupRef) eachRef;
-                    nodeIdList.addAll(Collections2.transform(group.getChildren(), new Function<VertexRef, Integer>(){
-                        @Override
-                        public Integer apply(VertexRef input) {
-                            return Integer.valueOf(input.getId());
-                        }
-                    }));
-                } catch (ClassCastException e){
-                    LoggerFactory.getLogger(getClass()).warn("Cannot filter category with ID: {} children: {}", eachRef.getId(), ((GroupRef) eachRef).getChildren());
-
-                }
-            }
-        }
-        return nodeIdList;
     }
 }

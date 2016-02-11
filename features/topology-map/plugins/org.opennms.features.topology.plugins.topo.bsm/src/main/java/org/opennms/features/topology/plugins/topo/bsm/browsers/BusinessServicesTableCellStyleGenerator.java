@@ -21,46 +21,36 @@
  *      http://www.gnu.org/licenses/
  *
  * For more information contact:
- * OpenNMS(R) Licensing <license@opennms.org>
- *      http://www.opennms.org/
- *      http://www.opennms.com/
+ *     OpenNMS(R) Licensing <license@opennms.org>
+ *     http://www.opennms.org/
+ *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.plugins.topo.bsm;
+package org.opennms.features.topology.plugins.topo.bsm.browsers;
 
-import java.util.Set;
-
+import org.opennms.netmgt.bsm.service.BusinessServiceManager;
 import org.opennms.netmgt.bsm.service.model.BusinessService;
+import org.opennms.netmgt.bsm.service.model.Status;
 
-import com.google.common.collect.Sets;
+import com.vaadin.ui.Table;
 
-public class BusinessServiceVertex extends AbstractBusinessServiceVertex {
+public class BusinessServicesTableCellStyleGenerator implements Table.CellStyleGenerator {
 
-    private final Long serviceId;
-
-    public BusinessServiceVertex(BusinessService businessService) {
-        this(businessService.getId(), businessService.getName(), businessService.getLevel());
-    }
-
-    public BusinessServiceVertex(Long serviceId, String name, int level) {
-        super(Type.BusinessService + ":" + serviceId, name, level);
-        this.serviceId = serviceId;
-        setLabel(name);
-        setTooltipText(String.format("Business Service '%s'", name));
-        setIconKey("business-service");
-    }
-
-    public Long getServiceId() {
-        return serviceId;
-    }
+    private BusinessServiceManager businessServiceManager;
 
     @Override
-    public Type getType() {
-        return Type.BusinessService;
+    public String getStyle(Table source, Object itemId, Object propertyId) {
+        if (propertyId == null) {
+            Long serviceId = (Long) itemId;
+            BusinessService businessService = businessServiceManager.getBusinessServiceById(serviceId);
+            Status status = businessService.getOperationalStatus();
+            return String.format("alarm-%s", status.name().toLowerCase());
+        }
+        return null;
     }
 
-    @Override
-    public Set<String> getReductionKeys() {
-        return Sets.newHashSet();
+    public void setBusinessServiceManager(BusinessServiceManager businessServiceManager) {
+        this.businessServiceManager = businessServiceManager;
     }
+
 }

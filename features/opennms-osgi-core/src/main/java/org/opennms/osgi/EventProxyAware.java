@@ -28,8 +28,6 @@
 
 package org.opennms.osgi;
 
-import org.opennms.osgi.EventProxy;
-
 public interface EventProxyAware {
     void setEventProxy(EventProxy eventProxy);
 }

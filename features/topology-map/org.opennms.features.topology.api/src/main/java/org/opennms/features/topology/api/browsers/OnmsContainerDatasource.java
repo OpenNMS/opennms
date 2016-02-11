@@ -26,41 +26,27 @@
  *      http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.plugins.topo.bsm;
+package org.opennms.features.topology.api.browsers;
 
-import java.util.Set;
+import java.io.Serializable;
+import java.util.List;
 
-import org.opennms.netmgt.bsm.service.model.BusinessService;
+import org.opennms.core.criteria.Criteria;
 
-import com.google.common.collect.Sets;
+/**
+ * Abstraction to allow the {@link OnmsVaadinContainer} to use different kinds of data sources, not only DAOs.
+ *
+ * @param <T> The entity type (e.g. OnmsAlarm).
+ * @param <K> The key type of the entity (e.g. Integer)
+ */
+public interface OnmsContainerDatasource<T, K extends Serializable> {
+    void clear();
 
-public class BusinessServiceVertex extends AbstractBusinessServiceVertex {
+    void delete(K itemId);
 
-    private final Long serviceId;
+    List<T> findMatching(Criteria criteria);
 
-    public BusinessServiceVertex(BusinessService businessService) {
-        this(businessService.getId(), businessService.getName(), businessService.getLevel());
-    }
+    int countMatching(Criteria criteria);
 
-    public BusinessServiceVertex(Long serviceId, String name, int level) {
-        super(Type.BusinessService + ":" + serviceId, name, level);
-        this.serviceId = serviceId;
-        setLabel(name);
-        setTooltipText(String.format("Business Service '%s'", name));
-        setIconKey("business-service");
-    }
-
-    public Long getServiceId() {
-        return serviceId;
-    }
-
-    @Override
-    public Type getType() {
-        return Type.BusinessService;
-    }
-
-    @Override
-    public Set<String> getReductionKeys() {
-        return Sets.newHashSet();
-    }
+    T createInstance(Class<T> itemClass) throws IllegalAccessException, InstantiationException;
 }

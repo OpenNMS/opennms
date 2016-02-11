@@ -38,6 +38,8 @@ import java.util.Set;
 
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.OperationContext;
+import org.opennms.features.topology.api.browsers.ContentType;
+import org.opennms.features.topology.api.browsers.SelectionChangedListener;
 import org.opennms.features.topology.api.support.VertexHopGraphProvider;
 import org.opennms.features.topology.api.topo.AbstractVertex;
 import org.opennms.features.topology.api.topo.Edge;
@@ -455,5 +457,10 @@ public class VmwareTopologyProvider extends SimpleGraphProvider implements Graph
         }
 
         return searchResults;
+    }
+
+    @Override
+    public SelectionChangedListener.Selection getSelection(List<VertexRef> selectedVertices, ContentType type) {
+        return getSelection(TOPOLOGY_NAMESPACE_VMWARE, selectedVertices, type);
     }
 }

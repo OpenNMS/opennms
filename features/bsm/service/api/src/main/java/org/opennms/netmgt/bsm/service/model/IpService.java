@@ -36,6 +36,8 @@ public interface IpService {
 
     String getServiceName();
 
+    Integer getNodeId();
+
     String getNodeLabel();
 
     String getIpAddress();

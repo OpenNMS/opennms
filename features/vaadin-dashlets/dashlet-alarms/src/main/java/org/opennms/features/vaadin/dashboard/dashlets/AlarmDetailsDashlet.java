@@ -46,7 +46,7 @@ import org.opennms.features.topology.plugins.browsers.AlarmDaoContainer;
 import org.opennms.features.topology.plugins.browsers.AlarmIdColumnLinkGenerator;
 import org.opennms.features.topology.plugins.browsers.AlarmTable;
 import org.opennms.features.topology.plugins.browsers.AlarmTableCellStyleGenerator;
-import org.opennms.features.topology.plugins.browsers.OnmsVaadinContainer;
+import org.opennms.features.topology.api.browsers.OnmsVaadinContainer;
 import org.opennms.features.topology.plugins.browsers.SeverityGenerator;
 import org.opennms.features.vaadin.dashboard.config.ui.editors.CriteriaBuilderHelper;
 import org.opennms.features.vaadin.dashboard.model.AbstractDashlet;

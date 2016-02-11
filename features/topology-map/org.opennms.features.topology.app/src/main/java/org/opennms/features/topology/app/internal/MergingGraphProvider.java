@@ -37,8 +37,11 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
-import org.opennms.features.topology.api.topo.DefaultVertexRef;
+
+import org.opennms.features.topology.api.browsers.ContentType;
+import org.opennms.features.topology.api.browsers.SelectionChangedListener;
 import org.opennms.features.topology.api.topo.Criteria;
+import org.opennms.features.topology.api.topo.DefaultVertexRef;
 import org.opennms.features.topology.api.topo.Edge;
 import org.opennms.features.topology.api.topo.EdgeListener;
 import org.opennms.features.topology.api.topo.EdgeProvider;
@@ -109,7 +112,7 @@ public class MergingGraphProvider implements GraphProvider, VertexListener, Edge
 		
 		m_baseGraphProvider.addVertexListener(this);
 		m_baseGraphProvider.addEdgeListener(this);
-		
+
 		fireVertexChanged();
 		fireEdgeChanged();
 	}
@@ -553,7 +556,17 @@ public class MergingGraphProvider implements GraphProvider, VertexListener, Edge
 	public void removeEdgeListener(EdgeListener edgeListener) {
 		m_edgeListeners.remove(edgeListener);
 	}
-	
+
+	@Override
+	public SelectionChangedListener.Selection getSelection(List<VertexRef> selectedVertices, ContentType type) {
+		return m_baseGraphProvider.getSelection(selectedVertices, type);
+	}
+
+	@Override
+	public boolean contributesTo(ContentType type) {
+		return m_baseGraphProvider.contributesTo(type);
+	}
+
 	private static class NullProvider implements GraphProvider {
 
 		@Override
@@ -755,6 +768,16 @@ public class MergingGraphProvider implements GraphProvider, VertexListener, Edge
 		@Override
 		public void clearEdges() {
 			// Do nothing
+		}
+
+		@Override
+		public SelectionChangedListener.Selection getSelection(List<VertexRef> selectedVertices, ContentType type) {
+			return SelectionChangedListener.Selection.NONE;
+		}
+
+		@Override
+		public boolean contributesTo(ContentType type) {
+			return false;
 		}
 	}
 

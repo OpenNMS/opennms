@@ -73,6 +73,14 @@ public class IpServiceImpl implements IpService {
     }
 
     @Override
+    public Integer getNodeId() {
+        if (m_entity.getNodeId() != null) {
+            return m_manager.getNodeById(m_entity.getNodeId()).getId();
+        }
+        return null;
+    }
+
+    @Override
     public String getIpAddress() {
         return m_entity.getIpAddress().toString();
     }

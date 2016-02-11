@@ -28,16 +28,16 @@
 
 package org.opennms.features.topology.plugins.topo.bsm;
 
+import java.util.Set;
+
+import com.google.common.collect.Sets;
+
 public class ReductionKeyVertex extends AbstractBusinessServiceVertex {
 
     private final String reductionKey;
 
     protected ReductionKeyVertex(String reductionKey, int level) {
-        this("reduction-key:" + reductionKey, reductionKey, level);
-    }
-
-    private ReductionKeyVertex(String id, String reductionKey, int level) {
-        super(id, reductionKey, level);
+        super(Type.ReductionKey + ":" + reductionKey, reductionKey, level);
         this.reductionKey = reductionKey;
         setTooltipText(String.format("Reduction Key '%s'", reductionKey));
         setIconKey("reduction-key");
@@ -45,5 +45,15 @@ public class ReductionKeyVertex extends AbstractBusinessServiceVertex {
 
     public String getReductionKey() {
         return reductionKey;
+    }
+
+    @Override
+    public Set<String> getReductionKeys() {
+        return Sets.newHashSet(getReductionKey());
+    }
+
+    @Override
+    public Type getType() {
+        return Type.ReductionKey;
     }
 }

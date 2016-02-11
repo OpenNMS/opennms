@@ -28,14 +28,11 @@
 
 package org.opennms.features.topology.plugins.topo.bsm.browsers;
 
-import java.util.Map;
-
-import org.opennms.features.topology.plugins.browsers.OnmsVaadinContainer;
-
-import com.vaadin.ui.Table;
+import org.opennms.features.topology.api.browsers.OnmsVaadinContainer;
+import org.opennms.features.topology.api.browsers.SelectionAwareTable;
 
 @SuppressWarnings("rawtypes")
-public class BusinessServicesTable extends Table {
+public class BusinessServicesTable extends SelectionAwareTable {
     private static final long serialVersionUID = 1L;
 
     /**
@@ -45,11 +42,4 @@ public class BusinessServicesTable extends Table {
     public BusinessServicesTable(final String caption, final OnmsVaadinContainer container) {
         super(caption, container);
     }
-
-    public void setColumnGenerators(Map generators) {
-        for (Object key : generators.keySet()) {
-            addGeneratedColumn(key, (ColumnGenerator) generators.get(key));
-        }
-    }
-
 }

@@ -28,13 +28,8 @@
 
 package org.opennms.features.topology.plugins.topo.bsm.browsers;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-
-import org.opennms.features.topology.api.VerticesUpdateManager;
-import org.opennms.features.topology.plugins.browsers.OnmsContainerDatasource;
-import org.opennms.features.topology.plugins.browsers.OnmsVaadinContainer;
+import org.opennms.features.topology.api.browsers.ContentType;
+import org.opennms.features.topology.api.browsers.OnmsVaadinContainer;
 import org.opennms.netmgt.bsm.service.model.BusinessService;
 
 public class BusinessServicesContainer extends OnmsVaadinContainer<BusinessService, Long> {
@@ -50,12 +45,8 @@ public class BusinessServicesContainer extends OnmsVaadinContainer<BusinessServi
     }
 
     @Override
-    public void verticesUpdated(VerticesUpdateManager.VerticesUpdateEvent event) {
-
+    protected ContentType getContentType() {
+        return ContentType.BusinessService;
     }
 
-    @Override
-    protected List<BusinessService> getItemsForCache(OnmsContainerDatasource<BusinessService, Long> datasource, Page page) {
-        return super.getItemsForCache(datasource, page);
-    }
 }

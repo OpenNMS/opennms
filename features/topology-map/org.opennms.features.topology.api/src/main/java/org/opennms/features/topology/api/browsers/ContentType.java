@@ -21,26 +21,16 @@
  *      http://www.gnu.org/licenses/
  *
  * For more information contact:
- * OpenNMS(R) Licensing <license@opennms.org>
- *      http://www.opennms.org/
- *      http://www.opennms.com/
+ *     OpenNMS(R) Licensing <license@opennms.org>
+ *     http://www.opennms.org/
+ *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.plugins.browsers;
+package org.opennms.features.topology.api.browsers;
 
-import java.io.Serializable;
-import java.util.List;
-
-import org.opennms.core.criteria.Criteria;
-
-public interface OnmsContainerDatasource<T, K extends Serializable> {
-    void clear();
-
-    void delete(K itemId);
-
-    List<T> findMatching(Criteria criteria);
-
-    int countMatching(Criteria criteria);
-
-    T createInstance(Class<T> itemClass) throws IllegalAccessException, InstantiationException;
+public enum ContentType {
+    Application,
+    BusinessService,
+    Node,
+    Alarm
 }

@@ -30,11 +30,10 @@ package org.opennms.features.topology.plugins.topo.application.browsers;
 
 import java.util.Map;
 
-import com.vaadin.ui.Table;
+import org.opennms.features.topology.api.browsers.OnmsVaadinContainer;
+import org.opennms.features.topology.api.browsers.SelectionAwareTable;
 
-import org.opennms.features.topology.plugins.browsers.OnmsVaadinContainer;
-
-public class ApplicationTable extends Table {
+public class ApplicationTable extends SelectionAwareTable {
     /**
      *  Leave OnmsVaadinContainer without generics; the Aries blueprint code cannot match up
      *  the arguments if you put the generic types in.
@@ -48,6 +47,4 @@ public class ApplicationTable extends Table {
             addGeneratedColumn(key, (ColumnGenerator)generators.get(key));
         }
     }
-
-
 }

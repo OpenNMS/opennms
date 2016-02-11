@@ -49,4 +49,9 @@ public class NodeImpl implements Node {
     public String getLabel() {
         return entity.getLabel();
     }
+
+    @Override
+    public Integer getId() {
+        return entity.getId();
+    }
 }
