@@ -93,9 +93,9 @@ public class DiscoveryJob implements Serializable {
     @Override
     public String toString() {
        return com.google.common.base.Objects.toStringHelper(this)
-                 .add("ranges", m_ranges)
                  .add("foreignSource", m_foreignSource)
                  .add("location", m_location)
+                 .add("ranges", m_ranges)
                  .toString();
     }
 }
