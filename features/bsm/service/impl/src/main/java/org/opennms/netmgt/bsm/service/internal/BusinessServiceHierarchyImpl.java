@@ -21,46 +21,37 @@
  *      http://www.gnu.org/licenses/
  *
  * For more information contact:
- * OpenNMS(R) Licensing <license@opennms.org>
- *      http://www.opennms.org/
- *      http://www.opennms.com/
+ *     OpenNMS(R) Licensing <license@opennms.org>
+ *     http://www.opennms.org/
+ *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.plugins.topo.bsm;
+package org.opennms.netmgt.bsm.service.internal;
 
+import java.util.Collection;
 import java.util.Set;
 
 import org.opennms.netmgt.bsm.service.model.BusinessService;
+import org.opennms.netmgt.bsm.service.model.BusinessServiceHierarchy;
 
-import com.google.common.collect.Sets;
+/**
+ * Helper object to wrap any number of Business Service objects.
+ * In this case the hierarchy level is set and the root elements can be determined.
+ * It is kind of a "Business Service Graph" object.
+ */
+class BusinessServiceHierarchyImpl implements BusinessServiceHierarchy {
 
-public class BusinessServiceVertex extends AbstractBusinessServiceVertex {
+    // the Root Business Services
+    private final Set<BusinessService> roots;
 
-    private final Long serviceId;
-
-    public BusinessServiceVertex(BusinessService businessService) {
-        this(businessService.getId(), businessService.getName(), businessService.getLevel());
-    }
-
-    public BusinessServiceVertex(Long serviceId, String name, int level) {
-        super(Type.BusinessService + ":" + serviceId, name, level);
-        this.serviceId = serviceId;
-        setLabel(name);
-        setTooltipText(String.format("Business Service '%s'", name));
-        setIconKey("business-service");
-    }
-
-    public Long getServiceId() {
-        return serviceId;
+    BusinessServiceHierarchyImpl(Collection<BusinessService> allBusinessServices) {
+        roots = BusinessServiceHierarchyUtils.getRoots(allBusinessServices);
+        BusinessServiceHierarchyUtils.updateHierarchyLevel(roots);
     }
 
     @Override
-    public Type getType() {
-        return Type.BusinessService;
+    public Set<BusinessService> getRoots() {
+        return roots;
     }
 
-    @Override
-    public Set<String> getReductionKeys() {
-        return Sets.newHashSet();
-    }
 }

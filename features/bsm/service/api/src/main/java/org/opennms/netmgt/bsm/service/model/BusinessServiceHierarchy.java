@@ -21,46 +21,16 @@
  *      http://www.gnu.org/licenses/
  *
  * For more information contact:
- * OpenNMS(R) Licensing <license@opennms.org>
- *      http://www.opennms.org/
- *      http://www.opennms.com/
+ *     OpenNMS(R) Licensing <license@opennms.org>
+ *     http://www.opennms.org/
+ *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.plugins.topo.bsm;
+package org.opennms.netmgt.bsm.service.model;
 
 import java.util.Set;
 
-import org.opennms.netmgt.bsm.service.model.BusinessService;
+public interface BusinessServiceHierarchy {
 
-import com.google.common.collect.Sets;
-
-public class BusinessServiceVertex extends AbstractBusinessServiceVertex {
-
-    private final Long serviceId;
-
-    public BusinessServiceVertex(BusinessService businessService) {
-        this(businessService.getId(), businessService.getName(), businessService.getLevel());
-    }
-
-    public BusinessServiceVertex(Long serviceId, String name, int level) {
-        super(Type.BusinessService + ":" + serviceId, name, level);
-        this.serviceId = serviceId;
-        setLabel(name);
-        setTooltipText(String.format("Business Service '%s'", name));
-        setIconKey("business-service");
-    }
-
-    public Long getServiceId() {
-        return serviceId;
-    }
-
-    @Override
-    public Type getType() {
-        return Type.BusinessService;
-    }
-
-    @Override
-    public Set<String> getReductionKeys() {
-        return Sets.newHashSet();
-    }
+    Set<BusinessService> getRoots();
 }

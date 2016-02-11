@@ -38,16 +38,16 @@ public class IpServiceVertex extends AbstractBusinessServiceVertex {
 
     private final Set<String> reductionKeys;
 
-    public IpServiceVertex(IpService ipServiceDTO) {
-        this(String.valueOf(ipServiceDTO.getId()),
-                ipServiceDTO.getServiceName(),
-                Integer.valueOf(ipServiceDTO.getId()),
-                ipServiceDTO.getIpAddress(),
-                ipServiceDTO.getReductionKeys());
+    public IpServiceVertex(IpService ipService, int level) {
+        this(ipService.getId(),
+            ipService.getServiceName(),
+            ipService.getIpAddress(),
+            ipService.getReductionKeys(),
+            level);
     }
 
-    private IpServiceVertex(String id, String ipServiceName, Integer ipServiceId, String ipAddress, Set<String> reductionKeys) {
-        super(Type.IpService + ":" + id, ipServiceName);
+    private IpServiceVertex(int ipServiceId, String ipServiceName, String ipAddress, Set<String> reductionKeys, int level) {
+        super(Type.IpService + ":" + ipServiceId, ipServiceName, level);
         this.ipServiceId = ipServiceId;
         this.reductionKeys = reductionKeys;
         setIpAddress(ipAddress);

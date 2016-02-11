@@ -33,6 +33,7 @@ import java.util.Set;
 
 import org.opennms.core.criteria.Criteria;
 import org.opennms.netmgt.bsm.service.model.BusinessService;
+import org.opennms.netmgt.bsm.service.model.BusinessServiceHierarchy;
 import org.opennms.netmgt.bsm.service.model.IpService;
 import org.opennms.netmgt.bsm.service.model.Status;
 import org.opennms.netmgt.bsm.service.model.edge.ChildEdge;
@@ -100,4 +101,6 @@ public interface BusinessServiceManager extends NodeManager {
     boolean addReductionKeyEdge(BusinessService businessService, String reductionKey, MapFunction mapFunction, int weight);
 
     void setReductionKeyEdges(BusinessService businessService, Set<ReductionKeyEdge> reductionKeyEdges);
+
+    BusinessServiceHierarchy getHierarchy();
 }

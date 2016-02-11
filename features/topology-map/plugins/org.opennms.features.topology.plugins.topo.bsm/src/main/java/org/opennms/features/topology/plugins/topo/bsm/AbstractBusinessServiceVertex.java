@@ -33,9 +33,10 @@ import java.util.List;
 import java.util.Set;
 
 import org.opennms.features.topology.api.topo.AbstractVertex;
+import org.opennms.features.topology.api.topo.LevelAware;
 import org.opennms.features.topology.api.topo.VertexRef;
 
-abstract class AbstractBusinessServiceVertex extends AbstractVertex {
+abstract class AbstractBusinessServiceVertex extends AbstractVertex implements LevelAware {
 
     enum Type {
         BusinessService,
@@ -45,13 +46,18 @@ abstract class AbstractBusinessServiceVertex extends AbstractVertex {
 
     private final List<VertexRef> children = new ArrayList<>();
 
+    private final int level;
+
     /**
      * Creates a new {@link AbstractBusinessServiceVertex}.
      *
      * @param id the unique id of this vertex. Must be unique overall the namespace.
+     * @param label a human readable label
+     * @param level the level of the vertex in the Business Service Hierarchy. The root element is level 0.
      */
-    protected AbstractBusinessServiceVertex(String id, String label) {
+    protected AbstractBusinessServiceVertex(String id, String label, int level) {
         super(BusinessServicesTopologyProvider.TOPOLOGY_NAMESPACE, id, label);
+        this.level = level;
         setIconKey(null);
         setLocked(false);
         setSelected(false);
@@ -76,15 +82,16 @@ abstract class AbstractBusinessServiceVertex extends AbstractVertex {
         return children;
     }
 
-    public boolean isPartOf(String serviceId) {
-        return serviceId != null && serviceId.equals(getRoot().getId());
-    }
-
     public AbstractBusinessServiceVertex getRoot() {
         if (isRoot()) {
             return this;
         }
         return ((AbstractBusinessServiceVertex) getParent()).getRoot();
+    }
+
+    @Override
+    public int getLevel() {
+        return level;
     }
 
     public abstract Type getType();

@@ -73,7 +73,7 @@ public class BusinessServicesSelectionLinkGenerator extends AbstractSelectionLin
                     public void buttonClick(Button.ClickEvent event) {
                         Long businessServiceId = idProperty.getValue();
                         String businessServiceLabel = labelProperty.getValue();
-                        BusinessServiceVertex vertex = new BusinessServiceVertex(businessServiceId, businessServiceLabel);
+                        BusinessServiceVertex vertex = new BusinessServiceVertex(businessServiceId, businessServiceLabel, 0 /* does not matter in this case*/);
                         fireVertexUpdatedEvent(vertex);
                     }
                 });

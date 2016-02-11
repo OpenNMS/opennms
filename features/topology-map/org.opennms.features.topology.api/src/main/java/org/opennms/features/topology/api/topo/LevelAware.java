@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2016 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -26,27 +26,9 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.plugins.topo.bsm.browsers;
+package org.opennms.features.topology.api.topo;
 
-import org.opennms.features.topology.api.browsers.ContentType;
-import org.opennms.features.topology.api.browsers.OnmsVaadinContainer;
-import org.opennms.netmgt.bsm.service.model.BusinessService;
+public interface LevelAware {
 
-public class BusinessServicesContainer extends OnmsVaadinContainer<BusinessService, Long> {
-    private static final long serialVersionUID = 1L;
-
-    public BusinessServicesContainer(BusinessServiceContainerDatasource datasource) {
-        super(BusinessService.class, datasource);
-    }
-
-    @Override
-    protected Long getId(BusinessService bean) {
-        return bean == null ? null : bean.getId();
-    }
-
-    @Override
-    protected ContentType getContentType() {
-        return ContentType.BusinessService;
-    }
-
+    int getLevel();
 }
