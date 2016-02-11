@@ -36,9 +36,9 @@ import javax.xml.bind.JAXBException;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.opennms.core.criteria.restrictions.Restriction;
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.browsers.ContentType;
+import org.opennms.features.topology.api.browsers.SelectionChangedListener;
 import org.opennms.features.topology.api.topo.AbstractTopologyProvider;
 import org.opennms.features.topology.api.topo.Criteria;
 import org.opennms.features.topology.api.topo.GraphProvider;
@@ -53,8 +53,8 @@ public class GCFilterableContainerTest {
     public void setUp() throws MalformedURLException, JAXBException {
         GraphProvider provider = new AbstractTopologyProvider("test") {
             @Override
-            public void addRestrictions(List<Restriction> restrictionList, List<VertexRef> selectedVertices, ContentType type) {
-
+            public SelectionChangedListener.Selection getSelection(List<VertexRef> selectedVertices, ContentType type) {
+                return SelectionChangedListener.Selection.EMPTY;
             }
 
             @Override

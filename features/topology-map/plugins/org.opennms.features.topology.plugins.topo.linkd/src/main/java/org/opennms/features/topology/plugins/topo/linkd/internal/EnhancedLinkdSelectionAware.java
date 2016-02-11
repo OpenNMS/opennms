@@ -32,10 +32,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import org.opennms.core.criteria.restrictions.Restriction;
-import org.opennms.core.criteria.restrictions.Restrictions;
 import org.opennms.features.topology.api.browsers.ContentType;
 import org.opennms.features.topology.api.browsers.SelectionAware;
+import org.opennms.features.topology.api.browsers.SelectionChangedListener;
 import org.opennms.features.topology.api.topo.GroupRef;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
@@ -47,18 +46,15 @@ import com.google.gwt.thirdparty.guava.common.collect.Collections2;
 
 public class EnhancedLinkdSelectionAware implements SelectionAware {
     @Override
-    public void addRestrictions(List<Restriction> restrictionList, List<VertexRef> selectedVertices, ContentType type) {
-        if (contributesTo(type)) {
-            List<Integer> nodeIds = extractNodeIds(selectedVertices);
-            if (!nodeIds.isEmpty()) {
-                if (type == ContentType.Alarm) {
-                    restrictionList.add(Restrictions.in("node.id", nodeIds));
-                }
-                if (type == ContentType.Node) {
-                    restrictionList.add(Restrictions.in("id", nodeIds));
-                }
-            }
+    public SelectionChangedListener.Selection getSelection(List<VertexRef> selectedVertices, ContentType type) {
+        List<Integer> nodeIds = extractNodeIds(selectedVertices);
+        if (type == ContentType.Alarm) {
+            return new SelectionChangedListener.AlarmNodeIdSelection(nodeIds);
         }
+        if (type == ContentType.Node) {
+            return new SelectionChangedListener.IdSelection<>(nodeIds);
+        }
+        return SelectionChangedListener.Selection.EMPTY;
     }
 
     @Override

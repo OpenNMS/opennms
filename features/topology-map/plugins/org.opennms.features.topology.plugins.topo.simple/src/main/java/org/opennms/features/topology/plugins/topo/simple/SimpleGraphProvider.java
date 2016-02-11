@@ -41,9 +41,8 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 
-import org.opennms.core.criteria.restrictions.Restriction;
-import org.opennms.core.criteria.restrictions.Restrictions;
 import org.opennms.features.topology.api.browsers.ContentType;
+import org.opennms.features.topology.api.browsers.SelectionChangedListener;
 import org.opennms.features.topology.api.topo.AbstractEdge;
 import org.opennms.features.topology.api.topo.AbstractTopologyProvider;
 import org.opennms.features.topology.api.topo.AbstractVertex;
@@ -245,33 +244,30 @@ public class SimpleGraphProvider extends AbstractTopologyProvider implements Gra
         }
     }
 
-
-    protected void addRestrictions(String namespace, List<Restriction> restrictionList, List<VertexRef> selectedVertices, ContentType type) {
-        if (contributesTo(type)) {
-            Set<Integer> nodeIds = selectedVertices.stream()
-                    .filter(v -> namespace.equals(v.getNamespace()))
-                    .filter(v -> v instanceof AbstractVertex)
-                    .map(v -> (AbstractVertex) v)
-                    .map(v -> v.getNodeID())
-                    .filter(nodeId -> nodeId != null)
-                    .collect(Collectors.toSet());
-            if (!nodeIds.isEmpty()) {
-                if (type == ContentType.Alarm) {
-                    restrictionList.add(Restrictions.in("node.id", nodeIds));
-                }
-                if (type == ContentType.Node) {
-                    restrictionList.add(Restrictions.in("id", nodeIds));
-                }
-            }
+    protected SelectionChangedListener.Selection getSelection(String namespace, List<VertexRef> selectedVertices, ContentType type) {
+        final Set<Integer> nodeIds = selectedVertices.stream()
+                .filter(v -> namespace.equals(v.getNamespace()))
+                .filter(v -> v instanceof AbstractVertex)
+                .map(v -> (AbstractVertex) v)
+                .map(v -> v.getNodeID())
+                .filter(nodeId -> nodeId != null)
+                .collect(Collectors.toSet());
+        if (type == ContentType.Alarm) {
+            return new SelectionChangedListener.AlarmNodeIdSelection(nodeIds);
         }
-    }
-    @Override
-    public void addRestrictions(List<Restriction> restrictionList, List<VertexRef> selectedVertices, ContentType type) {
-        addRestrictions(TOPOLOGY_NAMESPACE_SIMPLE, restrictionList, selectedVertices, type);
+        if (type == ContentType.Node) {
+            return new SelectionChangedListener.IdSelection<>(nodeIds);
+        }
+        return SelectionChangedListener.Selection.EMPTY;
     }
 
     @Override
-    public boolean contributesTo(ContentType container) {
-        return Sets.newHashSet(ContentType.Alarm, ContentType.Node).contains(container);
+    public SelectionChangedListener.Selection getSelection(List<VertexRef> selectedVertices, ContentType contentType) {
+            return getSelection(TOPOLOGY_NAMESPACE_SIMPLE, selectedVertices, contentType);
+    }
+
+    @Override
+    public boolean contributesTo(ContentType contentType) {
+        return Sets.newHashSet(ContentType.Alarm, ContentType.Node).contains(contentType);
     }
 }

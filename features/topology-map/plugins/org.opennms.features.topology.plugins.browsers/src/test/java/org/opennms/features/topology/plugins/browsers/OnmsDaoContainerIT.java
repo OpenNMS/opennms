@@ -40,9 +40,8 @@ import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.features.topology.api.VerticesUpdateManager;
-import org.opennms.features.topology.api.browsers.OnmsVaadinContainer;
 import org.opennms.features.topology.api.browsers.ContentType;
+import org.opennms.features.topology.api.browsers.OnmsVaadinContainer;
 import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.dao.api.DistPollerDao;
@@ -92,11 +91,6 @@ public class OnmsDaoContainerIT {
             @Override
             protected Integer getId(OnmsAlarm bean) {
                 return bean == null ? null : bean.getId();
-            }
-
-            @Override
-            public void verticesUpdated(VerticesUpdateManager.VerticesUpdateEvent event) {
-
             }
 
             @Override

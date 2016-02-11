@@ -35,8 +35,8 @@ import javax.xml.bind.JAXBException;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.opennms.core.criteria.restrictions.Restriction;
 import org.opennms.features.topology.api.browsers.ContentType;
+import org.opennms.features.topology.api.browsers.SelectionChangedListener;
 
 public class AbstractTopologyProviderTest {
 
@@ -45,8 +45,8 @@ public class AbstractTopologyProviderTest {
         AbstractTopologyProvider provider = new AbstractTopologyProvider("test") {
 
             @Override
-            public void addRestrictions(List<Restriction> restrictionList, List<VertexRef> selectedVertices, ContentType type) {
-                // do nothing
+            public SelectionChangedListener.Selection getSelection(List<VertexRef> selectedVertices, ContentType type) {
+                return SelectionChangedListener.Selection.EMPTY;
             }
 
             @Override

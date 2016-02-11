@@ -35,13 +35,11 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
-import org.opennms.core.criteria.restrictions.Restriction;
-import org.opennms.core.criteria.restrictions.Restrictions;
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.OperationContext;
 import org.opennms.features.topology.api.browsers.ContentType;
+import org.opennms.features.topology.api.browsers.SelectionChangedListener;
 import org.opennms.features.topology.api.support.VertexHopGraphProvider;
 import org.opennms.features.topology.api.topo.AbstractVertex;
 import org.opennms.features.topology.api.topo.Edge;
@@ -462,7 +460,7 @@ public class VmwareTopologyProvider extends SimpleGraphProvider implements Graph
     }
 
     @Override
-    public void addRestrictions(List<Restriction> restrictionList, List<VertexRef> selectedVertices, ContentType type) {
-        addRestrictions(TOPOLOGY_NAMESPACE_VMWARE, restrictionList, selectedVertices, type);
+    public SelectionChangedListener.Selection getSelection(List<VertexRef> selectedVertices, ContentType type) {
+        return getSelection(TOPOLOGY_NAMESPACE_VMWARE, selectedVertices, type);
     }
 }
