@@ -51,6 +51,8 @@ import org.opennms.core.config.api.JaxbListWrapper;
 import org.opennms.netmgt.provision.persist.ForeignSourceService;
 import org.opennms.netmgt.provision.support.PluginWrapper;
 import org.opennms.web.svclayer.ManualProvisioningService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -64,6 +66,7 @@ import org.springframework.util.Assert;
 @Component("foreignSourceConfigRestService")
 @Path("foreignSourcesConfig")
 public class ForeignSourceConfigRestService extends OnmsRestService implements InitializingBean {
+    private static final Logger LOG = LoggerFactory.getLogger(ForeignSourceConfigRestService.class);
 
     /** The m_foreign source service. */
     @Autowired
@@ -301,7 +304,11 @@ public class ForeignSourceConfigRestService extends OnmsRestService implements I
         SimplePluginConfigList plugins = new SimplePluginConfigList();
         Map<String,String> typesMap = isPolicies ? m_foreignSourceService.getPolicyTypes(): m_foreignSourceService.getDetectorTypes();
         for (String pluginClass : typesMap.keySet()) {
-            PluginWrapper wrapper = m_foreignSourceService.getWrappers().get(pluginClass);
+            final PluginWrapper wrapper = m_foreignSourceService.getWrappers().get(pluginClass);
+            if (wrapper == null) {
+                LOG.warn("No wrapper found for plugin class {}. See previous log messages for wrapping failures.", pluginClass);
+                continue;
+            }
             final String pluginName = typesMap.get(pluginClass);
             SimplePluginConfig cfg = new SimplePluginConfig(pluginName, pluginClass);
             List<SimplePluginParameter> requiredParams = new ArrayList<SimplePluginParameter>();
