@@ -258,7 +258,7 @@ public class SimpleGraphProvider extends AbstractTopologyProvider implements Gra
         if (type == ContentType.Node) {
             return new SelectionChangedListener.IdSelection<>(nodeIds);
         }
-        return SelectionChangedListener.Selection.EMPTY;
+        return SelectionChangedListener.Selection.NONE;
     }
 
     @Override
@@ -267,7 +267,7 @@ public class SimpleGraphProvider extends AbstractTopologyProvider implements Gra
     }
 
     @Override
-    public boolean contributesTo(ContentType contentType) {
-        return Sets.newHashSet(ContentType.Alarm, ContentType.Node).contains(contentType);
+    public boolean contributesTo(ContentType type) {
+        return Sets.newHashSet(ContentType.Alarm, ContentType.Node).contains(type);
     }
 }

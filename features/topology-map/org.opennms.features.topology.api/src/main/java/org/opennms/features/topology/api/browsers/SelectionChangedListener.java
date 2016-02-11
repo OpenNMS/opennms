@@ -40,23 +40,52 @@ import org.opennms.core.criteria.restrictions.Restrictions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
+/**
+ * Listener to deal with selection changes.
+ * This should be used in combination with the {@link OnmsVaadinContainer} or {@link SelectionAwareTable}.
+ * This allows the underlying container to filter based on the {@link Selection}'s returned restrictions.
+ * In addition to that it no longer depends directly on Topology knowledge.
+ */
 public interface SelectionChangedListener {
 
+    /**
+     * The new selection.
+     * Defines how to convert the current selection to a list of Restrictions.
+     */
     interface Selection {
 
-        Selection EMPTY = new Selection() {
+        /**
+         * Dummy selection for "NO SELECTION".
+         * This does not filter the underlying {@link OnmsVaadinContainer}
+         */
+        Selection NONE = new Selection() {
             @Override
             public List<Restriction> toRestrictions() {
                 return Lists.newArrayList();
             }
         };
 
+        /**
+         * The list of restrictions to return.
+         * Please note, that each element in the list is AND concatenated.
+         *
+         * @return The list of {@link Restriction} to return to use to filter the {@link OnmsVaadinContainer}.
+         */
         List<Restriction> toRestrictions();
 
     }
 
+    /**
+     * A convenient {@link Selection} to create an in-Restriction for the provided {@link #selectedIds}.
+     * If {@link #selectedIds} is null or empty, an empty list is returned (results in "NO SELECTION").
+     * Please be aware that this requires a "id" attribute on the entity managed by {@link OnmsVaadinContainer}.
+     *
+     * @param <T> The Type of the "id" attribute.
+     *
+     */
     class IdSelection<T extends Serializable> implements Selection {
 
+        /** The selected ids, e.g. Node Ids */
         private final Set<T> selectedIds;
 
         public IdSelection(Collection<T> selectedIds) {
@@ -72,6 +101,12 @@ public interface SelectionChangedListener {
         }
     }
 
+    /**
+     * A convenient {@link Selection} to create an in-Restriction for the provided {@link #selectedNodeIds}.
+     * If {@link #selectedNodeIds} is null or empty, an empty list is returned (results in "NO SELECTION").
+     * Please note that this requires a "node.id" attribute on the entity managed by {@link OnmsVaadinContainer}.
+     * It's original intention is to be used only for a {@link OnmsVaadinContainer} managing OnmsAlarm entities.
+     */
     class AlarmNodeIdSelection implements Selection {
 
         private final Set<Integer> selectedNodeIds;
@@ -89,5 +124,10 @@ public interface SelectionChangedListener {
         }
     }
 
+    /**
+     * Provide a new {@link Selection} object if the selection has changed.
+     *
+     * @param newSelection The new selection.
+     */
     void selectionChanged(Selection newSelection);
 }

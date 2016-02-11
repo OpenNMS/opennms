@@ -33,6 +33,12 @@ import java.util.List;
 
 import org.opennms.core.criteria.Criteria;
 
+/**
+ * Abstraction to allow the {@link OnmsVaadinContainer} to use different kinds of data sources, not only DAOs.
+ *
+ * @param <T> The entity type (e.g. OnmsAlarm).
+ * @param <K> The key type of the entity (e.g. Integer)
+ */
 public interface OnmsContainerDatasource<T, K extends Serializable> {
     void clear();
 

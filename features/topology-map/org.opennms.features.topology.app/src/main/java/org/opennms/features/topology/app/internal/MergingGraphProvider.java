@@ -563,8 +563,8 @@ public class MergingGraphProvider implements GraphProvider, VertexListener, Edge
 	}
 
 	@Override
-	public boolean contributesTo(ContentType container) {
-		return m_baseGraphProvider.contributesTo(container);
+	public boolean contributesTo(ContentType type) {
+		return m_baseGraphProvider.contributesTo(type);
 	}
 
 	private static class NullProvider implements GraphProvider {
@@ -772,11 +772,11 @@ public class MergingGraphProvider implements GraphProvider, VertexListener, Edge
 
 		@Override
 		public SelectionChangedListener.Selection getSelection(List<VertexRef> selectedVertices, ContentType type) {
-			return SelectionChangedListener.Selection.EMPTY;
+			return SelectionChangedListener.Selection.NONE;
 		}
 
 		@Override
-		public boolean contributesTo(ContentType container) {
+		public boolean contributesTo(ContentType type) {
 			return false;
 		}
 	}
