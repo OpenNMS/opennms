@@ -723,7 +723,7 @@ public class VertexHopGraphProvider implements GraphProvider, SelectionAware {
     }
 
     @Override
-    public boolean contributesTo(ContentType container) {
-        return m_delegate.contributesTo(container);
+    public boolean contributesTo(ContentType type) {
+        return m_delegate.contributesTo(type);
     }
 }

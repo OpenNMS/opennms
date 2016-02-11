@@ -54,11 +54,11 @@ public class GCFilterableContainerTest {
         GraphProvider provider = new AbstractTopologyProvider("test") {
             @Override
             public SelectionChangedListener.Selection getSelection(List<VertexRef> selectedVertices, ContentType type) {
-                return SelectionChangedListener.Selection.EMPTY;
+                return SelectionChangedListener.Selection.NONE;
             }
 
             @Override
-            public boolean contributesTo(ContentType container) {
+            public boolean contributesTo(ContentType type) {
                 return false;
             }
 

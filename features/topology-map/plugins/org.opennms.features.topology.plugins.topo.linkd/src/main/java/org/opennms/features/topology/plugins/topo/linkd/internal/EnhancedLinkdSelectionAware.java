@@ -54,12 +54,12 @@ public class EnhancedLinkdSelectionAware implements SelectionAware {
         if (type == ContentType.Node) {
             return new SelectionChangedListener.IdSelection<>(nodeIds);
         }
-        return SelectionChangedListener.Selection.EMPTY;
+        return SelectionChangedListener.Selection.NONE;
     }
 
     @Override
-    public boolean contributesTo(ContentType container) {
-        return Sets.newHashSet(ContentType.Alarm, ContentType.Node).contains(container);
+    public boolean contributesTo(ContentType type) {
+        return Sets.newHashSet(ContentType.Alarm, ContentType.Node).contains(type);
     }
 
     /**

@@ -134,7 +134,7 @@ public class ApplicationTopologyProvider extends AbstractTopologyProvider implem
     }
 
     @Override
-    public boolean contributesTo(ContentType container) {
-        return ContentType.Application == container;
+    public boolean contributesTo(ContentType type) {
+        return ContentType.Application == type;
     }
 }

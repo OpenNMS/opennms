@@ -321,7 +321,7 @@ public class NodeACLVertexProvider implements GraphProvider {
     }
 
     @Override
-    public boolean contributesTo(ContentType container) {
-        return m_delegate.contributesTo(container);
+    public boolean contributesTo(ContentType type) {
+        return m_delegate.contributesTo(type);
     }
 }

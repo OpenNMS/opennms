@@ -183,7 +183,7 @@ public class BusinessServicesTopologyProvider extends AbstractTopologyProvider i
                 .map(e -> (AbstractBusinessServiceVertex) e)
                 .collect(Collectors.toSet());
         if (filteredSet.isEmpty()) {
-            return SelectionChangedListener.Selection.EMPTY;
+            return SelectionChangedListener.Selection.NONE;
         }
         switch (contentType) {
             case Alarm:
@@ -228,7 +228,7 @@ public class BusinessServicesTopologyProvider extends AbstractTopologyProvider i
     }
 
     @Override
-    public boolean contributesTo(ContentType container) {
-        return Sets.newHashSet(ContentType.Alarm, ContentType.Node, ContentType.BusinessService).contains(container);
+    public boolean contributesTo(ContentType type) {
+        return Sets.newHashSet(ContentType.Alarm, ContentType.Node, ContentType.BusinessService).contains(type);
     }
 }

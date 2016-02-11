@@ -1464,8 +1464,8 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
     }
 
     @Override
-    public boolean contributesTo(ContentType container) {
-        return selectionAwareDelegate.contributesTo(container);
+    public boolean contributesTo(ContentType type) {
+        return selectionAwareDelegate.contributesTo(type);
     }
 
     private org.opennms.features.topology.api.topo.Criteria findCriterion(String resultId, GraphContainer container) {
