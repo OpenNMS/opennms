@@ -189,6 +189,7 @@ public class WallboardOverview extends VerticalLayout {
             m_table.setContainerDataSource(m_beanItemContainer);
             m_table.setVisibleColumns(new Object[]{"title", "Edit", "Remove", "Preview", "Default"});
             m_table.setColumnHeader("title", "Title");
+            m_table.sort();
             m_table.refreshRowCache();
         }
     }
