@@ -77,6 +77,11 @@
         <argument ref="businessServicesContainer" />
         <property name="columnReorderingAllowed" value="true" />
         <property name="columnCollapsingAllowed" value="true" />
+        <property name="cellStyleGenerator">
+            <bean class="org.opennms.features.topology.plugins.topo.bsm.browsers.BusinessServicesTableCellStyleGenerator">
+                <property name="businessServiceManager" ref="businessServiceManager" />
+            </bean>
+        </property>
         <property name="sortContainerPropertyId" value="name" />
         <property name="columnGenerators">
             <map>

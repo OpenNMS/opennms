@@ -38,7 +38,7 @@ import org.opennms.netmgt.model.OnmsSeverity;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.Table.CellStyleGenerator;
 
-public class NodeTableCellStyleGenerator  implements CellStyleGenerator {
+public class NodeTableCellStyleGenerator implements CellStyleGenerator {
 
     private final AlarmCellStyleRenderer cellStyleRenderer = new AlarmCellStyleRenderer();
     private AlarmDao alarmDao;
