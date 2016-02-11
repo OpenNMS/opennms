@@ -99,7 +99,7 @@ public class TransactionAwareBeanProxyFactory {
                     });
                     return result;
                 // We catch TransactionInvocationHandlerException in order to deal with exceptions thrown by the "transactionInvocationHandler" above.
-                // We grab the target Exception of a possible InvocationTargetException to ensure the the right exception is propagated.
+                // We grab the target Exception of a possible InvocationTargetException to ensure the right exception is propagated.
                 } catch (TransactionInvocationHandlerException ex) {
                     if (ex.getCause() instanceof InvocationTargetException) {
                         throw ((InvocationTargetException)ex.getCause()).getTargetException();
