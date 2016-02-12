@@ -16,6 +16,15 @@
 
   <context:annotation-config />
 
+  <!-- Pinger service -->
+  <!-- <onmsgi:reference id="pinger" interface="org.opennms.netmgt.icmp.Pinger" /> -->
+
+  <!-- Event IPC manager service -->
+  <onmsgi:reference id="eventForwarder" interface="org.opennms.netmgt.events.api.EventForwarder" />
+
+  <!-- Persistent DiscoveryConfiguration -->
+  <!-- <onmsgi:reference id="discoveryFactory" interface="org.opennms.netmgt.config.api.DiscoveryConfigurationFactory"/> -->
+
   <!-- Create a set of Properties that can be used as propertyPlaceholders for Camel -->
   <bean id="discoveryProperties" class="org.opennms.netmgt.discovery.DiscoveryConfigurationFactoryPropertiesConverter" factory-method="getProperties">
     <constructor-arg ref="discoveryFactory"/>
@@ -25,15 +34,6 @@
   <bean id="properties" class="org.apache.camel.component.properties.PropertiesComponent">
     <property name="initialProperties" ref="discoveryProperties"/>
   </bean>
-
-  <!-- Pinger service -->
-  <!-- <onmsgi:reference id="pinger" interface="org.opennms.netmgt.icmp.Pinger" /> -->
-
-  <!-- Event IPC manager service -->
-  <onmsgi:reference id="eventForwarder" interface="org.opennms.netmgt.events.api.EventForwarder" />
-
-  <!-- Persistent DiscoveryConfiguration -->
-  <!-- <onmsgi:reference id="discoveryConfigFactory" interface="org.opennms.netmgt.config.api.DiscoveryConfigurationFactory"/> -->
 
   <!--
     TODO: Hook this filter into DAO/event channel so that it can provide an up-to-date
@@ -66,11 +66,13 @@
     -->
   </bean>
 
+  <!-- Process the EventListener annotations on Discovery -->
   <bean id="daemonListener" class="org.opennms.netmgt.events.api.AnnotationBasedEventListenerAdapter">
     <property name="annotatedListener" ref="daemon" />
     <property name="eventSubscriptionService" ref="eventSubscriptionService" />
   </bean>
 
+  <!-- Discovery daemon -->
   <bean id="daemon" class="org.opennms.netmgt.discovery.Discovery">
     <property name="discoveryFactory" ref="discoveryFactory" />
     <property name="eventForwarder" ref="eventForwarder" />
@@ -81,7 +83,6 @@
 
     <!-- Bootstrap timer -->
     <route id="startDiscoveryTimer">
-      <!-- <log loggingLevel="INFO" message="blueprint-discovery.xml: Starting Discovery timer" /> -->
       <from uri="timer:discoveryTimer?period={{restartSleepTime}}&amp;delay={{initialSleepTime}}&amp;fixedRate=true&amp;daemon=true" />
       <!-- Set the DiscoveryConfiguration as the message body -->
       <transform><simple>${bean:discoveryFactory.getConfiguration}</simple></transform>
