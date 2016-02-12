@@ -55,7 +55,7 @@ public class BusinessServiceResponseDTOMarshalTest extends MarshalAndUnmarshalTe
 
     @Parameterized.Parameters
     public static Collection<Object[]> data() throws IOException {
-        final MapFunctionDTO ignoreDto = createMapFunctionDTO(MapFunctionType.Ignore, null);
+        final MapFunctionDTO ignoreDto = createMapFunctionDTO(MapFunctionType.Ignore);
         final BusinessServiceResponseDTO bs = new BusinessServiceResponseDTO();
         bs.setId(1L);
         bs.setName("Web Servers");
@@ -91,7 +91,7 @@ public class BusinessServiceResponseDTOMarshalTest extends MarshalAndUnmarshalTe
             "    \"operationalStatus\" : \"CRITICAL\"," +
             "    \"mapFunction\" : {" +
             "      \"type\" : \"Ignore\"," +
-            "      \"properties\" : null" +
+            "      \"properties\" : { }" +
             "    }," +
             "    \"weight\" : 9," +
             "    \"location\" : \"/api/v2/test/1\"," +
@@ -101,7 +101,7 @@ public class BusinessServiceResponseDTOMarshalTest extends MarshalAndUnmarshalTe
             "    \"operationalStatus\" : \"NORMAL\"," +
             "    \"mapFunction\" : {" +
             "      \"type\" : \"Ignore\"," +
-            "      \"properties\" : null" +
+            "      \"properties\" : { }" +
             "    }," +
             "    \"weight\" : 9," +
             "    \"location\" : \"/api/v2/test/2\"," +
@@ -112,7 +112,7 @@ public class BusinessServiceResponseDTOMarshalTest extends MarshalAndUnmarshalTe
             "    \"operationalStatus\" : \"MAJOR\"," +
             "    \"mapFunction\" : {" +
             "      \"type\" : \"Ignore\"," +
-            "      \"properties\" : null" +
+            "      \"properties\" : { }" +
             "    }," +
             "    \"weight\" : 7," +
             "    \"location\" : \"/api/v2/test/3\"," +
@@ -123,7 +123,7 @@ public class BusinessServiceResponseDTOMarshalTest extends MarshalAndUnmarshalTe
             "    \"operationalStatus\" : \"MAJOR\"," +
             "    \"mapFunction\" : {" +
             "      \"type\" : \"Ignore\"," +
-            "      \"properties\" : null" +
+            "      \"properties\" : { }" +
             "    }," +
             "    \"weight\" : 7," +
             "    \"location\" : \"/api/v2/test/4\"," +
@@ -135,7 +135,7 @@ public class BusinessServiceResponseDTOMarshalTest extends MarshalAndUnmarshalTe
             "    \"operationalStatus\" : \"MINOR\"," +
             "    \"mapFunction\" : {" +
             "      \"type\" : \"Ignore\"," +
-            "      \"properties\" : null" +
+            "      \"properties\" : { }" +
             "    }," +
             "    \"weight\" : 5," +
             "    \"location\" : \"/api/v2/test/5\"," +

@@ -46,10 +46,10 @@ public class BusinessServiceRequestDTOMarshalTest extends MarshalAndUnmarshalTes
 
     @Parameterized.Parameters
     public static Collection<Object[]> data() throws IOException {
-        final MapFunctionDTO increaseDto = createMapFunctionDTO(MapFunctionType.Increase, null);
+        final MapFunctionDTO increaseDto = createMapFunctionDTO(MapFunctionType.Increase);
         final MapFunctionDTO setToDto = createMapFunctionDTO(MapFunctionType.SetTo, new String[]{"status", "Critical"});
         final BusinessServiceRequestDTO requestDTO = new BusinessServiceRequestDTO();
-        requestDTO.setReduceFunction(createReduceFunctionDTO(ReduceFunctionType.MostCritical, null));
+        requestDTO.setReduceFunction(createReduceFunctionDTO(ReduceFunctionType.MostCritical));
         requestDTO.setName("Web Servers");
         requestDTO.addAttribute("dc", "RDU");
         requestDTO.addAttribute("some-key", "some-value");
@@ -70,13 +70,13 @@ public class BusinessServiceRequestDTOMarshalTest extends MarshalAndUnmarshalTes
             "  }," +
             "  \"reduceFunction\" : {" +
             "       \"type\" : \"MostCritical\"," +
-            "       \"properties\" : null" +
+            "       \"properties\" : { }" +
             "  }," +
             "  \"childServices\" : [" +
             "       {" +
             "           \"mapFunction\" : {" +
             "               \"type\" : \"Increase\"," +
-            "               \"properties\" : null" +
+            "               \"properties\" : { }" +
             "           }," +
             "           \"weight\" : 5," +
             "           \"childId\" : 2" +
@@ -96,7 +96,7 @@ public class BusinessServiceRequestDTOMarshalTest extends MarshalAndUnmarshalTes
             "       {" +
             "           \"mapFunction\" : {" +
             "               \"type\" : \"Increase\"," +
-            "               \"properties\" : null" +
+            "               \"properties\" : { }" +
             "           }," +
             "           \"weight\" : 9," +
             "           \"ipServiceId\" : 1" +
@@ -106,7 +106,7 @@ public class BusinessServiceRequestDTOMarshalTest extends MarshalAndUnmarshalTes
             "       {" +
             "           \"mapFunction\" : {" +
             "               \"type\" : \"Increase\"," +
-            "               \"properties\" : null" +
+            "               \"properties\" : { }" +
             "           }," +
             "           \"weight\" : 7," +
             "           \"reductionKey\" : \"myReductionKeyA\"" +
@@ -114,7 +114,7 @@ public class BusinessServiceRequestDTOMarshalTest extends MarshalAndUnmarshalTes
             "       {" +
             "            \"mapFunction\" : {" +
             "               \"type\" : \"Increase\"," +
-            "               \"properties\" : null" +
+            "               \"properties\" : { }" +
             "           }," +
             "           \"weight\" : 7," +
             "           \"reductionKey\" : \"myReductionKeyB\"" +

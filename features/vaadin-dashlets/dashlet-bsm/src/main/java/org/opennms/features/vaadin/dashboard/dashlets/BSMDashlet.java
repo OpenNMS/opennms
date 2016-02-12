@@ -148,7 +148,7 @@ public class BSMDashlet extends AbstractDashlet {
         rowLayout.setSizeFull();
         rowLayout.setSpacing(true);
 
-        final Status severity = m_businessServiceManager.getOperationalStatusForBusinessService(service);
+        final Status severity = m_businessServiceManager.getOperationalStatus(service);
         Label nameLabel = new Label(service.getName());
         nameLabel.setSizeFull();
         nameLabel.setStyleName("h3");

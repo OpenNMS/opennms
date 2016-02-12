@@ -102,7 +102,7 @@ public class BusinessServiceCriteria extends VertexHopCriteria implements Namesp
         Set<VertexRef> vertices = new HashSet<>();
         try {
             BusinessService businessService = businessServiceManager.getBusinessServiceById(Long.parseLong(businessServiceId));
-            vertices.add(new BusinessServiceVertex(businessService));
+            vertices.add(new BusinessServiceVertex(businessService, 0));
         } catch (NoSuchElementException ex) {
             LOG.warn("The Business Service with id {} does not exist anymore but is in focus. Skipping.", businessServiceId);
         }

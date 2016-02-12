@@ -52,7 +52,7 @@ public class BusinessServiceCriteriaTest {
         }
 
         @Override
-        public Status getOperationalStatusForBusinessService(BusinessService service) {
+        public Status getOperationalStatus(BusinessService service) {
             return service.getOperationalStatus();
         }
     };

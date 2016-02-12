@@ -28,38 +28,31 @@
 
 package org.opennms.netmgt.bsm.service.model.functions.reduce;
 
-import java.util.HashMap;
-import java.util.Map;
+import static org.junit.Assert.assertEquals;
 
-import org.junit.Assert;
+import java.util.Arrays;
+import java.util.Optional;
+
 import org.junit.Test;
 import org.opennms.netmgt.bsm.service.model.Status;
-import org.opennms.netmgt.bsm.service.model.edge.Edge;
-import org.opennms.netmgt.bsm.service.model.functions.map.Increase;
 
 public class ThresholdTest {
 
     @Test
     public void verifyReduce() {
         // Example from http://www.opennms.org/wiki/BusinessServiceMonitoring
-        Threshold threshold = new Threshold();
-        threshold.setThreshold(0.75f);
-
-        Map<Edge, Status> edgeStatusMap = new HashMap<>();
-        edgeStatusMap.put(new TestEdge(2, new Increase()), Status.MAJOR);
-        edgeStatusMap.put(new TestEdge(2, new Increase()), Status.CRITICAL);
-        edgeStatusMap.put(new TestEdge(1, new Increase()), Status.WARNING);
-        Assert.assertEquals(Status.MAJOR, threshold.reduce(edgeStatusMap).get());
+        assertEquals(Status.MAJOR, applyThreshold(0.75f, Status.MAJOR, Status.MAJOR, Status.CRITICAL, Status.CRITICAL, Status.WARNING).get());
 
         // Another Example with higher threshold
-        threshold.setThreshold(1.0f);
-        Assert.assertEquals(Status.WARNING, threshold.reduce(edgeStatusMap).get());
+        assertEquals(Status.WARNING, applyThreshold(1.0f, Status.MAJOR, Status.MAJOR, Status.CRITICAL, Status.CRITICAL, Status.WARNING).get());
 
         // Another Example
-        threshold.setThreshold(1.00f);
-        edgeStatusMap.clear();
-        edgeStatusMap.put(new TestEdge(1, new Increase()), Status.CRITICAL);
-        edgeStatusMap.put(new TestEdge(1, new Increase()), Status.MINOR);
-        Assert.assertEquals(Status.MINOR, threshold.reduce(edgeStatusMap).get());
+        assertEquals(Status.MINOR, applyThreshold(1.0f, Status.CRITICAL, Status.MINOR).get());
+    }
+
+    private Optional<Status> applyThreshold(float threshold, Status...statuses) {
+        Threshold t = new Threshold();
+        t.setThreshold(threshold);
+        return t.reduce(Arrays.asList(statuses));
     }
 }

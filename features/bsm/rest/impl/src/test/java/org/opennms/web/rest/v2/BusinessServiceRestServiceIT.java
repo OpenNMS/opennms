@@ -74,7 +74,6 @@ import org.opennms.netmgt.bsm.service.model.edge.Edge;
 import org.opennms.netmgt.bsm.service.model.functions.map.Ignore;
 import org.opennms.netmgt.bsm.test.BambooTestHierarchy;
 import org.opennms.netmgt.bsm.test.BsmDatabasePopulator;
-import org.opennms.netmgt.bsm.test.BsmTestUtils;
 import org.opennms.netmgt.bsm.test.BusinessServiceEntityBuilder;
 import org.opennms.netmgt.bsm.test.SimpleTestHierarchy;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
@@ -341,7 +340,6 @@ public class BusinessServiceRestServiceIT extends AbstractSpringJerseyRestTestCa
     }
 
     @Test
-    @SuppressWarnings("unchecked")
     public void canRetrieveBusinessServices() throws Exception {
         // Add business services to the DB
         BusinessServiceEntity bs = new BusinessServiceEntityBuilder()

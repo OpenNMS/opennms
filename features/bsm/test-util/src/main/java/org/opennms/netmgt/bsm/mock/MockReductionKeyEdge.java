@@ -26,77 +26,52 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.bsm.service.model.functions.reduce;
+package org.opennms.netmgt.bsm.mock;
 
+import java.util.Collections;
 import java.util.Set;
 
-import org.opennms.netmgt.bsm.service.model.BusinessService;
-import org.opennms.netmgt.bsm.service.model.Status;
-import org.opennms.netmgt.bsm.service.model.edge.Edge;
+import org.opennms.netmgt.bsm.service.model.edge.ro.ReadOnlyReductionKeyEdge;
+import org.opennms.netmgt.bsm.service.model.functions.map.Identity;
 import org.opennms.netmgt.bsm.service.model.functions.map.MapFunction;
 
-class TestEdge implements Edge {
+public class MockReductionKeyEdge implements ReadOnlyReductionKeyEdge {
 
-    private final int weight;
-    private final MapFunction mapFunction;
+    private final Long m_id;
+    private final String m_reductionKey;
 
-    TestEdge(int weight, MapFunction mapFunction) {
-        this.weight = weight;
-        this.mapFunction = mapFunction;
+    public MockReductionKeyEdge(long id, String reductionKey) {
+        m_id = id;
+        m_reductionKey = reductionKey;
     }
 
     @Override
     public Long getId() {
-        throw new UnsupportedOperationException();
+        return m_id;
     }
 
     @Override
     public Type getType() {
-        return Type.IP_SERVICE;
+        return Type.REDUCTION_KEY;
     }
 
     @Override
-    public MapFunction getMapFunction() {
-        return mapFunction;
-    }
-
-    @Override
-    public int getWeight() {
-        return weight;
-    }
-
-    @Override
-    public void setWeight(int weight) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void delete() {
-        throw new UnsupportedOperationException();
+    public String getReductionKey() {
+        return m_reductionKey;
     }
 
     @Override
     public Set<String> getReductionKeys() {
-        throw new UnsupportedOperationException();
+        return Collections.singleton(m_reductionKey);
     }
 
     @Override
-    public BusinessService getSource() {
-        throw new UnsupportedOperationException();
+    public MapFunction getMapFunction() {
+        return new Identity();
     }
 
     @Override
-    public Status getOperationalStatus() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void setMapFunction(MapFunction mapFunction) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void setSource(BusinessService source) {
-        throw new UnsupportedOperationException();
+    public int getWeight() {
+        return 1;
     }
 }
