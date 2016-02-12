@@ -40,10 +40,7 @@ import org.opennms.netmgt.bsm.service.model.edge.ReductionKeyEdge;
 import org.opennms.netmgt.bsm.service.model.functions.map.MapFunction;
 import org.opennms.netmgt.bsm.service.model.functions.reduce.ReductionFunction;
 
-public interface BusinessService {
-    Long getId();
-
-    String getName();
+public interface BusinessService extends ReadOnlyBusinessService {
 
     void setName(String name);
 
@@ -63,23 +60,13 @@ public interface BusinessService {
 
     void setReduceFunction(ReductionFunction reductionFunction);
 
-    ReductionFunction getReduceFunction();
-
-    Set<Edge> getEdges();
-
-    Set<IpServiceEdge> getIpServiceEdges();
-
     void setIpServiceEdges(Set<IpServiceEdge> ipServiceEdges);
 
     void addIpServiceEdge(IpService ipService, MapFunction mapFunction, int weight);
 
-    Set<ReductionKeyEdge> getReductionKeyEdges();
-
     void setReductionKeyEdges(Set<ReductionKeyEdge> reductionKeyEdges);
 
     void addReductionKeyEdge(String reductionKey, MapFunction mapFunction, int weight);
-
-    Set<ChildEdge> getChildEdges();
 
     void setChildEdges(Set<ChildEdge> childEdges);
 
@@ -87,9 +74,13 @@ public interface BusinessService {
 
     void setLevel(int level);
 
-    int getLevel();
-
-    Set<? extends Edge> getEdges(Edge.Type edgeType);
-
     void setEdges(Edge.Type edgeType, Set<? extends Edge> edges);
+    
+    Set<ReductionKeyEdge> getReductionKeyEdges();
+    
+    Set<IpServiceEdge> getIpServiceEdges();
+    
+    Set<? extends Edge> getEdges(Edge.Type edgeType);
+    
+    Set<ChildEdge> getChildEdges();
 }

@@ -30,12 +30,13 @@ package org.opennms.features.topology.plugins.topo.bsm;
 
 import java.util.Set;
 
+import org.opennms.netmgt.bsm.service.BusinessServiceManager;
 import org.opennms.netmgt.bsm.service.model.IpService;
+import org.opennms.netmgt.bsm.service.model.Status;
 
 public class IpServiceVertex extends AbstractBusinessServiceVertex {
 
     private final Integer ipServiceId;
-
     private final Set<String> reductionKeys;
 
     public IpServiceVertex(IpService ipServiceDTO) {
@@ -66,7 +67,17 @@ public class IpServiceVertex extends AbstractBusinessServiceVertex {
     }
 
     @Override
+    public boolean isLeaf() {
+        return true;
+    }
+
+    @Override
     public Set<String> getReductionKeys() {
         return reductionKeys;
+    }
+
+    @Override
+    public Status getOperationalStatus(BusinessServiceManager manager) {
+        return manager.getOperationalStatus(manager.getIpServiceById(ipServiceId));
     }
 }

@@ -31,17 +31,13 @@ package org.opennms.netmgt.bsm.service.internal;
 import java.util.Objects;
 
 import org.opennms.netmgt.bsm.service.model.Node;
-import org.opennms.netmgt.bsm.service.NodeManager;
 import org.opennms.netmgt.model.OnmsNode;
 
 public class NodeImpl implements Node {
 
-    private final NodeManager manager;
-
     private final OnmsNode entity;
 
-    public NodeImpl(NodeManager manager, OnmsNode entity) {
-        this.manager = Objects.requireNonNull(manager);
+    public NodeImpl(OnmsNode entity) {
         this.entity = Objects.requireNonNull(entity);
     }
 

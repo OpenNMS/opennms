@@ -36,6 +36,7 @@ import org.opennms.netmgt.bsm.service.BusinessServiceManager;
 import org.opennms.netmgt.bsm.service.model.BusinessService;
 import org.opennms.netmgt.bsm.service.model.IpService;
 import org.opennms.netmgt.bsm.service.model.Status;
+import org.opennms.netmgt.bsm.service.model.ReadOnlyBusinessService;
 import org.opennms.netmgt.bsm.service.model.edge.ChildEdge;
 import org.opennms.netmgt.bsm.service.model.edge.Edge;
 import org.opennms.netmgt.bsm.service.model.edge.IpServiceEdge;
@@ -55,7 +56,6 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Ordering;
 import com.vaadin.data.Property;
 import com.vaadin.data.Validator;
-import com.vaadin.data.validator.AbstractStringValidator;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Field;
@@ -77,6 +77,7 @@ import org.opennms.netmgt.vaadin.core.UIHelper;
  * @author Christian Pape <christian@opennms.org>
  */
 public class BusinessServiceEditWindow extends Window {
+    private static final long serialVersionUID = 6335020396458093845L;
 
     private final BusinessService m_businessService;
 
@@ -144,6 +145,8 @@ public class BusinessServiceEditWindow extends Window {
         Button saveButton = new Button("Save");
         saveButton.setId("saveButton");
         saveButton.addClickListener(UIHelper.getCurrent(TransactionAwareUI.class).wrapInTransactionProxy(new Button.ClickListener() {
+            private static final long serialVersionUID = -5985304347211214365L;
+
             @Override
             public void buttonClick(Button.ClickEvent event) {
                 if (!m_thresholdTextField.isValid() || !m_nameTextField.isValid()) {
@@ -157,6 +160,7 @@ public class BusinessServiceEditWindow extends Window {
                 close();
             }
 
+            @SuppressWarnings("unchecked")
             private ReductionFunction getReduceFunction() {
                 try {
                     final ReductionFunction reductionFunction = ((Class<? extends ReductionFunction>) m_reduceFunctionNativeSelect.getValue()).newInstance();
@@ -179,6 +183,8 @@ public class BusinessServiceEditWindow extends Window {
         Button cancelButton = new Button("Cancel");
         cancelButton.setId("cancelButton");
         cancelButton.addClickListener(new Button.ClickListener() {
+            private static final long serialVersionUID = 5306168797758047745L;
+
             @Override
             public void buttonClick(Button.ClickEvent event) {
                 close();
@@ -480,7 +486,7 @@ public class BusinessServiceEditWindow extends Window {
         setContent(verticalLayout);
     }
 
-    private void setVisible(Field field, boolean visible) {
+    private void setVisible(Field<?> field, boolean visible) {
         field.setEnabled(visible);
         field.setRequired(visible);
         field.setVisible(visible);
@@ -498,6 +504,7 @@ public class BusinessServiceEditWindow extends Window {
     private void refreshEdges() {
         m_edgesListSelect.removeAllItems();
         m_edgesListSelect.addItems(m_businessService.getEdges().stream()
+                                                    .map(e -> (Edge)e)
                                                     .sorted(Ordering.natural()
                                                                     .onResultOf(Edge::getType)
                                                                     .thenComparing(e -> getChildDescription(e)))
@@ -505,7 +512,7 @@ public class BusinessServiceEditWindow extends Window {
         m_edgesListSelect.getItemIds().forEach(item -> m_edgesListSelect.setItemCaption(item, describeEdge((Edge) item)));
     }
 
-    public static String describeBusinessService(final BusinessService businessService) {
+    public static String describeBusinessService(final ReadOnlyBusinessService businessService) {
         return businessService.getName();
     }
 

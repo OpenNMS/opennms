@@ -72,7 +72,7 @@ public abstract class AbstractEdge<T extends BusinessServiceEdgeEntity> implemen
 
     @Override
     public Status getOperationalStatus() {
-        return getManager().getOperationalStatusForEdge(this);
+        return getManager().getOperationalStatus(this);
     }
 
     @Override
@@ -110,7 +110,7 @@ public abstract class AbstractEdge<T extends BusinessServiceEdgeEntity> implemen
         if (obj == null) return false;
         if (obj == this) return true;
         if (getClass() != obj.getClass()) return false;
-        final AbstractEdge other = (AbstractEdge) obj;
+        final AbstractEdge<?> other = (AbstractEdge<?>) obj;
         return Objects.equals(getEntity(), other.getEntity());
     }
 

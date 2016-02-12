@@ -48,8 +48,7 @@ import org.opennms.netmgt.bsm.persistence.api.BusinessServiceEdgeDao;
 import org.opennms.netmgt.bsm.persistence.api.BusinessServiceEntity;
 import org.opennms.netmgt.bsm.persistence.api.functions.map.IdentityEntity;
 import org.opennms.netmgt.bsm.persistence.api.functions.map.IgnoreEntity;
-import org.opennms.netmgt.bsm.persistence.api.functions.map.MapFunctionDao;
-import org.opennms.netmgt.bsm.persistence.api.functions.reduce.HighestSeverityEntity;
+import org.opennms.netmgt.bsm.persistence.api.functions.reduce.MostCriticalEntity;
 import org.opennms.netmgt.bsm.persistence.api.functions.reduce.ReductionFunctionDao;
 import org.opennms.netmgt.bsm.test.BsmDatabasePopulator;
 import org.opennms.netmgt.bsm.test.BusinessServiceEntityBuilder;
@@ -58,8 +57,6 @@ import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.test.JUnitConfigurationEnvironment;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.test.context.ContextConfiguration;
@@ -79,9 +76,7 @@ import com.google.common.collect.Sets;
     "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml" })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase(reuseDatabase = false, tempDbClass = MockDatabase.class)
-public class BusinessServiceDaoIT {
-
-    private static final Logger LOG = LoggerFactory.getLogger(BusinessServiceDaoIT.class);
+public class BusinessServiceDaoIT { 
 
     @Autowired
     @Qualifier("bsmDatabasePopulator")
@@ -102,10 +97,7 @@ public class BusinessServiceDaoIT {
     @Autowired
     private BusinessServiceEdgeDao m_edgeDao;
 
-    @Autowired
-    private MapFunctionDao m_mapFunctionDao;
-
-    private HighestSeverityEntity m_highestSeverity;
+    private MostCriticalEntity m_mostCritical;
 
     private IgnoreEntity m_ignore;
 

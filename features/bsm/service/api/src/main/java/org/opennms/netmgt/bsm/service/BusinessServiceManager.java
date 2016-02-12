@@ -32,7 +32,6 @@ import java.util.List;
 import java.util.Set;
 
 import org.opennms.netmgt.bsm.service.model.BusinessService;
-import org.opennms.netmgt.bsm.service.model.BusinessServiceHierarchy;
 import org.opennms.netmgt.bsm.service.model.IpService;
 import org.opennms.netmgt.bsm.service.model.Status;
 import org.opennms.netmgt.bsm.service.model.edge.ChildEdge;
@@ -41,6 +40,7 @@ import org.opennms.netmgt.bsm.service.model.edge.IpServiceEdge;
 import org.opennms.netmgt.bsm.service.model.edge.ReductionKeyEdge;
 import org.opennms.netmgt.bsm.service.model.functions.map.MapFunction;
 import org.opennms.netmgt.bsm.service.model.functions.reduce.ReductionFunction;
+import org.opennms.netmgt.bsm.service.model.graph.BusinessServiceGraph;
 
 public interface BusinessServiceManager extends NodeManager {
 
@@ -64,13 +64,13 @@ public interface BusinessServiceManager extends NodeManager {
 
     Set<BusinessService> getFeasibleChildServices(BusinessService service);
 
-    Status getOperationalStatusForBusinessService(BusinessService service);
+    Status getOperationalStatus(BusinessService service);
 
-    Status getOperationalStatusForIPService(IpService ipService);
+    Status getOperationalStatus(IpService ipService);
 
-    Status getOperationalStatusForReductionKey(String reductionKey);
+    Status getOperationalStatus(String reductionKey);
 
-    Status getOperationalStatusForEdge(Edge edge);
+    Status getOperationalStatus(Edge edge);
 
     List<IpService> getAllIpServices();
 
@@ -99,5 +99,6 @@ public interface BusinessServiceManager extends NodeManager {
 
     void setReductionKeyEdges(BusinessService businessService, Set<ReductionKeyEdge> reductionKeyEdges);
 
-    BusinessServiceHierarchy getHierarchy();
+    BusinessServiceGraph getGraph();
+
 }

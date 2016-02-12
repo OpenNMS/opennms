@@ -52,6 +52,8 @@ import org.springframework.transaction.support.TransactionCallbackWithoutResult;
  * @author Christian Pape <christian@opennms.org>
  */
 public class BusinessServiceMainLayout extends VerticalLayout {
+    private static final long serialVersionUID = -6753816061488048389L;
+
     /**
      * the Business Service Manager instance
      */
@@ -126,6 +128,8 @@ public class BusinessServiceMainLayout extends VerticalLayout {
          * createBusinessService generated columns for modification of entries...
          */
         m_table.addGeneratedColumn("edit", new Table.ColumnGenerator() {
+            private static final long serialVersionUID = 7113848887128656685L;
+
             @Override
             public Object generateCell(Table source, Object itemId, Object columnId) {
                 Button editButton = new Button("edit");
@@ -147,39 +151,39 @@ public class BusinessServiceMainLayout extends VerticalLayout {
          * ...and deletion of entries
          */
         m_table.addGeneratedColumn("delete", new Table.ColumnGenerator() {
-                    @Override
-                    public Object generateCell(Table source, Object itemId, Object columnId) {
-                        Button deleteButton = new Button("delete");
-                        deleteButton.addStyleName("small");
-                        deleteButton.setId("deleteButton-" + m_beanContainer.getItem(itemId).getBean().getName());
+            private static final long serialVersionUID = 2425061320600155420L;
+            @Override
+            public Object generateCell(Table source, Object itemId, Object columnId) {
+                Button deleteButton = new Button("delete");
+                deleteButton.addStyleName("small");
+                deleteButton.setId("deleteButton-" + m_beanContainer.getItem(itemId).getBean().getName());
 
-                        deleteButton.addClickListener((Button.ClickListener)event -> {
-                            BusinessService businessService = m_businessServiceManager.getBusinessServiceById((Long) itemId);
-                            if (businessService.getParentServices().isEmpty() && businessService.getChildEdges().isEmpty()) {
-                                UIHelper.getCurrent(TransactionAwareUI.class).runInTransaction(() -> {
-                                    m_businessServiceManager.getBusinessServiceById((Long) itemId).delete();
-                                    refreshTable();
-                                });
-                            } else {
-                                new org.opennms.netmgt.vaadin.core.ConfirmationDialog()
-                                        .withOkAction(UIHelper.getCurrent(TransactionAwareUI.class).wrapInTransactionProxy(new org.opennms.netmgt.vaadin.core.ConfirmationDialog.Action() {
-                                            @Override
-                                            public void execute(org.opennms.netmgt.vaadin.core.ConfirmationDialog window) {
-                                                m_businessServiceManager.getBusinessServiceById((Long) itemId).delete();
-                                                refreshTable();
-                                            }
-                                        }))
-                                        .withOkLabel("Delete anyway")
-                                        .withCancelLabel("Cancel")
-                                        .withCaption("Warning")
-                                        .withDescription("This entry is referencing or is referenced by other Business Services! Do you really want to delete this entry?")
-                                        .open();
-                            }
+                deleteButton.addClickListener((Button.ClickListener)event -> {
+                    BusinessService businessService = m_businessServiceManager.getBusinessServiceById((Long) itemId);
+                    if (businessService.getParentServices().isEmpty() && businessService.getChildEdges().isEmpty()) {
+                        UIHelper.getCurrent(TransactionAwareUI.class).runInTransaction(() -> {
+                            m_businessServiceManager.getBusinessServiceById((Long) itemId).delete();
+                            refreshTable();
                         });
-                        return deleteButton;
+                    } else {
+                        new org.opennms.netmgt.vaadin.core.ConfirmationDialog()
+                                .withOkAction(UIHelper.getCurrent(TransactionAwareUI.class).wrapInTransactionProxy(new org.opennms.netmgt.vaadin.core.ConfirmationDialog.Action() {
+                                    @Override
+                                    public void execute(org.opennms.netmgt.vaadin.core.ConfirmationDialog window) {
+                                        m_businessServiceManager.getBusinessServiceById((Long) itemId).delete();
+                                        refreshTable();
+                                    }
+                                }))
+                                .withOkLabel("Delete anyway")
+                                .withCancelLabel("Cancel")
+                                .withCaption("Warning")
+                                .withDescription("This entry is referencing or is referenced by other Business Services! Do you really want to delete this entry?")
+                                .open();
                     }
-                }
-        );
+                });
+                return deleteButton;
+            }
+        });
 
         /**
          * add the table to the layout

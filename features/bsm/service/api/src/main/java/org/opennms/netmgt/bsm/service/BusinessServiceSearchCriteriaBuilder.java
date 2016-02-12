@@ -171,7 +171,7 @@ public class BusinessServiceSearchCriteriaBuilder implements BusinessServiceSear
          * @return the instance created
          */
         public static <A, B> Pair<A, B> of(A a, B b) {
-            return new Pair(a, b);
+            return new Pair<A, B>(a, b);
         }
     }
 
@@ -219,7 +219,7 @@ public class BusinessServiceSearchCriteriaBuilder implements BusinessServiceSear
         }
 
         for (Pair<CompareOperator, Status> pair : m_severityFilters) {
-            s = s.filter(p -> pair.getA().check(businessServiceManager.getOperationalStatusForBusinessService(p).compareTo(pair.getB())));
+            s = s.filter(p -> pair.getA().check(businessServiceManager.getOperationalStatus(p).compareTo(pair.getB())));
         }
 
         Comparator<BusinessServiceDTO> comparator = new Comparator<BusinessServiceDTO>() {
@@ -230,7 +230,7 @@ public class BusinessServiceSearchCriteriaBuilder implements BusinessServiceSear
                         return p1.getName().compareTo(p2.getName());
                     }
                     case Severity: {
-                        return businessServiceManager.getOperationalStatusForBusinessService(p1.getId()).compareTo(businessServiceManager.getOperationalStatusForBusinessService(p2.getId()));
+                        return businessServiceManager.getOperationalStatus(p1).compareTo(businessServiceManager.getOperationalStatus(p2));
                     }
                     default:
                         throw new IllegalArgumentException("Order not set");

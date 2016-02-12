@@ -36,24 +36,29 @@ import org.opennms.netmgt.model.OnmsAlarm;
 
 public class AlarmWrapperImpl implements AlarmWrapper {
 
-    private final OnmsAlarm alarm;
+    private final String m_reductionKey;
+    private final Status m_status;
+    private final Integer m_id;
 
     public AlarmWrapperImpl(OnmsAlarm alarm) {
-        this.alarm = Objects.requireNonNull(alarm);
+        Objects.requireNonNull(alarm);
+        m_reductionKey = alarm.getReductionKey();
+        m_status = SeverityMapper.toStatus(alarm.getSeverity());
+        m_id = alarm.getId();
     }
 
     @Override
     public String getReductionKey() {
-        return alarm.getReductionKey();
+        return m_reductionKey;
     }
 
     @Override
     public Status getStatus() {
-        return SeverityMapper.toStatus(alarm.getSeverity());
+        return m_status;
     }
 
     @Override
     public Integer getId() {
-        return alarm.getId();
+        return m_id;
     }
 }

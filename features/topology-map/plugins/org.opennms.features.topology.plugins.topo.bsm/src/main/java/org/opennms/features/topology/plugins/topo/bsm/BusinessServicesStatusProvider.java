@@ -29,9 +29,9 @@
 package org.opennms.features.topology.plugins.topo.bsm;
 
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import org.opennms.features.topology.api.topo.Criteria;
 import org.opennms.features.topology.api.topo.DefaultStatus;
@@ -41,10 +41,6 @@ import org.opennms.features.topology.api.topo.VertexProvider;
 import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.netmgt.bsm.service.BusinessServiceManager;
 import org.opennms.netmgt.vaadin.core.TransactionAwareBeanProxyFactory;
-
-import com.google.common.base.Function;
-import com.google.common.base.Predicate;
-import com.google.common.collect.Collections2;
 
 public class BusinessServicesStatusProvider implements StatusProvider {
 
@@ -57,44 +53,10 @@ public class BusinessServicesStatusProvider implements StatusProvider {
 
     @Override
     public Map<VertexRef, Status> getStatusForVertices(VertexProvider vertexProvider, Collection<VertexRef> vertices, Criteria[] criteria) {
-        // filter out vertices from other providers
-        final Collection<VertexRef> filteredVertices = Collections2.filter(vertices, new Predicate<VertexRef>() {
-            @Override
-            public boolean apply(VertexRef input) {
-                return input instanceof AbstractBusinessServiceVertex && contributesTo(input.getNamespace());
-            }
-        });
-
-        // cast to AbstractBusinessServiceVertex
-        final Collection<AbstractBusinessServiceVertex> businessServiceVertices = Collections2.transform(filteredVertices, new Function<VertexRef, AbstractBusinessServiceVertex>() {
-            @Override
-            public AbstractBusinessServiceVertex apply(VertexRef input) {
-                return (AbstractBusinessServiceVertex) input;
-            }
-        });
-
-        final Map<VertexRef, Status> statusMap = new HashMap<>();
-        for (AbstractBusinessServiceVertex eachVertex : businessServiceVertices) {
-            final org.opennms.netmgt.bsm.service.model.Status operationalStatus = getOperationalStatus(eachVertex);
-            statusMap.put(eachVertex, new DefaultStatus(operationalStatus.getLabel(), 0));
-        }
-        return statusMap;
-    }
-
-    private org.opennms.netmgt.bsm.service.model.Status getOperationalStatus(AbstractBusinessServiceVertex vertex) {
-        if (vertex.getType() == AbstractBusinessServiceVertex.Type.BusinessService) {
-            BusinessServiceVertex bsVertex = (BusinessServiceVertex) vertex;
-            return businessServiceManager.getBusinessServiceById(bsVertex.getServiceId()).getOperationalStatus();
-        }
-        if (vertex.getType() == AbstractBusinessServiceVertex.Type.IpService) {
-            IpServiceVertex ipServiceVertex = (IpServiceVertex) vertex;
-            return businessServiceManager.getOperationalStatusForIPService(ipServiceVertex.getIpServiceId());
-        }
-        if (vertex.getType() == AbstractBusinessServiceVertex.Type.ReductionKey) {
-            ReductionKeyVertex rkVertex = (ReductionKeyVertex) vertex;
-            return businessServiceManager.getOperationalStatusForReductionKey(rkVertex.getReductionKey());
-        }
-        throw new IllegalStateException("Unsupported BusinessServiceVertex type: " + vertex.getClass());
+        return vertices.stream()
+            .filter(v -> v instanceof AbstractBusinessServiceVertex && contributesTo(v.getNamespace()))
+            .map(v -> (AbstractBusinessServiceVertex)v)
+            .collect(Collectors.toMap(v -> v, v -> new DefaultStatus(v.getOperationalStatus(businessServiceManager).getLabel(), 0)));
     }
 
     @Override

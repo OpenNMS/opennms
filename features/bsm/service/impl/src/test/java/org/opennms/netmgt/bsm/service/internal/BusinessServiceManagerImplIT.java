@@ -46,14 +46,13 @@ import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.netmgt.bsm.persistence.api.BusinessServiceDao;
 import org.opennms.netmgt.bsm.persistence.api.BusinessServiceEdgeDao;
 import org.opennms.netmgt.bsm.persistence.api.BusinessServiceEntity;
-import org.opennms.netmgt.bsm.persistence.api.functions.map.MapFunctionDao;
-import org.opennms.netmgt.bsm.persistence.api.functions.reduce.ReductionFunctionDao;
 import org.opennms.netmgt.bsm.service.BusinessServiceManager;
 import org.opennms.netmgt.bsm.service.BusinessServiceStateMachine;
 import org.opennms.netmgt.bsm.service.model.BusinessService;
 import org.opennms.netmgt.bsm.service.model.IpService;
 import org.opennms.netmgt.bsm.service.model.Status;
 import org.opennms.netmgt.bsm.service.model.edge.Edge;
+import org.opennms.netmgt.bsm.service.model.edge.IpServiceEdge;
 import org.opennms.netmgt.bsm.service.model.functions.map.Identity;
 import org.opennms.netmgt.bsm.test.BsmDatabasePopulator;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
@@ -99,12 +98,6 @@ public class BusinessServiceManagerImplIT {
     private MonitoredServiceDao monitoredServiceDao;
 
     @Autowired
-    private MapFunctionDao mapFunctionDao;
-
-    @Autowired
-    private ReductionFunctionDao reduceFunctionDao;
-
-    @Autowired
     private BusinessServiceEdgeDao edgeDao;
 
     @Autowired
@@ -131,44 +124,46 @@ public class BusinessServiceManagerImplIT {
         final IpService ipServiceWithId6 = getIpService(6);
 
         // no ip services attached
-        Assert.assertEquals(Status.NORMAL, businessServiceManager.getOperationalStatusForBusinessService(bsService1));
-        Assert.assertEquals(Status.NORMAL, businessServiceManager.getOperationalStatusForBusinessService(bsService2));
+        Assert.assertEquals(Status.NORMAL, businessServiceManager.getOperationalStatus(bsService1));
+        Assert.assertEquals(Status.NORMAL, businessServiceManager.getOperationalStatus(bsService2));
 
         // ip services attached
         businessServiceManager.addIpServiceEdge(bsService1, ipServiceWithId5, new Identity(), Edge.DEFAULT_WEIGHT);
         businessServiceManager.addIpServiceEdge(bsService2, ipServiceWithId6, new Identity(), Edge.DEFAULT_WEIGHT);
         bsService1.save();
         bsService2.save();
+        businessServiceDao.flush();
         Assert.assertFalse("Services are equal but should not", Objects.equals(bsService1, bsService2));
         businessServiceStateMachine.setBusinessServices(Lists.newArrayList(bsService1, bsService2));
 
         // should not have any effect
-        Assert.assertEquals(Status.NORMAL, businessServiceManager.getOperationalStatusForBusinessService(bsService1));
-        Assert.assertEquals(Status.NORMAL, businessServiceManager.getOperationalStatusForBusinessService(bsService2));
+        Assert.assertEquals(Status.NORMAL, businessServiceManager.getOperationalStatus(bsService1));
+        Assert.assertEquals(Status.NORMAL, businessServiceManager.getOperationalStatus(bsService2));
 
         // attach NORMAL alarm to service 1
+        final IpServiceEdge ipServiceEdgeOnBsService1 = bsService1.getIpServiceEdges().iterator().next();
         businessServiceStateMachine.handleNewOrUpdatedAlarm(createAlarmWrapper(monitoredServiceDao.get(5), OnmsSeverity.NORMAL));
-        Assert.assertEquals(Status.NORMAL, businessServiceManager.getOperationalStatusForIPService(ipServiceWithId5));
-        Assert.assertEquals(Status.NORMAL, businessServiceManager.getOperationalStatusForBusinessService(bsService1));
-        Assert.assertEquals(Status.NORMAL, businessServiceManager.getOperationalStatusForBusinessService(bsService2));
+        Assert.assertEquals(Status.NORMAL, businessServiceManager.getOperationalStatus(ipServiceEdgeOnBsService1));
+        Assert.assertEquals(Status.NORMAL, businessServiceManager.getOperationalStatus(bsService1));
+        Assert.assertEquals(Status.NORMAL, businessServiceManager.getOperationalStatus(bsService2));
 
         // attach INDETERMINATE alarm to service 1
         businessServiceStateMachine.handleNewOrUpdatedAlarm(createAlarmWrapper(monitoredServiceDao.get(5), OnmsSeverity.INDETERMINATE));
-        Assert.assertEquals(Status.NORMAL, businessServiceManager.getOperationalStatusForIPService(ipServiceWithId5));
-        Assert.assertEquals(Status.NORMAL, businessServiceManager.getOperationalStatusForBusinessService(bsService1));
-        Assert.assertEquals(Status.NORMAL, businessServiceManager.getOperationalStatusForBusinessService(bsService2));
+        Assert.assertEquals(Status.NORMAL, businessServiceManager.getOperationalStatus(ipServiceEdgeOnBsService1));
+        Assert.assertEquals(Status.NORMAL, businessServiceManager.getOperationalStatus(bsService1));
+        Assert.assertEquals(Status.NORMAL, businessServiceManager.getOperationalStatus(bsService2));
 
         // attach WARNING alarm to service 1
         businessServiceStateMachine.handleNewOrUpdatedAlarm(createAlarmWrapper(monitoredServiceDao.get(5), OnmsSeverity.WARNING));
-        Assert.assertEquals(Status.WARNING, businessServiceManager.getOperationalStatusForIPService(ipServiceWithId5));
-        Assert.assertEquals(Status.WARNING, businessServiceManager.getOperationalStatusForBusinessService(bsService1));
-        Assert.assertEquals(Status.NORMAL, businessServiceManager.getOperationalStatusForBusinessService(bsService2));
+        Assert.assertEquals(Status.WARNING, businessServiceManager.getOperationalStatus(ipServiceEdgeOnBsService1));
+        Assert.assertEquals(Status.WARNING, businessServiceManager.getOperationalStatus(bsService1));
+        Assert.assertEquals(Status.NORMAL, businessServiceManager.getOperationalStatus(bsService2));
 
         // attach CRITICAL alarm to service 1
         businessServiceStateMachine.handleNewOrUpdatedAlarm(createAlarmWrapper(monitoredServiceDao.get(5), OnmsSeverity.CRITICAL));
-        Assert.assertEquals(Status.CRITICAL, businessServiceManager.getOperationalStatusForIPService(ipServiceWithId5));
-        Assert.assertEquals(Status.CRITICAL, businessServiceManager.getOperationalStatusForBusinessService(bsService1));
-        Assert.assertEquals(Status.NORMAL, businessServiceManager.getOperationalStatusForBusinessService(bsService2));
+        Assert.assertEquals(Status.CRITICAL, businessServiceManager.getOperationalStatus(ipServiceEdgeOnBsService1));
+        Assert.assertEquals(Status.CRITICAL, businessServiceManager.getOperationalStatus(bsService1));
+        Assert.assertEquals(Status.NORMAL, businessServiceManager.getOperationalStatus(bsService2));
     }
 
     @Test

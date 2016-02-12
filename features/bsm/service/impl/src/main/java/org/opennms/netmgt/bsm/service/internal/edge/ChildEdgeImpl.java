@@ -36,7 +36,6 @@ import org.opennms.netmgt.bsm.service.BusinessServiceManager;
 import org.opennms.netmgt.bsm.service.internal.BusinessServiceImpl;
 import org.opennms.netmgt.bsm.service.model.BusinessService;
 import org.opennms.netmgt.bsm.service.model.edge.ChildEdge;
-import org.opennms.netmgt.bsm.service.model.edge.Edge;
 
 public class ChildEdgeImpl extends AbstractEdge<BusinessServiceChildEdgeEntity> implements ChildEdge {
 

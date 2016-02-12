@@ -29,8 +29,9 @@
 package org.opennms.netmgt.bsm.service.model.edge;
 
 import org.opennms.netmgt.bsm.service.model.BusinessService;
+import org.opennms.netmgt.bsm.service.model.edge.ro.ReadOnlyChildEdge;
 
-public interface ChildEdge extends Edge {
+public interface ChildEdge extends ReadOnlyChildEdge, Edge {
 
     BusinessService getChild();
 

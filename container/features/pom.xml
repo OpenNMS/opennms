@@ -59,6 +59,7 @@
 
             <!-- BSM features -->
             <repository>mvn:org.opennms.features.bsm/org.opennms.features.bsm.service.api/${project.version}/xml/features</repository>
+            <repository>mvn:org.opennms.features.bsm/org.opennms.features.bsm.shell-commands/${project.version}/xml/features</repository>
             <repository>mvn:org.opennms.features.bsm/vaadin-adminpage/${project.version}/xml/features</repository>
 
             <!-- MIB Parser and Event/Collection features -->
@@ -260,6 +261,7 @@
 
             <!-- BSM -->
             <feature>org.opennms.features.bsm.service.api</feature>
+            <feature>org.opennms.features.bsm.shell-commands</feature>
             <feature>vaadin-adminpage</feature>
           </features>
         </configuration>
@@ -308,6 +310,13 @@
     <dependency>
       <groupId>org.opennms.features</groupId>
       <artifactId>jmxconfiggenerator</artifactId>
+      <version>${project.version}</version>
+      <type>pom</type>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.bsm</groupId>
+      <artifactId>org.opennms.features.bsm.shell-commands</artifactId>
       <version>${project.version}</version>
       <type>pom</type>
       <scope>provided</scope>

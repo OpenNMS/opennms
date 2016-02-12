@@ -20,6 +20,7 @@
     <module>service</module>
     <module>test-util</module>
     <module>vaadin-adminpage</module>
+    <module>shell-commands</module>
   </modules>
   <build>
     <plugins>

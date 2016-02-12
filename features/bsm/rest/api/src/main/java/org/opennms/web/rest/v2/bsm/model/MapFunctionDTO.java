@@ -36,6 +36,8 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import com.google.common.collect.Maps;
+
 @XmlRootElement(name = "map-function")
 @XmlAccessorType(XmlAccessType.NONE)
 public class MapFunctionDTO {
@@ -44,7 +46,7 @@ public class MapFunctionDTO {
     private MapFunctionType type;
 
     @XmlElement(name="properties")
-    private Map<String, String> properties;
+    private Map<String, String> properties = Maps.newHashMap();
 
     public MapFunctionType getType() {
         return type;

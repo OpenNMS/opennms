@@ -50,8 +50,6 @@ import org.opennms.web.rest.api.support.JsonResourceLocationSerializationProvide
 @XmlRootElement(name = "business-services")
 @JsonRootName("business-services")
 public class BusinessServiceListDTO {
-    private static final long serialVersionUID = 1L;
-
     private List<ResourceLocation> services;
 
     public BusinessServiceListDTO() {

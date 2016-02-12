@@ -26,32 +26,33 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.bsm.service.internal;
+package org.opennms.netmgt.bsm.mock;
 
-import java.util.Collection;
-import java.util.Set;
+import org.opennms.netmgt.bsm.service.model.AlarmWrapper;
+import org.opennms.netmgt.bsm.service.model.Status;
 
-import org.opennms.netmgt.bsm.service.model.BusinessService;
-import org.opennms.netmgt.bsm.service.model.BusinessServiceHierarchy;
+public class MockAlarmWrapper implements AlarmWrapper {
+    private final String m_reductionKey;
+    private final Status m_status;
 
-/**
- * Helper object to wrap any number of Business Service objects.
- * In this case the hierarchy level is set and the root elements can be determined.
- * It is kind of a "Business Service Graph" object.
- */
-class BusinessServiceHierarchyImpl implements BusinessServiceHierarchy {
-
-    // the Root Business Services
-    private final Set<BusinessService> roots;
-
-    BusinessServiceHierarchyImpl(Collection<BusinessService> allBusinessServices) {
-        roots = BusinessServiceHierarchyUtils.getRoots(allBusinessServices);
-        BusinessServiceHierarchyUtils.updateHierarchyLevel(roots);
+    public MockAlarmWrapper(String reductionKey, Status status) {
+        m_reductionKey = reductionKey;
+        m_status = status;
     }
 
     @Override
-    public Set<BusinessService> getRoots() {
-        return roots;
+    public String getReductionKey() {
+        return m_reductionKey;
+    }
+
+    @Override
+    public Status getStatus() {
+        return m_status;
+    }
+
+    @Override
+    public Integer getId() {
+        return Integer.valueOf(0);
     }
 
 }

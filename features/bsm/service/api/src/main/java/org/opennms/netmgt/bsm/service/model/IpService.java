@@ -42,7 +42,5 @@ public interface IpService {
 
     String getIpAddress();
 
-    Status getOperationalStatus();
-
     Set<String> getReductionKeys();
 }

@@ -340,7 +340,6 @@ public class BusinessServiceRestServiceIT extends AbstractSpringJerseyRestTestCa
     }
 
     @Test
-    @SuppressWarnings("unchecked")
     public void canRetrieveBusinessServices() throws Exception {
         // Add business services to the DB
         BusinessServiceEntity bs = new BusinessServiceEntityBuilder()

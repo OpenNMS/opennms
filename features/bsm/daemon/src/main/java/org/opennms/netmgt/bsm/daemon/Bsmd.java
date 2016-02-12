@@ -40,6 +40,7 @@ import org.opennms.netmgt.bsm.service.BusinessServiceStateMachine;
 import org.opennms.netmgt.bsm.service.internal.AlarmWrapperImpl;
 import org.opennms.netmgt.bsm.service.internal.SeverityMapper;
 import org.opennms.netmgt.bsm.service.model.BusinessService;
+import org.opennms.netmgt.bsm.service.model.ReadOnlyBusinessService;
 import org.opennms.netmgt.bsm.service.model.Status;
 import org.opennms.netmgt.config.api.EventConfDao;
 import org.opennms.netmgt.daemon.SpringServiceDaemon;
@@ -61,15 +62,15 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
 
-/**:
+/**
  * This daemon is responsible for driving the Business Service state machine by:
- *  - Sending alarms to the state machine when they are created and/or updated
- *  - Sending events on the event bus when the state of a Business Service changes
- *  - Reloading the Business Service configuration in the state machine when requested
+ *  1) Updating the state machine with Alarms when they are created, deleted or updated
+ *  2) Sending events on the event bus when the operational status of a Business Service changes
+ *  3) Reloading the Business Service configuration in the state machine when requested
  *
- * Some caveats to keep in account:
- *  - We may not always receive the alarm life-cycle events, we will need to poll the database periodically.
- *  - Events we do receive may happen out-of-order, i.e. alarm created, alarm deleted, alarm escalated
+ * We currently listen for alarm life-cycle events in order to know when alarms change,
+ * but not all changes send the required events (i.e. escalating an alarm in the WebUI).
+ * In order to work around this, we periodically poll the database. 
  *
  * @author jwhite
  */
@@ -169,7 +170,7 @@ public class Bsmd implements SpringServiceDaemon, BusinessServiceStateChangeHand
      */
     private void handleConfigurationChanged() {
         if (m_verifyReductionKeys) {
-            // The state machine may make certain assumptions about the reduction keys
+            // The state machine makes certain assumptions about the reduction keys
             // associated with particular events. Since these are configurable, we may
             // want to verify that the actual values match our assumptions and bail if they don't
             verifyReductionKey(EventConstants.NODE_LOST_SERVICE_EVENT_UEI, "%uei%:%dpname%:%nodeid%:%interface%:%service%");
@@ -252,7 +253,7 @@ public class Bsmd implements SpringServiceDaemon, BusinessServiceStateChangeHand
      * Called when the operational status of a business service was changed.
      */
     @Override
-    public void handleBusinessServiceStateChanged(BusinessService businessService, Status newStatus, Status prevStatus) {
+    public void handleBusinessServiceStateChanged(ReadOnlyBusinessService businessService, Status newStatus, Status prevStatus) {
         final OnmsSeverity newSeverity = SeverityMapper.toSeverity(newStatus);
         final OnmsSeverity prevSeverity = SeverityMapper.toSeverity(prevStatus);
 

@@ -28,23 +28,20 @@
 
 package org.opennms.features.topology.plugins.topo.bsm;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Set;
 
 import org.opennms.features.topology.api.topo.AbstractVertex;
 import org.opennms.features.topology.api.topo.LevelAware;
-import org.opennms.features.topology.api.topo.VertexRef;
+import org.opennms.netmgt.bsm.service.BusinessServiceManager;
+import org.opennms.netmgt.bsm.service.model.Status;
 
 abstract class AbstractBusinessServiceVertex extends AbstractVertex implements LevelAware {
 
-    enum Type {
+    static enum Type {
         BusinessService,
         IpService,
         ReductionKey,
     }
-
-    private final List<VertexRef> children = new ArrayList<>();
 
     private final int level;
 
@@ -53,6 +50,7 @@ abstract class AbstractBusinessServiceVertex extends AbstractVertex implements L
      *
      * @param id the unique id of this vertex. Must be unique overall the namespace.
      * @param label a human readable label
+     * @param edgeId
      * @param level the level of the vertex in the Business Service Hierarchy. The root element is level 0.
      */
     protected AbstractBusinessServiceVertex(String id, String label, int level) {
@@ -63,34 +61,16 @@ abstract class AbstractBusinessServiceVertex extends AbstractVertex implements L
         setSelected(false);
     }
 
-    public void addChildren(AbstractVertex vertex) {
-        if (!children.contains(vertex)) {
-            children.add(vertex);
-            vertex.setParent(this);
-        }
+    @Override
+    public int getLevel() {
+        return level;
     }
 
-    public boolean isRoot() {
-        return getParent() == null;
-    }
-
-    public boolean isLeaf() {
-        return children.isEmpty();
-    }
-
-    public List<VertexRef> getChildren() {
-        return children;
-    }
-
-    public AbstractBusinessServiceVertex getRoot() {
-        if (isRoot()) {
-            return this;
-        }
-        return ((AbstractBusinessServiceVertex) getParent()).getRoot();
-    }
+    public abstract boolean isLeaf();
 
     public abstract Type getType();
 
     public abstract Set<String> getReductionKeys();
 
+    public abstract Status getOperationalStatus(BusinessServiceManager manager);
 }

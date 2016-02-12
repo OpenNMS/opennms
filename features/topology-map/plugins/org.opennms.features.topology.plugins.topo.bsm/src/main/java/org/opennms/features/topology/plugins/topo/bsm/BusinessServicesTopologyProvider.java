@@ -28,10 +28,7 @@
 
 package org.opennms.features.topology.plugins.topo.bsm;
 
-import static org.opennms.features.topology.plugins.topo.bsm.AbstractBusinessServiceVertex.Type;
-
 import java.net.MalformedURLException;
-import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -51,11 +48,16 @@ import org.opennms.features.topology.api.topo.Edge;
 import org.opennms.features.topology.api.topo.GraphProvider;
 import org.opennms.features.topology.api.topo.SimpleEdgeProvider;
 import org.opennms.features.topology.api.topo.VertexRef;
+import org.opennms.features.topology.plugins.topo.bsm.AbstractBusinessServiceVertex.Type;
 import org.opennms.netmgt.bsm.service.BusinessServiceManager;
 import org.opennms.netmgt.bsm.service.model.BusinessService;
-import org.opennms.netmgt.bsm.service.model.BusinessServiceHierarchy;
-import org.opennms.netmgt.bsm.service.model.edge.IpServiceEdge;
-import org.opennms.netmgt.bsm.service.model.edge.ReductionKeyEdge;
+import org.opennms.netmgt.bsm.service.model.ReadOnlyBusinessService;
+import org.opennms.netmgt.bsm.service.model.edge.ro.ReadOnlyChildEdge;
+import org.opennms.netmgt.bsm.service.model.edge.ro.ReadOnlyEdge;
+import org.opennms.netmgt.bsm.service.model.edge.ro.ReadOnlyIpServiceEdge;
+import org.opennms.netmgt.bsm.service.model.graph.BusinessServiceGraph;
+import org.opennms.netmgt.bsm.service.model.graph.GraphEdge;
+import org.opennms.netmgt.bsm.service.model.graph.GraphVertex;
 import org.opennms.netmgt.vaadin.core.TransactionAwareBeanProxyFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -83,61 +85,67 @@ public class BusinessServicesTopologyProvider extends AbstractTopologyProvider i
 
     @Override
     public void save() {
-        // we do not support save at the moment
+        throw new UnsupportedOperationException();
     }
 
     private void load() {
         resetContainer();
-        BusinessServiceHierarchy hierarchy = businessServiceManager.getHierarchy();
-        // we only consider root business services to build the graph
-        addBusinessServices(null, hierarchy.getRoots());
-    }
-
-    private void addBusinessServices(BusinessServiceVertex parentVertex, Collection<BusinessServiceDTO> businessServices) {
-        for (BusinessServiceDTO eachBusinessService : businessServices) {
-            addBusinessService(parentVertex, eachBusinessService);
+        BusinessServiceGraph graph = businessServiceManager.getGraph();
+        for (GraphVertex topLevelBusinessService : graph.getVerticesByLevel(0)) {
+            addVertex(graph, topLevelBusinessService, null);
         }
     }
 
-    private void addBusinessService(BusinessServiceVertex parentVertex, BusinessServiceDTO businessService) {
-        // create the vertex itself
-        BusinessServiceVertex businessServiceVertex = new BusinessServiceVertex(businessService);
-        addVertices(businessServiceVertex);
-
-        // if we have a parent, connect the parent at the current business
-        // service vertex as well
-        if (parentVertex != null) {
-            parentVertex.addChildren(businessServiceVertex);
-            addEdges(createConnection(parentVertex, businessServiceVertex));
+    private void addVertex(BusinessServiceGraph graph, GraphVertex graphVertex, AbstractBusinessServiceVertex topologyVertex) {
+        if (topologyVertex == null) {
+            // Create a topology vertex for the current vertex
+            topologyVertex = createTopologyVertex(graphVertex);
+            addVertices(topologyVertex);
         }
 
-        // add ip services
-        for (IpServiceEdge eachIpEdge : businessService.getIpServiceEdges()) {
-            AbstractBusinessServiceVertex serviceVertex = new IpServiceVertex(eachIpEdge.getIpService(), businessService.getLevel() + 1);
-            businessServiceVertex.addChildren(serviceVertex);
-            addVertices(serviceVertex);
+        for (GraphEdge graphEdge : graph.getOutEdges(graphVertex)) {
+            GraphVertex childVertex = graph.getOpposite(graphVertex, graphEdge);
 
-            // connect with businessService
-            Edge edge = createConnection(businessServiceVertex, serviceVertex);
+            // Create a topology vertex for the child vertex
+            AbstractBusinessServiceVertex childToplogyVertex = createTopologyVertex(childVertex);
+            addVertices(childToplogyVertex);
+
+            // Connect the two
+            childToplogyVertex.setParent(topologyVertex);
+            Edge edge = createTopologyEdge(topologyVertex, childToplogyVertex);
             addEdges(edge);
+
+            // Recurse
+            addVertex(graph, childVertex, childToplogyVertex);
         }
-
-        // add reduction keys
-        for (ReductionKeyEdge eachRkEdge : businessService.getReductionKeyEdges()) {
-            AbstractBusinessServiceVertex rkVertex = new ReductionKeyVertex(eachRkEdge.getReductionKey(), businessService.getLevel() + 1);
-            businessServiceVertex.addChildren(rkVertex);
-            addVertices(rkVertex);
-
-            // connect with businessService
-            Edge edge = createConnection(businessServiceVertex, rkVertex);
-            addEdges(edge);
-        }
-
-        // add children to the hierarchy as well
-        addBusinessServices(businessServiceVertex, businessService.getChildServices());
     }
 
-    private Edge createConnection(AbstractBusinessServiceVertex v1, AbstractBusinessServiceVertex v2) {
+    private AbstractBusinessServiceVertex createTopologyVertex(GraphVertex graphVertex) {
+        final ReadOnlyBusinessService businessService = graphVertex.getBusinessService();
+        if (businessService != null) {
+            return new BusinessServiceVertex(businessService, graphVertex.getLevel());
+        }
+
+        final ReadOnlyEdge edge = graphVertex.getEdge();
+        switch (edge.getType()) {
+        case CHILD_SERVICE:
+            return new BusinessServiceVertex(((ReadOnlyChildEdge)edge).getChild(), graphVertex.getLevel());
+        case IP_SERVICE:
+            if (graphVertex.getReductionKey() == null) {
+                // If no reduction key is set, create an IP Service vertex
+                return new IpServiceVertex(((ReadOnlyIpServiceEdge)edge).getIpService(), graphVertex.getLevel());
+            } else {
+                // Otherwise, create a vertex for the particular reduction key related to the IP Service
+                return new ReductionKeyVertex(graphVertex.getReductionKey(), graphVertex.getLevel());
+            }
+        case REDUCTION_KEY:
+            return new ReductionKeyVertex(graphVertex.getReductionKey(), graphVertex.getLevel());
+        default:
+            throw new IllegalArgumentException("Unsuported edge: " + edge);
+        }
+    }
+
+    private Edge createTopologyEdge(AbstractBusinessServiceVertex v1, AbstractBusinessServiceVertex v2) {
         String id = String.format("connection:%s:%s", v1.getId(), v2.getId());
         Edge edge = new AbstractEdge(getEdgeNamespace(), id, v1, v2);
         return edge;
@@ -225,6 +233,8 @@ public class BusinessServicesTopologyProvider extends AbstractTopologyProvider i
                     }
                     return Lists.newArrayList(Restrictions.isNull("id")); // is always false, so nothing is shown
                 };
+            default:
+                // pass
         }
         throw new IllegalArgumentException(getClass().getSimpleName() + " does not support filtering vertices for contentType " + contentType);
     }

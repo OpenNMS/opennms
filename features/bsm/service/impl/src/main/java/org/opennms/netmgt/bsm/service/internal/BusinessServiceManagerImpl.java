@@ -42,7 +42,6 @@ import org.opennms.netmgt.bsm.persistence.api.BusinessServiceEdgeEntity;
 import org.opennms.netmgt.bsm.persistence.api.BusinessServiceEntity;
 import org.opennms.netmgt.bsm.persistence.api.IPServiceEdgeEntity;
 import org.opennms.netmgt.bsm.persistence.api.SingleReductionKeyEdgeEntity;
-import org.opennms.netmgt.bsm.persistence.api.functions.reduce.ReductionFunctionDao;
 import org.opennms.netmgt.bsm.service.BusinessServiceManager;
 import org.opennms.netmgt.bsm.service.BusinessServiceSearchCriteria;
 import org.opennms.netmgt.bsm.service.BusinessServiceStateMachine;
@@ -51,7 +50,6 @@ import org.opennms.netmgt.bsm.service.internal.edge.ChildEdgeImpl;
 import org.opennms.netmgt.bsm.service.internal.edge.IpServiceEdgeImpl;
 import org.opennms.netmgt.bsm.service.internal.edge.ReductionKeyEdgeImpl;
 import org.opennms.netmgt.bsm.service.model.BusinessService;
-import org.opennms.netmgt.bsm.service.model.BusinessServiceHierarchy;
 import org.opennms.netmgt.bsm.service.model.IpService;
 import org.opennms.netmgt.bsm.service.model.Node;
 import org.opennms.netmgt.bsm.service.model.Status;
@@ -63,12 +61,15 @@ import org.opennms.netmgt.bsm.service.model.functions.map.Decrease;
 import org.opennms.netmgt.bsm.service.model.functions.map.Identity;
 import org.opennms.netmgt.bsm.service.model.functions.map.Ignore;
 import org.opennms.netmgt.bsm.service.model.functions.map.Increase;
+import org.opennms.netmgt.bsm.service.model.functions.map.MapFunction;
 import org.opennms.netmgt.bsm.service.model.functions.map.SetTo;
 import org.opennms.netmgt.bsm.service.model.functions.reduce.HighestSeverity;
 import org.opennms.netmgt.bsm.service.model.functions.reduce.HighestSeverityAbove;
-import org.opennms.netmgt.bsm.service.model.functions.reduce.Threshold;
-import org.opennms.netmgt.bsm.service.model.functions.map.MapFunction;
+import org.opennms.netmgt.bsm.service.model.functions.reduce.MostCritical;
 import org.opennms.netmgt.bsm.service.model.functions.reduce.ReductionFunction;
+import org.opennms.netmgt.bsm.service.model.functions.reduce.Threshold;
+import org.opennms.netmgt.bsm.service.model.graph.BusinessServiceGraph;
+import org.opennms.netmgt.bsm.service.model.graph.internal.BusinessServiceGraphImpl;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.events.api.EventConstants;
@@ -85,9 +86,6 @@ import com.google.common.collect.Lists;
 public class BusinessServiceManagerImpl implements BusinessServiceManager {
     @Autowired
     private BusinessServiceDao businessServiceDao;
-
-    @Autowired
-    private ReductionFunctionDao reductionFunctionDao;
 
     @Autowired
     private BusinessServiceEdgeDao edgeDao;
@@ -132,6 +130,7 @@ public class BusinessServiceManagerImpl implements BusinessServiceManager {
         return new BusinessServiceImpl(this, new BusinessServiceEntity());
     }
 
+    @SuppressWarnings("unchecked")
     private <T extends Edge> T createEdge(Class<T> type, BusinessService source, MapFunction mapFunction, int weight) {
         T edge = null;
         if (type == IpServiceEdge.class) {
@@ -225,11 +224,6 @@ public class BusinessServiceManagerImpl implements BusinessServiceManager {
             parentEntity.removeEdge(e);
         }
         reductionKeyEdges.forEach(e -> parentEntity.addEdge(((ReductionKeyEdgeImpl) e).getEntity()));
-    }
-
-    @Override
-    public BusinessServiceHierarchy getHierarchy() {
-        return new BusinessServiceHierarchyImpl(getAllBusinessServices());
     }
 
     @Override
@@ -334,14 +328,26 @@ public class BusinessServiceManagerImpl implements BusinessServiceManager {
     }
 
     @Override
-    public Status getOperationalStatusForBusinessService(BusinessService service) {
+    public Status getOperationalStatus(BusinessService service) {
         final Status status = businessServiceStateMachine.getOperationalStatus(service);
         return status != null ? status : Status.INDETERMINATE;
     }
 
     @Override
-    public Status getOperationalStatusForIPService(IpService ipService) {
+    public Status getOperationalStatus(IpService ipService) {
         final Status status = businessServiceStateMachine.getOperationalStatus(ipService);
+        return status != null ? status : Status.INDETERMINATE;
+    }
+
+    @Override
+    public Status getOperationalStatus(String reductionKey) {
+        final Status status = businessServiceStateMachine.getOperationalStatus(reductionKey);
+        return status != null ? status : Status.INDETERMINATE;
+    }
+
+    @Override
+    public Status getOperationalStatus(Edge edge) {
+        final Status status = businessServiceStateMachine.getOperationalStatus(edge);
         return status != null ? status : Status.INDETERMINATE;
     }
 
@@ -366,27 +372,6 @@ public class BusinessServiceManagerImpl implements BusinessServiceManager {
     }
 
     @Override
-    public Status getOperationalStatusForReductionKey(String reductionKey) {
-        final Status status = businessServiceStateMachine.getOperationalStatus(reductionKey);
-        return status != null ? status : Status.INDETERMINATE;
-    }
-
-    @Override
-    public Status getOperationalStatusForEdge(Edge edge) {
-        Objects.requireNonNull(edge);
-        if (edge instanceof ReductionKeyEdge) {
-            return getOperationalStatusForReductionKey(((ReductionKeyEdge) edge).getReductionKey());
-        }
-        if (edge instanceof ChildEdge) {
-            return getOperationalStatusForBusinessService(((ChildEdge) edge).getChild());
-        }
-        if (edge instanceof IpServiceEdge) {
-            return getOperationalStatusForIPService(((IpServiceEdge) edge).getIpService());
-        }
-        throw new IllegalArgumentException("Could not determine status for edge of type " + edge.getClass());
-    }
-
-    @Override
     public List<MapFunction> listMapFunctions() {
         return Lists.newArrayList(new Identity(), new Increase(), new Decrease(), new SetTo(), new Ignore());
     }
@@ -398,7 +383,12 @@ public class BusinessServiceManagerImpl implements BusinessServiceManager {
 
     @Override
     public Node getNodeById(Integer nodeId) {
-        return new NodeImpl(this, getNodeEntity(nodeId));
+        return new NodeImpl(getNodeEntity(nodeId));
+    }
+
+    @Override
+    public BusinessServiceGraph getGraph() {
+        return new BusinessServiceGraphImpl(getAllBusinessServices());
     }
 
     protected BusinessServiceDao getDao() {
@@ -415,7 +405,7 @@ public class BusinessServiceManagerImpl implements BusinessServiceManager {
     }
 
     private BusinessServiceEdgeEntity getBusinessServiceEdgeEntity(Edge edge) {
-        return ((AbstractEdge) edge).getEntity();
+        return ((AbstractEdge<?>) edge).getEntity();
     }
 
     private BusinessServiceEdgeEntity getBusinessServiceEdgeEntity(Long edgeId) {
@@ -450,10 +440,6 @@ public class BusinessServiceManagerImpl implements BusinessServiceManager {
             throw new NoSuchElementException();
         }
         return entity;
-    }
-
-    private OnmsMonitoredService getMonitoredServiceEntity(IpService ipService) throws NoSuchElementException {
-        return ((IpServiceImpl) ipService).getEntity();
     }
 
     private OnmsMonitoredService getMonitoredServiceEntity(Integer serviceId) throws NoSuchElementException {

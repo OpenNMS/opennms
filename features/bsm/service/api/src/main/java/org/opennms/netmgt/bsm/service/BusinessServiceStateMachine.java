@@ -28,13 +28,15 @@
 
 package org.opennms.netmgt.bsm.service;
 
+import java.io.File;
 import java.util.List;
 import java.util.Map;
 
 import org.opennms.netmgt.bsm.service.model.AlarmWrapper;
-import org.opennms.netmgt.bsm.service.model.BusinessService;
 import org.opennms.netmgt.bsm.service.model.IpService;
+import org.opennms.netmgt.bsm.service.model.ReadOnlyBusinessService;
 import org.opennms.netmgt.bsm.service.model.Status;
+import org.opennms.netmgt.bsm.service.model.edge.ro.ReadOnlyEdge;
 
 public interface BusinessServiceStateMachine {
 
@@ -43,31 +45,39 @@ public interface BusinessServiceStateMachine {
      *
      * @param businessServices list of services to manage
      */
-    void setBusinessServices(List<BusinessService> businessServices);
+    void setBusinessServices(List<? extends ReadOnlyBusinessService> businessServices);
 
     /**
      * Retrieves the current operational status of a Business Service.
      *
-     * @param businessService service to query for
-     * @return the current operational status, or null if the service if not managed by the state machine
+     * @param businessService Business Service to query
+     * @return the current operational status, or null if the Business Service if not managed by the state machine
      */
-    Status getOperationalStatus(BusinessService businessService);
+    Status getOperationalStatus(ReadOnlyBusinessService businessService);
 
     /**
-     * Retrieves the current operational status of an IP-Service associated with a Business Service.
+     * Retrieves the current operational status of a particular IP service.
      *
-     * @param ipService service to query for
-     * @return the current operational status, or null if the IP-service is not monitored by the state machine
+     * @param ipService IP Service to query
+     * @return the current operational status, or null if the IP Service is not monitored by the state machine
      */
     Status getOperationalStatus(IpService ipService);
 
     /**
-     * Retrieves the current operational status of any defined reduction key.
+     * Retrieves the current operational status of a particular reduction key.
      *
-     * @param reductionKey the reduction key to query for
-     * @return the current operational status, or null if the reduction key is not monitored by the state machine
+     * @param reductionKey reduction key to query for
+     * @return the current operational status, or null if the Reduction Key is not monitored by the state machine
      */
     Status getOperationalStatus(String reductionKey);
+
+    /**
+     * Retrieves the current operational status of a particular Edge associated with a Business Service.
+     *
+     * @param edge edge to query for
+     * @return the current operational status, or null if the Edge is not monitored by the state machine
+     */
+    Status getOperationalStatus(ReadOnlyEdge edge);
 
     /**
      * Updates the states of the Business Services.
@@ -90,4 +100,7 @@ public interface BusinessServiceStateMachine {
      * @return true of the handler was previously registered, and false otherwise
      */
     boolean removeHandler(BusinessServiceStateChangeHandler handler, Map<String, String> attributes);
+
+    void renderGraphToPng(File target);
+
 }

@@ -58,6 +58,7 @@ public class BusinessServiceDaoImpl extends AbstractDaoHibernate<BusinessService
             public Set<BusinessServiceEntity> doInHibernate(Session session) throws HibernateException, SQLException {
                 Query query = session.createQuery("select edge from BusinessServiceEdgeEntity edge where type(edge) = BusinessServiceChildEdgeEntity and edge.child.id = :childId");
                 query.setParameter("childId", childId);
+                @SuppressWarnings("unchecked")
                 List<BusinessServiceEdgeEntity> list = query.list();
                 return list.stream().map(e -> e.getBusinessService()).collect(Collectors.toSet());
             }
