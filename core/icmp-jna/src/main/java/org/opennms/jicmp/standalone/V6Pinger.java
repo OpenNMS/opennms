@@ -49,7 +49,7 @@ import com.sun.jna.Platform;
 public class V6Pinger extends AbstractPinger<Inet6Address> {
 
     public V6Pinger() throws Exception {
-        super(NativeDatagramSocket.create(NativeDatagramSocket.PF_INET6, Platform.isMac() ? NativeDatagramSocket.SOCK_DGRAM : NativeDatagramSocket.SOCK_RAW, NativeDatagramSocket.IPPROTO_ICMPV6));
+        super(NativeDatagramSocket.create(NativeDatagramSocket.PF_INET6, getSocketType(), NativeDatagramSocket.IPPROTO_ICMPV6));
         
         // Windows requires at least one packet sent before a receive call can be made without error
         // so we send a packet here to make sure...  This one should not match the normal ping requests
