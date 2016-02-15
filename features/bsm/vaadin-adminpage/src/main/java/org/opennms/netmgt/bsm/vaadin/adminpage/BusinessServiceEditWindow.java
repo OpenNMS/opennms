@@ -34,14 +34,16 @@ import java.util.stream.Collectors;
 import org.opennms.netmgt.bsm.service.BusinessServiceManager;
 import org.opennms.netmgt.bsm.service.model.BusinessService;
 import org.opennms.netmgt.bsm.service.model.IpService;
+import org.opennms.netmgt.bsm.service.model.Status;
 import org.opennms.netmgt.bsm.service.model.edge.ChildEdge;
 import org.opennms.netmgt.bsm.service.model.edge.Edge;
 import org.opennms.netmgt.bsm.service.model.edge.IpServiceEdge;
 import org.opennms.netmgt.bsm.service.model.edge.ReductionKeyEdge;
 import org.opennms.netmgt.bsm.service.model.functions.map.SetTo;
+import org.opennms.netmgt.bsm.service.model.functions.reduce.HighestSeverityAbove;
 import org.opennms.netmgt.bsm.service.model.functions.reduce.MostCritical;
+import org.opennms.netmgt.bsm.service.model.functions.reduce.ReductionFunction;
 import org.opennms.netmgt.bsm.service.model.functions.reduce.Threshold;
-import org.opennms.netmgt.bsm.service.model.mapreduce.ReductionFunction;
 import org.opennms.netmgt.vaadin.core.TransactionAwareUI;
 import org.opennms.netmgt.vaadin.core.UIHelper;
 
@@ -50,8 +52,10 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Ordering;
 import com.vaadin.data.Property;
 import com.vaadin.data.Validator;
+import com.vaadin.ui.AbstractSelect;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.Field;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.ListSelect;
 import com.vaadin.ui.NativeSelect;
@@ -81,6 +85,12 @@ public class BusinessServiceEditWindow extends Window {
      * Reduce function
      */
     private NativeSelect m_reduceFunctionNativeSelect;
+
+    /**
+     * Status
+     */
+    private NativeSelect m_thresholdStatusSelect;
+
     /**
      * the threshold textfield
      */
@@ -129,27 +139,30 @@ public class BusinessServiceEditWindow extends Window {
         saveButton.addClickListener(UIHelper.getCurrent(TransactionAwareUI.class).wrapInTransactionProxy(new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent event) {
-                if (!m_thresholdTextField.isValid() ||
-                    !m_nameTextField.isValid())
+                if (!m_thresholdTextField.isValid() ||  !m_nameTextField.isValid()) {
                     return;
+                }
 
+                final ReductionFunction reductionFunction = getReduceFunction();
                 businessService.setName(m_nameTextField.getValue().trim());
-
-                final ReductionFunction reductionFunction;
-
-                try {
-                    reductionFunction = ((Class<? extends ReductionFunction>) m_reduceFunctionNativeSelect.getValue()).newInstance();
-                } catch (final InstantiationException | IllegalAccessException e) {
-                    throw Throwables.propagate(e);
-                }
-
-                if (reductionFunction instanceof Threshold) {
-                    ((Threshold) reductionFunction).setThreshold(Float.parseFloat(m_thresholdTextField.getValue()));
-                }
-
                 businessService.setReduceFunction(reductionFunction);
                 businessService.save();
                 close();
+            }
+
+            private ReductionFunction getReduceFunction() {
+                try {
+                    final ReductionFunction reductionFunction = ((Class<? extends ReductionFunction>) m_reduceFunctionNativeSelect.getValue()).newInstance();
+                    if (reductionFunction instanceof Threshold) {
+                        ((Threshold) reductionFunction).setThreshold(Float.parseFloat(m_thresholdTextField.getValue()));
+                    }
+                    if (reductionFunction instanceof HighestSeverityAbove) {
+                        ((HighestSeverityAbove) reductionFunction).setThreshold((Status) m_thresholdStatusSelect.getValue());
+                    }
+                    return reductionFunction;
+                } catch (final InstantiationException | IllegalAccessException e) {
+                    throw Throwables.propagate(e);
+                }
             }
         }));
 
@@ -187,11 +200,11 @@ public class BusinessServiceEditWindow extends Window {
          * create the reduce function component
          */
 
-        m_reduceFunctionNativeSelect = new NativeSelect("Reduce Function",
-                                                        ImmutableList.builder()
-                                                                .add(MostCritical.class)
-                                                                .add(Threshold.class)
-                                                                .build());
+        m_reduceFunctionNativeSelect = new NativeSelect("Reduce Function", ImmutableList.builder()
+                .add(MostCritical.class)
+                .add(Threshold.class)
+                .add(HighestSeverityAbove.class)
+                .build());
         m_reduceFunctionNativeSelect.setId("reduceFunctionNativeSelect");
         m_reduceFunctionNativeSelect.setWidth(100.0f, Unit.PERCENTAGE);
         m_reduceFunctionNativeSelect.setNullSelectionAllowed(false);
@@ -228,9 +241,31 @@ public class BusinessServiceEditWindow extends Window {
 
         verticalLayout.addComponent(m_thresholdTextField);
 
+        /**
+         * Status selection for "Highest Severity Above"
+         */
+        m_thresholdStatusSelect = new NativeSelect("Threshold");
+        m_thresholdStatusSelect.setId("thresholdStatusSelect");
+        m_thresholdStatusSelect.setRequired(false);
+        m_thresholdStatusSelect.setEnabled(false);
+        m_thresholdStatusSelect.setImmediate(true);
+        m_thresholdStatusSelect.setWidth(100.0f, Unit.PERCENTAGE);
+        m_thresholdStatusSelect.setMultiSelect(false);
+        m_thresholdStatusSelect.setNewItemsAllowed(false);
+        m_thresholdStatusSelect.setNullSelectionAllowed(false);
+        for (Status eachStatus : Status.values()) {
+            m_thresholdStatusSelect.addItem(eachStatus);
+        }
+        m_thresholdStatusSelect.setValue(Status.INDETERMINATE);
+        m_thresholdStatusSelect.getItemIds().forEach(itemId -> m_thresholdStatusSelect.setItemCaption(itemId, ((Status) itemId).getLabel()));
+        verticalLayout.addComponent(m_thresholdStatusSelect);
+
         m_reduceFunctionNativeSelect.addValueChangeListener(ev -> {
-            m_thresholdTextField.setEnabled(m_reduceFunctionNativeSelect.getValue() == Threshold.class);
-            m_thresholdTextField.setRequired(m_reduceFunctionNativeSelect.getValue() == Threshold.class);
+            boolean thresholdFunction = m_reduceFunctionNativeSelect.getValue() == Threshold.class;
+            boolean highestSeverityAboveFunction = m_reduceFunctionNativeSelect.getValue() == HighestSeverityAbove.class;
+
+            setVisible(m_thresholdTextField, thresholdFunction);
+            setVisible(m_thresholdStatusSelect, highestSeverityAboveFunction);
         });
 
         if (Objects.isNull(businessService.getReduceFunction())) {
@@ -238,8 +273,12 @@ public class BusinessServiceEditWindow extends Window {
         } else {
             m_reduceFunctionNativeSelect.setValue(businessService.getReduceFunction().getClass());
 
-            if (businessService.getReduceFunction().getClass()==Threshold.class) {
+            if (businessService.getReduceFunction().getClass() == Threshold.class) {
                 m_thresholdTextField.setValue(String.valueOf(((Threshold) businessService.getReduceFunction()).getThreshold()));
+            }
+
+            if (businessService.getReduceFunction().getClass() == HighestSeverityAbove.class) {
+                m_thresholdStatusSelect.setValue(((HighestSeverityAbove) businessService.getReduceFunction()).getThreshold());
             }
         }
 
@@ -300,9 +339,7 @@ public class BusinessServiceEditWindow extends Window {
         removeEdgeButton.addClickListener((Button.ClickListener) event -> {
             if (m_edgesListSelect.getValue() != null) {
                 removeEdgeButton.setEnabled(false);
-
                 ((Edge) m_edgesListSelect.getValue()).delete();
-
                 refreshEdges();
             }
         });
@@ -327,6 +364,12 @@ public class BusinessServiceEditWindow extends Window {
          * set the window's content
          */
         setContent(verticalLayout);
+    }
+
+    private void setVisible(Field field, boolean visible) {
+        field.setEnabled(visible);
+        field.setRequired(visible);
+        field.setVisible(visible);
     }
 
     private void refreshEdges() {

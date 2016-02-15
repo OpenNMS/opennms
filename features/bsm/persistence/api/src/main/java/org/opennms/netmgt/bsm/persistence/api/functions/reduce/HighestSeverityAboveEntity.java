@@ -21,24 +21,49 @@
  *      http://www.gnu.org/licenses/
  *
  * For more information contact:
- * OpenNMS(R) Licensing <license@opennms.org>
- *      http://www.opennms.org/
- *      http://www.opennms.com/
+ *     OpenNMS(R) Licensing <license@opennms.org>
+ *     http://www.opennms.org/
+ *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.bsm.service.model.functions.map;
+package org.opennms.netmgt.bsm.persistence.api.functions.reduce;
 
-import java.util.Optional;
+import javax.persistence.Column;
+import javax.persistence.DiscriminatorValue;
+import javax.persistence.Entity;
 
-import org.opennms.netmgt.bsm.service.model.Status;
+@Entity
+@DiscriminatorValue(value="highest-severity-above")
+public class HighestSeverityAboveEntity extends AbstractReductionFunctionEntity {
 
-public class Increase implements MapFunction {
-    @Override
-    public Optional<Status> map(Status source) {
-        if (source == null) {
-            return Optional.empty();
-        }
-        int newId = Math.min(Status.CRITICAL.getId(), source.getId() + 1);
-        return Optional.of(Status.get(newId));
+    /**
+     * The ordinal number of the Status object.
+     */
+    @Column(name="threshold_severity", nullable=false)
+    private int m_threshold;
+
+    public HighestSeverityAboveEntity() {
+
     }
+
+    public HighestSeverityAboveEntity(int threshold) {
+        setThreshold(threshold);
+    }
+
+    public void setThreshold(int threshold) {
+        m_threshold = threshold;
+    }
+
+    public int getThreshold() {
+        return m_threshold;
+    }
+
+    @Override
+    public String toString() {
+        return com.google.common.base.Objects.toStringHelper(this)
+                .add("id", getId())
+                .add("threshold", m_threshold)
+                .toString();
+    }
+
 }

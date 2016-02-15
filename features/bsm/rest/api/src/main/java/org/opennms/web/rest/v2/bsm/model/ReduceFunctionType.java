@@ -32,7 +32,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-import org.opennms.netmgt.bsm.service.model.mapreduce.ReductionFunction;
+import org.opennms.netmgt.bsm.service.model.Status;
+import org.opennms.netmgt.bsm.service.model.functions.reduce.ReductionFunction;
 
 public enum ReduceFunctionType {
     MostCritical(org.opennms.netmgt.bsm.service.model.functions.reduce.MostCritical.class) {
@@ -56,6 +57,25 @@ public enum ReduceFunctionType {
             dto.setType(this);
             Map<String, String> properties = new HashMap<>();
             properties.put("threshold", String.valueOf(((org.opennms.netmgt.bsm.service.model.functions.reduce.Threshold) input).getThreshold()));
+            dto.setProperties(properties);
+            return dto;
+        }
+    },
+    HighestSeverityAbove(org.opennms.netmgt.bsm.service.model.functions.reduce.HighestSeverityAbove.class) {
+        @Override
+        public ReductionFunction fromDTO(ReduceFunctionDTO input) {
+            org.opennms.netmgt.bsm.service.model.functions.reduce.HighestSeverityAbove highestSeverityAbove = new  org.opennms.netmgt.bsm.service.model.functions.reduce.HighestSeverityAbove();
+            String thresholdValue = Objects.requireNonNull(input.getProperties().get("threshold"));
+            highestSeverityAbove.setThreshold(Status.valueOf(thresholdValue));
+            return highestSeverityAbove;
+        }
+
+        @Override
+        public <T extends ReductionFunction> ReduceFunctionDTO toDTO(T input) {
+            ReduceFunctionDTO dto = new ReduceFunctionDTO();
+            dto.setType(this);
+            Map<String, String> properties = new HashMap<>();
+            properties.put("threshold", String.valueOf(((org.opennms.netmgt.bsm.service.model.functions.reduce.HighestSeverityAbove) input).getThreshold()));
             dto.setProperties(properties);
             return dto;
         }

@@ -32,7 +32,6 @@ import java.util.Objects;
 import java.util.Optional;
 
 import org.opennms.netmgt.bsm.service.model.Status;
-import org.opennms.netmgt.bsm.service.model.mapreduce.MapFunction;
 
 public class SetTo implements MapFunction {
 

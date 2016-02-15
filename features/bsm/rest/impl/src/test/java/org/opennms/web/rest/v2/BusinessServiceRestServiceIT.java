@@ -35,6 +35,7 @@ import static org.opennms.netmgt.bsm.test.BsmTestUtils.toRequestDto;
 import static org.opennms.netmgt.bsm.test.BsmTestUtils.toResponseDTO;
 import static org.opennms.netmgt.bsm.test.BsmTestUtils.toResponseDto;
 import static org.opennms.netmgt.bsm.test.BsmTestUtils.toXml;
+import static org.opennms.netmgt.bsm.test.BsmTestUtils.transform;
 
 import java.util.List;
 import java.util.Map;
@@ -66,12 +67,14 @@ import org.opennms.netmgt.bsm.persistence.api.functions.map.IdentityEntity;
 import org.opennms.netmgt.bsm.persistence.api.functions.map.IgnoreEntity;
 import org.opennms.netmgt.bsm.persistence.api.functions.map.IncreaseEntity;
 import org.opennms.netmgt.bsm.persistence.api.functions.map.SetToEntity;
+import org.opennms.netmgt.bsm.persistence.api.functions.reduce.HighestSeverityAboveEntity;
 import org.opennms.netmgt.bsm.persistence.api.functions.reduce.MostCriticalEntity;
 import org.opennms.netmgt.bsm.service.model.Status;
 import org.opennms.netmgt.bsm.service.model.edge.Edge;
 import org.opennms.netmgt.bsm.service.model.functions.map.Ignore;
 import org.opennms.netmgt.bsm.test.BambooTestHierarchy;
 import org.opennms.netmgt.bsm.test.BsmDatabasePopulator;
+import org.opennms.netmgt.bsm.test.BsmTestUtils;
 import org.opennms.netmgt.bsm.test.BusinessServiceEntityBuilder;
 import org.opennms.netmgt.bsm.test.SimpleTestHierarchy;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
@@ -507,6 +510,7 @@ public class BusinessServiceRestServiceIT extends AbstractSpringJerseyRestTestCa
                 .stream()
                 .map(e -> e.getId())
                 .collect(Collectors.toSet()), responseDTO.getParentServices());
+        Assert.assertEquals(transform(expectedEntity.getReductionFunction()), responseDTO.getReduceFunction());
         return responseDTO;
     }
 
@@ -567,6 +571,19 @@ public class BusinessServiceRestServiceIT extends AbstractSpringJerseyRestTestCa
         List<ReduceFunctionDTO> reduceFunctions = getXmlObject(JAXBContext.newInstance(ReduceFunctionListDTO.class), "/business-services/functions/reduce", 200, ReduceFunctionListDTO.class).getFunctions();
 
         Assert.assertEquals(5, mapFunctions.size());
-        Assert.assertEquals(2, reduceFunctions.size());
+        Assert.assertEquals(3, reduceFunctions.size());
+    }
+
+    @Test
+    public void verifyHighestSeverityAboveReduceFunction() throws Exception {
+        BusinessServiceEntity entity = new BusinessServiceEntityBuilder()
+                .name("Dummy Service")
+                .reduceFunction(new HighestSeverityAboveEntity(Status.CRITICAL.ordinal()))
+                .toEntity();
+        sendData(POST, MediaType.APPLICATION_XML, "/business-services", toXml(toRequestDto(entity)), 201);
+
+        entity.setId(findEntityByName("Dummy Service").getId());
+
+        verifyResponse(entity);
     }
 }

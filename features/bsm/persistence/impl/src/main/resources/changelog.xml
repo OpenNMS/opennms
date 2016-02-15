@@ -122,4 +122,9 @@
                                  referencedTableName="bsm_service" referencedColumnNames="id"
                                  onDelete="CASCADE" />
     </changeSet>
+    <changeSet author="mvrueden" id="18.0.0-bsm-highest-severity-above">
+        <addColumn tableName="bsm_reduce">
+            <column name="threshold_severity" type="integer"/>
+        </addColumn>
+    </changeSet>
 </databaseChangeLog>

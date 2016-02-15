@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2012-2016 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -21,9 +21,9 @@
  *      http://www.gnu.org/licenses/
  *
  * For more information contact:
- * OpenNMS(R) Licensing <license@opennms.org>
- *      http://www.opennms.org/
- *      http://www.opennms.com/
+ *     OpenNMS(R) Licensing <license@opennms.org>
+ *     http://www.opennms.org/
+ *     http://www.opennms.com/
  *******************************************************************************/
 
 package org.opennms.netmgt.bsm.service.model.functions.map;
@@ -32,13 +32,8 @@ import java.util.Optional;
 
 import org.opennms.netmgt.bsm.service.model.Status;
 
-public class Increase implements MapFunction {
-    @Override
-    public Optional<Status> map(Status source) {
-        if (source == null) {
-            return Optional.empty();
-        }
-        int newId = Math.min(Status.CRITICAL.getId(), source.getId() + 1);
-        return Optional.of(Status.get(newId));
-    }
+public interface MapFunction {
+
+    Optional<Status> map(Status source);
+
 }

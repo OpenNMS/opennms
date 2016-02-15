@@ -34,7 +34,6 @@ import java.util.Optional;
 
 import org.opennms.netmgt.bsm.service.model.Status;
 import org.opennms.netmgt.bsm.service.model.edge.Edge;
-import org.opennms.netmgt.bsm.service.model.mapreduce.ReductionFunction;
 
 public class MostCritical implements ReductionFunction {
 

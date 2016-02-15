@@ -38,7 +38,7 @@ import org.opennms.netmgt.bsm.service.internal.MapFunctionMapper;
 import org.opennms.netmgt.bsm.service.model.BusinessService;
 import org.opennms.netmgt.bsm.service.model.Status;
 import org.opennms.netmgt.bsm.service.model.edge.Edge;
-import org.opennms.netmgt.bsm.service.model.mapreduce.MapFunction;
+import org.opennms.netmgt.bsm.service.model.functions.map.MapFunction;
 
 public abstract class AbstractEdge<T extends BusinessServiceEdgeEntity> implements Edge {
 

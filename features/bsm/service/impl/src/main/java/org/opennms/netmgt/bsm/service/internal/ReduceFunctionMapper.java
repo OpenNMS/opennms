@@ -31,11 +31,14 @@ package org.opennms.netmgt.bsm.service.internal;
 import java.util.Map;
 
 import org.opennms.netmgt.bsm.persistence.api.functions.reduce.AbstractReductionFunctionEntity;
+import org.opennms.netmgt.bsm.persistence.api.functions.reduce.HighestSeverityAboveEntity;
 import org.opennms.netmgt.bsm.persistence.api.functions.reduce.MostCriticalEntity;
 import org.opennms.netmgt.bsm.persistence.api.functions.reduce.ThresholdEntity;
+import org.opennms.netmgt.bsm.service.model.Status;
+import org.opennms.netmgt.bsm.service.model.functions.reduce.HighestSeverityAbove;
 import org.opennms.netmgt.bsm.service.model.functions.reduce.MostCritical;
 import org.opennms.netmgt.bsm.service.model.functions.reduce.Threshold;
-import org.opennms.netmgt.bsm.service.model.mapreduce.ReductionFunction;
+import org.opennms.netmgt.bsm.service.model.functions.reduce.ReductionFunction;
 
 import com.google.common.base.Function;
 import com.google.common.collect.Maps;
@@ -53,11 +56,21 @@ public class ReduceFunctionMapper {
             entity.setThreshold(((Threshold) input).getThreshold());
             return entity;
         });
+        serviceToPersistenceMapping.put(HighestSeverityAbove.class, input -> {
+            HighestSeverityAboveEntity entity = new HighestSeverityAboveEntity();
+            entity.setThreshold(((HighestSeverityAbove) input).getThreshold().ordinal());
+            return entity;
+        });
 
         persistenceToServiceMapping.put(MostCriticalEntity.class, input -> new MostCritical());
         persistenceToServiceMapping.put(ThresholdEntity.class, input -> {
             Threshold result = new Threshold();
             result.setThreshold(((ThresholdEntity) input).getThreshold());
+            return result;
+        });
+        persistenceToServiceMapping.put(HighestSeverityAboveEntity.class, input -> {
+            HighestSeverityAbove result = new HighestSeverityAbove();
+            result.setThreshold(Status.get(((HighestSeverityAboveEntity) input).getThreshold()));
             return result;
         });
     }
