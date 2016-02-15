@@ -48,8 +48,8 @@ import org.opennms.netmgt.bsm.persistence.api.functions.reduce.AbstractReduction
 import org.opennms.netmgt.bsm.persistence.api.functions.reduce.MostCriticalEntity;
 import org.opennms.netmgt.bsm.service.model.AlarmWrapper;
 import org.opennms.netmgt.bsm.service.model.Status;
-import org.opennms.netmgt.bsm.service.model.mapreduce.MapFunction;
-import org.opennms.netmgt.bsm.service.model.mapreduce.ReductionFunction;
+import org.opennms.netmgt.bsm.service.model.functions.map.MapFunction;
+import org.opennms.netmgt.bsm.service.model.functions.reduce.ReductionFunction;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsMonitoredService;
@@ -95,7 +95,7 @@ public class BsmTestUtils {
         return request;
     }
 
-    private static ReduceFunctionDTO transform(AbstractReductionFunctionEntity input) {
+    public static ReduceFunctionDTO transform(AbstractReductionFunctionEntity input) {
         Objects.requireNonNull(input);
         ReductionFunction reductionFunction = new ReduceFunctionMapper().toServiceFunction(input);
         ReduceFunctionType type = ReduceFunctionType.valueOf(reductionFunction.getClass());
