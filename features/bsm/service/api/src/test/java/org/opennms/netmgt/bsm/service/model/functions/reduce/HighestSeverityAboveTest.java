@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2016 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -26,14 +26,36 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.bsm.service.model.mapreduce;
+package org.opennms.netmgt.bsm.service.model.functions.reduce;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
+import org.junit.Assert;
+import org.junit.Test;
 import org.opennms.netmgt.bsm.service.model.Status;
+import org.opennms.netmgt.bsm.service.model.edge.Edge;
+import org.opennms.netmgt.bsm.service.model.functions.map.Identity;
 
-public interface MapFunction {
+import com.google.common.collect.Maps;
 
-    Optional<Status> map(Status source);
+public class HighestSeverityAboveTest {
 
+    @Test
+    public void testReduce() {
+        Map<Edge, Status> edgeStatusMap = new HashMap<>();
+        edgeStatusMap.put(new TestEdge(1, new Identity()), Status.MINOR);
+        edgeStatusMap.put(new TestEdge(1, new Identity()), Status.MAJOR);
+        edgeStatusMap.put(new TestEdge(1, new Identity()), Status.WARNING);
+
+        HighestSeverityAbove reduceFunction = new HighestSeverityAbove();
+        reduceFunction.setThreshold(Status.CRITICAL);
+
+        Assert.assertEquals(Optional.empty(), reduceFunction.reduce(Maps.newHashMap()));
+        Assert.assertEquals(Optional.empty(), reduceFunction.reduce(edgeStatusMap));
+
+        edgeStatusMap.put(new TestEdge(1, new Identity()), Status.CRITICAL);
+        Assert.assertEquals(Optional.of(Status.CRITICAL), reduceFunction.reduce(edgeStatusMap));
+    }
 }

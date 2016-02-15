@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2016 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -26,15 +26,36 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.bsm.service.model.mapreduce;
+package org.opennms.netmgt.bsm.service.model.functions.reduce;
 
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 
 import org.opennms.netmgt.bsm.service.model.Status;
 import org.opennms.netmgt.bsm.service.model.edge.Edge;
 
-public interface ReductionFunction {
+public class HighestSeverityAbove implements ReductionFunction {
 
-    Optional<Status> reduce(Map<Edge, Status> edgeStatusMap);
+    private Status threshold;
+
+    @Override
+    public Optional<Status> reduce(Map<Edge, Status> edgeStatusMap) {
+        Optional<Status> mostCritical = new MostCritical().reduce(edgeStatusMap);
+        if (mostCritical.isPresent()) {
+            // verify that the status is >= the threshold.
+            if (mostCritical.get().isGreaterThanOrEqual(threshold)) {
+                return mostCritical;
+            }
+        }
+        return Optional.empty();
+    }
+
+    public void setThreshold(Status threshold) {
+        this.threshold = Objects.requireNonNull(threshold);
+    }
+
+    public Status getThreshold() {
+        return threshold;
+    }
 }

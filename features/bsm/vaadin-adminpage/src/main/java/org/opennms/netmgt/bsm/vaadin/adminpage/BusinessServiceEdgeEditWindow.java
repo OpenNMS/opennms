@@ -44,8 +44,8 @@ import org.opennms.netmgt.bsm.service.model.functions.map.Decrease;
 import org.opennms.netmgt.bsm.service.model.functions.map.Identity;
 import org.opennms.netmgt.bsm.service.model.functions.map.Ignore;
 import org.opennms.netmgt.bsm.service.model.functions.map.Increase;
+import org.opennms.netmgt.bsm.service.model.functions.map.MapFunction;
 import org.opennms.netmgt.bsm.service.model.functions.map.SetTo;
-import org.opennms.netmgt.bsm.service.model.mapreduce.MapFunction;
 import org.opennms.netmgt.vaadin.core.TransactionAwareUI;
 import org.opennms.netmgt.vaadin.core.UIHelper;
 
@@ -70,10 +70,6 @@ import com.vaadin.ui.Window;
  * @author Christian Pape <christian@opennms.org>
  */
 public class BusinessServiceEdgeEditWindow extends Window {
-    /**
-     * the parent main layout
-     */
-    private BusinessServiceEditWindow m_businessServiceEditWindow;
 
     /**
      * declaring the components
@@ -304,18 +300,8 @@ public class BusinessServiceEdgeEditWindow extends Window {
             if (!m_ipServiceComponent.isValid()) return;
             if (!m_childServiceComponent.isValid()) return;
             if (!m_reductionKeyComponent.isValid()) return;
-            
-            final MapFunction mapFunction;
-            try {
-                mapFunction = ((Class<? extends MapFunction>) m_mapFunctionSelect.getValue()).newInstance();
-            } catch (final InstantiationException | IllegalAccessException e) {
-                throw Throwables.propagate(e);
-            }
 
-            if (mapFunction instanceof SetTo) {
-                ((SetTo) mapFunction).setStatus((Status) m_mapFunctionSeveritySelect.getValue());
-            }
-
+            final MapFunction mapFunction = getMapFunction();
             final int weight = Integer.parseInt(m_weightField.getValue());
 
             /**
@@ -369,7 +355,7 @@ public class BusinessServiceEdgeEditWindow extends Window {
                 case IP_SERVICE:
                     m_typeSelect.setValue(Edge.Type.IP_SERVICE);
 
-                    for(IpService ipService: (Collection<IpService>) m_ipServiceComponent.getItemIds()) {
+                    for (IpService ipService : (Collection<IpService>) m_ipServiceComponent.getItemIds()) {
                         if (ipService.getId() == ((IpServiceEdge) edge).getIpService().getId()) {
                             m_ipServiceComponent.setValue(ipService);
                             break;
@@ -404,5 +390,17 @@ public class BusinessServiceEdgeEditWindow extends Window {
         rootLayout.addComponent(buttonLayout);
         rootLayout.setComponentAlignment(buttonLayout, Alignment.BOTTOM_RIGHT);
         setContent(rootLayout);
+    }
+
+    private MapFunction getMapFunction() {
+        try {
+            final MapFunction mapFunction = ((Class<? extends MapFunction>) m_mapFunctionSelect.getValue()).newInstance();
+            if (mapFunction instanceof SetTo) {
+                ((SetTo) mapFunction).setStatus((Status) m_mapFunctionSeveritySelect.getValue());
+            }
+            return mapFunction;
+        } catch (final InstantiationException | IllegalAccessException e) {
+            throw Throwables.propagate(e);
+        }
     }
 }

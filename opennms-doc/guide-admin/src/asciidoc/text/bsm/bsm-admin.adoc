@@ -97,9 +97,10 @@ For this operation the following _Reduce Functions_ are available:
 .Status calculation _Reduce Functions_
 [options="header, autowidth"]
 |===
-| Name            | Description
-| `Most Critical` | Uses the value of the most critical status.
-| `Threshold`     | Uses the highest severity found more often than the given threshold.
+| Name                      | Description
+| `Most Critical`           | Uses the value of the most critical status.
+| `Threshold`               | Uses the highest severity found more often than the given threshold.
+| `Highest Severity Above`  | Uses the highest severity only if it is greater or equal than the given threshold severity.
 |===
 
 ===== Operational status changes

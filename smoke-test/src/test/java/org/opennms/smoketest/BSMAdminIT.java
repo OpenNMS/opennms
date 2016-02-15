@@ -30,6 +30,7 @@ package org.opennms.smoketest;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import javax.annotation.Nullable;
@@ -116,7 +117,7 @@ public class BSMAdminIT extends OpenNMSSeleniumTestCase {
         }
 
         public BsmAdminPageEditWindow editEdge(String edgeValueString, String mapFunctionText, int weight) throws InterruptedException {
-            new Select(findElementByXpath("//*[@id=\"edgeList\"]/select")).selectByVisibleText(edgeValueString);
+            getSelectWebElement("edgeList").selectByVisibleText(edgeValueString);
             editEdgeWindow()
                     .selectMapFunction(mapFunctionText)
                     .weight(weight)
@@ -136,19 +137,24 @@ public class BSMAdminIT extends OpenNMSSeleniumTestCase {
         }
 
         public BsmAdminPageEditWindow removeEdge(String edgeValueString) {
-            new Select(findElementByXpath("//*[@id=\"edgeList\"]/select")).selectByVisibleText(edgeValueString);
+            getSelectWebElement("edgeList").selectByVisibleText(edgeValueString);
             findElementById("removeEdgeButton").click();
             return this;
         }
 
         public BsmAdminPageEditWindow setReductionFunction(final String reductionFunctionValueString) {
-            new Select(findElementByXpath("//*[@id=\"reduceFunctionNativeSelect\"]/select")).selectByVisibleText(reductionFunctionValueString);
+            getSelectWebElement("reduceFunctionNativeSelect").selectByVisibleText(reductionFunctionValueString);
             return this;
         }
 
         public BsmAdminPageEditWindow setThreshold(final float threshold) {
             findElementById("thresholdTextField").clear();
             findElementById("thresholdTextField").sendKeys(String.valueOf(threshold));
+            return this;
+        }
+
+        public BsmAdminPageEditWindow setThresholdStatus(String thresholdStatusString) {
+            getSelectWebElement("thresholdStatusSelect").selectByVisibleText(thresholdStatusString);
             return this;
         }
     }
@@ -203,24 +209,24 @@ public class BSMAdminIT extends OpenNMSSeleniumTestCase {
 
     private class BsmAdminPageEdgeEditWindow {
         private BsmAdminPageEdgeEditWindow selectEdgeType(String edgeType) {
-            new Select(findElementByXpath("//*[@id=\"edgeTypeSelector\"]/select")).selectByVisibleText(edgeType);
+            getSelectWebElement("edgeTypeSelector").selectByVisibleText(edgeType);
             return this;
         }
 
         public BsmAdminPageEdgeEditWindow selectIpService(String ipServiceText) {
             selectEdgeType("IP Service");
-            new Select(findElementByXpath("//*[@id=\"ipServiceList\"]/select")).selectByVisibleText(ipServiceText);
+            getSelectWebElement("ipServiceList").selectByVisibleText(ipServiceText);
             return this;
         }
 
         public BsmAdminPageEdgeEditWindow selectChildService(String childServiceText) {
             selectEdgeType("Child Service");
-            new Select(findElementByXpath("//*[@id=\"childServiceList\"]/select")).selectByVisibleText(childServiceText);
+            getSelectWebElement("childServiceList").selectByVisibleText(childServiceText);
             return this;
         }
 
         public BsmAdminPageEdgeEditWindow selectMapFunction(String mapFunctionText) {
-            new Select(findElementByXpath("//*[@id=\"mapFunctionSelector\"]/select")).selectByVisibleText(mapFunctionText);
+            getSelectWebElement("mapFunctionSelector").selectByVisibleText(mapFunctionText);
             return this;
         }
 
@@ -518,6 +524,31 @@ public class BSMAdminIT extends OpenNMSSeleniumTestCase {
         bsmAdminPage.delete(serviceName);
     }
 
+    @Test
+    public void testCanSetHighestSeverityAbove() throws InterruptedException {
+        // Create
+        final String serviceName = createUniqueBusinessServiceName();
+        BsmAdminPageEditWindow editWindow = bsmAdminPage.openNewDialog(serviceName);
+        editWindow.setReductionFunction("HighestSeverityAbove");
+        editWindow.setThresholdStatus("Major");
+        editWindow.save();
+
+        // Verify Reduce Function selection
+        BsmAdminPageEditWindow editDialog = bsmAdminPage.openEditDialog(serviceName);
+        List<WebElement> reduceFunctionSelect = getSelectWebElement("reduceFunctionNativeSelect").getAllSelectedOptions();
+        Assert.assertEquals(1, reduceFunctionSelect.size());
+        Assert.assertEquals("HighestSeverityAbove", reduceFunctionSelect.get(0).getText());
+
+        // Verify Reduce Function Status Threshold
+        List<WebElement> thresholdStatusSelect = getSelectWebElement("thresholdStatusSelect").getAllSelectedOptions();
+        Assert.assertEquals(1, thresholdStatusSelect.size());
+        Assert.assertEquals("Major", thresholdStatusSelect.get(0).getText());
+        editDialog.cancel();
+
+        // Clean up
+        bsmAdminPage.delete(serviceName);
+    }
+
     // switches to the embedded vaadin iframe
     private void switchToVaadinFrame() {
         m_driver.switchTo().frame(findElementByXpath("/html/body/div/iframe"));
@@ -604,5 +635,16 @@ public class BSMAdminIT extends OpenNMSSeleniumTestCase {
 
         // clean up afterwards
         bsmAdminPage.delete(serviceName);
+    }
+
+    /**
+     * Vaadin usually wraps the select elements around a div element.
+     * This method considers this.
+     *
+     * @param id
+     * @return
+     */
+    private Select getSelectWebElement(String id) {
+        return new Select(findElementByXpath("//*[@id=\"" + id + "\"]/select"));
     }
 }

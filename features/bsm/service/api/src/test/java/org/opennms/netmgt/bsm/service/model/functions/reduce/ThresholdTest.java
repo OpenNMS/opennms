@@ -30,83 +30,14 @@ package org.opennms.netmgt.bsm.service.model.functions.reduce;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.opennms.netmgt.bsm.service.model.BusinessService;
 import org.opennms.netmgt.bsm.service.model.Status;
 import org.opennms.netmgt.bsm.service.model.edge.Edge;
 import org.opennms.netmgt.bsm.service.model.functions.map.Increase;
-import org.opennms.netmgt.bsm.service.model.mapreduce.MapFunction;
 
 public class ThresholdTest {
-
-    private static class TestEdge implements Edge {
-
-        private final int weight;
-        private final MapFunction mapFunction;
-
-        private TestEdge(int weight, MapFunction mapFunction) {
-            this.weight = weight;
-            this.mapFunction = mapFunction;
-        }
-
-        @Override
-        public Long getId() {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public Type getType() {
-            return Type.IP_SERVICE;
-        }
-
-        @Override
-        public MapFunction getMapFunction() {
-            return mapFunction;
-        }
-
-        @Override
-        public int getWeight() {
-            return weight;
-        }
-
-        @Override
-        public void setWeight(int weight) {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public void delete() {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public Set<String> getReductionKeys() {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public BusinessService getSource() {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public Status getOperationalStatus() {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public void setMapFunction(MapFunction mapFunction) {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public void setSource(BusinessService source) {
-            throw new UnsupportedOperationException();
-        }
-    }
 
     @Test
     public void verifyReduce() {
