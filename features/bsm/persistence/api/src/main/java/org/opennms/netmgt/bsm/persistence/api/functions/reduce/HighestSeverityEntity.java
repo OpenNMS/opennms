@@ -32,7 +32,7 @@ import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 
 @Entity
-@DiscriminatorValue(value="most-critical")
+@DiscriminatorValue(value="highest-severity")
 public class HighestSeverityEntity extends AbstractReductionFunctionEntity {
 
 }

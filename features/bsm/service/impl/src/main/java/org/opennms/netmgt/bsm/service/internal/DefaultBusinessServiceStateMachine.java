@@ -233,7 +233,7 @@ public class DefaultBusinessServiceStateMachine implements BusinessServiceStateM
                 return null;
             }
 
-            // The IP-Service resolves to multiple reduction keys, we use the one with the highest severity (Most Critical)
+            // The IP-Service resolves to multiple reduction keys, we use the one with the highest severity
             Status maxStatus = DEFAULT_SEVERITY;
             for (String reductionKey : ipService.getReductionKeys()) {
                 final Status rkStatus = m_reductionKeyStatus.get(reductionKey);
