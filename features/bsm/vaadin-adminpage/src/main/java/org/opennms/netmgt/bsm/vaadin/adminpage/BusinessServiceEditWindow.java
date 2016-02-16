@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.bsm.vaadin.adminpage;
 
+import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
@@ -44,14 +45,17 @@ import org.opennms.netmgt.bsm.service.model.functions.reduce.HighestSeverity;
 import org.opennms.netmgt.bsm.service.model.functions.reduce.HighestSeverityAbove;
 import org.opennms.netmgt.bsm.service.model.functions.reduce.ReductionFunction;
 import org.opennms.netmgt.bsm.service.model.functions.reduce.Threshold;
+import org.opennms.netmgt.vaadin.core.KeyValueInputDialogWindow;
 import org.opennms.netmgt.vaadin.core.TransactionAwareUI;
 import org.opennms.netmgt.vaadin.core.UIHelper;
 
+import com.google.common.base.Strings;
 import com.google.common.base.Throwables;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Ordering;
 import com.vaadin.data.Property;
 import com.vaadin.data.Validator;
+import com.vaadin.data.validator.AbstractStringValidator;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Field;
@@ -95,9 +99,13 @@ public class BusinessServiceEditWindow extends Window {
      */
     private TextField m_thresholdTextField;
     /**
-     * list of reduction keys
+     * list of edges
      */
     private ListSelect m_edgesListSelect;
+    /**
+     * list of attributes
+     */
+    private ListSelect m_attributesListSelect;
 
     /**
      * Constructor
@@ -138,7 +146,7 @@ public class BusinessServiceEditWindow extends Window {
         saveButton.addClickListener(UIHelper.getCurrent(TransactionAwareUI.class).wrapInTransactionProxy(new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent event) {
-                if (!m_thresholdTextField.isValid() ||  !m_nameTextField.isValid()) {
+                if (!m_thresholdTextField.isValid() || !m_nameTextField.isValid()) {
                     return;
                 }
 
@@ -287,25 +295,22 @@ public class BusinessServiceEditWindow extends Window {
         m_edgesListSelect = new ListSelect("Edges");
         m_edgesListSelect.setId("edgeList");
         m_edgesListSelect.setWidth(100.0f, Unit.PERCENTAGE);
-        m_edgesListSelect.setRows(20);
+        m_edgesListSelect.setRows(10);
         m_edgesListSelect.setNullSelectionAllowed(false);
         m_edgesListSelect.setMultiSelect(false);
         refreshEdges();
 
-        /**
-         * wrap the reduction key list select box in a Vaadin Panel
-         */
         HorizontalLayout edgesListAndButtonLayout = new HorizontalLayout();
 
         edgesListAndButtonLayout.setWidth(100.0f, Unit.PERCENTAGE);
 
         VerticalLayout edgesButtonLayout = new VerticalLayout();
-        edgesButtonLayout.setWidth(100.0f, Unit.PIXELS);
+        edgesButtonLayout.setWidth(110.0f, Unit.PIXELS);
         edgesButtonLayout.setSpacing(true);
 
         Button addEdgeButton = new Button("Add Edge");
         addEdgeButton.setId("addEdgeButton");
-        addEdgeButton.setWidth(100.0f, Unit.PIXELS);
+        addEdgeButton.setWidth(110.0f, Unit.PIXELS);
         addEdgeButton.addStyleName("small");
         edgesButtonLayout.addComponent(addEdgeButton);
         addEdgeButton.addClickListener((Button.ClickListener) event -> {
@@ -317,7 +322,7 @@ public class BusinessServiceEditWindow extends Window {
         Button editEdgeButton = new Button("Edit Edge");
         editEdgeButton.setId("editEdgeButton");
         editEdgeButton.setEnabled(false);
-        editEdgeButton.setWidth(100.0f, Unit.PIXELS);
+        editEdgeButton.setWidth(110.0f, Unit.PIXELS);
         editEdgeButton.addStyleName("small");
         edgesButtonLayout.addComponent(editEdgeButton);
         editEdgeButton.addClickListener((Button.ClickListener) event -> {
@@ -329,11 +334,14 @@ public class BusinessServiceEditWindow extends Window {
         final Button removeEdgeButton = new Button("Remove Edge");
         removeEdgeButton.setId("removeEdgeButton");
         removeEdgeButton.setEnabled(false);
-        removeEdgeButton.setWidth(100.0f, Unit.PIXELS);
+        removeEdgeButton.setWidth(110.0f, Unit.PIXELS);
         removeEdgeButton.addStyleName("small");
         edgesButtonLayout.addComponent(removeEdgeButton);
 
-        m_edgesListSelect.addValueChangeListener((Property.ValueChangeListener) event -> {removeEdgeButton.setEnabled(event.getProperty().getValue() != null); editEdgeButton.setEnabled(event.getProperty().getValue() != null);});
+        m_edgesListSelect.addValueChangeListener((Property.ValueChangeListener) event -> {
+            removeEdgeButton.setEnabled(event.getProperty().getValue() != null);
+            editEdgeButton.setEnabled(event.getProperty().getValue() != null);
+        });
 
         removeEdgeButton.addClickListener((Button.ClickListener) event -> {
             if (m_edgesListSelect.getValue() != null) {
@@ -350,6 +358,113 @@ public class BusinessServiceEditWindow extends Window {
         edgesListAndButtonLayout.addComponent(edgesButtonLayout);
         edgesListAndButtonLayout.setComponentAlignment(edgesButtonLayout, Alignment.BOTTOM_CENTER);
         verticalLayout.addComponent(edgesListAndButtonLayout);
+
+        /**
+         * create the attributes list box
+         */
+        m_attributesListSelect = new ListSelect("Attributes");
+        m_attributesListSelect.setId("attributeList");
+        m_attributesListSelect.setWidth(100.0f, Unit.PERCENTAGE);
+        m_attributesListSelect.setRows(10);
+        m_attributesListSelect.setNullSelectionAllowed(false);
+        m_attributesListSelect.setMultiSelect(false);
+
+        refreshAttributes();
+
+        HorizontalLayout attributesListAndButtonLayout = new HorizontalLayout();
+
+        attributesListAndButtonLayout.setWidth(100.0f, Unit.PERCENTAGE);
+
+        VerticalLayout attributesButtonLayout = new VerticalLayout();
+        attributesButtonLayout.setWidth(110.0f, Unit.PIXELS);
+        attributesButtonLayout.setSpacing(true);
+
+        Button addAttributeButton = new Button("Add Attribute");
+        addAttributeButton.setId("addAttributeButton");
+        addAttributeButton.setWidth(110.0f, Unit.PIXELS);
+        addAttributeButton.addStyleName("small");
+        attributesButtonLayout.addComponent(addAttributeButton);
+        addAttributeButton.addClickListener((Button.ClickListener) event -> {
+            KeyValueInputDialogWindow keyValueInputDialogWindow = new KeyValueInputDialogWindow()
+                    .withKeyFieldName("Key")
+                    .withValueFieldName("Value")
+                    .withCaption("Attribute")
+                    .withKey("Key")
+                    .withValue("")
+                    .withOkAction(new KeyValueInputDialogWindow.Action() {
+                        @Override
+                        public void execute(KeyValueInputDialogWindow window) {
+                            m_businessService.getAttributes().put(window.getKey(), window.getValue());
+                            refreshAttributes();
+                        }
+                    })
+                    .withKeyValidator(new AbstractStringValidator("String must not be empty") {
+                        @Override
+                        protected boolean isValidValue(String value) {
+                            return !Strings.isNullOrEmpty(value) && !m_businessService.getAttributes().containsKey(value);
+                        }
+                    });
+            this.getUI().addWindow(keyValueInputDialogWindow);
+        });
+
+        Button editAttributeButton = new Button("Edit Attribute");
+        editAttributeButton.setId("editAttributeButton");
+        editAttributeButton.setEnabled(false);
+        editAttributeButton.setWidth(110.0f, Unit.PIXELS);
+        editAttributeButton.addStyleName("small");
+        attributesButtonLayout.addComponent(editAttributeButton);
+        editAttributeButton.addClickListener((Button.ClickListener) event -> {
+            Map.Entry<String, String> entry = (Map.Entry) m_attributesListSelect.getValue();
+            KeyValueInputDialogWindow keyValueInputDialogWindow = new KeyValueInputDialogWindow()
+                    .withKeyFieldName("Key")
+                    .withValueFieldName("Value")
+                    .withCaption("Attribute")
+                    .withKey(entry.getKey())
+                    .disableKey()
+                    .withValue(entry.getValue())
+                    .withOkAction(new KeyValueInputDialogWindow.Action() {
+                        @Override
+                        public void execute(KeyValueInputDialogWindow window) {
+                            m_businessService.getAttributes().put(window.getKey(), window.getValue());
+                            refreshAttributes();
+                        }
+                    })
+                    .withKeyValidator(new AbstractStringValidator("String must not be empty") {
+                        @Override
+                        protected boolean isValidValue(String value) {
+                            return !Strings.isNullOrEmpty(value);
+                        }
+                    });
+            this.getUI().addWindow(keyValueInputDialogWindow);
+        });
+
+        final Button removeAttributeButton = new Button("Remove Attribute");
+        removeAttributeButton.setId("removeAttributeButton");
+        removeAttributeButton.setEnabled(false);
+        removeAttributeButton.setWidth(110.0f, Unit.PIXELS);
+        removeAttributeButton.addStyleName("small");
+        attributesButtonLayout.addComponent(removeAttributeButton);
+
+        m_attributesListSelect.addValueChangeListener((Property.ValueChangeListener) event -> {
+            removeAttributeButton.setEnabled(event.getProperty().getValue() != null);
+            editAttributeButton.setEnabled(event.getProperty().getValue() != null);
+        });
+
+        removeAttributeButton.addClickListener((Button.ClickListener) event -> {
+            if (m_attributesListSelect.getValue() != null) {
+                removeAttributeButton.setEnabled(false);
+                m_businessService.getAttributes().remove(((Map.Entry<String, String>) m_attributesListSelect.getValue()).getKey());
+                refreshAttributes();
+            }
+        });
+
+        attributesListAndButtonLayout.setSpacing(true);
+        attributesListAndButtonLayout.addComponent(m_attributesListSelect);
+        attributesListAndButtonLayout.setExpandRatio(m_attributesListSelect, 1.0f);
+
+        attributesListAndButtonLayout.addComponent(attributesButtonLayout);
+        attributesListAndButtonLayout.setComponentAlignment(attributesButtonLayout, Alignment.BOTTOM_CENTER);
+        verticalLayout.addComponent(attributesListAndButtonLayout);
 
         /**
          * now add the button layout to the main layout
@@ -369,6 +484,15 @@ public class BusinessServiceEditWindow extends Window {
         field.setEnabled(visible);
         field.setRequired(visible);
         field.setVisible(visible);
+    }
+
+    private void refreshAttributes() {
+        m_attributesListSelect.removeAllItems();
+        m_attributesListSelect.addItems(m_businessService.getAttributes().entrySet().stream()
+                .sorted(Ordering.natural()
+                        .onResultOf(Map.Entry::getKey))
+                .collect(Collectors.toList()));
+        m_attributesListSelect.getItemIds().forEach(item -> m_attributesListSelect.setItemCaption(item, ((Map.Entry<String, String>) item).getKey() + "=" + ((Map.Entry<String, String>) item).getValue()));
     }
 
     private void refreshEdges() {
