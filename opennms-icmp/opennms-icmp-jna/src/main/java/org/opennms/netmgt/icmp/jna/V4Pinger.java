@@ -86,9 +86,9 @@ public class V4Pinger extends AbstractPinger<Inet4Address> {
                     notifyPingListeners(datagram.getAddress(), echoReply);
                 }
             }
-        } catch(final Throwable t) {
-            setThrowable(t);
-            LOG.debug("Error caught while processing ping packets: {}", t.getMessage(), t);
+        } catch(final Throwable e) {
+            setThrowable(e);
+            LOG.debug("Error caught while processing ping packets: {}", e.getMessage(), e);
         }
     }
 
