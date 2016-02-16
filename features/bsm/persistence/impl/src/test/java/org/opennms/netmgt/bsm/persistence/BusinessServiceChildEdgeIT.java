@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2016 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -18,12 +18,12 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
- *      http://www.gnu.org/licenses/
+ *       http://www.gnu.org/licenses/
  *
  * For more information contact:
- *     OpenNMS(R) Licensing <license@opennms.org>
- *     http://www.opennms.org/
- *     http://www.opennms.com/
+ * OpenNMS(R) Licensing <license@opennms.org>
+ *      http://www.opennms.org/
+ *      http://www.opennms.com/
  *******************************************************************************/
 
 package org.opennms.netmgt.bsm.persistence;
@@ -41,17 +41,15 @@ import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.MockDatabase;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
+import org.opennms.netmgt.bsm.persistence.api.BusinessServiceChildEdgeEntity;
 import org.opennms.netmgt.bsm.persistence.api.BusinessServiceDao;
-import org.opennms.netmgt.bsm.persistence.api.BusinessServiceEdgeEntity;
 import org.opennms.netmgt.bsm.persistence.api.BusinessServiceEdgeDao;
+import org.opennms.netmgt.bsm.persistence.api.BusinessServiceEdgeEntity;
 import org.opennms.netmgt.bsm.persistence.api.BusinessServiceEntity;
-import org.opennms.netmgt.bsm.persistence.api.IPServiceEdgeEntity;
 import org.opennms.netmgt.bsm.persistence.api.functions.map.IdentityEntity;
-import org.opennms.netmgt.bsm.persistence.api.functions.map.MapFunctionDao;
 import org.opennms.netmgt.bsm.persistence.api.functions.reduce.HighestSeverityEntity;
-import org.opennms.netmgt.bsm.persistence.api.functions.reduce.ReductionFunctionDao;
+import org.opennms.netmgt.bsm.test.BusinessServiceEntityBuilder;
 import org.opennms.netmgt.dao.DatabasePopulator;
-import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -70,7 +68,7 @@ import org.springframework.transaction.annotation.Transactional;
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase(reuseDatabase = false, tempDbClass = MockDatabase.class)
 @Transactional
-public class BusinessServiceEdgeDaoIT {
+public class BusinessServiceChildEdgeIT {
 
     @Autowired
     private DatabasePopulator m_databasePopulator;
@@ -81,16 +79,6 @@ public class BusinessServiceEdgeDaoIT {
     @Autowired
     private BusinessServiceEdgeDao m_businessServiceEdgeDao;
 
-    @Autowired
-    private ReductionFunctionDao m_reductionFunctionDao;
-
-    @Autowired
-    private MapFunctionDao m_mapFunctionDao;
-
-    private HighestSeverityEntity m_highestSeverity;
-
-    private IdentityEntity m_identity;
-
     @BeforeClass
     public static void setUpClass() {
         MockLogAppender.setupLogging(true, "TRACE", new Properties());
@@ -100,44 +88,40 @@ public class BusinessServiceEdgeDaoIT {
     public void setUp() {
         BeanUtils.assertAutowiring(this);
         m_databasePopulator.populateDatabase();
-
-        m_highestSeverity = new HighestSeverityEntity();
-        m_reductionFunctionDao.save(m_highestSeverity);
-        m_reductionFunctionDao.flush();
-
-        m_identity = new IdentityEntity();
-        m_mapFunctionDao.save(m_identity);
-        m_mapFunctionDao.flush();
     }
 
     @Test
     public void canCreateReadUpdateAndDeleteEdges() {
-        // Create a business service
-        BusinessService bs = new BusinessService();
-        bs.setName("Web Servers");
-        bs.setAttribute("dc", "RDU");
-        bs.setReductionFunction(m_highestSeverity);
-        m_businessServiceDao.save(bs);
+        // Create the Parent Business Service
+        BusinessServiceEntity parent = new BusinessServiceEntityBuilder()
+            .name("Parent Service")
+            .reduceFunction(new HighestSeverityEntity())
+            .toEntity();
+        // Create the Child Business Service
+        BusinessServiceEntity child = new BusinessServiceEntityBuilder()
+                .name("Child Service")
+                .reduceFunction(new HighestSeverityEntity())
+                .toEntity();
+        Long parentServiceId = m_businessServiceDao.save(parent);
+        Long childServiceId = m_businessServiceDao.save(child);
         m_businessServiceDao.flush();
 
         // Initially there should be no edges
         assertEquals(0, m_businessServiceEdgeDao.countAll());
 
         // Create an edge
-        IPServiceEdgeEntity edge = new IPServiceEdgeEntity();
-        edge.setMapFunction(m_identity);
-        edge.setBusinessService(bs);
-
-        // Grab the first monitored service from node 1
-        OnmsMonitoredService ipService = m_databasePopulator.getNode1()
-                .getIpInterfaces().iterator().next()
-                .getMonitoredServices().iterator().next();
-        edge.setIpService(ipService);
+        BusinessServiceChildEdgeEntity edge = new BusinessServiceChildEdgeEntity();
+        edge.setMapFunction(new IdentityEntity());
+        edge.setBusinessService(parent);
+        edge.setChild(child);
         m_businessServiceEdgeDao.save(edge);
         m_businessServiceEdgeDao.flush();
 
         // Read an edge
+        assertEquals(1, m_businessServiceEdgeDao.countAll());
         assertEquals(edge, m_businessServiceEdgeDao.get(edge.getId()));
+        assertEquals(parentServiceId, edge.getBusinessService().getId());
+        assertEquals(childServiceId, edge.getChild().getId());
 
         // Update an edge
         edge.setWeight(2);
@@ -150,6 +134,6 @@ public class BusinessServiceEdgeDaoIT {
 
         // Delete an edge
         m_businessServiceEdgeDao.delete(edge);
-        assertEquals(0, m_businessServiceEdgeDao.countAll()); 
+        assertEquals(0, m_businessServiceEdgeDao.countAll());
     }
 }

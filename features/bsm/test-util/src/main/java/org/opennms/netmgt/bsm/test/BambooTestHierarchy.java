@@ -35,7 +35,7 @@ import java.util.List;
 import org.opennms.netmgt.bsm.persistence.api.BusinessServiceEntity;
 import org.opennms.netmgt.bsm.persistence.api.functions.map.IdentityEntity;
 import org.opennms.netmgt.bsm.persistence.api.functions.map.IncreaseEntity;
-import org.opennms.netmgt.bsm.persistence.api.functions.reduce.MostCriticalEntity;
+import org.opennms.netmgt.bsm.persistence.api.functions.reduce.HighestSeverityEntity;
 import org.opennms.netmgt.bsm.persistence.api.functions.reduce.ThresholdEntity;
 
 // Creates a Business Service Hierarchy as defined here: http://www.opennms.org/wiki/BusinessServiceMonitoring#State_Machine
@@ -54,7 +54,7 @@ public class BambooTestHierarchy {
                 .name("Master")
                 .addReductionKey(HTTP_8085_BAMBOO_REDUCTION_KEY, new IncreaseEntity())
                 .addReductionKey(DISK_USAGE_THRESHOLD_BAMBO_REDUCTION_KEY, new IdentityEntity())
-                .reduceFunction(new MostCriticalEntity())
+                .reduceFunction(new HighestSeverityEntity())
                 .toEntity();
 
         BusinessServiceEntity agents = new BusinessServiceEntityBuilder()
@@ -69,7 +69,7 @@ public class BambooTestHierarchy {
                 .name("Bamboo")
                 .addChildren(master, new IdentityEntity())
                 .addChildren(agents, new IdentityEntity())
-                .reduceFunction(new MostCriticalEntity())
+                .reduceFunction(new HighestSeverityEntity())
                 .toEntity();
 
         businessServices.add(master);

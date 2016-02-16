@@ -49,7 +49,7 @@ import org.opennms.netmgt.bsm.persistence.api.BusinessServiceEntity;
 import org.opennms.netmgt.bsm.persistence.api.functions.map.IdentityEntity;
 import org.opennms.netmgt.bsm.persistence.api.functions.map.IgnoreEntity;
 import org.opennms.netmgt.bsm.persistence.api.functions.map.MapFunctionDao;
-import org.opennms.netmgt.bsm.persistence.api.functions.reduce.MostCriticalEntity;
+import org.opennms.netmgt.bsm.persistence.api.functions.reduce.HighestSeverityEntity;
 import org.opennms.netmgt.bsm.persistence.api.functions.reduce.ReductionFunctionDao;
 import org.opennms.netmgt.bsm.test.BsmDatabasePopulator;
 import org.opennms.netmgt.bsm.test.BusinessServiceEntityBuilder;
@@ -105,7 +105,7 @@ public class BusinessServiceDaoIT {
     @Autowired
     private MapFunctionDao m_mapFunctionDao;
 
-    private MostCriticalEntity m_mostCritical;
+    private HighestSeverityEntity m_highestSeverity;
 
     private IgnoreEntity m_ignore;
 
@@ -113,7 +113,7 @@ public class BusinessServiceDaoIT {
     public void setUp() {
         BeanUtils.assertAutowiring(this);
         m_databasePopulator.populateDatabase();
-        m_mostCritical = new MostCriticalEntity();
+        m_highestSeverity = new HighestSeverityEntity();
         m_ignore = new IgnoreEntity();
     }
 
@@ -131,7 +131,7 @@ public class BusinessServiceDaoIT {
                 .addAttribute("dc", "RDU")
                 .addReductionKey("TestReductionKeyA", new IdentityEntity())
                 .addReductionKey("TestReductionKeyB", new IdentityEntity())
-                .reduceFunction(m_mostCritical)
+                .reduceFunction(m_highestSeverity)
                 .toEntity();
         m_businessServiceDao.save(bs);
         m_businessServiceDao.flush();
@@ -176,7 +176,7 @@ public class BusinessServiceDaoIT {
         // Create a business service with an associated IP Service
         final BusinessServiceEntity bs = new BusinessServiceEntity();
         bs.setName("Mont Cascades");
-        bs.setReductionFunction(m_mostCritical);
+        bs.setReductionFunction(m_highestSeverity);
         final OnmsNode node = m_databasePopulator.getNode1();
         final OnmsMonitoredService ipService = getMonitoredServiceFromNode1();
         bs.addIpServiceEdge(ipService, m_ignore);
@@ -208,13 +208,13 @@ public class BusinessServiceDaoIT {
     public void verifyDeleteOnCascade() {
         BusinessServiceEntity child2 = new BusinessServiceEntityBuilder()
                 .name("Child 2")
-                .reduceFunction(new MostCriticalEntity())
+                .reduceFunction(new HighestSeverityEntity())
                 .addReductionKey("some-key", new IdentityEntity())
                 .toEntity();
 
         BusinessServiceEntity child1 = new BusinessServiceEntityBuilder()
                 .name("Child 1")
-                .reduceFunction(new MostCriticalEntity())
+                .reduceFunction(new HighestSeverityEntity())
                 .addChildren(child2, new IdentityEntity())
                 .toEntity();
 
@@ -224,7 +224,7 @@ public class BusinessServiceDaoIT {
                 .addReductionKey("TestReductionKeyA", new IdentityEntity())
                 .addReductionKey("TestReductionKeyB", new IdentityEntity())
                 .addIpService(getMonitoredServiceFromNode1(), new IdentityEntity())
-                .reduceFunction(m_mostCritical)
+                .reduceFunction(m_highestSeverity)
                 .addChildren(child1, new IdentityEntity())
                 .toEntity();
 
@@ -269,7 +269,7 @@ public class BusinessServiceDaoIT {
                 .addReductionKey("TestReductionKeyA", new IdentityEntity())
                 .addReductionKey("TestReductionKeyB", new IdentityEntity())
                 .addReductionKey("TestReductionKeyC", new IdentityEntity())
-                .reduceFunction(m_mostCritical)
+                .reduceFunction(m_highestSeverity)
                 .toEntity();
 
         m_businessServiceDao.save(entity);

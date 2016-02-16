@@ -33,13 +33,14 @@ import java.util.Map;
 import java.util.Objects;
 
 import org.opennms.netmgt.bsm.service.model.Status;
+import org.opennms.netmgt.bsm.service.model.functions.reduce.HighestSeverity;
 import org.opennms.netmgt.bsm.service.model.functions.reduce.ReductionFunction;
 
 public enum ReduceFunctionType {
-    MostCritical(org.opennms.netmgt.bsm.service.model.functions.reduce.MostCritical.class) {
+    HighestSeverity(HighestSeverity.class) {
         @Override
         public ReductionFunction fromDTO(ReduceFunctionDTO input) {
-            return new org.opennms.netmgt.bsm.service.model.functions.reduce.MostCritical();
+            return new HighestSeverity();
         }
     },
     Threshold(org.opennms.netmgt.bsm.service.model.functions.reduce.Threshold.class) {

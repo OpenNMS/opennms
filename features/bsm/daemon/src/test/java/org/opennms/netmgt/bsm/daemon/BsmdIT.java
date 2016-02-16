@@ -43,7 +43,7 @@ import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.netmgt.bsm.persistence.api.BusinessServiceEntity;
 import org.opennms.netmgt.bsm.persistence.api.functions.map.IdentityEntity;
-import org.opennms.netmgt.bsm.persistence.api.functions.reduce.MostCriticalEntity;
+import org.opennms.netmgt.bsm.persistence.api.functions.reduce.HighestSeverityEntity;
 import org.opennms.netmgt.bsm.service.BusinessServiceManager;
 import org.opennms.netmgt.bsm.service.internal.BusinessServiceImpl;
 import org.opennms.netmgt.bsm.service.model.BusinessService;
@@ -230,7 +230,7 @@ public class BsmdIT {
     private BusinessServiceEntity createBusinessService(String name) {
         BusinessServiceEntity bs = new BusinessServiceEntity();
         bs.setName(name);
-        bs.setReductionFunction(new MostCriticalEntity());
+        bs.setReductionFunction(new HighestSeverityEntity());
 
         // Grab the first monitored service from node 1
         OnmsMonitoredService ipService = m_databasePopulator.getNode1()

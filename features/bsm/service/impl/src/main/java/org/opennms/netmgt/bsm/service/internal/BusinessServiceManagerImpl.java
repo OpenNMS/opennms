@@ -64,8 +64,8 @@ import org.opennms.netmgt.bsm.service.model.functions.map.Identity;
 import org.opennms.netmgt.bsm.service.model.functions.map.Ignore;
 import org.opennms.netmgt.bsm.service.model.functions.map.Increase;
 import org.opennms.netmgt.bsm.service.model.functions.map.SetTo;
+import org.opennms.netmgt.bsm.service.model.functions.reduce.HighestSeverity;
 import org.opennms.netmgt.bsm.service.model.functions.reduce.HighestSeverityAbove;
-import org.opennms.netmgt.bsm.service.model.functions.reduce.MostCritical;
 import org.opennms.netmgt.bsm.service.model.functions.reduce.Threshold;
 import org.opennms.netmgt.bsm.service.model.functions.map.MapFunction;
 import org.opennms.netmgt.bsm.service.model.functions.reduce.ReductionFunction;
@@ -393,7 +393,7 @@ public class BusinessServiceManagerImpl implements BusinessServiceManager {
 
     @Override
     public List<ReductionFunction> listReduceFunctions() {
-        return Lists.newArrayList(new MostCritical(), new Threshold(), new HighestSeverityAbove());
+        return Lists.newArrayList(new HighestSeverity(), new Threshold(), new HighestSeverityAbove());
     }
 
     @Override

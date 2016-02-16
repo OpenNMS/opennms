@@ -68,13 +68,12 @@ import org.opennms.netmgt.bsm.persistence.api.functions.map.IgnoreEntity;
 import org.opennms.netmgt.bsm.persistence.api.functions.map.IncreaseEntity;
 import org.opennms.netmgt.bsm.persistence.api.functions.map.SetToEntity;
 import org.opennms.netmgt.bsm.persistence.api.functions.reduce.HighestSeverityAboveEntity;
-import org.opennms.netmgt.bsm.persistence.api.functions.reduce.MostCriticalEntity;
+import org.opennms.netmgt.bsm.persistence.api.functions.reduce.HighestSeverityEntity;
 import org.opennms.netmgt.bsm.service.model.Status;
 import org.opennms.netmgt.bsm.service.model.edge.Edge;
 import org.opennms.netmgt.bsm.service.model.functions.map.Ignore;
 import org.opennms.netmgt.bsm.test.BambooTestHierarchy;
 import org.opennms.netmgt.bsm.test.BsmDatabasePopulator;
-import org.opennms.netmgt.bsm.test.BsmTestUtils;
 import org.opennms.netmgt.bsm.test.BusinessServiceEntityBuilder;
 import org.opennms.netmgt.bsm.test.SimpleTestHierarchy;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
@@ -156,7 +155,7 @@ public class BusinessServiceRestServiceIT extends AbstractSpringJerseyRestTestCa
         // Create a business service without any edges
         BusinessServiceEntity service = new BusinessServiceEntityBuilder()
                 .name("Dummy Service")
-                .reduceFunction(new MostCriticalEntity())
+                .reduceFunction(new HighestSeverityEntity())
                 .toEntity();
         final Long serviceId = m_businessServiceDao.save(service);
         m_businessServiceDao.flush();
@@ -191,11 +190,11 @@ public class BusinessServiceRestServiceIT extends AbstractSpringJerseyRestTestCa
         // Create a child and parent Business Service without any edges
         BusinessServiceEntity childEntity = new BusinessServiceEntityBuilder()
                 .name("Child Service")
-                .reduceFunction(new MostCriticalEntity())
+                .reduceFunction(new HighestSeverityEntity())
                 .toEntity();
         BusinessServiceEntity parentEntity = new BusinessServiceEntityBuilder()
                 .name("Parent Service")
-                .reduceFunction(new MostCriticalEntity())
+                .reduceFunction(new HighestSeverityEntity())
                 .toEntity();
         final Long parentServiceId = m_businessServiceDao.save(parentEntity);
         final Long childServiceId = m_businessServiceDao.save(childEntity);
@@ -226,7 +225,7 @@ public class BusinessServiceRestServiceIT extends AbstractSpringJerseyRestTestCa
         // Create a business service without any edges
         BusinessServiceEntity service = new BusinessServiceEntityBuilder()
                 .name("Dummy Service")
-                .reduceFunction(new MostCriticalEntity())
+                .reduceFunction(new HighestSeverityEntity())
                 .toEntity();
         final Long serviceId = m_businessServiceDao.save(service);
         m_businessServiceDao.flush();
@@ -256,12 +255,12 @@ public class BusinessServiceRestServiceIT extends AbstractSpringJerseyRestTestCa
     public void canRemoveEdges() throws Exception {
         BusinessServiceEntity child = new BusinessServiceEntityBuilder()
                 .name("Child Service")
-                .reduceFunction(new MostCriticalEntity())
+                .reduceFunction(new HighestSeverityEntity())
                 .toEntity();
         m_businessServiceDao.save(child);
         BusinessServiceEntity parent = new BusinessServiceEntityBuilder()
                 .name("Parent Service")
-                .reduceFunction(new MostCriticalEntity())
+                .reduceFunction(new HighestSeverityEntity())
                 // add the IP services edges
                 .addIpService(monitoredServiceDao.get(17), new SetToEntity(OnmsSeverity.CRITICAL.getId()))
                 .addIpService(monitoredServiceDao.get(18), new IgnoreEntity())
@@ -347,7 +346,7 @@ public class BusinessServiceRestServiceIT extends AbstractSpringJerseyRestTestCa
         BusinessServiceEntity bs = new BusinessServiceEntityBuilder()
                 .name("Application Servers")
                 .addReductionKey("MyReductionKey", new IdentityEntity())
-                .reduceFunction(new MostCriticalEntity())
+                .reduceFunction(new HighestSeverityEntity())
                 .toEntity();
         Long id = m_businessServiceDao.save(bs);
         m_businessServiceDao.flush();
@@ -373,7 +372,7 @@ public class BusinessServiceRestServiceIT extends AbstractSpringJerseyRestTestCa
         BusinessServiceEntity bs = new BusinessServiceEntityBuilder()
                 .name("some-service")
                 .addAttribute("some-key", "some-value")
-                .reduceFunction(new MostCriticalEntity())
+                .reduceFunction(new HighestSeverityEntity())
                 .addReductionKey("reductionKey-1", new IdentityEntity())
                 .addReductionKey("reductionKey-2", new IdentityEntity())
                 .addReductionKey("reductionKey-3", new IdentityEntity())
@@ -536,7 +535,7 @@ public class BusinessServiceRestServiceIT extends AbstractSpringJerseyRestTestCa
                 .addAttribute("some-key", "some-value")
                 .addReductionKey("key1", new IdentityEntity())
                 .addReductionKey("key2-deleteMe", new IdentityEntity())
-                .reduceFunction(new MostCriticalEntity())
+                .reduceFunction(new HighestSeverityEntity())
                 .toEntity();
 
         final Long serviceId = m_businessServiceDao.save(bs);
