@@ -220,10 +220,12 @@
       <artifactId>org.opennms.features.collection.persistence.rrd</artifactId>
       <scope>test</scope>
     </dependency>
+    <!--
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-icmp-jna</artifactId>
       <scope>test</scope>
     </dependency>
+    -->
   </dependencies>
 </project>

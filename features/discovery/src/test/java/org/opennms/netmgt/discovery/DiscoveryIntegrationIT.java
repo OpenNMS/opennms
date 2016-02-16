@@ -66,7 +66,10 @@ import org.springframework.test.context.ContextConfiguration;
         "classpath:/META-INF/opennms/applicationContext-daemon.xml",
         "classpath:/META-INF/opennms/applicationContext-pinger.xml",
         "classpath:/META-INF/opennms/mockEventIpcManager.xml",
-        "classpath:/META-INF/opennms/applicationContext-discovery.xml"
+        "classpath:/META-INF/opennms/applicationContext-discovery.xml",
+
+        // Override the Pinger with a Pinger that always returns true
+        "classpath:/applicationContext-testPinger.xml"
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
