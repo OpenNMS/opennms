@@ -52,10 +52,7 @@ public class LinkdHopCriteriaFactory {
 	 * @return
 	 */
 	public synchronized static VertexHopCriteria createCriteria(String nodeId, String nodeLabel) {
-	    
 		VertexHopCriteria criterion = new LinkdHopCriteria(nodeId, nodeLabel, m_nodeDao);
-//	    VertexHopCriteria criterion = new FocusNodeHopCriteria(nodeId, nodeLabel);
-		
 		return criterion;
 	}
 	
