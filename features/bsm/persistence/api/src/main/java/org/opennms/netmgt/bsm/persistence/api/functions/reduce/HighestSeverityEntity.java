@@ -26,19 +26,13 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.bsm.service.model.functions.reduce;
+package org.opennms.netmgt.bsm.persistence.api.functions.reduce;
 
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
+import javax.persistence.DiscriminatorValue;
+import javax.persistence.Entity;
 
-import org.opennms.netmgt.bsm.service.model.Status;
-import org.opennms.netmgt.bsm.service.model.edge.Edge;
+@Entity
+@DiscriminatorValue(value="most-critical")
+public class HighestSeverityEntity extends AbstractReductionFunctionEntity {
 
-public class MostCritical implements ReductionFunction {
-
-    @Override
-    public Optional<Status> reduce(Map<Edge, Status> edgeStatusMap) {
-        return Objects.requireNonNull(edgeStatusMap).values().stream().reduce((a, b) -> a.isGreaterThan(b) ? a : b);
-    }
 }

@@ -49,7 +49,7 @@ public class BusinessServiceRequestDTOMarshalTest extends MarshalAndUnmarshalTes
         final MapFunctionDTO increaseDto = createMapFunctionDTO(MapFunctionType.Increase, null);
         final MapFunctionDTO setToDto = createMapFunctionDTO(MapFunctionType.SetTo, new String[]{"status", "Critical"});
         final BusinessServiceRequestDTO requestDTO = new BusinessServiceRequestDTO();
-        requestDTO.setReduceFunction(createReduceFunctionDTO(ReduceFunctionType.MostCritical, null));
+        requestDTO.setReduceFunction(createReduceFunctionDTO(ReduceFunctionType.HighestSeverity, null));
         requestDTO.setName("Web Servers");
         requestDTO.addAttribute("dc", "RDU");
         requestDTO.addAttribute("some-key", "some-value");
@@ -69,7 +69,7 @@ public class BusinessServiceRequestDTOMarshalTest extends MarshalAndUnmarshalTes
             "    \"some-key\" : \"some-value\"" +
             "  }," +
             "  \"reduceFunction\" : {" +
-            "       \"type\" : \"MostCritical\"," +
+            "       \"type\" : \"HighestSeverity\"," +
             "       \"properties\" : null" +
             "  }," +
             "  \"childServices\" : [" +
@@ -181,7 +181,7 @@ public class BusinessServiceRequestDTOMarshalTest extends MarshalAndUnmarshalTes
             "      </reductionkey-edge>\n" +
             "   </reductionkey-edges>\n" +
             "   <reduce-function>\n" +
-            "      <type>MostCritical</type>\n" +
+            "      <type>HighestSeverity</type>\n" +
             "   </reduce-function>\n" +
             "</business-service>"
         }});

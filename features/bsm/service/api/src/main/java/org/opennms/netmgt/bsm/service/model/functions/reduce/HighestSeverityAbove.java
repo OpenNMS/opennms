@@ -41,11 +41,11 @@ public class HighestSeverityAbove implements ReductionFunction {
 
     @Override
     public Optional<Status> reduce(Map<Edge, Status> edgeStatusMap) {
-        Optional<Status> mostCritical = new MostCritical().reduce(edgeStatusMap);
-        if (mostCritical.isPresent()) {
+        Optional<Status> highestSeverity = new HighestSeverity().reduce(edgeStatusMap);
+        if (highestSeverity.isPresent()) {
             // verify that the status is >= the threshold.
-            if (mostCritical.get().isGreaterThanOrEqual(threshold)) {
-                return mostCritical;
+            if (highestSeverity.get().isGreaterThanOrEqual(threshold)) {
+                return highestSeverity;
             }
         }
         return Optional.empty();
