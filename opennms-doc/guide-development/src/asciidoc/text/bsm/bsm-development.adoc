@@ -61,7 +61,7 @@ The _Business Service_ response data model for the ReST API has the following ba
     </child>
   </child-edges>
   <parent-services><parent-service>144</parent-service></parent-services>
-  <reduction-function><type>MostCritical</type></reduction-function>
+  <reduction-function><type>HighestSeverity</type></reduction-function>
   <operational-status>INDETERMINATE</operational-status>
   <location>/api/v2/business-services/146</location>
 </business-service>
@@ -100,7 +100,7 @@ The _Business Service_ response data model for the ReST API has the following ba
       <weight>1</weight>
     </child>
   </child-edges>
-  <reduction-function><type>MostCritical</type></reduction-function>
+  <reduction-function><type>HighestSeverity</type></reduction-function>
 </business-service>
 ----
 
