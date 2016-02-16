@@ -256,7 +256,7 @@
   <xs:simpleType name="reduceFunctionType">
     <xs:restriction base="xs:string">
       <xs:enumeration value="Threshold"/>
-      <xs:enumeration value="MostCritical"/>
+      <xs:enumeration value="HighestSeverity"/>
     </xs:restriction>
   </xs:simpleType>
 

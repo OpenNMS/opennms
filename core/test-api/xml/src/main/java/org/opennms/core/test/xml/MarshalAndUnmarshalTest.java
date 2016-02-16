@@ -54,18 +54,21 @@ public abstract class MarshalAndUnmarshalTest<T> {
     @Test
     public void testMarshalAndUnmarshalJson() throws IOException {
         // serialize object
-        String json = JsonTest.marshalToJson(object);
-        JsonTest.assertJsonEquals(json, expectedJson);
+        String jsonString = JsonTest.marshalToJson(object);
+        JsonTest.assertJsonEquals(expectedJson, jsonString);
 
-        // seserialize object
-        T deserializedObject = JsonTest.unmarshalFromJson(json, type);
+        // deserialize object
+        T deserializedObject = JsonTest.unmarshalFromJson(jsonString, type);
         Assert.assertEquals(object, deserializedObject);
     }
 
     @Test
     public void testMarshalAndUnmarshalXml() {
+        // serialize object
         final String xmlString = XmlTest.marshalToXmlWithJaxb(object);
         XmlTest.assertXmlEquals(expectedXml, xmlString);
+
+        // deserialize object
         T unmarshalled = XmlTest.unmarshalFromXmlWithJaxb(xmlString, type);
         Assert.assertEquals(object, unmarshalled);
     }
