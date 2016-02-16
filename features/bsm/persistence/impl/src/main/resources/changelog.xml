@@ -127,4 +127,12 @@
             <column name="threshold_severity" type="integer"/>
         </addColumn>
     </changeSet>
+    <changeSet author="fooker" id="18.0.0-bsm-most-critical-to-highest-severity">
+        <update tableName="bsm_reduce">
+            <column name="type"
+                    type="varchar(32)"
+                    value="highest-severity"/>
+            <where>most-critical</where>
+        </update>
+    </changeSet>
 </databaseChangeLog>
