@@ -44,8 +44,13 @@
 }
 
 .dashboard .header {
-    background: #fff;
-    border-bottom: 2px solid #ccc;
+    background-color: #dddddd;
+    border-color: #dddddd;
+    border-width: 0 0 1px;
+}
+
+.dashboard .logo {
+    padding: 10px 0px 0px 10px;
 }
 
 .dashboard .wallboard-board {
