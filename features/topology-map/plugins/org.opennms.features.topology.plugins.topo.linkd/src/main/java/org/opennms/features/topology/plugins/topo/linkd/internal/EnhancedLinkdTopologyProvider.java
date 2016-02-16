@@ -51,7 +51,6 @@ import org.opennms.features.topology.api.OperationContext;
 import org.opennms.features.topology.api.browsers.ContentType;
 import org.opennms.features.topology.api.browsers.SelectionAware;
 import org.opennms.features.topology.api.browsers.SelectionChangedListener;
-import org.opennms.features.topology.api.support.VertexHopGraphProvider;
 import org.opennms.features.topology.api.support.VertexHopGraphProvider.VertexHopCriteria;
 import org.opennms.features.topology.api.topo.AbstractSearchProvider;
 import org.opennms.features.topology.api.topo.AbstractVertex;
@@ -1473,22 +1472,11 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
         org.opennms.features.topology.api.topo.Criteria[] criteria = container.getCriteria();
         for (org.opennms.features.topology.api.topo.Criteria criterion : criteria) {
             if (criterion instanceof LinkdHopCriteria ) {
-
                 String id = ((LinkdHopCriteria) criterion).getId();
-
                 if (id.equals(resultId)) {
                     return criterion;
                 }
             }
-
-            if (criterion instanceof VertexHopGraphProvider.FocusNodeHopCriteria) {
-                String id = ((VertexHopGraphProvider.FocusNodeHopCriteria)criterion).getId();
-
-                if (id.equals(resultId)) {
-                    return criterion;
-                }
-            }
-
         }
         return null;
     }

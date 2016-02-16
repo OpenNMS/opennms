@@ -50,10 +50,13 @@ import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.HistoryOperation;
 import org.opennms.features.topology.api.Layout;
 import org.opennms.features.topology.api.Point;
-import org.opennms.features.topology.api.support.VertexHopGraphProvider.FocusNodeHopCriteria;
+import org.opennms.features.topology.api.support.VertexHopGraphProvider.DefaultVertexHopCriteria;
+import org.opennms.features.topology.api.support.VertexHopGraphProvider.VertexHopCriteria;
+import org.opennms.features.topology.api.topo.CollapsibleCriteria;
 import org.opennms.features.topology.api.topo.Criteria;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
@@ -62,6 +65,8 @@ import org.slf4j.LoggerFactory;
 @XmlRootElement(name="saved-history")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class SavedHistory {
+
+    private static final Logger LOG = LoggerFactory.getLogger(SavedHistory.class);
 
     @XmlAttribute(name="semantic-zoom-level")
     private int m_szl;
@@ -119,20 +124,14 @@ public class SavedHistory {
     }
 
     protected static Set<VertexRef> getFocusVertices(GraphContainer graphContainer) {
-        Set<VertexRef> retVal = new HashSet<VertexRef>();
-
+        final Set<VertexRef> retVal = new HashSet<>();
         Criteria[] criterias = graphContainer.getCriteria();
         for (Criteria crit : criterias) {
-            if (crit instanceof VertexHopGraphProvider.VertexHopCriteria && crit.getNamespace().equals("nodes")) {
+            if (crit instanceof VertexHopGraphProvider.VertexHopCriteria
+                    && !(crit instanceof CollapsibleCriteria)) {
                 retVal.addAll(((VertexHopGraphProvider.VertexHopCriteria) crit).getVertices());
             }
         }
-
-        FocusNodeHopCriteria criteria = VertexHopGraphProvider.getFocusNodeHopCriteriaForContainer(graphContainer, false);
-        if (criteria != null) {
-            retVal.addAll(criteria.getVertices());
-        }
-
         return retVal;
     }
 
@@ -143,7 +142,7 @@ public class SavedHistory {
         m_selectedVertices = selectedVertices;
         m_focusVertices = focusVertices;
         m_settings.putAll(operationSettings);
-        LoggerFactory.getLogger(this.getClass()).debug("Created " + toString());
+        LOG.debug("Created " + toString());
     }
 
     private static Map<VertexRef,Point> saveLocations(Graph graph) {
@@ -173,6 +172,7 @@ public class SavedHistory {
                 settingsCrc.update(entry.getValue().getBytes("UTF-8"));
             } catch (UnsupportedEncodingException e) {
                 // Impossible on modern JVMs
+                LOG.error(e.getMessage(), e);
             }
         }
         retval.append(String.format(",(%X)", settingsCrc.getValue()));
@@ -186,6 +186,7 @@ public class SavedHistory {
                 locationsCrc.update((int)entry.getValue().getY());
             } catch(UnsupportedEncodingException e) {
                 // Impossible on modern JVMs
+                LOG.error(e.getMessage(), e);
             }
         }
         retval.append(String.format(",(%X)", locationsCrc.getValue()));
@@ -197,6 +198,7 @@ public class SavedHistory {
                 selectionsCrc.update(entry.getId().getBytes("UTF-8"));
             } catch(UnsupportedEncodingException e) {
                 // Impossible on modern JVMs
+                LOG.error(e.getMessage(), e);
             }
         }
         retval.append(String.format(",(%X)", selectionsCrc.getValue()));
@@ -208,6 +210,7 @@ public class SavedHistory {
                 focusCrc.update(entry.getId().getBytes("UTF-8"));
             } catch(UnsupportedEncodingException e) {
                 // Impossible on modern JVMs
+                LOG.error(e.getMessage(), e);
             }
         }
         retval.append(String.format(",(%X)", focusCrc.getValue()));
@@ -216,28 +219,21 @@ public class SavedHistory {
     }
 
     public void apply(GraphContainer graphContainer, Collection<HistoryOperation> operations) {
-        LoggerFactory.getLogger(this.getClass()).debug("Applying " + toString());
+        LOG.debug("Applying " + toString());
 
-        if (m_focusVertices.size() > 0) {
-            FocusNodeHopCriteria criteria = VertexHopGraphProvider.getFocusNodeHopCriteriaForContainer(graphContainer);
-            // Clear existing focus nodes
-            criteria.clear();
-            // Add focus nodes from history
-            criteria.addAll(m_focusVertices);
-        } else {
-            // Remove any existing VertexHopCriteria
-            FocusNodeHopCriteria criteria = VertexHopGraphProvider.getFocusNodeHopCriteriaForContainer(graphContainer, false);
-            if (criteria != null) {
-                graphContainer.removeCriteria(criteria);
-            }
+        // Set vertices in focus
+        Set<VertexHopCriteria> vertexHopCriterias = Criteria.getCriteriaForGraphContainer(graphContainer, VertexHopCriteria.class);
+        for (VertexHopCriteria eachCriteria : vertexHopCriterias) {
+            graphContainer.removeCriteria(eachCriteria);
         }
+        m_focusVertices.forEach(vertexRef -> graphContainer.addCriteria(new DefaultVertexHopCriteria(vertexRef)));
 
         // Apply the history for each registered HistoryOperation
         for (HistoryOperation operation : operations) {
             try {
                 operation.applyHistory(graphContainer, m_settings);
             } catch (Throwable e) {
-                LoggerFactory.getLogger(this.getClass()).warn("Failed to perform applyHistory() operation", e);
+                LOG.warn("Failed to perform applyHistory() operation", e);
             }
         }
         applySavedLocations(m_locations, graphContainer.getGraph().getLayout());

@@ -37,9 +37,10 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.TreeMap;
-import java.util.TreeSet;
+import java.util.stream.Collectors;
 
 import javax.xml.bind.JAXBException;
 
@@ -61,6 +62,8 @@ import org.opennms.features.topology.api.topo.VertexRef;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.collect.Sets;
+
 /**
  * This class will be used to filter a topology so that the semantic zoom level is
  * interpreted as a hop distance away from a set of selected vertices. The vertex 
@@ -72,12 +75,9 @@ public class VertexHopGraphProvider implements GraphProvider, SelectionAware {
     @SuppressWarnings("unused")
     private static final Logger LOG = LoggerFactory.getLogger(VertexHopGraphProvider.class);
 
-    public static FocusNodeHopCriteria getFocusNodeHopCriteriaForContainer(GraphContainer graphContainer) {
-        return getFocusNodeHopCriteriaForContainer(graphContainer, true);
-    }
-
-    public static FocusNodeHopCriteria getFocusNodeHopCriteriaForContainer(GraphContainer graphContainer, boolean createIfAbsent) {
-        return Criteria.getSingleCriteriaForGraphContainer(graphContainer, FocusNodeHopCriteria.class, createIfAbsent);
+    public static WrappedVertexHopCriteria getWrappedVertexHopCriteria(GraphContainer graphContainer) {
+        final Set<VertexHopCriteria> vertexHopCriterias = Criteria.getCriteriaForGraphContainer(graphContainer, VertexHopCriteria.class);
+        return new WrappedVertexHopCriteria(vertexHopCriterias);
     }
 
     public static CollapsibleCriteria[] getCollapsedCriteriaForContainer(GraphContainer graphContainer) {
@@ -124,16 +124,13 @@ public class VertexHopGraphProvider implements GraphProvider, SelectionAware {
             return "Namespace:"+getNamespace()+", ID:"+getId()+", Label:"+getLabel();
         }
 
-        
         //Adding explicit constructor because I found that this label must be set
         //for the focus list to have meaningful information in the focus list.
         public VertexHopCriteria(String label) {
-        	super();
         	m_label = label;
         }
         
         public VertexHopCriteria(String id, String label) {
-        	super();
         	m_id = id;
         	m_label = label;
         }
@@ -160,104 +157,112 @@ public class VertexHopGraphProvider implements GraphProvider, SelectionAware {
         public String getId(){
             return m_id;
         }
-    }
-
-    public static class FocusNodeHopCriteria extends VertexHopCriteria {
-        private final Set<VertexRef> m_vertices = new TreeSet<VertexRef>(new RefComparator());
-
-        //FIXME: Since the criteria must have a label set, this constructor is being deprecated
-        //Be sure that your constructing class calls setLabel()
-        public FocusNodeHopCriteria() {
-        	super(null);
-        }
-        
-        public FocusNodeHopCriteria(String label) {
-        	super(label);
-        }
-        
-        public FocusNodeHopCriteria(String id, String label) {
-        	super(id, label);
-        }
-        
-        /**
-         * FIXME: I think it does matter ;)
-         * TODO: This return value doesn't matter since we just delegate
-         * to the m_delegate provider.
-         */
-        @Override
-        public String getNamespace() {
-            return "nodes";
-        }
-
-        public void add(VertexRef ref) {
-            m_vertices.add(ref);
-            setDirty(true);
-        }
-
-        public void remove(VertexRef ref) {
-            m_vertices.remove(ref);
-            setDirty(true);
-        }
-
-        public void clear() {
-            m_vertices.clear();
-            setDirty(true);
-        }
-
-        public boolean contains(VertexRef ref) {
-            return m_vertices.contains(ref);
-        }
-
-        public int size() {
-            return m_vertices.size();
-        }
 
         public boolean isEmpty() {
-            return m_vertices.isEmpty();
+            Set<VertexRef> vertices = getVertices();
+            if (vertices == null) {
+                return false;
+            }
+            return vertices.isEmpty();
+        }
+    }
+
+    /**
+     * Wrapper class to wrap a bunch of {@link VertexHopCriteria}.
+     * There may be multiple {@link VertexHopCriteria} objects available.
+     * However in the end it is easier to use this criteria object to wrap all available {@link VertexHopCriteria}
+     * instead of iterating over all all the time and determine all vertices.
+     */
+    public static class WrappedVertexHopCriteria extends VertexHopCriteria {
+
+        private final Set<VertexHopCriteria> criteriaList;
+
+        public WrappedVertexHopCriteria(Set<VertexHopCriteria> vertexHopCriterias) {
+            super("Wrapped Vertex Hop Criteria for all VertexHopCriteria in the currently selected GraphProvider");
+            criteriaList = Objects.requireNonNull(vertexHopCriterias);
+        }
+
+        public void addCriteria(VertexHopCriteria criteria) {
+            this.criteriaList.add(criteria);
         }
 
         @Override
         public Set<VertexRef> getVertices() {
-            return Collections.unmodifiableSet(m_vertices);
+            Set<VertexRef> vertices = criteriaList.stream()
+                    .flatMap(criteria -> criteria.getVertices().stream())
+                    .collect(Collectors.toSet());
+            return vertices;
         }
 
-        public void addAll(Collection<VertexRef> refs) {
-            m_vertices.addAll(refs);
-            setDirty(true);
-        }
-
-        public void removeAll(Collection<VertexRef> refs) {
-            m_vertices.removeAll(refs);
-            setDirty(true);
+        @Override
+        public String getNamespace() {
+            return "$wrapped$";
         }
 
         @Override
         public int hashCode() {
-            final int prime = 31;
-            int result = 1;
-            result = prime * result + ((m_vertices == null) ? 0 : m_vertices.hashCode());
-            return result;
+            return Objects.hash(criteriaList);
         }
 
         @Override
-        public boolean equals(final Object obj) {
-            if (this == obj) {
-                return true;
-            }
+        public boolean equals(Object obj) {
             if (obj == null) {
                 return false;
             }
-            if (!(obj instanceof FocusNodeHopCriteria)) {
+            if (obj == this) {
+                return true;
+            }
+            if (obj instanceof WrappedVertexHopCriteria) {
+                WrappedVertexHopCriteria other = (WrappedVertexHopCriteria) obj;
+                return Objects.equals(criteriaList, other.criteriaList);
+            }
+            return false;
+        }
+
+        public boolean contains(VertexRef vertexRef) {
+            return getVertices().contains(vertexRef);
+        }
+    }
+
+    /**
+     * Helper criteria class to reference to existing VertexRefs.
+     * This should be used anytime you want to add a vertex to the current focus (e.g. from the mouse context menu).
+     */
+    public static class DefaultVertexHopCriteria extends VertexHopCriteria {
+
+        private final VertexRef vertexRef;
+
+        public DefaultVertexHopCriteria(VertexRef vertexRef) {
+            super(vertexRef.getId(), vertexRef.getLabel());
+            this.vertexRef = vertexRef;
+        }
+
+        @Override
+        public Set<VertexRef> getVertices() {
+            return Sets.newHashSet(vertexRef);
+        }
+
+        @Override
+        public String getNamespace() {
+            return vertexRef.getNamespace();
+        }
+
+        @Override
+        public int hashCode() {
+            return vertexRef.hashCode();
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (obj == null) {
                 return false;
             }
-            final FocusNodeHopCriteria other = (FocusNodeHopCriteria) obj;
-            
-            if ((other.getNamespace() != null && other.getNamespace().equals(getNamespace()))
-                    &&  (other.getId() != null && other.getId().equals(getId()))
-                    && (other.getLabel() != null && other.getLabel().equals(getLabel()))) {
-               return true; 
+            if (obj == this) {
+                return true;
             }
-
+            if (obj instanceof DefaultVertexHopCriteria) {
+                return Objects.equals(vertexRef, ((DefaultVertexHopCriteria) obj).vertexRef);
+            }
             return false;
         }
     }
@@ -548,9 +553,6 @@ public class VertexHopGraphProvider implements GraphProvider, SelectionAware {
         }
     }
 
-    /**
-     * TODO: OVERRIDE THIS FUNCTION?
-     */
     @Override
     public List<Vertex> getVertices(Collection<? extends VertexRef> references, Criteria... criteria) {
         return m_delegate.getVertices(references, criteria);
@@ -588,7 +590,6 @@ public class VertexHopGraphProvider implements GraphProvider, SelectionAware {
                 return getVertices(criterium.getVertices());
             }
         }
-        //LOG.warn("Called getChildren() on a vertex {} that is not currently collapsible", group);
         return Collections.emptyList();
     }
 
@@ -631,7 +632,7 @@ public class VertexHopGraphProvider implements GraphProvider, SelectionAware {
     public List<Edge> getEdges(Criteria... criteria) {
         Set<Edge> retval = new HashSet<Edge>(m_delegate.getEdges(criteria));
         retval = collapseEdges(retval, getCollapsedCriteria(criteria));
-        return new ArrayList<Edge>(retval);
+        return new ArrayList<>(retval);
     }
 
     @Override

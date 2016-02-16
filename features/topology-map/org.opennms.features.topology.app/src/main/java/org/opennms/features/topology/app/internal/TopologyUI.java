@@ -28,6 +28,8 @@
 
 package org.opennms.features.topology.app.internal;
 
+import static org.opennms.features.topology.api.support.VertexHopGraphProvider.getWrappedVertexHopCriteria;
+
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -98,7 +100,7 @@ import org.opennms.features.topology.api.WidgetUpdateListener;
 import org.opennms.features.topology.api.browsers.ContentType;
 import org.opennms.features.topology.api.browsers.SelectionAwareTable;
 import org.opennms.features.topology.api.support.VertexHopGraphProvider;
-import org.opennms.features.topology.api.support.VertexHopGraphProvider.FocusNodeHopCriteria;
+import org.opennms.features.topology.api.support.VertexHopGraphProvider.VertexHopCriteria;
 import org.opennms.features.topology.api.topo.Criteria;
 import org.opennms.features.topology.api.topo.DefaultVertexRef;
 import org.opennms.features.topology.api.topo.VertexRef;
@@ -306,52 +308,35 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
     }
 
     private static void loadVertexHopCriteria(VaadinRequest request, GraphContainer graphContainer) {
-        String nodeIds = request.getParameter(PARAMETER_FOCUS_NODES);
-        FocusNodeHopCriteria criteria = VertexHopGraphProvider.getFocusNodeHopCriteriaForContainer(graphContainer);
+        loadNodesInFocusIfDefined(request, graphContainer);
 
+        // Add the default criteria if we do not have already a criteria set
+        if (getWrappedVertexHopCriteria(graphContainer).isEmpty() && noAdditionalFocusCriteria(graphContainer)) {
+            graphContainer.addCriteria(graphContainer.getBaseTopology().getDefaultCriteria()); // set default
+        }
+    }
+
+    private static void loadNodesInFocusIfDefined(VaadinRequest request, GraphContainer graphContainer) {
+        final String nodeIds = request.getParameter(PARAMETER_FOCUS_NODES);
         if (nodeIds != null) {
-            Collection<Integer> refs = new TreeSet<Integer>();
+            // Build the VertexRef elements
+            final Collection<VertexRef> refs = new TreeSet<>();
             for (String nodeId : nodeIds.split(",")) {
                 try {
-                    refs.add(Integer.parseInt(nodeId));
+                    // try to convert String values to Node Ids
+                    refs.add(new DefaultVertexRef("nodes", Integer.valueOf(nodeId).toString()));
                 } catch (NumberFormatException e) {
                     LOG.warn("Invalid node ID found in {} parameter: {}", PARAMETER_FOCUS_NODES, nodeId);
                 }
             }
-            // If we found valid node IDs in the list...
-            if (refs.size() > 0) {
-                if (criteria.size() == refs.size()) {
-                    boolean criteriaChanged = false;
-                    for (Integer ref : refs) {
-                        if (!criteria.contains(new DefaultVertexRef("nodes", String.valueOf(ref)))) {
-                            criteriaChanged = true;
-                        }
-                    }
-                    // If all of the refs in the query string are already in the filter, then
-                    // just return without altering it
-                    if (!criteriaChanged) {
-                        return;
-                    }
-                }
 
-                // Clear the exiting focus node list
-                criteria.clear();
-                for (Integer ref : refs) {
-                    // Add a new focus node reference to the VertexHopCriteria
-                    criteria.add(new DefaultVertexRef("nodes", String.valueOf(ref)));
-                }
-                // Set the semantic zoom level to 1 by default
+            // We have to update the vertices in focus (in our case only nodes) only if the focus has changed
+            VertexHopCriteria criteria = getWrappedVertexHopCriteria(graphContainer);
+            if (!criteria.getVertices().equals(refs)) {
+                graphContainer.clearCriteria();
+                refs.forEach(vertexRef -> graphContainer.addCriteria(new VertexHopGraphProvider.DefaultVertexHopCriteria(vertexRef)));
                 graphContainer.setSemanticZoomLevel(1);
-            } else {
-                // Don't do anything... we didn't find any focus nodes in the parameter so don't alter
-                // any existing VertexHopCriteria
             }
-        }
-
-        // check if we have a criteria set
-        if (criteria.isEmpty() && noAdditionalFocusCriteria(graphContainer)) { // no criteria or nodes in focus, load defaults
-            graphContainer.removeCriteria(criteria); // it is empty, so we don't need it
-            graphContainer.addCriteria(graphContainer.getBaseTopology().getDefaultCriteria()); // set default
         }
     }
 
@@ -1015,7 +1000,7 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
         Criteria[] crits = graphContainer.getCriteria();
         for(Criteria criteria : crits){
             try{
-                VertexHopGraphProvider.VertexHopCriteria catCrit = (VertexHopGraphProvider.VertexHopCriteria) criteria;
+                VertexHopCriteria catCrit = (VertexHopCriteria) criteria;
                 count += catCrit.getVertices().size();
             } catch(ClassCastException e){}
 

@@ -110,7 +110,6 @@ public class BusinessServiceEdgeEntity implements EdgeEntity {
         return m_weight;
     }
 
-    // TODO MVR make abstract (see class TODO above)
     @Override
     @Transient
     public Set<String> getReductionKeys() {

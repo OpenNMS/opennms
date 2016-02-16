@@ -28,14 +28,12 @@
 
 package org.opennms.features.topology.app.internal.operations;
 
+import java.util.List;
+
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.Operation;
 import org.opennms.features.topology.api.OperationContext;
-import org.opennms.features.topology.api.support.VertexHopGraphProvider;
-import org.opennms.features.topology.api.topo.Criteria;
 import org.opennms.features.topology.api.topo.VertexRef;
-
-import java.util.List;
 
 public class SetFocusVertexOperation implements Operation {
 
@@ -48,11 +46,7 @@ public class SetFocusVertexOperation implements Operation {
         final GraphContainer graphContainer = operationContext.getGraphContainer();
         graphContainer.clearCriteria();
 
-        VertexHopGraphProvider.FocusNodeHopCriteria criteria = VertexHopGraphProvider.getFocusNodeHopCriteriaForContainer(graphContainer);
-        for(VertexRef target : targets){
-            criteria.add(target);
-        }
-        graphContainer.redoLayout();
+        new AddFocusVerticesOperation().execute(targets, operationContext);
     }
 
     @Override
@@ -62,26 +56,7 @@ public class SetFocusVertexOperation implements Operation {
 
     @Override
     public boolean enabled(List<VertexRef> targets, OperationContext operationContext) {
-        if(targets == null || targets.isEmpty()) return false;
-
-        final GraphContainer graphContainer = operationContext.getGraphContainer();
-
-        for(Criteria crit : graphContainer.getCriteria()){
-            if(crit instanceof VertexHopGraphProvider.VertexHopCriteria) {
-                if(((VertexHopGraphProvider.VertexHopCriteria) crit).getVertices().containsAll(targets)){
-                    return false;
-                }
-            }
-        }
-
-        VertexHopGraphProvider.FocusNodeHopCriteria criteria = VertexHopGraphProvider.getFocusNodeHopCriteriaForContainer(graphContainer, false);
-        if (criteria != null) {
-            for (VertexRef target : targets) {
-                if(criteria.contains(target)) return false;
-            }
-        }
-
-        return true;
+        return new AddFocusVerticesOperation().enabled(targets, operationContext);
     }
 
     @Override

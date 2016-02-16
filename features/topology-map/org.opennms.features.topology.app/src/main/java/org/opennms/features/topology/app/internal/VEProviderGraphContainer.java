@@ -34,17 +34,12 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.atomic.AtomicBoolean;
-
-import com.vaadin.data.Item;
-import com.vaadin.data.Property;
-import com.vaadin.data.util.BeanItem;
 
 import org.opennms.features.topology.api.AutoRefreshSupport;
 import org.opennms.features.topology.api.Graph;
@@ -55,7 +50,7 @@ import org.opennms.features.topology.api.LayoutAlgorithm;
 import org.opennms.features.topology.api.MapViewManager;
 import org.opennms.features.topology.api.SelectionManager;
 import org.opennms.features.topology.api.support.SemanticZoomLevelCriteria;
-import org.opennms.features.topology.api.support.VertexHopGraphProvider;
+import org.opennms.features.topology.api.support.VertexHopGraphProvider.VertexHopCriteria;
 import org.opennms.features.topology.api.topo.AbstractEdge;
 import org.opennms.features.topology.api.topo.Criteria;
 import org.opennms.features.topology.api.topo.Edge;
@@ -76,6 +71,10 @@ import org.osgi.framework.ServiceListener;
 import org.osgi.framework.ServiceReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.vaadin.data.Item;
+import com.vaadin.data.Property;
+import com.vaadin.data.util.BeanItem;
 
 public class VEProviderGraphContainer implements GraphContainer, VertexListener, EdgeListener, ServiceListener {
 
@@ -454,16 +453,19 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
 
         unselectVerticesWhichAreNotVisibleAnymore(m_graph, m_selectionManager);
 
-        for(Criteria criteria : getCriteria()){
-            if(criteria instanceof VertexHopGraphProvider.FocusNodeHopCriteria){
-                VertexHopGraphProvider.FocusNodeHopCriteria focusCriteria = (VertexHopGraphProvider.FocusNodeHopCriteria) criteria;
-                List<VertexRef> vertexRefs = new LinkedList<VertexRef>();
-                for(VertexRef vRef : focusCriteria.getVertices()){
+        removeVerticesWhichAreNotVisible(displayVertices);
+    }
+
+    // Remove all vertices from focus which are not visible
+    private void removeVerticesWhichAreNotVisible(final List<Vertex> displayVertices) {
+        for(Criteria criteria : getCriteria()) {
+            if(criteria instanceof VertexHopCriteria){
+                final VertexHopCriteria hopCriteria = (VertexHopCriteria) criteria;
+                for(VertexRef vRef : hopCriteria.getVertices()){
                     if(!displayVertices.contains(vRef)){
-                        vertexRefs.add(vRef);
+                        removeCriteria(hopCriteria);
                     }
                 }
-                focusCriteria.removeAll(vertexRefs);
             }
         }
     }

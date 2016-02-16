@@ -40,8 +40,9 @@ import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.OperationContext;
 import org.opennms.features.topology.api.browsers.ContentType;
 import org.opennms.features.topology.api.browsers.SelectionChangedListener;
-import org.opennms.features.topology.api.support.VertexHopGraphProvider;
+import org.opennms.features.topology.api.support.VertexHopGraphProvider.DefaultVertexHopCriteria;
 import org.opennms.features.topology.api.topo.AbstractVertex;
+import org.opennms.features.topology.api.topo.DefaultVertexRef;
 import org.opennms.features.topology.api.topo.Edge;
 import org.opennms.features.topology.api.topo.EdgeRef;
 import org.opennms.features.topology.api.topo.GraphProvider;
@@ -435,14 +436,22 @@ public class VmwareTopologyProvider extends SimpleGraphProvider implements Graph
 
     @Override
     public void addVertexHopCriteria(SearchResult searchResult, GraphContainer container) {
-        VertexHopGraphProvider.FocusNodeHopCriteria criteria = VertexHopGraphProvider.getFocusNodeHopCriteriaForContainer(container);
-        criteria.add(getVertex(searchResult.getNamespace(), searchResult.getId()));
+        DefaultVertexHopCriteria criteria = new DefaultVertexHopCriteria(
+                new DefaultVertexRef(
+                        searchResult.getNamespace(),
+                        searchResult.getId(),
+                        searchResult.getLabel()));
+        container.addCriteria(criteria);
     }
 
     @Override
     public void removeVertexHopCriteria(SearchResult searchResult, GraphContainer container) {
-        VertexHopGraphProvider.FocusNodeHopCriteria criteria = VertexHopGraphProvider.getFocusNodeHopCriteriaForContainer(container);
-        criteria.remove(getVertex(searchResult.getNamespace(), searchResult.getLabel()));
+        DefaultVertexHopCriteria criteria = new DefaultVertexHopCriteria(
+                new DefaultVertexRef(
+                        searchResult.getNamespace(),
+                        searchResult.getId(),
+                        searchResult.getLabel()));
+        container.removeCriteria(criteria);
     }
 
     @Override

@@ -37,7 +37,9 @@ import java.util.Set;
 import org.opennms.core.criteria.Criteria;
 import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.features.topology.api.GraphContainer;
+import org.opennms.features.topology.api.support.VertexHopGraphProvider.DefaultVertexHopCriteria;
 import org.opennms.features.topology.api.topo.AbstractSearchProvider;
+import org.opennms.features.topology.api.topo.DefaultVertexRef;
 import org.opennms.features.topology.api.topo.SearchProvider;
 import org.opennms.features.topology.api.topo.SearchQuery;
 import org.opennms.features.topology.api.topo.SearchResult;
@@ -83,8 +85,9 @@ public class BusinessServiceSearchProvider extends AbstractSearchProvider implem
         bldr.limit(10);
         Criteria dbQueryCriteria = bldr.toCriteria();
 
-        for (BusinessServiceDTO bs : businessServiceManager.findMatching(dbQueryCriteria)) {
-            SearchResult searchResult = new SearchResult(getSearchProviderNamespace(), String.valueOf(bs.getId()), bs.getName(), queryString);
+        for (BusinessService bs : businessServiceManager.findMatching(dbQueryCriteria)) {
+            final BusinessServiceVertex businessServiceVertex = new BusinessServiceVertex(bs);
+            SearchResult searchResult = new SearchResult(businessServiceVertex);
             searchResult.setCollapsed(false);
             searchResult.setCollapsible(true);
             results.add(searchResult);
@@ -104,7 +107,7 @@ public class BusinessServiceSearchProvider extends AbstractSearchProvider implem
     public void addVertexHopCriteria(SearchResult searchResult, GraphContainer container) {
         LOG.debug("BusinessServiceSearchProvider->addVertexHopCriteria: called with search result: '{}'", searchResult);
 
-        BusinessServiceCriteria criterion = new BusinessServiceCriteria(searchResult.getId(), searchResult.getLabel(), businessServiceManager);
+        DefaultVertexHopCriteria criterion = new DefaultVertexHopCriteria(new DefaultVertexRef(searchResult.getNamespace(), searchResult.getId(), searchResult.getLabel()));
         container.addCriteria(criterion);
 
         LOG.debug("BusinessServiceSearchProvider->addVertexHop: adding hop criteria {}.", criterion);
@@ -115,7 +118,7 @@ public class BusinessServiceSearchProvider extends AbstractSearchProvider implem
     public void removeVertexHopCriteria(SearchResult searchResult, GraphContainer container) {
         LOG.debug("BusinessServiceSearchProvider->removeVertexHopCriteria: called with search result: '{}'", searchResult);
 
-        BusinessServiceCriteria criterion = new BusinessServiceCriteria(searchResult.getId(), searchResult.getLabel(), businessServiceManager);
+        DefaultVertexHopCriteria criterion = new DefaultVertexHopCriteria(new DefaultVertexRef(searchResult.getNamespace(), searchResult.getId(), searchResult.getLabel()));
         container.removeCriteria(criterion);
 
         LOG.debug("BusinessServiceSearchProvider->removeVertexHopCriteria: current criteria {}.", Arrays.toString(container.getCriteria()));
