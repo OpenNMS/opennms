@@ -44,8 +44,20 @@
 }
 
 .dashboard .header {
-    background: #ddd;
-    border-bottom: 2px solid #ccc;
+    background-color: #ddd;
+    border-color: #ccc;
+    border-width: 0 0 1px;
+}
+
+#onmslogo {
+    background:url(/opennms/images/meridian_logo.svg) no-repeat;
+    display:block;
+    height:44px;
+    width:170px;
+    overflow:hidden;
+    text-indent:100%;
+    white-space:nowrap;
+    margin: 10px 0px 0px 10px;
 }
 
 .dashboard .wallboard-board {
