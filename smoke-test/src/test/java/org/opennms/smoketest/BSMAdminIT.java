@@ -1,29 +1,29 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
- * <p>
- * Copyright (C) 2011-2015 The OpenNMS Group, Inc.
+ *
+ * Copyright (C) 2015 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2015 The OpenNMS Group, Inc.
- * <p>
+ *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
- * <p>
+ *
  * OpenNMS(R) is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation, either version 3 of the License,
  * or (at your option) any later version.
- * <p>
+ *
  * OpenNMS(R) is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Affero General Public License for more details.
- * <p>
+ *
  * You should have received a copy of the GNU Affero General Public License
  * along with OpenNMS(R).  If not, see:
- * http://www.gnu.org/licenses/
- * <p>
+ *      http://www.gnu.org/licenses/
+ *
  * For more information contact:
- * OpenNMS(R) Licensing <license@opennms.org>
- * http://www.opennms.org/
- * http://www.opennms.com/
+ *     OpenNMS(R) Licensing <license@opennms.org>
+ *     http://www.opennms.org/
+ *     http://www.opennms.com/
  *******************************************************************************/
 
 package org.opennms.smoketest;
@@ -90,6 +90,18 @@ public class BSMAdminIT extends OpenNMSSeleniumTestCase {
             return new BsmAdminPageEdgeEditWindow();
         }
 
+        public BsmAdminPageAttributeEditWindow newAttributeWindow() {
+            findElementById("addAttributeButton").click();
+            wait.until(pageContainsText("Attribute"));
+            return new BsmAdminPageAttributeEditWindow();
+        }
+
+        public BsmAdminPageAttributeEditWindow editAttributeWindow() {
+            findElementById("editAttributeButton").click();
+            wait.until(pageContainsText("Attribute"));
+            return new BsmAdminPageAttributeEditWindow();
+        }
+
         public BsmAdminPageEdgeEditWindow editEdgeWindow() {
             findElementById("editEdgeButton").click();
             wait.until(pageContainsText("Business Service Edge Edit"));
@@ -113,6 +125,24 @@ public class BSMAdminIT extends OpenNMSSeleniumTestCase {
                     .weight(weight)
                     .confirm();
             wait.until(ExpectedConditions.elementToBeClickable(By.id("addEdgeButton")));
+            return this;
+        }
+
+        public BsmAdminPageEditWindow addAttribute(String key, String value) throws InterruptedException {
+            newAttributeWindow()
+                    .key(key)
+                    .value(value)
+                    .confirm();
+            wait.until(ExpectedConditions.elementToBeClickable(By.id("addAttributeButton")));
+            return this;
+        }
+
+        public BsmAdminPageEditWindow editAttribute(String key, String value) throws InterruptedException {
+            getSelectWebElement("attributeList").selectByVisibleText(key);
+            editAttributeWindow()
+                    .value(value)
+                    .confirm();
+            wait.until(ExpectedConditions.elementToBeClickable(By.id("addAttributeButton")));
             return this;
         }
 
@@ -245,6 +275,26 @@ public class BSMAdminIT extends OpenNMSSeleniumTestCase {
 
         public BsmAdminPageEdgeEditWindow confirm() {
             findElementById("saveEdgeButton").click();
+            wait.until(pageContainsText("Business Service Edit"));
+            return new BsmAdminPageEdgeEditWindow();
+        }
+    }
+
+    private class BsmAdminPageAttributeEditWindow {
+        public BsmAdminPageAttributeEditWindow key(String key) throws InterruptedException {
+            findElementById("keyField").clear();
+            findElementById("keyField").sendKeys(key);
+            return this;
+        }
+
+        public BsmAdminPageAttributeEditWindow value(String value) {
+            findElementById("valueField").clear();
+            findElementById("valueField").sendKeys(String.valueOf(value));
+            return this;
+        }
+
+        public BsmAdminPageEdgeEditWindow confirm() {
+            findElementById("okBtn").click();
             wait.until(pageContainsText("Business Service Edit"));
             return new BsmAdminPageEdgeEditWindow();
         }
@@ -631,6 +681,34 @@ public class BSMAdminIT extends OpenNMSSeleniumTestCase {
         bsmAdminPageEditWindow = bsmAdminPage.openEditDialog(serviceName);
         bsmAdminPageEditWindow.editEdge("ReKey: some.reduction.key, Map: Increase, Weight: 1", "Decrease", 2);
         verifyElementPresent("ReKey: some.reduction.key, Map: Decrease, Weight: 2");
+        bsmAdminPageEditWindow.save();
+
+        // clean up afterwards
+        bsmAdminPage.delete(serviceName);
+    }
+
+    @Test
+    public void testCanEditTransientAttribute() throws InterruptedException {
+        // create Business Service with one Attribute
+        final String serviceName = createUniqueBusinessServiceName();
+        BsmAdminPageEditWindow bsmAdminPageEditWindow = bsmAdminPage.openNewDialog(serviceName).addAttribute("foo", "bar");
+        wait.until(pageContainsText("foo=bar"));
+
+        // cancel
+        bsmAdminPageEditWindow.cancel();
+    }
+
+    @Test
+    public void testCanEditPersistedAttribute() throws InterruptedException {
+        // create Business Service with one attribute and persist
+        final String serviceName = createUniqueBusinessServiceName();
+        BsmAdminPageEditWindow bsmAdminPageEditWindow = bsmAdminPage.openNewDialog(serviceName).addAttribute("foo", "bar");
+        wait.until(pageContainsText("foo=bar"));
+        bsmAdminPageEditWindow.save();
+
+        // edit attribute
+        bsmAdminPageEditWindow = bsmAdminPage.openEditDialog(serviceName).editAttribute("foo=bar", "123");
+        verifyElementPresent("foo=123");
         bsmAdminPageEditWindow.save();
 
         // clean up afterwards
