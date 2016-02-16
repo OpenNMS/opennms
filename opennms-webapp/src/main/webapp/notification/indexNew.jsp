@@ -38,8 +38,8 @@
 	<jsp:param name="title" value="Notifications" />
 	<jsp:param name="headTitle" value="Notifications" />
 	<jsp:param name="breadcrumb" value="Notifications" />
-	<jsp:param name="script" value='<script type="text/javascript" src="js/angular-1.4.0.min.js"></script>' />
-	<jsp:param name="script" value='<script type="text/javascript" src="js/angular-resource-1.4.0.min.js"></script>' />
+	<jsp:param name="script" value='<script type="text/javascript" src="js/angular-1.4.8.min.js"></script>' />
+	<jsp:param name="script" value='<script type="text/javascript" src="js/angular-resource-1.4.8.min.js"></script>' />
 
 	<jsp:param name="script" value='<script type="text/javascript" src="js/angular-onmsList.js"></script>' />
 	<jsp:param name="script" value='<script type="text/javascript" src="js/angular-onmsList-notification.js"></script>' />
