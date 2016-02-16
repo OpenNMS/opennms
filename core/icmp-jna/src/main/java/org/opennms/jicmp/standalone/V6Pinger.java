@@ -55,7 +55,7 @@ public class V6Pinger extends AbstractPinger<Inet6Address> {
         // so we send a packet here to make sure...  This one should not match the normal ping requests
         // since it does not contain the cookie so it won't interface.
         if (Platform.isWindows()) {
-            ICMPv6EchoPacket packet = new ICMPv6EchoPacket(64);
+            final ICMPv6EchoPacket packet = new ICMPv6EchoPacket(64);
             packet.setCode(0);
             packet.setType(Type.EchoRequest);
             packet.getContentBuffer().putLong(System.nanoTime());
@@ -67,13 +67,13 @@ public class V6Pinger extends AbstractPinger<Inet6Address> {
     @Override
     public void run() {
         try {
-            NativeDatagramPacket datagram = new NativeDatagramPacket(65535);
+            final NativeDatagramPacket datagram = new NativeDatagramPacket(65535);
             while (!isFinished()) {
                 getPingSocket().receive(datagram);
-                long received = System.nanoTime();
+                final long received = System.nanoTime();
     
-                ICMPv6Packet icmpPacket = new ICMPv6Packet(getIPPayload(datagram));
-                V6PingReply echoReply = icmpPacket.getType() == Type.EchoReply ? new V6PingReply(icmpPacket, received) : null;
+                final ICMPv6Packet icmpPacket = new ICMPv6Packet(getIPPayload(datagram));
+                final V6PingReply echoReply = icmpPacket.getType() == Type.EchoReply ? new V6PingReply(icmpPacket, received) : null;
             
                 if (echoReply != null && echoReply.isValid()) {
                     // 64 bytes from 127.0.0.1: icmp_seq=0 time=0.069 ms
@@ -89,23 +89,23 @@ public class V6Pinger extends AbstractPinger<Inet6Address> {
                     }
                 }
             }
-        } catch(Throwable e) {
+        } catch(final Throwable e) {
             m_throwable.set(e);
             e.printStackTrace();
         }
     }
 
-    private ByteBuffer getIPPayload(NativeDatagramPacket datagram) {
+    private ByteBuffer getIPPayload(final NativeDatagramPacket datagram) {
         return datagram.getContent();
     }
     
     @Override
-    public PingReplyMetric ping(Inet6Address addr, int id, int sequenceNumber, int count, long interval) throws InterruptedException {
-        PingReplyMetric metric = new PingReplyMetric(count, interval);
+    public PingReplyMetric ping(final Inet6Address addr, final int id, final int sequenceNumber, final int count, final long interval) throws InterruptedException {
+        final PingReplyMetric metric = new PingReplyMetric(count, interval);
         addPingReplyListener(metric);
-        NativeDatagramSocket socket = getPingSocket();
+        final NativeDatagramSocket socket = getPingSocket();
         for(int i = sequenceNumber; i < sequenceNumber + count; i++) {
-            V6PingRequest request = new V6PingRequest(id, i);
+            final V6PingRequest request = new V6PingRequest(id, i);
             request.send(socket, addr);
             Thread.sleep(interval);
         }

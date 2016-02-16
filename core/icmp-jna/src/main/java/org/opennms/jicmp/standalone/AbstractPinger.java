@@ -47,6 +47,8 @@ import com.sun.jna.Platform;
  */
 public abstract class AbstractPinger<T extends InetAddress> implements Runnable {
 
+    public static final double NANOS_PER_MILLI = 1000000.0;
+
     private NativeDatagramSocket m_pingSocket;
     private Thread m_thread;
     protected final AtomicReference<Throwable> m_throwable = new AtomicReference<Throwable>(null);
