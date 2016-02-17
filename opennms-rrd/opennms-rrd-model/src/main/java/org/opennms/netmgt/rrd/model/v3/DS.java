@@ -55,7 +55,7 @@ public class DS extends AbstractDS {
 
     /** The CDEF (Computed Datasource). */
     private String cdef;
-  
+
     /**
      * Gets the type.
      *
@@ -129,5 +129,13 @@ public class DS extends AbstractDS {
             return false;
 
         return super.formatEquals(ds);
+    }
+
+    /* (non-Javadoc)
+     * @see org.opennms.netmgt.rrd.model.AbstractDS#isCounter()
+     */
+    @Override
+    public boolean isCounter() {
+        return !getType().equals(DSType.GAUGE);
     }
 }
