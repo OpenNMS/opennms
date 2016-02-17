@@ -53,14 +53,14 @@ import org.junit.runner.RunWith;
 import org.opennms.netmgt.model.ncs.NCSComponentRepository;
 import org.ops4j.pax.exam.Option;
 import org.ops4j.pax.exam.junit.Configuration;
-import org.ops4j.pax.exam.junit.ExamReactorStrategy;
-import org.ops4j.pax.exam.junit.JUnit4TestRunner;
+import org.ops4j.pax.exam.junit.PaxExam;
 import org.ops4j.pax.exam.spi.reactors.AllConfinedStagedReactorFactory;
+import org.ops4j.pax.exam.spi.reactors.ExamReactorStrategy;
 import org.ops4j.pax.exam.util.PathUtils;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
 
-@RunWith(JUnit4TestRunner.class)
+@RunWith(PaxExam.class)
 @ExamReactorStrategy(AllConfinedStagedReactorFactory.class)
 @Ignore
 public class HelloWorldTest {
