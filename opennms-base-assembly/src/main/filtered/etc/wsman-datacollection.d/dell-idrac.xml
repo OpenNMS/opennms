@@ -18,13 +18,39 @@
         <attrib name="TotalOutputPower" alias="totalOutputPower" type="Gauge"/>
     </group>
 
+    <group name="drac-system-board"
+           resource-uri="http://schemas.dell.com/wbem/wscim/1/cim-schema/2/root/dcim/DCIM_NumericSensor"
+           dialect="http://schemas.microsoft.com/wbem/wsman/1/WQL"
+           filter="select CurrentReading, ElementName from DCIM_NumericSensor WHERE ElementName LIKE 'System Board %'"
+           resource-type="node">
+        <attrib name="CurrentReading" filter="#ElementName == 'System Board MEM Usage'" alias="sysBoardMemUsage" type="Gauge"/>
+        <attrib name="CurrentReading" filter="#ElementName == 'System Board IO Usage'" alias="sysBoardIoUsage" type="Gauge"/>
+        <attrib name="CurrentReading" filter="#ElementName == 'System Board CPU Usage'" alias="sysBoardCpuUsage" type="Gauge"/>
+        <attrib name="CurrentReading" filter="#ElementName == 'System Board SYS Usage'" alias="sysBoardSysUsage" type="Gauge"/>
+    </group>
+
+    <!--
+         Dell iDRAC 6 reports:
+              productVendor = 'Openwsman Project'
+              productVersion = '2.0.0'
+         (These devices need to be overriden via wsman-config.xml in order to match here)
+
+         Dell iDRAC 7 reports:
+              productVendor = 'Dell, Inc.'
+              productVersion = 'iDRAC : System Type = 12G Modular : LC Version = 2.15.10.10 : Version = 2.15.10.10'
+
+         Dell iDrac 8 reports:
+              productVendor = 'Dell, Inc.'
+              productVersion = 'iDRAC : System Type = 13G Monolithic : LC Version = 2.30.30.30 : Version = 2.30.30.30'
+    -->
     <system-definition name="Dell iDRAC (All Version)">
-        <!--
-             Dell iDRAC 6 reports productVendor: 'Openwsman Project' and productVersion: '2.0.0' so
-             those devices need to be overriden via wsman-config.xml in order to match here.
-        -->
-        <rule>#productVendor matches '^Dell.*' and #productVersion matches '.*DRAC.*'</rule>
+        <rule>#productVendor matches '^Dell.*' and #productVersion matches '.*iDRAC.*'</rule>
         <include-group>drac-system</include-group>
         <include-group>drac-power-supply</include-group>
+    </system-definition>
+
+    <system-definition name="Dell iDRAC 8">
+        <rule>#productVendor matches '^Dell.*' and #productVersion matches '.*iDRAC.*13G.*'</rule>
+        <include-group>drac-system-board</include-group>
     </system-definition>
 </wsman-datacollection-config>
