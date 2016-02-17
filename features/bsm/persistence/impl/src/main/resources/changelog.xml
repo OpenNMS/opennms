@@ -132,7 +132,7 @@
             <column name="type"
                     type="varchar(32)"
                     value="highest-severity"/>
-            <where>most-critical</where>
+            <where>type = 'most-critical'</where>
         </update>
     </changeSet>
 </databaseChangeLog>
