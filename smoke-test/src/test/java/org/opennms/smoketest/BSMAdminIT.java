@@ -133,7 +133,6 @@ public class BSMAdminIT extends OpenNMSSeleniumTestCase {
                     .key(key)
                     .value(value)
                     .confirm();
-            wait.until(ExpectedConditions.elementToBeClickable(By.id("addAttributeButton")));
             return this;
         }
 
@@ -142,7 +141,6 @@ public class BSMAdminIT extends OpenNMSSeleniumTestCase {
             editAttributeWindow()
                     .value(value)
                     .confirm();
-            wait.until(ExpectedConditions.elementToBeClickable(By.id("addAttributeButton")));
             return this;
         }
 
@@ -289,7 +287,7 @@ public class BSMAdminIT extends OpenNMSSeleniumTestCase {
 
         public BsmAdminPageAttributeEditWindow value(String value) {
             findElementById("valueField").clear();
-            findElementById("valueField").sendKeys(String.valueOf(value));
+            findElementById("valueField").sendKeys(value);
             return this;
         }
 
@@ -689,13 +687,27 @@ public class BSMAdminIT extends OpenNMSSeleniumTestCase {
 
     @Test
     public void testCanEditTransientAttribute() throws InterruptedException {
-        // create Business Service with one Attribute
+        // create Business Service with one attribute and persist
         final String serviceName = createUniqueBusinessServiceName();
         BsmAdminPageEditWindow bsmAdminPageEditWindow = bsmAdminPage.openNewDialog(serviceName).addAttribute("foo", "bar");
         wait.until(pageContainsText("foo=bar"));
+        bsmAdminPageEditWindow.save();
 
-        // cancel
+        // add another attribute
+        bsmAdminPageEditWindow = bsmAdminPage.openEditDialog(serviceName).editAttribute("foo=bar", "123");
+        verifyElementPresent("foo=123");
+
+        // do not persist
         bsmAdminPageEditWindow.cancel();
+
+        // checke  that the attribute is not set
+        bsmAdminPageEditWindow = bsmAdminPage.openEditDialog(serviceName);
+        verifyElementNotPresent("foo=123");
+
+        bsmAdminPageEditWindow.cancel();
+
+        // clean up afterwards
+        bsmAdminPage.delete(serviceName);
     }
 
     @Test
