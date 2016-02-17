@@ -29,7 +29,6 @@
 package org.opennms.features.topology.plugins.topo.bsm;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -50,6 +49,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 
 public class BusinessServiceSearchProvider extends AbstractSearchProvider implements SearchProvider {
     private static final Logger LOG = LoggerFactory.getLogger(BusinessServiceSearchProvider.class);
@@ -99,8 +99,8 @@ public class BusinessServiceSearchProvider extends AbstractSearchProvider implem
 
     @Override
     public Set<VertexRef> getVertexRefsBy(SearchResult searchResult, GraphContainer container) {
-        // TODO: When is this called?
-        return Collections.emptySet();
+        VertexRef vertexToFocus = new DefaultVertexRef(searchResult.getNamespace(), searchResult.getId(), searchResult.getLabel());
+        return Sets.newHashSet(vertexToFocus);
     }
 
     @Override
