@@ -137,6 +137,11 @@
     <c:if test="${command.service != null}">
       <c:param name="service" value="${command.service}"/>
     </c:if>
+    <c:if test="${command.mib2Parm != null}">
+      <c:param name="mib2Parm" value="${command.mib2Parm}"/>
+      <c:param name="mib2ParmValue" value="${command.mib2ParmValue}"/>
+      <c:param name="mib2ParmMatchType" value="${command.mib2ParmMatchType}"/>
+    </c:if>
     <c:if test="${command.snmpParm != null}">
       <c:param name="snmpParm" value="${command.snmpParm}"/>
       <c:param name="snmpParmValue" value="${command.snmpParmValue}"/>
