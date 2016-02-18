@@ -395,7 +395,7 @@ public class BusinessServiceEditWindow extends Window {
                     .withKeyFieldName("Key")
                     .withValueFieldName("Value")
                     .withCaption("Attribute")
-                    .withKey("Key")
+                    .withKey("")
                     .withValue("")
                     .withOkAction(new KeyValueInputDialogWindow.Action() {
                         @Override
@@ -404,10 +404,16 @@ public class BusinessServiceEditWindow extends Window {
                             refreshAttributes();
                         }
                     })
-                    .withKeyValidator(new AbstractStringValidator("String must not be empty") {
+                    .withKeyValidator(new AbstractStringValidator("Key must not be empty") {
                         @Override
                         protected boolean isValidValue(String value) {
-                            return !Strings.isNullOrEmpty(value) && !m_businessService.getAttributes().containsKey(value);
+                            return !Strings.isNullOrEmpty(value);
+                        }
+                    })
+                    .withKeyValidator(new AbstractStringValidator("Key must be unique") {
+                        @Override
+                        protected boolean isValidValue(String value) {
+                            return !m_businessService.getAttributes().containsKey(value);
                         }
                     });
             this.getUI().addWindow(keyValueInputDialogWindow);
@@ -433,12 +439,6 @@ public class BusinessServiceEditWindow extends Window {
                         public void execute(KeyValueInputDialogWindow window) {
                             m_businessService.getAttributes().put(window.getKey(), window.getValue());
                             refreshAttributes();
-                        }
-                    })
-                    .withKeyValidator(new AbstractStringValidator("String must not be empty") {
-                        @Override
-                        protected boolean isValidValue(String value) {
-                            return !Strings.isNullOrEmpty(value);
                         }
                     });
             this.getUI().addWindow(keyValueInputDialogWindow);
