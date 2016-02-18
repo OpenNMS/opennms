@@ -43,7 +43,7 @@ import org.opennms.features.topology.api.topo.SearchResult;
 import org.opennms.netmgt.bsm.persistence.api.BusinessServiceDao;
 import org.opennms.netmgt.bsm.persistence.api.BusinessServiceEntity;
 import org.opennms.netmgt.bsm.persistence.api.functions.map.IdentityEntity;
-import org.opennms.netmgt.bsm.persistence.api.functions.reduce.MostCriticalEntity;
+import org.opennms.netmgt.bsm.persistence.api.functions.reduce.HighestSeverityEntity;
 import org.opennms.netmgt.bsm.service.BusinessServiceManager;
 import org.opennms.netmgt.bsm.test.BusinessServiceEntityBuilder;
 import org.opennms.test.JUnitConfigurationEnvironment;
@@ -82,13 +82,13 @@ public class BusinessServiceSearchProviderIT {
     public void verifyQuery() {
         BusinessServiceEntity bs1 = new BusinessServiceEntityBuilder()
                 .name("Test Service")
-                .reduceFunction(new MostCriticalEntity())
+                .reduceFunction(new HighestSeverityEntity())
                 .addReductionKey("bs1.key1", new IdentityEntity(), 1)
                 .addReductionKey("bs1.key2", new IdentityEntity(), 1)
                 .toEntity();
         BusinessServiceEntity bs2 = new BusinessServiceEntityBuilder()
                 .name("Real Service 2")
-                .reduceFunction(new MostCriticalEntity())
+                .reduceFunction(new HighestSeverityEntity())
                 .addReductionKey("bs2.key1", new IdentityEntity(), 1)
                 .addReductionKey("bs2.key2", new IdentityEntity(), 1)
                 .toEntity();

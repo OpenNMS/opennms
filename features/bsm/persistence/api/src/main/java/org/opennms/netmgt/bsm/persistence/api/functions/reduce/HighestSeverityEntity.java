@@ -26,14 +26,13 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.bsm.service.model.mapreduce;
+package org.opennms.netmgt.bsm.persistence.api.functions.reduce;
 
-import java.util.Optional;
+import javax.persistence.DiscriminatorValue;
+import javax.persistence.Entity;
 
-import org.opennms.netmgt.bsm.service.model.Status;
-
-public interface MapFunction {
-
-    Optional<Status> map(Status source);
+@Entity
+@DiscriminatorValue(value="highest-severity")
+public class HighestSeverityEntity extends AbstractReductionFunctionEntity {
 
 }

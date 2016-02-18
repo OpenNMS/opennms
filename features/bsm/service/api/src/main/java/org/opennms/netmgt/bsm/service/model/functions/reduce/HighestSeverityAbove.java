@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2016 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -26,13 +26,36 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.bsm.persistence.api.functions.reduce;
+package org.opennms.netmgt.bsm.service.model.functions.reduce;
 
-import javax.persistence.DiscriminatorValue;
-import javax.persistence.Entity;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 
-@Entity
-@DiscriminatorValue(value="most-critical")
-public class MostCriticalEntity extends AbstractReductionFunctionEntity {
+import org.opennms.netmgt.bsm.service.model.Status;
+import org.opennms.netmgt.bsm.service.model.edge.Edge;
 
+public class HighestSeverityAbove implements ReductionFunction {
+
+    private Status threshold;
+
+    @Override
+    public Optional<Status> reduce(Map<Edge, Status> edgeStatusMap) {
+        Optional<Status> highestSeverity = new HighestSeverity().reduce(edgeStatusMap);
+        if (highestSeverity.isPresent()) {
+            // verify that the status is >= the threshold.
+            if (highestSeverity.get().isGreaterThanOrEqual(threshold)) {
+                return highestSeverity;
+            }
+        }
+        return Optional.empty();
+    }
+
+    public void setThreshold(Status threshold) {
+        this.threshold = Objects.requireNonNull(threshold);
+    }
+
+    public Status getThreshold() {
+        return threshold;
+    }
 }

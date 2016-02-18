@@ -220,16 +220,19 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
         }
     }
 
-    public TopologyUI(CommandManager commandManager, HistoryManager historyManager, GraphContainer graphContainer, IconRepositoryManager iconRepoManager, SelectionManager selectionManager) {
+    public TopologyUI(CommandManager commandManager, HistoryManager historyManager, GraphContainer graphContainer, IconRepositoryManager iconRepoManager) {
         // Ensure that selection changes trigger a history save operation
         m_commandManager = commandManager;
         m_historyManager = historyManager;
         m_iconRepositoryManager = iconRepoManager;
 
+        // We set it programmatically, as we require a GraphContainer instance per Topology UI instance.
+        // Scope Prototype would create too many GraphContainers, as scope singleton would create too few.
+        m_selectionManager = new DefaultSelectionManager(graphContainer);
+
         // Create a per-session GraphContainer instance
         m_graphContainer = graphContainer;
-        m_selectionManager = selectionManager;
-        m_graphContainer.setSelectionManager(selectionManager);
+        m_graphContainer.setSelectionManager(m_selectionManager);
     }
 
 	@Override

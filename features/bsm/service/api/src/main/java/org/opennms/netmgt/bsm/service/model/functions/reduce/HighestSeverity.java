@@ -26,15 +26,19 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.bsm.service.model.mapreduce;
+package org.opennms.netmgt.bsm.service.model.functions.reduce;
 
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 
 import org.opennms.netmgt.bsm.service.model.Status;
 import org.opennms.netmgt.bsm.service.model.edge.Edge;
 
-public interface ReductionFunction {
+public class HighestSeverity implements ReductionFunction {
 
-    Optional<Status> reduce(Map<Edge, Status> edgeStatusMap);
+    @Override
+    public Optional<Status> reduce(Map<Edge, Status> edgeStatusMap) {
+        return Objects.requireNonNull(edgeStatusMap).values().stream().reduce((a, b) -> a.isGreaterThan(b) ? a : b);
+    }
 }
