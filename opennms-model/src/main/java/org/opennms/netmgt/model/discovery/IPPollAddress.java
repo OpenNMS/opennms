@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.model.discovery;
 
+import java.io.Serializable;
 import java.net.InetAddress;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
@@ -42,7 +43,10 @@ import org.apache.commons.lang.builder.ToStringBuilder;
  * @author <A HREF="mailto:sowmya@opennms.org">Sowmya </A>
  * @author <A HREF="mailto:weave@oculan.com">Brian Weaver </A>
  */
-public class IPPollAddress {
+public class IPPollAddress implements Serializable {
+
+    private static final long serialVersionUID = -4162816651553193934L;
+
     /**
      * The dotted decimal IPv4 address for the poll.
      */
