@@ -114,7 +114,7 @@
     <module>integrations</module>
     <module>protocols</module>
     <module>tests</module>
-   <module>integration-tests</module>
+    <module>integration-tests</module>
 
     <!-- old structure -->
     <module>opennms-test</module>

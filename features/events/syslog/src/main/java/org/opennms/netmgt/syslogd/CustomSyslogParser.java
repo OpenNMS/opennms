@@ -48,19 +48,15 @@ public class CustomSyslogParser extends SyslogParser {
     private final Pattern m_forwardingPattern;
     private final int m_matchingGroupHost;
     private final int m_matchingGroupMessage;
-    private SyslogMessage syslogMessage = null;
 
-    public CustomSyslogParser(final SyslogdConfig config, final String text)
-            throws SyslogParserException {
+    public CustomSyslogParser(final SyslogdConfig config, final String text) throws SyslogParserException {
         super(config, text);
-        syslogMessage = new SyslogMessage();
+
         final String forwardingRegexp = config.getForwardingRegexp();
         if (forwardingRegexp == null || forwardingRegexp.length() == 0) {
-            throw new SyslogParserException(
-                                            "no forwarding regular expression defined");
+            throw new SyslogParserException("no forwarding regular expression defined");
         }
-        m_forwardingPattern = Pattern.compile(forwardingRegexp,
-                                              Pattern.MULTILINE);
+        m_forwardingPattern = Pattern.compile(forwardingRegexp, Pattern.MULTILINE);
         m_matchingGroupHost = config.getMatchingGroupHost();
         m_matchingGroupMessage = config.getMatchingGroupMessage();
     }
@@ -70,6 +66,7 @@ public class CustomSyslogParser extends SyslogParser {
         LOG.info("Message Parse start");
         final SyslogMessage syslogMessage = new SyslogMessage();
         syslogMessage.setParserClass(getClass());
+
         String message = getText();
 
         int lbIdx = message.indexOf('<');
@@ -103,7 +100,11 @@ public class CustomSyslogParser extends SyslogParser {
 
         String timestamp;
         Matcher oldDateMatcher = m_oldDatePattern.matcher(message);
-        if (!oldDateMatcher.find()) {
+        if (oldDateMatcher.find()) {
+            LOG.trace("stdMsg = {}", "true");
+            timestamp = oldDateMatcher.group(1);
+            message = oldDateMatcher.replaceFirst("");
+        } else {
             final Matcher stampMatcher = m_datePattern.matcher(message);
             if (stampMatcher.find()) {
                 LOG.trace("stdMsg = {}", "false");
@@ -118,11 +119,8 @@ public class CustomSyslogParser extends SyslogParser {
                     timestamp = "";
                 }
             }
-        } else {
-            LOG.trace("stdMsg = {}", "true");
-            timestamp = oldDateMatcher.group(1);
-            message = oldDateMatcher.replaceFirst("");
         }
+
         LOG.trace("timestamp = {}", timestamp);
         syslogMessage.setDate(parseDate(timestamp));
 
@@ -145,8 +143,9 @@ public class CustomSyslogParser extends SyslogParser {
         final Matcher m = pattern.matcher(message);
 
         /*
-         * We matched on a regexp for host/message pair. This can be a
-         * forwarded message as in BSD Style or syslog-ng.
+         * We matched on a regexp for host/message pair.
+         * This can be a forwarded message as in BSD Style
+         * or syslog-ng.
          */
 
         if (m.matches()) {
@@ -154,8 +153,7 @@ public class CustomSyslogParser extends SyslogParser {
             final String matchedMessage = m.group(m_matchingGroupMessage);
             syslogMessage.setMatchedMessage(matchedMessage);
 
-            LOG.trace("Syslog message '{}' matched regexp '{}'", message,
-                      m_forwardingPattern);
+            LOG.trace("Syslog message '{}' matched regexp '{}'", message, m_forwardingPattern);
             LOG.trace("Found host '{}'", m.group(m_matchingGroupHost));
             LOG.trace("Found message '{}'", matchedMessage);
 
@@ -176,17 +174,13 @@ public class CustomSyslogParser extends SyslogParser {
         String processName = "";
         String processIdStr = "";
 
-        // If loop has been reversed, in-order to fasten up that decides which
-        // loop to enter rather than calculating lbIdx < (rbIdx - 1) which
-        // might
-        // fail
+        // If statement has been reversed in order to make the decision faster
+        // rather than always calculating lbIdx < (rbIdx - 1) which might fail
 
-        if (lbIdx < 0 && rbIdx < 0 && colonIdx > 0
-                && spaceIdx == (colonIdx + 1)) {
+        if (lbIdx < 0 && rbIdx < 0 && colonIdx > 0 && spaceIdx == (colonIdx + 1)) {
             processName = message.substring(0, colonIdx);
             message = message.substring(colonIdx + 2);
-        } else if (lbIdx < (rbIdx - 1) && colonIdx == (rbIdx + 1)
-                && spaceIdx == (colonIdx + 1)) {
+        } else if (lbIdx < (rbIdx - 1) && colonIdx == (rbIdx + 1) && spaceIdx == (colonIdx + 1)) {
             processName = message.substring(0, lbIdx);
             processIdStr = message.substring(lbIdx + 1, rbIdx);
             message = message.substring(colonIdx + 2);
