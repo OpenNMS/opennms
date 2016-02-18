@@ -347,6 +347,7 @@
         <version>2.10.3</version>
         <configuration>
           <maxmemory>2g</maxmemory>
+          <additionalparam>-Xdoclint:none</additionalparam>
           <failOnError>false</failOnError>
           <tags>
             <tag>
