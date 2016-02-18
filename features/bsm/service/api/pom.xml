@@ -31,6 +31,7 @@
             <bundle>mvn:org.opennms.features.bsm/org.opennms.features.bsm.persistence.api/${project.version}</bundle>
             <bundle>mvn:org.opennms.features.bsm/org.opennms.features.bsm.service.api/${project.version}</bundle>
             <bundle>wrap:mvn:com.google.guava/guava/${guavaVersion}</bundle>
+            <bundle>wrap:mvn:net.sf.jung/jung-api/${jungVersion}</bundle>
           </bundles>
         </configuration>
       </plugin>
@@ -44,6 +45,10 @@
     <dependency>
       <groupId>com.google.guava</groupId>
       <artifactId>guava</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>net.sf.jung</groupId>
+      <artifactId>jung-api</artifactId>
     </dependency>
     <!-- Test Dependencies -->
     <dependency>

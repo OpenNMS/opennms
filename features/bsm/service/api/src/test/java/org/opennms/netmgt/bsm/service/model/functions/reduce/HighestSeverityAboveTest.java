@@ -28,34 +28,27 @@
 
 package org.opennms.netmgt.bsm.service.model.functions.reduce;
 
-import java.util.HashMap;
-import java.util.Map;
+import static org.junit.Assert.assertEquals;
+
 import java.util.Optional;
 
-import org.junit.Assert;
 import org.junit.Test;
 import org.opennms.netmgt.bsm.service.model.Status;
-import org.opennms.netmgt.bsm.service.model.edge.Edge;
-import org.opennms.netmgt.bsm.service.model.functions.map.Identity;
 
-import com.google.common.collect.Maps;
+import com.google.common.collect.Lists;
 
 public class HighestSeverityAboveTest {
 
     @Test
     public void testReduce() {
-        Map<Edge, Status> edgeStatusMap = new HashMap<>();
-        edgeStatusMap.put(new TestEdge(1, new Identity()), Status.MINOR);
-        edgeStatusMap.put(new TestEdge(1, new Identity()), Status.MAJOR);
-        edgeStatusMap.put(new TestEdge(1, new Identity()), Status.WARNING);
-
         HighestSeverityAbove reduceFunction = new HighestSeverityAbove();
         reduceFunction.setThreshold(Status.CRITICAL);
 
-        Assert.assertEquals(Optional.empty(), reduceFunction.reduce(Maps.newHashMap()));
-        Assert.assertEquals(Optional.empty(), reduceFunction.reduce(edgeStatusMap));
+        assertEquals(Optional.empty(), reduceFunction.reduce(Lists.newArrayList()));
+        assertEquals(Optional.empty(), reduceFunction.reduce(Lists.newArrayList(
+                Status.MINOR, Status.MAJOR, Status.WARNING)));
 
-        edgeStatusMap.put(new TestEdge(1, new Identity()), Status.CRITICAL);
-        Assert.assertEquals(Optional.of(Status.CRITICAL), reduceFunction.reduce(edgeStatusMap));
+        assertEquals(Optional.of(Status.CRITICAL), reduceFunction.reduce(Lists.newArrayList(
+                Status.MINOR, Status.MAJOR, Status.WARNING, Status.CRITICAL)));
     }
 }

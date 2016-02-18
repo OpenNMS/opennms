@@ -35,8 +35,6 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement(name = "reduce-functions")
 public class ReduceFunctionListDTO {
-    private static final long serialVersionUID = 1L;
-
     private List<ReduceFunctionDTO> functions;
 
     public ReduceFunctionListDTO() {

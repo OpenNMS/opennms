@@ -36,6 +36,8 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import com.google.common.collect.Maps;
+
 @XmlRootElement(name = "reduce-function")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class ReduceFunctionDTO {
@@ -44,7 +46,7 @@ public class ReduceFunctionDTO {
     private ReduceFunctionType type;
 
     @XmlElement(name="properties")
-    private Map<String, String> properties;
+    private Map<String, String> properties = Maps.newHashMap();
 
     public ReduceFunctionType getType() {
         return type;

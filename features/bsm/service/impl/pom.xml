@@ -20,7 +20,7 @@
             <Bundle-RequiredExecutionEnvironment>JavaSE-1.8</Bundle-RequiredExecutionEnvironment>
             <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
             <Bundle-Version>${project.version}</Bundle-Version>
-            <Private-Package>org.opennms.netmgt.bsm.service.internal.*</Private-Package>
+            <Private-Package>org.opennms.netmgt.bsm.service.internal.*;org.opennms.netmgt.bsm.service.model.graph.internal.*</Private-Package>
           </instructions>
         </configuration>
       </plugin>
@@ -47,7 +47,22 @@
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
-      <version>${slf4jVersion}</version>
+    </dependency>
+    <dependency>
+      <groupId>net.sf.jung</groupId>
+      <artifactId>jung-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>net.sf.jung</groupId>
+      <artifactId>jung-graph-impl</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>net.sf.jung</groupId>
+      <artifactId>jung-algorithms</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>net.sf.jung</groupId>
+      <artifactId>jung-visualization</artifactId>
     </dependency>
 
     <!-- Test Dependencies -->

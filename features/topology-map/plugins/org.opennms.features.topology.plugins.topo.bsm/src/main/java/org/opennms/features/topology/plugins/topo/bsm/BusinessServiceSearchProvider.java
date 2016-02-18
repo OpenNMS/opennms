@@ -86,7 +86,7 @@ public class BusinessServiceSearchProvider extends AbstractSearchProvider implem
         Criteria dbQueryCriteria = bldr.toCriteria();
 
         for (BusinessService bs : businessServiceManager.findMatching(dbQueryCriteria)) {
-            final BusinessServiceVertex businessServiceVertex = new BusinessServiceVertex(bs);
+            final BusinessServiceVertex businessServiceVertex = new BusinessServiceVertex(bs, 0);
             SearchResult searchResult = new SearchResult(businessServiceVertex);
             searchResult.setCollapsed(false);
             searchResult.setCollapsible(true);
