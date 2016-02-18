@@ -186,14 +186,6 @@ public class WsManCollector implements ServiceCollector {
         }
         LOG.debug("Found {} nodes.", nodes.size());
 
-        // Validate
-        if (effectiveResource == nodeResource && nodes.size() > 1) {
-            LOG.warn("Enumerating {} on {} returned {} nodes. " +
-                     "The node-level resource type cannot be used to collect multiple entries. " +
-                     "Only the first will be used.", group.getResourceUri(), client, nodes.size());
-            nodes = nodes.subList(0, 1);
-        }
-
         // Process the results
         processEnumerationResults(group, builder, effectiveResource, nodes);
     }
@@ -212,6 +204,10 @@ public class WsManCollector implements ServiceCollector {
                 if (type == null) {
                     LOG.error("Unsupported attribute type: {} for attribute: {} in group: {}. Value will be skipped.",
                             attrib.getType(), attrib.getName(), group.getName());
+                    continue;
+                }
+
+                if (attrib.getFilter() != null && !ResponseHandlingUtils.matchesFilter(attrib.getFilter(), elementValues)) {
                     continue;
                 }
 
