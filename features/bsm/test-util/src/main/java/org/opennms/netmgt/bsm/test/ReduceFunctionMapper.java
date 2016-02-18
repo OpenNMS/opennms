@@ -32,11 +32,11 @@ import java.util.Map;
 
 import org.opennms.netmgt.bsm.persistence.api.functions.reduce.AbstractReductionFunctionEntity;
 import org.opennms.netmgt.bsm.persistence.api.functions.reduce.HighestSeverityAboveEntity;
-import org.opennms.netmgt.bsm.persistence.api.functions.reduce.MostCriticalEntity;
+import org.opennms.netmgt.bsm.persistence.api.functions.reduce.HighestSeverityEntity;
 import org.opennms.netmgt.bsm.persistence.api.functions.reduce.ThresholdEntity;
 import org.opennms.netmgt.bsm.service.model.Status;
 import org.opennms.netmgt.bsm.service.model.functions.reduce.HighestSeverityAbove;
-import org.opennms.netmgt.bsm.service.model.functions.reduce.MostCritical;
+import org.opennms.netmgt.bsm.service.model.functions.reduce.HighestSeverity;
 import org.opennms.netmgt.bsm.service.model.functions.reduce.Threshold;
 import org.opennms.netmgt.bsm.service.model.functions.reduce.ReductionFunction;
 
@@ -51,7 +51,7 @@ class ReduceFunctionMapper {
     private static final Map<Class<? extends AbstractReductionFunctionEntity>, Function<AbstractReductionFunctionEntity, ReductionFunction>> persistenceToServiceMapping = Maps.newHashMap();
 
     static {
-        serviceToPersistenceMapping.put(MostCritical.class, input -> new MostCriticalEntity());
+        serviceToPersistenceMapping.put(HighestSeverity.class, input -> new HighestSeverityEntity());
         serviceToPersistenceMapping.put(Threshold.class, input -> {
             ThresholdEntity entity = new ThresholdEntity();
             entity.setThreshold(((Threshold) input).getThreshold());
@@ -63,7 +63,7 @@ class ReduceFunctionMapper {
             return entity;
         });
 
-        persistenceToServiceMapping.put(MostCriticalEntity.class, input -> new MostCritical());
+        persistenceToServiceMapping.put(HighestSeverityEntity.class, input -> new HighestSeverity());
         persistenceToServiceMapping.put(ThresholdEntity.class, input -> {
             Threshold result = new Threshold();
             result.setThreshold(((ThresholdEntity) input).getThreshold());
