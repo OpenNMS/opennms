@@ -9,5 +9,10 @@
             <parameter-assignment matching-group="1" parameter-name="databaseName"/>
             <parameter-assignment matching-group="1" parameter-name="sourceFile"/>
         </ueiMatch>
+        <ueiMatch>
+            <process-match expression="^postfix.*$"/>
+            <match type="substr" expression="disabling TLS support"/>
+            <uei>uei.opennms.org/vendor/postfix/syslog/postfix/TLSDisabled</uei>
+        </ueiMatch>
     </ueiList>
 </syslogd-configuration-group>

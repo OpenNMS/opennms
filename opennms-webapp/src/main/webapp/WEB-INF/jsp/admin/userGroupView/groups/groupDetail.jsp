@@ -98,6 +98,7 @@
       </div>
       <table class="table table-condensed table-striped table-bordered">
         <thead>
+          <tr>
           <th>Mo</th>
           <th>Tu</th>
           <th>We</th>
@@ -107,6 +108,7 @@
           <th>Su</th>
           <th>Begin Time</th>
           <th>End Time</th>
+          </tr>
         </thead>
         <% Collection<String> dutySchedules = group.getDutySchedules(); %>
         <%

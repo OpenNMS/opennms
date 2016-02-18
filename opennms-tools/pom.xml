@@ -19,7 +19,6 @@
     <module>csv-requisitions</module>
     <module>csv-address</module>
     <module>phonebook</module>
-    <module>sms-reflector</module>
   </modules>
   <profiles>
     <profile>

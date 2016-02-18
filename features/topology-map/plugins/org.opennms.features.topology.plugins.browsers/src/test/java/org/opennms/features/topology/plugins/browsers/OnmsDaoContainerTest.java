@@ -29,15 +29,15 @@
 package org.opennms.features.topology.plugins.browsers;
 
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.easymock.EasyMock;
 import org.junit.Assert;
 import org.junit.Test;
 import org.opennms.core.criteria.Criteria;
 import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.model.OnmsAlarm;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class OnmsDaoContainerTest {
 
