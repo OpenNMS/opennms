@@ -54,7 +54,9 @@ public class MockMonitor implements ServiceMonitor {
      * Simple constructor so that the MockMonitor can be used as a placeholder {@link ServiceMonitor}
      * inside config files.
      */
-    public MockMonitor() {}
+    public MockMonitor() {
+        m_network = new MockNetwork(); // So that this can be use in synchronized() statements
+    }
 
     /**
      * @param network

@@ -26,31 +26,22 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.poller.remote;
+package org.opennms.netmgt.dao.hibernate;
 
-import org.opennms.netmgt.poller.PollStatus;
+import java.util.List;
 
-/**
- * <p>PollObserver interface.</p>
- *
- * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
- * @version $Id: $
- */
-public interface PollObserver {
+import org.opennms.netmgt.dao.api.ScanReportDao;
+import org.opennms.netmgt.model.ScanReport;
 
-	/**
-	 * <p>pollStarted</p>
-	 *
-	 * @param pollId a {@link java.lang.String} object.
-	 */
-	void pollStarted(String pollId);
+public class ScanReportDaoHibernate extends AbstractDaoHibernate<ScanReport, String> implements ScanReportDao {
+    public ScanReportDaoHibernate() {
+        super(ScanReport.class);
+    }
 
-	/**
-	 * <p>pollCompleted</p>
-	 *
-	 * @param pollId a {@link java.lang.String} object.
-	 * @param pollStatus a {@link org.opennms.netmgt.poller.PollStatus} object.
-	 */
-	void pollCompleted(String pollId, PollStatus pollStatus);
-
+    /*
+    @Override
+    public List<ScanReport> findByMonitoringSystem(String monitoringSystemId) {
+        return find("from ScanReport sr where sr.monitoringsystem = ?", monitoringSystemId);
+    }
+    */
 }
