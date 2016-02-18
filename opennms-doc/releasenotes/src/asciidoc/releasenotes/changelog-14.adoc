@@ -1,7 +1,4 @@
 
-[[releasenotes-14]]
-== OpenNMS 14
-
 [[release-14-changelog]]
 === Changelog
 
