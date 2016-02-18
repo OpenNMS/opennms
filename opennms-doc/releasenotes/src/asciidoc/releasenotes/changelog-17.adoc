@@ -7,8 +7,24 @@ For a high-level overview of what's changed in OpenNMS 17, see https://github.co
 
 The codename for 17.1.0 is _Talisker_.
 
+===== New Features
+
+* Support for https://en.wikipedia.org/wiki/WS-Management[Web Services-Management] protocol for collecting performance data and monitoring status (http://issues.opennms.org/browse/HZN-583[HZN-583], http://issues.opennms.org/browse/HZN-584[HZN-584])
+* Expose the Northbound Interfaces configuration through ReST (http://issues.opennms.org/browse/HZN-570[HZN-570])
+* Northbound interface for E-Mail (http://issues.opennms.org/browse/HZN-565[HZN-565])
+* Northbound implementation for SNMP Traps (http://issues.opennms.org/browse/HZN-564[HZN-564])
+* AMQP Northbound Integration (http://issues.opennms.org/browse/HZN-537[HZN-537])
+* Provide a tool for importing existing .rrd / .jrb metrics into Newts (http://issues.opennms.org/browse/HZN-344[HZN-344])
+
+===== Enhancements
+
+* Add more flexibility to the syslog alarm northbound implementation (http://issues.opennms.org/browse/HZN-563[HZN-563])
+* Define optional event parameters on the event definition (http://issues.opennms.org/browse/HZN-551[HZN-551])
+* Create upgrade script for service-configuration.xml (http://issues.opennms.org/browse/HZN-545[HZN-545])
+
 ===== Bug
 
+* OTRS integration doesn't properly validate SOAP responses (http://issues.opennms.org/browse/HZN-518[HZN-518])
 * Bad suggestions in install guide (Issue http://issues.opennms.org/browse/NMS-4108[NMS-4108])
 * Enlinkd Topology Plugin fails to create LLDP links for mismatched link port descriptions. (Issue http://issues.opennms.org/browse/NMS-7152[NMS-7152])
 * snmp-graph.properties.d files with --vertical-label="verticalLabel" in config (Issue http://issues.opennms.org/browse/NMS-7820[NMS-7820])
