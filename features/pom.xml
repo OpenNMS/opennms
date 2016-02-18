@@ -33,6 +33,7 @@
     <module>collection</module>
     <module>jdbc-collector</module>
     <module>juniper-tca-collector</module>
+    <module>wsman</module>
 
     <!-- Discovery -->
     <module>discovery</module>
@@ -78,6 +79,7 @@
 
     <!-- Newts -->
     <module>newts</module>
+    <module>newts-repository-converter</module>
 
     <!-- GWT UI plugins -->
     <module>node-page-list</module>

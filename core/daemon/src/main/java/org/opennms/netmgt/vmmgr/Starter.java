@@ -99,6 +99,11 @@ public class Starter {
 
     private void setDefaultProperties() {
         setupFileResourceProperty("opennms.library.jicmp", System.mapLibraryName("jicmp"), "Initialization of ICMP socket will likely fail.");
+        try {
+            setupFileResourceProperty("opennms.library.jicmp6", System.mapLibraryName("jicmp6"), "Initialization of ICMPv6 socket will likely fail.");
+        } catch (Throwable e) {
+            LOG.warn("Could not resolve library path for jicmp6: " + e.getMessage(), e);
+        }
         setupFileResourceProperty("opennms.library.jrrd", System.mapLibraryName("jrrd"), "Initialization of RRD code will likely fail if the JniRrdStrategy is used.");
         setupFileResourceProperty("jcifs.properties", "jcifs.properties", "Initialization of JCIFS will likely fail or may be improperly configured.");
     }

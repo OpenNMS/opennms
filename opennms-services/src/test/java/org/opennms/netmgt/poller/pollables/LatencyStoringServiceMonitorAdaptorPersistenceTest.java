@@ -31,6 +31,7 @@ package org.opennms.netmgt.poller.pollables;
 import java.io.File;
 import java.net.InetAddress;
 import java.nio.file.Paths;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.easymock.EasyMock;
@@ -41,6 +42,8 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.netmgt.collection.persistence.rrd.RrdPersisterFactory;
+import org.opennms.netmgt.config.poller.Package;
+import org.opennms.netmgt.dao.support.FilesystemResourceStorageDao;
 import org.opennms.netmgt.mock.MockNetwork;
 import org.opennms.netmgt.mock.MockPollerConfig;
 import org.opennms.netmgt.poller.MonitoredService;
@@ -51,9 +54,6 @@ import org.opennms.netmgt.rrd.RrdStrategy;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-
-import org.opennms.netmgt.config.poller.Package;
-import org.opennms.netmgt.dao.support.FilesystemResourceStorageDao;
 
 /**
  * Verifies that latency samples are properly persisted.
@@ -92,10 +92,11 @@ public class LatencyStoringServiceMonitorAdaptorPersistenceTest {
     public void canPersistsLatencySamples() throws Exception {
         PollStatus pollStatus = PollStatus.get(PollStatus.SERVICE_AVAILABLE, 42.1);
         // For the purposes of this test, it's important the attributes are not added in lexicographical order
-        Map<String, Number> props = pollStatus.getProperties();
+        Map<String, Number> props = new LinkedHashMap<String,Number>(pollStatus.getProperties());
         props.put("ping1", Integer.valueOf(1));
         props.put("loss", Integer.valueOf(2));
         props.put("median", Integer.valueOf(3));
+        pollStatus.setProperties(props);
         ServiceMonitor serviceMonitor = new FixedServiceMonitor(pollStatus);
 
         Package pkg = new Package();
