@@ -33,6 +33,8 @@ import static org.opennms.core.utils.InetAddressUtils.addr;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
+import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -41,12 +43,12 @@ import java.util.concurrent.TimeUnit;
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 import org.apache.camel.builder.RouteBuilder;
+import org.apache.camel.component.netty.NettyComponent;
 import org.apache.camel.component.netty.NettyConstants;
 import org.apache.camel.impl.DefaultCamelContext;
 import org.apache.camel.impl.SimpleRegistry;
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.opennms.core.concurrent.LogPreservingThreadFactory;
-import org.opennms.core.concurrent.WaterfallExecutor;
 import org.opennms.core.logging.Logging;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.SyslogdConfig;
@@ -71,7 +73,9 @@ public class SyslogReceiverCamelNettyImpl implements SyslogReceiver {
     private final ExecutorService m_executor;
 
     private DefaultCamelContext m_camel;
-
+    
+    private List<SyslogConnectionHandler> m_syslogConnectionHandlers = Collections.emptyList();
+    
     /**
      * Construct a new receiver
      *
@@ -123,17 +127,32 @@ public class SyslogReceiverCamelNettyImpl implements SyslogReceiver {
         m_executor.shutdown();
     }
 
+    
+    
+    //Getter and setter for syslog handler
+    public SyslogConnectionHandler getSyslogConnectionHandlers() {
+	return m_syslogConnectionHandlers.get(0);
+    }
+
+    public void setSyslogConnectionHandlers(SyslogConnectionHandler handler) {
+	m_syslogConnectionHandlers = Collections.singletonList(handler);
+    }
+    
     /**
      * The execution context.
      */
     @Override
     public void run() {
-
         // Get a log instance
         Logging.putPrefix(Syslogd.LOG4J_CATEGORY);
 
         SimpleRegistry registry = new SimpleRegistry();
-        m_camel = new DefaultCamelContext(registry);
+
+	        //Adding netty component to camel inorder to resolve OSGi loading issues
+		NettyComponent nettyComponent=new NettyComponent();
+		m_camel = new DefaultCamelContext(registry);
+		m_camel.addComponent("netty", nettyComponent);
+
         try {
             m_camel.addRoutes(new RouteBuilder() {
                 @Override
@@ -144,7 +163,7 @@ public class SyslogReceiverCamelNettyImpl implements SyslogReceiver {
                         Integer.MAX_VALUE,
                         SOCKET_TIMEOUT
                     );
-
+                    
                     from(from)
                     //.convertBodyTo(java.nio.ByteBuffer.class)
                     .process(new Processor() {
@@ -154,7 +173,16 @@ public class SyslogReceiverCamelNettyImpl implements SyslogReceiver {
                             // NettyConstants.NETTY_REMOTE_ADDRESS is a SocketAddress type but because 
                             // we are listening on an InetAddress, it will always be of type InetAddressSocket
                             InetSocketAddress source = (InetSocketAddress)exchange.getIn().getHeader(NettyConstants.NETTY_REMOTE_ADDRESS); 
-                            WaterfallExecutor.waterfall(m_executor, new SyslogConnection(source.getAddress(), source.getPort(), buffer.toByteBuffer(), m_config));
+                            //Syslog Handler Implementation to recieve message from syslogport and pass it on to handler
+                            SyslogConnection connection = new SyslogConnection(source.getAddress(), source.getPort(), buffer.toByteBuffer(), m_config);
+                            try {
+                        	for (SyslogConnectionHandler handler : m_syslogConnectionHandlers) {
+                        	    handler.handleSyslogConnection(connection);
+                        	}
+                            } catch (Throwable e) {
+                        	LOG.error("Handler execution failed in {}", this.getClass().getSimpleName(), e);
+                            }
+
                         }
                     });
                 }
