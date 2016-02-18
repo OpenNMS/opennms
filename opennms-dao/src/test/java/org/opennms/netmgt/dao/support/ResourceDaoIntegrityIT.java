@@ -60,7 +60,7 @@ import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.CollectdConfigFactory;
-import org.opennms.netmgt.config.api.DataCollectionConfigDao;
+import org.opennms.netmgt.config.api.ResourceTypesDao;
 import org.opennms.netmgt.config.datacollection.Parameter;
 import org.opennms.netmgt.config.datacollection.PersistenceSelectorStrategy;
 import org.opennms.netmgt.config.datacollection.ResourceType;
@@ -120,7 +120,7 @@ public class ResourceDaoIntegrityIT implements InitializingBean {
     private EasyMockUtils m_easyMockUtils;
     private FilterDao m_filterDao;
     private CollectdConfigFactory m_collectdConfig;
-    private DataCollectionConfigDao m_dataCollectionConfigDao;
+    private ResourceTypesDao m_resourceTypesDao;
     private DefaultResourceDao m_resourceDao;
     private FilesystemResourceStorageDao m_resourceStorageDao = new FilesystemResourceStorageDao();
 
@@ -146,7 +146,7 @@ public class ResourceDaoIntegrityIT implements InitializingBean {
         setStoreByForeignSource(true);
 
         m_easyMockUtils = new EasyMockUtils();
-        m_dataCollectionConfigDao = m_easyMockUtils.createMock(DataCollectionConfigDao.class);
+        m_resourceTypesDao = m_easyMockUtils.createMock(ResourceTypesDao.class);
         m_filterDao = m_easyMockUtils.createMock(FilterDao.class);
 
         FilterDaoFactory.setInstance(m_filterDao);
@@ -167,7 +167,7 @@ public class ResourceDaoIntegrityIT implements InitializingBean {
         m_resourceDao.setLocationMonitorDao(m_locationMonitorDao);
         m_resourceDao.setCollectdConfig(m_collectdConfig);
         m_resourceDao.setResourceStorageDao(m_resourceStorageDao);
-        m_resourceDao.setDataCollectionConfigDao(m_dataCollectionConfigDao);
+        m_resourceDao.setResourceTypesDao(m_resourceTypesDao);
         m_resourceDao.setIpInterfaceDao(m_ipInterfaceDao);
     }
 
@@ -179,8 +179,8 @@ public class ResourceDaoIntegrityIT implements InitializingBean {
         createNodes();
         Map<String, ResourceType> types = createResourceTypes();
 
-        expect(m_dataCollectionConfigDao.getLastUpdate()).andReturn(new Date(System.currentTimeMillis())).anyTimes();
-        expect(m_dataCollectionConfigDao.getConfiguredResourceTypes()).andReturn(types).anyTimes();
+        expect(m_resourceTypesDao.getLastUpdate()).andReturn(new Date(System.currentTimeMillis())).anyTimes();
+        expect(m_resourceTypesDao.getResourceTypes()).andReturn(types).anyTimes();
 
         m_easyMockUtils.replayAll();
         m_resourceDao.afterPropertiesSet();

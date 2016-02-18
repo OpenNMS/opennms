@@ -28,13 +28,11 @@
 
 package org.opennms.netmgt.alarmd.northbounder.email;
 
-import java.io.ByteArrayInputStream;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.io.IOUtils;
 import org.opennms.core.utils.PropertiesUtils;
-import org.opennms.core.xml.CastorUtils;
+import org.opennms.core.xml.JaxbUtils;
 import org.opennms.javamail.JavaMailerException;
 import org.opennms.javamail.JavaSendMailer;
 import org.opennms.netmgt.alarmd.api.NorthboundAlarm;
@@ -43,6 +41,7 @@ import org.opennms.netmgt.alarmd.api.support.AbstractNorthbounder;
 import org.opennms.netmgt.config.javamail.SendmailConfig;
 import org.opennms.netmgt.config.javamail.SendmailMessage;
 import org.opennms.netmgt.dao.api.JavaMailConfigurationDao;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -97,18 +96,14 @@ public class EmailNorthbounder extends AbstractNorthbounder implements Initializ
         m_destination = configDao.getConfig().getEmailDestination(destinationName);
 
         // Creating a local copy of the SendmailConfig object, to avoid potential thread contention issues.
-        ByteArrayInputStream is = null;
         try {
             final SendmailConfig sendmail = javaMailDao.getSendMailConfig(destinationName);
             if (sendmail != null) {
-                final String sendmailText = CastorUtils.marshal(sendmail);
-                is = new ByteArrayInputStream(sendmailText.getBytes());
-                m_sendmail = CastorUtils.unmarshal(SendmailConfig.class, is);
+                final String sendmailText = JaxbUtils.marshal(sendmail);
+                m_sendmail = JaxbUtils.unmarshal(SendmailConfig.class, sendmailText);
             }
         } catch (Exception e) {
             LOG.error("Can't create a copy of the SendmailConfig object named {}.", destinationName, e);
-        } finally {
-            IOUtils.closeQuietly(is);
         }
 
         // Saving a local copy of the templates, as they will be overridden every time a new email has to be sent.
