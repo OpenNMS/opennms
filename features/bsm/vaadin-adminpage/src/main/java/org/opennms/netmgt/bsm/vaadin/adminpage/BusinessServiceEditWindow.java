@@ -415,8 +415,9 @@ public class BusinessServiceEditWindow extends Window {
                         protected boolean isValidValue(String value) {
                             return !m_businessService.getAttributes().containsKey(value);
                         }
-                    });
+                    }).focusKey();
             this.getUI().addWindow(keyValueInputDialogWindow);
+            keyValueInputDialogWindow.focus();
         });
 
         Button editAttributeButton = new Button("Edit Attribute");
@@ -440,8 +441,9 @@ public class BusinessServiceEditWindow extends Window {
                             m_businessService.getAttributes().put(window.getKey(), window.getValue());
                             refreshAttributes();
                         }
-                    });
+                    }).focusValue();
             this.getUI().addWindow(keyValueInputDialogWindow);
+            keyValueInputDialogWindow.focus();
         });
 
         final Button removeAttributeButton = new Button("Remove Attribute");
