@@ -81,7 +81,15 @@
       <exclusions>
         <exclusion>
           <groupId>org.apache.cxf</groupId>
-          <artifactId>*</artifactId>
+          <artifactId>cxf-rt-bindings-soap</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.apache.cxf</groupId>
+          <artifactId>cxf-rt-databinding-jaxb</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.apache.cxf</groupId>
+          <artifactId>cxf-rt-frontend-jaxws</artifactId>
         </exclusion>
       </exclusions>
     </dependency>
