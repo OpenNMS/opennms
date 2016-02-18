@@ -48,6 +48,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
 import org.opennms.core.config.api.JaxbListWrapper;
+import org.opennms.netmgt.config.PollerConfig;
+import org.opennms.netmgt.config.api.CollectdConfigFactory;
 import org.opennms.netmgt.provision.persist.ForeignSourceService;
 import org.opennms.netmgt.provision.support.PluginWrapper;
 import org.opennms.web.svclayer.ManualProvisioningService;
@@ -68,13 +70,20 @@ import org.springframework.util.Assert;
 public class ForeignSourceConfigRestService extends OnmsRestService implements InitializingBean {
     private static final Logger LOG = LoggerFactory.getLogger(ForeignSourceConfigRestService.class);
 
-    /** The m_foreign source service. */
+    /** The foreign source service. */
     @Autowired
     protected ForeignSourceService m_foreignSourceService;
 
-    /** The m_provisioning service. */
+    /** The provisioning service. */
     @Autowired
     protected ManualProvisioningService m_provisioningService;
+
+    /** The poller configuration. */
+    @Autowired
+    protected PollerConfig m_pollerConfig;
+
+    @Autowired
+    protected CollectdConfigFactory m_collectdConfigFactory;
 
     /* (non-Javadoc)
      * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
@@ -259,6 +268,8 @@ public class ForeignSourceConfigRestService extends OnmsRestService implements I
 
     /**
      * Gets the services.
+     * <p>It will include all the configured service monitors from poller-configuration.xml.</p>
+     * <p>If the groupName is not null, it will include the services defined on the foreign source.</p>
      *
      * @param groupName the group name
      * @return the services
@@ -267,7 +278,21 @@ public class ForeignSourceConfigRestService extends OnmsRestService implements I
     @Path("services/{groupName}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     public ElementList getServices(@PathParam("groupName") String groupName) {
-        return new ElementList(m_provisioningService.getServiceTypeNames(groupName));
+        ElementList elements = new ElementList(m_pollerConfig.getServiceMonitors().keySet());
+        m_collectdConfigFactory.getCollectdConfig().getCollectors().forEach(c -> {
+            if (!elements.contains(c.getService()))
+                elements.add(c.getService());
+        });
+        if (groupName != null) {
+            Collection<String> services = m_provisioningService.getServiceTypeNames(groupName);
+            if (services != null) {
+                services.forEach(s -> {
+                    if (!elements.contains(s))
+                        elements.add(s);
+                });
+            }
+        }
+        return elements;
     }
 
     /**
