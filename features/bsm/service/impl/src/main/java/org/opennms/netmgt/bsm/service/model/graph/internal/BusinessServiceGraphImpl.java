@@ -42,7 +42,7 @@ import org.opennms.netmgt.bsm.service.model.edge.ro.ReadOnlyEdge;
 import org.opennms.netmgt.bsm.service.model.edge.ro.ReadOnlyIpServiceEdge;
 import org.opennms.netmgt.bsm.service.model.edge.ro.ReadOnlyReductionKeyEdge;
 import org.opennms.netmgt.bsm.service.model.functions.map.Identity;
-import org.opennms.netmgt.bsm.service.model.functions.reduce.MostCritical;
+import org.opennms.netmgt.bsm.service.model.functions.reduce.HighestSeverity;
 import org.opennms.netmgt.bsm.service.model.graph.BusinessServiceGraph;
 import org.opennms.netmgt.bsm.service.model.graph.GraphEdge;
 import org.opennms.netmgt.bsm.service.model.graph.GraphVertex;
@@ -57,7 +57,7 @@ public class BusinessServiceGraphImpl extends DirectedSparseMultigraph<GraphVert
     private static final long serialVersionUID = -7575071727895407844L;
 
     private final static Identity MAP_IDENTITY = new Identity();
-    private final static MostCritical REDUCE_MOST_CRITICAL = new MostCritical();
+    private final static HighestSeverity REDUCE_HIGHEST_SEVERITY = new HighestSeverity();
     private final Map<Long, GraphVertex> m_verticesByBusinessServiceId = Maps.newHashMap();
     private final Map<Long, GraphVertex> m_verticesByIpServiceId = Maps.newHashMap();
     private final Map<String, GraphVertex> m_verticesByReductionKey = Maps.newHashMap();
@@ -103,21 +103,21 @@ public class BusinessServiceGraphImpl extends DirectedSparseMultigraph<GraphVert
                     vertexForEdge = addBusinessServiceVertex(((ReadOnlyChildEdge)edge).getChild());
                 } else if (edge instanceof ReadOnlyReductionKeyEdge) {
                     String reductionKey = ((ReadOnlyReductionKeyEdge)edge).getReductionKey();
-                    vertexForEdge = new GraphVertexImpl(REDUCE_MOST_CRITICAL, reductionKey, edge);
+                    vertexForEdge = new GraphVertexImpl(REDUCE_HIGHEST_SEVERITY, reductionKey, edge);
                     addVertex(vertexForEdge);
                     m_verticesByReductionKey.put(reductionKey, vertexForEdge);
                 } else if (edge instanceof ReadOnlyIpServiceEdge) {
                     // There are multiple reductions keys for this edge
                     // Create an intermediary vertex using the Most Critical reduction function
                     IpService ipService = ((ReadOnlyIpServiceEdge)edge).getIpService();
-                    vertexForEdge = new GraphVertexImpl(REDUCE_MOST_CRITICAL, null, edge);
+                    vertexForEdge = new GraphVertexImpl(REDUCE_HIGHEST_SEVERITY, null, edge);
                     addVertex(vertexForEdge);
                     m_verticesByIpServiceId.put(Long.valueOf(ipService.getId()), vertexForEdge);
 
                     // Map the reductions keys to the intermediary vertex using the Identity map
                     for (String reductionKey : edge.getReductionKeys()) {
                         GraphEdgeImpl intermediaryEdge = new GraphEdgeImpl(MAP_IDENTITY);
-                        GraphVertexImpl reductionKeyVertex = new GraphVertexImpl(REDUCE_MOST_CRITICAL, reductionKey, edge);
+                        GraphVertexImpl reductionKeyVertex = new GraphVertexImpl(REDUCE_HIGHEST_SEVERITY, reductionKey, edge);
                         addVertex(reductionKeyVertex);
                         m_verticesByReductionKey.put(reductionKey, reductionKeyVertex);
                         addEdge(intermediaryEdge, vertexForEdge, reductionKeyVertex);

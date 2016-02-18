@@ -32,7 +32,7 @@ import java.util.Set;
 
 import org.opennms.netmgt.bsm.service.model.ReadOnlyBusinessService;
 import org.opennms.netmgt.bsm.service.model.edge.ro.ReadOnlyEdge;
-import org.opennms.netmgt.bsm.service.model.functions.reduce.MostCritical;
+import org.opennms.netmgt.bsm.service.model.functions.reduce.HighestSeverity;
 import org.opennms.netmgt.bsm.service.model.functions.reduce.ReductionFunction;
 
 import com.google.common.collect.Sets;
@@ -62,7 +62,7 @@ public class MockBusinessService implements ReadOnlyBusinessService {
 
     @Override
     public ReductionFunction getReduceFunction() {
-        return new MostCritical();
+        return new HighestSeverity();
     }
 
     public void setEdges(Set<ReadOnlyEdge> edges) {

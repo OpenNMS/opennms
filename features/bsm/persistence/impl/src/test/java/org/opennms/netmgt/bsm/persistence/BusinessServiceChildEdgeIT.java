@@ -47,7 +47,7 @@ import org.opennms.netmgt.bsm.persistence.api.BusinessServiceEdgeDao;
 import org.opennms.netmgt.bsm.persistence.api.BusinessServiceEdgeEntity;
 import org.opennms.netmgt.bsm.persistence.api.BusinessServiceEntity;
 import org.opennms.netmgt.bsm.persistence.api.functions.map.IdentityEntity;
-import org.opennms.netmgt.bsm.persistence.api.functions.reduce.MostCriticalEntity;
+import org.opennms.netmgt.bsm.persistence.api.functions.reduce.HighestSeverityEntity;
 import org.opennms.netmgt.bsm.test.BusinessServiceEntityBuilder;
 import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.test.JUnitConfigurationEnvironment;
@@ -95,12 +95,12 @@ public class BusinessServiceChildEdgeIT {
         // Create the Parent Business Service
         BusinessServiceEntity parent = new BusinessServiceEntityBuilder()
             .name("Parent Service")
-            .reduceFunction(new MostCriticalEntity())
+            .reduceFunction(new HighestSeverityEntity())
             .toEntity();
         // Create the Child Business Service
         BusinessServiceEntity child = new BusinessServiceEntityBuilder()
                 .name("Child Service")
-                .reduceFunction(new MostCriticalEntity())
+                .reduceFunction(new HighestSeverityEntity())
                 .toEntity();
         Long parentServiceId = m_businessServiceDao.save(parent);
         Long childServiceId = m_businessServiceDao.save(child);

@@ -62,7 +62,7 @@ public class BusinessServiceResponseDTOMarshalTest extends MarshalAndUnmarshalTe
         bs.addAttribute("dc", "RDU");
         bs.setLocation(new ResourceLocation(ApiVersion.Version2, "business-services", "1"));
         bs.setOperationalStatus(Status.CRITICAL);
-        bs.setReduceFunction(createReduceFunctionDTO(ReduceFunctionType.MostCritical));
+        bs.setReduceFunction(createReduceFunctionDTO(ReduceFunctionType.HighestSeverity));
         bs.getReductionKeys().add(createReductionKeyEdgeResponse(1L, "myReductionKeyA", ignoreDto, Status.CRITICAL, new ResourceLocation(ApiVersion.Version2, "test/1")));
         bs.getReductionKeys().add(createReductionKeyEdgeResponse(2L, "myReductionKeyB", ignoreDto, Status.NORMAL, new ResourceLocation(ApiVersion.Version2, "test/2")));
         bs.getChildren().add(createChildEdgeResponse(3L, 2L, ignoreDto, Status.MAJOR, new ResourceLocation(ApiVersion.Version2, "test/3")));
@@ -83,7 +83,7 @@ public class BusinessServiceResponseDTOMarshalTest extends MarshalAndUnmarshalTe
             "  }," +
             "  \"operationalStatus\" : \"CRITICAL\"," +
             "  \"reduceFunction\" : {" +
-            "    \"type\" : \"MostCritical\"," +
+            "    \"type\" : \"HighestSeverity\"," +
             "    \"properties\" : { }" +
             "  }," +
             "  \"reductionKeys\" : [ {" +
@@ -236,7 +236,7 @@ public class BusinessServiceResponseDTOMarshalTest extends MarshalAndUnmarshalTe
             "      <parent-service>12</parent-service>\n" +
             "   </parent-services>\n" +
             "   <reduction-function>\n" +
-            "      <type>MostCritical</type>\n" +
+            "      <type>HighestSeverity</type>\n" +
             "   </reduction-function>\n" +
             "   <operational-status>CRITICAL</operational-status>\n" +
             "   <location>/api/v2/business-services/1</location>\n" +

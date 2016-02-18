@@ -41,8 +41,8 @@ import org.opennms.netmgt.bsm.service.model.edge.Edge;
 import org.opennms.netmgt.bsm.service.model.edge.IpServiceEdge;
 import org.opennms.netmgt.bsm.service.model.edge.ReductionKeyEdge;
 import org.opennms.netmgt.bsm.service.model.functions.map.SetTo;
+import org.opennms.netmgt.bsm.service.model.functions.reduce.HighestSeverity;
 import org.opennms.netmgt.bsm.service.model.functions.reduce.HighestSeverityAbove;
-import org.opennms.netmgt.bsm.service.model.functions.reduce.MostCritical;
 import org.opennms.netmgt.bsm.service.model.functions.reduce.ReductionFunction;
 import org.opennms.netmgt.bsm.service.model.functions.reduce.Threshold;
 import org.opennms.netmgt.vaadin.core.TransactionAwareUI;
@@ -204,7 +204,7 @@ public class BusinessServiceEditWindow extends Window {
          */
 
         m_reduceFunctionNativeSelect = new NativeSelect("Reduce Function", ImmutableList.builder()
-                .add(MostCritical.class)
+                .add(HighestSeverity.class)
                 .add(Threshold.class)
                 .add(HighestSeverityAbove.class)
                 .build());
@@ -272,7 +272,7 @@ public class BusinessServiceEditWindow extends Window {
         });
 
         if (Objects.isNull(businessService.getReduceFunction())) {
-            m_reduceFunctionNativeSelect.setValue(MostCritical.class);
+            m_reduceFunctionNativeSelect.setValue(HighestSeverity.class);
         } else {
             m_reduceFunctionNativeSelect.setValue(businessService.getReduceFunction().getClass());
 

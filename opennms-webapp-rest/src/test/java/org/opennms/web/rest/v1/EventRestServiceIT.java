@@ -28,7 +28,10 @@
 
 package org.opennms.web.rest.v1;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+
+import javax.ws.rs.core.MediaType;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -36,9 +39,14 @@ import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.test.rest.AbstractSpringJerseyRestTestCase;
+import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.dao.DatabasePopulator;
+import org.opennms.netmgt.dao.mock.EventAnticipator;
+import org.opennms.netmgt.dao.mock.MockEventIpcManager;
+import org.opennms.netmgt.xml.event.Event;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.transaction.annotation.Transactional;
@@ -65,6 +73,9 @@ public class EventRestServiceIT extends AbstractSpringJerseyRestTestCase {
     @Autowired
     private DatabasePopulator m_databasePopulator;
 
+    @Autowired
+    private MockEventIpcManager m_eventMgr;
+
     @Override
     protected void afterServletStart() {
         MockLogAppender.setupLogging(true, "DEBUG");
@@ -80,5 +91,25 @@ public class EventRestServiceIT extends AbstractSpringJerseyRestTestCase {
         assertTrue(xml.contains("totalCount=\"0\""));
         xml = sendRequest(GET, "/events/between", parseParamData("end=2010-01-01T01:00:00Z"), 200);
         assertTrue(xml.contains("totalCount=\"0\""));
+    }
+
+    @Test
+    public void canPublishEventToBus() throws Exception {
+        // Create some test event
+        Event e = new Event();
+        e.setUei("some.uei");
+        e.setHost("from-some-host");
+
+        // Setup the anticipator
+        EventAnticipator anticipator = m_eventMgr.getEventAnticipator();
+        anticipator.anticipateEvent(e);
+
+        // POST the event to the REST API
+        MockHttpServletResponse response = sendData(POST, MediaType.APPLICATION_XML, "/events", JaxbUtils.marshal(e));
+
+        // Verify
+        assertEquals(200, response.getStatus());
+        m_eventMgr.finishProcessingEvents();
+        anticipator.verifyAnticipated(1000, 0, 0, 0, 0);
     }
 }

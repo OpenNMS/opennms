@@ -21,3 +21,15 @@ _PUT_ requires form data using `application/x-www-form-urlencoded` as a Content-
 | `/events/{id}?ack=''(true;false)`      | Acknowledges (or unacknowledges) an event.
 | `/events?x=y&...&ack=''(true;false)`   | Acknowledges (or unacknowledges) the matching events.
 |===
+
+===== POSTs (Adding Data)
+
+POST requires XML (application/xml) or JSON (application/json) as its Content-Type.
+
+TIP: See `${OPENNMS_HOME}/share/xsds/event.xsd` for the reference schema.
+
+[options="header", cols="5,10"]
+|===
+| Resource                                        | Description
+| `/events`                                       | Publish an event on the event bus.
+|===
