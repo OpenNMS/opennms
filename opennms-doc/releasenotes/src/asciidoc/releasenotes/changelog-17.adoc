@@ -21,8 +21,18 @@ The codename for 17.1.0 is _Talisker_.
 * Add more flexibility to the syslog alarm northbound implementation (http://issues.opennms.org/browse/HZN-563[HZN-563])
 * Define optional event parameters on the event definition (http://issues.opennms.org/browse/HZN-551[HZN-551])
 * Create upgrade script for service-configuration.xml (http://issues.opennms.org/browse/HZN-545[HZN-545])
+* Expose SNMP4J 2.x noGetBulk and allowSnmpV2cInV1 capabilities (Issue http://issues.opennms.org/browse/NMS-7123[NMS-7123])
+* Add threshold comments and whitespace changes to match how the OpenNMS web GUI generates XML files (Issue http://issues.opennms.org/browse/NMS-7978[NMS-7978])
+* Add support for using NRTG via Ajax calls (Issue http://issues.opennms.org/browse/NMS-8005[NMS-8005])
+* Add support for OSGi-based Ticketing plugins (Issue http://issues.opennms.org/browse/NMS-8024[NMS-8024])
+* Add event definition for postfix syslog message TLS disabled (Issue http://issues.opennms.org/browse/NMS-8028[NMS-8028])
+* Improve the SNMP data collection config parsing to give more flexibility to the users (Issue http://issues.opennms.org/browse/NMS-8030[NMS-8030])
+* set Up severities for RADLAN-MIB.events.xml (Issue http://issues.opennms.org/browse/NMS-8042[NMS-8042])
+* Add support for marshalling NorthboundAlarms to XML (Issue http://issues.opennms.org/browse/NMS-8068[NMS-8068])
+* Event definition file for JUNIPER-IVE-MIB (Issue http://issues.opennms.org/browse/NMS-8071[NMS-8071])
+* Fixed a paragraph in the "Automatic Discovery" provisioning chapter (Issue http://issues.opennms.org/browse/NMS-8120[NMS-8120])
 
-===== Bug
+===== Bugs
 
 * OTRS integration doesn't properly validate SOAP responses (http://issues.opennms.org/browse/HZN-518[HZN-518])
 * Bad suggestions in install guide (Issue http://issues.opennms.org/browse/NMS-4108[NMS-4108])
@@ -63,19 +73,6 @@ The codename for 17.1.0 is _Talisker_.
 * Synchronizing a requisition fails (Issue http://issues.opennms.org/browse/NMS-8133[NMS-8133])
 * Add all the services declared on Collectd and Pollerd configuration as available services on /opennms/rest/foreignSourceConfig/services (Issue http://issues.opennms.org/browse/NMS-8147[NMS-8147])
 
-===== Enhancement
-
-* Expose SNMP4J 2.x noGetBulk and allowSnmpV2cInV1 capabilities (Issue http://issues.opennms.org/browse/NMS-7123[NMS-7123])
-* Add threshold comments and whitespace changes to match how the OpenNMS web GUI generates XML files (Issue http://issues.opennms.org/browse/NMS-7978[NMS-7978])
-* Add support for using NRTG via Ajax calls (Issue http://issues.opennms.org/browse/NMS-8005[NMS-8005])
-* Add support for OSGi-based Ticketing plugins (Issue http://issues.opennms.org/browse/NMS-8024[NMS-8024])
-* Add event definition for postfix syslog message TLS disabled (Issue http://issues.opennms.org/browse/NMS-8028[NMS-8028])
-* Improve the SNMP data collection config parsing to give more flexibility to the users (Issue http://issues.opennms.org/browse/NMS-8030[NMS-8030])
-* set Up severities for RADLAN-MIB.events.xml (Issue http://issues.opennms.org/browse/NMS-8042[NMS-8042])
-* Add support for marshalling NorthboundAlarms to XML (Issue http://issues.opennms.org/browse/NMS-8068[NMS-8068])
-* Event definition file for JUNIPER-IVE-MIB (Issue http://issues.opennms.org/browse/NMS-8071[NMS-8071])
-* Fixed a paragraph in the "Automatic Discovery" provisioning chapter (Issue http://issues.opennms.org/browse/NMS-8120[NMS-8120])
-
 [releasenotes-changelog-17.0.0]
 ==== Release 17.0.0
 
@@ -84,7 +81,46 @@ For a high-level overview of what's changed in OpenNMS 17, see <<releasenotes-17
 
 The codename for 17.0.0 is _Glen Moray_.
 
-===== Bug
+===== Enhancements
+
+* Add option to the <service> element in poller-configuration.xml to specify service-specific RRD settings (Issue http://issues.opennms.org/browse/NMS-1488[NMS-1488])
+* Additional storeByGroup capabilities (Issue http://issues.opennms.org/browse/NMS-1910[NMS-1910])
+* Infoblox events file (Issue http://issues.opennms.org/browse/NMS-2362[NMS-2362])
+* Adding SNMP traps for Raytheon NXU-2A (Issue http://issues.opennms.org/browse/NMS-3479[NMS-3479])
+* Add A10 AX load balancer trap events (Issue http://issues.opennms.org/browse/NMS-4008[NMS-4008])
+* Interactive JMX data collection configuration UI (Issue http://issues.opennms.org/browse/NMS-4364[NMS-4364])
+* Add Force10 Event/Traps (Issue http://issues.opennms.org/browse/NMS-5016[NMS-5016])
+* Event definition for Juniper screening SNMP traps (Issue http://issues.opennms.org/browse/NMS-5071[NMS-5071])
+* events definiton file for DSVIEW-TRAP-MIB (Issue http://issues.opennms.org/browse/NMS-5272[NMS-5272])
+* Trap definition files for Evertz Multiframe and Modules (Issue http://issues.opennms.org/browse/NMS-5397[NMS-5397])
+* Trap and data collection definitions for Ceragon FibeAir 1500 (Issue http://issues.opennms.org/browse/NMS-5398[NMS-5398])
+* New (additional) event file for NetApp filer (Issue http://issues.opennms.org/browse/NMS-5791[NMS-5791])
+* New Fortinet datacollection / graph definition (Issue http://issues.opennms.org/browse/NMS-6770[NMS-6770])
+* DefaultResourceDao should use RRD-API to find resources (Issue http://issues.opennms.org/browse/NMS-7108[NMS-7108])
+* MIB support for Zertico environment sensors (Issue http://issues.opennms.org/browse/NMS-7131[NMS-7131])
+* Implement "integration with OTRS-3.1+" feature (Issue http://issues.opennms.org/browse/NMS-7191[NMS-7191])
+* Unit tests should be able to run successfully from the start of a compile. (Issue http://issues.opennms.org/browse/NMS-7258[NMS-7258])
+* Create a detector for XMP (Issue http://issues.opennms.org/browse/NMS-7404[NMS-7404])
+* Remove linkd (Issue http://issues.opennms.org/browse/NMS-7520[NMS-7520])
+* Add Juniper SRX flow performance monitoring and default thresholds (Issue http://issues.opennms.org/browse/NMS-7553[NMS-7553])
+* Enable real SSO via Kerberos (SPNEGO) and LDAP (Issue http://issues.opennms.org/browse/NMS-7614[NMS-7614])
+* Create opennms.properties option to make dashboard the landing page (Issue http://issues.opennms.org/browse/NMS-7618[NMS-7618])
+* Get rid of servicemap and servermap database tables (Issue http://issues.opennms.org/browse/NMS-7689[NMS-7689])
+* Add support for Javascript-based graphs (Issue http://issues.opennms.org/browse/NMS-7700[NMS-7700])
+* Dell Equallogic Events (Issue http://issues.opennms.org/browse/NMS-7722[NMS-7722])
+* Persist the CdpGlobalDeviceIdFormat  (Issue http://issues.opennms.org/browse/NMS-7768[NMS-7768])
+* Add Sonicwall Firewall Events (Issue http://issues.opennms.org/browse/NMS-7798[NMS-7798])
+* JMS Alarm Northbounder (Issue http://issues.opennms.org/browse/NMS-7805[NMS-7805])
+* DNS Resolution against non-local resolver (Issue http://issues.opennms.org/browse/NMS-7821[NMS-7821])
+* Recognize Cisco ASA5580-20 for SNMP data collection (Issue http://issues.opennms.org/browse/NMS-7868[NMS-7868])
+* Promote Compass app when mobile browser detected (Issue http://issues.opennms.org/browse/NMS-7949[NMS-7949])
+* Document how to configure RRDtool in OpenNMS (Issue http://issues.opennms.org/browse/NMS-7986[NMS-7986])
+* nodeSource[] resource ids only work when storeByFs is enabled (Issue http://issues.opennms.org/browse/NMS-7711[NMS-7711])
+* Flatten and improve web app style (Issue http://issues.opennms.org/browse/NMS-7894[NMS-7894])
+* Document HeatMap ReST services (Issue http://issues.opennms.org/browse/NMS-7929[NMS-7929])
+* Cleanup docs modules (Issue http://issues.opennms.org/browse/NMS-7940[NMS-7940])
+
+===== Bugs
 
 * odd index "ifservicves_ipinterfaceid_idx" in database - typo? (Issue http://issues.opennms.org/browse/NMS-5613[NMS-5613])
 * JMX Config Tool CLI is not packaged correctly (Issue http://issues.opennms.org/browse/NMS-5946[NMS-5946])
@@ -200,42 +236,3 @@ The codename for 17.0.0 is _Glen Moray_.
 * Upgrade to commons-collections 3.2.2 (Issue http://issues.opennms.org/browse/NMS-7999[NMS-7999])
 * NPE in JMXDetector (Issue http://issues.opennms.org/browse/NMS-8001[NMS-8001])
 * Iplike could not be installed following install guide (Issue http://issues.opennms.org/browse/NMS-8004[NMS-8004])
-
-===== Enhancement
-
-* Add option to the <service> element in poller-configuration.xml to specify service-specific RRD settings (Issue http://issues.opennms.org/browse/NMS-1488[NMS-1488])
-* Additional storeByGroup capabilities (Issue http://issues.opennms.org/browse/NMS-1910[NMS-1910])
-* Infoblox events file (Issue http://issues.opennms.org/browse/NMS-2362[NMS-2362])
-* Adding SNMP traps for Raytheon NXU-2A (Issue http://issues.opennms.org/browse/NMS-3479[NMS-3479])
-* Add A10 AX load balancer trap events (Issue http://issues.opennms.org/browse/NMS-4008[NMS-4008])
-* Interactive JMX data collection configuration UI (Issue http://issues.opennms.org/browse/NMS-4364[NMS-4364])
-* Add Force10 Event/Traps (Issue http://issues.opennms.org/browse/NMS-5016[NMS-5016])
-* Event definition for Juniper screening SNMP traps (Issue http://issues.opennms.org/browse/NMS-5071[NMS-5071])
-* events definiton file for DSVIEW-TRAP-MIB (Issue http://issues.opennms.org/browse/NMS-5272[NMS-5272])
-* Trap definition files for Evertz Multiframe and Modules (Issue http://issues.opennms.org/browse/NMS-5397[NMS-5397])
-* Trap and data collection definitions for Ceragon FibeAir 1500 (Issue http://issues.opennms.org/browse/NMS-5398[NMS-5398])
-* New (additional) event file for NetApp filer (Issue http://issues.opennms.org/browse/NMS-5791[NMS-5791])
-* New Fortinet datacollection / graph definition (Issue http://issues.opennms.org/browse/NMS-6770[NMS-6770])
-* DefaultResourceDao should use RRD-API to find resources (Issue http://issues.opennms.org/browse/NMS-7108[NMS-7108])
-* MIB support for Zertico environment sensors (Issue http://issues.opennms.org/browse/NMS-7131[NMS-7131])
-* Implement "integration with OTRS-3.1+" feature (Issue http://issues.opennms.org/browse/NMS-7191[NMS-7191])
-* Unit tests should be able to run successfully from the start of a compile. (Issue http://issues.opennms.org/browse/NMS-7258[NMS-7258])
-* Create a detector for XMP (Issue http://issues.opennms.org/browse/NMS-7404[NMS-7404])
-* Remove linkd (Issue http://issues.opennms.org/browse/NMS-7520[NMS-7520])
-* Add Juniper SRX flow performance monitoring and default thresholds (Issue http://issues.opennms.org/browse/NMS-7553[NMS-7553])
-* Enable real SSO via Kerberos (SPNEGO) and LDAP (Issue http://issues.opennms.org/browse/NMS-7614[NMS-7614])
-* Create opennms.properties option to make dashboard the landing page (Issue http://issues.opennms.org/browse/NMS-7618[NMS-7618])
-* Get rid of servicemap and servermap database tables (Issue http://issues.opennms.org/browse/NMS-7689[NMS-7689])
-* Add support for Javascript-based graphs (Issue http://issues.opennms.org/browse/NMS-7700[NMS-7700])
-* Dell Equallogic Events (Issue http://issues.opennms.org/browse/NMS-7722[NMS-7722])
-* Persist the CdpGlobalDeviceIdFormat  (Issue http://issues.opennms.org/browse/NMS-7768[NMS-7768])
-* Add Sonicwall Firewall Events (Issue http://issues.opennms.org/browse/NMS-7798[NMS-7798])
-* JMS Alarm Northbounder (Issue http://issues.opennms.org/browse/NMS-7805[NMS-7805])
-* DNS Resolution against non-local resolver (Issue http://issues.opennms.org/browse/NMS-7821[NMS-7821])
-* Recognize Cisco ASA5580-20 for SNMP data collection (Issue http://issues.opennms.org/browse/NMS-7868[NMS-7868])
-* Promote Compass app when mobile browser detected (Issue http://issues.opennms.org/browse/NMS-7949[NMS-7949])
-* Document how to configure RRDtool in OpenNMS (Issue http://issues.opennms.org/browse/NMS-7986[NMS-7986])
-* nodeSource[] resource ids only work when storeByFs is enabled (Issue http://issues.opennms.org/browse/NMS-7711[NMS-7711])
-* Flatten and improve web app style (Issue http://issues.opennms.org/browse/NMS-7894[NMS-7894])
-* Document HeatMap ReST services (Issue http://issues.opennms.org/browse/NMS-7929[NMS-7929])
-* Cleanup docs modules (Issue http://issues.opennms.org/browse/NMS-7940[NMS-7940])
