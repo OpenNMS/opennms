@@ -1,8 +1,66 @@
 
-[[release-17-changelog]]
-=== Changelog
+[releasenotes-changelog-17.1.0]
+==== Release 17.1.0
 
-[[releasenotes-changelog-17.0.0]]
+Release 17.1.0 is the latest stable release of OpenNMS.  It contains a number of important bug fixes and a few new features.
+For a high-level overview of what's changed in OpenNMS 17, see https://github.com/OpenNMS/opennms/blob/opennms-17.0.0-1/WHATSNEW.md[What's New in OpenNMS 17].
+
+The codename for 17.1.0 is _Talisker_.
+
+===== Bug
+
+* Bad suggestions in install guide (Issue http://issues.opennms.org/browse/NMS-4108[NMS-4108])
+* Enlinkd Topology Plugin fails to create LLDP links for mismatched link port descriptions. (Issue http://issues.opennms.org/browse/NMS-7152[NMS-7152])
+* snmp-graph.properties.d files with --vertical-label="verticalLabel" in config (Issue http://issues.opennms.org/browse/NMS-7820[NMS-7820])
+* Incorrect host in Location header when creating resources via ReST (Issue http://issues.opennms.org/browse/NMS-7866[NMS-7866])
+* config-tester is broken (Issue http://issues.opennms.org/browse/NMS-7910[NMS-7910])
+* Opsboard and Opspanel use wrong logo (Issue http://issues.opennms.org/browse/NMS-7953[NMS-7953])
+* Unable to generate eventconf if a MIB (improperly?) uses a TC to define a TC (Issue http://issues.opennms.org/browse/NMS-7966[NMS-7966])
+* container features.xml still references jersey 1.18 when it should reference 1.19. (Issue http://issues.opennms.org/browse/NMS-7988[NMS-7988])
+* Topology-UI shows CDP links not correct (Issue http://issues.opennms.org/browse/NMS-8000[NMS-8000])
+* Backshift graphs show dates in UTC instead of the browser's timezone (Issue http://issues.opennms.org/browse/NMS-8014[NMS-8014])
+* StrafePing: Unexpected exception while polling PollableService (Issue http://issues.opennms.org/browse/NMS-8017[NMS-8017])
+* Grafana Box did not work anymore (Issue http://issues.opennms.org/browse/NMS-8023[NMS-8023])
+* Constant Thread Locking on Enlinkd (Issue http://issues.opennms.org/browse/NMS-8026[NMS-8026])
+* Wrong use of opennms.web.base-url (Issue http://issues.opennms.org/browse/NMS-8029[NMS-8029])
+* NRTG with newts - get StringIndexOutOfBoundsException (Issue http://issues.opennms.org/browse/NMS-8038[NMS-8038])
+* The newts script only works if cassandra runs on localhost (Issue http://issues.opennms.org/browse/NMS-8051[NMS-8051])
+* AlarmPersisterIT test is empty (Issue http://issues.opennms.org/browse/NMS-8054[NMS-8054])
+* The 'newts init' script does work when authentication is enabled in Cassandra (Issue http://issues.opennms.org/browse/NMS-8064[NMS-8064])
+* ReST Regression in Alarms/Events (Issue http://issues.opennms.org/browse/NMS-8065[NMS-8065])
+* Newts only uses a single thread when writing to Cassandra (Issue http://issues.opennms.org/browse/NMS-8066[NMS-8066])
+* User Restriction Filters: mapping class for roles to groups does not work (Issue http://issues.opennms.org/browse/NMS-8073[NMS-8073])
+* The "Remove From Focus" button intermittently fails (Issue http://issues.opennms.org/browse/NMS-8074[NMS-8074])
+* The OnmsDaoContainer does not update its cache correctly, leading to a NumberFormatException (Issue http://issues.opennms.org/browse/NMS-8079[NMS-8079])
+* File not found exception for interfaceSTP-box.jsp on SNMP interface page (Issue http://issues.opennms.org/browse/NMS-8084[NMS-8084])
+* Installation Guide Debian Bug Version 17.0.0 (Issue http://issues.opennms.org/browse/NMS-8097[NMS-8097])
+* Unable to complete creation of scheduled reports (Issue http://issues.opennms.org/browse/NMS-8100[NMS-8100])
+* NPE when persisting data with Newts (Issue http://issues.opennms.org/browse/NMS-8103[NMS-8103])
+* init script checkXmlFiles() fails to pick up errors (Issue http://issues.opennms.org/browse/NMS-8104[NMS-8104])
+* INFO-severity syslog-derived events end up unmatched (Issue http://issues.opennms.org/browse/NMS-8106[NMS-8106])
+* Memory leak when using  the BSFDetector (Issue http://issues.opennms.org/browse/NMS-8109[NMS-8109])
+* init script "configtest" exit value is always 1 (Issue http://issues.opennms.org/browse/NMS-8112[NMS-8112])
+* Heat map Alarms/Categories do not show all categories (Issue http://issues.opennms.org/browse/NMS-8116[NMS-8116])
+* WS-MAN has broken ForeignSourceConfigRestService and the requisitions UI doesn't work. (Issue http://issues.opennms.org/browse/NMS-8119[NMS-8119])
+* Removing ops boards via the configuration UI does not update the table (Issue http://issues.opennms.org/browse/NMS-8123[NMS-8123])
+* JNA ping code reuses buffer causing inconsistent reads of packet contents (Issue http://issues.opennms.org/browse/NMS-8126[NMS-8126])
+* Synchronizing a requisition fails (Issue http://issues.opennms.org/browse/NMS-8133[NMS-8133])
+* Add all the services declared on Collectd and Pollerd configuration as available services on /opennms/rest/foreignSourceConfig/services (Issue http://issues.opennms.org/browse/NMS-8147[NMS-8147])
+
+===== Enhancement
+
+* Expose SNMP4J 2.x noGetBulk and allowSnmpV2cInV1 capabilities (Issue http://issues.opennms.org/browse/NMS-7123[NMS-7123])
+* Add threshold comments and whitespace changes to match how the OpenNMS web GUI generates XML files (Issue http://issues.opennms.org/browse/NMS-7978[NMS-7978])
+* Add support for using NRTG via Ajax calls (Issue http://issues.opennms.org/browse/NMS-8005[NMS-8005])
+* Add support for OSGi-based Ticketing plugins (Issue http://issues.opennms.org/browse/NMS-8024[NMS-8024])
+* Add event definition for postfix syslog message TLS disabled (Issue http://issues.opennms.org/browse/NMS-8028[NMS-8028])
+* Improve the SNMP data collection config parsing to give more flexibility to the users (Issue http://issues.opennms.org/browse/NMS-8030[NMS-8030])
+* set Up severities for RADLAN-MIB.events.xml (Issue http://issues.opennms.org/browse/NMS-8042[NMS-8042])
+* Add support for marshalling NorthboundAlarms to XML (Issue http://issues.opennms.org/browse/NMS-8068[NMS-8068])
+* Event definition file for JUNIPER-IVE-MIB (Issue http://issues.opennms.org/browse/NMS-8071[NMS-8071])
+* Fixed a paragraph in the "Automatic Discovery" provisioning chapter (Issue http://issues.opennms.org/browse/NMS-8120[NMS-8120])
+
+[releasenotes-changelog-17.0.0]
 ==== Release 17.0.0
 
 Release 17.0.0 is the latest stable release of OpenNMS.  It contains a large number of bug fixes and new features.
