@@ -29,6 +29,7 @@
 package org.opennms.netmgt.vaadin.core;
 
 import com.vaadin.data.Validator;
+import com.vaadin.event.FieldEvents;
 import com.vaadin.event.ShortcutAction;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
@@ -76,6 +77,11 @@ public class KeyValueInputDialogWindow extends Window implements Window.CloseLis
     private final TextField m_valueInputField;
 
     /**
+     * where to set focus
+     */
+    private boolean m_focusKey = true;
+
+    /**
      * flag whether ok was pressed
      */
     private boolean m_okPressed;
@@ -116,9 +122,9 @@ public class KeyValueInputDialogWindow extends Window implements Window.CloseLis
 
         m_keyInputField.setValue("");
         m_keyInputField.setId("keyField");
-        m_keyInputField.focus();
         m_keyInputField.selectAll();
         m_keyInputField.setImmediate(true);
+        m_keyInputField.focus();
 
         /**
          * add the value input field
@@ -127,7 +133,6 @@ public class KeyValueInputDialogWindow extends Window implements Window.CloseLis
 
         m_valueInputField.setValue("");
         m_valueInputField.setId("valueField");
-        m_valueInputField.focus();
         m_valueInputField.selectAll();
         m_valueInputField.setImmediate(true);
 
@@ -172,6 +177,17 @@ public class KeyValueInputDialogWindow extends Window implements Window.CloseLis
         horizontalLayout.addComponent(m_okButton);
         formLayout.addComponent(horizontalLayout);
         verticalLayout.addComponent(formLayout);
+
+        addFocusListener(new FieldEvents.FocusListener() {
+            @Override
+            public void focus(FieldEvents.FocusEvent event) {
+                if (m_focusKey) {
+                    m_keyInputField.focus();
+                } else {
+                    m_valueInputField.focus();
+                }
+            }
+        });
 
         /**
          * the close listener
@@ -347,6 +363,26 @@ public class KeyValueInputDialogWindow extends Window implements Window.CloseLis
         if ((m_okPressed && m_keyInputField.isValid() && m_valueInputField.isValid()) || !m_okPressed) {
             close();
         }
+    }
+
+    /**
+     * Sets the focus to the key field.
+     *
+     * @return the instance itself
+     */
+    public KeyValueInputDialogWindow focusKey() {
+        m_focusKey = true;
+        return  this;
+    }
+
+    /**
+     * Sets the focus to the value field.
+     *
+     * @return the instance itself
+     */
+    public KeyValueInputDialogWindow focusValue() {
+        m_focusKey = false;
+        return this;
     }
 
     /**
