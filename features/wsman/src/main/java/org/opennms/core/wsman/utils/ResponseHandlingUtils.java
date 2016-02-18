@@ -40,6 +40,7 @@ import org.springframework.expression.spel.support.StandardEvaluationContext;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import com.google.common.base.Throwables;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ListMultimap;
 
@@ -111,5 +112,28 @@ public class ResponseHandlingUtils {
         }
 
         throw new NoSuchElementException();
+    }
+
+    public static boolean matchesFilter(String spelFilter, ListMultimap<String, String> valuesByName) {
+        // Compile the expression
+        final ExpressionParser parser = new SpelExpressionParser();
+        final Expression exp = parser.parseExpression(spelFilter);
+
+        // Build the context with the first values for all of the attributes
+        final StandardEvaluationContext context = new StandardEvaluationContext();
+        for (String name : valuesByName.keySet()) {
+            final List<String> values = valuesByName.get(name);
+            if (values.size() > 0) {
+                context.setVariable(name, values.get(0));
+            }
+        }
+
+        // Evaluate our expression
+        try {
+            return exp.getValue(context, Boolean.class);
+        } catch (Exception e) {
+            LOG.error("Failed to evaluate expression {}. Assuming match is negative. Msg: {}", exp.getExpressionString(), e.getMessage());
+            throw Throwables.propagate(e);
+        }
     }
 }

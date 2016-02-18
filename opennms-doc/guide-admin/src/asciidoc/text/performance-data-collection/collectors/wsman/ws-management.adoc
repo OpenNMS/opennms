@@ -138,7 +138,7 @@ NOTE: If you try to connect against _Microsoft Windows Server_ make sure to set 
 [[ga-performance-mgmt-collectors-wsman-collector]]
 ===== Collector
 
-Configuration for the WS-Management collector is stored in `etc/wsman-datacollection-config.xml` and `etc/wsman-datacollection/*.xml`.
+Configuration for the WS-Management collector is stored in `etc/wsman-datacollection-config.xml` and `etc/wsman-datacollection.d/*.xml`.
 
 NOTE: The contents of these files are automatically merged and reloaded when changed.
       The `default` WS-Management collection looks as follows:
@@ -168,7 +168,7 @@ The magic happens with the `<include-all-system-definitions/>` element which aut
 
 NOTE: If required, you can include a specific system-definition with `<include-system-definition>sys-def-name</include-system-definition>`.
 
-System definitions and related groups can be defined in the root `etc/wsman-datacollection-config.xml` file, but it is preferred that be added to a device specific configuration files in `etc/wsman-datacollection-config/*.xml`.
+System definitions and related groups can be defined in the root `etc/wsman-datacollection-config.xml` file, but it is preferred that be added to a device specific configuration files in `etc/wsman-datacollection-config.d/*.xml`.
 
 TIP: Avoid modifying any of the distribution configuration files and create new ones to store you specific details instead.
 
@@ -197,11 +197,7 @@ Here is an example configuration file for a _Dell iDRAC_:
     </group>
 
     <system-definition name="Dell iDRAC (All Version)">
-        <!--
-             Dell iDRAC 6 reports productVendor: 'Openwsman Project' and productVersion: '2.0.0' so
-             those devices need to be overriden via wsman-config.xml in order to match here.
-        -->
-        <rule>#productVendor matches '^Dell.*' and #productVersion matches '.*DRAC.*'</rule>
+        <rule>#productVendor matches '^Dell.*' and #productVersion matches '.*iDRAC.*'</rule>
         <include-group>drac-system</include-group>
         <include-group>drac-power-supply</include-group>
     </system-definition>
