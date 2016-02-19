@@ -81,10 +81,10 @@
             <td>{{ node.assets.length }}</td>
             <td>{{ node.categories.length }}</td>
             <td>
-              <button class="btn btn-default btn-xs" tooltip="Edit the {{node.nodeLabel}} Node" ng-click="editNode(node)">
+              <button class="btn btn-default btn-xs" uib-tooltip="Edit the {{node.nodeLabel}} Node" ng-click="editNode(node)">
                 <span class="glyphicon glyphicon-pencil"></span>
               </button>
-              <button class="btn btn-default btn-xs" tooltip="Remove the {{node.nodeLabel}} Node" ng-click="deleteNode(node)">
+              <button class="btn btn-default btn-xs" uib-tooltip="Remove the {{node.nodeLabel}} Node" ng-click="deleteNode(node)">
                 <span class="glyphicon glyphicon-remove"></span>
               </button>
             </td>
