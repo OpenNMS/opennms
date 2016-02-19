@@ -61,7 +61,8 @@ import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
 import com.google.common.base.Throwables;
-import com.sun.jersey.core.util.MultivaluedMapImpl;
+import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.core.MultivaluedHashMap;
 
 /**
  * Changes the label of a node, throws an event signaling that change, and then
@@ -130,7 +131,7 @@ public class NodeLabelChangeServlet extends HttpServlet {
                 transactionTemplate.execute(new TransactionCallback<RequisitionNode>() {
                     @Override
                     public RequisitionNode doInTransaction(TransactionStatus status) {
-                        MultivaluedMapImpl params = new MultivaluedMapImpl();
+                        MultivaluedMap<String, String> params = new MultivaluedHashMap<String, String>();
                         params.putSingle("node-label", newNodeLabel);
                         requisitionService.updateNode(node.getForeignSource(), node.getForeignId(), params);
                         return requisitionService.getNode(node.getForeignSource(), node.getForeignId());

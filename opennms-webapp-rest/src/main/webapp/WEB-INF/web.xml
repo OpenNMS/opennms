@@ -19,7 +19,6 @@
 
       <!-- WARMERGE: begin contextConfigLocation -->
       classpath*:/META-INF/opennms/component-service.xml
-      <!-- /WEB-INF/applicationContext-jersey.xml -->
       /WEB-INF/applicationContext-cxf-common.xml
       <!-- WARMERGE: end contextConfigLocation -->
     </param-value>
@@ -53,29 +52,6 @@
 
   <!-- WARMERGE: begin servlet -->
   <!--  RESTful Web Services -->
-  <!--
-  <servlet>
-    <servlet-name>opennmsJerseyWebServices</servlet-name>
-    <servlet-class>com.sun.jersey.spi.spring.container.servlet.SpringServlet</servlet-class>
-    <init-param>
-      <param-name>com.sun.jersey.config.property.resourceConfigClass</param-name>
-      <param-value>com.sun.jersey.api.core.PackagesResourceConfig</param-value>
-    </init-param>
-    <init-param>
-      <param-name>com.sun.jersey.config.property.packages</param-name>
-      <param-value>org.codehaus.jackson.jaxrs;org.opennms.web.rest;org.opennms.web.rest.config</param-value>
-    </init-param>
-    <init-param>
-      <param-name>com.sun.jersey.spi.container.ContainerRequestFilters</param-name>
-      <param-value>com.sun.jersey.api.container.filter.GZIPContentEncodingFilter</param-value>
-    </init-param>
-    <init-param>
-      <param-name>com.sun.jersey.spi.container.ContainerResponseFilters</param-name>
-      <param-value>com.sun.jersey.api.container.filter.GZIPContentEncodingFilter</param-value>
-    </init-param>
-    <load-on-startup>1</load-on-startup>
-  </servlet>
-  -->
   <servlet>
     <servlet-name>cxfRestServlet</servlet-name>
     <servlet-class>org.apache.cxf.transport.servlet.CXFServlet</servlet-class>
@@ -106,12 +82,6 @@
 
   <!-- WARMERGE: begin servlet-mapping -->
   <!-- Servlet mappings for REST Services -->
-  <!--
-  <servlet-mapping>
-    <servlet-name>opennmsJerseyWebServices</servlet-name>
-    <url-pattern>/rest/*</url-pattern>
-  </servlet-mapping>
-  -->
   <servlet-mapping>
     <servlet-name>cxfRestServlet</servlet-name>
     <url-pattern>/rest/*</url-pattern>
