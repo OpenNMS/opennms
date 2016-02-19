@@ -199,17 +199,9 @@ public class BSMAdminIT extends OpenNMSSeleniumTestCase {
         }
 
         public BsmAdminPageEditWindow openNewDialog(String businessServiceName) throws InterruptedException {
-            final WebElement createTextField = findElementById("createTextField");
-            createTextField.sendKeys(businessServiceName);
-            wait.until(new ExpectedCondition<Boolean>() {
-                @Override
-                public Boolean apply(final WebDriver driver) {
-                    return businessServiceName.equals(createTextField.getAttribute("value"));
-                }
-            });
             findElementById("createButton").click();
             wait.until(pageContainsText("Business Service Edit")); // we wait until the edit dialog appears
-            return new BsmAdminPageEditWindow(businessServiceName);
+            return new BsmAdminPageEditWindow(businessServiceName).name(businessServiceName);
         }
 
         public BsmAdminPageEditWindow openEditDialog(String businessServiceName) {
