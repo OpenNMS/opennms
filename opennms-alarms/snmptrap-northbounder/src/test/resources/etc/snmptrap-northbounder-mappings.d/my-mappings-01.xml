@@ -1,4 +1,4 @@
-<mapping-group name="My Mappings">
+<mapping-group name="my-mappings-01">
 	<rule>foreignSource matches 'Router.*'</rule>
 	<mapping name="trap01">
 		<rule>uei == 'uei.opennms.org/trap/myTrap3'</rule>
