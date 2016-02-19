@@ -38,10 +38,13 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import javax.imageio.ImageIO;
 
@@ -53,12 +56,12 @@ import org.opennms.netmgt.bsm.service.model.AlarmWrapper;
 import org.opennms.netmgt.bsm.service.model.IpService;
 import org.opennms.netmgt.bsm.service.model.ReadOnlyBusinessService;
 import org.opennms.netmgt.bsm.service.model.Status;
-import org.opennms.netmgt.bsm.service.model.edge.IpServiceEdge;
 import org.opennms.netmgt.bsm.service.model.edge.ro.ReadOnlyEdge;
 import org.opennms.netmgt.bsm.service.model.graph.BusinessServiceGraph;
 import org.opennms.netmgt.bsm.service.model.graph.GraphEdge;
 import org.opennms.netmgt.bsm.service.model.graph.GraphVertex;
 import org.opennms.netmgt.bsm.service.model.graph.internal.BusinessServiceGraphImpl;
+import org.opennms.netmgt.bsm.service.model.graph.internal.GraphAlgorithms;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -187,19 +190,32 @@ public class DefaultBusinessServiceStateMachine implements BusinessServiceStateM
         updateAndPropagateVertex(graph, vertex, newStatus);
     }
 
-    protected static List<Status> weighStatuses(Collection<GraphEdge> edges) {
+    public static List<Status> weighStatuses(Collection<GraphEdge> edges) {
+        return weighStatuses(edges.stream()
+                .collect(Collectors.toMap(Function.identity(), e -> e.getStatus())));
+    }
+
+    /**
+     * Apply the edges weights to the associated statuses set in the map,
+     * ignoring the actual status stored in the edge. Can be used for simulations
+     * without needing to change the actual edge's status.
+     *
+     * @param edgesWithStatus
+     * @return
+     */
+    public static List<Status> weighStatuses(Map<GraphEdge, Status> edgesWithStatus) {
         // Find the greatest common divisor of all the weights
-        int gcd = edges.stream()
+        int gcd = edgesWithStatus.keySet().stream()
                 .map(e -> e.getWeight())
                 .reduce((a,b) -> BigInteger.valueOf(a).gcd(BigInteger.valueOf(b)).intValue())
                 .orElse(1);
 
         // Multiply the statuses based on their relative weight
         List<Status> statuses = Lists.newArrayList();
-        for (GraphEdge edge : edges) {
-            int relativeWeight = Math.floorDiv(edge.getWeight(), gcd);
+        for (Entry<GraphEdge, Status> entry : edgesWithStatus.entrySet()) {
+            int relativeWeight = Math.floorDiv(entry.getKey().getWeight(), gcd);
             for (int i = 0; i < relativeWeight; i++) {
-                statuses.add(edge.getStatus());
+                statuses.add(entry.getValue());
             }
         }
 
@@ -248,7 +264,7 @@ public class DefaultBusinessServiceStateMachine implements BusinessServiceStateM
     public Status getOperationalStatus(IpService ipService) {
         m_rwLock.readLock().lock();
         try {
-            GraphVertex vertex = m_g.getVertexByIpServiceId(Long.valueOf(ipService.getId()));
+            GraphVertex vertex = m_g.getVertexByIpServiceId(ipService.getId());
             if (vertex != null) {
                 return vertex.getStatus();
             }
@@ -330,15 +346,14 @@ public class DefaultBusinessServiceStateMachine implements BusinessServiceStateM
                     if (vertex.getBusinessService() != null) {
                         return String.format("BS[%s]", vertex.getBusinessService().getName());
                     }
+                    if (vertex.getIpService() != null) {
+                        IpService ipService = vertex.getIpService();
+                        return String.format("IP_SERVICE[%s,%s]", ipService.getId(), ipService.getServiceName());
+                    }
                     if (vertex.getReductionKey() != null) {
                         return String.format("RK[%s]", vertex.getReductionKey());
                     }
-                    // Check for type last, as the reduction key edges of ip services are of type IP_SERVICE
-                    if (vertex.getEdge().getType() == ReadOnlyEdge.Type.IP_SERVICE) {
-                        IpService ipService = ((IpServiceEdge) vertex.getEdge()).getIpService();
-                        return String.format("IP_SERVICE[%s,%s]", ipService.getId(), ipService.getServiceName());
-                    }
-                    return String.format("%s[%d]", vertex.getEdge().getType(), vertex.getEdge().getId());
+                    return "UNKNOWN";
                 }
             });
             vv.getRenderContext().setEdgeLabelTransformer(new Transformer<GraphEdge,String>() {
@@ -368,5 +383,53 @@ public class DefaultBusinessServiceStateMachine implements BusinessServiceStateM
     @Override
     public BusinessServiceGraph getGraph() {
         return m_g;
+    }
+
+    @Override
+    public List<GraphVertex> calculateRootCause(ReadOnlyBusinessService businessService) {
+        m_rwLock.readLock().lock();
+        try {
+            final GraphVertex vertex = m_g.getVertexByBusinessServiceId(businessService.getId());
+            return GraphAlgorithms.calculateRootCause(m_g, vertex);
+        } finally {
+            m_rwLock.readLock().unlock();
+        }
+    }
+
+    @Override
+    public List<GraphVertex> calculateImpact(ReadOnlyBusinessService businessService) {
+        m_rwLock.readLock().lock();
+        try {
+            final GraphVertex vertex = m_g.getVertexByBusinessServiceId(businessService.getId());
+            return calculateImpact(vertex);
+        } finally {
+            m_rwLock.readLock().unlock();
+        }
+    }
+
+    @Override
+    public List<GraphVertex> calculateImpact(IpService ipService) {
+        m_rwLock.readLock().lock();
+        try {
+            final GraphVertex vertex = m_g.getVertexByIpServiceId(ipService.getId());
+            return calculateImpact(vertex);
+        } finally {
+            m_rwLock.readLock().unlock();
+        }
+    }
+
+    @Override
+    public List<GraphVertex> calculateImpact(String reductionKey) {
+        m_rwLock.readLock().lock();
+        try {
+            final GraphVertex vertex = m_g.getVertexByReductionKey(reductionKey);
+            return calculateImpact(vertex);
+        } finally {
+            m_rwLock.readLock().unlock();
+        }
+    }
+
+    private List<GraphVertex> calculateImpact(GraphVertex vertex) {
+        return GraphAlgorithms.calculateImpact(m_g, vertex);
     }
 }

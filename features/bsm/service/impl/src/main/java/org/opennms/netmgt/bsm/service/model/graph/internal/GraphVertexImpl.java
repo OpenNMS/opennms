@@ -28,32 +28,35 @@
 
 package org.opennms.netmgt.bsm.service.model.graph.internal;
 
+import org.opennms.netmgt.bsm.service.model.IpService;
 import org.opennms.netmgt.bsm.service.model.ReadOnlyBusinessService;
-import org.opennms.netmgt.bsm.service.model.edge.ro.ReadOnlyEdge;
 import org.opennms.netmgt.bsm.service.model.functions.reduce.ReductionFunction;
 import org.opennms.netmgt.bsm.service.model.graph.GraphVertex;
 
-public class GraphVertexImpl extends GraphElement implements GraphVertex {
-    private final ReductionFunction m_reductionFunction;
+public class GraphVertexImpl extends GraphElement implements GraphVertex, Comparable<GraphVertexImpl> {
+    private final ReadOnlyBusinessService m_businessService;
+    private final IpService m_ipService;
+    private final String m_reductionKey;
+    private ReductionFunction m_reductionFunction;
     int m_level = -1;
 
-    private final ReadOnlyEdge m_edge;
-    private final String m_reductionKey;
-
-    private final ReadOnlyBusinessService m_businessService;
-
-    public GraphVertexImpl(ReductionFunction reductionFunction, String reductionKey, ReadOnlyEdge edge) {
-        m_reductionFunction = reductionFunction;
-        m_reductionKey = reductionKey;
-        m_edge = edge;
-        m_businessService = null;
+    protected GraphVertexImpl(ReductionFunction reduceFunction, ReadOnlyBusinessService businessService) {
+        this(reduceFunction, businessService, null, null);
     }
 
-    public GraphVertexImpl(ReadOnlyBusinessService businessService) {
-        m_reductionFunction = businessService.getReduceFunction();
-        m_reductionKey = null;
-        m_edge = null;
+    protected GraphVertexImpl(ReductionFunction reduceFunction, IpService ipService) {
+        this(reduceFunction, null, ipService, null);
+    }
+
+    protected GraphVertexImpl(ReductionFunction reduceFunction, String reductionKey) {
+        this(reduceFunction, null, null, reductionKey);
+    }
+
+    public GraphVertexImpl(ReductionFunction reduceFunction, ReadOnlyBusinessService businessService, IpService ipService, String reductionKey) {
         m_businessService = businessService;
+        m_ipService = ipService;
+        m_reductionKey = reductionKey;
+        m_reductionFunction = reduceFunction;
     }
 
     @Override
@@ -67,14 +70,15 @@ public class GraphVertexImpl extends GraphElement implements GraphVertex {
     }
 
     @Override
-    public ReadOnlyEdge getEdge() {
-        return m_edge;
-    }
-
-    @Override
     public ReadOnlyBusinessService getBusinessService() {
         return m_businessService;
     }
+
+    @Override
+    public IpService getIpService() {
+        return m_ipService;
+    }
+
 
     public void setLevel(int level) {
         m_level = level;
@@ -88,11 +92,33 @@ public class GraphVertexImpl extends GraphElement implements GraphVertex {
     @Override
     public String toString() {
         return com.google.common.base.Objects.toStringHelper(this)
-                .add("edge", m_edge)
-                .add("reductionKey", m_reductionKey)
                 .add("businessService", m_businessService)
+                .add("ipService", m_ipService)
+                .add("reductionKey", m_reductionKey)
                 .add("level", m_level)
                 .add("reductionFunction", m_reductionFunction)
                 .toString();
+    }
+
+    /**
+     * This is used to ensure that list of vertices returned by
+     * the RCA and IA algorithms are in consistent order.
+     */
+    @Override
+    public int compareTo(GraphVertexImpl other) {
+        int i = getBusinessService() == null ?
+                (other.getBusinessService() == null ? 0 : -1) :
+                (other.getBusinessService() == null ? 1 : getBusinessService().getId().compareTo(other.getBusinessService().getId()));
+        if (i != 0) return i;
+
+        i = getIpService() == null ?
+                (other.getIpService() == null ? 0 : -1) :
+                (other.getIpService() == null ? 1 : Integer.compare(getIpService().getId(), other.getIpService().getId()));
+        if (i != 0) return i;
+
+        i = getReductionKey() == null ?
+                (other.getReductionKey() == null ? 0 : -1) :
+                (other.getReductionKey() == null ? 1 : getReductionKey().compareTo(other.getReductionKey()));
+        return i;
     }
 }

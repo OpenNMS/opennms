@@ -33,6 +33,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
+import java.util.List;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -45,6 +46,10 @@ import org.opennms.netmgt.bsm.service.model.AlarmWrapper;
 import org.opennms.netmgt.bsm.service.model.ReadOnlyBusinessService;
 import org.opennms.netmgt.bsm.service.model.Status;
 import org.opennms.netmgt.bsm.service.model.edge.ro.ReadOnlyEdge;
+import org.opennms.netmgt.bsm.service.model.functions.reduce.HighestSeverity;
+import org.opennms.netmgt.bsm.service.model.functions.reduce.HighestSeverityAbove;
+import org.opennms.netmgt.bsm.service.model.functions.reduce.Threshold;
+import org.opennms.netmgt.bsm.service.model.graph.GraphVertex;
 import org.opennms.netmgt.bsm.test.LoggingStateChangeHandler;
 
 import com.google.common.collect.Maps;
@@ -143,6 +148,87 @@ public class DefaultBusinessServiceStateMachineTest {
         assertEquals(Status.CRITICAL, stateMachine.getOperationalStatus(b1));
         // No additional state changes events should have been generated
         assertEquals(1, stateChangeHandler.getStateChanges().size());
+    }
+
+    @Test
+    public void canPerformRootCauseAndImpactAnalysis() {
+        // Create a hierarchy using all of the available reduction functions
+        HighestSeverity highestSeverity = new HighestSeverity();
+        Threshold threshold = new Threshold();
+        threshold.setThreshold(0.5f);
+        HighestSeverityAbove highestSeverityAbove = new HighestSeverityAbove();
+        highestSeverityAbove.setThreshold(Status.MINOR);
+
+        MockBusinessServiceHierarchy h = MockBusinessServiceHierarchy.builder()
+                .withBusinessService(1)
+                    .withName("b1")
+                    .withReductionFunction(highestSeverityAbove)
+                    .withBusinessService(2)
+                        .withName("b2")
+                        .withReductionFunction(highestSeverity)
+                        .withReductionKey(21, "a1")
+                        .withReductionKey(22, "a2")
+                        .withReductionKey(23, "a3")
+                    .commit()
+                    .withBusinessService(3)
+                        .withName("b3")
+                        .withReductionFunction(threshold)
+                        .withReductionKey(34, "a4")
+                        .withReductionKey(35, "a5")
+                        .withReductionKey(36, "a6")
+                    .commit()
+                .commit()
+                .build();
+
+        // Setup the state machine
+        DefaultBusinessServiceStateMachine stateMachine = new DefaultBusinessServiceStateMachine();
+        stateMachine.setBusinessServices(h.getBusinessServices());
+
+        // Bump b2 to MINOR, caused by a1
+        stateMachine.handleNewOrUpdatedAlarm(new MockAlarmWrapper("a1", Status.MINOR));
+        // Bump b3 to MAJOR, caused by a4 and a6
+        stateMachine.handleNewOrUpdatedAlarm(new MockAlarmWrapper("a4", Status.MAJOR));
+        stateMachine.handleNewOrUpdatedAlarm(new MockAlarmWrapper("a6", Status.CRITICAL));
+        // Bumped b1 to MAJOR, caused by b3
+
+        // Verify the state
+        assertEquals(Status.MAJOR, stateMachine.getOperationalStatus(h.getBusinessServiceById(1)));
+        assertEquals(Status.MINOR, stateMachine.getOperationalStatus(h.getBusinessServiceById(2)));
+        assertEquals(Status.MAJOR, stateMachine.getOperationalStatus(h.getBusinessServiceById(3)));
+
+        // Calculate and verify the root causes, b2 caused by a1
+        List<GraphVertex> causedby = stateMachine.calculateRootCause(h.getBusinessServiceById(2));
+        assertEquals(1, causedby.size());
+        assertEquals("a1", causedby.get(0).getReductionKey());
+
+        // b3 caused by a4 and a6
+        causedby = stateMachine.calculateRootCause(h.getBusinessServiceById(3));
+        assertEquals(2, causedby.size());
+        assertEquals("a4", causedby.get(0).getReductionKey());
+        assertEquals("a6", causedby.get(1).getReductionKey());
+
+        // b1 caused by b3, which was in turn caused by a4 and a6
+        causedby = stateMachine.calculateRootCause(h.getBusinessServiceById(1));
+        assertEquals(3, causedby.size());
+        assertEquals(Long.valueOf(3), causedby.get(0).getBusinessService().getId());
+        assertEquals("a4", causedby.get(1).getReductionKey());
+        assertEquals("a6", causedby.get(2).getReductionKey());
+
+        // Now calculate the impact, a1 impacts b2
+        List<GraphVertex> impacts = stateMachine.calculateImpact("a1");
+        assertEquals(1, impacts.size());
+        assertEquals("b2", impacts.get(0).getBusinessService().getName());
+
+        // a4 impacts b3 which impacts b1
+        impacts = stateMachine.calculateImpact("a4");
+        assertEquals(2, impacts.size());
+        assertEquals("b3", impacts.get(0).getBusinessService().getName());
+        assertEquals("b1", impacts.get(1).getBusinessService().getName());
+
+        // b3 impacts b1
+        impacts = stateMachine.calculateImpact(h.getBusinessServiceById(3));
+        assertEquals(1, impacts.size());
+        assertEquals("b1", impacts.get(0).getBusinessService().getName());
     }
 
     @Test

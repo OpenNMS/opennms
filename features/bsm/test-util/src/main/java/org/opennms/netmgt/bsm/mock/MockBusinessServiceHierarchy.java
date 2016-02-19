@@ -36,6 +36,7 @@ import java.util.stream.Collectors;
 import org.opennms.netmgt.bsm.mock.MockBusinessServiceHierarchy.HierarchyBuilder.BusinessServiceBuilder;
 import org.opennms.netmgt.bsm.service.model.ReadOnlyBusinessService;
 import org.opennms.netmgt.bsm.service.model.edge.ro.ReadOnlyEdge;
+import org.opennms.netmgt.bsm.service.model.functions.reduce.ReductionFunction;
 
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
@@ -70,6 +71,11 @@ public class MockBusinessServiceHierarchy {
 
             public BusinessServiceBuilder withName(String name) {
                 m_businessService.setName(name);
+                return this;
+            }
+
+            public BusinessServiceBuilder withReductionFunction(ReductionFunction reduce) {
+                m_businessService.setReductionFunction(reduce);
                 return this;
             }
 
