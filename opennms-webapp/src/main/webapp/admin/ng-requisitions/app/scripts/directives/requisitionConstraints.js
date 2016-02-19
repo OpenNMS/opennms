@@ -86,7 +86,7 @@
       require: 'ngModel',
       link: function(scope, element, attrs, ctrl) {
         ctrl.$parsers.unshift(function(foreignId) {
-          var found = scope.$parent.foreignIdBlackList.indexOf(foreignId) != -1;
+          var found = scope.foreignIdBlackList.indexOf(foreignId) != -1;
           if (found) {
             ctrl.$setValidity('unique', false);
             return undefined;
