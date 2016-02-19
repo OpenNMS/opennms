@@ -47,7 +47,10 @@
 		<port>162</port>
 		<version>v1</version>
 		<community>public</community>
-		<import-mappings>snmptrap-northbound/my-mappings-01.xml</import-mappings>
+		<import-mappings>snmptrap-northbounder-mappings.d/my-mappings-01.xml</import-mappings>
+		<import-mappings>snmptrap-northbounder-mappings.d/my-mappings-02.xml</import-mappings>
+		<import-mappings>snmptrap-northbounder-mappings.d/my-mappings-03.xml</import-mappings>
+		<import-mappings>snmptrap-northbounder-mappings.d/my-mappings-04.xml</import-mappings>
 	</snmp-trap-sink>
 
 </snmptrap-northbounder-config>
