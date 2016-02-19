@@ -121,43 +121,6 @@
   </build>
 
   <dependencies>
-
-    <!-- Jersey Dependencies -->
-    <!-- Override opennms Jersey implementation in Lib directory -->
-    <dependency>
-      <groupId>com.sun.jersey</groupId>
-      <artifactId>jersey-server</artifactId>
-      <version>${jerseyVersion}</version>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>com.sun.jersey</groupId>
-      <artifactId>jersey-servlet</artifactId>
-      <version>${jerseyVersion}</version>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>com.sun.jersey</groupId>
-      <artifactId>jersey-core</artifactId>
-      <version>${jerseyVersion}</version>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>com.sun.jersey</groupId>
-      <artifactId>jersey-client</artifactId>
-      <version>${jerseyVersion}</version>
-      <scope>compile</scope>
-    </dependency>
-
-    <dependency>
-      <!-- NOTE this is replaced in OpenNMS Lib with javax.ws.rs/javax.ws.rs-api -->
-      <!-- however jersey 1.19 bundles will not accept javax.ws.rs-api as jersey v2 api -->
-      <groupId>javax.ws.rs</groupId>
-      <artifactId>jsr311-api</artifactId>
-      <version>1.1.1</version>
-      <scope>provided</scope>
-    </dependency>
-
     <!-- OpenNMS Vaadin Dependencies -->
     <dependency>
       <groupId>org.opennms.osgi.features.topology</groupId>

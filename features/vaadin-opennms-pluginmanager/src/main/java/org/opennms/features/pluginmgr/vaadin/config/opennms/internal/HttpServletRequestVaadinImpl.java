@@ -66,6 +66,7 @@ import com.vaadin.server.VaadinRequest;
  * TODO: Refactor into a common class.
  * TODO: this is a copy of org.opennms.features.topology.app.internal.HttpServletRequestVaadinImpl
  */
+@Deprecated
 public class HttpServletRequestVaadinImpl implements HttpServletRequest {
 
     private final VaadinRequest m_request;

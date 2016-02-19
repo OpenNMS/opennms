@@ -28,9 +28,6 @@
 
 package org.opennms.features.pluginmgr.vaadin.config.opennms;
 
-//import org.opennms.features.vaadin.datacollection.SnmpCollectionPanel;
-//import org.opennms.netmgt.config.api.DataCollectionConfigDao;
-
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;

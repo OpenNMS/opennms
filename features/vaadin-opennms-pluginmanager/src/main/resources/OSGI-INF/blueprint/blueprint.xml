@@ -6,22 +6,6 @@
 					http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 
 					https://svn.apache.org/repos/asf/aries/tags/blueprint-0.3.1/blueprint-core/src/main/resources/org/apache/aries/blueprint/ext/blueprint-ext.xsd">
 
-  <!-- TODO REMOVE -->
-  <!-- <reference id="eventProxy" interface="org.opennms.netmgt.events.api.EventProxy" availability="mandatory" /> -->
-  <!-- <reference id="eventConfDao" interface="org.opennms.netmgt.config.api.EventConfDao" availability="mandatory" /> -->
-  <!-- <reference id="dataCollectionConfigDao" interface="org.opennms.netmgt.config.api.DataCollectionConfigDao" availability="mandatory" /> -->
-
-  <!-- <bean id="eventAdminApplicationFactory" class="org.opennms.features.pluginmgr.vaadin.config.opennms.EventAdminApplicationFactory"> -->
-  <!-- <property name="eventProxy" ref="eventProxy" /> -->
-  <!-- <property name="eventConfDao" ref="eventConfDao" /> -->
-  <!-- </bean> -->
-
-  <!-- <service id="eventsAdminService" interface="org.opennms.vaadin.extender.ApplicationFactory" ref="eventAdminApplicationFactory"> -->
-  <!-- <service-properties> -->
-  <!-- <entry key="alias" value="/admin-events" /> -->
-  <!-- </service-properties> -->
-  <!-- </service> -->
-  
   <!-- register product information with product registry in licence manager-->
   <reference id="productRegister" interface="org.opennms.karaf.productpub.ProductRegister" timeout="10000" />
 
