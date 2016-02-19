@@ -98,19 +98,27 @@ public class SnmpTrapNorthbounderConfigDaoTest {
         Assert.assertEquals(2, sink1.getMappings().get(0).getMappings().size());
         SnmpTrapSink sink2 = config.getSnmpTrapSink("localTest2");
         Assert.assertNotNull(sink2);
-        Assert.assertEquals(1, sink2.getMappings().size());
+        Assert.assertEquals(4, sink2.getMappings().size());
         Assert.assertEquals(1, sink2.getMappings().get(0).getMappings().size());
 
         NorthboundAlarm alarm = createAlarm();
 
         // Verify Filters
         Assert.assertTrue(sink1.accepts(alarm));
-        Assert.assertFalse(sink2.accepts(alarm));
-        SnmpTrapConfig trapConfig = sink1.createTrapConfig(alarm);
-        Assert.assertNotNull(trapConfig);
-        Assert.assertEquals(2, trapConfig.getParameters().size());
-        Assert.assertEquals("99", trapConfig.getParameterValue(".1.2.3.4.5.6.7.8.1"));
-        Assert.assertEquals("this is just a test", trapConfig.getParameterValue(".1.2.3.4.5.6.7.8.2"));
+        Assert.assertTrue(sink2.accepts(alarm));
+        SnmpTrapConfig trapConfig1 = sink1.createTrapConfig(alarm);
+        Assert.assertNotNull(trapConfig1);
+        System.out.println(trapConfig1);
+        Assert.assertEquals(2, trapConfig1.getParameters().size());
+        Assert.assertEquals("99", trapConfig1.getParameterValue(".1.2.3.4.5.6.7.8.1"));
+        Assert.assertEquals("this is just a test", trapConfig1.getParameterValue(".1.2.3.4.5.6.7.8.2"));
+
+        SnmpTrapConfig trapConfig2 = sink2.createTrapConfig(alarm);
+        Assert.assertNotNull(trapConfig2);
+        System.out.println(trapConfig2);
+        Assert.assertEquals(2, trapConfig2.getParameters().size());
+        Assert.assertEquals("AAA11122", trapConfig2.getParameterValue(".1.3.6.1.4.1.5.6.7.8.1000.1.1"));
+        Assert.assertEquals("everything is good", trapConfig2.getParameterValue(".1.3.6.1.4.1.5.6.7.8.1000.1.2"));
     }
 
     /**
@@ -122,10 +130,16 @@ public class SnmpTrapNorthbounderConfigDaoTest {
     public void testModifyConfiguration() throws Exception {
         SnmpTrapSink sink = configDao.getConfig().getSnmpTrapSink("localTest2");
         Assert.assertNotNull(sink);
+        Assert.assertEquals(4, sink.getImportMappings().size());
         sink.setIpAddress("192.168.0.1");
         configDao.save();
         configDao.reload();
         Assert.assertEquals("192.168.0.1", configDao.getConfig().getSnmpTrapSink("localTest2").getIpAddress());
+
+        // Verifies SnmpTrapSink.cleanMappingGroups()
+        SnmpTrapNorthbounderConfig cfg = JaxbUtils.unmarshal(SnmpTrapNorthbounderConfig.class, new File(tempFolder.getRoot(), "etc/snmptrap-northbounder-config.xml"));
+        Assert.assertNotNull(cfg);
+        Assert.assertTrue(cfg.getSnmpTrapSink("localTest2").getMappings().isEmpty());
     }
 
     /**
@@ -197,8 +211,8 @@ public class SnmpTrapNorthbounderConfigDaoTest {
     private NorthboundAlarm createAlarm() throws UnknownHostException {
         // Build a test node
         OnmsNode node = new OnmsNode("my-server");
-        node.setForeignSource("Server-MacOS");
-        node.setForeignId("1");
+        node.setForeignSource("Servers");
+        node.setForeignId("AAA11122");
         node.setId(1);
 
         // Build a test SNMP interface
@@ -224,11 +238,13 @@ public class SnmpTrapNorthbounderConfigDaoTest {
         onmsAlarm.setId(10);
         onmsAlarm.setNode(node);
         onmsAlarm.setUei("uei.opennms.org/trap/myTrap1");
-        onmsAlarm.setEventParms("alarmId=99(Int32,text);alarmMessage=this is just a test(string,text)");
+        onmsAlarm.setLogMsg("everything is good");
+        onmsAlarm.setEventParms("alarmId=99(Int32,text);alarmMessage=this is just a test(string,text);forwardAlarmToUserSnmpTrap=true(string,text)");
 
         // Build a test northbound alarm
         NorthboundAlarm alarm = new NorthboundAlarm(onmsAlarm);
         Assert.assertEquals(node.getForeignSource(), alarm.getForeignSource());
+        Assert.assertEquals(node.getForeignId(), alarm.getForeignId());
         return alarm;
     }
 
