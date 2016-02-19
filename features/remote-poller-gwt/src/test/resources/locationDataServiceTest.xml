@@ -35,6 +35,7 @@
     <property name="monitoringLocationDao" ref="monitoringLocationDao" />
     <property name="locationMonitorDao" ref="locationMonitorDao" />
     <property name="monitoredServiceDao" ref="monitoredServiceDao" />
+    <property name="scanReportDao" ref="scanReportDao" />
     <property name="pollerConfig" ref="pollerConfig" />
     <property name="timeKeeper" ref="timeKeeper" />
     <property name="eventIpcManager" ref="eventIpcManager" />

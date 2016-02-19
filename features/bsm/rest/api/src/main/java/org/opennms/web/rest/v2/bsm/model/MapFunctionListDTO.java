@@ -38,8 +38,6 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement(name = "map-functions")
 @XmlAccessorType(XmlAccessType.NONE)
 public class MapFunctionListDTO {
-    private static final long serialVersionUID = 1L;
-
     private List<MapFunctionDTO> functions;
 
     public MapFunctionListDTO() {

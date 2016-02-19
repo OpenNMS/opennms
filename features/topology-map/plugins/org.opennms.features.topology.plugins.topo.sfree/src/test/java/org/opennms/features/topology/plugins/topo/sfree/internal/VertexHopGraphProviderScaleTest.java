@@ -33,7 +33,7 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 import org.opennms.features.topology.api.support.VertexHopGraphProvider;
-import org.opennms.features.topology.api.support.VertexHopGraphProvider.FocusNodeHopCriteria;
+import org.opennms.features.topology.api.support.VertexHopGraphProvider.DefaultVertexHopCriteria;
 import org.opennms.features.topology.api.topo.DefaultVertexRef;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
@@ -77,12 +77,8 @@ public class VertexHopGraphProviderScaleTest {
 	@Test
 	public void testGraphProvider() {
         VertexRef randomVertex = randomVertex();
-		FocusNodeHopCriteria criteria = new FocusNodeHopCriteria(randomVertex.getId(), randomVertex.getLabel());
-		int focusNodeCount = 1;
-		for(int i = 0; i < focusNodeCount; i++) {
-            criteria.add(randomVertex);
-		}
-		
+		DefaultVertexHopCriteria criteria = new DefaultVertexHopCriteria(randomVertex);
+
 		LOG.info("Focus Nodes: {}", criteria.getVertices());
 		
 		long start = System.nanoTime();

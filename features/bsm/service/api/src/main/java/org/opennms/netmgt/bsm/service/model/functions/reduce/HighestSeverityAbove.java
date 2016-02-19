@@ -28,27 +28,21 @@
 
 package org.opennms.netmgt.bsm.service.model.functions.reduce;
 
-import java.util.Map;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
 import org.opennms.netmgt.bsm.service.model.Status;
-import org.opennms.netmgt.bsm.service.model.edge.Edge;
 
 public class HighestSeverityAbove implements ReductionFunction {
 
     private Status threshold;
 
     @Override
-    public Optional<Status> reduce(Map<Edge, Status> edgeStatusMap) {
-        Optional<Status> mostCritical = new MostCritical().reduce(edgeStatusMap);
-        if (mostCritical.isPresent()) {
-            // verify that the status is >= the threshold.
-            if (mostCritical.get().isGreaterThanOrEqual(threshold)) {
-                return mostCritical;
-            }
-        }
-        return Optional.empty();
+    public Optional<Status> reduce(List<Status> statuses) {
+        return statuses.stream()
+                .filter(s -> s.isGreaterThanOrEqual(threshold))
+                .reduce((a, b) -> a.isGreaterThan(b) ? a : b);
     }
 
     public void setThreshold(Status threshold) {

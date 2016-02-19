@@ -64,9 +64,9 @@ public class BusinessServiceVertexProviderTest {
         BusinessService bs1 = new BusinessServiceImpl(managerMock, builder.toEntity());
         BusinessService bs2 = new BusinessServiceImpl(managerMock, builder.toEntity());
         BusinessService bs3 = new BusinessServiceImpl(managerMock, builder.id(11L).toEntity()); // is different
-        BusinessServiceVertex bsVertex1 = new BusinessServiceVertex(bs1);
-        BusinessServiceVertex bsVertex2 = new BusinessServiceVertex(bs2);
-        BusinessServiceVertex bsVertex3 = new BusinessServiceVertex(bs3);
+        BusinessServiceVertex bsVertex1 = new BusinessServiceVertex(bs1, 0);
+        BusinessServiceVertex bsVertex2 = new BusinessServiceVertex(bs2, 0);
+        BusinessServiceVertex bsVertex3 = new BusinessServiceVertex(bs3, 0);
 
         // create 2 ip Service vertices where all of them should be equal
         IpService ipService1 = new IpServiceImpl(managerMock, BsmTestUtils.createMonitoredService(1, 1, "127.0.0.1", "SSH"));

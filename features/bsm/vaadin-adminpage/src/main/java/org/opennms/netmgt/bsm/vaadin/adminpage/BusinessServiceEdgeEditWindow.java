@@ -70,6 +70,7 @@ import com.vaadin.ui.Window;
  * @author Christian Pape <christian@opennms.org>
  */
 public class BusinessServiceEdgeEditWindow extends Window {
+    private static final long serialVersionUID = -5780075265758041282L;
 
     /**
      * declaring the components
@@ -88,6 +89,7 @@ public class BusinessServiceEdgeEditWindow extends Window {
      * @param businessService        the Business Service DTO instance to be configured
      * @param businessServiceManager the Business Service Manager
      */
+    @SuppressWarnings("unchecked")
     public BusinessServiceEdgeEditWindow(final BusinessService businessService,
                                          final BusinessServiceManager businessServiceManager,
                                          final Edge edge) {
@@ -392,6 +394,7 @@ public class BusinessServiceEdgeEditWindow extends Window {
         setContent(rootLayout);
     }
 
+    @SuppressWarnings("unchecked")
     private MapFunction getMapFunction() {
         try {
             final MapFunction mapFunction = ((Class<? extends MapFunction>) m_mapFunctionSelect.getValue()).newInstance();

@@ -45,7 +45,7 @@ public class ReduceFunctionDTOMarshalTest extends MarshalAndUnmarshalTest<Reduce
     @Parameterized.Parameters
     public static Collection<Object[]> data() throws IOException {
         ReduceFunctionDTO dto = new ReduceFunctionDTO();
-        dto.setType(ReduceFunctionType.MostCritical);
+        dto.setType(ReduceFunctionType.HighestSeverity);
         Map<String, String> properties = new HashMap<>();
         properties.put("status", "some-status");
         properties.put("some-property", "some-value");
@@ -55,14 +55,14 @@ public class ReduceFunctionDTOMarshalTest extends MarshalAndUnmarshalTest<Reduce
                 ReduceFunctionDTO.class,
                 dto,
                 "{" +
-                "  \"type\" : \"MostCritical\"," +
+                "  \"type\" : \"HighestSeverity\"," +
                 "  \"properties\" : {" +
                 "    \"status\" : \"some-status\"," +
                 "    \"some-property\" : \"some-value\"" +
                 "  }" +
                 "}",
                 "<reduce-function>\n" +
-                "   <type>MostCritical</type>\n" +
+                "   <type>HighestSeverity</type>\n" +
                 "   <properties>\n" +
                 "       <entry>\n" +
                 "           <key>status</key>\n" +

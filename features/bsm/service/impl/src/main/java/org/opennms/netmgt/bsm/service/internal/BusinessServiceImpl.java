@@ -115,7 +115,7 @@ public class BusinessServiceImpl implements BusinessService {
 
     @Override
     public Status getOperationalStatus() {
-        return m_manager.getOperationalStatusForBusinessService(this);
+        return m_manager.getOperationalStatus(this);
     }
 
     @Override
@@ -240,6 +240,7 @@ public class BusinessServiceImpl implements BusinessService {
         return Sets.newTreeSet();
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public void setEdges(Edge.Type edgeType, Set<? extends Edge> edges) {
         switch (edgeType) {

@@ -194,13 +194,6 @@ public class HierarchyLayout<V, E> implements Layout<V, E> {
     public void setInitializer(Transformer<V, Point2D> initializer) {
     }
 
-    /**
-     * Returns the center of this layout's area.
-     */
-    private Point2D getCenter() {
-        return new Point2D.Double(size.getWidth() / 2, size.getHeight() / 2);
-    }
-
     @Override
     public void setLocation(V v, Point2D location) {
         locations.get(v).setLocation(location);

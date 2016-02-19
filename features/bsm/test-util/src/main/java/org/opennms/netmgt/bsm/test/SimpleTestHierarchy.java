@@ -35,13 +35,19 @@ import java.util.Objects;
 
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.bsm.persistence.api.BusinessServiceEntity;
+import org.opennms.netmgt.bsm.persistence.api.IPServiceEdgeEntity;
 import org.opennms.netmgt.bsm.persistence.api.functions.map.IdentityEntity;
-import org.opennms.netmgt.bsm.persistence.api.functions.reduce.MostCriticalEntity;
+import org.opennms.netmgt.bsm.persistence.api.functions.reduce.HighestSeverityEntity;
 import org.opennms.netmgt.dao.DatabasePopulator;
-import org.opennms.netmgt.model.OnmsMonitoredService;
 
-// creates a simple hierarchy with 1 parent and 2 children.
-// Each children has one ip service attached. The parent has not.
+/**
+ * Creates a simple  hierarchy that looks like:
+ *                Parent (BS)
+ *            /                \
+ *     Child 1 (BS)        Child 2 (BS)
+ *         |                    |
+ *     SNMP on Node 1     ICMP on Node 2
+ */
 public class SimpleTestHierarchy {
 
     private final List<BusinessServiceEntity> businessServices = new ArrayList<>();
@@ -53,20 +59,20 @@ public class SimpleTestHierarchy {
         BusinessServiceEntity child1 = new BusinessServiceEntityBuilder()
                 .name("Child 1")
                 .addIpService(databasePopulator.getMonitoredServiceDao().get(databasePopulator.getNode1().getId(), InetAddressUtils.addr("192.168.1.1"), "SNMP"), new IdentityEntity())
-                .reduceFunction(new MostCriticalEntity())
+                .reduceFunction(new HighestSeverityEntity())
                 .toEntity();
 
         BusinessServiceEntity child2 = new BusinessServiceEntityBuilder()
                 .name("Child 2")
                 .addIpService(databasePopulator.getMonitoredServiceDao().get(databasePopulator.getNode2().getId(), InetAddressUtils.addr("192.168.2.1"), "ICMP"), new IdentityEntity())
-                .reduceFunction(new MostCriticalEntity())
+                .reduceFunction(new HighestSeverityEntity())
                 .toEntity();
 
         BusinessServiceEntity root = new BusinessServiceEntityBuilder()
                 .name("Parent")
                 .addChildren(child1, new IdentityEntity())
                 .addChildren(child2, new IdentityEntity())
-                .reduceFunction(new MostCriticalEntity())
+                .reduceFunction(new HighestSeverityEntity())
                 .toEntity();
 
         businessServices.add(child1);
@@ -86,12 +92,12 @@ public class SimpleTestHierarchy {
         return businessServices.get(1);
     }
 
-    public OnmsMonitoredService getServiceChild1() {
-        return getChild1().getIpServiceEdges().iterator().next().getIpService();
+    public IPServiceEdgeEntity getServiceChild1() {
+        return getChild1().getIpServiceEdges().iterator().next();
     }
 
-    public OnmsMonitoredService getServiceChild2() {
-        return getChild2().getIpServiceEdges().iterator().next().getIpService();
+    public IPServiceEdgeEntity getServiceChild2() {
+        return getChild2().getIpServiceEdges().iterator().next();
     }
 
     public List<BusinessServiceEntity> getServices() {

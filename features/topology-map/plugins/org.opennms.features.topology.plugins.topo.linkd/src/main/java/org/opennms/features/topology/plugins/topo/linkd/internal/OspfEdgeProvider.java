@@ -28,12 +28,23 @@
 
 package org.opennms.features.topology.plugins.topo.linkd.internal;
 
-import org.opennms.features.topology.api.topo.*;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import org.opennms.features.topology.api.topo.AbstractEdge;
+import org.opennms.features.topology.api.topo.AbstractVertex;
+import org.opennms.features.topology.api.topo.Criteria;
+import org.opennms.features.topology.api.topo.Edge;
+import org.opennms.features.topology.api.topo.EdgeListener;
+import org.opennms.features.topology.api.topo.EdgeProvider;
+import org.opennms.features.topology.api.topo.EdgeRef;
+import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.netmgt.dao.api.OspfElementDao;
 import org.opennms.netmgt.dao.api.OspfLinkDao;
 import org.opennms.netmgt.model.OspfLink;
-
-import java.util.*;
 
 public class OspfEdgeProvider implements EdgeProvider {
 
@@ -62,41 +73,22 @@ public class OspfEdgeProvider implements EdgeProvider {
 
     @Override
     public List<Edge> getEdges(Criteria... criteria) {
-        /*if(criteria.length > 0) {
-            for (Criteria crit : criteria) {
-                if (crit.getNamespace().equals(AbstractLinkdTopologyProvider.TOPOLOGY_NAMESPACE_LINKD)) {
-                    if (crit instanceof LinkdHopCriteria) {
-                        String nodeId = ((LinkdHopCriteria) crit).getId();
-                        //List<OspfLink> links = getOspfLinkDao().findByNodeId(Integer.valueOf(nodeId));
-                    }
+        List<OspfLink> allLinks =  getOspfLinkDao().findAll();
+        Set<Edge> combinedLinks = new HashSet<Edge>();
+        for(OspfLink sourceLink : allLinks) {
 
-                    if (crit instanceof VertexHopGraphProvider.FocusNodeHopCriteria) {
-
-                    }
+            for (OspfLink targetLink : allLinks) {
+                boolean ipAddrCheck = sourceLink.getOspfRemIpAddr().equals(targetLink.getOspfIpAddr()) && targetLink.getOspfRemIpAddr().equals(sourceLink.getOspfIpAddr());
+                if(ipAddrCheck) {
+                    String id = "ospf::" + Math.min(sourceLink.getId(), targetLink.getId()) + "||" + Math.max(sourceLink.getId(), targetLink.getId());
+                    Vertex source = new AbstractVertex(AbstractLinkdTopologyProvider.TOPOLOGY_NAMESPACE_LINKD, sourceLink.getNode().getNodeId(), sourceLink.getNode().getLabel());
+                    Vertex target = new AbstractVertex(AbstractLinkdTopologyProvider.TOPOLOGY_NAMESPACE_LINKD, targetLink.getNode().getNodeId(), targetLink.getNode().getLabel());
+                    Edge edge = new AbstractEdge(getEdgeNamespace(), id, source, target);
+                    combinedLinks.add(edge);
                 }
             }
-        } else {*/
-            List<OspfLink> allLinks =  getOspfLinkDao().findAll();
-            Set<Edge> combinedLinks = new HashSet<Edge>();
-            for(OspfLink sourceLink : allLinks) {
-
-                for (OspfLink targetLink : allLinks) {
-                    boolean ipAddrCheck = sourceLink.getOspfRemIpAddr().equals(targetLink.getOspfIpAddr()) && targetLink.getOspfRemIpAddr().equals(sourceLink.getOspfIpAddr());
-                    if(ipAddrCheck) {
-                        String id = "ospf::" + Math.min(sourceLink.getId(), targetLink.getId()) + "||" + Math.max(sourceLink.getId(), targetLink.getId());
-                        Vertex source = new AbstractVertex(AbstractLinkdTopologyProvider.TOPOLOGY_NAMESPACE_LINKD, sourceLink.getNode().getNodeId(), sourceLink.getNode().getLabel());
-                        Vertex target = new AbstractVertex(AbstractLinkdTopologyProvider.TOPOLOGY_NAMESPACE_LINKD, targetLink.getNode().getNodeId(), targetLink.getNode().getLabel());
-                        Edge edge = new AbstractEdge(getEdgeNamespace(), id, source, target);
-                        combinedLinks.add(edge);
-                    }
-                }
-            }
-            return Arrays.asList(combinedLinks.toArray(new Edge[0]));
-
-       /* }
-
-
-        return Collections.emptyList();*/
+        }
+        return Arrays.asList(combinedLinks.toArray(new Edge[0]));
     }
 
     @Override

@@ -46,25 +46,64 @@
 
     var baseHref = $window.ONMS_BASE_HREF === undefined ? '' : $window.ONMS_BASE_HREF;
     $log.debug('baseHref = "' + baseHref + '"');
+
+    // Cache Configuration
+
+    requisitionsService.internal.cacheEnabled = true;
+    requisitionsService.internal.cache = $cacheFactory('RequisitionsService');
+
+    // URLs
+
     requisitionsService.internal.requisitionsUrl = baseHref + 'rest/requisitions';
     requisitionsService.internal.foreignSourcesUrl = baseHref + 'rest/foreignSources';
     requisitionsService.internal.foreignSourcesConfigUrl = baseHref + 'rest/foreignSourcesConfig';
-    requisitionsService.internal.cache = $cacheFactory('RequisitionsService');
     requisitionsService.internal.errorHelp = ' Check the OpenNMS logs for more details, or try again later.';
+
+    // Timeouts
+
     requisitionsService.internal.defaultTimeout = 5;
     requisitionsService.internal.timingStatus = { isRunning: false };
 
     /**
-    * @description (Internal) Gets the requisitions data from the internal cache
+    * @description (Internal) Gets the data from the internal cache
     *
     * @private
-    * @name RequisitionsService:internal.getCachedRequisitionsData
+    * @name RequisitionsService:internal.getCatchedConfigData
     * @ngdoc method
     * @methodOf RequisitionsService
-    * @returns {object} the internal cache
+    * @returns {object} the internal cache content
+    */
+    requisitionsService.internal.getCatchedConfigData = function(configName, configObject) {
+      return requisitionsService.internal.cache.get(configName);
+    };
+
+    /**
+    * @description (Internal) Saves the data into internal cache
+    *
+    * @private
+    * @name RequisitionsService:internal.setCatchedConfigData
+    * @ngdoc method
+    * @methodOf RequisitionsService
+    * @param {string} configName The name of the config object
+    * @param {object} configObject The config object
+    */
+    requisitionsService.internal.setCatchedConfigData = function(configName, configObject) {
+      if (requisitionsService.internal.cacheEnabled) {
+        requisitionsService.internal.cache.put(configName, configObject);
+      }
+    };
+
+    /**
+    * @description (Internal) Gets the requisitions from the internal cache
+    *
+    * @private
+    * @name RequisitionsService:internal.getCatchedConfigData
+    * @ngdoc method
+    * @methodOf RequisitionsService
+    * @returns {object} the internal cache content
     */
     requisitionsService.internal.getCachedRequisitionsData = function() {
-      return requisitionsService.internal.cache.get('requisitionsData');
+      return requisitionsService.internal.getCatchedConfigData('requisitionsData');
     };
 
     /**
@@ -77,8 +116,9 @@
     * @param {object} requisitionsData The requisitions data
     */
     requisitionsService.internal.setCachedRequisitionsData = function(requisitionsData) {
-      requisitionsService.internal.cache.put('requisitionsData', requisitionsData);
+      return requisitionsService.internal.setCatchedConfigData('requisitionsData', requisitionsData);
     };
+
 
     /**
     * @description Clears the internal cache.
@@ -717,7 +757,7 @@
     requisitionsService.getAvailableDetectors = function() {
       var deferred = $q.defer();
 
-      var config = requisitionsService.internal.cache.get('detectorsConfig');
+      var config = requisitionsService.internal.getCatchedConfigData('detectorsConfig');
       if (config != null) {
         $log.debug('getAvailableDetectors: returning a cached copy of detectors configuration');
         deferred.resolve(config);
@@ -729,8 +769,8 @@
       $http.get(url)
       .success(function(data) {
         $log.debug('getAvailableDetectors: got available detectors');
-        requisitionsService.internal.cache.put('detectorsConfig', data);
-        deferred.resolve(data);
+        requisitionsService.internal.setCatchedConfigData('detectorsConfig', data.plugins);
+        deferred.resolve(data.plugins);
       })
       .error(function(error, status) {
         $log.error('getAvailableDetectors: GET ' + url + ' failed:', error, status);
@@ -753,7 +793,7 @@
     requisitionsService.getAvailablePolicies = function() {
       var deferred = $q.defer();
 
-      var config = requisitionsService.internal.cache.get('policiesConfig');
+      var config = requisitionsService.internal.getCatchedConfigData('policiesConfig');
       if (config) {
         $log.debug('getAvailablePolicies: returning a cached copy of policies configuration');
         deferred.resolve(config);
@@ -765,8 +805,8 @@
       $http.get(url)
       .success(function(data) {
         $log.debug('getAvailablePolicies: got available policies');
-        requisitionsService.internal.cache.put('policiesConfig', data);
-        deferred.resolve(data);
+        requisitionsService.internal.setCatchedConfigData('policiesConfig', data.plugins);
+        deferred.resolve(data.plugins);
       })
       .error(function(error, status) {
         $log.error('getAvailablePolicies: GET ' + url + ' failed:', error, status);
@@ -792,7 +832,7 @@
     requisitionsService.getAvailableServices = function(foreignSource) {
       var deferred = $q.defer();
 
-      var config = requisitionsService.internal.cache.get('servicesConfig');
+      var config = requisitionsService.internal.getCatchedConfigData('servicesConfig');
       if (config) {
         $log.debug('getAvailableServices: returning a cached copy of services configuration');
         deferred.resolve(config);
@@ -804,8 +844,8 @@
       $http.get(url)
       .success(function(data) {
         $log.debug('getAvailableServices: got available services');
-        requisitionsService.internal.cache.put('servicesConfig', data);
-        deferred.resolve(data);
+        requisitionsService.internal.setCatchedConfigData('servicesConfig', data.element);
+        deferred.resolve(data.element);
       })
       .error(function(error, status) {
         $log.error('getAvailableServices: GET ' + url + ' failed:', error, status);
@@ -830,7 +870,7 @@
     requisitionsService.getAvailableAssets = function() {
       var deferred = $q.defer();
 
-      var config = requisitionsService.internal.cache.get('assetsConfig');
+      var config = requisitionsService.internal.getCatchedConfigData('assetsConfig');
       if (config) {
         $log.debug('getAvailableAssets: returning a cached copy of assets configuration');
         deferred.resolve(config);
@@ -842,8 +882,8 @@
       $http.get(url)
       .success(function(data) {
         $log.debug('getAvailableAssets: got available assets');
-        requisitionsService.internal.cache.put('assetsConfig', data);
-        deferred.resolve(data);
+        requisitionsService.internal.setCatchedConfigData('assetsConfig', data.element);
+        deferred.resolve(data.element);
       })
       .error(function(error, status) {
         $log.error('getAvailableAssets: GET ' + url + ' failed:', error, status);
@@ -868,7 +908,7 @@
     requisitionsService.getAvailableCategories = function() {
       var deferred = $q.defer();
 
-      var config = requisitionsService.internal.cache.get('categoriesConfig');
+      var config = requisitionsService.internal.getCatchedConfigData('categoriesConfig');
       if (config) {
         $log.debug('getAvailableCategories: returning a cached copy of categories configuration');
         deferred.resolve(config);
@@ -880,8 +920,8 @@
       $http.get(url)
       .success(function(data) {
         $log.debug('getAvailableCategories: got available categories');
-        requisitionsService.internal.cache.put('categoriesConfig', data);
-        deferred.resolve(data);
+        requisitionsService.internal.setCatchedConfigData('categoriesConfig', data.element);
+        deferred.resolve(data.element);
       })
       .error(function(error, status) {
         $log.error('getAvailableCategories: GET ' + url + ' failed:', error, status);

@@ -31,7 +31,6 @@ package org.opennms.netmgt.bsm.vaadin.adminpage;
 import java.util.Objects;
 
 import org.opennms.netmgt.bsm.service.BusinessServiceManager;
-import org.opennms.netmgt.vaadin.core.TransactionAwareBeanProxyFactory;
 import org.opennms.netmgt.vaadin.core.TransactionAwareUI;
 import org.springframework.transaction.support.TransactionOperations;
 
@@ -52,18 +51,12 @@ import com.vaadin.server.VaadinRequest;
 public class BusinessServiceAdminPageUI extends TransactionAwareUI {
 
     /**
-     * wrapper for transaction-based service instances
-     */
-    private final TransactionAwareBeanProxyFactory m_transactionAwareBeanProxyFactory;
-
-    /**
      * the business service used for querying the Business Service data
      */
     private BusinessServiceManager m_businessServiceManager;
 
     public BusinessServiceAdminPageUI(final TransactionOperations transactionOperations) {
         super(transactionOperations);
-        this.m_transactionAwareBeanProxyFactory = new TransactionAwareBeanProxyFactory(transactionOperations);
     }
 
     /**
@@ -81,7 +74,6 @@ public class BusinessServiceAdminPageUI extends TransactionAwareUI {
      */
     public void setBusinessServiceManager(BusinessServiceManager businessServiceManager) {
         Objects.requireNonNull(businessServiceManager);
-//        m_businessServiceManager = m_transactionAwareBeanProxyFactory.createProxy(businessServiceManager);
         m_businessServiceManager = businessServiceManager;
     }
 }
