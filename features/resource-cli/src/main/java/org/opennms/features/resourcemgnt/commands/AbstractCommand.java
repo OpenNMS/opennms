@@ -1,24 +1,21 @@
 package org.opennms.features.resourcemgnt.commands;
 
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.Invocation;
+import javax.ws.rs.client.WebTarget;
+
+import org.apache.cxf.common.util.Base64Utility;
 import org.opennms.features.resourcemgnt.ResourceCli;
 
 import com.google.common.base.Strings;
 import com.google.common.net.UrlEscapers;
-import com.sun.jersey.api.client.WebResource;
-import com.sun.jersey.api.json.JSONConfiguration;
-import com.sun.jersey.client.apache.ApacheHttpClient;
-import com.sun.jersey.client.apache.config.ApacheHttpClientConfig;
-import com.sun.jersey.client.apache.config.DefaultApacheHttpClientConfig;
 
 public abstract class AbstractCommand implements Command {
 
-    protected WebResource connect(final ResourceCli resourceCli, final String resource) {
+    protected Invocation.Builder connect(final ResourceCli resourceCli, final String resource) {
         // Initialize the REST client
-        final DefaultApacheHttpClientConfig defaultApacheHttpClientConfig = new DefaultApacheHttpClientConfig();
-        defaultApacheHttpClientConfig.getFeatures().put(JSONConfiguration.FEATURE_POJO_MAPPING, Boolean.TRUE);
-        defaultApacheHttpClientConfig.getProperties().put(ApacheHttpClientConfig.PROPERTY_PREEMPTIVE_AUTHENTICATION, Boolean.TRUE);
-        defaultApacheHttpClientConfig.getState().setCredentials(null, null, -1, resourceCli.getUsername(), resourceCli.getPassword());
-        final ApacheHttpClient apacheHttpClient = ApacheHttpClient.create(defaultApacheHttpClientConfig);
+        final Client client = ClientBuilder.newClient();
 
         // Build the request URL
         final StringBuilder url = new StringBuilder();
@@ -28,13 +25,13 @@ public abstract class AbstractCommand implements Command {
             url.append("/");
             url.append(UrlEscapers.urlPathSegmentEscaper().escape(resource));
         }
+        WebTarget target = client.target(url.toString());
 
-        // Build the web resource
-        return apacheHttpClient
-                .resource(url.toString());
+        String authorizationHeader = "Basic " + Base64Utility.encode((resourceCli.getUsername() + ":" + resourceCli.getPassword()).getBytes());
+        return target.request().header("Authorization", authorizationHeader);
     }
 
-    protected WebResource connect(final ResourceCli resourceCli) {
-        return this.connect(resourceCli, null);
+    protected Invocation.Builder connect(final ResourceCli resourceCli) {
+        return connect(resourceCli, null);
     }
 }
