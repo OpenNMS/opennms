@@ -30,6 +30,7 @@ package org.opennms.netmgt.bsm.vaadin.adminpage;
 
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.opennms.netmgt.bsm.service.BusinessServiceManager;
@@ -107,6 +108,11 @@ public class BusinessServiceEditWindow extends Window {
     private ListSelect m_attributesListSelect;
 
     /**
+     * set of already used Business Service names
+     */
+    private Set<String> m_businessServiceNames;
+
+    /**
      * Constructor
      *
      * @param businessService the Business Service DTO instance to be configured
@@ -128,6 +134,15 @@ public class BusinessServiceEditWindow extends Window {
         setResizable(false);
         setWidth(50, Unit.PERCENTAGE);
         setHeight(75, Unit.PERCENTAGE);
+
+        /**
+         * create set for Business Service names
+         */
+        m_businessServiceNames = businessServiceManager.getAllBusinessServices().stream().map(BusinessService::getName).collect(Collectors.toSet());
+
+        if (m_businessService.getName() != null) {
+            m_businessServiceNames.remove(m_businessService.getName());
+        }
 
         /**
          * construct the main layout
@@ -202,9 +217,16 @@ public class BusinessServiceEditWindow extends Window {
          */
         m_nameTextField = new TextField("Business Service Name");
         m_nameTextField.setId("nameField");
-        m_nameTextField.setValue(businessService.getName());
+        m_nameTextField.setValue(Strings.nullToEmpty(businessService.getName()));
         m_nameTextField.setWidth(100, Unit.PERCENTAGE);
         m_nameTextField.setRequired(true);
+        m_nameTextField.focus();
+        m_nameTextField.addValidator(new AbstractStringValidator("Name must be unique") {
+            @Override
+            protected boolean isValidValue(String value) {
+                return !m_businessServiceNames.contains(value);
+            }
+        });
         verticalLayout.addComponent(m_nameTextField);
 
         /**

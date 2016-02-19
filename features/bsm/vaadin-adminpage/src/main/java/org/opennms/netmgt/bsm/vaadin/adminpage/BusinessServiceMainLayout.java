@@ -35,13 +35,11 @@ import org.opennms.netmgt.bsm.service.model.BusinessService;
 import org.opennms.netmgt.vaadin.core.TransactionAwareUI;
 import org.opennms.netmgt.vaadin.core.UIHelper;
 
-import com.google.common.base.Strings;
 import com.vaadin.data.util.BeanContainer;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Table;
-import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 
 /**
@@ -81,32 +79,20 @@ public class BusinessServiceMainLayout extends VerticalLayout {
             m_businessServiceManager.triggerDaemonReload();
         });
 
-        // business service input field
-        final TextField createTextField = new TextField();
-        createTextField.setWidth(300.0f, Unit.PIXELS);
-        createTextField.setInputPrompt("Business Service Name");
-        createTextField.setId("createTextField");
-
         // create Button
         final Button createButton = new Button("Create");
         createButton.setId("createButton");
         createButton.addClickListener((Button.ClickListener) event -> {
-            if (!"".equals(Strings.nullToEmpty(createTextField.getValue()).trim())) {
-                final BusinessService businessService = m_businessServiceManager.createBusinessService();
-                businessService.setName(createTextField.getValue().trim());
-                createTextField.setValue("");
-
-                final BusinessServiceEditWindow window = new BusinessServiceEditWindow(businessService, m_businessServiceManager);
-                window.addCloseListener(e -> refreshTable());
-                getUI().addWindow(window);
-            }
+            final BusinessService businessService = m_businessServiceManager.createBusinessService();
+            final BusinessServiceEditWindow window = new BusinessServiceEditWindow(businessService, m_businessServiceManager);
+            window.addCloseListener(e -> refreshTable());
+            getUI().addWindow(window);
         });
 
         /**
          * add to the upper layout
          */
         upperLayout.addComponent(reloadButton);
-        upperLayout.addComponent(createTextField);
         upperLayout.addComponent(createButton);
         addComponent(upperLayout);
         /**
