@@ -35,9 +35,9 @@ import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Set;
 
-import org.opennms.netmgt.bsm.service.model.IpService;
 import org.opennms.netmgt.bsm.service.model.ReadOnlyBusinessService;
-import org.opennms.netmgt.bsm.service.model.edge.Edge;
+import org.opennms.netmgt.bsm.service.model.edge.IpServiceEdge;
+import org.opennms.netmgt.bsm.service.model.edge.ReductionKeyEdge;
 import org.opennms.netmgt.bsm.service.model.edge.ro.ReadOnlyChildEdge;
 import org.opennms.netmgt.bsm.service.model.edge.ro.ReadOnlyEdge;
 import org.opennms.netmgt.bsm.service.model.edge.ro.ReadOnlyIpServiceEdge;
@@ -82,7 +82,7 @@ public class BusinessServiceGraphImpl extends DirectedSparseMultigraph<GraphVert
         }
 
         // Create
-        businessServiceVertex = new GraphVertexImpl(businessService);
+        businessServiceVertex = new GraphVertexImpl(businessService.getReduceFunction(), businessService);
         // Add
         addVertex(businessServiceVertex);
         // Index
@@ -93,7 +93,7 @@ public class BusinessServiceGraphImpl extends DirectedSparseMultigraph<GraphVert
             GraphEdge graphEdge = new GraphEdgeImpl(edge);
 
             // Use an existing vertex if we already created one
-            GraphVertex vertexForEdge = getVertexForEdge(edge);
+            GraphVertex vertexForEdge = getExistingVertex(edge);
 
             // If we couldn't find an existing vertex, create one
             if (vertexForEdge == null) {
@@ -101,22 +101,21 @@ public class BusinessServiceGraphImpl extends DirectedSparseMultigraph<GraphVert
                     vertexForEdge = addBusinessServiceVertex(((ReadOnlyChildEdge)edge).getChild());
                 } else if (edge instanceof ReadOnlyReductionKeyEdge) {
                     String reductionKey = ((ReadOnlyReductionKeyEdge)edge).getReductionKey();
-                    vertexForEdge = new GraphVertexImpl(REDUCE_MOST_CRITICAL, reductionKey, edge);
+                    vertexForEdge = new GraphVertexImpl(REDUCE_HIGHEST_SEVERITY, ((ReadOnlyReductionKeyEdge) edge).getReductionKey());
                     addVertex(vertexForEdge);
                     m_verticesByReductionKey.put(reductionKey, vertexForEdge);
                 } else if (edge instanceof ReadOnlyIpServiceEdge) {
                     // There are multiple reductions keys for this edge
                     // Create an intermediary vertex using the Most Critical reduction function
-                    IpService ipService = ((ReadOnlyIpServiceEdge)edge).getIpService();
-                    vertexForEdge = new GraphVertexImpl(REDUCE_MOST_CRITICAL, null, edge);
+                    vertexForEdge = new GraphVertexImpl(REDUCE_HIGHEST_SEVERITY, ((ReadOnlyIpServiceEdge) edge).getIpService());
                     addVertex(vertexForEdge);
-                    m_verticesByIpServiceId.put(ipService.getId(), vertexForEdge);
+                    m_verticesByIpServiceId.put(vertexForEdge.getIpService().getId(), vertexForEdge);
 
                     // SPECIAL CASE: Map the reductions keys to the intermediary vertex using the Identity map
                     for (String reductionKey : edge.getReductionKeys()) {
                         GraphVertex reductionKeyVertex = m_verticesByReductionKey.get(reductionKey);
                         if (reductionKeyVertex == null) { // not already added
-                            reductionKeyVertex = new GraphVertexImpl(REDUCE_HIGHEST_SEVERITY, reductionKey, edge);
+                            reductionKeyVertex = new GraphVertexImpl(REDUCE_HIGHEST_SEVERITY, reductionKey);
                             addVertex(reductionKeyVertex);
                             m_verticesByReductionKey.put(reductionKey, reductionKeyVertex);
                         }
@@ -136,17 +135,17 @@ public class BusinessServiceGraphImpl extends DirectedSparseMultigraph<GraphVert
         return businessServiceVertex;
     }
 
-    private GraphVertex getVertexForEdge(ReadOnlyEdge edge) {
-        if (edge.getType() == Edge.Type.REDUCTION_KEY) {
-            return m_verticesByReductionKey.get(((ReadOnlyReductionKeyEdge) edge).getReductionKey());
-        }
-        if (edge.getType() == Edge.Type.CHILD_SERVICE) {
+    private GraphVertex getExistingVertex(ReadOnlyEdge edge) {
+        if (edge instanceof ReadOnlyChildEdge) {
             return m_verticesByBusinessServiceId.get(((ReadOnlyChildEdge) edge).getChild().getId());
         }
-        if (edge.getType() == Edge.Type.IP_SERVICE) {
-            return m_verticesByIpServiceId.get(((ReadOnlyIpServiceEdge) edge).getIpService().getId());
+        if (edge instanceof IpServiceEdge) {
+            return m_verticesByIpServiceId.get(((IpServiceEdge) edge).getIpService().getId());
         }
-        throw new IllegalArgumentException("Unsupported edge of type: " + edge.getType().name());
+        if (edge instanceof ReductionKeyEdge) {
+            return m_verticesByReductionKey.get(((ReductionKeyEdge) edge).getReductionKey());
+        }
+        return null;
     }
 
     private void calculateAndIndexLevels() {
@@ -189,7 +188,7 @@ public class BusinessServiceGraphImpl extends DirectedSparseMultigraph<GraphVert
     }
 
     @Override
-    public GraphVertex getVertexByIpServiceId(Long id) {
+    public GraphVertex getVertexByIpServiceId(Integer id) {
         return m_verticesByIpServiceId.get(id);
     }
 

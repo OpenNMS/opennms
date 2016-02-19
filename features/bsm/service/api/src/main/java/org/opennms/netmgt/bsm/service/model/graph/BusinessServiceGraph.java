@@ -40,7 +40,7 @@ public interface BusinessServiceGraph extends DirectedGraph<GraphVertex,GraphEdg
 
     GraphVertex getVertexByReductionKey(String reductionKey);
 
-    GraphVertex getVertexByIpServiceId(Long id);
+    GraphVertex getVertexByIpServiceId(Integer id);
 
     GraphVertex getVertexByEdgeId(Long id);
 

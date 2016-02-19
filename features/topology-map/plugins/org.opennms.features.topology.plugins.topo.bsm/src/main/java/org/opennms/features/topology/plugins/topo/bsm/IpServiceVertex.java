@@ -32,6 +32,7 @@ import java.util.Set;
 
 import org.opennms.netmgt.bsm.service.model.IpService;
 import org.opennms.netmgt.bsm.service.model.Status;
+import org.opennms.netmgt.bsm.service.model.graph.GraphVertex;
 
 public class IpServiceVertex extends AbstractBusinessServiceVertex {
 
@@ -45,6 +46,10 @@ public class IpServiceVertex extends AbstractBusinessServiceVertex {
             ipService.getReductionKeys(),
             level,
             status);
+    }
+
+    public IpServiceVertex(GraphVertex graphVertex) {
+        this(graphVertex.getIpService(), graphVertex.getLevel(), graphVertex.getStatus());
     }
 
     private IpServiceVertex(int ipServiceId, String ipServiceName, String ipAddress, Set<String> reductionKeys, int level, Status status) {

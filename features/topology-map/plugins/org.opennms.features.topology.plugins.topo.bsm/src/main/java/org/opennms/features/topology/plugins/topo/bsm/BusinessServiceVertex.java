@@ -32,6 +32,7 @@ import java.util.Set;
 
 import org.opennms.netmgt.bsm.service.model.ReadOnlyBusinessService;
 import org.opennms.netmgt.bsm.service.model.Status;
+import org.opennms.netmgt.bsm.service.model.graph.GraphVertex;
 
 import com.google.common.collect.Sets;
 
@@ -41,6 +42,10 @@ public class BusinessServiceVertex extends AbstractBusinessServiceVertex {
 
     public BusinessServiceVertex(ReadOnlyBusinessService businessService, int level, Status status) {
         this(businessService.getId(), businessService.getName(), level, status);
+    }
+
+    public BusinessServiceVertex(GraphVertex graphVertex) {
+        this(graphVertex.getBusinessService(), graphVertex.getLevel(), graphVertex.getStatus());
     }
 
     public BusinessServiceVertex(Long serviceId, String name, int level, Status status) {

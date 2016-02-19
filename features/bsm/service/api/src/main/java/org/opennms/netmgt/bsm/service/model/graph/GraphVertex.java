@@ -28,25 +28,25 @@
 
 package org.opennms.netmgt.bsm.service.model.graph;
 
+import org.opennms.netmgt.bsm.service.model.IpService;
 import org.opennms.netmgt.bsm.service.model.ReadOnlyBusinessService;
 import org.opennms.netmgt.bsm.service.model.Status;
-import org.opennms.netmgt.bsm.service.model.edge.ro.ReadOnlyEdge;
 import org.opennms.netmgt.bsm.service.model.functions.reduce.ReductionFunction;
 
 public interface GraphVertex {
 
-    public int getLevel();
+    int getLevel();
 
-    public void setStatus(Status status);
+    void setStatus(Status status);
 
-    public Status getStatus();
+    Status getStatus();
 
-    public ReductionFunction getReductionFunction();
+    ReductionFunction getReductionFunction();
 
-    public String getReductionKey();
+    String getReductionKey();
 
-    public ReadOnlyBusinessService getBusinessService();
+    ReadOnlyBusinessService getBusinessService();
 
-    public ReadOnlyEdge getEdge();
+    IpService getIpService();
 
 }

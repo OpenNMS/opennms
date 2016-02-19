@@ -40,6 +40,7 @@ import com.google.common.collect.Sets;
 public class MockBusinessService implements ReadOnlyBusinessService {
     private final long m_id;
     private String m_name;
+    private ReductionFunction m_reductionFunction = new HighestSeverity();
     private Set<ReadOnlyEdge> m_edges = Sets.newHashSet();
 
     public MockBusinessService(long id) {
@@ -60,9 +61,13 @@ public class MockBusinessService implements ReadOnlyBusinessService {
         return m_name != null ? m_name : String.valueOf(m_id);
     }
 
+    public void setReductionFunction(ReductionFunction reduce) {
+        m_reductionFunction = reduce;
+    }
+
     @Override
     public ReductionFunction getReduceFunction() {
-        return new MostCritical();
+        return m_reductionFunction;
     }
 
     public void setEdges(Set<ReadOnlyEdge> edges) {

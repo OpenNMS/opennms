@@ -30,34 +30,20 @@ package org.opennms.netmgt.bsm.service.model.graph.internal;
 
 import static org.junit.Assert.assertEquals;
 
-import java.awt.Dimension;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
-import javax.swing.JFrame;
-
-import org.apache.commons.collections15.Transformer;
 import org.junit.Test;
 import org.opennms.netmgt.bsm.mock.MockBusinessServiceHierarchy;
 import org.opennms.netmgt.bsm.mock.MockBusinessServiceHierarchy.Builder;
 import org.opennms.netmgt.bsm.service.model.ReadOnlyBusinessService;
 import org.opennms.netmgt.bsm.service.model.graph.BusinessServiceGraph;
-import org.opennms.netmgt.bsm.service.model.graph.GraphEdge;
-import org.opennms.netmgt.bsm.service.model.graph.GraphVertex;
 
-import com.google.common.base.Throwables;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
-
-import edu.uci.ics.jung.algorithms.layout.KKLayout;
-import edu.uci.ics.jung.algorithms.layout.Layout;
-import edu.uci.ics.jung.visualization.BasicVisualizationServer;
 
 public class BusinessServiceGraphImplTest {
 
@@ -164,60 +150,6 @@ public class BusinessServiceGraphImplTest {
             long id = entry.getKey();
             int expectedLevel = entry.getValue();
             assertEquals(expectedLevel, graph.getVertexByBusinessServiceId(id).getLevel());
-        }
-
-        // Visualize
-        //visualizeGraph(graph);
-    }
-
-    /**
-     * Used to visualize, or manually inspect the generated graph.
-     */
-    protected static void visualizeGraph(BusinessServiceGraph graph) {
-        Layout<GraphVertex,GraphEdge> layout = new KKLayout<GraphVertex,GraphEdge>(graph);
-        layout.setSize(new Dimension(1024,1024)); // Size of the layout
-        BasicVisualizationServer<GraphVertex,GraphEdge> vv = new BasicVisualizationServer<GraphVertex,GraphEdge>(layout);
-        vv.setPreferredSize(new Dimension(1200,1200)); // Viewing area size
-        vv.getRenderContext().setVertexLabelTransformer(new Transformer<GraphVertex,String>() {
-            @Override
-            public String transform(GraphVertex vertex) {
-                if (vertex.getBusinessService() != null) {
-                    return String.format("BS[%s]", vertex.getBusinessService().getName());
-                } else {
-                    return String.format("%s[%d]", vertex.getEdge().getType(), vertex.getEdge().getId());
-                }
-            }
-        });
-        vv.getRenderContext().setEdgeLabelTransformer(new Transformer<GraphEdge,String>() {
-            @Override
-            public String transform(GraphEdge edge) {
-                return String.format("%s", edge.getMapFunction().getClass().getSimpleName());
-            }
-        });
-
-        JFrame frame = new JFrame("Business Service graph");
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.getContentPane().add(vv);
-        frame.pack();
-        frame.setVisible(true); 
-
-        final AtomicBoolean isFrameClosed = new AtomicBoolean(false);
-        frame.addWindowListener(new WindowAdapter() {
-            @Override
-            public void windowClosing(WindowEvent event) {
-                isFrameClosed.set(true);
-            }
-        });
-
-        while(true) {
-            try {
-                Thread.sleep(50);
-            } catch (InterruptedException e) {
-                throw Throwables.propagate(e);
-            }
-            if (!frame.isVisible()) {
-                break;
-            }
         }
     }
 }

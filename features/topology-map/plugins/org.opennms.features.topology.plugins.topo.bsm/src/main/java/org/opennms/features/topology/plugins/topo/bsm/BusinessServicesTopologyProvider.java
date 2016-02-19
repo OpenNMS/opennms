@@ -50,10 +50,6 @@ import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.features.topology.plugins.topo.bsm.AbstractBusinessServiceVertex.Type;
 import org.opennms.netmgt.bsm.service.BusinessServiceManager;
 import org.opennms.netmgt.bsm.service.model.BusinessService;
-import org.opennms.netmgt.bsm.service.model.ReadOnlyBusinessService;
-import org.opennms.netmgt.bsm.service.model.edge.ro.ReadOnlyChildEdge;
-import org.opennms.netmgt.bsm.service.model.edge.ro.ReadOnlyEdge;
-import org.opennms.netmgt.bsm.service.model.edge.ro.ReadOnlyIpServiceEdge;
 import org.opennms.netmgt.bsm.service.model.graph.BusinessServiceGraph;
 import org.opennms.netmgt.bsm.service.model.graph.GraphEdge;
 import org.opennms.netmgt.bsm.service.model.graph.GraphVertex;
@@ -125,28 +121,7 @@ public class BusinessServicesTopologyProvider extends AbstractTopologyProvider i
     }
 
     private AbstractBusinessServiceVertex createTopologyVertex(GraphVertex graphVertex) {
-        final ReadOnlyBusinessService businessService = graphVertex.getBusinessService();
-        if (businessService != null) {
-            return new BusinessServiceVertex(businessService, graphVertex.getLevel(), graphVertex.getStatus());
-        }
-
-        final ReadOnlyEdge edge = graphVertex.getEdge();
-        switch (edge.getType()) {
-        case CHILD_SERVICE:
-            return new BusinessServiceVertex(((ReadOnlyChildEdge)edge).getChild(), graphVertex.getLevel(), graphVertex.getStatus());
-        case IP_SERVICE:
-            if (graphVertex.getReductionKey() == null) {
-                // If no reduction key is set, create an IP Service vertex
-                return new IpServiceVertex(((ReadOnlyIpServiceEdge)edge).getIpService(), graphVertex.getLevel(), graphVertex.getStatus());
-            } else {
-                // Otherwise, create a vertex for the particular reduction key related to the IP Service
-                return new ReductionKeyVertex(graphVertex.getReductionKey(), graphVertex.getLevel(), graphVertex.getStatus());
-            }
-        case REDUCTION_KEY:
-            return new ReductionKeyVertex(graphVertex.getReductionKey(), graphVertex.getLevel(), graphVertex.getStatus());
-        default:
-            throw new IllegalArgumentException("Unsupported edge: " + edge);
-        }
+        return GraphVertexToTopologyVertexConverter.createTopologyVertex(graphVertex);
     }
 
     public void setBusinessServiceManager(BusinessServiceManager businessServiceManager) {

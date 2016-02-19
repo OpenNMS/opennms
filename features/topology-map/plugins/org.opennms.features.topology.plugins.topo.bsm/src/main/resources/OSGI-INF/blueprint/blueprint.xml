@@ -4,6 +4,7 @@
 
     <reference id="transactionOperations" interface="org.springframework.transaction.support.TransactionOperations" availability="mandatory" />
     <reference id="businessServiceManager" interface="org.opennms.netmgt.bsm.service.BusinessServiceManager" availability="mandatory" />
+    <reference id="businessServiceStateMachine" interface="org.opennms.netmgt.bsm.service.BusinessServiceStateMachine" availability="mandatory" />
 
     <!-- TransactionAwareBeanProxyFactory -->
     <bean id="transactionAwareBeanProxyFactory" class="org.opennms.netmgt.vaadin.core.TransactionAwareBeanProxyFactory">
@@ -125,5 +126,32 @@
                 </map>
             </property>
         </bean>
+    </service>
+
+    <bean id="rootCauseAnalysisOperation" class="org.opennms.features.topology.plugins.topo.bsm.operations.RootCauseAnalysisOperation" >
+        <property name="businessServiceStateMachine" ref="businessServiceStateMachine"/>
+        <property name="businessServiceManager" ref="businessServiceManager" />
+    </bean>
+
+    <bean id="impactAnalysisOperation" class="org.opennms.features.topology.plugins.topo.bsm.operations.ImpactAnalysisOperation" >
+        <property name="businessServiceStateMachine" ref="businessServiceStateMachine"/>
+        <property name="businessServiceManager" ref="businessServiceManager" />
+    </bean>
+
+    <!-- RCA and IA Operations -->
+    <service interface="org.opennms.features.topology.api.Operation" ref="rootCauseAnalysisOperation">
+        <service-properties>
+            <entry key="operation.menuLocation" value="Device"/>
+            <entry key="operation.contextMenuLocation" value="bsm"/>
+            <entry key="operation.label" value="Root Cause Analysis"/>
+        </service-properties>
+    </service>
+
+    <service interface="org.opennms.features.topology.api.Operation" ref="impactAnalysisOperation">
+        <service-properties>
+            <entry key="operation.menuLocation" value="Device"/>
+            <entry key="operation.contextMenuLocation" value="bsm"/>
+            <entry key="operation.label" value="Impact Analysis"/>
+        </service-properties>
     </service>
 </blueprint>

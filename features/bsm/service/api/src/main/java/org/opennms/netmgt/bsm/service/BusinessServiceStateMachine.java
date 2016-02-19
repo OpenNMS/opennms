@@ -38,6 +38,7 @@ import org.opennms.netmgt.bsm.service.model.ReadOnlyBusinessService;
 import org.opennms.netmgt.bsm.service.model.Status;
 import org.opennms.netmgt.bsm.service.model.edge.ro.ReadOnlyEdge;
 import org.opennms.netmgt.bsm.service.model.graph.BusinessServiceGraph;
+import org.opennms.netmgt.bsm.service.model.graph.GraphVertex;
 
 public interface BusinessServiceStateMachine {
 
@@ -117,5 +118,13 @@ public interface BusinessServiceStateMachine {
      * @return the actual graph of the {@link BusinessServiceStateMachine}. DO NOT MODIFY!
      */
     BusinessServiceGraph getGraph();
+
+    List<GraphVertex> calculateRootCause(ReadOnlyBusinessService businessService);
+
+    List<GraphVertex> calculateImpact(ReadOnlyBusinessService businessService);
+
+    List<GraphVertex> calculateImpact(IpService ipService);
+
+    List<GraphVertex> calculateImpact(String reductionKey);
 
 }
