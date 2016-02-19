@@ -113,13 +113,15 @@
 	</snmp-trap-sink>
 
     <!-- It is possible to define the mapping groups on a external file.
-         The file my-mappings.xml should contain "mapping-group" as its root tag:
+
+         * The file my-mappings.xml should contain "mapping-group" as its root tag.
+         * The name of the mapping group should match the name of the XML (without the extension).
 
 	<snmp-trap-sink>
 		<name>localTest2</name>
 		<ip-address>127.0.0.2</ip-address>
 		<version>v3</version>
-		<import-mappings>snmptrap-northbound/my-mappings.xml</import-mappings>
+		<import-mappings>snmptrap-northbounder-mappings.d/my-mappings.xml</import-mappings>
 	</snmp-trap-sink>
 
     -->
