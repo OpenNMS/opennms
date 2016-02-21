@@ -42,19 +42,66 @@ import java.util.TreeSet;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.opennms.features.topology.api.CheckedOperation;
+import org.opennms.features.topology.api.GraphContainer;
+import org.opennms.features.topology.api.HasExtraComponents;
+import org.opennms.features.topology.api.HistoryManager;
+import org.opennms.features.topology.api.IViewContribution;
+import org.opennms.features.topology.api.MapViewManager;
+import org.opennms.features.topology.api.MapViewManagerListener;
+import org.opennms.features.topology.api.OperationContext;
+import org.opennms.features.topology.api.OperationContext.DisplayLocation;
+import org.opennms.features.topology.api.SelectionContext;
+import org.opennms.features.topology.api.SelectionListener;
+import org.opennms.features.topology.api.SelectionManager;
+import org.opennms.features.topology.api.SelectionNotifier;
+import org.opennms.features.topology.api.VerticesUpdateManager;
+import org.opennms.features.topology.api.WidgetContext;
+import org.opennms.features.topology.api.WidgetManager;
+import org.opennms.features.topology.api.WidgetUpdateListener;
+import org.opennms.features.topology.api.browsers.ContentType;
+import org.opennms.features.topology.api.browsers.SelectionAwareTable;
+import org.opennms.features.topology.api.support.VertexHopGraphProvider;
+import org.opennms.features.topology.api.support.VertexHopGraphProvider.VertexHopCriteria;
+import org.opennms.features.topology.api.topo.Criteria;
+import org.opennms.features.topology.api.topo.Vertex;
+import org.opennms.features.topology.api.topo.VertexRef;
+import org.opennms.features.topology.app.internal.CommandManager.DefaultOperationContext;
+import org.opennms.features.topology.app.internal.TopologyComponent.VertexUpdateListener;
+import org.opennms.features.topology.app.internal.jung.TopoFRLayoutAlgorithm;
+import org.opennms.features.topology.app.internal.support.CategoryHopCriteria;
+import org.opennms.features.topology.app.internal.support.FontAwesomeIcons;
+import org.opennms.features.topology.app.internal.support.IconRepositoryManager;
+import org.opennms.features.topology.app.internal.ui.HudDisplay;
+import org.opennms.features.topology.app.internal.ui.LastUpdatedLabel;
+import org.opennms.features.topology.app.internal.ui.NoContentAvailableWindow;
+import org.opennms.features.topology.app.internal.ui.SearchBox;
+import org.opennms.osgi.EventConsumer;
+import org.opennms.osgi.OnmsServiceManager;
+import org.opennms.osgi.VaadinApplicationContext;
+import org.opennms.osgi.VaadinApplicationContextCreator;
+import org.opennms.osgi.VaadinApplicationContextImpl;
+import org.opennms.osgi.locator.OnmsServiceManagerLocator;
+import org.opennms.web.api.OnmsHeaderProvider;
+import org.osgi.framework.BundleContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.github.wolfie.refresher.Refresher;
+import com.google.common.base.Strings;
+import com.google.common.collect.Lists;
 import com.vaadin.annotations.PreserveOnRefresh;
 import com.vaadin.annotations.Theme;
 import com.vaadin.data.Property;
 import com.vaadin.event.FieldEvents;
 import com.vaadin.server.DefaultErrorHandler;
-import com.vaadin.server.Page;
 import com.vaadin.server.Page.UriFragmentChangedEvent;
 import com.vaadin.server.Page.UriFragmentChangedListener;
 import com.vaadin.server.RequestHandler;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinResponse;
+import com.vaadin.server.VaadinServletRequest;
 import com.vaadin.server.VaadinSession;
 import com.vaadin.shared.ui.slider.SliderOrientation;
 import com.vaadin.ui.AbsoluteLayout;
@@ -79,61 +126,10 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.VerticalSplitPanel;
 import com.vaadin.ui.Window;
 
-import org.opennms.features.topology.api.CheckedOperation;
-import org.opennms.features.topology.api.GraphContainer;
-import org.opennms.features.topology.api.HasExtraComponents;
-import org.opennms.features.topology.api.HistoryManager;
-import org.opennms.features.topology.api.HistoryOperation;
-import org.opennms.features.topology.api.IViewContribution;
-import org.opennms.features.topology.api.MapViewManager;
-import org.opennms.features.topology.api.MapViewManagerListener;
-import org.opennms.features.topology.api.OperationContext;
-import org.opennms.features.topology.api.OperationContext.DisplayLocation;
-import org.opennms.features.topology.api.SelectionContext;
-import org.opennms.features.topology.api.SelectionListener;
-import org.opennms.features.topology.api.SelectionManager;
-import org.opennms.features.topology.api.SelectionNotifier;
-import org.opennms.features.topology.api.VerticesUpdateManager;
-import org.opennms.features.topology.api.WidgetContext;
-import org.opennms.features.topology.api.WidgetManager;
-import org.opennms.features.topology.api.WidgetUpdateListener;
-import org.opennms.features.topology.api.browsers.ContentType;
-import org.opennms.features.topology.api.browsers.SelectionAwareTable;
-import org.opennms.features.topology.api.support.VertexHopGraphProvider;
-import org.opennms.features.topology.api.support.VertexHopGraphProvider.VertexHopCriteria;
-import org.opennms.features.topology.api.topo.Criteria;
-import org.opennms.features.topology.api.topo.DefaultVertexRef;
-import org.opennms.features.topology.api.topo.VertexRef;
-import org.opennms.features.topology.app.internal.CommandManager.DefaultOperationContext;
-import org.opennms.features.topology.app.internal.TopologyComponent.VertexUpdateListener;
-import org.opennms.features.topology.app.internal.jung.TopoFRLayoutAlgorithm;
-import org.opennms.features.topology.app.internal.support.CategoryHopCriteria;
-import org.opennms.features.topology.app.internal.support.FontAwesomeIcons;
-import org.opennms.features.topology.app.internal.support.IconRepositoryManager;
-import org.opennms.features.topology.app.internal.ui.HudDisplay;
-import org.opennms.features.topology.app.internal.ui.LastUpdatedLabel;
-import org.opennms.features.topology.app.internal.ui.NoContentAvailableWindow;
-import org.opennms.features.topology.app.internal.ui.SearchBox;
-import org.opennms.osgi.EventConsumer;
-import org.opennms.osgi.OnmsServiceManager;
-import org.opennms.osgi.VaadinApplicationContext;
-import org.opennms.osgi.VaadinApplicationContextCreator;
-import org.opennms.osgi.VaadinApplicationContextImpl;
-import org.opennms.osgi.locator.OnmsServiceManagerLocator;
-import org.opennms.web.api.OnmsHeaderProvider;
-import org.osgi.framework.BundleContext;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 @SuppressWarnings("serial")
 @Theme("topo_default")
 @PreserveOnRefresh
 public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpdateListener, ContextMenuHandler, WidgetUpdateListener, WidgetContext, UriFragmentChangedListener, GraphContainer.ChangeListener, MapViewManagerListener, VertexUpdateListener, SelectionListener, VerticesUpdateManager.VerticesUpdateListener {
-
-    public static final String PARAMETER_FOCUS_NODES = "focusNodes";
-    private static final String PARAMETER_SEMANTIC_ZOOM_LEVEL = "szl";
-    private static final String PARAMETER_GRAPH_PROVIDER = "provider";
-    private TabSheet tabSheet;
 
     private class DynamicUpdateRefresher implements Refresher.RefreshListener {
         private final Object lockObject = new Object();
@@ -180,6 +176,152 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
 
     }
 
+    private interface RequestParameterHandler {
+        boolean handleRequest(VaadinRequest request);
+    }
+
+    /**
+     * Class to handle Request Parameters, such as SZL, Vertices in Focus, Layout Selection, Graph Provider
+     * Selection, Status Provider selection, etc...
+     */
+    private class TopologyUIRequestHandler implements RequestHandler {
+
+        private final List<RequestParameterHandler> requestHandlerList;
+
+        private static final String PARAMETER_LAYOUT = "layout";
+        private static final String PARAMETER_STATUS_PROVIDER = "status-provider";
+        private static final String PARAMETER_FOCUS_NODES = "focusNodes";
+        private static final String PARAMETER_FOCUS_VERTICES = "focus-vertices";
+        private static final String PARAMETER_SEMANTIC_ZOOM_LEVEL = "szl";
+        private static final String PARAMETER_GRAPH_PROVIDER = "provider";
+        private static final String PARAMETER_HISTORY_FRAGMENT = "ui-fragment";
+
+        private TopologyUIRequestHandler() {
+            requestHandlerList = Lists.newArrayList(
+                    // The order matters
+                    request -> loadHistoryFragment(request),
+                    request -> loadGraphProvider(request),
+                    request -> loadVertexHopCriteria(request),
+                    request -> loadSemanticZoomLevel(request),
+                    request -> loadStatusProvider(request),
+                    request -> loadLayout(request));
+        }
+
+        @Override
+        public boolean handleRequest(VaadinSession session, VaadinRequest request, VaadinResponse response) throws IOException {
+            handleRequestParameter(request);
+            return false;
+        }
+
+        public void handleRequestParameter(VaadinRequest request) {
+            boolean updateURL = false;
+            for (RequestParameterHandler handler : requestHandlerList) {
+                if (handler.handleRequest(request)) {
+                    updateURL = true;
+                }
+            }
+            // we redo the layout before we save the history
+            m_graphContainer.redoLayout();
+            if (updateURL) {
+                // If we have a new location, we reload the page.
+                // This needs to be done to set the fragment of the page correctly
+                // Otherwise the Request-Parameters would still be there
+
+                // we must overwrite the existing saved history for this user, otherwise updateURL does not work
+                String fragment = m_historyManager.createHistory(m_applicationContext.getUsername(), m_graphContainer);
+                LOG.info("Redirect user {} to topology fragment url with fragment {}", m_applicationContext.getUsername(), fragment);
+                getPage().setLocation(String.format("%s#%s", ((VaadinServletRequest) request).getRequestURL(), fragment));
+            }
+        }
+
+        private boolean loadStatusProvider(VaadinRequest request) {
+            String statusProviderName = request.getParameter(PARAMETER_STATUS_PROVIDER);
+            return executeOperationWithLabel(statusProviderName);
+        }
+
+        private boolean loadLayout(VaadinRequest request) {
+            String layoutName = request.getParameter(PARAMETER_LAYOUT);
+            return executeOperationWithLabel(layoutName);
+        }
+
+        private boolean loadGraphProvider(VaadinRequest request) {
+            String graphProviderName = request.getParameter(PARAMETER_GRAPH_PROVIDER);
+            return executeOperationWithLabel(graphProviderName);
+        }
+
+        private boolean executeOperationWithLabel(String operationLabel) {
+            final CheckedOperation operation = m_commandManager.findOperationByLabel(CheckedOperation.class, operationLabel);
+            if (operation != null) {
+                final DefaultOperationContext operationContext = new DefaultOperationContext(TopologyUI.this, m_graphContainer, DisplayLocation.MENUBAR);
+                final List<VertexRef> targets = Collections.<VertexRef>emptyList();
+                // CheckedOperations may toggle its state when execute is invoked.
+                // We do not execute if already checked, as this would disable an already checked operation.
+                if (!operation.isChecked(targets, operationContext)) {
+                    operation.execute(targets, operationContext);
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        private boolean loadHistoryFragment(VaadinRequest request) {
+            String fragment = request.getParameter(PARAMETER_HISTORY_FRAGMENT);
+            if (!Strings.isNullOrEmpty(fragment) && getPage() != null) {
+                applyHistory(m_applicationContext.getUsername(), fragment);
+                return true;
+            }
+            return false;
+        }
+
+        private boolean loadSemanticZoomLevel(VaadinRequest request) {
+            String szl = request.getParameter(PARAMETER_SEMANTIC_ZOOM_LEVEL);
+            if (szl != null) {
+                try {
+                    m_graphContainer.setSemanticZoomLevel(Integer.parseInt(szl));
+                    return true;
+                } catch (NumberFormatException e) {
+                    LOG.warn("Invalid SZL found in {} parameter: {}", PARAMETER_SEMANTIC_ZOOM_LEVEL, szl);
+                }
+            }
+            return false;
+        }
+
+        private boolean loadVertexHopCriteria(VaadinRequest request) {
+            final String nodeIds = request.getParameter(PARAMETER_FOCUS_NODES);
+            String vertexIdInFocus = request.getParameter(PARAMETER_FOCUS_VERTICES);
+            if (nodeIds != null && vertexIdInFocus != null) {
+                LOG.warn("Usage of parameter '{1}' and '{2}'. This is not supported. Skipping parameter '{2}'", PARAMETER_FOCUS_NODES, PARAMETER_FOCUS_VERTICES);
+            }
+            if (nodeIds != null) {
+                LOG.warn("Usage of deprecated parameter '{}'. Please use '{}' instead.", PARAMETER_FOCUS_NODES, PARAMETER_FOCUS_VERTICES);
+                vertexIdInFocus = nodeIds;
+            }
+            if (vertexIdInFocus != null) {
+                // Build the VertexRef elements
+                final TreeSet<VertexRef> refs = new TreeSet<>();
+                for (String vertexId : vertexIdInFocus.split(",")) {
+                    String namespace = m_graphContainer.getBaseTopology().getVertexNamespace();
+                    Vertex vertex = m_graphContainer.getBaseTopology().getVertex(namespace, vertexId);
+                    if (vertex == null) {
+                        LOG.warn("Vertex with namespace {} and id {} do not exist in the selected Graph Provider {}",
+                                namespace, vertexId, m_graphContainer.getBaseTopology().getClass().getSimpleName());
+                    } else {
+                        refs.add(vertex);
+                    }
+                }
+                // We have to update the vertices in focus (in our case only nodes) only if the focus has changed
+                VertexHopGraphProvider.VertexHopCriteria criteria = VertexHopGraphProvider.getWrappedVertexHopCriteria(m_graphContainer);
+                if (!criteria.getVertices().equals(refs)) {
+                    m_graphContainer.clearCriteria();
+                    refs.forEach(vertexRef -> m_graphContainer.addCriteria(new VertexHopGraphProvider.DefaultVertexHopCriteria(vertexRef)));
+                    m_graphContainer.setSemanticZoomLevel(1);
+                }
+                return true;
+            }
+            return false;
+        }
+    }
+
     private static final long serialVersionUID = 6837501987137310938L;
     private static final Logger LOG = LoggerFactory.getLogger(TopologyUI.class);
 
@@ -200,7 +342,6 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
     private String m_headerHtml;
     private boolean m_showHeader = true;
     private OnmsHeaderProvider m_headerProvider = null;
-    private String m_userName;
     private OnmsServiceManager m_serviceManager;
     private VaadinApplicationContext m_applicationContext;
     private VerticesUpdateManager m_verticesUpdateManager;
@@ -211,6 +352,7 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
     private HudDisplay m_hudDisplay;
     int m_settingFragment = 0;
     private SearchBox m_searchBox;
+    private TabSheet tabSheet;
 
     private String getHeader(HttpServletRequest request) throws Exception {
         if(m_headerProvider == null) {
@@ -242,7 +384,7 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
         request.getService().addSessionDestroyListener((SessionDestroyListener) event -> m_widgetManager.removeUpdateListener(TopologyUI.this));
 
         try {
-            URL pageUrl = Page.getCurrent().getLocation().toURL();
+            URL pageUrl = getPage().getLocation().toURL();
             m_headerHtml = getHeader(new HttpServletRequestVaadinImpl(request, pageUrl));
         } catch (final Exception e) {
             LOG.error("failed to get header HTML for request " + request.getPathInfo(), e.getCause());
@@ -260,91 +402,59 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
             }
         });
         m_verticesUpdateManager = new OsgiVerticesUpdateManager(m_serviceManager, m_applicationContext);
-
-        // Add a request handler that parses incoming focusNode and szl query parameters
-        getSession().addRequestHandler(new RequestHandler() {
-            @Override
-            public boolean handleRequest(VaadinSession session, VaadinRequest request, VaadinResponse response) throws IOException {
-                loadGraphProvider(request);
-                loadVertexHopCriteria(request, m_graphContainer);
-                loadSemanticZoomLevel(request, m_graphContainer);
-                m_graphContainer.redoLayout();
-                return false; // No response was written
-            }
-        });
+        m_serviceManager.getEventRegistry().addPossibleEventConsumer(this, m_applicationContext);
 
         // Set the algorithm last so that the criteria and SZLs are
         // in place before we run the layout algorithm.
+        m_graphContainer.setSessionId(m_applicationContext.getSessionId());
         m_graphContainer.setLayoutAlgorithm(new TopoFRLayoutAlgorithm());
 
-        loadUserSettings(m_applicationContext);
-
-        setupListeners();
         createLayouts();
-        // Set up an error handler for UI-level exceptions
-        setupErrorHandler();
-        // Add an auto refresh handler to the GraphContainer
-        setupAutoRefresher();
+        setupErrorHandler(); // Set up an error handler for UI-level exceptions
+        setupAutoRefresher(); // Add an auto refresh handler to the GraphContainer
 
+        loadUserSettings();
         // the layout must be created BEFORE loading the hop criteria and the semantic zoom level
-        loadGraphProvider(request);
-        loadVertexHopCriteria(request, m_graphContainer);
-        loadSemanticZoomLevel(request, m_graphContainer);
+        TopologyUIRequestHandler handler = new TopologyUIRequestHandler();
+        getSession().addRequestHandler(handler); // Add a request handler that parses incoming focusNode and szl query parameters
+        handler.handleRequestParameter(request); // deal with those in init case
+
+        // Add the default criteria if we do not have already a criteria set
+        if (getWrappedVertexHopCriteria(m_graphContainer).isEmpty() && noAdditionalFocusCriteria()) {
+            m_graphContainer.addCriteria(m_graphContainer.getBaseTopology().getDefaultCriteria()); // set default
+        }
+
+        // We set the listeners at the end, to not fire them all the time when initializing the UI
+        setupListeners();
+
+        // We force a reload of the topology provider as it may not have been initialized
+        m_graphContainer.getBaseTopology().refresh();
+
+        // We force a reload to trigger a fireGraphChanged()
+        m_graphContainer.setDirty(true);
         m_graphContainer.redoLayout();
 
-        // notify OSGi listeners, otherwise initialization would not work
-        m_graphContainer.addChangeListener(m_verticesUpdateManager);
-        m_selectionManager.addSelectionListener(m_verticesUpdateManager);
-        m_verticesUpdateManager.selectionChanged(m_selectionManager);
-        m_verticesUpdateManager.graphChanged(m_graphContainer);
-
-        m_serviceManager.getEventRegistry().addPossibleEventConsumer(this, m_applicationContext);
+        // Trigger a selectionChanged
+        m_selectionManager.selectionChanged(m_selectionManager);
     }
 
     private void setupListeners() {
-        Page.getCurrent().addUriFragmentChangedListener(this);
+        getPage().addUriFragmentChangedListener(this);
         m_selectionManager.addSelectionListener(this);
         m_graphContainer.addChangeListener(this);
         m_graphContainer.getMapViewManager().addListener(this);
         m_commandManager.addMenuItemUpdateListener(this);
         m_commandManager.addCommandUpdateListener(this);
+
+        m_graphContainer.addChangeListener(m_searchBox);
+        m_selectionManager.addSelectionListener(m_searchBox);
+
+        m_graphContainer.addChangeListener(m_verticesUpdateManager);
+        m_selectionManager.addSelectionListener(m_verticesUpdateManager);
     }
 
-    private static void loadVertexHopCriteria(VaadinRequest request, GraphContainer graphContainer) {
-        loadNodesInFocusIfDefined(request, graphContainer);
-
-        // Add the default criteria if we do not have already a criteria set
-        if (getWrappedVertexHopCriteria(graphContainer).isEmpty() && noAdditionalFocusCriteria(graphContainer)) {
-            graphContainer.addCriteria(graphContainer.getBaseTopology().getDefaultCriteria()); // set default
-        }
-    }
-
-    private static void loadNodesInFocusIfDefined(VaadinRequest request, GraphContainer graphContainer) {
-        final String nodeIds = request.getParameter(PARAMETER_FOCUS_NODES);
-        if (nodeIds != null) {
-            // Build the VertexRef elements
-            final Collection<VertexRef> refs = new TreeSet<>();
-            for (String nodeId : nodeIds.split(",")) {
-                try {
-                    // try to convert String values to Node Ids
-                    refs.add(new DefaultVertexRef("nodes", Integer.valueOf(nodeId).toString()));
-                } catch (NumberFormatException e) {
-                    LOG.warn("Invalid node ID found in {} parameter: {}", PARAMETER_FOCUS_NODES, nodeId);
-                }
-            }
-
-            // We have to update the vertices in focus (in our case only nodes) only if the focus has changed
-            VertexHopCriteria criteria = getWrappedVertexHopCriteria(graphContainer);
-            if (!criteria.getVertices().equals(refs)) {
-                graphContainer.clearCriteria();
-                refs.forEach(vertexRef -> graphContainer.addCriteria(new VertexHopGraphProvider.DefaultVertexHopCriteria(vertexRef)));
-                graphContainer.setSemanticZoomLevel(1);
-            }
-        }
-    }
-
-    private static boolean noAdditionalFocusCriteria(GraphContainer graphContainer) {
-        Criteria[] crits = graphContainer.getCriteria();
+    private boolean noAdditionalFocusCriteria() {
+        Criteria[] crits = m_graphContainer.getCriteria();
         for(Criteria criteria : crits){
             try{
                 CategoryHopCriteria catCrit = (CategoryHopCriteria) criteria;
@@ -353,39 +463,6 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
 
         }
         return true;
-    }
-
-    private static void loadSemanticZoomLevel(VaadinRequest request, GraphContainer graphContainer) {
-        String szl = request.getParameter(PARAMETER_SEMANTIC_ZOOM_LEVEL);
-        if (szl != null) {
-            try {
-                graphContainer.setSemanticZoomLevel(Integer.parseInt(szl));
-            } catch (NumberFormatException e) {
-                LOG.warn("Invalid SZL found in {} parameter: {}", PARAMETER_SEMANTIC_ZOOM_LEVEL, szl);
-            }
-        }
-    }
-
-    private void loadGraphProvider(VaadinRequest request) {
-        String providerName = request.getParameter(PARAMETER_GRAPH_PROVIDER);
-        if (providerName != null) {
-            List<HistoryOperation> operations = m_historyManager.getHistoryOperations();
-            for (HistoryOperation operation : operations) {
-                try {
-                    // We have to cast to CheckedOperation here since that is the 
-                    // interface that is used in the OSGi proxies
-                    CheckedOperation selectOp = (CheckedOperation)operation;
-                    if (providerName.equals(selectOp.getId())) {
-                        selectOp.execute(Collections.<VertexRef>emptyList(), new DefaultOperationContext(this, m_graphContainer, DisplayLocation.MENUBAR));
-                        // Updated the checked state of the menu items
-                        updateMenuItems();
-                        return;
-                    }
-                } catch (ClassCastException e) {}
-            }
-        }
-        // Refresh the topology provider, triggering the vertices to load if they have not yet loaded
-        getGraphContainer().getBaseTopology().refresh();
     }
 
     private void createLayouts() {
@@ -406,7 +483,7 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
             @Override
             public void error(com.vaadin.server.ErrorEvent event) {
                 Notification.show("An Exception Occurred: see karaf.log", Notification.Type.TRAY_NOTIFICATION);
-                LOG.warn("An Exception Occured: in the TopologyUI", event.getThrowable());
+                LOG.warn("An Exception Occurred: in the TopologyUI", event.getThrowable());
 
             }
         });
@@ -631,8 +708,6 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
         });
 
         m_searchBox = new SearchBox(m_serviceManager, new CommandManager.DefaultOperationContext(this, m_graphContainer, OperationContext.DisplayLocation.SEARCH));
-        m_selectionManager.addSelectionListener(m_searchBox);
-        m_graphContainer.addChangeListener(m_searchBox);
 
         //History Button Layout
         HorizontalLayout historyButtonLayout = new HorizontalLayout();
@@ -725,23 +800,22 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
         return layout;
     }
 
-    private void loadUserSettings(VaadinApplicationContext context) {
-        m_userName = context.getUsername();
-        m_graphContainer.setSessionId(context.getSessionId());
+    // See if the history manager has an existing fragment stored for
+    // this user. Do this before laying out the UI because the history
+    // may change during layout.
+    private void loadUserSettings() {
+        applyHistory(m_applicationContext.getUsername(), m_historyManager.getHistoryHash(m_applicationContext.getUsername()));
+        m_graphContainer.redoLayout();
+    }
 
-        // See if the history manager has an existing fragment stored for
-        // this user. Do this before laying out the UI because the history
-        // may change during layout.
-        String fragment = m_historyManager.getHistoryHash(m_userName);
-
+    private void applyHistory(String username, String fragment) {
         // If there was existing history, then restore that history snapshot.
         if (fragment != null) {
-            LoggerFactory.getLogger(this.getClass()).info("Restoring history for user {}: {}", m_userName, fragment);
-            Page page = Page.getCurrent();
-            if (page != null) {
-                page.setUriFragment(fragment);
+            LoggerFactory.getLogger(this.getClass()).info("Restoring history for user {}: {}", username, fragment);
+            if (getPage() != null) {
+                getPage().setUriFragment(fragment);
             }
-            m_historyManager.applyHistory(m_userName, fragment, m_graphContainer);
+            m_historyManager.applyHistory(username, fragment, m_graphContainer);
         }
     }
 
@@ -941,7 +1015,7 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
     public void uriFragmentChanged(UriFragmentChangedEvent event) {
         m_settingFragment++;
         String fragment = event.getUriFragment();
-        m_historyManager.applyHistory(m_userName, fragment, m_graphContainer);
+        m_historyManager.applyHistory(m_applicationContext.getUsername(), fragment, m_graphContainer);
 
         // This is a hack to fix issue SPC-796 so that the display states of the 
         // TopologyComponent and NoContentAvailableWindow are reset correctly 
@@ -956,10 +1030,9 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
 
     private void saveHistory() {
         if (m_settingFragment == 0) {
-            String fragment = m_historyManager.createHistory(m_userName, m_graphContainer);
-            Page page = Page.getCurrent();
-            if (page != null) {
-                page.setUriFragment(fragment, false);
+            String fragment = m_historyManager.createHistory(m_applicationContext.getUsername(), m_graphContainer);
+            if (getPage() != null) {
+                getPage().setUriFragment(fragment, false);
             }
         }
     }
@@ -996,6 +1069,7 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
         m_szlOutBtn.setEnabled(graphContainer.getSemanticZoomLevel() > 0);
         updateTabVisibility();
         updateTimestamp(System.currentTimeMillis());
+        updateMenuItems();
     }
 
     private int getFocusVertices(GraphContainer graphContainer) {

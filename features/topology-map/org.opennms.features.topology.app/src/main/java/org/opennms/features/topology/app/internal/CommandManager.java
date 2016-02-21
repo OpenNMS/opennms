@@ -36,10 +36,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import com.vaadin.ui.MenuBar;
-import com.vaadin.ui.MenuBar.MenuItem;
-import com.vaadin.ui.UI;
-
 import org.opennms.features.topology.api.CheckedOperation;
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.Operation;
@@ -47,6 +43,10 @@ import org.opennms.features.topology.api.OperationContext;
 import org.opennms.features.topology.api.OperationContext.DisplayLocation;
 import org.opennms.features.topology.api.topo.VertexRef;
 import org.slf4j.LoggerFactory;
+
+import com.vaadin.ui.MenuBar;
+import com.vaadin.ui.MenuBar.MenuItem;
+import com.vaadin.ui.UI;
 
 public class CommandManager {
 
@@ -306,5 +306,22 @@ public class CommandManager {
 		} catch (final RuntimeException e) {
 		    LoggerFactory.getLogger(this.getClass()).warn("updateMenuItem: operation failed", e);
 		}
+	}
+
+	public <T extends CheckedOperation> T findOperationByLabel(Class<T> operationClass, String label) {
+		if (label == null) {
+			return null; // nothing to do
+		}
+		for (Command eachCommand : m_commandList) {
+			try {
+				OperationCommand opCommand = (OperationCommand) eachCommand;
+				String opLabel = MenuBarBuilder.removeLabelProperties(opCommand.getCaption());
+				if (label.equals(opLabel)) {
+					T operation = (T) opCommand.getOperation();
+					return operation;
+				}
+			} catch (ClassCastException e) {}
+		}
+		return null;
 	}
 }
