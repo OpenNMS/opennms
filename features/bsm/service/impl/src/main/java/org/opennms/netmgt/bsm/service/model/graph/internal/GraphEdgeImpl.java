@@ -35,26 +35,23 @@ import org.opennms.netmgt.bsm.service.model.graph.GraphEdge;
 
 public class GraphEdgeImpl extends GraphElement implements GraphEdge {
 
-    private Status m_status = Status.INDETERMINATE;
     private final MapFunction m_mapFunction;
     private final int m_weight;
 
     public GraphEdgeImpl(MapFunction mapFunction) {
-        m_mapFunction = mapFunction;
-        m_weight = 1;
+        this(mapFunction, 1);
     }
 
     public GraphEdgeImpl(ReadOnlyEdge edge) {
-        m_mapFunction = edge.getMapFunction();
-        m_weight = edge.getWeight();
+        this(edge.getMapFunction(), edge.getWeight());
     }
 
-    public Status getStatus() {
-        return m_status;
-    }
-
-    public void setStatus(Status status) {
-        m_status = status;
+    private GraphEdgeImpl(MapFunction mapFunction, int weight) {
+        m_mapFunction = mapFunction;
+        m_weight = weight;
+        // We set the default status to INDETERMINATE as the map function may not be IDENTITY
+        // This allows to distinguish between "NO STATUS" and a "DEFINED STATUS"
+        setStatus(Status.INDETERMINATE);
     }
 
     public MapFunction getMapFunction() {

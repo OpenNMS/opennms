@@ -37,6 +37,7 @@ import java.util.Set;
 
 import org.opennms.netmgt.bsm.service.model.IpService;
 import org.opennms.netmgt.bsm.service.model.ReadOnlyBusinessService;
+import org.opennms.netmgt.bsm.service.model.edge.Edge;
 import org.opennms.netmgt.bsm.service.model.edge.ro.ReadOnlyChildEdge;
 import org.opennms.netmgt.bsm.service.model.edge.ro.ReadOnlyEdge;
 import org.opennms.netmgt.bsm.service.model.edge.ro.ReadOnlyIpServiceEdge;
@@ -59,7 +60,7 @@ public class BusinessServiceGraphImpl extends DirectedSparseMultigraph<GraphVert
     private final static Identity MAP_IDENTITY = new Identity();
     private final static MostCritical REDUCE_MOST_CRITICAL = new MostCritical();
     private final Map<Long, GraphVertex> m_verticesByBusinessServiceId = Maps.newHashMap();
-    private final Map<Long, GraphVertex> m_verticesByIpServiceId = Maps.newHashMap();
+    private final Map<Integer, GraphVertex> m_verticesByIpServiceId = Maps.newHashMap();
     private final Map<String, GraphVertex> m_verticesByReductionKey = Maps.newHashMap();
     private final Map<Long, GraphVertex> m_verticesByEdgeId = Maps.newHashMap();
     private final Map<Integer, Set<GraphVertex>> m_verticesByLevel = Maps.newHashMap();
@@ -92,10 +93,7 @@ public class BusinessServiceGraphImpl extends DirectedSparseMultigraph<GraphVert
             GraphEdge graphEdge = new GraphEdgeImpl(edge);
 
             // Use an existing vertex if we already created one
-            GraphVertex vertexForEdge = m_verticesByEdgeId.get(Objects.requireNonNull(edge.getId(), "Edges must have ids."));
-            if (vertexForEdge == null && edge instanceof ReadOnlyChildEdge) {
-                vertexForEdge = m_verticesByBusinessServiceId.get(((ReadOnlyChildEdge)edge).getChild().getId());
-            }
+            GraphVertex vertexForEdge = getVertexForEdge(edge);
 
             // If we couldn't find an existing vertex, create one
             if (vertexForEdge == null) {
@@ -112,14 +110,18 @@ public class BusinessServiceGraphImpl extends DirectedSparseMultigraph<GraphVert
                     IpService ipService = ((ReadOnlyIpServiceEdge)edge).getIpService();
                     vertexForEdge = new GraphVertexImpl(REDUCE_MOST_CRITICAL, null, edge);
                     addVertex(vertexForEdge);
-                    m_verticesByIpServiceId.put(Long.valueOf(ipService.getId()), vertexForEdge);
+                    m_verticesByIpServiceId.put(ipService.getId(), vertexForEdge);
 
-                    // Map the reductions keys to the intermediary vertex using the Identity map
+                    // SPECIAL CASE: Map the reductions keys to the intermediary vertex using the Identity map
                     for (String reductionKey : edge.getReductionKeys()) {
+                        GraphVertex reductionKeyVertex = m_verticesByReductionKey.get(reductionKey);
+                        if (reductionKeyVertex == null) { // not already added
+                            reductionKeyVertex = new GraphVertexImpl(REDUCE_HIGHEST_SEVERITY, reductionKey, edge);
+                            addVertex(reductionKeyVertex);
+                            m_verticesByReductionKey.put(reductionKey, reductionKeyVertex);
+                        }
+                        // Always add an edge
                         GraphEdgeImpl intermediaryEdge = new GraphEdgeImpl(MAP_IDENTITY);
-                        GraphVertexImpl reductionKeyVertex = new GraphVertexImpl(REDUCE_MOST_CRITICAL, reductionKey, edge);
-                        addVertex(reductionKeyVertex);
-                        m_verticesByReductionKey.put(reductionKey, reductionKeyVertex);
                         addEdge(intermediaryEdge, vertexForEdge, reductionKeyVertex);
                     }
                 } else {
@@ -132,6 +134,19 @@ public class BusinessServiceGraphImpl extends DirectedSparseMultigraph<GraphVert
             m_verticesByEdgeId.put(edge.getId(), vertexForEdge);
         }
         return businessServiceVertex;
+    }
+
+    private GraphVertex getVertexForEdge(ReadOnlyEdge edge) {
+        if (edge.getType() == Edge.Type.REDUCTION_KEY) {
+            return m_verticesByReductionKey.get(((ReadOnlyReductionKeyEdge) edge).getReductionKey());
+        }
+        if (edge.getType() == Edge.Type.CHILD_SERVICE) {
+            return m_verticesByBusinessServiceId.get(((ReadOnlyChildEdge) edge).getChild().getId());
+        }
+        if (edge.getType() == Edge.Type.IP_SERVICE) {
+            return m_verticesByIpServiceId.get(((ReadOnlyIpServiceEdge) edge).getIpService().getId());
+        }
+        throw new IllegalArgumentException("Unsupported edge of type: " + edge.getType().name());
     }
 
     private void calculateAndIndexLevels() {

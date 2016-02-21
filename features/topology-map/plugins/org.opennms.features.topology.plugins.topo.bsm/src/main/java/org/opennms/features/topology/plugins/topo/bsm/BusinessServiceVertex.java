@@ -30,7 +30,6 @@ package org.opennms.features.topology.plugins.topo.bsm;
 
 import java.util.Set;
 
-import org.opennms.netmgt.bsm.service.BusinessServiceManager;
 import org.opennms.netmgt.bsm.service.model.ReadOnlyBusinessService;
 import org.opennms.netmgt.bsm.service.model.Status;
 
@@ -40,12 +39,12 @@ public class BusinessServiceVertex extends AbstractBusinessServiceVertex {
 
     private final Long serviceId;
 
-    public BusinessServiceVertex(ReadOnlyBusinessService businessService, int level) {
-        this(businessService.getId(), businessService.getName(), level);
+    public BusinessServiceVertex(ReadOnlyBusinessService businessService, int level, Status status) {
+        this(businessService.getId(), businessService.getName(), level, status);
     }
 
-    public BusinessServiceVertex(Long serviceId, String name) {
-        super(Type.BusinessService + ":" + serviceId, name);
+    public BusinessServiceVertex(Long serviceId, String name, int level, Status status) {
+        super(Type.BusinessService + ":" + serviceId, name, level, status);
         this.serviceId = serviceId;
         setLabel(name);
         setTooltipText(String.format("Business Service '%s'", name));
@@ -64,11 +63,6 @@ public class BusinessServiceVertex extends AbstractBusinessServiceVertex {
     @Override
     public Set<String> getReductionKeys() {
         return Sets.newHashSet();
-    }
-
-    @Override
-    public Status getOperationalStatus(BusinessServiceManager manager) {
-        return manager.getBusinessServiceById(serviceId).getOperationalStatus();
     }
 
     @Override

@@ -35,7 +35,7 @@ import org.opennms.netmgt.bsm.service.model.functions.map.MapFunction;
 
 public interface Edge extends ReadOnlyEdge {
 
-    static final int DEFAULT_WEIGHT = 1;
+    int DEFAULT_WEIGHT = 1;
 
     BusinessService getSource();
 

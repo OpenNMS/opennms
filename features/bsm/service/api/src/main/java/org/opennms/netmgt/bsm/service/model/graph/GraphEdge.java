@@ -33,11 +33,12 @@ import org.opennms.netmgt.bsm.service.model.functions.map.MapFunction;
 
 public interface GraphEdge {
 
-    public void setStatus(Status status);
+    void setStatus(Status status);
 
-    public Status getStatus();
+    Status getStatus();
 
-    public MapFunction getMapFunction();
+    MapFunction getMapFunction();
 
-    public int getWeight();
+    int getWeight();
+
 }

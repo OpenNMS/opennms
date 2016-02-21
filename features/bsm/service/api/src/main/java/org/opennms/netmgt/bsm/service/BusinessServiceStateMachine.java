@@ -37,6 +37,7 @@ import org.opennms.netmgt.bsm.service.model.IpService;
 import org.opennms.netmgt.bsm.service.model.ReadOnlyBusinessService;
 import org.opennms.netmgt.bsm.service.model.Status;
 import org.opennms.netmgt.bsm.service.model.edge.ro.ReadOnlyEdge;
+import org.opennms.netmgt.bsm.service.model.graph.BusinessServiceGraph;
 
 public interface BusinessServiceStateMachine {
 
@@ -72,7 +73,12 @@ public interface BusinessServiceStateMachine {
     Status getOperationalStatus(String reductionKey);
 
     /**
-     * Retrieves the current operational status of a particular Edge associated with a Business Service.
+     * Retrieves the current operational status of the element associated with a particular Edge.
+     * A call to this method is equal to a call to {@link #getOperationalStatus(String)},
+     * {@link #getOperationalStatus(IpService)} or {@link #getOperationalStatus(ReadOnlyBusinessService)} depending
+     * on the type of the edge.
+     *
+     * This method DOES NOT return the mapped status of the edge.
      *
      * @param edge edge to query for
      * @return the current operational status, or null if the Edge is not monitored by the state machine
@@ -102,5 +108,7 @@ public interface BusinessServiceStateMachine {
     boolean removeHandler(BusinessServiceStateChangeHandler handler, Map<String, String> attributes);
 
     void renderGraphToPng(File target);
+
+    BusinessServiceGraph getGraph();
 
 }

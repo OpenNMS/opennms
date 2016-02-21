@@ -41,7 +41,6 @@ import org.opennms.core.criteria.restrictions.Restrictions;
 import org.opennms.features.topology.api.browsers.ContentType;
 import org.opennms.features.topology.api.browsers.SelectionChangedListener;
 import org.opennms.features.topology.api.support.VertexHopGraphProvider;
-import org.opennms.features.topology.api.topo.AbstractEdge;
 import org.opennms.features.topology.api.topo.AbstractTopologyProvider;
 import org.opennms.features.topology.api.topo.Criteria;
 import org.opennms.features.topology.api.topo.Edge;
@@ -107,48 +106,42 @@ public class BusinessServicesTopologyProvider extends AbstractTopologyProvider i
             GraphVertex childVertex = graph.getOpposite(graphVertex, graphEdge);
 
             // Create a topology vertex for the child vertex
-            AbstractBusinessServiceVertex childToplogyVertex = createTopologyVertex(childVertex);
-            addVertices(childToplogyVertex);
+            AbstractBusinessServiceVertex childTopologyVertex = createTopologyVertex(childVertex);
+            addVertices(childTopologyVertex);
 
             // Connect the two
-            childToplogyVertex.setParent(topologyVertex);
-            Edge edge = createTopologyEdge(topologyVertex, childToplogyVertex);
+            childTopologyVertex.setParent(topologyVertex);
+            Edge edge = new BusinessServiceEdge(graphEdge, topologyVertex, childTopologyVertex);
             addEdges(edge);
 
             // Recurse
-            addVertex(graph, childVertex, childToplogyVertex);
+            addVertex(graph, childVertex, childTopologyVertex);
         }
     }
 
     private AbstractBusinessServiceVertex createTopologyVertex(GraphVertex graphVertex) {
         final ReadOnlyBusinessService businessService = graphVertex.getBusinessService();
         if (businessService != null) {
-            return new BusinessServiceVertex(businessService, graphVertex.getLevel());
+            return new BusinessServiceVertex(businessService, graphVertex.getLevel(), graphVertex.getStatus());
         }
 
         final ReadOnlyEdge edge = graphVertex.getEdge();
         switch (edge.getType()) {
         case CHILD_SERVICE:
-            return new BusinessServiceVertex(((ReadOnlyChildEdge)edge).getChild(), graphVertex.getLevel());
+            return new BusinessServiceVertex(((ReadOnlyChildEdge)edge).getChild(), graphVertex.getLevel(), graphVertex.getStatus());
         case IP_SERVICE:
             if (graphVertex.getReductionKey() == null) {
                 // If no reduction key is set, create an IP Service vertex
-                return new IpServiceVertex(((ReadOnlyIpServiceEdge)edge).getIpService(), graphVertex.getLevel());
+                return new IpServiceVertex(((ReadOnlyIpServiceEdge)edge).getIpService(), graphVertex.getLevel(), graphVertex.getStatus());
             } else {
                 // Otherwise, create a vertex for the particular reduction key related to the IP Service
-                return new ReductionKeyVertex(graphVertex.getReductionKey(), graphVertex.getLevel());
+                return new ReductionKeyVertex(graphVertex.getReductionKey(), graphVertex.getLevel(), graphVertex.getStatus());
             }
         case REDUCTION_KEY:
-            return new ReductionKeyVertex(graphVertex.getReductionKey(), graphVertex.getLevel());
+            return new ReductionKeyVertex(graphVertex.getReductionKey(), graphVertex.getLevel(), graphVertex.getStatus());
         default:
-            throw new IllegalArgumentException("Unsuported edge: " + edge);
+            throw new IllegalArgumentException("Unsupported edge: " + edge);
         }
-    }
-
-    private Edge createTopologyEdge(AbstractBusinessServiceVertex v1, AbstractBusinessServiceVertex v2) {
-        String id = String.format("connection:%s:%s", v1.getId(), v2.getId());
-        Edge edge = new AbstractEdge(getEdgeNamespace(), id, v1, v2);
-        return edge;
     }
 
     public void setBusinessServiceManager(BusinessServiceManager businessServiceManager) {
@@ -168,7 +161,7 @@ public class BusinessServicesTopologyProvider extends AbstractTopologyProvider i
         // If one was found, use it for the default focus
         if (!businessServices.isEmpty()) {
             BusinessService businessService = businessServices.iterator().next();
-            BusinessServiceVertex businessServiceVertex = new BusinessServiceVertex(businessService);
+            BusinessServiceVertex businessServiceVertex = new BusinessServiceVertex(businessService, 0, businessServiceManager.getOperationalStatus(businessService));
             return new VertexHopGraphProvider.DefaultVertexHopCriteria(businessServiceVertex);
         }
         return null;
@@ -216,12 +209,22 @@ public class BusinessServicesTopologyProvider extends AbstractTopologyProvider i
                         .filter(v -> v.getType() == Type.BusinessService)
                         .forEach(v -> businessServiceIds.add(((BusinessServiceVertex) v).getServiceId()));
 
-                // Ip Service or Reduction Key
+                // Ip Service
                 filteredSet.stream()
-                        .filter(v -> v.getType() == Type.IpService
-                                || v.getType() == Type.ReductionKey)
+                        .filter(v -> v.getType() == Type.IpService)
                         .forEach(v -> businessServiceIds.add(((BusinessServiceVertex) v.getParent()).getServiceId()));
-                return new SelectionChangedListener.IdSelection<>(businessServiceIds);
+
+                // Reduction keys (Only consider children of Business Services)
+                filteredSet.stream()
+                    .filter(v -> v.getType() == Type.ReductionKey
+                            && ((AbstractBusinessServiceVertex) v.getParent()).getType() == Type.BusinessService ) // we ignore children of ip services
+                    .forEach(v -> ((BusinessServiceVertex) v.getParent()).getServiceId());
+                return () -> {
+                    if (!businessServiceIds.isEmpty()) {
+                        return Lists.newArrayList(Restrictions.in("id", businessServiceIds));
+                    }
+                    return Lists.newArrayList(Restrictions.isNull("id"));
+                };
             case Node:
                 final Set<Integer> nodeIds = filteredSet.stream()
                         .filter(v -> v.getType() == Type.IpService)

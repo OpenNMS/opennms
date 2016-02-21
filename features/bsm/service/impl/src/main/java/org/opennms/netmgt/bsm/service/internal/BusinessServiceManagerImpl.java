@@ -69,7 +69,6 @@ import org.opennms.netmgt.bsm.service.model.functions.reduce.MostCritical;
 import org.opennms.netmgt.bsm.service.model.functions.reduce.ReductionFunction;
 import org.opennms.netmgt.bsm.service.model.functions.reduce.Threshold;
 import org.opennms.netmgt.bsm.service.model.graph.BusinessServiceGraph;
-import org.opennms.netmgt.bsm.service.model.graph.internal.BusinessServiceGraphImpl;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.events.api.EventConstants;
@@ -388,7 +387,8 @@ public class BusinessServiceManagerImpl implements BusinessServiceManager {
 
     @Override
     public BusinessServiceGraph getGraph() {
-        return new BusinessServiceGraphImpl(getAllBusinessServices());
+        // Do not instantiate a new instance, or the status is not set
+        return businessServiceStateMachine.getGraph();
     }
 
     protected BusinessServiceDao getDao() {
@@ -399,7 +399,7 @@ public class BusinessServiceManagerImpl implements BusinessServiceManager {
         Objects.requireNonNull(nodeId);
         final OnmsNode entity = nodeDao.get(nodeId);
         if (entity == null) {
-            throw new NoSuchElementException();
+            throw new NoSuchElementException("OnmsNode with id " + nodeId);
         }
         return entity;
     }
@@ -412,7 +412,7 @@ public class BusinessServiceManagerImpl implements BusinessServiceManager {
         Objects.requireNonNull(edgeId);
         BusinessServiceEdgeEntity edgeEntity = edgeDao.get(edgeId);
         if (edgeEntity == null) {
-            throw new NoSuchElementException();
+            throw new NoSuchElementException("BusinessServiceEdgeEntity with id " + edgeId);
         }
         return edgeEntity;
     }
@@ -437,7 +437,7 @@ public class BusinessServiceManagerImpl implements BusinessServiceManager {
         Objects.requireNonNull(serviceId);
         final BusinessServiceEntity entity = getDao().get(serviceId);
         if (entity == null) {
-            throw new NoSuchElementException();
+            throw new NoSuchElementException("BusinessServiceEntity with id " + serviceId);
         }
         return entity;
     }
@@ -446,7 +446,7 @@ public class BusinessServiceManagerImpl implements BusinessServiceManager {
         Objects.requireNonNull(serviceId);
         final OnmsMonitoredService monitoredService = monitoredServiceDao.get(serviceId);
         if (monitoredService == null) {
-            throw new NoSuchElementException();
+            throw new NoSuchElementException("OnmsMonitoredService with id " + serviceId);
         }
         return monitoredService;
     }

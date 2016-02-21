@@ -263,7 +263,7 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
     private LayoutAlgorithm m_layoutAlgorithm;
     private SelectionManager m_selectionManager;
     private StatusProvider m_statusProvider;
-    private Set<EdgeStatusProvider> m_edgeStatusProviders;
+    private EdgeStatusProvider m_edgeStatusProvider;
     private MergingGraphProvider m_mergedGraphProvider;
     private MapViewManager m_viewManager = new DefaultMapViewManager();
     private String m_sessionId;
@@ -664,9 +664,14 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
     }
 
     @Override
-    public Set<EdgeStatusProvider> getEdgeStatusProviders(){
-        if(m_edgeStatusProviders == null) m_edgeStatusProviders = new HashSet<>();
-        return m_edgeStatusProviders;
+    public EdgeStatusProvider getEdgeStatusProvider(){
+        return m_edgeStatusProvider;
+    }
+
+    @Override
+    public void setEdgeStatusProvider(EdgeStatusProvider edgeStatusProvider) {
+        m_edgeStatusProvider = edgeStatusProvider;
+        setDirty(true);
     }
 
     @Override

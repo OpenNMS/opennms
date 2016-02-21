@@ -29,11 +29,11 @@
 package org.opennms.netmgt.bsm.service.internal;
 
 import static org.junit.Assert.assertEquals;
-import static org.opennms.netmgt.bsm.test.BambooTestHierarchy.BAMBOO_AGENT_CAROLINA_REDUCTION_KEY;
-import static org.opennms.netmgt.bsm.test.BambooTestHierarchy.BAMBOO_AGENT_DUKE_REDUCTION_KEY;
-import static org.opennms.netmgt.bsm.test.BambooTestHierarchy.BAMBOO_AGENT_NCSTATE_REDUCTION_KEY;
-import static org.opennms.netmgt.bsm.test.BambooTestHierarchy.DISK_USAGE_THRESHOLD_BAMBO_REDUCTION_KEY;
-import static org.opennms.netmgt.bsm.test.BambooTestHierarchy.HTTP_8085_BAMBOO_REDUCTION_KEY;
+import static org.opennms.netmgt.bsm.test.hierarchies.BambooTestHierarchy.BAMBOO_AGENT_CAROLINA_REDUCTION_KEY;
+import static org.opennms.netmgt.bsm.test.hierarchies.BambooTestHierarchy.BAMBOO_AGENT_DUKE_REDUCTION_KEY;
+import static org.opennms.netmgt.bsm.test.hierarchies.BambooTestHierarchy.BAMBOO_AGENT_NCSTATE_REDUCTION_KEY;
+import static org.opennms.netmgt.bsm.test.hierarchies.BambooTestHierarchy.DISK_USAGE_THRESHOLD_BAMBO_REDUCTION_KEY;
+import static org.opennms.netmgt.bsm.test.hierarchies.BambooTestHierarchy.HTTP_8085_BAMBOO_REDUCTION_KEY;
 import static org.opennms.netmgt.bsm.test.BsmTestUtils.createAlarmWrapper;
 
 import java.util.List;
@@ -59,10 +59,11 @@ import org.opennms.netmgt.bsm.service.model.Status;
 import org.opennms.netmgt.bsm.service.model.edge.Edge;
 import org.opennms.netmgt.bsm.service.model.edge.IpServiceEdge;
 import org.opennms.netmgt.bsm.service.model.functions.map.Identity;
-import org.opennms.netmgt.bsm.test.BambooTestHierarchy;
+import org.opennms.netmgt.bsm.test.hierarchies.BambooTestHierarchy;
 import org.opennms.netmgt.bsm.test.BsmDatabasePopulator;
 import org.opennms.netmgt.bsm.test.LoggingStateChangeHandler;
-import org.opennms.netmgt.bsm.test.SimpleTestHierarchy;
+import org.opennms.netmgt.bsm.test.hierarchies.BusinessServicesShareIpServiceHierarchy;
+import org.opennms.netmgt.bsm.test.hierarchies.SimpleTestHierarchy;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.test.JUnitConfigurationEnvironment;
@@ -200,6 +201,47 @@ public class DefaultBusinessServiceStateMachineIT {
         assertEquals(Status.WARNING, stateMachine.getOperationalStatus(wrap(testSpecification.getMasterService()))); // Business Service "Master"
         assertEquals(Status.MAJOR, stateMachine.getOperationalStatus(wrap(testSpecification.getAgentsService()))); // Business Service "Agents"
         assertEquals(Status.MAJOR, stateMachine.getOperationalStatus(wrap(testSpecification.getBambooService()))); // Business Service "Bamboo" (root)
+    }
+
+    /**
+     * Verifies that two Business Services can share the same Ip Service and both Business Services will change their
+     * status when the IP Service changes its status.
+     */
+    @Test
+    public void canShareIpService() {
+        BusinessServicesShareIpServiceHierarchy testHierarchy = new BusinessServicesShareIpServiceHierarchy(populator);
+        testHierarchy.getServices().forEach(entity -> businessServiceDao.save(entity));
+        businessServiceDao.flush();
+
+        BusinessServiceImpl bsChild1 = wrap(testHierarchy.getChild1());
+        BusinessServiceImpl bsChild2 = wrap(testHierarchy.getChild2());
+        BusinessServiceImpl bsParent = wrap(testHierarchy.getRoot());
+        IpServiceEdge svc1 = wrap(testHierarchy.getServiceChild1());
+        IpServiceEdge svc2 = wrap(testHierarchy.getServiceChild2());
+
+        // Setup the state machine
+        List<ReadOnlyBusinessService> bss = Lists.newArrayList(bsChild1, bsChild2, bsParent);
+        LoggingStateChangeHandler handler = new LoggingStateChangeHandler();
+        DefaultBusinessServiceStateMachine stateMachine = new DefaultBusinessServiceStateMachine();
+        stateMachine.setBusinessServices(bss);
+        stateMachine.addHandler(handler, null);
+
+        // Verify the initial state
+        assertEquals(0, handler.getStateChanges().size());
+        for (ReadOnlyBusinessService eachBs : bss) {
+            assertEquals(DefaultBusinessServiceStateMachine.DEFAULT_SEVERITY, stateMachine.getOperationalStatus(eachBs));
+        }
+
+        // Pass alarm to the state machine
+        stateMachine.handleNewOrUpdatedAlarm(createAlarmWrapper(testHierarchy.getServiceChild1().getIpService(), OnmsSeverity.MINOR));
+
+        // Verify the updated state
+        assertEquals(3, handler.getStateChanges().size());
+        assertEquals(Status.MINOR, stateMachine.getOperationalStatus(svc1));
+        assertEquals(Status.MINOR, stateMachine.getOperationalStatus(bsChild1));
+        assertEquals(Status.MINOR, stateMachine.getOperationalStatus(svc2));
+        assertEquals(Status.MINOR, stateMachine.getOperationalStatus(bsChild2));
+        assertEquals(Status.MINOR, stateMachine.getOperationalStatus(bsParent));
     }
 
     @Test

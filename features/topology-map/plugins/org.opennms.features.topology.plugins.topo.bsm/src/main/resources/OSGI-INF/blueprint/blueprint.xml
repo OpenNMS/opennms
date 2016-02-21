@@ -36,18 +36,26 @@
         </service-properties>
     </service>
 
-    <!-- Status provider -->
-    <bean id="bsmStatusProvider" class="org.opennms.features.topology.plugins.topo.bsm.BusinessServicesStatusProvider">
-		<argument ref="transactionAwareBeanProxyFactory" />
-		<property name="businessServiceManager" ref="businessServiceManager" />
-    </bean>
+    <!-- Status provider Bean for Vertex and Edge Status Provider-->
+    <bean id="bsmStatusProvider" class="org.opennms.features.topology.plugins.topo.bsm.BusinessServicesStatusProvider" />
+    <!-- Vertex Status Provider -->
     <service interface="org.opennms.features.topology.api.CheckedOperation">
         <service-properties>
             <entry key="operation.menuLocation" value="View" />
             <entry key="operation.label" value="Business Services Status?group=status" />
         </service-properties>
-        <bean class="org.opennms.features.topology.plugins.topo.bsm.AlarmStatusToggleOperation">
+        <bean class="org.opennms.features.topology.plugins.topo.bsm.operations.BusinessServiceVertexStatusToggleOperation">
             <property name="statusProvider" ref="bsmStatusProvider" />
+        </bean>
+    </service>
+    <!-- Edge Status Provider -->
+    <service interface="org.opennms.features.topology.api.CheckedOperation">
+        <service-properties>
+            <entry key="operation.menuLocation" value="View" />
+            <entry key="operation.label" value="Business Services Edge Status?group=status" />
+        </service-properties>
+        <bean class="org.opennms.features.topology.plugins.topo.bsm.operations.BusinessServiceEdgeStatusToggleOperation">
+            <property name="edgeStatusProvider" ref="bsmStatusProvider" />
         </bean>
     </service>
 
@@ -121,7 +129,7 @@
             <entry key="operation.menuLocation" value="View" />
             <entry key="operation.label" value="Hide Leaf Elements?group=bsm" />
         </service-properties>
-        <bean class="org.opennms.features.topology.plugins.topo.bsm.HideLeafElementToggleOperation"/>
+        <bean class="org.opennms.features.topology.plugins.topo.bsm.operations.HideLeafElementToggleOperation"/>
     </service>
 
     <!-- Icon definition -->

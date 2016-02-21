@@ -53,6 +53,7 @@ import org.opennms.netmgt.bsm.service.model.AlarmWrapper;
 import org.opennms.netmgt.bsm.service.model.IpService;
 import org.opennms.netmgt.bsm.service.model.ReadOnlyBusinessService;
 import org.opennms.netmgt.bsm.service.model.Status;
+import org.opennms.netmgt.bsm.service.model.edge.IpServiceEdge;
 import org.opennms.netmgt.bsm.service.model.edge.ro.ReadOnlyEdge;
 import org.opennms.netmgt.bsm.service.model.graph.BusinessServiceGraph;
 import org.opennms.netmgt.bsm.service.model.graph.GraphEdge;
@@ -328,9 +329,16 @@ public class DefaultBusinessServiceStateMachine implements BusinessServiceStateM
                 public String transform(GraphVertex vertex) {
                     if (vertex.getBusinessService() != null) {
                         return String.format("BS[%s]", vertex.getBusinessService().getName());
-                    } else {
-                        return String.format("%s[%d]", vertex.getEdge().getType(), vertex.getEdge().getId());
                     }
+                    if (vertex.getReductionKey() != null) {
+                        return String.format("RK[%s]", vertex.getReductionKey());
+                    }
+                    // Check for type last, as the reduction key edges of ip services are of type IP_SERVICE
+                    if (vertex.getEdge().getType() == ReadOnlyEdge.Type.IP_SERVICE) {
+                        IpService ipService = ((IpServiceEdge) vertex.getEdge()).getIpService();
+                        return String.format("IP_SERVICE[%s,%s]", ipService.getId(), ipService.getServiceName());
+                    }
+                    return String.format("%s[%d]", vertex.getEdge().getType(), vertex.getEdge().getId());
                 }
             });
             vv.getRenderContext().setEdgeLabelTransformer(new Transformer<GraphEdge,String>() {
@@ -352,6 +360,16 @@ public class DefaultBusinessServiceStateMachine implements BusinessServiceStateM
             } catch (IOException e) {
                 throw Throwables.propagate(e);
             }
+        } finally {
+            m_rwLock.readLock().unlock();
+        }
+    }
+
+    @Override
+    public BusinessServiceGraph getGraph() {
+        m_rwLock.readLock().lock();
+        try {
+            return m_g;
         } finally {
             m_rwLock.readLock().unlock();
         }

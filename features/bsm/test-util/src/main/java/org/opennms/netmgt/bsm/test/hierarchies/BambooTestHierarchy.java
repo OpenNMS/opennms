@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.bsm.test;
+package org.opennms.netmgt.bsm.test.hierarchies;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -37,6 +37,7 @@ import org.opennms.netmgt.bsm.persistence.api.functions.map.IdentityEntity;
 import org.opennms.netmgt.bsm.persistence.api.functions.map.IncreaseEntity;
 import org.opennms.netmgt.bsm.persistence.api.functions.reduce.HighestSeverityEntity;
 import org.opennms.netmgt.bsm.persistence.api.functions.reduce.ThresholdEntity;
+import org.opennms.netmgt.bsm.test.BusinessServiceEntityBuilder;
 
 // Creates a Business Service Hierarchy as defined here: http://www.opennms.org/wiki/BusinessServiceMonitoring#State_Machine
 public class BambooTestHierarchy {

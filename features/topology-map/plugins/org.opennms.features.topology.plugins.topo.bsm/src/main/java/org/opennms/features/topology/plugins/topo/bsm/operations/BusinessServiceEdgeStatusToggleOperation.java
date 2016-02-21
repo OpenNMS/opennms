@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2013-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2016 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,10 +26,16 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.plugins.topo.linkd.internal.operations;
+package org.opennms.features.topology.plugins.topo.bsm.operations;
 
-import org.opennms.features.topology.api.AbstractStatusToggleOperation;
+import org.opennms.features.topology.api.AbstractEdgeStatusToggleOperation;
+import org.opennms.features.topology.api.GraphContainer;
+import org.opennms.features.topology.plugins.topo.bsm.BusinessServicesTopologyProvider;
 
-public class AlarmStatusToggleOperation extends AbstractStatusToggleOperation {
+public class BusinessServiceEdgeStatusToggleOperation extends AbstractEdgeStatusToggleOperation {
 
+    @Override
+    protected boolean enabled(GraphContainer container) {
+        return container.getBaseTopology().getVertexNamespace().equals(BusinessServicesTopologyProvider.TOPOLOGY_NAMESPACE);
+    }
 }
