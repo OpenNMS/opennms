@@ -37,7 +37,9 @@ import org.opennms.features.topology.api.topo.Criteria;
 import org.opennms.features.topology.api.topo.SimpleVertexProvider;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
+import org.opennms.features.topology.plugins.topo.bsm.AbstractBusinessServiceVertex.Type;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.Collections2;
 
 public class BusinessServiceVertexProvider extends SimpleVertexProvider {
@@ -49,6 +51,17 @@ public class BusinessServiceVertexProvider extends SimpleVertexProvider {
     public Vertex getVertex(VertexRef reference, Criteria... criteria) {
         Vertex theVertex = super.getVertex(reference, criteria);
         return filter(theVertex, criteria);
+    }
+
+    @Override
+    public Vertex getVertex(String namespace, String id) {
+        // Hack, as the id may not be prefixed with the type.
+        // In these cases we assume a Business Service and update the id
+        // We need to do this, otherwise linking from outside the Topology UI may not work
+        if (!isValidVertexId(id)) {
+            id = Type.BusinessService + ":" + id;
+        }
+        return super.getVertex(namespace, id);
     }
 
     @Override
@@ -84,5 +97,18 @@ public class BusinessServiceVertexProvider extends SimpleVertexProvider {
 
     private boolean hideLeafElement(List<Criteria> criteria) {
         return criteria.stream().filter(e -> e instanceof BusinessServicesHideLeafsCriteria).findFirst().isPresent();
+    }
+
+    // Verify if the id starts with the type name
+    private boolean isValidVertexId(String id) {
+        if (Strings.isNullOrEmpty(id)) {
+            return false;
+        }
+        for (Type eachType : Type.values()) {
+            if (id.startsWith(eachType.name())) {
+                return true;
+            }
+        }
+        return false;
     }
 }
