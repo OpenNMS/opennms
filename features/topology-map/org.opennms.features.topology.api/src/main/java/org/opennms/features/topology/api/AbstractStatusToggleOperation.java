@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2013-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2016 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,25 +26,31 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.plugins.topo.application;
+package org.opennms.features.topology.api;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import org.opennms.features.topology.api.AbstractCheckedOperation;
-import org.opennms.features.topology.api.GraphContainer;
-import org.opennms.features.topology.api.OperationContext;
 import org.opennms.features.topology.api.topo.StatusProvider;
 import org.opennms.features.topology.api.topo.VertexRef;
 
-public class AlarmStatusToggleOperation extends AbstractCheckedOperation {
+// This class is abstract only because the history is applied based on the class name
+public abstract class AbstractStatusToggleOperation extends AbstractCheckedOperation {
 
     private StatusProvider m_statusProvider;
 
     @Override
     public void execute(List<VertexRef> targets, OperationContext operationContext) {
-        toggle(operationContext.getGraphContainer());
+        GraphContainer container = operationContext.getGraphContainer();
+
+        // if already selected, deselect
+        if (container.getVertexStatusProvider() == m_statusProvider) {
+            container.setVertexStatusProvider(null);
+        } else { // otherwise select
+            container.setVertexStatusProvider(m_statusProvider);
+        }
+        container.redoLayout();
     }
 
     @Override
@@ -70,29 +76,15 @@ public class AlarmStatusToggleOperation extends AbstractCheckedOperation {
     @Override
     public void applyHistory(GraphContainer container, Map<String, String> settings) {
         String historyValue = settings.get(getClass().getName());
-        if (historyValue == null || historyValue.isEmpty()) {
-            container.setVertexStatusProvider(m_statusProvider); // no history value set, use default
+        boolean statusEnabled = Boolean.TRUE.toString().equals(historyValue);
+        if (statusEnabled) {
+            container.setVertexStatusProvider(m_statusProvider);
         } else {
-            // an history value is set, decide what to do
-            boolean alarmStatusEnabled = Boolean.TRUE.toString().equals(historyValue);
-            if (alarmStatusEnabled) {
-                container.setVertexStatusProvider(m_statusProvider);
-            } else {
-                container.setVertexStatusProvider(null);
-            }
+            container.setVertexStatusProvider(null);
         }
     }
 
     public void setStatusProvider(StatusProvider statusProvider) {
         m_statusProvider = statusProvider;
-    }
-
-    private void toggle(GraphContainer container) {
-        if (container.getVertexStatusProvider() == null) {
-            container.setVertexStatusProvider(m_statusProvider);
-        } else {
-            container.setVertexStatusProvider(null);
-        }
-        container.redoLayout();
     }
 }

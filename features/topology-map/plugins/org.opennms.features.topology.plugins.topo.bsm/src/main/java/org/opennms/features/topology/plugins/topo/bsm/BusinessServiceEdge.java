@@ -21,47 +21,38 @@
  *      http://www.gnu.org/licenses/
  *
  * For more information contact:
- * OpenNMS(R) Licensing <license@opennms.org>
- *      http://www.opennms.org/
- *      http://www.opennms.com/
+ *     OpenNMS(R) Licensing <license@opennms.org>
+ *     http://www.opennms.org/
+ *     http://www.opennms.com/
  *******************************************************************************/
 
 package org.opennms.features.topology.plugins.topo.bsm;
 
-import java.util.Set;
-
+import org.opennms.features.topology.api.topo.AbstractEdge;
 import org.opennms.netmgt.bsm.service.model.Status;
+import org.opennms.netmgt.bsm.service.model.graph.GraphEdge;
 
-import com.google.common.collect.Sets;
+public class BusinessServiceEdge extends AbstractEdge {
 
-public class ReductionKeyVertex extends AbstractBusinessServiceVertex {
+    private final Status status;
 
-    private final String reductionKey;
-
-    protected ReductionKeyVertex(String reductionKey, int level, Status status) {
-        super(Type.ReductionKey + ":" + reductionKey, reductionKey, level, status);
-        this.reductionKey = reductionKey;
-        setTooltipText(String.format("Reduction Key '%s'", reductionKey));
-        setIconKey("reduction-key");
+    public BusinessServiceEdge(GraphEdge graphEdge, AbstractBusinessServiceVertex source, AbstractBusinessServiceVertex target) {
+        super(BusinessServicesTopologyProvider.TOPOLOGY_NAMESPACE, String.format("connection:%s:%s", source.getId(), target.getId()), source, target);
+        this.status = graphEdge.getStatus();
+        setTooltipText(String.format("Map function: %s, Weight: %s", graphEdge.getMapFunction().getClass().getSimpleName(), graphEdge.getWeight()));
     }
 
-    public String getReductionKey() {
-        return reductionKey;
-    }
-
-    @Override
-    public Type getType() {
-        return Type.ReductionKey;
+    private BusinessServiceEdge(BusinessServiceEdge edgeToClone) {
+        super(edgeToClone);
+        status = edgeToClone.status;
     }
 
     @Override
-    public boolean isLeaf() {
-        return true;
+    public AbstractEdge clone() {
+        return new BusinessServiceEdge(this);
     }
 
-    @Override
-    public Set<String> getReductionKeys() {
-        return Sets.newHashSet(getReductionKey());
+    public Status getOperationalStatus() {
+        return status;
     }
-
 }

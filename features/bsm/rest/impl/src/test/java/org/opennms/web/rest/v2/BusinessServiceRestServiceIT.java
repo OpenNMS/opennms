@@ -28,9 +28,9 @@
 
 package org.opennms.web.rest.v2;
 
-import static org.opennms.netmgt.bsm.test.BambooTestHierarchy.BAMBOO_AGENT_CAROLINA_REDUCTION_KEY;
-import static org.opennms.netmgt.bsm.test.BambooTestHierarchy.BAMBOO_AGENT_DUKE_REDUCTION_KEY;
-import static org.opennms.netmgt.bsm.test.BambooTestHierarchy.BAMBOO_AGENT_NCSTATE_REDUCTION_KEY;
+import static org.opennms.netmgt.bsm.test.hierarchies.BambooTestHierarchy.BAMBOO_AGENT_CAROLINA_REDUCTION_KEY;
+import static org.opennms.netmgt.bsm.test.hierarchies.BambooTestHierarchy.BAMBOO_AGENT_DUKE_REDUCTION_KEY;
+import static org.opennms.netmgt.bsm.test.hierarchies.BambooTestHierarchy.BAMBOO_AGENT_NCSTATE_REDUCTION_KEY;
 import static org.opennms.netmgt.bsm.test.BsmTestUtils.toRequestDto;
 import static org.opennms.netmgt.bsm.test.BsmTestUtils.toResponseDTO;
 import static org.opennms.netmgt.bsm.test.BsmTestUtils.toResponseDto;
@@ -72,10 +72,10 @@ import org.opennms.netmgt.bsm.persistence.api.functions.reduce.HighestSeverityEn
 import org.opennms.netmgt.bsm.service.model.Status;
 import org.opennms.netmgt.bsm.service.model.edge.Edge;
 import org.opennms.netmgt.bsm.service.model.functions.map.Ignore;
-import org.opennms.netmgt.bsm.test.BambooTestHierarchy;
+import org.opennms.netmgt.bsm.test.hierarchies.BambooTestHierarchy;
 import org.opennms.netmgt.bsm.test.BsmDatabasePopulator;
 import org.opennms.netmgt.bsm.test.BusinessServiceEntityBuilder;
-import org.opennms.netmgt.bsm.test.SimpleTestHierarchy;
+import org.opennms.netmgt.bsm.test.hierarchies.SimpleTestHierarchy;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.test.JUnitConfigurationEnvironment;

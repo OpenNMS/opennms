@@ -30,7 +30,6 @@ package org.opennms.features.topology.plugins.topo.bsm;
 
 import java.util.Set;
 
-import org.opennms.netmgt.bsm.service.BusinessServiceManager;
 import org.opennms.netmgt.bsm.service.model.IpService;
 import org.opennms.netmgt.bsm.service.model.Status;
 
@@ -39,16 +38,17 @@ public class IpServiceVertex extends AbstractBusinessServiceVertex {
     private final Integer ipServiceId;
     private final Set<String> reductionKeys;
 
-    public IpServiceVertex(IpService ipService, int level) {
+    public IpServiceVertex(IpService ipService, int level, Status status) {
         this(ipService.getId(),
             ipService.getServiceName(),
             ipService.getIpAddress(),
             ipService.getReductionKeys(),
-            level);
+            level,
+            status);
     }
 
-    private IpServiceVertex(int ipServiceId, String ipServiceName, String ipAddress, Set<String> reductionKeys, int level) {
-        super(Type.IpService + ":" + ipServiceId, ipServiceName, level);
+    private IpServiceVertex(int ipServiceId, String ipServiceName, String ipAddress, Set<String> reductionKeys, int level, Status status) {
+        super(Type.IpService + ":" + ipServiceId, ipServiceName, level, status);
         this.ipServiceId = ipServiceId;
         this.reductionKeys = reductionKeys;
         setIpAddress(ipAddress);
@@ -74,10 +74,5 @@ public class IpServiceVertex extends AbstractBusinessServiceVertex {
     @Override
     public Set<String> getReductionKeys() {
         return reductionKeys;
-    }
-
-    @Override
-    public Status getOperationalStatus(BusinessServiceManager manager) {
-        return manager.getOperationalStatus(manager.getIpServiceById(ipServiceId));
     }
 }
