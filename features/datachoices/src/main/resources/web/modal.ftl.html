@@ -34,7 +34,7 @@
 (function(){
     $(document).ready(function() {
     	$('#datachoices-preview').on('show.bs.collapse', function () {
-    		$.get('datachoices!')
+    		$.get('datachoices')
     		  .done(function(data) {
     			  $('#datachoices-preview-content').html("<pre>" + JSON.stringify(data, null, 2) + "</pre>");
     		  })
