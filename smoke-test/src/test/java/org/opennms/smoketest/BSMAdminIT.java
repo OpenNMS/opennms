@@ -61,6 +61,10 @@ public class BSMAdminIT extends OpenNMSSeleniumTestCase {
     private class BsmAdminPageEditWindow {
         private final String businessServiceName;
 
+        private BsmAdminPageEditWindow() {
+            this(null);
+        }
+
         private BsmAdminPageEditWindow(final String businessServiceName) {
             this.businessServiceName = businessServiceName;
         }
@@ -201,7 +205,7 @@ public class BSMAdminIT extends OpenNMSSeleniumTestCase {
         public BsmAdminPageEditWindow openNewDialog(String businessServiceName) throws InterruptedException {
             findElementById("createButton").click();
             wait.until(pageContainsText("Business Service Edit")); // we wait until the edit dialog appears
-            return new BsmAdminPageEditWindow(businessServiceName).name(businessServiceName);
+            return new BsmAdminPageEditWindow().name(businessServiceName);
         }
 
         public BsmAdminPageEditWindow openEditDialog(String businessServiceName) {
