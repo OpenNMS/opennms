@@ -729,7 +729,7 @@
     // FIXME This should generate the OpenNMS version of the foreignSource definition based on the model.
     requisitionsService.saveForeignSourceDefinition = function(foreignSourceDef) {
       var deferred = $q.defer();
-      var foreignSource = foreignSourceDef['foreign-source'];
+      var foreignSource = foreignSourceDef.name;
       var url = requisitionsService.internal.foreignSourcesUrl;
       $log.debug('saveForeignSourceDefinition: saving definition for requisition ' + foreignSource);
       $http.post(url, foreignSourceDef)
@@ -741,6 +741,35 @@
         deferred.reject('Cannot save foreign source definition (detectors and policies) for requisition ' + foreignSource + '.' + requisitionsService.internal.errorHelp);
       });
       return deferred.promise;
+    };
+
+    /**
+    * @description Request the removal of a foreign source definition on the OpenNMS server.
+    *
+    * @name RequisitionsService:deleteForeignSourceDefinition
+    * @ngdoc method
+    * @methodOf RequisitionsService
+    * @param {string} foreignSource The requisition's name (a.k.a. foreign source), use 'default' for the default foreign source.
+    * @returns {object} a promise.
+    */
+    requisitionsService.deleteForeignSourceDefinition = function(foreignSource) {
+      var deferred = $q.defer();
+
+      $log.debug('deleteForeignSourceDefinition: deleting foreign source definition ' + foreignSource);
+      var deferredFSPending  = $http.delete(requisitionsService.internal.foreignSourcesUrl + '/' + foreignSource);
+      var deferredFSDeployed = $http.delete(requisitionsService.internal.foreignSourcesUrl + '/deployed/' + foreignSource);
+
+      $q.all([ deferredFSPending, deferredFSDeployed ])
+      .then(function(results) {
+        $log.debug('deleteForeignSourceDefinition: deleted foreign source definition ' + foreignSource);
+        deferred.resolve(results);
+      }, function(error, status) {
+        $log.error('deleteForeignSourceDefinition: DELETE operation failed:', error, status);
+        deferred.reject('Cannot delete the foreign source definition ' + foreignSource + '.' + requisitionsService.internal.errorHelp);
+      });
+
+      return deferred.promise;
+
     };
 
     /**

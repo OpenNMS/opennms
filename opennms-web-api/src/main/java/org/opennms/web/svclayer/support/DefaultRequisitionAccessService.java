@@ -540,6 +540,7 @@ public class DefaultRequisitionAccessService implements RequisitionAccessService
         return submitAndWait(new Callable<RequisitionCollection>() {
             @Override public RequisitionCollection call() throws Exception {
                 flushAll();
+                // FIXME Use NodeDao to provide the list of deployed foerignId on each requisition.
                 return new RequisitionCollection(getDeployedForeignSourceRepository().getRequisitions());
             }
         });

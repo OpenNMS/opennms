@@ -21,11 +21,12 @@
   * @requires $scope Angular local scope
   * @requires $filter Angular filter
   * @requires $window Document window
+  * @requires $uibModal Angular UI modal
   * @requires RequisitionsService The requisitions service
   * @requires SynchronizeService The synchronize service
   * @requires growl The growl plugin for instant notifications
   */
-  .controller('RequisitionsController', ['$scope', '$filter', '$window', 'RequisitionsService', 'SynchronizeService', 'growl', function($scope, $filter, $window, RequisitionsService, SynchronizeService, growl) {
+  .controller('RequisitionsController', ['$scope', '$filter', '$window', '$uibModal', 'RequisitionsService', 'SynchronizeService', 'growl', function($scope, $filter, $window, $uibModal, RequisitionsService, SynchronizeService, growl) {
 
     /**
     * @description The timing status.
@@ -135,7 +136,37 @@
     * @param {string} foreignSource The name of the requisition
     */
     $scope.clone = function(foreignSource) {
-      growl.warning('Cannot clone foreign source definitions for ' + foreignSource + '. Not implemented yet.'); // FIXME
+      var availableForeignSources = [];
+      angular.forEach($scope.requisitions, function(r) {
+        if (r.foreignSource !== foreignSource) {
+          availableForeignSources.push(r.foreignSource);
+        }
+      });
+      console.log("available requisitions: " + availableForeignSources);
+      var modalInstance = $uibModal.open({
+        backdrop: 'static',
+        controller: 'CloneForeignSourceController',
+        templateUrl: 'views/clone-foreignsource.html',
+        resolve: {
+          foreignSource: function() { return foreignSource },
+          availableForeignSources: function() { return availableForeignSources }
+        }
+      });
+      modalInstance.result.then(function(targetForeignSource) {
+        RequisitionsService.startTiming();
+        RequisitionsService.getForeignSourceDefinition(foreignSource).then(
+          function(r) { // success
+            r.name = targetForeignSource
+            RequisitionsService.saveForeignSourceDefinition(r).then(
+              function() { // success
+                growl.success('The foreign source definition for ' + foreignSource + ' has been cloned to ' + targetForeignSource);
+              },
+              $scope.errorHandler
+            );
+          },
+          $scope.errorHandler
+        );
+      });
     };
 
     /**
@@ -261,7 +292,18 @@
     * @methodOf RequisitionsController
     */
     $scope.resetDefaultForeignSource = function() {
-      growl.warning('Cannot reset default foreign source definition. Not implemented yet.'); // FIXME
+      bootbox.confirm('Are you sure you want to reset the default foreign source definition ?', function(ok) {
+        if (ok) {
+          RequisitionsService.startTiming();
+          RequisitionsService.deleteForeignSourceDefinition('default').then(
+            function() { // success
+              growl.success('The default foreign source definition has been reseted.');
+              $scope.initialize();
+            },
+            $scope.errorHandler
+          );
+        }
+      });
     };
 
     /**

@@ -157,7 +157,6 @@
     * @methodOf ForeignSourceController
     * @param {object} handler The goto handler
     */
-
     $scope.goTo = function(handler) {
       if (this.fsForm.$dirty) {
         bootbox.dialog({
@@ -389,6 +388,28 @@
         },
         $scope.errorHandler
       );
+    };
+
+    /**
+    * @description Resets to the default set of detectors and policies
+    *
+    * @name ForeignSourceController:reset
+    * @ngdoc method
+    * @methodOf ForeignSourceController
+    */
+    $scope.reset = function() {
+      bootbox.confirm('Are you sure you want to reset the foreign source definition to the default ?', function(ok) {
+        if (ok) {
+          RequisitionsService.startTiming();
+          RequisitionsService.deleteForeignSourceDefinition($scope.foreignSource).then(
+            function() { // success
+              growl.success('The foreign source definition for ' + $scope.foreignSource + 'has been reseted.');
+              $scope.initialize();
+            },
+            $scope.errorHandler
+          );
+        }
+      });
     };
 
     /**

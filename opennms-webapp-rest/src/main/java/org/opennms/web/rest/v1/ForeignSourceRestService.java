@@ -495,7 +495,11 @@ public class ForeignSourceRestService extends OnmsRestService {
         try {
             ForeignSource fs = getForeignSource(foreignSource);
             LOG.debug("deleteDeployedForeignSource: deleting foreign source {}", foreignSource);
-            m_deployedForeignSourceRepository.delete(fs);
+            if ("default".equals(foreignSource)) {
+                m_deployedForeignSourceRepository.resetDefaultForeignSource();
+            } else {
+                m_deployedForeignSourceRepository.delete(fs);
+            }
             return Response.ok().build();
         } finally {
             writeUnlock();

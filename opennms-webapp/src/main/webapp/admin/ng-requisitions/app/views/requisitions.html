@@ -22,11 +22,9 @@
         <button class="btn btn-default" ng-click="editDefaultForeignSource()" id="edit-default-foreign-source">
           <span class="glyphicon glyphicon-edit"/> Edit Default FS
         </button>
-        <!-- Not implemented
-          <button class="btn btn-default navbar-btn" ng-click="resetDefaultForeignSource()" id="reset-default">
-            <span class="glyphicon glyphicon-retweet"/> Reset Default
-          </button>
-        -->
+        <button class="btn btn-default navbar-btn" ng-click="resetDefaultForeignSource()" id="reset-default">
+          <span class="glyphicon glyphicon-retweet"/> Reset Default
+        </button>
         <button class="btn btn-default" ng-click="refresh()" id="refresh">
           <span class="glyphicon glyphicon-refresh"/> Refresh
         </button>
@@ -93,13 +91,11 @@
                 ng-click="editForeignSource(requisition.foreignSource)">
                 <span class="glyphicon glyphicon-edit"></span>
               </button>
-              <!-- Not implemented
               <button class="btn btn-default btn-xs clone-foreign-source"
                 uib-tooltip="Clone the set detectors and policies of the {{requisition.foreignSource}} Requisition"
                 ng-click="clone(requisition.foreignSource)">
                 <span class="glyphicon glyphicon-link"></span>
               </button>
-              -->
               <button class="btn btn-default btn-xs synchronize"
                 uib-tooltip="Synchronize the {{requisition.foreignSource}} Requisition"
                 ng-disabled="timingStatus.isRunning"

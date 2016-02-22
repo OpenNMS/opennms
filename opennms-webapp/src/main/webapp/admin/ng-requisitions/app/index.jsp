@@ -72,6 +72,7 @@
     <jsp:param name="script" value='<script type="text/javascript" src="scripts/services/Synchronize.js"></script>' />
     <jsp:param name="script" value='<script type="text/javascript" src="scripts/filters/startFrom.js"></script>' />
     <jsp:param name="script" value='<script type="text/javascript" src="scripts/directives/requisitionConstraints.js"></script>' />
+    <jsp:param name="script" value='<script type="text/javascript" src="scripts/controllers/CloneForeignSource.js"></script>' />
     <jsp:param name="script" value='<script type="text/javascript" src="scripts/controllers/Detector.js"></script>' />
     <jsp:param name="script" value='<script type="text/javascript" src="scripts/controllers/Policy.js"></script>' />
     <jsp:param name="script" value='<script type="text/javascript" src="scripts/controllers/ForeignSource.js"></script>' />
