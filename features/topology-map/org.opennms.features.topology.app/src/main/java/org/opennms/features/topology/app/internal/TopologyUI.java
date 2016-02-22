@@ -33,7 +33,6 @@ import static org.opennms.features.topology.api.support.VertexHopGraphProvider.g
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URL;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -94,7 +93,9 @@ import com.vaadin.annotations.PreserveOnRefresh;
 import com.vaadin.annotations.Theme;
 import com.vaadin.data.Property;
 import com.vaadin.event.FieldEvents;
+import com.vaadin.event.ShortcutAction;
 import com.vaadin.server.DefaultErrorHandler;
+import com.vaadin.server.FontAwesome;
 import com.vaadin.server.Page.UriFragmentChangedEvent;
 import com.vaadin.server.Page.UriFragmentChangedListener;
 import com.vaadin.server.RequestHandler;
@@ -112,6 +113,7 @@ import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.MenuBar;
 import com.vaadin.ui.MenuBar.MenuItem;
 import com.vaadin.ui.NativeButton;
@@ -120,6 +122,7 @@ import com.vaadin.ui.Slider;
 import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.TabSheet.SelectedTabChangeEvent;
 import com.vaadin.ui.TabSheet.SelectedTabChangeListener;
+import com.vaadin.ui.TextArea;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
@@ -194,7 +197,7 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
         private static final String PARAMETER_FOCUS_VERTICES = "focus-vertices";
         private static final String PARAMETER_SEMANTIC_ZOOM_LEVEL = "szl";
         private static final String PARAMETER_GRAPH_PROVIDER = "provider";
-        private static final String PARAMETER_HISTORY_FRAGMENT = "ui-fragment";
+        protected static final String PARAMETER_HISTORY_FRAGMENT = "ui-fragment";
 
         private TopologyUIRequestHandler() {
             requestHandlerList = Lists.newArrayList(
@@ -384,8 +387,7 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
         request.getService().addSessionDestroyListener((SessionDestroyListener) event -> m_widgetManager.removeUpdateListener(TopologyUI.this));
 
         try {
-            URL pageUrl = getPage().getLocation().toURL();
-            m_headerHtml = getHeader(new HttpServletRequestVaadinImpl(request, pageUrl));
+            m_headerHtml = getHeader(((VaadinServletRequest) request).getHttpServletRequest());
         } catch (final Exception e) {
             LOG.error("failed to get header HTML for request " + request.getPathInfo(), e.getCause());
         }
@@ -978,7 +980,58 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
 
 		m_contextMenu = commandManager.getContextMenu(new DefaultOperationContext(this, m_graphContainer, DisplayLocation.CONTEXTMENU));
 		m_contextMenu.setAsContextMenuOf(this);
-		updateMenuItems();
+
+        // Add Menu Item to share the View with others
+        m_menuBar.addItem("Share", FontAwesome.SHARE, new MenuBar.Command() {
+            @Override
+            public void menuSelected(MenuItem selectedItem) {
+                // create the share link
+                String fragment = getPage().getLocation().getFragment();
+                String url = getPage().getLocation().toString().replace("#" + getPage().getLocation().getFragment(), "");
+                String shareLink = String.format("%s?%s=%s", url, TopologyUIRequestHandler.PARAMETER_HISTORY_FRAGMENT, fragment);
+
+                // Create the Window
+                Window shareWindow = new Window();
+                shareWindow.setCaption("Share Link");
+                shareWindow.setModal(true);
+                shareWindow.setClosable(true);
+                shareWindow.setResizable(false);
+                shareWindow.setWidth(400, Unit.PIXELS);
+
+                TextArea shareLinkField = new TextArea();
+                shareLinkField.setValue(shareLink);
+                shareLinkField.setReadOnly(true);
+                shareLinkField.setRows(3);
+                shareLinkField.setWidth(100, Unit.PERCENTAGE);
+
+                // Close Button
+                Button close = new Button("Close");
+                close.setClickShortcut(ShortcutAction.KeyCode.ESCAPE, null);
+                close.addClickListener(event -> shareWindow.close());
+
+                // Layout for Buttons
+                HorizontalLayout buttonLayout = new HorizontalLayout();
+                buttonLayout.setMargin(true);
+                buttonLayout.setSpacing(true);
+                buttonLayout.setWidth("100%");
+                buttonLayout.addComponent(close);
+                buttonLayout.setComponentAlignment(close, Alignment.BOTTOM_RIGHT);
+
+                // Content Layout
+                VerticalLayout verticalLayout = new VerticalLayout();
+                verticalLayout.setMargin(true);
+                verticalLayout.setSpacing(true);
+                verticalLayout.addComponent(new Label("Please use the following link to share the current view with others."));
+                verticalLayout.addComponent(shareLinkField);
+                verticalLayout.addComponent(buttonLayout);
+
+                shareWindow.setContent(verticalLayout);
+
+                getUI().addWindow(shareWindow);
+            }
+        });
+
+        updateMenuItems();
 	}
 
 	@Override
