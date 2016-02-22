@@ -219,14 +219,16 @@ public class BusinessServiceEditWindow extends Window {
          */
         m_nameTextField = new TextField("Business Service Name");
         m_nameTextField.setId("nameField");
-        m_nameTextField.setValue(Strings.nullToEmpty(businessService.getName()));
+        m_nameTextField.setNullRepresentation("");
+        m_nameTextField.setNullSettingAllowed(true);
+        m_nameTextField.setValue(businessService.getName());
         m_nameTextField.setWidth(100, Unit.PERCENTAGE);
         m_nameTextField.setRequired(true);
         m_nameTextField.focus();
         m_nameTextField.addValidator(new AbstractStringValidator("Name must be unique") {
             @Override
             protected boolean isValidValue(String value) {
-                return !m_businessServiceNames.contains(value);
+                return value != null && !m_businessServiceNames.contains(value);
             }
         });
         verticalLayout.addComponent(m_nameTextField);
