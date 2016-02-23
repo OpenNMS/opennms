@@ -36,6 +36,7 @@ import java.util.stream.Stream;
 
 import org.opennms.netmgt.bsm.service.model.BusinessService;
 import org.opennms.netmgt.bsm.service.model.Status;
+import org.opennms.netmgt.bsm.service.model.graph.BusinessServiceGraph;
 
 /**
  * Criteria for searching for business services
@@ -82,7 +83,8 @@ public class BusinessServiceSearchCriteriaBuilder implements BusinessServiceSear
      */
     public enum Order {
         Name,
-        Severity;
+        Severity,
+        Level;
     }
 
     /**
@@ -223,6 +225,9 @@ public class BusinessServiceSearchCriteriaBuilder implements BusinessServiceSear
         }
 
         Comparator<BusinessService> comparator = new Comparator<BusinessService>() {
+
+            private final BusinessServiceGraph graph = businessServiceManager.getGraph();
+
             @Override
             public int compare(BusinessService p1, BusinessService p2) {
                 switch (m_order) {
@@ -231,6 +236,10 @@ public class BusinessServiceSearchCriteriaBuilder implements BusinessServiceSear
                     }
                     case Severity: {
                         return businessServiceManager.getOperationalStatus(p1).compareTo(businessServiceManager.getOperationalStatus(p2));
+                    }
+                    case Level: {
+                        return Integer.compare(graph.getVertexByBusinessServiceId(p1.getId()).getLevel(),
+                                               graph.getVertexByBusinessServiceId(p2.getId()).getLevel());
                     }
                     default:
                         throw new IllegalArgumentException("Order not set");
