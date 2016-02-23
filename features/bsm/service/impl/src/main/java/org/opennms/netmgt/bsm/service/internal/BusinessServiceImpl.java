@@ -117,15 +117,6 @@ public class BusinessServiceImpl implements BusinessService {
     }
 
     @Override
-    public void setLevel(int level) {
-        getEntity().setLevel(level);
-    }
-
-    public int getLevel() {
-        return getEntity().getLevel();
-    }
-
-    @Override
     public ReductionFunction getReduceFunction() {
         return new ReduceFunctionMapper().toServiceFunction(getEntity().getReductionFunction());
     }
