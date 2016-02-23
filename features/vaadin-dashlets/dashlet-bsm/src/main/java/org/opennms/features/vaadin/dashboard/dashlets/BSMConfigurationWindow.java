@@ -240,6 +240,7 @@ public class BSMConfigurationWindow extends DashletConfigurationWindow {
 
         m_orderBy.addItem(BusinessServiceSearchCriteriaBuilder.Order.Name.name());
         m_orderBy.addItem(BusinessServiceSearchCriteriaBuilder.Order.Severity.name());
+        m_orderBy.addItem(BusinessServiceSearchCriteriaBuilder.Order.Level.name());
 
         m_orderSequence = new NativeSelect("Asc/Desc ");
         m_orderSequence.setNullSelectionAllowed(false);
