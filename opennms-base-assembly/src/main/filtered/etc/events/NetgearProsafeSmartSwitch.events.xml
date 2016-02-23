@@ -77,7 +77,7 @@
 		<logmsg dest='logndisplay'>&lt;p&gt;
 			Netgear Event: broadcastStormEndTrap trap received&lt;/p&gt;
 		</logmsg>
-	<severity>Cleared</severity>
+	<severity>Normal</severity>
 </event>
 <event>
 	<mask>
