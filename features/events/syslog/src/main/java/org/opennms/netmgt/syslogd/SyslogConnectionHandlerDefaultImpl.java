@@ -28,10 +28,9 @@
 
 package org.opennms.netmgt.syslogd;
 
-import java.util.concurrent.ExecutionException;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 
-import org.opennms.core.concurrent.WaterfallExecutor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,11 +51,10 @@ public class SyslogConnectionHandlerDefaultImpl implements SyslogConnectionHandl
 	public void handleSyslogConnection(final SyslogConnection message) {
 		//SyslogConnection *Must* copy packet data and InetAddress as DatagramPacket is a mutable type
 		try {
-			WaterfallExecutor.waterfall(m_executor, message);
-		} catch (ExecutionException e) {
+			//Replacing from waterfall executory to Completablefuture
+			CompletableFuture.supplyAsync(message::call, m_executor);
+		} catch (Exception e) {
 			LOG.error("Task execution failed in {}", this.getClass().getSimpleName(), e);
-		} catch (InterruptedException e) {
-			LOG.error("Task interrupted in {}", this.getClass().getSimpleName(), e);
 		}
 	}
 }
