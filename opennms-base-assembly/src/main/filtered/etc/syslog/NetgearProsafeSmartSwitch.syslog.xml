@@ -24,14 +24,6 @@ Tested using Netgear ProSafe Smart Switch, model GS752TP
             <match type="regex" expression="^NTP server version not compatible$" />
             <uei>uei.opennms.org/vendor/netgear/syslog/prosafesmartswitch/Debug/NTPServerVersionNotCompatible</uei>
         </ueiMatch>
-        <!-- catch-all event for other Debug syslog messages -->
-        <ueiMatch>
-            <facility>local7</facility>
-            <severity>Debug</severity>
-            <process-match expression="^%.*$" />
-            <match type="regex" expression=".*" />
-            <uei>uei.opennms.org/vendor/netgear/syslog/prosafesmartswitch/Debug/unknownMessage</uei>
-        </ueiMatch>
 
         <!-- Informational level syslog messages -->
         <ueiMatch>
@@ -69,14 +61,6 @@ Tested using Netgear ProSafe Smart Switch, model GS752TP
             <match type="substr" expression="The device has been renewed the configuration on interface$" />
             <uei>uei.opennms.org/vendor/netgear/syslog/prosafesmartswitch/Informational/DHCPAddressRenewed</uei>
         </ueiMatch>
-        <!-- catch-all event for other Informational syslog messages -->
-        <ueiMatch>
-            <facility>local7</facility>
-            <severity>Informational</severity>
-            <process-match expression="^%.*$" />
-            <match type="regex" expression=".*" />
-            <uei>uei.opennms.org/vendor/netgear/syslog/prosafesmartswitch/Informational/unknownMessage</uei>
-        </ueiMatch>
 
         <!-- Notice level syslog messages -->
         <ueiMatch>
@@ -99,14 +83,6 @@ Tested using Netgear ProSafe Smart Switch, model GS752TP
             <process-match expression="^%COPY-N-LOGGINGFILECOPYSTOP$" />
             <match type="substr" expression="stop log messages related to file copy operations" />
             <uei>uei.opennms.org/vendor/netgear/syslog/prosafesmartswitch/Notice/SwitchConfigUpdateStart</uei>  <!-- this message is sent BEFORE the COPY-N-LOGGINGFILECOPY message -->
-        </ueiMatch>
-        <!-- catch-all event for other Notice syslog messages -->
-        <ueiMatch>
-            <facility>local7</facility>
-            <severity>Notice</severity>
-            <process-match expression="^%.*$" />
-            <match type="regex" expression=".*" />
-            <uei>uei.opennms.org/vendor/netgear/syslog/prosafesmartswitch/Notice/unknownMessage</uei>
         </ueiMatch>
 
         <!-- Warning level syslog messages -->
@@ -160,24 +136,9 @@ Tested using Netgear ProSafe Smart Switch, model GS752TP
             <parameter-assignment matching-group="2" parameter-name="sourceIP" />
             <parameter-assignment matching-group="3" parameter-name="destinationIP" />
         </ueiMatch>
-        <!-- catch-all event for other Warning syslog messages -->
-        <ueiMatch>
-            <facility>local7</facility>
-            <severity>Warning</severity>
-            <process-match expression="^%.*$" />
-            <match type="regex" expression=".*" />
-            <uei>uei.opennms.org/vendor/netgear/syslog/prosafesmartswitch/Warning/unknownMessage</uei>
-        </ueiMatch>
 
         <!-- Error level syslog messages -->
-        <!-- catch-all event for other Error syslog messages -->
-        <ueiMatch>
-            <facility>local7</facility>
-            <severity>Error</severity>
-            <process-match expression="^%.*$" />
-            <match type="regex" expression=".*" />
-            <uei>uei.opennms.org/vendor/netgear/syslog/prosafesmartswitch/Error/unknownMessage</uei>
-        </ueiMatch>
+	<!-- none entered at this time -->
 
         <!-- Critical level syslog messages -->
         <ueiMatch>
@@ -186,33 +147,12 @@ Tested using Netgear ProSafe Smart Switch, model GS752TP
             <match type="substr" expression="Event(0x0)" />
             <uei>uei.opennms.org/vendor/netgear/syslog/prosafesmartswitch/Critical/SwitchBootingUp</uei>
         </ueiMatch>
-        <!-- catch-all event for other Critical syslog messages -->
-        <ueiMatch>
-            <facility>local7</facility>
-            <severity>Critical</severity>
-            <process-match expression="^%.*$" />
-            <match type="regex" expression=".*" />
-            <uei>uei.opennms.org/vendor/netgear/syslog/prosafesmartswitch/Critical/unknownMessage</uei>
-        </ueiMatch>
 
         <!-- Alert level syslog messages -->
-        <!-- catch-all event for other Alert syslog messages -->
-        <ueiMatch>
-            <facility>local7</facility>
-            <severity>Alert</severity>
-            <process-match expression="^%.*$" />
-            <match type="regex" expression=".*" />
-            <uei>uei.opennms.org/vendor/netgear/syslog/prosafesmartswitch/Alert/unknownMessage</uei>
-        </ueiMatch>
+	<!-- none entered at this time -->
 
         <!-- Emergency level syslog messages -->
-        <!-- catch-all event for other Emergency syslog messages -->
-        <ueiMatch>
-            <facility>local7</facility>
-            <severity>Emergency</severity>
-            <process-match expression="^%.*$" />
-            <match type="regex" expression=".*" />
-            <uei>uei.opennms.org/vendor/netgear/syslog/prosafesmartswitch/Emergency/unknownMessage</uei>
-        </ueiMatch>
+	<!-- none entered at this time -->
+
     </ueiList>
 </syslogd-configuration-group>
