@@ -109,8 +109,29 @@ xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0
 
     <service interface="org.opennms.features.topology.api.topo.SearchProvider" ref="topologyProvider" />
 
-    <!-- EnhancedLinkd StatusProviders Service and CheckedOperation -->
-    <bean id="linkdEdgeStatusProvider" class="org.opennms.features.topology.plugins.topo.linkd.internal.LinkdEdgeStatusProvider">
+    <!-- EnhancedLinkd StatusProviders Service -->
+    <bean id="lldpLinkStatusProvider" class="org.opennms.features.topology.plugins.topo.linkd.internal.LldpLinkStatusProvider" >
+        <property name="alarmDao" ref="alarmDao" />
+        <property name="lldpLinkDao" ref="lldpLinkDao"/>
+    </bean>
+
+    <bean id="ospfLinkStatusProvider" class="org.opennms.features.topology.plugins.topo.linkd.internal.OspfLinkStatusProvider">
+        <property name="alarmDao" ref="alarmDao"/>
+        <property name="ospfLinkDao" ref="ospfLinkDao" />
+    </bean>
+
+    <bean id="isisLinkStatusProvider" class="org.opennms.features.topology.plugins.topo.linkd.internal.IsIsLinkStatusProvider">
+        <property name="alarmDao" ref="alarmDao"/>
+        <property name="isisLinkDao" ref="isisLinkDao"/>
+    </bean>
+
+    <bean id="bridgeLinkStatusProvider" class="org.opennms.features.topology.plugins.topo.linkd.internal.BridgeLinkStatusProvider">
+        <property name="alarmDao" ref="alarmDao"/>
+        <property name="bridgeMacLinkDao" ref="bridgeMacLinkDao"/>
+        <property name="bridgeBridgeLinkDao" ref="bridgeBridgeLinkDao"/>
+    </bean>
+
+    <bean id="cdpLinkStatusProvider" class="org.opennms.features.topology.plugins.topo.linkd.internal.CdpLinkStatusProvider">
         <property name="alarmDao" ref="alarmDao"/>
     </bean>
 
@@ -124,30 +145,13 @@ xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0
         <property name="cdpLinkStatusProvider" ref="cdpLinkStatusProvider"/>
     </bean>
 
-    <service interface="org.opennms.features.topology.api.CheckedOperation" >
-        <service-properties>
-            <entry key="operation.menuLocation" value="View"/>
-            <entry key="operation.label" value="Link Status"/>
-        </service-properties>
-        <bean class="org.opennms.features.topology.plugins.topo.linkd.internal.operations.LinkStatusToggleOperation">
-            <property name="edgeStatusProvider" ref="enlinkdWrappedEdgeStatusProvider" />
-        </bean>
-    </service>
-    <!-- End LldpLinkStatusProvider -->
+    <service interface="org.opennms.features.topology.api.topo.EdgeStatusProvider" ref="enlinkdWrappedEdgeStatusProvider" />
 
     <!-- status provider -->
     <bean id="statusProvider" class="org.opennms.features.topology.plugins.topo.linkd.internal.AlarmStatusProvider">
         <argument ref="alarmDao"/>
     </bean>
-    <service interface="org.opennms.features.topology.api.CheckedOperation" >
-        <service-properties>
-            <entry key="operation.menuLocation" value="View"/>
-            <entry key="operation.label" value="Alarm Status?group=status"/>
-        </service-properties>
-        <bean class="org.opennms.features.topology.plugins.topo.linkd.internal.operations.AlarmStatusToggleOperation">
-            <property name="statusProvider" ref="statusProvider"/>
-        </bean>
-    </service>
+    <service interface="org.opennms.features.topology.api.topo.StatusProvider" ref="statusProvider" />
 
     <service interface="org.opennms.features.topology.api.IconRepository">
         <bean class="org.opennms.features.topology.api.support.DefaultIconRepository">
