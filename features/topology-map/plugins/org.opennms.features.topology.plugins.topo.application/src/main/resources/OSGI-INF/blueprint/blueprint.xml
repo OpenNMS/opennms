@@ -32,15 +32,7 @@ xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0 http://www.osgi.o
 	<bean id="statusProvider" class="org.opennms.features.topology.plugins.topo.application.ApplicationStatusProvider">
 		<argument ref="applicationStatusDao" />
 	</bean>
-	<service interface="org.opennms.features.topology.api.CheckedOperation" >
-		<service-properties>
-			<entry key="operation.menuLocation" value="View"/>
-			<entry key="operation.label" value="Application Status?group=status"/>
-		</service-properties>
-		<bean class="org.opennms.features.topology.plugins.topo.application.ApplicationStatusToggleOperation">
-			<property name="statusProvider" ref="statusProvider"/>
-		</bean>
-	</service>
+	<service interface="org.opennms.features.topology.api.topo.StatusProvider" ref="statusProvider" />
 
 	<!-- Application Table -->
 	<bean id="applicationTableSelectionLinkGenerator" class="org.opennms.features.topology.plugins.topo.application.browsers.ApplicationSelectionLinkGenerator">

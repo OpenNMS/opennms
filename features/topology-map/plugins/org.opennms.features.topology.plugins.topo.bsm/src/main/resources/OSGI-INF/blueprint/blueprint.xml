@@ -38,26 +38,8 @@
 
     <!-- Status provider Bean for Vertex and Edge Status Provider-->
     <bean id="bsmStatusProvider" class="org.opennms.features.topology.plugins.topo.bsm.BusinessServicesStatusProvider" />
-    <!-- Vertex Status Provider -->
-    <service interface="org.opennms.features.topology.api.CheckedOperation">
-        <service-properties>
-            <entry key="operation.menuLocation" value="View" />
-            <entry key="operation.label" value="Business Services Status?group=status" />
-        </service-properties>
-        <bean class="org.opennms.features.topology.plugins.topo.bsm.operations.BusinessServiceVertexStatusToggleOperation">
-            <property name="statusProvider" ref="bsmStatusProvider" />
-        </bean>
-    </service>
-    <!-- Edge Status Provider -->
-    <service interface="org.opennms.features.topology.api.CheckedOperation">
-        <service-properties>
-            <entry key="operation.menuLocation" value="View" />
-            <entry key="operation.label" value="Business Services Edge Status?group=status" />
-        </service-properties>
-        <bean class="org.opennms.features.topology.plugins.topo.bsm.operations.BusinessServiceEdgeStatusToggleOperation">
-            <property name="edgeStatusProvider" ref="bsmStatusProvider" />
-        </bean>
-    </service>
+    <service interface="org.opennms.features.topology.api.topo.StatusProvider" ref="bsmStatusProvider" />
+    <service interface="org.opennms.features.topology.api.topo.EdgeStatusProvider" ref="bsmStatusProvider"/>
 
     <!-- Search Provider -->
     <bean id="bsmSearchProvider" class="org.opennms.features.topology.plugins.topo.bsm.BusinessServiceSearchProvider">
