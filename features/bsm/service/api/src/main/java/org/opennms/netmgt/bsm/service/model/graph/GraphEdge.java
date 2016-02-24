@@ -40,4 +40,6 @@ public interface GraphEdge {
     public MapFunction getMapFunction();
 
     public int getWeight();
+
+    String getFriendlyName();
 }

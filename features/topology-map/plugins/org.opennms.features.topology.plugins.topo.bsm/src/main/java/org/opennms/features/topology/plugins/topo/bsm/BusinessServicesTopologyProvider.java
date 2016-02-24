@@ -62,6 +62,7 @@ import org.opennms.netmgt.vaadin.core.TransactionAwareBeanProxyFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
@@ -106,6 +107,12 @@ public class BusinessServicesTopologyProvider extends AbstractTopologyProvider i
 
             // Create a topology vertex for the child vertex
             AbstractBusinessServiceVertex childToplogyVertex = createTopologyVertex(childVertex);
+            graph.getInEdges(childVertex).stream()
+                    .map(GraphEdge::getFriendlyName)
+                    .filter(s -> !Strings.isNullOrEmpty(s))
+                    .findFirst()
+                    .ifPresent(childToplogyVertex::setLabel);
+
             addVertices(childToplogyVertex);
 
             // Connect the two
@@ -139,7 +146,7 @@ public class BusinessServicesTopologyProvider extends AbstractTopologyProvider i
         case REDUCTION_KEY:
             return new ReductionKeyVertex(graphVertex.getReductionKey(), graphVertex.getLevel());
         default:
-            throw new IllegalArgumentException("Unsuported edge: " + edge);
+            throw new IllegalArgumentException("Unsupported edge: " + edge);
         }
     }
 

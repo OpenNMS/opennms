@@ -70,4 +70,9 @@ public class ChildEdgeImpl extends AbstractEdge<BusinessServiceChildEdgeEntity> 
                 .add("child", getChild() == null ? null : getChild().getId())
                 .toString();
     }
+
+    @Override
+    public String getFriendlyName() {
+        return null;
+    }
 }
