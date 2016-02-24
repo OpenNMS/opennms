@@ -197,7 +197,6 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
         private final List<RequestParameterHandler> requestHandlerList;
 
         private static final String PARAMETER_LAYOUT = "layout";
-        private static final String PARAMETER_STATUS_PROVIDER = "status-provider";
         private static final String PARAMETER_FOCUS_NODES = "focusNodes";
         private static final String PARAMETER_FOCUS_VERTICES = "focus-vertices";
         private static final String PARAMETER_SEMANTIC_ZOOM_LEVEL = "szl";
@@ -211,7 +210,6 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
                     request -> loadGraphProvider(request),
                     request -> loadVertexHopCriteria(request),
                     request -> loadSemanticZoomLevel(request),
-                    request -> loadStatusProvider(request),
                     request -> loadLayout(request));
         }
 
@@ -240,11 +238,6 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
                 LOG.info("Redirect user {} to topology fragment url with fragment {}", m_applicationContext.getUsername(), fragment);
                 getPage().setLocation(String.format("%s#%s", ((VaadinServletRequest) request).getRequestURL(), fragment));
             }
-        }
-
-        private boolean loadStatusProvider(VaadinRequest request) {
-            String statusProviderName = request.getParameter(PARAMETER_STATUS_PROVIDER);
-            return executeOperationWithLabel(statusProviderName);
         }
 
         private boolean loadLayout(VaadinRequest request) {

@@ -56,7 +56,6 @@
             <c:param name="szl" value="1"/>
             <c:param name="layout" value="Hierarchy Layout" />
             <c:param name="provider" value="Business Services" />
-            <c:param name="status-provider" value="Business Services Status"/>
           </c:url>
           <tr class="severity-${service.operationalStatus.label} nodivider">
             <td class="bright">
