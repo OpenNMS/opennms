@@ -32,4 +32,5 @@ import org.opennms.netmgt.bsm.service.model.IpService;
 
 public interface ReadOnlyIpServiceEdge extends ReadOnlyEdge {
     IpService getIpService();
+    String getFriendlyName();
 }
