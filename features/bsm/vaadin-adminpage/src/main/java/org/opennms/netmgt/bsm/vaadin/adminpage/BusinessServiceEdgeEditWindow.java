@@ -73,6 +73,11 @@ public class BusinessServiceEdgeEditWindow extends Window {
     private static final long serialVersionUID = -5780075265758041282L;
 
     /**
+     * the maximum length for a user-defined friendly name
+     */
+    private static int FRIENDLY_NAME_MAXLENGTH = 30;
+
+    /**
      * declaring the components
      */
     private final NativeSelect m_typeSelect;
@@ -82,6 +87,7 @@ public class BusinessServiceEdgeEditWindow extends Window {
     private final NativeSelect m_mapFunctionSelect;
     private final NativeSelect m_mapFunctionSeveritySelect;
     private final TextField m_weightField;
+    private final TextField m_friendlyNameField;
 
     /**
      * Constructor
@@ -189,6 +195,21 @@ public class BusinessServiceEdgeEditWindow extends Window {
         formLayout.addComponent(m_reductionKeyComponent);
 
         /**
+         * the friendly name
+         */
+
+        m_friendlyNameField = new TextField("Friendly Name");
+        m_friendlyNameField.setId("friendlyNameField");
+        m_friendlyNameField.setWidth(100.0f, Unit.PERCENTAGE);
+        m_friendlyNameField.setVisible(false);
+        m_friendlyNameField.setImmediate(true);
+        m_friendlyNameField.setValidationVisible(true);
+        m_friendlyNameField.setNullSettingAllowed(true);
+        m_friendlyNameField.setNullRepresentation("");
+        m_friendlyNameField.setMaxLength(FRIENDLY_NAME_MAXLENGTH);
+        formLayout.addComponent(m_friendlyNameField);
+
+        /**
          * show and hide components
          */
         m_typeSelect.addValueChangeListener(event -> {
@@ -198,6 +219,7 @@ public class BusinessServiceEdgeEditWindow extends Window {
             m_ipServiceComponent.setRequired(m_typeSelect.getValue() == Edge.Type.IP_SERVICE);
             m_reductionKeyComponent.setVisible(m_typeSelect.getValue() == Edge.Type.REDUCTION_KEY);
             m_reductionKeyComponent.setRequired(m_typeSelect.getValue() == Edge.Type.REDUCTION_KEY);
+            m_friendlyNameField.setVisible(m_typeSelect.getValue() == Edge.Type.REDUCTION_KEY || m_typeSelect.getValue() == Edge.Type.IP_SERVICE);
         });
 
         /**
@@ -324,11 +346,11 @@ public class BusinessServiceEdgeEditWindow extends Window {
                     break;
 
                 case IP_SERVICE:
-                    businessService.addIpServiceEdge((IpService) m_ipServiceComponent.getValue(), mapFunction, weight);
+                    businessService.addIpServiceEdge((IpService) m_ipServiceComponent.getValue(), mapFunction, weight, m_friendlyNameField.getValue());
                     break;
 
                 case REDUCTION_KEY:
-                    businessService.addReductionKeyEdge(m_reductionKeyComponent.getValue(), mapFunction, weight);
+                    businessService.addReductionKeyEdge(m_reductionKeyComponent.getValue(), mapFunction, weight, m_friendlyNameField.getValue());
                     break;
             }
 
@@ -363,12 +385,13 @@ public class BusinessServiceEdgeEditWindow extends Window {
                             break;
                         }
                     }
-
+                    m_friendlyNameField.setValue(((IpServiceEdge) edge).getFriendlyName());
                     m_ipServiceComponent.setEnabled(false);
                     break;
                 case REDUCTION_KEY:
                     m_typeSelect.setValue(Edge.Type.REDUCTION_KEY);
                     m_reductionKeyComponent.setValue(((ReductionKeyEdge) edge).getReductionKey());
+                    m_friendlyNameField.setValue(((ReductionKeyEdge) edge).getFriendlyName());
                     m_reductionKeyComponent.setEnabled(false);
                     break;
             }

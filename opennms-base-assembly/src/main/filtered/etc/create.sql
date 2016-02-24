@@ -2794,19 +2794,23 @@ CREATE TABLE bsm_service_edge (
 );
 
 CREATE TABLE bsm_service_ifservices (
-  bsm_service_id integer NOT NULL,
-  ifserviceid integer NOT NULL,
-  CONSTRAINT bsm_service_ifservices_pkey PRIMARY KEY (bsm_service_id, ifserviceid),
-  CONSTRAINT fk_bsm_service_ifservices_ifserviceid FOREIGN KEY (ifserviceid)
-  REFERENCES ifservices (id) ON DELETE CASCADE,
-  CONSTRAINT fk_bsm_service_ifservices_service_id FOREIGN KEY (bsm_service_id)
-  REFERENCES bsm_service (id) ON DELETE CASCADE
+    id integer NOT NULL,
+    ifserviceid integer NOT NULL,
+    friendlyname varchar(255),
+    CONSTRAINT bsm_service_ifservices_pkey PRIMARY KEY (id),
+    CONSTRAINT fk_bsm_service_ifservices_edge_id FOREIGN KEY (id)
+    REFERENCES bsm_service_edge (id) ON DELETE CASCADE,
+    CONSTRAINT fk_bsm_service_ifservices_ifserviceid FOREIGN KEY (ifserviceid)
+    REFERENCES ifservices (id) ON DELETE CASCADE
 );
 
 CREATE TABLE bsm_service_reductionkeys (
-  bsm_service_id integer NOT NULL,
-  reductionkey TEXT NOT NULL,
-  CONSTRAINT bsm_service_reductionkeys_pkey PRIMARY KEY (bsm_service_id, reductionkey)
+    id integer NOT NULL,
+    reductionkey TEXT NOT NULL,
+    friendlyname varchar(255),
+    CONSTRAINT bsm_service_reductionkeys_pkey PRIMARY KEY (id),
+    CONSTRAINT fk_bsm_service_reductionkeys_edge_id FOREIGN KEY (id)
+    REFERENCES bsm_service_edge (id) ON DELETE CASCADE
 );
 
 CREATE TABLE bsm_service_children (

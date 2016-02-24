@@ -95,7 +95,11 @@ public interface BusinessServiceManager extends NodeManager {
 
     boolean addIpServiceEdge(BusinessService businessService, IpService ipService, MapFunction mapFunction, int weight);
 
+    boolean addIpServiceEdge(BusinessService businessService, IpService ipService, MapFunction mapFunction, int weight, String friendlyName);
+
     boolean addReductionKeyEdge(BusinessService businessService, String reductionKey, MapFunction mapFunction, int weight);
+
+    boolean addReductionKeyEdge(BusinessService businessService, String reductionKey, MapFunction mapFunction, int weight, String friendlyName);
 
     void setReductionKeyEdges(BusinessService businessService, Set<ReductionKeyEdge> reductionKeyEdges);
 

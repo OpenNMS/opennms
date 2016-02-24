@@ -123,8 +123,13 @@ public class BSMAdminIT extends OpenNMSSeleniumTestCase {
         }
 
         public BsmAdminPageEditWindow addReductionKeyEdge(String reductionKeyText, String mapFunctionText, int weight) throws InterruptedException {
+            return addReductionKeyEdge(reductionKeyText, mapFunctionText, weight, null);
+        }
+
+        public BsmAdminPageEditWindow addReductionKeyEdge(String reductionKeyText, String mapFunctionText, int weight, String friendlyName) throws InterruptedException {
             newEdgeWindow()
                     .reductionKey(reductionKeyText)
+                    .friendlyName(friendlyName)
                     .selectMapFunction(mapFunctionText)
                     .weight(weight)
                     .confirm();
@@ -158,9 +163,25 @@ public class BSMAdminIT extends OpenNMSSeleniumTestCase {
             return this;
         }
 
+        public BsmAdminPageEditWindow editEdge(String edgeValueString, String mapFunctionText, int weight, String friendlyName) throws InterruptedException {
+            getSelectWebElement("edgeList").selectByVisibleText(edgeValueString);
+            editEdgeWindow()
+                    .selectMapFunction(mapFunctionText)
+                    .friendlyName(friendlyName)
+                    .weight(weight)
+                    .confirm();
+            wait.until(ExpectedConditions.elementToBeClickable(By.id("editEdgeButton")));
+            return this;
+        }
+
         public BsmAdminPageEditWindow addIpServiceEdge(String ipServiceText, String mapFunctionText, int weight) throws InterruptedException {
+            return addIpServiceEdge(ipServiceText, mapFunctionText, weight, null);
+        }
+
+        public BsmAdminPageEditWindow addIpServiceEdge(String ipServiceText, String mapFunctionText, int weight, String friendlyName) throws InterruptedException {
             newEdgeWindow()
                     .selectIpService(ipServiceText)
+                    .friendlyName(friendlyName)
                     .selectMapFunction(mapFunctionText)
                     .weight(weight)
                     .confirm();
@@ -251,6 +272,12 @@ public class BSMAdminIT extends OpenNMSSeleniumTestCase {
 
         public BsmAdminPageEdgeEditWindow selectMapFunction(String mapFunctionText) {
             getSelectWebElement("mapFunctionSelector").selectByVisibleText(mapFunctionText);
+            return this;
+        }
+
+        public BsmAdminPageEdgeEditWindow friendlyName(String friendlyName) throws InterruptedException {
+            findElementById("friendlyNameField").clear();
+            findElementById("friendlyNameField").sendKeys(friendlyName);
             return this;
         }
 
@@ -675,6 +702,36 @@ public class BSMAdminIT extends OpenNMSSeleniumTestCase {
         bsmAdminPageEditWindow = bsmAdminPage.openEditDialog(serviceName);
         bsmAdminPageEditWindow.editEdge("ReKey: some.reduction.key, Map: Increase, Weight: 1", "Decrease", 2);
         verifyElementPresent("ReKey: some.reduction.key, Map: Decrease, Weight: 2");
+        bsmAdminPageEditWindow.save();
+
+        // clean up afterwards
+        bsmAdminPage.delete(serviceName);
+    }
+
+    @Test
+    public void testCanEditTransientReductionKeyFriendlyName() throws InterruptedException {
+        // create Business Service with one Edge and persist
+        final String serviceName = createUniqueBusinessServiceName();
+        BsmAdminPageEditWindow bsmAdminPageEditWindow = bsmAdminPage.openNewDialog(serviceName).addReductionKeyEdge("some.reduction.key", "Increase", 1, "so-friendly");
+        wait.until(pageContainsText("ReKey: some.reduction.key (so-friendly), Map: Increase, Weight: 1"));
+        // remove transient edge
+        bsmAdminPageEditWindow.editEdge("ReKey: some.reduction.key (so-friendly), Map: Increase, Weight: 1", "Decrease", 2, "very-friendly");
+        verifyElementPresent("ReKey: some.reduction.key (very-friendly), Map: Decrease, Weight: 2");
+        bsmAdminPageEditWindow.cancel();
+    }
+
+    @Test
+    public void testCanEditPersistedReductionKeyFriendlyName() throws InterruptedException {
+        // create Business Service with one Edge and persist
+        final String serviceName = createUniqueBusinessServiceName();
+        BsmAdminPageEditWindow bsmAdminPageEditWindow = bsmAdminPage.openNewDialog(serviceName).addReductionKeyEdge("some.reduction.key", "Increase", 1, "so-friendly");
+        wait.until(pageContainsText("ReKey: some.reduction.key (so-friendly), Map: Increase, Weight: 1"));
+        bsmAdminPageEditWindow.save();
+
+        // remove persisted edge
+        bsmAdminPageEditWindow = bsmAdminPage.openEditDialog(serviceName);
+        bsmAdminPageEditWindow.editEdge("ReKey: some.reduction.key (so-friendly), Map: Increase, Weight: 1", "Decrease", 2, "very-friendly");
+        verifyElementPresent("ReKey: some.reduction.key (very-friendly), Map: Decrease, Weight: 2");
         bsmAdminPageEditWindow.save();
 
         // clean up afterwards

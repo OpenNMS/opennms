@@ -49,6 +49,7 @@ import com.google.common.collect.Sets;
 public class SingleReductionKeyEdgeEntity extends BusinessServiceEdgeEntity {
 
     private String reductionKey;
+    private String m_friendlyName;
 
     public void setReductionKey(String reductionKey) {
         this.reductionKey = reductionKey;
@@ -63,6 +64,15 @@ public class SingleReductionKeyEdgeEntity extends BusinessServiceEdgeEntity {
     @Transient
     public Set<String> getReductionKeys() {
         return Sets.newHashSet(reductionKey);
+    }
+
+    @Column(name="friendlyname", nullable = true)
+    public String getFriendlyName() {
+        return m_friendlyName;
+    }
+
+    public void setFriendlyName(String friendlyName) {
+        m_friendlyName = friendlyName;
     }
 
     @Override

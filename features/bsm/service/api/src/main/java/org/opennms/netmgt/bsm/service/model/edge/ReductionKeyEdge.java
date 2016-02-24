@@ -32,4 +32,5 @@ import org.opennms.netmgt.bsm.service.model.edge.ro.ReadOnlyReductionKeyEdge;
 
 public interface ReductionKeyEdge extends ReadOnlyReductionKeyEdge, Edge {
     void setReductionKey(String reductionKey);
+    void setFriendlyName(String friendlyName);
 }

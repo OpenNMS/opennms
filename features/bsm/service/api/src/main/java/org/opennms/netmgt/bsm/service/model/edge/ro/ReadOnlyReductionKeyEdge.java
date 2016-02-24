@@ -30,4 +30,5 @@ package org.opennms.netmgt.bsm.service.model.edge.ro;
 
 public interface ReadOnlyReductionKeyEdge extends ReadOnlyEdge {
     String getReductionKey();
+    String getFriendlyName();
 }

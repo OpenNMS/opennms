@@ -31,6 +31,8 @@ package org.opennms.netmgt.bsm.persistence.api;
 import java.util.Objects;
 import java.util.Set;
 
+import javax.persistence.Column;
+import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -51,6 +53,7 @@ import com.google.common.collect.Sets;
 public class IPServiceEdgeEntity extends BusinessServiceEdgeEntity {
 
     private OnmsMonitoredService m_ipService;
+    private String m_friendlyName;
 
     // NOTE: When we use @Column on this field, Hibernate attempts to serialize the objects as a byte array
     // Instead, we resort to use @ManyToOne
@@ -62,6 +65,15 @@ public class IPServiceEdgeEntity extends BusinessServiceEdgeEntity {
 
     public void setIpService(OnmsMonitoredService ipService) {
         m_ipService = ipService;
+    }
+
+    @Column(name="friendlyname", nullable = true)
+    public String getFriendlyName() {
+        return m_friendlyName;
+    }
+
+    public void setFriendlyName(String friendlyName) {
+        m_friendlyName = friendlyName;
     }
 
     @Override
@@ -86,4 +98,5 @@ public class IPServiceEdgeEntity extends BusinessServiceEdgeEntity {
         }
         return false;
     }
+
 }

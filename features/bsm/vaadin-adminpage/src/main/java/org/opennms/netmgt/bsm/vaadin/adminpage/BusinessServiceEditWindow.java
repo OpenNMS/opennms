@@ -543,10 +543,15 @@ public class BusinessServiceEditWindow extends Window {
     }
 
     public static String describeIpService(final IpService ipService) {
-        return String.format("%s %s %s",
+        return describeIpService(ipService, null);
+    }
+
+    public static String describeIpService(final IpService ipService, final String friendlyName) {
+        return String.format("%s %s %s %s",
                              ipService.getNodeLabel(),
                              ipService.getIpAddress(),
-                             ipService.getServiceName());
+                             ipService.getServiceName(),
+                             Strings.isNullOrEmpty(friendlyName) ? "" : "(" + friendlyName + ")");
     }
 
     private static String getEdgePrefix(Edge edge) {
@@ -561,15 +566,14 @@ public class BusinessServiceEditWindow extends Window {
     private static String getChildDescription(Edge edge) {
         switch (edge.getType()) {
             case CHILD_SERVICE: return describeBusinessService(((ChildEdge) edge).getChild());
-            case IP_SERVICE:    return describeIpService(((IpServiceEdge) edge).getIpService());
-            case REDUCTION_KEY: return describeReductionKey(((ReductionKeyEdge) edge).getReductionKey());
+            case IP_SERVICE:    return describeIpService(((IpServiceEdge) edge).getIpService(), ((IpServiceEdge) edge).getFriendlyName());
+            case REDUCTION_KEY: return describeReductionKey(((ReductionKeyEdge) edge).getReductionKey(), ((ReductionKeyEdge) edge).getFriendlyName());
             default: throw new IllegalArgumentException();
         }
-
     }
 
-    public static String describeReductionKey(final String reductionKey) {
-        return reductionKey;
+    public static String describeReductionKey(final String reductionKey, final String friendlyName) {
+        return reductionKey + (Strings.isNullOrEmpty(friendlyName) ? "" : " (" + friendlyName + ")");
     }
 
     public static String describeEdge(final Edge edge) {
