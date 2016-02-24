@@ -3,23 +3,34 @@ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0 http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd">
 
 	<reference id="applicationDao"  interface="org.opennms.netmgt.dao.api.ApplicationDao" availability="mandatory" />
+	<reference id="transactionOperations" interface="org.springframework.transaction.support.TransactionOperations" availability="mandatory" />
 	<reference id="sessionFactoryWrapper" interface="org.opennms.netmgt.dao.api.SessionFactoryWrapper" availability="mandatory"/>
+
+	<!-- TransactionAwareBeanProxyFactory -->
+	<bean id="transactionAwareBeanProxyFactory" class="org.opennms.netmgt.vaadin.core.TransactionAwareBeanProxyFactory">
+		<argument ref="transactionOperations" />
+	</bean>
 
 	<!-- Topology Provider -->
 	<bean id="applicationTopologyProvider" scope="prototype" class="org.opennms.features.topology.plugins.topo.application.ApplicationTopologyProvider">
 		<argument ref="applicationDao"/>
 	</bean>
-	<service interface="org.opennms.features.topology.api.topo.VertexProvider" ref="applicationTopologyProvider">
+	<!-- Make it hop aware -->
+	<bean id="applicationTopologyHopProvider" class="org.opennms.features.topology.api.support.VertexHopGraphProvider">
+		<argument ref="applicationTopologyProvider" />
+	</bean>
+	<!-- Register the hop aware Provider -->
+	<service interface="org.opennms.features.topology.api.topo.VertexProvider" ref="applicationTopologyHopProvider">
 		<service-properties>
 			<entry key="label" value="Application"/>
 		</service-properties>
 	</service>
-	<service interface="org.opennms.features.topology.api.topo.EdgeProvider" ref="applicationTopologyProvider">
+	<service interface="org.opennms.features.topology.api.topo.EdgeProvider" ref="applicationTopologyHopProvider">
 		<service-properties>
 			<entry key="label" value="Application"/>
 		</service-properties>
 	</service>
-	<service interface="org.opennms.features.topology.api.topo.GraphProvider" ref="applicationTopologyProvider">
+	<service interface="org.opennms.features.topology.api.topo.GraphProvider" ref="applicationTopologyHopProvider">
 		<service-properties>
 			<entry key="label" value="Application"/>
 		</service-properties>
@@ -37,6 +48,7 @@ xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0 http://www.osgi.o
 	<!-- Application Table -->
 	<bean id="applicationTableSelectionLinkGenerator" class="org.opennms.features.topology.plugins.topo.application.browsers.ApplicationSelectionLinkGenerator">
 		<argument value="id" />
+		<argument value="name" />
 	</bean>
 	<bean id="applicationDaoContainer" class="org.opennms.features.topology.plugins.topo.application.browsers.ApplicationDaoContainer" scope="prototype">
 		<argument ref="applicationDao"/>
@@ -79,12 +91,20 @@ xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0 http://www.osgi.o
 		</service-properties>
 	</service>
 
+	<!-- Search Provider -->
+	<bean id="applicationSearchProvider" class="org.opennms.features.topology.plugins.topo.application.ApplicationSearchProvider">
+		<argument ref="transactionAwareBeanProxyFactory" />
+		<property name="applicationDao" ref="applicationDao" />
+	</bean>
+	<service interface="org.opennms.features.topology.api.topo.SearchProvider" ref="applicationSearchProvider" />
+
 	<!-- Icon definition -->
 	<service interface="org.opennms.features.topology.api.IconRepository">
 		<bean class="org.opennms.features.topology.api.support.DefaultIconRepository">
 			<property name="iconMap">
 				<map>
-					<entry key="application" value="vmware-network"/>
+					<entry key="application" value="business_service" />
+					<entry key="monitored-service" value="IP_service" />
 				</map>
 			</property>
 		</bean>

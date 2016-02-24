@@ -34,9 +34,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.google.common.base.Predicate;
-import com.google.common.collect.Collections2;
-
 import org.opennms.features.topology.api.topo.Criteria;
 import org.opennms.features.topology.api.topo.DefaultStatus;
 import org.opennms.features.topology.api.topo.Status;
@@ -44,6 +41,9 @@ import org.opennms.features.topology.api.topo.StatusProvider;
 import org.opennms.features.topology.api.topo.VertexProvider;
 import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.netmgt.model.OnmsSeverity;
+
+import com.google.common.base.Predicate;
+import com.google.common.collect.Collections2;
 
 public class ApplicationStatusProvider implements StatusProvider {
 
@@ -75,7 +75,7 @@ public class ApplicationStatusProvider implements StatusProvider {
             ApplicationVertex applicationVertex = (ApplicationVertex) eachVertex;
             Status alarmStatus = statusMap.get(createKey(applicationVertex));
             if (alarmStatus == null) {
-                alarmStatus = createStatus(OnmsSeverity.INDETERMINATE, 0);
+                alarmStatus = createStatus(OnmsSeverity.NORMAL, 0);
             }
             returnMap.put(eachVertex, alarmStatus);
         }
@@ -83,7 +83,7 @@ public class ApplicationStatusProvider implements StatusProvider {
         // calculate status for root
         for (VertexRef eachRoot : vertexRefsRoot) {
             ApplicationVertex eachRootApplication = (ApplicationVertex) eachRoot;
-            OnmsSeverity maxSeverity = OnmsSeverity.CLEARED;
+            OnmsSeverity maxSeverity = OnmsSeverity.NORMAL;
             int count = 0;
             for (VertexRef eachChild : eachRootApplication.getChildren()) {
                 ApplicationVertex eachChildApplication = (ApplicationVertex) eachChild;
