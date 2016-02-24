@@ -31,7 +31,6 @@ package org.opennms.features.datachoices.web.internal;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
-import java.security.Principal;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -53,7 +52,7 @@ public class ModalInjector implements Injector {
     public String inject(HttpServletRequest request) throws TemplateException, IOException {  
         if (isPage("/opennms/admin/index.jsp", request)) {
             return generateModalHtml(false);
-        } else if (m_stateManager.isEnabled() == null && isPage("/opennms/index.jsp", request) && isAdminUser(request)) {
+        } else if (m_stateManager.isEnabled() == null && isPage("/opennms/index.jsp", request) && isUserInAdminRole(request)) {
             return generateModalHtml(true);
         }
         return null;
@@ -83,14 +82,8 @@ public class ModalInjector implements Injector {
         return uri.endsWith(endOfUri);
     }
 
-    protected static boolean isAdminUser(HttpServletRequest request) {
-        final Principal principal = request.getUserPrincipal();
-        if (principal == null) {
-            return false;
-        }
-        // Ideally we would be checking for ROLE_ADMIN, but
-        // this will suffice for now
-        return "admin".equalsIgnoreCase(principal.getName());
+    protected static boolean isUserInAdminRole(HttpServletRequest request) {
+        return request.isUserInRole("ROLE_ADMIN");
     }
 
     public void setStateManager(StateManager stateManager) {
