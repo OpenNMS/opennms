@@ -30,8 +30,12 @@ package org.opennms.features.datachoices.internal;
 
 import static org.junit.Assert.assertEquals;
 
+import java.util.Map;
+
 import org.junit.Test;
 import org.opennms.features.datachoices.internal.UsageStatisticsReportDTO;
+
+import com.google.common.collect.Maps;
 
 public class UsageStatisticsReportDTOTest {
 
@@ -42,8 +46,13 @@ public class UsageStatisticsReportDTOTest {
         usageStatisticsReport.setVersion("10.5.7");
         usageStatisticsReport.setPackageName("opennms");
 
+        Map<String, Long> numberOfNodesBySysOid = Maps.newHashMap();
+        numberOfNodesBySysOid.put(".1.2.3.4", 2L);
+        numberOfNodesBySysOid.put(".1.2.3.5", 6L);
+        usageStatisticsReport.setNodesBySysOid(numberOfNodesBySysOid);
+
         String actualJson = usageStatisticsReport.toJson();
-        String expectedJson = "{\"alarms\":0,\"events\":0,\"ipInterfaces\":0,\"monitoredServices\":0,\"nodes\":0,\"osArch\":null,\"osName\":null,\"osVersion\":null,\"packageName\":\"opennms\",\"snmpInterfaces\":0,\"systemId\":\"aae3fdeb-3014-47b4-bb13-c8aa503fccb7\",\"version\":\"10.5.7\"}";
+        String expectedJson = "{\"alarms\":0,\"events\":0,\"ipInterfaces\":0,\"monitoredServices\":0,\"nodes\":0,\"nodesBySysOid\":{\".1.2.3.4\":2,\".1.2.3.5\":6},\"osArch\":null,\"osName\":null,\"osVersion\":null,\"packageName\":\"opennms\",\"snmpInterfaces\":0,\"systemId\":\"aae3fdeb-3014-47b4-bb13-c8aa503fccb7\",\"version\":\"10.5.7\"}";
         assertEquals(expectedJson, actualJson);
     }
 }

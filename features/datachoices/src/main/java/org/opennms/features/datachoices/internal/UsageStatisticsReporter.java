@@ -165,13 +165,16 @@ public class UsageStatisticsReporter implements StateChangeHandler {
         // OpenNMS version and flavor
         usageStatisticsReport.setVersion(sysInfoUtils.getVersion());
         usageStatisticsReport.setPackageName(sysInfoUtils.getPackageName());
-        // Object statistics
+        // Object counts
         usageStatisticsReport.setNodes(m_nodeDao.countAll());
         usageStatisticsReport.setIpInterfaces(m_ipInterfaceDao.countAll());
         usageStatisticsReport.setSnmpInterfaces(m_snmpInterfaceDao.countAll());
         usageStatisticsReport.setMonitoredServices(m_monitoredServiceDao.countAll());
         usageStatisticsReport.setEvents(m_eventDao.countAll());
         usageStatisticsReport.setAlarms(m_alarmDao.countAll());
+        // Node statistics
+        usageStatisticsReport.setNodesBySysOid(m_nodeDao.getNumberOfNodesBySysOid());
+
         return usageStatisticsReport;
     }
 

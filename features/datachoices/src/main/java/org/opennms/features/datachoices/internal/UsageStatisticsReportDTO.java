@@ -29,6 +29,8 @@
 package org.opennms.features.datachoices.internal;
 
 import java.io.IOException;
+import java.util.Collections;
+import java.util.Map;
 
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.map.SerializationConfig.Feature;
@@ -52,6 +54,8 @@ public class UsageStatisticsReportDTO {
     private int m_monitoredServices;
     private int m_events;
     private int m_alarms;
+
+    private Map<String, Long> m_nodesBySysOid = Collections.emptyMap();
 
     public void setSystemId(String systemId) {
         m_systemId = systemId;
@@ -147,6 +151,14 @@ public class UsageStatisticsReportDTO {
 
     public int getAlarms() {
         return m_alarms;
+    }
+
+    public void setNodesBySysOid(Map<String, Long> nodesBySysOid) {
+        m_nodesBySysOid = nodesBySysOid;
+    }
+
+    public Map<String, Long> getNodesBySysOid() {
+        return m_nodesBySysOid;
     }
 
     public String toJson() {
