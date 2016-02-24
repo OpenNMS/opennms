@@ -146,7 +146,9 @@ public class SelectionAwareTable extends Table implements VerticesUpdateManager.
     public void verticesUpdated(VerticesUpdateManager.VerticesUpdateEvent event) {
 		if (isAttached()) {
 			SelectionAware source = event.getSource();
-			if (source.contributesTo(getContentType())) {
+			if (event.getVertexRefs().isEmpty()) {
+				selectionChanged(Selection.NONE);
+			} else if (source.contributesTo(getContentType())) {
 				SelectionChangedListener.Selection newSelection = source.getSelection(
 						new ArrayList<>(event.getVertexRefs()),
 						getContentType());

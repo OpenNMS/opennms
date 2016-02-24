@@ -97,7 +97,7 @@ public interface SelectionChangedListener {
             if (selectedIds != null && !selectedIds.isEmpty()) {
                 return Lists.newArrayList(Restrictions.in("id", selectedIds));
             }
-            return Lists.newArrayList();
+            return Lists.newArrayList(Restrictions.isNull("id"));  // is always false, so nothing is shown
         }
     }
 
@@ -120,7 +120,7 @@ public interface SelectionChangedListener {
             if (selectedNodeIds != null && !selectedNodeIds.isEmpty()) {
                 return Lists.newArrayList(Restrictions.in("node.id", selectedNodeIds));
             }
-            return Lists.newArrayList();
+            return Lists.newArrayList(Restrictions.isNull("node.id"));  // is always false, so nothing is shown
         }
     }
 

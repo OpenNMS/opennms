@@ -190,9 +190,6 @@ public class BusinessServicesTopologyProvider extends AbstractTopologyProvider i
                 .filter(e -> e instanceof AbstractBusinessServiceVertex)
                 .map(e -> (AbstractBusinessServiceVertex) e)
                 .collect(Collectors.toSet());
-        if (filteredSet.isEmpty()) {
-            return SelectionChangedListener.Selection.NONE;
-        }
         switch (contentType) {
             case Alarm:
                 // show alarms with reduction keys associated with the current selection.
@@ -224,23 +221,13 @@ public class BusinessServicesTopologyProvider extends AbstractTopologyProvider i
                     .filter(v -> v.getType() == Type.ReductionKey
                             && ((AbstractBusinessServiceVertex) v.getParent()).getType() == Type.BusinessService ) // we ignore children of ip services
                     .forEach(v -> ((BusinessServiceVertex) v.getParent()).getServiceId());
-                return () -> {
-                    if (!businessServiceIds.isEmpty()) {
-                        return Lists.newArrayList(Restrictions.in("id", businessServiceIds));
-                    }
-                    return Lists.newArrayList(Restrictions.isNull("id"));
-                };
+                return new SelectionChangedListener.IdSelection<>(businessServiceIds);
             case Node:
                 final Set<Integer> nodeIds = filteredSet.stream()
                         .filter(v -> v.getType() == Type.IpService)
                         .map(v -> businessServiceManager.getIpServiceById(((IpServiceVertex) v).getIpServiceId()).getNodeId())
                         .collect(Collectors.toSet());
-                return () -> {
-                    if (nodeIds != null && !nodeIds.isEmpty()) {
-                        return Lists.newArrayList(Restrictions.in("id", nodeIds));
-                    }
-                    return Lists.newArrayList(Restrictions.isNull("id")); // is always false, so nothing is shown
-                };
+                return new SelectionChangedListener.IdSelection<>(nodeIds);
             default:
                 // pass
         }
