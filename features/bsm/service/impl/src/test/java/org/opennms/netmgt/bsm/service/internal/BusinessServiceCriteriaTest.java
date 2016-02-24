@@ -36,6 +36,8 @@ import org.opennms.netmgt.bsm.persistence.api.BusinessServiceEntity;
 import org.opennms.netmgt.bsm.service.BusinessServiceSearchCriteriaBuilder;
 import org.opennms.netmgt.bsm.service.model.BusinessService;
 import org.opennms.netmgt.bsm.service.model.Status;
+import org.opennms.netmgt.bsm.service.model.graph.BusinessServiceGraph;
+import org.opennms.netmgt.bsm.service.model.graph.internal.BusinessServiceGraphImpl;
 
 import com.google.common.collect.ImmutableList;
 
@@ -54,6 +56,12 @@ public class BusinessServiceCriteriaTest {
         @Override
         public Status getOperationalStatus(BusinessService service) {
             return service.getOperationalStatus();
+        }
+
+        @Override
+        public BusinessServiceGraph getGraph() {
+            // Does not set the status
+            return new BusinessServiceGraphImpl(businessServices);
         }
     };
 
