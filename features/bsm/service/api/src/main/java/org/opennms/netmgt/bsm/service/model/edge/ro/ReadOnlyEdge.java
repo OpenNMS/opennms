@@ -57,4 +57,5 @@ public interface ReadOnlyEdge {
 
     int getWeight();
 
+    String getFriendlyName();
 }

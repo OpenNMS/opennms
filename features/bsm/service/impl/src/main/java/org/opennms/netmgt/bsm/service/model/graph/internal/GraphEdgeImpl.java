@@ -37,13 +37,22 @@ public class GraphEdgeImpl extends GraphElement implements GraphEdge {
 
     private final MapFunction m_mapFunction;
     private final int m_weight;
+    private final String m_friendlyName;
 
     public GraphEdgeImpl(MapFunction mapFunction) {
-        this(mapFunction, 1);
+        m_mapFunction = mapFunction;
+        m_weight = 1;
+        m_friendlyName = null;
     }
 
     public GraphEdgeImpl(ReadOnlyEdge edge) {
-        this(edge.getMapFunction(), edge.getWeight());
+        m_mapFunction = edge.getMapFunction();
+        m_weight = edge.getWeight();
+        m_friendlyName = edge.getFriendlyName();
+    }
+
+    public Status getStatus() {
+        return m_status;
     }
 
     private GraphEdgeImpl(MapFunction mapFunction, int weight) {
@@ -60,6 +69,11 @@ public class GraphEdgeImpl extends GraphElement implements GraphEdge {
 
     public int getWeight() {
         return m_weight;
+    }
+
+    @Override
+    public String getFriendlyName() {
+        return m_friendlyName;
     }
 
     @Override

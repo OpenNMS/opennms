@@ -61,8 +61,7 @@ import org.opennms.netmgt.vaadin.core.TransactionAwareBeanProxyFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Predicate;
-import com.google.common.collect.Collections2;
+import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
@@ -106,8 +105,14 @@ public class BusinessServicesTopologyProvider extends AbstractTopologyProvider i
             GraphVertex childVertex = graph.getOpposite(graphVertex, graphEdge);
 
             // Create a topology vertex for the child vertex
-            AbstractBusinessServiceVertex childTopologyVertex = createTopologyVertex(childVertex);
-            addVertices(childTopologyVertex);
+            AbstractBusinessServiceVertex childToplogyVertex = createTopologyVertex(childVertex);
+            graph.getInEdges(childVertex).stream()
+                    .map(GraphEdge::getFriendlyName)
+                    .filter(s -> !Strings.isNullOrEmpty(s))
+                    .findFirst()
+                    .ifPresent(childToplogyVertex::setLabel);
+
+            addVertices(childToplogyVertex);
 
             // Connect the two
             childTopologyVertex.setParent(topologyVertex);
