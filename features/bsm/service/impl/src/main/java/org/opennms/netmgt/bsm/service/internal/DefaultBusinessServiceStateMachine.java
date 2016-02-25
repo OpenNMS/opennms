@@ -367,11 +367,6 @@ public class DefaultBusinessServiceStateMachine implements BusinessServiceStateM
 
     @Override
     public BusinessServiceGraph getGraph() {
-        m_rwLock.readLock().lock();
-        try {
-            return m_g;
-        } finally {
-            m_rwLock.readLock().unlock();
-        }
+        return m_g;
     }
 }
