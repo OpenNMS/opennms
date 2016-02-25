@@ -39,10 +39,12 @@ public class MockReductionKeyEdge implements ReadOnlyReductionKeyEdge {
 
     private final Long m_id;
     private final String m_reductionKey;
+    private final String m_friendlyName;
 
-    public MockReductionKeyEdge(long id, String reductionKey) {
+    public MockReductionKeyEdge(long id, String reductionKey, String friendlyName) {
         m_id = id;
         m_reductionKey = reductionKey;
+        m_friendlyName = friendlyName;
     }
 
     @Override
@@ -73,5 +75,10 @@ public class MockReductionKeyEdge implements ReadOnlyReductionKeyEdge {
     @Override
     public int getWeight() {
         return 1;
+    }
+
+    @Override
+    public String getFriendlyName() {
+        return m_friendlyName;
     }
 }

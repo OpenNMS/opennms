@@ -220,7 +220,7 @@ public class BusinessServiceRestService {
                             final IpServiceEdgeRequestDTO edgeRequest) {
         final BusinessService businessService = getManager().getBusinessServiceById(serviceId);
         final IpService ipService = getManager().getIpServiceById(edgeRequest.getIpServiceId());
-        boolean changed = getManager().addIpServiceEdge(businessService, ipService, transform(edgeRequest.getMapFunction()), edgeRequest.getWeight());
+        boolean changed = getManager().addIpServiceEdge(businessService, ipService, transform(edgeRequest.getMapFunction()), edgeRequest.getWeight(), edgeRequest.getFriendlyName());
         if (!changed) {
             return Response.notModified().build();
         }
@@ -234,7 +234,7 @@ public class BusinessServiceRestService {
     public Response addReductionKeyEdge(@PathParam("id") final Long serviceId,
                             final ReductionKeyEdgeRequestDTO edgeRequest) {
         final BusinessService businessService = getManager().getBusinessServiceById(serviceId);
-        boolean changed = getManager().addReductionKeyEdge(businessService, edgeRequest.getReductionKey(), transform(edgeRequest.getMapFunction()), edgeRequest.getWeight());
+        boolean changed = getManager().addReductionKeyEdge(businessService, edgeRequest.getReductionKey(), transform(edgeRequest.getMapFunction()), edgeRequest.getWeight(), edgeRequest.getFriendlyName());
         if (!changed) {
             return Response.notModified().build();
         }
@@ -333,6 +333,7 @@ public class BusinessServiceRestService {
         response.setMapFunction(transform(edge.getMapFunction()));
         response.setWeight(edge.getWeight());
         response.setIpService(transform(edge.getIpService()));
+        response.setFriendlyName(edge.getFriendlyName());
         return response;
     }
 
@@ -357,6 +358,7 @@ public class BusinessServiceRestService {
         response.setReductionKeys(edge.getReductionKeys());
         response.setMapFunction(transform(edge.getMapFunction()));
         response.setWeight(edge.getWeight());
+        response.setFriendlyName(edge.getFriendlyName());
         return response;
     }
 

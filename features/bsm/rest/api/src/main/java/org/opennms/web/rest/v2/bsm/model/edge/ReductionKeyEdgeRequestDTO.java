@@ -35,6 +35,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class ReductionKeyEdgeRequestDTO extends AbstractEdgeRequestDTO {
     private String reductionKey;
 
+    private String friendlyName;
+
     @XmlElement(name="reduction-key",required = true)
     public String getReductionKey() {
         return reductionKey;
@@ -42,6 +44,15 @@ public class ReductionKeyEdgeRequestDTO extends AbstractEdgeRequestDTO {
 
     public void setReductionKey(String reductionKey) {
         this.reductionKey = reductionKey;
+    }
+
+    @XmlElement(name="friendly-name",required = false)
+    public String getFriendlyName() {
+        return friendlyName;
+    }
+
+    public void setFriendlyName(String friendlyName) {
+        this.friendlyName = friendlyName;
     }
 
     @Override

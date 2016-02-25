@@ -63,11 +63,11 @@ public class BusinessServiceResponseDTOMarshalTest extends MarshalAndUnmarshalTe
         bs.setLocation(new ResourceLocation(ApiVersion.Version2, "business-services", "1"));
         bs.setOperationalStatus(Status.CRITICAL);
         bs.setReduceFunction(createReduceFunctionDTO(ReduceFunctionType.HighestSeverity));
-        bs.getReductionKeys().add(createReductionKeyEdgeResponse(1L, "myReductionKeyA", ignoreDto, Status.CRITICAL, new ResourceLocation(ApiVersion.Version2, "test/1")));
-        bs.getReductionKeys().add(createReductionKeyEdgeResponse(2L, "myReductionKeyB", ignoreDto, Status.NORMAL, new ResourceLocation(ApiVersion.Version2, "test/2")));
+        bs.getReductionKeys().add(createReductionKeyEdgeResponse(1L, "myReductionKeyA", ignoreDto, Status.CRITICAL, new ResourceLocation(ApiVersion.Version2, "test/1"), "reduction-key-a-friendly-name"));
+        bs.getReductionKeys().add(createReductionKeyEdgeResponse(2L, "myReductionKeyB", ignoreDto, Status.NORMAL, new ResourceLocation(ApiVersion.Version2, "test/2"), "reduction-key-b-friendly-name"));
         bs.getChildren().add(createChildEdgeResponse(3L, 2L, ignoreDto, Status.MAJOR, new ResourceLocation(ApiVersion.Version2, "test/3")));
         bs.getChildren().add(createChildEdgeResponse(4L, 3L, ignoreDto, Status.MAJOR, new ResourceLocation(ApiVersion.Version2, "test/4")));
-        bs.getIpServices().add(createIpServiceEdgeResponse(5L, createIpServiceResponse(), ignoreDto, Status.MINOR, new ResourceLocation(ApiVersion.Version2, "test/5")));
+        bs.getIpServices().add(createIpServiceEdgeResponse(5L, createIpServiceResponse(), ignoreDto, Status.MINOR, new ResourceLocation(ApiVersion.Version2, "test/5"), "ip-service-friendly-name"));
         bs.getParentServices().add(11L);
         bs.getParentServices().add(12L);
 
@@ -95,7 +95,8 @@ public class BusinessServiceResponseDTOMarshalTest extends MarshalAndUnmarshalTe
             "    }," +
             "    \"weight\" : 9," +
             "    \"location\" : \"/api/v2/test/1\"," +
-            "    \"reductionKeys\" : [ \"myReductionKeyA\" ]" +
+            "    \"reductionKeys\" : [ \"myReductionKeyA\" ]," +
+                    "    \"friendlyName\" : \"reduction-key-a-friendly-name\"" +
             "  }, {" +
             "    \"id\" : 2," +
             "    \"operationalStatus\" : \"NORMAL\"," +
@@ -105,7 +106,8 @@ public class BusinessServiceResponseDTOMarshalTest extends MarshalAndUnmarshalTe
             "    }," +
             "    \"weight\" : 9," +
             "    \"location\" : \"/api/v2/test/2\"," +
-            "    \"reductionKeys\" : [ \"myReductionKeyB\" ]" +
+            "    \"reductionKeys\" : [ \"myReductionKeyB\" ]," +
+                    "    \"friendlyName\" : \"reduction-key-b-friendly-name\"" +
             "  } ]," +
             "  \"children\" : [ {" +
             "    \"id\" : 3," +
@@ -146,7 +148,8 @@ public class BusinessServiceResponseDTOMarshalTest extends MarshalAndUnmarshalTe
             "      \"nodeLabel\" : \"dummy\"," +
             "      \"serviceName\" : \"ICMP\"," +
             "      \"ipAddress\" : \"1.1.1.1\"" +
-            "    }" +
+            "    }," +
+            "    \"friendlyName\" : \"ip-service-friendly-name\"" +
             "  } ]," +
             "  \"parentServices\" : [ 11, 12 ]" +
             "}",
@@ -179,6 +182,7 @@ public class BusinessServiceResponseDTOMarshalTest extends MarshalAndUnmarshalTe
             "            <ip-address>1.1.1.1</ip-address>\n" +
             "            <location>/api/v2/business-services/ip-services/17</location>\n" +
             "         </ip-service>\n" +
+            "         <friendly-name>ip-service-friendly-name</friendly-name>\n" +
             "      </ip-service>\n" +
             "   </ip-service-edges>\n" +
             "   <reductionKey-edges>\n" +
@@ -193,6 +197,7 @@ public class BusinessServiceResponseDTOMarshalTest extends MarshalAndUnmarshalTe
             "            <reductionKey>myReductionKeyA</reductionKey>\n" +
             "         </reductionKeys>\n" +
             "         <weight>9</weight>\n" +
+            "         <friendly-name>reduction-key-a-friendly-name</friendly-name>\n" +
             "      </reductionKey>\n" +
             "      <reductionKey>\n" +
             "         <id>2</id>\n" +
@@ -205,6 +210,7 @@ public class BusinessServiceResponseDTOMarshalTest extends MarshalAndUnmarshalTe
             "            <reductionKey>myReductionKeyB</reductionKey>\n" +
             "         </reductionKeys>\n" +
             "         <weight>9</weight>\n" +
+            "         <friendly-name>reduction-key-b-friendly-name</friendly-name>\n" +
             "      </reductionKey>\n" +
             "   </reductionKey-edges>\n" +
             "   <child-edges>\n" +
@@ -255,6 +261,10 @@ public class BusinessServiceResponseDTOMarshalTest extends MarshalAndUnmarshalTe
     }
 
     private static IpServiceEdgeResponseDTO createIpServiceEdgeResponse(long id, IpServiceResponseDTO ipServiceResponseDTO, MapFunctionDTO mapFunctionDTO, Status status, ResourceLocation location) {
+        return createIpServiceEdgeResponse(id, ipServiceResponseDTO, mapFunctionDTO, status, location);
+    }
+
+    private static IpServiceEdgeResponseDTO createIpServiceEdgeResponse(long id, IpServiceResponseDTO ipServiceResponseDTO, MapFunctionDTO mapFunctionDTO, Status status, ResourceLocation location, String friendlyName) {
         IpServiceEdgeResponseDTO responseDTO = new IpServiceEdgeResponseDTO();
         responseDTO.setOperationalStatus(status);
         responseDTO.setId(id);
@@ -264,6 +274,7 @@ public class BusinessServiceResponseDTOMarshalTest extends MarshalAndUnmarshalTe
         responseDTO.setIpService(ipServiceResponseDTO);
         responseDTO.setWeight(5);
         responseDTO.setMapFunction(mapFunctionDTO);
+        responseDTO.setFriendlyName(friendlyName);
         return responseDTO;
     }
 
@@ -279,6 +290,10 @@ public class BusinessServiceResponseDTOMarshalTest extends MarshalAndUnmarshalTe
     }
 
     private static ReductionKeyEdgeResponseDTO createReductionKeyEdgeResponse(long id, String reductionKey, MapFunctionDTO mapFunctionDTO, Status status, ResourceLocation location) {
+        return createReductionKeyEdgeResponse(id, reductionKey, mapFunctionDTO, status, location);
+    }
+
+    private static ReductionKeyEdgeResponseDTO createReductionKeyEdgeResponse(long id, String reductionKey, MapFunctionDTO mapFunctionDTO, Status status, ResourceLocation location, String friendlyName) {
         ReductionKeyEdgeResponseDTO responseDTO = new ReductionKeyEdgeResponseDTO();
         responseDTO.setOperationalStatus(status);
         responseDTO.setId(id);
@@ -286,6 +301,7 @@ public class BusinessServiceResponseDTOMarshalTest extends MarshalAndUnmarshalTe
         responseDTO.setLocation(location);
         responseDTO.setReductionKeys(Sets.newHashSet(reductionKey));
         responseDTO.setMapFunction(mapFunctionDTO);
+        responseDTO.setFriendlyName(friendlyName);
         return responseDTO;
     }
 }

@@ -74,7 +74,7 @@ public class MockBusinessServiceHierarchy {
             }
 
             public BusinessServiceBuilder withReductionKey(long id, String reductionKey) {
-                m_edges.add(new MockReductionKeyEdge(id, reductionKey));
+                m_edges.add(new MockReductionKeyEdge(id, reductionKey, null));
                 return this;
             }
 

@@ -55,9 +55,9 @@ public class BusinessServiceRequestDTOMarshalTest extends MarshalAndUnmarshalTes
         requestDTO.addAttribute("some-key", "some-value");
         requestDTO.addChildService(2L, increaseDto, 5);
         requestDTO.addChildService(3L, setToDto, 5);
-        requestDTO.addReductionKey("myReductionKeyA", increaseDto, 7);
-        requestDTO.addReductionKey("myReductionKeyB", increaseDto, 7);
-        requestDTO.addIpService(1, increaseDto, 9);
+        requestDTO.addReductionKey("myReductionKeyA", increaseDto, 7, "reduction-key-a-friendly-name");
+        requestDTO.addReductionKey("myReductionKeyB", increaseDto, 7, "reduction-key-b-friendly-name");
+        requestDTO.addIpService(1, increaseDto, 9, "ip-service-friendly-name");
 
         return Arrays.asList(new Object[][]{{
             BusinessServiceRequestDTO.class,
@@ -99,7 +99,8 @@ public class BusinessServiceRequestDTOMarshalTest extends MarshalAndUnmarshalTes
             "               \"properties\" : { }" +
             "           }," +
             "           \"weight\" : 9," +
-            "           \"ipServiceId\" : 1" +
+            "           \"ipServiceId\" : 1," +
+            "           \"friendlyName\" : \"ip-service-friendly-name\"" +
             "       }," +
             "   ]," +
             "  \"reductionKeys\" : [" +
@@ -109,7 +110,8 @@ public class BusinessServiceRequestDTOMarshalTest extends MarshalAndUnmarshalTes
             "               \"properties\" : { }" +
             "           }," +
             "           \"weight\" : 7," +
-            "           \"reductionKey\" : \"myReductionKeyA\"" +
+            "           \"reductionKey\" : \"myReductionKeyA\"," +
+            "           \"friendlyName\" : \"reduction-key-a-friendly-name\"" +
             "       }," +
             "       {" +
             "            \"mapFunction\" : {" +
@@ -117,7 +119,8 @@ public class BusinessServiceRequestDTOMarshalTest extends MarshalAndUnmarshalTes
             "               \"properties\" : { }" +
             "           }," +
             "           \"weight\" : 7," +
-            "           \"reductionKey\" : \"myReductionKeyB\"" +
+            "           \"reductionKey\" : \"myReductionKeyB\"," +
+            "           \"friendlyName\" : \"reduction-key-b-friendly-name\"" +
             "       }," +
             "   ]," +
             "}",
@@ -139,6 +142,7 @@ public class BusinessServiceRequestDTOMarshalTest extends MarshalAndUnmarshalTes
             "            <type>Increase</type>\n" +
             "         </map-function>\n" +
             "         <weight>9</weight>\n" +
+            "         <friendly-name>ip-service-friendly-name</friendly-name>\n" +
             "         <ip-service-id>1</ip-service-id>\n" +
             "      </ip-service-edge>\n" +
             "   </ip-services-edges>\n" +
@@ -170,6 +174,7 @@ public class BusinessServiceRequestDTOMarshalTest extends MarshalAndUnmarshalTes
             "            <type>Increase</type>\n" +
             "         </map-function>\n" +
             "         <weight>7</weight>\n" +
+            "         <friendly-name>reduction-key-a-friendly-name</friendly-name>\n" +
             "         <reduction-key>myReductionKeyA</reduction-key>\n" +
             "      </reductionkey-edge>\n" +
             "      <reductionkey-edge>\n" +
@@ -177,6 +182,7 @@ public class BusinessServiceRequestDTOMarshalTest extends MarshalAndUnmarshalTes
             "            <type>Increase</type>\n" +
             "         </map-function>\n" +
             "         <weight>7</weight>\n" +
+            "         <friendly-name>reduction-key-b-friendly-name</friendly-name>\n" +
             "         <reduction-key>myReductionKeyB</reduction-key>\n" +
             "      </reductionkey-edge>\n" +
             "   </reductionkey-edges>\n" +

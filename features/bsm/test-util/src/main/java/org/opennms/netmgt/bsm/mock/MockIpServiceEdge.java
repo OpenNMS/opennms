@@ -39,10 +39,12 @@ public class MockIpServiceEdge implements ReadOnlyIpServiceEdge {
 
     private final IpService m_ipService;
     private final Long m_id;
+    private final String m_friendlyName;
 
-    public MockIpServiceEdge(long id, IpService ipService) {
+    public MockIpServiceEdge(long id, IpService ipService, String friendlyName) {
         m_ipService = ipService;
         m_id = id;
+        m_friendlyName = friendlyName;
     }
 
     @Override
@@ -73,5 +75,10 @@ public class MockIpServiceEdge implements ReadOnlyIpServiceEdge {
     @Override
     public int getWeight() {
         return 1;
+    }
+
+    @Override
+    public String getFriendlyName() {
+        return m_friendlyName;
     }
 }

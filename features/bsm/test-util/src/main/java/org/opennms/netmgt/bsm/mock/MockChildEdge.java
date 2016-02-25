@@ -80,4 +80,9 @@ public class MockChildEdge implements ReadOnlyChildEdge {
     public String toString() {
         return String.format("MockChildEdge[id=%d, businessService=%s]", m_id, m_businessService);
     }
+
+    @Override
+    public String getFriendlyName() {
+        return null;
+    }
 }

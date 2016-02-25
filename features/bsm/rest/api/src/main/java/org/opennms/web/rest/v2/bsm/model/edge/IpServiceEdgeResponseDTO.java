@@ -42,6 +42,9 @@ public class IpServiceEdgeResponseDTO extends AbstractEdgeResponseDTO {
     @XmlElement(name="ip-service")
     private IpServiceResponseDTO ipService;
 
+    @XmlElement(name="friendly-name",required = false)
+    private String friendlyName;
+
     public IpServiceResponseDTO getIpService() {
         return ipService;
     }
@@ -64,5 +67,13 @@ public class IpServiceEdgeResponseDTO extends AbstractEdgeResponseDTO {
     @Override
     public int hashCode() {
         return super.hashCode() + Objects.hash(ipService);
+    }
+
+    public String getFriendlyName() {
+        return friendlyName;
+    }
+
+    public void setFriendlyName(String friendlyName) {
+        this.friendlyName = friendlyName;
     }
 }
