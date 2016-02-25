@@ -35,14 +35,14 @@ import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.nio.ByteBuffer;
 import java.nio.channels.DatagramChannel;
-import java.util.concurrent.ExecutionException;
+import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 import org.opennms.core.concurrent.LogPreservingThreadFactory;
-import org.opennms.core.concurrent.WaterfallExecutor;
 import org.opennms.core.logging.Logging;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.SyslogdConfig;
@@ -90,6 +90,8 @@ public class SyslogReceiverNioThreadPoolImpl implements SyslogReceiver {
     private final ExecutorService m_executor;
 
     private final ExecutorService m_socketReceivers;
+    
+    private List<SyslogConnectionHandler> m_syslogConnectionHandlers = Collections.emptyList();
 
     public static DatagramChannel openChannel(SyslogdConfig config) throws SocketException, IOException {
         DatagramChannel channel = DatagramChannel.open();
@@ -180,6 +182,15 @@ public class SyslogReceiverNioThreadPoolImpl implements SyslogReceiver {
             LOG.debug("Thread context stopped and joined");
         }
     }
+    
+    //Getter and setter for syslog handler
+    public SyslogConnectionHandler getSyslogConnectionHandlers() {
+        return m_syslogConnectionHandlers.get(0);
+    }
+
+    public void setSyslogConnectionHandlers(SyslogConnectionHandler handler) {
+        m_syslogConnectionHandlers = Collections.singletonList(handler);
+    }
 
     /**
      * The execution context.
@@ -253,8 +264,17 @@ public class SyslogReceiverNioThreadPoolImpl implements SyslogReceiver {
                             // Flip the buffer from write to read mode
                             buffer.flip();
 
-                            WaterfallExecutor.waterfall(m_executor, new SyslogConnection(SyslogConnection.copyPacket(source.getAddress(), source.getPort(), buffer), m_config));
+                            SyslogConnection connection = new SyslogConnection(SyslogConnection.copyPacket(source.getAddress(), source.getPort(), buffer), m_config);
 
+                            try {
+                                for (SyslogConnectionHandler handler : m_syslogConnectionHandlers) {
+                                    handler.handleSyslogConnection(connection);
+                                }
+                            } catch (Throwable e) {
+                                LOG.error("Handler execution failed in {}", this.getClass().getSimpleName(), e);
+                            }
+                            
+                            
                             // Clear the buffer so that it's ready for writing again
                             buffer.clear();
 
@@ -266,16 +286,10 @@ public class SyslogReceiverNioThreadPoolImpl implements SyslogReceiver {
                         } catch (InterruptedIOException e) {
                             ioInterrupted = true;
                             continue;
-                        } catch (ExecutionException e) {
+                        } catch (Exception e) {
                             LOG.error("Task execution failed in {}", this.getClass().getSimpleName(), e);
                             break;
-                        } catch (InterruptedException e) {
-                            LOG.error("Task interrupted in {}", this.getClass().getSimpleName(), e);
-                            break;
-                        } catch (IOException e) {
-                            LOG.error("An I/O exception occured on the datagram receipt port, exiting", e);
-                            break;
-                        }
+                        } 
 
                     } // end while status OK
 
