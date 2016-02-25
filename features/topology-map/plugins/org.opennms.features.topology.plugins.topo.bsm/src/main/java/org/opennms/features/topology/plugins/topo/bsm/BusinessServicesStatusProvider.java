@@ -30,33 +30,34 @@ package org.opennms.features.topology.plugins.topo.bsm;
 
 import java.util.Collection;
 import java.util.Map;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.opennms.features.topology.api.topo.Criteria;
 import org.opennms.features.topology.api.topo.DefaultStatus;
+import org.opennms.features.topology.api.topo.EdgeProvider;
+import org.opennms.features.topology.api.topo.EdgeRef;
+import org.opennms.features.topology.api.topo.EdgeStatusProvider;
 import org.opennms.features.topology.api.topo.Status;
 import org.opennms.features.topology.api.topo.StatusProvider;
 import org.opennms.features.topology.api.topo.VertexProvider;
 import org.opennms.features.topology.api.topo.VertexRef;
-import org.opennms.netmgt.bsm.service.BusinessServiceManager;
-import org.opennms.netmgt.vaadin.core.TransactionAwareBeanProxyFactory;
 
-public class BusinessServicesStatusProvider implements StatusProvider {
-
-    private final TransactionAwareBeanProxyFactory transactionAwareBeanProxyFactory;
-    private BusinessServiceManager businessServiceManager;
-
-    public BusinessServicesStatusProvider(TransactionAwareBeanProxyFactory transactionAwareBeanProxyFactory) {
-        this.transactionAwareBeanProxyFactory = Objects.requireNonNull(transactionAwareBeanProxyFactory);
-    }
+public class BusinessServicesStatusProvider implements StatusProvider, EdgeStatusProvider {
 
     @Override
     public Map<VertexRef, Status> getStatusForVertices(VertexProvider vertexProvider, Collection<VertexRef> vertices, Criteria[] criteria) {
         return vertices.stream()
-            .filter(v -> v instanceof AbstractBusinessServiceVertex && contributesTo(v.getNamespace()))
-            .map(v -> (AbstractBusinessServiceVertex)v)
-            .collect(Collectors.toMap(v -> v, v -> new DefaultStatus(v.getOperationalStatus(businessServiceManager).getLabel(), 0)));
+            .filter(v -> contributesTo(v.getNamespace()) && v instanceof AbstractBusinessServiceVertex)
+            .map(v -> (AbstractBusinessServiceVertex) v)
+            .collect(Collectors.toMap(v -> v, v -> new DefaultStatus(v.getOperationalStatus().getLabel(), 0)));
+    }
+
+    @Override
+    public Map<EdgeRef, Status> getStatusForEdges(EdgeProvider edgeProvider, Collection<EdgeRef> edges, Criteria[] criteria) {
+        return edges.stream()
+                .filter(edge -> contributesTo(edge.getNamespace()) && edge instanceof BusinessServiceEdge)
+                .map(edge -> (BusinessServiceEdge) edge)
+                .collect(Collectors.toMap(edge -> edge, edge -> new DefaultStatus(edge.getOperationalStatus().getLabel(), 0)));
     }
 
     @Override
@@ -69,8 +70,4 @@ public class BusinessServicesStatusProvider implements StatusProvider {
         return getNamespace().equals(namespace);
     }
 
-    public void setBusinessServiceManager(BusinessServiceManager serviceManager) {
-        Objects.requireNonNull(serviceManager);
-        this.businessServiceManager = transactionAwareBeanProxyFactory.createProxy(serviceManager);
-    }
 }

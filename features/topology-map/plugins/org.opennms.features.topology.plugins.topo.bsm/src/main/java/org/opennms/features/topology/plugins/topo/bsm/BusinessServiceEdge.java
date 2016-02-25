@@ -26,11 +26,33 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.bsm.service.model;
+package org.opennms.features.topology.plugins.topo.bsm;
 
-import java.util.Set;
+import org.opennms.features.topology.api.topo.AbstractEdge;
+import org.opennms.netmgt.bsm.service.model.Status;
+import org.opennms.netmgt.bsm.service.model.graph.GraphEdge;
 
-public interface BusinessServiceHierarchy {
+public class BusinessServiceEdge extends AbstractEdge {
 
-    Set<BusinessService> getRoots();
+    private final Status status;
+
+    public BusinessServiceEdge(GraphEdge graphEdge, AbstractBusinessServiceVertex source, AbstractBusinessServiceVertex target) {
+        super(BusinessServicesTopologyProvider.TOPOLOGY_NAMESPACE, String.format("connection:%s:%s", source.getId(), target.getId()), source, target);
+        this.status = graphEdge.getStatus();
+        setTooltipText(String.format("Map function: %s, Weight: %s", graphEdge.getMapFunction().getClass().getSimpleName(), graphEdge.getWeight()));
+    }
+
+    private BusinessServiceEdge(BusinessServiceEdge edgeToClone) {
+        super(edgeToClone);
+        status = edgeToClone.status;
+    }
+
+    @Override
+    public AbstractEdge clone() {
+        return new BusinessServiceEdge(this);
+    }
+
+    public Status getOperationalStatus() {
+        return status;
+    }
 }

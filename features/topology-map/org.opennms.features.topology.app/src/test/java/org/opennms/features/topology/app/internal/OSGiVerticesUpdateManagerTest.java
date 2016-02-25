@@ -33,13 +33,10 @@ import static org.junit.Assert.assertNull;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Dictionary;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Set;
-
-import com.vaadin.data.Property;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -67,6 +64,8 @@ import org.opennms.osgi.OnmsServiceManager;
 import org.opennms.osgi.VaadinApplicationContext;
 import org.opennms.osgi.VaadinApplicationContextCreator;
 import org.osgi.framework.BundleContext;
+
+import com.vaadin.data.Property;
 
 public class OSGiVerticesUpdateManagerTest {
 
@@ -404,8 +403,13 @@ public class OSGiVerticesUpdateManagerTest {
         }
 
         @Override
-        public Set<EdgeStatusProvider> getEdgeStatusProviders() {
-            return Collections.emptySet();
+        public void setEdgeStatusProvider(EdgeStatusProvider edgeStatusProvider) {
+
+        }
+
+        @Override
+        public EdgeStatusProvider getEdgeStatusProvider() {
+            return null;
         }
 
         @Override

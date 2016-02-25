@@ -26,10 +26,10 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.plugins.topo.linkd.internal.operations;
+package org.opennms.features.topology.plugins.topo.application;
 
 import org.opennms.features.topology.api.AbstractStatusToggleOperation;
 
-public class AlarmStatusToggleOperation extends AbstractStatusToggleOperation {
+public class ApplicationStatusToggleOperation extends AbstractStatusToggleOperation {
 
 }

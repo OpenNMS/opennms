@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2016 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -26,25 +26,31 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.plugins.topo.bsm;
+package org.opennms.features.topology.api;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import org.opennms.features.topology.api.AbstractCheckedOperation;
-import org.opennms.features.topology.api.GraphContainer;
-import org.opennms.features.topology.api.OperationContext;
-import org.opennms.features.topology.api.topo.StatusProvider;
+import org.opennms.features.topology.api.topo.EdgeStatusProvider;
 import org.opennms.features.topology.api.topo.VertexRef;
 
-public class AlarmStatusToggleOperation extends AbstractCheckedOperation {
+// This class is abstract only because the history is applied based on the class name
+public abstract class AbstractEdgeStatusToggleOperation extends AbstractCheckedOperation {
 
-    private StatusProvider m_statusProvider;
+    private EdgeStatusProvider m_edgeStatusProvider;
 
     @Override
     public void execute(List<VertexRef> targets, OperationContext operationContext) {
-        toggle(operationContext.getGraphContainer());
+        GraphContainer container = operationContext.getGraphContainer();
+
+        // if already selected, deselect
+        if (container.getEdgeStatusProvider() == m_edgeStatusProvider) {
+            container.setEdgeStatusProvider(null);
+        } else { // otherwise select
+            container.setEdgeStatusProvider(m_edgeStatusProvider);
+        }
+        container.redoLayout();
     }
 
     @Override
@@ -59,40 +65,34 @@ public class AlarmStatusToggleOperation extends AbstractCheckedOperation {
 
     @Override
     protected boolean isChecked(GraphContainer container) {
-        return container.getVertexStatusProvider() != null && container.getVertexStatusProvider() == m_statusProvider;
+        return container.getEdgeStatusProvider() != null && container.getEdgeStatusProvider() == m_edgeStatusProvider;
     }
 
     @Override
-    public Map<String, String> createHistory(GraphContainer container) {
+    public Map<String, String> createHistory(GraphContainer container){
         return Collections.singletonMap(getClass().getName(), Boolean.toString(isChecked(container)));
     }
 
     @Override
     public void applyHistory(GraphContainer container, Map<String, String> settings) {
         String historyValue = settings.get(getClass().getName());
-        if (historyValue == null || historyValue.isEmpty()) {
-            container.setVertexStatusProvider(m_statusProvider);
-            // no history value set, use default
+        boolean statusEnabled = Boolean.TRUE.toString().equals(historyValue);
+        if (statusEnabled) {
+            container.setEdgeStatusProvider(m_edgeStatusProvider);
         } else {
-            // an history value is set, decide what to do
-            boolean alarmStatusEnabled = Boolean.TRUE.toString().equals(historyValue);
-            if (alarmStatusEnabled) {
-                container.setVertexStatusProvider(m_statusProvider);
-            } else {
-                container.setVertexStatusProvider(null);
-            }
+            container.setEdgeStatusProvider(null);
         }
     }
 
-    public void setStatusProvider(StatusProvider statusProvider) {
-        m_statusProvider = statusProvider;
+    public void setEdgeStatusProvider(EdgeStatusProvider edgeStatusProvider) {
+        m_edgeStatusProvider = edgeStatusProvider;
     }
 
     private void toggle(GraphContainer container) {
-        if (container.getVertexStatusProvider() == null) {
-            container.setVertexStatusProvider(m_statusProvider);
+        if (container.getEdgeStatusProvider() == null) {
+            container.setEdgeStatusProvider(m_edgeStatusProvider);
         } else {
-            container.setVertexStatusProvider(null);
+            container.setEdgeStatusProvider(null);
         }
         container.redoLayout();
     }

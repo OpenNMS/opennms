@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.plugins.topo.bsm;
+package org.opennms.features.topology.plugins.topo.bsm.operations;
 
 import java.util.Collections;
 import java.util.List;
@@ -37,6 +37,8 @@ import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.OperationContext;
 import org.opennms.features.topology.api.topo.Criteria;
 import org.opennms.features.topology.api.topo.VertexRef;
+import org.opennms.features.topology.plugins.topo.bsm.BusinessServicesHideLeafsCriteria;
+import org.opennms.features.topology.plugins.topo.bsm.BusinessServicesTopologyProvider;
 
 public class HideLeafElementToggleOperation extends AbstractCheckedOperation {
 
