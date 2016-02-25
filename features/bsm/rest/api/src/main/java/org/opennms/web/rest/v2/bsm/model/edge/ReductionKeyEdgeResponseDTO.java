@@ -30,13 +30,25 @@ package org.opennms.web.rest.v2.bsm.model.edge;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement(name="reduction-key-edge")
 @XmlAccessorType(XmlAccessType.NONE)
 public class ReductionKeyEdgeResponseDTO extends AbstractEdgeResponseDTO {
 
+    @XmlElement(name="friendly-name",required = false)
+    private String friendlyName;
+
     public void setReductionKey(String reductionKey) {
         getReductionKeys().add(reductionKey);
+    }
+
+    public String getFriendlyName() {
+        return friendlyName;
+    }
+
+    public void setFriendlyName(String friendlyName) {
+        this.friendlyName = friendlyName;
     }
 }

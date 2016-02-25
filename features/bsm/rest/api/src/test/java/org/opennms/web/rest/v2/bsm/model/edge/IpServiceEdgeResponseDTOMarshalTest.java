@@ -62,6 +62,7 @@ public class IpServiceEdgeResponseDTOMarshalTest extends MarshalAndUnmarshalTest
         edge.setOperationalStatus(Status.WARNING);
         edge.getReductionKeys().add("key1");
         edge.getReductionKeys().add("key2");
+        edge.setFriendlyName("ip-service-friendly-name");
         edge.setWeight(20);
         edge.setMapFunction(createMapFunctionDTO(MapFunctionType.SetTo, new String[]{"key1", "value1"}));
         edge.setId(1);
@@ -89,7 +90,8 @@ public class IpServiceEdgeResponseDTOMarshalTest extends MarshalAndUnmarshalTest
                 "       \"ipAddress\" : \"1.1.1.1\"," +
                 "       \"nodeLabel\" : \"dummy\"," +
                 "       \"serviceName\" : \"ICMP\"" +
-                "  }" +
+                "  }," +
+                "  \"friendlyName\" : \"ip-service-friendly-name\"" +
                 "}",
                 "<ip-service-edge>\n" +
                 "   <id>1</id>\n" +
@@ -108,7 +110,7 @@ public class IpServiceEdgeResponseDTOMarshalTest extends MarshalAndUnmarshalTest
                 "       <reductionKey>key1</reductionKey>\n" +
                 "       <reductionKey>key2</reductionKey>\n" +
                 "   </reductionKeys>\n" +
-                "    <weight>20</weight>\n" +
+                "   <weight>20</weight>\n" +
                 "   <ip-service>\n" +
                 "       <id>17</id>\n" +
                 "       <service-name>ICMP</service-name>\n" +
@@ -116,6 +118,7 @@ public class IpServiceEdgeResponseDTOMarshalTest extends MarshalAndUnmarshalTest
                 "       <ip-address>1.1.1.1</ip-address>\n" +
                 "       <location>/api/v2/business-services/ip-services/17</location>\n" +
                 "   </ip-service>\n" +
+                "   <friendly-name>ip-service-friendly-name</friendly-name>\n" +
                 "</ip-service-edge>"
         }});
     }

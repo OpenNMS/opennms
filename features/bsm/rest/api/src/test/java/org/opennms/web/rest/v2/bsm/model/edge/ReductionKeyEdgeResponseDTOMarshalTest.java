@@ -56,6 +56,7 @@ public class ReductionKeyEdgeResponseDTOMarshalTest extends MarshalAndUnmarshalT
         edge.setMapFunction(createMapFunctionDTO(MapFunctionType.SetTo, new String[]{"key1", "value1"}));
         edge.setId(1);
         edge.setWeight(17);
+        edge.setFriendlyName("reduction-key-friendly-name");
 
         return Arrays.asList(new Object[][]{{
                 ReductionKeyEdgeResponseDTO.class,
@@ -74,6 +75,7 @@ public class ReductionKeyEdgeResponseDTOMarshalTest extends MarshalAndUnmarshalT
                 "       \"my-custom-reduction-key\"" +
                 "   ]," +
                 "  \"weight\" : 17," +
+                "  \"friendlyName\" : \"reduction-key-friendly-name\"," +
                 "}",
                 "<reduction-key-edge>\n" +
                 "   <id>1</id>\n" +
@@ -92,6 +94,7 @@ public class ReductionKeyEdgeResponseDTOMarshalTest extends MarshalAndUnmarshalT
                 "       <reductionKey>my-custom-reduction-key</reductionKey>\n" +
                 "   </reductionKeys>\n" +
                 "   <weight>17</weight>\n" +
+                "   <friendly-name>reduction-key-friendly-name</friendly-name>\n" +
                 "</reduction-key-edge>"
         }});
     }
