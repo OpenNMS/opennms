@@ -109,6 +109,13 @@ public interface BusinessServiceStateMachine {
 
     void renderGraphToPng(File target);
 
+    /**
+     * This returns the actual graph of the {@link BusinessServiceStateMachine}.
+     *
+     * Please DO NOT MODIFY any object in that graph.
+     *
+     * @return the actual graph of the {@link BusinessServiceStateMachine}. DO NOT MODIFY!
+     */
     BusinessServiceGraph getGraph();
 
 }
