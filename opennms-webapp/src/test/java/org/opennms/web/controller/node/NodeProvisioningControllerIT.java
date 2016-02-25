@@ -69,8 +69,7 @@ import org.springframework.web.servlet.ModelAndView;
 		"classpath:/META-INF/opennms/mockEventIpcManager.xml",
 		"classpath:/META-INF/opennms/applicationContext-reporting.xml",
 		"classpath:/META-INF/opennms/applicationContext-mock-usergroup.xml",
-		"file:src/main/webapp/WEB-INF/applicationContext-spring-security.xml",
-		"file:src/main/webapp/WEB-INF/applicationContext-jersey.xml"
+		"file:src/main/webapp/WEB-INF/applicationContext-spring-security.xml"
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase

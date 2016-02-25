@@ -91,6 +91,7 @@ import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.vaadin.annotations.PreserveOnRefresh;
 import com.vaadin.annotations.Theme;
+import com.vaadin.annotations.Title;
 import com.vaadin.data.Property;
 import com.vaadin.event.FieldEvents;
 import com.vaadin.event.ShortcutAction;
@@ -131,6 +132,7 @@ import com.vaadin.ui.Window;
 
 @SuppressWarnings("serial")
 @Theme("topo_default")
+@Title("OpenNMS Topology Map")
 @PreserveOnRefresh
 public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpdateListener, ContextMenuHandler, WidgetUpdateListener, WidgetContext, UriFragmentChangedListener, GraphContainer.ChangeListener, MapViewManagerListener, VertexUpdateListener, SelectionListener, VerticesUpdateManager.VerticesUpdateListener {
 

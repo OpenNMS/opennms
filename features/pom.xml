@@ -82,6 +82,7 @@
 
     <!-- Newts -->
     <module>newts</module>
+    <module>newts-repository-converter</module>
 
     <!-- GWT UI plugins -->
     <module>node-page-list</module>

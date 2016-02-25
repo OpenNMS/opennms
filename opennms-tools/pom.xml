@@ -39,6 +39,7 @@
         <module>jrb-to-rrd-converter</module>
         <module>csv-requisitions</module>
         <module>csv-address</module>
+        <module>metric-repository-converter</module>
       </modules>
     </profile>
   </profiles>

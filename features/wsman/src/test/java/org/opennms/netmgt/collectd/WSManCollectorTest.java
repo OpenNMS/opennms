@@ -107,7 +107,6 @@ public class WSManCollectorTest {
         assertEquals("Computer System", attributesByName.get("StringWithValue").getStringValue());
     }
 
-
     @Test
     public void canCollectFromMultivaluedKeyUsingIndexOf() {
         /* The iDrac provides the following keys in the DCIM_ComputerSystem entry:
@@ -162,6 +161,51 @@ public class WSManCollectorTest {
         // Verify
         Map<String, CollectionAttribute> attributesByName = getAttributes(builder.build());
         assertEquals("C7BBBP1", attributesByName.get("ServiceTag").getStringValue());
+    }
+
+    @Test
+    public void canCollectFromMultipleRecordsUsingFilter() {
+        Group group = new Group();
+        group.setName("DCIM_NumericSensor");
+
+        Attrib attr = new Attrib();
+        attr.setName("CurrentReading");
+        attr.setAlias("sysBoardInletTemp");
+        attr.setFilter("#ElementName == 'System Board Inlet Temp'");
+        attr.setType("Gauge");
+        group.addAttrib(attr);
+
+        attr = new Attrib();
+        attr.setName("CurrentReading");
+        attr.setAlias("sysBoardExhaustTemp");
+        attr.setFilter("#ElementName == 'System Board Exhaust Temp'");
+        attr.setType("Gauge");
+        group.addAttrib(attr);
+
+        CollectionAgent agent = mock(CollectionAgent.class);
+        when(agent.getStorageDir()).thenReturn(new java.io.File(""));
+        CollectionSetBuilder builder = new CollectionSetBuilder(agent);
+        Resource resource = mock(NodeLevelResource.class);
+
+        XMLTag xmlTag = XMLDoc.newDocument(true).addRoot("body")
+                .addTag("DCIM_NumericSensor")
+                    .addTag("CurrentReading").setText("260")
+                    .addTag("ElementName").setText("System Board Inlet Temp")
+                    .gotoRoot()
+                .addTag("DCIM_NumericSensor")
+                    .addTag("CurrentReading").setText("370")
+                    .addTag("ElementName").setText("System Board Exhaust Temp");
+
+        List<Node> nodes = xmlTag.gotoRoot().getChildElement().stream()
+            .map(el -> (Node)el)
+            .collect(Collectors.toList());
+
+        WsManCollector.processEnumerationResults(group, builder, resource, nodes);
+
+        // Verify
+        Map<String, CollectionAttribute> attributesByName = getAttributes(builder.build());
+        assertEquals(Double.valueOf(260), attributesByName.get("sysBoardInletTemp").getNumericValue());
+        assertEquals(Double.valueOf(370), attributesByName.get("sysBoardExhaustTemp").getNumericValue());
     }
 
     @Test

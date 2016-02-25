@@ -414,6 +414,11 @@
       <artifactId>resource-cli</artifactId>
       <version>${project.version}</version>
     </dependency>
+    <dependency>
+      <groupId>org.opennms.features</groupId>
+      <artifactId>newts-repository-converter</artifactId>
+      <version>${project.version}</version>
+    </dependency>
     <!--
     <dependency>
       <groupId>org.opennms.features</groupId>

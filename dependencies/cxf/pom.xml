@@ -85,6 +85,19 @@
       <type>pom</type>
     </dependency>
 
+    <!-- JAX-RS Client -->
+    <dependency>
+      <groupId>org.apache.cxf</groupId>
+      <artifactId>cxf-rt-rs-client</artifactId>
+      <version>${cxfVersion}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>com.sun.xml.bind</groupId>
+          <artifactId>jaxb-impl</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+
     <!-- Start of WS-Man related dependencies -->
     <dependency>
       <groupId>org.apache.cxf</groupId>

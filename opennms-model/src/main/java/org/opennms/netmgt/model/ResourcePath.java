@@ -39,6 +39,13 @@ public class ResourcePath implements Iterable<String>, Comparable<ResourcePath> 
         }
     }
 
+    public ResourcePath(ResourcePath parent, Iterable<String> path) {
+        m_elements.addAll(parent.m_elements);
+        for (String el : path) {
+            m_elements.add(el);
+        }
+    }
+
     /**
      * Convenience method.
      */
@@ -57,6 +64,13 @@ public class ResourcePath implements Iterable<String>, Comparable<ResourcePath> 
      * Convenience method.
      */
     public static ResourcePath get(ResourcePath parent, String... path) {
+        return new ResourcePath(parent, path);
+    }
+
+    /**
+     * Convenience method.
+     */
+    public static ResourcePath get(ResourcePath parent, Iterable<String> path) {
         return new ResourcePath(parent, path);
     }
 

@@ -318,7 +318,7 @@ public class WillItUnmarshalIT {
 
         // Add all wsman-datacollection configuration files
         addFile(Source.CONFIG, "wsman-datacollection-config.xml", WsmanDatacollectionConfig.class, Impl.JAXB);
-        for (final File file : FileUtils.listFiles(new File(getDaemonEtcDirectory(), "wsman-datacollection"),
+        for (final File file : FileUtils.listFiles(new File(getDaemonEtcDirectory(), "wsman-datacollection.d"),
                                                    new String[] { "xml" },
                                                    true)) {
             addFile(Source.ABSOLUTE,
@@ -328,7 +328,7 @@ public class WillItUnmarshalIT {
         }
 
         // Add all resource-types configuration files
-        for (final File file : FileUtils.listFiles(new File(getDaemonEtcDirectory(), "resource-types"),
+        for (final File file : FileUtils.listFiles(new File(getDaemonEtcDirectory(), "resource-types.d"),
                                                    new String[] { "xml" },
                                                    true)) {
             addFile(Source.ABSOLUTE,

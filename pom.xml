@@ -347,6 +347,7 @@
         <version>2.10.3</version>
         <configuration>
           <maxmemory>2g</maxmemory>
+          <additionalparam>-Xdoclint:none</additionalparam>
           <failOnError>false</failOnError>
           <tags>
             <tag>
@@ -1250,8 +1251,6 @@
     <jacksonVersion>1.9.13</jacksonVersion>
     <jasperreportsVersion>6.1.1</jasperreportsVersion>
     <jettyVersion>8.1.10.v20130312</jettyVersion>
-    <jerseyVersion>1.19</jerseyVersion>
-    <jerseyContribVersion>1.19</jerseyContribVersion>
     <jodaTimeVersion>2.1</jodaTimeVersion>
     <jrubyVersion>9.0.4.0</jrubyVersion>
     <jsoupVersion>1.7.2</jsoupVersion>
@@ -2330,7 +2329,7 @@
       </dependency>
       <dependency>
         <groupId>org.opennms.dependencies</groupId>
-        <artifactId>jersey-client-dependencies</artifactId>
+        <artifactId>cxf-dependencies</artifactId>
         <version>${project.version}</version>
         <type>pom</type>
       </dependency>
