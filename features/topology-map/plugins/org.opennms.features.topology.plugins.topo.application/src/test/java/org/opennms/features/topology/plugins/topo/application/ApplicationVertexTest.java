@@ -60,6 +60,6 @@ public class ApplicationVertexTest {
     }
 
     private static ApplicationVertex createVertex(String id) {
-        return new ApplicationVertex(id);
+        return new ApplicationVertex(id, id);
     }
 }
