@@ -547,11 +547,11 @@ public class BusinessServiceEditWindow extends Window {
     }
 
     public static String describeIpService(final IpService ipService, final String friendlyName) {
-        return String.format("%s %s %s %s",
+        return String.format("%s %s %s%s",
                              ipService.getNodeLabel(),
                              ipService.getIpAddress(),
                              ipService.getServiceName(),
-                             Strings.isNullOrEmpty(friendlyName) ? "" : "(" + friendlyName + ")");
+                             Strings.isNullOrEmpty(friendlyName) ? "" : " (" + friendlyName + ")");
     }
 
     private static String getEdgePrefix(Edge edge) {
