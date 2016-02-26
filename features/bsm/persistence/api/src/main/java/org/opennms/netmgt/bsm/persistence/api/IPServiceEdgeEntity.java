@@ -39,6 +39,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+import javax.validation.constraints.Size;
 
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.events.api.EventConstants;
@@ -53,6 +54,7 @@ import com.google.common.collect.Sets;
 public class IPServiceEdgeEntity extends BusinessServiceEdgeEntity {
 
     private OnmsMonitoredService m_ipService;
+
     private String m_friendlyName;
 
     // NOTE: When we use @Column on this field, Hibernate attempts to serialize the objects as a byte array
@@ -68,6 +70,7 @@ public class IPServiceEdgeEntity extends BusinessServiceEdgeEntity {
     }
 
     @Column(name="friendlyname", nullable = true)
+    @Size(min = 0, max = 30)
     public String getFriendlyName() {
         return m_friendlyName;
     }

@@ -38,6 +38,7 @@ import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.persistence.UniqueConstraint;
+import javax.validation.constraints.Size;
 
 import com.google.common.collect.Sets;
 
@@ -67,6 +68,7 @@ public class SingleReductionKeyEdgeEntity extends BusinessServiceEdgeEntity {
     }
 
     @Column(name="friendlyname", nullable = true)
+    @Size(min = 0, max = 30)
     public String getFriendlyName() {
         return m_friendlyName;
     }
