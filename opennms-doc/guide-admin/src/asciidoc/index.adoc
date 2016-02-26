@@ -170,6 +170,7 @@ include::text/enlinkd/layer-3/is-is-discovery.adoc[]
 == Operation
 include::text/operation/ssl/ssl.adoc[]
 include::text/operation/resourcecli.adoc[]
+include::text/operation/newts-repository-converter.adoc[]
 
 [[ga-opennms-operation-newts]]
 === Newts

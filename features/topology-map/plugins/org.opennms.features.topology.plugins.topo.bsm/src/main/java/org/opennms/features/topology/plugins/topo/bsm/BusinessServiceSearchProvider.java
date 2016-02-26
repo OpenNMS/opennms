@@ -45,6 +45,7 @@ import org.opennms.features.topology.api.topo.SearchResult;
 import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.netmgt.bsm.service.BusinessServiceManager;
 import org.opennms.netmgt.bsm.service.model.BusinessService;
+import org.opennms.netmgt.bsm.service.model.Status;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -86,7 +87,7 @@ public class BusinessServiceSearchProvider extends AbstractSearchProvider implem
         Criteria dbQueryCriteria = bldr.toCriteria();
 
         for (BusinessService bs : businessServiceManager.findMatching(dbQueryCriteria)) {
-            final BusinessServiceVertex businessServiceVertex = new BusinessServiceVertex(bs, 0);
+            final BusinessServiceVertex businessServiceVertex = new BusinessServiceVertex(bs, 0, Status.INDETERMINATE);
             SearchResult searchResult = new SearchResult(businessServiceVertex);
             searchResult.setCollapsed(false);
             searchResult.setCollapsible(true);

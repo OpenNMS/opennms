@@ -59,7 +59,7 @@ public class WSManDataCollectionConfigDaoJaxb extends AbstractMergingJaxbConfigD
     public WSManDataCollectionConfigDaoJaxb() {
         super(WsmanDatacollectionConfig.class, "WS-Man Data Collection Configuration",
                 Paths.get("etc", "wsman-datacollection-config.xml"),
-                Paths.get("etc", "wsman-datacollection"));
+                Paths.get("etc", "wsman-datacollection.d"));
     }
 
     @Override

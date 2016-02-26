@@ -54,8 +54,8 @@ public class RrdMergeIT {
      */
     @Test
     public void testRrdMerge() throws Exception {
-        RRDv3 tempA = JaxbUtils.unmarshal(RRDv3.class, new File("src/test/resources/rrd-tempA.xml"));
-        RRDv3 tempB = JaxbUtils.unmarshal(RRDv3.class, new File("src/test/resources/rrd-tempB.xml"));
+        RRDv3 tempA = JaxbUtils.unmarshal(RRDv3.class, new File("src/test/resources/rrd-tempA-rrd.xml"));
+        RRDv3 tempB = JaxbUtils.unmarshal(RRDv3.class, new File("src/test/resources/rrd-tempB-rrd.xml"));
 
         // Retrieve a list of the time stamps of the rows with data from tempA.rrd
         // Verify the max value

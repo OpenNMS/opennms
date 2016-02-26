@@ -35,8 +35,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.vaadin.server.PaintException;
-
 import org.opennms.features.topology.api.Graph;
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.Layout;
@@ -57,6 +55,8 @@ import org.opennms.features.topology.app.internal.gwt.client.TopologyComponentSt
 import org.opennms.features.topology.app.internal.support.IconRepositoryManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.vaadin.server.PaintException;
 
 public class GraphPainter extends BaseGraphVisitor {
 
@@ -106,13 +106,14 @@ public class GraphPainter extends BaseGraphVisitor {
 			}
         }
 
-        if(m_graphContainer.getEdgeStatusProviders() != null) {
-            for (EdgeStatusProvider statusProvider : m_graphContainer.getEdgeStatusProviders()) {
-                if (statusProvider.contributesTo(m_graphContainer.getBaseTopology().getEdgeNamespace())) {
-                    m_edgeStatusMap.putAll(statusProvider.getStatusForEdges(m_graphContainer.getBaseTopology(),
-                            new ArrayList<>(graph.getDisplayEdges()),
-                            m_graphContainer.getCriteria()));
-                }
+        if(m_graphContainer.getEdgeStatusProvider() != null) {
+			EdgeStatusProvider edgeStatusProvider = m_graphContainer.getEdgeStatusProvider();
+			if (edgeStatusProvider.contributesTo(m_graphContainer.getBaseTopology().getEdgeNamespace())) {
+				Map<EdgeRef, Status> newStatusForEdges = edgeStatusProvider.getStatusForEdges(m_graphContainer.getBaseTopology(),
+						new ArrayList<>(graph.getDisplayEdges()),
+						m_graphContainer.getCriteria());
+				m_edgeStatusMap.clear();
+				m_edgeStatusMap.putAll(newStatusForEdges);
             }
         }
     }

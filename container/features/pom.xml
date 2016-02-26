@@ -160,7 +160,6 @@
             <feature>hibernate36</feature>
             <feature>hibernate-validator41</feature>
             <feature>jaxb</feature>
-            <feature>jersey-client</feature>
             <feature>jfreechart</feature>
             <feature>jolokia</feature>
             <feature>jrobin</feature>

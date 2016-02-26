@@ -137,6 +137,8 @@
           </restriction>
         </simpleType>
       </attribute>
+      <attribute name="index-of" type="string"/>
+      <attribute name="filter" type="string"/>
     </complexType>
   </element>
 </schema>

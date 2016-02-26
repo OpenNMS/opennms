@@ -36,20 +36,10 @@
         </service-properties>
     </service>
 
-    <!-- Status provider -->
-    <bean id="bsmStatusProvider" class="org.opennms.features.topology.plugins.topo.bsm.BusinessServicesStatusProvider">
-		<argument ref="transactionAwareBeanProxyFactory" />
-		<property name="businessServiceManager" ref="businessServiceManager" />
-    </bean>
-    <service interface="org.opennms.features.topology.api.CheckedOperation">
-        <service-properties>
-            <entry key="operation.menuLocation" value="View" />
-            <entry key="operation.label" value="Business Services Status?group=status" />
-        </service-properties>
-        <bean class="org.opennms.features.topology.plugins.topo.bsm.AlarmStatusToggleOperation">
-            <property name="statusProvider" ref="bsmStatusProvider" />
-        </bean>
-    </service>
+    <!-- Status provider Bean for Vertex and Edge Status Provider-->
+    <bean id="bsmStatusProvider" class="org.opennms.features.topology.plugins.topo.bsm.BusinessServicesStatusProvider" />
+    <service interface="org.opennms.features.topology.api.topo.StatusProvider" ref="bsmStatusProvider" />
+    <service interface="org.opennms.features.topology.api.topo.EdgeStatusProvider" ref="bsmStatusProvider"/>
 
     <!-- Search Provider -->
     <bean id="bsmSearchProvider" class="org.opennms.features.topology.plugins.topo.bsm.BusinessServiceSearchProvider">
@@ -121,7 +111,7 @@
             <entry key="operation.menuLocation" value="View" />
             <entry key="operation.label" value="Hide Leaf Elements?group=bsm" />
         </service-properties>
-        <bean class="org.opennms.features.topology.plugins.topo.bsm.HideLeafElementToggleOperation"/>
+        <bean class="org.opennms.features.topology.plugins.topo.bsm.operations.HideLeafElementToggleOperation"/>
     </service>
 
     <!-- Icon definition -->

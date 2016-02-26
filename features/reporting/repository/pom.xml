@@ -47,8 +47,12 @@
       <artifactId>org.opennms.features.reporting.sdo</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.opennms.core</groupId>
+      <artifactId>org.opennms.core.web</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.opennms.dependencies</groupId>
-      <artifactId>jersey-client-dependencies</artifactId>
+      <artifactId>cxf-dependencies</artifactId>
       <type>pom</type>
     </dependency>
     <dependency>

@@ -41,7 +41,7 @@ public class DefaultResourceTypesDao extends AbstractMergingJaxbConfigDao<Resour
 
     public DefaultResourceTypesDao() {
         super(ResourceTypes.class, "Resource Type Definitions",
-                Paths.get("etc", "resource-types"));
+                Paths.get("etc", "resource-types.d"));
     }
 
     @Override
