@@ -65,7 +65,14 @@
       <xs:extension base="bs:abstractEdgeRequestDTO">
         <xs:sequence>
           <xs:element name="ip-service-id" type="xs:int"/>
-          <xs:element name="friendly-name" type="xs:string"/>
+          <xs:element name="friendly-name">
+            <xs:simpleType>
+              <xs:restriction base="xs:string">
+                <xs:minLength value="0"/>
+                <xs:maxLength value="30"/>
+              </xs:restriction>
+            </xs:simpleType>
+          </xs:element>
         </xs:sequence>
       </xs:extension>
     </xs:complexContent>
@@ -113,7 +120,14 @@
       <xs:extension base="bs:abstractEdgeRequestDTO">
         <xs:sequence>
           <xs:element name="reduction-key" type="xs:string"/>
-          <xs:element name="friendly-name" type="xs:string"/>
+          <xs:element name="friendly-name">
+            <xs:simpleType>
+              <xs:restriction base="xs:string">
+                <xs:minLength value="0"/>
+                <xs:maxLength value="30"/>
+              </xs:restriction>
+            </xs:simpleType>
+          </xs:element>
         </xs:sequence>
       </xs:extension>
     </xs:complexContent>
@@ -183,7 +197,14 @@
       <xs:extension base="bs:abstractEdgeResponseDTO">
         <xs:sequence>
           <xs:element minOccurs="0" name="ip-service" type="bs:ipServiceResponseDTO"/>
-          <xs:element name="friendly-name" type="xs:string"/>
+          <xs:element name="friendly-name">
+            <xs:simpleType>
+              <xs:restriction base="xs:string">
+                <xs:minLength value="0"/>
+                <xs:maxLength value="30"/>
+              </xs:restriction>
+            </xs:simpleType>
+          </xs:element>
         </xs:sequence>
       </xs:extension>
     </xs:complexContent>
@@ -203,7 +224,14 @@
         </xs:complexType>
       </xs:element>
       <xs:element name="weight" type="xs:int"/>
-      <xs:element name="friendly-name" type="xs:string"/>
+      <xs:element name="friendly-name">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:minLength value="0"/>
+            <xs:maxLength value="30"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
     </xs:sequence>
   </xs:complexType>
 
