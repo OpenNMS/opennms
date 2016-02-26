@@ -34,9 +34,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.opennms.features.topology.api.AbstractCheckedOperation;
+import org.opennms.features.topology.api.CheckedOperation;
 import org.opennms.features.topology.api.GraphContainer;
+import org.opennms.features.topology.api.LayoutAlgorithm;
 import org.opennms.features.topology.api.OperationContext;
 import org.opennms.features.topology.api.topo.EdgeStatusProvider;
 import org.opennms.features.topology.api.topo.GraphProvider;
@@ -80,11 +83,15 @@ class TopologySelectorOperation extends AbstractCheckedOperation {
 			// We automatically set status providers if there are any
 			StatusProvider vertexStatusProvider = findVertexStatusProvider(m_topologyProvider);
 			EdgeStatusProvider edgeStatusProvider = findEdgeStatusProvider(m_topologyProvider);
+			LayoutAlgorithm layoutAlgorithm = findLayoutAlgorithm();
 
             // Refresh the topology provider, triggering the vertices to load  if they have not yet loaded
             m_topologyProvider.refresh();
 			container.setEdgeStatusProvider(edgeStatusProvider);
 			container.setVertexStatusProvider(vertexStatusProvider);
+			if (layoutAlgorithm != null) {
+				container.setLayoutAlgorithm(layoutAlgorithm);
+			}
             container.setBaseTopology(m_topologyProvider);
             container.clearCriteria(); // remove all criteria
             container.setSemanticZoomLevel(1); // reset to 1
@@ -122,11 +129,24 @@ class TopologySelectorOperation extends AbstractCheckedOperation {
         }
     }
 
+	private LayoutAlgorithm findLayoutAlgorithm() {
+		Object preferredLayout = m_metaData.get("preferredLayout");
+		if (preferredLayout != null) {
+			// LayoutOperations are exposed as CheckedOperations
+			CheckedOperation operation = findSingleService(m_bundleContext, CheckedOperation.class, null, String.format("(operation.label=%s*)", preferredLayout));
+			if (operation instanceof HierarchyLayoutOperation) { // Cast it to HierarchyLayout if possible
+				return ((HierarchyLayoutOperation) operation).getLayoutAlgorithm();
+			}
+		}
+		return null; // no preferredLayout defined
+	}
+
 	private StatusProvider findVertexStatusProvider(GraphProvider graphProvider) {
 		StatusProvider vertexStatusProvider = findSingleService(
 				m_bundleContext,
 				StatusProvider.class,
-				statusProvider -> statusProvider.contributesTo(graphProvider.getVertexNamespace()));
+				statusProvider -> statusProvider.contributesTo(graphProvider.getVertexNamespace()),
+				null);
 		return vertexStatusProvider;
 	}
 
@@ -134,23 +154,27 @@ class TopologySelectorOperation extends AbstractCheckedOperation {
 		EdgeStatusProvider edgeStatusProvider = findSingleService(
 				m_bundleContext,
 				EdgeStatusProvider.class,
-				statusProvider -> statusProvider.contributesTo(graphProvider.getEdgeNamespace()));
+				statusProvider -> statusProvider.contributesTo(graphProvider.getEdgeNamespace()),
+				null);
 		return edgeStatusProvider;
 	}
 
 	/**
 	 * Finds a service registered with the OSGI Service Registry of type <code>clazz</code>.
-	 * In addition the registered service must comply with the provided filter.
+	 * If a <code>bundleContextFilter</code> is provided, it is used to query for the service, e.g. "(operation.label=My Label*)".
+	 * In addition each clazz of type T found in the OSGI Service Registry must afterwards pass the provided <code>postFilter</code>.
 	 *
-	 * If multiple services are found (and the filter criteria matches), only the first one is returned.
+	 * If multiple services are found, only the first one is returned.
 	 *
      * @return A object of type <code>clazz</code> or null.
      */
-	private <T> T findSingleService(BundleContext bundleContext, Class<T> clazz, Predicate<T> filter) {
-		List<T> providers = findServices(bundleContext, clazz);
-		providers = providers.stream()
-				.filter(filter)
-				.collect(Collectors.toList());
+	private <T> T findSingleService(BundleContext bundleContext, Class<T> clazz, Predicate<T> postFilter, String bundleContextFilter) {
+		List<T> providers = findServices(bundleContext, clazz, bundleContextFilter);
+		Stream<T> stream = providers.stream();
+		if (postFilter != null) { // filter may be null
+			stream = stream.filter(postFilter);
+		}
+		providers = stream.collect(Collectors.toList());
 		if (providers.size() > 1) {
 			LOG.warn("Found more than one {}s. This is not supported. Using 1st one in list.", clazz.getSimpleName());
 		}
@@ -162,14 +186,15 @@ class TopologySelectorOperation extends AbstractCheckedOperation {
 
 	/**
 	 * Find services of class <code>clazz</code> registered in the OSGI Service Registry.
-	 * No additional filter criteria is used.
+	 * The optional filter criteria <code>query</code> is used.
 	 *
 	 * @return All found services registered in the OSGI Service Registry of type <code>clazz</code>.
      */
-	private <T> List<T> findServices(BundleContext bundleContext, Class<T> clazz) {
+	private <T> List<T> findServices(BundleContext bundleContext, Class<T> clazz, String query) {
 		List<T> serviceList = new ArrayList<>();
+		LOG.debug("Finding Service of type {} and additional filter criteria {} ...", clazz, query);
 		try {
-			ServiceReference<?>[] allServiceReferences = bundleContext.getAllServiceReferences(clazz.getName(), null);
+			ServiceReference<?>[] allServiceReferences = bundleContext.getAllServiceReferences(clazz.getName(), query);
 			for (ServiceReference eachServiceReference : allServiceReferences) {
 				T statusProvider = (T) bundleContext.getService(eachServiceReference);
 				serviceList.add(statusProvider);
@@ -177,6 +202,7 @@ class TopologySelectorOperation extends AbstractCheckedOperation {
 		} catch (InvalidSyntaxException e) {
 			LOG.error("Could not query BundleContext for services", e);
 		}
+		LOG.debug("Found {} services", serviceList.size());
 		return serviceList;
 	}
 }

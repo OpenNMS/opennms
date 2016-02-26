@@ -34,6 +34,7 @@
     <service interface="org.opennms.features.topology.api.topo.GraphProvider" ref="bsmTopologyHopProvider">
         <service-properties>
             <entry key="label" value="Business Services" />
+            <entry key="preferredLayout" value="Hierarchy Layout" />
         </service-properties>
     </service>
 

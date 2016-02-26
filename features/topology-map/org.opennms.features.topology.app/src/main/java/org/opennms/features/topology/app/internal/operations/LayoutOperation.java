@@ -81,4 +81,8 @@ public abstract class LayoutOperation extends AbstractCheckedOperation {
 			execute(container);
 		}
 	}
+
+    public LayoutAlgorithm getLayoutAlgorithm() {
+        return m_factory.getLayoutAlgorithm();
+    }
 }
