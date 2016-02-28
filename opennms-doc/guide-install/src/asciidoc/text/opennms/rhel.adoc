@@ -86,7 +86,8 @@ systemctl enable postgresql
 systemctl start postgresql
 ----
 
-The next step is creating an _opennms_ database user with password and configure the authentication method.
+The next step is setting the _postgres_ super user password and creating an _opennms_ database user with password.
+Additionally it is required to configure the authentication method to allow authentication from the local network.
 
 .Accounting and database management for _OpenNMS_
 [source, shell]
@@ -94,9 +95,18 @@ The next step is creating an _opennms_ database user with password and configure
 su - postgres
 createuser -P opennms
 createdb -O opennms opennms
-psql -c "ALTER USER opennms WITH SUPERUSER;"
 exit
 ----
+
+.Set password for Postgres super user
+[source, shell]
+----
+su - postgres
+psql -c "ALTER USER postgres WITH PASSWORD 'YOUR-POSTGRES-PASSWORD';"
+exit
+----
+
+NOTE: The super user is required to be able to initialize and change the database schema for installation and updates.
 
 To allow _OpenNMS_ access to the database over the local network _PostgreSQL_ has to be configured.
 
@@ -141,14 +151,14 @@ vi ${OPENNMS_HOME}/etc/opennms-datasources.xml
                     database-name="template1"
                     class-name="org.postgresql.Driver"
                     url="jdbc:postgresql://localhost:5432/template1"
-                    user-name="** YOUR-OPENNMS-USERNAME **"<3>
-                    password="** YOUR-OPENNMS-PASSWORD **" /><4>
+                    user-name="postgres"<3>
+                    password="** YOUR-POSTGRES-PASSWORD **" /><4>
 ----
 
 <1> Set the user name to access the _OpenNMS_ database table
 <2> Set the password to access the _OpenNMS_ database table
-<3> Set the user name for administrative changes of the _OpenNMS_ database table
-<4> Set the password for administrative changes of the _OpenNMS_ database table
+<3> Set the _postgres_ user for administrative access to PostgreSQL
+<4> Set the password for administrative access to PostgreSQL
 
 [[gi-install-opennms-rhel-init]]
 ==== Initialize OpenNMS
@@ -172,18 +182,6 @@ ${OPENNMS_HOME}/bin/install -dis
 [source, shell]
 ----
 systemctl enable opennms
-----
-
-Running _OpenNMS_ doesn't require super user permissions.
-They are necessary for installing the _IPLIKE_ stored procedure during the database initialization.
-For operation the _OpenNMS_ database user can be restricted to a normal user.
-
-.Lockdown database permissions
-[source, shell]
-----
-su - postgres
-psql -c "ALTER ROLE opennms NOSUPERUSER;"
-psql -c "ALTER ROLE opennms NOCREATEDB;"
 ----
 
 .Startup _OpenNMS_
