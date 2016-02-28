@@ -176,6 +176,7 @@ public class DefaultBusinessServiceStateMachineTest {
                         .withReductionKey(34, "a4")
                         .withReductionKey(35, "a5")
                         .withReductionKey(36, "a6")
+                        .withReductionKey(37, "a7")
                     .commit()
                 .commit()
                 .build();
@@ -186,9 +187,10 @@ public class DefaultBusinessServiceStateMachineTest {
 
         // Bump b2 to MINOR, caused by a1
         stateMachine.handleNewOrUpdatedAlarm(new MockAlarmWrapper("a1", Status.MINOR));
-        // Bump b3 to MAJOR, caused by a4 and a6
+        // Bump b3 to MAJOR, caused by a4, a6 and a7
         stateMachine.handleNewOrUpdatedAlarm(new MockAlarmWrapper("a4", Status.MAJOR));
         stateMachine.handleNewOrUpdatedAlarm(new MockAlarmWrapper("a6", Status.CRITICAL));
+        stateMachine.handleNewOrUpdatedAlarm(new MockAlarmWrapper("a7", Status.MAJOR));
         // Bumped b1 to MAJOR, caused by b3
 
         // Verify the state
@@ -201,18 +203,20 @@ public class DefaultBusinessServiceStateMachineTest {
         assertEquals(1, causedby.size());
         assertEquals("a1", causedby.get(0).getReductionKey());
 
-        // b3 caused by a4 and a6
+        // b3 caused by a4, a6 and a7
         causedby = stateMachine.calculateRootCause(h.getBusinessServiceById(3));
-        assertEquals(2, causedby.size());
+        assertEquals(3, causedby.size());
         assertEquals("a4", causedby.get(0).getReductionKey());
         assertEquals("a6", causedby.get(1).getReductionKey());
+        assertEquals("a7", causedby.get(2).getReductionKey());
 
-        // b1 caused by b3, which was in turn caused by a4 and a6
+        // b1 caused by b3, which was in turn caused by a4, a6 and a7
         causedby = stateMachine.calculateRootCause(h.getBusinessServiceById(1));
-        assertEquals(3, causedby.size());
+        assertEquals(4, causedby.size());
         assertEquals(Long.valueOf(3), causedby.get(0).getBusinessService().getId());
         assertEquals("a4", causedby.get(1).getReductionKey());
         assertEquals("a6", causedby.get(2).getReductionKey());
+        assertEquals("a7", causedby.get(3).getReductionKey());
 
         // Now calculate the impact, a1 impacts b2
         List<GraphVertex> impacts = stateMachine.calculateImpact("a1");
