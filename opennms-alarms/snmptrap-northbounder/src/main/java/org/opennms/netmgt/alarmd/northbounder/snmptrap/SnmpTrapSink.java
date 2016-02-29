@@ -33,6 +33,7 @@ import java.io.FileWriter;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -44,6 +45,8 @@ import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.alarmd.api.Destination;
 import org.opennms.netmgt.alarmd.api.NorthboundAlarm;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Configuration for the various SNMP Trap hosts to receive alarms via Traps.
@@ -54,6 +57,10 @@ import org.opennms.netmgt.alarmd.api.NorthboundAlarm;
 @XmlAccessorType(XmlAccessType.FIELD)
 public class SnmpTrapSink implements Destination {
 
+    /** The Constant LOG. */
+    public static final Logger LOG = LoggerFactory.getLogger(SnmpTrapSink.class);
+
+    /** The Constant MAPPINGS_DIRECTORY_NAME. */
     public static final String MAPPINGS_DIRECTORY_NAME = "snmptrap-northbounder-mappings.d";
 
     /** The Constant serialVersionUID. */
@@ -264,10 +271,22 @@ public class SnmpTrapSink implements Destination {
         }
     }
 
+    /**
+     * Gets the mapping group file name.
+     *
+     * @param mappingName the mapping name
+     * @return the full path for the mapping group file name
+     */
     public String getMappingGroupFileName(String mappingName) {
-        return MAPPINGS_DIRECTORY_NAME + File.separator + mappingName;
+        return MAPPINGS_DIRECTORY_NAME + File.separator + mappingName + ".xml";
     }
 
+    /**
+     * Gets the mapping group file.
+     *
+     * @param mappingFileName the mapping file name
+     * @return the mapping group file
+     */
     public File getMappingGroupFile(String mappingFileName) {
         return new File(ConfigFileConstants.getHome(), "etc" + File.separator + mappingFileName);
     }
@@ -384,13 +403,17 @@ public class SnmpTrapSink implements Destination {
      * <p>All the groups that currently exist on the mappings list and also on the import-mappings list will be removed from the mapping list to avoid duplicates.</p>
      */
     public void cleanMappingGroups() {
-        final List<Integer> deleteList = new ArrayList<Integer>();
-        for (int i = 0; i < m_mappings.size(); i++) {
-            if (m_importMappings.contains(getMappingGroupFileName(m_mappings.get(i).getName()))) {
-                deleteList.add(i);
+        for (Iterator<SnmpTrapMappingGroup> it = m_mappings.iterator(); it.hasNext();) {
+            SnmpTrapMappingGroup grp = it.next();
+            if (m_importMappings.contains(getMappingGroupFileName(grp.getName()))) {
+                LOG.debug("cleanMappingGroups: removing {} from {} as the content is managed through an external file", grp.getName(), getName());
+                it.remove();
+            } else {
+                LOG.debug("cleanMappingGroups: keeping {} on {}", grp.getName(), getName());
             }
+
         }
-        deleteList.forEach(i -> m_mappings.remove(i));
+        LOG.debug("cleanMappingGroups: {} group remains explicitly on {}", m_mappings.size(), getName());
     }
 
     /**

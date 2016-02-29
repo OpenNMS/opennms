@@ -45,9 +45,13 @@ import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.dao.api.CategoryDao;
+import org.opennms.netmgt.dao.api.OutageDao;
 import org.opennms.netmgt.dao.hibernate.AlarmDaoHibernate;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsCategory;
+import org.opennms.netmgt.model.OnmsOutage;
+import org.opennms.netmgt.model.alarm.AlarmSummary;
+import org.opennms.netmgt.model.outage.OutageSummary;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -73,6 +77,9 @@ public class AuthorizationIT implements InitializingBean {
 
     @Autowired
     AlarmDao m_alarmDao;
+
+    @Autowired
+    OutageDao m_outageDao;
 
     @Autowired
     CategoryDao m_categoryDao;
@@ -119,6 +126,68 @@ public class AuthorizationIT implements InitializingBean {
         disableAuthorizationFilter();
 
         Collection<OnmsAlarm> matching3 = m_alarmDao.findAll();
+
+        assertNotNull(matching3);
+        assertEquals(1, matching3.size());
+
+        System.err.println(matching3);
+    }
+
+    @Test
+    @Transactional
+    @JUnitTemporaryDatabase
+    public void testAuthorizedOutages() {
+
+        Collection<OnmsOutage> matching = m_outageDao.findAll();
+
+        assertNotNull(matching);
+        assertEquals(2, matching.size());
+
+        System.err.println(matching);
+
+        enableAuthorizationFilter("NonExistentGroup");
+
+        Collection<OnmsOutage> matching2 = m_outageDao.findAll();
+
+        assertNotNull(matching2);
+        assertEquals(0, matching2.size());
+
+        System.err.println(matching2);
+
+        disableAuthorizationFilter();
+
+        Collection<OnmsOutage> matching3 = m_outageDao.findAll();
+
+        assertNotNull(matching3);
+        assertEquals(2, matching3.size());
+
+        System.err.println(matching3);
+    }
+
+    @Test
+    @Transactional
+    @JUnitTemporaryDatabase
+    public void testAuthorizedOutageSumaries() {
+
+        List<OutageSummary> matching = m_outageDao.getNodeOutageSummaries(10);
+
+        assertNotNull(matching);
+        assertEquals(1, matching.size());
+
+        System.err.println(matching);
+
+        enableAuthorizationFilter("NonExistentGroup");
+
+        List<OutageSummary> matching2 = m_outageDao.getNodeOutageSummaries(10);
+
+        assertNotNull(matching2);
+        assertEquals(0, matching2.size());
+
+        System.err.println(matching2);
+
+        disableAuthorizationFilter();
+
+        List<OutageSummary> matching3 = m_outageDao.getNodeOutageSummaries(10);
 
         assertNotNull(matching3);
         assertEquals(1, matching3.size());
