@@ -28,32 +28,32 @@
 
 package org.opennms.features.topology.plugins.topo.application.browsers;
 
-import java.util.Objects;
-
-import org.opennms.features.topology.api.GraphContainer;
-import org.opennms.features.topology.api.WidgetContext;
+import org.opennms.features.topology.api.browsers.AbstractSelectionLinkGenerator;
 import org.opennms.features.topology.plugins.browsers.ToStringColumnGenerator;
-import org.opennms.features.topology.plugins.topo.application.ApplicationCriteria;
+import org.opennms.features.topology.plugins.topo.application.ApplicationVertex;
 
 import com.vaadin.data.Property;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Table;
-import com.vaadin.ui.UI;
 import com.vaadin.ui.themes.BaseTheme;
 
-public class ApplicationSelectionLinkGenerator implements Table.ColumnGenerator {
+public class ApplicationSelectionLinkGenerator extends AbstractSelectionLinkGenerator {
 
-    public ApplicationSelectionLinkGenerator(String idPropertyName) {
-		this.idPropertyName = idPropertyName;
-		this.columnGenerator = new ToStringColumnGenerator();
-	}
-
+	private final String labelPropertyName;
 	private final String idPropertyName;
 	private final Table.ColumnGenerator columnGenerator;
+
+    public ApplicationSelectionLinkGenerator(String idPropertyName, String labelPropertyName) {
+		this.idPropertyName = idPropertyName;
+		this.labelPropertyName = labelPropertyName;
+		this.columnGenerator = new ToStringColumnGenerator();
+	}
 
 	@Override
 	public Object generateCell(final Table source, final Object itemId, Object columnId) {
 		final Property<Integer> idProperty = source.getContainerProperty(itemId, idPropertyName);
+		final Property<String> labelProperty = source.getContainerProperty(itemId, labelPropertyName);
+
 		Object cellValue = columnGenerator.generateCell(source, itemId, columnId);
 		if (cellValue == null) {
 			return null;
@@ -67,22 +67,10 @@ public class ApplicationSelectionLinkGenerator implements Table.ColumnGenerator 
 				button.addClickListener(new Button.ClickListener() {
 					@Override
 					public void buttonClick(Button.ClickEvent event) {
-						// Retrieve the graph container associated with the current application context
-						UI ui = UI.getCurrent();
-						WidgetContext context = (WidgetContext)ui;
-						GraphContainer graphContainer = context.getGraphContainer();
-
-						ApplicationCriteria applicationCriteria = graphContainer.findSingleCriteria(ApplicationCriteria.class);
-						if (applicationCriteria == null) {
-							applicationCriteria = new ApplicationCriteria();
-						}
-
-						String applicationId = String.valueOf(idProperty.getValue());
-						if (!Objects.equals(applicationCriteria.getApplicationId(), applicationId)) {
-							applicationCriteria.setApplicationId(applicationId);
-							graphContainer.setDirty(true);
-							graphContainer.redoLayout();
-						}
+						Integer applicationId = idProperty.getValue();
+						String applicationName = labelProperty.getValue();
+						ApplicationVertex vertex = new ApplicationVertex(applicationId.toString(), applicationName);
+						fireVertexUpdatedEvent(vertex);
 					}
 				});
 				return button;

@@ -32,24 +32,40 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.opennms.features.topology.api.topo.AbstractVertex;
+import org.opennms.features.topology.api.topo.LevelAware;
 import org.opennms.features.topology.api.topo.VertexRef;
+import org.opennms.netmgt.model.OnmsApplication;
+import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsServiceType;
 
-class ApplicationVertex extends AbstractVertex {
+public class ApplicationVertex extends AbstractVertex implements LevelAware {
 
     private List<VertexRef> children = new ArrayList<>();
 
     private OnmsServiceType serviceType;
 
+    public ApplicationVertex(OnmsApplication application) {
+        this(application.getId().toString(), application.getName());
+        setTooltipText(String.format("Application '%s'", application.getName()));
+        setIconKey("application");
+    }
+
+    public ApplicationVertex(OnmsMonitoredService monitoredService) {
+        this(monitoredService.getId().toString(), monitoredService.getServiceName());
+        setIconKey("monitored-service");
+        setIpAddress(monitoredService.getIpAddress().toString());
+        setTooltipText(String.format("Service '%s', IP: %s", monitoredService.getServiceName(), monitoredService.getIpAddress().toString()));
+        setNodeID(monitoredService.getNodeId());
+        setServiceType(monitoredService.getServiceType());
+        setIconKey("monitored-service");
+    }
+
     /**
      * Creates a new {@link ApplicationVertex}.
      * @param id the unique id of this vertex. Must be unique overall the namespace.
      */
-    public ApplicationVertex(String id) {
-        super(ApplicationTopologyProvider.TOPOLOGY_NAMESPACE, id);
-        setIconKey(null);
-        setLocked(false);
-        setSelected(false);
+    public ApplicationVertex(String id, String label) {
+        super(ApplicationTopologyProvider.TOPOLOGY_NAMESPACE, id, label);
     }
 
     public void addChildren(AbstractVertex vertex) {
@@ -88,5 +104,10 @@ class ApplicationVertex extends AbstractVertex {
             return this;
         }
         return ((ApplicationVertex)getParent()).getRoot();
+    }
+
+    @Override
+    public int getLevel() {
+        return isRoot() ? 0 : 1;
     }
 }

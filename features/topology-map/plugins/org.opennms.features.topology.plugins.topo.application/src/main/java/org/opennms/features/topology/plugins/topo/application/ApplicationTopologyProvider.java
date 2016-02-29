@@ -37,18 +37,22 @@ import javax.xml.bind.JAXBException;
 
 import org.opennms.features.topology.api.browsers.ContentType;
 import org.opennms.features.topology.api.browsers.SelectionChangedListener;
+import org.opennms.features.topology.api.support.VertexHopGraphProvider;
 import org.opennms.features.topology.api.topo.AbstractEdge;
 import org.opennms.features.topology.api.topo.AbstractTopologyProvider;
 import org.opennms.features.topology.api.topo.Criteria;
 import org.opennms.features.topology.api.topo.Edge;
 import org.opennms.features.topology.api.topo.GraphProvider;
 import org.opennms.features.topology.api.topo.SimpleEdgeProvider;
+import org.opennms.features.topology.api.topo.SimpleVertexProvider;
 import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.netmgt.dao.api.ApplicationDao;
 import org.opennms.netmgt.model.OnmsApplication;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.common.collect.Sets;
 
 public class ApplicationTopologyProvider extends AbstractTopologyProvider implements GraphProvider {
 
@@ -59,7 +63,7 @@ public class ApplicationTopologyProvider extends AbstractTopologyProvider implem
     private ApplicationDao applicationDao;
 
     public ApplicationTopologyProvider(ApplicationDao applicationDao) {
-        super(new ApplicationVertexProvider(TOPOLOGY_NAMESPACE), new SimpleEdgeProvider(TOPOLOGY_NAMESPACE));
+        super(new SimpleVertexProvider(TOPOLOGY_NAMESPACE), new SimpleEdgeProvider(TOPOLOGY_NAMESPACE));
         this.applicationDao = applicationDao;
         LOG.debug("Creating a new {} with namespace {}", getClass().getSimpleName(), TOPOLOGY_NAMESPACE);
     }
@@ -72,26 +76,17 @@ public class ApplicationTopologyProvider extends AbstractTopologyProvider implem
     private void load() {
         resetContainer();
         for (OnmsApplication application : applicationDao.findAll()) {
-            ApplicationVertex applicationVertex = new ApplicationVertex(String.valueOf(application.getId()));
-            applicationVertex.setLabel(application.getName());
-            applicationVertex.setTooltipText(String.format("Application '%s'", application.getName()));
-            applicationVertex.setIconKey("application");
+            ApplicationVertex applicationVertex = new ApplicationVertex(application);
             addVertices(applicationVertex);
 
             for (OnmsMonitoredService eachMonitoredService : application.getMonitoredServices()) {
-                final ApplicationVertex serviceVertex = new ApplicationVertex(String.valueOf(eachMonitoredService.getId()));
-                serviceVertex.setIpAddress(eachMonitoredService.getIpAddress().toString());
-                serviceVertex.setLabel(eachMonitoredService.getServiceName());
-                serviceVertex.setTooltipText(String.format("Service '%s', IP: %s", eachMonitoredService.getServiceName(), eachMonitoredService.getIpAddress().toString()));
-                serviceVertex.setNodeID(eachMonitoredService.getNodeId());
-                serviceVertex.setServiceType(eachMonitoredService.getServiceType());
+                final ApplicationVertex serviceVertex = new ApplicationVertex(eachMonitoredService);
                 applicationVertex.addChildren(serviceVertex);
                 addVertices(serviceVertex);
 
                 // connect with application
                 String id = String.format("connection:%s:%s", applicationVertex.getId(), serviceVertex.getId());
                 Edge edge = new AbstractEdge(getEdgeNamespace(), id, applicationVertex, serviceVertex);
-                edge.setTooltipText("LINK");
                 addEdges(edge);
             }
         }
@@ -107,7 +102,7 @@ public class ApplicationTopologyProvider extends AbstractTopologyProvider implem
         // Only show the first application by default
         List<OnmsApplication> applications = applicationDao.findAll();
         if (!applications.isEmpty()) {
-            return new ApplicationCriteria(String.valueOf(applications.get(0).getId()));
+            return new VertexHopGraphProvider.DefaultVertexHopCriteria(new ApplicationVertex(applications.get(0)));
         }
         return null;
     }
@@ -123,18 +118,38 @@ public class ApplicationTopologyProvider extends AbstractTopologyProvider implem
     }
 
     @Override
-    public SelectionChangedListener.Selection getSelection(List<VertexRef> selectedVertices, ContentType type) {
+    public SelectionChangedListener.Selection getSelection(List<VertexRef> selectedVertices, ContentType contentType) {
         Set<ApplicationVertex> filteredVertices = selectedVertices.stream()
                 .filter(v -> TOPOLOGY_NAMESPACE.equals(v.getNamespace()))
                 .map(v -> (ApplicationVertex) v)
-                .filter(v -> v.getServiceType() == null /* Application Vertex, no child */)
                 .collect(Collectors.toSet());
-        Set<Integer> applicationIds = filteredVertices.stream().map(v -> Integer.valueOf(v.getId())).collect(Collectors.toSet());
-        return new SelectionChangedListener.IdSelection<>(applicationIds);
+        Set<Integer> nodeIds = extractNodeIds(filteredVertices);
+        switch (contentType) {
+            case Alarm:
+                return new SelectionChangedListener.AlarmNodeIdSelection(nodeIds);
+            case Node:
+                return new SelectionChangedListener.IdSelection<>(nodeIds);
+            case Application:
+                final Set<Integer> applicationIds = filteredVertices.stream()
+                        .filter(v -> v.isRoot())
+                        .map(v -> Integer.valueOf(v.getId())).collect(Collectors.toSet());
+                return new SelectionChangedListener.IdSelection<>(applicationIds);
+        }
+        throw new IllegalArgumentException(getClass().getSimpleName() + " does not support filtering vertices for contentType " + contentType);
     }
 
     @Override
     public boolean contributesTo(ContentType type) {
-        return ContentType.Application == type;
+        return Sets.newHashSet(
+                ContentType.Application,
+                ContentType.Alarm,
+                ContentType.Alarm.Node).contains(type);
+    }
+
+    private Set<Integer> extractNodeIds(Set<ApplicationVertex> applicationVertices) {
+        return applicationVertices.stream()
+                .filter(eachVertex -> TOPOLOGY_NAMESPACE.equals(eachVertex.getNamespace()) && eachVertex.getNodeID() != null)
+                .map(eachVertex -> eachVertex.getNodeID())
+                .collect(Collectors.toSet());
     }
 }
