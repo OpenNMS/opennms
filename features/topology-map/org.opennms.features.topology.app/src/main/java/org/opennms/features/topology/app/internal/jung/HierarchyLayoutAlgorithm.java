@@ -41,7 +41,6 @@ import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.Layout;
 import org.opennms.features.topology.api.Point;
 import org.opennms.features.topology.api.topo.AbstractEdge;
-import org.opennms.features.topology.api.topo.AbstractVertex;
 import org.opennms.features.topology.api.topo.Edge;
 import org.opennms.features.topology.api.topo.LevelAware;
 import org.opennms.features.topology.api.topo.Vertex;
@@ -124,42 +123,9 @@ public class HierarchyLayoutAlgorithm extends AbstractLayoutAlgorithm {
         }
     }
 
-    // we may have 1 to n root vertices
-    private List<Vertex> getRoots(Graph g) {
-        List<Vertex> rootList = new ArrayList<Vertex>();
-        Collection<Vertex> displayableVertices = g.getDisplayVertices();
-        for (Vertex eachVertex : displayableVertices) {
-            if (eachVertex.getParent() == null // no parent
-                    || !displayableVertices.contains(eachVertex.getParent())) { // parent is not visible, include it as possible root
-                rootList.add(eachVertex);
-            }
-        }
-        return rootList;
-    }
-
     private edu.uci.ics.jung.algorithms.layout.Layout<VertexRef, Edge> createTreeLayout(final Graph g) {
         final edu.uci.ics.jung.graph.DirectedGraph<VertexRef, Edge> jungGraph = convert(g);
-        final List<Vertex> rootVertices = getRoots(g);
-
-        // Vertex to be used as a dummy root element, if more than 1 root element exists in the provided graph
-        final Vertex dummyRootVertex = new AbstractVertex(getClass().getName(), "$ROOT", "$ROOT");
-
-        // If no rootVertices exist in the graph, null is used.
-        // If only one root element exists, that vertex is used.
-        // If more than 1 root element exist, the dummyRootVertex is used
-        final Vertex rootVertex = rootVertices.isEmpty() ? null : rootVertices.size() > 1 ? dummyRootVertex : rootVertices.iterator().next();
-
-        // If more than 1 root vertices exist, we add a dummy root to have
-        // the tree layout set the positions correctly. However the dummy root and its vertices do not show up in the ui.
-        // They are only used for the positioning
-        if (rootVertices.size() > 1) {
-            List<Edge> dummyRootEdges = createRootDummyEdges(rootVertices, dummyRootVertex);
-            jungGraph.addVertex(dummyRootVertex);
-            for (Edge e : dummyRootEdges) {
-                jungGraph.addEdge(e, e.getSource().getVertex(), e.getTarget().getVertex());
-            }
-        }
-        HierarchyLayout<VertexRef, Edge> layout = new HierarchyLayout<>(jungGraph, rootVertex, ELBOW_ROOM * 2, ELBOW_ROOM * 2);
+        HierarchyLayout<VertexRef, Edge> layout = new HierarchyLayout<>(jungGraph, ELBOW_ROOM * 2, ELBOW_ROOM * 2);
         return layout;
     }
 
