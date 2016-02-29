@@ -81,7 +81,8 @@ public class GCFilterableContainerTest {
             }
         };
         provider.load(null);
-        graphContainer = new VEProviderGraphContainer(provider, new ProviderManager());
+        graphContainer = new VEProviderGraphContainer(new ProviderManager());
+        graphContainer.setBaseTopology(provider);
     }
     
     @Test

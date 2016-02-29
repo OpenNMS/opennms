@@ -179,7 +179,8 @@ public class VEProviderGraphContainerTest {
 		ProviderManager providerManager = new ProviderManager();
 		providerManager.onEdgeProviderBind(m_edgeProvider);
 
-		GraphContainer graphContainer = new VEProviderGraphContainer(m_graphProvider, providerManager);
+		GraphContainer graphContainer = new VEProviderGraphContainer(providerManager);
+		graphContainer.setBaseTopology(m_graphProvider);
 		graphContainer.setSemanticZoomLevel(0);
 		
 		m_graphContainer = graphContainer;
@@ -205,7 +206,8 @@ public class VEProviderGraphContainerTest {
 		// Wrap the test GraphProvider in a VertexHopGraphProvider
 		ProviderManager providerManager = new ProviderManager();
 		providerManager.onEdgeProviderBind(m_edgeProvider);
-		GraphContainer graphContainer = new VEProviderGraphContainer(new VertexHopGraphProvider(m_graphProvider), providerManager);
+		GraphContainer graphContainer = new VEProviderGraphContainer(providerManager);
+		graphContainer.setBaseTopology(new VertexHopGraphProvider(m_graphProvider));
 		graphContainer.setSemanticZoomLevel(0);
 
 		m_graphContainer = graphContainer;
