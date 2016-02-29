@@ -51,6 +51,7 @@ import org.opennms.netmgt.bsm.service.BusinessServiceStateMachine;
 import org.opennms.netmgt.bsm.service.model.IpService;
 import org.opennms.netmgt.bsm.service.model.ReadOnlyBusinessService;
 import org.opennms.netmgt.bsm.service.model.graph.GraphVertex;
+import org.opennms.netmgt.vaadin.core.InfoDialog;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -83,15 +84,19 @@ public class ImpactAnalysisOperation implements Operation {
         }
         LOG.info("Found {} business services impacted.", graphVerticesToFocus.size());
 
-        // add to focus
-        GraphContainer container = operationContext.getGraphContainer();
-        container.clearCriteria();
-        graphVerticesToFocus.forEach(graphVertex -> container.addCriteria(
-                new VertexHopGraphProvider.DefaultVertexHopCriteria(createTopologyVertex(graphVertex))));
-        // add the context vertex because it is missing in the root cause result
-        container.addCriteria(new VertexHopGraphProvider.DefaultVertexHopCriteria(targets.get(0)));
-        container.setSemanticZoomLevel(0);
-        container.redoLayout();
+        if (graphVerticesToFocus.isEmpty()) {
+            new InfoDialog("No result", "No vertices are impacted by the selected vertices.").open();
+        } else {
+            // add to focus
+            GraphContainer container = operationContext.getGraphContainer();
+            container.clearCriteria();
+            graphVerticesToFocus.forEach(graphVertex -> container.addCriteria(
+                    new VertexHopGraphProvider.DefaultVertexHopCriteria(createTopologyVertex(graphVertex))));
+            // add the context vertex because it is missing in the root cause result
+            container.addCriteria(new VertexHopGraphProvider.DefaultVertexHopCriteria(targets.get(0)));
+            container.setSemanticZoomLevel(0);
+            container.redoLayout();
+        }
     }
 
     @Override

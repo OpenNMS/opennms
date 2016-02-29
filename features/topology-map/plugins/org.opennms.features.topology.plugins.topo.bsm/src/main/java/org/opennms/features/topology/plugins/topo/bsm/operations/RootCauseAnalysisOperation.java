@@ -45,6 +45,7 @@ import org.opennms.features.topology.plugins.topo.bsm.BusinessServiceVertex;
 import org.opennms.netmgt.bsm.service.BusinessServiceManager;
 import org.opennms.netmgt.bsm.service.BusinessServiceStateMachine;
 import org.opennms.netmgt.bsm.service.model.graph.GraphVertex;
+import org.opennms.netmgt.vaadin.core.InfoDialog;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -65,15 +66,19 @@ public class RootCauseAnalysisOperation implements Operation {
             .collect(Collectors.toList());
         LOG.info("Found {} edges for root cause.", verticesToFocus.size());
 
-        // add to focus
-        GraphContainer container = operationContext.getGraphContainer();
-        container.clearCriteria();
-        verticesToFocus.forEach(graphVertex -> container.addCriteria(
-                new DefaultVertexHopCriteria(createTopologyVertex(graphVertex))));
-        // add the context vertex because it is missing in the root cause result
-        container.addCriteria(new DefaultVertexHopCriteria(targets.get(0)));
-        container.setSemanticZoomLevel(0);
-        container.redoLayout();
+        if (verticesToFocus.isEmpty()) {
+            new InfoDialog("No result", "No root cause was found for the selected vertices.").open();
+        } else {
+            // add to focus
+            GraphContainer container = operationContext.getGraphContainer();
+            container.clearCriteria();
+            verticesToFocus.forEach(graphVertex -> container.addCriteria(
+                    new DefaultVertexHopCriteria(createTopologyVertex(graphVertex))));
+            // add the context vertex because it is missing in the root cause result
+            container.addCriteria(new DefaultVertexHopCriteria(targets.get(0)));
+            container.setSemanticZoomLevel(0);
+            container.redoLayout();
+        }
     }
 
     @Override

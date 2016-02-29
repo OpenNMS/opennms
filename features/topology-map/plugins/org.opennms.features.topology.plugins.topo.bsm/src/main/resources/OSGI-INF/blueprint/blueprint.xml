@@ -160,7 +160,7 @@
     <service interface="org.opennms.features.topology.api.Operation" ref="rootCauseAnalysisOperation">
         <service-properties>
             <entry key="operation.menuLocation" value="Device"/>
-            <entry key="operation.contextMenuLocation" value="bsm"/>
+            <entry key="operation.contextMenuLocation" value=""/>
             <entry key="operation.label" value="Root Cause Analysis"/>
         </service-properties>
     </service>
@@ -168,7 +168,7 @@
     <service interface="org.opennms.features.topology.api.Operation" ref="impactAnalysisOperation">
         <service-properties>
             <entry key="operation.menuLocation" value="Device"/>
-            <entry key="operation.contextMenuLocation" value="bsm"/>
+            <entry key="operation.contextMenuLocation" value=""/>
             <entry key="operation.label" value="Impact Analysis"/>
         </service-properties>
     </service>
