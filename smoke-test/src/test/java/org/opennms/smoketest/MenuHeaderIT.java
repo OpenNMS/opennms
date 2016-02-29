@@ -122,10 +122,6 @@ public class MenuHeaderIT extends OpenNMSSeleniumTestCase {
         findElementByXpath("//h3[text()='Distributed Monitoring']");
 
         frontPage();
-        clickMenuItem("name=nav-admin-top", "Quick-Add Node", "opennms/admin/node/add.htm");
-        findElementByXpath("//h3[text()='Node Quick-Add']");
-
-        frontPage();
         clickMenuItem("name=nav-admin-top", "Help/Support", "opennms/support/index.htm");
         findElementByXpath("//h3[text()='Commercial Support']");
 
