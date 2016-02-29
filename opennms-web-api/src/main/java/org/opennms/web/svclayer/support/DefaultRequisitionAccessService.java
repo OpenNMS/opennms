@@ -31,6 +31,7 @@ package org.opennms.web.svclayer.support;
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -46,12 +47,15 @@ import java.util.concurrent.ThreadFactory;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.xml.datatype.XMLGregorianCalendar;
 
+import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventProxy;
 import org.opennms.netmgt.events.api.EventProxyException;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.provision.persist.ForeignSourceRepository;
 import org.opennms.netmgt.provision.persist.RequisitionFileUtils;
+import org.opennms.netmgt.provision.persist.requisition.DeployedRequisitionStats;
+import org.opennms.netmgt.provision.persist.requisition.DeployedStats;
 import org.opennms.netmgt.provision.persist.requisition.Requisition;
 import org.opennms.netmgt.provision.persist.requisition.RequisitionAsset;
 import org.opennms.netmgt.provision.persist.requisition.RequisitionAssetCollection;
@@ -84,6 +88,9 @@ public class DefaultRequisitionAccessService implements RequisitionAccessService
     @Autowired
     @Qualifier("deployed")
     private ForeignSourceRepository m_deployedForeignSourceRepository;
+
+    @Autowired
+    private NodeDao m_nodeDao;
 
     @Autowired
     @Qualifier("eventProxy")
@@ -576,6 +583,24 @@ public class DefaultRequisitionAccessService implements RequisitionAccessService
             @Override public Integer call() throws Exception {
                 flushAll();
                 return getPendingForeignSourceRepository().getRequisitions().size();
+            }
+        });
+    }
+
+    // GLOBAL
+    @Override
+    public DeployedStats getDeployedStats() {
+        return submitAndWait(new Callable<DeployedStats>() {
+            @Override public DeployedStats call() throws Exception {
+                final DeployedStats deployedStats = new DeployedStats();
+                Map<String,Set<String>> map = m_nodeDao.getForeignIdsPerForeignSourceMap();
+                map.entrySet().forEach(e -> {
+                    DeployedRequisitionStats stats = new DeployedRequisitionStats();
+                    stats.setForeignSource(e.getKey());
+                    stats.setForeignIds(new ArrayList<String>(e.getValue()));
+                    deployedStats.add(stats);
+                });
+                return deployedStats;
             }
         });
     }

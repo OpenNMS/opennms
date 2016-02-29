@@ -48,6 +48,7 @@ import javax.ws.rs.core.UriInfo;
 import javax.xml.bind.ValidationException;
 
 import org.opennms.netmgt.provision.persist.ForeignSourceRepositoryFactory;
+import org.opennms.netmgt.provision.persist.requisition.DeployedStats;
 import org.opennms.netmgt.provision.persist.requisition.Requisition;
 import org.opennms.netmgt.provision.persist.requisition.RequisitionAsset;
 import org.opennms.netmgt.provision.persist.requisition.RequisitionAssetCollection;
@@ -146,6 +147,13 @@ public class RequisitionRestService extends OnmsRestService {
     @Produces(MediaType.TEXT_PLAIN)
     public String getDeployedCount() {
         return Integer.toString(m_accessService.getDeployedCount());
+    }
+
+    @GET
+    @Path("deployed/stats")
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
+    public DeployedStats getDeployedStats() {
+        return m_accessService.getDeployedStats();
     }
 
     /**

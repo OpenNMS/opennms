@@ -30,6 +30,7 @@ package org.opennms.web.svclayer.api;
 
 import javax.ws.rs.core.MultivaluedMap;
 
+import org.opennms.netmgt.provision.persist.requisition.DeployedStats;
 import org.opennms.netmgt.provision.persist.requisition.Requisition;
 import org.opennms.netmgt.provision.persist.requisition.RequisitionAsset;
 import org.opennms.netmgt.provision.persist.requisition.RequisitionAssetCollection;
@@ -58,6 +59,9 @@ public interface RequisitionAccessService {
 
 	// GLOBAL
 	int getPendingCount();
+
+	// GLOBAL
+	DeployedStats getDeployedStats();
 
 	Requisition getRequisition(String foreignSource);
 
