@@ -17,8 +17,6 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 http://aries.apache.org/schemas/b
         </cm:default-properties>
     </cm:property-placeholder>
 
-    <reference id="topologyProvider" interface="org.opennms.features.topology.api.topo.GraphProvider" filter="|(label=Enhanced Linkd)(label=Linkd)"  availability="mandatory"/>
-
     <bean id="topologyApplication" class="org.opennms.features.topology.app.internal.TopologyUI" scope="prototype">
         <argument ref="commandManager"/>
         <argument ref="historyManager"/>
@@ -31,7 +29,6 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 http://aries.apache.org/schemas/b
     </bean>
 
     <bean id="veGraphContainer" class="org.opennms.features.topology.app.internal.VEProviderGraphContainer" scope="prototype">
-        <argument ref="topologyProvider" />
         <argument ref="providerManager" />
         <property name="bundleContext" ref="blueprintBundleContext" />
         <property name="autoRefreshSupport" ref="defaultAutoRefreshSupport"/>

@@ -70,9 +70,8 @@ public class MergingGraphProvider implements GraphProvider, VertexListener, Edge
 	private final Set<VertexListener> m_vertexListeners = new CopyOnWriteArraySet<VertexListener>();
 	private final Set<EdgeListener> m_edgeListeners = new CopyOnWriteArraySet<EdgeListener>();
 	
-	public MergingGraphProvider(GraphProvider baseGraphProvider, ProviderManager providerManager) {
-		m_baseGraphProvider = baseGraphProvider;
-
+	public MergingGraphProvider(ProviderManager providerManager) {
+		m_baseGraphProvider = NULL_PROVIDER;
 		for(VertexProvider vertexProvider : providerManager.getVertexProviders()) {
 			addVertexProvider(vertexProvider);
 		}

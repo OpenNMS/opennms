@@ -29,6 +29,7 @@
 package org.opennms.features.topology.app.internal.operations;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -51,31 +52,39 @@ import org.osgi.framework.ServiceReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-class TopologySelectorOperation extends AbstractCheckedOperation {
+public class TopologySelectorOperation extends AbstractCheckedOperation {
 
-	private final Logger LOG = LoggerFactory.getLogger(getClass());
+	private static final Logger LOG = LoggerFactory.getLogger(TopologySelectorOperation.class);
 
 	private final GraphProvider m_topologyProvider;
-    private final Map<?,?> m_metaData;
 	private final BundleContext m_bundleContext;
+	private final String m_label;
+	private final String m_preferredLayout;
 
-    public TopologySelectorOperation(BundleContext bundleContext, GraphProvider topologyProvider, Map<?,?> metaData) {
-        m_topologyProvider = topologyProvider;
-        m_metaData = metaData;
-		m_bundleContext = bundleContext;
+    public TopologySelectorOperation(BundleContext bundleContext, GraphProvider topologyProvider, Map<?,?> metadata) {
+		this(bundleContext,
+			 topologyProvider,
+			 metadata.get("label") == null ? "No Label for Topology Provider" : (String) metadata.get("label"),
+			 (String) metadata.get("preferredLayout"));
     }
+
+	private TopologySelectorOperation(BundleContext bundleContext, GraphProvider graphProvider, String label, String preferredLayout) {
+		m_topologyProvider = graphProvider;
+		m_bundleContext = bundleContext;
+		m_label = label;
+		m_preferredLayout = preferredLayout;
+	}
 
     public String getLabel() {
-        return m_metaData.get("label") == null ? "No Label for Topology Provider" : (String)m_metaData.get("label");
+        return m_label;
     }
-
 
     @Override
     public void execute(List<VertexRef> targets, OperationContext operationContext) {
         execute(operationContext.getGraphContainer());
     }
 
-    private void execute(GraphContainer container) {
+    public void execute(GraphContainer container) {
        	LOG.debug("Active provider is: {}", m_topologyProvider);
 
         // only change if provider changed
@@ -130,10 +139,9 @@ class TopologySelectorOperation extends AbstractCheckedOperation {
     }
 
 	private LayoutAlgorithm findLayoutAlgorithm() {
-		Object preferredLayout = m_metaData.get("preferredLayout");
-		if (preferredLayout != null) {
+		if (m_preferredLayout != null) {
 			// LayoutOperations are exposed as CheckedOperations
-			CheckedOperation operation = findSingleService(m_bundleContext, CheckedOperation.class, null, String.format("(operation.label=%s*)", preferredLayout));
+			CheckedOperation operation = findSingleService(m_bundleContext, CheckedOperation.class, null, String.format("(operation.label=%s*)", m_preferredLayout));
 			if (operation instanceof HierarchyLayoutOperation) { // Cast it to HierarchyLayout if possible
 				return ((HierarchyLayoutOperation) operation).getLayoutAlgorithm();
 			}
@@ -204,5 +212,22 @@ class TopologySelectorOperation extends AbstractCheckedOperation {
 		}
 		LOG.debug("Found {} services", serviceList.size());
 		return serviceList;
+	}
+
+	public static TopologySelectorOperation createOperationForDefaultGraphProvider(BundleContext bundleContext, String filterCriteria) {
+		try {
+			Collection<ServiceReference<GraphProvider>> serviceReferences = bundleContext.getServiceReferences(GraphProvider.class, filterCriteria);
+			if (!serviceReferences.isEmpty()) {
+				ServiceReference reference = serviceReferences.iterator().next();
+				return new TopologySelectorOperation(
+						bundleContext,
+						(GraphProvider) bundleContext.getService(reference),
+						(String) reference.getProperty("label"),
+						(String) reference.getProperty("preferredLayout"));
+			}
+		} catch (InvalidSyntaxException e) {
+			LOG.error("Could not query BundleContext for services", e);
+		}
+		return null;
 	}
 }

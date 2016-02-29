@@ -28,22 +28,20 @@
 
 package org.opennms.features.topology.app.internal;
 
-import com.github.wolfie.refresher.Refresher;
-import com.vaadin.annotations.PreserveOnRefresh;
-import com.vaadin.annotations.Theme;
-import com.vaadin.annotations.Title;
-import com.vaadin.data.Property;
-import com.vaadin.event.FieldEvents;
-import com.vaadin.server.*;
-import com.vaadin.server.Page.UriFragmentChangedEvent;
-import com.vaadin.server.Page.UriFragmentChangedListener;
-import com.vaadin.shared.ui.slider.SliderOrientation;
-import com.vaadin.ui.*;
-import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.Button.ClickListener;
-import com.vaadin.ui.MenuBar.MenuItem;
-import com.vaadin.ui.TabSheet.SelectedTabChangeEvent;
-import com.vaadin.ui.TabSheet.SelectedTabChangeListener;
+import static org.opennms.features.topology.api.support.VertexHopGraphProvider.getWrappedVertexHopCriteria;
+import static org.opennms.features.topology.app.internal.operations.TopologySelectorOperation.createOperationForDefaultGraphProvider;
+
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
+import java.util.TreeSet;
+
+import javax.servlet.http.HttpServletRequest;
 
 import org.opennms.features.topology.api.CheckedOperation;
 import org.opennms.features.topology.api.GraphContainer;
@@ -72,6 +70,7 @@ import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.features.topology.app.internal.CommandManager.DefaultOperationContext;
 import org.opennms.features.topology.app.internal.TopologyComponent.VertexUpdateListener;
 import org.opennms.features.topology.app.internal.jung.TopoFRLayoutAlgorithm;
+import org.opennms.features.topology.app.internal.operations.TopologySelectorOperation;
 import org.opennms.features.topology.app.internal.support.CategoryHopCriteria;
 import org.opennms.features.topology.app.internal.support.FontAwesomeIcons;
 import org.opennms.features.topology.app.internal.support.IconRepositoryManager;
@@ -354,6 +353,7 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
     int m_settingFragment = 0;
     private SearchBox m_searchBox;
     private TabSheet tabSheet;
+    private BundleContext m_bundlecontext;
 
     private String getHeader(HttpServletRequest request) throws Exception {
         if(m_headerProvider == null) {
@@ -422,6 +422,13 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
         // Add the default criteria if we do not have already a criteria set
         if (getWrappedVertexHopCriteria(m_graphContainer).isEmpty() && noAdditionalFocusCriteria()) {
             m_graphContainer.addCriteria(m_graphContainer.getBaseTopology().getDefaultCriteria()); // set default
+        }
+
+        // If no Topology Provider was selected (due to loadUserSettings(), fallback to default
+        if (m_graphContainer.getBaseTopology() == null) {
+            TopologySelectorOperation defaultTopologySelectorOperation = createOperationForDefaultGraphProvider(m_bundlecontext, "(|(label=Enhanced Linkd)(label=Linkd))");
+            Objects.requireNonNull(defaultTopologySelectorOperation, "No default GraphProvider found."); // no default found, abort
+            defaultTopologySelectorOperation.execute(m_graphContainer);
         }
 
         // We set the listeners at the end, to not fire them all the time when initializing the UI
@@ -1191,6 +1198,7 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
 
     public void setServiceManager(BundleContext bundleContext) {
         this.m_serviceManager = new OnmsServiceManagerLocator().lookup(bundleContext);
+        this.m_bundlecontext = bundleContext;
     }
 
     public VaadinApplicationContext getApplicationContext() {

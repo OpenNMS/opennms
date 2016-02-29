@@ -274,8 +274,8 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
     private VEGraph m_graph;
     private AtomicBoolean m_containerDirty = new AtomicBoolean(Boolean.TRUE);
 
-    public VEProviderGraphContainer(GraphProvider graphProvider, ProviderManager providerManager) {
-        m_mergedGraphProvider = new MergingGraphProvider(graphProvider, providerManager);
+    public VEProviderGraphContainer(ProviderManager providerManager) {
+        m_mergedGraphProvider = new MergingGraphProvider(providerManager);
     }
 
     @Override
