@@ -36,11 +36,14 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.commons.collections15.Transformer;
 import org.apache.commons.collections15.map.LazyMap;
+import org.opennms.features.topology.api.topo.LevelAware;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.Maps;
 
 import edu.uci.ics.jung.algorithms.layout.Layout;
 import edu.uci.ics.jung.graph.Forest;
@@ -70,31 +73,50 @@ public class HierarchyLayout<V, E> implements Layout<V, E> {
 
     private final int distX;
     private int distY;
-    private final V root;
+    private final Map<V, Integer> levelMap = Maps.newHashMap();
     private transient Point m_currentPoint = new Point();
     private transient Set<V> alreadyDone = new HashSet<V>();
 
     /**
      * Creates an instance for the specified graph, X distance, and Y distance.
      */
-    public HierarchyLayout(Graph<V, E> g, V root, int distx, int disty) {
-        if (root != null) {
-            Preconditions.checkArgument(g.containsVertex(root), "The root Vertex must be a Vertex in the provided Graph");
-        }
+    public HierarchyLayout(Graph<V, E> g, int distx, int disty) {
         Preconditions.checkArgument(distx >= 1 && disty >= 1, "X and Y distances must each be positive");
-        this.graph = Objects.requireNonNull(g, "Graph must not be null");;
+        this.graph = Objects.requireNonNull(g, "Graph must not be null");
         this.distX = distx;
         this.distY = disty;
-        this.root = root;
         buildTree();
     }
 
+    // we may have 1 to n root vertices
+    private Set<V> getRoots() {
+        Set<V> roots = graph.getVertices().stream()
+                .filter(v -> graph.getInEdges(v).isEmpty())
+                .collect(Collectors.toSet());
+        return roots;
+    }
+
     protected void buildTree() {
+        // we index the levels
+        graph.getVertices().forEach(v -> {
+            if (v instanceof LevelAware) {
+                int level = ((LevelAware)v).getLevel();
+                levelMap.put(v, level);
+            } else {
+                levelMap.put(v, 0);
+            }
+        });
+
+        // now we calculate the vertex
         this.m_currentPoint = new Point(0, 20);
-        if (root != null  && graph != null) {
-            calculateDimensionX(root);
-            m_currentPoint.x += this.basePositions.get(root) / 2 + this.distX;
-            buildTree(root, this.m_currentPoint.x);
+        if (graph != null) {
+            for (V eachRoot : getRoots()) {
+                if (eachRoot != null) {
+                    calculateDimensionX(eachRoot);
+                    m_currentPoint.x += this.basePositions.get(eachRoot) / 2 + this.distX;
+                    buildTree(eachRoot, this.m_currentPoint.x);
+                }
+            }
         }
     }
 
@@ -103,7 +125,7 @@ public class HierarchyLayout<V, E> implements Layout<V, E> {
             alreadyDone.add(v);
 
             //go one level further down
-            this.m_currentPoint.y += this.distY;
+            this.m_currentPoint.y = (levelMap.get(v) + 1) * this.distY;
             this.m_currentPoint.x = x;
 
             this.setCurrentPositionFor(v);
