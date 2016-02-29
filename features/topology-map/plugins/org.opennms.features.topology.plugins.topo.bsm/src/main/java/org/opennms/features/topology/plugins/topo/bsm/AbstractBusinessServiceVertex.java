@@ -34,7 +34,7 @@ import org.opennms.features.topology.api.topo.AbstractVertex;
 import org.opennms.features.topology.api.topo.LevelAware;
 import org.opennms.netmgt.bsm.service.model.Status;
 
-abstract class AbstractBusinessServiceVertex extends AbstractVertex implements LevelAware  {
+public abstract class AbstractBusinessServiceVertex extends AbstractVertex implements LevelAware {
 
     enum Type {
         BusinessService,

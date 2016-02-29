@@ -21,52 +21,27 @@
  *      http://www.gnu.org/licenses/
  *
  * For more information contact:
- * OpenNMS(R) Licensing <license@opennms.org>
- *      http://www.opennms.org/
- *      http://www.opennms.com/
+ *     OpenNMS(R) Licensing <license@opennms.org>
+ *     http://www.opennms.org/
+ *     http://www.opennms.com/
  *******************************************************************************/
 
 package org.opennms.features.topology.plugins.topo.bsm;
 
-import java.util.Set;
-
-import org.opennms.netmgt.bsm.service.model.Status;
 import org.opennms.netmgt.bsm.service.model.graph.GraphVertex;
 
-import com.google.common.collect.Sets;
+public class GraphVertexToTopologyVertexConverter {
 
-public class ReductionKeyVertex extends AbstractBusinessServiceVertex {
-
-    private final String reductionKey;
-
-    public ReductionKeyVertex(GraphVertex graphVertex) {
-        this(graphVertex.getReductionKey(), graphVertex.getLevel(), graphVertex.getStatus());
+    public static AbstractBusinessServiceVertex createTopologyVertex(GraphVertex graphVertex) {
+        if (graphVertex.getBusinessService() != null) {
+            return new BusinessServiceVertex(graphVertex);
+        }
+        if (graphVertex.getIpService() != null) {
+            return new IpServiceVertex(graphVertex);
+        }
+        if (graphVertex.getReductionKey() != null) {
+            return new ReductionKeyVertex(graphVertex);
+        }
+        throw new IllegalArgumentException("Cannot convert GraphVertex to BusinessServiceVertex: " + graphVertex);
     }
-
-    protected ReductionKeyVertex(String reductionKey, int level, Status status) {
-        super(Type.ReductionKey + ":" + reductionKey, reductionKey, level, status);
-        this.reductionKey = reductionKey;
-        setTooltipText(String.format("Reduction Key '%s'", reductionKey));
-        setIconKey("reduction-key");
-    }
-
-    public String getReductionKey() {
-        return reductionKey;
-    }
-
-    @Override
-    public Type getType() {
-        return Type.ReductionKey;
-    }
-
-    @Override
-    public boolean isLeaf() {
-        return true;
-    }
-
-    @Override
-    public Set<String> getReductionKeys() {
-        return Sets.newHashSet(getReductionKey());
-    }
-
 }
