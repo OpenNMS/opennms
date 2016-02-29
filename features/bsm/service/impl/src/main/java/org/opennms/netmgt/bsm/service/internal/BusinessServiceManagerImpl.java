@@ -227,7 +227,7 @@ public class BusinessServiceManagerImpl implements BusinessServiceManager {
 
     @Override
     public boolean addReductionKeyEdge(BusinessService businessService, String reductionKey, MapFunction mapFunction, int weight) {
-        return addReductionKeyEdge(businessService, reductionKey, mapFunction, weight);
+        return addReductionKeyEdge(businessService, reductionKey, mapFunction, weight, null);
     }
 
     @Override
