@@ -74,7 +74,7 @@ public class ChildEdgeImpl extends AbstractEdge<BusinessServiceChildEdgeEntity> 
     /**
      * Method implementation for the friendly name used in the topology UI. Since this value is not
      * used for child Business Services this method always returns <code>null</code>.
-     * 
+     *
      * @return always null
      * @see AbstractEdge#getFriendlyName()
      */
