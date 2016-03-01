@@ -71,7 +71,7 @@
     <jsp:param name="script" value='<script type="text/javascript" src="scripts/model/QuickNode.js"></script>' />
     <jsp:param name="script" value='<script type="text/javascript" src="scripts/services/Requisitions.js"></script>' />
     <jsp:param name="script" value='<script type="text/javascript" src="scripts/directives/requisitionConstraints.js"></script>' />
-    <jsp:param name="script" value='<script type="text/javascript" src="scripts/controllers/QuickAddNodeStandalone.js"></script>' />
+    <jsp:param name="script" value='<script type="text/javascript" src="scripts/controllers/QuickAddNode.js"></script>' />
 </jsp:include>
 
 <div ng-view></div>

@@ -141,21 +141,14 @@
       });
       var modalInstance = $uibModal.open({
         backdrop: 'static',
-        controller: 'QuickAddNodeController',
+        controller: 'QuickAddNodeModalController',
         templateUrl: 'views/quick-add-node.html',
         resolve: {
           foreignSources: function() { return availableForeignSources; }
         }
       });
       modalInstance.result.then(function(node) {
-        growl.warning('The node ' + node.nodeLabel + ' will be added to ' + node.foreignSource + '. Please wait...');
-        RequisitionsService.startTiming(10); // Twice the default
-        RequisitionsService.quickAddNode(node).then(
-          function() { // success
-            growl.success('The node ' + node.nodeLabel + ' has been added to ' + node.foreignSource);
-          },
-          $scope.errorHandler
-        );
+        $log.debug('The node ' + node.nodeLabel + ' has been added to ' + node.foreignSource);
       });
     };
 

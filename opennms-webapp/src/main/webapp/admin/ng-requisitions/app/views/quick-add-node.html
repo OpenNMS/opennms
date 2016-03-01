@@ -13,7 +13,7 @@
         <uib-tab heading="Basic Attributes" id="tab-basic-information">
           <div class="form-group" ng-class="{ 'has-error' : quickAddNodeForm.foreignSource.$invalid }">
             <label class="control-label" for="foreignSource">Requisition</label>
-            <input class="form-control" type="text" name="foreignSource" placeholder="Requisition Name (hit space bar to see the options)" ng-model="node.foreignSource" typeahead-editable="false" typeahead-min-length="0" uib-typeahead="fs for fs in foreignSources | filter:$viewValue" required></input>
+            <input class="form-control" type="text" id="foreignSource" name="foreignSource" placeholder="Requisition Name (hit space bar to see the options)" ng-model="node.foreignSource" typeahead-editable="false" typeahead-min-length="0" uib-typeahead="fs for fs in foreignSources | filter:$viewValue" required></input>
           </div>
           <div class="form-group" ng-class="{ 'has-error' : quickAddNodeForm.ipAddress.$invalid }">
             <label class="control-label" for="ipAddress">IP Address</label>
@@ -104,8 +104,8 @@
   </div> <!-- modal-body -->
 
   <div class="modal-footer">
-    <button class="btn btn-primary" ng-click="provision()" ng-disabled="isInvalid()">Provision</button>
-    <button class="btn btn-default" ng-click="cancel()">Cancel</button>
+    <button class="btn btn-primary" ng-click="modalProvision()" ng-disabled="isInvalid()">Provision</button>
+    <button class="btn btn-default" ng-click="modalCancel()">Cancel</button>
   </div>
 
 </div> <!-- modal-content -->

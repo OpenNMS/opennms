@@ -17,14 +17,13 @@
   * @module onms-requisitions
   *
   * @requires $scope Angular local scope
-  * @requires $uibModalInstance Angular UI modal instance
   * @requires foreignSources The list of available requisitions (a.k.a. foreign source)
   * @requires RequisitionsService The requisitions service
   * @requires growl The growl plugin for instant notifications
   *
   * @description The controller for manage the modal dialog for quick add a node to an existing requisition.
   */
-  .controller('QuickAddNodeController', ['$scope', '$uibModalInstance', 'foreignSources', 'RequisitionsService', 'growl', function($scope, $uibModalInstance, foreignSources, RequisitionsService, growl) {
+  .controller('QuickAddNodeController', ['$scope', 'foreignSources', 'RequisitionsService', 'growl', function($scope, foreignSources, RequisitionsService, growl) {
 
     /**
     * @description The available foreign sources
@@ -34,7 +33,7 @@
     * @propertyOf QuickAddNodeController
     * @returns {array} List of available foreign sources
     */
-    $scope.foreignSources = foreignSources;
+    $scope.foreignSources = [];
 
     /**
     * @description The available configured categories
@@ -74,18 +73,13 @@
     * @methodOf QuickAddNodeController
     */
     $scope.provision = function() {
-      $uibModalInstance.close($scope.node);
-    };
-
-    /**
-    * @description Cancels current operation
-    *
-    * @name QuickAddNodeController:cancel
-    * @ngdoc method
-    * @methodOf QuickAddNodeController
-    */
-    $scope.cancel = function() {
-      $uibModalInstance.dismiss('cancel');
+      growl.warning('The node ' + $scope.node.nodeLabel + ' will be added to ' + $scope.node.foreignSource + '. Please wait...');
+      RequisitionsService.quickAddNode($scope.node).then(
+        function() { // success
+          growl.success('The node ' + $scope.node.nodeLabel + ' has been added to ' + $scope.node.foreignSource);
+        },
+        $scope.errorHandler
+      );
     };
 
    /**
@@ -146,9 +140,15 @@
     * @returns {boolean} true if the form is invalid.
     */
     $scope.isInvalid = function() {
+      if (this.quickAddNodeForm == null
+        || this.quickAddNodeForm.foreignSource == null
+        || this.quickAddNodeForm.ipAddress == null
+        || this.quickAddNodeForm.nodeLabel == null) {
+        return true;
+      }
       return this.quickAddNodeForm.foreignSource.$invalid
-      || this.quickAddNodeForm.ipAddress.$invalid
-      || this.quickAddNodeForm.nodeLabel.$invalid;
+        || this.quickAddNodeForm.ipAddress.$invalid
+        || this.quickAddNodeForm.nodeLabel.$invalid;
     }
 
     /**
@@ -170,6 +170,21 @@
       },
       $scope.errorHandler
     );
+
+    // Initialize requisitions
+    // TODO Implement a ReST end point for getting requisition names (it will be less expensive)
+    if (foreignSources == null) {
+      RequisitionsService.getRequisitions().then(
+        function(data) { // success
+          angular.forEach(data.requisitions, function(r) {
+            $scope.foreignSources.push(r.foreignSource);
+          });
+        },
+        $scope.errorHandler
+      );
+    } else {
+      $scope.foreignSources = foreignSources;
+    }
 
   }]);
 

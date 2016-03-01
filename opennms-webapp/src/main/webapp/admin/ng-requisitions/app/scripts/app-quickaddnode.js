@@ -37,7 +37,10 @@
     $routeProvider
     .when('/', {
       templateUrl: 'views/quick-add-node-standalone.html',
-      controller: 'QuickAddNodeStandaloneController'
+      controller: 'QuickAddNodeController',
+      resolve: {
+        foreignSources: function() { return null; }
+      }
     })
     .otherwise({
       redirectTo: '/'
