@@ -136,6 +136,20 @@
       this.quickAddNodeForm.$dirty = true;
     };
 
+    /**
+    * @description Checks if the form is valid or not
+    *
+    * @name NodeController:isInvalid
+    * @ngdoc method
+    * @methodOf NodeController
+    * @returns {boolean} true if the form is invalid.
+    */
+    $scope.isInvalid = function() {
+      return this.quickAddNodeForm.foreignSource.$invalid
+      || this.quickAddNodeForm.ipAddress.$invalid
+      || this.quickAddNodeForm.nodeLabel.$invalid;
+    }
+
     // Initialize categories
     RequisitionsService.getAvailableCategories().then(
       function(categories) { // success
