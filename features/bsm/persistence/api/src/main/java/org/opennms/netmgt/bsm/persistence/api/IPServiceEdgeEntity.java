@@ -93,7 +93,8 @@ public class IPServiceEdgeEntity extends BusinessServiceEdgeEntity {
     public boolean equalsDefinition(BusinessServiceEdgeEntity other) {
         boolean equalsSuper = super.equalsDefinition(other);
         if (equalsSuper) {
-            return Objects.equals(m_ipService, ((IPServiceEdgeEntity) other).m_ipService);
+            return Objects.equals(m_ipService, ((IPServiceEdgeEntity) other).m_ipService) &&
+                   Objects.equals(m_friendlyName, ((IPServiceEdgeEntity) other).m_friendlyName);
         }
         return false;
     }
