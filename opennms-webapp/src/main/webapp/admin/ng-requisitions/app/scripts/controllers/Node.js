@@ -186,7 +186,7 @@
     /**
     * @description Shows the dialog for add/edit an asset field
     *
-    * @name NodeController:save
+    * @name NodeController:editAsset
     * @ngdoc method
     * @methodOf NodeController
     * @param {integer} index The index of the asset to be edited

@@ -13,35 +13,33 @@
 
   /**
   * @ngdoc controller
-  * @name QuickAddNodeController
+  * @name QuickAddNodeStandaloneController
   * @module onms-requisitions
   *
   * @requires $scope Angular local scope
-  * @requires $uibModalInstance Angular UI modal instance
-  * @requires foreignSources The list of available requisitions (a.k.a. foreign source)
   * @requires RequisitionsService The requisitions service
   * @requires growl The growl plugin for instant notifications
   *
   * @description The controller for manage the modal dialog for quick add a node to an existing requisition.
   */
-  .controller('QuickAddNodeController', ['$scope', '$uibModalInstance', 'foreignSources', 'RequisitionsService', 'growl', function($scope, $uibModalInstance, foreignSources, RequisitionsService, growl) {
+  .controller('QuickAddNodeStandaloneController', ['$scope', 'RequisitionsService', 'growl', function($scope, RequisitionsService, growl) {
 
     /**
     * @description The available foreign sources
     *
     * @ngdoc property
-    * @name QuickAddNodeController#foreignSources
-    * @propertyOf QuickAddNodeController
+    * @name QuickAddNodeStandaloneController#foreignSources
+    * @propertyOf QuickAddNodeStandaloneController
     * @returns {array} List of available foreign sources
     */
-    $scope.foreignSources = foreignSources;
+    $scope.foreignSources = [];
 
     /**
     * @description The available configured categories
     *
     * @ngdoc property
-    * @name QuickAddNodeController#availableCategories
-    * @propertyOf QuickAddNodeController
+    * @name QuickAddNodeStandaloneController#availableCategories
+    * @propertyOf QuickAddNodeStandaloneController
     * @returns {array} The categories
     */
     $scope.availableCategories = [];
@@ -50,8 +48,8 @@
     * @description The available access methods
     *
     * @ngdoc property
-    * @name QuickAddNodeController#availableAccessMethods
-    * @propertyOf QuickAddNodeController
+    * @name QuickAddNodeStandaloneController#availableAccessMethods
+    * @propertyOf QuickAddNodeStandaloneController
     * @returns {array} The access methods
     */
     $scope.availableAccessMethods = [ 'RSH', 'SSH', 'Telnet' ];
@@ -60,8 +58,8 @@
     * @description The source object that contains all the required information for the new node
     *
     * @ngdoc property
-    * @name QuickAddNodeController#node
-    * @propertyOf QuickAddNodeController
+    * @name QuickAddNodeStandaloneController#node
+    * @propertyOf QuickAddNodeStandaloneController
     * @returns {object} The source object
     */
     $scope.node = new QuickNode();
@@ -69,31 +67,26 @@
     /**
     * @description Provision the current node
     *
-    * @name QuickAddNodeController:provision
+    * @name QuickAddNodeStandaloneController:provision
     * @ngdoc method
-    * @methodOf QuickAddNodeController
+    * @methodOf QuickAddNodeStandaloneController
     */
     $scope.provision = function() {
-      $uibModalInstance.close($scope.node);
-    };
-
-    /**
-    * @description Cancels current operation
-    *
-    * @name QuickAddNodeController:cancel
-    * @ngdoc method
-    * @methodOf QuickAddNodeController
-    */
-    $scope.cancel = function() {
-      $uibModalInstance.dismiss('cancel');
+        growl.warning('The node ' + node.nodeLabel + ' will be added to ' + node.foreignSource + '. Please wait...');
+        RequisitionsService.quickAddNode(node).then(
+          function() { // success
+            growl.success('The node ' + node.nodeLabel + ' has been added to ' + node.foreignSource);
+          },
+          $scope.errorHandler
+        );
     };
 
    /**
     * @description Get the unused available categories
     *
-    * @name QuickAddNodeController:getAvailableCategories
+    * @name QuickAddNodeStandaloneController:getAvailableCategories
     * @ngdoc method
-    * @methodOf QuickAddNodeController
+    * @methodOf QuickAddNodeStandaloneController
     * @returns {array} the unused available categories
     */
     $scope.getAvailableCategories = function() {
@@ -115,9 +108,9 @@
     /**
     * @description Removes a category from the local node
     *
-    * @name QuickAddNodeController:removeCategory
+    * @name QuickAddNodeStandaloneController:removeCategory
     * @ngdoc method
-    * @methodOf QuickAddNodeController
+    * @methodOf QuickAddNodeStandaloneController
     * @param {integer} index The index of the category to be removed
     */
     $scope.removeCategory = function(index) {
@@ -128,9 +121,9 @@
     /**
     * @description Adds a new category to the local node
     *
-    * @name QuickAddNodeController:addCategory
+    * @name QuickAddNodeStandaloneController:addCategory
     * @ngdoc method
-    * @methodOf QuickAddNodeController
+    * @methodOf QuickAddNodeStandaloneController
     */
     $scope.addCategory = function() {
       $scope.node.addNewCategory();
@@ -140,9 +133,9 @@
     /**
     * @description Checks if the form is valid or not
     *
-    * @name QuickAddNodeController:isInvalid
+    * @name QuickAddNodeStandaloneController:isInvalid
     * @ngdoc method
-    * @methodOf QuickAddNodeController
+    * @methodOf QuickAddNodeStandaloneController
     * @returns {boolean} true if the form is invalid.
     */
     $scope.isInvalid = function() {
@@ -154,9 +147,9 @@
     /**
     * @description Shows an error to the user
     *
-    * @name QuickAddNodeController:errorHandler
+    * @name QuickAddNodeStandaloneController:errorHandler
     * @ngdoc method
-    * @methodOf QuickAddNodeController
+    * @methodOf QuickAddNodeStandaloneController
     * @param {string} message The error message
     */
     $scope.errorHandler = function(message) {
@@ -167,6 +160,17 @@
     RequisitionsService.getAvailableCategories().then(
       function(categories) { // success
         $scope.availableCategories = categories;
+      },
+      $scope.errorHandler
+    );
+
+    // Initialize categories
+    RequisitionsService.getRequisitions().then(
+      function(data) { // success
+        angular.forEach(data.requisitions, function(r) {
+          console.log(r.foreignSource);
+          $scope.foreignSources.push(r.foreignSource);
+        });
       },
       $scope.errorHandler
     );

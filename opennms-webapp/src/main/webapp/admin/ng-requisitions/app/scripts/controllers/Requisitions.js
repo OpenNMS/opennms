@@ -184,7 +184,6 @@
         }
       });
       modalInstance.result.then(function(targetForeignSource) {
-        // FIXME Requires work, even if it works
         RequisitionsService.startTiming();
         RequisitionsService.getForeignSourceDefinition(foreignSource).then(
           function(r) { // success

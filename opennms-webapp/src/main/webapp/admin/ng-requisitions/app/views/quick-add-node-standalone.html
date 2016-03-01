@@ -1,0 +1,125 @@
+<!-- Author: Alejandro Galue <agalue@opennms.org> -->
+
+<ol class="breadcrumb">
+  <li><a href="/opennms/index.jsp">Home</a></li>
+  <li><a href="/opennms/admin/index.jsp">Admin</a></li>
+  <li><a href="/opennms/admin/ng-requisitions/app/index.jsp">Provisioning Requisitions</a></li>
+  <li>Quick-Add Node</li>
+</ol>
+
+<!-- Content -->
+
+<div class="row">
+  <div class="col-md-12">
+    <form name="quickAddNodeForm">
+
+      <div class="panel panel-default">
+        <div class="panel-heading"><h3 class="panel-title">Basic Attributes (required)</h3></div>
+        <div class="panel-body">
+          <div class="form-group" ng-class="{ 'has-error' : quickAddNodeForm.foreignSource.$invalid }">
+            <label class="control-label" for="foreignSource">Requisition</label>
+            <input class="form-control" type="text" name="foreignSource" placeholder="Requisition Name (hit space bar to see the options)" ng-model="node.foreignSource" typeahead-editable="false" typeahead-min-length="0" uib-typeahead="fs for fs in foreignSources | filter:$viewValue" required></input>
+          </div>
+          <div class="form-group" ng-class="{ 'has-error' : quickAddNodeForm.ipAddress.$invalid }">
+            <label class="control-label" for="ipAddress">IP Address</label>
+            <input class="form-control" type="text" id="ipAddress" name="ipAddress" placeholder="A valid IPv4 or IPv6 address" ng-model="node.ipAddress" required valid-ip-address></input>
+            <p ng-show="intfForm.ipAddress.$invalid" class="help-block">A valid IPv4 or IPv6 address is required</p>
+          </div>
+          <div class="form-group" ng-class="{ 'has-error' : quickAddNodeForm.nodeLabel.$invalid }">
+            <label class="control-label" for="nodeLabel">Node Label</label>
+            <input class="form-control" type="text" id="nodeLabel" name="nodeLabel" placeholder="The Node Label" ng-model="node.nodeLabel" required></input>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel panel-default">
+        <div class="panel-heading"><h3 class="panel-title">SNMP</h3></div>
+        <div class="panel-body">
+          <div class="form-group">
+            <div class="checkbox">
+              <label>
+                <input type="checkbox" ng-model="node.noSnmp">
+                No SNMP
+              </label>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="control-label" for="snmpVersion">SNMP Parameters (optional)</label>
+            <div class="radio">
+              <label>
+                <input type="radio" name="snmpVersion" id="vesion_1" value="v1" ng-model="node.snmpVersion" ng-disabled="node.noSnmp">
+                Version 1
+              </la
+            <div class="radio">
+              <label>
+                <input type="radio" name="snmpVersion" id="version_2c" value="v2c" ng-model="node.snmpVersion" ng-disabled="node.noSnmp">
+                Version 2c
+              </label>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="control-label" for="snmpCommunity">Community String</label>
+            <input class="form-control" type="text" id="snmpCommunity" name="snmpCommunity" placeholder="SNMP Community String" ng-model="node.snmpCommunity" ng-disabled="node.noSnmp"></input>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel panel-default">
+        <div class="panel-heading"><h3 class="panel-title">Surveillance Category Memberships (optional)</h3></div>
+        <div class="panel-body">
+          <a ng-click="addCategory()" class="btn"><span class="glyphicon glyphicon-plus"/> Add Category</a>
+          <br/>
+          <ng-form name="categoryForm" ng-repeat="category in node.categories">
+            <div class="form-group" ng-class="{ 'has-error' : categoryForm.categoryName.$invalid }">
+              <div class="input-group">
+                <input class="form-control" type="text" name="categoryName" placeholder="Category Name" ng-model="category.name" typeahead-min-length="0" typeahead-editable="true" uib-typeahead="category for category in getAvailableCategories() | filter:$viewValue" required></input>
+                <span class="input-group-btn">
+                  <button class="btn btn-default" type="button" ng-click="removeCategory($index)"><span class="glyphicon glyphicon-remove"></span></button>
+                </span>
+              </div>
+              <p ng-show="categoryForm.categoryName.$invalid" class="help-block">Category name is required and should be unique on the node.</p>
+            </div>
+          </ng-form>
+        </div>
+      </div>
+
+      <div class="panel panel-default">
+        <div class="panel-heading"><h3 class="panel-title">CCLI Authentication Parameters (optional)</h3></div>
+        <div class="panel-body">
+          <div class="form-group">
+            <label class="control-label" for="descr">Device username</label>
+            <input class="form-control" type="text" id="deviceUsername" name="deviceUsername" placeholder="The device username" ng-model="node.deviceUsername"></input>
+          </div>
+          <div class="form-group">
+            <label class="control-label" for="descr">Device password</label>
+            <input class="form-control" type="text" id="devicePassword" name="devicePassword" placeholder="The device password" ng-model="node.devicePassword"></input>
+          </div>
+          <div class="form-group">
+            <label class="control-label" for="descr">Enable Password</label>
+            <input class="form-control" type="text" id="enablePassword" name="enablePassword" placeholder="The enable password" ng-model="node.enablePassword"></input>
+          </div>
+          <div class="form-group">
+            <label class="control-label" for="descr">Access Method</label>
+            <input class="form-control" type="text" name="accessMethod" placeholder="Access Method (hit space bar to see the options)" ng-model="node.accessMethod" typeahead-editable="false" typeahead-min-length="0" uib-typeahead="m for m in availableAccessMethods | filter:$viewValue" required></input>
+          </div>
+          <div class="form-group">
+            <div class="checkbox">
+              <label>
+                <input type="checkbox" ng-model="node.autoEnable">
+                Auto Enable
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </form>
+
+  </div> <!-- column -->
+</div> <!-- row -->
+
+<div class="row">
+  <div class="col-md-12">
+    <button class="btn btn-primary" ng-click="provision()" ng-disabled="isInvalid()">Provision</button>
+  </div>
+</div>
