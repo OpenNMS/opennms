@@ -425,7 +425,8 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
         }
 
         // If no Topology Provider was selected (due to loadUserSettings(), fallback to default
-        if (m_graphContainer.getBaseTopology() == null) {
+        if (m_graphContainer.getBaseTopology() == null
+                || m_graphContainer.getBaseTopology() == MergingGraphProvider.NULL_PROVIDER) {
             TopologySelectorOperation defaultTopologySelectorOperation = createOperationForDefaultGraphProvider(m_bundlecontext, "(|(label=Enhanced Linkd)(label=Linkd))");
             Objects.requireNonNull(defaultTopologySelectorOperation, "No default GraphProvider found."); // no default found, abort
             defaultTopologySelectorOperation.execute(m_graphContainer);
