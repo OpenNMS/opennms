@@ -148,43 +148,15 @@
         }
       });
       modalInstance.result.then(function(node) {
-        if (node.noSnmp == false && node.snmpCommunity != '') {
-          RequisitionsService.startTiming();
-          RequisitionsService.updateSnmpCommunity(node.ipAddress, node.snmpCommunity, node.snmpVersion).then(
-            function() { // success
-              $scope.addNode(node);
-            },
-            $scope.errorHandler
-          );
-        } else {
-          $scope.addNode(node);
-        }
+        growl.warn('The node ' + node.nodeLabel + ' will be added to ' + node.foreignSource + '. Please wait...');
+        RequisitionsService.startTiming(10); // Twice the default
+        RequisitionsService.quickAddNode(node).then(
+          function() { // success
+            growl.success('The node ' + node.nodeLabel + ' has been added to ' + node.foreignSource);
+          },
+          $scope.errorHandler
+        );
       });
-    };
-
-    /**
-    * @description Add a new node to an existing requisition
-    *
-    * @name RequisitionsController:addNode
-    * @ngdoc method
-    * @methodOf RequisitionsController
-    * @param {object} node the QuickNode object
-    */
-    $scope.addNode = function(quickNode) {
-      var node = quickNode.createRequisitionedNode();
-      RequisitionsService.startTiming();
-      RequisitionsService.saveNode(node).then(
-        function() { // success
-          growl.success('The node ' + node.nodeLabel + ' has been saved.');
-          RequisitionsService.synchronizeRequisition(node.foreignSource,  'false').then(
-            function() {
-              growl.success('The requisition ' + node.foreignSource + ' has been synchronized.');
-            },
-            $scope.errorHandler
-          );
-        },
-        $scope.errorHandler
-      );
     };
 
     /**

@@ -274,6 +274,40 @@
     };
 
     /**
+    * @description Add a new node to an existing requisition
+    *
+    * @private
+    * @name RequisitionsService:addQuickNode
+    * @ngdoc method
+    * @methodOf RequisitionsService
+    * @param {object} node the QuickNode object
+    */
+    requisitionsService.internal.addQuickNode = function(quickNode) {
+      var deferred = $q.defer();
+      var node = quickNode.createRequisitionedNode();
+      requisitionsService.saveNode(node).then(
+        function() { // success
+          $log.debug('The node ' + node.nodeLabel + ' has been saved.');
+          $timeout(function() {
+            requisitionsService.synchronizeRequisition(node.foreignSource, 'false').then(
+              function() { // success
+                $log.debug('The requisition ' + node.foreignSource + ' has been synchronized.');
+                deferred.resolve();
+              },
+              function() { // failure
+                deferred.reject('Cannot synchronize requisition ' + node.foreignSource);
+              }
+            );
+          }, 5000); // Otherwise, an HTTP 500 is received.
+        },
+        function() { // failure
+          deferred.reject('Cannot quick-add node to requisition ' + node.foreignSource);
+        }
+      );
+      return deferred.promise;
+    };
+
+    /**
     * @description Gets the timing status object
     *
     * @name RequisitionsService:getTiming
@@ -1109,6 +1143,38 @@
       });
       return deferred.promise;
     };
+
+    /**
+    * @description Quick add a node to a requisition.
+    *
+    * @name RequisitionsService:quickAddNode
+    * @ngdoc method
+    * @methodOf RequisitionsService
+    * @param {object} node The QuickNode object
+    * @returns {object} a promise.
+    */
+    requisitionsService.quickAddNode = function(node) {
+      if (node.noSnmp == false && node.snmpCommunity != '') {
+        var deferred = $q.defer();
+        requisitionsService.updateSnmpCommunity(node.ipAddress, node.snmpCommunity, node.snmpVersion).then(
+          function() { // success
+            requisitionsService.internal.addQuickNode(node).then(
+              function() { // success
+                deferred.resolve();
+              },
+              function(msg) { // failure
+                deferred.reject(msg);
+              }
+            );
+          },
+          function() { // failure
+            deferred.reject('Cannot update SNMP credentials for ' + node.ipAddress);
+          }
+        );
+        return deferred.promise;
+      }
+      return requisitionsService.internal.addQuickNode(node);
+    }
 
     return requisitionsService;
   }]);
