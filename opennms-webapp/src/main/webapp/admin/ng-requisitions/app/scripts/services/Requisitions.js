@@ -298,7 +298,7 @@
                 deferred.reject('Cannot synchronize requisition ' + node.foreignSource);
               }
             );
-          }, 5000); // Otherwise, an HTTP 500 is received.
+          }, 5000); // Otherwise, an HTTP 500 is received (NMS-7872)
         },
         function() { // failure
           deferred.reject('Cannot quick-add node to requisition ' + node.foreignSource);
@@ -309,11 +309,12 @@
 
     /**
     * @description Gets the timing status object
+    * The reason for using this is because of NMS-7872.
     *
-    * @name RequisitionsService:getTiming
+    * @name RequisitionsService:startTiming
     * @ngdoc method
     * @methodOf RequisitionsService
-    * @param {object} ts The timeout in seconds
+    * @param {integer} ts The timeout in seconds (optional)
     * @returns {object} the timing status object
     */
     requisitionsService.startTiming = function(ts) {
