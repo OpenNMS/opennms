@@ -15,7 +15,9 @@
   * @module onms-requisitions
   *
   * @description A directive to verify IPv4 and IPv6 addresses using a regular expression.
-  * Also verifies if the given IP is unique on the node (to avoid duplicates).
+  * Also verifies if the given IP is unique on the node (to avoid duplicates). For this purpose,
+  * it requires an array defined on the controller scope called ipBlackList if you want to make
+  * the field invalid if the value is listed.
   */
   .directive('validIpAddress', function() {
     return {
@@ -28,7 +30,7 @@
             ctrl.$setValidity('valid', false);
             return undefined;
           }
-          var found = scope.ipBlackList.indexOf(ipAddress) != -1;
+          var found = scope.ipBlackList != null && scope.ipBlackList.indexOf(ipAddress) != -1;
           if (found) {
             ctrl.$setValidity('valid', false);
             return undefined;
@@ -55,11 +57,13 @@
       link: function(scope, element, attrs, ctrl) {
         ctrl.$parsers.unshift(function(serviceName) {
           var found = false;
-          angular.forEach(scope.requisitionInterface.services, function(s) {
-            if (s.$$hashKey != scope.service.$$hashKey && s.name == serviceName) {
-              found = true;
-            }
-          });
+          if (scope.requisitionInterface != null && scope.requisitionInterface.services != null) {
+            angular.forEach(scope.requisitionInterface.services, function(s) {
+              if (s.$$hashKey != scope.service.$$hashKey && s.name == serviceName) {
+                found = true;
+              }
+            });
+          }
           if (found) {
             ctrl.$setValidity('unique', false);
             return undefined;
@@ -78,7 +82,8 @@
   * @module onms-requisitions
   *
   * @description A directive to verify if the given foreign ID is unique on the requisition.
-  * This must be used on node.html in conjunction with NodeController
+  * This must be used on node.html in conjunction with NodeController.
+  * It requires an array defined on the controller scope called foreignIdBlackList if you want to make the field invalid if the value is listed.
   */
   .directive('validForeignId', function() {
     return {
@@ -86,7 +91,7 @@
       require: 'ngModel',
       link: function(scope, element, attrs, ctrl) {
         ctrl.$parsers.unshift(function(foreignId) {
-          var found = scope.foreignIdBlackList.indexOf(foreignId) != -1;
+          var found = scope.foreignIdBlackList != null && scope.foreignIdBlackList.indexOf(foreignId) != -1;
           if (found) {
             ctrl.$setValidity('unique', false);
             return undefined;

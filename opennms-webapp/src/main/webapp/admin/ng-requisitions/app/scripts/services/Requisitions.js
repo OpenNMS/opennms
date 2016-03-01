@@ -57,6 +57,7 @@
     requisitionsService.internal.requisitionsUrl = baseHref + 'rest/requisitions';
     requisitionsService.internal.foreignSourcesUrl = baseHref + 'rest/foreignSources';
     requisitionsService.internal.foreignSourcesConfigUrl = baseHref + 'rest/foreignSourcesConfig';
+    requisitionsService.internal.snmpConfigUrl = baseHref + 'rest/snmpConfig';
     requisitionsService.internal.errorHelp = ' Check the OpenNMS logs for more details, or try again later.';
 
     // Timeouts
@@ -71,9 +72,10 @@
     * @name RequisitionsService:internal.getCatchedConfigData
     * @ngdoc method
     * @methodOf RequisitionsService
+    * @param {string} configName The name of the config object
     * @returns {object} the internal cache content
     */
-    requisitionsService.internal.getCatchedConfigData = function(configName, configObject) {
+    requisitionsService.internal.getCatchedConfigData = function(configName) {
       return requisitionsService.internal.cache.get(configName);
     };
 
@@ -1078,6 +1080,32 @@
         var message = 'cannot verify category on node ' + foreignId + '@' + foreignSource + '. ';
         $log.error('isIpAddressOnNode: ' + message, err);
         deferred.reject(message + requisitionsService.internal.errorHelp);
+      });
+      return deferred.promise;
+    };
+
+    /**
+    * @description Update the SNMP credentials for a given IP Address.
+    *
+    * @name RequisitionsService:addRequisition
+    * @ngdoc method
+    * @methodOf RequisitionsService
+    * @param {string} ipAddress The IP Address
+    * @param {string} snmpCommunity The SNMP Community String
+    * @param {string} snmpVersion The SNMP Version
+    * @returns {object} a promise.
+    */
+    requisitionsService.updateSnmpCommunity = function(ipAddress, snmpCommunity, snmpVersion) {
+      var deferred = $q.defer();
+      var url = requisitionsService.internal.snmpConfigUrl + '/' + ipAddress;
+      $log.debug('updateSnmpCommunity: updating snmp community for ' + ipAddress);
+      $http.put(url, {'readCommunity' : snmpCommunity, 'version' : snmpVersion})
+      .success(function() {
+        $log.debug('updateSnmpCommunity: updated snmp community for ' + ipAddress);
+        deferred.resolve(ipAddress);
+      }).error(function(error, status) {
+        $log.error('updateSnmpCommunity: PUT ' + url + ' failed:', error, status);
+        deferred.reject('Cannot update snmp community for ' + ipAddress + '.' + requisitionsService.internal.errorHelp);
       });
       return deferred.promise;
     };

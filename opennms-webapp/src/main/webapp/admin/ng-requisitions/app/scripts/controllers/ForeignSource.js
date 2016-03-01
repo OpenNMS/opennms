@@ -436,7 +436,7 @@
       $scope.detectorsCurrentPage = 1;
       $scope.detectorsTotalItems = $scope.filteredDetectors.length;
       $scope.detectorsNumPages = Math.ceil($scope.detectorsTotalItems / $scope.detectorsPageSize);
-    }
+    };
 
     /**
     * @description Initialized the local foreign source definition from the server
@@ -468,7 +468,7 @@
     * @ngdoc event
     * @methodOf ForeignSourceController
     */
-    $scope.$watch("filters.detector", function() {
+    $scope.$watch('filters.detector', function() {
       $scope.filteredDetectors = filterFilter($scope.foreignSourceDef.detectors, $scope.filters.detector);
       $scope.updateFilteredDetectors();
     });

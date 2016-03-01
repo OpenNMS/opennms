@@ -128,6 +128,66 @@
     };
 
     /**
+    * @description Quick add a new node
+    *
+    * @name RequisitionsController:quickAddNode
+    * @ngdoc method
+    * @methodOf RequisitionsController
+    */
+    $scope.quickAddNode = function() {
+      var availableForeignSources = [];
+      angular.forEach($scope.requisitions, function(r) {
+        availableForeignSources.push(r.foreignSource);
+      });
+      var modalInstance = $uibModal.open({
+        backdrop: 'static',
+        controller: 'QuickAddNodeController',
+        templateUrl: 'views/quick-add-node.html',
+        resolve: {
+          foreignSources: function() { return availableForeignSources; }
+        }
+      });
+      modalInstance.result.then(function(node) {
+        if (node.noSnmp == false && node.snmpCommunity != '') {
+          RequisitionsService.startTiming();
+          RequisitionsService.updateSnmpCommunity(node.ipAddress, node.snmpCommunity, node.snmpVersion).then(
+            function() { // success
+              $scope.addNode(node);
+            },
+            $scope.errorHandler
+          );
+        } else {
+          $scope.addNode(node);
+        }
+      });
+    };
+
+    /**
+    * @description Add a new node to an existing requisition
+    *
+    * @name RequisitionsController:addNode
+    * @ngdoc method
+    * @methodOf RequisitionsController
+    * @param {object} node the QuickNode object
+    */
+    $scope.addNode = function(quickNode) {
+      var node = quickNode.createRequisitionedNode();
+      RequisitionsService.startTiming();
+      RequisitionsService.saveNode(node).then(
+        function() { // success
+          growl.success('The node ' + node.nodeLabel + ' has been saved.');
+          RequisitionsService.synchronizeRequisition(node.foreignSource,  'false').then(
+            function() {
+              growl.success('The requisition ' + node.foreignSource + ' has been synchronized.');
+            },
+            $scope.errorHandler
+          );
+        },
+        $scope.errorHandler
+      );
+    };
+
+    /**
     * @description Clones the detectors and policies of a specific requisition
     *
     * @name RequisitionsController:clone
@@ -142,21 +202,21 @@
           availableForeignSources.push(r.foreignSource);
         }
       });
-      console.log("available requisitions: " + availableForeignSources);
       var modalInstance = $uibModal.open({
         backdrop: 'static',
         controller: 'CloneForeignSourceController',
         templateUrl: 'views/clone-foreignsource.html',
         resolve: {
-          foreignSource: function() { return foreignSource },
-          availableForeignSources: function() { return availableForeignSources }
+          foreignSource: function() { return foreignSource; },
+          availableForeignSources: function() { return availableForeignSources; }
         }
       });
       modalInstance.result.then(function(targetForeignSource) {
+        // FIXME Requires work, even if it works
         RequisitionsService.startTiming();
         RequisitionsService.getForeignSourceDefinition(foreignSource).then(
           function(r) { // success
-            r.name = targetForeignSource
+            r.name = targetForeignSource;
             RequisitionsService.saveForeignSourceDefinition(r).then(
               function() { // success
                 growl.success('The foreign source definition for ' + foreignSource + ' has been cloned to ' + targetForeignSource);
@@ -331,7 +391,7 @@
       $scope.currentPage = 1;
       $scope.totalItems = $scope.filteredRequisitions.length;
       $scope.numPages = Math.ceil($scope.totalItems / $scope.pageSize);
-    }
+    };
 
     /**
     * @description Initializes the local requisitions list from the server

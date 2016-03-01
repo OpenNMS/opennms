@@ -23,7 +23,7 @@ function RequisitionNode(foreignSource, node, isDeployed) {
 
   // Internal function for initialization purposes
   var isEmpty = function(str) {
-    return (str === null || str === undefined || 0 === str.length); 
+    return (str === null || str === undefined || 0 === str.length);
   };
 
   /**

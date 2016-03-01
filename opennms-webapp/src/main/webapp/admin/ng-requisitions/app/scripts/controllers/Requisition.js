@@ -204,7 +204,7 @@
       $scope.currentPage = 1;
       $scope.totalItems = $scope.filteredNodes.length;
       $scope.numPages = Math.ceil($scope.totalItems / $scope.pageSize);
-    }
+    };
 
     /**
     * @description Initializes the local requisition from the server
