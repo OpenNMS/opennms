@@ -28,6 +28,8 @@
 
 package org.opennms.web.rest.v2.bsm.model.edge;
 
+import java.util.Objects;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
@@ -50,5 +52,21 @@ public class ReductionKeyEdgeResponseDTO extends AbstractEdgeResponseDTO {
 
     public void setFriendlyName(String friendlyName) {
         this.friendlyName = friendlyName;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) { return false; }
+        if (getClass() != obj.getClass()) { return false; }
+        if (!super.equals(obj)) {
+            return false;
+        }
+        // compare subclass fields
+        return Objects.equals(friendlyName, ((ReductionKeyEdgeResponseDTO) obj).friendlyName);
+    }
+
+    @Override
+    public int hashCode() {
+        return super.hashCode() + Objects.hash(friendlyName);
     }
 }

@@ -61,12 +61,13 @@ public class IpServiceEdgeResponseDTO extends AbstractEdgeResponseDTO {
             return false;
         }
         // compare subclass fields
-        return Objects.equals(ipService, ((IpServiceEdgeResponseDTO) obj).ipService);
+        return Objects.equals(ipService, ((IpServiceEdgeResponseDTO) obj).ipService)
+                && Objects.equals(friendlyName, ((IpServiceEdgeResponseDTO) obj).friendlyName);
     }
 
     @Override
     public int hashCode() {
-        return super.hashCode() + Objects.hash(ipService);
+        return super.hashCode() + Objects.hash(ipService, friendlyName);
     }
 
     public String getFriendlyName() {

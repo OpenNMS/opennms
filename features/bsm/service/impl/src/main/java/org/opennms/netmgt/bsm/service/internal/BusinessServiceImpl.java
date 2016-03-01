@@ -157,11 +157,6 @@ public class BusinessServiceImpl implements BusinessService {
     }
 
     @Override
-    public void addIpServiceEdge(IpService ipService, MapFunction mapFunction, int weight) {
-        addIpServiceEdge(ipService, mapFunction, weight, null);
-    }
-
-    @Override
     public Set<ReductionKeyEdge> getReductionKeyEdges() {
         return m_entity.getReductionKeyEdges()
                 .stream()
@@ -177,11 +172,6 @@ public class BusinessServiceImpl implements BusinessService {
     @Override
     public void addReductionKeyEdge(String reductionKey, MapFunction mapFunction, int weight, String friendlyName) {
         m_manager.addReductionKeyEdge(this, reductionKey, mapFunction, weight, friendlyName);
-    }
-
-    @Override
-    public void addReductionKeyEdge(String reductionKey, MapFunction mapFunction, int weight) {
-        addReductionKeyEdge(reductionKey, mapFunction, weight, null);
     }
 
     @Override
