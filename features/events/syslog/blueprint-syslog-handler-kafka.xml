@@ -13,14 +13,13 @@
 		http://aries.apache.org/schemas/blueprint-ext/blueprint-ext-1.1.xsd
 ">
 
-<!--
-	<cm:property-placeholder id="syslogProperties" persistent-id="org.opennms.netmgt.syslog" update-strategy="none">
+	<cm:property-placeholder id="syslogHandlerKafkaProperties" persistent-id="org.opennms.netmgt.syslog.handler.kafka" placeholder-prefix="$[" placeholder-suffix="]" update-strategy="none">
 		<cm:default-properties>
-			<cm:property name="syslog.listen.interface" value="0.0.0.0" />
-			<cm:property name="syslog.listen.port" value="514" />
+			<cm:property name="kafkahost" value="127.0.0.1" />
+			<cm:property name="kafkaport" value="9092" />
+			<cm:property name="kafkatopic" value="syslog" />
 		</cm:default-properties>
 	</cm:property-placeholder>
--->
 
 	<bean id="syslogConnectionHandlerCamel" class="org.opennms.netmgt.syslogd.SyslogConnectionHandlerCamelImpl">
 		<argument value="seda:handleMessage"/>
@@ -29,7 +28,7 @@
 	<service interface="org.opennms.netmgt.syslogd.SyslogConnectionHandler" ref="syslogConnectionHandlerCamel"/>
 
 	<camelContext id="syslogConnectionHandler" xmlns="http://camel.apache.org/schema/blueprint">
-		<propertyPlaceholder id="properties" location="blueprint:syslogProperties" />
+		<propertyPlaceholder id="properties" location="blueprint:syslogHandlerKafkaProperties" />
 		<route id="handle">
 			<from uri="seda:handleMessage" />
 			<convertBodyTo type="org.opennms.netmgt.syslogd.SyslogConnection"/>

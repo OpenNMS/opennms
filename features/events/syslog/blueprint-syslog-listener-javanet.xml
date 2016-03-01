@@ -36,18 +36,4 @@
 		<argument ref="syslogListenerJava"/>
 	</bean>
 
-	<!--
-	<service interface="org.opennms.netmgt.syslogd.SyslogReceiver" ref="syslogListenerJava"/>
-	-->
-
-	<!--
-	<camelContext id="syslog" xmlns="http://camel.apache.org/schema/blueprint">
-		<propertyPlaceholder id="properties" location="blueprint:syslogProperties" />
-		<route id="bootstrap">
-			<from uri="timer:helloWorld?period=1000" />
-			<to uri="log:helloWorld"/>
-		</route>
-	</camelContext>
-	-->
-
 </blueprint>
