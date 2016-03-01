@@ -142,13 +142,15 @@ public class BusinessServiceRestService {
                 .forEach(rkEdge -> service.addReductionKeyEdge(
                         rkEdge.getReductionKey(),
                         transform(rkEdge.getMapFunction()),
-                        rkEdge.getWeight()));
+                        rkEdge.getWeight(),
+                        rkEdge.getFriendlyName()));
         request.getIpServices()
                 .stream()
                 .forEach(ipEdge -> service.addIpServiceEdge(
                         getManager().getIpServiceById(ipEdge.getIpServiceId()),
                         transform(ipEdge.getMapFunction()),
-                        ipEdge.getWeight()));
+                        ipEdge.getWeight(),
+                        ipEdge.getFriendlyName()));
         request.getChildServices()
                 .stream()
                 .forEach(childEdge -> service.addChildEdge(
@@ -183,7 +185,8 @@ public class BusinessServiceRestService {
                             service,
                             rkEdge.getReductionKey(),
                             transform(rkEdge.getMapFunction()),
-                            rkEdge.getWeight()));
+                            rkEdge.getWeight(),
+                            rkEdge.getFriendlyName()));
         service.setIpServiceEdges(Sets.newHashSet());
         request.getIpServices()
                 .forEach(ipEdge ->
@@ -191,7 +194,8 @@ public class BusinessServiceRestService {
                             service,
                             getManager().getIpServiceById(ipEdge.getIpServiceId()),
                             transform(ipEdge.getMapFunction()),
-                            ipEdge.getWeight()));
+                            ipEdge.getWeight(),
+                            ipEdge.getFriendlyName()));
         service.setChildEdges(Sets.newHashSet());
         request.getChildServices()
                 .forEach(childEdge ->

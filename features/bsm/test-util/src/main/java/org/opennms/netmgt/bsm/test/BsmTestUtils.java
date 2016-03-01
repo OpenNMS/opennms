@@ -87,11 +87,13 @@ public class BsmTestUtils {
         input.getIpServiceEdges().forEach(e -> request.addIpService(
                 e.getIpService().getId(),
                 transform(e.getMapFunction()),
-                e.getWeight()));
+                e.getWeight(),
+                e.getFriendlyName()));
         input.getReductionKeyEdges().forEach(e -> request.addReductionKey(
                 e.getReductionKey(),
                 transform(e.getMapFunction()),
-                e.getWeight()));
+                e.getWeight(),
+                e.getFriendlyName()));
         return request;
     }
 
@@ -151,6 +153,7 @@ public class BsmTestUtils {
         edge.setMapFunction(transform(input.getMapFunction()));
         edge.setId(input.getId());
         edge.setWeight(input.getWeight());
+        edge.setFriendlyName(input.getFriendlyName());
         edge.setOperationalStatus(Status.INDETERMINATE); // we assume INDETERMINATE
         return edge;
     }
@@ -163,6 +166,7 @@ public class BsmTestUtils {
         edge.setMapFunction(transform(input.getMapFunction()));
         edge.setId(input.getId());
         edge.setWeight(input.getWeight());
+        edge.setFriendlyName(input.getFriendlyName());
         edge.setOperationalStatus(Status.INDETERMINATE); // we assume INDETERMINATE
         return edge;
     }

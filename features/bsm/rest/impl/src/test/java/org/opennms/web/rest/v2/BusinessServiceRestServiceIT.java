@@ -97,6 +97,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
@@ -583,5 +584,19 @@ public class BusinessServiceRestServiceIT extends AbstractSpringJerseyRestTestCa
         entity.setId(findEntityByName("Dummy Service").getId());
 
         verifyResponse(entity);
+    }
+
+    @Test
+    public void verifyFriendlyName() throws Exception {
+        BusinessServiceEntity entity = new BusinessServiceEntityBuilder()
+                .name("Some Custom Name")
+                .addReductionKey("My Reduction Key", new IdentityEntity(), "so friendly")
+                .reduceFunction(new HighestSeverityEntity())
+                .toEntity();
+
+        sendData(POST, MediaType.APPLICATION_XML, "/business-services", toXml(toRequestDto(entity)), 201);
+        BusinessServiceResponseDTO responseDTO = verifyResponse(findEntityByName("Some Custom Name"));
+        Assert.assertEquals(1, responseDTO.getReductionKeys().size());
+        Assert.assertEquals("so friendly", responseDTO.getReductionKeys().get(0).getFriendlyName());
     }
 }

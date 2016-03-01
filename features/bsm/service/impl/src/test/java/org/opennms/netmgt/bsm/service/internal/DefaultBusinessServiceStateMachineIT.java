@@ -257,7 +257,7 @@ public class DefaultBusinessServiceStateMachineIT {
         IpServiceEdge svc2 = wrap(testHierarchy.getServiceChild2());
 
         // Manually add a reduction key to a business service to verify that this also works
-        bsChild1.addReductionKeyEdge("explicitReductionKey", new Identity(), Edge.DEFAULT_WEIGHT);
+        bsChild1.addReductionKeyEdge("explicitReductionKey", new Identity(), Edge.DEFAULT_WEIGHT, null);
         businessServiceDao.flush();
 
         // Setup the state machine

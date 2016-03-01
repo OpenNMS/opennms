@@ -42,13 +42,15 @@ public class BusinessServiceEntityBuilder {
 
     private class EdgeDefinition<V> {
         private final V value;
+        private final String friendlyName;
         private final AbstractMapFunctionEntity mapFunction;
         private final int weight;
 
-        public EdgeDefinition(V value, AbstractMapFunctionEntity mapFunction, int weight) {
+        public EdgeDefinition(V value, AbstractMapFunctionEntity mapFunction, int weight, String friendlyName) {
             this.value = value;
             this.mapFunction = mapFunction;
             this.weight = weight;
+            this.friendlyName = friendlyName;
         }
     }
 
@@ -84,9 +86,9 @@ public class BusinessServiceEntityBuilder {
         if (reduceFunction != null) {
             entity.setReductionFunction(reduceFunction);
         }
-        ipServices.forEach(e -> entity.addIpServiceEdge(e.value, e.mapFunction, e.weight));
+        ipServices.forEach(e -> entity.addIpServiceEdge(e.value, e.mapFunction, e.weight, e.friendlyName));
         children.forEach(e -> entity.addChildServiceEdge(e.value, e.mapFunction, e.weight));
-        reductionKeys.forEach(e -> entity.addReductionKeyEdge(e.value, e.mapFunction, e.weight));
+        reductionKeys.forEach(e -> entity.addReductionKeyEdge(e.value, e.mapFunction, e.weight, e.friendlyName));
         return entity;
     }
 
@@ -95,16 +97,24 @@ public class BusinessServiceEntityBuilder {
     }
 
     public BusinessServiceEntityBuilder addIpService(OnmsMonitoredService ipService, AbstractMapFunctionEntity mapFunctionEntity, int weight) {
-        ipServices.add(new EdgeDefinition<>(ipService, mapFunctionEntity, weight));
+        ipServices.add(new EdgeDefinition<>(ipService, mapFunctionEntity, weight, null));
         return this;
     }
 
+    public BusinessServiceEntityBuilder addReductionKey(String reductionKey, AbstractMapFunctionEntity mapFunctionEntity, String friendlyName) {
+        return addReductionKey(reductionKey, mapFunctionEntity, 1, friendlyName);
+    }
+
     public BusinessServiceEntityBuilder addReductionKey(String reductionKey, AbstractMapFunctionEntity mapFunctionEntity) {
-        return addReductionKey(reductionKey, mapFunctionEntity, 1);
+        return addReductionKey(reductionKey, mapFunctionEntity, 1, null);
     }
 
     public BusinessServiceEntityBuilder addReductionKey(String reductionKey, AbstractMapFunctionEntity mapFunctionEntity, int weight) {
-        reductionKeys.add(new EdgeDefinition<>(reductionKey, mapFunctionEntity, weight));
+        return addReductionKey(reductionKey, mapFunctionEntity, weight, null);
+    }
+
+    public BusinessServiceEntityBuilder addReductionKey(String reductionKey, AbstractMapFunctionEntity mapFunctionEntity, int weight, String friendlyName) {
+        reductionKeys.add(new EdgeDefinition<>(reductionKey, mapFunctionEntity, weight, friendlyName));
         return this;
     }
 
@@ -113,7 +123,7 @@ public class BusinessServiceEntityBuilder {
     }
 
     public BusinessServiceEntityBuilder addChildren(BusinessServiceEntity child, AbstractMapFunctionEntity mapFunctionEntity, int weight) {
-        children.add(new EdgeDefinition<>(child, mapFunctionEntity, weight));
+        children.add(new EdgeDefinition<>(child, mapFunctionEntity, weight, null));
         return this;
     }
 

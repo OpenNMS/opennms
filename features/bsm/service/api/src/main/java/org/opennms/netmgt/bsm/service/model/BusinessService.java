@@ -62,13 +62,9 @@ public interface BusinessService extends ReadOnlyBusinessService {
 
     void setIpServiceEdges(Set<IpServiceEdge> ipServiceEdges);
 
-    void addIpServiceEdge(IpService ipService, MapFunction mapFunction, int weight);
-
     void addIpServiceEdge(IpService ipService, MapFunction mapFunction, int weight, String friendlyName);
 
     void setReductionKeyEdges(Set<ReductionKeyEdge> reductionKeyEdges);
-
-    void addReductionKeyEdge(String reductionKey, MapFunction mapFunction, int weight);
 
     void addReductionKeyEdge(String reductionKey, MapFunction mapFunction, int weight, String friendlyName);
 

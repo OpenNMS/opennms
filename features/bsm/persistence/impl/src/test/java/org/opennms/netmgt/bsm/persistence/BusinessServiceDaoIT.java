@@ -33,6 +33,8 @@ import static org.junit.Assert.assertNotNull;
 
 import java.util.Objects;
 
+import javax.validation.ConstraintViolationException;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -62,7 +64,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.google.common.collect.Sets;
+import com.google.common.base.Strings;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {
@@ -276,6 +278,21 @@ public class BusinessServiceDaoIT {
         // verify that coundMatching also works
         assertEquals(1, m_businessServiceDao.countMatching(criteria));
 
+    }
+
+    @Test(expected=ConstraintViolationException.class)
+    @Transactional
+    public void verifyBeanValidation() {
+        BusinessServiceEntity entity = new BusinessServiceEntityBuilder()
+                .name("Some Custom Name")
+                .addReductionKey("My Reduction Key", new IdentityEntity(), "so friendly")
+                .addReductionKey("Another Reduction Key", new IdentityEntity(), Strings.padEnd("too", 30, 'o') + " friendly")
+                .reduceFunction(m_highestSeverity)
+                .toEntity();
+
+        // Should throw a ConstraintViolationException (friendly name too long)
+        m_businessServiceDao.save(entity);
+        m_businessServiceDao.flush();
     }
 
     private OnmsMonitoredService getMonitoredServiceFromNode1() {

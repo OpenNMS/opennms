@@ -225,32 +225,34 @@ public class BusinessServiceEntity {
 
     // Convenient method to add an ipservice edge
     public BusinessServiceEntity addIpServiceEdge(OnmsMonitoredService ipService, AbstractMapFunctionEntity mapFunction) {
-        return addIpServiceEdge(ipService, mapFunction, 1);
+        return addIpServiceEdge(ipService, mapFunction, 1, null);
     }
 
     // Convenient method to add an ipservice edge
-    public BusinessServiceEntity addIpServiceEdge(OnmsMonitoredService ipService, AbstractMapFunctionEntity mapFunction, int weight) {
+    public BusinessServiceEntity addIpServiceEdge(OnmsMonitoredService ipService, AbstractMapFunctionEntity mapFunction, int weight, String friendlyName) {
         IPServiceEdgeEntity edge = new IPServiceEdgeEntity();
         edge.setBusinessService(this);
         edge.setIpService(Objects.requireNonNull(ipService));
         edge.setWeight(weight);
         edge.setMapFunction(Objects.requireNonNull(mapFunction));
+        edge.setFriendlyName(friendlyName);
         addEdge(edge);
         return this;
     }
 
     // Convenient method to add a reduction key edge
     public BusinessServiceEntity addReductionKeyEdge(String reductionKey, AbstractMapFunctionEntity mapFunction) {
-        return addReductionKeyEdge(reductionKey, mapFunction, 1);
+        return addReductionKeyEdge(reductionKey, mapFunction, 1, null);
     }
 
     // Convenient method to add a reduction key edge
-    public BusinessServiceEntity addReductionKeyEdge(String reductionKey, AbstractMapFunctionEntity mapFunction, int weight) {
+    public BusinessServiceEntity addReductionKeyEdge(String reductionKey, AbstractMapFunctionEntity mapFunction, int weight, String friendlyName) {
         SingleReductionKeyEdgeEntity edge = new SingleReductionKeyEdgeEntity();
         edge.setBusinessService(this);
         edge.setReductionKey(Objects.requireNonNull(reductionKey));
         edge.setWeight(weight);
         edge.setMapFunction(Objects.requireNonNull(mapFunction));
+        edge.setFriendlyName(friendlyName);
         addEdge(edge);
         return this;
     }
