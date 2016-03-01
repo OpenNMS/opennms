@@ -148,7 +148,7 @@
         }
       });
       modalInstance.result.then(function(node) {
-        growl.warn('The node ' + node.nodeLabel + ' will be added to ' + node.foreignSource + '. Please wait...');
+        growl.warning('The node ' + node.nodeLabel + ' will be added to ' + node.foreignSource + '. Please wait...');
         RequisitionsService.startTiming(10); // Twice the default
         RequisitionsService.quickAddNode(node).then(
           function() { // success

@@ -56,7 +56,7 @@ describe('Controller: NodeController', function () {
     mockRequisitionsService.getTiming.andReturn({ isRunning: false });
 
     mockGrowl = {
-      warn: function(msg) { console.warn(msg); },
+      warning: function(msg) { console.warn(msg); },
       error: function(msg) { console.error(msg); },
       info: function(msg) { console.info(msg); },
       success: function(msg) { console.info(msg); }
