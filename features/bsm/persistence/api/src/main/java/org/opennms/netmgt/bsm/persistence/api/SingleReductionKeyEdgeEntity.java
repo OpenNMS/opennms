@@ -89,7 +89,8 @@ public class SingleReductionKeyEdgeEntity extends BusinessServiceEdgeEntity {
     public boolean equalsDefinition(BusinessServiceEdgeEntity other) {
         boolean equalsSuper = super.equalsDefinition(other);
         if (equalsSuper) {
-            return Objects.equals(reductionKey, ((SingleReductionKeyEdgeEntity) other).reductionKey);
+            return Objects.equals(reductionKey, ((SingleReductionKeyEdgeEntity) other).reductionKey) &&
+                   Objects.equals(m_friendlyName, ((SingleReductionKeyEdgeEntity) other).m_friendlyName);
         }
         return false;
     }

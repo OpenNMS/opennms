@@ -1289,7 +1289,7 @@
     <guavaVersion>17.0</guavaVersion>
     <gwtVersion>2.6.1</gwtVersion>
     <gwtPluginVersion>2.6.1</gwtPluginVersion>
-    <hikaricpVersion>2.4.6</hikaricpVersion>
+    <hibernateValidatorVersion>4.3.2.Final</hibernateValidatorVersion>
     <httpcoreVersion>4.3.3</httpcoreVersion>
     <httpclientVersion>4.3.6</httpclientVersion>
     <httpasyncclientVersion>4.0.2</httpasyncclientVersion>
@@ -3201,6 +3201,11 @@
         <groupId>org.codehaus.jackson</groupId>
         <artifactId>jackson-xc</artifactId>
         <version>${jacksonVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.hibernate</groupId>
+        <artifactId>hibernate-validator</artifactId>
+        <version>${hibernateValidatorVersion}</version>
       </dependency>
       <dependency>
         <groupId>javassist</groupId>
