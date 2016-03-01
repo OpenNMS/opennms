@@ -36,7 +36,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class SyslogConnectionHandlerDefaultImpl implements SyslogConnectionHandler {
-	private static final Logger LOG = LoggerFactory.getLogger(SyslogReceiverJavaNetImpl.class);
+	private static final Logger LOG = LoggerFactory.getLogger(SyslogConnectionHandlerDefaultImpl.class);
 
 	private final ExecutorService m_executor;
 
@@ -44,13 +44,8 @@ public class SyslogConnectionHandlerDefaultImpl implements SyslogConnectionHandl
 		m_executor = executor;
 	}
 
-	/**
-	 * Send the incoming {@link SyslogConnection} message into the Camel route
-	 * specified by the {@link #m_endpointUri} property.
-	 */
 	@Override
 	public void handleSyslogConnection(final SyslogConnection message) {
-		//SyslogConnection *Must* copy packet data and InetAddress as DatagramPacket is a mutable type
 		try {
 			WaterfallExecutor.waterfall(m_executor, message);
 		} catch (ExecutionException e) {
