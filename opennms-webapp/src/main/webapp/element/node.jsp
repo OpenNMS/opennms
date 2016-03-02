@@ -65,6 +65,7 @@
 <%!private int m_telnetServiceId;
     private int m_sshServiceId;
     private int m_httpServiceId;
+    private int m_httpsServiceId;
     private int m_dellServiceId;
     private int m_rdpServiceId;
     private int m_snmpServiceId;
@@ -87,6 +88,12 @@
             m_httpServiceId = NetworkElementFactory.getInstance(getServletContext()).getServiceIdFromName("HTTP");
         } catch (Throwable e) {
             throw new ServletException("Could not determine the HTTP service ID", e);
+        }
+
+        try {
+            m_httpsServiceId = NetworkElementFactory.getInstance(getServletContext()).getServiceIdFromName("HTTPS");
+        } catch (Throwable e) {
+            throw new ServletException("Could not determine the HTTPS service ID", e);
         }
 
         try {
@@ -166,6 +173,7 @@
     links.addAll(createLinkForService(nodeId, m_telnetServiceId, "Telnet", "telnet://", "", getServletContext()));
     links.addAll(createLinkForService(nodeId, m_sshServiceId, "SSH", "ssh://", "", getServletContext()));
     links.addAll(createLinkForService(nodeId, m_httpServiceId, "HTTP", "http://", "/", getServletContext()));
+    links.addAll(createLinkForService(nodeId, m_httpsServiceId, "HTTPS", "https://", "/", getServletContext()));
     links.addAll(createLinkForService(nodeId, m_dellServiceId, "OpenManage", "https://", ":1311", getServletContext()));
     links.addAll(createLinkForService(nodeId, m_rdpServiceId, "Microsoft RDP", "rdp://", ":3389", getServletContext()));
     nodeModel.put("links", links);
