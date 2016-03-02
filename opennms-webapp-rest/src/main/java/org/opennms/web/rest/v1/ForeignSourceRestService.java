@@ -28,7 +28,6 @@
 
 package org.opennms.web.rest.v1;
 
-import java.text.ParseException;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
@@ -366,7 +365,7 @@ public class ForeignSourceRestService extends OnmsRestService {
         try {
             LOG.debug("addForeignSource: Adding foreignSource {}", foreignSource.getName());
             m_pendingForeignSourceRepository.save(foreignSource);
-            return Response.seeOther(getRedirectUri(uriInfo, foreignSource.getName())).build();
+            return Response.accepted().header("Location", getRedirectUri(uriInfo, foreignSource.getName())).build();
         } finally {
             writeUnlock();
         }
@@ -391,7 +390,7 @@ public class ForeignSourceRestService extends OnmsRestService {
             fs.updateDateStamp();
             fs.addDetector(detector);
             m_pendingForeignSourceRepository.save(fs);
-            return Response.seeOther(getRedirectUri(uriInfo, detector.getName())).build();
+            return Response.accepted().header("Location", getRedirectUri(uriInfo, detector.getName())).build();
         } finally {
             writeUnlock();
         }
@@ -416,7 +415,7 @@ public class ForeignSourceRestService extends OnmsRestService {
             fs.updateDateStamp();
             fs.addPolicy(policy);
             m_pendingForeignSourceRepository.save(fs);
-            return Response.seeOther(getRedirectUri(uriInfo, policy.getName())).build();
+            return Response.accepted().header("Location", getRedirectUri(uriInfo, policy.getName())).build();
         } finally {
             writeUnlock();
         }
@@ -439,7 +438,7 @@ public class ForeignSourceRestService extends OnmsRestService {
             ForeignSource fs = getActiveForeignSource(foreignSource);
             LOG.debug("updateForeignSource: updating foreign source {}", foreignSource);
             
-            if (params.isEmpty()) return Response.seeOther(getRedirectUri(uriInfo)).build();
+            if (params.isEmpty()) return Response.notModified().build();
 
             final BeanWrapper wrapper = PropertyAccessorFactory.forBeanPropertyAccess(fs);
             wrapper.registerCustomEditor(Duration.class, new StringIntervalPropertyEditor());
@@ -454,7 +453,7 @@ public class ForeignSourceRestService extends OnmsRestService {
             LOG.debug("updateForeignSource: foreign source {} updated", foreignSource);
             fs.updateDateStamp();
             m_pendingForeignSourceRepository.save(fs);
-            return Response.seeOther(getRedirectUri(uriInfo)).build();
+            return Response.accepted().header("Location", getRedirectUri(uriInfo)).build();
         } finally {
             writeUnlock();
         }

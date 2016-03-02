@@ -101,7 +101,7 @@ public class MonitoringLocationsRestService extends OnmsRestService {
 		try {
 			LOG.debug("addMonitoringLocation: Adding monitoringLocation {}", monitoringLocation.getLocationName());
 			m_monitoringLocationDao.save(monitoringLocation);
-			return Response.seeOther(getRedirectUri(uriInfo, monitoringLocation.getLocationName())).build();
+			return Response.created(getRedirectUri(uriInfo, monitoringLocation.getLocationName())).build();
 		} finally {
 			writeUnlock();
 		}
@@ -111,13 +111,13 @@ public class MonitoringLocationsRestService extends OnmsRestService {
 	@Path("{monitoringLocation}")
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
 	@Transactional
-	public Response updateMonitoringLocation(@Context final UriInfo uriInfo, @PathParam("monitoringLocation") String monitoringLocation, MultivaluedMapImpl params) {
+	public Response updateMonitoringLocation(@PathParam("monitoringLocation") String monitoringLocation, MultivaluedMapImpl params) {
 		writeLock();
 		try {
 			LocationDef def = m_monitoringLocationDao.get(monitoringLocation);
 			LOG.debug("updateMonitoringLocation: updating monitoring location {}", monitoringLocation);
 
-			if (params.isEmpty()) return Response.seeOther(getRedirectUri(uriInfo)).build();
+			if (params.isEmpty()) return Response.notModified().build();
 
 			final BeanWrapper wrapper = PropertyAccessorFactory.forBeanPropertyAccess(def);
 			wrapper.registerCustomEditor(Duration.class, new StringIntervalPropertyEditor());
@@ -131,7 +131,7 @@ public class MonitoringLocationsRestService extends OnmsRestService {
 			}
 			LOG.debug("updateMonitoringLocation: monitoring location {} updated", monitoringLocation);
 			m_monitoringLocationDao.save(def);
-			return Response.seeOther(getRedirectUri(uriInfo)).build();
+			return Response.ok().build();
 		} finally {
 			writeUnlock();
 		}

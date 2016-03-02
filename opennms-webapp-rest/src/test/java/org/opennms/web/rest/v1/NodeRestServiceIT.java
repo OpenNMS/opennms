@@ -160,7 +160,7 @@ public class NodeRestServiceIT extends AbstractSpringJerseyRestTestCase {
 
         // Testing PUT
         url += "/1";
-        sendPut(url, "sysContact=OpenNMS&assetRecord.manufacturer=Apple&assetRecord.operatingSystem=MacOSX Leopard", 303, "/nodes/1");
+        sendPut(url, "sysContact=OpenNMS&assetRecord.manufacturer=Apple&assetRecord.operatingSystem=MacOSX Leopard", 200);
 
         // Testing GET Single Object
         xml = sendRequest(GET, url, 200);
@@ -177,7 +177,7 @@ public class NodeRestServiceIT extends AbstractSpringJerseyRestTestCase {
     public void testPutCoordinates() throws Exception {
         createNode();
         String url = "/nodes/1/assetRecord";
-        sendPut(url, "longitude=-1.2345&latitude=6.7890", 303, "/nodes/1/assetRecord");
+        sendPut(url, "longitude=-1.2345&latitude=6.7890", 200);
 
         String xml = sendRequest(GET, url, 200);
         assertTrue(xml.contains("<longitude>-1.2345"));
@@ -235,7 +235,7 @@ public class NodeRestServiceIT extends AbstractSpringJerseyRestTestCase {
 
         // Testing PUT
         url += "/1";
-        sendPut(url, "sysContact=OpenNMS&assetRecord.manufacturer=Apple&assetRecord.operatingSystem=MacOSX Leopard", 303, "/nodes/1");
+        sendPut(url, "sysContact=OpenNMS&assetRecord.manufacturer=Apple&assetRecord.operatingSystem=MacOSX Leopard", 200);
 
         // Testing GET Single Object to make sure that the parameters changed
         xml = sendRequest(GET, url, 200);
@@ -310,7 +310,7 @@ public class NodeRestServiceIT extends AbstractSpringJerseyRestTestCase {
         String xml = sendRequest(GET, url, 200);
         assertTrue(xml.contains("<ipAddress>10.10.10.10</ipAddress>"));
         url += "/10.10.10.10";
-        sendPut(url, "isManaged=U", 303, "/nodes/1/ipinterfaces/10.10.10.10");
+        sendPut(url, "isManaged=U", 200);
         xml = sendRequest(GET, url, 200);
         assertTrue(xml.contains("isManaged=\"U\""));
         sendRequest(DELETE, url, 200);
@@ -347,7 +347,7 @@ public class NodeRestServiceIT extends AbstractSpringJerseyRestTestCase {
         assertTrue(xml.contains("count=\"1\""));
         
         url += "/10.10.10.10";
-        sendPut(url, "isManaged=U", 303, "/nodes/1/ipinterfaces/10.10.10.10");
+        sendPut(url, "isManaged=U", 200);
         xml = sendRequest(GET, url, 200);
         assertTrue(xml.contains("isManaged=\"U\""));
         sendRequest(DELETE, url, 200);
@@ -382,7 +382,7 @@ public class NodeRestServiceIT extends AbstractSpringJerseyRestTestCase {
         String xml = sendRequest(GET, url, 200);
         assertTrue(xml.contains("ifIndex=\"6\""));
         url += "/6";
-        sendPut(url, "ifName=eth0", 303, "/nodes/1/snmpinterfaces/6");
+        sendPut(url, "ifName=eth0", 200);
         xml = sendRequest(GET, url, 200);
         assertTrue(xml.contains("<ifName>eth0</ifName>"));
         sendRequest(DELETE, url, 200);
@@ -419,7 +419,7 @@ public class NodeRestServiceIT extends AbstractSpringJerseyRestTestCase {
         String xml = sendRequest(GET, url, 200);
         assertTrue(xml.contains("<name>ICMP</name>"));
         url += "/ICMP";
-        sendPut(url, "status=A", 303, "/nodes/1/ipinterfaces/10.10.10.10/services/ICMP");
+        sendPut(url, "status=A", 200);
         xml = sendRequest(GET, url, 200);
         assertTrue(xml.contains("status=\"A\""));
         sendRequest(DELETE, url, 200);
@@ -435,7 +435,7 @@ public class NodeRestServiceIT extends AbstractSpringJerseyRestTestCase {
         assertFalse(xml.contains("name=\"Routers\""));
 
         // add category to node 
-        sendRequest(POST, "/nodes/1/categories/Routers", 303);
+        sendRequest(POST, "/nodes/1/categories/Routers", 201);
         xml = sendRequest(GET, "/nodes/1/categories", 200);
         assertTrue(xml.contains("name=\"Routers\""));
         
@@ -443,12 +443,12 @@ public class NodeRestServiceIT extends AbstractSpringJerseyRestTestCase {
         sendRequest(POST, "/nodes/1/categories/Routers", 400); // should fail
         
         // change category description via PUT to categories path
-        sendPut("/categories/Routers", "description=My Equipment", 303, "/categories/Routers");
+        sendPut("/categories/Routers", "description=My Equipment", 200);
         xml = sendRequest(GET, "/nodes/1/categories/Routers", 200);
         assertTrue(xml.contains("<description>My Equipment</description>"));
 
         // Change category description via PUT to node path
-        sendPut("/nodes/1/categories/Routers", "description=My Equipment UPDATED", 303, "/nodes/1/categories/Routers");
+        sendPut("/nodes/1/categories/Routers", "description=My Equipment UPDATED", 200);
         xml = sendRequest(GET, "/nodes/1/categories/Routers", 200);
         assertTrue(xml.contains("<description>My Equipment UPDATED</description>"));
 
@@ -463,7 +463,7 @@ public class NodeRestServiceIT extends AbstractSpringJerseyRestTestCase {
         assertTrue(xml.contains("name=\"Routers\""));
         
         // try backwards compatibility
-        sendPost("/nodes/1/categories/", JaxbUtils.marshal(new OnmsCategory("Routers")), 303, "/nodes/1/categories/Routers");
+        sendPost("/nodes/1/categories/", JaxbUtils.marshal(new OnmsCategory("Routers")), 201, "/nodes/1/categories/Routers");
         xml = sendRequest(GET, "/nodes/1/categories/Routers", 200);
         assertTrue(xml.contains("<description>My Equipment UPDATED</description>"));
         
@@ -515,7 +515,7 @@ public class NodeRestServiceIT extends AbstractSpringJerseyRestTestCase {
         createIpInterface();
         byte[] encoded = Files.readAllBytes(Paths.get("src/test/resources/hardware-inventory.xml"));
         String entity = new String(encoded, "UTF-8");
-        sendPost("/nodes/1/hardwareInventory", entity, 303, null);
+        sendPost("/nodes/1/hardwareInventory", entity, 200, null);
         String xml = sendRequest(GET, "/nodes/1/hardwareInventory", 200);
         assertTrue(xml, xml.contains("Cisco 7206VXR, 6-slot chassis"));
 
@@ -525,18 +525,18 @@ public class NodeRestServiceIT extends AbstractSpringJerseyRestTestCase {
         Map<String, String> params = new HashMap<String,String>();
         params.put("entPhysicalSerialNum", "123456789");
         params.put("ceExtProcessorRam", "256MB");
-        sendRequest(PUT, "/nodes/1/hardwareInventory/9", params, 303);
+        sendRequest(PUT, "/nodes/1/hardwareInventory/9", params, 200);
         xml = sendRequest(GET, "/nodes/1/hardwareInventory/9", 200);
         assertTrue(xml, xml.contains("<entPhysicalSerialNum>123456789</entPhysicalSerialNum>"));
         assertTrue(xml, xml.contains("value=\"256MB\""));
 
-        sendPost("/nodes/1/hardwareInventory/9", "<hwEntity entPhysicalIndex=\"200\"><entPhysicalName>Sample1</entPhysicalName></hwEntity>", 303, null);
-        sendPost("/nodes/1/hardwareInventory/9", "<hwEntity entPhysicalIndex=\"17\"><entPhysicalName>Sample2</entPhysicalName></hwEntity>", 303, null);
+        sendPost("/nodes/1/hardwareInventory/9", "<hwEntity entPhysicalIndex=\"200\"><entPhysicalName>Sample1</entPhysicalName></hwEntity>", 200, null);
+        sendPost("/nodes/1/hardwareInventory/9", "<hwEntity entPhysicalIndex=\"17\"><entPhysicalName>Sample2</entPhysicalName></hwEntity>", 200, null);
         xml = sendRequest(GET, "/nodes/1/hardwareInventory/9", 200);
         assertTrue(xml, xml.contains("Sample1"));
         assertTrue(xml, xml.contains("Sample2"));
 
-        sendRequest(DELETE, "/nodes/1/hardwareInventory/9", 303);
+        sendRequest(DELETE, "/nodes/1/hardwareInventory/9", 200);
         sendRequest(GET, "/nodes/1/hardwareInventory/9", 400);
     }
 
@@ -552,7 +552,7 @@ public class NodeRestServiceIT extends AbstractSpringJerseyRestTestCase {
         System.err.println(xml);
         assertTrue(xml.contains("<name>ICMP</name>"));
         url += "/ICMP";
-        sendPut(url, "status=A", 303, "/nodes/1/ipinterfaces/10.10.10.10/services/ICMP");
+        sendPut(url, "status=A", 200);
         xml = sendRequest(GET, url, 200);
         assertTrue(xml.contains("status=\"A\""));
         sendRequest(DELETE, url, 200);
@@ -575,12 +575,12 @@ public class NodeRestServiceIT extends AbstractSpringJerseyRestTestCase {
         "<lastCapsdPoll>2011-09-24T07:12:46.421-04:00</lastCapsdPoll>" +
         "</node>";
 
-        HttpServletResponse response = sendPost("/nodes", node, 303, null);
+        HttpServletResponse response = sendPost("/nodes", node, 201, null);
 
         // Set the asset record's lastModifiedDate to a constant value as well
         String newNodeLocation = response.getHeader("Location");
         String nodeId = newNodeLocation.substring(newNodeLocation.lastIndexOf("/"));
-        sendPut("/nodes" + nodeId + "/assetRecord", "lastModifiedDate=2011-09-24T07:12:46.421-04:00", 303, null);
+        sendPut("/nodes" + nodeId + "/assetRecord", "lastModifiedDate=2011-09-24T07:12:46.421-04:00", 200);
     }
 
     @Override
@@ -590,7 +590,7 @@ public class NodeRestServiceIT extends AbstractSpringJerseyRestTestCase {
         "<ipAddress>10.10.10.10</ipAddress>" +
         "<hostName>TestMachine" + m_nodeCounter + "</hostName>" +
         "</ipInterface>";
-        sendPost("/nodes/1/ipinterfaces", ipInterface, 303, "/nodes/1/ipinterfaces/10.10.10.10");
+        sendPost("/nodes/1/ipinterfaces", ipInterface, 201, "/nodes/1/ipinterfaces/10.10.10.10");
     }
     
     
@@ -600,13 +600,13 @@ public class NodeRestServiceIT extends AbstractSpringJerseyRestTestCase {
         "<ipAddress>10.10.10.10</ipAddress>" +
         "<hostName>TestMachine" + m_nodeCounter + "</hostName>" +
         "</ipInterface>";
-        sendPost("/nodes/1/ipinterfaces", ipInterface, 303, "/nodes/1/ipinterfaces/10.10.10.10");
+        sendPost("/nodes/1/ipinterfaces", ipInterface, 201, "/nodes/1/ipinterfaces/10.10.10.10");
         
         String ipInterface2 = "<ipInterface isManaged=\"M\" snmpPrimary=\"P\">" +
         "<ipAddress>10.10.10.11</ipAddress>" +
         "<hostName>TestMachine" + (m_nodeCounter + 1) + "</hostName>" +
         "</ipInterface>";
-        sendPost("/nodes/1/ipinterfaces", ipInterface2, 303, "/nodes/1/ipinterfaces/10.10.10.11");
+        sendPost("/nodes/1/ipinterfaces", ipInterface2, 201, "/nodes/1/ipinterfaces/10.10.10.11");
         
     }
 

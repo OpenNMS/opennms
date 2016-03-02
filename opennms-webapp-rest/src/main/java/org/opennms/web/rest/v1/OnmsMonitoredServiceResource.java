@@ -188,7 +188,7 @@ public class OnmsMonitoredServiceResource extends OnmsRestService {
             } catch (EventProxyException ex) {
                 throw getException(Status.BAD_REQUEST, ex.getMessage());
             }
-            return Response.seeOther(getRedirectUri(uriInfo, service.getServiceName())).build();
+            return Response.created(getRedirectUri(uriInfo, service.getServiceName())).build();
         } finally {
             writeUnlock();
         }
@@ -206,7 +206,7 @@ public class OnmsMonitoredServiceResource extends OnmsRestService {
     @PUT
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Path("{service}")
-    public Response updateService(@Context final UriInfo uriInfo, @PathParam("nodeCriteria") String nodeCriteria, @PathParam("ipAddress") String ipAddress, @PathParam("service") String serviceName, MultivaluedMapImpl params) {
+    public Response updateService(@PathParam("nodeCriteria") String nodeCriteria, @PathParam("ipAddress") String ipAddress, @PathParam("service") String serviceName, MultivaluedMapImpl params) {
         writeLock();
         try {
             OnmsNode node = m_nodeDao.get(nodeCriteria);
@@ -240,7 +240,7 @@ public class OnmsMonitoredServiceResource extends OnmsRestService {
             LOG.debug("updateSservice: service {} updated", service);
             m_serviceDao.saveOrUpdate(service);
             // If the status is changed, we should send the proper event to notify Pollerd
-            return Response.seeOther(getRedirectUri(uriInfo)).build();
+            return Response.ok().build();
         } finally {
             writeUnlock();
         }

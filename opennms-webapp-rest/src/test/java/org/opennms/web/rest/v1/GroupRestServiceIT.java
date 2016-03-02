@@ -122,7 +122,7 @@ public class GroupRestServiceIT extends AbstractSpringJerseyRestTestCase {
         JSONAssert.assertNotEquals(expectedObject, restObject, true);
 
         // Update the comment value
-        sendPut("/groups/Admin", "comments=The administrators", 303, "/groups/Admin");
+        sendPut("/groups/Admin", "comments=The administrators", 200);
 
         // Now they should be equal
         jsonRequest = createRequest(m_servletContext, GET, url);
@@ -140,7 +140,7 @@ public class GroupRestServiceIT extends AbstractSpringJerseyRestTestCase {
         String xml = sendRequest(GET, "/groups/test", 200);
         assertTrue(xml.contains("<group><name>test</name>"));
 
-        sendPut("/groups/test", "comments=MONKEYS", 303, "/groups/test");
+        sendPut("/groups/test", "comments=MONKEYS", 200);
 
         xml = sendRequest(GET, "/groups/test", 200);
         assertTrue(xml.contains(">MONKEYS<"));
@@ -172,7 +172,7 @@ public class GroupRestServiceIT extends AbstractSpringJerseyRestTestCase {
 
         LOG.debug("add totallyUniqueUser to deleteMe");
         // add user to group
-        sendRequest(PUT, "/groups/deleteMe/users/totallyUniqueUser", 303);
+        sendRequest(PUT, "/groups/deleteMe/users/totallyUniqueUser", 200);
         String xml = sendRequest(GET, "/groups/deleteMe", 200);
         assertTrue(xml.contains("totallyUniqueUser"));
 
@@ -262,13 +262,13 @@ public class GroupRestServiceIT extends AbstractSpringJerseyRestTestCase {
 
     protected void createCategory(final String categoryName) throws Exception {
         OnmsCategory cat = new OnmsCategory(categoryName);
-        sendPost("/categories", JaxbUtils.marshal(cat), 303, "/categories/" + categoryName);
+        sendPost("/categories", JaxbUtils.marshal(cat), 201, "/categories/" + categoryName);
     }
     
     private void createUser(final String userName) throws Exception {
         OnmsUser user = new OnmsUser();
         user.setUsername(userName);
-        sendPost("/users", JaxbUtils.marshal(user), 303, "/users/" + userName);
+        sendPost("/users", JaxbUtils.marshal(user), 201, "/users/" + userName);
     }
     
     protected void createGroup(final String groupname) throws Exception {
@@ -276,6 +276,6 @@ public class GroupRestServiceIT extends AbstractSpringJerseyRestTestCase {
                 "<name>" + groupname + "</name>" +
                 "<comments>" + groupname + "</comments>" +
                 "</group>";
-        sendPost("/groups", group, 303, "/groups/" + groupname);
+        sendPost("/groups", group, 201, "/groups/" + groupname);
     }
 }

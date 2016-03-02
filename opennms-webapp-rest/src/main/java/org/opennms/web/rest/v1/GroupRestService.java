@@ -132,7 +132,7 @@ public class GroupRestService extends OnmsRestService {
         try {
             LOG.debug("addGroup: Adding group {}", group);
             m_groupService.saveGroup(group);
-            return Response.seeOther(getRedirectUri(uriInfo, group.getName())).build();
+            return Response.created(getRedirectUri(uriInfo, group.getName())).build();
         } catch (final Throwable t) {
             throw getException(Status.BAD_REQUEST, t);
         } finally {
@@ -143,7 +143,7 @@ public class GroupRestService extends OnmsRestService {
     @PUT
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Path("{groupName}")
-    public Response updateGroup(@Context final UriInfo uriInfo, @PathParam("groupName") final String groupName, final MultivaluedMapImpl params) {
+    public Response updateGroup(@PathParam("groupName") final String groupName, final MultivaluedMapImpl params) {
         writeLock();
         
         try {
@@ -169,7 +169,7 @@ public class GroupRestService extends OnmsRestService {
             } catch (final Throwable t) {
                 throw getException(Status.INTERNAL_SERVER_ERROR, t);
             }
-            return Response.seeOther(getRedirectUri(uriInfo)).build();
+            return Response.ok().build();
         } finally {
             writeUnlock();
         }
@@ -193,13 +193,13 @@ public class GroupRestService extends OnmsRestService {
 
     @PUT
     @Path("{groupName}/users/{userName}")
-    public Response addUser(@Context final UriInfo uriInfo, @PathParam("groupName") final String groupName, @PathParam("userName") final String userName) {
+    public Response addUser(@PathParam("groupName") final String groupName, @PathParam("userName") final String userName) {
         writeLock();
         try {
             getOnmsGroup(groupName); // just ensure that group exists
             boolean success = m_groupService.addUser(groupName, userName);
             if (success) {
-                return Response.seeOther(getRedirectUri(uriInfo)).build();    
+                return Response.ok().build();
             }
         } catch (final Throwable t) {
             throw getException(Status.INTERNAL_SERVER_ERROR, t);

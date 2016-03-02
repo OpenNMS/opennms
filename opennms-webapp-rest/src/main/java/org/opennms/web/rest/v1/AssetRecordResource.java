@@ -36,11 +36,9 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
-import javax.ws.rs.core.UriInfo;
 
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.events.api.EventConstants;
@@ -100,7 +98,7 @@ public class AssetRecordResource extends OnmsRestService {
      */
     @PUT
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-    public Response updateAssetRecord(@Context final UriInfo uriInfo, @PathParam("nodeCriteria") final String nodeCriteria, final MultivaluedMapImpl params) {
+    public Response updateAssetRecord(@PathParam("nodeCriteria") final String nodeCriteria, final MultivaluedMapImpl params) {
         OnmsNode node = m_nodeDao.get(nodeCriteria);
         if (node == null) {
             throw getException(Status.BAD_REQUEST, "updateAssetRecord: Can't find node " + nodeCriteria);
@@ -133,7 +131,7 @@ public class AssetRecordResource extends OnmsRestService {
             throw getException(Status.BAD_REQUEST, e.getMessage());
         }
 
-        return Response.seeOther(getRedirectUri(uriInfo)).build();
+        return Response.ok().build();
     }
 
     private static OnmsAssetRecord getAssetRecord(OnmsNode node) {

@@ -39,11 +39,9 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
-import javax.ws.rs.core.UriInfo;
 
 import org.opennms.netmgt.dao.api.HwEntityAttributeTypeDao;
 import org.opennms.netmgt.dao.api.HwEntityDao;
@@ -143,7 +141,7 @@ public class HardwareInventoryResource extends OnmsRestService {
      */
     @POST
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public Response setHardwareInventory(@Context final UriInfo uriInfo, @PathParam("nodeCriteria") String nodeCriteria, OnmsHwEntity entity) {
+    public Response setHardwareInventory(@PathParam("nodeCriteria") String nodeCriteria, OnmsHwEntity entity) {
         if (!entity.isRoot()) {
             throw getException(Status.BAD_REQUEST, "setHardwareInventory: The OnmsHwEntity is not a root entity " + entity);
         }
@@ -160,7 +158,7 @@ public class HardwareInventoryResource extends OnmsRestService {
             }
             m_hwEntityDao.save(entity);
 
-            return Response.seeOther(getRedirectUri(uriInfo)).build();
+            return Response.ok().build();
         } finally {
             writeUnlock();
         }
@@ -177,7 +175,7 @@ public class HardwareInventoryResource extends OnmsRestService {
     @POST
     @Path("{parentEntPhysicalIndex}")
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public Response addOrReplaceChild(@Context final UriInfo uriInfo, @PathParam("nodeCriteria") String nodeCriteria, @PathParam("parentEntPhysicalIndex") Integer parentEntPhysicalIndex, OnmsHwEntity child) {
+    public Response addOrReplaceChild(@PathParam("nodeCriteria") String nodeCriteria, @PathParam("parentEntPhysicalIndex") Integer parentEntPhysicalIndex, OnmsHwEntity child) {
         writeLock();
         try {
             OnmsNode node = getOnmsNode(nodeCriteria);
@@ -195,7 +193,7 @@ public class HardwareInventoryResource extends OnmsRestService {
             parent.addChildEntity(child);
             LOG.debug("addOrReplaceChild: updating entity {}", child);
             m_hwEntityDao.save(parent);
-            return Response.seeOther(getRedirectUri(uriInfo)).build();
+            return Response.ok().build();
         } finally {
             writeUnlock();
         }
@@ -212,7 +210,7 @@ public class HardwareInventoryResource extends OnmsRestService {
     @PUT
     @Path("{entPhysicalIndex}")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-    public Response updateHwEntity(@Context final UriInfo uriInfo, @PathParam("nodeCriteria") String nodeCriteria, @PathParam("entPhysicalIndex") Integer entPhysicalIndex, MultivaluedMapImpl params) {
+    public Response updateHwEntity(@PathParam("nodeCriteria") String nodeCriteria, @PathParam("entPhysicalIndex") Integer entPhysicalIndex, MultivaluedMapImpl params) {
         writeLock();
         try {
             OnmsNode node = getOnmsNode(nodeCriteria);
@@ -235,7 +233,7 @@ public class HardwareInventoryResource extends OnmsRestService {
             }
             m_hwEntityDao.save(entity);
 
-            return Response.seeOther(getRedirectUri(uriInfo)).build();
+            return Response.ok().build();
         } finally {
             writeUnlock();
         }
@@ -250,13 +248,13 @@ public class HardwareInventoryResource extends OnmsRestService {
      */
     @DELETE
     @Path("{entPhysicalIndex}")
-    public Response deleteHwEntity(@Context final UriInfo uriInfo, @PathParam("nodeCriteria") final String nodeCriteria, @PathParam("entPhysicalIndex") Integer entPhysicalIndex) {
+    public Response deleteHwEntity(@PathParam("nodeCriteria") final String nodeCriteria, @PathParam("entPhysicalIndex") Integer entPhysicalIndex) {
         writeLock();
         try {
             OnmsNode node = getOnmsNode(nodeCriteria);
             OnmsHwEntity entity = getHwEntity(node.getId(), entPhysicalIndex);
             m_hwEntityDao.delete(entity);
-            return Response.seeOther(getRedirectUri(uriInfo)).build();
+            return Response.ok().build();
         } finally {
             writeUnlock();
         }

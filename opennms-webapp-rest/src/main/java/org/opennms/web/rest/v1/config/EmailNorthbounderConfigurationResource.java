@@ -43,10 +43,8 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriInfo;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.ws.rs.core.Response.Status;
@@ -139,18 +137,17 @@ public class EmailNorthbounderConfigurationResource extends OnmsRestService impl
     /**
      * Sets the configuration.
      *
-     * @param uriInfo the UEI info
      * @param config the full configuration object
      * @return the response
      */
     @POST
-    public Response setConfiguration(@Context final UriInfo uriInfo, final EmailNorthbounderConfig config) {
+    public Response setConfiguration(final EmailNorthbounderConfig config) {
         writeLock();
         try {
             File configFile = m_emailNorthbounderConfigDao.getConfigResource().getFile();
             JaxbUtils.marshal(config, new FileWriter(configFile));
             notifyDaemons();
-            return Response.seeOther(getRedirectUri(uriInfo)).build();
+            return Response.ok().build();
         } catch (Throwable t) {
             throw new WebApplicationException(Response.status(Status.INTERNAL_SERVER_ERROR).type(MediaType.TEXT_PLAIN).entity(t.getMessage()).build());
         } finally {
@@ -224,19 +221,18 @@ public class EmailNorthbounderConfigurationResource extends OnmsRestService impl
      * Sets an email destination.
      * <p>If there is a destination with the same name, the existing one will be overridden.</p>
      *
-     * @param uriInfo the URI info
      * @param destination the destination
      * @return the response
      */
     @POST
     @Path("destinations")
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
-    public Response setEmailDestination(@Context final UriInfo uriInfo, final EmailDestination destination) {
+    public Response setEmailDestination(final EmailDestination destination) {
         writeLock();
         try {
             m_emailNorthbounderConfigDao.getConfig().addEmailDestination(destination);
             saveConfiguration();
-            return Response.seeOther(getRedirectUri(uriInfo)).build();
+            return Response.ok().build();
         } finally {
             writeUnlock();
         }
@@ -245,7 +241,6 @@ public class EmailNorthbounderConfigurationResource extends OnmsRestService impl
     /**
      * Updates a specific email destination.
      *
-     * @param uriInfo the URI info
      * @param destinationName the destination name
      * @param params the parameters map
      * @return the response
@@ -253,7 +248,7 @@ public class EmailNorthbounderConfigurationResource extends OnmsRestService impl
     @PUT
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Path("destinations/{destinationName}")
-    public Response updateEmailDestination(@Context final UriInfo uriInfo, @PathParam("destinationName") final String destinationName, final MultivaluedMapImpl params) {
+    public Response updateEmailDestination(@PathParam("destinationName") final String destinationName, final MultivaluedMapImpl params) {
         writeLock();
         try {
             boolean modified = false;
@@ -272,7 +267,7 @@ public class EmailNorthbounderConfigurationResource extends OnmsRestService impl
             }
             if (modified) {
                 saveConfiguration();
-                return Response.seeOther(getRedirectUri(uriInfo)).build();
+                return Response.ok().build();
             }
             return Response.notModified().build();
         } catch (Throwable t) {

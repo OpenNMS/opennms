@@ -126,7 +126,7 @@ public class NotificationRestService extends OnmsRestService {
     @Path("{notifId}")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Transactional
-    public Response updateNotification(@Context final SecurityContext securityContext, @Context final UriInfo uriInfo, @PathParam("notifId") final String notifId, @FormParam("ack") final Boolean ack) {
+    public Response updateNotification(@Context final SecurityContext securityContext, @PathParam("notifId") final String notifId, @FormParam("ack") final Boolean ack) {
         writeLock();
         
         try {
@@ -135,7 +135,7 @@ public class NotificationRestService extends OnmsRestService {
                 throw getException(Status.BAD_REQUEST, "Must supply the 'ack' parameter, set to either 'true' or 'false'");
             }
             processNotifAck(securityContext, notif,ack);
-            return Response.seeOther(uriInfo.getBaseUriBuilder().path(this.getClass()).path(this.getClass(), "getNotification").build(notifId)).build();
+            return Response.ok().build();
         } finally {
             writeUnlock();
         }
@@ -149,7 +149,7 @@ public class NotificationRestService extends OnmsRestService {
     @PUT
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Transactional
-    public Response updateNotifications(@Context final SecurityContext securityContext, @Context final UriInfo uriInfo, final MultivaluedMapImpl params) {
+    public Response updateNotifications(@Context final SecurityContext securityContext, final MultivaluedMapImpl params) {
         writeLock();
         
         try {
@@ -164,7 +164,7 @@ public class NotificationRestService extends OnmsRestService {
             for (final OnmsNotification notif : m_notifDao.findMatching(builder.toCriteria())) {
                 processNotifAck(securityContext, notif, ack);
             }
-            return Response.seeOther(uriInfo.getBaseUriBuilder().path(this.getClass()).path(this.getClass(), "getNotifications").build()).build();
+            return Response.ok().build();
         } finally {
             writeUnlock();
         }

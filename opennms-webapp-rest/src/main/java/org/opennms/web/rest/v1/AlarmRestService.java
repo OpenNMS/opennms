@@ -144,7 +144,7 @@ public class AlarmRestService extends AlarmRestServiceBase {
     @Path("{alarmId}")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Transactional
-    public Response updateAlarm(@Context final UriInfo uriInfo, @Context final SecurityContext securityContext, @PathParam("alarmId") final Integer alarmId, final MultivaluedMapImpl formProperties) {
+    public Response updateAlarm(@Context final SecurityContext securityContext, @PathParam("alarmId") final Integer alarmId, final MultivaluedMapImpl formProperties) {
         writeLock();
 
         try {
@@ -189,7 +189,7 @@ public class AlarmRestService extends AlarmRestServiceBase {
                 return getBadRequestResponse("Must supply one of the 'ack', 'escalate', or 'clear' parameters, set to either 'true' or 'false'.");
             }
             m_ackDao.processAck(acknowledgement);
-            return Response.seeOther(getRedirectUri(uriInfo)).build();
+            return Response.ok().build();
         } finally {
             writeUnlock();
         }
@@ -206,7 +206,7 @@ public class AlarmRestService extends AlarmRestServiceBase {
     @PUT
     @Transactional
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-    public Response updateAlarms(@Context final UriInfo uriInfo, @Context final SecurityContext securityContext, final MultivaluedMapImpl formProperties) {
+    public Response updateAlarms(@Context final SecurityContext securityContext, final MultivaluedMapImpl formProperties) {
         writeLock();
 
         try {
@@ -250,11 +250,7 @@ public class AlarmRestService extends AlarmRestServiceBase {
                 m_ackDao.processAck(acknowledgement);
             }
 
-            if (alarms.size() == 1) {
-                return Response.seeOther(getRedirectUri(uriInfo, alarms.get(0).getId())).build();
-            } else {
-                return Response.seeOther(getRedirectUri(uriInfo)).build();
-            }
+            return Response.ok().build();
         } finally {
             writeUnlock();
         }

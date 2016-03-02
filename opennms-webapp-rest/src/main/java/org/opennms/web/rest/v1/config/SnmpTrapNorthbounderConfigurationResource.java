@@ -43,10 +43,8 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.core.Response.Status;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -172,18 +170,17 @@ public class SnmpTrapNorthbounderConfigurationResource extends OnmsRestService i
     /**
      * Sets the configuration.
      *
-     * @param uriInfo the UEI info
      * @param config the full configuration object
      * @return the response
      */
     @POST
-    public Response setConfiguration(@Context final UriInfo uriInfo, final SnmpTrapNorthbounderConfig config) {
+    public Response setConfiguration(final SnmpTrapNorthbounderConfig config) {
         writeLock();
         try {
             File configFile = m_snmpTrapNorthbounderConfigDao.getConfigResource().getFile();
             JaxbUtils.marshal(config, new FileWriter(configFile));
             notifyDaemons();
-            return Response.seeOther(getRedirectUri(uriInfo)).build();
+            return Response.ok().build();
         } catch (Throwable t) {
             throw new WebApplicationException(Response.status(Status.INTERNAL_SERVER_ERROR).type(MediaType.TEXT_PLAIN).entity(t.getMessage()).build());
         } finally {
@@ -275,19 +272,18 @@ public class SnmpTrapNorthbounderConfigurationResource extends OnmsRestService i
      * Sets a SNMP trap sink.
      * <p>If there is a trap sunk with the same name, the existing one will be overridden.</p>
      *
-     * @param uriInfo the URI info
      * @param snmpTrapSink the SNMP trap sink
      * @return the response
      */
     @POST
     @Path("trapsinks")
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
-    public Response setSnmpTrapSink(@Context final UriInfo uriInfo, final SnmpTrapSink snmpTrapSink) {
+    public Response setSnmpTrapSink(final SnmpTrapSink snmpTrapSink) {
         writeLock();
         try {
             m_snmpTrapNorthbounderConfigDao.getConfig().addSnmpTrapSink(snmpTrapSink);
             saveConfiguration();
-            return Response.seeOther(getRedirectUri(uriInfo)).build();
+            return Response.ok().build();
         } finally {
             writeUnlock();
         }
@@ -296,7 +292,6 @@ public class SnmpTrapNorthbounderConfigurationResource extends OnmsRestService i
     /**
      * Sets an import mapping.
      *
-     * @param uriInfo the UEI info
      * @param trapSinkName the trap sink name
      * @param mappingGroup the mapping group
      * @return the response
@@ -304,7 +299,7 @@ public class SnmpTrapNorthbounderConfigurationResource extends OnmsRestService i
     @POST
     @Path("trapsinks/{trapsinkName}/import-mappings")
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
-    public Response setImportMapping(@Context final UriInfo uriInfo, @PathParam("trapsinkName") final String trapSinkName, final SnmpTrapMappingGroup mappingGroup) {
+    public Response setImportMapping(@PathParam("trapsinkName") final String trapSinkName, final SnmpTrapMappingGroup mappingGroup) {
         writeLock();
         try {
             SnmpTrapSink trapSink = m_snmpTrapNorthbounderConfigDao.getConfig().getSnmpTrapSink(trapSinkName);
@@ -313,7 +308,7 @@ public class SnmpTrapNorthbounderConfigurationResource extends OnmsRestService i
             }
             trapSink.addImportMapping(mappingGroup);
             saveConfiguration();
-            return Response.seeOther(getRedirectUri(uriInfo)).build();
+            return Response.ok().build();
         } catch (Throwable t) {
             throw new WebApplicationException(Response.status(Status.INTERNAL_SERVER_ERROR).type(MediaType.TEXT_PLAIN).entity(t.getMessage()).build());
         } finally {
@@ -324,7 +319,6 @@ public class SnmpTrapNorthbounderConfigurationResource extends OnmsRestService i
     /**
      * Update a specific SNMP trap sink.
      *
-     * @param uriInfo the URI info
      * @param trapSinkName the trap sink name
      * @param params the parameters map
      * @return the response
@@ -332,7 +326,7 @@ public class SnmpTrapNorthbounderConfigurationResource extends OnmsRestService i
     @PUT
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Path("trapsinks/{trapsinkName}")
-    public Response updateSnmpTrapSink(@Context final UriInfo uriInfo, @PathParam("trapsinkName") final String trapSinkName, final MultivaluedMapImpl params) {
+    public Response updateSnmpTrapSink(@PathParam("trapsinkName") final String trapSinkName, final MultivaluedMapImpl params) {
         writeLock();
         try {
             boolean modified = false;
@@ -351,7 +345,7 @@ public class SnmpTrapNorthbounderConfigurationResource extends OnmsRestService i
             }
             if (modified) {
                 saveConfiguration();
-                return Response.seeOther(getRedirectUri(uriInfo)).build();
+                return Response.ok().build();
             }
             return Response.notModified().build();
         } catch (Throwable t) {
@@ -364,7 +358,6 @@ public class SnmpTrapNorthbounderConfigurationResource extends OnmsRestService i
     /**
      * Update import mapping.
      *
-     * @param uriInfo the UEI info
      * @param trapSinkName the trap sink name
      * @param mappingName the mapping name
      * @param params the parameters map
@@ -373,7 +366,7 @@ public class SnmpTrapNorthbounderConfigurationResource extends OnmsRestService i
     @PUT
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Path("trapsinks/{trapsinkName}/import-mappings/{mappingName}")
-    public Response updateImportMapping(@Context final UriInfo uriInfo, @PathParam("trapsinkName") final String trapSinkName, @PathParam("mappingName") final String mappingName, final MultivaluedMapImpl params) {
+    public Response updateImportMapping(@PathParam("trapsinkName") final String trapSinkName, @PathParam("mappingName") final String mappingName, final MultivaluedMapImpl params) {
         writeLock();
         try {
             boolean modified = false;
@@ -397,7 +390,7 @@ public class SnmpTrapNorthbounderConfigurationResource extends OnmsRestService i
             if (modified) {
                 trapSink.addImportMapping(mappingGroup);
                 saveConfiguration();
-                return Response.seeOther(getRedirectUri(uriInfo)).build();
+                return Response.ok().build();
             }
             return Response.notModified().build();
         } catch (Throwable t) {

@@ -170,7 +170,7 @@ public class OnmsIpInterfaceResource extends OnmsRestService {
             } catch (final EventProxyException ex) {
                 throw getException(Status.BAD_REQUEST, ex.getMessage());
             }
-            return Response.seeOther(getRedirectUri(uriInfo, InetAddressUtils.str(ipInterface.getIpAddress()))).build();
+            return Response.created(getRedirectUri(uriInfo, InetAddressUtils.str(ipInterface.getIpAddress()))).build();
         } finally {
             writeUnlock();
         }
@@ -187,7 +187,7 @@ public class OnmsIpInterfaceResource extends OnmsRestService {
     @PUT
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Path("{ipAddress}")
-    public Response updateIpInterface(@Context final UriInfo uriInfo, @PathParam("nodeCriteria") final String nodeCriteria, @PathParam("ipAddress") final String ipAddress, final MultivaluedMapImpl params) {
+    public Response updateIpInterface(@PathParam("nodeCriteria") final String nodeCriteria, @PathParam("ipAddress") final String ipAddress, final MultivaluedMapImpl params) {
         writeLock();
         
         try {
@@ -216,7 +216,7 @@ public class OnmsIpInterfaceResource extends OnmsRestService {
             }
             LOG.debug("updateIpInterface: ip interface {} updated", ipInterface);
             m_ipInterfaceDao.saveOrUpdate(ipInterface);
-            return Response.seeOther(getRedirectUri(uriInfo)).build();
+            return Response.ok().build();
         } finally {
             writeUnlock();
         }

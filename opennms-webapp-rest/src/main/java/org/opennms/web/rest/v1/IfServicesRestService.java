@@ -167,7 +167,7 @@ public class IfServicesRestService extends OnmsRestService {
             throw getException(Status.BAD_REQUEST, "updateServices: the supplied list of services (" + services_csv + ") doesn't match any service based on the provided criteria: " + uriInfo.getQueryParameters());
         }
 
-        return Response.seeOther(getRedirectUri(uriInfo)).build();
+        return Response.ok().build();
     }
 
     private static Criteria getCriteria(final MultivaluedMap<String, String> params) {

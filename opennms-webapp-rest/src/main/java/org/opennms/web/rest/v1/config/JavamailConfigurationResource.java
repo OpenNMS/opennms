@@ -40,10 +40,8 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.core.Response.Status;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -343,19 +341,18 @@ public class JavamailConfigurationResource extends OnmsRestService implements In
      * Sets the readmail configuration.
      * <p>If there is a readmail configuration with the same name, the existing one will be overridden.</p>
      *
-     * @param uriInfo the URI info
      * @param readmailConfig the readmail configuration
      * @return the response
      */
     @POST
     @Path("readmails")
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
-    public Response setReadmailConfiguration(@Context final UriInfo uriInfo, final ReadmailConfig readmailConfig) {
+    public Response setReadmailConfiguration(final ReadmailConfig readmailConfig) {
         writeLock();
         try {
             m_javamailConfigurationDao.addReadMailConfig(readmailConfig);
             saveConfiguration();
-            return Response.seeOther(getRedirectUri(uriInfo)).build();
+            return Response.ok().build();
         } finally {
             writeUnlock();
         }
@@ -365,19 +362,18 @@ public class JavamailConfigurationResource extends OnmsRestService implements In
      * Sets the sendmail configuration.
      * <p>If there is a sendmail configuration with the same name, the existing one will be overridden.</p>
      *
-     * @param uriInfo the URI info
      * @param sendmailConfig the sendmail configuration
      * @return the response
      */
     @POST
     @Path("sendmails")
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
-    public Response setSendmailConfiguration(@Context final UriInfo uriInfo, final SendmailConfig sendmailConfig) {
+    public Response setSendmailConfiguration(final SendmailConfig sendmailConfig) {
         writeLock();
         try {
             m_javamailConfigurationDao.addSendMailConfig(sendmailConfig);
             saveConfiguration();
-            return Response.seeOther(getRedirectUri(uriInfo)).build();
+            return Response.ok().build();
         } finally {
             writeUnlock();
         }
@@ -387,19 +383,18 @@ public class JavamailConfigurationResource extends OnmsRestService implements In
      * Sets the end2end mail configuration.
      * <p>If there is a end2end configuration with the same name, the existing one will be overridden.</p>
      *
-     * @param uriInfo the URI info
      * @param end2endMailConfig the end2end mail configuration
      * @return the response
      */
     @POST
     @Path("end2ends")
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
-    public Response setEnd2EndMailConfiguration(@Context final UriInfo uriInfo, final End2endMailConfig end2endMailConfig) {
+    public Response setEnd2EndMailConfiguration(final End2endMailConfig end2endMailConfig) {
         writeLock();
         try {
             m_javamailConfigurationDao.addEnd2endMailConfig(end2endMailConfig);
             saveConfiguration();
-            return Response.seeOther(getRedirectUri(uriInfo)).build();
+            return Response.ok().build();
         } finally {
             writeUnlock();
         }
@@ -408,7 +403,6 @@ public class JavamailConfigurationResource extends OnmsRestService implements In
     /**
      * Update readmail configuration.
      *
-     * @param uriInfo the URI info
      * @param readmailConfigName the readmail configuration name
      * @param params the parameters map
      * @return the response
@@ -416,7 +410,7 @@ public class JavamailConfigurationResource extends OnmsRestService implements In
     @PUT
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Path("readmails/{readmailConfig}")
-    public Response updateReadmailConfiguration(@Context final UriInfo uriInfo, @PathParam("readmailConfig") final String readmailConfigName, final MultivaluedMapImpl params) {
+    public Response updateReadmailConfiguration(@PathParam("readmailConfig") final String readmailConfigName, final MultivaluedMapImpl params) {
         writeLock();
         try {
             ReadmailConfig readmailConfig = m_javamailConfigurationDao.getReadMailConfig(readmailConfigName);
@@ -425,7 +419,7 @@ public class JavamailConfigurationResource extends OnmsRestService implements In
             }
             if (updateConfiguration(readmailConfig, params)) {
                 saveConfiguration();
-                return Response.seeOther(getRedirectUri(uriInfo)).build();
+                return Response.ok().build();
             }
             return Response.notModified().build();
         } catch (Throwable t) {
@@ -438,7 +432,6 @@ public class JavamailConfigurationResource extends OnmsRestService implements In
     /**
      * Update sendmail configuration.
      *
-     * @param uriInfo the URI info
      * @param sendmailConfigName the sendmail configuration name
      * @param params the parameters map
      * @return the response
@@ -446,7 +439,7 @@ public class JavamailConfigurationResource extends OnmsRestService implements In
     @PUT
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Path("sendmails/{sendmailConfig}")
-    public Response updateSendmailConfiguration(@Context final UriInfo uriInfo, @PathParam("sendmailConfig") final String sendmailConfigName, final MultivaluedMapImpl params) {
+    public Response updateSendmailConfiguration(@PathParam("sendmailConfig") final String sendmailConfigName, final MultivaluedMapImpl params) {
         writeLock();
         try {
             SendmailConfig sendmailConfig = m_javamailConfigurationDao.getSendMailConfig(sendmailConfigName);
@@ -455,7 +448,7 @@ public class JavamailConfigurationResource extends OnmsRestService implements In
             }
             if (updateConfiguration(sendmailConfig, params)) {
                 saveConfiguration();
-                return Response.seeOther(getRedirectUri(uriInfo)).build();
+                return Response.ok().build();
             }
             return Response.notModified().build();
         } catch (Throwable t) {
@@ -468,7 +461,6 @@ public class JavamailConfigurationResource extends OnmsRestService implements In
     /**
      * Update end2end configuration.
      *
-     * @param uriInfo the URI info
      * @param end2endConfigName the end2end configuration name
      * @param params the parameters map
      * @return the response
@@ -476,7 +468,7 @@ public class JavamailConfigurationResource extends OnmsRestService implements In
     @PUT
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Path("end2ends/{end2endConfig}")
-    public Response updateEnd2endConfiguration(@Context final UriInfo uriInfo, @PathParam("end2endConfig") final String end2endConfigName, final MultivaluedMapImpl params) {
+    public Response updateEnd2endConfiguration(@PathParam("end2endConfig") final String end2endConfigName, final MultivaluedMapImpl params) {
         writeLock();
         try {
             End2endMailConfig end2endConfig = m_javamailConfigurationDao.getEnd2endConfig(end2endConfigName);
@@ -485,7 +477,7 @@ public class JavamailConfigurationResource extends OnmsRestService implements In
             }
             if (updateConfiguration(end2endConfig, params)) {
                 saveConfiguration();
-                return Response.seeOther(getRedirectUri(uriInfo)).build();
+                return Response.ok().build();
             }
             return Response.notModified().build();
         } catch (Throwable t) {

@@ -179,7 +179,7 @@ public class NodeRestService extends OnmsRestService {
             } catch (EventProxyException ex) {
                 throw getException(Status.BAD_REQUEST, ex.getMessage());
             }
-            return Response.seeOther(uriInfo.getRequestUriBuilder().path(node.getNodeId()).build()).build();
+            return Response.created(uriInfo.getRequestUriBuilder().path(node.getNodeId()).build()).build();
         } finally {
             writeUnlock();
         }
@@ -195,7 +195,7 @@ public class NodeRestService extends OnmsRestService {
     @PUT
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Path("{nodeCriteria}")
-    public Response updateNode(@Context final UriInfo uriInfo, @PathParam("nodeCriteria") final String nodeCriteria, final MultivaluedMapImpl params) {
+    public Response updateNode(@PathParam("nodeCriteria") final String nodeCriteria, final MultivaluedMapImpl params) {
         writeLock();
         
         try {
@@ -218,8 +218,7 @@ public class NodeRestService extends OnmsRestService {
     
             LOG.debug("updateNode: node {} updated", node);
             m_nodeDao.saveOrUpdate(node);
-            return Response.seeOther(getRedirectUri(uriInfo)).build();
-            // return Response.ok(node).build();
+            return Response.ok().build();
         } finally {
             writeUnlock();
         }
@@ -340,7 +339,7 @@ public class NodeRestService extends OnmsRestService {
                 LOG.debug("addCategory: Adding category {} to node {}", found, nodeCriteria);
                 node.addCategory(found);
                 m_nodeDao.save(node);
-                return Response.seeOther(getRedirectUri(uriInfo, categoryName)).build();
+                return Response.created(getRedirectUri(uriInfo, categoryName)).build();
             } else {
                 throw getException(Status.BAD_REQUEST, "addCategory: Category '{}' already added to node '{}'", categoryName, nodeCriteria);
             }
@@ -352,7 +351,7 @@ public class NodeRestService extends OnmsRestService {
     @PUT
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Path("/{nodeCriteria}/categories/{categoryName}")
-    public Response updateCategoryForNode(@Context final UriInfo uriInfo, @PathParam("nodeCriteria") final String nodeCriteria, @PathParam("categoryName") final String categoryName, MultivaluedMapImpl params) {
+    public Response updateCategoryForNode(@PathParam("nodeCriteria") final String nodeCriteria, @PathParam("categoryName") final String categoryName, MultivaluedMapImpl params) {
         writeLock();
 
         try {
@@ -381,7 +380,7 @@ public class NodeRestService extends OnmsRestService {
             } else {
                 LOG.debug("updateCategory: no fields updated in category {}", category);
             }
-            return Response.seeOther(getRedirectUri(uriInfo)).build();
+            return Response.ok().build();
         } finally {
             writeUnlock();
         }

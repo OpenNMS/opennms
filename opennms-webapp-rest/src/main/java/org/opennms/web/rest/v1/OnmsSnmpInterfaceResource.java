@@ -157,7 +157,7 @@ public class OnmsSnmpInterfaceResource extends OnmsRestService {
             }
             m_snmpInterfaceDao.save(snmpInterface);
             final Integer ifIndex = snmpInterface.getIfIndex();
-            return Response.seeOther(getRedirectUri(uriInfo, ifIndex)).build();
+            return Response.created(getRedirectUri(uriInfo, ifIndex)).build();
         } finally {
             writeUnlock();
         }
@@ -203,7 +203,7 @@ public class OnmsSnmpInterfaceResource extends OnmsRestService {
     @PUT
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Path("{ifIndex}")
-    public Response updateSnmpInterface(@Context final UriInfo uriInfo, @PathParam("nodeCriteria") final String nodeCriteria, @PathParam("ifIndex") final int ifIndex, final MultivaluedMapImpl params) {
+    public Response updateSnmpInterface(@PathParam("nodeCriteria") final String nodeCriteria, @PathParam("ifIndex") final int ifIndex, final MultivaluedMapImpl params) {
         writeLock();
         
         try {
@@ -256,7 +256,7 @@ public class OnmsSnmpInterfaceResource extends OnmsRestService {
                     throw getException(Response.Status.INTERNAL_SERVER_ERROR, "Exception occurred sending event: "+ex.getMessage());
                 }
             }
-            return Response.seeOther(getRedirectUri(uriInfo)).build();
+            return Response.ok().build();
         } finally {
             writeUnlock();
         }

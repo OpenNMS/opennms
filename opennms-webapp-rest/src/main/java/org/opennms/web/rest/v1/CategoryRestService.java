@@ -98,7 +98,7 @@ public class CategoryRestService extends OnmsRestService {
     @PUT
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Path("/{categoryName}")
-    public Response updateCategory(@Context final UriInfo uriInfo, @PathParam("categoryName") final String categoryName, final MultivaluedMapImpl params) {
+    public Response updateCategory(@PathParam("categoryName") final String categoryName, final MultivaluedMapImpl params) {
         writeLock();
         try {
             OnmsCategory category = m_categoryDao.findByName(categoryName);
@@ -116,7 +116,7 @@ public class CategoryRestService extends OnmsRestService {
             }
             LOG.debug("updateCategory: category {} updated", category);
             m_categoryDao.saveOrUpdate(category);
-            return Response.seeOther(getRedirectUri(uriInfo)).build();
+            return Response.ok().build();
         } finally {
             writeUnlock();
         }
@@ -143,7 +143,7 @@ public class CategoryRestService extends OnmsRestService {
         boolean exists = m_categoryDao.findByName(category.getName()) != null;
         if (!exists) {
             m_categoryDao.save(category);
-            return Response.seeOther(getRedirectUri(uriInfo, category.getName())).build();
+            return Response.created(getRedirectUri(uriInfo, category.getName())).build();
         }
         throw getException(Response.Status.BAD_REQUEST, "A category with name '{}' already exists.", category.getName());
     }
@@ -156,11 +156,11 @@ public class CategoryRestService extends OnmsRestService {
 
     @DELETE
     @Path("/{categoryName}")
-    public Response deleteCategory(@Context final UriInfo uriInfo, @PathParam("categoryName") final String categoryName) {
+    public Response deleteCategory(@PathParam("categoryName") final String categoryName) {
         OnmsCategory category = m_categoryDao.findByName(categoryName);
         if (category != null) {
             m_categoryDao.delete(category);
-            return Response.seeOther(getRedirectUri(uriInfo)).build();
+            return Response.ok().build();
         }
         throw getException(Response.Status.BAD_REQUEST, "A category with name '{}' does not exist.", categoryName);
     }

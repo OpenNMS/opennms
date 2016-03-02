@@ -115,7 +115,7 @@ public class UserRestService extends OnmsRestService {
             }
             LOG.debug("addUser: Adding user {}", user);
             m_userManager.save(user);
-            return Response.seeOther(getRedirectUri(uriInfo, user.getUsername())).build();
+            return Response.created(getRedirectUri(uriInfo, user.getUsername())).build();
         } catch (final Throwable t) {
             throw getException(Status.BAD_REQUEST, t);
         } finally {
@@ -126,7 +126,7 @@ public class UserRestService extends OnmsRestService {
     @PUT
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Path("{userCriteria}")
-    public Response updateUser(@Context final SecurityContext securityContext, @Context final UriInfo uriInfo, @PathParam("userCriteria") final String userCriteria, final MultivaluedMapImpl params) {
+    public Response updateUser(@Context final SecurityContext securityContext, @PathParam("userCriteria") final String userCriteria, final MultivaluedMapImpl params) {
         OnmsUser user = null;
         writeLock();
         try {
@@ -154,7 +154,7 @@ public class UserRestService extends OnmsRestService {
             } catch (final Throwable t) {
                 throw getException(Status.INTERNAL_SERVER_ERROR, t);
             }
-            return Response.seeOther(getRedirectUri(uriInfo)).build();
+            return Response.ok().build();
         } finally {
             writeUnlock();
         }

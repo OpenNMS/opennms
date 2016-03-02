@@ -94,11 +94,11 @@ public class NotificationRestServiceIT extends AbstractSpringJerseyRestTestCase 
         xml = sendRequest(GET, "/notifications/count", 200);
         assertEquals("1", xml);
 
-        sendPut("/notifications/1", "ack=true", 303, null);
-        sendPut("/notifications/1", "ack=false", 303, null);
+        sendPut("/notifications/1", "ack=true", 200);
+        sendPut("/notifications/1", "ack=false", 200);
 
-        sendPut("/notifications", "notifyId=1&ack=true", 303, "/notifications");
-        sendPut("/notifications", "notifyId=1&ack=false", 303, "/notifications");
+        sendPut("/notifications", "notifyId=1&ack=true", 200);
+        sendPut("/notifications", "notifyId=1&ack=false", 200);
     }
 
     @Test
