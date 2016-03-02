@@ -67,4 +67,14 @@ public class ReductionKeyEdgeImpl extends AbstractEdge<SingleReductionKeyEdgeEnt
                 .add("reductionKey", getReductionKey())
                 .toString();
     }
+
+    @Override
+    public void setFriendlyName(String friendlyName) {
+        getEntity().setFriendlyName(friendlyName);
+    }
+
+    @Override
+    public String getFriendlyName() {
+        return getEntity().getFriendlyName();
+    }
 }

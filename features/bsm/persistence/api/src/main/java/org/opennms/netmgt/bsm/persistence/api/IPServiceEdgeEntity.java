@@ -31,6 +31,7 @@ package org.opennms.netmgt.bsm.persistence.api;
 import java.util.Objects;
 import java.util.Set;
 
+import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
@@ -38,6 +39,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+import javax.validation.constraints.Size;
 
 import org.opennms.netmgt.model.OnmsMonitoredService;
 
@@ -49,6 +51,8 @@ public class IPServiceEdgeEntity extends BusinessServiceEdgeEntity {
 
     private OnmsMonitoredService m_ipService;
 
+    private String m_friendlyName;
+
     // NOTE: When we use @Column on this field, Hibernate attempts to serialize the objects as a byte array
     // Instead, we resort to use @ManyToOne
     @ManyToOne(optional=false)
@@ -59,6 +63,16 @@ public class IPServiceEdgeEntity extends BusinessServiceEdgeEntity {
 
     public void setIpService(OnmsMonitoredService ipService) {
         m_ipService = ipService;
+    }
+
+    @Column(name="friendlyname", nullable = true)
+    @Size(min = 0, max = 30)
+    public String getFriendlyName() {
+        return m_friendlyName;
+    }
+
+    public void setFriendlyName(String friendlyName) {
+        m_friendlyName = friendlyName;
     }
 
     @Override
@@ -79,8 +93,10 @@ public class IPServiceEdgeEntity extends BusinessServiceEdgeEntity {
     public boolean equalsDefinition(BusinessServiceEdgeEntity other) {
         boolean equalsSuper = super.equalsDefinition(other);
         if (equalsSuper) {
-            return Objects.equals(m_ipService, ((IPServiceEdgeEntity) other).m_ipService);
+            return Objects.equals(m_ipService, ((IPServiceEdgeEntity) other).m_ipService) &&
+                   Objects.equals(m_friendlyName, ((IPServiceEdgeEntity) other).m_friendlyName);
         }
         return false;
     }
+
 }

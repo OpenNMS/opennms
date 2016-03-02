@@ -36,6 +36,8 @@ public class IpServiceEdgeRequestDTO extends AbstractEdgeRequestDTO {
 
     private Integer ipServiceId;
 
+    private String friendlyName;
+
     @XmlElement(name="ip-service-id",required = true)
     public Integer getIpServiceId() {
         return ipServiceId;
@@ -43,6 +45,15 @@ public class IpServiceEdgeRequestDTO extends AbstractEdgeRequestDTO {
 
     public void setIpServiceId(Integer ipServiceId) {
         this.ipServiceId = ipServiceId;
+    }
+
+    @XmlElement(name="friendly-name",required = false)
+    public String getFriendlyName() {
+        return friendlyName;
+    }
+
+    public void setFriendlyName(String friendlyName) {
+        this.friendlyName = friendlyName;
     }
 
     @Override

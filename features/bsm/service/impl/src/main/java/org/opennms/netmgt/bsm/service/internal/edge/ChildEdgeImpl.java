@@ -70,4 +70,16 @@ public class ChildEdgeImpl extends AbstractEdge<BusinessServiceChildEdgeEntity> 
                 .add("child", getChild() == null ? null : getChild().getId())
                 .toString();
     }
+
+    /**
+     * Method implementation for the friendly name used in the topology UI. Since this value is not
+     * used for child Business Services this method always returns <code>null</code>.
+     *
+     * @return always null
+     * @see AbstractEdge#getFriendlyName()
+     */
+    @Override
+    public String getFriendlyName() {
+        return null;
+    }
 }

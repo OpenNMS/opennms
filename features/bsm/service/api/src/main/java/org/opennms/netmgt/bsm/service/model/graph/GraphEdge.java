@@ -41,4 +41,5 @@ public interface GraphEdge {
 
     int getWeight();
 
+    String getFriendlyName();
 }

@@ -232,11 +232,17 @@ public class BusinessServiceManagerImpl implements BusinessServiceManager {
 
     @Override
     public boolean addReductionKeyEdge(BusinessService businessService, String reductionKey, MapFunction mapFunction, int weight) {
+        return addReductionKeyEdge(businessService, reductionKey, mapFunction, weight, null);
+    }
+
+    @Override
+    public boolean addReductionKeyEdge(BusinessService businessService, String reductionKey, MapFunction mapFunction, int weight, String friendlyName) {
         final BusinessServiceEntity parentEntity = getBusinessServiceEntity(businessService);
 
         // Create the edge
         final ReductionKeyEdgeImpl edge = (ReductionKeyEdgeImpl) createEdge(ReductionKeyEdge.class, businessService, mapFunction, weight);
         edge.setReductionKey(reductionKey);
+        edge.setFriendlyName(friendlyName);
 
         // if already exists, no update
         final SingleReductionKeyEdgeEntity edgeEntity = getBusinessServiceEdgeEntity(edge);
@@ -259,11 +265,17 @@ public class BusinessServiceManagerImpl implements BusinessServiceManager {
 
     @Override
     public boolean addIpServiceEdge(BusinessService businessService, IpService ipService, MapFunction mapFunction, int weight) {
+        return addIpServiceEdge(businessService, ipService, mapFunction, weight, null);
+    }
+
+    @Override
+    public boolean addIpServiceEdge(BusinessService businessService, IpService ipService, MapFunction mapFunction, int weight, String friendlyName) {
         final BusinessServiceEntity parentEntity = getBusinessServiceEntity(businessService);
 
         // Create the edge
         final IpServiceEdge edge = createEdge(IpServiceEdge.class, businessService, mapFunction, weight);
         edge.setIpService(ipService);
+        edge.setFriendlyName(friendlyName);
 
         // if already exists, no update
         final IPServiceEdgeEntity edgeEntity = getBusinessServiceEdgeEntity(edge);

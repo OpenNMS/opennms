@@ -70,4 +70,13 @@ public class IpServiceEdgeImpl extends AbstractEdge<IPServiceEdgeEntity> impleme
                 .toString();
     }
 
+    @Override
+    public void setFriendlyName(String friendlyName) {
+        getEntity().setFriendlyName(friendlyName);
+    }
+
+    @Override
+    public String getFriendlyName() {
+        return getEntity().getFriendlyName();
+    }
 }

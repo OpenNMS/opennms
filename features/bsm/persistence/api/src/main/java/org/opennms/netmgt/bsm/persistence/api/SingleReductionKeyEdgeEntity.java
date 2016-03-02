@@ -38,6 +38,7 @@ import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.persistence.UniqueConstraint;
+import javax.validation.constraints.Size;
 
 import com.google.common.collect.Sets;
 
@@ -49,6 +50,7 @@ import com.google.common.collect.Sets;
 public class SingleReductionKeyEdgeEntity extends BusinessServiceEdgeEntity {
 
     private String reductionKey;
+    private String m_friendlyName;
 
     public void setReductionKey(String reductionKey) {
         this.reductionKey = reductionKey;
@@ -65,6 +67,16 @@ public class SingleReductionKeyEdgeEntity extends BusinessServiceEdgeEntity {
         return Sets.newHashSet(reductionKey);
     }
 
+    @Column(name="friendlyname", nullable = true)
+    @Size(min = 0, max = 30)
+    public String getFriendlyName() {
+        return m_friendlyName;
+    }
+
+    public void setFriendlyName(String friendlyName) {
+        m_friendlyName = friendlyName;
+    }
+
     @Override
     public String toString() {
         return com.google.common.base.Objects.toStringHelper(this)
@@ -77,7 +89,8 @@ public class SingleReductionKeyEdgeEntity extends BusinessServiceEdgeEntity {
     public boolean equalsDefinition(BusinessServiceEdgeEntity other) {
         boolean equalsSuper = super.equalsDefinition(other);
         if (equalsSuper) {
-            return Objects.equals(reductionKey, ((SingleReductionKeyEdgeEntity) other).reductionKey);
+            return Objects.equals(reductionKey, ((SingleReductionKeyEdgeEntity) other).reductionKey) &&
+                   Objects.equals(m_friendlyName, ((SingleReductionKeyEdgeEntity) other).m_friendlyName);
         }
         return false;
     }

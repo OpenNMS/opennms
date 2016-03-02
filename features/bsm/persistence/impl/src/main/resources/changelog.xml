@@ -135,4 +135,12 @@
             <where>type = 'most-critical'</where>
         </update>
     </changeSet>
+    <changeSet author="cpape" id="18.0.0-bsm-friendlynames">
+        <addColumn tableName="bsm_service_reductionkeys">
+            <column name="friendlyname" type="varchar(255)"/>
+        </addColumn>
+        <addColumn tableName="bsm_service_ifservices">
+            <column name="friendlyname" type="varchar(255)"/>
+        </addColumn>
+    </changeSet>
 </databaseChangeLog>
