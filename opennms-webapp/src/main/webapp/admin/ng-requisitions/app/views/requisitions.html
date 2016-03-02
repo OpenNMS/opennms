@@ -84,35 +84,35 @@
             <td>{{ requisition.nodesInDatabase }}</td>
             <td>
               <button class="btn btn-default btn-xs edit-requisition"
-                tooltip="Edit the {{requisition.foreignSource}} Requisition"
+                uib-tooltip="Edit the {{requisition.foreignSource}} Requisition"
                 ng-click="edit(requisition.foreignSource)">
                 <span class="glyphicon glyphicon-pencil"></span>
               </button>
               <button class="btn btn-default btn-xs edit-foreign-source"
-                tooltip="Edit detectors and policies of the {{requisition.foreignSource}} Requisition"
+                uib-tooltip="Edit detectors and policies of the {{requisition.foreignSource}} Requisition"
                 ng-click="editForeignSource(requisition.foreignSource)">
                 <span class="glyphicon glyphicon-edit"></span>
               </button>
               <!-- Not implemented
               <button class="btn btn-default btn-xs clone-foreign-source"
-                tooltip="Clone the set detectors and policies of the {{requisition.foreignSource}} Requisition"
+                uib-tooltip="Clone the set detectors and policies of the {{requisition.foreignSource}} Requisition"
                 ng-click="clone(requisition.foreignSource)">
                 <span class="glyphicon glyphicon-link"></span>
               </button>
               -->
               <button class="btn btn-default btn-xs synchronize"
-                tooltip="Synchronize the {{requisition.foreignSource}} Requisition"
+                uib-tooltip="Synchronize the {{requisition.foreignSource}} Requisition"
                 ng-disabled="timingStatus.isRunning"
                 ng-click="synchronize(requisition.foreignSource)">
                 <span class="glyphicon glyphicon-refresh"></span>
               </button>
               <button class="btn btn-default btn-xs remove-nodes" ng-show="requisition.nodesInDatabase > 0"
-                tooltip="Remove all nodes from the {{requisition.foreignSource}} Requisition"
+                uib-tooltip="Remove all nodes from the {{requisition.foreignSource}} Requisition"
                 ng-click="removeAllNodes(requisition.foreignSource)">
                 <span class="glyphicon glyphicon-remove-circle"></span>
               </button>
               <button class="btn btn-default btn-xs remove-requisition" ng-show="requisition.nodesInDatabase == 0"
-                tooltip="Remove the {{requisition.foreignSource}} Requisition"
+                uib-tooltip="Remove the {{requisition.foreignSource}} Requisition"
                 ng-click="delete(requisition.foreignSource)">
                 <span class="glyphicon glyphicon-remove"></span>
               </button>
