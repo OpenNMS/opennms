@@ -34,7 +34,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import edu.uci.ics.jung.graph.SparseGraph;
 import org.apache.commons.collections15.Transformer;
 import org.junit.Before;
 import org.junit.Test;
@@ -52,6 +51,8 @@ import org.opennms.features.topology.app.internal.VEProviderGraphContainer;
 import org.opennms.features.topology.plugins.topo.simple.SimpleGraphBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import edu.uci.ics.jung.graph.SparseGraph;
 
 public class FRLayoutTest {
 
@@ -91,7 +92,8 @@ public class FRLayoutTest {
                 .get();
 
         ProviderManager providerManager = new ProviderManager();
-        m_graphContainer = new VEProviderGraphContainer(m_graphProvider, providerManager);
+        m_graphContainer = new VEProviderGraphContainer(providerManager);
+        m_graphContainer.setBaseTopology(m_graphProvider);
     }
 
     @Test

@@ -58,7 +58,7 @@ import org.slf4j.LoggerFactory;
 
 public class MergingGraphProvider implements GraphProvider, VertexListener, EdgeListener, ProviderListener {
 	
-	private static final GraphProvider NULL_PROVIDER = new NullProvider();
+	public static final GraphProvider NULL_PROVIDER = new NullProvider();
 	
 	/**
 	 * This provider is the bottom-level provider that we delegate to.
@@ -70,9 +70,8 @@ public class MergingGraphProvider implements GraphProvider, VertexListener, Edge
 	private final Set<VertexListener> m_vertexListeners = new CopyOnWriteArraySet<VertexListener>();
 	private final Set<EdgeListener> m_edgeListeners = new CopyOnWriteArraySet<EdgeListener>();
 	
-	public MergingGraphProvider(GraphProvider baseGraphProvider, ProviderManager providerManager) {
-		m_baseGraphProvider = baseGraphProvider;
-
+	public MergingGraphProvider(ProviderManager providerManager) {
+		m_baseGraphProvider = NULL_PROVIDER;
 		for(VertexProvider vertexProvider : providerManager.getVertexProviders()) {
 			addVertexProvider(vertexProvider);
 		}
