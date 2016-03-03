@@ -242,19 +242,19 @@ public class ConvertToEvent {
                     if (fullText.contains(hide.getMatch().getExpression())) {
                         // We should hide the message based on this match
                         doHide = true;
-                    }                   
+                    }
                 } else if (hide.getMatch().getType().equals("regex")) {
-                        try {
+                    try {
                         msgPat = Pattern.compile(hide.getMatch().getExpression(), Pattern.MULTILINE);
-                        msgMat = msgPat.matcher(fullText);                      
-                        } catch (PatternSyntaxException pse) {
-                                LOG.warn("Failed to compile regex pattern '{}'", hide.getMatch().getExpression(), pse);
-                                msgMat = null;
-                        }
-                        if ((msgMat != null) && (msgMat.find())) {
+                        msgMat = msgPat.matcher(fullText);
+                    } catch (PatternSyntaxException pse) {
+                        LOG.warn("Failed to compile regex pattern '{}'", hide.getMatch().getExpression(), pse);
+                        msgMat = null;
+                    }
+                    if ((msgMat != null) && (msgMat.find())) {
                         // We should hide the message based on this match
-                                doHide = true;
-                        }
+                        doHide = true;
+                    }
                 }
                 if (doHide) {
                     LOG.debug("Hiding syslog message from Event - May contain sensitive data");
@@ -352,7 +352,7 @@ public class ConvertToEvent {
                 return newPat;
             } catch(final PatternSyntaxException pse) {
                 LOG.warn("Failed to compile regex pattern '{}'", expression, pse);
-                }
+            }
         }
         return msgPat;
     }
@@ -366,7 +366,7 @@ public class ConvertToEvent {
                 throw new MessageDiscardedException();
             } else {
                 //We can pass a new UEI on this
-                    if (traceEnabled) LOG.trace("Changed the UEI of a Syslogd event, based on substring match, to : {}", uei.getUei());
+                if (traceEnabled) LOG.trace("Changed the UEI of a Syslogd event, based on substring match, to : {}", uei.getUei());
                 bldr.setUei(uei.getUei());
                 // I think we want to stop processing here so the first
                 // ueiMatch wins, right?

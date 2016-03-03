@@ -147,13 +147,12 @@ public class SyslogParser {
             } else {
                 final DateFormat df = new SimpleDateFormat("MMM dd HH:mm:ss", Locale.ROOT);
                 df.setTimeZone(TimeZone.getTimeZone("UTC"));
-                // Ugh, what's a non-lame way of forcing it to parse to
-                // "this year"?
-                date = df.parse(dateString);
+                
+                // Ugh, what's a non-lame way of forcing it to parse to "this year"?
+                Date date = df.parse(dateString);
                 final Calendar c = df.getCalendar();
                 c.setTime(date);
-                c.set(Calendar.YEAR,
-                      Calendar.getInstance().get(Calendar.YEAR));
+                c.set(Calendar.YEAR, Calendar.getInstance().get(Calendar.YEAR));
                 return c.getTime();
             }
         } catch (final Exception e) {

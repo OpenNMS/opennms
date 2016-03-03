@@ -35,10 +35,6 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
 
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
@@ -48,7 +44,6 @@ import org.apache.camel.component.netty.NettyConstants;
 import org.apache.camel.impl.DefaultCamelContext;
 import org.apache.camel.impl.SimpleRegistry;
 import org.jboss.netty.buffer.ChannelBuffer;
-import org.opennms.core.concurrent.LogPreservingThreadFactory;
 import org.opennms.core.logging.Logging;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.SyslogdConfig;
@@ -122,17 +117,6 @@ public class SyslogReceiverCamelNettyImpl implements SyslogReceiver {
         m_syslogConnectionHandlers = Collections.singletonList(handler);
     }
 
-    
-    
-    //Getter and setter for syslog handler
-    public SyslogConnectionHandler getSyslogConnectionHandlers() {
-	return m_syslogConnectionHandlers.get(0);
-    }
-
-    public void setSyslogConnectionHandlers(SyslogConnectionHandler handler) {
-	m_syslogConnectionHandlers = Collections.singletonList(handler);
-    }
-    
     /**
      * The execution context.
      */
