@@ -32,9 +32,7 @@ import static org.opennms.core.utils.InetAddressUtils.addr;
 
 import java.util.List;
 import java.util.concurrent.Callable;
-
 import org.opennms.netmgt.xml.event.Event;
-import org.opennms.core.concurrent.EndOfTheWaterfall;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventIpcManagerFactory;
@@ -54,7 +52,8 @@ import org.slf4j.LoggerFactory;
  * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
  * @author <a href="http://www.oculan.com">Oculan Corporation </a>
  */
-final class SyslogProcessor implements EndOfTheWaterfall {
+//Changed from EndOfWaterFall to Callable
+final class SyslogProcessor implements Callable<Callable<Void>> {
     private static final Logger LOG = LoggerFactory.getLogger(SyslogProcessor.class);
 
     private final boolean m_NewSuspectOnMessage;
