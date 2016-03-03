@@ -213,6 +213,8 @@ public class SyslogReceiverNioThreadPoolImpl implements SyslogReceiver {
         try {
             LOG.debug("Opening syslog channel...");
             m_channel = openChannel(m_config);
+            //Added since channel's blocking mode was true and it was not allowing to channel to recieve buffer
+            m_channel.configureBlocking(false);
         } catch (IOException e) {
             LOG.warn("An I/O error occured while trying to set the socket timeout", e);
         }
@@ -257,10 +259,11 @@ public class SyslogReceiverNioThreadPoolImpl implements SyslogReceiver {
                             if (!ioInterrupted) {
                                 LOG.debug("Waiting on a datagram to arrive");
                             }
-
                             // Write the datagram into the ByteBuffer
-                            InetSocketAddress source = (InetSocketAddress)m_channel.receive(buffer);
-
+                            //changed since mchannel recieve used to return null
+                            InetSocketAddress source = new InetSocketAddress(m_config.getListenAddress(), m_config.getSyslogPort());
+                            m_channel.receive(buffer);
+                          
                             // Flip the buffer from write to read mode
                             buffer.flip();
 

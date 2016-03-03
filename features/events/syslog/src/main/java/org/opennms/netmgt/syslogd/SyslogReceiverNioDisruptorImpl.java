@@ -35,10 +35,9 @@ import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.nio.ByteBuffer;
 import java.nio.channels.DatagramChannel;
-import java.util.concurrent.CompletableFuture;
+import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.TimeUnit;
-
 import org.opennms.core.concurrent.ExecutorFactory;
 import org.opennms.core.concurrent.ExecutorFactoryJavaImpl;
 import org.opennms.core.logging.Logging;
@@ -47,10 +46,6 @@ import org.opennms.netmgt.config.SyslogdConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.codahale.metrics.ConsoleReporter;
-import com.codahale.metrics.Histogram;
-import com.codahale.metrics.Meter;
-import com.codahale.metrics.MetricRegistry;
 import com.lmax.disruptor.RingBuffer;
 import com.lmax.disruptor.dsl.Disruptor;
 
@@ -66,7 +61,6 @@ import com.lmax.disruptor.dsl.Disruptor;
 public class SyslogReceiverNioDisruptorImpl implements SyslogReceiver {
 
     private static final Logger LOG = LoggerFactory.getLogger(SyslogReceiverNioDisruptorImpl.class);
-    private static final MetricRegistry METRICS = new MetricRegistry();
 
     private static final int SOCKET_TIMEOUT = 500;
 
@@ -150,6 +144,8 @@ public class SyslogReceiverNioDisruptorImpl implements SyslogReceiver {
 
     private final Disruptor<ByteBufferMessage> m_byteBuffers;
     private final RingBuffer<ByteBufferMessage> m_ringBuffer;
+    
+    private List<SyslogConnectionHandler> m_syslogConnectionHandlers = Collections.emptyList();
 
     /**
      * This class is a container for a preallocated {@link ByteBuffer} that is
@@ -258,6 +254,15 @@ public class SyslogReceiverNioDisruptorImpl implements SyslogReceiver {
             LOG.debug("Thread context stopped and joined");
         }
     }
+    
+    //Getter and setter for sysloghandler
+    public SyslogConnectionHandler getSyslogConnectionHandlers() {
+        return m_syslogConnectionHandlers.get(0);
+    }
+
+    public void setSyslogConnectionHandlers(SyslogConnectionHandler handler) {
+        m_syslogConnectionHandlers = Collections.singletonList(handler);
+    }
 
     /**
      * The execution context.
@@ -269,18 +274,6 @@ public class SyslogReceiverNioDisruptorImpl implements SyslogReceiver {
 
         // Get a log instance
         Logging.putPrefix(Syslogd.LOG4J_CATEGORY);
-
-        ConsoleReporter reporter = ConsoleReporter.forRegistry(METRICS)
-            .convertRatesTo(TimeUnit.SECONDS)
-            .convertDurationsTo(TimeUnit.MILLISECONDS)
-            .build();
-        reporter.start(1, TimeUnit.SECONDS);
-
-        // Create some metrics
-        Meter packetMeter = METRICS.meter(MetricRegistry.name(getClass(), "packets"));
-        Meter processorMeter = METRICS.meter(MetricRegistry.name(getClass(), "processors"));
-        Meter connectionMeter = METRICS.meter(MetricRegistry.name(getClass(), "connections"));
-        Histogram packetSizeHistogram = METRICS.histogram(MetricRegistry.name(getClass(), "packetSize"));
 
         if (m_stop) {
             LOG.debug("Stop flag set before thread started, exiting");
@@ -296,6 +289,8 @@ public class SyslogReceiverNioDisruptorImpl implements SyslogReceiver {
         try {
             LOG.debug("Opening syslog channel...");
             m_channel = openChannel(m_config);
+            //Added since channel's blocking mode was true and it was not allowing to channel to recieve buffer
+            m_channel.configureBlocking(false);
         } catch (IOException e) {
             LOG.warn("An I/O error occured while trying to set the socket timeout", e);
         }
@@ -346,49 +341,25 @@ public class SyslogReceiverNioDisruptorImpl implements SyslogReceiver {
                             final ByteBufferMessage message = m_ringBuffer.get(sequence);
 
                             // Write the datagram into the ByteBuffer
-                            final InetSocketAddress source = (InetSocketAddress)m_channel.receive(message.buffer);
-
-                            // Increment the packet counter
-                            packetMeter.mark();
+                            //changed since mchannel recieve used to return null
+                            final InetSocketAddress source = new InetSocketAddress(m_config.getListenAddress(), m_config.getSyslogPort());
+                            m_channel.receive(message.buffer);
 
                             // Flip the buffer from write to read mode
                             message.buffer.flip();
 
-                            // Create a metric for the syslog packet size
-                            packetSizeHistogram.update(message.buffer.remaining());
+                            SyslogConnection connection = new SyslogConnection(source.getAddress(), source.getPort(), message.buffer, m_config);
 
-                            /*
-                            CompletableFuture<Void> processPacket = CompletableFuture.supplyAsync(
-                                () -> new SyslogConnection(source.getAddress(), source.getPort(), message.buffer, m_config, null),
-                                m_syslogConnectionExecutor
-                            )
-                            .thenApplyAsync(c -> c.call(), m_syslogConnectionExecutor)
-                            .thenAcceptAsync(c -> c.call(), m_syslogProcessorExecutor);
-                            */
-
-                            SyslogConnection conn = new SyslogConnection(source.getAddress(), source.getPort(), message.buffer, m_config);
-
-                            // Convert the syslog packet into an OpenNMS event
-                            CompletableFuture<SyslogProcessor> proc = CompletableFuture.supplyAsync(conn::call, m_syslogConnectionExecutor);
-
-                            // After the bytes are converted into an event...
-                            proc.thenRun(() -> {
-                                // Clear the buffer so that it's ready for writing again
-                                message.buffer.clear();
-
-                                if (sequence % 50 == 0) {
-                                    LOG.debug("Released 50 more datagrams");
+                            try {
+                                for (SyslogConnectionHandler handler : m_syslogConnectionHandlers) {
+                                    handler.handleSyslogConnection(connection);
                                 }
-
-                                // Release the buffer back to the disruptor
-                                m_ringBuffer.publish(sequence);
-
-                                // Increment the counter
-                                processorMeter.mark();
-                            });
-
-                            // Broadcast the event on the event channel
-                            proc.thenAcceptAsync(c -> c.call(), m_syslogProcessorExecutor).thenRun(() -> connectionMeter.mark());
+                            } catch (Throwable e) {
+                                LOG.error("Handler execution failed in {}", this.getClass().getSimpleName(), e);
+                            }
+                            
+                            // Clear the buffer so that it's ready for writing again
+                            message.buffer.clear();
 
                             // reset the flag
                             ioInterrupted = false; 
