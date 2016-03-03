@@ -299,6 +299,14 @@
       <scope>provided</scope>
     </dependency>
 
+    <!-- Other projects necessary to run integration tests -->
+    <dependency>
+      <groupId>org.opennms.features</groupId>
+      <artifactId>org.opennms.features.discovery</artifactId>
+      <version>${project.version}</version>
+      <scope>test</scope>
+    </dependency>
+
     <!-- 
       This test-jar contains the org.apache.karaf.itests.KarafTestSupport class
       which provides useful utility functions when running Pax Exam testing inside

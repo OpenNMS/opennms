@@ -484,7 +484,7 @@ describe('Service: RequisitionsService', function () {
 
     initializeCache();
 
-    var services = ['ICMP','SNMP'];
+    var services = { element: ['ICMP','SNMP'] };
     var url = requisitionsService.internal.foreignSourcesConfigUrl + '/services/test-server';
     $httpBackend.expect('GET', url).respond(services);
 
@@ -506,7 +506,7 @@ describe('Service: RequisitionsService', function () {
 
     initializeCache();
 
-    var assets = ['address1','city','state','zip'];
+    var assets = { element: ['address1','city','state','zip'] };
     var url = requisitionsService.internal.foreignSourcesConfigUrl + '/assets';
     $httpBackend.expect('GET', url).respond(assets);
 
@@ -528,7 +528,7 @@ describe('Service: RequisitionsService', function () {
 
     initializeCache();
 
-    var categories = ['Production','Development','Testing'];
+    var categories = { element: ['Production','Development','Testing'] };
     var url = requisitionsService.internal.foreignSourcesConfigUrl + '/categories';
     $httpBackend.expect('GET', url).respond(categories);
 
@@ -550,7 +550,7 @@ describe('Service: RequisitionsService', function () {
 
     initializeCache();
 
-    var policies = [{
+    var policies = { plugins: [{
       "name": "Match IP Interface",
       "class": "org.opennms.netmgt.provision.persist.policies.MatchingIpInterfacePolicy",
       "parameters": [{
@@ -570,7 +570,7 @@ describe('Service: RequisitionsService', function () {
         "required": false,
         "options": []
       }]
-    }];
+    }]};
 
     var url = requisitionsService.internal.foreignSourcesConfigUrl + '/policies';
     $httpBackend.expect('GET', url).respond(policies);
@@ -594,7 +594,7 @@ describe('Service: RequisitionsService', function () {
 
     initializeCache();
 
-    var detectors = [{
+    var detectors = { plugins: [{
       "name": "ICMP",
       "class": "org.opennms.netmgt.provision.detector.icmp.IcmpDetector",
       "parameters": [{
@@ -618,7 +618,7 @@ describe('Service: RequisitionsService', function () {
         "required": false,
         "options": []
       }]
-    }];
+    }]};
     var url = requisitionsService.internal.foreignSourcesConfigUrl + '/detectors';
     $httpBackend.expect('GET', url).respond(detectors);
 

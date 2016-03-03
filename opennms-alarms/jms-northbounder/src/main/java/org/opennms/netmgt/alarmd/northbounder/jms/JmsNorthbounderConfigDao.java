@@ -31,23 +31,43 @@ package org.opennms.netmgt.alarmd.northbounder.jms;
 import org.opennms.core.xml.AbstractJaxbConfigDao;
 
 /**
- * @author David Schlenk <dschlenk@converge-one.com>
+ * The Class JmsNorthbounderConfigDao.
+ *
+ * @author <a href="mailto:dschlenk@converge-one.com">David Schlenk</a>
+ * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
-public class JmsNorthbounderConfigDao extends
-        AbstractJaxbConfigDao<JmsNorthbounderConfig, JmsNorthbounderConfig> {
+public class JmsNorthbounderConfigDao extends AbstractJaxbConfigDao<JmsNorthbounderConfig, JmsNorthbounderConfig> {
 
+    /**
+     * Instantiates a new JMX northbounder configuration DAO.
+     */
     public JmsNorthbounderConfigDao() {
         super(JmsNorthbounderConfig.class, "Config for JMS Northbounder");
     }
 
+    /* (non-Javadoc)
+     * @see org.opennms.core.xml.AbstractJaxbConfigDao#translateConfig(java.lang.Object)
+     */
     @Override
     protected JmsNorthbounderConfig translateConfig(
             JmsNorthbounderConfig config) {
         return config;
     }
 
+    /**
+     * Gets the configuration.
+     *
+     * @return the configuration
+     */
     public JmsNorthbounderConfig getConfig() {
         return getContainer().getObject();
+    }
+
+    /**
+     * Reload.
+     */
+    public void reload() {
+        getContainer().reload();
     }
 
 }

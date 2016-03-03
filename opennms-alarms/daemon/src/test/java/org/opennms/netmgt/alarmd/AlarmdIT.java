@@ -118,10 +118,15 @@ public class AlarmdIT implements TemporaryDatabaseAware<MockDatabase>, Initializ
             return m_alarms;
         }
 
-		@Override
-		public String getName() {
-			return "MockNorthbounder";
-		}
+        @Override
+        public String getName() {
+            return "MockNorthbounder";
+        }
+
+        @Override
+        public void reloadConfig() {
+        }
+
     }
 
     private MockNetwork m_mockNetwork = new MockNetwork();

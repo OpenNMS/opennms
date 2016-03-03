@@ -31,6 +31,7 @@ package org.opennms.features.topology.app.internal;
 import com.github.wolfie.refresher.Refresher;
 import com.vaadin.annotations.PreserveOnRefresh;
 import com.vaadin.annotations.Theme;
+import com.vaadin.annotations.Title;
 import com.vaadin.data.Property;
 import com.vaadin.event.FieldEvents;
 import com.vaadin.server.*;
@@ -78,6 +79,7 @@ import java.util.*;
 
 @SuppressWarnings("serial")
 @Theme("topo_default")
+@Title("OpenNMS Topology Map")
 @PreserveOnRefresh
 public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpdateListener, ContextMenuHandler, WidgetUpdateListener, WidgetContext, UriFragmentChangedListener, GraphContainer.ChangeListener, MapViewManagerListener, VertexUpdateListener, SelectionListener, VerticesUpdateManager.VerticesUpdateListener {
 
@@ -346,7 +348,7 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
                 } catch (ClassCastException e) {}
             }
         }
-        //Initialize the Base Topology provider just in case
+        // Refresh the topology provider, triggering the vertices to load if they have not yet loaded
         getGraphContainer().getBaseTopology().refresh();
     }
 

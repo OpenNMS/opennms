@@ -51,96 +51,142 @@ import org.junit.Test;
  * 
  * FIXME: This is just a stub for getting started.  Needs lots of work.
  * 
- * @author <a mailto:brozow@opennms.org>Matt Brozowski</a>
- * @author <a mailto:david@opennms.org>David Hustace</a>
+ * @author <a href="mailto:brozow@opennms.org">Matt Brozowski</a>
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
  */
 public class JAXBTest {
-	
+
+    /**
+     * The Class TestNorthBoundAlarm.
+     */
     @XmlRootElement(name="test-alarm")
     @XmlAccessorType(XmlAccessType.FIELD)
     public static class TestNorthBoundAlarm {
-        
+
+        /** The ID. */
         @XmlElement(name="id")
         private String m_id;
+
+        /** The name. */
         private String m_name;
+
+        /** The status. */
         private String m_status;
-        
+
+        /**
+         * Gets the id.
+         *
+         * @return the id
+         */
         public String getId() {
             return m_id;
         }
+
+        /**
+         * Sets the id.
+         *
+         * @param id the new id
+         */
         public void setId(String id) {
             m_id = id;
         }
+
+        /**
+         * Gets the name.
+         *
+         * @return the name
+         */
         public String getName() {
             return m_name;
         }
+
+        /**
+         * Sets the name.
+         *
+         * @param name the new name
+         */
         public void setName(String name) {
             m_name = name;
         }
+
+        /**
+         * Gets the status.
+         *
+         * @return the status
+         */
         public String getStatus() {
             return m_status;
         }
+
+        /**
+         * Sets the status.
+         *
+         * @param status the new status
+         */
         public void setStatus(String status) {
             m_status = status;
         }
     }
 
+    /**
+     * Test marshall.
+     *
+     * @throws Exception the exception
+     */
+    @Test
+    public void testMarshall() throws Exception {
+        final String expectedXML = "" +
+                "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" + 
+                "<test-alarm>\n" + 
+                "    <id>23</id>\n" + 
+                "</test-alarm>\n" +
+                "";
 
-	@Test
-	public void testMarshall() throws Exception {
-		
-		final String expectedXML = "" +
-				"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" + 
-				"<test-alarm>\n" + 
-				"    <id>23</id>\n" + 
-				"</test-alarm>\n" +
-				"";
+        TestNorthBoundAlarm nba = new TestNorthBoundAlarm();
+        nba.setId("23");
 
-		TestNorthBoundAlarm nba = new TestNorthBoundAlarm();
-		nba.setId("23");
-		
-		// Create a Marshaller
-		JAXBContext context = JAXBContext.newInstance(TestNorthBoundAlarm.class);
-		Marshaller marshaller = context.createMarshaller();
-		marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-		
-		// save the output in a byte array
-		ByteArrayOutputStream out = new ByteArrayOutputStream();
+        // Create a Marshaller
+        JAXBContext context = JAXBContext.newInstance(TestNorthBoundAlarm.class);
+        Marshaller marshaller = context.createMarshaller();
+        marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
 
-		// marshall the output
-		marshaller.marshal(nba, out);
+        // save the output in a byte array
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
 
-		// verify its matches the expected results
-		byte[] utf8 = out.toByteArray();
+        // marshall the output
+        marshaller.marshal(nba, out);
 
-		String result = new String(utf8, "UTF-8");
-		assertXmlEquals(expectedXML, result);
-		
-		System.err.println(result);
-		
-		// unmarshall the generated XML
-		
-//		URL xsd = getClass().getResource("/ncs-model.xsd");
-//		
-//		assertNotNull(xsd);
-//		
-//		SchemaFactory schemaFactory = SchemaFactory.newInstance("http://www.w3.org/2001/XMLSchema");
-//		Schema schema = schemaFactory.newSchema(xsd);
-		
-		Unmarshaller unmarshaller = context.createUnmarshaller();
-//		unmarshaller.setSchema(schema);
-		Source source = new StreamSource(new ByteArrayInputStream(utf8));
-		TestNorthBoundAlarm read = unmarshaller.unmarshal(source, TestNorthBoundAlarm.class).getValue();
-		
-		assertNotNull(read);
-		
-		// round trip back to XML and make sure we get the same thing
-		ByteArrayOutputStream reout = new ByteArrayOutputStream();
-		marshaller.marshal(read, reout);
-		
-		String roundTrip = new String(reout.toByteArray(), "UTF-8");
-		
-		assertXmlEquals(expectedXML, roundTrip);
-	}
+        // verify its matches the expected results
+        byte[] utf8 = out.toByteArray();
+
+        String result = new String(utf8, "UTF-8");
+        assertXmlEquals(expectedXML, result);
+
+        System.err.println(result);
+
+        // unmarshall the generated XML
+
+        //		URL xsd = getClass().getResource("/ncs-model.xsd");
+        //		
+        //		assertNotNull(xsd);
+        //		
+        //		SchemaFactory schemaFactory = SchemaFactory.newInstance("http://www.w3.org/2001/XMLSchema");
+        //		Schema schema = schemaFactory.newSchema(xsd);
+
+        Unmarshaller unmarshaller = context.createUnmarshaller();
+        //		unmarshaller.setSchema(schema);
+        Source source = new StreamSource(new ByteArrayInputStream(utf8));
+        TestNorthBoundAlarm read = unmarshaller.unmarshal(source, TestNorthBoundAlarm.class).getValue();
+
+        assertNotNull(read);
+
+        // round trip back to XML and make sure we get the same thing
+        ByteArrayOutputStream reout = new ByteArrayOutputStream();
+        marshaller.marshal(read, reout);
+
+        String roundTrip = new String(reout.toByteArray(), "UTF-8");
+
+        assertXmlEquals(expectedXML, roundTrip);
+    }
 
 }

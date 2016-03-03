@@ -77,8 +77,6 @@ import com.google.common.base.Optional;
         "org.opennms.timeseries.strategy=newts"
 })
 @JUnitNewtsCassandra(
-        host=NewtsPersisterIT.CASSANDRA_HOST,
-        port=NewtsPersisterIT.CASSANDRA_PORT,
         keyspace=NewtsPersisterIT.NEWTS_KEYSPACE
 )
 public class NewtsPersisterIT {

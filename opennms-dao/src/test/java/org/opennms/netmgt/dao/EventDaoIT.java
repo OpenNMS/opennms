@@ -40,9 +40,11 @@ import org.junit.runner.RunWith;
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
+import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.dao.api.DistPollerDao;
 import org.opennms.netmgt.dao.api.EventDao;
 import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.events.api.EventParameterUtils;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.model.OnmsIpInterface;
@@ -119,6 +121,7 @@ public class EventDaoIT implements InitializingBean {
         OnmsAlarm alarm = new OnmsAlarm();
 	    event.setAlarm(alarm);
         event.setIpAddr(iface.getIpAddress());
+        event.setEventParms("label=node(string,text);ds=(memAvailReal + memCached) / memTotalReal * 100.0(string,text);description=(memAvailReal + memCached) / memTotalReal * 100.0(string,text);value=4.7(string,text);instance=node(string,text);instanceLabel=node(string,text);resourceId=node[70].nodeSnmp[](string,text);threshold=5.0(string,text);trigger=2(string,text);rearm=10.0(string,text)");
         m_eventDao.save(event);
        
         OnmsEvent newEvent = m_eventDao.load(event.getId());
@@ -126,6 +129,8 @@ public class EventDaoIT implements InitializingBean {
         assertNotNull(newEvent.getServiceType());
         assertEquals(service.getNodeId(), newEvent.getNode().getId());
         assertEquals(event.getIpAddr(), newEvent.getIpAddr());
+        
+        System.err.println(JaxbUtils.marshal(event));
     }
 
     @Test

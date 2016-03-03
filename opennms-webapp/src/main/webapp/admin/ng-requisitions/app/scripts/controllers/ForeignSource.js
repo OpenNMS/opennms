@@ -19,15 +19,14 @@
   * @requires $scope Angular local scope
   * @requires $routeParams Angular route parameters
   * @requires $window Document window
-  * @requires $modal Angular modal
+  * @requires $uibModal Angular UI modal
   * @required filterFilter the Angular filter
   * @requires RequisitionsService The requisitions service
-  * @requires EmptyTypeaheadService The empty typeahead Service
   * @requires growl The growl plugin for instant notifications
   *
   * @description The controller for manage foreign source definitions (i.e. policies and detectors)
   */
-  .controller('ForeignSourceController', ['$scope', '$routeParams', '$window', '$modal', 'filterFilter', 'RequisitionsService', 'EmptyTypeaheadService', 'growl', function($scope, $routeParams, $window, $modal, filterFilter, RequisitionsService, EmptyTypeaheadService, growl) {
+  .controller('ForeignSourceController', ['$scope', '$routeParams', '$window', '$uibModal', 'filterFilter', 'RequisitionsService', 'growl', function($scope, $routeParams, $window, $uibModal, filterFilter, RequisitionsService, growl) {
 
     /**
     * @description The timing status.
@@ -59,24 +58,6 @@
     * @returns {object} The foreign source definition
     */
     $scope.foreignSourceDef = { detectors: [], policies: [] };
-
-    /**
-    * @description fieldComparator method from EmptyTypeaheadService
-    *
-    * @ngdoc method
-    * @name ForeignSourceController#fieldComparator
-    * @methodOf AssetController
-    */
-    $scope.fieldComparator = EmptyTypeaheadService.fieldComparator;
-
-    /**
-    * @description onFocus method from EmptyTypeaheadService
-    *
-    * @ngdoc method
-    * @name ForeignSourceController#onFocus
-    * @methodOf AssetController
-    */
-    $scope.onFocus = EmptyTypeaheadService.onFocus;
 
     /**
     * @description The filteres object (used to track the content of the search fields)
@@ -288,7 +269,7 @@
     */
     $scope.editPolicy = function(policy, isNew) {
       var form = this.fsForm;
-      $modal.open({
+      $uibModal.open({
         backdrop: true,
         controller: 'PolicyController',
         templateUrl: 'views/policy.html',
@@ -345,7 +326,7 @@
     */
     $scope.editDetector = function(detector, isNew) {
       var form = this.fsForm;
-      $modal.open({
+      $uibModal.open({
         backdrop: true,
         controller: 'DetectorController',
         templateUrl: 'views/detector.html',

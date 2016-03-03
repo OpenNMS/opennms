@@ -1,0 +1,58 @@
+
+==== Syslog Northbounder Interface Configuration
+
+===== GETs (Reading Data)
+
+[options="header", cols="5,10"]
+|===
+| Resource        | Description
+| `/config/syslog-nbi` | Gets full content of the configuration.
+| `/config/syslog-nbi/status` | Gets the status of the Syslog NBI (returns either true or false).
+| `/config/syslog-nbi/destinations` | Gets the name of all the existing destinations.
+| `/config/syslog-nbi/destinations/{name}` | Gets the content of the destination named {name}
+|===
+
+===== PUTs (Update defaults)
+
+On a successful request, the Syslog NBI will be notified about the configuration change.
+
+[options="header", cols="5,10"]
+|===
+| Resource        | Description
+| `/config/syslog-nbi/status?enabled=(true;false)` | Sets the status of the Syslog NBI.
+|===
+
+===== POSTs (Adding Data)
+
+POST requires form data using application/x-www-form-urlencoded as a Content-Type.
+
+On a successful request, the Syslog NBI will be notified about the configuration change.
+
+[options="header", cols="5,10"]
+|===
+| Resource        | Description
+| `/config/syslog-nbi` | Updates the full content of the configuration.
+| `/config/syslog-nbi/destinations` | Adds a new or overrides an existing destination.
+|===
+
+===== PUTs (Modifying Data)
+
+PUT requires form data using application/x-www-form-urlencoded as a Content-Type.
+
+On a successful request, the Syslog NBI will be notified about the configuration change.
+
+[options="header", cols="5,10"]
+|===
+| Resource                               | Description
+| `/config/syslog-nbi/destinations/{name}` | Updates the content of the destination named {name}
+|===
+
+===== DELETEs (Remove Data)
+
+On a successful request, the Syslog NBI will be notified about the configuration change.
+
+[options="header", cols="5,10"]
+|===
+| Resource                               | Description
+| `/config/syslog-nbi/destinations/{name}` | Updates the content of the destination named {name}
+|===

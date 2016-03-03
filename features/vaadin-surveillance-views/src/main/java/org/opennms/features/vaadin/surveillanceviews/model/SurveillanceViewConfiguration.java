@@ -132,4 +132,9 @@ public class SurveillanceViewConfiguration implements java.io.Serializable {
         result = 31 * result + (m_views != null ? m_views.hashCode() : 0);
         return result;
     }
+
+	@Override
+	public String toString() {
+		return "SurveillanceViewConfiguration [defaultView=" + m_defaultView + ", views=" + m_views + "]";
+	}
 }

@@ -28,8 +28,6 @@
     <module>javamail</module>
     <module>jaxb</module>
     <module>jcifs</module>
-    <module>jersey</module>
-    <module>jersey-client</module>
     <module>jfreechart</module>
     <module>jinterop</module>
     <module>jmx</module>
@@ -47,7 +45,6 @@
     <module>pax-exam</module>
     <module>quartz</module>
     <module>rancid</module>
-    <module>rxtx</module>
     <module>servlet</module>
     <module>smack</module>
     <module>smslib</module>

@@ -58,8 +58,12 @@
 							return [];
 						}
 						*/
-						// Always return the data as an array
-						return angular.isArray(data.minion) ? data.minion : [ data.minion ];
+						if (status === 204) { // No content
+							return [];
+						} else {
+							// Always return the data as an array
+							return angular.isArray(data.minion) ? data.minion : [ data.minion ];
+						}
 					})
 				},
 				'update': { 

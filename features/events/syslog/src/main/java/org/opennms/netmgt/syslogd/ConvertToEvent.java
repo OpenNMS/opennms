@@ -145,7 +145,7 @@ public class ConvertToEvent {
         }
         SyslogMessage message;
         try {
-                message = parser.parse();
+            message = parser.parse();
         } catch (final SyslogParserException ex) {
             LOG.debug("Unable to parse '{}'", syslogString, ex);
             throw new MessageDiscardedException(ex);
@@ -209,16 +209,14 @@ public class ConvertToEvent {
             LOG.warn("No ueiList configured.");
         } else {
             for (final UeiMatch uei : ueiMatch) {
-                final boolean otherStuffMatches = matchUei(uei.getFacilityCollection(), facilityTxt) &&
-                								  matchUei(uei.getSeverityCollection(), priorityTxt) &&
+                final boolean otherStuffMatches = containsIgnoreCase(uei.getFacilityCollection(), facilityTxt) &&
+                                                  containsIgnoreCase(uei.getSeverityCollection(), priorityTxt) &&
                                                   matchProcess(uei.getProcessMatch(), message.getProcessName()) && 
                                                   matchHostname(uei.getHostnameMatch(), message.getHostName()) &&
                                                   matchHostAddr(uei.getHostaddrMatch(), message.getHostAddress());
-                
-                // Single boolean check is added instead of performing
-                // multiple
-                // boolean check for both if and else if which causes a extra
-                // time
+
+                // Single boolean check is added instead of performing multiple
+                // boolean check for both if and else if which causes a extra time
                 if (otherStuffMatches) {
                     if (uei.getMatch().getType().equals("substr")) {
                         if (matchSubstring(discardUei, bldr, matchedText, uei)) {
@@ -337,11 +335,10 @@ public class ConvertToEvent {
         return false;
     }
     
-    private static boolean matchUei(List<String> ueis, String priorityTxt)
-    {
-    	 if (ueis.size() == 0) return true;
-         for (String facility : ueis) {
-             if (facility.equalsIgnoreCase(priorityTxt)) return true;
+    private static boolean containsIgnoreCase(List<String> collection, String match) {
+         if (collection.size() == 0) return true;
+         for (String string : collection) {
+             if (string.equalsIgnoreCase(match)) return true;
          }
          return false;
     }
@@ -408,21 +405,24 @@ public class ConvertToEvent {
             bldr.setUei(uei.getUei());
             // Removed check of count in both if condition which is redundant
             if (msgMat.groupCount() > 0) {
-            if (uei.getMatch().isDefaultParameterMapping()) {
-                if (traceEnabled) LOG.trace("Doing default parameter mappings for this regex match.");
-                for (int groupNum = 1; groupNum <= msgMat.groupCount(); groupNum++) {
-                    if (traceEnabled) LOG.trace("Added parm 'group{}' with value '{}' to Syslogd event based on regex match group", groupNum, msgMat.group(groupNum));
-                    bldr.addParam("group"+groupNum, msgMat.group(groupNum));
+                if (uei.getMatch().isDefaultParameterMapping()) {
+                    if (traceEnabled) LOG.trace("Doing default parameter mappings for this regex match.");
+                    for (int groupNum = 1; groupNum <= msgMat.groupCount(); groupNum++) {
+                        if (traceEnabled) LOG.trace("Added parm 'group{}' with value '{}' to Syslogd event based on regex match group", groupNum, msgMat.group(groupNum));
+                        bldr.addParam("group"+groupNum, msgMat.group(groupNum));
+                    }
                 }
-            }
-            if (uei.getParameterAssignmentCount() > 0) {
-                if (traceEnabled) LOG.trace("Doing user-specified parameter assignments for this regex match.");
-                for (ParameterAssignment assignment : uei.getParameterAssignmentCollection()) {
-                    String parmName = assignment.getParameterName();
-                    String parmValue = msgMat.group(assignment.getMatchingGroup());
-                    parmValue = parmValue == null ? "" : parmValue;
-                    bldr.addParam(parmName, parmValue);
-                    if (traceEnabled) LOG.trace("Added parm '{}' with value '{}' to Syslogd event based on user-specified parameter assignment", parmName, parmValue);
+
+                if (uei.getParameterAssignmentCount() > 0) {
+                    if (traceEnabled) LOG.trace("Doing user-specified parameter assignments for this regex match.");
+                    for (ParameterAssignment assignment : uei.getParameterAssignmentCollection()) {
+                        String parmName = assignment.getParameterName();
+                        String parmValue = msgMat.group(assignment.getMatchingGroup());
+                        parmValue = parmValue == null ? "" : parmValue;
+                        bldr.addParam(parmName, parmValue);
+                        if (traceEnabled) {
+                            LOG.trace("Added parm '{}' with value '{}' to Syslogd event based on user-specified parameter assignment", parmName, parmValue);
+                        }
                     }
                 }
             }

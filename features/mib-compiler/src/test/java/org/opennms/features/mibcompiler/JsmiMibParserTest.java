@@ -171,6 +171,20 @@ public class JsmiMibParserTest {
     }
 
     /**
+     * Test generate events from a semi-invalid MIB.
+     *
+     * @throws Exception the exception
+     */
+    @Test
+    public void testRecursiveTextualConvention() throws Exception {
+        if (parser.parseMib(new File(MIB_DIR, "NORTEL-NMI-CONFIG-NOTI-MIB.txt"))) {
+            Events events = parser.getEvents("uei.opennms.org/vendor/Nortel/traps/");
+            Assert.assertNotNull(events);
+            System.out.println(JaxbUtils.marshal(events));
+        }
+    }
+
+    /**
      * Test generate events from traps.
      */
     @Test

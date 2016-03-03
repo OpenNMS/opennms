@@ -86,6 +86,8 @@
             <!-- Vaadin Surveillance Views Feature-->
             <repository>mvn:org.opennms.features/vaadin-surveillance-views/${project.version}/xml/features</repository>
 
+            <!-- Ticketing Features-->
+            <repository>mvn:org.opennms.features/jira-troubleticketer/${project.version}/xml/features</repository>
           </repositories>
 
           <!-- 
@@ -151,7 +153,6 @@
             <feature>hibernate36</feature>
             <feature>hibernate-validator41</feature>
             <feature>jaxb</feature>
-            <feature>jersey-client</feature>
             <feature>jfreechart</feature>
             <feature>jolokia</feature>
             <feature>jrobin</feature>
@@ -175,10 +176,14 @@
             <feature>opennms-core-web</feature>
             <feature>opennms-dao-api</feature>
             <feature>opennms-dao</feature>
+            <feature>opennms-discovery</feature>
             <feature>opennms-events-api</feature>
             <feature>opennms-events-daemon</feature>
             <feature>opennms-events-traps</feature>
             <feature>opennms-icmp-api</feature>
+            <feature>opennms-icmp-jna</feature>
+            <feature>opennms-icmp-jni</feature>
+            <feature>opennms-icmp-jni6</feature>
             <feature>opennms-javamail</feature>
             <feature>opennms-model</feature>
             <feature>opennms-poller-api</feature>
@@ -224,6 +229,7 @@
             <feature>vaadin-snmp-events-and-metrics</feature>
             <feature>vaadin-surveillance-views</feature>
             <feature>opennms-elasticsearch-event-forwarder</feature>
+            <feature>jira-troubleticketer</feature>
           </features>
         </configuration>
       </plugin>
@@ -389,6 +395,27 @@
     <dependency>
       <groupId>org.opennms.features</groupId>
       <artifactId>vaadin-components</artifactId>
+      <version>${project.version}</version>
+      <type>pom</type>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features</groupId>
+      <artifactId>jira-troubleticketer</artifactId>
+      <version>${project.version}</version>
+      <type>pom</type>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-icmp-jni</artifactId>
+      <version>${project.version}</version>
+      <type>pom</type>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-icmp-jni6</artifactId>
       <version>${project.version}</version>
       <type>pom</type>
       <scope>provided</scope>

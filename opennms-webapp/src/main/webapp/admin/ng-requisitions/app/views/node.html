@@ -18,10 +18,10 @@
   </div>
   <div class="col-md-6">
     <div class="input-group pull-right">
-      <button class="btn btn-danger" ng-click="save()" ng-show="nodeForm.$dirty && nodeForm.$valid" ng-disabled="timingStatus.isRunning">
+      <button class="btn btn-danger" id="save-node" ng-click="save()" ng-show="nodeForm.$dirty &amp;&amp; nodeForm.$valid" ng-disabled="timingStatus.isRunning">
         <span class="glyphicon glyphicon-save"></span> Save
       </button>
-      <button class="btn btn-default" ng-click="goBack()">
+      <button class="btn btn-default" id="go-back" ng-click="goBack()">
         <span class="glyphicon glyphicon-remove"></span> Return
       </button>
     </div>
@@ -35,10 +35,10 @@
 
     <!-- Tab Panel -->
     <div class="container-fluid">
-      <tabset justified="true">
+      <uib-tabset justified="true">
 
         <!-- Basic Information Tab -->
-        <tab heading="Basic Information">
+        <uib-tab heading="Basic Information" id="tab-basic-information">
           <a ng-show="isNew" ng-click="generateForeignId(nodeForm.foreignId)" class="btn"><span class="glyphicon glyphicon-plus"/> Auto-generate the Foreign ID</a>
           <br/>
           <br/>
@@ -60,10 +60,10 @@
             <label class="control-label" for="city">City</label>
             <input class="form-control" type="text" id="city" name="city" placeholder="City" ng-model="node.city"/>
           </div>
-        </tab>
+        </uib-tab>
 
         <!-- Path Outage Tab -->
-        <tab heading="Path Outage">
+        <uib-tab heading="Path Outage" id="tab-path-outage">
           <br/>
           <div class="form-group">
             <label class="control-label" for="parentForeignSource">Parent Foreign Source</label>
@@ -77,10 +77,10 @@
             <label class="control-label" for="parentNodeLabel">Parent Node Label</label>
             <input class="form-control" type="text" id="parentNodeLabel" name="parentNodeLabel" placeholder="Parent Node Label (use either this or Parent Foreign ID)" ng-model="node.parentNodeLabel"/>
           </div>
-        </tab>
+        </uib-tab>
 
         <!-- Interfaces Tab -->
-        <tab heading="Interfaces">
+        <uib-tab heading="Interfaces" id="tab-interfaces">
           <a ng-click="addInterface()" class="btn"><span class="glyphicon glyphicon-plus"/> Add Interface</a>
           <br/>
           <div class="table-responsive">
@@ -107,10 +107,10 @@
                   </td>
                   <td>
                     <span class="pull-right">
-                      <a class="btn btn-default btn-xs" tooltip="Edit the interface" ng-click="editInterface($index)">
+                      <a class="btn btn-default btn-xs" uib-tooltip="Edit the interface" ng-click="editInterface($index)">
                         <span class="glyphicon glyphicon-pencil"/>
                       </a>
-                      <a class="btn btn-default btn-xs" tooltip="Remove the interface" ng-click="removeInterface($index)">
+                      <a class="btn btn-default btn-xs" uib-tooltip="Remove the interface" ng-click="removeInterface($index)">
                         <span class="glyphicon glyphicon-remove"/>
                       </a>
                     </span>
@@ -119,10 +119,10 @@
               </tbody>
             </table>
           </div>
-        </tab>
+        </uib-tab>
 
         <!-- Assets Tab -->
-        <tab heading="Assets">
+        <uib-tab heading="Assets" id="tab-assets">
           <a ng-click="addAsset()" class="btn"><span class="glyphicon glyphicon-plus"/> Add Asset</a>
           <br/>
           <div class="table-responsive">
@@ -140,10 +140,10 @@
                   <td>{{asset.value}}</td>
                   <td>
                     <span class="pull-right">
-                      <a class="btn btn-default btn-xs" tooltip="Edit the asset" ng-click="editAsset($index)">
+                      <a class="btn btn-default btn-xs" uib-tooltip="Edit the asset" ng-click="editAsset($index)">
                         <span class="glyphicon glyphicon-pencil"/>
                       </a>
-                      <a class="btn btn-default btn-xs" tooltip="Remove the asset" ng-click="removeAsset($index)">
+                      <a class="btn btn-default btn-xs" uib-tooltip="Remove the asset" ng-click="removeAsset($index)">
                         <span class="glyphicon glyphicon-remove"/>
                       </a>
                     </span>
@@ -152,16 +152,16 @@
               </tbody>
             </table>
           </div>
-        </tab>
+        </uib-tab>
 
         <!-- Categories Tab -->
-        <tab heading="Categories">
+        <uib-tab heading="Categories" id="tab-categories">
           <a ng-click="addCategory()" class="btn"><span class="glyphicon glyphicon-plus"/> Add Category</a>
           <br/>
           <ng-form name="categoryForm" ng-repeat="category in node.categories">
             <div class="form-group" ng-class="{ 'has-error' : categoryForm.categoryName.$invalid }">
               <div class="input-group">
-                <input class="form-control" type="text" name="categoryName" placeholder="Category Name" ng-model="category.name" ng-focus="onFocus($event)" empty-typeahead typeahead-editable="true" typeahead="category for category in getAvailableCategories() | filter:$viewValue:fieldComparator" required valid-category="category"></input>
+                <input class="form-control" type="text" name="categoryName" placeholder="Category Name" ng-model="category.name" typeahead-min-length="0" typeahead-editable="true" uib-typeahead="category for category in getAvailableCategories() | filter:$viewValue" required valid-category="category"></input>
                 <span class="input-group-btn">
                   <button class="btn btn-default" type="button" ng-click="removeCategory($index)"><span class="glyphicon glyphicon-remove"></span></button>
                 </span>
@@ -169,9 +169,9 @@
               <p ng-show="categoryForm.categoryName.$invalid" class="help-block">Category name is required and should be unique on the node.</p>
             </div>
           </ng-form>
-        </tab>
+        </uib-tab>
 
-      </tabset>
+      </uib-tabset>
     </div> <!-- tab-panel container-fluid -->
 
   </div> <!-- column -->

@@ -34,6 +34,7 @@ import java.util.Date;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -51,6 +52,7 @@ import org.joda.time.format.ISODateTimeFormat;
 import org.opennms.core.criteria.Alias.JoinType;
 import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.netmgt.dao.api.EventDao;
+import org.opennms.netmgt.events.api.EventIpcManager;
 import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.model.OnmsEventCollection;
 import org.opennms.web.rest.support.MultivaluedMapImpl;
@@ -66,6 +68,9 @@ public class EventRestService extends OnmsRestService {
 
     @Autowired
     private EventDao m_eventDao;
+
+    @Autowired
+    private EventIpcManager m_eventForwarder;
 
     /**
      * <p>
@@ -256,6 +261,14 @@ public class EventRestService extends OnmsRestService {
             event.setEventAckUser(null);
         }
         m_eventDao.save(event);
+    }
+
+    @POST
+    @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
+    @Transactional
+    public Response publishEvent(final org.opennms.netmgt.xml.event.Event event) {
+        m_eventForwarder.sendNow(event);
+        return Response.ok().build();
     }
 
     private static CriteriaBuilder getCriteriaBuilder(final MultivaluedMap<String, String> params) {

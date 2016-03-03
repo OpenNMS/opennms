@@ -96,7 +96,11 @@ public class DataCollectionConfigParser {
                         throwException("You must specify at least the data collection group name or system definition name for the include-collection attribute", null);
                     } else {
                         // Include One system definition
-                        addSystemDef(collection, include.getSystemDef());
+                        SystemDef systemDef = getSystemDef(include.getSystemDef());
+                        if (systemDef == null) {
+                            throwException("Can't find system definition " + include.getSystemDef(), null);
+                        }
+                        addSystemDef(collection, systemDef, null);
                     }
                 }
             }
@@ -228,9 +232,20 @@ public class DataCollectionConfigParser {
      * Get a MIB object group from datacollection-group map.
      * 
      * @param groupName the group name
+     * @param dataCollectionGroupName the data collection group name
      * @return the group object
      */
-    private Group getMibObjectGroup(String groupName) {
+    private Group getMibObjectGroup(String groupName, String dataCollectionGroupName) {
+        if (dataCollectionGroupName != null) {
+            DatacollectionGroup dataGroup = externalGroupsMap.get(dataCollectionGroupName);
+            if (dataGroup != null) {
+                for (Group g : dataGroup.getGroups()) {
+                    if (g.getName().equals(groupName)) {
+                        return g;
+                    }
+                }
+            }
+        }
         for (DatacollectionGroup group : externalGroupsMap.values()) {
             for (Group g : group.getGroups()) {
                 if (g.getName().equals(groupName)) {
@@ -245,31 +260,28 @@ public class DataCollectionConfigParser {
      * Add a specific system definition into a SNMP collection.
      * 
      * @param collection the target SNMP collection object.
-     * @param systemDefName the system definition name.
+     * @param systemDef the system definition object.
+     * @Parm dataCollectionGroupName the data collection group name where the systemDef is defined
      */
-    private void addSystemDef(SnmpCollection collection, String systemDefName) {
-        LOG.debug("addSystemDef: merging system defintion {} into snmp-collection {}", collection.getName(), systemDefName);
-        // Find System Definition
-        SystemDef systemDef = getSystemDef(systemDefName);
-        if (systemDef == null) {
-            throwException("Can't find system definition " + systemDefName, null);
-        }
+    private void addSystemDef(SnmpCollection collection, SystemDef systemDef, String dataCollectionGroupName) {
+        final String dcGroup = dataCollectionGroupName == null ? "N/A" : dataCollectionGroupName;
+        LOG.debug("addSystemDef: merging system defintion {} into snmp-collection {}", systemDef.getName(), collection.getName());
         // Add System Definition to target SNMP collection
         if (contains(collection.getSystems().getSystemDefs(), systemDef)) {
-            LOG.warn("addSystemDef: system definition {} already exist on SNMP collection {}", collection.getName(), systemDefName);
+            LOG.warn("addSystemDef: system definition {} from data collection group {} already exist on SNMP collection {}", systemDef.getName(), dcGroup, collection.getName());
         } else {
-            LOG.debug("addSystemDef: adding system definition {} to snmp-collection {}", collection.getName(), systemDef.getName());
+            LOG.debug("addSystemDef: adding system definition {} from data collection group {} to snmp-collection {}", systemDef.getName(), dcGroup, collection.getName());
             collection.getSystems().addSystemDef(systemDef);
             // Add Groups
             for (String groupName : systemDef.getCollect().getIncludeGroups()) {
-                Group group = getMibObjectGroup(groupName);
+                Group group = getMibObjectGroup(groupName, dataCollectionGroupName);
                 if (group == null) {
-                    LOG.warn("addSystemDef: group {} does not exist on global container", groupName);
+                    LOG.warn("addSystemDef: group {} does not exist on any data collection group", groupName);
                 } else {
                     if (contains(collection.getGroups().getGroups(), group)) {
-                        LOG.debug("addSystemDef: group {} already exist on SNMP collection {}", collection.getName(), groupName);
+                        LOG.debug("addSystemDef: group {} already exist on SNMP collection {}", groupName, collection.getName());
                     } else {
-                        LOG.debug("addSystemDef: adding mib object group {} to snmp-collection {}", collection.getName(), group.getName());
+                        LOG.debug("addSystemDef: adding mib object group {} from data collection group {} to snmp-collection {}", group.getName(), dcGroup, collection.getName());
                         collection.getGroups().addGroup(group);
                     }
                 }
@@ -289,11 +301,10 @@ public class DataCollectionConfigParser {
         if (group == null) {
             throwException("Group " + dataCollectionGroupName + " does not exist.", null);
         }
-        LOG.debug("addDatacollectionGroup: adding all definitions from group {} to snmp-collection {}", collection.getName(), group.getName());
+        LOG.debug("addDatacollectionGroup: adding all definitions from group {} to snmp-collection {}", group.getName(), collection.getName());
         for (SystemDef systemDef : group.getSystemDefs()) {
-            String sysDef = systemDef.getName();
-            if (shouldAdd(sysDef, excludeList)) {
-                addSystemDef(collection, sysDef);
+            if (shouldAdd(systemDef.getName(), excludeList)) {
+                addSystemDef(collection, systemDef, group.getName());
             }
         }
     }
@@ -305,7 +316,7 @@ public class DataCollectionConfigParser {
                     final Pattern p = Pattern.compile(re);
                     final Matcher m = p.matcher(sysDef);
                     if (m.matches()) {
-                        LOG.info("addDatacollectionGroup: system definition {} is blacklisted by filter {}", re, sysDef);
+                        LOG.info("addDatacollectionGroup: system definition {} is blacklisted by filter {}", sysDef, re);
                         return false;
                     }
                 } catch (PatternSyntaxException e) {

@@ -28,24 +28,45 @@
 
 package org.opennms.netmgt.alarmd.api;
 
-
-
-
 /**
- * North bound Interface API
- * 
+ * North bound Interface API.
+ *
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
- * @version $Id: $
  */
-
 public interface Northbounder {
 
+    /**
+     * Start.
+     *
+     * @throws NorthbounderException the northbounder exception
+     */
     public void start() throws NorthbounderException;
-    
+
+    /**
+     * On alarm.
+     *
+     * @param alarm the alarm
+     * @throws NorthbounderException the northbounder exception
+     */
     public void onAlarm(NorthboundAlarm alarm) throws NorthbounderException;
-    
+
+    /**
+     * Stop.
+     *
+     * @throws NorthbounderException the northbounder exception
+     */
     public void stop() throws NorthbounderException;
-    
+
+    /**
+     * Gets the name.
+     *
+     * @return the name
+     */
     public String getName();
-    
+
+    /**
+     * Reloads configuration.
+     */
+    public void reloadConfig();
+
 }

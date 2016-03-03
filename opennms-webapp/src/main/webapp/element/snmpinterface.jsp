@@ -259,8 +259,6 @@ if (request.isUserInRole( Authentication.ROLE_ADMIN )) {
         <jsp:param name="ifIndex" value="<%=ifIndex%>" />
       </jsp:include>
     <% } %>
-    <!-- STP Info box -->
-    <jsp:include page="/includes/interfaceSTP-box.jsp" flush="false" />
 
   </div> <!-- right content -->
 

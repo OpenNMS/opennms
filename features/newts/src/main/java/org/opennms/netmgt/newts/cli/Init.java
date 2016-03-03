@@ -42,9 +42,11 @@ public class Init implements Command {
         String keyspace = System.getProperty("org.opennms.newts.config.keyspace", "newts");
         String hostname = System.getProperty("org.opennms.newts.config.hostname", "localhost");
         int port = Integer.getInteger("org.opennms.newts.config.port", 9042);
+        String username = System.getProperty("org.opennms.newts.config.username");
+        String password = System.getProperty("org.opennms.newts.config.password");
 
         System.out.println(String.format("Initializing the '%s' keyspaces on %s:%d", keyspace, hostname, port));
-        try (SchemaManager m = new SchemaManager(keyspace, hostname, port)) {
+        try (SchemaManager m = new SchemaManager(keyspace, hostname, port, username, password)) {
             for (Schema s : s_schemas) {
                 m.create(s, true);
             }

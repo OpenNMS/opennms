@@ -40,6 +40,7 @@ import java.util.Map.Entry;
 
 import org.apache.bsf.BSFException;
 import org.apache.bsf.BSFManager;
+import org.apache.bsf.BSFManagerTerminator;
 import org.apache.bsf.util.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -154,7 +155,7 @@ public class BSFMonitor extends AbstractServiceMonitor {
     @Override
     public void release() {
         LOG.debug("Terminating the BSFManager.");
-        m_bsfManager.terminate();
+        BSFManagerTerminator.terminate(m_bsfManager);
     }
     
     private void undeclareBean(String beanName) {

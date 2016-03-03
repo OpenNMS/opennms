@@ -70,12 +70,10 @@ public class SyslogReceiverCamelNettyImpl implements SyslogReceiver {
 
     private final SyslogdConfig m_config;
 
-    private final ExecutorService m_executor;
-
     private DefaultCamelContext m_camel;
-    
+
     private List<SyslogConnectionHandler> m_syslogConnectionHandlers = Collections.emptyList();
-    
+
     /**
      * Construct a new receiver
      *
@@ -93,15 +91,6 @@ public class SyslogReceiverCamelNettyImpl implements SyslogReceiver {
         m_host = config.getListenAddress() == null ? addr("0.0.0.0"): addr(config.getListenAddress());
         m_port = config.getSyslogPort();
         m_config = config;
-
-        m_executor = new ThreadPoolExecutor(
-            Runtime.getRuntime().availableProcessors() * 2,
-            Runtime.getRuntime().availableProcessors() * 2,
-            1000L,
-            TimeUnit.MILLISECONDS,
-            new LinkedBlockingQueue<Runnable>(),
-            new LogPreservingThreadFactory(getClass().getSimpleName(), Integer.MAX_VALUE)
-        );
     }
 
     @Override
@@ -122,9 +111,15 @@ public class SyslogReceiverCamelNettyImpl implements SyslogReceiver {
         } catch (Exception e) {
             LOG.warn("Exception while shutting down syslog Camel context", e);
         }
+    }
 
-        // Shut down the thread pools that are executing SyslogConnection and SyslogProcessor tasks
-        m_executor.shutdown();
+    //Getter and setter for syslog handler
+    public SyslogConnectionHandler getSyslogConnectionHandlers() {
+        return m_syslogConnectionHandlers.get(0);
+    }
+
+    public void setSyslogConnectionHandlers(SyslogConnectionHandler handler) {
+        m_syslogConnectionHandlers = Collections.singletonList(handler);
     }
 
     
@@ -148,10 +143,10 @@ public class SyslogReceiverCamelNettyImpl implements SyslogReceiver {
 
         SimpleRegistry registry = new SimpleRegistry();
 
-	        //Adding netty component to camel inorder to resolve OSGi loading issues
-		NettyComponent nettyComponent=new NettyComponent();
-		m_camel = new DefaultCamelContext(registry);
-		m_camel.addComponent("netty", nettyComponent);
+        //Adding netty component to camel inorder to resolve OSGi loading issues
+        NettyComponent nettyComponent = new NettyComponent();
+        m_camel = new DefaultCamelContext(registry);
+        m_camel.addComponent("netty", nettyComponent);
 
         try {
             m_camel.addRoutes(new RouteBuilder() {
@@ -173,14 +168,14 @@ public class SyslogReceiverCamelNettyImpl implements SyslogReceiver {
                             // NettyConstants.NETTY_REMOTE_ADDRESS is a SocketAddress type but because 
                             // we are listening on an InetAddress, it will always be of type InetAddressSocket
                             InetSocketAddress source = (InetSocketAddress)exchange.getIn().getHeader(NettyConstants.NETTY_REMOTE_ADDRESS); 
-                            //Syslog Handler Implementation to recieve message from syslogport and pass it on to handler
+                            // Syslog Handler Implementation to recieve message from syslogport and pass it on to handler
                             SyslogConnection connection = new SyslogConnection(source.getAddress(), source.getPort(), buffer.toByteBuffer(), m_config);
                             try {
-                        	for (SyslogConnectionHandler handler : m_syslogConnectionHandlers) {
-                        	    handler.handleSyslogConnection(connection);
-                        	}
+                                for (SyslogConnectionHandler handler : m_syslogConnectionHandlers) {
+                                    handler.handleSyslogConnection(connection);
+                                }
                             } catch (Throwable e) {
-                        	LOG.error("Handler execution failed in {}", this.getClass().getSimpleName(), e);
+                                LOG.error("Handler execution failed in {}", this.getClass().getSimpleName(), e);
                             }
 
                         }
@@ -189,7 +184,7 @@ public class SyslogReceiverCamelNettyImpl implements SyslogReceiver {
             });
 
             m_camel.start();
-        } catch (Exception e) {
+        } catch (Throwable e) {
             LOG.error("Could not configure Camel routes for syslog receiver", e);
         }
     }

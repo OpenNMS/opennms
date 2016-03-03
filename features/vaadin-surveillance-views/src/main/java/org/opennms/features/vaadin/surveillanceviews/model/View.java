@@ -189,4 +189,10 @@ public class View {
         result = 31 * result + (m_refreshSeconds != null ? m_refreshSeconds.hashCode() : 0);
         return result;
     }
+
+    @Override
+	public String toString() {
+		return "View [rows=" + m_rows + ", columns=" + m_columns + ", name=" + m_name + ", refresh="
+				+ m_refreshSeconds + "s]";
+	}
 }

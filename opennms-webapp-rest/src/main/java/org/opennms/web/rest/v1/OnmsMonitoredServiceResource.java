@@ -1,4 +1,5 @@
 /*******************************************************************************
+
  * This file is part of OpenNMS(R).
  *
  * Copyright (C) 2008-2014 The OpenNMS Group, Inc.
@@ -127,8 +128,15 @@ public class OnmsMonitoredServiceResource extends OnmsRestService {
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     @Path("{service}")
     public OnmsMonitoredService getService(@PathParam("nodeCriteria") String nodeCriteria, @PathParam("ipAddress") String ipAddress, @PathParam("service") String service) {
-        OnmsNode node = m_nodeDao.get(nodeCriteria);
-        return node.getIpInterfaceByIpAddress(ipAddress).getMonitoredServiceByServiceType(service);
+        final OnmsNode node = m_nodeDao.get(nodeCriteria);
+        if (node == null) {
+            throw getException(Status.NOT_FOUND, "Node {} was not found.", nodeCriteria);
+        }
+        final OnmsIpInterface iface = node.getIpInterfaceByIpAddress(ipAddress);
+        if (iface == null) {
+            throw getException(Status.NOT_FOUND, "Interface {} was not found.", ipAddress);
+        }
+        return iface.getMonitoredServiceByServiceType(service);
     }
     
     /**

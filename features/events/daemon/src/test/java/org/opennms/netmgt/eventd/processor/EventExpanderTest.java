@@ -104,4 +104,33 @@ public class EventExpanderTest extends TestCase {
         //String matchText = "During a rescan";
         //assertTrue("event description should contain '" + matchText + "'", event.getDescr().contains(matchText));
     }
+
+    public void testOptionalParameters() {
+        String uei = "uei.opennms.org/testEventWithOptionalParameters";
+        EventBuilder builder = new EventBuilder(uei, "something");
+        Event event = builder.getEvent();
+
+        EventExpander expander = new EventExpander();
+        expander.setEventConfDao(m_eventConfDao);
+        expander.afterPropertiesSet();
+
+        org.opennms.netmgt.xml.eventconf.Event eventConfig = new org.opennms.netmgt.xml.eventconf.Event();
+        eventConfig.setUei(uei);
+        org.opennms.netmgt.xml.eventconf.Parameter p1 = new org.opennms.netmgt.xml.eventconf.Parameter();
+        p1.setName("username");
+        p1.setValue("agalue");
+        eventConfig.addParameter(p1);
+
+        EasyMock.expect(m_eventConfDao.findByEvent(event)).andReturn(eventConfig);
+        EasyMock.expect(m_eventConfDao.isSecureTag(EasyMock.anyObject())).andReturn(true).anyTimes();
+        m_mocks.replayAll();
+
+        expander.expandEvent(event);
+
+        assertEquals("event UEI", uei, event.getUei());
+        assertEquals("parameters count", 1, event.getParmCollection().size());
+        assertNotNull(event.getParm("username"));
+        assertEquals("parameter value", "agalue", event.getParm("username").getValue().getContent());
+    }
+
 }

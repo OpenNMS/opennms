@@ -51,6 +51,7 @@ import org.opennms.core.tasks.RunInBatch;
 import org.opennms.core.tasks.Task;
 import org.opennms.core.utils.IPLike;
 import org.opennms.netmgt.provision.AsyncServiceDetector;
+import org.opennms.netmgt.provision.PersistsAgentInfo;
 import org.opennms.netmgt.provision.ServiceDetector;
 import org.opennms.netmgt.provision.SyncServiceDetector;
 
@@ -140,40 +141,44 @@ public class IpInterfaceScan implements RunInBatch {
      * @param serviceName a {@link java.lang.String} object.
      * @return a {@link org.opennms.core.tasks.Callback} object.
      */
-    public Callback<Boolean> servicePersister(final BatchTask currentPhase, final String serviceName) {
+    public Callback<Boolean> servicePersister(final BatchTask currentPhase, final ServiceDetector detector) {
         return new Callback<Boolean>() {
             @Override
             public void complete(final Boolean serviceDetected) {
                 final String hostAddress = str(getAddress());
-				LOG.info("Attempted to detect service {} on address {}: {}", serviceName, hostAddress, serviceDetected);
+				LOG.info("Attempted to detect service {} on address {}: {}", detector.getServiceName(), hostAddress, serviceDetected);
                 if (serviceDetected) {
 
                     currentPhase.getBuilder().addSequence(
                             new RunInBatch() {
                                 @Override
                                 public void run(final BatchTask batch) {
-                                    if ("SNMP".equals(serviceName)) {
+                                    if ("SNMP".equals(detector.getServiceName())) {
                                         setupAgentInfo(currentPhase);
                                     }
                                 }
-                            }, 
+                            },
+                            new RunInBatch() {
+                                @Override
+                                public void run(BatchTask batch) {
+                                    if (detector instanceof PersistsAgentInfo) {
+                                        ((PersistsAgentInfo)detector).persistAgentInfo(getNodeId(), getAddress());
+                                    }
+                                }
+                            },
                             new RunInBatch() {
                                 @Override
                                 public void run(final BatchTask batch) {
-                                    getProvisionService().addMonitoredService(getNodeId(), hostAddress, serviceName);
+                                    getProvisionService().addMonitoredService(getNodeId(), hostAddress, detector.getServiceName());
                                 }
                             });
-
-
-                    
-
                 }
-                getProvisionService().updateMonitoredServiceState(getNodeId(), hostAddress, serviceName); // NMS-3906
+                getProvisionService().updateMonitoredServiceState(getNodeId(), hostAddress, detector.getServiceName()); // NMS-3906
             }
 
             @Override
             public void handleException(final Throwable t) {
-                LOG.info("Exception occurred while trying to detect service {} on address {}", serviceName, str(getAddress()), t);
+                LOG.info("Exception occurred while trying to detect service {} on address {}", detector.getServiceName(), str(getAddress()), t);
             }
         };
     }
@@ -213,11 +218,11 @@ public class IpInterfaceScan implements RunInBatch {
     }
 
     private Task createAsyncDetectorTask(final BatchTask currentPhase, final AsyncServiceDetector asyncDetector) {
-        return currentPhase.getCoordinator().createTask(currentPhase, runDetector(asyncDetector), servicePersister(currentPhase, asyncDetector.getServiceName()));
+        return currentPhase.getCoordinator().createTask(currentPhase, runDetector(asyncDetector), servicePersister(currentPhase, asyncDetector));
     }
 
     private Task createSyncDetectorTask(final BatchTask currentPhase, final SyncServiceDetector syncDetector) {
-        return currentPhase.getCoordinator().createTask(currentPhase, runDetector(syncDetector, servicePersister(currentPhase, syncDetector.getServiceName())));
+        return currentPhase.getCoordinator().createTask(currentPhase, runDetector(syncDetector, servicePersister(currentPhase, syncDetector)));
     }
 
     /** {@inheritDoc} */

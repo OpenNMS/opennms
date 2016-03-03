@@ -34,7 +34,6 @@ import java.io.OutputStreamWriter;
 import java.net.URI;
 import java.security.GeneralSecurityException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -102,7 +101,7 @@ public class NCSNorthbounder extends AbstractNorthbounder {
 
         if(m_config.getAcceptableUeis() != null && m_config.getAcceptableUeis().size() != 0 && !m_config.getAcceptableUeis().contains(alarm.getUei())) return false;
 
-        Map<String, String> alarmParms = getParameterMap(alarm.getEventParms());
+        final Map<String, String> alarmParms = alarm.getParameters();
 
         // in order to determine the service we need to have the following parameters set in the events
         if (!alarmParms.containsKey(COMPONENT_TYPE)) return false;
@@ -132,40 +131,13 @@ public class NCSNorthbounder extends AbstractNorthbounder {
     private ServiceAlarm toServiceAlarm(NorthboundAlarm alarm) {
         AlarmType alarmType = alarm.getAlarmType();
 
-        Map<String, String> alarmParms = getParameterMap(alarm.getEventParms());
+        final Map<String, String> alarmParms = alarm.getParameters();
 
         String id = alarmParms.get(COMPONENT_FOREIGN_SOURCE)+":"+alarmParms.get(COMPONENT_FOREIGN_ID);
         String name = alarmParms.get(COMPONENT_NAME);
 
         return new ServiceAlarm(id, name, alarmType == AlarmType.PROBLEM ? "Down" : "Up");
     }
-
-    Map<String, String> getParameterMap(String parmString) {
-
-        Map<String, String> parmMap = new HashMap<String, String>();
-
-        String[] parms = parmString.split(";");
-
-        for(String parm : parms) {
-            if (parm.endsWith("(string,text)")) {
-                // we only include string valued keys in the map
-                parm = parm.substring(0, parm.length()-"(string,text)".length());
-
-                int eq = parm.indexOf('=');
-                if (0 < eq && eq < parm.length()) {
-                    String key = parm.substring(0, eq);
-                    String val = parm.substring(eq+1);
-                    parmMap.put(key, val);
-                }
-            }
-        }
-
-        return parmMap;
-
-    }
-
-
-
 
     @Override
     public void forwardAlarms(List<NorthboundAlarm> alarms) throws NorthbounderException {

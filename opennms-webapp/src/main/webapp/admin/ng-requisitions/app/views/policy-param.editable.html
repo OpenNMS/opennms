@@ -1,8 +1,8 @@
 <input required class="form-control" type="text"
-        placeholder="Parameter Name"
+        placeholder="Parameter Name (hit space bar to see the options)"
         ng-model="parameter.key"
-        ng-focus="onFocus($event)" empty-typeahead typeahead-editable="false"
-        typeahead="param for param in getOptionalParameters() | filter:$viewValue:fieldComparator"></input>
+        typeahead-min-length="0" typeahead-editable="false"
+        uib-typeahead="param for param in getOptionalParameters() | filter:$viewValue"></input>
 <div class="input-group">
   <input class="form-control" type="text" placeholder="Parameter Value" ng-model="parameter.value" required></input>
   <span class="input-group-btn">

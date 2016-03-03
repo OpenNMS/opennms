@@ -156,4 +156,10 @@ public class RowDef implements Def {
         result = 31 * result + (m_categories != null ? m_categories.hashCode() : 0);
         return result;
     }
+
+	@Override
+	public String toString() {
+		return "RowDef [label=" + m_label + ", reportCategory=" + m_reportCategory + ", categories="
+				+ m_categories + "]";
+	}
 }

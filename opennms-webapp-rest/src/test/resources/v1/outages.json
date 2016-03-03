@@ -36,7 +36,9 @@
                 "logMessage": "Test Event Log Message", 
                 "nodeId": 1, 
                 "nodeLabel": "node1", 
-                "parms": "testParm=HelloWorld(string,text)", 
+                "parameters": [
+                    {"name": "testParm", "value": "HelloWorld", "type":"string" }
+                ],
                 "serviceType": {
                     "id": 1,
                     "name": "ICMP"
@@ -58,7 +60,9 @@
                 "logMessage": "Test Event Log Message", 
                 "nodeId": 1, 
                 "nodeLabel": "node1", 
-                "parms": "testParm=HelloWorld(string,text)", 
+                "parameters": [
+                    {"name": "testParm", "value": "HelloWorld", "type":"string" }
+                ],
                 "serviceType": {
                     "id": 1,
                     "name": "ICMP"

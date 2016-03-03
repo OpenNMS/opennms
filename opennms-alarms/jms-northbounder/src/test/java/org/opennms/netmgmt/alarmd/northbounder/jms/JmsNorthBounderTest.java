@@ -64,8 +64,8 @@ import org.springframework.jms.core.JmsTemplate;
 import org.springframework.test.context.ContextConfiguration;
 
 /**
- * Tests the JMS North Bound Interface
- * 
+ * Tests the JMS North Bound Interface.
+ *
  * @author <a href="mailto:dschlenk@converge-one.com">David Schlenk</a>
  */
 @RunWith(OpenNMSJUnit4ClassRunner.class)
@@ -76,15 +76,26 @@ import org.springframework.test.context.ContextConfiguration;
 })
 @JUnitConfigurationEnvironment
 public class JmsNorthBounderTest {
+    
+    /** The Constant NODE_LABEL. */
     private static final String NODE_LABEL = "schlazor";
+    
+    /** The JMS template. */
     private JmsTemplate m_template;
     
+    /** The JMS northbounder connection factory. */
     @Autowired
     private ConnectionFactory m_jmsNorthbounderConnectionFactory;
     
+    /** The Node DAO. */
     @Autowired
     private MockNodeDao m_nodeDao;
     
+    /**
+     * Start broker.
+     *
+     * @throws InterruptedException the interrupted exception
+     */
     @Before
     public void startBroker() throws InterruptedException {
         MockLogAppender.setupLogging();
@@ -93,6 +104,11 @@ public class JmsNorthBounderTest {
         m_template.setReceiveTimeout(100L);
     }
 
+    /**
+     * Assert logs.
+     *
+     * @throws InterruptedException the interrupted exception
+     */
     @After
     public void assertLogs() throws InterruptedException {
         //MockLogAppender.assertNoWarningsOrGreater();
@@ -101,12 +117,11 @@ public class JmsNorthBounderTest {
     /**
      * This tests forwarding of 7 alarms, one for each OpenNMS severity to
      * verify the LOG_LEVEL agrees with the Severity based on our algorithm.
-     * 
-     * @throws Exception
+     *
+     * @throws Exception the exception
      */
     @Test
     public void testForwardAlarms() throws Exception {
-
         String xml = generateConfigXml();
 
         Resource resource = new ByteArrayResource(xml.getBytes());
@@ -122,11 +137,7 @@ public class JmsNorthBounderTest {
         List<JmsNorthbounder> nbis = new LinkedList<JmsNorthbounder>();
 
         for (JmsDestination jmsDestination : destinations) {
-            JmsNorthbounder nbi = new JmsNorthbounder(
-                                                      config,
-                                                      m_jmsNorthbounderConnectionFactory,
-                                                      jmsDestination);
-            nbi.setNodeDao(m_nodeDao);
+            JmsNorthbounder nbi = new JmsNorthbounder(config, m_jmsNorthbounderConnectionFactory, jmsDestination);
             nbi.afterPropertiesSet();
             nbis.add(nbi);
         }
@@ -163,7 +174,6 @@ public class JmsNorthBounderTest {
         m_nodeDao.flush();
         // TX via NBIs
         for (JmsNorthbounder nbi : nbis) {
-
             for (int i = 1; i <= j; ++i) {
                 OnmsAlarm onmsAlarm = new OnmsAlarm();
                 onmsAlarm.setId(i);
@@ -204,8 +214,7 @@ public class JmsNorthBounderTest {
             m = m_template.receive("OpenNMSAlarmQueue");
         }
 
-        Assert.assertTrue("Log messages sent: 7, Log messages received: "
-                + messages.size(), 7 == messages.size());
+        Assert.assertTrue("Log messages sent: 7, Log messages received: " + messages.size(), 7 == messages.size());
 
         for (String message : messages) {
             System.out.println(message);
@@ -214,12 +223,16 @@ public class JmsNorthBounderTest {
         int i = 0;
         for (String message : messages) {
             Assert.assertTrue("ALARM ID:" +(i+1), message.contains("ALARM ID:" + (i+1) + " "));
-            Assert.assertTrue(message.contains("NODE:"
-                    + NODE_LABEL));
+            Assert.assertTrue(message.contains("NODE:" + NODE_LABEL));
             i++;
         }
     }
 
+    /**
+     * Generate configuration XML.
+     *
+     * @return the string
+     */
     private String generateConfigXml() {
         return "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n"
                 + "<jms-northbounder-config>\n"

@@ -159,6 +159,7 @@ public class QueueingForeignSourceRepository implements ForeignSourceRepository,
     @Override
     public void save(final Requisition requisition) throws ForeignSourceRepositoryException {
         LOG.debug("Queueing save of requisition {} (containing {} nodes)", requisition.getForeignSource(), requisition.getNodeCount());
+        validate(requisition);
         m_pendingRequisitions.put(requisition.getForeignSource(), requisition);
         m_executor.execute(new QueuePersistRunnable());
     }
@@ -207,12 +208,15 @@ public class QueueingForeignSourceRepository implements ForeignSourceRepository,
 
     @Override
     public void clear() throws ForeignSourceRepositoryException {
+        m_pendingForeignSources.clear();
+        m_pendingRequisitions.clear();
         for (final Requisition req : getRequisitions()) {
             if (req != null) delete(req);
         }
         for (final ForeignSource fs : getForeignSources()) {
             if (fs != null) delete(fs);
         }
+        m_executor.execute(new QueuePersistRunnable());
     }
 
     private final class QueuePersistRunnable implements Runnable {

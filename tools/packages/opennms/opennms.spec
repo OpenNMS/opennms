@@ -665,7 +665,6 @@ find $RPM_BUILD_ROOT%{instprefix}/lib ! -type d | \
 	sed -e "s|^$RPM_BUILD_ROOT|%attr(755,root,root) |" | \
 	grep -v 'gnu-crypto' | \
 	grep -v 'jdhcp' | \
-	grep -v 'jira' | \
 	grep -v 'jradius' | \
 	grep -v 'ncs-' | \
 	grep -v 'opennms-alarm-northbounder-jms' | \
@@ -686,6 +685,7 @@ find $RPM_BUILD_ROOT%{instprefix}/lib ! -type d | \
 	sort >> %{_tmppath}/files.main
 find $RPM_BUILD_ROOT%{instprefix}/system ! -type d | \
     sed -e "s|^$RPM_BUILD_ROOT|%attr(755,root,root) |" | \
+	grep -v 'jira-' | \
     sort >> %{_tmppath}/files.main
 # Put the etc, lib, and system subdirectories into the package
 find $RPM_BUILD_ROOT%{instprefix}/etc $RPM_BUILD_ROOT%{instprefix}/lib $RPM_BUILD_ROOT%{instprefix}/system -type d | \
@@ -795,7 +795,8 @@ rm -rf $RPM_BUILD_ROOT
 
 %files plugin-ticketer-jira
 %defattr(664 root root 775)
-%{instprefix}/lib/jira-*.jar
+%{instprefix}/system/org/opennms/features/jira-troubleticketer/*/jira-*.jar
+%{instprefix}/system/org/opennms/features/jira-client/*/jira-*.jar
 %config(noreplace) %{instprefix}/etc/jira.properties
 %{sharedir}/etc-pristine/jira.properties
 

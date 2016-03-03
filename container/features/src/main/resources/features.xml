@@ -268,15 +268,6 @@
       <bundle>wrap:mvn:jfree/jcommon/1.0.16</bundle>
     </feature>
 
-    <feature name="jersey-client" description="Jersey :: Client" version="1.18.1">
-      <feature>commons-codec</feature>
-
-      <bundle>mvn:com.sun.jersey/jersey-client/1.18.1</bundle>
-      <bundle>mvn:com.sun.jersey/jersey-core/1.18.1</bundle>
-      <bundle>mvn:com.sun.jersey.contribs/jersey-apache-client/1.18</bundle>
-      <bundle>wrap:mvn:commons-httpclient/commons-httpclient/3.1</bundle>
-    </feature>
-
     <feature name="jolokia" description="Jolokia" version="1.2.3">
       <feature>http</feature>
       <bundle>mvn:org.jolokia/jolokia-osgi/1.2.3</bundle>
@@ -320,6 +311,19 @@
       <bundle>wrap:mvn:org.springframework.webflow/spring-js/${springWebFlowVersion}</bundle>
       <bundle>wrap:mvn:org.springframework.webflow/spring-js-resources/${springWebFlowVersion}</bundle>
       <bundle>wrap:mvn:org.springframework.webflow/spring-webflow/${springWebFlowVersion}</bundle>
+    </feature>
+
+    <feature name="net.java.dev.jna" description="Java Native Access (JNA)" version="4.2.1">
+      <bundle>wrap:mvn:net.java.dev.jna/jna/4.2.1$Export-Package=com.sun.jna</bundle>
+      <bundle>wrap:mvn:net.java.dev.jna/jna-platform/4.2.1$Export-Package=com.sun.jna.platform</bundle>
+    </feature>
+
+    <feature name="jicmp" description="jicmp" version="1.4.4">
+      <bundle>wrap:mvn:org.opennms/jicmp-api/1.4.4$Export-Package=org.opennms.protocols.icmp,org.opennms.protocols.ip</bundle>
+    </feature>
+
+    <feature name="jicmp6" description="jicmp6" version="1.2.1">
+      <bundle>wrap:mvn:org.opennms/jicmp6-api/1.2.1$Export-Package=org.opennms.protocols.icmp6</bundle>
     </feature>
 
     <!-- OpenNMS features -->
@@ -474,6 +478,17 @@
       <bundle>mvn:org.opennms/opennms-dao/${project.version}</bundle>
     </feature>
 
+    <feature name="opennms-discovery" description="OpenNMS :: Discovery" version="${project.version}">
+      <feature>castor</feature>
+      <feature>guava</feature>
+
+      <feature>opennms-core-daemon</feature>
+      <feature>opennms-core-db</feature>
+      <feature>opennms-config</feature>
+
+      <bundle>mvn:org.opennms.features/org.opennms.features.discovery/${project.version}</bundle>
+    </feature>
+
     <feature name="opennms-events-api" description="OpenNMS :: Events API" version="${project.version}">
       <feature version="[4.0,4.1)">spring</feature>
 
@@ -507,11 +522,33 @@
       <bundle>mvn:org.opennms.features.events/org.opennms.features.events.traps/${project.version}</bundle>
     </feature>
 
-    <feature name="opennms-icmp-api" description="OpenNMS :: ICMP API" version="${project.version}">
+    <feature name="opennms-icmp-api" description="OpenNMS :: ICMP :: API" version="${project.version}">
       <feature>opennms-core</feature>
 
       <bundle dependency="true">mvn:org.opennms.lib/org.opennms.lib.tracker/0.7</bundle>
       <bundle>mvn:org.opennms/opennms-icmp-api/${project.version}</bundle>
+    </feature>
+
+    <feature name="opennms-icmp-jna" description="OpenNMS :: ICMP :: JNA" version="${project.version}">
+      <feature>opennms-icmp-api</feature>
+      <feature>net.java.dev.jna</feature>
+
+      <bundle>mvn:org.opennms.core/org.opennms.core.icmp-jna/${project.version}</bundle>
+      <bundle>mvn:org.opennms/opennms-icmp-jna/${project.version}</bundle>
+    </feature>
+
+    <feature name="opennms-icmp-jni" description="OpenNMS :: ICMP :: JNI" version="${project.version}">
+      <feature>opennms-icmp-api</feature>
+      <feature>jicmp</feature>
+
+      <bundle>mvn:org.opennms/opennms-icmp-jni/${project.version}</bundle>
+    </feature>
+
+    <feature name="opennms-icmp-jni6" description="OpenNMS :: ICMP :: JNI (with IPv6 support)" version="${project.version}">
+      <feature>opennms-icmp-jni</feature>
+      <feature>jicmp6</feature>
+
+      <bundle>mvn:org.opennms/opennms-icmp-jni6/${project.version}</bundle>
     </feature>
 
     <feature name="opennms-javamail" description="OpenNMS :: Javamail" version="${project.version}">
@@ -540,7 +577,6 @@
       <feature>commons-beanutils</feature>
       <feature>commons-io</feature>
       <feature>fop</feature>
-      <feature>jersey-client</feature>
 
       <feature>opennms-config</feature>
       <feature>opennms-core</feature>

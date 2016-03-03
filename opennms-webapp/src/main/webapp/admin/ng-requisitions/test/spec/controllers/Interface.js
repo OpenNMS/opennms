@@ -21,7 +21,7 @@ describe('Controller: InterfaceController', function () {
   function createController() {
     return controllerFactory('InterfaceController', {
       $scope: scope,
-      $modalInstance: mockModalInstance,
+      $uibModalInstance: mockModalInstance,
       RequisitionsService: mockRequisitionsService,
       foreignSource: foreignSource,
       foreignId: foreignId,

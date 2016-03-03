@@ -33,11 +33,13 @@ import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertTrue;
 
 import java.io.File;
+import java.nio.file.Paths;
 import java.util.Date;
 
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.opennms.api.integration.ticketing.PluginException;
 import org.opennms.api.integration.ticketing.Ticket;
 
 public class JiraTicketerPluginTest {
@@ -46,18 +48,22 @@ public class JiraTicketerPluginTest {
 
     @Before
     public void setUp() throws Exception {
-
-        System.setProperty("opennms.home", "src" + File.separatorChar + "test" + File.separatorChar + "opennms-home");
-
-        System.out.println("src" + File.separatorChar + "test" + File.separatorChar + "opennms-home");
+        final File opennmsHome = Paths.get("src", "test", "resources", "opennms-home").toFile();
+        assertTrue(opennmsHome + " must exist.", opennmsHome.exists());
+        System.setProperty("opennms.home", opennmsHome.getAbsolutePath());
 
         m_ticketer = new JiraTicketerPlugin();
     }
 
     @Test
-    @Ignore("This test creates test tickets on a JIRA system.")
-    public void testSave() {
+    @Ignore("This rely on the JIRA system configured in src/test/resources/opennms-home/etc/jira.properties")
+    public void canSaveGetAndUpdate() throws Exception {
+        String ticketId = save();
+        get(ticketId);
+        update(ticketId);
+    }
 
+    private String save() throws PluginException {
         Ticket ticket = new Ticket();
         ticket.setState(Ticket.State.OPEN);
         ticket.setSummary("This is the summary");
@@ -72,11 +78,20 @@ public class JiraTicketerPluginTest {
         assertNotNull(newTicket);
         assertTicketEquals(ticket, newTicket);
 
+        return ticket.getId();
     }
 
-    @Test
-    @Ignore("This test creates test tickets on a JIRA system.")
-    public void testUpdate() throws Exception {
+    private void get(String ticketId) throws PluginException {
+        Ticket newTicket = m_ticketer.get(ticketId);
+
+        assertNotNull(newTicket);
+        assertEquals(ticketId, newTicket.getId());
+        assertEquals(Ticket.State.OPEN, newTicket.getState());
+        assertTrue("Unexpected summary: " + newTicket.getSummary(), newTicket.getSummary().contains("This is the summary"));
+        assertTrue("Unexpected description: " + newTicket.getDetails(), newTicket.getDetails().contains("details"));
+    }
+
+    private void update(String ticketId) throws PluginException, InterruptedException {
 
         String summary = "A Ticket at " + new Date();
 
@@ -112,30 +127,5 @@ public class JiraTicketerPluginTest {
         assertEquals(ticket.getId(), newTicket.getId());
         assertEquals(ticket.getState(), newTicket.getState());
         assertEquals(ticket.getSummary(), newTicket.getSummary());
-
-        //TODO: Implement this later when we need 2 way retrieval of comments/details
-        //assertEquals(ticket.getDetails(), newTicket.getDetails());
     }
-
-    /**
-     * This test relies on issues.opennms.org being accessible.
-     */
-    @Test
-    public void testGet() {
-
-        //This may need to be changed ;-)
-        String ticketId = "NMS-1000";
-        Ticket newTicket = m_ticketer.get(ticketId);
-
-        assertNotNull(newTicket);
-        assertEquals(ticketId, newTicket.getId());
-        System.out.println(newTicket.getId() + ": " + newTicket.getSummary());
-        // This was a bug about SQL exceptions
-        assertTrue("Unexpected summary: " + newTicket.getSummary(), newTicket.getSummary().startsWith("java.sql.SQLException"));
-        assertEquals(Ticket.State.CLOSED, newTicket.getState());
-
-        assertTrue("Unexpected details: " + newTicket.getDetails(), newTicket.getDetails().startsWith("Ted Kaczmarek"));
-
-    }
-
 }

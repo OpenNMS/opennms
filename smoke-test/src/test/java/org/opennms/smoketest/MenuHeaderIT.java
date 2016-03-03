@@ -66,25 +66,31 @@ public class MenuHeaderIT extends OpenNMSSeleniumTestCase {
         findElementByXpath("//h3[contains(text(), 'Distributed Status Summary')]");
 
         clickMenuItem("Status", "Surveillance", "surveillance-view.jsp");
-        m_driver.switchTo().frame("surveillance-view-ui");
+        // switchTo() by xpath is much faster than by ID
+        //m_driver.switchTo().frame("surveillance-view-ui");
+        m_driver.switchTo().frame(findElementByXpath("/html/body/div/iframe"));
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//span[text()='Surveillance view: default']")));
+        m_driver.switchTo().defaultContent();
         frontPage();
 
-        clickMenuItem("Reports", "Charts", "charts/index.jsp");
+        clickMenuItem("name=nav-Reports-top", "Charts", "charts/index.jsp");
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("include-charts")));
 
-        clickMenuItem("Reports", "Resource Graphs", "graph/index.jsp");
+        clickMenuItem("name=nav-Reports-top", "Resource Graphs", "graph/index.jsp");
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//h3[contains(text(), 'Standard Resource')]")));
 
-        clickMenuItem("Reports", "KSC Reports", "KSC/index.htm");
+        clickMenuItem("name=nav-Reports-top", "KSC Reports", "KSC/index.htm");
         findElementByXpath("//h3[text()='Customized Reports']");
 
-        clickMenuItem("Reports", "Statistics", "statisticsReports/index.htm");
+        clickMenuItem("name=nav-Reports-top", "Statistics", "statisticsReports/index.htm");
         findElementByXpath("//h3[text()='Statistics Report List']");
 
         clickMenuItem("Dashboards", "Dashboard", "dashboard.jsp");
-        m_driver.switchTo().frame("surveillance-view-ui");
+        // switchTo() by xpath is much faster than by ID
+        //m_driver.switchTo().frame("surveillance-view-ui");
+        m_driver.switchTo().frame(findElementByXpath("/html/body/div/iframe"));
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//span[text()='Surveillance view: default']")));
+        m_driver.switchTo().defaultContent();
         frontPage();
 
         clickMenuItem("Dashboards", "Ops Board", "vaadin-wallboard");
@@ -92,10 +98,13 @@ public class MenuHeaderIT extends OpenNMSSeleniumTestCase {
 
         frontPage();
         clickMenuItem("Maps", "Distributed", "RemotePollerMap/index.jsp");
-        m_driver.switchTo().frame("app");
+        // switchTo() by xpath is much faster than by ID
+        //m_driver.switchTo().frame("app");
+        m_driver.switchTo().frame(findElementByXpath("/html/body/div/iframe"));
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("gwt-uid-1")));
-
+        m_driver.switchTo().defaultContent();
         frontPage();
+
         clickMenuItem("Maps", "Topology", "topology");
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[contains(text(), 'Last update time')]")));
 

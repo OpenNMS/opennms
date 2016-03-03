@@ -44,6 +44,7 @@ import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.test.rest.AbstractSpringJerseyRestTestCase;
 import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.netmgt.dao.support.FilesystemResourceStorageDao;
+import org.opennms.netmgt.rrd.RrdStrategyFactory;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -68,12 +69,14 @@ import org.springframework.transaction.annotation.Transactional;
 @JUnitTemporaryDatabase
 @Transactional
 public class GraphRestServiceIT extends AbstractSpringJerseyRestTestCase {
-
     @Autowired
     private DatabasePopulator m_dbPopulator;
 
     @Autowired
     private FilesystemResourceStorageDao m_resourceStorageDao;
+
+    @Autowired
+    private RrdStrategyFactory m_rrdStrategyFactory;
 
     @Rule
     public TemporaryFolder m_tempFolder = new TemporaryFolder();
@@ -88,10 +91,11 @@ public class GraphRestServiceIT extends AbstractSpringJerseyRestTestCase {
         // Point to our temporary directory
         m_resourceStorageDao.setRrdDirectory(m_tempFolder.getRoot());
 
-        // Add some blank .jrb files
+        // Add some blank RRD files
+        final String extension = m_rrdStrategyFactory.getStrategy().getDefaultFileExtension();
         File nodeSnmp1 = m_tempFolder.newFolder("snmp", "1");
-        FileUtils.touch(new File(nodeSnmp1, "SwapIn.jrb"));
-        FileUtils.touch(new File(nodeSnmp1, "SwapOut.jrb"));
+        FileUtils.touch(new File(nodeSnmp1, "SwapIn" + extension));
+        FileUtils.touch(new File(nodeSnmp1, "SwapOut" + extension));
     }
 
     @Test

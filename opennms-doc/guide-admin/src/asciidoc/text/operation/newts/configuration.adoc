@@ -44,6 +44,7 @@ The following properties, found in `${OPENNMS_HOME}/etc/opennms.properties`, can
                                                                            See http://docs.datastax.com/en/cassandra/2.1/cassandra/dml/dml_config_consistency_c.html[Configuring data consistency] for a list of available options.
 | `org.opennms.newts.config.max_batch_size`       | `16`                 | Maximum number of records to insert in a single transaction. Limited by the size of the Cassandra cluster's batch_size_fail_threshold_in_kb property.
 | `org.opennms.newts.config.ring_buffer_size`     | `8192`               | Maximum number of records that can be held in the ring buffer. Must be a power of two.
+| `org.opennms.newts.config.writer_threads`       | `16`                 | Number of threads used to pull samples from the ring buffer and insert them into Newts.
 | `org.opennms.newts.config.ttl`                  | `31540000`           | Number of seconds after which samples will automatically be deleted. Defaults to one year.
 | `org.opennms.newts.config.resource_shard`       | `604800`             | Duration in seconds for which samples will be stored at the same key. Defaults to 7 days in seconds.
 | `org.opennms.newts.query.minimum_step`          | `30000`              | Minimum step size in milliseconds. Used to prevent large queries.

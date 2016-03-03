@@ -74,7 +74,7 @@ public class WillItUnmarshalCoverageMetaIT {
     private static SortedSet<String> FILES = new TreeSet<String>();
     
     /**
-     * Adds all .xml files in the given director to the list of files to test
+     * Adds all .xml files in the given directory to the list of files to test
      * coverage for.
      * 
      * @param directory the directory to scan for .xml files
@@ -102,8 +102,10 @@ public class WillItUnmarshalCoverageMetaIT {
      */
     private static void ignoreFile(final File file) {
         try {
-            String canonicalPath = file.getCanonicalPath();
-            assert FILES.remove(canonicalPath);
+            final String canonicalPath = file.getCanonicalPath();
+            LOG.debug("removing {}", canonicalPath);
+            FILES.remove(canonicalPath);
+            assert !FILES.contains(canonicalPath);
         } catch (final IOException e) {
             LOG.error("Failed to get canonical file for {}", file, e);
             assert false;
@@ -201,7 +203,7 @@ public class WillItUnmarshalCoverageMetaIT {
      */
     @Test
     public void testCoverage() {
-        // Check if the file is in the set of covvered files
+        // Check if the file is in the set of covered files
         assertTrue("File is not covered: " + file, COVERED_FILES.contains(file));
     }
 }

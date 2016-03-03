@@ -170,6 +170,11 @@ public class ConfigTesterTest {
     }
 
     @Test
+    public void testEmailNorthbounderConfiguration() {
+        testConfigFile("email-northbounder-configuration.xml");
+    }
+
+    @Test
     public void testEventConf() {
         testConfigFile("eventconf.xml");
     }
@@ -221,7 +226,7 @@ public class ConfigTesterTest {
 
     @Test
     public void testJmsNorthbounderConfiguration() {
-        testConfigFile("jms-northbounder-configuration.xml");
+        ignoreConfigFile("jms-northbounder-configuration.xml");
     }
 
     @Test
@@ -449,6 +454,11 @@ public class ConfigTesterTest {
     }
 
     @Test
+    public void testSnmpTrapNorthbounderConfiguration() {
+        testConfigFile("snmptrap-northbounder-configuration.xml");
+    }
+
+    @Test
     public void testStatsdConfiguration() {
         testConfigFile("statsd-configuration.xml");
     }
@@ -534,6 +544,12 @@ public class ConfigTesterTest {
     @Test
     public void testVMwareDatacollectionConfig() {
         testConfigFile("vmware-datacollection-config.xml");
+    }
+
+    @Test
+    public void testWSManConfigFiles() {
+        testConfigFile("wsman-config.xml");
+        testConfigFile("wsman-datacollection-config.xml");
     }
 
     @Test
