@@ -166,7 +166,7 @@ public class AvailabilityRestService extends OnmsRestService {
             if (node == null) {
                 throw getException(Status.NOT_FOUND, "Node {} was not found for category {}.", Long.toString(nodeId), categoryName);
             }
-            return getAvailabilityNode(node.getId().intValue()); // TODO This seems to be unnecessary, cat.getNode() already returns an AvailabilityNode object.
+            return getAvailabilityNode(node.getId().intValue());
         } catch (final Exception e) {
             LOG.warn("Failed to get availability data for category {}: {}", categoryName, e.getMessage(), e);
             throw getException(Status.BAD_REQUEST, "Failed to get availability data for category " + categoryName);
