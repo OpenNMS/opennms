@@ -68,8 +68,8 @@ public class ForeignSourceRestServiceIT extends AbstractSpringJerseyRestTestCase
         assertTrue(xml.contains("ICMP"));
 
         // TODO: If we try to delete the default foreign source, it should fail
-        sendRequest(DELETE, url, 200);
-        sendRequest(DELETE, "/foreignSources/deployed/default", 200);
+        sendRequest(DELETE, url, 204);
+        sendRequest(DELETE, "/foreignSources/deployed/default", 204);
     }
     
     @Test
@@ -100,11 +100,11 @@ public class ForeignSourceRestServiceIT extends AbstractSpringJerseyRestTestCase
         
         url = "/foreignSources/test";
         sendPut(url, "scanInterval=1h", 202, "/foreignSources/test");
-        sendRequest(DELETE, url, 200);
+        sendRequest(DELETE, url, 204);
         xml = sendRequest(GET, url, 200);
         assertTrue(xml.contains("<scan-interval>1d</scan-interval>"));
         
-        sendRequest(DELETE, url, 200);
+        sendRequest(DELETE, url, 204);
         xml = sendRequest(GET, url, 200);
         assertTrue(xml.contains("<scan-interval>1d</scan-interval>"));
     }
@@ -123,7 +123,7 @@ public class ForeignSourceRestServiceIT extends AbstractSpringJerseyRestTestCase
         xml = sendRequest(GET, url, 200);
         assertTrue(xml, xml.contains("org.opennms.netmgt.provision.detector.simple.HttpDetector"));
 
-        xml = sendRequest(DELETE, url, 200);
+        xml = sendRequest(DELETE, url, 204);
         xml = sendRequest(GET, url, 204);
     }
 
@@ -142,7 +142,7 @@ public class ForeignSourceRestServiceIT extends AbstractSpringJerseyRestTestCase
         xml = sendRequest(GET, url, 200);
         assertTrue(xml, xml.contains("org.opennms.netmgt.provision.persist.policies.InclusiveInterfacePolicy"));
         
-        xml = sendRequest(DELETE, url, 200);
+        xml = sendRequest(DELETE, url, 204);
         xml = sendRequest(GET, url, 204);
     }
 

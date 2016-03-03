@@ -42,6 +42,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
+import javax.ws.rs.core.Response.Status;
 
 import org.joda.time.Duration;
 import org.opennms.netmgt.config.monitoringLocations.LocationDef;
@@ -90,7 +91,11 @@ public class MonitoringLocationsRestService extends OnmsRestService {
 	@Path("{monitoringLocation}")
 	@Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
 	public LocationDef getMonitoringLocation(@PathParam("monitoringLocation") String monitoringLocation) {
-		return m_monitoringLocationDao.get(monitoringLocation);
+	    final LocationDef loc = m_monitoringLocationDao.get(monitoringLocation);
+            if (loc == null) {
+                throw getException(Status.NOT_FOUND, "Monitoring location {} was not found.", monitoringLocation);
+            }
+            return loc;
 	}
 
 	@POST
@@ -119,6 +124,7 @@ public class MonitoringLocationsRestService extends OnmsRestService {
 
 			if (params.isEmpty()) return Response.notModified().build();
 
+			boolean modified = false;
 			final BeanWrapper wrapper = PropertyAccessorFactory.forBeanPropertyAccess(def);
 			wrapper.registerCustomEditor(Duration.class, new StringIntervalPropertyEditor());
 			for(final String key : params.keySet()) {
@@ -127,11 +133,15 @@ public class MonitoringLocationsRestService extends OnmsRestService {
 					String stringValue = params.getFirst(key);
 					value = wrapper.convertIfNecessary(stringValue, (Class<?>)wrapper.getPropertyType(key));
 					wrapper.setPropertyValue(key, value);
+					modified = true;
 				}
 			}
-			LOG.debug("updateMonitoringLocation: monitoring location {} updated", monitoringLocation);
-			m_monitoringLocationDao.save(def);
-			return Response.ok().build();
+			if (modified) {
+			    LOG.debug("updateMonitoringLocation: monitoring location {} updated", monitoringLocation);
+			    m_monitoringLocationDao.save(def);
+			    return Response.noContent().build();
+			}
+			return Response.notModified().build();
 		} finally {
 			writeUnlock();
 		}
@@ -145,7 +155,7 @@ public class MonitoringLocationsRestService extends OnmsRestService {
 		try {
 			LOG.debug("deleteMonitoringLocation: deleting monitoring location {}", monitoringLocation);
 			m_monitoringLocationDao.delete(monitoringLocation);
-			return Response.ok().build();
+			return Response.noContent().build();
 		} finally {
 			writeUnlock();
 		}

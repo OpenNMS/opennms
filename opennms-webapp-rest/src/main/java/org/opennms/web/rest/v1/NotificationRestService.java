@@ -79,7 +79,11 @@ public class NotificationRestService extends OnmsRestService {
     @Path("{notifId}")
     @Transactional
     public OnmsNotification getNotification(@PathParam("notifId") int notifId) {
-        return m_notifDao.get(notifId);
+        final OnmsNotification notif = m_notifDao.get(notifId);
+        if (notif == null) {
+            throw getException(Status.NOT_FOUND, "Notification {} was not found.", Integer.toString(notifId));
+        }
+        return notif;
     }
     
     /**
@@ -135,7 +139,7 @@ public class NotificationRestService extends OnmsRestService {
                 throw getException(Status.BAD_REQUEST, "Must supply the 'ack' parameter, set to either 'true' or 'false'");
             }
             processNotifAck(securityContext, notif,ack);
-            return Response.ok().build();
+            return Response.noContent().build();
         } finally {
             writeUnlock();
         }
@@ -164,7 +168,7 @@ public class NotificationRestService extends OnmsRestService {
             for (final OnmsNotification notif : m_notifDao.findMatching(builder.toCriteria())) {
                 processNotifAck(securityContext, notif, ack);
             }
-            return Response.ok().build();
+            return Response.noContent().build();
         } finally {
             writeUnlock();
         }

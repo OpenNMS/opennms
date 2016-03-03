@@ -180,7 +180,7 @@ public class SnmpTrapNorthbounderConfigurationResource extends OnmsRestService i
             File configFile = m_snmpTrapNorthbounderConfigDao.getConfigResource().getFile();
             JaxbUtils.marshal(config, new FileWriter(configFile));
             notifyDaemons();
-            return Response.ok().build();
+            return Response.noContent().build();
         } catch (Throwable t) {
             throw new WebApplicationException(Response.status(Status.INTERNAL_SERVER_ERROR).type(MediaType.TEXT_PLAIN).entity(t.getMessage()).build());
         } finally {
@@ -283,7 +283,7 @@ public class SnmpTrapNorthbounderConfigurationResource extends OnmsRestService i
         try {
             m_snmpTrapNorthbounderConfigDao.getConfig().addSnmpTrapSink(snmpTrapSink);
             saveConfiguration();
-            return Response.ok().build();
+            return Response.noContent().build();
         } finally {
             writeUnlock();
         }
@@ -308,7 +308,7 @@ public class SnmpTrapNorthbounderConfigurationResource extends OnmsRestService i
             }
             trapSink.addImportMapping(mappingGroup);
             saveConfiguration();
-            return Response.ok().build();
+            return Response.noContent().build();
         } catch (Throwable t) {
             throw new WebApplicationException(Response.status(Status.INTERNAL_SERVER_ERROR).type(MediaType.TEXT_PLAIN).entity(t.getMessage()).build());
         } finally {
@@ -345,7 +345,7 @@ public class SnmpTrapNorthbounderConfigurationResource extends OnmsRestService i
             }
             if (modified) {
                 saveConfiguration();
-                return Response.ok().build();
+                return Response.noContent().build();
             }
             return Response.notModified().build();
         } catch (Throwable t) {
@@ -390,7 +390,7 @@ public class SnmpTrapNorthbounderConfigurationResource extends OnmsRestService i
             if (modified) {
                 trapSink.addImportMapping(mappingGroup);
                 saveConfiguration();
-                return Response.ok().build();
+                return Response.noContent().build();
             }
             return Response.notModified().build();
         } catch (Throwable t) {
@@ -447,7 +447,7 @@ public class SnmpTrapNorthbounderConfigurationResource extends OnmsRestService i
         try {
             m_snmpTrapNorthbounderConfigDao.save();
             notifyDaemons();
-            return Response.ok().build();
+            return Response.noContent().build();
         } catch (Throwable t) {
             throw new WebApplicationException(Response.status(Status.INTERNAL_SERVER_ERROR).type(MediaType.TEXT_PLAIN).entity(t.getMessage()).build());
         }

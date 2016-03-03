@@ -303,11 +303,10 @@ public abstract class AbstractSpringJerseyRestTestCase {
         return roles == null? new HashSet<String>() : new HashSet<>(roles);
     }
 
-    /**
-     * @param url
-     * @param xml
-     * @param statusCode
-     */
+    protected MockHttpServletResponse sendPost(String url, String xml, int statusCode) throws Exception {
+        return sendPost(url, xml, statusCode, null);
+    }
+
     protected MockHttpServletResponse sendPost(String url, String xml, int statusCode, final String expectedUrlSuffix) throws Exception {
         LOG.debug("POST {}, expected status code = {}, expected URL suffix = {}", url, statusCode, expectedUrlSuffix);
         final MockHttpServletResponse response = sendData(POST, MediaType.APPLICATION_XML, url, xml, statusCode);

@@ -207,7 +207,11 @@ public class RequisitionRestService extends OnmsRestService {
     @Path("{foreignSource}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     public Requisition getRequisition(@PathParam("foreignSource") final String foreignSource) {
-        return m_accessService.getRequisition(foreignSource);
+        final Requisition requisition = m_accessService.getRequisition(foreignSource);
+        if (requisition == null) {
+            throw getException(Status.NOT_FOUND, "Foreign source '{}' not found.", foreignSource);
+        }
+        return requisition;
     }
 
     /**
@@ -222,9 +226,8 @@ public class RequisitionRestService extends OnmsRestService {
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     public RequisitionNodeCollection getNodes(@PathParam("foreignSource") final String foreignSource) throws ParseException {
         final RequisitionNodeCollection results = m_accessService.getNodes(foreignSource);
-
         if (results == null) {
-            throw getException(Response.Status.NOT_FOUND, "Foreign source '" + foreignSource + "' not found.");
+            throw getException(Status.NOT_FOUND, "Foreign source '{}' not found.", foreignSource);
         }
         return results;
     }
@@ -242,13 +245,10 @@ public class RequisitionRestService extends OnmsRestService {
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     public RequisitionNode getNode(@PathParam("foreignSource") final String foreignSource, @PathParam("foreignId") final String foreignId) throws ParseException {
         final RequisitionNode node = m_accessService.getNode(foreignSource, foreignId);
-
         if (node == null) {
-            throw getException(Response.Status.NOT_FOUND, "Node with Foreign ID '" + foreignId +"' and Foreign source '" + foreignSource + "' not found.");
+            throw getException(Status.NOT_FOUND, "Node with Foreign ID '{}' and Foreign source '{}' not found.", foreignId, foreignSource);
         }
         return node;
-
-
     }
 
     /**
@@ -264,11 +264,9 @@ public class RequisitionRestService extends OnmsRestService {
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     public RequisitionInterfaceCollection getInterfacesForNode(@PathParam("foreignSource") final String foreignSource, @PathParam("foreignId") final String foreignId) throws ParseException {
         final RequisitionInterfaceCollection ifaces = m_accessService.getInterfacesForNode(foreignSource, foreignId);
-
         if (ifaces == null) {
-            throw getException(Response.Status.NOT_FOUND, "Foreign ID '" + foreignId + "' not found in foreign source '" + foreignSource + "'.");
+            throw getException(Status.NOT_FOUND, "Node with Foreign ID '{}' and Foreign source '{}' not found.", foreignId, foreignSource);
         }
-
         return ifaces;
     }
 
@@ -286,11 +284,9 @@ public class RequisitionRestService extends OnmsRestService {
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     public RequisitionInterface getInterfaceForNode(@PathParam("foreignSource") final String foreignSource, @PathParam("foreignId") final String foreignId, @PathParam("ipAddress") final String ipAddress) throws ParseException {
         final RequisitionInterface iface = m_accessService.getInterfaceForNode(foreignSource, foreignId, ipAddress);
-
         if (iface == null) {
-            throw getException(Response.Status.NOT_FOUND, "Foreign ID '" + foreignId + "' not found in foreign source '" + foreignSource + "'.");
+            throw getException(Status.NOT_FOUND, "IP Interface {} on node with Foreign ID '{}' and Foreign source '{}' not found.", ipAddress, foreignId, foreignSource);
         }
-
         return iface;
     }
 
@@ -308,11 +304,9 @@ public class RequisitionRestService extends OnmsRestService {
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     public RequisitionMonitoredServiceCollection getServicesForInterface(@PathParam("foreignSource") final String foreignSource, @PathParam("foreignId") final String foreignId, @PathParam("ipAddress") final String ipAddress) throws ParseException {
         final RequisitionMonitoredServiceCollection services = m_accessService.getServicesForInterface(foreignSource, foreignId, ipAddress);
-
         if (services == null) {
-            throw getException(Response.Status.NOT_FOUND, "Unable to locate IP address '" + ipAddress + "' in " + foreignSource + ":" + foreignId + ".");
+            throw getException(Status.NOT_FOUND, "IP Interface {} on node with Foreign ID '{}' and Foreign source '{}' not found.", ipAddress, foreignId, foreignSource);
         }
-
         return services;
     }
 
@@ -331,11 +325,9 @@ public class RequisitionRestService extends OnmsRestService {
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     public RequisitionMonitoredService getServiceForInterface(@PathParam("foreignSource") final String foreignSource, @PathParam("foreignId") final String foreignId, @PathParam("ipAddress") final String ipAddress, @PathParam("service") String service) throws ParseException {
         final RequisitionMonitoredService monitoredService = m_accessService.getServiceForInterface(foreignSource, foreignId, ipAddress, service);
-
         if (monitoredService == null) {
-            throw getException(Response.Status.NOT_FOUND, "Unable to locate IP address '" + ipAddress + "' in " + foreignSource + ":" + foreignId + ".");
+            throw getException(Status.NOT_FOUND, "Monitored Service {} on IP Interface {} on node with Foreign ID '{}' and Foreign source '{}' not found.", service, ipAddress, foreignId, foreignSource);
         }
-
         return monitoredService;
     }
 
@@ -352,11 +344,9 @@ public class RequisitionRestService extends OnmsRestService {
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     public RequisitionCategoryCollection getCategories(@PathParam("foreignSource") final String foreignSource, @PathParam("foreignId") final String foreignId) throws ParseException {
         final RequisitionCategoryCollection categories = m_accessService.getCategories(foreignSource, foreignId);
-
         if (categories == null) {
-            throw getException(Response.Status.NOT_FOUND, "Unable to location node with ForeignSource: " + foreignSource + " and ForeignId: " + foreignId);
+            throw getException(Status.NOT_FOUND, "Node with Foreign ID '{}' and Foreign source '{}' not found.", foreignId, foreignSource);
         }
-
         return categories;
     }
 
@@ -374,9 +364,8 @@ public class RequisitionRestService extends OnmsRestService {
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     public RequisitionCategory getCategory(@PathParam("foreignSource") final String foreignSource, @PathParam("foreignId") final String foreignId, @PathParam("category") final String category) throws ParseException {
         final RequisitionCategory reqCategory = m_accessService.getCategory(foreignSource, foreignId, category);
-
         if (reqCategory == null) {
-            throw getException(Response.Status.NOT_FOUND, "Unable to find category " + category + " on node with Foreign ID '" + foreignId + "' and foreign source '" + foreignSource + "'.");
+            throw getException(Status.NOT_FOUND, "Category {} on node with Foreign ID '{}' and Foreign source '{}' not found.", category, foreignId, foreignSource);
         }
         return reqCategory;
     }
@@ -394,9 +383,8 @@ public class RequisitionRestService extends OnmsRestService {
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     public RequisitionAssetCollection getAssetParameters(@PathParam("foreignSource") final String foreignSource, @PathParam("foreignId") final String foreignId) throws ParseException {
         final RequisitionAssetCollection assets = m_accessService.getAssetParameters(foreignSource, foreignId);
-
         if (assets == null) {
-            throw getException(Response.Status.NOT_FOUND, "Unable able to find assets for node with foreign ID '" + foreignId + "' not found in foreign source '" + foreignSource + "'.");
+            throw getException(Status.NOT_FOUND, "Node with Foreign ID '{}' and Foreign source '{}' not found.", foreignId, foreignSource);
         }
         return assets;
     }
@@ -415,11 +403,9 @@ public class RequisitionRestService extends OnmsRestService {
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     public RequisitionAsset getAssetParameter(@PathParam("foreignSource") final String foreignSource, @PathParam("foreignId") final String foreignId, @PathParam("parameter") final String parameter) throws ParseException {
         final RequisitionAsset asset = m_accessService.getAssetParameter(foreignSource, foreignId, parameter);
-
         if (asset == null) {
-            throw getException(Response.Status.NOT_FOUND, "Unable to find asset " + parameter + " for node with foreign ID '" + foreignId + "' not found in foreign source '" + foreignSource + "'.");
+            throw getException(Status.NOT_FOUND, "Asset {} on node with Foreign ID '{}' and Foreign source '{}' not found.", parameter, foreignId, foreignSource);
         }
-
         return asset;
     }
 
@@ -439,7 +425,6 @@ public class RequisitionRestService extends OnmsRestService {
             LOG.debug("error validating incoming requisition with foreign source '{}'", requisition.getForeignSource(), e);
             throw getException(Status.BAD_REQUEST, e.getMessage());
         }
-
         debug("addOrReplaceRequisition: Adding requisition %s (containing %d nodes)", requisition.getForeignSource(), requisition.getNodeCount());
         m_accessService.addOrReplaceRequisition(requisition);
         return Response.accepted().header("Location", getRedirectUri(uriInfo, requisition.getForeignSource())).build();

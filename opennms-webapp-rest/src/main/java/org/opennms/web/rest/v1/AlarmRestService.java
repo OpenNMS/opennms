@@ -51,6 +51,7 @@ import org.opennms.netmgt.model.AckAction;
 import org.opennms.netmgt.model.OnmsAcknowledgment;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsAlarmCollection;
+import org.opennms.netmgt.model.alarm.AlarmSummary;
 import org.opennms.netmgt.model.alarm.AlarmSummaryCollection;
 import org.opennms.web.api.Authentication;
 import org.opennms.web.rest.support.MultivaluedMapImpl;
@@ -84,11 +85,11 @@ public class AlarmRestService extends AlarmRestServiceBase {
     public Response getAlarm(@Context SecurityContext securityContext, @PathParam("alarmId") final Integer alarmId) {
         assertUserReadCredentials(securityContext);
         if ("summaries".equals(alarmId)) {
-            final AlarmSummaryCollection collection = new AlarmSummaryCollection(m_alarmDao.getNodeAlarmSummaries());
-            return collection == null ? Response.noContent().build() : Response.ok(collection).build();
+            final List<AlarmSummary> collection = m_alarmDao.getNodeAlarmSummaries();
+            return collection == null ? Response.status(Status.NOT_FOUND).build() : Response.ok(new AlarmSummaryCollection(collection)).build();
         } else {
             final OnmsAlarm alarm = m_alarmDao.get(alarmId);
-            return alarm == null ? Response.noContent().build() : Response.ok(alarm).build();
+            return alarm == null ? Response.status(Status.NOT_FOUND).build() : Response.ok(alarm).build();
         }
     }
 
@@ -189,7 +190,7 @@ public class AlarmRestService extends AlarmRestServiceBase {
                 return getBadRequestResponse("Must supply one of the 'ack', 'escalate', or 'clear' parameters, set to either 'true' or 'false'.");
             }
             m_ackDao.processAck(acknowledgement);
-            return Response.ok().build();
+            return Response.noContent().build();
         } finally {
             writeUnlock();
         }
@@ -250,7 +251,7 @@ public class AlarmRestService extends AlarmRestServiceBase {
                 m_ackDao.processAck(acknowledgement);
             }
 
-            return Response.ok().build();
+            return Response.noContent().build();
         } finally {
             writeUnlock();
         }

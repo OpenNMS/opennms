@@ -121,7 +121,7 @@ public class IfServicesRestService extends OnmsRestService {
     public Response updateServices(@Context final UriInfo uriInfo, final MultivaluedMapImpl params) {
         final String status = params.getFirst("status");
         if (status == null || !status.matches("(A|R|S|F)")) {
-            throw getException(Status.BAD_REQUEST, "updateServices: parameter status must be specified. Possible values: A (Managed), F (Forced Unmanaged), R (Rescan to Resume), S (Rescan to Suspend)");
+            throw getException(Status.BAD_REQUEST, "Parameter status must be specified. Possible values: A (Managed), F (Forced Unmanaged), R (Rescan to Resume), S (Rescan to Suspend)");
         }
         final String services_csv = params.getFirst("services");
         final List<String> serviceList = new ArrayList<String>();
@@ -135,7 +135,7 @@ public class IfServicesRestService extends OnmsRestService {
         c.setOffset(null);
         final OnmsMonitoredServiceList services = new OnmsMonitoredServiceList(m_serviceDao.findMatching(c));
         if (services.isEmpty()) {
-            throw getException(Status.BAD_REQUEST, "updateServices: can't find any service matching the provided criteria: " + uriInfo.getQueryParameters());
+            throw getException(Status.BAD_REQUEST, "Can't find any service matching the provided criteria: {}.", uriInfo.getQueryParameters().toString());
         }
         boolean modified = false;
         for (OnmsMonitoredService svc : services) {
@@ -164,10 +164,10 @@ public class IfServicesRestService extends OnmsRestService {
             }
         }
         if (!modified && !serviceList.isEmpty()) {
-            throw getException(Status.BAD_REQUEST, "updateServices: the supplied list of services (" + services_csv + ") doesn't match any service based on the provided criteria: " + uriInfo.getQueryParameters());
+            throw getException(Status.BAD_REQUEST, "updateServices: the supplied list of services {} doesn't match any service based on the provided criteria: {}.", services_csv, uriInfo.getQueryParameters().toString());
         }
 
-        return Response.ok().build();
+        return Response.noContent().build();
     }
 
     private static Criteria getCriteria(final MultivaluedMap<String, String> params) {

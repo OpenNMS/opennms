@@ -352,7 +352,7 @@ public class JavamailConfigurationResource extends OnmsRestService implements In
         try {
             m_javamailConfigurationDao.addReadMailConfig(readmailConfig);
             saveConfiguration();
-            return Response.ok().build();
+            return Response.noContent().build();
         } finally {
             writeUnlock();
         }
@@ -373,7 +373,7 @@ public class JavamailConfigurationResource extends OnmsRestService implements In
         try {
             m_javamailConfigurationDao.addSendMailConfig(sendmailConfig);
             saveConfiguration();
-            return Response.ok().build();
+            return Response.noContent().build();
         } finally {
             writeUnlock();
         }
@@ -394,7 +394,7 @@ public class JavamailConfigurationResource extends OnmsRestService implements In
         try {
             m_javamailConfigurationDao.addEnd2endMailConfig(end2endMailConfig);
             saveConfiguration();
-            return Response.ok().build();
+            return Response.noContent().build();
         } finally {
             writeUnlock();
         }
@@ -419,7 +419,7 @@ public class JavamailConfigurationResource extends OnmsRestService implements In
             }
             if (updateConfiguration(readmailConfig, params)) {
                 saveConfiguration();
-                return Response.ok().build();
+                return Response.noContent().build();
             }
             return Response.notModified().build();
         } catch (Throwable t) {
@@ -448,7 +448,7 @@ public class JavamailConfigurationResource extends OnmsRestService implements In
             }
             if (updateConfiguration(sendmailConfig, params)) {
                 saveConfiguration();
-                return Response.ok().build();
+                return Response.noContent().build();
             }
             return Response.notModified().build();
         } catch (Throwable t) {
@@ -477,7 +477,7 @@ public class JavamailConfigurationResource extends OnmsRestService implements In
             }
             if (updateConfiguration(end2endConfig, params)) {
                 saveConfiguration();
-                return Response.ok().build();
+                return Response.noContent().build();
             }
             return Response.notModified().build();
         } catch (Throwable t) {
@@ -569,7 +569,7 @@ public class JavamailConfigurationResource extends OnmsRestService implements In
             EventBuilder eb = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_UEI, "ReST");
             eb.addParam(EventConstants.PARM_DAEMON_NAME, "EmailNBI");
             m_eventProxy.send(eb.getEvent());
-            return Response.ok().build();
+            return Response.noContent().build();
         } catch (Throwable t) {
             throw new WebApplicationException(Response.status(Status.INTERNAL_SERVER_ERROR).type(MediaType.TEXT_PLAIN).entity(t.getMessage()).build());
         } finally {

@@ -136,8 +136,8 @@ public class AcknowledgmentRestServiceIT extends AbstractSpringJerseyRestTestCas
 	    final Pattern p = Pattern.compile("^.*<ackTime>(.*?)</ackTime>.*$", Pattern.DOTALL & Pattern.MULTILINE);
 	    sendData(POST, MediaType.APPLICATION_FORM_URLENCODED, "/acks", "alarmId=1&action=ack");
 
-	    // Try to fetch a non-existent ack, get 204 No Content
-	    String xml = sendRequest(GET, "/acks/999999", 204);
+	    // Try to fetch a non-existent ack, get 404 Not Found
+	    String xml = sendRequest(GET, "/acks/999999", 404);
 
 	    xml = sendRequest(GET, "/acks/count", 200);
 	    // {@link DatabasePopulator} adds one ack so we have 2 total

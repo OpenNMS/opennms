@@ -98,7 +98,7 @@ public class KscRestService extends OnmsRestService {
         final Map<Integer, Report> reportList = m_kscReportService.getReportMap();
         final Report report = reportList.get(reportId);
         if (report == null) {
-            throw getException(Status.NOT_FOUND, "No such report id " + reportId);
+            throw getException(Status.NOT_FOUND, "No such report id {}.", Integer.toString(reportId));
         }
         return new KscReport(report);
     }
@@ -123,7 +123,7 @@ public class KscRestService extends OnmsRestService {
             }
             final Report report = m_kscReportFactory.getReportByIndex(kscReportId);
             if (report == null) {
-                throw getException(Status.NOT_FOUND, "Invalid request: No KSC report found with ID: " + kscReportId);
+                throw getException(Status.NOT_FOUND, "Invalid request: No KSC report found with ID: {}.", Integer.toString(kscReportId));
             }
             final Graph graph = new Graph();
             if (title != null) {
@@ -153,7 +153,7 @@ public class KscRestService extends OnmsRestService {
             } catch (final Exception e) {
                 throw getException(Status.BAD_REQUEST, e.getMessage());
             }
-            return Response.ok().build();
+            return Response.noContent().build();
         } finally {
             writeUnlock();
         }
@@ -167,7 +167,7 @@ public class KscRestService extends OnmsRestService {
             LOG.debug("addKscReport: Adding KSC Report {}", kscReport);
             Report report = m_kscReportFactory.getReportByIndex(kscReport.getId());
             if (report != null) {
-                throw getException(Status.CONFLICT, "Invalid request: Existing KSC report found with ID: " + kscReport.getId());
+                throw getException(Status.CONFLICT, "Invalid request: Existing KSC report found with ID: {}.", Integer.toString(kscReport.getId()));
             }
             report = new Report();
             report.setId(kscReport.getId());

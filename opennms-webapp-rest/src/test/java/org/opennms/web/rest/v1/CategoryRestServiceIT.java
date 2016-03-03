@@ -113,7 +113,7 @@ public class CategoryRestServiceIT extends AbstractSpringJerseyRestTestCase {
         assertTrue(xml.contains("name=\"testCategory\""));
         
         // delete
-        sendRequest("DELETE", "/categories/testCategory", 200);
+        sendRequest("DELETE", "/categories/testCategory", 204);
         xml = sendRequest("GET", "/categories", 200);
         categories = JAXB.unmarshal(new StringReader(xml), OnmsCategoryCollection.class);
         assertEquals(initialSize, categories.size());
@@ -170,11 +170,11 @@ public class CategoryRestServiceIT extends AbstractSpringJerseyRestTestCase {
         
         // change
         url += "/myName";
-        sendPut(url, "description=My Equipment&name=NewCategory", 200);
+        sendPut(url, "description=My Equipment&name=NewCategory", 204);
         xml = sendRequest(GET, url, 200);
         assertTrue(xml.contains("<description>My Equipment</description>"));
         assertTrue(xml.contains("name=\"NewCategory\""));
-        xml = sendRequest(DELETE, url, 200);
+        xml = sendRequest(DELETE, url, 204);
         assertFalse(xml.contains("<description>My Equipment</description>"));
         assertFalse(xml.contains("name=\"NewCategory\""));
         assertFalse(xml.contains("name=\"myName\""));
@@ -194,19 +194,19 @@ public class CategoryRestServiceIT extends AbstractSpringJerseyRestTestCase {
         sendRequest(PUT, "/categories/Routers/nodes/1", 201); // add category to node 1
         sendRequest(GET, "/categories/Routers/nodes/1", 200); // list all categories of node 1
         // Delete via the node path
-        sendRequest(DELETE, "/nodes/1/categories/Routers", 200); // remove category from node 1
+        sendRequest(DELETE, "/nodes/1/categories/Routers", 204); // remove category from node 1
 
         // Make sure that the node was removed from the category (204 No content)
-        sendRequest(GET, "/nodes/1/categories/Routers", 204);
+        sendRequest(GET, "/nodes/1/categories/Routers", 404);
 
         // Add node 1 to Routers
         sendRequest(PUT, "/categories/Routers/nodes/1", 201); // add category to node 1
         sendRequest(GET, "/categories/Routers/nodes/1", 200); // list all categories of node 1
         // Delete via the category path
-        sendRequest(DELETE, "/categories/Routers/nodes/1", 200); // remove category from node 1
+        sendRequest(DELETE, "/categories/Routers/nodes/1", 204); // remove category from node 1
 
-        // Make sure that the node was removed from the category (204 No content)
-        sendRequest(GET, "/categories/Routers/nodes/1", 204);
+        // Make sure that the node was removed from the category
+        sendRequest(GET, "/categories/Routers/nodes/1", 404);
     }
     
     @Test
@@ -215,8 +215,8 @@ public class CategoryRestServiceIT extends AbstractSpringJerseyRestTestCase {
     // the tests should be done in GroupRestServiceTest
     public void testGroupCategories() throws Exception {
         sendRequest(GET, "/categories/groups/Admin", 200); // list all categories of group Admin
-        sendRequest(PUT, "/categories/Routers/groups/Admin", 200); // add category Routers to group Admin
-        sendRequest(DELETE, "/categories/Routers/groups/Admin", 200); // remove category from Group 
+        sendRequest(PUT, "/categories/Routers/groups/Admin", 204); // add category Routers to group Admin
+        sendRequest(DELETE, "/categories/Routers/groups/Admin", 204); // remove category from Group 
     }
     
     protected void createCategory(final OnmsCategory category) throws Exception {

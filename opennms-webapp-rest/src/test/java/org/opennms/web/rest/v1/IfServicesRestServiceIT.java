@@ -97,7 +97,7 @@ public class IfServicesRestServiceIT extends AbstractSpringJerseyRestTestCase {
         }
 
         // Mark all services as forced unmanaged
-        sendPut(url, "status=F", 200);
+        sendPut(url, "status=F", 204);
 
         // Verify that all statuses were updated
         list = getXmlObject(JaxbUtils.getContextFor(OnmsMonitoredServiceDetailList.class), url, 200, OnmsMonitoredServiceDetailList.class);

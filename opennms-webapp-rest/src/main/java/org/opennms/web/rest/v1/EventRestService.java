@@ -81,7 +81,11 @@ public class EventRestService extends OnmsRestService {
     @Path("{eventId}")
     @Transactional
     public OnmsEvent getEvent(@PathParam("eventId") final Integer eventId) {
-        return m_eventDao.get(eventId);
+        final OnmsEvent e = m_eventDao.get(eventId);
+        if (e == null) {
+            throw getException(Status.NOT_FOUND, "Event object {} was not found.", Integer.toString(eventId));
+        }
+        return e;
     }
 
     /**
@@ -208,7 +212,7 @@ public class EventRestService extends OnmsRestService {
                 throw getException(Status.BAD_REQUEST, "Must supply the 'ack' parameter, set to either 'true' or 'false'");
             }
             processEventAck(securityContext, event, ack);
-            return Response.ok().build();
+            return Response.noContent().build();
         } finally {
             writeUnlock();
         }
@@ -241,7 +245,7 @@ public class EventRestService extends OnmsRestService {
             for (final OnmsEvent event : m_eventDao.findMatching(builder.toCriteria())) {
                 processEventAck(securityContext, event, ack);
             }
-            return Response.ok().build();
+            return Response.noContent().build();
         } finally {
             writeUnlock();
         }

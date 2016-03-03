@@ -112,6 +112,7 @@ public class AssetRecordResource extends OnmsRestService {
             assetRecord.setGeolocation(new OnmsGeolocation());
         }
         LOG.debug("updateAssetRecord: updating category {}", assetRecord);
+        boolean modified = false;
         BeanWrapper wrapper = PropertyAccessorFactory.forBeanPropertyAccess(assetRecord);
         wrapper.registerCustomEditor(Date.class, new ISO8601DateEditor());
         for(String key : params.keySet()) {
@@ -119,19 +120,21 @@ public class AssetRecordResource extends OnmsRestService {
                 String stringValue = params.getFirst(key);
                 Object value = wrapper.convertIfNecessary(stringValue, (Class<?>)wrapper.getPropertyType(key));
                 wrapper.setPropertyValue(key, value);
+                modified = true;
             }
         }
-
-        LOG.debug("updateAssetRecord: assetRecord {} updated", assetRecord);
-        m_nodeDao.saveOrUpdate(node);
-
-        try {
-            sendEvent(EventConstants.ASSET_INFO_CHANGED_EVENT_UEI, node.getId());
-        } catch (EventProxyException e) {
-            throw getException(Status.BAD_REQUEST, e.getMessage());
+        if (modified) {
+            LOG.debug("updateAssetRecord: assetRecord {} updated", assetRecord);
+            m_nodeDao.saveOrUpdate(node);
+            try {
+                sendEvent(EventConstants.ASSET_INFO_CHANGED_EVENT_UEI, node.getId());
+            } catch (EventProxyException e) {
+                throw getException(Status.BAD_REQUEST, e.getMessage());
+            }
+            return Response.noContent().build();
         }
 
-        return Response.ok().build();
+        return Response.notModified().build();
     }
 
     private static OnmsAssetRecord getAssetRecord(OnmsNode node) {

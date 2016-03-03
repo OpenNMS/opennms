@@ -147,7 +147,7 @@ public class EmailNorthbounderConfigurationResource extends OnmsRestService impl
             File configFile = m_emailNorthbounderConfigDao.getConfigResource().getFile();
             JaxbUtils.marshal(config, new FileWriter(configFile));
             notifyDaemons();
-            return Response.ok().build();
+            return Response.noContent().build();
         } catch (Throwable t) {
             throw new WebApplicationException(Response.status(Status.INTERNAL_SERVER_ERROR).type(MediaType.TEXT_PLAIN).entity(t.getMessage()).build());
         } finally {
@@ -196,7 +196,7 @@ public class EmailNorthbounderConfigurationResource extends OnmsRestService impl
     @Path("destinations")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     public Response getEmailDestinations() {
-        EmailDestinationList destinations = new EmailDestinationList(m_emailNorthbounderConfigDao.getConfig().getEmailDestinations());
+        final EmailDestinationList destinations = new EmailDestinationList(m_emailNorthbounderConfigDao.getConfig().getEmailDestinations());
         return Response.ok(destinations).build();
     }
 
@@ -210,9 +210,9 @@ public class EmailNorthbounderConfigurationResource extends OnmsRestService impl
     @Path("destinations/{destinationName}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     public Response getEmailDestination(@PathParam("destinationName") final String destinationName) {
-        EmailDestination destination = m_emailNorthbounderConfigDao.getConfig().getEmailDestination(destinationName);
+       final  EmailDestination destination = m_emailNorthbounderConfigDao.getConfig().getEmailDestination(destinationName);
         if (destination == null) {
-            return Response.status(404).build();
+            return Response.status(Status.NOT_FOUND).build();
         }
         return Response.ok(destination).build();
     }
@@ -232,7 +232,7 @@ public class EmailNorthbounderConfigurationResource extends OnmsRestService impl
         try {
             m_emailNorthbounderConfigDao.getConfig().addEmailDestination(destination);
             saveConfiguration();
-            return Response.ok().build();
+            return Response.noContent().build();
         } finally {
             writeUnlock();
         }
@@ -252,9 +252,9 @@ public class EmailNorthbounderConfigurationResource extends OnmsRestService impl
         writeLock();
         try {
             boolean modified = false;
-            EmailDestination destination = m_emailNorthbounderConfigDao.getConfig().getEmailDestination(destinationName);
+            final EmailDestination destination = m_emailNorthbounderConfigDao.getConfig().getEmailDestination(destinationName);
             if (destination == null) {
-                return Response.status(404).build();
+                return Response.status(Status.NOT_FOUND).build();
             }
             final BeanWrapper wrapper = PropertyAccessorFactory.forBeanPropertyAccess(destination);
             for (final String key : params.keySet()) {
@@ -267,7 +267,7 @@ public class EmailNorthbounderConfigurationResource extends OnmsRestService impl
             }
             if (modified) {
                 saveConfiguration();
-                return Response.ok().build();
+                return Response.noContent().build();
             }
             return Response.notModified().build();
         } catch (Throwable t) {
@@ -290,7 +290,7 @@ public class EmailNorthbounderConfigurationResource extends OnmsRestService impl
         if (m_emailNorthbounderConfigDao.getConfig().removeEmailDestination(destinationName)) {
             return saveConfiguration();
         }
-        return Response.status(404).build();
+        return Response.status(Status.NOT_FOUND).build();
     }
 
     /**
@@ -302,7 +302,7 @@ public class EmailNorthbounderConfigurationResource extends OnmsRestService impl
         try {
             m_emailNorthbounderConfigDao.save();
             notifyDaemons();
-            return Response.ok().build();
+            return Response.noContent().build();
         } catch (Throwable t) {
             throw new WebApplicationException(Response.status(Status.INTERNAL_SERVER_ERROR).type(MediaType.TEXT_PLAIN).entity(t.getMessage()).build());
         }

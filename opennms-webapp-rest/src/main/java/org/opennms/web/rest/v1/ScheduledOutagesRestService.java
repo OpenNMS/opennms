@@ -118,7 +118,7 @@ public class ScheduledOutagesRestService extends OnmsRestService {
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     public Outage getOutage(@PathParam("outageName") String outageName) throws IllegalArgumentException {
         Outage outage = m_pollOutagesConfigFactory.getOutage(outageName);
-        if (outage == null) throw new IllegalArgumentException("Scheduled outage " + outageName + " does not exist.");
+        if (outage == null) throw getException(Status.NOT_FOUND, "Scheduled outage {} was not found.", outageName);
         return outage;
     }
 
@@ -138,9 +138,9 @@ public class ScheduledOutagesRestService extends OnmsRestService {
             }
             m_pollOutagesConfigFactory.saveCurrent();
             sendConfigChangedEvent();
-            return Response.ok().build();
+            return Response.noContent().build();
         } catch (Exception e) {
-            throw getException(Status.BAD_REQUEST, "Can't save or update the scheduled outage " + newOutage.getName() + " because, " + e.getMessage());
+            throw getException(Status.BAD_REQUEST, "Can't save or update the scheduled outage {} because, {}", newOutage.getName(), e.getMessage());
         } finally {
             writeUnlock();
         }
@@ -159,9 +159,9 @@ public class ScheduledOutagesRestService extends OnmsRestService {
             m_pollOutagesConfigFactory.removeOutage(outageName);
             m_pollOutagesConfigFactory.saveCurrent();
             sendConfigChangedEvent();
-            return Response.ok().build();
+            return Response.noContent().build();
         } catch (Exception e) {
-            throw getException(Status.BAD_REQUEST, "Can't delete the scheduled outage " + outageName + " because, " + e.getMessage());
+            throw getException(Status.BAD_REQUEST, "Can't delete the scheduled outage {} because, {}", outageName, e.getMessage());
         } finally {
             writeUnlock();
         }
@@ -174,9 +174,9 @@ public class ScheduledOutagesRestService extends OnmsRestService {
         try {
             updateCollectd(ConfigAction.ADD, outageName, packageName);
             sendConfigChangedEvent();
-            return Response.ok().build();
+            return Response.noContent().build();
         } catch (Exception e) {
-            throw getException(Status.BAD_REQUEST, "Can't add scheduled outage " + outageName + " to collector package " + packageName + ", because: " + e.getMessage());
+            throw getException(Status.BAD_REQUEST, "Can't add scheduled outage {} to collector package {}, because: {}", outageName, packageName, e.getMessage());
         } finally {
             writeUnlock();
         }
@@ -189,9 +189,9 @@ public class ScheduledOutagesRestService extends OnmsRestService {
         try {
             updateCollectd(ConfigAction.REMOVE, outageName, packageName);
             sendConfigChangedEvent();
-            return Response.ok().build();
+            return Response.noContent().build();
         } catch (Exception e) {
-            throw getException(Status.BAD_REQUEST, "Can't remove scheduled outage " + outageName + " from collector package " + packageName + ", because: " + e.getMessage());
+            throw getException(Status.BAD_REQUEST, "Can't remove scheduled outage {} from collector package {}, because: {}", outageName, packageName, e.getMessage());
         } finally {
             writeUnlock();
         }
@@ -204,9 +204,9 @@ public class ScheduledOutagesRestService extends OnmsRestService {
         try {
             updatePollerd(ConfigAction.ADD, outageName, packageName);
             sendConfigChangedEvent();
-            return Response.ok().build();
+            return Response.noContent().build();
         } catch (Exception e) {
-            throw getException(Status.BAD_REQUEST, "Can't add scheduled outage " + outageName + " to poller package " + packageName  + ", because: " + e.getMessage());
+            throw getException(Status.BAD_REQUEST, "Can't add scheduled outage {} to poller package {}, because: {}", outageName, packageName, e.getMessage());
         } finally {
             writeUnlock();
         }
@@ -219,9 +219,9 @@ public class ScheduledOutagesRestService extends OnmsRestService {
         try {
             updatePollerd(ConfigAction.REMOVE, outageName, packageName);
             sendConfigChangedEvent();
-            return Response.ok().build();
+            return Response.noContent().build();
         } catch (Exception e) {
-            throw getException(Status.BAD_REQUEST, "Can't remove scheduled outage " + outageName + " from poller package " + packageName + ", because: " + e.getMessage());
+            throw getException(Status.BAD_REQUEST, "Can't remove scheduled outage {} from poller package {}, because: {}", outageName, packageName, e.getMessage());
         } finally {
             writeUnlock();
         }
@@ -234,9 +234,9 @@ public class ScheduledOutagesRestService extends OnmsRestService {
         try {
             updateThreshd(ConfigAction.ADD, outageName, packageName);
             sendConfigChangedEvent();
-            return Response.ok().build();
+            return Response.noContent().build();
         } catch (Exception e) {
-            throw getException(Status.BAD_REQUEST, "Can't add scheduled outage " + outageName + " to threshold package " + packageName + ", because: " + e.getMessage());
+            throw getException(Status.BAD_REQUEST, "Can't add scheduled outage {} to threshold package {}, because: {}", outageName, packageName, e.getMessage());
         } finally {
             writeUnlock();
         }
@@ -249,9 +249,9 @@ public class ScheduledOutagesRestService extends OnmsRestService {
         try {
             updateThreshd(ConfigAction.REMOVE, outageName, packageName);
             sendConfigChangedEvent();
-            return Response.ok().build();
+            return Response.noContent().build();
         } catch (Exception e) {
-            throw getException(Status.BAD_REQUEST, "Can't remove scheduled outage " + outageName + " from threshold package " + packageName + ", because: " + e.getMessage());
+            throw getException(Status.BAD_REQUEST, "Can't remove scheduled outage {} from threshold package {}, because: {}", outageName, packageName, e.getMessage());
         } finally {
             writeUnlock();
         }
@@ -264,9 +264,9 @@ public class ScheduledOutagesRestService extends OnmsRestService {
         try {
             updateNotifd(ConfigAction.ADD, outageName);
             sendConfigChangedEvent();
-            return Response.ok().build();
+            return Response.noContent().build();
         } catch (Exception e) {
-            throw getException(Status.BAD_REQUEST, "Can't add scheduled outage " + outageName + " to notifications because: " + e.getMessage());
+            throw getException(Status.BAD_REQUEST, "Can't add scheduled outage {} to notifications because: {}", outageName, e.getMessage());
         } finally {
             writeUnlock();
         }
@@ -279,9 +279,9 @@ public class ScheduledOutagesRestService extends OnmsRestService {
         try {
             updateNotifd(ConfigAction.REMOVE, outageName);
             sendConfigChangedEvent();
-            return Response.ok().build();
+            return Response.noContent().build();
         } catch (Exception e) {
-            throw getException(Status.BAD_REQUEST, "Can't remove scheduled outage " + outageName + " from notifications because: " + e.getMessage());
+            throw getException(Status.BAD_REQUEST, "Can't remove scheduled outage {} from notifications because: {}", outageName, e.getMessage());
         } finally {
             writeUnlock();
         }
@@ -338,7 +338,7 @@ public class ScheduledOutagesRestService extends OnmsRestService {
             valid = false;
         }
         if (!valid) {
-            throw getException(Status.BAD_REQUEST, "Malformed IP Address " + ipAddress);
+            throw getException(Status.BAD_REQUEST, "Malformed IP Address {}", ipAddress);
         }
     }
 
@@ -363,7 +363,7 @@ public class ScheduledOutagesRestService extends OnmsRestService {
 
     private Package getCollectdPackage(String packageName) throws IllegalArgumentException {
         Package pkg = m_collectdConfigFactory.getPackage(packageName);
-        if (pkg == null) throw new IllegalArgumentException("Collectd package " + packageName + " does not exist.");
+        if (pkg == null) throw getException(Status.BAD_REQUEST, "Collectd package {} does not exist.", packageName);
         return pkg;
     }
 
@@ -388,7 +388,7 @@ public class ScheduledOutagesRestService extends OnmsRestService {
 
     private static org.opennms.netmgt.config.poller.Package getPollerdPackage(String packageName) throws IllegalArgumentException {
         org.opennms.netmgt.config.poller.Package pkg = PollerConfigFactory.getInstance().getPackage(packageName);
-        if (pkg == null) throw new IllegalArgumentException("Poller package " + packageName + " does not exist.");
+        if (pkg == null) throw getException(Status.NOT_FOUND, "Poller package {} does not exist.", packageName);
         return pkg;
     }
 
@@ -413,7 +413,7 @@ public class ScheduledOutagesRestService extends OnmsRestService {
 
     private static org.opennms.netmgt.config.threshd.Package getThreshdPackage(String packageName) throws IllegalArgumentException {
         org.opennms.netmgt.config.threshd.Package pkg = ThreshdConfigFactory.getInstance().getPackage(packageName);
-        if (pkg == null) throw new IllegalArgumentException("Threshold package " + packageName + " does not exist.");
+        if (pkg == null) throw getException(Status.NOT_FOUND, "Threshold package {} does not exist.", packageName);
         return pkg;
     }
 

@@ -98,7 +98,7 @@ public class UserRestService extends OnmsRestService {
         try {
             final OnmsUser user = m_userManager.getOnmsUser(username);
             if (user != null) return filterUserPassword(securityContext, user);
-            throw getException(Status.NOT_FOUND, username + " does not exist");
+            throw getException(Status.NOT_FOUND, "User {} does not exist", username);
         } catch (final Throwable t) {
             if (t instanceof WebApplicationException) throw (WebApplicationException)t;
             throw getException(Status.BAD_REQUEST, t);
@@ -111,7 +111,7 @@ public class UserRestService extends OnmsRestService {
         writeLock();
         try {
             if (!hasEditRights(securityContext)) {
-                throw getException(Status.BAD_REQUEST, new RuntimeException(securityContext.getUserPrincipal().getName() + " does not have write access to users!"));
+                throw getException(Status.BAD_REQUEST, "User {} does not have write access to users!", securityContext.getUserPrincipal().getName());
             }
             LOG.debug("addUser: Adding user {}", user);
             m_userManager.save(user);
@@ -131,14 +131,14 @@ public class UserRestService extends OnmsRestService {
         writeLock();
         try {
             if (!hasEditRights(securityContext)) {
-                throw getException(Status.BAD_REQUEST, new RuntimeException(securityContext.getUserPrincipal().getName() + " does not have write access to users!"));
+                throw getException(Status.BAD_REQUEST, "User {} does not have write access to users!", securityContext.getUserPrincipal().getName());
             }
             try {
                 user = m_userManager.getOnmsUser(userCriteria);
             } catch (final Throwable t) {
                 throw getException(Status.BAD_REQUEST, t);
             }
-            if (user == null) throw getException(Status.BAD_REQUEST, "updateUser: User does not exist: " + userCriteria);
+            if (user == null) throw getException(Status.BAD_REQUEST, "User {} does not exist.", userCriteria);
             LOG.debug("updateUser: updating user {}", user);
             final BeanWrapper wrapper = PropertyAccessorFactory.forBeanPropertyAccess(user);
             for(final String key : params.keySet()) {
@@ -154,7 +154,7 @@ public class UserRestService extends OnmsRestService {
             } catch (final Throwable t) {
                 throw getException(Status.INTERNAL_SERVER_ERROR, t);
             }
-            return Response.ok().build();
+            return Response.noContent().build();
         } finally {
             writeUnlock();
         }
@@ -166,7 +166,7 @@ public class UserRestService extends OnmsRestService {
         writeLock();
         try {
             if (!hasEditRights(securityContext)) {
-                throw getException(Status.BAD_REQUEST, new RuntimeException(securityContext.getUserPrincipal().getName() + " does not have write access to users!"));
+                throw getException(Status.BAD_REQUEST, "User {} does not have write access to users!", securityContext.getUserPrincipal().getName());
             }
             OnmsUser user = null;
             try {
@@ -174,14 +174,14 @@ public class UserRestService extends OnmsRestService {
             } catch (final Throwable t) {
                 throw getException(Status.BAD_REQUEST, t);
             }
-            if (user == null) throw getException(Status.BAD_REQUEST, "deleteUser: User does not exist: " + userCriteria);
+            if (user == null) throw getException(Status.BAD_REQUEST, "User {} does not exist.", userCriteria);
             LOG.debug("deleteUser: deleting user {}", user);
             try {
                 m_userManager.deleteUser(user.getUsername());
             } catch (final Throwable t) {
                 throw getException(Status.INTERNAL_SERVER_ERROR, t);
             }
-            return Response.ok().build();
+            return Response.noContent().build();
         } finally {
             writeUnlock();
         }

@@ -147,7 +147,7 @@ public class SyslogNorthbounderConfigurationResource extends OnmsRestService imp
             File configFile = m_syslogNorthbounderConfigDao.getConfigResource().getFile();
             JaxbUtils.marshal(config, new FileWriter(configFile));
             notifyDaemons();
-            return Response.ok().build();
+            return Response.noContent().build();
         } catch (Throwable t) {
             throw new WebApplicationException(Response.status(Status.INTERNAL_SERVER_ERROR).type(MediaType.TEXT_PLAIN).entity(t.getMessage()).build());
         } finally {
@@ -232,7 +232,7 @@ public class SyslogNorthbounderConfigurationResource extends OnmsRestService imp
         try {
             m_syslogNorthbounderConfigDao.getConfig().addSyslogDestination(destination);
             saveConfiguration();
-            return Response.ok().build();
+            return Response.noContent().build();
         } finally {
             writeUnlock();
         }
@@ -267,7 +267,7 @@ public class SyslogNorthbounderConfigurationResource extends OnmsRestService imp
             }
             if (modified) {
                 saveConfiguration();
-                return Response.ok().build();
+                return Response.noContent().build();
             }
             return Response.notModified().build();
         } catch (Throwable t) {
@@ -302,7 +302,7 @@ public class SyslogNorthbounderConfigurationResource extends OnmsRestService imp
         try {
             m_syslogNorthbounderConfigDao.save();
             notifyDaemons();
-            return Response.ok().build();
+            return Response.noContent().build();
         } catch (Throwable t) {
             throw new WebApplicationException(Response.status(Status.INTERNAL_SERVER_ERROR).type(MediaType.TEXT_PLAIN).entity(t.getMessage()).build());
         }

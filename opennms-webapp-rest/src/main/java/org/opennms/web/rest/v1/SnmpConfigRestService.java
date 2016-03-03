@@ -37,9 +37,9 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.SnmpConfigAccessService;
@@ -124,7 +124,7 @@ public class SnmpConfigRestService extends OnmsRestService {
     public SnmpInfo getSnmpInfo(@PathParam("ipAddr") String ipAddr) {
         final InetAddress addr = InetAddressUtils.addr(ipAddr);
         if (addr == null) {
-            throw new WebApplicationException(Response.serverError().build());
+            throw getException(Status.BAD_REQUEST, "Malformed IP Address: {}.", ipAddr);
         }
         final SnmpAgentConfig config = m_accessService.getAgentConfig(addr);
         return new SnmpInfo(config);
@@ -152,7 +152,7 @@ public class SnmpConfigRestService extends OnmsRestService {
             }
 
             m_accessService.define(eventInfo);
-            return Response.ok().build();
+            return Response.noContent().build();
         } catch (final Throwable e) {
             return Response.serverError().build();
         } finally {
@@ -184,7 +184,7 @@ public class SnmpConfigRestService extends OnmsRestService {
                 eventInfo = info.createEventInfo(ipAddress);
             }
             m_accessService.define(eventInfo);
-            return Response.ok().build();
+            return Response.noContent().build();
         } catch (final Throwable e) {
             return Response.serverError().build();
         } finally {

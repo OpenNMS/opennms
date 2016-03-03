@@ -103,20 +103,25 @@ public class CategoryRestService extends OnmsRestService {
         try {
             OnmsCategory category = m_categoryDao.findByName(categoryName);
             if (category == null) {
-                throw getException(Status.BAD_REQUEST, "updateCategory: Category " + categoryName + " not found.");
+                throw getException(Status.BAD_REQUEST, "Category with name '{}' was not found.", categoryName);
             }
             LOG.debug("updateCategory: updating category {}", category);
             BeanWrapper wrapper = PropertyAccessorFactory.forBeanPropertyAccess(category);
+            boolean modified = false;
             for(String key : params.keySet()) {
                 if (wrapper.isWritableProperty(key)) {
                     String stringValue = params.getFirst(key);
                     Object value = wrapper.convertIfNecessary(stringValue, (Class<?>)wrapper.getPropertyType(key));
                     wrapper.setPropertyValue(key, value);
+                    modified = true;
                 }
             }
             LOG.debug("updateCategory: category {} updated", category);
-            m_categoryDao.saveOrUpdate(category);
-            return Response.ok().build();
+            if (modified) {
+                m_categoryDao.saveOrUpdate(category);
+                return Response.noContent().build();
+            }
+            return Response.notModified().build();
         } finally {
             writeUnlock();
         }
@@ -132,7 +137,7 @@ public class CategoryRestService extends OnmsRestService {
     @Path("/{categoryName}")
     public OnmsCategory getCategory(@PathParam("categoryName") final String categoryName) {
         OnmsCategory category = m_categoryDao.findByName(categoryName);
-        if (category == null) throw getException(Response.Status.NOT_FOUND, "Category with name {} was not found.", categoryName);
+        if (category == null) throw getException(Response.Status.NOT_FOUND, "Category with name '{}' was not found.", categoryName);
         return category;
     }
     
@@ -160,7 +165,7 @@ public class CategoryRestService extends OnmsRestService {
         OnmsCategory category = m_categoryDao.findByName(categoryName);
         if (category != null) {
             m_categoryDao.delete(category);
-            return Response.ok().build();
+            return Response.noContent().build();
         }
         throw getException(Response.Status.BAD_REQUEST, "A category with name '{}' does not exist.", categoryName);
     }
@@ -168,7 +173,7 @@ public class CategoryRestService extends OnmsRestService {
 
     @PUT
     @Path("/{categoryName}/groups/{groupName}")
-    public OnmsCategory addCategoryToGroup(@Context final ResourceContext context, @PathParam("groupName") final String groupName, @PathParam("categoryName") final String categoryName) {
+    public Response addCategoryToGroup(@Context final ResourceContext context, @PathParam("groupName") final String groupName, @PathParam("categoryName") final String categoryName) {
         return context.getResource(GroupRestService.class).addCategory(groupName, categoryName);
     }
 
