@@ -266,7 +266,7 @@ public final class IfInfo extends SnmpCollectionResource {
      */
     @Override
     public String getInstance() {
-        return Integer.toString(getIndex()); //For interfaces, use ifIndex as it's unique within a node (by definition)
+        return Integer.toUnsignedString(getIndex()); //For interfaces, use ifIndex as it's unique within a node (by definition)
     }
 
     @Override
