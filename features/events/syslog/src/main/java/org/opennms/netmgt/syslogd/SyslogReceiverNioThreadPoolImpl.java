@@ -87,8 +87,6 @@ public class SyslogReceiverNioThreadPoolImpl implements SyslogReceiver {
 
     private final SyslogdConfig m_config;
 
-    private final ExecutorService m_executor;
-
     private final ExecutorService m_socketReceivers;
     
     private List<SyslogConnectionHandler> m_syslogConnectionHandlers = Collections.emptyList();
@@ -124,15 +122,6 @@ public class SyslogReceiverNioThreadPoolImpl implements SyslogReceiver {
         m_channel = null;
         m_config = config;
 
-        m_executor = new ThreadPoolExecutor(
-            Runtime.getRuntime().availableProcessors() * 2,
-            Runtime.getRuntime().availableProcessors() * 2,
-            1000L,
-            TimeUnit.MILLISECONDS,
-            new LinkedBlockingQueue<Runnable>(),
-            new LogPreservingThreadFactory(getClass().getSimpleName(), Integer.MAX_VALUE)
-        );
-
         // This thread pool is used to process {@link DatagramChannel#receive(ByteBuffer)} calls
         // on the syslog port. By using multiple threads, we can optimize the receipt of
         // packet data from the syslog port and avoid discarding UDP syslog packets.
@@ -163,9 +152,6 @@ public class SyslogReceiverNioThreadPoolImpl implements SyslogReceiver {
 
         // Shut down the thread pool that is processing DatagramChannel.receive() calls
         m_socketReceivers.shutdown();
-
-        // Shut down the thread pools that are executing SyslogConnection and SyslogProcessor tasks
-        m_executor.shutdown();
 
         try {
             m_channel.close();
@@ -213,8 +199,6 @@ public class SyslogReceiverNioThreadPoolImpl implements SyslogReceiver {
         try {
             LOG.debug("Opening syslog channel...");
             m_channel = openChannel(m_config);
-            //Added since channel's blocking mode was true and it was not allowing to channel to recieve buffer
-            m_channel.configureBlocking(false);
         } catch (IOException e) {
             LOG.warn("An I/O error occured while trying to set the socket timeout", e);
         }
@@ -259,11 +243,10 @@ public class SyslogReceiverNioThreadPoolImpl implements SyslogReceiver {
                             if (!ioInterrupted) {
                                 LOG.debug("Waiting on a datagram to arrive");
                             }
+
                             // Write the datagram into the ByteBuffer
-                            //changed since mchannel recieve used to return null
-                            InetSocketAddress source = new InetSocketAddress(m_config.getListenAddress(), m_config.getSyslogPort());
-                            m_channel.receive(buffer);
-                          
+                            InetSocketAddress source =  (InetSocketAddress)m_channel.receive(buffer);
+
                             // Flip the buffer from write to read mode
                             buffer.flip();
 
@@ -276,8 +259,7 @@ public class SyslogReceiverNioThreadPoolImpl implements SyslogReceiver {
                             } catch (Throwable e) {
                                 LOG.error("Handler execution failed in {}", this.getClass().getSimpleName(), e);
                             }
-                            
-                            
+
                             // Clear the buffer so that it's ready for writing again
                             buffer.clear();
 
@@ -289,10 +271,13 @@ public class SyslogReceiverNioThreadPoolImpl implements SyslogReceiver {
                         } catch (InterruptedIOException e) {
                             ioInterrupted = true;
                             continue;
-                        } catch (Exception e) {
+                        } catch (IOException e) {
+                            ioInterrupted = true;
+                            continue;
+                        } catch (Throwable e) {
                             LOG.error("Task execution failed in {}", this.getClass().getSimpleName(), e);
                             break;
-                        } 
+                        }
 
                     } // end while status OK
 
