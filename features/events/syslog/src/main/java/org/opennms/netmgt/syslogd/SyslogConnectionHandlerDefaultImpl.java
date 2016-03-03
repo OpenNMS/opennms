@@ -46,7 +46,6 @@ public class SyslogConnectionHandlerDefaultImpl implements SyslogConnectionHandl
 	@Override
 	public void handleSyslogConnection(final SyslogConnection message) {
 		try {
-			//Replacing from waterfall executory to Completablefuture
 			CompletableFuture.supplyAsync(message::call, m_executor);
 		} catch (Exception e) {
 			LOG.error("Task execution failed in {}", this.getClass().getSimpleName(), e);
