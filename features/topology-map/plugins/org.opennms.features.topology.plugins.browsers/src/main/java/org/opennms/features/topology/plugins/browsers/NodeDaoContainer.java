@@ -30,6 +30,7 @@ package org.opennms.features.topology.plugins.browsers;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedHashSet;
 import java.util.List;
 
 import org.opennms.core.criteria.Alias;
@@ -39,6 +40,7 @@ import org.opennms.core.criteria.restrictions.Restriction;
 import org.opennms.core.criteria.restrictions.Restrictions;
 import org.opennms.features.topology.api.VerticesUpdateManager;
 import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.dao.api.OnmsDao;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.PrimaryType;
 import org.opennms.osgi.EventConsumer;
@@ -60,9 +62,20 @@ public class NodeDaoContainer extends OnmsDaoContainer<OnmsNode,Integer> {
     @Override
     protected void addAdditionalCriteriaOptions(Criteria criteria, Page page, boolean doOrder) {
         if (!doOrder) return;
+        // We join the ipInterfaces table, to be able to sort on ipInterfaces.ipAddress.
         criteria.setAliases(Arrays.asList(new Alias[] {
                 new Alias("ipInterfaces", "ipInterfaces", Alias.JoinType.LEFT_JOIN, new EqRestriction("ipInterfaces.isSnmpPrimary", PrimaryType.PRIMARY))
         }));
+    }
+
+    @Override
+    protected List<OnmsNode> getItemsForCache(OnmsDao<OnmsNode, Integer> dao, Page page) {
+        // The join criteria isSnmpPrimary = PrimaryType.PRIMARY is used to only consider primary interfaces.
+        // It is supposed that only one primary interface exists, but that is not always the case.
+        // In order to create a valid result set, we "unify" the result.
+        // See http://issues.opennms.org/browse/NMS-8079 for more details
+        List<OnmsNode> itemsForCache = super.getItemsForCache(dao, page);
+        return new ArrayList<>(new LinkedHashSet<>(itemsForCache));
     }
 
     @Override
