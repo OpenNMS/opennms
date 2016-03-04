@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2014-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2016-2016 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -28,18 +28,31 @@
 
 package org.opennms.core.camel;
 
-import org.apache.camel.InOnly;
+import org.apache.camel.Exchange;
+import org.apache.camel.Processor;
+import org.opennms.core.xml.JaxbUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-@InOnly
-public class DefaultDispatcher {
+/**
+ * This Camel {@link Processor} uses {@link JaxbUtils} to marshal classes
+ * into XML String representations.
+ * 
+ * @author Seth
+ */
+public class JaxbUtilsMarshalProcessor implements Processor {
+	public static final Logger LOG = LoggerFactory.getLogger(JaxbUtilsMarshalProcessor.class);
 
-	private final String m_endpointUri;
+	private final Class<?> m_class;
 
-	public DefaultDispatcher(final String endpointUri) {
-		m_endpointUri = endpointUri;
+	@SuppressWarnings("rawtypes") // Because Aries Blueprint cannot handle generics
+	public JaxbUtilsMarshalProcessor(Class clazz) {
+		m_class = clazz;
 	}
 
-	public String getEndpointUri() {
-		return m_endpointUri;
+	@Override
+	public void process(final Exchange exchange) throws Exception {
+		final Object object = exchange.getIn().getBody(m_class);
+		exchange.getIn().setBody(JaxbUtils.marshal(object), String.class);
 	}
 }
