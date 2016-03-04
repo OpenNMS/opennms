@@ -78,6 +78,7 @@ public class AdminPageIT extends OpenNMSSeleniumTestCase {
                 new String[] { "Ops Board Configuration", "//div[@id='content']//iframe" },
                 new String[] { "Surveillance Views Configuration", "//div[@id='content']//iframe" },
                 new String[] { "JMX Configuration Generator", "//div[@id='content']//iframe" },
+                new String[] { "OpenNMS Plugin Manager", "/html/body/iframe" },
 
                 // Node Provisioning
                 new String[] { "Manually Add an Interface", "//h3[text()='Enter IP Address']" },

@@ -112,5 +112,8 @@
     <module>ncs</module>
     <module>springframework-security</module>
     <module>system-report</module>
+
+    <!-- OpenNMS Plugin Manager -->
+    <module>vaadin-opennms-pluginmanager</module>
   </modules>
 </project>
