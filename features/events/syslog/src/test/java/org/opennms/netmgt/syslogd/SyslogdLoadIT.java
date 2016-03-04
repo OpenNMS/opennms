@@ -145,9 +145,35 @@ public class SyslogdLoadIT implements InitializingBean {
         }
     }
 
-    private void startSyslogdGracefully() throws Exception {
+    private void startSyslogdJavaNet() throws Exception {
         m_syslogd = new Syslogd();
         SyslogReceiverJavaNetImpl receiver = new SyslogReceiverJavaNetImpl(m_config);
+        receiver.setSyslogConnectionHandlers(new SyslogConnectionHandlerDefaultImpl());
+        m_syslogd.setSyslogReceiver(receiver);
+        m_syslogd.init();
+        SyslogdTestUtils.startSyslogdGracefully(m_syslogd);
+    }
+
+    private void startSyslogdNio() throws Exception {
+        m_syslogd = new Syslogd();
+        SyslogReceiverNioThreadPoolImpl receiver = new SyslogReceiverNioThreadPoolImpl(m_config);
+        receiver.setSyslogConnectionHandlers(new SyslogConnectionHandlerDefaultImpl());
+        m_syslogd.setSyslogReceiver(receiver);
+        m_syslogd.init();
+        SyslogdTestUtils.startSyslogdGracefully(m_syslogd);
+    }
+
+    private void startSyslogdNioDisruptor() throws Exception {
+        m_syslogd = new Syslogd();
+        SyslogReceiverNioDisruptorImpl receiver = new SyslogReceiverNioDisruptorImpl(m_config);
+        m_syslogd.setSyslogReceiver(receiver);
+        m_syslogd.init();
+        SyslogdTestUtils.startSyslogdGracefully(m_syslogd);
+    }
+
+    private void startSyslogdCamelNetty() throws Exception {
+        m_syslogd = new Syslogd();
+        SyslogReceiverCamelNettyImpl receiver = new SyslogReceiverCamelNettyImpl(m_config);
         receiver.setSyslogConnectionHandlers(new SyslogConnectionHandlerDefaultImpl());
         m_syslogd.setSyslogReceiver(receiver);
         m_syslogd.init();
@@ -198,10 +224,33 @@ public class SyslogdLoadIT implements InitializingBean {
 
     @Test
     @Transactional
-    @Ignore
-    public void testSyslogReceiver() throws Exception {
-        startSyslogdGracefully();
+    public void testSyslogReceiverJavaNet() throws Exception {
+        startSyslogdJavaNet();
+        doTestSyslogReceiver();
+    }
 
+    @Test
+    @Transactional
+    public void testSyslogReceiverNio() throws Exception {
+        startSyslogdNio();
+        doTestSyslogReceiver();
+    }
+
+    @Test
+    @Transactional
+    public void testSyslogReceiverNioDisruptor() throws Exception {
+        startSyslogdNioDisruptor();
+        doTestSyslogReceiver();
+    }
+
+    @Test
+    @Transactional
+    public void testSyslogReceiverCamelNetty() throws Exception {
+        startSyslogdCamelNetty();
+        doTestSyslogReceiver();
+    }
+
+    public void doTestSyslogReceiver() throws Exception {
         final int eventCount = 100;
         
         List<Integer> foos = new ArrayList<Integer>();
@@ -248,7 +297,7 @@ public class SyslogdLoadIT implements InitializingBean {
         long mid = System.currentTimeMillis();
         System.err.println(String.format("Sent %d packets in %d milliseconds", eventCount, mid - start));
 
-        m_eventCounter.waitForFinish(120000);
+        m_eventCounter.waitForFinish(30000);
         long end = System.currentTimeMillis();
 
         System.err.println(String.format("Events expected: %d, events received: %d", eventCount, m_eventCounter.getCount()));
@@ -264,7 +313,7 @@ public class SyslogdLoadIT implements InitializingBean {
     public void testRfcSyslog() throws Exception {
         loadSyslogConfiguration("/etc/syslogd-rfc-configuration.xml");
 
-        startSyslogdGracefully();
+        startSyslogdJavaNet();
 
         m_eventCounter.anticipate();
 
@@ -290,7 +339,7 @@ public class SyslogdLoadIT implements InitializingBean {
     public void testNGSyslog() throws Exception {
         loadSyslogConfiguration("/etc/syslogd-syslogng-configuration.xml");
 
-        startSyslogdGracefully();
+        startSyslogdJavaNet();
 
         m_eventCounter.anticipate();
 
