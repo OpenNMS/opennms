@@ -46,7 +46,6 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.opennms.core.concurrent.WaterfallExecutor;
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
@@ -85,8 +84,6 @@ public class Nms4335IT implements InitializingBean {
 
     @Autowired
     private MockEventIpcManager m_eventIpcManager;
-
-    private final ExecutorService m_executorServices = Executors.newCachedThreadPool();
 
     @Override
     public void afterPropertiesSet() throws Exception {
@@ -205,7 +202,7 @@ public class Nms4335IT implements InitializingBean {
         
         final SyslogClient sc = new SyslogClient(null, 10, SyslogClient.LOG_DAEMON, addr("127.0.0.1"));
         final DatagramPacket pkt = sc.getPacket(SyslogClient.LOG_DEBUG, testPDU);
-        WaterfallExecutor.waterfall(m_executorServices, new SyslogConnection(pkt, m_config));
+        new SyslogConnectionHandlerDefaultImpl().handleSyslogConnection(new SyslogConnection(pkt, m_config));
 
         ea.verifyAnticipated(5000,0,0,0,0);
         final Event receivedEvent = ea.getAnticipatedEventsRecieved().get(0);
