@@ -1088,18 +1088,6 @@ public abstract class EventConstants {
     public static final String ALARM_UPDATED_WITH_REDUCED_EVENT_UEI = "uei.opennms.org/alarms/alarmUpdatedWithReducedEvent";
 
     //
-    // for Bsmd
-    //
-    public static final String BUSINESS_SERVICE_OPERATIONAL_STATUS_CHANGED_UEI = "uei.opennms.org/bsmd/serviceOperationalStatusChanged";
-
-    public static final String PARM_BUSINESS_SERVICE_ID = "businessServiceId";
-    public static final String PARM_BUSINESS_SERVICE_NAME = "businessServiceName";
-    public static final String PARM_NEW_SEVERITY_ID = "newSeverityId";
-    public static final String PARM_NEW_SEVERITY_LABEL = "newSeverityLabel";
-    public static final String PARM_PREV_SEVERITY_ID = "prevSeverityId";
-    public static final String PARM_PREV_SEVERITY_LABEL = "prevSeverityLabel";
-
-    //
     // for NCS service
     //
     public static final String COMPONENT_ADDED_UEI   = "uei.opennms.org/internal/ncs/componentAdded";

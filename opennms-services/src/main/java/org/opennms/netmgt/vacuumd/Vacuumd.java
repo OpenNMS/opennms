@@ -99,7 +99,7 @@ public class Vacuumd extends AbstractServiceDaemon implements Runnable, EventLis
 
     /**
      */
-    static synchronized void destroySingleton() {
+    public static synchronized void destroySingleton() {
         if (m_singleton != null) {
             m_singleton.stop();
             m_singleton = null;

@@ -45,11 +45,8 @@ import org.springframework.beans.factory.DisposableBean;
 
 /**
  * Alarm management Daemon
- * 
- * TODO: Create configuration for Alarm to enable forwarding.
- * TODO: Application Context for wiring in forwarders???
+ *
  * TODO: Change this class to use AbstractServiceDaemon instead of SpringServiceDaemon
- * 
  *
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
  * @version $Id: $
