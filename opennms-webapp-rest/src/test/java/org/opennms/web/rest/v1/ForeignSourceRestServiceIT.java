@@ -124,7 +124,7 @@ public class ForeignSourceRestServiceIT extends AbstractSpringJerseyRestTestCase
         assertTrue(xml, xml.contains("org.opennms.netmgt.provision.detector.simple.HttpDetector"));
 
         xml = sendRequest(DELETE, url, 204);
-        xml = sendRequest(GET, url, 204);
+        xml = sendRequest(GET, url, 404);
     }
 
     @Test
@@ -143,7 +143,7 @@ public class ForeignSourceRestServiceIT extends AbstractSpringJerseyRestTestCase
         assertTrue(xml, xml.contains("org.opennms.netmgt.provision.persist.policies.InclusiveInterfacePolicy"));
         
         xml = sendRequest(DELETE, url, 204);
-        xml = sendRequest(GET, url, 204);
+        xml = sendRequest(GET, url, 404);
     }
 
     private void createForeignSource() throws Exception {

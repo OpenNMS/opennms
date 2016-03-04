@@ -255,7 +255,11 @@ public class ForeignSourceRestService extends OnmsRestService {
     public ForeignSource getForeignSource(@PathParam("foreignSource") String foreignSource) {
         readLock();
         try {
-            return getActiveForeignSource(foreignSource);
+            final ForeignSource fs = getActiveForeignSource(foreignSource);
+            if (fs == null) {
+                throw getException(Status.NOT_FOUND, "Foreign source definition '{}' not found.", foreignSource);
+            }
+            return fs;
         } catch (final Throwable t) {
             throw getException(Status.BAD_REQUEST, t.getMessage());
         } finally {
@@ -301,7 +305,7 @@ public class ForeignSourceRestService extends OnmsRestService {
                     return new DetectorWrapper(pc);
                 }
             }
-            return null;
+            throw getException(Status.NOT_FOUND, "Detector {} on foreign source definition '{}' not found.", detector, foreignSource);
         } finally {
             readUnlock();
         }
@@ -345,7 +349,7 @@ public class ForeignSourceRestService extends OnmsRestService {
                     return new PolicyWrapper(pc);
                 }
             }
-            return null;
+            throw getException(Status.NOT_FOUND, "Policy {} on foreign source definition '{}' not found.", policy, foreignSource);
         } finally {
             readUnlock();
         }
@@ -440,6 +444,7 @@ public class ForeignSourceRestService extends OnmsRestService {
             
             if (params.isEmpty()) return Response.notModified().build();
 
+            boolean modified = false;
             final BeanWrapper wrapper = PropertyAccessorFactory.forBeanPropertyAccess(fs);
             wrapper.registerCustomEditor(Duration.class, new StringIntervalPropertyEditor());
             for(final String key : params.keySet()) {
@@ -448,12 +453,17 @@ public class ForeignSourceRestService extends OnmsRestService {
                     String stringValue = params.getFirst(key);
                     value = wrapper.convertIfNecessary(stringValue, (Class<?>)wrapper.getPropertyType(key));
                     wrapper.setPropertyValue(key, value);
+                    modified = true;
                 }
             }
-            LOG.debug("updateForeignSource: foreign source {} updated", foreignSource);
-            fs.updateDateStamp();
-            m_pendingForeignSourceRepository.save(fs);
-            return Response.accepted().header("Location", getRedirectUri(uriInfo)).build();
+            if (modified) {
+                LOG.debug("updateForeignSource: foreign source {} updated", foreignSource);
+                fs.updateDateStamp();
+                m_pendingForeignSourceRepository.save(fs);
+                return Response.accepted().header("Location", getRedirectUri(uriInfo)).build();
+            } else {
+                return Response.notModified().build();
+            }
         } finally {
             writeUnlock();
         }
