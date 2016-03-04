@@ -1,11 +1,11 @@
-[releasenotes-17]
-=== OpenNMS 17
+[[release-17-changelog]]
+=== Changelog
 
-[releasenotes-changelog-17.1.0]
+[[releasenotes-changelog-17.1.0]]
 ==== Release 17.1.0
 
 Release 17.1.0 is the latest stable release of OpenNMS.  It contains a number of important bug fixes and a few new features.
-For a high-level overview of what's changed in OpenNMS 17, see https://github.com/OpenNMS/opennms/blob/opennms-17.0.0-1/WHATSNEW.md[What's New in OpenNMS 17].
+For a high-level overview of what's changed in OpenNMS 17, see <<releasenotes-17, major changes in OpenNMS 17>>.
 
 The codename for 17.1.0 is _Talisker_.
 
@@ -75,7 +75,7 @@ The codename for 17.1.0 is _Talisker_.
 * Synchronizing a requisition fails (Issue http://issues.opennms.org/browse/NMS-8133[NMS-8133])
 * Add all the services declared on Collectd and Pollerd configuration as available services on /opennms/rest/foreignSourceConfig/services (Issue http://issues.opennms.org/browse/NMS-8147[NMS-8147])
 
-[releasenotes-changelog-17.0.0]
+[[releasenotes-changelog-17.0.0]]
 ==== Release 17.0.0
 
 Release 17.0.0 is the latest stable release of OpenNMS.  It contains a large number of bug fixes and new features.
