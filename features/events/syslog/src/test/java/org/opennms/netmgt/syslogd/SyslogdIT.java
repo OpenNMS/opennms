@@ -134,7 +134,7 @@ public class SyslogdIT implements InitializingBean {
 
         m_syslogd = new Syslogd();
         SyslogReceiverJavaNetImpl receiver = new SyslogReceiverJavaNetImpl(m_config);
-        receiver.setSyslogConnectionHandlers(new SyslogConnectionHandlerDefaultImpl(m_executorService));
+        receiver.setSyslogConnectionHandlers(new SyslogConnectionHandlerDefaultImpl());
         m_syslogd.setSyslogReceiver(receiver);
         m_syslogd.init();
         SyslogdTestUtils.startSyslogdGracefully(m_syslogd);

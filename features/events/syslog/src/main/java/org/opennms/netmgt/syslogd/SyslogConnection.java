@@ -68,7 +68,7 @@ public class SyslogConnection implements Callable<Callable<?>> {
     */
 
     public SyslogConnection(final DatagramPacket packet, final SyslogdConfig config) {
-        this(packet.getAddress(), packet.getPort(), ByteBuffer.wrap(packet.getData()), config);
+        this(packet.getAddress(), packet.getPort(), ByteBuffer.wrap(packet.getData(), 0, packet.getLength()), config);
     }
 
     public SyslogConnection(final InetAddress sourceAddress, final int port, final ByteBuffer bytes, final SyslogdConfig config) {
@@ -122,7 +122,7 @@ public class SyslogConnection implements Callable<Callable<?>> {
     public SyslogProcessor call() {
 
         try {
-            LOG.debug("Converting syslog message into event");
+            LOG.debug("Converting syslog message into event ({} bytes)", m_bytes.remaining());
 
             // TODO: Change to a static call?
             ConvertToEvent re = new ConvertToEvent(
