@@ -353,6 +353,8 @@
       <feature>camel-core</feature>
       <feature>camel-http</feature>
 
+      <feature>opennms-core</feature>
+
       <bundle>mvn:org.opennms.core/org.opennms.core.camel/${project.version}</bundle>
     </feature>
 
