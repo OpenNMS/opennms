@@ -53,7 +53,7 @@ import org.slf4j.LoggerFactory;
  * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
  * @author <a href="http://www.oculan.com">Oculan Corporation </a>
  */
-final class SyslogProcessor implements Callable<Void> {
+public final class SyslogProcessor implements Callable<Void> {
     private static final Logger LOG = LoggerFactory.getLogger(SyslogProcessor.class);
 
     private final boolean m_NewSuspectOnMessage;
@@ -66,6 +66,10 @@ final class SyslogProcessor implements Callable<Void> {
         m_event = event;
         m_NewSuspectOnMessage = newSuspectOnMessage;
         m_localAddr = InetAddressUtils.getLocalHostName();
+    }
+
+    public Event getEvent() {
+        return m_event;
     }
 
     /**

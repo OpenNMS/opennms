@@ -40,6 +40,12 @@ public final class SyslogConfigBean implements SyslogdConfig {
 
 	private int m_syslogPort;
 	private String m_listenAddress;
+	private String m_forwardingRegexp;
+	private int m_matchingGroupHost;
+	private int m_matchingGroupMessage;
+	private String m_parser;
+	private String m_discardUei;
+	private boolean m_newSuspectOnMessage;
 
 	@Override
 	public int getSyslogPort() {
@@ -61,27 +67,47 @@ public final class SyslogConfigBean implements SyslogdConfig {
 
 	@Override
 	public boolean getNewSuspectOnMessage() {
-		return false;
+		return m_newSuspectOnMessage;
+	}
+
+	public void setNewSuspectOnMessage(boolean newSuspectOnMessage) {
+		m_newSuspectOnMessage = newSuspectOnMessage;
 	}
 
 	@Override
 	public String getForwardingRegexp() {
-		return "";
+		return m_forwardingRegexp;
+	}
+
+	public void setForwardingRegexp(String forwardingRegexp) {
+		m_forwardingRegexp = forwardingRegexp;
 	}
 
 	@Override
 	public int getMatchingGroupHost() {
-		return 0;
+		return m_matchingGroupHost;
+	}
+
+	public void setMatchingGroupHost(int matchingGroupHost) {
+		m_matchingGroupHost = matchingGroupHost;
 	}
 
 	@Override
 	public int getMatchingGroupMessage() {
-		return 0;
+		return m_matchingGroupMessage;
+	}
+
+	public void setMatchingGroupMessage(int matchingGroupMessage) {
+		m_matchingGroupMessage = matchingGroupMessage;
 	}
 
 	@Override
 	public String getParser() {
-		return null;
+		return m_parser;
+	}
+
+	public void setParser(String parser) {
+		m_parser = parser;
 	}
 
 	@Override
@@ -96,7 +122,11 @@ public final class SyslogConfigBean implements SyslogdConfig {
 
 	@Override
 	public String getDiscardUei() {
-		return null;
+		return m_discardUei;
+	}
+
+	public void setDiscardUei(String discardUei) {
+		m_discardUei = discardUei;
 	}
 
 }
