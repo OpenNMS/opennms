@@ -74,6 +74,7 @@ public class CustomSyslogParser extends SyslogParser {
 
         if (lbIdx < 0 || rbIdx < 0 || lbIdx >= (rbIdx - 1)) {
             LOG.warn("Syslogd received an unparsable message!");
+            return null;
         }
 
         int priCode = 0;
