@@ -84,7 +84,7 @@ public class RequisitionRestServiceIT extends AbstractSpringJerseyRestTestCase {
         url = "/requisitions/test";
 
         sendRequest(DELETE, url, 202);
-        xml = sendRequest(GET, url, 204);
+        xml = sendRequest(GET, url, 404);
     }
 
     @Test

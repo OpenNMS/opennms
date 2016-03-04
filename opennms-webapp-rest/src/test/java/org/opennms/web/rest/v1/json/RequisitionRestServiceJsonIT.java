@@ -103,7 +103,7 @@ public class RequisitionRestServiceJsonIT extends AbstractSpringJerseyRestJsonTe
 
         url = "/requisitions/test";
         sendRequest(DELETE, url, 202);
-        sendRequest(GET, url, 204);
+        sendRequest(GET, url, 404);
     }
 
     @Test
