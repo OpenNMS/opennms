@@ -35,14 +35,14 @@ import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.nio.ByteBuffer;
 import java.nio.channels.DatagramChannel;
-import java.util.concurrent.ExecutionException;
+import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 import org.opennms.core.concurrent.LogPreservingThreadFactory;
-import org.opennms.core.concurrent.WaterfallExecutor;
 import org.opennms.core.logging.Logging;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.SyslogdConfig;
@@ -87,9 +87,9 @@ public class SyslogReceiverNioThreadPoolImpl implements SyslogReceiver {
 
     private final SyslogdConfig m_config;
 
-    private final ExecutorService m_executor;
-
     private final ExecutorService m_socketReceivers;
+    
+    private List<SyslogConnectionHandler> m_syslogConnectionHandlers = Collections.emptyList();
 
     public static DatagramChannel openChannel(SyslogdConfig config) throws SocketException, IOException {
         DatagramChannel channel = DatagramChannel.open();
@@ -122,15 +122,6 @@ public class SyslogReceiverNioThreadPoolImpl implements SyslogReceiver {
         m_channel = null;
         m_config = config;
 
-        m_executor = new ThreadPoolExecutor(
-            Runtime.getRuntime().availableProcessors() * 2,
-            Runtime.getRuntime().availableProcessors() * 2,
-            1000L,
-            TimeUnit.MILLISECONDS,
-            new LinkedBlockingQueue<Runnable>(),
-            new LogPreservingThreadFactory(getClass().getSimpleName(), Integer.MAX_VALUE)
-        );
-
         // This thread pool is used to process {@link DatagramChannel#receive(ByteBuffer)} calls
         // on the syslog port. By using multiple threads, we can optimize the receipt of
         // packet data from the syslog port and avoid discarding UDP syslog packets.
@@ -162,9 +153,6 @@ public class SyslogReceiverNioThreadPoolImpl implements SyslogReceiver {
         // Shut down the thread pool that is processing DatagramChannel.receive() calls
         m_socketReceivers.shutdown();
 
-        // Shut down the thread pools that are executing SyslogConnection and SyslogProcessor tasks
-        m_executor.shutdown();
-
         try {
             m_channel.close();
         } catch (IOException e) {
@@ -179,6 +167,15 @@ public class SyslogReceiverNioThreadPoolImpl implements SyslogReceiver {
             m_context.join();
             LOG.debug("Thread context stopped and joined");
         }
+    }
+    
+    //Getter and setter for syslog handler
+    public SyslogConnectionHandler getSyslogConnectionHandlers() {
+        return m_syslogConnectionHandlers.get(0);
+    }
+
+    public void setSyslogConnectionHandlers(SyslogConnectionHandler handler) {
+        m_syslogConnectionHandlers = Collections.singletonList(handler);
     }
 
     /**
@@ -248,12 +245,20 @@ public class SyslogReceiverNioThreadPoolImpl implements SyslogReceiver {
                             }
 
                             // Write the datagram into the ByteBuffer
-                            InetSocketAddress source = (InetSocketAddress)m_channel.receive(buffer);
+                            InetSocketAddress source =  (InetSocketAddress)m_channel.receive(buffer);
 
                             // Flip the buffer from write to read mode
                             buffer.flip();
 
-                            WaterfallExecutor.waterfall(m_executor, new SyslogConnection(SyslogConnection.copyPacket(source.getAddress(), source.getPort(), buffer), m_config));
+                            SyslogConnection connection = new SyslogConnection(SyslogConnection.copyPacket(source.getAddress(), source.getPort(), buffer), m_config);
+
+                            try {
+                                for (SyslogConnectionHandler handler : m_syslogConnectionHandlers) {
+                                    handler.handleSyslogConnection(connection);
+                                }
+                            } catch (Throwable e) {
+                                LOG.error("Handler execution failed in {}", this.getClass().getSimpleName(), e);
+                            }
 
                             // Clear the buffer so that it's ready for writing again
                             buffer.clear();
@@ -266,14 +271,11 @@ public class SyslogReceiverNioThreadPoolImpl implements SyslogReceiver {
                         } catch (InterruptedIOException e) {
                             ioInterrupted = true;
                             continue;
-                        } catch (ExecutionException e) {
-                            LOG.error("Task execution failed in {}", this.getClass().getSimpleName(), e);
-                            break;
-                        } catch (InterruptedException e) {
-                            LOG.error("Task interrupted in {}", this.getClass().getSimpleName(), e);
-                            break;
                         } catch (IOException e) {
-                            LOG.error("An I/O exception occured on the datagram receipt port, exiting", e);
+                            ioInterrupted = true;
+                            continue;
+                        } catch (Throwable e) {
+                            LOG.error("Task execution failed in {}", this.getClass().getSimpleName(), e);
                             break;
                         }
 

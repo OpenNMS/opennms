@@ -28,30 +28,43 @@
 
 package org.opennms.netmgt.syslogd;
 
-import java.util.concurrent.ExecutionException;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 
-import org.opennms.core.concurrent.WaterfallExecutor;
+import org.opennms.core.concurrent.ExecutorFactory;
+import org.opennms.core.concurrent.ExecutorFactoryJavaImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class SyslogConnectionHandlerDefaultImpl implements SyslogConnectionHandler {
 	private static final Logger LOG = LoggerFactory.getLogger(SyslogConnectionHandlerDefaultImpl.class);
 
-	private final ExecutorService m_executor;
+	/**
+	 * This is the number of threads that are used to parse syslog messages into
+	 * OpenNMS events.
+	 * 
+	 * TODO: Make this configurable
+	 */
+	public static final int EVENT_PARSER_THREADS = Runtime.getRuntime().availableProcessors();
 
-	public SyslogConnectionHandlerDefaultImpl(ExecutorService executor) {
-		m_executor = executor;
-	}
+	/**
+	 * This is the number of threads that are used to broadcast the OpenNMS events.
+	 * 
+	 * TODO: Make this configurable
+	 */
+	public static final int EVENT_SENDER_THREADS = Runtime.getRuntime().availableProcessors();
+
+	private final ExecutorFactory m_executorFactory = new ExecutorFactoryJavaImpl();
+	private final ExecutorService m_syslogConnectionExecutor = m_executorFactory.newExecutor(EVENT_PARSER_THREADS, Integer.MAX_VALUE, "OpenNMS.Syslogd", "syslogConnections");
+	private final ExecutorService m_syslogProcessorExecutor = m_executorFactory.newExecutor(EVENT_SENDER_THREADS, Integer.MAX_VALUE, "OpenNMS.Syslogd", "syslogProcessors");
 
 	@Override
 	public void handleSyslogConnection(final SyslogConnection message) {
 		try {
-			WaterfallExecutor.waterfall(m_executor, message);
-		} catch (ExecutionException e) {
+			CompletableFuture.supplyAsync(message::call, m_syslogConnectionExecutor)
+				.thenAcceptAsync(proc -> proc.call(), m_syslogProcessorExecutor);
+		} catch (Throwable e) {
 			LOG.error("Task execution failed in {}", this.getClass().getSimpleName(), e);
-		} catch (InterruptedException e) {
-			LOG.error("Task interrupted in {}", this.getClass().getSimpleName(), e);
 		}
 	}
 }

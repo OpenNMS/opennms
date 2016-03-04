@@ -19,12 +19,7 @@
   <bean id="executorFactory" class="org.opennms.core.concurrent.ExecutorFactoryJavaImpl"/>
 
   <bean id="syslogConnectionHandler" class="org.opennms.netmgt.syslogd.SyslogConnectionHandlerDefaultImpl">
-    <constructor-arg>
-      <bean factory-bean="executorFactory" factory-method="newExecutor">
-        <constructor-arg value="OpenNMS.Syslogd"/>
-        <constructor-arg value="SyslogConnectionHandler"/>
-      </bean>
-    </constructor-arg>
+    <!-- TODO: Inject executorFactory and use it to construct Executors -->
   </bean>
 
   <bean id="syslogReceiverJavaNet" class="org.opennms.netmgt.syslogd.SyslogReceiverJavaNetImpl">

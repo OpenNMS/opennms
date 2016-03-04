@@ -33,15 +33,11 @@ import static org.opennms.core.utils.InetAddressUtils.addr;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.UndeclaredThrowableException;
-import java.net.BindException;
 import java.net.DatagramPacket;
+import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
-import java.net.SocketAddress;
 import java.net.UnknownHostException;
-import java.nio.ByteBuffer;
-import java.nio.channels.DatagramChannel;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -53,6 +49,7 @@ import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.concurrent.WaterfallExecutor;
@@ -148,20 +145,47 @@ public class SyslogdLoadIT implements InitializingBean {
         }
     }
 
-    private void startSyslogdGracefully() throws Exception {
+    private void startSyslogdJavaNet() throws Exception {
         m_syslogd = new Syslogd();
-        m_syslogd.setSyslogReceiver(new SyslogReceiverJavaNetImpl(m_config));
+        SyslogReceiverJavaNetImpl receiver = new SyslogReceiverJavaNetImpl(m_config);
+        receiver.setSyslogConnectionHandlers(new SyslogConnectionHandlerDefaultImpl());
+        m_syslogd.setSyslogReceiver(receiver);
+        m_syslogd.init();
+        SyslogdTestUtils.startSyslogdGracefully(m_syslogd);
+    }
+
+    private void startSyslogdNio() throws Exception {
+        m_syslogd = new Syslogd();
+        SyslogReceiverNioThreadPoolImpl receiver = new SyslogReceiverNioThreadPoolImpl(m_config);
+        receiver.setSyslogConnectionHandlers(new SyslogConnectionHandlerDefaultImpl());
+        m_syslogd.setSyslogReceiver(receiver);
+        m_syslogd.init();
+        SyslogdTestUtils.startSyslogdGracefully(m_syslogd);
+    }
+
+    private void startSyslogdNioDisruptor() throws Exception {
+        m_syslogd = new Syslogd();
+        SyslogReceiverNioDisruptorImpl receiver = new SyslogReceiverNioDisruptorImpl(m_config);
+        m_syslogd.setSyslogReceiver(receiver);
+        m_syslogd.init();
+        SyslogdTestUtils.startSyslogdGracefully(m_syslogd);
+    }
+
+    private void startSyslogdCamelNetty() throws Exception {
+        m_syslogd = new Syslogd();
+        SyslogReceiverCamelNettyImpl receiver = new SyslogReceiverCamelNettyImpl(m_config);
+        receiver.setSyslogConnectionHandlers(new SyslogConnectionHandlerDefaultImpl());
+        m_syslogd.setSyslogReceiver(receiver);
         m_syslogd.init();
         SyslogdTestUtils.startSyslogdGracefully(m_syslogd);
     }
 
     @Test
     @Transactional
-    public void testDefaultSyslogd() throws Exception {
-        startSyslogdGracefully();
+    public void testSyslogConnectionHandlerDefaultImpl() throws Exception {
 
         final int eventCount = 100;
-        
+
         List<Integer> foos = new ArrayList<Integer>();
 
         for (int i = 0; i < eventCount; i++) {
@@ -177,13 +201,70 @@ public class SyslogdLoadIT implements InitializingBean {
         // Test by directly invoking the SyslogConnection task
         System.err.println("Starting to send packets");
         final long start = System.currentTimeMillis();
+        SyslogConnectionHandler handler = new SyslogConnectionHandlerDefaultImpl();
         for (int i = 0; i < eventCount; i++) {
             int foo = foos.get(i);
             DatagramPacket pkt = sc.getPacket(SyslogClient.LOG_DEBUG, String.format(testPduFormat, foo, foo));
-            WaterfallExecutor.waterfall(m_executorService, new SyslogConnection(pkt, m_config));
+            handler.handleSyslogConnection(new SyslogConnection(pkt, m_config));
         }
 
-        /*
+        long mid = System.currentTimeMillis();
+        System.err.println(String.format("Sent %d packets in %d milliseconds", eventCount, mid - start));
+
+        m_eventCounter.waitForFinish(60000);
+        long end = System.currentTimeMillis();
+
+        System.err.println(String.format("Events expected: %d, events received: %d", eventCount, m_eventCounter.getCount()));
+        final long total = (end - start);
+        final double eventsPerSecond = (eventCount * 1000.0 / total);
+        System.err.println(String.format("total time: %d, wait time: %d, events per second: %8.4f", total, (end - mid), eventsPerSecond));
+
+        assertEquals(eventCount, m_eventCounter.getCount());
+    }
+
+    @Test
+    @Transactional
+    public void testSyslogReceiverJavaNet() throws Exception {
+        startSyslogdJavaNet();
+        doTestSyslogReceiver();
+    }
+
+    @Test
+    @Transactional
+    public void testSyslogReceiverNio() throws Exception {
+        startSyslogdNio();
+        doTestSyslogReceiver();
+    }
+
+    @Test
+    @Transactional
+    public void testSyslogReceiverNioDisruptor() throws Exception {
+        startSyslogdNioDisruptor();
+        doTestSyslogReceiver();
+    }
+
+    @Test
+    @Transactional
+    public void testSyslogReceiverCamelNetty() throws Exception {
+        startSyslogdCamelNetty();
+        doTestSyslogReceiver();
+    }
+
+    public void doTestSyslogReceiver() throws Exception {
+        final int eventCount = 100;
+        
+        List<Integer> foos = new ArrayList<Integer>();
+
+        for (int i = 0; i < eventCount; i++) {
+            int eventNum = Double.valueOf(Math.random() * 10000).intValue();
+            foos.add(eventNum);
+        }
+
+        m_eventCounter.setAnticipated(eventCount);
+
+        String testPduFormat = "2010-08-19 localhost foo%d: load test %d on tty1";
+        SyslogClient sc = new SyslogClient(null, 10, SyslogClient.LOG_USER, addr("127.0.0.1"));
+
         // Test by sending over a java.net socket
         final DatagramSocket socket = new DatagramSocket();
         System.err.println("Starting to send packets");
@@ -194,7 +275,6 @@ public class SyslogdLoadIT implements InitializingBean {
             socket.send(pkt);
         }
         socket.close();
-        */
 
         /*
         // Test by sending over an NIO channel
@@ -217,13 +297,15 @@ public class SyslogdLoadIT implements InitializingBean {
         long mid = System.currentTimeMillis();
         System.err.println(String.format("Sent %d packets in %d milliseconds", eventCount, mid - start));
 
-        m_eventCounter.waitForFinish(120000);
+        m_eventCounter.waitForFinish(30000);
         long end = System.currentTimeMillis();
 
         System.err.println(String.format("Events expected: %d, events received: %d", eventCount, m_eventCounter.getCount()));
         final long total = (end - start);
         final double eventsPerSecond = (eventCount * 1000.0 / total);
         System.err.println(String.format("total time: %d, wait time: %d, events per second: %8.4f", total, (end - mid), eventsPerSecond));
+
+        assertEquals(eventCount, m_eventCounter.getCount());
     }
 
     @Test
@@ -231,7 +313,7 @@ public class SyslogdLoadIT implements InitializingBean {
     public void testRfcSyslog() throws Exception {
         loadSyslogConfiguration("/etc/syslogd-rfc-configuration.xml");
 
-        startSyslogdGracefully();
+        startSyslogdJavaNet();
 
         m_eventCounter.anticipate();
 
@@ -257,7 +339,7 @@ public class SyslogdLoadIT implements InitializingBean {
     public void testNGSyslog() throws Exception {
         loadSyslogConfiguration("/etc/syslogd-syslogng-configuration.xml");
 
-        startSyslogdGracefully();
+        startSyslogdJavaNet();
 
         m_eventCounter.anticipate();
 
