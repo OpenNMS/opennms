@@ -40,8 +40,6 @@ import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.commons.io.IOUtils;
@@ -49,10 +47,8 @@ import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.opennms.core.concurrent.WaterfallExecutor;
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.test.ConfigurationTestUtils;
 import org.opennms.core.test.MockLogAppender;
@@ -108,8 +104,6 @@ public class SyslogdLoadIT implements InitializingBean {
     private SyslogdConfigFactory m_config;
 
     private Syslogd m_syslogd;
-
-    private final ExecutorService m_executorService = Executors.newCachedThreadPool();
 
     @Override
     public void afterPropertiesSet() throws Exception {
@@ -322,12 +316,12 @@ public class SyslogdLoadIT implements InitializingBean {
         // handle an invalid packet
         byte[] bytes = "<34>1 2010-08-19T22:14:15.000Z localhost - - - - BOMfoo0: load test 0 on tty1\0".getBytes();
         DatagramPacket pkt = new DatagramPacket(bytes, bytes.length, address, SyslogClient.PORT);
-        WaterfallExecutor.waterfall(m_executorService, new SyslogConnection(pkt, m_config));
+        new SyslogConnectionHandlerDefaultImpl().handleSyslogConnection(new SyslogConnection(pkt, m_config));
 
         // handle a valid packet
         bytes = "<34>1 2003-10-11T22:14:15.000Z plonk -ev/pts/8\0".getBytes();
         pkt = new DatagramPacket(bytes, bytes.length, address, SyslogClient.PORT);
-        WaterfallExecutor.waterfall(m_executorService, new SyslogConnection(pkt, m_config));
+        new SyslogConnectionHandlerDefaultImpl().handleSyslogConnection(new SyslogConnection(pkt, m_config));
 
         m_eventCounter.waitForFinish(120000);
         
@@ -348,12 +342,12 @@ public class SyslogdLoadIT implements InitializingBean {
         // handle an invalid packet
         byte[] bytes = "<34>main: 2010-08-19 localhost foo0: load test 0 on tty1\0".getBytes();
         DatagramPacket pkt = new DatagramPacket(bytes, bytes.length, address, SyslogClient.PORT);
-        WaterfallExecutor.waterfall(m_executorService, new SyslogConnection(pkt, m_config));
+        new SyslogConnectionHandlerDefaultImpl().handleSyslogConnection(new SyslogConnection(pkt, m_config));
 
         // handle a valid packet
         bytes = "<34>monkeysatemybrain!\0".getBytes();
         pkt = new DatagramPacket(bytes, bytes.length, address, SyslogClient.PORT);
-        WaterfallExecutor.waterfall(m_executorService, new SyslogConnection(pkt, m_config));
+        new SyslogConnectionHandlerDefaultImpl().handleSyslogConnection(new SyslogConnection(pkt, m_config));
 
         m_eventCounter.waitForFinish(120000);
         
