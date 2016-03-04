@@ -5,5 +5,5 @@ OpenNMS Meridian is a custom build of OpenNMS Horizon designed for stability and
 
 It is based on the following code:
 
-* OpenNMS Horizon 17.0.1
-
+* OpenNMS Horizon 17.1.1
+* ReST API Changes from OpenNMS Horizon 18

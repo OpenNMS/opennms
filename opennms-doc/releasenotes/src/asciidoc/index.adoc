@@ -4,11 +4,11 @@
 :lang: en
 :icons: font
 :toc: left
-:toclevels: 8
+:toclevels: 3
 :numbered!:
 
 = OpenNMS Meridian Release Notes
-:author: Copyright (c) 2015 The OpenNMS Group, Inc.
+:author: Copyright (c) 2015-2016 The OpenNMS Group, Inc.
 :revnumber: OpenNMS Meridian v{opennms-version}
 :revdate: {last-update-label} {docdatetime}
 :version-label!:
@@ -28,12 +28,6 @@ include::common/copyright.adoc[]
 include::common/legalnotice.adoc[]
 include::common/preface.adoc[]
 
-[releasenotes-changelog]
-== Changelog
 :numbered!:
 include::releasenotes/changelog-2015.adoc[]
-
-:numbered:
-include::releasenotes/known-issues.adoc[]
-include::releasenotes/supported-systems.adoc[]
 
