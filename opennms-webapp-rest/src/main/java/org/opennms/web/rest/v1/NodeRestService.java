@@ -29,7 +29,9 @@
 package org.opennms.web.rest.v1;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -58,6 +60,7 @@ import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventProxy;
 import org.opennms.netmgt.events.api.EventProxyException;
+import org.opennms.netmgt.filter.api.FilterDao;
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsCategoryCollection;
 import org.opennms.netmgt.model.OnmsGeolocation;
@@ -89,6 +92,9 @@ public class NodeRestService extends OnmsRestService {
     
     @Autowired
     private NodeDao m_nodeDao;
+
+    @Autowired
+    private FilterDao m_filterDao;
 
     @Autowired
     private CategoryDao m_categoryDao;
@@ -123,6 +129,22 @@ public class NodeRestService extends OnmsRestService {
             builder.distinct();
 
             crit = builder.toCriteria();
+        } else if (params.getFirst("filterRule") != null) {
+            final Set<Integer> filteredNodeIds = m_filterDao.getNodeMap(params.getFirst("filterRule")).keySet();
+            if (filteredNodeIds.size() < 1) {
+                // The "in" criteria fails if the list of node ids is empty
+                final OnmsNodeList coll = new OnmsNodeList(Collections.emptyList());
+                coll.setTotalCount(0);
+                return coll;
+            }
+
+            // Apply the criteria, without the filter rule
+            params.remove("filterRule");
+            final CriteriaBuilder filterRuleCriteriaBuilder = getCriteriaBuilder(params);
+            filterRuleCriteriaBuilder.in("id", filteredNodeIds);
+            filterRuleCriteriaBuilder.distinct();
+
+            crit = filterRuleCriteriaBuilder.toCriteria();
         } else {
             applyQueryFilters(params, builder);
             builder.orderBy("label").asc();
