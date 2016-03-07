@@ -47,17 +47,16 @@ public class ApplicationVertex extends AbstractVertex implements LevelAware {
     public ApplicationVertex(OnmsApplication application) {
         this(application.getId().toString(), application.getName());
         setTooltipText(String.format("Application '%s'", application.getName()));
-        setIconKey("application");
+        setIconKey("application.application");
     }
 
     public ApplicationVertex(OnmsMonitoredService monitoredService) {
         this(monitoredService.getId().toString(), monitoredService.getServiceName());
-        setIconKey("monitored-service");
         setIpAddress(monitoredService.getIpAddress().toString());
         setTooltipText(String.format("Service '%s', IP: %s", monitoredService.getServiceName(), monitoredService.getIpAddress().toString()));
         setNodeID(monitoredService.getNodeId());
         setServiceType(monitoredService.getServiceType());
-        setIconKey("monitored-service");
+        setIconKey("application.monitored-service");
     }
 
     /**

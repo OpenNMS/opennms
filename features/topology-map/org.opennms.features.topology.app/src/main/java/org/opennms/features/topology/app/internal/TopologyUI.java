@@ -376,6 +376,7 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
         // Create a per-session GraphContainer instance
         m_graphContainer = graphContainer;
         m_graphContainer.setSelectionManager(m_selectionManager);
+        m_graphContainer.setIconManager(m_iconRepositoryManager);
     }
 
 	@Override

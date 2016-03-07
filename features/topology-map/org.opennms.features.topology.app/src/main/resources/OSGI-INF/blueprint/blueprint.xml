@@ -115,40 +115,16 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 http://aries.apache.org/schemas/b
         <value>org.osgi.service.cm.ManagedService</value>
       </interfaces>
       <service-properties>
-        <entry key="service.pid" value="org.opennms.features.topology.app.icons"/>
+        <entry key="service.pid" value="org.opennms.features.topology.app.icons.default"/>
       </service-properties>
-       <bean class="org.opennms.features.topology.api.support.ConfigurableIconRepository" />
+      <bean class="org.opennms.features.topology.api.support.DefaultIconRepository" />
     </service>
 
     <!-- Icon Repository Manager -->
     <bean id="iconRepoManager" class="org.opennms.features.topology.app.internal.support.IconRepositoryManager"/>
-    
     <reference-list interface="org.opennms.features.topology.api.IconRepository" availability="optional">
         <reference-listener bind-method="onBind" unbind-method="onUnbind" ref="iconRepoManager" />
     </reference-list>
-
-    <service interface="org.opennms.features.topology.api.IconRepository">
-        <bean class="org.opennms.features.topology.api.support.DefaultIconRepository">
-            <property name="iconMap">
-                <map>
-                    <entry key="default" value="generic" />
-                    <entry key="group" value="cloud"/>
-                    <entry key="cloud" value="cloud"/>
-                    
-                    <!-- vmware icon information has been moved into the vmware Topology Provider's blueprint.xml file -->
-					<!-- linkd icon information has been moved into the linkd ToPr's blueprint.xml file -->
-                </map>
-            </property>
-            <property name="SVGDefs">
-                <list>
-                    <value>theme://svg/default_icons.svg</value>
-                    <value>theme://svg/vmware_icons.svg</value>
-                    <value>theme://svg/open_icons.svg</value>
-                    <value>theme://svg/bsm_icons.svg</value>
-                </list>
-            </property>
-        </bean>
-    </service>
     
     <bean id="providerManager" class="org.opennms.features.topology.app.internal.ProviderManager" />
     
@@ -276,6 +252,24 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 http://aries.apache.org/schemas/b
             <entry key="operation.contextMenuLocation" value=""/>
         </service-properties>
         <bean class="org.opennms.features.topology.app.internal.operations.RedoLayoutOperation"/>
+    </service>
+
+    <service interface="org.opennms.features.topology.api.Operation" >
+        <service-properties>
+            <entry key="operation.menuLocation" value="Device"/>
+            <entry key="operation.label" value="Change Icon" />
+            <entry key="operation.contextMenuLocation" value=""/>
+        </service-properties>
+        <bean class="org.opennms.features.topology.app.internal.operations.icons.IconSelectionOperation"/>
+    </service>
+
+    <service interface="org.opennms.features.topology.api.Operation" >
+        <service-properties>
+            <entry key="operation.menuLocation" value="Device"/>
+            <entry key="operation.label" value="Reset Icon" />
+            <entry key="operation.contextMenuLocation" value=""/>
+        </service-properties>
+        <bean class="org.opennms.features.topology.app.internal.operations.icons.IconResetOperation"/>
     </service>
     
     <service interface="org.opennms.features.topology.api.Operation" >

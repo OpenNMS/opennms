@@ -45,6 +45,7 @@ import org.opennms.features.topology.api.AutoRefreshSupport;
 import org.opennms.features.topology.api.Graph;
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.GraphVisitor;
+import org.opennms.features.topology.api.IconManager;
 import org.opennms.features.topology.api.Layout;
 import org.opennms.features.topology.api.LayoutAlgorithm;
 import org.opennms.features.topology.api.MapViewManager;
@@ -262,6 +263,7 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
     private Property<Double> m_scaleProperty = new ScaleProperty(0.0);
     private LayoutAlgorithm m_layoutAlgorithm;
     private SelectionManager m_selectionManager;
+    private IconManager m_iconManager;
     private StatusProvider m_statusProvider;
     private EdgeStatusProvider m_edgeStatusProvider;
     private MergingGraphProvider m_mergedGraphProvider;
@@ -598,6 +600,16 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
 
         // not found
         return null;
+    }
+
+    @Override
+    public IconManager getIconManager() {
+        return m_iconManager;
+    }
+
+    @Override
+    public void setIconManager(IconManager iconManager) {
+        m_iconManager = iconManager;
     }
 
     @Override

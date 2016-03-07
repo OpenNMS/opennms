@@ -342,7 +342,7 @@ public class VTopologyComponent extends Composite implements SVGTopologyMap, Top
 
                                 @Override
 				public String call(GWTVertex param, int index) {
-					return "" + param.getId();
+					return param.getId() + "_" + param.getSVGIconId();
 				}
 
 			};
@@ -754,8 +754,6 @@ public class VTopologyComponent extends Composite implements SVGTopologyMap, Top
             
             boolean selected = sharedVertex.getSelected();
             vertex.setSelected(selected);
-
-            vertex.setIconUrl(applicationConnection.translateVaadinUri(sharedVertex.getIconUrl()));
 
             vertex.setSVGIconId(sharedVertex.getSVGIconId());
 

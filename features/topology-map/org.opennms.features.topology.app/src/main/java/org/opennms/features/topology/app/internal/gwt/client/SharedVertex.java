@@ -84,10 +84,6 @@ public class SharedVertex implements Serializable {
         m_selected = selected;
     }
 
-    public void setIconUrl(String iconUrl) {
-        m_iconUrl = iconUrl;
-    }
-
     public void setLabel(String label) {
         m_label = label;
     }

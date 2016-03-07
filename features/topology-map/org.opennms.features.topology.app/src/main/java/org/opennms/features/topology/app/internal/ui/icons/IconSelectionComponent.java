@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2016 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,24 +26,36 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.app.internal.support;
+package org.opennms.features.topology.app.internal.ui.icons;
 
-import java.util.Dictionary;
+import java.util.List;
 
-import org.osgi.service.cm.ConfigurationException;
-import org.osgi.service.cm.ManagedService;
+import com.vaadin.annotations.JavaScript;
+import com.vaadin.ui.AbstractJavaScriptComponent;
+import com.vaadin.ui.JavaScriptFunction;
 
-public class IconConfigManager implements ManagedService {
-    
-    private IconRepositoryManager m_iconRepoManager;
+@JavaScript({
+        "theme://js/d3.v3.4.13.js",
+        "theme://js/icon-selection-component_connector.js"
+})
+public class IconSelectionComponent extends AbstractJavaScriptComponent {
 
-    public void setIconRepositoryManager(IconRepositoryManager iconRepoManager) {
-        m_iconRepoManager = iconRepoManager;
+    public IconSelectionComponent(List<String> elementsToShow, String currentIconId) {
+        getState().setElementsToShow(elementsToShow);
+        getState().setColumnCount(5);
+        getState().setMaxSize(100);
+        getState().setSpacing(25);
+        getState().setSelectedIconId(currentIconId);
+
+        addFunction("onIconSelection", (JavaScriptFunction) arguments -> {
+            if (arguments.length() >= 1) {
+                getState().setSelectedIconId(arguments.getString(0));
+            }
+        });
     }
-    
+
     @Override
-    public void updated(Dictionary<String,?> properties) throws ConfigurationException {
-        m_iconRepoManager.updateIconConfig(properties);
+    public IconState getState() {
+        return (IconState) super.getState();
     }
-
 }

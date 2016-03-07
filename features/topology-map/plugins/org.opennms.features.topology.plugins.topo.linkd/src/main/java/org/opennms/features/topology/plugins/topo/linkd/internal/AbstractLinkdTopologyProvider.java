@@ -36,6 +36,7 @@ import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.xml.bind.JAXB;
 import javax.xml.bind.JAXBContext;
@@ -184,7 +185,7 @@ public abstract class AbstractLinkdTopologyProvider extends AbstractTopologyProv
     }
 
     public static String getIconName(String nodeSysObjectId) {
-        return nodeSysObjectId == null ? "linkd:system" : "linkd:system:snmp:"+nodeSysObjectId;
+        return nodeSysObjectId == null ? "linkd.system" : "linkd.system.snmp"+nodeSysObjectId;
     }
 
     protected static String getNodeTooltipDefaultText(String ip, String label, boolean isManaged, String location,NodeType nodeType) {

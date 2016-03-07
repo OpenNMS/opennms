@@ -153,7 +153,11 @@ div.v-table-header-wrap {
     pointer-events: none;
 }
 
-
+.vertex-label {
+    alignment-base: text-before-edge;
+    text-anchor: middle;
+    font-size: 9px;
+}
 
 /******** Vertex Status Styles ********/
 .vertex .status.selected,
@@ -363,4 +367,18 @@ div.v-table-header-wrap {
 	border-color: gray;
 	background-color: white;
 	-moz-border-radius: ;
+}
+
+/* Icon Selection Dialog */
+.svgIconOverlay.selected {
+    stroke-width: 2px;
+    stroke: #2e6da4;
+    opacity: 1;
+    fill-opacity: 0;
+}
+
+.icon-selection-component,
+.v-slot-icon-selection-component {
+    overflow-y: scroll;
+    overflow-x: hidden;
 }

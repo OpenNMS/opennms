@@ -59,7 +59,7 @@ public class IpServiceVertex extends AbstractBusinessServiceVertex {
         setIpAddress(ipAddress);
         setLabel(ipServiceName);
         setTooltipText(String.format("IP Service '%s' on %s", ipServiceName, ipAddress));
-        setIconKey("ip-service");
+        setIconKey("bsm.ip-service");
     }
 
     public Integer getIpServiceId() {

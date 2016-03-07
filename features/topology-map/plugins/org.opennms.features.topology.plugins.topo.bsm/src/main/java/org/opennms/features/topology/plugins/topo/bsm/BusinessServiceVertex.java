@@ -53,7 +53,7 @@ public class BusinessServiceVertex extends AbstractBusinessServiceVertex {
         this.serviceId = serviceId;
         setLabel(name);
         setTooltipText(String.format("Business Service '%s'", name));
-        setIconKey("business-service");
+        setIconKey("bsm.business-service");
     }
 
     public Long getServiceId() {
