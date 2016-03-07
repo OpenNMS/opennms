@@ -44,6 +44,8 @@ public interface BridgeMacLinkDao extends OnmsDao<BridgeMacLink, Integer> {
 
     public BridgeMacLink getByNodeIdBridgePortMac(Integer id, Integer port,String mac);
 
+    public List<BridgeMacLink> findByNodeIdBridgePort(Integer id, Integer port);
+
     public List<BridgeMacLink> findByMacAddress(String mac);
 
     void deleteByNodeIdOlderThen(Integer nodeiId, Date now);
@@ -51,5 +53,7 @@ public interface BridgeMacLinkDao extends OnmsDao<BridgeMacLink, Integer> {
     public List<BridgeMacTopologyLink> getAllBridgeLinksToIpAddrToNodes();
 
     public List<BridgeMacTopologyLink> getAllBridgeLinksToBridgeNodes();
+
+    void deleteByNodeId(Integer nodeiId);
 
 }
