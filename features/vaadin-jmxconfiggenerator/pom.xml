@@ -25,7 +25,6 @@
                     <instructions>
                         <Bundle-RequiredExecutionEnvironment>JavaSE-1.8</Bundle-RequiredExecutionEnvironment>
                         <Include-Resource>{maven-resources}</Include-Resource>
-                        <Import-Package>*;com.vaadin.data.util.converter;</Import-Package>
                     </instructions>
                 </configuration>
             </plugin>
