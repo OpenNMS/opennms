@@ -30,6 +30,8 @@ package org.opennms.core.test.db;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.Callable;
@@ -41,13 +43,12 @@ import java.util.concurrent.Future;
 import javax.sql.DataSource;
 
 import org.junit.Test;
+import org.junit.internal.MethodSorter;
 import org.opennms.core.db.C3P0ConnectionFactory;
 import org.opennms.core.db.DataSourceFactory;
 import org.opennms.core.db.XADataSourceFactory;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.netmgt.config.opennmsDataSources.JdbcDataSource;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.test.annotation.DirtiesContext.HierarchyMode;
 import org.springframework.test.context.TestContext;
 import org.springframework.test.context.TestExecutionListener;
@@ -66,7 +67,6 @@ import org.springframework.util.Assert;
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  */
 public class TemporaryDatabaseExecutionListener extends AbstractTestExecutionListener {
-    private static final Logger LOG = LoggerFactory.getLogger(TemporaryDatabaseExecutionListener.class);
 
     private boolean m_createNewDatabases = false;
     private TemporaryDatabase m_database;
@@ -167,6 +167,20 @@ public class TemporaryDatabaseExecutionListener extends AbstractTestExecutionLis
         ((TemporaryDatabaseAware) testContext.getTestInstance()).setTemporaryDatabase(m_database);
     }
 
+    public static List<Method> getOrderedTestMethods(Class<?> testClass) {
+        final List<Method> methods = new LinkedList<>();
+        getOrderedTestMethods(testClass, methods);
+        return methods;
+    }
+
+    public static void getOrderedTestMethods(Class<?> testClass, List<Method> methods) {
+        methods.addAll(Arrays.asList(MethodSorter.getDeclaredMethods(testClass)));
+        final Class<?> testSuperClass = testClass.getSuperclass();
+        if (testSuperClass != null) {
+            getOrderedTestMethods(testSuperClass, methods);
+        }
+    }
+
     @Override
     public void beforeTestClass(final TestContext testContext) throws Exception {
         // Fire up a thread pool for each CPU to create test databases
@@ -185,7 +199,7 @@ public class TemporaryDatabaseExecutionListener extends AbstractTestExecutionLis
         }
 
         List<Future<TemporaryDatabase>> futures = new ArrayList<Future<TemporaryDatabase>>();
-        for (Method method : testContext.getTestClass().getMethods()) {
+        for (Method method : getOrderedTestMethods(testContext.getTestClass())) {
             if (method != null) {
                 final JUnitTemporaryDatabase methodJtd = method.getAnnotation(JUnitTemporaryDatabase.class);
                 boolean methodHasTest = method.getAnnotation(Test.class) != null;
