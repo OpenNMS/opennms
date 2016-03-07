@@ -29,6 +29,7 @@
 package org.opennms.web.rest.v1;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
@@ -119,16 +120,11 @@ public class NodeRestService extends OnmsRestService {
 
         if (params.size() == 1 && params.getFirst("nodeId") != null && params.getFirst("nodeId").contains(",")) {
             // we've been specifically asked for a list of nodes by ID
-
             final List<Integer> nodeIds = new ArrayList<Integer>();
             for (final String id : params.getFirst("nodeId").split(",")) {
                 nodeIds.add(Integer.valueOf(id));
             }
-            builder.ne("type", "D");
-            builder.in("id", nodeIds);
-            builder.distinct();
-
-            crit = builder.toCriteria();
+            crit = filterForNodeIds(builder, nodeIds).toCriteria();
         } else if (params.getFirst("filterRule") != null) {
             final Set<Integer> filteredNodeIds = m_filterDao.getNodeMap(params.getFirst("filterRule")).keySet();
             if (filteredNodeIds.size() < 1) {
@@ -138,13 +134,10 @@ public class NodeRestService extends OnmsRestService {
                 return coll;
             }
 
-            // Apply the criteria, without the filter rule
+            // Apply the criteria without the filter rule
             params.remove("filterRule");
             final CriteriaBuilder filterRuleCriteriaBuilder = getCriteriaBuilder(params);
-            filterRuleCriteriaBuilder.in("id", filteredNodeIds);
-            filterRuleCriteriaBuilder.distinct();
-
-            crit = filterRuleCriteriaBuilder.toCriteria();
+            crit = filterForNodeIds(filterRuleCriteriaBuilder, filteredNodeIds).toCriteria();
         } else {
             applyQueryFilters(params, builder);
             builder.orderBy("label").asc();
@@ -167,6 +160,12 @@ public class NodeRestService extends OnmsRestService {
         coll.setTotalCount(m_nodeDao.countMatching(crit));
 
         return coll;
+    }
+
+    private static CriteriaBuilder filterForNodeIds(CriteriaBuilder builder, Collection<Integer> nodeIds) {
+        return builder.ne("type", "D")
+                .in("id", nodeIds)
+                .distinct();
     }
 
     /**
