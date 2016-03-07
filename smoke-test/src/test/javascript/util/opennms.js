@@ -223,7 +223,7 @@ OpenNMS.prototype.createOrReplaceRequisition = function(foreignSource, obj) {
 			'Content-Type': 'application/json'
 		}
 	}, function(response) {
-		if (response.status !== 200) {
+		if (response.status !== 202) {
 			console.log('OpenNMS.createOrReplaceRequisition: unexpected response: ' + JSON.stringify(response));
 			throw new CasperError('POST of requisition ' + foreignSource + ' should return success.');
 		}
@@ -301,9 +301,9 @@ OpenNMS.prototype.importRequisition = function(foreignSource) {
 			Accept: '*/*'
 		}
 	}, function(response) {
-		if (response.status !== 415) {
-			console.log('OpeNNMS.importRequisition: unexpected response: ' + JSON.stringify(response));
-			throw new CasperError('(sigh) import of requisition ' + foreignSource + ' redirects to a page that eventually gives a 415 error.');
+		if (response.status !== 202) {
+			console.log('OpeNNMS.importRequisition: unexpected response: ' + response);
+			throw new CasperError('Import of requisition ' + foreignSource + ' should return success.');
 		}
 	});
 	self.casper.back();
@@ -315,16 +315,16 @@ OpenNMS.prototype.deleteRequisition = function(foreignSource) {
 	self.casper.thenOpen(self.root() + '/rest/requisitions/' + foreignSource, {
 		method: 'delete'
 	}, function(response) {
-		if (response.status !== 200) {
-			console.log('OpenNMS.deleteRequisition: unexpected response: ' + JSON.stringify(response));
+		if (response.status !== 202) {
+			console.log('OpenNMS.deleteRequisition: unexpected response: ' + response);
 			throw new CasperError('DELETE of requisition ' + foreignSource + ' should return success.');
 		}
 	});
 	self.casper.thenOpen(self.root() + '/rest/requisitions/deployed/' + foreignSource, {
 		method: 'delete'
 	}, function(response) {
-		if (response.status !== 200) {
-			console.log('OpenNMS.deleteRequisition: unexpected response: ' + JSON.stringify(response));
+		if (response.status !== 202) {
+			console.log('OpenNMS.deleteRequisition: unexpected response: ' + response);
 			throw new CasperError('DELETE of requisition ' + foreignSource + ' should return success.');
 		}
 	});
