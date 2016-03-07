@@ -114,7 +114,7 @@ public class SFreeTopologyProvider extends AbstractTopologyProvider implements G
             int j=(i+1)%((int)Math.round(2*averageNumberofNeighboors));
 
             SimpleLeafVertex vertexi = new SimpleLeafVertex(TOPOLOGY_NAMESPACE_SFREE, Integer.toString(i), 0, 0);
-            vertexi.setIconKey("sfree:system");
+            vertexi.setIconKey("sfree.system");
             vertexi.setLabel("BarabasiAlbertNode"+i);
             if (!nodes.containsKey(i)) {
                 nodes.put(i, vertexi);
@@ -122,7 +122,7 @@ public class SFreeTopologyProvider extends AbstractTopologyProvider implements G
             }
 
             SimpleLeafVertex vertexj = new SimpleLeafVertex(TOPOLOGY_NAMESPACE_SFREE, Integer.toString(j), 0, 0);
-            vertexj.setIconKey("sfree:system");
+            vertexj.setIconKey("sfree.system");
             vertexj.setLabel("BarabasiAlbertNode"+j);
             if (!nodes.containsKey(j)) {
                 nodes.put(j, vertexj);
@@ -140,7 +140,7 @@ public class SFreeTopologyProvider extends AbstractTopologyProvider implements G
         for(int i=((int)Math.floor(2*averageNumberofNeighboors));i<numberOfNodes;i++){
 
             SimpleLeafVertex vertexi = new SimpleLeafVertex(TOPOLOGY_NAMESPACE_SFREE, Integer.toString(i),0,0);
-            vertexi.setIconKey("sfree:system");
+            vertexi.setIconKey("sfree.system");
             vertexi.setLabel("BarabasiAlbertNode"+i);
             nodes.put(i, vertexi);
             LOG.debug("Adding Node: {}", i);
@@ -170,7 +170,7 @@ public class SFreeTopologyProvider extends AbstractTopologyProvider implements G
         List<AbstractEdge> edges = new ArrayList<AbstractEdge>();
         for (Integer i=0; i< numberOfNodes ;i++) {
             SimpleLeafVertex vertex = new SimpleLeafVertex(TOPOLOGY_NAMESPACE_SFREE, Integer.toString(i), 0, 0);
-            vertex.setIconKey("sfree:system");
+            vertex.setIconKey("sfree.system");
             vertex.setLabel("ErdosReniyNode"+i);
 
             nodes.put(i,vertex);

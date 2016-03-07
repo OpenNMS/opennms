@@ -117,16 +117,15 @@
     </service>
 
     <!-- Icon definition -->
-    <service interface="org.opennms.features.topology.api.IconRepository">
-        <bean class="org.opennms.features.topology.api.support.DefaultIconRepository">
-            <property name="iconMap">
-                <map>
-                    <entry key="business-service" value="business_service" />
-                    <entry key="ip-service" value="IP_service" />
-                    <entry key="reduction-key" value="reduction_key" />
-                </map>
-            </property>
-        </bean>
+    <service>
+        <interfaces>
+            <value>org.opennms.features.topology.api.IconRepository</value>
+            <value>org.osgi.service.cm.ManagedService</value>
+        </interfaces>
+        <service-properties>
+            <entry key="service.pid" value="org.opennms.features.topology.app.icons.bsm"/>
+        </service-properties>
+        <bean class="org.opennms.features.topology.api.support.DefaultIconRepository" />
     </service>
 
     <bean id="rootCauseAnalysisOperation" class="org.opennms.features.topology.plugins.topo.bsm.operations.RootCauseAnalysisOperation" >

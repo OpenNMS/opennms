@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2016 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,26 +26,19 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.app.internal.support;
+package org.opennms.features.topology.api;
 
-import static org.junit.Assert.assertEquals;
+import java.util.List;
 
-import java.util.Dictionary;
-import java.util.Hashtable;
+public interface IconManager {
 
-import org.junit.Test;
+    IconRepository findRepositoryByIconKey(String iconKey);
 
-public class IconConfigManagerTest {
+    /**
+     * Returns the list of available svg-files, e.g. 'theme://svg/file.svg'
+     * @return the list of available svg-files, e.g. 'theme://svg/file.svg'
+     */
+    List<String> getSVGIconFiles();
 
-    @Test
-    public void testParseConfig() {
-        Dictionary<String,Object> props = new Hashtable<String,Object>();
-        props.put("type1", "#mx9600_external");
-        
-        IconRepositoryManager iconManager = new IconRepositoryManager();
-        iconManager.updateIconConfig(props);
-        
-        assertEquals("#mx9600_external", iconManager.findSVGIconIdByKey("type1"));
-    }
-
+    String getSVGIconId(String iconKey);
 }
