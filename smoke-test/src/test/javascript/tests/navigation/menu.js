@@ -262,9 +262,11 @@ casper.test.begin('OpenNMS Nav Bar Menu', 65, {
 			}
 
 			// Vaadin apps do weird redirects on first launch sometimes, so make sure we've gone back enough to reset.
-			casper.back();
-			casper.back();
-			casper.back();
+			casper.then(function() {
+				casper.back();
+				casper.back();
+				casper.back();
+			});
 		};
 
 		var getMenuEntryName = function(entries) {
@@ -275,18 +277,18 @@ casper.test.begin('OpenNMS Nav Bar Menu', 65, {
 		};
 
 		for (var text in expected) {
+			casper.thenOpen(opennms.root());
 			if (expected.hasOwnProperty(text)) {
 				var entry = getEntry(text, expected);
-				casper.thenOpen(opennms.root());
 				var entrySelector = 'ul > li > a[name=\"' + entry.selector.replace(/\"/, '\\\"') + '\"]';
 				testSelectorExists(entrySelector, getMenuEntryName(text) + ' menu entry exists');
 				testClickable(entrySelector, entry.linkPageSelector, entry.linkPageText, getMenuEntryName(text));
 				if (expected[text].children) {
 					var children = expected[text].children;
 					for (var child in children) {
+						casper.thenOpen(opennms.root());
 						if (children.hasOwnProperty(child)) {
 							var childEntry = getEntry(child, children, text);
-							casper.thenOpen(opennms.root());
 							var childSelector = 'ul > li > ul > li > a[name=\"' + childEntry.selector.replace(/\"/, '\\\"') + '\"]';
 							testSelectorExists(childSelector, getMenuEntryName([text, child]) + ' menu entry exists');
 							testClickable([entrySelector, childSelector], childEntry.linkPageSelector, childEntry.linkPageText, getMenuEntryName([text, child]));
@@ -311,7 +313,6 @@ casper.test.begin('OpenNMS Nav Bar Menu', 65, {
 		casper.then(function() {
 			this.page.switchToParentFrame();
 		});
-		casper.back();
 
 		// heatmap
 		casper.thenOpen(opennms.root() + '/heatmap/index.jsp');
@@ -319,7 +320,6 @@ casper.test.begin('OpenNMS Nav Bar Menu', 65, {
 			test.assertSelectorHasText('h3.panel-title > a', 'Alarm Heatmap  (by Categories)', 'Heatmap iframe loads');
 			this.page.switchToParentFrame();
 		});
-		casper.back();
 
 		// dashboard
 		casper.thenOpen(opennms.root() + '/dashboard.jsp');
@@ -333,7 +333,6 @@ casper.test.begin('OpenNMS Nav Bar Menu', 65, {
 		casper.then(function() {
 			this.page.switchToParentFrame();
 		});
-		casper.back();
 
 		// distributed maps
 		casper.thenOpen(opennms.root() + '/RemotePollerMap/index.jsp');
@@ -347,7 +346,6 @@ casper.test.begin('OpenNMS Nav Bar Menu', 65, {
 		casper.then(function() {
 			this.page.switchToParentFrame();
 		});
-		casper.back();
 
 		opennms.finished(test);
 	}
