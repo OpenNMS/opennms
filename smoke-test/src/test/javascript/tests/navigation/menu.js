@@ -51,12 +51,14 @@ var expected = {
 				linkPageText: 'Outage Menu'
 			},
 			'Surveillance': '/surveillance-view.jsp',
-			'Heatmap': '/heatmap/index.jsp',
+			'Heatmap': '/heatmap/index.jsp'
+			/*,
 			'Distributed Status': {
 				href: '/distributedStatusSummary.htm',
 				linkPageSelector: 'h3.panel-title',
 				linkPageText: 'Distributed Status Summary Error: No Applications Defined'
 			}
+			*/
 		}
 	},
 	'Reports': {
@@ -108,7 +110,11 @@ var expected = {
 		linkPageSelector: 'h3.panel-title',
 		linkPageText: 'Maps',
 		children: {
-			'Distributed': '/RemotePollerMap/index.jsp',
+			/* smoke tests have this, but a default install does not, skip it for now
+			'Distributed': {
+				'/RemotePollerMap/index.jsp',
+			},
+			*/
 			'Topology': {
 				href: '/topology',
 				linkPageSelector: 'table.topoHudDisplay div.gwt-Label',
@@ -163,7 +169,7 @@ var expected = {
 	}
 };
 
-casper.test.begin('OpenNMS Nav Bar Menu', 63, {
+casper.test.begin('OpenNMS Nav Bar Menu', 59, {
 	setUp: function() {
 		opennms.initialize();
 		opennms.login();
@@ -260,7 +266,11 @@ casper.test.begin('OpenNMS Nav Bar Menu', 63, {
 			// Vaadin apps do weird redirects on first launch sometimes, so make sure we've gone back enough to reset.
 			casper.then(function() {
 				casper.back();
+			});
+			casper.then(function() {
 				casper.back();
+			});
+			casper.then(function() {
 				casper.back();
 			});
 		};
@@ -314,7 +324,6 @@ casper.test.begin('OpenNMS Nav Bar Menu', 63, {
 		casper.thenOpen(opennms.root() + '/heatmap/index.jsp');
 		casper.waitForSelector('#coreweb', function() {
 			test.assertSelectorHasText('h3.panel-title > a', 'Alarm Heatmap  (by Categories)', 'Heatmap iframe loads');
-			this.page.switchToParentFrame();
 		});
 
 		// dashboard
@@ -331,6 +340,7 @@ casper.test.begin('OpenNMS Nav Bar Menu', 63, {
 		});
 
 		// distributed maps
+		/*
 		casper.thenOpen(opennms.root() + '/RemotePollerMap/index.jsp');
 		casper.waitForSelector('#app');
 		casper.then(function() {
@@ -342,6 +352,7 @@ casper.test.begin('OpenNMS Nav Bar Menu', 63, {
 		casper.then(function() {
 			this.page.switchToParentFrame();
 		});
+		*/
 
 		opennms.finished(test);
 	}

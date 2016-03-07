@@ -204,6 +204,9 @@ OpenNMS.prototype.root = function() {
 
 OpenNMS.prototype.finished = function(test) {
 	var self = this;
+	self.casper.then(function() {
+		this.page.switchToParentFrame();
+	});
 	self.logout();
 	self.casper.run(function() {
 		setTimeout(function() {
