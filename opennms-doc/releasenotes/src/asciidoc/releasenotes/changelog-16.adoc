@@ -1,13 +1,15 @@
-[releasenotes-16]
-=== OpenNMS 16
 
-[releasenotes-changelog-16.0.4]
+[[release-16-changelog]]
+=== Changelog
+
+[[releasenotes-changelog-16.0.4]]
 ==== Release 16.0.4
 
-Release 16.0.4 is the latest stable release of OpenNMS.  It contains a number of bugfixes, including a change
-to help mitigate remote attacks over RMI.
+Release 16.0.4 is the latest stable release of OpenNMS.
+It contains a number of bugfixes, including a change to help mitigate remote attacks over RMI.
 
-As of this release, RMI listens only on localhost by default.  This can be overridden by setting the property `opennms.poller.server.serverHost={lt}hostname or IP{gt}` in `opennms.conf` or `opennms.properties`.
+As of this release, RMI listens only on localhost by default.
+This can be overridden by setting the property `opennms.poller.server.serverHost=<hostname or IP>` in `opennms.conf` or `opennms.properties`.
 
 The old behavior can be restored by setting the property to: `opennms.poller.server.serverHost=0.0.0.0`.
 
@@ -41,7 +43,7 @@ The codename for 16.0.4 is _Doorman_.
 
 * Interactive JMX data collection configuration UI (Issue http://issues.opennms.org/browse/NMS-4364[NMS-4364])
 
-[releasenotes-changelog-16.0.3]
+[[releasenotes-changelog-16.0.3]]
 ==== Release 16.0.3
 
 Release 16.0.3 is the latest stable release of OpenNMS.  It contains a number of bugfixes, including a fix
@@ -65,14 +67,14 @@ The codename for 16.0.3 is _Phillip Fathom_.
 * Fix for NMS-6567 prevents interfaces from acquiring SNMP interface records on rescan (Issue http://issues.opennms.org/browse/NMS-7838[NMS-7838])
 * Counter variables reported as strings (like Net-SNMP extent) are not stored properly when using RRDtool (Issue http://issues.opennms.org/browse/NMS-7839[NMS-7839])
 
-[releasenotes-changelog-16.0.2]
+[[releasenotes-changelog-16.0.2]]
 ==== Release 16.0.2
 
 Release 16.0.2 is the latest stable release of OpenNMS.  It is a repack of 16.0.1 with a missing bugfix included.
 
 The codename for 16.0.2 is **__still__** _Bananaman_.  It'll be our secret.
 
-[releasenotes-changelog-16.0.1]
+[[releasenotes-changelog-16.0.1]]
 ==== Release 16.0.1
 
 Release 16.0.1 is the latest stable release of OpenNMS.  It contains a few small enhancements and a number of bugfixes, including
@@ -107,7 +109,7 @@ The codename for 16.0.1 is _Bananaman_.
 * Improve links for SLA categories on start page (Issue http://issues.opennms.org/browse/NMS-7713[NMS-7713])
 
 
-[releasenotes-changelog-16.0.0]
+[[releasenotes-changelog-16.0.0]]
 ==== Release 16.0.0
 
 Release 16.0.0 is the latest stable release of OpenNMS.  It is primarily a refactoring/cleanup release, but contains a number
@@ -260,4 +262,3 @@ The codename for 16.0.0 is _Daredevil_.
 * Rename the surveillance config panel link in Admin menu (Issue http://issues.opennms.org/browse/NMS-7530[NMS-7530])
 * Dashboard Dashlet: Refresh indicator (Issue http://issues.opennms.org/browse/NMS-7540[NMS-7540])
 * Vaadin Dashboard: Alarm Dashlet should have severity sorting by default (Issue http://issues.opennms.org/browse/NMS-7542[NMS-7542])
-

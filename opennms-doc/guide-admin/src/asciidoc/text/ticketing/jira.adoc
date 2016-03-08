@@ -24,15 +24,20 @@ Configure the plugin options by setting the following properties in `${OPENNMS_H
 
 [options="header, autowidth"]
 |===
-| Name            | Description
-| `jira.host`     | JIRA Server Url
-| `jira.username` | Username
-| `jira.password` | Password
-| `jira.project`  | Project Code
-| `jira.type`     | Issue Type ID to use when opening new issues
-| `jira.resolve`  | Name of the transition to use when resolving issues
-| `jira.reopen`   | Name of the transition to use when re-opening issues
+| Name                    | Description
+| `jira.host`             | JIRA Server Url
+| `jira.username`         | Username
+| `jira.password`         | Password
+| `jira.project`          | Project Code
+| `jira.type`             | Issue Type ID to use when opening new issues
+| `jira.resolve`          | Name of the transition to use when resolving issues
+| `jira.reopen`           | Name of the transition to use when re-opening issues
+| `jira.status.open`      | Comma-separated list of JIRA status names for which the ticket should be considered 'Open'
+| `jira.status.closed`    | Comma-separated list of JIRA status names for which the ticket should be considered 'Closed'
+| `jira.status.cancelled` | Comma-separated list of JIRA status names for which the ticket should be considered 'Cancelled'
 |===
+
+NOTE: The transition names for `resolve` and `reopen` are typically found on buttons when looking at the ticket in JIRA
 
 NOTE: See https://confluence.atlassian.com/display/JIRA050/Finding+the+Id+for+Issue+Types for determining the appropriate issue type id.
 

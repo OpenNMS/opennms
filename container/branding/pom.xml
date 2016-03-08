@@ -30,8 +30,6 @@
                     <instructions>
                         <Bundle-RequiredExecutionEnvironment>JavaSE-1.8</Bundle-RequiredExecutionEnvironment>
                         <Bundle-SymbolicName>manual</Bundle-SymbolicName>
-                        <Import-Package>*</Import-Package>
-                        <Private-Package>!*</Private-Package>
                         <Export-Package>
                             org.apache.karaf.branding
                         </Export-Package>
