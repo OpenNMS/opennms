@@ -31,7 +31,6 @@ package org.opennms.features.topology.app.internal.operations.icons;
 import java.util.List;
 
 import org.opennms.features.topology.api.IconManager;
-import org.opennms.features.topology.api.IconRepository;
 import org.opennms.features.topology.api.Operation;
 import org.opennms.features.topology.api.OperationContext;
 import org.opennms.features.topology.api.topo.AbstractVertex;
@@ -47,23 +46,17 @@ public class IconSelectionOperation implements Operation {
     @Override
     public void execute(List<VertexRef> targets, OperationContext operationContext) {
         final AbstractVertex vertex = (AbstractVertex) targets.get(0);
-        final String selectedIconId = operationContext.getGraphContainer().getIconManager().getSVGIconId(vertex.getIconKey());
+        final String preSelectedIconId = operationContext.getGraphContainer().getIconManager().getSVGIconId(vertex);
 
-        new IconSelectionDialog(selectedIconId)
+        new IconSelectionDialog(preSelectedIconId)
                 .withOkAction(iconWindow -> {
                     final IconManager iconManager = operationContext.getGraphContainer().getIconManager();
-                    final String oldIconId = iconManager.getSVGIconId(vertex.getIconKey());
                     final String newIconId = iconWindow.getSelectedIcon();
 
-                    // We look for a IconRepository with the old icon key as mapping
-                    IconRepository iconRepository = iconManager.findRepositoryByIconKey(vertex.getIconKey());
-                    if (iconRepository != null && !oldIconId.equals(newIconId)) {
-                        // now we set the new mapping: vertex-id => icon-id
-                        iconRepository.addIconMapping(vertex.getId(), newIconId);
-                        iconRepository.save();
-
-                        // We have to update the icon key, otherwise the icon is not updated (redoLayout has no effect)
-                        vertex.setIconKey(vertex.getId());
+                    String newIconKey = iconManager.setIconMapping(vertex, newIconId);
+                    if (newIconKey != null) {
+                        // We have to temporary update the icon key, otherwise the icon is not updated (redoLayout has no effect)
+                        vertex.setIconKey(newIconKey);
 
                         // Redo the layout to apply new icon
                         operationContext.getGraphContainer().setDirty(true);

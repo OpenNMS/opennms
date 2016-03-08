@@ -31,9 +31,9 @@ package org.opennms.features.topology.app.internal.operations.icons;
 import java.util.List;
 
 import org.opennms.features.topology.api.IconManager;
-import org.opennms.features.topology.api.IconRepository;
 import org.opennms.features.topology.api.Operation;
 import org.opennms.features.topology.api.OperationContext;
+import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
 
 /**
@@ -46,19 +46,13 @@ public class IconResetOperation implements Operation {
         IconManager iconManager = operationContext.getGraphContainer().getIconManager();
         final boolean[] updated = {false};
         targets.forEach(vertex -> {
-            // We look for a IconRepository with the old icon key as mapping
-            IconRepository iconRepository = iconManager.findRepositoryByIconKey(vertex.getId());
-            if (iconRepository != null) { // we ay not have a icon repository due to no custom mapping
-                iconRepository.removeIconMapping(vertex.getId());
-                iconRepository.save();
-                updated[0] = true;
-            }
+            updated[0] |= iconManager.removeIconMapping((Vertex) vertex);
         });
 
         // Redo the layout to apply new icon
         if (updated[0]) {
-            // HACK! We have no concept of "default icon" at the moment.
-            // In order to populate the icon, we have to re-initialize the base topology
+            // HACK! We have no concept of "get the default icon for a vertex" at the moment.
+            // In order to populate the icon, we have to re-initialize the Base Topology Provider
             operationContext.getGraphContainer().getBaseTopology().refresh();
             operationContext.getGraphContainer().setDirty(true);
             operationContext.getGraphContainer().redoLayout();
@@ -75,7 +69,8 @@ public class IconResetOperation implements Operation {
 
     @Override
     public boolean enabled(List<VertexRef> targets, OperationContext operationContext) {
-        return true; // if displayed, always enabled
+        // only enabled, if all elements are a Vertex
+        return targets.stream().filter(v -> v instanceof Vertex).count() == targets.size();
     }
 
     @Override
