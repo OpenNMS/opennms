@@ -51,7 +51,9 @@ public class DefaultIconRepository implements IconRepository, ManagedService {
 
     @Override
     public boolean contains(String iconKey) {
-        if (Constants.SERVICE_PID.equals(iconKey)) {
+        // These elements are in the m_iconMap, but should not map to any iconKey, as the mapping does not
+        // point to an icon id
+        if (Constants.SERVICE_PID.equals(iconKey) || "felix.fileinstall.filename".equals(iconKey)) {
             return false;
         }
         return m_iconMap.containsKey(iconKey);
@@ -90,7 +92,7 @@ public class DefaultIconRepository implements IconRepository, ManagedService {
 
     @Override
 	public void updated(Dictionary<String,?> properties) throws ConfigurationException {
-        if (!properties.equals(m_iconMap)) {
+        if (properties != null && !properties.equals(m_iconMap)) {
             m_iconMap.clear();
             for (String key : Collections.list(properties.keys())) {
                 String v = ((String) properties.get(key));
