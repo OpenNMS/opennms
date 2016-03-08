@@ -29,7 +29,10 @@
 package org.opennms.web.rest.v1;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -58,6 +61,7 @@ import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventProxy;
 import org.opennms.netmgt.events.api.EventProxyException;
+import org.opennms.netmgt.filter.api.FilterDao;
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsCategoryCollection;
 import org.opennms.netmgt.model.OnmsGeolocation;
@@ -91,6 +95,9 @@ public class NodeRestService extends OnmsRestService {
     private NodeDao m_nodeDao;
 
     @Autowired
+    private FilterDao m_filterDao;
+
+    @Autowired
     private CategoryDao m_categoryDao;
 
     @Autowired
@@ -113,16 +120,24 @@ public class NodeRestService extends OnmsRestService {
 
         if (params.size() == 1 && params.getFirst("nodeId") != null && params.getFirst("nodeId").contains(",")) {
             // we've been specifically asked for a list of nodes by ID
-
             final List<Integer> nodeIds = new ArrayList<Integer>();
             for (final String id : params.getFirst("nodeId").split(",")) {
                 nodeIds.add(Integer.valueOf(id));
             }
-            builder.ne("type", "D");
-            builder.in("id", nodeIds);
-            builder.distinct();
+            crit = filterForNodeIds(builder, nodeIds).toCriteria();
+        } else if (params.getFirst("filterRule") != null) {
+            final Set<Integer> filteredNodeIds = m_filterDao.getNodeMap(params.getFirst("filterRule")).keySet();
+            if (filteredNodeIds.size() < 1) {
+                // The "in" criteria fails if the list of node ids is empty
+                final OnmsNodeList coll = new OnmsNodeList(Collections.emptyList());
+                coll.setTotalCount(0);
+                return coll;
+            }
 
-            crit = builder.toCriteria();
+            // Apply the criteria without the filter rule
+            params.remove("filterRule");
+            final CriteriaBuilder filterRuleCriteriaBuilder = getCriteriaBuilder(params);
+            crit = filterForNodeIds(filterRuleCriteriaBuilder, filteredNodeIds).toCriteria();
         } else {
             applyQueryFilters(params, builder);
             builder.orderBy("label").asc();
@@ -145,6 +160,12 @@ public class NodeRestService extends OnmsRestService {
         coll.setTotalCount(m_nodeDao.countMatching(crit));
 
         return coll;
+    }
+
+    private static CriteriaBuilder filterForNodeIds(CriteriaBuilder builder, Collection<Integer> nodeIds) {
+        return builder.ne("type", "D")
+                .in("id", nodeIds)
+                .distinct();
     }
 
     /**
