@@ -270,7 +270,11 @@ casper.test.begin('OpenNMS Nav Bar Menu', 59, {
 			// Vaadin apps do weird redirects on first launch sometimes, so make sure we've gone back enough to reset.
 			casper.then(function() {
 				casper.back();
+			});
+			casper.then(function() {
 				casper.back();
+			});
+			casper.then(function() {
 				casper.back();
 			});
 		};
@@ -324,7 +328,6 @@ casper.test.begin('OpenNMS Nav Bar Menu', 59, {
 		casper.thenOpen(opennms.root() + '/heatmap/index.jsp');
 		casper.waitForSelector('#coreweb', function() {
 			test.assertSelectorHasText('h3.panel-title > a', 'Alarm Heatmap  (by Categories)', 'Heatmap iframe loads');
-			this.page.switchToParentFrame();
 		});
 
 		// dashboard
