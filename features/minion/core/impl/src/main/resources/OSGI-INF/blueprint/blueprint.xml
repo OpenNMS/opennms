@@ -1,0 +1,34 @@
+<blueprint
+    xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0"
+    xmlns:ext="http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.1.0"
+    xmlns:cb="http://camel.apache.org/schema/blueprint"
+    xsi:schemaLocation="
+        http://www.osgi.org/xmlns/blueprint/v1.0.0 
+        http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd
+
+        http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0
+        http://aries.apache.org/schemas/blueprint-cm/blueprint-cm-1.1.0.xsd
+
+        http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.1.0
+        http://aries.apache.org/schemas/blueprint-ext/blueprint-ext-1.1.xsd
+">
+
+    <cm:property-placeholder id="minionProperties" persistent-id="org.opennms.minion.controller" placeholder-prefix="$(" placeholder-suffix=")" update-strategy="none"/>
+    <cm:property-placeholder id="activemqProperties" persistent-id="org.opennms.minion.activemq" placeholder-prefix="[[" placeholder-suffix="]]" update-strategy="none"/>
+
+    <bean id="minionInfo" class="org.opennms.features.minion.core.impl.MinionInfoImpl">
+       <argument value="$(location)"/>
+    </bean>
+
+    <service ref="minionInfo" interface="org.opennms.features.minion.core.api.MinionInfo"/>
+
+    <bean id="activemq" class="org.apache.activemq.camel.component.ActiveMQComponent">
+        <property name="brokerURL" value="[[broker-url]]"/>
+        <property name="userName" value="[[username]]"/>
+        <property name="password" value="[[password]]"/>
+    </bean>
+
+    <service id="queuingservice" ref="activemq" interface="org.apache.camel.Component"/>
+</blueprint>

@@ -121,5 +121,8 @@
 
     <!-- Elasticsearch event-forwarder-->
     <module>elasticsearch</module>
+
+    <!-- Minion -->
+    <module>minion</module>
   </modules>
 </project>
