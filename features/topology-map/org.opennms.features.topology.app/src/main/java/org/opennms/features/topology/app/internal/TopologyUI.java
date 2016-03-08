@@ -227,6 +227,14 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
             }
             // we redo the layout before we save the history
             m_graphContainer.redoLayout();
+
+            // Close all open Windows/Dialogs if it is not the "NO VERTICES IN FOCUS"-Window
+            for (Window eachWindow : getWindows()) {
+                if (eachWindow != m_noContentWindow) {
+                    eachWindow.close();
+                }
+            }
+
             if (updateURL) {
                 // If we have a new location, we reload the page.
                 // This needs to be done to set the fragment of the page correctly
