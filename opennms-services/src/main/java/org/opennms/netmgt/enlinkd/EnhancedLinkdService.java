@@ -124,7 +124,7 @@ public interface EnhancedLinkdService {
     
     BroadcastDomain getBridgeTopologyBroadcastDomain(int nodeId);
 
-    List<BridgeMacLink> getBridgeTopologyUpdateBFT(int nodeid);
+    List<BridgeMacLink> useBridgeTopologyUpdateBFT(int nodeid);
    
     List<BridgeMacLink> getBridgeTopologyRootBFT(int nodeid);
     

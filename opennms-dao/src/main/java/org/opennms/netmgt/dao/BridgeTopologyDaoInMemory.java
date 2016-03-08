@@ -38,7 +38,7 @@ public class BridgeTopologyDaoInMemory implements BridgeTopologyDao {
     }
 
     @Override
-    public synchronized void clear() {
+    public synchronized void clean() {
         Set<BroadcastDomain> empties = new HashSet<BroadcastDomain>();
         for (BroadcastDomain domain: m_domains) {
             if (domain.isEmpty())

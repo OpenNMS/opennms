@@ -633,7 +633,7 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
         }
         bftdomain.addBridge(new Bridge(nodeId));
         m_bridgeTopologyDao.save(bftdomain);
-        m_bridgeTopologyDao.clear();
+        m_bridgeTopologyDao.clean();
         m_nodetoBroadcastDomainMap.put(nodeId, new ArrayList<BridgeMacLink>(effectiveBFT.values()));
     }
 
@@ -652,7 +652,7 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
     }
 
     @Override
-    public synchronized List<BridgeMacLink> getBridgeTopologyUpdateBFT(int nodeid) {
+    public synchronized List<BridgeMacLink> useBridgeTopologyUpdateBFT(int nodeid) {
         return m_nodetoBroadcastDomainMap.remove(nodeid);
     }    
 

@@ -50,6 +50,7 @@ import org.opennms.netmgt.enlinkd.snmp.Dot1qTpFdbTableTracker;
 import org.opennms.netmgt.model.BridgeElement;
 import org.opennms.netmgt.model.BridgeElement.BridgeDot1dBaseType;
 import org.opennms.netmgt.model.BridgeMacLink;
+import org.opennms.netmgt.model.BridgeMacLink.BridgeDot1qTpFdbStatus;
 import org.opennms.netmgt.model.BridgeStpLink;
 import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpWalker;
@@ -304,6 +305,12 @@ public final class NodeDiscoveryBridge extends NodeDiscovery {
 	                            return;
 				}
                                 link.setVlan(vlan);
+                                
+                                if (!bridgeifindex.containsKey(link.getBridgePort()) && link.getBridgeDot1qTpFdbStatus() != BridgeDot1qTpFdbStatus.DOT1D_TP_FDB_STATUS_SELF) {
+                                    LOG.warn("processDot1dTpFdbRow: row has invalid bridge port no ifindex found. mac {}: vlan {}: on port {} ifindex {} status {}",  
+                                             row.getDot1dTpFdbAddress(), vlan, row.getDot1dTpFdbPort(),link.getBridgePortIfIndex(),link.getBridgeDot1qTpFdbStatus());
+                                        return;
+                                }
                                 link.setBridgePortIfIndex(bridgeifindex.get(link.getBridgePort()));
                                 LOG.info("processDot1dTpFdbRow: row processed: mac {}: vlan {}: on port {} ifindex {} status {}",  
                                          link.getMacAddress(), link.getVlan(), link.getBridgePort() ,link.getBridgePortIfIndex(),link.getBridgeDot1qTpFdbStatus());
@@ -356,6 +363,12 @@ public final class NodeDiscoveryBridge extends NodeDiscovery {
                                      row.getDot1qTpFdbAddress(),row.getDot1qTpFdbPort(),link.getBridgePortIfIndex(),link.getBridgeDot1qTpFdbStatus());
                                 return;
                             }
+                            if (!bridgeifindex.containsKey(link.getBridgePort()) && link.getBridgeDot1qTpFdbStatus() != BridgeDot1qTpFdbStatus.DOT1D_TP_FDB_STATUS_SELF) {
+                                LOG.warn("processDot1qTpFdbRow: row has invalid bridgeport no ifindex found. mac {}: on port {} ifindex {} status {}",  
+                                         row.getDot1qTpFdbAddress(),row.getDot1qTpFdbPort(),link.getBridgePortIfIndex(),link.getBridgeDot1qTpFdbStatus());
+                                    return;
+                            }
+                                    
                             link.setBridgePortIfIndex(bridgeifindex.get(link.getBridgePort()));
                             LOG.info("processDot1qTpFdbRow: row processed: mac {}: vlan {}: on port {} ifindex {} status {}",  
                                      link.getMacAddress(), link.getVlan(), link.getBridgePort() ,link.getBridgePortIfIndex(),link.getBridgeDot1qTpFdbStatus());

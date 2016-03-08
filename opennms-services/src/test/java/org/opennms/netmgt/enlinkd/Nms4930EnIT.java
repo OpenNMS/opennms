@@ -333,7 +333,7 @@ public class Nms4930EnIT extends EnLinkdBuilderITCase {
         assertEquals(0,m_bridgeBridgeLinkDao.countAll());
         assertEquals(0,m_bridgeMacLinkDao.countAll());
 
-        List<BridgeMacLink> links  = m_linkd.getQueryManager().getBridgeTopologyUpdateBFT(dlink1.getId());
+        List<BridgeMacLink> links  = m_linkd.getQueryManager().useBridgeTopologyUpdateBFT(dlink1.getId());
         
         assertEquals(59,links.size());
         for (BridgeMacLink link: links) {
