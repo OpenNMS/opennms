@@ -524,7 +524,7 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
         
         for (Integer nodeid: m_domain.getBridgeNodesOnDomain()) {
             LOG.debug("run: node: {}, getting update bft for node {} on domain", getNodeId(),nodeid);
-            List<BridgeMacLink> bft = m_linkd.getQueryManager().getBridgeTopologyUpdateBFT(nodeid);
+            List<BridgeMacLink> bft = m_linkd.getQueryManager().useBridgeTopologyUpdateBFT(nodeid);
             if (bft == null || bft.isEmpty()) {
                 LOG.debug("run: node: {}, no update bft for node {} on domain", getNodeId(),nodeid);
                 continue;
@@ -778,16 +778,42 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
 
     }
 
+    private void loadFirstLevelSharedSegment(List<BridgeMacLink> electedRootBFT) {
+         Map<Integer, SharedSegment> rootleafs = new HashMap<Integer, SharedSegment>();
+         for (BridgeMacLink link : electedRootBFT) {
+             if (link.getBridgeDot1qTpFdbStatus() != BridgeDot1qTpFdbStatus.DOT1D_TP_FDB_STATUS_LEARNED)
+                 continue;
+             if (rootleafs.containsKey(link.getBridgePort()))
+                 rootleafs.get(link.getBridgePort()).add(link);
+             else
+                 rootleafs.put(link.getBridgePort(),
+                               new SharedSegment(m_domain,link));
+         }
+         for (SharedSegment rootleaf : rootleafs.values()) {
+             LOG.info("calculate: adding shared segment to topology: root bridge {} port: {}, mac size: {}, bft size: {}",
+                      rootleaf.getDesignatedBridge(),
+                      rootleaf.getDesignatedPort(),
+                      rootleaf.getMacsOnSegment().size(),
+                      rootleaf.getBridgeMacLinks().size());
+             m_domain.add(rootleaf);
+         }
+        
+    }
     private void setUpRoot(Bridge electedRoot) {
         if (electedRoot.isRootBridge() && !m_notYetParsedBFTMap.containsKey(electedRoot)) {
             LOG.info("calculate: elected root bridge: {}, is old root bridge with old bft",
                      electedRoot.getId());
         } else if (electedRoot.isRootBridge() && m_notYetParsedBFTMap.containsKey(electedRoot)) {
-            LOG.info("calculate: elected root bridge: {}, is old root bridge with new bft, size: {}",
+            LOG.info("calculate: elected root bridge: {}, is old root bridge with new bft",
                      electedRoot.getId());
             m_rootBridgeBFT=new ArrayList<BridgeMacLink>(m_notYetParsedBFTMap.remove(electedRoot));
             LOG.debug("calculate: updated new bft for root bridge {}  size:  {}",
                           electedRoot.getId(), m_rootBridgeBFT.size());
+            if (m_domain.getTopology().isEmpty()) {
+                LOG.info("calculate: elected root bridge: {}, clean topology found. Adding level 0 shared segments",
+                         electedRoot.getId());
+                loadFirstLevelSharedSegment(m_rootBridgeBFT);
+            }
         } else if (!electedRoot.isRootBridge() && m_notYetParsedBFTMap.containsKey(electedRoot)) {
             LOG.info("calculate: elected root bridge: {}, is new root bridge and has new bft",
                          electedRoot.getId());
@@ -796,24 +822,7 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
            if (m_domain.getTopology().isEmpty()) {
                LOG.info("calculate: new elected root bridge: {}, is the first bridge in topology. Adding level 0 shared segments",
                         electedRoot.getId());
-                Map<Integer, SharedSegment> rootleafs = new HashMap<Integer, SharedSegment>();
-                for (BridgeMacLink link : electedRootBFT) {
-                    if (link.getBridgeDot1qTpFdbStatus() != BridgeDot1qTpFdbStatus.DOT1D_TP_FDB_STATUS_LEARNED)
-                        continue;
-                    if (rootleafs.containsKey(link.getBridgePort()))
-                        rootleafs.get(link.getBridgePort()).add(link);
-                    else
-                        rootleafs.put(link.getBridgePort(),
-                                      new SharedSegment(m_domain,link));
-                }
-                for (SharedSegment rootleaf : rootleafs.values()) {
-                    LOG.info("calculate: adding shared segment to topology: root bridge {} port: {}, mac size: {}, bft size: {}",
-                             rootleaf.getDesignatedBridge(),
-                             rootleaf.getDesignatedPort(),
-                             rootleaf.getMacsOnSegment().size(),
-                             rootleaf.getBridgeMacLinks().size());
-                    m_domain.add(rootleaf);
-                }
+                loadFirstLevelSharedSegment(electedRootBFT);
                 electedRoot.setRootBridge(true);
                 electedRoot.setRootPort(null);
            } else {

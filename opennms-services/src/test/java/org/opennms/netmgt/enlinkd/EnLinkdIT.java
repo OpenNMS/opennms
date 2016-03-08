@@ -104,7 +104,7 @@ public class EnLinkdIT extends EnLinkdBuilderITCase {
         
         m_linkd.getQueryManager().store(topology.nodeAId, topology.bftA);
         
-        List<BridgeMacLink> links = m_linkd.getQueryManager().getBridgeTopologyUpdateBFT(topology.nodeAId);
+        List<BridgeMacLink> links = m_linkd.getQueryManager().useBridgeTopologyUpdateBFT(topology.nodeAId);
         assertEquals(topology.bftA.size(), links.size());
         for (BridgeMacLink link: links) {
             assertEquals(BridgeDot1qTpFdbStatus.DOT1D_TP_FDB_STATUS_LEARNED, link.getBridgeDot1qTpFdbStatus());

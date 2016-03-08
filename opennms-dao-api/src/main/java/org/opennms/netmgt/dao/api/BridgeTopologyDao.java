@@ -9,7 +9,7 @@ public interface BridgeTopologyDao {
         
     
     // clear topology for all BroadcastDomain that are empty
-    void clear();
+    void clean();
     // update broadcastdomain
     void save(BroadcastDomain domain);
     // Load the topology from the scratch

@@ -44,7 +44,22 @@ import org.opennms.netmgt.model.OnmsNode.NodeType;
  * 
  */
 public abstract class NmsNetworkBuilder {
-
+    //NMS7918
+    public static final String PE01_ROOT = "PE01";
+    public static final String PE01_IP   = "172.25.64.8";
+    public static final String PE01_NAME = "pe01";
+    public static final String PE01_SYSNAME = "PE01";
+    public static final String PE01_SYSOID = ".1.3.6.1.4.1.9.1.534";
+    public static final String PE01_SNMP_RESOURCE = "classpath:linkd/nms7918/"+PE01_NAME+".txt";
+    
+    public static final String ASW01_ROOT = "ASW01";
+    public static final String ASW01_IP   = "10.25.19.2";
+    public static final String ASW01_NAME = "asw01";
+    public static final String ASW01_SYSNAME = "ASW01";
+    public static final String ASW01_SYSOID = ".1.3.6.1.4.1.6486.800.1.1.2.1.10.1.1";
+    public static final String ASW01_SNMP_RESOURCE = "classpath:linkd/nms7918/"+ASW01_NAME+".txt";
+    
+    
     //NMS8003
     //NMS8000
     public final static String NMMR1_ROOT= "NMMR1";
