@@ -65,8 +65,7 @@ public abstract class OnmsVaadinContainer<T,K extends Serializable> implements C
 
     protected static class Page {
         protected int length;
-        // we initially set it to -1 to force an update on index=0
-        protected int offset = -1;
+        protected int offset;
         protected final Size size;
 
         public Page (int length, Size size) {
