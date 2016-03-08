@@ -239,7 +239,7 @@ public class ScheduledOutagesRestServiceIT extends AbstractSpringJerseyRestTestC
                 "<time begins='17-Feb-2012 19:20:00' ends='18-Feb-2012 22:30:00' />" +
                 "<node id='11' />" +
                 "</outage>";
-        sendPost(url, outage, 204, null);
+        sendPost(url, outage, 201, null);
 
         Outage out = getXmlObject(m_jaxbContext, "/sched-outages/test-outage", 200, Outage.class);
         Assert.assertNotNull(out);

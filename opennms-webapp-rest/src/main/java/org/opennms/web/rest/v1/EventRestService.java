@@ -200,7 +200,7 @@ public class EventRestService extends OnmsRestService {
      * the events
      * 
      * @param eventId
-     *            a {@link java.lang.String} object.
+     *            a {@link java.lang.Integer} object.
      * @param ack
      *            a {@link java.lang.Boolean} object.
      */
@@ -208,11 +208,11 @@ public class EventRestService extends OnmsRestService {
     @Path("{eventId}")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Transactional
-    public Response updateEvent(@Context final SecurityContext securityContext, @PathParam("eventId") final String eventId, @FormParam("ack") final Boolean ack) {
+    public Response updateEvent(@Context final SecurityContext securityContext, @PathParam("eventId") final Integer eventId, @FormParam("ack") final Boolean ack) {
         writeLock();
 
         try {
-            final OnmsEvent event = m_eventDao.get(Integer.valueOf(eventId));
+            final OnmsEvent event = getEvent(eventId);
             if (ack == null) {
                 throw getException(Status.BAD_REQUEST, "Must supply the 'ack' parameter, set to either 'true' or 'false'");
             }
@@ -272,7 +272,7 @@ public class EventRestService extends OnmsRestService {
     @Transactional
     public Response publishEvent(final org.opennms.netmgt.xml.event.Event event) {
         m_eventForwarder.sendNow(event);
-        return Response.ok().build();
+        return Response.noContent().build();
     }
 
     private static CriteriaBuilder getCriteriaBuilder(final MultivaluedMap<String, String> params) {

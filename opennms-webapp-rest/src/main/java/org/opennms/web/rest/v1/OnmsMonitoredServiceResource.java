@@ -193,12 +193,8 @@ public class OnmsMonitoredServiceResource extends OnmsRestService {
             
             Event e = EventUtils.createNodeGainedServiceEvent(getClass().getName(), node.getId(), intf.getIpAddress(), 
                     service.getServiceName(), node.getLabel(), node.getLabelSource(), node.getSysName(), node.getSysDescription());
-            
-            try {
-                m_eventProxy.send(e);
-            } catch (EventProxyException ex) {
-                throw getException(Status.BAD_REQUEST, ex.getMessage());
-            }
+            sendEvent(e);
+
             return Response.created(getRedirectUri(uriInfo, service.getServiceName())).build();
         } finally {
             writeUnlock();
@@ -297,10 +293,14 @@ public class OnmsMonitoredServiceResource extends OnmsRestService {
         bldr.setNodeid(dbObj.getNodeId());
         bldr.setInterface(dbObj.getIpAddress());
         bldr.setService(dbObj.getServiceName());
+        sendEvent(bldr.getEvent());
+    }
+
+    private void sendEvent(Event event) {
         try {
-            m_eventProxy.send(bldr.getEvent());
-        } catch (EventProxyException ex) {
-            throw getException(Status.BAD_REQUEST, ex.getMessage());
+            m_eventProxy.send(event);
+        } catch (final EventProxyException e) {
+            throw getException(Status.INTERNAL_SERVER_ERROR, "Cannot send event {} : {}", event.getUei(), e.getMessage());
         }
     }
 

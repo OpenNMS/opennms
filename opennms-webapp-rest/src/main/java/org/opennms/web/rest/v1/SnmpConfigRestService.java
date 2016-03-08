@@ -154,7 +154,7 @@ public class SnmpConfigRestService extends OnmsRestService {
             m_accessService.define(eventInfo);
             return Response.noContent().build();
         } catch (final Throwable e) {
-            return Response.serverError().build();
+            throw getException(Status.INTERNAL_SERVER_ERROR, "Can't update SNMP configuration for {} : {}", ipAddress, e.getMessage());
         } finally {
             writeUnlock();
         }
@@ -186,7 +186,7 @@ public class SnmpConfigRestService extends OnmsRestService {
             m_accessService.define(eventInfo);
             return Response.noContent().build();
         } catch (final Throwable e) {
-            return Response.serverError().build();
+            throw getException(Status.INTERNAL_SERVER_ERROR, "Can't update SNMP configuration for {} : {}", ipAddress, e.getMessage());
         } finally {
             writeUnlock();
         }

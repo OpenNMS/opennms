@@ -265,7 +265,7 @@ public class OnmsSnmpInterfaceResource extends OnmsRestService {
                 try {
                     m_eventProxy.send(e);
                 } catch (final EventProxyException ex) {
-                    throw getException(Response.Status.INTERNAL_SERVER_ERROR, "Exception occurred sending event: "+ex.getMessage());
+                    throw getException(Response.Status.INTERNAL_SERVER_ERROR, "Exception occurred sending event {} : {}", e.getUei(), ex.getMessage());
                 }
             }
             return modified ? Response.noContent().build() : Response.notModified().build();

@@ -177,12 +177,17 @@ public class SnmpTrapNorthbounderConfigurationResource extends OnmsRestService i
     public Response setConfiguration(final SnmpTrapNorthbounderConfig config) {
         writeLock();
         try {
-            File configFile = m_snmpTrapNorthbounderConfigDao.getConfigResource().getFile();
-            JaxbUtils.marshal(config, new FileWriter(configFile));
-            notifyDaemons();
+            if (config == null) {
+                throw getException(Status.BAD_REQUEST, "SNMP NBI configuration object cannot be null");
+            }
+            try {
+                File configFile = m_snmpTrapNorthbounderConfigDao.getConfigResource().getFile();
+                JaxbUtils.marshal(config, new FileWriter(configFile));
+                notifyDaemons();
+            } catch (Throwable t) {
+                throw getException(Status.INTERNAL_SERVER_ERROR, t);
+            }
             return Response.noContent().build();
-        } catch (Throwable t) {
-            throw new WebApplicationException(Response.status(Status.INTERNAL_SERVER_ERROR).type(MediaType.TEXT_PLAIN).entity(t.getMessage()).build());
         } finally {
             writeUnlock();
         }
@@ -242,12 +247,12 @@ public class SnmpTrapNorthbounderConfigurationResource extends OnmsRestService i
     @GET
     @Path("trapsinks/{trapsinkName}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
-    public Response getSnmpTrapSink(@PathParam("trapsinkName") final String trapSinkName) {
+    public SnmpTrapSink getSnmpTrapSink(@PathParam("trapsinkName") final String trapSinkName) {
         SnmpTrapSink trapSink = m_snmpTrapNorthbounderConfigDao.getConfig().getSnmpTrapSink(trapSinkName);
         if (trapSink == null) {
-            return Response.status(404).build();
+            throw getException(Status.NOT_FOUND, "SNMP Trap sink {} was not found.", trapSinkName);
         }
-        return Response.ok(trapSink).build();
+        return trapSink;
     }
 
     /**
@@ -260,10 +265,7 @@ public class SnmpTrapNorthbounderConfigurationResource extends OnmsRestService i
     @Path("trapsinks/{trapsinkName}/import-mappings")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     public Response getImportMappings(@PathParam("trapsinkName") final String trapSinkName) {
-        SnmpTrapSink trapSink = m_snmpTrapNorthbounderConfigDao.getConfig().getSnmpTrapSink(trapSinkName);
-        if (trapSink == null) {
-            return Response.status(404).build();
-        }
+        SnmpTrapSink trapSink = getSnmpTrapSink(trapSinkName);
         return Response.ok(new ImportMappings(trapSink.getImportMappings())).build();
 
     }
@@ -281,6 +283,9 @@ public class SnmpTrapNorthbounderConfigurationResource extends OnmsRestService i
     public Response setSnmpTrapSink(final SnmpTrapSink snmpTrapSink) {
         writeLock();
         try {
+            if (snmpTrapSink == null) {
+                throw getException(Status.BAD_REQUEST, "SNMP Trap Sink object cannot be null");
+            }
             m_snmpTrapNorthbounderConfigDao.getConfig().addSnmpTrapSink(snmpTrapSink);
             saveConfiguration();
             return Response.noContent().build();
@@ -302,15 +307,14 @@ public class SnmpTrapNorthbounderConfigurationResource extends OnmsRestService i
     public Response setImportMapping(@PathParam("trapsinkName") final String trapSinkName, final SnmpTrapMappingGroup mappingGroup) {
         writeLock();
         try {
-            SnmpTrapSink trapSink = m_snmpTrapNorthbounderConfigDao.getConfig().getSnmpTrapSink(trapSinkName);
-            if (trapSink == null) {
-                return Response.status(404).build();
+            SnmpTrapSink trapSink = getSnmpTrapSink(trapSinkName);
+            try {
+                trapSink.addImportMapping(mappingGroup);
+            } catch (Throwable t) {
+                throw getException(Status.INTERNAL_SERVER_ERROR, t);
             }
-            trapSink.addImportMapping(mappingGroup);
             saveConfiguration();
             return Response.noContent().build();
-        } catch (Throwable t) {
-            throw new WebApplicationException(Response.status(Status.INTERNAL_SERVER_ERROR).type(MediaType.TEXT_PLAIN).entity(t.getMessage()).build());
         } finally {
             writeUnlock();
         }
@@ -330,10 +334,7 @@ public class SnmpTrapNorthbounderConfigurationResource extends OnmsRestService i
         writeLock();
         try {
             boolean modified = false;
-            SnmpTrapSink trapSink = m_snmpTrapNorthbounderConfigDao.getConfig().getSnmpTrapSink(trapSinkName);
-            if (trapSink == null) {
-                return Response.status(404).build();
-            }
+            SnmpTrapSink trapSink = getSnmpTrapSink(trapSinkName);
             final BeanWrapper wrapper = PropertyAccessorFactory.forBeanPropertyAccess(trapSink);
             for (final String key : params.keySet()) {
                 if (wrapper.isWritableProperty(key)) {
@@ -348,8 +349,6 @@ public class SnmpTrapNorthbounderConfigurationResource extends OnmsRestService i
                 return Response.noContent().build();
             }
             return Response.notModified().build();
-        } catch (Throwable t) {
-            throw new WebApplicationException(Response.status(Status.INTERNAL_SERVER_ERROR).type(MediaType.TEXT_PLAIN).entity(t.getMessage()).build());
         } finally {
             writeUnlock();
         }
@@ -369,15 +368,17 @@ public class SnmpTrapNorthbounderConfigurationResource extends OnmsRestService i
     public Response updateImportMapping(@PathParam("trapsinkName") final String trapSinkName, @PathParam("mappingName") final String mappingName, final MultivaluedMapImpl params) {
         writeLock();
         try {
-            boolean modified = false;
-            SnmpTrapSink trapSink = m_snmpTrapNorthbounderConfigDao.getConfig().getSnmpTrapSink(trapSinkName);
-            if (trapSink == null) {
-                return Response.status(404).build();
+            SnmpTrapSink trapSink = getSnmpTrapSink(trapSinkName);
+            SnmpTrapMappingGroup mappingGroup = null;
+            try {
+                mappingGroup = trapSink.getImportMapping(mappingName);
+            } catch (Throwable t) {
+                throw getException(Status.INTERNAL_SERVER_ERROR, t);
             }
-            SnmpTrapMappingGroup mappingGroup = trapSink.getImportMapping(mappingName);
             if (mappingGroup == null) {
                 return Response.status(404).build();
             }
+            boolean modified = false;
             final BeanWrapper wrapper = PropertyAccessorFactory.forBeanPropertyAccess(mappingGroup);
             for (final String key : params.keySet()) {
                 if (wrapper.isWritableProperty(key)) {
@@ -388,13 +389,15 @@ public class SnmpTrapNorthbounderConfigurationResource extends OnmsRestService i
                 }
             }
             if (modified) {
-                trapSink.addImportMapping(mappingGroup);
+                try {
+                    trapSink.addImportMapping(mappingGroup);
+                } catch (Throwable t) {
+                    throw getException(Status.INTERNAL_SERVER_ERROR, t);
+                }
                 saveConfiguration();
                 return Response.noContent().build();
             }
             return Response.notModified().build();
-        } catch (Throwable t) {
-            throw new WebApplicationException(Response.status(Status.INTERNAL_SERVER_ERROR).type(MediaType.TEXT_PLAIN).entity(t.getMessage()).build());
         } finally {
             writeUnlock();
         }
@@ -411,11 +414,7 @@ public class SnmpTrapNorthbounderConfigurationResource extends OnmsRestService i
     @Path("trapsinks/{trapsinkName}/import-mappings/{mappingName}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     public Response removeImportMapping(@PathParam("trapsinkName") final String trapSinkName, @PathParam("mappingName") final String mappingName) {
-        SnmpTrapSink trapSink = m_snmpTrapNorthbounderConfigDao.getConfig().getSnmpTrapSink(trapSinkName);
-        if (trapSink == null) {
-            return Response.status(404).build();
-        }
-
+        SnmpTrapSink trapSink = getSnmpTrapSink(trapSinkName);
         if (trapSink.removeImportMapping(mappingName)) {
             return saveConfiguration();
         }
@@ -449,7 +448,7 @@ public class SnmpTrapNorthbounderConfigurationResource extends OnmsRestService i
             notifyDaemons();
             return Response.noContent().build();
         } catch (Throwable t) {
-            throw new WebApplicationException(Response.status(Status.INTERNAL_SERVER_ERROR).type(MediaType.TEXT_PLAIN).entity(t.getMessage()).build());
+            throw getException(Status.INTERNAL_SERVER_ERROR, t);
         }
     }
 

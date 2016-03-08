@@ -351,16 +351,6 @@ public abstract class AbstractSpringJerseyRestTestCase {
      * @param contentType
      * @param url
      * @param data
-     */
-    protected MockHttpServletResponse sendData(String requestType, String contentType, String url, String data) throws Exception {
-        return sendData(requestType, contentType, url, data, 200);
-    }
-
-    /**
-     * @param requestType
-     * @param contentType
-     * @param url
-     * @param data
      * @param statusCode
      */
     protected MockHttpServletResponse sendData(String requestType, String contentType, String url, String data, int statusCode) throws Exception {

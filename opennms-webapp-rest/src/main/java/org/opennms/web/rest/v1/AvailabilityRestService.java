@@ -55,8 +55,6 @@ import org.codehaus.jackson.map.annotate.JsonRootName;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.config.api.JaxbListWrapper;
-import org.opennms.netmgt.dao.api.IpInterfaceDao;
-import org.opennms.netmgt.dao.api.MonitoredServiceDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMonitoredService;
@@ -99,12 +97,6 @@ public class AvailabilityRestService extends OnmsRestService {
     @Autowired
     private NodeDao m_nodeDao;
 
-    @Autowired
-    private IpInterfaceDao m_ipInterfaceDao;
-
-    @Autowired
-    private MonitoredServiceDao m_monitoredServiceDao;
-
     private static void assertCategoryListExists() throws ServletException {
         if (m_categoryList == null) {
             m_categoryList = new CategoryList();
@@ -117,7 +109,7 @@ public class AvailabilityRestService extends OnmsRestService {
             return new AvailabilityData(m_categoryList.getCategoryData());
         } catch (final MarshalException | ValidationException | IOException e) {
             LOG.warn("Failed to get availability data: {}", e.getMessage(), e);
-            throw getException(Status.BAD_REQUEST, "Failed to get availability data.");
+            throw getException(Status.INTERNAL_SERVER_ERROR, "Failed to get availability data: {}", e.getMessage());
         }
     }
 
@@ -133,7 +125,7 @@ public class AvailabilityRestService extends OnmsRestService {
             return cat;
         } catch (final MarshalException | ValidationException | IOException e) {
             LOG.warn("Failed to get availability data for category {}: {}", categoryName, e.getMessage(), e);
-            throw getException(Status.BAD_REQUEST, "Failed to get availability data for category " + categoryName);
+            throw getException(Status.INTERNAL_SERVER_ERROR, "Failed to get availability data for category {} : {}", categoryName, e.getMessage());
         }
     }
 
@@ -149,7 +141,7 @@ public class AvailabilityRestService extends OnmsRestService {
             return cat.getNodes();
         } catch (final MarshalException | ValidationException | IOException e) {
             LOG.warn("Failed to get availability data for category {}: {}", categoryName, e.getMessage(), e);
-            throw getException(Status.BAD_REQUEST, "Failed to get availability data for category " + categoryName);
+            throw getException(Status.INTERNAL_SERVER_ERROR, "Failed to get availability data for category {} : {}", categoryName, e.getMessage());
         }
     }
 
@@ -169,7 +161,7 @@ public class AvailabilityRestService extends OnmsRestService {
             return getAvailabilityNode(node.getId().intValue());
         } catch (final Exception e) {
             LOG.warn("Failed to get availability data for category {}: {}", categoryName, e.getMessage(), e);
-            throw getException(Status.BAD_REQUEST, "Failed to get availability data for category " + categoryName);
+            throw getException(Status.INTERNAL_SERVER_ERROR, "Failed to get availability data for category {} : {}", categoryName, e.getMessage());
         }
     }
 
@@ -184,7 +176,7 @@ public class AvailabilityRestService extends OnmsRestService {
             return avail;
         } catch (final Exception e) {
             LOG.warn("Failed to get availability data for node {}: {}", nodeId, e.getMessage(), e);
-            throw getException(Status.BAD_REQUEST, "Failed to get availability data for node " + nodeId);
+            throw getException(Status.INTERNAL_SERVER_ERROR, "Failed to get availability data for node {} : {}", nodeId.toString(), e.getMessage());
         }
     }
 
@@ -282,19 +274,4 @@ public class AvailabilityRestService extends OnmsRestService {
         m_nodeDao = dao;
     }
 
-    /**
-     * Used for testing only.
-     * @param dao
-     */
-    void setIpInterfaceDao(final IpInterfaceDao dao) {
-        m_ipInterfaceDao = dao;
-    }
-
-    /**
-     * Used for testing only.
-     * @param dao
-     */
-    void setMonitoredServiceDao(final MonitoredServiceDao dao) {
-        m_monitoredServiceDao = dao;
-    }
 }

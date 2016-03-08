@@ -153,7 +153,7 @@ public class GroupRestServiceIT extends AbstractSpringJerseyRestTestCase {
         String xml = sendRequest(GET, "/groups", 200);
         assertTrue(xml.contains("deleteMe"));
 
-        sendRequest(DELETE, "/groups/idontexist", 400);
+        sendRequest(DELETE, "/groups/idontexist", 404);
         
         sendRequest(DELETE, "/groups/deleteMe", 204);
 

@@ -36,8 +36,10 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.core.Response.Status;
 
 import org.opennms.core.utils.InetAddressUtils;
@@ -124,7 +126,7 @@ public class ScheduledOutagesRestService extends OnmsRestService {
 
     @POST
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public Response saveOrUpdateOutage(final Outage newOutage) {
+    public Response saveOrUpdateOutage(@Context final UriInfo uriInfo, final Outage newOutage) {
         writeLock();
         try {
             if (newOutage == null) throw getException(Status.BAD_REQUEST, "Outage object can't be null");
@@ -136,11 +138,13 @@ public class ScheduledOutagesRestService extends OnmsRestService {
                 LOG.debug("saveOrUpdateOutage: updating outage {}", newOutage.getName());
                 m_pollOutagesConfigFactory.replaceOutage(oldOutage, newOutage);
             }
-            m_pollOutagesConfigFactory.saveCurrent();
+            try {
+                m_pollOutagesConfigFactory.saveCurrent();
+            } catch (Exception e) {
+                throw getException(Status.INTERNAL_SERVER_ERROR, "Can't save or update the scheduled outage {} because, {}", newOutage.getName(), e.getMessage());
+            }
             sendConfigChangedEvent();
-            return Response.noContent().build();
-        } catch (Exception e) {
-            throw getException(Status.BAD_REQUEST, "Can't save or update the scheduled outage {} because, {}", newOutage.getName(), e.getMessage());
+            return oldOutage == null ? Response.created(getRedirectUri(uriInfo, newOutage.getName())).build() : Response.noContent().build();
         } finally {
             writeUnlock();
         }
@@ -156,12 +160,14 @@ public class ScheduledOutagesRestService extends OnmsRestService {
             updatePollerd(ConfigAction.REMOVE_FROM_ALL, outageName, null);
             updateThreshd(ConfigAction.REMOVE_FROM_ALL, outageName, null);
             updateNotifd(ConfigAction.REMOVE, outageName);
-            m_pollOutagesConfigFactory.removeOutage(outageName);
-            m_pollOutagesConfigFactory.saveCurrent();
+            try {
+                m_pollOutagesConfigFactory.removeOutage(outageName);
+                m_pollOutagesConfigFactory.saveCurrent();
+            } catch (Exception e) {
+                throw getException(Status.INTERNAL_SERVER_ERROR, "Can't delete the scheduled outage {} because, {}", outageName, e.getMessage());
+            }
             sendConfigChangedEvent();
             return Response.noContent().build();
-        } catch (Exception e) {
-            throw getException(Status.BAD_REQUEST, "Can't delete the scheduled outage {} because, {}", outageName, e.getMessage());
         } finally {
             writeUnlock();
         }
@@ -175,8 +181,6 @@ public class ScheduledOutagesRestService extends OnmsRestService {
             updateCollectd(ConfigAction.ADD, outageName, packageName);
             sendConfigChangedEvent();
             return Response.noContent().build();
-        } catch (Exception e) {
-            throw getException(Status.BAD_REQUEST, "Can't add scheduled outage {} to collector package {}, because: {}", outageName, packageName, e.getMessage());
         } finally {
             writeUnlock();
         }
@@ -190,8 +194,6 @@ public class ScheduledOutagesRestService extends OnmsRestService {
             updateCollectd(ConfigAction.REMOVE, outageName, packageName);
             sendConfigChangedEvent();
             return Response.noContent().build();
-        } catch (Exception e) {
-            throw getException(Status.BAD_REQUEST, "Can't remove scheduled outage {} from collector package {}, because: {}", outageName, packageName, e.getMessage());
         } finally {
             writeUnlock();
         }
@@ -205,8 +207,6 @@ public class ScheduledOutagesRestService extends OnmsRestService {
             updatePollerd(ConfigAction.ADD, outageName, packageName);
             sendConfigChangedEvent();
             return Response.noContent().build();
-        } catch (Exception e) {
-            throw getException(Status.BAD_REQUEST, "Can't add scheduled outage {} to poller package {}, because: {}", outageName, packageName, e.getMessage());
         } finally {
             writeUnlock();
         }
@@ -220,8 +220,6 @@ public class ScheduledOutagesRestService extends OnmsRestService {
             updatePollerd(ConfigAction.REMOVE, outageName, packageName);
             sendConfigChangedEvent();
             return Response.noContent().build();
-        } catch (Exception e) {
-            throw getException(Status.BAD_REQUEST, "Can't remove scheduled outage {} from poller package {}, because: {}", outageName, packageName, e.getMessage());
         } finally {
             writeUnlock();
         }
@@ -235,8 +233,6 @@ public class ScheduledOutagesRestService extends OnmsRestService {
             updateThreshd(ConfigAction.ADD, outageName, packageName);
             sendConfigChangedEvent();
             return Response.noContent().build();
-        } catch (Exception e) {
-            throw getException(Status.BAD_REQUEST, "Can't add scheduled outage {} to threshold package {}, because: {}", outageName, packageName, e.getMessage());
         } finally {
             writeUnlock();
         }
@@ -251,7 +247,7 @@ public class ScheduledOutagesRestService extends OnmsRestService {
             sendConfigChangedEvent();
             return Response.noContent().build();
         } catch (Exception e) {
-            throw getException(Status.BAD_REQUEST, "Can't remove scheduled outage {} from threshold package {}, because: {}", outageName, packageName, e.getMessage());
+            throw getException(Status.INTERNAL_SERVER_ERROR, "Can't delete the scheduled outage {} because, {}", outageName, e.getMessage());
         } finally {
             writeUnlock();
         }
@@ -265,8 +261,6 @@ public class ScheduledOutagesRestService extends OnmsRestService {
             updateNotifd(ConfigAction.ADD, outageName);
             sendConfigChangedEvent();
             return Response.noContent().build();
-        } catch (Exception e) {
-            throw getException(Status.BAD_REQUEST, "Can't add scheduled outage {} to notifications because: {}", outageName, e.getMessage());
         } finally {
             writeUnlock();
         }
@@ -280,8 +274,6 @@ public class ScheduledOutagesRestService extends OnmsRestService {
             updateNotifd(ConfigAction.REMOVE, outageName);
             sendConfigChangedEvent();
             return Response.noContent().build();
-        } catch (Exception e) {
-            throw getException(Status.BAD_REQUEST, "Can't remove scheduled outage {} from notifications because: {}", outageName, e.getMessage());
         } finally {
             writeUnlock();
         }
@@ -342,7 +334,7 @@ public class ScheduledOutagesRestService extends OnmsRestService {
         }
     }
 
-    private void updateCollectd(ConfigAction action, String outageName, String packageName) throws Exception {
+    private void updateCollectd(ConfigAction action, String outageName, String packageName) {
         getOutage(outageName); // Validate if outageName exists.
         if (action.equals(ConfigAction.ADD)) {
             Package pkg = getCollectdPackage(packageName);
@@ -358,16 +350,20 @@ public class ScheduledOutagesRestService extends OnmsRestService {
                 pkg.removeOutageCalendar(outageName);
             }
         }
-        m_collectdConfigFactory.saveCurrent();
+        try {
+            m_collectdConfigFactory.saveCurrent();
+        } catch (Exception e) {
+            throw getException(Status.INTERNAL_SERVER_ERROR, "Can't save collector's configuration: {}", e.getMessage());
+        }
     }
 
-    private Package getCollectdPackage(String packageName) throws IllegalArgumentException {
+    private Package getCollectdPackage(String packageName) {
         Package pkg = m_collectdConfigFactory.getPackage(packageName);
-        if (pkg == null) throw getException(Status.BAD_REQUEST, "Collectd package {} does not exist.", packageName);
+        if (pkg == null) throw getException(Status.NOT_FOUND, "Collector package {} does not exist.", packageName);
         return pkg;
     }
 
-    private void updatePollerd(ConfigAction action, String outageName, String packageName) throws Exception {
+    private void updatePollerd(ConfigAction action, String outageName, String packageName) {
         getOutage(outageName); // Validate if outageName exists.
         if (action.equals(ConfigAction.ADD)) {
             org.opennms.netmgt.config.poller.Package pkg = getPollerdPackage(packageName);
@@ -383,16 +379,20 @@ public class ScheduledOutagesRestService extends OnmsRestService {
                 pkg.removeOutageCalendar(outageName);
             }
         }
-        PollerConfigFactory.getInstance().save();
+        try {
+            PollerConfigFactory.getInstance().save();
+        } catch (Exception e) {
+            throw getException(Status.INTERNAL_SERVER_ERROR, "Can't save poller's configuration: {}", e.getMessage());
+        }
     }
 
-    private static org.opennms.netmgt.config.poller.Package getPollerdPackage(String packageName) throws IllegalArgumentException {
+    private static org.opennms.netmgt.config.poller.Package getPollerdPackage(String packageName) {
         org.opennms.netmgt.config.poller.Package pkg = PollerConfigFactory.getInstance().getPackage(packageName);
         if (pkg == null) throw getException(Status.NOT_FOUND, "Poller package {} does not exist.", packageName);
         return pkg;
     }
 
-    private void updateThreshd(ConfigAction action, String outageName, String packageName) throws Exception {
+    private void updateThreshd(ConfigAction action, String outageName, String packageName) {
         getOutage(outageName); // Validate if outageName exists.
         if (action.equals(ConfigAction.ADD)) {
             org.opennms.netmgt.config.threshd.Package pkg = getThreshdPackage(packageName);
@@ -408,25 +408,33 @@ public class ScheduledOutagesRestService extends OnmsRestService {
                 pkg.removeOutageCalendar(outageName);
             }
         }
-        ThreshdConfigFactory.getInstance().saveCurrent();
+        try {
+            ThreshdConfigFactory.getInstance().saveCurrent();
+        } catch (Exception e) {
+            throw getException(Status.INTERNAL_SERVER_ERROR, "Can't save thresholds configuration: {}", e.getMessage());
+        }
     }
 
-    private static org.opennms.netmgt.config.threshd.Package getThreshdPackage(String packageName) throws IllegalArgumentException {
+    private static org.opennms.netmgt.config.threshd.Package getThreshdPackage(String packageName) {
         org.opennms.netmgt.config.threshd.Package pkg = ThreshdConfigFactory.getInstance().getPackage(packageName);
         if (pkg == null) throw getException(Status.NOT_FOUND, "Threshold package {} does not exist.", packageName);
         return pkg;
     }
 
-    private void updateNotifd(ConfigAction action, String outageName) throws Exception {
+    private void updateNotifd(ConfigAction action, String outageName) {
         getOutage(outageName); // Validate if outageName exists.
-        NotifdConfigFactory factory = NotifdConfigFactory.getInstance();
-        if (action.equals(ConfigAction.ADD)) {
-            factory.getConfiguration().addOutageCalendar(outageName);
+        try {
+            NotifdConfigFactory factory = NotifdConfigFactory.getInstance();
+            if (action.equals(ConfigAction.ADD)) {
+                factory.getConfiguration().addOutageCalendar(outageName);
+            }
+            if (action.equals(ConfigAction.REMOVE) || action.equals(ConfigAction.REMOVE_FROM_ALL)) {
+                factory.getConfiguration().removeOutageCalendar(outageName);
+            }
+            factory.saveCurrent();
+        } catch (Exception e) {
+            throw getException(Status.INTERNAL_SERVER_ERROR, "Can't save notifications configuration: {}", e.getMessage());
         }
-        if (action.equals(ConfigAction.REMOVE) || action.equals(ConfigAction.REMOVE_FROM_ALL)) {
-            factory.getConfiguration().removeOutageCalendar(outageName);
-        }
-        factory.saveCurrent();
     }
 
     private void sendConfigChangedEvent() {
@@ -434,7 +442,7 @@ public class ScheduledOutagesRestService extends OnmsRestService {
         try {
             m_eventProxy.send(builder.getEvent());
         } catch (Throwable e) {
-            throw getException(Status.BAD_REQUEST, "Could not send event " + builder.getEvent().getUei() + " because, " + e.getMessage());
+            throw getException(Status.INTERNAL_SERVER_ERROR, "Can't send event {} : {}", builder.getEvent().getUei(), e.getMessage());
         }
     }
 

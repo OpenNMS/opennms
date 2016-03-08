@@ -178,11 +178,7 @@ public class NodeRestService extends OnmsRestService {
         try {
             LOG.debug("addNode: Adding node {}", node);
             m_nodeDao.save(node);
-            try {
-                sendEvent(EventConstants.NODE_ADDED_EVENT_UEI, node.getId(), node.getLabel());
-            } catch (EventProxyException ex) {
-                throw getException(Status.BAD_REQUEST, ex.getMessage());
-            }
+            sendEvent(EventConstants.NODE_ADDED_EVENT_UEI, node.getId(), node.getLabel());
             return Response.created(uriInfo.getRequestUriBuilder().path(node.getNodeId()).build()).build();
         } finally {
             writeUnlock();
@@ -249,11 +245,7 @@ public class NodeRestService extends OnmsRestService {
     
             LOG.debug("deleteNode: deleting node {}", nodeCriteria);
             m_nodeDao.delete(node);
-            try {
-                sendEvent(EventConstants.NODE_DELETED_EVENT_UEI, node.getId(), node.getLabel());
-            } catch (final EventProxyException ex) {
-                throw getException(Status.BAD_REQUEST, ex.getMessage());
-            }
+            sendEvent(EventConstants.NODE_DELETED_EVENT_UEI, node.getId(), node.getLabel());
             return Response.noContent().build();
         } finally {
             writeUnlock();
@@ -430,11 +422,15 @@ public class NodeRestService extends OnmsRestService {
         return null;
     }
 
-    private void sendEvent(final String uei, final int nodeId, String nodeLabel) throws EventProxyException {
-        final EventBuilder bldr = new EventBuilder(uei, getClass().getName());
-        bldr.setNodeid(nodeId);
-        bldr.addParam("nodelabel", nodeLabel);
-        m_eventProxy.send(bldr.getEvent());
+    private void sendEvent(final String uei, final int nodeId, String nodeLabel) {
+        try {
+            final EventBuilder bldr = new EventBuilder(uei, getClass().getName());
+            bldr.setNodeid(nodeId);
+            bldr.addParam("nodelabel", nodeLabel);
+            m_eventProxy.send(bldr.getEvent());
+        } catch (final EventProxyException e) {
+            throw getException(Status.INTERNAL_SERVER_ERROR, "Cannot send event {} : {}", uei, e.getMessage());
+        }
     }
 
     private static CriteriaBuilder getCriteriaBuilder(final MultivaluedMap<String, String> params) {

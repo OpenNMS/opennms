@@ -163,11 +163,7 @@ public class IfServicesRestService extends OnmsRestService {
                 }
             }
         }
-        if (!modified && !serviceList.isEmpty()) {
-            throw getException(Status.BAD_REQUEST, "updateServices: the supplied list of services {} doesn't match any service based on the provided criteria: {}.", services_csv, uriInfo.getQueryParameters().toString());
-        }
-
-        return Response.noContent().build();
+        return modified ? Response.noContent().build() : Response.notModified().build();
     }
 
     private static Criteria getCriteria(final MultivaluedMap<String, String> params) {
@@ -191,7 +187,7 @@ public class IfServicesRestService extends OnmsRestService {
         try {
             m_eventProxy.send(bldr.getEvent());
         } catch (EventProxyException ex) {
-            throw getException(Status.BAD_REQUEST, ex.getMessage());
+            throw getException(Status.INTERNAL_SERVER_ERROR, "Cannot send event {} : {}", eventUEI, ex.getMessage());
         }
     }
 

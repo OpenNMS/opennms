@@ -168,12 +168,8 @@ public class OnmsIpInterfaceResource extends OnmsRestService {
     
             bldr.setNodeid(node.getId());
             bldr.setInterface(ipInterface.getIpAddress());
+            sendEvent(bldr);
     
-            try {
-                m_eventProxy.send(bldr.getEvent());
-            } catch (final EventProxyException ex) {
-                throw getException(Status.BAD_REQUEST, ex.getMessage());
-            }
             return Response.created(getRedirectUri(uriInfo, InetAddressUtils.str(ipInterface.getIpAddress()))).build();
         } finally {
             writeUnlock();
@@ -260,12 +256,8 @@ public class OnmsIpInterfaceResource extends OnmsRestService {
     
             bldr.setNodeid(node.getId());
             bldr.setInterface(addr(ipAddress));
-    
-            try {
-                m_eventProxy.send(bldr.getEvent());
-            } catch (final EventProxyException ex) {
-                throw getException(Status.BAD_REQUEST, ex.getMessage());
-            }
+            sendEvent(bldr);
+
             return Response.noContent().build();
         } finally {
             writeUnlock();
@@ -280,6 +272,14 @@ public class OnmsIpInterfaceResource extends OnmsRestService {
     @Path("{ipAddress}/services")
     public OnmsMonitoredServiceResource getServices(@Context final ResourceContext context) {
         return context.getResource(OnmsMonitoredServiceResource.class);
+    }
+
+    private void sendEvent(EventBuilder builder) {
+        try {
+            m_eventProxy.send(builder.getEvent());
+        } catch (final EventProxyException e) {
+            throw getException(Status.INTERNAL_SERVER_ERROR, "Cannot send event {} : {}", builder.getEvent().getUei(), e.getMessage());
+        }
     }
 
 }

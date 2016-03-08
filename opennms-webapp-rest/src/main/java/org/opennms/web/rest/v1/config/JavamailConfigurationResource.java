@@ -39,7 +39,6 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
@@ -295,12 +294,12 @@ public class JavamailConfigurationResource extends OnmsRestService implements In
     @GET
     @Path("readmails/{readmailConfig}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
-    public Response getReadmailConfiguration(@PathParam("readmailConfig") final String readmailConfig) {
+    public ReadmailConfig getReadmailConfiguration(@PathParam("readmailConfig") final String readmailConfig) {
         ReadmailConfig readmail = "default".equals(readmailConfig) ? m_javamailConfigurationDao.getDefaultReadmailConfig() : m_javamailConfigurationDao.getReadMailConfig(readmailConfig);
         if (readmail == null) {
-            return Response.status(404).build();
+            throw getException(Status.NOT_FOUND, "Readmail configuration {} was not found.", readmailConfig);
         }
-        return Response.ok(readmail).build();
+        return readmail;
     }
 
     /**
@@ -312,12 +311,12 @@ public class JavamailConfigurationResource extends OnmsRestService implements In
     @GET
     @Path("sendmails/{sendmailConfig}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
-    public Response getSendmailConfiguration(@PathParam("sendmailConfig") final String sendmailConfig) {
+    public SendmailConfig getSendmailConfiguration(@PathParam("sendmailConfig") final String sendmailConfig) {
         SendmailConfig sendmail = "default".equals(sendmailConfig) ? m_javamailConfigurationDao.getDefaultSendmailConfig() : m_javamailConfigurationDao.getSendMailConfig(sendmailConfig);
         if (sendmail == null) {
-            return Response.status(404).build();
+            throw getException(Status.NOT_FOUND, "Sendmail configuration {} was not found.", sendmailConfig);
         }
-        return Response.ok(sendmail).build();
+        return sendmail;
     }
 
     /**
@@ -329,12 +328,12 @@ public class JavamailConfigurationResource extends OnmsRestService implements In
     @GET
     @Path("end2ends/{end2endConfig}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
-    public Response getEnd2EndMailConfiguration(@PathParam("end2endConfig") final String end2endConfig) {
+    public End2endMailConfig getEnd2EndMailConfiguration(@PathParam("end2endConfig") final String end2endConfig) {
         End2endMailConfig end2end = m_javamailConfigurationDao.getEnd2endConfig(end2endConfig);
         if (end2end == null) {
-            return Response.status(404).build();
+            throw getException(Status.NOT_FOUND, "End2End configuration {} was not found.", end2endConfig);
         }
-        return Response.ok(end2end).build();
+        return end2end;
     }
 
     /**
@@ -350,6 +349,9 @@ public class JavamailConfigurationResource extends OnmsRestService implements In
     public Response setReadmailConfiguration(final ReadmailConfig readmailConfig) {
         writeLock();
         try {
+            if (readmailConfig == null) {
+                throw getException(Status.BAD_REQUEST, "Readmail configuration object cannot be null");
+            }
             m_javamailConfigurationDao.addReadMailConfig(readmailConfig);
             saveConfiguration();
             return Response.noContent().build();
@@ -371,6 +373,9 @@ public class JavamailConfigurationResource extends OnmsRestService implements In
     public Response setSendmailConfiguration(final SendmailConfig sendmailConfig) {
         writeLock();
         try {
+            if (sendmailConfig == null) {
+                throw getException(Status.BAD_REQUEST, "Sendmail configuration object cannot be null");
+            }
             m_javamailConfigurationDao.addSendMailConfig(sendmailConfig);
             saveConfiguration();
             return Response.noContent().build();
@@ -392,6 +397,9 @@ public class JavamailConfigurationResource extends OnmsRestService implements In
     public Response setEnd2EndMailConfiguration(final End2endMailConfig end2endMailConfig) {
         writeLock();
         try {
+            if (end2endMailConfig == null) {
+                throw getException(Status.BAD_REQUEST, "End2End configuration object cannot be null");
+            }
             m_javamailConfigurationDao.addEnd2endMailConfig(end2endMailConfig);
             saveConfiguration();
             return Response.noContent().build();
@@ -413,17 +421,12 @@ public class JavamailConfigurationResource extends OnmsRestService implements In
     public Response updateReadmailConfiguration(@PathParam("readmailConfig") final String readmailConfigName, final MultivaluedMapImpl params) {
         writeLock();
         try {
-            ReadmailConfig readmailConfig = m_javamailConfigurationDao.getReadMailConfig(readmailConfigName);
-            if (readmailConfig == null) {
-                return Response.status(404).build();
-            }
+            ReadmailConfig readmailConfig = getReadmailConfiguration(readmailConfigName);
             if (updateConfiguration(readmailConfig, params)) {
                 saveConfiguration();
                 return Response.noContent().build();
             }
             return Response.notModified().build();
-        } catch (Throwable t) {
-            throw new WebApplicationException(Response.status(Status.INTERNAL_SERVER_ERROR).type(MediaType.TEXT_PLAIN).entity(t.getMessage()).build());
         } finally {
             writeUnlock();
         }
@@ -442,17 +445,12 @@ public class JavamailConfigurationResource extends OnmsRestService implements In
     public Response updateSendmailConfiguration(@PathParam("sendmailConfig") final String sendmailConfigName, final MultivaluedMapImpl params) {
         writeLock();
         try {
-            SendmailConfig sendmailConfig = m_javamailConfigurationDao.getSendMailConfig(sendmailConfigName);
-            if (sendmailConfig == null) {
-                return Response.status(404).build();
-            }
+            SendmailConfig sendmailConfig = getSendmailConfiguration(sendmailConfigName);
             if (updateConfiguration(sendmailConfig, params)) {
                 saveConfiguration();
                 return Response.noContent().build();
             }
             return Response.notModified().build();
-        } catch (Throwable t) {
-            throw new WebApplicationException(Response.status(Status.INTERNAL_SERVER_ERROR).type(MediaType.TEXT_PLAIN).entity(t.getMessage()).build());
         } finally {
             writeUnlock();
         }
@@ -471,17 +469,12 @@ public class JavamailConfigurationResource extends OnmsRestService implements In
     public Response updateEnd2endConfiguration(@PathParam("end2endConfig") final String end2endConfigName, final MultivaluedMapImpl params) {
         writeLock();
         try {
-            End2endMailConfig end2endConfig = m_javamailConfigurationDao.getEnd2endConfig(end2endConfigName);
-            if (end2endConfig == null) {
-                return Response.status(404).build();
-            }
+            End2endMailConfig end2endConfig = getEnd2EndMailConfiguration(end2endConfigName);
             if (updateConfiguration(end2endConfig, params)) {
                 saveConfiguration();
                 return Response.noContent().build();
             }
             return Response.notModified().build();
-        } catch (Throwable t) {
-            throw new WebApplicationException(Response.status(Status.INTERNAL_SERVER_ERROR).type(MediaType.TEXT_PLAIN).entity(t.getMessage()).build());
         } finally {
             writeUnlock();
         }
@@ -500,7 +493,7 @@ public class JavamailConfigurationResource extends OnmsRestService implements In
         if (m_javamailConfigurationDao.removeReadMailConfig(readmailConfig)) {
             return saveConfiguration();
         }
-        return Response.status(404).build();
+        return Response.status(Status.NOT_FOUND).build();
     }
 
     /**
@@ -516,7 +509,7 @@ public class JavamailConfigurationResource extends OnmsRestService implements In
         if (m_javamailConfigurationDao.removeSendMailConfig(sendmailConfig)) {
             return saveConfiguration();
         }
-        return Response.status(404).build();
+        return Response.status(Status.NOT_FOUND).build();
     }
 
     /**
@@ -532,7 +525,7 @@ public class JavamailConfigurationResource extends OnmsRestService implements In
         if (m_javamailConfigurationDao.removeEnd2endConfig(end2endConfig)) {
             return saveConfiguration();
         }
-        return Response.status(404).build();
+        return Response.status(Status.NOT_FOUND).build();
     }
 
     /**
@@ -571,7 +564,7 @@ public class JavamailConfigurationResource extends OnmsRestService implements In
             m_eventProxy.send(eb.getEvent());
             return Response.noContent().build();
         } catch (Throwable t) {
-            throw new WebApplicationException(Response.status(Status.INTERNAL_SERVER_ERROR).type(MediaType.TEXT_PLAIN).entity(t.getMessage()).build());
+            throw getException(Status.INTERNAL_SERVER_ERROR, t);
         } finally {
             writeUnlock();            
         }

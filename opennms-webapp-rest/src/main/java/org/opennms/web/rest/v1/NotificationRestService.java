@@ -78,7 +78,10 @@ public class NotificationRestService extends OnmsRestService {
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     @Path("{notifId}")
     @Transactional
-    public OnmsNotification getNotification(@PathParam("notifId") int notifId) {
+    public OnmsNotification getNotification(@PathParam("notifId") Integer notifId) {
+        if (notifId == null) {
+            throw getException(Status.BAD_REQUEST, "Notification ID is required");
+        }
         final OnmsNotification notif = m_notifDao.get(notifId);
         if (notif == null) {
             throw getException(Status.NOT_FOUND, "Notification {} was not found.", Integer.toString(notifId));
@@ -130,14 +133,14 @@ public class NotificationRestService extends OnmsRestService {
     @Path("{notifId}")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Transactional
-    public Response updateNotification(@Context final SecurityContext securityContext, @PathParam("notifId") final String notifId, @FormParam("ack") final Boolean ack) {
+    public Response updateNotification(@Context final SecurityContext securityContext, @PathParam("notifId") final Integer notifId, @FormParam("ack") final Boolean ack) {
         writeLock();
         
         try {
-            OnmsNotification notif=m_notifDao.get(Integer.valueOf(notifId));
             if(ack==null) {
                 throw getException(Status.BAD_REQUEST, "Must supply the 'ack' parameter, set to either 'true' or 'false'");
             }
+            OnmsNotification notif= getNotification(notifId);
             processNotifAck(securityContext, notif,ack);
             return Response.noContent().build();
         } finally {

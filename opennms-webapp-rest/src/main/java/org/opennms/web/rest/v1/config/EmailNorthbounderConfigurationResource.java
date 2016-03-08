@@ -143,13 +143,16 @@ public class EmailNorthbounderConfigurationResource extends OnmsRestService impl
     @POST
     public Response setConfiguration(final EmailNorthbounderConfig config) {
         writeLock();
+        if (config == null) {
+            throw getException(Status.BAD_REQUEST, "Email NBI configuration object cannot be null");
+        }
         try {
             File configFile = m_emailNorthbounderConfigDao.getConfigResource().getFile();
             JaxbUtils.marshal(config, new FileWriter(configFile));
             notifyDaemons();
             return Response.noContent().build();
         } catch (Throwable t) {
-            throw new WebApplicationException(Response.status(Status.INTERNAL_SERVER_ERROR).type(MediaType.TEXT_PLAIN).entity(t.getMessage()).build());
+            throw getException(Status.INTERNAL_SERVER_ERROR, t);
         } finally {
             writeUnlock();
         }
@@ -209,12 +212,12 @@ public class EmailNorthbounderConfigurationResource extends OnmsRestService impl
     @GET
     @Path("destinations/{destinationName}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
-    public Response getEmailDestination(@PathParam("destinationName") final String destinationName) {
-       final  EmailDestination destination = m_emailNorthbounderConfigDao.getConfig().getEmailDestination(destinationName);
+    public EmailDestination getEmailDestination(@PathParam("destinationName") final String destinationName) {
+       final EmailDestination destination = m_emailNorthbounderConfigDao.getConfig().getEmailDestination(destinationName);
         if (destination == null) {
-            return Response.status(Status.NOT_FOUND).build();
+            throw getException(Status.NOT_FOUND, "Email destination {} was not found.", destinationName);
         }
-        return Response.ok(destination).build();
+        return destination;
     }
 
     /**
@@ -230,6 +233,9 @@ public class EmailNorthbounderConfigurationResource extends OnmsRestService impl
     public Response setEmailDestination(final EmailDestination destination) {
         writeLock();
         try {
+            if (destination == null) {
+                throw getException(Status.BAD_REQUEST, "Email destination object cannot be null");
+            }
             m_emailNorthbounderConfigDao.getConfig().addEmailDestination(destination);
             saveConfiguration();
             return Response.noContent().build();
@@ -252,10 +258,7 @@ public class EmailNorthbounderConfigurationResource extends OnmsRestService impl
         writeLock();
         try {
             boolean modified = false;
-            final EmailDestination destination = m_emailNorthbounderConfigDao.getConfig().getEmailDestination(destinationName);
-            if (destination == null) {
-                return Response.status(Status.NOT_FOUND).build();
-            }
+            final EmailDestination destination = getEmailDestination(destinationName);
             final BeanWrapper wrapper = PropertyAccessorFactory.forBeanPropertyAccess(destination);
             for (final String key : params.keySet()) {
                 if (wrapper.isWritableProperty(key)) {
@@ -270,8 +273,6 @@ public class EmailNorthbounderConfigurationResource extends OnmsRestService impl
                 return Response.noContent().build();
             }
             return Response.notModified().build();
-        } catch (Throwable t) {
-            throw new WebApplicationException(Response.status(Status.INTERNAL_SERVER_ERROR).type(MediaType.TEXT_PLAIN).entity(t.getMessage()).build());
         } finally {
             writeUnlock();
         }
@@ -304,7 +305,7 @@ public class EmailNorthbounderConfigurationResource extends OnmsRestService impl
             notifyDaemons();
             return Response.noContent().build();
         } catch (Throwable t) {
-            throw new WebApplicationException(Response.status(Status.INTERNAL_SERVER_ERROR).type(MediaType.TEXT_PLAIN).entity(t.getMessage()).build());
+            throw getException(Status.INTERNAL_SERVER_ERROR, t);
         }
     }
 

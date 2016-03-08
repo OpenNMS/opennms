@@ -154,7 +154,7 @@ public class AcknowledgmentRestService extends OnmsRestService {
             }
             final OnmsAlarm alarm = m_alarmDao.get(numericAlarmId);
             if (alarm == null) {
-                return Response.noContent().build();
+                return Response.notModified().build();
             }
             ack = new OnmsAcknowledgment(alarm);
         } else if (notifId != null) {
@@ -164,7 +164,7 @@ public class AcknowledgmentRestService extends OnmsRestService {
             }
             final OnmsNotification notification = m_notificationDao.get(numericNotifId);
             if (notification == null) {
-                return Response.noContent().build();
+                return Response.notModified().build();
             }
             ack = new OnmsAcknowledgment(notification);
         }

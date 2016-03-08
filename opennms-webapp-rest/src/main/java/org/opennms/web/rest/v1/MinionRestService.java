@@ -71,7 +71,12 @@ public class MinionRestService extends OnmsRestService {
     @Path("{minionId}/{key}")
     @Transactional
     public String getMinionProperty(@PathParam("minionId") final String minionId, @PathParam("key") final String key) {
-        return m_minionDao.findById(minionId).getProperties().get(key);
+        final OnmsMinion minion = getMinion(minionId);
+        final String value = minion.getProperties().get(key);
+        if (value == null) {
+            throw getException(Status.NOT_FOUND, "Property {} was not found on Minion {}.", key, minionId);
+        }
+        return value;
     }
 
     @GET

@@ -251,7 +251,7 @@ public class AlarmRestService extends AlarmRestServiceBase {
                 m_ackDao.processAck(acknowledgement);
             }
 
-            return Response.noContent().build();
+            return alarms == null || alarms.isEmpty() ? Response.notModified().build() : Response.noContent().build();
         } finally {
             writeUnlock();
         }

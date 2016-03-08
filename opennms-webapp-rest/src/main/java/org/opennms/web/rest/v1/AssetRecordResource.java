@@ -129,7 +129,7 @@ public class AssetRecordResource extends OnmsRestService {
             try {
                 sendEvent(EventConstants.ASSET_INFO_CHANGED_EVENT_UEI, node.getId());
             } catch (EventProxyException e) {
-                throw getException(Status.BAD_REQUEST, e.getMessage());
+                throw getException(Status.INTERNAL_SERVER_ERROR, e.getMessage());
             }
             return Response.noContent().build();
         }

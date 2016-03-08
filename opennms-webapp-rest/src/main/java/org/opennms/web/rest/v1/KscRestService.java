@@ -151,7 +151,7 @@ public class KscRestService extends OnmsRestService {
             try {
                 m_kscReportFactory.saveCurrent();
             } catch (final Exception e) {
-                throw getException(Status.BAD_REQUEST, e.getMessage());
+                throw getException(Status.INTERNAL_SERVER_ERROR, "Cannot save report with Id {} : {} ", kscReportId.toString(), e.getMessage());
             }
             return Response.noContent().build();
         } finally {
@@ -195,8 +195,6 @@ public class KscRestService extends OnmsRestService {
                 throw getException(Status.BAD_REQUEST, e.getMessage());
             }
             return Response.created(getRedirectUri(uriInfo, kscReport.getId())).build();
-        } catch (final Throwable t) {
-            throw getException(Status.BAD_REQUEST, t);
         } finally {
             writeUnlock();
         }

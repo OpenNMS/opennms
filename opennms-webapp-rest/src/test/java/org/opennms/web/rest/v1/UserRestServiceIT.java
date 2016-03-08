@@ -231,7 +231,7 @@ public class UserRestServiceIT extends AbstractSpringJerseyRestTestCase  {
         String xml = sendRequest(GET, "/users", 200);
         assertTrue(xml.contains("deleteMe"));
 
-        sendRequest(DELETE, "/users/idontexist", 400);
+        sendRequest(DELETE, "/users/idontexist", 404);
 
         setUser("doesntHavePermissions", new String[] { "ROLE_USER" });
         sendRequest(DELETE, "/users/deleteMe", 400);
