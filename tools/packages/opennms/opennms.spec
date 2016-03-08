@@ -21,6 +21,9 @@
 %{!?servletdir:%define servletdir opennms}
 # Where OpenNMS binaries live
 %{!?bindir:%define bindir %instprefix/bin}
+# The minion install prefix
+%{!?minioninstprefix:%define minioninstprefix /opt/minion}
+%{!?minionpacksprefix:%define minionpacksprefix /opt/minion/featurepacks}
 
 # Description
 %{!?_name:%define _name "opennms"}
@@ -468,6 +471,30 @@ VTD-XML is very fast GPL library for parsing XMLs with XPath Suppoer.
 %{extrainfo}
 %{extrainfo2}
 
+%package minion-container
+Summary:    Minion Core Container
+Group:      Applications/System
+Requires(pre):  %{jdk}
+Requires:   %{jdk}
+
+%description minion-container
+OpenNMS Minion is a container infrastructure for distributed, scalable network
+management and monitoring.
+
+%{extrainfo}
+%{extrainfo2}
+
+%package minion-features
+Summary:    Minion Features
+Group:      Applications/System
+Requires(pre):	%{name}-minion-container = %{version}-%{release}
+Requires:	%{name}-minion-container = %{version}-%{release}
+
+%description minion-features
+Default feature pack for Minion.
+
+%{extrainfo}
+%{extrainfo2}
 
 %prep
 
@@ -543,6 +570,25 @@ tar zxvf $RPM_BUILD_DIR/%{name}-%{version}-%{release}/target$RPM_BUILD_ROOT.tar.
 
 echo "=== UNTAR BUILD COMPLETED ==="
 
+### MINION START
+
+mkdir -p $RPM_BUILD_ROOT%{minioninstprefix}
+
+tar zxvf $RPM_BUILD_DIR/%{name}-%{version}-%{release}/features/minion/container/karaf/target/karaf-*.tar.gz -C $RPM_BUILD_ROOT%{minioninstprefix} --strip-components=1
+
+mkdir -p $RPM_BUILD_ROOT%{_initrddir}
+sed -e 's,@INSTPREFIX@,%{minioninstprefix},g' $RPM_BUILD_DIR/%{name}-%{version}-%{release}/tools/packages/minion/minion.init > "$RPM_BUILD_ROOT%{_initrddir}"/minion
+chmod 755 "$RPM_BUILD_ROOT%{_initrddir}"/minion
+
+#### Default Minion feature pack
+
+mkdir -p $RPM_BUILD_ROOT%{minionpacksprefix}/default
+tar zxvf $RPM_BUILD_DIR/%{name}-%{version}-%{release}/features/minion/repository/target/repository-*-repo.tar.gz -C $RPM_BUILD_ROOT%{minionpacksprefix}/default
+# FIXME: We should pull in the feature repositories from elsewhere
+echo 'file:/opt/minion/featurepacks/default@id=default@snapshots,mvn:org.opennms.features.minion/features/18.0.0-SNAPSHOT/xml' > $RPM_BUILD_ROOT%{minioninstprefix}/etc/featurepacks.d/default.pack
+
+### MINION END
+
 ### Set this so users can refer to $OPENNMS_HOME easily.
 ### /etc/profile.d
 
@@ -597,6 +643,7 @@ cd $RPM_BUILD_ROOT
 # core package files
 find $RPM_BUILD_ROOT%{instprefix}/etc ! -type d | \
 	sed -e "s,^$RPM_BUILD_ROOT,%config(noreplace) ," | \
+	grep -v '%{_initrddir}/minion' | \
 	grep -v '%{_initrddir}/opennms-remote-poller' | \
 	grep -v '%{_sysconfdir}/sysconfig/opennms-remote-poller' | \
 	grep -v 'ncs-northbounder-configuration.xml' | \
@@ -620,6 +667,7 @@ find $RPM_BUILD_ROOT%{instprefix}/etc ! -type d | \
 	sort > %{_tmppath}/files.main
 find $RPM_BUILD_ROOT%{sharedir}/etc-pristine ! -type d | \
 	sed -e "s,^$RPM_BUILD_ROOT,," | \
+	grep -v '%{_initrddir}/minion' | \
 	grep -v '%{_initrddir}/opennms-remote-poller' | \
 	grep -v '%{_sysconfdir}/sysconfig/opennms-remote-poller' | \
 	grep -v 'ncs-northbounder-configuration.xml' | \
@@ -710,6 +758,25 @@ find $RPM_BUILD_ROOT%{jettydir}/*/WEB-INF/*.xml | \
 find $RPM_BUILD_ROOT%{jettydir} -type d | \
 	sed -e "s,^$RPM_BUILD_ROOT,%dir ," | \
 	sort >> %{_tmppath}/files.jetty
+
+# minion
+find $RPM_BUILD_ROOT%{minioninstprefix} ! -type d | \
+    sed -e "s|^$RPM_BUILD_ROOT|%attr(755,root,root) |" | \
+    grep -v '/opt/minion/featurepacks' | \
+    grep -v '/opt/minion/etc/featurepacks.d/default.pack' | \
+    sort >> %{_tmppath}/files.minion
+find $RPM_BUILD_ROOT%{minioninstprefix} -type d | \
+    sed -e "s,^$RPM_BUILD_ROOT,%dir ," | \
+    grep -v '/opt/minion/featurepacks' | \
+    sort >> %{_tmppath}/files.minion
+
+# default featurepack
+find $RPM_BUILD_ROOT%{minionpacksprefix}/default ! -type d | \
+    sed -e "s|^$RPM_BUILD_ROOT|%attr(755,root,root) |" | \
+    sort >> %{_tmppath}/files.minion.default
+find $RPM_BUILD_ROOT%{minionpacksprefix}/default -type d | \
+    sed -e "s,^$RPM_BUILD_ROOT,%dir ," | \
+    sort >> %{_tmppath}/files.minion.default
 
 cd -
 
@@ -868,6 +935,12 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(664 root root 775)
 %{instprefix}/lib/opennms-vtdxml-collector-handler-*.jar
 %{instprefix}/lib/vtd-xml-*.jar
+
+%files minion-container -f %{_tmppath}/files.minion
+%attr(755,root,root) %{_initrddir}/minion
+
+%files minion-features -f %{_tmppath}/files.minion.default
+%attr(755,root,root) /opt/minion/etc/featurepacks.d/default.pack
 
 %post -p /bin/bash docs
 ROOT_INST="$RPM_INSTALL_PREFIX0"

@@ -128,7 +128,7 @@
     <!-- Elasticsearch event-forwarder-->
     <module>elasticsearch</module>
 
-    <!-- Business Service Monitor -->
-    <module>bsm</module>
+    <!-- Minion -->
+    <module>minion</module>
   </modules>
 </project>

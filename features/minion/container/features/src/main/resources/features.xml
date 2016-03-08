@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<features name="karaf-extensions" xmlns="http://karaf.apache.org/xmlns/features/v1.2.0">
+    <feature name="karaf-extensions" description="OpenNMS :: Features :: Minion :: Container :: Extensions" version="${project.version}">
+        <bundle>mvn:org.opennms.features.minion.container/extensions/${project.version}</bundle>
+    </feature>
+</features>
