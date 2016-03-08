@@ -40,6 +40,41 @@
           </execution>
         </executions>
       </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>build-helper-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>attach-artifacts</id>
+            <phase>package</phase>
+            <goals>
+              <goal>attach-artifact</goal>
+            </goals>
+            <configuration>
+              <artifacts>
+                <!-- The Discovery scheduler -->
+                <artifact>
+                  <file>blueprint-discovery.xml</file>
+                  <type>xml</type>
+                  <classifier>blueprint-discovery</classifier>
+                </artifact>
+                <!-- The Discoverer that performs pings for a location -->
+                <artifact>
+                  <file>blueprint-discoverer.xml</file>
+                  <type>xml</type>
+                  <classifier>blueprint-discoverer</classifier>
+                </artifact>
+                <!-- The DistPollerDao for a Minion system -->
+                <artifact>
+                  <file>blueprint-discovery-distPollerDaoMinion.xml</file>
+                  <type>xml</type>
+                  <classifier>blueprint-discovery-distPollerDaoMinion</classifier>
+                </artifact>
+              </artifacts>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
     </plugins>
   </build>
   <dependencies>
@@ -189,6 +224,17 @@
       <groupId>org.opennms</groupId>
       <artifactId>opennms-test</artifactId>
       <scope>test</scope>
+      <!-- TODO: Remove these deps from opennms-test -->
+      <exclusions>
+        <exclusion>
+          <groupId>org.opennms.dependencies</groupId>
+          <artifactId>newts-dependencies</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.opennms.newts</groupId>
+          <artifactId>newts-cassandra-test</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.opennms.core.test-api</groupId>

@@ -1,17 +1,17 @@
 <blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0"
 	xmlns:ext="http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.1.0"
 	xsi:schemaLocation="
 		http://www.osgi.org/xmlns/blueprint/v1.0.0 
 		http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd
+
 		http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0
 		http://aries.apache.org/schemas/blueprint-cm/blueprint-cm-1.1.0.xsd
+
 		http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.1.0
 		http://aries.apache.org/schemas/blueprint-ext/blueprint-ext-1.1.xsd
 ">
-
-	<!-- Pinger service -->
-	<reference id="pinger" interface="org.opennms.netmgt.icmp.Pinger" />
 
 	<!-- Event IPC manager service -->
 	<reference id="eventForwarder" interface="org.opennms.netmgt.events.api.EventForwarder" />
@@ -51,17 +51,12 @@
 		<property name="ipAddressFilter" ref="unmanagedInterfaceFilter"/>
 	</bean>
 
-	<!-- This processor performs ICMP pings and reports the results -->
-	<bean id="discoverer" class="org.opennms.netmgt.discovery.actors.Discoverer">
-		<argument ref="pinger" />
-	</bean>
-
 	<!-- This processor sends newSuspect events for IP addresses reported in a DiscoveryResult -->
 	<bean id="eventWriter" class="org.opennms.netmgt.discovery.actors.EventWriter">
 		<argument ref="eventForwarder" />
 	</bean>
 
-	<bean id="activemq" class="org.apache.activemq.camel.component.ActiveMQComponent">
+	<bean id="discovery-activemq" class="org.apache.activemq.camel.component.ActiveMQComponent">
 		<!-- TODO: HZN-490 Add configurable ActiveMQ URI -->
 		<property name="brokerURL" value="tcp://localhost:61616" />
 		<!-- TODO: HZN-490 Add configurable authentication -->
@@ -96,27 +91,12 @@
 				<simple>${body}</simple>
 				<!-- Use recipientList so that we can have a dynamic to: URI -->
 				<recipientList>
+					<!-- TODO: Use a more sophisticated naming convention for this queue -->
  					<simple>activemq:Location-${body.location}</simple>
 				</recipientList>
 				<!-- Send the DiscoveryResults to the eventWriter -->
 				<bean ref="eventWriter" />
 			</split>
-		</route>
-
-		<!-- TEST LOCATION QUEUE -->
-		<route id="loc1LocationDiscoveryRoute">
-			<from uri="activemq:Location-LOC1" />
-			<log loggingLevel="INFO" message="blueprint-discovery.xml: Executing DiscoveryJob" />
-			<log loggingLevel="INFO" message="blueprint-discovery.xml: ${body}" />
-			<bean ref="discoverer" />
-		</route>
-
-		<!-- Default localhost location queue -->
-		<route id="localhostLocationDiscoveryRoute">
-			<from uri="activemq:Location-localhost" />
-			<log loggingLevel="INFO" message="blueprint-discovery.xml: Executing DiscoveryJob" />
-			<log loggingLevel="INFO" message="blueprint-discovery.xml: ${body}" />
-			<bean ref="discoverer" />
 		</route>
 	</camelContext>
 
