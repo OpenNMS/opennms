@@ -142,8 +142,8 @@ public class TopologySelectorOperation extends AbstractCheckedOperation {
 		if (m_preferredLayout != null) {
 			// LayoutOperations are exposed as CheckedOperations
 			CheckedOperation operation = findSingleService(m_bundleContext, CheckedOperation.class, null, String.format("(operation.label=%s*)", m_preferredLayout));
-			if (operation instanceof HierarchyLayoutOperation) { // Cast it to HierarchyLayout if possible
-				return ((HierarchyLayoutOperation) operation).getLayoutAlgorithm();
+			if (operation instanceof LayoutOperation) { // Cast it to LayoutOperation if possible
+				return ((LayoutOperation) operation).getLayoutAlgorithm();
 			}
 		}
 		return null; // no preferredLayout defined
