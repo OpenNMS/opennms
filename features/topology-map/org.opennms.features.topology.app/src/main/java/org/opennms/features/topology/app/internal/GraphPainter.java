@@ -140,11 +140,7 @@ public class GraphPainter extends BaseGraphVisitor {
 	}
 
 	private String getIconId(Vertex vertex) {
-		String iconId = m_iconRepoManager.getSVGIconId(vertex.getId());
-		if (iconId != null && !"generic".equals(iconId)) {
-			return iconId;
-		}
-		return m_iconRepoManager.getSVGIconId(vertex.getIconKey());
+		return m_iconRepoManager.getSVGIconId(vertex);
 	}
 
     private String getVertexStyle(Vertex vertex) {

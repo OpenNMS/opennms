@@ -30,6 +30,8 @@ package org.opennms.features.topology.api;
 
 import java.util.List;
 
+import org.opennms.features.topology.api.topo.Vertex;
+
 public interface IconManager {
 
     IconRepository findRepositoryByIconKey(String iconKey);
@@ -41,4 +43,10 @@ public interface IconManager {
     List<String> getSVGIconFiles();
 
     String getSVGIconId(String iconKey);
+
+    String getSVGIconId(Vertex vertex);
+
+    String setIconMapping(Vertex vertex, String newIconId);
+
+    boolean removeIconMapping(Vertex vertex);
 }

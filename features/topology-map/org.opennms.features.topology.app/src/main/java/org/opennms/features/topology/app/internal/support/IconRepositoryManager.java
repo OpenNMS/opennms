@@ -39,6 +39,7 @@ import java.util.List;
 
 import org.opennms.features.topology.api.IconManager;
 import org.opennms.features.topology.api.IconRepository;
+import org.opennms.features.topology.api.topo.Vertex;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.Lists;
@@ -46,11 +47,11 @@ import com.vaadin.server.Page;
 
 public class IconRepositoryManager implements IconManager {
 
-    private List<IconRepository> m_iconRepos = new ArrayList<IconRepository>();
+    private List<IconRepository> m_iconRepositories = new ArrayList<IconRepository>();
 
     public synchronized void onBind(IconRepository iconRepo) {
         try {
-            m_iconRepos.add(iconRepo);
+            m_iconRepositories.add(iconRepo);
         } catch (Throwable e) {
             LoggerFactory.getLogger(this.getClass()).warn("Exception during onBind()", e);
         }
@@ -58,19 +59,62 @@ public class IconRepositoryManager implements IconManager {
 
     public synchronized void onUnbind(IconRepository iconRepo) {
         try {
-            m_iconRepos.remove(iconRepo);
+            m_iconRepositories.remove(iconRepo);
         } catch (Throwable e) {
             LoggerFactory.getLogger(this.getClass()).warn("Exception during onUnbind()", e);
         }
     }
 
     private String lookupSVGIconIdForExactKey(String key) {
-        for(IconRepository iconRepo : m_iconRepos) {
+        for(IconRepository iconRepo : m_iconRepositories) {
             if(iconRepo.contains(key)) {
                 return iconRepo.getSVGIconId(key);
             }
         }
         return null;
+    }
+
+    private String createIconKey(Vertex vertex) {
+        return String.format("%s.%s", vertex.getNamespace(), vertex.getId());
+    }
+
+    @Override
+    public String setIconMapping(Vertex vertex, String newIconId) {
+        // We look for a IconRepository with the old icon key as mapping
+        final IconRepository iconRepository = findRepositoryByIconKey(vertex.getIconKey());
+        final String oldIconId = getSVGIconId(vertex.getIconKey());
+        if (iconRepository != null && !oldIconId.equals(newIconId)) {
+            String iconKey = createIconKey(vertex);
+            // now we set the new mapping: vertex-id => icon-id
+            iconRepository.addIconMapping(iconKey, newIconId);
+            iconRepository.save();
+            return iconKey;
+        }
+        return null;
+    }
+
+    @Override
+    public boolean removeIconMapping(Vertex vertex) {
+        // We look for a IconRepository with the old icon key as mapping
+        final String iconKey = createIconKey(vertex);
+        final IconRepository iconRepository = findRepositoryByIconKey(iconKey);
+        if (iconRepository != null) { // we may not have a icon repository due to no custom mapping
+            iconRepository.removeIconMapping(iconKey);
+            iconRepository.save();
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public String getSVGIconId(Vertex vertex) {
+        // If there is a direct mapping for the vertex, use that mapping (overwrites icon key)
+        final String iconId = lookupSVGIconIdForExactKey(createIconKey(vertex));
+        if (iconId != null) {
+            return iconId;
+        }
+        // Otherwise resolve the icon key assigned by the topology provider for that vertex
+        return getSVGIconId(vertex.getIconKey());
     }
 
     @Override
@@ -100,10 +144,7 @@ public class IconRepositoryManager implements IconManager {
         }
     }
 
-    public boolean contains(String iconKey) {
-        return getSVGIconId(iconKey) != null;
-    }
-
+    @Override
     public List<String> getSVGIconFiles() {
         List<String> svgUrls = Lists.newArrayList();
         try {
@@ -123,7 +164,7 @@ public class IconRepositoryManager implements IconManager {
     @Override
     public IconRepository findRepositoryByIconKey(String iconKey) {
         // look up the key in each repository
-        for (IconRepository eachRepository : m_iconRepos) {
+        for (IconRepository eachRepository : m_iconRepositories) {
             if (eachRepository.contains(iconKey)) {
                 return eachRepository;
             }
