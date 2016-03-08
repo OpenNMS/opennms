@@ -104,6 +104,7 @@ xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0
     	</interfaces>
         <service-properties>
             <entry key="label" value="Enhanced Linkd" />
+            <entry key="preferredLayout" value="D3 Layout" />
         </service-properties>
     </service>
 
