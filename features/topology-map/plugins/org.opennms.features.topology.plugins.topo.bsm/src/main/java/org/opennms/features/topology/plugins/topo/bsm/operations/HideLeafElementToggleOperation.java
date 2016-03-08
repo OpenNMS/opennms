@@ -50,7 +50,7 @@ public class HideLeafElementToggleOperation extends AbstractCheckedOperation {
 
     @Override
     protected boolean enabled(GraphContainer container) {
-        return container.getBaseTopology().getVertexNamespace().equals(BusinessServicesTopologyProvider.TOPOLOGY_NAMESPACE);
+        return BusinessServicesTopologyProvider.TOPOLOGY_NAMESPACE.equals(container.getBaseTopology().getVertexNamespace());
     }
 
     @Override
