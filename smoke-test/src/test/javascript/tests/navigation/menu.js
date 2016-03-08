@@ -173,7 +173,7 @@ var expected = {
 	}
 };
 
-casper.test.begin('OpenNMS Nav Bar Menu', 61, {
+casper.test.begin('OpenNMS Nav Bar Menu', 59, {
 	setUp: function() {
 		opennms.initialize();
 		opennms.login();
