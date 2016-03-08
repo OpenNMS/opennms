@@ -1,0 +1,38 @@
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0"
+	xmlns:ext="http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.1.0"
+	xsi:schemaLocation="
+		http://www.osgi.org/xmlns/blueprint/v1.0.0 
+		http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd
+
+		http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0
+		http://aries.apache.org/schemas/blueprint-cm/blueprint-cm-1.1.0.xsd
+
+		http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.1.0
+		http://aries.apache.org/schemas/blueprint-ext/blueprint-ext-1.1.xsd
+">
+
+	<!-- Configuration properties -->
+	<!-- 
+		update-strategy="reload" causes unit test failures because the Blueprint context
+		can be destroyed and recreated by CM properties updates while the Camel context
+		is initializing:
+
+		https://issues.apache.org/jira/browse/ARIES-961
+	-->
+	<cm:property-placeholder id="discovererDistPollerProperties" persistent-id="org.opennms.minion.controller" placeholder-prefix="[[" placeholder-suffix="]]" update-strategy="none">
+		<!-- TODO: Should there be any defaults here? -->
+	</cm:property-placeholder>
+
+	<!-- Create a DistPollerDao that can be used to access information about the Minion system -->
+	<bean id="distPollerDaoMinion" class="org.opennms.netmgt.discovery.DistPollerDaoMinion">
+		<argument value="[[id]]"/>
+		<argument value="[[id]]"/>
+		<argument value="[[location]]"/>
+	</bean>
+
+	<!-- DistPollerDao -->
+	<service ref="distPollerDaoMinion" interface="org.opennms.netmgt.dao.api.DistPollerDao"/>
+
+</blueprint>
