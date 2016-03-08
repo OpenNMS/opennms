@@ -1324,6 +1324,7 @@
     <snmp4jagentVersion>2.4.2</snmp4jagentVersion>
     <smackVersion>4.0.6</smackVersion>
     <springJaxbVersion>2.1.7</springJaxbVersion>
+    <trackerVersion>0.7</trackerVersion>
     <xalanVersion>2.7.2</xalanVersion>
     <xercesVersion>2.9.1</xercesVersion>
     <xmlApisVersion>1.4.01</xmlApisVersion>
