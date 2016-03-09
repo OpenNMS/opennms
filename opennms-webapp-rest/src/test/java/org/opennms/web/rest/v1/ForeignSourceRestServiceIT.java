@@ -30,12 +30,15 @@ package org.opennms.web.rest.v1;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.test.rest.AbstractSpringJerseyRestTestCase;
+import org.opennms.core.xml.JaxbUtils;
+import org.opennms.netmgt.provision.persist.foreignsource.ForeignSourceCollection;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.context.ContextConfiguration;
@@ -100,12 +103,10 @@ public class ForeignSourceRestServiceIT extends AbstractSpringJerseyRestTestCase
         url = "/foreignSources/test";
         sendPut(url, "scanInterval=1h", 202, "/foreignSources/test");
         sendRequest(DELETE, url, 202);
-        Thread.sleep(2000); // To avoid race-conditions on Bamboo machines
         xml = sendRequest(GET, url, 200);
         assertTrue(xml.contains("<scan-interval>1d</scan-interval>"));
         
         sendRequest(DELETE, url, 202);
-        Thread.sleep(2000);  // To avoid race-conditions on Bamboo machines
         xml = sendRequest(GET, url, 200);
         assertTrue(xml.contains("<scan-interval>1d</scan-interval>"));
     }
@@ -148,6 +149,16 @@ public class ForeignSourceRestServiceIT extends AbstractSpringJerseyRestTestCase
     }
 
     private void createForeignSource() throws Exception {
+        // Be sure there are no foreign-sources defined
+        ForeignSourceCollection collection = JaxbUtils.unmarshal(ForeignSourceCollection.class, sendRequest(GET, "/foreignSources", 200));
+        collection.getForeignSources().forEach(f -> {
+            try {
+                sendRequest(DELETE, "/foreignSources/" + f.getName(), 202);
+            } catch (Exception e) {
+                fail(e.getMessage());
+            }
+        });
+        // Create sample foreign source
         String fs =
             "<foreign-source xmlns=\"http://xmlns.opennms.org/xsd/config/foreign-source\" name=\"test\">" +
                 "<scan-interval>1d</scan-interval>" +
