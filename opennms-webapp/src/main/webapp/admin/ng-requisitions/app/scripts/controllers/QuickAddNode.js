@@ -88,11 +88,22 @@
       RequisitionsService.quickAddNode($scope.node).then(
         function() { // success
           growl.success('The node ' + $scope.node.nodeLabel + ' has been added to ' + $scope.node.foreignSource);
-          $scope.node = new QuickNode(); // Resetting the object.
-          $scope.isSaving = false;
+          $scope.reset();
         },
         $scope.errorHandler
       );
+    };
+
+    /**
+    * @description Resets the current node
+    *
+    * @name QuickAddNodeController:reset
+    * @ngdoc method
+    * @methodOf QuickAddNodeController
+    */
+    $scope.reset = function() {
+      $scope.node = new QuickNode(); // Resetting the object.
+      $scope.isSaving = false;
     };
 
    /**

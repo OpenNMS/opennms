@@ -10,7 +10,7 @@
 <!-- Content -->
 
 <div class="row">
-  <div class="col-md-12">
+  <div class="col-md-8">
     <form name="quickAddNodeForm">
     <fieldset ng-disabled="isSaving">
 
@@ -114,14 +114,64 @@
         </div>
       </div>
 
+      <div class="form-group">
+        <button class="btn btn-primary" ng-click="provision()" ng-disabled="isInvalid()">Provision</button>
+        <button class="btn btn-primary" ng-click="reset()">Reset</button>
+      </div>
+
     </fieldset>
     </form>
 
   </div> <!-- column -->
-</div> <!-- row -->
 
-<div class="row">
-  <div class="col-md-12">
-    <button class="btn btn-primary" ng-click="provision()" ng-disabled="isInvalid()">Provision</button>
-  </div>
-</div>
+  <div class="col-md-4">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Node Quick-Add</h3>
+      </div>
+      <div class="panel-body">
+        <p>
+        This workflow provides a quick way to add a node to an existing
+        provisioning requisition in this OpenNMS system.
+        </p>
+
+        <p>
+        <strong>Note: This operation <em>will</em> override any un-synchronized
+        modifications made to the selected requisition.</strong>
+        </p>
+
+        <p>
+        <em>Basic Attributes</em> are common to all nodes. Select the requisition
+        into which this node should be added, provide an IP address on which OpenNMS
+        will communicate with the node, and enter a node label. The node label will
+        serve as the display name for the node throughout OpenNMS.
+        </p>
+
+        <p>
+        <em>Surveillance Category Memberships</em> are optional and work like tags.
+        A node can be a member of any number of surveillance categories, and the
+        names of those categories can be used in a variety of powerful ways throughout
+        the OpenNMS system.
+        </p>
+
+        <p>
+        <em>SNMP Parameters</em> are optional and apply only to the node being
+        requisitioned. If no values are specified here, OpenNMS' system-wide SNMP
+        configuration will be used to determine the appropriate values for the IP
+        address entered in the <em>Basic Attributes</em> section. If the node does not
+        support SNMP, the "No SNMP" box should be checked. Configuring SNMPv3
+        parameters via the web UI is not supported; contact your OpenNMS administrator
+        if this node requires SNMPv3 parameters that differ from those in the
+        system-wide configuration.
+        </p>
+
+        <p>
+        <em>CLI Authentication Parameters</em> are optional and will be used only if one
+        or more provisioning adapters are configured to use them. Typically this is the
+        case if OpenNMS is integrated with an external configuration management system.
+        </p>
+      </div> <!-- panel-body -->
+    </div> <!-- panel -->
+  </div> <!-- column -->
+
+</div> <!-- row -->
