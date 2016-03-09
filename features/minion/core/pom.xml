@@ -14,5 +14,7 @@
     <modules>
         <module>api</module>
         <module>impl</module>
+        <module>features</module>
+        <module>repository</module>
     </modules>
 </project>

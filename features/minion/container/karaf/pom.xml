@@ -63,7 +63,7 @@
                         <feature>feature</feature>
                         <feature>instance</feature>
                         <feature>kar</feature>
-                        <feature>karaf-extensions</feature>
+                        <feature>karaf-extender</feature>
                         <feature>log</feature>
                         <feature>package</feature>
                         <feature>service</feature>
@@ -150,7 +150,7 @@
         </dependency>
         <dependency>
             <groupId>org.opennms.features.minion.container</groupId>
-            <artifactId>features</artifactId>
+            <artifactId>extender-feature</artifactId>
             <version>${project.version}</version>
             <classifier>features</classifier>
             <type>xml</type>

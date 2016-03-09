@@ -13,7 +13,7 @@
 
     <modules>
         <module>karaf</module>
-        <module>extensions</module>
-        <module>features</module>
+        <module>extender</module>
+        <module>extender-feature</module>
     </modules>
 </project>

@@ -33,7 +33,7 @@ case "$1" in
 			exit 0
 		fi
 
-		"$MINION_HOME"/bin/start clean server
+		"$MINION_HOME"/bin/start
 		exit $?
 		;;
 
