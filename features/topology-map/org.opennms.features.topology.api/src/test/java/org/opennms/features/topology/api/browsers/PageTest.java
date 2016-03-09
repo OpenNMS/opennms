@@ -43,8 +43,8 @@ public class PageTest {
             }
         }));
 
-        // first page (should always assert to true, because otherwise the cache may not have been initialized
-        Assert.assertTrue(p.updateOffset(0));
+        // first page
+        Assert.assertFalse(p.updateOffset(0));
         Assert.assertEquals(30, p.length);
         Assert.assertEquals(0, p.offset);
 
