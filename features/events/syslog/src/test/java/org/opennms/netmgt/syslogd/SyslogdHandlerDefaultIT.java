@@ -29,10 +29,13 @@
 package org.opennms.netmgt.syslogd;
 
 import java.nio.ByteBuffer;
+import java.util.Arrays;
 import java.util.Dictionary;
 import java.util.Map;
+import java.util.Properties;
 
 import org.apache.activemq.broker.BrokerService;
+import org.apache.camel.ExchangePattern;
 import org.apache.camel.component.mock.MockEndpoint;
 import org.apache.camel.test.blueprint.CamelBlueprintTestSupport;
 import org.apache.camel.util.KeyValueHolder;
@@ -42,15 +45,17 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.core.xml.JaxbUtils;
+import org.opennms.netmgt.config.SyslogdConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.test.context.ContextConfiguration;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations = { "classpath:/META-INF/opennms/emptyContext.xml" })
-public class SyslogdHandlerMinionIT extends CamelBlueprintTestSupport {
+public class SyslogdHandlerDefaultIT extends CamelBlueprintTestSupport {
 
-	private static final Logger LOG = LoggerFactory.getLogger(SyslogdHandlerMinionIT.class);
+	private static final Logger LOG = LoggerFactory.getLogger(SyslogdHandlerDefaultIT.class);
 
 	private static BrokerService m_broker = null;
 
@@ -85,19 +90,29 @@ public class SyslogdHandlerMinionIT extends CamelBlueprintTestSupport {
 	@SuppressWarnings("rawtypes")
 	@Override
 	protected void addServicesOnStartup(Map<String, KeyValueHolder<Object, Dictionary>> services) {
-		// Register any mock OSGi services here
+		// Create a mock SyslogdConfig
+		SyslogConfigBean config = new SyslogConfigBean();
+		config.setSyslogPort(10514);
+		config.setNewSuspectOnMessage(false);
+		config.setParser("org.opennms.netmgt.syslogd.CustomSyslogParser");
+		config.setForwardingRegexp("^.*\\s(19|20)\\d\\d([-/.])(0[1-9]|1[012])\\2(0[1-9]|[12][0-9]|3[01])(\\s+)(\\S+)(\\s)(\\S.+)");
+		config.setMatchingGroupHost(4);
+		config.setMatchingGroupMessage(7);
+		config.setDiscardUei("DISCARD-MATCHING-MESSAGES");
+
+		services.put(SyslogdConfig.class.getName(), new KeyValueHolder<Object, Dictionary>(config, new Properties()));
 	}
 
 	// The location of our Blueprint XML files to be used for testing
 	@Override
 	protected String getBlueprintDescriptor() {
-		return "file:blueprint-syslog-handler-minion.xml";
+		return "file:blueprint-syslog-handler-default.xml";
 	}
 
 	@BeforeClass
 	public static void startActiveMQ() throws Exception {
 		m_broker = new BrokerService();
-		m_broker.addConnector("tcp://127.0.0.1:61716");
+		m_broker.addConnector("tcp://127.0.0.1:61616");
 		m_broker.start();
 	}
 
@@ -114,19 +129,42 @@ public class SyslogdHandlerMinionIT extends CamelBlueprintTestSupport {
 		MockEndpoint broadcastSyslog = getMockEndpoint("mock:activemq:broadcastSyslog");
 		broadcastSyslog.setExpectedMessageCount(1);
 
+		MockEndpoint syslogHandler = getMockEndpoint("mock:seda:syslogHandler");
+		syslogHandler.setExpectedMessageCount(1);
+
 		// Create a mock SyslogdConfig
 		SyslogConfigBean config = new SyslogConfigBean();
 		config.setSyslogPort(10514);
 		config.setNewSuspectOnMessage(false);
-		config.setParser("org.opennms.netmgt.syslogd.CustomSyslogParser");
-		config.setForwardingRegexp("^.*\\s(19|20)\\d\\d([-/.])(0[1-9]|1[012])\\2(0[1-9]|[12][0-9]|3[01])(\\s+)(\\S+)(\\s)(\\S.+)");
-		config.setMatchingGroupHost(6);
-		config.setMatchingGroupMessage(8);
-		config.setDiscardUei("DISCARD-MATCHING-MESSAGES");
 
-		// Send a SyslogConnection to seda:handleMessage
-		template.requestBody("seda:handleMessage", new SyslogConnection(InetAddressUtils.ONE_TWENTY_SEVEN, 2000, ByteBuffer.wrap("<34>main: 2010-08-19 localhost foo0: load test 0 on tty1\0".getBytes("US-ASCII")), config));
+		// Leave a bunch of config that won't be available on the Minion side blank
+		//config.setParser("org.opennms.netmgt.syslogd.CustomSyslogParser");
+		//config.setForwardingRegexp("^.*\\s(19|20)\\d\\d([-/.])(0[1-9]|1[012])\\2(0[1-9]|[12][0-9]|3[01])(\\s+)(\\S+)(\\s)(\\S.+)");
+		//config.setMatchingGroupHost(6);
+		//config.setMatchingGroupMessage(8);
+		//config.setDiscardUei("DISCARD-MATCHING-MESSAGES");
+
+		byte[] messageBytes = "<34>main: 2010-08-19 localhost foo0: load test 0 on tty1\0".getBytes("US-ASCII");
+
+		// Send a SyslogConnection
+		template.sendBody(
+			"activemq:broadcastSyslog",
+			JaxbUtils.marshal(new SyslogConnection(InetAddressUtils.ONE_TWENTY_SEVEN, 2000, ByteBuffer.wrap(messageBytes), config))
+		);
 
 		assertMockEndpointsSatisfied();
+
+		// Check that the input for the seda:syslogHandler endpoint matches
+		// the SyslogConnection that we simulated via ActiveMQ
+		SyslogConnection result = syslogHandler.getReceivedExchanges().get(0).getIn().getBody(SyslogConnection.class);
+		assertEquals(InetAddressUtils.ONE_TWENTY_SEVEN, result.getSourceAddress());
+		assertEquals(2000, result.getPort());
+		assertTrue(Arrays.equals(result.getBytes(), messageBytes));
+
+		// Assert that the SyslogdConfig has been updated to the local copy
+		// that has been provided as an OSGi service
+		assertEquals("DISCARD-MATCHING-MESSAGES", result.getConfig().getDiscardUei());
+		assertEquals(4, result.getConfig().getMatchingGroupHost());
+		assertEquals(7, result.getConfig().getMatchingGroupMessage());
 	}
 }
