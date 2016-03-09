@@ -585,7 +585,7 @@ chmod 755 "$RPM_BUILD_ROOT%{_initrddir}"/minion
 mkdir -p $RPM_BUILD_ROOT%{minionpacksprefix}/default
 tar zxvf $RPM_BUILD_DIR/%{name}-%{version}-%{release}/features/minion/repository/target/repository-*-repo.tar.gz -C $RPM_BUILD_ROOT%{minionpacksprefix}/default
 # FIXME: We should pull in the feature repositories from elsewhere
-echo 'file:/opt/minion/featurepacks/default@id=default@snapshots,mvn:org.opennms.features.minion/features/18.0.0-SNAPSHOT/xml' > $RPM_BUILD_ROOT%{minioninstprefix}/etc/featurepacks.d/default.pack
+echo 'file:/opt/minion/featurepacks/default@id=default@snapshots,mvn:org.opennms.features.minion/features/18.0.0-SNAPSHOT/xml,mvn:org.opennms.karaf/opennms/18.0.0-SNAPSHOT/xml/features' > $RPM_BUILD_ROOT%{minioninstprefix}/etc/featurepacks.d/default.pack
 
 ### MINION END
 
