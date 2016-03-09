@@ -26,13 +26,9 @@
 	<service interface="org.opennms.netmgt.syslogd.SyslogConnectionHandler" ref="syslogConnectionHandlerDefault"/>
 	-->
 
-	<bean id="syslogConnectionClass" class="java.lang.Class" factory-method="forName">
-		<argument value="org.opennms.netmgt.syslogd.SyslogConnection" />
-	</bean>
-
 	<!-- Camel Event marshalling processor -->
 	<bean id="unmarshaller" class="org.opennms.core.camel.JaxbUtilsUnmarshalProcessor">
-		<argument ref="syslogConnectionClass" />
+		<argument value="org.opennms.netmgt.syslogd.SyslogConnection" />
 	</bean>
 
 	<reference id="syslogdConfig" interface="org.opennms.netmgt.config.SyslogdConfig" />

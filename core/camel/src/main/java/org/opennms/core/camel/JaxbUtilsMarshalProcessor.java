@@ -50,6 +50,10 @@ public class JaxbUtilsMarshalProcessor implements Processor {
 		m_class = clazz;
 	}
 
+	public JaxbUtilsMarshalProcessor(String className) throws ClassNotFoundException {
+		m_class = Class.forName(className);
+	}
+
 	@Override
 	public void process(final Exchange exchange) throws Exception {
 		final Object object = exchange.getIn().getBody(m_class);

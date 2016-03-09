@@ -35,7 +35,6 @@ import java.util.Map;
 import java.util.Properties;
 
 import org.apache.activemq.broker.BrokerService;
-import org.apache.camel.ExchangePattern;
 import org.apache.camel.component.mock.MockEndpoint;
 import org.apache.camel.test.blueprint.CamelBlueprintTestSupport;
 import org.apache.camel.util.KeyValueHolder;
@@ -126,10 +125,10 @@ public class SyslogdHandlerDefaultIT extends CamelBlueprintTestSupport {
 	@Test
 	public void testSyslogd() throws Exception {
 		// Expect one SyslogConnection message to be broadcast on the messaging channel
-		MockEndpoint broadcastSyslog = getMockEndpoint("mock:activemq:broadcastSyslog");
+		MockEndpoint broadcastSyslog = getMockEndpoint("mock:activemq:broadcastSyslog", false);
 		broadcastSyslog.setExpectedMessageCount(1);
 
-		MockEndpoint syslogHandler = getMockEndpoint("mock:seda:syslogHandler");
+		MockEndpoint syslogHandler = getMockEndpoint("mock:seda:syslogHandler", false);
 		syslogHandler.setExpectedMessageCount(1);
 
 		// Create a mock SyslogdConfig
