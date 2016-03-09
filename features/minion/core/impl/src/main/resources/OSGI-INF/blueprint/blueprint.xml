@@ -15,20 +15,30 @@
         http://aries.apache.org/schemas/blueprint-ext/blueprint-ext-1.1.xsd
 ">
 
-    <cm:property-placeholder id="minionProperties" persistent-id="org.opennms.minion.controller" placeholder-prefix="$(" placeholder-suffix=")" update-strategy="none"/>
-    <cm:property-placeholder id="activemqProperties" persistent-id="org.opennms.minion.activemq" placeholder-prefix="[[" placeholder-suffix="]]" update-strategy="none"/>
+    <cm:property-placeholder id="minionProperties" persistent-id="org.opennms.minion.controller" placeholder-prefix="[[" placeholder-suffix="]]" update-strategy="none">
+        <cm:default-properties>
+            <cm:property name="location" value="MINION"/>
+            <cm:property name="id" value="00000000-0000-0000-0000-000000ddba11"/>
+            <cm:property name="broker-url" value="tcp://127.0.0.1:61616"/>
+            <cm:property name="opennms-url" value="http://127.0.0.1:8980/opennms"/>
+            <cm:property name="username" value="admin"/>
+            <cm:property name="password" value="admin"/>
+        </cm:default-properties>
+    </cm:property-placeholder>
 
-    <bean id="minionInfo" class="org.opennms.features.minion.core.impl.MinionInfoImpl">
-       <argument value="$(location)"/>
+    <!-- A canonical source for this Minion's identity -->
+    <bean id="minionIdentity" class="org.opennms.minion.core.impl.MinionIdentityImpl">
+       <argument value="[[location]]"/>
+       <argument value="[[id]]"/>
     </bean>
+    <service ref="minionIdentity" interface="org.opennms.minion.core.api.MinionIdentity"/>
 
-    <service ref="minionInfo" interface="org.opennms.features.minion.core.api.MinionInfo"/>
-
+    <!-- A canonical ActiveMQ component pointing to the OpenNMS controller -->
+    <!-- TODO: Use connection pooling. See http://camel.apache.org/activemq.html -->
     <bean id="activemq" class="org.apache.activemq.camel.component.ActiveMQComponent">
         <property name="brokerURL" value="[[broker-url]]"/>
         <property name="userName" value="[[username]]"/>
         <property name="password" value="[[password]]"/>
     </bean>
-
     <service id="queuingservice" ref="activemq" interface="org.apache.camel.Component"/>
 </blueprint>

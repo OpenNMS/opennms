@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<features name="karaf-extensions" xmlns="http://karaf.apache.org/xmlns/features/v1.2.0">
+    <feature name="karaf-extender" description="Karaf Extender" version="${project.version}">
+        <bundle>mvn:com.google.guava/guava/${guavaVersion}</bundle>
+        <bundle>mvn:org.opennms.features.minion.container/extender/${project.version}</bundle>
+    </feature>
+</features>
