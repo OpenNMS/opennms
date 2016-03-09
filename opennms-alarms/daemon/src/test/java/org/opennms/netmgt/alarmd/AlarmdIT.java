@@ -224,6 +224,10 @@ public class AlarmdIT implements TemporaryDatabaseAware<MockDatabase>, Initializ
         int numberOfAlarmsToReduce = 10;
 
         //there should be no alarms in the alarms table
+        //
+        // NMS-8214: This assertion fails intermittently so there must be 
+        // a test ordering issue here
+        //
         assertEquals(0, m_jdbcTemplate.queryForObject("select count(*) from alarms", Integer.class).intValue());
 
         final String reductionKey = "countThese";
