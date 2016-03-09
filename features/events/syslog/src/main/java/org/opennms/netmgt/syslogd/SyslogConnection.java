@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.syslogd;
 
+import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
@@ -36,6 +37,13 @@ import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.Callable;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+
+import org.opennms.core.network.InetAddressXmlAdapter;
 import org.opennms.netmgt.config.SyslogdConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,6 +57,8 @@ import org.slf4j.LoggerFactory;
  * @author <a href="mailto:joed@opennms.org">Johan Edstrom</a>
  * @author <a href="mailto:mhuot@opennms.org">Mike Huot</a>
  */
+@XmlRootElement
+@XmlAccessorType(XmlAccessType.NONE)
 public class SyslogConnection implements Callable<Callable<?>> {
 
     private static final Logger LOG = LoggerFactory.getLogger(SyslogConnection.class);
@@ -60,12 +70,10 @@ public class SyslogConnection implements Callable<Callable<?>> {
 
     /**
      * No-arg constructor so that we can preallocate this object for use with
-     * an LMAX Disruptor.
+     * an LMAX Disruptor or use it with JAXB.
      */
-    /*
     public SyslogConnection() {
     }
-    */
 
     public SyslogConnection(final DatagramPacket packet, final SyslogdConfig config) {
         this(packet.getAddress(), packet.getPort(), ByteBuffer.wrap(packet.getData(), 0, packet.getLength()), config);
@@ -86,6 +94,8 @@ public class SyslogConnection implements Callable<Callable<?>> {
         m_config = config;
     }
 
+    @XmlAttribute
+    @XmlJavaTypeAdapter(InetAddressXmlAdapter.class)
     public InetAddress getSourceAddress() {
         return m_sourceAddress;
     }
@@ -94,6 +104,7 @@ public class SyslogConnection implements Callable<Callable<?>> {
         m_sourceAddress = sourceAddress;
     }
 
+    @XmlAttribute
     public int getPort() {
         return m_port;
     }
@@ -108,6 +119,18 @@ public class SyslogConnection implements Callable<Callable<?>> {
 
     public void setByteBuffer(ByteBuffer bytes) {
         m_bytes = bytes;
+    }
+
+    @XmlAttribute
+    public byte[] getBytes() {
+        byte[] retval = new byte[m_bytes.remaining()];
+        m_bytes.get(retval, 0, m_bytes.remaining());
+        m_bytes.rewind();
+        return retval;
+    }
+
+    public void setBytes(byte[] bytes) {
+        m_bytes = ByteBuffer.wrap(bytes);
     }
 
     public SyslogdConfig getConfig() {

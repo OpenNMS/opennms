@@ -23,16 +23,15 @@
 		<argument value="seda:handleMessage"/>
 	</bean>
 
-	<service interface="org.opennms.netmgt.syslogd.SyslogConnectionHandler" ref="syslogConnectionHandlerCamel"/>	
+	<service interface="org.opennms.netmgt.syslogd.SyslogConnectionHandler" ref="syslogConnectionHandlerCamel"/>
 
-
-	<bean id="eventClass" class="java.lang.Class" factory-method="forName">
-		<argument value="org.opennms.netmgt.xml.event.Event"/>
+	<bean id="syslogConnectionClass" class="java.lang.Class" factory-method="forName">
+		<argument value="org.opennms.netmgt.syslogd.SyslogConnection" />
 	</bean>
 
 	<!-- Camel Event marshalling processor -->
 	<bean id="marshaller" class="org.opennms.core.camel.JaxbUtilsMarshalProcessor">
-		<argument ref="eventClass"/>
+		<argument ref="syslogConnectionClass" />
 	</bean>
 
 	<bean id="activemq" class="org.apache.activemq.camel.component.ActiveMQComponent">
@@ -47,25 +46,13 @@
 
 	<camelContext id="syslogConnectionHandlerMinion" xmlns="http://camel.apache.org/schema/blueprint">
 		<propertyPlaceholder id="properties" location="blueprint:syslogHandlerMinionProperties" />
-		<route id="syslogHandlerMinion">
+		<route id="handleMessage">
 			<from uri="seda:handleMessage" />
 			<convertBodyTo type="org.opennms.netmgt.syslogd.SyslogConnection"/>
-			<!-- Call the SyslogConnection to produce a SyslogProcessor -->
-			<transform>
-				<simple>${body.call}</simple>
-			</transform>
-			<choice>
-				<when>
-					<simple>${body} != null</simple>
-					<!-- Get the event out of the SyslogProcessor -->
-					<transform>
-						<simple>${body.getEvent}</simple>
-					</transform>
-					<!-- Marshal the Event into a String using JaxbUtils -->
-					<bean ref="marshaller"/>
-					<to uri="activemq:broadcastSyslog?disableReplyTo=true"/>
-				</when>
-			</choice>
+			<!-- Marshal the message to XML -->
+			<bean ref="marshaller"/>
+			<!-- Broadcast the message over ActiveMQ -->
+			<to uri="activemq:broadcastSyslog?disableReplyTo=true"/>
 		</route>
 	</camelContext>
 
