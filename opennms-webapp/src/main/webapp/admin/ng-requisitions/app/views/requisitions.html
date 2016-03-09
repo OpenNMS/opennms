@@ -19,7 +19,7 @@
         <input class="form-control" type="text" placeholder="Search/Filter Requisitions" ng-model="reqFilter" id="search-requisitions"></input>
       </div>
       <div class="input-group">
-        <button class="btn btn-default" ng-click="quickAddNode()" id="quick-add-node">
+        <button class="btn btn-default" ng-click="quickAddNode()" id="quick-add-node" ng-show="requisitions.length > 0">
           <span class="glyphicon glyphicon-upload"/> Quick Add Node
         </button>
         <button class="btn btn-default" ng-click="editDefaultForeignSource()" id="edit-default-foreign-source">

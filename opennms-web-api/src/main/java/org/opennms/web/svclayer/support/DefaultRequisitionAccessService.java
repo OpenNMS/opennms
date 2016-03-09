@@ -593,11 +593,16 @@ public class DefaultRequisitionAccessService implements RequisitionAccessService
         return submitAndWait(new Callable<DeployedStats>() {
             @Override public DeployedStats call() throws Exception {
                 final DeployedStats deployedStats = new DeployedStats();
+                final Map<String,Date> lastImportedMap = new HashMap<String,Date>();
+                getDeployedRequisitions().forEach(r -> {
+                    lastImportedMap.put(r.getForeignSource(), r.getLastImportAsDate());
+                });
                 Map<String,Set<String>> map = m_nodeDao.getForeignIdsPerForeignSourceMap();
                 map.entrySet().forEach(e -> {
                     DeployedRequisitionStats stats = new DeployedRequisitionStats();
                     stats.setForeignSource(e.getKey());
                     stats.setForeignIds(new ArrayList<String>(e.getValue()));
+                    stats.setLastImported(lastImportedMap.get(e.getKey()));
                     deployedStats.add(stats);
                 });
                 return deployedStats;

@@ -56,6 +56,16 @@
     $scope.availableAccessMethods = [ 'RSH', 'SSH', 'Telnet' ];
 
     /**
+    * @description The saving flag (true when the node is being saved)
+    *
+    * @ngdoc property
+    * @name QuickAddNodeController#isSaving
+    * @propertyOf QuickAddNodeController
+    * @returns {boolean} true when the node is being saved
+    */
+    $scope.isSaving = false;
+
+    /**
     * @description The source object that contains all the required information for the new node
     *
     * @ngdoc property
@@ -73,10 +83,13 @@
     * @methodOf QuickAddNodeController
     */
     $scope.provision = function() {
+      $scope.isSaving = true;
       growl.warning('The node ' + $scope.node.nodeLabel + ' will be added to ' + $scope.node.foreignSource + '. Please wait...');
       RequisitionsService.quickAddNode($scope.node).then(
         function() { // success
           growl.success('The node ' + $scope.node.nodeLabel + ' has been added to ' + $scope.node.foreignSource);
+          $scope.node = new QuickNode(); // Resetting the object.
+          $scope.isSaving = false;
         },
         $scope.errorHandler
       );
@@ -163,6 +176,34 @@
       growl.error(message, {ttl: 10000});
     };
 
+    /**
+    * @description Adds a new requisition
+    *
+    * @name QuickAddNodeController:addRequisition
+    * @ngdoc method
+    * @methodOf QuickAddNodeController
+    */
+    $scope.addRequisition = function() {
+      bootbox.prompt('A requisition is required, please enter the name for a new requisition', function(foreignSource) {
+        if (foreignSource) {
+          RequisitionsService.addRequisition(foreignSource).then(
+            function() { // success
+              RequisitionsService.synchronizeRequisition(foreignSource, false).then(
+                function() {
+                  growl.success('The requisition ' + foreignSource + ' has been created and synchronized.');
+                  $scope.foreignSources.push(foreignSource);
+                },
+                $scope.errorHandler
+              );
+            },
+            $scope.errorHandler
+          );
+        } else {
+          window.location = "/opennms/index.jsp"; // TODO Is this the best way ?
+        }
+      });
+    }
+
     // Initialize categories
     RequisitionsService.getAvailableCategories().then(
       function(categories) { // success
@@ -179,6 +220,10 @@
           angular.forEach(data.requisitions, function(r) {
             $scope.foreignSources.push(r.foreignSource);
           });
+          // If there is NO requisitions, the user has to create a new one
+          if ($scope.foreignSources.length == 0) {
+            $scope.addRequisition();
+          }
         },
         $scope.errorHandler
       );

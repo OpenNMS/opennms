@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.provision.persist.requisition;
 
+import java.util.Date;
 import java.util.List;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -54,12 +55,15 @@ public class DeployedRequisitionStats extends JaxbListWrapper<String> {
     private static final long serialVersionUID = 1L;
 
     /**
-     * Instantiates a new deployed requisition stats.
+     * Instantiates a new deployed requisition statistics.
      */
     public DeployedRequisitionStats() { super(); }
 
     /** The foreign source. */
     private String foreignSource;
+
+    /** The last imported date. */
+    private Date lastImported;
 
     /**
      * Gets the foreign source.
@@ -73,9 +77,20 @@ public class DeployedRequisitionStats extends JaxbListWrapper<String> {
     }
 
     /**
-     * Gets the foreign ids.
+     * Gets the foreign source.
      *
-     * @return the foreign ids
+     * @return the foreign source
+     */
+    @XmlAttribute(name="last-imported")
+    @JsonProperty("last-imported")
+    public Date getLastImported() {
+        return lastImported;
+    }
+
+    /**
+     * Gets the foreign IDs.
+     *
+     * @return the foreign IDs
      */
     @XmlElement(name="foreign-id")
     @JsonProperty("foreign-id")
@@ -93,9 +108,18 @@ public class DeployedRequisitionStats extends JaxbListWrapper<String> {
     }
 
     /**
-     * Sets the foreign ids.
+     * Sets the last imported date.
      *
-     * @param foreignIds the new foreign ids
+     * @param lastImported the new last imported date
+     */
+    public void setLastImported(Date lastImported) {
+        this.lastImported = lastImported;
+    }
+
+    /**
+     * Sets the foreign IDs.
+     *
+     * @param foreignIds the new foreign IDs
      */
     public void setForeignIds(List<String> foreignIds) {
         this.clear();

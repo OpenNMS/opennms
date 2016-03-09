@@ -53,7 +53,7 @@ public class DeployedStats extends JaxbListWrapper<DeployedRequisitionStats> {
     private static final long serialVersionUID = 1L;
 
     /**
-     * Instantiates a new deployed stats.
+     * Instantiates a new deployed statistics.
      */
     public DeployedStats() { super(); }
 
