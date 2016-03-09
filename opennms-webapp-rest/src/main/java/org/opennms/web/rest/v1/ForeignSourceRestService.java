@@ -357,7 +357,7 @@ public class ForeignSourceRestService extends OnmsRestService {
         try {
             LOG.debug("addForeignSource: Adding foreignSource {}", foreignSource.getName());
             m_pendingForeignSourceRepository.save(foreignSource);
-            return Response.noContent().header("Location", getRedirectUri(uriInfo, foreignSource.getName())).build();
+            return Response.accepted().header("Location", getRedirectUri(uriInfo, foreignSource.getName())).build();
         } finally {
             writeUnlock();
         }
@@ -382,7 +382,7 @@ public class ForeignSourceRestService extends OnmsRestService {
             fs.updateDateStamp();
             fs.addDetector(detector);
             m_pendingForeignSourceRepository.save(fs);
-            return Response.noContent().header("Location", getRedirectUri(uriInfo, detector.getName())).build();
+            return Response.accepted().header("Location", getRedirectUri(uriInfo, detector.getName())).build();
         } finally {
             writeUnlock();
         }
@@ -407,7 +407,7 @@ public class ForeignSourceRestService extends OnmsRestService {
             fs.updateDateStamp();
             fs.addPolicy(policy);
             m_pendingForeignSourceRepository.save(fs);
-            return Response.noContent().header("Location", getRedirectUri(uriInfo, policy.getName())).build();
+            return Response.accepted().header("Location", getRedirectUri(uriInfo, policy.getName())).build();
         } finally {
             writeUnlock();
         }
@@ -448,7 +448,7 @@ public class ForeignSourceRestService extends OnmsRestService {
                 LOG.debug("updateForeignSource: foreign source {} updated", foreignSource);
                 fs.updateDateStamp();
                 m_pendingForeignSourceRepository.save(fs);
-                return Response.noContent().header("Location", getRedirectUri(uriInfo)).build();
+                return Response.accepted().header("Location", getRedirectUri(uriInfo)).build();
             } else {
                 return Response.notModified().build();
             }
@@ -472,7 +472,7 @@ public class ForeignSourceRestService extends OnmsRestService {
             ForeignSource fs = getForeignSource(foreignSource);
             LOG.debug("deletePendingForeignSource: deleting foreign source {}", foreignSource);
             m_pendingForeignSourceRepository.delete(fs);
-            return Response.noContent().build();
+            return Response.accepted().build();
         } finally {
             writeUnlock();
         }
@@ -493,7 +493,7 @@ public class ForeignSourceRestService extends OnmsRestService {
             ForeignSource fs = getForeignSource(foreignSource);
             LOG.debug("deleteDeployedForeignSource: deleting foreign source {}", foreignSource);
             m_deployedForeignSourceRepository.delete(fs);
-            return Response.noContent().build();
+            return Response.accepted().build();
         } finally {
             writeUnlock();
         }
@@ -519,7 +519,7 @@ public class ForeignSourceRestService extends OnmsRestService {
                 fs.updateDateStamp();
                 fs.setDetectors(detectors);
                 m_pendingForeignSourceRepository.save(fs);
-                return Response.noContent().build();
+                return Response.accepted().build();
             }
             return Response.notModified().build();
         } finally {
@@ -547,7 +547,7 @@ public class ForeignSourceRestService extends OnmsRestService {
                 fs.updateDateStamp();
                 fs.setPolicies(policies);
                 m_pendingForeignSourceRepository.save(fs);
-                return Response.noContent().build();
+                return Response.accepted().build();
             }
             return Response.notModified().build();
         } finally {

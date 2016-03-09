@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2008-2024 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2024 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -67,9 +67,8 @@ public class ForeignSourceRestServiceIT extends AbstractSpringJerseyRestTestCase
         assertTrue(xml.contains("name=\"default\""));
         assertTrue(xml.contains("ICMP"));
 
-        // TODO: If we try to delete the default foreign source, it should fail
-        sendRequest(DELETE, url, 204);
-        sendRequest(DELETE, "/foreignSources/deployed/default", 204);
+        sendRequest(DELETE, url, 202);
+        sendRequest(DELETE, "/foreignSources/deployed/default", 202);
     }
     
     @Test
@@ -94,17 +93,19 @@ public class ForeignSourceRestServiceIT extends AbstractSpringJerseyRestTestCase
         assertEquals(xml, "1", xml);
 
         url = "/foreignSources/test";
-        sendPut(url, "scanInterval=1h", 204, "/foreignSources/test");
+        sendPut(url, "scanInterval=1h", 202, "/foreignSources/test");
         xml = sendRequest(GET, url, 200);
         assertTrue(xml.contains("<scan-interval>1h</scan-interval>"));
         
         url = "/foreignSources/test";
-        sendPut(url, "scanInterval=1h", 204, "/foreignSources/test");
-        sendRequest(DELETE, url, 204);
+        sendPut(url, "scanInterval=1h", 202, "/foreignSources/test");
+        sendRequest(DELETE, url, 202);
+        Thread.sleep(2000); // To avoid race-conditions on Bamboo machines
         xml = sendRequest(GET, url, 200);
         assertTrue(xml.contains("<scan-interval>1d</scan-interval>"));
         
-        sendRequest(DELETE, url, 204);
+        sendRequest(DELETE, url, 202);
+        Thread.sleep(2000);  // To avoid race-conditions on Bamboo machines
         xml = sendRequest(GET, url, 200);
         assertTrue(xml.contains("<scan-interval>1d</scan-interval>"));
     }
@@ -123,7 +124,7 @@ public class ForeignSourceRestServiceIT extends AbstractSpringJerseyRestTestCase
         xml = sendRequest(GET, url, 200);
         assertTrue(xml, xml.contains("org.opennms.netmgt.provision.detector.simple.HttpDetector"));
 
-        xml = sendRequest(DELETE, url, 204);
+        xml = sendRequest(DELETE, url, 202);
         xml = sendRequest(GET, url, 404);
     }
 
@@ -142,7 +143,7 @@ public class ForeignSourceRestServiceIT extends AbstractSpringJerseyRestTestCase
         xml = sendRequest(GET, url, 200);
         assertTrue(xml, xml.contains("org.opennms.netmgt.provision.persist.policies.InclusiveInterfacePolicy"));
         
-        xml = sendRequest(DELETE, url, 204);
+        xml = sendRequest(DELETE, url, 202);
         xml = sendRequest(GET, url, 404);
     }
 
@@ -164,7 +165,7 @@ public class ForeignSourceRestServiceIT extends AbstractSpringJerseyRestTestCase
                     "<policy name=\"all-ipinterfaces\" class=\"org.opennms.netmgt.provision.persist.policies.InclusiveInterfacePolicy\" />" +
                 "</policies>" +
             "</foreign-source>";
-        MockHttpServletResponse response = sendPost("/foreignSources", fs, 204, "/foreignSources/test");
+        MockHttpServletResponse response = sendPost("/foreignSources", fs, 202, "/foreignSources/test");
         System.err.println("response = " + stringifyResponse(response));
     }
     
