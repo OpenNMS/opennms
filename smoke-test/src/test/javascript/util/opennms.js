@@ -473,7 +473,7 @@ OpenNMS.prototype.createEvent = function(ev) {
 		},
 		data: ev
 	}, function(response) {
-		if (response.status !== 200) {
+		if (response.status !== 204) {
 			console.log('* OpenNMS.createEvent: unexpected response: ' + JSON.stringify(response));
 			throw new CasperError('Creation of event ' + ev.uei + ' failed.');
 		}
