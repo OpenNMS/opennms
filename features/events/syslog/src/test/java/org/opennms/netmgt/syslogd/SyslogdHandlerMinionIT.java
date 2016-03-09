@@ -111,7 +111,7 @@ public class SyslogdHandlerMinionIT extends CamelBlueprintTestSupport {
 	@Test
 	public void testSyslogd() throws Exception {
 		// Expect one SyslogConnection message to be broadcast on the messaging channel
-		MockEndpoint broadcastSyslog = getMockEndpoint("mock:activemq:broadcastSyslog");
+		MockEndpoint broadcastSyslog = getMockEndpoint("mock:activemq:broadcastSyslog", false);
 		broadcastSyslog.setExpectedMessageCount(1);
 
 		// Create a mock SyslogdConfig

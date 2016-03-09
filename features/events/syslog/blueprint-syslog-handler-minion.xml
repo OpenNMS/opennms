@@ -25,13 +25,9 @@
 
 	<service interface="org.opennms.netmgt.syslogd.SyslogConnectionHandler" ref="syslogConnectionHandlerCamel"/>
 
-	<bean id="syslogConnectionClass" class="java.lang.Class" factory-method="forName">
-		<argument value="org.opennms.netmgt.syslogd.SyslogConnection" />
-	</bean>
-
 	<!-- Camel Event marshalling processor -->
 	<bean id="marshaller" class="org.opennms.core.camel.JaxbUtilsMarshalProcessor">
-		<argument ref="syslogConnectionClass" />
+		<argument value="org.opennms.netmgt.syslogd.SyslogConnection" />
 	</bean>
 
 	<bean id="activemq" class="org.apache.activemq.camel.component.ActiveMQComponent">

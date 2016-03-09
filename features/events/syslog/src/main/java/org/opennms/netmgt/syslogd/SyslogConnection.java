@@ -28,7 +28,6 @@
 
 package org.opennms.netmgt.syslogd;
 
-import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
