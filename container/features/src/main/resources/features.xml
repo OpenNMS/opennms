@@ -42,7 +42,9 @@
       <feature>camel-blueprint</feature>
       <feature>camel-http</feature>
       <feature>camel-amqp</feature>
-      <bundle dependency="true">mvn:org.opennms.core/org.opennms.core.camel/${project.version}</bundle>
+
+      <feature>opennms-core-camel</feature>
+
       <bundle>mvn:org.opennms.features.amqp/org.opennms.features.amqp.common/${project.version}</bundle>
       <bundle>mvn:org.opennms.features.amqp/org.opennms.features.amqp.event-forwarder/${project.version}</bundle>
     </feature>
@@ -52,9 +54,23 @@
       <feature>camel-blueprint</feature>
       <feature>camel-http</feature>
       <feature>camel-amqp</feature>
-      <bundle dependency="true">mvn:org.opennms.core/org.opennms.core.camel/${project.version}</bundle>
+
+      <feature>opennms-core-camel</feature>
+
       <bundle>mvn:org.opennms.features.amqp/org.opennms.features.amqp.common/${project.version}</bundle>
       <bundle>mvn:org.opennms.features.amqp/org.opennms.features.amqp.event-receiver/${project.version}</bundle>
+    </feature>
+
+    <feature name="opennms-amqp-alarm-northbounder" description="OpenNMS :: Features :: AMQP :: Alarm Northbounder" version="${project.version}">
+      <feature>camel-core</feature>
+      <feature>camel-blueprint</feature>
+      <feature>camel-http</feature>
+      <feature>camel-amqp</feature>
+
+      <feature>opennms-core-camel</feature>
+
+      <bundle>mvn:org.opennms.features.amqp/org.opennms.features.amqp.common/${project.version}</bundle>
+      <bundle>mvn:org.opennms.features.amqp/org.opennms.features.amqp.alarm-northbounder/${project.version}</bundle>
     </feature>
 
     <!-- need to override camel-elasticsearch because it pulls an elasticsearch version that does not work -->
@@ -81,9 +97,11 @@
       <feature>camel-core</feature>
       <feature>camel-blueprint</feature>
       <feature>camel-http</feature>
+
       <feature>onms-camel-elasticsearch</feature>
+      <feature>opennms-core-camel</feature>
+
       <bundle>mvn:com.google.guava/guava/17.0</bundle>
-      <bundle>mvn:org.opennms.core/org.opennms.core.camel/${project.version}</bundle>
       <bundle>mvn:org.opennms.features.elasticsearch/org.opennms.features.elasticsearch.event-forwarder/${project.version}</bundle>
     </feature>
 
@@ -664,7 +682,9 @@
     <feature name="opennms-syslogd" description="OpenNMS :: Syslogd" version="${project.version}">
       <feature version="[4.0,4.1)">spring</feature>
       <feature>camel-core</feature>
+      <feature>camel-http</feature>
       <feature>camel-netty</feature>
+      <feature>activemq-camel</feature>
 
       <feature>dropwizard-metrics</feature>
       <feature>lmax-disruptor</feature>
@@ -679,62 +699,59 @@
       <bundle>mvn:org.opennms.features.events/org.opennms.features.events.syslog/${project.version}</bundle>
     </feature>
 
-    <feature name="opennms-syslogd-handler-kafka" description="OpenNMS :: Syslogd :: Handler :: Kafka" version="${project.version}">
+    <feature name="opennms-syslogd-listener-javanet" description="OpenNMS :: Syslogd :: Listener :: java.net" version="${project.version}">
+      <configfile override="true" finalname="/etc/blueprint-syslog-listener-javanet.xml">mvn:org.opennms.features.events/org.opennms.features.events.syslog/${project.version}/xml/blueprint-syslog-listener-javanet</configfile>
+
+      <feature>camel-blueprint</feature>
       <feature>opennms-syslogd</feature>
 
-      <configfile override="true" finalname="/etc/blueprint-syslog-handler-kafka.xml">
-        mvn:org.opennms.features.events/org.opennms.features.events.syslog/${project.version}/xml/blueprint-syslog-handler-kafka
-      </configfile>
-      <bundle>blueprint:file:etc/blueprint-syslog-handler-kafka.xml</bundle>
-    </feature>
-
-    <!-- TODO -->
-    <feature name="opennms-syslogd-handler-minion" description="OpenNMS :: Syslogd :: Handler :: Minion" version="${project.version}">
-      <feature>opennms-syslogd</feature>
-
-      <configfile override="true" finalname="/etc/blueprint-syslog-handler-minion.xml">
-        mvn:org.opennms.features.events/org.opennms.features.events.syslog/${project.version}/xml/blueprint-syslog-handler-minion
-      </configfile>
-      <bundle>blueprint:file:etc/blueprint-syslog-handler-minion.xml</bundle>
-    </feature>
-
-    <!-- TODO -->
-    <feature name="opennms-syslogd-handler-default" description="OpenNMS :: Syslogd :: Handler :: Default" version="${project.version}">
-      <feature>opennms-syslogd</feature>
-
-      <configfile override="true" finalname="/etc/blueprint-syslog-handler-default.xml">
-        mvn:org.opennms.features.events/org.opennms.features.events.syslog/${project.version}/xml/blueprint-syslog-handler-default
-      </configfile>
-      <bundle>blueprint:file:etc/blueprint-syslog-handler-default.xml</bundle>
-    </feature>
-
-    <feature name="opennms-syslogd-receiver-javanet" description="OpenNMS :: Syslogd :: Receiver :: java.net" version="${project.version}">
-      <feature>opennms-syslogd</feature>
-
-      <configfile override="true" finalname="/etc/blueprint-syslog-listener-javanet.xml">
-        mvn:org.opennms.features.events/org.opennms.features.events.syslog/${project.version}/xml/blueprint-syslog-listener-javanet
-      </configfile>
       <bundle>blueprint:file:etc/blueprint-syslog-listener-javanet.xml</bundle>
     </feature>
 
-    <!-- TODO -->
-    <feature name="opennms-syslogd-receiver-camel-netty" description="OpenNMS :: Syslogd :: Receiver :: Camel :: Netty" version="${project.version}">
+		<feature name="opennms-syslogd-listener-camel-netty" description="OpenNMS :: Syslogd :: Listener :: camel-netty" version="${project.version}">
+      <configfile override="true" finalname="/etc/blueprint-syslog-listener-camel-netty.xml">mvn:org.opennms.features.events/org.opennms.features.events.syslog/${project.version}/xml/blueprint-syslog-listener-camel-netty</configfile>
+
+      <feature>camel-blueprint</feature>
       <feature>opennms-syslogd</feature>
 
-      <configfile override="true" finalname="/etc/blueprint-syslog-listener-camel-netty.xml">
-        mvn:org.opennms.features.events/org.opennms.features.events.syslog/${project.version}/xml/blueprint-syslog-listener-camel-netty
-      </configfile>
       <bundle>blueprint:file:etc/blueprint-syslog-listener-camel-netty.xml</bundle>
     </feature>
 
-    <!-- TODO -->
-    <feature name="opennms-syslogd-receiver-nio" description="OpenNMS :: Syslogd :: Receiver :: NIO" version="${project.version}">
+    <feature name="opennms-syslogd-listener-nio" description="OpenNMS :: Syslogd :: Listener :: NIO" version="${project.version}">
+      <configfile override="true" finalname="/etc/blueprint-syslog-listener-nio.xml">mvn:org.opennms.features.events/org.opennms.features.events.syslog/${project.version}/xml/blueprint-syslog-listener-nio</configfile>
+
+      <feature>camel-blueprint</feature>
       <feature>opennms-syslogd</feature>
 
-      <configfile override="true" finalname="/etc/blueprint-syslog-listener-nio.xml">
-        mvn:org.opennms.features.events/org.opennms.features.events.syslog/${project.version}/xml/blueprint-syslog-listener-nio
-      </configfile>
       <bundle>blueprint:file:etc/blueprint-syslog-listener-nio.xml</bundle>
+    </feature>
+
+    <!-- TODO: Rename this. It's more of an Dominion-side syslog connection handler... -->
+    <feature name="opennms-syslogd-handler-default" description="OpenNMS :: Syslogd :: Handler :: Default" version="${project.version}">
+      <configfile override="true" finalname="/etc/blueprint-syslog-handler-default.xml">mvn:org.opennms.features.events/org.opennms.features.events.syslog/${project.version}/xml/blueprint-syslog-handler-default</configfile>
+
+      <feature>camel-blueprint</feature>
+      <feature>opennms-syslogd</feature>
+
+      <bundle>blueprint:file:etc/blueprint-syslog-handler-default.xml</bundle>
+    </feature>
+
+    <feature name="opennms-syslogd-handler-minion" description="OpenNMS :: Syslogd :: Handler :: Minion" version="${project.version}">
+      <configfile override="true" finalname="/etc/blueprint-syslog-handler-minion.xml">mvn:org.opennms.features.events/org.opennms.features.events.syslog/${project.version}/xml/blueprint-syslog-handler-minion</configfile>
+
+      <feature>camel-blueprint</feature>
+      <feature>opennms-syslogd</feature>
+
+      <bundle>blueprint:file:etc/blueprint-syslog-handler-minion.xml</bundle>
+    </feature>
+
+    <feature name="opennms-syslogd-handler-kafka" description="OpenNMS :: Syslogd :: Handler :: Kafka" version="${project.version}">
+      <configfile override="true" finalname="/etc/blueprint-syslog-handler-kafka.xml">mvn:org.opennms.features.events/org.opennms.features.events.syslog/${project.version}/xml/blueprint-syslog-handler-kafka</configfile>
+
+      <feature>camel-blueprint</feature>
+      <feature>opennms-syslogd</feature>
+
+      <bundle>blueprint:file:etc/blueprint-syslog-handler-kafka.xml</bundle>
     </feature>
 
     <feature name="opennms-webapp" description="OpenNMS :: Webapp" version="${project.version}">
