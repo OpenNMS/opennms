@@ -33,7 +33,7 @@
         @XmlNs(prefix="", namespaceURI="http://xmlns.opennms.org/xsd/config/monitoring-locations")
     }
 )
-package org.opennms.netmgt.config.monitoringLocations;
+package org.opennms.netmgt.model.monitoringLocations;
 import javax.xml.bind.annotation.XmlNs;
 import javax.xml.bind.annotation.XmlSchema;
 

@@ -49,7 +49,6 @@ import org.joda.time.Duration;
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.api.DiscoveryConfigurationFactory;
-import org.opennms.netmgt.config.monitoringLocations.LocationDef;
 import org.opennms.netmgt.dao.api.CategoryDao;
 import org.opennms.netmgt.dao.api.DistPollerDao;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
@@ -82,6 +81,7 @@ import org.opennms.netmgt.model.events.DeleteEventVisitor;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventUtils;
 import org.opennms.netmgt.model.events.UpdateEventVisitor;
+import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 import org.opennms.netmgt.provision.IpInterfacePolicy;
 import org.opennms.netmgt.provision.NodePolicy;
 import org.opennms.netmgt.provision.ServiceDetector;
@@ -707,11 +707,11 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
     }
 
     @Override
-    public LocationDef createLocationIfNecessary(final String locationName) {
+    public OnmsMonitoringLocation createLocationIfNecessary(final String locationName) {
         if (locationName == null) {
             return createLocationIfNecessary("localhost");
         } else {
-            LocationDef location = new LocationDef();
+            OnmsMonitoringLocation location = new OnmsMonitoringLocation();
             location.setLocationName(locationName);
             // NMS-7968: Set monitoring area too because it is a non-null field
             location.setMonitoringArea(locationName);
@@ -719,16 +719,16 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
         }
     }
 
-    public LocationDef createLocationDefIfNecessary(final LocationDef location) {
-        return new CreateIfNecessaryTemplate<LocationDef, MonitoringLocationDao>(m_transactionManager, m_monitoringLocationDao) {
+    public OnmsMonitoringLocation createLocationDefIfNecessary(final OnmsMonitoringLocation location) {
+        return new CreateIfNecessaryTemplate<OnmsMonitoringLocation, MonitoringLocationDao>(m_transactionManager, m_monitoringLocationDao) {
 
             @Override
-            protected LocationDef query() {
+            protected OnmsMonitoringLocation query() {
                 return m_dao.get(location.getLocationName());
             }
 
             @Override
-            public LocationDef doInsert() {
+            public OnmsMonitoringLocation doInsert() {
                 m_dao.save(location);
                 m_dao.flush();
                 return location;

@@ -56,7 +56,6 @@ import org.opennms.features.poller.remote.gwt.client.location.LocationDetails;
 import org.opennms.features.poller.remote.gwt.client.location.LocationInfo;
 import org.opennms.features.poller.remote.gwt.client.utils.Interval;
 import org.opennms.features.poller.remote.gwt.client.utils.IntervalUtils;
-import org.opennms.netmgt.config.monitoringLocations.LocationDef;
 import org.opennms.netmgt.dao.api.ApplicationDao;
 import org.opennms.netmgt.dao.api.DistPollerDao;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
@@ -70,6 +69,7 @@ import org.opennms.netmgt.model.OnmsApplication;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsLocationMonitor;
 import org.opennms.netmgt.model.OnmsLocationMonitor.MonitorStatus;
+import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsServiceType;
@@ -153,7 +153,7 @@ public class LocationDataServiceIT implements TemporaryDatabaseAware<TemporaryDa
         p.setProperty("log4j.logger.org.hibernate.SQL", "DEBUG");
         MockLogAppender.setupLogging(p);
 
-        LocationDef location = new LocationDef("RDU", "East Coast", new String[] { "example1" }, new String[0], "Research Triangle Park, NC", 35.715751f, -79.16262f, 1L, "odd");
+        OnmsMonitoringLocation location = new OnmsMonitoringLocation("RDU", "East Coast", new String[] { "example1" }, new String[0], "Research Triangle Park, NC", 35.715751f, -79.16262f, 1L, "odd");
         m_monitoringLocationDao.saveOrUpdate(location);
 
         OnmsApplication app = new OnmsApplication();

@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.config.monitoringLocations;
+package org.opennms.netmgt.model.monitoringLocations;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -73,7 +73,7 @@ import org.apache.commons.lang.builder.EqualsBuilder;
 @Table(name="monitoringLocations")
 @XmlRootElement(name="location")
 @XmlAccessorType(XmlAccessType.NONE)
-public class LocationDef implements Serializable {
+public class OnmsMonitoringLocation implements Serializable {
     private static final long serialVersionUID = -7651610012389148818L;
 
     /**
@@ -131,7 +131,7 @@ public class LocationDef implements Serializable {
     @XmlElement(name="tag")
     private List<String> m_tags;
 
-    public LocationDef() {
+    public OnmsMonitoringLocation() {
         super();
     }
 
@@ -142,11 +142,11 @@ public class LocationDef implements Serializable {
      * @param monitoringArea
      * @param pollingPackageName
      */
-    public LocationDef(final String locationName, final String monitoringArea, final String pollingPackageName) {
+    public OnmsMonitoringLocation(final String locationName, final String monitoringArea, final String pollingPackageName) {
         this(locationName, monitoringArea, null, new String[] { pollingPackageName }, null, null, null, 100L);
     }
 
-    public LocationDef(final String locationName, final String monitoringArea, final String[] pollingPackageNames, final String[] collectionPackageNames, final String geolocation, final Float latitude, final Float longitude, final Long priority, final String... tags) {
+    public OnmsMonitoringLocation(final String locationName, final String monitoringArea, final String[] pollingPackageNames, final String[] collectionPackageNames, final String geolocation, final Float latitude, final Float longitude, final Long priority, final String... tags) {
         m_locationName = locationName;
         m_monitoringArea = monitoringArea;
         m_pollingPackageNames = (pollingPackageNames == null ? null : Arrays.asList(pollingPackageNames));
@@ -286,10 +286,10 @@ public class LocationDef implements Serializable {
         if (this == obj) {
             return true;
         }
-        if (!(obj instanceof LocationDef)) {
+        if (!(obj instanceof OnmsMonitoringLocation)) {
             return false;
         }
-        final LocationDef other = (LocationDef) obj;
+        final OnmsMonitoringLocation other = (OnmsMonitoringLocation) obj;
         return new EqualsBuilder()
             .append(getLatitude(), other.getLatitude())
             .append(getLongitude(), other.getLongitude())
@@ -305,7 +305,7 @@ public class LocationDef implements Serializable {
 
     @Override
     public String toString() {
-        return "LocationDef [location-name=" + m_locationName +
+        return "OnmsMonitoringLocation [location-name=" + m_locationName +
                 ", monitoring-area=" + m_monitoringArea +
                 ", polling-package-names=" + m_pollingPackageNames +
                 ", collection-package-names=" + m_collectionPackageNames +
