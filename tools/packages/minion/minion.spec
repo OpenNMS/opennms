@@ -131,6 +131,7 @@ echo "minion-core" > $RPM_BUILD_ROOT%{minioninstprefix}/etc/featuresBoot.d/core.
 mkdir -p $RPM_BUILD_ROOT%{minionrepoprefix}/default
 tar zxvf $RPM_BUILD_DIR/%{_name}-%{version}-%{release}/features/minion/repository/target/repository-*-repo.tar.gz -C $RPM_BUILD_ROOT%{minionrepoprefix}/default
 echo "# Default Minion Features" > $RPM_BUILD_ROOT%{minioninstprefix}/etc/featuresBoot.d/default.boot
+echo "opennms-discoverer" >> $RPM_BUILD_ROOT%{minioninstprefix}/etc/featuresBoot.d/default.boot
 
 # container package files
 find $RPM_BUILD_ROOT%{minioninstprefix} ! -type d | \
