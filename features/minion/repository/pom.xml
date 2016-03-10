@@ -39,7 +39,7 @@
                             <!-- To ensure that all JAR files for a feature 
                                 are included in the repository tar.gz file, add the feature to this list. -->
                             <features>
-                                <feature>opennms-icmp-api</feature>
+                                <feature>opennms-discoverer</feature>
                             </features>
                             <repository>target/maven-repo</repository>
                         </configuration>
