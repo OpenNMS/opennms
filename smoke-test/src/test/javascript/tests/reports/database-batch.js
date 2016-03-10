@@ -3,7 +3,7 @@
 var opennms = require('../../util/opennms')(casper),
 	utils = require('utils');
 
-casper.test.begin('Database Batch Reports', 8, {
+casper.test.begin('Database Batch Reports', {
 	setUp: function() {
 		opennms.initialize();
 		opennms.login();
