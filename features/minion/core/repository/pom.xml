@@ -3,7 +3,7 @@
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
         <groupId>org.opennms.features.minion</groupId>
-        <artifactId>minion-parent</artifactId>
+        <artifactId>core-parent</artifactId>
         <version>18.0.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>

@@ -68,12 +68,6 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.opennms.features.minion</groupId>
-            <artifactId>features</artifactId>
-            <version>${project.version}</version>
-            <type>xml</type>
-        </dependency>
-        <dependency>
             <groupId>org.opennms.karaf</groupId>
             <artifactId>opennms</artifactId>
             <version>${project.version}</version>
