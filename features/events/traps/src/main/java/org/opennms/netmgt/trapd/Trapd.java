@@ -88,11 +88,6 @@ public class Trapd extends AbstractServiceDaemon implements TrapProcessorFactory
     private int m_status = START_PENDING;
 
     /**
-     * The thread pool that processes traps
-     */
-    private ExecutorService m_backlogQ;
-
-    /**
      * The queue processing thread
      */
     @Autowired
@@ -146,6 +141,7 @@ public class Trapd extends AbstractServiceDaemon implements TrapProcessorFactory
     }
 
     /** {@inheritDoc} */
+    // TODO: HZN-609: Move this method into TrapReceiverSnmp4jImpl
     @Override
     public void trapReceived(TrapNotification trapNotification) {
         m_backlogQ.submit(m_processorFactory.getInstance(trapNotification));
@@ -157,8 +153,6 @@ public class Trapd extends AbstractServiceDaemon implements TrapProcessorFactory
     @Override
     public synchronized void onInit() {
         BeanUtils.assertAutowiring(this);
-
-        Assert.state(m_backlogQ != null, "backlogQ must be set");
 
         try {
             m_trapdIpMgr.dataSourceSync();
@@ -288,8 +282,6 @@ public class Trapd extends AbstractServiceDaemon implements TrapProcessorFactory
 
         LOG.debug("stop: Stopping queue processor.");
 
-        m_backlogQ.shutdown();
-
         m_eventReader.close();
 
         m_status = STOPPED;
@@ -308,6 +300,7 @@ public class Trapd extends AbstractServiceDaemon implements TrapProcessorFactory
     }
 
     /** {@inheritDoc} */
+    // TODO: HZN-609: Move this method into TrapReceiverSnmp4jImpl
     @Override
     public void trapError(final int error, final String msg) {
         LOG.warn("Error Processing Received Trap: error = {} {}", error, (msg != null ? ", ref = " + msg : ""));
@@ -329,24 +322,6 @@ public class Trapd extends AbstractServiceDaemon implements TrapProcessorFactory
      */
     public void setEventReader(BroadcastEventProcessor eventReader) {
         m_eventReader = eventReader;
-    }
-
-    /**
-     * <p>getBacklogQ</p>
-     *
-     * @return a {@link java.util.concurrent.ExecutorService} object.
-     */
-    public ExecutorService getBacklogQ() {
-        return m_backlogQ;
-    }
-
-    /**
-     * <p>setBacklogQ</p>
-     *
-     * @param backlogQ a {@link java.util.concurrent.ExecutorService} object.
-     */
-    public void setBacklogQ(ExecutorService backlogQ) {
-        m_backlogQ = backlogQ;
     }
 
     public static String getLoggingCategory() {

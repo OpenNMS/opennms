@@ -21,7 +21,6 @@
   
   <bean id="daemon" class="org.opennms.netmgt.trapd.Trapd">
     <property name="eventReader" ref="eventReader"/>
-    <property name="backlogQ" ref="trapdBacklogQ"/>
   </bean>
   
   <bean id="trapdIpMgr" class="org.opennms.netmgt.trapd.HibernateTrapdIpMgr"/>
@@ -29,11 +28,6 @@
   <bean id="eventReader" class="org.opennms.netmgt.trapd.BroadcastEventProcessor">
     <constructor-arg ref="eventIpcManager" />
     <constructor-arg ref="trapdIpMgr" />
-  </bean>
-  
-  <!-- Single-threaded pool that will queue and convert traps into events -->
-  <bean id="trapdBacklogQ" class="java.util.concurrent.Executors" factory-method="newFixedThreadPool">
-    <constructor-arg value="1"/>
   </bean>
   
   <bean id="processorFactory" class="org.opennms.netmgt.trapd.TrapQueueProcessorFactory">
