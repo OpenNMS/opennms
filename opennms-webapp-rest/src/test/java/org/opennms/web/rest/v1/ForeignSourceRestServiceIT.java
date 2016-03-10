@@ -150,15 +150,18 @@ public class ForeignSourceRestServiceIT extends AbstractSpringJerseyRestTestCase
 
     private void createForeignSource() throws Exception {
         // Be sure there are no foreign-sources defined
+        System.err.println("[createForeignSource] : deleting existing foreign source definitions");
         ForeignSourceCollection collection = JaxbUtils.unmarshal(ForeignSourceCollection.class, sendRequest(GET, "/foreignSources", 200));
         collection.getForeignSources().forEach(f -> {
             try {
+                System.err.printf("[createForeignSource] : deleting %s\n", f.getName());
                 sendRequest(DELETE, "/foreignSources/" + f.getName(), 202);
             } catch (Exception e) {
                 fail(e.getMessage());
             }
         });
         // Create sample foreign source
+        System.err.println("[createForeignSource] : creating sample foreign source");
         String fs =
             "<foreign-source xmlns=\"http://xmlns.opennms.org/xsd/config/foreign-source\" name=\"test\">" +
                 "<scan-interval>1d</scan-interval>" +
