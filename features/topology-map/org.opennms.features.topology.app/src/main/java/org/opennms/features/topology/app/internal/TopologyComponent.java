@@ -35,13 +35,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 
-import com.vaadin.annotations.JavaScript;
-import com.vaadin.data.Property;
-import com.vaadin.data.Property.ValueChangeEvent;
-import com.vaadin.data.Property.ValueChangeListener;
-import com.vaadin.shared.MouseEventDetails;
-import com.vaadin.ui.AbstractComponent;
-
 import org.opennms.features.topology.api.BoundingBox;
 import org.opennms.features.topology.api.Graph;
 import org.opennms.features.topology.api.GraphContainer;
@@ -60,7 +53,14 @@ import org.opennms.features.topology.app.internal.gwt.client.TopologyComponentSt
 import org.opennms.features.topology.app.internal.support.IconRepositoryManager;
 import org.slf4j.LoggerFactory;
 
-@JavaScript({"gwt/public/topologywidget/js/d3.v3.4.13.js"})
+import com.vaadin.annotations.JavaScript;
+import com.vaadin.data.Property;
+import com.vaadin.data.Property.ValueChangeEvent;
+import com.vaadin.data.Property.ValueChangeListener;
+import com.vaadin.shared.MouseEventDetails;
+import com.vaadin.ui.AbstractComponent;
+
+@JavaScript({"theme://js/d3.v3.4.13.js"})
 public class TopologyComponent extends AbstractComponent implements ChangeListener, ValueChangeListener, MapViewManagerListener {
 
     TopologyComponentServerRpc m_rpc = new TopologyComponentServerRpc(){
@@ -112,11 +112,9 @@ public class TopologyComponent extends AbstractComponent implements ChangeListen
 
             Object menuTarget = null;
             if (type.toLowerCase().equals("vertex")) {
-                String targetKey = target;
-                menuTarget = getGraph().getVertexByKey(targetKey);
+                menuTarget = getGraph().getVertexByKey(target);
             } else if (type.toLowerCase().equals("edge")) {
-                String targetKey = (String)target;
-                menuTarget = getGraph().getEdgeByKey(targetKey);
+                menuTarget = getGraph().getEdgeByKey(target);
             }
 
             m_contextMenuHandler.showContextMenu(menuTarget, x, y);
@@ -193,7 +191,7 @@ public class TopologyComponent extends AbstractComponent implements ChangeListen
 
         setScaleDataSource(m_graphContainer.getScaleProperty());
 
-        getState().setSVGDefFiles(m_iconRepoManager.getSVGIconDefs());
+        getState().setSVGDefFiles(m_iconRepoManager.getSVGIconFiles());
         updateGraph();
     }
 

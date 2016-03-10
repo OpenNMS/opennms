@@ -114,4 +114,8 @@ public interface GraphContainer extends DisplayState {
      * @return The first found criteria, or null if none is found.
      */
     <T extends Criteria> T findSingleCriteria(Class<T> criteriaType);
+
+    IconManager getIconManager();
+
+    void setIconManager(IconManager iconManager);
 }

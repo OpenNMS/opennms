@@ -44,6 +44,7 @@ import org.opennms.features.topology.api.AutoRefreshSupport;
 import org.opennms.features.topology.api.Graph;
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.GraphVisitor;
+import org.opennms.features.topology.api.IconManager;
 import org.opennms.features.topology.api.Layout;
 import org.opennms.features.topology.api.LayoutAlgorithm;
 import org.opennms.features.topology.api.MapViewManager;
@@ -473,6 +474,16 @@ public class OSGiVerticesUpdateManagerTest {
         @Override
         public <T extends Criteria> T findSingleCriteria(Class<T> criteriaType) {
             return null;
+        }
+
+        @Override
+        public IconManager getIconManager() {
+            return null;
+        }
+
+        @Override
+        public void setIconManager(IconManager iconManager) {
+
         }
     }
 }

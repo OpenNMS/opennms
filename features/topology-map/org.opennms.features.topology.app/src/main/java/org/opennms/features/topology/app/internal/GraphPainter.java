@@ -132,11 +132,15 @@ public class GraphPainter extends BaseGraphVisitor {
 		v.setSelected(isSelected(m_graphContainer.getSelectionManager(), vertex));
         v.setStatus(getStatus(vertex));
         v.setStatusCount(getStatusCount(vertex));
-        v.setSVGIconId(m_iconRepoManager.findSVGIconIdByKey(vertex.getIconKey()));
+        v.setSVGIconId(getIconId(vertex));
 		v.setLabel(vertex.getLabel());
 		v.setTooltipText(getTooltipText(vertex));
         v.setStyleName(getVertexStyle(vertex));
 		m_vertices.add(v);
+	}
+
+	private String getIconId(Vertex vertex) {
+		return m_iconRepoManager.getSVGIconId(vertex);
 	}
 
     private String getVertexStyle(Vertex vertex) {
