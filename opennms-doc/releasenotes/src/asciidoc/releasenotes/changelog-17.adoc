@@ -5,10 +5,7 @@
 Release 17.1.1 is the latest stable release of OpenNMS.  It contains a number of bug fixes and a few other changes.
 For a high-level overview of what's changed in OpenNMS 17, see <<releasenotes-17, major changes in OpenNMS 17>>.
 
-The codename for 17.1.1 is _Talisker_.
-
-[releasenotes-changelog-17.1.1]
-==== Release 17.1.1
+The codename for 17.1.1 is _Glenmorangie_.
 
 ===== Enhancement
 
