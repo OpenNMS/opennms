@@ -13,23 +13,11 @@
 		http://aries.apache.org/schemas/blueprint-ext/blueprint-ext-1.1.xsd
 ">
 
-	<!-- Configuration properties -->
-	<!-- 
-		update-strategy="reload" causes unit test failures because the Blueprint context
-		can be destroyed and recreated by CM properties updates while the Camel context
-		is initializing:
-
-		https://issues.apache.org/jira/browse/ARIES-961
-	-->
-	<cm:property-placeholder id="discovererDistPollerProperties" persistent-id="org.opennms.minion.controller" placeholder-prefix="[[" placeholder-suffix="]]" update-strategy="none">
-		<!-- TODO: Should there be any defaults here? -->
-	</cm:property-placeholder>
+    <reference id="minionIdentity" interface="org.opennms.minion.core.api.MinionIdentity"/>
 
 	<!-- Create a DistPollerDao that can be used to access information about the Minion system -->
 	<bean id="distPollerDaoMinion" class="org.opennms.netmgt.discovery.DistPollerDaoMinion">
-		<argument value="[[id]]"/>
-		<argument value="[[id]]"/>
-		<argument value="[[location]]"/>
+		<argument ref="minionIdentity"/>
 	</bean>
 
 	<!-- DistPollerDao -->
