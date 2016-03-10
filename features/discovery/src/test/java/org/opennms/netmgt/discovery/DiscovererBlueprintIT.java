@@ -33,10 +33,10 @@ import java.util.Map;
 import java.util.Properties;
 
 import org.apache.activemq.broker.BrokerService;
+import org.apache.camel.Component;
+import org.apache.camel.component.seda.SedaComponent;
 import org.apache.camel.test.blueprint.CamelBlueprintTestSupport;
 import org.apache.camel.util.KeyValueHolder;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
@@ -49,6 +49,7 @@ import org.opennms.netmgt.dao.mock.MockEventIpcManager;
 import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.events.api.EventIpcManager;
 import org.opennms.netmgt.icmp.Pinger;
+import org.opennms.netmgt.model.OnmsDistPoller;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.test.context.ContextConfiguration;
@@ -61,8 +62,6 @@ public class DiscovererBlueprintIT extends CamelBlueprintTestSupport {
     private static final MockEventIpcManager IPC_MANAGER_INSTANCE = new MockEventIpcManager();
 
     private static final String LOCATION = "RDU";
-
-    private static BrokerService m_broker = null;
 
     /**
      * Use Aries Blueprint synchronous mode to avoid a blueprint deadlock bug.
@@ -112,11 +111,11 @@ public class DiscovererBlueprintIT extends CamelBlueprintTestSupport {
         services.put( EventIpcManager.class.getName(),
                 new KeyValueHolder<Object, Dictionary>( IPC_MANAGER_INSTANCE, new Properties() ) );
 
-        DistPollerDao distPollerDao = new DistPollerDaoMinion(
-            DistPollerDao.DEFAULT_DIST_POLLER_ID,
-            DistPollerDao.DEFAULT_DIST_POLLER_ID,
-            LOCATION
-        );
+        OnmsDistPoller distPoller = new OnmsDistPoller();
+        distPoller.setId(DistPollerDao.DEFAULT_DIST_POLLER_ID);
+        distPoller.setLabel(DistPollerDao.DEFAULT_DIST_POLLER_ID);
+        distPoller.setLocation(LOCATION);
+        DistPollerDao distPollerDao = new DistPollerDaoMinion(distPoller);
 
         services.put( DistPollerDao.class.getName(),
                 new KeyValueHolder<Object, Dictionary>(distPollerDao, new Properties() ) );
@@ -133,6 +132,9 @@ public class DiscovererBlueprintIT extends CamelBlueprintTestSupport {
 
         services.put( DiscoveryConfigurationFactory.class.getName(),
                 new KeyValueHolder<Object, Dictionary>(configFactory, new Properties() ) );
+
+        services.put( Component.class.getName(),
+                new KeyValueHolder<Object, Dictionary>( new SedaComponent(), new Properties() ) );
     }
 
     // The location of our Blueprint XML file to be used for testing
@@ -140,20 +142,6 @@ public class DiscovererBlueprintIT extends CamelBlueprintTestSupport {
     protected String getBlueprintDescriptor()
     {
         return "file:blueprint-discoverer.xml";
-    }
-
-    @BeforeClass
-    public static void startActiveMQ() throws Exception {
-        m_broker = new BrokerService();
-        m_broker.addConnector("tcp://127.0.0.1:61616");
-        m_broker.start();
-    }
-
-    @AfterClass
-    public static void stopActiveMQ() throws Exception {
-        if (m_broker != null) {
-            m_broker.stop();
-        }
     }
 
     @Test

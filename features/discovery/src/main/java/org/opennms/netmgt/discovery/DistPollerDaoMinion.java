@@ -31,8 +31,10 @@ package org.opennms.netmgt.discovery;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 import org.opennms.core.criteria.Criteria;
+import org.opennms.minion.core.api.MinionIdentity;
 import org.opennms.netmgt.dao.api.DistPollerDao;
 import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.netmgt.model.OnmsMonitoringSystem;
@@ -47,12 +49,17 @@ public class DistPollerDaoMinion implements DistPollerDao {
 
 	private final OnmsDistPoller m_distPoller;
 
-	public DistPollerDaoMinion(String id, String label, String location) {
+    public DistPollerDaoMinion(OnmsDistPoller distPoller) {
+        m_distPoller = Objects.requireNonNull(distPoller);
+    }
+
+	public DistPollerDaoMinion(MinionIdentity identity) {
+	    Objects.requireNonNull(identity);
 		m_distPoller = new OnmsDistPoller();
-		m_distPoller.setId(id);
-		m_distPoller.setLabel(label);
+		m_distPoller.setId(identity.getId());
+		m_distPoller.setLabel(identity.getId());
 		m_distPoller.setLastUpdated(new Date());
-		m_distPoller.setLocation(location);
+		m_distPoller.setLocation(identity.getLocation());
 		m_distPoller.setType(OnmsMonitoringSystem.TYPE_MINION);
 	}
 
