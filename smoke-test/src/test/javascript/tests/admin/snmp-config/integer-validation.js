@@ -102,7 +102,7 @@ var testInvalidIp = function(first, last, error) {
 	});
 };
 
-casper.test.begin('Configure SNMP Community Names by IP Address > Integer Validation', 28, {
+casper.test.begin('Configure SNMP Community Names by IP Address > Integer Validation', {
 	setUp: function() {
 		opennms.initialize();
 		opennms.login();

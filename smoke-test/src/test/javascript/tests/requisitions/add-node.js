@@ -8,7 +8,7 @@ var foreignId = 'localNode';
 var nodeLabel = 'localNode';
 var ipAddress = '127.0.0.1';
 
-casper.test.begin('Add Node to Requisition', 9, {
+casper.test.begin('Add Node to Requisition', {
 	setUp: function() {
 		opennms.initialize();
 		opennms.login();
