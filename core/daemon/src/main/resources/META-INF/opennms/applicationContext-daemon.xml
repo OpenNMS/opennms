@@ -29,4 +29,9 @@
   <onmsgi:reference id="eventProxy" interface="org.opennms.netmgt.events.api.EventProxy"/>
   <onmsgi:reference id="eventSubscriptionService" interface="org.opennms.netmgt.events.api.EventSubscriptionService"/>
 
+  <!-- Start an ActiveMQ broker based on the opennms-activemq.xml config file -->
+  <bean id="brokerFactory" class="org.apache.activemq.xbean.BrokerFactoryBean">
+    <constructor-arg value="file:${opennms.home}/etc/opennms-activemq.xml" />
+  </bean>
+
 </beans>

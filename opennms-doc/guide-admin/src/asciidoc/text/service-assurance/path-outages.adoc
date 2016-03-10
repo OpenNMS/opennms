@@ -1,0 +1,51 @@
+
+// Allow GitHub image rendering
+:imagesdir: ../../images
+
+[[ga-service-assurance-path-outage]]
+=== Path Outages
+
+To reduce the amount of alarms and notifications a _Path Outage_ can be configured.
+This functionality is used to suppress _Notifications_ based on the node depending on each other in the network path.
+The dependency is modeled in the _Node Provisioning_ in _Path Outage_.
+
+IMPORTANT: By default the _Path Outage_ feature is disabled and has to be enabled in the `pollerd-configuration.xml`.
+
+It requires the following information:
+
+* _Parent Foreign Source_: The _Foreign Source_ where the parent node is defined.
+* _Parent Foreign ID_: The _Foreign ID_ of the parent _Node_ where this node depends on.
+* The _IP Interface_ selected as _Primary_ is used as _Critical IP_
+
+Additionally it is possible to define generic rules for _Path Outages_.
+For example there is a whole _IP Subnet_ behind a _Router_ and this _Router_ is the _Critical Path_ to this _IP Subnet_.
+
+The configuration can be made in _Admin -> Configure Notifications -> Configure Path Outages_.
+It requires to specify a _Critical IP_ of the _Router_ and allows to specify the _IP Subnet_ by defining a _Rule/Filter_.
+They are specified in link:http://www.opennms.org/wiki/Filters[Rules/Filters] in the _OpenNMS Wiki_.
+In this case, the _Router_ with all _Nodes_ on the _IP Subnet_ are down, but only one _Notification_ is sent.
+All other _Node Down_ notifications are suppressed matching the _Rule/Filter_ defined in the _Path Outage_.
+
+[[ga-service-assurance-topology-path-outage]]
+.Topology for Path Outage
+image::service-assurance/02_path-outage.png[width="600"]
+
+To configure a _Path Outage_ based on the example in figure <<ga-service-assurance-topology-path-outage, Topology for Path Outage>>, the configuration has to be defined as the following.
+
+NOTE: This example expects all _Nodes_ are defined in the same _Foreign Source_ named `Network-ACME` and the _Foreign ID_ is the same as the _Node Label_.
+
+.Provisioning for Topology Example
+[options="header, autowidth"]
+|===
+| Parent Foreign Source | Parent Foreign ID | Provisioned Node
+| _not defined_         | _not defined_     | `default-gw-01`
+| `Network-ACME`        | `default-gw-01`   | `node-01`
+| `Network-ACME`        | `default-gw-01`   | `node-02`
+| `Network-ACME`        | `default-gw-01`   | `default-gw02`
+| `Network-ACME`        | `default-gw-02`   | `node-03`
+| `Network-ACME`        | `default-gw-02`   | `node-04`
+|===
+
+IMPORTANT: The _IP Interface_ which is set to _Primary_ is selected as the _Critical IP_.
+           In this example it is important the _IP interface_ on _default-gw-01_ in the network _192.168.1.0/24_ is set as _Primary_ interface.
+           The IP interface in the network _172.23.42.0/24_ on _default-gw-02_ is set as _Primary_ interface.

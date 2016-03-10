@@ -23,7 +23,6 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import org.omg.PortableInterceptor.INACTIVE;
 import org.opennms.core.network.IPAddress;
 
 public abstract class LldpUtils {

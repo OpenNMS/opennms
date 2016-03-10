@@ -106,7 +106,7 @@ public abstract class AbstractDaoRestService<T,K extends Serializable> {
 					condition.accept(visitor);
 				}
 			} catch (PropertyNotFoundException | ArrayIndexOutOfBoundsException e) {
-				LOG.warn("Error while parsing FIQL search, ignoring: " + e.getMessage());
+				LOG.warn(e.getClass().getSimpleName() + " while parsing FIQL search, ignoring: " + e.getMessage());
 			}
 		}
 
@@ -139,7 +139,7 @@ public abstract class AbstractDaoRestService<T,K extends Serializable> {
 		final List<T> coll = getDao().findMatching(crit);
 
 		if (coll == null || coll.size() < 1) {
-			return Response.status(Status.NOT_FOUND).build();
+			return Response.status(Status.NO_CONTENT).build();
 		} else {
 			Integer offset = crit.getOffset();
 

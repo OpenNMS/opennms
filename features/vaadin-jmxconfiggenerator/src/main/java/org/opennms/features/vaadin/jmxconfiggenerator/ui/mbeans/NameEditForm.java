@@ -41,7 +41,7 @@ import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 import org.opennms.features.vaadin.jmxconfiggenerator.data.SelectionChangedListener;
 import org.opennms.features.vaadin.jmxconfiggenerator.data.SelectionValueChangedListener;
-import org.opennms.features.vaadin.jmxconfiggenerator.ui.UIHelper;
+import org.opennms.netmgt.vaadin.core.UIHelper;
 import org.opennms.features.vaadin.jmxconfiggenerator.ui.mbeans.validation.NameValidator;
 
 import java.util.Objects;

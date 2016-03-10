@@ -28,15 +28,13 @@
 
 package org.opennms.netmgt.provision.detector.jmx;
 
-import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.utils.InetAddressUtils;
+
 import org.opennms.netmgt.dao.jmx.JmxConfigDao;
 import org.opennms.netmgt.jmx.connection.JmxServerConnectionWrapper;
 import org.opennms.netmgt.provision.support.SyncAbstractDetector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import org.opennms.core.utils.InetAddressUtils;
 
 import javax.management.InstanceNotFoundException;
 import javax.management.MalformedObjectNameException;

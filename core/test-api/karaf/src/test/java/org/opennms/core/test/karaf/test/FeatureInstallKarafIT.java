@@ -109,8 +109,8 @@ public class FeatureInstallKarafIT extends KarafTestCase {
      */
     @Test
     public void testInstallAllOpenNMSFeatures() {
-        addFeaturesUrl(maven().groupId("org.opennms.container").artifactId("karaf").version("17.0.0-SNAPSHOT").type("xml").classifier("features").getURL());
-        addFeaturesUrl(maven().groupId("org.opennms.karaf").artifactId("opennms").version("17.0.0-SNAPSHOT").type("xml").classifier("features").getURL());
+        addFeaturesUrl(maven().groupId("org.opennms.container").artifactId("karaf").version("18.0.0-SNAPSHOT").type("xml").classifier("features").getURL());
+        addFeaturesUrl(maven().groupId("org.opennms.karaf").artifactId("opennms").version("18.0.0-SNAPSHOT").type("xml").classifier("features").getURL());
 
         installFeature("atomikos");
         installFeature("batik");
@@ -155,10 +155,14 @@ public class FeatureInstallKarafIT extends KarafTestCase {
         installFeature("opennms-core-web");
         installFeature("opennms-dao-api");
         installFeature("opennms-dao");
+        installFeature("opennms-discovery");
         installFeature("opennms-events-api");
         installFeature("opennms-events-daemon");
         installFeature("opennms-events-traps");
         installFeature("opennms-icmp-api");
+        installFeature("opennms-icmp-jna");
+        installFeature("opennms-icmp-jni");
+        installFeature("opennms-icmp-jni6");
         //installFeature("opennms-javamail");
         installFeature("opennms-model");
         installFeature("opennms-poller-api");

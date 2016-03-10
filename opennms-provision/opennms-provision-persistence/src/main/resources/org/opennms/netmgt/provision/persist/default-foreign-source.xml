@@ -49,5 +49,8 @@
 			<parameter key="type" value="default"/>
 			<parameter key="object" value="org.apache.cassandra.db:type=ColumnFamilies,keyspace=newts,columnfamily=samples"/>
 		</detector>
+		<detector name="MS-RDP" class="org.opennms.netmgt.provision.detector.simple.TcpDetector">
+			<parameter key="port" value="3389"/>
+		</detector>
 	</detectors>
 </foreign-source>

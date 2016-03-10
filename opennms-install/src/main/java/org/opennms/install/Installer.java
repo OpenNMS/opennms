@@ -411,12 +411,15 @@ public class Installer {
         m_etc_dir = fetchProperty("install.etc.dir");
         
         loadEtcPropertiesFile("opennms.properties");
-        loadEtcPropertiesFile("model-importer.properties");
         // Used to retrieve 'org.opennms.rrd.strategyClass'
         loadEtcPropertiesFile("rrd-configuration.properties");
         
         m_install_servletdir = fetchProperty("install.servlet.dir");
-        m_import_dir = fetchProperty("importer.requisition.dir");
+        try {
+            m_import_dir = fetchProperty("importer.requisition.dir");
+        } catch (Exception e) {
+            m_import_dir = m_opennms_home + File.separator + "etc" + File.separator + "imports";
+        }
 
         final String pg_lib_dir = m_properties.getProperty("install.postgresql.dir");
 

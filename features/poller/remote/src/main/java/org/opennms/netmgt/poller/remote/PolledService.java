@@ -31,11 +31,14 @@ package org.opennms.netmgt.poller.remote;
 import java.io.Serializable;
 import java.net.InetAddress;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang.builder.CompareToBuilder;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.netmgt.model.OnmsApplication;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.poller.InetNetworkInterface;
 import org.opennms.netmgt.poller.MonitoredService;
@@ -58,6 +61,7 @@ public class PolledService implements MonitoredService, Serializable, Comparable
     private final Integer m_nodeId;
     private final String m_nodeLabel;
     private final String m_svcName;
+    private final Set<String> m_applications;
 	
 	/**
 	 * <p>Constructor for PolledService.</p>
@@ -74,6 +78,8 @@ public class PolledService implements MonitoredService, Serializable, Comparable
         m_netInterface = new InetNetworkInterface(monitoredService.getIpInterface().getIpAddress());
 		m_monitorConfiguration = monitorConfiguration;
 		m_pollModel = pollModel;
+		// Add all of the application names for the service to this object
+		m_applications = monitoredService.getApplications().stream().map(OnmsApplication::getName).collect(Collectors.toSet());
 	}
 	
 	/**
@@ -133,6 +139,14 @@ public class PolledService implements MonitoredService, Serializable, Comparable
     @Override
     public String getNodeLabel() {
         return m_nodeLabel;
+    }
+
+    /**
+     * TODO: Should this method be part of the {@link MonitoredService} API?
+     */
+    //@Override
+    public Set<String> getApplications() {
+        return m_applications;
     }
 
     /**

@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>container</artifactId>
-    <version>17.0.1-SNAPSHOT</version>
+    <version>18.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.karaf</groupId>
@@ -50,9 +50,6 @@
             <!-- OpenNMS features bundle -->
             <repository>file:${project.build.outputDirectory}/features.xml</repository>
 
-            <!-- OpenNMS OSGi core -->
-            <repository>mvn:org.opennms.osgi/opennms-osgi-core/${project.version}/xml/features</repository>
-
             <!-- JAAS Login Module -->
             <repository>mvn:org.opennms.container/jaas-login-module/${project.version}/xml/features</repository>
 
@@ -78,6 +75,9 @@
             <repository>mvn:org.opennms.osgi.features.topology/opennms-topology-runtime-sfree/${project.version}/xml/features</repository>
             <repository>mvn:org.opennms.osgi.features.topology/opennms-topology-runtime-simple/${project.version}/xml/features</repository>
             <repository>mvn:org.opennms.osgi.features.topology/opennms-topology-runtime-vmware/${project.version}/xml/features</repository>
+
+            <!-- Vaadin Feature -->
+            <repository>mvn:org.opennms.features/vaadin/${project.version}/xml/features</repository>
 
             <!-- Vaadin Dashboard Feature-->
             <repository>mvn:org.opennms.features/vaadin-dashboard/${project.version}/xml/features</repository>
@@ -176,10 +176,14 @@
             <feature>opennms-core-web</feature>
             <feature>opennms-dao-api</feature>
             <feature>opennms-dao</feature>
+            <feature>opennms-discovery</feature>
             <feature>opennms-events-api</feature>
             <feature>opennms-events-daemon</feature>
             <feature>opennms-events-traps</feature>
             <feature>opennms-icmp-api</feature>
+            <feature>opennms-icmp-jna</feature>
+            <feature>opennms-icmp-jni</feature>
+            <feature>opennms-icmp-jni6</feature>
             <feature>opennms-javamail</feature>
             <feature>opennms-model</feature>
             <feature>opennms-poller-api</feature>
@@ -193,7 +197,6 @@
             <feature>postgresql</feature>
 
             <!-- Features from other OpenNMS repositories -->
-            <feature>opennms-osgi-core</feature>
             <feature>opennms-core</feature>
             <feature>opennms-core-web</feature>
             <feature>opennms-jaas-login-module</feature>
@@ -225,6 +228,7 @@
             <feature>vaadin-node-maps</feature>
             <feature>vaadin-snmp-events-and-metrics</feature>
             <feature>vaadin-surveillance-views</feature>
+            <feature>opennms-elasticsearch-event-forwarder</feature>
             <feature>jira-troubleticketer</feature>
           </features>
         </configuration>
@@ -271,13 +275,6 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>org.opennms.osgi</groupId>
-      <artifactId>opennms-osgi-core</artifactId>
-      <version>${project.version}</version>
-      <type>pom</type>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
       <groupId>org.opennms.features</groupId>
       <artifactId>jmxconfiggenerator</artifactId>
       <version>${project.version}</version>
@@ -307,6 +304,13 @@
     <dependency>
       <groupId>org.opennms.osgi.features.nrtg</groupId>
       <artifactId>nrtg</artifactId>
+      <version>${project.version}</version>
+      <type>pom</type>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features</groupId>
+      <artifactId>vaadin</artifactId>
       <version>${project.version}</version>
       <type>pom</type>
       <scope>provided</scope>
@@ -398,6 +402,20 @@
     <dependency>
       <groupId>org.opennms.features</groupId>
       <artifactId>jira-troubleticketer</artifactId>
+      <version>${project.version}</version>
+      <type>pom</type>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-icmp-jni</artifactId>
+      <version>${project.version}</version>
+      <type>pom</type>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-icmp-jni6</artifactId>
       <version>${project.version}</version>
       <type>pom</type>
       <scope>provided</scope>

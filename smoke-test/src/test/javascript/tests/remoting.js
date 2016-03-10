@@ -12,8 +12,9 @@ casper.test.begin('Remoting Page', {
 
 	test: function(test) {
 		casper.then(function() {
-			test.assertSelectorHasText('h2 a', 'Remote Poller with GUI', 'The Remoting page should have a "Remote Poller with GUI" link');
+			test.assertSelectorHasText('h2 a', 'Remote Poller', 'The Remoting page should have a "Remote Poller" link');
 			test.assertSelectorHasText('h2 a', 'Remote Poller without GUI', 'The Remoting page should have a "Remote Poller without GUI" link');
+			test.assertSelectorHasText('h2 a', 'Remote Poller Scan Report', 'The Remoting page should have a "Remote Poller Scan Report" link');
 		});
 
 		opennms.finished(test);

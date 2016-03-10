@@ -48,8 +48,6 @@ import org.opennms.netmgt.dao.support.FilesystemResourceStorageDao;
 import org.opennms.netmgt.filter.FilterDaoFactory;
 import org.opennms.netmgt.filter.api.FilterDao;
 import org.opennms.netmgt.poller.ServiceMonitor;
-import org.opennms.netmgt.rrd.NullRrdStrategy;
-import org.opennms.netmgt.rrd.RrdStrategy;
 import org.opennms.netmgt.scheduler.Timer;
 
 @RunWith(MockitoJUnitRunner.class)

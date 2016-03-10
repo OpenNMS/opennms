@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>opennms</artifactId>
-    <version>17.0.1-SNAPSHOT</version>
+    <version>18.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>org.opennms.features</artifactId>
@@ -25,6 +25,9 @@
 
     <!-- Events -->
     <module>events</module>
+
+    <!-- Executor factories -->
+    <module>executor-factory</module>
 
     <!-- OpenNMS Collection API and implementations -->
     <module>collection</module>
@@ -95,6 +98,9 @@
     <!-- OpenNMS Vaadin Themes -->
     <module>themes</module>
 
+    <!-- Vaadin Feature -->
+    <module>vaadin</module>
+
     <!-- Generic Vaadin components -->
     <module>vaadin-components</module>
 
@@ -112,5 +118,8 @@
     <module>ncs</module>
     <module>springframework-security</module>
     <module>system-report</module>
+
+    <!-- Elasticsearch event-forwarder-->
+    <module>elasticsearch</module>
   </modules>
 </project>

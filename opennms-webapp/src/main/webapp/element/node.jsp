@@ -66,7 +66,9 @@
 <%!private int m_telnetServiceId;
     private int m_sshServiceId;
     private int m_httpServiceId;
+    private int m_httpsServiceId;
     private int m_dellServiceId;
+    private int m_rdpServiceId;
     private int m_snmpServiceId;
     private ResourceService m_resourceService;
 	private AssetModel m_model = new AssetModel();
@@ -91,10 +93,23 @@
         }
 
         try {
+            m_httpsServiceId = NetworkElementFactory.getInstance(getServletContext()).getServiceIdFromName("HTTPS");
+        } catch (Throwable e) {
+            throw new ServletException("Could not determine the HTTPS service ID", e);
+        }
+
+        try {
             m_dellServiceId = NetworkElementFactory.getInstance(getServletContext()).getServiceIdFromName("Dell-OpenManage");
         } catch (Throwable e) {
             throw new ServletException("Could not determine the Dell-OpenManage service ID", e);
         }
+
+        try {
+            m_rdpServiceId = NetworkElementFactory.getInstance(getServletContext()).getServiceIdFromName("MS-RDP");
+        } catch (Throwable e) {
+            throw new ServletException("Could not determine the Mirosoft Remote Desktop service ID", e);
+        }
+
 
         try {
             m_snmpServiceId = NetworkElementFactory.getInstance(getServletContext()).getServiceIdFromName("SNMP");
@@ -161,7 +176,9 @@
     links.addAll(createLinkForService(nodeId, m_telnetServiceId, "Telnet", "telnet://", "", getServletContext()));
     links.addAll(createLinkForService(nodeId, m_sshServiceId, "SSH", "ssh://", "", getServletContext()));
     links.addAll(createLinkForService(nodeId, m_httpServiceId, "HTTP", "http://", "/", getServletContext()));
+    links.addAll(createLinkForService(nodeId, m_httpsServiceId, "HTTPS", "https://", "/", getServletContext()));
     links.addAll(createLinkForService(nodeId, m_dellServiceId, "OpenManage", "https://", ":1311", getServletContext()));
+    links.addAll(createLinkForService(nodeId, m_rdpServiceId, "Microsoft RDP", "rdp://", ":3389", getServletContext()));
     nodeModel.put("links", links);
 
     Asset asset = m_model.getAsset(nodeId);

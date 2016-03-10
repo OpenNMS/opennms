@@ -28,8 +28,6 @@
 
 package org.opennms.netmgt.correlation.drools;
 
-import static org.easymock.EasyMock.expect;
-
 import org.junit.Test;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.model.events.EventBuilder;

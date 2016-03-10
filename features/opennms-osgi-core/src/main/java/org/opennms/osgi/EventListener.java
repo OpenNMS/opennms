@@ -30,7 +30,6 @@ package org.opennms.osgi;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.Dictionary;
 import java.util.Hashtable;
 
 import org.slf4j.Logger;

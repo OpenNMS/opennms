@@ -29,11 +29,15 @@
 package org.opennms.core.concurrent;
 
 import java.util.concurrent.Callable;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * @deprecated Replace usage of this class with Java 8's {@link CompletableFuture}.
+ */
 public class WaterfallCallable implements Runnable {
 
     private static Logger LOG = LoggerFactory.getLogger(WaterfallCallable.class);
@@ -49,7 +53,7 @@ public class WaterfallCallable implements Runnable {
     /**
      * This method will execute the given {@link Callable} and if it returns a subsequent
      * {@link Callable}, it will enqueue the subsequent {@link Callable} on the same
-     * {@link ExecutorO}.
+     * {@link Executor}.
      */
     @SuppressWarnings({ "rawtypes", "unchecked" })
     @Override

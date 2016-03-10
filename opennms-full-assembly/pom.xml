@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>opennms</artifactId>
-    <version>17.0.1-SNAPSHOT</version>
+    <version>18.0.0-SNAPSHOT</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
   <groupId>org.opennms</groupId>
@@ -315,13 +315,6 @@
       <type>tar.gz</type>
       <version>${project.version}</version>
       <classifier>docs</classifier>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-rxtx-assembly</artifactId>
-      <version>${project.version}</version>
-      <type>tar.gz</type>
-      <classifier>rxtx</classifier>
     </dependency>
     <dependency>
       <groupId>org.opennms.assemblies</groupId>

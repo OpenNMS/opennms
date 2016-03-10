@@ -20,6 +20,17 @@
   <context:annotation-config />
 
   <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+    <property name="systemPropertiesModeName" value="SYSTEM_PROPERTIES_MODE_OVERRIDE" />
+    <!-- 
+      We need to ignore unresolvable placeholders since if multiple PropertyPlaceholderConfigurer
+      preprocessors are in use in a single context (such as inside unit tests), Spring will encounter
+      the issue documented here:
+
+      https://jira.springsource.org/browse/SPR-6428
+
+      TODO: Fix this behavior after upgrading to Spring 3.1.
+    -->
+    <property name="ignoreUnresolvablePlaceholders" value="true"/>
     <property name="properties">
       <props>
         <prop key="opennms.pollerBackend.monitorCheckInterval">10000</prop>
@@ -27,16 +38,6 @@
         <prop key="opennms.pollerBackend.minimumConfigurationReloadInterval">300000</prop>
       </props>
     </property>
-    <!-- 
-      We need to ignore unresolvable placeholders since multiple PropertyPlaceholderConfigurer
-      preprocessors are in use inside this context which is initialized in beanRefContext.xml.
-
-      https://jira.springsource.org/browse/SPR-6428
-
-      TODO: Fix this behavior after upgrading to Spring 3.1.
-    -->
-    <property name="ignoreUnresolvablePlaceholders" value="true"/>
-    <property name="systemPropertiesModeName" value="SYSTEM_PROPERTIES_MODE_OVERRIDE" />
   </bean>
 
   <bean name="daemon" class="org.opennms.netmgt.poller.remote.support.DefaultPollerBackEnd">
@@ -48,6 +49,9 @@
     </property>
     <property name="monitoredServiceDao">
       <onmsgi:reference interface="org.opennms.netmgt.dao.api.MonitoredServiceDao"/>
+    </property>
+    <property name="scanReportDao">
+      <onmsgi:reference interface="org.opennms.netmgt.dao.api.ScanReportDao"/>
     </property>
     <property name="pollerConfig" ref="pollerConfig" />
     <property name="timeKeeper" ref="timeKeeper" />

@@ -41,7 +41,6 @@ import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.xml.CastorUtils;
 import org.opennms.web.api.Util;
-import org.opennms.web.servlet.InitializerServletContextListener.RTCPostSubscriberTimerTask;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

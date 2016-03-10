@@ -32,7 +32,6 @@ import com.google.gwt.user.client.ui.*;
 import com.google.gwt.user.client.ui.DockPanel.DockLayoutConstant;
 import org.gwtbootstrap3.client.ui.*;
 import org.gwtbootstrap3.client.ui.Panel;
-import org.gwtbootstrap3.client.ui.constants.ColumnSize;
 import org.gwtbootstrap3.client.ui.constants.HeadingSize;
 
 /**

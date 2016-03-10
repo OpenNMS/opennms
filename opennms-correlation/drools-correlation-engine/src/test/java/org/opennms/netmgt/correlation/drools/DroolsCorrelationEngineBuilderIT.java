@@ -32,7 +32,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-import java.util.List;
+import java.util.Collection;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -56,6 +56,7 @@ import org.springframework.test.context.ContextConfiguration;
         "classpath:META-INF/opennms/applicationContext-daemon.xml",
         "classpath:META-INF/opennms/mockEventIpcManager.xml",
         "classpath:META-INF/opennms/applicationContext-correlator.xml",
+        "classpath*:META-INF/opennms/correlation-engine.xml",
         "classpath:test-context.xml"
 })
 @JUnitConfigurationEnvironment
@@ -74,10 +75,10 @@ public class DroolsCorrelationEngineBuilderIT implements InitializingBean {
 
     @Test
     public void testIt() throws Exception {
-        List<CorrelationEngine> engines = m_mockCorrelator.getEngines();
+        Collection<CorrelationEngine> engines = m_mockCorrelator.getEngines();
         assertNotNull(engines);
         assertEquals(5, m_mockCorrelator.getEngines().size());
-        assertTrue(engines.get(0) instanceof DroolsCorrelationEngine);
+        assertTrue(engines.iterator().next() instanceof DroolsCorrelationEngine);
         assertTrue(m_mockCorrelator.findEngineByName("locationMonitorRules") instanceof DroolsCorrelationEngine);
         DroolsCorrelationEngine engine = (DroolsCorrelationEngine) m_mockCorrelator.findEngineByName("locationMonitorRules");
         assertEquals(2, engine.getInterestingEvents().size());

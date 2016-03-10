@@ -41,8 +41,6 @@ import org.junit.runner.RunWith;
 import org.opennms.netmgt.dao.api.DistPollerDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.NetworkBuilder;
-import org.opennms.netmgt.model.OnmsDistPoller;
-import org.opennms.netmgt.model.OnmsMonitoringSystem;
 import org.opennms.netmgt.model.ncs.NCSBuilder;
 import org.opennms.netmgt.model.ncs.NCSComponent;
 import org.opennms.netmgt.model.ncs.NCSComponent.DependencyRequirements;
@@ -56,7 +54,6 @@ import org.springframework.transaction.annotation.Transactional;
 @ContextConfiguration(locations={
 		"classpath:META-INF/opennms/applicationContext-soa.xml",
 		"classpath:META-INF/opennms/applicationContext-datasource.xml",
-		"classpath*:/META-INF/opennms/applicationContext-daemon.xml",
 		"classpath:META-INF/opennms/applicationContext-testDao.xml",
 		"file:target/classes/META-INF/opennms/component-dao.xml"
 })

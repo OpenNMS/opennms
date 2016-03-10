@@ -78,8 +78,6 @@ import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.poller.mock.MockPollContext;
 import org.opennms.netmgt.poller.mock.MockScheduler;
 import org.opennms.netmgt.poller.mock.MockTimer;
-import org.opennms.netmgt.rrd.NullRrdStrategy;
-import org.opennms.netmgt.rrd.RrdStrategy;
 import org.opennms.netmgt.scheduler.Schedule;
 import org.opennms.netmgt.scheduler.ScheduleTimer;
 import org.opennms.netmgt.xml.event.Event;
