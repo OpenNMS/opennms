@@ -123,7 +123,7 @@ public class SyslogConnection implements Callable<Callable<?>> {
     @XmlAttribute
     public byte[] getBytes() {
         byte[] retval = new byte[m_bytes.remaining()];
-        m_bytes.get(retval, 0, m_bytes.remaining());
+        m_bytes.get(retval);
         m_bytes.rewind();
         return retval;
     }
