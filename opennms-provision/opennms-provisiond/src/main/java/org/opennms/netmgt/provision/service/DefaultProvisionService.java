@@ -1119,7 +1119,7 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
 
             @Override
             protected OnmsNode doInsert() {
-                node.setLocation(createLocationIfNecessary(node.getLocation()).getLocationName());
+                node.setLocation(createLocationIfNecessary(node.getLocation() == null ? null : node.getLocation().getLocationName()));
                 return saveOrUpdate(node);
             }
         }.execute();

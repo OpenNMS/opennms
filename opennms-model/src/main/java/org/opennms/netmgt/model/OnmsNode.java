@@ -69,9 +69,11 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlEnum;
 import javax.xml.bind.annotation.XmlEnumValue;
 import javax.xml.bind.annotation.XmlID;
+import javax.xml.bind.annotation.XmlIDREF;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
+import org.codehaus.jackson.annotate.JsonBackReference;
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.codehaus.jackson.annotate.JsonValue;
@@ -83,6 +85,7 @@ import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.model.events.AddEventVisitor;
 import org.opennms.netmgt.model.events.DeleteEventVisitor;
 import org.opennms.netmgt.model.events.EventBuilder;
+import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.style.ToStringCreator;
@@ -164,10 +167,8 @@ public class OnmsNode extends OnmsEntity implements Serializable, Comparable<Onm
 
     private String m_foreignId;
 
-    /**
-     * TODO: Make this a persistent foreign key reference to the monitoringLocations table
-     */
-    private String m_location = "localhost";
+    /** persistent field */
+    private OnmsMonitoringLocation m_location;
 
     /** persistent field */
     private OnmsAssetRecord m_assetRecord;
@@ -716,17 +717,19 @@ public class OnmsNode extends OnmsEntity implements Serializable, Comparable<Onm
     /**
      * Monitoring location that this node is located in.
      */
-    @XmlTransient
-    @JsonIgnore
-    @Transient
-    public String getLocation() {
+    @XmlIDREF
+    @JsonBackReference
+    @XmlElement(name="location")
+    @ManyToOne(optional=false, fetch=FetchType.LAZY)
+    @JoinColumn(name="location")
+    public OnmsMonitoringLocation getLocation() {
         return m_location;
     }
 
     /**
      * Set the monitoring location that this node is located in.
      */
-    public void setLocation(String location) {
+    public void setLocation(OnmsMonitoringLocation location) {
         m_location = location;
     }
 
