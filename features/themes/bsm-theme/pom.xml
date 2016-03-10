@@ -12,7 +12,7 @@
     <packaging>bundle</packaging>
     <name>OpenNMS Features :: Vaadin :: Theme :: Business Service Manager</name>
     <properties>
-      <opennms.dependency.version>17.1.1-SNAPSHOT</opennms.dependency.version>
+      <opennms.dependency.version>17.1.1</opennms.dependency.version>
     </properties>
     <dependencies>
         <dependency>
