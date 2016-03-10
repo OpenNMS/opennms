@@ -45,7 +45,7 @@ var links = {
 	'JMX Configuration Generator': new Selector('div[id="content"] > iframe[src="osgi/jmx-config-tool"]')
 };
 
-casper.test.begin('Admin Page Links', 36, function suite(test) {
+casper.test.begin('Admin Page Links', function suite(test) {
 	var opennms = require('../../util/opennms')(casper),
 		utils = require('utils');
 
