@@ -41,23 +41,16 @@
 		<argument ref="pinger" />
 	</bean>
 
-	<bean id="discoverer-activemq" class="org.apache.activemq.camel.component.ActiveMQComponent">
-		<!-- TODO: HZN-490 Add configurable ActiveMQ URI -->
-		<property name="brokerURL" value="tcp://localhost:61616" />
-		<!-- TODO: HZN-490 Add configurable authentication -->
-		<!--
-		<property name="userName" value="karaf" />
-		<property name="password" value="karaf" />
-		-->
-	</bean>
+    <!-- ActiveMQ component provided by minion-core -->
+    <reference id="queuingservice" interface="org.apache.camel.Component"/>
 
 	<camelContext id="discovererCamelContext" xmlns="http://camel.apache.org/schema/blueprint">
 		<propertyPlaceholder id="properties" location="blueprint:discovererProperties" />
 
 		<!-- Location queue -->
 		<route id="discovererRoute">
-			<!-- TODO: Use a more sophisticated naming convention for this queue -->
-			<from uri="activemq:Location-{{monitoringLocationName}}" />
+			<!-- TODO: Use a more sophisticated naming convention for this queue. See NMS-8217 -->
+            <from uri="queuingservice:Location-{{monitoringLocationName}}" />
 			<log loggingLevel="INFO" message="blueprint-discovery.xml: Executing DiscoveryJob" />
 			<log loggingLevel="INFO" message="blueprint-discovery.xml: ${body}" />
 			<bean ref="discoverer" />
