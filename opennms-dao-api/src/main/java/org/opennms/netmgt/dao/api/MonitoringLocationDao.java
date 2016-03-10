@@ -31,7 +31,7 @@ package org.opennms.netmgt.dao.api;
 import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 
 /**
- * <p>LocationMonitorDao interface.</p>
+ * <p>MonitoringLocationDao interface.</p>
  *
  * @author Seth
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>

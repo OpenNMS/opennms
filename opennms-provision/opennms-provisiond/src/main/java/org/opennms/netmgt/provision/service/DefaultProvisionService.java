@@ -709,7 +709,7 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
     @Override
     public OnmsMonitoringLocation createLocationIfNecessary(final String locationName) {
         if (locationName == null) {
-            return createLocationIfNecessary("localhost");
+            return createLocationIfNecessary(MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID);
         } else {
             OnmsMonitoringLocation location = new OnmsMonitoringLocation();
             location.setLocationName(locationName);
@@ -1353,7 +1353,7 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
             protected OnmsNode doInsert() {
                 final Date now = new Date();
 
-                createLocationIfNecessary("localhost");
+                createLocationIfNecessary(MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID);
                 // TODO: Associate location with node if necessary
                 final OnmsNode node = new OnmsNode();
 
