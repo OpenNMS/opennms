@@ -143,7 +143,7 @@ public class AssetRecordResource extends OnmsRestService {
     
     
     private void sendEvent(String uei, int nodeId) throws EventProxyException {
-        EventBuilder bldr = new EventBuilder(uei, getClass().getName());
+        EventBuilder bldr = new EventBuilder(uei, "ReST");
         bldr.setNodeid(nodeId);
         m_eventProxy.send(bldr.getEvent());
     }

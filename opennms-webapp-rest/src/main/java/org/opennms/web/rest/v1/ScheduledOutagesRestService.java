@@ -438,7 +438,7 @@ public class ScheduledOutagesRestService extends OnmsRestService {
     }
 
     private void sendConfigChangedEvent() {
-        EventBuilder builder = new EventBuilder(EventConstants.SCHEDOUTAGES_CHANGED_EVENT_UEI, "Web UI");
+        EventBuilder builder = new EventBuilder(EventConstants.SCHEDOUTAGES_CHANGED_EVENT_UEI, "ReST");
         try {
             m_eventProxy.send(builder.getEvent());
         } catch (Throwable e) {

@@ -180,7 +180,7 @@ public class IfServicesRestService extends OnmsRestService {
     }
 
     private void sendEvent(String eventUEI, OnmsMonitoredService dbObj) {
-        final EventBuilder bldr = new EventBuilder(eventUEI, getClass().getName());
+        final EventBuilder bldr = new EventBuilder(eventUEI, "ReST");
         bldr.setNodeid(dbObj.getNodeId());
         bldr.setInterface(dbObj.getIpAddress());
         bldr.setService(dbObj.getServiceName());

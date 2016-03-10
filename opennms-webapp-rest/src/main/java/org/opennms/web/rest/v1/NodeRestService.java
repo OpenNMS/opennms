@@ -424,7 +424,7 @@ public class NodeRestService extends OnmsRestService {
 
     private void sendEvent(final String uei, final int nodeId, String nodeLabel) {
         try {
-            final EventBuilder bldr = new EventBuilder(uei, getClass().getName());
+            final EventBuilder bldr = new EventBuilder(uei, "ReST");
             bldr.setNodeid(nodeId);
             bldr.addParam("nodelabel", nodeLabel);
             m_eventProxy.send(bldr.getEvent());

@@ -191,7 +191,7 @@ public class OnmsMonitoredServiceResource extends OnmsRestService {
             LOG.debug("addService: adding service {}", service);
             m_serviceDao.save(service);
             
-            Event e = EventUtils.createNodeGainedServiceEvent(getClass().getName(), node.getId(), intf.getIpAddress(), 
+            Event e = EventUtils.createNodeGainedServiceEvent("ReST", node.getId(), intf.getIpAddress(), 
                     service.getServiceName(), node.getLabel(), node.getLabelSource(), node.getSysName(), node.getSysDescription());
             sendEvent(e);
 
@@ -289,7 +289,7 @@ public class OnmsMonitoredServiceResource extends OnmsRestService {
     }
 
     private void sendEvent(String eventUEI, OnmsMonitoredService dbObj) {
-        final EventBuilder bldr = new EventBuilder(eventUEI, getClass().getName());
+        final EventBuilder bldr = new EventBuilder(eventUEI, "ReST");
         bldr.setNodeid(dbObj.getNodeId());
         bldr.setInterface(dbObj.getIpAddress());
         bldr.setService(dbObj.getServiceName());

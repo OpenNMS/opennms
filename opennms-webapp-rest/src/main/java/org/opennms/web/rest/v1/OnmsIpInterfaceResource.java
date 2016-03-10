@@ -164,7 +164,7 @@ public class OnmsIpInterfaceResource extends OnmsRestService {
             node.addIpInterface(ipInterface);
             m_ipInterfaceDao.save(ipInterface);
             
-            final EventBuilder bldr = new EventBuilder(EventConstants.NODE_GAINED_INTERFACE_EVENT_UEI, getClass().getName());
+            final EventBuilder bldr = new EventBuilder(EventConstants.NODE_GAINED_INTERFACE_EVENT_UEI, "ReST");
     
             bldr.setNodeid(node.getId());
             bldr.setInterface(ipInterface.getIpAddress());
@@ -252,7 +252,7 @@ public class OnmsIpInterfaceResource extends OnmsRestService {
             node.getIpInterfaces().remove(intf);
             m_nodeDao.save(node);
             
-            final EventBuilder bldr = new EventBuilder(EventConstants.INTERFACE_DELETED_EVENT_UEI, getClass().getName());
+            final EventBuilder bldr = new EventBuilder(EventConstants.INTERFACE_DELETED_EVENT_UEI, "ReST");
     
             bldr.setNodeid(node.getId());
             bldr.setInterface(addr(ipAddress));
