@@ -39,6 +39,7 @@ import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Transient;
@@ -121,7 +122,7 @@ public class BusinessServiceEdgeEntity implements EdgeEntity {
         m_weight = weight;
     }
 
-    @ManyToOne(cascade = {CascadeType.ALL})
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "bsm_map_id")
     public AbstractMapFunctionEntity getMapFunction() {
         return m_mapFunction;

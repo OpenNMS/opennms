@@ -45,6 +45,7 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToOne;
 import javax.persistence.MapKeyColumn;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Transient;
@@ -169,7 +170,7 @@ public class BusinessServiceEntity {
                 .collect(Collectors.toSet());
     }
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "bsm_reduce_id")
     public AbstractReductionFunctionEntity getReductionFunction() {
         return m_reductionFunction;

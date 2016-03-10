@@ -123,8 +123,7 @@ public class BusinessServiceImpl implements BusinessService {
 
     @Override
     public void setReduceFunction(ReductionFunction reductionFunction) {
-        AbstractReductionFunctionEntity reductionFunctionEntity = new ReduceFunctionMapper().toPersistenceFunction(reductionFunction);
-        getEntity().setReductionFunction(reductionFunctionEntity);
+        m_manager.setReduceFunction(this, reductionFunction);
     }
 
     @Override
@@ -229,19 +228,8 @@ public class BusinessServiceImpl implements BusinessService {
         return Sets.newTreeSet();
     }
 
-    @SuppressWarnings("unchecked")
     @Override
-    public void setEdges(Edge.Type edgeType, Set<? extends Edge> edges) {
-        switch (edgeType) {
-            case CHILD_SERVICE:
-                setChildEdges((Set<ChildEdge>)edges);
-                break;
-            case IP_SERVICE:
-                setIpServiceEdges((Set<IpServiceEdge>)edges);
-                break;
-            case REDUCTION_KEY:
-                setReductionKeyEdges((Set<ReductionKeyEdge>)edges);
-                break;
-        }
+    public void removeEdge(final Edge edge) {
+        m_manager.removeEdge(this, edge);
     }
 }

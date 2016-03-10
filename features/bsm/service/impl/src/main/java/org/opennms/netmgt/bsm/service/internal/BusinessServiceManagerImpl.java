@@ -42,6 +42,10 @@ import org.opennms.netmgt.bsm.persistence.api.BusinessServiceEdgeEntity;
 import org.opennms.netmgt.bsm.persistence.api.BusinessServiceEntity;
 import org.opennms.netmgt.bsm.persistence.api.IPServiceEdgeEntity;
 import org.opennms.netmgt.bsm.persistence.api.SingleReductionKeyEdgeEntity;
+import org.opennms.netmgt.bsm.persistence.api.functions.map.AbstractMapFunctionEntity;
+import org.opennms.netmgt.bsm.persistence.api.functions.map.MapFunctionDao;
+import org.opennms.netmgt.bsm.persistence.api.functions.reduce.AbstractReductionFunctionEntity;
+import org.opennms.netmgt.bsm.persistence.api.functions.reduce.ReductionFunctionDao;
 import org.opennms.netmgt.bsm.service.BusinessServiceManager;
 import org.opennms.netmgt.bsm.service.BusinessServiceSearchCriteria;
 import org.opennms.netmgt.bsm.service.BusinessServiceStateMachine;
@@ -91,6 +95,12 @@ public class BusinessServiceManagerImpl implements BusinessServiceManager {
 
     @Autowired
     private MonitoredServiceDao monitoredServiceDao;
+
+    @Autowired
+    private MapFunctionDao mapFunctionDao;
+
+    @Autowired
+    private ReductionFunctionDao reductionFunctionDao;
 
     @Autowired
     private BusinessServiceStateMachine businessServiceStateMachine;
@@ -315,6 +325,14 @@ public class BusinessServiceManagerImpl implements BusinessServiceManager {
         return true;
     }
 
+    @Override
+    public void removeEdge(final BusinessService businessService, final Edge edge) {
+        final BusinessServiceEntity businessServiceEntity = getBusinessServiceEntity(businessService);
+        final BusinessServiceEdgeEntity edgeEntity = getBusinessServiceEdgeEntity(edge);
+
+        businessServiceEntity.removeEdge(edgeEntity);
+    }
+
     private boolean checkDescendantForLoop(final BusinessServiceEntity parent,
                                            final BusinessServiceEntity descendant) {
         if (parent.equals(descendant)) {
@@ -401,6 +419,38 @@ public class BusinessServiceManagerImpl implements BusinessServiceManager {
     public BusinessServiceGraph getGraph() {
         // Do not instantiate a new instance, or the status is not set
         return businessServiceStateMachine.getGraph();
+    }
+
+    @Override
+    public void setMapFunction(final Edge edge, final MapFunction mapFunction) {
+        // This is a workaround for a hibernate bug which does not remove
+        // orphan elements if the element is replaced using the setter. See:
+        // https://hibernate.atlassian.net/browse/HHH-6484
+        final BusinessServiceEdgeEntity edgeEntity = this.getBusinessServiceEdgeEntity(edge);
+
+        final AbstractMapFunctionEntity prevMapFunctionEntity = edgeEntity.getMapFunction();
+        if (prevMapFunctionEntity != null && prevMapFunctionEntity.getId() != null) {
+            this.mapFunctionDao.delete(prevMapFunctionEntity);
+        }
+
+        final AbstractMapFunctionEntity mapFunctionEntity = new MapFunctionMapper().toPersistenceFunction(mapFunction);
+        edgeEntity.setMapFunction(mapFunctionEntity);
+    }
+
+    @Override
+    public void setReduceFunction(final BusinessService businessService, final ReductionFunction reductionFunction) {
+        // This is a workaround for a hibernate bug which does not remove
+        // orphan elements if the element is replaced using the setter. See:
+        // https://hibernate.atlassian.net/browse/HHH-6484
+        final BusinessServiceEntity entity = this.getBusinessServiceEntity(businessService);
+
+        final AbstractReductionFunctionEntity prevReduceFunctionEntity = entity.getReductionFunction();
+        if (prevReduceFunctionEntity != null && prevReduceFunctionEntity.getId() != null) {
+            this.reductionFunctionDao.delete(prevReduceFunctionEntity);
+        }
+
+        final AbstractReductionFunctionEntity reduceFunctionEntity = new ReduceFunctionMapper().toPersistenceFunction(reductionFunction);
+        entity.setReductionFunction(reduceFunctionEntity);
     }
 
     protected BusinessServiceDao getDao() {

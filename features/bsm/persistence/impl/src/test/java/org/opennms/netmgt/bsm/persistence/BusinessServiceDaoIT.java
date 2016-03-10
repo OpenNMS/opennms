@@ -52,6 +52,7 @@ import org.opennms.netmgt.bsm.persistence.api.functions.map.IdentityEntity;
 import org.opennms.netmgt.bsm.persistence.api.functions.map.IgnoreEntity;
 import org.opennms.netmgt.bsm.persistence.api.functions.reduce.MostCriticalEntity;
 import org.opennms.netmgt.bsm.persistence.api.functions.reduce.ReductionFunctionDao;
+import org.opennms.netmgt.bsm.persistence.api.functions.reduce.ThresholdEntity;
 import org.opennms.netmgt.bsm.test.BsmDatabasePopulator;
 import org.opennms.netmgt.bsm.test.BusinessServiceEntityBuilder;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
@@ -275,7 +276,7 @@ public class BusinessServiceDaoIT {
         Criteria criteria = new CriteriaBuilder(BusinessServiceEntity.class).toCriteria();
         // verify that root entity is merged
         //assertEquals(1, m_businessServiceDao.findMatching(criteria).size());
-        // verify that coundMatching also works
+        // verify that countMatching also works
         assertEquals(1, m_businessServiceDao.countMatching(criteria));
 
     }

@@ -77,8 +77,7 @@ public abstract class AbstractEdge<T extends BusinessServiceEdgeEntity> implemen
 
     @Override
     public void setMapFunction(MapFunction mapFunction) {
-        AbstractMapFunctionEntity mapFunctionEntity = new MapFunctionMapper().toPersistenceFunction(mapFunction);
-        getEntity().setMapFunction(mapFunctionEntity);
+        m_manager.setMapFunction(this, mapFunction);
     }
 
     @Override

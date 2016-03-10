@@ -103,6 +103,8 @@ public interface BusinessServiceManager extends NodeManager {
 
     void setReductionKeyEdges(BusinessService businessService, Set<ReductionKeyEdge> reductionKeyEdges);
 
+    void removeEdge(BusinessService businessService, Edge edge);
+
     /**
      * This returns the actual graph of the underlying {@link BusinessServiceStateMachine}.
      *
@@ -112,4 +114,7 @@ public interface BusinessServiceManager extends NodeManager {
      */
     BusinessServiceGraph getGraph();
 
+    void setMapFunction(Edge edge, MapFunction mapFunction);
+
+    void setReduceFunction(BusinessService businessService, ReductionFunction reductionFunction);
 }

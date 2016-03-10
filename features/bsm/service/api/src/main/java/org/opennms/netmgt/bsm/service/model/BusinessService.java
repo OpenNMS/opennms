@@ -72,8 +72,8 @@ public interface BusinessService extends ReadOnlyBusinessService {
 
     void addChildEdge(BusinessService child, MapFunction mapFunction, int weight);
 
-    void setEdges(Edge.Type edgeType, Set<? extends Edge> edges);
-    
+    void removeEdge(Edge edge);
+
     Set<ReductionKeyEdge> getReductionKeyEdges();
     
     Set<IpServiceEdge> getIpServiceEdges();
