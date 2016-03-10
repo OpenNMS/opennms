@@ -58,7 +58,7 @@ import org.springframework.util.Assert;
  * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
  *  
  */
-class TrapQueueProcessor implements Callable<Callable<?>>, InitializingBean {
+class TrapQueueProcessor implements Callable<Void>, InitializingBean {
 	
 	private static final Logger LOG = LoggerFactory.getLogger(TrapQueueProcessor.class);
 	
@@ -163,7 +163,7 @@ class TrapQueueProcessor implements Callable<Callable<?>>, InitializingBean {
      * </p>
      */
     @Override
-    public Callable<Void> call() {
+    public Void call() {
         try {
             processTrapEvent(((EventCreator)m_trapNotification.getTrapProcessor()).getEvent());
         } catch (IllegalArgumentException e) {

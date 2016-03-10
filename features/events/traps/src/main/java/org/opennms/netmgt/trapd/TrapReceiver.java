@@ -26,56 +26,18 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.trapd.jmx;
+package org.opennms.netmgt.trapd;
 
-import org.opennms.netmgt.daemon.AbstractSpringContextJmxServiceDaemon;
 
 /**
- * <p>Trapd class.</p>
- *
- * @author ranger
- * @version $Id: $
+ * @author Seth
  */
-public class Trapd extends AbstractSpringContextJmxServiceDaemon<org.opennms.netmgt.trapd.Trapd> implements TrapdMBean {
-    /** {@inheritDoc} */
-    @Override
-    protected String getLoggingPrefix() {
-        return org.opennms.netmgt.trapd.Trapd.LOG4J_CATEGORY;
-    }
+public interface TrapReceiver extends Runnable {
 
-    /** {@inheritDoc} */
     @Override
-    protected String getSpringContext() {
-        return "trapDaemonContext";
-    }
+    void run();
 
-    /** {@inheritDoc} */
-    @Override
-    public long getV1TrapsReceived() {
-        return getDaemon().getV1TrapsReceived();
-    }
-    
-    /** {@inheritDoc} */
-    @Override
-    public long getV2cTrapsReceived() {
-        return getDaemon().getV2cTrapsReceived();
-    }
-    
-    /** {@inheritDoc} */
-    @Override
-    public long getV3TrapsReceived() {
-        return getDaemon().getV3TrapsReceived();
-    }
-    
-    /** {@inheritDoc} */
-    @Override
-    public long getTrapsDiscarded() {
-        return getDaemon().getTrapsDiscarded();
-    }
-    
-    /** {@inheritDoc} */
-    @Override
-    public long getTrapsErrored() {
-        return getDaemon().getTrapsErrored();
-    }
+    String getName();
+
+    void stop() throws InterruptedException;
 }

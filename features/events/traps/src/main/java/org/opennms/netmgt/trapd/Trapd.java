@@ -80,7 +80,7 @@ public class Trapd extends AbstractServiceDaemon implements TrapProcessorFactory
     
     private static final Logger LOG = LoggerFactory.getLogger(Trapd.class);
 
-    private static final String LOG4J_CATEGORY = "trapd";
+    public static final String LOG4J_CATEGORY = "trapd";
     
     /**
      * The last status sent to the service control manager.

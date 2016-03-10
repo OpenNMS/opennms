@@ -269,7 +269,7 @@ public class Snmp4jTrapReceiverIT extends MockSnmpAgentITCase implements TrapPro
         }
     }
 
-    private final class TestTrapProcessor implements TrapProcessor {
+    private static final class TestTrapProcessor implements TrapProcessor {
         @Override
         public void setCommunity(String community) {}
         @Override

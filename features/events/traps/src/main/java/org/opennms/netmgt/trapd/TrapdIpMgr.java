@@ -79,4 +79,6 @@ public interface TrapdIpMgr {
      */
     long removeNodeId(String addr);
 
+    long longValue(Long result);
+
 }

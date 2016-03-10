@@ -146,4 +146,9 @@ public class HibernateTrapdIpMgr implements TrapdIpMgr, InitializingBean {
         return m_ipInterfaceDao;
     }
 
+    @Override
+    public long longValue(final Long result) {
+        return (result == null ? -1 : result);
+    }
+
 }
