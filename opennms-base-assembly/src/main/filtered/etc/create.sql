@@ -274,6 +274,12 @@ CREATE TABLE monitoringlocationstags (
 CREATE INDEX monitoringlocationstags_id_idx on monitoringlocationstags(monitoringlocationid);
 CREATE UNIQUE INDEX monitoringlocationstags_id_pkg_idx on monitoringlocationstags(monitoringlocationid, tag);
 
+--##################################################################
+--# The following command adds the initial localhost entry to
+--# the 'monitoringlocations' table.
+--##################################################################
+INSERT INTO monitoringlocations (id, monitoringarea) values ('localhost', 'localhost');
+
 
 --#####################################################
 --# monitoringsystems Table - Contains a list of OpenNMS systems
@@ -484,8 +490,10 @@ create table node (
 	lastCapsdPoll   timestamp with time zone,
 	foreignSource	varchar(64),
 	foreignId       varchar(64),
+	location        text,
 
-	constraint pk_nodeID primary key (nodeID)
+	constraint pk_nodeID primary key (nodeID),
+	constraint fk_node_location foreign key (location) references monitoringlocations (id) ON DELETE CASCADE
 );
 
 create index node_id_type_idx on node(nodeID, nodeType);

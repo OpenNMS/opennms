@@ -41,6 +41,7 @@ import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.netmgt.dao.api.AssetRecordDao;
 import org.opennms.netmgt.dao.api.DistPollerDao;
+import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.OnmsAssetRecord;
 import org.opennms.netmgt.model.OnmsGeolocation;
@@ -70,6 +71,9 @@ public class AssetRecordDaoIT implements InitializingBean {
 	private DistPollerDao m_distPollerDao;
 	
 	@Autowired
+	private MonitoringLocationDao m_locationDao;
+
+	@Autowired
 	private NodeDao m_nodeDao;
 
 	@Autowired
@@ -97,6 +101,7 @@ public class AssetRecordDaoIT implements InitializingBean {
 	@Transactional
     public void testCreateAndGets() {
         OnmsNode onmsNode = new OnmsNode("myNode");
+        onmsNode.setLocation(m_locationDao.get(MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID));
         m_nodeDao.save(onmsNode);
         OnmsAssetRecord assetRecord = onmsNode.getAssetRecord();
         assetRecord.setAssetNumber("imported-id: 7");
@@ -116,6 +121,7 @@ public class AssetRecordDaoIT implements InitializingBean {
     @Transactional
 	public void testAddUserName() {
         OnmsNode onmsNode = new OnmsNode("myNode");
+        onmsNode.setLocation(m_locationDao.get(MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID));
         m_nodeDao.save(onmsNode);
         OnmsAssetRecord assetRecord = onmsNode.getAssetRecord();
         assetRecord.setAssetNumber("imported-id: 7");
@@ -140,6 +146,7 @@ public class AssetRecordDaoIT implements InitializingBean {
     @Transactional
     public void testAddAutoenable() {
         OnmsNode onmsNode = new OnmsNode("myNode");
+        onmsNode.setLocation(m_locationDao.get(MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID));
         m_nodeDao.save(onmsNode);
         OnmsAssetRecord assetRecord = onmsNode.getAssetRecord();
         assetRecord.setAssetNumber("imported-id: 7");
@@ -164,6 +171,7 @@ public class AssetRecordDaoIT implements InitializingBean {
         @Transactional
     public void testFindByNodeId() {
         OnmsNode onmsNode = new OnmsNode("myNode");
+        onmsNode.setLocation(m_locationDao.get(MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID));
         m_nodeDao.save(onmsNode);
         OnmsAssetRecord assetRecord = onmsNode.getAssetRecord();
         assetRecord.setAssetNumber("imported-id: 7");
@@ -179,6 +187,7 @@ public class AssetRecordDaoIT implements InitializingBean {
         @Transactional
         public void testGeolocation() {
             OnmsNode onmsNode = new OnmsNode("myNode");
+            onmsNode.setLocation(m_locationDao.get(MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID));
             m_nodeDao.save(onmsNode);
             OnmsAssetRecord assetRecord = onmsNode.getAssetRecord();
             OnmsGeolocation geo = assetRecord.getGeolocation();

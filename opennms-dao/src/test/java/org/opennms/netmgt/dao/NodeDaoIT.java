@@ -44,6 +44,8 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.apache.commons.beanutils.BeanUtils;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.criteria.Criteria;
@@ -53,6 +55,7 @@ import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.LldpUtils.LldpChassisIdSubType;
 import org.opennms.netmgt.dao.api.DistPollerDao;
+import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.LldpElement;
 import org.opennms.netmgt.model.OnmsIpInterface;
@@ -65,8 +68,6 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.transaction.AfterTransaction;
-import org.springframework.test.context.transaction.BeforeTransaction;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallback;
@@ -91,6 +92,9 @@ public class NodeDaoIT implements InitializingBean {
     DistPollerDao m_distPollerDao;
 
     @Autowired
+    MonitoringLocationDao m_locationDao;
+
+    @Autowired
     NodeDao m_nodeDao;
 
     @Autowired
@@ -107,12 +111,12 @@ public class NodeDaoIT implements InitializingBean {
         org.opennms.core.spring.BeanUtils.assertAutowiring(this);
     }
 
-    @BeforeTransaction
+    @Before
     public void setUp() {
         m_populator.populateDatabase();
     }
 
-    @AfterTransaction
+    @After
     public void tearDown() {
         m_populator.resetDatabase();
     }
@@ -138,6 +142,7 @@ public class NodeDaoIT implements InitializingBean {
     public void testSave() {
 
         OnmsNode node = new OnmsNode("MyFirstNode");
+        node.setLocation(m_locationDao.get(MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID));
         getNodeDao().save(node);
 
         getNodeDao().flush();
@@ -148,6 +153,7 @@ public class NodeDaoIT implements InitializingBean {
     public void testSaveWithPathElement() {
 
         OnmsNode node = new OnmsNode("MyFirstNode");
+        node.setLocation(m_locationDao.get(MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID));
         PathElement p = new PathElement("192.168.7.7", "ICMP");
         node.setPathElement(p);
         getNodeDao().save(node);
@@ -159,6 +165,7 @@ public class NodeDaoIT implements InitializingBean {
     @Transactional
     public void testSaveWithNullPathElement() {
         OnmsNode node = new OnmsNode("MyFirstNode");
+        node.setLocation(m_locationDao.get(MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID));
         PathElement p = new PathElement("192.168.7.7", "ICMP");
         node.setPathElement(p);
         getNodeDao().save(node);
@@ -175,6 +182,7 @@ public class NodeDaoIT implements InitializingBean {
     @Transactional
     public void testLldpSaveAndUpdate() throws InterruptedException {
         OnmsNode node = new OnmsNode("MyFirstLldpNode");
+        node.setLocation(m_locationDao.get(MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID));
         getNodeDao().save(node);
         getNodeDao().flush();
         
@@ -253,6 +261,7 @@ public class NodeDaoIT implements InitializingBean {
     public void testCreate() throws InterruptedException {
 
         OnmsNode node = new OnmsNode("MyFirstNode");
+        node.setLocation(m_locationDao.get(MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID));
         node.getAssetRecord().setDisplayCategory("MyCategory");
         PathElement p = new PathElement("192.168.7.7", "ICMP");
         node.setPathElement(p);
@@ -433,7 +442,6 @@ public class NodeDaoIT implements InitializingBean {
     @JUnitTemporaryDatabase // This test manages its own transactions so use a fresh database
     public void testDeleteObsoleteInterfaces() {
         try {
-            m_populator.populateDatabase();
 
             final Date timestamp = new Date(1234);
 

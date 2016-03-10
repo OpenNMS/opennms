@@ -67,6 +67,7 @@ import org.opennms.netmgt.config.datacollection.ResourceType;
 import org.opennms.netmgt.config.datacollection.StorageStrategy;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.LocationMonitorDao;
+import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.filter.FilterDaoFactory;
 import org.opennms.netmgt.filter.api.FilterDao;
@@ -123,6 +124,9 @@ public class ResourceDaoIntegrityIT implements InitializingBean {
     private ResourceTypesDao m_resourceTypesDao;
     private DefaultResourceDao m_resourceDao;
     private FilesystemResourceStorageDao m_resourceStorageDao = new FilesystemResourceStorageDao();
+
+    @Autowired
+    private MonitoringLocationDao m_locationDao;
 
     @Autowired
     private NodeDao m_nodeDao;
@@ -281,6 +285,7 @@ public class ResourceDaoIntegrityIT implements InitializingBean {
 
         for (int i = 1; i <= NUM_NODES; i++) {
             OnmsNode node = new OnmsNode();
+            node.setLocation(m_locationDao.get(MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID));
             node.setLabel("node" + i);
             node.setForeignSource("NODES");
             node.setForeignId(Integer.toString(i));

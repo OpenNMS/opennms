@@ -49,6 +49,7 @@ import org.opennms.netmgt.dao.api.DistPollerDao;
 import org.opennms.netmgt.dao.api.EventDao;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
+import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.OutageDao;
 import org.opennms.netmgt.dao.api.ServiceTypeDao;
@@ -91,7 +92,10 @@ import org.springframework.transaction.support.TransactionTemplate;
 public class OutageDaoIT implements InitializingBean {
     @Autowired
     private DistPollerDao m_distPollerDao;
-    
+
+    @Autowired
+    private MonitoringLocationDao m_locationDao;
+
     @Autowired
     private NodeDao m_nodeDao;
 
@@ -135,6 +139,7 @@ public class OutageDaoIT implements InitializingBean {
     @Transactional
     public void testSave() {
         OnmsNode node = new OnmsNode("localhost");
+        node.setLocation(m_locationDao.get(MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID));
         m_nodeDao.save(node);
 
         OnmsIpInterface ipInterface = new OnmsIpInterface(addr("172.16.1.1"), node);
@@ -164,6 +169,7 @@ public class OutageDaoIT implements InitializingBean {
             @Override
             public void doInTransactionWithoutResult(TransactionStatus status) {
                 OnmsNode node = new OnmsNode("localhost");
+                node.setLocation(m_locationDao.get(MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID));
                 m_nodeDao.save(node);
                 insertEntitiesAndOutage("172.16.1.1", "ICMP", node);
             }
@@ -193,6 +199,7 @@ public class OutageDaoIT implements InitializingBean {
             @Override
             public void doInTransactionWithoutResult(TransactionStatus status) {
                 OnmsNode node = new OnmsNode("localhost");
+                node.setLocation(m_locationDao.get(MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID));
                 m_nodeDao.save(node);
                 insertEntitiesAndOutage("172.16.1.1", "ICMP", node);
             }
@@ -221,17 +228,20 @@ public class OutageDaoIT implements InitializingBean {
             m_nodeDao.delete(node);
         }
         OnmsNode node = new OnmsNode("shoes");
+        node.setLocation(m_locationDao.get(MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID));
         m_nodeDao.save(node);
         insertEntitiesAndOutage("172.16.1.1", "ICMP", node);
         insertEntitiesAndOutage("192.0.2.1", "ICMP", node);
         
         node = new OnmsNode("megaphone");
+        node.setLocation(m_locationDao.get(MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID));
         m_nodeDao.save(node);
         insertEntitiesAndOutage("172.16.1.2", "ICMP", node);
         insertEntitiesAndOutage("172.17.1.2", "ICMP", node);
         insertEntitiesAndOutage("172.18.1.2", "ICMP", node);
 
         node = new OnmsNode("grunties");
+        node.setLocation(m_locationDao.get(MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID));
         m_nodeDao.save(node);
         insertEntitiesAndOutage("172.16.1.3", "ICMP", node);
 
@@ -247,17 +257,20 @@ public class OutageDaoIT implements InitializingBean {
             m_nodeDao.delete(node);
         }
         OnmsNode node = new OnmsNode("shoes");
+        node.setLocation(m_locationDao.get(MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID));
         m_nodeDao.save(node);
         insertEntitiesAndOutage("172.16.1.1", "ICMP", node);
         insertEntitiesAndOutage("192.0.2.1", "ICMP", node);
         
         node = new OnmsNode("megaphone");
+        node.setLocation(m_locationDao.get(MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID));
         m_nodeDao.save(node);
         insertEntitiesAndOutage("172.16.1.2", "ICMP", node);
         insertEntitiesAndOutage("172.17.1.2", "ICMP", node);
         insertEntitiesAndOutage("172.18.1.2", "ICMP", node);
 
         node = new OnmsNode("grunties");
+        node.setLocation(m_locationDao.get(MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID));
         m_nodeDao.save(node);
         insertEntitiesAndOutage("172.16.1.3", "ICMP", node);
 

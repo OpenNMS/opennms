@@ -45,6 +45,7 @@ import org.opennms.netmgt.dao.api.DistPollerDao;
 import org.opennms.netmgt.dao.api.EventDao;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
+import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.PathOutageDao;
 import org.opennms.netmgt.dao.api.ServiceTypeDao;
@@ -81,7 +82,10 @@ import org.springframework.transaction.support.TransactionTemplate;
 public class PathOutageDaoIT implements InitializingBean {
     @Autowired
     private DistPollerDao m_distPollerDao;
-    
+
+    @Autowired
+    private MonitoringLocationDao m_locationDao;
+
     @Autowired
     private NodeDao m_nodeDao;
 
@@ -127,6 +131,7 @@ public class PathOutageDaoIT implements InitializingBean {
 
         // This will be our router with one IP address
         OnmsNode router = new OnmsNode("router");
+        router.setLocation(m_locationDao.get(MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID));
         m_nodeDao.save(router);
         OnmsIpInterface routerIpInterface = new OnmsIpInterface(addr("172.16.1.1"), router);
         routerIpInterface.setIsManaged("M");
@@ -135,6 +140,7 @@ public class PathOutageDaoIT implements InitializingBean {
 
         // Add a node that will be routed through the router
         OnmsNode node = new OnmsNode("localhost");
+        node.setLocation(m_locationDao.get(MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID));
         m_nodeDao.save(node);
         OnmsIpInterface nodeIpInterface = new OnmsIpInterface(addr("172.16.1.2"), node);
         nodeIpInterface.setIsManaged("M");
@@ -143,6 +149,7 @@ public class PathOutageDaoIT implements InitializingBean {
 
         // Make another node with an interface that is initially marked as deleted
         OnmsNode newNode = new OnmsNode("newnode");
+        newNode.setLocation(m_locationDao.get(MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID));
         m_nodeDao.save(newNode);
         OnmsIpInterface newIpInterface = new OnmsIpInterface(addr("172.16.1.3"), newNode);
         newIpInterface.setIsManaged("D");

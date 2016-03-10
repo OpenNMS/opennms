@@ -142,20 +142,32 @@ public class OnmsMonitoringLocation implements Serializable {
      * @param monitoringArea
      * @param pollingPackageName
      */
+    public OnmsMonitoringLocation(final String locationName, final String monitoringArea) {
+        this(locationName, monitoringArea, null, null, null, null, null, null);
+    }
+
+    /**
+     * This constructor is only used during unit testing.
+     * 
+     * @param locationName
+     * @param monitoringArea
+     * @param pollingPackageName
+     */
     public OnmsMonitoringLocation(final String locationName, final String monitoringArea, final String pollingPackageName) {
-        this(locationName, monitoringArea, null, new String[] { pollingPackageName }, null, null, null, 100L);
+        this(locationName, monitoringArea, null, new String[] { pollingPackageName }, null, null, null, null);
     }
 
     public OnmsMonitoringLocation(final String locationName, final String monitoringArea, final String[] pollingPackageNames, final String[] collectionPackageNames, final String geolocation, final Float latitude, final Float longitude, final Long priority, final String... tags) {
         m_locationName = locationName;
         m_monitoringArea = monitoringArea;
-        m_pollingPackageNames = (pollingPackageNames == null ? null : Arrays.asList(pollingPackageNames));
-        m_collectionPackageNames = (collectionPackageNames == null ? null : Arrays.asList(collectionPackageNames));
+        m_pollingPackageNames = (pollingPackageNames == null ? Collections.emptyList() : Arrays.asList(pollingPackageNames));
+        m_collectionPackageNames = (collectionPackageNames == null ? Collections.emptyList() : Arrays.asList(collectionPackageNames));
         m_geolocation = geolocation;
         m_latitude = latitude;
         m_longitude = longitude;
         m_priority = priority;
-        m_tags = (tags == null ? null : Arrays.asList(tags));
+        // Because tags is a vararg, if you have no arguments for it, it comes in as String[0]
+        m_tags = ((tags == null || tags.length == 0) ? Collections.emptyList() : Arrays.asList(tags));
     }
 
     @Id 
@@ -247,16 +259,12 @@ public class OnmsMonitoringLocation implements Serializable {
     @JoinTable(name="monitoringLocationsTags", joinColumns = @JoinColumn(name="monitoringLocationId"))
     @Column(name="tag")
     public List<String> getTags() {
-        if (m_tags == null) {
-            return null;
-        } else {
-            return Collections.unmodifiableList(m_tags);
-        }
+        return Collections.unmodifiableList(m_tags);
     }
 
     public void setTags(final List<String> tags) {
         if (tags == null || tags.size() == 0) {
-            m_tags = null;
+            m_tags = Collections.emptyList();
         } else {
             m_tags = new ArrayList<String>(tags);
         }

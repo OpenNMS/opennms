@@ -50,6 +50,7 @@ import org.opennms.netmgt.config.notifications.Notification;
 import org.opennms.netmgt.dao.api.CategoryDao;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
+import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.ServiceTypeDao;
 import org.opennms.netmgt.filter.FilterDaoFactory;
@@ -79,6 +80,9 @@ import org.springframework.test.context.ContextConfiguration;
 public class NotificationManagerIT implements InitializingBean {
 	@Autowired
 	private DataSource m_dataSource;
+
+	@Autowired
+	private MonitoringLocationDao m_locationDao;
 
 	@Autowired
 	private NodeDao m_nodeDao;
@@ -136,6 +140,7 @@ public class NotificationManagerIT implements InitializingBean {
         m_serviceTypeDao.save(serviceType);
 
 		node = new OnmsNode("node 1");
+		node.setLocation(m_locationDao.get(MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID));
 		node.addCategory(category1);
 		node.addCategory(category2);
 		node.addCategory(category3);
@@ -146,6 +151,7 @@ public class NotificationManagerIT implements InitializingBean {
 
         // node 2
         node = new OnmsNode("node 2");
+        node.setLocation(m_locationDao.get(MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID));
 		node.addCategory(category1);
 		node.addCategory(category2);
 		node.addCategory(category4);
@@ -161,6 +167,7 @@ public class NotificationManagerIT implements InitializingBean {
         
         // node 3
         node = new OnmsNode("node 3");
+        node.setLocation(m_locationDao.get(MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID));
         m_nodeDao.save(node);
         
         ipInterface = new OnmsIpInterface(addr("192.168.1.2"), node);
@@ -170,6 +177,7 @@ public class NotificationManagerIT implements InitializingBean {
         
         // node 4 has an interface, but no services
         node = new OnmsNode("node 4");
+        node.setLocation(m_locationDao.get(MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID));
         m_nodeDao.save(node);
 
         ipInterface = new OnmsIpInterface(addr("192.168.1.3"), node);
@@ -177,6 +185,7 @@ public class NotificationManagerIT implements InitializingBean {
         
         // node 5 has no interfaces
         node = new OnmsNode("node 5");
+        node.setLocation(m_locationDao.get(MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID));
         m_nodeDao.save(node);
 
         m_nodeDao.flush();

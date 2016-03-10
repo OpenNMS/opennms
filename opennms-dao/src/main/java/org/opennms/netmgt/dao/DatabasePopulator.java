@@ -301,7 +301,7 @@ public class DatabasePopulator {
         LOG.debug("==== DatabasePopulator Starting ====");
 
         final NetworkBuilder builder = new NetworkBuilder();
-        
+
         final OnmsNode node1 = buildNode1(builder);
         getNodeDao().save(node1);
         getNodeDao().flush();
