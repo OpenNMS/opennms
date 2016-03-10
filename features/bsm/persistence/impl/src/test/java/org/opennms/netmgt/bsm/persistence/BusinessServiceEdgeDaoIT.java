@@ -47,6 +47,7 @@ import org.opennms.netmgt.bsm.persistence.api.BusinessServiceEdgeDao;
 import org.opennms.netmgt.bsm.persistence.api.BusinessServiceEntity;
 import org.opennms.netmgt.bsm.persistence.api.IPServiceEdgeEntity;
 import org.opennms.netmgt.bsm.persistence.api.functions.map.IdentityEntity;
+import org.opennms.netmgt.bsm.persistence.api.functions.map.IgnoreEntity;
 import org.opennms.netmgt.bsm.persistence.api.functions.map.MapFunctionDao;
 import org.opennms.netmgt.bsm.persistence.api.functions.reduce.HighestSeverityEntity;
 import org.opennms.netmgt.bsm.persistence.api.functions.reduce.ReductionFunctionDao;
@@ -150,6 +151,6 @@ public class BusinessServiceEdgeDaoIT {
 
         // Delete an edge
         m_businessServiceEdgeDao.delete(edge);
-        assertEquals(0, m_businessServiceEdgeDao.countAll()); 
+        assertEquals(0, m_businessServiceEdgeDao.countAll());
     }
 }

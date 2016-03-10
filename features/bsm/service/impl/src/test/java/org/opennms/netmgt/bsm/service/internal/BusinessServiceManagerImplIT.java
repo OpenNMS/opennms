@@ -28,11 +28,14 @@
 
 package org.opennms.netmgt.bsm.service.internal;
 
+import static org.junit.Assert.assertEquals;
 import static org.opennms.netmgt.bsm.test.BsmTestUtils.createAlarmWrapper;
 import static org.opennms.netmgt.bsm.test.BsmTestUtils.createDummyBusinessService;
 
 import java.util.Objects;
 
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Iterators;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -46,6 +49,13 @@ import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.netmgt.bsm.persistence.api.BusinessServiceDao;
 import org.opennms.netmgt.bsm.persistence.api.BusinessServiceEdgeDao;
 import org.opennms.netmgt.bsm.persistence.api.BusinessServiceEntity;
+import org.opennms.netmgt.bsm.persistence.api.IPServiceEdgeEntity;
+import org.opennms.netmgt.bsm.persistence.api.functions.map.IdentityEntity;
+import org.opennms.netmgt.bsm.persistence.api.functions.map.IgnoreEntity;
+import org.opennms.netmgt.bsm.persistence.api.functions.map.MapFunctionDao;
+import org.opennms.netmgt.bsm.persistence.api.functions.reduce.HighestSeverityEntity;
+import org.opennms.netmgt.bsm.persistence.api.functions.reduce.ReductionFunctionDao;
+import org.opennms.netmgt.bsm.persistence.api.functions.reduce.ThresholdEntity;
 import org.opennms.netmgt.bsm.service.BusinessServiceManager;
 import org.opennms.netmgt.bsm.service.BusinessServiceStateMachine;
 import org.opennms.netmgt.bsm.service.model.BusinessService;
@@ -53,8 +63,13 @@ import org.opennms.netmgt.bsm.service.model.IpService;
 import org.opennms.netmgt.bsm.service.model.Status;
 import org.opennms.netmgt.bsm.service.model.edge.Edge;
 import org.opennms.netmgt.bsm.service.model.edge.IpServiceEdge;
+import org.opennms.netmgt.bsm.service.model.functions.map.Decrease;
 import org.opennms.netmgt.bsm.service.model.functions.map.Identity;
+import org.opennms.netmgt.bsm.service.model.functions.map.Increase;
+import org.opennms.netmgt.bsm.service.model.functions.reduce.HighestSeverity;
+import org.opennms.netmgt.bsm.service.model.functions.reduce.Threshold;
 import org.opennms.netmgt.bsm.test.BsmDatabasePopulator;
+import org.opennms.netmgt.bsm.test.BusinessServiceEntityBuilder;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.test.JUnitConfigurationEnvironment;
@@ -99,6 +114,12 @@ public class BusinessServiceManagerImplIT {
 
     @Autowired
     private BusinessServiceEdgeDao edgeDao;
+
+    @Autowired
+    private ReductionFunctionDao reductionFunctionDao;
+
+    @Autowired
+    private MapFunctionDao mapFunctionDao;
 
     @Autowired
     @Qualifier("bsmDatabasePopulator")
@@ -290,6 +311,53 @@ public class BusinessServiceManagerImplIT {
         businessServiceManager.addChildEdge(getBusinessService(serviceId1), getBusinessService(serviceId2), new Identity(), Edge.DEFAULT_WEIGHT);
         businessServiceManager.addChildEdge(getBusinessService(serviceId2), getBusinessService(serviceId3), new Identity(), Edge.DEFAULT_WEIGHT);
         businessServiceManager.addChildEdge(getBusinessService(serviceId3), getBusinessService(serviceId1), new Identity(), Edge.DEFAULT_WEIGHT);
+    }
+
+    @Test
+    @Transactional
+    public void ensureNoDanglingReductionFunctions() {
+        // Create a business service
+        final BusinessService bs = this.createBusinessService("bs1");
+        bs.save();
+
+        // Ensure there is an associated reduction function
+        assertEquals(1, reductionFunctionDao.countAll());
+
+        bs.setReduceFunction(new HighestSeverity());
+        bs.save();
+
+        // Ensure there is still only one associated reduction function
+        assertEquals(1, reductionFunctionDao.countAll());
+
+        // Delete
+        bs.delete();
+
+        // There should be no reduction function left
+        assertEquals(0, reductionFunctionDao.countAll());
+    }
+
+    @Test
+    public void ensureNoDanglingMapFunctions() {
+        // Create a business service with an edge
+        final BusinessService bs = this.createBusinessService("bs1");
+        bs.addReductionKeyEdge("my-reduction-key", new Increase(), Edge.DEFAULT_WEIGHT, "My Reduction Key");
+        bs.save();
+
+        // Ensure there is an associated mapping function
+        assertEquals(1, mapFunctionDao.countAll());
+
+        Iterables.getOnlyElement(bs.getReductionKeyEdges())
+                 .setMapFunction(new Decrease());
+        bs.save();
+
+        // Ensure there is still only one associated mapping function
+        assertEquals(1, mapFunctionDao.countAll());
+
+        // Delete an edge
+        bs.delete();
+
+        // Ensure there are no mapping functions left
+        assertEquals(0, mapFunctionDao.countAll());
     }
 
     private BusinessService createBusinessService(String serviceName) {
