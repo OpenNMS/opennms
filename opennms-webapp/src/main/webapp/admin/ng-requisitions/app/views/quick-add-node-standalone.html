@@ -10,7 +10,7 @@
 <!-- Content -->
 
 <div class="row">
-  <div class="col-md-8">
+  <div class="col-md-6">
     <form name="quickAddNodeForm">
     <fieldset ng-disabled="isSaving">
 
@@ -19,7 +19,7 @@
         <div class="panel-body">
           <div class="form-group" ng-class="{ 'has-error' : quickAddNodeForm.foreignSource.$invalid }">
             <label class="control-label" for="foreignSource">Requisition</label>
-            <input class="form-control" type="text" name="foreignSource" placeholder="Requisition Name (hit space bar to see the options)" ng-model="node.foreignSource" typeahead-editable="false" typeahead-min-length="0" uib-typeahead="fs for fs in foreignSources | filter:$viewValue" required></input>
+            <input class="form-control" type="text" name="foreignSource" placeholder="Select a Requisition (hit space bar to see the options or start typing the name)" ng-model="node.foreignSource" typeahead-editable="false" typeahead-min-length="0" uib-typeahead="fs for fs in foreignSources | filter:$viewValue" required></input>
           </div>
           <div class="form-group" ng-class="{ 'has-error' : quickAddNodeForm.ipAddress.$invalid }">
             <label class="control-label" for="ipAddress">IP Address</label>
@@ -34,7 +34,7 @@
       </div>
 
       <div class="panel panel-default">
-        <div class="panel-heading"><h3 class="panel-title">SNMP</h3></div>
+        <div class="panel-heading"><h3 class="panel-title">SNMP Parameters (optional)</h3></div>
         <div class="panel-body">
           <div class="form-group">
             <div class="checkbox">
@@ -45,18 +45,11 @@
             </div>
           </div>
           <div class="form-group">
-            <label class="control-label" for="snmpVersion">SNMP Parameters (optional)</label>
-            <div class="radio">
-              <label>
-                <input type="radio" name="snmpVersion" id="vesion_1" value="v1" ng-model="node.snmpVersion" ng-disabled="node.noSnmp">
-                Version 1
-              </la
-            <div class="radio">
-              <label>
-                <input type="radio" name="snmpVersion" id="version_2c" value="v2c" ng-model="node.snmpVersion" ng-disabled="node.noSnmp">
-                Version 2c
-              </label>
-            </div>
+            <label class="control-label" for="snmpVersion">Version</label>
+            <select class="form-control" ng-model="node.snmpVersion" ng-disabled="node.noSnmp">
+              <option>v1</option>
+              <option selected>v2c</option>
+            </select>
           </div>
           <div class="form-group">
             <label class="control-label" for="snmpCommunity">Community String</label>
@@ -124,7 +117,7 @@
 
   </div> <!-- column -->
 
-  <div class="col-md-4">
+  <div class="col-md-6">
     <div class="panel panel-default">
       <div class="panel-heading">
         <h3 class="panel-title">Node Quick-Add</h3>

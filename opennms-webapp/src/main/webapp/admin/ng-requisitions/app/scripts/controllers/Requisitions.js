@@ -143,6 +143,7 @@
         backdrop: 'static',
         controller: 'QuickAddNodeModalController',
         templateUrl: 'views/quick-add-node.html',
+        size: 'lg',
         resolve: {
           foreignSources: function() { return availableForeignSources; }
         }

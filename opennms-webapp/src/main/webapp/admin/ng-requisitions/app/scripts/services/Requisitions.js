@@ -286,21 +286,19 @@
       var deferred = $q.defer();
       var node = quickNode.createRequisitionedNode();
       requisitionsService.saveNode(node).then(
-        function() { // success
+        function() { // saveNode:success
           $log.debug('The node ' + node.nodeLabel + ' has been saved.');
-          $timeout(function() {
-            requisitionsService.synchronizeRequisition(node.foreignSource, 'false').then(
-              function() { // success
-                $log.debug('The requisition ' + node.foreignSource + ' has been synchronized.');
-                deferred.resolve();
-              },
-              function() { // failure
-                deferred.reject('Cannot synchronize requisition ' + node.foreignSource);
-              }
-            );
-          }, 5000); // Otherwise, an HTTP 500 is received (NMS-7872)
+          requisitionsService.synchronizeRequisition(node.foreignSource, 'false').then(
+            function() { // synchronizeRequisition:success
+              $log.debug('The requisition ' + node.foreignSource + ' has been synchronized.');
+              deferred.resolve();
+            },
+            function() { // synchronizeRequisition:failure
+              deferred.reject('Cannot synchronize requisition ' + node.foreignSource);
+            }
+          );
         },
-        function() { // failure
+        function() { // saveNode:failure
           deferred.reject('Cannot quick-add node to requisition ' + node.foreignSource);
         }
       );
@@ -1158,17 +1156,17 @@
       if (node.noSnmp == false && node.snmpCommunity != '') {
         var deferred = $q.defer();
         requisitionsService.updateSnmpCommunity(node.ipAddress, node.snmpCommunity, node.snmpVersion).then(
-          function() { // success
+          function() { // updateSnmpCommunity:success
             requisitionsService.internal.addQuickNode(node).then(
-              function() { // success
+              function() { // addQuickNode:success
                 deferred.resolve();
               },
-              function(msg) { // failure
+              function(msg) { // addQuickNode:failure
                 deferred.reject(msg);
               }
             );
           },
-          function() { // failure
+          function() { // updateSnmpCommunity:failure
             deferred.reject('Cannot update SNMP credentials for ' + node.ipAddress);
           }
         );
