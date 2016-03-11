@@ -143,4 +143,12 @@
             <column name="friendlyname" type="varchar(255)"/>
         </addColumn>
     </changeSet>
+    <changeSet author="mvrueden" id="18.0.0-bsm-map-reduce-cleanup">
+        <delete tableName="bsm_reduce">
+            <where>id not in(select distinct bsm_reduce_id from bsm_service)</where>
+        </delete>
+        <delete tableName="bsm_map">
+            <where>id not in(select distinct bsm_map_id from bsm_service_edge)</where>
+        </delete>
+    </changeSet>
 </databaseChangeLog>
