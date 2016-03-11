@@ -266,7 +266,10 @@ public class DatabasePopulator {
             m_serviceTypeDao.delete(service);
         }
         for (final OnmsMonitoringLocation location : m_monitoringLocationDao.findAll()) {
-            m_monitoringLocationDao.delete(location);
+            // Don't delete the default localhost monitoring location
+            if (!MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID.equals(location.getLocationName())) {
+                m_monitoringLocationDao.delete(location);
+            }
         }
         for (final OnmsCategory category : m_categoryDao.findAll()) {
             m_categoryDao.delete(category);
