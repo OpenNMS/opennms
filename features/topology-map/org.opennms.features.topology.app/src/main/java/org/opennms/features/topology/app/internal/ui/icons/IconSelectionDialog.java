@@ -127,7 +127,7 @@ public class IconSelectionDialog extends Window implements Window.CloseListener,
 
     private List<String> getElementsToShow() {
         final String opennmsHomeStr = System.getProperty("opennms.home", "");
-        final String propertiesFilename = "org.opennms.features.topology.app.icons.properties";
+        final String propertiesFilename = "org.opennms.features.topology.app.icons.list";
         final Path configPath = Paths.get(opennmsHomeStr, "etc", propertiesFilename);
         try {
             List<String> strings = Files.readAllLines(configPath);
