@@ -37,6 +37,7 @@ import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsServiceType;
 import org.opennms.netmgt.model.PrimaryType;
+import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 import org.opennms.netmgt.model.OnmsNode.NodeLabelSource;
 import org.opennms.netmgt.model.OnmsNode.NodeType;
 import org.opennms.netmgt.provision.service.ProvisionService;
@@ -54,36 +55,18 @@ public abstract class SaveOrUpdateOperation extends ImportOperation {
     
     private ScanManager m_scanManager;
     private String m_rescanExisting = Boolean.TRUE.toString();
-    
-    /**
-     * <p>Constructor for SaveOrUpdateOperation.</p>
-     *
-     * @param foreignSource a {@link java.lang.String} object.
-     * @param foreignId a {@link java.lang.String} object.
-     * @param nodeLabel a {@link java.lang.String} object.
-     * @param building a {@link java.lang.String} object.
-     * @param city a {@link java.lang.String} object.
-     * @param provisionService a {@link org.opennms.netmgt.provision.service.ProvisionService} object.
-     */
-    public SaveOrUpdateOperation(String foreignSource, String foreignId, String nodeLabel, String building, String city, ProvisionService provisionService) {
-		this(null, foreignSource, foreignId, nodeLabel, building, city, provisionService, Boolean.TRUE.toString());
-	}
 
-	/**
-	 * <p>Constructor for SaveOrUpdateOperation.</p>
-	 *
-	 * @param nodeId a {@link java.lang.Integer} object.
-	 * @param foreignSource a {@link java.lang.String} object.
-	 * @param foreignId a {@link java.lang.String} object.
-	 * @param nodeLabel a {@link java.lang.String} object.
-	 * @param building a {@link java.lang.String} object.
-	 * @param city a {@link java.lang.String} object.
-	 * @param provisionService a {@link org.opennms.netmgt.provision.service.ProvisionService} object.
-         * @param rescanExisting a {@link java.lang.String} object
-	 */
-	public SaveOrUpdateOperation(Integer nodeId, String foreignSource, String foreignId, String nodeLabel, String building, String city, ProvisionService provisionService, String rescanExisting) {
-	    super(provisionService);
-	    
+    public SaveOrUpdateOperation(String foreignSource, String foreignId, String nodeLabel, String building, String city, ProvisionService provisionService) {
+        this(null, foreignSource, foreignId, nodeLabel, building, city, provisionService, Boolean.TRUE.toString());
+    }
+
+    public SaveOrUpdateOperation(Integer nodeId, String foreignSource, String foreignId, String nodeLabel, String building, String city, ProvisionService provisionService, String rescanExisting) {
+        this(null, foreignSource, foreignId, nodeLabel, building, city, null, provisionService, Boolean.TRUE.toString());
+    }
+
+    public SaveOrUpdateOperation(Integer nodeId, String foreignSource, String foreignId, String nodeLabel, String building, String city, String location, ProvisionService provisionService, String rescanExisting) {
+        super(provisionService);
+
         m_node = new OnmsNode();
         m_node.setId(nodeId);
 		m_node.setLabel(nodeLabel);
@@ -93,6 +76,7 @@ public abstract class SaveOrUpdateOperation extends ImportOperation {
         m_node.setForeignId(foreignId);
         m_node.getAssetRecord().setBuilding(building);
         m_node.getAssetRecord().setCity(city);
+        m_node.setLocation(new OnmsMonitoringLocation(location, null));
         m_rescanExisting = rescanExisting;
 	}
 	

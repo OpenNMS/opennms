@@ -172,7 +172,8 @@ public class OnmsMonitoringLocation implements Serializable {
         m_tags = ((tags == null || tags.length == 0) ? Collections.emptyList() : Arrays.asList(tags));
     }
 
-    @Id 
+    @Id
+    @XmlID
     @Column(name="id", nullable=false)
     public String getLocationName() {
         return m_locationName;

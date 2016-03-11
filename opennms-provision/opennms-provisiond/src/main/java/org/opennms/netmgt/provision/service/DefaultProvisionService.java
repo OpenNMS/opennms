@@ -213,11 +213,28 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
         return System.getProperty("org.opennms.provisiond.enableDeletionOfRequisitionedEntities", "false").equalsIgnoreCase("true");
     }
 
+    private void updateLocation(final OnmsNode node) {
+        String locationName = null;
+        if (node.getLocation() == null) {
+            locationName = MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID;
+        } else if (node.getLocation().getMonitoringArea() == null) {
+            locationName = node.getLocation().getLocationName();
+        }
+        if (locationName != null) {
+            try {
+                final OnmsMonitoringLocation location = m_monitoringLocationDao.get(locationName);
+                node.setLocation(location);
+            } catch (final IllegalArgumentException e) {
+                LOG.warn("Unknown monitoring location: {}", locationName);
+            }
+        }
+    }
+
     /** {@inheritDoc} */
     @Transactional
     @Override
     public void insertNode(final OnmsNode node) {
-
+        updateLocation(node);
         m_nodeDao.save(node);
         m_nodeDao.flush();
 
@@ -229,7 +246,7 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
     @Transactional
     @Override
     public void updateNode(final OnmsNode node, String rescanExisting) {
-
+        updateLocation(node);
         final OnmsNode dbNode = m_nodeDao.getHierarchy(node.getId());
 
         // on an update, leave categories alone, let the NodeScan handle applying requisitioned categories
