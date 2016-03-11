@@ -83,8 +83,8 @@ public class V6Pinger extends AbstractPinger<Inet6Address> {
         Logging.putPrefix("icmp");
         try {
             final int pingerId = getPingerId();
-            final NativeDatagramPacket datagram = new NativeDatagramPacket(65535);
             while (!isFinished()) {
+                final NativeDatagramPacket datagram = new NativeDatagramPacket(65535);
                 getPingSocket().receive(datagram);
                 final long received = System.nanoTime();
     

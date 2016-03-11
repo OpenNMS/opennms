@@ -107,8 +107,8 @@ public class IsIsLinkDaoHibernate extends AbstractDaoHibernate<IsIsLink, Integer
                 "np.nodesysoid as targetnodesysoid, " +
                 "np.nodesyslocation as targetnodelocation, " +
                 "np.nodetype as targetnodetype, " +
-                "l2.isiscircifindex as l2_isiscircifindex " +
-
+                "l2.isiscircifindex as l2_isiscircifindex, " +
+                "l1.isislinklastpolltime as lastPollTime " +
                 "from isislink l1 " +
                 "left join isiselement e1 on l1.nodeid = e1.nodeid " +
                 "left join node n on n.nodeid = e1.nodeid " +
@@ -139,7 +139,10 @@ public class IsIsLinkDaoHibernate extends AbstractDaoHibernate<IsIsLink, Integer
 	                                (String) objs[11],
 	                                (String) objs[12],
 	                                NodeType.getNodeTypeFromChar((char)objs[13]),
-	                                (Integer) objs[14]));
+	                                (Integer) objs[14],
+	                                (Date) objs[15]
+	                                        )
+	                              );
 	            }
 	        }
 
