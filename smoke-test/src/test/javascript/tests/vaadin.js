@@ -11,7 +11,7 @@ var urls = [
 	'wallboard-config'
 ];
 
-casper.test.begin('Vaadin Applications', 20, {
+casper.test.begin('Vaadin Applications', {
 	setUp: function() {
 		opennms.initialize();
 	},
