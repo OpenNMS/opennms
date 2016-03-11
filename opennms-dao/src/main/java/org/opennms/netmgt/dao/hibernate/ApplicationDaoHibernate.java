@@ -28,8 +28,15 @@
 
 package org.opennms.netmgt.dao.hibernate;
 
+import java.net.InetAddress;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
 import org.opennms.netmgt.dao.api.ApplicationDao;
+import org.opennms.netmgt.dao.api.ApplicationStatusEntity;
 import org.opennms.netmgt.model.OnmsApplication;
+import org.opennms.netmgt.model.OnmsSeverity;
 
 public class ApplicationDaoHibernate extends AbstractDaoHibernate<OnmsApplication, Integer> implements ApplicationDao {
 
@@ -44,5 +51,22 @@ public class ApplicationDaoHibernate extends AbstractDaoHibernate<OnmsApplicatio
         @Override
 	public OnmsApplication findByName(final String name) {
 		return findUnique("from OnmsApplication as app where app.name = ?", name);
+	}
+
+	@Override
+	public List<ApplicationStatusEntity> getAlarmStatus() {
+		final StringBuilder sql = new StringBuilder();
+		sql.append("select distinct alarm.node.id, alarm.ipAddr, alarm.serviceType.id, min(alarm.lastEventTime), max(alarm.severity), (count(*) - count(alarm.alarmAckTime)) ");
+		sql.append("from OnmsAlarm alarm ");
+		sql.append("where alarm.severity > 3 and alarm.node.id != null and alarm.ipAddr != null and alarm.serviceType.id != null and alarm.alarmAckTime is null ");
+		sql.append("group by alarm.node.id, alarm.ipAddr, alarm.serviceType.id");
+
+		List<ApplicationStatusEntity> entityList = new ArrayList<>();
+		List<Object[][]> objects = (List<Object[][]>) getHibernateTemplate().find(sql.toString());
+		for (Object[] eachRow : objects) {
+			ApplicationStatusEntity entity = new ApplicationStatusEntity((Integer)eachRow[0], (InetAddress)eachRow[1], (Integer) eachRow[2], (Date) eachRow[3], (OnmsSeverity) eachRow[4], (Long) eachRow[5]);
+			entityList.add(entity);
+		}
+		return entityList;
 	}
 }
