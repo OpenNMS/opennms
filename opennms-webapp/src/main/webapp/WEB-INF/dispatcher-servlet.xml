@@ -233,6 +233,11 @@
         <property name="businessServiceManager" ref="businessServiceManager"/>
     </bean>
 
+    <bean name="/application/summary-box.htm" class="org.opennms.web.controller.application.ApplicationBoxController">
+        <property name="successView" value="application/summary-box"/>
+        <property name="applicationDao" ref="applicationDao"/>
+    </bean>
+
    	<bean name="/event/*" class="org.opennms.web.controller.event.EventController">
     </bean>
 

@@ -26,12 +26,13 @@
  *      http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.plugins.topo.application;
+package org.opennms.netmgt.dao.api;
 
 import java.net.InetAddress;
 import java.util.Date;
 import java.util.Objects;
 
+import org.opennms.netmgt.model.OnmsServiceType;
 import org.opennms.netmgt.model.OnmsSeverity;
 
 public class ApplicationStatusEntity {
@@ -46,6 +47,10 @@ public class ApplicationStatusEntity {
             this.nodeId = nodeId;
             this.serviceId = serviceId;
             this.ipAddress = ipAddress;
+        }
+
+        public Key(Integer nodeId, OnmsServiceType serviceType, InetAddress ipAddress) {
+            this (String.valueOf(Objects.requireNonNull(nodeId)), String.valueOf(Objects.requireNonNull(serviceType).getId()), Objects.requireNonNull(ipAddress).toString());
         }
 
         @Override
@@ -74,7 +79,7 @@ public class ApplicationStatusEntity {
     private final OnmsSeverity severity;
     private long alarmCount;
 
-    public ApplicationStatusEntity(Integer nodeId, InetAddress ipAddress, Integer serviceTypeId,  Date lastEventTime, OnmsSeverity severity, Long alarmCount) {
+    public ApplicationStatusEntity(Integer nodeId, InetAddress ipAddress, Integer serviceTypeId, Date lastEventTime, OnmsSeverity severity, Long alarmCount) {
         this.nodeId = nodeId;
         this.ipAddress = ipAddress;
         this.lastEventTime = lastEventTime;

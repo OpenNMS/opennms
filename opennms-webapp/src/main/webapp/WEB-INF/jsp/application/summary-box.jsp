@@ -32,15 +32,15 @@
 <%@ page language="java" contentType="text/html" session="true" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 
-<!-- bsm/summary-box.htm -->
+<!-- application/summary-box.htm -->
 <div class="panel panel-default">
   <div class="panel-heading">
     <h3 class="panel-title">
-      <a href="#">Business Services with Pending Problems</a>
+      <a href="#">Applications with Pending Problems</a>
     </h3>
   </div>
   <c:choose>
-    <c:when test="${empty services}">
+    <c:when test="${empty summaries}">
       <div class="panel-body">
         <p class="noBottomMargin">
           There are no pending problems.
@@ -49,23 +49,23 @@
     </c:when>
     <c:otherwise>
       <table class="table table-condensed severity">
-        <c:forEach var="service" items="${services}">
-          <c:url var="bsTopoLink" value="topology">
-            <c:param name="focus-vertices" value="${service.id}"/>
+        <c:forEach var="summary" items="${summaries}">
+          <c:url var="applicationTopoLink" value="topology">
+            <c:param name="focus-vertices" value="${summary.application.id}"/>
             <c:param name="szl" value="1"/>
             <c:param name="layout" value="Hierarchy Layout" />
-            <c:param name="provider" value="Business Services" />
+            <c:param name="provider" value="Application" />
           </c:url>
-          <tr class="severity-${service.operationalStatus.label} nodivider">
+          <tr class="severity-${summary.severity.label} nodivider">
             <td class="bright">
-              <a href="${bsTopoLink}">${service.name}</a>
+              <a href="${applicationTopoLink}">${summary.application.name}</a>
             </td>
           </tr>
         </c:forEach>
       </table>
       <c:if test="${more}">
         <div class="panel-footer text-right">
-          Not all Business Services with Pending Problems are shown.
+          Not all Applications with Pending Problems are shown.
         </div>
       </c:if>
     </c:otherwise>

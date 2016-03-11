@@ -40,6 +40,8 @@ import org.opennms.features.topology.api.topo.Status;
 import org.opennms.features.topology.api.topo.StatusProvider;
 import org.opennms.features.topology.api.topo.VertexProvider;
 import org.opennms.features.topology.api.topo.VertexRef;
+import org.opennms.netmgt.dao.api.ApplicationDao;
+import org.opennms.netmgt.dao.api.ApplicationStatusEntity;
 import org.opennms.netmgt.model.OnmsSeverity;
 
 import com.google.common.base.Predicate;
@@ -47,10 +49,10 @@ import com.google.common.collect.Collections2;
 
 public class ApplicationStatusProvider implements StatusProvider {
 
-    private final ApplicationStatusDao applicationStatusDao;
+    private final ApplicationDao applicationDao;
 
-    public ApplicationStatusProvider(ApplicationStatusDao applicationStatusDao) {
-        this.applicationStatusDao = applicationStatusDao;
+    public ApplicationStatusProvider(ApplicationDao applicationDao) {
+        this.applicationDao = applicationDao;
     }
 
     @Override
@@ -58,7 +60,7 @@ public class ApplicationStatusProvider implements StatusProvider {
         Map<VertexRef, Status> returnMap = new HashMap<>();
         Map<ApplicationStatusEntity.Key, Status> statusMap = new HashMap<>();
 
-        List<ApplicationStatusEntity> result = applicationStatusDao.getAlarmStatus();
+        List<ApplicationStatusEntity> result = applicationDao.getAlarmStatus();
         for (ApplicationStatusEntity eachRow : result) {
             DefaultStatus status = createStatus(eachRow.getSeverity(), eachRow.getCount());
             statusMap.put(eachRow.getKey(), status);
