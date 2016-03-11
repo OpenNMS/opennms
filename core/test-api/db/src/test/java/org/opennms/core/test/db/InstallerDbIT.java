@@ -1613,6 +1613,7 @@ public class InstallerDbIT extends TemporaryDatabaseITCase {
         getInstallerDb().updatePlPgsql();
         getInstallerDb().addStoredProcedures();
 
+        addTableFromSQL("monitoringlocations");
         addTableFromSQL("monitoringsystems");
         addTableFromSQL("node");
         
