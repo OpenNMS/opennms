@@ -332,9 +332,7 @@ public class BusinessServiceEdgeEditWindow extends Window {
              * in the case edge is not null, remove the old object...
              */
             if (edge != null) {
-                Set<? extends Edge> edges = businessService.getEdges(edge.getType());
-                edges.remove(edge);
-                businessService.setEdges(edge.getType(), edges);
+                businessService.removeEdge(edge);
             }
 
             /**
