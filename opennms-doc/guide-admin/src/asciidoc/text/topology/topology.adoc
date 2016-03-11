@@ -137,7 +137,7 @@ NOTE: It is important that each `icon id` is unique overall SVG files. This mean
 If the new icons should be selectable from the _Topology Map's Icon Selection Dialog_ an entry with the new `icon id` must be added to the file `${OPENNMS_HOME}/etc/org.opennms.features.topology.app.icons.properties`.
 
 [source]
-.Snippet of `org.opennms.features.topology.app.icons.properties`
+.Snippet of `org.opennms.features.topology.app.icons.list`
 ----
 access_gateway <1>
 accesspoint
@@ -153,4 +153,4 @@ my-custom <2>
 <1> Already existing icon ids
 <2> New icon id
 
-NOTE: The order of the entries in `org.opennms.features.topology.app.icons.properties` determine the order in the _Icon Selection Dialog_ in the _Topology Map_.
+NOTE: The order of the entries in `org.opennms.features.topology.app.icons.list` determine the order in the _Icon Selection Dialog_ in the _Topology Map_.
