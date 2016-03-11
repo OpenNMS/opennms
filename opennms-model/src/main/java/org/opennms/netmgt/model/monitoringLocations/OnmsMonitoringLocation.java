@@ -46,6 +46,7 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
+import javax.xml.bind.annotation.XmlID;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
@@ -79,6 +80,7 @@ public class OnmsMonitoringLocation implements Serializable {
     /**
      * The name of the location.  This must be a unique identifier.
      */
+    @XmlID
     @XmlAttribute(name="location-name")
     private String m_locationName;
 
@@ -259,7 +261,11 @@ public class OnmsMonitoringLocation implements Serializable {
     @JoinTable(name="monitoringLocationsTags", joinColumns = @JoinColumn(name="monitoringLocationId"))
     @Column(name="tag")
     public List<String> getTags() {
-        return Collections.unmodifiableList(m_tags);
+        if (m_tags == null) {
+            return Collections.emptyList();
+        } else {
+            return Collections.unmodifiableList(m_tags);
+        }
     }
 
     public void setTags(final List<String> tags) {
