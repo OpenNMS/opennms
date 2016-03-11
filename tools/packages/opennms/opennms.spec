@@ -96,6 +96,7 @@ Requires:	jicmp6
 Requires(pre):	%{jdk}
 Requires:	%{jdk}
 Obsoletes:	opennms < 1.3.11
+Recommends: haveged
 
 %description core
 The core backend.  This package contains the main daemon responsible
