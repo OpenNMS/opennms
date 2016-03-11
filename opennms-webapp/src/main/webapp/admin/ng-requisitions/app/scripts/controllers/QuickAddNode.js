@@ -1,4 +1,4 @@
-/*global RequisitionNode:true */
+/*global QuickNode:true,bootbox:true */
 
 /**
 * @author Alejandro Galue <agalue@opennms.org>
@@ -173,7 +173,7 @@
       return this.quickAddNodeForm.foreignSource.$invalid
         || this.quickAddNodeForm.ipAddress.$invalid
         || this.quickAddNodeForm.nodeLabel.$invalid;
-    }
+    };
 
     /**
     * @description Shows an error to the user
@@ -210,10 +210,10 @@
             $scope.errorHandler
           );
         } else {
-          window.location = "/opennms/index.jsp"; // TODO Is this the best way ?
+          window.location = '/opennms/index.jsp'; // TODO Is this the best way ?
         }
       });
-    }
+    };
 
     // Initialize categories
     RequisitionsService.getAvailableCategories().then(

@@ -30,6 +30,15 @@ function Requisition(requisition, isDeployed) {
   self.deployed = isDeployed;
 
   /**
+   * @description The modified flag
+   * @ngdoc property
+   * @name Requisition#modified
+   * @propertyOf Requisition
+   * @returns {boolean} true, if the requisition has been modified
+   */
+  self.modified = false;
+
+  /**
    * @description The name of the requisition (the foreign source)
    * @ngdoc property
    * @name Requisition#foreignSource
@@ -57,6 +66,20 @@ function Requisition(requisition, isDeployed) {
   self.lastImport = requisition['last-import'];
 
   /**
+   * @description The configured nodes array
+   * @ngdoc property
+   * @name Requisition#nodes
+   * @propertyOf Requisition
+   * @returns {array} The nodes array
+   */
+  self.nodes = [];
+
+  angular.forEach(requisition.node, function(node) {
+    var requisitionNode = new RequisitionNode(self.foreignSource, node, isDeployed);
+    self.nodes.push(requisitionNode);
+  });
+
+  /**
    * @description The number of nodes stored on the database
    * @ngdoc property
    * @name Requisition#nodesInDatabase
@@ -72,21 +95,22 @@ function Requisition(requisition, isDeployed) {
    * @propertyOf Requisition
    * @returns {interger} number of nodes defined
    */
-  self.nodesDefined = 0;
+  self.nodesDefined = self.nodes.length;
 
   /**
-   * @description The configured nodes array
-   * @ngdoc property
-   * @name Requisition#nodes
-   * @propertyOf Requisition
-   * @returns {array} The nodes array
-   */
-  self.nodes = [];
-
-  angular.forEach(requisition.node, function(node) {
-    var requisitionNode = new RequisitionNode(self.foreignSource, node, isDeployed);
-    self.nodes.push(requisitionNode);
-  });
+  * @description Checks if the requisition has been changed
+  *
+  * @name Requisition:isModified
+  * @ngdoc method
+  * @methodOf Requisition
+  * @returns {boolean} true if the requisition has been changed or modified.
+  */
+  self.isModified = function() {
+    if (self.modified) {
+      return true;
+    }
+    return ! self.deployed;
+  };
 
   /**
   * @description Gets the array possition for a particular node
@@ -107,18 +131,17 @@ function Requisition(requisition, isDeployed) {
   };
 
   /**
-  * @description Updates the internal statistics of nodes defined/deployed
+  * @description Gets a specific node object.
   *
-  * @name Requisition:updateStats
+  * @name Requisition:getNode
   * @ngdoc method
+  * @param {string} foreignId The foreign ID of the node
   * @methodOf Requisition
+  * @returns {object} the node object.
   */
-  self.updateStats = function() {
-    if (self.deployed) {
-      self.nodesInDatabase = self.nodes.length;
-    } else {
-      self.nodesDefined = self.nodes.length;
-    }
+  self.getNode = function(foreignId) {
+    var idx = self.indexOf(foreignId);
+    return idx < 0 ? null : self.nodes[idx];
   };
 
   /**
@@ -131,13 +154,13 @@ function Requisition(requisition, isDeployed) {
   */
   self.setDeployed = function(deployed) {
     self.deployed = deployed;
+    self.modified = false;
     angular.forEach(self.nodes, function(node) {
       node.deployed = deployed;
+      node.modified = false;
     });
-    self.updateStats();
+    self.lastImport = Date.now();
   };
-
-  self.updateStats();
 
   self.className = 'Requisition';
 

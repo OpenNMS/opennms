@@ -144,7 +144,7 @@
     * @methodOf RequisitionController
     */
     $scope.synchronize = function() {
-      SynchronizeService.synchronize($scope.foreignSource, $scope.errorHandler);
+      SynchronizeService.synchronize($scope.requisition, $scope.errorHandler);
     };
 
     /**
@@ -205,6 +205,22 @@
       $scope.totalItems = $scope.filteredNodes.length;
       $scope.numPages = Math.ceil($scope.totalItems / $scope.pageSize);
     };
+
+    /**
+    * @description Refreshes the deployed statistics for the requisition from the server
+    *
+    * @name RequisitionController:refresh
+    * @ngdoc method
+    * @methodOf RequisitionController
+    */
+    $scope.refresh = function() {
+      RequisitionsService.updateDeployedStatsForRequisition($scope.requisition).then(
+        function() { // success
+          growl.success('The deployed statistics has been updated.');
+        },
+        $scope.errorHandler
+      );
+    }
 
     /**
     * @description Initializes the local requisition from the server

@@ -594,7 +594,7 @@ public class DefaultRequisitionAccessService implements RequisitionAccessService
             @Override public DeployedStats call() throws Exception {
                 final DeployedStats deployedStats = new DeployedStats();
                 final Map<String,Date> lastImportedMap = new HashMap<String,Date>();
-                getDeployedRequisitions().forEach(r -> {
+                getDeployedForeignSourceRepository().getRequisitions().forEach(r -> {
                     lastImportedMap.put(r.getForeignSource(), r.getLastImportAsDate());
                 });
                 Map<String,Set<String>> map = m_nodeDao.getForeignIdsPerForeignSourceMap();
@@ -605,6 +605,21 @@ public class DefaultRequisitionAccessService implements RequisitionAccessService
                     stats.setLastImported(lastImportedMap.get(e.getKey()));
                     deployedStats.add(stats);
                 });
+                return deployedStats;
+            }
+        });
+    }
+
+    // GLOBAL
+    @Override
+    public DeployedRequisitionStats getDeployedStats(String foreignSource) {
+        return submitAndWait(new Callable<DeployedRequisitionStats>() {
+            @Override public DeployedRequisitionStats call() throws Exception {
+                final DeployedRequisitionStats deployedStats = new DeployedRequisitionStats();
+                final Requisition fs = getDeployedForeignSourceRepository().getRequisition(foreignSource);
+                deployedStats.setForeignSource(foreignSource);
+                deployedStats.setLastImported(fs.getLastImportAsDate());
+                deployedStats.addAll(m_nodeDao.getForeignIdsPerForeignSource(foreignSource));
                 return deployedStats;
             }
         });

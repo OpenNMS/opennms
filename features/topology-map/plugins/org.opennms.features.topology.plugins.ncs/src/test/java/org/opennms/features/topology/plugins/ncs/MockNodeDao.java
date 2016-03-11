@@ -178,6 +178,12 @@ public class MockNodeDao implements NodeDao {
     }
 
     @Override
+    public Set<String> getForeignIdsPerForeignSource(String foreignSource) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
     public List<OnmsNode> findAllByVarCharAssetColumn(String columnName,
             String columnValue) {
         // TODO Auto-generated method stub

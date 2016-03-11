@@ -35,7 +35,6 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.MockLogAppender;
@@ -367,6 +366,14 @@ public class RequisitionRestServiceIT extends AbstractSpringJerseyRestTestCase {
         final List<Parm> parms = event.getParmCollection();
         assertEquals(2, parms.size());
         assertEquals("false", parms.get(1).getValue().getContent());
+    }
+
+    @Test
+    public void testDeployedStats() throws Exception {
+        createRequisition();
+
+        String xml = sendRequest(GET, "/requisitions/deployed/stats", 200);
+        assertTrue(xml.contains("deployed-stats"));
     }
 
     private void createRequisition() throws Exception {

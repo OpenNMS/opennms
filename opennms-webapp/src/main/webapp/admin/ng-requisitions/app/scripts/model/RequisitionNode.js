@@ -45,6 +45,15 @@ function RequisitionNode(foreignSource, node, isDeployed) {
   self.deployed = isDeployed;
 
   /**
+   * @description The modified flag
+   * @ngdoc property
+   * @name RequisitionNode#modified
+   * @propertyOf RequisitionNode
+   * @returns {boolean} true, if the node has been modified
+   */
+  self.modified = false;
+
+  /**
    * @description The foreign Id
    * @ngdoc property
    * @name RequisitionNode#foreignId
@@ -150,6 +159,21 @@ function RequisitionNode(foreignSource, node, isDeployed) {
   angular.forEach(node['category'], function(category) {
     self.categories.push(category);
   });
+
+  /**
+  * @description Check if the node has been changed
+  *
+  * @name RequisitionNode:isModified
+  * @ngdoc method
+  * @methodOf RequisitionNode
+  * @returns {boolean} true if the node has been changed or modified.
+  */
+  self.isModified = function() {
+    if (self.modified) {
+      return true;
+    }
+    return ! self.deployed;
+  };
 
   /**
   * @description Adds a new interface to the node

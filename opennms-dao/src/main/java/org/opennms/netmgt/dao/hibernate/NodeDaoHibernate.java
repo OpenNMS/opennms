@@ -116,12 +116,27 @@ public class NodeDaoHibernate extends AbstractDaoHibernate<OnmsNode, Integer> im
         for (Object row[] : rows) {
             final String foreignSource = (String) row[0];
             final String foreignId = (String) row[1];
-            if (!map.containsKey(foreignSource)) {
-                map.put(foreignSource, new TreeSet<String>());
+            if (foreignSource != null && foreignId != null) {
+                if (!map.containsKey(foreignSource)) {
+                    map.put(foreignSource, new TreeSet<String>());
+                }
+                map.get(foreignSource).add(foreignId);
             }
-            map.get(foreignSource).add(foreignId);
         }
         return map;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public Set<String> getForeignIdsPerForeignSource(String foreignSource) {
+        Set<String> set = new TreeSet<String>();
+        List<String> rows = findObjects(String.class, "select n.foreignId from OnmsNode as n where n.foreignSource = ?", foreignSource);
+        for (String foreignId : rows) {
+            if (foreignId != null) {
+                set.add(foreignId);
+            }
+        }
+        return set;
     }
 
     /** {@inheritDoc} */

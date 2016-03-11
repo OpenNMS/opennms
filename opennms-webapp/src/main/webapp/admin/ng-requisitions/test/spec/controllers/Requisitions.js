@@ -51,7 +51,7 @@ describe('Controller: RequisitionsController', function () {
     createController();
     scope.$digest();
     expect(mockRequisitionsService.getRequisitions).toHaveBeenCalled();
-    expect(scope.requisitions.status).not.toBe(null);
+    expect(scope.requisitionsData.requisitions.length).toBe(0);
   });
 
 });

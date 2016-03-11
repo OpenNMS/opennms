@@ -49,14 +49,14 @@
     $scope.loaded = false;
 
     /**
-    * @description The requisitions list
+    * @description The requisitions data
     *
     * @ngdoc property
-    * @name RequisitionsController#requisitions
+    * @name RequisitionsController#requisitionsData
     * @propertyOf RequisitionsController
-    * @returns {array} The requisitions array
+    * @returns {object} The requisitions data
     */
-    $scope.requisitions = [];
+    $scope.requisitionsData = { requisitions: [] };
 
     /**
     * @description The filtered version of the requisitions list
@@ -111,23 +111,6 @@
     };
 
     /**
-    * @description Returns the index of a requisition
-    *
-    * @name RequisitionsController:indexOfRequisition
-    * @ngdoc method
-    * @methodOf RequisitionsController
-    * @param {string} foreignSource The name of the requisition
-    */
-    $scope.indexOfRequisition = function(foreignSource) {
-      for(var i = 0; i < $scope.requisitions.length; i++) {
-        if ($scope.requisitions[i].foreignSource === foreignSource) {
-          return i;
-        }
-      }
-      return -1;
-    };
-
-    /**
     * @description Quick add a new node
     *
     * @name RequisitionsController:quickAddNode
@@ -136,7 +119,7 @@
     */
     $scope.quickAddNode = function() {
       var availableForeignSources = [];
-      angular.forEach($scope.requisitions, function(r) {
+      angular.forEach($scope.requisitionsData.requisitions, function(r) {
         availableForeignSources.push(r.foreignSource);
       });
       var modalInstance = $uibModal.open({
@@ -148,9 +131,7 @@
           foreignSources: function() { return availableForeignSources; }
         }
       });
-      modalInstance.result.then(function(node) {
-        $log.debug('The node ' + node.nodeLabel + ' has been added to ' + node.foreignSource);
-      });
+      modalInstance.result.then(function(node) {}); // In theory, nothing is required here.
     };
 
     /**
@@ -163,7 +144,7 @@
     */
     $scope.clone = function(foreignSource) {
       var availableForeignSources = [];
-      angular.forEach($scope.requisitions, function(r) {
+      angular.forEach($scope.requisitionsData.requisitions, function(r) {
         if (r.foreignSource !== foreignSource) {
           availableForeignSources.push(r.foreignSource);
         }
@@ -251,7 +232,8 @@
     * @param {string} foreignSource The name of the requisition
     */
     $scope.synchronize = function(foreignSource) {
-      SynchronizeService.synchronize(foreignSource, $scope.errorHandler);
+      var req = $scope.requisitionsData.getRequisition(foreignSource);
+      SynchronizeService.synchronize(req, $scope.errorHandler);
     };
 
     /**
@@ -332,17 +314,52 @@
     };
 
     /**
-    * @description Refreshes the local requisitions list from the server
+    * @description Refreshes the requisitions from the server
+    *
+    * There are two main actions:
+    * - Retrieve all the requisitions from the server ignoring the current state.
+    * - Retrieve only the deployed statistics, and update the current requisitions.
     *
     * @name RequisitionsController:refresh
     * @ngdoc method
     * @methodOf RequisitionsController
     */
     $scope.refresh = function() {
-      growl.success('Refreshing requisitions...');
-      RequisitionsService.clearRequisitionsCache();
-      $scope.requisitions = [];
-      $scope.initialize();
+      bootbox.dialog({
+        message: 'Are you sure you want to refresh the content of the page ?<br/><hr/>' +
+                 'Choose <b>Reload Everything</b> to retrieve all the requisitions from the server (any existing unsaved change will be lost).<br/>' +
+                 'Choose <b>Reload Deployed Data</b> to retrieve the deployed statistics and update the UI.<br/>' +
+                 'Choose <b>Cancel</b> to abort the request.',
+        title: 'Refresh',
+        buttons: {
+          reloadAll: {
+            label: 'Reload Everything',
+            className: 'btn-danger',
+            callback: function() {
+              growl.success('Refreshing requisitions...');
+              RequisitionsService.clearRequisitionsCache();
+              $scope.requisitionsData = { requisitions : [] };
+              $scope.initialize();
+            }
+          },
+          reloadDeployed: {
+            label: 'Reload Deployed Data',
+            className: 'btn-success',
+            callback: function() {
+              RequisitionsService.updateDeployedStats($scope.requisitionsData).then(
+                function() { // success
+                  growl.success('The deployed statistics has been updated.');
+                },
+                $scope.errorHandler
+              );
+            }
+          },
+          main: {
+            label: 'Cancel',
+            className: 'btn-default'
+          }
+        }
+      });
     };
 
    /**
@@ -369,11 +386,11 @@
       $scope.loaded = false;
       RequisitionsService.getRequisitions().then(
         function(data) { // success
-          $scope.requisitions = data.requisitions;
-          $scope.filteredRequisitions = data.requisitions;
+          $scope.requisitionsData = data;
+          $scope.filteredRequisitions = $scope.requisitionsData.requisitions;
           $scope.updateFilteredRequisitions();
           $scope.loaded = true;
-          growl.success('Loaded ' + data.requisitions.length + ' requisitions...');
+          growl.success('Loaded ' + $scope.requisitionsData.requisitions.length + ' requisitions...');
         },
         $scope.errorHandler
       );
@@ -387,7 +404,7 @@
     * @methodOf RequisitionsController
     */
     $scope.$watch('reqFilter', function() {
-      $scope.filteredRequisitions = $filter('filter')($scope.requisitions, $scope.reqFilter);
+      $scope.filteredRequisitions = $filter('filter')($scope.requisitionsData.requisitions, $scope.reqFilter);
       $scope.updateFilteredRequisitions();
     });
 

@@ -102,7 +102,15 @@ public interface NodeDao extends LegacyOnmsDao<OnmsNode, Integer> {
      * @return a {@link java.util.Map} object.
      */
     Map<String, Set<String>> getForeignIdsPerForeignSourceMap();
-    
+
+    /**
+     * <p>getForeignIdsPerForeignSource</p>
+     *
+     * @param foreignSource a {@link java.lang.String} object.
+     * @return a {@link java.util.Set} object.
+     */
+    Set<String> getForeignIdsPerForeignSource(String foreignSource);
+
     /**
      * <p>findAllByVarCharAssetColumn</p>
      *

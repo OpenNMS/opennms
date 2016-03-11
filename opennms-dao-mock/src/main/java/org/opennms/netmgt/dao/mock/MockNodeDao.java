@@ -278,6 +278,16 @@ public class MockNodeDao extends AbstractMockDao<OnmsNode, Integer> implements N
         }
         return map;
     }
+    @Override
+    public Set<String> getForeignIdsPerForeignSource(String foreignSource) {
+        Set<String> set = new TreeSet<String>();
+        for (final OnmsNode node : findAll()) {
+            if (node.getForeignId() != null) {
+                set.add(node.getForeignId());
+            }
+        }
+        return set;
+    }
 
     @Override
     public List<OnmsNode> findAllProvisionedNodes() {
