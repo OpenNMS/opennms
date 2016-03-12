@@ -31,6 +31,8 @@ package org.opennms.karaf.extender;
 import static org.junit.Assert.assertEquals;
 
 import java.io.File;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.file.Paths;
 
 import org.junit.Test;
@@ -40,13 +42,13 @@ import com.google.common.collect.Lists;
 public class RepositoryTest {
 
     @Test
-    public void canGenerateMavenUris() {
+    public void canGenerateMavenUris() throws URISyntaxException {
         Repository releaseRepo = new Repository(Paths.get(File.separator + "release"),
-                Lists.newArrayList("mvn:group.id/artifact.id/2.0.0/xml"));
-        assertEquals("file:/release@id=release", releaseRepo.toMavenUri());
+                Lists.newArrayList(new URI("mvn:group.id/artifact.id/2.0.0/xml")));
+        assertEquals(new URI("file:/release@id=release"), releaseRepo.toMavenUri());
 
         Repository snapshotRepo = new Repository(Paths.get(File.separator + "other"),
-                Lists.newArrayList("mvn:other.group.id/other.artifact.id/1.0-SNAPSHOT/xml"));
-        assertEquals("file:/other@id=other@snapshots", snapshotRepo.toMavenUri());
+                Lists.newArrayList(new URI("mvn:other.group.id/other.artifact.id/1.0-SNAPSHOT/xml")));
+        assertEquals(new URI("file:/other@id=other@snapshots"), snapshotRepo.toMavenUri());
     }
 }

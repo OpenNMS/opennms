@@ -28,6 +28,8 @@
 
 package org.opennms.karaf.extender;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Objects;
@@ -36,26 +38,28 @@ import com.google.common.collect.ImmutableList;
 
 public class Repository {
     private final Path m_path;
-    private final List<String> m_featureUris;
+    private final List<URI> m_featureUris;
+    private final URI m_mavenUri;
 
-    public Repository(Path path, List<String> featureUris) {
+    public Repository(Path path, List<URI> featureUris) throws URISyntaxException {
         m_path = Objects.requireNonNull(path);
         m_featureUris = ImmutableList.copyOf(featureUris);
+        m_mavenUri = new URI(String.format("file:%s@id=%s%s",
+                m_path.toAbsolutePath().toString(),
+                m_path.getFileName().toString(), containsSnapshots() ? "@snapshots" : ""));
     }
 
-    public List<String> getFeatureUris() {
+    public List<URI> getFeatureUris() {
         return m_featureUris;
     }
 
-    public String toMavenUri() {
-        return String.format("file:%s@id=%s%s",
-                m_path.toAbsolutePath().toString(),
-                m_path.getFileName().toString(), containsSnapshots() ? "@snapshots" : "");
+    public URI toMavenUri() {
+        return m_mavenUri;
     }
 
     public boolean containsSnapshots() {
         return m_featureUris.stream()
-                .filter(uri -> uri.contains("-SNAPSHOT"))
+                .filter(uri -> uri.toString().contains("-SNAPSHOT"))
                 .findFirst().isPresent();
     }
 
