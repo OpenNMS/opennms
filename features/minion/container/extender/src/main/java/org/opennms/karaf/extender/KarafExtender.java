@@ -45,6 +45,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.apache.karaf.features.FeaturesService;
+import org.ops4j.pax.url.mvn.MavenResolver;
 import org.osgi.service.cm.Configuration;
 import org.osgi.service.cm.ConfigurationAdmin;
 import org.slf4j.Logger;
@@ -72,10 +73,12 @@ public class KarafExtender {
     private final Path m_featuresBootDotD = m_karafHome.resolve(Paths.get("etc", "featuresBoot.d"));
 
     private ConfigurationAdmin m_configurationAdmin;
+    private MavenResolver m_mavenResolver;
     private FeaturesService m_featuresService;
 
-    public void init() {
+    public void init() throws InterruptedException {
         Objects.requireNonNull(m_configurationAdmin, "configurationAdmin");
+        Objects.requireNonNull(m_mavenResolver, "mavenResolver");
         Objects.requireNonNull(m_featuresService, "featuresService");
 
         List<Repository> repositories;
@@ -119,6 +122,13 @@ public class KarafExtender {
             return;
         }
 
+        // The update is async, we need to wait for the feature URLs to be resolvable before
+        // we use them
+        LOG.info("Waiting up-to 30 seconds for the Maven repositories to be updated...");
+        for (int i = 30; i > 0 && !canResolveAllFeatureUris(repositories); i--) {
+            Thread.sleep(1000);
+        }
+
         for (Repository repository : repositories) {
             for (URI featureUri : repository.getFeatureUris()) {
                 try {
@@ -143,6 +153,21 @@ public class KarafExtender {
                 LOG.error("Failed to install feature '{}'. Skipping.", feature, e);
             }
         }
+    }
+
+    private boolean canResolveAllFeatureUris(List<Repository> repositories) {
+        for (Repository repository : repositories) {
+            for (URI featureUri : repository.getFeatureUris()) {
+                try {
+                    if (m_mavenResolver.resolve(featureUri.toString()) == null) {
+                        return false;
+                    }
+                } catch (Exception e) {
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 
     public List<Repository> getRepositories() throws IOException {
@@ -236,6 +261,10 @@ public class KarafExtender {
 
     public void setConfigurationAdmin(ConfigurationAdmin configurationAdmin) {
         m_configurationAdmin = configurationAdmin;
+    }
+
+    public void setMavenResolver(MavenResolver mavenResolver) {
+        m_mavenResolver = mavenResolver;
     }
 
     public void setFeaturesService(FeaturesService featuresService) {
