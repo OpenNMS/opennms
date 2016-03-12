@@ -33,6 +33,8 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Collections;
 
 import org.junit.Before;
@@ -91,7 +93,7 @@ public class KarafExtenderTest {
     }
 
     @Test
-    public void canGenerateRepositoryList() throws IOException {
+    public void canGenerateRepositoryList() throws IOException, URISyntaxException {
         // Create repositories
         File repositories = tempFolder.newFolder("repositories");
         repositories.mkdirs();
@@ -117,9 +119,9 @@ public class KarafExtenderTest {
         assertEquals(Lists.newArrayList(
                 new Repository(emptyRepository.toPath(), Collections.emptyList()),
                 new Repository(releaseRepository.toPath(),
-                        Lists.newArrayList("mvn:group.id/artifact.id/2.0.0/xml")),
+                        Lists.newArrayList(new URI("mvn:group.id/artifact.id/2.0.0/xml"))),
                 new Repository(snapshotRepository.toPath(),
-                        Lists.newArrayList("mvn:other.group.id/other.artifact.id/1.0-SNAPSHOT/xml"))),
+                        Lists.newArrayList(new URI("mvn:other.group.id/other.artifact.id/1.0-SNAPSHOT/xml")))),
                 karafExtender.getRepositories());
     }
 }

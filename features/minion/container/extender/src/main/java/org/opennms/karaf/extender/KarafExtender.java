@@ -29,29 +29,24 @@
 package org.opennms.karaf.extender;
 
 import java.io.IOException;
-import java.lang.management.ManagementFactory;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Dictionary;
 import java.util.List;
-import java.util.Map;
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import javax.management.JMX;
-import javax.management.MBeanException;
-import javax.management.MBeanServer;
-import javax.management.MalformedObjectNameException;
-import javax.management.ObjectName;
-
-import org.apache.karaf.config.core.ConfigMBean;
-import org.apache.karaf.features.management.FeaturesServiceMBean;
-import org.osgi.framework.BundleActivator;
-import org.osgi.framework.BundleContext;
+import org.apache.karaf.features.FeaturesService;
+import org.osgi.service.cm.Configuration;
+import org.osgi.service.cm.ConfigurationAdmin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -61,13 +56,10 @@ import com.google.common.collect.Lists;
  * Allows Maven repositories, feature repositories and features to boot
  * to be extended using a .d style configuration format.
  *
- * TODO: Evaluate if we can use services instead of MBeans
- *
  * @author jwhite
  */
-public class KarafExtender implements BundleActivator, Runnable {
+public class KarafExtender {
     private static final Logger LOG = LoggerFactory.getLogger(KarafExtender.class);
-    private static final String KARAF_INSTANCE_NAME = "root";
     private static final String PAX_MVN_PID = "org.ops4j.pax.url.mvn";
     private static final String PAX_MVN_REPOSITORIES = "org.ops4j.pax.url.mvn.repositories";
 
@@ -79,58 +71,12 @@ public class KarafExtender implements BundleActivator, Runnable {
     private final Path m_repositories = m_karafHome.resolve("repositories");
     private final Path m_featuresBootDotD = m_karafHome.resolve(Paths.get("etc", "featuresBoot.d"));
 
-    private Thread thread = null;
+    private ConfigurationAdmin m_configurationAdmin;
+    private FeaturesService m_featuresService;
 
-    @Override
-    public synchronized void start(BundleContext context) throws Exception {
-        // We may need to wait for particular MBean to be available,
-        // so we do this in a background thread order in to avoid
-        // locking up any other features from loading
-        thread = new Thread(this);
-        thread.start();
-        LOG.info("Started.");
-    }
-
-    @Override
-    public synchronized void stop(BundleContext context) throws Exception {
-        if (thread != null) {
-            thread.interrupt();
-            thread = null;
-        }
-        LOG.info("Stopped");
-    }
-
-    @Override
-    public void run() {
-        FeaturesServiceMBean featuresService;
-        ConfigMBean config;
-        while(true) {
-            try {
-                Thread.sleep(100);
-            } catch (InterruptedException e) {
-                LOG.warn("Thread interrupted. Aborting.", e);
-                return;
-            }
-
-            try {
-                featuresService = getFeaturesServiceMBean();
-                featuresService.getRepositories();
-            } catch (Throwable t) {
-                LOG.debug("FeaturesServiceMBean failed. Waiting to retry.", t);
-                continue;
-            }
-
-            try {
-                config = getConfigMBean();
-                config.listProperties(PAX_MVN_PID);
-            } catch (Throwable t) {
-                LOG.debug("ConfigMBean failed. Waiting to retry.", t);
-                continue;
-            }
-
-            // We were able to successfully query both MBeans
-            break;
-        }
+    public void init() {
+        Objects.requireNonNull(m_configurationAdmin, "configurationAdmin");
+        Objects.requireNonNull(m_featuresService, "featuresService");
 
         List<Repository> repositories;
         try {
@@ -159,23 +105,28 @@ public class KarafExtender implements BundleActivator, Runnable {
 
         LOG.info("Updating Maven repositories to include: {}", mavenReposSb);
         try {
-            Map<String, String> props = config.listProperties(PAX_MVN_PID);
+            final Configuration config = m_configurationAdmin.getConfiguration(PAX_MVN_PID);
+            if (config == null) {
+                throw new IOException("The OSGi configuration (admin) registry was found for pid " + PAX_MVN_PID +
+                        ", but a configuration could not be located/generated.  This shouldn't happen.");
+            }
+            final Dictionary<String, Object> props = config.getProperties();
             props.put(PAX_MVN_REPOSITORIES, mavenReposSb.toString());
-            config.update(PAX_MVN_PID, props);
-        } catch (MBeanException e) {
+            config.update(props);
+        } catch (IOException e) {
             LOG.error("Failed to update the list of Maven repositories to '{}'. Aborting.",
                     mavenReposSb, e);
             return;
         }
 
         for (Repository repository : repositories) {
-            for (String featureUri : repository.getFeatureUris()) {
+            for (URI featureUri : repository.getFeatureUris()) {
                 try {
                     LOG.info("Adding feature repository: {}", featureUri);
-                    featuresService.addRepository(featureUri);
-                    featuresService.refreshRepository(featureUri);
-                } catch (Throwable t) {
-                    LOG.error("Failed to add feature repository '{}'. Skipping.", featureUri, t);
+                    m_featuresService.addRepository(featureUri);
+                    m_featuresService.refreshRepository(featureUri);
+                } catch (Exception e) {
+                    LOG.error("Failed to add feature repository '{}'. Skipping.", featureUri, e);
                 }
             }
         }
@@ -184,28 +135,14 @@ public class KarafExtender implements BundleActivator, Runnable {
             LOG.info("Installing feature: {}", feature);
             try {
                 if (feature.getVersion() == null) {
-                    featuresService.installFeature(feature.getName());
+                    m_featuresService.installFeature(feature.getName());
                 } else {
-                    featuresService.installFeature(feature.getName(), feature.getVersion());
+                    m_featuresService.installFeature(feature.getName(), feature.getVersion());
                 }
-            } catch (Throwable t) {
-                LOG.error("Failed to install feature '{}'. Skipping.", feature, t);
+            } catch (Exception e) {
+                LOG.error("Failed to install feature '{}'. Skipping.", feature, e);
             }
         }
-    }
-
-    private static FeaturesServiceMBean getFeaturesServiceMBean() throws MalformedObjectNameException {
-        return getKarafMbean("feature", KARAF_INSTANCE_NAME, FeaturesServiceMBean.class);
-    }
-
-    private static ConfigMBean getConfigMBean() throws MalformedObjectNameException {
-        return getKarafMbean("config", KARAF_INSTANCE_NAME, ConfigMBean.class);
-    }
-
-    private static <T> T getKarafMbean(String type, String instance, Class<T> clazz) throws MalformedObjectNameException {
-        final MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
-        final ObjectName mbeanName = new ObjectName(String.format("org.apache.karaf:type=%s,name=%s", type, instance));
-        return JMX.newMBeanProxy(mbs, mbeanName, clazz, true);
     }
 
     public List<Repository> getRepositories() throws IOException {
@@ -213,14 +150,20 @@ public class KarafExtender implements BundleActivator, Runnable {
 
         final List<Repository> repositories = Lists.newLinkedList();
         for (Path repositoryPath : repositoryPaths) {
-            List<String> featureUris = Lists.newLinkedList();
+            List<URI> featureUris = Lists.newLinkedList();
 
-            Path featureUrisMeta = repositoryPath.resolve(FEATURE_URIS_META);
-            if (featureUrisMeta.toFile().isFile()) {
-                featureUris.addAll(getLinesIn(featureUrisMeta));
+            try {
+                Path featureUrisMeta = repositoryPath.resolve(FEATURE_URIS_META);
+                if (featureUrisMeta.toFile().isFile()) {
+                    for (String line : getLinesIn(featureUrisMeta)) {
+                        featureUris.add(new URI(line));
+                    }
+                }
+                repositories.add(new Repository(repositoryPath, featureUris));
+            } catch (URISyntaxException e) {
+                LOG.error("Failed to generate one or more feature URIs for repository {}. Skipping.",
+                        repositoryPath, e);
             }
-
-            repositories.add(new Repository(repositoryPath, featureUris));
         }
 
         return repositories;
@@ -273,6 +216,10 @@ public class KarafExtender implements BundleActivator, Runnable {
                 if (!path.toFile().isDirectory()) {
                     continue;
                 }
+                if (path.getFileName().toString().startsWith(".")) {
+                    // Ignore dot folders
+                    continue;
+                }
                 paths.add(path);
             }
         }
@@ -285,5 +232,13 @@ public class KarafExtender implements BundleActivator, Runnable {
         return Files.readAllLines(file).stream()
             .filter(l -> !l.matches(COMMENT_REGEX))
             .collect(Collectors.toList());
+    }
+
+    public void setConfigurationAdmin(ConfigurationAdmin configurationAdmin) {
+        m_configurationAdmin = configurationAdmin;
+    }
+
+    public void setFeaturesService(FeaturesService featuresService) {
+        m_featuresService = featuresService;
     }
 }
