@@ -6,10 +6,12 @@
         http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd
 ">
     <reference id="configurationAdmin" interface="org.osgi.service.cm.ConfigurationAdmin"/>
+    <reference id="mavenResolver" interface="org.ops4j.pax.url.mvn.MavenResolver"/>
     <reference id="featuresService" interface="org.apache.karaf.features.FeaturesService"/>
 
     <bean id="controller" class="org.opennms.karaf.extender.KarafExtender" init-method="init">
         <property name="configurationAdmin" ref="configurationAdmin" />
+        <property name="mavenResolver" ref="mavenResolver" />
         <property name="featuresService" ref="featuresService" />
     </bean>
 </blueprint>
