@@ -19,6 +19,10 @@
 == Setup a development system
 include::text/dev-guide.adoc[]
 
+== Minion development
+include::text/minion/introduction.adoc[]
+include::text/minion/container.adoc[]
+
 == CORS Support
 include::text/rest/CORS.adoc[]
 
