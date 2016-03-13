@@ -12,10 +12,6 @@
     <packaging>pom</packaging>
     <name>OpenNMS :: Features :: Minion</name>
 
-    <properties>
-        <minionKarafVersion>4.0.4</minionKarafVersion>
-    </properties>
-
     <modules>
         <module>container</module>
         <module>core</module>

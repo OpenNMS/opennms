@@ -1309,7 +1309,8 @@
     <log4jVersion>99.99.99-use-log4j2</log4jVersion>
     <log4j2Version>2.5</log4j2Version>
     <minaVersion>2.0.7</minaVersion>
-    <newtsVersion>1.4.2</newtsVersion>
+    <minionKarafVersion>4.0.4</minionKarafVersion>
+    <newtsVersion>1.3.4</newtsVersion>
     <paxExamVersion>4.6.0</paxExamVersion>
     <paxSwissboxVersion>1.8.1</paxSwissboxVersion>
     <postgresqlVersion>9.4.1211</postgresqlVersion>

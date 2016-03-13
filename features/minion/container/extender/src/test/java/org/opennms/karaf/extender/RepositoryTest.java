@@ -44,11 +44,13 @@ public class RepositoryTest {
     @Test
     public void canGenerateMavenUris() throws URISyntaxException {
         Repository releaseRepo = new Repository(Paths.get(File.separator + "release"),
-                Lists.newArrayList(new URI("mvn:group.id/artifact.id/2.0.0/xml")));
+                Lists.newArrayList(new URI("mvn:group.id/artifact.id/2.0.0/xml")),
+                Lists.newArrayList());
         assertEquals(new URI("file:/release@id=release"), releaseRepo.toMavenUri());
 
         Repository snapshotRepo = new Repository(Paths.get(File.separator + "other"),
-                Lists.newArrayList(new URI("mvn:other.group.id/other.artifact.id/1.0-SNAPSHOT/xml")));
+                Lists.newArrayList(new URI("mvn:other.group.id/other.artifact.id/1.0-SNAPSHOT/xml")),
+                Lists.newArrayList());
         assertEquals(new URI("file:/other@id=other@snapshots"), snapshotRepo.toMavenUri());
     }
 }

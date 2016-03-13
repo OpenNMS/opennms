@@ -125,13 +125,10 @@ echo "id = 00000000-0000-0000-0000-000000ddba11" >> $RPM_BUILD_ROOT%{minioninstp
 echo "broker-url = tcp://127.0.0.1:61616" >> $RPM_BUILD_ROOT%{minioninstprefix}/etc/org.opennms.minion.controller.cfg
 echo "username = admin" >> $RPM_BUILD_ROOT%{minioninstprefix}/etc/org.opennms.minion.controller.cfg
 echo "password = admin" >> $RPM_BUILD_ROOT%{minioninstprefix}/etc/org.opennms.minion.controller.cfg
-echo "minion-core" > $RPM_BUILD_ROOT%{minioninstprefix}/etc/featuresBoot.d/core.boot
 
 # Extract the default repository
 mkdir -p $RPM_BUILD_ROOT%{minionrepoprefix}/default
 tar zxvf $RPM_BUILD_DIR/%{_name}-%{version}-%{release}/features/minion/repository/target/repository-*-repo.tar.gz -C $RPM_BUILD_ROOT%{minionrepoprefix}/default
-echo "# Default Minion Features" > $RPM_BUILD_ROOT%{minioninstprefix}/etc/featuresBoot.d/default.boot
-echo "opennms-discoverer" >> $RPM_BUILD_ROOT%{minioninstprefix}/etc/featuresBoot.d/default.boot
 
 # container package files
 find $RPM_BUILD_ROOT%{minioninstprefix} ! -type d | \

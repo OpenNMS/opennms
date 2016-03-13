@@ -39,11 +39,13 @@ import com.google.common.collect.ImmutableList;
 public class Repository {
     private final Path m_path;
     private final List<URI> m_featureUris;
+    private final List<Feature> m_featuresBoot;
     private final URI m_mavenUri;
 
-    public Repository(Path path, List<URI> featureUris) throws URISyntaxException {
+    public Repository(Path path, List<URI> featureUris, List<Feature> featuresBoot) throws URISyntaxException {
         m_path = Objects.requireNonNull(path);
         m_featureUris = ImmutableList.copyOf(featureUris);
+        m_featuresBoot = ImmutableList.copyOf(featuresBoot);
         m_mavenUri = new URI(String.format("file:%s@id=%s%s",
                 m_path.toAbsolutePath().toString(),
                 m_path.getFileName().toString(), containsSnapshots() ? "@snapshots" : ""));
@@ -51,6 +53,10 @@ public class Repository {
 
     public List<URI> getFeatureUris() {
         return m_featureUris;
+    }
+
+    public List<Feature> getFeaturesBoot() {
+        return m_featuresBoot;
     }
 
     public URI toMavenUri() {
@@ -65,13 +71,13 @@ public class Repository {
 
     @Override
     public String toString() {
-        return String.format("Repository[path=%s, featureUris=%s]",
-                m_path, m_featureUris);
+        return String.format("Repository[path=%s, featureUris=%s, featuresBoot=%s]",
+                m_path, m_featureUris, m_featuresBoot);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(m_path, m_featureUris);
+        return Objects.hash(m_path, m_featureUris, m_featuresBoot);
     }
 
     @Override
@@ -84,6 +90,7 @@ public class Repository {
             return false;
         Repository other = (Repository) obj;
         return Objects.equals(this.m_path, other.m_path) &&
-                Objects.equals(this.m_featureUris, other.m_featureUris);
+                Objects.equals(this.m_featureUris, other.m_featureUris) &&
+                Objects.equals(this.m_featuresBoot, other.m_featuresBoot);
     }
 }

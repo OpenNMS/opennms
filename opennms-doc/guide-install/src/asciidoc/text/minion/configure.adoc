@@ -24,8 +24,14 @@ karaf@root()> config:update
 .Configure the credentials to use when communicating with _OpenNMS_
 [source]
 ----
-karaf@root()> scv:set http://opennms-fqdn:8980/opennms admin admin
-karaf@root()> scv:set tcp://opennms-fdqn:61616 admin admin
+karaf@root()> scv:set opennms.http admin admin
+karaf@root()> scv:set opennms.broker admin admin
+----
+
+.Restart the Minion after updating the credentials
+[source]
+----
+[root@localhost /root]# $ systemctl restart minion
 ----
 
 NOTE: The credentials are configured separately since they are encrypted on disk.
