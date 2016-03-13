@@ -65,7 +65,7 @@ public class KarafExtenderTest {
         File featuresBootDotD = tempFolder.newFolder("etc", "featuresBoot.d");
         featuresBootDotD.mkdirs();
 
-        // Add a subdirectory, which should be ignored
+        // Add a sub-directory, which should be ignored
         assertTrue("Failed to create subdirectory.", new File(featuresBootDotD, "some-subdirectory").mkdir());
 
         // Add a file that starts with '.' in the directory, it's contents should be ignored
@@ -106,22 +106,28 @@ public class KarafExtenderTest {
         File releaseRepository = new File(repositories, "release");
         releaseRepository.mkdirs();
         Files.write("mvn:group.id/artifact.id/2.0.0/xml",
-                new File(releaseRepository, "feature-uris.meta"), Charsets.UTF_8);
+                new File(releaseRepository, "features.uri"), Charsets.UTF_8);
+        Files.write("  # comment\n" + "released-feature",
+                new File(releaseRepository, "features.boot"), Charsets.UTF_8);
 
         // Create a snapshot repository
         File snapshotRepository = new File(repositories, "snapshot");
         snapshotRepository.mkdirs();
         Files.write("#feature uris\n" +
                 "mvn:other.group.id/other.artifact.id/1.0-SNAPSHOT/xml",
-                new File(snapshotRepository, "feature-uris.meta"), Charsets.UTF_8);
+                new File(snapshotRepository, "features.uri"), Charsets.UTF_8);
+        Files.write("snapshot-feature",
+                new File(snapshotRepository, "features.boot"), Charsets.UTF_8);
 
         // Read and verify
         assertEquals(Lists.newArrayList(
-                new Repository(emptyRepository.toPath(), Collections.emptyList()),
+                new Repository(emptyRepository.toPath(), Collections.emptyList(), Collections.emptyList()),
                 new Repository(releaseRepository.toPath(),
-                        Lists.newArrayList(new URI("mvn:group.id/artifact.id/2.0.0/xml"))),
+                        Lists.newArrayList(new URI("mvn:group.id/artifact.id/2.0.0/xml")),
+                        Lists.newArrayList(new Feature("released-feature"))),
                 new Repository(snapshotRepository.toPath(),
-                        Lists.newArrayList(new URI("mvn:other.group.id/other.artifact.id/1.0-SNAPSHOT/xml")))),
+                        Lists.newArrayList(new URI("mvn:other.group.id/other.artifact.id/1.0-SNAPSHOT/xml")),
+                        Lists.newArrayList(new Feature("snapshot-feature")))),
                 karafExtender.getRepositories());
     }
 }

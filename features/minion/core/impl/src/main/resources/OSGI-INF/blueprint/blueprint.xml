@@ -20,11 +20,11 @@
             <cm:property name="location" value="MINION"/>
             <cm:property name="id" value="00000000-0000-0000-0000-000000ddba11"/>
             <cm:property name="broker-url" value="tcp://127.0.0.1:61616"/>
-            <cm:property name="opennms-url" value="http://127.0.0.1:8980/opennms"/>
-            <cm:property name="username" value="admin"/>
-            <cm:property name="password" value="admin"/>
+            <cm:property name="http-url" value="http://127.0.0.1:8980/opennms"/>
         </cm:default-properties>
     </cm:property-placeholder>
+
+    <reference id="secureCredentialsVault" interface="org.opennms.features.scv.api.SecureCredentialsVault" />
 
     <!-- A canonical source for this Minion's identity -->
     <bean id="minionIdentity" class="org.opennms.minion.core.impl.MinionIdentityImpl">
@@ -35,10 +35,10 @@
 
     <!-- A canonical ActiveMQ component pointing to the OpenNMS controller -->
     <!-- TODO: Use connection pooling. See http://camel.apache.org/activemq.html -->
-    <bean id="activemq" class="org.apache.activemq.camel.component.ActiveMQComponent">
+    <bean id="activemq" class="org.opennms.minion.core.impl.ScvEnabledActiveMQComponent">
+        <argument ref="secureCredentialsVault"/>
+        <argument value="opennms.broker"/>
         <property name="brokerURL" value="[[broker-url]]"/>
-        <property name="userName" value="[[username]]"/>
-        <property name="password" value="[[password]]"/>
     </bean>
     <service id="queuingservice" ref="activemq" interface="org.apache.camel.Component"/>
 </blueprint>

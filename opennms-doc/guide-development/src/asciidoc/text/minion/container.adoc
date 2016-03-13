@@ -7,7 +7,7 @@
 The _Minion_ container differs from standard _Karaf_ distribution as follows:
 
 . We force a clean start by wiping `$karaf.home/data` (except for `$karaf.home/data/logs`) everytime the container starts
-. We install an additional feature we call the `KarafExtender` extension.
+. We manage repositories and features using the _Karaf Extender_.
 
 ==== Clean Start
 
@@ -22,7 +22,7 @@ Starting the container via some other means will not necessarily force a clean s
 
 ==== Karaf Extender
 
-The `KarafExtender` was developed to make it easier to manage and extend the container using existing packaging tools.
+The _Karaf Extender_ was developed to make it easier to manage and extend the container using existing packaging tools.
 It allows packages to register *Maven Repositories*, *Karaf Feature Repositories* and *Karaf Features to Boot* by overlaying additional files, avoiding modifying any of the existing files.
 
 Here's an overview, used for reference, of the relevant directories that are (currently) present on a default install of the `opennms-minion` package:

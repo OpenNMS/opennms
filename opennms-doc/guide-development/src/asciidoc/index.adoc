@@ -22,6 +22,9 @@ include::text/dev-guide.adoc[]
 == Minion development
 include::text/minion/introduction.adoc[]
 include::text/minion/container.adoc[]
+include::text/minion/packaging.adoc[]
+include::text/minion/guidelines.adoc[]
+include::text/minion/testing.adoc[]
 
 == CORS Support
 include::text/rest/CORS.adoc[]

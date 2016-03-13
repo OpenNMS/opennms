@@ -66,6 +66,7 @@
                         <feature>karaf-extender</feature>
                         <feature>log</feature>
                         <feature>package</feature>
+                        <feature>scv</feature>
                         <feature>service</feature>
                         <feature>shell</feature>
                         <feature>shell-compat</feature>
@@ -150,7 +151,7 @@
         </dependency>
         <dependency>
             <groupId>org.opennms.features.minion.container</groupId>
-            <artifactId>extender-feature</artifactId>
+            <artifactId>features</artifactId>
             <version>${project.version}</version>
             <classifier>features</classifier>
             <type>xml</type>

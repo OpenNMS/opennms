@@ -64,7 +64,8 @@ public class KarafExtender {
     private static final String PAX_MVN_PID = "org.ops4j.pax.url.mvn";
     private static final String PAX_MVN_REPOSITORIES = "org.ops4j.pax.url.mvn.repositories";
 
-    public static final String FEATURE_URIS_META = "feature-uris.meta";
+    public static final String FEATURES_URI = "features.uri";
+    public static final String FEATURES_BOOT = "features.boot";
     private static final String COMMENT_REGEX = "^\\s*(#.*)?$";
     private static final Pattern FEATURE_VERSION_PATTERN = Pattern.compile("(.*?)(/(.*))?");
 
@@ -89,9 +90,12 @@ public class KarafExtender {
             return;
         }
 
-        List<Feature> featuresBoot;
+        // Prepend the featuresBoot from the repository definitions
+        List<Feature> featuresBoot = repositories.stream()
+                .flatMap(r -> r.getFeaturesBoot().stream())
+                .collect(Collectors.toList());
         try {
-            featuresBoot = getFeaturesBoot();
+            featuresBoot.addAll(getFeaturesBoot());
         } catch (IOException e) {
             LOG.error("Failed to retrieve the list of features to boot. Aborting.", e);
             return;
@@ -122,10 +126,13 @@ public class KarafExtender {
             return;
         }
 
-        // The update is async, we need to wait for the feature URLs to be resolvable before
-        // we use them
+        // The configuration update is async, we need to wait for the feature URLs to be resolvable before we use them
         LOG.info("Waiting up-to 30 seconds for the Maven repositories to be updated...");
-        for (int i = 30; i > 0 && !canResolveAllFeatureUris(repositories); i--) {
+        // Attempting to resolve a missing features writes an exception to the log
+        // We sleep fix a fixed amount of time before our first try in order to help minimize the logged
+        // exceptions, even if we catch them
+        Thread.sleep(2000);
+        for (int i = 28; i > 0 && !canResolveAllFeatureUris(repositories); i--) {
             Thread.sleep(1000);
         }
 
@@ -175,16 +182,23 @@ public class KarafExtender {
 
         final List<Repository> repositories = Lists.newLinkedList();
         for (Path repositoryPath : repositoryPaths) {
-            List<URI> featureUris = Lists.newLinkedList();
-
             try {
-                Path featureUrisMeta = repositoryPath.resolve(FEATURE_URIS_META);
-                if (featureUrisMeta.toFile().isFile()) {
-                    for (String line : getLinesIn(featureUrisMeta)) {
+                List<URI> featureUris = Lists.newLinkedList();
+                Path featuresUriPath = repositoryPath.resolve(FEATURES_URI);
+                if (featuresUriPath.toFile().isFile()) {
+                    for (String line : getLinesIn(featuresUriPath)) {
                         featureUris.add(new URI(line));
                     }
                 }
-                repositories.add(new Repository(repositoryPath, featureUris));
+
+                List<Feature> featuresBoot;
+                Path featuresBootPath = repositoryPath.resolve(FEATURES_BOOT);
+                if (featuresBootPath.toFile().isFile()) {
+                    featuresBoot = getFeaturesIn(featuresBootPath);
+                } else {
+                    featuresBoot = Collections.emptyList();
+                }
+                repositories.add(new Repository(repositoryPath, featureUris, featuresBoot));
             } catch (URISyntaxException e) {
                 LOG.error("Failed to generate one or more feature URIs for repository {}. Skipping.",
                         repositoryPath, e);
@@ -194,9 +208,9 @@ public class KarafExtender {
         return repositories;
     }
 
-    public List<Feature> getFeaturesBoot() throws IOException {
+    public List<Feature> getFeaturesIn(Path featuresBootFile) throws IOException {
         final List<Feature> features = Lists.newLinkedList();
-        for (String line : getLinesFromFilesIn(m_featuresBootDotD)) {
+        for (String line : getLinesIn(featuresBootFile)) {
             final Matcher m = FEATURE_VERSION_PATTERN.matcher(line);
             if (!m.matches()) {
                 continue;
@@ -210,7 +224,15 @@ public class KarafExtender {
         return features;
     }
 
-    private static List<String> getLinesFromFilesIn(Path folder) throws IOException {
+    public List<Feature> getFeaturesBoot() throws IOException {
+        final List<Feature> features = Lists.newLinkedList();
+        for (Path featuresBootFile : getFilesIn(m_featuresBootDotD)) {
+            features.addAll(getFeaturesIn(featuresBootFile));
+        }
+        return features;
+    }
+
+    private static List<Path> getFilesIn(Path folder) throws IOException {
         final List<Path> files = new ArrayList<>();
         try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(folder)) {
             for (Path path : directoryStream) {
@@ -227,11 +249,7 @@ public class KarafExtender {
         }
         Collections.sort(files);
 
-        final List<String> lines = new ArrayList<>();
-        for (Path file : files) {
-            lines.addAll(getLinesIn(file));
-        }
-        return lines;
+        return files;
     }
 
     private static List<Path> getFoldersIn(Path folder) throws IOException {

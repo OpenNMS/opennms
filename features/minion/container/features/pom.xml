@@ -8,9 +8,9 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.opennms.features.minion.container</groupId>
-    <artifactId>extender-feature</artifactId>
+    <artifactId>features</artifactId>
     <packaging>pom</packaging>
-    <name>OpenNMS :: Features :: Minion :: Container :: Extender Feature</name>
+    <name>OpenNMS :: Features :: Minion :: Container :: Features</name>
 
     <build>
         <plugins>
@@ -66,6 +66,12 @@
             <groupId>org.opennms.features.minion.container</groupId>
             <artifactId>extender</artifactId>
             <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.features.minion.container</groupId>
+            <artifactId>scv</artifactId>
+            <version>${project.version}</version>
+            <type>pom</type>
         </dependency>
     </dependencies>
 </project>

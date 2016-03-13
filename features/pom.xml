@@ -124,5 +124,6 @@
 
     <!-- Minion -->
     <module>minion</module>
+    <module>scv</module>
   </modules>
 </project>
