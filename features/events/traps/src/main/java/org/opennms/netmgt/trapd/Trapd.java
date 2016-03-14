@@ -38,8 +38,6 @@ import javax.annotation.Resource;
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
 import org.opennms.netmgt.snmp.SnmpV3User;
-import org.opennms.netmgt.snmp.TrapProcessor;
-import org.opennms.netmgt.snmp.TrapProcessorFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -69,7 +67,7 @@ import org.springframework.util.Assert;
  * @author <A HREF="mailto:tarus@opennms.org">Tarus Balog </A>
  * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
  */
-public class Trapd extends AbstractServiceDaemon implements TrapProcessorFactory{
+public class Trapd extends AbstractServiceDaemon{
     
     private static final Logger LOG = LoggerFactory.getLogger(Trapd.class);
 
@@ -124,16 +122,6 @@ public class Trapd extends AbstractServiceDaemon implements TrapProcessorFactory
      */
     public Trapd() {
         super(LOG4J_CATEGORY);
-    }
-    
-    /**
-     * <p>createTrapProcessor</p>
-     *
-     * @return a {@link org.opennms.netmgt.snmp.TrapProcessor} object.
-     */
-    @Override
-    public TrapProcessor createTrapProcessor() {
-        return new EventCreator(m_trapdIpMgr);
     }
 
     /**
