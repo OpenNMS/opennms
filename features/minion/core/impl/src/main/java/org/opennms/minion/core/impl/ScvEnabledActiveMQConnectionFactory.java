@@ -39,10 +39,10 @@ import org.slf4j.LoggerFactory;
  *
  * @author jwhite
  */
-public class ScvEnableActiveMQConnectionFactory extends ActiveMQConnectionFactory {
-    public static final Logger LOG = LoggerFactory.getLogger(ScvEnabledActiveMQComponent.class);
+public class ScvEnabledActiveMQConnectionFactory extends ActiveMQConnectionFactory {
+    public static final Logger LOG = LoggerFactory.getLogger(ScvEnabledActiveMQConnectionFactory.class);
 
-    public ScvEnableActiveMQConnectionFactory(String brokerUrl, SecureCredentialsVault scv, String scvAlias) {
+    public ScvEnabledActiveMQConnectionFactory(String brokerUrl, SecureCredentialsVault scv, String scvAlias) {
         this.setBrokerURL(brokerUrl);
         final Credentials amqCredentials = scv.getCredentials(scvAlias);
         if (amqCredentials == null) {
