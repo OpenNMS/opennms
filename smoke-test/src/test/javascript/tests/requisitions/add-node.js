@@ -134,7 +134,7 @@ casper.test.begin('Add Node to Requisition', 10, {
 		casper.waitWhileSelector('.danger', function() {
 			test.assertDoesntExist('.danger', 'There should be no unfinished/red entries on the screen');
 		});
-		asper.wait(10000); // Wait until the requisition is synchronized (it should be quick)
+		casper.wait(10000); // Wait until the requisition is synchronized (it should be quick)
 		casper.thenClick('#refresh');
 		casper.waitForText('(1 defined, 1 deployed)', function() {
 			test.assertTextExists('(1 defined, 1 deployed)', 'There should be one deployed node on the requisition node page');
