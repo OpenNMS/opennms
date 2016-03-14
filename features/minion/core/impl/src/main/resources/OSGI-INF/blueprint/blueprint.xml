@@ -35,6 +35,14 @@
     </bean>
     <service ref="minionIdentity" interface="org.opennms.minion.core.api.MinionIdentity"/>
 
+    <!-- REST Client used to communicate with the OpenNMS controller -->
+    <bean id="restClient" class="org.opennms.minion.core.impl.ScvEnabledRestClientImpl">
+        <argument value="[[http-url]]"/>
+        <argument ref="secureCredentialsVault"/>
+        <argument value="opennms.http"/>
+    </bean>
+    <service ref="restClient" interface="org.opennms.minion.core.api.RestClient"/>
+
     <!-- Connection factory used by the Camel component and shell commands -->
     <bean id="jmsConnectionFactory" class="org.opennms.minion.core.impl.ScvEnabledActiveMQConnectionFactory">
         <argument value="[[broker-url]]"/>

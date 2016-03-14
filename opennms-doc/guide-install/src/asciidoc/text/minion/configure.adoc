@@ -45,7 +45,9 @@ Once the URLs and credentials for communicating with the _OpenNMS_ instance are 
 [source]
 ----
 admin@minion()> minion:ping
-Connecting to broker...
+Connecting to ReST...
+OK
+Connecting to Broker...
 OK
 admin@minion()>
 ----
