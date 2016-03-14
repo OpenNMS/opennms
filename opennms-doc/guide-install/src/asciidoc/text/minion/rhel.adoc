@@ -56,9 +56,9 @@ systemctl start minion
 ----
 
 After starting _Minion_ the shell can be accessed locally on ssh://localhost:8201.
-The default login user is _karaf_ and the password is initialized to _karaf_.
+The default login user is _admin_ and the password is initialized to _admin_.
 
 [source, shell]
 ----
-[root@localhost /root]# $ ssh -oPort=8201 karaf@localhost
+[root@localhost /root]# $ ssh -oPort=8201 admin@localhost
 ----
