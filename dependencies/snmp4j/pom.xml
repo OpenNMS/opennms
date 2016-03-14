@@ -18,7 +18,7 @@
     <dependency>
       <groupId>org.snmp4j</groupId>
       <artifactId>snmp4j</artifactId>
-      <version>2.3.1</version>
+      <version>2.4.3</version>
       <exclusions>
         <exclusion>
           <groupId>log4j</groupId>

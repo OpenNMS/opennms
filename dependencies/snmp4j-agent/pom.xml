@@ -23,7 +23,7 @@
     <dependency>
       <groupId>org.snmp4j</groupId>
       <artifactId>snmp4j-agent</artifactId>
-      <version>2.2.2</version>
+      <version>2.4.2</version>
       <exclusions>
         <exclusion>
           <groupId>log4j</groupId>
