@@ -32,7 +32,6 @@ import java.util.Dictionary;
 import java.util.Map;
 import java.util.Properties;
 
-import org.apache.activemq.broker.BrokerService;
 import org.apache.camel.Component;
 import org.apache.camel.component.seda.SedaComponent;
 import org.apache.camel.test.blueprint.CamelBlueprintTestSupport;
@@ -133,8 +132,10 @@ public class DiscovererBlueprintIT extends CamelBlueprintTestSupport {
         services.put( DiscoveryConfigurationFactory.class.getName(),
                 new KeyValueHolder<Object, Dictionary>(configFactory, new Properties() ) );
 
+        Properties props = new Properties();
+        props.setProperty("alias", "opennms.broker");
         services.put( Component.class.getName(),
-                new KeyValueHolder<Object, Dictionary>( new SedaComponent(), new Properties() ) );
+                new KeyValueHolder<Object, Dictionary>( new SedaComponent(), props ) );
     }
 
     // The location of our Blueprint XML file to be used for testing

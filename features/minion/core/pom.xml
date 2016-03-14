@@ -16,5 +16,6 @@
         <module>impl</module>
         <module>features</module>
         <module>repository</module>
+        <module>shell</module>
     </modules>
 </project>

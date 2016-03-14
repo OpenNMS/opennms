@@ -33,12 +33,26 @@
     </bean>
     <service ref="minionIdentity" interface="org.opennms.minion.core.api.MinionIdentity"/>
 
+    <!-- Connection factory used by the Camel component and shell commands -->
+    <bean id="amqConnectionFactory" class="org.opennms.minion.core.impl.ScvEnableActiveMQConnectionFactory">
+        <argument value="[[broker-url]]"/>
+        <argument ref="secureCredentialsVault"/>
+        <argument value="opennms.broker"/>
+    </bean>
+    <service ref="amqConnectionFactory" interface="javax.jms.ConnectionFactory">
+        <service-properties>
+            <entry key="alias" value="opennms.broker"/>
+        </service-properties>
+    </service>
+
     <!-- A canonical ActiveMQ component pointing to the OpenNMS controller -->
     <!-- TODO: Use connection pooling. See http://camel.apache.org/activemq.html -->
     <bean id="activemq" class="org.opennms.minion.core.impl.ScvEnabledActiveMQComponent">
-        <argument ref="secureCredentialsVault"/>
-        <argument value="opennms.broker"/>
-        <property name="brokerURL" value="[[broker-url]]"/>
+        <argument ref="amqConnectionFactory"/>
     </bean>
-    <service id="queuingservice" ref="activemq" interface="org.apache.camel.Component"/>
+    <service id="queuingservice" ref="activemq" interface="org.apache.camel.Component">
+        <service-properties>
+            <entry key="alias" value="opennms.broker"/>
+        </service-properties>
+    </service>
 </blueprint>

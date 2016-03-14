@@ -41,7 +41,7 @@ import org.opennms.features.scv.api.SecureCredentialsVault;
 public class ScvSetCommand implements Action {
 
     @Reference
-    protected SecureCredentialsVault secureCredentialsVault;
+    public SecureCredentialsVault secureCredentialsVault;
 
     @Argument(index = 0, name = "alias", description = "Alias used to retrieve the credentials.", required = true, multiValued = false)
     @Completion(AliasCompleter.class)

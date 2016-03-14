@@ -1,16 +1,16 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <groupId>org.opennms.features</groupId>
-        <artifactId>org.opennms.features.scv</artifactId>
+        <groupId>org.opennms.features.minion</groupId>
+        <artifactId>core-parent</artifactId>
         <version>18.0.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
-    <groupId>org.opennms.features.scv</groupId>
-    <artifactId>org.opennms.features.scv.jceks-impl</artifactId>
+    <artifactId>shell</artifactId>
     <packaging>bundle</packaging>
-    <name>OpenNMS :: Features :: SCV :: JCEKS Impl.</name>
+    <name>OpenNMS :: Features :: Minion :: Core :: Shell</name>
+
     <build>
         <plugins>
             <plugin>
@@ -22,6 +22,7 @@
                         <Bundle-RequiredExecutionEnvironment>JavaSE-1.8</Bundle-RequiredExecutionEnvironment>
                         <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
                         <Bundle-Version>${project.version}</Bundle-Version>
+                        <Karaf-Commands>*</Karaf-Commands>
                     </instructions>
                 </configuration>
             </plugin>
@@ -30,26 +31,19 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.opennms.features.scv</groupId>
-            <artifactId>org.opennms.features.scv.api</artifactId>
+            <groupId>org.opennms.features.minion</groupId>
+            <artifactId>core-api</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
+          <groupId>org.apache.activemq</groupId>
+          <artifactId>activemq-client</artifactId>
+          <version>${activemqVersion}</version>
         </dependency>
         <dependency>
-            <groupId>commons-codec</groupId>
-            <artifactId>commons-codec</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.google.guava</groupId>
-            <artifactId>guava</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <scope>test</scope>
+            <groupId>org.apache.karaf.shell</groupId>
+            <artifactId>org.apache.karaf.shell.console</artifactId>
+            <version>${minionKarafVersion}</version>
         </dependency>
     </dependencies>
 </project>

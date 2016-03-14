@@ -41,7 +41,7 @@ import org.opennms.features.scv.api.SecureCredentialsVault;
 public class AliasCompleter implements Completer {
 
     @Reference
-    protected SecureCredentialsVault secureCredentialsVault;
+    public SecureCredentialsVault secureCredentialsVault;
 
     public int complete(Session session, CommandLine commandLine, List<String> candidates) {
         StringsCompleter delegate = new StringsCompleter();

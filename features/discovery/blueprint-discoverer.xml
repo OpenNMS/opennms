@@ -42,7 +42,7 @@
 	</bean>
 
     <!-- ActiveMQ component provided by minion-core -->
-    <reference id="queuingservice" interface="org.apache.camel.Component"/>
+    <reference id="queuingservice" interface="org.apache.camel.Component" filter="(alias=opennms.broker)"/>
 
 	<camelContext id="discovererCamelContext" xmlns="http://camel.apache.org/schema/blueprint">
 		<propertyPlaceholder id="properties" location="blueprint:discovererProperties" />

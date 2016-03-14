@@ -45,6 +45,7 @@ Once the URLs and credentials for communicating with the _OpenNMS_ instance are 
 [source]
 ----
 karaf@root()> minion:ping
+Connecting to broker...
 OK
 karaf@root()>
 ----
