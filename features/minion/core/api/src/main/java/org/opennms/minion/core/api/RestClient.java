@@ -25,35 +25,20 @@
  *      http://www.opennms.org/
  *      http://www.opennms.com/
  *******************************************************************************/
-package org.opennms.minion.core.shell;
+package org.opennms.minion.core.api;
 
-import javax.jms.ConnectionFactory;
+/**
+ * REST API client for OpenNMS.
+ *
+ * @author jwhite
+ */
+public interface RestClient {
 
-import org.apache.karaf.shell.api.action.Action;
-import org.apache.karaf.shell.api.action.Command;
-import org.apache.karaf.shell.api.action.lifecycle.Reference;
-import org.apache.karaf.shell.api.action.lifecycle.Service;
-import org.opennms.minion.core.api.RestClient;
+    /**
+     * Used to verify connectivity with the REST endpoint.
+     *
+     * @throws Exception on failure
+     */
+    public void ping() throws Exception;
 
-@Command(scope = "minion", name = "ping", description="Tests connectivity with the controller.")
-@Service
-public class MinionPingCommand implements Action {
-
-    @Reference
-    public ConnectionFactory brokerConnectionFactory;
-
-    @Reference
-    public RestClient restClient;
-
-    @Override
-    public Object execute() throws Exception {
-        System.out.println("Connecting to ReST...");
-        restClient.ping();
-        System.out.println("OK");
-
-        System.out.println("Connecting to Broker...");
-        brokerConnectionFactory.createConnection();
-        System.out.println("OK");
-        return null;
-    }
 }

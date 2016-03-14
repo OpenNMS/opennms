@@ -16,6 +16,10 @@
         <bundle>mvn:javax.annotation/javax.annotation-api/1.2</bundle>
         <feature>activemq-camel</feature>
 
+        <!-- Used for the REST client -->
+        <bundle>mvn:org.apache.httpcomponents/httpcore-osgi/${httpcoreVersion}</bundle>
+        <bundle>mvn:org.apache.httpcomponents/httpclient-osgi/${httpclientVersion}</bundle>
+
         <bundle>mvn:org.opennms.features.minion/core-api/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.minion/core-impl/${project.version}</bundle>
     </feature>
