@@ -30,8 +30,10 @@ package org.opennms.netmgt.trapd;
 
 import java.io.IOException;
 import java.io.InterruptedIOException;
+import java.lang.reflect.UndeclaredThrowableException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
+import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
@@ -42,24 +44,54 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+import javax.annotation.Resource;
+
 import org.opennms.core.concurrent.LogPreservingThreadFactory;
 import org.opennms.core.logging.Logging;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.SyslogdConfig;
+import org.opennms.netmgt.snmp.SnmpUtils;
+import org.opennms.netmgt.snmp.SnmpV3User;
+import org.opennms.netmgt.snmp.TrapNotification;
+import org.opennms.netmgt.snmp.TrapNotificationListener;
+import org.opennms.netmgt.snmp.TrapProcessor;
+import org.opennms.netmgt.snmp.TrapProcessorFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * @author <a href="mailto:weave@oculan.com">Brian Weaver</a>
  * @author <a href="http://www.oculan.com">Oculan Corporation</a>
  * @fiddler joed
  */
-// TODO: HZN-609: Change to implement TrapNotificationListener
-public class TrapReceiverSnmp4jImpl implements TrapReceiver {
+public class TrapReceiverSnmp4jImpl implements TrapReceiver, TrapNotificationListener,TrapProcessorFactory {
     private static final Logger LOG = LoggerFactory.getLogger(TrapReceiverSnmp4jImpl.class);
 
     private static final int SOCKET_TIMEOUT = 500;
 
+    /**
+     * The thread pool that processes traps
+     */
+    private ExecutorService m_backlogQ;
+
+    /**
+     * The queue processing thread
+     */
+    @Autowired
+    private TrapQueueProcessorFactory m_processorFactory;
+    
+    @Resource(name="snmpTrapAddress")
+    private String m_snmpTrapAddress;
+
+    @Resource(name="snmpTrapPort")
+    private Integer m_snmpTrapPort;
+
+    @Resource(name="snmpV3Users")
+    private List<SnmpV3User> m_snmpV3Users;
+    
+    private boolean m_registeredForTraps;
+    
     /**
      * The Fiber's status.
      */
@@ -150,19 +182,203 @@ public class TrapReceiverSnmp4jImpl implements TrapReceiver {
     /**
      * The execution context.
      */
-    // TODO: HZN-609: Change this to TrapdNotificationListener.receive()
     @Override
     public void run() {
-        SyslogConnection connection = new SyslogConnection(pkt, m_config);
+        // get the context
+        m_context = Thread.currentThread();
+
+        // Get a log instance
+        Logging.putPrefix(Syslogd.LOG4J_CATEGORY);
+
+        if (m_stop) {
+            LOG.debug("Stop flag set before thread started, exiting");
+            return;
+        } else
+            LOG.debug("Thread context started");
+
+        // allocate a buffer
+        final int length = 0xffff;
+        final byte[] buffer = new byte[length];
 
         try {
-            for (TrapNotificationHandler handler : m_trapNotificationHandlers) {
-                handler.handleTrapNotification(connection);
-            }
-        } catch (Throwable e) {
-            LOG.error("Handler execution failed in {}", this.getClass().getSimpleName(), e);
+            LOG.debug("Creating syslog socket");
+            m_dgSock = new DatagramSocket(null);
+        } catch (SocketException e) {
+            LOG.warn("Could not create syslog socket: " + e.getMessage(), e);
+            return;
         }
-    }
+
+        // set an SO timeout to make sure we don't block forever
+        // if a socket is closed.
+        try {
+            LOG.debug("Setting socket timeout to {}ms", SOCKET_TIMEOUT);
+            m_dgSock.setSoTimeout(SOCKET_TIMEOUT);
+        } catch (SocketException e) {
+            LOG.warn("An I/O error occured while trying to set the socket timeout", e);
+        }
+
+        // Set SO_REUSEADDR so that we don't run into problems in
+        // unit tests trying to rebind to an address where other tests
+        // also bound. This shouldn't have any effect at runtime.
+        try {
+            LOG.debug("Setting socket SO_REUSEADDR to true");
+            m_dgSock.setReuseAddress(true);
+        } catch (SocketException e) {
+            LOG.warn("An I/O error occured while trying to set SO_REUSEADDR", e);
+        }
+
+        // Increase the receive buffer for the socket
+        try {
+            LOG.debug("Attempting to set receive buffer size to {}", Integer.MAX_VALUE);
+            m_dgSock.setReceiveBufferSize(Integer.MAX_VALUE);
+            LOG.debug("Actual receive buffer size is {}", m_dgSock.getReceiveBufferSize());
+        } catch (SocketException e) {
+            LOG.info("Failed to set the receive buffer to {}", Integer.MAX_VALUE, e);
+        }
+
+        try {
+            LOG.debug("Opening datagram socket");
+            if (m_config.getListenAddress() != null && m_config.getListenAddress().length() != 0) {
+                m_dgSock.bind(new InetSocketAddress(InetAddressUtils.addr(m_config.getListenAddress()), m_config.getSyslogPort()));
+            } else {
+                m_dgSock.bind(new InetSocketAddress(m_config.getSyslogPort()));
+            }
+        } catch (SocketException e) {
+            LOG.info("Failed to open datagram socket", e);
+        }
+
+        // set to avoid numerous tracing message
+        boolean ioInterrupted = false;
+
+        // Construct one mutable {@link DatagramPacket} that will be used for receiving syslog messages 
+        DatagramPacket pkt = new DatagramPacket(buffer, length);
+
+        // now start processing incoming requests
+        while (!m_stop) {
+            if (m_context.isInterrupted()) {
+                LOG.debug("Thread context interrupted");
+                break;
+            }
+
+            try {
+                if (!ioInterrupted) {
+                    LOG.debug("Waiting on a datagram to arrive");
+                }
+
+                m_dgSock.receive(pkt);
+
+                SyslogConnection connection = new SyslogConnection(pkt, m_config);
+
+                try {
+                    for (TrapNotificationHandler handler : m_trapNotificationHandlers) {
+                      //  handler.handleTrapNotification(connection);
+                    }
+                } catch (Throwable e) {
+                    LOG.error("Handler execution failed in {}", this.getClass().getSimpleName(), e);
+                }
+
+                ioInterrupted = false; // reset the flag
+            } catch (SocketTimeoutException e) {
+                ioInterrupted = true;
+                continue;
+            } catch (InterruptedIOException e) {
+                ioInterrupted = true;
+                continue;
+            } catch (IOException e) {
+                if (m_stop) {
+                    // A SocketException can be thrown during normal shutdown so log as debug
+                    LOG.debug("Shutting down the datagram receipt port: " + e.getMessage());
+                } else {
+                    LOG.error("An I/O exception occured on the datagram receipt port, exiting", e);
+                }
+                break;
+            }
+
+        } // end while status OK
+
+        LOG.debug("Thread context exiting");
 
     }
+
+	@Override
+	public void trapReceived(TrapNotification trapNotification) {
+		m_backlogQ.submit(m_processorFactory.getInstance(trapNotification));
+		
+	}
+
+	@Override
+	public void trapError(int error, String msg) {
+      LOG.warn("Error Processing Received Trap: error = {} {}", error, (msg != null ? ", ref = " + msg : ""));
+	}
+	
+	public void registeredForTraps(){
+        try {
+        	InetAddress address = getInetAddress();
+        	LOG.info("Listening on {}:{}", address == null ? "[all interfaces]" : InetAddressUtils.str(address), m_snmpTrapPort);
+            SnmpUtils.registerForTraps(this, this, address, m_snmpTrapPort, m_snmpV3Users); // Need to clarify 
+            m_registeredForTraps = true;
+            
+            LOG.debug("init: Creating the trap session");
+        } catch (final IOException e) {
+            if (e instanceof java.net.BindException) {
+                Logging.withPrefix("OpenNMS.Manager", new Runnable() {
+                    @Override
+                    public void run() {
+                        LOG.error("init: Failed to listen on SNMP trap port, perhaps something else is already listening?", e);
+                    }
+                });
+                LOG.error("init: Failed to listen on SNMP trap port, perhaps something else is already listening?", e);
+            } else {
+                LOG.error("init: Failed to initialize SNMP trap socket", e);
+            }
+            throw new UndeclaredThrowableException(e);
+        }
+	}
+	
+	public void unRegisteredForTraps(){
+        try {
+            if (m_registeredForTraps) {
+                LOG.debug("stop: Closing SNMP trap session.");
+                SnmpUtils.unregisterForTraps(this, getInetAddress(), m_snmpTrapPort);
+                LOG.debug("stop: SNMP trap session closed.");
+            } else {
+                LOG.debug("stop: not attemping to closing SNMP trap session--it was never opened");
+            }
+
+        } catch (final IOException e) {
+            LOG.warn("stop: exception occurred closing session", e);
+        } catch (final IllegalStateException e) {
+            LOG.debug("stop: The SNMP session was already closed", e);
+        }
+	}
+	
+    public ExecutorService getM_backlogQ() {
+		return m_backlogQ;
+	}
+
+	public void setM_backlogQ(ExecutorService m_backlogQ) {
+		this.m_backlogQ = m_backlogQ;
+	}
+
+	public TrapQueueProcessorFactory getM_processorFactory() {
+		return m_processorFactory;
+	}
+
+	public void setM_processorFactory(TrapQueueProcessorFactory m_processorFactory) {
+		this.m_processorFactory = m_processorFactory;
+	}
+
+	private InetAddress getInetAddress() {
+    	if (m_snmpTrapAddress.equals("*")) {
+    		return null;
+    	}
+		return InetAddressUtils.addr(m_snmpTrapAddress);
+    }
+
+	@Override
+	public TrapProcessor createTrapProcessor() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
 }

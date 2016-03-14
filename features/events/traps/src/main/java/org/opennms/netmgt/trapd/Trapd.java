@@ -28,23 +28,16 @@
 
 package org.opennms.netmgt.trapd;
 
-import java.io.IOException;
 import java.lang.reflect.UndeclaredThrowableException;
-import java.net.InetAddress;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 
 import javax.annotation.Resource;
 
-import org.opennms.core.logging.Logging;
 import org.opennms.core.spring.BeanUtils;
-import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
-import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpV3User;
-import org.opennms.netmgt.snmp.TrapNotification;
-import org.opennms.netmgt.snmp.TrapNotificationListener;
 import org.opennms.netmgt.snmp.TrapProcessor;
 import org.opennms.netmgt.snmp.TrapProcessorFactory;
 import org.slf4j.Logger;
@@ -76,7 +69,7 @@ import org.springframework.util.Assert;
  * @author <A HREF="mailto:tarus@opennms.org">Tarus Balog </A>
  * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
  */
-public class Trapd extends AbstractServiceDaemon implements TrapProcessorFactory, TrapNotificationListener {
+public class Trapd extends AbstractServiceDaemon implements TrapProcessorFactory{
     
     private static final Logger LOG = LoggerFactory.getLogger(Trapd.class);
 
@@ -86,6 +79,11 @@ public class Trapd extends AbstractServiceDaemon implements TrapProcessorFactory
      * The last status sent to the service control manager.
      */
     private int m_status = START_PENDING;
+
+    /**
+     * The thread pool that processes traps
+     */
+    private ExecutorService m_backlogQ;
 
     /**
      * The queue processing thread
@@ -114,8 +112,6 @@ public class Trapd extends AbstractServiceDaemon implements TrapProcessorFactory
     @Resource(name="snmpV3Users")
     private List<SnmpV3User> m_snmpV3Users;
 
-    private boolean m_registeredForTraps;
-
     /**
      * <P>
      * Constructs a new Trapd object that receives and forwards trap messages
@@ -140,19 +136,14 @@ public class Trapd extends AbstractServiceDaemon implements TrapProcessorFactory
         return new EventCreator(m_trapdIpMgr);
     }
 
-    /** {@inheritDoc} */
-    // TODO: HZN-609: Move this method into TrapReceiverSnmp4jImpl
-    @Override
-    public void trapReceived(TrapNotification trapNotification) {
-        m_backlogQ.submit(m_processorFactory.getInstance(trapNotification));
-    }
-
     /**
      * <p>onInit</p>
      */
     @Override
     public synchronized void onInit() {
         BeanUtils.assertAutowiring(this);
+
+        Assert.state(m_backlogQ != null, "backlogQ must be set");
 
         try {
             m_trapdIpMgr.dataSourceSync();
@@ -162,40 +153,11 @@ public class Trapd extends AbstractServiceDaemon implements TrapProcessorFactory
         }
 
         try {
-        	InetAddress address = getInetAddress();
-        	LOG.info("Listening on {}:{}", address == null ? "[all interfaces]" : InetAddressUtils.str(address), m_snmpTrapPort);
-            SnmpUtils.registerForTraps(this, this, address, m_snmpTrapPort, m_snmpV3Users);
-            m_registeredForTraps = true;
-
-            LOG.debug("init: Creating the trap session");
-        } catch (final IOException e) {
-            if (e instanceof java.net.BindException) {
-                Logging.withPrefix("OpenNMS.Manager", new Runnable() {
-                    @Override
-                    public void run() {
-                        LOG.error("init: Failed to listen on SNMP trap port, perhaps something else is already listening?", e);
-                    }
-                });
-                LOG.error("init: Failed to listen on SNMP trap port, perhaps something else is already listening?", e);
-            } else {
-                LOG.error("init: Failed to initialize SNMP trap socket", e);
-            }
-            throw new UndeclaredThrowableException(e);
-        }
-
-        try {
             m_eventReader.open();
         } catch (final Throwable e) {
             LOG.error("init: Failed to open event reader", e);
             throw new UndeclaredThrowableException(e);
         }
-    }
-
-    private InetAddress getInetAddress() {
-    	if (m_snmpTrapAddress.equals("*")) {
-    		return null;
-    	}
-		return InetAddressUtils.addr(m_snmpTrapAddress);
     }
 
     /**
@@ -265,22 +227,9 @@ public class Trapd extends AbstractServiceDaemon implements TrapProcessorFactory
         // shutdown and wait on the background processing thread to exit.
         LOG.debug("stop: closing communication paths.");
 
-        try {
-            if (m_registeredForTraps) {
-                LOG.debug("stop: Closing SNMP trap session.");
-                SnmpUtils.unregisterForTraps(this, getInetAddress(), m_snmpTrapPort);
-                LOG.debug("stop: SNMP trap session closed.");
-            } else {
-                LOG.debug("stop: not attemping to closing SNMP trap session--it was never opened");
-            }
-
-        } catch (final IOException e) {
-            LOG.warn("stop: exception occurred closing session", e);
-        } catch (final IllegalStateException e) {
-            LOG.debug("stop: The SNMP session was already closed", e);
-        }
-
         LOG.debug("stop: Stopping queue processor.");
+
+        m_backlogQ.shutdown();
 
         m_eventReader.close();
 
@@ -299,13 +248,6 @@ public class Trapd extends AbstractServiceDaemon implements TrapProcessorFactory
         return m_status;
     }
 
-    /** {@inheritDoc} */
-    // TODO: HZN-609: Move this method into TrapReceiverSnmp4jImpl
-    @Override
-    public void trapError(final int error, final String msg) {
-        LOG.warn("Error Processing Received Trap: error = {} {}", error, (msg != null ? ", ref = " + msg : ""));
-    }
-
     /**
      * <p>getEventReader</p>
      *
@@ -322,6 +264,24 @@ public class Trapd extends AbstractServiceDaemon implements TrapProcessorFactory
      */
     public void setEventReader(BroadcastEventProcessor eventReader) {
         m_eventReader = eventReader;
+    }
+
+    /**
+     * <p>getBacklogQ</p>
+     *
+     * @return a {@link java.util.concurrent.ExecutorService} object.
+     */
+    public ExecutorService getBacklogQ() {
+        return m_backlogQ;
+    }
+
+    /**
+     * <p>setBacklogQ</p>
+     *
+     * @param backlogQ a {@link java.util.concurrent.ExecutorService} object.
+     */
+    public void setBacklogQ(ExecutorService backlogQ) {
+        m_backlogQ = backlogQ;
     }
 
     public static String getLoggingCategory() {
