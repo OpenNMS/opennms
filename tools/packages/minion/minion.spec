@@ -67,6 +67,8 @@ Summary:       Minion Container
 Group:         Applications/System
 Requires(pre): %{jdk}
 Requires:      %{jdk}
+Requires(pre): openssh
+Requires:      openssh
 
 %description container
 Minion Container
@@ -79,6 +81,8 @@ Summary:       Minion Core Features
 Group:         Applications/System
 Requires(pre): %{name}-container = %{version}-%{release}
 Requires:      %{name}-container = %{version}-%{release}
+Requires(pre): util-linux
+Requires:      util-linux
 
 %description features-core
 Minion Core Features
@@ -122,9 +126,6 @@ mkdir -p $RPM_BUILD_ROOT%{minionrepoprefix}/core
 tar zxvf $RPM_BUILD_DIR/%{_name}-%{version}-%{release}/features/minion/core/repository/target/core-repository-*-repo.tar.gz -C $RPM_BUILD_ROOT%{minionrepoprefix}/core
 echo "location = MINION" > $RPM_BUILD_ROOT%{minioninstprefix}/etc/org.opennms.minion.controller.cfg
 echo "id = 00000000-0000-0000-0000-000000ddba11" >> $RPM_BUILD_ROOT%{minioninstprefix}/etc/org.opennms.minion.controller.cfg
-echo "broker-url = tcp://127.0.0.1:61616" >> $RPM_BUILD_ROOT%{minioninstprefix}/etc/org.opennms.minion.controller.cfg
-echo "username = admin" >> $RPM_BUILD_ROOT%{minioninstprefix}/etc/org.opennms.minion.controller.cfg
-echo "password = admin" >> $RPM_BUILD_ROOT%{minioninstprefix}/etc/org.opennms.minion.controller.cfg
 
 # Extract the default repository
 mkdir -p $RPM_BUILD_ROOT%{minionrepoprefix}/default
@@ -166,9 +167,19 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %{_initrddir}/minion
 %attr(644,root,root) %{minioninstprefix}/etc/featuresBoot.d/.readme
 
+%post container
+# Generate an SSH key
+/usr/bin/ssh-keygen -t rsa -N "" -b 4096 -f %{minioninstprefix}/etc/host.key
+
 %files features-core -f %{_tmppath}/files.core
 %defattr(664 root root 775)
 %config(noreplace) %{minioninstprefix}/etc/org.opennms.minion.controller.cfg
 
+%post features-core
+# Generate a new UUID
+UUID=$(/usr/bin/uuidgen -t)
+/usr/bin/sed -i "s|id =.*|id = $UUID|g" "%{minioninstprefix}/etc/org.opennms.minion.controller.cfg"
+
 %files features-default -f %{_tmppath}/files.default
 %defattr(664 root root 775)
+
