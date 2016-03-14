@@ -70,7 +70,7 @@ public class Snmp4JTrapNotifier implements CommandResponder {
 
         private PDUv1 m_pdu;
 
-        protected Snmp4JV1TrapInformation(InetAddress agent, String community, PDUv1 pdu, TrapProcessor trapProcessor) {
+        public Snmp4JV1TrapInformation(InetAddress agent, String community, PDUv1 pdu, TrapProcessor trapProcessor) {
             super(agent, community, trapProcessor);
             m_pdu = pdu;
         }
