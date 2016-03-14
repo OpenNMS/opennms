@@ -169,9 +169,6 @@ rm -rf $RPM_BUILD_ROOT
 %files features-core -f %{_tmppath}/files.core
 %defattr(664 root root 775)
 %config(noreplace) %{minioninstprefix}/etc/org.opennms.minion.controller.cfg
-%config(noreplace) %{minioninstprefix}/etc/featuresBoot.d/core.boot
 
 %files features-default -f %{_tmppath}/files.default
 %defattr(664 root root 775)
-%config(noreplace) %{minioninstprefix}/etc/featuresBoot.d/default.boot
-
