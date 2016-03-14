@@ -70,7 +70,7 @@ casper.test.begin('Add Node to Requisition', 9, {
 		casper.then(function() {
 			casper.click('#go-back');
 		});
-		casper.waitForText('(0 nodes)');
+		casper.waitForText('(0 defined, 0 deployed)');
 
 		// Add a node to the requisition
 		casper.then(function() {
@@ -128,8 +128,8 @@ casper.test.begin('Add Node to Requisition', 9, {
 		});
 		casper.thenClick('.modal-dialog button.btn.btn-success');
 		casper.waitWhileSelector('.modal_dialog');
-		casper.waitForText('(1 nodes)', function() {
-			test.assertTextExists('(1 nodes)', 'There should be one node on the requisition node page');
+		casper.waitForText('(1 defined, 1 deployed)', function() {
+			test.assertTextExists('(1 defined, 1 deployed)', 'There should be one node on the requisition node page');
 		});
 		casper.waitWhileSelector('.danger', function() {
 			test.assertDoesntExist('.danger', 'There should be no unfinished/red entries on the screen');

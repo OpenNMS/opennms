@@ -15,17 +15,18 @@
       </div>
       <div class="form-group">
         <label class="control-label" for="descr">Description</label>
-        <input class="form-control" type="text" id="descr" name="descr" placeholder="Description" ng-model="requisitionInterface.description"></input>
+        <input class="form-control" type="text" id="descr" name="descr" placeholder="Description [optional]" ng-model="requisitionInterface.description"></input>
       </div>
-      <div class="form-group">
+      <div class="form-group" ng-class="{ 'has-error' : intfForm.snmpPrimary.$invalid }">
         <label class="control-label" for="snmpPrimary">SNMP Primary</label>
-        <input class="form-control" type="text" id="snmpPrimary" name="snmpPrimary" ng-model="requisitionInterface.snmpPrimary" typeahead-editable="false" typeahead-min-length="0" uib-typeahead="a.id as a.title for a in snmpPrimaryFields | filter:$viewValue" required></input>
+        <input class="form-control" type="text" id="snmpPrimary" name="snmpPrimary" placeholder="SNMP Primary Flag (choose one from the list)" ng-model="requisitionInterface.snmpPrimary" typeahead-editable="false" typeahead-min-length="0" uib-typeahead="a.id as a.title for a in snmpPrimaryFields | filter:$viewValue" required></input>
+        <p ng-show="intfForm.snmpPrimary.$invalid" class="help-block">A valid SNMP Primary Flag is required.</p>
       </div>
       <label ng-show="requisitionInterface.services.length > 0">Services</label>
       <ng-form name="serviceForm" ng-repeat="service in requisitionInterface.services">
         <div class="form-group" ng-class="{ 'has-error' : serviceForm.serviceName.$invalid }">
           <div class="input-group">
-            <input class="form-control" type="text" name="serviceName" placeholder="Service Name" ng-model="service.name" typeahead-editable="true" typeahead-min-length="0" uib-typeahead="service for service in getAvailableServices() | filter:$viewValue" required valid-service></input>
+            <input class="form-control" type="text" name="serviceName" placeholder="Service Name (choose one from the list or type a custom text for a new one)" ng-model="service.name" typeahead-editable="true" typeahead-min-length="0" uib-typeahead="service for service in getAvailableServices() | filter:$viewValue" required valid-service></input>
             <span class="input-group-btn">
               <button class="btn btn-default" type="button" ng-click="removeService($index)"><span class="glyphicon glyphicon-remove"></span></button>
             </span>

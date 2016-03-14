@@ -159,7 +159,7 @@ function Requisition(requisition, isDeployed) {
       node.deployed = deployed;
       node.modified = false;
     });
-    self.lastImport = Date.now();
+    self.lastImport = deployed ? Date.now() : null;
   };
 
   self.className = 'Requisition';

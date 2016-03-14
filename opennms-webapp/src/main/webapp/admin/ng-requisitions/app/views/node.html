@@ -54,11 +54,11 @@
           </div>
           <div class="form-group">
             <label class="control-label" for="building">Building</label>
-            <input class="form-control" type="text" id="building" name="building" placeholder="Building" ng-model="node.building"/>
+            <input class="form-control" type="text" id="building" name="building" placeholder="Building [optional]" ng-model="node.building"/>
           </div>
           <div class="form-group">
             <label class="control-label" for="city">City</label>
-            <input class="form-control" type="text" id="city" name="city" placeholder="City" ng-model="node.city"/>
+            <input class="form-control" type="text" id="city" name="city" placeholder="City [optional]" ng-model="node.city"/>
           </div>
         </uib-tab>
 
@@ -67,7 +67,7 @@
           <br/>
           <div class="form-group">
             <label class="control-label" for="parentForeignSource">Parent Foreign Source</label>
-            <input class="form-control" type="text" id="parentForeignSource" name="parentForeignSource" placeholder="Parent Foreign Source" ng-model="node.parentForeignSource"/>
+            <input class="form-control" type="text" id="parentForeignSource" name="parentForeignSource" placeholder="Parent Foreign Source (leave it blank to use the current requisition)" ng-model="node.parentForeignSource"/>
           </div>
           <div class="form-group" ng-show="node.parentNodeLabel == null || node.parentNodeLabel == ''">
             <label class="control-label" for="parentForeignId">Parent Foreign ID</label>
@@ -161,7 +161,7 @@
           <ng-form name="categoryForm" ng-repeat="category in node.categories">
             <div class="form-group" ng-class="{ 'has-error' : categoryForm.categoryName.$invalid }">
               <div class="input-group">
-                <input class="form-control" type="text" name="categoryName" placeholder="Category Name" ng-model="category.name" typeahead-min-length="0" typeahead-editable="true" uib-typeahead="category for category in getAvailableCategories() | filter:$viewValue" required valid-category="category"></input>
+                <input class="form-control" type="text" name="categoryName" placeholder="Category Name (choose one from the list or type a custom text for a new one)" ng-model="category.name" typeahead-min-length="0" typeahead-editable="true" uib-typeahead="category for category in getAvailableCategories() | filter:$viewValue" required valid-category="category"></input>
                 <span class="input-group-btn">
                   <button class="btn btn-default" type="button" ng-click="removeCategory($index)"><span class="glyphicon glyphicon-remove"></span></button>
                 </span>

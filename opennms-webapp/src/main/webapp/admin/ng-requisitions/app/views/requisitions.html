@@ -105,13 +105,13 @@
                 ng-click="synchronize(requisition.foreignSource)">
                 <span class="glyphicon glyphicon-refresh"></span>
               </button>
-              <button class="btn btn-default btn-xs remove-nodes" ng-show="requisition.nodesInDatabase > 0"
+              <button class="btn btn-default btn-xs remove-nodes" ng-disabled="requisition.nodesDefined == 0"
                 uib-tooltip="Remove all nodes from the {{requisition.foreignSource}} Requisition"
                 ng-disabled="timingStatus.isRunning"
                 ng-click="removeAllNodes(requisition.foreignSource)">
                 <span class="glyphicon glyphicon-remove-circle"></span>
               </button>
-              <button class="btn btn-default btn-xs remove-requisition" ng-show="requisition.nodesInDatabase == 0"
+              <button class="btn btn-default btn-xs remove-requisition" ng-disabled="requisition.nodesInDatabase > 0 || requisition.nodesDefined > 0"
                 uib-tooltip="Remove the {{requisition.foreignSource}} Requisition"
                 ng-disabled="timingStatus.isRunning"
                 ng-click="delete(requisition.foreignSource)">

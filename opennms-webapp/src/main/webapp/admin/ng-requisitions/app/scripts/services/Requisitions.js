@@ -329,9 +329,16 @@
       $log.debug('updateDeployedStats: retrieving deployed statistics.');
       $http.get(url)
       .success(function(data) {
-        angular.forEach(data['foreign-source'], function(deployedReq) {
-          var existingReq = requisitionsData.getRequisition(deployedReq.name);
-          if (existingReq != null) {
+        angular.forEach(requisitionsData.requisitions, function(existingReq) {
+          var deployedReq = null;
+          angular.forEach(data['foreign-source'], function(r) {
+            if (r.name == existingReq.foreignSource) {
+              deployedReq = r;
+            }
+          });
+          if (deployedReq == null) {
+            existingReq.setDeployed(false);
+          } else {
             requisitionsService.internal.updateRequisition(existingReq, deployedReq);
           }
         });
