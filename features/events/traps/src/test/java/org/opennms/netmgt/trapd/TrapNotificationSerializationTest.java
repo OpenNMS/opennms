@@ -47,7 +47,7 @@ public class TrapNotificationSerializationTest {
 		assertTrue(writeTrapNotificationObject(snmp4JV1Trap));
 	}
 
-	//@Test
+	@Test
 	public void testsnmp4JV2cSerialization() throws UnknownHostException {
 		// create instance of snmp4JV2cTrap
 		PDU snmp4JV2cTrapPdu = new PDU();
@@ -64,7 +64,7 @@ public class TrapNotificationSerializationTest {
 		assertTrue(writeTrapNotificationObject(snmp4JV2cTrap));
 	}
 
-	//@Test
+	@Test
 	public void testsnmp4JV3Serialization() throws UnknownHostException {
 
 		// create instance of snmp4JV3Trap
