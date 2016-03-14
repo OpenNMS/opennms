@@ -4,21 +4,11 @@
 
 === Container
 
-The _Minion_ container differs from standard _Karaf_ distribution as follows:
-
-. We force a clean start by wiping `$karaf.home/data` (except for `$karaf.home/data/logs`) everytime the container starts
-. We manage repositories and features using the _Karaf Extender_.
+This sections details the customization we make to the standard _Karaf_ distribution for the _Minion_ container.
 
 ==== Clean Start
 
-We force a clean start everytime the container is started for these main reasons:
-
-. To ensure that only the features listed in the featuresBoot (or installed by the `KarafExtender`) are installed
-. To ensure that _Minion_ is stateless
-
-The clean start is performed in the `$karaf.home/bin/start` script, which is used by the init script.
-
-Starting the container via some other means will not necessarily force a clean start.
+We clear the cache on every start by setting `karaf.clean.cache = true` in order to  ensure that only the features listed in the featuresBoot (or installed by the `karaf-extender`) are installed.
 
 ==== Karaf Extender
 
