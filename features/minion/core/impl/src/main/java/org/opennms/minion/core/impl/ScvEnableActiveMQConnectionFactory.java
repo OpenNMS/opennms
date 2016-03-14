@@ -29,7 +29,8 @@
 package org.opennms.minion.core.impl;
 
 import org.apache.activemq.ActiveMQConnectionFactory;
-import org.apache.activemq.camel.component.ActiveMQComponent;
+import org.opennms.features.scv.api.Credentials;
+import org.opennms.features.scv.api.SecureCredentialsVault;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,10 +39,19 @@ import org.slf4j.LoggerFactory;
  *
  * @author jwhite
  */
-public class ScvEnabledActiveMQComponent extends ActiveMQComponent {
+public class ScvEnableActiveMQConnectionFactory extends ActiveMQConnectionFactory {
     public static final Logger LOG = LoggerFactory.getLogger(ScvEnabledActiveMQComponent.class);
 
-    public ScvEnabledActiveMQComponent(ActiveMQConnectionFactory connectionFactory) {
-        this.setConnectionFactory(connectionFactory);
+    public ScvEnableActiveMQConnectionFactory(String brokerUrl, SecureCredentialsVault scv, String scvAlias) {
+        this.setBrokerURL(brokerUrl);
+        final Credentials amqCredentials = scv.getCredentials(scvAlias);
+        if (amqCredentials == null) {
+            LOG.warn("No credentials found in SCV for alias '{}'. Using default credentials.", scvAlias);
+            setUserName("admin");
+            setPassword("admin");
+        } else {
+            setUserName(amqCredentials.getUsername());
+            setPassword(amqCredentials.getPassword());
+        }
     }
 }

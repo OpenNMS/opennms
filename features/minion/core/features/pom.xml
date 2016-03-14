@@ -71,5 +71,10 @@
             <artifactId>core-impl</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.opennms.features.minion</groupId>
+            <artifactId>shell</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
 </project>

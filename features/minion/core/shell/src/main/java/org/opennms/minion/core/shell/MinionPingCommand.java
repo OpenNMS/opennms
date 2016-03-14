@@ -25,41 +25,30 @@
  *      http://www.opennms.org/
  *      http://www.opennms.com/
  *******************************************************************************/
-package org.opennms.features.scv.shell;
+package org.opennms.minion.core.shell;
+
+import javax.jms.ConnectionFactory;
 
 import org.apache.karaf.shell.api.action.Action;
-import org.apache.karaf.shell.api.action.Argument;
 import org.apache.karaf.shell.api.action.Command;
-import org.apache.karaf.shell.api.action.Completion;
 import org.apache.karaf.shell.api.action.lifecycle.Reference;
 import org.apache.karaf.shell.api.action.lifecycle.Service;
-import org.opennms.features.scv.api.Credentials;
-import org.opennms.features.scv.api.SecureCredentialsVault;
 
-@Command(scope = "scv", name = "get", description="Retrieves the username and attributes for the given alias.")
+@Command(scope = "minion", name = "ping", description="Tests connectivity with the controller.")
 @Service
-public class ScvGetCommand implements Action {
+public class MinionPingCommand implements Action {
 
+    // TODO: Can we add a filter here? In particular, we need: (alias=opennms.broker)
     @Reference
-    public SecureCredentialsVault secureCredentialsVault;
-
-    @Argument(index = 0, name = "alias", description = "Alias used to retrieve the credentials.", required = true, multiValued = false)
-    @Completion(AliasCompleter.class)
-    public String alias = null;
+    public ConnectionFactory brokerConnectionFactory;
 
     @Override
     public Object execute() throws Exception {
-        final Credentials credentials = secureCredentialsVault.getCredentials(alias);
-        if (credentials == null) {
-            System.out.println("No credentials found for alias '" + alias + "'.");
-        } else {
-            System.out.printf("Credentials for %s:\n", alias);
-            System.out.printf("\tUsername: %s\n", credentials.getUsername());
-            System.out.printf("\tPassword: *********\n");
-            for (String attributeKey : credentials.getAttributeKeys()) {
-                System.out.printf("\t%s: %s\n", attributeKey, credentials.getAttribute(attributeKey));
-            }
-        }
+        System.out.println("Connecting to broker...");
+        brokerConnectionFactory.createConnection();
+        // No exceptions means we were able to establish a connection
+
+        System.out.println("OK");
         return null;
     }
 }
