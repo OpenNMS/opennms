@@ -49,12 +49,12 @@ public class DistPollerDaoMinion implements DistPollerDao {
 
 	private final OnmsDistPoller m_distPoller;
 
-    public DistPollerDaoMinion(OnmsDistPoller distPoller) {
-        m_distPoller = Objects.requireNonNull(distPoller);
-    }
+	public DistPollerDaoMinion(OnmsDistPoller distPoller) {
+		m_distPoller = Objects.requireNonNull(distPoller);
+	}
 
 	public DistPollerDaoMinion(MinionIdentity identity) {
-	    Objects.requireNonNull(identity);
+		Objects.requireNonNull(identity);
 		m_distPoller = new OnmsDistPoller();
 		m_distPoller.setId(identity.getId());
 		m_distPoller.setLabel(identity.getId());
