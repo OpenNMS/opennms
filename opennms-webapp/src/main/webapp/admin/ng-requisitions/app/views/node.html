@@ -21,7 +21,7 @@
       <button class="btn btn-danger" id="save-node" ng-click="save()" ng-show="nodeForm.$dirty &amp;&amp; nodeForm.$valid" ng-disabled="timingStatus.isRunning">
         <span class="glyphicon glyphicon-save"></span> Save
       </button>
-      <button class="btn btn-default" id="go-back" ng-click="goBack()">
+      <button class="btn btn-success" id="go-back" ng-click="goBack()">
         <span class="glyphicon glyphicon-remove"></span> Return
       </button>
     </div>
@@ -97,7 +97,7 @@
               <tbody>
                 <tr ng-repeat="intf in node.interfaces">
                   <td>{{ intf.ipAddress }}</td>
-                  <td>{{ intf.description }}</td>
+                  <td>{{ intf.description || 'N/A' }}</td>
                   <td>{{ intf.snmpPrimary }}</td>
                   <td>
                     <div ng-hide="intf.services.length > 0">[No services]</div>

@@ -20,7 +20,7 @@
         <input class="form-control" id="search-nodes" type="text" placeholder="Search/Filter Nodes" ng-model="reqFilter"></input>
       </div>
       <div class="input-group">
-        <button class="btn btn-default" ng-click="refresh()" id="refresh">
+        <button class="btn btn-default" id="refresh" ng-click="refresh()">
           <span class="glyphicon glyphicon-refresh"/> Refresh
         </button>
         <button class="btn btn-default" id="edit-foreign-source" ng-click="editForeignSource()">
@@ -32,7 +32,7 @@
         <button class="btn btn-default" id="add-node" ng-click="addNode()">
           <span class="glyphicon glyphicon-plus"/> Add Node
         </button>
-        <button class="btn btn-default" id="go-back" ng-click="goBack()">
+        <button class="btn btn-success" id="go-back" ng-click="goBack()">
           <span class="glyphicon glyphicon-remove"/> Return
         </button>
       </div>
@@ -73,8 +73,8 @@
           <tr ng-class="{danger: node.isModified()}" ng-repeat="node in filteredNodes | startFrom:(currentPage-1)*pageSize | limitTo:pageSize ">
             <td>{{ node.nodeLabel }}</td>
             <td>{{ node.foreignId }}</td>
-            <td>{{ node.building }}</td>
-            <td>{{ node.city }}</td>
+            <td>{{ node.building || 'N/A' }}</td>
+            <td>{{ node.city || 'N/A' }}</td>
             <td>
               <div ng-hide="node.interfaces.length > 0">[No IP Addresses]</div>
               <div ng-repeat="intf in node.interfaces">

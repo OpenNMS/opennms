@@ -8,7 +8,7 @@ var foreignId = 'localNode';
 var nodeLabel = 'localNode';
 var ipAddress = '127.0.0.1';
 
-casper.test.begin('Add Node to Requisition', 9, {
+casper.test.begin('Add Node to Requisition', 10, {
 	setUp: function() {
 		opennms.initialize();
 		opennms.login();
@@ -128,11 +128,16 @@ casper.test.begin('Add Node to Requisition', 9, {
 		});
 		casper.thenClick('.modal-dialog button.btn.btn-success');
 		casper.waitWhileSelector('.modal_dialog');
-		casper.waitForText('(1 defined, 1 deployed)', function() {
-			test.assertTextExists('(1 defined, 1 deployed)', 'There should be one node on the requisition node page');
+		casper.waitForText('(1 defined, 0 deployed)', function() {
+			test.assertTextExists('(1 defined, 0 deployed)', 'There should be one defined node on the requisition node page');
 		});
 		casper.waitWhileSelector('.danger', function() {
 			test.assertDoesntExist('.danger', 'There should be no unfinished/red entries on the screen');
+		});
+		asper.wait(10000); // Wait until the requisition is synchronized (it should be quick)
+		casper.thenClick('#refresh');
+		casper.waitForText('(1 defined, 1 deployed)', function() {
+			test.assertTextExists('(1 defined, 1 deployed)', 'There should be one deployed node on the requisition node page');
 		});
 
 		opennms.finished(test);
