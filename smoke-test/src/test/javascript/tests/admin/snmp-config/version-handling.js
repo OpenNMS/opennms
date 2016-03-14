@@ -3,7 +3,7 @@
 var opennms = require('../../util/opennms')(casper),
 	utils = require('utils');
 
-casper.test.begin('Configure SNMP Community Names by IP Address > Version Handling', 7, {
+casper.test.begin('Configure SNMP Community Names by IP Address > Version Handling', {
 	setUp: function() {
 		opennms.initialize();
 		opennms.login();

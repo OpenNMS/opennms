@@ -9,7 +9,7 @@ var links = {
 	'Configure Users, Groups and On-Call Roles': 'Users and Groups',
 
 	// Provisioning
-	'Manage Provisioning Requisitions': new Selector('h4', 'Requisitions (0)'),
+	'Manage Provisioning Requisitions': new Selector('button#edit-default-foreign-source', 'Edit Default FS'),
 	'Import and Export Asset Information': 'Import and Export Assets',
 	'Manage Surveillance Categories': 'Surveillance Categories',
 	'Configure Discovery': 'General Settings',
@@ -45,7 +45,7 @@ var links = {
 	'JMX Configuration Generator': new Selector('div[id="content"] > iframe[src="osgi/jmx-config-tool"]')
 };
 
-casper.test.begin('Admin Page Links', 36, function suite(test) {
+casper.test.begin('Admin Page Links', function suite(test) {
 	var opennms = require('../../util/opennms')(casper),
 		utils = require('utils');
 

@@ -7,7 +7,7 @@ var testUser = 'SmokeTestUser',
 	testGroup = 'SmokeTestGroup',
 	testPassword = 'SmokeTestPassword';
 
-casper.test.begin('User Admin Page', 12, {
+casper.test.begin('User Admin Page', {
 	setUp: function() {
 		opennms.initialize();
 		opennms.login();
