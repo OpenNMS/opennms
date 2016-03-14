@@ -20,6 +20,8 @@
             <cm:property name="location" value="MINION"/>
             <cm:property name="id" value="00000000-0000-0000-0000-000000ddba11"/>
             <cm:property name="broker-url" value="tcp://127.0.0.1:61616"/>
+            <cm:property name="broker-max-connections" value="8"/>
+            <cm:property name="broker-concurrent-consumers" value="10"/>
             <cm:property name="http-url" value="http://127.0.0.1:8980/opennms"/>
         </cm:default-properties>
     </cm:property-placeholder>
@@ -45,10 +47,19 @@
         </service-properties>
     </service>
 
+    <!-- Setup JMS connection pooling -->
+    <bean id="pooledConnectionFactory" class="org.apache.activemq.pool.PooledConnectionFactory" init-method="start" destroy-method="stop">
+       <property name="maxConnections" value="[[broker-max-connections]]" />
+       <property name="connectionFactory" ref="jmsConnectionFactory" />
+    </bean>
+    <bean id="jmsConfig"  class="org.apache.camel.component.jms.JmsConfiguration">
+       <property name="connectionFactory" ref="pooledConnectionFactory"/>
+       <property name="concurrentConsumers" value="[[broker-concurrent-consumers]]"/>
+    </bean>
+
     <!-- A canonical ActiveMQ component pointing to the OpenNMS controller -->
-    <!-- TODO: Use connection pooling. See http://camel.apache.org/activemq.html -->
     <bean id="activemq" class="org.opennms.minion.core.impl.ScvEnabledActiveMQComponent">
-        <argument ref="amqConnectionFactory"/>
+        <property name="configuration" ref="jmsConfig"/>
     </bean>
     <service id="queuingservice" ref="activemq" interface="org.apache.camel.Component">
         <service-properties>
