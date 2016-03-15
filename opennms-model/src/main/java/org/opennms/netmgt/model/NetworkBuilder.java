@@ -105,8 +105,7 @@ public class NetworkBuilder {
      * @return a {@link org.opennms.netmgt.model.NetworkBuilder.NodeBuilder} object.
      */
     public NodeBuilder addNode(String label) {
-        m_currentNode = new OnmsNode(label);
-        m_currentNode.setLocation(m_location);
+        m_currentNode = new OnmsNode(m_location, label);
         m_assetBean = PropertyAccessorFactory.forBeanPropertyAccess(m_currentNode.getAssetRecord());
         return new NodeBuilder(m_currentNode);
     }

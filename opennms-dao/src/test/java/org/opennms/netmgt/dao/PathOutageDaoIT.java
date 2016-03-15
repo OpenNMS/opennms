@@ -130,8 +130,7 @@ public class PathOutageDaoIT implements InitializingBean {
         assertNotNull(serviceType);
 
         // This will be our router with one IP address
-        OnmsNode router = new OnmsNode("router");
-        router.setLocation(m_locationDao.get(MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID));
+        OnmsNode router = new OnmsNode(m_locationDao.getDefaultLocation(), "router");
         m_nodeDao.save(router);
         OnmsIpInterface routerIpInterface = new OnmsIpInterface(addr("172.16.1.1"), router);
         routerIpInterface.setIsManaged("M");
@@ -139,8 +138,7 @@ public class PathOutageDaoIT implements InitializingBean {
         routerService.setStatus("A");
 
         // Add a node that will be routed through the router
-        OnmsNode node = new OnmsNode("localhost");
-        node.setLocation(m_locationDao.get(MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID));
+        OnmsNode node = new OnmsNode(m_locationDao.getDefaultLocation(), "localhost");
         m_nodeDao.save(node);
         OnmsIpInterface nodeIpInterface = new OnmsIpInterface(addr("172.16.1.2"), node);
         nodeIpInterface.setIsManaged("M");
@@ -148,8 +146,7 @@ public class PathOutageDaoIT implements InitializingBean {
         nodeMonitoredService.setStatus("A");
 
         // Make another node with an interface that is initially marked as deleted
-        OnmsNode newNode = new OnmsNode("newnode");
-        newNode.setLocation(m_locationDao.get(MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID));
+        OnmsNode newNode = new OnmsNode(m_locationDao.getDefaultLocation(), "newnode");
         m_nodeDao.save(newNode);
         OnmsIpInterface newIpInterface = new OnmsIpInterface(addr("172.16.1.3"), newNode);
         newIpInterface.setIsManaged("D");

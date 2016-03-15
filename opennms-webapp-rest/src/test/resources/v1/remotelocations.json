@@ -9,7 +9,7 @@
             "location-name": "localhost",
             "longitude": null,
             "polling-package-names": [],
-            "priority": null,
+            "priority": 100,
             "tags": []
         }, 
         {

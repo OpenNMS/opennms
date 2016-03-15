@@ -498,8 +498,8 @@ public class NewtsConverterIT implements TemporaryDatabaseAware<TemporaryDatabas
     @Before
     public void setupDatabase() throws Exception {
         if (!NewtsConverterIT.populated) {
-            this.database.getJdbcTemplate().execute("INSERT INTO node (nodeid, nodecreatetime, nodelabel, foreignsource, foreignid) " +
-                                               "VALUES (1, NOW(), 'my-node-1', 'fs1', 'fid1')");
+            this.database.getJdbcTemplate().execute("INSERT INTO node (location, nodeid, nodecreatetime, nodelabel, foreignsource, foreignid) " +
+                                               "VALUES ('localhost', 1, NOW(), 'my-node-1', 'fs1', 'fid1')");
 
 
             try (final BufferedReader r = Files.newBufferedReader(OPENNMS_HOME.resolve("etc")

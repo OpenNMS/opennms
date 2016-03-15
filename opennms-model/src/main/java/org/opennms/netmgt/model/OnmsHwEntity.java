@@ -652,6 +652,7 @@ public class OnmsHwEntity implements Serializable, Comparable<OnmsHwEntity> {
     @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="nodeId")
     @XmlAttribute(name="nodeId")
+    //@XmlIDREF
     @XmlJavaTypeAdapter(NodeIdAdapter.class)
     public OnmsNode getNode() {
         return m_node;

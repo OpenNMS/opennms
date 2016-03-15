@@ -284,9 +284,7 @@ public class ResourceDaoIntegrityIT implements InitializingBean {
         assertTrue(resourceTreeIps.length < NUM_NODES);
 
         for (int i = 1; i <= NUM_NODES; i++) {
-            OnmsNode node = new OnmsNode();
-            node.setLocation(m_locationDao.get(MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID));
-            node.setLabel("node" + i);
+            OnmsNode node = new OnmsNode(m_locationDao.getDefaultLocation(), "node" + i);
             node.setForeignSource("NODES");
             node.setForeignId(Integer.toString(i));
             m_nodeDao.save(node);

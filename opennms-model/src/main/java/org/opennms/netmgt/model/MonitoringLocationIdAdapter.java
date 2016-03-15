@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2014 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -26,20 +26,24 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.dao.api;
+package org.opennms.netmgt.model;
+
+import javax.xml.bind.annotation.adapters.XmlAdapter;
 
 import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 
-/**
- * <p>MonitoringLocationDao interface.</p>
- *
- * @author Seth
- * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
- * @author <a href="mailto:david@opennms.org">David Hustace</a>
- */
-public interface MonitoringLocationDao extends OnmsDao<OnmsMonitoringLocation, String> {
+public class MonitoringLocationIdAdapter extends XmlAdapter<String, OnmsMonitoringLocation> {
 
-	public static final String DEFAULT_MONITORING_LOCATION_ID = "localhost";
+    @Override
+    public String marshal(final OnmsMonitoringLocation v) throws Exception {
+        return v == null? null : v.getLocationName();
+    }
 
-	OnmsMonitoringLocation getDefaultLocation();
+    @Override
+    public OnmsMonitoringLocation unmarshal(final String v) throws Exception {
+        if (v == null) return null;
+        final OnmsMonitoringLocation location = new OnmsMonitoringLocation(v, v);
+        return location;
+    }
+
 }

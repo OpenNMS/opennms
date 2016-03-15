@@ -160,9 +160,9 @@ public class LocationDataServiceIT implements TemporaryDatabaseAware<TemporaryDa
         app.setName("TestApp1");
         m_applicationDao.saveOrUpdate(app);
 
-        OnmsNode localhostNode = new OnmsNode("localhost");
+        OnmsNode localhostNode = new OnmsNode(location, "localhost");
         m_nodeDao.saveOrUpdate(localhostNode);
-        OnmsNode googleNode = new OnmsNode("google");
+        OnmsNode googleNode = new OnmsNode(location, "google");
         m_nodeDao.saveOrUpdate(googleNode);
 
         OnmsIpInterface localhostIpInterface = new OnmsIpInterface(addr("127.0.0.1"), localhostNode);

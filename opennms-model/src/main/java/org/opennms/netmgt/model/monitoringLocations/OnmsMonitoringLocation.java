@@ -80,57 +80,44 @@ public class OnmsMonitoringLocation implements Serializable {
     /**
      * The name of the location.  This must be a unique identifier.
      */
-    @XmlID
-    @XmlAttribute(name="location-name")
     private String m_locationName;
 
     /**
      * The name of the monitoring area.  This field is used to group
      * multiple locations together, ie, a region, or abstract category.
      */
-    @XmlAttribute(name="monitoring-area")
     private String m_monitoringArea;
 
     /**
      * The polling packages associated with this monitoring location.
      */
-    @XmlElementWrapper(name="polling-package-names")
-    @XmlElement(name="polling-package-name")
     private List<String> m_pollingPackageNames;
 
     /**
      * The collection packages associated with this monitoring location.
      */
-    @XmlElementWrapper(name="collection-package-names")
-    @XmlElement(name="collection-package-name")
     private List<String> m_collectionPackageNames;
 
     /**
      * The geolocation (address) of this monitoring location.
      */
-    @XmlAttribute(name="geolocation")
     private String m_geolocation;
 
     /**
      * The latitude of this monitoring location.
      */
-    @XmlAttribute(name="longitude")
     private Float m_longitude;
 
     /**
      * The latitude of this monitoring location.
      */
-    @XmlAttribute(name="latitude")
     private Float m_latitude;
 
     /**
      * The priority of the location. (1=highest)
      */
-    @XmlAttribute(name="priority")
     private Long m_priority;
 
-    @XmlElementWrapper(name="tags")
-    @XmlElement(name="tag")
     private List<String> m_tags;
 
     public OnmsMonitoringLocation() {
@@ -172,8 +159,9 @@ public class OnmsMonitoringLocation implements Serializable {
         m_tags = ((tags == null || tags.length == 0) ? Collections.emptyList() : Arrays.asList(tags));
     }
 
-    @Id
     @XmlID
+    @XmlAttribute(name="location-name")
+    @Id
     @Column(name="id", nullable=false)
     public String getLocationName() {
         return m_locationName;
@@ -183,6 +171,7 @@ public class OnmsMonitoringLocation implements Serializable {
         m_locationName = locationName;
     }
 
+    @XmlAttribute(name="monitoring-area")
     @Column(name="monitoringArea", nullable=false)
     public String getMonitoringArea() {
         return m_monitoringArea;
@@ -192,6 +181,8 @@ public class OnmsMonitoringLocation implements Serializable {
         m_monitoringArea = monitoringArea;
     }
 
+    @XmlElementWrapper(name="polling-package-names")
+    @XmlElement(name="polling-package-name")
     @ElementCollection
     @JoinTable(name="monitoringLocationsPollingPackages", joinColumns = @JoinColumn(name="monitoringLocationId"))
     @Column(name="packageName")
@@ -203,6 +194,8 @@ public class OnmsMonitoringLocation implements Serializable {
         m_pollingPackageNames = pollingPackageNames;
     }
 
+    @XmlElementWrapper(name="collection-package-names")
+    @XmlElement(name="collection-package-name")
     @ElementCollection
     @JoinTable(name="monitoringLocationsCollectionPackages", joinColumns = @JoinColumn(name="monitoringLocationId"))
     @Column(name="packageName")
@@ -214,6 +207,7 @@ public class OnmsMonitoringLocation implements Serializable {
         m_collectionPackageNames = collectionPackageNames;
     }
 
+    @XmlAttribute(name="geolocation")
     @Column(name="geolocation")
     public String getGeolocation() {
         return m_geolocation;
@@ -227,6 +221,7 @@ public class OnmsMonitoringLocation implements Serializable {
      * The longitude coordinate of this node.
      * @return
      */
+    @XmlAttribute(name="longitude")
     @Column(name="longitude")
     public Float getLongitude() {
         return m_longitude;
@@ -240,6 +235,7 @@ public class OnmsMonitoringLocation implements Serializable {
      * The latitude coordinate of this node.
      * @return
      */
+    @XmlAttribute(name="latitude")
     @Column(name="latitude")
     public Float getLatitude() {
         return m_latitude;
@@ -249,6 +245,7 @@ public class OnmsMonitoringLocation implements Serializable {
         m_latitude = latitude;
     }
 
+    @XmlAttribute(name="priority")
     @Column(name="priority")
     public Long getPriority() {
         return m_priority == null ? 100L : m_priority;
@@ -258,6 +255,8 @@ public class OnmsMonitoringLocation implements Serializable {
         m_priority = priority;
     }
 
+    @XmlElementWrapper(name="tags")
+    @XmlElement(name="tag")
     @ElementCollection
     @JoinTable(name="monitoringLocationsTags", joinColumns = @JoinColumn(name="monitoringLocationId"))
     @Column(name="tag")

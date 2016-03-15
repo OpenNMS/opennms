@@ -81,10 +81,11 @@ public class SyslogNorthBounderWithFiltersTest extends SyslogNorthBounderTest {
         }
 
         // Add a sample node to the database
-        OnmsNode node = new OnmsNode("agalue");
+        OnmsNode node = new OnmsNode();
         node.setForeignSource("TestGroup");
         node.setForeignId("1");
         node.setId(m_nodeDao.getNextNodeId());
+        node.setLabel("agalue");
         OnmsSnmpInterface snmpInterface = new OnmsSnmpInterface(node, 1);
         snmpInterface.setId(1);
         snmpInterface.setIfAlias("Connection to OpenNMS Wifi");

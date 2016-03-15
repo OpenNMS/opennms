@@ -736,7 +736,7 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
         }
     }
 
-    public OnmsMonitoringLocation createLocationDefIfNecessary(final OnmsMonitoringLocation location) {
+    protected OnmsMonitoringLocation createLocationDefIfNecessary(final OnmsMonitoringLocation location) {
         return new CreateIfNecessaryTemplate<OnmsMonitoringLocation, MonitoringLocationDao>(m_transactionManager, m_monitoringLocationDao) {
 
             @Override
@@ -1370,9 +1370,9 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
             protected OnmsNode doInsert() {
                 final Date now = new Date();
 
-                createLocationIfNecessary(MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID);
-                // TODO: Associate location with node if necessary
-                final OnmsNode node = new OnmsNode();
+                OnmsMonitoringLocation location = createLocationIfNecessary(MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID);
+                // Associate the location with the node
+                final OnmsNode node = new OnmsNode(location);
 
                 final String hostname = m_hostnameResolver.getHostname(addr(ipAddress));
                 if (hostname == null || ipAddress.equals(hostname)) {
@@ -1456,9 +1456,11 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
     @Override
     public OnmsNode getNode(final Integer nodeId) {
         final OnmsNode node = m_nodeDao.get(nodeId);
+        // TODO: Does calling initialize() on an entity do anything?
         m_nodeDao.initialize(node);
         m_nodeDao.initialize(node.getCategories());
         m_nodeDao.initialize(node.getIpInterfaces());
+        m_nodeDao.initialize(node.getLocation());
         return node;
     }
 
@@ -1467,7 +1469,10 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
     @Override
     public OnmsNode getDbNodeInitCat(final Integer nodeId) {
         final OnmsNode node = m_nodeDao.get(nodeId);
+        // TODO: Does calling initialize() on an entity do anything?
+        m_nodeDao.initialize(node);
         m_nodeDao.initialize(node.getCategories());
+        m_nodeDao.initialize(node.getLocation());
         return node;
     }
 

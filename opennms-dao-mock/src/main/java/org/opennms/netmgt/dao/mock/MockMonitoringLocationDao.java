@@ -44,4 +44,9 @@ public class MockMonitoringLocationDao extends AbstractMockDao<OnmsMonitoringLoc
     protected String getId(final OnmsMonitoringLocation loc) {
         return loc.getLocationName();
     }
+
+    @Override
+    public OnmsMonitoringLocation getDefaultLocation() {
+        return get(DEFAULT_MONITORING_LOCATION_ID);
+    }
 }

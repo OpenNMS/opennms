@@ -583,6 +583,8 @@ public class Provisioner implements SpringServiceDaemon {
     
     /**
      * <p>handleNewSuspectEvent</p>
+     * 
+     * TODO: HZN-613: Associate location with new nodes
      *
      * @param e a {@link org.opennms.netmgt.xml.event.Event} object.
      */
@@ -595,8 +597,9 @@ public class Provisioner implements SpringServiceDaemon {
         String foreignSource = null;
         List<Parm> parmCollection = e.getParmCollection();
         for (Parm parm : parmCollection) {
-			if (parm.getParmName().equals("foreignSource")) {
+			if ("foreignSource".equals(parm.getParmName())) {
 				foreignSource = parm.getValue().getContent();
+				break;
 			}
 		}
 
@@ -773,7 +776,13 @@ public class Provisioner implements SpringServiceDaemon {
             }
         }
     }
-    
+
+    /**
+     * TODO: HZN-613: Associate location with new nodes
+     * 
+     * @param ipAddr
+     * @param nodeLabel
+     */
     private void doAddNode(String ipAddr, String nodeLabel) {
 
         OnmsNode node = new OnmsNode();

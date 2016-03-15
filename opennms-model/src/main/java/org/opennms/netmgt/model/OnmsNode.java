@@ -69,9 +69,9 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlEnum;
 import javax.xml.bind.annotation.XmlEnumValue;
 import javax.xml.bind.annotation.XmlID;
-import javax.xml.bind.annotation.XmlIDREF;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.codehaus.jackson.annotate.JsonBackReference;
 import org.codehaus.jackson.annotate.JsonIgnore;
@@ -201,7 +201,12 @@ public class OnmsNode extends OnmsEntity implements Serializable, Comparable<Onm
     private PathElement m_pathElement;
 
     /**
-     * <p>Constructor for OnmsNode.</p>
+     * <p>
+     * Constructor for OnmsNode. This constructor should only be used
+     * by JAXB and by unit tests that do not need to persist the {@link OnmsNode}
+     * in the database. It does not associate the {@link OnmsNode} with a
+     * required {@link OnmsMonitoringLocation}.
+     * </p>
      */
     public OnmsNode() {
         this(null);
@@ -210,9 +215,21 @@ public class OnmsNode extends OnmsEntity implements Serializable, Comparable<Onm
     /**
      * <p>Constructor for OnmsNode.</p>
      *
+     * @param location The location where this node is located
+     */
+    public OnmsNode(final OnmsMonitoringLocation location) {
+        // Set the location
+        setLocation(location);
+    }
+
+    /**
+     * <p>Constructor for OnmsNode.</p>
+     *
+     * @param location The location where this node is located
      * @param label The node label
      */
-    public OnmsNode(final String label) {
+    public OnmsNode(final OnmsMonitoringLocation location, final String label) {
+        this(location);
         // Set the label
         setLabel(label);
     }
@@ -717,11 +734,12 @@ public class OnmsNode extends OnmsEntity implements Serializable, Comparable<Onm
     /**
      * Monitoring location that this node is located in.
      */
-    @XmlIDREF
     @JsonBackReference
     @XmlElement(name="location")
     @ManyToOne(optional=false, fetch=FetchType.LAZY)
     @JoinColumn(name="location")
+    //@XmlIDREF
+    @XmlJavaTypeAdapter(MonitoringLocationIdAdapter.class)
     public OnmsMonitoringLocation getLocation() {
         return m_location;
     }
@@ -1037,6 +1055,7 @@ public class OnmsNode extends OnmsEntity implements Serializable, Comparable<Onm
     public String toString() {
         ToStringCreator retval = new ToStringCreator(this);
         retval.append("id", m_id);
+        retval.append("location", m_location == null ? null : m_location.getLocationName());
         retval.append("foreignSource", m_foreignSource);
         retval.append("foreignId", m_foreignId);
         retval.append("labelSource", m_labelSource == null ? null : m_labelSource.toString());

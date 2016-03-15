@@ -47,4 +47,7 @@ public class MonitoringLocationDaoHibernate extends AbstractDaoHibernate<OnmsMon
         super(OnmsMonitoringLocation.class);
     }
 
+    public OnmsMonitoringLocation getDefaultLocation() {
+        return get(DEFAULT_MONITORING_LOCATION_ID);
+    }
 }

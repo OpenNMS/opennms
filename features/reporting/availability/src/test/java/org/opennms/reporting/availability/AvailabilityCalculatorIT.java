@@ -79,8 +79,8 @@ public class AvailabilityCalculatorIT extends TestCase {
 
         m_catFactory = new MockCategoryFactory();
         CategoryFactory.setInstance(m_catFactory);
-        m_db.update("insert into node (nodeID, nodelabel, nodeCreateTime, nodeType) values (1,'test1.availability.opennms.org','2004-03-01 09:00:00','A')");
-        m_db.update("insert into node (nodeID, nodelabel, nodeCreateTime, nodeType) values (2,'test2.availability.opennms.org','2004-03-01 09:00:00','A')");
+        m_db.update("insert into node (location, nodeID, nodelabel, nodeCreateTime, nodeType) values ('localhost', 1,'test1.availability.opennms.org','2004-03-01 09:00:00','A')");
+        m_db.update("insert into node (location, nodeID, nodelabel, nodeCreateTime, nodeType) values ('localhost', 2,'test2.availability.opennms.org','2004-03-01 09:00:00','A')");
 
         m_db.update("insert into service (serviceid, servicename) values\n"
                 + "(1, 'ICMP');");

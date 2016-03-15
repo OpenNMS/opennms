@@ -47,6 +47,7 @@ import org.junit.runner.RunWith;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.netmgt.alarmd.api.NorthboundAlarm;
+import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.dao.mock.MockNodeDao;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsIpInterface;
@@ -100,6 +101,9 @@ public class SyslogNorthBounderTest {
     /** The Node DAO. */
     @Autowired
     protected MockNodeDao m_nodeDao;
+
+    @Autowired
+    protected MonitoringLocationDao m_locationDao;
 
     /** The Syslog Server. */
     private SyslogServerIF m_server;
@@ -233,7 +237,7 @@ public class SyslogNorthBounderTest {
         int j = 7;
         List<NorthboundAlarm> alarms = new LinkedList<NorthboundAlarm>();
 
-        OnmsNode node = new OnmsNode("p-brane");
+        OnmsNode node = new OnmsNode(m_locationDao.getDefaultLocation(), "p-brane");
         node.setForeignSource("TestGroup");
         node.setForeignId("1");
         node.setId(m_nodeDao.getNextNodeId());

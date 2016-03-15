@@ -141,8 +141,7 @@ public class NodeDaoIT implements InitializingBean {
     @Transactional
     public void testSave() {
 
-        OnmsNode node = new OnmsNode("MyFirstNode");
-        node.setLocation(m_locationDao.get(MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID));
+        OnmsNode node = new OnmsNode(m_locationDao.getDefaultLocation(), "MyFirstNode");
         getNodeDao().save(node);
 
         getNodeDao().flush();
@@ -152,8 +151,7 @@ public class NodeDaoIT implements InitializingBean {
     @Transactional
     public void testSaveWithPathElement() {
 
-        OnmsNode node = new OnmsNode("MyFirstNode");
-        node.setLocation(m_locationDao.get(MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID));
+        OnmsNode node = new OnmsNode(m_locationDao.getDefaultLocation(), "MyFirstNode");
         PathElement p = new PathElement("192.168.7.7", "ICMP");
         node.setPathElement(p);
         getNodeDao().save(node);
@@ -164,8 +162,7 @@ public class NodeDaoIT implements InitializingBean {
     @Test
     @Transactional
     public void testSaveWithNullPathElement() {
-        OnmsNode node = new OnmsNode("MyFirstNode");
-        node.setLocation(m_locationDao.get(MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID));
+        OnmsNode node = new OnmsNode(m_locationDao.getDefaultLocation(), "MyFirstNode");
         PathElement p = new PathElement("192.168.7.7", "ICMP");
         node.setPathElement(p);
         getNodeDao().save(node);
@@ -181,8 +178,7 @@ public class NodeDaoIT implements InitializingBean {
     @Test
     @Transactional
     public void testLldpSaveAndUpdate() throws InterruptedException {
-        OnmsNode node = new OnmsNode("MyFirstLldpNode");
-        node.setLocation(m_locationDao.get(MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID));
+        OnmsNode node = new OnmsNode(m_locationDao.getDefaultLocation(), "MyFirstLldpNode");
         getNodeDao().save(node);
         getNodeDao().flush();
         
@@ -260,8 +256,7 @@ public class NodeDaoIT implements InitializingBean {
     @Transactional
     public void testCreate() throws InterruptedException {
 
-        OnmsNode node = new OnmsNode("MyFirstNode");
-        node.setLocation(m_locationDao.get(MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID));
+        OnmsNode node = new OnmsNode(m_locationDao.getDefaultLocation(), "MyFirstNode");
         node.getAssetRecord().setDisplayCategory("MyCategory");
         PathElement p = new PathElement("192.168.7.7", "ICMP");
         node.setPathElement(p);
@@ -508,6 +503,7 @@ public class NodeDaoIT implements InitializingBean {
 
     private void validateNode(OnmsNode n) throws Exception {
         assertNotNull("Expected node to be non-null", n);
+        assertNotNull("Expected location to be non-null", n.getLocation());
         assertNotNull("Expected node "+n.getId()+" to have interfaces", n.getIpInterfaces());
         assertEquals("Unexpected number of interfaces for node "+n.getId(), 4, n.getIpInterfaces().size());
         for (Object o : n.getIpInterfaces()) {

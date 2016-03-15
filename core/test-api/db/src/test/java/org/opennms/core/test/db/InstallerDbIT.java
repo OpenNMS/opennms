@@ -1616,15 +1616,18 @@ public class InstallerDbIT extends TemporaryDatabaseITCase {
         addTableFromSQL("monitoringlocations");
         addTableFromSQL("monitoringsystems");
         addTableFromSQL("node");
-        
+
+        // Insert the default monitoring location
+        getInstallerDb().insertData("monitoringlocations");
+
         // Add snmpinterface table with an arbitrary change so it gets upgraded
         addTableFromSQLWithReplacements("snmpinterface", new String[][] {
                 new String[] {
                         "snmpIfAlias\\s+varchar\\(\\d+\\),", ""
                 } });
 
-        executeSQL("INSERT INTO node ( nodeId, nodeCreateTime ) "
-                   + "VALUES ( 1, now() )");
+        executeSQL("INSERT INTO node ( location, nodeId, nodeCreateTime ) "
+                   + "VALUES ( 'localhost', 1, now() )");
         executeSQL("INSERT INTO snmpInterface ( nodeID, snmpIfIndex ) "
                    + "VALUES ( 1, 1 )");
         
