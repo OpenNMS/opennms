@@ -1318,11 +1318,8 @@
     <oroVersion>2.0.8</oroVersion>
     <osgiVersion>5.0.0</osgiVersion>
     <osgiEnterpriseVersion>5.0.0</osgiEnterpriseVersion>
-    <owaspEncoderVersion>1.2</owaspEncoderVersion>
-    <quartzVersion>1.6.5</quartzVersion>
-    <slf4jVersion>1.7.21</slf4jVersion>
-    <snmp4jVersion>2.4.3</snmp4jVersion>
-    <snmp4jagentVersion>2.4.2</snmp4jagentVersion>
+    <slf4jVersion>1.7.7</slf4jVersion>
+    <snmp4jVersion>2.3.1</snmp4jVersion>
     <smackVersion>4.0.6</smackVersion>
     <springJaxbVersion>2.1.7</springJaxbVersion>
     <trackerVersion>0.7</trackerVersion>
