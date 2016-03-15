@@ -44,8 +44,6 @@ casper.test.begin('Add Node to Requisition', 11, {
 			test.assertSelectorHasText('h4', 'Foreign Source Definition for Requisition add-node-to-requisition-test', 'Foreign source edit header should be found.');
 			casper.click('button#add-detector');
 		});
-
-		// Add detector
 		casper.waitForSelector('form[name="detectorForm"]');
 		casper.then(function() {
 			casper.fillSelectors('form[name="detectorForm"]', {
@@ -61,8 +59,6 @@ casper.test.begin('Add Node to Requisition', 11, {
 			casper.click('.modal-dialog button.btn.btn-success');
 		});
 		casper.waitWhileVisible('.modal-dialog');
-
-		// Save the foreign source
 		casper.then(function() {
 			casper.click('#save-foreign-source');
 		});
@@ -71,11 +67,6 @@ casper.test.begin('Add Node to Requisition', 11, {
 			casper.click('ul[ng-model="detectorsCurrentPage"] .pagination-next');
 		});
 		casper.waitForText('HTTP-8980');
-
-		// Add Policy
-		// TODO ??
-
-		// Go back to requisitions
 		casper.then(function() {
 			casper.click('#go-back');
 		});
@@ -92,7 +83,6 @@ casper.test.begin('Add Node to Requisition', 11, {
 				foreignId: foreignId
 			}, false);
 		});
-
 		// Add an interface to the node
 		casper.then(function() {
 			casper.click('#tab-interfaces');
@@ -109,61 +99,18 @@ casper.test.begin('Add Node to Requisition', 11, {
 				ipAddress: ipAddress
 			}, false);
 		});
-
-		// Add a service to the interface
 		casper.then(function() {
 			casper.clickLabel('Add Service');
 		});
 		casper.waitUntilVisible('input[name="serviceName"]', function() {
-			casper.sendKeys('input[name="serviceName"]', 'HTTP-8980', {reset:true});
+			casper.sendKeys('input[name="serviceName"]', 'HTTP-8980\n', {reset:true});
 		});
-
-		// Save the interface (close the modal window)
 		casper.then(function() {
 			casper.clickLabel('Save');
 		});
-		casper.waitWhileVisible('.modal-dialog');
-
-		// Add a category to the node
-		casper.then(function() {
-			casper.click('#tab-categories');
-		});
-		casper.waitUntilVisible('a[ng-click="addCategory()"]', function() {
-			casper.click('a[ng-click="addCategory()"]');
-		});
-		casper.waitUntilVisible('input[name="categoryName"]', function() {
-			casper.sendKeys('input[name="categoryName"]', 'Testing', {reset:true});
-		});
-
-		// Add an asset to the node
-		casper.then(function() {
-			casper.click('#tab-assets');
-		});
-		casper.waitUntilVisible('a[ng-click="addAsset()"]', function() {
-			casper.click('a[ng-click="addAsset()"]');
-		});
-		casper.waitUntilVisible('form[name="assetForm"]', function() {
-			casper.sendKeys('input#value', 'USA\n', {reset:true});
-			casper.sendKeys('input#name', 'country', {reset:true});
-		});
-		casper.waitForSelector('.modal-dialog ul.dropdown-menu a[title="country"]', function() {
-			casper.click('.modal-dialog ul.dropdown-menu a[title="country"]');
-		});
-		casper.waitWhileVisible('.modal-dialog ul.dropdown-menu');
-
-		// Save the asset (close the modal window)
-		casper.waitWhileSelector('button[disabled][ng-click="save()"]', function() {
-			casper.click('button[ng-click="save()"]');
-		});
-		casper.waitWhileVisible('.modal-dialog');
-
-		// Save the node
 		casper.waitUntilVisible('#save-node', function() {
-			test.assertExists('#save-node', 'The save node button should be visible');
 			casper.click('#save-node');
 		});
-
-		// Go back to the requisition's page
 		casper.waitWhileVisible('#save-node', function() {
 			casper.click('#go-back');
 		});
