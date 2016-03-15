@@ -163,17 +163,17 @@ public class BusinessServiceResponseDTOMarshalTest extends MarshalAndUnmarshalTe
             "      </attribute>\n" +
             "   </attributes>\n" +
             "   <ip-service-edges>\n" +
-            "      <ip-service>\n" +
+            "      <ip-service-edge>\n" +
             "         <id>5</id>\n" +
             "         <operational-status>MINOR</operational-status>\n" +
             "         <map-function>\n" +
             "            <type>Ignore</type>\n" +
             "         </map-function>\n" +
             "         <location>/api/v2/test/5</location>\n" +
-            "         <reductionKeys>\n" +
-            "           <reductionKey>key1</reductionKey>\n" +
-            "           <reductionKey>key2</reductionKey>\n" +
-            "         </reductionKeys>\n" +
+            "         <reduction-keys>\n" +
+            "            <reduction-key>key1</reduction-key>\n" +
+            "            <reduction-key>key2</reduction-key>\n" +
+            "         </reduction-keys>\n" +
             "         <weight>5</weight>\n" +
             "         <ip-service>\n" +
             "            <id>17</id>\n" +
@@ -183,67 +183,67 @@ public class BusinessServiceResponseDTOMarshalTest extends MarshalAndUnmarshalTe
             "            <location>/api/v2/business-services/ip-services/17</location>\n" +
             "         </ip-service>\n" +
             "         <friendly-name>ip-service-friendly-name</friendly-name>\n" +
-            "      </ip-service>\n" +
+            "      </ip-service-edge>\n" +
             "   </ip-service-edges>\n" +
-            "   <reductionKey-edges>\n" +
-            "      <reductionKey>\n" +
+            "   <reduction-key-edges>\n" +
+            "      <reduction-key-edge>\n" +
             "         <id>1</id>\n" +
             "         <operational-status>CRITICAL</operational-status>\n" +
             "         <map-function>\n" +
             "            <type>Ignore</type>\n" +
             "         </map-function>\n" +
             "         <location>/api/v2/test/1</location>\n" +
-            "         <reductionKeys>\n" +
-            "            <reductionKey>myReductionKeyA</reductionKey>\n" +
-            "         </reductionKeys>\n" +
+            "         <reduction-keys>\n" +
+            "            <reduction-key>myReductionKeyA</reduction-key>\n" +
+            "         </reduction-keys>\n" +
             "         <weight>9</weight>\n" +
             "         <friendly-name>reduction-key-a-friendly-name</friendly-name>\n" +
-            "      </reductionKey>\n" +
-            "      <reductionKey>\n" +
+            "      </reduction-key-edge>\n" +
+            "      <reduction-key-edge>\n" +
             "         <id>2</id>\n" +
             "         <operational-status>NORMAL</operational-status>\n" +
             "         <map-function>\n" +
             "            <type>Ignore</type>\n" +
             "         </map-function>\n" +
             "         <location>/api/v2/test/2</location>\n" +
-            "         <reductionKeys>\n" +
-            "            <reductionKey>myReductionKeyB</reductionKey>\n" +
-            "         </reductionKeys>\n" +
+            "         <reduction-keys>\n" +
+            "            <reduction-key>myReductionKeyB</reduction-key>\n" +
+            "         </reduction-keys>\n" +
             "         <weight>9</weight>\n" +
             "         <friendly-name>reduction-key-b-friendly-name</friendly-name>\n" +
-            "      </reductionKey>\n" +
-            "   </reductionKey-edges>\n" +
+            "      </reduction-key-edge>\n" +
+            "   </reduction-key-edges>\n" +
             "   <child-edges>\n" +
-            "      <child>\n" +
+            "      <child-edge>\n" +
             "         <id>3</id>\n" +
             "         <operational-status>MAJOR</operational-status>\n" +
             "         <map-function>\n" +
             "            <type>Ignore</type>\n" +
             "         </map-function>\n" +
             "         <location>/api/v2/test/3</location>\n" +
-            "         <reductionKeys/>\n" +
+            "         <reduction-keys/>\n" +
             "         <weight>7</weight>\n" +
-            "         <childId>2</childId>\n" +
-            "      </child>\n" +
-            "      <child>\n" +
+            "         <child-id>2</child-id>\n" +
+            "      </child-edge>\n" +
+            "      <child-edge>\n" +
             "         <id>4</id>\n" +
             "         <operational-status>MAJOR</operational-status>\n" +
             "         <map-function>\n" +
             "            <type>Ignore</type>\n" +
             "         </map-function>\n" +
             "         <location>/api/v2/test/4</location>\n" +
-            "         <reductionKeys/>\n" +
+            "         <reduction-keys/>\n" +
             "         <weight>7</weight>\n" +
-            "         <childId>3</childId>\n" +
-            "      </child>\n" +
+            "         <child-id>3</child-id>\n" +
+            "      </child-edge>\n" +
             "   </child-edges>\n" +
             "   <parent-services>\n" +
             "      <parent-service>11</parent-service>\n" +
             "      <parent-service>12</parent-service>\n" +
             "   </parent-services>\n" +
-            "   <reduction-function>\n" +
+            "   <reduce-function>\n" +
             "      <type>HighestSeverity</type>\n" +
-            "   </reduction-function>\n" +
+            "   </reduce-function>\n" +
             "   <operational-status>CRITICAL</operational-status>\n" +
             "   <location>/api/v2/business-services/1</location>\n" +
             "</business-service>"
