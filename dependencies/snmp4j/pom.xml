@@ -38,20 +38,7 @@
       <releases><enabled>true</enabled><updatePolicy>${updatePolicy}</updatePolicy></releases>
       <id>oosnmp-repo</id>
       <name>OOSNMP Repository</name>
-      <url>https://oosnmp.net/dist/release/org/snmp4j</url>
-    </repository>
-    <repository>
-      <snapshots>
-        <enabled>false</enabled>
-        <updatePolicy>${updatePolicy}</updatePolicy>
-      </snapshots>
-      <releases>
-        <enabled>true</enabled>
-        <updatePolicy>${updatePolicy}</updatePolicy>
-      </releases>
-      <id>opennms-3rdparty-repo</id>
-      <name>OpenNMS 3rd Party Maven Repository</name>
-      <url>http://maven.opennms.org/content/repositories/thirdparty</url>
+      <url>http://maven.opennms.org/content/repositories/oosnmp-repo</url>
     </repository>
   </repositories>
 </project>
