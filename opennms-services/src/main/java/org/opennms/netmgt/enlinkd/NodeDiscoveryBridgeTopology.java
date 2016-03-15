@@ -496,11 +496,11 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
             schedule();
             return;
         }
-        LOG.info("run: node: {}, getLock broadcast domain.", getNodeId());
+        LOG.info("run: node: {}, getLock broadcast domain for nodes: {}, and macs: {}.", getNodeId(), 
+                 m_domain.getBridgeNodesOnDomain(), m_domain.getMacsOnDomain());
         super.run();
         m_domain.releaseLock(this);
-        LOG.info("run: node: {}, releaseLock broadcast domain.", getNodeId());
-
+        LOG.info("run: node: {}, releaseLock broadcast domain for nodes: {}.", getNodeId(),m_domain.getBridgeNodesOnDomain());
     }
     
     @Override

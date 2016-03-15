@@ -38,6 +38,8 @@ import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.netmgt.config.EnhancedLinkdConfig;
+import org.opennms.netmgt.dao.api.BridgeElementDao;
+import org.opennms.netmgt.dao.api.BridgeStpLinkDao;
 import org.opennms.netmgt.dao.api.BridgeTopologyDao;
 import org.opennms.netmgt.dao.api.CdpLinkDao;
 import org.opennms.netmgt.dao.api.IpNetToMediaDao;
@@ -87,6 +89,12 @@ public abstract class EnLinkdBuilderITCase extends EnLinkdTestHelper implements 
 
     @Autowired
     protected IsIsLinkDao m_isisLinkDao;
+
+    @Autowired
+    protected BridgeElementDao m_bridgeElementDao;
+
+    @Autowired
+    protected BridgeStpLinkDao m_bridgeStpLinkDao;
 
     @Autowired
     protected BridgeBridgeLinkDao m_bridgeBridgeLinkDao;

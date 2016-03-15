@@ -125,9 +125,7 @@ public class BroadcastDomain {
     }
     
     public boolean containBridgeId(int nodeid) {
-        System.out.println("getting domain for bridge: " + nodeid);
         for (Bridge bridge: m_bridges) {
-            System.out.println("parsing bridge: " + bridge.getId());
             if (bridge.getId().intValue() == nodeid)
                 return true;
         }
