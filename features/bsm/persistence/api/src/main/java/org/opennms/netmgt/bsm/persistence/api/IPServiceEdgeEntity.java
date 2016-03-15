@@ -103,4 +103,8 @@ public class IPServiceEdgeEntity extends BusinessServiceEdgeEntity {
         return false;
     }
 
+    @Override
+    public <T> T accept(EdgeEntityVisitor<T> visitor) {
+        return visitor.visit(this);
+    }
 }

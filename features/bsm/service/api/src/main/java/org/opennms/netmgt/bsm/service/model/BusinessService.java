@@ -78,7 +78,5 @@ public interface BusinessService extends ReadOnlyBusinessService {
     
     Set<IpServiceEdge> getIpServiceEdges();
     
-    Set<? extends Edge> getEdges(Edge.Type edgeType);
-    
     Set<ChildEdge> getChildEdges();
 }

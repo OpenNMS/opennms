@@ -215,20 +215,6 @@ public class BusinessServiceImpl implements BusinessService {
     }
 
     @Override
-    public Set<? extends Edge> getEdges(Edge.Type edgeType) {
-        switch (edgeType) {
-            case CHILD_SERVICE:
-                return getChildEdges();
-            case IP_SERVICE:
-                return getIpServiceEdges();
-            case REDUCTION_KEY:
-                return getReductionKeyEdges();
-        }
-
-        return Sets.newTreeSet();
-    }
-
-    @Override
     public void removeEdge(final Edge edge) {
         m_manager.removeEdge(this, edge);
     }

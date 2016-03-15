@@ -36,16 +36,12 @@ import org.opennms.netmgt.bsm.service.BusinessServiceManager;
 import org.opennms.netmgt.bsm.service.internal.BusinessServiceImpl;
 import org.opennms.netmgt.bsm.service.model.BusinessService;
 import org.opennms.netmgt.bsm.service.model.edge.ChildEdge;
+import org.opennms.netmgt.bsm.service.model.edge.EdgeVisitor;
 
 public class ChildEdgeImpl extends AbstractEdge<BusinessServiceChildEdgeEntity> implements ChildEdge {
 
     public ChildEdgeImpl(BusinessServiceManager manager, BusinessServiceChildEdgeEntity entity) {
         super(manager, entity);
-    }
-
-    @Override
-    public Type getType() {
-        return Type.CHILD_SERVICE;
     }
 
     @Override
@@ -81,5 +77,10 @@ public class ChildEdgeImpl extends AbstractEdge<BusinessServiceChildEdgeEntity> 
     @Override
     public String getFriendlyName() {
         return null;
+    }
+
+    @Override
+    public <T> T accept(EdgeVisitor<T> visitor) {
+        return visitor.visit(this);
     }
 }

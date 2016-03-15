@@ -69,4 +69,8 @@ public class ReductionKeyVertex extends AbstractBusinessServiceVertex {
         return Sets.newHashSet(getReductionKey());
     }
 
+    @Override
+    public void accept(BusinessServiceVertexVisitor visitor) {
+        visitor.visit(this);
+    }
 }

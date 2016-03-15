@@ -36,12 +36,11 @@ import java.util.Objects;
 import java.util.Set;
 
 import org.opennms.netmgt.bsm.service.model.ReadOnlyBusinessService;
+import org.opennms.netmgt.bsm.service.model.edge.ChildEdge;
+import org.opennms.netmgt.bsm.service.model.edge.EdgeVisitor;
 import org.opennms.netmgt.bsm.service.model.edge.IpServiceEdge;
 import org.opennms.netmgt.bsm.service.model.edge.ReductionKeyEdge;
-import org.opennms.netmgt.bsm.service.model.edge.ro.ReadOnlyChildEdge;
 import org.opennms.netmgt.bsm.service.model.edge.ro.ReadOnlyEdge;
-import org.opennms.netmgt.bsm.service.model.edge.ro.ReadOnlyIpServiceEdge;
-import org.opennms.netmgt.bsm.service.model.edge.ro.ReadOnlyReductionKeyEdge;
 import org.opennms.netmgt.bsm.service.model.functions.map.Identity;
 import org.opennms.netmgt.bsm.service.model.functions.reduce.MostCritical;
 import org.opennms.netmgt.bsm.service.model.graph.BusinessServiceGraph;
@@ -93,59 +92,77 @@ public class BusinessServiceGraphImpl extends DirectedSparseMultigraph<GraphVert
             GraphEdge graphEdge = new GraphEdgeImpl(edge);
 
             // Use an existing vertex if we already created one
-            GraphVertex vertexForEdge = getExistingVertex(edge);
+            final GraphVertex[] vertexForEdge = {getExistingVertex(edge)};
 
             // If we couldn't find an existing vertex, create one
-            if (vertexForEdge == null) {
-                if (edge instanceof ReadOnlyChildEdge) {
-                    vertexForEdge = addBusinessServiceVertex(((ReadOnlyChildEdge)edge).getChild());
-                } else if (edge instanceof ReadOnlyReductionKeyEdge) {
-                    String reductionKey = ((ReadOnlyReductionKeyEdge)edge).getReductionKey();
-                    vertexForEdge = new GraphVertexImpl(REDUCE_HIGHEST_SEVERITY, ((ReadOnlyReductionKeyEdge) edge).getReductionKey());
-                    addVertex(vertexForEdge);
-                    m_verticesByReductionKey.put(reductionKey, vertexForEdge);
-                } else if (edge instanceof ReadOnlyIpServiceEdge) {
-                    // There are multiple reductions keys for this edge
-                    // Create an intermediary vertex using the Most Critical reduction function
-                    vertexForEdge = new GraphVertexImpl(REDUCE_HIGHEST_SEVERITY, ((ReadOnlyIpServiceEdge) edge).getIpService());
-                    addVertex(vertexForEdge);
-                    m_verticesByIpServiceId.put(vertexForEdge.getIpService().getId(), vertexForEdge);
+            if (vertexForEdge[0] == null) {
+                edge.accept(new EdgeVisitor<Void>() {
 
-                    // SPECIAL CASE: Map the reductions keys to the intermediary vertex using the Identity map
-                    for (String reductionKey : edge.getReductionKeys()) {
-                        GraphVertex reductionKeyVertex = m_verticesByReductionKey.get(reductionKey);
-                        if (reductionKeyVertex == null) { // not already added
-                            reductionKeyVertex = new GraphVertexImpl(REDUCE_HIGHEST_SEVERITY, reductionKey);
-                            addVertex(reductionKeyVertex);
-                            m_verticesByReductionKey.put(reductionKey, reductionKeyVertex);
-                        }
-                        // Always add an edge
-                        GraphEdgeImpl intermediaryEdge = new GraphEdgeImpl(MAP_IDENTITY);
-                        addEdge(intermediaryEdge, vertexForEdge, reductionKeyVertex);
+                    @Override
+                    public Void visit(ChildEdge edge) {
+                        vertexForEdge[0] = addBusinessServiceVertex(edge.getChild());
+                        return null;
                     }
-                } else {
-                    throw new IllegalArgumentException("Unsupported edge of type: " + edge.getClass().getCanonicalName());
-                }
+
+                    @Override
+                    public Void visit(IpServiceEdge edge) {
+                        // There are multiple reductions keys for this edge
+                        // Create an intermediary vertex using the Most Critical reduction function
+                        vertexForEdge[0] = new GraphVertexImpl(REDUCE_HIGHEST_SEVERITY, edge.getIpService());
+                        addVertex(vertexForEdge[0]);
+                        m_verticesByIpServiceId.put(vertexForEdge[0].getIpService().getId(), vertexForEdge[0]);
+
+                        // SPECIAL CASE: Map the reductions keys to the intermediary vertex using the Identity map
+                        for (String reductionKey : edge.getReductionKeys()) {
+                            GraphVertex reductionKeyVertex = m_verticesByReductionKey.get(reductionKey);
+                            if (reductionKeyVertex == null) { // not already added
+                                reductionKeyVertex = new GraphVertexImpl(REDUCE_HIGHEST_SEVERITY, reductionKey);
+                                addVertex(reductionKeyVertex);
+                                m_verticesByReductionKey.put(reductionKey, reductionKeyVertex);
+                            }
+                            // Always add an edge
+                            GraphEdgeImpl intermediaryEdge = new GraphEdgeImpl(MAP_IDENTITY);
+                            addEdge(intermediaryEdge, vertexForEdge[0], reductionKeyVertex);
+                        }
+                        return null;
+                    }
+
+                    @Override
+                    public Void visit(ReductionKeyEdge edge) {
+                        String reductionKey = edge.getReductionKey();
+                        vertexForEdge[0] = new GraphVertexImpl(REDUCE_HIGHEST_SEVERITY, edge.getReductionKey());
+                        addVertex(vertexForEdge[0]);
+                        m_verticesByReductionKey.put(reductionKey, vertexForEdge[0]);
+                        return null;
+                    }
+                });
             }
 
             // Link and index
-            addEdge(graphEdge, businessServiceVertex, vertexForEdge);
-            m_verticesByEdgeId.put(edge.getId(), vertexForEdge);
+            addEdge(graphEdge, businessServiceVertex, vertexForEdge[0]);
+            m_verticesByEdgeId.put(edge.getId(), vertexForEdge[0]);
         }
         return businessServiceVertex;
     }
 
     private GraphVertex getExistingVertex(ReadOnlyEdge edge) {
-        if (edge instanceof ReadOnlyChildEdge) {
-            return m_verticesByBusinessServiceId.get(((ReadOnlyChildEdge) edge).getChild().getId());
-        }
-        if (edge instanceof IpServiceEdge) {
-            return m_verticesByIpServiceId.get(((IpServiceEdge) edge).getIpService().getId());
-        }
-        if (edge instanceof ReductionKeyEdge) {
-            return m_verticesByReductionKey.get(((ReductionKeyEdge) edge).getReductionKey());
-        }
-        return null;
+        return edge.accept(new EdgeVisitor<GraphVertex>() {
+
+            @Override
+            public GraphVertex visit(IpServiceEdge edge) {
+                return m_verticesByIpServiceId.get(edge.getIpService().getId());
+            }
+
+            @Override
+            public GraphVertex visit(ReductionKeyEdge edge) {
+                return m_verticesByReductionKey.get(edge.getReductionKey());
+            }
+
+            @Override
+            public GraphVertex visit(ChildEdge edge) {
+                return m_verticesByBusinessServiceId.get(edge.getChild().getId());
+            }
+        });
     }
 
     private void calculateAndIndexLevels() {

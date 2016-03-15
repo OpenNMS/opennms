@@ -82,4 +82,9 @@ public class BusinessServiceChildEdgeEntity extends BusinessServiceEdgeEntity {
         }
         return false;
     }
+
+    @Override
+    public <T> T accept(EdgeEntityVisitor<T> visitor) {
+        return visitor.visit(this);
+    }
 }

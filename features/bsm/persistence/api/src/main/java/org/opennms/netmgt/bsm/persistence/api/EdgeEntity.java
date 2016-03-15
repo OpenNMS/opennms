@@ -14,4 +14,6 @@ public interface EdgeEntity {
 
     AbstractMapFunctionEntity getMapFunction();
 
+    <T> T accept(EdgeEntityVisitor<T> visitor);
+
 }

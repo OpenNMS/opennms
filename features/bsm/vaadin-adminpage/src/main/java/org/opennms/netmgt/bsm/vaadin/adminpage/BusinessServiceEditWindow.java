@@ -36,10 +36,11 @@ import java.util.stream.Collectors;
 import org.opennms.netmgt.bsm.service.BusinessServiceManager;
 import org.opennms.netmgt.bsm.service.model.BusinessService;
 import org.opennms.netmgt.bsm.service.model.IpService;
-import org.opennms.netmgt.bsm.service.model.Status;
 import org.opennms.netmgt.bsm.service.model.ReadOnlyBusinessService;
+import org.opennms.netmgt.bsm.service.model.Status;
 import org.opennms.netmgt.bsm.service.model.edge.ChildEdge;
 import org.opennms.netmgt.bsm.service.model.edge.Edge;
+import org.opennms.netmgt.bsm.service.model.edge.EdgeVisitor;
 import org.opennms.netmgt.bsm.service.model.edge.IpServiceEdge;
 import org.opennms.netmgt.bsm.service.model.edge.ReductionKeyEdge;
 import org.opennms.netmgt.bsm.service.model.functions.map.SetTo;
@@ -531,9 +532,7 @@ public class BusinessServiceEditWindow extends Window {
         m_edgesListSelect.removeAllItems();
         m_edgesListSelect.addItems(m_businessService.getEdges().stream()
                                                     .map(e -> (Edge)e)
-                                                    .sorted(Ordering.natural()
-                                                                    .onResultOf(Edge::getType)
-                                                                    .thenComparing(e -> getChildDescription(e)))
+                                                    .sorted((e1, e2) -> getChildDescription(e1).compareTo(getChildDescription(e2)))
                                                     .collect(Collectors.toList()));
         m_edgesListSelect.getItemIds().forEach(item -> m_edgesListSelect.setItemCaption(item, describeEdge((Edge) item)));
     }
@@ -555,21 +554,43 @@ public class BusinessServiceEditWindow extends Window {
     }
 
     private static String getEdgePrefix(Edge edge) {
-        switch (edge.getType()) {
-            case CHILD_SERVICE: return "Child";
-            case IP_SERVICE:    return "IPSvc";
-            case REDUCTION_KEY: return "ReKey";
-            default: throw new IllegalArgumentException();
-        }
+        return edge.accept(new EdgeVisitor<String>() {
+
+            @Override
+            public String visit(IpServiceEdge edge) {
+                return "IPSvc";
+            }
+
+            @Override
+            public String visit(ReductionKeyEdge edge) {
+                return "ReKey";
+            }
+
+            @Override
+            public String visit(ChildEdge edge) {
+                return "Child";
+            }
+        });
     }
 
     private static String getChildDescription(Edge edge) {
-        switch (edge.getType()) {
-            case CHILD_SERVICE: return describeBusinessService(((ChildEdge) edge).getChild());
-            case IP_SERVICE:    return describeIpService(((IpServiceEdge) edge).getIpService(), ((IpServiceEdge) edge).getFriendlyName());
-            case REDUCTION_KEY: return describeReductionKey(((ReductionKeyEdge) edge).getReductionKey(), ((ReductionKeyEdge) edge).getFriendlyName());
-            default: throw new IllegalArgumentException();
-        }
+        return edge.accept(new EdgeVisitor<String>() {
+
+            @Override
+            public String visit(IpServiceEdge edge) {
+                return describeIpService(edge.getIpService(), edge.getFriendlyName());
+            }
+
+            @Override
+            public String visit(ReductionKeyEdge edge) {
+                return describeReductionKey(edge.getReductionKey(), edge.getFriendlyName());
+            }
+
+            @Override
+            public String visit(ChildEdge edge) {
+                return describeBusinessService(edge.getChild());
+            }
+        });
     }
 
     public static String describeReductionKey(final String reductionKey, final String friendlyName) {

@@ -50,6 +50,7 @@ import org.opennms.netmgt.bsm.service.model.BusinessService;
 import org.opennms.netmgt.bsm.service.model.IpService;
 import org.opennms.netmgt.bsm.service.model.edge.ChildEdge;
 import org.opennms.netmgt.bsm.service.model.edge.Edge;
+import org.opennms.netmgt.bsm.service.model.edge.EdgeVisitor;
 import org.opennms.netmgt.bsm.service.model.edge.IpServiceEdge;
 import org.opennms.netmgt.bsm.service.model.edge.ReductionKeyEdge;
 import org.opennms.netmgt.bsm.service.model.functions.map.MapFunction;
@@ -316,16 +317,23 @@ public class BusinessServiceRestService {
 
     private AbstractEdgeResponseDTO transform(Edge edge) {
         Objects.requireNonNull(edge);
-        if (edge instanceof IpServiceEdge) {
-            return transform((IpServiceEdge) edge);
-        }
-        if (edge instanceof ChildEdge) {
-            return transform((ChildEdge) edge);
-        }
-        if (edge instanceof ReductionKeyEdge) {
-            return transform((ReductionKeyEdge) edge);
-        }
-        throw new IllegalArgumentException("Could not find a mapper for edge of type " + edge.getClass());
+        return edge.accept(new EdgeVisitor<AbstractEdgeResponseDTO>() {
+
+            @Override
+            public AbstractEdgeResponseDTO visit(IpServiceEdge edge) {
+                return transform(edge);
+            }
+
+            @Override
+            public AbstractEdgeResponseDTO visit(ReductionKeyEdge edge) {
+                return transform(edge);
+            }
+
+            @Override
+            public AbstractEdgeResponseDTO visit(ChildEdge edge) {
+                return transform(edge);
+            }
+        });
     }
 
     private IpServiceEdgeResponseDTO transform(IpServiceEdge edge) {

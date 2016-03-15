@@ -40,6 +40,7 @@ import org.opennms.netmgt.bsm.persistence.api.BusinessServiceDao;
 import org.opennms.netmgt.bsm.persistence.api.BusinessServiceEdgeDao;
 import org.opennms.netmgt.bsm.persistence.api.BusinessServiceEdgeEntity;
 import org.opennms.netmgt.bsm.persistence.api.BusinessServiceEntity;
+import org.opennms.netmgt.bsm.persistence.api.EdgeEntityVisitor;
 import org.opennms.netmgt.bsm.persistence.api.IPServiceEdgeEntity;
 import org.opennms.netmgt.bsm.persistence.api.SingleReductionKeyEdgeEntity;
 import org.opennms.netmgt.bsm.persistence.api.functions.map.AbstractMapFunctionEntity;
@@ -163,16 +164,23 @@ public class BusinessServiceManagerImpl implements BusinessServiceManager {
     @Override
     public Edge getEdgeById(Long edgeId) {
         BusinessServiceEdgeEntity edgeEntity = getBusinessServiceEdgeEntity(edgeId);
-        if (edgeEntity instanceof BusinessServiceChildEdgeEntity) {
-            return new ChildEdgeImpl(this, (BusinessServiceChildEdgeEntity) edgeEntity);
-        }
-        if (edgeEntity instanceof SingleReductionKeyEdgeEntity) {
-            return new ReductionKeyEdgeImpl(this, (SingleReductionKeyEdgeEntity) edgeEntity);
-        }
-        if (edgeEntity instanceof IPServiceEdgeEntity) {
-            return new IpServiceEdgeImpl(this, (IPServiceEdgeEntity) edgeEntity);
-        }
-        throw new IllegalArgumentException("Could not create edge for entity " + edgeEntity.getClass());
+        return edgeEntity.accept(new EdgeEntityVisitor<Edge>() {
+
+            @Override
+            public Edge visit(BusinessServiceChildEdgeEntity edgeEntity) {
+                return new ChildEdgeImpl(BusinessServiceManagerImpl.this, edgeEntity);
+            }
+
+            @Override
+            public Edge visit(SingleReductionKeyEdgeEntity edge) {
+                return new ReductionKeyEdgeImpl(BusinessServiceManagerImpl.this, edge);
+            }
+
+            @Override
+            public Edge visit(IPServiceEdgeEntity edge) {
+                return new IpServiceEdgeImpl(BusinessServiceManagerImpl.this, edge);
+            }
+        });
     }
 
     @Override

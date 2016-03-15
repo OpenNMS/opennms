@@ -29,7 +29,6 @@
 package org.opennms.netmgt.bsm.vaadin.adminpage;
 
 import java.util.Collection;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.opennms.netmgt.bsm.service.BusinessServiceManager;
@@ -38,6 +37,7 @@ import org.opennms.netmgt.bsm.service.model.IpService;
 import org.opennms.netmgt.bsm.service.model.Status;
 import org.opennms.netmgt.bsm.service.model.edge.ChildEdge;
 import org.opennms.netmgt.bsm.service.model.edge.Edge;
+import org.opennms.netmgt.bsm.service.model.edge.EdgeVisitor;
 import org.opennms.netmgt.bsm.service.model.edge.IpServiceEdge;
 import org.opennms.netmgt.bsm.service.model.edge.ReductionKeyEdge;
 import org.opennms.netmgt.bsm.service.model.functions.map.Decrease;
@@ -70,6 +70,11 @@ import com.vaadin.ui.Window;
  * @author Christian Pape <christian@opennms.org>
  */
 public class BusinessServiceEdgeEditWindow extends Window {
+
+    private enum EdgeType {
+        IP_SERVICE, REDUCTION_KEY, CHILD_SERVICE
+    }
+
     private static final long serialVersionUID = -5780075265758041282L;
 
     /**
@@ -134,12 +139,12 @@ public class BusinessServiceEdgeEditWindow extends Window {
         m_typeSelect.setNewItemsAllowed(false);
         m_typeSelect.setNullSelectionAllowed(false);
         m_typeSelect.setRequired(true);
-        m_typeSelect.addItem(Edge.Type.CHILD_SERVICE);
-        m_typeSelect.setItemCaption(Edge.Type.CHILD_SERVICE, "Child Service");
-        m_typeSelect.addItem(Edge.Type.IP_SERVICE);
-        m_typeSelect.setItemCaption(Edge.Type.IP_SERVICE, "IP Service");
-        m_typeSelect.addItem(Edge.Type.REDUCTION_KEY);
-        m_typeSelect.setItemCaption(Edge.Type.REDUCTION_KEY, "Reduction Key");
+        m_typeSelect.addItem(EdgeType.CHILD_SERVICE);
+        m_typeSelect.setItemCaption(EdgeType.CHILD_SERVICE, "Child Service");
+        m_typeSelect.addItem(EdgeType.IP_SERVICE);
+        m_typeSelect.setItemCaption(EdgeType.IP_SERVICE, "IP Service");
+        m_typeSelect.addItem(EdgeType.REDUCTION_KEY);
+        m_typeSelect.setItemCaption(EdgeType.REDUCTION_KEY, "Reduction Key");
         m_typeSelect.setWidth(100.0f, Unit.PERCENTAGE);
         formLayout.addComponent(m_typeSelect);
 
@@ -213,13 +218,13 @@ public class BusinessServiceEdgeEditWindow extends Window {
          * show and hide components
          */
         m_typeSelect.addValueChangeListener(event -> {
-            m_childServiceComponent.setVisible(m_typeSelect.getValue() == Edge.Type.CHILD_SERVICE);
-            m_childServiceComponent.setRequired(m_typeSelect.getValue() == Edge.Type.CHILD_SERVICE);
-            m_ipServiceComponent.setVisible(m_typeSelect.getValue() == Edge.Type.IP_SERVICE);
-            m_ipServiceComponent.setRequired(m_typeSelect.getValue() == Edge.Type.IP_SERVICE);
-            m_reductionKeyComponent.setVisible(m_typeSelect.getValue() == Edge.Type.REDUCTION_KEY);
-            m_reductionKeyComponent.setRequired(m_typeSelect.getValue() == Edge.Type.REDUCTION_KEY);
-            m_friendlyNameField.setVisible(m_typeSelect.getValue() == Edge.Type.REDUCTION_KEY || m_typeSelect.getValue() == Edge.Type.IP_SERVICE);
+            m_childServiceComponent.setVisible(m_typeSelect.getValue() == EdgeType.CHILD_SERVICE);
+            m_childServiceComponent.setRequired(m_typeSelect.getValue() == EdgeType.CHILD_SERVICE);
+            m_ipServiceComponent.setVisible(m_typeSelect.getValue() == EdgeType.IP_SERVICE);
+            m_ipServiceComponent.setRequired(m_typeSelect.getValue() == EdgeType.IP_SERVICE);
+            m_reductionKeyComponent.setVisible(m_typeSelect.getValue() == EdgeType.REDUCTION_KEY);
+            m_reductionKeyComponent.setRequired(m_typeSelect.getValue() == EdgeType.REDUCTION_KEY);
+            m_friendlyNameField.setVisible(m_typeSelect.getValue() == EdgeType.REDUCTION_KEY || m_typeSelect.getValue() == EdgeType.IP_SERVICE);
         });
 
         /**
@@ -302,7 +307,7 @@ public class BusinessServiceEdgeEditWindow extends Window {
         /**
          * setting the defaults
          */
-        m_typeSelect.setValue(Edge.Type.CHILD_SERVICE);
+        m_typeSelect.setValue(EdgeType.CHILD_SERVICE);
         m_mapFunctionSelect.setValue(Identity.class);
         m_mapFunctionSeveritySelect.setValue(Status.INDETERMINATE);
         m_weightField.setValue(Integer.toString(Edge.DEFAULT_WEIGHT));
@@ -338,15 +343,13 @@ public class BusinessServiceEdgeEditWindow extends Window {
             /**
              * ...and add the new edge
              */
-            switch ((Edge.Type) m_typeSelect.getValue()) {
+            switch ((EdgeType) m_typeSelect.getValue()) {
                 case CHILD_SERVICE:
                     businessService.addChildEdge((BusinessService) m_childServiceComponent.getValue(), mapFunction, weight);
                     break;
-
                 case IP_SERVICE:
                     businessService.addIpServiceEdge((IpService) m_ipServiceComponent.getValue(), mapFunction, weight, m_friendlyNameField.getValue());
                     break;
-
                 case REDUCTION_KEY:
                     businessService.addReductionKeyEdge(m_reductionKeyComponent.getValue(), mapFunction, weight, m_friendlyNameField.getValue());
                     break;
@@ -368,31 +371,39 @@ public class BusinessServiceEdgeEditWindow extends Window {
          * when edge is not null, fill the components with values
          */
         if (edge != null) {
-            switch (edge.getType()) {
-                case CHILD_SERVICE:
-                    m_typeSelect.setValue(Edge.Type.CHILD_SERVICE);
-                    m_childServiceComponent.setValue(((ChildEdge) edge).getChild());
-                    m_childServiceComponent.setEnabled(false);
-                    break;
-                case IP_SERVICE:
-                    m_typeSelect.setValue(Edge.Type.IP_SERVICE);
+            edge.accept(new EdgeVisitor<Void>() {
+                @Override
+                public Void visit(IpServiceEdge edge) {
+                    m_typeSelect.setValue(EdgeType.IP_SERVICE);
 
                     for (IpService ipService : (Collection<IpService>) m_ipServiceComponent.getItemIds()) {
-                        if (ipService.getId() == ((IpServiceEdge) edge).getIpService().getId()) {
+                        if (ipService.getId() == edge.getIpService().getId()) {
                             m_ipServiceComponent.setValue(ipService);
                             break;
                         }
                     }
-                    m_friendlyNameField.setValue(((IpServiceEdge) edge).getFriendlyName());
+                    m_friendlyNameField.setValue(edge.getFriendlyName());
                     m_ipServiceComponent.setEnabled(false);
-                    break;
-                case REDUCTION_KEY:
-                    m_typeSelect.setValue(Edge.Type.REDUCTION_KEY);
-                    m_reductionKeyComponent.setValue(((ReductionKeyEdge) edge).getReductionKey());
-                    m_friendlyNameField.setValue(((ReductionKeyEdge) edge).getFriendlyName());
+                    return null;
+                }
+
+                @Override
+                public Void visit(ReductionKeyEdge edge) {
+                    m_typeSelect.setValue(EdgeType.REDUCTION_KEY);
+                    m_reductionKeyComponent.setValue(edge.getReductionKey());
+                    m_friendlyNameField.setValue(edge.getFriendlyName());
                     m_reductionKeyComponent.setEnabled(false);
-                    break;
-            }
+                    return null;
+                }
+
+                @Override
+                public Void visit(ChildEdge edge) {
+                    m_typeSelect.setValue(EdgeType.CHILD_SERVICE);
+                    m_childServiceComponent.setValue(edge.getChild());
+                    m_childServiceComponent.setEnabled(false);
+                    return null;
+                }
+            });
 
             m_typeSelect.setEnabled(false);
             m_mapFunctionSelect.setValue(edge.getMapFunction().getClass());
