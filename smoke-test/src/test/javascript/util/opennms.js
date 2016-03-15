@@ -545,8 +545,8 @@ OpenNMS.prototype.selectByValue = function(selector, text) {
 				if (el.options[i].text === text) {
 					el.value = el.options[i].value;
 					el.selectedIndex = i;
-					var evt = document.createEvent("UIEvents");
-					evt.initUIEvent("change", true, true);
+					var evt = document.createEvent('UIEvents');
+					evt.initUIEvent('change', true, true);
 					el.dispatchEvent(evt);
 					found = true;
 					break;

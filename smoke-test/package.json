@@ -16,7 +16,7 @@
     "phantomjs-prebuilt": "^2.1.5"
   },
   "scripts": {
-    "test": "npm run lint && find src/test/javascript/tests -type f | xargs casperjs test --xunit=target/failsafe-reports/casperjs.xml",
+    "test": "npm run lint && find src/test/javascript/tests -type f -name \\*.js | xargs casperjs test --xunit=target/failsafe-reports/casperjs.xml",
     "lint": "eslint . --ext .js"
   }
 }
