@@ -19,7 +19,7 @@ var reports = {
 	'Event-Analysis': ['CSV', 'Event Analysis', 2]
 }
 
-casper.test.begin('Database Batch Reports', 13, {
+casper.test.begin('Database Batch Reports', {
 	setUp: function() {
 		opennms.initialize();
 		opennms.login();

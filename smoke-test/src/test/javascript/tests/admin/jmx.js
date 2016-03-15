@@ -7,7 +7,7 @@ var x = require('casper').selectXPath;
 var nextButton = 'div#next > span.v-button-wrap > span.v-icon';
 var previousButton = 'div#previous > span.v-button-wrap > span.v-icon';
 
-casper.test.begin('JMX Configuration Generator', 13, {
+casper.test.begin('JMX Configuration Generator', {
 	setUp: function() {
 		opennms.initialize();
 		opennms.login();
