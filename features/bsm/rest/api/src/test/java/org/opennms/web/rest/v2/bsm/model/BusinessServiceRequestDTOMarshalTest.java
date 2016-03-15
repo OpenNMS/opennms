@@ -127,16 +127,16 @@ public class BusinessServiceRequestDTOMarshalTest extends MarshalAndUnmarshalTes
             "<business-service>\n" +
             "   <name>Web Servers</name>\n" +
             "   <attributes>\n" +
-            "       <attribute>\n" +
-            "           <key>dc</key>\n" +
-            "           <value>RDU</value>\n" +
-            "       </attribute>\n" +
-            "       <attribute>\n" +
-            "           <key>some-key</key>\n" +
-            "           <value>some-value</value>\n" +
-            "       </attribute>\n" +
+            "      <attribute>\n" +
+            "         <key>dc</key>\n" +
+            "         <value>RDU</value>\n" +
+            "      </attribute>\n" +
+            "      <attribute>\n" +
+            "         <key>some-key</key>\n" +
+            "         <value>some-value</value>\n" +
+            "      </attribute>\n" +
             "   </attributes>\n" +
-            "    <ip-services-edges>\n" +
+            "    <ip-service-edges>\n" +
             "      <ip-service-edge>\n" +
             "         <map-function>\n" +
             "            <type>Increase</type>\n" +
@@ -145,14 +145,14 @@ public class BusinessServiceRequestDTOMarshalTest extends MarshalAndUnmarshalTes
             "         <friendly-name>ip-service-friendly-name</friendly-name>\n" +
             "         <ip-service-id>1</ip-service-id>\n" +
             "      </ip-service-edge>\n" +
-            "   </ip-services-edges>\n" +
+            "   </ip-service-edges>\n" +
             "   <child-edges>\n" +
             "      <child-edge>\n" +
             "         <map-function>\n" +
             "            <type>Increase</type>\n" +
             "         </map-function>\n" +
             "         <weight>5</weight>\n" +
-            "         <childId>2</childId>\n" +
+            "         <child-id>2</child-id>\n" +
             "      </child-edge>\n" +
             "      <child-edge>\n" +
             "         <map-function>\n" +
@@ -165,27 +165,27 @@ public class BusinessServiceRequestDTOMarshalTest extends MarshalAndUnmarshalTes
             "            </properties>\n" +
             "         </map-function>\n" +
             "         <weight>5</weight>\n" +
-            "         <childId>3</childId>\n" +
+            "         <child-id>3</child-id>\n" +
             "      </child-edge>\n" +
             "   </child-edges>\n" +
-            "   <reductionkey-edges>\n" +
-            "      <reductionkey-edge>\n" +
+            "   <reduction-key-edges>\n" +
+            "      <reduction-key-edge>\n" +
             "         <map-function>\n" +
             "            <type>Increase</type>\n" +
             "         </map-function>\n" +
             "         <weight>7</weight>\n" +
             "         <friendly-name>reduction-key-a-friendly-name</friendly-name>\n" +
             "         <reduction-key>myReductionKeyA</reduction-key>\n" +
-            "      </reductionkey-edge>\n" +
-            "      <reductionkey-edge>\n" +
+            "      </reduction-key-edge>\n" +
+            "      <reduction-key-edge>\n" +
             "         <map-function>\n" +
             "            <type>Increase</type>\n" +
             "         </map-function>\n" +
             "         <weight>7</weight>\n" +
             "         <friendly-name>reduction-key-b-friendly-name</friendly-name>\n" +
             "         <reduction-key>myReductionKeyB</reduction-key>\n" +
-            "      </reductionkey-edge>\n" +
-            "   </reductionkey-edges>\n" +
+            "      </reduction-key-edge>\n" +
+            "   </reduction-key-edges>\n" +
             "   <reduce-function>\n" +
             "      <type>HighestSeverity</type>\n" +
             "   </reduce-function>\n" +

@@ -35,7 +35,7 @@
     <xs:sequence>
       <xs:element minOccurs="0" name="name" type="xs:string"/>
       <xs:element minOccurs="0" ref="attributes"/>
-      <xs:element minOccurs="0" name="ip-services-edges">
+      <xs:element minOccurs="0" name="ip-service-edges">
         <xs:complexType>
           <xs:sequence>
             <xs:element maxOccurs="unbounded" minOccurs="0" name="ip-service-edge" type="bs:ipServiceEdgeRequestDTO"/>
@@ -49,10 +49,10 @@
           </xs:sequence>
         </xs:complexType>
       </xs:element>
-      <xs:element minOccurs="0" name="reductionkey-edges">
+      <xs:element minOccurs="0" name="reduction-key-edges">
         <xs:complexType>
           <xs:sequence>
-            <xs:element maxOccurs="unbounded" minOccurs="0" name="reductionkey-edge" type="bs:reductionKeyEdgeRequestDTO"/>
+            <xs:element maxOccurs="unbounded" minOccurs="0" name="reduction-key-edge" type="bs:reductionKeyEdgeRequestDTO"/>
           </xs:sequence>
         </xs:complexType>
       </xs:element>
@@ -102,7 +102,7 @@
     <xs:complexContent>
       <xs:extension base="bs:abstractEdgeRequestDTO">
         <xs:sequence>
-          <xs:element name="childId" type="xs:long"/>
+          <xs:element name="child-id" type="xs:long"/>
         </xs:sequence>
       </xs:extension>
     </xs:complexContent>
@@ -151,10 +151,10 @@
           </xs:sequence>
         </xs:complexType>
       </xs:element>
-      <xs:element minOccurs="0" name="reductionKey-edges">
+      <xs:element minOccurs="0" name="reduction-key-edges">
         <xs:complexType>
           <xs:sequence>
-            <xs:element maxOccurs="unbounded" minOccurs="0" name="reductionKey" type="bs:reductionKeyEdgeResponseDTO"/>
+            <xs:element maxOccurs="unbounded" minOccurs="0" name="reduction-key" type="bs:reductionKeyEdgeResponseDTO"/>
           </xs:sequence>
         </xs:complexType>
       </xs:element>
@@ -172,7 +172,7 @@
           </xs:sequence>
         </xs:complexType>
       </xs:element>
-      <xs:element minOccurs="0" name="reduction-function" type="bs:reduceFunctionDTO"/>
+      <xs:element minOccurs="0" name="reduce-function" type="bs:reduceFunctionDTO"/>
       <xs:element minOccurs="0" name="operational-status" type="status"/>
       <xs:element minOccurs="0" name="location" type="xs:string"/>
     </xs:sequence>
@@ -195,10 +195,10 @@
       <xs:element minOccurs="0" name="operational-status" type="status"/>
       <xs:element minOccurs="0" name="map-function" type="bs:mapFunctionDTO"/>
       <xs:element minOccurs="0" name="location" type="xs:string"/>
-      <xs:element minOccurs="0" name="reductionKeys">
+      <xs:element minOccurs="0" name="reduction-keys">
         <xs:complexType>
           <xs:sequence>
-            <xs:element maxOccurs="unbounded" minOccurs="0" name="reductionKey" type="xs:string"/>
+            <xs:element maxOccurs="unbounded" minOccurs="0" name="reduction-key" type="xs:string"/>
           </xs:sequence>
         </xs:complexType>
       </xs:element>
@@ -229,7 +229,7 @@
     <xs:complexContent>
       <xs:extension base="bs:abstractEdgeResponseDTO">
         <xs:sequence>
-          <xs:element minOccurs="0" name="childId" type="xs:long"/>
+          <xs:element minOccurs="0" name="child-id" type="xs:long"/>
         </xs:sequence>
       </xs:extension>
     </xs:complexContent>

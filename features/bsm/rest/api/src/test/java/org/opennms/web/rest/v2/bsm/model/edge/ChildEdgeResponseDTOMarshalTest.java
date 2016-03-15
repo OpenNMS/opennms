@@ -82,21 +82,21 @@ public class ChildEdgeResponseDTOMarshalTest extends MarshalAndUnmarshalTest<Chi
                 "   <id>1</id>\n" +
                 "   <operational-status>WARNING</operational-status>\n" +
                 "   <map-function>\n" +
-                "       <type>SetTo</type>\n" +
-                "       <properties>\n" +
-                "           <entry>\n" +
-                "              <key>key1</key>\n" +
-                "               <value>value1</value>\n" +
-                "           </entry>\n" +
-                "       </properties>\n" +
+                "      <type>SetTo</type>\n" +
+                "      <properties>\n" +
+                "         <entry>\n" +
+                "            <key>key1</key>\n" +
+                "            <value>value1</value>\n" +
+                "         </entry>\n" +
+                "      </properties>\n" +
                 "   </map-function>\n" +
                 "   <location>/api/v2/business-services/edges/1</location>\n" +
-                "   <reductionKeys>\n" +
-                "       <reductionKey>key1</reductionKey>\n" +
-                "       <reductionKey>key2</reductionKey>\n" +
-                "   </reductionKeys>\n" +
+                "   <reduction-keys>\n" +
+                "      <reduction-key>key1</reduction-key>\n" +
+                "      <reduction-key>key2</reduction-key>\n" +
+                "   </reduction-keys>\n" +
                 "   <weight>20</weight>\n" +
-                "   <childId>127</childId>" +
+                "   <child-id>127</child-id>" +
                 "</child-edge>"
         }});
     }

@@ -37,7 +37,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlAccessorType(XmlAccessType.NONE)
 public class ChildEdgeResponseDTO extends AbstractEdgeResponseDTO {
 
-    @XmlElement(name="childId")
+    @XmlElement(name="child-id")
     private Long childId;
 
     public void setChildId(Long childId) {

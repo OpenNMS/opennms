@@ -66,8 +66,8 @@ public abstract class AbstractEdgeResponseDTO {
     @JsonDeserialize(using = JsonResourceLocationDeserializationProvider.class)
     private ResourceLocation location;
 
-    @XmlElement(name="reductionKey")
-    @XmlElementWrapper(name="reductionKeys")
+    @XmlElement(name="reduction-key")
+    @XmlElementWrapper(name="reduction-keys")
     private Set<String> reductionKeys = new HashSet<>();
 
     @XmlElement(name="weight", required = true)

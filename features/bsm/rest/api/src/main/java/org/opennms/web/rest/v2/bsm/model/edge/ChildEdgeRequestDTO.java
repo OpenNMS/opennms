@@ -36,7 +36,7 @@ public class ChildEdgeRequestDTO extends AbstractEdgeRequestDTO {
 
     private Long childId;
 
-    @XmlElement(name="childId",required = true)
+    @XmlElement(name="child-id",required = true)
     public Long getChildId() {
         return childId;
     }

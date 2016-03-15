@@ -102,6 +102,6 @@ public enum ReduceFunctionType {
                 return eachType;
             }
         }
-        throw new IllegalArgumentException("Cannot create Type for reduction function " + aClass);
+        throw new IllegalArgumentException("Cannot create Type for reduce function " + aClass);
     }
 }

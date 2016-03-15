@@ -72,15 +72,15 @@ public class BusinessServiceResponseDTO {
     @XmlJavaTypeAdapter(JAXBMapAdapter.class)
     private Map<String, String> m_attributes = Maps.newLinkedHashMap();
 
-    @XmlElement(name="ip-service")
+    @XmlElement(name="ip-service-edge")
     @XmlElementWrapper(name="ip-service-edges")
     private List<IpServiceEdgeResponseDTO> m_ipServices = Lists.newArrayList();
 
-    @XmlElement(name="reductionKey")
-    @XmlElementWrapper(name="reductionKey-edges")
+    @XmlElement(name="reduction-key-edge")
+    @XmlElementWrapper(name="reduction-key-edges")
     private List<ReductionKeyEdgeResponseDTO> m_reductionKeys = Lists.newArrayList();
 
-    @XmlElement(name="child")
+    @XmlElement(name="child-edge")
     @XmlElementWrapper(name="child-edges")
     private List<ChildEdgeResponseDTO> m_children = Lists.newArrayList();;
 
@@ -88,7 +88,7 @@ public class BusinessServiceResponseDTO {
     @XmlElementWrapper(name="parent-services")
     private Set<Long> m_parentServices = Sets.newLinkedHashSet();
 
-    @XmlElement(name="reduction-function")
+    @XmlElement(name="reduce-function")
     private ReduceFunctionDTO m_reduceFunction;
 
     @XmlElement(name="operational-status")
@@ -215,6 +215,7 @@ public class BusinessServiceResponseDTO {
                 .add("id", m_id)
                 .add("name", m_name)
                 .add("attributes", m_attributes)
+                .add("reduceFunction", m_reduceFunction)
                 .add("ipServices", m_ipServices)
                 .add("operationalStatus", m_operationalStatus)
                 .add("childServices", m_children)

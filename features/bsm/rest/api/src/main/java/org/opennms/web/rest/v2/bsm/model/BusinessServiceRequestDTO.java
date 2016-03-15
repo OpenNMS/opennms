@@ -60,15 +60,15 @@ public class BusinessServiceRequestDTO {
     private Map<String, String> m_attributes = Maps.newLinkedHashMap();
 
     @XmlElement(name="ip-service-edge")
-    @XmlElementWrapper(name="ip-services-edges")
+    @XmlElementWrapper(name="ip-service-edges")
     private List<IpServiceEdgeRequestDTO> m_ipServices = Lists.newArrayList();
 
     @XmlElement(name="child-edge")
     @XmlElementWrapper(name="child-edges")
     private List<ChildEdgeRequestDTO> m_childServices = Lists.newArrayList();
 
-    @XmlElement(name="reductionkey-edge")
-    @XmlElementWrapper(name="reductionkey-edges")
+    @XmlElement(name="reduction-key-edge")
+    @XmlElementWrapper(name="reduction-key-edges")
     private List<ReductionKeyEdgeRequestDTO> reductionKeys = Lists.newArrayList();
 
     @XmlElement(name="reduce-function")

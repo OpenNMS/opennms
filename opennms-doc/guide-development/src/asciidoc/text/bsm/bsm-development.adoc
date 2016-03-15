@@ -19,49 +19,49 @@ The _Business Service_ response data model for the ReST API has the following ba
   <name>Datacenter North</name>
   <attributes/>
   <ip-service-edges>
-    <ip-service>
+    <ip-service-edge>
       <id>23</id>
       <operational-status>WARNING</operational-status>
       <map-function>
         <type>Identity</type>
       </map-function>
       <location>/api/v2/business-services/2/edges/23</location>
-      <reductionKeys>
-        <reductionKey>uei.opennms.org/nodes/nodeLostService::12:10.10.10.42:ICMP</reductionKey>
-        <reductionKey>uei.opennms.org/nodes/nodeDown::12</reductionKey>
-      </reductionKeys>
+      <reduction-keys>
+        <reduction-key>uei.opennms.org/nodes/nodeLostService::12:10.10.10.42:ICMP</reductionKey>
+        <reduction-key>uei.opennms.org/nodes/nodeDown::12</reductionKey>
+      </reduction-keys>
       <weight>1</weight>
-    </ip-service>
+    </ip-service-edge>
   </ip-service-edges>
-  <reductionKey-edges>
-    <reductionKey>
+  <reduction-key-edges>
+    <reduction-key-edge>
       <id>111</id>
       <operational-status>INDETERMINATE</operational-status>
       <map-function>
         <type>Identity</type>
       </map-function>
       <location>/api/v2/business-services/42/edges/111</location>
-      <reductionKeys>
-        <reductionKey>my-reduction-key1</reductionKey>
-      </reductionKeys>
+      <reduction-keys>
+        <reduction-key>my-reduction-key1</reduction-key>
+      </reduction-keys>
       <weight>1</weight>
-    </reductionKey>
-  </reductionKey-edges>
+    </reduction-key-edge>
+  </reduction-key-edges>
   <child-edges>
-    <child>
+    <child-edge>
       <id>123</id>
       <operational-status>MINOR</operational-status>
       <map-function>
         <type>Identity</type>
       </map-function>
       <location>/api/v2/business-services/42/edges/123</location>
-      <reductionKeys/>
+      <reduction-keys/>
       <weight>1</weight>
-      <childId>43</childId>
-    </child>
+      <child-id>43</child-id>
+    </child-edge>
   </child-edges>
   <parent-services><parent-service>144</parent-service></parent-services>
-  <reduction-function><type>HighestSeverity</type></reduction-function>
+  <reduce-function><type>HighestSeverity</type></reduce-function>
   <operational-status>INDETERMINATE</operational-status>
   <location>/api/v2/business-services/146</location>
 </business-service>
@@ -74,33 +74,33 @@ The _Business Service_ response data model for the ReST API has the following ba
   <name>Datacenter North</name>
   <attributes/>
   <ip-service-edges>
-    <ip-service>
+    <ip-service-edge>
       <ip-service-id>99</ip-service-id>
       <map-function>
         <type>Identity</type>
       </map-function>
       <weight>1</weight>
-    </ip-service>
+    </ip-service-edge>
   </ip-service-edges>
-  <reductionKey-edges>
-    <reductionKey>
-      <reductionKey>my-reduction-key1</reductionKey>
+  <reduction-key-edges>
+    <reduction-key-edge>
+      <reduction-key>my-reduction-key1</reduction-key>
       <map-function>
         <type>Identity</type>
       </map-function>
       <weight>1</weight>
-    </reductionKey>
-  </reductionKey-edges>
+    </reduction-key-edge>
+  </reduction-key-edges>
   <child-edges>
-    <child>
-      <childId>43</childId>
+    <child-edge>
+      <child-id>43</child-id>
       <map-function>
         <type>Identity</type>
       </map-function>
       <weight>1</weight>
-    </child>
+    </child-edge>
   </child-edges>
-  <reduction-function><type>HighestSeverity</type></reduction-function>
+  <reduce-function><type>HighestSeverity</type></reduce-function>
 </business-service>
 ----
 
