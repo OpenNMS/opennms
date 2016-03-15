@@ -28,9 +28,6 @@
 
 package org.opennms.netmgt.bsm.persistence;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-
 import java.util.Objects;
 
 import javax.validation.ConstraintViolationException;
@@ -66,6 +63,8 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.google.common.base.Strings;
+
+import static org.junit.Assert.*;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {
@@ -294,6 +293,31 @@ public class BusinessServiceDaoIT {
         // Should throw a ConstraintViolationException (friendly name too long)
         m_businessServiceDao.save(entity);
         m_businessServiceDao.flush();
+    }
+
+    @Test()
+    @Transactional
+    public void verifyUniqueNameConstraint() {
+        BusinessServiceEntity entity1 = new BusinessServiceEntityBuilder()
+                .name("Some Custom Name")
+                .reduceFunction(m_highestSeverity)
+                .toEntity();
+
+        m_businessServiceDao.save(entity1);
+
+        BusinessServiceEntity entity2 = new BusinessServiceEntityBuilder()
+                .name("Some Custom Name")
+                .reduceFunction(m_highestSeverity)
+                .toEntity();
+
+        // Should throw a ConstraintViolationException (name not unique)
+        try {
+            m_businessServiceDao.save(entity2);
+            fail("ConstraintViolationException must be thrown");
+
+        } catch (final ConstraintViolationException e) {
+            assertEquals("Name must be uniqqqqq", e.getMessage());
+        }
     }
 
     private OnmsMonitoredService getMonitoredServiceFromNode1() {
