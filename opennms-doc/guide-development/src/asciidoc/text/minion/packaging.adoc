@@ -4,9 +4,9 @@
 
 === Packaging
 
-This sections describes the packages for the _Minion_ features and helps developers add new features to these packages.
+This sections describes packages for _Minion_ features and helps developers add new features to these packages.
 
-We currently provide two different feature packages for the _Minion_:
+We currently provide two different feature packages for _Minion_:
 
 openns-minion-features-core::
 Core utilities and services required for connectivity with the _OpenNMS_ controller
