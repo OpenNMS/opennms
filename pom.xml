@@ -1265,6 +1265,8 @@
     <osgiVersion>5.0.0</osgiVersion>
     <osgiEnterpriseVersion>5.0.0</osgiEnterpriseVersion>
     <slf4jVersion>1.7.7</slf4jVersion>
+    <snmp4jVersion>2.4.3</snmp4jVersion>
+    <snmp4jagentVersion>2.4.2</snmp4jagentVersion>
     <smackVersion>4.0.6</smackVersion>
     <springJaxbVersion>2.1.7</springJaxbVersion>
     <xalanVersion>2.7.2</xalanVersion>
@@ -3656,6 +3658,13 @@
       <url>http://maven.opennms.org/content/repositories/central/</url>
     </repository>
 -->
+    <repository>
+      <snapshots><enabled>false</enabled><updatePolicy>${updatePolicy}</updatePolicy></snapshots>
+      <releases><enabled>true</enabled><updatePolicy>${updatePolicy}</updatePolicy></releases>
+      <id>oosnmp-repo</id>
+      <name>OOSNMP Repository</name>
+      <url>https://oosnmp.net/dist/release/org/snmp4j</url>
+    </repository>
   </repositories>
   <pluginRepositories>
     <pluginRepository>
