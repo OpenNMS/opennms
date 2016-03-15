@@ -39,6 +39,13 @@
   </dependencies>
   <repositories>
     <repository>
+      <snapshots><enabled>false</enabled><updatePolicy>${updatePolicy}</updatePolicy></snapshots>
+      <releases><enabled>true</enabled><updatePolicy>${updatePolicy}</updatePolicy></releases>
+      <id>oosnmp-repo</id>
+      <name>OOSNMP Repository</name>
+      <url>https://oosnmp.net/dist/release/org/snmp4j</url>
+    </repository>
+    <repository>
       <snapshots>
         <enabled>false</enabled>
         <updatePolicy>${updatePolicy}</updatePolicy>
