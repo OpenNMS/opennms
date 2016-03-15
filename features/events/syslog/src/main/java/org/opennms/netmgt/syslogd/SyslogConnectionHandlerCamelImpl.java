@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -26,15 +26,32 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.core.concurrent;
+package org.opennms.netmgt.syslogd;
 
-import java.util.concurrent.Callable;
-import java.util.concurrent.CompletableFuture;
+import org.apache.camel.InOnly;
+import org.apache.camel.Produce;
+import org.opennms.core.camel.DefaultDispatcher;
 
 /**
- * This interface is used to denote a WaterfallCallable that terminates the chain of 
- * execution by not returning a subsequent Callable&lt;Callable&lt;?&gt;&gt; value.
- * 
- * @deprecated Replace usage of this class with Java 8's {@link CompletableFuture}.
+ * This class is an {@link InOnly} endpoint that will send messages to the 
+ * Camel endpoint specified by the <code>endpointUri</code> constructor argument.
  */
-public interface EndOfTheWaterfall extends Callable<Callable<Void>> {}
+@InOnly
+public class SyslogConnectionHandlerCamelImpl extends DefaultDispatcher implements SyslogConnectionHandler {
+
+	@Produce(property="endpointUri")
+	SyslogConnectionHandler m_proxy;
+
+	public SyslogConnectionHandlerCamelImpl(final String endpointUri) {
+		super(endpointUri);
+	}
+
+	/**
+	 * Send the incoming {@link SyslogConnection} message into the Camel route
+	 * specified by the {@link #m_endpointUri} property.
+	 */
+	@Override
+	public void handleSyslogConnection(final SyslogConnection message) {
+		m_proxy.handleSyslogConnection(message);
+	}
+}

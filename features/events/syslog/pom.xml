@@ -48,6 +48,53 @@
           </execution>
         </executions>
       </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>build-helper-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>attach-artifacts</id>
+            <phase>package</phase>
+            <goals>
+              <goal>attach-artifact</goal>
+            </goals>
+            <configuration>
+              <artifacts>
+                <artifact>
+                  <file>blueprint-syslog-handler-default.xml</file>
+                  <type>xml</type>
+                  <classifier>blueprint-syslog-handler-default</classifier>
+                </artifact>
+                <artifact>
+                  <file>blueprint-syslog-handler-kafka.xml</file>
+                  <type>xml</type>
+                  <classifier>blueprint-syslog-handler-kafka</classifier>
+                </artifact>
+                <artifact>
+                  <file>blueprint-syslog-handler-minion.xml</file>
+                  <type>xml</type>
+                  <classifier>blueprint-syslog-handler-minion</classifier>
+                </artifact>
+                <artifact>
+                  <file>blueprint-syslog-listener-javanet.xml</file>
+                  <type>xml</type>
+                  <classifier>blueprint-syslog-listener-javanet</classifier>
+                </artifact>
+                <artifact>
+                  <file>blueprint-syslog-listener-camel-netty.xml</file>
+                  <type>xml</type>
+                  <classifier>blueprint-syslog-listener-camel-netty</classifier>
+                </artifact>
+                <artifact>
+                  <file>blueprint-syslog-listener-nio.xml</file>
+                  <type>xml</type>
+                  <classifier>blueprint-syslog-listener-nio</classifier>
+                </artifact>
+              </artifacts>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
     </plugins>
   </build>
   <dependencies>
@@ -55,6 +102,10 @@
       <groupId>org.opennms.dependencies</groupId>
       <artifactId>camel-dependencies</artifactId>
       <type>pom</type>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.core</groupId>
+      <artifactId>org.opennms.core.camel</artifactId>
     </dependency>
     <dependency>
       <groupId>org.opennms.core</groupId>
@@ -168,6 +219,46 @@
       <groupId>org.opennms.features.collection</groupId>
       <artifactId>org.opennms.features.collection.persistence.rrd</artifactId>
       <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.activemq</groupId>
+      <artifactId>activemq-camel</artifactId>
+      <version>${activemqVersion}</version>
+      <scope>test</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>javax.xml.bind</groupId>
+          <artifactId>jaxb-api</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>com.sun.xml.bind</groupId>
+          <artifactId>jaxb-impl</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>commons-logging</groupId>
+          <artifactId>commons-logging</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.springframework</groupId>
+          <artifactId>spring-beans</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.springframework</groupId>
+          <artifactId>spring-context</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.springframework</groupId>
+          <artifactId>spring-jms</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.springframework</groupId>
+          <artifactId>spring-aop</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.springframework</groupId>
+          <artifactId>spring-tx</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
   </dependencies>
 </project>

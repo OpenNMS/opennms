@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2015-2016 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,30 +26,27 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.core.concurrent;
+package org.opennms.netmgt.syslogd;
 
-import java.util.concurrent.Callable;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Executor;
+import org.opennms.netmgt.config.SyslogdConfig;
 
 /**
- * @deprecated Replace usage of this class with Java 8's {@link CompletableFuture}.
+ * This processor will update the {@link SyslogdConfig} on a
+ * {@link SyslogConnection} so that it can be processed according
+ * to the new configuration.
  * 
  * @author Seth
  */
-public abstract class WaterfallExecutor {
-    /**
-     * This function recursively calls the {@link WaterfallCallable} tasks with the given chain of ExecutorServices.
-     */
-    public static void waterfall(Executor executor, Callable<Callable<?>> callable) throws InterruptedException, ExecutionException {
-        if (executor == null) {
-            throw new IllegalStateException("Executor is null");
-        } else if (callable == null) {
-            throw new IllegalStateException("Callable is null");
-        }
+public class SyslogdConfigProcessor {
 
-        // Submit the task to the current ExecutorService
-        executor.execute(new WaterfallCallable(executor, callable));
-    }
+	private final SyslogdConfig m_config;
+
+	public SyslogdConfigProcessor(SyslogdConfig config) {
+		m_config = config;
+	}
+
+	public SyslogConnection process(SyslogConnection connection) {
+		connection.setConfig(m_config);
+		return connection;
+	}
 }
