@@ -4,5 +4,5 @@
 
 === Introduction
 
-This guide is intended to provide developers with guidelines and help them get started with developers getting started with writing _Minion_ related features.
-It it not intented to be an exhaustive overview on the _Minion_ architecture or feature set.
+This guide is intended to help developers get started with writing _Minion_ related features.
+It is not intented to be an exhaustive overview of the _Minion_ architecture or feature set.
