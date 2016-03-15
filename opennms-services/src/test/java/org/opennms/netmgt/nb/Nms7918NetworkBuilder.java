@@ -50,6 +50,26 @@ public class Nms7918NetworkBuilder extends NmsNetworkBuilder {
         nb.addInterface(ASW01_IP).setIsSnmpPrimary("P").setIsManaged("M");
         m_nodeDao.save(nb.getCurrentNode());
         m_nodeDao.flush();
+        
+        nb.addNode(OSPESS01_NAME).setForeignSource("linkd").setForeignId(OSPESS01_NAME).setSysObjectId(OSPESS01_SYSOID).setType(NodeType.ACTIVE);
+        nb.addInterface(OSPESS01_IP).setIsSnmpPrimary("P").setIsManaged("M");
+        m_nodeDao.save(nb.getCurrentNode());
+        m_nodeDao.flush();
+        
+        nb.addNode(OSPWL01_NAME).setForeignSource("linkd").setForeignId(OSPWL01_NAME).setSysObjectId(OSPWL01_SYSOID).setType(NodeType.ACTIVE);
+        nb.addInterface(OSPWL01_IP).setIsSnmpPrimary("P").setIsManaged("M");
+        m_nodeDao.save(nb.getCurrentNode());
+        m_nodeDao.flush();
+
+        nb.addNode(SAMASW01_NAME).setForeignSource("linkd").setForeignId(SAMASW01_NAME).setSysObjectId(SAMASW01_SYSOID).setType(NodeType.ACTIVE);
+        nb.addInterface(SAMASW01_IP).setIsSnmpPrimary("P").setIsManaged("M");
+        m_nodeDao.save(nb.getCurrentNode());
+        m_nodeDao.flush();
+
+        nb.addNode(STCASW01_NAME).setForeignSource("linkd").setForeignId(STCASW01_NAME).setSysObjectId(STCASW01_SYSOID).setType(NodeType.ACTIVE);
+        nb.addInterface(STCASW01_IP).setIsSnmpPrimary("P").setIsManaged("M");
+        m_nodeDao.save(nb.getCurrentNode());
+        m_nodeDao.flush();
     }    
 
     

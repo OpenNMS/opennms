@@ -110,6 +110,7 @@ public final class NodeDiscoveryBridge extends NodeDiscovery {
 		}
 		LOG.debug("run: found on node: '{}' bridge ifindex map {}",getNodeId(), bridgeifindex);
 		bft = walkDot1qTpFdb(bridgeifindex,bft);
+		
 		m_linkd.getQueryManager().store(getNodeId(), bft);
                 LOG.debug("run: reconciling bridge: '{}' time {}",getNodeId(), now);
 		m_linkd.getQueryManager().reconcileBridge(getNodeId(), now);
@@ -407,7 +408,8 @@ public final class NodeDiscoveryBridge extends NodeDiscovery {
 				BridgeStpLink link = row.getLink();
 				link.setVlan(vlan);
 				link.setStpPortIfIndex(bridgeifindex.get(link.getStpPort()));
-				if (!baseBridgeAddress.equals(link.getDesignatedBridgeAddress())) {
+				if (isValidStpBridgeId(link.getDesignatedRoot()) && 
+				        isValidStpBridgeId(link.getDesignatedBridge()) && !baseBridgeAddress.equals(link.getDesignatedBridgeAddress())) {
 					m_linkd.getQueryManager().store(getNodeId(),link);
 				}
 			}
