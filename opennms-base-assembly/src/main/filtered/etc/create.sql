@@ -2766,11 +2766,10 @@ CREATE TABLE bsm_map (
 
 CREATE TABLE bsm_service (
     id integer NOT NULL,
-    name text NOT NULL,
+    name character varying(255) NOT NULL UNIQUE,
     bsm_reduce_id integer NOT NULL,
     CONSTRAINT bsm_services_pkey PRIMARY KEY (id),
-    CONSTRAINT fk_bsm_service_reduce_id FOREIGN KEY (bsm_reduce_id)
-    REFERENCES bsm_reduce (id)
+    CONSTRAINT fk_bsm_service_reduce_id FOREIGN KEY (bsm_reduce_id) REFERENCES bsm_reduce (id)
 );
 
 CREATE TABLE bsm_service_attributes (

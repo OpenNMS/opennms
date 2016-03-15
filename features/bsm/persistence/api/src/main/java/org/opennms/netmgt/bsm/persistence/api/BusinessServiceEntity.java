@@ -104,7 +104,7 @@ public class BusinessServiceEntity {
         m_id = id;
     }
 
-    @Column(name = "name", nullable = false)
+    @Column(name = "name", nullable = false, unique = true)
     public String getName() {
         return m_name;
     }

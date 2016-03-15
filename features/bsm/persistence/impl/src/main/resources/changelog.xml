@@ -151,4 +151,11 @@
             <where>id not in(select distinct bsm_map_id from bsm_service_edge)</where>
         </delete>
     </changeSet>
+    <changeSet author="fooker" id="18.0.0-bsm-unique-names">
+        <modifyDataType tableName="bsm_service"
+                        columnName="name"
+                        newDataType="character varying(255)" />
+        <addUniqueConstraint tableName="bsm_service"
+                             columnNames="name" />
+    </changeSet>
 </databaseChangeLog>
