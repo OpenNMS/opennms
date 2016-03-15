@@ -74,4 +74,9 @@ public class BusinessServiceVertex extends AbstractBusinessServiceVertex {
     public boolean isLeaf() {
         return false;
     }
+
+    @Override
+    public void accept(BusinessServiceVertexVisitor visitor) {
+        visitor.visit(this);
+    }
 }

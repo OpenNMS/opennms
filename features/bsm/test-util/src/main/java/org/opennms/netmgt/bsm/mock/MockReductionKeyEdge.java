@@ -31,6 +31,7 @@ package org.opennms.netmgt.bsm.mock;
 import java.util.Collections;
 import java.util.Set;
 
+import org.opennms.netmgt.bsm.service.model.edge.EdgeVisitor;
 import org.opennms.netmgt.bsm.service.model.edge.ro.ReadOnlyReductionKeyEdge;
 import org.opennms.netmgt.bsm.service.model.functions.map.Identity;
 import org.opennms.netmgt.bsm.service.model.functions.map.MapFunction;
@@ -50,11 +51,6 @@ public class MockReductionKeyEdge implements ReadOnlyReductionKeyEdge {
     @Override
     public Long getId() {
         return m_id;
-    }
-
-    @Override
-    public Type getType() {
-        return Type.REDUCTION_KEY;
     }
 
     @Override
@@ -80,5 +76,10 @@ public class MockReductionKeyEdge implements ReadOnlyReductionKeyEdge {
     @Override
     public String getFriendlyName() {
         return m_friendlyName;
+    }
+
+    @Override
+    public <T> T accept(EdgeVisitor<T> visitor) {
+        throw new UnsupportedOperationException();
     }
 }

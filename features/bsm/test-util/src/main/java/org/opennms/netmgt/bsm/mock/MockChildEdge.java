@@ -31,6 +31,7 @@ package org.opennms.netmgt.bsm.mock;
 import java.util.Set;
 
 import org.opennms.netmgt.bsm.service.model.ReadOnlyBusinessService;
+import org.opennms.netmgt.bsm.service.model.edge.EdgeVisitor;
 import org.opennms.netmgt.bsm.service.model.edge.ro.ReadOnlyChildEdge;
 import org.opennms.netmgt.bsm.service.model.functions.map.Identity;
 import org.opennms.netmgt.bsm.service.model.functions.map.MapFunction;
@@ -49,11 +50,6 @@ public class MockChildEdge implements ReadOnlyChildEdge {
     @Override
     public Long getId() {
         return m_id;
-    }
-
-    @Override
-    public Type getType() {
-        return Type.CHILD_SERVICE;
     }
 
     @Override
@@ -84,5 +80,10 @@ public class MockChildEdge implements ReadOnlyChildEdge {
     @Override
     public String getFriendlyName() {
         return null;
+    }
+
+    @Override
+    public <T> T accept(EdgeVisitor<T> visitor) {
+        throw new UnsupportedOperationException();
     }
 }

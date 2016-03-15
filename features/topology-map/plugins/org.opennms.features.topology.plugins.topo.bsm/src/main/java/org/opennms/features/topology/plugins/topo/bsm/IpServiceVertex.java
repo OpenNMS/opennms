@@ -80,4 +80,9 @@ public class IpServiceVertex extends AbstractBusinessServiceVertex {
     public Set<String> getReductionKeys() {
         return reductionKeys;
     }
+
+    @Override
+    public void accept(BusinessServiceVertexVisitor visitor) {
+        visitor.visit(this);
+    }
 }

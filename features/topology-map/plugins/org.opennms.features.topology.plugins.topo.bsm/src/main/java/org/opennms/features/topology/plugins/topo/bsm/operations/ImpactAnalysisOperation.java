@@ -44,6 +44,7 @@ import org.opennms.features.topology.api.support.VertexHopGraphProvider;
 import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.features.topology.plugins.topo.bsm.AbstractBusinessServiceVertex;
 import org.opennms.features.topology.plugins.topo.bsm.BusinessServiceVertex;
+import org.opennms.features.topology.plugins.topo.bsm.BusinessServiceVertexVisitor;
 import org.opennms.features.topology.plugins.topo.bsm.IpServiceVertex;
 import org.opennms.features.topology.plugins.topo.bsm.ReductionKeyVertex;
 import org.opennms.netmgt.bsm.service.BusinessServiceManager;
@@ -70,17 +71,24 @@ public class ImpactAnalysisOperation implements Operation {
 
         Set<GraphVertex> graphVerticesToFocus = Sets.newHashSet();
         for (AbstractBusinessServiceVertex vertex : vertices) {
-            if (vertex instanceof BusinessServiceVertex) {
-                ReadOnlyBusinessService businessService = businessServiceManager.getBusinessServiceById(((BusinessServiceVertex) vertex).getServiceId());
-                graphVerticesToFocus.addAll(businessServiceStateMachine.calculateImpact(businessService));
-            }
-            if (vertex instanceof IpServiceVertex) {
-                IpService ipService = businessServiceManager.getIpServiceById(((IpServiceVertex) vertex).getIpServiceId());
-                graphVerticesToFocus.addAll(businessServiceStateMachine.calculateImpact(ipService));
-            }
-            if (vertex instanceof ReductionKeyVertex) {
-                graphVerticesToFocus.addAll(businessServiceStateMachine.calculateImpact(((ReductionKeyVertex) vertex).getReductionKey()));
-            }
+            vertex.accept(new BusinessServiceVertexVisitor() {
+                @Override
+                public void visit(BusinessServiceVertex vertex) {
+                    ReadOnlyBusinessService businessService = businessServiceManager.getBusinessServiceById(vertex.getServiceId());
+                    graphVerticesToFocus.addAll(businessServiceStateMachine.calculateImpact(businessService));
+                }
+
+                @Override
+                public void visit(IpServiceVertex vertex) {
+                    IpService ipService = businessServiceManager.getIpServiceById(vertex.getIpServiceId());
+                    graphVerticesToFocus.addAll(businessServiceStateMachine.calculateImpact(ipService));
+                }
+
+                @Override
+                public void visit(ReductionKeyVertex vertex) {
+                    graphVerticesToFocus.addAll(businessServiceStateMachine.calculateImpact(vertex.getReductionKey()));
+                }
+            });
         }
         LOG.info("Found {} business services impacted.", graphVerticesToFocus.size());
 

@@ -180,4 +180,9 @@ public class BusinessServiceEdgeEntity implements EdgeEntity {
                 && getMapFunction().equalsDefinition(other.getMapFunction());
         return equals;
     }
+
+    @Override
+    public <T> T accept(EdgeEntityVisitor<T> visitor) {
+        return null; // we MUST overwrite this in all sub-classes properly
+    }
 }
