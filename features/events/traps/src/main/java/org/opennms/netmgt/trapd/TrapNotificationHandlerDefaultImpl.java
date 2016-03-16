@@ -36,34 +36,31 @@ import org.opennms.core.concurrent.ExecutorFactoryJavaImpl;
 import org.opennms.netmgt.snmp.TrapNotification;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 public class TrapNotificationHandlerDefaultImpl implements TrapNotificationHandler {
 	private static final Logger LOG = LoggerFactory.getLogger(TrapNotificationHandlerDefaultImpl.class);
 
 	/**
-	 * This is the number of threads that are used to parse syslog messages into
-	 * OpenNMS events.
+	 * This is the number of threads that are used to process traps.
 	 * 
 	 * TODO: Make this configurable
 	 */
-	public static final int EVENT_PARSER_THREADS = Runtime.getRuntime().availableProcessors();
-
-	/**
-	 * This is the number of threads that are used to broadcast the OpenNMS events.
-	 * 
-	 * TODO: Make this configurable
-	 */
-	public static final int EVENT_SENDER_THREADS = Runtime.getRuntime().availableProcessors();
+	public static final int TRAP_PROCESSOR_THREADS = Runtime.getRuntime().availableProcessors();
 
 	private final ExecutorFactory m_executorFactory = new ExecutorFactoryJavaImpl();
-	private final ExecutorService m_syslogConnectionExecutor = m_executorFactory.newExecutor(EVENT_PARSER_THREADS, Integer.MAX_VALUE, "OpenNMS.Syslogd", "syslogConnections");
-	private final ExecutorService m_syslogProcessorExecutor = m_executorFactory.newExecutor(EVENT_SENDER_THREADS, Integer.MAX_VALUE, "OpenNMS.Syslogd", "syslogProcessors");
+	private final ExecutorService m_processorExecutor = m_executorFactory.newExecutor(TRAP_PROCESSOR_THREADS, Integer.MAX_VALUE, "OpenNMS.Trapd", "trapProcessors");
+
+	@Autowired
+	private TrapQueueProcessorFactory m_processorFactory;
 
 	@Override
 	public void handleTrapNotification(final TrapNotification message) {
 		try {
-			CompletableFuture.supplyAsync(message::call, m_syslogConnectionExecutor)
-				.thenAcceptAsync(proc -> proc.call(), m_syslogProcessorExecutor);
+			// Use the TrapQueueProcessorFactory to construct a TrapQueueProcessor
+			TrapQueueProcessor processor = m_processorFactory.getInstance(message);
+			// Call the processor asynchronously
+			CompletableFuture.supplyAsync(processor::call, m_processorExecutor);
 		} catch (Throwable e) {
 			LOG.error("Task execution failed in {}", this.getClass().getSimpleName(), e);
 		}
