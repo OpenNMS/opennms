@@ -33,6 +33,7 @@ import java.util.Date;
 import org.junit.Assert;
 import org.junit.Test;
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.netmgt.dao.api.ApplicationStatusEntity;
 import org.opennms.netmgt.model.OnmsSeverity;
 
 public class ApplicationStatusEntityTest {
