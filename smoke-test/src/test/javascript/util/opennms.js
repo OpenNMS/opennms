@@ -72,46 +72,52 @@ var cleanText = function(text) {
 	return text.replace(/[^A-Za-z0-9]+/gm, '-').replace(/^\-/, '').replace(/\-$/, '').toLowerCase();
 };
 
-OpenNMS.prototype.enableScreenshots = function() {
+OpenNMS.prototype.takeScreenshot = function(filename) {
 	var self = this;
-
 	if (!self.casper.hasOwnProperty('_screenshotNumber')) {
 		self.casper._screenshotNumber = 1;
 	}
 
-	var takeScreenshot = function(filename) {
-		self.casper.capture('target/screenshots/' + self.casper._screenshotNumber.padLeft(3) + '-' + filename);
-		self.casper._screenshotNumber++;
-	};
+	if (filename.indexOf('.png') === -1 && filename.indexOf('.jpg') === -1) {
+		filename += '.png';
+	}
+	var shotfile = self.casper._screenshotNumber.padLeft(3) + '-' + filename;
+	console.log('Taking screenshot: ' + shotfile);
+	self.casper.capture('target/screenshots/' + shotfile);
+	self.casper._screenshotNumber++;
+};
+
+OpenNMS.prototype.enableScreenshots = function() {
+	var self = this;
 
 	self.casper.options.onWaitTimeout = function() {
 		//console.log('wait timeout: ' + JSON.stringify(Array.prototype.slice.call(arguments)));
 		if (arguments[1].text) {
-			takeScreenshot('timeout-wait-' + cleanText(arguments[1].text) + '.png');
+			self.takeScreenshot('timeout-wait-' + cleanText(arguments[1].text) + '.png');
 		} else if (arguments[1].selector) {
-			takeScreenshot('timeout-wait-' + cleanText(arguments[1].selector) + '.png');
+			self.takeScreenshot('timeout-wait-' + cleanText(arguments[1].selector) + '.png');
 		} else {
-			takeScreenshot('timeout-wait.png');
+			self.takeScreenshot('timeout-wait.png');
 		}
 	};
 	self.casper.options.onTimeout = function() {
 		//console.log('timeout: ' + JSON.stringify(Array.prototype.slice.call(arguments)));
 		if (arguments[1].text) {
-			takeScreenshot('timeout-' + cleanText(arguments[1].text) + '.png');
+			self.takeScreenshot('timeout-' + cleanText(arguments[1].text) + '.png');
 		} else if (arguments[1].selector) {
-			takeScreenshot('timeout-' + cleanText(arguments[1].selector) + '.png');
+			self.takeScreenshot('timeout-' + cleanText(arguments[1].selector) + '.png');
 		} else {
-			takeScreenshot('timeout.png');
+			self.takeScreenshot('timeout.png');
 		}
 	};
 	self.casper.options.onStepTimeout = function() {
 		//console.log('step timeout: ' + JSON.stringify(Array.prototype.slice.call(arguments)));
 		if (arguments[1].text) {
-			takeScreenshot('timeout-step-' + cleanText(arguments[1].text) + '.png');
+			self.takeScreenshot('timeout-step-' + cleanText(arguments[1].text) + '.png');
 		} else if (arguments[1].selector) {
-			takeScreenshot('timeout-step-' + cleanText(arguments[1].selector) + '.png');
+			self.takeScreenshot('timeout-step-' + cleanText(arguments[1].selector) + '.png');
 		} else {
-			takeScreenshot('timeout-step.png');
+			self.takeScreenshot('timeout-step.png');
 		}
 	};
 	if (!self.casper._screenshotsEnabled) {
@@ -131,7 +137,7 @@ OpenNMS.prototype.enableScreenshots = function() {
 				if (file) {
 					outfile = file + '-' + outfile;
 				}
-				takeScreenshot(outfile);
+				self.takeScreenshot(outfile);
 			}
 		});
 		self.casper._screenshotsEnabled = true;
@@ -213,6 +219,25 @@ OpenNMS.prototype.finished = function(test) {
 			test.done();
 		},0);
 	});
+};
+
+OpenNMS.prototype.setForeignSource = function(foreignSource, obj) {
+	var self = this;
+
+	self.casper.thenOpen(self.root() + '/rest/foreignSources', {
+		method: 'post',
+		data: obj || {'name': foreignSource},
+		headers: {
+			Accept: 'application/json',
+			'Content-Type': 'application/json'
+		}
+	}, function(response) {
+		if (response.status !== 200) {
+			console.log('OpenNMS.setForeignSource: unexpected response: ' + JSON.stringify(response));
+			throw new CasperError('POST of foreign source ' + foreignSource + ' should return success.');
+		}
+	});
+	self.casper.back();
 };
 
 OpenNMS.prototype.createOrReplaceRequisition = function(foreignSource, obj) {
@@ -487,7 +512,7 @@ OpenNMS.prototype.scrollToElementWithText = function(type, text) {
 	var self = this;
 
 	self.casper.thenEvaluate(function(type, text) {
-		console.log('* Scrolling to "'+type+'" element with text "'+text+'"');
+		casper.log('* Scrolling to "'+type+'" element with text "'+text+'"');
 		var elements = document.getElementsByTagName('span');
 		var element;
 		for (var i=0; i < elements.length; i++) {
@@ -501,9 +526,44 @@ OpenNMS.prototype.scrollToElementWithText = function(type, text) {
 				behavior: 'instant'
 			});
 		} else {
-			console.log('! Failed to find element.');
+			casper.log('! Failed to find element.');
 		}
 	}, type, text);
+};
+
+OpenNMS.prototype.selectByValue = function(selector, text) {
+	var self = this;
+
+	self.casper.thenEvaluate(function(selector, text) {
+		console.log('* OpenNMS.selectByValue: Selecting "' + text + '" in ' + selector);
+		var el = document.querySelector(selector);
+		if (el) {
+			var found = false;
+			el.focus();
+			for (var i=0, len=el.options.length; i < len; i++) {
+				console.log('* OpenNMS.selectByValue: ' + el.options[i].text + ' = ' + el.options[i].value);
+				if (el.options[i].text === text) {
+					el.value = el.options[i].value;
+					el.selectedIndex = i;
+					var evt = document.createEvent('UIEvents');
+					evt.initUIEvent('change', true, true);
+					el.dispatchEvent(evt);
+					found = true;
+					break;
+				}
+			}
+			if (found) {
+				console.log('* OpenNMS.selectByValue: Found "' + text + '" in ' + selector);
+			} else {
+				console.log('! OpenNMS.selectByValue: Unable to locate "' + text + '" text in ' + selector);
+				throw new Error('Unable to locate "' + text + '" text in ' + selector);
+			}
+		} else {
+			console.log('! OpenNMS.selectByValue: unable to locate CSS selector: ' + selector);
+			throw new Error('Unable to locate CSS selector: ' + selector);
+		}
+		return true;
+	}, selector, text);
 };
 
 module.exports = function(casper, options) {

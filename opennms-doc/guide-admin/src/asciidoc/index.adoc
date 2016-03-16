@@ -9,7 +9,7 @@
 
 [[ga]]
 = Administrators Guide
-:author: Copyright (c) 2015 The OpenNMS Group, Inc.
+:author: Copyright (c) 2015-2016 The OpenNMS Group, Inc.
 :revnumber: OpenNMS {opennms-version}
 :revdate: {last-update-label} {docdatetime}
 :version-label!:
