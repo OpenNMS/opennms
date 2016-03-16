@@ -163,6 +163,4 @@ public class TrapReceiverSnmp4jImpl implements TrapReceiver {
             LOG.error("Handler execution failed in {}", this.getClass().getSimpleName(), e);
         }
     }
-
-    }
 }

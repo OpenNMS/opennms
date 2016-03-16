@@ -154,12 +154,7 @@ public class Trapd extends AbstractServiceDaemon implements TrapProcessorFactory
     public synchronized void onInit() {
         BeanUtils.assertAutowiring(this);
 
-        try {
-            m_trapdIpMgr.dataSourceSync();
-        } catch (final SQLException e) {
-            LOG.error("init: Failed to load known IP address list", e);
-            throw new UndeclaredThrowableException(e);
-        }
+        m_trapdIpMgr.dataSourceSync();
 
         try {
         	InetAddress address = getInetAddress();
