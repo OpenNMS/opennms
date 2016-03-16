@@ -29,14 +29,10 @@
 package org.opennms.netmgt.trapd;
 
 import java.io.IOException;
-import java.io.InterruptedIOException;
 import java.lang.reflect.UndeclaredThrowableException;
-import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
-import java.net.InetSocketAddress;
 import java.net.SocketException;
-import java.net.SocketTimeoutException;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -49,7 +45,7 @@ import javax.annotation.Resource;
 import org.opennms.core.concurrent.LogPreservingThreadFactory;
 import org.opennms.core.logging.Logging;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.netmgt.config.SyslogdConfig;
+import org.opennms.netmgt.config.TrapdConfig;
 import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpV3User;
 import org.opennms.netmgt.snmp.TrapNotification;
@@ -67,8 +63,6 @@ import org.springframework.beans.factory.annotation.Autowired;
  */
 public class TrapReceiverSnmp4jImpl implements TrapReceiver, TrapNotificationListener,TrapProcessorFactory {
     private static final Logger LOG = LoggerFactory.getLogger(TrapReceiverSnmp4jImpl.class);
-
-    private static final int SOCKET_TIMEOUT = 500;
 
     /**
      * The thread pool that processes traps
@@ -93,11 +87,6 @@ public class TrapReceiverSnmp4jImpl implements TrapReceiver, TrapNotificationLis
     private boolean m_registeredForTraps;
     
     /**
-     * The Fiber's status.
-     */
-    private volatile boolean m_stop;
-
-    /**
      * The UDP socket for receipt and transmission of packets from agents.
      */
     private DatagramSocket m_dgSock;
@@ -107,7 +96,7 @@ public class TrapReceiverSnmp4jImpl implements TrapReceiver, TrapNotificationLis
      */
     private Thread m_context;
 
-    private final SyslogdConfig m_config;
+    private final TrapdConfig m_config;
 
     private List<TrapNotificationHandler> m_trapNotificationHandlers = Collections.emptyList();
 
@@ -121,12 +110,11 @@ public class TrapReceiverSnmp4jImpl implements TrapReceiver, TrapNotificationLis
      * @param hostGroup
      * @param messageGroup
      */
-    public TrapReceiverSnmp4jImpl(final SyslogdConfig config) throws SocketException {
+    public TrapReceiverSnmp4jImpl(final TrapdConfig config) throws SocketException {
         if (config == null) {
             throw new IllegalArgumentException("Config cannot be null");
         }
 
-        m_stop = false;
         m_dgSock = null;
         m_config = config;
 
@@ -150,8 +138,8 @@ public class TrapReceiverSnmp4jImpl implements TrapReceiver, TrapNotificationLis
 
     @Override
     public String getName() {
-        String listenAddress = (m_config.getListenAddress() != null && m_config.getListenAddress().length() > 0) ? m_config.getListenAddress() : "0.0.0.0";
-        return getClass().getSimpleName() + " [" + listenAddress + ":" + m_config.getSyslogPort() + "]";
+        String listenAddress = (m_config.getSnmpTrapAddress() != null && m_config.getSnmpTrapAddress().length() > 0) ? m_config.getSnmpTrapAddress() : "0.0.0.0";
+        return getClass().getSimpleName() + " [" + listenAddress + ":" + m_config.getSnmpTrapPort() + "]";
     }
 
     /*
@@ -161,8 +149,6 @@ public class TrapReceiverSnmp4jImpl implements TrapReceiver, TrapNotificationLis
      */
     @Override
     public void stop() throws InterruptedException {
-        m_stop = true;
-
         // Close the datagram socket
         if (m_dgSock != null) {
             m_dgSock.close();
