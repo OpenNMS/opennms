@@ -81,18 +81,18 @@ public class ReductionKeyEdgeResponseDTOMarshalTest extends MarshalAndUnmarshalT
                 "   <id>1</id>\n" +
                 "   <operational-status>WARNING</operational-status>\n" +
                 "   <map-function>\n" +
-                "       <type>SetTo</type>\n" +
-                "       <properties>\n" +
-                "           <entry>\n" +
-                "              <key>key1</key>\n" +
-                "               <value>value1</value>\n" +
-                "           </entry>\n" +
-                "       </properties>\n" +
+                "      <type>SetTo</type>\n" +
+                "      <properties>\n" +
+                "         <entry>\n" +
+                "            <key>key1</key>\n" +
+                "            <value>value1</value>\n" +
+                "         </entry>\n" +
+                "      </properties>\n" +
                 "   </map-function>\n" +
                 "   <location>/api/v2/business-services/edges/1</location>\n" +
-                "   <reductionKeys>\n" +
-                "       <reductionKey>my-custom-reduction-key</reductionKey>\n" +
-                "   </reductionKeys>\n" +
+                "   <reduction-keys>\n" +
+                "      <reduction-key>my-custom-reduction-key</reduction-key>\n" +
+                "   </reduction-keys>\n" +
                 "   <weight>17</weight>\n" +
                 "   <friendly-name>reduction-key-friendly-name</friendly-name>\n" +
                 "</reduction-key-edge>"
