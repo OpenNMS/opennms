@@ -1037,7 +1037,7 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
 
     @Override
     public List<BridgeMacLink> getBridgeTopologyRootBFT(int nodeid) {
-        return m_broadcastDomainToRootBFTMap.remove(nodeid);
+        return m_broadcastDomainToRootBFTMap.get(nodeid);
     }
 
     @Override
