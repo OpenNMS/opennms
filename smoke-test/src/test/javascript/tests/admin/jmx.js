@@ -88,17 +88,17 @@ casper.test.begin('JMX Configuration Generator', {
 		});
 		casper.waitForText('com.mchange.v2.c3p0');
 		casper.then(function() {
-			opennms.scrollToElementWithText('span', 'PS MarkSweep');
+			opennms.scrollToElementWithText('span', 'Code Cache');
 		});
 		casper.then(function() {
-			this.mouse.rightclick(x('//span[text()=\'PS MarkSweep\']'));
+			this.mouse.rightclick(x('//span[text()=\'Code Cache\']'));
 		});
 		casper.wait(100);
 		casper.then(function() {
 			casper.click(x('//td[@role="menuitem"]/div[text()=\'select\']'));
 		});
 		casper.wait(100);
-		opennms.scrollToElementWithText('span', 'PS MarkSweep');
+		opennms.scrollToElementWithText('span', 'Code Cache');
 		casper.then(function() {
 			casper.click(nextButton);
 		});
@@ -111,8 +111,8 @@ casper.test.begin('JMX Configuration Generator', {
 		casper.waitForText('JMXMP protocol');
 		casper.then(function() {
 			var info = casper.fetchText('textarea');
-			test.assertEquals(info.match(/\<comp-attrib/g).length, 1, 'There should be 1 <comp-attrib/> tag in jmx-datacollection-config.xml');
-			test.assertEquals(info.match(/\<comp-member/g).length, 7, 'There should be 7 <comp-member/> tags in jmx-datacollection-config.xml');
+			test.assertEquals(info.match(/\<comp-attrib/g).length, 2, 'There should be 2 <comp-attrib/> tags in jmx-datacollection-config.xml');
+			test.assertEquals(info.match(/\<comp-member/g).length, 8, 'There should be 8 <comp-member/> tags in jmx-datacollection-config.xml');
 		});
 
 		opennms.finished(test);
