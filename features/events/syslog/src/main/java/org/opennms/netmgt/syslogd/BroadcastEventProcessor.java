@@ -31,6 +31,9 @@ package org.opennms.netmgt.syslogd;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventIpcManagerFactory;
 import org.opennms.netmgt.events.api.EventListener;
@@ -45,6 +48,9 @@ import org.slf4j.LoggerFactory;
  */
 final class BroadcastEventProcessor implements EventListener {
     private static final Logger LOG = LoggerFactory.getLogger(BroadcastEventProcessor.class);
+    
+    @Autowired
+    private SyslogdIPMgr m_syslogdIPMgr;
     /**
      * Create message selector to set to the subscription
      */
@@ -96,19 +102,19 @@ final class BroadcastEventProcessor implements EventListener {
         if (eventUei.equals(EventConstants.NODE_GAINED_INTERFACE_EVENT_UEI)) {
             // add to known nodes
             if (Long.toString(event.getNodeid()) != null && event.getInterface() != null) {
-                SyslogdIPMgrJDBCImpl.getInstance().setNodeId(event.getInterface(), event.getNodeid());
+                m_syslogdIPMgr.setNodeId(event.getInterface(), event.getNodeid());
             }
             LOG.debug("Added {} to known node list", event.getInterface());
         } else if (eventUei.equals(EventConstants.INTERFACE_DELETED_EVENT_UEI)) {
             // remove from known nodes
             if (event.getInterface() != null) {
-                SyslogdIPMgrJDBCImpl.getInstance().removeNodeId(event.getInterface());
+                m_syslogdIPMgr.removeNodeId(event.getInterface());
             }
             LOG.debug("Removed {} from known node list", event.getInterface());
         } else if (eventUei.equals(EventConstants.INTERFACE_REPARENTED_EVENT_UEI)) {
             // add to known nodes
             if (Long.toString(event.getNodeid()) != null && event.getInterface() != null) {
-                SyslogdIPMgrJDBCImpl.getInstance().setNodeId(event.getInterface(), event.getNodeid());
+                m_syslogdIPMgr.setNodeId(event.getInterface(), event.getNodeid());
             }
             LOG.debug("Reparented {} to known node list", event.getInterface());
         }
