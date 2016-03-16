@@ -2,8 +2,8 @@ package org.opennms.netmgt.trapd;
 
 import static org.junit.Assert.*;
 
+import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.net.InetAddress;
@@ -84,8 +84,8 @@ public class TrapNotificationSerializationTest {
 
 	public boolean writeTrapNotificationObject(TrapNotification object) {
 		try {
-			FileOutputStream file = new FileOutputStream("src/test/resources/org/opennms/netmgt/trapd/serializeObject.txt");
-			ObjectOutputStream objectOutputStream = new ObjectOutputStream(file);
+			ByteArrayOutputStream bos = new ByteArrayOutputStream();
+			ObjectOutputStream objectOutputStream = new ObjectOutputStream(bos);
 			objectOutputStream.writeObject(object);
 			return true;
 		} catch (FileNotFoundException e) {
