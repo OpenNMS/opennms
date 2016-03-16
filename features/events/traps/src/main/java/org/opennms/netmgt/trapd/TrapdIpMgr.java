@@ -28,7 +28,6 @@
 
 package org.opennms.netmgt.trapd;
 
-import java.sql.SQLException;
 
 /**
  * <p>TrapdIpMgr interface.</p>
@@ -48,7 +47,7 @@ public interface TrapdIpMgr {
      *             Thrown if the connection cannot be created or a database
      *             error occurs.
      */
-    void dataSourceSync() throws SQLException;
+    void dataSourceSync();
 
     /**
      * Returns the nodeid for the IP Address
@@ -57,7 +56,7 @@ public interface TrapdIpMgr {
      *            The IP Address to query.
      * @return The node ID of the IP Address if known.
      */
-    long getNodeId(String addr);
+    int getNodeId(String addr);
 
     /**
      * Sets the IP Address and Node ID in the Map.
@@ -68,7 +67,7 @@ public interface TrapdIpMgr {
      *            The Node ID to add.
      * @return The nodeid if it existed in the map.
      */
-    long setNodeId(String addr, long nodeid);
+    int setNodeId(String addr, int nodeid);
 
     /**
      * Removes an address from the node ID map.
@@ -77,8 +76,13 @@ public interface TrapdIpMgr {
      *            The address to remove from the node ID map.
      * @return The nodeid that was in the map.
      */
-    long removeNodeId(String addr);
+    int removeNodeId(String addr);
 
-    long longValue(Long result);
+    /**
+     * Method will check value for null. 
+     * @param result
+     * @return If result is null returns -1 else returns result itself 
+     */
+    int intValue(Integer result);
 
 }

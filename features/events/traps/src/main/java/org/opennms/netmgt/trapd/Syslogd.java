@@ -88,7 +88,7 @@ public class Syslogd extends AbstractServiceDaemon {
 
         try {
             // clear out the known nodes
-            TrapdIpManagerJDBCImpl.getInstance().dataSourceSync();
+            TrapdIpManagerDaoImpl.getInstance().dataSourceSync();
         } catch (SQLException e) {
             LOG.error("Failed to load known IP address list", e);
             throw new UndeclaredThrowableException(e);
