@@ -20,6 +20,7 @@
   <modules>
     <module>core</module>
     <module>graph</module>
+    <module>extender-service</module>
   </modules>
   <build>
     <plugins>

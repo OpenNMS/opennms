@@ -1341,7 +1341,6 @@
     <vaadinVersion>7.2.7</vaadinVersion>
     <vaadinSharedEpsVersion>1.0.2</vaadinSharedEpsVersion>
     <vaadin.plugin.version>${vaadinVersion}</vaadin.plugin.version>
-    <vaadinExtenderVersion>1.0.0</vaadinExtenderVersion>
     <vaadinAddonContextMenuVersion>4.2.1</vaadinAddonContextMenuVersion>
     <vaadinAddonRefresherVersion>1.2.3.7</vaadinAddonRefresherVersion>
     <vaadinAddonConfirmDialogVersion>2.0.4</vaadinAddonConfirmDialogVersion>
@@ -3069,9 +3068,9 @@
         <version>${vaadinAddonConfirmDialogVersion}</version>
       </dependency>
       <dependency>
-        <groupId>org.opennms.vaadin-extender</groupId>
-        <artifactId>service</artifactId>
-        <version>${vaadinExtenderVersion}</version>
+        <groupId>org.opennms.features.vaadin-components</groupId>
+        <artifactId>extender-service</artifactId>
+        <version>${project.version}</version>
       </dependency>
       <dependency>
         <groupId>ognl</groupId>
