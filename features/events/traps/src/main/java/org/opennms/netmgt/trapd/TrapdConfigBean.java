@@ -48,6 +48,38 @@ public class TrapdConfigBean implements TrapdConfig{
 	private boolean m_newSuspectOnTrap;
 	private List<SnmpV3User> m_snmpV3Users;
 	
+	public String getM_snmpTrapAddress() {
+		return m_snmpTrapAddress;
+	}
+
+	public void setM_snmpTrapAddress(String m_snmpTrapAddress) {
+		this.m_snmpTrapAddress = m_snmpTrapAddress;
+	}
+
+	public int getM_snmpTrapPort() {
+		return m_snmpTrapPort;
+	}
+
+	public void setM_snmpTrapPort(int m_snmpTrapPort) {
+		this.m_snmpTrapPort = m_snmpTrapPort;
+	}
+
+	public boolean isM_newSuspectOnTrap() {
+		return m_newSuspectOnTrap;
+	}
+
+	public void setM_newSuspectOnTrap(boolean m_newSuspectOnTrap) {
+		this.m_newSuspectOnTrap = m_newSuspectOnTrap;
+	}
+
+	public List<SnmpV3User> getM_snmpV3Users() {
+		return m_snmpV3Users;
+	}
+
+	public void setM_snmpV3Users(List<SnmpV3User> m_snmpV3Users) {
+		this.m_snmpV3Users = m_snmpV3Users;
+	}
+
 	@Override
 	public String getSnmpTrapAddress() {
 		return m_snmpTrapAddress;
