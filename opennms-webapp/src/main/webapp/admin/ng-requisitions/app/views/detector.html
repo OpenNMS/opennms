@@ -7,7 +7,7 @@
   </div>
 
   <div class="modal-body">
-    <form name="detectorForm" role="form">
+    <form name="detectorForm">
       <div class="form-group" ng-class="{ 'has-error' : detectorForm.name.$invalid }">
         <label class="control-label" for="name">Name</label>
         <input class="form-control" type="text" id="name" name="name" placeholder="Detector Name" ng-model="detector.name" required></input>
@@ -28,7 +28,7 @@
           <div class="input-group" ng-class="{ 'has-error' : paramForm.paramValue.$invalid }">
             <input class="form-control" type="text" name="paramValue" placeholder="Parameter Value" ng-model="parameter.value" required></input>
             <span class="input-group-btn">
-              <button class="btn btn-default" type="button" ng-click="removeParameter($index)"><span class="glyphicon glyphicon-remove"></span></button>
+              <button type="button" class="btn btn-default" ng-click="removeParameter($index)"><span class="glyphicon glyphicon-remove"></span></button>
             </span>
           </div>
           <p ng-show="paramForm.paramValue.$invalid" class="help-block">Parameter value is required.</p>
@@ -38,9 +38,9 @@
   </div>
 
   <div class="modal-footer">
-    <button class="btn btn-primary" ng-click="addParameter()" ng-disabled="detectorForm.clazz.$invalid || getAvailableParameters().length == 0">Add Parameter</button>
-    <button class="btn btn-success" ng-click="save()" ng-disabled="detectorForm.$invalid">Save</button>
-    <button class="btn btn-default" ng-click="cancel()">Cancel</button>
+    <button type="button" class="btn btn-primary" id="add-detector-parameter" ng-click="addParameter()" ng-disabled="detectorForm.clazz.$invalid || getAvailableParameters().length == 0">Add Parameter</button>
+    <button type="button" class="btn btn-success" id="save-detector" ng-click="save()" ng-disabled="detectorForm.$invalid">Save</button>
+    <button type="button" class="btn btn-default" id="cancel-detector" ng-click="cancel()">Cancel</button>
   </div>
 
 </div> <!-- modal-content -->

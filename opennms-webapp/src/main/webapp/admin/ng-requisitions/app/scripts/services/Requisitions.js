@@ -121,7 +121,6 @@
       return requisitionsService.internal.setCatchedConfigData('requisitionsData', requisitionsData);
     };
 
-
     /**
     * @description Clears the internal cache.
     *
@@ -190,7 +189,7 @@
           requisitionsService.synchronizeRequisition(node.foreignSource, 'false').then(
             function() { // synchronizeRequisition:success
               $log.debug('The requisition ' + node.foreignSource + ' has been synchronized.');
-              deferred.resolve();
+              deferred.resolve(node);
             },
             function() { // synchronizeRequisition:failure
               deferred.reject('Cannot synchronize requisition ' + node.foreignSource);
@@ -556,6 +555,7 @@
     /**
     * @description Request the removal of all from an existing requisition on the OpenNMS server.
     *
+    * After updating the requisition, a synchronization with rescanExisting=false will be performed.
     * The controller must ensure that the requisition exist.
     * If the cache is defined and the requisition is not there, the operation will be rejected.
     * The internal cache will be updated after the request is completed successfully if exist.
@@ -571,8 +571,8 @@
 
       var requisitionsData = requisitionsService.internal.getCachedRequisitionsData();
       if (requisitionsData != null) {
-        var reqIdx = requisitionsData.indexOf(foreignSource);
-        if (reqIdx < 0) {
+        var requisition = requisitionsData.getRequisition(foreignSource);
+        if (requisition == null) {
           deferred.reject('The foreignSource ' + foreignSource + ' does not exist.');
           return deferred.promise;
         }
@@ -583,16 +583,21 @@
       $log.debug('removeAllNodesFromRequisition: removing nodes from requisition ' + foreignSource);
       $http.post(url, requisition)
       .success(function(data) {
-        $log.debug('removeAllNodesFromRequisition: removed nodes requisition ' + foreignSource);
-        var req = requisitionsService.internal.getCachedRequisition(foreignSource);
-        if (req != null) {
-          $log.debug('removeAllNodesFromRequisition: updating requisition ' + foreignSource + ' on the internal cache');
-          req.nodes = [];
-          req.nodesDefined = 0;
-          req.modified = true;
-          req.dateStamp = Date.now();
-        }
-        deferred.resolve(data);
+        $log.debug('removeAllNodesFromRequisition: removed nodes from requisition ' + foreignSource);
+        requisitionsService.synchronizeRequisition(foreignSource, 'false').then(
+          function() { // synchronizeRequisition:success
+            $log.debug('removeAllNodesFromRequisition: rhe requisition ' + foreignSource + ' has been synchronized.');
+            var req = requisitionsService.internal.getCachedRequisition(foreignSource);
+            if (req != null) {
+              $log.debug('removeAllNodesFromRequisition: updating requisition ' + foreignSource + ' on the internal cache');
+              req.reset();
+            }
+            deferred.resolve(data);
+          },
+          function() { // synchronizeRequisition:failure
+            deferred.reject('Cannot synchronize requisition ' + foreignSource);
+          }
+        );
       }).error(function(error, status) {
         $log.error('removeAllNodesFromRequisition: POST ' + url + ' failed:', error, status);
         deferred.reject('Cannot remove all nodes from requisition ' + foreignSource + '.' + requisitionsService.internal.errorHelp);
@@ -661,10 +666,12 @@
       .success(function(data) {
         $log.debug('saveNode: saved node ' + node.nodeLabel + ' on requisition ' + node.foreignSource);
         var r = requisitionsService.internal.getCachedRequisition(node.foreignSource);
-        if (r != null && r.indexOf(node.foreignId) < 0) {
-          $log.debug('saveNode: adding new node ' + node.foreignId + '@' + node.foreignSource + ' into the internal cache');
-          r.nodes.push(node);
-          r.nodesDefined++;
+        if (r != null) {
+          if (r.indexOf(node.foreignId) < 0) {
+            $log.debug('saveNode: adding new node ' + node.foreignId + '@' + node.foreignSource + ' into the internal cache');
+            r.nodes.push(node);
+            r.nodesDefined++;
+          }
           r.modified = true;
           r.dateStamp = Date.now();
         }

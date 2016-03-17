@@ -20,19 +20,19 @@
         <input class="form-control" id="search-nodes" type="text" placeholder="Search/Filter Nodes" ng-model="reqFilter"></input>
       </div>
       <div class="input-group">
-        <button class="btn btn-default" id="refresh" ng-click="refresh()">
+        <button type="button" class="btn btn-default" id="refresh" ng-click="refresh()">
           <span class="glyphicon glyphicon-refresh"/> Refresh
         </button>
-        <button class="btn btn-default" id="edit-foreign-source" ng-click="editForeignSource()">
+        <button type="button" class="btn btn-default" id="edit-foreign-source" ng-click="editForeignSource()">
           <span class="glyphicon glyphicon-edit"/> Edit Definition
         </button>
-        <button class="btn btn-default" id="synchronize" ng-disabled="timingStatus.isRunning" ng-click="synchronize()">
+        <button type="button" class="btn btn-default" id="synchronize" ng-disabled="timingStatus.isRunning" ng-click="synchronize()">
           <span class="glyphicon glyphicon-refresh"/> Synchronize
         </button>
-        <button class="btn btn-default" id="add-node" ng-click="addNode()">
+        <button type="button" class="btn btn-default" id="add-node" ng-click="addNode()">
           <span class="glyphicon glyphicon-plus"/> Add Node
         </button>
-        <button class="btn btn-success" id="go-back" ng-click="goBack()">
+        <button type="button" class="btn btn-success" id="go-back" ng-click="goBack()">
           <span class="glyphicon glyphicon-remove"/> Return
         </button>
       </div>

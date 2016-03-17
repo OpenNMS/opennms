@@ -250,7 +250,9 @@
           RequisitionsService.startTiming();
           RequisitionsService.removeAllNodesFromRequisition(foreignSource).then(
             function() { // success
-              growl.success('All the nodes from ' + foreignSource + ' have been removed');
+              growl.success('All the nodes from ' + foreignSource + ' have been removed, and the requisition has been synchronized.');
+              var req = $scope.requisitionsData.getRequisition(foreignSource);
+              req.reset();
             },
             $scope.errorHandler
           );

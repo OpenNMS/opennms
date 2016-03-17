@@ -346,8 +346,9 @@ describe('Service: RequisitionsService', function () {
     initializeCache();
 
     var requisition = {'foreign-source': 'test-network', node: []};
-    var saveUrl = requisitionsService.internal.requisitionsUrl;
-    $httpBackend.expect('POST', saveUrl, requisition).respond({});
+    var url = requisitionsService.internal.requisitionsUrl;
+    $httpBackend.expect('POST', url, requisition).respond({});
+    $httpBackend.expect('PUT', url + '/test-network/import?rescanExisting=false').respond({});
 
     requisitionsService.removeAllNodesFromRequisition('test-network');
     $httpBackend.flush();

@@ -10,7 +10,7 @@
     <form name="policyForm">
       <div class="form-group" ng-class="{ 'has-error' : policyForm.name.$invalid }">
         <label class="control-label" for="name">Name</label>
-        <input class="form-control" type="text" id="name" name="name" placeholder="Name" ng-model="policy.name" required></input>
+        <input class="form-control" type="text" id="name" name="name" placeholder="Policy Name" ng-model="policy.name" required></input>
         <p ng-show="policyForm.name.$invalid" class="help-block">A non empty name is required.</p>
       </div>
       <div class="form-group" ng-class="{ 'has-error' : policyForm.clazz.$invalid }">
@@ -24,9 +24,9 @@
   </div>
 
   <div class="modal-footer">
-    <button class="btn btn-primary" ng-click="addParameter()" ng-disabled="policyForm.clazz.$invalid">Add Parameter</button>
-    <button class="btn btn-success" ng-click="save()" ng-disabled="policyForm.$invalid">Save</button>
-    <button class="btn btn-default" ng-click="cancel()">Cancel</button>
+    <button type="button" class="btn btn-primary" id="add-policy-parameter" ng-click="addParameter()" ng-disabled="policyForm.clazz.$invalid">Add Parameter</button>
+    <button type="button" class="btn btn-success" id="save-policy" ng-click="save()" ng-disabled="policyForm.$invalid">Save</button>
+    <button type="button" class="btn btn-default" id="cancel=policy" ng-click="cancel()">Cancel</button>
   </div>
 
 </div> <!-- modal-content -->

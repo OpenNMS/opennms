@@ -120,6 +120,10 @@
       scope: { 'category': '=validCategory' },
       link: function(scope, element, attrs, ctrl) {
         ctrl.$parsers.unshift(function(categoryName) {
+          if (categoryName == null || categoryName == undefined || categoryName.trim() == '') {
+            ctrl.$setValidity('unique', false);
+            return undefined;
+          }
           var found = false;
           angular.forEach(scope.$parent.node.categories, function(c) {
             if (c.$$hashKey != scope.category.$$hashKey && c.name == categoryName) {

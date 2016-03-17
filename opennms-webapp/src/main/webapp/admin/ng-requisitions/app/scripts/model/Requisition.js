@@ -162,6 +162,21 @@ function Requisition(requisition, isDeployed) {
     self.lastImport = deployed ? Date.now() : null;
   };
 
+  /**
+  * @description Resets the content of the requisition
+  *
+  * @name Requisition:reset
+  * @ngdoc method
+  * @methodOf Requisition
+  */
+  self.reset = function() {
+    self.nodes = [];
+    self.nodesDefined = 0;
+    self.nodesInDatabase = 0;
+    self.modified = true;
+    self.dateStamp = Date.now();
+  };
+
   self.className = 'Requisition';
 
   return self;
