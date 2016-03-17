@@ -28,6 +28,10 @@
 
 package org.opennms.netmgt.bsm.persistence;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
+
 import java.util.Objects;
 
 import javax.validation.ConstraintViolationException;
@@ -49,7 +53,6 @@ import org.opennms.netmgt.bsm.persistence.api.functions.map.IdentityEntity;
 import org.opennms.netmgt.bsm.persistence.api.functions.map.IgnoreEntity;
 import org.opennms.netmgt.bsm.persistence.api.functions.reduce.MostCriticalEntity;
 import org.opennms.netmgt.bsm.persistence.api.functions.reduce.ReductionFunctionDao;
-import org.opennms.netmgt.bsm.persistence.api.functions.reduce.ThresholdEntity;
 import org.opennms.netmgt.bsm.test.BsmDatabasePopulator;
 import org.opennms.netmgt.bsm.test.BusinessServiceEntityBuilder;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
@@ -59,12 +62,11 @@ import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.google.common.base.Strings;
-
-import static org.junit.Assert.*;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {
@@ -317,9 +319,7 @@ public class BusinessServiceDaoIT {
         try {
             m_businessServiceDao.flush();
             fail("ConstraintViolationException must be thrown");
-
-        } catch (final ConstraintViolationException e) {
-            assertEquals("Name must be uniqqqqq", e.getMessage());
+        } catch (final DataIntegrityViolationException e) {
         }
     }
 
