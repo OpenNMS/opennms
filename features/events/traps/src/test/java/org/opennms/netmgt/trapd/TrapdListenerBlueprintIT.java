@@ -38,7 +38,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.netmgt.snmp.TrapNotification;
-import org.opennms.netmgt.snmp.TrapProcessor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.test.context.ContextConfiguration;
@@ -81,12 +80,14 @@ public class TrapdListenerBlueprintIT extends CamelBlueprintTestSupport {
 	@Override
 	protected void addServicesOnStartup(Map<String, KeyValueHolder<Object, Dictionary>> services) {
 		// Register any mock OSGi services here
-		services.put(TrapNotification.class.getName(), new KeyValueHolder<Object, Dictionary>(new TrapNotification() {
+		services.put(TrapNotificationHandler.class.getName(), new KeyValueHolder<Object, Dictionary>(new TrapNotificationHandler() {
+
 			@Override
-			public TrapProcessor getTrapProcessor() {
+			public void handleTrapNotification(TrapNotification message) {
 				// TODO Auto-generated method stub
-				return null;
+				
 			}
+
 		}, new Properties()));
 	}
 
@@ -97,7 +98,7 @@ public class TrapdListenerBlueprintIT extends CamelBlueprintTestSupport {
 	}
 
 	@Test
-	public void testSyslogd() throws Exception {
+	public void testTrapd() throws Exception {
 		// TODO: Perform integration testing
 	}
 }

@@ -25,11 +25,11 @@
 		<property name="snmpTrapAddress" value="${trapd.listen.interface}"/>
 	</bean>
 
-	<reference id="trapdConnectionHandlers" interface="org.opennms.netmgt.snmp.TrapNotification"/>
+	<reference id="trapNotificationHandlers" interface="org.opennms.netmgt.trapd.TrapNotificationHandler"/>
 
 	<bean id="trapdListenerJava" class="org.opennms.netmgt.trapd.TrapReceiverSnmp4jImpl" destroy-method="stop">
 		<argument ref="trapdConfig"/>
-		<property name="trapdConnectionHandlers" ref="trapdConnectionHandlers"/>
+		<property name="trapNotificationHandlers" ref="trapNotificationHandlers"/>
 	</bean>
 
 	<bean class="java.lang.Thread" init-method="start">
