@@ -62,6 +62,14 @@ casper.test.begin('JMX Configuration Generator', {
 		casper.waitForText('collectd-configuration.xml');
 		casper.then(function() {
 			test.assertTextExists('collectd-configuration.xml', 'After navigating to the last page, "collectd-configuration.xml" should be visible');
+			casper.clickLabel('jmx-datacollection-config.xml');
+		});
+		casper.waitForText('JMXMP protocol');
+		casper.then(function() {
+			var info = casper.fetchText('textarea');
+			test.assertEquals(info.match(/\<mbeans\/\>/g).length, 1, 'There should be 1 <mbeans/> tags in jmx-datacollection-config.xml');
+			test.assertEquals(info.match(/\<mbean /g), null, 'There should be no <mbean/> tags in jmx-datacollection-config.xml');
+			test.assertEquals(info.match(/\<attrib /g), null, 'There should be no <attrib/> tags in jmx-datacollection-config.xml');
 			casper.click(previousButton);
 		});
 		casper.waitForText('com.mchange.v2.c3p0');
@@ -89,18 +97,20 @@ casper.test.begin('JMX Configuration Generator', {
 			casper.click(nextButton);
 		});
 		casper.waitForText('com.mchange.v2.c3p0');
+		// look for a few known entities in the OpenNMS and JVM beans
 		casper.then(function() {
-			opennms.scrollToElementWithText('span', 'Code Cache');
+			test.assertTextExists('JMImplementation', 'JMImplementation should be in the MBean list');
+			test.assertTextExists('HotSpotDiagnostic', 'HotSpotDiagnostic should be in the MBean list');
+			test.assertTextExists('PS MarkSweep', 'PS MarkSweep should be in the MBean list');
+			test.assertTextExists('org.apache.karaf', 'org.apache.karaf should be in the MBean list');
 		});
 		casper.then(function() {
-			this.mouse.rightclick(x('//span[text()=\'Code Cache\']'));
+			this.mouse.rightclick(x('//span[text()=\'OpenNMS\']'));
 		});
 		casper.wait(vaadinTax);
 		casper.then(function() {
 			casper.click(x('//td[@role="menuitem"]/div[text()=\'select\']'));
 		});
-		casper.wait(vaadinTax);
-		opennms.scrollToElementWithText('span', 'Code Cache');
 		casper.then(function() {
 			casper.click(nextButton);
 		});
@@ -113,8 +123,9 @@ casper.test.begin('JMX Configuration Generator', {
 		casper.waitForText('JMXMP protocol');
 		casper.then(function() {
 			var info = casper.fetchText('textarea');
-			test.assertEquals(info.match(/\<comp-attrib/g).length, 2, 'There should be 2 <comp-attrib/> tags in jmx-datacollection-config.xml');
-			test.assertEquals(info.match(/\<comp-member/g).length, 8, 'There should be 8 <comp-member/> tags in jmx-datacollection-config.xml');
+			test.assertEquals(info.match(/\<mbeans\>/g).length, 1, 'There should be 1 <mbeans/> tags in jmx-datacollection-config.xml');
+			test.assertEquals(info.match(/\<mbean /g).length, 24, 'There should be 24 <mbean/> tags in jmx-datacollection-config.xml');
+			test.assertEquals(info.match(/\<attrib /g).length, 108, 'There should be 108 <attrib/> tags in jmx-datacollection-config.xml');
 		});
 
 		opennms.finished(test);
