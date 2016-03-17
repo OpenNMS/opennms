@@ -45,8 +45,8 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>org.opennms.vaadin-extender</groupId>
-            <artifactId>service</artifactId>
+            <groupId>org.opennms.features.vaadin-components</groupId>
+            <artifactId>extender-service</artifactId>
             <scope>provided</scope>
         </dependency>
         <dependency>
