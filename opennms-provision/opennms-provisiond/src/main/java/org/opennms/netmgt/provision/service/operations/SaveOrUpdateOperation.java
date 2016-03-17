@@ -56,15 +56,7 @@ public abstract class SaveOrUpdateOperation extends ImportOperation {
     private ScanManager m_scanManager;
     private String m_rescanExisting = Boolean.TRUE.toString();
 
-    public SaveOrUpdateOperation(String foreignSource, String foreignId, String nodeLabel, String building, String city, ProvisionService provisionService) {
-        this(null, foreignSource, foreignId, nodeLabel, building, city, provisionService, Boolean.TRUE.toString());
-    }
-
-    public SaveOrUpdateOperation(Integer nodeId, String foreignSource, String foreignId, String nodeLabel, String building, String city, ProvisionService provisionService, String rescanExisting) {
-        this(null, foreignSource, foreignId, nodeLabel, building, city, null, provisionService, Boolean.TRUE.toString());
-    }
-
-    public SaveOrUpdateOperation(Integer nodeId, String foreignSource, String foreignId, String nodeLabel, String building, String city, String location, ProvisionService provisionService, String rescanExisting) {
+    protected SaveOrUpdateOperation(Integer nodeId, String foreignSource, String foreignId, String nodeLabel, String building, String city, String location, ProvisionService provisionService, String rescanExisting) {
         super(provisionService);
 
         // TODO: Is this the correct way to set OnmsMonitoringLocation?

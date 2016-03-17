@@ -214,19 +214,10 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
     }
 
     private void updateLocation(final OnmsNode node) {
-        String locationName = null;
         if (node.getLocation() == null) {
-            locationName = MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID;
-        } else if (node.getLocation().getMonitoringArea() == null) {
-            locationName = node.getLocation().getLocationName();
-        }
-        if (locationName != null) {
-            try {
-                final OnmsMonitoringLocation location = m_monitoringLocationDao.get(locationName);
-                node.setLocation(location);
-            } catch (final IllegalArgumentException e) {
-                LOG.warn("Unknown monitoring location: {}", locationName);
-            }
+            node.setLocation(m_monitoringLocationDao.getDefaultLocation());
+        } else {
+            node.setLocation(createLocationIfNecessary(node.getLocation().getLocationName()));
         }
     }
 
