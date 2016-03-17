@@ -30,6 +30,7 @@ package org.opennms.netmgt.bsm.persistence;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
 
 import java.util.Objects;
 
@@ -52,7 +53,6 @@ import org.opennms.netmgt.bsm.persistence.api.functions.map.IdentityEntity;
 import org.opennms.netmgt.bsm.persistence.api.functions.map.IgnoreEntity;
 import org.opennms.netmgt.bsm.persistence.api.functions.reduce.HighestSeverityEntity;
 import org.opennms.netmgt.bsm.persistence.api.functions.reduce.ReductionFunctionDao;
-import org.opennms.netmgt.bsm.persistence.api.functions.reduce.ThresholdEntity;
 import org.opennms.netmgt.bsm.test.BsmDatabasePopulator;
 import org.opennms.netmgt.bsm.test.BusinessServiceEntityBuilder;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
@@ -62,6 +62,7 @@ import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -294,6 +295,32 @@ public class BusinessServiceDaoIT {
         // Should throw a ConstraintViolationException (friendly name too long)
         m_businessServiceDao.save(entity);
         m_businessServiceDao.flush();
+    }
+
+    @Test()
+    @Transactional
+    public void verifyUniqueNameConstraint() {
+        BusinessServiceEntity entity1 = new BusinessServiceEntityBuilder()
+                .name("Some Custom Name")
+                .reduceFunction(m_highestSeverity)
+                .toEntity();
+
+        m_businessServiceDao.save(entity1);
+        m_businessServiceDao.flush();
+
+        BusinessServiceEntity entity2 = new BusinessServiceEntityBuilder()
+                .name("Some Custom Name")
+                .reduceFunction(m_highestSeverity)
+                .toEntity();
+        
+        m_businessServiceDao.save(entity2);
+
+        // Should throw a ConstraintViolationException (name not unique)
+        try {
+            m_businessServiceDao.flush();
+            fail("ConstraintViolationException must be thrown");
+        } catch (final DataIntegrityViolationException e) {
+        }
     }
 
     private OnmsMonitoredService getMonitoredServiceFromNode1() {
