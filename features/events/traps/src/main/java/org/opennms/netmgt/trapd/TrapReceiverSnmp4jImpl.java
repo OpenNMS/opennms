@@ -118,11 +118,11 @@ public class TrapReceiverSnmp4jImpl implements TrapReceiver, TrapNotificationLis
         );
     }
 
-    public TrapNotificationHandler getSyslogConnectionHandlers() {
+    public TrapNotificationHandler getTrapNotificationHandlers() {
         return m_trapNotificationHandlers.get(0);
     }
 
-    public void setSyslogConnectionHandlers(TrapNotificationHandler handler) {
+    public void setTrapNotificationHandlers(TrapNotificationHandler handler) {
         m_trapNotificationHandlers = Collections.singletonList(handler);
     }
 
