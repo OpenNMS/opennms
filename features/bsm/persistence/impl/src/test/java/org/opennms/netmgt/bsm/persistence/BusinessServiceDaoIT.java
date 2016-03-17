@@ -304,7 +304,7 @@ public class BusinessServiceDaoIT {
                 .toEntity();
 
         m_businessServiceDao.save(entity1);
-        m_businessServiceDao.flush(entity1);
+        m_businessServiceDao.flush();
 
         BusinessServiceEntity entity2 = new BusinessServiceEntityBuilder()
                 .name("Some Custom Name")
@@ -315,7 +315,7 @@ public class BusinessServiceDaoIT {
 
         // Should throw a ConstraintViolationException (name not unique)
         try {
-            m_businessServiceDao.flush(entity2);
+            m_businessServiceDao.flush();
             fail("ConstraintViolationException must be thrown");
 
         } catch (final ConstraintViolationException e) {
