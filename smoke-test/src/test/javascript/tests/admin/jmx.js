@@ -7,6 +7,8 @@ var x = require('casper').selectXPath;
 var nextButton = 'div#next > span.v-button-wrap > span.v-icon';
 var previousButton = 'div#previous > span.v-button-wrap > span.v-icon';
 
+var vaadinTax = 500; // milliseconds
+
 casper.test.begin('JMX Configuration Generator', {
 	setUp: function() {
 		opennms.initialize();
@@ -42,7 +44,7 @@ casper.test.begin('JMX Configuration Generator', {
 			test.assertTruthy(!info.attributes.hasOwnProperty('checked'), 'Authentication checkbox should be checked');
 			casper.click('span#authenticate label');
 		});
-		casper.wait(200);
+		casper.wait(vaadinTax);
 		casper.then(function() {
 			var info = casper.getElementInfo('span#authenticate input[type="checkbox"]');
 			test.assertTruthy(info.attributes.hasOwnProperty('checked'), 'Authentication checkbox should be checked');
@@ -80,7 +82,7 @@ casper.test.begin('JMX Configuration Generator', {
 			test.assertTruthy(info.attributes.hasOwnProperty('checked'), 'Skip JVM MBeans should be checked');
 			casper.click('span#skipDefaultVM input');
 		});
-		casper.wait(200);
+		casper.wait(vaadinTax);
 		casper.then(function() {
 			var info = casper.getElementInfo('span#skipDefaultVM input[type="checkbox"]');
 			test.assertTruthy(!info.attributes.hasOwnProperty('checked'), 'Skip JVM MBeans should not be checked');
@@ -93,11 +95,11 @@ casper.test.begin('JMX Configuration Generator', {
 		casper.then(function() {
 			this.mouse.rightclick(x('//span[text()=\'Code Cache\']'));
 		});
-		casper.wait(100);
+		casper.wait(vaadinTax);
 		casper.then(function() {
 			casper.click(x('//td[@role="menuitem"]/div[text()=\'select\']'));
 		});
-		casper.wait(100);
+		casper.wait(vaadinTax);
 		opennms.scrollToElementWithText('span', 'Code Cache');
 		casper.then(function() {
 			casper.click(nextButton);
