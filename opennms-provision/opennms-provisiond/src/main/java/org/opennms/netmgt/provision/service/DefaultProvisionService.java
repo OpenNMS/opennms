@@ -1060,6 +1060,9 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
                 return getDbNode(node);
             }
 
+            private final List<String> m_categoriesAdded = new ArrayList<>();
+            private final List<String> m_categoriesDeleted = new ArrayList<>();
+
             private boolean handleCategoryChanges(final OnmsNode dbNode) {
                 final String foreignSource = dbNode.getForeignSource();
                 final List<String> categories = new ArrayList<>();
@@ -1091,6 +1094,7 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
                         // we previously stored this category, but now it shouldn't be there anymore
                         // remove it from the category association
                         LOG.debug("Node {}/{}/{} no longer has the category: {}", dbNode.getId(), foreignSource, dbNode.getForeignId(), categoryName);
+                        m_categoriesDeleted.add(categoryName);
                         dbNode.removeCategory(reqCat.getCategory());
                         node.removeCategory(reqCat.getCategory());
                         reqIter.remove();
@@ -1101,6 +1105,7 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
 
                 // the remainder of requisitioned categories get added
                 for (final String cat : categories) {
+                    m_categoriesAdded.add(cat);
                     final OnmsCategory onmsCat = createCategoryIfNecessary(cat);
                     final RequisitionedCategoryAssociation r = new RequisitionedCategoryAssociation(dbNode, onmsCat);
                     node.addCategory(onmsCat);
@@ -1124,7 +1129,7 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
                 final OnmsNode ret = saveOrUpdate(dbNode);
 
                 if (changed) {
-                    accumulator.sendNow(EventUtils.createNodeCategoryMembershipChangedEvent("Provisiond", ret.getId(), ret.getLabel()));
+                    accumulator.sendNow(EventUtils.createNodeCategoryMembershipChangedEvent("Provisiond", ret.getId(), ret.getLabel(), m_categoriesAdded.toArray(new String[0]), m_categoriesDeleted.toArray(new String[0])));
                     LOG.debug("Node {}/{}/{} categories changed: {}", dbNode.getId(), dbNode.getForeignSource(), dbNode.getForeignId(), getCategoriesForNode(dbNode));
                 } else {
                     LOG.debug("Node {}/{}/{} categories unchanged: {}", dbNode.getId(), dbNode.getForeignSource(), dbNode.getForeignId(), getCategoriesForNode(dbNode));
