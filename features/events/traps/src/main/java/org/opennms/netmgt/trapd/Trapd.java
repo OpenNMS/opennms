@@ -31,8 +31,6 @@ package org.opennms.netmgt.trapd;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.sql.SQLException;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-
 import javax.annotation.Resource;
 
 import org.opennms.core.spring.BeanUtils;
@@ -41,7 +39,6 @@ import org.opennms.netmgt.snmp.SnmpV3User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.util.Assert;
 
 /**
  * <p>
@@ -77,11 +74,6 @@ public class Trapd extends AbstractServiceDaemon{
      * The last status sent to the service control manager.
      */
     private int m_status = START_PENDING;
-
-    /**
-     * The thread pool that processes traps
-     */
-    private ExecutorService m_backlogQ;
 
     /**
      * The queue processing thread
@@ -130,8 +122,6 @@ public class Trapd extends AbstractServiceDaemon{
     @Override
     public synchronized void onInit() {
         BeanUtils.assertAutowiring(this);
-
-        Assert.state(m_backlogQ != null, "backlogQ must be set");
 
         try {
             m_trapdIpMgr.dataSourceSync();
@@ -217,8 +207,6 @@ public class Trapd extends AbstractServiceDaemon{
 
         LOG.debug("stop: Stopping queue processor.");
 
-        m_backlogQ.shutdown();
-
         m_eventReader.close();
 
         m_status = STOPPED;
@@ -252,24 +240,6 @@ public class Trapd extends AbstractServiceDaemon{
      */
     public void setEventReader(BroadcastEventProcessor eventReader) {
         m_eventReader = eventReader;
-    }
-
-    /**
-     * <p>getBacklogQ</p>
-     *
-     * @return a {@link java.util.concurrent.ExecutorService} object.
-     */
-    public ExecutorService getBacklogQ() {
-        return m_backlogQ;
-    }
-
-    /**
-     * <p>setBacklogQ</p>
-     *
-     * @param backlogQ a {@link java.util.concurrent.ExecutorService} object.
-     */
-    public void setBacklogQ(ExecutorService backlogQ) {
-        m_backlogQ = backlogQ;
     }
 
     public static String getLoggingCategory() {

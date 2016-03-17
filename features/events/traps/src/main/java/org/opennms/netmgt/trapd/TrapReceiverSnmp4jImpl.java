@@ -30,7 +30,6 @@ package org.opennms.netmgt.trapd;
 
 import java.io.IOException;
 import java.lang.reflect.UndeclaredThrowableException;
-import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
 import java.util.Collections;
@@ -64,10 +63,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class TrapReceiverSnmp4jImpl implements TrapReceiver, TrapNotificationListener,TrapProcessorFactory {
     private static final Logger LOG = LoggerFactory.getLogger(TrapReceiverSnmp4jImpl.class);
 
-    /**
-     * The thread pool that processes traps
-     */
-    private ExecutorService m_backlogQ;
 
     /**
      * The queue processing thread
@@ -87,14 +82,10 @@ public class TrapReceiverSnmp4jImpl implements TrapReceiver, TrapNotificationLis
     private boolean m_registeredForTraps;
     
     /**
-     * The UDP socket for receipt and transmission of packets from agents.
+     * Trapd IP manager.  Contains IP address -> node ID mapping.
      */
-    private DatagramSocket m_dgSock;
-
-    /**
-     * The context thread
-     */
-    private Thread m_context;
+    @Autowired
+    private TrapdIpMgr m_trapdIpMgr;
 
     private final TrapdConfig m_config;
 
@@ -115,7 +106,6 @@ public class TrapReceiverSnmp4jImpl implements TrapReceiver, TrapNotificationLis
             throw new IllegalArgumentException("Config cannot be null");
         }
 
-        m_dgSock = null;
         m_config = config;
 
         m_executor = new ThreadPoolExecutor(
@@ -134,35 +124,6 @@ public class TrapReceiverSnmp4jImpl implements TrapReceiver, TrapNotificationLis
 
     public void setSyslogConnectionHandlers(TrapNotificationHandler handler) {
         m_trapNotificationHandlers = Collections.singletonList(handler);
-    }
-
-    @Override
-    public String getName() {
-        String listenAddress = (m_config.getSnmpTrapAddress() != null && m_config.getSnmpTrapAddress().length() > 0) ? m_config.getSnmpTrapAddress() : "0.0.0.0";
-        return getClass().getSimpleName() + " [" + listenAddress + ":" + m_config.getSnmpTrapPort() + "]";
-    }
-
-    /*
-     * stop the current receiver
-     * @throws InterruptedException
-     * 
-     */
-    @Override
-    public void stop() throws InterruptedException {
-        // Close the datagram socket
-        if (m_dgSock != null) {
-            m_dgSock.close();
-        }
-
-        // Shut down the thread pools that are executing SyslogConnection and SyslogProcessor tasks
-        m_executor.shutdown();
-
-        if (m_context != null) {
-            LOG.debug("Stopping and joining thread context {}", m_context.getName());
-            m_context.interrupt();
-            m_context.join();
-            LOG.debug("Thread context stopped and joined");
-        }
     }
 
     /**
@@ -188,7 +149,8 @@ public class TrapReceiverSnmp4jImpl implements TrapReceiver, TrapNotificationLis
       LOG.warn("Error Processing Received Trap: error = {} {}", error, (msg != null ? ", ref = " + msg : ""));
 	}
 	
-	public void registeredForTraps(){
+	@Override
+	public void start(){
         try {
         	InetAddress address = getInetAddress();
         	LOG.info("Listening on {}:{}", address == null ? "[all interfaces]" : InetAddressUtils.str(address), m_snmpTrapPort);
@@ -212,7 +174,8 @@ public class TrapReceiverSnmp4jImpl implements TrapReceiver, TrapNotificationLis
         }
 	}
 	
-	public void unRegisteredForTraps(){
+	@Override
+	public void stop(){
         try {
             if (m_registeredForTraps) {
                 LOG.debug("stop: Closing SNMP trap session.");
@@ -229,13 +192,6 @@ public class TrapReceiverSnmp4jImpl implements TrapReceiver, TrapNotificationLis
         }
 	}
 	
-    public ExecutorService getM_backlogQ() {
-		return m_backlogQ;
-	}
-
-	public void setM_backlogQ(ExecutorService m_backlogQ) {
-		this.m_backlogQ = m_backlogQ;
-	}
 
 	public TrapQueueProcessorFactory getM_processorFactory() {
 		return m_processorFactory;
@@ -254,7 +210,7 @@ public class TrapReceiverSnmp4jImpl implements TrapReceiver, TrapNotificationLis
 
 	@Override
 	public TrapProcessor createTrapProcessor() {
-		return null;
+        return new EventCreator(m_trapdIpMgr);
 	}
 	
 }

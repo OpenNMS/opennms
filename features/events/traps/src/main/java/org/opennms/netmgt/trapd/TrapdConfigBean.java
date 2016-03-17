@@ -28,13 +28,44 @@
 
 package org.opennms.netmgt.trapd;
 
+import java.util.List;
+
+import org.opennms.netmgt.config.TrapdConfig;
+import org.opennms.netmgt.snmp.SnmpV3User;
 
 /**
- * @author Seth
+ * This is a bean container that can be used as a {@link TrapdConfig}
+ * service.
  */
-public interface TrapReceiver extends Runnable {
+/**
+ * @author dp044946
+ *
+ */
+public class TrapdConfigBean implements TrapdConfig{
 
-	void start();
+	private String m_snmpTrapAddress;
+	private int m_snmpTrapPort;
+	private boolean m_newSuspectOnTrap;
+	private List<SnmpV3User> m_snmpV3Users;
+	
+	@Override
+	public String getSnmpTrapAddress() {
+		return m_snmpTrapAddress;
+	}
 
-    void stop() throws InterruptedException;
+	@Override
+	public int getSnmpTrapPort() {
+		return m_snmpTrapPort;
+	}
+
+	@Override
+	public boolean getNewSuspectOnTrap() {
+		return m_newSuspectOnTrap;
+	}
+
+	@Override
+	public List<SnmpV3User> getSnmpV3Users() {
+		return m_snmpV3Users;
+	}
+
 }
