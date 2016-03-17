@@ -27,7 +27,7 @@
 
 	<reference id="trapNotificationHandlers" interface="org.opennms.netmgt.trapd.TrapNotificationHandler"/>
 
-	<bean id="trapdListenerJava" class="org.opennms.netmgt.trapd.TrapReceiverSnmp4jImpl" destroy-method="stop">
+	<bean id="trapdListenerJava" class="org.opennms.netmgt.trapd.TrapReceiverSnmp4jImpl" init-method="start" destroy-method="stop">
 		<argument ref="trapdConfig"/>
 		<property name="trapNotificationHandlers" ref="trapNotificationHandlers"/>
 	</bean>
