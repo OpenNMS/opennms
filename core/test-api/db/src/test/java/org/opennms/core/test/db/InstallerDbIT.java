@@ -1626,6 +1626,7 @@ public class InstallerDbIT extends TemporaryDatabaseITCase {
                         "snmpIfAlias\\s+varchar\\(\\d+\\),", ""
                 } });
 
+        // org.opennms.netmgt.dao.api.MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID
         executeSQL("INSERT INTO node ( location, nodeId, nodeCreateTime ) "
                    + "VALUES ( 'localhost', 1, now() )");
         executeSQL("INSERT INTO snmpInterface ( nodeID, snmpIfIndex ) "
