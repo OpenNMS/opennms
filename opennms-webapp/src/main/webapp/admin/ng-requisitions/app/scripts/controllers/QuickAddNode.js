@@ -238,6 +238,10 @@
       RequisitionsService.getRequisitionNames().then(
         function(requisitions) { // success
           $scope.foreignSources = requisitions
+          // If there is NO requisitions, the user has to create a new one
+          if ($scope.foreignSources.length == 0) {
+            $scope.addRequisition();
+          }
         },
         $scope.errorHandler
       );
