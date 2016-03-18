@@ -51,327 +51,337 @@ public class OnmsFeatureKarafIT extends KarafTestCase {
 	}
 
 	@Test
-	public void testInstallFeature000() {
+	public void testInstallFeatureAtomikos() {
 		installFeature("atomikos");
-		System.out.println(executeCommand("features:list"));
+		System.out.println(executeCommand("features:list -i"));
 	}
 	@Test
-	public void testInstallFeature010() {
+	public void testInstallFeatureBatik() {
 		installFeature("batik");
-		System.out.println(executeCommand("features:list"));
+		System.out.println(executeCommand("features:list -i"));
 	}
 	@Test
-	public void testInstallFeature015() {
+	public void testInstallFeatureC3P0() {
 		installFeature("c3p0");
-		System.out.println(executeCommand("features:list"));
+		System.out.println(executeCommand("features:list -i"));
 	}
 	@Test
-	public void testInstallFeature020() {
+	public void testInstallFeatureCastor() {
 		installFeature("castor");
-		System.out.println(executeCommand("features:list"));
+		System.out.println(executeCommand("features:list -i"));
 	}
 	@Test
-	public void testInstallFeature030() {
+	public void testInstallFeatureCommonsBeanutils() {
 		installFeature("commons-beanutils");
-		System.out.println(executeCommand("features:list"));
+		System.out.println(executeCommand("features:list -i"));
 	}
 	@Test
-	public void testInstallFeature040() {
+	public void testInstallFeatureCommonsCli() {
 		installFeature("commons-cli");
-		System.out.println(executeCommand("features:list"));
+		System.out.println(executeCommand("features:list -i"));
 	}
 	@Test
-	public void testInstallFeature050() {
+	public void testInstallFeatureCommonsCodec() {
 		installFeature("commons-codec");
-		System.out.println(executeCommand("features:list"));
+		System.out.println(executeCommand("features:list -i"));
 	}
 	@Test
-	public void testInstallFeature060() {
+	public void testInstallFeatureCommonsCollections() {
 		installFeature("commons-collections");
-		System.out.println(executeCommand("features:list"));
+		System.out.println(executeCommand("features:list -i"));
 	}
-	/*
 	@Test
-	public void testInstallFeature070() {
+	@Ignore("OSGi dependency problems: javax.servlet")
+	public void testInstallFeatureCommonsConfiguration() {
 		installFeature("commons-configuration");
-		System.out.println(executeCommand("features:list"));
+		System.out.println(executeCommand("features:list -i"));
 	}
-	*/
 	@Test
-	public void testInstallFeature080() {
+	public void testInstallFeatureCommonsDigester() {
 		installFeature("commons-digester");
-		System.out.println(executeCommand("features:list"));
+		System.out.println(executeCommand("features:list -i"));
 	}
 	@Test
-	public void testInstallFeature090() {
+	public void testInstallFeatureCommonsExec() {
 		installFeature("commons-exec");
-		System.out.println(executeCommand("features:list"));
+		System.out.println(executeCommand("features:list -i"));
 	}
 	@Test
-	public void testInstallFeature100() {
+	public void testInstallFeatureCommonsIo() {
 		installFeature("commons-io");
-		System.out.println(executeCommand("features:list"));
+		System.out.println(executeCommand("features:list -i"));
 	}
 	@Test
-	public void testInstallFeature110() {
+	public void testInstallFeatureCommonsJexl() {
 		installFeature("commons-jexl");
-		System.out.println(executeCommand("features:list"));
+		System.out.println(executeCommand("features:list -i"));
 	}
 	@Test
-	public void testInstallFeature120() {
+	public void testInstallFeatureCommonsLang() {
 		installFeature("commons-lang");
-		System.out.println(executeCommand("features:list"));
+		System.out.println(executeCommand("features:list -i"));
 	}
 	@Test
-	public void testInstallFeature130() {
+	public void testInstallFeatureCommonsNet() {
 		installFeature("commons-net");
-		System.out.println(executeCommand("features:list"));
+		System.out.println(executeCommand("features:list -i"));
 	}
 	@Test
-	public void testInstallFeature140() {
+	public void testInstallFeatureDnsjava() {
 		installFeature("dnsjava");
-		System.out.println(executeCommand("features:list"));
+		System.out.println(executeCommand("features:list -i"));
 	}
 	@Test
-	public void testInstallFeature150() {
+	public void testInstallFeatureDropwizardMetrics() {
+		installFeature("dropwizard-metrics");
+		System.out.println(executeCommand("features:list -i"));
+	}
+	@Test
+	public void testInstallFeatureFop() {
 		installFeature("fop");
-		System.out.println(executeCommand("features:list"));
+		System.out.println(executeCommand("features:list -i"));
 	}
 	@Test
-	public void testInstallFeature160() {
+	public void testInstallFeatureGuava() {
 		installFeature("guava");
-		System.out.println(executeCommand("features:list"));
+		System.out.println(executeCommand("features:list -i"));
 	}
 	@Test
-	public void testInstallFeature170() {
+	public void testInstallFeatureHibernate36() {
 		installFeature("hibernate36");
-		System.out.println(executeCommand("features:list"));
+		System.out.println(executeCommand("features:list -i"));
 	}
 	@Test
-	public void testInstallFeature180() {
+	public void testInstallFeatureHibernateValidator41() {
 		installFeature("hibernate-validator41");
-		System.out.println(executeCommand("features:list"));
+		System.out.println(executeCommand("features:list -i"));
 	}
 	@Test
-	public void testInstallFeature190() {
+	public void testInstallFeatureJaxb() {
 		installFeature("jaxb");
-		System.out.println(executeCommand("features:list"));
+		System.out.println(executeCommand("features:list -i"));
 	}
 	@Test
-	public void testInstallFeature200() {
-		installFeature("jersey-client");
-		System.out.println(executeCommand("features:list"));
-	}
-	@Test
-	public void testInstallFeature210() {
+	public void testInstallFeatureJfreechart() {
 		installFeature("jfreechart");
-		System.out.println(executeCommand("features:list"));
+		System.out.println(executeCommand("features:list -i"));
+	}
+	@Test
+	public void testInstallFeatureJicmp() {
+		installFeature("jicmp");
+		System.out.println(executeCommand("features:list -i"));
+	}
+	@Test
+	public void testInstallFeatureJicmp6() {
+		installFeature("jicmp6");
+		System.out.println(executeCommand("features:list -i"));
 	}
 	/*
 	@Test
-	public void testInstallFeature220() {
+	public void testInstallFeatureJolokia() {
 		installFeature("jolokia");
-		System.out.println(executeCommand("features:list"));
+		System.out.println(executeCommand("features:list -i"));
 	}
 	*/
 	@Test
-	public void testInstallFeature230() {
+	public void testInstallFeatureJrobin() {
 		installFeature("jrobin");
-		System.out.println(executeCommand("features:list"));
+		System.out.println(executeCommand("features:list -i"));
 	}
 	@Test
-	public void testInstallFeature240() {
+	public void testInstallFeatureJsonLib() {
 		installFeature("json-lib");
-		System.out.println(executeCommand("features:list"));
+		System.out.println(executeCommand("features:list -i"));
 	}
+	@Test
+	public void testInstallFeatureLmaxDisruptor() {
+		installFeature("lmax-disruptor");
+		System.out.println(executeCommand("features:list -i"));
+	}
+	/*
 	@Test
 	public void testInstallFeature250() {
 		installFeature("opennms-activemq-config");
-		System.out.println(executeCommand("features:list"));
+		System.out.println(executeCommand("features:list -i"));
 	}
-	/*
 	@Test
 	public void testInstallFeature260() {
 		installFeature("opennms-activemq");
-		System.out.println(executeCommand("features:list"));
+		System.out.println(executeCommand("features:list -i"));
 	}
-	*/
 	@Test
 	public void testInstallFeature270() {
 		installFeature("opennms-activemq-dispatcher-config");
-		System.out.println(executeCommand("features:list"));
+		System.out.println(executeCommand("features:list -i"));
 	}
-	/*
 	@Test
 	public void testInstallFeature280() {
 		installFeature("opennms-activemq-dispatcher");
-		System.out.println(executeCommand("features:list"));
+		System.out.println(executeCommand("features:list -i"));
 	}
 	@Test
 	public void testInstallFeature290() {
 		installFeature("opennms-activemq-event-forwarder");
-		System.out.println(executeCommand("features:list"));
+		System.out.println(executeCommand("features:list -i"));
 	}
 	@Test
 	public void testInstallFeature300() {
 		installFeature("opennms-activemq-event-receiver");
-		System.out.println(executeCommand("features:list"));
+		System.out.println(executeCommand("features:list -i"));
 	}
 	*/
 	@Test
-	public void testInstallFeature310() {
+	public void testInstallFeatureOpennmsCollectionApi() {
 		installFeature("opennms-collection-api");
-		System.out.println(executeCommand("features:list"));
+		System.out.println(executeCommand("features:list -i"));
 	}
 	@Test
-	public void testInstallFeature320() {
+	public void testInstallFeatureOpennmsCollectionPersistenceRrd() {
 		installFeature("opennms-collection-persistence-rrd");
-		System.out.println(executeCommand("features:list"));
+		System.out.println(executeCommand("features:list -i"));
 	}
 	@Test
-	public void testInstallFeature330() {
+	public void testInstallFeatureOpennmsConfigApi() {
 		installFeature("opennms-config-api");
-		System.out.println(executeCommand("features:list"));
+		System.out.println(executeCommand("features:list -i"));
 	}
 	@Test
-	public void testInstallFeature340() {
+	public void testInstallFeatureOpennmsConfig() {
 		installFeature("opennms-config");
-		System.out.println(executeCommand("features:list"));
+		System.out.println(executeCommand("features:list -i"));
 	}
 	@Test
-	public void testInstallFeature350() {
+	public void testInstallFeatureOpennmsConfigJaxb() {
 		installFeature("opennms-config-jaxb");
-		System.out.println(executeCommand("features:list"));
+		System.out.println(executeCommand("features:list -i"));
 	}
 	@Test
-	public void testInstallFeature360() {
+	public void testInstallFeatureOpennmsCoreDaemon() {
 		installFeature("opennms-core-daemon");
-		System.out.println(executeCommand("features:list"));
+		System.out.println(executeCommand("features:list -i"));
 	}
 	@Test
-	public void testInstallFeature370() {
+	public void testInstallFeatureOpennmsCoreDb() {
 		installFeature("opennms-core-db");
-		System.out.println(executeCommand("features:list"));
+		System.out.println(executeCommand("features:list -i"));
 	}
 	@Test
-	public void testInstallFeature380() {
+	public void testInstallFeatureOpennmsCore() {
 		installFeature("opennms-core");
-		System.out.println(executeCommand("features:list"));
+		System.out.println(executeCommand("features:list -i"));
 	}
 	@Test
-	public void testInstallFeature390() {
+	public void testInstallFeatureOpennmsCoreWeb() {
 		installFeature("opennms-core-web");
-		System.out.println(executeCommand("features:list"));
+		System.out.println(executeCommand("features:list -i"));
 	}
 	@Test
-	public void testInstallFeature400() {
+	public void testInstallFeatureOpennmsDaoApi() {
 		installFeature("opennms-dao-api");
-		System.out.println(executeCommand("features:list"));
+		System.out.println(executeCommand("features:list -i"));
 	}
 	@Test
-	public void testInstallFeature410() {
+	public void testInstallFeatureOpennmsDao() {
 		installFeature("opennms-dao");
-		System.out.println(executeCommand("features:list"));
+		System.out.println(executeCommand("features:list -i"));
 	}
 	@Test
-	public void testInstallFeature415() {
+	public void testInstallFeatureOpennmsDiscovery() {
 		installFeature("opennms-discovery");
-		System.out.println(executeCommand("features:list"));
+		System.out.println(executeCommand("features:list -i"));
 	}
 	@Test
-	public void testInstallFeature420() {
+	public void testInstallFeatureOpennmsEventsApi() {
 		installFeature("opennms-events-api");
-		System.out.println(executeCommand("features:list"));
+		System.out.println(executeCommand("features:list -i"));
 	}
 	@Test
-	public void testInstallFeature430() {
+	public void testInstallFeatureOpennmsEventsDaemon() {
 		installFeature("opennms-events-daemon");
-		System.out.println(executeCommand("features:list"));
+		System.out.println(executeCommand("features:list -i"));
 	}
 	@Test
-	public void testInstallFeature440() {
+	public void testInstallFeatureOpennmsEventsTraps() {
 		installFeature("opennms-events-traps");
-		System.out.println(executeCommand("features:list"));
+		System.out.println(executeCommand("features:list -i"));
 	}
 	@Test
-	public void testInstallIcmpApi() {
+	public void testInstallFeatureOpennmsIcmpApi() {
 		installFeature("opennms-icmp-api");
-		System.out.println(executeCommand("features:list"));
+		System.out.println(executeCommand("features:list -i"));
 	}
 	@Test
-	public void testInstallIcmpJna() {
+	public void testInstallFeatureOpennmsIcmpJna() {
 		installFeature("opennms-icmp-jna");
-		System.out.println(executeCommand("features:list"));
+		System.out.println(executeCommand("features:list -i"));
 	}
 	@Test
-	public void testInstallIcmpJni() {
+	public void testInstallFeatureOpennmsIcmpJni() {
 		installFeature("opennms-icmp-jni");
-		System.out.println(executeCommand("features:list"));
+		System.out.println(executeCommand("features:list -i"));
 	}
 	@Test
-	public void testInstallIcmpJni6() {
+	public void testInstallFeatureOpennmsIcmpJni6() {
 		installFeature("opennms-icmp-jni6");
-		System.out.println(executeCommand("features:list"));
+		System.out.println(executeCommand("features:list -i"));
 	}
-	/*
 	@Test
-	public void testInstallFeature460() {
+	public void testInstallFeatureOpennmsJavamail() {
 		installFeature("opennms-javamail");
-		System.out.println(executeCommand("features:list"));
+		System.out.println(executeCommand("features:list -i"));
 	}
-	*/
 	@Test
-	public void testInstallFeature470() {
+	public void testInstallFeatureOpennmsModel() {
 		installFeature("opennms-model");
-		System.out.println(executeCommand("features:list"));
+		System.out.println(executeCommand("features:list -i"));
 	}
 	@Test
-	public void testInstallFeature480() {
+	public void testInstallFeatureOpennmsPollerApi() {
 		installFeature("opennms-poller-api");
-		System.out.println(executeCommand("features:list"));
+		System.out.println(executeCommand("features:list -i"));
 	}
 	/*
 	@Test
-	public void testInstallFeature490() {
+	public void testInstallFeatureOpennmsProvisioning() {
 		installFeature("opennms-provisioning");
-		System.out.println(executeCommand("features:list"));
+		System.out.println(executeCommand("features:list -i"));
 	}
 	@Test
-	public void testInstallFeature500() {
+	public void testInstallFeatureOpennmsReporting() {
 		installFeature("opennms-reporting");
-		System.out.println(executeCommand("features:list"));
+		System.out.println(executeCommand("features:list -i"));
 	}
 	*/
 	@Test
-	public void testInstallFeature510() {
+	public void testInstallFeatureOpennmsRrdApi() {
 		installFeature("opennms-rrd-api");
-		System.out.println(executeCommand("features:list"));
+		System.out.println(executeCommand("features:list -i"));
 	}
 	@Test
-	public void testInstallFeature520() {
+	public void testInstallFeatureOpennmsRrdJrobin() {
 		installFeature("opennms-rrd-jrobin");
-		System.out.println(executeCommand("features:list"));
+		System.out.println(executeCommand("features:list -i"));
 	}
 	@Test
-	public void testInstallFeature530() {
+	public void testInstallFeatureOpennmsSnmp() {
 		installFeature("opennms-snmp");
-		System.out.println(executeCommand("features:list"));
+		System.out.println(executeCommand("features:list -i"));
 	}
 	/*
 	@Test
-	public void testInstallFeature540() {
+	public void testInstallFeatureOpennmsWebapp() {
 		installFeature("opennms-webapp");
-		System.out.println(executeCommand("features:list"));
+		System.out.println(executeCommand("features:list -i"));
 	}
 	*/
 	@Test
-	public void testInstallFeature550() {
+	public void testInstallFeatureOrgJson() {
 		installFeature("org.json");
-		System.out.println(executeCommand("features:list"));
+		System.out.println(executeCommand("features:list -i"));
 	}
 	@Test
-	public void testInstallFeature560() {
+	public void testInstallFeaturePostgresql() {
 		installFeature("postgresql");
-		System.out.println(executeCommand("features:list"));
+		System.out.println(executeCommand("features:list -i"));
 	}
 }
