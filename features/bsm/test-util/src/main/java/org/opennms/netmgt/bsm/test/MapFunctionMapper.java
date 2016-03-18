@@ -28,62 +28,62 @@
 
 package org.opennms.netmgt.bsm.test;
 
-import java.util.Map;
-
 import org.opennms.netmgt.bsm.persistence.api.functions.map.AbstractMapFunctionEntity;
 import org.opennms.netmgt.bsm.persistence.api.functions.map.DecreaseEntity;
 import org.opennms.netmgt.bsm.persistence.api.functions.map.IdentityEntity;
 import org.opennms.netmgt.bsm.persistence.api.functions.map.IgnoreEntity;
 import org.opennms.netmgt.bsm.persistence.api.functions.map.IncreaseEntity;
+import org.opennms.netmgt.bsm.persistence.api.functions.map.MapFunctionEntityVisitor;
 import org.opennms.netmgt.bsm.persistence.api.functions.map.SetToEntity;
 import org.opennms.netmgt.bsm.service.model.functions.map.Decrease;
 import org.opennms.netmgt.bsm.service.model.functions.map.Identity;
 import org.opennms.netmgt.bsm.service.model.functions.map.Ignore;
 import org.opennms.netmgt.bsm.service.model.functions.map.Increase;
-import org.opennms.netmgt.bsm.service.model.functions.map.SetTo;
 import org.opennms.netmgt.bsm.service.model.functions.map.MapFunction;
-
-import com.google.common.base.Function;
-import com.google.common.collect.Maps;
+import org.opennms.netmgt.bsm.service.model.functions.map.SetTo;
 
 // this is copied from service.impl as the dependency on that project would form a cycle.
 @Deprecated
 class MapFunctionMapper {
 
-    private static final Map<Class<? extends MapFunction>, Function<MapFunction, AbstractMapFunctionEntity>> serviceToPersistenceMapping = Maps.newHashMap();
+    private static final MapFunctionEntityVisitor<MapFunction> persistenceToServiceMapping = new MapFunctionEntityVisitor<MapFunction>() {
+        @Override
+        public MapFunction visit(DecreaseEntity decreaseEntity) {
+            return new Decrease();
+        }
 
-    private static final Map<Class<? extends AbstractMapFunctionEntity>, Function<AbstractMapFunctionEntity, MapFunction>> persistenceToServiceMapping = Maps.newHashMap();
+        @Override
+        public MapFunction visit(IdentityEntity identityEntity) {
+            return new Identity();
+        }
 
-    static {
-        serviceToPersistenceMapping.put(Decrease.class, input -> new DecreaseEntity());
-        serviceToPersistenceMapping.put(Increase.class, input -> new IncreaseEntity());
-        serviceToPersistenceMapping.put(Identity.class, input -> new IdentityEntity());
-        serviceToPersistenceMapping.put(Ignore.class, input -> new IgnoreEntity());
-        serviceToPersistenceMapping.put(SetTo.class, input -> {
-            SetToEntity entity = new SetToEntity();
-            entity.setSeverity(SeverityMapper.toSeverity(((SetTo) input).getStatus()));
-            return entity;
-        });
+        @Override
+        public MapFunction visit(IgnoreEntity ignoreEntity) {
+            return new Ignore();
+        }
 
-        persistenceToServiceMapping.put(DecreaseEntity.class, input -> new Decrease());
-        persistenceToServiceMapping.put(IncreaseEntity.class, input -> new Increase());
-        persistenceToServiceMapping.put(IdentityEntity.class, input -> new Identity());
-        persistenceToServiceMapping.put(IgnoreEntity.class, input -> new Ignore());
-        persistenceToServiceMapping.put(SetToEntity.class, input -> {
+        @Override
+        public MapFunction visit(IncreaseEntity increaseEntity) {
+            return new Increase();
+        }
+
+        @Override
+        public MapFunction visit(SetToEntity setToEntity) {
             SetTo result = new SetTo();
-            result.setStatus(SeverityMapper.toStatus(((SetToEntity) input).getSeverity()));
+            result.setStatus(SeverityMapper.toStatus(setToEntity.getSeverity()));
             return result;
-        });
-    }
+        }
+    };
 
-    public MapFunction toServiceFunction(AbstractMapFunctionEntity mapFunction) {
-        if (mapFunction == null) {
+
+    public MapFunction toServiceFunction(AbstractMapFunctionEntity mapFunctionEntity) {
+        if (mapFunctionEntity == null) {
             return null;
         }
-        Function<AbstractMapFunctionEntity, MapFunction> mapping = persistenceToServiceMapping.get(mapFunction.getClass());
-        if (mapping == null) {
+        MapFunction mapFunction = mapFunctionEntity.accept(persistenceToServiceMapping);
+        if (mapFunction == null) {
             throw new IllegalArgumentException("No mapping found");
         }
-        return mapping.apply(mapFunction);
+        return mapFunction;
     }
 }

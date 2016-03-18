@@ -35,12 +35,12 @@ import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Set;
 
-import org.opennms.netmgt.bsm.service.model.ReadOnlyBusinessService;
+import org.opennms.netmgt.bsm.service.model.BusinessService;
 import org.opennms.netmgt.bsm.service.model.edge.ChildEdge;
+import org.opennms.netmgt.bsm.service.model.edge.Edge;
 import org.opennms.netmgt.bsm.service.model.edge.EdgeVisitor;
 import org.opennms.netmgt.bsm.service.model.edge.IpServiceEdge;
 import org.opennms.netmgt.bsm.service.model.edge.ReductionKeyEdge;
-import org.opennms.netmgt.bsm.service.model.edge.ro.ReadOnlyEdge;
 import org.opennms.netmgt.bsm.service.model.functions.map.Identity;
 import org.opennms.netmgt.bsm.service.model.functions.reduce.MostCritical;
 import org.opennms.netmgt.bsm.service.model.graph.BusinessServiceGraph;
@@ -64,7 +64,7 @@ public class BusinessServiceGraphImpl extends DirectedSparseMultigraph<GraphVert
     private final Map<Long, GraphVertex> m_verticesByEdgeId = Maps.newHashMap();
     private final Map<Integer, Set<GraphVertex>> m_verticesByLevel = Maps.newHashMap();
 
-    public BusinessServiceGraphImpl(final List<? extends ReadOnlyBusinessService> businessServices) {
+    public BusinessServiceGraphImpl(final List<? extends BusinessService> businessServices) {
         // Build the graph
         Objects.requireNonNull(businessServices).stream()
             .forEach(b -> addBusinessServiceVertex(b));
@@ -73,7 +73,7 @@ public class BusinessServiceGraphImpl extends DirectedSparseMultigraph<GraphVert
         calculateAndIndexLevels();
     }
 
-    private GraphVertex addBusinessServiceVertex(ReadOnlyBusinessService businessService) {
+    private GraphVertex addBusinessServiceVertex(BusinessService businessService) {
         // Use an existing vertex if we already created one
         GraphVertex businessServiceVertex = m_verticesByBusinessServiceId.get(businessService.getId());
         if (businessServiceVertex != null) {
@@ -87,7 +87,7 @@ public class BusinessServiceGraphImpl extends DirectedSparseMultigraph<GraphVert
         // Index
         m_verticesByBusinessServiceId.put(businessService.getId(), businessServiceVertex);
 
-        for (ReadOnlyEdge edge : businessService.getEdges()) {
+        for (Edge edge : businessService.getEdges()) {
             // Create the edge
             GraphEdge graphEdge = new GraphEdgeImpl(edge);
 
@@ -145,7 +145,7 @@ public class BusinessServiceGraphImpl extends DirectedSparseMultigraph<GraphVert
         return businessServiceVertex;
     }
 
-    private GraphVertex getExistingVertex(ReadOnlyEdge edge) {
+    private GraphVertex getExistingVertex(Edge edge) {
         return edge.accept(new EdgeVisitor<GraphVertex>() {
 
             @Override

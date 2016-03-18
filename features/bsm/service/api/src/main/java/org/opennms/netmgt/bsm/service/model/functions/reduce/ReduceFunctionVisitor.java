@@ -26,28 +26,13 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.bsm.service.model;
+package org.opennms.netmgt.bsm.service.model.functions.reduce;
 
-import java.util.Set;
+public interface ReduceFunctionVisitor<T> {
 
-import org.opennms.netmgt.bsm.service.model.edge.ro.ReadOnlyEdge;
-import org.opennms.netmgt.bsm.service.model.functions.reduce.ReductionFunction;
+    T visit(HighestSeverity highestSeverity);
 
-/**
- * A simplified version of the {@link org.opennms.netmgt.bsm.service.model.BusinessService}
- * that contains the minimal set of functions necessary to the state machine to function and
- * for the daemon to send the associated state change events.
- *
- * @author jwhite
- */
-public interface ReadOnlyBusinessService {
+    T visit(HighestSeverityAbove highestSeverityAbove);
 
-    String getName();
-
-    Long getId();
-
-    ReductionFunction getReduceFunction();
-
-    Set<? extends ReadOnlyEdge> getEdges();
-
+    T visit(Threshold threshold);
 }

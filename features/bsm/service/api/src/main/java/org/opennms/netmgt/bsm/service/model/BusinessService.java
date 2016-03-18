@@ -40,7 +40,14 @@ import org.opennms.netmgt.bsm.service.model.edge.ReductionKeyEdge;
 import org.opennms.netmgt.bsm.service.model.functions.map.MapFunction;
 import org.opennms.netmgt.bsm.service.model.functions.reduce.ReductionFunction;
 
-public interface BusinessService extends ReadOnlyBusinessService {
+public interface BusinessService {
+
+
+    Long getId();
+
+    Set<? extends Edge> getEdges();
+
+    String getName();
 
     void setName(String name);
 
@@ -57,6 +64,8 @@ public interface BusinessService extends ReadOnlyBusinessService {
     void delete();
 
     Status getOperationalStatus();
+
+    ReductionFunction getReduceFunction();
 
     void setReduceFunction(ReductionFunction reductionFunction);
 

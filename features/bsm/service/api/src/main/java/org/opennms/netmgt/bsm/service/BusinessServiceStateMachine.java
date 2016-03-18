@@ -33,10 +33,10 @@ import java.util.List;
 import java.util.Map;
 
 import org.opennms.netmgt.bsm.service.model.AlarmWrapper;
+import org.opennms.netmgt.bsm.service.model.BusinessService;
 import org.opennms.netmgt.bsm.service.model.IpService;
-import org.opennms.netmgt.bsm.service.model.ReadOnlyBusinessService;
 import org.opennms.netmgt.bsm.service.model.Status;
-import org.opennms.netmgt.bsm.service.model.edge.ro.ReadOnlyEdge;
+import org.opennms.netmgt.bsm.service.model.edge.Edge;
 import org.opennms.netmgt.bsm.service.model.graph.BusinessServiceGraph;
 import org.opennms.netmgt.bsm.service.model.graph.GraphVertex;
 
@@ -47,7 +47,7 @@ public interface BusinessServiceStateMachine {
      *
      * @param businessServices list of services to manage
      */
-    void setBusinessServices(List<? extends ReadOnlyBusinessService> businessServices);
+    void setBusinessServices(List<BusinessService> businessServices);
 
     /**
      * Retrieves the current operational status of a Business Service.
@@ -55,7 +55,7 @@ public interface BusinessServiceStateMachine {
      * @param businessService Business Service to query
      * @return the current operational status, or null if the Business Service if not managed by the state machine
      */
-    Status getOperationalStatus(ReadOnlyBusinessService businessService);
+    Status getOperationalStatus(BusinessService businessService);
 
     /**
      * Retrieves the current operational status of a particular IP service.
@@ -76,7 +76,7 @@ public interface BusinessServiceStateMachine {
     /**
      * Retrieves the current operational status of the element associated with a particular Edge.
      * A call to this method is equal to a call to {@link #getOperationalStatus(String)},
-     * {@link #getOperationalStatus(IpService)} or {@link #getOperationalStatus(ReadOnlyBusinessService)} depending
+     * {@link #getOperationalStatus(IpService)} or {@link #getOperationalStatus(BusinessService)} depending
      * on the type of the edge.
      *
      * This method DOES NOT return the mapped status of the edge.
@@ -84,7 +84,7 @@ public interface BusinessServiceStateMachine {
      * @param edge edge to query for
      * @return the current operational status, or null if the Edge is not monitored by the state machine
      */
-    Status getOperationalStatus(ReadOnlyEdge edge);
+    Status getOperationalStatus(Edge edge);
 
     /**
      * Updates the states of the Business Services.
@@ -119,9 +119,9 @@ public interface BusinessServiceStateMachine {
      */
     BusinessServiceGraph getGraph();
 
-    List<GraphVertex> calculateRootCause(ReadOnlyBusinessService businessService);
+    List<GraphVertex> calculateRootCause(BusinessService businessService);
 
-    List<GraphVertex> calculateImpact(ReadOnlyBusinessService businessService);
+    List<GraphVertex> calculateImpact(BusinessService businessService);
 
     List<GraphVertex> calculateImpact(IpService ipService);
 

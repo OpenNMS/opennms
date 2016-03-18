@@ -28,9 +28,6 @@
 
 package org.opennms.netmgt.bsm.test;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.opennms.netmgt.bsm.service.model.Status;
 import org.opennms.netmgt.model.OnmsSeverity;
 
@@ -38,27 +35,13 @@ import org.opennms.netmgt.model.OnmsSeverity;
 @Deprecated
 class SeverityMapper {
 
-    // Maps the Status to an OnmsSeverity
-    public static OnmsSeverity toSeverity(Status status) {
-        Map<Status, OnmsSeverity> map = new HashMap<>();
-        map.put(Status.CRITICAL, OnmsSeverity.CRITICAL);
-        map.put(Status.INDETERMINATE, OnmsSeverity.INDETERMINATE);
-        map.put(Status.MAJOR, OnmsSeverity.MAJOR);
-        map.put(Status.MINOR, OnmsSeverity.MINOR);
-        map.put(Status.NORMAL, OnmsSeverity.NORMAL);
-        map.put(Status.WARNING, OnmsSeverity.WARNING);
-        return map.get(status);
-    }
-
     public static Status toStatus(OnmsSeverity severity) {
-        Map<OnmsSeverity, Status> map = new HashMap<>();
-        map.put(OnmsSeverity.INDETERMINATE, Status.INDETERMINATE);
-        map.put(OnmsSeverity.CLEARED, Status.INDETERMINATE);
-        map.put(OnmsSeverity.NORMAL, Status.NORMAL);
-        map.put(OnmsSeverity.WARNING, Status.WARNING);
-        map.put(OnmsSeverity.MINOR, Status.MINOR);
-        map.put(OnmsSeverity.MAJOR, Status.MAJOR);
-        map.put(OnmsSeverity.CRITICAL, Status.CRITICAL);
-        return map.get(severity);
+        try {
+            if (severity != null) {
+                return Status.valueOf(severity.name());
+            }
+        } catch (IllegalArgumentException ex) {
+        }
+        return Status.INDETERMINATE;
     }
 }

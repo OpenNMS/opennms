@@ -29,7 +29,7 @@
 package org.opennms.netmgt.bsm.service.model.graph.internal;
 
 import org.opennms.netmgt.bsm.service.model.Status;
-import org.opennms.netmgt.bsm.service.model.edge.ro.ReadOnlyEdge;
+import org.opennms.netmgt.bsm.service.model.edge.Edge;
 import org.opennms.netmgt.bsm.service.model.functions.map.MapFunction;
 import org.opennms.netmgt.bsm.service.model.graph.GraphEdge;
 
@@ -45,14 +45,8 @@ public class GraphEdgeImpl extends GraphElement implements GraphEdge {
         m_friendlyName = null;
     }
 
-    public GraphEdgeImpl(ReadOnlyEdge edge) {
-        m_mapFunction = edge.getMapFunction();
-        m_weight = edge.getWeight();
-        m_friendlyName = edge.getFriendlyName();
-    }
-
-    public Status getStatus() {
-        return m_status;
+    public GraphEdgeImpl(Edge edge) {
+        this(edge.getMapFunction(), edge.getWeight(), edge.getFriendlyName());
     }
 
     private GraphEdgeImpl(MapFunction mapFunction, int weight) {

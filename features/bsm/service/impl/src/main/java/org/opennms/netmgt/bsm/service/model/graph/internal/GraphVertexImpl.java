@@ -28,19 +28,19 @@
 
 package org.opennms.netmgt.bsm.service.model.graph.internal;
 
+import org.opennms.netmgt.bsm.service.model.BusinessService;
 import org.opennms.netmgt.bsm.service.model.IpService;
-import org.opennms.netmgt.bsm.service.model.ReadOnlyBusinessService;
 import org.opennms.netmgt.bsm.service.model.functions.reduce.ReductionFunction;
 import org.opennms.netmgt.bsm.service.model.graph.GraphVertex;
 
 public class GraphVertexImpl extends GraphElement implements GraphVertex, Comparable<GraphVertexImpl> {
-    private final ReadOnlyBusinessService m_businessService;
+    private final BusinessService m_businessService;
     private final IpService m_ipService;
     private final String m_reductionKey;
     private ReductionFunction m_reductionFunction;
     int m_level = -1;
 
-    protected GraphVertexImpl(ReductionFunction reduceFunction, ReadOnlyBusinessService businessService) {
+    protected GraphVertexImpl(ReductionFunction reduceFunction, BusinessService businessService) {
         this(reduceFunction, businessService, null, null);
     }
 
@@ -52,7 +52,7 @@ public class GraphVertexImpl extends GraphElement implements GraphVertex, Compar
         this(reduceFunction, null, null, reductionKey);
     }
 
-    public GraphVertexImpl(ReductionFunction reduceFunction, ReadOnlyBusinessService businessService, IpService ipService, String reductionKey) {
+    public GraphVertexImpl(ReductionFunction reduceFunction, BusinessService businessService, IpService ipService, String reductionKey) {
         m_businessService = businessService;
         m_ipService = ipService;
         m_reductionKey = reductionKey;
@@ -70,7 +70,7 @@ public class GraphVertexImpl extends GraphElement implements GraphVertex, Compar
     }
 
     @Override
-    public ReadOnlyBusinessService getBusinessService() {
+    public BusinessService getBusinessService() {
         return m_businessService;
     }
 

@@ -21,15 +21,22 @@
  *      http://www.gnu.org/licenses/
  *
  * For more information contact:
- * OpenNMS(R) Licensing <license@opennms.org>
- *      http://www.opennms.org/
- *      http://www.opennms.com/
+ *     OpenNMS(R) Licensing <license@opennms.org>
+ *     http://www.opennms.org/
+ *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.bsm.service.model.edge.ro;
+package org.opennms.netmgt.bsm.service.model.functions.map;
 
-import org.opennms.netmgt.bsm.service.model.ReadOnlyBusinessService;
+public interface MapFunctionVisitor<T> {
 
-public interface ReadOnlyChildEdge extends ReadOnlyEdge {
-    ReadOnlyBusinessService getChild();
+    T visit(Decrease decrease);
+
+    T visit(Identity identity);
+
+    T visit(Ignore ignore);
+
+    T visit(Increase increase);
+
+    T visit(SetTo setTo);
 }

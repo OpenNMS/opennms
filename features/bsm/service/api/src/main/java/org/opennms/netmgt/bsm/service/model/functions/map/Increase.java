@@ -41,4 +41,9 @@ public class Increase implements MapFunction {
         int newId = Math.min(Status.CRITICAL.getId(), source.getId() + 1);
         return Optional.of(Status.get(newId));
     }
+
+    @Override
+    public <T> T accept(MapFunctionVisitor<T> visitor) {
+        return visitor.visit(this);
+    }
 }

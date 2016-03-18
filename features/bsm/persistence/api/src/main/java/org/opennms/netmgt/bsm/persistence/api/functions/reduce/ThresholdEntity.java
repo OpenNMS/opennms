@@ -66,4 +66,9 @@ public class ThresholdEntity extends AbstractReductionFunctionEntity {
                 .add("threshold", m_threshold)
                 .toString();
     }
+
+    @Override
+    public <T> T accept(ReductionFunctionEntityVisitor<T> visitor) {
+        return visitor.visit(this);
+    }
 }

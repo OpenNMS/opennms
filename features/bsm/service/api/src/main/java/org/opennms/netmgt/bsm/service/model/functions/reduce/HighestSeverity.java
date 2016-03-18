@@ -39,4 +39,9 @@ public class HighestSeverity implements ReductionFunction {
     public Optional<Status> reduce(List<Status> statuses) {
         return statuses.stream().reduce((a, b) -> a.isGreaterThan(b) ? a : b);
     }
+
+    @Override
+    public <T> T accept(ReduceFunctionVisitor<T> visitor) {
+        return visitor.visit(this);
+    }
 }

@@ -79,4 +79,9 @@ public class SetToEntity extends AbstractMapFunctionEntity {
         }
         return false;
     }
+
+    @Override
+    public <T> T accept(MapFunctionEntityVisitor<T> visitor) {
+        return visitor.visit(this);
+    }
 }

@@ -28,20 +28,29 @@
 
 package org.opennms.netmgt.bsm.mock;
 
+import java.util.Map;
 import java.util.Set;
 
-import org.opennms.netmgt.bsm.service.model.ReadOnlyBusinessService;
-import org.opennms.netmgt.bsm.service.model.edge.ro.ReadOnlyEdge;
-import org.opennms.netmgt.bsm.service.model.functions.reduce.MostCritical;
+import org.opennms.netmgt.bsm.service.model.BusinessService;
+import org.opennms.netmgt.bsm.service.model.IpService;
+import org.opennms.netmgt.bsm.service.model.Status;
+import org.opennms.netmgt.bsm.service.model.edge.ChildEdge;
+import org.opennms.netmgt.bsm.service.model.edge.Edge;
+import org.opennms.netmgt.bsm.service.model.edge.IpServiceEdge;
+import org.opennms.netmgt.bsm.service.model.edge.ReductionKeyEdge;
+import org.opennms.netmgt.bsm.service.model.functions.map.MapFunction;
+import org.opennms.netmgt.bsm.service.model.functions.reduce.HighestSeverity;
 import org.opennms.netmgt.bsm.service.model.functions.reduce.ReductionFunction;
 
+import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
-public class MockBusinessService implements ReadOnlyBusinessService {
+public class MockBusinessService implements BusinessService {
     private final long m_id;
     private String m_name;
     private ReductionFunction m_reductionFunction = new HighestSeverity();
-    private Set<ReadOnlyEdge> m_edges = Sets.newHashSet();
+    private Map<String, String> attributes = Maps.newHashMap();
+    private Set<Edge> m_edges = Sets.newHashSet();
 
     public MockBusinessService(long id) {
         m_id = id;
@@ -54,6 +63,41 @@ public class MockBusinessService implements ReadOnlyBusinessService {
 
     public void setName(String name) {
         m_name = name;
+    }
+
+    @Override
+    public Map<String, String> getAttributes() {
+        return attributes;
+    }
+
+    @Override
+    public void setAttributes(Map<String, String> attributes) {
+        this.attributes = attributes;
+    }
+
+    @Override
+    public Set<BusinessService> getChildServices() {
+        return Sets.newHashSet();
+    }
+
+    @Override
+    public Set<BusinessService> getParentServices() {
+        return Sets.newHashSet();
+    }
+
+    @Override
+    public void save() {
+
+    }
+
+    @Override
+    public void delete() {
+
+    }
+
+    @Override
+    public Status getOperationalStatus() {
+        return null;
     }
 
     @Override
@@ -70,16 +114,71 @@ public class MockBusinessService implements ReadOnlyBusinessService {
         return m_reductionFunction;
     }
 
-    public void setEdges(Set<ReadOnlyEdge> edges) {
+    @Override
+    public void setReduceFunction(ReductionFunction reductionFunction) {
+        m_reductionFunction = reductionFunction;
+    }
+
+    @Override
+    public void setIpServiceEdges(Set<IpServiceEdge> ipServiceEdges) {
+
+    }
+
+    @Override
+    public void addIpServiceEdge(IpService ipService, MapFunction mapFunction, int weight, String friendlyName) {
+
+    }
+
+    @Override
+    public void setReductionKeyEdges(Set<ReductionKeyEdge> reductionKeyEdges) {
+
+    }
+
+    @Override
+    public void addReductionKeyEdge(String reductionKey, MapFunction mapFunction, int weight, String friendlyName) {
+
+    }
+
+    @Override
+    public void setChildEdges(Set<ChildEdge> childEdges) {
+
+    }
+
+    @Override
+    public void addChildEdge(BusinessService child, MapFunction mapFunction, int weight) {
+
+    }
+
+    @Override
+    public void removeEdge(Edge edge) {
+        m_edges.remove(edge);
+    }
+
+    @Override
+    public Set<ReductionKeyEdge> getReductionKeyEdges() {
+        return Sets.newHashSet();
+    }
+
+    @Override
+    public Set<IpServiceEdge> getIpServiceEdges() {
+        return null;
+    }
+
+    @Override
+    public Set<ChildEdge> getChildEdges() {
+        return null;
+    }
+
+    public void setEdges(Set<Edge> edges) {
         m_edges = edges;
     }
 
-    public void addEdge(ReadOnlyEdge edge) {
+    public void addEdge(Edge edge) {
         m_edges.add(edge);
     }
 
     @Override
-    public Set<ReadOnlyEdge> getEdges() {
+    public Set<Edge> getEdges() {
         return m_edges;
     }
 

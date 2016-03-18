@@ -29,12 +29,12 @@
 package org.opennms.netmgt.bsm.service.internal;
 
 import static org.junit.Assert.assertEquals;
+import static org.opennms.netmgt.bsm.test.BsmTestUtils.createAlarmWrapper;
 import static org.opennms.netmgt.bsm.test.hierarchies.BambooTestHierarchy.BAMBOO_AGENT_CAROLINA_REDUCTION_KEY;
 import static org.opennms.netmgt.bsm.test.hierarchies.BambooTestHierarchy.BAMBOO_AGENT_DUKE_REDUCTION_KEY;
 import static org.opennms.netmgt.bsm.test.hierarchies.BambooTestHierarchy.BAMBOO_AGENT_NCSTATE_REDUCTION_KEY;
 import static org.opennms.netmgt.bsm.test.hierarchies.BambooTestHierarchy.DISK_USAGE_THRESHOLD_BAMBO_REDUCTION_KEY;
 import static org.opennms.netmgt.bsm.test.hierarchies.BambooTestHierarchy.HTTP_8085_BAMBOO_REDUCTION_KEY;
-import static org.opennms.netmgt.bsm.test.BsmTestUtils.createAlarmWrapper;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -54,14 +54,14 @@ import org.opennms.netmgt.bsm.persistence.api.ReductionKeyHelper;
 import org.opennms.netmgt.bsm.service.BusinessServiceManager;
 import org.opennms.netmgt.bsm.service.internal.edge.IpServiceEdgeImpl;
 import org.opennms.netmgt.bsm.service.model.AlarmWrapper;
-import org.opennms.netmgt.bsm.service.model.ReadOnlyBusinessService;
+import org.opennms.netmgt.bsm.service.model.BusinessService;
 import org.opennms.netmgt.bsm.service.model.Status;
 import org.opennms.netmgt.bsm.service.model.edge.Edge;
 import org.opennms.netmgt.bsm.service.model.edge.IpServiceEdge;
 import org.opennms.netmgt.bsm.service.model.functions.map.Identity;
-import org.opennms.netmgt.bsm.test.hierarchies.BambooTestHierarchy;
 import org.opennms.netmgt.bsm.test.BsmDatabasePopulator;
 import org.opennms.netmgt.bsm.test.LoggingStateChangeHandler;
+import org.opennms.netmgt.bsm.test.hierarchies.BambooTestHierarchy;
 import org.opennms.netmgt.bsm.test.hierarchies.BusinessServicesShareIpServiceHierarchy;
 import org.opennms.netmgt.bsm.test.hierarchies.SimpleTestHierarchy;
 import org.opennms.netmgt.events.api.EventConstants;
@@ -220,7 +220,7 @@ public class DefaultBusinessServiceStateMachineIT {
         IpServiceEdge svc2 = wrap(testHierarchy.getServiceChild2());
 
         // Setup the state machine
-        List<ReadOnlyBusinessService> bss = Lists.newArrayList(bsChild1, bsChild2, bsParent);
+        List<BusinessService> bss = Lists.newArrayList(bsChild1, bsChild2, bsParent);
         LoggingStateChangeHandler handler = new LoggingStateChangeHandler();
         DefaultBusinessServiceStateMachine stateMachine = new DefaultBusinessServiceStateMachine();
         stateMachine.setBusinessServices(bss);
@@ -228,7 +228,7 @@ public class DefaultBusinessServiceStateMachineIT {
 
         // Verify the initial state
         assertEquals(0, handler.getStateChanges().size());
-        for (ReadOnlyBusinessService eachBs : bss) {
+        for (BusinessService eachBs : bss) {
             assertEquals(DefaultBusinessServiceStateMachine.DEFAULT_SEVERITY, stateMachine.getOperationalStatus(eachBs));
         }
 
@@ -261,7 +261,7 @@ public class DefaultBusinessServiceStateMachineIT {
         businessServiceDao.flush();
 
         // Setup the state machine
-        List<ReadOnlyBusinessService> bss = Lists.newArrayList(bsChild1, bsChild2, bsParent);
+        List<BusinessService> bss = Lists.newArrayList(bsChild1, bsChild2, bsParent);
         LoggingStateChangeHandler handler = new LoggingStateChangeHandler();
         DefaultBusinessServiceStateMachine stateMachine = new DefaultBusinessServiceStateMachine();
         stateMachine.setBusinessServices(bss);
@@ -269,7 +269,7 @@ public class DefaultBusinessServiceStateMachineIT {
 
         // Verify the initial state
         assertEquals(0, handler.getStateChanges().size());
-        for (ReadOnlyBusinessService eachBs : bss) {
+        for (BusinessService eachBs : bss) {
             assertEquals(DefaultBusinessServiceStateMachine.DEFAULT_SEVERITY, stateMachine.getOperationalStatus(eachBs));
         }
 

@@ -37,4 +37,6 @@ public interface ReductionFunction {
 
     Optional<Status> reduce(List<Status> statuses);
 
+    <T> T accept(ReduceFunctionVisitor<T> visitor);
+
 }

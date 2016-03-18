@@ -28,9 +28,9 @@
 
 package org.opennms.netmgt.bsm.service;
 
-import org.opennms.netmgt.bsm.service.model.ReadOnlyBusinessService;
+import org.opennms.netmgt.bsm.service.model.BusinessService;
 import org.opennms.netmgt.bsm.service.model.Status;
 
 public interface BusinessServiceStateChangeHandler {
-    void handleBusinessServiceStateChanged(ReadOnlyBusinessService businessService, Status newStatus, Status oldStatus);
+    void handleBusinessServiceStateChanged(BusinessService businessService, Status newStatus, Status oldStatus);
 }

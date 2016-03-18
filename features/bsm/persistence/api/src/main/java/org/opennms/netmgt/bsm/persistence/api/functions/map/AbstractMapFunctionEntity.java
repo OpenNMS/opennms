@@ -77,4 +77,6 @@ public abstract class AbstractMapFunctionEntity {
         if (other == null) return false;
         return other.getClass().equals(getClass());
     }
+
+    public abstract <T> T accept(MapFunctionEntityVisitor<T> visitor);
 }

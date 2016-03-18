@@ -35,4 +35,9 @@ import javax.persistence.Entity;
 @DiscriminatorValue(value="identity")
 public class IdentityEntity extends AbstractMapFunctionEntity {
 
+    @Override
+    public <T> T accept(MapFunctionEntityVisitor<T> visitor) {
+        return visitor.visit(this);
+    }
+
 }

@@ -29,9 +29,10 @@
 package org.opennms.netmgt.bsm.service.model.edge;
 
 import org.opennms.netmgt.bsm.service.model.IpService;
-import org.opennms.netmgt.bsm.service.model.edge.ro.ReadOnlyIpServiceEdge;
 
-public interface IpServiceEdge extends ReadOnlyIpServiceEdge, Edge {
+public interface IpServiceEdge extends Edge {
+    IpService getIpService();
+    String getFriendlyName();
     void setIpService(IpService ipService);
     void setFriendlyName(String friendlyName);
 }

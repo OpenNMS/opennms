@@ -66,4 +66,8 @@ public class HighestSeverityAboveEntity extends AbstractReductionFunctionEntity 
                 .toString();
     }
 
+    @Override
+    public <T> T accept(ReductionFunctionEntityVisitor<T> visitor) {
+        return visitor.visit(this);
+    }
 }

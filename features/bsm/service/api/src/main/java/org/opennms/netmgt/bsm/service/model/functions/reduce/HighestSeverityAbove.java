@@ -52,4 +52,9 @@ public class HighestSeverityAbove implements ReductionFunction {
     public Status getThreshold() {
         return threshold;
     }
+
+    @Override
+    public <T> T accept(ReduceFunctionVisitor<T> visitor) {
+        return visitor.visit(this);
+    }
 }

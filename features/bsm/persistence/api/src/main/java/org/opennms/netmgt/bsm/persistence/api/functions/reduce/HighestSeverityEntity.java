@@ -35,4 +35,9 @@ import javax.persistence.Entity;
 @DiscriminatorValue(value="highest-severity")
 public class HighestSeverityEntity extends AbstractReductionFunctionEntity {
 
+    @Override
+    public <T> T accept(ReductionFunctionEntityVisitor<T> visitor) {
+        return visitor.visit(this);
+    }
+
 }

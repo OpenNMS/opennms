@@ -39,7 +39,7 @@ import java.util.stream.Collectors;
 import org.junit.Test;
 import org.opennms.netmgt.bsm.mock.MockBusinessServiceHierarchy;
 import org.opennms.netmgt.bsm.mock.MockBusinessServiceHierarchy.Builder;
-import org.opennms.netmgt.bsm.service.model.ReadOnlyBusinessService;
+import org.opennms.netmgt.bsm.service.model.BusinessService;
 import org.opennms.netmgt.bsm.service.model.graph.BusinessServiceGraph;
 
 import com.google.common.collect.Maps;
@@ -75,7 +75,7 @@ public class BusinessServiceGraphImplTest {
             .commit()
             .withBusinessService(7).commit()
             .build();
-        List<ReadOnlyBusinessService> businessServices = h.getBusinessServices();
+        List<BusinessService> businessServices = h.getBusinessServices();
 
         // Quick sanity check of the generated hierarchy
         assertEquals(7, businessServices.size());
@@ -85,15 +85,15 @@ public class BusinessServiceGraphImplTest {
         BusinessServiceGraph graph = new BusinessServiceGraphImpl(h.getBusinessServices());
 
         // Verify the services at every level
-        Map<Integer, Set<ReadOnlyBusinessService>> servicesByLevel = Maps.newTreeMap();
+        Map<Integer, Set<BusinessService>> servicesByLevel = Maps.newTreeMap();
         servicesByLevel.put(0, Sets.newHashSet(h.getBusinessServiceById(1), h.getBusinessServiceById(5), h.getBusinessServiceById(6), h.getBusinessServiceById(7)));
         servicesByLevel.put(1, Sets.newHashSet(h.getBusinessServiceById(2)));
         servicesByLevel.put(2, Sets.newHashSet(h.getBusinessServiceById(3)));
         servicesByLevel.put(3, Sets.newHashSet(h.getBusinessServiceById(4)));
         servicesByLevel.put(4, Sets.newHashSet());
-        for (Entry<Integer, Set<ReadOnlyBusinessService>> entry : servicesByLevel.entrySet()) {
+        for (Entry<Integer, Set<BusinessService>> entry : servicesByLevel.entrySet()) {
             int level = entry.getKey();
-            Set<ReadOnlyBusinessService> servicesAtLevel = graph.getVerticesByLevel(level).stream()
+            Set<BusinessService> servicesAtLevel = graph.getVerticesByLevel(level).stream()
                 .filter(v -> v.getLevel() == level) // Used to verify the level on the actual vertex
                 .map(v -> v.getBusinessService())
                 .collect(Collectors.toSet());

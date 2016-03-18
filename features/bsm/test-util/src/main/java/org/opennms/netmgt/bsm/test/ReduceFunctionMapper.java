@@ -28,62 +28,49 @@
 
 package org.opennms.netmgt.bsm.test;
 
-import java.util.Map;
-
 import org.opennms.netmgt.bsm.persistence.api.functions.reduce.AbstractReductionFunctionEntity;
 import org.opennms.netmgt.bsm.persistence.api.functions.reduce.HighestSeverityAboveEntity;
 import org.opennms.netmgt.bsm.persistence.api.functions.reduce.HighestSeverityEntity;
+import org.opennms.netmgt.bsm.persistence.api.functions.reduce.ReductionFunctionEntityVisitor;
 import org.opennms.netmgt.bsm.persistence.api.functions.reduce.ThresholdEntity;
 import org.opennms.netmgt.bsm.service.model.Status;
-import org.opennms.netmgt.bsm.service.model.functions.reduce.HighestSeverityAbove;
 import org.opennms.netmgt.bsm.service.model.functions.reduce.HighestSeverity;
-import org.opennms.netmgt.bsm.service.model.functions.reduce.Threshold;
+import org.opennms.netmgt.bsm.service.model.functions.reduce.HighestSeverityAbove;
 import org.opennms.netmgt.bsm.service.model.functions.reduce.ReductionFunction;
-
-import com.google.common.base.Function;
-import com.google.common.collect.Maps;
+import org.opennms.netmgt.bsm.service.model.functions.reduce.Threshold;
 // this is copied from service.impl as the dependency on that project would form a cycle.
 @Deprecated
 class ReduceFunctionMapper {
 
-    private static final Map<Class<? extends ReductionFunction>, Function<ReductionFunction, AbstractReductionFunctionEntity>> serviceToPersistenceMapping = Maps.newHashMap();
-
-    private static final Map<Class<? extends AbstractReductionFunctionEntity>, Function<AbstractReductionFunctionEntity, ReductionFunction>> persistenceToServiceMapping = Maps.newHashMap();
-
-    static {
-        serviceToPersistenceMapping.put(HighestSeverity.class, input -> new HighestSeverityEntity());
-        serviceToPersistenceMapping.put(Threshold.class, input -> {
-            ThresholdEntity entity = new ThresholdEntity();
-            entity.setThreshold(((Threshold) input).getThreshold());
-            return entity;
-        });
-        serviceToPersistenceMapping.put(HighestSeverityAbove.class, input -> {
-            HighestSeverityAboveEntity entity = new HighestSeverityAboveEntity();
-            entity.setThreshold(((HighestSeverityAbove) input).getThreshold().ordinal());
-            return entity;
-        });
-
-        persistenceToServiceMapping.put(HighestSeverityEntity.class, input -> new HighestSeverity());
-        persistenceToServiceMapping.put(ThresholdEntity.class, input -> {
-            Threshold result = new Threshold();
-            result.setThreshold(((ThresholdEntity) input).getThreshold());
-            return result;
-        });
-        persistenceToServiceMapping.put(HighestSeverityAboveEntity.class, input -> {
+    private static final ReductionFunctionEntityVisitor<ReductionFunction> persistenceToServiceMapping = new ReductionFunctionEntityVisitor<ReductionFunction>() {
+        @Override
+        public ReductionFunction visit(HighestSeverityAboveEntity highestSeverityAboveEntity) {
             HighestSeverityAbove result = new HighestSeverityAbove();
-            result.setThreshold(Status.get(((HighestSeverityAboveEntity) input).getThreshold()));
+            result.setThreshold(Status.get(highestSeverityAboveEntity.getThreshold()));
             return result;
-        });
-    }
+        }
+
+        @Override
+        public ReductionFunction visit(HighestSeverityEntity highestSeverityEntity) {
+            return new HighestSeverity();
+        }
+
+        @Override
+        public ReductionFunction visit(ThresholdEntity thresholdEntity) {
+            Threshold result = new Threshold();
+            result.setThreshold(thresholdEntity.getThreshold());
+            return result;
+        }
+    };
 
     public ReductionFunction toServiceFunction(AbstractReductionFunctionEntity reductionFunctionEntity) {
         if (reductionFunctionEntity == null) {
             return null;
         }
-        Function<AbstractReductionFunctionEntity, ReductionFunction> mapping = persistenceToServiceMapping.get(reductionFunctionEntity.getClass());
-        if (mapping == null) {
+        ReductionFunction reductionFunction = reductionFunctionEntity.accept(persistenceToServiceMapping);
+        if (reductionFunction == null) {
             throw new IllegalArgumentException("No mapping found");
         }
-        return mapping.apply(reductionFunctionEntity);
+        return reductionFunction;
     }
 }
