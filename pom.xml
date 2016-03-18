@@ -1311,9 +1311,8 @@
     <minaVersion>2.0.7</minaVersion>
     <minionKarafVersion>4.0.4</minionKarafVersion>
     <newtsVersion>1.3.4</newtsVersion>
-    <paxExamVersion>4.6.0</paxExamVersion>
-    <paxSwissboxVersion>1.8.1</paxSwissboxVersion>
-    <postgresqlVersion>9.4.1211</postgresqlVersion>
+    <paxExamVersion>4.8.0</paxExamVersion>
+    <paxSwissboxVersion>1.8.2</paxSwissboxVersion>
     <powermockVersion>1.5.5</powermockVersion>
     <oroVersion>2.0.8</oroVersion>
     <osgiVersion>5.0.0</osgiVersion>
