@@ -234,17 +234,10 @@
     );
 
     // Initialize requisitions
-    // TODO Implement a ReST end point for getting requisition names (it will be less expensive)
     if (foreignSources == null) {
-      RequisitionsService.getRequisitions().then(
-        function(data) { // success
-          angular.forEach(data.requisitions, function(r) {
-            $scope.foreignSources.push(r.foreignSource);
-          });
-          // If there is NO requisitions, the user has to create a new one
-          if ($scope.foreignSources.length == 0) {
-            $scope.addRequisition();
-          }
+      RequisitionsService.getRequisitionNames().then(
+        function(requisitions) { // success
+          $scope.foreignSources = requisitions
         },
         $scope.errorHandler
       );

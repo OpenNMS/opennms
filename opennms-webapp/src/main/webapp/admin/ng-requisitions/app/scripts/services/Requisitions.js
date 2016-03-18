@@ -55,6 +55,7 @@
     // URLs
 
     requisitionsService.internal.requisitionsUrl = baseHref + 'rest/requisitions';
+    requisitionsService.internal.requisitionNamesUrl = baseHref + 'rest/requisitionNames';
     requisitionsService.internal.foreignSourcesUrl = baseHref + 'rest/foreignSources';
     requisitionsService.internal.foreignSourcesConfigUrl = baseHref + 'rest/foreignSourcesConfig';
     requisitionsService.internal.snmpConfigUrl = baseHref + 'rest/snmpConfig';
@@ -308,6 +309,40 @@
       .error(function(error, status) {
         $log.error('getRequisition: GET ' + url + ' failed:', error, status);
         deferred.reject('Cannot retrieve the requisitions.' + requisitionsService.internal.errorHelp);
+      });
+
+      return deferred.promise;
+    };
+
+    /**
+    * @description Gets the requisition names.
+    *
+    * @name RequisitionsService:getRequisitionNames
+    * @ngdoc method
+    * @methodOf RequisitionsService
+    * @returns {object} a promise. On success, it provides a list of requisition names.
+    */
+    requisitionsService.getRequisitionNames = function() {
+      var deferred = $q.defer();
+
+      var config = requisitionsService.internal.getCatchedConfigData('requisitionNames');
+      if (config != null) {
+        $log.debug('getRequisitionNames: returning a cached copy of requisition names');
+        deferred.resolve(config);
+        return deferred.promise;
+      }
+
+      var url = requisitionsService.internal.requisitionNamesUrl;
+      $log.debug('getRequisitionNames: getting requisition names');
+      $http.get(url)
+      .success(function(data) {
+        $log.debug('getRequisitionNames: got requisition names');
+        requisitionsService.internal.setCatchedConfigData('requisitionNames', data['foreign-source']);
+        deferred.resolve(data['foreign-source']);
+      })
+      .error(function(error, status) {
+        $log.error('getRequisitionNames: GET ' + url + ' failed:', error, status);
+        deferred.reject('Cannot retrieve requisition names.' + requisitionsService.internal.errorHelp);
       });
 
       return deferred.promise;
