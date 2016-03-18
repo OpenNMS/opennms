@@ -186,7 +186,7 @@ public class RemotePollerAvailabilityService extends OnmsRestService {
         
         LocationDef locationDefinition = m_monitoringLocationDao.get(location);
         if (locationDefinition == null) {
-            throw getException(Status.BAD_REQUEST, "Cannot find location definition: " + location);
+            throw getException(Status.BAD_REQUEST, "Cannot find location definition: {}", location);
         }
         Collection<OnmsLocationMonitor> monitors = m_locationMonitorDao.findByLocationDefinition(locationDefinition);
         
@@ -351,7 +351,7 @@ public class RemotePollerAvailabilityService extends OnmsRestService {
         Date start = getStartTime(params);
         Date end = getEndTime(params);
         if((end.getTime() - start.getTime()) < TimeChunker.MINUTE) {
-            throw getException(Status.BAD_REQUEST, "The endTime has to be after the startTime by 5 minutes.\nCurrently the startTime is " + start + " and endTime is " + end);
+            throw getException(Status.BAD_REQUEST, "The endTime has to be after the startTime by 5 minutes.\nCurrently the startTime is {} and endTime is {}.", start.toString(), end.toString());
         }
         
         timeChunker = new TimeChunker(getResolution(params), start, end);

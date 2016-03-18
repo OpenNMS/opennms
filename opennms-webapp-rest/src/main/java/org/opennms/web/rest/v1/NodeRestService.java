@@ -178,7 +178,11 @@ public class NodeRestService extends OnmsRestService {
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     @Path("{nodeCriteria}")
     public OnmsNode getNode(@PathParam("nodeCriteria") final String nodeCriteria) {
-        return m_nodeDao.get(nodeCriteria);
+        final OnmsNode node = m_nodeDao.get(nodeCriteria);
+        if (node == null) {
+            throw getException(Status.NOT_FOUND, "Node {} was not found.", nodeCriteria);
+        }
+        return node;
     }
 
     /**
@@ -195,12 +199,8 @@ public class NodeRestService extends OnmsRestService {
         try {
             LOG.debug("addNode: Adding node {}", node);
             m_nodeDao.save(node);
-            try {
-                sendEvent(EventConstants.NODE_ADDED_EVENT_UEI, node.getId(), node.getLabel());
-            } catch (EventProxyException ex) {
-                throw getException(Status.BAD_REQUEST, ex.getMessage());
-            }
-            return Response.seeOther(uriInfo.getRequestUriBuilder().path(node.getNodeId()).build()).build();
+            sendEvent(EventConstants.NODE_ADDED_EVENT_UEI, node.getId(), node.getLabel());
+            return Response.created(uriInfo.getRequestUriBuilder().path(node.getNodeId()).build()).build();
         } finally {
             writeUnlock();
         }
@@ -216,31 +216,34 @@ public class NodeRestService extends OnmsRestService {
     @PUT
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Path("{nodeCriteria}")
-    public Response updateNode(@Context final UriInfo uriInfo, @PathParam("nodeCriteria") final String nodeCriteria, final MultivaluedMapImpl params) {
+    public Response updateNode(@PathParam("nodeCriteria") final String nodeCriteria, final MultivaluedMapImpl params) {
         writeLock();
         
         try {
             final OnmsNode node = m_nodeDao.get(nodeCriteria);
-            if (node == null) throw getException(Status.BAD_REQUEST, "updateNode: Can't find node " + nodeCriteria);
+            if (node == null) throw getException(Status.BAD_REQUEST, "Node {} was not found.", nodeCriteria);
             if (node.getAssetRecord().getGeolocation() == null) {
                 node.getAssetRecord().setGeolocation(new OnmsGeolocation());
             }
     
             LOG.debug("updateNode: updating node {}", node);
     
+            boolean modified = false;
             final BeanWrapper wrapper = PropertyAccessorFactory.forBeanPropertyAccess(node);
             for(final String key : params.keySet()) {
                 if (wrapper.isWritableProperty(key)) {
                     final String stringValue = params.getFirst(key);
                     final Object value = wrapper.convertIfNecessary(stringValue, (Class<?>)wrapper.getPropertyType(key));
                     wrapper.setPropertyValue(key, value);
+                    modified = true;
                 }
             }
-    
-            LOG.debug("updateNode: node {} updated", node);
-            m_nodeDao.saveOrUpdate(node);
-            return Response.seeOther(getRedirectUri(uriInfo)).build();
-            // return Response.ok(node).build();
+            if (modified) {
+                LOG.debug("updateNode: node {} updated", node);
+                m_nodeDao.saveOrUpdate(node);
+                return Response.noContent().build();
+            }
+            return Response.notModified().build();
         } finally {
             writeUnlock();
         }
@@ -259,16 +262,12 @@ public class NodeRestService extends OnmsRestService {
         
         try {
             final OnmsNode node = m_nodeDao.get(nodeCriteria);
-            if (node == null) throw getException(Status.BAD_REQUEST, "deleteNode: Can't find node " + nodeCriteria);
+            if (node == null) throw getException(Status.BAD_REQUEST, "Node {} was not found.", nodeCriteria);
     
             LOG.debug("deleteNode: deleting node {}", nodeCriteria);
             m_nodeDao.delete(node);
-            try {
-                sendEvent(EventConstants.NODE_DELETED_EVENT_UEI, node.getId(), node.getLabel());
-            } catch (final EventProxyException ex) {
-                throw getException(Status.BAD_REQUEST, ex.getMessage());
-            }
-            return Response.ok().build();
+            sendEvent(EventConstants.NODE_DELETED_EVENT_UEI, node.getId(), node.getLabel());
+            return Response.noContent().build();
         } finally {
             writeUnlock();
         }
@@ -320,7 +319,7 @@ public class NodeRestService extends OnmsRestService {
     public OnmsCategoryCollection getCategoriesForNode(@PathParam("nodeCriteria") String nodeCriteria) {
         OnmsNode node = m_nodeDao.get(nodeCriteria);
         if (node == null) {
-            throw getException(Status.BAD_REQUEST, "getCategories: Can't find node " + nodeCriteria);
+            throw getException(Status.BAD_REQUEST, "Node {} was not found.", nodeCriteria);
         }
         return new OnmsCategoryCollection(node.getCategories());
     }
@@ -330,9 +329,13 @@ public class NodeRestService extends OnmsRestService {
     public OnmsCategory getCategoryForNode(@PathParam("nodeCriteria") String nodeCriteria, @PathParam("categoryName") String categoryName) {
         OnmsNode node = m_nodeDao.get(nodeCriteria);
         if (node == null) {
-            throw getException(Status.BAD_REQUEST, "getCategory: Can't find node " + nodeCriteria);
+            throw getException(Status.BAD_REQUEST, "Node {} was not found.", nodeCriteria);
         }
-        return getCategory(node, categoryName);
+        final OnmsCategory cat = getCategory(node, categoryName);
+        if (cat == null) {
+            throw getException(Status.NOT_FOUND, "Can't find category {} for node {}.", categoryName, nodeCriteria);
+        }
+        return cat;
     }
 
     @POST
@@ -351,19 +354,19 @@ public class NodeRestService extends OnmsRestService {
         try {
             OnmsNode node = m_nodeDao.get(nodeCriteria);
             if (node == null) {
-                throw getException(Status.BAD_REQUEST, "addCategory: Can't find node " + nodeCriteria);
+                throw getException(Status.BAD_REQUEST, "Node {} was not found.", nodeCriteria);
             }
             OnmsCategory found = m_categoryDao.findByName(categoryName);
             if (found == null) {
-                throw getException(Status.BAD_REQUEST, "addCategory: Can't find category " + categoryName);
+                throw getException(Status.BAD_REQUEST, "Category {} was not found.", categoryName);
             }
             if (!node.getCategories().contains(found)) {
                 LOG.debug("addCategory: Adding category {} to node {}", found, nodeCriteria);
                 node.addCategory(found);
                 m_nodeDao.save(node);
-                return Response.seeOther(getRedirectUri(uriInfo, categoryName)).build();
+                return Response.created(getRedirectUri(uriInfo, categoryName)).build();
             } else {
-                throw getException(Status.BAD_REQUEST, "addCategory: Category '{}' already added to node '{}'", categoryName, nodeCriteria);
+                throw getException(Status.BAD_REQUEST, "Category '{}' already added to node '{}'", categoryName, nodeCriteria);
             }
         } finally {
             writeUnlock();
@@ -373,17 +376,17 @@ public class NodeRestService extends OnmsRestService {
     @PUT
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Path("/{nodeCriteria}/categories/{categoryName}")
-    public Response updateCategoryForNode(@Context final UriInfo uriInfo, @PathParam("nodeCriteria") final String nodeCriteria, @PathParam("categoryName") final String categoryName, MultivaluedMapImpl params) {
+    public Response updateCategoryForNode(@PathParam("nodeCriteria") final String nodeCriteria, @PathParam("categoryName") final String categoryName, MultivaluedMapImpl params) {
         writeLock();
 
         try {
             OnmsNode node = m_nodeDao.get(nodeCriteria);
             if (node == null) {
-                throw getException(Status.BAD_REQUEST, "updateCategory: Can't find node " + nodeCriteria);
+                throw getException(Status.BAD_REQUEST, "Node {} was not found.", nodeCriteria);
             }
             OnmsCategory category = getCategory(node, categoryName);
             if (category == null) {
-                throw getException(Status.BAD_REQUEST, "updateCategory: Category " + categoryName + " not found on node " + nodeCriteria);
+                throw getException(Status.BAD_REQUEST, "Category {} not found on node {}", categoryName, nodeCriteria);
             }
             LOG.debug("updateCategory: updating category {}", category);
             BeanWrapper wrapper = PropertyAccessorFactory.forBeanPropertyAccess(category);
@@ -402,7 +405,7 @@ public class NodeRestService extends OnmsRestService {
             } else {
                 LOG.debug("updateCategory: no fields updated in category {}", category);
             }
-            return Response.seeOther(getRedirectUri(uriInfo)).build();
+            return Response.noContent().build();
         } finally {
             writeUnlock();
         }
@@ -416,16 +419,16 @@ public class NodeRestService extends OnmsRestService {
         try {
             OnmsNode node = m_nodeDao.get(nodeCriteria);
             if (node == null) {
-                throw getException(Status.BAD_REQUEST, "deleteCaegory: Can't find node " + nodeCriteria);
+                throw getException(Status.BAD_REQUEST, "Node {} was not found.", nodeCriteria);
             }
             OnmsCategory category = getCategory(node, categoryName);
             if (category == null) {
-                throw getException(Status.BAD_REQUEST, "deleteCaegory: Category " + categoryName + " not found on node " + nodeCriteria);
+                throw getException(Status.BAD_REQUEST, "Category {} not found on node {}", categoryName, nodeCriteria);
             }
             LOG.debug("deleteCaegory: deleting category {} from node {}", categoryName, nodeCriteria);
             node.getCategories().remove(category);
             m_nodeDao.saveOrUpdate(node);
-            return Response.ok().build();
+            return Response.noContent().build();
         } finally {
             writeUnlock();
         }
@@ -440,11 +443,15 @@ public class NodeRestService extends OnmsRestService {
         return null;
     }
 
-    private void sendEvent(final String uei, final int nodeId, String nodeLabel) throws EventProxyException {
-        final EventBuilder bldr = new EventBuilder(uei, getClass().getName());
-        bldr.setNodeid(nodeId);
-        bldr.addParam("nodelabel", nodeLabel);
-        m_eventProxy.send(bldr.getEvent());
+    private void sendEvent(final String uei, final int nodeId, String nodeLabel) {
+        try {
+            final EventBuilder bldr = new EventBuilder(uei, "ReST");
+            bldr.setNodeid(nodeId);
+            bldr.addParam("nodelabel", nodeLabel);
+            m_eventProxy.send(bldr.getEvent());
+        } catch (final EventProxyException e) {
+            throw getException(Status.INTERNAL_SERVER_ERROR, "Cannot send event {} : {}", uei, e.getMessage());
+        }
     }
 
     private static CriteriaBuilder getCriteriaBuilder(final MultivaluedMap<String, String> params) {
