@@ -254,6 +254,11 @@
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
+      <artifactId>opennms-detector-lineoriented</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
       <artifactId>opennms-icmp-jna</artifactId>
       <scope>test</scope>
     </dependency>

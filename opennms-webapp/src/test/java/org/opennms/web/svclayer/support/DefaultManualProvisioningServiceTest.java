@@ -45,7 +45,10 @@ import org.junit.Test;
 import org.opennms.core.test.ConfigurationTestUtils;
 import org.opennms.netmgt.config.PollerConfig;
 import org.opennms.netmgt.dao.mock.MockServiceTypeDao;
+import org.opennms.netmgt.poller.MonitoredService;
+import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.poller.ServiceMonitor;
+import org.opennms.netmgt.poller.monitors.AbstractServiceMonitor;
 import org.opennms.netmgt.provision.persist.ForeignSourceRepository;
 import org.opennms.netmgt.provision.persist.MockForeignSourceRepository;
 import org.opennms.netmgt.provision.persist.requisition.Requisition;
@@ -180,11 +183,16 @@ public class DefaultManualProvisioningServiceTest {
     public void serviceTypeNamesIncludesServiceFromPollerConfiguration() {
         // Map of service monitors
         final Map<String, ServiceMonitor> serviceMonitors = new HashMap<String, ServiceMonitor>();
-        serviceMonitors.put("Shochu-Stock-Level", null);
+        serviceMonitors.put("Shochu-Stock-Level", new AbstractServiceMonitor() {
+            @Override
+            public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {
+                return null;
+            }
+        });
 
         // Build a mock config. that returns our map
         final PollerConfig pollerConfig = EasyMock.createNiceMock(PollerConfig.class);
-        EasyMock.expect(pollerConfig.getServiceMonitors()).andReturn(serviceMonitors);
+        EasyMock.expect(pollerConfig.getServiceMonitors()).andReturn(serviceMonitors).anyTimes();
         m_provisioningService.setPollerConfig(pollerConfig);
 
         EasyMock.replay(pollerConfig);

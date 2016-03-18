@@ -122,7 +122,7 @@ public class GroupRestServiceIT extends AbstractSpringJerseyRestTestCase {
         JSONAssert.assertNotEquals(expectedObject, restObject, true);
 
         // Update the comment value
-        sendPut("/groups/Admin", "comments=The administrators", 303, "/groups/Admin");
+        sendPut("/groups/Admin", "comments=The administrators", 204);
 
         // Now they should be equal
         jsonRequest = createRequest(m_servletContext, GET, url);
@@ -140,7 +140,7 @@ public class GroupRestServiceIT extends AbstractSpringJerseyRestTestCase {
         String xml = sendRequest(GET, "/groups/test", 200);
         assertTrue(xml.contains("<group><name>test</name>"));
 
-        sendPut("/groups/test", "comments=MONKEYS", 303, "/groups/test");
+        sendPut("/groups/test", "comments=MONKEYS", 204);
 
         xml = sendRequest(GET, "/groups/test", 200);
         assertTrue(xml.contains(">MONKEYS<"));
@@ -153,9 +153,9 @@ public class GroupRestServiceIT extends AbstractSpringJerseyRestTestCase {
         String xml = sendRequest(GET, "/groups", 200);
         assertTrue(xml.contains("deleteMe"));
 
-        sendRequest(DELETE, "/groups/idontexist", 400);
+        sendRequest(DELETE, "/groups/idontexist", 404);
         
-        sendRequest(DELETE, "/groups/deleteMe", 200);
+        sendRequest(DELETE, "/groups/deleteMe", 204);
 
         sendRequest(GET, "/groups/deleteMe", 404);
     }
@@ -172,7 +172,7 @@ public class GroupRestServiceIT extends AbstractSpringJerseyRestTestCase {
 
         LOG.debug("add totallyUniqueUser to deleteMe");
         // add user to group
-        sendRequest(PUT, "/groups/deleteMe/users/totallyUniqueUser", 303);
+        sendRequest(PUT, "/groups/deleteMe/users/totallyUniqueUser", 204);
         String xml = sendRequest(GET, "/groups/deleteMe", 200);
         assertTrue(xml.contains("totallyUniqueUser"));
 
@@ -196,7 +196,7 @@ public class GroupRestServiceIT extends AbstractSpringJerseyRestTestCase {
         LOG.debug("delete temporary users");
         // clean up
         sendRequest(DELETE, "/groups/deleteMe/users/totallyBogusUser", 400);
-        sendRequest(DELETE, "/groups/deleteMe/users/totallyUniqueUser", 200);
+        sendRequest(DELETE, "/groups/deleteMe/users/totallyUniqueUser", 204);
         xml = sendRequest(GET, "/groups/deleteMe", 200);
         assertFalse(xml.contains("totallyUniqueUser"));
         
@@ -238,7 +238,7 @@ public class GroupRestServiceIT extends AbstractSpringJerseyRestTestCase {
         // add category to group
         sendRequest(PUT, "/groups/testGroup/categories/testCategory", 400); // fails, because Category is not there
         createCategory("testCategory"); // create category
-        sendRequest(PUT, "/groups/testGroup/categories/testCategory", 200); // should not fail, because Category is now there
+        sendRequest(PUT, "/groups/testGroup/categories/testCategory", 204); // should not fail, because Category is now there
         xml = sendRequest(GET, "/groups/testGroup/categories/testCategory", 200); // get data
         assertNotNull(xml);
         OnmsCategory category = JAXB.unmarshal(new StringReader(xml), OnmsCategory.class);
@@ -249,7 +249,7 @@ public class GroupRestServiceIT extends AbstractSpringJerseyRestTestCase {
         sendRequest(PUT, "/groups/testGroup/categories/testCategory", 400); // should fail, because Category is already there
 
         // remove category from group
-        sendRequest(DELETE, "/groups/testGroup/categories/testCategory", 200); // should not fail
+        sendRequest(DELETE, "/groups/testGroup/categories/testCategory", 204); // should not fail
         sendRequest(DELETE, "/groups/testGroup/categories/testCategory", 400); // should fail, because category is already removed
 
         // test that all categories for group "testGroup" have been removed
@@ -262,13 +262,13 @@ public class GroupRestServiceIT extends AbstractSpringJerseyRestTestCase {
 
     protected void createCategory(final String categoryName) throws Exception {
         OnmsCategory cat = new OnmsCategory(categoryName);
-        sendPost("/categories", JaxbUtils.marshal(cat), 303, "/categories/" + categoryName);
+        sendPost("/categories", JaxbUtils.marshal(cat), 201, "/categories/" + categoryName);
     }
     
     private void createUser(final String userName) throws Exception {
         OnmsUser user = new OnmsUser();
         user.setUsername(userName);
-        sendPost("/users", JaxbUtils.marshal(user), 303, "/users/" + userName);
+        sendPost("/users", JaxbUtils.marshal(user), 201, "/users/" + userName);
     }
     
     protected void createGroup(final String groupname) throws Exception {
@@ -276,6 +276,6 @@ public class GroupRestServiceIT extends AbstractSpringJerseyRestTestCase {
                 "<name>" + groupname + "</name>" +
                 "<comments>" + groupname + "</comments>" +
                 "</group>";
-        sendPost("/groups", group, 303, "/groups/" + groupname);
+        sendPost("/groups", group, 201, "/groups/" + groupname);
     }
 }
