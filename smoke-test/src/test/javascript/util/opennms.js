@@ -232,7 +232,7 @@ OpenNMS.prototype.setForeignSource = function(foreignSource, obj) {
 			'Content-Type': 'application/json'
 		}
 	}, function(response) {
-		if (response.status !== 200) {
+		if (response.status !== 202) {
 			console.log('OpenNMS.setForeignSource: unexpected response: ' + JSON.stringify(response));
 			throw new CasperError('POST of foreign source ' + foreignSource + ' should return success.');
 		}

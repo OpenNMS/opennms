@@ -13,105 +13,26 @@
   <div class="col-md-6">
     <form name="quickAddNodeForm">
     <fieldset ng-disabled="isSaving">
-
       <div class="panel panel-default">
         <div class="panel-heading"><h3 class="panel-title">Basic Attributes (required)</h3></div>
-        <div class="panel-body">
-          <div class="form-group" ng-class="{ 'has-error' : quickAddNodeForm.foreignSource.$invalid }">
-            <label class="control-label" for="foreignSource">Requisition</label>
-            <input class="form-control" type="text" name="foreignSource" placeholder="Select a Requisition (hit space bar to see the options or start typing the name)" ng-model="node.foreignSource" typeahead-editable="false" typeahead-min-length="0" uib-typeahead="fs for fs in foreignSources | filter:$viewValue" required></input>
-          </div>
-          <div class="form-group" ng-class="{ 'has-error' : quickAddNodeForm.ipAddress.$invalid }">
-            <label class="control-label" for="ipAddress">IP Address</label>
-            <input class="form-control" type="text" id="ipAddress" name="ipAddress" placeholder="A valid IPv4 or IPv6 address" ng-model="node.ipAddress" required valid-ip-address></input>
-            <p ng-show="intfForm.ipAddress.$invalid" class="help-block">A valid IPv4 or IPv6 address is required</p>
-          </div>
-          <div class="form-group" ng-class="{ 'has-error' : quickAddNodeForm.nodeLabel.$invalid }">
-            <label class="control-label" for="nodeLabel">Node Label</label>
-            <input class="form-control" type="text" id="nodeLabel" name="nodeLabel" placeholder="The Node Label" ng-model="node.nodeLabel" required></input>
-          </div>
-        </div>
+        <div class="panel-body" ng-include="'views/quick-add-panel-basic.html'"></div>
       </div>
-
       <div class="panel panel-default">
         <div class="panel-heading"><h3 class="panel-title">SNMP Parameters (optional)</h3></div>
-        <div class="panel-body">
-          <div class="form-group">
-            <div class="checkbox">
-              <label>
-                <input type="checkbox" ng-model="node.noSnmp">
-                No SNMP
-              </label>
-            </div>
-          </div>
-          <div class="form-group">
-            <label class="control-label" for="snmpVersion">Version</label>
-            <select class="form-control" ng-model="node.snmpVersion" ng-disabled="node.noSnmp">
-              <option>v1</option>
-              <option selected>v2c</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label class="control-label" for="snmpCommunity">Community String</label>
-            <input class="form-control" type="text" id="snmpCommunity" name="snmpCommunity" placeholder="SNMP Community String" ng-model="node.snmpCommunity" ng-disabled="node.noSnmp"></input>
-          </div>
-        </div>
+        <div class="panel-body" ng-include="'views/quick-add-panel-snmp.html'"></div>
       </div>
-
       <div class="panel panel-default">
         <div class="panel-heading"><h3 class="panel-title">Surveillance Category Memberships (optional)</h3></div>
-        <div class="panel-body">
-          <a ng-click="addCategory()" class="btn"><span class="glyphicon glyphicon-plus"/> Add Category</a>
-          <br/>
-          <ng-form name="categoryForm" ng-repeat="category in node.categories">
-            <div class="form-group" ng-class="{ 'has-error' : categoryForm.categoryName.$invalid }">
-              <div class="input-group">
-                <input class="form-control" type="text" name="categoryName" placeholder="Category Name" ng-model="category.name" typeahead-min-length="0" typeahead-editable="true" uib-typeahead="category for category in getAvailableCategories() | filter:$viewValue" required></input>
-                <span class="input-group-btn">
-                  <button class="btn btn-default" type="button" ng-click="removeCategory($index)"><span class="glyphicon glyphicon-remove"></span></button>
-                </span>
-              </div>
-              <p ng-show="categoryForm.categoryName.$invalid" class="help-block">Category name is required and should be unique on the node.</p>
-            </div>
-          </ng-form>
-        </div>
+        <div class="panel-body" ng-include="'views/quick-add-panel-categories.html'"></div>
       </div>
-
       <div class="panel panel-default">
         <div class="panel-heading"><h3 class="panel-title">CLI Authentication Parameters (optional)</h3></div>
-        <div class="panel-body">
-          <div class="form-group">
-            <label class="control-label" for="descr">Device username</label>
-            <input class="form-control" type="text" id="deviceUsername" name="deviceUsername" placeholder="The device username [optional]" ng-model="node.deviceUsername"></input>
-          </div>
-          <div class="form-group">
-            <label class="control-label" for="descr">Device password</label>
-            <input class="form-control" type="text" id="devicePassword" name="devicePassword" placeholder="The device password [optional]" ng-model="node.devicePassword"></input>
-          </div>
-          <div class="form-group">
-            <label class="control-label" for="descr">Enable Password</label>
-            <input class="form-control" type="text" id="enablePassword" name="enablePassword" placeholder="The enable password [optional]" ng-model="node.enablePassword"></input>
-          </div>
-          <div class="form-group">
-            <label class="control-label" for="descr">Access Method</label>
-            <input class="form-control" type="text" name="accessMethod" placeholder="Access Method (hit space bar to see the options) [optional]" ng-model="node.accessMethod" typeahead-editable="false" typeahead-min-length="0" uib-typeahead="m for m in availableAccessMethods | filter:$viewValue" required></input>
-          </div>
-          <div class="form-group">
-            <div class="checkbox">
-              <label>
-                <input type="checkbox" ng-model="node.autoEnable">
-                Auto Enable
-              </label>
-            </div>
-          </div>
-        </div>
+        <div class="panel-body" ng-include="'views/quick-add-panel-cli.html'"></div>
       </div>
-
       <div class="form-group">
-        <button type="button" class="btn btn-primary" ng-click="provision()" ng-disabled="isInvalid()">Provision</button>
-        <button type="button" class="btn btn-primary" ng-click="reset()">Reset</button>
+        <button type="button" class="btn btn-primary" id="provision" ng-click="provision()" ng-disabled="isInvalid()">Provision</button>
+        <button type="button" class="btn btn-primary" id="reset" ng-click="reset()">Reset</button>
       </div>
-
     </fieldset>
     </form>
 
@@ -119,52 +40,9 @@
 
   <div class="col-md-6">
     <div class="panel panel-default">
-      <div class="panel-heading">
-        <h3 class="panel-title">Node Quick-Add</h3>
-      </div>
-      <div class="panel-body">
-        <p>
-        This workflow provides a quick way to add a node to an existing
-        provisioning requisition in this OpenNMS system.
-        </p>
-
-        <p>
-        <strong>Note: This operation <em>will</em> override any un-synchronized
-        modifications made to the selected requisition.</strong>
-        </p>
-
-        <p>
-        <em>Basic Attributes</em> are common to all nodes. Select the requisition
-        into which this node should be added, provide an IP address on which OpenNMS
-        will communicate with the node, and enter a node label. The node label will
-        serve as the display name for the node throughout OpenNMS.
-        </p>
-
-        <p>
-        <em>Surveillance Category Memberships</em> are optional and work like tags.
-        A node can be a member of any number of surveillance categories, and the
-        names of those categories can be used in a variety of powerful ways throughout
-        the OpenNMS system.
-        </p>
-
-        <p>
-        <em>SNMP Parameters</em> are optional and apply only to the node being
-        requisitioned. If no values are specified here, OpenNMS' system-wide SNMP
-        configuration will be used to determine the appropriate values for the IP
-        address entered in the <em>Basic Attributes</em> section. If the node does not
-        support SNMP, the "No SNMP" box should be checked. Configuring SNMPv3
-        parameters via the web UI is not supported; contact your OpenNMS administrator
-        if this node requires SNMPv3 parameters that differ from those in the
-        system-wide configuration.
-        </p>
-
-        <p>
-        <em>CLI Authentication Parameters</em> are optional and will be used only if one
-        or more provisioning adapters are configured to use them. Typically this is the
-        case if OpenNMS is integrated with an external configuration management system.
-        </p>
-      </div> <!-- panel-body -->
-    </div> <!-- panel -->
+      <div class="panel-heading"><h3 class="panel-title">Node Quick-Add Help</h3></div>
+      <div class="panel-body" ng-include="'views/quick-add-panel-help.html'"></div>
+    </div>
   </div> <!-- column -->
 
 </div> <!-- row -->

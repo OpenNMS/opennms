@@ -84,11 +84,21 @@
     */
     $scope.provision = function() {
       $scope.isSaving = true;
-      growl.warning('The node ' + $scope.node.nodeLabel + ' will be added to ' + $scope.node.foreignSource + '. Please wait...');
+      growl.info('The node ' + $scope.node.nodeLabel + ' is being added to requisition ' + $scope.node.foreignSource + '. Please wait...');
+      var successMessage = 'The node ' + $scope.node.nodeLabel + ' has been added to requisition ' + $scope.node.foreignSource;
       RequisitionsService.quickAddNode($scope.node).then(
         function() { // success
-          growl.success('The node ' + $scope.node.nodeLabel + ' has been added to ' + $scope.node.foreignSource);
           $scope.reset();
+          bootbox.dialog({
+            message: successMessage,
+            title: 'Success',
+            buttons: {
+              main: {
+                label: 'Ok',
+                className: 'btn-default'
+              }
+            }
+          });
         },
         $scope.errorHandler
       );
