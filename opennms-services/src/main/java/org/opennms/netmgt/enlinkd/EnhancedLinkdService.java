@@ -19,6 +19,7 @@ package org.opennms.netmgt.enlinkd;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.opennms.netmgt.model.BridgeElement;
@@ -120,12 +121,22 @@ public interface EnhancedLinkdService {
     
     void store(BroadcastDomain domain);
     
+    void save(BroadcastDomain domain);
+    
+    Set<BroadcastDomain> getAllBroadcastDomains();
+    
+    Map<Integer, List<BridgeMacLink>> getUpdateBftMap();
+
     void save(int rootId, List<BridgeMacLink> rootBFT);
     
     BroadcastDomain getBridgeTopologyBroadcastDomain(int nodeId);
 
     List<BridgeMacLink> useBridgeTopologyUpdateBFT(int nodeid);
-   
+
+    List<BridgeMacLink> getBridgeTopologyUpdateBFT(int nodeid);
+
+    boolean hasUpdatedBft(int nodeid);
+    
     List<BridgeMacLink> getBridgeTopologyRootBFT(int nodeid);
     
     List<BridgeElement> getBridgeElements(Set<Integer> nodeids);

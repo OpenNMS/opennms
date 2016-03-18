@@ -71,8 +71,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.google.common.collect.ImmutableSet;
-
 public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
 
     @Autowired
@@ -606,63 +604,19 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
     @Override
     public void store(int nodeId, List<BridgeMacLink> bft) {
         Map<BridgeMacLinkHash,BridgeMacLink> effectiveBFT=new HashMap<BridgeMacLinkHash,BridgeMacLink>();        
-        Set<String> incomingSet = new HashSet<String>();
         for (BridgeMacLink link : bft) {
             OnmsNode node = new OnmsNode();
             node.setId(nodeId);
             link.setNode(node);
             effectiveBFT.put(new BridgeMacLinkHash(link), link);
-            incomingSet.add(link.getMacAddress());
         }
-        System.out.println("incomingset: " + incomingSet);
-        BroadcastDomain bftdomain = null;        
-        for (BroadcastDomain domain : m_bridgeTopologyDao.getAll()) {
-            System.out.println("domain nodes: " + domain.getBridgeNodesOnDomain());
-            System.out.println("domain macs: " + domain.getMacsOnDomain());
-
-            Set<String>retainedSet = new HashSet<String>(
-                                                          domain.getMacsOnDomain());
-            retainedSet.retainAll(incomingSet);
-            System.out.println("retained: " + retainedSet);
-            // should contain at list 10 or 10% of the all size
-            if (retainedSet.size() > 10
-                    || retainedSet.size() >= incomingSet.size() * 0.1) {
-                bftdomain = domain;
-                System.out.println("found!");
-                continue;
-            }
-            if (domain.containBridgeId(nodeId))
-                domain.removeBridge(nodeId);
-        }
-
-        if (bftdomain == null) {
-            for (Integer curNodeId: m_nodetoBroadcastDomainMap.keySet()) {
-                System.out.println("parsing node: " + curNodeId);
-                Set<String>retainedSet = new HashSet<String>();
-                for (BridgeMacLink link: m_nodetoBroadcastDomainMap.get(curNodeId)) {
-                    retainedSet.add(link.getMacAddress());
-                }
-                System.out.println("node macs: " + retainedSet);
-                retainedSet.retainAll(incomingSet);
-                System.out.println("retained: " + retainedSet);
-                if (retainedSet.size() > 10
-                        || retainedSet.size() >= incomingSet.size() * 0.1) {
-                    bftdomain = m_bridgeTopologyDao.get(curNodeId);
-                    System.out.println("found!");
-                    break;
-                }
-            }
-        }
-        if (bftdomain == null) {
-            System.out.println("not found! Creating a new Domain");
-            bftdomain = new BroadcastDomain();
-        }
-        bftdomain.addBridge(new Bridge(nodeId));
-        m_bridgeTopologyDao.save(bftdomain);
-        m_bridgeTopologyDao.clean();
         m_nodetoBroadcastDomainMap.put(nodeId, new ArrayList<BridgeMacLink>(effectiveBFT.values()));
     }
 
+    public Map<Integer,List<BridgeMacLink>> getUpdateBftMap() {
+        return m_nodetoBroadcastDomainMap;
+    }
+    
     @Override
     public void reconcileBridge(int nodeId, Date now) {
         m_bridgeElementDao.deleteByNodeIdOlderThen(nodeId, now);
@@ -673,14 +627,35 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
     }
 
     @Override
+    public Set<BroadcastDomain> getAllBroadcastDomains() {
+        return m_bridgeTopologyDao.getAll();
+    }
+    
+    @Override
+    public void save(BroadcastDomain domain) {
+        m_bridgeTopologyDao.save(domain);
+        m_bridgeTopologyDao.clean();
+    }
+
+    @Override
     public BroadcastDomain getBridgeTopologyBroadcastDomain(int nodeId) {
         return m_bridgeTopologyDao.get(nodeId);
     }
 
     @Override
+    public synchronized boolean hasUpdatedBft(int nodeid) {
+        return m_nodetoBroadcastDomainMap.containsKey(nodeid);
+    }
+    
+    @Override
     public synchronized List<BridgeMacLink> useBridgeTopologyUpdateBFT(int nodeid) {
         return m_nodetoBroadcastDomainMap.remove(nodeid);
-    }    
+    }
+
+    @Override
+    public synchronized List<BridgeMacLink> getBridgeTopologyUpdateBFT(int nodeid) {
+        return m_nodetoBroadcastDomainMap.get(nodeid);
+    }
 
     @Override
     public void save(int rootid, List<BridgeMacLink> rootBFT) {

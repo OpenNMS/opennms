@@ -111,6 +111,7 @@ public final class NodeDiscoveryBridge extends NodeDiscovery {
 		LOG.debug("run: found on node: '{}' bridge ifindex map {}",getNodeId(), bridgeifindex);
 		bft = walkDot1qTpFdb(bridgeifindex,bft);
 		
+		
 		m_linkd.getQueryManager().store(getNodeId(), bft);
                 LOG.debug("run: reconciling bridge: '{}' time {}",getNodeId(), now);
 		m_linkd.getQueryManager().reconcileBridge(getNodeId(), now);
