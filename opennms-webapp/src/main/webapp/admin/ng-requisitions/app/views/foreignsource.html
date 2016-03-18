@@ -20,7 +20,7 @@
   </div>
   <div class="col-md-6">
     <div class="input-group pull-right">
-      <button type="button" id="reset-default" class="btn btn-default navbar-btn" ng-click="reset()">
+      <button type="button" id="reset-default" class="btn btn-default" ng-click="reset()">
         <span class="glyphicon glyphicon-retweet"></span> Reset to Default
       </button>
       <button type="button" id="save-foreign-source" class="btn btn-danger" ng-click="save()" ng-show="fsForm.$dirty" ng-disabled="fsForm.$invalid" ng-disabled="timingStatus.isRunning">
@@ -88,7 +88,7 @@
                   <th>Name</th>
                   <th>Class</th>
                   <th>Parameters</th>
-                  <th></th>
+                  <th><span class="pull-right">Actions</span></th>
                 </tr>
               </thead>
               <tbody>
@@ -102,12 +102,14 @@
                     </div>
                   </td>
                   <td>
-                    <button type="button" class="btn btn-default btn-xs" uib-tooltip="Edit the detector" ng-click="editDetector(detector)">
-                      <span class="glyphicon glyphicon-pencil"/>
-                    </button>
-                    <button type="button" class="btn btn-default btn-xs" uib-tooltip="Remove the detector" ng-click="removeDetector(detector)">
-                      <span class="glyphicon glyphicon-remove"/>
-                    </button>
+                    <span class="pull-right">
+                      <button type="button" class="btn btn-default btn-xs" uib-tooltip="Edit the detector" ng-click="editDetector(detector)">
+                        <span class="glyphicon glyphicon-pencil"/>
+                      </button>
+                      <button type="button" class="btn btn-default btn-xs" uib-tooltip="Remove the detector" ng-click="removeDetector(detector)">
+                        <span class="glyphicon glyphicon-remove"/>
+                      </button>
+                    </span>
                   </td>
                 </tr>
               </tbody>
@@ -139,7 +141,7 @@
                   <th>Name</th>
                   <th>Class</th>
                   <th>Parameters</th>
-                  <th></th>
+                  <th><span class="pull-right">Actions</span></th>
                 </tr>
               </thead>
               <tbody>
@@ -153,12 +155,14 @@
                     </div>
                   </td>
                   <td>
-                    <a class="btn btn-default btn-xs" uib-tooltip="Edit the policy" ng-click="editPolicy(policy)">
-                      <span class="glyphicon glyphicon-pencil"/>
-                    </a>
-                    <a class="btn btn-default btn-xs" uib-tooltip="Remove the policy" ng-click="removePolicy(policy)">
-                      <span class="glyphicon glyphicon-remove"/>
-                    </a>
+                    <span class="pull-right">
+                      <button type="button" class="btn btn-default btn-xs" uib-tooltip="Edit the policy" ng-click="editPolicy(policy)">
+                        <span class="glyphicon glyphicon-pencil"/>
+                      </button>
+                      <button type="button" class="btn btn-default btn-xs" uib-tooltip="Remove the policy" ng-click="removePolicy(policy)">
+                        <span class="glyphicon glyphicon-remove"/>
+                      </button>
+                      </span>
                   </td>
                 </tr>
               </tbody>

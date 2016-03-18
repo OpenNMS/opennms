@@ -269,7 +269,8 @@
     $scope.editPolicy = function(policy, isNew) {
       var form = this.fsForm;
       $uibModal.open({
-        backdrop: true,
+        backdrop: 'static',
+        keyboard: false,
         controller: 'PolicyController',
         templateUrl: 'views/policy.html',
         resolve: {
@@ -326,7 +327,8 @@
     $scope.editDetector = function(detector, isNew) {
       var form = this.fsForm;
       $uibModal.open({
-        backdrop: true,
+        backdrop: 'static',
+        keyboard: false,
         controller: 'DetectorController',
         templateUrl: 'views/detector.html',
         resolve: {

@@ -49,7 +49,10 @@
     })
     .when('/requisitions/:foreignSource/nodes/:foreignId', {
       templateUrl: 'views/node.html',
-      //templateUrl: 'views/node-panels.html',
+      controller: 'NodeController'
+    })
+    .when('/requisitions/:foreignSource/nodes/:foreignId/vertical', {
+      templateUrl: 'views/node-panels.html',
       controller: 'NodeController'
     })
     .otherwise({
@@ -67,7 +70,7 @@
       'mouseenter': 'mouseleave'
     });
     $uibTooltipProvider.options({
-      'placement': 'top',
+      'placement': 'left',
       'trigger': 'mouseenter'
     });
   }]);

@@ -159,6 +159,28 @@
     };
 
     /**
+    * @description Goes to the vertical layout page (navigation)
+    *
+    * @name NodeController:goVerticalLayout
+    * @ngdoc method
+    * @methodOf NodeController
+    */
+    $scope.goVerticalLayout = function() {
+      $scope.goTo('#/requisitions/' + $scope.foreignSource + '/nodes/' + $scope.foreignId + '/vertical');
+    };
+
+    /**
+    * @description Goes to the horizontal layout page (navigation)
+    *
+    * @name NodeController:goHorizontalLayout
+    * @ngdoc method
+    * @methodOf NodeController
+    */
+    $scope.goHorizontalLayout = function() {
+      $scope.goTo('#/requisitions/' + $scope.foreignSource + '/nodes/' + $scope.foreignId);
+    };
+
+    /**
     * @description Shows an error to the user
     *
     * @name NodeController:errorHandler
@@ -202,6 +224,7 @@
 
       var modalInstance = $uibModal.open({
         backdrop: 'static',
+        keyboard: false,
         controller: 'AssetController',
         templateUrl: 'views/asset.html',
         resolve: {
@@ -265,6 +288,7 @@
 
       var modalInstance = $uibModal.open({
         backdrop: 'static',
+        keyboard: false,
         controller: 'InterfaceController',
         templateUrl: 'views/interface.html',
         resolve: {

@@ -66,7 +66,7 @@
             <th>IP Addresses</th>
             <th># Assets</th>
             <th># Categories</th>
-            <th>Actions</th>
+            <th><span class="pull-right">Actions</span></th>
           </tr>
         </thead>
         <tbody>
@@ -84,12 +84,14 @@
             <td>{{ node.assets.length }}</td>
             <td>{{ node.categories.length }}</td>
             <td>
-              <button class="btn btn-default btn-xs" uib-tooltip="Edit the {{node.nodeLabel}} Node" ng-click="editNode(node)">
-                <span class="glyphicon glyphicon-pencil"></span>
-              </button>
-              <button class="btn btn-default btn-xs" uib-tooltip="Remove the {{node.nodeLabel}} Node" ng-click="deleteNode(node)">
-                <span class="glyphicon glyphicon-remove"></span>
-              </button>
+              <span class="pull-right">
+                <button class="btn btn-default btn-xs" uib-tooltip="Edit the {{node.nodeLabel}} Node" ng-click="editNode(node)">
+                  <span class="glyphicon glyphicon-pencil"></span>
+                </button>
+                <button class="btn btn-default btn-xs" uib-tooltip="Remove the {{node.nodeLabel}} Node" ng-click="deleteNode(node)">
+                  <span class="glyphicon glyphicon-remove"></span>
+                </button>
+              </span>
             </td>
           </tr>
         </tbody>

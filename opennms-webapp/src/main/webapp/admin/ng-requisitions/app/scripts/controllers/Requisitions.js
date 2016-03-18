@@ -124,6 +124,7 @@
       });
       var modalInstance = $uibModal.open({
         backdrop: 'static',
+        keyboard: false,
         controller: 'QuickAddNodeModalController',
         templateUrl: 'views/quick-add-node.html',
         size: 'lg',
@@ -151,6 +152,7 @@
       });
       var modalInstance = $uibModal.open({
         backdrop: 'static',
+        keyboard: false,
         controller: 'CloneForeignSourceController',
         templateUrl: 'views/clone-foreignsource.html',
         resolve: {
