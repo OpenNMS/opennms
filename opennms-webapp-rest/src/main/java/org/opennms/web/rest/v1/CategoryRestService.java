@@ -98,25 +98,30 @@ public class CategoryRestService extends OnmsRestService {
     @PUT
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Path("/{categoryName}")
-    public Response updateCategory(@Context final UriInfo uriInfo, @PathParam("categoryName") final String categoryName, final MultivaluedMapImpl params) {
+    public Response updateCategory(@PathParam("categoryName") final String categoryName, final MultivaluedMapImpl params) {
         writeLock();
         try {
             OnmsCategory category = m_categoryDao.findByName(categoryName);
             if (category == null) {
-                throw getException(Status.BAD_REQUEST, "updateCategory: Category " + categoryName + " not found.");
+                throw getException(Status.BAD_REQUEST, "Category with name '{}' was not found.", categoryName);
             }
             LOG.debug("updateCategory: updating category {}", category);
             BeanWrapper wrapper = PropertyAccessorFactory.forBeanPropertyAccess(category);
+            boolean modified = false;
             for(String key : params.keySet()) {
                 if (wrapper.isWritableProperty(key)) {
                     String stringValue = params.getFirst(key);
                     Object value = wrapper.convertIfNecessary(stringValue, (Class<?>)wrapper.getPropertyType(key));
                     wrapper.setPropertyValue(key, value);
+                    modified = true;
                 }
             }
             LOG.debug("updateCategory: category {} updated", category);
-            m_categoryDao.saveOrUpdate(category);
-            return Response.seeOther(getRedirectUri(uriInfo)).build();
+            if (modified) {
+                m_categoryDao.saveOrUpdate(category);
+                return Response.noContent().build();
+            }
+            return Response.notModified().build();
         } finally {
             writeUnlock();
         }
@@ -132,7 +137,7 @@ public class CategoryRestService extends OnmsRestService {
     @Path("/{categoryName}")
     public OnmsCategory getCategory(@PathParam("categoryName") final String categoryName) {
         OnmsCategory category = m_categoryDao.findByName(categoryName);
-        if (category == null) throw getException(Response.Status.NOT_FOUND, "Category with name {} was not found.", categoryName);
+        if (category == null) throw getException(Response.Status.NOT_FOUND, "Category with name '{}' was not found.", categoryName);
         return category;
     }
     
@@ -143,7 +148,7 @@ public class CategoryRestService extends OnmsRestService {
         boolean exists = m_categoryDao.findByName(category.getName()) != null;
         if (!exists) {
             m_categoryDao.save(category);
-            return Response.seeOther(getRedirectUri(uriInfo, category.getName())).build();
+            return Response.created(getRedirectUri(uriInfo, category.getName())).build();
         }
         throw getException(Response.Status.BAD_REQUEST, "A category with name '{}' already exists.", category.getName());
     }
@@ -156,11 +161,11 @@ public class CategoryRestService extends OnmsRestService {
 
     @DELETE
     @Path("/{categoryName}")
-    public Response deleteCategory(@Context final UriInfo uriInfo, @PathParam("categoryName") final String categoryName) {
+    public Response deleteCategory(@PathParam("categoryName") final String categoryName) {
         OnmsCategory category = m_categoryDao.findByName(categoryName);
         if (category != null) {
             m_categoryDao.delete(category);
-            return Response.seeOther(getRedirectUri(uriInfo)).build();
+            return Response.noContent().build();
         }
         throw getException(Response.Status.BAD_REQUEST, "A category with name '{}' does not exist.", categoryName);
     }
@@ -168,7 +173,7 @@ public class CategoryRestService extends OnmsRestService {
 
     @PUT
     @Path("/{categoryName}/groups/{groupName}")
-    public OnmsCategory addCategoryToGroup(@Context final ResourceContext context, @PathParam("groupName") final String groupName, @PathParam("categoryName") final String categoryName) {
+    public Response addCategoryToGroup(@Context final ResourceContext context, @PathParam("groupName") final String groupName, @PathParam("categoryName") final String categoryName) {
         return context.getResource(GroupRestService.class).addCategory(groupName, categoryName);
     }
 
