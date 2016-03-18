@@ -43,10 +43,8 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.core.Response.Status;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -139,20 +137,24 @@ public class SyslogNorthbounderConfigurationResource extends OnmsRestService imp
     /**
      * Sets the configuration.
      *
-     * @param uriInfo the UEI info
      * @param config the full configuration object
      * @return the response
      */
     @POST
-    public Response setConfiguration(@Context final UriInfo uriInfo, final SyslogNorthbounderConfig config) {
+    public Response setConfiguration(final SyslogNorthbounderConfig config) {
         writeLock();
         try {
-            File configFile = m_syslogNorthbounderConfigDao.getConfigResource().getFile();
-            JaxbUtils.marshal(config, new FileWriter(configFile));
-            notifyDaemons();
-            return Response.seeOther(getRedirectUri(uriInfo)).build();
-        } catch (Throwable t) {
-            throw new WebApplicationException(Response.status(Status.INTERNAL_SERVER_ERROR).type(MediaType.TEXT_PLAIN).entity(t.getMessage()).build());
+            if (config == null) {
+                throw getException(Status.BAD_REQUEST, "Syslog NBI configuration object cannot be null");
+            }
+            try {
+                File configFile = m_syslogNorthbounderConfigDao.getConfigResource().getFile();
+                JaxbUtils.marshal(config, new FileWriter(configFile));
+                notifyDaemons();
+            } catch (Throwable t) {
+                throw getException(Status.INTERNAL_SERVER_ERROR, t);
+            }
+            return Response.noContent().build();
         } finally {
             writeUnlock();
         }
@@ -212,31 +214,33 @@ public class SyslogNorthbounderConfigurationResource extends OnmsRestService imp
     @GET
     @Path("destinations/{destinationName}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
-    public Response getSyslogDestination(@PathParam("destinationName") final String destinationName) {
+    public SyslogDestination getSyslogDestination(@PathParam("destinationName") final String destinationName) {
         SyslogDestination destination = m_syslogNorthbounderConfigDao.getConfig().getSyslogDestination(destinationName);
         if (destination == null) {
-            return Response.status(404).build();
+            throw getException(Status.NOT_FOUND, "Syslog destination {} was not found.", destinationName);
         }
-        return Response.ok(destination).build();
+        return destination;
     }
 
     /**
      * Sets a syslog destination.
      * <p>If there is a destination with the same name, the existing one will be overridden.</p>
      *
-     * @param uriInfo the URI info
      * @param destination the destination
      * @return the response
      */
     @POST
     @Path("destinations")
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
-    public Response setSyslogDestination(@Context final UriInfo uriInfo, final SyslogDestination destination) {
+    public Response setSyslogDestination(final SyslogDestination destination) {
         writeLock();
         try {
+            if (destination == null) {
+                throw getException(Status.BAD_REQUEST, "Syslog destination object cannot be null");
+            }
             m_syslogNorthbounderConfigDao.getConfig().addSyslogDestination(destination);
             saveConfiguration();
-            return Response.seeOther(getRedirectUri(uriInfo)).build();
+            return Response.noContent().build();
         } finally {
             writeUnlock();
         }
@@ -245,7 +249,6 @@ public class SyslogNorthbounderConfigurationResource extends OnmsRestService imp
     /**
      * Update a specific Syslog Destination.
      *
-     * @param uriInfo the URI info
      * @param destinationName the destination name
      * @param params the parameters map
      * @return the response
@@ -253,14 +256,11 @@ public class SyslogNorthbounderConfigurationResource extends OnmsRestService imp
     @PUT
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Path("destinations/{destinationName}")
-    public Response updateSyslogDestination(@Context final UriInfo uriInfo, @PathParam("destinationName") final String destinationName, final MultivaluedMapImpl params) {
+    public Response updateSyslogDestination(@PathParam("destinationName") final String destinationName, final MultivaluedMapImpl params) {
         writeLock();
         try {
             boolean modified = false;
-            SyslogDestination destination = m_syslogNorthbounderConfigDao.getConfig().getSyslogDestination(destinationName);
-            if (destination == null) {
-                return Response.status(404).build();
-            }
+            SyslogDestination destination = getSyslogDestination(destinationName);
             final BeanWrapper wrapper = PropertyAccessorFactory.forBeanPropertyAccess(destination);
             for (final String key : params.keySet()) {
                 if (wrapper.isWritableProperty(key)) {
@@ -272,11 +272,9 @@ public class SyslogNorthbounderConfigurationResource extends OnmsRestService imp
             }
             if (modified) {
                 saveConfiguration();
-                return Response.seeOther(getRedirectUri(uriInfo)).build();
+                return Response.noContent().build();
             }
             return Response.notModified().build();
-        } catch (Throwable t) {
-            throw new WebApplicationException(Response.status(Status.INTERNAL_SERVER_ERROR).type(MediaType.TEXT_PLAIN).entity(t.getMessage()).build());
         } finally {
             writeUnlock();
         }
@@ -295,7 +293,7 @@ public class SyslogNorthbounderConfigurationResource extends OnmsRestService imp
         if (m_syslogNorthbounderConfigDao.getConfig().removeSyslogDestination(destinationName)) {
             return saveConfiguration();
         }
-        return Response.status(404).build();
+        return Response.status(Status.NOT_FOUND).build();
     }
 
     /**
@@ -307,9 +305,9 @@ public class SyslogNorthbounderConfigurationResource extends OnmsRestService imp
         try {
             m_syslogNorthbounderConfigDao.save();
             notifyDaemons();
-            return Response.ok().build();
+            return Response.noContent().build();
         } catch (Throwable t) {
-            throw new WebApplicationException(Response.status(Status.INTERNAL_SERVER_ERROR).type(MediaType.TEXT_PLAIN).entity(t.getMessage()).build());
+            throw getException(Status.INTERNAL_SERVER_ERROR, t);
         }
     }
 
