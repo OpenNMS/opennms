@@ -40,7 +40,6 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -87,7 +86,7 @@ public class UserRestService extends OnmsRestService {
         try {
             return filterUserPasswords(securityContext, m_userManager.getOnmsUserList());
         } catch (final Throwable t) {
-            throw getException(Status.BAD_REQUEST, t);
+            throw getException(Status.INTERNAL_SERVER_ERROR, t);
         }
     }
 
@@ -95,14 +94,8 @@ public class UserRestService extends OnmsRestService {
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     @Path("{username}")
     public OnmsUser getUser(@Context final SecurityContext securityContext, @PathParam("username") final String username) {
-        try {
-            final OnmsUser user = m_userManager.getOnmsUser(username);
-            if (user != null) return filterUserPassword(securityContext, user);
-            throw getException(Status.NOT_FOUND, username + " does not exist");
-        } catch (final Throwable t) {
-            if (t instanceof WebApplicationException) throw (WebApplicationException)t;
-            throw getException(Status.BAD_REQUEST, t);
-        }
+        final OnmsUser user = getOnmsUser(username);
+        return filterUserPassword(securityContext, user);
     }
 
     @POST
@@ -111,13 +104,15 @@ public class UserRestService extends OnmsRestService {
         writeLock();
         try {
             if (!hasEditRights(securityContext)) {
-                throw getException(Status.BAD_REQUEST, new RuntimeException(securityContext.getUserPrincipal().getName() + " does not have write access to users!"));
+                throw getException(Status.BAD_REQUEST, "User {} does not have write access to users!", securityContext.getUserPrincipal().getName());
             }
             LOG.debug("addUser: Adding user {}", user);
-            m_userManager.save(user);
-            return Response.seeOther(getRedirectUri(uriInfo, user.getUsername())).build();
-        } catch (final Throwable t) {
-            throw getException(Status.BAD_REQUEST, t);
+            try {
+                m_userManager.save(user);
+            } catch (final Throwable t) {
+                throw getException(Status.INTERNAL_SERVER_ERROR, t);
+            }
+            return Response.created(getRedirectUri(uriInfo, user.getUsername())).build();
         } finally {
             writeUnlock();
         }
@@ -126,35 +121,34 @@ public class UserRestService extends OnmsRestService {
     @PUT
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Path("{userCriteria}")
-    public Response updateUser(@Context final SecurityContext securityContext, @Context final UriInfo uriInfo, @PathParam("userCriteria") final String userCriteria, final MultivaluedMapImpl params) {
-        OnmsUser user = null;
+    public Response updateUser(@Context final SecurityContext securityContext, @PathParam("userCriteria") final String userCriteria, final MultivaluedMapImpl params) {
         writeLock();
         try {
             if (!hasEditRights(securityContext)) {
-                throw getException(Status.BAD_REQUEST, new RuntimeException(securityContext.getUserPrincipal().getName() + " does not have write access to users!"));
+                throw getException(Status.BAD_REQUEST, "User {} does not have write access to users!", securityContext.getUserPrincipal().getName());
             }
-            try {
-                user = m_userManager.getOnmsUser(userCriteria);
-            } catch (final Throwable t) {
-                throw getException(Status.BAD_REQUEST, t);
-            }
-            if (user == null) throw getException(Status.BAD_REQUEST, "updateUser: User does not exist: " + userCriteria);
+            final OnmsUser user = getOnmsUser(userCriteria);
             LOG.debug("updateUser: updating user {}", user);
+            boolean modified = false;
             final BeanWrapper wrapper = PropertyAccessorFactory.forBeanPropertyAccess(user);
             for(final String key : params.keySet()) {
                 if (wrapper.isWritableProperty(key)) {
                     final String stringValue = params.getFirst(key);
                     final Object value = wrapper.convertIfNecessary(stringValue, wrapper.getPropertyType(key));
                     wrapper.setPropertyValue(key, value);
+                    modified = true;
                 }
             }
-            LOG.debug("updateUser: user {} updated", user);
-            try {
-                m_userManager.save(user);
-            } catch (final Throwable t) {
-                throw getException(Status.INTERNAL_SERVER_ERROR, t);
+            if (modified) {
+                LOG.debug("updateUser: user {} updated", user);
+                try {
+                    m_userManager.save(user);
+                } catch (final Throwable t) {
+                    throw getException(Status.INTERNAL_SERVER_ERROR, t);
+                }
+                return Response.noContent().build();
             }
-            return Response.seeOther(getRedirectUri(uriInfo)).build();
+            return Response.notModified().build();
         } finally {
             writeUnlock();
         }
@@ -166,25 +160,30 @@ public class UserRestService extends OnmsRestService {
         writeLock();
         try {
             if (!hasEditRights(securityContext)) {
-                throw getException(Status.BAD_REQUEST, new RuntimeException(securityContext.getUserPrincipal().getName() + " does not have write access to users!"));
+                throw getException(Status.BAD_REQUEST, "User {} does not have write access to users!", securityContext.getUserPrincipal().getName());
             }
-            OnmsUser user = null;
-            try {
-                user = m_userManager.getOnmsUser(userCriteria);
-            } catch (final Throwable t) {
-                throw getException(Status.BAD_REQUEST, t);
-            }
-            if (user == null) throw getException(Status.BAD_REQUEST, "deleteUser: User does not exist: " + userCriteria);
+            final OnmsUser user = getOnmsUser(userCriteria);
             LOG.debug("deleteUser: deleting user {}", user);
             try {
                 m_userManager.deleteUser(user.getUsername());
             } catch (final Throwable t) {
                 throw getException(Status.INTERNAL_SERVER_ERROR, t);
             }
-            return Response.ok().build();
+            return Response.noContent().build();
         } finally {
             writeUnlock();
         }
+    }
+
+    private OnmsUser getOnmsUser(String username) {
+        OnmsUser user = null;
+        try {
+            user = m_userManager.getOnmsUser(username);
+        } catch (final Throwable t) {
+            throw getException(Status.INTERNAL_SERVER_ERROR, t);
+        }
+        if (user == null) throw getException(Status.NOT_FOUND, "User {} does not exist.", username);
+        return user;
     }
 
     private static boolean hasEditRights(SecurityContext securityContext) {
