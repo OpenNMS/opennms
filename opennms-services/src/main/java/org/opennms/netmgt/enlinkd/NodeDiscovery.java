@@ -66,7 +66,7 @@ public abstract class NodeDiscovery implements ReadyRunnable {
 
     private boolean m_suspendCollection = false;
 
-    private boolean m_runned = false;
+    protected boolean m_runned = false;
 
 
     protected final EnhancedLinkd m_linkd;
@@ -99,39 +99,48 @@ public abstract class NodeDiscovery implements ReadyRunnable {
      * </p>
      */
     public void run() {
-    	EventBuilder builder;
         if (m_suspendCollection) {
-            builder = new EventBuilder(
-                    "uei.opennms.org/internal/linkd/nodeLinkDiscoverySuspended",
-                    "EnhancedLinkd");
-            builder.setNodeid(getNodeId());
-            builder.setInterface(getTarget());
-            builder.addParam("runnable", getName());
-            m_linkd.getEventForwarder().sendNow(builder.getEvent());
+            sendSuspendedEvent(getNodeId());
         } else {
-            builder = new EventBuilder(
-                    "uei.opennms.org/internal/linkd/nodeLinkDiscoveryStarted",
-                    "EnhancedLinkd");
-            builder.setNodeid(getNodeId());
-            builder.setInterface(getTarget());
-            builder.addParam("runnable", getName());
-            m_linkd.getEventForwarder().sendNow(builder.getEvent());
-            
+            sendStartEvent(getNodeId());
             runCollection();
-            
-            builder = new EventBuilder(
-                    "uei.opennms.org/internal/linkd/nodeLinkDiscoveryCompleted",
-                    "EnhancedLinkd");
-            builder.setNodeid(getNodeId());
-            builder.setInterface(getTarget());
-            builder.addParam("runnable", getName());
-            m_linkd.getEventForwarder().sendNow(builder.getEvent());
-
+            sendCompletedEvent(getNodeId());
         }
         m_runned = true;
         reschedule();
     }
+
+    protected void sendSuspendedEvent(int nodeid) {
+        EventBuilder builder = new EventBuilder(
+                                   "uei.opennms.org/internal/linkd/nodeLinkDiscoverySuspended",
+                                   "EnhancedLinkd");
+                           builder.setNodeid(getNodeId());
+                           builder.setInterface(getTarget());
+                           builder.addParam("runnable", getName());
+       m_linkd.getEventForwarder().sendNow(builder.getEvent());
+    }
     
+    protected void sendStartEvent(int nodeid) {
+        EventBuilder builder = new EventBuilder(
+                                   "uei.opennms.org/internal/linkd/nodeLinkDiscoveryStarted",
+                                   "EnhancedLinkd");
+                           builder.setNodeid(getNodeId());
+                           builder.setInterface(getTarget());
+                           builder.addParam("runnable", getName());
+                           m_linkd.getEventForwarder().sendNow(builder.getEvent());
+        
+    }
+    
+    protected void sendCompletedEvent(int nodeid) {
+        EventBuilder builder = new EventBuilder(
+                                   "uei.opennms.org/internal/linkd/nodeLinkDiscoveryCompleted",
+                                   "EnhancedLinkd");
+                           builder.setNodeid(getNodeId());
+                           builder.setInterface(getTarget());
+                           builder.addParam("runnable", getName());
+                           m_linkd.getEventForwarder().sendNow(builder.getEvent());
+    }
+
     protected abstract void runCollection(); 
     /**
      * <p>
@@ -172,7 +181,7 @@ public abstract class NodeDiscovery implements ReadyRunnable {
     /**
 	 * 
 	 */
-    private void reschedule() {
+    public void reschedule() {
         if (m_scheduler == null)
             throw new IllegalStateException(
                                             "Cannot schedule a service whose scheduler is set to null");
