@@ -251,7 +251,7 @@ OpenNMS.prototype.createOrReplaceRequisition = function(foreignSource, obj) {
 			'Content-Type': 'application/json'
 		}
 	}, function(response) {
-		if (response.status !== 200) {
+		if (response.status !== 202) {
 			console.log('OpenNMS.createOrReplaceRequisition: unexpected response: ' + JSON.stringify(response));
 			throw new CasperError('POST of requisition ' + foreignSource + ' should return success.');
 		}
@@ -329,9 +329,9 @@ OpenNMS.prototype.importRequisition = function(foreignSource) {
 			Accept: '*/*'
 		}
 	}, function(response) {
-		if (response.status !== 415) {
+		if (response.status !== 202) {
 			console.log('OpeNNMS.importRequisition: unexpected response: ' + JSON.stringify(response));
-			throw new CasperError('(sigh) import of requisition ' + foreignSource + ' redirects to a page that eventually gives a 415 error.');
+			throw new CasperError('Import of requisition ' + foreignSource + ' should return success.');
 		}
 	});
 	self.casper.back();
@@ -343,7 +343,7 @@ OpenNMS.prototype.deleteRequisition = function(foreignSource) {
 	self.casper.thenOpen(self.root() + '/rest/requisitions/' + foreignSource, {
 		method: 'delete'
 	}, function(response) {
-		if (response.status !== 200) {
+		if (response.status !== 202) {
 			console.log('OpenNMS.deleteRequisition: unexpected response: ' + JSON.stringify(response));
 			throw new CasperError('DELETE of requisition ' + foreignSource + ' should return success.');
 		}
@@ -351,7 +351,7 @@ OpenNMS.prototype.deleteRequisition = function(foreignSource) {
 	self.casper.thenOpen(self.root() + '/rest/requisitions/deployed/' + foreignSource, {
 		method: 'delete'
 	}, function(response) {
-		if (response.status !== 200) {
+		if (response.status !== 202) {
 			console.log('OpenNMS.deleteRequisition: unexpected response: ' + JSON.stringify(response));
 			throw new CasperError('DELETE of deployed requisition ' + foreignSource + ' should return success.');
 		}
@@ -359,7 +359,7 @@ OpenNMS.prototype.deleteRequisition = function(foreignSource) {
 	self.casper.thenOpen(self.root() + '/rest/foreignSources/' + foreignSource, {
 		method: 'delete'
 	}, function(response) {
-		if (response.status !== 200) {
+		if (response.status !== 202) {
 			console.log('OpenNMS.deleteRequisition: unexpected response: ' + JSON.stringify(response));
 			throw new CasperError('DELETE of foreign source definition ' + foreignSource + ' should return success.');
 		}
@@ -367,7 +367,7 @@ OpenNMS.prototype.deleteRequisition = function(foreignSource) {
 	self.casper.thenOpen(self.root() + '/rest/foreignSources/deployed/' + foreignSource, {
 		method: 'delete'
 	}, function(response) {
-		if (response.status !== 200) {
+		if (response.status !== 202) {
 			console.log('OpenNMS.deleteRequisition: unexpected response: ' + JSON.stringify(response));
 			throw new CasperError('DELETE of deployed foreign source definition ' + foreignSource + ' should return success.');
 		}
@@ -515,7 +515,7 @@ OpenNMS.prototype.createEvent = function(ev) {
 		},
 		data: ev
 	}, function(response) {
-		if (response.status !== 200) {
+		if (response.status !== 204) {
 			console.log('* OpenNMS.createEvent: unexpected response: ' + JSON.stringify(response));
 			throw new CasperError('Creation of event ' + ev.uei + ' failed.');
 		}
