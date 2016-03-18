@@ -18,7 +18,7 @@
   </div>
   <div class="col-md-6">
     <div class="input-group pull-right">
-      <button type="button" class="btn btn-danger" id="save-node" ng-click="save()" ng-show="nodeForm.$dirty &amp;&amp; nodeForm.$valid" ng-disabled="timingStatus.isRunning">
+      <button type="button" class="btn btn-danger" id="save-node" ng-click="save()" ng-show="nodeForm.$dirty" ng-disabled="nodeForm.$invalid" ng-disabled="timingStatus.isRunning">
         <span class="glyphicon glyphicon-save"></span> Save
       </button>
       <button type="button" class="btn btn-success" id="go-back" ng-click="goBack()">

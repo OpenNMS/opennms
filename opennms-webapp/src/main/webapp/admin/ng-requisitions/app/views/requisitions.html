@@ -28,10 +28,10 @@
         <button type="button" class="btn btn-default navbar-btn" ng-click="resetDefaultForeignSource()" id="reset-default-foreign-source" ng-disabled="timingStatus.isRunning">
           <span class="glyphicon glyphicon-retweet"/> Reset Default
         </button>
-        <button type="button" class="btn btn-default" ng-click="refresh()" id="refresh-requisitions">
+        <button type="button" class="btn btn-default" ng-click="refresh()" id="refresh-requisitions" ng-disabled="timingStatus.isRunning">
           <span class="glyphicon glyphicon-refresh"/> Refresh
         </button>
-        <button type="button" class="btn btn-default" ng-click="add()" id="add-requisition">
+        <button type="button" class="btn btn-default" ng-click="add()" id="add-requisition" ng-disabled="timingStatus.isRunning">
           <span class="glyphicon glyphicon-plus"/> Add Requisition
         </button>
       </div>
@@ -57,7 +57,7 @@
     <div class="jumbotron" ng-show="loaded && requisitionsData.requisitions.length == 0">
       <div class="container">
         <h1>There are no requisitions</h1>
-        <p>Please click on the 'Add' button, to start adding requisitions.</p>
+        <p>Please click on the 'Add Requisition' button, to start adding requisitions.</p>
       </div>
     </div>
 
