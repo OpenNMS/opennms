@@ -45,6 +45,7 @@ import org.opennms.netmgt.bsm.service.model.functions.map.Identity;
 import org.opennms.netmgt.bsm.service.model.functions.map.Ignore;
 import org.opennms.netmgt.bsm.service.model.functions.map.Increase;
 import org.opennms.netmgt.bsm.service.model.functions.map.MapFunction;
+import org.opennms.netmgt.bsm.service.model.functions.map.MapFunctionVisitor;
 import org.opennms.netmgt.bsm.service.model.functions.map.SetTo;
 import org.opennms.netmgt.vaadin.core.TransactionAwareUI;
 import org.opennms.netmgt.vaadin.core.UIHelper;
@@ -408,11 +409,37 @@ public class BusinessServiceEdgeEditWindow extends Window {
             m_typeSelect.setEnabled(false);
             m_mapFunctionSelect.setValue(edge.getMapFunction().getClass());
 
-            if (edge.getMapFunction() instanceof SetTo) {
-                m_mapFunctionSeveritySelect.setValue(((SetTo) edge.getMapFunction()).getStatus());
-            } else {
-                m_mapFunctionSeveritySelect.setValue(Status.INDETERMINATE);
-            }
+            edge.getMapFunction().accept(new MapFunctionVisitor<Void>() {
+                @Override
+                public Void visit(Decrease decrease) {
+                    m_mapFunctionSeveritySelect.setValue(Status.INDETERMINATE);
+                    return null;
+                }
+
+                @Override
+                public Void visit(Identity identity) {
+                    m_mapFunctionSeveritySelect.setValue(Status.INDETERMINATE);
+                    return null;
+                }
+
+                @Override
+                public Void visit(Ignore ignore) {
+                    m_mapFunctionSeveritySelect.setValue(Status.INDETERMINATE);
+                    return null;
+                }
+
+                @Override
+                public Void visit(Increase increase) {
+                    m_mapFunctionSeveritySelect.setValue(Status.INDETERMINATE);
+                    return null;
+                }
+
+                @Override
+                public Void visit(SetTo setTo) {
+                    m_mapFunctionSeveritySelect.setValue(((SetTo) edge.getMapFunction()).getStatus());
+                    return null;
+                }
+            });
 
             m_weightField.setValue(String.valueOf(edge.getWeight()));
         }
@@ -430,9 +457,33 @@ public class BusinessServiceEdgeEditWindow extends Window {
     private MapFunction getMapFunction() {
         try {
             final MapFunction mapFunction = ((Class<? extends MapFunction>) m_mapFunctionSelect.getValue()).newInstance();
-            if (mapFunction instanceof SetTo) {
-                ((SetTo) mapFunction).setStatus((Status) m_mapFunctionSeveritySelect.getValue());
-            }
+            mapFunction.accept(new MapFunctionVisitor<Void>() {
+                @Override
+                public Void visit(Decrease decrease) {
+                    return null;
+                }
+
+                @Override
+                public Void visit(Identity identity) {
+                    return null;
+                }
+
+                @Override
+                public Void visit(Ignore ignore) {
+                    return null;
+                }
+
+                @Override
+                public Void visit(Increase increase) {
+                    return null;
+                }
+
+                @Override
+                public Void visit(SetTo setTo) {
+                    setTo.setStatus((Status) m_mapFunctionSeveritySelect.getValue());
+                    return null;
+                }
+            });
             return mapFunction;
         } catch (final InstantiationException | IllegalAccessException e) {
             throw Throwables.propagate(e);

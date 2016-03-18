@@ -37,4 +37,10 @@ public class Ignore implements MapFunction {
     public Optional<Status> map(Status source) {
         return Optional.empty();
     }
+
+    @Override
+    public <T> T accept(MapFunctionVisitor<T> visitor) {
+        return visitor.visit(this);
+    }
+
 }

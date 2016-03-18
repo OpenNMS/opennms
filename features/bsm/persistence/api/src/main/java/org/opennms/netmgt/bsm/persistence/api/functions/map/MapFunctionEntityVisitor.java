@@ -21,14 +21,22 @@
  *      http://www.gnu.org/licenses/
  *
  * For more information contact:
- * OpenNMS(R) Licensing <license@opennms.org>
- *      http://www.opennms.org/
- *      http://www.opennms.com/
+ *     OpenNMS(R) Licensing <license@opennms.org>
+ *     http://www.opennms.org/
+ *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.bsm.service.model.edge.ro;
+package org.opennms.netmgt.bsm.persistence.api.functions.map;
 
-public interface ReadOnlyReductionKeyEdge extends ReadOnlyEdge {
-    String getReductionKey();
-    String getFriendlyName();
+public interface MapFunctionEntityVisitor<T> {
+
+    T visit(DecreaseEntity decreaseEntity);
+
+    T visit(IdentityEntity identityEntity);
+
+    T visit(IgnoreEntity ignoreEntity);
+
+    T visit(IncreaseEntity increaseEntity);
+
+    T visit(SetToEntity setToEntity);
 }

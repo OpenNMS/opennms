@@ -28,58 +28,43 @@
 
 package org.opennms.netmgt.bsm.mock;
 
-import java.util.Collections;
-import java.util.Set;
-
 import org.opennms.netmgt.bsm.service.model.edge.EdgeVisitor;
-import org.opennms.netmgt.bsm.service.model.edge.ro.ReadOnlyReductionKeyEdge;
+import org.opennms.netmgt.bsm.service.model.edge.ReductionKeyEdge;
 import org.opennms.netmgt.bsm.service.model.functions.map.Identity;
-import org.opennms.netmgt.bsm.service.model.functions.map.MapFunction;
 
-public class MockReductionKeyEdge implements ReadOnlyReductionKeyEdge {
+public class MockReductionKeyEdge extends AbstractMockEdge implements ReductionKeyEdge {
 
-    private final Long m_id;
-    private final String m_reductionKey;
-    private final String m_friendlyName;
+    private String friendlyName;
 
     public MockReductionKeyEdge(long id, String reductionKey, String friendlyName) {
-        m_id = id;
-        m_reductionKey = reductionKey;
-        m_friendlyName = friendlyName;
-    }
-
-    @Override
-    public Long getId() {
-        return m_id;
+        super(id, new Identity());
+        setReductionKey(reductionKey);
+        setFriendlyName(friendlyName);
     }
 
     @Override
     public String getReductionKey() {
-        return m_reductionKey;
+        return getReductionKeys().isEmpty() ? null : getReductionKeys().iterator().next();
     }
 
     @Override
-    public Set<String> getReductionKeys() {
-        return Collections.singleton(m_reductionKey);
-    }
-
-    @Override
-    public MapFunction getMapFunction() {
-        return new Identity();
-    }
-
-    @Override
-    public int getWeight() {
-        return 1;
+    public void setReductionKey(String reductionKey) {
+        getReductionKeys().clear();
+        getReductionKeys().add(reductionKey);
     }
 
     @Override
     public String getFriendlyName() {
-        return m_friendlyName;
+        return friendlyName;
+    }
+
+    @Override
+    public void setFriendlyName(String friendlyName) {
+        this.friendlyName = friendlyName;
     }
 
     @Override
     public <T> T accept(EdgeVisitor<T> visitor) {
-        throw new UnsupportedOperationException();
+        return visitor.visit(this);
     }
 }

@@ -28,68 +28,98 @@
 
 package org.opennms.netmgt.bsm.service.internal;
 
-import java.util.Map;
-
 import org.opennms.netmgt.bsm.persistence.api.functions.map.AbstractMapFunctionEntity;
 import org.opennms.netmgt.bsm.persistence.api.functions.map.DecreaseEntity;
 import org.opennms.netmgt.bsm.persistence.api.functions.map.IdentityEntity;
 import org.opennms.netmgt.bsm.persistence.api.functions.map.IgnoreEntity;
 import org.opennms.netmgt.bsm.persistence.api.functions.map.IncreaseEntity;
+import org.opennms.netmgt.bsm.persistence.api.functions.map.MapFunctionEntityVisitor;
 import org.opennms.netmgt.bsm.persistence.api.functions.map.SetToEntity;
 import org.opennms.netmgt.bsm.service.model.functions.map.Decrease;
 import org.opennms.netmgt.bsm.service.model.functions.map.Identity;
 import org.opennms.netmgt.bsm.service.model.functions.map.Ignore;
 import org.opennms.netmgt.bsm.service.model.functions.map.Increase;
-import org.opennms.netmgt.bsm.service.model.functions.map.SetTo;
 import org.opennms.netmgt.bsm.service.model.functions.map.MapFunction;
-
-import com.google.common.base.Function;
-import com.google.common.collect.Maps;
+import org.opennms.netmgt.bsm.service.model.functions.map.MapFunctionVisitor;
+import org.opennms.netmgt.bsm.service.model.functions.map.SetTo;
 
 public class MapFunctionMapper {
 
-    private static final Map<Class<? extends MapFunction>, Function<MapFunction, AbstractMapFunctionEntity>> serviceToPersistenceMapping = Maps.newHashMap();
+    private static final MapFunctionVisitor<AbstractMapFunctionEntity> serviceToPersistenceMapping = new MapFunctionVisitor<AbstractMapFunctionEntity>() {
 
-    private static final Map<Class<? extends AbstractMapFunctionEntity>, Function<AbstractMapFunctionEntity, MapFunction>> persistenceToServiceMapping = Maps.newHashMap();
+        @Override
+        public AbstractMapFunctionEntity visit(Decrease decrease) {
+            return new DecreaseEntity();
+        }
 
-    static {
-        serviceToPersistenceMapping.put(Decrease.class, input -> new DecreaseEntity());
-        serviceToPersistenceMapping.put(Increase.class, input -> new IncreaseEntity());
-        serviceToPersistenceMapping.put(Identity.class, input -> new IdentityEntity());
-        serviceToPersistenceMapping.put(Ignore.class, input -> new IgnoreEntity());
-        serviceToPersistenceMapping.put(SetTo.class, input -> {
+        @Override
+        public AbstractMapFunctionEntity visit(Identity identity) {
+            return new IdentityEntity();
+        }
+
+        @Override
+        public AbstractMapFunctionEntity visit(Ignore ignore) {
+            return new IgnoreEntity();
+        }
+
+        @Override
+        public AbstractMapFunctionEntity visit(Increase increase) {
+            return new IncreaseEntity();
+        }
+
+        @Override
+        public AbstractMapFunctionEntity visit(SetTo setTo) {
             SetToEntity entity = new SetToEntity();
-            entity.setSeverity(SeverityMapper.toSeverity(((SetTo) input).getStatus()));
+            entity.setSeverity(SeverityMapper.toSeverity(setTo.getStatus()));
             return entity;
-        });
+        }
+    };
 
-        persistenceToServiceMapping.put(DecreaseEntity.class, input -> new Decrease());
-        persistenceToServiceMapping.put(IncreaseEntity.class, input -> new Increase());
-        persistenceToServiceMapping.put(IdentityEntity.class, input -> new Identity());
-        persistenceToServiceMapping.put(IgnoreEntity.class, input -> new Ignore());
-        persistenceToServiceMapping.put(SetToEntity.class, input -> {
+    private static final MapFunctionEntityVisitor<MapFunction> persistenceToServiceMapping = new MapFunctionEntityVisitor<MapFunction>() {
+        @Override
+        public MapFunction visit(DecreaseEntity decreaseEntity) {
+            return new Decrease();
+        }
+
+        @Override
+        public MapFunction visit(IdentityEntity identityEntity) {
+            return new Identity();
+        }
+
+        @Override
+        public MapFunction visit(IgnoreEntity ignoreEntity) {
+            return new Ignore();
+        }
+
+        @Override
+        public MapFunction visit(IncreaseEntity increaseEntity) {
+            return new Increase();
+        }
+
+        @Override
+        public MapFunction visit(SetToEntity setToEntity) {
             SetTo result = new SetTo();
-            result.setStatus(SeverityMapper.toStatus(((SetToEntity) input).getSeverity()));
+            result.setStatus(SeverityMapper.toStatus(setToEntity.getSeverity()));
             return result;
-        });
-    }
+        }
+    };
 
     public AbstractMapFunctionEntity toPersistenceFunction(MapFunction mapFunction) {
-        Function<MapFunction, AbstractMapFunctionEntity> mapping = serviceToPersistenceMapping.get(mapFunction.getClass());
-        if (mapping == null) {
+        AbstractMapFunctionEntity mapFunctionEntity = mapFunction.accept(serviceToPersistenceMapping);
+        if (mapFunctionEntity == null) {
             throw new IllegalArgumentException("No mapping found");
         }
-        return mapping.apply(mapFunction);
+        return mapFunctionEntity;
     }
 
-    public MapFunction toServiceFunction(AbstractMapFunctionEntity mapFunction) {
-        if (mapFunction == null) {
+    public MapFunction toServiceFunction(AbstractMapFunctionEntity mapFunctionEntity) {
+        if (mapFunctionEntity == null) {
             return null;
         }
-        Function<AbstractMapFunctionEntity, MapFunction> mapping = persistenceToServiceMapping.get(mapFunction.getClass());
-        if (mapping == null) {
+        MapFunction mapFunction = mapFunctionEntity.accept(persistenceToServiceMapping);
+        if (mapFunction == null) {
             throw new IllegalArgumentException("No mapping found");
         }
-        return mapping.apply(mapFunction);
+        return mapFunction;
     }
 }

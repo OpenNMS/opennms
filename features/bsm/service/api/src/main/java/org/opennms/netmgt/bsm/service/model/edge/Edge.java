@@ -28,12 +28,13 @@
 
 package org.opennms.netmgt.bsm.service.model.edge;
 
+import java.util.Set;
+
 import org.opennms.netmgt.bsm.service.model.BusinessService;
 import org.opennms.netmgt.bsm.service.model.Status;
-import org.opennms.netmgt.bsm.service.model.edge.ro.ReadOnlyEdge;
 import org.opennms.netmgt.bsm.service.model.functions.map.MapFunction;
 
-public interface Edge extends ReadOnlyEdge {
+public interface Edge {
 
     int DEFAULT_WEIGHT = 1;
 
@@ -48,4 +49,16 @@ public interface Edge extends ReadOnlyEdge {
     void setWeight(int weight);
 
     void delete();
+
+    Long getId();
+
+    Set<String> getReductionKeys();
+
+    MapFunction getMapFunction();
+
+    int getWeight();
+
+    String getFriendlyName();
+
+    <T> T accept(EdgeVisitor<T> visitor);
 }

@@ -36,4 +36,6 @@ public interface MapFunction {
 
     Optional<Status> map(Status source);
 
+    <T> T accept(MapFunctionVisitor<T> visitor);
+
 }

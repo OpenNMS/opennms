@@ -49,8 +49,8 @@ import org.opennms.features.topology.plugins.topo.bsm.IpServiceVertex;
 import org.opennms.features.topology.plugins.topo.bsm.ReductionKeyVertex;
 import org.opennms.netmgt.bsm.service.BusinessServiceManager;
 import org.opennms.netmgt.bsm.service.BusinessServiceStateMachine;
+import org.opennms.netmgt.bsm.service.model.BusinessService;
 import org.opennms.netmgt.bsm.service.model.IpService;
-import org.opennms.netmgt.bsm.service.model.ReadOnlyBusinessService;
 import org.opennms.netmgt.bsm.service.model.graph.GraphVertex;
 import org.opennms.netmgt.vaadin.core.InfoDialog;
 import org.slf4j.Logger;
@@ -74,7 +74,7 @@ public class ImpactAnalysisOperation implements Operation {
             vertex.accept(new BusinessServiceVertexVisitor() {
                 @Override
                 public void visit(BusinessServiceVertex vertex) {
-                    ReadOnlyBusinessService businessService = businessServiceManager.getBusinessServiceById(vertex.getServiceId());
+                    BusinessService businessService = businessServiceManager.getBusinessServiceById(vertex.getServiceId());
                     graphVerticesToFocus.addAll(businessServiceStateMachine.calculateImpact(businessService));
                 }
 

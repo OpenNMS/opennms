@@ -41,4 +41,9 @@ public class Identity implements MapFunction {
             return Optional.of(source);
         }
     }
+
+    @Override
+    public <T> T accept(MapFunctionVisitor<T> visitor) {
+        return visitor.visit(this);
+    }
 }

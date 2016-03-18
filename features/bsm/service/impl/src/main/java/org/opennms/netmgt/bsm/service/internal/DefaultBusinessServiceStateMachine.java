@@ -53,10 +53,10 @@ import org.opennms.netmgt.bsm.service.AlarmProvider;
 import org.opennms.netmgt.bsm.service.BusinessServiceStateChangeHandler;
 import org.opennms.netmgt.bsm.service.BusinessServiceStateMachine;
 import org.opennms.netmgt.bsm.service.model.AlarmWrapper;
+import org.opennms.netmgt.bsm.service.model.BusinessService;
 import org.opennms.netmgt.bsm.service.model.IpService;
-import org.opennms.netmgt.bsm.service.model.ReadOnlyBusinessService;
 import org.opennms.netmgt.bsm.service.model.Status;
-import org.opennms.netmgt.bsm.service.model.edge.ro.ReadOnlyEdge;
+import org.opennms.netmgt.bsm.service.model.edge.Edge;
 import org.opennms.netmgt.bsm.service.model.graph.BusinessServiceGraph;
 import org.opennms.netmgt.bsm.service.model.graph.GraphEdge;
 import org.opennms.netmgt.bsm.service.model.graph.GraphVertex;
@@ -87,7 +87,7 @@ public class DefaultBusinessServiceStateMachine implements BusinessServiceStateM
     private BusinessServiceGraph m_g = new BusinessServiceGraphImpl(Collections.emptyList());
 
     @Override
-    public void setBusinessServices(List<? extends ReadOnlyBusinessService> businessServices) {
+    public void setBusinessServices(List<BusinessService> businessServices) {
         m_rwLock.writeLock().lock();
         try {
             // Create a new graph
@@ -223,7 +223,7 @@ public class DefaultBusinessServiceStateMachine implements BusinessServiceStateM
     }
 
     private void onStatusUpdated(BusinessServiceGraph graph, GraphVertex vertex, Status previousStatus) {
-        ReadOnlyBusinessService businessService = vertex.getBusinessService();
+        BusinessService businessService = vertex.getBusinessService();
         if (businessService == null) {
             // Only send updates for business services (and not for reduction keys)
             return;
@@ -246,7 +246,7 @@ public class DefaultBusinessServiceStateMachine implements BusinessServiceStateM
     }
 
     @Override
-    public Status getOperationalStatus(ReadOnlyBusinessService businessService) {
+    public Status getOperationalStatus(BusinessService businessService) {
         Objects.requireNonNull(businessService);
         m_rwLock.readLock().lock();
         try {
@@ -289,7 +289,7 @@ public class DefaultBusinessServiceStateMachine implements BusinessServiceStateM
     }
 
     @Override
-    public Status getOperationalStatus(ReadOnlyEdge edge) {
+    public Status getOperationalStatus(Edge edge) {
         m_rwLock.readLock().lock();
         try {
             GraphVertex vertex = m_g.getVertexByEdgeId(edge.getId());
@@ -386,7 +386,7 @@ public class DefaultBusinessServiceStateMachine implements BusinessServiceStateM
     }
 
     @Override
-    public List<GraphVertex> calculateRootCause(ReadOnlyBusinessService businessService) {
+    public List<GraphVertex> calculateRootCause(BusinessService businessService) {
         m_rwLock.readLock().lock();
         try {
             final GraphVertex vertex = m_g.getVertexByBusinessServiceId(businessService.getId());
@@ -397,7 +397,7 @@ public class DefaultBusinessServiceStateMachine implements BusinessServiceStateM
     }
 
     @Override
-    public List<GraphVertex> calculateImpact(ReadOnlyBusinessService businessService) {
+    public List<GraphVertex> calculateImpact(BusinessService businessService) {
         m_rwLock.readLock().lock();
         try {
             final GraphVertex vertex = m_g.getVertexByBusinessServiceId(businessService.getId());

@@ -26,31 +26,13 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.bsm.service.model.edge.ro;
+package org.opennms.netmgt.bsm.persistence.api.functions.reduce;
 
-import java.util.Set;
+public interface ReductionFunctionEntityVisitor<T> {
 
-import org.opennms.netmgt.bsm.service.model.edge.EdgeVisitor;
-import org.opennms.netmgt.bsm.service.model.functions.map.MapFunction;
+    T visit(HighestSeverityAboveEntity highestSeverityAboveEntity);
 
-/**
- * A simplified version of the {@link org.opennms.netmgt.bsm.service.model.edge.Edge}
- * that contains the minimal set of functions necessary to the state machine to function and
- * for the daemon to send the associated state change events.
- *
- * @author jwhite
- */
-public interface ReadOnlyEdge {
+    T visit(HighestSeverityEntity highestSeverityEntity);
 
-    Long getId();
-
-    Set<String> getReductionKeys();
-
-    MapFunction getMapFunction();
-
-    int getWeight();
-
-    String getFriendlyName();
-
-    <T> T accept(EdgeVisitor<T> visitor);
+    T visit(ThresholdEntity thresholdEntity);
 }

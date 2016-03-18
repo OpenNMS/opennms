@@ -32,25 +32,19 @@ import java.util.Set;
 
 import org.opennms.netmgt.bsm.service.model.IpService;
 import org.opennms.netmgt.bsm.service.model.edge.EdgeVisitor;
-import org.opennms.netmgt.bsm.service.model.edge.ro.ReadOnlyIpServiceEdge;
+import org.opennms.netmgt.bsm.service.model.edge.IpServiceEdge;
 import org.opennms.netmgt.bsm.service.model.functions.map.Identity;
-import org.opennms.netmgt.bsm.service.model.functions.map.MapFunction;
 
-public class MockIpServiceEdge implements ReadOnlyIpServiceEdge {
+public class MockIpServiceEdge extends AbstractMockEdge implements IpServiceEdge {
 
-    private final IpService m_ipService;
-    private final Long m_id;
-    private final String m_friendlyName;
+    private IpService m_ipService;
+
+    private String m_friendlyName;
 
     public MockIpServiceEdge(long id, IpService ipService, String friendlyName) {
-        m_ipService = ipService;
-        m_id = id;
+        super(id, new Identity());
         m_friendlyName = friendlyName;
-    }
-
-    @Override
-    public Long getId() {
-        return m_id;
+        m_ipService = ipService;
     }
 
     @Override
@@ -64,22 +58,22 @@ public class MockIpServiceEdge implements ReadOnlyIpServiceEdge {
     }
 
     @Override
-    public MapFunction getMapFunction() {
-        return new Identity();
-    }
-
-    @Override
-    public int getWeight() {
-        return 1;
-    }
-
-    @Override
     public String getFriendlyName() {
         return m_friendlyName;
     }
 
     @Override
+    public void setIpService(IpService ipService) {
+        m_ipService = ipService;
+    }
+
+    @Override
+    public void setFriendlyName(String friendlyName) {
+        m_friendlyName = friendlyName;
+    }
+
+    @Override
     public <T> T accept(EdgeVisitor<T> visitor) {
-        throw new UnsupportedOperationException();
+        return visitor.visit(this);
     }
 }

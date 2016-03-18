@@ -77,4 +77,9 @@ public class SetTo implements MapFunction {
                 .add("severity", getStatus())
                 .toString();
     }
+
+    @Override
+    public <T> T accept(MapFunctionVisitor<T> visitor) {
+        return visitor.visit(this);
+    }
 }

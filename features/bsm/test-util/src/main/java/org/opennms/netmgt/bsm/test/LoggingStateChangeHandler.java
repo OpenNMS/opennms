@@ -31,7 +31,7 @@ package org.opennms.netmgt.bsm.test;
 import java.util.List;
 
 import org.opennms.netmgt.bsm.service.BusinessServiceStateChangeHandler;
-import org.opennms.netmgt.bsm.service.model.ReadOnlyBusinessService;
+import org.opennms.netmgt.bsm.service.model.BusinessService;
 import org.opennms.netmgt.bsm.service.model.Status;
 
 import com.google.common.collect.Lists;
@@ -39,17 +39,17 @@ import com.google.common.collect.Lists;
 public class LoggingStateChangeHandler implements BusinessServiceStateChangeHandler {
 
     public class StateChange {
-        private final ReadOnlyBusinessService m_businessService;
+        private final BusinessService m_businessService;
         private final Status m_newStatus;
         private final Status m_prevStatus;
 
-        public StateChange(ReadOnlyBusinessService businessService, Status newStatus, Status prevStatus) {
+        public StateChange(BusinessService businessService, Status newStatus, Status prevStatus) {
             m_businessService = businessService;
             m_newStatus = newStatus;
             m_prevStatus = prevStatus;
         }
 
-        public ReadOnlyBusinessService getBusinessService() {
+        public BusinessService getBusinessService() {
             return m_businessService;
         }
 
@@ -65,7 +65,7 @@ public class LoggingStateChangeHandler implements BusinessServiceStateChangeHand
     private final List<StateChange> m_stateChanges = Lists.newArrayList();
 
     @Override
-    public void handleBusinessServiceStateChanged(ReadOnlyBusinessService businessService, Status newStatus, Status prevStatus) {
+    public void handleBusinessServiceStateChanged(BusinessService businessService, Status newStatus, Status prevStatus) {
         m_stateChanges.add(new StateChange(businessService, newStatus, prevStatus));
     }
 

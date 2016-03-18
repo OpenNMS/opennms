@@ -99,4 +99,9 @@ public class Threshold implements ReductionFunction {
                 .add("threshold", m_threshold)
                 .toString();
     }
+
+    @Override
+    public <T> T accept(ReduceFunctionVisitor<T> visitor) {
+        return visitor.visit(this);
+    }
 }
