@@ -413,10 +413,10 @@ public abstract class EnLinkdTestHelper {
                     assertEquals(0, links.size());
                     assertEquals(1, bblinks.size());
                     BridgeBridgeLink bblink = bblinks.iterator().next();
-                    assertEquals(nodeAId, bblink.getNode().getId());
-                    assertEquals(nodeBId, bblink.getDesignatedNode().getId());
-                    assertEquals(portAB, bblink.getBridgePort());
-                    assertEquals(portBA, bblink.getDesignatedPort());
+                    assertEquals(nodeAId, bblink.getDesignatedNode().getId());
+                    assertEquals(nodeBId, bblink.getNode().getId());
+                    assertEquals(portAB, bblink.getDesignatedPort());
+                    assertEquals(portBA, bblink.getBridgePort());
                } else if (shared.getMacsOnSegment().contains(mac1)) {
                     assertEquals(1, shared.getBridgeIdsOnSegment().size());
                     assertEquals(1, links.size());
@@ -467,10 +467,10 @@ public abstract class EnLinkdTestHelper {
                     assertEquals(0, links.size());
                     assertEquals(1, bblinks.size());
                     BridgeBridgeLink bblink = bblinks.iterator().next();
-                    assertEquals(nodeBId, bblink.getNode().getId());
-                    assertEquals(nodeCId, bblink.getDesignatedNode().getId());
-                    assertEquals(portBC, bblink.getBridgePort());
-                    assertEquals(portCB, bblink.getDesignatedPort());
+                    assertEquals(nodeBId, bblink.getDesignatedNode().getId());
+                    assertEquals(nodeCId, bblink.getNode().getId());
+                    assertEquals(portBC, bblink.getDesignatedPort());
+                    assertEquals(portCB, bblink.getBridgePort());
                } else if (shared.getMacsOnSegment().contains(mac1)) {
                     assertEquals(1, shared.getBridgeIdsOnSegment().size());
                     assertEquals(1, links.size());
@@ -886,10 +886,10 @@ public abstract class EnLinkdTestHelper {
                     assertEquals(1, shared.getBridgeBridgeLinks().size());
                     assertEquals(0, shared.getBridgeMacLinks().size());
                     BridgeBridgeLink link = shared.getBridgeBridgeLinks().iterator().next();
-                    assertEquals(nodeDId, link.getNode().getId());
-                    assertEquals(nodeGId, link.getDesignatedNode().getId());
-                    assertEquals(portDD, link.getBridgePort());
-                    assertEquals(portGD, link.getDesignatedPort());
+                    assertEquals(nodeDId, link.getDesignatedNode().getId());
+                    assertEquals(nodeGId, link.getNode().getId());
+                    assertEquals(portDD, link.getDesignatedPort());
+                    assertEquals(portGD, link.getBridgePort());
                 } else if (shared.getMacsOnSegment().contains(mac1)) {
                     assertEquals(1, shared.getBridgeIdsOnSegment().size());
                     assertEquals(2, shared.getMacsOnSegment().size());
@@ -1093,20 +1093,20 @@ public abstract class EnLinkdTestHelper {
                     assertEquals(0, shared.getBridgeMacLinks().size());
                     BridgeBridgeLink link = shared.getBridgeBridgeLinks().iterator().next();
                     if (shared.getBridgeIdsOnSegment().contains(nodeDId)) {
-                        assertEquals(nodeDId.intValue(),link.getNode().getId().intValue());
-                        assertEquals(portDD,link.getBridgePort());
-                        assertEquals(nodeGId.intValue(),link.getDesignatedNode().getId().intValue());
-                        assertEquals(portGD,link.getDesignatedPort());
+                        assertEquals(nodeDId.intValue(),link.getDesignatedNode().getId().intValue());
+                        assertEquals(portDD,link.getDesignatedPort());
+                        assertEquals(nodeGId.intValue(),link.getNode().getId().intValue());
+                        assertEquals(portGD,link.getBridgePort());
                     } else if (shared.getBridgeIdsOnSegment().contains(nodeEId)) {
-                        assertEquals(nodeEId.intValue(),link.getNode().getId().intValue());
-                        assertEquals(portEE,link.getBridgePort());
-                        assertEquals(nodeGId.intValue(),link.getDesignatedNode().getId().intValue());
-                        assertEquals(portGE,link.getDesignatedPort());
+                        assertEquals(nodeEId.intValue(),link.getDesignatedNode().getId().intValue());
+                        assertEquals(portEE,link.getDesignatedPort());
+                        assertEquals(nodeGId.intValue(),link.getNode().getId().intValue());
+                        assertEquals(portGE,link.getBridgePort());
                     } else if (shared.getBridgeIdsOnSegment().contains(nodeFId)) {
-                        assertEquals(nodeFId.intValue(),link.getNode().getId().intValue());
-                        assertEquals(portFF,link.getBridgePort());
-                        assertEquals(nodeGId.intValue(),link.getDesignatedNode().getId().intValue());
-                        assertEquals(portGF,link.getDesignatedPort());
+                        assertEquals(nodeFId.intValue(),link.getDesignatedNode().getId().intValue());
+                        assertEquals(portFF,link.getDesignatedPort());
+                        assertEquals(nodeGId.intValue(),link.getNode().getId().intValue());
+                        assertEquals(portGF,link.getBridgePort());
                     } else {
                         assertEquals(false, true);
                     }
@@ -1192,35 +1192,35 @@ public abstract class EnLinkdTestHelper {
                     assertEquals(0, shared.getBridgeMacLinks().size());
                     BridgeBridgeLink link = shared.getBridgeBridgeLinks().iterator().next();
                     if (shared.getBridgeIdsOnSegment().contains(nodeDId) && shared.getDesignatedPort().intValue() == portDD.intValue()) {
-                        assertEquals(nodeDId.intValue(),link.getNode().getId().intValue());
-                        assertEquals(portDD,link.getBridgePort());
-                        assertEquals(nodeGId.intValue(),link.getDesignatedNode().getId().intValue());
-                        assertEquals(portGD,link.getDesignatedPort());
+                        assertEquals(nodeDId.intValue(),link.getDesignatedNode().getId().intValue());
+                        assertEquals(portDD,link.getDesignatedPort());
+                        assertEquals(nodeGId.intValue(),link.getNode().getId().intValue());
+                        assertEquals(portGD,link.getBridgePort());
                     } else if (shared.getBridgeIdsOnSegment().contains(nodeDId) && shared.getDesignatedPort().intValue() == portD.intValue()) {
-                            assertEquals(nodeDId.intValue(),link.getNode().getId().intValue());
-                            assertEquals(portD,link.getBridgePort());
-                            assertEquals(nodeHId.intValue(),link.getDesignatedNode().getId().intValue());
-                            assertEquals(portHH,link.getDesignatedPort());
+                            assertEquals(nodeDId.intValue(),link.getDesignatedNode().getId().intValue());
+                            assertEquals(portD,link.getDesignatedPort());
+                            assertEquals(nodeHId.intValue(),link.getNode().getId().intValue());
+                            assertEquals(portHH,link.getBridgePort());
                     } else if (shared.getBridgeIdsOnSegment().contains(nodeGId) && shared.getDesignatedPort().intValue() == portGE.intValue()) {
-                        assertEquals(nodeEId.intValue(),link.getNode().getId().intValue());
-                        assertEquals(portEE,link.getBridgePort());
-                        assertEquals(nodeGId.intValue(),link.getDesignatedNode().getId().intValue());
-                        assertEquals(portGE,link.getDesignatedPort());
+                        assertEquals(nodeEId.intValue(),link.getDesignatedNode().getId().intValue());
+                        assertEquals(portEE,link.getDesignatedPort());
+                        assertEquals(nodeGId.intValue(),link.getNode().getId().intValue());
+                        assertEquals(portGE,link.getBridgePort());
                     } else if (shared.getBridgeIdsOnSegment().contains(nodeEId) && shared.getDesignatedPort().intValue() == portE.intValue()) {
-                        assertEquals(nodeEId.intValue(),link.getNode().getId().intValue());
-                        assertEquals(portE,link.getBridgePort());
-                        assertEquals(nodeLId.intValue(),link.getDesignatedNode().getId().intValue());
-                        assertEquals(portLL,link.getDesignatedPort());
+                        assertEquals(nodeEId.intValue(),link.getDesignatedNode().getId().intValue());
+                        assertEquals(portE,link.getDesignatedPort());
+                        assertEquals(nodeLId.intValue(),link.getNode().getId().intValue());
+                        assertEquals(portLL,link.getBridgePort());
                     } else if (shared.getBridgeIdsOnSegment().contains(nodeGId) && shared.getDesignatedPort().intValue() == portGF.intValue()) {
-                        assertEquals(nodeFId.intValue(),link.getNode().getId().intValue());
-                        assertEquals(portFF,link.getBridgePort());
-                        assertEquals(nodeGId.intValue(),link.getDesignatedNode().getId().intValue());
-                        assertEquals(portGF,link.getDesignatedPort());
+                        assertEquals(nodeFId.intValue(),link.getDesignatedNode().getId().intValue());
+                        assertEquals(portFF,link.getDesignatedPort());
+                        assertEquals(nodeGId.intValue(),link.getNode().getId().intValue());
+                        assertEquals(portGF,link.getBridgePort());
                     } else if (shared.getBridgeIdsOnSegment().contains(nodeFId) && shared.getDesignatedPort().intValue() == portF.intValue()) {
-                        assertEquals(nodeFId.intValue(),link.getNode().getId().intValue());
-                        assertEquals(portF,link.getBridgePort());
-                        assertEquals(nodeIId.intValue(),link.getDesignatedNode().getId().intValue());
-                        assertEquals(portII,link.getDesignatedPort());
+                        assertEquals(nodeFId.intValue(),link.getDesignatedNode().getId().intValue());
+                        assertEquals(portF,link.getDesignatedPort());
+                        assertEquals(nodeIId.intValue(),link.getNode().getId().intValue());
+                        assertEquals(portII,link.getBridgePort());
                     } else {
                         assertEquals(false, true);
                     }
@@ -1477,15 +1477,15 @@ public abstract class EnLinkdTestHelper {
 
                 BridgeBridgeLink dlink = shared.getBridgeBridgeLinks().iterator().next();
                 if (revertedbblink) {
-                    assertEquals(nodeAId, dlink.getNode().getId());
-                    assertEquals(portAB, dlink.getBridgePort());
-                    assertEquals(nodeBId, dlink.getDesignatedNode().getId());
-                    assertEquals(portBA, dlink.getDesignatedPort());
-                } else {
+                    assertEquals(nodeAId, dlink.getDesignatedNode().getId());
+                    assertEquals(portAB, dlink.getDesignatedPort());
                     assertEquals(nodeBId, dlink.getNode().getId());
                     assertEquals(portBA, dlink.getBridgePort());
-                    assertEquals(nodeAId, dlink.getDesignatedNode().getId());
-                    assertEquals(portAB, dlink.getDesignatedPort());                    
+                } else {
+                    assertEquals(nodeBId, dlink.getDesignatedNode().getId());
+                    assertEquals(portBA, dlink.getDesignatedPort());
+                    assertEquals(nodeAId, dlink.getNode().getId());
+                    assertEquals(portAB, dlink.getBridgePort());                    
                 }
             } else if (shared.getDesignatedBridge().intValue() == nodeBId.intValue() && shared.getDesignatedPort() == portB2) {
                 assertEquals(0, shared.getBridgeBridgeLinks().size());
@@ -1863,10 +1863,10 @@ public abstract class EnLinkdTestHelper {
                     assertEquals(0, shared.getBridgeMacLinks().size());
                     assertEquals(1, shared.getBridgeBridgeLinks().size());
                     BridgeBridgeLink link=shared.getBridgeBridgeLinks().iterator().next();
-                    assertEquals(nodeAId, link.getNode().getId());
-                    assertEquals(portAB,link.getBridgePort());
-                    assertEquals(nodeBId, link.getDesignatedNode().getId());
-                    assertEquals(portBA,link.getDesignatedPort());
+                    assertEquals(nodeAId, link.getDesignatedNode().getId());
+                    assertEquals(portAB,link.getDesignatedPort());
+                    assertEquals(nodeBId, link.getNode().getId());
+                    assertEquals(portBA,link.getBridgePort());
                 } else {
                     assertEquals(1, shared.getMacsOnSegment().size());
                     BridgeMacLink link = shared.getBridgeMacLinks().iterator().next();
@@ -2005,10 +2005,10 @@ public abstract class EnLinkdTestHelper {
                         }
                     }
                     BridgeBridgeLink dlink = shared.getBridgeBridgeLinks().iterator().next();
-                    assertEquals(nodeAId, dlink.getNode().getId());
-                    assertEquals(portAB, dlink.getBridgePort());
-                    assertEquals(nodeBId, dlink.getDesignatedNode().getId());
-                    assertEquals(portBA, dlink.getDesignatedPort());
+                    assertEquals(nodeAId, dlink.getDesignatedNode().getId());
+                    assertEquals(portAB, dlink.getDesignatedPort());
+                    assertEquals(nodeBId, dlink.getNode().getId());
+                    assertEquals(portBA, dlink.getBridgePort());
                 } else if (shared.getMacsOnSegment().contains(mac6)) {
                     assertEquals(0, shared.getBridgeBridgeLinks().size());
                     assertEquals(1, shared.getBridgeMacLinks().size());
@@ -2115,10 +2115,10 @@ public abstract class EnLinkdTestHelper {
                            assertTrue(false);
                     }
                     BridgeBridgeLink dlink = shared.getBridgeBridgeLinks().iterator().next();
-                    assertEquals(nodeAId, dlink.getNode().getId());
-                    assertEquals(portAB, dlink.getBridgePort());
-                    assertEquals(nodeBId, dlink.getDesignatedNode().getId());
-                    assertEquals(portBA, dlink.getDesignatedPort());
+                    assertEquals(nodeAId, dlink.getDesignatedNode().getId());
+                    assertEquals(portAB, dlink.getDesignatedPort());
+                    assertEquals(nodeBId, dlink.getNode().getId());
+                    assertEquals(portBA, dlink.getBridgePort());
                 } else if (shared.getMacsOnSegment().contains(macA11)) {
                     assertEquals(0, shared.getBridgeBridgeLinks().size());
                     assertEquals(2, shared.getMacsOnSegment().size());
@@ -2247,10 +2247,10 @@ public abstract class EnLinkdTestHelper {
                            assertTrue(false);
                     }
                     BridgeBridgeLink dlink = shared.getBridgeBridgeLinks().iterator().next();
-                    assertEquals(nodeBId, dlink.getNode().getId());
-                    assertEquals(portBA, dlink.getBridgePort());
-                    assertEquals(nodeAId, dlink.getDesignatedNode().getId());
-                    assertEquals(portAB, dlink.getDesignatedPort());
+                    assertEquals(nodeBId, dlink.getDesignatedNode().getId());
+                    assertEquals(portBA, dlink.getDesignatedPort());
+                    assertEquals(nodeAId, dlink.getNode().getId());
+                    assertEquals(portAB, dlink.getBridgePort());
                 } else if (shared.getMacsOnSegment().contains(macA11)) {
                     assertEquals(0, shared.getBridgeBridgeLinks().size());
                     assertEquals(2, shared.getMacsOnSegment().size());

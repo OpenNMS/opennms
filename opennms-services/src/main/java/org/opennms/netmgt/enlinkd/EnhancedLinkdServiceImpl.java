@@ -200,7 +200,6 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
                 }
             }
         }
-
     }
 
     @Override
@@ -634,6 +633,10 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
     @Override
     public void save(BroadcastDomain domain) {
         m_bridgeTopologyDao.save(domain);
+    }
+
+    @Override
+    public void cleanBroadcastDomains() {
         m_bridgeTopologyDao.clean();
     }
 

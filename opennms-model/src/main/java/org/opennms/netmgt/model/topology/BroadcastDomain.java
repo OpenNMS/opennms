@@ -154,7 +154,7 @@ public class BroadcastDomain {
         for (Bridge cur: m_bridges) {
             if (cur.getId().intValue() == bridgeId) 
                 continue;
-            bridges.add(bridge);
+            bridges.add(cur);
         }
         m_bridges = bridges;            
     }

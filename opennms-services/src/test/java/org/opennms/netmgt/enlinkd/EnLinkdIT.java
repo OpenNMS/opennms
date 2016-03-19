@@ -39,6 +39,7 @@ import static org.opennms.netmgt.nb.NmsNetworkBuilder.MUMBAI_SYSOID;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 import java.util.List;
 
@@ -47,6 +48,8 @@ import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.model.BridgeBridgeLink;
 import org.opennms.netmgt.model.BridgeMacLink;
 import org.opennms.netmgt.model.BridgeMacLink.BridgeDot1qTpFdbStatus;
+import org.opennms.netmgt.model.OnmsNode.NodeType;
+import org.opennms.netmgt.model.NetworkBuilder;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.topology.BroadcastDomain;
 import org.opennms.netmgt.nb.Nms10205bNetworkBuilder;
@@ -205,6 +208,103 @@ public class EnLinkdIT extends EnLinkdBuilderITCase {
     
     @Test
     public void testDeleteBridge() {
-//        m_linkd.deleteNode(nodeid);
+        ABCTopology topology = new ABCTopology();
+        OnmsNode lnodeA = topology.nodeA;
+        lnodeA.setForeignSource("linkd");
+        lnodeA.setForeignId("nodeA");
+        lnodeA.setLabel("nodeA");
+
+        OnmsNode lnodeB = topology.nodeB;
+        lnodeB.setForeignSource("linkd");
+        lnodeB.setForeignId("nodeB");
+        lnodeB.setLabel("nodeB");
+
+        NetworkBuilder nb = new NetworkBuilder();
+        nb.addNode("nodeC").setForeignSource("linkd").setForeignId("nodeC").setSysObjectId("0.0").setSysName("nodeC").setType(NodeType.ACTIVE);
+        nb.addInterface("10.0.1.1").setIsSnmpPrimary("P").setIsManaged("M");
+
+        m_nodeDao.save(lnodeA);
+        m_nodeDao.save(lnodeB);
+        m_nodeDao.save(nb.getCurrentNode());
+
+        OnmsNode nodeA = m_nodeDao.findByForeignId("linkd", "nodeA");
+        OnmsNode nodeB = m_nodeDao.findByForeignId("linkd", "nodeB");
+        OnmsNode nodeC = m_nodeDao.findByForeignId("linkd", "nodeC");
+
+        topology.nodeAId = nodeA.getId();
+        topology.nodeBId = nodeB.getId();
+        topology.nodeCId = nodeC.getId();
+
+        topology.nodeA = nodeA;
+        topology.nodeB = nodeB;
+        topology.nodeC = nodeC;
+
+        BridgeBridgeLink ablink = new BridgeBridgeLink();
+        ablink.setNode(nodeA);
+        ablink.setBridgePort(topology.portAB);
+        ablink.setDesignatedNode(nodeB);
+        ablink.setDesignatedPort(topology.portBA);
+        ablink.setBridgeBridgeLinkLastPollTime(ablink.getBridgeBridgeLinkCreateTime());
+        m_bridgeBridgeLinkDao.save(ablink);
+
+        BridgeBridgeLink bclink = new BridgeBridgeLink();
+        bclink.setNode(nodeB);
+        bclink.setBridgePort(topology.portBC);
+        bclink.setDesignatedNode(nodeC);
+        bclink.setDesignatedPort(topology.portCB);
+        bclink.setBridgeBridgeLinkLastPollTime(ablink.getBridgeBridgeLinkCreateTime());
+        m_bridgeBridgeLinkDao.save(bclink);
+
+        BridgeMacLink mac1 = new BridgeMacLink();
+        mac1.setNode(nodeA);
+        mac1.setBridgePort(topology.portA);
+        mac1.setMacAddress(topology.mac1);
+        mac1.setBridgeMacLinkLastPollTime(mac1.getBridgeMacLinkCreateTime());
+        m_bridgeMacLinkDao.save(mac1);
+
+        BridgeMacLink mac2 = new BridgeMacLink();
+        mac2.setNode(nodeB);
+        mac2.setBridgePort(topology.portB);
+        mac2.setMacAddress(topology.mac2);
+        mac2.setBridgeMacLinkLastPollTime(mac2.getBridgeMacLinkCreateTime());
+        m_bridgeMacLinkDao.save(mac2);
+
+        BridgeMacLink mac3 = new BridgeMacLink();
+        mac3.setNode(nodeC);
+        mac3.setBridgePort(topology.portC);
+        mac3.setMacAddress(topology.mac3);
+        mac3.setBridgeMacLinkLastPollTime(mac3.getBridgeMacLinkCreateTime());
+        m_bridgeMacLinkDao.save(mac3);
+
+        m_bridgeMacLinkDao.flush();
+        m_bridgeBridgeLinkDao.flush();
+        assertEquals(3, m_bridgeMacLinkDao.countAll());
+        assertEquals(2, m_bridgeBridgeLinkDao.countAll());
+        
+        assertNotNull(m_bridgeTopologyDao);
+        m_linkd.getQueryManager().loadBridgeTopology();
+
+        assertEquals(1, m_bridgeTopologyDao.getAll().size());
+        BroadcastDomain nodeAbd = m_linkd.getQueryManager().getBridgeTopologyBroadcastDomain(nodeA.getId().intValue());
+        assertNotNull(nodeAbd);
+        BroadcastDomain nodeBbd = m_linkd.getQueryManager().getBridgeTopologyBroadcastDomain(nodeB.getId().intValue());
+        BroadcastDomain nodeCbd = m_linkd.getQueryManager().getBridgeTopologyBroadcastDomain(nodeC.getId().intValue());
+        assertEquals(nodeAbd, nodeBbd);
+        assertEquals(nodeAbd, nodeCbd);
+        assertNull(nodeAbd.getRootBridgeId());
+        assertTrue(nodeAbd.containBridgeId(nodeA.getId()));
+        assertTrue(nodeAbd.containBridgeId(nodeB.getId()));
+        assertTrue(nodeAbd.containBridgeId(nodeC.getId()));
+        nodeAbd.hierarchySetUp(nodeAbd.getBridge(nodeA.getId()));
+        assertNotNull(nodeAbd.getRootBridgeId());
+        topology.check(nodeAbd.getTopology());
+
+        assertTrue(m_linkd.scheduleNodeCollection(nodeC.getId()));
+        m_linkd.deleteNode(nodeC.getId());
+        assertEquals(1, m_bridgeTopologyDao.getAll().size());
+        
+        BroadcastDomain domain = m_bridgeTopologyDao.getAll().iterator().next();
+        topology.checkAB(domain.getTopology());
+        
     }
 }
