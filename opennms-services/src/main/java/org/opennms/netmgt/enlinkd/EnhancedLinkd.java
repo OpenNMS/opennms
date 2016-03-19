@@ -351,7 +351,7 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
                         nodeid);
 
         BroadcastDomain domain = m_queryMgr.getBridgeTopologyBroadcastDomain(nodeid);
-
+        LOG.debug("deleteNode: {}, found broadcast domain: nodes {}, macs {}", nodeid, domain.getBridgeNodesOnDomain(), domain.getMacsOnDomain());
         // must be calculated the topology for nodeid...
         Node node = removeNode(nodeid);
 
@@ -359,7 +359,7 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
             LOG.warn("deleteNode: node not found: {}", nodeid);
         } else {
             Collection<NodeDiscovery> collections = getSnmpCollections(node);
-            LOG.info("deleteNode: fetched SnmpCollections from scratch, iterating over {} objects to wake them up",
+            LOG.info("deleteNode: fetched SnmpCollections from scratch, iterating over {} objects to delete",
                             collections.size());
             for (NodeDiscovery collection : collections) {
                 ReadyRunnable rr = getReadyRunnable(collection);
@@ -368,16 +368,17 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
                     LOG.warn("deleteNode: found null ReadyRunnable");
                     continue;
                 } else {
-                    if (rr instanceof NodeDiscoveryBridgeTopology && domain.getBridgeNodesOnDomain().size() > 1) {
+                    if (collection instanceof NodeDiscoveryBridgeTopology) {
+                        NodeDiscoveryBridgeTopology ndbt= (NodeDiscoveryBridgeTopology) collection;
+                        ndbt.setDomain(domain);
                         domain.getLock(this);
-                        LOG.info("deleteNode: node: {}, start: calculating topology for braodcast domain",nodeid);
-                        NodeDiscoveryBridgeTopology ndbt= (NodeDiscoveryBridgeTopology) rr;
+                        LOG.info("deleteNode: node: {}, start: merging topology for domain",nodeid);
                         ndbt.clearTopologyForBridge(domain.getBridge(nodeid));
-                        LOG.info("deleteNode: node: {}, end: calculating topology for braodcast domain",nodeid);
-                        LOG.info("deleteNode: node: {}, start: save topology for braodcast domain",nodeid);
+                        LOG.info("deleteNode: node: {}, end: merging topology for domain",nodeid);
+                        LOG.info("deleteNode: node: {}, start: save topology for domain",nodeid);
                         m_queryMgr.store(domain);
                         m_queryMgr.save(ndbt.getDomain().getRootBridgeId(),ndbt.getRootBridgeBFT());
-                        LOG.info("deleteNode: node: {}, end: save topology for braodcast domain",nodeid);
+                        LOG.info("deleteNode: node: {}, end: save topology for domain",nodeid);
                         domain.releaseLock(this);
                     }
                     rr.unschedule();
@@ -387,6 +388,7 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
 
         }
         m_queryMgr.delete(nodeid);
+        m_queryMgr.cleanBroadcastDomains();
 
     }
 

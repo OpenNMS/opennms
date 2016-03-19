@@ -45,7 +45,6 @@ import static org.opennms.netmgt.nb.NmsNetworkBuilder.STCASW01_IP;
 import static org.opennms.netmgt.nb.NmsNetworkBuilder.STCASW01_NAME;
 import static org.opennms.netmgt.nb.NmsNetworkBuilder.STCASW01_SNMP_RESOURCE;
 
-
 import java.util.List;
 
 import org.junit.Before;
@@ -57,6 +56,7 @@ import org.opennms.netmgt.model.BridgeMacLink;
 //import org.opennms.netmgt.model.BridgeMacLink.BridgeDot1qTpFdbStatus;
 //import org.opennms.netmgt.model.IpNetToMedia;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.topology.SharedSegment;
 //import org.opennms.netmgt.model.topology.BridgeMacTopologyLink;
 import org.opennms.netmgt.nb.Nms7918NetworkBuilder;
 
@@ -484,25 +484,284 @@ public class Nms7918EnIT extends EnLinkdBuilderITCase {
         assertTrue(m_linkd.runTopologyDiscovery(asw01.getId()));
         assertEquals(3,m_bridgeElementDao.countAll());
         assertEquals(0,m_bridgeStpLinkDao.countAll());
-        assertEquals(1,m_bridgeBridgeLinkDao.countAll());
+        assertEquals(2,m_bridgeBridgeLinkDao.countAll());
         assertEquals(91,m_bridgeMacLinkDao.countAll());
 
         assertTrue(m_linkd.runTopologyDiscovery(samasw01.getId()));
         assertTrue(m_linkd.runTopologyDiscovery(stcasw01.getId()));
         assertEquals(3,m_bridgeElementDao.countAll());
         assertEquals(0,m_bridgeStpLinkDao.countAll());
-        assertEquals(1,m_bridgeBridgeLinkDao.countAll());
+        assertEquals(2,m_bridgeBridgeLinkDao.countAll());
         assertEquals(91,m_bridgeMacLinkDao.countAll());
 
         for (BridgeBridgeLink bblink : m_bridgeBridgeLinkDao.findAll()) {
             printBridgeBridgeLink(bblink);
             assertNotNull(bblink);
-            assertEquals(asw01.getId(), bblink.getNode().getId());
-            assertEquals(stcasw01.getId(), bblink.getDesignatedNode().getId());
-            assertEquals(2, bblink.getBridgePort().intValue());
-            assertEquals(1002, bblink.getBridgePortIfIndex().intValue());
-            assertEquals(11, bblink.getDesignatedPort().intValue());
-            assertEquals(1011, bblink.getDesignatedPortIfIndex().intValue());
+            assertEquals(asw01.getId(), bblink.getDesignatedNode().getId());
+            assertEquals(2, bblink.getDesignatedPort().intValue());
+            assertEquals(1002, bblink.getDesignatedPortIfIndex().intValue());
+            if (stcasw01.getId().intValue() ==  bblink.getNode().getId().intValue()) {
+                assertEquals(11, bblink.getBridgePort().intValue());
+                assertEquals(1011, bblink.getBridgePortIfIndex().intValue());
+            } else if (samasw01.getId().intValue() ==  bblink.getNode().getId().intValue()) {
+                assertEquals(3, bblink.getBridgePort().intValue());
+                assertEquals(3, bblink.getBridgePortIfIndex().intValue());
+            } else {
+                assertTrue(false);
+            }
+        }
+
+        for (String mac: asw01port1bft) {
+            List<BridgeMacLink>links = m_bridgeMacLinkDao.findByMacAddress(mac);
+            assertEquals(1, links.size());
+            BridgeMacLink link = links.iterator().next();
+            printStoredBridgeMacLink(link);
+            assertEquals(asw01.getId(), link.getNode().getId());
+            assertEquals(1, link.getBridgePort().intValue());
+            assertEquals(1001, link.getBridgePortIfIndex().intValue());
+            assertEquals(mac, link.getMacAddress());
+        }
+        
+        for (String mac: asw01port2bft) {
+            List<BridgeMacLink>links = m_bridgeMacLinkDao.findByMacAddress(mac);
+            assertEquals(1, links.size());
+            BridgeMacLink link = links.iterator().next();
+            printStoredBridgeMacLink(link);
+            assertEquals(asw01.getId(), link.getNode().getId());
+            assertEquals(2, link.getBridgePort().intValue());
+            assertEquals(1002, link.getBridgePortIfIndex().intValue());
+            assertEquals(mac, link.getMacAddress());
+        }
+        
+        for (String mac: asw01port3bft) {
+            List<BridgeMacLink>links = m_bridgeMacLinkDao.findByMacAddress(mac);
+            assertEquals(1, links.size());
+            BridgeMacLink link = links.iterator().next();
+            printStoredBridgeMacLink(link);
+            assertEquals(asw01.getId(), link.getNode().getId());
+            assertEquals(3, link.getBridgePort().intValue());
+            assertEquals(1003, link.getBridgePortIfIndex().intValue());
+            assertEquals(mac, link.getMacAddress());
+        }
+        
+        for (String mac: asw01port4bft) {
+            List<BridgeMacLink>links = m_bridgeMacLinkDao.findByMacAddress(mac);
+            assertEquals(1, links.size());
+            BridgeMacLink link = links.iterator().next();
+            printStoredBridgeMacLink(link);
+            assertEquals(asw01.getId(), link.getNode().getId());
+            assertEquals(4, link.getBridgePort().intValue());
+            assertEquals(1004, link.getBridgePortIfIndex().intValue());
+            assertEquals(mac, link.getMacAddress());
+        }
+        
+        for (String mac: samport3bft) {
+            List<BridgeMacLink>links = m_bridgeMacLinkDao.findByMacAddress(mac);
+            assertEquals(1, links.size());
+            BridgeMacLink link = links.iterator().next();
+            printStoredBridgeMacLink(link);
+            assertEquals(samasw01.getId(), link.getNode().getId());
+            assertEquals(3, link.getBridgePort().intValue());
+            assertEquals(3, link.getBridgePortIfIndex().intValue());
+            assertEquals(mac, link.getMacAddress());
+        }
+
+
+        for (String mac: samport23bft) {
+            List<BridgeMacLink>links = m_bridgeMacLinkDao.findByMacAddress(mac);
+            assertEquals(1, links.size());
+            BridgeMacLink link = links.iterator().next();
+            printStoredBridgeMacLink(link);
+            assertEquals(samasw01.getId(), link.getNode().getId());
+            assertEquals(23, link.getBridgePort().intValue());
+            assertEquals(23, link.getBridgePortIfIndex().intValue());
+            assertEquals(mac, link.getMacAddress());
+        }
+
+        for (String mac: stcport11bft) {
+            List<BridgeMacLink>links = m_bridgeMacLinkDao.findByMacAddress(mac);
+            assertEquals(1, links.size());
+            BridgeMacLink link = links.iterator().next();
+            printStoredBridgeMacLink(link);
+            assertEquals(stcasw01.getId(), link.getNode().getId());
+            assertEquals(11, link.getBridgePort().intValue());
+            assertEquals(1011, link.getBridgePortIfIndex().intValue());
+            assertEquals(mac, link.getMacAddress());
+        }
+
+        for (String mac: stcport19bft) {
+            List<BridgeMacLink>links = m_bridgeMacLinkDao.findByMacAddress(mac);
+            assertEquals(1, links.size());
+            BridgeMacLink link = links.iterator().next();
+            printStoredBridgeMacLink(link);
+            assertEquals(stcasw01.getId(), link.getNode().getId());
+            assertEquals(19, link.getBridgePort().intValue());
+            assertEquals(1019, link.getBridgePortIfIndex().intValue());
+            assertEquals(mac, link.getMacAddress());
+        }
+        
+        for (String mac: stcport24bft) {
+            List<BridgeMacLink>links = m_bridgeMacLinkDao.findByMacAddress(mac);
+            assertEquals(1, links.size());
+            BridgeMacLink link = links.iterator().next();
+            printStoredBridgeMacLink(link);
+            assertEquals(stcasw01.getId(), link.getNode().getId());
+            assertEquals(24, link.getBridgePort().intValue());
+            assertEquals(1024, link.getBridgePortIfIndex().intValue());
+            assertEquals(mac, link.getMacAddress());
+        }
+
+
+        for (String mac: samasw01shared) {
+            List<BridgeMacLink>links = m_bridgeMacLinkDao.findByMacAddress(mac);
+            assertEquals(2, links.size());
+            for (BridgeMacLink link:  links) {
+                printStoredBridgeMacLink(link);
+                assertEquals(mac, link.getMacAddress());
+                if (samasw01.getId().intValue() == link.getNode().getId()) {
+                    assertEquals(3, link.getBridgePort().intValue());
+                    assertEquals(3, link.getBridgePortIfIndex().intValue());
+                } else if (asw01.getId().intValue() == link.getNode().getId()) {
+                    assertEquals(2, link.getBridgePort().intValue());
+                    assertEquals(1002, link.getBridgePortIfIndex().intValue());
+                } else {
+                    assertTrue(false);
+                }
+            }
+        }
+
+        for (String mac: stcasw01shared) {
+            System.err.println("Mac:" + mac);
+            List<BridgeMacLink>links = m_bridgeMacLinkDao.findByMacAddress(mac);
+            assertEquals(2, links.size());
+            for (BridgeMacLink link:  links) {
+                printStoredBridgeMacLink(link);
+                assertEquals(mac, link.getMacAddress());
+                if (stcasw01.getId().intValue() == link.getNode().getId()) {
+                    assertEquals(11, link.getBridgePort().intValue());
+                    assertEquals(1011, link.getBridgePortIfIndex().intValue());
+                } else if (asw01.getId().intValue() == link.getNode().getId()) {
+                    assertEquals(2, link.getBridgePort().intValue());
+                    assertEquals(1002, link.getBridgePortIfIndex().intValue());
+                } else {
+                    assertTrue(false);
+                }
+            }
+        }
+
+        for (String mac: stcsamshared) {
+            System.err.println("Mac:" + mac);
+            List<BridgeMacLink>links = m_bridgeMacLinkDao.findByMacAddress(mac);
+            assertEquals(2, links.size());
+            for (BridgeMacLink link:  links) {
+                printStoredBridgeMacLink(link);
+                assertEquals(mac, link.getMacAddress());
+                if (stcasw01.getId().intValue() == link.getNode().getId()) {
+                    assertEquals(11, link.getBridgePort().intValue());
+                    assertEquals(1011, link.getBridgePortIfIndex().intValue());
+                } else if (samasw01.getId().intValue() == link.getNode().getId()) {
+                    assertEquals(3, link.getBridgePort().intValue());
+                    assertEquals(3, link.getBridgePortIfIndex().intValue());
+                } else {
+                    assertTrue(false);
+                }
+            }
+        }
+
+        for (String mac: allshared) {
+            System.err.println("Mac:" + mac);
+            List<BridgeMacLink>links = m_bridgeMacLinkDao.findByMacAddress(mac);
+            assertEquals(3, links.size());
+            for (BridgeMacLink link:  links) {
+                printStoredBridgeMacLink(link);
+                assertEquals(mac, link.getMacAddress());
+                if (stcasw01.getId().intValue() == link.getNode().getId()) {
+                    assertEquals(11, link.getBridgePort().intValue());
+                    assertEquals(1011, link.getBridgePortIfIndex().intValue());
+                } else if (samasw01.getId().intValue() == link.getNode().getId()) {
+                    assertEquals(3, link.getBridgePort().intValue());
+                    assertEquals(3, link.getBridgePortIfIndex().intValue());
+                } else if (asw01.getId().intValue() == link.getNode().getId()) {
+                    assertEquals(2, link.getBridgePort().intValue());
+                    assertEquals(1002, link.getBridgePortIfIndex().intValue());
+                } else {
+                    assertTrue(false);
+                }
+            }
+        }
+
+        for (SharedSegment segment: m_linkd.getQueryManager().getBridgeTopologyBroadcastDomain(samasw01.getId()).getTopology()) {
+            printSharedSegment(segment);
+        }
+
+    }
+
+    @Test
+    @JUnitSnmpAgents(value={
+            @JUnitSnmpAgent(host=ASW01_IP, port=161, resource=ASW01_SNMP_RESOURCE),
+            @JUnitSnmpAgent(host=SAMASW01_IP, port=161, resource=SAMASW01_SNMP_RESOURCE),
+            @JUnitSnmpAgent(host=STCASW01_IP, port=161, resource=STCASW01_SNMP_RESOURCE)
+    })
+    public void testNms7918TwoSteps() throws Exception {
+        final OnmsNode stcasw01 = m_nodeDao.findByForeignId("linkd", STCASW01_NAME);
+        final OnmsNode samasw01 = m_nodeDao.findByForeignId("linkd", SAMASW01_NAME);
+        final OnmsNode asw01 = m_nodeDao.findByForeignId("linkd", ASW01_NAME);
+        m_linkdConfig.getConfiguration().setUseBridgeDiscovery(true);
+        m_linkdConfig.getConfiguration().setUseCdpDiscovery(false);
+        m_linkdConfig.getConfiguration().setUseOspfDiscovery(false);
+        m_linkdConfig.getConfiguration().setUseLldpDiscovery(false);
+        m_linkdConfig.getConfiguration().setUseIsisDiscovery(false);
+        assertTrue(!m_linkdConfig.useLldpDiscovery());
+        assertTrue(!m_linkdConfig.useCdpDiscovery());
+        assertTrue(!m_linkdConfig.useOspfDiscovery());
+        assertTrue(m_linkdConfig.useBridgeDiscovery());
+        assertTrue(!m_linkdConfig.useIsisDiscovery());
+
+        assertTrue(m_linkd.scheduleNodeCollection(asw01.getId()));
+        assertTrue(m_linkd.scheduleNodeCollection(samasw01.getId()));
+        assertTrue(m_linkd.scheduleNodeCollection(stcasw01.getId()));
+
+        assertEquals(0,m_bridgeElementDao.countAll());
+        assertEquals(0,m_bridgeStpLinkDao.countAll());
+        assertEquals(0,m_bridgeBridgeLinkDao.countAll());
+        assertEquals(0,m_bridgeMacLinkDao.countAll());
+
+        assertTrue(m_linkd.runSingleSnmpCollection(asw01.getId()));
+        assertTrue(m_linkd.runSingleSnmpCollection(samasw01.getId()));
+        assertEquals(2,m_bridgeElementDao.countAll());
+        assertEquals(0,m_bridgeStpLinkDao.countAll());
+        assertEquals(0,m_bridgeBridgeLinkDao.countAll());
+        assertEquals(0,m_bridgeMacLinkDao.countAll());
+        
+        assertTrue(m_linkd.runTopologyDiscovery(asw01.getId()));
+        assertEquals(2,m_bridgeElementDao.countAll());
+        assertEquals(0,m_bridgeStpLinkDao.countAll());
+        assertEquals(1,m_bridgeBridgeLinkDao.countAll());
+        assertEquals(67,m_bridgeMacLinkDao.countAll());
+
+        assertTrue(m_linkd.runTopologyDiscovery(samasw01.getId()));
+        assertTrue(m_linkd.runSingleSnmpCollection(stcasw01.getId()));
+        assertTrue(m_linkd.runTopologyDiscovery(stcasw01.getId()));
+        assertEquals(3,m_bridgeElementDao.countAll());
+        assertEquals(0,m_bridgeStpLinkDao.countAll());
+        assertEquals(2,m_bridgeBridgeLinkDao.countAll());
+        assertEquals(91,m_bridgeMacLinkDao.countAll());
+
+        for (BridgeBridgeLink bblink : m_bridgeBridgeLinkDao.findAll()) {
+            printBridgeBridgeLink(bblink);
+            assertNotNull(bblink);
+            assertEquals(asw01.getId(), bblink.getDesignatedNode().getId());
+            assertEquals(2, bblink.getDesignatedPort().intValue());
+            assertEquals(1002, bblink.getDesignatedPortIfIndex().intValue());
+            if (stcasw01.getId().intValue() ==  bblink.getNode().getId().intValue()) {
+                assertEquals(11, bblink.getBridgePort().intValue());
+                assertEquals(1011, bblink.getBridgePortIfIndex().intValue());
+            } else if (samasw01.getId().intValue() ==  bblink.getNode().getId().intValue()) {
+                assertEquals(3, bblink.getBridgePort().intValue());
+                assertEquals(3, bblink.getBridgePortIfIndex().intValue());
+            } else {
+                assertTrue(false);
+            }
         }
         for (String mac: asw01port1bft) {
             List<BridgeMacLink>links = m_bridgeMacLinkDao.findByMacAddress(mac);
@@ -683,7 +942,268 @@ public class Nms7918EnIT extends EnLinkdBuilderITCase {
             }
         }
 
+        for (SharedSegment segment: m_linkd.getQueryManager().getBridgeTopologyBroadcastDomain(samasw01.getId()).getTopology()) {
+            printSharedSegment(segment);
+        }
 
     }
+    
+    @Test
+    @JUnitSnmpAgents(value={
+            @JUnitSnmpAgent(host=ASW01_IP, port=161, resource=ASW01_SNMP_RESOURCE),
+            @JUnitSnmpAgent(host=SAMASW01_IP, port=161, resource=SAMASW01_SNMP_RESOURCE),
+            @JUnitSnmpAgent(host=STCASW01_IP, port=161, resource=STCASW01_SNMP_RESOURCE)
+    })
+    public void testNms7918ThreeSteps() throws Exception {
+        final OnmsNode stcasw01 = m_nodeDao.findByForeignId("linkd", STCASW01_NAME);
+        final OnmsNode samasw01 = m_nodeDao.findByForeignId("linkd", SAMASW01_NAME);
+        final OnmsNode asw01 = m_nodeDao.findByForeignId("linkd", ASW01_NAME);
+        m_linkdConfig.getConfiguration().setUseBridgeDiscovery(true);
+        m_linkdConfig.getConfiguration().setUseCdpDiscovery(false);
+        m_linkdConfig.getConfiguration().setUseOspfDiscovery(false);
+        m_linkdConfig.getConfiguration().setUseLldpDiscovery(false);
+        m_linkdConfig.getConfiguration().setUseIsisDiscovery(false);
+        assertTrue(!m_linkdConfig.useLldpDiscovery());
+        assertTrue(!m_linkdConfig.useCdpDiscovery());
+        assertTrue(!m_linkdConfig.useOspfDiscovery());
+        assertTrue(m_linkdConfig.useBridgeDiscovery());
+        assertTrue(!m_linkdConfig.useIsisDiscovery());
+
+        assertTrue(m_linkd.scheduleNodeCollection(asw01.getId()));
+        assertTrue(m_linkd.scheduleNodeCollection(samasw01.getId()));
+        assertTrue(m_linkd.scheduleNodeCollection(stcasw01.getId()));
+
+        assertEquals(0,m_bridgeElementDao.countAll());
+        assertEquals(0,m_bridgeStpLinkDao.countAll());
+        assertEquals(0,m_bridgeBridgeLinkDao.countAll());
+        assertEquals(0,m_bridgeMacLinkDao.countAll());
+
+        assertTrue(m_linkd.runSingleSnmpCollection(asw01.getId()));
+        assertEquals(1,m_bridgeElementDao.countAll());
+        assertEquals(0,m_bridgeStpLinkDao.countAll());
+        assertEquals(0,m_bridgeBridgeLinkDao.countAll());
+        assertEquals(0,m_bridgeMacLinkDao.countAll());
+        
+        assertTrue(m_linkd.runTopologyDiscovery(asw01.getId()));
+        assertEquals(1,m_bridgeElementDao.countAll());
+        assertEquals(0,m_bridgeStpLinkDao.countAll());
+        assertEquals(0,m_bridgeBridgeLinkDao.countAll());
+        assertEquals(40,m_bridgeMacLinkDao.countAll());
+
+        assertTrue(m_linkd.runSingleSnmpCollection(samasw01.getId()));
+        assertTrue(m_linkd.runTopologyDiscovery(samasw01.getId()));
+        assertEquals(2,m_bridgeElementDao.countAll());
+        assertEquals(0,m_bridgeStpLinkDao.countAll());
+        assertEquals(1,m_bridgeBridgeLinkDao.countAll());
+        assertEquals(67,m_bridgeMacLinkDao.countAll());
+
+        assertTrue(m_linkd.runSingleSnmpCollection(stcasw01.getId()));
+        assertTrue(m_linkd.runTopologyDiscovery(stcasw01.getId()));
+        assertEquals(3,m_bridgeElementDao.countAll());
+        assertEquals(0,m_bridgeStpLinkDao.countAll());
+        assertEquals(2,m_bridgeBridgeLinkDao.countAll());
+        assertEquals(91,m_bridgeMacLinkDao.countAll());
+
+        for (BridgeBridgeLink bblink : m_bridgeBridgeLinkDao.findAll()) {
+            printBridgeBridgeLink(bblink);
+            assertNotNull(bblink);
+            assertEquals(asw01.getId(), bblink.getDesignatedNode().getId());
+            assertEquals(2, bblink.getDesignatedPort().intValue());
+            assertEquals(1002, bblink.getDesignatedPortIfIndex().intValue());
+            if (stcasw01.getId().intValue() ==  bblink.getNode().getId().intValue()) {
+                assertEquals(11, bblink.getBridgePort().intValue());
+                assertEquals(1011, bblink.getBridgePortIfIndex().intValue());
+            } else if (samasw01.getId().intValue() ==  bblink.getNode().getId().intValue()) {
+                assertEquals(3, bblink.getBridgePort().intValue());
+                assertEquals(3, bblink.getBridgePortIfIndex().intValue());
+            } else {
+                assertTrue(false);
+            }
+        }
+        for (String mac: asw01port1bft) {
+            List<BridgeMacLink>links = m_bridgeMacLinkDao.findByMacAddress(mac);
+            assertEquals(1, links.size());
+            BridgeMacLink link = links.iterator().next();
+            printStoredBridgeMacLink(link);
+            assertEquals(asw01.getId(), link.getNode().getId());
+            assertEquals(1, link.getBridgePort().intValue());
+            assertEquals(1001, link.getBridgePortIfIndex().intValue());
+            assertEquals(mac, link.getMacAddress());
+        }
+        
+        for (String mac: asw01port2bft) {
+            List<BridgeMacLink>links = m_bridgeMacLinkDao.findByMacAddress(mac);
+            assertEquals(1, links.size());
+            BridgeMacLink link = links.iterator().next();
+            printStoredBridgeMacLink(link);
+            assertEquals(asw01.getId(), link.getNode().getId());
+            assertEquals(2, link.getBridgePort().intValue());
+            assertEquals(1002, link.getBridgePortIfIndex().intValue());
+            assertEquals(mac, link.getMacAddress());
+        }
+        
+        for (String mac: asw01port3bft) {
+            List<BridgeMacLink>links = m_bridgeMacLinkDao.findByMacAddress(mac);
+            assertEquals(1, links.size());
+            BridgeMacLink link = links.iterator().next();
+            printStoredBridgeMacLink(link);
+            assertEquals(asw01.getId(), link.getNode().getId());
+            assertEquals(3, link.getBridgePort().intValue());
+            assertEquals(1003, link.getBridgePortIfIndex().intValue());
+            assertEquals(mac, link.getMacAddress());
+        }
+        
+        for (String mac: asw01port4bft) {
+            List<BridgeMacLink>links = m_bridgeMacLinkDao.findByMacAddress(mac);
+            assertEquals(1, links.size());
+            BridgeMacLink link = links.iterator().next();
+            printStoredBridgeMacLink(link);
+            assertEquals(asw01.getId(), link.getNode().getId());
+            assertEquals(4, link.getBridgePort().intValue());
+            assertEquals(1004, link.getBridgePortIfIndex().intValue());
+            assertEquals(mac, link.getMacAddress());
+        }
+        
+        for (String mac: samport3bft) {
+            List<BridgeMacLink>links = m_bridgeMacLinkDao.findByMacAddress(mac);
+            assertEquals(1, links.size());
+            BridgeMacLink link = links.iterator().next();
+            printStoredBridgeMacLink(link);
+            assertEquals(samasw01.getId(), link.getNode().getId());
+            assertEquals(3, link.getBridgePort().intValue());
+            assertEquals(3, link.getBridgePortIfIndex().intValue());
+            assertEquals(mac, link.getMacAddress());
+        }
+
+
+        for (String mac: samport23bft) {
+            List<BridgeMacLink>links = m_bridgeMacLinkDao.findByMacAddress(mac);
+            assertEquals(1, links.size());
+            BridgeMacLink link = links.iterator().next();
+            printStoredBridgeMacLink(link);
+            assertEquals(samasw01.getId(), link.getNode().getId());
+            assertEquals(23, link.getBridgePort().intValue());
+            assertEquals(23, link.getBridgePortIfIndex().intValue());
+            assertEquals(mac, link.getMacAddress());
+        }
+
+        for (String mac: stcport11bft) {
+            List<BridgeMacLink>links = m_bridgeMacLinkDao.findByMacAddress(mac);
+            assertEquals(1, links.size());
+            BridgeMacLink link = links.iterator().next();
+            printStoredBridgeMacLink(link);
+            assertEquals(stcasw01.getId(), link.getNode().getId());
+            assertEquals(11, link.getBridgePort().intValue());
+            assertEquals(1011, link.getBridgePortIfIndex().intValue());
+            assertEquals(mac, link.getMacAddress());
+        }
+
+        for (String mac: stcport19bft) {
+            List<BridgeMacLink>links = m_bridgeMacLinkDao.findByMacAddress(mac);
+            assertEquals(1, links.size());
+            BridgeMacLink link = links.iterator().next();
+            printStoredBridgeMacLink(link);
+            assertEquals(stcasw01.getId(), link.getNode().getId());
+            assertEquals(19, link.getBridgePort().intValue());
+            assertEquals(1019, link.getBridgePortIfIndex().intValue());
+            assertEquals(mac, link.getMacAddress());
+        }
+        
+        for (String mac: stcport24bft) {
+            List<BridgeMacLink>links = m_bridgeMacLinkDao.findByMacAddress(mac);
+            assertEquals(1, links.size());
+            BridgeMacLink link = links.iterator().next();
+            printStoredBridgeMacLink(link);
+            assertEquals(stcasw01.getId(), link.getNode().getId());
+            assertEquals(24, link.getBridgePort().intValue());
+            assertEquals(1024, link.getBridgePortIfIndex().intValue());
+            assertEquals(mac, link.getMacAddress());
+        }
+
+
+        for (String mac: samasw01shared) {
+            List<BridgeMacLink>links = m_bridgeMacLinkDao.findByMacAddress(mac);
+            assertEquals(2, links.size());
+            for (BridgeMacLink link:  links) {
+                printStoredBridgeMacLink(link);
+                assertEquals(mac, link.getMacAddress());
+                if (samasw01.getId().intValue() == link.getNode().getId()) {
+                    assertEquals(3, link.getBridgePort().intValue());
+                    assertEquals(3, link.getBridgePortIfIndex().intValue());
+                } else if (asw01.getId().intValue() == link.getNode().getId()) {
+                    assertEquals(2, link.getBridgePort().intValue());
+                    assertEquals(1002, link.getBridgePortIfIndex().intValue());
+                } else {
+                    assertTrue(false);
+                }
+            }
+        }
+
+        for (String mac: stcasw01shared) {
+            System.err.println("Mac:" + mac);
+            List<BridgeMacLink>links = m_bridgeMacLinkDao.findByMacAddress(mac);
+            assertEquals(2, links.size());
+            for (BridgeMacLink link:  links) {
+                printStoredBridgeMacLink(link);
+                assertEquals(mac, link.getMacAddress());
+                if (stcasw01.getId().intValue() == link.getNode().getId()) {
+                    assertEquals(11, link.getBridgePort().intValue());
+                    assertEquals(1011, link.getBridgePortIfIndex().intValue());
+                } else if (asw01.getId().intValue() == link.getNode().getId()) {
+                    assertEquals(2, link.getBridgePort().intValue());
+                    assertEquals(1002, link.getBridgePortIfIndex().intValue());
+                } else {
+                    assertTrue(false);
+                }
+            }
+        }
+
+        for (String mac: stcsamshared) {
+            System.err.println("Mac:" + mac);
+            List<BridgeMacLink>links = m_bridgeMacLinkDao.findByMacAddress(mac);
+            assertEquals(2, links.size());
+            for (BridgeMacLink link:  links) {
+                printStoredBridgeMacLink(link);
+                assertEquals(mac, link.getMacAddress());
+                if (stcasw01.getId().intValue() == link.getNode().getId()) {
+                    assertEquals(11, link.getBridgePort().intValue());
+                    assertEquals(1011, link.getBridgePortIfIndex().intValue());
+                } else if (samasw01.getId().intValue() == link.getNode().getId()) {
+                    assertEquals(3, link.getBridgePort().intValue());
+                    assertEquals(3, link.getBridgePortIfIndex().intValue());
+                } else {
+                    assertTrue(false);
+                }
+            }
+        }
+
+        for (String mac: allshared) {
+            System.err.println("Mac:" + mac);
+            List<BridgeMacLink>links = m_bridgeMacLinkDao.findByMacAddress(mac);
+            assertEquals(3, links.size());
+            for (BridgeMacLink link:  links) {
+                printStoredBridgeMacLink(link);
+                assertEquals(mac, link.getMacAddress());
+                if (stcasw01.getId().intValue() == link.getNode().getId()) {
+                    assertEquals(11, link.getBridgePort().intValue());
+                    assertEquals(1011, link.getBridgePortIfIndex().intValue());
+                } else if (samasw01.getId().intValue() == link.getNode().getId()) {
+                    assertEquals(3, link.getBridgePort().intValue());
+                    assertEquals(3, link.getBridgePortIfIndex().intValue());
+                } else if (asw01.getId().intValue() == link.getNode().getId()) {
+                    assertEquals(2, link.getBridgePort().intValue());
+                    assertEquals(1002, link.getBridgePortIfIndex().intValue());
+                } else {
+                    assertTrue(false);
+                }
+            }
+        }
+
+        for (SharedSegment segment: m_linkd.getQueryManager().getBridgeTopologyBroadcastDomain(samasw01.getId()).getTopology()) {
+            printSharedSegment(segment);
+        }
+
+    }
+
 
 }

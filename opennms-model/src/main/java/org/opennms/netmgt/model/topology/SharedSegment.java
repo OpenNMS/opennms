@@ -9,6 +9,7 @@ import java.util.Set;
 
 import org.opennms.netmgt.model.BridgeBridgeLink;
 import org.opennms.netmgt.model.BridgeMacLink;
+import org.opennms.netmgt.model.BridgeMacLink.BridgeDot1qTpFdbStatus;
 
 public class SharedSegment {
     
@@ -87,40 +88,44 @@ public class SharedSegment {
             return;
         } 
         BridgeBridgeLink first= m_bridgeportsOnLink.iterator().next();
-        if (first.getNode().getId().intValue() == dlink.getNode().getId().intValue()) {
+        if (first.getDesignatedNode().getId().intValue() == dlink.getDesignatedNode().getId().intValue()) {
             m_bridgeportsOnLink.add(dlink);
             return;
         }
-
-        BridgeBridgeLink x = new BridgeBridgeLink();
-        x.setNode(first.getNode());
-        x.setBridgePort(first.getBridgePort());
-        x.setBridgePortIfIndex(first.getBridgePortIfIndex());
-        x.setBridgePortIfName(first.getBridgePortIfName());
-        x.setVlan(first.getVlan());
+        if (first.getDesignatedNode().getId().intValue() == dlink.getNode().getId().intValue()) {
+            m_bridgeportsOnLink.add(dlink.getReverseBridgeBridgeLink());
+            return;
+        }
         
-        x.setDesignatedNode(dlink.getNode());
-        x.setDesignatedPort(dlink.getBridgePort());
-        x.setDesignatedPortIfIndex(dlink.getBridgePortIfIndex());
-        x.setDesignatedPortIfName(dlink.getBridgePortIfName());
-        x.setDesignatedVlan(dlink.getVlan());
+        BridgeBridgeLink x = new BridgeBridgeLink();
+
+        x.setNode(dlink.getNode());
+        x.setBridgePort(dlink.getBridgePort());
+        x.setBridgePortIfIndex(dlink.getBridgePortIfIndex());
+        x.setBridgePortIfName(dlink.getBridgePortIfName());
+        x.setVlan(dlink.getVlan());
+
+        x.setDesignatedNode(first.getDesignatedNode());
+        x.setDesignatedPort(first.getDesignatedPort());
+        x.setDesignatedPortIfIndex(first.getDesignatedPortIfIndex());
+        x.setDesignatedPortIfName(first.getDesignatedPortIfName());
+        x.setVlan(first.getDesignatedVlan());
+        
         m_bridgeportsOnLink.add(x);
         
-        if (first.getNode().getId().intValue() != dlink.getDesignatedNode().getId().intValue()) {
-            BridgeBridgeLink y = new BridgeBridgeLink();
-            y.setNode(first.getNode());
-            y.setBridgePort(first.getBridgePort());
-            y.setBridgePortIfIndex(first.getBridgePortIfIndex());
-            y.setBridgePortIfName(first.getBridgePortIfName());
-            y.setVlan(first.getVlan());
+        BridgeBridgeLink y = new BridgeBridgeLink();
+        x.setNode(dlink.getDesignatedNode());
+        x.setBridgePort(dlink.getDesignatedPort());
+        x.setBridgePortIfIndex(dlink.getDesignatedPortIfIndex());
+        x.setBridgePortIfName(dlink.getDesignatedPortIfName());
+        x.setVlan(dlink.getDesignatedVlan());
             
-            y.setDesignatedNode(dlink.getDesignatedNode());
-            y.setDesignatedPort(dlink.getDesignatedPort());
-            y.setDesignatedPortIfIndex(dlink.getDesignatedPortIfIndex());
-            y.setDesignatedPortIfName(dlink.getDesignatedPortIfName());
-            y.setDesignatedVlan(dlink.getDesignatedVlan());
-            m_bridgeportsOnLink.add(y);
-        }
+        y.setDesignatedNode(first.getDesignatedNode());
+        y.setDesignatedPort(first.getDesignatedPort());
+        y.setDesignatedPortIfIndex(first.getDesignatedPortIfIndex());
+        y.setDesignatedPortIfName(first.getDesignatedPortIfName());
+        y.setVlan(first.getDesignatedVlan());
+        m_bridgeportsOnLink.add(y);
     }
 
     //   this=topSegment {tmac...} {(tbridge,tport)....}U{bridgeId, bridgeIdPortId} 
@@ -133,14 +138,36 @@ public class SharedSegment {
     //    move all the macs and port on shared
     //  ------> topSegment {tmac...}U{smac....} {(tbridge,tport)}U{(sbridge,sport).....}
     public void mergeBridge(SharedSegment shared, Integer bridgeId) {
+
+        for (BridgeBridgeLink bblink: m_bridgeportsOnLink) {
+            for (BridgeMacLink link: shared.getBridgeMacLinks()) {
+                BridgeMacLink nlink = new BridgeMacLink();
+                nlink.setNode(bblink.getNode());
+                nlink.setBridgePort(bblink.getBridgePort());
+                nlink.setBridgePortIfIndex(bblink.getBridgePortIfIndex());
+                nlink.setBridgePortIfName(bblink.getBridgePortIfName());
+                nlink.setVlan(bblink.getVlan());
+                nlink.setMacAddress(link.getMacAddress());
+                nlink.setBridgeDot1qTpFdbStatus(BridgeDot1qTpFdbStatus.DOT1D_TP_FDB_STATUS_LEARNED);
+                m_bridgeportsOnSegment.add(nlink);
+                BridgeMacLink klink = new BridgeMacLink();
+                klink.setNode(bblink.getDesignatedNode());
+                klink.setBridgePort(bblink.getDesignatedPort());
+                klink.setBridgePortIfIndex(bblink.getDesignatedPortIfIndex());
+                klink.setBridgePortIfName(bblink.getDesignatedPortIfName());
+                klink.setVlan(bblink.getDesignatedVlan());
+                klink.setMacAddress(link.getMacAddress());
+                klink.setBridgeDot1qTpFdbStatus(BridgeDot1qTpFdbStatus.DOT1D_TP_FDB_STATUS_LEARNED);
+                m_bridgeportsOnSegment.add(klink);
+            }            
+        }
+
         for (BridgeBridgeLink dlink: shared.getBridgeBridgeLinks())
             add(dlink);
 
-        for (BridgeMacLink link: shared.getBridgeMacLinks()) 
+        for (BridgeMacLink link: shared.getBridgeMacLinks()) {
             m_bridgeportsOnSegment.add(link);
-        
-        removeBridge(bridgeId);
-
+        }        
     }
 
     public void assign(List<BridgeMacLink> links, BridgeBridgeLink dlink) {

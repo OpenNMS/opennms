@@ -122,7 +122,9 @@ public interface EnhancedLinkdService {
     void store(BroadcastDomain domain);
     
     void save(BroadcastDomain domain);
-    
+
+    void cleanBroadcastDomains();
+
     Set<BroadcastDomain> getAllBroadcastDomains();
     
     Map<Integer, List<BridgeMacLink>> getUpdateBftMap();
