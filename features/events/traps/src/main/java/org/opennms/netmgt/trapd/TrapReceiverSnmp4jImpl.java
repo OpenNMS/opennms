@@ -70,13 +70,10 @@ public class TrapReceiverSnmp4jImpl implements TrapReceiver, TrapNotificationLis
     @Autowired
     private TrapQueueProcessorFactory m_processorFactory;
     
-    @Resource(name="snmpTrapAddress")
     private String m_snmpTrapAddress;
 
-    @Resource(name="snmpTrapPort")
     private Integer m_snmpTrapPort;
 
-    @Resource(name="snmpV3Users")
     private List<SnmpV3User> m_snmpV3Users;
     
     private boolean m_registeredForTraps;
@@ -107,6 +104,9 @@ public class TrapReceiverSnmp4jImpl implements TrapReceiver, TrapNotificationLis
         }
 
         m_config = config;
+        m_snmpTrapPort = config.getSnmpTrapPort();
+        m_snmpTrapAddress = config.getSnmpTrapAddress();
+        m_snmpV3Users = config.getSnmpV3Users();
 
         m_executor = new ThreadPoolExecutor(
             Runtime.getRuntime().availableProcessors() * 2,
