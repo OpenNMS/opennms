@@ -15,11 +15,11 @@
 
 	<cm:property-placeholder id="trapdProperties" persistent-id="org.opennms.netmgt.trapd" update-strategy="none">
 		<cm:default-properties>
-			<cm:property name="trapd.listen.interface" value="0.0.0.0" />
-			<cm:property name="trapd.listen.port" value="514" />
+			<cm:property name="trapd.listen.interface" value="127.0.0.1" />
+			<cm:property name="trapd.listen.port" value="5150" />
 		</cm:default-properties>
 	</cm:property-placeholder>
-
+    
 	<bean id="trapdConfig" class="org.opennms.netmgt.trapd.TrapdConfigBean">
 		<property name="snmpTrapPort" value="${trapd.listen.port}"/>
 		<property name="snmpTrapAddress" value="${trapd.listen.interface}"/>
@@ -30,10 +30,6 @@
 	<bean id="trapdListenerJava" class="org.opennms.netmgt.trapd.TrapReceiverSnmp4jImpl" init-method="start" destroy-method="stop">
 		<argument ref="trapdConfig"/>
 		<property name="trapNotificationHandlers" ref="trapNotificationHandlers"/>
-	</bean>
-
-	<bean class="java.lang.Thread" init-method="start">
-		<argument ref="trapdListenerJava"/>
 	</bean>
 
 </blueprint>
