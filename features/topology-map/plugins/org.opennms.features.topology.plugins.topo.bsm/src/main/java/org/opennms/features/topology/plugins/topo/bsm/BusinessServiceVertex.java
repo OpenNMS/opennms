@@ -31,7 +31,6 @@ package org.opennms.features.topology.plugins.topo.bsm;
 import java.util.Set;
 
 import org.opennms.netmgt.bsm.service.model.BusinessService;
-import org.opennms.netmgt.bsm.service.model.Status;
 import org.opennms.netmgt.bsm.service.model.graph.GraphVertex;
 
 import com.google.common.collect.Sets;
@@ -40,16 +39,16 @@ public class BusinessServiceVertex extends AbstractBusinessServiceVertex {
 
     private final Long serviceId;
 
-    public BusinessServiceVertex(BusinessService businessService, int level, Status status) {
-        this(businessService.getId(), businessService.getName(), level, status);
+    public BusinessServiceVertex(BusinessService businessService, int level) {
+        this(businessService.getId(), businessService.getName(), level);
     }
 
     public BusinessServiceVertex(GraphVertex graphVertex) {
-        this(graphVertex.getBusinessService(), graphVertex.getLevel(), graphVertex.getStatus());
+        this(graphVertex.getBusinessService(), graphVertex.getLevel());
     }
 
-    public BusinessServiceVertex(Long serviceId, String name, int level, Status status) {
-        super(Type.BusinessService + ":" + serviceId, name, level, status);
+    public BusinessServiceVertex(Long serviceId, String name, int level) {
+        super(Type.BusinessService + ":" + serviceId, name, level);
         this.serviceId = serviceId;
         setLabel(name);
         setTooltipText(String.format("Business Service '%s'", name));

@@ -110,6 +110,8 @@ public interface BusinessServiceManager extends NodeManager {
      */
     BusinessServiceGraph getGraph();
 
+    BusinessServiceStateMachine getStateMachine();
+
     void setMapFunction(Edge edge, MapFunction mapFunction);
 
     void setReduceFunction(BusinessService businessService, ReductionFunction reductionFunction);

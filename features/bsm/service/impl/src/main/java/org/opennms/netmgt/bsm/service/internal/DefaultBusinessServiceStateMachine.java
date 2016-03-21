@@ -76,7 +76,6 @@ import edu.uci.ics.jung.visualization.VisualizationImageServer;
 
 public class DefaultBusinessServiceStateMachine implements BusinessServiceStateMachine {
     private static final Logger LOG = LoggerFactory.getLogger(DefaultBusinessServiceStateMachine.class);
-    public static final Status DEFAULT_SEVERITY = Status.NORMAL;
     public static final Status MIN_SEVERITY = Status.NORMAL;
 
     @Autowired
@@ -141,6 +140,9 @@ public class DefaultBusinessServiceStateMachine implements BusinessServiceStateM
             return;
         }
 
+        // Apply lower bound
+        newStatus = newStatus.isLessThan(MIN_SEVERITY) ? MIN_SEVERITY : newStatus;
+
         // Update the status if necessary
         Status previousStatus = vertex.getStatus();
         if (previousStatus.equals(newStatus)) {
@@ -148,13 +150,21 @@ public class DefaultBusinessServiceStateMachine implements BusinessServiceStateM
             return;
         }
         vertex.setStatus(newStatus);
+
         // Notify the listeners
         onStatusUpdated(graph, vertex, previousStatus);
 
         // Update the edges with the mapped status
         List<GraphEdge> updatedEges = Lists.newArrayList();
         for (GraphEdge edge : graph.getInEdges(vertex)) {
-            Status mappedStatus = edge.getMapFunction().map(newStatus).orElse(DEFAULT_SEVERITY);
+            Status mappedStatus = newStatus;
+            if (newStatus.isGreaterThan(MIN_SEVERITY)) {
+                // Only apply the map function when the status is > the minimum
+                mappedStatus = edge.getMapFunction().map(newStatus).orElse(MIN_SEVERITY);
+            } else {
+                mappedStatus = newStatus;
+            }
+
             if (mappedStatus.equals(edge.getStatus())) {
                 // The status hasn't changed
                 continue;
@@ -181,10 +191,7 @@ public class DefaultBusinessServiceStateMachine implements BusinessServiceStateM
         List<Status> statuses = weighStatuses(graph.getOutEdges(vertex));
 
         // Reduce
-        Status newStatus = vertex.getReductionFunction().reduce(statuses).orElse(DEFAULT_SEVERITY);
-
-        // Apply lower bound
-        newStatus = newStatus.isLessThan(MIN_SEVERITY) ? MIN_SEVERITY : newStatus;
+        Status newStatus = vertex.getReductionFunction().reduce(statuses).orElse(MIN_SEVERITY);
 
         // Update and propagate
         updateAndPropagateVertex(graph, vertex, newStatus);
@@ -396,6 +403,48 @@ public class DefaultBusinessServiceStateMachine implements BusinessServiceStateM
         }
     }
 
+    @Override
+    public BusinessServiceStateMachine clone(boolean preserveState) {
+        m_rwLock.readLock().lock();
+        try {
+            final BusinessServiceStateMachine sm = new DefaultBusinessServiceStateMachine();
+
+            // Rebuild the graph using the business services from the existing state machine
+            final BusinessServiceGraph graph = getGraph();
+            sm.setBusinessServices(graph.getVertices().stream()
+                    .filter(v -> v.getBusinessService() != null)
+                    .map(v -> v.getBusinessService())
+                    .collect(Collectors.toList()));
+
+            // Prime the state
+            if (preserveState) {
+                for (String reductionKey : graph.getReductionKeys()) {
+                    GraphVertex reductionKeyVertex = graph.getVertexByReductionKey(reductionKey);
+                    sm.handleNewOrUpdatedAlarm(new AlarmWrapper() {
+                        @Override
+                        public String getReductionKey() {
+                            return reductionKey;
+                        }
+
+                        @Override
+                        public Status getStatus() {
+                            return reductionKeyVertex.getStatus();
+                        }
+
+                        @Override
+                        public Integer getId() {
+                            return 0;
+                        }
+                    });
+                }
+            }
+            return sm;
+        } finally {
+            m_rwLock.readLock().unlock();
+        }
+    }
+
+    @Override
     public List<GraphVertex> calculateRootCause(BusinessService businessService) {
         m_rwLock.readLock().lock();
         try {

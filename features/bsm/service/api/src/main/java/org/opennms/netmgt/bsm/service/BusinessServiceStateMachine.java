@@ -121,6 +121,8 @@ public interface BusinessServiceStateMachine {
      */
     BusinessServiceGraph getGraph();
 
+    BusinessServiceStateMachine clone(boolean preserveState);
+
     List<GraphVertex> calculateRootCause(BusinessService businessService);
 
     Set<GraphEdge> calculateImpacting(BusinessService businessService);

@@ -28,8 +28,9 @@
 
 package org.opennms.features.topology.plugins.topo.bsm.info;
 
-import com.vaadin.ui.Component;
-import com.vaadin.ui.FormLayout;
+import static org.opennms.netmgt.vaadin.core.UIHelper.createLabel;
+
+import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.info.VertexInfoPanelItem;
 import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.features.topology.plugins.topo.bsm.AbstractBusinessServiceVertex;
@@ -48,7 +49,8 @@ import org.opennms.netmgt.bsm.service.model.functions.reduce.ReductionFunction;
 import org.opennms.netmgt.bsm.service.model.functions.reduce.Threshold;
 import org.opennms.netmgt.vaadin.core.TransactionAwareBeanProxyFactory;
 
-import static org.opennms.netmgt.vaadin.core.UIHelper.createLabel;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.FormLayout;
 
 public class BusinessServiceVertexInfoPanelItem implements VertexInfoPanelItem {
 
@@ -65,12 +67,12 @@ public class BusinessServiceVertexInfoPanelItem implements VertexInfoPanelItem {
     }
 
     @Override
-    public boolean contributesTo(VertexRef vertexRef) {
+    public boolean contributesTo(VertexRef vertexRef, GraphContainer container) {
         return vertexRef.getNamespace().equals(BusinessServicesTopologyProvider.TOPOLOGY_NAMESPACE);
     }
 
     @Override
-    public Component getComponent(VertexRef ref) {
+    public Component getComponent(VertexRef ref, GraphContainer container) {
         final FormLayout formLayout = new FormLayout();
         formLayout.setSpacing(false);
         formLayout.setMargin(false);

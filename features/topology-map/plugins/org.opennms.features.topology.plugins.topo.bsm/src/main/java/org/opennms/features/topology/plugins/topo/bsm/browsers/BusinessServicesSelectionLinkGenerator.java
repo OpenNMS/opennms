@@ -31,7 +31,6 @@ package org.opennms.features.topology.plugins.topo.bsm.browsers;
 import org.opennms.features.topology.api.browsers.AbstractSelectionLinkGenerator;
 import org.opennms.features.topology.plugins.browsers.ToStringColumnGenerator;
 import org.opennms.features.topology.plugins.topo.bsm.BusinessServiceVertex;
-import org.opennms.netmgt.bsm.service.model.Status;
 
 import com.vaadin.data.Property;
 import com.vaadin.ui.Button;
@@ -77,8 +76,7 @@ public class BusinessServicesSelectionLinkGenerator extends AbstractSelectionLin
                         BusinessServiceVertex vertex = new BusinessServiceVertex(
                                 businessServiceId,
                                 businessServiceLabel,
-                                0 /* does not matter in this case*/,
-                                Status.INDETERMINATE /* does not matter in this case*/);
+                                0 /* does not matter in this case*/);
                         fireVertexUpdatedEvent(vertex);
                     }
                 });

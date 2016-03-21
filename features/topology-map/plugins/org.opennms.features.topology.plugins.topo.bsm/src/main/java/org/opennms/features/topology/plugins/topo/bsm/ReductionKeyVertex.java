@@ -32,7 +32,6 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.opennms.netmgt.bsm.service.model.Status;
 import org.opennms.netmgt.bsm.service.model.graph.GraphVertex;
 
 import com.google.common.collect.Sets;
@@ -45,11 +44,11 @@ public class ReductionKeyVertex extends AbstractBusinessServiceVertex {
     private final String reductionKey;
 
     public ReductionKeyVertex(GraphVertex graphVertex) {
-        this(graphVertex.getReductionKey(), graphVertex.getLevel(), graphVertex.getStatus());
+        this(graphVertex.getReductionKey(), graphVertex.getLevel());
     }
 
-    public ReductionKeyVertex(String reductionKey, int level, Status status) {
-        super(Type.ReductionKey + ":" + reductionKey, getLabelFromReductionKey(reductionKey), level, status);
+    public ReductionKeyVertex(String reductionKey, int level) {
+        super(Type.ReductionKey + ":" + reductionKey, getLabelFromReductionKey(reductionKey), level);
         this.reductionKey = reductionKey;
         setTooltipText(String.format("Reduction Key '%s'", reductionKey));
         setIconKey("bsm.reduction-key");

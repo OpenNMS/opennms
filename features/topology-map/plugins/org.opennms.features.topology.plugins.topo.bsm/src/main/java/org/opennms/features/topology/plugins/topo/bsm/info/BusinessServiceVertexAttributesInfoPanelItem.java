@@ -28,29 +28,20 @@
 
 package org.opennms.features.topology.plugins.topo.bsm.info;
 
-import com.vaadin.ui.Component;
-import com.vaadin.ui.FormLayout;
-import org.opennms.features.topology.api.info.VertexInfoPanelItem;
-import org.opennms.features.topology.api.topo.VertexRef;
-import org.opennms.features.topology.plugins.topo.bsm.AbstractBusinessServiceVertex;
-import org.opennms.features.topology.plugins.topo.bsm.BusinessServiceVertex;
-import org.opennms.features.topology.plugins.topo.bsm.BusinessServiceVertexVisitor;
-import org.opennms.features.topology.plugins.topo.bsm.BusinessServicesTopologyProvider;
-import org.opennms.features.topology.plugins.topo.bsm.IpServiceVertex;
-import org.opennms.features.topology.plugins.topo.bsm.ReductionKeyVertex;
-import org.opennms.netmgt.bsm.service.BusinessServiceManager;
-import org.opennms.netmgt.bsm.service.model.BusinessService;
-import org.opennms.netmgt.bsm.service.model.IpService;
-import org.opennms.netmgt.bsm.service.model.functions.reduce.HighestSeverity;
-import org.opennms.netmgt.bsm.service.model.functions.reduce.HighestSeverityAbove;
-import org.opennms.netmgt.bsm.service.model.functions.reduce.ReduceFunctionVisitor;
-import org.opennms.netmgt.bsm.service.model.functions.reduce.ReductionFunction;
-import org.opennms.netmgt.bsm.service.model.functions.reduce.Threshold;
-import org.opennms.netmgt.vaadin.core.TransactionAwareBeanProxyFactory;
+import static org.opennms.netmgt.vaadin.core.UIHelper.createLabel;
 
 import java.util.Map;
 
-import static org.opennms.netmgt.vaadin.core.UIHelper.createLabel;
+import org.opennms.features.topology.api.GraphContainer;
+import org.opennms.features.topology.api.info.VertexInfoPanelItem;
+import org.opennms.features.topology.api.topo.VertexRef;
+import org.opennms.features.topology.plugins.topo.bsm.BusinessServiceVertex;
+import org.opennms.netmgt.bsm.service.BusinessServiceManager;
+import org.opennms.netmgt.bsm.service.model.BusinessService;
+import org.opennms.netmgt.vaadin.core.TransactionAwareBeanProxyFactory;
+
+import com.vaadin.ui.Component;
+import com.vaadin.ui.FormLayout;
 
 public class BusinessServiceVertexAttributesInfoPanelItem implements VertexInfoPanelItem {
 
@@ -67,13 +58,13 @@ public class BusinessServiceVertexAttributesInfoPanelItem implements VertexInfoP
     }
 
     @Override
-    public boolean contributesTo(VertexRef vertexRef) {
+    public boolean contributesTo(VertexRef vertexRef, GraphContainer container) {
         return vertexRef instanceof BusinessServiceVertex
                && !this.businessServiceManager.getBusinessServiceById(((BusinessServiceVertex) vertexRef).getServiceId()).getAttributes().isEmpty();
     }
 
     @Override
-    public Component getComponent(VertexRef ref) {
+    public Component getComponent(VertexRef ref, GraphContainer container) {
         final FormLayout formLayout = new FormLayout();
         formLayout.setSpacing(false);
         formLayout.setMargin(false);

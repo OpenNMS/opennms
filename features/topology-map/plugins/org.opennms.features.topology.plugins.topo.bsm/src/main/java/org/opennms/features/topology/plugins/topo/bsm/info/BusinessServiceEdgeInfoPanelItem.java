@@ -30,15 +30,11 @@ package org.opennms.features.topology.plugins.topo.bsm.info;
 
 import static org.opennms.netmgt.vaadin.core.UIHelper.createLabel;
 
-import com.vaadin.shared.ui.label.ContentMode;
-import com.vaadin.ui.Label;
+import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.info.EdgeInfoPanelItem;
 import org.opennms.features.topology.api.topo.EdgeRef;
-import org.opennms.features.topology.plugins.topo.bsm.AbstractBusinessServiceVertex;
 import org.opennms.features.topology.plugins.topo.bsm.BusinessServiceEdge;
-import org.opennms.features.topology.plugins.topo.bsm.BusinessServiceVertex;
 import org.opennms.features.topology.plugins.topo.bsm.BusinessServicesTopologyProvider;
-import org.opennms.netmgt.bsm.service.BusinessServiceManager;
 import org.opennms.netmgt.bsm.service.model.functions.map.Decrease;
 import org.opennms.netmgt.bsm.service.model.functions.map.Identity;
 import org.opennms.netmgt.bsm.service.model.functions.map.Ignore;
@@ -46,27 +42,14 @@ import org.opennms.netmgt.bsm.service.model.functions.map.Increase;
 import org.opennms.netmgt.bsm.service.model.functions.map.MapFunction;
 import org.opennms.netmgt.bsm.service.model.functions.map.MapFunctionVisitor;
 import org.opennms.netmgt.bsm.service.model.functions.map.SetTo;
-import org.opennms.netmgt.vaadin.core.TransactionAwareBeanProxyFactory;
 
 import com.vaadin.ui.Component;
 import com.vaadin.ui.FormLayout;
 
 public class BusinessServiceEdgeInfoPanelItem implements EdgeInfoPanelItem {
 
-    private BusinessServiceManager businessServiceManager;
-
-    private final TransactionAwareBeanProxyFactory transactionAwareBeanProxyFactory;
-
-    public BusinessServiceEdgeInfoPanelItem(TransactionAwareBeanProxyFactory transactionAwareBeanProxyFactory) {
-        this.transactionAwareBeanProxyFactory = transactionAwareBeanProxyFactory;
-    }
-
-    public void setBusinessServiceManager(BusinessServiceManager businessServiceManager) {
-        this.businessServiceManager = transactionAwareBeanProxyFactory.createProxy(businessServiceManager);
-    }
-
     @Override
-    public Component getComponent(EdgeRef ref) {
+    public Component getComponent(EdgeRef ref, GraphContainer container) {
         FormLayout formLayout = new FormLayout();
         formLayout.setMargin(false);
         formLayout.setSpacing(false);
@@ -79,7 +62,7 @@ public class BusinessServiceEdgeInfoPanelItem implements EdgeInfoPanelItem {
     }
 
     @Override
-    public boolean contributesTo(EdgeRef edgeRef) {
+    public boolean contributesTo(EdgeRef edgeRef, GraphContainer containe) {
         return BusinessServicesTopologyProvider.TOPOLOGY_NAMESPACE.equals(edgeRef.getNamespace());
     }
 

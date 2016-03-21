@@ -34,7 +34,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.opennms.netmgt.bsm.persistence.api.BusinessServiceEntity;
-import org.opennms.netmgt.bsm.persistence.api.functions.reduce.AbstractReductionFunctionEntity;
 import org.opennms.netmgt.bsm.service.BusinessServiceManager;
 import org.opennms.netmgt.bsm.service.internal.edge.ChildEdgeImpl;
 import org.opennms.netmgt.bsm.service.internal.edge.IpServiceEdgeImpl;
@@ -49,6 +48,7 @@ import org.opennms.netmgt.bsm.service.model.edge.ReductionKeyEdge;
 import org.opennms.netmgt.bsm.service.model.functions.map.MapFunction;
 import org.opennms.netmgt.bsm.service.model.functions.reduce.ReductionFunction;
 
+import com.google.common.collect.Sets;
 
 public class BusinessServiceImpl implements BusinessService {
 

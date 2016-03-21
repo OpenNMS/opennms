@@ -39,23 +39,13 @@ import org.hibernate.Criteria;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
-import org.hibernate.criterion.DetachedCriteria;
-import org.hibernate.criterion.Projection;
-import org.hibernate.criterion.ProjectionList;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
-import org.hibernate.criterion.Subqueries;
-import org.hibernate.transform.ResultTransformer;
-import org.opennms.core.criteria.Alias;
-import org.opennms.core.criteria.restrictions.InRestriction;
 import org.opennms.netmgt.bsm.persistence.api.BusinessServiceDao;
 import org.opennms.netmgt.bsm.persistence.api.BusinessServiceEdgeEntity;
 import org.opennms.netmgt.bsm.persistence.api.BusinessServiceEntity;
 import org.opennms.netmgt.dao.hibernate.AbstractDaoHibernate;
-import org.opennms.netmgt.dao.hibernate.HibernateCriteriaConverter;
 import org.springframework.orm.hibernate3.HibernateCallback;
-
-import com.google.common.collect.Lists;
 
 public class BusinessServiceDaoImpl extends AbstractDaoHibernate<BusinessServiceEntity, Long> implements BusinessServiceDao {
 

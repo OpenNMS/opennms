@@ -254,8 +254,11 @@ public class CommandManager {
 		for (String topLevelItem : topLevelOrder) {
 			if (!topLevelItem.equals("Additions")) {
 				String key = "submenu." + topLevelItem + ".groups";
-				addOrUpdateGroupOrder(topLevelItem,
-						Arrays.asList(props.get(key).toString().split(",")));
+				Object value = props.get(key);
+				if (value != null) {
+					addOrUpdateGroupOrder(topLevelItem,
+						Arrays.asList(value.toString().split(",")));
+				}
 			}
 		}
 		addOrUpdateGroupOrder(

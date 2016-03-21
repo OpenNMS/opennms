@@ -4,7 +4,6 @@
 
     <reference id="transactionTemplate" interface="org.springframework.transaction.support.TransactionOperations" availability="mandatory" />
     <reference id="businessServiceManager" interface="org.opennms.netmgt.bsm.service.BusinessServiceManager" availability="mandatory" />
-    <reference id="businessServiceStateMachine" interface="org.opennms.netmgt.bsm.service.BusinessServiceStateMachine" availability="mandatory" />
 
     <!-- TransactionAwareBeanProxyFactory -->
     <bean id="transactionAwareBeanProxyFactory" class="org.opennms.netmgt.vaadin.core.TransactionAwareBeanProxyFactory">
@@ -39,7 +38,9 @@
     </service>
 
     <!-- Status provider Bean for Vertex and Edge Status Provider-->
-    <bean id="bsmStatusProvider" class="org.opennms.features.topology.plugins.topo.bsm.BusinessServicesStatusProvider" />
+    <bean id="bsmStatusProvider" class="org.opennms.features.topology.plugins.topo.bsm.BusinessServicesStatusProvider">
+        <property name="businessServiceManager" ref="businessServiceManager" />
+    </bean>
     <service interface="org.opennms.features.topology.api.topo.StatusProvider" ref="bsmStatusProvider" />
     <service interface="org.opennms.features.topology.api.topo.EdgeStatusProvider" ref="bsmStatusProvider"/>
 
@@ -124,18 +125,20 @@
         <bean class="org.opennms.features.topology.plugins.topo.bsm.info.BusinessServiceVertexStatusInfoPanelItem" >
             <argument ref="transactionAwareBeanProxyFactory" />
             <property name="businessServiceManager" ref="businessServiceManager" />
-            <property name="businessServiceStateMachine" ref="businessServiceStateMachine"/>
             <property name="businessServicesTopologyProvider" ref="bsmTopologyProvider"/>
         </bean>
     </service>
     <service interface="org.opennms.features.topology.api.info.EdgeInfoPanelItem">
-        <bean class="org.opennms.features.topology.plugins.topo.bsm.info.BusinessServiceEdgeInfoPanelItem" >
+        <bean class="org.opennms.features.topology.plugins.topo.bsm.info.BusinessServiceEdgeInfoPanelItem" />
+    </service>
+    <service interface="org.opennms.features.topology.api.info.EdgeInfoPanelItem">
+        <bean class="org.opennms.features.topology.plugins.topo.bsm.info.BusinessServiceEdgeStatusInfoPanelItem" >
             <argument ref="transactionAwareBeanProxyFactory" />
             <property name="businessServiceManager" ref="businessServiceManager" />
         </bean>
     </service>
-    <service interface="org.opennms.features.topology.api.info.EdgeInfoPanelItem">
-        <bean class="org.opennms.features.topology.plugins.topo.bsm.info.BusinessServiceEdgeStatusInfoPanelItem" />
+    <service interface="org.opennms.features.topology.api.info.VertexInfoPanelItem">
+        <bean class="org.opennms.features.topology.plugins.topo.bsm.info.SimulationModeReductionKeyInfoPanelItem" />
     </service>
 
     <!-- Hide Leaf Elements Operation -->
@@ -160,12 +163,10 @@
     </service>
 
     <bean id="rootCauseAnalysisOperation" class="org.opennms.features.topology.plugins.topo.bsm.operations.RootCauseAnalysisOperation" >
-        <property name="businessServiceStateMachine" ref="businessServiceStateMachine"/>
         <property name="businessServiceManager" ref="businessServiceManager" />
     </bean>
 
     <bean id="impactAnalysisOperation" class="org.opennms.features.topology.plugins.topo.bsm.operations.ImpactAnalysisOperation" >
-        <property name="businessServiceStateMachine" ref="businessServiceStateMachine"/>
         <property name="businessServiceManager" ref="businessServiceManager" />
     </bean>
 
@@ -184,5 +185,28 @@
             <entry key="operation.contextMenuLocation" value=""/>
             <entry key="operation.label" value="Impact Analysis"/>
         </service-properties>
+    </service>
+
+    <!-- Simulation -->
+    <service interface="org.opennms.features.topology.api.CheckedOperation" >
+        <service-properties>
+            <entry key="operation.menuLocation" value="Simulate"/>
+            <entry key="operation.label" value="Simulation Mode?group=mode"/>
+        </service-properties>
+        <bean class="org.opennms.features.topology.plugins.topo.bsm.operations.SimulationModeOperation"/>
+    </service>
+    <service interface="org.opennms.features.topology.api.CheckedOperation" >
+        <service-properties>
+            <entry key="operation.menuLocation" value="Simulate"/>
+            <entry key="operation.label" value="Inherit State?group=state"/>
+        </service-properties>
+        <bean class="org.opennms.features.topology.plugins.topo.bsm.operations.InheritStateOperation"/>
+    </service>
+    <service interface="org.opennms.features.topology.api.Operation" >
+        <service-properties>
+            <entry key="operation.menuLocation" value="Simulate"/>
+            <entry key="operation.label" value="Reset State?group=state"/>
+        </service-properties>
+        <bean class="org.opennms.features.topology.plugins.topo.bsm.operations.ResetStateOperation"/>
     </service>
 </blueprint>

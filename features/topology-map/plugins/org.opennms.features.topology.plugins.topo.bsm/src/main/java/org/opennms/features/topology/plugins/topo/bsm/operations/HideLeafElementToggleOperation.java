@@ -60,7 +60,7 @@ public class HideLeafElementToggleOperation extends AbstractCheckedOperation {
 
     @Override
     public String getId() {
-        return getClass().getSimpleName();
+        return getClass().getCanonicalName();
     }
 
     @Override

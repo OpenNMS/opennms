@@ -127,7 +127,7 @@ public class GraphAlgorithms {
 
             // Weigh and reduce the statuses
             List<Status> statuses = DefaultBusinessServiceStateMachine.weighStatuses(edgesWithStatus);
-            Status reducedStatus = parent.getReductionFunction().reduce(statuses).orElse(DefaultBusinessServiceStateMachine.DEFAULT_SEVERITY);
+            Status reducedStatus = parent.getReductionFunction().reduce(statuses).orElse(DefaultBusinessServiceStateMachine.MIN_SEVERITY);
 
             // Did replacing the status of the edges in the current subset affect the status?
             if (reducedStatus.isLessThan(parent.getStatus())) {

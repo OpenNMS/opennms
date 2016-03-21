@@ -229,7 +229,7 @@ public class DefaultBusinessServiceStateMachineIT {
         // Verify the initial state
         assertEquals(0, handler.getStateChanges().size());
         for (BusinessService eachBs : bss) {
-            assertEquals(DefaultBusinessServiceStateMachine.DEFAULT_SEVERITY, stateMachine.getOperationalStatus(eachBs));
+            assertEquals(DefaultBusinessServiceStateMachine.MIN_SEVERITY, stateMachine.getOperationalStatus(eachBs));
         }
 
         // Pass alarm to the state machine
@@ -270,7 +270,7 @@ public class DefaultBusinessServiceStateMachineIT {
         // Verify the initial state
         assertEquals(0, handler.getStateChanges().size());
         for (BusinessService eachBs : bss) {
-            assertEquals(DefaultBusinessServiceStateMachine.DEFAULT_SEVERITY, stateMachine.getOperationalStatus(eachBs));
+            assertEquals(DefaultBusinessServiceStateMachine.MIN_SEVERITY, stateMachine.getOperationalStatus(eachBs));
         }
 
         // Pass alarm to the state machine
@@ -280,8 +280,8 @@ public class DefaultBusinessServiceStateMachineIT {
         assertEquals(2, handler.getStateChanges().size());
         assertEquals(Status.MINOR, stateMachine.getOperationalStatus(svc1));
         assertEquals(Status.MINOR, stateMachine.getOperationalStatus(bsChild1));
-        assertEquals(DefaultBusinessServiceStateMachine.DEFAULT_SEVERITY, stateMachine.getOperationalStatus(svc2));
-        assertEquals(DefaultBusinessServiceStateMachine.DEFAULT_SEVERITY, stateMachine.getOperationalStatus(bsChild2));
+        assertEquals(DefaultBusinessServiceStateMachine.MIN_SEVERITY, stateMachine.getOperationalStatus(svc2));
+        assertEquals(DefaultBusinessServiceStateMachine.MIN_SEVERITY, stateMachine.getOperationalStatus(bsChild2));
         assertEquals(Status.MINOR, stateMachine.getOperationalStatus(bsParent));
 
         // Verify that hierarchy works

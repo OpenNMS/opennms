@@ -409,6 +409,11 @@ public class BusinessServiceManagerImpl implements BusinessServiceManager {
     }
 
     @Override
+    public BusinessServiceStateMachine getStateMachine() {
+        return businessServiceStateMachine;
+    }
+
+    @Override
     public void setMapFunction(final Edge edge, final MapFunction mapFunction) {
         // This is a workaround for a hibernate bug which does not remove
         // orphan elements if the element is replaced using the setter. See:

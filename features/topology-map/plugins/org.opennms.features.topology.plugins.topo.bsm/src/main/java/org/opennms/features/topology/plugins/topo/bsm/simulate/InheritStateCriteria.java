@@ -26,24 +26,13 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.api.info;
+package org.opennms.features.topology.plugins.topo.bsm.simulate;
 
-import org.opennms.features.topology.api.GraphContainer;
-import org.opennms.features.topology.api.topo.Ref;
-
-import com.vaadin.ui.Component;
-
-public interface InfoPanelItem<T extends Ref> extends java.lang.Comparable<InfoPanelItem<T>> {
-
-    Component getComponent(T ref, GraphContainer container);
-
-    boolean contributesTo(T ref, GraphContainer container);
-
-    String getTitle(T ref);
-
-    int getOrder();
-
-    default int compareTo(InfoPanelItem<T> o) {
-        return Integer.valueOf(getOrder()).compareTo(Integer.valueOf(o.getOrder()));
-    }
+/**
+ * This criteria is set when we should copy the state machine's state
+ * instead of starting from "ground".
+ *
+ * @author jwhite
+ */
+public class InheritStateCriteria  extends SimulationCriteria {
 }

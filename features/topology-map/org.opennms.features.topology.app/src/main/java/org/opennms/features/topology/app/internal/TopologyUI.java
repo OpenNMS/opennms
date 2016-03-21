@@ -346,7 +346,7 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
     public class InfoPanelItemProvider implements SelectionListener {
 
         private Component wrap(InfoPanelItem item, Ref ref) {
-            return wrap(item.getComponent(ref), item.getTitle(ref));
+            return wrap(item.getComponent(ref, m_graphContainer), item.getTitle(ref));
         }
 
         /**
@@ -373,7 +373,7 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
         private List<Component> getVertexInfoComponents(VertexRef vertexRef) {
             final List<VertexInfoPanelItem> infoPanelItems = findInfoPanelComponents(VertexInfoPanelItem.class);
             return infoPanelItems.stream()
-                    .filter(panel -> panel.contributesTo(vertexRef))
+                    .filter(panel -> panel.contributesTo(vertexRef, m_graphContainer))
                     .sorted()
                     .map(item -> wrap(item, vertexRef))
                     .collect(Collectors.toList());
@@ -382,7 +382,7 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
         private List<Component> getEdgeInfoComponents(EdgeRef edgeRef) {
             final List<EdgeInfoPanelItem> infoPanelItems = findInfoPanelComponents(EdgeInfoPanelItem.class);
             return infoPanelItems.stream()
-                    .filter(panel -> panel.contributesTo(edgeRef))
+                    .filter(panel -> panel.contributesTo(edgeRef, m_graphContainer))
                     .sorted()
                     .map(item -> wrap(item, edgeRef))
                     .collect(Collectors.toList());

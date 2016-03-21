@@ -141,7 +141,7 @@ public class BusinessServicesTopologyProvider extends AbstractTopologyProvider i
         // If one was found, use it for the default focus
         if (!businessServices.isEmpty()) {
             BusinessService businessService = businessServices.iterator().next();
-            BusinessServiceVertex businessServiceVertex = new BusinessServiceVertex(businessService, 0, businessServiceManager.getOperationalStatus(businessService));
+            BusinessServiceVertex businessServiceVertex = new BusinessServiceVertex(businessService, 0);
             return new VertexHopGraphProvider.DefaultVertexHopCriteria(businessServiceVertex);
         }
         return null;
