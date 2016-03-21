@@ -26,7 +26,9 @@
         <div class="input-group" ng-class="{ 'has-error' : paramForm.paramValue.$invalid }">
           <input class="form-control" type="text" name="paramValue" placeholder="Parameter Value" ng-model="parameter.value" required></input>
           <span class="input-group-btn">
-            <button type="button" class="btn btn-default" ng-click="removeParameter($index)"><span class="glyphicon glyphicon-remove"></span></button>
+            <button type="button" class="btn btn-default" ng-click="removeParameter($index)">
+              <span class="glyphicon glyphicon-remove"></span>
+            </button>
           </span>
         </div>
         <p ng-show="paramForm.paramValue.$invalid" class="help-block">Parameter value is required.</p>

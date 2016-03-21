@@ -15,14 +15,14 @@
     'angular-loading-bar'
   ])
 
-  .factory('authHttpResponseInterceptor',['$q','$location', function($q, $location) {
+  .factory('authHttpResponseInterceptor',['$q','$window', function($q, $window) {
     return {
       response: function(response) {
         return response || $q.when(response);
       },
       responseError: function(rejection) {
         if (rejection.status === 401) {
-          $location.path('/opennms/login.jsp').search('returnTo', $location.path());
+          $window.location = '/opennms/login.jsp';
         }
         return $q.reject(rejection);
       }

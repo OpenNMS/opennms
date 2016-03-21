@@ -1,12 +1,14 @@
-<a id="generate-foreign-id" class="btn" ng-click="generateForeignId(nodeForm.foreignId)" ng-show="isNew">
-  <span class="glyphicon glyphicon-plus"/> Auto-generate the Foreign ID
-</a>
-<p/>
+<br/>
 <div class="form-group" ng-class="{ 'has-error' : nodeForm.foreignId.$invalid }">
   <label class="control-label" for="foreignId">Foreign ID</label>
-  <input class="form-control" type="text" id="foreignId" name="foreignId"
-         placeholder="Foreign ID (must be unique within the requisition)"
-         ng-model="node.foreignId" ng-disabled="!isNew" required valid-foreign-id/>
+  <div class="input-group">
+    <input class="form-control" type="text" id="foreignId" name="foreignId"
+           placeholder="Foreign ID (must be unique within the requisition)"
+           ng-model="node.foreignId" ng-disabled="!isNew" required valid-foreign-id/>
+    <span class="input-group-btn">
+      <button class="btn btn-default" type="button" ng-click="generateForeignId(nodeForm.foreignId)" ng-disabled="!isNew"><span class="glyphicon glyphicon-plus"/> Auto-generate</button>
+    </span>
+  </div>
   <p ng-show="nodeForm.foreignId.$invalid" class="help-block">Foreign ID is required and must be unique within the requisition.</p>
 </div>
 <div class="form-group" ng-class="{ 'has-error' : nodeForm.nodeLabel.$invalid }">

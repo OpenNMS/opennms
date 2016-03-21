@@ -19,6 +19,7 @@ function QuickNode() {
   var self = this;
 
   self.foreignSource = null;
+  self.foreignId = new Date().getTime() + '';
   self.nodeLabel = null;
   self.ipAddress = null;
   self.snmpCommunity = 'public';
@@ -41,7 +42,7 @@ function QuickNode() {
   */
   self.createRequisitionedNode = function() {
     var reqNode = new RequisitionNode(self.foreignSource, {
-      'foreign-id': new Date().getTime() + '',
+      'foreign-id': self.foreignId,
       'node-label': self.nodeLabel,
       'interface': [{
         'ip-addr': self.ipAddress,

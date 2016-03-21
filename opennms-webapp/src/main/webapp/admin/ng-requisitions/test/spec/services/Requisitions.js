@@ -32,8 +32,8 @@ describe('Service: RequisitionsService', function () {
   };
 
   var requisitions = {
-    'count': 2,
-    'totalCount': 2,
+    'count': 3,
+    'totalCount': 3,
     'model-import': [{
       'foreign-source' : 'test-network', // Modified requisition
       'node': [{
@@ -85,7 +85,56 @@ describe('Service: RequisitionsService', function () {
     },{
       'foreign-source' : 'test-empty', // New requisition
       'node': []
+    },{
+      'foreign-source' : 'test-monitoring', // Deployed requisition
+      'node': [{
+        'foreign-id': 'onms',
+        'node-label': 'onms.local',
+        'interface': [{
+          'ip-addr': '192.168.0.1', // New IP
+          'descr': 'eth0',
+          'snmp-primary': 'P',
+          'status': '1'
+        }]
+      }]
     }]
+  };
+
+  var foreignSourceDef = {
+    "name": "add-node-to-requisition-test",
+    "date-stamp": 1458575873998,
+    "scan-interval": "1d",
+    "detectors": [{
+      "name": "ICMP",
+      "class": "org.opennms.netmgt.provision.detector.icmp.IcmpDetector",
+      "parameter": []
+    }, {
+      "name": "SNMP",
+      "class": "org.opennms.netmgt.provision.detector.snmp.SnmpDetector",
+      "parameter": []
+    }, {
+      "name ": "HTTP-8980",
+      "class": "org.opennms.netmgt.provision.detector.simple.HttpDetector",
+      "parameter": [{
+        "key": "port",
+        "value": "8980"
+      }]
+    }],
+    "policies": [{
+      "name": "No IPs",
+      "class": "org.opennms.netmgt.provision.persist.policies.MatchingIpInterfacePolicy",
+      "parameter": [{
+        "key": "action",
+        "value": "DO_NOT_PERSIST"
+      }, {
+        "key": "matchBehavior",
+        "value": "NO_PARAMETERS"
+      }]
+    }]
+  };
+
+  var errorHandlerFn = function(msg) {
+      throw 'This is not expected. ' + (msg == null ? '' : ' ' + msg);
   };
 
   // Initialize testing environment
@@ -115,6 +164,28 @@ describe('Service: RequisitionsService', function () {
     $httpBackend.verifyNoOutstandingRequest();
   });
 
+  // Testing cache related functions
+
+  it('getCached*', function() {
+    console.log('Running tests for cache');
+
+    initializeCache();
+    var requisitionsData = requisitionsService.internal.getCachedRequisitionsData();
+    var requisition = requisitionsService.internal.getCachedRequisition('test-network');
+    var node = requisitionsService.internal.getCachedNode('test-network', '1001');
+    expect(requisitionsData).not.toBe(undefined);
+    expect(requisition).not.toBe(null);
+    expect(node).not.toBe(null);
+
+    requisitionsService.clearRequisitionsCache();
+    requisitionsData = requisitionsService.internal.getCachedRequisitionsData();
+    requisition = requisitionsService.internal.getCachedRequisition('test-network');
+    node = requisitionsService.internal.getCachedNode('test-network', '1001');
+    expect(requisitionsData).toBe(undefined);
+    expect(requisition).toBe(null);
+    expect(node).toBe(null);
+  });
+
   // Testing getRequisitions
 
   it('getRequisitions', function() {
@@ -127,7 +198,7 @@ describe('Service: RequisitionsService', function () {
     var handlerFn = function(data) {
       expect(data).not.toBe(null);
       console.log(angular.toJson(data));
-      expect(data.requisitions.length).toBe(2);
+      expect(data.requisitions.length).toBe(3);
       expect(data.requisitions[0].foreignSource).toBe('test-network');
       expect(data.requisitions[0].deployed).toBe(true);
       expect(data.requisitions[0].nodes.length).toBe(3);
@@ -142,7 +213,7 @@ describe('Service: RequisitionsService', function () {
       expect(data.requisitions[1].nodes.length).toBe(0);
     };
 
-    requisitionsService.getRequisitions().then(handlerFn);
+    requisitionsService.getRequisitions().then(handlerFn, errorHandlerFn);
 
     $httpBackend.flush();
 
@@ -150,35 +221,45 @@ describe('Service: RequisitionsService', function () {
 
     // The following calls should use internal cache
 
-    requisitionsService.getRequisitions().then(handlerFn);
+    requisitionsService.getRequisitions().then(handlerFn, errorHandlerFn);
     requisitionsService.getRequisition('test-network').then(function(r) {
       expect(r).not.toBe(null);
       expect(r.foreignSource).toBe('test-network');
-    });
+    }, errorHandlerFn);
     requisitionsService.getNode('test-network', '1001').then(function(n) {
       expect(n).not.toBe(null);
       expect(n.foreignId).toBe('1001');
-    });
-
+    }, errorHandlerFn);
   });
 
-  // Testing Cache
+  // Testing getRequisitionNames
 
-  it('internal.cache', function() {
-    console.log('Running tests for cache');
+  it('getRequisitionNames', function() {
+    console.log('Running tests for getRequisitionNames');
 
-    initializeCache();
-    var requisitionsData = requisitionsService.internal.getCachedRequisitionsData();
-    var requisition = requisitionsService.internal.getCachedRequisition('test-network');
-    var node = requisitionsService.internal.getCachedNode('test-network', '1001');
-    expect(requisitionsData).not.toBe(null);
-    expect(requisition).not.toBe(null);
-    expect(node).not.toBe(null);
+    var requisitionNames = {
+      "count": 3,
+      "totalCount": 3, 
+      "foreign-source": [
+        requisitions['model-import'][0]['foreign-source'],
+        requisitions['model-import'][1]['foreign-source'],
+        requisitions['model-import'][2]['foreign-source']
+      ]
+    };
+
+    $httpBackend.expect('GET', requisitionsService.internal.requisitionNamesUrl).respond(requisitionNames);
+
+    requisitionsService.getRequisitionNames().then(function(names) {
+      expect(names.length).toBe(3);
+      expect(names[2]).toBe('test-monitoring'); // 3rd requsition
+    }, errorHandlerFn);
+
+    $httpBackend.flush();
   });
 
-  // Testing getRequisition::fromServer
+  // Testing getRequisition
 
-  it('getRequisition::fromServer', function() {
+  it('getRequisition', function() {
     console.log('Running tests for getRequisition from server');
 
     var req = requisitions['model-import'][0];
@@ -186,12 +267,83 @@ describe('Service: RequisitionsService', function () {
     var requisitionUrl = requisitionsService.internal.requisitionsUrl + '/' + fs;
     $httpBackend.expect('GET', requisitionUrl).respond(req);
 
-    var handlerFn = function(data) {
+    requisitionsService.getRequisition(fs).then(function(data) {
       expect(data).not.toBe(null);
       expect(data.nodes.length).toBe(3);
+    }, errorHandlerFn);
+
+    $httpBackend.flush();
+  });
+
+  // Testing updateDeployedStatsForRequisition
+
+  it('updateDeployedStatsForRequisition', function() {
+    console.log('Running tests for updateDeployedStatsForRequisition');
+
+    initializeCache();
+    var req = requisitionsService.internal.getCachedRequisition('test-network');
+    expect(req.nodesInDatabase).toBe(2);
+    expect(req.nodesDefined).toBe(3);
+
+    var stats = {
+      'name' : 'test-network',
+      'count': 3,
+      'totalCount': 3,
+      'foreign-id': [
+        '1001',
+        '1002',
+        '1003'
+      ]
+    };
+    var url = requisitionsService.internal.requisitionsUrl + '/deployed/stats/test-network';
+    $httpBackend.expect('GET', url).respond(stats);
+
+    requisitionsService.updateDeployedStatsForRequisition(req).then(function() {
+      expect(req.nodesInDatabase).toBe(3);
+      expect(req.nodesDefined).toBe(3);
+    }, errorHandlerFn);
+
+    $httpBackend.flush();
+  });
+
+  // Testing updateDeployedStats
+
+  it('updateDeployedStats', function() {
+    console.log('Running tests for updateDeployedStats');
+
+    initializeCache();
+
+    var stats = {
+      'count': 2,
+      'totalCount': 2,
+      'foreign-source': [{
+        'name' : 'test-network',
+        'count': 3,
+        'totalCount': 3,
+        'foreign-id': [
+          '1001',
+          '1002',
+          '1003'
+        ]
+      },{
+        'name' : 'test-monitoring',
+        'count': 1,
+        'totalCount': 1,
+        'foreign-id': [
+          'onms'
+        ]
+      }]
     };
 
-    requisitionsService.getRequisition(fs).then(handlerFn);
+    var url = requisitionsService.internal.requisitionsUrl + '/deployed/stats';
+    $httpBackend.expect('GET', url).respond(stats);
+
+    var requisitionsData = requisitionsService.internal.getCachedRequisitionsData();
+    requisitionsService.updateDeployedStats(requisitionsData).then(function() {
+      var req = requisitionsData.getRequisition('test-network');
+      expect(req.nodesInDatabase).toBe(3);
+      expect(req.nodesDefined).toBe(3);
+    }, errorHandlerFn);
 
     $httpBackend.flush();
   });
@@ -205,7 +357,7 @@ describe('Service: RequisitionsService', function () {
     var importUrl = requisitionsService.internal.requisitionsUrl + '/' + foreignSource + '/import?rescanExisting=false';
     $httpBackend.expect('PUT', importUrl).respond({});
 
-    requisitionsService.synchronizeRequisition(foreignSource, "false");
+    requisitionsService.synchronizeRequisition(foreignSource, "false").then(function() {}, errorHandlerFn);
     $httpBackend.flush();
   });
 
@@ -217,9 +369,7 @@ describe('Service: RequisitionsService', function () {
     initializeCache();
 
     var foreignSource = 'blah-blah';
-    requisitionsService.synchronizeRequisition(foreignSource).then(function() {
-      throw 'This is not expected';
-    }, function(msg) {
+    requisitionsService.synchronizeRequisition(foreignSource).then(errorHandlerFn, function(msg) {
       expect(msg).toBe('The foreignSource ' + foreignSource + ' does not exist.');
     });
   });
@@ -237,7 +387,7 @@ describe('Service: RequisitionsService', function () {
 
     requisitionsService.addRequisition(foreignSource).then(function(requisition) {
       expect(requisition.foreignSource).toBe(foreignSource);
-    });
+    }, errorHandlerFn);
     $httpBackend.flush();
   });
 
@@ -249,9 +399,7 @@ describe('Service: RequisitionsService', function () {
     initializeCache();
 
     var foreignSource = 'test-network';
-    requisitionsService.addRequisition(foreignSource).then(function() {
-      throw 'This is not expected';
-    }, function(msg) {
+    requisitionsService.addRequisition(foreignSource).then(errorHandlerFn, function(msg) {
       expect(msg).toBe('Invalid foreignSource ' + foreignSource + ', it already exist.');
     });
   });
@@ -264,9 +412,7 @@ describe('Service: RequisitionsService', function () {
     initializeCache();
 
     var foreignSource = 'test-network';
-    requisitionsService.deleteRequisition(foreignSource).then(function() {
-      throw 'This is not expected';
-    }, function(msg) {
+    requisitionsService.deleteRequisition(foreignSource).then(errorHandlerFn, function(msg) {
       expect(msg).toBe('The foreignSource ' + foreignSource + ' contains 2 nodes on the database, it cannot be deleted.');
     });
   });
@@ -279,9 +425,7 @@ describe('Service: RequisitionsService', function () {
     initializeCache();
 
     var foreignSource = 'blah-blah';
-    requisitionsService.deleteRequisition(foreignSource).then(function() {
-      throw 'This is not expected';
-    }, function(msg) {
+    requisitionsService.deleteRequisition(foreignSource).then(errorHandlerFn, function(msg) {
       expect(msg).toBe('The foreignSource ' + foreignSource + ' does not exist.');
     });
   });
@@ -302,9 +446,7 @@ describe('Service: RequisitionsService', function () {
     $httpBackend.expect('DELETE', requisitionsService.internal.foreignSourcesUrl + '/' + foreignSource).respond({});
     $httpBackend.expect('DELETE', requisitionsService.internal.foreignSourcesUrl + '/deployed/' + foreignSource).respond({});
 
-    requisitionsService.deleteRequisition(foreignSource).then(function() {}, function() {
-      throw 'This is not expected';
-    });
+    requisitionsService.deleteRequisition(foreignSource).then(function() {}, errorHandlerFn);
     $httpBackend.flush();
 
     r = requisitionsService.internal.getCachedRequisition(foreignSource);
@@ -329,9 +471,7 @@ describe('Service: RequisitionsService', function () {
     $httpBackend.expect('DELETE', requisitionsService.internal.foreignSourcesUrl + '/' + foreignSource).respond({});
     $httpBackend.expect('DELETE', requisitionsService.internal.foreignSourcesUrl + '/deployed/' + foreignSource).respond({});
 
-    requisitionsService.deleteRequisition(foreignSource).then(function() {}, function(msg) {
-      throw msg;
-    });
+    requisitionsService.deleteRequisition(foreignSource).then(function() {}, errorHandlerFn);
     $httpBackend.flush();
 
     r = requisitionsService.internal.getCachedRequisition(foreignSource);
@@ -350,7 +490,7 @@ describe('Service: RequisitionsService', function () {
     $httpBackend.expect('POST', url, requisition).respond({});
     $httpBackend.expect('PUT', url + '/test-network/import?rescanExisting=false').respond({});
 
-    requisitionsService.removeAllNodesFromRequisition('test-network');
+    requisitionsService.removeAllNodesFromRequisition('test-network').then(function() {}, errorHandlerFn);
     $httpBackend.flush();
 
     var r = requisitionsService.internal.getCachedRequisition('test-network');
@@ -371,12 +511,10 @@ describe('Service: RequisitionsService', function () {
     var nodeUrl = requisitionsService.internal.requisitionsUrl + '/' + fs + '/nodes/' + fid;
     $httpBackend.expect('GET', nodeUrl).respond(node);
 
-    var handlerFn = function(data) {
-      expect(data).not.toBe(null);
-      expect(data.nodeLabel).toBe('testing-server');
-    };
-
-    requisitionsService.getNode(fs, fid).then(handlerFn);
+    requisitionsService.getNode(fs, fid).then(function(node) {
+      expect(node).not.toBe(null);
+      expect(node.nodeLabel).toBe('testing-server');
+    }, errorHandlerFn);
 
     $httpBackend.flush();
   });
@@ -388,12 +526,10 @@ describe('Service: RequisitionsService', function () {
 
     initializeCache();
 
-    var handlerFn = function(data) {
-      expect(data).not.toBe(null);
-      expect(data.nodeLabel).toBe('testing-server');
-    };
-
-    requisitionsService.getNode('test-network', '1001').then(handlerFn);
+    requisitionsService.getNode('test-network', '1001').then(function(node) {
+      expect(node).not.toBe(null);
+      expect(node.nodeLabel).toBe('testing-server');
+    }, errorHandlerFn);
   });
 
   // Testing saveNode
@@ -415,7 +551,7 @@ describe('Service: RequisitionsService', function () {
     var nodeCount = requisition.nodes.length;
     var pendingCount = requisition.nodesDefined;
 
-    requisitionsService.saveNode(node);
+    requisitionsService.saveNode(node).then(function() {}, errorHandlerFn);
     $httpBackend.flush();
 
     expect(requisition.isModified()).toBe(true);
@@ -439,7 +575,7 @@ describe('Service: RequisitionsService', function () {
     var nodeCount = requisition.nodes.length;
     var pendingCount = requisition.nodesDefined;
 
-    requisitionsService.deleteNode(node);
+    requisitionsService.deleteNode(node).then(function() {}, errorHandlerFn);
     $httpBackend.flush();
 
     expect(requisition.isModified()).toBe(true);
@@ -447,7 +583,7 @@ describe('Service: RequisitionsService', function () {
     expect(requisition.nodesDefined).toBe(pendingCount - 1);
   });
 
-  // Get services
+  // Testing getAvailableServices
 
   it('getAvailableServices', function() {
     console.log('Running tests for getAvailableServices');
@@ -462,14 +598,12 @@ describe('Service: RequisitionsService', function () {
       expect(data).not.toBe(null);
       expect(data.length).toBe(2);
       expect(data[1]).toBe('SNMP');
-    }, function(msg) {
-      throw 'This is not expected';
-    });
+    }, errorHandlerFn);
 
     $httpBackend.flush();
   });
 
-  // Get assets
+  // Testing getAvailableAssets
 
   it('getAvailableAssets', function() {
     console.log('Running tests for getAvailableAssets');
@@ -484,14 +618,12 @@ describe('Service: RequisitionsService', function () {
       expect(data).not.toBe(null);
       expect(data.length).toBe(4);
       expect(data[1]).toBe('city');
-    }, function(msg) {
-      throw 'This is not expected';
-    });
+    }, errorHandlerFn);
 
     $httpBackend.flush();
   });
 
-  // Get categories
+  // Testing getAvailableCategories
 
   it('getAvailableCategories', function() {
     console.log('Running tests for getAvailableCategories');
@@ -506,14 +638,12 @@ describe('Service: RequisitionsService', function () {
       expect(data).not.toBe(null);
       expect(data.length).toBe(3);
       expect(data[1]).toBe('Development');
-    }, function(msg) {
-      throw 'This is not expected';
-    });
+    }, errorHandlerFn);
 
     $httpBackend.flush();
   });
 
-  // Get policies
+  // Testing getAvailablePolicies
 
   it('getAvailablePolicies', function() {
     console.log('Running tests for getAvailablePolicies');
@@ -550,14 +680,12 @@ describe('Service: RequisitionsService', function () {
       expect(data.length).toBe(1);
       expect(data[0].name).toBe('Match IP Interface');
       expect(data[0].parameters.length).toBe(4);
-    }, function(msg) {
-      throw 'This is not expected';
-    });
+    }, errorHandlerFn);
 
     $httpBackend.flush();
   });
 
-  // Get detectors
+  // Testing getAvailableDetectors
 
   it('getAvailableDetectors', function() {
     console.log('Running tests for getAvailableDetectors');
@@ -597,14 +725,12 @@ describe('Service: RequisitionsService', function () {
       expect(data.length).toBe(1);
       expect(data[0].name).toBe('ICMP');
       expect(data[0].parameters.length).toBe(5);
-    }, function(msg) {
-      throw 'This is not expected';
-    });
+    }, errorHandlerFn);
 
     $httpBackend.flush();
   });
 
-  // Test Foreign ID on Requisition
+  // Testing isForeignIdOnRequisition
 
   it('isForeignIdOnRequisition', function() {
     console.log('Running tests for isForeignIdOnRequisition');
@@ -613,18 +739,14 @@ describe('Service: RequisitionsService', function () {
 
     requisitionsService.isForeignIdOnRequisition('test-network', '1001').then(function(exist) {
       expect(exist).toBe(true);
-    }, function(msg) {
-      throw 'This is not expected';
-    });
+    }, errorHandlerFn);
 
     requisitionsService.isForeignIdOnRequisition('test-network', '1004').then(function(exist) {
       expect(exist).toBe(false);
-    }, function(msg) {
-      throw 'This is not expected';
-    });
+    }, errorHandlerFn);
   });
 
-  // Test IP Address on Node
+  // Testing isIpAddressOnNode
 
   it('isIpAddressOnNode', function() {
     console.log('Running tests for isIpAddressOnNode');
@@ -633,18 +755,14 @@ describe('Service: RequisitionsService', function () {
 
     requisitionsService.isIpAddressOnNode('test-network', '1001', '10.0.0.1').then(function(exist) {
       expect(exist).toBe(true);
-    }, function(msg) {
-      throw 'This is not expected';
-    });
+    }, errorHandlerFn);
 
     requisitionsService.isIpAddressOnNode('test-network', '1001', '10.0.0.2').then(function(exist) {
       expect(exist).toBe(false);
-    }, function(msg) {
-      throw 'This is not expected';
-    });
+    }, errorHandlerFn);
   });
 
-  // Test Category on Node
+  // Testing isCategoryOnNode
 
   it('isCategoryOnNode', function() {
     console.log('Running tests for isCategoryOnNode');
@@ -653,18 +771,14 @@ describe('Service: RequisitionsService', function () {
 
     requisitionsService.isCategoryOnNode('test-network', '1001', 'Servers').then(function(exist) {
       expect(exist).toBe(true);
-    }, function(msg) {
-      throw 'This is not expected';
-    });
+    }, errorHandlerFn);
 
     requisitionsService.isCategoryOnNode('test-network', '1001', 'Router').then(function(exist) {
       expect(exist).toBe(false);
-    }, function(msg) {
-      throw 'This is not expected';
-    });
+    }, errorHandlerFn);
   });
 
-  // Test Service on Node
+  // Testing isServiceOnNode
 
   it('isServiceOnNode', function() {
     console.log('Running tests for isServiceOnNode');
@@ -673,16 +787,181 @@ describe('Service: RequisitionsService', function () {
 
     requisitionsService.isServiceOnNode('test-network', '1001', '10.0.0.1', 'ICMP').then(function(exist) {
       expect(exist).toBe(true);
-    }, function(msg) {
-      throw 'This is not expected';
-    });
+    }, errorHandlerFn);
 
     requisitionsService.isServiceOnNode('test-network', '1001', '10.0.0.2', 'HTTP').then(function(exist) {
       expect(exist).toBe(false);
-    }, function(msg) {
-      throw 'This is not expected';
-    });
+    }, errorHandlerFn);
   });
 
+  // Test getForeignSourceDefinition
+
+  it('getForeignSourceDefinition', function() {
+    console.log('Running tests for getForeignSourceDefinition');
+
+    var url = requisitionsService.internal.foreignSourcesUrl + '/default';
+    $httpBackend.expect('GET', url).respond(foreignSourceDef);
+
+    requisitionsService.getForeignSourceDefinition('default').then(function(data) {
+      expect(data).not.toBe(null);
+      expect(data.detectors.length).toBe(3);
+      expect(data.detectors[0].name).toBe('ICMP');
+      expect(data.policies.length).toBe(1);
+      expect(data.policies[0].name).toBe('No IPs');
+    }, errorHandlerFn);
+
+    $httpBackend.flush();
+  });
+
+  // Testing saveForeignSourceDefinition
+
+  it('saveForeignSourceDefinition', function() {
+    console.log('Running tests for saveForeignSourceDefinition');
+
+    var url = requisitionsService.internal.foreignSourcesUrl;
+    $httpBackend.expect('POST', url).respond();
+
+    requisitionsService.saveForeignSourceDefinition(foreignSourceDef).then(function() {}, errorHandlerFn);
+
+    $httpBackend.flush();
+  });
+ 
+  // Test cloneForeignSourceDefinition
+
+  it('cloneForeignSourceDefinition::unknownSource', function() {
+    console.log('Running tests for cloneForeignSourceDefinition for an unknown source');
+
+    var requisitionNames = {
+      "count": 3,
+      "totalCount": 3, 
+      "foreign-source": [ 'Routers', 'Servers', 'Storage' ]
+    };
+
+    $httpBackend.expect('GET', requisitionsService.internal.requisitionNamesUrl).respond(requisitionNames);
+
+    requisitionsService.cloneForeignSourceDefinition('this_does_not_exist', 'Routers').then(errorHandlerFn, function(msg) {
+      expect(msg).toBe('The source requisition this_does_not_exist does not exist.')
+    });
+
+    $httpBackend.flush();
+  });
+
+  it('cloneForeignSourceDefinition::unknownDestination', function() {
+    console.log('Running tests for cloneForeignSourceDefinition for an unknown destination');
+
+    var requisitionNames = {
+      "count": 3,
+      "totalCount": 3, 
+      "foreign-source": [ 'Routers', 'Servers', 'Storage' ]
+    };
+
+    $httpBackend.expect('GET', requisitionsService.internal.requisitionNamesUrl).respond(requisitionNames);
+
+    requisitionsService.cloneForeignSourceDefinition('Routers', 'this_does_not_exist').then(errorHandlerFn, function(msg) {
+      expect(msg).toBe('The target requisition this_does_not_exist does not exist.')
+    });
+
+    $httpBackend.flush();
+  });
+
+  it('cloneForeignSourceDefinition', function() {
+    console.log('Running tests for cloneForeignSourceDefinition');
+
+    var requisitionNames = {
+      "count": 3,
+      "totalCount": 3, 
+      "foreign-source": [ 'Routers', 'Servers', 'Storage' ]
+    };
+
+    $httpBackend.expect('GET', requisitionsService.internal.requisitionNamesUrl).respond(requisitionNames);
+    $httpBackend.expect('GET', requisitionsService.internal.foreignSourcesUrl + '/Routers').respond(foreignSourceDef);
+    $httpBackend.expect('POST', requisitionsService.internal.foreignSourcesUrl).respond();
+
+    requisitionsService.cloneForeignSourceDefinition('Routers', 'Servers').then(function(fs) {
+        expect(fs.name).toBe('Servers');
+    }, errorHandlerFn);
+
+    $httpBackend.flush();
+  });
+
+  // Testing deleteForeignSourceDefinition
+
+  it('deleteForeignSourceDefinition', function() {
+    console.log('Running tests for deleteForeignSourceDefinition');
+
+    var urlP = requisitionsService.internal.foreignSourcesUrl + '/test-requisition';
+    $httpBackend.expect('DELETE', urlP).respond();
+    var urlD = requisitionsService.internal.foreignSourcesUrl + '/deployed/test-requisition';
+    $httpBackend.expect('DELETE', urlD).respond();
+
+    requisitionsService.deleteForeignSourceDefinition('test-requisition').then(function() {}, errorHandlerFn);
+
+    $httpBackend.flush();
+  });
+
+  // Testing updateSnmpCommunity
+
+  it('updateSnmpCommunity', function() {
+    console.log('Running tests for updateSnmpCommunity');
+
+    var url = requisitionsService.internal.snmpConfigUrl + '/192.168.1.1';
+    $httpBackend.expect('PUT', url, {'readCommunity' : 'my_community', 'version' : 'v2c'}).respond();
+
+    requisitionsService.updateSnmpCommunity('192.168.1.1', 'my_community', 'v2c').then(function(ip) {
+      expect(ip).toBe('192.168.1.1');
+    }, errorHandlerFn);
+
+    $httpBackend.flush();
+  });
+
+  // Testing quickAddNode without SNMP
+
+  it('quickAddNode::noSnmp', function() {
+    console.log('Running tests for quickAddNode without SNMP');
+
+    var quickNode = new QuickNode();
+    quickNode.ipAddress = '192.168.1.1';
+    quickNode.foreignSource = 'test-network';
+    quickNode.foreignId = '123456789';
+    quickNode.nodeLabel = 'new-node.local';
+    quickNode.noSnmp = true;
+    var node = quickNode.createRequisitionedNode().getOnmsRequisitionNode();
+
+    var saveUrl = requisitionsService.internal.requisitionsUrl + '/' + quickNode.foreignSource + '/nodes';
+    $httpBackend.expect('POST', saveUrl, node).respond({});
+    var importUrl = requisitionsService.internal.requisitionsUrl + '/' + quickNode.foreignSource + '/import?rescanExisting=false';
+    $httpBackend.expect('PUT', importUrl).respond({});
+
+    requisitionsService.quickAddNode(quickNode).then(function(n) {
+      expect(n.nodeLabel).toBe('new-node.local');
+    }, errorHandlerFn);
+
+    $httpBackend.flush();
+  });
+
+  it('quickAddNode', function() {
+    console.log('Running tests for quickAddNode');
+
+    var quickNode = new QuickNode();
+    quickNode.ipAddress = '192.168.1.1';
+    quickNode.foreignSource = 'test-network';
+    quickNode.foreignId = '123456789';
+    quickNode.nodeLabel = 'new-node.local';
+    quickNode.snmpCommunity = 'my_community';
+    var node = quickNode.createRequisitionedNode().getOnmsRequisitionNode();
+
+    var updateSnmpUrl = requisitionsService.internal.snmpConfigUrl + '/' + quickNode.ipAddress;
+    $httpBackend.expect('PUT', updateSnmpUrl, {'readCommunity' : quickNode.snmpCommunity, 'version' : quickNode.snmpVersion}).respond();
+    var saveUrl = requisitionsService.internal.requisitionsUrl + '/' + quickNode.foreignSource + '/nodes';
+    $httpBackend.expect('POST', saveUrl, node).respond({});
+    var importUrl = requisitionsService.internal.requisitionsUrl + '/' + quickNode.foreignSource + '/import?rescanExisting=false';
+    $httpBackend.expect('PUT', importUrl).respond({});
+
+    requisitionsService.quickAddNode(quickNode).then(function(n) {
+      expect(n.nodeLabel).toBe('new-node.local');
+    }, errorHandlerFn);
+
+    $httpBackend.flush();
+  });
 
 });

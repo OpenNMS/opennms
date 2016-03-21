@@ -76,6 +76,19 @@
     $scope.node = new QuickNode();
 
     /**
+    * @description Generates a foreign Id
+    *
+    * @name QuickAddNodeController:generateForeignId
+    * @ngdoc method
+    * @methodOf QuickAddNodeController
+    * @param {object} the form object associated with the foreignId
+    */
+    $scope.generateForeignId = function(formObj) {
+      $scope.node.foreignId = new Date().getTime() + '';
+      formObj.$invalid = false;
+    };
+
+    /**
     * @description Provision the current node
     *
     * @name QuickAddNodeController:provision

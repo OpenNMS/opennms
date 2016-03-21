@@ -162,15 +162,9 @@
       });
       modalInstance.result.then(function(targetForeignSource) {
         RequisitionsService.startTiming();
-        RequisitionsService.getForeignSourceDefinition(foreignSource).then(
+        RequisitionsService.cloneForeignSourceDefinition(foreignSource, targetForeignSource).then(
           function(r) { // success
-            r.name = targetForeignSource;
-            RequisitionsService.saveForeignSourceDefinition(r).then(
-              function() { // success
-                growl.success('The foreign source definition for ' + foreignSource + ' has been cloned to ' + targetForeignSource);
-              },
-              $scope.errorHandler
-            );
+            growl.success('The foreign source definition for ' + foreignSource + ' has been cloned to ' + targetForeignSource);
           },
           $scope.errorHandler
         );

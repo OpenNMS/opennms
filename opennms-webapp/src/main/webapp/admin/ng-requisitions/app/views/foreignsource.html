@@ -70,13 +70,17 @@
           <div class="row">
             <div class="col-md-3">
               <div class="input-group">
-                <span class="input-group-addon"><span class="glyphicon glyphicon-search"/></span>
-                <input class="form-control" type="text" placeholder="Search/Filter Detectors" ng-model="filters.detector" />
+                <span class="input-group-addon">
+                  <span class="glyphicon glyphicon-search"></span>
+                </span>
+                <input class="form-control" type="text" placeholder="Search/Filter Detectors" ng-model="filters.detector"></input>
               </div>
             </div>
             <div class="col-md-9">
               <div class="input-group pull-right">
-                <button type="button" id="add-detector" class="btn btn-default" ng-click="addDetector()"><span class="glyphicon glyphicon-plus"/> Add Detector</button>
+                <button type="button" id="add-detector" class="btn btn-default" ng-click="addDetector()">
+                  <span class="glyphicon glyphicon-plus"></span> Add Detector
+                </button>
               </div>
             </div>
           </div>
@@ -123,13 +127,17 @@
           <div class="row">
             <div class="col-md-3">
               <div class="input-group">
-                <span class="input-group-addon"><span class="glyphicon glyphicon-search"/></span>
+                <span class="input-group-addon">
+                  <span class="glyphicon glyphicon-search"></span>
+                </span>
                 <input class="form-control" type="text" placeholder="Search/Filter Policies" ng-model="filters.policy" />
               </div>
             </div>
             <div class="col-md-9">
               <div class="input-group pull-right">
-                <button type="button" id="add-policy" class="btn btn-default" ng-click="addPolicy()"><span class="glyphicon glyphicon-plus"/> Add Policy</button>
+                <button type="button" id="add-policy" class="btn btn-default" ng-click="addPolicy()">
+                  <span class="glyphicon glyphicon-plus"></span> Add Policy
+                </button>
               </div>
             </div>
           </div>
@@ -157,10 +165,10 @@
                   <td>
                     <span class="pull-right">
                       <button type="button" class="btn btn-default btn-xs" uib-tooltip="Edit the policy" ng-click="editPolicy(policy)">
-                        <span class="glyphicon glyphicon-pencil"/>
+                        <span class="glyphicon glyphicon-pencil"></span>
                       </button>
                       <button type="button" class="btn btn-default btn-xs" uib-tooltip="Remove the policy" ng-click="removePolicy(policy)">
-                        <span class="glyphicon glyphicon-remove"/>
+                        <span class="glyphicon glyphicon-remove"></span>
                       </button>
                       </span>
                   </td>

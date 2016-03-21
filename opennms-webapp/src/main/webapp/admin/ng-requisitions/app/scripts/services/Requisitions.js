@@ -186,10 +186,10 @@
       var node = quickNode.createRequisitionedNode();
       requisitionsService.saveNode(node).then(
         function() { // saveNode:success
-          $log.debug('The node ' + node.nodeLabel + ' has been saved.');
+          $log.debug('addQuickNode: the node ' + node.nodeLabel + ' has been saved.');
           requisitionsService.synchronizeRequisition(node.foreignSource, 'false').then(
             function() { // synchronizeRequisition:success
-              $log.debug('The requisition ' + node.foreignSource + ' has been synchronized.');
+              $log.debug('addQuickNode: the requisition ' + node.foreignSource + ' has been synchronized.');
               deferred.resolve(node);
             },
             function() { // synchronizeRequisition:failure
@@ -473,7 +473,7 @@
       }
 
       var url = requisitionsService.internal.requisitionsUrl + '/' + foreignSource + '/import';
-      $log.debug('synchronizeRequisition: synchronizing requisition ' + foreignSource);
+      $log.debug('synchronizeRequisition: synchronizing requisition ' + foreignSource + ' with rescanExisting=' + rescanExisting);
       $http({ method: 'PUT', url: url, params: { rescanExisting: rescanExisting }})
       .success(function(data) {
         $log.debug('synchronizeRequisition: synchronized requisition ' + foreignSource);
@@ -808,6 +808,56 @@
         $log.error('saveForeignSourceDefinition: POST ' + url + ' failed:', error, status);
         deferred.reject('Cannot save foreign source definition (detectors and policies) for requisition ' + foreignSource + '.' + requisitionsService.internal.errorHelp);
       });
+      return deferred.promise;
+    };
+
+    /**
+    * @description Clones an existing foreign source definition to another.
+    *
+    * The foreign source definition contains the set of policies and detectors, as well as the scan frequency.
+    *
+    * @name RequisitionsService:cloneForeignSourceDefinition
+    * @ngdoc method
+    * @methodOf RequisitionsService
+    * @param {string} sourceRequisition The name of the source requisition
+    * @param {string} targetRequisition The name of the target requisition
+    * @returns {object} a promise.
+    */
+    requisitionsService.cloneForeignSourceDefinition = function(sourceRequisition, targetRequisition) {
+      var deferred = $q.defer();
+
+      requisitionsService.getRequisitionNames().then(
+        function(requisitions) { // success
+          if (requisitions.indexOf(sourceRequisition) < 0) {
+            deferred.reject('The source requisition ' + sourceRequisition + ' does not exist.');
+            return;
+          }
+          if (requisitions.indexOf(targetRequisition) < 0) {
+            deferred.reject('The target requisition ' + targetRequisition + ' does not exist.');
+            return;
+          }
+          requisitionsService.getForeignSourceDefinition(sourceRequisition).then(
+            function(fsDef) { // success
+              fsDef.name = targetRequisition;
+              requisitionsService.saveForeignSourceDefinition(fsDef).then(
+                function() { // success
+                  deferred.resolve(fsDef);
+                },
+                function() { // error
+                  deferred.reject('Cannot save foreign source definition for requisition ' + targetRequisition);
+                }
+              );
+            },
+            function() { // error
+              deferred.reject('Cannot get foreign source definition for requisition ' + sourceRequisition);
+            }
+          );
+        },
+        function() { // error
+          deferred.reject('Cannot validate the existance of the source and target requisitions.');
+        }
+      );
+
       return deferred.promise;
     };
 
@@ -1182,17 +1232,17 @@
     * @name RequisitionsService:quickAddNode
     * @ngdoc method
     * @methodOf RequisitionsService
-    * @param {object} node The QuickNode object
+    * @param {object} quickNode The QuickNode object
     * @returns {object} a promise.
     */
-    requisitionsService.quickAddNode = function(node) {
-      if (node.noSnmp == false && node.snmpCommunity != '') {
+    requisitionsService.quickAddNode = function(quickNode) {
+      if (quickNode.noSnmp == false && quickNode.snmpCommunity != '') {
         var deferred = $q.defer();
-        requisitionsService.updateSnmpCommunity(node.ipAddress, node.snmpCommunity, node.snmpVersion).then(
+        requisitionsService.updateSnmpCommunity(quickNode.ipAddress, quickNode.snmpCommunity, quickNode.snmpVersion).then(
           function() { // updateSnmpCommunity:success
-            requisitionsService.internal.addQuickNode(node).then(
-              function() { // addQuickNode:success
-                deferred.resolve();
+            requisitionsService.internal.addQuickNode(quickNode).then(
+              function(node) { // addQuickNode:success
+                deferred.resolve(node);
               },
               function(msg) { // addQuickNode:failure
                 deferred.reject(msg);
@@ -1200,12 +1250,12 @@
             );
           },
           function() { // updateSnmpCommunity:failure
-            deferred.reject('Cannot update SNMP credentials for ' + node.ipAddress);
+            deferred.reject('Cannot update SNMP credentials for ' + quickNode.ipAddress);
           }
         );
         return deferred.promise;
       }
-      return requisitionsService.internal.addQuickNode(node);
+      return requisitionsService.internal.addQuickNode(quickNode);
     }
 
     return requisitionsService;
