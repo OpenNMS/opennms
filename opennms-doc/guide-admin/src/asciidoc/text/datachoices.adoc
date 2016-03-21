@@ -9,7 +9,7 @@ Statistics will only be published once an `Administrator` has opted-in.
 
 Usage statistics can later be disabled by accessing the 'Data Choices' link in the 'Admin' menu.
 
-When enabled, the following anonymous statistics will be collected and publish on system starutp and every 24 hours after:
+When enabled, the following anonymous statistics will be collected and publish on system startup and every 24 hours after:
 
 * System ID (a randomly generated UUID)
 * OpenNMS Release
