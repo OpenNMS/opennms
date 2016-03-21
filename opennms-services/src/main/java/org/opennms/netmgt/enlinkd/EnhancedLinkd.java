@@ -32,6 +32,7 @@ package org.opennms.netmgt.enlinkd;
 import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
@@ -350,6 +351,7 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
         LOG.info("deleteNode: deleting LinkableNode for node {}",
                         nodeid);
 
+        Date now = new Date();
         BroadcastDomain domain = m_queryMgr.getBridgeTopologyBroadcastDomain(nodeid);
         LOG.debug("deleteNode: {}, found broadcast domain: nodes {}, macs {}", nodeid, domain.getBridgeNodesOnDomain(), domain.getMacsOnDomain());
         // must be calculated the topology for nodeid...
@@ -378,6 +380,7 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
                         LOG.info("deleteNode: node: {}, start: save topology for domain",nodeid);
                         m_queryMgr.store(domain);
                         m_queryMgr.save(ndbt.getDomain().getRootBridgeId(),ndbt.getRootBridgeBFT());
+                        m_queryMgr.reconcileBridgeTopology(ndbt.getDomain().getRootBridgeId(), now);
                         LOG.info("deleteNode: node: {}, end: save topology for domain",nodeid);
                         domain.releaseLock(this);
                     }
