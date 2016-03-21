@@ -50,10 +50,8 @@ casper.test.begin('Quick-Add Node to Requisition', {
         // Provision
         casper.waitWhileSelector('button[disabled][id="provision"]');
         casper.thenClick('#provision');
-        casper.waitUntilVisible('.modal-dialog .modal-footer button[data-bb-handler="main"]');
-        casper.then(function() {
-            casper.click('.modal-dialog .modal-footer button[data-bb-handler="main"]');
-        });
+        casper.waitUntilVisible('.modal-dialog button[data-bb-handler="main"]');
+        casper.thenClick('.modal-dialog button[data-bb-handler="main"]');
 
         // Verify Node
         casper.wait(20000);

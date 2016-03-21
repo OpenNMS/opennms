@@ -39,9 +39,7 @@ casper.test.begin('Add Node to Requisition', {
 
 		// Edit the foreign source
 		casper.waitForSelector('button[uib-tooltip="Edit detectors and policies of the '+foreignSource+' Requisition"]');
-		casper.then(function() {
-			casper.click('button[uib-tooltip="Edit detectors and policies of the '+foreignSource+' Requisition"]');
-		});
+		casper.thenClick('button[uib-tooltip="Edit detectors and policies of the '+foreignSource+' Requisition"]');
 		casper.waitForSelector('input[placeholder="Search/Filter Detectors"]');
 		casper.then(function() {
 			test.assertSelectorHasText('h4', 'Foreign Source Definition for Requisition add-node-to-requisition-test', 'Foreign source edit header should be found.');
@@ -61,12 +59,10 @@ casper.test.begin('Add Node to Requisition', {
 			casper.sendKeys('input#clazz', 'HTTP');
 		});
 		casper.waitForSelector('.modal-dialog ul.dropdown-menu a[title="HTTP"]', function() {
-			casper.click('.modal-dialog ul.dropdown-menu a[title="HTTP"]');
+			casper.click('.modal-dialog ul.dropdown-menu a[title="HTTP"]'); // This should happen if the dropdown-menu is present.
 		});
 		casper.waitWhileVisible('.modal-dialog ul.dropdown-menu');
-		casper.then(function() {
-			casper.click('#add-detector-parameter');
-		});
+		casper.thenClick('#add-detector-parameter');
 		casper.waitForSelector('input[name="paramName"]');
 		casper.then(function() {
 			casper.sendKeys('input[name="paramName"]', 'port');
@@ -123,22 +119,16 @@ casper.test.begin('Add Node to Requisition', {
 		});
 
 		// Save foreign source definition
-		casper.then(function() {
-			casper.click('#save-foreign-source');
-		});
+		casper.thenClick('#save-foreign-source');
 		casper.waitWhileVisible('#save-foreign-source');
 
 		// Go back to the requisition's page
-		casper.then(function() {
-			casper.click('#go-back');
-		});
+		casper.thenClick('#go-back');
 		casper.waitForText('(0 defined, 0 deployed)');
 
 		// Add a node to the requisition
 		casper.wait(10000);
-		casper.then(function() {
-			casper.click('#add-node');
-		});
+		casper.thenClick('#add-node');
 		casper.waitUntilVisible('input#nodeLabel');
 		casper.then(function() {
 			casper.sendKeys('input#nodeLabel', nodeLabel, {reset:true});
@@ -147,9 +137,7 @@ casper.test.begin('Add Node to Requisition', {
 
 		// Add an interface to the node
 		casper.waitForSelector('#tab-interfaces .ng-binding');
-		casper.then(function() {
-			casper.click('#tab-interfaces .ng-binding');
-		});
+		casper.thenClick('#tab-interfaces .ng-binding');
 		casper.waitUntilVisible('#add-interface');
 		casper.then(function() {
 			test.assertExists('#add-interface', 'The "Add Interface" button should exist');
@@ -162,15 +150,14 @@ casper.test.begin('Add Node to Requisition', {
 		});
 
 		// Add a service to the interface
-		casper.then(function() {
-			casper.click('#add-service');
-		});
+		casper.thenClick('#add-service');
 		casper.waitUntilVisible('input[name="serviceName"]', function() {
 			test.assertExists('input[name="serviceName"]', 'The "Service Name" field should be visible');
 			casper.sendKeys('input[name="serviceName"]', service);
+			casper.sendKeys('input[name="serviceName"]', casper.page.event.key.Enter);
 		});
 		casper.waitForSelector('.modal-dialog ul.dropdown-menu a[title="'+service+'"]', function() {
-			casper.click('.modal-dialog ul.dropdown-menu a[title="'+service+'"]');
+			casper.then('.modal-dialog ul.dropdown-menu a[title="'+service+'"]'); // This should happen if the dropdown-menu is present.
 		});
 		casper.waitWhileVisible('.modal-dialog ul.dropdown-menu');
 
@@ -185,9 +172,7 @@ casper.test.begin('Add Node to Requisition', {
 
 		// Add an asset to the node
 		casper.waitForSelector('#tab-assets .ng-binding');
-		casper.then(function() {
-			casper.click('#tab-assets .ng-binding');
-		});
+		casper.thenClick('#tab-assets .ng-binding');
 		casper.waitUntilVisible('#add-asset');
 		casper.then(function() {
 			test.assertExists('#add-asset', 'The "Add Asset" button should exist');
@@ -212,9 +197,7 @@ casper.test.begin('Add Node to Requisition', {
 
 		// Add a category to the node
 		casper.waitForSelector('#tab-categories .ng-binding');
-		casper.then(function() {
-			casper.click('#tab-categories .ng-binding');
-		});
+		casper.thenClick('#tab-categories .ng-binding');
 		casper.waitUntilVisible('#add-category');
 		casper.then(function() {
 			test.assertExists('#add-category', 'The "Add Category" button should exist');
@@ -238,9 +221,7 @@ casper.test.begin('Add Node to Requisition', {
 
 		// Go back to the requisition's page
 		casper.waitWhileVisible('#save-node');
-		casper.then(function() {
-			casper.click('#go-back');
-		});
+		casper.thenClick('#go-back');
 		casper.waitForText(nodeLabel, function() {
 			test.assertSelectorHasText('td', nodeLabel, 'There should be a node row entry for the test node label');
 			test.assertSelectorHasText('td', foreignId, 'There should be a node row entry for the test foreign ID');
