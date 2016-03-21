@@ -39,6 +39,15 @@ import org.ops4j.pax.exam.junit.PaxExam;
 import org.ops4j.pax.exam.spi.reactors.ExamReactorStrategy;
 import org.ops4j.pax.exam.spi.reactors.PerMethod;
 
+/**
+ * <p>This test checks that the features from:</p>
+ * <code>
+ * mvn:org.opennms.karaf/opennms/${currentVersion}/xml/features
+ * <code>
+ * <p>load correctly in Karaf.</p>
+ * 
+ * @author Seth
+ */
 @RunWith(PaxExam.class)
 @ExamReactorStrategy(PerMethod.class)
 @Ignore("Ignore for now since creating the features repo is causing dependency problems")
@@ -198,6 +207,13 @@ public class OnmsFeatureKarafIT extends KarafTestCase {
 		installFeature("lmax-disruptor");
 		System.out.println(executeCommand("features:list -i"));
 	}
+	@Test
+	public void testInstallFeatureJna() {
+		installFeature("net.java.dev.jna");
+		System.out.println(executeCommand("features:list -i"));
+	}
+
+
 	/*
 	@Test
 	public void testInstallFeature250() {
@@ -231,6 +247,22 @@ public class OnmsFeatureKarafIT extends KarafTestCase {
 	}
 	*/
 	@Test
+	@Ignore("OSGi dependency problems: org.opennms.netmgt.alarmd.api")
+	public void testInstallFeatureAmqpAlarmNorthbounder() {
+		installFeature("opennms-amqp-alarm-northbounder");
+		System.out.println(executeCommand("features:list -i"));
+	}
+	@Test
+	public void testInstallFeatureAmqpEventForwarder() {
+		installFeature("opennms-amqp-event-forwarder");
+		System.out.println(executeCommand("features:list -i"));
+	}
+	@Test
+	public void testInstallFeatureAmqpEventReceiver() {
+		installFeature("opennms-amqp-event-receiver");
+		System.out.println(executeCommand("features:list -i"));
+	}
+	@Test
 	public void testInstallFeatureOpennmsCollectionApi() {
 		installFeature("opennms-collection-api");
 		System.out.println(executeCommand("features:list -i"));
@@ -253,6 +285,11 @@ public class OnmsFeatureKarafIT extends KarafTestCase {
 	@Test
 	public void testInstallFeatureOpennmsConfigJaxb() {
 		installFeature("opennms-config-jaxb");
+		System.out.println(executeCommand("features:list -i"));
+	}
+	@Test
+	public void testInstallFeatureOpennmsCoreCamel() {
+		installFeature("opennms-core-camel");
 		System.out.println(executeCommand("features:list -i"));
 	}
 	@Test
@@ -288,6 +325,11 @@ public class OnmsFeatureKarafIT extends KarafTestCase {
 	@Test
 	public void testInstallFeatureOpennmsDiscovery() {
 		installFeature("opennms-discovery");
+		System.out.println(executeCommand("features:list -i"));
+	}
+	@Test
+	public void testInstallFeatureOpennmsDiscoveryDaemon() {
+		installFeature("opennms-discovery-daemon");
 		System.out.println(executeCommand("features:list -i"));
 	}
 	@Test
