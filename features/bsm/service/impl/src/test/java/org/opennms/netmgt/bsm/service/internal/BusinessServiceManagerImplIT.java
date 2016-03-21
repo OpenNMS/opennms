@@ -34,8 +34,6 @@ import static org.opennms.netmgt.bsm.test.BsmTestUtils.createDummyBusinessServic
 
 import java.util.Objects;
 
-import com.google.common.collect.Iterables;
-import com.google.common.collect.Iterators;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -49,13 +47,8 @@ import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.netmgt.bsm.persistence.api.BusinessServiceDao;
 import org.opennms.netmgt.bsm.persistence.api.BusinessServiceEdgeDao;
 import org.opennms.netmgt.bsm.persistence.api.BusinessServiceEntity;
-import org.opennms.netmgt.bsm.persistence.api.IPServiceEdgeEntity;
-import org.opennms.netmgt.bsm.persistence.api.functions.map.IdentityEntity;
-import org.opennms.netmgt.bsm.persistence.api.functions.map.IgnoreEntity;
 import org.opennms.netmgt.bsm.persistence.api.functions.map.MapFunctionDao;
-import org.opennms.netmgt.bsm.persistence.api.functions.reduce.HighestSeverityEntity;
 import org.opennms.netmgt.bsm.persistence.api.functions.reduce.ReductionFunctionDao;
-import org.opennms.netmgt.bsm.persistence.api.functions.reduce.ThresholdEntity;
 import org.opennms.netmgt.bsm.service.BusinessServiceManager;
 import org.opennms.netmgt.bsm.service.BusinessServiceStateMachine;
 import org.opennms.netmgt.bsm.service.model.BusinessService;
@@ -67,9 +60,7 @@ import org.opennms.netmgt.bsm.service.model.functions.map.Decrease;
 import org.opennms.netmgt.bsm.service.model.functions.map.Identity;
 import org.opennms.netmgt.bsm.service.model.functions.map.Increase;
 import org.opennms.netmgt.bsm.service.model.functions.reduce.HighestSeverity;
-import org.opennms.netmgt.bsm.service.model.functions.reduce.Threshold;
 import org.opennms.netmgt.bsm.test.BsmDatabasePopulator;
-import org.opennms.netmgt.bsm.test.BusinessServiceEntityBuilder;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.test.JUnitConfigurationEnvironment;
@@ -79,6 +70,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)

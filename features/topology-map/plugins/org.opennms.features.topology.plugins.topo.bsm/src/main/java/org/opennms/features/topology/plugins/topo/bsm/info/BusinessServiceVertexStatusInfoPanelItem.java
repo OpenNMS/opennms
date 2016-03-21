@@ -28,18 +28,21 @@
 
 package org.opennms.features.topology.plugins.topo.bsm.info;
 
-import com.vaadin.shared.ui.label.ContentMode;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.FormLayout;
-import com.vaadin.ui.Label;
+import static org.opennms.netmgt.vaadin.core.UIHelper.createLabel;
+
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.info.VertexInfoPanelItem;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
-import org.opennms.features.topology.plugins.topo.bsm.BusinessServiceEdge;
 import org.opennms.features.topology.plugins.topo.bsm.BusinessServiceVertex;
+import org.opennms.features.topology.plugins.topo.bsm.BusinessServicesStatusProvider;
 import org.opennms.features.topology.plugins.topo.bsm.BusinessServicesTopologyProvider;
 import org.opennms.features.topology.plugins.topo.bsm.IpServiceVertex;
 import org.opennms.features.topology.plugins.topo.bsm.ReductionKeyVertex;
+import org.opennms.features.topology.plugins.topo.bsm.simulate.SimulationAwareStateMachineFactory;
 import org.opennms.netmgt.bsm.service.BusinessServiceManager;
 import org.opennms.netmgt.bsm.service.BusinessServiceStateMachine;
 import org.opennms.netmgt.bsm.service.model.BusinessService;
@@ -50,19 +53,17 @@ import org.opennms.netmgt.bsm.service.model.edge.EdgeVisitor;
 import org.opennms.netmgt.bsm.service.model.edge.IpServiceEdge;
 import org.opennms.netmgt.bsm.service.model.edge.ReductionKeyEdge;
 import org.opennms.netmgt.bsm.service.model.graph.BusinessServiceGraph;
-import org.opennms.netmgt.bsm.service.model.graph.GraphEdge;
 import org.opennms.netmgt.bsm.service.model.graph.GraphVertex;
 import org.opennms.netmgt.vaadin.core.TransactionAwareBeanProxyFactory;
 
-import static org.opennms.netmgt.vaadin.core.UIHelper.createLabel;
-
-import java.util.Set;
-import java.util.stream.Collectors;
+import com.vaadin.shared.ui.label.ContentMode;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.FormLayout;
+import com.vaadin.ui.Label;
 
 public class BusinessServiceVertexStatusInfoPanelItem implements VertexInfoPanelItem {
 
     private BusinessServiceManager businessServiceManager;
-    private BusinessServiceStateMachine businessServiceStateMachine;
     private BusinessServicesTopologyProvider businessServicesTopologyProvider;
 
     private final TransactionAwareBeanProxyFactory transactionAwareBeanProxyFactory;
@@ -75,23 +76,18 @@ public class BusinessServiceVertexStatusInfoPanelItem implements VertexInfoPanel
         this.businessServiceManager = transactionAwareBeanProxyFactory.createProxy(businessServiceManager);
     }
 
-    public void setBusinessServiceStateMachine(BusinessServiceStateMachine businessServiceStateMachine) {
-        this.businessServiceStateMachine = transactionAwareBeanProxyFactory.createProxy(businessServiceStateMachine);
-    }
-
     public void setBusinessServicesTopologyProvider(final BusinessServicesTopologyProvider businessServicesTopologyProvider) {
         this.businessServicesTopologyProvider = businessServicesTopologyProvider;
     }
 
     @Override
-    public boolean contributesTo(VertexRef vertexRef) {
+    public boolean contributesTo(VertexRef vertexRef, GraphContainer container) {
         return vertexRef instanceof BusinessServiceVertex;
     }
 
     @Override
-    public Component getComponent(VertexRef ref) {
+    public Component getComponent(VertexRef ref, GraphContainer container) {
         final BusinessServiceVertex vertex = (BusinessServiceVertex) ref;
-        final BusinessService businessService = businessServiceManager.getBusinessServiceById(vertex.getServiceId());
 
         final FormLayout rootLayout = new FormLayout();
         rootLayout.setSizeFull();
@@ -99,12 +95,15 @@ public class BusinessServiceVertexStatusInfoPanelItem implements VertexInfoPanel
         rootLayout.setMargin(false);
         rootLayout.addStyleName("severity");
 
-        rootLayout.addComponent(createStatusLabel("Overall", businessService.getOperationalStatus()));
+        final BusinessServiceStateMachine stateMachine = SimulationAwareStateMachineFactory.createStateMachine(businessServiceManager, container.getCriteria());
+        final Status overallStatus = BusinessServicesStatusProvider.getStatus(stateMachine, vertex);
+        rootLayout.addComponent(createStatusLabel("Overall", overallStatus));
 
         rootLayout.addComponent(new Label());
 
-        final BusinessServiceGraph graph = businessServiceStateMachine.getGraph();
-        final Set<GraphVertex> impactingVertices = businessServiceStateMachine.calculateImpacting(businessService)
+        final BusinessServiceGraph graph = stateMachine.getGraph();
+        final BusinessService businessService = businessServiceManager.getBusinessServiceById(vertex.getServiceId());
+        final Set<GraphVertex> impactingVertices = stateMachine.calculateImpacting(businessService)
                                                                               .stream()
                                                                               .map(e -> graph.getDest(e))
                                                                               .collect(Collectors.toSet());
@@ -114,29 +113,25 @@ public class BusinessServiceVertexStatusInfoPanelItem implements VertexInfoPanel
             final Vertex childVertex = businessServicesTopologyProvider.getVertex(edge.accept(new EdgeVisitor<VertexRef>() {
                 @Override
                 public VertexRef visit(final IpServiceEdge edge) {
-                    return new IpServiceVertex(edge.getIpService(),
-                                               0, null);
+                    return new IpServiceVertex(edge.getIpService(), 0);
                 }
 
                 @Override
                 public VertexRef visit(final ReductionKeyEdge edge) {
-                    return new ReductionKeyVertex(edge.getReductionKey(),
-                                                  0, null);
+                    return new ReductionKeyVertex(edge.getReductionKey(), 0);
                 }
 
                 @Override
                 public VertexRef visit(final ChildEdge edge) {
-                    return new BusinessServiceVertex(edge.getChild(),
-                                                     0, null);
+                    return new BusinessServiceVertex(edge.getChild(), 0);
                 }
             }));
-
-            final Status mappedStatus = edge.getMapFunction().map(edge.getOperationalStatus()).orElse(Status.NORMAL);
+            final Status edgeStatus = stateMachine.getOperationalStatus(edge);
 
             rootLayout.addComponent(createStatusLabel(childVertex.getLabel(),
-                                                      mappedStatus,
+                                                      edgeStatus,
                                                       String.format("%s &times; %d <i class=\"pull-right glyphicon %s\"></i>",
-                                                                    mappedStatus.getLabel(),
+                                                                    edgeStatus.getLabel(),
                                                                     edge.getWeight(),
                                                                     impactingVertices.contains(graph.getVertexByEdgeId(edge.getId()))
                                                                     ? "glyphicon-flash"

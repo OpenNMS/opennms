@@ -32,7 +32,6 @@ import java.util.Set;
 
 import org.opennms.features.topology.api.topo.AbstractVertex;
 import org.opennms.features.topology.api.topo.LevelAware;
-import org.opennms.netmgt.bsm.service.model.Status;
 
 public abstract class AbstractBusinessServiceVertex extends AbstractVertex implements LevelAware {
 
@@ -44,8 +43,6 @@ public abstract class AbstractBusinessServiceVertex extends AbstractVertex imple
 
     private final int level;
 
-    private final Status status;
-
     /**
      * Creates a new {@link AbstractBusinessServiceVertex}.
      *  @param id the unique id of this vertex. Must be unique overall the namespace.
@@ -53,10 +50,9 @@ public abstract class AbstractBusinessServiceVertex extends AbstractVertex imple
      * @param level the level of the vertex in the Business Service Hierarchy. The root element is level 0.
      * @param status
      */
-    protected AbstractBusinessServiceVertex(String id, String label, int level, Status status) {
+    protected AbstractBusinessServiceVertex(String id, String label, int level) {
         super(BusinessServicesTopologyProvider.TOPOLOGY_NAMESPACE, id, label);
         this.level = level;
-        this.status = status;
         setIconKey(null);
         setLocked(false);
         setSelected(false);
@@ -72,10 +68,6 @@ public abstract class AbstractBusinessServiceVertex extends AbstractVertex imple
     public abstract Type getType();
 
     public abstract Set<String> getReductionKeys();
-
-    public Status getOperationalStatus() {
-        return status;
-    }
 
     public abstract <T> T accept(BusinessServiceVertexVisitor<T> visitor);
 }

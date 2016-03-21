@@ -31,7 +31,6 @@ package org.opennms.netmgt.bsm.service.internal.edge;
 import java.util.Objects;
 
 import org.opennms.netmgt.bsm.persistence.api.BusinessServiceEdgeEntity;
-import org.opennms.netmgt.bsm.persistence.api.functions.map.AbstractMapFunctionEntity;
 import org.opennms.netmgt.bsm.service.BusinessServiceManager;
 import org.opennms.netmgt.bsm.service.internal.BusinessServiceImpl;
 import org.opennms.netmgt.bsm.service.internal.MapFunctionMapper;

@@ -26,48 +26,35 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.app.internal.ui.info;
+package org.opennms.features.topology.plugins.topo.bsm.simulate;
 
-import static org.opennms.netmgt.vaadin.core.UIHelper.createLabel;
+import org.opennms.features.topology.api.NamespaceAware;
+import org.opennms.features.topology.api.topo.Criteria;
+import org.opennms.features.topology.plugins.topo.bsm.BusinessServicesTopologyProvider;
 
-import org.opennms.features.topology.api.GraphContainer;
-import org.opennms.features.topology.api.info.EdgeInfoPanelItem;
-import org.opennms.features.topology.api.topo.AbstractEdge;
-import org.opennms.features.topology.api.topo.EdgeRef;
-
-import com.vaadin.ui.Component;
-import com.vaadin.ui.FormLayout;
-
-public class DefaultEdgeInfoPanelItem implements EdgeInfoPanelItem {
-
+public abstract class SimulationCriteria extends Criteria implements NamespaceAware {
     @Override
-    public Component getComponent(EdgeRef ref, GraphContainer container) {
-        FormLayout formLayout = new FormLayout();
-        formLayout.setSpacing(false);
-        formLayout.setMargin(false);
-
-        if (ref instanceof AbstractEdge) {
-            AbstractEdge edge = (AbstractEdge) ref;
-
-            formLayout.addComponent(createLabel("Source", edge.getSource().getVertex().getLabel()));
-            formLayout.addComponent(createLabel("Target", edge.getTarget().getVertex().getLabel()));
-        }
-
-        return formLayout;
+    public boolean contributesTo(String namespace) {
+        return getNamespace().equals(namespace);
     }
 
     @Override
-    public boolean contributesTo(EdgeRef ref, GraphContainer container) {
-        return true;
+    public ElementType getType() {
+        return ElementType.EDGE;
     }
 
     @Override
-    public String getTitle(EdgeRef ref) {
-        return "Technical Details";
+    public String getNamespace() {
+        return BusinessServicesTopologyProvider.TOPOLOGY_NAMESPACE;
     }
 
     @Override
-    public int getOrder() {
-        return Integer.MAX_VALUE;
+    public int hashCode() {
+        return 0;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return obj != null && getClass().equals(obj.getClass());
     }
 }

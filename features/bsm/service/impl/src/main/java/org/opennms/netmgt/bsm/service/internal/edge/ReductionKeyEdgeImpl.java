@@ -30,7 +30,6 @@ package org.opennms.netmgt.bsm.service.internal.edge;
 
 import java.util.Set;
 
-import com.google.common.base.Strings;
 import org.opennms.netmgt.bsm.persistence.api.SingleReductionKeyEdgeEntity;
 import org.opennms.netmgt.bsm.service.BusinessServiceManager;
 import org.opennms.netmgt.bsm.service.model.edge.EdgeVisitor;

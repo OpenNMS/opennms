@@ -31,9 +31,7 @@ package org.opennms.features.topology.app.internal.ui.info;
 import static org.opennms.netmgt.vaadin.core.UIHelper.createButton;
 import static org.opennms.netmgt.vaadin.core.UIHelper.createLabel;
 
-import com.google.common.base.Strings;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Link;
+import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.info.VertexInfoPanelItem;
 import org.opennms.features.topology.api.topo.AbstractVertex;
 import org.opennms.features.topology.api.topo.VertexRef;
@@ -41,10 +39,11 @@ import org.opennms.features.topology.app.internal.ui.NodeInfoWindow;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.OnmsNode;
 
+import com.google.common.base.Strings;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.FormLayout;
-import com.vaadin.ui.Label;
+import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.themes.BaseTheme;
 
 public class NodeInfoPanelItem implements VertexInfoPanelItem {
@@ -56,7 +55,7 @@ public class NodeInfoPanelItem implements VertexInfoPanelItem {
     }
 
     @Override
-    public Component getComponent(VertexRef ref) {
+    public Component getComponent(VertexRef ref, GraphContainer container) {
         if (ref instanceof AbstractVertex && ((AbstractVertex) ref).getNodeID() != null) {
             AbstractVertex vertex = ((AbstractVertex) ref);
             OnmsNode node = nodeDao.get(vertex.getNodeID());
@@ -87,7 +86,7 @@ public class NodeInfoPanelItem implements VertexInfoPanelItem {
     }
 
     @Override
-    public boolean contributesTo(VertexRef ref) {
+    public boolean contributesTo(VertexRef ref, GraphContainer container) {
         return (ref instanceof AbstractVertex) &&
                (((AbstractVertex) ref).getNodeID() != null);
     }
