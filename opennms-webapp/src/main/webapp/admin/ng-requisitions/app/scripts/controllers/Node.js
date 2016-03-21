@@ -448,6 +448,7 @@
     );
 
     // Initialize foreign-id black list (thanks to the cache, this call is not expensive)
+    // TODO: What if the cache is disabled ?
     RequisitionsService.getRequisition($scope.foreignSource).then(
       function(requisition) {
         angular.forEach(requisition.nodes, function(node) {

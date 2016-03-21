@@ -63,6 +63,10 @@ describe('Controller: InterfaceController', function () {
     expect(scope.requisitionInterface.services.length).toBe(0);
     expect(scope.availableServices.length).toBe(3);
     expect(scope.availableServices[0]).toBe('ICMP');
+
+    expect(scope.getAvailableServices()).toEqual(['ICMP','SNMP','HTTP']);
+    scope.requisitionInterface.services.push({name: 'ICMP'});
+    expect(scope.getAvailableServices()).toEqual(['SNMP','HTTP']);
   });
 
 });

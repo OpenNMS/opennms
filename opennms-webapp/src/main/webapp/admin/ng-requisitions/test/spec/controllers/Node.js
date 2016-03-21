@@ -15,9 +15,9 @@ describe('Controller: NodeController', function () {
 
   var foreignSource = 'test-requisition';
   var foreignId = '1001';
-  var categories = ['Production', 'Testing'];
+  var categories = ['Production', 'Testing', 'Server', 'Storage'];
   var node = new RequisitionNode(foreignSource, { 'foreign-id': foreignId });
-  var requisition = { foreignSource: foreignSource, nodes: [] };
+  var requisition = { foreignSource: foreignSource, nodes: [{foreignId: '01'},{foreignId: '02'}] };
 
   function createController() {
     return controllerFactory('NodeController', {
@@ -70,7 +70,12 @@ describe('Controller: NodeController', function () {
     expect(mockRequisitionsService.getNode).toHaveBeenCalledWith(foreignSource, foreignId);
     expect(scope.foreignSource).toBe(foreignSource);
     expect(scope.foreignId).toBe(foreignId);
-    expect(scope.availableCategories.length).toBe(2);
+    expect(scope.availableCategories.length).toBe(4);
+    expect(scope.foreignIdBlackList).toEqual(['01', '02']);
+
+    expect(scope.getAvailableCategories()).toEqual(categories);
+    scope.node.categories.push({name: 'Production'});
+    expect(scope.getAvailableCategories()).toEqual(['Testing', 'Server', 'Storage']);
   });
 
 });
