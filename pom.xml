@@ -2994,6 +2994,11 @@
         </exclusions>
       </dependency>
       <dependency>
+        <groupId>org.reflections</groupId>
+        <artifactId>reflections</artifactId>
+        <version>0.9.10</version>
+      </dependency>
+      <dependency>
         <groupId>com.googlecode.concurrent-locks</groupId>
         <artifactId>concurrent-locks</artifactId>
         <version>1.0.0</version>
