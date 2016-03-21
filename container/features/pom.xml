@@ -172,6 +172,7 @@
             <feature>commons-lang</feature>
             <feature>commons-net</feature>
             <feature>dnsjava</feature>
+            <feature>dropwizard-metrics</feature>
             <feature>fop</feature>
             <feature>guava</feature>
             <feature>hibernate36</feature>
@@ -181,6 +182,7 @@
             <feature>jolokia</feature>
             <feature>jrobin</feature>
             <feature>json-lib</feature>
+            <feature>lmax-disruptor</feature>
             <!--
             <feature>opennms-activemq-config</feature>
             <feature>opennms-activemq</feature>

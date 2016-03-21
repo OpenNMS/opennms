@@ -76,8 +76,8 @@
     <!-- need to override camel-elasticsearch because it pulls an elasticsearch version that does not work -->
     <feature name='onms-camel-elasticsearch' version='${camelVersion}' resolver='(obr)' start-level='50'>
       <feature version='${camelVersion}'>camel-core</feature>
+      <feature>guava</feature>
       <feature>http</feature>
-      <bundle dependency='true'>mvn:com.google.guava/guava/17.0</bundle>
       <bundle dependency='true'>mvn:com.google.protobuf/protobuf-java/2.5.0</bundle>
       <bundle dependency='true'>mvn:com.fasterxml.jackson.core/jackson-core/2.4.1</bundle>
       <bundle dependency='true'>mvn:com.fasterxml.jackson.dataformat/jackson-dataformat-smile/2.4.1</bundle>
@@ -97,11 +97,13 @@
       <feature>camel-core</feature>
       <feature>camel-blueprint</feature>
       <feature>camel-http</feature>
+      <feature>guava</feature>
 
       <feature>onms-camel-elasticsearch</feature>
       <feature>opennms-core-camel</feature>
+      <!-- TODO -->
+      <!-- <feature>opennms-alarm-api</feature> -->
 
-      <bundle>mvn:com.google.guava/guava/17.0</bundle>
       <bundle>mvn:org.opennms.features.elasticsearch/org.opennms.features.elasticsearch.event-forwarder/${project.version}</bundle>
     </feature>
 
@@ -243,8 +245,10 @@
     <feature name="hibernate36" description="Hibernate :: Hibernate ORM" version="3.6.10.Final">
       <bundle dependency="true">wrap:mvn:antlr/antlr/2.7.7</bundle>
       <bundle dependency="true">wrap:mvn:dom4j/dom4j/1.6.1</bundle>
-      <bundle dependency="true">wrap:mvn:javax.transaction/jta/1.1</bundle>
+      <!-- Use geronimo-jta_1.1_spec instead of javax.transaction because the Apache projects use it -->
+      <!-- <bundle dependency="true">wrap:mvn:javax.transaction/jta/1.1</bundle> -->
       <bundle dependency="true">mvn:commons-collections/commons-collections/3.2.2</bundle>
+      <bundle dependency="true">mvn:org.apache.geronimo.specs/geronimo-jta_1.1_spec/1.1.1</bundle>
       <bundle>wrap:mvn:org.hibernate.javax.persistence/hibernate-jpa-2.0-api/1.0.1.Final</bundle>
       <bundle>wrap:mvn:org.hibernate/hibernate-core/3.6.10.Final$Export-Package=org.hibernate*;version="3.6.10"</bundle>
       <bundle>wrap:mvn:org.hibernate/hibernate-commons-annotations/3.2.0.Final</bundle>
@@ -255,6 +259,10 @@
       <bundle dependency="true">wrap:mvn:javax.validation/validation-api/1.0.0.GA$Bundle-SymbolicName=javax.validation:validation-api&amp;Bundle-Version=1.0.0&amp;Export-Package=javax.validation;version="1.0.0",javax.validation.bootstrap;version="1.0.0",javax.validation.constraints;version="1.0.0",javax.validation.groups;version="1.0.0",javax.validation.metadata;version="1.0.0",javax.validation.spi;version="1.0.0"</bundle>
       <bundle>wrap:mvn:org.hibernate/hibernate-validator-annotation-processor/4.1.0.Final</bundle>
       <bundle>wrap:mvn:org.hibernate/hibernate-validator/4.1.0.Final</bundle>
+    </feature>
+
+    <feature name="javax.mail" description="javax.mail" version="1.4.5">
+      <bundle>wrap:mvn:javax.mail/mail/1.4.5</bundle>
     </feature>
 
     <!-- This feature contains all of the dependencies from the dependencies/jaxb/pom.xml -->
@@ -309,6 +317,10 @@
     <feature name="postgresql" description="PostgreSQL :: JDBC Driver" version="${postgresqlVersion}">
       <bundle dependency="true">mvn:org.apache.geronimo.specs/geronimo-jta_1.1_spec/1.1.1</bundle>
       <bundle>wrap:mvn:org.postgresql/postgresql/${postgresqlVersion}</bundle>
+    </feature>
+
+    <feature name="snmp4j" description="SNMP4J" version="2.3.1">
+      <bundle>wrap:mvn:org.snmp4j/snmp4j/2.3.1</bundle>
     </feature>
 
     <feature name="spring-security32" description="Spring :: Security" version="${springSecurityVersion}">
@@ -418,6 +430,7 @@
       <feature>dnsjava</feature>
       <feature>hibernate36</feature>
       <feature>jaxb</feature>
+      <feature>snmp4j</feature>
 
       <feature>opennms-core</feature>
       <feature>opennms-events-api</feature>
@@ -503,6 +516,7 @@
       <feature>opennms-dao-api</feature>
       <!-- Parent Spring context -->
       <feature>opennms-core-daemon</feature>
+      <feature>opennms-measurements-api</feature>
 
       <bundle>mvn:org.opennms/opennms-dao/${project.version}</bundle>
     </feature>
@@ -593,6 +607,12 @@
     </feature>
 
     <feature name="opennms-javamail" description="OpenNMS :: Javamail" version="${project.version}">
+      <feature>commons-lang</feature>
+      <feature>javax.mail</feature>
+
+      <feature>opennms-core</feature>
+      <feature>opennms-config-api</feature>
+
       <bundle>mvn:org.opennms/opennms-javamail-api/${project.version}</bundle>
     </feature>
 
@@ -604,6 +624,15 @@
       <feature>opennms-core</feature>
 
       <bundle>mvn:org.opennms.features.poller/org.opennms.features.poller.api/${project.version}</bundle>
+    </feature>
+
+    <feature name="opennms-measurements-api" description="OpenNMS :: Measurements :: API" version="${project.version}">
+      <feature version="[4.0,4.1)">spring</feature>
+
+      <feature>commons-lang</feature>
+      <feature>guava</feature>
+
+      <bundle>mvn:org.opennms.features.measurements/org.opennms.features.measurements.api/${project.version}</bundle>
     </feature>
 
     <feature name="opennms-provisioning" description="OpenNMS :: Provisioning" version="${project.version}">
@@ -659,6 +688,8 @@
 
     <feature name="opennms-snmp" description="OpenNMS :: Core :: SNMP" version="${project.version}">
       <feature>org.json</feature>
+      <feature>snmp4j</feature>
+
       <bundle>mvn:org.opennms.core.snmp/org.opennms.core.snmp.api/${project.version}</bundle>
       <bundle>mvn:org.opennms.core.snmp/org.opennms.core.snmp.commands/${project.version}</bundle>
       <bundle>wrap:mvn:org.snmp4j/snmp4j/${snmp4jVersion}</bundle>
