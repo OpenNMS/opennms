@@ -156,7 +156,8 @@ public class UsageStatisticsReporter implements StateChangeHandler {
         try {
             usageStatisticsReport.setSystemId(m_stateManager.getOrGenerateSystemId());
         } catch (IOException e) {
-            LOG.warn("An error occurred while retrieving the system id.", e);
+            LOG.warn("An error occurred while retrieving the system id. " +
+                        "The usage report will be submitted with a null system id.", e);
         }
         // Operating System
         usageStatisticsReport.setOsName(System.getProperty("os.name"));
