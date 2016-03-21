@@ -932,11 +932,15 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
         //all the topology will be merged with the segment for bridge designated port
         SharedSegment topsegment = m_domain.getSharedSegment(bridge.getId(), bridge.getRootPort());
         if (topsegment != null) {
+            LOG.debug("calculate: clearTopologyForBridge: removing {} : top segment nodes {}, macs {}",
+                      bridge.getId(),topsegment.getBridgeIdsOnSegment(),topsegment.getMacsOnSegment());
+                LOG.debug("calculate: clearTopologyForBridge: removing {}: top segment designated {}, port {}",
+                      bridge.getId(),topsegment.getDesignatedBridge(),topsegment.getDesignatedPort());
             topsegment.removeBridge(bridge.getId());
-            LOG.debug("calculate: clearTopologyForBridge {} : top segment nodes {}, macs {}",
-                  bridge.getId(),topsegment.getBridgeIdsOnSegment(),topsegment.getMacsOnSegment());
-            LOG.debug("calculate: clearTopologyForBridge {}: top segment designated {}, port {}",
-                  bridge.getId(),topsegment.getDesignatedBridge(),topsegment.getDesignatedPort());
+            LOG.debug("calculate: clearTopologyForBridge: removed {} : top segment nodes {}, macs {}",
+                      bridge.getId(),topsegment.getBridgeIdsOnSegment(),topsegment.getMacsOnSegment());
+            LOG.debug("calculate: clearTopologyForBridge: removed {}: top segment designated {}, port {}",
+                      bridge.getId(),topsegment.getDesignatedBridge(),topsegment.getDesignatedPort());
         } else {
             LOG.debug("calculate: clearTopologyForBridge {} : no top segment found",
                       bridge.getId());
