@@ -40,6 +40,7 @@ import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.bsm.persistence.api.BusinessServiceChildEdgeEntity;
 import org.opennms.netmgt.bsm.persistence.api.BusinessServiceEntity;
+import org.opennms.netmgt.bsm.persistence.api.EdgeEntityVisitor;
 import org.opennms.netmgt.bsm.persistence.api.IPServiceEdgeEntity;
 import org.opennms.netmgt.bsm.persistence.api.ReductionKeyHelper;
 import org.opennms.netmgt.bsm.persistence.api.SingleReductionKeyEdgeEntity;
@@ -58,13 +59,12 @@ import org.opennms.web.rest.api.ResourceLocationFactory;
 import org.opennms.web.rest.v2.bsm.model.BusinessServiceRequestDTO;
 import org.opennms.web.rest.v2.bsm.model.BusinessServiceResponseDTO;
 import org.opennms.web.rest.v2.bsm.model.MapFunctionDTO;
-import org.opennms.web.rest.v2.bsm.model.MapFunctionType;
 import org.opennms.web.rest.v2.bsm.model.ReduceFunctionDTO;
-import org.opennms.web.rest.v2.bsm.model.ReduceFunctionType;
 import org.opennms.web.rest.v2.bsm.model.edge.ChildEdgeResponseDTO;
 import org.opennms.web.rest.v2.bsm.model.edge.IpServiceEdgeResponseDTO;
 import org.opennms.web.rest.v2.bsm.model.edge.IpServiceResponseDTO;
 import org.opennms.web.rest.v2.bsm.model.edge.ReductionKeyEdgeResponseDTO;
+import org.opennms.web.rest.v2.bsm.model.meta.FunctionsManager;
 
 import com.google.common.base.Throwables;
 import com.google.common.collect.Sets;
@@ -80,35 +80,49 @@ public class BsmTestUtils {
         request.setName(input.getName());
         request.setAttributes(new HashMap<>(input.getAttributes()));
         request.setReduceFunction(transform(input.getReductionFunction()));
-        input.getChildEdges().forEach(e -> request.addChildService(
-                e.getChild().getId(),
-                transform(e.getMapFunction()),
-                e.getWeight()));
-        input.getIpServiceEdges().forEach(e -> request.addIpService(
-                e.getIpService().getId(),
-                transform(e.getMapFunction()),
-                e.getWeight(),
-                e.getFriendlyName()));
-        input.getReductionKeyEdges().forEach(e -> request.addReductionKey(
-                e.getReductionKey(),
-                transform(e.getMapFunction()),
-                e.getWeight(),
-                e.getFriendlyName()));
+        input.getEdges().forEach(eachEdge -> eachEdge.accept(new EdgeEntityVisitor<Void>() {
+            @Override
+            public Void visit(BusinessServiceChildEdgeEntity edgeEntity) {
+                request.addChildService(
+                        edgeEntity.getChild().getId(),
+                        transform(edgeEntity.getMapFunction()),
+                        edgeEntity.getWeight());
+                return null;
+            }
+
+            @Override
+            public Void visit(SingleReductionKeyEdgeEntity edgeEntity) {
+                request.addReductionKey(
+                        edgeEntity.getReductionKey(),
+                        transform(edgeEntity.getMapFunction()),
+                        edgeEntity.getWeight(),
+                        edgeEntity.getFriendlyName());
+                return null;
+            }
+
+            @Override
+            public Void visit(IPServiceEdgeEntity edgeEntity) {
+                request.addIpService(
+                        edgeEntity.getIpService().getId(),
+                        transform(edgeEntity.getMapFunction()),
+                        edgeEntity.getWeight(),
+                        edgeEntity.getFriendlyName());
+                return null;
+            }
+        }));
         return request;
     }
 
     public static ReduceFunctionDTO transform(AbstractReductionFunctionEntity input) {
         Objects.requireNonNull(input);
         ReductionFunction reductionFunction = new ReduceFunctionMapper().toServiceFunction(input);
-        ReduceFunctionType type = ReduceFunctionType.valueOf(reductionFunction.getClass());
-        return type.toDTO(reductionFunction);
+        return new FunctionsManager().getReduceFunctionDTO(reductionFunction);
     }
 
     private static MapFunctionDTO transform(AbstractMapFunctionEntity input) {
         Objects.requireNonNull(input);
         MapFunction mapFunction = new MapFunctionMapper().toServiceFunction(input);
-        MapFunctionType type = MapFunctionType.valueOf(mapFunction.getClass());
-        return type.toDTO(mapFunction);
+        return new FunctionsManager().getMapFunctionDTO(mapFunction);
     }
 
     public static BusinessServiceResponseDTO toResponseDto(BusinessServiceEntity input) {

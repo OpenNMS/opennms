@@ -26,30 +26,33 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.web.rest.v2.bsm.model;
+package org.opennms.web.rest.v2.bsm.model.meta;
 
 import java.util.List;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-@XmlRootElement(name = "reduce-functions")
-public class ReduceFunctionListDTO {
-    private List<ReduceFunctionDTO> functions;
+@XmlRootElement(name = "functions")
+@XmlAccessorType(XmlAccessType.NONE)
+public class FunctionMetaListDTO {
+    private List<FunctionMetaDTO> functions;
 
-    public ReduceFunctionListDTO() {
+    public FunctionMetaListDTO() {
     }
 
-    public ReduceFunctionListDTO(final List<ReduceFunctionDTO> functions) {
+    public FunctionMetaListDTO(final List<FunctionMetaDTO> functions) {
         this.functions = functions;
     }
 
-    @XmlElement(name = "reduce-function")
-    public List<ReduceFunctionDTO> getFunctions() {
+    @XmlElement(name = "function")
+    public List<FunctionMetaDTO> getFunctions() {
         return functions;
     }
 
-    public void setFunctions(List<ReduceFunctionDTO> functions) {
+    public void setFunctions(List<FunctionMetaDTO> functions) {
         this.functions = functions;
     }
 }

@@ -28,8 +28,6 @@
 
 package org.opennms.web.rest.v2.bsm.model.edge;
 
-import static org.opennms.web.rest.v2.bsm.model.TestHelper.createMapFunctionDTO;
-
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
@@ -39,7 +37,7 @@ import org.opennms.core.test.xml.MarshalAndUnmarshalTest;
 import org.opennms.netmgt.bsm.service.model.Status;
 import org.opennms.web.rest.api.ApiVersion;
 import org.opennms.web.rest.api.ResourceLocation;
-import org.opennms.web.rest.v2.bsm.model.MapFunctionType;
+import org.opennms.web.rest.v2.bsm.model.MapFunctionDTO;
 
 public class ReductionKeyEdgeResponseDTOMarshalTest extends MarshalAndUnmarshalTest<ReductionKeyEdgeResponseDTO> {
 
@@ -49,11 +47,15 @@ public class ReductionKeyEdgeResponseDTOMarshalTest extends MarshalAndUnmarshalT
 
     @Parameterized.Parameters
     public static Collection<Object[]> data() throws IOException {
+        MapFunctionDTO mapFunctionDTO = new MapFunctionDTO();
+        mapFunctionDTO.getProperties().put("key1", "value1");
+        mapFunctionDTO.setType("SetTo");
+
         ReductionKeyEdgeResponseDTO edge = new ReductionKeyEdgeResponseDTO();
         edge.setLocation(new ResourceLocation(ApiVersion.Version2, "business-services", "edges", "1"));
         edge.setReductionKey("my-custom-reduction-key");
         edge.setOperationalStatus(Status.WARNING);
-        edge.setMapFunction(createMapFunctionDTO(MapFunctionType.SetTo, new String[]{"key1", "value1"}));
+        edge.setMapFunction(mapFunctionDTO);
         edge.setId(1);
         edge.setWeight(17);
         edge.setFriendlyName("reduction-key-friendly-name");

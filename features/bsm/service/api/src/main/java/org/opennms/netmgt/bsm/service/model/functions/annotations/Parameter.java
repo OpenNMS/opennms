@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2015 The OpenNMS Group, Inc.
+ * Copyright (C) 2010-2015 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2015 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -26,33 +26,21 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.web.rest.v2.bsm.model;
+package org.opennms.netmgt.bsm.service.model.functions.annotations;
 
-import java.util.List;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-
-@XmlRootElement(name = "map-functions")
-@XmlAccessorType(XmlAccessType.NONE)
-public class MapFunctionListDTO {
-    private List<MapFunctionDTO> functions;
-
-    public MapFunctionListDTO() {
-    }
-
-    public MapFunctionListDTO(final List<MapFunctionDTO> functions) {
-        this.functions = functions;
-    }
-
-    @XmlElement(name = "map-function")
-    public List<MapFunctionDTO> getFunctions() {
-        return functions;
-    }
-
-    public void setFunctions(List<MapFunctionDTO> functions) {
-        this.functions = functions;
-    }
+/**
+ * Used to annotate parameters on functions.
+ */
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.FIELD)
+public @interface Parameter {
+    String key();
+    String description();
+    boolean required() default true;
+    String defaultValue() default "";
 }

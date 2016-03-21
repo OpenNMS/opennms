@@ -32,21 +32,21 @@ import java.util.Objects;
 import java.util.Optional;
 
 import org.opennms.netmgt.bsm.service.model.Status;
+import org.opennms.netmgt.bsm.service.model.functions.annotations.Function;
+import org.opennms.netmgt.bsm.service.model.functions.annotations.Parameter;
 
+@Function(name="SetTo", description = "Sets the status to a defined value")
 public class SetTo implements MapFunction {
 
-    private Integer m_severity;
+    @Parameter(key="status", description="The status value to set the status to")
+    private Status m_severity;
 
     public void setStatus(Status severity) {
-        m_severity = Objects.requireNonNull(severity).getId();
+        m_severity = Objects.requireNonNull(severity);
     }
 
     public Status getStatus() {
-        if (m_severity == null) {
-            return null;
-        } else {
-            return Status.get(m_severity);
-        }
+        return m_severity;
     }
 
     @Override

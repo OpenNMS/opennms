@@ -114,8 +114,10 @@ The whole model is defined in `jetty-webapps/opennms/WEB-INF/lib/org.opennms.fea
 | `/opennms/api/v2/business-services`                           | Provides a brief list of all defined _Business Services_
 | `/opennms/api/v2/business-services/{id}`                      | Returns the _Business Service_ identified by `id` included the current operational state
 | `/opennms/api/v2/business-services/egdes/{edgeId}`            | Returns the edge of the _Business Service_ identified by `edgeId`
-| `/opennms/api/v2/business-services/functions/map`             | Provides a list of the available _Map Functions_
-| `/opennms/api/v2/business-services/functions/reduce`          | Provides a list of the available _Reduce Functions_
+| `/opennms/api/v2/business-services/functions/map`             | Provides a list of supported _Map Function_ definitions
+| `/opennms/api/v2/business-services/functions/map/{name}`      | Returns the definition of the _Map Function_ identified by `name`
+| `/opennms/api/v2/business-services/functions/reduce/`         | Provides a list of supported _Reduce Function_ definitions
+| `/opennms/api/v2/business-services/functions/reduce/{name}`   | Returns the definition of the _Reduce Function_ identified by `name`
 |===
 
 ===== PUTs (Modifying Data)
@@ -146,4 +148,3 @@ The whole model is defined in `jetty-webapps/opennms/WEB-INF/lib/org.opennms.fea
 | `/opennms/api/v2/business-services/{id}`                | Deletes the _Business Service_ identified by `id`
 | `/opennms/api/v2/business-services/{id}/edges/{edgeId}` | Removes an edge with the identifier `edgeId` from the _Business Service_ identified by `id`
 |===
-

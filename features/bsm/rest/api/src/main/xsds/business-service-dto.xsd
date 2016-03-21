@@ -15,11 +15,9 @@
 
   <xs:element name="map-function" type="bs:mapFunctionDTO"/>
 
-  <xs:element name="map-functions" type="bs:mapFunctionListDTO"/>
+  <xs:element name="functions" type="bs:functionMetaListDTO"/>
 
   <xs:element name="reduce-function" type="bs:reduceFunctionDTO"/>
-
-  <xs:element name="reduce-functions" type="bs:reduceFunctionListDTO"/>
 
   <xs:element name="attribute" type="bs:jaxbMapEntry"/>
 
@@ -80,7 +78,7 @@
 
   <xs:complexType name="mapFunctionDTO">
     <xs:sequence>
-      <xs:element name="type" type="bs:mapFunctionType"/>
+      <xs:element name="type" type="xs:string"/>
       <xs:element name="properties">
         <xs:complexType>
           <xs:sequence>
@@ -121,7 +119,7 @@
 
   <xs:complexType name="reduceFunctionDTO">
     <xs:sequence>
-      <xs:element name="type" type="bs:reduceFunctionType"/>
+      <xs:element name="type" type="xs:string"/>
       <xs:element name="properties">
         <xs:complexType>
           <xs:sequence>
@@ -235,34 +233,28 @@
     </xs:complexContent>
   </xs:complexType>
 
-  <xs:complexType name="mapFunctionListDTO">
+  <xs:complexType name="functionMetaDTO">
     <xs:sequence>
-      <xs:element maxOccurs="unbounded" minOccurs="0" name="map-function" type="bs:mapFunctionDTO"/>
+      <xs:element maxOccurs="unbounded" minOccurs="0" name="parameter" type="bs:parameterMetaDTO"/>
     </xs:sequence>
+    <xs:attribute name="type" type="bs:functionType"/>
+    <xs:attribute name="name" type="xs:string" use="required"/>
+    <xs:attribute name="description" type="xs:string"/>
   </xs:complexType>
 
-  <xs:complexType name="reduceFunctionListDTO">
-    <xs:sequence>
-      <xs:element maxOccurs="unbounded" minOccurs="0" name="reduce-function" type="bs:reduceFunctionDTO"/>
-    </xs:sequence>
+  <xs:complexType name="parameterMetaDTO">
+    <xs:sequence/>
+    <xs:attribute name="key" type="xs:string" use="required"/>
+    <xs:attribute name="type" type="xs:string" use="required"/>
+    <xs:attribute name="description" type="xs:string" use="required"/>
+    <xs:attribute name="required" type="xs:boolean" use="required"/>
   </xs:complexType>
 
-  <xs:simpleType name="mapFunctionType">
-    <xs:restriction base="xs:string">
-      <xs:enumeration value="Increase"/>
-      <xs:enumeration value="Ignore"/>
-      <xs:enumeration value="Identity"/>
-      <xs:enumeration value="Decrease"/>
-      <xs:enumeration value="SetTo"/>
-    </xs:restriction>
-  </xs:simpleType>
-
-  <xs:simpleType name="reduceFunctionType">
-    <xs:restriction base="xs:string">
-      <xs:enumeration value="Threshold"/>
-      <xs:enumeration value="HighestSeverity"/>
-    </xs:restriction>
-  </xs:simpleType>
+  <xs:complexType name="functionMetaListDTO">
+    <xs:sequence>
+      <xs:element maxOccurs="unbounded" minOccurs="0" name="function" type="bs:functionMetaDTO"/>
+    </xs:sequence>
+  </xs:complexType>
 
   <xs:complexType name="jaxbMap">
     <xs:sequence>
@@ -296,6 +288,13 @@
     <xs:restriction base="xs:string">
       <xs:minLength value="0"/>
       <xs:maxLength value="30"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="functionType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="MapFunction"/>
+      <xs:enumeration value="ReduceFunction"/>
     </xs:restriction>
   </xs:simpleType>
 </xs:schema>
