@@ -28,6 +28,7 @@
 
 package org.opennms.web.rest.v2.bsm.model;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -37,8 +38,11 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
+import org.codehaus.jackson.annotate.JsonIgnore;
+import org.opennms.web.rest.v2.bsm.model.edge.AbstractEdgeRequestDTO;
 import org.opennms.web.rest.v2.bsm.model.edge.ChildEdgeRequestDTO;
 import org.opennms.web.rest.v2.bsm.model.edge.IpServiceEdgeRequestDTO;
 import org.opennms.web.rest.v2.bsm.model.edge.ReductionKeyEdgeRequestDTO;
@@ -193,5 +197,15 @@ public class BusinessServiceRequestDTO {
         edge.setWeight(weight);
         edge.setFriendlyName(friendlyName);
         getIpServices().add(edge);
+    }
+
+    @XmlTransient
+    @JsonIgnore
+    public List<AbstractEdgeRequestDTO> getEdges() {
+        List<AbstractEdgeRequestDTO> edges = new ArrayList<>();
+        edges.addAll(getChildServices());
+        edges.addAll(getIpServices());
+        edges.addAll(getReductionKeys());
+        return edges;
     }
 }

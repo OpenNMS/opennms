@@ -38,6 +38,8 @@ import java.util.Collection;
 import org.junit.runners.Parameterized;
 import org.opennms.core.test.xml.MarshalAndUnmarshalTest;
 import org.opennms.netmgt.bsm.service.model.Status;
+import org.opennms.netmgt.bsm.service.model.functions.map.Ignore;
+import org.opennms.netmgt.bsm.service.model.functions.reduce.HighestSeverity;
 import org.opennms.web.rest.api.ApiVersion;
 import org.opennms.web.rest.api.ResourceLocation;
 import org.opennms.web.rest.v2.bsm.model.edge.ChildEdgeResponseDTO;
@@ -55,14 +57,14 @@ public class BusinessServiceResponseDTOMarshalTest extends MarshalAndUnmarshalTe
 
     @Parameterized.Parameters
     public static Collection<Object[]> data() throws IOException {
-        final MapFunctionDTO ignoreDto = createMapFunctionDTO(MapFunctionType.Ignore);
+        final MapFunctionDTO ignoreDto = createMapFunctionDTO(new Ignore());
         final BusinessServiceResponseDTO bs = new BusinessServiceResponseDTO();
         bs.setId(1L);
         bs.setName("Web Servers");
         bs.addAttribute("dc", "RDU");
         bs.setLocation(new ResourceLocation(ApiVersion.Version2, "business-services", "1"));
         bs.setOperationalStatus(Status.CRITICAL);
-        bs.setReduceFunction(createReduceFunctionDTO(ReduceFunctionType.HighestSeverity));
+        bs.setReduceFunction(createReduceFunctionDTO(new HighestSeverity()));
         bs.getReductionKeys().add(createReductionKeyEdgeResponse(1L, "myReductionKeyA", ignoreDto, Status.CRITICAL, new ResourceLocation(ApiVersion.Version2, "test/1"), "reduction-key-a-friendly-name"));
         bs.getReductionKeys().add(createReductionKeyEdgeResponse(2L, "myReductionKeyB", ignoreDto, Status.NORMAL, new ResourceLocation(ApiVersion.Version2, "test/2"), "reduction-key-b-friendly-name"));
         bs.getChildren().add(createChildEdgeResponse(3L, 2L, ignoreDto, Status.MAJOR, new ResourceLocation(ApiVersion.Version2, "test/3")));

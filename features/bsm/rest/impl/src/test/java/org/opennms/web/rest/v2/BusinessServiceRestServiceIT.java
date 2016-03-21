@@ -59,9 +59,12 @@ import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.test.rest.AbstractSpringJerseyRestTestCase;
+import org.opennms.netmgt.bsm.persistence.api.BusinessServiceChildEdgeEntity;
 import org.opennms.netmgt.bsm.persistence.api.BusinessServiceDao;
 import org.opennms.netmgt.bsm.persistence.api.BusinessServiceEdgeEntity;
 import org.opennms.netmgt.bsm.persistence.api.BusinessServiceEntity;
+import org.opennms.netmgt.bsm.persistence.api.EdgeEntityVisitor;
+import org.opennms.netmgt.bsm.persistence.api.IPServiceEdgeEntity;
 import org.opennms.netmgt.bsm.persistence.api.SingleReductionKeyEdgeEntity;
 import org.opennms.netmgt.bsm.persistence.api.functions.map.IdentityEntity;
 import org.opennms.netmgt.bsm.persistence.api.functions.map.IgnoreEntity;
@@ -71,6 +74,7 @@ import org.opennms.netmgt.bsm.persistence.api.functions.reduce.HighestSeverityAb
 import org.opennms.netmgt.bsm.persistence.api.functions.reduce.HighestSeverityEntity;
 import org.opennms.netmgt.bsm.service.model.Status;
 import org.opennms.netmgt.bsm.service.model.edge.Edge;
+import org.opennms.netmgt.bsm.service.model.functions.map.Identity;
 import org.opennms.netmgt.bsm.service.model.functions.map.Ignore;
 import org.opennms.netmgt.bsm.test.hierarchies.BambooTestHierarchy;
 import org.opennms.netmgt.bsm.test.BsmDatabasePopulator;
@@ -84,20 +88,18 @@ import org.opennms.web.rest.v2.bsm.model.BusinessServiceListDTO;
 import org.opennms.web.rest.v2.bsm.model.BusinessServiceRequestDTO;
 import org.opennms.web.rest.v2.bsm.model.BusinessServiceResponseDTO;
 import org.opennms.web.rest.v2.bsm.model.MapFunctionDTO;
-import org.opennms.web.rest.v2.bsm.model.MapFunctionListDTO;
-import org.opennms.web.rest.v2.bsm.model.MapFunctionType;
-import org.opennms.web.rest.v2.bsm.model.ReduceFunctionDTO;
-import org.opennms.web.rest.v2.bsm.model.ReduceFunctionListDTO;
 import org.opennms.web.rest.v2.bsm.model.edge.ChildEdgeRequestDTO;
 import org.opennms.web.rest.v2.bsm.model.edge.IpServiceEdgeRequestDTO;
 import org.opennms.web.rest.v2.bsm.model.edge.ReductionKeyEdgeRequestDTO;
+import org.opennms.web.rest.v2.bsm.model.meta.FunctionMetaDTO;
+import org.opennms.web.rest.v2.bsm.model.meta.FunctionMetaListDTO;
+import org.opennms.web.rest.v2.bsm.model.meta.FunctionsManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
@@ -163,9 +165,7 @@ public class BusinessServiceRestServiceIT extends AbstractSpringJerseyRestTestCa
 
         // The Request to send to create an edge
         IpServiceEdgeRequestDTO edgeRequestDTO = new IpServiceEdgeRequestDTO();
-        MapFunctionDTO mapFunctionDTO = new MapFunctionDTO();
-        mapFunctionDTO.setType(MapFunctionType.Identity);
-        edgeRequestDTO.setMapFunction(mapFunctionDTO);
+        edgeRequestDTO.setMapFunction(new FunctionsManager().getMapFunctionDTO(new Identity()));
 
         // verify adding of not existing ip service is not possible
         edgeRequestDTO.setIpServiceId(-1);
@@ -203,9 +203,7 @@ public class BusinessServiceRestServiceIT extends AbstractSpringJerseyRestTestCa
 
         // The Request to send to create the edge
         ChildEdgeRequestDTO edgeRequestDTO = new ChildEdgeRequestDTO();
-        MapFunctionDTO mapFunctionDTO = new MapFunctionDTO();
-        mapFunctionDTO.setType(MapFunctionType.Identity);
-        edgeRequestDTO.setMapFunction(mapFunctionDTO);
+        edgeRequestDTO.setMapFunction(new FunctionsManager().getMapFunctionDTO(new Identity()));
 
         // verify adding of not existing ip parentEntity is not possible
         edgeRequestDTO.setChildId(-1L);
@@ -233,9 +231,7 @@ public class BusinessServiceRestServiceIT extends AbstractSpringJerseyRestTestCa
 
         // The Request to send to create an edge
         ReductionKeyEdgeRequestDTO edgeRequestDTO = new ReductionKeyEdgeRequestDTO();
-        MapFunctionDTO mapFunctionDTO = new MapFunctionDTO();
-        mapFunctionDTO.setType(MapFunctionType.Identity);
-        edgeRequestDTO.setMapFunction(mapFunctionDTO);
+        edgeRequestDTO.setMapFunction(new FunctionsManager().getMapFunctionDTO(new Identity()));
 
         // verify adding of existing ip service is possible
         edgeRequestDTO.setReductionKey("1st reduction key");
@@ -546,7 +542,7 @@ public class BusinessServiceRestServiceIT extends AbstractSpringJerseyRestTestCa
         requestDTO.setName("New Name");
         requestDTO.getAttributes().put("key", "value");
         requestDTO.getReductionKeys().clear();
-        requestDTO.addReductionKey("key1updated", MapFunctionType.Ignore.toDTO(new Ignore()), Edge.DEFAULT_WEIGHT);
+        requestDTO.addReductionKey("key1updated", new FunctionsManager().getMapFunctionDTO(new Ignore()), Edge.DEFAULT_WEIGHT);
 
         // TODO JSON cannot be de-serialized by the rest service. Fix me.
 //        sendData(PUT, MediaType.APPLICATION_JSON, "/business-services/" + serviceId, toJson(requestDTO), 204);
@@ -566,11 +562,19 @@ public class BusinessServiceRestServiceIT extends AbstractSpringJerseyRestTestCa
 
     @Test
     public void verifyListFunctions() throws Exception {
-        List<MapFunctionDTO> mapFunctions = getXmlObject(JAXBContext.newInstance(MapFunctionListDTO.class), "/business-services/functions/map", 200, MapFunctionListDTO.class).getFunctions();
-        List<ReduceFunctionDTO> reduceFunctions = getXmlObject(JAXBContext.newInstance(ReduceFunctionListDTO.class), "/business-services/functions/reduce", 200, ReduceFunctionListDTO.class).getFunctions();
-
+        List<FunctionMetaDTO> mapFunctions = getXmlObject(JAXBContext.newInstance(FunctionMetaListDTO.class), "/business-services/functions/map", 200, FunctionMetaListDTO.class).getFunctions();
         Assert.assertEquals(5, mapFunctions.size());
+        for (FunctionMetaDTO eachFunction : mapFunctions) {
+            FunctionMetaDTO manuallyRead = getXmlObject(JAXBContext.newInstance(FunctionMetaDTO.class), "/business-services/functions/map/" + eachFunction.getName(), 200, FunctionMetaDTO.class);
+            Assert.assertEquals(eachFunction, manuallyRead);
+        }
+
+        List<FunctionMetaDTO> reduceFunctions = getXmlObject(JAXBContext.newInstance(FunctionMetaListDTO.class), "/business-services/functions/reduce", 200, FunctionMetaListDTO.class).getFunctions();
         Assert.assertEquals(3, reduceFunctions.size());
+        for (FunctionMetaDTO eachFunction : reduceFunctions) {
+            FunctionMetaDTO manuallyRead = getXmlObject(JAXBContext.newInstance(FunctionMetaDTO.class), "/business-services/functions/reduce/" + eachFunction.getName(), 200, FunctionMetaDTO.class);
+            Assert.assertEquals(eachFunction, manuallyRead);
+        }
     }
 
     @Test

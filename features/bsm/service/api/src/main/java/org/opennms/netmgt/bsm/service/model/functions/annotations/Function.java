@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012-2016 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2010-2015 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2015 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,24 +26,19 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.bsm.service.model.functions.reduce;
+package org.opennms.netmgt.bsm.service.model.functions.annotations;
 
-import java.util.List;
-import java.util.Optional;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-import org.opennms.netmgt.bsm.service.model.Status;
-import org.opennms.netmgt.bsm.service.model.functions.annotations.Function;
-
-@Function(name="HighestSeverity", description = "Uses the value of the highest severity")
-public class HighestSeverity implements ReductionFunction {
-
-    @Override
-    public Optional<Status> reduce(List<Status> statuses) {
-        return statuses.stream().reduce((a, b) -> a.isGreaterThan(b) ? a : b);
-    }
-
-    @Override
-    public <T> T accept(ReduceFunctionVisitor<T> visitor) {
-        return visitor.visit(this);
-    }
+/**
+ * General function meta data.
+ */
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.TYPE)
+public @interface Function {
+    String name();
+    String description() default "";
 }

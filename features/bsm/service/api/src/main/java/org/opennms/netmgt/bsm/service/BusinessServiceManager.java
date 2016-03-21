@@ -83,10 +83,6 @@ public interface BusinessServiceManager extends NodeManager {
 
     Set<BusinessService> getParentServices(Long id);
 
-    List<MapFunction> listMapFunctions();
-
-    List<ReductionFunction> listReduceFunctions();
-
     void setChildEdges(BusinessService parentService, Set<ChildEdge> childEdges);
 
     boolean addChildEdge(BusinessService parent, BusinessService child, MapFunction mapFunction, int weight);

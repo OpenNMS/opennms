@@ -33,9 +33,13 @@ import java.util.Objects;
 import java.util.Optional;
 
 import org.opennms.netmgt.bsm.service.model.Status;
+import org.opennms.netmgt.bsm.service.model.functions.annotations.Function;
+import org.opennms.netmgt.bsm.service.model.functions.annotations.Parameter;
 
+@Function(name="HighestSeverityAbove", description = "Uses the highest severity only if it is greater or equal than the given threshold severity")
 public class HighestSeverityAbove implements ReductionFunction {
 
+    @Parameter(key="threshold", description = "The status value to use as threshold")
     private Status threshold;
 
     @Override

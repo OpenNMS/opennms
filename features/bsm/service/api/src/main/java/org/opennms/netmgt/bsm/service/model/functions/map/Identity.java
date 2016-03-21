@@ -31,7 +31,9 @@ package org.opennms.netmgt.bsm.service.model.functions.map;
 import java.util.Optional;
 
 import org.opennms.netmgt.bsm.service.model.Status;
+import org.opennms.netmgt.bsm.service.model.functions.annotations.Function;
 
+@Function(name="Identity", description = "Use the status as is")
 public class Identity implements MapFunction {
     @Override
     public Optional<Status> map(Status source) {

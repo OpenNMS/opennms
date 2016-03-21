@@ -37,6 +37,10 @@ import java.util.Collection;
 
 import org.junit.runners.Parameterized;
 import org.opennms.core.test.xml.MarshalAndUnmarshalTest;
+import org.opennms.netmgt.bsm.service.model.Status;
+import org.opennms.netmgt.bsm.service.model.functions.map.Increase;
+import org.opennms.netmgt.bsm.service.model.functions.map.SetTo;
+import org.opennms.netmgt.bsm.service.model.functions.reduce.HighestSeverity;
 
 public class BusinessServiceRequestDTOMarshalTest extends MarshalAndUnmarshalTest<BusinessServiceRequestDTO> {
 
@@ -46,10 +50,13 @@ public class BusinessServiceRequestDTOMarshalTest extends MarshalAndUnmarshalTes
 
     @Parameterized.Parameters
     public static Collection<Object[]> data() throws IOException {
-        final MapFunctionDTO increaseDto = createMapFunctionDTO(MapFunctionType.Increase);
-        final MapFunctionDTO setToDto = createMapFunctionDTO(MapFunctionType.SetTo, new String[]{"status", "Critical"});
+        final SetTo setTo = new SetTo();
+        setTo.setStatus(Status.CRITICAL);
+
+        final MapFunctionDTO increaseDto = createMapFunctionDTO(new Increase());
+        final MapFunctionDTO setToDto = createMapFunctionDTO(setTo);
         final BusinessServiceRequestDTO requestDTO = new BusinessServiceRequestDTO();
-        requestDTO.setReduceFunction(createReduceFunctionDTO(ReduceFunctionType.MostCritical));
+        requestDTO.setReduceFunction(createReduceFunctionDTO(new HighestSeverity()));
         requestDTO.setName("Web Servers");
         requestDTO.addAttribute("dc", "RDU");
         requestDTO.addAttribute("some-key", "some-value");

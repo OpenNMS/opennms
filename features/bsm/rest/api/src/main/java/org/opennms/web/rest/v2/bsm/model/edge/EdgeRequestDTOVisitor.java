@@ -21,48 +21,18 @@
  *      http://www.gnu.org/licenses/
  *
  * For more information contact:
- * OpenNMS(R) Licensing <license@opennms.org>
- *      http://www.opennms.org/
- *      http://www.opennms.com/
+ *     OpenNMS(R) Licensing <license@opennms.org>
+ *     http://www.opennms.org/
+ *     http://www.opennms.com/
  *******************************************************************************/
 
 package org.opennms.web.rest.v2.bsm.model.edge;
 
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
+public interface EdgeRequestDTOVisitor {
 
-@XmlRootElement(name="child-edge")
-public class ChildEdgeRequestDTO extends AbstractEdgeRequestDTO {
+    void visit(IpServiceEdgeRequestDTO ipEdge);
 
-    private Long childId;
+    void visit(ChildEdgeRequestDTO childEdge);
 
-    @XmlElement(name="child-id",required = true)
-    public Long getChildId() {
-        return childId;
-    }
-
-    public void setChildId(Long childId) {
-        this.childId = childId;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (obj == null) { return false; }
-        if (!(obj instanceof ChildEdgeRequestDTO)) { return false; }
-        if (!super.equals(obj)) {
-            return false;
-        }
-        // compare subclass fields
-        return java.util.Objects.equals(childId, ((ChildEdgeRequestDTO) obj).childId);
-    }
-
-    @Override
-    public int hashCode() {
-        return super.hashCode() + java.util.Objects.hash(childId);
-    }
-
-    @Override
-    public void accept(EdgeRequestDTOVisitor visitor) {
-        visitor.visit(this);
-    }
+    void visit(ReductionKeyEdgeRequestDTO rkEdge);
 }

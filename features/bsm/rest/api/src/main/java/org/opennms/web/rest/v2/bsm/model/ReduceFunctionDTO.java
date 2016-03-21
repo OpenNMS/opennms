@@ -43,16 +43,16 @@ import com.google.common.collect.Maps;
 public class ReduceFunctionDTO {
 
     @XmlElement(name="type", required = true)
-    private ReduceFunctionType type;
+    private String type;
 
     @XmlElement(name="properties")
     private Map<String, String> properties = Maps.newHashMap();
 
-    public ReduceFunctionType getType() {
+    public String getType() {
         return type;
     }
 
-    public void setType(ReduceFunctionType type) {
+    public void setType(String type) {
         this.type = type;
     }
 
@@ -63,7 +63,6 @@ public class ReduceFunctionDTO {
     public void setProperties(Map<String, String> properties) {
         this.properties = properties;
     }
-
 
     @Override
     public boolean equals(Object obj) {

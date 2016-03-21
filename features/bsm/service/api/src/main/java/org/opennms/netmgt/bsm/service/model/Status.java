@@ -76,4 +76,9 @@ public enum Status implements Serializable {
         }
         throw new IllegalArgumentException("Cannot create Status from unknown ordinal " + ordinal);
     }
+
+    @Override
+    public String toString() {
+        return getLabel();
+    }
 }

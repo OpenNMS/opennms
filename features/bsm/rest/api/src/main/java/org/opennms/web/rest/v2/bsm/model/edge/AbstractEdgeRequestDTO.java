@@ -37,7 +37,7 @@ import javax.xml.bind.annotation.XmlElement;
 import org.opennms.web.rest.v2.bsm.model.MapFunctionDTO;
 
 @XmlAccessorType(XmlAccessType.NONE)
-public class AbstractEdgeRequestDTO {
+public abstract class AbstractEdgeRequestDTO {
 
     @XmlElement(name="map-function")
     private MapFunctionDTO mapFunction;
@@ -61,7 +61,6 @@ public class AbstractEdgeRequestDTO {
         return mapFunction;
     }
 
-
     @Override
     public boolean equals(Object obj) {
         if (obj == null) { return false; }
@@ -84,4 +83,6 @@ public class AbstractEdgeRequestDTO {
                 .add("mapFunction", mapFunction)
                 .toString();
     }
+
+    public abstract void accept(EdgeRequestDTOVisitor visitor);
 }

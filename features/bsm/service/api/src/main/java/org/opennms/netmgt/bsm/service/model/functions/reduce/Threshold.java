@@ -35,9 +35,12 @@ import java.util.Optional;
 import java.util.TreeMap;
 
 import org.opennms.netmgt.bsm.service.model.Status;
+import org.opennms.netmgt.bsm.service.model.functions.annotations.Function;
+import org.opennms.netmgt.bsm.service.model.functions.annotations.Parameter;
 
 import com.google.common.base.Preconditions;
 
+@Function(name="Threshold", description = "Uses the highest severity found more often than the given threshold.")
 public class Threshold implements ReductionFunction {
 
     private static final Comparator<Status> HIGHEST_SEVERITY_FIRST = new Comparator<Status>() {
@@ -47,6 +50,7 @@ public class Threshold implements ReductionFunction {
         }
     };
 
+    @Parameter(key="threshold", description = "The Threshold to use")
     private float m_threshold;
 
     public void setThreshold(float threshold) {

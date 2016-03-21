@@ -71,4 +71,9 @@ public class IpServiceEdgeRequestDTO extends AbstractEdgeRequestDTO {
     public int hashCode() {
         return super.hashCode() + java.util.Objects.hash(ipServiceId);
     }
+
+    @Override
+    public void accept(EdgeRequestDTOVisitor visitor) {
+        visitor.visit(this);
+    }
 }
