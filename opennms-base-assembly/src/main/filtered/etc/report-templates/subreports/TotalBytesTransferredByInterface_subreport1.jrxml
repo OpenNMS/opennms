@@ -8,7 +8,7 @@
 	<template><![CDATA[$P{ONMS_REPORT_DIR} + "/assets/styles/defaultStyles.jrtx"]]></template>
 	<parameter name="ONMS_REPORT_DIR" class="java.lang.String">
 		<parameterDescription><![CDATA[The directory where all reports can be found]]></parameterDescription>
-		<defaultValueExpression><![CDATA["/Users/mvrueden/ownCloud/temp/jasperstudio/workspace/report-templates"]]></defaultValueExpression>
+		<defaultValueExpression><![CDATA["${install.dir}/etc/report-templates"]]></defaultValueExpression>
 	</parameter>
 	<parameter name="MEASUREMENT_URL" class="java.lang.String"/>
 	<parameter name="MEASUREMENT_USERNAME" class="java.lang.String"/>

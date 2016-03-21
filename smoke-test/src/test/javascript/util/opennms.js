@@ -257,6 +257,7 @@ OpenNMS.prototype.createOrReplaceRequisition = function(foreignSource, obj) {
 		}
 	});
 	self.casper.back();
+	self.casper.wait(500);
 };
 
 OpenNMS.prototype.fetchRequisition = function(foreignSource) {
@@ -335,6 +336,7 @@ OpenNMS.prototype.importRequisition = function(foreignSource) {
 		}
 	});
 	self.casper.back();
+	self.casper.wait(500);
 };
 
 OpenNMS.prototype.deleteRequisition = function(foreignSource) {
