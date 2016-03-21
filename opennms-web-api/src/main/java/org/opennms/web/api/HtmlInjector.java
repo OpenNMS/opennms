@@ -35,7 +35,7 @@ import javax.servlet.http.HttpServletRequest;
  *
  * @author jwhite
  */
-public interface Injector {
+public interface HtmlInjector {
 
     /**
      * Inject content into the current page.

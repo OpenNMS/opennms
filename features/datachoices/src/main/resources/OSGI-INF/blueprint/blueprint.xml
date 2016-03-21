@@ -55,7 +55,7 @@
     <bean id="modalInjector" class="org.opennms.features.datachoices.web.internal.ModalInjector">
         <property name="stateManager" ref="stateManager"/>
     </bean>
-    <service interface="org.opennms.web.api.Injector" ref="modalInjector">
+    <service interface="org.opennms.web.api.HtmlInjector" ref="modalInjector">
         <service-properties>
           <entry key="registration.export" value="true" />
         </service-properties>

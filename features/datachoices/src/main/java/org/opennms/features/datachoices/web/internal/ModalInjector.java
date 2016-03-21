@@ -36,7 +36,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
 import org.opennms.features.datachoices.internal.StateManager;
-import org.opennms.web.api.Injector;
+import org.opennms.web.api.HtmlInjector;
 
 import com.google.common.collect.Maps;
 
@@ -45,7 +45,7 @@ import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
 
-public class ModalInjector implements Injector {
+public class ModalInjector implements HtmlInjector {
     private StateManager m_stateManager;
 
     @Override

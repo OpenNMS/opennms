@@ -50,7 +50,7 @@ import com.google.common.collect.Lists;
  *   acknowledged-at=13943454545
  *
  * Same file also holds:
- *   url=https://stats.opennms.org:3542
+ *   url=http://stats.opennms.org/datachoices/
  *   interval=86400000
  *
  * @author jwhite

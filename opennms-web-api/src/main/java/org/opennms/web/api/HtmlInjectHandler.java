@@ -42,8 +42,8 @@ import org.slf4j.LoggerFactory;
  *
  * @author jwhite
  */
-public class InjectHandler {
-    private static final Logger LOG = LoggerFactory.getLogger(InjectHandler.class);
+public class HtmlInjectHandler {
+    private static final Logger LOG = LoggerFactory.getLogger(HtmlInjectHandler.class);
     private static AtomicReference<ServiceRegistry> serviceRegistryRef = new AtomicReference<ServiceRegistry>(); 
 
     public static String inject(final HttpServletRequest request) {
@@ -61,7 +61,7 @@ public class InjectHandler {
         // and concatenate their results
         final StringBuilder sb = new StringBuilder();
         sb.append("<!-- Begin injected -->");
-        for (Injector injector : serviceRegistry.findProviders(Injector.class)) {
+        for (HtmlInjector injector : serviceRegistry.findProviders(HtmlInjector.class)) {
             try {
                 final String content = injector.inject(request);
                 if (content != null) {
