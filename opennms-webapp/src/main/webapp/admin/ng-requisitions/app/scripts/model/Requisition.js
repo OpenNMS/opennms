@@ -160,6 +160,8 @@ function Requisition(requisition, isDeployed) {
     } else {
       self.nodes[idx] = node;
     }
+    self.modified = true;
+    self.dateStamp = Date.now();
   }
 
   /**

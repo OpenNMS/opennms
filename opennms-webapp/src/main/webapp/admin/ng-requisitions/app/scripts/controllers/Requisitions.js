@@ -132,7 +132,10 @@
           foreignSources: function() { return availableForeignSources; }
         }
       });
-      modalInstance.result.then(function(node) {}); // In theory, nothing is required here.
+      modalInstance.result.then(function(node) {
+        var r = $scope.requisitionsData.getRequisition(node.foreignSource);
+        r.setNode(node);
+      });
     };
 
     /**
@@ -225,11 +228,29 @@
     * @name RequisitionsController:synchronize
     * @ngdoc method
     * @methodOf RequisitionsController
-    * @param {string} foreignSource The name of the requisition
+    * @param {object} requisition The requisition object
     */
-    $scope.synchronize = function(foreignSource) {
-      var req = $scope.requisitionsData.getRequisition(foreignSource);
-      SynchronizeService.synchronize(req, $scope.errorHandler);
+    $scope.synchronize = function(requisition) {
+      RequisitionsService.startTiming();
+      SynchronizeService.synchronize(requisition, $scope.errorHandler);
+    };
+
+    /**
+    * @description Refreshes the deployed statistics of a requisition on the server
+    *
+    * @name RequisitionsController:refresh
+    * @ngdoc method
+    * @methodOf RequisitionsController
+    * @param {object} requisition The requisition object
+    */
+    $scope.refresh = function(requisition) {
+      RequisitionsService.startTiming();
+      RequisitionsService.updateDeployedStatsForRequisition(requisition).then(
+        function() { // success
+          growl.success('The deployed statistics for ' + requisition.foreignSource + ' has been updated.');
+        },
+        $scope.errorHandler
+      );
     };
 
     /**
@@ -318,11 +339,11 @@
     * - Retrieve all the requisitions from the server ignoring the current state.
     * - Retrieve only the deployed statistics, and update the current requisitions.
     *
-    * @name RequisitionsController:refresh
+    * @name RequisitionsController:refreshData
     * @ngdoc method
     * @methodOf RequisitionsController
     */
-    $scope.refresh = function() {
+    $scope.refreshData = function() {
       bootbox.dialog({
         message: 'Are you sure you want to refresh the content of the page ?<br/><hr/>' +
                  'Choose <b>Reload Everything</b> to retrieve all the requisitions from the server (any existing unsaved change will be lost).<br/>' +
@@ -382,7 +403,7 @@
         if (ok) {
           RequisitionsService.startTiming();
           growl.success('Refreshing requisitions...');
-          RequisitionsService.clearRequisitionsCache();
+          RequisitionsService.clearCache();
           $scope.requisitionsData = { requisitions : [] };
           $scope.initialize();
         }

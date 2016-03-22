@@ -177,7 +177,7 @@ describe('Service: RequisitionsService', function () {
     expect(requisition).not.toBe(null);
     expect(node).not.toBe(null);
 
-    requisitionsService.clearRequisitionsCache();
+    requisitionsService.clearCache();
     requisitionsData = requisitionsService.internal.getCachedRequisitionsData();
     requisition = requisitionsService.internal.getCachedRequisition('test-network');
     node = requisitionsService.internal.getCachedNode('test-network', '1001');

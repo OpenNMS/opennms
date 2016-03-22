@@ -7,31 +7,13 @@
 
   'use strict';
 
-  angular.module('onms-requisitions', [
+  angular.module('onms-quick-add-node', [
     'ngRoute',
     'ngAnimate',
     'ui.bootstrap',
     'angular-growl',
     'angular-loading-bar'
   ])
-
-  .factory('authHttpResponseInterceptor',['$q','$window', function($q, $window) {
-    return {
-      response: function(response) {
-        return response || $q.when(response);
-      },
-      responseError: function(rejection) {
-        if (rejection.status === 401) {
-          $window.location = '/opennms/login.jsp';
-        }
-        return $q.reject(rejection);
-      }
-    };
-  }])
-
-  .config(['$httpProvider',function($httpProvider) {
-    $httpProvider.interceptors.push('authHttpResponseInterceptor');
-  }])
 
   .config(['$routeProvider', function ($routeProvider) {
     $routeProvider

@@ -4,18 +4,6 @@
          placeholder="Select a Requisition (hit space bar to see the options or start typing the name)"
          ng-model="node.foreignSource" typeahead-editable="false" typeahead-min-length="0" uib-typeahead="fs for fs in foreignSources | filter:$viewValue" required></input>
 </div>
-<div class="form-group" ng-class="{ 'has-error' : quickAddNodeForm.foreignId.$invalid }">
-  <label class="control-label" for="foreignId">Foreign ID</label>
-  <div class="input-group">
-    <input class="form-control" type="text" id="foreignId" name="foreignId"
-           placeholder="Foreign ID (must be unique within the requisition)"
-           ng-model="node.foreignId" required/>
-    <span class="input-group-btn">
-      <button class="btn btn-default" type="button" ng-click="generateForeignId(quickAddNodeForm.foreignId)"><span class="glyphicon glyphicon-tag"/> Auto-generate</button>
-    </span>
-  </div>
-  <p ng-show="nodeForm.foreignId.$invalid" class="help-block">Foreign ID is required and must be unique within the requisition.</p>
-</div>
 <div class="form-group" ng-class="{ 'has-error' : quickAddNodeForm.ipAddress.$invalid }">
   <label class="control-label" for="ipAddress">IP Address</label>
   <input class="form-control" type="text" id="ipAddress" name="ipAddress" placeholder="A valid IPv4 or IPv6 address" ng-model="node.ipAddress" required valid-ip-address></input>

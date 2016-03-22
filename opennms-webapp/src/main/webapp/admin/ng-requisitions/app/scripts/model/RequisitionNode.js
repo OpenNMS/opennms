@@ -246,6 +246,27 @@ function RequisitionNode(foreignSource, node, isDeployed) {
   };
 
   /**
+  * @description Checks if the node has parent information (for path outages).
+  *
+  * @name RequisitionNode:hasParentInformation
+  * @ngdoc method
+  * @methodOf RequisitionNode
+  * @returns {boolean} true, if the node has parent information.
+  */
+  self.hasParentInformation = function() {
+    if (self.parentForeignSource != null && self.parentForeignSource.trim() != "") {
+      return true;
+    }
+    if (self.parentForeignId != null && self.parentForeignId.trim() != "") {
+      return true;
+    }
+    if (self.parentNodeLabel != null && self.parentNodeLabel.trim() != "") {
+      return true;
+    }
+    return false;
+  };
+
+  /**
   * @description Gets the OpenNMS representation of the requisitioned node
   *
   * @name RequisitionNode:getOnmsRequisitionNode
