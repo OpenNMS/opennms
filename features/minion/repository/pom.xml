@@ -100,8 +100,12 @@
 
     <pluginRepositories>
         <pluginRepository>
-            <snapshots><enabled>true</enabled></snapshots>
-            <releases><enabled>false</enabled></releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
             <id>opennms-snapshots</id>
             <name>OpenNMS Snapshot Maven Repository</name>
             <url>http://maven.opennms.org/content/groups/opennms.org-snapshot</url>
@@ -110,8 +114,12 @@
             <id>apache-snapshots</id>
             <name>Apache Snapshots Repository</name>
             <url>http://repository.apache.org/content/groups/snapshots-group</url>
-            <releases><enabled>false</enabled></releases>
-            <snapshots><enabled>true</enabled></snapshots>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
         </pluginRepository>
     </pluginRepositories>
 
@@ -120,15 +128,8 @@
             <snapshots><enabled>false</enabled></snapshots>
             <releases><enabled>true</enabled></releases>
             <id>opennms-repo</id>
-            <name>OpenNMS Maven Repository</name>
+            <name>OpenNMS Repository</name>
             <url>http://maven.opennms.org/content/groups/opennms.org-release</url>
-        </repository>
-        <repository>
-            <snapshots><enabled>true</enabled></snapshots>
-            <releases><enabled>false</enabled></releases>
-            <id>opennms-snapshots</id>
-            <name>OpenNMS Snapshot Maven Repository</name>
-            <url>http://maven.opennms.org/content/groups/opennms.org-snapshot</url>
         </repository>
         <repository>
             <snapshots><enabled>false</enabled></snapshots>
