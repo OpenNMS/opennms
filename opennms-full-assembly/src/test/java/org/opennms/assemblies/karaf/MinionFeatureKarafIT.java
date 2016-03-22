@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.core.test.karaf.test;
+package org.opennms.assemblies.karaf;
 
 import static org.ops4j.pax.exam.CoreOptions.maven;
 
@@ -49,7 +49,6 @@ import org.ops4j.pax.exam.spi.reactors.PerMethod;
  */
 @RunWith(PaxExam.class)
 @ExamReactorStrategy(PerMethod.class)
-//@Ignore("Ignore for now since creating the features repo is causing dependency problems")
 public class MinionFeatureKarafIT extends KarafTestCase {
 
 	@Before
