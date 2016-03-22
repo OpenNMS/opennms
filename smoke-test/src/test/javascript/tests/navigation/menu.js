@@ -145,12 +145,6 @@ var expected = {
 				linkPageSelector: 'h3.panel-title',
 				linkPageText: 'Performance Measurement'
 			},
-			'Quick-Add Node': {
-				name: 'nav-admin-quick-add',
-				href: '/admin/node/add.htm',
-				linkPageSelector: 'h3.panel-title',
-				linkPageText: 'Node Quick-Add'
-			},
 			'Help/Support': {
 				name: 'nav-admin-support',
 				href: '/support/index.htm',
