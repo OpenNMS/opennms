@@ -176,7 +176,13 @@ OpenNMS.prototype.login = function login() {
 	self.casper.waitForSelector('ol.breadcrumb > li > a[href="'+self.root()+'/index.jsp"]', function() {
 		console.log('* Finished logging in.');
 	});
-}
+	self.casper.waitForSelector('#datachoices-enable', function() {
+		casper.clickLabel('Opt-in');
+		console.log("* Enabled data choices.");
+	}, function() {
+		console.log("* Data choices already enabled.");
+	}, 5000);
+};
 
 OpenNMS.prototype.enableBasicAuth = function(username, password) {
 	var self = this;
