@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.web.rest.v2.bsm.model;
+package org.opennms.web.rest.v2.bsm.model.meta;
 
 import java.util.List;
 
@@ -35,24 +35,24 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-@XmlRootElement(name = "map-functions")
+@XmlRootElement(name = "functions")
 @XmlAccessorType(XmlAccessType.NONE)
-public class MapFunctionListDTO {
-    private List<MapFunctionDTO> functions;
+public class FunctionMetaListDTO {
+    private List<FunctionMetaDTO> functions;
 
-    public MapFunctionListDTO() {
+    public FunctionMetaListDTO() {
     }
 
-    public MapFunctionListDTO(final List<MapFunctionDTO> functions) {
+    public FunctionMetaListDTO(final List<FunctionMetaDTO> functions) {
         this.functions = functions;
     }
 
-    @XmlElement(name = "map-function")
-    public List<MapFunctionDTO> getFunctions() {
+    @XmlElement(name = "function")
+    public List<FunctionMetaDTO> getFunctions() {
         return functions;
     }
 
-    public void setFunctions(List<MapFunctionDTO> functions) {
+    public void setFunctions(List<FunctionMetaDTO> functions) {
         this.functions = functions;
     }
 }

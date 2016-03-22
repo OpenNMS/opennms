@@ -21,16 +21,19 @@
  *      http://www.gnu.org/licenses/
  *
  * For more information contact:
- * OpenNMS(R) Licensing <license@opennms.org>
- *      http://www.opennms.org/
- *      http://www.opennms.com/
+ *     OpenNMS(R) Licensing <license@opennms.org>
+ *     http://www.opennms.org/
+ *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.bsm.service.model.edge.ro;
+package org.opennms.netmgt.bsm.persistence.api;
 
-import org.opennms.netmgt.bsm.service.model.IpService;
+public interface EdgeEntityVisitor<T> {
 
-public interface ReadOnlyIpServiceEdge extends ReadOnlyEdge {
-    IpService getIpService();
-    String getFriendlyName();
+    T visit(BusinessServiceChildEdgeEntity edgeEntity);
+
+    T visit(SingleReductionKeyEdgeEntity edgeEntity);
+
+    T visit(IPServiceEdgeEntity edgeEntity);
+
 }

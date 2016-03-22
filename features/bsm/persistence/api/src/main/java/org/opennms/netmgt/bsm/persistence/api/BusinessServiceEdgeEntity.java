@@ -180,4 +180,11 @@ public class BusinessServiceEdgeEntity implements EdgeEntity {
                 && getMapFunction().equalsDefinition(other.getMapFunction());
         return equals;
     }
+
+    @Override
+    public <T> T accept(EdgeEntityVisitor<T> visitor) {
+        // ALl sub classes MUST overwrite this properly, as this class cannot be abstract.
+        // This is due to how hibernate deals with inheritance strategies.
+        throw new IllegalStateException("Class '" + getClass().getName() + "' did not overwrite accept(EdgeEntityVisitor) method properly");
+    }
 }

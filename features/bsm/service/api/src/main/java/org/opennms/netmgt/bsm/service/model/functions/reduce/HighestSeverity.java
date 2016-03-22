@@ -32,11 +32,18 @@ import java.util.List;
 import java.util.Optional;
 
 import org.opennms.netmgt.bsm.service.model.Status;
+import org.opennms.netmgt.bsm.service.model.functions.annotations.Function;
 
+@Function(name="HighestSeverity", description = "Uses the value of the highest severity")
 public class HighestSeverity implements ReductionFunction {
 
     @Override
     public Optional<Status> reduce(List<Status> statuses) {
         return statuses.stream().reduce((a, b) -> a.isGreaterThan(b) ? a : b);
+    }
+
+    @Override
+    public <T> T accept(ReduceFunctionVisitor<T> visitor) {
+        return visitor.visit(this);
     }
 }

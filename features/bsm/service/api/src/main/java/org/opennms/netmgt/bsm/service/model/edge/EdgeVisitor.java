@@ -26,48 +26,13 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.bsm.persistence.api.functions.reduce;
+package org.opennms.netmgt.bsm.service.model.edge;
 
-import javax.persistence.Column;
-import javax.persistence.DiscriminatorValue;
-import javax.persistence.Entity;
+public interface EdgeVisitor<T> {
 
-@Entity
-@DiscriminatorValue(value="highest-severity-above")
-public class HighestSeverityAboveEntity extends AbstractReductionFunctionEntity {
+    T visit(IpServiceEdge edge);
 
-    /**
-     * The ordinal number of the Status object.
-     */
-    @Column(name="threshold_severity", nullable=false)
-    private int m_threshold;
+    T visit(ReductionKeyEdge edge);
 
-    public HighestSeverityAboveEntity() {
-
-    }
-
-    public HighestSeverityAboveEntity(int threshold) {
-        setThreshold(threshold);
-    }
-
-    public void setThreshold(int threshold) {
-        m_threshold = threshold;
-    }
-
-    public int getThreshold() {
-        return m_threshold;
-    }
-
-    @Override
-    public String toString() {
-        return com.google.common.base.Objects.toStringHelper(this)
-                .add("id", getId())
-                .add("threshold", m_threshold)
-                .toString();
-    }
-
-    @Override
-    public <T> T accept(ReductionFunctionEntityVisitor<T> visitor) {
-        return visitor.visit(this);
-    }
+    T visit(ChildEdge edge);
 }

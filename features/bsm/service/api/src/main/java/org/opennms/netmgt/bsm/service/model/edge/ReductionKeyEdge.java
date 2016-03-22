@@ -28,9 +28,9 @@
 
 package org.opennms.netmgt.bsm.service.model.edge;
 
-import org.opennms.netmgt.bsm.service.model.edge.ro.ReadOnlyReductionKeyEdge;
-
-public interface ReductionKeyEdge extends ReadOnlyReductionKeyEdge, Edge {
+public interface ReductionKeyEdge extends Edge {
+    String getReductionKey();
+    String getFriendlyName();
     void setReductionKey(String reductionKey);
     void setFriendlyName(String friendlyName);
 }

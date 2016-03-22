@@ -34,8 +34,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.opennms.netmgt.bsm.mock.MockBusinessServiceHierarchy.HierarchyBuilder.BusinessServiceBuilder;
-import org.opennms.netmgt.bsm.service.model.ReadOnlyBusinessService;
-import org.opennms.netmgt.bsm.service.model.edge.ro.ReadOnlyEdge;
+import org.opennms.netmgt.bsm.service.model.BusinessService;
+import org.opennms.netmgt.bsm.service.model.edge.Edge;
 import org.opennms.netmgt.bsm.service.model.functions.reduce.ReductionFunction;
 
 import com.google.common.collect.Maps;
@@ -61,7 +61,7 @@ public class MockBusinessServiceHierarchy {
             private final HierarchyBuilder m_root;
             private final Builder m_parent;
             private final MockBusinessService m_businessService;
-            private final Set<ReadOnlyEdge> m_edges = Sets.newHashSet();
+            private final Set<Edge> m_edges = Sets.newHashSet();
 
             private BusinessServiceBuilder(HierarchyBuilder root, Builder parent, MockBusinessService businessService) {
                 m_root = root;
@@ -97,7 +97,7 @@ public class MockBusinessServiceHierarchy {
 
             @Override
             public Builder commit() {
-                for (ReadOnlyEdge edge : m_edges) {
+                for (Edge edge : m_edges) {
                     m_businessService.addEdge(edge);
                 }
                 m_root.m_businessServicesById.put(m_businessService.getId(), m_businessService);
@@ -139,16 +139,16 @@ public class MockBusinessServiceHierarchy {
         m_builder = builder;
     }
 
-    public List<ReadOnlyBusinessService> getBusinessServices() {
+    public List<BusinessService> getBusinessServices() {
         return m_builder.m_businessServicesById.values().stream()
-                    .map(b -> (ReadOnlyBusinessService)b).collect(Collectors.toList());
+                    .map(b -> (BusinessService)b).collect(Collectors.toList());
     }
 
-    public ReadOnlyBusinessService getBusinessServiceById(long id) {
+    public BusinessService getBusinessServiceById(long id) {
         return m_builder.m_businessServicesById.get(Long.valueOf(id));
     }
 
-    public ReadOnlyEdge getEdgeByReductionKey(String reductionKey) {
+    public Edge getEdgeByReductionKey(String reductionKey) {
         return m_builder.m_businessServicesById.values().stream()
                 .map(b -> b.getEdges())
                 .flatMap(l -> l.stream())

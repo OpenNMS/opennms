@@ -67,4 +67,6 @@ public abstract class AbstractReductionFunctionEntity {
                 .add("id", m_id)
                 .toString();
     }
+
+    public abstract <T> T accept(ReductionFunctionEntityVisitor<T> visitor);
 }

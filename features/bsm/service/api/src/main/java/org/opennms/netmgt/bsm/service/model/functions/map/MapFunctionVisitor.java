@@ -26,36 +26,17 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.bsm.service.model.edge.ro;
+package org.opennms.netmgt.bsm.service.model.functions.map;
 
-import java.util.Set;
+public interface MapFunctionVisitor<T> {
 
-import org.opennms.netmgt.bsm.service.model.functions.map.MapFunction;
+    T visit(Decrease decrease);
 
-/**
- * A simplified version of the {@link org.opennms.netmgt.bsm.service.model.edge.Edge}
- * that contains the minimal set of functions necessary to the state machine to function and
- * for the daemon to send the associated state change events.
- *
- * @author jwhite
- */
-public interface ReadOnlyEdge {
+    T visit(Identity identity);
 
-    static enum Type {
-        CHILD_SERVICE,
-        IP_SERVICE,
-        REDUCTION_KEY,
-    }
+    T visit(Ignore ignore);
 
-    Long getId();
+    T visit(Increase increase);
 
-    Type getType();
-
-    Set<String> getReductionKeys();
-
-    MapFunction getMapFunction();
-
-    int getWeight();
-
-    String getFriendlyName();
+    T visit(SetTo setTo);
 }

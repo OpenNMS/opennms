@@ -37,14 +37,15 @@ import org.opennms.netmgt.bsm.service.BusinessServiceManager;
 import org.opennms.netmgt.bsm.service.model.BusinessService;
 import org.opennms.netmgt.bsm.service.model.IpService;
 import org.opennms.netmgt.bsm.service.model.Status;
-import org.opennms.netmgt.bsm.service.model.ReadOnlyBusinessService;
 import org.opennms.netmgt.bsm.service.model.edge.ChildEdge;
 import org.opennms.netmgt.bsm.service.model.edge.Edge;
+import org.opennms.netmgt.bsm.service.model.edge.EdgeVisitor;
 import org.opennms.netmgt.bsm.service.model.edge.IpServiceEdge;
 import org.opennms.netmgt.bsm.service.model.edge.ReductionKeyEdge;
 import org.opennms.netmgt.bsm.service.model.functions.map.SetTo;
 import org.opennms.netmgt.bsm.service.model.functions.reduce.HighestSeverity;
 import org.opennms.netmgt.bsm.service.model.functions.reduce.HighestSeverityAbove;
+import org.opennms.netmgt.bsm.service.model.functions.reduce.ReduceFunctionVisitor;
 import org.opennms.netmgt.bsm.service.model.functions.reduce.ReductionFunction;
 import org.opennms.netmgt.bsm.service.model.functions.reduce.Threshold;
 import org.opennms.netmgt.vaadin.core.KeyValueInputDialogWindow;
@@ -177,12 +178,24 @@ public class BusinessServiceEditWindow extends Window {
             private ReductionFunction getReduceFunction() {
                 try {
                     final ReductionFunction reductionFunction = ((Class<? extends ReductionFunction>) m_reduceFunctionNativeSelect.getValue()).newInstance();
-                    if (reductionFunction instanceof Threshold) {
-                        ((Threshold) reductionFunction).setThreshold(Float.parseFloat(m_thresholdTextField.getValue()));
-                    }
-                    if (reductionFunction instanceof HighestSeverityAbove) {
-                        ((HighestSeverityAbove) reductionFunction).setThreshold((Status) m_thresholdStatusSelect.getValue());
-                    }
+                    reductionFunction.accept(new ReduceFunctionVisitor<Void>() {
+                        @Override
+                        public Void visit(HighestSeverity highestSeverity) {
+                            return null;
+                        }
+
+                        @Override
+                        public Void visit(HighestSeverityAbove highestSeverityAbove) {
+                            highestSeverityAbove.setThreshold((Status) m_thresholdStatusSelect.getValue());
+                            return null;
+                        }
+
+                        @Override
+                        public Void visit(Threshold threshold) {
+                            threshold.setThreshold(Float.parseFloat(m_thresholdTextField.getValue()));
+                            return null;
+                        }
+                    });
                     return reductionFunction;
                 } catch (final InstantiationException | IllegalAccessException e) {
                     throw Throwables.propagate(e);
@@ -308,13 +321,24 @@ public class BusinessServiceEditWindow extends Window {
         } else {
             m_reduceFunctionNativeSelect.setValue(businessService.getReduceFunction().getClass());
 
-            if (businessService.getReduceFunction().getClass() == Threshold.class) {
-                m_thresholdTextField.setValue(String.valueOf(((Threshold) businessService.getReduceFunction()).getThreshold()));
-            }
+            businessService.getReduceFunction().accept(new ReduceFunctionVisitor<Void>() {
+                @Override
+                public Void visit(HighestSeverity highestSeverity) {
+                    return null;
+                }
 
-            if (businessService.getReduceFunction().getClass() == HighestSeverityAbove.class) {
-                m_thresholdStatusSelect.setValue(((HighestSeverityAbove) businessService.getReduceFunction()).getThreshold());
-            }
+                @Override
+                public Void visit(HighestSeverityAbove highestSeverityAbove) {
+                    m_thresholdStatusSelect.setValue(highestSeverityAbove.getThreshold());
+                    return null;
+                }
+
+                @Override
+                public Void visit(Threshold threshold) {
+                    m_thresholdTextField.setValue(String.valueOf(threshold.getThreshold()));
+                    return null;
+                }
+            });
         }
 
         /**
@@ -529,14 +553,12 @@ public class BusinessServiceEditWindow extends Window {
         m_edgesListSelect.removeAllItems();
         m_edgesListSelect.addItems(m_businessService.getEdges().stream()
                                                     .map(e -> (Edge)e)
-                                                    .sorted(Ordering.natural()
-                                                                    .onResultOf(Edge::getType)
-                                                                    .thenComparing(e -> getChildDescription(e)))
+                                                    .sorted((e1, e2) -> getChildDescription(e1).compareTo(getChildDescription(e2)))
                                                     .collect(Collectors.toList()));
         m_edgesListSelect.getItemIds().forEach(item -> m_edgesListSelect.setItemCaption(item, describeEdge((Edge) item)));
     }
 
-    public static String describeBusinessService(final ReadOnlyBusinessService businessService) {
+    public static String describeBusinessService(final BusinessService businessService) {
         return businessService.getName();
     }
 
@@ -553,21 +575,43 @@ public class BusinessServiceEditWindow extends Window {
     }
 
     private static String getEdgePrefix(Edge edge) {
-        switch (edge.getType()) {
-            case CHILD_SERVICE: return "Child";
-            case IP_SERVICE:    return "IPSvc";
-            case REDUCTION_KEY: return "ReKey";
-            default: throw new IllegalArgumentException();
-        }
+        return edge.accept(new EdgeVisitor<String>() {
+
+            @Override
+            public String visit(IpServiceEdge edge) {
+                return "IPSvc";
+            }
+
+            @Override
+            public String visit(ReductionKeyEdge edge) {
+                return "ReKey";
+            }
+
+            @Override
+            public String visit(ChildEdge edge) {
+                return "Child";
+            }
+        });
     }
 
     private static String getChildDescription(Edge edge) {
-        switch (edge.getType()) {
-            case CHILD_SERVICE: return describeBusinessService(((ChildEdge) edge).getChild());
-            case IP_SERVICE:    return describeIpService(((IpServiceEdge) edge).getIpService(), ((IpServiceEdge) edge).getFriendlyName());
-            case REDUCTION_KEY: return describeReductionKey(((ReductionKeyEdge) edge).getReductionKey(), ((ReductionKeyEdge) edge).getFriendlyName());
-            default: throw new IllegalArgumentException();
-        }
+        return edge.accept(new EdgeVisitor<String>() {
+
+            @Override
+            public String visit(IpServiceEdge edge) {
+                return describeIpService(edge.getIpService(), edge.getFriendlyName());
+            }
+
+            @Override
+            public String visit(ReductionKeyEdge edge) {
+                return describeReductionKey(edge.getReductionKey(), edge.getFriendlyName());
+            }
+
+            @Override
+            public String visit(ChildEdge edge) {
+                return describeBusinessService(edge.getChild());
+            }
+        });
     }
 
     public static String describeReductionKey(final String reductionKey, final String friendlyName) {

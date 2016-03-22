@@ -31,7 +31,9 @@ package org.opennms.netmgt.bsm.service.model.functions.map;
 import java.util.Optional;
 
 import org.opennms.netmgt.bsm.service.model.Status;
+import org.opennms.netmgt.bsm.service.model.functions.annotations.Function;
 
+@Function(name="Increase", description = "Increase the status by one level")
 public class Increase implements MapFunction {
     @Override
     public Optional<Status> map(Status source) {
@@ -40,5 +42,10 @@ public class Increase implements MapFunction {
         }
         int newId = Math.min(Status.CRITICAL.getId(), source.getId() + 1);
         return Optional.of(Status.get(newId));
+    }
+
+    @Override
+    public <T> T accept(MapFunctionVisitor<T> visitor) {
+        return visitor.visit(this);
     }
 }

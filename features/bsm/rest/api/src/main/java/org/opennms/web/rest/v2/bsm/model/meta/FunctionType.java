@@ -26,28 +26,10 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.bsm.service.model;
+package org.opennms.web.rest.v2.bsm.model.meta;
 
-import java.util.Set;
-
-import org.opennms.netmgt.bsm.service.model.edge.ro.ReadOnlyEdge;
-import org.opennms.netmgt.bsm.service.model.functions.reduce.ReductionFunction;
-
-/**
- * A simplified version of the {@link org.opennms.netmgt.bsm.service.model.BusinessService}
- * that contains the minimal set of functions necessary to the state machine to function and
- * for the daemon to send the associated state change events.
- *
- * @author jwhite
- */
-public interface ReadOnlyBusinessService {
-
-    String getName();
-
-    Long getId();
-
-    ReductionFunction getReduceFunction();
-
-    Set<? extends ReadOnlyEdge> getEdges();
+public enum FunctionType {
+    ReduceFunction,
+    MapFunction
 
 }

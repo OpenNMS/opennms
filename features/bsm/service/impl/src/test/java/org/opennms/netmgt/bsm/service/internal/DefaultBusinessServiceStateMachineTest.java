@@ -43,9 +43,9 @@ import org.opennms.netmgt.bsm.mock.MockBusinessServiceHierarchy;
 import org.opennms.netmgt.bsm.service.AlarmProvider;
 import org.opennms.netmgt.bsm.service.BusinessServiceStateMachine;
 import org.opennms.netmgt.bsm.service.model.AlarmWrapper;
-import org.opennms.netmgt.bsm.service.model.ReadOnlyBusinessService;
+import org.opennms.netmgt.bsm.service.model.BusinessService;
 import org.opennms.netmgt.bsm.service.model.Status;
-import org.opennms.netmgt.bsm.service.model.edge.ro.ReadOnlyEdge;
+import org.opennms.netmgt.bsm.service.model.edge.Edge;
 import org.opennms.netmgt.bsm.service.model.functions.reduce.HighestSeverity;
 import org.opennms.netmgt.bsm.service.model.functions.reduce.HighestSeverityAbove;
 import org.opennms.netmgt.bsm.service.model.functions.reduce.Threshold;
@@ -67,8 +67,8 @@ public class DefaultBusinessServiceStateMachineTest {
                     .withReductionKey(1, "a1")
                     .commit()
                 .build();
-        ReadOnlyBusinessService b1 = h.getBusinessServiceById(1);
-        ReadOnlyEdge a1 = h.getEdgeByReductionKey("a1");
+        BusinessService b1 = h.getBusinessServiceById(1);
+        Edge a1 = h.getEdgeByReductionKey("a1");
 
         // Setup the state machine
         DefaultBusinessServiceStateMachine stateMachine = new DefaultBusinessServiceStateMachine();
@@ -106,7 +106,7 @@ public class DefaultBusinessServiceStateMachineTest {
                     .commit()
                 .build();
         stateMachine.setBusinessServices(h.getBusinessServices());
-        ReadOnlyEdge a2 = h.getEdgeByReductionKey("a2");
+        Edge a2 = h.getEdgeByReductionKey("a2");
 
         // The state should be upgraded
         assertEquals(Status.CRITICAL, stateMachine.getOperationalStatus(b1));
@@ -124,7 +124,7 @@ public class DefaultBusinessServiceStateMachineTest {
                     .withReductionKey(1, "a1")
                     .commit()
                 .build();
-        ReadOnlyBusinessService b1 = h.getBusinessServiceById(1);
+        BusinessService b1 = h.getBusinessServiceById(1);
 
         // Setup the state machine
         BusinessServiceStateMachine stateMachine = new DefaultBusinessServiceStateMachine();

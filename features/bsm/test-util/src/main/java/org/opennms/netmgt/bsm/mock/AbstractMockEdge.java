@@ -31,47 +31,78 @@ package org.opennms.netmgt.bsm.mock;
 import java.util.Set;
 
 import org.opennms.netmgt.bsm.service.model.BusinessService;
-import org.opennms.netmgt.bsm.service.model.edge.ChildEdge;
-import org.opennms.netmgt.bsm.service.model.edge.EdgeVisitor;
-import org.opennms.netmgt.bsm.service.model.functions.map.Identity;
+import org.opennms.netmgt.bsm.service.model.Status;
+import org.opennms.netmgt.bsm.service.model.edge.Edge;
+import org.opennms.netmgt.bsm.service.model.functions.map.MapFunction;
 
 import com.google.common.collect.Sets;
 
-public class MockChildEdge extends AbstractMockEdge implements ChildEdge {
-    private BusinessService m_businessService;
+public abstract class AbstractMockEdge implements Edge {
 
-    public MockChildEdge(long id, BusinessService businessService) {
-        super(id, new Identity());
-        m_businessService = businessService;
+    private int weight = Edge.DEFAULT_WEIGHT;
+
+    private Status status;
+
+    private BusinessService source;
+
+    private MapFunction mapFunction;
+
+    private Set<String> reductionKeys = Sets.newHashSet();
+
+    private long id;
+
+    public AbstractMockEdge(Long id, MapFunction mapFunction) {
+        this.id = id;
+        this.mapFunction = mapFunction;
+    }
+
+    @Override
+    public BusinessService getSource() {
+        return source;
+    }
+
+    @Override
+    public Status getOperationalStatus() {
+        return status;
+    }
+
+    @Override
+    public void setMapFunction(MapFunction mapFunction) {
+        this.mapFunction = mapFunction;
+    }
+
+    @Override
+    public void setSource(BusinessService source) {
+        this.source = source;
+    }
+
+    @Override
+    public void setWeight(int weight) {
+        this.weight = weight;
+    }
+
+    @Override
+    public void delete() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Long getId() {
+        return id;
     }
 
     @Override
     public Set<String> getReductionKeys() {
-        return Sets.newHashSet();
+        return reductionKeys;
     }
 
     @Override
-    public BusinessService getChild() {
-        return m_businessService;
+    public MapFunction getMapFunction() {
+        return mapFunction;
     }
 
     @Override
-    public void setChild(BusinessService child) {
-        m_businessService = child;
-    }
-
-    @Override
-    public String toString() {
-        return String.format("MockChildEdge[id=%d, businessService=%s]", getId(), m_businessService);
-    }
-
-    @Override
-    public String getFriendlyName() {
-        return null;
-    }
-
-    @Override
-    public <T> T accept(EdgeVisitor<T> visitor) {
-        return visitor.visit(this);
+    public int getWeight() {
+        return weight;
     }
 }

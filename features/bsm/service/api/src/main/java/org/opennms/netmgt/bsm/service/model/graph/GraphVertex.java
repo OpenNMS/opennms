@@ -28,8 +28,8 @@
 
 package org.opennms.netmgt.bsm.service.model.graph;
 
+import org.opennms.netmgt.bsm.service.model.BusinessService;
 import org.opennms.netmgt.bsm.service.model.IpService;
-import org.opennms.netmgt.bsm.service.model.ReadOnlyBusinessService;
 import org.opennms.netmgt.bsm.service.model.Status;
 import org.opennms.netmgt.bsm.service.model.functions.reduce.ReductionFunction;
 
@@ -45,7 +45,7 @@ public interface GraphVertex {
 
     String getReductionKey();
 
-    ReadOnlyBusinessService getBusinessService();
+    BusinessService getBusinessService();
 
     IpService getIpService();
 

@@ -32,17 +32,13 @@ import java.util.Set;
 
 import org.opennms.netmgt.bsm.persistence.api.SingleReductionKeyEdgeEntity;
 import org.opennms.netmgt.bsm.service.BusinessServiceManager;
+import org.opennms.netmgt.bsm.service.model.edge.EdgeVisitor;
 import org.opennms.netmgt.bsm.service.model.edge.ReductionKeyEdge;
 
 public class ReductionKeyEdgeImpl extends AbstractEdge<SingleReductionKeyEdgeEntity> implements ReductionKeyEdge {
 
     public ReductionKeyEdgeImpl(BusinessServiceManager manager, SingleReductionKeyEdgeEntity entity) {
         super(manager, entity);
-    }
-
-    @Override
-    public Type getType() {
-        return Type.REDUCTION_KEY;
     }
 
     @Override
@@ -76,5 +72,10 @@ public class ReductionKeyEdgeImpl extends AbstractEdge<SingleReductionKeyEdgeEnt
     @Override
     public String getFriendlyName() {
         return getEntity().getFriendlyName();
+    }
+
+    @Override
+    public <T> T accept(EdgeVisitor<T> visitor) {
+        return visitor.visit(this);
     }
 }

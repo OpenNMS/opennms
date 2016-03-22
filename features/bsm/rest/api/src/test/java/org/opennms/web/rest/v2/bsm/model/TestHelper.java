@@ -28,35 +28,17 @@
 
 package org.opennms.web.rest.v2.bsm.model;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
+import org.opennms.netmgt.bsm.service.model.functions.map.MapFunction;
+import org.opennms.netmgt.bsm.service.model.functions.reduce.ReductionFunction;
+import org.opennms.web.rest.v2.bsm.model.meta.FunctionsManager;
 
 public class TestHelper {
 
-    public static MapFunctionDTO createMapFunctionDTO(MapFunctionType type, String[]... pairs) {
-        MapFunctionDTO mapFunctionDTO = new MapFunctionDTO();
-        mapFunctionDTO.setType(type);
-        mapFunctionDTO.setProperties(buildMap(pairs));
-        return mapFunctionDTO;
+    public static MapFunctionDTO createMapFunctionDTO(MapFunction mapFunction) {
+        return new FunctionsManager().getMapFunctionDTO(mapFunction);
     }
 
-    public static ReduceFunctionDTO createReduceFunctionDTO(ReduceFunctionType type, String[]... pairs) {
-        ReduceFunctionDTO reduceFunctionDTO = new ReduceFunctionDTO();
-        reduceFunctionDTO.setType(type);
-        reduceFunctionDTO.setProperties(buildMap(pairs));
-        return reduceFunctionDTO;
+    public static ReduceFunctionDTO createReduceFunctionDTO(ReductionFunction reductionFunction) {
+        return new FunctionsManager().getReduceFunctionDTO(reductionFunction);
     }
-
-    private static Map<String, String> buildMap(String[][] pairs) {
-        if (pairs != null) {
-            Map<String, String> map = new HashMap<>();
-            for(String[] eachPair : pairs) {
-                map.put(Objects.requireNonNull(eachPair[0]), Objects.requireNonNull(eachPair[1]));
-            }
-            return map;
-        }
-        return null;
-    }
-
 }

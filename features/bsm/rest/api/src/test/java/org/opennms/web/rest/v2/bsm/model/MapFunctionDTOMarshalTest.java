@@ -45,7 +45,7 @@ public class MapFunctionDTOMarshalTest extends MarshalAndUnmarshalTest<MapFuncti
     @Parameterized.Parameters
     public static Collection<Object[]> data() throws IOException {
         MapFunctionDTO dto = new MapFunctionDTO();
-        dto.setType(MapFunctionType.Increase);
+        dto.setType("Increase");
         Map<String, String> properties = new HashMap<>();
         properties.put("status", "some-status");
         properties.put("some-property", "some-value");

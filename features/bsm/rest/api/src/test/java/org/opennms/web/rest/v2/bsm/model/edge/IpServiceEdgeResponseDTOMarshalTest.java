@@ -28,8 +28,6 @@
 
 package org.opennms.web.rest.v2.bsm.model.edge;
 
-import static org.opennms.web.rest.v2.bsm.model.TestHelper.createMapFunctionDTO;
-
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
@@ -39,7 +37,7 @@ import org.opennms.core.test.xml.MarshalAndUnmarshalTest;
 import org.opennms.netmgt.bsm.service.model.Status;
 import org.opennms.web.rest.api.ApiVersion;
 import org.opennms.web.rest.api.ResourceLocation;
-import org.opennms.web.rest.v2.bsm.model.MapFunctionType;
+import org.opennms.web.rest.v2.bsm.model.MapFunctionDTO;
 
 public class IpServiceEdgeResponseDTOMarshalTest extends MarshalAndUnmarshalTest<IpServiceEdgeResponseDTO> {
 
@@ -56,6 +54,10 @@ public class IpServiceEdgeResponseDTOMarshalTest extends MarshalAndUnmarshalTest
         ipService.setServiceName("ICMP");
         ipService.setLocation(new ResourceLocation(ApiVersion.Version2, "business-services", "ip-services", "17"));
 
+        MapFunctionDTO mapFunctionDTO = new MapFunctionDTO();
+        mapFunctionDTO.getProperties().put("key1", "value1");
+        mapFunctionDTO.setType("SetTo");
+
         IpServiceEdgeResponseDTO edge = new IpServiceEdgeResponseDTO();
         edge.setLocation(new ResourceLocation(ApiVersion.Version2, "business-services", "edges", "1"));
         edge.setIpService(ipService);
@@ -64,7 +66,7 @@ public class IpServiceEdgeResponseDTOMarshalTest extends MarshalAndUnmarshalTest
         edge.getReductionKeys().add("key2");
         edge.setFriendlyName("ip-service-friendly-name");
         edge.setWeight(20);
-        edge.setMapFunction(createMapFunctionDTO(MapFunctionType.SetTo, new String[]{"key1", "value1"}));
+        edge.setMapFunction(mapFunctionDTO);
         edge.setId(1);
 
         return Arrays.asList(new Object[][]{{

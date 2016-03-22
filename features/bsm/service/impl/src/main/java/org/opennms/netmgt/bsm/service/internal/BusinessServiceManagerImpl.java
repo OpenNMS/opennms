@@ -40,6 +40,7 @@ import org.opennms.netmgt.bsm.persistence.api.BusinessServiceDao;
 import org.opennms.netmgt.bsm.persistence.api.BusinessServiceEdgeDao;
 import org.opennms.netmgt.bsm.persistence.api.BusinessServiceEdgeEntity;
 import org.opennms.netmgt.bsm.persistence.api.BusinessServiceEntity;
+import org.opennms.netmgt.bsm.persistence.api.EdgeEntityVisitor;
 import org.opennms.netmgt.bsm.persistence.api.IPServiceEdgeEntity;
 import org.opennms.netmgt.bsm.persistence.api.SingleReductionKeyEdgeEntity;
 import org.opennms.netmgt.bsm.persistence.api.functions.map.AbstractMapFunctionEntity;
@@ -61,16 +62,8 @@ import org.opennms.netmgt.bsm.service.model.edge.ChildEdge;
 import org.opennms.netmgt.bsm.service.model.edge.Edge;
 import org.opennms.netmgt.bsm.service.model.edge.IpServiceEdge;
 import org.opennms.netmgt.bsm.service.model.edge.ReductionKeyEdge;
-import org.opennms.netmgt.bsm.service.model.functions.map.Decrease;
-import org.opennms.netmgt.bsm.service.model.functions.map.Identity;
-import org.opennms.netmgt.bsm.service.model.functions.map.Ignore;
-import org.opennms.netmgt.bsm.service.model.functions.map.Increase;
 import org.opennms.netmgt.bsm.service.model.functions.map.MapFunction;
-import org.opennms.netmgt.bsm.service.model.functions.map.SetTo;
-import org.opennms.netmgt.bsm.service.model.functions.reduce.HighestSeverity;
-import org.opennms.netmgt.bsm.service.model.functions.reduce.HighestSeverityAbove;
 import org.opennms.netmgt.bsm.service.model.functions.reduce.ReductionFunction;
-import org.opennms.netmgt.bsm.service.model.functions.reduce.Threshold;
 import org.opennms.netmgt.bsm.service.model.graph.BusinessServiceGraph;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
 import org.opennms.netmgt.dao.api.NodeDao;
@@ -81,8 +74,6 @@ import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
-
-import com.google.common.collect.Lists;
 
 @Transactional
 public class BusinessServiceManagerImpl implements BusinessServiceManager {
@@ -168,16 +159,23 @@ public class BusinessServiceManagerImpl implements BusinessServiceManager {
     @Override
     public Edge getEdgeById(Long edgeId) {
         BusinessServiceEdgeEntity edgeEntity = getBusinessServiceEdgeEntity(edgeId);
-        if (edgeEntity instanceof BusinessServiceChildEdgeEntity) {
-            return new ChildEdgeImpl(this, (BusinessServiceChildEdgeEntity) edgeEntity);
-        }
-        if (edgeEntity instanceof SingleReductionKeyEdgeEntity) {
-            return new ReductionKeyEdgeImpl(this, (SingleReductionKeyEdgeEntity) edgeEntity);
-        }
-        if (edgeEntity instanceof IPServiceEdgeEntity) {
-            return new IpServiceEdgeImpl(this, (IPServiceEdgeEntity) edgeEntity);
-        }
-        throw new IllegalArgumentException("Could not create edge for entity " + edgeEntity.getClass());
+        return edgeEntity.accept(new EdgeEntityVisitor<Edge>() {
+
+            @Override
+            public Edge visit(BusinessServiceChildEdgeEntity edgeEntity) {
+                return new ChildEdgeImpl(BusinessServiceManagerImpl.this, edgeEntity);
+            }
+
+            @Override
+            public Edge visit(SingleReductionKeyEdgeEntity edge) {
+                return new ReductionKeyEdgeImpl(BusinessServiceManagerImpl.this, edge);
+            }
+
+            @Override
+            public Edge visit(IPServiceEdgeEntity edge) {
+                return new IpServiceEdgeImpl(BusinessServiceManagerImpl.this, edge);
+            }
+        });
     }
 
     @Override
@@ -403,16 +401,6 @@ public class BusinessServiceManagerImpl implements BusinessServiceManager {
         EventBuilder eventBuilder = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_UEI, "BSM Master Page");
         eventBuilder.addParam(EventConstants.PARM_DAEMON_NAME, "bsmd");
         eventForwarder.sendNow(eventBuilder.getEvent());
-    }
-
-    @Override
-    public List<MapFunction> listMapFunctions() {
-        return Lists.newArrayList(new Identity(), new Increase(), new Decrease(), new SetTo(), new Ignore());
-    }
-
-    @Override
-    public List<ReductionFunction> listReduceFunctions() {
-        return Lists.newArrayList(new HighestSeverity(), new Threshold(), new HighestSeverityAbove());
     }
 
     @Override

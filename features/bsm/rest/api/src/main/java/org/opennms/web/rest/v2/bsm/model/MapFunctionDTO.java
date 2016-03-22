@@ -43,16 +43,16 @@ import com.google.common.collect.Maps;
 public class MapFunctionDTO {
 
     @XmlElement(name="type", required = true)
-    private MapFunctionType type;
+    private String type;
 
     @XmlElement(name="properties")
     private Map<String, String> properties = Maps.newHashMap();
 
-    public MapFunctionType getType() {
+    public String getType() {
         return type;
     }
 
-    public void setType(MapFunctionType type) {
+    public void setType(String type) {
         this.type = type;
     }
 

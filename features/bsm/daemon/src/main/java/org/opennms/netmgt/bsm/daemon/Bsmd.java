@@ -40,7 +40,6 @@ import org.opennms.netmgt.bsm.service.BusinessServiceStateMachine;
 import org.opennms.netmgt.bsm.service.internal.AlarmWrapperImpl;
 import org.opennms.netmgt.bsm.service.internal.SeverityMapper;
 import org.opennms.netmgt.bsm.service.model.BusinessService;
-import org.opennms.netmgt.bsm.service.model.ReadOnlyBusinessService;
 import org.opennms.netmgt.bsm.service.model.Status;
 import org.opennms.netmgt.config.api.EventConfDao;
 import org.opennms.netmgt.daemon.SpringServiceDaemon;
@@ -253,7 +252,7 @@ public class Bsmd implements SpringServiceDaemon, BusinessServiceStateChangeHand
      * Called when the operational status of a business service was changed.
      */
     @Override
-    public void handleBusinessServiceStateChanged(ReadOnlyBusinessService businessService, Status newStatus, Status prevStatus) {
+    public void handleBusinessServiceStateChanged(BusinessService businessService, Status newStatus, Status prevStatus) {
         final OnmsSeverity newSeverity = SeverityMapper.toSeverity(newStatus);
         final OnmsSeverity prevSeverity = SeverityMapper.toSeverity(prevStatus);
 

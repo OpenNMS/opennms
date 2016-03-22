@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2015 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2015 The OpenNMS Group, Inc.
+ * Copyright (C) 2016 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,30 +26,17 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.web.rest.v2.bsm.model;
+package org.opennms.netmgt.bsm.persistence.api.functions.map;
 
-import java.util.List;
+public interface MapFunctionEntityVisitor<T> {
 
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
+    T visit(DecreaseEntity decreaseEntity);
 
-@XmlRootElement(name = "reduce-functions")
-public class ReduceFunctionListDTO {
-    private List<ReduceFunctionDTO> functions;
+    T visit(IdentityEntity identityEntity);
 
-    public ReduceFunctionListDTO() {
-    }
+    T visit(IgnoreEntity ignoreEntity);
 
-    public ReduceFunctionListDTO(final List<ReduceFunctionDTO> functions) {
-        this.functions = functions;
-    }
+    T visit(IncreaseEntity increaseEntity);
 
-    @XmlElement(name = "reduce-function")
-    public List<ReduceFunctionDTO> getFunctions() {
-        return functions;
-    }
-
-    public void setFunctions(List<ReduceFunctionDTO> functions) {
-        this.functions = functions;
-    }
+    T visit(SetToEntity setToEntity);
 }
