@@ -14,6 +14,10 @@
 :revdate: {last-update-label} {docdatetime}
 :version-label!:
 
+[[ga-admin-datachoices]]
+== Data Choices
+include::text/datachoices.adoc[]
+
 [[ga-admin-ui]]
 == Administrative Webinterface
 
