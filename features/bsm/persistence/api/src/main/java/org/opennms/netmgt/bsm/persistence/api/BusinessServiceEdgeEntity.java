@@ -177,6 +177,8 @@ public class BusinessServiceEdgeEntity implements EdgeEntity {
 
     @Override
     public <T> T accept(EdgeEntityVisitor<T> visitor) {
-        return null; // we MUST overwrite this in all sub-classes properly
+        // ALl sub classes MUST overwrite this properly, as this class cannot be abstract.
+        // This is due to how hibernate deals with inheritance strategies.
+        throw new IllegalStateException("Class '" + getClass().getName() + "' did not overwrite accept(EdgeEntityVisitor) method properly");
     }
 }
