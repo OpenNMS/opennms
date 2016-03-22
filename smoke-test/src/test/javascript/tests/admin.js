@@ -42,7 +42,8 @@ var links = {
 	'SNMP MIB Compiler': new Selector('div[id="content"] > iframe[src="mib-compiler"]'),
 	'Ops Board Configuration': new Selector('div[id="content"] > iframe[src="osgi/wallboard-config"]'),
 	'Surveillance Views Configuration': new Selector('div[id="content"] > iframe[src="osgi/vaadin-surveillance-views-config"]'),
-	'JMX Configuration Generator': new Selector('div[id="content"] > iframe[src="osgi/jmx-config-tool"]')
+	'JMX Configuration Generator': new Selector('div[id="content"] > iframe[src="osgi/jmx-config-tool"]'),
+	'Data Choices': new Selector('#datachoices-enable')
 };
 
 casper.test.begin('Admin Page Links', function suite(test) {

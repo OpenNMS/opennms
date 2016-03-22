@@ -224,6 +224,13 @@ public interface NodeDao extends LegacyOnmsDao<OnmsNode, Integer> {
      */
     List<OnmsNode> findByForeignSourceAndIpAddress(String foreignSource, String ipAddress);
 
+    /**
+     * Retrieves the number of nodes for each sysOid.
+     *
+     * @return a {@link java.util.Map} containing the number of nodes for each sysOid
+     */
+    Map<String, Long> getNumberOfNodesBySysOid();
+
     SurveillanceStatus findSurveillanceStatusByCategoryLists(Collection<OnmsCategory> rowCategories, Collection<OnmsCategory> columnCategories);
 
     Integer getNextNodeId (Integer nodeId);
