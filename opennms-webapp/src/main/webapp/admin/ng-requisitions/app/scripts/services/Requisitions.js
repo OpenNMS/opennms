@@ -241,8 +241,11 @@
     requisitionsService.removeRequisitionFromCache = function(foreignSource) {
       var requisitionsData = requisitionsService.internal.getCachedRequisitionsData();
       if (requisitionsData != null) {
-        $log.debug('clearRequisitionCache: removing requisition ' + foreignSource + ' from the internal cache');
-        requisitionsData.requisitions.splice(reqIdx, 1);
+        var reqIdx = requisitionsData.indexOf(foreignSource);
+        if (reqIdx >= 0) {
+          $log.debug('clearRequisitionCache: removing requisition ' + foreignSource + ' from the internal cache');
+          requisitionsData.requisitions.splice(reqIdx, 1);
+        }
       }
     };
 
