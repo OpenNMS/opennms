@@ -223,6 +223,8 @@
             <!-- <feature>opennms-webapp</feature> -->
             <feature>org.json</feature>
             <feature>postgresql</feature>
+            <feature>spring-security32</feature>
+            <feature>spring-webflow</feature>
 
             <!-- Features from other OpenNMS repositories -->
             <feature>opennms-core</feature>

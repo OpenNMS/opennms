@@ -124,6 +124,7 @@
 
     <feature name="batik" description="Apache :: XML Graphics :: Batik" version="1.7">
       <bundle>wrap:mvn:xalan/xalan/2.7.2</bundle>
+      <bundle>wrap:mvn:xalan/serializer/2.7.2</bundle>
       <bundle>wrap:mvn:xml-apis/xml-apis/1.4.01</bundle>
       <bundle>wrap:mvn:xml-apis/xml-apis-ext/1.3.04</bundle>
 
@@ -789,6 +790,7 @@
       <feature>opennms-reporting</feature>
 
       <bundle>wrap:mvn:xalan/xalan/2.7.2</bundle>
+      <bundle>wrap:mvn:xalan/serializer/2.7.2</bundle>
       <bundle>mvn:joda-time/joda-time/${jodaTimeVersion}</bundle>
       <bundle>wrap:mvn:org.quartz-scheduler/quartz/2.1.5</bundle>
       <bundle>wrap:mvn:org.w3c.css/sac/1.3</bundle>

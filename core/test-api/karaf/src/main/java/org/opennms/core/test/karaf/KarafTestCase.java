@@ -149,6 +149,7 @@ public abstract class KarafTestCase {
             // This path needs to match the path in the POM to the repo created by the features-maven-plugin's 'add-features-to-repo' execution: 
             // <repository>target/paxexam/test-repo</repository>
             editConfigurationFileExtend("etc/org.ops4j.pax.url.mvn.cfg", "org.ops4j.pax.url.mvn.defaultRepositories", "file:${karaf.home}/../test-repo@snapshots@id=default-repo"),
+            editConfigurationFileExtend("etc/org.ops4j.pax.url.mvn.cfg", "org.ops4j.pax.url.mvn.defaultRepositories", "file:${karaf.home}/../../features-repo@snapshots@id=opennms-repo"),
 
             // Disable all standard internet repositories so that we only rely on the defaultRepositories
             editConfigurationFilePut("etc/org.ops4j.pax.url.mvn.cfg", "org.ops4j.pax.url.mvn.repositories", ""),

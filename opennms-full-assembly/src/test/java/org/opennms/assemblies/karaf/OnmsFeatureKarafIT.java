@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.core.test.karaf.test;
+package org.opennms.assemblies.karaf;
 
 import static org.ops4j.pax.exam.CoreOptions.maven;
 
@@ -50,7 +50,6 @@ import org.ops4j.pax.exam.spi.reactors.PerMethod;
  */
 @RunWith(PaxExam.class)
 @ExamReactorStrategy(PerMethod.class)
-@Ignore("Ignore for now since creating the features repo is causing dependency problems")
 public class OnmsFeatureKarafIT extends KarafTestCase {
 
 	@Before
@@ -424,6 +423,16 @@ public class OnmsFeatureKarafIT extends KarafTestCase {
 	@Test
 	public void testInstallFeaturePostgresql() {
 		installFeature("postgresql");
+		System.out.println(executeCommand("features:list -i"));
+	}
+	@Test
+	public void testInstallFeatureSpringSecurity32() {
+		installFeature("spring-security32");
+		System.out.println(executeCommand("features:list -i"));
+	}
+	@Test
+	public void testInstallFeatureSpringWebflow() {
+		installFeature("spring-webflow");
 		System.out.println(executeCommand("features:list -i"));
 	}
 }
