@@ -209,11 +209,12 @@
     /**
     * @description Refreshes the deployed statistics for the requisition from the server
     *
-    * @name RequisitionController:refresh
+    * @name RequisitionController:refreshDeployedStats
     * @ngdoc method
     * @methodOf RequisitionController
     */
-    $scope.refresh = function() {
+    $scope.refreshDeployedStats = function() {
+      RequisitionsService.startTiming();
       RequisitionsService.updateDeployedStatsForRequisition($scope.requisition).then(
         function() { // success
           growl.success('The deployed statistics has been updated.');
@@ -223,19 +224,43 @@
     }
 
     /**
+    * @description Refreshes the currently loaded requisition from the server
+    *
+    * @name RequisitionController:refreshRequisition
+    * @ngdoc method
+    * @methodOf RequisitionController
+    */
+    $scope.refreshRequisition = function() {
+      bootbox.confirm('Are you sure you want to reload the requisition?<br/>All current changes will be lost.', function(ok) {
+        if (ok) {
+          RequisitionsService.startTiming();
+          $scope.requisition = new Requisition({});
+          RequisitionsService.removeRequisitionFromCache();
+          $scope.initialize(function() {
+            $scope.refreshDeployedStats();
+          });
+        }
+      });
+    }
+
+    /**
     * @description Initializes the local requisition from the server
     *
     * @name RequisitionController:initialize
     * @ngdoc method
     * @methodOf RequisitionController
+    * @param {function} customHandler An optional method to be called after the initialization is done.
     */
-    $scope.initialize = function() {
+    $scope.initialize = function(customHandler) {
       growl.success('Retrieving requisition ' + $scope.foreignSource + '...');
       RequisitionsService.getRequisition($scope.foreignSource).then(
         function(requisition) { // success
           $scope.requisition = requisition;
           $scope.filteredNodes = requisition.nodes;
           $scope.updateFilteredNodes();
+          if (customHandler != null) {
+            customHandler();
+          }
         },
         $scope.errorHandler
       );

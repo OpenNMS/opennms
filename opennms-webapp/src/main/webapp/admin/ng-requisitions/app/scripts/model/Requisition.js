@@ -145,6 +145,24 @@ function Requisition(requisition, isDeployed) {
   };
 
   /**
+  * @description Adds or replaces a node object.
+  *
+  * @name Requisition:setNode
+  * @ngdoc method
+  * @param {object} node The RequisitionNode object
+  * @methodOf Requisition
+  */
+  self.setNode = function(node) {
+    var idx = self.indexOf(node.foreignId);
+    if (idx < 0) {
+      self.nodes.push(node);
+      self.nodesDefined++;
+    } else {
+      self.nodes[idx] = node;
+    }
+  }
+
+  /**
   * @description Marks the requisition as deployed
   *
   * @name Requisition:setDeployed

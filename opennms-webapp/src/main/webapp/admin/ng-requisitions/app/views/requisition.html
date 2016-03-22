@@ -20,9 +20,15 @@
         <input class="form-control" id="search-nodes" type="text" placeholder="Search/Filter Nodes" ng-model="reqFilter"></input>
       </div>
       <div class="input-group">
-        <button type="button" class="btn btn-default" id="refresh" ng-click="refresh()">
-          <span class="glyphicon glyphicon-refresh"/> Refresh
-        </button>
+        <div class="btn-group" uib-dropdown>
+          <button type="button" class="btn btn-default" id="refresh" uib-dropdown-toggle ng-disabled="timingStatus.isRunning">
+            <span class="glyphicon glyphicon-refresh"></span> Refresh <span class="caret"></span>
+          </button>
+          <ul uib-dropdown-menu role="menu" aria-labelledby="refresh">
+            <li role="menuitem"><a id="refreshDeployedStats" ng-click="refreshDeployedStats()">Refresh Deployed Statistics</a></li>
+            <li role="menuitem"><a id="refreshRequisition" ng-click="refreshRequisition()">Refresh Requisition from Server</a></li>
+          </ul>
+        </div>
         <button type="button" class="btn btn-default" id="edit-foreign-source" ng-click="editForeignSource()">
           <span class="glyphicon glyphicon-edit"/> Edit Definition
         </button>
@@ -30,7 +36,7 @@
           <span class="glyphicon glyphicon-refresh"/> Synchronize
         </button>
         <button type="button" class="btn btn-default" id="add-node" ng-click="addNode()">
-          <span class="glyphicon glyphicon-plus"/> Add Node
+          <span class="glyphicon glyphicon-plus-sign"/> Add Node
         </button>
         <button type="button" class="btn btn-success" id="go-back" ng-click="goBack()">
           <span class="glyphicon glyphicon-remove"/> Return
@@ -89,7 +95,7 @@
                   <span class="glyphicon glyphicon-pencil"></span>
                 </button>
                 <button class="btn btn-default btn-xs" uib-tooltip="Remove the {{node.nodeLabel}} Node" ng-click="deleteNode(node)">
-                  <span class="glyphicon glyphicon-remove"></span>
+                  <span class="glyphicon glyphicon-trash"></span>
                 </button>
               </span>
             </td>

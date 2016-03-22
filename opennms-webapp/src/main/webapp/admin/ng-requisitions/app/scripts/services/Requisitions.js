@@ -123,19 +123,6 @@
     };
 
     /**
-    * @description Clears the internal cache.
-    *
-    * This forces the service to retrieve the data from the server on next request.
-    *
-    * @name RequisitionsService:internal.clearRequisitionsCache
-    * @ngdoc method
-    * @methodOf RequisitionsService
-    */
-    requisitionsService.clearRequisitionsCache = function() {
-      requisitionsService.internal.cache.removeAll();
-    };
-
-    /**
     * @description (Internal) Gets a specific requisition object from the cache.
     *
     * @private
@@ -173,7 +160,7 @@
     };
 
     /**
-    * @description Add a new node to an existing requisition
+    * @description (Internal) Add a new node to an existing requisition
     *
     * @private
     * @name RequisitionsService:addQuickNode
@@ -205,7 +192,7 @@
     };
 
     /**
-    * @description Updates a Requisition object based on a Deployed Statistics Object.
+    * @description (Internal) Updates a Requisition object based on a Deployed Statistics Object.
     *
     * @private
     * @name RequisitionsService:updateRequisition
@@ -225,6 +212,37 @@
         if (existingNode != null) {
           existingNode.deployed = true;
         }
+      }
+    };
+
+    /**
+    * @description Clears the internal cache.
+    *
+    * This forces the service to retrieve the data from the server on next request.
+    *
+    * @name RequisitionsService:internal.clearRequisitionsCache
+    * @ngdoc method
+    * @methodOf RequisitionsService
+    */
+    requisitionsService.clearRequisitionsCache = function() {
+        $log.debug('clearRequisitionsCache: removing everything from the internal cache');
+      requisitionsService.internal.cache.removeAll();
+    };
+
+    /**
+    * @description Removes a specific requisition from the internal cache
+    *
+    * This forces the service to retrieve the data from the server on next request.
+    *
+    * @name RequisitionsService:internal.removeRequisitionFromCache
+    * @ngdoc method
+    * @methodOf RequisitionsService
+    */
+    requisitionsService.removeRequisitionFromCache = function(foreignSource) {
+      var requisitionsData = requisitionsService.internal.getCachedRequisitionsData();
+      if (requisitionsData != null) {
+        $log.debug('clearRequisitionCache: removing requisition ' + foreignSource + ' from the internal cache');
+        requisitionsData.requisitions.splice(reqIdx, 1);
       }
     };
 
@@ -307,7 +325,7 @@
         );
       })
       .error(function(error, status) {
-        $log.error('getRequisition: GET ' + url + ' failed:', error, status);
+        $log.error('getRequisitions: GET ' + url + ' failed:', error, status);
         deferred.reject('Cannot retrieve the requisitions.' + requisitionsService.internal.errorHelp);
       });
 
@@ -437,6 +455,11 @@
       .success(function(data) {
         var requisition = new Requisition(data);
         $log.debug('getRequisition: got requisition ' + foreignSource);
+        var requisitionsData = requisitionsService.internal.getCachedRequisitionsData();
+        if (requisitionsData != null) {
+          $log.debug('getRequisition: updating cache for requisition ' + foreignSource);
+          requisitionsData.setRequisition(requisition);
+        }
         deferred.resolve(requisition);
       })
       .error(function(error, status) {
@@ -574,10 +597,7 @@
       $q.all([ deferredReqPending, deferredReqDeployed, deferredFSPending, deferredFSDeployed ])
       .then(function(results) {
         $log.debug('deleteRequisition: deleted requisition ' + foreignSource);
-        if (requisitionsData != null) {
-          $log.debug('deleteRequisition: removing requisition ' + foreignSource + ' from the internal cache');
-          requisitionsData.requisitions.splice(reqIdx, 1);
-        }
+        requisitionsService.removeRequisitionFromCache(foreignSource);
         deferred.resolve(results);
       }, function(error, status) {
         $log.error('deleteRequisition: DELETE operation failed:', error, status);
@@ -668,6 +688,11 @@
       .success(function(data) {
         var node = new RequisitionNode(foreignSource, data);
         $log.debug('getNode: got node ' + foreignId + '@' + foreignSource);
+        var requisition = requisitionsService.internal.getCachedRequisition(foreignSource);
+        if (requisition != null) {
+          $log.debug('getNode: updating cache for requisition ' + foreignSource);
+          requisition.setNode(node);
+        }
         deferred.resolve(node);
       })
       .error(function(error, status) {

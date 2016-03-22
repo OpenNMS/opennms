@@ -11,7 +11,7 @@
            placeholder="Foreign ID (must be unique within the requisition)"
            ng-model="node.foreignId" required/>
     <span class="input-group-btn">
-      <button class="btn btn-default" type="button" ng-click="generateForeignId(quickAddNodeForm.foreignId)"><span class="glyphicon glyphicon-plus"/> Auto-generate</button>
+      <button class="btn btn-default" type="button" ng-click="generateForeignId(quickAddNodeForm.foreignId)"><span class="glyphicon glyphicon-tag"/> Auto-generate</button>
     </span>
   </div>
   <p ng-show="nodeForm.foreignId.$invalid" class="help-block">Foreign ID is required and must be unique within the requisition.</p>

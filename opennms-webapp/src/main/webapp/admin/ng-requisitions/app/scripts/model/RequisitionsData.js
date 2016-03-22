@@ -58,6 +58,23 @@ function RequisitionsData() {
     return idx < 0 ? null : self.requisitions[idx];
   };
 
+  /**
+  * @description Adds or replaces a requisition object.
+  *
+  * @name RequisitionsData:setRequisition
+  * @ngdoc method
+  * @param {object} requisition The Requisition object
+  * @methodOf RequisitionsData
+  */
+  self.setRequisition = function(requisition) {
+    var idx = self.indexOf(requisition.foreignSource);
+    if (idx < 0) {
+      self.requisitions.push(requisition);
+    } else {
+      self.requisitions[idx] = requisition;
+    }
+  }
+
   self.className = 'RequisitionsData';
 
   return self;

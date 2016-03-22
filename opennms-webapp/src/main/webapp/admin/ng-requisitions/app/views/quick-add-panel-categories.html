@@ -1,4 +1,4 @@
-<a class="btn" id="add-category" ng-click="addCategory()"><span class="glyphicon glyphicon-plus"/> Add Category</a>
+<a class="btn" id="add-category" ng-click="addCategory()"><span class="glyphicon glyphicon-plus-sign"/> Add Category</a>
 <br/>
 <ng-form name="categoryForm" ng-repeat="category in node.categories">
   <div class="form-group" ng-class="{ 'has-error' : categoryForm.categoryName.$invalid }">
@@ -9,7 +9,7 @@
       <input class="form-control" type="text" name="categoryName" placeholder="Category Name" ng-model="category.name" typeahead-min-length="0" typeahead-editable="true" uib-typeahead="category for category in getAvailableCategories() | filter:$viewValue" required></input>
       <span class="input-group-btn">
         <button class="btn btn-default" type="button" ng-click="removeCategory($index)">
-          <span class="glyphicon glyphicon-remove"></span>
+          <span class="glyphicon glyphicon-trash"></span>
         </button>
       </span>
     </div>

@@ -334,22 +334,14 @@
             label: 'Reload Everything',
             className: 'btn-danger',
             callback: function() {
-              growl.success('Refreshing requisitions...');
-              RequisitionsService.clearRequisitionsCache();
-              $scope.requisitionsData = { requisitions : [] };
-              $scope.initialize();
+              $scope.refreshRequisitions();
             }
           },
           reloadDeployed: {
             label: 'Reload Deployed Data',
             className: 'btn-success',
             callback: function() {
-              RequisitionsService.updateDeployedStats($scope.requisitionsData).then(
-                function() { // success
-                  growl.success('The deployed statistics has been updated.');
-                },
-                $scope.errorHandler
-              );
+              $scope.refreshDeployedStats();
             }
           },
           main: {
@@ -359,6 +351,43 @@
         }
       });
     };
+
+    /**
+    * @description Refreshes the deployed statistics for all the requisitions from the server
+    *
+    * @name RequisitionsController:refreshDeployedStats
+    * @ngdoc method
+    * @methodOf RequisitionsController
+    */
+    $scope.refreshDeployedStats = function() {
+      RequisitionsService.startTiming();
+      growl.success('Refreshing deployed statistics...');
+      RequisitionsService.updateDeployedStats($scope.requisitionsData).then(
+        function() { // success
+          growl.success('The deployed statistics has been updated.');
+        },
+        $scope.errorHandler
+      );
+    }
+
+    /**
+    * @description Refreshes all the requisitions from the server
+    *
+    * @name RequisitionsController:refreshRequisitions
+    * @ngdoc method
+    * @methodOf RequisitionsController
+    */
+    $scope.refreshRequisitions = function() {
+      bootbox.confirm('Are you sure you want to reload all the requisitions?<br/>All current changes will be lost.', function(ok) {
+        if (ok) {
+          RequisitionsService.startTiming();
+          growl.success('Refreshing requisitions...');
+          RequisitionsService.clearRequisitionsCache();
+          $scope.requisitionsData = { requisitions : [] };
+          $scope.initialize();
+        }
+      });
+    }
 
    /**
     * @description Updates the pagination variables for the requisitions.
