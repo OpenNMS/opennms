@@ -29,7 +29,7 @@
 package org.opennms.features.topology.api;
 
 public interface Constants {
-    public static final String CENTER_VERTEX_ID = "center";
-    public static final String GROUP_ICON_KEY = "group";
-    public static final String SERVER_ICON_KEY = "server";
+    String CENTER_VERTEX_ID = "center";
+    String GROUP_ICON_KEY = "group";
+    String SERVER_ICON_KEY = "server";
 }
