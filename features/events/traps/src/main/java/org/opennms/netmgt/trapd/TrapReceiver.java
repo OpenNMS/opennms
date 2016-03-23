@@ -28,16 +28,12 @@
 
 package org.opennms.netmgt.trapd;
 
-
 /**
  * @author Seth
  */
-public interface TrapReceiver extends Runnable {
+public interface TrapReceiver {
 
-    @Override
-    void run();
+    void start();
 
-    String getName();
-
-    void stop() throws InterruptedException;
+    void stop();
 }

@@ -30,6 +30,12 @@
     <constructor-arg ref="trapdIpMgr" />
   </bean>
   
+  <bean id="trapConfigBean" class="org.opennms.netmgt.trapd.TrapdConfigBean"/>
+  
+  <bean id="trapReceiverSnmp4jImpl" class="org.opennms.netmgt.trapd.TrapReceiverSnmp4jImpl">
+    <constructor-arg ref="trapConfigBean" />
+  </bean>
+  
   <bean id="processorFactory" class="org.opennms.netmgt.trapd.TrapQueueProcessorFactory">
     <property name="eventManager" ref="eventIpcManager"/>
   </bean>

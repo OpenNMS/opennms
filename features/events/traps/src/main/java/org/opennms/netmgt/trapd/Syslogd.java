@@ -63,7 +63,7 @@ public class Syslogd extends AbstractServiceDaemon {
     @Autowired
     private TrapReceiver m_udpEventReceiver;
 
-    private BroadcastEventProcessorSyslog m_broadcastEventProcessor;
+    private BroadcastEventProcessor m_broadcastEventProcessor;
 
     /**
      * <p>Constructor for Syslogd.</p>
