@@ -85,6 +85,15 @@ public class TopologySelectorOperation extends AbstractCheckedOperation {
     }
 
     public void execute(GraphContainer container) {
+		execute(container, true);
+	}
+
+	/**
+	 * Changes the base topology to {@link #m_topologyProvider} and optionally resets all criteria and sets the szl to 1.
+	 * @param container The GraphContainer.
+	 * @param resetCriteriaAndSzl Defines if the criteria and szl is reset.
+     */
+	private void execute(GraphContainer container, boolean resetCriteriaAndSzl) {
        	LOG.debug("Active provider is: {}", m_topologyProvider);
 
         // only change if provider changed
@@ -102,9 +111,11 @@ public class TopologySelectorOperation extends AbstractCheckedOperation {
 				container.setLayoutAlgorithm(layoutAlgorithm);
 			}
             container.setBaseTopology(m_topologyProvider);
-            container.clearCriteria(); // remove all criteria
-            container.setSemanticZoomLevel(1); // reset to 1
-            container.addCriteria(container.getBaseTopology().getDefaultCriteria());
+			if (resetCriteriaAndSzl) {
+				container.clearCriteria(); // remove all criteria
+				container.setSemanticZoomLevel(1); // reset to 1
+				container.addCriteria(container.getBaseTopology().getDefaultCriteria());
+			}
             container.redoLayout();
         }
     }
@@ -134,7 +145,7 @@ public class TopologySelectorOperation extends AbstractCheckedOperation {
     public void applyHistory(GraphContainer container, Map<String, String> settings) {
         // If the class name and label tuple is set to true, then set the base topology provider
         if ("true".equals(settings.get(this.getClass().getName() + "." + getLabel()))) {
-            execute(container);
+            execute(container, false);
         }
     }
 
