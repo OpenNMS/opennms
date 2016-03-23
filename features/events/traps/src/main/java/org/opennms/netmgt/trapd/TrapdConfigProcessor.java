@@ -28,25 +28,26 @@
 
 package org.opennms.netmgt.trapd;
 
-import org.opennms.netmgt.config.SyslogdConfig;
+import org.opennms.netmgt.config.TrapdConfig;
+import org.opennms.netmgt.snmp.TrapNotification;
 
 /**
- * This processor will update the {@link SyslogdConfig} on a
- * {@link SyslogConnection} so that it can be processed according
+ * This processor will update the {@link TrapdConfig} on a
+ * {@link TrapQueueProcessor} so that it can be processed according
  * to the new configuration.
  * 
  * @author Seth
  */
-public class SyslogdConfigProcessor {
+public class TrapdConfigProcessor {
 
-	private final SyslogdConfig m_config;
+	private final TrapdConfig m_config;
 
-	public SyslogdConfigProcessor(SyslogdConfig config) {
+	public TrapdConfigProcessor(TrapdConfig config) {
 		m_config = config;
 	}
 
-	public SyslogConnection process(SyslogConnection connection) {
-		connection.setConfig(m_config);
-		return connection;
+	public TrapNotification process(TrapNotification trapNotification) {
+		
+		return trapNotification;
 	}
 }
