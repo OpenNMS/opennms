@@ -131,12 +131,12 @@ public class SearchBox extends AbstractComponent implements SelectionListener, G
             LOG.debug("SearchBox->addToFocus: called with searchSuggestion: {}", searchSuggestion);
             SearchResult searchResult = new SearchResult(searchSuggestion.getNamespace(), searchSuggestion.getId(), searchSuggestion.getLabel(), searchSuggestion.getQuery());
 
-            Multiset<SearchProvider> keys = m_suggestionMap.keys();
-            for(SearchProvider key : keys){
-                Collection<SearchResult> searchResults = m_suggestionMap.get(key);
+            Multiset<SearchProvider> searchProviders = m_suggestionMap.keys();
+            for(SearchProvider eachSearchProvider : searchProviders){
+                Collection<SearchResult> searchResults = m_suggestionMap.get(eachSearchProvider);
                 if(searchResults.contains(searchResult)){
-                    key.onFocusSearchResult(searchResult, m_operationContext);
-                    key.addVertexHopCriteria(searchResult, m_operationContext.getGraphContainer());
+                    eachSearchProvider.onFocusSearchResult(searchResult, m_operationContext);
+                    eachSearchProvider.addVertexHopCriteria(searchResult, m_operationContext.getGraphContainer());
                     break;
                 }
             }
