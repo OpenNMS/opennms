@@ -305,9 +305,9 @@ sub get_version_from_java {
 	my ($output, $bindir, $shortversion, $version, $build, $java_home);
 
 	$output = `"$javacmd" -version 2>\&1`;
-	($version) = $output =~ / version \"?([\d\.]+?(?:[\-\_]\S+?)?)\"?$/ms;
-	($version, $build) = $version =~ /^([\d\.]+)(?:[\-\_](.*?))?$/;
-	($shortversion) = $version =~ /^(\d+\.\d+)/;
+	($version) = $output =~ / version \"?([\d\.]+?(?:[\+\-\_]\S+?)?)\"?$/ms;
+	($version, $build) = $version =~ /^([\d\.]+)(?:[\+\-\_](.*?))?$/;
+	($shortversion) = $version =~ /^(\d+\.\d+|\d+)/;
 	$build = 0 if (not defined $build);
 
 	$bindir = dirname($javacmd);
@@ -344,6 +344,7 @@ sub find_java_home {
 					next if ($java  =~ /openjdk/i);
 					next if ($build =~ /openjdk/i);
 				}
+				next unless ($shortversion);
 
 				$versions->{$shortversion}             = {} unless (exists $versions->{$shortversion});
 				$versions->{$shortversion}->{$version} = {} unless (exists $versions->{$shortversion}->{$version});
