@@ -66,7 +66,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  * @author <A HREF="mailto:tarus@opennms.org">Tarus Balog </A>
  * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
  */
-public class Trapd extends AbstractServiceDaemon implements TrapProcessorFactory{
+public class Trapd extends AbstractServiceDaemon implements TrapProcessorFactory {
     
     private static final Logger LOG = LoggerFactory.getLogger(Trapd.class);
 
@@ -138,7 +138,7 @@ public class Trapd extends AbstractServiceDaemon implements TrapProcessorFactory
      * <p>onInit</p>
      */
     @Override
-    public synchronized void onInit() {
+    protected synchronized void onInit() {
         BeanUtils.assertAutowiring(this);
 
         m_trapdIpMgr.dataSourceSync();
@@ -162,7 +162,7 @@ public class Trapd extends AbstractServiceDaemon implements TrapProcessorFactory
      * @see org.opennms.protocols.snmp.SnmpTrapHandler
      */
     @Override
-    public synchronized void onStart() {
+    protected synchronized void onStart() {
         m_status = STARTING;
 
         LOG.debug("start: Initializing the Trapd receiver");
@@ -178,7 +178,7 @@ public class Trapd extends AbstractServiceDaemon implements TrapProcessorFactory
      * Pauses Trapd
      */
     @Override
-    public void onPause() {
+    protected void onPause() {
         if (m_status != RUNNING) {
             return;
         }
@@ -197,7 +197,7 @@ public class Trapd extends AbstractServiceDaemon implements TrapProcessorFactory
      * Resumes Trapd
      */
     @Override
-    public void onResume() {
+    protected void onResume() {
         if (m_status != PAUSED) {
             return;
         }
@@ -217,7 +217,7 @@ public class Trapd extends AbstractServiceDaemon implements TrapProcessorFactory
      * the command is silently discarded.
      */
     @Override
-    public synchronized void onStop() {
+    protected synchronized void onStop() {
         m_status = STOP_PENDING;
 
         // shutdown and wait on the background processing thread to exit.
