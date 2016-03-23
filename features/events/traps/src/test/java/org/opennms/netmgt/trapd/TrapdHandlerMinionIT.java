@@ -30,7 +30,6 @@ package org.opennms.netmgt.trapd;
 
 import java.util.Dictionary;
 import java.util.Map;
-import java.util.Properties;
 
 import org.apache.activemq.broker.BrokerService;
 import org.apache.camel.component.mock.MockEndpoint;
@@ -40,17 +39,11 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.MockitoAnnotations;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
-import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.netmgt.config.TrapdConfig;
-import org.opennms.netmgt.config.api.EventConfDao;
 import org.opennms.netmgt.snmp.TrapNotification;
 import org.opennms.netmgt.snmp.TrapProcessor;
 import org.opennms.netmgt.snmp.snmp4j.Snmp4JTrapNotifier;
-import org.opennms.test.JUnitConfigurationEnvironment;
-import org.opennms.test.mock.EasyMockUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.snmp4j.PDU;
@@ -64,20 +57,11 @@ import org.springframework.test.context.ContextConfiguration;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations = { "classpath:/META-INF/opennms/emptyContext.xml" })
-@JUnitConfigurationEnvironment
-@JUnitTemporaryDatabase
-public class TrapdHandlerDefaultIT extends CamelBlueprintTestSupport {
+public class TrapdHandlerMinionIT extends CamelBlueprintTestSupport {
 
-	private boolean mockInitialized = false;
-
-	private static final Logger LOG = LoggerFactory.getLogger(TrapdHandlerDefaultIT.class);
+	private static final Logger LOG = LoggerFactory.getLogger(TrapdHandlerMinionIT.class);
 
 	private static BrokerService m_broker = null;
-
-	private EasyMockUtils m_mocks = new EasyMockUtils();
-
-	private EventConfDao m_eventConfDao = m_mocks
-			.createMock(EventConfDao.class);
 
 	/**
 	 * Use Aries Blueprint synchronous mode to avoid a blueprint deadlock bug.
@@ -87,15 +71,8 @@ public class TrapdHandlerDefaultIT extends CamelBlueprintTestSupport {
 	 */
 	@Override
 	public void doPreSetup() throws Exception {
-		System.setProperty("org.apache.aries.blueprint.synchronous",
-				Boolean.TRUE.toString());
-		System.setProperty("de.kalpatec.pojosr.framework.events.sync",
-				Boolean.TRUE.toString());
-
-		if (!mockInitialized) {
-			MockitoAnnotations.initMocks(this);
-			mockInitialized = true;
-		}
+		System.setProperty("org.apache.aries.blueprint.synchronous", Boolean.TRUE.toString());
+		System.setProperty("de.kalpatec.pojosr.framework.events.sync", Boolean.TRUE.toString());
 	}
 
 	@Override
@@ -116,29 +93,20 @@ public class TrapdHandlerDefaultIT extends CamelBlueprintTestSupport {
 
 	@SuppressWarnings("rawtypes")
 	@Override
-	protected void addServicesOnStartup(
-			Map<String, KeyValueHolder<Object, Dictionary>> services) {
-		// Create a mock SyslogdConfig
-		TrapdConfigBean config = new TrapdConfigBean();
-		config.setSnmpTrapPort(10514);
-		config.setSnmpTrapAddress("127.0.0.1");
-		config.setNewSuspectOnTrap(false);
-
-		services.put(
-				TrapdConfig.class.getName(),
-				new KeyValueHolder<Object, Dictionary>(config, new Properties()));
+	protected void addServicesOnStartup(Map<String, KeyValueHolder<Object, Dictionary>> services) {
+		// Register any mock OSGi services here
 	}
 
 	// The location of our Blueprint XML files to be used for testing
 	@Override
 	protected String getBlueprintDescriptor() {
-		return "file:blueprint-trapd-handler-default.xml,file:src/test/resources/blueprint-empty-camel-context.xml";
+		return "file:blueprint-trapd-handler-minion.xml";
 	}
 
 	@BeforeClass
 	public static void startActiveMQ() throws Exception {
 		m_broker = new BrokerService();
-		m_broker.addConnector("tcp://127.0.0.1:61616");
+		m_broker.addConnector("tcp://127.0.0.1:61716");
 		m_broker.start();
 	}
 
@@ -151,30 +119,18 @@ public class TrapdHandlerDefaultIT extends CamelBlueprintTestSupport {
 
 	@Test
 	public void testTrapd() throws Exception {
-		// Expect one SyslogConnection message to be broadcast on the messaging
-		// channel
-		MockEndpoint broadcastTrapd = getMockEndpoint(
-				"mock:activemq:broadcastTrap", false);
-		broadcastTrapd.setExpectedMessageCount(1);
+		
+		MockEndpoint broadcasTrap = getMockEndpoint("mock:activemq:broadcastTrap", false);
+		broadcasTrap.setExpectedMessageCount(1);
 
-		MockEndpoint trapHandler = getMockEndpoint("mock:seda:trapHandler",
-				false);
-		trapHandler.setExpectedMessageCount(1);
 
-		// Create a mock SyslogdConfig
-		TrapdConfigBean config = new TrapdConfigBean();
-		config.setSnmpTrapPort(10514);
-		config.setSnmpTrapAddress("127.0.0.1");
-		config.setNewSuspectOnTrap(false);
-
-		TrapQueueProcessor trapQProcessor = new TrapQueueProcessor();
+		TrapQueueProcessor trap=new TrapQueueProcessor();
+		trap.setNewSuspect(false);
 		TrapProcessor trapProcess = new TrapProcessorImpl();
 		trapProcess.setAgentAddress(InetAddressUtils.ONE_TWENTY_SEVEN);
 		trapProcess.setCommunity("comm");
-		trapProcess.setTimeStamp(System.currentTimeMillis());
 		trapProcess.setTrapAddress(InetAddressUtils.ONE_TWENTY_SEVEN);
-
-		// create instance of snmp4JV2cTrap
+		
 		PDU snmp4JV2cTrapPdu = new PDU();
 		
 		OID oid = new OID(".1.3.6.1.2.1.1.3.0");
@@ -189,20 +145,13 @@ public class TrapdHandlerDefaultIT extends CamelBlueprintTestSupport {
 		TrapNotification snmp4JV2cTrap = new Snmp4JTrapNotifier.Snmp4JV2TrapInformation(
 				InetAddressUtils.ONE_TWENTY_SEVEN, new String("public"),
 				snmp4JV2cTrapPdu, trapProcess);
+		
+		trap.setTrapNotification(snmp4JV2cTrap);
 
-		trapQProcessor.setTrapNotification(snmp4JV2cTrap);
 
-		trapQProcessor.setEventConfDao(m_eventConfDao);
-
-		// Send a TrapQProcessor
-		template.sendBody("activemq:broadcastTrap", trapQProcessor.call());
+		template.requestBody("seda:handleMessage", trap.call());
 
 		assertMockEndpointsSatisfied();
 
-		// Check that the input for the seda:trapHandler endpoint matches
-		// the TrapQProcessor that we simulated via ActiveMQ
-		TrapQueueProcessor result = trapHandler.getReceivedExchanges().get(0)
-				.getIn().getBody(TrapQueueProcessor.class);
-		System.out.println("Result ++++:" + result);
 	}
 }
