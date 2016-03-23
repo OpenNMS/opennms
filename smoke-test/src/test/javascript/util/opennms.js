@@ -176,7 +176,13 @@ OpenNMS.prototype.login = function login() {
 	self.casper.waitForSelector('ol.breadcrumb > li > a[href="'+self.root()+'/index.jsp"]', function() {
 		console.log('* Finished logging in.');
 	});
-}
+	self.casper.waitForSelector('#datachoices-enable', function() {
+		casper.clickLabel('Opt-in');
+		console.log("* Enabled data choices.");
+	}, function() {
+		console.log("* Data choices already enabled.");
+	}, 5000);
+};
 
 OpenNMS.prototype.enableBasicAuth = function(username, password) {
 	var self = this;
@@ -390,21 +396,25 @@ OpenNMS.prototype.waitForRequisition = function(foreignSource, numNodes) {
 	}, 500);
 	console.log('* Waiting for ' + foreignSource + ' requisition to exist and be deployed.');
 	self.casper.waitFor(function check() {
-		var ret = false;
+		var ret = true;
 		var content = self.casper.getPageContent();
 		if (content.indexOf(expected) >= 0) {
 			var requisition = JSON.parse(content);
-			if (numNodes && numNodes !== requisition.node.length) {
-				//console.log('! Requisition ' + foreignSource + ' exists, but has the wrong number of nodes! (' + requisition.node.length + ' != ' + numNodes + ')');
+
+			if (!requisition) {
+				return false;
+			}
+
+			if (numNodes === 0 && requisition.node && requisition.node.length !== 0) {
 				ret = false;
-			} else {
-				if (requisition['date-stamp'] > requisition['last-import']) {
-					//console.log('! Requisition ' + foreignSource + ' exists, but has not finished importing.');
-					ret = true;
-				} else {
-					//console.log('* Requisition ' + foreignSource + ' has finished importing.');
-					ret = true;
-				}
+			}
+			if (numNodes && requisition.node && numNodes !== requisition.node.length) {
+				ret = false;
+			}
+			if (requisition['date-stamp'] <= requisition['last-import']) {
+				// after successful import, we update the requisition in "deployed", so it gets a newer datestamp
+				// if it's older than last-import, then it hasn't finished importing yet
+				ret = false;
 			}
 		}
 		return ret;
@@ -432,7 +442,9 @@ OpenNMS.prototype.waitForRequisition = function(foreignSource, numNodes) {
 			}
 		});
 		self.casper.thenOpen(startingUrl);
-	});
+	}, function onTimeout() {
+		throw new CasperError('Requisition "' + foreignSource + '" never finished showing up');
+	}, self.casper.options.waitTimeout * 2);
 	self.casper.then(function() {
 		console.log('* ' + foreignSource + ' has been deployed.');
 	});
@@ -456,7 +468,7 @@ OpenNMS.prototype.wipeRequisition = function(foreignSource) {
 		wipeLog('importing empty ' + foreignSource);
 		self.importRequisition(foreignSource);
 	});
-	self.waitForRequisition(foreignSource);
+	self.waitForRequisition(foreignSource, 0);
 	self.casper.then(function() {
 		wipeLog('deleting ' + foreignSource);
 		self.deleteRequisition(foreignSource);
@@ -467,6 +479,7 @@ OpenNMS.prototype.wipeRequisition = function(foreignSource) {
 OpenNMS.prototype.ensureNoRequisitions = function() {
 	var self = this;
 
+	self.casper.wait(500);
 	self.casper.thenOpen(self.root() + '/rest/requisitions', {
 		headers: {
 			Accept: 'application/json'
