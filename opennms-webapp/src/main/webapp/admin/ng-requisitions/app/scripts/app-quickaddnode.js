@@ -7,7 +7,7 @@
 
   'use strict';
 
-  angular.module('onms-quick-add-node', [
+  angular.module('onms-requisitions', [
     'ngRoute',
     'ngAnimate',
     'ui.bootstrap',
