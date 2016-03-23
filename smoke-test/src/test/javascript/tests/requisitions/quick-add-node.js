@@ -25,7 +25,7 @@ casper.test.begin('Quick-Add Node to Requisition', {
         });
 
         // Basic fields
-        casper.waitForSelector('input#foreignSource');
+        casper.waitUntilVisible('input#foreignSource');
         casper.then(function() {
             test.assertVisible('input#foreignSource', 'The "Foreign Source" field should be visible');
             casper.sendKeys('input#nodeLabel', nodeLabel);

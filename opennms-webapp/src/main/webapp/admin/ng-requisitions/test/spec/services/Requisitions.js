@@ -156,6 +156,7 @@ describe('Service: RequisitionsService', function () {
   beforeEach(inject(function($injector) {
     scope = $injector.get('$rootScope').$new();
     $httpBackend = $injector.get('$httpBackend');
+    $httpBackend.whenGET('views/requisitions.html').respond(200, '');
     requisitionsService = $injector.get('RequisitionsService');
   }));
 

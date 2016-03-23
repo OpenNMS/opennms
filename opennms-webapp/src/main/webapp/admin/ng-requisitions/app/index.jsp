@@ -61,6 +61,7 @@
     <jsp:param name="script" value='<script type="text/javascript" src="bower_components/angular-bootstrap/ui-bootstrap-tpls.min.js"></script>' />
     <jsp:param name="script" value='<script type="text/javascript" src="bower_components/angular-loading-bar/build/loading-bar.min.js"></script>' />
     <jsp:param name="script" value='<script type="text/javascript" src="bower_components/angular-growl-v2/build/angular-growl.min.js"></script>' />
+    <jsp:param name="script" value='<script type="text/javascript" src="bower_components/ip-address/dist/ip-address-globals.js"></script>' />
     <jsp:param name="script" value='<script type="text/javascript" src="bower_components/bootbox/bootbox.js"></script>' />
 
     <jsp:param name="script" value='<script type="text/javascript" src="scripts/app.js"></script>' />

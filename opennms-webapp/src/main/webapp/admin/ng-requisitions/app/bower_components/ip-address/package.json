@@ -1,0 +1,49 @@
+{
+  "name": "ip-address",
+  "description": "A library for parsing IPv6 and IPv4 IP addresses in node and the browser.",
+  "keywords": [
+    "ipv6",
+    "ipv4",
+    "browser",
+    "validation"
+  ],
+  "version": "5.8.0",
+  "author": "Beau Gunderson <beau@beaugunderson.com> (https://beaugunderson.com/)",
+  "license": "MIT",
+  "main": "ip-address.js",
+  "scripts": {
+    "test": "mocha -R spec",
+    "docs": "documentation --github --output docs --format html ./ip-address.js",
+    "prepublish": "browserify ./ip-address-globals.js > ./dist/ip-address-globals.js"
+  },
+  "bin": {
+    "ipv6": "bin/ipv6.js",
+    "ipv6grep": "bin/ipv6grep.js"
+  },
+  "engines": {
+    "node": ">= 0.10"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/beaugunderson/ip-address.git"
+  },
+  "dependencies": {
+    "cli": "0.11.x",
+    "cliff": "0.1.x",
+    "jsbn": "0.1.0",
+    "lodash.find": "^4.0.0",
+    "lodash.max": "^4.0.0",
+    "lodash.merge": "^4.0.1",
+    "lodash.padstart": "^4.0.1",
+    "lodash.repeat": "^3.1.1",
+    "sprintf-js": "^1.0.3"
+  },
+  "devDependencies": {
+    "browserify": "^13.0.0",
+    "chai": "^3.4.1",
+    "codecov.io": "^0.1.6",
+    "documentation": "^3.0.4",
+    "istanbul": "^0.4.2",
+    "mocha": "^2.3.4"
+  }
+}
