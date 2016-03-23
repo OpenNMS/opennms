@@ -260,6 +260,12 @@
 
   <dependencies>
     <dependency>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>snmp4j-agent-dependencies</artifactId>
+      <type>pom</type>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
       <groupId>org.opennms.container</groupId>
       <artifactId>karaf</artifactId>
       <type>tar.gz</type>
