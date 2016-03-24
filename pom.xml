@@ -1312,7 +1312,7 @@
           <releases><enabled>false</enabled><updatePolicy>${updatePolicy}</updatePolicy></releases>
           <id>opennms-snapshots</id>
           <name>OpenNMS Snapshot Maven Repository</name>
-          <url>http://maven.opennms.org/content/groups/opennms.org-snapshot</url>
+          <url>http://maven.opennms.org/content/groups/opennms.org-snapshot/</url>
         </repository>
       </repositories>
     </profile>
@@ -3687,7 +3687,7 @@
       <releases><enabled>true</enabled><updatePolicy>${updatePolicy}</updatePolicy></releases>
       <id>opennms-repo</id>
       <name>OpenNMS Repository</name>
-      <url>http://maven.opennms.org/content/groups/opennms.org-release</url>
+      <url>http://maven.opennms.org/content/groups/opennms.org-release/</url>
     </repository>
     <repository>
       <snapshots><enabled>false</enabled><updatePolicy>${updatePolicy}</updatePolicy></snapshots>
@@ -3704,7 +3704,7 @@
       <releases><enabled>true</enabled></releases>
       <id>opennms-repo</id>
       <name>OpenNMS Repository</name>
-      <url>http://maven.opennms.org/content/groups/opennms.org-release</url>
+      <url>http://maven.opennms.org/content/groups/opennms.org-release/</url>
     </pluginRepository>
 <!--
     <pluginRepository>
@@ -3719,7 +3719,7 @@
       <releases><enabled>false</enabled></releases>
       <id>opennms-snapshots</id>
       <name>OpenNMS Snapshot Repository</name>
-      <url>http://maven.opennms.org/content/groups/opennms.org-snapshot</url>
+      <url>http://maven.opennms.org/content/groups/opennms.org-snapshot/</url>
     </pluginRepository>
     <pluginRepository>
       <snapshots><enabled>false</enabled></snapshots>
@@ -3737,7 +3737,7 @@
       <releases><enabled>true</enabled></releases>
       <id>central</id>
       <name>Maven Central</name>
-      <url>http://repo1.maven.org/maven2</url>
+      <url>http://repo1.maven.org/maven2/</url>
     </pluginRepository>
 -->
   </pluginRepositories>
