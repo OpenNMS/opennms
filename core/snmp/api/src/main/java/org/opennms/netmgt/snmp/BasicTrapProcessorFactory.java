@@ -25,7 +25,8 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  *******************************************************************************/
-package org.opennms.netmgt.alarmd.northbounder.snmptrap;
+
+package org.opennms.netmgt.snmp;
 
 import java.net.InetAddress;
 
@@ -40,44 +41,11 @@ import org.opennms.netmgt.snmp.TrapProcessorFactory;
  * 
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
-public class NullTrapProcessorFactory implements TrapProcessorFactory {
+public class BasicTrapProcessorFactory implements TrapProcessorFactory {
 
-    /* (non-Javadoc)
-     * @see org.opennms.netmgt.snmp.TrapProcessorFactory#createTrapProcessor()
-     */
     @Override
     public TrapProcessor createTrapProcessor() {
-        return new TrapProcessor() {
-
-            @Override
-            public void setCommunity(String community) {
-            }
-
-            @Override
-            public void setTimeStamp(long timeStamp) {
-            }
-
-            @Override
-            public void setVersion(String version) {
-            }
-
-            @Override
-            public void setAgentAddress(InetAddress agentAddress) {
-            }
-
-            @Override
-            public void processVarBind(SnmpObjId name, SnmpValue value) {
-            }
-
-            @Override
-            public void setTrapAddress(InetAddress trapAddress) {
-            }
-
-            @Override
-            public void setTrapIdentity(TrapIdentity trapIdentity) {
-            }
-
-        };
+        return new BasicTrapProcessor();
     }
 
 }

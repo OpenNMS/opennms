@@ -41,6 +41,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.netmgt.snmp.BasicTrapProcessor;
 import org.opennms.netmgt.snmp.TrapNotification;
 import org.opennms.netmgt.snmp.TrapProcessor;
 import org.opennms.netmgt.snmp.snmp4j.Snmp4JTrapNotifier;
@@ -126,7 +127,7 @@ public class TrapdHandlerMinionIT extends CamelBlueprintTestSupport {
 
 		TrapQueueProcessor trap=new TrapQueueProcessor();
 		trap.setNewSuspect(false);
-		TrapProcessor trapProcess = new TrapProcessorImpl();
+		TrapProcessor trapProcess = new BasicTrapProcessor();
 		trapProcess.setAgentAddress(InetAddressUtils.ONE_TWENTY_SEVEN);
 		trapProcess.setCommunity("comm");
 		trapProcess.setTrapAddress(InetAddressUtils.ONE_TWENTY_SEVEN);

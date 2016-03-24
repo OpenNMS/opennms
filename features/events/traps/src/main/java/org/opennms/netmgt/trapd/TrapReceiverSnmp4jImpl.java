@@ -40,22 +40,20 @@ import javax.annotation.Resource;
 import org.opennms.core.logging.Logging;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.TrapdConfig;
+import org.opennms.netmgt.snmp.BasicTrapProcessorFactory;
 import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpV3User;
 import org.opennms.netmgt.snmp.TrapNotification;
 import org.opennms.netmgt.snmp.TrapNotificationListener;
-import org.opennms.netmgt.snmp.TrapProcessor;
-import org.opennms.netmgt.snmp.TrapProcessorFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * @author <a href="mailto:weave@oculan.com">Brian Weaver</a>
  * @author <a href="http://www.oculan.com">Oculan Corporation</a>
  * @fiddler joed
  */
-public class TrapReceiverSnmp4jImpl implements TrapReceiver, TrapNotificationListener, TrapProcessorFactory {
+public class TrapReceiverSnmp4jImpl implements TrapReceiver, TrapNotificationListener {
     private static final Logger LOG = LoggerFactory.getLogger(TrapReceiverSnmp4jImpl.class);
 
     @Resource(name="snmpTrapAddress")
@@ -68,15 +66,6 @@ public class TrapReceiverSnmp4jImpl implements TrapReceiver, TrapNotificationLis
     private List<SnmpV3User> m_snmpV3Users;
 
     private boolean m_registeredForTraps;
-
-    /**
-     * Trapd IP manager.  Contains IP address -> node ID mapping.
-     * 
-     * TODO: Get rid of the requirement to have this here by creating a different
-     * TrapProcessorFactory.
-     */
-    @Autowired
-    private TrapdIpMgr m_trapdIpMgr;
 
     private List<TrapNotificationHandler> m_trapNotificationHandlers = Collections.emptyList();
 
@@ -127,7 +116,7 @@ public class TrapReceiverSnmp4jImpl implements TrapReceiver, TrapNotificationLis
         try {
             InetAddress address = getInetAddress();
             LOG.info("Listening on {}:{}", address == null ? "[all interfaces]" : InetAddressUtils.str(address), m_snmpTrapPort);
-            SnmpUtils.registerForTraps(this, this, address, m_snmpTrapPort, m_snmpV3Users); // Need to clarify 
+            SnmpUtils.registerForTraps(this, new BasicTrapProcessorFactory(), address, m_snmpTrapPort, m_snmpV3Users); // Need to clarify 
             m_registeredForTraps = true;
             
             LOG.debug("init: Creating the trap session");
@@ -170,15 +159,6 @@ public class TrapReceiverSnmp4jImpl implements TrapReceiver, TrapNotificationLis
             return null;
         }
         return InetAddressUtils.addr(m_snmpTrapAddress);
-    }
-
-    /**
-     * TODO: Get rid of the requirement to have this here by creating a different
-     * TrapProcessorFactory.
-     */
-    @Override
-    public TrapProcessor createTrapProcessor() {
-        return new EventCreator(m_trapdIpMgr);
     }
 
 }

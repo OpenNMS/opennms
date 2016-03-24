@@ -46,6 +46,7 @@ import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.TrapdConfig;
 import org.opennms.netmgt.config.api.EventConfDao;
+import org.opennms.netmgt.snmp.BasicTrapProcessor;
 import org.opennms.netmgt.snmp.TrapNotification;
 import org.opennms.netmgt.snmp.TrapProcessor;
 import org.opennms.netmgt.snmp.snmp4j.Snmp4JTrapNotifier;
@@ -168,7 +169,7 @@ public class TrapdHandlerDefaultIT extends CamelBlueprintTestSupport {
 		config.setNewSuspectOnTrap(false);
 
 		TrapQueueProcessor trapQProcessor = new TrapQueueProcessor();
-		TrapProcessor trapProcess = new TrapProcessorImpl();
+		TrapProcessor trapProcess = new BasicTrapProcessor();
 		trapProcess.setAgentAddress(InetAddressUtils.ONE_TWENTY_SEVEN);
 		trapProcess.setCommunity("comm");
 		trapProcess.setTimeStamp(System.currentTimeMillis());
