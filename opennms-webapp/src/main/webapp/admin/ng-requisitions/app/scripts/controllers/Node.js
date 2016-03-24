@@ -18,6 +18,7 @@
   *
   * @requires $scope Angular local scope
   * @requires $routeParams Angular route params
+  * @requires $cookies Angular cookies
   * @requires $window Document window
   * @requires $uibModal Angular UI modal
   * @requires RequisitionsService The requisitions service
@@ -25,7 +26,7 @@
   *
   * @description The controller for manage requisitioned nodes (add/edit the nodes on a specific requisition)
   */
-  .controller('NodeController', ['$scope', '$routeParams', '$window', '$uibModal', 'RequisitionsService', 'growl', function($scope, $routeParams, $window, $uibModal, RequisitionsService, growl) {
+  .controller('NodeController', ['$scope', '$routeParams', '$cookies', '$window', '$uibModal', 'RequisitionsService', 'growl', function($scope, $routeParams, $cookies, $window, $uibModal, RequisitionsService, growl) {
 
     /**
     * @description The timing status.
@@ -166,6 +167,7 @@
     * @methodOf NodeController
     */
     $scope.goVerticalLayout = function() {
+      $cookies.put('use_requisitions_node_vertical_layout', 'true');
       $scope.goTo('#/requisitions/' + $scope.foreignSource + '/nodes/' + $scope.foreignId + '/vertical');
     };
 
@@ -177,6 +179,7 @@
     * @methodOf NodeController
     */
     $scope.goHorizontalLayout = function() {
+      $cookies.put('use_requisitions_node_vertical_layout', 'false');
       $scope.goTo('#/requisitions/' + $scope.foreignSource + '/nodes/' + $scope.foreignId);
     };
 
@@ -371,6 +374,7 @@
       RequisitionsService.saveNode($scope.node).then(
         function() { // success
           growl.success('The node ' + $scope.node.nodeLabel + ' has been saved.');
+          $scope.foreignId = $scope.node.foreignId;
           form.$dirty = false;
         },
         $scope.errorHandler

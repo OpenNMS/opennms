@@ -9,6 +9,7 @@
 
   angular.module('onms-requisitions', [
     'ngRoute',
+    'ngCookies',
     'ngAnimate',
     'ui.bootstrap',
     'angular-growl',

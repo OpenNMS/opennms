@@ -20,13 +20,14 @@
   *
   * @requires $scope Angular local scope
   * @requires $filter Angular filter
+  * @requires $cookies Angular cookies
   * @requires $window Document window
   * @requires $routeParams Angular route parameters
   * @requires RequisitionsService The requisitions service
   * @requires SynchronizeService The synchronize service
   * @requires growl The growl plugin for instant notifications
   */
-  .controller('RequisitionController', ['$scope', '$filter', '$window', '$routeParams', 'RequisitionsService', 'SynchronizeService', 'growl', function($scope, $filter, $window, $routeParams, RequisitionsService, SynchronizeService, growl) {
+  .controller('RequisitionController', ['$scope', '$filter', '$cookies', '$window', '$routeParams', 'RequisitionsService', 'SynchronizeService', 'growl', function($scope, $filter, $cookies, $window, $routeParams, RequisitionsService, SynchronizeService, growl) {
 
     /**
     * @description The timing status.
@@ -148,6 +149,19 @@
     };
 
     /**
+    * @description Returns the vertical layout suffix for nodes if enabled
+    *
+    * @name RequisitionController:getVerticalLayout
+    * @ngdoc method
+    * @methodOf RequisitionController
+    * @returns {string} URL suffix for vertical layout if enabled.
+    */
+    $scope.getVerticalLayout = function() {
+      var isVertical = $cookies.get('use_requisitions_node_vertical_layout');
+      return isVertical == 'true' ? '/vertical' : '';
+    }
+
+    /**
     * @description Goes to the page for adding a new node to the requisition (navigation)
     *
     * @name RequisitionController:addNode
@@ -155,7 +169,7 @@
     * @methodOf RequisitionController
     */
     $scope.addNode = function() {
-      $window.location.href = '#/requisitions/' + $scope.foreignSource + '/nodes/__new__';
+      $window.location.href = '#/requisitions/' + $scope.foreignSource + '/nodes/__new__' + $scope.getVerticalLayout();
     };
 
     /**
@@ -168,7 +182,7 @@
     * @param {object} The node's object to edit
     */
     $scope.editNode = function(node) {
-      $window.location.href = '#/requisitions/' + $scope.foreignSource + '/nodes/' + node.foreignId;
+      $window.location.href = '#/requisitions/' + $scope.foreignSource + '/nodes/' + node.foreignId + $scope.getVerticalLayout();
     };
 
     /**
