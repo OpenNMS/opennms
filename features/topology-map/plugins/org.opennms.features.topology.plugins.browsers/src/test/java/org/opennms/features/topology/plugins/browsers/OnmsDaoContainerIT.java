@@ -52,6 +52,7 @@ import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionOperations;
 
 @ContextConfiguration(locations={
         "classpath:/META-INF/opennms/applicationContext-soa.xml",
@@ -79,6 +80,9 @@ public class OnmsDaoContainerIT {
     @Autowired
     private AlarmDao m_alarmDao;
 
+    @Autowired
+    private TransactionOperations m_transactionTemplate;
+
     @Before
     public void setUp() throws Exception {
         BeanUtils.assertAutowiring(this);
@@ -87,7 +91,7 @@ public class OnmsDaoContainerIT {
 
     @Test
     public void verifyCacheIsReloadedCorrectly() {
-        OnmsVaadinContainer<OnmsAlarm, Integer> container = new OnmsVaadinContainer<OnmsAlarm, Integer>(OnmsAlarm.class, new OnmsDaoContainerDatasource<>(m_alarmDao)) {
+        OnmsVaadinContainer<OnmsAlarm, Integer> container = new OnmsVaadinContainer<OnmsAlarm, Integer>(OnmsAlarm.class, new OnmsDaoContainerDatasource<>(m_alarmDao, m_transactionTemplate)) {
             @Override
             protected Integer getId(OnmsAlarm bean) {
                 return bean == null ? null : bean.getId();

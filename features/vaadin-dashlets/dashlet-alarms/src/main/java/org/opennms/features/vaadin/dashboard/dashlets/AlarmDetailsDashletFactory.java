@@ -35,6 +35,7 @@ import org.opennms.features.vaadin.dashboard.model.DashletSpec;
 import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.dao.api.AlarmRepository;
 import org.opennms.netmgt.dao.api.NodeDao;
+import org.springframework.transaction.support.TransactionOperations;
 
 /**
  * This class implements a factory used for instantiating new dashlet instances.
@@ -45,13 +46,15 @@ public class AlarmDetailsDashletFactory extends AbstractDashletFactory {
     /**
      * The {@link AlarmDao} used
      */
-    private AlarmDao m_alarmDao;
+    private final AlarmDao m_alarmDao;
     /**
      * The {@link NodeDao} used
      */
-    private NodeDao m_nodeDao;
+    private final NodeDao m_nodeDao;
 
-    private AlarmRepository m_alarmRepository;
+    private final AlarmRepository m_alarmRepository;
+
+    private final TransactionOperations m_transactionTemplate;
 
     /**
      * Constructor used for instantiating a new factory.
@@ -59,20 +62,21 @@ public class AlarmDetailsDashletFactory extends AbstractDashletFactory {
      * @param alarmDao the {@link AlarmDao} to be used
      * @param nodeDao  the {@link NodeDao} to be used
      */
-    public AlarmDetailsDashletFactory(AlarmDao alarmDao, NodeDao nodeDao, AlarmRepository alarmRepository) {
+    public AlarmDetailsDashletFactory(AlarmDao alarmDao, NodeDao nodeDao, AlarmRepository alarmRepository, TransactionOperations transactionTemplate) {
         m_alarmDao = alarmDao;
         m_nodeDao = nodeDao;
         m_alarmRepository = alarmRepository;
+        m_transactionTemplate = transactionTemplate;
     }
 
     /**
-     * Method for instatiating a new {@link Dashlet} instance.
+     * Method for instantiating a new {@link Dashlet} instance.
      *
      * @param dashletSpec the {@link DashletSpec} to use
      * @return a new {@link Dashlet} instance
      */
     public Dashlet newDashletInstance(DashletSpec dashletSpec) {
-        return new AlarmDetailsDashlet(getName(), dashletSpec, m_alarmDao, m_nodeDao, m_alarmRepository);
+        return new AlarmDetailsDashlet(getName(), dashletSpec, m_alarmDao, m_nodeDao, m_alarmRepository, m_transactionTemplate);
     }
 
     /**

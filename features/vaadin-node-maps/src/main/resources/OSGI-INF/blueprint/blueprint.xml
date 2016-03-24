@@ -33,6 +33,7 @@
 	<!-- Wrap the DAO in a Vaadin container -->
 	<bean id="alarmDaoContainer" class="org.opennms.features.topology.plugins.browsers.AlarmDaoContainer" scope="prototype">
 		<argument ref="alarmDao" />
+        <argument ref="transactionTemplate" />
 	</bean>
 	
 	<bean id="alarmTable" class="org.opennms.features.topology.plugins.browsers.AlarmTable" scope="prototype">
@@ -95,6 +96,7 @@
 	<!-- Wrap the DAO in a Vaadin container -->
 	<bean id="nodeDaoContainer" class="org.opennms.features.topology.plugins.browsers.NodeDaoContainer" scope="prototype">
 		<argument ref="nodeDao" />
+        <argument ref="transactionTemplate" />
 	</bean>
 
 	<bean id="nodeTableSelectionLinkGenerator" class="org.opennms.features.topology.plugins.browsers.NodeSelectionLinkGenerator">
