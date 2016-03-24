@@ -62,6 +62,8 @@
                 <descriptor>mvn:org.apache.karaf.assemblies.features/standard/${karafVersion}/xml/features</descriptor>
                 <!-- Karaf Spring features -->
                 <descriptor>mvn:org.apache.karaf.assemblies.features/spring/${karafVersion}/xml/features</descriptor>
+                <!-- Pax Exam features -->
+                <descriptor>mvn:org.ops4j.pax.exam/pax-exam-features/${paxExamVersion}/xml</descriptor>
                 <!-- Pax Web features -->
                 <descriptor>mvn:org.ops4j.pax.web/pax-web-features/3.1.2/xml/features</descriptor>
 
@@ -73,6 +75,19 @@
                 <!-- <descriptor>mvn:org.opennms.karaf/opennms/${project.version}/xml/minion</descriptor> -->
               </descriptors>
               <features>
+                <!--
+                  These features rely on components not included in the base Karaf package
+                  so we must install the features so that these components are put into the 
+                  test-repo.
+                -->
+                <!-- Relies on Pax Web -->
+                <feature>http</feature>
+                <!-- Relies on Pax Web -->
+                <feature>http-whiteboard</feature>
+                <!-- Relies on Pax URL -->
+                <feature>obr</feature>
+                <!-- Relies on Pax Web -->
+                <feature>war</feature>
 
                 <!-- OpenNMS product features -->
                 <!-- <feature>opennms-${project.version}</feature> -->
@@ -183,6 +198,15 @@
       <scope>test</scope>
     </dependency>
 
+    <!-- Pax Exam features artifact -->
+    <dependency>
+      <groupId>org.ops4j.pax.exam</groupId>
+      <artifactId>pax-exam-features</artifactId>
+      <version>${paxExamVersion}</version>
+      <type>xml</type>
+      <scope>test</scope>
+    </dependency>
+
     <!-- Pax Web features artifact -->
     <dependency>
       <groupId>org.ops4j.pax.web</groupId>
@@ -194,6 +218,7 @@
     </dependency>
 
     <!-- OpenNMS container features artifact -->
+    <!--
     <dependency>
       <groupId>org.opennms.container</groupId>
       <artifactId>karaf</artifactId>
@@ -202,8 +227,10 @@
       <type>xml</type>
       <scope>test</scope>
     </dependency>
+    -->
 
     <!-- OpenNMS product features artifact -->
+    <!--
     <dependency>
       <groupId>org.opennms.karaf</groupId>
       <artifactId>opennms</artifactId>
@@ -212,8 +239,10 @@
       <type>xml</type>
       <scope>test</scope>
     </dependency>
+    -->
 
     <!-- OpenNMS Minion features artifact -->
+    <!--
     <dependency>
       <groupId>org.opennms.karaf</groupId>
       <artifactId>opennms</artifactId>
@@ -222,6 +251,7 @@
       <type>xml</type>
       <scope>test</scope>
     </dependency>
+    -->
 
     <!-- Other projects necessary to make the features-maven-plugin happy -->
     <!--
@@ -322,22 +352,6 @@
       <artifactId>org.opennms.features.discovery</artifactId>
       <version>${project.version}</version>
       <scope>test</scope>
-    </dependency>
-    -->
-
-    <!-- 
-      This test-jar contains the org.apache.karaf.itests.KarafTestSupport class
-      which provides useful utility functions when running Pax Exam testing inside
-      Karaf.
-
-      @see org.apache.karaf.itests.KarafTestSupport
-    -->
-    <!-- 2016-03-21: I think this JAR is empty now -->
-    <!--
-    <dependency>
-      <groupId>org.apache.karaf.itests</groupId>
-      <artifactId>itests</artifactId>
-      <version>${karafVersion}</version>
     </dependency>
     -->
 
