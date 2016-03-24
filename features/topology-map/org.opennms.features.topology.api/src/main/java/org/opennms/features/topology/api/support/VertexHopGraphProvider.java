@@ -407,17 +407,18 @@ public class VertexHopGraphProvider implements GraphProvider, SelectionAware {
             neighbors.clear();
 
             for(VertexRef vertexRef : workingSet) {
-                if (m_semanticZoomLevels.containsKey(vertexRef)) {
-                    throw new IllegalStateException("Calculating semantic zoom level for vertex that has already been calculated: " + vertexRef.toString());
-                }
-                m_semanticZoomLevels.put(vertexRef, semanticZoomLevel);
-                Set<VertexRef> refs = neighborMap.get(vertexRef);
-                if (refs != null) {
-                    neighbors.addAll(refs);
-                }
+                // Only consider Vertex if it is actually not filtered by the criteria (which it might)
                 Vertex vertex = getVertex(vertexRef, criteria);
                 if (vertex != null) {
-                    processed.add(getVertex(vertexRef, criteria));
+                    if (m_semanticZoomLevels.containsKey(vertexRef)) {
+                        throw new IllegalStateException("Calculating semantic zoom level for vertex that has already been calculated: " + vertexRef.toString());
+                    }
+                    m_semanticZoomLevels.put(vertexRef, semanticZoomLevel);
+                    Set<VertexRef> refs = neighborMap.get(vertexRef);
+                    if (refs != null) {
+                        neighbors.addAll(refs);
+                    }
+                    processed.add(vertex);
                 }
             }
 
