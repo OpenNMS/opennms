@@ -53,6 +53,7 @@ import org.opennms.features.topology.api.SelectionManager;
 import org.opennms.features.topology.api.support.SemanticZoomLevelCriteria;
 import org.opennms.features.topology.api.support.VertexHopGraphProvider.VertexHopCriteria;
 import org.opennms.features.topology.api.topo.AbstractEdge;
+import org.opennms.features.topology.api.topo.CollapsibleCriteria;
 import org.opennms.features.topology.api.topo.Criteria;
 import org.opennms.features.topology.api.topo.Edge;
 import org.opennms.features.topology.api.topo.EdgeListener;
@@ -461,7 +462,11 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
     // Remove all vertices from focus which are not visible
     private void removeVerticesWhichAreNotVisible(final List<Vertex> displayVertices) {
         for(Criteria criteria : getCriteria()) {
-            if(criteria instanceof VertexHopCriteria){
+            if (criteria instanceof VertexHopCriteria
+                    // CollapsibleCriteria may contain not visible vertices (when collapsed)
+                    // and multiple collapsible criteria may contain the same vertices.
+                    // We do not remove them manually for now
+                    && !(criteria instanceof CollapsibleCriteria)) {
                 final VertexHopCriteria hopCriteria = (VertexHopCriteria) criteria;
                 for(VertexRef vRef : hopCriteria.getVertices()){
                     if(!displayVertices.contains(vRef)){
