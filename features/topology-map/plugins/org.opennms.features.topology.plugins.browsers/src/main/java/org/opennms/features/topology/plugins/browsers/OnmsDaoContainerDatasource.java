@@ -35,13 +35,18 @@ import java.util.Objects;
 import org.opennms.core.criteria.Criteria;
 import org.opennms.features.topology.api.browsers.OnmsContainerDatasource;
 import org.opennms.netmgt.dao.api.OnmsDao;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionOperations;
 
 public class OnmsDaoContainerDatasource<T, K extends Serializable> implements OnmsContainerDatasource<T, K> {
 
     private final OnmsDao<T, K> dao;
+    private final TransactionOperations transactionTemplate;
 
-    public OnmsDaoContainerDatasource(OnmsDao<T, K> dao) {
+    public OnmsDaoContainerDatasource(OnmsDao<T, K> dao, TransactionOperations transactionTemplate) {
         this.dao = Objects.requireNonNull(dao);
+        this.transactionTemplate = Objects.requireNonNull(transactionTemplate);
     }
 
     @Override
@@ -56,7 +61,19 @@ public class OnmsDaoContainerDatasource<T, K extends Serializable> implements On
 
     @Override
     public List<T> findMatching(Criteria criteria) {
-        return dao.findMatching(criteria);
+        // Wrap the find and callbacks in a single transaction
+        return transactionTemplate.execute(new TransactionCallback<List<T>>() {
+            @Override
+            public List<T> doInTransaction(TransactionStatus arg0) {
+                final List<T> matchingItems = dao.findMatching(criteria);
+                matchingItems.forEach(t -> findMatchingCallback(t));
+                return matchingItems;
+            }
+        });
+    }
+
+    public void findMatchingCallback(T item) {
+        // pass
     }
 
     @Override

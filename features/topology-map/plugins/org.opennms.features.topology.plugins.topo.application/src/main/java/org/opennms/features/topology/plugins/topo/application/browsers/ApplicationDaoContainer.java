@@ -33,11 +33,13 @@ import org.opennms.features.topology.plugins.browsers.OnmsDaoContainerDatasource
 import org.opennms.features.topology.api.browsers.OnmsVaadinContainer;
 import org.opennms.netmgt.dao.api.ApplicationDao;
 import org.opennms.netmgt.model.OnmsApplication;
+import org.springframework.transaction.support.TransactionOperations;
 
 public class ApplicationDaoContainer extends OnmsVaadinContainer<OnmsApplication, Integer> {
+    private static final long serialVersionUID = 1L;
 
-    public ApplicationDaoContainer(ApplicationDao applicationDao) {
-        super(OnmsApplication.class, new OnmsDaoContainerDatasource<>(applicationDao));
+    public ApplicationDaoContainer(ApplicationDao applicationDao, TransactionOperations transactionTemplate) {
+        super(OnmsApplication.class, new OnmsDaoContainerDatasource<>(applicationDao, transactionTemplate));
     }
 
     @Override

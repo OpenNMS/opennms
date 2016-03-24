@@ -36,6 +36,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.TreeMap;
 
 import org.opennms.core.criteria.Criteria;
@@ -179,7 +180,6 @@ public abstract class OnmsVaadinContainer<T,K extends Serializable> implements C
             int rowNumber = page.getStart();
             for (T eachBean : beans) {
                 addItem(rowNumber, getId(eachBean), eachBean);
-                doItemAddedCallBack(rowNumber, getId(eachBean), eachBean);
                 rowNumber++;
             }
             // Ensure that the number of items expected matches with the actual ones. See issue NMS-8079 fore more details.
@@ -217,8 +217,8 @@ public abstract class OnmsVaadinContainer<T,K extends Serializable> implements C
     private Map<Object,Class<?>> m_properties;
 
     public OnmsVaadinContainer(Class<T> itemClass, OnmsContainerDatasource<T,K> datasource) {
-        m_itemClass = itemClass;
-        m_datasource = datasource;
+        m_itemClass = Objects.requireNonNull(itemClass);
+        m_datasource = Objects.requireNonNull(datasource);
         size = new Size(new SizeReloadStrategy() {
             @Override
             public int reload() {
@@ -587,10 +587,6 @@ public abstract class OnmsVaadinContainer<T,K extends Serializable> implements C
 
     // must be overwritten by subclass if you want to add some alias and so on
     protected void addAdditionalCriteriaOptions(Criteria criteria, Page page, boolean doOrder) {
-
-    }
-
-    protected void doItemAddedCallBack(int rowNumber, K id, T eachBean) {
 
     }
 

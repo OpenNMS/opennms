@@ -37,12 +37,15 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.opennms.core.criteria.Criteria;
 import org.opennms.netmgt.dao.api.AlarmDao;
+import org.opennms.netmgt.dao.mock.MockTransactionTemplate;
 import org.opennms.netmgt.model.OnmsAlarm;
 
 public class OnmsDaoContainerTest {
 
     @Test
     public void testGetItemIdsWithOnlyOneItem() {
+        MockTransactionTemplate transactionTemplate = new MockTransactionTemplate();
+        transactionTemplate.afterPropertiesSet();
 
         List<OnmsAlarm> alarmList = new ArrayList<OnmsAlarm>();
         OnmsAlarm alarm = new OnmsAlarm();
@@ -54,7 +57,7 @@ public class OnmsDaoContainerTest {
         EasyMock.expect(alarmDaoMock.findMatching((Criteria)EasyMock.anyObject())).andReturn(alarmList);
         EasyMock.replay(alarmDaoMock);
 
-        AlarmDaoContainer container = new AlarmDaoContainer(alarmDaoMock);
+        AlarmDaoContainer container = new AlarmDaoContainer(alarmDaoMock, transactionTemplate);
 
         List<Integer> items = container.getItemIds(0, 1);
         Assert.assertNotNull(items);
