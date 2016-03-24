@@ -1248,6 +1248,8 @@
     <jacksonVersion>1.9.13</jacksonVersion>
     <jasperreportsVersion>6.1.1</jasperreportsVersion>
     <jettyVersion>8.1.10.v20130312</jettyVersion>
+    <jfreechartVersion>1.0.19</jfreechartVersion>
+    <jcommonVersion>1.0.23</jcommonVersion>
     <jodaTimeVersion>2.1</jodaTimeVersion>
     <jrubyVersion>9.0.0.0</jrubyVersion>
     <karafVersion>2.4.0</karafVersion>
@@ -1264,6 +1266,7 @@
     <oroVersion>2.0.8</oroVersion>
     <osgiVersion>5.0.0</osgiVersion>
     <osgiEnterpriseVersion>5.0.0</osgiEnterpriseVersion>
+    <quartzVersion>1.6.5</quartzVersion>
     <slf4jVersion>1.7.7</slf4jVersion>
     <snmp4jVersion>2.4.3</snmp4jVersion>
     <snmp4jagentVersion>2.4.2</snmp4jagentVersion>
