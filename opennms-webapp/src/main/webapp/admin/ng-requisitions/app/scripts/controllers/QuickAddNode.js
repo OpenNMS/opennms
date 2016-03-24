@@ -1,4 +1,5 @@
 /*global QuickNode:true,bootbox:true */
+/*jshint eqnull:true, undef:false */
 
 /**
 * @author Alejandro Galue <agalue@opennms.org>
@@ -187,15 +188,15 @@
     * @returns {boolean} true if the form is invalid.
     */
     $scope.isInvalid = function() {
-      if (this.quickAddNodeForm == null
-        || this.quickAddNodeForm.foreignSource == null
-        || this.quickAddNodeForm.ipAddress == null
-        || this.quickAddNodeForm.nodeLabel == null) {
+      if (this.quickAddNodeForm == null ||
+        this.quickAddNodeForm.foreignSource == null ||
+        this.quickAddNodeForm.ipAddress == null ||
+        this.quickAddNodeForm.nodeLabel == null) {
         return true;
       }
-      return this.quickAddNodeForm.foreignSource.$invalid
-        || this.quickAddNodeForm.ipAddress.$invalid
-        || this.quickAddNodeForm.nodeLabel.$invalid;
+      return this.quickAddNodeForm.foreignSource.$invalid ||
+        this.quickAddNodeForm.ipAddress.$invalid ||
+        this.quickAddNodeForm.nodeLabel.$invalid;
     };
 
     /**
@@ -250,7 +251,7 @@
     if (foreignSources == null) {
       RequisitionsService.getRequisitionNames().then(
         function(requisitions) { // success
-          $scope.foreignSources = requisitions
+          $scope.foreignSources = requisitions;
           // If there is NO requisitions, the user has to create a new one
           if ($scope.foreignSources.length == 0) {
             $scope.addRequisition();

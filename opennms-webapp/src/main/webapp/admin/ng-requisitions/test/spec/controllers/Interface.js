@@ -44,7 +44,7 @@ describe('Controller: InterfaceController', function () {
     mockRequisitionsService.getAvailableServices = jasmine.createSpy('getAvailableServices');
     var servicesDefer = $q.defer();
     servicesDefer.resolve(services);
-    mockRequisitionsService.getAvailableServices.andReturn(servicesDefer.promise);
+    mockRequisitionsService.getAvailableServices.and.returnValue(servicesDefer.promise);
 
     mockModalInstance = {
       close: function(obj) { console.info(obj); },

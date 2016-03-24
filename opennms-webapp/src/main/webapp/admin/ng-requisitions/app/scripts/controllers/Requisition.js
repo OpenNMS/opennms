@@ -1,4 +1,5 @@
 /*global Requisition:true, bootbox:true */
+/*jshint eqnull:true */
 
 /**
 * @author Alejandro Galue <agalue@opennms.org>
@@ -159,7 +160,7 @@
     $scope.getVerticalLayout = function() {
       var isVertical = $cookies.get('use_requisitions_node_vertical_layout');
       return isVertical == 'true' ? '/vertical' : '';
-    }
+    };
 
     /**
     * @description Goes to the page for adding a new node to the requisition (navigation)
@@ -235,7 +236,7 @@
         },
         $scope.errorHandler
       );
-    }
+    };
 
     /**
     * @description Refreshes the currently loaded requisition from the server
@@ -255,7 +256,7 @@
           });
         }
       });
-    }
+    };
 
     /**
     * @description Initializes the local requisition from the server

@@ -114,7 +114,7 @@ describe('Controller: PolicyController', function () {
     mockRequisitionsService.getAvailablePolicies = jasmine.createSpy('getAvailablePolicies');
     var policies = $q.defer();
     policies.resolve(policyList);
-    mockRequisitionsService.getAvailablePolicies.andReturn(policies.promise);
+    mockRequisitionsService.getAvailablePolicies.and.returnValue(policies.promise);
 
     mockModalInstance = {
       close: function(obj) { console.info(obj); },

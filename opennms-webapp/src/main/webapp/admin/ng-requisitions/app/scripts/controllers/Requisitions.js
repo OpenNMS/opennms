@@ -1,4 +1,5 @@
-/* global bootbox:true */
+/*global bootbox:true */
+/*jshint eqnull:true */
 
 /**
 * @author Alejandro Galue <agalue@opennms.org>
@@ -166,7 +167,7 @@
       modalInstance.result.then(function(targetForeignSource) {
         RequisitionsService.startTiming();
         RequisitionsService.cloneForeignSourceDefinition(foreignSource, targetForeignSource).then(
-          function(r) { // success
+          function() { // success
             growl.success('The foreign source definition for ' + foreignSource + ' has been cloned to ' + targetForeignSource);
           },
           $scope.errorHandler
@@ -389,7 +390,7 @@
         },
         $scope.errorHandler
       );
-    }
+    };
 
     /**
     * @description Refreshes all the requisitions from the server
@@ -408,7 +409,7 @@
           $scope.initialize();
         }
       });
-    }
+    };
 
    /**
     * @description Updates the pagination variables for the requisitions.

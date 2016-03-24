@@ -1,5 +1,5 @@
 /*global RequisitionInterface:true */
-/*jshint unused: false, undef:false, sub:true */
+/*jshint eqnull:true, undef:false, unused:false, sub:true */
 
 /**
 * @author Alejandro Galue <agalue@opennms.org>
@@ -254,13 +254,13 @@ function RequisitionNode(foreignSource, node, isDeployed) {
   * @returns {boolean} true, if the node has parent information.
   */
   self.hasParentInformation = function() {
-    if (self.parentForeignSource != null && self.parentForeignSource.trim() != "") {
+    if (self.parentForeignSource != null && self.parentForeignSource.trim() != '') {
       return true;
     }
-    if (self.parentForeignId != null && self.parentForeignId.trim() != "") {
+    if (self.parentForeignId != null && self.parentForeignId.trim() != '') {
       return true;
     }
-    if (self.parentNodeLabel != null && self.parentNodeLabel.trim() != "") {
+    if (self.parentNodeLabel != null && self.parentNodeLabel.trim() != '') {
       return true;
     }
     return false;

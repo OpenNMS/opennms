@@ -162,7 +162,7 @@ function Requisition(requisition, isDeployed) {
     }
     self.modified = true;
     self.dateStamp = Date.now();
-  }
+  };
 
   /**
   * @description Marks the requisition as deployed

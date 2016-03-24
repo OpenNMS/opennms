@@ -1,4 +1,5 @@
 /*global Address4:true, Address6:true */
+/*jshint eqnull:true */
 
 /**
 * @author Alejandro Galue <agalue@opennms.org>

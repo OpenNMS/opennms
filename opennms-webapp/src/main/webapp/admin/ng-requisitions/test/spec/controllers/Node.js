@@ -46,14 +46,14 @@ describe('Controller: NodeController', function () {
     mockRequisitionsService.getAvailableCategories = jasmine.createSpy('getAvailableCategories');
     var nodeDefer = $q.defer();
     nodeDefer.resolve(node);
-    mockRequisitionsService.getNode.andReturn(nodeDefer.promise);
+    mockRequisitionsService.getNode.and.returnValue(nodeDefer.promise);
     var categoriesDefer = $q.defer();
     categoriesDefer.resolve(categories);
-    mockRequisitionsService.getAvailableCategories.andReturn(categoriesDefer.promise);
+    mockRequisitionsService.getAvailableCategories.and.returnValue(categoriesDefer.promise);
     var reqDefer = $q.defer();
     reqDefer.resolve(requisition);
-    mockRequisitionsService.getRequisition.andReturn(reqDefer.promise);
-    mockRequisitionsService.getTiming.andReturn({ isRunning: false });
+    mockRequisitionsService.getRequisition.and.returnValue(reqDefer.promise);
+    mockRequisitionsService.getTiming.and.returnValue({ isRunning: false });
 
     mockGrowl = {
       warning: function(msg) { console.warn(msg); },

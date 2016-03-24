@@ -1,4 +1,4 @@
-/*jshint undef: false */
+/*jshint eqnull:true */
 /*global RequisitionsData:true, Requisition:true, RequisitionNode:true */
 
 /**
@@ -321,7 +321,7 @@
           requisitionsData.requisitions.push(requisition);
         });
         requisitionsService.updateDeployedStats(requisitionsData).then(
-          function(data) { // success;
+          function() { // success;
             requisitionsService.internal.setCachedRequisitionsData(requisitionsData);
             deferred.resolve(requisitionsData);
           },
@@ -647,8 +647,7 @@
 
       var requisitionsData = requisitionsService.internal.getCachedRequisitionsData();
       if (requisitionsData != null) {
-        var requisition = requisitionsData.getRequisition(foreignSource);
-        if (requisition == null) {
+        if (requisitionsData.getRequisition(foreignSource) == null) {
           deferred.reject('The foreignSource ' + foreignSource + ' does not exist.');
           return deferred.promise;
         }
@@ -656,7 +655,8 @@
 
       var requisition = {'foreign-source': foreignSource, node: []};
       $log.debug('removeAllNodesFromRequisition: removing nodes from requisition ' + foreignSource);
-      $http.post(requisitionsService.internal.requisitionsUrl, requisition)
+      var url = requisitionsService.internal.requisitionsUrl;
+      $http.post(url, requisition)
       .success(function(data) {
         $log.debug('removeAllNodesFromRequisition: removed nodes from requisition ' + foreignSource);
         requisitionsService.synchronizeRequisition(foreignSource, 'false').then(
@@ -1215,7 +1215,7 @@
         });
         deferred.resolve(found);
       }, function(err) {
-        var message = 'cannot verify foreignId ' + foreignId + '@' + foreignSource + '. ';
+        var message = 'cannot verify nodeLabel ' + nodeLabel + '@' + foreignSource + '. ';
         $log.error('isForeignIdOnRequisition: ' + message, err);
         deferred.reject(message + requisitionsService.internal.errorHelp);
       });
@@ -1380,7 +1380,7 @@
         return deferred.promise;
       }
       return requisitionsService.internal.addQuickNode(quickNode);
-    }
+    };
 
     return requisitionsService;
   }]);

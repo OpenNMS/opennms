@@ -73,7 +73,7 @@ function RequisitionsData() {
     } else {
       self.requisitions[idx] = requisition;
     }
-  }
+  };
 
   self.className = 'RequisitionsData';
 

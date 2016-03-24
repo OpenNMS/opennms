@@ -48,7 +48,7 @@ describe('Controller: DetectorController', function () {
     mockRequisitionsService.getAvailableDetectors = jasmine.createSpy('getAvailableDetectors');
     var detectors = $q.defer();
     detectors.resolve(detectorList);
-    mockRequisitionsService.getAvailableDetectors.andReturn(detectors.promise);
+    mockRequisitionsService.getAvailableDetectors.and.returnValue(detectors.promise);
 
     mockModalInstance = {
       close: function(obj) { console.info(obj); },
