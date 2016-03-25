@@ -37,8 +37,8 @@
     <jsp:param name="norequirejs" value="true" />
     <jsp:param name="nobreadcrumbs" value="true" />
     <jsp:param name="ngapp" value="onms-requisitions" />
-    <jsp:param name="title" value="Manage Provisioning Requisitions" />
-    <jsp:param name="headTitle" value="Provisioning Requisitions" />
+    <jsp:param name="title" value="Quick-Add Node" />
+    <jsp:param name="headTitle" value="Quick-Add Node" />
     <jsp:param name="headTitle" value="Admin" />
     <jsp:param name="location" value="admin" />
 
