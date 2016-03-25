@@ -28,6 +28,15 @@
 
 package org.opennms.netmgt.dao.mock;
 
+import java.net.InetAddress;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
+
 import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.OnmsCategory;
@@ -37,15 +46,6 @@ import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.model.SurveillanceStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.net.InetAddress;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
 
 public class MockNodeDao extends AbstractMockDao<OnmsNode, Integer> implements NodeDao {
     private static final Logger LOG = LoggerFactory.getLogger(MockNodeDao.class);
@@ -388,6 +388,11 @@ public class MockNodeDao extends AbstractMockDao<OnmsNode, Integer> implements N
             allLabelsById.put(node.getId(), node.getLabel());
         }
         return allLabelsById;
+    }
+
+    @Override
+    public Map<String, Long> getNumberOfNodesBySysOid() {
+        return new HashMap<>();
     }
 
     public int getNextNodeId() {

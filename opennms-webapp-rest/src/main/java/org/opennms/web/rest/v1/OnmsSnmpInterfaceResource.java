@@ -128,7 +128,15 @@ public class OnmsSnmpInterfaceResource extends OnmsRestService {
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     @Path("{ifIndex}")
     public OnmsSnmpInterface getSnmpInterface(@PathParam("nodeCriteria") final String nodeCriteria, @PathParam("ifIndex") final int ifIndex) {
-        return m_nodeDao.get(nodeCriteria).getSnmpInterfaceWithIfIndex(ifIndex);
+        final OnmsNode node = m_nodeDao.get(nodeCriteria);
+        if (node == null) {
+            throw getException(Status.BAD_REQUEST, "Node {} was not found.", nodeCriteria);
+        }
+        final OnmsSnmpInterface iface = node.getSnmpInterfaceWithIfIndex(ifIndex);
+        if (iface == null) {
+            throw getException(Status.NOT_FOUND, "SNMP Interface {} was not found on node {}.", Integer.toString(ifIndex), nodeCriteria);
+        }
+        return iface;
     }
     
     /**
@@ -145,8 +153,8 @@ public class OnmsSnmpInterfaceResource extends OnmsRestService {
         
         try {
             final OnmsNode node = m_nodeDao.get(nodeCriteria);
-            if (node == null) throw getException(Status.BAD_REQUEST, "addSnmpInterface: can't find node " + nodeCriteria);
-            if (snmpInterface == null) throw getException(Status.BAD_REQUEST, "addSnmpInterface: SNMP interface object cannot be null");
+            if (node == null) throw getException(Status.BAD_REQUEST, "Node {} was not found.", nodeCriteria);
+            if (snmpInterface == null) throw getException(Status.BAD_REQUEST, "SNMP interface object cannot be null");
             
             LOG.debug("addSnmpInterface: adding interface {}", snmpInterface);
             node.addSnmpInterface(snmpInterface);
@@ -157,7 +165,7 @@ public class OnmsSnmpInterfaceResource extends OnmsRestService {
             }
             m_snmpInterfaceDao.save(snmpInterface);
             final Integer ifIndex = snmpInterface.getIfIndex();
-            return Response.seeOther(getRedirectUri(uriInfo, ifIndex)).build();
+            return Response.created(getRedirectUri(uriInfo, ifIndex)).build();
         } finally {
             writeUnlock();
         }
@@ -177,16 +185,16 @@ public class OnmsSnmpInterfaceResource extends OnmsRestService {
         
         try {
             final OnmsNode node = m_nodeDao.get(nodeCriteria);
-            if (node == null) throw getException(Status.BAD_REQUEST, "deleteSnmpInterface: can't find node " + nodeCriteria);
+            if (node == null) throw getException(Status.BAD_REQUEST, "Node {} was not found.", nodeCriteria);
             
             final OnmsEntity snmpInterface = node.getSnmpInterfaceWithIfIndex(ifIndex);
-            if (snmpInterface == null) throw getException(Status.BAD_REQUEST, "deleteSnmpInterface: can't find SNMP interface with ifIndex " + ifIndex + " for node " + nodeCriteria);
+            if (snmpInterface == null) throw getException(Status.BAD_REQUEST, "Can't find SNMP interface with ifIndex {} for node {}", Integer.toString(ifIndex), nodeCriteria);
     
             LOG.debug("deletSnmpInterface: deleting interface with ifIndex {} from node {}", ifIndex, nodeCriteria);
             node.getSnmpInterfaces().remove(snmpInterface);
             m_nodeDao.saveOrUpdate(node);
             // TODO Add important events here
-            return Response.ok().build();
+            return Response.noContent().build();
         } finally {
             writeUnlock();
         }
@@ -203,19 +211,20 @@ public class OnmsSnmpInterfaceResource extends OnmsRestService {
     @PUT
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Path("{ifIndex}")
-    public Response updateSnmpInterface(@Context final UriInfo uriInfo, @PathParam("nodeCriteria") final String nodeCriteria, @PathParam("ifIndex") final int ifIndex, final MultivaluedMapImpl params) {
+    public Response updateSnmpInterface(@PathParam("nodeCriteria") final String nodeCriteria, @PathParam("ifIndex") final int ifIndex, final MultivaluedMapImpl params) {
         writeLock();
         
         try {
             final OnmsNode node = m_nodeDao.get(nodeCriteria);
-            if (node == null) throw getException(Status.BAD_REQUEST, "deleteSnmpInterface: can't find node " + nodeCriteria);
-            if (ifIndex < 0) throw getException(Status.BAD_REQUEST, "deleteSnmpInterface: invalid ifIndex specified for SNMP interface on node " + node.getId() + ": " + ifIndex);
+            if (node == null) throw getException(Status.BAD_REQUEST, "Node {} was not found.", nodeCriteria);
+            if (ifIndex < 0) throw getException(Status.BAD_REQUEST, "Invalid ifIndex specified for SNMP interface on node {}: {}", nodeCriteria, Integer.toString(ifIndex));
     
             final OnmsSnmpInterface snmpInterface = node.getSnmpInterfaceWithIfIndex(ifIndex);
-            if (snmpInterface == null) throw getException(Status.BAD_REQUEST, "deleteSnmpInterface: can't find SNMP interface with ifIndex " + ifIndex + " for node " + nodeCriteria);
+            if (snmpInterface == null) throw getException(Status.BAD_REQUEST, "Can't find SNMP interface with ifIndex {} for node {}", Integer.toString(ifIndex), nodeCriteria);
     
             LOG.debug("updateSnmpInterface: updating SNMP interface {}", snmpInterface);
     
+            boolean modified = false;
             final BeanWrapper wrapper = PropertyAccessorFactory.forBeanPropertyAccess(snmpInterface);
             for(final String key : params.keySet()) {
                 // don't try setting the node data
@@ -228,13 +237,18 @@ public class OnmsSnmpInterfaceResource extends OnmsRestService {
                     final String stringValue = params.getFirst(key);
                     final Object value = wrapper.convertIfNecessary(stringValue, (Class<?>)wrapper.getPropertyType(key));
                     wrapper.setPropertyValue(key, value);
+                    modified = true;
                 }
+            }
+            if (modified) {
+                LOG.debug("updateSnmpInterface: SNMP interface {} updated", snmpInterface);
+                m_snmpInterfaceDao.saveOrUpdate(snmpInterface);
             }
             
             Event e = null;
-            if (params.containsKey("collect")) {
+            if (params.containsKey("collect")) { // TODO Is this still valid if the interface was not modified ?
                 // we've updated the collection flag so we need to send an event to redo collection
-                final EventBuilder bldr = new EventBuilder(EventConstants.REINITIALIZE_PRIMARY_SNMP_INTERFACE_EVENT_UEI, "OpenNMS.Webapp");
+                final EventBuilder bldr = new EventBuilder(EventConstants.REINITIALIZE_PRIMARY_SNMP_INTERFACE_EVENT_UEI, "ReST");
                 bldr.setNode(node);
                 // Bug NMS-4432 says that sometimes the primary SNMP interface is null
                 // so we need to check for that before we set the interface
@@ -246,17 +260,15 @@ public class OnmsSnmpInterfaceResource extends OnmsRestService {
                     e = bldr.getEvent();
                 }
             }
-            LOG.debug("updateSnmpInterface: SNMP interface {} updated", snmpInterface);
-            m_snmpInterfaceDao.saveOrUpdate(snmpInterface);
             
             if (e != null) {
                 try {
                     m_eventProxy.send(e);
                 } catch (final EventProxyException ex) {
-                    throw getException(Response.Status.INTERNAL_SERVER_ERROR, "Exception occurred sending event: "+ex.getMessage());
+                    throw getException(Response.Status.INTERNAL_SERVER_ERROR, "Exception occurred sending event {} : {}", e.getUei(), ex.getMessage());
                 }
             }
-            return Response.seeOther(getRedirectUri(uriInfo)).build();
+            return modified ? Response.noContent().build() : Response.notModified().build();
         } finally {
             writeUnlock();
         }

@@ -3,7 +3,7 @@
 var opennms = require('../../util/opennms')(casper),
 	utils = require('utils');
 
-casper.test.begin('Distributed Maps', 7, {
+casper.test.begin('Distributed Maps', {
 	setUp: function() {
 		opennms.initialize();
 		opennms.login();

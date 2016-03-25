@@ -3,7 +3,7 @@
 var opennms = require('../../util/opennms')(casper),
 	utils = require('utils');
 
-casper.test.begin('User Account Page', 10, {
+casper.test.begin('User Account Page', {
 	setUp: function() {
 		opennms.initialize();
 		opennms.login();

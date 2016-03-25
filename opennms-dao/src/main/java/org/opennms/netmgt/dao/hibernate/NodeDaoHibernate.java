@@ -429,6 +429,18 @@ public class NodeDaoHibernate extends AbstractDaoHibernate<OnmsNode, Integer> im
         return findObjects(Integer.class, "select distinct n.id from OnmsNode as n where n.type != 'D'");
     }
 
+    /** {@inheritDoc} */
+    @Override
+    @SuppressWarnings("unchecked")
+    public Map<String, Long> getNumberOfNodesBySysOid() {
+        List<Object[]> pairs = (List<Object[]>)getHibernateTemplate().find("select n.sysObjectId, count(*) from OnmsNode as n where n.sysObjectId != null group by sysObjectId");
+        Map<String, Long> numberOfNodesBySysOid = new HashMap<String, Long>();
+        for (Object[] pair : pairs) {
+            numberOfNodesBySysOid.put((String)pair[0], (Long)pair[1]);
+        }
+        return Collections.unmodifiableMap(numberOfNodesBySysOid);
+    }
+
     @Override
     public Integer getNextNodeId (Integer nodeId) {
         Integer nextNodeId = null;

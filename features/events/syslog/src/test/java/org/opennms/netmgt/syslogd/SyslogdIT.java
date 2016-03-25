@@ -39,15 +39,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.opennms.core.concurrent.WaterfallExecutor;
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.test.ConfigurationTestUtils;
 import org.opennms.core.test.MockLogAppender;
@@ -64,7 +61,6 @@ import org.opennms.netmgt.xml.event.Parm;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -91,8 +87,6 @@ public class SyslogdIT implements InitializingBean {
     private SyslogdConfigFactory m_config;
 
     private Syslogd m_syslogd;
-
-    private final ExecutorService m_executorService = Executors.newFixedThreadPool(3);
 
     @Autowired
     private MockEventIpcManager m_eventIpcManager;
@@ -134,7 +128,9 @@ public class SyslogdIT implements InitializingBean {
         assertTrue(foundMalt);
 
         m_syslogd = new Syslogd();
-        m_syslogd.setSyslogReceiver(new SyslogReceiverJavaNetImpl(m_config));
+        SyslogReceiverJavaNetImpl receiver = new SyslogReceiverJavaNetImpl(m_config);
+        receiver.setSyslogConnectionHandlers(new SyslogConnectionHandlerDefaultImpl());
+        m_syslogd.setSyslogReceiver(receiver);
         m_syslogd.init();
         SyslogdTestUtils.startSyslogdGracefully(m_syslogd);
     }
@@ -169,7 +165,7 @@ public class SyslogdIT implements InitializingBean {
         
         final SyslogClient sc = new SyslogClient(null, 10, SyslogClient.LOG_DAEMON, addr(m_localhost));
         final DatagramPacket pkt = sc.getPacket(SyslogClient.LOG_DEBUG, testPDU);
-        WaterfallExecutor.waterfall(m_executorService, new SyslogConnection(pkt, m_config));
+        new SyslogConnectionHandlerDefaultImpl().handleSyslogConnection(new SyslogConnection(pkt, m_config));
 
         ea.verifyAnticipated(5000,0,0,0,0);
         final Event receivedEvent = ea.getAnticipatedEventsRecieved().get(0);

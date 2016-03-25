@@ -29,15 +29,24 @@
 package org.opennms.netmgt.discovery;
 
 import java.net.InetAddress;
+import java.util.Collections;
 import java.util.Dictionary;
 import java.util.Map;
 import java.util.Properties;
 
 import org.apache.activemq.broker.BrokerService;
+import org.apache.activemq.camel.component.ActiveMQComponent;
+import org.apache.camel.CamelContext;
+import org.apache.camel.Exchange;
+import org.apache.camel.Message;
+import org.apache.camel.Processor;
+import org.apache.camel.builder.RouteBuilder;
+import org.apache.camel.impl.DefaultCamelContext;
+import org.apache.camel.impl.SimpleRegistry;
 import org.apache.camel.test.blueprint.CamelBlueprintTestSupport;
 import org.apache.camel.util.KeyValueHolder;
-import org.junit.After;
-import org.junit.Before;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
@@ -47,12 +56,16 @@ import org.opennms.netmgt.config.api.DiscoveryConfigurationFactory;
 import org.opennms.netmgt.config.discovery.DiscoveryConfiguration;
 import org.opennms.netmgt.config.discovery.IncludeRange;
 import org.opennms.netmgt.config.discovery.Specific;
+import org.opennms.netmgt.dao.api.DistPollerDao;
 import org.opennms.netmgt.dao.mock.EventAnticipator;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
+import org.opennms.netmgt.discovery.messages.DiscoveryJob;
+import org.opennms.netmgt.discovery.messages.DiscoveryResults;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.events.api.EventIpcManager;
 import org.opennms.netmgt.icmp.Pinger;
+import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -60,13 +73,14 @@ import org.springframework.test.context.ContextConfiguration;
 
 @RunWith( OpenNMSJUnit4ClassRunner.class )
 @ContextConfiguration( locations = { "classpath:/META-INF/opennms/emptyContext.xml" } )
-public class DiscoveryBlueprintIT extends CamelBlueprintTestSupport
-{
-    private static final Logger              LOG                  = LoggerFactory.getLogger(
-                    DiscoveryBlueprintIT.class );
+public class DiscoveryBlueprintIT extends CamelBlueprintTestSupport {
+
+    private static final Logger LOG = LoggerFactory.getLogger(DiscoveryBlueprintIT.class );
     private static final MockEventIpcManager IPC_MANAGER_INSTANCE = new MockEventIpcManager();
 
-    private BrokerService m_broker = null;
+    private static final String LOCATION = "RDU";
+
+    private static BrokerService m_broker = null;
 
     /**
      * Use Aries Blueprint synchronous mode to avoid a blueprint deadlock bug.
@@ -112,9 +126,19 @@ public class DiscoveryBlueprintIT extends CamelBlueprintTestSupport
 
         services.put( EventForwarder.class.getName(),
                 new KeyValueHolder<Object, Dictionary>( IPC_MANAGER_INSTANCE, new Properties() ) );
+
         services.put( EventIpcManager.class.getName(),
                 new KeyValueHolder<Object, Dictionary>( IPC_MANAGER_INSTANCE, new Properties() ) );
-        
+
+        OnmsDistPoller distPoller = new OnmsDistPoller();
+        distPoller.setId(DistPollerDao.DEFAULT_DIST_POLLER_ID);
+        distPoller.setLabel(DistPollerDao.DEFAULT_DIST_POLLER_ID);
+        distPoller.setLocation(LOCATION);
+        DistPollerDao distPollerDao = new DistPollerDaoMinion(distPoller);
+
+        services.put( DistPollerDao.class.getName(),
+                new KeyValueHolder<Object, Dictionary>(distPollerDao, new Properties() ) );
+
         DiscoveryConfiguration config = new DiscoveryConfiguration();
         IncludeRange range = new IncludeRange();
         range.setBegin("127.0.1.1");
@@ -124,6 +148,7 @@ public class DiscoveryBlueprintIT extends CamelBlueprintTestSupport
         config.setInitialSleepTime(30000);
         config.setRestartSleepTime(30000);
         DiscoveryConfigFactory configFactory = new DiscoveryConfigFactory(config);
+
         services.put( DiscoveryConfigurationFactory.class.getName(),
                 new KeyValueHolder<Object, Dictionary>(configFactory, new Properties() ) );
     }
@@ -132,29 +157,63 @@ public class DiscoveryBlueprintIT extends CamelBlueprintTestSupport
     @Override
     protected String getBlueprintDescriptor()
     {
-        return "file:src/main/resources/OSGI-INF/blueprint/blueprint.xml";
+        return "file:blueprint-discovery.xml";
     }
 
-    @Before
-    public void startActiveMQ() throws Exception {
+    @BeforeClass
+    public static void startActiveMQ() throws Exception {
         m_broker = new BrokerService();
         m_broker.addConnector("tcp://127.0.0.1:61616");
         m_broker.start();
     }
 
-    @After
-    public void stopActiveMQ() throws Exception {
+    @AfterClass
+    public static void stopActiveMQ() throws Exception {
         if (m_broker != null) {
             m_broker.stop();
         }
     }
 
     @Test
-    public void testDiscover() throws Exception
-    {
+    public void testDiscover() throws Exception {
+
+        /*
+         * Create a Camel listener for the location queue that will respond with
+         * {@link DiscoveryResult} objects.
+         */
+        SimpleRegistry registry = new SimpleRegistry();
+        CamelContext mockDiscoverer = new DefaultCamelContext(registry);
+        mockDiscoverer.addComponent("activemq", ActiveMQComponent.activeMQComponent("tcp://127.0.0.1:61616"));
+        mockDiscoverer.addRoutes(new RouteBuilder() {
+            @Override
+            public void configure() throws Exception {
+                String from = String.format("activemq:Location-%s", LOCATION);
+
+                from(from)
+                .process(new Processor() {
+                    @Override
+                    public void process(Exchange exchange) throws Exception {
+                        DiscoveryJob job = exchange.getIn().getBody(DiscoveryJob.class);
+                        String foreignSource = job.getForeignSource();
+                        String location = job.getLocation();
+
+                        Message out = exchange.getOut();
+                        DiscoveryResults results = new DiscoveryResults(
+                            Collections.singletonMap(InetAddressUtils.addr("4.2.2.2"), 1000L),
+                            foreignSource,
+                            location
+                        );
+                        out.setBody(results);
+                    }
+                });
+            }
+        });
+
+        mockDiscoverer.start();
+
         final String ipAddress = "4.2.2.2";
         final String foreignSource = "Bogus FS";
-        final String location = "LOC1";
+        final String location = LOCATION;
 
         EventAnticipator anticipator = IPC_MANAGER_INSTANCE.getEventAnticipator();
 
@@ -183,5 +242,7 @@ public class DiscoveryBlueprintIT extends CamelBlueprintTestSupport
 
         Thread.sleep( 1000 );
         anticipator.verifyAnticipated();
+
+        mockDiscoverer.stop();
     }
 }

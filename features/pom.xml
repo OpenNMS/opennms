@@ -111,6 +111,9 @@
     <!-- OpenNMS Vaadin Surveillance Views -->
     <module>vaadin-surveillance-views</module>
 
+    <!-- Data Choices -->
+    <module>datachoices</module>
+
     <!-- Other projects -->
     <module>geocoder</module>
     <module>instrumentationLogReader</module>
@@ -121,5 +124,9 @@
 
     <!-- Elasticsearch event-forwarder-->
     <module>elasticsearch</module>
+
+    <!-- Minion -->
+    <module>minion</module>
+    <module>scv</module>
   </modules>
 </project>

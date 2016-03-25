@@ -37,7 +37,6 @@ import java.nio.ByteBuffer;
 import java.nio.channels.DatagramChannel;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.TimeUnit;
 
 import org.opennms.core.concurrent.ExecutorFactory;
 import org.opennms.core.concurrent.ExecutorFactoryJavaImpl;
@@ -47,7 +46,6 @@ import org.opennms.netmgt.config.SyslogdConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.codahale.metrics.ConsoleReporter;
 import com.codahale.metrics.Histogram;
 import com.codahale.metrics.Meter;
 import com.codahale.metrics.MetricRegistry;
@@ -269,12 +267,6 @@ public class SyslogReceiverNioDisruptorImpl implements SyslogReceiver {
 
         // Get a log instance
         Logging.putPrefix(Syslogd.LOG4J_CATEGORY);
-
-        ConsoleReporter reporter = ConsoleReporter.forRegistry(METRICS)
-            .convertRatesTo(TimeUnit.SECONDS)
-            .convertDurationsTo(TimeUnit.MILLISECONDS)
-            .build();
-        reporter.start(1, TimeUnit.SECONDS);
 
         // Create some metrics
         Meter packetMeter = METRICS.meter(MetricRegistry.name(getClass(), "packets"));

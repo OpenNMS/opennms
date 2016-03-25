@@ -1,0 +1,55 @@
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0"
+	xmlns:ext="http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.1.0"
+	xsi:schemaLocation="
+		http://www.osgi.org/xmlns/blueprint/v1.0.0 
+		http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd
+
+		http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0
+		http://aries.apache.org/schemas/blueprint-cm/blueprint-cm-1.1.0.xsd
+
+		http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.1.0
+		http://aries.apache.org/schemas/blueprint-ext/blueprint-ext-1.1.xsd
+">
+
+	<cm:property-placeholder id="syslogHandlerMinionProperties" persistent-id="org.opennms.netmgt.syslog.handler.minion" update-strategy="none">
+		<cm:default-properties>
+			<cm:property name="brokerUri" value="tcp://127.0.0.1:61716" />
+		</cm:default-properties>
+	</cm:property-placeholder>
+
+	<bean id="syslogConnectionHandlerCamel" class="org.opennms.netmgt.syslogd.SyslogConnectionHandlerCamelImpl">
+		<argument value="seda:handleMessage"/>
+	</bean>
+
+	<service interface="org.opennms.netmgt.syslogd.SyslogConnectionHandler" ref="syslogConnectionHandlerCamel"/>
+
+	<!-- Camel Event marshalling processor -->
+	<bean id="marshaller" class="org.opennms.core.camel.JaxbUtilsMarshalProcessor">
+		<argument value="org.opennms.netmgt.syslogd.SyslogConnection" />
+	</bean>
+
+	<bean id="activemq" class="org.apache.activemq.camel.component.ActiveMQComponent">
+		<!-- TODO: HZN-490 Add configurable ActiveMQ URI -->
+		<property name="brokerURL" value="${brokerUri}" />
+		<!-- TODO: HZN-490 Add configurable authentication -->
+		<!--
+		<property name="userName" value="karaf" />
+		<property name="password" value="karaf" />
+		-->
+	</bean>
+
+	<camelContext id="syslogConnectionHandlerMinion" xmlns="http://camel.apache.org/schema/blueprint">
+		<propertyPlaceholder id="properties" location="blueprint:syslogHandlerMinionProperties" />
+		<route id="handleMessage">
+			<from uri="seda:handleMessage" />
+			<convertBodyTo type="org.opennms.netmgt.syslogd.SyslogConnection"/>
+			<!-- Marshal the message to XML -->
+			<bean ref="marshaller"/>
+			<!-- Broadcast the message over ActiveMQ -->
+			<to uri="activemq:broadcastSyslog?disableReplyTo=true"/>
+		</route>
+	</camelContext>
+
+</blueprint>
