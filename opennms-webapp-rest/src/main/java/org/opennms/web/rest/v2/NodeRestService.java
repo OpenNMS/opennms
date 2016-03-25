@@ -98,15 +98,13 @@ public class NodeRestService extends AbstractDaoRestService<OnmsNode,Integer> {
 		return new OnmsNodeList(list);
 	}
 
-	@POST
-	@Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
 	@Override
-	public Response create(@Context final UriInfo uriInfo, OnmsNode object) {
+	public Response doCreate(final UriInfo uriInfo, final OnmsNode object) {
 		if (object.getLocation() == null) {
 			OnmsMonitoringLocation location = m_locationDao.getDefaultLocation();
 			LOG.debug("addNode: Assigning new node to default location: {}", location.getLocationName());
 			object.setLocation(location);
 		}
-		return super.create(uriInfo, object);
+		return super.doCreate(uriInfo, object);
 	}
 }
