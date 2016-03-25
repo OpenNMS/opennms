@@ -31,7 +31,6 @@ package org.opennms.core.test.karaf;
 import static org.ops4j.pax.exam.CoreOptions.maven;
 import static org.ops4j.pax.exam.CoreOptions.provision;
 import static org.ops4j.pax.exam.karaf.options.KarafDistributionOption.debugConfiguration;
-import static org.ops4j.pax.exam.karaf.options.KarafDistributionOption.editConfigurationFileExtend;
 import static org.ops4j.pax.exam.karaf.options.KarafDistributionOption.editConfigurationFilePut;
 import static org.ops4j.pax.exam.karaf.options.KarafDistributionOption.karafDistributionConfiguration;
 import static org.ops4j.pax.exam.karaf.options.KarafDistributionOption.logLevel;
@@ -126,7 +125,7 @@ public abstract class KarafTestCase {
                 // Turn off using the deploy folder or stream bundle provisioning
                 // won't happen before the probe bundle executes, causing problems
                 // like {@link NoClassDefFoundError}.
-                .useDeployFolder(false), 
+                .useDeployFolder(false),
 
             // Pack this parent class from src/main/java into a stream bundle
             // so that it is accessible inside the container
@@ -144,12 +143,23 @@ public abstract class KarafTestCase {
             // Set logging to INFO
             logLevel(LogLevelOption.LogLevel.INFO),
 
-            editConfigurationFilePut("etc/org.ops4j.pax.url.mvn.cfg", "org.ops4j.pax.url.mvn.defaultRepositories", "file:${karaf.home}/${karaf.default.repository}@snapshots@id=karaf.${karaf.default.repository}"),
+            /**
+             * CAUTION: Do not use editConfigurationFileExtend(), it appears to overwrite its own changes
+             * if there are multiple statements.
+             */
+            editConfigurationFilePut("etc/org.ops4j.pax.url.mvn.cfg", "org.ops4j.pax.url.mvn.defaultRepositories",
+                String.join(",", new String[] {
+                    "file:${karaf.home}/${karaf.default.repository}@snapshots@id=karaf.${karaf.default.repository}",
 
-            // This path needs to match the path in the POM to the repo created by the features-maven-plugin's 'add-features-to-repo' execution: 
-            // <repository>target/paxexam/test-repo</repository>
-            editConfigurationFileExtend("etc/org.ops4j.pax.url.mvn.cfg", "org.ops4j.pax.url.mvn.defaultRepositories", "file:${karaf.home}/../test-repo@snapshots@id=default-repo"),
-            editConfigurationFileExtend("etc/org.ops4j.pax.url.mvn.cfg", "org.ops4j.pax.url.mvn.defaultRepositories", "file:${karaf.home}/../../features-repo@snapshots@id=opennms-repo"),
+                    // This path needs to match the path in the POM to the repo created by the features-maven-plugin's 'add-features-to-repo' execution, ie:
+                    // <repository>target/paxexam/test-repo</repository>
+                    //
+                    // TODO: Make it possible for tests to override these paths with the path where their 'add-features-to-repo' execution is creating a repo
+                    //
+                    "file:${karaf.home}/../test-repo@snapshots@id=default-repo",
+                    "file:${karaf.home}/../../features-repo@snapshots@id=opennms-repo"
+                })
+            ),
 
             // Disable all standard internet repositories so that we only rely on the defaultRepositories
             editConfigurationFilePut("etc/org.ops4j.pax.url.mvn.cfg", "org.ops4j.pax.url.mvn.repositories", ""),
