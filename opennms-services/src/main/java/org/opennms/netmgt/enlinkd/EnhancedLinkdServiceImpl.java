@@ -21,7 +21,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -49,7 +48,6 @@ import org.opennms.netmgt.dao.support.UpsertTemplate;
 import org.opennms.netmgt.model.BridgeBridgeLink;
 import org.opennms.netmgt.model.BridgeElement;
 import org.opennms.netmgt.model.BridgeMacLink;
-import org.opennms.netmgt.model.BridgeMacLink.BridgeDot1qTpFdbStatus;
 import org.opennms.netmgt.model.BridgeStpLink;
 import org.opennms.netmgt.model.CdpElement;
 import org.opennms.netmgt.model.CdpLink;
@@ -63,7 +61,6 @@ import org.opennms.netmgt.model.OnmsNode.NodeType;
 import org.opennms.netmgt.model.OspfElement;
 import org.opennms.netmgt.model.OspfLink;
 import org.opennms.netmgt.model.PrimaryType;
-import org.opennms.netmgt.model.topology.Bridge;
 import org.opennms.netmgt.model.topology.BridgeMacLinkHash;
 import org.opennms.netmgt.model.topology.BroadcastDomain;
 import org.opennms.netmgt.model.topology.SharedSegment;
@@ -809,95 +806,9 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
 
     @Override
     public void loadBridgeTopology() {
-        List<SharedSegment> segments = new ArrayList<SharedSegment>();
-        for (BridgeMacLink link : m_bridgeMacLinkDao.findAll()) {
-            link.setBridgeDot1qTpFdbStatus(BridgeDot1qTpFdbStatus.DOT1D_TP_FDB_STATUS_LEARNED);
-            for (SharedSegment segment : segments) {
-                if (segment.containsMac(link.getMacAddress())
-                        || segment.containsPort(link.getNode().getId(),
-                                                link.getBridgePort())) {
-                    segment.add(link);
-                    break;
-                }
-            }
-            SharedSegment segment = new SharedSegment();
-            segment.add(link);
-            segment.setDesignatedBridge(link.getNode().getId());
-            segments.add(segment);
-        }
-
-        for (BridgeBridgeLink link : m_bridgeBridgeLinkDao.findAll()) {
-            for (SharedSegment segment : segments) {
-                if (segment.containsPort(link.getNode().getId(),
-                                         link.getBridgePort())
-                     || segment.containsPort(link.getDesignatedNode().getId(),
-                                             link.getDesignatedPort())) {
-                    segment.add(link);
-                    segment.setDesignatedBridge(link.getDesignatedNode().getId());
-                    break;
-                }
-            }
-            SharedSegment segment = new SharedSegment();
-            segment.add(link);
-            segment.setDesignatedBridge(link.getDesignatedNode().getId());
-            segments.add(segment);
-        }
-        
-        Set<Set<Integer>> nodelinked = new HashSet<Set<Integer>>();
-SHARED:        for (SharedSegment segment: segments) {
-            Set<Integer> nodesOnSegment = new HashSet<Integer>(segment.getBridgeIdsOnSegment());
-            for (Set<Integer> nodes: nodelinked) {
-                for (Integer nodeid: nodesOnSegment) {
-                    if (nodes.contains(nodeid)) 
-                        continue SHARED;
-                }
-            }
-            nodelinked.add(getNodesOnDomainSet(segments, segment, new HashSet<SharedSegment>(),nodesOnSegment));
-        }
-        
-        Set<BroadcastDomain> domains = new HashSet<BroadcastDomain>();
-        for (Set<Integer> nodes : nodelinked) {
-            BroadcastDomain domain = new BroadcastDomain();
-            for (Integer nodeid: nodes)
-                domain.addBridge(new Bridge(nodeid));
-            domains.add(domain);
-        }
-        // Assign the segment to domain and add to single nodes
-        for (SharedSegment segment : segments) {
-            BroadcastDomain domain = null;
-            for (BroadcastDomain cdomain: domains) {
-                if (cdomain.containsAtleastOne(segment.getBridgeIdsOnSegment())) {
-                    domain = cdomain;
-                    break;
-                }
-            }
-            if (domain == null) {
-                domain = new BroadcastDomain();
-                domains.add(domain);
-            }
-            domain.loadTopologyEntry(segment);
-        }
-
-        m_bridgeTopologyDao.load(domains);
+        m_bridgeTopologyDao.load(m_bridgeBridgeLinkDao, m_bridgeMacLinkDao);
     }
     
-    private Set<Integer> getNodesOnDomainSet(List<SharedSegment> segments, SharedSegment segment, Set<SharedSegment> parsed, Set<Integer> nodesOnDomain) {
-        parsed.add(segment);
-MAINLOOP:        for (SharedSegment parsing: segments) {
-            if (parsed.contains(parsing))
-                continue;
-            Set<Integer> nodesOnSegment = parsing.getBridgeIdsOnSegment();
-            for (Integer nodeid: nodesOnSegment) {
-                if (nodesOnDomain.contains(nodeid)) {
-                    nodesOnDomain.addAll(nodesOnSegment);
-                    getNodesOnDomainSet(segments, parsing, parsed, nodesOnDomain);
-                    break MAINLOOP;
-                }
-            }
-        }
-        return nodesOnDomain;
-    }
-
     public CdpLinkDao getCdpLinkDao() {
         return m_cdpLinkDao;
     }

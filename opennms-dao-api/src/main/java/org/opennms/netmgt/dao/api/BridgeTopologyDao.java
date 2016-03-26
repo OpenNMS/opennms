@@ -1,9 +1,11 @@
 package org.opennms.netmgt.dao.api;
 
 
+import java.util.List;
 import java.util.Set;
 
 import org.opennms.netmgt.model.topology.BroadcastDomain;
+import org.opennms.netmgt.model.topology.SharedSegment;
 
 public interface BridgeTopologyDao {
         
@@ -13,7 +15,9 @@ public interface BridgeTopologyDao {
     // update broadcastdomain
     void save(BroadcastDomain domain);
     // Load the topology from the scratch
-    void load(Set<BroadcastDomain> domain);
+    void load(BridgeBridgeLinkDao bridgeBridgeLinkDao,BridgeMacLinkDao bridgeMacLinkDao);
+    
+    List<SharedSegment> getNodeSharedSegments(BridgeBridgeLinkDao bridgeBridgeLinkDao,BridgeMacLinkDao bridgeMacLinkDao, int nodeid);
 
     void delete(BroadcastDomain domain);
 
