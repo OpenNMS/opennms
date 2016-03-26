@@ -822,6 +822,7 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
             }
             SharedSegment segment = new SharedSegment();
             segment.add(link);
+            segment.setDesignatedBridge(link.getNode().getId());
             segments.add(segment);
         }
 
@@ -832,37 +833,28 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
                      || segment.containsPort(link.getDesignatedNode().getId(),
                                              link.getDesignatedPort())) {
                     segment.add(link);
+                    segment.setDesignatedBridge(link.getDesignatedNode().getId());
                     break;
                 }
             }
             SharedSegment segment = new SharedSegment();
             segment.add(link);
+            segment.setDesignatedBridge(link.getDesignatedNode().getId());
             segments.add(segment);
         }
+        
         Set<Set<Integer>> nodelinked = new HashSet<Set<Integer>>();
-        for (SharedSegment segmentA: segments) {
-            if (segmentA.getBridgeIdsOnSegment().size() == 1)
-                continue;
-            System.out.println("--------");
-            System.out.println("nodelinked: "+nodelinked);
-            System.out.println("nodes on segment: " + segmentA.getBridgeIdsOnSegment());
-            boolean tobeadded = true;
-            Set<Integer> intersection=new HashSet<Integer>(segmentA.getBridgeIdsOnSegment());
-            for (Set<Integer> nodes : nodelinked) {
-                System.out.println("nodes on set: " + nodes);
-                intersection.retainAll(nodes);
-                System.out.println("intersection: "+intersection);
-                if (!intersection.isEmpty()) {
-                    nodes.addAll(segmentA.getBridgeIdsOnSegment());
-                    tobeadded=false;
-                    break;
+SHARED:        for (SharedSegment segment: segments) {
+            Set<Integer> nodesOnSegment = new HashSet<Integer>(segment.getBridgeIdsOnSegment());
+            for (Set<Integer> nodes: nodelinked) {
+                for (Integer nodeid: nodesOnSegment) {
+                    if (nodes.contains(nodeid)) 
+                        continue SHARED;
                 }
             }
-            if (tobeadded)
-                nodelinked.add(new HashSet<Integer>(segmentA.getBridgeIdsOnSegment()));
+            nodelinked.add(getNodesOnDomainSet(segments, segment, new HashSet<SharedSegment>(),nodesOnSegment));
         }
         
-        System.out.println(nodelinked);
         Set<BroadcastDomain> domains = new HashSet<BroadcastDomain>();
         for (Set<Integer> nodes : nodelinked) {
             BroadcastDomain domain = new BroadcastDomain();
@@ -872,13 +864,10 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
         }
         // Assign the segment to domain and add to single nodes
         for (SharedSegment segment : segments) {
-            System.out.println("Adding segment: " + segment.getBridgeIdsOnSegment());
             BroadcastDomain domain = null;
             for (BroadcastDomain cdomain: domains) {
-                System.out.println("Parsing domain: " + cdomain.getBridgeNodesOnDomain());
                 if (cdomain.containsAtleastOne(segment.getBridgeIdsOnSegment())) {
                     domain = cdomain;
-                    System.out.println("Matched domain: "+cdomain.getBridgeNodesOnDomain());
                     break;
                 }
             }
@@ -890,6 +879,23 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
         }
 
         m_bridgeTopologyDao.load(domains);
+    }
+    
+    private Set<Integer> getNodesOnDomainSet(List<SharedSegment> segments, SharedSegment segment, Set<SharedSegment> parsed, Set<Integer> nodesOnDomain) {
+        parsed.add(segment);
+MAINLOOP:        for (SharedSegment parsing: segments) {
+            if (parsed.contains(parsing))
+                continue;
+            Set<Integer> nodesOnSegment = parsing.getBridgeIdsOnSegment();
+            for (Integer nodeid: nodesOnSegment) {
+                if (nodesOnDomain.contains(nodeid)) {
+                    nodesOnDomain.addAll(nodesOnSegment);
+                    getNodesOnDomainSet(segments, parsing, parsed, nodesOnDomain);
+                    break MAINLOOP;
+                }
+            }
+        }
+        return nodesOnDomain;
     }
 
     public CdpLinkDao getCdpLinkDao() {

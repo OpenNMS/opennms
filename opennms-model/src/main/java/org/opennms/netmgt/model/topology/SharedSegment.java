@@ -1,6 +1,7 @@
 package org.opennms.netmgt.model.topology;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -9,14 +10,159 @@ import java.util.Set;
 
 import org.opennms.netmgt.model.BridgeBridgeLink;
 import org.opennms.netmgt.model.BridgeMacLink;
+import org.opennms.netmgt.model.OnmsNode;
 
 public class SharedSegment {
+    private class BridgePort {
+
+        private OnmsNode m_node;
+        private Integer m_bridgePort;
+        private Integer m_bridgePortIfIndex;
+        private String  m_bridgePortIfName;
+        private Integer m_vlan;
+        private Date m_createTime;
+        private Date m_pollTime;
+
+        @Override
+        public int hashCode() {
+            final int prime = 31;
+            int result = 1;
+            result = prime * result + getOuterType().hashCode();
+            result = prime * result
+                    + ((m_bridgePort == null) ? 0 : m_bridgePort.hashCode());
+            result = prime * result
+                    + ((m_node == null) ? 0 : m_node.getId().hashCode());
+            return result;
+        }
+        @Override
+        public boolean equals(Object obj) {
+            if (this == obj)
+                return true;
+            if (obj == null)
+                return false;
+            if (getClass() != obj.getClass())
+                return false;
+            BridgePort other = (BridgePort) obj;
+            if (!getOuterType().equals(other.getOuterType()))
+                return false;
+            if (m_bridgePort == null) {
+                if (other.m_bridgePort != null)
+                    return false;
+            } else if (!m_bridgePort.equals(other.m_bridgePort))
+                return false;
+            if (m_node == null) {
+                if (other.m_node != null)
+                    return false;
+            } else if (!m_node.getId().equals(other.m_node.getId()))
+                return false;
+            return true;
+        }
+
+        public OnmsNode getNode() {
+            return m_node;
+        }
+        public void setNode(OnmsNode node) {
+            m_node = node;
+        }
+        public Integer getBridgePort() {
+            return m_bridgePort;
+        }
+        public void setBridgePort(Integer bridgePort) {
+            m_bridgePort = bridgePort;
+        }
+        public Integer getBridgePortIfIndex() {
+            return m_bridgePortIfIndex;
+        }
+        public void setBridgePortIfIndex(Integer bridgePortIfIndex) {
+            m_bridgePortIfIndex = bridgePortIfIndex;
+        }
+        public String getBridgePortIfName() {
+            return m_bridgePortIfName;
+        }
+        public void setBridgePortIfName(String bridgePortIfName) {
+            m_bridgePortIfName = bridgePortIfName;
+        }
+        public Integer getVlan() {
+            return m_vlan;
+        }
+        public void setVlan(Integer vlan) {
+            m_vlan = vlan;
+        }
+        private SharedSegment getOuterType() {
+            return SharedSegment.this;
+        }
+        public Date getCreateTime() {
+            return m_createTime;
+        }
+        public void setCreateTime(Date time) {
+            m_createTime = time;
+        }
+        public Date getPollTime() {
+            return m_pollTime;
+        }
+        public void setPollTime(Date time) {
+            m_pollTime = time;
+        }
+        
+    }
     
-    Integer m_designatedBridge;
+    BridgePort m_designatedBridge;
     List<BridgeMacLink> m_macsOnSegment = new ArrayList<BridgeMacLink>();
-    List<BridgeBridgeLink> m_portsOnSegment = new ArrayList<BridgeBridgeLink>();
+    Set<BridgePort> m_portsOnSegment = new HashSet<BridgePort>();
     BroadcastDomain m_domain;
     
+    private BridgePort getFromBridgeMacLink(BridgeMacLink link) {
+        BridgePort bp = new BridgePort();
+        bp.setNode(link.getNode());
+        bp.setBridgePort(link.getBridgePort());
+        bp.setBridgePortIfIndex(link.getBridgePortIfIndex());
+        bp.setBridgePortIfName(link.getBridgePortIfName());
+        bp.setVlan(link.getVlan());
+        bp.setCreateTime(link.getBridgeMacLinkCreateTime());
+        bp.setPollTime(link.getBridgeMacLinkLastPollTime());
+        return bp;
+    }
+
+    private BridgePort getFromBridgeBridgeLink(BridgeBridgeLink link) {
+        BridgePort bp = new BridgePort();
+        bp.setNode(link.getNode());
+        bp.setBridgePort(link.getBridgePort());
+        bp.setBridgePortIfIndex(link.getBridgePortIfIndex());
+        bp.setBridgePortIfName(link.getBridgePortIfName());
+        bp.setVlan(link.getVlan());
+        bp.setCreateTime(link.getBridgeBridgeLinkCreateTime());
+        bp.setPollTime(link.getBridgeBridgeLinkLastPollTime());
+        return bp;
+    }
+
+    private BridgePort getFromDesignatedBridgeBridgeLink(BridgeBridgeLink link) {
+        BridgePort bp = new BridgePort();
+        bp.setNode(link.getDesignatedNode());
+        bp.setBridgePort(link.getDesignatedPort());
+        bp.setBridgePortIfIndex(link.getDesignatedPortIfIndex());
+        bp.setBridgePortIfName(link.getDesignatedPortIfName());
+        bp.setVlan(link.getDesignatedVlan());
+        bp.setCreateTime(link.getBridgeBridgeLinkCreateTime());
+        bp.setPollTime(link.getBridgeBridgeLinkLastPollTime());
+        return bp;
+    }
+
+    private BridgeBridgeLink getBridgeBridgeLink(BridgePort bp) {
+        BridgeBridgeLink link = new BridgeBridgeLink();
+        link.setNode(bp.getNode());
+        link.setBridgePort(bp.getBridgePort());
+        link.setBridgePortIfIndex(bp.getBridgePortIfIndex());
+        link.setBridgePortIfName(bp.getBridgePortIfName());
+        link.setVlan(bp.getVlan());
+        link.setDesignatedNode(m_designatedBridge.getNode());
+        link.setDesignatedPort(m_designatedBridge.getBridgePort());
+        link.setDesignatedPortIfIndex(m_designatedBridge.getBridgePortIfIndex());
+        link.setDesignatedPortIfName(m_designatedBridge.getBridgePortIfName());
+        link.setDesignatedVlan(m_designatedBridge.getVlan());
+        link.setBridgeBridgeLinkCreateTime(m_designatedBridge.getCreateTime());
+        link.setBridgeBridgeLinkLastPollTime(m_designatedBridge.getPollTime());
+        return link;
+    }
     public SharedSegment(){};
     
     public SharedSegment(BroadcastDomain domain) {
@@ -33,26 +179,38 @@ public class SharedSegment {
 
     public SharedSegment(BroadcastDomain domain, BridgeMacLink link) {
         m_domain =domain;
-        m_designatedBridge = link.getNode().getId();
+        m_designatedBridge = getFromBridgeMacLink(link);
         m_macsOnSegment.add(link);
+        m_portsOnSegment.add(m_designatedBridge);
     }
 
-    public SharedSegment(BroadcastDomain domain, Integer designatedBridge,Integer designatedPort) {
+    public SharedSegment(BroadcastDomain domain, BridgeBridgeLink link) {
         m_domain =domain;
-        m_designatedBridge=designatedBridge;
+        m_portsOnSegment.add(getFromDesignatedBridgeBridgeLink(link));
+        m_portsOnSegment.add(getFromBridgeBridgeLink(link));
     }
         
     public void setDesignatedBridge(Integer designatedBridge) {
-        m_designatedBridge = designatedBridge;
+        if (designatedBridge == null)
+            return;
+        if (m_designatedBridge != null && designatedBridge != null 
+                && m_designatedBridge.getNode().getId() == designatedBridge.intValue())
+            return;
+        for (BridgePort port: m_portsOnSegment) {
+            if (port.getNode().getId().intValue() == designatedBridge.intValue()) {
+                m_designatedBridge = port;
+                break;
+            }
+        }
     }
 
     public Integer getDesignatedBridge() {
-        return m_designatedBridge;
+        return m_designatedBridge.getNode().getId();
     }
 
 
     public Integer getDesignatedPort() {
-        return getPortForBridge(m_designatedBridge);
+        return m_designatedBridge.getBridgePort();
     }
 
 
@@ -60,8 +218,18 @@ public class SharedSegment {
         return m_macsOnSegment.isEmpty() && m_portsOnSegment.isEmpty();
     }
 
-    public List<BridgeBridgeLink> getBridgeBridgeLinks() {
+    public Set<BridgePort> getBridgePortsOnSegment() {
         return m_portsOnSegment;
+    }        
+
+    public List<BridgeBridgeLink> getBridgeBridgeLinks() {
+        List<BridgeBridgeLink> links = new ArrayList<BridgeBridgeLink>();
+        for (BridgePort port: m_portsOnSegment) {
+            if (port.equals(m_designatedBridge))
+                continue;
+            links.add(getBridgeBridgeLink(port));
+        }
+        return links;
     }
     
     public List<BridgeMacLink> getBridgeMacLinks() {
@@ -74,56 +242,18 @@ public class SharedSegment {
 
     public void setBridgeMacLinks(List<BridgeMacLink> links) {
         m_macsOnSegment = links;
+        for (BridgeMacLink link: links)
+            m_portsOnSegment.add(getFromBridgeMacLink(link));
     }
 
     public void add(BridgeMacLink link) {
         m_macsOnSegment.add(link);
+        m_portsOnSegment.add(getFromBridgeMacLink(link));
     }
     
     public void add(BridgeBridgeLink dlink) {
-        if (m_portsOnSegment.isEmpty()) {
-            m_portsOnSegment.add(dlink);
-            return;
-        } 
-        BridgeBridgeLink first= m_portsOnSegment.iterator().next();
-        if (first.getDesignatedNode().getId().intValue() == dlink.getDesignatedNode().getId().intValue()) {
-            m_portsOnSegment.add(dlink);
-            return;
-        }
-        if (first.getDesignatedNode().getId().intValue() == dlink.getNode().getId().intValue()) {
-            m_portsOnSegment.add(dlink.getReverseBridgeBridgeLink());
-            return;
-        }
-        
-        BridgeBridgeLink x = new BridgeBridgeLink();
-
-        x.setNode(dlink.getNode());
-        x.setBridgePort(dlink.getBridgePort());
-        x.setBridgePortIfIndex(dlink.getBridgePortIfIndex());
-        x.setBridgePortIfName(dlink.getBridgePortIfName());
-        x.setVlan(dlink.getVlan());
-
-        x.setDesignatedNode(first.getDesignatedNode());
-        x.setDesignatedPort(first.getDesignatedPort());
-        x.setDesignatedPortIfIndex(first.getDesignatedPortIfIndex());
-        x.setDesignatedPortIfName(first.getDesignatedPortIfName());
-        x.setVlan(first.getDesignatedVlan());
-        
-        m_portsOnSegment.add(x);
-        
-        BridgeBridgeLink y = new BridgeBridgeLink();
-        x.setNode(dlink.getDesignatedNode());
-        x.setBridgePort(dlink.getDesignatedPort());
-        x.setBridgePortIfIndex(dlink.getDesignatedPortIfIndex());
-        x.setBridgePortIfName(dlink.getDesignatedPortIfName());
-        x.setVlan(dlink.getDesignatedVlan());
-            
-        y.setDesignatedNode(first.getDesignatedNode());
-        y.setDesignatedPort(first.getDesignatedPort());
-        y.setDesignatedPortIfIndex(first.getDesignatedPortIfIndex());
-        y.setDesignatedPortIfName(first.getDesignatedPortIfName());
-        y.setVlan(first.getDesignatedVlan());
-        m_portsOnSegment.add(y);
+        m_portsOnSegment.add(getFromDesignatedBridgeBridgeLink(dlink));
+        m_portsOnSegment.add(getFromBridgeBridgeLink(dlink));
     }
 
     //   this=topSegment {tmac...} {(tbridge,tport)....}U{bridgeId, bridgeIdPortId} 
@@ -136,112 +266,52 @@ public class SharedSegment {
     //    move all the macs and port on shared
     //  ------> topSegment {tmac...}U{smac....} {(tbridge,tport)}U{(sbridge,sport).....}
     public void mergeBridge(SharedSegment shared, Integer bridgeId) {
-        // if there is a single port on the segment
-        BridgeBridgeLink first = m_portsOnSegment.iterator().next();
-        if (m_macsOnSegment.isEmpty() && m_portsOnSegment.size() == 1 && first.getNode().getId().intValue() == 
-                first.getDesignatedNode().getId().intValue()) {
-            
-            if (shared.getBridgeBridgeLinks().isEmpty()) {
-                for (BridgeMacLink mlink: shared.getBridgeMacLinks()) {
-                    mlink.setNode(first.getDesignatedNode());
-                    mlink.setBridgePort(first.getDesignatedPort());
-                    mlink.setBridgePortIfIndex(first.getDesignatedPortIfIndex());
-                    mlink.setBridgePortIfName(first.getDesignatedPortIfName());
-                    mlink.setVlan(first.getDesignatedVlan());
-                    m_macsOnSegment.add(mlink);
-                }
-                m_portsOnSegment.clear();
-                return;
-            } 
-            
-            BridgeBridgeLink sharedFirst = shared.getBridgeBridgeLinks().iterator().next();
-            
-            if (sharedFirst.getDesignatedNode().getId().intValue() == bridgeId.intValue()) {
-                m_portsOnSegment.clear();
-            } else {
-                first.setNode(sharedFirst.getDesignatedNode());
-                first.setBridgePort(sharedFirst.getDesignatedPort());
-                first.setBridgePortIfIndex(sharedFirst.getDesignatedPortIfIndex());
-                first.setBridgePortIfName(sharedFirst.getDesignatedPortIfName());
-                first.setVlan(sharedFirst.getDesignatedVlan());
-            }
-            for (BridgeBridgeLink blink : shared.getBridgeBridgeLinks()) {
-                if (blink.getNode().getId().intValue() == bridgeId.intValue())
+        List<BridgeMacLink> toadd = new ArrayList<BridgeMacLink>();
+        for (BridgeMacLink link: m_macsOnSegment) {
+            if (link.getNode().getId().intValue() != m_designatedBridge.getNode().getId().intValue())
+                continue;
+            for (BridgePort mport: shared.getBridgePortsOnSegment()) {
+                if (mport.getNode().getId().intValue() == bridgeId.intValue())
                     continue;
-                blink.setDesignatedNode(first.getDesignatedNode());
-                blink.setDesignatedPort(first.getDesignatedPort());
-                blink.setDesignatedPortIfIndex(first.getDesignatedPortIfIndex());
-                blink.setDesignatedPortIfName(first.getDesignatedPortIfName());
-                blink.setDesignatedVlan(first.getDesignatedVlan());
-                m_portsOnSegment.add(blink);
+                BridgeMacLink nlink = new BridgeMacLink();
+                nlink.setNode(mport.getNode());
+                nlink.setBridgePort(mport.getBridgePort());
+                nlink.setBridgePortIfIndex(mport.getBridgePortIfIndex());
+                nlink.setBridgePortIfName(mport.getBridgePortIfName());
+                nlink.setVlan(mport.getVlan());
+                nlink.setMacAddress(link.getMacAddress());
+                nlink.setBridgeMacLinkCreateTime(link.getBridgeMacLinkCreateTime());
+                nlink.setBridgeMacLinkLastPollTime(link.getBridgeMacLinkLastPollTime());
+                nlink.setBridgeDot1qTpFdbStatus(link.getBridgeDot1qTpFdbStatus());
+                toadd.add(nlink);
             }
-
-            for (BridgeMacLink mlink: shared.getBridgeMacLinks()) {
-                if (mlink.getNode().getId().intValue() == bridgeId.intValue()) {
-                    mlink.setNode(first.getDesignatedNode());
-                    mlink.setBridgePort(first.getDesignatedPort());
-                    mlink.setBridgePortIfIndex(first.getDesignatedPortIfIndex());
-                    mlink.setBridgePortIfName(first.getDesignatedPortIfName());
-                    mlink.setVlan(first.getDesignatedVlan());
-                } 
-                m_macsOnSegment.add(mlink);    
-            }
-            return;            
         }
-
+        m_macsOnSegment.addAll(toadd);
         
         for (BridgeMacLink mlink: shared.getBridgeMacLinks()) {
             if (mlink.getNode().getId().intValue() == bridgeId.intValue()) {
-                mlink.setNode(first.getDesignatedNode());
-                mlink.setBridgePort(first.getDesignatedPort());
-                mlink.setBridgePortIfIndex(first.getDesignatedPortIfIndex());
-                mlink.setBridgePortIfName(first.getDesignatedPortIfName());
-                mlink.setVlan(first.getDesignatedVlan());
-            }
-            m_macsOnSegment.add(mlink);
-        }            
-
-        if (shared.getBridgeBridgeLinks().isEmpty())
-            return;
-        
-        BridgeBridgeLink sharedFirst = shared.getBridgeBridgeLinks().iterator().next();
-        
-        if (sharedFirst.getDesignatedNode().getId().intValue() == bridgeId.intValue()) {
-            for (BridgeBridgeLink blink : shared.getBridgeBridgeLinks()) {
-                blink.setDesignatedNode(first.getDesignatedNode());
-                blink.setDesignatedPort(first.getDesignatedPort());
-                blink.setDesignatedPortIfIndex(first.getDesignatedPortIfIndex());
-                blink.setDesignatedPortIfName(first.getDesignatedPortIfName());
-                blink.setDesignatedVlan(first.getDesignatedVlan());
-                m_portsOnSegment.add(blink);
-            }
-            return;
-        } 
-        
-        BridgeBridgeLink nbblink = new BridgeBridgeLink();
-        nbblink.setNode(sharedFirst.getDesignatedNode());
-        nbblink.setBridgePort(sharedFirst.getDesignatedPort());
-        nbblink.setBridgePortIfIndex(sharedFirst.getDesignatedPortIfIndex());
-        nbblink.setBridgePortIfName(sharedFirst.getDesignatedPortIfName());
-        nbblink.setVlan(sharedFirst.getDesignatedVlan());
-        nbblink.setDesignatedNode(first.getDesignatedNode());
-        nbblink.setDesignatedPort(first.getDesignatedPort());
-        nbblink.setDesignatedPortIfIndex(first.getDesignatedPortIfIndex());
-        nbblink.setDesignatedPortIfName(first.getDesignatedPortIfName());
-        nbblink.setDesignatedVlan(first.getDesignatedVlan());
-        m_portsOnSegment.add(nbblink);
-        
-        for (BridgeBridgeLink blink : shared.getBridgeBridgeLinks()) {
-            if (blink.getNode().getId().intValue() == bridgeId.intValue())
+                for (BridgePort port : m_portsOnSegment) {
+                    BridgeMacLink nlink = new BridgeMacLink();
+                    nlink.setNode(port.getNode());
+                    nlink.setBridgePort(port.getBridgePort());
+                    nlink.setBridgePortIfIndex(port.getBridgePortIfIndex());
+                    nlink.setBridgePortIfName(port.getBridgePortIfName());
+                    nlink.setVlan(port.getVlan());
+                    nlink.setMacAddress(mlink.getMacAddress());
+                    nlink.setBridgeMacLinkCreateTime(mlink.getBridgeMacLinkCreateTime());
+                    nlink.setBridgeMacLinkLastPollTime(mlink.getBridgeMacLinkLastPollTime());
+                    nlink.setBridgeDot1qTpFdbStatus(mlink.getBridgeDot1qTpFdbStatus());
+                    m_macsOnSegment.add(nlink);
+                }
                 continue;
-            blink.setDesignatedNode(first.getDesignatedNode());
-            blink.setDesignatedPort(first.getDesignatedPort());
-            blink.setDesignatedPortIfIndex(first.getDesignatedPortIfIndex());
-            blink.setDesignatedPortIfName(first.getDesignatedPortIfName());
-            blink.setDesignatedVlan(first.getDesignatedVlan());
-            m_portsOnSegment.add(blink);
+            } 
+            m_macsOnSegment.add(mlink);    
         }
-
+        for (BridgePort port: shared.getBridgePortsOnSegment()) {
+            if (port.getNode().getId().intValue() == bridgeId.intValue())
+                continue;
+            m_portsOnSegment.add(port);
+        }
     }
 
     public void assign(List<BridgeMacLink> links, BridgeBridgeLink dlink) {
@@ -253,48 +323,25 @@ public class SharedSegment {
             sharedsegmentmaclinks.put(new BridgeMacLinkHash(link),link);
         //intersection is not null, then we have to add all the BridgeMacLink
         // for each mac address
-        for (BridgeMacLink link: m_macsOnSegment)
+        for (BridgeMacLink link: m_macsOnSegment) {
             sharedsegmentmaclinks.put(new BridgeMacLinkHash(link),link);
-
+            m_portsOnSegment.add(getFromBridgeMacLink(link));
+        }
         m_macsOnSegment = new ArrayList<BridgeMacLink>(sharedsegmentmaclinks.values());
     }
 
     public void removeBridge(int bridgeId) {
-        List<BridgeMacLink> updatemacsonsegment = new ArrayList<BridgeMacLink>();
-        List<BridgeBridgeLink> updateportonsegment = new ArrayList<BridgeBridgeLink>();
-        List<BridgeBridgeLink> deleteportonsegment = new ArrayList<BridgeBridgeLink>();
-        BridgeBridgeLink first = m_portsOnSegment.iterator().next();
-        if (!m_portsOnSegment.isEmpty()) {
-            if (first.getDesignatedNode().getId().intValue() == bridgeId) {
-                for (BridgeBridgeLink link: m_portsOnSegment) {
-                    link.setDesignatedNode(first.getNode());
-                    link.setDesignatedPort(first.getBridgePort());
-                    link.setDesignatedPortIfIndex(first.getBridgePortIfIndex());
-                    link.setDesignatedPortIfName(first.getBridgePortIfName());
-                    link.setDesignatedVlan(first.getVlan());
-                    if (link.getNode().getId() == first.getNode().getId()) {
-                        deleteportonsegment.add(link);
-                        continue;
-                    }
-                    updateportonsegment.add(link);
-                }
-            } else {
-                for (BridgeBridgeLink link: m_portsOnSegment) {
-                    if (link.getNode().getId().intValue() == bridgeId ) {
-                        deleteportonsegment.add(link);
-                        continue;
-                    }
-                    updateportonsegment.add(link);
-                }
-            }
-        }
-
-        if (updateportonsegment.isEmpty() && m_macsOnSegment.isEmpty()) {
-            m_portsOnSegment=deleteportonsegment;
+        if (m_portsOnSegment.isEmpty())
             return;
+        Set<BridgePort> updateportsonsegment = new HashSet<SharedSegment.BridgePort>();
+        for (BridgePort port: m_portsOnSegment) {
+            if (port.getNode().getId().intValue() == bridgeId)
+                continue;
+            updateportsonsegment.add(port);
         }
-        m_portsOnSegment = updateportonsegment;
-
+        m_portsOnSegment = updateportsonsegment;
+        
+        List<BridgeMacLink> updatemacsonsegment = new ArrayList<BridgeMacLink>();
         for (BridgeMacLink link: m_macsOnSegment) {
             if (link.getNode().getId().intValue() == bridgeId ) {
                continue;
@@ -323,7 +370,7 @@ public class SharedSegment {
     
     public Integer getFirstNoDesignatedBridge() {
         for (Integer bridgeId: getBridgeIdsOnSegment()) {
-            if (m_designatedBridge == null || bridgeId != m_designatedBridge)
+            if (m_designatedBridge == null || bridgeId != m_designatedBridge.getNode().getId())
                 return bridgeId;
         }
         return null;
@@ -339,11 +386,7 @@ public class SharedSegment {
 
     public Set<Integer> getBridgeIdsOnSegment() {
         Set<Integer> nodes = new HashSet<Integer>();
-        for (BridgeBridgeLink link: m_portsOnSegment) {
-            nodes.add(link.getNode().getId());
-            nodes.add(link.getDesignatedNode().getId());
-        }
-        for ( BridgeMacLink link: m_macsOnSegment) {
+        for (BridgePort link: m_portsOnSegment) {
             nodes.add(link.getNode().getId());
         }
         return nodes;
@@ -360,17 +403,9 @@ public class SharedSegment {
     }
 
     public boolean containsPort(Integer nodeid, Integer bridgeport) {
-        for (BridgeBridgeLink link: m_portsOnSegment) {
+        for (BridgePort link: m_portsOnSegment) {
             if (link.getNode().getId().intValue() == nodeid.intValue() && 
                     link.getBridgePort().intValue() == bridgeport.intValue())
-                return true;
-            if (link.getDesignatedNode().getId().intValue() == nodeid.intValue() 
-                    && link.getDesignatedPort().intValue() == bridgeport.intValue())
-                return true;
-        }
-        for (BridgeMacLink link: m_macsOnSegment) {
-            if (link.getNode().getId().intValue() == nodeid.intValue() 
-                    && link.getBridgePort().intValue() == bridgeport.intValue()) 
                 return true;
         }
         return false;
@@ -380,17 +415,11 @@ public class SharedSegment {
         if (nodeid == null)
             return null;
         if (m_macsOnSegment.isEmpty()) {
-            for (BridgeBridgeLink link: m_portsOnSegment) {
+            for (BridgePort link: m_portsOnSegment) {
                 if (link.getNode().getId().intValue() == nodeid.intValue() )
                     return link.getBridgePort();
-                if (link.getDesignatedNode().getId().intValue() == nodeid.intValue() )
-                    return link.getDesignatedPort() ;
             }
             return null;
-        }
-        for (BridgeMacLink link: m_macsOnSegment) {
-            if (link.getNode().getId().intValue() == nodeid.intValue()) 
-                return link.getBridgePort();
         }
         return null;
     }
