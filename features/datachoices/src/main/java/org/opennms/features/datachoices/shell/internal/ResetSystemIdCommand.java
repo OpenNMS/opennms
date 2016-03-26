@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2016 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -21,32 +21,31 @@
  *      http://www.gnu.org/licenses/
  *
  * For more information contact:
- *     OpenNMS(R) Licensing <license@opennms.org>
- *     http://www.opennms.org/
- *     http://www.opennms.com/
+ * OpenNMS(R) Licensing <license@opennms.org>
+ *      http://www.opennms.org/
+ *      http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.web.navigate;
+package org.opennms.features.datachoices.shell.internal;
 
-import javax.servlet.http.HttpServletRequest;
+import java.util.Objects;
 
-import org.opennms.web.api.Authentication;
+import org.apache.felix.gogo.commands.Command;
+import org.apache.karaf.shell.console.OsgiCommandSupport;
+import org.opennms.features.datachoices.internal.StateManager;
 
-/**
- * Handle the Quick Add Node Menu Item
- *
- * @author <a href="mailto:david@opennms.org">David Hustace</a>
- * @version $Id: $
- * @since 1.8.1
- */
-public class ProvisionUserNavBarEntry extends LocationBasedNavBarEntry {
-    /** {@inheritDoc} */
+@Command(scope = "datachoices", name = "reset-system-id", description="Regenerate the system id.")
+public class ResetSystemIdCommand extends OsgiCommandSupport {
+
+    private StateManager m_stateManager;
+
     @Override
-    public DisplayStatus evaluate(HttpServletRequest request) {
-        if (request.isUserInRole(Authentication.ROLE_ADMIN) || request.isUserInRole(Authentication.ROLE_PROVISION)) {
-            return super.evaluate(request);
-        } else {
-            return DisplayStatus.NO_DISPLAY;
-        }
+    protected Object doExecute() throws Exception {
+        System.out.println("New system id: " + m_stateManager.getAndRegenerateSystemId());
+        return null;
+    }
+
+    public void setStateManager(StateManager stateManager) {
+        m_stateManager = Objects.requireNonNull(stateManager);
     }
 }
