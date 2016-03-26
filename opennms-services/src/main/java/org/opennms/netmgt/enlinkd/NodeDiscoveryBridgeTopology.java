@@ -728,9 +728,9 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
                 //create a SharedSegment with root port
                 LOG.info("calculate: level {}: Y bridge: {} is a leaf of X Bridge: {}, creating shared segment for port {}", 
                          level,yBridge.getId(),xBridge.getId(),xyDesignatedPort);
-                SharedSegment leafSegment = new SharedSegment(m_domain,xBridge.getId(), xyDesignatedPort);
-                leafSegment.add(yx.getSimpleConnection().getDlink());
+                SharedSegment leafSegment = new SharedSegment(m_domain,yx.getSimpleConnection().getDlink());
                 leafSegment.setBridgeMacLinks(yx.getSimpleConnection().getLinks());
+                leafSegment.setDesignatedBridge(xBridge.getId());
                 m_domain.add(leafSegment);
                 portsAdded.add(xyDesignatedPort);
                 
@@ -766,9 +766,9 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
         for (Integer xbridgePort : rx.getSecondBridgeTroughSet().keySet()) {
             if (portsAdded.contains(xbridgePort))
                 continue;
-            SharedSegment xleafSegment = new SharedSegment(m_domain,xBridge.getId(),
-                                                           xbridgePort);
+            SharedSegment xleafSegment = new SharedSegment(m_domain);
             xleafSegment.setBridgeMacLinks(rx.getSecondBridgeTroughSet().get(xbridgePort));
+            xleafSegment.setDesignatedBridge(xBridge.getId());  
             LOG.info("calculate: level {}: adding shared segment to topology: root bridge {} port: {}, mac size: {}, bft size: {}",
                      level,
                      xleafSegment.getDesignatedBridge(),
@@ -909,6 +909,8 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
     
     public void clearTopologyForBridge(Bridge bridge) {
         if (bridge.isRootBridge()) {
+            LOG.debug("calculate: clearTopologyForBridge: bridge {}, is root bridge. setting up a new hierarchy before clean",
+                      bridge.getId());
             for (SharedSegment segment: m_domain.getSharedSegmentOnTopologyForBridge(bridge.getId())) {
                 Integer newRootId = segment.getFirstNoDesignatedBridge();
                 if (newRootId == null)
@@ -932,26 +934,22 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
         //all the topology will be merged with the segment for bridge designated port
         SharedSegment topsegment = m_domain.getSharedSegment(bridge.getId(), bridge.getRootPort());
         if (topsegment != null) {
-            LOG.debug("calculate: clearTopologyForBridge: removing {} : top segment nodes {}, macs {}",
-                      bridge.getId(),topsegment.getBridgeIdsOnSegment(),topsegment.getMacsOnSegment());
-                LOG.debug("calculate: clearTopologyForBridge: removing {}: top segment designated {}, port {}",
-                      bridge.getId(),topsegment.getDesignatedBridge(),topsegment.getDesignatedPort());
+            LOG.debug("calculate: clearTopologyForBridge: removing bridge {}: top segment nodes {}, macs {}, designated {}, port {}",
+                      bridge.getId(),topsegment.getBridgeIdsOnSegment(),topsegment.getMacsOnSegment(),
+                      topsegment.getDesignatedBridge(),topsegment.getDesignatedPort());
             topsegment.removeBridge(bridge.getId());
-            LOG.debug("calculate: clearTopologyForBridge: removed {} : top segment nodes {}, macs {}",
-                      bridge.getId(),topsegment.getBridgeIdsOnSegment(),topsegment.getMacsOnSegment());
-            LOG.debug("calculate: clearTopologyForBridge: removed {}: top segment designated {}, port {}",
-                      bridge.getId(),topsegment.getDesignatedBridge(),topsegment.getDesignatedPort());
+            LOG.debug("calculate: clearTopologyForBridge: removed bridge {}: top segment nodes {}, macs {}, designated {}, port {}",
+                      bridge.getId(),topsegment.getBridgeIdsOnSegment(),topsegment.getMacsOnSegment(),
+                      topsegment.getDesignatedBridge(),topsegment.getDesignatedPort());
         } else {
-            LOG.debug("calculate: clearTopologyForBridge {} : no top segment found",
+            LOG.debug("calculate: clearTopologyForBridge {}: no top segment found",
                       bridge.getId());
-            
         }
 
         for (SharedSegment segment: m_domain.removeSharedSegmentOnTopologyForBridge(bridge.getId())) {
-            LOG.debug("calculate: clearTopologyForBridge {} : segment nodes {}, macs {}",
-                      bridge.getId(),segment.getBridgeIdsOnSegment(),segment.getMacsOnSegment());
-            LOG.debug("calculate: clearTopologyForBridge {}:  segment designated {}, port {}",
-                      bridge.getId(),segment.getDesignatedBridge(),segment.getDesignatedPort());
+            LOG.debug("calculate: clearTopologyForBridge merging bridge {} on top for segment: nodes {}, macs {}, designated {}, port {}",
+                      bridge.getId(),segment.getBridgeIdsOnSegment(),segment.getMacsOnSegment(),
+                      segment.getDesignatedBridge(),segment.getDesignatedPort());
             if (topsegment != null)
                 topsegment.mergeBridge(segment,bridge.getId());
         }        
@@ -994,6 +992,11 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
     }
 
     private Integer goUp(SharedSegment down,Bridge bridge, int level) {
+        if (level == 30) {
+            LOG.warn("calculate: level {}: bridge: {}, too many iteration on topology exiting.....",level,bridge.getId());
+            m_domain.clearTopology();
+            return -1;
+        }
         LOG.debug("calculate: goUp: level: {}, checking up segment designated bridge {}, designated port {}, bridge {}, with root port {}",
                   level,down.getDesignatedBridge(),down.getDesignatedPort(), bridge.getId(), bridge.getRootPort());
             Integer upBridgeId = down.getDesignatedBridge();
