@@ -25,6 +25,18 @@
         </configuration>
       </plugin>
       <plugin>
+        <groupId>org.apache.servicemix.tooling</groupId>
+        <artifactId>depends-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>generate-depends-file</id>
+            <goals>
+              <goal>generate-depends-file</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-dependency-plugin</artifactId>
         <executions>
@@ -80,6 +92,9 @@
                   their dependencies are installed into the test-repo repository.
                 -->
 
+                <!-- Pax Exam feature that is necessary to run the tests -->
+                <feature>exam</feature>
+
                 <!-- Standard Karaf features -->
                 <feature>admin</feature>
                 <feature>aries-blueprint</feature>
@@ -120,6 +135,7 @@
                 <feature>spring-oxm</feature>
                 <feature>spring-tx</feature>
                 <feature>spring-web</feature>
+
               </features>
               <repository>target/paxexam/test-repo</repository>
             </configuration>
@@ -148,7 +164,7 @@
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
       <version>4.12</version>
-      <scope>test</scope>
+      <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms.dependencies</groupId>
@@ -207,7 +223,7 @@
       <version>${karafVersion}</version>
       <classifier>features</classifier>
       <type>xml</type>
-      <scope>test</scope>
+      <scope>compile</scope>
     </dependency>
 
     <!-- Karaf Spring features artifact -->
@@ -217,7 +233,7 @@
       <version>${karafVersion}</version>
       <classifier>features</classifier>
       <type>xml</type>
-      <scope>test</scope>
+      <scope>compile</scope>
     </dependency>
 
     <!-- Pax Exam features artifact -->
@@ -226,7 +242,7 @@
       <artifactId>pax-exam-features</artifactId>
       <version>${paxExamVersion}</version>
       <type>xml</type>
-      <scope>test</scope>
+      <scope>compile</scope>
     </dependency>
 
     <!-- Pax Web features artifact -->
@@ -236,7 +252,7 @@
       <version>3.1.2</version>
       <classifier>features</classifier>
       <type>xml</type>
-      <scope>test</scope>
+      <scope>compile</scope>
     </dependency>
 
     <!-- OpenNMS container features artifact -->
