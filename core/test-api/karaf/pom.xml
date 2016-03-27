@@ -76,28 +76,50 @@
               </descriptors>
               <features>
                 <!--
-                  These features rely on components not included in the base Karaf package
-                  so we must install the features so that these components are put into the 
-                  test-repo.
+                  Make sure that all features that we try to install inside the integration tests and 
+                  their dependencies are installed into the test-repo repository.
                 -->
-                <!-- Relies on Pax Web -->
+
+                <!-- Standard Karaf features -->
+                <feature>admin</feature>
+                <feature>aries-blueprint</feature>
+                <feature>aries-proxy</feature>
+                <feature>blueprint-web</feature>
+                <feature>config</feature>
+                <feature>deployer</feature>
+                <feature>diagnostic</feature>
+                <feature>eventadmin</feature>
+                <feature>features</feature>
                 <feature>http</feature>
-                <!-- Relies on Pax Web -->
                 <feature>http-whiteboard</feature>
-                <!-- Relies on Pax URL -->
+                <feature>jaas</feature>
+                <feature>jasypt-encryption</feature>
+                <feature>jetty</feature>
+                <feature>karaf-framework</feature>
+                <feature>kar</feature>
+                <feature>management</feature>
                 <feature>obr</feature>
-                <!-- Relies on Pax Web -->
+                <feature>scr</feature>
+                <feature>service-security</feature>
+                <feature>service-wrapper</feature>
+                <feature>shell</feature>
+                <feature>ssh</feature>
                 <feature>war</feature>
+                <feature>webconsole</feature>
+                <feature>wrap</feature>
+                <feature>wrapper</feature>
 
-                <!-- OpenNMS product features -->
-                <!-- <feature>opennms-${project.version}</feature> -->
-
-                <!-- OpenNMS Minion features -->
-                <!--
-                <feature>opennms-discoverer</feature>
-                <feature>opennms-discovery-distPollerDaoMinion</feature>
-                -->
-
+                <!-- Spring features -->
+                <feature>spring</feature>
+                <feature>spring-aspects</feature>
+                <feature>spring-instrument</feature>
+                <feature>spring-jdbc</feature>
+                <feature>spring-jms</feature>
+                <feature>spring-test</feature>
+                <feature>spring-orm</feature>
+                <feature>spring-oxm</feature>
+                <feature>spring-tx</feature>
+                <feature>spring-web</feature>
               </features>
               <repository>target/paxexam/test-repo</repository>
             </configuration>
