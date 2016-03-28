@@ -94,6 +94,10 @@ public class NetworkBuilder {
         m_distPoller.setType(OnmsMonitoringSystem.TYPE_OPENNMS);
     }
 
+    public OnmsMonitoringLocation getLocation() {
+        return m_location;
+    }
+
     public OnmsDistPoller getDistPoller() {
         return m_distPoller;
     }
