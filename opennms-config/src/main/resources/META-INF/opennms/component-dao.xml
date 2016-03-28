@@ -61,6 +61,11 @@
 		<constructor-arg value="org.opennms.netmgt.config.snmp.SnmpConfig" />
 		<constructor-arg value="file:${opennms.home}/etc/snmp-config.xml" />
 	</bean>
+    
+     <bean name="trapd-configuration.xml" class="org.opennms.core.config.impl.JaxbResourceConfiguration">
+        <constructor-arg value="org.opennms.netmgt.config.trapd.TrapdConfiguration" />
+        <constructor-arg value="file:${opennms.home}/etc/trapd-configuration.xml" />
+    </bean>
 
 	<bean name="vacuumd-configuration.xml" class="org.opennms.core.config.impl.JaxbResourceConfiguration">
 		<constructor-arg value="org.opennms.netmgt.config.vacuumd.VacuumdConfiguration" />

@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2015-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2016-2016 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -28,25 +28,58 @@
 
 package org.opennms.netmgt.trapd;
 
-import org.opennms.netmgt.config.SyslogdConfig;
+import java.util.List;
+
+import org.opennms.netmgt.config.TrapdConfig;
+import org.opennms.netmgt.snmp.SnmpV3User;
 
 /**
- * This processor will update the {@link SyslogdConfig} on a
- * {@link SyslogConnection} so that it can be processed according
- * to the new configuration.
+ * This is a bean container that can be used as a {@link TrapdConfig}
+ * service.
  * 
- * @author Seth
+ * @author dp044946
  */
-public class SyslogdConfigProcessor {
+public class TrapdConfigBean implements TrapdConfig {
 
-	private final SyslogdConfig m_config;
+	private String m_snmpTrapAddress;
+	private int m_snmpTrapPort;
+	private boolean m_newSuspectOnTrap;
+	private List<SnmpV3User> m_snmpV3Users;
 
-	public SyslogdConfigProcessor(SyslogdConfig config) {
-		m_config = config;
+	public void setSnmpTrapAddress(String snmpTrapAddress) {
+		this.m_snmpTrapAddress = snmpTrapAddress;
 	}
 
-	public SyslogConnection process(SyslogConnection connection) {
-		connection.setConfig(m_config);
-		return connection;
+	public void setSnmpTrapPort(int snmpTrapPort) {
+		this.m_snmpTrapPort = snmpTrapPort;
 	}
+
+	public void setNewSuspectOnTrap(boolean newSuspectOnTrap) {
+		this.m_newSuspectOnTrap = newSuspectOnTrap;
+	}
+
+	public void setSnmpV3Users(List<SnmpV3User> snmpV3Users) {
+		this.m_snmpV3Users = snmpV3Users;
+	}
+
+	@Override
+	public String getSnmpTrapAddress() {
+		return m_snmpTrapAddress;
+	}
+
+	@Override
+	public int getSnmpTrapPort() {
+		return m_snmpTrapPort;
+	}
+
+	@Override
+	public boolean getNewSuspectOnTrap() {
+		return m_newSuspectOnTrap;
+	}
+
+	@Override
+	public List<SnmpV3User> getSnmpV3Users() {
+		return m_snmpV3Users;
+	}
+
 }

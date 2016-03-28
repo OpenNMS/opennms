@@ -1,0 +1,3 @@
+#Mon Mar 28 16:53:11 IST 2016
+org.opennms.netmgt.config.trapd.TrapdConfiguration=org.opennms.netmgt.config.trapd.descriptors.TrapdConfigurationDescriptor
+org.opennms.netmgt.config.trapd.Snmpv3User=org.opennms.netmgt.config.trapd.descriptors.Snmpv3UserDescriptor

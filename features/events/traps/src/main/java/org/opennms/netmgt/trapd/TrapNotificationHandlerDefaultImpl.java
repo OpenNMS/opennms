@@ -41,6 +41,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class TrapNotificationHandlerDefaultImpl implements TrapNotificationHandler {
 	private static final Logger LOG = LoggerFactory.getLogger(TrapNotificationHandlerDefaultImpl.class);
 
+	// HZN-632: Inject an EventCreator
+
 	/**
 	 * This is the number of threads that are used to process traps.
 	 * 
@@ -57,6 +59,8 @@ public class TrapNotificationHandlerDefaultImpl implements TrapNotificationHandl
 	@Override
 	public void handleTrapNotification(final TrapNotification message) {
 		try {
+			// HZN-632: Call message.setProcessor() to change the processor to the EventCreator
+
 			// Use the TrapQueueProcessorFactory to construct a TrapQueueProcessor
 			TrapQueueProcessor processor = m_processorFactory.getInstance(message);
 			// Call the processor asynchronously
