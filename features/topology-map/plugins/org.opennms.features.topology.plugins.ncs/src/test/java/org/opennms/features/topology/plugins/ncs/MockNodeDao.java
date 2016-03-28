@@ -301,4 +301,9 @@ public class MockNodeDao implements NodeDao {
         // TODO Auto-generated method stub
         return null;
     }
+
+    @Override
+    public Map<String, Long> getNumberOfNodesBySysOid() {
+        return null;
+    }
 }
