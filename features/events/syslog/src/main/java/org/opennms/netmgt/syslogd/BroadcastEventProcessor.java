@@ -45,6 +45,9 @@ import org.opennms.netmgt.xml.event.Event;
  */
 final class BroadcastEventProcessor implements EventListener {
     private static final Logger LOG = LoggerFactory.getLogger(BroadcastEventProcessor.class);
+
+    // TODO: HZN-607: Create field for SyslogdIpMgr implementation (m_ipManager)
+
     /**
      * Create message selector to set to the subscription
      */
@@ -93,6 +96,7 @@ final class BroadcastEventProcessor implements EventListener {
         if (eventUei.equals(EventConstants.NODE_GAINED_INTERFACE_EVENT_UEI)) {
             // add to known nodes
             if (Long.toString(event.getNodeid()) != null && event.getInterface() != null) {
+                // TODO: HZN-607: Instead of using the singleton call, use Spring to inject the value 
                 SyslogdIPMgrDaoImpl.getInstance().setNodeId(event.getInterface(), event.getNodeid());
             }
             LOG.debug("Added {} to known node list", event.getInterface());

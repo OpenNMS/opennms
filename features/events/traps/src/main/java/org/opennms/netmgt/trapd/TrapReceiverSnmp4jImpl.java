@@ -29,23 +29,22 @@
 package org.opennms.netmgt.trapd;
 
 import java.io.IOException;
-import java.io.InterruptedIOException;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-import java.net.InetSocketAddress;
+import java.lang.reflect.UndeclaredThrowableException;
+import java.net.InetAddress;
 import java.net.SocketException;
-import java.net.SocketTimeoutException;
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
 
-import org.opennms.core.concurrent.LogPreservingThreadFactory;
+import javax.annotation.Resource;
+
 import org.opennms.core.logging.Logging;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.netmgt.config.SyslogdConfig;
+import org.opennms.netmgt.config.TrapdConfig;
+import org.opennms.netmgt.snmp.BasicTrapProcessorFactory;
+import org.opennms.netmgt.snmp.SnmpUtils;
+import org.opennms.netmgt.snmp.SnmpV3User;
+import org.opennms.netmgt.snmp.TrapNotification;
+import org.opennms.netmgt.snmp.TrapNotificationListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -54,31 +53,21 @@ import org.slf4j.LoggerFactory;
  * @author <a href="http://www.oculan.com">Oculan Corporation</a>
  * @fiddler joed
  */
-public class TrapReceiverSnmp4jImpl implements TrapReceiver {
+public class TrapReceiverSnmp4jImpl implements TrapReceiver, TrapNotificationListener {
     private static final Logger LOG = LoggerFactory.getLogger(TrapReceiverSnmp4jImpl.class);
 
-    private static final int SOCKET_TIMEOUT = 500;
+    @Resource(name="snmpTrapAddress")
+    private String m_snmpTrapAddress;
 
-    /**
-     * The Fiber's status.
-     */
-    private volatile boolean m_stop;
+    @Resource(name="snmpTrapPort")
+    private Integer m_snmpTrapPort;
 
-    /**
-     * The UDP socket for receipt and transmission of packets from agents.
-     */
-    private DatagramSocket m_dgSock;
+    @Resource(name="snmpV3Users")
+    private List<SnmpV3User> m_snmpV3Users;
 
-    /**
-     * The context thread
-     */
-    private Thread m_context;
-
-    private final SyslogdConfig m_config;
+    private boolean m_registeredForTraps;
 
     private List<TrapNotificationHandler> m_trapNotificationHandlers = Collections.emptyList();
-
-    private final ExecutorService m_executor;
 
     /**
      * construct a new receiver
@@ -88,182 +77,88 @@ public class TrapReceiverSnmp4jImpl implements TrapReceiver {
      * @param hostGroup
      * @param messageGroup
      */
-    public TrapReceiverSnmp4jImpl(final SyslogdConfig config) throws SocketException {
+    public TrapReceiverSnmp4jImpl(final TrapdConfig config) throws SocketException {
         if (config == null) {
             throw new IllegalArgumentException("Config cannot be null");
         }
 
-        m_stop = false;
-        m_dgSock = null;
-        m_config = config;
-
-        m_executor = new ThreadPoolExecutor(
-            Runtime.getRuntime().availableProcessors() * 2,
-            Runtime.getRuntime().availableProcessors() * 2,
-            1000L,
-            TimeUnit.MILLISECONDS,
-            new LinkedBlockingQueue<Runnable>(),
-            new LogPreservingThreadFactory(getClass().getSimpleName(), Integer.MAX_VALUE)
-        );
+        m_snmpTrapPort = config.getSnmpTrapPort();
+        m_snmpTrapAddress = config.getSnmpTrapAddress();
+        m_snmpV3Users = config.getSnmpV3Users();
     }
 
-    public TrapNotificationHandler getSyslogConnectionHandlers() {
+    public TrapNotificationHandler getTrapNotificationHandlers() {
         return m_trapNotificationHandlers.get(0);
     }
 
-    public void setSyslogConnectionHandlers(TrapNotificationHandler handler) {
+    public void setTrapNotificationHandlers(TrapNotificationHandler handler) {
         m_trapNotificationHandlers = Collections.singletonList(handler);
     }
 
     @Override
-    public String getName() {
-        String listenAddress = (m_config.getListenAddress() != null && m_config.getListenAddress().length() > 0) ? m_config.getListenAddress() : "0.0.0.0";
-        return getClass().getSimpleName() + " [" + listenAddress + ":" + m_config.getSyslogPort() + "]";
-    }
-
-    /*
-     * stop the current receiver
-     * @throws InterruptedException
-     * 
-     */
-    @Override
-    public void stop() throws InterruptedException {
-        m_stop = true;
-
-        // Close the datagram socket
-        if (m_dgSock != null) {
-            m_dgSock.close();
-        }
-
-        // Shut down the thread pools that are executing SyslogConnection and SyslogProcessor tasks
-        m_executor.shutdown();
-
-        if (m_context != null) {
-            LOG.debug("Stopping and joining thread context {}", m_context.getName());
-            m_context.interrupt();
-            m_context.join();
-            LOG.debug("Thread context stopped and joined");
+    public void trapReceived(TrapNotification trapNotification) {
+        try {
+            for (TrapNotificationHandler handler : m_trapNotificationHandlers) {
+                handler.handleTrapNotification(trapNotification);
+            }
+        } catch (Throwable e) {
+            LOG.error("Handler execution failed in {}", this.getClass().getSimpleName(), e);
         }
     }
 
-    /**
-     * The execution context.
-     */
     @Override
-    public void run() {
-        // get the context
-        m_context = Thread.currentThread();
+    public void trapError(int error, String msg) {
+      LOG.warn("Error Processing Received Trap: error = {} {}", error, (msg != null ? ", ref = " + msg : ""));
+    }
 
-        // Get a log instance
-        Logging.putPrefix(Syslogd.LOG4J_CATEGORY);
-
-        if (m_stop) {
-            LOG.debug("Stop flag set before thread started, exiting");
-            return;
-        } else
-            LOG.debug("Thread context started");
-
-        // allocate a buffer
-        final int length = 0xffff;
-        final byte[] buffer = new byte[length];
-
+    @Override
+    public void start(){
         try {
-            LOG.debug("Creating syslog socket");
-            m_dgSock = new DatagramSocket(null);
-        } catch (SocketException e) {
-            LOG.warn("Could not create syslog socket: " + e.getMessage(), e);
-            return;
-        }
-
-        // set an SO timeout to make sure we don't block forever
-        // if a socket is closed.
-        try {
-            LOG.debug("Setting socket timeout to {}ms", SOCKET_TIMEOUT);
-            m_dgSock.setSoTimeout(SOCKET_TIMEOUT);
-        } catch (SocketException e) {
-            LOG.warn("An I/O error occured while trying to set the socket timeout", e);
-        }
-
-        // Set SO_REUSEADDR so that we don't run into problems in
-        // unit tests trying to rebind to an address where other tests
-        // also bound. This shouldn't have any effect at runtime.
-        try {
-            LOG.debug("Setting socket SO_REUSEADDR to true");
-            m_dgSock.setReuseAddress(true);
-        } catch (SocketException e) {
-            LOG.warn("An I/O error occured while trying to set SO_REUSEADDR", e);
-        }
-
-        // Increase the receive buffer for the socket
-        try {
-            LOG.debug("Attempting to set receive buffer size to {}", Integer.MAX_VALUE);
-            m_dgSock.setReceiveBufferSize(Integer.MAX_VALUE);
-            LOG.debug("Actual receive buffer size is {}", m_dgSock.getReceiveBufferSize());
-        } catch (SocketException e) {
-            LOG.info("Failed to set the receive buffer to {}", Integer.MAX_VALUE, e);
-        }
-
-        try {
-            LOG.debug("Opening datagram socket");
-            if (m_config.getListenAddress() != null && m_config.getListenAddress().length() != 0) {
-                m_dgSock.bind(new InetSocketAddress(InetAddressUtils.addr(m_config.getListenAddress()), m_config.getSyslogPort()));
-            } else {
-                m_dgSock.bind(new InetSocketAddress(m_config.getSyslogPort()));
-            }
-        } catch (SocketException e) {
-            LOG.info("Failed to open datagram socket", e);
-        }
-
-        // set to avoid numerous tracing message
-        boolean ioInterrupted = false;
-
-        // Construct one mutable {@link DatagramPacket} that will be used for receiving syslog messages 
-        DatagramPacket pkt = new DatagramPacket(buffer, length);
-
-        // now start processing incoming requests
-        while (!m_stop) {
-            if (m_context.isInterrupted()) {
-                LOG.debug("Thread context interrupted");
-                break;
-            }
-
-            try {
-                if (!ioInterrupted) {
-                    LOG.debug("Waiting on a datagram to arrive");
-                }
-
-                m_dgSock.receive(pkt);
-
-                SyslogConnection connection = new SyslogConnection(pkt, m_config);
-
-                try {
-                    for (TrapNotificationHandler handler : m_trapNotificationHandlers) {
-                        handler.handleTrapNotification(connection);
+            InetAddress address = getInetAddress();
+            LOG.info("Listening on {}:{}", address == null ? "[all interfaces]" : InetAddressUtils.str(address), m_snmpTrapPort);
+            SnmpUtils.registerForTraps(this, new BasicTrapProcessorFactory(), address, m_snmpTrapPort, m_snmpV3Users); // Need to clarify 
+            m_registeredForTraps = true;
+            
+            LOG.debug("init: Creating the trap session");
+        } catch (final IOException e) {
+            if (e instanceof java.net.BindException) {
+                Logging.withPrefix("OpenNMS.Manager", new Runnable() {
+                    @Override
+                    public void run() {
+                        LOG.error("init: Failed to listen on SNMP trap port, perhaps something else is already listening?", e);
                     }
-                } catch (Throwable e) {
-                    LOG.error("Handler execution failed in {}", this.getClass().getSimpleName(), e);
-                }
+                });
+                LOG.error("init: Failed to listen on SNMP trap port, perhaps something else is already listening?", e);
+            } else {
+                LOG.error("init: Failed to initialize SNMP trap socket", e);
+            }
+            throw new UndeclaredThrowableException(e);
+        }
+    }
 
-                ioInterrupted = false; // reset the flag
-            } catch (SocketTimeoutException e) {
-                ioInterrupted = true;
-                continue;
-            } catch (InterruptedIOException e) {
-                ioInterrupted = true;
-                continue;
-            } catch (IOException e) {
-                if (m_stop) {
-                    // A SocketException can be thrown during normal shutdown so log as debug
-                    LOG.debug("Shutting down the datagram receipt port: " + e.getMessage());
-                } else {
-                    LOG.error("An I/O exception occured on the datagram receipt port, exiting", e);
-                }
-                break;
+    @Override
+    public void stop() {
+        try {
+            if (m_registeredForTraps) {
+                LOG.debug("stop: Closing SNMP trap session.");
+                SnmpUtils.unregisterForTraps(this, getInetAddress(), m_snmpTrapPort);
+                LOG.debug("stop: SNMP trap session closed.");
+            } else {
+                LOG.debug("stop: not attemping to closing SNMP trap session--it was never opened");
             }
 
-        } // end while status OK
-
-        LOG.debug("Thread context exiting");
-
+        } catch (final IOException e) {
+            LOG.warn("stop: exception occurred closing session", e);
+        } catch (final IllegalStateException e) {
+            LOG.debug("stop: The SNMP session was already closed", e);
+        }
     }
+
+    private InetAddress getInetAddress() {
+        if (m_snmpTrapAddress.equals("*")) {
+            return null;
+        }
+        return InetAddressUtils.addr(m_snmpTrapAddress);
+    }
+
 }

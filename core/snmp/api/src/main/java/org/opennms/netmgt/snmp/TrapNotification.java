@@ -32,4 +32,6 @@ public interface TrapNotification {
 
     TrapProcessor getTrapProcessor();
 
+    void setTrapProcessor(TrapProcessor processor);
+
 }
