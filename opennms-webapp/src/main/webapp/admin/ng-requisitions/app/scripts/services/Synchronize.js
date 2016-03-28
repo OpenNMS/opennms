@@ -31,19 +31,21 @@
       * @name SynchronizeService:synchronize
       * @ngdoc method
       * @methodOf SynchronizeService
-      * @param {string} foreignSource The name of the requisition
+      * @param {object} requisition The requisition object
+      * @param {function} successHandler The function to call after a successful synchronization
       * @param {function} errorHandler The function to call when something went wrong.
       */
-      synchronize: function(foreignSource, errorHandler) {
+      synchronize: function(requisition, errorHandler) {
         /**
-        * @param {string} foreignSource The name of the requisition
+        * @param {object} requisition The requisition object
         * @param {string} rescanExisting true to perform a full scan, false to only add/remove nodes without scan, dbonly for all DB operations without scan
         */
-        var doSynchronize = function(foreignSource, rescanExisting) {
+        var doSynchronize = function(requisition, rescanExisting) {
           RequisitionsService.startTiming();
-          RequisitionsService.synchronizeRequisition(foreignSource, rescanExisting).then(
+          RequisitionsService.synchronizeRequisition(requisition.foreignSource, rescanExisting).then(
             function() { // success
-              growl.success('The import operation has been started for ' + foreignSource + ' (rescanExisting? ' + rescanExisting + ')');
+              growl.success('The import operation has been started for ' + requisition.foreignSource + ' (rescanExisting? ' + rescanExisting + ')<br/>Use <b>refresh</b> to update the deployed statistics');
+              requisition.setDeployed(true);
             },
             errorHandler
           );
@@ -54,27 +56,27 @@
                    'Choose <b>no</b> to synchronize only the new and deleted nodes with the database executing the scan phase only for new nodes.<br/>' +
                    'Choose <b>dbonly</b> to synchronize all the nodes with the database skipping the scan phase.<br/>' +
                    'Choose <b>cancel</b> to abort the request.',
-          title: 'Synchronize Requisition ' + foreignSource,
+          title: 'Synchronize Requisition ' + requisition.foreignSource,
           buttons: {
-            success: {
+            fullSync: {
               label: 'Yes',
               className: 'btn-success',
               callback: function() {
-                doSynchronize(foreignSource, 'true');
+                doSynchronize(requisition, 'true');
               }
             },
-            warning: {
+            dbOnlySync: {
               label: 'DB Only',
               className: 'btn-warning',
               callback: function() {
-                doSynchronize(foreignSource, 'dbonly');
+                doSynchronize(requisition, 'dbonly');
               }
             },
-            danger: {
+            ignoreExistingSync: {
               label: 'No',
               className: 'btn-danger',
               callback: function() {
-                doSynchronize(foreignSource, 'false');
+                doSynchronize(requisition, 'false');
               }
             },
             main: {
