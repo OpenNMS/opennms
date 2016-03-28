@@ -55,8 +55,8 @@ import org.opennms.netmgt.model.ncs.NCSComponent;
 import org.opennms.netmgt.ncs.persistence.NCSComponentService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.helpers.MessageFormatter;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
@@ -94,11 +94,17 @@ public class NCSRestService {
             LOG.debug("getComponent: type = {}, foreignSource = {}, foreignId = {}", type, foreignSource, foreignId);
 
             if (m_componentService == null) {
-                throw new IllegalStateException("component service is null");
+                throw getException(Status.INTERNAL_SERVER_ERROR, "Component service is null");
+            }
+            if (foreignSource == null) {
+                throw getException(Status.BAD_REQUEST, "Foreign Source cannot be null");
+            }
+            if (foreignId == null) {
+                throw getException(Status.BAD_REQUEST, "Foreign ID cannot be null");
             }
 
             final NCSComponent component = m_componentService.getComponent(type, foreignSource, foreignId);
-            if (component == null) throw new WebApplicationException(Status.BAD_REQUEST);
+            if (component == null) throw getException(Status.NOT_FOUND, "Component of type {} not found for {}:{}", type, foreignSource, foreignId);
             return component;
         } finally {
             readUnlock();
@@ -112,7 +118,7 @@ public class NCSRestService {
         readLock();
         try {
             if (m_componentService == null) {
-                throw new IllegalStateException("component service is null");
+                throw getException(Status.INTERNAL_SERVER_ERROR, "Component service is null");
             }
 
             return m_componentService.findComponentsWithAttribute("jnxVpnPwVpnName", "ge-3/1/4.2");
@@ -131,14 +137,13 @@ public class NCSRestService {
             LOG.debug("addComponents: Adding component {} (deleteOrphans={})", component, Boolean.valueOf(deleteOrphans));
 
             if (m_componentService == null) {
-                throw new IllegalStateException("component service is null");
+                throw getException(Status.INTERNAL_SERVER_ERROR, "Component service is null");
+            }
+            if (component == null) {
+                throw getException(Status.BAD_REQUEST, "Component cannot be null");
             }
 
-            try {
-                m_componentService.addOrUpdateComponents(component, deleteOrphans);
-            } catch (final DataAccessException e) {
-                throw new WebApplicationException(e, Status.BAD_REQUEST);
-            }
+            m_componentService.addOrUpdateComponents(component, deleteOrphans);
             return Response.ok(component).build();
         } finally {
             writeUnlock();
@@ -160,18 +165,22 @@ public class NCSRestService {
             LOG.debug("addComponent: type = {}, foreignSource = {}, foreignId = {} (deleteOrphans={})", type, foreignSource, foreignId, Boolean.valueOf(deleteOrphans));
 
             if (m_componentService == null) {
-                throw new IllegalStateException("component service is null");
+                throw getException(Status.INTERNAL_SERVER_ERROR, "Component service is null");
             }
-
+            if (type == null) {
+                throw getException(Status.BAD_REQUEST, "Type cannot be null");
+            }
+            if (foreignSource == null) {
+                throw getException(Status.BAD_REQUEST, "Foreign Source cannot be null");
+            }
+            if (foreignId == null) {
+                throw getException(Status.BAD_REQUEST, "Foreign ID cannot be null");
+            }
             if (subComponent == null) {
-                throw new WebApplicationException(Status.BAD_REQUEST);
+                throw getException(Status.BAD_REQUEST, "Sub-component cannot be null");
             }
 
-            try {
-                return m_componentService.addSubcomponent(type, foreignSource, foreignId, subComponent, deleteOrphans);
-            } catch (final DataAccessException e) {
-                throw new WebApplicationException(e, Status.BAD_REQUEST);
-            }
+            return m_componentService.addSubcomponent(type, foreignSource, foreignId, subComponent, deleteOrphans);
         } finally {
             writeUnlock();
         }
@@ -187,11 +196,20 @@ public class NCSRestService {
             LOG.info("deleteComponent: Deleting component of type {} and foreignIdentity {}:{} (deleteOrphans={})", type, foreignSource, foreignId, Boolean.valueOf(deleteOrphans));
 
             if (m_componentService == null) {
-                throw new IllegalStateException("component service is null");
+                throw getException(Status.INTERNAL_SERVER_ERROR, "Component service is null");
+            }
+            if (type == null) {
+                throw getException(Status.BAD_REQUEST, "Type cannot be null");
+            }
+            if (foreignSource == null) {
+                throw getException(Status.BAD_REQUEST, "Foreign Source cannot be null");
+            }
+            if (foreignId == null) {
+                throw getException(Status.BAD_REQUEST, "Foreign ID cannot be null");
             }
 
             m_componentService.deleteComponent(type, foreignSource, foreignId, deleteOrphans);
-            return Response.ok().build();
+            return Response.noContent().build();
         } finally {
             writeUnlock();
         }
@@ -240,6 +258,12 @@ public class NCSRestService {
         public List<NCSComponent> getObjects() {
             return super.getObjects();
         }
+    }
+
+    protected static WebApplicationException getException(final Status status, String msg, Object... params) throws WebApplicationException {
+        if (params != null) msg = MessageFormatter.arrayFormat(msg, params).getMessage();
+        LOG.error(msg);
+        return new WebApplicationException(Response.status(status).type(MediaType.TEXT_PLAIN).entity(msg).build());
     }
 
 }

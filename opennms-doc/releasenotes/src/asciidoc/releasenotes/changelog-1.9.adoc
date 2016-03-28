@@ -1,7 +1,11 @@
-[releasenotes-1.9]
-=== Release 1.9
 
-[releasenotes-changelog-1.9.93]
+[[releasenotes-1.9]]
+== Release 1.9
+
+[[release-1.9-changelog]]
+=== Changelog
+
+[[releasenotes-changelog-1.9.93]]
 ==== Release 1.9.93
 Release 1.9.93 is the latest in a series of development releases of OpenNMS.
 This represents what will eventually become OpenNMS 1.10.0 when it is blessed as the next stable release.
@@ -34,7 +38,7 @@ The codename for 1.9.93 is _Kora_.
 * Split Syslogd configuration across multiple files, add useful definitions and matching events (Issue http://issues.opennms.org/browse/NMS-5024[NMS-5024])
 * Missing OID in linkd's config for VLAN classes (Issue http://issues.opennms.org/browse/NMS-5031[NMS-5031])
 
-[releasenotes-changelog-1.9.92]
+[[releasenotes-changelog-1.9.92]]
 ==== Release 1.9.92
 Release 1.9.92 is the latest in a series of development releases of OpenNMS.
 This represents what will eventually become OpenNMS 1.10.0 when it is blessed as the next stable release.
@@ -93,7 +97,7 @@ The codename for 1.9.92 is _Superbone_.
 * HostResourceSwRunMonitor: define the service-name parameter as a regular expression (Issue http://issues.opennms.org/browse/NMS-4978[NMS-4978])
 * Make sure we add -XX:+HeapDumpOnOutOfMemoryError to default runtime arguments (Issue http://issues.opennms.org/browse/NMS-4953[NMS-4953])
 
-[releasenotes-changelog-1.9.91]
+[[releasenotes-changelog-1.9.91]]
 ==== Release 1.9.91
 Release 1.9.91 is the latest in a series of development releases of OpenNMS.
 This represents what will eventually become OpenNMS 1.10.0 when it is blessed as the next stable release.
@@ -153,7 +157,7 @@ The codename for 1.9.91 is _Crumhorn_.
 * Check if a node is currently covered by a scheduled outage using Rest (Issue http://issues.opennms.org/browse/NMS-4839[NMS-4839])
 * Add PostgreSQL 9.1 support (Issue http://issues.opennms.org/browse/NMS-4923[NMS-4923])
 
-[releasenotes-changelog-1.9.90]
+[[releasenotes-changelog-1.9.90]]
 ==== Release 1.9.90
 Release 1.9.90 is the latest in a series of development releases of OpenNMS.
 This represents what will eventually become OpenNMS 1.10.0 when it is blessed as the next stable release.
@@ -245,7 +249,7 @@ The codename for 1.9.90 is _Balafon_.
 * Convert Linkd to use Hibernate (Issue http://issues.opennms.org/browse/NMS-4850[NMS-4850])
 * Add command option to NRPE in provisiond (Issue http://issues.opennms.org/browse/NMS-4862[NMS-4862])
 
-[releasenotes-changelog-1.9.8]
+[[releasenotes-changelog-1.9.8]]
 ==== Release 1.9.8
 Release 1.9.8 is the latest in a series of development releases of OpenNMS.
 This represents what will eventually become OpenNMS 1.10.0 when it is declared feature-complete and stable.
@@ -313,7 +317,7 @@ The codename for 1.9.8 is _Pulalu_.
 * Add MSCHAPv1 and MSCHAPv2 support to RADIUS clients (Issue http://issues.opennms.org/browse/NMS-4659[NMS-4659])
 * RADIUS MS-CHAPv2 (Issue http://issues.opennms.org/browse/NMS-4665[NMS-4665])
 
-[releasenotes-changelog-1.9.7]
+[[releasenotes-changelog-1.9.7]]
 ==== Release 1.9.7
 Release 1.9.7 is the latest in a series of development releases of OpenNMS.
 This represents what will eventually become OpenNMS 1.10.0 when it is declared feature-complete and stable.
@@ -368,7 +372,7 @@ The codename for 1.9.7 is _Naqara_.
 * OpenNMS needs a way to do in-depth configuration testing without starting the daemon (Issue http://issues.opennms.org/browse/NMS-4336[NMS-4336])
 * create a tool for migrating RRDs (Issue http://issues.opennms.org/browse/NMS-4450[NMS-4450])
 
-[releasenotes-changelog-1.9.6]
+[[releasenotes-changelog-1.9.6]]
 ==== Release 1.9.6
 Release 1.9.6 is the latest in a series of development releases of OpenNMS.
 This represents what will eventually become OpenNMS 1.10.0 when it is declared feature-complete and stable.
@@ -414,7 +418,7 @@ JRobin 1.5.10 includes a new backend that can improve performance dramatically.
 For safety's sake, it is disabled by default, but users are encouraged on test systems to enable the new `MNIO` backend in `rrd-configuration.properties` and report issues.
 ====
 
-[releasenotes-changelog-1.9.5]
+[[releasenotes-changelog-1.9.5]]
 ==== Release 1.9.5
 Release 1.9.5 is the latest in a series of development releases of OpenNMS.
 This represents what will eventually become OpenNMS 1.10.0 when it is declared feature-complete and stable.
@@ -429,7 +433,7 @@ The codename for 1.9.5 is _Canjo_.
 * yum update from 1.8.7 to 1.8.8 is breaking opennms  (Issue http://issues.opennms.org/browse/NMS-4396[NMS-4396])
 * rancid provisioning adapter jar still included in opennms-core RPM (Issue http://issues.opennms.org/browse/NMS-4397[NMS-4397])
 
-[releasenotes-changelog-1.9.4]
+[[releasenotes-changelog-1.9.4]]
 ==== Release 1.9.4
 Release 1.9.4 is the latest in a series of development releases of OpenNMS.
 This represents what will eventually become OpenNMS 1.10.0 when it is declared feature-complete and stable.
@@ -496,14 +500,14 @@ The codename for 1.9.4 is _Guzheng_.
 * Add a build script to clean everything (top-level and full assembly) (Issue http://issues.opennms.org/browse/NMS-4386[NMS-4386])
 * make it easier to open support tickets from the web UI (Issue http://issues.opennms.org/browse/NMS-4307[NMS-4307])
 
-[releasenotes-changelog-1.9.3]
+[[releasenotes-changelog-1.9.3]]
 ==== Release 1.9.3
 Release 1.9.3 is the latest in a series of development releases of OpenNMS.
 This represents what will eventually become OpenNMS 1.10.0 when it is declared feature-complete and stable.
 
 The codename for 1.9.3 is _Recorder_.
 
-[releasenotes-bugs-1.9.3]
+[[releasenotes-bugs-1.9.3]]
 ===== Bug
 
 * Web users can bypass ACLs by editing params of element/node.jsp URLs (Issue http://issues.opennms.org/browse/NMS-3184[NMS-3184])
@@ -530,7 +534,7 @@ The codename for 1.9.3 is _Recorder_.
 * Make SNMPv2c the default in web SNMP config dialog (Issue http://issues.opennms.org/browse/NMS-4263[NMS-4263])
 * build blacklists JDKs other than version 1.5 or 1.6 (Issue http://issues.opennms.org/browse/NMS-4270[NMS-4270])
 
-[releasenotes-features-1.9.3]
+[[releasenotes-features-1.9.3]]
 ===== Enhancements
 
 * SNMP Asset Provisioning Adapter: suppress output like No such instance (Issue http://issues.opennms.org/browse/NMS-4173[NMS-4173])
@@ -543,18 +547,18 @@ The codename for 1.9.3 is _Recorder_.
 * Improve Liebert power-related SNMP data collection and resource graph definitions (Issue http://issues.opennms.org/browse/NMS-4241[NMS-4241])
 * Create performance resource graphs for MS HTTP stats (Issue http://issues.opennms.org/browse/NMS-4242[NMS-4242])
 
-[releasenotes-changelog-1.9.2]
+[[releasenotes-changelog-1.9.2]]
 ==== Release 1.9.2
 Release 1.9.2 is the latest in a series of development releases of OpenNMS.
 This represents what will eventually become OpenNMS 1.10.0 when it is declared feature-complete and stable.
 
 The codename for 1.9.2 is _Psaltery_.
 
-[releasenotes-changes-1.9.2]
+[[releasenotes-changes-1.9.2]]
 ===== Changes in OpenNMS 1.9.2
 Version 1.9.2 is identical to 1.9.1, except it contains the changes present in http://bugzilla.opennms.org/buglist.cgi?target_milestone=1.8.5[OpenNMS 1.8.5].
 
-[releasenotes-changelog-1.9.1]
+[[releasenotes-changelog-1.9.1]]
 ==== Release 1.9.1
 Release 1.9.1 is the latest in a series of development releases of OpenNMS.
 This represents what will eventually become OpenNMS 1.10.0 when it is declared feature-complete and stable.
@@ -563,7 +567,7 @@ Since 1.9.0, http://bugzilla.opennms.org/buglist.cgi?target_milestone=1.9.1[a fe
 
 The codename for 1.9.1 is _Oboe_.
 
-[releasenotes-features-1.9.1]
+[[releasenotes-features-1.9.1]]
 ===== Enhancements
 
 * Some of the groundwork for IPv6 support has been started.
@@ -572,7 +576,7 @@ The codename for 1.9.1 is _Oboe_.
 * You can now specify whether to be strict or loose when verifying HTTPS connections in the `PageSequenceMonitor`.
 (Bug http://bugzilla.opennms.org/show_bug.cgi?id=4113[#4113])
 
-[releasenotes-changelog-1.9.0]
+[[releasenotes-changelog-1.9.0]]
 ==== Release 1.9.0
 Release 1.9.0 is the latest in a series of development releases of OpenNMS.
 This represents what will eventually become OpenNMS 1.10.0 when it is declared feature-complete and stable.
@@ -581,7 +585,7 @@ Since 1.8, http://bugzilla.opennms.org/buglist.cgi?target_milestone=1.9.0[a few 
 
 The codename for 1.9.0 is _Timple_.
 
-[releasenotes-features-1.9.0]
+[[releasenotes-features-1.9.0]]
 ===== Enhancements
 
 * You can now have syslogd bind to a specific IP address.
@@ -590,4 +594,3 @@ The codename for 1.9.0 is _Timple_.
 (Bug http://bugzilla.opennms.org/show_bug.cgi?id=3413[#3413])
 * Data collection configuration has now been split out into multiple include files, like events.
 (Bug http://bugzilla.opennms.org/show_bug.cgi?id=4031[#4031])
-

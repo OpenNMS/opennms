@@ -182,7 +182,7 @@
       <plugin>
         <groupId>org.apache.felix</groupId>
         <artifactId>maven-bundle-plugin</artifactId>
-        <version>2.5.3</version>
+        <version>3.0.1</version>
         <extensions>true</extensions>
         <configuration>
           <obrRepository>NONE</obrRepository>
@@ -1252,6 +1252,8 @@
     <jacksonVersion>1.9.13</jacksonVersion>
     <jasperreportsVersion>6.1.1</jasperreportsVersion>
     <jettyVersion>8.1.10.v20130312</jettyVersion>
+    <jfreechartVersion>1.0.19</jfreechartVersion>
+    <jcommonVersion>1.0.23</jcommonVersion>
     <jodaTimeVersion>2.1</jodaTimeVersion>
     <jrubyVersion>9.0.4.0</jrubyVersion>
     <jsoupVersion>1.7.2</jsoupVersion>
@@ -1263,6 +1265,7 @@
     <log4jVersion>99.99.99-use-log4j2</log4jVersion>
     <log4j2Version>2.1</log4j2Version>
     <minaVersion>2.0.7</minaVersion>
+    <minionKarafVersion>4.0.4</minionKarafVersion>
     <newtsVersion>1.3.4</newtsVersion>
     <paxExamVersion>4.6.0</paxExamVersion>
     <paxSwissboxVersion>1.8.1</paxSwissboxVersion>
@@ -1270,9 +1273,13 @@
     <oroVersion>2.0.8</oroVersion>
     <osgiVersion>5.0.0</osgiVersion>
     <osgiEnterpriseVersion>5.0.0</osgiEnterpriseVersion>
+    <quartzVersion>1.6.5</quartzVersion>
     <slf4jVersion>1.7.7</slf4jVersion>
+    <snmp4jVersion>2.4.3</snmp4jVersion>
+    <snmp4jagentVersion>2.4.2</snmp4jagentVersion>
     <smackVersion>4.0.6</smackVersion>
     <springJaxbVersion>2.1.7</springJaxbVersion>
+    <trackerVersion>0.7</trackerVersion>
     <xalanVersion>2.7.2</xalanVersion>
     <xercesVersion>2.9.1</xercesVersion>
     <xmlApisVersion>1.4.01</xmlApisVersion>
@@ -1309,7 +1316,7 @@
           <releases><enabled>false</enabled><updatePolicy>${updatePolicy}</updatePolicy></releases>
           <id>opennms-snapshots</id>
           <name>OpenNMS Snapshot Maven Repository</name>
-          <url>http://maven.opennms.org/content/groups/opennms.org-snapshot</url>
+          <url>http://maven.opennms.org/content/groups/opennms.org-snapshot/</url>
         </repository>
       </repositories>
     </profile>
@@ -3694,7 +3701,7 @@
       <releases><enabled>true</enabled><updatePolicy>${updatePolicy}</updatePolicy></releases>
       <id>opennms-repo</id>
       <name>OpenNMS Repository</name>
-      <url>http://maven.opennms.org/content/groups/opennms.org-release</url>
+      <url>http://maven.opennms.org/content/groups/opennms.org-release/</url>
     </repository>
     <repository>
       <snapshots><enabled>false</enabled><updatePolicy>${updatePolicy}</updatePolicy></snapshots>
@@ -3711,7 +3718,7 @@
       <releases><enabled>true</enabled></releases>
       <id>opennms-repo</id>
       <name>OpenNMS Repository</name>
-      <url>http://maven.opennms.org/content/groups/opennms.org-release</url>
+      <url>http://maven.opennms.org/content/groups/opennms.org-release/</url>
     </pluginRepository>
 <!--
     <pluginRepository>
@@ -3726,7 +3733,7 @@
       <releases><enabled>false</enabled></releases>
       <id>opennms-snapshots</id>
       <name>OpenNMS Snapshot Repository</name>
-      <url>http://maven.opennms.org/content/groups/opennms.org-snapshot</url>
+      <url>http://maven.opennms.org/content/groups/opennms.org-snapshot/</url>
     </pluginRepository>
     <pluginRepository>
       <snapshots><enabled>false</enabled></snapshots>
@@ -3744,7 +3751,7 @@
       <releases><enabled>true</enabled></releases>
       <id>central</id>
       <name>Maven Central</name>
-      <url>http://repo1.maven.org/maven2</url>
+      <url>http://repo1.maven.org/maven2/</url>
     </pluginRepository>
 -->
   </pluginRepositories>
