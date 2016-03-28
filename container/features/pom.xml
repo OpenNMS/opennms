@@ -220,6 +220,12 @@
             <feature>opennms-rrd-api</feature>
             <feature>opennms-rrd-jrobin</feature>
             <feature>opennms-snmp</feature>
+            <feature>opennms-syslogd</feature>
+            <feature>opennms-syslogd-listener-javanet</feature>
+            <feature>opennms-syslogd-listener-camel-netty</feature>
+            <feature>opennms-syslogd-listener-nio</feature>
+            <feature>opennms-syslogd-handler-kafka</feature>
+            <feature>opennms-syslogd-handler-minion</feature>
             <!-- <feature>opennms-webapp</feature> -->
             <feature>org.json</feature>
             <feature>postgresql</feature>

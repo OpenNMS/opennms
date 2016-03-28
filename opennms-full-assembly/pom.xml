@@ -301,6 +301,12 @@
 
                 <!-- Include everything in the opennms-${project.version} feature produced by container/features/pom.xml -->
                 <feature>opennms-${project.version}</feature>
+
+                <!-- Include the OpenNMS Minion features produced by container/features/pom.xml -->
+                <feature>minion-core-api</feature>
+                <feature>opennms-discoverer</feature>
+                <feature>opennms-discovery-distPollerDaoMinion</feature>
+
               </features>
               <repository>target/features-repo</repository>
             </configuration>
@@ -551,7 +557,6 @@
     <dependency>
       <groupId>org.opennms.features.ncs</groupId>
       <artifactId>ncs-model</artifactId>
-      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.opennms.features.ncs</groupId>
