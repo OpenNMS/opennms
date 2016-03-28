@@ -104,10 +104,8 @@ public class AlarmPersisterImpl implements AlarmPersister {
             ebldr = new EventBuilder(EventConstants.ALARM_UPDATED_WITH_REDUCED_EVENT_UEI, Alarmd.NAME);
         }
 
-        if (ebldr != null) {
-            ebldr.addParam(EventConstants.PARM_ALARM_UEI, alarm.getUei());
-            ebldr.addParam(EventConstants.PARM_ALARM_ID, alarm.getId());
-            m_eventForwarder.sendNow(ebldr.getEvent());
+        if (alarm.getNodeId() != null) {
+            alarm.getNode().getForeignSource(); // This should trigger the lazy loading of the node object, to properly populate the NorthboundAlarm class.
         }
 
         if (ebldr != null) {
