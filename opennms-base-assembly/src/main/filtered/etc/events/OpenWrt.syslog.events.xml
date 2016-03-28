@@ -1,0 +1,190 @@
+<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+
+<!--
+
+OpenWrt (the Linux distribution) and other OpenWrt software package syslog events
+
+-->
+
+  <!-- core OS -->
+  <event>
+    <uei>uei.opennms.org/vendor/openwrt/syslog/SystemStarting</uei>
+    <event-label>OpenWrt sysinit event: SystemStarting</event-label>
+    <descr>
+       &lt;p&gt;The interface %interface% generated a syslog message.&lt;br&gt;
+       Node ID: %nodeid%&lt;br&gt;
+       Host: %nodelabel%&lt;br&gt;
+       Interface: %interface% &lt;br&gt;
+       Syslog severity: %parm[severity]% &lt;br&gt;
+       OpenNMS severity: %severity% &lt;br&gt;
+       Message: %parm[syslogmessage]% &lt;br&gt;
+       Process: %parm[process]% &lt;br&gt;
+       PID: %parm[processid]%
+       &lt;/p&gt;
+     </descr>
+     <logmsg dest='logndisplay'>
+       &lt;p&gt;An OpenWrt sysinit syslog message has been received&lt;/p&gt;
+       Message: %parm[process]%: %parm[syslogmessage]% &lt;br&gt;
+     </logmsg>
+     <severity>Normal</severity>
+  </event>
+  <event>
+    <uei>uei.opennms.org/vendor/openwrt/syslog/SystemStopping</uei>
+    <event-label>OpenWrt sysinit event: SystemStopping</event-label>
+    <descr>
+       &lt;p&gt;The interface %interface% generated a syslog message.&lt;br&gt;
+       Node ID: %nodeid%&lt;br&gt;
+       Host: %nodelabel%&lt;br&gt;
+       Interface: %interface% &lt;br&gt;
+       Syslog severity: %parm[severity]% &lt;br&gt;
+       OpenNMS severity: %severity% &lt;br&gt;
+       Message: %parm[syslogmessage]% &lt;br&gt;
+       Process: %parm[process]% &lt;br&gt;
+       PID: %parm[processid]%
+       &lt;/p&gt;
+     </descr>
+     <logmsg dest='logndisplay'>
+       &lt;p&gt;An OpenWrt sysinit syslog message has been received&lt;/p&gt;
+       Message: %parm[process]%: %parm[syslogmessage]% &lt;br&gt;
+     </logmsg>
+     <severity>Normal</severity>
+  </event>
+
+  <!-- ddns-scripts package -->
+  <event>
+    <uei>uei.opennms.org/vendor/openwrt/syslog/ddns-scripts/DDNSIPUpdateFailed</uei>
+    <event-label>OpenWrt ddns-scripts event: DDNSIPUpdateFailed</event-label>
+    <descr>
+       &lt;p&gt;The interface %interface% generated a syslog message.&lt;br&gt;
+       Node ID: %nodeid%&lt;br&gt;
+       Host: %nodelabel%&lt;br&gt;
+       Interface: %interface% &lt;br&gt;
+       Syslog severity: %parm[severity]% &lt;br&gt;
+       OpenNMS severity: %severity% &lt;br&gt;
+       Message: %parm[syslogmessage]% &lt;br&gt;
+       Process: %parm[process]% &lt;br&gt;
+       PID: %parm[processid]%
+       &lt;/p&gt;
+     </descr>
+     <logmsg dest='logndisplay'>
+       &lt;p&gt;An OpenWrt ddns-scripts syslog message has been received&lt;/p&gt;
+       Message: %parm[process]%: %parm[syslogmessage]% &lt;br&gt;
+     </logmsg>
+     <severity>Warning</severity>
+  </event>
+  <event>
+    <uei>uei.opennms.org/vendor/openwrt/syslog/ddns-scripts/DDNSIPUpdateSuccessful</uei>
+    <event-label>OpenWrt ddns-scripts event: DDNSIPUpdateSuccessful</event-label>
+    <descr>
+       &lt;p&gt;The interface %interface% generated a syslog message.&lt;br&gt;
+       Node ID: %nodeid%&lt;br&gt;
+       Host: %nodelabel%&lt;br&gt;
+       Interface: %interface% &lt;br&gt;
+       Syslog severity: %parm[severity]% &lt;br&gt;
+       OpenNMS severity: %severity% &lt;br&gt;
+       Message: %parm[syslogmessage]% &lt;br&gt;
+       Process: %parm[process]% &lt;br&gt;
+       PID: %parm[processid]%
+       &lt;/p&gt;
+     </descr>
+     <logmsg dest='logndisplay'>
+       &lt;p&gt;An OpenWrt ddns-scripts syslog message has been received&lt;/p&gt;
+       Message: %parm[process]%: %parm[syslogmessage]% &lt;br&gt;
+     </logmsg>
+     <severity>Normal</severity>
+  </event>
+
+  <!-- mwan3 package -->
+  <event>
+    <uei>uei.opennms.org/vendor/openwrt/syslog/mwan3/LostPingsOnInterface</uei>
+    <event-label>OpenWrt mwan3 event: Lost pings on interface</event-label>
+    <descr>
+       &lt;p&gt;The interface %interface% generated a syslog message.&lt;br&gt;
+       Interface name: %parm[interfaceName]%&lt;br&gt;
+       &lt;br&gt;
+       Node ID: %nodeid%&lt;br&gt;
+       Host: %nodelabel%&lt;br&gt;
+       Interface: %interface% &lt;br&gt;
+       Syslog severity: %parm[severity]% &lt;br&gt;
+       OpenNMS severity: %severity% &lt;br&gt;
+       Message: %parm[syslogmessage]% &lt;br&gt;
+       Process: %parm[process]% &lt;br&gt;
+       PID: %parm[processid]%
+       &lt;/p&gt;
+     </descr>
+     <logmsg dest='logndisplay'>
+       &lt;p&gt;An OpenWrt mwan3 syslog message has been received&lt;/p&gt;
+       Message: %parm[process]%: %parm[syslogmessage]% &lt;br&gt;
+     </logmsg>
+     <severity>Warning</severity>
+  </event>
+  <event>
+    <uei>uei.opennms.org/vendor/openwrt/syslog/mwan3/OnlineInterface</uei>
+    <event-label>OpenWrt mwan3 event: OnlineInterface</event-label>
+    <descr>
+       &lt;p&gt;The interface %interface% generated a syslog message.&lt;br&gt;
+       Interface name: %parm[interfaceName]%&lt;br&gt;
+       &lt;br&gt;
+       Node ID: %nodeid%&lt;br&gt;
+       Host: %nodelabel%&lt;br&gt;
+       Interface: %interface% &lt;br&gt;
+       Syslog severity: %parm[severity]% &lt;br&gt;
+       OpenNMS severity: %severity% &lt;br&gt;
+       Message: %parm[syslogmessage]% &lt;br&gt;
+       Process: %parm[process]% &lt;br&gt;
+       PID: %parm[processid]%
+       &lt;/p&gt;
+     </descr>
+     <logmsg dest='logndisplay'>
+       &lt;p&gt;An OpenWrt mwan3 syslog message has been received&lt;/p&gt;
+       Message: %parm[process]%: %parm[syslogmessage]% &lt;br&gt;
+     </logmsg>
+     <severity>Normal</severity>
+  </event>
+  <event>
+    <uei>uei.opennms.org/vendor/openwrt/syslog/mwan3/OfflineInterface</uei>
+    <event-label>OpenWrt mwan3 event: OfflineInterface</event-label>
+    <descr>
+       &lt;p&gt;The interface %interface% generated a syslog message.&lt;br&gt;
+       Interface name: %parm[interfaceName]%&lt;br&gt;
+       &lt;br&gt;
+       Node ID: %nodeid%&lt;br&gt;
+       Host: %nodelabel%&lt;br&gt;
+       Interface: %interface% &lt;br&gt;
+       Syslog severity: %parm[severity]% &lt;br&gt;
+       OpenNMS severity: %severity% &lt;br&gt;
+       Message: %parm[syslogmessage]% &lt;br&gt;
+       Process: %parm[process]% &lt;br&gt;
+       PID: %parm[processid]%
+       &lt;/p&gt;
+     </descr>
+     <logmsg dest='logndisplay'>
+       &lt;p&gt;An OpenWrt mwan3 syslog message has been received&lt;/p&gt;
+       Message: %parm[process]%: %parm[syslogmessage]% &lt;br&gt;
+     </logmsg>
+     <severity>Minor</severity>
+  </event>
+  <!-- mwan3 catchall -->
+  <event>
+    <uei>~uei\.opennms\.org/vendor/openwrt/syslog/mwan3/Informational/.*</uei>
+    <event-label>OpenWrt mwan3 event: syslogMessage</event-label>
+    <descr>
+       &lt;p&gt;The interface %interface% generated a syslog message.&lt;br&gt;
+       Node ID: %nodeid%&lt;br&gt;
+       Host: %nodelabel%&lt;br&gt;
+       Interface: %interface% &lt;br&gt;
+       Syslog severity: %parm[severity]% &lt;br&gt;
+       OpenNMS severity: %severity% &lt;br&gt;
+       Message: %parm[syslogmessage]% &lt;br&gt;
+       Process: %parm[process]% &lt;br&gt;
+       PID: %parm[processid]%
+       &lt;/p&gt;
+     </descr>
+     <logmsg dest='logndisplay'>
+       &lt;p&gt;An OpenWrt mwan3 syslog message has been received&lt;/p&gt;
+       Message: %parm[process]%: %parm[syslogmessage]% &lt;br&gt;
+     </logmsg>
+     <severity>Indeterminate</severity>
+  </event>
+
+</events>
