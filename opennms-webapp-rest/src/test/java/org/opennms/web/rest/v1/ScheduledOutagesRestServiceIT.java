@@ -239,7 +239,7 @@ public class ScheduledOutagesRestServiceIT extends AbstractSpringJerseyRestTestC
                 "<time begins='17-Feb-2012 19:20:00' ends='18-Feb-2012 22:30:00' />" +
                 "<node id='11' />" +
                 "</outage>";
-        sendPost(url, outage, 303, "/sched-outages/test-outage");
+        sendPost(url, outage, 201, null);
 
         Outage out = getXmlObject(m_jaxbContext, "/sched-outages/test-outage", 200, Outage.class);
         Assert.assertNotNull(out);
@@ -252,7 +252,7 @@ public class ScheduledOutagesRestServiceIT extends AbstractSpringJerseyRestTestC
                 "<time begins='17-Feb-2012 19:20:00' ends='18-Feb-2012 22:30:00' />" +
                 "<node id='11' />" +
                 "</outage>";
-        sendPost(url, outage, 303, "/sched-outages/test-outage");
+        sendPost(url, outage, 204, null);
 
         out = getXmlObject(m_jaxbContext, "/sched-outages/test-outage", 200, Outage.class);
         Assert.assertNotNull(out);
@@ -261,31 +261,31 @@ public class ScheduledOutagesRestServiceIT extends AbstractSpringJerseyRestTestC
 
     @Test
     public void testDeleteOutage() throws Exception {
-        sendRequest(DELETE, "/sched-outages/my-junit-test", 200);
+        sendRequest(DELETE, "/sched-outages/my-junit-test", 204);
     }
 
     @Test
     public void testUpdateCollectdConfig() throws Exception {
-        sendRequest(PUT, "/sched-outages/my-junit-test/collectd/example1", 303);
-        sendRequest(DELETE, "/sched-outages/my-junit-test/collectd/example1", 200);
+        sendRequest(PUT, "/sched-outages/my-junit-test/collectd/example1", 204);
+        sendRequest(DELETE, "/sched-outages/my-junit-test/collectd/example1", 204);
     }
 
     @Test
     public void testUpdatePollerdConfig() throws Exception {
-        sendRequest(PUT, "/sched-outages/my-junit-test/pollerd/example1", 303);
-        sendRequest(DELETE, "/sched-outages/my-junit-test/pollerd/example1", 200);
+        sendRequest(PUT, "/sched-outages/my-junit-test/pollerd/example1", 204);
+        sendRequest(DELETE, "/sched-outages/my-junit-test/pollerd/example1", 204);
     }
 
     @Test
     public void testUpdateThreshdConfig() throws Exception {
-        sendRequest(PUT, "/sched-outages/my-junit-test/threshd/example1", 303);
-        sendRequest(DELETE, "/sched-outages/my-junit-test/threshd/example1", 200);
+        sendRequest(PUT, "/sched-outages/my-junit-test/threshd/example1", 204);
+        sendRequest(DELETE, "/sched-outages/my-junit-test/threshd/example1", 204);
     }
 
     @Test
     public void testUpdateNotifdConfig() throws Exception {
-        sendRequest(PUT, "/sched-outages/my-junit-test/notifd", 303);
-        sendRequest(DELETE, "/sched-outages/my-junit-test/notifd", 200);
+        sendRequest(PUT, "/sched-outages/my-junit-test/notifd", 204);
+        sendRequest(DELETE, "/sched-outages/my-junit-test/notifd", 204);
     }
 
     @Test

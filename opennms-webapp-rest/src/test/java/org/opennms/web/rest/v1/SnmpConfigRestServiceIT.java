@@ -191,7 +191,7 @@ public class SnmpConfigRestServiceIT extends AbstractSpringJerseyRestTestCase {
 		config.setMaxRequestSize(7000);
 
 		// store them via REST
-		putXmlObject(m_jaxbContext, url, 303, config, "/snmpConfig/1.1.1.1");
+		putXmlObject(m_jaxbContext, url, 204, config);
 
 		// prepare expected Result
 		expectedConfig = new SnmpInfo();
@@ -256,7 +256,7 @@ public class SnmpConfigRestServiceIT extends AbstractSpringJerseyRestTestCase {
                 changedConfig.setMaxRequestSize(7000);
 
                 // store them via REST
-                putXmlObject(m_jaxbContext, url, 303, changedConfig, "/snmpConfig/1.1.1.1");
+                putXmlObject(m_jaxbContext, url, 204, changedConfig);
                 
                 // prepare expected Result
                 expectedConfig = new SnmpInfo();
@@ -343,7 +343,7 @@ public class SnmpConfigRestServiceIT extends AbstractSpringJerseyRestTestCase {
                 changedConfig.setMaxRequestSize(7000);
 
                 // store them via REST
-                putXmlObject(m_jaxbContext, urlRange, 303, changedConfig, urlRange);
+                putXmlObject(m_jaxbContext, urlRange, 204, changedConfig);
                 
                 // prepare expected Result
                 expectedConfig = new SnmpInfo();
