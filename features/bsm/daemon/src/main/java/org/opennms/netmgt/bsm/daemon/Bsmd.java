@@ -182,7 +182,7 @@ public class Bsmd implements SpringServiceDaemon, BusinessServiceStateChangeHand
             @Override
             protected void doInTransactionWithoutResult(TransactionStatus status) {
                 final List<BusinessService> businessServices = m_manager.getAllBusinessServices();
-                LOG.debug("Adding business services to state machine {}: {}", m_stateMachine, businessServices);
+                LOG.debug("Adding {} business services to the state machine.", businessServices.size());
                 m_stateMachine.setBusinessServices(businessServices);
             }
         });
