@@ -28,6 +28,9 @@
 
 package org.opennms.netmgt.poller.monitors;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.lang.reflect.UndeclaredThrowableException;
@@ -36,9 +39,8 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.Map;
+
 import org.junit.After;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -276,6 +278,51 @@ public class SmtpMonitorIT {
                     s.getOutputStream().write("554 localhost.localdomain ESMTP bogon\r\n".getBytes());
                     BufferedReader r = new BufferedReader(new InputStreamReader(s.getInputStream()));
                     String command = r.readLine();
+                    System.out.println("C: " + command);
+                    if (command.equals("QUIT")) {
+                        System.out.println("S: 221-Goodbye, friend.");
+                        s.getOutputStream().write("221-Goodbye, friend.\r\n".getBytes());
+                        System.out.println("S: 221 See ya");
+                        s.getOutputStream().write("221 See ya\r\n".getBytes());
+                    }
+                } catch (Throwable e) {
+                    throw new UndeclaredThrowableException(e);
+                }
+            }
+        });
+
+        m_serverThread.start();
+
+        ServiceMonitor sm = new SmtpMonitor();
+        MonitoredService svc = new MockMonitoredService(1, "Node One", InetAddressUtils.addr("127.0.0.1"), "SMTP");
+        Map<String, Object> parms = new HashMap<String, Object>();
+        parms.put("port", m_serverSocket.getLocalPort());
+
+        PollStatus ps = sm.poll(svc, parms);
+        assertTrue(ps.isUnavailable());
+        assertFalse(ps.isUp());
+    }
+
+    @Test
+    public void testPollCaseForCRLFCheck() throws UnknownHostException, InterruptedException {
+        m_serverThread = new Thread(new Runnable() {
+
+            @Override
+            public void run() {
+                try {
+                    m_serverSocket.setSoTimeout(1000);
+                    Socket s = m_serverSocket.accept();
+                    System.out.println("S: 220 localhost.localdomain ESMTP bogon");
+                    // Having \r should fail in cheking for end of the line as the requirement is for CRLF
+                    s.getOutputStream().write("220 localhost.localdomain ESMTP bogon\r".getBytes());
+                    BufferedReader r = new BufferedReader(new InputStreamReader(s.getInputStream()));
+                    String command = r.readLine();
+                    System.out.println("C: " + command);
+                    if (command.startsWith("HELO ")) {
+                        System.out.println("S: 250 Hello");
+                        s.getOutputStream().write("250 Hello\r\n".getBytes());
+                    }
+                    command = r.readLine();
                     System.out.println("C: " + command);
                     if (command.equals("QUIT")) {
                         System.out.println("S: 221-Goodbye, friend.");
