@@ -33,7 +33,7 @@ describe('Controller: AssetController', function () {
     mockRequisitionsService.getAvailableAssets = jasmine.createSpy('getAvailableAssets');
     var assets = $q.defer();
     assets.resolve(['address1','city','state','zip']);
-    mockRequisitionsService.getAvailableAssets.andReturn(assets.promise);
+    mockRequisitionsService.getAvailableAssets.and.returnValue(assets.promise);
 
     mockModalInstance = {
       close: function(obj) { console.info(obj); },
@@ -47,6 +47,9 @@ describe('Controller: AssetController', function () {
     expect(scope.asset.value).toBe(asset.value);
     expect(scope.assetFields.length).toBe(4);
     expect(scope.assetFields[0]).toBe('address1');
+    expect(scope.getAvailableAssetFields()).toEqual(['address1','city','state','zip']);
+    scope.assetsBlackList.push('address1');
+    expect(scope.getAvailableAssetFields()).toEqual(['city','state','zip']);
   });
 
 });

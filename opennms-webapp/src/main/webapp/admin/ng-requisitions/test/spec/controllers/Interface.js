@@ -44,7 +44,7 @@ describe('Controller: InterfaceController', function () {
     mockRequisitionsService.getAvailableServices = jasmine.createSpy('getAvailableServices');
     var servicesDefer = $q.defer();
     servicesDefer.resolve(services);
-    mockRequisitionsService.getAvailableServices.andReturn(servicesDefer.promise);
+    mockRequisitionsService.getAvailableServices.and.returnValue(servicesDefer.promise);
 
     mockModalInstance = {
       close: function(obj) { console.info(obj); },
@@ -63,6 +63,10 @@ describe('Controller: InterfaceController', function () {
     expect(scope.requisitionInterface.services.length).toBe(0);
     expect(scope.availableServices.length).toBe(3);
     expect(scope.availableServices[0]).toBe('ICMP');
+
+    expect(scope.getAvailableServices()).toEqual(['ICMP','SNMP','HTTP']);
+    scope.requisitionInterface.services.push({name: 'ICMP'});
+    expect(scope.getAvailableServices()).toEqual(['SNMP','HTTP']);
   });
 
 });

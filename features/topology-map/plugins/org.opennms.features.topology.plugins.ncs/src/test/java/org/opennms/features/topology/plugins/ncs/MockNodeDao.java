@@ -33,6 +33,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.opennms.core.criteria.Criteria;
 import org.opennms.netmgt.dao.api.NodeDao;
@@ -166,6 +167,18 @@ public class MockNodeDao implements NodeDao {
 
     @Override
     public Map<String, Integer> getForeignIdToNodeIdMap(String foreignSource) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public Map<String, Set<String>> getForeignIdsPerForeignSourceMap() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public Set<String> getForeignIdsPerForeignSource(String foreignSource) {
         // TODO Auto-generated method stub
         return null;
     }
