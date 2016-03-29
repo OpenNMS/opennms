@@ -48,6 +48,8 @@ import javax.ws.rs.core.UriInfo;
 import javax.xml.bind.ValidationException;
 
 import org.opennms.netmgt.provision.persist.ForeignSourceRepositoryFactory;
+import org.opennms.netmgt.provision.persist.requisition.DeployedRequisitionStats;
+import org.opennms.netmgt.provision.persist.requisition.DeployedStats;
 import org.opennms.netmgt.provision.persist.requisition.Requisition;
 import org.opennms.netmgt.provision.persist.requisition.RequisitionAsset;
 import org.opennms.netmgt.provision.persist.requisition.RequisitionAssetCollection;
@@ -146,6 +148,30 @@ public class RequisitionRestService extends OnmsRestService {
     @Produces(MediaType.TEXT_PLAIN)
     public String getDeployedCount() {
         return Integer.toString(m_accessService.getDeployedCount());
+    }
+
+    /**
+     * get the statistics for the deployed requisitions
+     *
+     * @return a DeployedStats.
+     */
+    @GET
+    @Path("deployed/stats")
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
+    public DeployedStats getDeployedStats() {
+        return m_accessService.getDeployedStats();
+    }
+
+    /**
+     * get the statistics for a given deployed requisition
+     *
+     * @return a DeployedRequisitionStats.
+     */
+    @GET
+    @Path("deployed/stats/{foreignSource}")
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
+    public DeployedRequisitionStats getDeployedStats(@PathParam("foreignSource") final String foreignSource) {
+        return m_accessService.getDeployedStats(foreignSource);
     }
 
     /**

@@ -157,7 +157,6 @@
     * @methodOf ForeignSourceController
     * @param {object} handler The goto handler
     */
-
     $scope.goTo = function(handler) {
       if (this.fsForm.$dirty) {
         bootbox.dialog({
@@ -270,7 +269,8 @@
     $scope.editPolicy = function(policy, isNew) {
       var form = this.fsForm;
       $uibModal.open({
-        backdrop: true,
+        backdrop: 'static',
+        keyboard: false,
         controller: 'PolicyController',
         templateUrl: 'views/policy.html',
         resolve: {
@@ -327,7 +327,8 @@
     $scope.editDetector = function(detector, isNew) {
       var form = this.fsForm;
       $uibModal.open({
-        backdrop: true,
+        backdrop: 'static',
+        keyboard: false,
         controller: 'DetectorController',
         templateUrl: 'views/detector.html',
         resolve: {
@@ -392,6 +393,28 @@
     };
 
     /**
+    * @description Resets to the default set of detectors and policies
+    *
+    * @name ForeignSourceController:reset
+    * @ngdoc method
+    * @methodOf ForeignSourceController
+    */
+    $scope.reset = function() {
+      bootbox.confirm('Are you sure you want to reset the foreign source definition to the default ?', function(ok) {
+        if (ok) {
+          RequisitionsService.startTiming();
+          RequisitionsService.deleteForeignSourceDefinition($scope.foreignSource).then(
+            function() { // success
+              growl.success('The foreign source definition for ' + $scope.foreignSource + 'has been reseted.');
+              $scope.initialize();
+            },
+            $scope.errorHandler
+          );
+        }
+      });
+    };
+
+    /**
     * @description Updates the pagination variables for the policies.
     *
     * @name ForeignSourceController:updateFilteredPolicies
@@ -415,7 +438,7 @@
       $scope.detectorsCurrentPage = 1;
       $scope.detectorsTotalItems = $scope.filteredDetectors.length;
       $scope.detectorsNumPages = Math.ceil($scope.detectorsTotalItems / $scope.detectorsPageSize);
-    }
+    };
 
     /**
     * @description Initialized the local foreign source definition from the server
@@ -447,7 +470,7 @@
     * @ngdoc event
     * @methodOf ForeignSourceController
     */
-    $scope.$watch("filters.detector", function() {
+    $scope.$watch('filters.detector', function() {
       $scope.filteredDetectors = filterFilter($scope.foreignSourceDef.detectors, $scope.filters.detector);
       $scope.updateFilteredDetectors();
     });

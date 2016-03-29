@@ -92,6 +92,9 @@
               <#if isAdmin >
                 <li><a name="nav-admin-admin" href="${baseHref}admin/index.jsp" style="white-space: nowrap">Configure OpenNMS</a></li>
               </#if>
+              <#if isAdmin || isProvision >
+                <li><a name="nav-admin-quick-add" href="${baseHref}admin/ng-requisitions/app/quick-add-node.jsp#/" style="white-space: nowrap">Quick-Add Node</a></li>
+              </#if>
               <li><a name="nav-admin-support" href="${baseHref}support/index.htm">Help/Support</a></li>
               <#if request.remoteUser?has_content >
                 <li><a name="nav-admin-self-service" href="${baseHref}account/selfService/index.jsp">Change Password</a>
