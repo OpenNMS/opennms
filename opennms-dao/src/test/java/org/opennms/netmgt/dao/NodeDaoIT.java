@@ -380,6 +380,22 @@ public class NodeDaoIT implements InitializingBean {
 
     @Test
     @Transactional
+    public void testGetForeignIdsPerForeignSourceMap() {
+        Map<String, Set<String>> arMap = getNodeDao().getForeignIdsPerForeignSourceMap();
+        assertTrue("Expected to find foreign source 'imported:'", arMap.containsKey("imported:"));
+        assertEquals(4, arMap.get("imported:").size());
+        assertEquals("1", arMap.get("imported:").iterator().next());
+    }
+
+    @Test
+    @Transactional
+    public void testGetForeignIdsPerForeignSource() {
+        Set<String> set = getNodeDao().getForeignIdsPerForeignSource("imported:");
+        assertEquals("1", set.iterator().next());
+    }
+
+    @Test
+    @Transactional
     public void testUpdateNodeScanStamp() {
 
         Date timestamp = new Date(27);

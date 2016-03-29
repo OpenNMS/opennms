@@ -23,7 +23,7 @@
           <configuration>
             <nodeDownloadRoot>http://mirror.internal.opennms.com/nodejs/dist/</nodeDownloadRoot>
             <npmDownloadRoot>http://mirror.internal.opennms.com/npmjs/npm/-/</npmDownloadRoot>
-            <installDirectory>${java.io.tmpdir}/node-smoke-${version}</installDirectory>
+            <installDirectory>${java.io.tmpdir}/node-smoke-${project.version}</installDirectory>
           </configuration>
           <executions>
             <execution>
@@ -169,7 +169,6 @@
       <groupId>org.opennms</groupId>
       <artifactId>opennms-model</artifactId>
       <version>${project.version}</version>
-      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms.core.test-api</groupId>
@@ -192,8 +191,8 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-model</artifactId>
+      <groupId>org.opennms.core</groupId>
+      <artifactId>org.opennms.core.xml</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>

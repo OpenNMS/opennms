@@ -51,7 +51,7 @@ OpenNMS.prototype.configureLogging = function() {
 			if (message) {
 				message.trim().split(/[\r\n]+/).map(function(line) {
 					if (line.indexOf('com.vaadin.client.VConsole') < 0) {
-						//console.log('console: ' + line);
+						console.log('console: ' + line);
 					}
 				});
 			}
@@ -238,7 +238,7 @@ OpenNMS.prototype.setForeignSource = function(foreignSource, obj) {
 			'Content-Type': 'application/json'
 		}
 	}, function(response) {
-		if (response.status !== 200) {
+		if (response.status !== 202) {
 			console.log('OpenNMS.setForeignSource: unexpected response: ' + JSON.stringify(response));
 			throw new CasperError('POST of foreign source ' + foreignSource + ' should return success.');
 		}
@@ -337,7 +337,7 @@ OpenNMS.prototype.importRequisition = function(foreignSource) {
 		}
 	}, function(response) {
 		if (response.status !== 202) {
-			console.log('OpeNNMS.importRequisition: unexpected response: ' + response);
+			console.log('OpeNNMS.importRequisition: unexpected response: ' + JSON.stringify(response));
 			throw new CasperError('Import of requisition ' + foreignSource + ' should return success.');
 		}
 	});
@@ -352,7 +352,7 @@ OpenNMS.prototype.deleteRequisition = function(foreignSource) {
 		method: 'delete'
 	}, function(response) {
 		if (response.status !== 202) {
-			console.log('OpenNMS.deleteRequisition: unexpected response: ' + response);
+			console.log('OpenNMS.deleteRequisition: unexpected response: ' + JSON.stringify(response));
 			throw new CasperError('DELETE of requisition ' + foreignSource + ' should return success.');
 		}
 	});
@@ -360,10 +360,27 @@ OpenNMS.prototype.deleteRequisition = function(foreignSource) {
 		method: 'delete'
 	}, function(response) {
 		if (response.status !== 202) {
-			console.log('OpenNMS.deleteRequisition: unexpected response: ' + response);
-			throw new CasperError('DELETE of requisition ' + foreignSource + ' should return success.');
+			console.log('OpenNMS.deleteRequisition: unexpected response: ' + JSON.stringify(response));
+			throw new CasperError('DELETE of deployed requisition ' + foreignSource + ' should return success.');
 		}
 	});
+	self.casper.thenOpen(self.root() + '/rest/foreignSources/' + foreignSource, {
+		method: 'delete'
+	}, function(response) {
+		if (response.status !== 202) {
+			console.log('OpenNMS.deleteRequisition: unexpected response: ' + JSON.stringify(response));
+			throw new CasperError('DELETE of foreign source definition ' + foreignSource + ' should return success.');
+		}
+	});
+	self.casper.thenOpen(self.root() + '/rest/foreignSources/deployed/' + foreignSource, {
+		method: 'delete'
+	}, function(response) {
+		if (response.status !== 202) {
+			console.log('OpenNMS.deleteRequisition: unexpected response: ' + JSON.stringify(response));
+			throw new CasperError('DELETE of deployed foreign source definition ' + foreignSource + ' should return success.');
+		}
+	});
+
 	self.casper.back();
 };
 
