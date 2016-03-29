@@ -264,7 +264,7 @@ public class DefaultPollContext implements PollContext, EventListener {
             String[] criticalPath = PathOutageManagerDaoImpl.getInstance().getCriticalPath(nodeId);
             
             if (criticalPath[0] != null && !"".equals(criticalPath[0].trim())) {
-                if (!this.testCriticalPath(criticalPath)) {
+                if (! testCriticalPath(criticalPath)) {
                     LOG.debug("Critical path test failed for node {}", nodeId);
                     
                     // add eventReason, criticalPathIp, criticalPathService
@@ -416,11 +416,15 @@ public class DefaultPollContext implements PollContext, EventListener {
     }
 
     boolean testCriticalPath(String[] criticalPath) {
-        LOG.debug("Test critical path IP {}/{}", criticalPath[0], criticalPath[1]);
+        if (criticalPath == null || criticalPath.length < 2) {
+            LOG.error("testCriticalPath: illegal arguments, ignoring.");
+            return true;
+        }
+        LOG.debug("testCriticalPath: checking {}@{}", criticalPath[1], criticalPath[0]);
         final InetAddress ipAddress = InetAddressUtils.addr(criticalPath[0]);
         final String svcName = criticalPath[1];
         if (ipAddress == null) {
-            LOG.error("failed to convert string address to InetAddress {}", criticalPath[0]);
+            LOG.error("testCriticalPath: failed to convert string address to InetAddress {}", criticalPath[0]);
             return true;
         }
         final Map<String, Object> parameters = new HashMap<String,Object>();
@@ -439,18 +443,19 @@ public class DefaultPollContext implements PollContext, EventListener {
                 });
             }
         }
-        parameters.put("retry",  OpennmsServerConfigFactory.getInstance().getDefaultCriticalPathRetries());
-        parameters.put("timeout",  OpennmsServerConfigFactory.getInstance().getDefaultCriticalPathTimeout());
         ServiceMonitor monitor = getPollerConfig().getServiceMonitor(svcName);
         if (monitor == null) {
             try {
+                LOG.debug("testCriticalPath: can't find monitor implementation for {}, using IcmpMonitor.", svcName);
                 monitor = new IcmpMonitor();
             } catch (IOException e) {
-                LOG.error("failed to instantiate the IcmpMonitor.");
+                LOG.error("testCriticalPath: failed to instantiate the default monitor: IcmpMonitor.");
                 return true;
             }
         }
+        LOG.debug("testCriticalPath: running {} with {}", monitor.getClass().getSimpleName(), parameters);
         final PollStatus status = monitor.poll(new SimpleMonitoredService(ipAddress, svcName), parameters);
+        LOG.error("testCriticalPath: available ? {}", status.isAvailable());
         return status.isAvailable();
     }
 
