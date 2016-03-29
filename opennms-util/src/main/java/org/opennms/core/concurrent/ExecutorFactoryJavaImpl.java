@@ -38,6 +38,11 @@ import org.opennms.core.concurrent.LogPreservingThreadFactory;
 public class ExecutorFactoryJavaImpl implements ExecutorFactory {
 
 	@Override
+	public ExecutorService newExecutor(String daemonName, String executorName) {
+		return newExecutor(Runtime.getRuntime().availableProcessors(), Integer.MAX_VALUE, daemonName, executorName);
+	}
+
+	@Override
 	public ExecutorService newExecutor(int threads, String daemonName, String executorName) {
 		return newExecutor(threads, Integer.MAX_VALUE, daemonName, executorName);
 	}

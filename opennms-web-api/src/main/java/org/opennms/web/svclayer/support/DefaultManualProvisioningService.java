@@ -573,7 +573,9 @@ public class DefaultManualProvisioningService implements ManualProvisioningServi
             }
 
             // Include all of the service names defined in the poller configuration
-            serviceNames.addAll(m_pollerConfig.getServiceMonitors().keySet());
+            if (m_pollerConfig != null && m_pollerConfig.getServiceMonitors() != null && ! m_pollerConfig.getServiceMonitors().isEmpty()) {
+                serviceNames.addAll(m_pollerConfig.getServiceMonitors().keySet());
+            }
 
             return serviceNames;
         } finally {

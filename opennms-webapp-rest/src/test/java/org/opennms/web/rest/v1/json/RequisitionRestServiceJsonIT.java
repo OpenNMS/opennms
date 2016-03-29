@@ -102,8 +102,8 @@ public class RequisitionRestServiceJsonIT extends AbstractSpringJerseyRestJsonTe
         assertTrue(mgmtFound);
 
         url = "/requisitions/test";
-        sendRequest(DELETE, url, 200);
-        sendRequest(GET, url, 204);
+        sendRequest(DELETE, url, 202);
+        sendRequest(GET, url, 404);
     }
 
     @Test
@@ -142,7 +142,7 @@ public class RequisitionRestServiceJsonIT extends AbstractSpringJerseyRestJsonTe
         node.put("node-label", "shoe");
         node.put("parent-node-label", "david");
         node.put("foreign-id", "1111");
-        sendPost(url, node.toString(), 303, "/test/nodes/1111");
+        sendPost(url, node.toString(), 202, "/test/nodes/1111");
 
         // get list of nodes
         String json = sendRequest(GET, url, 200);
@@ -160,13 +160,13 @@ public class RequisitionRestServiceJsonIT extends AbstractSpringJerseyRestJsonTe
         assertEquals("david", node.getString("node-label"));
 
         // set attributes
-        sendPut(url, "node-label=homo+sapien", 303, "/nodes/4243");
+        sendPut(url, "node-label=homo+sapien", 202, "/nodes/4243");
         json = sendRequest(GET, url, 200);
         node = new JSONObject(json);
         assertEquals("homo sapien", node.getString("node-label"));
 
         // delete node
-        json = sendRequest(DELETE, url, 200);
+        json = sendRequest(DELETE, url, 202);
         json = sendRequest(GET, url, 404);
     }
 
@@ -182,7 +182,7 @@ public class RequisitionRestServiceJsonIT extends AbstractSpringJerseyRestJsonTe
         node.put("parent-node-label", "david");
         node.put("foreign-id", "4243");
 
-        sendPost(url, node.toString(), 303, "/requisitions/test/nodes/4243");
+        sendPost(url, node.toString(), 202, "/requisitions/test/nodes/4243");
 
         // get list of nodes
         String json = sendRequest(GET, url, 200);
@@ -209,9 +209,9 @@ public class RequisitionRestServiceJsonIT extends AbstractSpringJerseyRestJsonTe
         JSONObject icmp = new JSONObject();
         icmp.put("service-name", "ICMP");
         intf.append("monitored-service", icmp);
-        sendPost(base, intf.toString(), 303, "/nodes/4243/interfaces/192.0.2.254");
+        sendPost(base, intf.toString(), 202, "/nodes/4243/interfaces/192.0.2.254");
         intf.put("descr", "Blah");
-        sendPost(base, intf.toString(), 303, "/nodes/4243/interfaces/192.0.2.254");
+        sendPost(base, intf.toString(), 202, "/nodes/4243/interfaces/192.0.2.254");
 
         // get list of interfaces
         json = sendRequest(GET, base, 200);
@@ -243,7 +243,7 @@ public class RequisitionRestServiceJsonIT extends AbstractSpringJerseyRestJsonTe
         assertEquals("VPN interface", intf.getString("descr"));
 
         // set attributes
-        sendPut(url, "status=3&descr=Total+Crap&snmp-primary=P", 303, "/nodes/4243/interfaces/192.0.2.204");
+        sendPut(url, "status=3&descr=Total+Crap&snmp-primary=P", 202, "/nodes/4243/interfaces/192.0.2.204");
         json = sendRequest(GET, url, 200);
         intf = new JSONObject(json);
         assertEquals("Total Crap", intf.getString("descr"));
@@ -251,7 +251,7 @@ public class RequisitionRestServiceJsonIT extends AbstractSpringJerseyRestJsonTe
         assertEquals(3, intf.getInt("status"));
 
         // delete interface
-        json = sendRequest(DELETE, url, 200);
+        json = sendRequest(DELETE, url, 202);
         json = sendRequest(GET, url, 404);
 
         // confirm there is one less interface
@@ -269,7 +269,7 @@ public class RequisitionRestServiceJsonIT extends AbstractSpringJerseyRestJsonTe
         // create a service
         JSONObject monkey = new JSONObject();
         monkey.put("service-name", "MONKEY");
-        sendPost(base, monkey.toString(), 303, "/interfaces/192.0.2.204/services/MONKEY");
+        sendPost(base, monkey.toString(), 202, "/interfaces/192.0.2.204/services/MONKEY");
 
         // get list of services
         String json = sendRequest(GET, base, 200);
@@ -295,7 +295,7 @@ public class RequisitionRestServiceJsonIT extends AbstractSpringJerseyRestJsonTe
         assertEquals("ICMP", svc.getString("service-name"));
 
         // delete interface
-        json = sendRequest(DELETE, url, 200);
+        json = sendRequest(DELETE, url, 202);
         json = sendRequest(GET, url, 404);
 
         // confirm there is one less interface
@@ -313,7 +313,7 @@ public class RequisitionRestServiceJsonIT extends AbstractSpringJerseyRestJsonTe
         // create a category
         JSONObject category = new JSONObject();
         category.put("name", "Dead Servers");
-        sendPost(base, category.toString(), 303, "/nodes/4243/categories/Dead%20Servers");
+        sendPost(base, category.toString(), 202, "/nodes/4243/categories/Dead%20Servers");
 
         // get list of categories
         String url = base;
@@ -344,7 +344,7 @@ public class RequisitionRestServiceJsonIT extends AbstractSpringJerseyRestJsonTe
         assertEquals("low", category.getString("name"));
 
         // delete category
-        json = sendRequest(DELETE, url, 200);
+        json = sendRequest(DELETE, url, 202);
         json = sendRequest(GET, url, 404);
 
         // confirm there are less categories
@@ -357,7 +357,7 @@ public class RequisitionRestServiceJsonIT extends AbstractSpringJerseyRestJsonTe
         category = new JSONObject();
         category.put("name", "New Category");
 
-        sendPost(base, category.toString(), 303, "/nodes/4244/categories/New%20Category");
+        sendPost(base, category.toString(), 202, "/nodes/4244/categories/New%20Category");
         json = sendRequest(GET, base + "/New%20Category", 404);
     }
 
@@ -371,7 +371,7 @@ public class RequisitionRestServiceJsonIT extends AbstractSpringJerseyRestJsonTe
         JSONObject asset = new JSONObject();
         asset.put("name", "manufacturer");
         asset.put("value", "Dead Servers, Inc.");
-        sendPost(base, asset.toString(), 303, "/nodes/4243/assets/manufacturer");
+        sendPost(base, asset.toString(), 202, "/nodes/4243/assets/manufacturer");
 
         // get list of asset parameters
         String url = base;
@@ -403,7 +403,7 @@ public class RequisitionRestServiceJsonIT extends AbstractSpringJerseyRestJsonTe
         assertEquals("Windows Pi", asset.getString("value"));
 
         // delete asset parameter
-        json = sendRequest(DELETE, url, 200);
+        json = sendRequest(DELETE, url, 202);
         json = sendRequest(GET, url, 404);
 
         // confirm there are less assets
@@ -434,7 +434,7 @@ public class RequisitionRestServiceJsonIT extends AbstractSpringJerseyRestJsonTe
 
         EventAnticipator anticipator = m_eventProxy.getEventAnticipator();
 
-        sendRequest(PUT, "/requisitions/test/import", 303);
+        sendRequest(PUT, "/requisitions/test/import", 202);
 
         assertEquals(1, anticipator.unanticipatedEvents().size());
     }
@@ -445,7 +445,7 @@ public class RequisitionRestServiceJsonIT extends AbstractSpringJerseyRestJsonTe
 
         EventAnticipator anticipator = m_eventProxy.getEventAnticipator();
 
-        sendRequest(PUT, "/requisitions/test/import", parseParamData("rescanExisting=false"), 303);
+        sendRequest(PUT, "/requisitions/test/import", parseParamData("rescanExisting=false"), 202);
 
         assertEquals(1, anticipator.unanticipatedEvents().size());
         final Event event = anticipator.unanticipatedEvents().iterator().next();
@@ -456,7 +456,7 @@ public class RequisitionRestServiceJsonIT extends AbstractSpringJerseyRestJsonTe
 
     private void createRequisition() throws Exception {
         JSONObject req = generateSampleRequisition();
-        sendPost("/requisitions", req.toString(), 303, "/requisitions/test");
+        sendPost("/requisitions", req.toString(), 202, "/requisitions/test");
     }
 
     private JSONObject generateSampleRequisition() throws JSONException {

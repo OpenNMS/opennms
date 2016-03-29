@@ -91,7 +91,6 @@ public class AlarmPersisterImpl implements AlarmPersister {
             m_eventDao.saveOrUpdate(e);
 
             ebldr = new EventBuilder(EventConstants.ALARM_CREATED_UEI, Alarmd.NAME);
-
         } else {
             LOG.debug("addOrReduceEventAsAlarm: reductionKey:{} found, reducing event to existing alarm: {}", reductionKey, alarm.getIpAddr());
             reduceEvent(e, alarm, event);
@@ -105,14 +104,14 @@ public class AlarmPersisterImpl implements AlarmPersister {
             ebldr = new EventBuilder(EventConstants.ALARM_UPDATED_WITH_REDUCED_EVENT_UEI, Alarmd.NAME);
         }
 
+        if (alarm.getNodeId() != null) {
+            alarm.getNode().getForeignSource(); // This should trigger the lazy loading of the node object, to properly populate the NorthboundAlarm class.
+        }
+
         if (ebldr != null) {
             ebldr.addParam(EventConstants.PARM_ALARM_UEI, alarm.getUei());
             ebldr.addParam(EventConstants.PARM_ALARM_ID, alarm.getId());
             m_eventForwarder.sendNow(ebldr.getEvent());
-        }
-
-        if (alarm.getNodeId() != null) {
-            alarm.getNode().getForeignSource(); // This should trigger the lazy loading of the node object, to properly populate the NorthboundAlarm class.
         }
 
         return alarm;

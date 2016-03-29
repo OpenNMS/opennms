@@ -43,7 +43,7 @@
 <%@page language="java"
 	contentType="text/html"
 	session="true"
-	import="java.io.File"
+	import="java.io.File,org.opennms.web.api.HtmlInjectHandler"
 %>
 
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
@@ -89,6 +89,9 @@
      header), so we hide it in a JSP code fragment so the Eclipse HTML
      validator doesn't complain.  See bug #1728. --%>
 <%= "</div>" %><!-- id="content" class="container-fluid" -->
+
+<%-- Allows services exposed via the OSGi registry to inject HTML content --%>
+<%= HtmlInjectHandler.inject( request ) %>
 
 <%-- The </body> and </html> tags are unmatched in this file (the matching
      tags are in the header), so we hide them in JSP code fragments so the

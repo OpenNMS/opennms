@@ -349,8 +349,7 @@ public class BSMAdminIT extends OpenNMSSeleniumTestCase {
     }
 
     private void removeTestSetup() throws Exception {
-        requisitionUtils.deleteNode("NodeA");
-        requisitionUtils.deleteForeignSource();
+        requisitionUtils.deleteTestRequisition();
     }
 
     @Before
