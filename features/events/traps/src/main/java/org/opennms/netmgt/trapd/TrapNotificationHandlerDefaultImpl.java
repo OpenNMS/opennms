@@ -55,12 +55,15 @@ public class TrapNotificationHandlerDefaultImpl implements TrapNotificationHandl
 
 	@Autowired
 	private TrapQueueProcessorFactory m_processorFactory;
+	
+	@Autowired
+	private EventCreator m_eventCreator;
 
 	@Override
 	public void handleTrapNotification(final TrapNotification message) {
 		try {
 			// HZN-632: Call message.setProcessor() to change the processor to the EventCreator
-
+			message.setTrapProcessor(getEventCreator());
 			// Use the TrapQueueProcessorFactory to construct a TrapQueueProcessor
 			TrapQueueProcessor processor = m_processorFactory.getInstance(message);
 			// Call the processor asynchronously
@@ -69,4 +72,33 @@ public class TrapNotificationHandlerDefaultImpl implements TrapNotificationHandl
 			LOG.error("Task execution failed in {}", this.getClass().getSimpleName(), e);
 		}
 	}
+
+	/**
+	 * @return the m_processorFactory
+	 */
+	public TrapQueueProcessorFactory getProcessorFactory() {
+		return m_processorFactory;
+	}
+
+	/**
+	 * @param m_processorFactory the m_processorFactory to set
+	 */
+	public void setProcessorFactory(TrapQueueProcessorFactory m_processorFactory) {
+		this.m_processorFactory = m_processorFactory;
+	}
+
+	/**
+	 * @return the eventCreator
+	 */
+	public EventCreator getEventCreator() {
+		return m_eventCreator;
+	}
+
+	/**
+	 * @param eventCreator the eventCreator to set
+	 */
+	public void setEventCreator(EventCreator eventCreator) {
+		this.m_eventCreator = eventCreator;
+	}
+
 }
