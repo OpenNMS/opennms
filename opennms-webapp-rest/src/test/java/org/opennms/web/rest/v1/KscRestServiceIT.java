@@ -128,7 +128,7 @@ public class KscRestServiceIT extends AbstractSpringJerseyRestTestCase {
         params.put("title", "foo");
         params.put("reportName", "bar");
         params.put("resourceId", "baz");
-        sendRequest(PUT, "/ksc/0", params, 303, "/ksc/0");
+        sendRequest(PUT, "/ksc/0", params, 204);
 
         final String xml = slurp(m_configFile);
         assertTrue(xml, xml.contains("title=\"foo\""));
@@ -140,7 +140,7 @@ public class KscRestServiceIT extends AbstractSpringJerseyRestTestCase {
                 +"<kscGraph title=\"Title1\" resourceId=\"node[2].responseTime[127.0.0.1]\" timespan=\"1_hour\" graphtype=\"icmp\"/>"
                 +"</kscReport>";
 
-        sendPost("/ksc", kscReport, 303, null);
+        sendPost("/ksc", kscReport, 201, "/ksc/3");
 
         final String xml = slurp(m_configFile);
         assertTrue(xml, xml.contains("title=\"foo2\""));

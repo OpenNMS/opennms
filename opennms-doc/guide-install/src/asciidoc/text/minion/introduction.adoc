@@ -1,0 +1,25 @@
+
+// Allow GitHub image rendering
+:imagesdir: ../../images
+
+[[gi-install-minion]]
+== Installing Minion
+
+_Minion_ enables enterprises with the ability to create a globally distributed and scalable monitoring fabric.
+
+IMPORTANT: Support for _Minion_ is currently experimental and packages are only available for RHEL based systems.
+
+NOTE: Before attempting to setup _Minion_ you must have an instance of _OpenNMS_ setup using the same version of the packages.
+
+A _Minion_ can be installed on the same system as _OpenNMS_ or on other system systems provided that it can communicate with:
+
+. The OpenNMS REST interface
+. The ActiveMQ broker used by OpenNMS
+
+_OpenNMS_ embeds an _ActiveMQ_ broker which is used by default, however the port is bound to `127.0.0.1`.
+In order to make the _ActiveMQ_ broker accessible remotely, must edit `$OPENNMS_HOME/etc/opennms-activemq.xml` and configure the `transportConnector` to bind to `0.0.0.0` (or another suitable address):
+
+[source,xml]
+----
+<transportConnector name="openwire" uri="tcp://0.0.0.0:61616?useJmx=false&amp;maximumConnections=1000&amp;wireformat.maxFrameSize=104857600"/>
+----

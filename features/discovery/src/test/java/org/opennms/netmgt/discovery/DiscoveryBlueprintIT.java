@@ -65,6 +65,7 @@ import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.events.api.EventIpcManager;
 import org.opennms.netmgt.icmp.Pinger;
+import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -129,11 +130,11 @@ public class DiscoveryBlueprintIT extends CamelBlueprintTestSupport {
         services.put( EventIpcManager.class.getName(),
                 new KeyValueHolder<Object, Dictionary>( IPC_MANAGER_INSTANCE, new Properties() ) );
 
-        DistPollerDao distPollerDao = new DistPollerDaoMinion(
-            DistPollerDao.DEFAULT_DIST_POLLER_ID,
-            DistPollerDao.DEFAULT_DIST_POLLER_ID,
-            LOCATION
-        );
+        OnmsDistPoller distPoller = new OnmsDistPoller();
+        distPoller.setId(DistPollerDao.DEFAULT_DIST_POLLER_ID);
+        distPoller.setLabel(DistPollerDao.DEFAULT_DIST_POLLER_ID);
+        distPoller.setLocation(LOCATION);
+        DistPollerDao distPollerDao = new DistPollerDaoMinion(distPoller);
 
         services.put( DistPollerDao.class.getName(),
                 new KeyValueHolder<Object, Dictionary>(distPollerDao, new Properties() ) );

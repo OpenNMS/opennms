@@ -1,0 +1,66 @@
+
+// Allow GitHub image rendering
+:imagesdir: ../../images
+
+[[gi-install-minion-rhel]]
+=== Installing on RHEL-based systems
+
+This section describes how to install _Minion_ on a _RHEL_ based system.
+
+NOTE: This description was built on _RHEL 7_ and _CentOS 7.1_.
+
+Start by <<gi-install-opennms-yum-repo,setting up the OpenNMS YUM repository>> and <<gi-install-oracle-java,installing Java>>.
+
+NOTE: The Minion currently requires a JDK. See http://issues.opennms.org/browse/HZN-620[HZN-620] for details.
+
+Once the _YUM_ repository has been configured:
+
+.Install the Minion packages
+[source, bash]
+----
+yum -y install opennms-minion
+----
+
+The following packages will be automatically installed:
+
+* _opennms-minion_: The Minion meta package
+* _opennms-minion-container_: The _Karaf_ OSGi container with _Minion_ branding and additional management extensions
+* _opennms-minion-features-core_: Core utilities and services required by the _Minion_ features
+* _opennms-minion-features-default_: Service-specific features
+
+The _Minion_ packages setup the following directory structure:
+
+[source, shell]
+----
+[root@localhost /opt/minion]# $ tree -L 1
+.
+├── bin
+├── deploy
+├── etc
+├── lib
+├── repositories
+└── system
+----
+
+[[gi-install-minion-rhel-init]]
+==== Initialize Minion
+
+.System startup configuration for _Minion_
+[source, shell]
+----
+systemctl enable minion
+----
+
+.Startup _Minion_
+[source, shell]
+----
+systemctl start minion
+----
+
+After starting _Minion_ the shell can be accessed locally on ssh://localhost:8201.
+The default login user is _admin_ and the password is initialized to _admin_.
+
+[source, shell]
+----
+[root@localhost /root]# $ ssh -oPort=8201 admin@localhost
+----
