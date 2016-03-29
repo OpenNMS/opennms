@@ -88,10 +88,13 @@ public class BusinessServiceSearchProvider extends AbstractSearchProvider implem
 
         for (BusinessService bs : businessServiceManager.findMatching(dbQueryCriteria)) {
             final BusinessServiceVertex businessServiceVertex = new BusinessServiceVertex(bs, 0, Status.INDETERMINATE);
-            SearchResult searchResult = new SearchResult(businessServiceVertex);
-            searchResult.setCollapsed(false);
-            searchResult.setCollapsible(true);
-            results.add(searchResult);
+            // Only consider results which are available in the Topology Provider, see BSM-191
+            if (container.getBaseTopology().getVertex(businessServiceVertex) != null) {
+                SearchResult searchResult = new SearchResult(businessServiceVertex);
+                searchResult.setCollapsed(false);
+                searchResult.setCollapsible(true);
+                results.add(searchResult);
+            }
         }
 
         LOG.info("BusinessServiceSearchProvider->query: found {} results: {}", results.size(), results);
