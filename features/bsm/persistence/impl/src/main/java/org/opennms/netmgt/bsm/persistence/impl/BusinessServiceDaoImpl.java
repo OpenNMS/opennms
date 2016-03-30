@@ -29,6 +29,7 @@
 package org.opennms.netmgt.bsm.persistence.impl;
 
 import java.sql.SQLException;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -38,11 +39,23 @@ import org.hibernate.Criteria;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
+import org.hibernate.criterion.DetachedCriteria;
+import org.hibernate.criterion.Projection;
+import org.hibernate.criterion.ProjectionList;
+import org.hibernate.criterion.Projections;
+import org.hibernate.criterion.Restrictions;
+import org.hibernate.criterion.Subqueries;
+import org.hibernate.transform.ResultTransformer;
+import org.opennms.core.criteria.Alias;
+import org.opennms.core.criteria.restrictions.InRestriction;
 import org.opennms.netmgt.bsm.persistence.api.BusinessServiceDao;
 import org.opennms.netmgt.bsm.persistence.api.BusinessServiceEdgeEntity;
 import org.opennms.netmgt.bsm.persistence.api.BusinessServiceEntity;
 import org.opennms.netmgt.dao.hibernate.AbstractDaoHibernate;
+import org.opennms.netmgt.dao.hibernate.HibernateCriteriaConverter;
 import org.springframework.orm.hibernate3.HibernateCallback;
+
+import com.google.common.collect.Lists;
 
 public class BusinessServiceDaoImpl extends AbstractDaoHibernate<BusinessServiceEntity, Long> implements BusinessServiceDao {
 
@@ -70,10 +83,31 @@ public class BusinessServiceDaoImpl extends AbstractDaoHibernate<BusinessService
     @Override
     public List<BusinessServiceEntity> findMatching(final org.opennms.core.criteria.Criteria criteria) {
         final HibernateCallback<List<BusinessServiceEntity>> callback = session -> {
-            final Criteria hibernateCriteria = m_criteriaConverter.convert(criteria, session);
-            // Manually override default. Otherwise for each 1 - n relationship (with n > 1), n entities are returned instead of 1
-            hibernateCriteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
-            return (List<BusinessServiceEntity>)(hibernateCriteria.list());
+            // If limit and offset are set, we MUST manually limit the result, as by default
+            // hibernate would return multiple rows for each entity if the criteria has alias/join definitions
+            // or the entity fetched by the criteria has EAGER loaded relationships and this relationship is 1:n and
+            // there is more than 1 elements (e.g. each parent has 3 children). Order and Limit definitions are not
+            // working in this case, using the default implementation of findMatching. See: BSM-104, NMS-8079
+            if (criteria.getLimit() != null || criteria.getOffset() != null) {
+                final Criteria idCriteria = m_criteriaConverter.convert(criteria, session);
+                idCriteria.setProjection(Projections.distinct(
+                        Projections.projectionList()
+                            .add(Projections.property("id"))
+                            .add(Projections.property("name"))));
+                List<Object[]> idList = idCriteria.list();
+                if (!idList.isEmpty()) {
+                    Criteria entityCriteria = session.createCriteria(criteria.getCriteriaClass());
+                    entityCriteria.add(Restrictions.in("id", idList.stream().map(e -> e[0]).collect(Collectors.toList())));
+                    entityCriteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
+                    return entityCriteria.list();
+                }
+                return Collections.emptyList();
+            } else { // if no offset, limit is set, we can leverage the DISTINCT_ROOT_ENTITY result transformer behaviour.
+                // Manually override default. Otherwise for each 1 - n relationship (with n > 1), n entities are returned instead of 1
+                final Criteria hibernateCriteria = m_criteriaConverter.convert(criteria, session);
+                hibernateCriteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
+                return (List<BusinessServiceEntity>)(hibernateCriteria.list());
+            }
         };
         return getHibernateTemplate().execute(callback);
     }

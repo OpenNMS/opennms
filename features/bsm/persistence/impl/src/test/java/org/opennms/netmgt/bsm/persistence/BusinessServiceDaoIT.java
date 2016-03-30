@@ -32,15 +32,20 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
 
+import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import javax.validation.ConstraintViolationException;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.core.criteria.Alias;
 import org.opennms.core.criteria.Criteria;
 import org.opennms.core.criteria.CriteriaBuilder;
+import org.opennms.core.criteria.Order;
+import org.opennms.core.criteria.restrictions.Restrictions;
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.MockDatabase;
@@ -67,6 +72,9 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.google.common.base.Strings;
+import com.google.common.collect.Lists;
+
+import junit.framework.Assert;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {
@@ -276,7 +284,7 @@ public class BusinessServiceDaoIT {
 
         Criteria criteria = new CriteriaBuilder(BusinessServiceEntity.class).toCriteria();
         // verify that root entity is merged
-        //assertEquals(1, m_businessServiceDao.findMatching(criteria).size());
+        assertEquals(1, m_businessServiceDao.findMatching(criteria).size());
         // verify that countMatching also works
         assertEquals(1, m_businessServiceDao.countMatching(criteria));
 
@@ -321,6 +329,78 @@ public class BusinessServiceDaoIT {
             fail("ConstraintViolationException must be thrown");
         } catch (final DataIntegrityViolationException e) {
         }
+    }
+
+    @Test
+    @Transactional
+    public void verifyFindMatching() {
+        /*
+         * Test that offset and limit work, when only ordered by id
+         */
+        // create test data
+        Long bsId1 = m_businessServiceDao.save(new BusinessServiceEntityBuilder().name("BS 1.1")
+                .reduceFunction(new HighestSeverityEntity())
+                .addReductionKey("bs1.key1", new IgnoreEntity(), 1)
+                .addReductionKey("bs1.key2", new IgnoreEntity(), 2)
+                .addReductionKey("bs1.key3", new IgnoreEntity(), 3)
+                .toEntity());
+        Long bsId2 = m_businessServiceDao.save(new BusinessServiceEntityBuilder().name("BS 2.0")
+                .reduceFunction(new HighestSeverityEntity())
+                .addReductionKey("bs2.key1", new IgnoreEntity(), 1)
+                .addReductionKey("bs2.key2", new IgnoreEntity(), 2)
+                .addReductionKey("bs2.key3", new IgnoreEntity(), 3)
+                .toEntity());
+        m_businessServiceDao.flush();
+
+        // create criteria to limit result
+        org.opennms.core.criteria.Criteria criteria = new CriteriaBuilder(BusinessServiceEntity.class)
+                .offset(0)
+                .limit(2)
+                .orderBy("id")
+                .toCriteria();
+
+        // verify that entities are distinct
+        List<BusinessServiceEntity> filteredBusinessServices = m_businessServiceDao.findMatching(criteria);
+        Assert.assertEquals(2, filteredBusinessServices.size());
+        Assert.assertEquals(
+                m_businessServiceDao.findAll().stream().sorted((bs1, bs2) -> bs1.getId().compareTo(bs2.getId())).collect(Collectors.toList()),
+                filteredBusinessServices);
+
+        // create another bs for a more complex test
+        Long bsId3 = m_businessServiceDao.save(new BusinessServiceEntityBuilder().name("BS 3.1")
+                .reduceFunction(new HighestSeverityEntity())
+                .addReductionKey("bs3.key3.1", new IgnoreEntity(), 4)
+                .addReductionKey("bs3.key3.2", new IgnoreEntity(), 5)
+                .addReductionKey("bs3.key3.3", new IgnoreEntity(), 6)
+                .toEntity());
+        m_businessServiceDao.flush();
+
+        // restrict to value3% and order by id descending
+        criteria.setAliases(Lists.newArrayList(new Alias("edges", "edge", Alias.JoinType.INNER_JOIN, Restrictions.ge("edge.weight", 3))));
+        criteria.setOrders(Lists.newArrayList(new Order("id", false)));
+
+        // Verify
+        filteredBusinessServices = m_businessServiceDao.findMatching(criteria);
+        Assert.assertEquals(2, filteredBusinessServices.size());
+        Assert.assertEquals(Lists.newArrayList(
+                    m_businessServiceDao.get(bsId2),
+                    m_businessServiceDao.get(bsId3)),
+                filteredBusinessServices);
+
+        /*
+         * Verify that one can also order by name
+         */
+        Criteria nameCriteria = new CriteriaBuilder(BusinessServiceEntity.class)
+                .ilike("name", "BS %.1")
+                .orderBy("name")
+                .limit(2)
+                .toCriteria();
+        filteredBusinessServices = m_businessServiceDao.findMatching(nameCriteria);
+        Assert.assertEquals(2, filteredBusinessServices.size());
+        Assert.assertEquals(Lists.newArrayList(
+                    m_businessServiceDao.get(bsId1),
+                    m_businessServiceDao.get(bsId3)),
+                filteredBusinessServices);
     }
 
     private OnmsMonitoredService getMonitoredServiceFromNode1() {
