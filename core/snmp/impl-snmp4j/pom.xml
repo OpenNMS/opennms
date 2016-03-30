@@ -24,9 +24,17 @@
             <!--  don't export anything this is implementation only -->
             <Export-Package></Export-Package>
             <Private-Package>org.opennms.netmgt.snmp.snmp4j.*</Private-Package>
-            <Import-Package>org.snmp4j.smi;org.apache.commons.lang.*;org.apache.log4j.*;resolution:=optional,*</Import-Package>
+            <Import-Package>
+              org.apache.commons.lang;resolution:=optional,
+              org.apache.log4j;resolution:=optional,
+              <!-- Not autodetected by bnd -->
+              org.snmp4j.smi,
+              *
+            </Import-Package>
+            <!-- 
             <Embed-Dependency>snmp4j;inline=true</Embed-Dependency>
             <Embed-Transitive>true</Embed-Transitive>
+            -->
           </instructions>
         </configuration>
       </plugin>
