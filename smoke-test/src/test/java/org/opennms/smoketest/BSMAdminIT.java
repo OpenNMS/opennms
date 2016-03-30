@@ -295,7 +295,7 @@ public class BSMAdminIT extends OpenNMSSeleniumTestCase {
         }
 
         public BsmAdminPageEdgeEditWindow confirm() {
-            findElementById("saveEdgeButton").click();
+            clickElementUntilItDisappears(By.id("saveEdgeButton"));
             wait.until(pageContainsText("Business Service Edit"));
             return new BsmAdminPageEdgeEditWindow();
         }
@@ -789,5 +789,31 @@ public class BSMAdminIT extends OpenNMSSeleniumTestCase {
      */
     private Select getSelectWebElement(String id) {
         return new Select(findElementByXpath("//*[@id=\"" + id + "\"]/select"));
+    }
+
+    /**
+     * In some cases, Vaadin doesn't register our clicks,
+     * so this method keeps click until the given element
+     * is no longer found.
+     *
+     * @param by selector
+     */
+    private void clickElementUntilItDisappears(By by) {
+        try {
+            setImplicitWait(100, TimeUnit.MILLISECONDS);
+            wait.until(new ExpectedCondition<Boolean>() {
+                @Override
+                public Boolean apply(WebDriver driver) {
+                    try {
+                        driver.findElement(by).click();
+                        return false;
+                    } catch (NoSuchElementException e) {
+                        return true;
+                    }
+                }
+            });
+        } finally {
+            setImplicitWait();
+        }
     }
 }
