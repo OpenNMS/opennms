@@ -138,8 +138,6 @@ public class AvailabilityRestServiceIT extends AbstractSpringJerseyRestTestCase 
         final OnmsNode node = m_populator.getNode1();
         final AvailabilityRestService ars = new AvailabilityRestService();
         ars.setNodeDao(m_populator.getNodeDao());
-        ars.setIpInterfaceDao(m_populator.getIpInterfaceDao());
-        ars.setMonitoredServiceDao(m_populator.getMonitoredServiceDao());
         final AvailabilityNode an = ars.getAvailabilityNode(node.getId());
         assertNotNull(an);
         System.err.println(JaxbUtils.marshal(an));

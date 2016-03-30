@@ -38,6 +38,9 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
+import java.util.TreeSet;
 
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
@@ -95,6 +98,7 @@ public class NodeDaoHibernate extends AbstractDaoHibernate<OnmsNode, Integer> im
     }
 
     /** {@inheritDoc} */
+    @Override
     public Map<Integer, String> getAllLabelsById() {
         Map<Integer, String> labelsByNodeId = new HashMap<Integer, String>();
         List<? extends Object[]> rows = findObjects(new Object[0].getClass(), "select n.id, n.label from OnmsNode as n");
@@ -102,6 +106,37 @@ public class NodeDaoHibernate extends AbstractDaoHibernate<OnmsNode, Integer> im
             labelsByNodeId.put((Integer)row[0], (String)row[1]);
         }
         return labelsByNodeId;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public Map<String, Set<String>> getForeignIdsPerForeignSourceMap() {
+        Map<String, Set<String>> map = new TreeMap<String,Set<String>>();
+        List<? extends Object[]> rows = findObjects(new Object[0].getClass(), "select n.foreignSource, n.foreignId from OnmsNode as n");
+        for (Object row[] : rows) {
+            final String foreignSource = (String) row[0];
+            final String foreignId = (String) row[1];
+            if (foreignSource != null && foreignId != null) {
+                if (!map.containsKey(foreignSource)) {
+                    map.put(foreignSource, new TreeSet<String>());
+                }
+                map.get(foreignSource).add(foreignId);
+            }
+        }
+        return map;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public Set<String> getForeignIdsPerForeignSource(String foreignSource) {
+        Set<String> set = new TreeSet<String>();
+        List<String> rows = findObjects(String.class, "select n.foreignId from OnmsNode as n where n.foreignSource = ?", foreignSource);
+        for (String foreignId : rows) {
+            if (foreignId != null) {
+                set.add(foreignId);
+            }
+        }
+        return set;
     }
 
     /** {@inheritDoc} */
@@ -427,6 +462,18 @@ public class NodeDaoHibernate extends AbstractDaoHibernate<OnmsNode, Integer> im
     @Override
     public Collection<Integer> getNodeIds() {
         return findObjects(Integer.class, "select distinct n.id from OnmsNode as n where n.type != 'D'");
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    @SuppressWarnings("unchecked")
+    public Map<String, Long> getNumberOfNodesBySysOid() {
+        List<Object[]> pairs = (List<Object[]>)getHibernateTemplate().find("select n.sysObjectId, count(*) from OnmsNode as n where n.sysObjectId != null group by sysObjectId");
+        Map<String, Long> numberOfNodesBySysOid = new HashMap<String, Long>();
+        for (Object[] pair : pairs) {
+            numberOfNodesBySysOid.put((String)pair[0], (Long)pair[1]);
+        }
+        return Collections.unmodifiableMap(numberOfNodesBySysOid);
     }
 
     @Override

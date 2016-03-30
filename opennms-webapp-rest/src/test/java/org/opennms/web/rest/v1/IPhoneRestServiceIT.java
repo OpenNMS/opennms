@@ -92,12 +92,12 @@ public class IPhoneRestServiceIT extends AbstractSpringJerseyRestTestCase {
     @JUnitTemporaryDatabase
     public void testAcknowlegement() throws Exception {
         final Pattern p = Pattern.compile("^.*<ackTime>(.*?)</ackTime>.*$", Pattern.DOTALL & Pattern.MULTILINE);
-        sendData(POST, MediaType.APPLICATION_FORM_URLENCODED, "/acks", "alarmId=1&action=ack");
+        sendData(POST, MediaType.APPLICATION_FORM_URLENCODED, "/acks", "alarmId=1&action=ack", 200);
         String xml = sendRequest(GET, "/alarms/1", new HashMap<String, String>(), 200);
         Matcher m = p.matcher(xml);
         assertTrue(m.matches());
         assertTrue(m.group(1).length() > 0);
-        sendData(POST, MediaType.APPLICATION_FORM_URLENCODED, "/acks", "alarmId=1&action=unack");
+        sendData(POST, MediaType.APPLICATION_FORM_URLENCODED, "/acks", "alarmId=1&action=unack", 200);
         xml = sendRequest(GET, "/alarms/1", new HashMap<String, String>(), 200);
         m = p.matcher(xml);
         assertFalse(m.matches());

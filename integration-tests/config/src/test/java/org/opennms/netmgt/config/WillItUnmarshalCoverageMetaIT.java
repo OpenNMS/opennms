@@ -125,7 +125,9 @@ public class WillItUnmarshalCoverageMetaIT {
 
         ignoreFile(new File(getDaemonEtcDirectory(), "syslog/ApacheHTTPD.syslog.xml"));
         ignoreFile(new File(getDaemonEtcDirectory(), "syslog/LinuxKernel.syslog.xml"));
+        ignoreFile(new File(getDaemonEtcDirectory(), "syslog/NetgearProsafeSmartSwitch.syslog.xml"));
         ignoreFile(new File(getDaemonEtcDirectory(), "syslog/OpenSSH.syslog.xml"));
+        ignoreFile(new File(getDaemonEtcDirectory(), "syslog/OpenWrt.syslog.xml"));
         ignoreFile(new File(getDaemonEtcDirectory(), "syslog/Procmail.syslog.xml"));
         ignoreFile(new File(getDaemonEtcDirectory(), "syslog/POSIX.syslog.xml"));
         ignoreFile(new File(getDaemonEtcDirectory(), "syslog/Postfix.syslog.xml"));

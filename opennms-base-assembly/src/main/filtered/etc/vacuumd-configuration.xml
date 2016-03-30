@@ -1,45 +1,5 @@
 <VacuumdConfiguration period="86400000" >
   <statement>
-    <!-- removes references in topo maps to nodes that have been marked as deleted - cascading deletes cannot work here -->
-    DELETE FROM element
-     WHERE element.elementtype = 'N'
-       AND element.elementid IN
-           (SELECT nodeid
-              FROM node
-             WHERE nodetype = 'D');
-  </statement>
-
-  <statement>
-    <!-- this deletes all entries in atInterface that have been marked as deleted -->
-    DELETE FROM atInterface WHERE atInterface.status = 'D';
-  </statement>
-
-  <statement>
-    <!-- this deletes all entries in datalinkInterface that have been marked as deleted -->
-    DELETE FROM datalinkInterface WHERE datalinkInterface.status = 'D';
-  </statement>
-
-  <statement>
-    <!-- this deletes all entries in ipRouteInterface that have been marked as deleted -->
-    DELETE FROM ipRouteInterface WHERE ipRouteInterface.status = 'D';
-  </statement>
-
-  <statement>
-    <!-- this deletes all entries in vlan that have been marked as deleted -->
-    DELETE FROM vLan WHERE vLan.status = 'D';
-  </statement>
-
-  <statement>
-    <!-- this deletes all entries in stpInterface that have been marked as deleted -->
-    DELETE FROM stpInterface WHERE stpInterface.status = 'D';
-  </statement>
-
-  <statement>
-    <!-- this deletes all entries in stpInterface that have been marked as deleted -->
-    DELETE FROM stpNode WHERE stpNode.status = 'D';
-  </statement>
-   
-  <statement>
     <!-- this deletes all the snmpInterfaces that have been marked as deleted -->
     DELETE FROM snmpInterface WHERE snmpInterface.snmpCollect = 'D';
   </statement>
@@ -71,10 +31,11 @@
   </statement>
     
   <automations>
-    <automation name="cosmicClear" interval="30000" active="true" 
-                trigger-name="selectResolvers" 
-                action-name="clearProblems" />
-                
+    <automation name="cosmicClear" interval="30000" active="true"
+                trigger-name="selectAlarmsToClear"
+                action-name="clearAlarms"
+                action-event="sendAlarmClearedEvent" />
+
     <automation name="cleanUp" interval="60000" active="true"
                 action-name="deletePastClearedAlarms" />
                 
@@ -89,13 +50,14 @@
                 
     <automation name="unclear" interval="30000"  active="true" 
                 trigger-name="selectClearedAlarms" 
-                action-name="resetSeverity" />
-                
+                action-name="resetSeverity"
+                action-event="sendAlarmUnclearedEvent" />
+
     <automation name="escalation" interval="30000" active="false" 
                 trigger-name="selectSuspectAlarms" 
                 action-name="escalateAlarm" 
-                action-event="eventEscalated" />
-                
+                action-event="sendAlarmEscalatedEvent" />
+
     <automation name="purgeStatisticsReports" active="true"
                 interval="3600000" 
                 action-name="deletePurgeableStatisticsReports" />
@@ -149,7 +111,7 @@
     <!-- Find Alarms that have a closed ticket state that haven't been cleared, yet -->
     <trigger name="selectClosedTicketStateForProblemAlarms" operator="&gt;=" row-count="1" >
       <statement>
-          SELECT a.alarmid AS _alarmid, 
+          SELECT a.alarmid AS _alarmid, a.eventuei AS _eventUei, e.eventseverity AS _sev, now() AS _ts
                  now() AS _ts
             FROM alarms a
            WHERE a.tticketstate = 3
@@ -249,7 +211,7 @@
     <!-- This finds problems that have reoccurred since the previoius clear -->
     <trigger name="selectClearedAlarms" operator="&gt;=" row-count="1" >
       <statement>
-        SELECT a.alarmid AS _id, e.eventseverity AS _sev, now() AS _ts
+        SELECT a.alarmid AS _id, a.eventuei AS _eventuei, e.eventseverity AS _sev, now() AS _ts
           FROM alarms a
           JOIN events e 
             ON e.eventid = a.lasteventid
@@ -259,15 +221,16 @@
       </statement>
     </trigger>
  
-    <!-- Find all alarms that potentially clear problems --> 
-    <trigger name="selectResolvers" operator="&gt;=" row-count="1" >
+    <!-- Find all alarms that can be cleared -->
+    <trigger name="selectAlarmsToClear" operator="&gt;=" row-count="1" >
       <statement>
-        SELECT *, now() AS _ts 
-          FROM alarms 
-         WHERE alarmType=2
+        SELECT *, now() AS _ts FROM alarms as problems
+        WHERE alarmType=1
+          AND severity &gt; 2
+          AND reductionKey IN (SELECT clearKey FROM alarms WHERE alarmType=2 AND lastEventTime &gt; problems.lastEventTime)
       </statement>
     </trigger>
-    
+
     <!-- Find assets that have maintenance-contract that will expire in less then 30 days -->
     <!-- 
     <trigger name="selectExpirationMaintenance" operator="&gt;=" row-count="1" >
@@ -408,18 +371,14 @@
       </statement>
     </action>
   
-    <!--  New and optimized version of clearing problems -->
-    <action name="clearProblems" >
+    <action name="clearAlarms" >
       <statement>
-        UPDATE alarms 
+        UPDATE alarms
            SET severity=2, firstautomationtime = COALESCE(firstautomationtime, ${_ts}), lastautomationtime = ${_ts}
-         WHERE alarmType=1 
-           AND severity &gt; 2 
-           AND lastEventTime &lt;=  ${lastEventTime} 
-           AND reductionKey = ${clearKey} 
+         WHERE alarmId=${alarmId}
       </statement> 
     </action>
-    
+
     <!--  clear alarms that have a trouble ticket assigned as closed and alarm has not cleared-->
     <action name="clearClosedTicketAlarms" >
       <statement>
@@ -498,13 +457,6 @@
     -->
   </actions>
 
-  <!--  Deprecating this element... see the new <action-events> element -->    
-  <auto-events>
-    <auto-event name="escalationEvent" >
-      <uei>uei.opennms.org/vacuumd/alarmEscalated</uei>
-    </auto-event>
-  </auto-events>
-
   <!-- Note: action events that have tokens require the for-each-result attribute to be set to true -->
   <action-events>
     <action-event name="createTicket" for-each-result="true" >
@@ -530,15 +482,27 @@
       <assignment type="parameter" name="troubleTicket" value="${_tticketID}" />
     </action-event>
     
-    <action-event name="eventEscalated" for-each-result="true" >
-      <assignment type="field" name="uei" value="uei.opennms.org/vacuumd/alarmEscalated" />
+    <action-event name="sendAlarmEscalatedEvent" for-each-result="true" >
+      <assignment type="field" name="uei" value="uei.opennms.org/alarms/alarmEscalated" />
       <assignment type="field" name="nodeid" value="${_nodeid}" />
       <assignment type="field" name="interface" value="${_ipaddr}" />
       <assignment type="field" name="service" value="${_servicename}" />
       <assignment type="parameter" name="alarmId" value="${_alarmid}" />
       <assignment type="parameter" name="alarmEventUei" value="${_eventUei}" />
     </action-event>
-    
+
+    <action-event name="sendAlarmClearedEvent" for-each-result="true" >
+      <assignment type="field" name="uei" value="uei.opennms.org/alarms/alarmCleared" />
+      <assignment type="parameter" name="alarmId" value="${alarmid}" />
+      <assignment type="parameter" name="alarmEventUei" value="${eventUei}" />
+    </action-event>
+
+    <action-event name="sendAlarmUnclearedEvent" for-each-result="true" >
+      <assignment type="field" name="uei" value="uei.opennms.org/alarms/alarmUncleared" />
+      <assignment type="parameter" name="alarmId" value="${_id}" />
+      <assignment type="parameter" name="alarmEventUei" value="${_eventUei}" />
+    </action-event>
+
     <!-- Monitoring maintenance conracts -->
     <!--
     <action-event name="maintenanceExpirationWarning" for-each-result="true" >

@@ -38,6 +38,7 @@ import org.junit.runners.MethodSorters;
 public class NodeListPageIT extends OpenNMSSeleniumTestCase {
     @Before
     public void setUp() throws Exception {
+        deleteTestRequisition();
         createNode("node1");
         createNode("node2");
         nodePage();
@@ -45,8 +46,7 @@ public class NodeListPageIT extends OpenNMSSeleniumTestCase {
 
     @After
     public void tearDown() throws Exception {
-        deleteNode("node1");
-        deleteNode("node2");
+        deleteTestRequisition();
     }
 
     private void createNode(final String foreignId) throws Exception {
@@ -60,21 +60,19 @@ public class NodeListPageIT extends OpenNMSSeleniumTestCase {
         "<sysName>TestMachine" + foreignId + "</sysName>" +
         "<sysObjectId>.1.3.6.1.4.1.8072.3.2.255</sysObjectId>" +
         "</node>";
-        sendPost("/rest/nodes", node);
-    }
-
-    private void deleteNode(final String foreignId) throws Exception {
-        sendDelete("/rest/nodes/" + REQUISITION_NAME + ":" + foreignId);
+        sendPost("/rest/nodes", node, 201);
     }
 
     @Test
     public void testAllTextIsPresent() throws Exception {
         findElementByXpath("//h3//span[text()='Nodes']");
+        findElementByXpath("//ol[@class=\"breadcrumb\"]//li[text()='Node List']");
     }
 
     @Test
     public void testAllLinks() throws InterruptedException {
         findElementByLink("Show interfaces").click();
+        findElementByXpath("//h3[text()='Nodes and their interfaces']");
         findElementByLink("Hide interfaces");
     }
 }

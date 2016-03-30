@@ -70,50 +70,54 @@ public class MenuHeaderIT extends OpenNMSSeleniumTestCase {
         //m_driver.switchTo().frame("surveillance-view-ui");
         m_driver.switchTo().frame(findElementByXpath("/html/body/div/iframe"));
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//span[text()='Surveillance view: default']")));
-        m_driver.switchTo().defaultContent();
+        m_driver.switchTo().parentFrame();
         frontPage();
 
-        clickMenuItem("name=nav-Reports-top", "Charts", "charts/index.jsp");
+        final String reportsMenuName = "name=nav-Reports-top";
+        clickMenuItem(reportsMenuName, "Charts", "charts/index.jsp");
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("include-charts")));
 
-        clickMenuItem("name=nav-Reports-top", "Resource Graphs", "graph/index.jsp");
+        clickMenuItem(reportsMenuName, "Resource Graphs", "graph/index.jsp");
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//h3[contains(text(), 'Standard Resource')]")));
 
-        clickMenuItem("name=nav-Reports-top", "KSC Reports", "KSC/index.htm");
+        clickMenuItem(reportsMenuName, "KSC Reports", "KSC/index.htm");
         findElementByXpath("//h3[text()='Customized Reports']");
 
-        clickMenuItem("name=nav-Reports-top", "Statistics", "statisticsReports/index.htm");
+        clickMenuItem(reportsMenuName, "Statistics", "statisticsReports/index.htm");
         findElementByXpath("//h3[text()='Statistics Report List']");
 
-        clickMenuItem("Dashboards", "Dashboard", "dashboard.jsp");
+        final String dashboardsMenuName = "name=nav-Dashboards-top";
+        clickMenuItem(dashboardsMenuName, "Dashboard", "dashboard.jsp");
         // switchTo() by xpath is much faster than by ID
         //m_driver.switchTo().frame("surveillance-view-ui");
         m_driver.switchTo().frame(findElementByXpath("/html/body/div/iframe"));
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//span[text()='Surveillance view: default']")));
-        m_driver.switchTo().defaultContent();
+        m_driver.switchTo().parentFrame();
         frontPage();
 
-        clickMenuItem("Dashboards", "Ops Board", "vaadin-wallboard");
+        clickMenuItem(dashboardsMenuName, "Ops Board", "vaadin-wallboard");
         findElementByXpath("//select[@class='v-select-select']");
 
         frontPage();
-        clickMenuItem("Maps", "Distributed", "RemotePollerMap/index.jsp");
+        final String mapsMenuName = "name=nav-Maps-top";
+        clickMenuItem(mapsMenuName, "Distributed", "RemotePollerMap/index.jsp");
         // switchTo() by xpath is much faster than by ID
         //m_driver.switchTo().frame("app");
         m_driver.switchTo().frame(findElementByXpath("/html/body/div/iframe"));
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("gwt-uid-1")));
-        m_driver.switchTo().defaultContent();
+        m_driver.switchTo().parentFrame();
         frontPage();
 
-        clickMenuItem("Maps", "Topology", "topology");
+        clickMenuItem(mapsMenuName, "Topology", "topology");
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[contains(text(), 'Last update time')]")));
 
         frontPage();
-        clickMenuItem("Maps", "Geographical", "node-maps");
+        clickMenuItem(mapsMenuName, "Geographical", "node-maps");
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[text()='Show Severity >=']")));
 
         frontPage();
-        clickMenuItem("name=nav-admin-top", "Configure OpenNMS", "opennms/admin/index.jsp");
+        final String adminMenuName = "name=nav-admin-top";
+        clickMenuItem(adminMenuName, "Configure OpenNMS", "opennms/admin/index.jsp");
         findElementByXpath("//h3[text()='OpenNMS System']");
         findElementByXpath("//h3[text()='Provisioning']");
         findElementByXpath("//h3[text()='Event Management']");
@@ -122,15 +126,11 @@ public class MenuHeaderIT extends OpenNMSSeleniumTestCase {
         findElementByXpath("//h3[text()='Distributed Monitoring']");
 
         frontPage();
-        clickMenuItem("name=nav-admin-top", "Quick-Add Node", "opennms/admin/node/add.htm");
-        findElementByXpath("//h3[text()='Node Quick-Add']");
-
-        frontPage();
-        clickMenuItem("name=nav-admin-top", "Help/Support", "opennms/support/index.htm");
+        clickMenuItem(adminMenuName, "Help/Support", "opennms/support/index.htm");
         findElementByXpath("//h3[text()='Commercial Support']");
 
         frontPage();
-        clickMenuItem("name=nav-admin-top", "Log Out", "opennms/j_spring_security_logout");
+        clickMenuItem(adminMenuName, "Log Out", "opennms/j_spring_security_logout");
         findElementById("input_j_username");
     }
 

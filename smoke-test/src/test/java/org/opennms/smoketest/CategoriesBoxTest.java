@@ -37,11 +37,11 @@ public class CategoriesBoxTest extends OpenNMSSeleniumTestCase {
 
     @Before
     public void before() {
-        m_driver.get(BASE_URL+"opennms");
+        frontPage();
     }
 
     @Test
-    public void testAlarmLink() throws Exception {
+    public void testCategoryLink() throws Exception {
         // Hit the default "Network Interfaces" link on the startpage
         findElementByLink("Network Interfaces").click();
         // check for correct url...
