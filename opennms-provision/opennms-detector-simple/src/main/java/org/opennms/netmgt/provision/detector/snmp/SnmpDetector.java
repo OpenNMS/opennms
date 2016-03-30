@@ -28,21 +28,21 @@
 
 package org.opennms.netmgt.provision.detector.snmp;
 
-import java.lang.reflect.UndeclaredThrowableException;
-import java.net.InetAddress;
-import java.util.regex.Pattern;
-
 import org.opennms.netmgt.config.api.SnmpAgentConfigFactory;
 import org.opennms.netmgt.provision.support.SyncAbstractDetector;
-import org.opennms.netmgt.snmp.SnmpAgentConfig;
-import org.opennms.netmgt.snmp.SnmpObjId;
-import org.opennms.netmgt.snmp.SnmpUtils;
-import org.opennms.netmgt.snmp.SnmpValue;
+import org.opennms.netmgt.snmp.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
+
+import java.lang.reflect.UndeclaredThrowableException;
+import java.net.InetAddress;
+import java.util.Map;
+import java.util.regex.Pattern;
 
 @Component
 /**
@@ -58,20 +58,25 @@ public class SnmpDetector extends SyncAbstractDetector implements InitializingBe
     protected static final String DEFAULT_SERVICE_NAME = "SNMP";
 
     /**
-     * The system object identifier to retreive from the remote agent.
+     * The system object identifier to retrieve from the remote agent.
      */
     private static final String DEFAULT_OID = ".1.3.6.1.2.1.1.2.0";
     
-    //These are -1 so by default we use the AgentConfig 
+    //These are -1 so by default we use the AgentConfig
     private static final int DEFAULT_PORT = -1;
     private static final int DEFAULT_TIMEOUT = -1;
     private static final int DEFAULT_RETRIES = -1;
     
     private String m_oid = DEFAULT_OID;
+    private boolean m_isTable = false;
+    private boolean m_hex = false;
+
     private String m_forceVersion;
     private String m_vbvalue;
-    
+
     private SnmpAgentConfigFactory m_agentConfigFactory;
+
+    private static final Logger LOG = LoggerFactory.getLogger(SnmpDetector.class);
     
     /**
      * <p>Constructor for SnmpDetector.</p>
@@ -95,6 +100,32 @@ public class SnmpDetector extends SyncAbstractDetector implements InitializingBe
         Assert.notNull(m_agentConfigFactory);
     }
 
+    /**
+     * <p>setIsTable</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
+    public String getIsTable(String table) {
+        if (this.m_isTable) {
+            return new String("true");
+        } else {
+            return new String("false");
+        }
+    }
+
+    /**
+     * <p>getIsTable</p>
+     *
+     * @param table a {@link java.lang.String} object.
+     */
+    public void setIsTable(String table) {
+        if ("true".equalsIgnoreCase(table)) {
+            this.m_isTable = true;
+        } else {
+            this.m_isTable = false;
+        }
+    }
+
     /** {@inheritDoc} */
     @Override
     public boolean isServiceDetected(InetAddress address) {
@@ -110,15 +141,39 @@ public class SnmpDetector extends SyncAbstractDetector implements InitializingBe
             if (getVbvalue() != null) {
                 expectedValue = getVbvalue();
             }
-            
-            String retrievedValue = getValue(agentConfig, getOid());
-            
-            if (retrievedValue != null && expectedValue != null) {
-                return (Pattern.compile(expectedValue).matcher(retrievedValue).matches());
+
+            if (this.m_isTable) {
+                LOG.debug(getServiceName() + ": Table detect enabled");
+                SnmpObjId snmpObjId = SnmpObjId.get(getOid());
+
+                Map<SnmpInstId, SnmpValue> table = SnmpUtils.getOidValues(agentConfig, DEFAULT_SERVICE_NAME, snmpObjId);
+                for (Map.Entry<SnmpInstId, SnmpValue> e : table.entrySet()) {
+                    String retrievedValue;
+                    if (m_hex) {
+                        retrievedValue = e.getValue().toHexString();
+                    } else {
+                        retrievedValue = e.getValue().toString();
+                    }
+                    LOG.debug(getServiceName() + ": retrieved value [" + retrievedValue + "]");
+
+                    if (retrievedValue != null && expectedValue != null &&
+                            Pattern.compile(expectedValue).matcher(retrievedValue).matches()) {
+                        LOG.debug(getServiceName() + ": expected value matched");
+                        return true;
+                    } else if (retrievedValue != null) {
+                        return true;
+                    }
+                }
+                return false;
             } else {
-                return (retrievedValue != null);
+                String retrievedValue = getValue(agentConfig, getOid());
+
+                if (retrievedValue != null && expectedValue != null) {
+                    return (Pattern.compile(expectedValue).matcher(retrievedValue).matches());
+                } else {
+                    return (retrievedValue != null);
+                }
             }
-            
         } catch (Throwable t) {
             throw new UndeclaredThrowableException(t);
         }
