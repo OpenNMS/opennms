@@ -36,11 +36,11 @@ describe('Controller: RequisitionsController', function () {
     mockRequisitionsService.getRequisitions = jasmine.createSpy('getRequisitions');
     var requisitionsDefer = $q.defer();
     requisitionsDefer.resolve(requisitionsData);
-    mockRequisitionsService.getRequisitions.andReturn(requisitionsDefer.promise);
-    mockRequisitionsService.getTiming.andReturn({ isRunning: false });
+    mockRequisitionsService.getRequisitions.and.returnValue(requisitionsDefer.promise);
+    mockRequisitionsService.getTiming.and.returnValue({ isRunning: false });
 
     mockGrowl = {
-      warn: function(msg) { console.warn(msg); },
+      warning: function(msg) { console.warn(msg); },
       error: function(msg) { console.error(msg); },
       info: function(msg) { console.info(msg); },
       success: function(msg) { console.info(msg); }
@@ -51,7 +51,7 @@ describe('Controller: RequisitionsController', function () {
     createController();
     scope.$digest();
     expect(mockRequisitionsService.getRequisitions).toHaveBeenCalled();
-    expect(scope.requisitions.status).not.toBe(null);
+    expect(scope.requisitionsData.requisitions.length).toBe(0);
   });
 
 });

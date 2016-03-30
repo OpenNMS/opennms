@@ -18,10 +18,13 @@
   </div>
   <div class="col-md-6">
     <div class="input-group pull-right">
-      <button class="btn btn-danger" id="save-node" ng-click="save()" ng-show="nodeForm.$dirty &amp;&amp; nodeForm.$valid" ng-disabled="timingStatus.isRunning">
+      <button type="button" class="btn btn-default" id="go-vertical" ng-click="goVerticalLayout()">
+        <span class="glyphicon glyphicon-align-center"></span> Use Vertical Layout
+      </button>
+      <button type="button" class="btn btn-danger" id="save-node" ng-click="save()" ng-show="nodeForm.$dirty" ng-disabled="nodeForm.$invalid" ng-disabled="timingStatus.isRunning">
         <span class="glyphicon glyphicon-save"></span> Save
       </button>
-      <button class="btn btn-default" id="go-back" ng-click="goBack()">
+      <button type="button" class="btn btn-success" id="go-back" ng-click="goBack()">
         <span class="glyphicon glyphicon-remove"></span> Return
       </button>
     </div>
@@ -39,136 +42,27 @@
 
         <!-- Basic Information Tab -->
         <uib-tab heading="Basic Information" id="tab-basic-information">
-          <a ng-show="isNew" ng-click="generateForeignId(nodeForm.foreignId)" class="btn"><span class="glyphicon glyphicon-plus"/> Auto-generate the Foreign ID</a>
-          <br/>
-          <br/>
-          <div class="form-group" ng-class="{ 'has-error' : nodeForm.foreignId.$invalid }">
-            <label class="control-label" for="foreignId">Foreign ID</label>
-            <input class="form-control" type="text" id="foreignId" name="foreignId" placeholder="Foreign ID (must be unique within the requisition)" ng-model="node.foreignId" ng-disabled="!isNew" required valid-foreign-id/>
-            <p ng-show="nodeForm.foreignId.$invalid" class="help-block">Foreign ID is required and must be unique within the requisition.</p>
-          </div>
-          <div class="form-group" ng-class="{ 'has-error' : nodeForm.nodeLabel.$invalid }">
-            <label class="control-label" for="nodeLabel">Node Label</label>
-            <input class="form-control" type="text" id="nodeLabel" name="nodeLabel" placeholder="Node Label" ng-model="node.nodeLabel" required/>
-            <p ng-show="nodeForm.nodeLabel.$invalid" class="help-block">Node Label is required.</p>
-          </div>
-          <div class="form-group">
-            <label class="control-label" for="building">Building</label>
-            <input class="form-control" type="text" id="building" name="building" placeholder="Building" ng-model="node.building"/>
-          </div>
-          <div class="form-group">
-            <label class="control-label" for="city">City</label>
-            <input class="form-control" type="text" id="city" name="city" placeholder="City" ng-model="node.city"/>
-          </div>
+          <ng-include src="'views/node-basic.html'"/>
         </uib-tab>
 
         <!-- Path Outage Tab -->
         <uib-tab heading="Path Outage" id="tab-path-outage">
-          <br/>
-          <div class="form-group">
-            <label class="control-label" for="parentForeignSource">Parent Foreign Source</label>
-            <input class="form-control" type="text" id="parentForeignSource" name="parentForeignSource" placeholder="Parent Foreign Source" ng-model="node.parentForeignSource"/>
-          </div>
-          <div class="form-group" ng-show="node.parentNodeLabel == null || node.parentNodeLabel == ''">
-            <label class="control-label" for="parentForeignId">Parent Foreign ID</label>
-            <input class="form-control" type="text" id="parentForeignId" name="parentForeignId" placeholder="Parent Foreign ID (use either this or Parent Node Label)" ng-model="node.parentForeignId"/>
-          </div>
-          <div class="form-group" ng-show="node.parentForeignId == null || node.parentForeignId == ''">
-            <label class="control-label" for="parentNodeLabel">Parent Node Label</label>
-            <input class="form-control" type="text" id="parentNodeLabel" name="parentNodeLabel" placeholder="Parent Node Label (use either this or Parent Foreign ID)" ng-model="node.parentNodeLabel"/>
-          </div>
+          <ng-include src="'views/node-pathoutages.html'"/>
         </uib-tab>
 
         <!-- Interfaces Tab -->
         <uib-tab heading="Interfaces" id="tab-interfaces">
-          <a ng-click="addInterface()" class="btn"><span class="glyphicon glyphicon-plus"/> Add Interface</a>
-          <br/>
-          <div class="table-responsive">
-            <table class="table table-striped table-condensed">
-              <thead>
-                <tr>
-                  <th>IP Address</th>
-                  <th>Description</th>
-                  <th>SNMP Primary</th>
-                  <th>Services</th>
-                  <th></th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr ng-repeat="intf in node.interfaces">
-                  <td>{{ intf.ipAddress }}</td>
-                  <td>{{ intf.description }}</td>
-                  <td>{{ intf.snmpPrimary }}</td>
-                  <td>
-                    <div ng-hide="intf.services.length > 0">[No services]</div>
-                    <div ng-repeat="service in intf.services">
-                      <p>{{ service.name }}</p>
-                    </div>
-                  </td>
-                  <td>
-                    <span class="pull-right">
-                      <a class="btn btn-default btn-xs" uib-tooltip="Edit the interface" ng-click="editInterface($index)">
-                        <span class="glyphicon glyphicon-pencil"/>
-                      </a>
-                      <a class="btn btn-default btn-xs" uib-tooltip="Remove the interface" ng-click="removeInterface($index)">
-                        <span class="glyphicon glyphicon-remove"/>
-                      </a>
-                    </span>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
+          <ng-include src="'views/node-interfaces.html'"/>
         </uib-tab>
 
         <!-- Assets Tab -->
         <uib-tab heading="Assets" id="tab-assets">
-          <a ng-click="addAsset()" class="btn"><span class="glyphicon glyphicon-plus"/> Add Asset</a>
-          <br/>
-          <div class="table-responsive">
-            <table class="table table-striped table-condensed">
-              <thead>
-                <tr>
-                  <th>Name</th>
-                  <th>Value</th>
-                  <th>&nbsp;</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr ng-repeat="asset in node.assets">
-                  <td>{{asset.name}}</td>
-                  <td>{{asset.value}}</td>
-                  <td>
-                    <span class="pull-right">
-                      <a class="btn btn-default btn-xs" uib-tooltip="Edit the asset" ng-click="editAsset($index)">
-                        <span class="glyphicon glyphicon-pencil"/>
-                      </a>
-                      <a class="btn btn-default btn-xs" uib-tooltip="Remove the asset" ng-click="removeAsset($index)">
-                        <span class="glyphicon glyphicon-remove"/>
-                      </a>
-                    </span>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
+          <ng-include src="'views/node-assets.html'"/>
         </uib-tab>
 
         <!-- Categories Tab -->
         <uib-tab heading="Categories" id="tab-categories">
-          <a ng-click="addCategory()" class="btn"><span class="glyphicon glyphicon-plus"/> Add Category</a>
-          <br/>
-          <ng-form name="categoryForm" ng-repeat="category in node.categories">
-            <div class="form-group" ng-class="{ 'has-error' : categoryForm.categoryName.$invalid }">
-              <div class="input-group">
-                <input class="form-control" type="text" name="categoryName" placeholder="Category Name" ng-model="category.name" typeahead-min-length="0" typeahead-editable="true" uib-typeahead="category for category in getAvailableCategories() | filter:$viewValue" required valid-category="category"></input>
-                <span class="input-group-btn">
-                  <button class="btn btn-default" type="button" ng-click="removeCategory($index)"><span class="glyphicon glyphicon-remove"></span></button>
-                </span>
-              </div>
-              <p ng-show="categoryForm.categoryName.$invalid" class="help-block">Category name is required and should be unique on the node.</p>
-            </div>
-          </ng-form>
+          <ng-include src="'views/node-categories.html'"/>
         </uib-tab>
 
       </uib-tabset>

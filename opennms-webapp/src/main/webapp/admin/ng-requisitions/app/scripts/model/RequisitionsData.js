@@ -18,18 +18,6 @@ function RequisitionsData() {
   var self = this;
 
   /**
-   * @description The status object, to obtain the number of deployed (status.deployed) and pending  (status.pending) requisitions.
-   * @ngdoc property
-   * @name RequisitionsData#status
-   * @propertyOf RequisitionsData
-   * @returns {object} The status Object
-   */
-  self.status = {
-    deployed: 0,
-    pending: 0
-  };
-
-  /**
    * @description The configured requisitions.
    * @ngdoc property
    * @name RequisitionsData#requisitions
@@ -54,6 +42,37 @@ function RequisitionsData() {
       }
     }
     return -1;
+  };
+
+  /**
+  * @description Gets the requisition object for a given foreign source.
+  *
+  * @name RequisitionsData:getRequisition
+  * @ngdoc method
+  * @param {string} foreignSource The foreign source (a.k.a requisition name)
+  * @methodOf RequisitionsData
+  * @returns {object} the requisition object.
+  */
+  self.getRequisition = function(foreignSource) {
+    var idx = self.indexOf(foreignSource);
+    return idx < 0 ? null : self.requisitions[idx];
+  };
+
+  /**
+  * @description Adds or replaces a requisition object.
+  *
+  * @name RequisitionsData:setRequisition
+  * @ngdoc method
+  * @param {object} requisition The Requisition object
+  * @methodOf RequisitionsData
+  */
+  self.setRequisition = function(requisition) {
+    var idx = self.indexOf(requisition.foreignSource);
+    if (idx < 0) {
+      self.requisitions.push(requisition);
+    } else {
+      self.requisitions[idx] = requisition;
+    }
   };
 
   self.className = 'RequisitionsData';
