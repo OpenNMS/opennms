@@ -28,8 +28,10 @@
 
 package org.opennms.netmgt.provision.detector;
 
+import static junit.framework.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.opennms.netmgt.provision.detector.snmp.SnmpDetector.*;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -98,6 +100,59 @@ public class SnmpDetectorTest implements ApplicationContextAware {
          
      }
 
+    @Test(timeout=20000)
+    @JUnitSnmpAgent(host=SnmpDetectorTest.TEST_IP_ADDRESS, resource="classpath:org/opennms/netmgt/provision/detector/snmpTestData2.properties")
+    public void testTable1() {
+        // exist
+        m_detector.setOid(".1.3.6.1.2.1.2.2.1.7");
+        m_detector.setIsTable("true");
+        m_detector.setMatchType(MatchType.Exist.name());
+        assertEquals(true, m_detector.isServiceDetected(m_testIpAddress));
+
+        // all
+        m_detector.setMatchType(MatchType.All.name());
+        m_detector.setVbvalue("1");
+        assertEquals(true, m_detector.isServiceDetected(m_testIpAddress));
+        m_detector.setVbvalue("2");
+        assertEquals(false, m_detector.isServiceDetected(m_testIpAddress));
+
+        // none
+        m_detector.setMatchType(MatchType.None.name());
+        assertEquals(false, m_detector.isServiceDetected(m_testIpAddress));
+
+        // any
+        m_detector.setMatchType(MatchType.Any.name());
+        assertEquals(false, m_detector.isServiceDetected(m_testIpAddress));
+    }
+
+    @Test(timeout=20000)
+    @JUnitSnmpAgent(host=SnmpDetectorTest.TEST_IP_ADDRESS, resource="classpath:org/opennms/netmgt/provision/detector/snmpTestData3.properties")
+    public void testTable2() {
+        // any
+        m_detector.setOid(".1.3.6.1.2.1.2.2.1.7");
+        m_detector.setMatchType(MatchType.Any.name());
+        m_detector.setVbvalue("1");
+        assertEquals(false, m_detector.isServiceDetected(m_testIpAddress));
+        m_detector.setVbvalue("2");
+        assertEquals(true, m_detector.isServiceDetected(m_testIpAddress));
+
+        // none
+        m_detector.setMatchType(MatchType.None.name());
+        m_detector.setVbvalue("1");
+        assertEquals(true, m_detector.isServiceDetected(m_testIpAddress));
+        m_detector.setVbvalue("3");
+        assertEquals(false, m_detector.isServiceDetected(m_testIpAddress));
+
+        // all
+        m_detector.setMatchType(MatchType.All.name());
+        assertEquals(false, m_detector.isServiceDetected(m_testIpAddress));
+
+        // exist
+        m_detector.setMatchType(MatchType.Exist.name());
+        assertEquals(false, m_detector.isServiceDetected(m_testIpAddress));
+    }
+    
+    
     @Override
     public void setApplicationContext(final ApplicationContext applicationContext) throws BeansException {
         m_applicationContext = applicationContext;
