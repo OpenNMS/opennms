@@ -1,0 +1,389 @@
+<!-- Define traps sent by NetGear ProSafe Smart Switch line
+     {iso(1) identified-organization(3) dod(6) internet(1) private(4) enterprise(1) netgear(4526) ng700smartswitch(11) agentSwitching(1)
+     see NetGear-provided ng_switching.my MIB file (last updated 17 Mar 2008 12:00:00 GMT) included on switch CD
+-->
+
+<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.4526.11.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>1</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/netgear/traps/multipleUsersTrap</uei>
+	<event-label>NETGEAR-SWITCHING-MIB defined trap event: multipleUsersTrap</event-label>
+	<descr>
+&lt;p&gt;trapMgrMultipleUsersLogTrap.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			Netgear Event: multipleUsersTrap trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.4526.11.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>2</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/netgear/traps/broadcastStormStartTrap</uei>
+	<event-label>NETGEAR-SWITCHING-MIB defined trap event: broadcastStormStartTrap</event-label>
+	<descr>
+&lt;p&gt;trapMgrBCastStormStartLogTrap.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			Netgear Event: broadcastStormStartTrap trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.4526.11.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>3</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/netgear/traps/broadcastStormEndTrap</uei>
+	<event-label>NETGEAR-SWITCHING-MIB defined trap event: broadcastStormEndTrap</event-label>
+	<descr>
+&lt;p&gt;trapMgrBCastStormEndLogTrap.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			Netgear Event: broadcastStormEndTrap trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.4526.11.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>4</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/netgear/traps/linkFailureTrap</uei>
+	<event-label>NETGEAR-SWITCHING-MIB defined trap event: linkFailureTrap</event-label>
+	<descr>
+&lt;p&gt;trapMgrLinkFailureLogTrap.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			Netgear Event: linkFailureTrap trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Minor</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.4526.11.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>5</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/netgear/traps/vlanRequestFailureTrap</uei>
+	<event-label>NETGEAR-SWITCHING-MIB defined trap event: vlanRequestFailureTrap</event-label>
+	<descr>
+&lt;p&gt;trapMgrVlanRequestFailureLogTrap&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	dot1qVlanIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			Netgear Event: vlanRequestFailureTrap trap received 
+			dot1qVlanIndex=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.4526.11.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/netgear/traps/vlanDeleteLastTrap</uei>
+	<event-label>NETGEAR-SWITCHING-MIB defined trap event: vlanDeleteLastTrap</event-label>
+	<descr>
+&lt;p&gt;trapMgrLastVlanDeleteLastLogTrap&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	dot1qVlanIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			Netgear Event: vlanDeleteLastTrap trap received 
+			dot1qVlanIndex=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.4526.11.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>7</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/netgear/traps/vlanDefaultCfgFailureTrap</uei>
+	<event-label>NETGEAR-SWITCHING-MIB defined trap event: vlanDefaultCfgFailureTrap</event-label>
+	<descr>
+&lt;p&gt;trapMgrDefaultVlanCfgFailureLogTrap&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	dot1qVlanIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			Netgear Event: vlanDefaultCfgFailureTrap trap received 
+			dot1qVlanIndex=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.4526.11.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>8</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/netgear/traps/vlanRestoreFailureTrap</uei>
+	<event-label>NETGEAR-SWITCHING-MIB defined trap event: vlanRestoreFailureTrap</event-label>
+	<descr>
+&lt;p&gt;trapMgrVlanRestoreFailureLogTrap&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	dot1qVlanIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			Netgear Event: vlanRestoreFailureTrap trap received 
+			dot1qVlanIndex=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.4526.11.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>9</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/netgear/traps/fanFailureTrap</uei>
+	<event-label>NETGEAR-SWITCHING-MIB defined trap event: fanFailureTrap</event-label>
+	<descr>
+&lt;p&gt;trapMgrFanFailureLogTrap.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			Netgear Event: fanFailureTrap trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Minor</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.4526.11.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>10</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/netgear/traps/stpInstanceNewRootTrap</uei>
+	<event-label>NETGEAR-SWITCHING-MIB defined trap event: stpInstanceNewRootTrap</event-label>
+	<descr>
+&lt;p&gt;trapMgrStpInstanceNewRootTrap&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	agentStpMstId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			Netgear Event: stpInstanceNewRootTrap trap received 
+			agentStpMstId=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.4526.11.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>11</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/netgear/traps/stpInstanceTopologyChangeTrap</uei>
+	<event-label>NETGEAR-SWITCHING-MIB defined trap event: stpInstanceTopologyChangeTrap</event-label>
+	<descr>
+&lt;p&gt;trapMgrStpInstanceTopologyChange&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	agentStpMstId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			Netgear Event: stpInstanceTopologyChangeTrap trap received 
+			agentStpMstId=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.4526.11.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>12</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/netgear/traps/powerSupplyStatusChangeTrap</uei>
+	<event-label>NETGEAR-SWITCHING-MIB defined trap event: powerSupplyStatusChangeTrap</event-label>
+	<descr>
+&lt;p&gt;powerSupplyStatusChangeTrap&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			Netgear Event: powerSupplyStatusChangeTrap trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Minor</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.4526.11.1</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>13</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/netgear/traps/failedUserLoginTrap</uei>
+	<event-label>NETGEAR-SWITCHING-MIB defined trap event: failedUserLoginTrap</event-label>
+	<descr>
+&lt;p&gt;failedUserLoginTrap&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			Netgear Event: failedUserLoginTrap trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+        <mask>
+                <maskelement>
+                        <mename>id</mename>
+                        <mevalue>.1.3.6.1.4.1.4526.11.1</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>generic</mename>
+                        <mevalue>6</mevalue>
+                </maskelement>
+                <maskelement>
+                        <mename>specific</mename>
+                        <mevalue>14</mevalue>
+                </maskelement>
+        </mask>
+        <uei>uei.opennms.org/vendor/netgear/traps/userLockoutTrap</uei>
+        <event-label>NETGEAR-SWITCHING-MIB defined trap event: userLockoutTrap</event-label>
+        <descr>
+&lt;p&gt;userLockoutTrap&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+        </descr>
+                <logmsg dest='logndisplay'>&lt;p&gt;
+                        Netgear Event: userLockoutTrap trap received&lt;/p&gt;
+                </logmsg>
+        <severity>Warning</severity>
+</event>
+
+<!-- End of data -->
+</events>
