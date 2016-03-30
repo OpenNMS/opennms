@@ -30,6 +30,7 @@ package org.opennms.features.topology.plugins.topo.bsm;
 
 import java.util.List;
 
+import org.easymock.EasyMock;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -37,9 +38,14 @@ import org.junit.runner.RunWith;
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
+import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.topo.AbstractSearchQuery;
+import org.opennms.features.topology.api.topo.AbstractVertex;
+import org.opennms.features.topology.api.topo.DefaultVertexRef;
+import org.opennms.features.topology.api.topo.GraphProvider;
 import org.opennms.features.topology.api.topo.SearchQuery;
 import org.opennms.features.topology.api.topo.SearchResult;
+import org.opennms.features.topology.api.topo.SimpleLeafVertex;
 import org.opennms.netmgt.bsm.persistence.api.BusinessServiceDao;
 import org.opennms.netmgt.bsm.persistence.api.BusinessServiceEntity;
 import org.opennms.netmgt.bsm.persistence.api.functions.map.IdentityEntity;
@@ -96,6 +102,15 @@ public class BusinessServiceSearchProviderIT {
         businessServiceDao.save(bs2);
         businessServiceDao.flush();
 
+        // prepare mocks
+        GraphProvider graphProviderMock = EasyMock.createNiceMock(GraphProvider.class);
+        EasyMock.expect(graphProviderMock.getVertex(EasyMock.anyObject(BusinessServiceVertex.class)))
+                .andReturn(new AbstractVertex("bsm", "0", "Dummy Vertex")); // always return a vertex, it just needs to be not null
+
+        GraphContainer graphContainerMock = EasyMock.createNiceMock(GraphContainer.class);
+        EasyMock.expect(graphContainerMock.getBaseTopology()).andReturn(graphProviderMock).times(1);
+        EasyMock.replay(graphContainerMock, graphProviderMock);
+
         // try searching
         final BusinessServiceSearchProvider provider = new BusinessServiceSearchProvider();
         provider.setBusinessServiceManager(businessServiceManager);
@@ -105,7 +120,8 @@ public class BusinessServiceSearchProviderIT {
                 return true; // always match, it does not matter
             }
         };
-        final List<SearchResult> result = provider.query(query, null /* we do not need a container for this test */);
+        final List<SearchResult> result = provider.query(query, graphContainerMock);
         Assert.assertEquals(1, result.size());
+        EasyMock.verify(graphContainerMock, graphProviderMock);
     }
 }
