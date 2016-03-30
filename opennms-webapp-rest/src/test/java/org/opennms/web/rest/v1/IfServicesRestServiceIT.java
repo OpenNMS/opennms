@@ -55,7 +55,6 @@ import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.support.TransactionTemplate;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @WebAppConfiguration
@@ -80,9 +79,6 @@ public class IfServicesRestServiceIT extends AbstractSpringJerseyRestTestCase {
     private DatabasePopulator m_databasePopulator;
 
     @Autowired
-    private TransactionTemplate m_template;
-
-    @Autowired
     private ServletContext m_servletContext;
 
     @Override
@@ -101,7 +97,7 @@ public class IfServicesRestServiceIT extends AbstractSpringJerseyRestTestCase {
         }
 
         // Mark all services as forced unmanaged
-        sendPut(url, "status=F", 303, null);
+        sendPut(url, "status=F", 204);
 
         // Verify that all statuses were updated
         list = getXmlObject(JaxbUtils.getContextFor(OnmsMonitoredServiceDetailList.class), url, 200, OnmsMonitoredServiceDetailList.class);

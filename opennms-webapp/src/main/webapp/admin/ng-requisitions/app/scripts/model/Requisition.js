@@ -30,6 +30,15 @@ function Requisition(requisition, isDeployed) {
   self.deployed = isDeployed;
 
   /**
+   * @description The modified flag
+   * @ngdoc property
+   * @name Requisition#modified
+   * @propertyOf Requisition
+   * @returns {boolean} true, if the requisition has been modified
+   */
+  self.modified = false;
+
+  /**
    * @description The name of the requisition (the foreign source)
    * @ngdoc property
    * @name Requisition#foreignSource
@@ -57,6 +66,20 @@ function Requisition(requisition, isDeployed) {
   self.lastImport = requisition['last-import'];
 
   /**
+   * @description The configured nodes array
+   * @ngdoc property
+   * @name Requisition#nodes
+   * @propertyOf Requisition
+   * @returns {array} The nodes array
+   */
+  self.nodes = [];
+
+  angular.forEach(requisition.node, function(node) {
+    var requisitionNode = new RequisitionNode(self.foreignSource, node, isDeployed);
+    self.nodes.push(requisitionNode);
+  });
+
+  /**
    * @description The number of nodes stored on the database
    * @ngdoc property
    * @name Requisition#nodesInDatabase
@@ -72,21 +95,22 @@ function Requisition(requisition, isDeployed) {
    * @propertyOf Requisition
    * @returns {interger} number of nodes defined
    */
-  self.nodesDefined = 0;
+  self.nodesDefined = self.nodes.length;
 
   /**
-   * @description The configured nodes array
-   * @ngdoc property
-   * @name Requisition#nodes
-   * @propertyOf Requisition
-   * @returns {array} The nodes array
-   */
-  self.nodes = [];
-
-  angular.forEach(requisition.node, function(node) {
-    var requisitionNode = new RequisitionNode(self.foreignSource, node, isDeployed);
-    self.nodes.push(requisitionNode);
-  });
+  * @description Checks if the requisition has been changed
+  *
+  * @name Requisition:isModified
+  * @ngdoc method
+  * @methodOf Requisition
+  * @returns {boolean} true if the requisition has been changed or modified.
+  */
+  self.isModified = function() {
+    if (self.modified) {
+      return true;
+    }
+    return ! self.deployed;
+  };
 
   /**
   * @description Gets the array possition for a particular node
@@ -107,18 +131,37 @@ function Requisition(requisition, isDeployed) {
   };
 
   /**
-  * @description Updates the internal statistics of nodes defined/deployed
+  * @description Gets a specific node object.
   *
-  * @name Requisition:updateStats
+  * @name Requisition:getNode
   * @ngdoc method
+  * @param {string} foreignId The foreign ID of the node
+  * @methodOf Requisition
+  * @returns {object} the node object.
+  */
+  self.getNode = function(foreignId) {
+    var idx = self.indexOf(foreignId);
+    return idx < 0 ? null : self.nodes[idx];
+  };
+
+  /**
+  * @description Adds or replaces a node object.
+  *
+  * @name Requisition:setNode
+  * @ngdoc method
+  * @param {object} node The RequisitionNode object
   * @methodOf Requisition
   */
-  self.updateStats = function() {
-    if (self.deployed) {
-      self.nodesInDatabase = self.nodes.length;
+  self.setNode = function(node) {
+    var idx = self.indexOf(node.foreignId);
+    if (idx < 0) {
+      self.nodes.push(node);
+      self.nodesDefined++;
     } else {
-      self.nodesDefined = self.nodes.length;
+      self.nodes[idx] = node;
     }
+    self.modified = true;
+    self.dateStamp = Date.now();
   };
 
   /**
@@ -131,13 +174,28 @@ function Requisition(requisition, isDeployed) {
   */
   self.setDeployed = function(deployed) {
     self.deployed = deployed;
+    self.modified = false;
     angular.forEach(self.nodes, function(node) {
       node.deployed = deployed;
+      node.modified = false;
     });
-    self.updateStats();
+    self.lastImport = deployed ? Date.now() : null;
   };
 
-  self.updateStats();
+  /**
+  * @description Resets the content of the requisition
+  *
+  * @name Requisition:reset
+  * @ngdoc method
+  * @methodOf Requisition
+  */
+  self.reset = function() {
+    self.nodes = [];
+    self.nodesDefined = 0;
+    self.nodesInDatabase = 0;
+    self.modified = true;
+    self.dateStamp = Date.now();
+  };
 
   self.className = 'Requisition';
 

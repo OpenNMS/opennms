@@ -42,18 +42,34 @@ Events may originate within OpenNMS itself or from outside.
 
 Internally-generated events can be the result of the platform's monitoring and management functions (_e.g._ a monitored node becoming totally unavailable results in an event with the UEI `uei.opennms.org/nodes/nodeDown`) or they may act as inputs or outputs of housekeeping processes.
 
-Externally-created events can arrive by a variety of mechanisms, including:
+The following subsections summarize the mechanisms by which externally-created events can arrive.
 
-.External Event Mechanisms
-SNMP Traps::
-    If SNMP-capable devices in the network are configured to send *traps* to OpenNMS, these traps are transformed into events according to pre-configured rules.
-    Event definitions are included with OpenNMS for traps from many vendors' equipment.
-Syslog Messages::
-    Syslog messages sent over the network to OpenNMS can be transformed into events according to pre-configured rules.
-TL1 Autonomous Messages::
-    Autonomous messages can be retrieved from certain TL1-enabled equipment and transformed into events.
-XML-TCP::
-    Any application or script can create custom events in OpenNMS by sending properly-formatted XML data over a TCP socket.
+==== SNMP Traps
+
+If SNMP-capable devices in the network are configured to send *traps* to OpenNMS, these traps are transformed into events according to pre-configured rules. The `Trapd` service daemon, which enables OpenNMS to receive SNMP traps, is enabled by default.
+
+IMPORTANT: Disabling the `Trapd` service daemon will render OpenNMS *incapable* of receiving SNMP traps.
+
+Event definitions are included with OpenNMS for traps from many vendors' equipment.
+
+==== Syslog Messages
+
+Syslog messages sent over the network to OpenNMS can be transformed into events according to pre-configured rules.
+
+IMPORTANT: The `Syslogd` service daemon, which enables OpenNMS to receive syslog messages over the network, must be enabled for this functionality to work. This service daemon is *disabled* by default.
+    
+==== TL1 Autonomous Messages
+
+Autonomous messages can be retrieved from certain TL1-enabled equipment and transformed into events.
+
+IMPORTANT: The `Tl1d` service daemon, which enables OpenNMS to receive TL1 autonomous messages, must be enabled for this functionality to work. This service daemon is *disabled* by default.
+
+==== XML-TCP
+Any application or script can create custom events in OpenNMS by sending properly-formatted XML data over a TCP socket.
+
+==== ReST
+
+Posting an event in XML format to the appropriate endpoint in the OpenNMS ReST API will cause the creation of a corresponding event, just as with the XML-TCP interface.
 
 [[ga-events-event-bus]]
 === The Event Bus

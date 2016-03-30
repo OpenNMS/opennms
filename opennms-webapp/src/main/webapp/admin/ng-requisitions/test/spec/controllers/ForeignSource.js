@@ -36,11 +36,11 @@ describe('Controller: ForeignSourceController', function () {
     mockRequisitionsService.getTiming = jasmine.createSpy('getTiming');
     var requisitionDefer = $q.defer();
     requisitionDefer.resolve({ detectors: [{'name':'ICMP'},{'name':'SNMP'}], policies: [{'name':'Foo'},{'name':'Bar'}] });
-    mockRequisitionsService.getForeignSourceDefinition.andReturn(requisitionDefer.promise);
-    mockRequisitionsService.getTiming.andReturn({ isRunning: false });
+    mockRequisitionsService.getForeignSourceDefinition.and.returnValue(requisitionDefer.promise);
+    mockRequisitionsService.getTiming.and.returnValue({ isRunning: false });
 
     mockGrowl = {
-      warn: function(msg) { console.warn(msg); },
+      warning: function(msg) { console.warn(msg); },
       error: function(msg) { console.error(msg); },
       info: function(msg) { console.info(msg); },
       success: function(msg) { console.info(msg); }

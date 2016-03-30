@@ -43,10 +43,8 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriInfo;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.ws.rs.core.Response.Status;
@@ -139,20 +137,22 @@ public class EmailNorthbounderConfigurationResource extends OnmsRestService impl
     /**
      * Sets the configuration.
      *
-     * @param uriInfo the UEI info
      * @param config the full configuration object
      * @return the response
      */
     @POST
-    public Response setConfiguration(@Context final UriInfo uriInfo, final EmailNorthbounderConfig config) {
+    public Response setConfiguration(final EmailNorthbounderConfig config) {
         writeLock();
+        if (config == null) {
+            throw getException(Status.BAD_REQUEST, "Email NBI configuration object cannot be null");
+        }
         try {
             File configFile = m_emailNorthbounderConfigDao.getConfigResource().getFile();
             JaxbUtils.marshal(config, new FileWriter(configFile));
             notifyDaemons();
-            return Response.seeOther(getRedirectUri(uriInfo)).build();
+            return Response.noContent().build();
         } catch (Throwable t) {
-            throw new WebApplicationException(Response.status(Status.INTERNAL_SERVER_ERROR).type(MediaType.TEXT_PLAIN).entity(t.getMessage()).build());
+            throw getException(Status.INTERNAL_SERVER_ERROR, t);
         } finally {
             writeUnlock();
         }
@@ -199,7 +199,7 @@ public class EmailNorthbounderConfigurationResource extends OnmsRestService impl
     @Path("destinations")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     public Response getEmailDestinations() {
-        EmailDestinationList destinations = new EmailDestinationList(m_emailNorthbounderConfigDao.getConfig().getEmailDestinations());
+        final EmailDestinationList destinations = new EmailDestinationList(m_emailNorthbounderConfigDao.getConfig().getEmailDestinations());
         return Response.ok(destinations).build();
     }
 
@@ -212,31 +212,33 @@ public class EmailNorthbounderConfigurationResource extends OnmsRestService impl
     @GET
     @Path("destinations/{destinationName}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
-    public Response getEmailDestination(@PathParam("destinationName") final String destinationName) {
-        EmailDestination destination = m_emailNorthbounderConfigDao.getConfig().getEmailDestination(destinationName);
+    public EmailDestination getEmailDestination(@PathParam("destinationName") final String destinationName) {
+       final EmailDestination destination = m_emailNorthbounderConfigDao.getConfig().getEmailDestination(destinationName);
         if (destination == null) {
-            return Response.status(404).build();
+            throw getException(Status.NOT_FOUND, "Email destination {} was not found.", destinationName);
         }
-        return Response.ok(destination).build();
+        return destination;
     }
 
     /**
      * Sets an email destination.
      * <p>If there is a destination with the same name, the existing one will be overridden.</p>
      *
-     * @param uriInfo the URI info
      * @param destination the destination
      * @return the response
      */
     @POST
     @Path("destinations")
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
-    public Response setEmailDestination(@Context final UriInfo uriInfo, final EmailDestination destination) {
+    public Response setEmailDestination(final EmailDestination destination) {
         writeLock();
         try {
+            if (destination == null) {
+                throw getException(Status.BAD_REQUEST, "Email destination object cannot be null");
+            }
             m_emailNorthbounderConfigDao.getConfig().addEmailDestination(destination);
             saveConfiguration();
-            return Response.seeOther(getRedirectUri(uriInfo)).build();
+            return Response.noContent().build();
         } finally {
             writeUnlock();
         }
@@ -245,7 +247,6 @@ public class EmailNorthbounderConfigurationResource extends OnmsRestService impl
     /**
      * Updates a specific email destination.
      *
-     * @param uriInfo the URI info
      * @param destinationName the destination name
      * @param params the parameters map
      * @return the response
@@ -253,14 +254,11 @@ public class EmailNorthbounderConfigurationResource extends OnmsRestService impl
     @PUT
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Path("destinations/{destinationName}")
-    public Response updateEmailDestination(@Context final UriInfo uriInfo, @PathParam("destinationName") final String destinationName, final MultivaluedMapImpl params) {
+    public Response updateEmailDestination(@PathParam("destinationName") final String destinationName, final MultivaluedMapImpl params) {
         writeLock();
         try {
             boolean modified = false;
-            EmailDestination destination = m_emailNorthbounderConfigDao.getConfig().getEmailDestination(destinationName);
-            if (destination == null) {
-                return Response.status(404).build();
-            }
+            final EmailDestination destination = getEmailDestination(destinationName);
             final BeanWrapper wrapper = PropertyAccessorFactory.forBeanPropertyAccess(destination);
             for (final String key : params.keySet()) {
                 if (wrapper.isWritableProperty(key)) {
@@ -272,11 +270,9 @@ public class EmailNorthbounderConfigurationResource extends OnmsRestService impl
             }
             if (modified) {
                 saveConfiguration();
-                return Response.seeOther(getRedirectUri(uriInfo)).build();
+                return Response.noContent().build();
             }
             return Response.notModified().build();
-        } catch (Throwable t) {
-            throw new WebApplicationException(Response.status(Status.INTERNAL_SERVER_ERROR).type(MediaType.TEXT_PLAIN).entity(t.getMessage()).build());
         } finally {
             writeUnlock();
         }
@@ -295,7 +291,7 @@ public class EmailNorthbounderConfigurationResource extends OnmsRestService impl
         if (m_emailNorthbounderConfigDao.getConfig().removeEmailDestination(destinationName)) {
             return saveConfiguration();
         }
-        return Response.status(404).build();
+        return Response.status(Status.NOT_FOUND).build();
     }
 
     /**
@@ -307,9 +303,9 @@ public class EmailNorthbounderConfigurationResource extends OnmsRestService impl
         try {
             m_emailNorthbounderConfigDao.save();
             notifyDaemons();
-            return Response.ok().build();
+            return Response.noContent().build();
         } catch (Throwable t) {
-            throw new WebApplicationException(Response.status(Status.INTERNAL_SERVER_ERROR).type(MediaType.TEXT_PLAIN).entity(t.getMessage()).build());
+            throw getException(Status.INTERNAL_SERVER_ERROR, t);
         }
     }
 
