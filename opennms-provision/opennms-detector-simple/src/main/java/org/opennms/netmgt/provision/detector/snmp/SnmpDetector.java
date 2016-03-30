@@ -30,7 +30,11 @@ package org.opennms.netmgt.provision.detector.snmp;
 
 import org.opennms.netmgt.config.api.SnmpAgentConfigFactory;
 import org.opennms.netmgt.provision.support.SyncAbstractDetector;
-import org.opennms.netmgt.snmp.*;
+import org.opennms.netmgt.snmp.SnmpAgentConfig;
+import org.opennms.netmgt.snmp.SnmpInstId;
+import org.opennms.netmgt.snmp.SnmpObjId;
+import org.opennms.netmgt.snmp.SnmpUtils;
+import org.opennms.netmgt.snmp.SnmpValue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -105,12 +109,8 @@ public class SnmpDetector extends SyncAbstractDetector implements InitializingBe
      *
      * @return a {@link java.lang.String} object.
      */
-    public String getIsTable(String table) {
-        if (this.m_isTable) {
-            return new String("true");
-        } else {
-            return new String("false");
-        }
+    public String getIsTable() {
+        return String.valueOf(m_isTable);
     }
 
     /**
@@ -119,11 +119,7 @@ public class SnmpDetector extends SyncAbstractDetector implements InitializingBe
      * @param table a {@link java.lang.String} object.
      */
     public void setIsTable(String table) {
-        if ("true".equalsIgnoreCase(table)) {
-            this.m_isTable = true;
-        } else {
-            this.m_isTable = false;
-        }
+        m_isTable = "true".equalsIgnoreCase(table);
     }
 
     /** {@inheritDoc} */
