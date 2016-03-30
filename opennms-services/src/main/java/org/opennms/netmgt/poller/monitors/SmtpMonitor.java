@@ -42,6 +42,7 @@ import java.util.StringTokenizer;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
+import org.apache.commons.net.io.CRLFLineReader;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.TimeoutTracker;
@@ -164,8 +165,8 @@ public final class SmtpMonitor extends AbstractServiceMonitor {
 
                 // We're connected, so upgrade status to unresponsive
                 serviceStatus = PollStatus.unresponsive();
-
-                BufferedReader rdr = new BufferedReader(new InputStreamReader(socket.getInputStream(), "ASCII"));
+                // Forcing to check for CRLF instead of any other line terminator as per RFC specification
+                CRLFLineReader rdr = new CRLFLineReader(new InputStreamReader(socket.getInputStream(), "ASCII"));
 
                 //
                 // Tokenize the Banner Line, and check the first
