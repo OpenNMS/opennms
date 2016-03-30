@@ -313,30 +313,10 @@ public abstract class AbstractSpringJerseyRestTestCase {
         return roles == null? new HashSet<String>() : new HashSet<>(roles);
     }
 
-    /**
-     * @param url
-     * @param xml
-     * @deprecated use {@link #sendPost(String, String, int, String)} instead
-     */
-    protected MockHttpServletResponse sendPost(String url, String xml) throws Exception {
-        return sendData(POST, MediaType.APPLICATION_XML, url, xml, /* POST/Redirect/GET */ 303);
-    }
-
-    /**
-     * @param url
-     * @param xml
-     * @param statusCode
-     * @deprecated use {@link #sendPost(String, String, int, String)} instead
-     */
     protected MockHttpServletResponse sendPost(String url, String xml, int statusCode) throws Exception {
-        return sendData(POST, MediaType.APPLICATION_XML, url, xml, statusCode);
+        return sendPost(url, xml, statusCode, null);
     }
 
-    /**
-     * @param url
-     * @param xml
-     * @param statusCode
-     */
     protected MockHttpServletResponse sendPost(String url, String xml, int statusCode, final String expectedUrlSuffix) throws Exception {
         LOG.debug("POST {}, expected status code = {}, expected URL suffix = {}", url, statusCode, expectedUrlSuffix);
         final MockHttpServletResponse response = sendData(POST, MediaType.APPLICATION_XML, url, xml, statusCode);
@@ -353,20 +333,11 @@ public abstract class AbstractSpringJerseyRestTestCase {
     /**
      * @param url
      * @param formData
-     * @deprecated use {@link #sendPut(String, String, int, String)} instead
-     */
-    protected MockHttpServletResponse sendPut(String url, String formData) throws Exception {
-        return sendData(PUT, MediaType.APPLICATION_FORM_URLENCODED, url, formData, /* PUT/Redirect/GET */ 303);
-    }
-
-    /**
-     * @param url
-     * @param formData
      * @param statusCode
-     * @deprecated use {@link #sendPut(String, String, int, String)} instead
+     * @param expectedUrlSuffix
      */
     protected MockHttpServletResponse sendPut(String url, String formData, int statusCode) throws Exception {
-        return sendData(PUT, MediaType.APPLICATION_FORM_URLENCODED, url, formData, statusCode);
+        return sendPut(url, formData, statusCode, null);
     }
 
     /**
@@ -383,16 +354,6 @@ public abstract class AbstractSpringJerseyRestTestCase {
             assertTrue("location '" + location + "' should end with '" + expectedUrlSuffix + "'", location.endsWith(expectedUrlSuffix));
         }
         return response;
-    }
-
-    /**
-     * @param requestType
-     * @param contentType
-     * @param url
-     * @param data
-     */
-    protected MockHttpServletResponse sendData(String requestType, String contentType, String url, String data) throws Exception {
-        return sendData(requestType, contentType, url, data, 200);
     }
 
     /**
@@ -549,7 +510,7 @@ public abstract class AbstractSpringJerseyRestTestCase {
         return getXmlObject(context, url, Collections.emptyMap(), expectedStatus, expectedClass);
     }
 
-    protected void putXmlObject(final JAXBContext context, final String url, final int expectedStatus, final Object object, final String expectedUrlSuffix) throws Exception {
+    protected void putXmlObject(final JAXBContext context, final String url, final int expectedStatus, final Object object) throws Exception {
         final ByteArrayOutputStream out = new ByteArrayOutputStream(); 
         final Marshaller marshaller = context.createMarshaller();
         marshaller.marshal(object, out);
@@ -561,13 +522,10 @@ public abstract class AbstractSpringJerseyRestTestCase {
         final MockHttpServletResponse response = createResponse();
         dispatch(request, response);
         assertEquals(expectedStatus, response.getStatus());
-
-        final String location = response.getHeader("Location").toString();
-        assertTrue("location '" + location + "' should end with '" + expectedUrlSuffix + "'", location.endsWith(expectedUrlSuffix));
     }
 
     protected void createNode() throws Exception {
-        createNode(303);
+        createNode(201);
     }
 
     protected void createNode(int statusCode) throws Exception {
@@ -591,7 +549,7 @@ public abstract class AbstractSpringJerseyRestTestCase {
                 "<hostName>TestMachine</hostName>" +
                 "<ipStatus>1</ipStatus>" +
                 "</ipInterface>";
-        sendPost("/nodes/1/ipinterfaces", ipInterface, 303, "/nodes/1/ipinterfaces/10.10.10.10");
+        sendPost("/nodes/1/ipinterfaces", ipInterface, 201, "/nodes/1/ipinterfaces/10.10.10.10");
     }
 
     protected void createSnmpInterface() throws Exception {
@@ -606,7 +564,7 @@ public abstract class AbstractSpringJerseyRestTestCase {
                 "<netMask>255.255.255.0</netMask>" +
                 "<physAddr>001e5271136d</physAddr>" +
                 "</snmpInterface>";
-        sendPost("/nodes/1/snmpinterfaces", snmpInterface, 303, "/nodes/1/snmpinterfaces/6");
+        sendPost("/nodes/1/snmpinterfaces", snmpInterface, 201, "/nodes/1/snmpinterfaces/6");
     }
 
     protected void createService() throws Exception {
@@ -617,7 +575,7 @@ public abstract class AbstractSpringJerseyRestTestCase {
                 "<name>ICMP</name>" +
                 "</serviceType>" +
                 "</service>";
-        sendPost("/nodes/1/ipinterfaces/10.10.10.10/services", service, 303, "/nodes/1/ipinterfaces/10.10.10.10/services/ICMP");
+        sendPost("/nodes/1/ipinterfaces/10.10.10.10/services", service, 201, "/nodes/1/ipinterfaces/10.10.10.10/services/ICMP");
     }
 
     protected void createCategory() throws Exception {
@@ -625,7 +583,7 @@ public abstract class AbstractSpringJerseyRestTestCase {
         String service = "<category name=\"Routers\">" +
                 "<description>Core Routers</description>" +
                 "</category>";
-        sendPost("/categories", service, 303, "/categories/Routers");
+        sendPost("/categories", service, 201, "/categories/Routers");
     }
 
     public void setContextListener(ContextLoaderListener contextListener) {

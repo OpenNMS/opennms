@@ -37,7 +37,9 @@
 
     <import-file>syslog/ApacheHTTPD.syslog.xml</import-file>
     <import-file>syslog/LinuxKernel.syslog.xml</import-file>
+    <import-file>syslog/NetgearProsafeSmartSwitch.syslog.xml</import-file>
     <import-file>syslog/OpenSSH.syslog.xml</import-file>
+    <import-file>syslog/OpenWrt.syslog.xml</import-file>
     <import-file>syslog/Procmail.syslog.xml</import-file>
     <import-file>syslog/Postfix.syslog.xml</import-file>
     <import-file>syslog/Sudo.syslog.xml</import-file>

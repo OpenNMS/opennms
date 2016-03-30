@@ -36,25 +36,9 @@ import org.junit.runners.MethodSorters;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class NodeListPageIT extends OpenNMSSeleniumTestCase {
-
-    private RequisitionUtils requisitionUtils = new RequisitionUtils(this);
-
-    private void createNode(final String foreignId) throws Exception {
-        final String node = "<node type=\"A\" label=\"TestMachine" + foreignId + "\" foreignSource=\""+ OpenNMSSeleniumTestCase.REQUISITION_NAME +"\" foreignId=\"" + foreignId + "\">" +
-                "<labelSource>H</labelSource>" +
-                "<sysContact>The Owner</sysContact>" +
-                "<sysDescription>" +
-                "Darwin TestMachine 9.4.0 Darwin Kernel Version 9.4.0: Mon Jun  9 19:30:53 PDT 2008; root:xnu-1228.5.20~1/RELEASE_I386 i386" +
-                "</sysDescription>" +
-                "<sysLocation>DevJam</sysLocation>" +
-                "<sysName>TestMachine" + foreignId + "</sysName>" +
-                "<sysObjectId>.1.3.6.1.4.1.8072.3.2.255</sysObjectId>" +
-                "</node>";
-        requisitionUtils.createNode(node);
-    }
-
     @Before
     public void setUp() throws Exception {
+        deleteTestRequisition();
         createNode("node1");
         createNode("node2");
         nodePage();
@@ -62,18 +46,33 @@ public class NodeListPageIT extends OpenNMSSeleniumTestCase {
 
     @After
     public void tearDown() throws Exception {
-        requisitionUtils.deleteNode("node1");
-        requisitionUtils.deleteNode("node2");
+        deleteTestRequisition();
+    }
+
+    private void createNode(final String foreignId) throws Exception {
+        final String node = "<node type=\"A\" label=\"TestMachine" + foreignId + "\" foreignSource=\""+ REQUISITION_NAME +"\" foreignId=\"" + foreignId + "\">" +
+        "<labelSource>H</labelSource>" +
+        "<sysContact>The Owner</sysContact>" +
+        "<sysDescription>" +
+        "Darwin TestMachine 9.4.0 Darwin Kernel Version 9.4.0: Mon Jun  9 19:30:53 PDT 2008; root:xnu-1228.5.20~1/RELEASE_I386 i386" +
+        "</sysDescription>" +
+        "<sysLocation>DevJam</sysLocation>" +
+        "<sysName>TestMachine" + foreignId + "</sysName>" +
+        "<sysObjectId>.1.3.6.1.4.1.8072.3.2.255</sysObjectId>" +
+        "</node>";
+        sendPost("/rest/nodes", node, 201);
     }
 
     @Test
     public void testAllTextIsPresent() throws Exception {
         findElementByXpath("//h3//span[text()='Nodes']");
+        findElementByXpath("//ol[@class=\"breadcrumb\"]//li[text()='Node List']");
     }
 
     @Test
     public void testAllLinks() throws InterruptedException {
         findElementByLink("Show interfaces").click();
+        findElementByXpath("//h3[text()='Nodes and their interfaces']");
         findElementByLink("Hide interfaces");
     }
 }

@@ -31,15 +31,16 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
 
-import com.google.common.base.Throwables;
-import com.google.common.net.HttpHeaders;
-import com.google.common.net.MediaType;
-
+import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.methods.HttpRequestBase;
+import org.apache.http.entity.ContentType;
+import org.apache.http.entity.StringEntity;
+
 import org.opennms.core.web.HttpClientWrapper;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.model.OnmsNode;
@@ -48,6 +49,10 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.common.base.Throwables;
+import com.google.common.net.HttpHeaders;
+import com.google.common.net.MediaType;
 
 /**
  * Utility functions for dealing with provisioning requisitions.
@@ -68,24 +73,16 @@ public class RequisitionUtils {
     }
 
     protected void createNode(String nodeXML) throws IOException, InterruptedException {
-        m_testCase.sendPost("/rest/nodes", nodeXML);
+        sendPost("/rest/nodes", nodeXML);
     }
 
     protected void setupTestRequisition(String requisitionXML, String foreignSourceXML) throws IOException, InterruptedException {
-        m_testCase.sendPost("/rest/requisitions/", requisitionXML);
+        sendPost("/rest/requisitions/", requisitionXML);
         if (foreignSourceXML != null && !"".equals(foreignSourceXML)) {
-            m_testCase.sendPost("/rest/foreignSources", foreignSourceXML);
+            sendPost("/rest/foreignSources", foreignSourceXML);
         }
-        HttpRequestBase request = new HttpPut(OpenNMSSeleniumTestCase.BASE_URL + "/opennms/rest/requisitions/" + m_testCase.REQUISITION_NAME + "/import");
+        HttpRequestBase request = new HttpPut(OpenNMSSeleniumTestCase.BASE_URL + "/opennms/rest/requisitions/" + OpenNMSSeleniumTestCase.REQUISITION_NAME + "/import");
         m_testCase.doRequest(request);
-    }
-
-    protected void deleteNode(final String foreignId) throws IOException, InterruptedException {
-        m_testCase.sendDelete("/rest/nodes/" + m_testCase.REQUISITION_NAME + ":" + foreignId);
-    }
-
-    protected void deleteForeignSource() throws IOException, InterruptedException {
-        m_testCase.sendDelete("/rest/foreignSources/" + m_testCase.REQUISITION_NAME);
     }
 
     protected void deleteTestRequisition() throws Exception {
@@ -131,6 +128,15 @@ public class RequisitionUtils {
 
         @Override public Boolean apply(final WebDriver input) {
             return getNodesInDatabase(OpenNMSSeleniumTestCase.REQUISITION_NAME).size() == m_numberToMatch;
+        }
+    }
+
+    protected void sendPost(final String urlFragment, final String body) throws ClientProtocolException, IOException, InterruptedException {
+        final HttpPost post = new HttpPost(OpenNMSSeleniumTestCase.BASE_URL + "opennms" + (urlFragment.startsWith("/")? urlFragment : "/"+urlFragment));
+        post.setEntity(new StringEntity(body, ContentType.APPLICATION_XML));
+        final Integer response = m_testCase.doRequest(post);
+        if (response < 200 || response >= 300) {
+            throw new RuntimeException("Bad response code! (" + response + ")");
         }
     }
 }

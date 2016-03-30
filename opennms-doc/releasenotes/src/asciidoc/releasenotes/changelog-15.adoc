@@ -1,7 +1,8 @@
-[releasenotes-15]
-=== OpenNMS 15
 
-[releasenotes-changelog-15.0.2]
+[[release-15-changelog]]
+=== Changelog
+
+[[releasenotes-changelog-15.0.2]]
 ==== Release 15.0.2
 
 Release 15.0.2 is the latest stable release of OpenNMS.  It consists of a large number of bugfixes and other small changes included in Meridian 2015.1.0.
@@ -71,7 +72,7 @@ The codename for 15.0.1 is _Psychonauts_.
 * Notification wizard client-side filtering of event list   (Issue http://issues.opennms.org/browse/NMS-7507[NMS-7507])
 * Use the default threshold definition as a template when adding TriggeredUEI/RearmedUEI on thresholds through the WebUI (Issue http://issues.opennms.org/browse/NMS-7528[NMS-7528])
 
-[releasenotes-changelog-15.0.1]
+[[releasenotes-changelog-15.0.1]]
 ==== Release 15.0.1
 
 Release 15.0.1 is the latest stable release of OpenNMS.  It consists primarily of bugfixes to the new UI and a fix for some database-related issues that could cause duplicate outages.
@@ -111,7 +112,7 @@ The codename for 15.0.1 is _Silpheed_.
 * Apply the auto-resize feature for the timeline charts (Issue http://issues.opennms.org/browse/NMS-7438[NMS-7438])
 
 
-[releasenotes-changelog-15.0.0]
+[[releasenotes-changelog-15.0.0]]
 ==== Release 15.0.0
 
 Release 15.0.0 is the latest stable release of OpenNMS.  Alongside the usual enhancements and bug fixes, OpenNMS 15 gets a name (Horizon) and starts the process of finally modernizing the web UI.  We have completely replaced our existing layout using http://getbootstrap.com/[Bootstrap].  While it may look visually similar for now, this puts us on a footing to make better and more frequent UI changes going forward.
@@ -221,4 +222,3 @@ The codename for 15.0.0 is _Sundog_.
 * Rearrange Node/Event/Alarm/Outage links on bootstrap UI (Issue http://issues.opennms.org/browse/NMS-7317[NMS-7317])
 * Add configuration property for protobuf queue size (Issue http://issues.opennms.org/browse/NMS-7384[NMS-7384])
 * IpInterfaceScan shouldDetect() method should check for empty string in addition to null string (Issue http://issues.opennms.org/browse/NMS-7388[NMS-7388])
-

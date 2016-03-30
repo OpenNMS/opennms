@@ -98,7 +98,7 @@ public class KscRestService extends OnmsRestService {
         final Map<Integer, Report> reportList = m_kscReportService.getReportMap();
         final Report report = reportList.get(reportId);
         if (report == null) {
-            throw getException(Status.NOT_FOUND, "No such report id " + reportId);
+            throw getException(Status.NOT_FOUND, "No such report id {}.", Integer.toString(reportId));
         }
         return new KscReport(report);
     }
@@ -114,7 +114,7 @@ public class KscRestService extends OnmsRestService {
     @PUT
     @Path("{kscReportId}")
     @Transactional
-    public Response addGraph(@Context final UriInfo uriInfo, @PathParam("kscReportId") final Integer kscReportId, @QueryParam("title") final String title, @QueryParam("reportName") final String reportName, @QueryParam("resourceId") final String resourceId, @QueryParam("timespan") String timespan) {
+    public Response addGraph(@PathParam("kscReportId") final Integer kscReportId, @QueryParam("title") final String title, @QueryParam("reportName") final String reportName, @QueryParam("resourceId") final String resourceId, @QueryParam("timespan") String timespan) {
         writeLock();
 
         try {
@@ -123,7 +123,7 @@ public class KscRestService extends OnmsRestService {
             }
             final Report report = m_kscReportFactory.getReportByIndex(kscReportId);
             if (report == null) {
-                throw getException(Status.NOT_FOUND, "Invalid request: No KSC report found with ID: " + kscReportId);
+                throw getException(Status.NOT_FOUND, "Invalid request: No KSC report found with ID: {}.", Integer.toString(kscReportId));
             }
             final Graph graph = new Graph();
             if (title != null) {
@@ -151,9 +151,9 @@ public class KscRestService extends OnmsRestService {
             try {
                 m_kscReportFactory.saveCurrent();
             } catch (final Exception e) {
-                throw getException(Status.BAD_REQUEST, e.getMessage());
+                throw getException(Status.INTERNAL_SERVER_ERROR, "Cannot save report with Id {} : {} ", kscReportId.toString(), e.getMessage());
             }
-            return Response.seeOther(getRedirectUri(uriInfo)).build();
+            return Response.noContent().build();
         } finally {
             writeUnlock();
         }
@@ -167,7 +167,7 @@ public class KscRestService extends OnmsRestService {
             LOG.debug("addKscReport: Adding KSC Report {}", kscReport);
             Report report = m_kscReportFactory.getReportByIndex(kscReport.getId());
             if (report != null) {
-                throw getException(Status.CONFLICT, "Invalid request: Existing KSC report found with ID: " + kscReport.getId());
+                throw getException(Status.CONFLICT, "Invalid request: Existing KSC report found with ID: {}.", Integer.toString(kscReport.getId()));
             }
             report = new Report();
             report.setId(kscReport.getId());
@@ -194,9 +194,7 @@ public class KscRestService extends OnmsRestService {
             } catch (final Exception e) {
                 throw getException(Status.BAD_REQUEST, e.getMessage());
             }
-            return Response.seeOther(getRedirectUri(uriInfo)).build();
-        } catch (final Throwable t) {
-            throw getException(Status.BAD_REQUEST, t);
+            return Response.created(getRedirectUri(uriInfo, kscReport.getId())).build();
         } finally {
             writeUnlock();
         }

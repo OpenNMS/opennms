@@ -1,5 +1,6 @@
 package org.opennms.smoketest;
 
+
 import static org.opennms.smoketest.OpenNMSSeleniumTestCase.BASIC_AUTH_PASSWORD;
 import static org.opennms.smoketest.OpenNMSSeleniumTestCase.BASIC_AUTH_USERNAME;
 import static org.opennms.smoketest.OpenNMSSeleniumTestCase.OPENNMS_WEB_HOST;

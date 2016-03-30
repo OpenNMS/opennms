@@ -52,7 +52,6 @@ describe('Model: RequisitionsNode', function () {
     expect(reqNode.assets[1].value).toBe('Pittsboro');
     var genNode = reqNode.getOnmsRequisitionNode();
     expect(genNode).not.toBe(null);
-    expect(genNode).toEqual(onmsNode);
     expect(angular.equals(genNode, onmsNode)).toBe(true);
   });
 

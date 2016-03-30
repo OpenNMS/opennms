@@ -172,6 +172,8 @@
   <event-file>events/NetApp.events.xml</event-file>
   <event-file>events/Netbotz.events.xml</event-file>
   <event-file>events/Netgear.events.xml</event-file>
+  <event-file>events/NetgearProsafeSmartSwitch.events.xml</event-file>
+  <event-file>events/NetgearProsafeSmartSwitch.syslog.events.xml</event-file>
   <event-file>events/Netscreen.events.xml</event-file>
   <event-file>events/NetSNMP.events.xml</event-file>
   <event-file>events/Nokia.events.xml</event-file>
@@ -179,6 +181,7 @@
   <event-file>events/Novell.events.xml</event-file>
   <event-file>events/OpenNMSMIB.events.xml</event-file>
   <event-file>events/OpenSSH.syslog.events.xml</event-file>
+  <event-file>events/OpenWrt.syslog.events.xml</event-file>
   <event-file>events/Oracle.events.xml</event-file>
   <event-file>events/OSPF.events.xml</event-file>
   <event-file>events/Overland.events.xml</event-file>

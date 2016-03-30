@@ -182,6 +182,10 @@ public abstract class OnmsVaadinContainer<T,K extends Serializable> implements C
                 doItemAddedCallBack(rowNumber, getId(eachBean), eachBean);
                 rowNumber++;
             }
+            // Ensure that the number of items expected matches with the actual ones. See issue NMS-8079 fore more details.
+            if (beans.size() != rowMap.size()) {
+                throw new IllegalStateException("The cache is supposed to carry " + beans.size() + " but only contains " + rowMap.size() + " items.");
+            }
         }
     }
 

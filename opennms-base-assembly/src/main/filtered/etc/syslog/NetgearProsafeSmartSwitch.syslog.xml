@@ -1,0 +1,158 @@
+<?xml version="1.0"?>
+
+<!--
+Netgear Prosafe Smart Switch syslog events
+
+Event severities are listed in the order from least important to most important
+
+Note: These switches send syslog messages in a format that doesn't parse correctly with the default OpenNMS syslog parsing string (as of the end of 2016).
+      This was worked around by having the switches send syslog messages to a rsyslog server on a Linux server and having the rsyslog server forward
+      the messages to OpenNMS in RFC5424 format (with OpenNMS configured to use the syslog parser org.opennms.netmgt.syslogd.Rfc5424SyslogParser).
+      For more information, see the OpenNMS wiki page http://www.opennms.org/wiki/Syslogd
+
+Tested using Netgear ProSafe Smart Switch, model GS752TP
+-->
+
+<syslogd-configuration-group>
+    <ueiList>
+
+        <!-- Debug level syslog messages -->
+        <ueiMatch>
+            <facility>local7</facility>
+            <severity>Debug</severity>
+            <process-match expression="^%SNTP-D-NTPBADVER$" />
+            <match type="regex" expression="^NTP server version not compatible$" />
+            <uei>uei.opennms.org/vendor/netgear/syslog/prosafesmartswitch/Debug/NTPServerVersionNotCompatible</uei>
+        </ueiMatch>
+
+        <!-- Informational level syslog messages -->
+        <ueiMatch>
+            <facility>local7</facility>
+            <severity>Informational</severity>
+            <process-match expression="^%AAA-I-CONNECT$" />
+            <match type="regex" expression="^New http connection for user (.+), source ([0-9.]+) destination ([0-9.]+) ACCEPTED$" />
+            <uei>uei.opennms.org/vendor/netgear/syslog/prosafesmartswitch/Informational/WebConsoleLogin</uei>
+            <parameter-assignment matching-group="1" parameter-name="userName" />
+            <parameter-assignment matching-group="2" parameter-name="sourceIP" />
+            <parameter-assignment matching-group="3" parameter-name="destinationIP" />
+        </ueiMatch>
+        <ueiMatch>
+            <facility>local7</facility>
+            <severity>Informational</severity>
+            <process-match expression="^%AAA-I-DISCONNECT$" />
+            <match type="regex" expression="^http connection for user (.+), source ([0-9.]+) destination ([0-9.]+) TERMINATED$" />
+            <uei>uei.opennms.org/vendor/netgear/syslog/prosafesmartswitch/Informational/WebConsoleLogout</uei>
+            <parameter-assignment matching-group="1" parameter-name="userName" />
+            <parameter-assignment matching-group="2" parameter-name="sourceIP" />
+            <parameter-assignment matching-group="3" parameter-name="destinationIP" />
+        </ueiMatch>
+        <ueiMatch>
+            <facility>local7</facility>
+            <severity>Informational</severity>
+            <process-match expression="^%LINK-I-Up$" />
+            <match type="regex" expression="^(.*)$" />
+            <uei>uei.opennms.org/vendor/netgear/syslog/prosafesmartswitch/Informational/PortStatusLinkUp</uei>
+            <parameter-assignment matching-group="1" parameter-name="portName" />
+        </ueiMatch>
+        <ueiMatch>
+            <facility>local7</facility>
+            <severity>Informational</severity>
+            <process-match expression="^%BOOTP_DHCP_CL-I-DHCPRENEWED$" />
+            <match type="substr" expression="The device has been renewed the configuration on interface$" />
+            <uei>uei.opennms.org/vendor/netgear/syslog/prosafesmartswitch/Informational/DHCPAddressRenewed</uei>
+        </ueiMatch>
+
+        <!-- Notice level syslog messages -->
+        <ueiMatch>
+            <facility>local7</facility>
+            <severity>Notice</severity>
+            <process-match expression="^%COPY-N-TRAP$" />
+            <match type="substr" expression="The copy operation was completed successfully" />
+            <uei>uei.opennms.org/vendor/netgear/syslog/prosafesmartswitch/Notice/FirmwareCopyCompletedSuccessfully</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <facility>local7</facility>
+            <severity>Notice</severity>
+            <process-match expression="^%COPY-N-LOGGINGFILECOPY$" />
+            <match type="substr" expression="start log messages related to file copy operations" />
+            <uei>uei.opennms.org/vendor/netgear/syslog/prosafesmartswitch/Notice/SwitchConfigUpdateEnd</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <facility>local7</facility>
+            <severity>Notice</severity>
+            <process-match expression="^%COPY-N-LOGGINGFILECOPYSTOP$" />
+            <match type="substr" expression="stop log messages related to file copy operations" />
+            <uei>uei.opennms.org/vendor/netgear/syslog/prosafesmartswitch/Notice/SwitchConfigUpdateStart</uei>  <!-- this message is sent BEFORE the COPY-N-LOGGINGFILECOPY message -->
+        </ueiMatch>
+
+        <!-- Warning level syslog messages -->
+        <ueiMatch>
+            <facility>local7</facility>
+            <severity>Warning</severity>
+            <process-match expression="^%NT_GREEN-W-EeeLldpSingleNeighbour$" />
+            <match type="regex" expression="^Single LLDP neighbour on port (.*) - EEE operational state can be TRUE$" />
+            <uei>uei.opennms.org/vendor/netgear/syslog/prosafesmartswitch/Warning/EnergyEfficientEthernetStateTrue</uei>
+            <parameter-assignment matching-group="1" parameter-name="portName" />
+        </ueiMatch>
+        <ueiMatch>
+            <facility>local7</facility>
+            <severity>Warning</severity>
+            <process-match expression="^%NT_GREEN-W-EeeLldpMultiNeighbours$" />
+            <match type="regex" expression="^Multiple LLDP neighbours on port (.*) - EEE operational state is FALSE$" />
+            <uei>uei.opennms.org/vendor/netgear/syslog/prosafesmartswitch/Warning/EnergyEfficientEthernetStateFalse</uei>
+            <parameter-assignment matching-group="1" parameter-name="portName" />
+        </ueiMatch>
+        <ueiMatch>
+            <facility>local7</facility>
+            <severity>Warning</severity>
+            <process-match expression="^%STP-W-PORTSTATUS$" />
+            <match type="regex" expression="^(.*) of instance ([0-9.]+): STP status Forwarding$" />
+            <uei>uei.opennms.org/vendor/netgear/syslog/prosafesmartswitch/Warning/PortSTPStatusForwarding</uei>
+            <parameter-assignment matching-group="1" parameter-name="portName" />
+            <parameter-assignment matching-group="2" parameter-name="instanceNumber" />
+        </ueiMatch>
+        <ueiMatch>
+            <facility>local7</facility>
+            <severity>Warning</severity>
+            <process-match expression="^%BOOTP_DHCP_CL-W-FLNMEEMPTY$" />
+            <match type="substr" expression="No option 67 in the DHCP packet. Unable to start autoconfiguration." />
+            <uei>uei.opennms.org/vendor/netgear/syslog/prosafesmartswitch/Warning/UnableToStartDHCPAutoconfiguration</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <facility>local7</facility>
+            <severity>Warning</severity>
+            <process-match expression="^%LINK-W-Down$" />
+            <match type="regex" expression="^(.*)$" />
+            <uei>uei.opennms.org/vendor/netgear/syslog/prosafesmartswitch/Warning/PortStatusLinkDown</uei>
+            <parameter-assignment matching-group="1" parameter-name="portName" />
+        </ueiMatch>
+        <ueiMatch>
+            <facility>local7</facility>
+            <severity>Warning</severity>
+            <process-match expression="^%AAA-W-REJECT$" />
+            <match type="regex" expression="^New http connection for user (.+), source ([0-9.]+) destination ([0-9.]+)  REJECTED$" /> <!-- two spaces needed -->
+            <uei>uei.opennms.org/vendor/netgear/syslog/prosafesmartswitch/Warning/WebConsoleLoginFailure</uei>
+            <parameter-assignment matching-group="1" parameter-name="userName" />
+            <parameter-assignment matching-group="2" parameter-name="sourceIP" />
+            <parameter-assignment matching-group="3" parameter-name="destinationIP" />
+        </ueiMatch>
+
+        <!-- Error level syslog messages -->
+	<!-- none entered at this time -->
+
+        <!-- Critical level syslog messages -->
+        <ueiMatch>
+            <severity>Critical</severity>
+            <process-match expression="^%UNKN$" />
+            <match type="substr" expression="Event(0x0)" />
+            <uei>uei.opennms.org/vendor/netgear/syslog/prosafesmartswitch/Critical/SwitchBootingUp</uei>
+        </ueiMatch>
+
+        <!-- Alert level syslog messages -->
+	<!-- none entered at this time -->
+
+        <!-- Emergency level syslog messages -->
+	<!-- none entered at this time -->
+
+    </ueiList>
+</syslogd-configuration-group>
