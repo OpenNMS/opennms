@@ -215,8 +215,8 @@ public class SnmpDetector extends SyncAbstractDetector implements InitializingBe
             } else {
                 final String retrievedValue = getValue(agentConfig, getOid(), m_hex);
                 // we have to ensure that if expectedValue is defined, we use ANY, this is due to backwards compatibility
-                MatchType matchType = MatchType.Exist;
-                if (expectedValue != null) {
+                MatchType matchType = this.matchType;
+                if (matchType == null && expectedValue != null) {
                     matchType = MatchType.Any;
                 }
                 return isServiceDetected(matchType, Lists.newArrayList(retrievedValue), expectedValue);
