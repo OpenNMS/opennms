@@ -118,7 +118,7 @@ public class SnmpDetectorTest implements ApplicationContextAware {
 
         // none
         m_detector.setMatchType(MatchType.None.name());
-        assertEquals(false, m_detector.isServiceDetected(m_testIpAddress));
+        assertEquals(true, m_detector.isServiceDetected(m_testIpAddress));
 
         // any
         m_detector.setMatchType(MatchType.Any.name());
@@ -132,6 +132,7 @@ public class SnmpDetectorTest implements ApplicationContextAware {
         m_detector.setOid(".1.3.6.1.2.1.2.2.1.7");
         m_detector.setMatchType(MatchType.Any.name());
         m_detector.setVbvalue("1");
+        m_detector.setIsTable("true");
         assertEquals(false, m_detector.isServiceDetected(m_testIpAddress));
         m_detector.setVbvalue("2");
         assertEquals(true, m_detector.isServiceDetected(m_testIpAddress));
@@ -149,7 +150,7 @@ public class SnmpDetectorTest implements ApplicationContextAware {
 
         // exist
         m_detector.setMatchType(MatchType.Exist.name());
-        assertEquals(false, m_detector.isServiceDetected(m_testIpAddress));
+        assertEquals(true, m_detector.isServiceDetected(m_testIpAddress));
     }
     
     
