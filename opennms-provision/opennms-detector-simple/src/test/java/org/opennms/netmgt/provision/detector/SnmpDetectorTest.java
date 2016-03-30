@@ -55,7 +55,7 @@ import org.springframework.test.context.ContextConfiguration;
 		"classpath:/META-INF/opennms/applicationContext-proxy-snmp.xml",
 		"classpath:/META-INF/opennms/detectors.xml"
 })
-@JUnitSnmpAgent(host=SnmpDetectorTest.TEST_IP_ADDRESS, resource="classpath:org/opennms/netmgt/provision/detector/snmpTestData1.properties")
+@JUnitSnmpAgent(host=SnmpDetectorTest.TEST_IP_ADDRESS, resource="classpath:org/opennms/netmgt/provision/detector/snmpDetectorTestData.properties")
 public class SnmpDetectorTest implements ApplicationContextAware {
     
     static final String TEST_IP_ADDRESS = "192.0.2.205";
@@ -97,63 +97,112 @@ public class SnmpDetectorTest implements ApplicationContextAware {
     @Test(timeout=20000)
      public void testIsProtocolSupportedInetAddress() throws UnknownHostException {
          assertTrue("protocol is not supported", m_detector.isServiceDetected(m_testIpAddress));
-         
      }
 
     @Test(timeout=20000)
-    @JUnitSnmpAgent(host=SnmpDetectorTest.TEST_IP_ADDRESS, resource="classpath:org/opennms/netmgt/provision/detector/snmpTestData2.properties")
-    public void testTable1() {
-        // exist
+    public void testDetectTableExist() throws UnknownHostException {
+        // Set to existing table, detect service
         m_detector.setOid(".1.3.6.1.2.1.2.2.1.7");
         m_detector.setIsTable("true");
         m_detector.setMatchType(MatchType.Exist.name());
         assertEquals(true, m_detector.isServiceDetected(m_testIpAddress));
 
-        // all
-        m_detector.setMatchType(MatchType.All.name());
-        m_detector.setVbvalue("1");
-        assertEquals(true, m_detector.isServiceDetected(m_testIpAddress));
-        m_detector.setVbvalue("2");
-        assertEquals(false, m_detector.isServiceDetected(m_testIpAddress));
-
-        // none
-        m_detector.setMatchType(MatchType.None.name());
-        assertEquals(true, m_detector.isServiceDetected(m_testIpAddress));
-
-        // any
-        m_detector.setMatchType(MatchType.Any.name());
+        // Set to non existing table, do not detect service
+        m_detector.setOid(".9.9.9.9.9.9.9.9.999");
         assertEquals(false, m_detector.isServiceDetected(m_testIpAddress));
     }
 
     @Test(timeout=20000)
-    @JUnitSnmpAgent(host=SnmpDetectorTest.TEST_IP_ADDRESS, resource="classpath:org/opennms/netmgt/provision/detector/snmpTestData3.properties")
-    public void testTable2() {
-        // any
-        m_detector.setOid(".1.3.6.1.2.1.2.2.1.7");
-        m_detector.setMatchType(MatchType.Any.name());
-        m_detector.setVbvalue("1");
+    public void testDetectTableAll() throws UnknownHostException {
+        // Set to table with all 1
+        m_detector.setOid(".1.3.6.1.2.1.2.2.1.8");
         m_detector.setIsTable("true");
+        m_detector.setMatchType(MatchType.All.name());
+
+        // Detect service if all values are 1
+        m_detector.setVbvalue("1");
+        assertEquals(true, m_detector.isServiceDetected(m_testIpAddress));
+
+        // Do not detect service if not all values are 2
+        m_detector.setVbvalue("2");
         assertEquals(false, m_detector.isServiceDetected(m_testIpAddress));
+    }
+
+    @Test(timeout=20000)
+    public void testDetectTableNone() throws UnknownHostException {
+        // Set to table with 3 and 2 mixed
+        m_detector.setOid(".1.3.6.1.2.1.2.2.1.7");
+        m_detector.setIsTable("true");
+
+        // Detect service if 1 is not in the table
+        m_detector.setVbvalue("1");
+        m_detector.setMatchType(MatchType.None.name());
+        assertEquals(true, m_detector.isServiceDetected(m_testIpAddress));
+
+        // Do not detect service if 2 is somewhere in the table
+        m_detector.setVbvalue("2");
+        m_detector.setMatchType(MatchType.None.name());
+        assertEquals(false, m_detector.isServiceDetected(m_testIpAddress));
+    }
+
+    @Test(timeout=20000)
+    public void testDetectTableAny() throws UnknownHostException {
+        // Set to table with 3 and 2 mixed
+        m_detector.setOid(".1.3.6.1.2.1.2.2.1.7");
+        m_detector.setIsTable("true");
+        m_detector.setMatchType(MatchType.Any.name());
+
+        // Detect service if 2 is somewhere in the table
         m_detector.setVbvalue("2");
         assertEquals(true, m_detector.isServiceDetected(m_testIpAddress));
 
-        // none
-        m_detector.setMatchType(MatchType.None.name());
+        // Do not detect service if 1 is not in the table
         m_detector.setVbvalue("1");
-        assertEquals(true, m_detector.isServiceDetected(m_testIpAddress));
-        m_detector.setVbvalue("3");
         assertEquals(false, m_detector.isServiceDetected(m_testIpAddress));
+    }
 
-        // all
-        m_detector.setMatchType(MatchType.All.name());
-        assertEquals(false, m_detector.isServiceDetected(m_testIpAddress));
-
-        // exist
-        m_detector.setMatchType(MatchType.Exist.name());
+    @Test(timeout=20000)
+    public void testDetectScalarBackwardCompatibility() throws UnknownHostException {
+        // Match type was introduced with SNMP table detection, make sure it does not break configs without MatchType set
+        m_detector.setOid(".1.3.6.1.2.1.1.2.0");
+        m_detector.setIsTable("false");
+        m_detector.setVbvalue("\\.1\\.3\\.6\\.1\\.4\\.1.*");
         assertEquals(true, m_detector.isServiceDetected(m_testIpAddress));
     }
-    
-    
+
+    @Test(timeout=20000)
+    public void testDetectScalarHexString() throws UnknownHostException {
+        m_detector.setOid(".1.3.6.1.2.1.3.1.1.2.4.1.192.0.2.1");
+        m_detector.setIsTable("false");
+
+        // Validate against data type Hex-STRING for a MAC address
+        m_detector.setHex("true");
+        m_detector.setVbvalue("000f662002fd");
+        assertEquals(true, m_detector.isServiceDetected(m_testIpAddress));
+
+        // Should not detect, input not interpreted as Hex-STRING
+        m_detector.setHex("false");
+        m_detector.setVbvalue("000f662002fd");
+        assertEquals(false, m_detector.isServiceDetected(m_testIpAddress));
+    }
+
+    @Test(timeout=20000)
+    public void testDetectTableHexString() throws UnknownHostException {
+        m_detector.setOid(".1.3.6.1.2.1.3.1.1.2.4.1");
+        m_detector.setIsTable("true");
+
+        // Validate against data type Hex-STRING for a MAC address
+        m_detector.setHex("true");
+        m_detector.setMatchType(MatchType.Any.name());
+        m_detector.setVbvalue("000f662002fd");
+        assertEquals(true, m_detector.isServiceDetected(m_testIpAddress));
+
+        // Should not detect, input not interpreted as Hex-STRING
+        m_detector.setHex("false");
+        m_detector.setVbvalue("000f662002fd");
+        assertEquals(false, m_detector.isServiceDetected(m_testIpAddress));
+    }
+
     @Override
     public void setApplicationContext(final ApplicationContext applicationContext) throws BeansException {
         m_applicationContext = applicationContext;
