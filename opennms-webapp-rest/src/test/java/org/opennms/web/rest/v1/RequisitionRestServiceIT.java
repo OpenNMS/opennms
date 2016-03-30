@@ -368,6 +368,14 @@ public class RequisitionRestServiceIT extends AbstractSpringJerseyRestTestCase {
         assertEquals("false", parms.get(1).getValue().getContent());
     }
 
+    @Test
+    public void testDeployedStats() throws Exception {
+        createRequisition();
+
+        String xml = sendRequest(GET, "/requisitions/deployed/stats", 200);
+        assertTrue(xml.contains("deployed-stats"));
+    }
+
     private void createRequisition() throws Exception {
         String req =
             "<model-import xmlns=\"http://xmlns.opennms.org/xsd/config/model-import\" date-stamp=\"2006-03-09T00:03:09\" foreign-source=\"test\">" +

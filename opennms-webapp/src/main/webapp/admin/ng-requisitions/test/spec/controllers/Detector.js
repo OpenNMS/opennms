@@ -7,8 +7,23 @@
 
 describe('Controller: DetectorController', function () {
 
-  var scope, $q, controllerFactory, mockModalInstance, mockRequisitionsService = {},
-    detector = { 'name': 'HTTP', 'class': 'org.opennms.netmgt.provision.http.HttpDetector', 'parameters': [] };
+  var scope, $q, controllerFactory, mockModalInstance, mockRequisitionsService = {};
+
+  var detector = {
+    'name': 'HTTP',
+    'class': 'org.opennms.netmgt.provision.http.HttpDetector',
+    'parameters': []
+  };
+
+  var detectorList = [{
+    "name": "ICMP",
+    "class": "org.opennms.netmgt.provision.detector.icmp.IcmpDetector",
+    "parameters": [{"key": "port"}, {"key": "ipMatch"}, {"key": "retries"}, {"key": "timeout"}]
+  },{
+    "name": "SNMP",
+    "class": "org.opennms.netmgt.provision.detector.snmp.SnmpDetector",
+    "parameters": [{"key": "port"}, {"key": "vbvalue"}, {"key": "oid"}, {"key": "ipMatch"}, {"key": "retries"}, {"key": "agentConfigFactory"}, {"key": "timeout"}]
+  }];
 
   function createController() {
     return controllerFactory('DetectorController', {
@@ -32,16 +47,8 @@ describe('Controller: DetectorController', function () {
   beforeEach(function() {
     mockRequisitionsService.getAvailableDetectors = jasmine.createSpy('getAvailableDetectors');
     var detectors = $q.defer();
-    detectors.resolve([{
-      "name": "ICMP",
-      "class": "org.opennms.netmgt.provision.detector.icmp.IcmpDetector",
-      "parameters": [{"key": "port"}, {"key": "ipMatch"}, {"key": "retries"}, {"key": "timeout"}]
-    },{
-      "name": "SNMP",
-      "class": "org.opennms.netmgt.provision.detector.snmp.SnmpDetector",
-      "parameters": [{"key": "port"}, {"key": "vbvalue"}, {"key": "oid"}, {"key": "ipMatch"}, {"key": "retries"}, {"key": "agentConfigFactory"}, {"key": "timeout"}]
-    }]);
-    mockRequisitionsService.getAvailableDetectors.andReturn(detectors.promise);
+    detectors.resolve(detectorList);
+    mockRequisitionsService.getAvailableDetectors.and.returnValue(detectors.promise);
 
     mockModalInstance = {
       close: function(obj) { console.info(obj); },
@@ -58,11 +65,7 @@ describe('Controller: DetectorController', function () {
     expect(scope.availableDetectors[0].name).toBe('ICMP');
     expect(scope.availableDetectors[1].name).toBe('SNMP');
 
-    scope.updateAvailableParameters({
-      "name": "SNMP",
-      "class": "org.opennms.netmgt.provision.detector.snmp.SnmpDetector",
-      "parameters": [{"key": "port"}, {"key": "vbvalue"}, {"key": "oid"}, {"key": "ipMatch"}, {"key": "retries"}, {"key": "agentConfigFactory"}, {"key": "timeout"}]
-    });
+    scope.updateAvailableParameters(detectorList[1]);
     expect(scope.availableParameters.length).toBe(7);
     expect(scope.availableParameters[0].key).toBe("port");
   });
