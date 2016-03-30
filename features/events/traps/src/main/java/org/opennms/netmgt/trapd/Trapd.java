@@ -66,7 +66,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  * @author <A HREF="mailto:tarus@opennms.org">Tarus Balog </A>
  * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
  */
-public class Trapd extends AbstractServiceDaemon implements TrapProcessorFactory {
+public class Trapd extends AbstractServiceDaemon {
     
     private static final Logger LOG = LoggerFactory.getLogger(Trapd.class);
 
@@ -124,15 +124,6 @@ public class Trapd extends AbstractServiceDaemon implements TrapProcessorFactory
         super(LOG4J_CATEGORY);
     }
 
-    /**
-     * <p>createTrapProcessor</p>
-     *
-     * @return a {@link org.opennms.netmgt.snmp.TrapProcessor} object.
-     */
-    @Override
-    public TrapProcessor createTrapProcessor() {
-        return new EventCreator(m_trapdIpMgr);
-    }
 
     /**
      * <p>onInit</p>

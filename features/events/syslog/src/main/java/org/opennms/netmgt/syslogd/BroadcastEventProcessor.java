@@ -49,7 +49,7 @@ final class BroadcastEventProcessor implements EventListener {
     
     @Autowired
     private SyslogdIPMgr m_syslogdIPMgr;
-
+ 
     /**
      * Create message selector to set to the subscription
      */
