@@ -156,6 +156,7 @@ public class ForeignSourceRestServiceIT extends AbstractSpringJerseyRestTestCase
             try {
                 System.err.printf("[createForeignSource] : deleting %s\n", f.getName());
                 sendRequest(DELETE, "/foreignSources/" + f.getName(), 202);
+                sendRequest(DELETE, "/requisitions/" + f.getName(), 202);
             } catch (Exception e) {
                 fail(e.getMessage());
             }

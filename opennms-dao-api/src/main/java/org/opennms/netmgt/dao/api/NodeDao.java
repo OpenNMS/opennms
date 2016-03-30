@@ -33,6 +33,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsIpInterface;
@@ -95,6 +96,21 @@ public interface NodeDao extends LegacyOnmsDao<OnmsNode, Integer> {
      */
     Map<String, Integer> getForeignIdToNodeIdMap(String foreignSource);
     
+    /**
+     * <p>getForeignIdsPerForeignSourceMap</p>
+     *
+     * @return a {@link java.util.Map} object.
+     */
+    Map<String, Set<String>> getForeignIdsPerForeignSourceMap();
+
+    /**
+     * <p>getForeignIdsPerForeignSource</p>
+     *
+     * @param foreignSource a {@link java.lang.String} object.
+     * @return a {@link java.util.Set} object.
+     */
+    Set<String> getForeignIdsPerForeignSource(String foreignSource);
+
     /**
      * <p>findAllByVarCharAssetColumn</p>
      *
