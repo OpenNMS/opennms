@@ -86,7 +86,15 @@ class DefaultJmxConnector implements JmxServerConnector {
                 return new PlatformMBeanServerConnector().createConnection(ipAddress, propertiesMap);
             }
 
-            final JMXServiceURL url = new JMXServiceURL("service:jmx:" + protocol + ":///jndi/"+protocol+"://" + InetAddressUtils.str(ipAddress) + ":" + port + urlPath);
+            final JMXServiceURL url;
+	    if(protocol.equalsIgnoreCase("jmxmp") || protocol.equalsIgnoreCase("remoting-jmx"))
+	    {
+	    	url = new JMXServiceURL("service:jmx:" + protocol + "://" + InetAddressUtils.str(ipAddress) + ":" + port + urlPath);
+	    }
+	    else
+	    {
+	    	url = new JMXServiceURL("service:jmx:" + protocol + ":///jndi/"+protocol+"://" + InetAddressUtils.str(ipAddress) + ":" + port + urlPath);
+	    }
             LOG.debug("JMX: {} - {}", factory, url);
 
             final Map<String,String[]> env = new HashMap<>();
