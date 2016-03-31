@@ -15,15 +15,14 @@
   * @module onms-requisitions
   *
   * @requires $scope Angular local scope
-  * @requires $modalInstance Angular modal instance
+  * @requires $uibModalInstance Angular UI modal instance
   * @requires RequisitionsService The Requisitions Servive
-  * @requires EmptyTypeaheadService The empty typeahead Service
   * @requires asset Node asset object
   * @requires assetsBlackList The black list of asset fields
   *
   * @description The controller for manage the modal dialog for add/edit asserts of requisitioned nodes
   */
-  .controller('AssetController', ['$scope', '$modalInstance', 'RequisitionsService', 'EmptyTypeaheadService', 'asset', 'assetsBlackList', function($scope, $modalInstance, RequisitionsService, EmptyTypeaheadService, asset, assetsBlackList) {
+  .controller('AssetController', ['$scope', '$uibModalInstance', 'RequisitionsService', 'asset', 'assetsBlackList', function($scope, $uibModalInstance, RequisitionsService, asset, assetsBlackList) {
 
     /**
     * @description The asset object
@@ -56,24 +55,6 @@
     $scope.assetsBlackList = assetsBlackList;
 
     /**
-    * @description fieldComparator method from EmptyTypeaheadService
-    *
-    * @ngdoc method
-    * @name AssetController:fieldComparator
-    * @methodOf AssetController
-    */
-    $scope.fieldComparator = EmptyTypeaheadService.fieldComparator;
-
-    /**
-    * @description onFocus method from EmptyTypeaheadService
-    *
-    * @ngdoc method
-    * @name AssetController:onFocus
-    * @methodOf AssetController
-    */
-    $scope.onFocus = EmptyTypeaheadService.onFocus;
-
-    /**
     * @description Saves the current asset
     *
     * @name AssetController:save
@@ -81,7 +62,7 @@
     * @methodOf AssetController
     */
     $scope.save = function() {
-      $modalInstance.close($scope.asset);
+      $uibModalInstance.close($scope.asset);
     };
 
     /**
@@ -92,7 +73,7 @@
     * @methodOf AssetController
     */
     $scope.cancel = function() {
-      $modalInstance.dismiss('cancel');
+      $uibModalInstance.dismiss('cancel');
     };
 
     /**

@@ -46,6 +46,7 @@ import java.util.TreeSet;
 import org.apache.commons.beanutils.BeanUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.core.criteria.Criteria;
 import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
@@ -379,6 +380,22 @@ public class NodeDaoIT implements InitializingBean {
 
     @Test
     @Transactional
+    public void testGetForeignIdsPerForeignSourceMap() {
+        Map<String, Set<String>> arMap = getNodeDao().getForeignIdsPerForeignSourceMap();
+        assertTrue("Expected to find foreign source 'imported:'", arMap.containsKey("imported:"));
+        assertEquals(4, arMap.get("imported:").size());
+        assertEquals("1", arMap.get("imported:").iterator().next());
+    }
+
+    @Test
+    @Transactional
+    public void testGetForeignIdsPerForeignSource() {
+        Set<String> set = getNodeDao().getForeignIdsPerForeignSource("imported:");
+        assertEquals("1", set.iterator().next());
+    }
+
+    @Test
+    @Transactional
     public void testUpdateNodeScanStamp() {
 
         Date timestamp = new Date(27);
@@ -609,6 +626,25 @@ public class NodeDaoIT implements InitializingBean {
         nodes = m_nodeDao.findMatching(cb.toCriteria());
         System.err.println("Nodes found: "+nodes.size());
         assertEquals(2, nodes.size());
+    }
+
+    @Test
+    @Transactional
+    public void testCriteriaBuilderOrderBy() {
+        CriteriaBuilder cb = new CriteriaBuilder(OnmsNode.class);
+        cb.alias("ipInterfaces", "ipInterface").distinct();
+
+        // TODO: Make this work but we need to put the fields into
+        // an aggregator function since node->ipInterfaces is a 1->M
+        // relationship.
+        //
+        //cb.orderBy("ipInterfaces.ipAddress").distinct();
+
+        Criteria criteria = cb.toCriteria();
+        System.out.println("Criteria: " + criteria.toString());
+        List<OnmsNode> nodes = m_nodeDao.findMatching(criteria);
+        nodes.stream().forEach(System.out::println);
+        assertEquals(6, nodes.size());
     }
 
     @Test

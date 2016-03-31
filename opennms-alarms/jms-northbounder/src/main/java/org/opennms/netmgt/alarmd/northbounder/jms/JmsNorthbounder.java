@@ -72,18 +72,18 @@ public class JmsNorthbounder extends AbstractNorthbounder implements Initializin
     private static final Logger LOG = LoggerFactory.getLogger(JmsNorthbounder.class);
 
     /** The Constant NBI_NAME. */
-    public static final String NBI_NAME = "JmsNorthbounder";
+    public static final String NBI_NAME = "JmsNBI";
 
-    /** The m_jms northbounder connection factory. */
+    /** The JMX northbounder connection factory. */
     private ConnectionFactory m_jmsNorthbounderConnectionFactory;
 
-    /** The m_config. */
+    /** The JMS northbounder configuration. */
     private JmsNorthbounderConfig m_config;
 
-    /** The m_jms destination. */
+    /** The JMS destination. */
     private JmsDestination m_jmsDestination;
 
-    /** The m_template. */
+    /** The JMS template. */
     private JmsTemplate m_template;
 
     /**
@@ -113,6 +113,7 @@ public class JmsNorthbounder extends AbstractNorthbounder implements Initializin
     @Override
     public boolean accepts(NorthboundAlarm alarm) {
         if (!m_config.isEnabled()) {
+            LOG.warn("JMS Northbounder {} is currently disabled, rejecting alarm {}.", getName(), alarm.getUei());
             return false;
         }
         LOG.debug("Validating UEI of alarm: {}", alarm.getUei());

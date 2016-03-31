@@ -29,15 +29,17 @@
 package org.opennms.netmgt.alarmd.northbounder.jms;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import javax.jms.ConnectionFactory;
 
 import org.opennms.core.soa.Registration;
 import org.opennms.core.soa.ServiceRegistry;
+import org.opennms.netmgt.alarmd.api.NorthboundAlarm;
 import org.opennms.netmgt.alarmd.api.Northbounder;
-import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.alarmd.api.NorthbounderException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,25 +49,24 @@ import org.springframework.util.Assert;
  * The Class JmsNorthbounderManager.
  *
  * @author <a href="mailto:dschlenk@converge-one.com">David Schlenk</a>
+ * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
-public class JmsNorthbounderManager implements InitializingBean,
-        DisposableBean {
+public class JmsNorthbounderManager implements InitializingBean, Northbounder, DisposableBean {
 
-    /** The m_service registry. */
+    /** The Constant LOG. */
+    private static final Logger LOG = LoggerFactory.getLogger(JmsNorthbounderManager.class);
+
+    /** The service registry. */
     @Autowired
     private ServiceRegistry m_serviceRegistry;
 
-    /** The m_jms northbounder connection factory. */
+    /** The JMX northbounder connection factory. */
     @Autowired
     private ConnectionFactory m_jmsNorthbounderConnectionFactory;
 
-    /** The m_config dao. */
+    /** The JMS Configuration DAO. */
     @Autowired
     private JmsNorthbounderConfigDao m_configDao;
-
-    /** The m_node dao. */
-    @Autowired
-    private NodeDao m_nodeDao;
 
     /** The m_registrations. */
     private Map<String, Registration> m_registrations = new HashMap<String, Registration>();
@@ -75,22 +76,31 @@ public class JmsNorthbounderManager implements InitializingBean,
      */
     @Override
     public void afterPropertiesSet() throws Exception {
-
-        Assert.notNull(m_nodeDao);
         Assert.notNull(m_configDao);
         Assert.notNull(m_serviceRegistry);
 
-        JmsNorthbounderConfig config = m_configDao.getConfig();
-        List<JmsDestination> destinations = config.getDestinations();
-        for (JmsDestination jmsDestination : destinations) {
-            JmsNorthbounder nbi = new JmsNorthbounder(
-                                                      config,
-                                                      m_jmsNorthbounderConnectionFactory,
-                                                      jmsDestination);
+        // Registering itself as a northbounder
+        m_registrations.put(getName(), m_serviceRegistry.register(this, Northbounder.class));
+
+        // Registering each destination as a northbounder
+        registerNorthnounders();
+    }
+
+    /**
+     * Register northnounders.
+     *
+     * @throws Exception the exception
+     */
+    private void registerNorthnounders() throws Exception {
+        if (! m_configDao.getConfig().isEnabled()) {
+            LOG.warn("The JMS NBI is globally disabled, the destinations won't be registered which means all the alarms will be rejected.");
+            return;
+        }
+        for (JmsDestination jmsDestination : m_configDao.getConfig().getDestinations()) {
+            LOG.info("Registering JMS northbound configuration for destination {}.", jmsDestination.getName());
+            JmsNorthbounder nbi = new JmsNorthbounder(m_configDao.getConfig(), m_jmsNorthbounderConnectionFactory, jmsDestination);
             nbi.afterPropertiesSet();
-            m_registrations.put(nbi.getName(),
-                                m_serviceRegistry.register(nbi,
-                                                           Northbounder.class));
+            m_registrations.put(nbi.getName(), m_serviceRegistry.register(nbi, Northbounder.class));
         }
     }
 
@@ -99,8 +109,53 @@ public class JmsNorthbounderManager implements InitializingBean,
      */
     @Override
     public void destroy() throws Exception {
-        for (Registration r : m_registrations.values()) {
-            r.unregister();
+        m_registrations.values().forEach(r -> r.unregister());
+    }
+
+    /* (non-Javadoc)
+     * @see org.opennms.netmgt.alarmd.api.Northbounder#start()
+     */
+    @Override
+    public void start() throws NorthbounderException {
+        // There is no need to do something here. Only the reload method will be implemented
+    }
+
+    /* (non-Javadoc)
+     * @see org.opennms.netmgt.alarmd.api.Northbounder#onAlarm(org.opennms.netmgt.alarmd.api.NorthboundAlarm)
+     */
+    @Override
+    public void onAlarm(NorthboundAlarm alarm) throws NorthbounderException {
+        // There is no need to do something here. Only the reload method will be implemented
+    }
+
+    /* (non-Javadoc)
+     * @see org.opennms.netmgt.alarmd.api.Northbounder#stop()
+     */
+    @Override
+    public void stop() throws NorthbounderException {
+        // There is no need to do something here. Only the reload method will be implemented
+    }
+
+    /* (non-Javadoc)
+     * @see org.opennms.netmgt.alarmd.api.Northbounder#getName()
+     */
+    @Override
+    public String getName() {
+        return JmsNorthbounder.NBI_NAME;
+    }
+
+    /* (non-Javadoc)
+     * @see org.opennms.netmgt.alarmd.api.Northbounder#reloadConfig()
+     */
+    @Override
+    public void reloadConfig() {
+        LOG.info("Reloading JMS northbound configuration.");
+        try {
+            m_configDao.reload();
+            m_registrations.forEach((k,v) -> { if (k != getName()) v.unregister();});
+            registerNorthnounders();
+        } catch (Exception e) {
+            LOG.error("Can't reload the JMS northbound configuration", e);
         }
     }
 

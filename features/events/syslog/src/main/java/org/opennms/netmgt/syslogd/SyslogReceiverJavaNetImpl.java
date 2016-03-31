@@ -35,19 +35,23 @@ import java.net.DatagramSocket;
 import java.net.InetSocketAddress;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
-import java.util.concurrent.ExecutionException;
+import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 import org.opennms.core.concurrent.LogPreservingThreadFactory;
-import org.opennms.core.concurrent.WaterfallExecutor;
 import org.opennms.core.logging.Logging;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.SyslogdConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.codahale.metrics.Histogram;
+import com.codahale.metrics.Meter;
+import com.codahale.metrics.MetricRegistry;
 
 /**
  * @author <a href="mailto:weave@oculan.com">Brian Weaver</a>
@@ -56,6 +60,8 @@ import org.slf4j.LoggerFactory;
  */
 public class SyslogReceiverJavaNetImpl implements SyslogReceiver {
     private static final Logger LOG = LoggerFactory.getLogger(SyslogReceiverJavaNetImpl.class);
+    
+    private static final MetricRegistry METRICS = new MetricRegistry();
 
     private static final int SOCKET_TIMEOUT = 500;
 
@@ -75,6 +81,8 @@ public class SyslogReceiverJavaNetImpl implements SyslogReceiver {
     private Thread m_context;
 
     private final SyslogdConfig m_config;
+
+    private List<SyslogConnectionHandler> m_syslogConnectionHandlers = Collections.emptyList();
 
     private final ExecutorService m_executor;
 
@@ -118,6 +126,14 @@ public class SyslogReceiverJavaNetImpl implements SyslogReceiver {
         );
     }
 
+    public SyslogConnectionHandler getSyslogConnectionHandlers() {
+        return m_syslogConnectionHandlers.get(0);
+    }
+
+    public void setSyslogConnectionHandlers(SyslogConnectionHandler handler) {
+        m_syslogConnectionHandlers = Collections.singletonList(handler);
+    }
+
     @Override
     public String getName() {
         String listenAddress = (m_config.getListenAddress() != null && m_config.getListenAddress().length() > 0) ? m_config.getListenAddress() : "0.0.0.0";
@@ -159,6 +175,11 @@ public class SyslogReceiverJavaNetImpl implements SyslogReceiver {
 
         // Get a log instance
         Logging.putPrefix(Syslogd.LOG4J_CATEGORY);
+
+        // Create some metrics
+        Meter packetMeter = METRICS.meter(MetricRegistry.name(getClass(), "packets"));
+        Meter connectionMeter = METRICS.meter(MetricRegistry.name(getClass(), "connections"));
+        Histogram packetSizeHistogram = METRICS.histogram(MetricRegistry.name(getClass(), "packetSize"));
 
         if (m_stop) {
             LOG.debug("Stop flag set before thread started, exiting");
@@ -236,9 +257,27 @@ public class SyslogReceiverJavaNetImpl implements SyslogReceiver {
                 }
 
                 m_dgSock.receive(pkt);
+                
+                // Increment the packet counter
+                packetMeter.mark();
+                
+                // Create a metric for the syslog packet size
+                packetSizeHistogram.update(length);
+
+                SyslogConnection connection = new SyslogConnection(pkt, m_config);
+
+                try {
+                    for (SyslogConnectionHandler handler : m_syslogConnectionHandlers) {
+                        connectionMeter.mark();
+                        handler.handleSyslogConnection(connection);
+                    }
+                } catch (Throwable e) {
+                    LOG.error("Handler execution failed in {}", this.getClass().getSimpleName(), e);
+                }
 
                 //SyslogConnection *Must* copy packet data and InetAddress as DatagramPacket is a mutable type
-                WaterfallExecutor.waterfall(m_executor, new SyslogConnection(pkt, m_config));
+                //WaterfallExecutor.waterfall(m_executor, new SyslogConnection(pkt, m_config));
+
                 ioInterrupted = false; // reset the flag
             } catch (SocketTimeoutException e) {
                 ioInterrupted = true;
@@ -246,12 +285,14 @@ public class SyslogReceiverJavaNetImpl implements SyslogReceiver {
             } catch (InterruptedIOException e) {
                 ioInterrupted = true;
                 continue;
+                /*
             } catch (ExecutionException e) {
                 LOG.error("Task execution failed in {}", this.getClass().getSimpleName(), e);
                 break;
             } catch (InterruptedException e) {
                 LOG.error("Task interrupted in {}", this.getClass().getSimpleName(), e);
                 break;
+                */
             } catch (IOException e) {
                 if (m_stop) {
                     // A SocketException can be thrown during normal shutdown so log as debug

@@ -95,7 +95,7 @@
 
                     <div class="form-group">
                         <div class="col-md-2">
-                            <input type="submit" class="btn btn-default" id="proceed" name="_evedntId_proceed" value="Proceed"/>&#160;
+                            <input type="submit" class="btn btn-default" id="proceed" name="_eventId_proceed" value="Proceed"/>&#160;
                             <input type="submit" class="btn btn-default" name="_eventId_revise" value="Revise"/>&#160;
                             <input type="submit" class="btn btn-default" name="_eventId_cancel" value="Cancel"/>&#160;
                         </div>

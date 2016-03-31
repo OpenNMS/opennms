@@ -187,6 +187,7 @@ public class DefaultGlobalReportRepositoryTest {
     }
 
     @Test
+    @Ignore
     public void addReportRepositoryTest() {
         assertEquals("Repository is initialized with one configured repository", 1, m_globalReportRepository.getRepositoryList().size());
         m_globalReportRepository.addReportRepository(m_mockLocalReportRepository);

@@ -1,0 +1,56 @@
+<?xml version="1.0"?>
+<wsman-datacollection-config>
+    <group name="drac-system"
+           resource-uri="http://schemas.dell.com/wbem/wscim/1/cim-schema/2/root/dcim/DCIM_ComputerSystem"
+           resource-type="node">
+        <attrib name="OtherIdentifyingInfo" index-of="#IdentifyingDescriptions matches '.*ServiceTag'" alias="serviceTag" type="String"/>
+    </group>
+
+    <group name="drac-power-supply"
+           resource-uri="http://schemas.dmtf.org/wbem/wscim/1/*"
+           dialect="http://schemas.microsoft.com/wbem/wsman/1/WQL"
+           filter="select InputVoltage,InstanceID,PrimaryStatus,SerialNumber,TotalOutputPower from DCIM_PowerSupplyView where DetailedState != 'Absent'"
+           resource-type="dracPowerSupplyIndex">
+        <attrib name="InputVoltage" alias="inputVoltage" type="Gauge"/>
+        <attrib name="InstanceID" alias="instanceId" type="String"/>
+        <attrib name="PrimaryStatus" alias="primaryStatus" type="Gauge"/>
+        <attrib name="SerialNumber" alias="serialNumber" type="String"/>
+        <attrib name="TotalOutputPower" alias="totalOutputPower" type="Gauge"/>
+    </group>
+
+    <group name="drac-system-board"
+           resource-uri="http://schemas.dell.com/wbem/wscim/1/cim-schema/2/root/dcim/DCIM_NumericSensor"
+           dialect="http://schemas.microsoft.com/wbem/wsman/1/WQL"
+           filter="select CurrentReading, ElementName from DCIM_NumericSensor WHERE ElementName LIKE 'System Board %'"
+           resource-type="node">
+        <attrib name="CurrentReading" filter="#ElementName == 'System Board MEM Usage'" alias="sysBoardMemUsage" type="Gauge"/>
+        <attrib name="CurrentReading" filter="#ElementName == 'System Board IO Usage'" alias="sysBoardIoUsage" type="Gauge"/>
+        <attrib name="CurrentReading" filter="#ElementName == 'System Board CPU Usage'" alias="sysBoardCpuUsage" type="Gauge"/>
+        <attrib name="CurrentReading" filter="#ElementName == 'System Board SYS Usage'" alias="sysBoardSysUsage" type="Gauge"/>
+    </group>
+
+    <!--
+         Dell iDRAC 6 reports:
+              productVendor = 'Openwsman Project'
+              productVersion = '2.0.0'
+         (These devices need to be overriden via wsman-config.xml in order to match here)
+
+         Dell iDRAC 7 reports:
+              productVendor = 'Dell, Inc.'
+              productVersion = 'iDRAC : System Type = 12G Modular : LC Version = 2.15.10.10 : Version = 2.15.10.10'
+
+         Dell iDrac 8 reports:
+              productVendor = 'Dell, Inc.'
+              productVersion = 'iDRAC : System Type = 13G Monolithic : LC Version = 2.30.30.30 : Version = 2.30.30.30'
+    -->
+    <system-definition name="Dell iDRAC (All Version)">
+        <rule>#productVendor matches '^Dell.*' and #productVersion matches '.*iDRAC.*'</rule>
+        <include-group>drac-system</include-group>
+        <include-group>drac-power-supply</include-group>
+    </system-definition>
+
+    <system-definition name="Dell iDRAC 8">
+        <rule>#productVendor matches '^Dell.*' and #productVersion matches '.*iDRAC.*13G.*'</rule>
+        <include-group>drac-system-board</include-group>
+    </system-definition>
+</wsman-datacollection-config>

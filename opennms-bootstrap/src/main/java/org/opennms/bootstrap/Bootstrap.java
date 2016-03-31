@@ -104,11 +104,12 @@ public abstract class Bootstrap {
      *
      * @param dirStr
      *            List of directories to search for JARs, separated by
-     *            {@link java.io.File#pathSeparator File.pathSeparator}
+     *            {@link java.io.File#pathSeparator File.pathSeparator}.
      * @param recursive
      *            Whether to recurse into subdirectories of the directories in
-     *            dirStr
-     * @param append TODO
+     *            dirStr.
+     * @param append Append the URLs of the current {@link java.lang.Thread#getContextClassLoader())
+     *            to this classloader.
      * @returns A new ClassLoader containing the found JARs
      * @return a {@link java.lang.ClassLoader} object.
      * @throws java.net.MalformedURLException if any.

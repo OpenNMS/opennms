@@ -42,7 +42,7 @@ public class RemotePollerBackEnd extends AbstractSpringContextJmxServiceDaemon<o
     /** {@inheritDoc} */
     @Override
     protected String getLoggingPrefix() {
-        return Poller.getLoggingCategory();
+        return Poller.LOG4J_CATEGORY;
     }
 
     /** {@inheritDoc} */

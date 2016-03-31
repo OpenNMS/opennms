@@ -55,6 +55,14 @@ public class RRDv3 extends AbstractRRD {
     /** The data sources. */
     public List<DS> dataSources = new ArrayList<DS>();
 
+    /**
+     * Instantiates a new RRDv3.
+     */
+    public RRDv3() {
+        super();
+        setVersion("0003");
+    }
+
     /* (non-Javadoc)
      * @see org.opennms.netmgt.rrd.model.AbstractRRD#getRras()
      */

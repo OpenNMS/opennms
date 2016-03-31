@@ -30,7 +30,6 @@ package org.opennms.netmgt.alarmd.northbounder.syslog;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
@@ -158,10 +157,10 @@ public class SyslogConfigDaoTest {
         assertNotNull(syslogDestination);
         assertEquals("test-host", syslogDestination.getName());
         assertEquals("127.0.0.2", syslogDestination.getHost());
-        assertEquals(10514, syslogDestination.getPort());
+        assertEquals(new Integer(10514), syslogDestination.getPort());
         assertEquals(SyslogDestination.SyslogProtocol.TCP, syslogDestination.getProtocol());
         assertEquals(SyslogDestination.SyslogFacility.LOCAL0, syslogDestination.getFacility());
-        assertEquals(512, syslogDestination.getMaxMessageLength());
+        assertEquals(new Integer(512), syslogDestination.getMaxMessageLength());
         assertEquals(false, syslogDestination.isSendLocalName());
         assertEquals(false, syslogDestination.isSendLocalTime());
         assertEquals(true, syslogDestination.isTruncateMessage());
@@ -207,7 +206,7 @@ public class SyslogConfigDaoTest {
         dao.afterPropertiesSet();
 
         assertNotNull(dao.getConfig());
-        SyslogDestination dst = dao.getConfig().getDestination("test-host");
+        SyslogDestination dst = dao.getConfig().getSyslogDestination("test-host");
         assertNotNull(dst);
         assertEquals(2, dst.getFilters().size());
         assertEquals(true, dst.getFilters().get(0).isEnabled());
@@ -218,9 +217,37 @@ public class SyslogConfigDaoTest {
         writer.close();
         dao.reload();
 
-        dst = dao.getConfig().getDestination("test-host");
+        dst = dao.getConfig().getSyslogDestination("test-host");
         assertNotNull(dst);
-        assertNull(dst.getFilters());
+        assertTrue(dst.getFilters().isEmpty());
+        configFile.delete();
+    }
+
+    /**
+     * Test modify configuration.
+     *
+     * @throws Exception the exception
+     */
+    @Test
+    public void testModifyConfiguration() throws Exception {
+        File configFile = new File("target/syslog-northbounder-test.xml");
+        FileWriter writer = new FileWriter(configFile);
+        writer.write(xmlWithFilters);
+        writer.close();
+        Resource resource = new FileSystemResource(configFile);
+
+        SyslogNorthbounderConfigDao dao = new SyslogNorthbounderConfigDao();
+        dao.setConfigResource(resource);
+        dao.afterPropertiesSet();
+
+        assertNotNull(dao.getConfig());
+        SyslogDestination dst = dao.getConfig().getSyslogDestination("test-host");
+        assertNotNull(dst);
+        dst.setHost("192.168.0.1");
+        dao.save();
+        dao.reload();
+
+        assertEquals("192.168.0.1", dao.getConfig().getSyslogDestination("test-host").getHost());
         configFile.delete();
     }
 

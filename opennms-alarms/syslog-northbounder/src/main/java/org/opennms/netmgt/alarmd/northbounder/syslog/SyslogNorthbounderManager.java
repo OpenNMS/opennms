@@ -89,6 +89,10 @@ public class SyslogNorthbounderManager implements InitializingBean, Northbounder
      * @throws Exception the exception
      */
     private void registerNorthnounders() throws Exception {
+        if (! m_configDao.getConfig().isEnabled()) {
+            LOG.warn("The Syslog NBI is globally disabled, the destinations won't be registered which means all the alarms will be rejected.");
+            return;
+        }
         for (SyslogDestination syslogDestination : m_configDao.getConfig().getDestinations()) {
             LOG.info("Registering syslog northbound configuration for destination {}.", syslogDestination.getName());
             SyslogNorthbounder nbi = new SyslogNorthbounder(m_configDao, syslogDestination.getName());
@@ -158,10 +162,10 @@ public class SyslogNorthbounderManager implements InitializingBean, Northbounder
      */
     @Override
     public void reloadConfig() {
-        m_configDao.reload();
-        LOG.info("Reloading syslog northbound configuration.");
-        m_registrations.forEach((k,v) -> { if (k != getName()) v.unregister();}); // Unregistering Syslog destinations
+        LOG.info("Reloading Syslog northbound configuration.");
         try {
+            m_configDao.reload();
+            m_registrations.forEach((k,v) -> { if (k != getName()) v.unregister();}); // Unregistering Syslog destinations
             Syslog.shutdown(); // Shutdown all Syslog instances.
             registerNorthnounders(); // Re-registering all Syslog destinations.
         } catch (Exception e) {

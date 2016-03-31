@@ -468,7 +468,6 @@ VTD-XML is very fast GPL library for parsing XMLs with XPath Suppoer.
 %{extrainfo}
 %{extrainfo2}
 
-
 %prep
 
 tar -xvzf $RPM_SOURCE_DIR/%{name}-source-%{version}-%{release}.tar.gz -C $RPM_BUILD_DIR

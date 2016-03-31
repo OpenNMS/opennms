@@ -28,7 +28,12 @@
 
 package org.opennms.netmgt.alarmd.northbounder.email;
 
+import java.io.FileWriter;
+import java.io.IOException;
+
 import org.opennms.core.xml.AbstractJaxbConfigDao;
+import org.opennms.core.xml.JaxbUtils;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -72,5 +77,14 @@ public class EmailNorthbounderConfigDao extends AbstractJaxbConfigDao<EmailNorth
     public void reload() {
         getContainer().reload();
     }
-    
+
+    /**
+     * Save.
+     *
+     * @throws IOException Signals that an I/O exception has occurred.
+     */
+    public void save() throws IOException {
+        JaxbUtils.marshal(getConfig(), new FileWriter(getConfigResource().getFile()));
+    }
+
 }

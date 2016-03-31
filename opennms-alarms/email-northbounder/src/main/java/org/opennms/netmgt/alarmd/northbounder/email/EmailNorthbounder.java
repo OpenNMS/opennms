@@ -28,13 +28,11 @@
 
 package org.opennms.netmgt.alarmd.northbounder.email;
 
-import java.io.ByteArrayInputStream;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.io.IOUtils;
 import org.opennms.core.utils.PropertiesUtils;
-import org.opennms.core.xml.CastorUtils;
+import org.opennms.core.xml.JaxbUtils;
 import org.opennms.javamail.JavaMailerException;
 import org.opennms.javamail.JavaSendMailer;
 import org.opennms.netmgt.alarmd.api.NorthboundAlarm;
@@ -43,6 +41,7 @@ import org.opennms.netmgt.alarmd.api.support.AbstractNorthbounder;
 import org.opennms.netmgt.config.javamail.SendmailConfig;
 import org.opennms.netmgt.config.javamail.SendmailMessage;
 import org.opennms.netmgt.dao.api.JavaMailConfigurationDao;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -81,6 +80,9 @@ public class EmailNorthbounder extends AbstractNorthbounder implements Initializ
     /** The Email body format. */
     private String m_emailBodyFormat;
 
+    /** The initialized flag (it will be true when the NBI is properly initialized). */
+    private boolean initialized = false;
+
     /**
      * Instantiates a new SNMP Trap northbounder.
      *
@@ -94,18 +96,14 @@ public class EmailNorthbounder extends AbstractNorthbounder implements Initializ
         m_destination = configDao.getConfig().getEmailDestination(destinationName);
 
         // Creating a local copy of the SendmailConfig object, to avoid potential thread contention issues.
-        ByteArrayInputStream is = null;
         try {
             final SendmailConfig sendmail = javaMailDao.getSendMailConfig(destinationName);
             if (sendmail != null) {
-                final String sendmailText = CastorUtils.marshal(sendmail);
-                is = new ByteArrayInputStream(sendmailText.getBytes());
-                m_sendmail = CastorUtils.unmarshal(SendmailConfig.class, is);
+                final String sendmailText = JaxbUtils.marshal(sendmail);
+                m_sendmail = JaxbUtils.unmarshal(SendmailConfig.class, sendmailText);
             }
         } catch (Exception e) {
             LOG.error("Can't create a copy of the SendmailConfig object named {}.", destinationName, e);
-        } finally {
-            IOUtils.closeQuietly(is);
         }
 
         // Saving a local copy of the templates, as they will be overridden every time a new email has to be sent.
@@ -123,15 +121,14 @@ public class EmailNorthbounder extends AbstractNorthbounder implements Initializ
     @Override
     public void afterPropertiesSet() throws Exception {
         if (m_destination == null || m_sendmail == null) {
-            LOG.info("Email Northbounder is currently disabled, rejecting alarm.");
-            String msg = "Email forwarding configuration is not initialized.";
-            IllegalStateException e = new IllegalStateException(msg);
-            LOG.error(msg, e);
-            throw e;
+            LOG.error("Emai Northbounder {} is currently disabled because it has not been initialized correctly or there is a problem with the configuration.", getName());
+            initialized = false;
+            return;
         }
         setNaglesDelay(getConfig().getNaglesDelay());
         setMaxBatchSize(getConfig().getBatchSize());
         setMaxPreservedAlarms(getConfig().getQueueSize());
+        initialized = true;
     }
 
     /**
@@ -142,9 +139,15 @@ public class EmailNorthbounder extends AbstractNorthbounder implements Initializ
      */
     @Override
     public boolean accepts(NorthboundAlarm alarm) {
-        if (!getConfig().isEnabled()) {
+        if (!initialized) {
+            LOG.warn("Email Northbounder {} has not been properly initialized, rejecting alarm {}.", getName(), alarm.getUei());
             return false;
         }
+        if (!getConfig().isEnabled()) {
+            LOG.warn("Email Northbounder {} is currently disabled, rejecting alarm {}.", getName(), alarm.getUei());
+            return false;
+        }
+
         LOG.debug("Validating UEI of alarm: {}", alarm.getUei());
         if (getConfig().getUeis() == null || getConfig().getUeis().contains(alarm.getUei())) {
             LOG.debug("UEI: {}, accepted.", alarm.getUei());
@@ -152,6 +155,7 @@ public class EmailNorthbounder extends AbstractNorthbounder implements Initializ
             LOG.debug("Filters: {}, passed ? {}.", alarm.getUei(), passed);
             return passed;
         }
+
         LOG.debug("UEI: {}, rejected.", alarm.getUei());
         return false;
     }

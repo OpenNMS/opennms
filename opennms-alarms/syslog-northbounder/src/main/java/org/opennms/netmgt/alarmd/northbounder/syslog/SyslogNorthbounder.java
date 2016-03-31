@@ -34,18 +34,14 @@ import org.opennms.core.utils.PropertiesUtils;
 import org.opennms.netmgt.alarmd.api.NorthboundAlarm;
 import org.opennms.netmgt.alarmd.api.NorthbounderException;
 import org.opennms.netmgt.alarmd.api.support.AbstractNorthbounder;
-import org.opennms.netmgt.alarmd.northbounder.syslog.SyslogDestination.SyslogFacility;
-import org.opennms.netmgt.alarmd.northbounder.syslog.SyslogDestination.SyslogProtocol;
-import org.opennms.netmgt.model.OnmsSeverity;
+
 import org.graylog2.syslog4j.Syslog;
-import org.graylog2.syslog4j.SyslogConfigIF;
-import org.graylog2.syslog4j.SyslogConstants;
 import org.graylog2.syslog4j.SyslogIF;
 import org.graylog2.syslog4j.SyslogRuntimeException;
-import org.graylog2.syslog4j.impl.net.tcp.TCPNetSyslogConfig;
-import org.graylog2.syslog4j.impl.net.udp.UDPNetSyslogConfig;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import org.springframework.beans.factory.InitializingBean;
 
 /**
@@ -67,6 +63,9 @@ public class SyslogNorthbounder extends AbstractNorthbounder implements Initiali
     /** The Syslog Destination. */
     private SyslogDestination m_destination;
 
+    /** The initialized flag (it will be true when the NBI is properly initialized). */
+    private boolean initialized = false;
+
     /**
      * Instantiates a new Syslog northbounder.
      *
@@ -76,7 +75,7 @@ public class SyslogNorthbounder extends AbstractNorthbounder implements Initiali
     public SyslogNorthbounder(SyslogNorthbounderConfigDao configDao, String destination) {
         super(NBI_NAME + ":" + destination);
         m_configDao = configDao;
-        m_destination = configDao.getSyslogDestination(destination);
+        m_destination = configDao.getConfig().getSyslogDestination(destination);
     }
 
     /* (non-Javadoc)
@@ -85,16 +84,15 @@ public class SyslogNorthbounder extends AbstractNorthbounder implements Initiali
     @Override
     public void afterPropertiesSet() throws Exception {
         if (m_destination == null) {
-            LOG.info("Syslog Northbounder is currently disabled, rejecting alarm.");
-            String msg = "Syslog forwarding configuration is not initialized.";
-            IllegalStateException e = new IllegalStateException(msg);
-            LOG.error(msg, e);
-            throw e;
+            LOG.error("Syslog Northbounder {} is currently disabled because it has not been initialized correctly or there is a problem with the configuration.", getName());
+            initialized = false;
+            return;
         }
-        createNorthboundInstance();
+        SyslogUtils.createNorthboundInstance(m_destination);
         setNaglesDelay(getConfig().getNaglesDelay());
         setMaxBatchSize(getConfig().getBatchSize());
         setMaxPreservedAlarms(getConfig().getQueueSize());
+        initialized = true;
     }
 
     /**
@@ -106,7 +104,12 @@ public class SyslogNorthbounder extends AbstractNorthbounder implements Initiali
      */
     @Override
     public boolean accepts(NorthboundAlarm alarm) {
+        if (!initialized) {
+            LOG.warn("Syslog Northbounder {} has not been properly initialized, rejecting alarm {}.", getName(), alarm.getUei());
+            return false;
+        }
         if (!getConfig().isEnabled()) {
+            LOG.warn("Syslog Northbounder {} is currently disabled, rejecting alarm {}.", getName(), alarm.getUei());
             return false;
         }
 
@@ -172,7 +175,7 @@ public class SyslogNorthbounder extends AbstractNorthbounder implements Initiali
                 syslogMessage = PropertiesUtils.substitute(msgFormat, createMapping(alarm));
 
                 LOG.debug("Determining LOG_LEVEL for alarm: {}", alarm.getId());
-                level = determineLogLevel(alarm.getSeverity());
+                level = SyslogUtils.determineLogLevel(alarm.getSeverity());
 
                 LOG.debug("Forwarding alarm: {} via syslog to destination: {}", alarm.getId(), m_destination.getName());
                 instance.log(level, syslogMessage);
@@ -181,170 +184,6 @@ public class SyslogNorthbounder extends AbstractNorthbounder implements Initiali
                 LOG.error("Caught exception sending to destination: '{}': {}", m_destination.getName(), ex);
             }
         }
-    }
-
-    /**
-     * This is here, for now, until it can be properly wired and proper
-     * configuration can be created. This allows generic 127.0.0.1:UDP/514 to
-     * work with OpenNMS having no configuration. This is trickery in its
-     * finest hour.
-     *
-     * @throws SyslogRuntimeException the syslog runtime exception
-     */
-    private void createNorthboundInstance() throws SyslogRuntimeException {
-        LOG.info("Creating Syslog Northbound Instance {}", m_destination.getName());
-
-        int facility = convertFacility(m_destination.getFacility());
-        SyslogProtocol protocol = m_destination.getProtocol();
-        SyslogConfigIF instanceConfiguration = createConfig(m_destination, protocol, facility);
-        instanceConfiguration.setIdent("OpenNMS");
-        instanceConfiguration.setCharSet(m_destination.getCharSet());
-        instanceConfiguration.setMaxMessageLength(m_destination.getMaxMessageLength());
-        instanceConfiguration.setSendLocalName(m_destination.isSendLocalName());
-        instanceConfiguration.setSendLocalTimestamp(m_destination.isSendLocalTime());
-        instanceConfiguration.setTruncateMessage(m_destination.isTruncateMessage());
-        instanceConfiguration.setUseStructuredData(SyslogConstants.USE_STRUCTURED_DATA_DEFAULT);
-
-        try {
-            Syslog.createInstance(m_destination.getName(), instanceConfiguration);
-        } catch (SyslogRuntimeException e) {
-            LOG.error("Could not create northbound instance, '{}': {}", m_destination.getName(), e);
-            throw e;
-        }
-    }
-
-    /**
-     * Creates the Syslog configuration object.
-     *
-     * @param dest the destination
-     * @param protocol the protocol
-     * @param fac the facility
-     * @return the SyslogConfigIf object
-     */
-    private SyslogConfigIF createConfig(final SyslogDestination dest, final SyslogProtocol protocol, int fac) {
-        SyslogConfigIF config;
-        switch (protocol) {
-        case UDP:
-            config = new UDPNetSyslogConfig(fac, dest.getHost(), dest.getPort());
-            break;
-        case TCP:
-            config = new TCPNetSyslogConfig(fac, dest.getHost(), dest.getPort());
-            break;
-        default:
-            config = new UDPNetSyslogConfig(fac, "localhost", 514);
-        }
-        return config;
-    }
-
-    /**
-     * Convert facility.
-     *
-     * @param facility the facility
-     * @return the integer version of the facility
-     */
-    private int convertFacility(final SyslogFacility facility) {
-        int fac;
-        switch (facility) {
-        case KERN:
-            fac = SyslogConstants.FACILITY_KERN;
-            break;
-        case USER:
-            fac = SyslogConstants.FACILITY_USER;
-            break;
-        case MAIL:
-            fac = SyslogConstants.FACILITY_MAIL;
-            break;
-        case DAEMON:
-            fac = SyslogConstants.FACILITY_DAEMON;
-            break;
-        case AUTH:
-            fac = SyslogConstants.FACILITY_AUTH;
-            break;
-        case SYSLOG:
-            fac = SyslogConstants.FACILITY_SYSLOG;
-            break;
-        case LPR:
-            fac = SyslogConstants.FACILITY_LPR;
-            break;
-        case NEWS:
-            fac = SyslogConstants.FACILITY_NEWS;
-            break;
-        case UUCP:
-            fac = SyslogConstants.FACILITY_UUCP;
-            break;
-        case CRON:
-            fac = SyslogConstants.FACILITY_CRON;
-            break;
-        case AUTHPRIV:
-            fac = SyslogConstants.FACILITY_AUTHPRIV;
-            break;
-        case FTP:
-            fac = SyslogConstants.FACILITY_FTP;
-            break;
-        case LOCAL0:
-            fac = SyslogConstants.FACILITY_LOCAL0;
-            break;
-        case LOCAL1:
-            fac = SyslogConstants.FACILITY_LOCAL1;
-            break;
-        case LOCAL2:
-            fac = SyslogConstants.FACILITY_LOCAL2;
-            break;
-        case LOCAL3:
-            fac = SyslogConstants.FACILITY_LOCAL3;
-            break;
-        case LOCAL4:
-            fac = SyslogConstants.FACILITY_LOCAL4;
-            break;
-        case LOCAL5:
-            fac = SyslogConstants.FACILITY_LOCAL5;
-            break;
-        case LOCAL6:
-            fac = SyslogConstants.FACILITY_LOCAL6;
-            break;
-        case LOCAL7:
-            fac = SyslogConstants.FACILITY_LOCAL7;
-            break;
-        default:
-            fac = SyslogConstants.FACILITY_USER;
-        }
-        return fac;
-    }
-
-    /**
-     * Determine log level.
-     *
-     * @param severity the severity
-     * @return the integer version of the severity
-     */
-    private int determineLogLevel(final OnmsSeverity severity) {
-        int level;
-        switch (severity) {
-        case CRITICAL:
-            level = SyslogConstants.LEVEL_CRITICAL;
-            break;
-        case MAJOR:
-            level = SyslogConstants.LEVEL_ERROR;
-            break;
-        case MINOR:
-            level = SyslogConstants.LEVEL_ERROR;
-            break;
-        case WARNING:
-            level = SyslogConstants.LEVEL_WARN;
-            break;
-        case NORMAL:
-            level = SyslogConstants.LEVEL_NOTICE;
-            break;
-        case CLEARED:
-            level = SyslogConstants.LEVEL_INFO;
-            break;
-        case INDETERMINATE:
-            level = SyslogConstants.LEVEL_DEBUG;
-            break;
-        default:
-            level = SyslogConstants.LEVEL_WARN;
-        }
-        return level;
     }
 
     /**

@@ -177,21 +177,23 @@ if (currConfig == null) {
           </div>
         </div> <!-- form-group -->
         <div class="form-group">
-          <label for="threads" class="col-sm-4 control-label">Threads:</label>
+          <label for="foreignsource" class="col-sm-4 control-label">Foreign Source (Optional):</label>
           <div class="col-sm-8">
-            <select id="threads" class="form-control" name="threads">
-              <option value="1" <%if(currConfig.getThreads()==1) out.print("selected");%>>1</option>
-              <option value="2" <%if(currConfig.getThreads()==2) out.print("selected");%>>2</option>
-              <option value="3" <%if(currConfig.getThreads()==3) out.print("selected");%>>3</option>
-              <option value="4" <%if(currConfig.getThreads()==4) out.print("selected");%>>4</option>
-              <option value="5" <%if(currConfig.getThreads()==5) out.print("selected");%>>5</option>
-              <option value="6" <%if(currConfig.getThreads()==6) out.print("selected");%>>6</option>
-              <option value="7" <%if(currConfig.getThreads()==7) out.print("selected");%>>7</option>
-              <option value="8" <%if(currConfig.getThreads()==8) out.print("selected");%>>8</option>
-              <option value="9" <%if(currConfig.getThreads()==9) out.print("selected");%>>9</option>
-              <option value="10" <%if(currConfig.getThreads()==10) out.print("selected");%>>10</option>
-              <option value="15" <%if(currConfig.getThreads()==15) out.print("selected");%>>15</option>
-            </select>
+            <!-- TODO: Make this a dropdown of all foreign sources -->
+            <input type="text" class="form-control" id="foreignsource" name="foreignsource" value="<%=currConfig.getForeignSource()%>"/>
+          </div>
+        </div> <!-- form-group -->
+        <div class="form-group">
+          <label for="location" class="col-sm-4 control-label">Location (Optional):</label>
+          <div class="col-sm-8">
+            <!-- TODO: Make this a dropdown of all monitoring locations -->
+            <input type="text" class="form-control" id="location" name="location" value="<%=currConfig.getLocation()%>"/>
+          </div>
+        </div> <!-- form-group -->
+        <div class="form-group">
+          <label for="retries" class="col-sm-4 control-label">Retries:</label>
+          <div class="col-sm-8">
+            <input type="text" class="form-control" id="retries" name="retries" value="<%=((currConfig.getRetries()==0)?"3":""+currConfig.getRetries())%>"/>
           </div>
         </div> <!-- form-group -->
         <div class="form-group">

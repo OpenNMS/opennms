@@ -167,16 +167,6 @@
         <property name="locationMonitorDao" ref="locationMonitorDao"/>
     </bean>
 
-    <bean name="/admin/node/add.htm" class="org.opennms.web.controller.node.NodeProvisioningController">
-        <property name="redirectView">
-            <value>add.htm</value>
-        </property>
-        <property name="successView">
-            <value>admin/node/add</value>
-        </property>
-        <property name="nodeProvisionService" ref="nodeProvisionService"/>
-    </bean>
-
     <bean name="/alarm/ticket/create.htm" class="org.opennms.web.controller.alarm.AlarmTicketController">
         <property name="troubleTicketProxy" ref="troubleTicketProxy"/>
     </bean>
@@ -439,6 +429,11 @@
                                 <property name="locationMatch" value="distributedstatus"/>
                                 <property name="monitoringLocationDao" ref="monitoringLocationDao"/>
                             </bean>
+                            <bean class="org.opennms.web.navigate.LocationBasedNavBarEntry">
+                                <property name="name" value="Scan Reports"/>
+                                <property name="url" value="scanreports/index.jsp"/>
+                                <property name="locationMatch" value="scanReport"/>
+                            </bean>
                         </list>
                     </property>
                 </bean>
@@ -480,14 +475,6 @@
                 <ref bean="dashboardMenuEntries" />
 
                 <ref bean="mapMenuEntries" />
-
-<!-- called "Quick-Add Node" in the user menu now
-                <bean class="org.opennms.web.navigate.ProvisionUserNavBarEntry">
-                    <property name="name" value="Add Node"/>
-                    <property name="url" value="admin/node/add.htm"/>
-                    <property name="locationMatch" value="addNode"/>
-                </bean>
--->
 
 <!-- called "Configure OpenNMS" in the user menu now
                 <bean class="org.opennms.web.navigate.AdminUserNavBarEntry">

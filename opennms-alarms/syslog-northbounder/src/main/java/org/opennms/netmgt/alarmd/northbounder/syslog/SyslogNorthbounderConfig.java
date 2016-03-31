@@ -29,6 +29,7 @@
 package org.opennms.netmgt.alarmd.northbounder.syslog;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -54,23 +55,23 @@ public class SyslogNorthbounderConfig implements Serializable {
 
     /** The nagles delay. */
     @XmlElement(name = "nagles-delay", required = false, defaultValue = "1000")
-    private Integer m_naglesDelay = 1000;
+    private Integer m_naglesDelay;
 
     /** The batch size. */
     @XmlElement(name = "batch-size", required = false, defaultValue = "100")
-    private Integer m_batchSize = 100;
+    private Integer m_batchSize;
 
     /** The queue size. */
     @XmlElement(name = "queue-size", required = false, defaultValue = "300000")
-    private Integer m_queueSize = 300000;
+    private Integer m_queueSize;
 
     /** The message format. */
     @XmlElement(name = "message-format", required = false, defaultValue = "ALARM ID:${alarmId} NODE:${nodeLabel} ${logMsg}")
-    private String m_messageFormat = "ALARM ID:${alarmId} NODE:${nodeLabel} ${logMsg}";
+    private String m_messageFormat;
 
     /** The destinations. */
     @XmlElement(name = "destination")
-    private List<SyslogDestination> m_destinations;
+    private List<SyslogDestination> m_destinations = new ArrayList<SyslogDestination>();
 
     /** The UEIs. */
     @XmlElement(name = "uei", required = false)
@@ -118,7 +119,7 @@ public class SyslogNorthbounderConfig implements Serializable {
      * @return the message format
      */
     public String getMessageFormat() {
-        return m_messageFormat;
+        return m_messageFormat == null ? "ALARM ID:${alarmId} NODE:${nodeLabel} ${logMsg}" : m_messageFormat;
     }
 
     /**
@@ -136,7 +137,7 @@ public class SyslogNorthbounderConfig implements Serializable {
      * @return the nagles delay
      */
     public Integer getNaglesDelay() {
-        return m_naglesDelay;
+        return m_naglesDelay == null ? 1000 : m_naglesDelay;
     }
 
     /**
@@ -154,7 +155,7 @@ public class SyslogNorthbounderConfig implements Serializable {
      * @return the batch size
      */
     public Integer getBatchSize() {
-        return m_batchSize;
+        return m_batchSize == null ? 100 : m_batchSize;
     }
 
     /**
@@ -172,7 +173,7 @@ public class SyslogNorthbounderConfig implements Serializable {
      * @return the queue size
      */
     public Integer getQueueSize() {
-        return m_queueSize;
+        return m_queueSize == null ? 300000 : m_queueSize;
     }
 
     /**
@@ -190,7 +191,7 @@ public class SyslogNorthbounderConfig implements Serializable {
      * @return the boolean
      */
     public Boolean isEnabled() {
-        return m_enabled;
+        return m_enabled == null ? Boolean.FALSE : m_enabled;
     }
 
     /**
@@ -203,19 +204,61 @@ public class SyslogNorthbounderConfig implements Serializable {
     }
 
     /**
-     * Gets the destination.
+     * Gets a specific Syslog destination.
      *
-     * @param destinationName the destination name
-     * @return the destination
+     * @param syslogDestinationName the Syslog destination name
+     * @return the Syslog destination
      */
-    public SyslogDestination getDestination(String destinationName) {
-        SyslogDestination destination = null;
+    public SyslogDestination getSyslogDestination(String syslogDestinationName) {
         for (SyslogDestination dest : m_destinations) {
-            if (dest.getName().equals(destinationName)) {
-                destination = dest;
+            if (dest.getName().equals(syslogDestinationName)) {
+                return dest;
             }
         }
-        return destination;
+        return null;
+    }
+
+    /**
+     * Adds a specific Syslog destination.
+     * <p>If there is a destination with the same name, the existing one will be overridden.</p>
+     *
+     * @param syslogDestination the Syslog destination object
+     */
+    public void addSyslogDestination(SyslogDestination syslogDestination) {
+        int index = -1;
+        for (int i = 0; i < m_destinations.size(); i++) {
+            if (m_destinations.get(i).getName().equals(syslogDestination.getName())) {
+                index = i;
+                break;
+            }
+        }
+        if (index > -1) {
+            m_destinations.remove(index);
+            m_destinations.add(index, syslogDestination);
+        } else {
+            m_destinations.add(syslogDestination);
+        }
+    }
+
+    /**
+     * Removes a specific syslog destination.
+     *
+     * @param syslogDestinationName the Syslog destination name
+     * @return true, if successful
+     */
+    public boolean removeSyslogDestination(String syslogDestinationName) {
+        int index = -1;
+        for (int i = 0; i < m_destinations.size(); i++) {
+            if (m_destinations.get(i).getName().equals(syslogDestinationName)) {
+                index = i;
+                break;
+            }
+        }
+        if (index > -1) {
+            m_destinations.remove(index);
+            return true;
+        }
+        return false;
     }
 
 }

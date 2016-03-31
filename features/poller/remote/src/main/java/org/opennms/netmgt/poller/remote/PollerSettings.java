@@ -29,25 +29,30 @@
 package org.opennms.netmgt.poller.remote;
 
 /**
- * <p>PollerSettings interface.</p>
+ * This interface holds configuration parameters for the current
+ * Remote Poller monitoring system instance (such as its ID).
  *
+ * @author Seth
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
- * @version $Id: $
  */
 public interface PollerSettings {
 
     /**
-     * <p>getMonitorId</p>
+     * Get the monitoring system ID of this system. This value
+     * will be a UUID that can uniquely identify this system
+     * among a cluster of OpenNMS monitoring systems.
      *
-     * @return a {@link java.lang.Integer} object.
+     * @return a {@link java.lang.String} object.
      */
-    public String getMonitorId();
+    String getMonitoringSystemId();
 
     /**
-     * <p>setMonitorId</p>
+     * Set the monitoring system ID of this system. This value
+     * must be a UUID that is unique among all of the systems in
+     * the OpenNMS cluster with which this system is communicating.
      *
-     * @param monitorId a {@link java.lang.Integer} object.
+     * @param monitoringSystemId a {@link java.lang.String} object.
      */
-    public void setMonitorId(String monitorId);
+    void setMonitoringSystemId(String monitoringSystemId);
 
 }

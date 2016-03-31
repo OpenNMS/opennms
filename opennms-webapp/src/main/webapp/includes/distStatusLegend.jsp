@@ -57,6 +57,7 @@ border:1px solid #666666
 -->
 
 <table style="width:100%">
+<tr>
 <td class="notstyle" style="text-align:right;width:100%;vertical-align:middle;height:15px">
 
 <a href="#" onClick="MyWindow=window.open('includes/legendInfo-box.jsp','MyWindow','toolbar=no,location=yes,directories=no,status=no,menubar=no,scrollbars=no,resizable=no,width=700,height=250,left=550'); return false;">Legend</a>
@@ -81,6 +82,8 @@ Legend
 </tbody>
 </table>
 </td>
+
+</tr>
 
 </table>
 

@@ -7,9 +7,73 @@
   <name>OpenNMS Smoke Test</name>
   <properties>
     <skipITs>true</skipITs>
+    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+    <updatePolicy>interval:60</updatePolicy>
+    <frontendPluginVersion>0.0.29</frontendPluginVersion>
+    <nodeVersion>v5.8.0</nodeVersion>
+    <npmVersion>3.7.1</npmVersion>
   </properties>
   <build>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>com.github.eirslett</groupId>
+          <artifactId>frontend-maven-plugin</artifactId>
+          <version>${frontendPluginVersion}</version>
+          <configuration>
+            <nodeDownloadRoot>http://mirror.internal.opennms.com/nodejs/dist/</nodeDownloadRoot>
+            <npmDownloadRoot>http://mirror.internal.opennms.com/npmjs/npm/-/</npmDownloadRoot>
+            <installDirectory>${java.io.tmpdir}/node-smoke-${project.version}</installDirectory>
+          </configuration>
+          <executions>
+            <execution>
+              <id>install-node-and-npm</id>
+              <goals><goal>install-node-and-npm</goal></goals>
+              <configuration>
+                <nodeVersion>${nodeVersion}</nodeVersion>
+                <npmVersion>${npmVersion}</npmVersion>
+              </configuration>
+            </execution>
+            <execution>
+              <id>install-node-dependencies</id>
+              <goals><goal>npm</goal></goals>
+              <phase>none</phase>
+              <configuration>
+                <arguments>install</arguments>
+              </configuration>
+            </execution>
+            <execution>
+              <id>run-tests</id>
+              <goals><goal>npm</goal></goals>
+              <phase>none</phase>
+              <configuration>
+                <arguments>test</arguments>
+              </configuration>
+            </execution>
+          </executions>
+        </plugin>
+      </plugins>
+    </pluginManagement>
     <plugins>
+      <plugin>
+         <inherited>false</inherited>
+         <groupId>org.apache.maven.plugins</groupId>
+         <artifactId>maven-antrun-plugin</artifactId>
+         <version>1.8</version>
+         <executions>
+           <execution>
+             <phase>validate</phase>
+             <configuration>
+               <target>
+                 <echo message="skipITs = ${skipITs}"/>
+               </target>
+             </configuration>
+             <goals>
+               <goal>run</goal>
+             </goals>
+           </execution>
+         </executions>
+      </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
@@ -22,8 +86,17 @@
         </configuration>
       </plugin>
       <plugin>
+         <groupId>org.apache.maven.plugins</groupId>
+         <artifactId>maven-resources-plugin</artifactId>
+         <version>2.7</version>
+         <configuration>
+           <encoding>UTF-8</encoding>
+         </configuration>
+      </plugin>
+      <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-failsafe-plugin</artifactId>
+        <version>2.19</version>
         <configuration>
           <!-- Don't specify argLine here or it will override the argLine property value -->
           <systemPropertyVariables/>
@@ -46,6 +119,46 @@
       </plugin>
     </plugins>
   </build>
+  <!--
+  <profiles>
+    <profile>
+      <id>enable-skipITs-false</id>
+      <activation>
+        <property><name>skipITs</name><value>false</value></property>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>com.github.eirslett</groupId>
+            <artifactId>frontend-maven-plugin</artifactId>
+            <executions>
+              <execution><id>install-node-dependencies</id><phase>verify</phase></execution>
+              <execution><id>run-tests</id><phase>verify</phase></execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    <profile>
+      <id>enable-smoke-true</id>
+      <activation>
+        <property><name>smoke</name><value>true</value></property>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>com.github.eirslett</groupId>
+            <artifactId>frontend-maven-plugin</artifactId>
+            <executions>
+              <execution><id>install-node-dependencies</id><phase>verify</phase></execution>
+              <execution><id>run-tests</id><phase>verify</phase></execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
+  -->
   <dependencies>
     <dependency>
       <groupId>junit</groupId>
@@ -56,7 +169,6 @@
       <groupId>org.opennms</groupId>
       <artifactId>opennms-model</artifactId>
       <version>${project.version}</version>
-      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms.core.test-api</groupId>
@@ -79,8 +191,8 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-model</artifactId>
+      <groupId>org.opennms.core</groupId>
+      <artifactId>org.opennms.core.xml</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>

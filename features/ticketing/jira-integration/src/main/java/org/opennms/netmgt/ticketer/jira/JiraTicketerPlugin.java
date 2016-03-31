@@ -36,8 +36,14 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.Arrays;
 import java.util.Calendar;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Properties;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
 
 import org.joda.time.DateTime;
@@ -119,7 +125,7 @@ public class JiraTicketerPlugin implements Plugin {
             ticket.setModificationTimestamp(String.valueOf(issue.getUpdateDate().toDate().getTime()));
             ticket.setSummary(issue.getSummary());
             ticket.setDetails(issue.getDescription());
-            ticket.setState(getStateFromId(issue.getStatus().getName()));
+            ticket.setState(getStateFromStatusName(issue.getStatus().getName()));
 
             return ticket;
         } else {
@@ -134,22 +140,33 @@ public class JiraTicketerPlugin implements Plugin {
      * @param stateIdString
      * @return the converted <code>org.opennms.api.integration.ticketing.Ticket.State</code>
      */
-    private static Ticket.State getStateFromId(String stateIdString) {
-        if (stateIdString == null) {
-            return Ticket.State.OPEN;
-        } else if ("Open".equals(stateIdString)) {
-            return Ticket.State.OPEN;
-        } else if ("In Progress".equals(stateIdString)) {
-            return Ticket.State.OPEN;
-        } else if ("Reopened".equals(stateIdString)) {
-            return Ticket.State.OPEN;
-        } else if ("Resolved".equals(stateIdString)) {
-            return Ticket.State.CLOSED;
-        } else if ("Closed".equals(stateIdString)) {
-            return Ticket.State.CLOSED;
-        } else {
-            return Ticket.State.OPEN;
+    private static Ticket.State getStateFromStatusName(String ticketStatusName) {
+        // Mapping of property key names to ticket states
+        // The values for the properties at these keys should contain
+        // a comma-separated list of known JIRA status names that map
+        // the respective ticket states
+        Map<Ticket.State, String> ticketStateToPropNameMap = new HashMap<>();
+        ticketStateToPropNameMap.put(Ticket.State.OPEN, "jira.status.open");
+        ticketStateToPropNameMap.put(Ticket.State.CLOSED, "jira.status.closed");
+        ticketStateToPropNameMap.put(Ticket.State.CANCELLED, "jira.status.cancelled");
+
+        Properties jiraProperties = getProperties();
+        for (Entry<Ticket.State, String> entry : ticketStateToPropNameMap.entrySet()) {
+            // Grab the value for the given property and all of the names to the set
+            Set<String> knownStateIds = new HashSet<>();
+            String stateIdsProp = jiraProperties.getProperty(entry.getValue());
+            if (stateIdsProp != null) {
+                knownStateIds.addAll(Arrays.asList(stateIdsProp.split(",")));
+            }
+
+            // If there's a match, return the current ticket state
+            if (knownStateIds.contains(ticketStatusName)) {
+                return entry.getKey();
+            }
         }
+
+        // No match, default to open
+        return Ticket.State.OPEN;
     }
 
     /**

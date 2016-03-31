@@ -18,20 +18,14 @@
         <dependency>
             <groupId>org.opennms</groupId>
             <artifactId>opennms-model</artifactId>
-            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.opennms.core</groupId>
             <artifactId>org.opennms.core.api</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.opennms</groupId>
-            <artifactId>opennms-webapp-rest</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
             <groupId>org.opennms.dependencies</groupId>
-            <artifactId>jersey-client-dependencies</artifactId>
+            <artifactId>cxf-dependencies</artifactId>
             <type>pom</type>
         </dependency>
         <dependency>
@@ -57,7 +51,6 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>2.5.1</version>
                 <configuration>
                     <source>1.8</source>
                     <target>1.8</target>

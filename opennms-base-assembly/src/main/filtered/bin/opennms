@@ -169,11 +169,11 @@ checkXmlFiles(){
 		find "$OPENNMS_HOME/etc" -type f -name \*.xml | while read "FILE"; do
 			"$XMLLINT" "$FILE" >/dev/null 2>&1
 			if [ $? != 0 ]; then
-				echo "ERROR: XML validation failed: $FILE" >&2
-				echo "	   run '$XMLLINT $FILE' for details" >&2
+				echo "ERROR: XML validation failed: $FILE"
+				echo "	   run '$XMLLINT $FILE' for details"
 			fi
 		done >"$TEMPFILE"
-		cat "$TEMPFILE"
+		cat "$TEMPFILE" >&2
 		FAILCOUNT=`cat "$TEMPFILE" | grep -c 'XML validation failed'`
 		rm "$TEMPFILE"
 		if [ $FAILCOUNT -gt 0 ]; then
@@ -583,12 +583,6 @@ BOOTSTRAP="$OPENNMS_HOME/lib/opennms_bootstrap.jar"
 #MANAGER_OPTIONS="-DOPENNMSLAUNCH"
 MANAGER_OPTIONS=""
 MANAGER_OPTIONS="$MANAGER_OPTIONS -Dopennms.home=$OPENNMS_HOME"
-#MANAGER_OPTIONS="$MANAGER_OPTIONS -Dcom.sun.management.jmxremote.port=18980"
-#MANAGER_OPTIONS="$MANAGER_OPTIONS -Dcom.sun.management.jmxremote.ssl=false"
-MANAGER_OPTIONS="$MANAGER_OPTIONS -Dcom.sun.management.jmxremote.authenticate=true"
-MANAGER_OPTIONS="$MANAGER_OPTIONS -Dcom.sun.management.jmxremote.login.config=opennms"
-MANAGER_OPTIONS="$MANAGER_OPTIONS -Dcom.sun.management.jmxremote.access.file=$OPENNMS_HOME/etc/jmxremote.access"
-#MANAGER_OPTIONS="$MANAGER_OPTIONS -Djava.security.debug=all"
 #MANAGER_OPTIONS="$MANAGER_OPTIONS -Djcifs.properties=$OPENNMS_HOME/etc/jcifs.properties"
 MANAGER_OPTIONS="$MANAGER_OPTIONS -Xmx${JAVA_HEAP_SIZE}m"
 MANAGER_OPTIONS="$MANAGER_OPTIONS -XX:+HeapDumpOnOutOfMemoryError"
@@ -597,21 +591,39 @@ if [ -n "$USE_INCGC" -a "$USE_INCGC" = true ] ; then
 	MANAGER_OPTIONS="$MANAGER_OPTIONS -Xincgc"
 fi
 
-if echo "$ADDITIONAL_MANAGER_OPTIONS" | grep -- -DisThreadContextMapInheritable=true > /dev/null ; then
-    true # do nothing
-else
+#if [ `echo "$ADDITIONAL_MANAGER_OPTIONS" | grep -c -- -Dcom.sun.management.jmxremote.port=` -eq 0 ]; then
+#    ADDITIONAL_MANAGER_OPTIONS="$ADDITIONAL_MANAGER_OPTIONS -Dcom.sun.management.jmxremote.port=18980"
+#fi
+
+#if [ `echo "$ADDITIONAL_MANAGER_OPTIONS" | grep -c -- -Dcom.sun.management.jmxremote.ssl=` -eq 0 ]; then
+#    ADDITIONAL_MANAGER_OPTIONS="$ADDITIONAL_MANAGER_OPTIONS -Dcom.sun.management.jmxremote.ssl=false"
+#fi
+
+if [ `echo "$ADDITIONAL_MANAGER_OPTIONS" | grep -c -- -Dcom.sun.management.jmxremote.authenticate=` -eq 0 ]; then
+    ADDITIONAL_MANAGER_OPTIONS="$ADDITIONAL_MANAGER_OPTIONS -Dcom.sun.management.jmxremote.authenticate=true"
+fi
+
+if [ `echo "$ADDITIONAL_MANAGER_OPTIONS" | grep -c -- -Dcom.sun.management.jmxremote.login.config=` -eq 0 ]; then
+    ADDITIONAL_MANAGER_OPTIONS="$ADDITIONAL_MANAGER_OPTIONS -Dcom.sun.management.jmxremote.login.config=opennms"
+fi
+
+if [ `echo "$ADDITIONAL_MANAGER_OPTIONS" | grep -c -- -Dcom.sun.management.jmxremote.access.file=` -eq 0 ]; then
+    ADDITIONAL_MANAGER_OPTIONS="$ADDITIONAL_MANAGER_OPTIONS -Dcom.sun.management.jmxremote.access.file=$OPENNMS_HOME/etc/jmxremote.access"
+fi
+
+#if [ `echo "$ADDITIONAL_MANAGER_OPTIONS" | grep -c -- -Djava.security.debug=` -eq 0 ]; then
+#    ADDITIONAL_MANAGER_OPTIONS="$ADDITIONAL_MANAGER_OPTIONS -Djava.security.debug=all"
+#fi
+
+if [ `echo "$ADDITIONAL_MANAGER_OPTIONS" | grep -c -- -DisThreadContextMapInheritable=` -eq 0 ]; then
     ADDITIONAL_MANAGER_OPTIONS="$ADDITIONAL_MANAGER_OPTIONS -DisThreadContextMapInheritable=true"
 fi
 
-if echo "$ADDITIONAL_MANAGER_OPTIONS" | grep MaxMetaspaceSize > /dev/null ; then
-	true # do nothing
-else
+if [ `echo "$ADDITIONAL_MANAGER_OPTIONS" | grep -c MaxMetaspaceSize=` -eq 0 ]; then
 	ADDITIONAL_MANAGER_OPTIONS="$ADDITIONAL_MANAGER_OPTIONS -XX:MaxMetaspaceSize=256m"
 fi
 
-if echo "$ADDITIONAL_MANAGER_OPTIONS" | grep -- -Djava.io.tmpdir > /dev/null ; then
-	true # do nothing
-else
+if [ `echo "$ADDITIONAL_MANAGER_OPTIONS" | grep -c -- -Djava.io.tmpdir=` -eq 0 ]; then
 	if [ ! -d "$OPENNMS_HOME/data/tmp" ]; then
 		mkdir -p "$OPENNMS_HOME/data/tmp"
 	fi
@@ -851,8 +863,16 @@ case "$COMMAND" in
 
 	configtest)
 		$opennms_echo "Validating XML files: \c"
-		checkXmlFiles || exit $?
-		echo "PASSED"
+		checkXmlFiles
+		ret=$?
+		case $ret in
+			0)
+				echo "PASSED"
+				;;
+			*)
+				# nothing
+				;;
+		esac
 		;;
 
 	pause)

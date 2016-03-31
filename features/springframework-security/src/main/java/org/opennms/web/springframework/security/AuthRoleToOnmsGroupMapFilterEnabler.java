@@ -42,10 +42,9 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 
 import org.opennms.netmgt.model.FilterManager;
-
-import org.opennms.web.api.SecurityContextService;
-
-import org.springframework.beans.factory.annotation.Autowired;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 /**
@@ -56,21 +55,12 @@ import org.springframework.security.core.context.SecurityContextHolder;
  */
 public class AuthRoleToOnmsGroupMapFilterEnabler implements Filter {
     
+	private static final Logger LOG = LoggerFactory.getLogger(AuthRoleToOnmsGroupMapFilterEnabler.class);
+
     private FilterManager m_filterManager;
     
     private Map<String, List<String>> roleToOnmsGroupMap = new HashMap<String, List<String>>();
     
-    private SecurityContextService m_contextService;
-
-    public SecurityContextService getContextService() {
-		return m_contextService;
-	}
-
-    @Autowired
-	public void setContextService(SecurityContextService contextService) {
-		m_contextService = contextService;
-	}
-   
     public void setRoleToOnmsGroupMap(Map<String, List<String>> roleToOnmsGroupMap) {
         this.roleToOnmsGroupMap = roleToOnmsGroupMap;
     }
@@ -98,7 +88,8 @@ public class AuthRoleToOnmsGroupMapFilterEnabler implements Filter {
 
         if (shouldFilter) {
     
-            for (String role: roleToOnmsGroupMap.keySet()) {            
+            for (String role: roleToOnmsGroupMap.keySet()) {
+            	LOG.debug("found role: {}, associated with user group: {}", role, roleToOnmsGroupMap.get(role));
                if (userHasAuthority(role))
                    groups.addAll(roleToOnmsGroupMap.get(role));
             }
@@ -128,7 +119,12 @@ public class AuthRoleToOnmsGroupMapFilterEnabler implements Filter {
     }
 
     private boolean userHasAuthority(String role) {
-    	return getContextService().hasRole(role);
+    	for (GrantedAuthority authority: SecurityContextHolder.getContext().getAuthentication().getAuthorities()) {
+    		LOG.debug("checking role: {}, with granted authority: {}", role,authority.getAuthority());
+    		if (authority.getAuthority().equals(role))
+    			return true;
+    	}
+    	return false;
     }
     
     

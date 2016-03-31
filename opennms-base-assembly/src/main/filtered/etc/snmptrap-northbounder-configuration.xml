@@ -79,7 +79,7 @@
 
 	<snmp-trap-sink>
 		<name>localTest1</name>
-		<ip-address>127.0.0.1</ip-address>
+		<ip-address>127.0.0.1</ip-address> <!-- You could use either an IPv4/IPv6 address or a FQDN -->
 		<version>v2c</version>
 		<mapping-group name="My Mappings">
 			<rule>foreignSource matches '^Server.*'</rule>
@@ -90,7 +90,7 @@
 				<varbind>
 					<oid>.1.2.3.4.5.6.7.8.1</oid>
 					<type>Int32</type>
-					<value>eventParametersCollection[2].value.content</value> <!-- Value of the third parameter -->
+					<value>eventParametersCollection[2].value</value> <!-- Value of the third parameter -->
 				</varbind>
 				<varbind>
 					<oid>.1.2.3.4.5.6.7.8.2</oid>
@@ -113,13 +113,15 @@
 	</snmp-trap-sink>
 
     <!-- It is possible to define the mapping groups on a external file.
-         The file my-mappings.xml should contain "mapping-group" as its root tag:
+
+         * The file my-mappings.xml should contain "mapping-group" as its root tag.
+         * The name of the mapping group should match the name of the XML (without the extension).
 
 	<snmp-trap-sink>
 		<name>localTest2</name>
 		<ip-address>127.0.0.2</ip-address>
 		<version>v3</version>
-		<import-mappings>snmptrap-northbound/my-mappings.xml</import-mappings>
+		<import-mappings>snmptrap-northbounder-mappings.d/my-mappings.xml</import-mappings>
 	</snmp-trap-sink>
 
     -->

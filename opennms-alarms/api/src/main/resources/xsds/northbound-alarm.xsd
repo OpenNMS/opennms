@@ -35,6 +35,13 @@
          <xsd:element name="ticket-state" type="ns0:troubleTicketState" minOccurs="0"/>
          <xsd:element name="x733-type" type="xsd:string" minOccurs="0"/>
          <xsd:element name="x733-cause" type="xsd:int"/>
+         <xsd:element name="parameters" minOccurs="0">
+            <xsd:complexType>
+               <xsd:sequence>
+                  <xsd:element name="parameter" type="ns0:onmsEventParameter" minOccurs="0" maxOccurs="unbounded"/>
+               </xsd:sequence>
+            </xsd:complexType>
+         </xsd:element>
          <xsd:element name="preserved" type="xsd:boolean" default="false"/>
       </xsd:sequence>
       <xsd:attribute name="id" type="xsd:int"/>
@@ -80,5 +87,12 @@
          <xsd:enumeration value="CANCEL_FAILED"/>
       </xsd:restriction>
    </xsd:simpleType>
+
+   <xsd:complexType name="onmsEventParameter">
+      <xsd:sequence/>
+      <xsd:attribute name="name" type="xsd:string"/>
+      <xsd:attribute name="value" type="xsd:string"/>
+      <xsd:attribute name="type" type="xsd:string"/>
+   </xsd:complexType>
 
 </xsd:schema>

@@ -35,86 +35,150 @@ import org.opennms.netmgt.config.javamail.ReadmailConfig;
 import org.opennms.netmgt.config.javamail.SendmailConfig;
 import org.springframework.dao.DataAccessResourceFailureException;
 
-
 /**
- * <p>JavaMailConfigurationDao interface.</p>
- *
+ * The Interface JavaMailConfigurationDao.
+ * 
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
- * @version $Id: $
  */
 public interface JavaMailConfigurationDao {
 
     /**
-     * <p>getDefaultSendmailConfig</p>
+     * Gets the default sendmail configuration.
      *
-     * @return a {@link org.opennms.netmgt.config.javamail.SendmailConfig} object.
+     * @return the default sendmail configuration
      */
     SendmailConfig getDefaultSendmailConfig();
-    
+
     /**
-     * <p>getSendMailConfig</p>
+     * Sets the default sendmail configuration.
      *
-     * @param name a {@link java.lang.String} object.
-     * @return a {@link org.opennms.netmgt.config.javamail.SendmailConfig} object.
+     * @param sendmailConfigName the new default sendmail configuration
      */
-    SendmailConfig getSendMailConfig(String name);
-    
+    void setDefaultSendmailConfig(String sendmailConfigName);
+
     /**
-     * <p>getSendmailConfigs</p>
+     * Gets the default readmail configuration.
      *
-     * @return a {@link java.util.List} object.
-     */
-    List<SendmailConfig> getSendmailConfigs();
-    
-    /**
-     * <p>getDefaultReadmailConfig</p>
-     *
-     * @return a {@link org.opennms.netmgt.config.javamail.ReadmailConfig} object.
+     * @return the default readmail configuration
      */
     ReadmailConfig getDefaultReadmailConfig();
-    
+
     /**
-     * <p>getReadMailConfig</p>
+     * Sets the default readmail configuration.
      *
-     * @param name a {@link java.lang.String} object.
-     * @return a {@link org.opennms.netmgt.config.javamail.ReadmailConfig} object.
+     * @param readmailConfigName the new default readmail configuration
      */
-    ReadmailConfig getReadMailConfig(String name);
-    
+    void setDefaultReadmailConfig(String readmailConfigName);
+
     /**
-     * <p>getReadmailConfigs</p>
+     * Gets the send mail configuration.
      *
-     * @return a {@link java.util.List} object.
+     * @param sendmailConfigName the sendmail configuration name
+     * @return the send mail configuration
+     */
+    SendmailConfig getSendMailConfig(String sendmailConfigName);
+
+    /**
+     * Adds the send mail configuration.
+     * <p>If there is a sendmail-config object with the same name, it will be replaced; otherwise, the new object will be added.</p>
+     *
+     * @param sendmailConfig the sendmail configuration
+     */
+    void addSendMailConfig(SendmailConfig sendmailConfig);
+
+    /**
+     * Removes the sendmail configuration.
+     *
+     * @param sendmailConfigName the sendmail configuration name
+     * @return true, if successful
+     */
+    boolean removeSendMailConfig(String sendmailConfigName);
+
+    /**
+     * Gets the sendmail configurations.
+     *
+     * @return the sendmail configurations
+     */
+    List<SendmailConfig> getSendmailConfigs();
+
+    /**
+     * Gets the read mail configuration.
+     *
+     * @param readmailConfigName the readmail configuration name
+     * @return the read mail configuration
+     */
+    ReadmailConfig getReadMailConfig(String readmailConfigName);
+
+    /**
+     * Adds the read mail configuration.
+     * <p>If there is a readmail-config object with the same name, it will be replaced; otherwise, the new object will be added.</p>
+     *
+     * @param readmailConfig the readmail configuration
+     */
+    void addReadMailConfig(ReadmailConfig readmailConfig);
+
+    /**
+     * Removes the readmail configuration.
+     *
+     * @param readmailConfigName the readmail configuration name
+     * @return true, if successful
+     */
+    boolean removeReadMailConfig(String readmailConfigName);
+
+    /**
+     * Gets the readmail configurations.
+     *
+     * @return the readmail configurations
      */
     List<ReadmailConfig> getReadmailConfigs();
-    
+
     /**
-     * <p>getEnd2EndConfig</p>
+     * Gets the end2end mail configuration.
      *
-     * @param name a {@link java.lang.String} object.
-     * @return a {@link org.opennms.netmgt.config.javamail.End2endMailConfig} object.
+     * @param end2endConfigName the end2end configuration name
+     * @return the end2end configuration
      */
-    End2endMailConfig getEnd2EndConfig(String name);
-    
+    End2endMailConfig getEnd2endConfig(String end2endConfigName);
+
     /**
-     * <p>getEnd2EndConfigs</p>
+     * Adds the end2end mail configuration.
+     * <p>If there is a end2end-mail-config object with the same name, it will be replaced; otherwise, the new object will be added.</p>
      *
-     * @return a {@link java.util.List} object.
+     * @param end2endConfig the end2end configuration
+     */
+    void addEnd2endMailConfig(End2endMailConfig end2endConfig);
+
+    /**
+     * Removes the end2 end configuration.
+     *
+     * @param end2endConfigName the end2end configuration name
+     * @return true, if successful
+     */
+    boolean removeEnd2endConfig(String end2endConfigName);
+
+    /**
+     * Gets the end2end mail configurations.
+     *
+     * @return the end2end mail configurations
      */
     List<End2endMailConfig> getEnd2EndConfigs();
-    
+
     /**
-     * <p>verifyMarshaledConfiguration</p>
+     * Verifies marshaled configuration.
      *
-     * @throws java.lang.IllegalStateException if any.
+     * @throws IllegalStateException the illegal state exception
      */
     void verifyMarshaledConfiguration() throws IllegalStateException;
-    
+
     /**
-     * <p>reloadConfiguration</p>
+     * Reloads the configuration.
      *
-     * @throws org.springframework.dao.DataAccessResourceFailureException if any.
+     * @throws DataAccessResourceFailureException the data access resource failure exception
      */
     void reloadConfiguration() throws DataAccessResourceFailureException;
-    
+
+    /**
+     * Saves the current configuration on disk.
+     */
+    void saveConfiguration();
 }

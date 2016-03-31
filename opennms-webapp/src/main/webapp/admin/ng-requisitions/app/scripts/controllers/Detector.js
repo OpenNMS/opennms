@@ -1,3 +1,5 @@
+/*jshint eqnull:true */
+
 /**
 * @author Alejandro Galue <agalue@opennms.org>
 * @copyright 2014 The OpenNMS Group, Inc.
@@ -15,14 +17,13 @@
   * @module onms-requisitions
   *
   * @requires $scope Angular local scope
-  * @requires $modalInstance Angular modal instance
+  * @requires $uibModalInstance Angular UI modal instance
   * @requires RequisitionsService The Requisitions Servive
-  * @requires EmptyTypeaheadService The empty typeahead Service
   * @requires detector Requisition detector object
   *
   * @description The controller for manage the modal dialog for add/edit requisition detectors
   */
-  .controller('DetectorController', ['$scope', '$modalInstance', 'RequisitionsService', 'EmptyTypeaheadService', 'detector', function($scope, $modalInstance, RequisitionsService, EmptyTypeaheadService, detector) {
+  .controller('DetectorController', ['$scope', '$uibModalInstance', 'RequisitionsService', 'detector', function($scope, $uibModalInstance, RequisitionsService, detector) {
 
     /**
     * @description The detector object
@@ -55,24 +56,6 @@
     $scope.availableParameters = [];
 
     /**
-    * @description fieldComparator method from EmptyTypeaheadService
-    *
-    * @ngdoc method
-    * @name DetectorController#fieldComparator
-    * @methodOf AssetController
-    */
-    $scope.fieldComparator = EmptyTypeaheadService.fieldComparator;
-
-    /**
-    * @description onFocus method from EmptyTypeaheadService
-    *
-    * @ngdoc method
-    * @name DetectorController#onFocus
-    * @methodOf AssetController
-    */
-    $scope.onFocus = EmptyTypeaheadService.onFocus;
-
-    /**
     * @description Gets the available parameters not being used by the detector
     *
     * @name DetectorController:getAvailableParameters
@@ -103,8 +86,7 @@
     * @methodOf DetectorController
     */
     $scope.save = function () {
-      console.log($scope.detector);
-      $modalInstance.close($scope.detector);
+      $uibModalInstance.close($scope.detector);
     };
 
     /**
@@ -115,7 +97,7 @@
     * @methodOf DetectorController
     */
     $scope.cancel = function () {
-      $modalInstance.dismiss('cancel');
+      $uibModalInstance.dismiss('cancel');
     };
 
     /**

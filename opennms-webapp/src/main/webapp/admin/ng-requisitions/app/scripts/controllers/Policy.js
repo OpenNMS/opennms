@@ -1,3 +1,5 @@
+/*jshint eqnull:true */
+
 /**
 * @author Alejandro Galue <agalue@opennms.org>
 * @copyright 2014 The OpenNMS Group, Inc.
@@ -15,14 +17,13 @@
   * @module onms-requisitions
   *
   * @requires $scope Angular local scope
-  * @requires $modalInstance Angular modal instance
+  * @requires $uibModalInstance Angular UI modal instance
   * @requires RequisitionsService The Requisitions Servive
-  * @requires EmptyTypeaheadService The empty typeahead Service
   * @requires policy Requisition policy object
   *
   * @description The controller for manage the modal dialog for add/edit requisition policies
   */
-  .controller('PolicyController', ['$scope', '$modalInstance', 'RequisitionsService', 'EmptyTypeaheadService', 'policy', function($scope, $modalInstance, RequisitionsService, EmptyTypeaheadService, policy) {
+  .controller('PolicyController', ['$scope', '$uibModalInstance', 'RequisitionsService', 'policy', function($scope, $uibModalInstance, RequisitionsService, policy) {
 
     /**
     * @description The policy object
@@ -55,24 +56,6 @@
     $scope.optionalParameters = [];
 
     /**
-    * @description fieldComparator method from EmptyTypeaheadService
-    *
-    * @ngdoc method
-    * @name PolicyController#fieldComparator
-    * @methodOf AssetController
-    */
-    $scope.fieldComparator = EmptyTypeaheadService.fieldComparator;
-
-    /**
-    * @description onFocus method from EmptyTypeaheadService
-    *
-    * @ngdoc method
-    * @name PolicyController#onFocus
-    * @methodOf AssetController
-    */
-    $scope.onFocus = EmptyTypeaheadService.onFocus;
-
-    /**
     * @description Saves the current policy
     *
     * @name PolicyController:save
@@ -80,7 +63,7 @@
     * @methodOf PolicyController
     */
     $scope.save = function () {
-      $modalInstance.close($scope.policy);
+      $uibModalInstance.close($scope.policy);
     };
 
     /**
@@ -91,7 +74,7 @@
     * @methodOf PolicyController
     */
     $scope.cancel = function () {
-      $modalInstance.dismiss('cancel');
+      $uibModalInstance.dismiss('cancel');
     };
 
     /**

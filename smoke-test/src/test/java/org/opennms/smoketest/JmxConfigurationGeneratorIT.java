@@ -108,6 +108,7 @@ public class JmxConfigurationGeneratorIT extends OpenNMSSeleniumTestCase {
 
     // switches to the embedded vaadin iframe
     private void switchToVaadinFrame() {
+        // switchTo() by xpath is much faster than by ID
         m_driver.switchTo().frame(findElementByXpath("/html/body/div/iframe"));
     }
 

@@ -1,5 +1,5 @@
 /*global RequisitionInterface:true */
-/*jshint unused: false, undef:false, sub:true */
+/*jshint eqnull:true, undef:false, unused:false, sub:true */
 
 /**
 * @author Alejandro Galue <agalue@opennms.org>
@@ -23,7 +23,7 @@ function RequisitionNode(foreignSource, node, isDeployed) {
 
   // Internal function for initialization purposes
   var isEmpty = function(str) {
-    return (str === null || str === undefined || 0 === str.length); 
+    return (str === null || str === undefined || 0 === str.length);
   };
 
   /**
@@ -43,6 +43,15 @@ function RequisitionNode(foreignSource, node, isDeployed) {
    * @returns {boolean} true, if the node has been deployed
    */
   self.deployed = isDeployed;
+
+  /**
+   * @description The modified flag
+   * @ngdoc property
+   * @name RequisitionNode#modified
+   * @propertyOf RequisitionNode
+   * @returns {boolean} true, if the node has been modified
+   */
+  self.modified = false;
 
   /**
    * @description The foreign Id
@@ -152,6 +161,21 @@ function RequisitionNode(foreignSource, node, isDeployed) {
   });
 
   /**
+  * @description Check if the node has been changed
+  *
+  * @name RequisitionNode:isModified
+  * @ngdoc method
+  * @methodOf RequisitionNode
+  * @returns {boolean} true if the node has been changed or modified.
+  */
+  self.isModified = function() {
+    if (self.modified) {
+      return true;
+    }
+    return ! self.deployed;
+  };
+
+  /**
   * @description Adds a new interface to the node
   *
   * @name RequisitionNode:addNewInterface
@@ -219,6 +243,27 @@ function RequisitionNode(foreignSource, node, isDeployed) {
       }
     });
     return ip;
+  };
+
+  /**
+  * @description Checks if the node has parent information (for path outages).
+  *
+  * @name RequisitionNode:hasParentInformation
+  * @ngdoc method
+  * @methodOf RequisitionNode
+  * @returns {boolean} true, if the node has parent information.
+  */
+  self.hasParentInformation = function() {
+    if (self.parentForeignSource != null && self.parentForeignSource.trim() != '') {
+      return true;
+    }
+    if (self.parentForeignId != null && self.parentForeignId.trim() != '') {
+      return true;
+    }
+    if (self.parentNodeLabel != null && self.parentNodeLabel.trim() != '') {
+      return true;
+    }
+    return false;
   };
 
   /**

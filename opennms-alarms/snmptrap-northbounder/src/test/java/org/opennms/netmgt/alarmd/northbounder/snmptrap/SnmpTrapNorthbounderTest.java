@@ -64,7 +64,7 @@ public class SnmpTrapNorthbounderTest extends AbstractTrapReceiverTest {
         configDao.afterPropertiesSet();
 
         // Setup the trap northbounder (overriding the settings of the first sink to use the test trap receiver)
-        SnmpTrapSink sink = configDao.getSnmpTrapSink("localTest1");
+        SnmpTrapSink sink = configDao.getConfig().getSnmpTrapSink("localTest1");
         sink.setIpAddress(TRAP_DESTINATION.getHostAddress());
         sink.setPort(TRAP_PORT);
         SnmpTrapNorthbounder nbi = new SnmpTrapNorthbounder(configDao, sink.getName());

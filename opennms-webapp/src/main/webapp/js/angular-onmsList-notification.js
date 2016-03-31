@@ -60,8 +60,12 @@
 							return [];
 						}
 						*/
-						// Always return the data as an array
-						return angular.isArray(data.notification) ? data.notification : [ data.notification ];
+						if (status === 204) { // No content
+							return [];
+						} else {
+							// Always return the data as an array
+							return angular.isArray(data.notification) ? data.notification : [ data.notification ];
+						}
 					})
 				},
 				'update': { 

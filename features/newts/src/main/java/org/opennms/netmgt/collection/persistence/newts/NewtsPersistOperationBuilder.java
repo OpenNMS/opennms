@@ -123,6 +123,13 @@ public class NewtsPersistOperationBuilder implements PersistOperationBuilder {
             CollectionAttributeType attrType = entry.getKey();
             MetricType type = mapType(attrType.getType());
             if (type == null) {
+                // Skip attributes with no type
+                continue;
+            }
+
+            Number value = entry.getValue();
+            if (value == null) {
+                // Skip attributes with no value (see NMS-8103)
                 continue;
             }
 

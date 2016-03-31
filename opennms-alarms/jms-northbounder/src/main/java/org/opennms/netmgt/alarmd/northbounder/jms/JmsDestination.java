@@ -86,15 +86,15 @@ public class JmsDestination implements Destination {
 
     /** The first occurrence only. */
     @XmlElement(name = "first-occurence-only", required = false, defaultValue = "false")
-    private boolean m_firstOccurrenceOnly = false;
+    private Boolean m_firstOccurrenceOnly;
 
     /** The send as object message enabled. */
     @XmlElement(name = "send-as-object-message", required = false, defaultValue = "false")
-    private boolean m_sendAsObjectMessageEnabled = false;
+    private Boolean m_sendAsObjectMessageEnabled;
 
     /** The destination type. */
     @XmlElement(name = "destination-type", required = true, defaultValue = "QUEUE")
-    private DestinationType m_destinationType = DestinationType.QUEUE;
+    private DestinationType m_destinationType;
 
     /** The destination. */
     @XmlElement(name = "jms-destination", required = true)
@@ -161,7 +161,7 @@ public class JmsDestination implements Destination {
      */
     @Override
     public boolean isFirstOccurrenceOnly() {
-        return m_firstOccurrenceOnly;
+        return m_firstOccurrenceOnly == null ? false : m_firstOccurrenceOnly;
     }
 
     /**
@@ -169,7 +169,7 @@ public class JmsDestination implements Destination {
      *
      * @param firstOccurrenceOnly the new first occurrence only
      */
-    public void setFirstOccurrenceOnly(boolean firstOccurrenceOnly) {
+    public void setFirstOccurrenceOnly(Boolean firstOccurrenceOnly) {
         m_firstOccurrenceOnly = firstOccurrenceOnly;
     }
 
@@ -188,7 +188,7 @@ public class JmsDestination implements Destination {
      * @return true, if is send as object message enabled
      */
     public boolean isSendAsObjectMessageEnabled() {
-        return m_sendAsObjectMessageEnabled;
+        return m_sendAsObjectMessageEnabled == null ? false : m_sendAsObjectMessageEnabled;
     }
 
     /**
@@ -197,7 +197,7 @@ public class JmsDestination implements Destination {
      * @return the destination type
      */
     public DestinationType getDestinationType() {
-        return m_destinationType;
+        return m_destinationType == null ? DestinationType.QUEUE : m_destinationType;
     }
 
     /**

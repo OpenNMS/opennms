@@ -54,7 +54,7 @@ import org.junit.Test;
 import org.opennms.core.test.ConfigurationTestUtils;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.CollectdConfigFactory;
-import org.opennms.netmgt.config.api.DataCollectionConfigDao;
+import org.opennms.netmgt.config.api.ResourceTypesDao;
 import org.opennms.netmgt.config.datacollection.ResourceType;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.LocationMonitorDao;
@@ -81,7 +81,7 @@ public class DefaultResourceDaoTest {
     private NodeDao m_nodeDao;
     private LocationMonitorDao m_locationMonitorDao;
     private CollectdConfigFactory m_collectdConfig;
-    private DataCollectionConfigDao m_dataCollectionConfigDao;
+    private ResourceTypesDao m_resourceTypesDao;
     private DefaultResourceDao m_resourceDao;
     private IpInterfaceDao m_ipInterfaceDao;
     private FilesystemResourceStorageDao m_resourceStorageDao = new FilesystemResourceStorageDao();
@@ -102,7 +102,7 @@ public class DefaultResourceDaoTest {
         m_easyMockUtils = new EasyMockUtils();
         m_nodeDao = m_easyMockUtils.createMock(NodeDao.class);
         m_locationMonitorDao = m_easyMockUtils.createMock(LocationMonitorDao.class);
-        m_dataCollectionConfigDao = m_easyMockUtils.createMock(DataCollectionConfigDao.class);
+        m_resourceTypesDao = m_easyMockUtils.createMock(ResourceTypesDao.class);
         m_filterDao = m_easyMockUtils.createMock(FilterDao.class);
         m_ipInterfaceDao = m_easyMockUtils.createMock(IpInterfaceDao.class);
 
@@ -125,11 +125,11 @@ public class DefaultResourceDaoTest {
         m_resourceDao.setLocationMonitorDao(m_locationMonitorDao);
         m_resourceDao.setIpInterfaceDao(m_ipInterfaceDao);
         m_resourceDao.setCollectdConfig(m_collectdConfig);
-        m_resourceDao.setDataCollectionConfigDao(m_dataCollectionConfigDao);
+        m_resourceDao.setResourceTypesDao(m_resourceTypesDao);
         m_resourceDao.setResourceStorageDao(m_resourceStorageDao);
 
-        expect(m_dataCollectionConfigDao.getConfiguredResourceTypes()).andReturn(new HashMap<String, ResourceType>());
-        expect(m_dataCollectionConfigDao.getLastUpdate()).andReturn(m_lastUpdateTime);
+        expect(m_resourceTypesDao.getResourceTypes()).andReturn(new HashMap<String, ResourceType>());
+        expect(m_resourceTypesDao.getLastUpdate()).andReturn(m_lastUpdateTime);
 
         m_easyMockUtils.replayAll();
         m_resourceDao.afterPropertiesSet();
@@ -175,7 +175,7 @@ public class DefaultResourceDaoTest {
         OnmsIpInterface ip = createIpInterfaceOnNode();
         expect(m_nodeDao.get(ip.getNode().getId())).andReturn(ip.getNode()).times(1);
         expect(m_ipInterfaceDao.get(ip.getNode(), "192.168.1.1")).andReturn(ip).times(1);
-        expect(m_dataCollectionConfigDao.getLastUpdate()).andReturn(new Date(System.currentTimeMillis()-86400000l)).anyTimes();
+        expect(m_resourceTypesDao.getLastUpdate()).andReturn(new Date(System.currentTimeMillis()-86400000l)).anyTimes();
 
         File response = m_fileAnticipator.tempDir("response");
         File ipDir = m_fileAnticipator.tempDir(response, "192.168.1.1");
@@ -297,7 +297,7 @@ public class DefaultResourceDaoTest {
         File intf = m_fileAnticipator.tempDir(domain, "server1");
         m_fileAnticipator.tempFile(intf, "ifInOctects" + m_rrdFileExtension);
         
-        expect(m_dataCollectionConfigDao.getLastUpdate()).andReturn(new Date(System.currentTimeMillis()-86400000l)).anyTimes();
+        expect(m_resourceTypesDao.getLastUpdate()).andReturn(new Date(System.currentTimeMillis()-86400000l)).anyTimes();
         String resourceId = OnmsResource.createResourceId("domain", "example1", "interfaceSnmp", "server1");
         
         m_easyMockUtils.replayAll();
@@ -333,7 +333,7 @@ public class DefaultResourceDaoTest {
         File ipDir = m_fileAnticipator.tempDir(response, "192.168.1.1");
         m_fileAnticipator.tempFile(ipDir, "icmp" + m_rrdFileExtension);
 
-        expect(m_dataCollectionConfigDao.getLastUpdate()).andReturn(m_lastUpdateTime);
+        expect(m_resourceTypesDao.getLastUpdate()).andReturn(m_lastUpdateTime);
 
         m_easyMockUtils.replayAll();
         List<OnmsResource> resources = m_resourceDao.findNodeResources();
@@ -359,7 +359,7 @@ public class DefaultResourceDaoTest {
         File ipDir = m_fileAnticipator.tempDir(monitor, "192.168.1.1");
         m_fileAnticipator.tempFile(ipDir, "icmp" + m_rrdFileExtension);
 
-        expect(m_dataCollectionConfigDao.getLastUpdate()).andReturn(m_lastUpdateTime);
+        expect(m_resourceTypesDao.getLastUpdate()).andReturn(m_lastUpdateTime);
 
         // Setup the status to match the path on disk
         OnmsLocationMonitor locMon = new OnmsLocationMonitor();
@@ -392,7 +392,7 @@ public class DefaultResourceDaoTest {
         File nodeDir = m_fileAnticipator.tempDir(snmp, "1");
         m_fileAnticipator.tempFile(nodeDir, "foo" + m_rrdFileExtension);
 
-        expect(m_dataCollectionConfigDao.getLastUpdate()).andReturn(m_lastUpdateTime);
+        expect(m_resourceTypesDao.getLastUpdate()).andReturn(m_lastUpdateTime);
 
         m_easyMockUtils.replayAll();
         List<OnmsResource> resources = m_resourceDao.findNodeResources();
@@ -417,7 +417,7 @@ public class DefaultResourceDaoTest {
         File intfDir = m_fileAnticipator.tempDir(nodeDir, "eth0");
         m_fileAnticipator.tempFile(intfDir, "foo" + m_rrdFileExtension);
 
-        expect(m_dataCollectionConfigDao.getLastUpdate()).andReturn(m_lastUpdateTime);
+        expect(m_resourceTypesDao.getLastUpdate()).andReturn(m_lastUpdateTime);
 
         m_easyMockUtils.replayAll();
         List<OnmsResource> resources = m_resourceDao.findNodeResources();
@@ -475,7 +475,7 @@ public class DefaultResourceDaoTest {
         locationMonitorInterfaces.add(new LocationMonitorIpInterface(locMon, ip));
 
         expect(m_locationMonitorDao.findStatusChangesForNodeForUniqueMonitorAndInterface(ip.getNode().getId())).andReturn(locationMonitorInterfaces);
-        expect(m_dataCollectionConfigDao.getLastUpdate()).andReturn(new Date(System.currentTimeMillis()-86400000l)).anyTimes();
+        expect(m_resourceTypesDao.getLastUpdate()).andReturn(new Date(System.currentTimeMillis()-86400000l)).anyTimes();
 
         m_easyMockUtils.replayAll();
         OnmsResource resource = m_resourceDao.getResourceForIpInterface(ip, locMon);

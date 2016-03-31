@@ -98,9 +98,9 @@ These phases are now managed separately by Provisiond.
 Immediately following the import of a node entity, tasks are created for scanning a node to discover the node entity’s interfaces (SNMP and IP).
 As interfaces are found, they are persisted and tasks are scheduled for service detection of each IP interface.
 
-For auto discovered nodes, a node merging phase is scheduled.
-Nodes that have been directly provisioned will not be included in the node process.
-Only in the case the 2 where nodes that have been automatically discovered that appear to be the same node with the node merging phase be activated.
+For auto discovered nodes, a node merging phase is scheduled;
+Nodes that have been directly provisioned will not be included in the node merging process.
+Merging will only occur when 2 automatically discovered nodes appear to be the same node.
 
 NOTE: the use case and redesign of node merging is still an outstanding issue with the 1.8.0 release
 

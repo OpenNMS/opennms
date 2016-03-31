@@ -38,6 +38,7 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.opennms.core.utils.InetAddressUtils;
@@ -45,6 +46,7 @@ import org.opennms.core.xml.ValidateUsing;
 import org.opennms.netmgt.events.api.EventParameterUtils;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsDistPoller;
+import org.opennms.netmgt.model.OnmsEventParameter;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.TroubleTicketState;
 import org.opennms.netmgt.xml.event.Parm;
@@ -56,6 +58,7 @@ import org.opennms.netmgt.xml.event.Parm;
  * FIXME: Most of these fields are not implemented waiting on above fix to be completed.
  * 
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
+ * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
 @XmlRootElement(name="northbound-alarm")
 @ValidateUsing("northbound-alarm.xsd")
@@ -613,7 +616,7 @@ public class NorthboundAlarm implements Preservable {
     @XmlElement(name="object-type")
     private String m_objectType;
 
-    /** The operator instructions */
+    /** The operator instructions. */
     @XmlElement(name="operator-instructions")
     private String m_operInst;
 
@@ -668,13 +671,18 @@ public class NorthboundAlarm implements Preservable {
     /** The event parameters map. */
     private Map<String,String> m_eventParametersMap = new HashMap<String,String>();
 
-    /** The m_event parameters collection. */
-    private List<Parm> m_eventParametersCollection = new ArrayList<Parm>();
+    /** The event parameters collection. */
+    @XmlElementWrapper(name="parameters")
+    @XmlElement(name="parameter")
+    private List<OnmsEventParameter> m_eventParametersCollection = new ArrayList<OnmsEventParameter>();
 
     /** The preserved flag. */
     @XmlElement(name="preserved", defaultValue="false")
     private volatile boolean m_preserved = false;
 
+    /**
+     * Instantiates a new northbound alarm.
+     */
     public NorthboundAlarm() {
         // No-arg constructore required by JAXB
     }
@@ -765,8 +773,8 @@ public class NorthboundAlarm implements Preservable {
         }
 
         if (alarm.getEventParms() != null) {
-            m_eventParametersCollection.addAll(EventParameterUtils.decode(alarm.getEventParms()));
-            for (Parm parm : m_eventParametersCollection) {
+            for (Parm parm : EventParameterUtils.decode(alarm.getEventParms())) {
+                m_eventParametersCollection.add(new OnmsEventParameter(parm));
                 m_eventParametersMap.put(parm.getParmName(), parm.getValue().getContent());
             }
         }
@@ -1047,7 +1055,7 @@ public class NorthboundAlarm implements Preservable {
      *
      * @return the event parameters collection
      */
-    public List<Parm> getEventParametersCollection() {
+    public List<OnmsEventParameter> getEventParametersCollection() {
         return m_eventParametersCollection;
     }
 
@@ -1112,147 +1120,327 @@ public class NorthboundAlarm implements Preservable {
         return m_foreignId;
     }
 
+    /**
+     * Sets the id.
+     *
+     * @param id the new id
+     */
     public void setId(Integer id) {
         m_id = id;
     }
 
+    /**
+     * Sets the UEI.
+     *
+     * @param uei the new UEI
+     */
     public void setUei(String uei) {
         m_uei = uei;
     }
 
+    /**
+     * Sets the node id.
+     *
+     * @param nodeId the new node id
+     */
     public void setNodeId(Integer nodeId) {
         m_nodeId = nodeId;
     }
 
+    /**
+     * Sets the node label.
+     *
+     * @param nodeLabel the new node label
+     */
     public void setNodeLabel(String nodeLabel) {
         m_nodeLabel = nodeLabel;
     }
 
+    /**
+     * Sets the node sys object id.
+     *
+     * @param nodeSysObjectId the new node sys object id
+     */
     public void setNodeSysObjectId(String nodeSysObjectId) {
         m_nodeSysObjectId = nodeSysObjectId;
     }
 
+    /**
+     * Sets the foreign source.
+     *
+     * @param foreignSource the new foreign source
+     */
     public void setForeignSource(String foreignSource) {
         m_foreignSource = foreignSource;
     }
 
+    /**
+     * Sets the foreign id.
+     *
+     * @param foreignId the new foreign id
+     */
     public void setForeignId(String foreignId) {
         m_foreignId = foreignId;
     }
 
+    /**
+     * Sets the acknowledge time.
+     *
+     * @param ackTime the new acknowledge time
+     */
     public void setAckTime(Date ackTime) {
         m_ackTime = ackTime;
     }
 
+    /**
+     * Sets the acknowledge user.
+     *
+     * @param ackUser the new acknowledge user
+     */
     public void setAckUser(String ackUser) {
         m_ackUser = ackUser;
     }
 
+    /**
+     * Sets the alarm type.
+     *
+     * @param alarmType the new alarm type
+     */
     public void setAlarmType(AlarmType alarmType) {
         m_alarmType = alarmType;
     }
 
+    /**
+     * Sets the App DN.
+     *
+     * @param appDn the new App DN
+     */
     public void setAppDn(String appDn) {
         m_appDn = appDn;
     }
 
+    /**
+     * Sets the clear key.
+     *
+     * @param clearKey the new clear key
+     */
     public void setClearKey(String clearKey) {
         m_clearKey = clearKey;
     }
 
+    /**
+     * Sets the count.
+     *
+     * @param count the new count
+     */
     public void setCount(Integer count) {
         m_count = count;
     }
 
+    /**
+     * Sets the description.
+     *
+     * @param desc the new description
+     */
     public void setDesc(String desc) {
-       m_desc = desc;
+        m_desc = desc;
     }
 
+    /**
+     * Sets the poller.
+     *
+     * @param poller the new poller
+     */
     public void setPoller(OnmsDistPoller poller) {
         m_poller = poller;
     }
 
+    /**
+     * Sets the first occurrence.
+     *
+     * @param firstOccurrence the new first occurrence
+     */
     public void setFirstOccurrence(Date firstOccurrence) {
         m_firstOccurrence = firstOccurrence;
     }
 
+    /**
+     * Sets the IP address.
+     *
+     * @param ipAddr the new IP address
+     */
     public void setIpAddr(String ipAddr) {
         m_ipAddr = ipAddr;
     }
 
+    /**
+     * Sets the last occurrence.
+     *
+     * @param lastOccurrence the new last occurrence
+     */
     public void setLastOccurrence(Date lastOccurrence) {
         m_lastOccurrence = lastOccurrence;
     }
 
+    /**
+     * Sets the log message.
+     *
+     * @param logMsg the new log message
+     */
     public void setLogMsg(String logMsg) {
         m_logMsg = logMsg;
     }
 
+    /**
+     * Sets the object instance.
+     *
+     * @param objectInstance the new object instance
+     */
     public void setObjectInstance(String objectInstance) {
         m_objectInstance = objectInstance;
     }
 
+    /**
+     * Sets the object type.
+     *
+     * @param objectType the new object type
+     */
     public void setObjectType(String objectType) {
         m_objectType = objectType;
     }
 
+    /**
+     * Sets the operator instructions.
+     *
+     * @param operInst the new operator instructions
+     */
     public void setOperInst(String operInst) {
         m_operInst = operInst;
     }
 
+    /**
+     * Sets the OSS key.
+     *
+     * @param ossKey the new OSS key
+     */
     public void setOssKey(String ossKey) {
         m_ossKey = ossKey;
     }
 
+    /**
+     * Sets the OSS state.
+     *
+     * @param ossState the new OSS state
+     */
     public void setOssState(String ossState) {
         m_ossState = ossState;
     }
 
+    /**
+     * Sets the alarm key.
+     *
+     * @param alarmKey the new alarm key
+     */
     public void setAlarmKey(String alarmKey) {
         m_alarmKey = alarmKey;
     }
 
+    /**
+     * Sets the service.
+     *
+     * @param service the new service
+     */
     public void setService(String service) {
         m_service = service;
     }
 
+    /**
+     * Sets the severity.
+     *
+     * @param severity the new severity
+     */
     public void setSeverity(OnmsSeverity severity) {
         m_severity = severity;
     }
 
+    /**
+     * Sets the suppressed.
+     *
+     * @param suppressed the new suppressed
+     */
     public void setSuppressed(Date suppressed) {
         m_suppressed = suppressed;
     }
 
+    /**
+     * Sets the suppressed until.
+     *
+     * @param suppressedUntil the new suppressed until
+     */
     public void setSuppressedUntil(Date suppressedUntil) {
         m_suppressedUntil = suppressedUntil;
     }
 
+    /**
+     * Sets the suppressed by.
+     *
+     * @param suppressedBy the new suppressed by
+     */
     public void setSuppressedBy(String suppressedBy) {
         m_suppressedBy = suppressedBy;
     }
 
+    /**
+     * Sets the ticket id.
+     *
+     * @param ticketId the new ticket id
+     */
     public void setTicketId(String ticketId) {
         m_ticketId = ticketId;
     }
 
+    /**
+     * Sets the ticket state.
+     *
+     * @param ticketState the new ticket state
+     */
     public void setTicketState(TroubleTicketState ticketState) {
         m_ticketState = ticketState;
     }
 
+    /**
+     * Sets the x733 type.
+     *
+     * @param x733Type the new x733 type
+     */
     public void setx733Type(String x733Type) {
         m_x733Type = x733Type;
     }
 
+    /**
+     * Sets the x733 cause.
+     *
+     * @param x733Cause the new x733 cause
+     */
     public void setx733Cause(int x733Cause) {
         m_x733Cause = x733Cause;
     }
 
+    /**
+     * Sets the event parameters map.
+     *
+     * @param eventParametersMap the event parameters map
+     */
     public void setEventParametersMap(Map<String, String> eventParametersMap) {
         m_eventParametersMap = eventParametersMap;
     }
 
-    public void setEventParametersCollection(List<Parm> eventParametersCollection) {
+    /**
+     * Sets the event parameters collection.
+     *
+     * @param eventParametersCollection the new event parameters collection
+     */
+    public void setEventParametersCollection(List<OnmsEventParameter> eventParametersCollection) {
         m_eventParametersCollection = eventParametersCollection;
     }
 
@@ -1264,6 +1452,9 @@ public class NorthboundAlarm implements Preservable {
         return String.format("NorthboundAlarm[id=%d, uei='%s', nodeId=%d]", m_id, m_uei, m_nodeId);
     }
 
+    /* (non-Javadoc)
+     * @see java.lang.Object#hashCode()
+     */
     @Override
     public int hashCode() {
         final int prime = 31;
@@ -1308,6 +1499,9 @@ public class NorthboundAlarm implements Preservable {
         return result;
     }
 
+    /* (non-Javadoc)
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
     @Override
     public boolean equals(Object obj) {
         if (this == obj)

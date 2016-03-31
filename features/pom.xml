@@ -33,6 +33,7 @@
     <module>collection</module>
     <module>jdbc-collector</module>
     <module>juniper-tca-collector</module>
+    <module>wsman</module>
 
     <!-- Discovery -->
     <module>discovery</module>
@@ -78,6 +79,7 @@
 
     <!-- Newts -->
     <module>newts</module>
+    <module>newts-repository-converter</module>
 
     <!-- GWT UI plugins -->
     <module>node-page-list</module>
@@ -109,6 +111,9 @@
     <!-- OpenNMS Vaadin Surveillance Views -->
     <module>vaadin-surveillance-views</module>
 
+    <!-- Data Choices -->
+    <module>datachoices</module>
+
     <!-- Other projects -->
     <module>geocoder</module>
     <module>instrumentationLogReader</module>
@@ -119,5 +124,9 @@
 
     <!-- Elasticsearch event-forwarder-->
     <module>elasticsearch</module>
+
+    <!-- Minion -->
+    <module>minion</module>
+    <module>scv</module>
   </modules>
 </project>

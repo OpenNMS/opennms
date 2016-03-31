@@ -86,10 +86,8 @@
     <intercept-url pattern="/js/global.js" access="ROLE_ANONYMOUS,ROLE_USER,ROLE_DASHBOARD" />
     <intercept-url pattern="/lib/**" access="ROLE_ANONYMOUS,ROLE_USER,ROLE_DASHBOARD" />
     <intercept-url pattern="/images/**" access="ROLE_ANONYMOUS,ROLE_USER,ROLE_DASHBOARD" />
-    <intercept-url pattern="/admin/node/add.htm" access="ROLE_PROVISION, ROLE_ADMIN" />
-    <intercept-url pattern="/admin/provisioningGroups.htm" access="ROLE_PROVISION, ROLE_ADMIN" />
-    <intercept-url pattern="/admin/editForeignSource.htm" access="ROLE_PROVISION, ROLE_ADMIN" />
-    <intercept-url pattern="/admin/editProvisioningGroup.htm" access="ROLE_PROVISION, ROLE_ADMIN" />
+    <intercept-url pattern="/admin/ng-requisitions/app/**" access="ROLE_PROVISION,ROLE_ADMIN" />
+    <intercept-url pattern="/rest/snmpConfig/**" access="ROLE_PROVISION,ROLE_ADMIN" />
     <intercept-url pattern="/admin/**" access="ROLE_ADMIN" />
     <intercept-url pattern="/**/mib-compiler" access="ROLE_ADMIN" />
     <intercept-url pattern="/**/admin-*" access="ROLE_ADMIN" />
