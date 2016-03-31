@@ -72,6 +72,7 @@
             <th>IP Addresses</th>
             <th># Assets</th>
             <th># Categories</th>
+            <th>Has Parent</th>
             <th><span class="pull-right">Actions</span></th>
           </tr>
         </thead>
@@ -89,6 +90,7 @@
             </td>
             <td>{{ node.assets.length }}</td>
             <td>{{ node.categories.length }}</td>
+            <td>{{ node.hasParentInformation() ? 'Yes' : 'No' }}</td>
             <td>
               <span class="pull-right">
                 <button class="btn btn-default btn-xs" uib-tooltip="Edit the {{node.nodeLabel}} Node" ng-click="editNode(node)">
