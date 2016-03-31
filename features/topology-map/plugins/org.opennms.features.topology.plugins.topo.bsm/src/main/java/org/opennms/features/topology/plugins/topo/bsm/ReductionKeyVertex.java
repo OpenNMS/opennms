@@ -48,7 +48,7 @@ public class ReductionKeyVertex extends AbstractBusinessServiceVertex {
         this(graphVertex.getReductionKey(), graphVertex.getLevel(), graphVertex.getStatus());
     }
 
-    protected ReductionKeyVertex(String reductionKey, int level, Status status) {
+    public ReductionKeyVertex(String reductionKey, int level, Status status) {
         super(Type.ReductionKey + ":" + reductionKey, getLabelFromReductionKey(reductionKey), level, status);
         this.reductionKey = reductionKey;
         setTooltipText(String.format("Reduction Key '%s'", reductionKey));
@@ -86,7 +86,7 @@ public class ReductionKeyVertex extends AbstractBusinessServiceVertex {
     }
 
     @Override
-    public void accept(BusinessServiceVertexVisitor visitor) {
-        visitor.visit(this);
+    public <T> T accept(BusinessServiceVertexVisitor<T> visitor) {
+        return visitor.visit(this);
     }
 }

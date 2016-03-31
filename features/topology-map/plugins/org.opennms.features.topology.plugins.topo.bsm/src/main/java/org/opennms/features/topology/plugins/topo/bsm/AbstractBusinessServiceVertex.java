@@ -77,5 +77,5 @@ public abstract class AbstractBusinessServiceVertex extends AbstractVertex imple
         return status;
     }
 
-    public abstract void accept(BusinessServiceVertexVisitor visitor);
+    public abstract <T> T accept(BusinessServiceVertexVisitor<T> visitor);
 }

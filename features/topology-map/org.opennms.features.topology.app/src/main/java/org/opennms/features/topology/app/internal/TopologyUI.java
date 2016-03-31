@@ -34,12 +34,14 @@ import static org.opennms.features.topology.app.internal.operations.TopologySele
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -62,9 +64,14 @@ import org.opennms.features.topology.api.WidgetManager;
 import org.opennms.features.topology.api.WidgetUpdateListener;
 import org.opennms.features.topology.api.browsers.ContentType;
 import org.opennms.features.topology.api.browsers.SelectionAwareTable;
+import org.opennms.features.topology.api.info.EdgeInfoPanelItem;
+import org.opennms.features.topology.api.info.InfoPanelItem;
+import org.opennms.features.topology.api.info.VertexInfoPanelItem;
 import org.opennms.features.topology.api.support.VertexHopGraphProvider;
 import org.opennms.features.topology.api.support.VertexHopGraphProvider.VertexHopCriteria;
 import org.opennms.features.topology.api.topo.Criteria;
+import org.opennms.features.topology.api.topo.EdgeRef;
+import org.opennms.features.topology.api.topo.Ref;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.features.topology.app.internal.CommandManager.DefaultOperationContext;
@@ -75,6 +82,7 @@ import org.opennms.features.topology.app.internal.support.CategoryHopCriteria;
 import org.opennms.features.topology.app.internal.support.FontAwesomeIcons;
 import org.opennms.features.topology.app.internal.support.IconRepositoryManager;
 import org.opennms.features.topology.app.internal.ui.HudDisplay;
+import org.opennms.features.topology.app.internal.ui.InfoPanel;
 import org.opennms.features.topology.app.internal.ui.LastUpdatedLabel;
 import org.opennms.features.topology.app.internal.ui.NoContentAvailableWindow;
 import org.opennms.features.topology.app.internal.ui.SearchBox;
@@ -86,6 +94,8 @@ import org.opennms.osgi.VaadinApplicationContextImpl;
 import org.opennms.osgi.locator.OnmsServiceManagerLocator;
 import org.opennms.web.api.OnmsHeaderProvider;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.InvalidSyntaxException;
+import org.osgi.framework.ServiceReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -330,11 +340,103 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
         }
     }
 
+    /**
+     * Helper class to load components to show in the info panel.
+     */
+    public class InfoPanelItemProvider implements SelectionListener {
+
+        private Component wrap(InfoPanelItem item, Ref ref) {
+            return wrap(item.getComponent(ref), item.getTitle(ref));
+        }
+
+        /**
+         * Wraps the provided component in order to fit it better in the Info Panel.
+         * E.g. a caption is added to better difference between components.
+         *
+         * @param component The component to wrap.
+         * @param title the title of the component to wrap.
+         * @return The wrapped component.
+         */
+        private Component wrap(Component component, String title) {
+            Label label = new Label(title);
+            label.addStyleName("info-panel-item-label");
+
+            VerticalLayout layout = new VerticalLayout();
+            layout.addStyleName("info-panel-item");
+            layout.addComponent(label);
+            layout.addComponent(component);
+            layout.setMargin(true);
+
+            return layout;
+        }
+
+        private List<Component> getVertexInfoComponents(VertexRef vertexRef) {
+            final List<VertexInfoPanelItem> infoPanelItems = findInfoPanelComponents(VertexInfoPanelItem.class);
+            return infoPanelItems.stream()
+                    .filter(panel -> panel.contributesTo(vertexRef))
+                    .sorted()
+                    .map(item -> wrap(item, vertexRef))
+                    .collect(Collectors.toList());
+        }
+
+        private List<Component> getEdgeInfoComponents(EdgeRef edgeRef) {
+            final List<EdgeInfoPanelItem> infoPanelItems = findInfoPanelComponents(EdgeInfoPanelItem.class);
+            return infoPanelItems.stream()
+                    .filter(panel -> panel.contributesTo(edgeRef))
+                    .sorted()
+                    .map(item -> wrap(item, edgeRef))
+                    .collect(Collectors.toList());
+        }
+
+        private <T extends InfoPanelItem> List<T> findInfoPanelComponents(Class<T> classname) {
+            try {
+                List<T> serviceList = new ArrayList<>();
+                ServiceReference<?>[] allServiceReferences = m_bundlecontext.getAllServiceReferences(classname.getName(), null);
+                if (allServiceReferences != null) {
+                    for (ServiceReference eachReference : allServiceReferences) {
+                        T service = (T) m_bundlecontext.getService(eachReference);
+                        serviceList.add(service);
+                    }
+                }
+                return serviceList;
+
+            } catch (InvalidSyntaxException e) {
+                LOG.error(e.getMessage(), e);
+            }
+            return Collections.emptyList();
+        }
+
+        @Override
+        public void selectionChanged(SelectionContext selectionContext) {
+            final Collection<EdgeRef> selectedEdgeRefs = selectionContext.getSelectedEdgeRefs();
+            final Collection<VertexRef> selectedVertexRefs = selectionContext.getSelectedVertexRefs();
+            final List<Component> components = Lists.newArrayList();
+            if (selectedVertexRefs.size() == 1) {
+                final VertexRef vertexRef = selectedVertexRefs.iterator().next();
+                Vertex vertex = m_graphContainer.getBaseTopology().getVertex(vertexRef);
+                if (vertex != null) {
+                    final List<Component> vertexInfoComponents = getVertexInfoComponents(vertex);
+                    components.addAll(vertexInfoComponents);
+                }
+            }
+            if (selectedEdgeRefs.size() == 1) {
+                final EdgeRef edgeRef = selectedEdgeRefs.iterator().next();
+                final List<Component> edgeInfoComponents = getEdgeInfoComponents(edgeRef);
+                components.addAll(edgeInfoComponents);
+            }
+            if (components.isEmpty()) {
+                components.add(wrap(m_hudDisplay, "Selection Context"));
+            }
+            m_infoPanel.setDynamicComponents(components);
+        }
+    }
+
     private static final long serialVersionUID = 6837501987137310938L;
     private static final Logger LOG = LoggerFactory.getLogger(TopologyUI.class);
 
     private TopologyComponent m_topologyComponent;
     private Window m_noContentWindow;
+    private InfoPanel m_infoPanel;
     private final GraphContainer m_graphContainer;
     private SelectionManager m_selectionManager;
     private final CommandManager m_commandManager;
@@ -468,6 +570,7 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
 
         m_graphContainer.addChangeListener(m_verticesUpdateManager);
         m_selectionManager.addSelectionListener(m_verticesUpdateManager);
+        m_selectionManager.addSelectionListener(new InfoPanelItemProvider());
     }
 
     private boolean noAdditionalFocusCriteria() {
@@ -492,6 +595,14 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
         addHeader();
 
         addContentLayout();
+
+        addNoContentWindow();
+    }
+
+    private void addNoContentWindow() {
+        m_noContentWindow = new NoContentAvailableWindow(m_graphContainer);
+        m_noContentWindow.setVisible(true);
+        addWindow(m_noContentWindow);
     }
 
     private void setupErrorHandler() {
@@ -556,7 +667,7 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
         }
     }
 
-    private AbsoluteLayout createMapLayout() {
+    private Component createMapLayout() {
         final Property<Double> scale = m_graphContainer.getScaleProperty();
 
         m_lastUpdatedTimeLabel = new LastUpdatedLabel();
@@ -756,34 +867,25 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
         HorizontalLayout locationToolLayout = createLocationToolLayout();
 
         //Vertical Layout for all tools on right side
-        VerticalLayout toolbar = new VerticalLayout();
-        toolbar.setDefaultComponentAlignment(Alignment.MIDDLE_CENTER);
-        toolbar.setSpacing(true);
+        VerticalLayout toollayout = new VerticalLayout();
+        toollayout.setDefaultComponentAlignment(Alignment.MIDDLE_CENTER);
+        toollayout.setSpacing(true);
 
-        toolbar.addComponent(historyCtrlLayout);
-        toolbar.addComponent(locationToolLayout);
-        toolbar.addComponent(showFocusVerticesBtn);
-        toolbar.addComponent(sliderLayout);
-        toolbar.addComponent(controlLayout);
-        toolbar.addComponent(semanticCtrlLayout);
-
+        toollayout.addComponent(historyCtrlLayout);
+        toollayout.addComponent(locationToolLayout);
+        toollayout.addComponent(showFocusVerticesBtn);
+        toollayout.addComponent(sliderLayout);
+        toollayout.addComponent(controlLayout);
+        toollayout.addComponent(semanticCtrlLayout);
 
         AbsoluteLayout mapLayout = new AbsoluteLayout();
-
-
         mapLayout.addComponent(m_topologyComponent, "top:0px; left: 0px; right: 0px; bottom: 0px;");
         mapLayout.addComponent(m_lastUpdatedTimeLabel, "top: 5px; right: 10px;");
-        mapLayout.addComponent(m_hudDisplay, "top: 445px; right: 10px");
-        mapLayout.addComponent(toolbar, "top: 25px; right: 10px;");
-        mapLayout.addComponent(m_searchBox, "top:5px; left:5px;");
-        //mapLayout.addComponent(locationToolLayout, "top: 5px; left: 50%");
+        mapLayout.addComponent(toollayout, "top: 25px; right: 10px;");
         mapLayout.setSizeFull();
 
-        m_noContentWindow = new NoContentAvailableWindow(m_graphContainer);
-        m_noContentWindow.setVisible(true);
-        addWindow(m_noContentWindow);
-
-        return mapLayout;
+        m_infoPanel = new InfoPanel(m_searchBox, mapLayout);
+        return m_infoPanel;
     }
 
     private HorizontalLayout createLocationToolLayout() {

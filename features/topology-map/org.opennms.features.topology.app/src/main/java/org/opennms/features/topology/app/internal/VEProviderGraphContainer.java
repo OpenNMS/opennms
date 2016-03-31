@@ -58,6 +58,7 @@ import org.opennms.features.topology.api.topo.Criteria;
 import org.opennms.features.topology.api.topo.Edge;
 import org.opennms.features.topology.api.topo.EdgeListener;
 import org.opennms.features.topology.api.topo.EdgeProvider;
+import org.opennms.features.topology.api.topo.EdgeRef;
 import org.opennms.features.topology.api.topo.EdgeStatusProvider;
 import org.opennms.features.topology.api.topo.GraphProvider;
 import org.opennms.features.topology.api.topo.RefComparator;
@@ -454,7 +455,7 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
             m_graph.updateLayout(displayVertices, displayEdges);
         }
 
-        unselectVerticesWhichAreNotVisibleAnymore(m_graph, m_selectionManager);
+        unselectElementsWhichAreNotVisibleAnymore(m_graph, m_selectionManager);
 
         removeVerticesWhichAreNotVisible(displayVertices);
     }
@@ -477,12 +478,11 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
         }
     }
 
-    // we have to find out if each selected vertex is still displayable,
-    // if not we deselect it.
-    private static void unselectVerticesWhichAreNotVisibleAnymore(Graph graph, SelectionManager selectionManager) {
+    // we have to find out if each selected vertex/edge is still displayable, if not we deselect it.
+    private static void unselectElementsWhichAreNotVisibleAnymore(Graph graph, SelectionManager selectionManager) {
         if (selectionManager == null) return;
-        List<VertexRef> selectedVertexRefs = new ArrayList<VertexRef>(selectionManager.getSelectedVertexRefs());
-        List<VertexRef> newSelectedVertexRefs = new ArrayList<VertexRef>();
+        List<VertexRef> selectedVertexRefs = new ArrayList<>(selectionManager.getSelectedVertexRefs());
+        List<VertexRef> newSelectedVertexRefs = new ArrayList<>();
         for (VertexRef eachSelectedVertex : selectedVertexRefs) {
             for (Vertex eachDisplayableVertex : graph.getDisplayVertices()) {
                 if (eachDisplayableVertex.getNamespace().equals(eachSelectedVertex.getNamespace())
@@ -493,9 +493,24 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
             }
         }
 
+        List<EdgeRef> selectedEdgeRefs = new ArrayList<>(selectionManager.getSelectedEdgeRefs());
+        List<EdgeRef> newSelectedEdgeRefs = new ArrayList<>();
+        for (EdgeRef eachSelectedEdgeRef : selectedEdgeRefs) {
+            for (Edge eachDisplayableEdge : graph.getDisplayEdges()) {
+                if (eachDisplayableEdge.getNamespace().equals(eachSelectedEdgeRef.getNamespace())
+                        && eachDisplayableEdge.getId().equals(eachSelectedEdgeRef.getId())) {
+                    newSelectedEdgeRefs.add(eachSelectedEdgeRef);
+                    break;
+                }
+            }
+        }
+
         // if the selection changed, inform selectionManager
         if (!newSelectedVertexRefs.equals(selectedVertexRefs)) {
             selectionManager.setSelectedVertexRefs(newSelectedVertexRefs);
+        }
+        if (!newSelectedEdgeRefs.equals(selectedEdgeRefs)) {
+            selectionManager.setSelectedEdgeRefs(newSelectedEdgeRefs);
         }
     }
 

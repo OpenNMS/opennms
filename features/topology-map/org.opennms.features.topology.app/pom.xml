@@ -50,6 +50,11 @@
             <type>pom</type>
         </dependency>
         <dependency>
+            <groupId>org.opennms.features.vaadin-components</groupId>
+            <artifactId>core</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.opennms.features.topology</groupId>
             <artifactId>api</artifactId>
             <version>${project.version}</version>

@@ -386,6 +386,16 @@ public class DefaultBusinessServiceStateMachine implements BusinessServiceStateM
     }
 
     @Override
+    public Set<GraphEdge> calculateImpacting(BusinessService businessService) {
+        m_rwLock.readLock().lock();
+        try {
+            final GraphVertex vertex = m_g.getVertexByBusinessServiceId(businessService.getId());
+            return GraphAlgorithms.calculateImpacting(m_g, vertex);
+        } finally {
+            m_rwLock.readLock().unlock();
+        }
+    }
+
     public List<GraphVertex> calculateRootCause(BusinessService businessService) {
         m_rwLock.readLock().lock();
         try {

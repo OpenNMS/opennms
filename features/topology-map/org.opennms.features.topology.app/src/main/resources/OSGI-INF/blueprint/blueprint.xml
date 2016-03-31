@@ -391,4 +391,17 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 http://aries.apache.org/schemas/b
 		</service-properties>
 	</service>
 
+    <!-- Info Items -->
+    <service interface="org.opennms.features.topology.api.info.VertexInfoPanelItem">
+        <bean class="org.opennms.features.topology.app.internal.ui.info.DefaultVertexInfoPanelItem" />
+    </service>
+    <service interface="org.opennms.features.topology.api.info.VertexInfoPanelItem">
+        <bean class="org.opennms.features.topology.app.internal.ui.info.NodeInfoPanelItem" >
+            <argument ref="nodeDao"/>
+        </bean>
+    </service>
+    <service interface="org.opennms.features.topology.api.info.EdgeInfoPanelItem">
+        <bean class="org.opennms.features.topology.app.internal.ui.info.DefaultEdgeInfoPanelItem" />
+    </service>
+
 </blueprint>

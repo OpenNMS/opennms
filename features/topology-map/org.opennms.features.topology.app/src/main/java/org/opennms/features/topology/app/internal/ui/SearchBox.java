@@ -377,7 +377,7 @@ public class SearchBox extends AbstractComponent implements SelectionListener, G
     private void init() {
         registerRpc(m_rpc);
         getState().immediate = true;
-        setWidth(250.0f, Unit.PIXELS);
+        setWidth(100, Unit.PERCENTAGE);
         setImmediate(true);
 
         m_suggestionMap = HashMultimap.create();

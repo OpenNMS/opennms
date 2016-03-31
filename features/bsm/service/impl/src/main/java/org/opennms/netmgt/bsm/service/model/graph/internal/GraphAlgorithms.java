@@ -54,7 +54,7 @@ public class GraphAlgorithms {
         }
 
         // Gather the list of child vertices that impact the current vertex
-        final List<GraphVertex> childVerticesWithImpact = getImpactingEdges(graph, vertex)
+        final List<GraphVertex> childVerticesWithImpact = calculateImpacting(graph, vertex)
                 .stream()
                 .map(e -> graph.getOpposite(vertex, e))
                 .sorted()
@@ -75,7 +75,7 @@ public class GraphAlgorithms {
 
         // Gather the list of parent vertices that are impacted by the current vertex
         final List<GraphVertex> impactedParentVertices = graph.getInEdges(vertex).stream()
-                .filter(e -> getImpactingEdges(graph, graph.getOpposite(vertex, e)).contains(e))
+                .filter(e -> calculateImpacting(graph, graph.getOpposite(vertex, e)).contains(e))
                 .map(e -> graph.getOpposite(vertex, e))
                 .sorted()
                 .collect(Collectors.toList());
@@ -89,7 +89,7 @@ public class GraphAlgorithms {
     }
 
 
-    private static Set<GraphEdge> getImpactingEdges(BusinessServiceGraph graph, GraphVertex parent) {
+    public static Set<GraphEdge> calculateImpacting(BusinessServiceGraph graph, GraphVertex parent) {
         // Grab all of the child edges
         List<GraphEdge> childEdges = graph.getOutEdges(parent).stream()
                 .collect(Collectors.toList());

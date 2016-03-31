@@ -26,13 +26,10 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.plugins.topo.bsm;
+package org.opennms.features.topology.api.info;
 
-public interface BusinessServiceVertexVisitor<T> {
+import org.opennms.features.topology.api.topo.EdgeRef;
 
-    T visit(BusinessServiceVertex vertex);
+public interface EdgeInfoPanelItem extends InfoPanelItem<EdgeRef> {
 
-    T visit(IpServiceVertex vertex);
-
-    T visit(ReductionKeyVertex vertex);
 }
