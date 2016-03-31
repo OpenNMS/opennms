@@ -52,6 +52,7 @@ import org.opennms.netmgt.model.OnmsNode.NodeType;
 import org.opennms.netmgt.model.NetworkBuilder;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.topology.BroadcastDomain;
+import org.opennms.netmgt.model.topology.SharedSegment;
 import org.opennms.netmgt.nb.Nms10205bNetworkBuilder;
 import org.opennms.netmgt.nb.Nms17216NetworkBuilder;
 
@@ -204,6 +205,12 @@ public class EnLinkdIT extends EnLinkdBuilderITCase {
         assertEquals(nodeAbd, nodeCbd);
         nodeAbd.hierarchySetUp(nodeAbd.getBridge(nodeA.getId()));
         topology.check(nodeAbd.getTopology());
+        
+        List<SharedSegment> nodeASegments = m_bridgeTopologyDao.getBridgeNodeSharedSegments(m_bridgeBridgeLinkDao, m_bridgeMacLinkDao, nodeA.getId());
+        assertEquals(2, nodeASegments.size());
+        for (SharedSegment segment: nodeASegments) {
+            printSharedSegment(segment);
+        }
     }    
     
     @Test

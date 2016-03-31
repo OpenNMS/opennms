@@ -693,6 +693,10 @@ public class Nms7918EnIT extends EnLinkdBuilderITCase {
         for (SharedSegment segment: m_linkd.getQueryManager().getBridgeTopologyBroadcastDomain(samasw01.getId()).getTopology()) {
             printSharedSegment(segment);
         }
+        
+        for (SharedSegment segment : m_bridgeTopologyDao.getBridgeNodeSharedSegments(m_bridgeBridgeLinkDao, m_bridgeMacLinkDao, samasw01.getId())) {
+            printSharedSegment(segment);
+        }
 
     }
 
