@@ -29,10 +29,12 @@
 
 --%>
 
+<%@page import="org.opennms.web.enlinkd.BridgeLinkSharedHost"%>
 <%@page import="org.opennms.web.enlinkd.EnLinkdElementFactory"%>
 <%@page import="org.opennms.web.enlinkd.EnLinkdElementFactoryInterface"%>
 <%@page import="org.opennms.web.enlinkd.BridgeLinkNode"%>
 <%@page import="org.opennms.web.enlinkd.NodeLinkBridge"%>
+<%@page import="org.opennms.web.enlinkd.BridgeLinkSharedHost"%>
 <%@page import="org.opennms.web.enlinkd.BridgeLinkRemoteNode"%>
 <%@page import="org.opennms.web.enlinkd.LldpLinkNode"%>
 <%@page import="org.opennms.web.enlinkd.CdpLinkNode"%>
@@ -286,35 +288,70 @@
 		<thead>
 			<tr>
 			<th>Local Port</th> 
-			<th>Bridge Node</th>
-			<th>Bridge Port</th> 
-            <th>Bridge Vlan</th>
+			<th>Hosts on Segment</th> 
+			<th>Bridge Ports on Segment</th>
 			<th>Created</th>
 			<th>Last Poll</th>
 			</tr>
 		</thead>
 				
 		<% for( NodeLinkBridge nodelink: nodelinks) { %>
-			<% for( String localport: nodelink.getNodeLocalPorts()) { %>
 	    <tr>
-		    <td><%=localport%></td>
+		    <td><%=nodelink.getNodeLocalPort()%></td>
             <td>
-            	<a href="<%=nodelink.getBridgeLinkRemoteNode().getBridgeRemoteUrl()%>"><%=nodelink.getBridgeLinkRemoteNode().getBridgeRemoteNode()%></a>
-             </td>
-            <td>
-            	<a href="<%=nodelink.getBridgeLinkRemoteNode().getBridgeRemotePortUrl()%>"><%=nodelink.getBridgeLinkRemoteNode().getBridgeRemotePort()%></a>
+			<% if (nodelink.getBridgeLinkSharedHost().isEmpty()) {%>
+            	            	&nbsp;
+			<% } else { %>
+            	<table>
+            	<% for (BridgeLinkSharedHost sharedhost: nodelink.getBridgeLinkSharedHost()) {%>
+            	<tr>
+            		<td>
+		 			<% if (sharedhost.getSharedHostUrl() != null) { %>
+            		<a href="<%=sharedhost.getSharedHostUrl()%>"><%=sharedhost.getSharedHost()%></a>
+            		<% } else { %> 
+            		<%=sharedhost.getSharedHost()%>
+		    		<% } %> 
+            		</td>
+		 			<% if (sharedhost.getSharedHostPortUrl() != null) { %>
+            		<td>
+            		<a href="<%=sharedhost.getSharedHostPortUrl()%>"><%=sharedhost.getSharedHostPort()%></a>
+            		<% } else { %> 
+            		<%=sharedhost.getSharedHostPort()%>
+    				<% } %> 
+            		</td>
+            	<tr>
+            	<% }%>
+            	</table>
+			<% } %>
             </td>
-		    <td>
-		 	<% if (nodelink.getBridgeLinkRemoteNode().getBridgeRemoteVlan() != null) { %>
-            	<%=nodelink.getBridgeLinkRemoteNode().getBridgeRemoteVlan()%>
-            <% } else { %> 
-            	&nbsp;
-    		<% } %> 
+            <td>
+		    <% if (nodelink.getBridgeLinkRemoteNodes().isEmpty()) {%>
+            	            	&nbsp;
+			<% } else { %>
+            	<table>
+            	<% for (BridgeLinkRemoteNode remote: nodelink.getBridgeLinkRemoteNodes()) {%>
+            	<tr>
+            		<td>
+            		<a href="<%=remote.getBridgeRemoteUrl()%>"><%=remote.getBridgeRemoteNode() %></a>
+            		</td>
+            		<td>
+            		<a href="<%=remote.getBridgeRemotePortUrl()%>"><%=remote.getBridgeRemotePort()%></a>
+            		</td>
+            		<td>
+         			<% if (remote.getBridgeRemoteVlan() != null) { %>
+            		VLAN(<%=remote.getBridgeRemoteVlan() %>)
+            		<% } else { %> 
+            		&nbsp;
+    				<% } %> 
+            		</td>
+            	<tr>
+            	<% }%>
+            	</table>
+			<% }%>
             </td>
 		    <td><%=nodelink.getBridgeLinkCreateTime()%></td>
 		    <td><%=nodelink.getBridgeLinkLastPollTime()%></td>
 	    </tr>
-		    <% } %>
 	    <% } %>
 		    
 	    </table>
@@ -330,47 +367,71 @@
 		
 		<thead>
 			<tr>
-			<th>Local Port</th> 
-            <th>Local Vlan</th>
-			<th>Remote Node</th>
-			<th>Remote Port</th> 
-            <th>Remote Vlan</th>
+			<th>Port</th> 
+            <th>VLAN</th>
+			<th>Hosts on Segment</th> 
+			<th>Bridge Ports on Segment</th>
 			<th>Created</th>
 			<th>Last Poll</th>
 			</tr>
 		</thead>
 				
 		<% for( BridgeLinkNode bridgelink: bridgelinks) { %>
-			<% for( BridgeLinkRemoteNode remlink: bridgelink.getBridgeLinkRemoteNodes()) { %>
-	    <tr>
-		    <td><%=bridgelink.getBridgeLocalPort()%></td>
-		    <td>
-		 	<% if (bridgelink.getBridgeLocalVlan() != null) { %>
-            	<%=bridgelink.getBridgeLocalVlan()%>
+		<tr>
+			<td><%=bridgelink.getNodeLocalPort()%></td>
+		    <td><%=bridgelink.getBridgeLocalVlan()%></td>
+		
+            <td>
+<% if (bridgelink.getBridgeLinkSharedHost().isEmpty()) {%>
+            	            	&nbsp;
+<% } else { %>
+            	<table>
+            	<% for (BridgeLinkSharedHost sharedhost: bridgelink.getBridgeLinkSharedHost()) {%>
+            	<tr>
+            		<td>
+		 	<% if (sharedhost.getSharedHostUrl() != null) { %>
+            		<a href="<%=sharedhost.getSharedHostUrl()%>"><%=sharedhost.getSharedHost()%></a>
+            <% } else { %> 
+            	<%=sharedhost.getSharedHost()%>
+    		<% } %> 
+            		</td>
+		 	<% if (sharedhost.getSharedHostPortUrl() != null) { %>
+            		<td>
+            		<a href="<%=sharedhost.getSharedHostPortUrl()%>"><%=sharedhost.getSharedHostPort()%></a>
+            <% } else { %> 
+            	<%=sharedhost.getSharedHostPort()%>
+    		<% } %> 
+            		</td>
+            	<tr>
+            	<% }%>
+            	</table>
+<% }%>
+            </td>
+            <td>
+<% if (bridgelink.getBridgeLinkRemoteNodes().isEmpty()) {%>
+            	            	&nbsp;
+<% } else { %>
+            	<table>
+            	<% for (BridgeLinkRemoteNode remote: bridgelink.getBridgeLinkRemoteNodes()) {%>
+            	<tr>
+            		<td>
+            		<a href="<%=remote.getBridgeRemoteUrl()%>"><%=remote.getBridgeRemoteNode()%></a>
+            		</td>
+            		<td>
+            		<a href="<%=remote.getBridgeRemotePortUrl()%>"><%=remote.getBridgeRemotePort()%></a>
+            		</td>
+            		<td>
+         	<% if (remote.getBridgeRemoteVlan() != null) { %>
+            		
+            		VLAN(<%=remote.getBridgeRemoteVlan() %>)
             <% } else { %> 
             	&nbsp;
     		<% } %> 
-            </td>
-            <td>
-            <% if (remlink.getBridgeRemoteUrl() != null) { %>
-            	<a href="<%=remlink.getBridgeRemoteUrl()%>"><%=remlink.getBridgeRemoteNode()%></a>
-            <% } else { %> 
-				<%=remlink.getBridgeRemoteNode()%>
-    			<% } %> 
-            </td>
-            <td>
-           <% if (remlink.getBridgeRemotePortUrl() != null) { %>
-            	<a href="<%=remlink.getBridgeRemotePortUrl()%>"><%=remlink.getBridgeRemotePort()%></a>
-            <% } else { %> 
-				<%=remlink.getBridgeRemotePort() != null ? remlink.getBridgeRemotePort() : "" %>
-    			<% } %> 
-            </td>
-		    <td>
-		 	<% if (remlink.getBridgeRemoteVlan() != null) { %>
-            	<%=remlink.getBridgeRemoteVlan()%>
-            <% } else { %> 
-            	&nbsp;
-    		<% } %> 
+            		</td>
+            	<tr>
+            	<% }%>
+            	</table>
+<% }%>
             </td>
 		    <td><%=bridgelink.getBridgeLinkCreateTime()%></td>
 		    <td><%=bridgelink.getBridgeLinkLastPollTime()%></td>
@@ -380,7 +441,6 @@
 		    
 	    </table>
 
-<% }  %>
 </div>
 
 <!-- LLDP Links -->

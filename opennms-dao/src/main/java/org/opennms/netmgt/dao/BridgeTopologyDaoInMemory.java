@@ -29,8 +29,40 @@ public class BridgeTopologyDaoInMemory implements BridgeTopologyDao {
     }
 
     @Override
-    public List<SharedSegment> getNodeSharedSegments(BridgeBridgeLinkDao bridgeBridgeLinkDao,BridgeMacLinkDao bridgeMacLinkDao, int nodeid) {
+    public List<SharedSegment> getBridgeNodeSharedSegments(BridgeBridgeLinkDao bridgeBridgeLinkDao,BridgeMacLinkDao bridgeMacLinkDao, int nodeid) {
         List<SharedSegment> segments = new ArrayList<SharedSegment>();
+        for (BridgeBridgeLink link : bridgeBridgeLinkDao.findByNodeId(nodeid)) {
+            for (SharedSegment segment : segments) {
+                if (segment.containsPort(link.getNode().getId(),
+                                         link.getBridgePort())
+                     || segment.containsPort(link.getDesignatedNode().getId(),
+                                             link.getDesignatedPort())) {
+                    segment.add(link);
+                    break;
+                }
+            }
+            SharedSegment segment = new SharedSegment();
+            segment.add(link);
+            segment.setDesignatedBridge(link.getDesignatedNode().getId());
+            segments.add(segment);
+        }
+        
+        for (BridgeBridgeLink link : bridgeBridgeLinkDao.findByDesignatedNodeId(nodeid)) {
+            for (SharedSegment segment : segments) {
+                if (segment.containsPort(link.getNode().getId(),
+                                         link.getBridgePort())
+                     || segment.containsPort(link.getDesignatedNode().getId(),
+                                             link.getDesignatedPort())) {
+                    segment.add(link);
+                    break;
+                }
+            }
+            SharedSegment segment = new SharedSegment();
+            segment.add(link);
+            segment.setDesignatedBridge(link.getDesignatedNode().getId());
+            segments.add(segment);
+        }
+
         for (BridgeMacLink link : bridgeMacLinkDao.findByNodeId(nodeid)) {
             link.setBridgeDot1qTpFdbStatus(BridgeDot1qTpFdbStatus.DOT1D_TP_FDB_STATUS_LEARNED);
             for (SharedSegment segment : segments) {
@@ -47,30 +79,35 @@ public class BridgeTopologyDaoInMemory implements BridgeTopologyDao {
             segments.add(segment);
         }
 
-        for (BridgeBridgeLink link : bridgeBridgeLinkDao.findByNodeId(nodeid)) {
-            for (SharedSegment segment : segments) {
-                if (segment.containsPort(link.getNode().getId(),
-                                         link.getBridgePort())
-                     || segment.containsPort(link.getDesignatedNode().getId(),
-                                             link.getDesignatedPort())) {
-                    segment.add(link);
-                    segment.setDesignatedBridge(link.getDesignatedNode().getId());
-                    break;
-                }
+
+        return segments;
+    }
+    
+    @Override
+    public SharedSegment getHostNodeSharedSegment(BridgeBridgeLinkDao bridgeBridgeLinkDao, BridgeMacLinkDao bridgeMacLinkDao, String mac) {
+        
+        List<BridgeMacLink> links = bridgeMacLinkDao.findByMacAddress(mac);
+        if (links.size() == 0 )
+            return new SharedSegment();
+        BridgeMacLink link = links.get(0);
+        for (SharedSegment segment: getBridgeNodeSharedSegments(bridgeBridgeLinkDao, bridgeMacLinkDao, link.getNode().getId()) ) {
+            if (segment.containsPort(link.getNode().getId(), link.getBridgePort())) {
+                return segment;
             }
-            SharedSegment segment = new SharedSegment();
-            segment.add(link);
-            segment.setDesignatedBridge(link.getDesignatedNode().getId());
-            segments.add(segment);
         }
-        for (BridgeBridgeLink link : bridgeBridgeLinkDao.findByDesignatedNodeId(nodeid)) {
+        return new SharedSegment();
+    }
+
+    public Set<BroadcastDomain> getAllPersisted(BridgeBridgeLinkDao bridgeBridgeLinkDao,BridgeMacLinkDao bridgeMacLinkDao) {
+        List<SharedSegment> segments = new ArrayList<SharedSegment>();
+
+        for (BridgeBridgeLink link : bridgeBridgeLinkDao.findAll()) {
             for (SharedSegment segment : segments) {
                 if (segment.containsPort(link.getNode().getId(),
                                          link.getBridgePort())
                      || segment.containsPort(link.getDesignatedNode().getId(),
                                              link.getDesignatedPort())) {
                     segment.add(link);
-                    segment.setDesignatedBridge(link.getDesignatedNode().getId());
                     break;
                 }
             }
@@ -80,11 +117,6 @@ public class BridgeTopologyDaoInMemory implements BridgeTopologyDao {
             segments.add(segment);
         }
 
-        return segments;
-    }
-    
-    public Set<BroadcastDomain> getAllPersisted(BridgeBridgeLinkDao bridgeBridgeLinkDao,BridgeMacLinkDao bridgeMacLinkDao) {
-        List<SharedSegment> segments = new ArrayList<SharedSegment>();
         for (BridgeMacLink link : bridgeMacLinkDao.findAll()) {
             link.setBridgeDot1qTpFdbStatus(BridgeDot1qTpFdbStatus.DOT1D_TP_FDB_STATUS_LEARNED);
             for (SharedSegment segment : segments) {
@@ -101,23 +133,6 @@ public class BridgeTopologyDaoInMemory implements BridgeTopologyDao {
             segments.add(segment);
         }
 
-        for (BridgeBridgeLink link : bridgeBridgeLinkDao.findAll()) {
-            for (SharedSegment segment : segments) {
-                if (segment.containsPort(link.getNode().getId(),
-                                         link.getBridgePort())
-                     || segment.containsPort(link.getDesignatedNode().getId(),
-                                             link.getDesignatedPort())) {
-                    segment.add(link);
-                    segment.setDesignatedBridge(link.getDesignatedNode().getId());
-                    break;
-                }
-            }
-            SharedSegment segment = new SharedSegment();
-            segment.add(link);
-            segment.setDesignatedBridge(link.getDesignatedNode().getId());
-            segments.add(segment);
-        }
-        
         Set<Set<Integer>> nodelinked = new HashSet<Set<Integer>>();
 SHARED:        for (SharedSegment segment: segments) {
             Set<Integer> nodesOnSegment = new HashSet<Integer>(segment.getBridgeIdsOnSegment());
