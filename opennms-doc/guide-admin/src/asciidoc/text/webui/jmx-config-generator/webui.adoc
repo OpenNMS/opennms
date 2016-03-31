@@ -11,8 +11,8 @@ The workflow of the tool is:
 
 . Connect with _JMX_ or _JMXMP_ against a _MBean Server_ provided of a _Java_ application
 . Retrieve all _MBean_ and _Composite Data_ from the application
-. Select specific _MBeans_ and _Composite Data_ objects which should be collected by _OpenNMS_
-. Generate _JMX Collectd_ configuration file and _RRD graph_ definitions for _OpenNMS_ as downloadable archive
+. Select specific _MBeans_ and _Composite Data_ objects which should be collected by _{opennms-product-name}_
+. Generate _JMX Collectd_ configuration file and _RRD graph_ definitions for _{opennms-product-name}_ as downloadable archive
 
 The following connection settings are supported:
 
@@ -20,7 +20,7 @@ The following connection settings are supported:
 * Authentication credentials for _JMX_ connection
 * Optional: JMXMP connection
 
-The web based configuration tool can be used in the _OpenNMS Web Application_ in administration section _Admin -> JMX Configuration Generator_.
+The web based configuration tool can be used in the _{opennms-product-name} Web Application_ in administration section _Admin -> JMX Configuration Generator_.
 
 ===== Configure JMX Connection
 
@@ -43,7 +43,7 @@ The data is loaded into the _MBeans Configuration_ screen which allows to select
 
 The _MBeans Configuration_ section is used to assign the _MBean_ and _Composite Data attributes_ to _RRD domain_ specific data types and data source names.
 
-.Select MBeans or Composite Data for OpenNMS data collection
+.Select MBeans or Composite Data for {opennms-product-name} data collection
 image::operation/jmx-config-generator/02-webui-mbean-selection.png[]
 
 The left sidebar shows the tree with the _JMX Domain_, _MBeans_ and _Composite Data_ hierarchy retrieved from the _MBean Server_.
@@ -68,7 +68,7 @@ For the _Alias_ inputs are validated to be not longer then 19 characters and hav
 
 ===== Download and include configuration
 
-The last step is generating the following configuration files for _OpenNMS_:
+The last step is generating the following configuration files for _{opennms-product-name}_:
 
 * _collectd-configuration.xml_: Generated sample configuration assigned to a service with a matching data collection group
 * _jmx-datacollection-config.xml_: Generated _JMX_ data collection configuration with the selected _MBeans_ and _Composite Data_

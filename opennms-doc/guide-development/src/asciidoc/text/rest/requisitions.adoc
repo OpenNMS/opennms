@@ -1,7 +1,7 @@
 
 ==== Requisitions
 
-_RESTful_ service to the OpenNMS Provisioning Requisitions.
+_RESTful_ service to the {opennms-product-name} Provisioning Requisitions.
 In this _API_, these "groups" of nodes are aptly named and treated as requisitions.
 
 This current implementation supports _CRUD_ operations for managing provisioning requisitions.

@@ -13,11 +13,11 @@ To monitor the BGP-Session the RFC1269 SNMP MIB is used and test the status of t
 The `<peer-ip>` is the far end IP address of the BGP session end point.
 
 A SNMP get request for `BGP_PEER_STATE_OID` returns a result between `1` to `6`.
-The servicestates for OpenNMS are mapped as follows:
+The servicestates for {opennms-product-name} are mapped as follows:
 
 [options="header, autowidth"]
 |===
-| Result | State description | Monitor state in OpenNMS
+| Result | State description | Monitor state in {opennms-product-name}
 | `1`    | _Idle_            | DOWN
 | `2`    | _Connect_         | DOWN
 | `3`    | _Active_          | DOWN
