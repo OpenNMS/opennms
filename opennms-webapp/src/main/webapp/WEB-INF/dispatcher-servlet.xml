@@ -228,9 +228,13 @@
         <property name="alarmRepository" ref="alarmRepository"/>
     </bean>
 
-   	<bean name="/event/*" class="org.opennms.web.controller.event.EventController">
+    <bean name="/alarm/threshold-box.htm" class="org.opennms.web.controller.alarm.ThresholdBoxController">
+        <property name="successView" value="alarm/threshold-box"/>
+        <property name="alarmRepository" ref="alarmRepository"/>
     </bean>
 
+   	<bean name="/event/*" class="org.opennms.web.controller.event.EventController">
+    </bean>
 
     <bean name="/notification/acknowledge"
           class="org.opennms.web.controller.notification.AcknowledgeNotificationController">
