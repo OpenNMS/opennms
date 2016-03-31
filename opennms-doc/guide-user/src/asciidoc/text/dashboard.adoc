@@ -2,7 +2,7 @@
 :imagesdir: ../images
 
 [[user-guide-dashboard]]
-== OpenNMS Dashboard
+== {opennms-product-name} Dashboard
 
 In Network Operation Centers _NOC_ an overview about issues in the network is important and often described as _Dashboards_.
 Large networks have people (Operator) with different responsibilities and the _Dashboard_ should show only information for a given _monitoring context_.
@@ -66,7 +66,7 @@ The _Alarms_ component shows the most recent _Alarms_ and allows the user to scr
 ==== Notifications
 
 To inform people on a duty schedule notifications are used and force action to fix or reconfigure systems immediately.
-In _OpenNMS_ it is possible to acknowledge notifications to see who is working on a specific issue.
+In _{opennms-product-name}_ it is possible to acknowledge notifications to see who is working on a specific issue.
 The _Dashboard_ should show outstanding notifications in the _NOC_ to provide an overview and give the possibility for intervention.
 
 .Information displayed in the _Notifications_ component
@@ -124,9 +124,9 @@ For instance the user `drv4doe` is assigned the dashboard role.
 So, when logging in as `drv4doe`, the user is taking directly to the _Dashboard_ page and is presented with a custom _Dashboard_ based on the `drv4doe` _Surveillance View_ definition.
 
 ===== Step 1: Create an user
-The following example assigns a Dashboard to the user "drv4doe" (a router and switch jockey) and restricts the user for navigation to any other link in the OpenNMS WebUI.
+The following example assigns a Dashboard to the user "drv4doe" (a router and switch jockey) and restricts the user for navigation to any other link in the {opennms-product-name} WebUI.
 
-.Creating the user `drv4doe` using the OpenNMS WebUI
+.Creating the user `drv4doe` using the {opennms-product-name} WebUI
 image::dashboard/07_dashboard-add-user.png[]
 
 ===== Step 2: Change magic-users.properties
@@ -195,7 +195,7 @@ Edit the `$OPENNMS_HOME/etc/surveilliance-view.xml` file to add a definition for
 
 This configuration and proper assignment of node categories will produce a default _Dashboard_ for all users, other than `drv4doe`.
 
-TIP: You can hide the upper navigation on any page by specifying `?quiet=true;` adding it to the end of the _OpenNMS_ URL.
+TIP: You can hide the upper navigation on any page by specifying `?quiet=true;` adding it to the end of the _{opennms-product-name}_ URL.
 This is very handy when using the dashboard on a large monitor or tv screen for office wide viewing.
 
 However, when logging in as `drv4doe`, the user is taking directly to the _Dashboard_ page and is presented with a _Dashboard_ based on the custom _Surveillance View_ definition.
@@ -302,7 +302,7 @@ Finally, near the bottom of the page, add a new instance of `AnonymousProcessing
     <property name="userAttribute"><value>dashboard2,ROLE_DASHBOARD</value></property>
   </bean>
 ----
-Restart OpenNMS and you should bring up a dashboard at `http://.../opennms/dashboard1` without logging in.
+Restart {opennms-product-name} and you should bring up a dashboard at `http://.../opennms/dashboard1` without logging in.
 
 WARNING: There's no way to switch dashboards without closing the browser (or deleting the JSESSIONID session cookie).
 
