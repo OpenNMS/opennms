@@ -12,8 +12,8 @@ Usage statistics can later be disabled by accessing the 'Data Choices' link in t
 When enabled, the following anonymous statistics will be collected and publish on system startup and every 24 hours after:
 
 * System ID (a randomly generated UUID)
-* OpenNMS Release
-* OpenNMS Version
+* {opennms-product-name} Release
+* {opennms-product-name} Version
 * OS Architecture
 * OS Name
 * OS Version

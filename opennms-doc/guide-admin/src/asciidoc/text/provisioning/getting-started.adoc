@@ -5,15 +5,15 @@
 === Getting Started
 
 An NMS is of no use until it is setup for monitoring and entities are added to the system.
-OpenNMS installs with a base configuration with a configuration that is sufficient get service level monitoring and performance management quickly up and running.
+{opennms-product-name} installs with a base configuration with a configuration that is sufficient get service level monitoring and performance management quickly up and running.
 As soon as managed entities are provisioned, the base configuration will automatically begin monitoring and reporting.
 
-Generally speaking, there are two methods of provisioning in OpenNMS: _Auto Discovery_ and _Directed Discovery_.
+Generally speaking, there are two methods of provisioning in {opennms-product-name}: _Auto Discovery_ and _Directed Discovery_.
 We'll start with _Auto Discovery_, but first, we should quickly review the configuration of SNMP so that newly discovered devices can be immediately scanned for entities as well as have reporting and thresholding available.
 
 ==== Provisioning the SNMP Configuration
 
-OpenNMS requires that the SNMP configuration to be properly setup for your network in order to properly understand Network and Node topology as well as to automatically enabled performance data collection.
+{opennms-product-name} requires that the SNMP configuration to be properly setup for your network in order to properly understand Network and Node topology as well as to automatically enabled performance data collection.
 Network topology is updated as nodes (a.k.a. devices or hosts) are provisioned.
 Navigate to the _Admin/Configure SNMP Community Names_ as shown below.
 
@@ -21,7 +21,7 @@ NOTE: Provisiond includes an option to add community information in the _Single 
 This, is equivalent of entering a single IP address in the screen with the convenience of setting the community string at the same time a node is provisioned.
 See the _Quick Node Add_ feature below for more details about this capability.
 
-This screen sets up SNMP within OpenNMS for agents listening on IP addresses 10.1.1.1 through 10.254.254.254.
+This screen sets up SNMP within {opennms-product-name} for agents listening on IP addresses 10.1.1.1 through 10.254.254.254.
 These settings are optimized into the `snmp-configuration.xml` file.
 Optimization means that the minimal configuration possible will be written.
 Any IP addresses already configured that are eclipsed by this range will be removed.
@@ -88,7 +88,7 @@ This is very similar to the way that entities were handled by Capsd by with fine
 
 ==== Automatic Discovery
 
-Currently in OpenNMS, the ICMP is used to automatically provision node entities into OpenNMS.
+Currently in {opennms-product-name}, the ICMP is used to automatically provision node entities into {opennms-product-name}.
 This functionality has been in OpenNMS since is 1.0 release, however, in 1.8, a few of the use cases have been updated with _Provisiond’s_ replacement of _Capsd_.
 
 ===== Separation of Concerns
@@ -122,7 +122,7 @@ The import phase also has sub phases: marshal, audit, limited SNMP scan, and re-
 
 It is important to understand that the nodes requisitioned from each foreign source are managed as a complete set.
 Nodes defined in a requisition from the foreign source _CRM_ and _CMDB_, for example, will be managed separately from each other even if they should contain exactly the same node definitions.
-To OpenNMS, these are individual entities and they are managed as a set.
+To {opennms-product-name}, these are individual entities and they are managed as a set.
 
 Requisitions are referenced via a URL.
 Currently, the URL can be specified as one of the following protocols: FILE, HTTP, HTTPS, and DNS.
@@ -131,15 +131,15 @@ The DNS protocol is a special handler developed for Provisioning sets of nodes a
 See DNS Protocol Handler for details.
 
 Upon the import request (either on schedule or on demand via an Event) the requisition is marshaled into Java objects for processing.
-The nodes defined in the requisition represent what OpenNMS should have as the current set of managed entities from that foreign source.
+The nodes defined in the requisition represent what {opennms-product-name} should have as the current set of managed entities from that foreign source.
 The audit phase determines for each node defined (or not defined) in the requisition which are to be processed as an _Add_, _Update_, or _Delete_ operation during the _Import Phase_.
-This determination is made by comparing the set foreign IDs of each node in the requisition set with the set of foreign IDs of currently managed entities in OpenNMS.
+This determination is made by comparing the set foreign IDs of each node in the requisition set with the set of foreign IDs of currently managed entities in {opennms-product-name}.
 
 The intersection of the IDs from each set will become the Update operations, the extra set of foreign IDs that are in the requisition become the Add operations, and the extra set of foreign IDs from the managed entities become the Delete operations.
 This implies that the foreign IDs from each foreign source must be unique.
 
 Naturally, the first time an import request is processed from a foreign source there will be zero (0) node entities from the set of nodes currently being managed and each node defined in the requisition will become an Add Operation.
-If a requisition is processed with zero (0) node definitions, all the currently managed nodes from that foreign source will become Delete operations (all the nodes, interfaces, outages, alarms, etc. will be removed from OpenNMS).
+If a requisition is processed with zero (0) node definitions, all the currently managed nodes from that foreign source will become Delete operations (all the nodes, interfaces, outages, alarms, etc. will be removed from {opennms-product-name}).
 
 When nodes are provisioned using the Provisioning Groups Web-UI, the requisitions are stored on the local file system and the file protocol handler is used to reference the requisition.
 Each Provisioning Group is a separate foreign source and unique foreign IDs are generated by the Web-UI.

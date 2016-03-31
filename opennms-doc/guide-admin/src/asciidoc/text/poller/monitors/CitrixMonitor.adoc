@@ -29,7 +29,7 @@ It is not verified if the monitor works in this case.
 
 ===== Examples
 
-The following example configures OpenNMS to monitor the ICA protocol on TCP 1494 with 2 retries and waiting 5 seconds for each retry.
+The following example configures {opennms-product-name} to monitor the ICA protocol on TCP 1494 with 2 retries and waiting 5 seconds for each retry.
 [source, xml]
 ----
 <service name="Citrix-TCP-ICA" interval="300000" user-defined="false" status="on">
