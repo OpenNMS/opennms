@@ -76,7 +76,7 @@ public class BusinessServiceVertex extends AbstractBusinessServiceVertex {
     }
 
     @Override
-    public void accept(BusinessServiceVertexVisitor visitor) {
-        visitor.visit(this);
+    public <T> T accept(BusinessServiceVertexVisitor<T> visitor) {
+        return visitor.visit(this);
     }
 }

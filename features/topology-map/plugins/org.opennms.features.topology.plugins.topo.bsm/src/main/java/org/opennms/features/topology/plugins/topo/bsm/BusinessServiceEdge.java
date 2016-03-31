@@ -30,21 +30,28 @@ package org.opennms.features.topology.plugins.topo.bsm;
 
 import org.opennms.features.topology.api.topo.AbstractEdge;
 import org.opennms.netmgt.bsm.service.model.Status;
+import org.opennms.netmgt.bsm.service.model.functions.map.MapFunction;
 import org.opennms.netmgt.bsm.service.model.graph.GraphEdge;
 
 public class BusinessServiceEdge extends AbstractEdge {
 
     private final Status status;
+    private final MapFunction mapFunction;
+    private final float weight;
 
     public BusinessServiceEdge(GraphEdge graphEdge, AbstractBusinessServiceVertex source, AbstractBusinessServiceVertex target) {
         super(BusinessServicesTopologyProvider.TOPOLOGY_NAMESPACE, String.format("connection:%s:%s", source.getId(), target.getId()), source, target);
         this.status = graphEdge.getStatus();
+        this.mapFunction = graphEdge.getMapFunction();
+        this.weight = graphEdge.getWeight();
         setTooltipText(String.format("Map function: %s, Weight: %s", graphEdge.getMapFunction().getClass().getSimpleName(), graphEdge.getWeight()));
     }
 
     private BusinessServiceEdge(BusinessServiceEdge edgeToClone) {
         super(edgeToClone);
         status = edgeToClone.status;
+        mapFunction = edgeToClone.mapFunction;
+        weight = edgeToClone.weight;
     }
 
     @Override
@@ -54,5 +61,17 @@ public class BusinessServiceEdge extends AbstractEdge {
 
     public Status getOperationalStatus() {
         return status;
+    }
+
+    public Status getStatus() {
+        return status;
+    }
+
+    public MapFunction getMapFunction() {
+        return mapFunction;
+    }
+
+    public float getWeight() {
+        return weight;
     }
 }

@@ -31,6 +31,7 @@ package org.opennms.netmgt.bsm.service;
 import java.io.File;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.opennms.netmgt.bsm.service.model.AlarmWrapper;
 import org.opennms.netmgt.bsm.service.model.BusinessService;
@@ -38,6 +39,7 @@ import org.opennms.netmgt.bsm.service.model.IpService;
 import org.opennms.netmgt.bsm.service.model.Status;
 import org.opennms.netmgt.bsm.service.model.edge.Edge;
 import org.opennms.netmgt.bsm.service.model.graph.BusinessServiceGraph;
+import org.opennms.netmgt.bsm.service.model.graph.GraphEdge;
 import org.opennms.netmgt.bsm.service.model.graph.GraphVertex;
 
 public interface BusinessServiceStateMachine {
@@ -120,6 +122,8 @@ public interface BusinessServiceStateMachine {
     BusinessServiceGraph getGraph();
 
     List<GraphVertex> calculateRootCause(BusinessService businessService);
+
+    Set<GraphEdge> calculateImpacting(BusinessService businessService);
 
     List<GraphVertex> calculateImpact(BusinessService businessService);
 

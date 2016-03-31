@@ -223,18 +223,17 @@ div.v-table-header-wrap {
 /*** End Vertex Styles***/
 
 /** SearchBox Styles **/
+.topology-search {
+    padding: 18px;
+}
+
 .search-token-field {
 	border-radius: 2px;
 	-moz-border-radius: 2px;
 	-webkit-border-radius: 2px;
-    background-color: #6EC0FF;
     color: black;
 	padding: 2px 5px 2px 5px;
 	margin: 1px;
-}
-
-.search-token-field a:hover{
-	color:white;
 }
 
 .search-token-namespace{
@@ -243,8 +242,8 @@ div.v-table-header-wrap {
 }
 
 .search-token-label{
-    padding-right: 8px;
-    max-width: 156px;
+    padding-right: 5px;
+    max-width: 180px;
     word-wrap: break-word;
 }
 
@@ -381,4 +380,40 @@ div.v-table-header-wrap {
 .v-slot-icon-selection-component {
     overflow-y: scroll;
     overflow-x: hidden;
+}
+
+/* Info Panel Styling */
+.toggle-button {
+    background: rgba(255, 255, 255, 0.9) url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAAUCAQAAAAXDMSnAAAAi0lEQVR4AX3JQcqBURQG4O/+9WNG30D3vOfSDTuQsgcZyBakZANSzMVMBme3zsBI5/VMn4ZKLP5ki1E4tYejWpilxVUtzOEUD68odYmXR5BJNp/4zllXD2phllYvamHmirsayUkfJ5ruHzueTldC08kcT5YOY9xYujqQM03XKXuaLmEtNF1e1Nz89gbL+0do6OEwRwAAAABJRU5ErkJggg==") no-repeat scroll 7px center / 7px 10px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+    position: absolute;
+    top: 8px;
+    left: 100%;
+    z-index: 10000;
+    cursor: pointer;
+    height: 48px;
+    width: 23px;
+}
+
+.toggle-button.info-panel-collapsed {
+    transform: scaleX(-1);
+}
+
+.info-panel-component {
+    background-color: #f9f9f9;
+    border: 1px solid black;
+}
+
+.info-panel-item {
+    overflow: auto;
+}
+
+.info-panel-item-label {
+    font-weight: bold;
+}
+
+.info-panel-area {
+    height: 100%;
+    max-width: 350px;
+    overflow-y: auto;
 }

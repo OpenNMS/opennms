@@ -26,13 +26,38 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.plugins.topo.bsm;
+package org.opennms.features.topology.app.internal.ui;
 
-public interface BusinessServiceVertexVisitor<T> {
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URL;
 
-    T visit(BusinessServiceVertex vertex);
+import org.opennms.features.topology.api.support.InfoWindow;
 
-    T visit(IpServiceVertex vertex);
+import com.google.common.base.Throwables;
+import com.vaadin.server.Page;
+import com.vaadin.server.VaadinServlet;
+import com.vaadin.ui.UI;
 
-    T visit(ReductionKeyVertex vertex);
+public class NodeInfoWindow extends InfoWindow {
+    public NodeInfoWindow(int nodeId) {
+        super(getURL(nodeId), () -> "Node Info " + nodeId);
+    }
+
+    private static URL getURL(int nodeId) {
+        final URI currentLocation = Page.getCurrent().getLocation();
+        final String contextRoot = VaadinServlet.getCurrent().getServletContext().getContextPath();
+        final String redirectFragment = contextRoot + "/element/node.jsp?node=" + nodeId;
+        try {
+            return new URL(currentLocation.toURL(), redirectFragment);
+        } catch (MalformedURLException e) {
+            throw Throwables.propagate(e);
+        }
+    }
+
+    public void open() {
+        if (UI.getCurrent() != null) {
+            UI.getCurrent().addWindow(this);
+        }
+    }
 }

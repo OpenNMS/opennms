@@ -47,6 +47,7 @@ import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.Field;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.UI;
@@ -75,6 +76,12 @@ public abstract class UIHelper {
 		if (buttonDescription != null) button.setDescription(buttonDescription);
 		if (clickListener != null) button.addClickListener(clickListener);
 		return button;
+	}
+
+	public static Label createLabel(String caption, String content) {
+		Label label = new Label(content);
+		label.setCaption(caption);
+		return label;
 	}
 
 	/**
