@@ -9879,12 +9879,12 @@
 	mtrapargsString=%parm[#7]%&lt;/p&gt;
 	</logmsg>
       <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#2]%:%parm[#5]%:%parm[#6]%" clear-key="uei.opennms.org/vendor/APC/traps/envHighTempThresholdViolation:%dpname%:%nodeid%:%parm[#2]%:%parm[#5]%:%parm[#6]%" alarm-type="2" auto-clean="false"/>
       <varbindsdecode>
          <parmid>parm[#4]</parmid>
          <decode varbindvalue="1" varbinddecodedstring="celsius"/>
          <decode varbindvalue="2" varbinddecodedstring="fahrenheit"/>
       </varbindsdecode>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#2]%:%parm[#5]%:%parm[#6]%" clear-key="uei.opennms.org/vendor/APC/traps/envHighTempThresholdViolation:%dpname%:%nodeid%:%parm[#2]%:%parm[#5]%:%parm[#6]%" alarm-type="2" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -10029,12 +10029,12 @@
 	mtrapargsString=%parm[#7]%&lt;/p&gt;
 	</logmsg>
       <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#2]%:%parm[#5]%:%parm[#6]%" clear-key="uei.opennms.org/vendor/APC/traps/envLowTempThresholdViolation:%dpname%:%nodeid%:%parm[#2]%:%parm[#5]%:%parm[#6]%" alarm-type="2" auto-clean="false"/>
       <varbindsdecode>
          <parmid>parm[#4]</parmid>
          <decode varbindvalue="1" varbinddecodedstring="celsius"/>
          <decode varbindvalue="2" varbinddecodedstring="fahrenheit"/>
       </varbindsdecode>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#2]%:%parm[#5]%:%parm[#6]%" clear-key="uei.opennms.org/vendor/APC/traps/envLowTempThresholdViolation:%dpname%:%nodeid%:%parm[#2]%:%parm[#5]%:%parm[#6]%" alarm-type="2" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -14852,12 +14852,12 @@
 	mtrapargsString=%parm[#7]%&lt;/p&gt;
 	</logmsg>
       <severity>Minor</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#5]%" alarm-type="1" auto-clean="false"/>
       <varbindsdecode>
          <parmid>parm[#4]</parmid>
          <decode varbindvalue="1" varbinddecodedstring="celsius"/>
          <decode varbindvalue="2" varbinddecodedstring="fahrenheit"/>
       </varbindsdecode>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#5]%" alarm-type="1" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -14927,12 +14927,12 @@
 	mtrapargsString=%parm[#7]%&lt;/p&gt;
 	</logmsg>
       <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#5]%" clear-key="uei.opennms.org/vendor/APC/traps/envMaxTempThresholdViolation:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#5]%" alarm-type="2" auto-clean="false"/>
       <varbindsdecode>
          <parmid>parm[#4]</parmid>
          <decode varbindvalue="1" varbinddecodedstring="celsius"/>
          <decode varbindvalue="2" varbinddecodedstring="fahrenheit"/>
       </varbindsdecode>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#5]%" clear-key="uei.opennms.org/vendor/APC/traps/envMaxTempThresholdViolation:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#5]%" alarm-type="2" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -15002,12 +15002,12 @@
 	mtrapargsString=%parm[#7]%&lt;/p&gt;
 	</logmsg>
       <severity>Minor</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#5]%" alarm-type="1" auto-clean="false"/>
       <varbindsdecode>
          <parmid>parm[#4]</parmid>
          <decode varbindvalue="1" varbinddecodedstring="celsius"/>
          <decode varbindvalue="2" varbinddecodedstring="fahrenheit"/>
       </varbindsdecode>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#5]%" alarm-type="1" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -15077,12 +15077,12 @@
 	mtrapargsString=%parm[#7]%&lt;/p&gt;
 	</logmsg>
       <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#5]%" clear-key="uei.opennms.org/vendor/APC/traps/envMinTempThresholdViolation:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#5]%" alarm-type="2" auto-clean="false"/>
       <varbindsdecode>
          <parmid>parm[#4]</parmid>
          <decode varbindvalue="1" varbinddecodedstring="celsius"/>
          <decode varbindvalue="2" varbinddecodedstring="fahrenheit"/>
       </varbindsdecode>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#5]%" clear-key="uei.opennms.org/vendor/APC/traps/envMinTempThresholdViolation:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#5]%" alarm-type="2" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -15396,12 +15396,12 @@
 	mtrapargsString=%parm[#7]%&lt;/p&gt;
 	</logmsg>
       <severity>Minor</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#5]%" alarm-type="1" auto-clean="false"/>
       <varbindsdecode>
          <parmid>parm[#4]</parmid>
          <decode varbindvalue="1" varbinddecodedstring="celsius"/>
          <decode varbindvalue="2" varbinddecodedstring="fahrenheit"/>
       </varbindsdecode>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#5]%" alarm-type="1" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -15471,12 +15471,12 @@
 	mtrapargsString=%parm[#7]%&lt;/p&gt;
 	</logmsg>
       <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#5]%" clear-key="uei.opennms.org/vendor/APC/traps/envSTIncTempRateViolation:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#5]%" alarm-type="2" auto-clean="false"/>
       <varbindsdecode>
          <parmid>parm[#4]</parmid>
          <decode varbindvalue="1" varbinddecodedstring="celsius"/>
          <decode varbindvalue="2" varbinddecodedstring="fahrenheit"/>
       </varbindsdecode>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#5]%" clear-key="uei.opennms.org/vendor/APC/traps/envSTIncTempRateViolation:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#5]%" alarm-type="2" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -15546,12 +15546,12 @@
 	mtrapargsString=%parm[#7]%&lt;/p&gt;
 	</logmsg>
       <severity>Minor</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#5]%" alarm-type="1" auto-clean="false"/>
       <varbindsdecode>
          <parmid>parm[#4]</parmid>
          <decode varbindvalue="1" varbinddecodedstring="celsius"/>
          <decode varbindvalue="2" varbinddecodedstring="fahrenheit"/>
       </varbindsdecode>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#5]%" alarm-type="1" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -15621,12 +15621,12 @@
 	mtrapargsString=%parm[#7]%&lt;/p&gt;
 	</logmsg>
       <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#5]%" clear-key="uei.opennms.org/vendor/APC/traps/envSTDecTempRateViolation:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#5]%" alarm-type="2" auto-clean="false"/>
       <varbindsdecode>
          <parmid>parm[#4]</parmid>
          <decode varbindvalue="1" varbinddecodedstring="celsius"/>
          <decode varbindvalue="2" varbinddecodedstring="fahrenheit"/>
       </varbindsdecode>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#5]%" clear-key="uei.opennms.org/vendor/APC/traps/envSTDecTempRateViolation:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#5]%" alarm-type="2" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -15696,12 +15696,12 @@
 	mtrapargsString=%parm[#7]%&lt;/p&gt;
 	</logmsg>
       <severity>Minor</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#5]%" alarm-type="1" auto-clean="false"/>
       <varbindsdecode>
          <parmid>parm[#4]</parmid>
          <decode varbindvalue="1" varbinddecodedstring="celsius"/>
          <decode varbindvalue="2" varbinddecodedstring="fahrenheit"/>
       </varbindsdecode>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#5]%" alarm-type="1" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -15771,12 +15771,12 @@
 	mtrapargsString=%parm[#7]%&lt;/p&gt;
 	</logmsg>
       <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#5]%" clear-key="uei.opennms.org/vendor/APC/traps/envLTIncTempRateViolation:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#5]%" alarm-type="2" auto-clean="false"/>
       <varbindsdecode>
          <parmid>parm[#4]</parmid>
          <decode varbindvalue="1" varbinddecodedstring="celsius"/>
          <decode varbindvalue="2" varbinddecodedstring="fahrenheit"/>
       </varbindsdecode>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#5]%" clear-key="uei.opennms.org/vendor/APC/traps/envLTIncTempRateViolation:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#5]%" alarm-type="2" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -15846,12 +15846,12 @@
 	mtrapargsString=%parm[#7]%&lt;/p&gt;
 	</logmsg>
       <severity>Minor</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#5]%" alarm-type="1" auto-clean="false"/>
       <varbindsdecode>
          <parmid>parm[#4]</parmid>
          <decode varbindvalue="1" varbinddecodedstring="celsius"/>
          <decode varbindvalue="2" varbinddecodedstring="fahrenheit"/>
       </varbindsdecode>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#5]%" alarm-type="1" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -15921,12 +15921,12 @@
 	mtrapargsString=%parm[#7]%&lt;/p&gt;
 	</logmsg>
       <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#5]%" clear-key="uei.opennms.org/vendor/APC/traps/envLTDecTempRateViolation:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#5]%" alarm-type="2" auto-clean="false"/>
       <varbindsdecode>
          <parmid>parm[#4]</parmid>
          <decode varbindvalue="1" varbinddecodedstring="celsius"/>
          <decode varbindvalue="2" varbinddecodedstring="fahrenheit"/>
       </varbindsdecode>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#5]%" clear-key="uei.opennms.org/vendor/APC/traps/envLTDecTempRateViolation:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#5]%" alarm-type="2" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -28702,7 +28702,6 @@
 	mtrapargsString=%parm[#5]%&lt;/p&gt;
 	</logmsg>
       <severity>Warning</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#3]%:%parm[#4]%" alarm-type="1" auto-clean="false"/>
       <varbindsdecode>
          <parmid>parm[#3]</parmid>
          <decode varbindvalue="1" varbinddecodedstring="phase1"/>
@@ -28716,6 +28715,7 @@
          <decode varbindvalue="2" varbinddecodedstring="bank1"/>
          <decode varbindvalue="3" varbinddecodedstring="bank2"/>
       </varbindsdecode>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#3]%:%parm[#4]%" alarm-type="1" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -28780,7 +28780,6 @@
 	mtrapargsString=%parm[#5]%&lt;/p&gt;
 	</logmsg>
       <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#3]%:%parm[#4]%" clear-key="uei.opennms.org/vendor/APC/traps/atsLowLoad:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#3]%:%parm[#4]%" alarm-type="2" auto-clean="false"/>
       <varbindsdecode>
          <parmid>parm[#3]</parmid>
          <decode varbindvalue="1" varbinddecodedstring="phase1"/>
@@ -28794,6 +28793,7 @@
          <decode varbindvalue="2" varbinddecodedstring="bank1"/>
          <decode varbindvalue="3" varbinddecodedstring="bank2"/>
       </varbindsdecode>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#3]%:%parm[#4]%" clear-key="uei.opennms.org/vendor/APC/traps/atsLowLoad:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#3]%:%parm[#4]%" alarm-type="2" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -28857,7 +28857,6 @@
 	mtrapargsString=%parm[#5]%&lt;/p&gt;
 	</logmsg>
       <severity>Warning</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#3]%:%parm[#4]%" alarm-type="1" auto-clean="false"/>
       <varbindsdecode>
          <parmid>parm[#3]</parmid>
          <decode varbindvalue="1" varbinddecodedstring="phase1"/>
@@ -28871,6 +28870,7 @@
          <decode varbindvalue="2" varbinddecodedstring="bank1"/>
          <decode varbindvalue="3" varbinddecodedstring="bank2"/>
       </varbindsdecode>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#3]%:%parm[#4]%" alarm-type="1" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -28935,7 +28935,6 @@
 	mtrapargsString=%parm[#5]%&lt;/p&gt;
 	</logmsg>
       <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#3]%:%parm[#4]%" clear-key="uei.opennms.org/vendor/APC/traps/atsNearOverload:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#3]%:%parm[#4]%" alarm-type="2" auto-clean="false"/>
       <varbindsdecode>
          <parmid>parm[#3]</parmid>
          <decode varbindvalue="1" varbinddecodedstring="phase1"/>
@@ -28949,6 +28948,7 @@
          <decode varbindvalue="2" varbinddecodedstring="bank1"/>
          <decode varbindvalue="3" varbinddecodedstring="bank2"/>
       </varbindsdecode>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#3]%:%parm[#4]%" clear-key="uei.opennms.org/vendor/APC/traps/atsNearOverload:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#3]%:%parm[#4]%" alarm-type="2" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -29012,7 +29012,6 @@
 	mtrapargsString=%parm[#5]%&lt;/p&gt;
 	</logmsg>
       <severity>Minor</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#3]%:%parm[#4]%" alarm-type="1" auto-clean="false"/>
       <varbindsdecode>
          <parmid>parm[#3]</parmid>
          <decode varbindvalue="1" varbinddecodedstring="phase1"/>
@@ -29026,6 +29025,7 @@
          <decode varbindvalue="2" varbinddecodedstring="bank1"/>
          <decode varbindvalue="3" varbinddecodedstring="bank2"/>
       </varbindsdecode>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#3]%:%parm[#4]%" alarm-type="1" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -29090,7 +29090,6 @@
 	mtrapargsString=%parm[#5]%&lt;/p&gt;
 	</logmsg>
       <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#3]%:%parm[#4]%" clear-key="uei.opennms.org/vendor/APC/traps/atsOverload:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#3]%:%parm[#4]%" alarm-type="2" auto-clean="false"/>
       <varbindsdecode>
          <parmid>parm[#3]</parmid>
          <decode varbindvalue="1" varbinddecodedstring="phase1"/>
@@ -29104,6 +29103,7 @@
          <decode varbindvalue="2" varbinddecodedstring="bank1"/>
          <decode varbindvalue="3" varbinddecodedstring="bank2"/>
       </varbindsdecode>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#3]%:%parm[#4]%" clear-key="uei.opennms.org/vendor/APC/traps/atsOverload:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#3]%:%parm[#4]%" alarm-type="2" auto-clean="false"/>
    </event>
    <event>
       <mask>
