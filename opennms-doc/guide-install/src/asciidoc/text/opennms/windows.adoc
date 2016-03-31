@@ -5,6 +5,8 @@
 [[gi-install-opennms-windows]]
 === Install on Microsoft Windows Systems
 
+IMPORTANT: This guide does not apply to OpenNMS Meridian, which can be installed only on Red Hat Enterprise Linux or CentOS systems.
+
 _OpenNMS_ is mostly developed on Unix/Linux based systems, nevertheless it is possible to install the platform on _Microsoft Windows_ operating systems.
 To install the application a graphical installer is provided and can be used to install _OpenNMS_ on _Microsoft Windows_.
 This section describes how to install the _OpenNMS_ platform on _Microsoft Windows 2012 Server_.

@@ -38,7 +38,7 @@ The `packet-count` and `packet-timeout` parameters instead service this purpose 
 
 * One or more _Cisco_ devices running an _IOS_ image of recent vintage; any 12.2 or later image is probably fine.
 Even very low-end devices appear to support the CISCO-PING-MIB.
-* The _IOS_ devices that will perform the remote pings must be configured with an _SNMP write community_ string whose source address access-list includes the address of the OpenNMS server and whose MIB view (if any) includes the OID of the _ciscoPingTable_.
+* The _IOS_ devices that will perform the remote pings must be configured with an _SNMP write community_ string whose source address access-list includes the address of the {opennms-product-name} server and whose MIB view (if any) includes the OID of the _ciscoPingTable_.
 * The corresponding _SNMP write community_ string must be specified in the `write-community` attribute of either the top-level `<snmp-config>` element of `snmp-config.xml` or a `<definition>` child element that applies to the _SNMP-primary_ interface of the _IOS_ device(s) that will perform the remote pings.
 
 ===== Scalability concerns
@@ -126,7 +126,7 @@ This is optional just if you can use variables in the configuration
 A service provider's client, Foo Corporation, has network service at multiple locations.
 At each Foo location, a point-of-sale system is statically configured at IPv4 address 192.168.255.1.
 Foo wants to be notified any time a point-of-sale system becomes unreachable.
-Using an OpenNMS remote location monitor is not feasible.
+Using an {opennms-product-name} remote location monitor is not feasible.
 All of Foo Corporation's CPE routers must be _Cisco IOS_ devices in order to achieve full coverage in this scenario.
 
 One approach to this requirement is to configure all of Foo Corporation's premise routers to be in the surveillance categories Customer_Foo, CPE, and Routers, and to use a filter to create a poller package that applies only to those routers.
@@ -164,7 +164,7 @@ Since we want each Foo CPE router to ping the same IP address 192.168.255.1, we 
 ===== Example: Ping from a single IOS device routable address of each router of customer Bar
 
 A service provider's client, Bar Limited, has network service at multiple locations.
-While OpenNMS' world-class service assurance is generally sufficient, Bar also wants to be notified any time a premise router at one of their locations unreachable from the perspective of an _IOS_ device in Bar's main data center.
+While {opennms-product-name}' world-class service assurance is generally sufficient, Bar also wants to be notified any time a premise router at one of their locations unreachable from the perspective of an _IOS_ device in Bar's main data center.
 Some or all of the Bar Limited CPE routers may be non-Cisco devices in this scenario.
 
 To meet this requirement, our approach is to configure Bar Limited's premise routers to be in the surveillance categories Customer_Bar, CPE, and Routers, and to use a filter to create a poller package that applies only to those routers.

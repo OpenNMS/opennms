@@ -7,22 +7,22 @@
 The explosive growth and density of the IT systems being deployed today to support not traditional IP services is impacting management systems like never before and is demanding from them tremendous amounts of scalability.
 The scalability of a management system is defined by its capacity for maintaining large numbers of managing entities coupled with its efficiency of managing the entities.
 
-Today, It is not uncommon for OpenNMS deployments to find node entities with tens of thousands of physical interfaces being reported by SNMP agents due to virtualization (virtual hosts, interfaces, as well as networks).
+Today, It is not uncommon for {opennms-product-name} deployments to find node entities with tens of thousands of physical interfaces being reported by SNMP agents due to virtualization (virtual hosts, interfaces, as well as networks).
 An NMS must be capable of using the full capacity every resource of its computing platform (hardware and OS) as effectively as possible in order to manage these environments.
 The days of writing scripts or single threaded applications will just no longer be able to do the work required an NMS when dealing with the scalability challenges facing systems and systems administrators working in this domain.
 
 ===== Parallelization and Non-Blocking I/O
 
-Squeezing out every ounce of power from a management system’s platform (hardware and OS) is absolutely required to complete all the work of a fully functional NMS such as OpenNMS.
+Squeezing out every ounce of power from a management system’s platform (hardware and OS) is absolutely required to complete all the work of a fully functional NMS such as {opennms-product-name}.
 Fortunately, the hardware and CPU architecture of a modern computing platform provides multiple CPUs with multiple cores having instruction sets that include support for atomic operations.
 While these very powerful resources are being provided by commodity systems, it makes the complexity of developing applications to use them vs. not using them, orders of magnitude more complex.
 However, because of scalability demands of our complex IT environments, multi-threaded NMS applications are now essential and this has fully exposed the complex issues of concurrency in software development.
 
-OpenNMS has stepped up to this challenge with its new concurrency strategy.
+{opennms-product-name} has stepped up to this challenge with its new concurrency strategy.
 This strategy is based on a technique that combines the efficiency of parallel (asynchronous) operations (traditionally used by most effectively by single threaded applications) with the power of a fully current, non-blocking, multi-threaded design.
-The non-blocking component of this new concurrency strategy added greater complexity but OpenNMS gained orders of magnitude in increased scalability.
+The non-blocking component of this new concurrency strategy added greater complexity but {opennms-product-name} gained orders of magnitude in increased scalability.
 
-NOTE: Java Runtimes, based on the Sun JVM, have provided implementations for processor based atomic operations and is the basis for OpenNMS’ non-blocking concurrency algorithms.
+NOTE: Java Runtimes, based on the Sun JVM, have provided implementations for processor based atomic operations and is the basis for {opennms-product-name}’ non-blocking concurrency algorithms.
 
 ===== Provisioning Policies
 
@@ -38,8 +38,8 @@ The policies for an auto-discovered node or nodes from provisioning groups that 
 ===== The Default Foreign Source Definition
 
 Contained in the libraries of the Provisioning service is the "template" or default foreign source.
-The template stored in the library is used until the OpenNMS admin user alters the default from the _Provisioning Groups_ WebUI.
-Upon edit, this template is exported to the OpenNMS `etc/` directory with the file name: `default-foreign-source.xml.
+The template stored in the library is used until the {opennms-product-name} admin user alters the default from the _Provisioning Groups_ WebUI.
+Upon edit, this template is exported to the {opennms-product-name} `etc/` directory with the file name: `default-foreign-source.xml.
 
 [source, xml]
 ----
