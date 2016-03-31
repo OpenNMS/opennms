@@ -41,13 +41,14 @@ import org.opennms.features.topology.api.browsers.OnmsVaadinContainer;
 import org.opennms.features.topology.api.browsers.ContentType;
 import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.model.OnmsAlarm;
+import org.springframework.transaction.support.TransactionOperations;
 
 public class AlarmDaoContainer extends OnmsVaadinContainer<OnmsAlarm,Integer> {
 
     private static final long serialVersionUID = -4026870931086916312L;
 
-    public AlarmDaoContainer(AlarmDao dao) {
-        super(OnmsAlarm.class, new OnmsDaoContainerDatasource<>(dao));
+    public AlarmDaoContainer(AlarmDao dao, TransactionOperations transactionTemplate) {
+        super(OnmsAlarm.class, new OnmsDaoContainerDatasource<>(dao, transactionTemplate));
         addBeanToHibernatePropertyMapping("nodeLabel", "node.label");
     }
 

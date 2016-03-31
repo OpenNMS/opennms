@@ -40,15 +40,28 @@ import org.opennms.features.topology.api.browsers.ContentType;
 import org.opennms.features.topology.api.browsers.OnmsContainerDatasource;
 import org.opennms.features.topology.api.browsers.OnmsVaadinContainer;
 import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.dao.api.OnmsDao;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.PrimaryType;
+import org.springframework.transaction.support.TransactionOperations;
 
 public class NodeDaoContainer extends OnmsVaadinContainer<OnmsNode,Integer> {
 
 	private static final long serialVersionUID = -5697472655705494537L;
 
-	public NodeDaoContainer(NodeDao dao) {
-		super(OnmsNode.class, new OnmsDaoContainerDatasource<>(dao));
+    public static class NodeDaoContainerDatasource extends OnmsDaoContainerDatasource<OnmsNode, Integer> {
+        public NodeDaoContainerDatasource(OnmsDao<OnmsNode, Integer> dao, TransactionOperations transactionTemplate) {
+            super(dao, transactionTemplate);
+        }
+
+        @Override
+        public void findMatchingCallback(OnmsNode node) {
+            node.getPrimaryInterface();
+        }
+    }
+
+	public NodeDaoContainer(NodeDao dao, TransactionOperations transactionTemplate) {
+	    super(OnmsNode.class, new NodeDaoContainerDatasource(dao, transactionTemplate));
         addBeanToHibernatePropertyMapping("primaryInterface", "ipInterfaces.ipAddress");
 	}
 
@@ -74,11 +87,6 @@ public class NodeDaoContainer extends OnmsVaadinContainer<OnmsNode,Integer> {
         // See http://issues.opennms.org/browse/NMS-8079 for more details
         List<OnmsNode> itemsForCache = super.getItemsForCache(datasource, page);
         return new ArrayList<>(new LinkedHashSet<>(itemsForCache));
-    }
-
-    @Override
-    protected void doItemAddedCallBack(int rowNumber, Integer id, OnmsNode eachBean) {
-        eachBean.getPrimaryInterface();
     }
 
     @Override

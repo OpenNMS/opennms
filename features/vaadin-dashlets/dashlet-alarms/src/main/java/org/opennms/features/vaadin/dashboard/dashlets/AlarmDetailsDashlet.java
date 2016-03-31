@@ -63,6 +63,8 @@ import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.osgi.EventProxy;
 import org.opennms.osgi.VaadinApplicationContextImpl;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.support.TransactionOperations;
 
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -78,11 +80,11 @@ public class AlarmDetailsDashlet extends AbstractDashlet {
     /**
      * The {@link AlarmDao} used
      */
-    private AlarmDao m_alarmDao;
+    private final AlarmDao m_alarmDao;
     /**
      * The {@link NodeDao} used
      */
-    private NodeDao m_nodeDao;
+    private final NodeDao m_nodeDao;
     /**
      * Helper for handling criterias
      */
@@ -98,7 +100,9 @@ public class AlarmDetailsDashlet extends AbstractDashlet {
     /**
      * alarm table
      */
-    AlarmRepository m_alarmRepository;
+    private final AlarmRepository m_alarmRepository;
+
+    private final TransactionOperations m_transactionTemplate;
 
     /**
      * Constructor for instantiating new objects.
@@ -107,7 +111,7 @@ public class AlarmDetailsDashlet extends AbstractDashlet {
      * @param alarmDao    the {@link AlarmDao} to be used
      * @param nodeDao     the {@link NodeDao} to be used
      */
-    public AlarmDetailsDashlet(String name, DashletSpec dashletSpec, AlarmDao alarmDao, NodeDao nodeDao, AlarmRepository alarmRepository) {
+    public AlarmDetailsDashlet(String name, DashletSpec dashletSpec, AlarmDao alarmDao, NodeDao nodeDao, AlarmRepository alarmRepository, TransactionOperations transactionTemplate) {
         super(name, dashletSpec);
 
         /**
@@ -116,6 +120,7 @@ public class AlarmDetailsDashlet extends AbstractDashlet {
         m_alarmDao = alarmDao;
         m_nodeDao = nodeDao;
         m_alarmRepository = alarmRepository;
+        m_transactionTemplate = transactionTemplate;
     }
 
     @Override
@@ -180,7 +185,7 @@ public class AlarmDetailsDashlet extends AbstractDashlet {
                 private AlarmTable m_alarmTable;
 
                 {
-                    m_alarmTable = new AlarmTable("Alarms", new AlarmDaoContainer(m_alarmDao), m_alarmRepository);
+                    m_alarmTable = new AlarmTable("Alarms", new AlarmDaoContainer(m_alarmDao, m_transactionTemplate), m_alarmRepository);
 
                     m_alarmTable.setSizeFull();
 
