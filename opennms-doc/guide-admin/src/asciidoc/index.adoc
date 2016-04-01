@@ -132,16 +132,7 @@ include::text/performance-data-collection/collectors/wsman/detector.adoc[]
 include::text/events/events.adoc[]
 include::text/events/forward-elasticsearch.adoc[]
 
-[[ga-notifications]]
-== Notifications
-include::text/notifications/introduction.adoc[]
-include::text/notifications/getting-started.adoc[]
-include::text/notifications/concepts.adoc[]
-include::text/notifications/bonus-strategies.adoc[]
-include::text/notifications/strategies/mattermost.adoc[]
-include::text/notifications/strategies/slack.adoc[]
-
-[ga-provisioning]
+[[ga-provisioning]]
 == Provisioning
 include::text/provisioning/introduction.adoc[]
 include::text/provisioning/concepts.adoc[]
@@ -156,13 +147,9 @@ include::text/provisioning/single-node.adoc[]
 include::text/provisioning/fine-grained.adoc[]
 include::text/provisioning/api-examples.adoc[]
 
-[[ga-bsm-admin]]
-== Business Service Monitoring
-include::text/bsm/bsm-admin.adoc[]
-
-[[ga-topology]]
-== Topology Map
-include::text/topology/topology.adoc[]
+[[ga-provisioning-detectors]]
+=== Service Detectors
+include::text/provisioning/detectors/SnmpDetector.adoc[]
 
 [[ga-database-reports]]
 == Database Reports
