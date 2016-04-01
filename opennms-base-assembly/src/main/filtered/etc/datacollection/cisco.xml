@@ -980,6 +980,26 @@
         </collect>
       </systemDef>
 
+      <systemDef name="Cisco ASA5515-X">
+        <sysoid>.1.3.6.1.4.1.9.1.1421</sysoid>
+        <collect>
+          <includeGroup>cisco-pix</includeGroup>
+          <includeGroup>cisco-cike</includeGroup>
+          <includeGroup>cisco-cipsec</includeGroup>
+          <includeGroup>cisco-memory</includeGroup>
+        </collect>
+      </systemDef>
+
+      <systemDef name="Cisco ASA5525-X">
+        <sysoid>.1.3.6.1.4.1.9.1.1408</sysoid>
+        <collect>
+          <includeGroup>cisco-pix</includeGroup>
+          <includeGroup>cisco-cike</includeGroup>
+          <includeGroup>cisco-cipsec</includeGroup>
+          <includeGroup>cisco-memory</includeGroup>
+        </collect>
+      </systemDef>
+
       <systemDef name="Cisco ASA5580">
         <sysoid>.1.3.6.1.4.1.9.1.914</sysoid>
         <collect>
