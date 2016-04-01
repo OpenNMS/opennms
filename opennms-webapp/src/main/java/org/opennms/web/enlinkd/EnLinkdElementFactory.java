@@ -23,7 +23,6 @@ import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -164,6 +163,7 @@ public class EnLinkdElementFactory implements InitializingBean,
         return convertFromModel(m_ospfElementDao.findByNodeId(Integer.valueOf(nodeId)));
     }
 
+    @SuppressWarnings("deprecation")
     private OspfElementNode convertFromModel(OspfElement ospf) {
         if (ospf == null)
             return null;
@@ -188,6 +188,7 @@ public class EnLinkdElementFactory implements InitializingBean,
     }
 
     @Transactional
+    @SuppressWarnings("deprecation")
     private List<OspfLinkNode> convertFromModel(int nodeid, OspfLink link) {
         List<OspfLinkNode> linkNodes = new ArrayList<OspfLinkNode>();
 
@@ -243,6 +244,7 @@ public class EnLinkdElementFactory implements InitializingBean,
         return convertFromModel(m_cdpElementDao.findByNodeId(Integer.valueOf(nodeId)));
     }
 
+    @SuppressWarnings("deprecation")
     private CdpElementNode convertFromModel(CdpElement cdp) {
         if (cdp == null)
             return null;
@@ -271,6 +273,7 @@ public class EnLinkdElementFactory implements InitializingBean,
     }
 
     @Transactional
+    @SuppressWarnings("deprecation")
     private CdpLinkNode convertFromModel(int nodeid, CdpLink link) {
         CdpLinkNode linknode = new CdpLinkNode();
         linknode.setCdpLocalPort(getPortString(link.getCdpCacheIfIndex(),
@@ -310,6 +313,7 @@ public class EnLinkdElementFactory implements InitializingBean,
         return convertFromModel(m_lldpElementDao.findByNodeId(Integer.valueOf(nodeId)));
     }
 
+    @SuppressWarnings("deprecation")
     private LldpElementNode convertFromModel(LldpElement lldp) {
         if (lldp == null)
             return null;
@@ -335,6 +339,7 @@ public class EnLinkdElementFactory implements InitializingBean,
     }
 
     @Transactional
+    @SuppressWarnings("deprecation")
     private LldpLinkNode convertFromModel(int nodeid, LldpLink link) {
 
         LldpLinkNode linknode = new LldpLinkNode();
@@ -399,6 +404,7 @@ public class EnLinkdElementFactory implements InitializingBean,
         return convertFromModel(m_isisElementDao.findByNodeId(Integer.valueOf(nodeId)));
     }
 
+    @SuppressWarnings("deprecation")
     private IsisElementNode convertFromModel(IsIsElement isis) {
         if (isis == null)
             return null;
@@ -423,6 +429,7 @@ public class EnLinkdElementFactory implements InitializingBean,
     }
 
     @Transactional
+    @SuppressWarnings("deprecation")
     private IsisLinkNode convertFromModel(int nodeid, IsIsLink link) {
         IsisLinkNode linknode = new IsisLinkNode();
         linknode.setIsisCircIfIndex(link.getIsisCircIfIndex());
@@ -481,6 +488,7 @@ public class EnLinkdElementFactory implements InitializingBean,
         return nodes;
     }
 
+    @SuppressWarnings("deprecation")
     private BridgeElementNode convertFromModel(BridgeElement bridge) {
         if (bridge == null)
             return null;
@@ -532,10 +540,12 @@ public class EnLinkdElementFactory implements InitializingBean,
     }
 
     @Transactional
+    @SuppressWarnings("deprecation")
     private NodeLinkBridge convertFromModel(String mac,
             SharedSegment segment, String port) {
         final NodeLinkBridge linknode = new NodeLinkBridge();
         linknode.setNodeLocalPort(port);
+        
         for (BridgePort link : segment.getBridgePortsOnSegment()) {
             final BridgeLinkRemoteNode remlinknode = new BridgeLinkRemoteNode();
             final Integer rempnodeId = link.getNode().getId();
@@ -560,6 +570,7 @@ public class EnLinkdElementFactory implements InitializingBean,
             remlinknode.setBridgeRemoteVlan(link.getVlan());
             linknode.getBridgeLinkRemoteNodes().add(remlinknode);
         }
+        
         for (BridgeMacLink link: segment.getBridgeMacLinks()) {
             if (link.getMacAddress().equals(mac)) {
                 linknode.setBridgeLinkCreateTime(Util.formatDateToUIString(link.getBridgeMacLinkCreateTime()));
@@ -567,13 +578,18 @@ public class EnLinkdElementFactory implements InitializingBean,
                 break;
             }
         }
+        
+        Map<String, List<IpNetToMedia>> sharedmacs = new HashMap<String, List<IpNetToMedia>>();
         for (String shredmac: segment.getMacsOnSegment()) {
             if (shredmac.equals(mac))
                 continue;
-            List<IpNetToMedia> ipnettomedias = m_ipNetToMediaDao.findByPhysAddress(shredmac);
-
-            
-            if (ipnettomedias.isEmpty()) {
+            sharedmacs.put(shredmac, new ArrayList<IpNetToMedia>());
+            sharedmacs.get(shredmac).addAll(m_ipNetToMediaDao.findByPhysAddress(shredmac));
+        }
+       
+        Map<String, List<OnmsIpInterface>> sharedhosts = new HashMap<String, List<OnmsIpInterface>>();
+        for (String shredmac: sharedmacs.keySet()) {
+            if (sharedmacs.get(shredmac).isEmpty()) {
                 BridgeLinkSharedHost remlinknode = new BridgeLinkSharedHost();
                 OnmsSnmpInterface snmp = getFromPhysAddress(shredmac);
                 if (snmp == null) {
@@ -590,33 +606,43 @@ public class EnLinkdElementFactory implements InitializingBean,
                 linknode.getBridgeLinkSharedHost().add(remlinknode);
                 continue;
             }
-            for (IpNetToMedia ipnettomedia : ipnettomedias) {
-                BridgeLinkSharedHost remlinknode = new BridgeLinkSharedHost();
-                List<OnmsIpInterface> ips = m_ipInterfaceDao.findByIpAddress(ipnettomedia.getNetAddress().getHostAddress());
-                if (ips.isEmpty()) {
-                    remlinknode.setSharedHost(str(ipnettomedia.getNetAddress())
-                            + "/"
-                            + shredmac
-                            + " No node associated in db");
-                } else if (ips.size() > 1) {
-                    remlinknode.setSharedHost(str(ipnettomedia.getNetAddress())
-                            + "/"
-                            + shredmac
-                            + " duplicated ip multiple node associated in db");
-                } else {
-                    for (OnmsIpInterface ip : ips) {
-                        remlinknode.setSharedHost(ip.getNode().getLabel());
-                        remlinknode.setSharedHostUrl(getNodeUrl(ip.getNode().getId()));
-
-                        remlinknode.setSharedHostPort(str(ipnettomedia.getNetAddress())
-                            + "/" + shredmac);
-                        remlinknode.setSharedHostPortUrl(getIpInterfaceUrl(ip));
-                    }
-                }
-                linknode.getBridgeLinkSharedHost().add(remlinknode);
-            }
-
+            sharedhosts.put(shredmac, new ArrayList<OnmsIpInterface>());
+            for (IpNetToMedia ipnettomedia : sharedmacs.get(shredmac))
+                sharedhosts.get(sharedmacs).addAll(m_ipInterfaceDao.findByIpAddress(ipnettomedia.getNetAddress().getHostAddress()));
         }
+
+        for (String shredmac: sharedhosts.keySet()) {
+            BridgeLinkSharedHost remlinknode = new BridgeLinkSharedHost();
+            Set<InetAddress> ips = new HashSet<InetAddress>();
+            if (sharedhosts.get(shredmac).isEmpty()) {
+                for (IpNetToMedia ipnettomedia: sharedmacs.get(shredmac)) {
+                    ips.add(ipnettomedia.getNetAddress());
+                }
+                remlinknode.setSharedHost(getNodePortString(ips, shredmac)+ " No node found");
+                linknode.getBridgeLinkSharedHost().add(remlinknode);
+                continue;
+            }
+            OnmsIpInterface first = null;
+            boolean multiplenodeids = false;
+            for (OnmsIpInterface ip: sharedhosts.get(shredmac)) {
+                if (first == null )
+                    first = ip;
+                if (first.getNode().getId().intValue() != ip.getNode().getId().intValue() )
+                    multiplenodeids = true;
+                ips.add(ip.getIpAddress());
+            }
+            if (multiplenodeids) {
+                remlinknode.setSharedHost(getNodePortString(ips, shredmac)  + " duplicated ip multiple node associated in db");
+            } else {
+                remlinknode.setSharedHost(first.getNode().getLabel());
+                remlinknode.setSharedHostUrl(getNodeUrl(first.getNode().getId()));
+            }
+            remlinknode.setSharedHostPort(getNodePortString(ips, shredmac));
+            if (ips.size() == 1) {
+                remlinknode.setSharedHostPortUrl(getIpInterfaceUrl(first));
+            } 
+            linknode.getBridgeLinkSharedHost().add(remlinknode);
+        }        
         return linknode;
     }
 
@@ -631,6 +657,7 @@ public class EnLinkdElementFactory implements InitializingBean,
     }
 
     @Transactional
+    @SuppressWarnings("deprecation")
     private BridgeLinkNode convertFromModel(int nodeid, SharedSegment segment) {
         final BridgeLinkNode linknode = new BridgeLinkNode();
         for (BridgePort link : segment.getBridgePortsOnSegment()) {
@@ -686,11 +713,16 @@ public class EnLinkdElementFactory implements InitializingBean,
                 }
             }
         }
-        for (String shredmac: segment.getMacsOnSegment()) {
-            List<IpNetToMedia> ipnettomedias = m_ipNetToMediaDao.findByPhysAddress(shredmac);
 
-            
-            if (ipnettomedias.isEmpty()) {
+        Map<String, List<IpNetToMedia>> sharedmacs = new HashMap<String, List<IpNetToMedia>>();
+        for (String shredmac: segment.getMacsOnSegment()) {
+            sharedmacs.put(shredmac, new ArrayList<IpNetToMedia>());
+            sharedmacs.get(shredmac).addAll(m_ipNetToMediaDao.findByPhysAddress(shredmac));
+        }
+       
+        Map<String, List<OnmsIpInterface>> sharedhosts = new HashMap<String, List<OnmsIpInterface>>();
+        for (String shredmac: sharedmacs.keySet()) {
+            if (sharedmacs.get(shredmac).isEmpty()) {
                 BridgeLinkSharedHost remlinknode = new BridgeLinkSharedHost();
                 OnmsSnmpInterface snmp = getFromPhysAddress(shredmac);
                 if (snmp == null) {
@@ -707,33 +739,44 @@ public class EnLinkdElementFactory implements InitializingBean,
                 linknode.getBridgeLinkSharedHost().add(remlinknode);
                 continue;
             }
-            for (IpNetToMedia ipnettomedia : ipnettomedias) {
-                BridgeLinkSharedHost remlinknode = new BridgeLinkSharedHost();
-                List<OnmsIpInterface> ips = m_ipInterfaceDao.findByIpAddress(ipnettomedia.getNetAddress().getHostAddress());
-                if (ips.isEmpty()) {
-                    remlinknode.setSharedHost(str(ipnettomedia.getNetAddress())
-                            + "/"
-                            + shredmac
-                            + " No node associated in db");
-                } else if (ips.size() > 1) {
-                    remlinknode.setSharedHost(str(ipnettomedia.getNetAddress())
-                            + "/"
-                            + shredmac
-                            + " duplicated ip multiple node associated in db");
-                } else {
-                    for (OnmsIpInterface ip : ips) {
-                        remlinknode.setSharedHost(ip.getNode().getLabel());
-                        remlinknode.setSharedHostUrl(getNodeUrl(ip.getNode().getId()));
-
-                        remlinknode.setSharedHostPort(str(ipnettomedia.getNetAddress())
-                            + "/" + shredmac);
-                        remlinknode.setSharedHostPortUrl(getIpInterfaceUrl(ip));
-                    }
-                }
-                linknode.getBridgeLinkSharedHost().add(remlinknode);
-            }
-
+            sharedhosts.put(shredmac, new ArrayList<OnmsIpInterface>());
+            for (IpNetToMedia ipnettomedia : sharedmacs.get(shredmac))
+                sharedhosts.get(sharedmacs).addAll(m_ipInterfaceDao.findByIpAddress(ipnettomedia.getNetAddress().getHostAddress()));
         }
+
+        for (String shredmac: sharedhosts.keySet()) {
+            BridgeLinkSharedHost remlinknode = new BridgeLinkSharedHost();
+            Set<InetAddress> ips = new HashSet<InetAddress>();
+            if (sharedhosts.get(shredmac).isEmpty()) {
+                for (IpNetToMedia ipnettomedia: sharedmacs.get(shredmac)) {
+                    ips.add(ipnettomedia.getNetAddress());
+                }
+                remlinknode.setSharedHost(getNodePortString(ips, shredmac)+ " No node found");
+                linknode.getBridgeLinkSharedHost().add(remlinknode);
+                continue;
+            }
+            OnmsIpInterface first = null;
+            boolean multiplenodeids = false;
+            for (OnmsIpInterface ip: sharedhosts.get(shredmac)) {
+                if (first == null )
+                    first = ip;
+                if (first.getNode().getId().intValue() != ip.getNode().getId().intValue() )
+                    multiplenodeids = true;
+                ips.add(ip.getIpAddress());
+            }
+            if (multiplenodeids) {
+                remlinknode.setSharedHost(getNodePortString(ips, shredmac)  + " duplicated ip multiple node associated in db");
+            } else {
+                remlinknode.setSharedHost(first.getNode().getLabel());
+                remlinknode.setSharedHostUrl(getNodeUrl(first.getNode().getId()));
+            }
+            remlinknode.setSharedHostPort(getNodePortString(ips, shredmac));
+            if (ips.size() == 1) {
+                remlinknode.setSharedHostPortUrl(getIpInterfaceUrl(first));
+            } 
+            linknode.getBridgeLinkSharedHost().add(remlinknode);
+        }        
+
         return linknode;
 
     }
@@ -800,31 +843,16 @@ public class EnLinkdElementFactory implements InitializingBean,
         return port;
     }
 
-    private String getBridgePortString(Integer bridgePort, Integer ifindex) {
-        if (ifindex != null)
-            return "bridge port: " + bridgePort + "(ifindex:" + ifindex + ")";
-        return "bridge port: " + bridgePort;
-    }
-
-    private OnmsSnmpInterface getSnmpInterface(OnmsNode node, Integer ifIndex) {
-        if (node != null && node.getId() != null && ifIndex != null) {
-            OnmsSnmpInterface snmpInterface = m_snmpInterfaceDao.findByNodeIdAndIfIndex(node.getId(),
-                                                                                        ifIndex);
-            return snmpInterface;
-        }
-        return null;
-    }
-
     private String getPortString(Integer ifindex, String ifName, String ifAlias) {
         if (ifindex == null && ifName == null && ifAlias == null)
-            return "(ifindex:" + ifindex + ")";
+            return null;
         String port = "";
         if (ifName != null) 
             port += ifName;
         if (ifindex != null )
             port += "(ifindex:" + ifindex + ")";
         if (ifAlias != null) {
-            port += "(" + ifAlias + ")";
+            port += "(ifalias: " + ifAlias + ")";
         }
         return port;
     }
@@ -835,14 +863,6 @@ public class EnLinkdElementFactory implements InitializingBean,
 
     private String getNodeUrl(Integer nodeid) {
         return "element/node.jsp?node=" + nodeid;
-    }
-
-    private String getSnmpInterfaceUrl(OnmsSnmpInterface iface) {
-        if (iface != null) {
-            return getSnmpInterfaceUrl(iface.getNode().getId(),
-                                       iface.getIfIndex());
-        }
-        return null;
     }
 
     private String getSnmpInterfaceUrl(Integer nodeid, Integer ifindex) {

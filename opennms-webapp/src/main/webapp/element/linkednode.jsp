@@ -280,15 +280,15 @@
 	</div>
 	<% } else { %>
   <div class="panel-heading">
-    <h3 class="panel-title"><%=node_db.getLabel()%> Bridge Forwarding Table Links found by Enhanced Linkd</h3>
+    <h3 class="panel-title"><%=node_db.getLabel()%> Shared Segments found by Enhanced Linkd using Bridge Forwarding Table</h3>
 	</div>
 		<!-- Link box -->
 		<table class="table table-condensed">
 		
 		<thead>
 			<tr>
-			<th>Local Port</th> 
-			<th>Hosts on Segment</th> 
+			<th>Port - Ip - Mac</th> 
+			<th>Other Hosts on Segment</th> 
 			<th>Bridge Ports on Segment</th>
 			<th>Created</th>
 			<th>Last Poll</th>
@@ -311,12 +311,12 @@
             		<% } else { %> 
             		<%=sharedhost.getSharedHost()%>
 		    		<% } %> 
-            		</td>
 		 			<% if (sharedhost.getSharedHostPortUrl() != null) { %>
-            		<td>
-            		<a href="<%=sharedhost.getSharedHostPortUrl()%>"><%=sharedhost.getSharedHostPort()%></a>
+            		&nbsp;(<a href="<%=sharedhost.getSharedHostPortUrl()%>"><%=sharedhost.getSharedHostPort()%></a>)
+            		<% } else if (sharedhost.getSharedHostPort() != null ){ %> 
+            		&nbsp;(<%=sharedhost.getSharedHostPort()%>)
             		<% } else { %> 
-            		<%=sharedhost.getSharedHostPort()%>
+            		&nbsp;
     				<% } %> 
             		</td>
             	<tr>
@@ -379,8 +379,13 @@
 		<% for( BridgeLinkNode bridgelink: bridgelinks) { %>
 		<tr>
 			<td><%=bridgelink.getNodeLocalPort()%></td>
-		    <td><%=bridgelink.getBridgeLocalVlan()%></td>
-		
+		    <td>
+<% if (bridgelink.getBridgeLocalVlan() == null) {%>
+            	            	&nbsp;
+<% } else { %>
+		    <%=bridgelink.getBridgeLocalVlan()%>
+<%} %>
+		    </td>
             <td>
 <% if (bridgelink.getBridgeLinkSharedHost().isEmpty()) {%>
             	            	&nbsp;
@@ -389,18 +394,19 @@
             	<% for (BridgeLinkSharedHost sharedhost: bridgelink.getBridgeLinkSharedHost()) {%>
             	<tr>
             		<td>
-		 	<% if (sharedhost.getSharedHostUrl() != null) { %>
+		 			<% if (sharedhost.getSharedHostUrl() != null) { %>
             		<a href="<%=sharedhost.getSharedHostUrl()%>"><%=sharedhost.getSharedHost()%></a>
-            <% } else { %> 
-            	<%=sharedhost.getSharedHost()%>
-    		<% } %> 
-            		</td>
-		 	<% if (sharedhost.getSharedHostPortUrl() != null) { %>
-            		<td>
-            		<a href="<%=sharedhost.getSharedHostPortUrl()%>"><%=sharedhost.getSharedHostPort()%></a>
-            <% } else { %> 
-            	<%=sharedhost.getSharedHostPort()%>
-    		<% } %> 
+            		<% } else { %> 
+            		<%=sharedhost.getSharedHost()%>
+		    		<% } %> 
+		 			
+		 			<% if (sharedhost.getSharedHostPortUrl() != null) { %>
+            		&nbsp;(<a href="<%=sharedhost.getSharedHostPortUrl()%>"><%=sharedhost.getSharedHostPort()%></a>)
+            		<% } else if (sharedhost.getSharedHostPort() != null ){ %> 
+            		&nbsp;(<%=sharedhost.getSharedHostPort()%>)
+            		<% } else { %> 
+            		&nbsp;
+    				<% } %> 
             		</td>
             	<tr>
             	<% }%>
