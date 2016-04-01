@@ -5,7 +5,7 @@
 
 ===== Enabling Newts
 
-_OpenNMS_ can be configured to use Newts by setting the following property in in `${OPENNMS_HOME}/etc/opennms.properties`:
+_{opennms-product-name}_ can be configured to use Newts by setting the following property in in `${OPENNMS_HOME}/etc/opennms.properties`:
 
 [source]
 ----
@@ -20,7 +20,7 @@ To this end, the following property should also be set in the same file:
 org.opennms.rrd.storeByForeignSource=true
 ----
 
-With these set, _OpenNMS_ will begin persisting metrics using the _Newts_ engine when restarted.
+With these set, _{opennms-product-name}_ will begin persisting metrics using the _Newts_ engine when restarted.
 
 Additional configuration options are presented in the next section.
 
