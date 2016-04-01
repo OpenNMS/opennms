@@ -1,0 +1,61 @@
+
+// Allow GitHub image rendering
+:imagesdir: ../../images
+
+=== Plugin Manager UI panel
+
+The plugin manager is accessed as an entry in the OpenNMS Admin Gui 
+image::plugin-manager/adminPageEntry.png[]
+
+The Plugin manager adminstration page is split into six main areas as illustrated below.
+
+1. Top left is the Karaf Instance data panel which lists the karaf instances known to the plugin manager. When a karaf instance is selected, the data on the rest of the page refers to the selected instance.
+
+2. Bottom Left is the The Available Plugins Server panel which is used to set the address and passwords to access the app server and / or the list of available plugins
+
+3. Top Right, just below the OpenNMS menu  are links to three diagnostic pages which can help test the rest interface to remote Karaf Instances
+
+4. Middle Right is a messages panel which reports the status of any operations. If an operation fails, the full error message can be listed by pressing the error message button
+
+5. Bottom Right is a tabbed panel which reflects the status of the plugins and licences installed in the selected Karaf instance.
+
+
+image::plugin-manager/pluginmgrFullPage.png[]
+
+
+=== Setting Karaf Instance Data
+
+The Karaf instances known to the Plugin Manager are listed in the karaf instance data selection panel. 
+
+'Localhost' refers to the local OpenNMS server and is always an option in the panel. 
+
+The karaf instance data is persisted locally and should be refreshed using the reload karaf instance data button before changes are made.
+
+Each karaf instance must have a unique system id which is used to update it's configuration and also to validate it's licences.
+
+In most situations the remote karaf instance can be accessed from the OpenNMS plugin manager. However in many cases, the remote karaf will be behind a firewall in which case it must initiate the communications to request it's configuration and supply an update on it's status. 
+
+The 'Remote is Accessible' field tells the plugin manager which mode of operation is in use. 
+
+
+.Karaf Instance Fields
+[width="100%",options="header,footer"]
+|====================
+|Field Name  | Description 
+|Instance Name | host Name of the karaf instance 
+|Karaf URL  |  URL used to access the Karaf Plugin Rest API
+|Current Instance System ID  | The system ID currently installed in the Karaf system 
+|Manifest System ID | The system ID to be provisioned in the karaf system
+|Remote is Accessable | If ticked 'true', the plugin manager will try and contact the remote karaf instance usign the URL. If not ticked (i.e. false), the remote karaf instance must request it's configuration
+|Allow Status Update from Remote|Allow the remote karaf instance to request and update to it's configuration. 
+|====================
+
+image::plugin-manager/karafInstanceData.png[]
+
+=== Manually adding a managed Karaf instance
+The list of karaf instances can be modified using the karaf instance editor illustrated below. The same fields apply as above.
+
+image::plugin-manager/karafinstanceeditor.png[]
+
+
+

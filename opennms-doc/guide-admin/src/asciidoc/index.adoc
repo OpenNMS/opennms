@@ -173,3 +173,9 @@ include::text/ticketing/introduction.adoc[]
 
 // JIRA Ticketer
 include::text/ticketing/jira.adoc[]
+
+== Plugin Manager
+include::text/plugin-manager/Introduction.adoc[]
+include::text/plugin-manager/SettingKarafInstanceData.adoc[]
+include::text/plugin-manager/InstallingAvailablePlugins.adoc[]
+include::text/plugin-manager/InstallingLicences.adoc[]
