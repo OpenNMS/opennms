@@ -30,7 +30,7 @@ The result should look like:
   </filter-mapping>
 -----------
 
-. Restart OpenNMS
+. Restart {opennms-product-name}
 
 === How can I configure CORS support?
 

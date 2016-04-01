@@ -7,7 +7,7 @@ This _Alarm-Details Dashlet_ shows a table with alarms and some detailed informa
 [options="header, autowidth"]
 |===
 | Field             | Description
-| _Alarm ID_        | OpenNMS ID for the alarm
+| _Alarm ID_        | {opennms-product-name} ID for the alarm
 | _Severity_        | Alarm severity (Cleared, Indeterminate, Normal, Warning, Minor, Major, Critical)
 | _Node label_      | Node label of the node where the alarm occurred
 | _Alarm count_     | Alarm count based on reduction key for deduplication

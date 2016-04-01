@@ -7,12 +7,12 @@
 
 Web Services-Management (WS-Management) is a DMTF open standard defining a SOAP-based protocol for the management of servers, devices, applications and various Web services.
 Windows Remote Management (WinRM) is the Microsoft implementation of WS-Management Protocol.
-OpenNMS currently provides support for detecting, polling and collecting metrics from WS-Man endpoints.
+{opennms-product-name} currently provides support for detecting, polling and collecting metrics from WS-Man endpoints.
 
 [[ga-performance-mgmt-collectors-wsman-setup]]
 ===== Setup
 
-Before setting up OpenNMS to communicate with a WS-Management agent, you should confirm that it is properly configured and reachable from the OpenNMS system.
+Before setting up {opennms-product-name} to communicate with a WS-Management agent, you should confirm that it is properly configured and reachable from the {opennms-product-name} system.
 If you need help enabling the WS-Management agent, consult the documentation from the manufacturer.
 Here are some link resources that could help:
 
@@ -29,7 +29,7 @@ For example:
 wsman identify -h localhost -P 5985 -u wsman -p secret
 ----
 
-Once validated, add the agent specific details to the OpenNMS configuration, defined in the next section.
+Once validated, add the agent specific details to the {opennms-product-name} configuration, defined in the next section.
 
 ===== Troubleshooting and Commands
 

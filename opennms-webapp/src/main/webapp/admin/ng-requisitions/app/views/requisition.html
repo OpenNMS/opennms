@@ -11,7 +11,7 @@
 
 <div class="row">
   <div class="col-md-6">
-    <h4>Requisition {{ requisition.foreignSource }} ({{ requisition.nodes.length }} nodes)</h4>
+    <h4>Requisition {{ requisition.foreignSource }} ({{ requisition.nodes.length }} defined, {{ requisition.nodesInDatabase }} deployed)</h4>
   </div>
   <div class="col-md-6">
     <form class="form-inline pull-right" role="search">
@@ -20,16 +20,25 @@
         <input class="form-control" id="search-nodes" type="text" placeholder="Search/Filter Nodes" ng-model="reqFilter"></input>
       </div>
       <div class="input-group">
-        <button class="btn btn-default" id="edit-foreign-source" ng-click="editForeignSource()">
+        <div class="btn-group" uib-dropdown>
+          <button type="button" class="btn btn-default" id="refresh" uib-dropdown-toggle ng-disabled="timingStatus.isRunning">
+            <span class="glyphicon glyphicon-refresh"></span> Refresh <span class="caret"></span>
+          </button>
+          <ul uib-dropdown-menu role="menu" aria-labelledby="refresh">
+            <li role="menuitem"><a id="refreshDeployedStats" ng-click="refreshDeployedStats()">Refresh Deployed Statistics</a></li>
+            <li role="menuitem"><a id="refreshRequisition" ng-click="refreshRequisition()">Refresh Requisition from Server</a></li>
+          </ul>
+        </div>
+        <button type="button" class="btn btn-default" id="edit-foreign-source" ng-click="editForeignSource()">
           <span class="glyphicon glyphicon-edit"/> Edit Definition
         </button>
-        <button class="btn btn-default" id="synchronize" ng-disabled="timingStatus.isRunning" ng-click="synchronize()">
-          <span class="glyphicon glyphicon-refresh"/> Synchronize
+        <button type="button" class="btn btn-default" id="synchronize" ng-disabled="timingStatus.isRunning" ng-click="synchronize()">
+          <span class="glyphicon glyphicon-transfer"/> Synchronize
         </button>
-        <button class="btn btn-default" id="add-node" ng-click="addNode()">
-          <span class="glyphicon glyphicon-plus"/> Add Node
+        <button type="button" class="btn btn-default" id="add-node" ng-click="addNode()">
+          <span class="glyphicon glyphicon-plus-sign"/> Add Node
         </button>
-        <button class="btn btn-default" id="go-back" ng-click="goBack()">
+        <button type="button" class="btn btn-success" id="go-back" ng-click="goBack()">
           <span class="glyphicon glyphicon-remove"/> Return
         </button>
       </div>
@@ -63,15 +72,16 @@
             <th>IP Addresses</th>
             <th># Assets</th>
             <th># Categories</th>
-            <th>Actions</th>
+            <th>Has Parent</th>
+            <th><span class="pull-right">Actions</span></th>
           </tr>
         </thead>
         <tbody>
-          <tr ng-class="{danger: !node.deployed}" ng-repeat="node in filteredNodes | startFrom:(currentPage-1)*pageSize | limitTo:pageSize ">
+          <tr ng-class="{danger: node.isModified()}" ng-repeat="node in filteredNodes | startFrom:(currentPage-1)*pageSize | limitTo:pageSize ">
             <td>{{ node.nodeLabel }}</td>
             <td>{{ node.foreignId }}</td>
-            <td>{{ node.building }}</td>
-            <td>{{ node.city }}</td>
+            <td>{{ node.building || 'N/A' }}</td>
+            <td>{{ node.city || 'N/A' }}</td>
             <td>
               <div ng-hide="node.interfaces.length > 0">[No IP Addresses]</div>
               <div ng-repeat="intf in node.interfaces">
@@ -80,13 +90,16 @@
             </td>
             <td>{{ node.assets.length }}</td>
             <td>{{ node.categories.length }}</td>
+            <td>{{ node.hasParentInformation() ? 'Yes' : 'No' }}</td>
             <td>
-              <button class="btn btn-default btn-xs" uib-tooltip="Edit the {{node.nodeLabel}} Node" ng-click="editNode(node)">
-                <span class="glyphicon glyphicon-pencil"></span>
-              </button>
-              <button class="btn btn-default btn-xs" uib-tooltip="Remove the {{node.nodeLabel}} Node" ng-click="deleteNode(node)">
-                <span class="glyphicon glyphicon-remove"></span>
-              </button>
+              <span class="pull-right">
+                <button class="btn btn-default btn-xs" uib-tooltip="Edit the {{node.nodeLabel}} Node" ng-click="editNode(node)">
+                  <span class="glyphicon glyphicon-pencil"></span>
+                </button>
+                <button class="btn btn-default btn-xs" uib-tooltip="Remove the {{node.nodeLabel}} Node" ng-click="deleteNode(node)">
+                  <span class="glyphicon glyphicon-trash"></span>
+                </button>
+              </span>
             </td>
           </tr>
         </tbody>

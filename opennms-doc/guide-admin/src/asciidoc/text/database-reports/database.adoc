@@ -2,24 +2,24 @@
 // Allow image rendering
 :imagesdir: ../../images
 
-Reporting on information from the _OpenNMS_ monitoring system is important for strategical or operational decisions.
+Reporting on information from the _{opennms-product-name}_ monitoring system is important for strategical or operational decisions.
 _Database Reports_ give access to the embedded _JasperReports_ engine and allows to create and customize report templates.
-These reports can be executed on demand or on a pre-defined schedule within _OpenNMS_.
+These reports can be executed on demand or on a pre-defined schedule within _{opennms-product-name}_.
 
-NOTE: Originally _Database Reports_ were introduced to create reports working on data stored in the _OpenNMS_ database only.
+NOTE: Originally _Database Reports_ were introduced to create reports working on data stored in the _{opennms-product-name}_ database only.
       This is no longer mandatory, also performance data can be used.
-      Theoretically the reports do not necessarily need to be _OpenNMS_ related.
+      Theoretically the reports do not necessarily need to be _{opennms-product-name}_ related.
 
-WARNING: The _OpenNMS Report Engine_ allows the creation of various kinds of reports and also supports distributed report repositories.
+WARNING: The _{opennms-product-name} Report Engine_ allows the creation of various kinds of reports and also supports distributed report repositories.
          At the moment these features are not covered by this documentation.
          Only reports using _JasperReports_ are described here.
 
 [[ga-database-reports-overview]]
 === Overview
 
-The _OpenNMS Report Engine_ uses the _JasperReport_ library to create reports in various output formats.
+The _{opennms-product-name} Report Engine_ uses the _JasperReport_ library to create reports in various output formats.
 Each report template must be a `*.jrxml` file.
-The _OpenNMS Report Engine_ passes a _JDBC_ Connection to the _OpenNMS Database_ to each report on execution.
+The _{opennms-product-name} Report Engine_ passes a _JDBC_ Connection to the _{opennms-product-name} Database_ to each report on execution.
 
 .feature overview
 |===
@@ -32,7 +32,7 @@ For more details on how _JasperReports_ works, please have a look at the link:ht
 [[ga-database-report-add-custom-report]]
 === Add a custom report
 
-To add a new _JasperReport_ report to the _Local OpenNMS Report Repository_, the following steps are required.
+To add a new _JasperReport_ report to the _Local {opennms-product-name} Report Repository_, the following steps are required.
 
 At first a new entry in the file `$OPENNMS_HOME/etc/database-reports.xml` must be created.
 
@@ -72,13 +72,13 @@ In addition a new entry in the file `$OPENNMS_HOME/etc/jasper-reports.xml` must 
 When developing new reports it is recommended to use the _Jaspersoft Studio_ application.
 It can be downloaded link:http://community.jaspersoft.com/project/jaspersoft-studio[here].
 
-TIP: We recommend always to use the same _Jaspersoft Studio_ version as the _JasperReport_ library OpenNMS uses.
-     Currently OpenNMS uses version {jasperReportsVersion}.
+TIP: We recommend always to use the same _Jaspersoft Studio_ version as the _JasperReport_ library {opennms-product-name} uses.
+     Currently {opennms-product-name} uses version {jasperReportsVersion}.
 
 [[ga-database-reports-connect-database]]
-==== Connect to the OpenNMS Database
+==== Connect to the {opennms-product-name} Database
 
-In order to actually create SQL statements against the _OpenNMS database_ a `database Data Adapter` must be created.
+In order to actually create SQL statements against the _{opennms-product-name} database_ a `database Data Adapter` must be created.
 The official _Jaspersoft Studio_ documentation and wiki covers this aspect.
 
 [[ga-database-reports-measurement-ds-helpers]]
@@ -108,13 +108,13 @@ NOTE: Even if there is no `Read Fields` functionality available, the `Data previ
 [[ga-database-reports-access-performance-data]]
 === Accessing Performance Data
 
-WARNING: Before _OpenNMS 17_ it was possible to access the performance data stored in `.rrd` or `.jrobin` files directly by using the `jrobin` language extension provided by the `RrdDataSource`.
+WARNING: Before _OpenNMS Horizon 17_ and _OpenNMS Meridian 2016_ it was possible to access the performance data stored in `.rrd` or `.jrobin` files directly by using the `jrobin` language extension provided by the `RrdDataSource`.
          This is no longer possible and the _Measurements Datasource_ has to be used.
 
 To access performance data within reports we created a custom _Measurement Datasource_ which allows to query the _Measurements API_ and process the returned data in your reports.
 Please refer to the link:http://docs.opennms.org/opennms/releases/{opennms-version}/guide-development/guide-development.html#\_measurements_api[official Measurements API documentation] on how to use the _Measurements API_.
 
-NOTE:  When using the _Measurements Datasource_ within a report a `HTTP` connection to the _Measurements API_ is only established if the report is NOT running within OpenNMS, e.g. when used with _Jaspersoft Studio_.
+NOTE:  When using the _Measurements Datasource_ within a report a `HTTP` connection to the _Measurements API_ is only established if the report is NOT running within {opennms-product-name}, e.g. when used with _Jaspersoft Studio_.
 
 To receive data from the _Measurements API_ simply create a query as follows:
 
@@ -163,7 +163,7 @@ In addition to the `queryString` the following _JasperReports_ parameters are su
 [[ga-database-reports-helper-methods]]
 === Helper methods
 
-There are a couple of helper methods to help creating reports in _OpenNMS_.
+There are a couple of helper methods to help creating reports in _{opennms-product-name}_.
 
 These helpers come along with the _Measurement Datasource_.
 
@@ -267,8 +267,8 @@ To get the appropriate `interface descriptor` depends on the input parameter.
 [[ga-database-reports-https]]
 ==== Use HTTPS
 
-To establish a secure connection to the _Measurements API_ the public certificate of the running _OpenNMS_ must be imported to the _Java Trust Store_.
-In Addition _OpenNMS_ must be configured to use that _Java Trust Store_.
+To establish a secure connection to the _Measurements API_ the public certificate of the running _{opennms-product-name}_ must be imported to the _Java Trust Store_.
+In Addition _{opennms-product-name}_ must be configured to use that _Java Trust Store_.
 Please follow the instructions in this <<ga-operation-ssl-opennms-trust-store,chapter>> to setup the _Java Trust Store_ correctly.
 
 In addition please also set the property `org.opennms.netmgt.jasper.measurement.ssl.enable` in `$OPENNMS_HOME\etc\opennms.properties` to `true` to ensure that only secure connections are established.
@@ -279,5 +279,5 @@ WARNING: If `org.opennms.netmgt.jasper.measurement.ssl.enable` is set to `false`
 [[ga-database-reports-limitations]]
 === Limitations
 
- * Only a _JDBC Datasource_ to the _OpenNMS Database connection_ can be passed to a report, or no datasource at all.
+ * Only a _JDBC Datasource_ to the _{opennms-product-name} Database connection_ can be passed to a report, or no datasource at all.
    One does not have to use the datasource, though.

@@ -5,6 +5,8 @@
 [[gi-install-opennms-debian]]
 === Install on Debian-based systems
 
+IMPORTANT: This guide does not apply to OpenNMS Meridian, which can be installed only on Red Hat Enterprise Linux or CentOS systems.
+
 This section describes how to install the _OpenNMS_ platform on _Ubuntu 14.04 LTS_.
 The setup process is described in the following steps:
 
