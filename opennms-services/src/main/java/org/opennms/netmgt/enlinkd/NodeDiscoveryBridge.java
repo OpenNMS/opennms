@@ -52,6 +52,7 @@ import org.opennms.netmgt.model.BridgeElement.BridgeDot1dBaseType;
 import org.opennms.netmgt.model.BridgeMacLink;
 import org.opennms.netmgt.model.BridgeMacLink.BridgeDot1qTpFdbStatus;
 import org.opennms.netmgt.model.BridgeStpLink;
+import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpWalker;
 import org.slf4j.Logger;
@@ -95,18 +96,18 @@ public final class NodeDiscoveryBridge extends NodeDiscovery {
 		
 		if (vlanmap.isEmpty()) {
 			bridgeifindex.putAll(walkDot1d(null,null));
-                        bft = walkDot1dTpFdp(null,bridgeifindex,bft);
+                        bft = walkDot1dTpFdp(null,bridgeifindex,bft,getPeer());
 		} else {
 			String community = getPeer().getReadCommunity();
 			for (Entry<Integer, String> entry: vlanmap.entrySet()) {
 				LOG.debug("run: cisco vlan collection setting peer community: {} with VLAN {}",
 						community, entry.getKey());
-				getPeer().setReadCommunity(community + "@" + entry.getKey());
+				SnmpAgentConfig peer = getPeer();
+				peer.setReadCommunity(community + "@" + entry.getKey());
 				bridgeifindex.putAll(walkDot1d(entry.getKey(), entry.getValue()));
-			        bft = walkDot1dTpFdp(entry.getKey(),bridgeifindex,bft);
+			        bft = walkDot1dTpFdp(entry.getKey(),bridgeifindex,bft,peer);
 
 			}
-			getPeer().setReadCommunity(community);
 		}
 		LOG.debug("run: found on node: '{}' bridge ifindex map {}",getNodeId(), bridgeifindex);
 		bft = walkDot1qTpFdb(bridgeifindex,bft);
@@ -281,7 +282,7 @@ public final class NodeDiscoveryBridge extends NodeDiscovery {
 		return bridgetoifindex;
 	}
 	
-	private List<BridgeMacLink> walkDot1dTpFdp(final Integer vlan, final Map<Integer,Integer> bridgeifindex,List<BridgeMacLink> bft) {
+	private List<BridgeMacLink> walkDot1dTpFdp(final Integer vlan, final Map<Integer,Integer> bridgeifindex,List<BridgeMacLink> bft, SnmpAgentConfig peer) {
 		String trackerName = "dot1dTbFdbPortTable";
 
 		Dot1dTpFdbTableTracker stpPortTableTracker = new Dot1dTpFdbTableTracker() {
@@ -317,7 +318,7 @@ public final class NodeDiscoveryBridge extends NodeDiscovery {
                                 bft.add(link);
 			}
 		};
-		SnmpWalker walker = SnmpUtils.createWalker(getPeer(), trackerName,
+		SnmpWalker walker = SnmpUtils.createWalker(peer, trackerName,
 				stpPortTableTracker);
 		walker.start();
 
