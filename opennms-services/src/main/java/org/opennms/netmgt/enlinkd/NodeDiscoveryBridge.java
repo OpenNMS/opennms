@@ -146,14 +146,12 @@ public final class NodeDiscoveryBridge extends NodeDiscovery {
 
 		if (vtpStatus.getVtpVersion() == null) {
 			LOG.info("run: cisco vtp mib not supported, on: {}",
-					str(getPeer().getAddress()));
+			         getNodeId());
 			return vlanmap;
 		}
 
-		LOG.info("run: cisco vtp mib supported, on: {}", str(getPeer()
-				.getAddress()));
-		LOG.info("run: walking cisco vtp, on: {}", str(getPeer()
-				.getAddress()));
+		LOG.info("run: cisco vtp mib supported, on: {}", getNodeId());
+		LOG.info("run: walking cisco vtp, on: {}", getNodeId());
 
 		trackerName = "ciscoVtpVlan";
 		final CiscoVtpVlanTableTracker ciscoVtpVlanTableTracker = new CiscoVtpVlanTableTracker() {
@@ -185,7 +183,7 @@ public final class NodeDiscoveryBridge extends NodeDiscovery {
 
 	protected Map<Integer,Integer> walkDot1d(Integer vlan, String vlanname) {
 		LOG.debug("run: Bridge Linkd node scan : ready to walk dot1d data on {}, vlan {}, vlanname {}.",
-				str(getPeer().getAddress()),vlan,vlanname);
+				getNodeId(),vlan,vlanname);
 		String trackerName = "dot1dbase";
 		final Dot1dBaseTracker dot1dbase = new Dot1dBaseTracker();
 		SnmpWalker walker = SnmpUtils.createWalker(getPeer(), trackerName,
@@ -213,27 +211,27 @@ public final class NodeDiscoveryBridge extends NodeDiscovery {
 		bridge.setVlanname(vlanname);
 		if (bridge.getBaseBridgeAddress() == null) {
 			LOG.info("run: base bridge address is null: bridge mib not supported on: {}",
-					str(getPeer().getAddress()));
+					getNodeId());
 			return new HashMap<Integer, Integer>();
 		}
 
 		if (!isValidBridgeAddress(bridge.getBaseBridgeAddress())) {
 			LOG.info("run: bridge not supported, base address identifier {} is not valid on: {}",
-					dot1dbase.getBridgeAddress(), str(getPeer().getAddress()));
+					dot1dbase.getBridgeAddress(), getNodeId());
 			return new HashMap<Integer, Integer>();
 		}
 
-		if (bridge.getBaseNumPorts() == 0) {
+		if (bridge.getBaseNumPorts() == null || bridge.getBaseNumPorts().intValue() == 0) {
 			LOG.info("run: bridge {} has 0 port active, on: {}",
-					dot1dbase.getBridgeAddress(), str(getPeer().getAddress()));
+					dot1dbase.getBridgeAddress(), getNodeId());
 			return new HashMap<Integer, Integer>();
 		}
 		LOG.info("run: bridge {} has is if type {}, on: {}", dot1dbase
-				.getBridgeAddress(), BridgeDot1dBaseType.getTypeString(dot1dbase.getBridgeType()),str(getPeer().getAddress()));
+				.getBridgeAddress(), BridgeDot1dBaseType.getTypeString(dot1dbase.getBridgeType()),getNodeId());
 
 		if (bridge.getBaseType() ==  BridgeDot1dBaseType.DOT1DBASETYPE_SOURCEROUTE_ONLY) {
 			LOG.info("run: {}: source route only type bridge, on: {}",
-					dot1dbase.getBridgeAddress(), str(getPeer().getAddress()));
+					dot1dbase.getBridgeAddress(), getNodeId());
 			return new HashMap<Integer, Integer>();
 		}
 		m_linkd.getQueryManager().store(getNodeId(), bridge);
@@ -243,11 +241,11 @@ public final class NodeDiscoveryBridge extends NodeDiscovery {
 
 		if (!isValidStpBridgeId(bridge.getStpDesignatedRoot())) {
 			LOG.info("run: invalid Stp designated root: spanning tree not supported on: {}",
-					str(getPeer().getAddress()));
+					getNodeId());
 		} else if (bridge.getBaseBridgeAddress().equals(getBridgeAddressFromStpBridgeId(bridge.getStpDesignatedRoot()))) {
 			LOG.info("run: designated root of spanning tree is itself on bridge {}, on: {}",
 					bridge.getStpDesignatedRoot(),
-					str(getPeer().getAddress()));
+					getNodeId());
 		} else {
 			walkSpanningTree(bridge.getBaseBridgeAddress(),vlan, bridgetoifindex);
 		}
