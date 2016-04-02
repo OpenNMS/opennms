@@ -594,7 +594,7 @@ public class EnLinkdElementFactory implements InitializingBean,
                 OnmsSnmpInterface snmp = getFromPhysAddress(shredmac);
                 if (snmp == null) {
                     remlinknode.setSharedHost(shredmac
-                            + " No node associated in db");
+                            + " No ip address found");
                 } else {
                     remlinknode.setSharedHost(snmp.getNode().getLabel());
                     remlinknode.setSharedHostUrl(getNodeUrl(snmp.getNode().getId()));
@@ -608,7 +608,7 @@ public class EnLinkdElementFactory implements InitializingBean,
             }
             sharedhosts.put(shredmac, new ArrayList<OnmsIpInterface>());
             for (IpNetToMedia ipnettomedia : sharedmacs.get(shredmac))
-                sharedhosts.get(sharedmacs).addAll(m_ipInterfaceDao.findByIpAddress(ipnettomedia.getNetAddress().getHostAddress()));
+                sharedhosts.get(shredmac).addAll(m_ipInterfaceDao.findByIpAddress(ipnettomedia.getNetAddress().getHostAddress()));
         }
 
         for (String shredmac: sharedhosts.keySet()) {
@@ -727,7 +727,7 @@ public class EnLinkdElementFactory implements InitializingBean,
                 OnmsSnmpInterface snmp = getFromPhysAddress(shredmac);
                 if (snmp == null) {
                     remlinknode.setSharedHost(shredmac
-                            + " No node associated in db");
+                            + " No ip address found");
                 } else {
                     remlinknode.setSharedHost(snmp.getNode().getLabel());
                     remlinknode.setSharedHostUrl(getNodeUrl(snmp.getNode().getId()));
@@ -741,7 +741,7 @@ public class EnLinkdElementFactory implements InitializingBean,
             }
             sharedhosts.put(shredmac, new ArrayList<OnmsIpInterface>());
             for (IpNetToMedia ipnettomedia : sharedmacs.get(shredmac))
-                sharedhosts.get(sharedmacs).addAll(m_ipInterfaceDao.findByIpAddress(ipnettomedia.getNetAddress().getHostAddress()));
+                sharedhosts.get(shredmac).addAll(m_ipInterfaceDao.findByIpAddress(ipnettomedia.getNetAddress().getHostAddress()));
         }
 
         for (String shredmac: sharedhosts.keySet()) {
