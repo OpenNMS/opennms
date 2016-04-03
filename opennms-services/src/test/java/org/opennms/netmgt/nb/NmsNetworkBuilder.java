@@ -44,7 +44,50 @@ import org.opennms.netmgt.model.OnmsNode.NodeType;
  * 
  */
 public abstract class NmsNetworkBuilder {
+    //NMS7918
+    public static final String PE01_ROOT = "PE01";
+    public static final String PE01_IP   = "172.25.64.8";
+    public static final String PE01_NAME = "pe01";
+    public static final String PE01_SYSNAME = "PE01";
+    public static final String PE01_SYSOID = ".1.3.6.1.4.1.9.1.534";
+    public static final String PE01_SNMP_RESOURCE = "classpath:linkd/nms7918/"+PE01_NAME+".txt";
+    
+    public static final String ASW01_ROOT = "ASW01";
+    public static final String ASW01_IP   = "10.25.19.2";
+    public static final String ASW01_NAME = "asw01";
+    public static final String ASW01_SYSNAME = "ASW01";
+    public static final String ASW01_SYSOID = ".1.3.6.1.4.1.6486.800.1.1.2.1.10.1.1";
+    public static final String ASW01_SNMP_RESOURCE = "classpath:linkd/nms7918/"+ASW01_NAME+".txt";
+    
+    public static final String OSPESS01_ROOT = "OSPESS01";
+    public static final String OSPESS01_IP   = "10.25.19.3";
+    public static final String OSPESS01_NAME = "osp.ess01";
+    public static final String OSPESS01_SYSNAME = "osp.ess01";
+    public static final String OSPESS01_SYSOID = ".1.3.6.1.4.1.8072.3.2.10";
+    public static final String OSPESS01_SNMP_RESOURCE = "classpath:linkd/nms7918/"+OSPESS01_NAME+".txt";
+    
+    public static final String OSPWL01_ROOT = "OSPWL01";
+    public static final String OSPWL01_IP   = "10.25.19.4";
+    public static final String OSPWL01_NAME = "ospedale-wl1";
+    public static final String OSPWL01_SYSNAME = "ospedale-wl1";
+    public static final String OSPWL01_SYSOID = ".1.3.6.1.4.1.14988.1";
+    public static final String OSPWL01_SNMP_RESOURCE = "classpath:linkd/nms7918/"+OSPWL01_NAME+".txt";
 
+    public static final String SAMASW01_ROOT = "SAMASW01";
+    public static final String SAMASW01_IP   = "10.25.19.211";
+    public static final String SAMASW01_NAME = "sam.asw01";
+    public static final String SAMASW01_SYSNAME = "sam.asw01";
+    public static final String SAMASW01_SYSOID = ".1.3.6.1.4.1.6486.800.1.1.2.2.4.1.1";
+    public static final String SAMASW01_SNMP_RESOURCE = "classpath:linkd/nms7918/"+SAMASW01_NAME+".txt";
+
+    public static final String STCASW01_ROOT = "STCASW01";
+    public static final String STCASW01_IP   = "10.25.19.216";
+    public static final String STCASW01_NAME = "stc.asw01";
+    public static final String STCASW01_SYSNAME = "stc.asw01";
+    public static final String STCASW01_SYSOID = ".1.3.6.1.4.1.6486.800.1.1.2.1.10.1.1";
+    public static final String STCASW01_SNMP_RESOURCE = "classpath:linkd/nms7918/"+STCASW01_NAME+".txt";
+
+    
     //NMS8003
     //NMS8000
     public final static String NMMR1_ROOT= "NMMR1";

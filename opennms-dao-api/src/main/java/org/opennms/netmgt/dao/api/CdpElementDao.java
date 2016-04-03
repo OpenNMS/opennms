@@ -39,4 +39,5 @@ public interface CdpElementDao extends OnmsDao<CdpElement, Integer> {
 
     public CdpElement findByGlobalDeviceId(String deviceId);
 
+    public void deleteByNodeId(Integer nodeId);
 }
