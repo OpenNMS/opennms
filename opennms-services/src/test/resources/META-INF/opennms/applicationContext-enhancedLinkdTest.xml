@@ -112,6 +112,9 @@
     <property name="sessionFactory" ref="sessionFactory" />
   </bean>  
 
+  <bean id="bridgeTopologyDao" class="org.opennms.netmgt.dao.BridgeTopologyDaoInMemory">
+  </bean>
+
     <bean id="queryManager" class="org.opennms.netmgt.enlinkd.EnhancedLinkdServiceImpl">
       <property name="nodeDao" ref="nodeDao" />
       <property name="cdpLinkDao" ref="cdpLinkDao" />
@@ -127,6 +130,7 @@
       <property name="isisElementDao" ref="isisElementDao" />
       <property name="bridgeElementDao" ref="bridgeElementDao" />
       <property name="ipNetToMediaDao" ref="ipNetToMediaDao" />
+      <property name="bridgeTopologyDao" ref="bridgeTopologyDao" />
     </bean>
 
     <bean id="scheduler" class="org.opennms.netmgt.enlinkd.scheduler.Scheduler">

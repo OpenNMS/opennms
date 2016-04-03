@@ -39,5 +39,7 @@ public interface IsIsElementDao extends OnmsDao<IsIsElement, Integer> {
     public IsIsElement findByNodeId(Integer id);
 
     public IsIsElement findByIsIsSysId(String isisSysId);
+    
+    public void deleteByNodeId(Integer nodeId);
 
 }
