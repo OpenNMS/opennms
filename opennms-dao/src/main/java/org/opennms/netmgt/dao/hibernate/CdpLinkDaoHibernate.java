@@ -147,6 +147,7 @@ public class CdpLinkDaoHibernate extends AbstractDaoHibernate<CdpLink, Integer> 
     public List<CdpTopologyLink> findLinksForTopology() {
         return getHibernateTemplate().execute(new HibernateCallback<List<CdpTopologyLink>>() {
             @Override
+            @SuppressWarnings("unchecked")
             public List<CdpTopologyLink> doInHibernate(Session session) throws HibernateException, SQLException {
                Map<String, CdpTopologyLink> mapToLink = new HashMap<String,CdpTopologyLink>();
                List<CdpTopologyLink> alllinks = convertObjectToTopologyLink(session.createSQLQuery(SQL_CDP_LINK_BASE_QUERY+";").list());
@@ -197,6 +198,7 @@ public class CdpLinkDaoHibernate extends AbstractDaoHibernate<CdpLink, Integer> 
     public List<CdpTopologyLink> findLinksForTopologyByIds(final Integer... ids) {
         return getHibernateTemplate().execute(new HibernateCallback<List<CdpTopologyLink>>() {
             @Override
+            @SuppressWarnings("unchecked")
             public List<CdpTopologyLink> doInHibernate(Session session) throws HibernateException, SQLException {
 
                 StringBuffer idList = new StringBuffer();
@@ -223,10 +225,17 @@ public class CdpLinkDaoHibernate extends AbstractDaoHibernate<CdpLink, Integer> 
     }
 
     @Override
-	public void deleteByNodeIdOlderThen(Integer nodeId, Date now) {
-		for (CdpLink link: find("from CdpLink cdpLink where cdpLink.node.id = ? and cdpLink.cdpLinkLastPollTime < ?",nodeId,now)) {
-			delete(link);
-		}
+    public void deleteByNodeIdOlderThen(Integer nodeId, Date now) {
+	for (CdpLink link: find("from CdpLink cdpLink where cdpLink.node.id = ? and cdpLink.cdpLinkLastPollTime < ?",nodeId,now)) {
+	    delete(link);
 	}
-    
+    }
+
+    @Override
+    public void deleteByNodeId(Integer nodeId) {
+        for (CdpLink link: find("from CdpLink cdpLink where cdpLink.node.id = ? ",nodeId)) {
+            delete(link);
+        }
+    }
+
 }
