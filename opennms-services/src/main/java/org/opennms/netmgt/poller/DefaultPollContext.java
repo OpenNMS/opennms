@@ -455,7 +455,7 @@ public class DefaultPollContext implements PollContext, EventListener {
         }
         LOG.debug("testCriticalPath: running {} with {}", monitor.getClass().getSimpleName(), parameters);
         final PollStatus status = monitor.poll(new SimpleMonitoredService(ipAddress, svcName), parameters);
-        LOG.error("testCriticalPath: available ? {}", status.isAvailable());
+        LOG.debug("testCriticalPath: available ? {}", status.isAvailable());
         return status.isAvailable();
     }
 
