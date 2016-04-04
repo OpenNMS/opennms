@@ -28,7 +28,7 @@
 
 package org.opennms.web.enlinkd;
 
-public class LldpLinkNode {
+public class LldpLinkNode implements Comparable<LldpLinkNode> {
 
 	private String   m_lldpPortString;
 	private String   m_lldpPortDescr;
@@ -108,5 +108,9 @@ public class LldpLinkNode {
 	public void setLldpLastPollTime(String lldpLastPollTime) {
 		m_lldpLastPollTime = lldpLastPollTime;
 	}
+    @Override
+    public int compareTo(LldpLinkNode o) {
+        return m_lldpPortString.compareTo(o.m_lldpPortString);
+    }
 	
 }

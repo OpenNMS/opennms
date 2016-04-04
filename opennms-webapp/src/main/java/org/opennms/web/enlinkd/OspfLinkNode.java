@@ -28,18 +28,18 @@
 
 package org.opennms.web.enlinkd;
 
-public class OspfLinkNode {
-	private String m_ospfIpAddr;
-	private Integer m_ospfIfIndex;
-	private Integer m_ospfAddressLessIndex;
+public class OspfLinkNode implements Comparable<OspfLinkNode>{
+    private String m_ospfIpAddr;
+    private Integer m_ospfIfIndex;
+    private Integer m_ospfAddressLessIndex;
 
-	private String m_ospfRemRouterId;
-	private String m_ospfRemRouterUrl;
-	private String m_ospfRemIpAddr;
-	private Integer m_ospfRemAddressLessIndex;
-	private String m_ospfRemPortUrl;
+    private String m_ospfRemRouterId;
+    private String m_ospfRemRouterUrl;
+    private String m_ospfRemIpAddr;
+    private Integer m_ospfRemAddressLessIndex;
+    private String m_ospfRemPortUrl;
 
-	private String m_ospfLinkCreateTime;
+    private String m_ospfLinkCreateTime;
     private String m_ospfLinkLastPollTime;
 
     public String getOspfIpAddr() {
@@ -102,5 +102,9 @@ public class OspfLinkNode {
 	public void setOspfLinkLastPollTime(String ospfLinkLastPollTime) {
 		m_ospfLinkLastPollTime = ospfLinkLastPollTime;
 	}
+    @Override
+    public int compareTo(OspfLinkNode o) {
+        return getOspfIpAddr().compareTo(o.getOspfIpAddr());
+    }
 
 }
