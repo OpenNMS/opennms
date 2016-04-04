@@ -83,6 +83,8 @@ public class MockPollerConfig extends PollOutagesConfigManager implements Poller
 
     private boolean m_pollAll = true;
 
+    private boolean m_pathOutageEnabled = false;
+
     private boolean m_serviceUnresponsiveEnabled = false;
 
     private String m_nextOutageIdSql;
@@ -506,7 +508,11 @@ public class MockPollerConfig extends PollOutagesConfigManager implements Poller
 
     @Override
     public boolean isPathOutageEnabled() {
-        return false;
+        return m_pathOutageEnabled;
+    }
+
+    public void setPathOutageEnabled(boolean pathOutageEnabled) {
+        m_pathOutageEnabled = pathOutageEnabled;
     }
 
     @Override
