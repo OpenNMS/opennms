@@ -279,4 +279,48 @@ public class Trapd extends AbstractServiceDaemon {
     public long getTrapsErrored() {
         return TrapQueueProcessor.getTrapsErrored();
     }
+
+
+	/**
+	 * @return the m_processorFactory
+	 */
+	public TrapQueueProcessorFactory getProcessorFactory() {
+		return m_processorFactory;
+	}
+
+	/**
+	 * @param m_processorFactory the m_processorFactory to set
+	 */
+	public void setProcessorFactory(TrapQueueProcessorFactory m_processorFactory) {
+		this.m_processorFactory = m_processorFactory;
+	}
+
+	/**
+	 * @return the m_trapReceiver
+	 */
+	public TrapReceiver getTrapReceiver() {
+		return m_trapReceiver;
+	}
+
+	/**
+	 * @param m_trapReceiver the m_trapReceiver to set
+	 */
+	public void setTrapReceiver(TrapReceiver trapReceiver) {
+		this.m_trapReceiver = trapReceiver;
+	}
+
+	/**
+	 * @return the m_trapdIpMgr
+	 */
+	public TrapdIpMgr getTrapdIpMgr() {
+		return m_trapdIpMgr;
+	}
+
+	/**
+	 * @param m_trapdIpMgr the m_trapdIpMgr to set
+	 */
+	public void setTrapdIpMgr(TrapdIpMgr trapdIpMgr) {
+		this.m_trapdIpMgr = trapdIpMgr;
+	}
+
 }

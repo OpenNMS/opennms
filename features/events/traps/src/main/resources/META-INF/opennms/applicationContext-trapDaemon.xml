@@ -21,6 +21,21 @@
   
   <bean id="daemon" class="org.opennms.netmgt.trapd.Trapd">
     <property name="eventReader" ref="eventReader"/>
+    <property name="processorFactory" ref="processorFactory"/>
+    <property name="trapReceiver" ref="trapReceiverSnmp4jImpl"/>
+    <property name="trapdIpMgr" ref="trapdIpMgr"/>
+  </bean>
+  
+  <bean id="eventCreator" class="org.opennms.netmgt.trapd.EventCreator">
+    <constructor-arg ref="trapdIpMgr" />
+  </bean>
+  <bean id="trapNotificationDefaultImpl" class="org.opennms.netmgt.trapd.TrapNotificationHandlerDefaultImpl" >
+    <property name="eventCreator" ref="eventCreator"/>
+  </bean>
+  
+  <bean id="trapReceiverSnmp4jImpl" class="org.opennms.netmgt.trapd.TrapReceiverSnmp4jImpl">
+    <constructor-arg ref="trapConfigBean" />
+    <property name="trapNotificationHandlers" ref="trapNotificationDefaultImpl"/>
   </bean>
   
   <bean id="trapdIpMgr" class="org.opennms.netmgt.trapd.TrapdIpManagerDaoImpl"/>
@@ -31,10 +46,6 @@
   </bean>
   
   <bean id="trapConfigBean" class="org.opennms.netmgt.trapd.TrapdConfigBean"/>
-  
-  <bean id="trapReceiverSnmp4jImpl" class="org.opennms.netmgt.trapd.TrapReceiverSnmp4jImpl">
-    <constructor-arg ref="trapConfigBean" />
-  </bean>
   
   <bean id="processorFactory" class="org.opennms.netmgt.trapd.TrapQueueProcessorFactory">
     <property name="eventManager" ref="eventIpcManager"/>

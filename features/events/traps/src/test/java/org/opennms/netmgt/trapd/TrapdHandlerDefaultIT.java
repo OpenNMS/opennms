@@ -46,9 +46,8 @@ import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.TrapdConfig;
 import org.opennms.netmgt.config.api.EventConfDao;
-import org.opennms.netmgt.snmp.BasicTrapProcessor;
+import org.opennms.netmgt.dao.mock.MockEventIpcManager;
 import org.opennms.netmgt.snmp.TrapNotification;
-import org.opennms.netmgt.snmp.TrapProcessor;
 import org.opennms.netmgt.snmp.snmp4j.Snmp4JTrapNotifier;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.opennms.test.mock.EasyMockUtils;
@@ -168,12 +167,20 @@ public class TrapdHandlerDefaultIT extends CamelBlueprintTestSupport {
 		config.setSnmpTrapAddress("127.0.0.1");
 		config.setNewSuspectOnTrap(false);
 
+		MockEventIpcManager mockEventIpcManager = new MockEventIpcManager();
+
+		MockTrapdIpMgr m_trapdIpMgr=new MockTrapdIpMgr();
+
+		m_trapdIpMgr.clearKnownIpsMap();
+		m_trapdIpMgr.setNodeId("127.0.0.1", 1);
+
 		TrapQueueProcessor trapQProcessor = new TrapQueueProcessor();
-		TrapProcessor trapProcess = new BasicTrapProcessor();
+		EventCreator trapProcess = new EventCreator(m_trapdIpMgr);
 		trapProcess.setAgentAddress(InetAddressUtils.ONE_TWENTY_SEVEN);
 		trapProcess.setCommunity("comm");
 		trapProcess.setTimeStamp(System.currentTimeMillis());
 		trapProcess.setTrapAddress(InetAddressUtils.ONE_TWENTY_SEVEN);
+		trapQProcessor.setEventManager(mockEventIpcManager);
 
 		// create instance of snmp4JV2cTrap
 		PDU snmp4JV2cTrapPdu = new PDU();

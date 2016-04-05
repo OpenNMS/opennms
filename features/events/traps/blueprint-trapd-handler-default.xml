@@ -17,8 +17,16 @@
 			<cm:property name="brokerUri" value="tcp://127.0.0.1:61616" />
 		</cm:default-properties>
 	</cm:property-placeholder>
+	
+	<bean id="trapdIpMgr" class="org.opennms.netmgt.trapd.TrapdIpManagerDaoImpl"/>
+	
+	<bean id="eventCreator" class="org.opennms.netmgt.trapd.EventCreator">
+		<argument ref="trapdIpMgr"/>
+	</bean>
 
-	<bean id="trapConnectionHandlerDefault" class="org.opennms.netmgt.trapd.TrapNotificationHandlerDefaultImpl" />
+	<bean id="trapConnectionHandlerDefault" class="org.opennms.netmgt.trapd.TrapNotificationHandlerDefaultImpl">
+		<property name="eventCreator" ref="eventCreator"/>
+	</bean>
 
 	<reference id="trapdConfig" interface="org.opennms.netmgt.config.TrapdConfig" />
 
