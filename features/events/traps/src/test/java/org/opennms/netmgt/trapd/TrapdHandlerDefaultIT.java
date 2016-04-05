@@ -78,7 +78,6 @@ public class TrapdHandlerDefaultIT extends CamelBlueprintTestSupport {
 
 	private EventConfDao m_eventConfDao = m_mocks
 			.createMock(EventConfDao.class);
-	
 
 	/**
 	 * Use Aries Blueprint synchronous mode to avoid a blueprint deadlock bug.
@@ -167,13 +166,13 @@ public class TrapdHandlerDefaultIT extends CamelBlueprintTestSupport {
 		config.setSnmpTrapPort(10514);
 		config.setSnmpTrapAddress("127.0.0.1");
 		config.setNewSuspectOnTrap(false);
-		
+
 		MockEventIpcManager mockEventIpcManager = new MockEventIpcManager();
-		
+
 		MockTrapdIpMgr m_trapdIpMgr=new MockTrapdIpMgr();
-	    
+
 		m_trapdIpMgr.clearKnownIpsMap();
-        m_trapdIpMgr.setNodeId("127.0.0.1", 1);
+		m_trapdIpMgr.setNodeId("127.0.0.1", 1);
 
 		TrapQueueProcessor trapQProcessor = new TrapQueueProcessor();
 		EventCreator trapProcess = new EventCreator(m_trapdIpMgr);

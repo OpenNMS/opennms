@@ -27,15 +27,15 @@
   </bean>
   
   <bean id="eventCreator" class="org.opennms.netmgt.trapd.EventCreator">
-		<constructor-arg ref="trapdIpMgr" />
+    <constructor-arg ref="trapdIpMgr" />
   </bean>
   <bean id="trapNotificationDefaultImpl" class="org.opennms.netmgt.trapd.TrapNotificationHandlerDefaultImpl" >
-  	<property name="eventCreator" ref="eventCreator"/>
+    <property name="eventCreator" ref="eventCreator"/>
   </bean>
   
   <bean id="trapReceiverSnmp4jImpl" class="org.opennms.netmgt.trapd.TrapReceiverSnmp4jImpl">
-  	<constructor-arg ref="trapConfigBean" />
-  	<property name="trapNotificationHandlers" ref="trapNotificationDefaultImpl"/>
+    <constructor-arg ref="trapConfigBean" />
+    <property name="trapNotificationHandlers" ref="trapNotificationDefaultImpl"/>
   </bean>
   
   <bean id="trapdIpMgr" class="org.opennms.netmgt.trapd.TrapdIpManagerDaoImpl"/>
