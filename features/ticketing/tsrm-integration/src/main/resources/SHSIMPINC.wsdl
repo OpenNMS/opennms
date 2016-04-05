@@ -155,10 +155,10 @@
   </binding>
   <service name="SHSIMPINC">
     <port name="SHSIMPINCSOAP11Port" binding="mxws:SHSIMPINCSOAP11Binding">
-      <soap:address location="http://tamit-prod.sceur.ch/meaweb/services/SHSIMPINC"/>
+      <soap:address location="http://host/meaweb/services/SHSIMPINC"/>
     </port>
     <port name="SHSIMPINCSOAP12Port" binding="mxws:SHSIMPINCSOAP12Binding">
-      <soap12:address location="http://tamit-prod.sceur.ch/meaweb/services/SHSIMPINC"/>
+      <soap12:address location="http://host/meaweb/services/SHSIMPINC"/>
     </port>
   </service>
 </definitions>
