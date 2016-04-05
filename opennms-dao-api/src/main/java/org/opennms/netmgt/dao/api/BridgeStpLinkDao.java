@@ -52,4 +52,7 @@ public interface BridgeStpLinkDao extends OnmsDao<BridgeStpLink, Integer> {
     public List<BridgeStpLink> findByDesignatedRoot(String root);
 
     void deleteByNodeIdOlderThen(Integer nodeiId, Date now);
+    
+    void deleteByNodeId(Integer nodeiId);
+
 }

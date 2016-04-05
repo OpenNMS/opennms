@@ -463,6 +463,11 @@
     <property name="sessionFactory" ref="sessionFactory" />
   </bean>
 
+  <onmsgi:service interface="org.opennms.netmgt.dao.api.BridgeTopologyDao" ref="bridgeTopologyDao" />
+
+  <bean id="bridgeTopologyDao" class="org.opennms.netmgt.dao.BridgeTopologyDaoInMemory">
+  </bean>
+
   <onmsgi:service interface="org.opennms.netmgt.dao.api.TopologyDao" ref="topologyDao" />
 
   <!-- The time-series strategy specific context should provide beans that implement:

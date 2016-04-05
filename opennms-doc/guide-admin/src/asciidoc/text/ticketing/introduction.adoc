@@ -2,5 +2,5 @@
 // Allow GitHub image rendering
 :imagesdir: ../../images
 
-The ticketing integration allows _OpenNMS_ to create trouble tickets in external systems.
+The ticketing integration allows _{opennms-product-name}_ to create trouble tickets in external systems.
 Tickets can be created and updated in response to new and/or resolved alarms.

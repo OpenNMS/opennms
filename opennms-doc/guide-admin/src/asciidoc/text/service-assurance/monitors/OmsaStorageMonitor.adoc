@@ -17,7 +17,7 @@ If the result of the `virtualDiskRollUpStatus` is not `3` the monitors is marked
 .Possible result of virtual disk rollup status
 [options="header, autowidth"]
 |===
-| Result | State description | Monitor state in OpenNMS
+| Result | State description | Monitor state in {opennms-product-name}
 | `1`    | _other_           | DOWN
 | `2`    | _unknown_         | DOWN
 | `3`    | _ok_              | UP

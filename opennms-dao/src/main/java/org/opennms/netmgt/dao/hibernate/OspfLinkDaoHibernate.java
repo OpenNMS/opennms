@@ -81,12 +81,19 @@ public class OspfLinkDaoHibernate extends AbstractDaoHibernate<OspfLink, Integer
         return find("from OspfLink ospfLink where ospfLink.node.id = ?", nodeId);
     }
 
-	@Override
-	public void deleteByNodeIdOlderThen(Integer nodeId, Date now) {
-		for (OspfLink link: find("from OspfLink ospfLink where ospfLink.node.id = ? and ospfLinkLastPollTime < ?",nodeId,now)) {
-			delete(link);
-		}
-	}
+    @Override
+    public void deleteByNodeIdOlderThen(Integer nodeId, Date now) {
+        for (OspfLink link : find("from OspfLink ospfLink where ospfLink.node.id = ? and ospfLinkLastPollTime < ?",
+                                  nodeId, now)) {
+            delete(link);
+        }
+    }    
     
-    
+    @Override
+    public void deleteByNodeId(Integer nodeId) {
+        for (OspfLink link : find("from OspfLink ospfLink where ospfLink.node.id = ? ",
+                                  nodeId)) {
+            delete(link);
+        }
+    }
 }

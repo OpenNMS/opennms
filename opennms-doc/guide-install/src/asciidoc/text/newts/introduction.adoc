@@ -14,7 +14,7 @@ IMPORTANT: It is currently not supported to initialize the _Newts_ keyspace from
 [[gi-setup-cassandra]]
 === Setting up Cassandra
 
-It is recommended to install _Cassandra_ on a dedicated server, but is also possible to run a node on the _OpenNMS_ server itself.
+It is recommended to install _Cassandra_ on a dedicated server, but is also possible to run a node on the _{opennms-product-name}_ server itself.
 This installation guide describes how to set up a single _Cassandra_ instance for evaluating and testing _Newts_.
 These steps are not suitable for a high performance production _Cassandra Cluster_.
 For further information see link:https://wiki.apache.org/cassandra/GettingStarted[Cassandra Getting Started Guide].
