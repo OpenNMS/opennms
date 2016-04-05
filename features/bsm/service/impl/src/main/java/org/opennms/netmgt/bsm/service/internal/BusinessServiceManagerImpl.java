@@ -73,9 +73,7 @@ import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.transaction.annotation.Transactional;
 
-@Transactional
 public class BusinessServiceManagerImpl implements BusinessServiceManager {
     @Autowired
     private BusinessServiceDao businessServiceDao;
