@@ -28,13 +28,24 @@
 
 package org.opennms.core.profiler;
 
+/**
+ * A simple Timer implementation to start and stop.
+ */
 public class Timer {
-    long startTime;
+    private long startTime;
 
+    /**
+     * Starts the timer.
+     */
     public synchronized void start() {
         startTime = System.currentTimeMillis();
     }
 
+    /**
+     * Stops the timer and returns <code>NOW - startTime</code>.
+     *
+     * @return <code>NOW - startTime</code>
+     */
     public synchronized long stop() {
         if (startTime == 0) {
             throw new IllegalStateException("start() must be invoked before stop()");
