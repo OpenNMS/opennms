@@ -28,10 +28,15 @@
 
 package org.opennms.smoketest;
 
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.openqa.selenium.By;
+import org.openqa.selenium.Keys;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 
 public class QuickAddNodeIT extends OpenNMSSeleniumTestCase {
@@ -71,17 +76,39 @@ public class QuickAddNodeIT extends OpenNMSSeleniumTestCase {
 
         // Basic fields
         findElementByCss("input#foreignSource");
-        enterText(By.id("nodeLabel"), NODE_LABEL);
+        Thread.sleep(1000);
+        enterTextAutocomplete(By.id("foreignSource"), REQUISITION_NAME);
         enterText(By.id("ipAddress"), NODE_IPADDR);
-        enterText(By.id("foreignSource"), REQUISITION_NAME);
+        enterText(By.id("nodeLabel"), NODE_LABEL);
 
         // Add a category to the node
         findElementById("add-category").click();
-        findElementByCss("input[name=\"categoryName\"]");
-        enterText(By.cssSelector("input[name=\"categoryName\"]"), NODE_CATEGORY);
+        findElementByCss("input[name='categoryName'");
+        enterTextAutocomplete(By.cssSelector("input[name='categoryName']"), NODE_CATEGORY, Keys.ENTER);
 
         wait.until(ExpectedConditions.elementToBeClickable(By.id("provision"))).click();
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector(".modal-dialog button[data-bb-handler=\"main\"]"))).click();
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector(".modal-dialog button[data-bb-handler='main']"))).click();
+
         wait.until(new WaitForNodesInDatabase(1));
+    }
+
+    protected WebElement enterTextAutocomplete(final By selector, final CharSequence... text) throws InterruptedException {
+        final WebElement element = m_driver.findElement(selector);
+        element.click();
+        Thread.sleep(200);
+        element.sendKeys(text);
+        Thread.sleep(10);
+        element.sendKeys(Keys.ENTER);
+        Thread.sleep(10);
+        try {
+            setImplicitWait(2, TimeUnit.SECONDS);
+            final List<WebElement> matching = m_driver.findElements(By.cssSelector("a[title='"+text+"']"));
+            if (!matching.isEmpty()) {
+                findElementByCss("a[title='"+text+"']").click();
+            }
+        } finally {
+            setImplicitWait();
+        }
+        return element;
     }
 }
