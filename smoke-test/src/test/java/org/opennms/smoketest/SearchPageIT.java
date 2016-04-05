@@ -39,6 +39,7 @@ import org.junit.runners.MethodSorters;
 public class SearchPageIT extends OpenNMSSeleniumTestCase {
     @Before
     public void setUp() throws Exception {
+        deleteTestRequisition();
         searchPage();
     }
 
