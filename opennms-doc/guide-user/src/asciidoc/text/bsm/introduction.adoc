@@ -1,0 +1,28 @@
+
+// Allow GitHub image rendering
+:imagesdir: ../../images
+
+The _Business Service Monitoring_ component helps you to quickly identify most critical problems affecting your services.
+While OpenNMS detects issues in your network on a per device level, the _Business Service Monitoring_ takes one step further.
+It allows to model _Business Services_ on a more abstract level and are different from network devices like switches, servers, routers or a virtual machines.
+The _Business Service_ status is driven by specific monitored _Services_ and are driven by a specific set of _Alarms_ and can contain other _Business Services_ to build a hierarchy.
+_Alarm_ status is used to indicate the impact on a _Business Service_ based on outage- or threshold alarms from your monitored network.
+In this hierarchy there is also a possibility to identify the root cause which affects this service.
+
+The _Business Service Monitoring_ has the following components:
+
+* _BSMD_: The component to calculate the status for the _Business Service Hierarchy_
+* _Business Service Editor_: Component in the admin web application which allows you to create, update or delete _Business Services_
+* _Topology View for Business Services_: Visual representation of the _Business Service Hiearchy_ as a component of the _Topology User Interface_.
+* _BSM ReST API_: ReST based API to create, update or query _Business Services_ with external applications
+
+NOTE: This guide is focused on basic concepts and how to use it from a users perspective.
+      Changing the behavior and configuration please go to the <<ga-bsm, Administrative Guide>>.
+      If you want to use the _ReST API_ or want to enhance the functionality with code, plsee see the <<dg-bsm, Developers Guide>>.
+
+[[ug-bsm-intro-business-service]]
+.Example for a Business Service
+image::IMAGE-HERE.png[]
+
+The _Business Service_ in <<ug-bsm-intro-business-service, Figure above>> shows an example for a web application.
+With

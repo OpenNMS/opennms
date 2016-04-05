@@ -23,6 +23,6 @@ include::text/service-assurance/path-outage.adoc[]
 include::text/surveillance-view.adoc[]
 include::text/dashboard.adoc[]
 
-[[gu-alarms]]
-== Alarms
-include::text/alarms/alarm-notes.adoc[]
+[[gu-bsm]]
+== Busines Service Monitoring
+include::text/bsm/introduction.adoc[]
