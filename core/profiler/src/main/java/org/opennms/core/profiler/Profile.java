@@ -33,6 +33,12 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+/**
+ * Annotate any method or class in order to measure execution time.
+ *
+ * This only works out-of-the-box if Spring AOP is enabled.
+ * See {@link ProfilerAspect} for more details.
+ */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(value = { ElementType.TYPE, ElementType.METHOD })
 public @interface Profile {

@@ -38,6 +38,12 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Throwables;
 
+/**
+ * Aspect to measure the execution time of methods.
+ * Simply annotate the class or method to measure with {@link Profile}.
+ * In order to get this to work, a bean of type {@link ProfilerAspect} must be in the current Spring Application Context
+ * and AOP  must be enabled, e.g. <aop:aspectj-autoproxy/>.
+ */
 @Aspect
 public class ProfilerAspect {
 
@@ -56,7 +62,12 @@ public class ProfilerAspect {
         }
     }
 
-    // if no AOP is available, whatever the reason or manually profiling is preferred
+    /**
+     * Sometimes adding an annotation may not work, e.g. the class is not managed by spring.
+     * This method allows to wrap any statements to be measured, by simply wrap it into a {@link Block} object
+     *
+     * @return the return of the block. If no return is required, simply return null.
+     */
     public static <T> T wrapProfile(Class clazz, String signature, Block<T> block) {
         return wrapProfile(clazz.getSimpleName() + "." + signature, block);
     }
@@ -75,11 +86,23 @@ public class ProfilerAspect {
         }
     }
 
-    public static void log(String kind, String signature, long diff) {
-        Logging.withPrefix("profiler", () -> LoggerFactory.getLogger(ProfilerAspect.class).info("{} {} took {}, raw = {}ms", signature, kind, humanReadable(diff), diff));
+    /**
+     * Logs the execution time of the @Profile annotated method.
+     *
+     * @param kind The kind, e.g. "method-execution"
+     * @param signature The method signature
+     * @param executionTime The execution time in ms.
+     */
+    private static void log(String kind, String signature, long executionTime) {
+        Logging.withPrefix("profiler", () -> LoggerFactory.getLogger(ProfilerAspect.class).info("{} {} took {}, raw = {}ms", signature, kind, humanReadable(executionTime), executionTime));
     }
 
-    // input in ms
+    /**
+     * Converts the input milliseconds in a human readable format (e.g. 1s 100ms)
+     *
+     * @param milliseconds The ms to convert
+     * @return The human readable format, e.g. 2h 15m 3s 150ms
+     */
     public static String humanReadable(final long milliseconds) {
         int seconds = (int)(milliseconds / 1000) % 60 ;
         int minutes = (int) ((milliseconds / (1000*60)) % 60);
