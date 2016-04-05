@@ -114,6 +114,10 @@
 			<artifactId>org.opennms.features.ticketing.api</artifactId>
 		</dependency>
 		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+		</dependency>
+		<dependency>
 			<groupId>org.apache.cxf</groupId>
 			<artifactId>cxf-rt-frontend-jaxws</artifactId>
 			<version>${cxfVersion}</version>
@@ -156,6 +160,16 @@
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-all</artifactId>
+            <scope>test</scope>
+        </dependency>
+		<dependency>
+			<groupId>org.opennms.core.test-api</groupId>
+			<artifactId>org.opennms.core.test-api.services</artifactId>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>

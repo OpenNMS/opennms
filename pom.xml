@@ -1343,7 +1343,7 @@
     <xalanVersion>2.7.2</xalanVersion>
     <xercesVersion>2.9.1</xercesVersion>
     <xmlApisVersion>1.4.01</xmlApisVersion>
-    <wsmanVersion>1.2.2</wsmanVersion>
+    <wsdl4jVersion>1.6.3</wsdl4jVersion>
 
     <springVersion>4.0.5.RELEASE_1</springVersion>
     <!-- ALWAYS change aspectj to match the version referenced in the spring poms -->
@@ -3696,7 +3696,7 @@
       <dependency>
         <groupId>wsdl4j</groupId>
         <artifactId>wsdl4j</artifactId>
-        <version>1.6.3</version>
+        <version>${wsdl4jVersion}</version>
       </dependency>
       <dependency>
         <groupId>xalan</groupId>

@@ -186,3 +186,19 @@ include::text/operation/newts/newts.adoc[]
 [[ga-opennms-system-properties]]
 == System Properties
 include::text/system-properties/introduction.adoc[]
+
+[[ga-ticketing]]
+== Ticketing
+include::text/ticketing/introduction.adoc[]
+
+// JIRA Ticketer
+include::text/ticketing/jira.adoc[]
+
+// TSRM Ticketer
+include::text/ticketing/tsrm.adoc[]
+
+== Plugin Manager
+include::text/plugin-manager/Introduction.adoc[]
+include::text/plugin-manager/SettingKarafInstanceData.adoc[]
+include::text/plugin-manager/InstallingAvailablePlugins.adoc[]
+include::text/plugin-manager/InstallingLicences.adoc[]

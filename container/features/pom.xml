@@ -28,6 +28,7 @@
           -->
           <importRepositoryExclusions>
             <value>karaf-${karafVersion}</value>
+            <value>cxf-${cxfVersion}</value>
             <value>activemq-${activemqVersion}</value>
             <value>camel-${camelVersion}</value>
           </importRepositoryExclusions>
@@ -95,7 +96,7 @@
 
             <!-- Ticketing Features-->
             <repository>mvn:org.opennms.features/jira-troubleticketer/${project.version}/xml/features</repository>
-
+            
             <!-- Data Choices -->
             <repository>mvn:org.opennms.features/datachoices/${project.version}/xml/features</repository>
 
@@ -269,6 +270,9 @@
             <feature>vaadin-snmp-events-and-metrics</feature>
             <feature>vaadin-surveillance-views</feature>
             <feature>opennms-elasticsearch-event-forwarder</feature>
+            <feature>jira-troubleticketer</feature>
+            <feature>tsrm-troubleticketer</feature>
+            <feature>datachoices</feature>
 
             <!-- BSM -->
             <feature>org.opennms.features.bsm.service.api</feature>
@@ -496,6 +500,20 @@
     <dependency>
       <groupId>org.opennms.features</groupId>
       <artifactId>vaadin-components</artifactId>
+      <version>${project.version}</version>
+      <type>pom</type>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features</groupId>
+      <artifactId>jira-troubleticketer</artifactId>
+      <version>${project.version}</version>
+      <type>pom</type>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features</groupId>
+      <artifactId>opennms-integration-tsrm</artifactId>
       <version>${project.version}</version>
       <type>pom</type>
       <scope>provided</scope>

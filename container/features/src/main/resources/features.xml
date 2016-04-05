@@ -8,6 +8,9 @@
     <!-- Apache Camel features -->
     <repository>mvn:org.apache.camel.karaf/apache-camel/${camelVersion}/xml/features</repository>
 
+    <!-- Apache CXF features -->
+    <repository>mvn:org.apache.cxf.karaf/apache-cxf/${cxfVersion}/xml/features</repository>
+
     <!-- Apache ActiveMQ features -->
     <repository>mvn:org.apache.activemq/activemq-karaf/${activemqVersion}/xml/features</repository>
 
@@ -811,5 +814,11 @@
 
       <!-- The main webapp WAR file -->
       <bundle>mvn:org.opennms/opennms-webapp/${project.version}/war</bundle>
+    </feature>
+
+    <feature name="tsrm-troubleticketer" version="${project.version}" description="OpenNMS :: Features :: Ticketing :: Tivoli Service Request Manager (TSRM)">
+        <feature version="${cxfVersion}">cxf-jaxws</feature>
+        <bundle>mvn:org.opennms.features.ticketing/org.opennms.features.ticketing.api/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features/opennms-integration-tsrm/${project.version}</bundle>
     </feature>
 </features>
