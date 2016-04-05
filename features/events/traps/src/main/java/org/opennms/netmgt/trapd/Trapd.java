@@ -36,8 +36,6 @@ import javax.annotation.Resource;
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
 import org.opennms.netmgt.snmp.SnmpV3User;
-import org.opennms.netmgt.snmp.TrapProcessor;
-import org.opennms.netmgt.snmp.TrapProcessorFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -76,12 +74,6 @@ public class Trapd extends AbstractServiceDaemon {
      * The last status sent to the service control manager.
      */
     private int m_status = START_PENDING;
-
-    /**
-     * The queue processing thread
-     */
-    @Autowired
-    private TrapQueueProcessorFactory m_processorFactory;
 
     /**
      * The class instance used to receive new events from for the system.
@@ -279,21 +271,6 @@ public class Trapd extends AbstractServiceDaemon {
     public long getTrapsErrored() {
         return TrapQueueProcessor.getTrapsErrored();
     }
-
-
-	/**
-	 * @return the m_processorFactory
-	 */
-	public TrapQueueProcessorFactory getProcessorFactory() {
-		return m_processorFactory;
-	}
-
-	/**
-	 * @param m_processorFactory the m_processorFactory to set
-	 */
-	public void setProcessorFactory(TrapQueueProcessorFactory m_processorFactory) {
-		this.m_processorFactory = m_processorFactory;
-	}
 
 	/**
 	 * @return the m_trapReceiver

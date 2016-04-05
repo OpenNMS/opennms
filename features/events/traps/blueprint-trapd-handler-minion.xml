@@ -12,30 +12,18 @@
 		http://aries.apache.org/schemas/blueprint-ext/blueprint-ext-1.1.xsd
 ">
 
-	<cm:property-placeholder id="trapdNotifcationHandlerMinionProperties"
-		persistent-id="org.opennms.netmgt.trapd.handler.minion"
-		update-strategy="none">
+	<cm:property-placeholder id="trapdNotificationHandlerMinionProperties" persistent-id="org.opennms.netmgt.trapd.handler.minion" update-strategy="none">
 		<cm:default-properties>
 			<cm:property name="brokerUri" value="tcp://127.0.0.1:61716" />
 		</cm:default-properties>
 	</cm:property-placeholder>
 
-	<bean id="trapdNotificationHandlerCamel"
-		class="org.opennms.netmgt.trapd.TrapNotificationHandlerCamelImpl">
+	<bean id="trapdNotificationHandlerCamel" class="org.opennms.netmgt.trapd.TrapNotificationHandlerCamelImpl">
 		<argument value="seda:handleMessage" />
 	</bean>
 
-	<service interface="org.opennms.netmgt.trapd.TrapNotificationHandler"
-		ref="trapdNotificationHandlerCamel" />
+	<service interface="org.opennms.netmgt.trapd.TrapNotificationHandler" ref="trapdNotificationHandlerCamel" />
 
-
-	<bean id="eventClass" class="java.lang.Class" factory-method="forName">
-		<argument value="org.opennms.netmgt.xml.event.Event" />
-	</bean>
-
-	<!-- Camel Event marshalling processor -->
-	<!-- <bean id="marshaller" class="org.opennms.core.camel.JaxbUtilsMarshalProcessor"> 
-		<argument ref="eventClass"/> </bean> -->
 
 	<bean id="activemq" class="org.apache.activemq.camel.component.ActiveMQComponent">
 		<!-- TODO: HZN-490 Add configurable ActiveMQ URI -->
@@ -47,11 +35,11 @@
 
 	<camelContext id="trapdNotificationHandlerMinion"
 		xmlns="http://camel.apache.org/schema/blueprint">
-		<propertyPlaceholder id="properties"
-			location="blueprint:trapdNotifcationHandlerMinionProperties" />
+		<propertyPlaceholder id="properties" location="blueprint:trapdNotificationHandlerMinionProperties" />
 		<route id="trapdHandlerMinion">
 			<from uri="seda:handleMessage" />
 			<convertBodyTo type="org.opennms.netmgt.trapd.TrapQueueProcessor" />
+			<!-- TODO: Use marshalling instead of serialization when transmitting object? -->
 			<!-- Broadcast message over ActiveMQ -->
 			<to uri="activemq:broadcastTrap?disableReplyTo=true" />
 		</route>

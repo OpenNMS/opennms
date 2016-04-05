@@ -28,8 +28,6 @@
 		<property name="eventCreator" ref="eventCreator"/>
 	</bean>
 
-	<reference id="trapdConfig" interface="org.opennms.netmgt.config.TrapdConfig" />
-
 	<bean id="activemq" class="org.apache.activemq.camel.component.ActiveMQComponent">
 		<!-- TODO: HZN-490 Add configurable ActiveMQ URI -->
 		<property name="brokerURL" value="${brokerUri}" />
@@ -41,6 +39,7 @@
 
 		<route id="receiveTrapConnection">
 			<from uri="activemq:broadcastTrap" />
+			<!-- TODO: Use marshalling instead of serialization when transmitting object? -->
 			<!-- <bean ref="unmarshaller"/> -->
 			<to uri="seda:trapHandler" />
 		</route>
@@ -48,8 +47,10 @@
 		<route id="trapHandler">
 			<from uri="seda:trapHandler" />
 			<convertBodyTo type="org.opennms.netmgt.snmp.TrapNotification" />
-			<!-- Pass the message to the default handler which will convert it into 
-				an event and broadcast the event. -->
+			<!--
+				Pass the message to the default handler which will convert it into 
+				an event and broadcast the event.
+			-->
 			<bean ref="trapConnectionHandlerDefault" />
 		</route>
 	</camelContext>
