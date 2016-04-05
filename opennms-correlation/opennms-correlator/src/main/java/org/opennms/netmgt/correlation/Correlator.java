@@ -67,11 +67,12 @@ public class Correlator extends AbstractServiceDaemon implements CorrelationEngi
 			m_name = m_engine.getClass().getSimpleName() + '-' + m_engine.getName() ;
 			Map<String,String> mdc = Logging.getCopyOfContextMap();
 			Logging.putPrefix(m_name);
-			if (m_engine.getInterestingEvents().contains(EventHandler.ALL_UEIS)) {
+			final List<String> interesting = m_engine.getInterestingEvents();
+			if (interesting.contains(EventHandler.ALL_UEIS)) {
 				LOG.warn("Registering engine {} for ALL events", m_engine.getName());
 				m_eventIpcManager.addEventListener(this);
 			} else {
-				m_eventIpcManager.addEventListener(this, m_engine.getInterestingEvents());
+				m_eventIpcManager.addEventListener(this, interesting);
 			}
 			Logging.setContextMap(mdc);
 		}
