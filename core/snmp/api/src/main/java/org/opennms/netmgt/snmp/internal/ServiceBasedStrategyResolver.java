@@ -47,6 +47,10 @@ public class ServiceBasedStrategyResolver implements StrategyResolver {
 		return resolver;
 	}
 	
+	public static void unregister() {
+		SnmpUtils.unsetStrategyResolver();
+	}
+	
 	Map<String, SnmpStrategy> m_strategies = new ConcurrentHashMap<String, SnmpStrategy>();
 
 	public void onBind(SnmpStrategy strategy, Map<String, String> props) {

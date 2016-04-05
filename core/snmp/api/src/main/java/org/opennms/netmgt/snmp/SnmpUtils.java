@@ -161,6 +161,10 @@ public abstract class SnmpUtils {
     	s_strategyResolver = strategyResolver;
     }
     
+    public static void unsetStrategyResolver() {
+    	s_strategyResolver = null;
+    }
+    
     private static class DefaultStrategyResolver implements StrategyResolver {
 
 		@Override
