@@ -29,6 +29,7 @@
 package org.opennms.netmgt.bsm.daemon;
 
 import static org.junit.Assert.assertTrue;
+import static org.opennms.core.profiler.ProfilerAspect.humanReadable;
 
 import java.util.Collection;
 import java.util.concurrent.TimeUnit;
@@ -38,9 +39,12 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.core.profiler.Timer;
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
+import org.opennms.netmgt.bsm.karaf.shell.GenerateHierarchiesShellCommand;
+import org.opennms.netmgt.bsm.persistence.api.BusinessServiceDao;
 import org.opennms.netmgt.bsm.persistence.api.BusinessServiceEntity;
 import org.opennms.netmgt.bsm.persistence.api.functions.map.IdentityEntity;
 import org.opennms.netmgt.bsm.persistence.api.functions.reduce.HighestSeverityEntity;
@@ -214,6 +218,29 @@ public class BsmdIT {
         // wait n seconds and try again
         Thread.sleep(20*1000);
         Assert.assertEquals(Status.CRITICAL, m_bsmd.getBusinessServiceStateMachine().getOperationalStatus(wrap(simpleBs)));
+    }
+
+    /**
+     * Verify that Bsmd can start within a reasonable amount of time when 20k business services exist.
+     */
+    @Test
+    @Transactional
+    public void verifyStartupTime() throws Exception {
+        // generate test hierarchy
+        GenerateHierarchiesShellCommand shellCommand = new GenerateHierarchiesShellCommand();
+        shellCommand.setBusinessServiceManager(businessServiceManager);
+        shellCommand.setNumServices(200 * 100); // 200 hierarchies
+        shellCommand.setDepth(100); // 100 services each
+        shellCommand.execute(null);
+        m_businessServiceDao.flush();
+
+        // Measure startup time
+        Timer timer = new Timer();
+        timer.start();
+        m_bsmd.start();
+        long diff = timer.stop();
+        Assert.assertTrue("Bsmd took " + humanReadable(diff) + " to start but only 30 seconds are considered reasonable. Please optimize startup time.",
+                diff <= 30 * 1000 /* 30 seconds */);
     }
 
     private OnmsAlarm createAlarm() {

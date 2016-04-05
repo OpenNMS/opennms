@@ -93,7 +93,7 @@
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-dao</artifactId>
-      <scope>test</scope>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
@@ -103,6 +103,18 @@
     <dependency>
       <groupId>org.opennms.features.bsm</groupId>
       <artifactId>org.opennms.features.bsm.persistence.impl</artifactId>
+      <version>${project.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.bsm</groupId>
+      <artifactId>org.opennms.features.bsm.shell-commands</artifactId>
+      <version>${project.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.core</groupId>
+      <artifactId>org.opennms.core.profiler</artifactId>
       <version>${project.version}</version>
       <scope>test</scope>
     </dependency>
