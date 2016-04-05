@@ -132,88 +132,85 @@ if (currConfig == null) {
 <input type="hidden" id="erbegin" name="erbegin" value=""/>
 <input type="hidden" id="erend" name="erend" value=""/>
 
-<div class="row">
-  <div class="col-md-4">
-    <button type="submit" class="btn btn-default">Save and Restart Discovery</button>
-  </div> <!-- column -->
-</div> <!-- row -->
+<button type="submit" class="btn btn-default">Save and Restart Discovery</button>
 
-<div class="row top-buffer">
+<p/>
+
+<div class="row">
   <div class="col-md-6">
     <div class="panel panel-default">
       <div class="panel-heading">
         <h3 class="panel-title">General Settings</h3>
       </div>
-      <div class="panel-body">
-        <div class="form-group">
-          <label for="initialsleeptime" class="col-sm-4 control-label">Initial sleep time (sec.):</label>
-          <div class="col-sm-8">
-            <select id="initialsleeptime" class="form-control" name="initialsleeptime">
-              <option value="30000" <%if(currConfig.getInitialSleepTime()==30000) out.print("selected");%>>30</option>
-              <option value="60000" <%if(currConfig.getInitialSleepTime()==60000) out.print("selected");%>>60</option>
-              <option value="90000" <%if(currConfig.getInitialSleepTime()==90000) out.print("selected");%>>90</option>
-              <option value="120000" <%if(currConfig.getInitialSleepTime()==120000) out.print("selected");%>>120</option>
-              <option value="150000" <%if(currConfig.getInitialSleepTime()==150000) out.print("selected");%>>150</option>
-              <option value="300000" <%if(currConfig.getInitialSleepTime()==300000) out.print("selected");%>>300</option>
-              <option value="600000" <%if(currConfig.getInitialSleepTime()==600000) out.print("selected");%>>600</option>
-            </select>
-          </div>
-        </div> <!-- form-group -->
-        <div class="form-group">
-          <label for="restartsleeptime" class="col-sm-4 control-label">Restart sleep time (hours):</label>
-          <div class="col-sm-8">
-            <select id="restartsleeptime" class="form-control" name="restartsleeptime">
-              <option value="3600000" <%if(currConfig.getRestartSleepTime()==3600000) out.print("selected");%>>1</option>
-              <option value="7200000" <%if(currConfig.getRestartSleepTime()==7200000) out.print("selected");%>>2</option>
-              <option value="10800000" <%if(currConfig.getRestartSleepTime()==10800000) out.print("selected");%>>3</option>
-              <option value="14400000" <%if(currConfig.getRestartSleepTime()==14400000) out.print("selected");%>>4</option>
-              <option value="18000000" <%if(currConfig.getRestartSleepTime()==18000000) out.print("selected");%>>5</option>
-              <option value="21600000" <%if(currConfig.getRestartSleepTime()==21600000) out.print("selected");%>>6</option>
-              <option value="43200000" <%if(currConfig.getRestartSleepTime()==43200000) out.print("selected");%>>12</option>
-              <option value="86400000" <%if(currConfig.getRestartSleepTime()==86400000) out.print("selected");%>>24</option>
-              <option value="129600000" <%if(currConfig.getRestartSleepTime()==129600000) out.print("selected");%>>36</option>
-              <option value="259200000" <%if(currConfig.getRestartSleepTime()==259200000) out.print("selected");%>>72</option>
-            </select>
-          </div>
-        </div> <!-- form-group -->
-        <div class="form-group">
-          <label for="foreignsource" class="col-sm-4 control-label">Foreign Source (Optional):</label>
-          <div class="col-sm-8">
-            <!-- TODO: Make this a dropdown of all foreign sources -->
-            <input type="text" class="form-control" id="foreignsource" name="foreignsource" value="<%=currConfig.getForeignSource()%>"/>
-          </div>
-        </div> <!-- form-group -->
-        <div class="form-group">
-          <label for="location" class="col-sm-4 control-label">Location (Optional):</label>
-          <div class="col-sm-8">
-            <!-- TODO: Make this a dropdown of all monitoring locations -->
-            <input type="text" class="form-control" id="location" name="location" value="<%=currConfig.getLocation()%>"/>
-          </div>
-        </div> <!-- form-group -->
-        <div class="form-group">
-          <label for="retries" class="col-sm-4 control-label">Retries:</label>
-          <div class="col-sm-8">
-            <input type="text" class="form-control" id="retries" name="retries" value="<%=((currConfig.getRetries()==0)?"3":""+currConfig.getRetries())%>"/>
-          </div>
-        </div> <!-- form-group -->
-        <div class="form-group">
-          <label for="retries" class="col-sm-4 control-label">Retries:</label>
-          <div class="col-sm-8">
-            <input type="text" class="form-control" id="retries" name="retries" value="<%=((currConfig.getRetries()==0)?"3":""+currConfig.getRetries())%>"/>
-          </div>
-        </div> <!-- form-group -->
-        <div class="form-group">
-          <label for="retries" class="col-sm-4 control-label">Timeout (ms.):</label>
-          <div class="col-sm-8">
-            <input type="text" class="form-control" id="timeout" name="timeout" size="4" value="<%=((currConfig.getTimeout()==0)?"800":""+currConfig.getTimeout())%>"/>
-          </div>
-        </div> <!-- form-group -->
-      </div> <!-- panel-body -->
+      <div class="list-group">
+        <div class="list-group-item">
+        <div class="col-md-12 input-group">
+          <label for="initialsleeptime" class="control-label">Initial sleep time (seconds):</label>
+          <select id="initialsleeptime" class="form-control" name="initialsleeptime">
+            <option value="30000" <%if(currConfig.getInitialSleepTime()==30000) out.print("selected");%>>30</option>
+            <option value="60000" <%if(currConfig.getInitialSleepTime()==60000) out.print("selected");%>>60</option>
+            <option value="90000" <%if(currConfig.getInitialSleepTime()==90000) out.print("selected");%>>90</option>
+            <option value="120000" <%if(currConfig.getInitialSleepTime()==120000) out.print("selected");%>>120</option>
+            <option value="150000" <%if(currConfig.getInitialSleepTime()==150000) out.print("selected");%>>150</option>
+            <option value="300000" <%if(currConfig.getInitialSleepTime()==300000) out.print("selected");%>>300</option>
+            <option value="600000" <%if(currConfig.getInitialSleepTime()==600000) out.print("selected");%>>600</option>
+          </select>
+        </div> <!-- input-group -->
+        <div class="col-md-12 input-group">
+          <label for="restartsleeptime" class="control-label">Restart sleep time (hours):</label>
+          <select id="restartsleeptime" class="form-control" name="restartsleeptime">
+            <option value="3600000" <%if(currConfig.getRestartSleepTime()==3600000) out.print("selected");%>>1</option>
+            <option value="7200000" <%if(currConfig.getRestartSleepTime()==7200000) out.print("selected");%>>2</option>
+            <option value="10800000" <%if(currConfig.getRestartSleepTime()==10800000) out.print("selected");%>>3</option>
+            <option value="14400000" <%if(currConfig.getRestartSleepTime()==14400000) out.print("selected");%>>4</option>
+            <option value="18000000" <%if(currConfig.getRestartSleepTime()==18000000) out.print("selected");%>>5</option>
+            <option value="21600000" <%if(currConfig.getRestartSleepTime()==21600000) out.print("selected");%>>6</option>
+            <option value="43200000" <%if(currConfig.getRestartSleepTime()==43200000) out.print("selected");%>>12</option>
+            <option value="86400000" <%if(currConfig.getRestartSleepTime()==86400000) out.print("selected");%>>24</option>
+            <option value="129600000" <%if(currConfig.getRestartSleepTime()==129600000) out.print("selected");%>>36</option>
+            <option value="259200000" <%if(currConfig.getRestartSleepTime()==259200000) out.print("selected");%>>72</option>
+          </select>
+        </div> <!-- input-group -->
+        <div class="col-md-12 input-group">
+          <label for="retries" class="control-label">Timeout (milliseconds):</label>
+          <!-- TODO: Use a constant for the default value -->
+          <input type="text" class="form-control" id="timeout" name="timeout" size="4" value="<%=((currConfig.getTimeout()==0)?"800":""+currConfig.getTimeout())%>"/>
+        </div> <!-- input-group -->
+        <div class="col-md-12 input-group">
+          <label for="retries" class="control-label">Retries:</label>
+          <!-- TODO: Use a constant for the default value -->
+          <input type="text" class="form-control" id="retries" name="retries" value="<%=((currConfig.getRetries()==0)?"3":""+currConfig.getRetries())%>"/>
+        </div> <!-- input-group -->
+        </div>
+
+        <div class="list-group-item">
+        <h4 class="list-group-item-heading">Optional configuration</h4>
+        <div class="col-md-12 input-group">
+          <label for="foreignsource" class="control-label">Foreign Source:</label>
+          <!-- TODO: Make this a dropdown of all foreign sources -->
+          <input type="text" class="form-control" id="foreignsource" name="foreignsource" value="<%=currConfig.getForeignSource()%>"/>
+        </div> <!-- input-group -->
+        <div class="col-md-12 input-group">
+          <label for="location" class="control-label">Location:</label>
+          <!-- TODO: Make this a dropdown of all monitoring locations -->
+          <input type="text" class="form-control" id="location" name="location" value="<%=currConfig.getLocation()%>"/>
+        </div> <!-- input-group -->
+        </div>
+
+        <div class="list-group-item">
+        <h4 class="list-group-item-heading">Advanced configuration</h4>
+        <div class="col-md-12 input-group">
+          <label for="chunksize" class="control-label">Task chunk size:</label>
+          <!-- TODO: Use a constant for the default value -->
+          <input type="text" class="form-control" id="chunksize" name="chunksize" value="<%=((currConfig.getChunkSize()==0)?"100":""+currConfig.getChunkSize())%>"/>
+        </div> <!-- input-group -->
+        </div>
+      </div>
     </div> <!-- panel -->
   </div> <!-- column -->
 </div> <!-- row -->
 
-<div class="row top-buffer">
+<div class="row">
   <div class="col-md-12">
     <div class="panel panel-default">
       <div class="panel-heading">
@@ -228,7 +225,7 @@ if (currConfig == null) {
 					    IP Address
 					</th>
 					<th>
-					    Timeout (ms.)
+					    Timeout (milliseconds)
 					</th>
 					<th>
 					    Retries
@@ -242,7 +239,7 @@ if (currConfig == null) {
 					  <td><%=specs[i].getContent()%></td>
 					  <td><%=(specs[i].getTimeout()!=0)?""+specs[i].getTimeout():""+currConfig.getTimeout() %></td>
 					  <td><%=(specs[i].getRetries()!=0)?""+specs[i].getRetries():""+currConfig.getRetries() %></td>
-					  <td width="1%"><button type="button" class="btn btn-default" onclick="deleteSpecific(<%=i%>);">Delete</button></td>
+					  <td width="1%"><button type="button" class="btn btn-xs btn-default" onclick="deleteSpecific(<%=i%>);">Delete</button></td>
 					</tr>
 				      <%} // end for%>
 				     </table>
@@ -258,7 +255,7 @@ if (currConfig == null) {
   </div> <!-- column -->
 </div> <!-- row -->
 
-<div class="row top-buffer">
+<div class="row">
   <div class="col-md-12">
     <div class="panel panel-default">
       <div class="panel-heading">
@@ -273,11 +270,11 @@ if (currConfig == null) {
 					    URL
 					</th>
 					<th>
-					    Timeout (ms.)
+					    Timeout (milliseconds)
 					</th>
 					<th>
 					    Retries
-					</th>
+					</th> 
 					<th>
 					    Action
 					</th>
@@ -287,7 +284,7 @@ if (currConfig == null) {
 					  <td><%=urls[i].getContent()%></td>
 					  <td><%=(urls[i].getTimeout()!=0)?""+urls[i].getTimeout():""+currConfig.getTimeout() %></td>
 					  <td><%=(urls[i].getRetries()!=0)?""+urls[i].getRetries():""+currConfig.getRetries() %></td>
-					  <td width="1%"><button type="button" class="btn btn-default" onclick="deleteIncludeUrl(<%=i%>);">Delete</button></td>
+					  <td width="1%"><button type="button" class="btn btn-xs btn-default" onclick="deleteIncludeUrl(<%=i%>);">Delete</button></td>
 					</tr>
 				      <%} // end for%>
 				     </table>
@@ -303,7 +300,7 @@ if (currConfig == null) {
   </div> <!-- column -->
 </div> <!-- row -->
 
-<div class="row top-buffer">
+<div class="row">
   <div class="col-md-12">
     <div class="panel panel-default">
       <div class="panel-heading">
@@ -321,7 +318,7 @@ if (currConfig == null) {
 						    End Address
 						</th>
 						<th>
-						    Timeout (ms.)
+						    Timeout (milliseconds)
 						</th>
 						<th>
 						    Retries
@@ -338,7 +335,7 @@ if (currConfig == null) {
 						  <td><%=irange[i].getEnd()%></td>
 						  <td><%=(irange[i].getTimeout()!=0)?""+irange[i].getTimeout():""+currConfig.getTimeout() %></td>
 						  <td><%=(irange[i].getRetries()!=0)?""+irange[i].getRetries():""+currConfig.getRetries() %></td>
-						  <td width="1%"><button type="button" onclick="deleteIR(<%=i%>);">Delete</button></td>
+						  <td width="1%"><button type="button" class="btn btn-xs btn-default" onclick="deleteIR(<%=i%>);">Delete</button></td>
 						</tr>
 					      <%} // end for%>
 					     </table>
@@ -354,7 +351,7 @@ if (currConfig == null) {
   </div> <!-- column -->
 </div> <!-- row -->
 
-<div class="row top-buffer">
+<div class="row">
   <div class="col-md-12">
     <div class="panel panel-default">
       <div class="panel-heading">
@@ -381,7 +378,7 @@ if (currConfig == null) {
 					 <tr class="text-center">
 					  <td><%=irange[i].getBegin()%></td>
 					  <td><%=irange[i].getEnd()%></td>
-					  <td width="1%"><button type="button" onclick="deleteER(<%=i%>);">Delete</button></td>
+					  <td width="1%"><button type="button" class="btn btn-xs btn-default" onclick="deleteER(<%=i%>);">Delete</button></td>
 					</tr>
 				      <%} // end for%>
 
@@ -398,12 +395,11 @@ if (currConfig == null) {
   </div> <!-- column -->
 </div> <!-- row -->
 
-<div class="row top-buffer">
-  <div class="col-md-4">
-    <button type="submit" class="btn btn-default">Save and Restart Discovery</button>
-  </div> <!-- column -->
-</div> <!-- row -->
+<button type="submit" class="btn btn-default">Save and Restart Discovery</button>
 
 </form>
+
+<!-- TODO: Remove this, add top padding to the footer div -->
+<p/>
 
 <jsp:include page="/includes/bootstrap-footer.jsp" flush="false" />
