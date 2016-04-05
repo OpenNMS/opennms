@@ -56,7 +56,7 @@ public class GenerateHierarchiesShellCommand extends OsgiCommandSupport {
 
     @Override
     protected Object doExecute() throws Exception {
-        final Map<String, BusinessService> businessServivesByName = businessServiceManager.getAllBusinessServices()
+        final Map<String, BusinessService> businessServicesByName = businessServiceManager.getAllBusinessServices()
                 .stream().collect(Collectors.toMap(b -> b.getName(), b -> b));
 
         int showStatusEvery = 100;
@@ -71,8 +71,8 @@ public class GenerateHierarchiesShellCommand extends OsgiCommandSupport {
                         Math.min(i + showStatusEvery, numServicesToGenerate));
             }
             final String name = "B" + i;
-            if (businessServivesByName.containsKey(name)) {
-                lastBusinessService = businessServivesByName.get(name);
+            if (businessServicesByName.containsKey(name)) {
+                lastBusinessService = businessServicesByName.get(name);
                 continue;
             }
 
@@ -92,6 +92,14 @@ public class GenerateHierarchiesShellCommand extends OsgiCommandSupport {
             lastBusinessService = businessService;
         }
         return null;
+    }
+
+    public void setNumServices(Integer numServices) {
+        this.numServices = numServices;
+    }
+
+    public void setDepth(Integer depth) {
+        this.depth = depth;
     }
 
     public void setBusinessServiceManager(BusinessServiceManager businessServiceManager) {
