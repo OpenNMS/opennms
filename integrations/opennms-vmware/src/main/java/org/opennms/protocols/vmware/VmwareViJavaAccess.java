@@ -63,12 +63,10 @@ import javax.net.ssl.X509TrustManager;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
-
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.netmgt.collectd.vmware.vijava.VmwarePerformanceValues;
 import org.opennms.netmgt.config.vmware.VmwareServer;
 import org.opennms.netmgt.dao.VmwareConfigDao;
-
 import org.sblim.wbem.cim.CIMException;
 import org.sblim.wbem.cim.CIMNameSpace;
 import org.sblim.wbem.cim.CIMObject;
@@ -78,7 +76,6 @@ import org.sblim.wbem.cim.CIMValue;
 import org.sblim.wbem.client.CIMClient;
 import org.sblim.wbem.client.PasswordCredential;
 import org.sblim.wbem.client.UserPrincipal;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -103,7 +100,7 @@ import com.vmware.vim25.mo.ServerConnection;
 import com.vmware.vim25.mo.ServiceInstance;
 import com.vmware.vim25.mo.VirtualMachine;
 import com.vmware.vim25.mo.util.MorUtil;
-import com.vmware.vim25.ws.WSClient;
+import com.vmware.vim25.ws.Client;
 
 /**
  * The Class VmwareViJavaAccess
@@ -220,10 +217,10 @@ public class VmwareViJavaAccess {
             if (serverConnection != null) {
                 VimPortType vimService = serverConnection.getVimService();
                 if (vimService != null) {
-                    WSClient wsClient = vimService.getWsc();
-                    if (wsClient != null) {
-                        wsClient.setConnectTimeout(timeout);
-                        wsClient.setReadTimeout(timeout);
+                    Client client = vimService.getWsc();
+                    if (client != null) {
+                        client.setConnectTimeout(timeout);
+                        client.setReadTimeout(timeout);
                         return true;
                     }
                 }
