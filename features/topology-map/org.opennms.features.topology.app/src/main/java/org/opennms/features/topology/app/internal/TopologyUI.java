@@ -64,14 +64,10 @@ import org.opennms.features.topology.api.WidgetManager;
 import org.opennms.features.topology.api.WidgetUpdateListener;
 import org.opennms.features.topology.api.browsers.ContentType;
 import org.opennms.features.topology.api.browsers.SelectionAwareTable;
-import org.opennms.features.topology.api.info.EdgeInfoPanelItem;
 import org.opennms.features.topology.api.info.InfoPanelItem;
-import org.opennms.features.topology.api.info.VertexInfoPanelItem;
 import org.opennms.features.topology.api.support.VertexHopGraphProvider;
 import org.opennms.features.topology.api.support.VertexHopGraphProvider.VertexHopCriteria;
 import org.opennms.features.topology.api.topo.Criteria;
-import org.opennms.features.topology.api.topo.EdgeRef;
-import org.opennms.features.topology.api.topo.Ref;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.features.topology.app.internal.CommandManager.DefaultOperationContext;
@@ -343,10 +339,36 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
     /**
      * Helper class to load components to show in the info panel.
      */
-    public class InfoPanelItemProvider implements SelectionListener {
+    public class InfoPanelItemProvider implements SelectionListener, MenuItemUpdateListener {
 
-        private Component wrap(InfoPanelItem item, Ref ref) {
-            return wrap(item.getComponent(ref, m_graphContainer), item.getTitle(ref));
+        // Panel Item to visualize the selection context
+        private final InfoPanelItem selectionContextPanelItem = new InfoPanelItem() {
+
+            @Override
+            public Component getComponent(GraphContainer container) {
+                return m_hudDisplay;
+            }
+
+            @Override
+            public boolean contributesTo(GraphContainer container) {
+                // only show if no selection
+                return container.getSelectionManager().getSelectedEdgeRefs().isEmpty()
+                        && container.getSelectionManager().getSelectedVertexRefs().isEmpty();
+            }
+
+            @Override
+            public String getTitle(GraphContainer container) {
+                return "Selection Context";
+            }
+
+            @Override
+            public int getOrder() {
+                return 0;
+            }
+        };
+
+        private Component wrap(InfoPanelItem item) {
+            return wrap(item.getComponent(m_graphContainer), item.getTitle(m_graphContainer));
         }
 
         /**
@@ -358,8 +380,11 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
          * @return The wrapped component.
          */
         private Component wrap(Component component, String title) {
-            Label label = new Label(title);
+            Label label = new Label();
             label.addStyleName("info-panel-item-label");
+            if (title != null) {
+                label.setValue(title);
+            }
 
             VerticalLayout layout = new VerticalLayout();
             layout.addStyleName("info-panel-item");
@@ -370,28 +395,20 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
             return layout;
         }
 
-        private List<Component> getVertexInfoComponents(VertexRef vertexRef) {
-            final List<VertexInfoPanelItem> infoPanelItems = findInfoPanelComponents(VertexInfoPanelItem.class);
+        private List<Component> getInfoPanelComponents() {
+            final List<InfoPanelItem> infoPanelItems = findInfoPanelItems();
+            infoPanelItems.add(selectionContextPanelItem); // manually add this, as it is not exposed via osgi
             return infoPanelItems.stream()
-                    .filter(panel -> panel.contributesTo(vertexRef, m_graphContainer))
+                    .filter(panel -> panel.contributesTo(m_graphContainer))
                     .sorted()
-                    .map(item -> wrap(item, vertexRef))
+                    .map(item -> wrap(item))
                     .collect(Collectors.toList());
         }
 
-        private List<Component> getEdgeInfoComponents(EdgeRef edgeRef) {
-            final List<EdgeInfoPanelItem> infoPanelItems = findInfoPanelComponents(EdgeInfoPanelItem.class);
-            return infoPanelItems.stream()
-                    .filter(panel -> panel.contributesTo(edgeRef, m_graphContainer))
-                    .sorted()
-                    .map(item -> wrap(item, edgeRef))
-                    .collect(Collectors.toList());
-        }
-
-        private <T extends InfoPanelItem> List<T> findInfoPanelComponents(Class<T> classname) {
+        private <T extends InfoPanelItem> List<T> findInfoPanelItems() {
             try {
                 List<T> serviceList = new ArrayList<>();
-                ServiceReference<?>[] allServiceReferences = m_bundlecontext.getAllServiceReferences(classname.getName(), null);
+                ServiceReference<?>[] allServiceReferences = m_bundlecontext.getAllServiceReferences(InfoPanelItem.class.getName(), null);
                 if (allServiceReferences != null) {
                     for (ServiceReference eachReference : allServiceReferences) {
                         T service = (T) m_bundlecontext.getService(eachReference);
@@ -406,28 +423,20 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
             return Collections.emptyList();
         }
 
+        private void refreshInfoPanel() {
+            List<Component> components = Lists.newArrayList();
+            components.addAll(getInfoPanelComponents());
+            m_infoPanel.setDynamicComponents(components);
+        }
+
         @Override
         public void selectionChanged(SelectionContext selectionContext) {
-            final Collection<EdgeRef> selectedEdgeRefs = selectionContext.getSelectedEdgeRefs();
-            final Collection<VertexRef> selectedVertexRefs = selectionContext.getSelectedVertexRefs();
-            final List<Component> components = Lists.newArrayList();
-            if (selectedVertexRefs.size() == 1) {
-                final VertexRef vertexRef = selectedVertexRefs.iterator().next();
-                Vertex vertex = m_graphContainer.getBaseTopology().getVertex(vertexRef);
-                if (vertex != null) {
-                    final List<Component> vertexInfoComponents = getVertexInfoComponents(vertex);
-                    components.addAll(vertexInfoComponents);
-                }
-            }
-            if (selectedEdgeRefs.size() == 1) {
-                final EdgeRef edgeRef = selectedEdgeRefs.iterator().next();
-                final List<Component> edgeInfoComponents = getEdgeInfoComponents(edgeRef);
-                components.addAll(edgeInfoComponents);
-            }
-            if (components.isEmpty()) {
-                components.add(wrap(m_hudDisplay, "Selection Context"));
-            }
-            m_infoPanel.setDynamicComponents(components);
+            refreshInfoPanel();
+        }
+
+        @Override
+        public void updateMenuItems() {
+            refreshInfoPanel();
         }
     }
 
@@ -570,7 +579,11 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
 
         m_graphContainer.addChangeListener(m_verticesUpdateManager);
         m_selectionManager.addSelectionListener(m_verticesUpdateManager);
-        m_selectionManager.addSelectionListener(new InfoPanelItemProvider());
+
+        // Register the Info Panel to listen for certain events
+        final InfoPanelItemProvider infoPanelItemProvider = new InfoPanelItemProvider();
+        m_selectionManager.addSelectionListener(infoPanelItemProvider);
+        m_commandManager.addMenuItemUpdateListener(infoPanelItemProvider);
     }
 
     private boolean noAdditionalFocusCriteria() {

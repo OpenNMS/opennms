@@ -46,7 +46,7 @@ import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.themes.BaseTheme;
 
-public class NodeInfoPanelItem implements VertexInfoPanelItem {
+public class NodeInfoPanelItem extends VertexInfoPanelItem {
 
     private final NodeDao nodeDao;
 
@@ -55,7 +55,7 @@ public class NodeInfoPanelItem implements VertexInfoPanelItem {
     }
 
     @Override
-    public Component getComponent(VertexRef ref, GraphContainer container) {
+    protected Component getComponent(VertexRef ref, GraphContainer container) {
         if (ref instanceof AbstractVertex && ((AbstractVertex) ref).getNodeID() != null) {
             AbstractVertex vertex = ((AbstractVertex) ref);
             OnmsNode node = nodeDao.get(vertex.getNodeID());
@@ -86,13 +86,13 @@ public class NodeInfoPanelItem implements VertexInfoPanelItem {
     }
 
     @Override
-    public boolean contributesTo(VertexRef ref, GraphContainer container) {
+    protected boolean contributesTo(VertexRef ref, GraphContainer container) {
         return (ref instanceof AbstractVertex) &&
                (((AbstractVertex) ref).getNodeID() != null);
     }
 
     @Override
-    public String getTitle(VertexRef vertexRef) {
+    protected String getTitle(VertexRef vertexRef) {
         return "Node Details";
     }
 

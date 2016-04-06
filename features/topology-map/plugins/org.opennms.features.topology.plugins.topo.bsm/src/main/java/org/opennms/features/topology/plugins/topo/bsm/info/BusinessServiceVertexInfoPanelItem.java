@@ -52,7 +52,7 @@ import org.opennms.netmgt.vaadin.core.TransactionAwareBeanProxyFactory;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.FormLayout;
 
-public class BusinessServiceVertexInfoPanelItem implements VertexInfoPanelItem {
+public class BusinessServiceVertexInfoPanelItem extends VertexInfoPanelItem {
 
     private BusinessServiceManager businessServiceManager;
 
@@ -67,12 +67,12 @@ public class BusinessServiceVertexInfoPanelItem implements VertexInfoPanelItem {
     }
 
     @Override
-    public boolean contributesTo(VertexRef vertexRef, GraphContainer container) {
+    protected boolean contributesTo(VertexRef vertexRef, GraphContainer container) {
         return vertexRef.getNamespace().equals(BusinessServicesTopologyProvider.TOPOLOGY_NAMESPACE);
     }
 
     @Override
-    public Component getComponent(VertexRef ref, GraphContainer container) {
+    protected Component getComponent(VertexRef ref, GraphContainer container) {
         final FormLayout formLayout = new FormLayout();
         formLayout.setSpacing(false);
         formLayout.setMargin(false);
@@ -111,7 +111,7 @@ public class BusinessServiceVertexInfoPanelItem implements VertexInfoPanelItem {
     }
 
     @Override
-    public String getTitle(VertexRef ref) {
+    protected String getTitle(VertexRef ref) {
         return ((AbstractBusinessServiceVertex) ref).accept(new BusinessServiceVertexVisitor<String>() {
             @Override
             public String visit(BusinessServiceVertex vertex) {

@@ -417,3 +417,17 @@ div.v-table-header-wrap {
     max-width: 350px;
     overflow-y: auto;
 }
+
+/** Simulation Info Panel Styling */
+.info-panel-area .v-slot-simulation .v-slot-warning {
+    color: orange;
+}
+
+.info-panel-area .v-slot-simulation .v-slot-warning .v-caption-warning {
+    display: inline;
+}
+
+.info-panel-area .v-slot-simulation .v-label-warning {
+    vertical-align: top;
+    padding-left: 8px;
+}
