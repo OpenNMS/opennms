@@ -35,6 +35,7 @@ import org.opennms.features.topology.api.AbstractCheckedOperation;
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.OperationContext;
 import org.opennms.features.topology.api.topo.VertexRef;
+import org.opennms.features.topology.plugins.topo.bsm.BusinessServicesTopologyProvider;
 import org.opennms.features.topology.plugins.topo.bsm.simulate.SimulationEnabledCriteria;
 
 public class SimulationModeOperation extends AbstractCheckedOperation  {
@@ -56,6 +57,11 @@ public class SimulationModeOperation extends AbstractCheckedOperation  {
         }
         // Force a refresh to update the status
         container.redoLayout();
+    }
+
+    @Override
+    protected boolean enabled(GraphContainer container) {
+        return BusinessServicesTopologyProvider.TOPOLOGY_NAMESPACE.equals(container.getBaseTopology().getVertexNamespace());
     }
 
     @Override
