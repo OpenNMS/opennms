@@ -4,15 +4,15 @@
 
 === Introduction
 
-With the introduction of Karaf as an OSGi application container, OpenNMS now has the ability to install or upgrade features on top of a running instance of OpenNMS. In addtion, the new distributed OSGi architectue allows an OpenNMS system to be deployed as multiple software modules each running in their own Karaf instance.
+With the introduction of Karaf as an OSGi application container, OpenNMS now has the ability to install or upgrade features on top of a running instance of OpenNMS. In addition, the new distributed OSGi architecture allows an OpenNMS system to be deployed as multiple software modules each running in their own Karaf instance.
 
 The OpenNMS plugin manager provides a unified interface for managing the lifecycle of optional OSGi plugins installed in OpenNMS or in any Karaf instances which it manages. This need not be limited to Karaf instances running OpenNMS but can also be used to deploy modules to Karaf instances running user applications.
 
-In addtion to managing the installation of OSGi features, the plugin manager also allows the installation of licence keys which can be used to enable the features for a particular instance of OpenNMS. Although the OpenNMS platform remains open source, this provides a mechanism for third parties developing features on top of the OpenNMS platform to control access to their software.
+In addition to managing the installation of OSGi features, the plugin manager also allows the installation of licence keys which can be used to enable features for a particular instance of OpenNMS. Although the OpenNMS platform remains open source, this provides a mechanism for third parties developing features on top of the OpenNMS platform to manage access to their software.
 
-The plugin manager also provides a mechanism for a separate 'app-store' to be used to deliver these new features and / or licences into a particular OpenNMS insance. It is also possible to deliver software without access to the intenet using the traditional karaf Kar/RPM deployment model. In this case a number of features can be delivered together in a single sofware package but each only enabled at run time using the Plugin Manager.
+The plugin manager also provides a mechanism for a separate 'app-store' to be used to deliver these new features and / or licences into a particular OpenNMS instance. It is also possible to deliver software without access to the internet using the traditional Karaf Kar/RPM deployment model. In this case a number of features can be delivered together in a single software package but each only enabled at run time using the Plugin Manager.
 
-OpenNMS plugins are standard Karaf features with additional metadata which describes the feature and the licence (if any) required. A plugin requiring a licence will not start if a licence string is not also installed.
+OpenNMS plugins are standard Karaf features with additional metadata which describes the feature and the licence (if any) required. A plugin requiring a licence will not start if a valid licence string is not also installed.
 
-This guide describes how to deploy and manage plugins using the plugin manager. A seperate developers guide is provided for those wishing to write their own plugins.
+This guide describes how to deploy and manage plugins using the plugin manager. A separate plugin developer's guide is provided for those wishing to write their own plugins.
 
