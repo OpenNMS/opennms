@@ -19,19 +19,21 @@ The detector binds a service with a given _Service Name_ when a particular _SNMP
 .Parameters for the SNMP detector
 [options="header, autowidth"]
 |===
-| Parameter   | Description                                                                                              | Required | Default value
-| `oid`       | _SNMP OID_ for scalar or table to detect the service.                                                    | required | `.1.3.6.1.2.1.1.2.0`
-| `retry`     | Number of retries to detect the service.                                                                 | optional | _agent config_
-| `timeout`   | Timeout in milliseconds to wait for a response from the _SNMP_ agent.                                    | optional | _agent config_
+| Parameter   | Description                                                                                             | Required | Default value
+| `oid`       | _SNMP OID_ for scalar or table to detect the service.                                                   | required | `.1.3.6.1.2.1.1.2.0`
+| `retry`     | Number of retries to detect the service.                                                                | optional | _agent config_
+| `timeout`   | Timeout in milliseconds to wait for a response from the _SNMP_ agent.                                   | optional | _agent config_
 | `vbvalue`   | expected return value to detect the service; if not specified the service is detected if the _SNMP OID_
-                returned any kind of valid value.                                                                        | optional | `-`
-| `hex`       | Set `true` if the data is from type _HEX-String_.                                                        | optional | `false`
-| `isTable`   | Set `true` if detector should evaluate _SNMP tables_.                                                    | optional | `false`
+                returned any kind of valid value.
+                The `vbvalue` is evaluated as
+                link:https://docs.oracle.com/javase/8/docs/api/java/util/regex/Pattern.html[Java Regular Expression].   | optional | `-`
+| `hex`       | Set `true` if the data is from type _HEX-String_.                                                       | optional | `false`
+| `isTable`   | Set `true` if detector should evaluate _SNMP tables_.                                                   | optional | `false`
 | `matchType` | Set match type to evaluate the expected value in the SNMP table. +
                 _EXIST_: the expected `vbalue` is ignored, service detected if the given table under _OID_ exist +
                 _ALL_: all values in the table must match against expected `vbalue` to detect service +
-                _ANY_: at least on value in the table must match against expected `vbalue` to detect service +
-                _NONE_: None of the values should match against expected value to detect service
+                _ANY_: at least one value in the table must match against expected `vbalue` to detect service +
+                _NONE_: None of the values should match against expected value to detect service                        | optional | `EXIST`
 |===
 
 ===== Example for SNMP scalar value
