@@ -43,8 +43,6 @@ public interface BusinessService {
 
     Long getId();
 
-    Set<? extends Edge> getEdges();
-
     String getName();
 
     void setName(String name);
@@ -84,6 +82,8 @@ public interface BusinessService {
     Set<ReductionKeyEdge> getReductionKeyEdges();
     
     Set<IpServiceEdge> getIpServiceEdges();
-    
+
     Set<ChildEdge> getChildEdges();
+    
+    Set<? extends Edge> getEdges();
 }

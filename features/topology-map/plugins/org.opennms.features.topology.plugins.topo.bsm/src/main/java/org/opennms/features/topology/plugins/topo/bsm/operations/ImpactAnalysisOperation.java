@@ -71,22 +71,25 @@ public class ImpactAnalysisOperation implements Operation {
 
         Set<GraphVertex> graphVerticesToFocus = Sets.newHashSet();
         for (AbstractBusinessServiceVertex vertex : vertices) {
-            vertex.accept(new BusinessServiceVertexVisitor() {
+            vertex.accept(new BusinessServiceVertexVisitor<Void>() {
                 @Override
-                public void visit(BusinessServiceVertex vertex) {
+                public Void visit(BusinessServiceVertex vertex) {
                     BusinessService businessService = businessServiceManager.getBusinessServiceById(vertex.getServiceId());
                     graphVerticesToFocus.addAll(businessServiceStateMachine.calculateImpact(businessService));
+                    return null;
                 }
 
                 @Override
-                public void visit(IpServiceVertex vertex) {
+                public Void visit(IpServiceVertex vertex) {
                     IpService ipService = businessServiceManager.getIpServiceById(vertex.getIpServiceId());
                     graphVerticesToFocus.addAll(businessServiceStateMachine.calculateImpact(ipService));
+                    return null;
                 }
 
                 @Override
-                public void visit(ReductionKeyVertex vertex) {
+                public Void visit(ReductionKeyVertex vertex) {
                     graphVerticesToFocus.addAll(businessServiceStateMachine.calculateImpact(vertex.getReductionKey()));
+                    return null;
                 }
             });
         }

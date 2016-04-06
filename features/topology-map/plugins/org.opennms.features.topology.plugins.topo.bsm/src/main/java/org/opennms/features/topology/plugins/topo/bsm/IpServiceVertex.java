@@ -44,15 +44,17 @@ public class IpServiceVertex extends AbstractBusinessServiceVertex {
             ipService.getServiceName(),
             ipService.getIpAddress(),
             ipService.getReductionKeys(),
+            ipService.getNodeId(),
             level,
             status);
+
     }
 
     public IpServiceVertex(GraphVertex graphVertex) {
         this(graphVertex.getIpService(), graphVertex.getLevel(), graphVertex.getStatus());
     }
 
-    private IpServiceVertex(int ipServiceId, String ipServiceName, String ipAddress, Set<String> reductionKeys, int level, Status status) {
+    private IpServiceVertex(int ipServiceId, String ipServiceName, String ipAddress, Set<String> reductionKeys, int nodeId, int level, Status status) {
         super(Type.IpService + ":" + ipServiceId, ipServiceName, level, status);
         this.ipServiceId = ipServiceId;
         this.reductionKeys = reductionKeys;
@@ -60,6 +62,7 @@ public class IpServiceVertex extends AbstractBusinessServiceVertex {
         setLabel(ipServiceName);
         setTooltipText(String.format("IP Service '%s' on %s", ipServiceName, ipAddress));
         setIconKey("bsm.ip-service");
+        setNodeID(nodeId);
     }
 
     public Integer getIpServiceId() {
@@ -82,7 +85,7 @@ public class IpServiceVertex extends AbstractBusinessServiceVertex {
     }
 
     @Override
-    public void accept(BusinessServiceVertexVisitor visitor) {
-        visitor.visit(this);
+    public <T> T accept(BusinessServiceVertexVisitor<T> visitor) {
+        return visitor.visit(this);
     }
 }

@@ -26,13 +26,23 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.plugins.topo.bsm;
+package org.opennms.features.topology.api.info;
 
-public interface BusinessServiceVertexVisitor<T> {
+import org.opennms.features.topology.api.topo.Ref;
 
-    T visit(BusinessServiceVertex vertex);
+import com.vaadin.ui.Component;
 
-    T visit(IpServiceVertex vertex);
+public interface InfoPanelItem<T extends Ref> extends java.lang.Comparable<InfoPanelItem<T>> {
 
-    T visit(ReductionKeyVertex vertex);
+    Component getComponent(T ref);
+
+    boolean contributesTo(T ref);
+
+    String getTitle(T ref);
+
+    int getOrder();
+
+    default int compareTo(InfoPanelItem<T> o) {
+        return Integer.valueOf(getOrder()).compareTo(Integer.valueOf(o.getOrder()));
+    }
 }
