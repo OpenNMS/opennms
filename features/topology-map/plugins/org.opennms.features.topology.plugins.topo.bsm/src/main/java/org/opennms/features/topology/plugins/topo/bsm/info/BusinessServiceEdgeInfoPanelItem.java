@@ -46,10 +46,10 @@ import org.opennms.netmgt.bsm.service.model.functions.map.SetTo;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.FormLayout;
 
-public class BusinessServiceEdgeInfoPanelItem implements EdgeInfoPanelItem {
+public class BusinessServiceEdgeInfoPanelItem extends EdgeInfoPanelItem {
 
     @Override
-    public Component getComponent(EdgeRef ref, GraphContainer container) {
+    protected Component getComponent(EdgeRef ref, GraphContainer container) {
         FormLayout formLayout = new FormLayout();
         formLayout.setMargin(false);
         formLayout.setSpacing(false);
@@ -62,7 +62,7 @@ public class BusinessServiceEdgeInfoPanelItem implements EdgeInfoPanelItem {
     }
 
     @Override
-    public boolean contributesTo(EdgeRef edgeRef, GraphContainer containe) {
+    protected boolean contributesTo(EdgeRef edgeRef, GraphContainer containe) {
         return BusinessServicesTopologyProvider.TOPOLOGY_NAMESPACE.equals(edgeRef.getNamespace());
     }
 
@@ -72,7 +72,7 @@ public class BusinessServiceEdgeInfoPanelItem implements EdgeInfoPanelItem {
     }
 
     @Override
-    public String getTitle(EdgeRef edgeRef) {
+    protected String getTitle(EdgeRef edgeRef) {
         return "Map Function Details";
     }
 

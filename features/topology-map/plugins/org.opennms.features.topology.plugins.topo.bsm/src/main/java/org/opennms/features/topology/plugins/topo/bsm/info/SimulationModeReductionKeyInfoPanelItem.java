@@ -42,7 +42,7 @@ import com.vaadin.ui.Component;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.NativeSelect;
 
-public class SimulationModeReductionKeyInfoPanelItem implements VertexInfoPanelItem {
+public class SimulationModeReductionKeyInfoPanelItem extends VertexInfoPanelItem {
 
     @Override
     public boolean contributesTo(VertexRef ref, GraphContainer container) {

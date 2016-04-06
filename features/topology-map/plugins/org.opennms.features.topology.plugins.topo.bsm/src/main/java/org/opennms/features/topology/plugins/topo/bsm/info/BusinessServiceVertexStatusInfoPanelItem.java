@@ -61,7 +61,7 @@ import com.vaadin.ui.Component;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.Label;
 
-public class BusinessServiceVertexStatusInfoPanelItem implements VertexInfoPanelItem {
+public class BusinessServiceVertexStatusInfoPanelItem extends VertexInfoPanelItem {
 
     private BusinessServiceManager businessServiceManager;
     private BusinessServicesTopologyProvider businessServicesTopologyProvider;
@@ -81,12 +81,12 @@ public class BusinessServiceVertexStatusInfoPanelItem implements VertexInfoPanel
     }
 
     @Override
-    public boolean contributesTo(VertexRef vertexRef, GraphContainer container) {
+    protected boolean contributesTo(VertexRef vertexRef, GraphContainer container) {
         return vertexRef instanceof BusinessServiceVertex;
     }
 
     @Override
-    public Component getComponent(VertexRef ref, GraphContainer container) {
+    protected Component getComponent(VertexRef ref, GraphContainer container) {
         final BusinessServiceVertex vertex = (BusinessServiceVertex) ref;
 
         final FormLayout rootLayout = new FormLayout();
@@ -142,7 +142,7 @@ public class BusinessServiceVertexStatusInfoPanelItem implements VertexInfoPanel
     }
 
     @Override
-    public String getTitle(VertexRef ref) {
+    protected String getTitle(VertexRef ref) {
         return "Business Service Status";
     }
 
