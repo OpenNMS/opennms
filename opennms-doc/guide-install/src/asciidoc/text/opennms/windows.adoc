@@ -5,6 +5,8 @@
 [[gi-install-opennms-windows]]
 === Install on Microsoft Windows Systems
 
+IMPORTANT: This guide does not apply to OpenNMS Meridian, which can be installed only on Red Hat Enterprise Linux or CentOS systems.
+
 _OpenNMS_ is mostly developed on Unix/Linux based systems, nevertheless it is possible to install the platform on _Microsoft Windows_ operating systems.
 To install the application a graphical installer is provided and can be used to install _OpenNMS_ on _Microsoft Windows_.
 This section describes how to install the _OpenNMS_ platform on _Microsoft Windows 2012 Server_.
@@ -89,13 +91,13 @@ WARNING: There is currently an open issue in the installer link:http://issues.op
                     database-name="template1"
                     class-name="org.postgresql.Driver"
                     url="jdbc:postgresql://localhost:5432/template1"
-                    user-name="** YOUR-OPENNMS-USERNAME **"<3>
-                    password="** YOUR-OPENNMS-PASSWORD **" /><4>
+                    user-name="postgres"<3>
+                    password="** YOUR-POSTGRES-PASSWORD **" /><4>
 ----
 
 <1> Set the user name to access the _OpenNMS_ database table
 <2> Set the password to access the _OpenNMS_ database table
-<3> Set the user name for administrative changes of the _OpenNMS_ database table
+<3> Set the _postgres_ user for administrative access to PostgreSQL
 <4> Set the password for administrative changes of the _OpenNMS_ database table
 
 After setting the username and passwords in `opennms-datasources.xml` re-run the graphical installer and also initialize the database.

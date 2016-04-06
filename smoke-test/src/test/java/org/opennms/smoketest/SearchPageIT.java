@@ -28,6 +28,8 @@
 
 package org.opennms.smoketest;
 
+import static org.junit.Assert.assertEquals;
+
 import org.junit.Before;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
@@ -37,26 +39,29 @@ import org.junit.runners.MethodSorters;
 public class SearchPageIT extends OpenNMSSeleniumTestCase {
     @Before
     public void setUp() throws Exception {
+        deleteTestRequisition();
         searchPage();
     }
 
     @Test
     public void testAllTextIsPresent() throws Exception {
+        assertEquals(3, countElementsMatchingCss("h3.panel-title"));
         findElementByXpath("//h3[text()='Search for Nodes']");
         findElementByXpath("//h3[text()='Search Asset Information']");
         findElementByXpath("//h3[text()='Search Options']");
     }
 
     @Test 
-    public void testAllFormsArePresent() throws InterruptedException {
+    public void testAllFormsArePresent() throws Exception {
+        assertEquals(9, countElementsMatchingCss("form"));
         for (final String matchingElement : new String[] {
-                "input[@name='nodename']",
-                "input[@name='iplike']",
-                "input[@name='snmpParmValue']",
-                "select[@name='service']",
+                "input[@id='byname_nodename']",
+                "input[@id='byip_iplike']",
+                "select[@name='mib2Parm']",
+                "select[@name='snmpParm']",
+                "select[@id='byservice_service']",
                 "input[@name='maclike']",
                 "input[@name='foreignSource']"
-
         }) {
             findElementByXpath("//form[@action='element/nodeList.htm']//" + matchingElement);
         }

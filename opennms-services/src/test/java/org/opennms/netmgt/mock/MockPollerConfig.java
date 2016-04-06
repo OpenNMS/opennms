@@ -39,7 +39,6 @@ import java.util.Date;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.TreeMap;
 import java.util.Vector;
 
@@ -83,6 +82,8 @@ public class MockPollerConfig extends PollOutagesConfigManager implements Poller
     private long m_defaultPollInterval = 7654L;
 
     private boolean m_pollAll = true;
+
+    private boolean m_pathOutageEnabled = false;
 
     private boolean m_serviceUnresponsiveEnabled = false;
 
@@ -507,7 +508,11 @@ public class MockPollerConfig extends PollOutagesConfigManager implements Poller
 
     @Override
     public boolean isPathOutageEnabled() {
-        return false;
+        return m_pathOutageEnabled;
+    }
+
+    public void setPathOutageEnabled(boolean pathOutageEnabled) {
+        m_pathOutageEnabled = pathOutageEnabled;
     }
 
     @Override

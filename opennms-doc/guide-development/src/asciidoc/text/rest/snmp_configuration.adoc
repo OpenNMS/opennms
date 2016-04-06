@@ -24,7 +24,7 @@ The following operations are supported:
 
 ===== Determine API version
 
-To determine the version of the _API_ running in your OpenNMS type http://localhost:8980/opennms/rest/snmpConfig/1.1.1.1 in your browser and have a look at the output:
+To determine the version of the _API_ running in your {opennms-product-name} type http://localhost:8980/opennms/rest/snmpConfig/1.1.1.1 in your browser and have a look at the output:
 
 - *Version 1:* If the output only have attributes `community`, `port`, `retries`, `timeout` and `version`
 - *Version 2:* If there are more attributes than described before (e.g. max Repetitions)
@@ -101,7 +101,7 @@ This may change in the future.
 
 The interface uses _SnmpInfo_ objects for communication.
 Therefore it is possible to set for example v1 and v3 parameters in one request (e.g. `readCommunity` String and `privProtocol` String).
-However OpenNMS does not allow this.
+However {opennms-product-name} does not allow this.
 It is only allowed to set attributes which have no version restriction (e.g. timeout value) or the attributes which are limited to the version (e.g. `readCommunity` String if version is v1/v2c).
 The same is for getting data from the _API_, even if it is possible to store v1 and v3 parameters in one definition block in the `snmp-config.xml` manually, the _ReST API_ will only return the parameters which match the version.
 If no version is defined, the default is assumed (both in _PUT_ and _GET_ requests).

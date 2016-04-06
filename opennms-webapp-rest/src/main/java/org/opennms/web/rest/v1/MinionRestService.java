@@ -38,6 +38,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.UriInfo;
+import javax.ws.rs.core.Response.Status;
 
 import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.netmgt.dao.api.MinionDao;
@@ -58,7 +59,11 @@ public class MinionRestService extends OnmsRestService {
     @Path("{minionId}")
     @Transactional
     public OnmsMinion getMinion(@PathParam("minionId") final String minionId) {
-        return m_minionDao.get(minionId);
+        final OnmsMinion minion = m_minionDao.get(minionId);
+        if (minion == null) {
+            throw getException(Status.NOT_FOUND, "Minion {} was not found.", minionId);
+        }
+        return minion;
     }
 
     @GET
@@ -66,7 +71,12 @@ public class MinionRestService extends OnmsRestService {
     @Path("{minionId}/{key}")
     @Transactional
     public String getMinionProperty(@PathParam("minionId") final String minionId, @PathParam("key") final String key) {
-        return m_minionDao.findById(minionId).getProperties().get(key);
+        final OnmsMinion minion = getMinion(minionId);
+        final String value = minion.getProperties().get(key);
+        if (value == null) {
+            throw getException(Status.NOT_FOUND, "Property {} was not found on Minion {}.", key, minionId);
+        }
+        return value;
     }
 
     @GET

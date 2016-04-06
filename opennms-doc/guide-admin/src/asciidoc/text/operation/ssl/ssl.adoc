@@ -5,7 +5,7 @@
 [[ga-operation-https-ssl]]
 === HTTPS / SSL
 
-This chapter covers the possibilities to configure _OpenNMS_ to protect web sessions with HTTPS and also explains how to configure _OpenNMS_ to establish secure connections.
+This chapter covers the possibilities to configure _{opennms-product-name}_ to protect web sessions with HTTPS and also explains how to configure _{opennms-product-name}_ to establish secure connections.
 
 NOTE: In order to use HTTPS the Java command line tool `keytool` is used.
       It is automatically shipped with each JRE installation.
@@ -14,10 +14,10 @@ NOTE: In order to use HTTPS the Java command line tool `keytool` is used.
 [[ga-operation-standalone-https-jetty]]
 ==== Standalone HTTPS with Jetty
 
-To configure _OpenNMS_ to protect web sessions with HTTPS please refer to the official _OpenNMS_ Wiki article link:http://www.opennms.org/wiki/Standalone_HTTPS_with_Jetty[Standalone HTTPS with Jetty].
+To configure _{opennms-product-name}_ to protect web sessions with HTTPS please refer to the official _{opennms-product-name}_ Wiki article link:http://www.opennms.org/wiki/Standalone_HTTPS_with_Jetty[Standalone HTTPS with Jetty].
 
 [[ga-operation-https-client]]
-==== OpenNMS as HTTPS client
+==== {opennms-product-name} as HTTPS client
 
 To establish secure HTTPS connections within Java one has to setup a so called _Java Trust Store_.
 
@@ -75,9 +75,9 @@ openssl \
 <6> Where to store the certificate.
 
 [[ga-operation-ssl-opennms-trust-store]]
-===== Configure OpenNMS to use the defined _Java Trust Store_
+===== Configure {opennms-product-name} to use the defined _Java Trust Store_
 
-To setup _OpenNMS_ to use the defined _Java Trust Store_ the according `javax.net.ssl.trustStore*` properties have to be set.
+To setup _{opennms-product-name}_ to use the defined _Java Trust Store_ the according `javax.net.ssl.trustStore*` properties have to be set.
 Open `$OPENNMS_HOME/etc/opennms.properties` and add the properties `javax.net.ssl.trustStore` and `javax.net.ssl.trustStorePassword` as shown below.
 
 .$OPENNMS_HOME/etc/opennms.properties snippet to define a _Java Trust Store_
@@ -91,7 +91,7 @@ javax.net.ssl.trustStorePassword=change-me <2>
 
 For more details on the Java build-in SSL System properties have a look at chapter <<ga-operation-ssl-properties,Debugging / Properties>>.
 
-NOTE: Each time you modify the _Java Trust Store_ you have to restart _OpenNMS_ to have the changes take effect.
+NOTE: Each time you modify the _Java Trust Store_ you have to restart _{opennms-product-name}_ to have the changes take effect.
 
 [[ga-operation-trust-store-key-store]]
 ==== Differences between _Java Trust Store_ and _Java Key Store_

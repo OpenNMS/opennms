@@ -53,17 +53,17 @@ public class UserIT extends OpenNMSSeleniumTestCase {
     @Test
     public void testExpectedTextAndLinksArePresent() throws Exception {
         final List<WebElement> h3s = m_driver.findElements(By.tagName("h3"));
-        assertEquals(2, h3s.size());
-        assertEquals("User Account Self-Service", h3s.get(0).getText());
-        assertEquals("Account Self-Service Options", h3s.get(1).getText());
+        assertEquals("Account page should have 2 panels", 2, h3s.size());
+        assertEquals("Account page should have \"User Account Self-Service\" panel", "User Account Self-Service", h3s.get(0).getText());
+        assertEquals("Account page should have \"User Account Self-Service Options\" panel", "Account Self-Service Options", h3s.get(1).getText());
     }
 
     @Test
     public void testSubmitWithWrongPassword() throws InterruptedException {
         m_driver.findElement(By.linkText("Change Password")).click();
-        m_driver.findElement(By.cssSelector("input[type=password][name=oldpass]")).sendKeys("12345");
-        m_driver.findElement(By.cssSelector("input[type=password][name=pass1]")).sendKeys("23456");
-        m_driver.findElement(By.cssSelector("input[type=password][name=pass2]")).sendKeys("34567");
+        enterText(By.cssSelector("input[type=password][name=oldpass]"), "12345");
+        enterText(By.cssSelector("input[type=password][name=pass1]"), "23456");
+        enterText(By.cssSelector("input[type=password][name=pass2]"), "34567");
         m_driver.findElement(By.cssSelector("button[type=submit]")).click();
 
         try {
@@ -71,6 +71,7 @@ public class UserIT extends OpenNMSSeleniumTestCase {
             alert.dismiss();
         } catch (final Exception e) {
             LOG.debug("Got an exception waiting for a 'wrong password' alert.", e);
+            throw e;
         }
     }
 
@@ -106,6 +107,18 @@ public class UserIT extends OpenNMSSeleniumTestCase {
 
         findElementByLink(GROUP_NAME).click();
         m_driver.findElement(By.xpath("//h2[text()='Details for Group: " + GROUP_NAME + "']"));
+
+        findElementByLink("Group List").click();
+        findElementById(GROUP_NAME + ".doDelete").click();
+        handleAlert("Are you sure you want to delete the group " + GROUP_NAME + "?");
+        assertElementDoesNotExist(By.id(GROUP_NAME));
+
+        findElementByLink("Users and Groups").click();
+        findElementByLink("Configure Users").click();
+        findElementById("user-" + USER_NAME);
+        findElementById("users(" + USER_NAME + ").doDelete").click();
+        handleAlert("Are you sure you want to delete the user " + USER_NAME + "?");
+        assertElementDoesNotExist(By.id(USER_NAME));
     }
 
 }

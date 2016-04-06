@@ -89,6 +89,9 @@
             <!-- Ticketing Features-->
             <repository>mvn:org.opennms.features/jira-troubleticketer/${project.version}/xml/features</repository>
 
+            <!-- Data Choices -->
+            <repository>mvn:org.opennms.features/datachoices/${project.version}/xml/features</repository>
+
             <!-- OpenNMS Plugin Manager Feature -->
             <repository>mvn:org.opennms.plugins/vaadin-opennms-pluginmanager/${project.version}/xml/features</repository>
           </repositories>
@@ -229,6 +232,7 @@
             <feature>vaadin-snmp-events-and-metrics</feature>
             <feature>vaadin-surveillance-views</feature>
             <feature>jira-troubleticketer</feature>
+            <feature>datachoices</feature>
             <feature>vaadin-opennms-pluginmanager</feature>
           </features>
         </configuration>
@@ -402,6 +406,13 @@
     <dependency>
       <groupId>org.opennms.features</groupId>
       <artifactId>jira-troubleticketer</artifactId>
+      <version>${project.version}</version>
+      <type>pom</type>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features</groupId>
+      <artifactId>datachoices</artifactId>
       <version>${project.version}</version>
       <type>pom</type>
       <scope>provided</scope>

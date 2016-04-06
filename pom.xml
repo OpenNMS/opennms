@@ -1248,6 +1248,8 @@
     <jacksonVersion>1.9.13</jacksonVersion>
     <jasperreportsVersion>6.1.1</jasperreportsVersion>
     <jettyVersion>8.1.10.v20130312</jettyVersion>
+    <jfreechartVersion>1.0.19</jfreechartVersion>
+    <jcommonVersion>1.0.23</jcommonVersion>
     <jodaTimeVersion>2.1</jodaTimeVersion>
     <jrubyVersion>9.0.0.0</jrubyVersion>
     <karafVersion>2.4.0</karafVersion>
@@ -1264,7 +1266,10 @@
     <oroVersion>2.0.8</oroVersion>
     <osgiVersion>5.0.0</osgiVersion>
     <osgiEnterpriseVersion>5.0.0</osgiEnterpriseVersion>
+    <quartzVersion>1.6.5</quartzVersion>
     <slf4jVersion>1.7.7</slf4jVersion>
+    <snmp4jVersion>2.4.3</snmp4jVersion>
+    <snmp4jagentVersion>2.4.2</snmp4jagentVersion>
     <smackVersion>4.0.6</smackVersion>
     <springJaxbVersion>2.1.7</springJaxbVersion>
     <xalanVersion>2.7.2</xalanVersion>
@@ -1300,7 +1305,7 @@
           <releases><enabled>false</enabled><updatePolicy>${updatePolicy}</updatePolicy></releases>
           <id>opennms-snapshots</id>
           <name>OpenNMS Snapshot Maven Repository</name>
-          <url>http://maven.opennms.org/content/groups/opennms.org-snapshot</url>
+          <url>http://maven.opennms.org/content/groups/opennms.org-snapshot/</url>
         </repository>
       </repositories>
     </profile>
@@ -3646,7 +3651,7 @@
       <releases><enabled>true</enabled><updatePolicy>${updatePolicy}</updatePolicy></releases>
       <id>opennms-repo</id>
       <name>OpenNMS Repository</name>
-      <url>http://maven.opennms.org/content/groups/opennms.org-release</url>
+      <url>http://maven.opennms.org/content/groups/opennms.org-release/</url>
     </repository>
     <repository>
       <snapshots><enabled>false</enabled><updatePolicy>${updatePolicy}</updatePolicy></snapshots>
@@ -3663,7 +3668,7 @@
       <releases><enabled>true</enabled></releases>
       <id>opennms-repo</id>
       <name>OpenNMS Repository</name>
-      <url>http://maven.opennms.org/content/groups/opennms.org-release</url>
+      <url>http://maven.opennms.org/content/groups/opennms.org-release/</url>
     </pluginRepository>
 <!--
     <pluginRepository>
@@ -3678,7 +3683,7 @@
       <releases><enabled>false</enabled></releases>
       <id>opennms-snapshots</id>
       <name>OpenNMS Snapshot Repository</name>
-      <url>http://maven.opennms.org/content/groups/opennms.org-snapshot</url>
+      <url>http://maven.opennms.org/content/groups/opennms.org-snapshot/</url>
     </pluginRepository>
     <pluginRepository>
       <snapshots><enabled>false</enabled></snapshots>
@@ -3696,7 +3701,7 @@
       <releases><enabled>true</enabled></releases>
       <id>central</id>
       <name>Maven Central</name>
-      <url>http://repo1.maven.org/maven2</url>
+      <url>http://repo1.maven.org/maven2/</url>
     </pluginRepository>
 -->
   </pluginRepositories>

@@ -4,7 +4,7 @@
 
 === Event Forwarder
 
-The event forwarder listens for _all_ events on OpenNMS' internal event bus.
+The event forwarder listens for _all_ events on the internal event bus of {opennms-product-name}.
 Events from the bus are sent to a Camel processor, which can filter or transform these, before being sent to the AMQP endpoint.
 
 The event forwarer exposes the following properties via the `org.opennms.features.amqp.eventforwarder` pid:

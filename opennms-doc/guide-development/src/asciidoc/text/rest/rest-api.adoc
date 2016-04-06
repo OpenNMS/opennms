@@ -1,6 +1,6 @@
 
 A RESTful interface is a web service conforming to the REST architectural style as described in the book link:http://oreilly.com/catalog/9780596529260[RESTful Web Services].
-This page is describes the RESTful interface for OpenNMS.
+This page is describes the RESTful interface for {opennms-product-name}.
 
 === ReST URL
 
@@ -63,3 +63,19 @@ Take `/events` as an example.
 | `/events?eventAckTime=2008-07-28T04:41:30.530%2B12:00&id=100&comparator=gt&limit=20` | would return the first 20 events that have were acknowledged after 28th July 2008 at 4:41am (+12:00), and an id greater than 100.  Note that the same comparator applies to both property comparisons. Also note that you must URL encode the plus sign when using GET.
 | `/events?orderBy=id&order=desc`                                                    | would return the 10 latest events inserted (probably, unless you've been messing with the id's)
 |===
+
+=== HTTP Return Codes
+
+The following apply for OpenNMS Horizon 18 and newer.
+
+* All the DELETE requests are going to return a 204 (NO_CONTENT) on success.
+* All the PUT requests are going to return a 204 (NO_CONTENT) on success.
+* All the POST requests that can either add or update an entity are going to return a 204 (NO_CONTENT) on success.
+* All the POST associated to resource addition are going to return a 201 (CREATED) on success.
+* All the POST requests where it is required to return an object will return a 200 (OK).
+* All the requests excepts GET for the Requisitions end-point and the Foreign Sources Definitions end-point will return 202 (ACCEPTED). This is because all the requests are actually executed asynchronously and there is no way to know the status of the execution, or wait until the processing is done.
+* If a resource is not modified during a PUT request, a NOT_MODIFIED will be returned. A NO_CONTENT will be returned only on a success operation.
+* All GET requests are going to return 200 (OK) on success.
+* All GET requests are going to return 404 (NOT_FOUND) when a single resource doesn't exist; but will return 400 (BAD_REQUEST), if an intermediate resource doesn't exist. For example, if a specific IP doesn't exist on a valid node, return 404. But, if the IP is valid and the node is not valid, because the node is an intermediate resource, a 400 will be returned.
+* If something not expected is received from the Service/DAO Layer when processing any HTTP request, like an exception, a 500 (INTERNAL_SERVER_ERROR) will be returned.
+* Any problem related with the incoming parameters, like validations, will generate a 400 (BAD_REQUEST).
