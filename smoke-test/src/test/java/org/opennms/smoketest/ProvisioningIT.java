@@ -30,13 +30,10 @@ package org.opennms.smoketest;
 
 import static org.junit.Assert.assertTrue;
 
-import java.util.concurrent.TimeUnit;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.opennms.core.utils.InetAddressUtils;
 import org.openqa.selenium.By;
-import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
@@ -118,7 +115,7 @@ public class ProvisioningIT extends OpenNMSSeleniumTestCase {
         // add a node
         findElementById("edit_req_anchor_" + REQUISITION_NAME).click();
         findElementByXpath("//input[@value='Add Node']").click();
-        String nodeForNode = setTreeFieldsAndSave("nodeEditForm", type("nodeLabel", NODE_LABEL));
+        String nodeForNode = setTreeFieldsAndSave("nodeEditForm", type("nodeLabel", NODE_LABEL), type("foreignId", NODE_LABEL));
 
         // add the node interface
         findElementByXpath("//a[contains(@href, '" + nodeForNode + "') and text() = '[Add Interface]']").click();
@@ -137,23 +134,8 @@ public class ProvisioningIT extends OpenNMSSeleniumTestCase {
         // wait for the node scanning to complete
         Thread.sleep(5000);
 
-        clickMenuItem("Info", "Nodes", "element/nodeList.htm");
-
-        try {
-            // Disable implicitlyWait
-            m_driver.manage().timeouts().implicitlyWait(0, TimeUnit.MILLISECONDS);
-
-            // If this is the only node on the system, we'll be sent directly
-            // to its node details page.
-            findElementByXpath("//h3[text()='Availability']");
-        } catch (NoSuchElementException e) {
-            // If there are multiple nodes, we will be on the node list page, 
-            // click through to the node
-            findElementByLink(NODE_LABEL).click();
-        } finally {
-            // Restore the implicitlyWait timeout
-            m_driver.manage().timeouts().implicitlyWait(LOAD_TIMEOUT, TimeUnit.MILLISECONDS);
-        }
+        m_driver.get(BASE_URL + "opennms/element/node.jsp?node="+ REQUISITION_NAME + ":" + NODE_LABEL);
+        findElementByXpath("//h3[text()='Availability']");
 
         wait.until(ExpectedConditions.elementToBeClickable(By.linkText("ICMP")));
         findElementByXpath("//a[contains(@href, 'element/interface.jsp') and text()='" + InetAddressUtils.normalize("::1") + "']");

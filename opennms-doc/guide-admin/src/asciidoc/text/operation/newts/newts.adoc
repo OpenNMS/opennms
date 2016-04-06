@@ -3,7 +3,7 @@
 :imagesdir: ../../../images
 ==== Newts Monitoring
 
-This section describes the metrics _OpenNMS_ collects for monitoring the _Newts_ keyspace from `org.apache.cassandra.metrics.Keyspace` on an _Cassandra_ node.
+This section describes the metrics _{opennms-product-name}_ collects for monitoring the _Newts_ keyspace from `org.apache.cassandra.metrics.Keyspace` on an _Cassandra_ node.
 To enable the data collection, the node has to be in the _Surveillance Categories_ named _Cassandra21_ and _Newts_.
 
 The data collection is bound to the agent IP interface with the service name _JMX-Cassandra-Newts_.

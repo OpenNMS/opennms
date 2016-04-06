@@ -28,27 +28,23 @@
 
 package org.opennms.netmgt.poller;
 
-import java.io.IOException;
 import java.net.InetAddress;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.config.OpennmsServerConfigFactory;
 import org.opennms.netmgt.config.PollerConfig;
 import org.opennms.netmgt.dao.hibernate.PathOutageManagerDaoImpl;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventIpcManager;
 import org.opennms.netmgt.events.api.EventListener;
+import org.opennms.netmgt.icmp.PingerFactory;
 import org.opennms.netmgt.model.events.EventBuilder;
-import org.opennms.netmgt.poller.monitors.IcmpMonitor;
 import org.opennms.netmgt.poller.pollables.PendingPollEvent;
 import org.opennms.netmgt.poller.pollables.PollContext;
 import org.opennms.netmgt.poller.pollables.PollEvent;
@@ -420,43 +416,25 @@ public class DefaultPollContext implements PollContext, EventListener {
             LOG.error("testCriticalPath: illegal arguments, ignoring.");
             return true;
         }
-        LOG.debug("testCriticalPath: checking {}@{}", criticalPath[1], criticalPath[0]);
         final InetAddress ipAddress = InetAddressUtils.addr(criticalPath[0]);
-        final String svcName = criticalPath[1];
         if (ipAddress == null) {
             LOG.error("testCriticalPath: failed to convert string address to InetAddress {}", criticalPath[0]);
             return true;
         }
-        final Map<String, Object> parameters = new HashMap<String,Object>();
-        org.opennms.netmgt.config.poller.Package pkg = getPollerConfig().getFirstLocalPackageMatch(ipAddress.getHostAddress());
-        if (pkg != null) {
-            org.opennms.netmgt.config.poller.Service svc = getPollerConfig().getServiceInPackage(svcName, pkg);
-            if (svc != null) {
-                svc.getParameters().forEach(p -> {
-                    String value = p.getValue();
-                    if (value == null) {
-                        try {
-                            value = JaxbUtils.marshal(p.getAnyObject());
-                        } catch (Exception e) {}
-                    }
-                    parameters.put(p.getKey(), value);
-                });
+        boolean available = false;
+        try {
+            int retries = OpennmsServerConfigFactory.getInstance().getDefaultCriticalPathRetries();
+            int timeout = OpennmsServerConfigFactory.getInstance().getDefaultCriticalPathTimeout();
+            Number retval = PingerFactory.getInstance().ping(ipAddress, timeout, retries);
+            if (retval != null) {
+                available = true;
             }
+        } catch (Throwable e) {
+            LOG.warn("Pinger failed to ping {}", ipAddress, e);
+            available = false;
         }
-        ServiceMonitor monitor = getPollerConfig().getServiceMonitor(svcName);
-        if (monitor == null) {
-            try {
-                LOG.debug("testCriticalPath: can't find monitor implementation for {}, using IcmpMonitor.", svcName);
-                monitor = new IcmpMonitor();
-            } catch (IOException e) {
-                LOG.error("testCriticalPath: failed to instantiate the default monitor: IcmpMonitor.");
-                return true;
-            }
-        }
-        LOG.debug("testCriticalPath: running {} with {}", monitor.getClass().getSimpleName(), parameters);
-        final PollStatus status = monitor.poll(new SimpleMonitoredService(ipAddress, svcName), parameters);
-        LOG.error("testCriticalPath: available ? {}", status.isAvailable());
-        return status.isAvailable();
+        LOG.debug("testCriticalPath: checking {}@{}, available ? {}", criticalPath[1], criticalPath[0], available);
+        return available;
     }
 
     String getNodeLabel(int nodeId) {

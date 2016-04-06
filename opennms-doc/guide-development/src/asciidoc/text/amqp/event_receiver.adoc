@@ -4,7 +4,7 @@
 
 === Event Receiver
 
-The event receiver listens for messages from an AMQP target and forwards them onto OpenNMS' internal event bus.
+The event receiver listens for messages from an AMQP target and forwards them onto the internal event bus of {opennms-product-name}.
 Messages are sent to a Camel processor, which can filter or transform these, before being sent onto the event bus.
 
 The event forwarer exposes the following properties via the `org.opennms.features.amqp.eventreceiver` pid:

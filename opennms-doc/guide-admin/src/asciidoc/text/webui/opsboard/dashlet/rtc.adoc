@@ -1,7 +1,7 @@
 
 ===== RTC
 
-This _Dashlet_ shows the configured SLA categories from the OpenNMS start page.
+This _Dashlet_ shows the configured SLA categories from the {opennms-product-name} start page.
 
 [options="autowidth"]
 |===

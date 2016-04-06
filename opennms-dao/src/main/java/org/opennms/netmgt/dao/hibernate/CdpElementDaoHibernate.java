@@ -60,6 +60,14 @@ public class CdpElementDaoHibernate extends AbstractDaoHibernate<CdpElement, Int
         return findUnique("from CdpElement rec where rec.cdpGlobalDeviceId = ? ", deviceId);
 	}
 
+    @Override
+    public void deleteByNodeId(Integer nodeId) {
+        for (CdpElement rec : find("from CdpElement rec where rec.node.id = ? ",
+                                    nodeId)) {
+            delete(rec);
+        }
+
+    }
 
 
 }

@@ -28,6 +28,8 @@
 
 package org.opennms.smoketest;
 
+import static org.junit.Assert.assertEquals;
+
 import java.net.InetSocketAddress;
 
 import org.junit.Before;
@@ -42,6 +44,7 @@ import org.opennms.netmgt.model.events.EventBuilder;
 import org.openqa.selenium.By;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 
+@SuppressWarnings("deprecation")
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class AlarmsPageIT extends OpenNMSSeleniumTestCase {
     @BeforeClass
@@ -62,7 +65,8 @@ public class AlarmsPageIT extends OpenNMSSeleniumTestCase {
     }
 
     @Test
-    public void testAllTextIsPresent() throws InterruptedException {
+    public void testAllTextIsPresent() throws Exception {
+        assertEquals(3, countElementsMatchingCss("h3.panel-title"));
         findElementByXpath("//h3[text()='Alarm Queries']");
         findElementByXpath("//h3[text()='Alarm Filter Favorites']");
         findElementByXpath("//h3[text()='Outstanding and acknowledged alarms']");
@@ -75,6 +79,7 @@ public class AlarmsPageIT extends OpenNMSSeleniumTestCase {
     public void testAllLinks() throws InterruptedException{
         findElementByLink("All alarms (summary)").click();
         findElementByXpath("//a[@title='Show acknowledged alarm(s)']");
+        assertElementDoesNotExist(By.cssSelector("//table//th//a[text()='First Event Time']"));
 
         alarmsPage();
         findElementByLink("All alarms (detail)").click();
