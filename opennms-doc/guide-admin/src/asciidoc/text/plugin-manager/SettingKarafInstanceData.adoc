@@ -4,7 +4,8 @@
 
 === Plugin Manager UI panel
 
-The plugin manager is accessed as an entry in the OpenNMS Admin Gui 
+The plugin manager is accessed as an entry in the Additional Tools panel of the OpenNMS Admin Gui 
+
 image::plugin-manager/adminPageEntry.png[]
 
 The Plugin manager administration page is split into six main areas as illustrated below.
