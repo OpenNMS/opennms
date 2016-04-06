@@ -26,32 +26,43 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.api.info;
+package org.opennms.features.topology.plugins.topo.bsm.info;
 
 import org.opennms.features.topology.api.GraphContainer;
+import org.opennms.features.topology.api.info.InfoPanelItem;
+import org.opennms.features.topology.plugins.topo.bsm.simulate.SimulationAwareStateMachineFactory;
 
+import com.vaadin.server.FontAwesome;
 import com.vaadin.ui.Component;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
 
-/**
- * A general item to show up in the info panel.
- */
-public interface InfoPanelItem extends java.lang.Comparable<InfoPanelItem> {
+public class SimulationModeEnabledPanelItem implements InfoPanelItem {
+    @Override
+    public Component getComponent(GraphContainer container) {
+        Label label = new Label("Simulation Mode Enabled");
+        label.setDescription("Simulation Mode is enabled");
+        label.setIcon(FontAwesome.EXCLAMATION_TRIANGLE);
+        label.addStyleName("warning");
 
-    Component getComponent(GraphContainer container);
+        HorizontalLayout layout = new HorizontalLayout();
+        layout.addComponent(label);
+        layout.addStyleName("simulation");
+        return layout;
+    }
 
-    boolean contributesTo(GraphContainer container);
+    @Override
+    public boolean contributesTo(GraphContainer container) {
+        return SimulationAwareStateMachineFactory.isInSimulationMode(container.getCriteria());
+    }
 
-    String getTitle(GraphContainer container);
+    @Override
+    public String getTitle(GraphContainer container) {
+        return null;
+    }
 
-    /**
-     * The order of the item in which it should occur.
-     *
-     * @return
-     */
-    int getOrder();
-
-    // ensure that InfoPanelItems are always sorted by order
-    default int compareTo(InfoPanelItem o) {
-        return Integer.valueOf(getOrder()).compareTo(Integer.valueOf(o.getOrder()));
+    @Override
+    public int getOrder() {
+        return Integer.MIN_VALUE;
     }
 }

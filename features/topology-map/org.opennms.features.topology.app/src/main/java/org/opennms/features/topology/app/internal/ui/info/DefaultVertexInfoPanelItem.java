@@ -30,8 +30,7 @@ package org.opennms.features.topology.app.internal.ui.info;
 
 import static org.opennms.netmgt.vaadin.core.UIHelper.createLabel;
 
-import com.vaadin.shared.ui.label.ContentMode;
-import com.vaadin.ui.Label;
+import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.info.VertexInfoPanelItem;
 import org.opennms.features.topology.api.topo.AbstractVertex;
 import org.opennms.features.topology.api.topo.VertexRef;
@@ -39,9 +38,9 @@ import org.opennms.features.topology.api.topo.VertexRef;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.FormLayout;
 
-public class DefaultVertexInfoPanelItem implements VertexInfoPanelItem {
+public class DefaultVertexInfoPanelItem extends VertexInfoPanelItem {
     @Override
-    public Component getComponent(VertexRef ref) {
+    protected Component getComponent(VertexRef ref, GraphContainer container) {
         FormLayout formLayout = new FormLayout();
         formLayout.setSpacing(false);
         formLayout.setMargin(false);
@@ -63,12 +62,12 @@ public class DefaultVertexInfoPanelItem implements VertexInfoPanelItem {
     }
 
     @Override
-    public boolean contributesTo(VertexRef ref) {
+    protected boolean contributesTo(VertexRef ref, GraphContainer container) {
         return true;
     }
 
     @Override
-    public String getTitle(VertexRef vertexRef) {
+    protected String getTitle(VertexRef vertexRef) {
         return "Technical Details";
     }
 

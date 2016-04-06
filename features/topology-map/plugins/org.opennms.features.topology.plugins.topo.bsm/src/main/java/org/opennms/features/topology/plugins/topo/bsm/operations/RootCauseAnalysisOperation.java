@@ -42,6 +42,7 @@ import org.opennms.features.topology.api.OperationContext.DisplayLocation;
 import org.opennms.features.topology.api.support.VertexHopGraphProvider.DefaultVertexHopCriteria;
 import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.features.topology.plugins.topo.bsm.BusinessServiceVertex;
+import org.opennms.features.topology.plugins.topo.bsm.simulate.SimulationAwareStateMachineFactory;
 import org.opennms.netmgt.bsm.service.BusinessServiceManager;
 import org.opennms.netmgt.bsm.service.BusinessServiceStateMachine;
 import org.opennms.netmgt.bsm.service.model.graph.GraphVertex;
@@ -51,17 +52,17 @@ import org.slf4j.LoggerFactory;
 
 public class RootCauseAnalysisOperation implements Operation {
     private static final Logger LOG = LoggerFactory.getLogger(RootCauseAnalysisOperation.class);
-    private static final String OPERATION_ID = "contextRootCauseAnalysis";
 
     private BusinessServiceManager businessServiceManager;
-    private BusinessServiceStateMachine businessServiceStateMachine;
 
     @Override
     public void execute(List<VertexRef> targets, OperationContext operationContext) {
-        List<BusinessServiceVertex> vertices = getVertices(targets);
-        List<GraphVertex> verticesToFocus = vertices.stream()
+        final List<BusinessServiceVertex> vertices = getVertices(targets);
+        final BusinessServiceStateMachine stateMachine = SimulationAwareStateMachineFactory.createStateMachine(businessServiceManager,
+                operationContext.getGraphContainer().getCriteria());
+        final List<GraphVertex> verticesToFocus = vertices.stream()
             .map(v -> businessServiceManager.getBusinessServiceById(v.getServiceId()))
-            .map(b -> businessServiceStateMachine.calculateRootCause(b))
+            .map(b -> stateMachine.calculateRootCause(b))
             .flatMap(l -> l.stream())
             .collect(Collectors.toList());
         LOG.info("Found {} edges for root cause.", verticesToFocus.size());
@@ -71,7 +72,7 @@ public class RootCauseAnalysisOperation implements Operation {
         } else {
             // add to focus
             GraphContainer container = operationContext.getGraphContainer();
-            container.clearCriteria();
+            ImpactAnalysisOperation.removeHopCriteria(container);
             verticesToFocus.forEach(graphVertex -> container.addCriteria(
                     new DefaultVertexHopCriteria(createTopologyVertex(graphVertex))));
             // add the context vertex because it is missing in the root cause result
@@ -106,11 +107,7 @@ public class RootCauseAnalysisOperation implements Operation {
 
     @Override
     public String getId() {
-        return OPERATION_ID;
-    }
-
-    public void setBusinessServiceStateMachine(BusinessServiceStateMachine businessServiceStateMachine) {
-        this.businessServiceStateMachine = Objects.requireNonNull(businessServiceStateMachine);
+        return getClass().getCanonicalName();
     }
 
     public void setBusinessServiceManager(BusinessServiceManager businessServiceManager) {

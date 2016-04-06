@@ -37,7 +37,6 @@ import org.opennms.netmgt.bsm.service.internal.IpServiceImpl;
 import org.opennms.netmgt.bsm.service.model.BusinessService;
 import org.opennms.netmgt.bsm.service.model.IpService;
 import org.opennms.netmgt.bsm.service.model.Node;
-import org.opennms.netmgt.bsm.service.model.Status;
 import org.opennms.netmgt.bsm.test.BsmTestUtils;
 import org.opennms.netmgt.bsm.test.BusinessServiceEntityBuilder;
 
@@ -65,20 +64,20 @@ public class BusinessServiceVertexProviderTest {
         BusinessService bs1 = new BusinessServiceImpl(managerMock, builder.toEntity());
         BusinessService bs2 = new BusinessServiceImpl(managerMock, builder.toEntity());
         BusinessService bs3 = new BusinessServiceImpl(managerMock, builder.id(11L).toEntity()); // is different
-        BusinessServiceVertex bsVertex1 = new BusinessServiceVertex(bs1, 0, Status.INDETERMINATE);
-        BusinessServiceVertex bsVertex2 = new BusinessServiceVertex(bs2, 0, Status.INDETERMINATE);
-        BusinessServiceVertex bsVertex3 = new BusinessServiceVertex(bs3, 0, Status.INDETERMINATE);
+        BusinessServiceVertex bsVertex1 = new BusinessServiceVertex(bs1, 0);
+        BusinessServiceVertex bsVertex2 = new BusinessServiceVertex(bs2, 0);
+        BusinessServiceVertex bsVertex3 = new BusinessServiceVertex(bs3, 0);
 
         // create 2 ip Service vertices where all of them should be equal
         IpService ipService1 = new IpServiceImpl(managerMock, BsmTestUtils.createMonitoredService(1, 1, "127.0.0.1", "SSH"));
         IpService ipService2 = new IpServiceImpl(managerMock, BsmTestUtils.createMonitoredService(1, 1, "127.0.0.1", "SSH"));
-        IpServiceVertex ipServiceVertex1 = new IpServiceVertex(ipService1, 0, Status.INDETERMINATE);
-        IpServiceVertex ipServiceVertex2 = new IpServiceVertex(ipService2, 0, Status.INDETERMINATE);
+        IpServiceVertex ipServiceVertex1 = new IpServiceVertex(ipService1, 0);
+        IpServiceVertex ipServiceVertex2 = new IpServiceVertex(ipService2, 0);
 
         // create 3 reduction key vertices where 2 of them should be equal
-        ReductionKeyVertex rkVertex1 = new ReductionKeyVertex("key1", 0, Status.INDETERMINATE);
-        ReductionKeyVertex rkVertex2 = new ReductionKeyVertex("key1", 0, Status.INDETERMINATE);
-        ReductionKeyVertex rkVertex3 = new ReductionKeyVertex("key2", 0, Status.INDETERMINATE);
+        ReductionKeyVertex rkVertex1 = new ReductionKeyVertex("key1", 0);
+        ReductionKeyVertex rkVertex2 = new ReductionKeyVertex("key1", 0);
+        ReductionKeyVertex rkVertex3 = new ReductionKeyVertex("key2", 0);
 
         // Add all the above vertices. Some of them even twice to ensure that the getRefId() methods work correctly
         BusinessServiceVertexProvider vertexProvider = new BusinessServiceVertexProvider(BusinessServicesTopologyProvider.TOPOLOGY_NAMESPACE);

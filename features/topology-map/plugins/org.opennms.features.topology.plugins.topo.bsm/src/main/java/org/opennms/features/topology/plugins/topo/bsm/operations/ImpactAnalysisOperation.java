@@ -30,6 +30,7 @@ package org.opennms.features.topology.plugins.topo.bsm.operations;
 
 import static org.opennms.features.topology.plugins.topo.bsm.GraphVertexToTopologyVertexConverter.createTopologyVertex;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -40,13 +41,15 @@ import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.Operation;
 import org.opennms.features.topology.api.OperationContext;
 import org.opennms.features.topology.api.OperationContext.DisplayLocation;
-import org.opennms.features.topology.api.support.VertexHopGraphProvider;
+import org.opennms.features.topology.api.support.VertexHopGraphProvider.DefaultVertexHopCriteria;
+import org.opennms.features.topology.api.topo.Criteria;
 import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.features.topology.plugins.topo.bsm.AbstractBusinessServiceVertex;
 import org.opennms.features.topology.plugins.topo.bsm.BusinessServiceVertex;
 import org.opennms.features.topology.plugins.topo.bsm.BusinessServiceVertexVisitor;
 import org.opennms.features.topology.plugins.topo.bsm.IpServiceVertex;
 import org.opennms.features.topology.plugins.topo.bsm.ReductionKeyVertex;
+import org.opennms.features.topology.plugins.topo.bsm.simulate.SimulationAwareStateMachineFactory;
 import org.opennms.netmgt.bsm.service.BusinessServiceManager;
 import org.opennms.netmgt.bsm.service.BusinessServiceStateMachine;
 import org.opennms.netmgt.bsm.service.model.BusinessService;
@@ -60,35 +63,34 @@ import com.google.common.collect.Sets;
 
 public class ImpactAnalysisOperation implements Operation {
     private static final Logger LOG = LoggerFactory.getLogger(ImpactAnalysisOperation.class);
-    private static final String OPERATION_ID = "contextImpactAnalysis";
 
     private BusinessServiceManager businessServiceManager;
-    private BusinessServiceStateMachine businessServiceStateMachine;
 
     @Override
     public void execute(List<VertexRef> targets, OperationContext operationContext) {
-        List<AbstractBusinessServiceVertex> vertices = getVertices(targets);
-
-        Set<GraphVertex> graphVerticesToFocus = Sets.newHashSet();
+        final List<AbstractBusinessServiceVertex> vertices = getVertices(targets);
+        final BusinessServiceStateMachine stateMachine = SimulationAwareStateMachineFactory.createStateMachine(businessServiceManager,
+                operationContext.getGraphContainer().getCriteria());
+        final Set<GraphVertex> graphVerticesToFocus = Sets.newHashSet();
         for (AbstractBusinessServiceVertex vertex : vertices) {
             vertex.accept(new BusinessServiceVertexVisitor<Void>() {
                 @Override
                 public Void visit(BusinessServiceVertex vertex) {
                     BusinessService businessService = businessServiceManager.getBusinessServiceById(vertex.getServiceId());
-                    graphVerticesToFocus.addAll(businessServiceStateMachine.calculateImpact(businessService));
+                    graphVerticesToFocus.addAll(stateMachine.calculateImpact(businessService));
                     return null;
                 }
 
                 @Override
                 public Void visit(IpServiceVertex vertex) {
                     IpService ipService = businessServiceManager.getIpServiceById(vertex.getIpServiceId());
-                    graphVerticesToFocus.addAll(businessServiceStateMachine.calculateImpact(ipService));
+                    graphVerticesToFocus.addAll(stateMachine.calculateImpact(ipService));
                     return null;
                 }
 
                 @Override
                 public Void visit(ReductionKeyVertex vertex) {
-                    graphVerticesToFocus.addAll(businessServiceStateMachine.calculateImpact(vertex.getReductionKey()));
+                    graphVerticesToFocus.addAll(stateMachine.calculateImpact(vertex.getReductionKey()));
                     return null;
                 }
             });
@@ -100,13 +102,22 @@ public class ImpactAnalysisOperation implements Operation {
         } else {
             // add to focus
             GraphContainer container = operationContext.getGraphContainer();
-            container.clearCriteria();
+            removeHopCriteria(container);
             graphVerticesToFocus.forEach(graphVertex -> container.addCriteria(
-                    new VertexHopGraphProvider.DefaultVertexHopCriteria(createTopologyVertex(graphVertex))));
+                    new DefaultVertexHopCriteria(createTopologyVertex(graphVertex))));
             // add the context vertex because it is missing in the root cause result
-            container.addCriteria(new VertexHopGraphProvider.DefaultVertexHopCriteria(targets.get(0)));
+            container.addCriteria(new DefaultVertexHopCriteria(targets.get(0)));
             container.setSemanticZoomLevel(0);
             container.redoLayout();
+        }
+    }
+
+    public static void removeHopCriteria(GraphContainer container) {
+        Criteria[] currentCriteria = container.getCriteria();
+        for (Criteria c : Arrays.copyOf(currentCriteria, currentCriteria.length)) {
+            if (c instanceof DefaultVertexHopCriteria) {
+                container.removeCriteria(c);
+            }
         }
     }
 
@@ -135,11 +146,7 @@ public class ImpactAnalysisOperation implements Operation {
 
     @Override
     public String getId() {
-        return OPERATION_ID;
-    }
-
-    public void setBusinessServiceStateMachine(BusinessServiceStateMachine businessServiceStateMachine) {
-        this.businessServiceStateMachine = Objects.requireNonNull(businessServiceStateMachine);
+        return getClass().getCanonicalName();
     }
 
     public void setBusinessServiceManager(BusinessServiceManager businessServiceManager) {

@@ -26,32 +26,13 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.api.info;
-
-import org.opennms.features.topology.api.GraphContainer;
-
-import com.vaadin.ui.Component;
+package org.opennms.features.topology.plugins.topo.bsm.simulate;
 
 /**
- * A general item to show up in the info panel.
+ * This criteria is set when we should copy the state machine's state
+ * instead of starting from "ground".
+ *
+ * @author jwhite
  */
-public interface InfoPanelItem extends java.lang.Comparable<InfoPanelItem> {
-
-    Component getComponent(GraphContainer container);
-
-    boolean contributesTo(GraphContainer container);
-
-    String getTitle(GraphContainer container);
-
-    /**
-     * The order of the item in which it should occur.
-     *
-     * @return
-     */
-    int getOrder();
-
-    // ensure that InfoPanelItems are always sorted by order
-    default int compareTo(InfoPanelItem o) {
-        return Integer.valueOf(getOrder()).compareTo(Integer.valueOf(o.getOrder()));
-    }
+public class InheritStateCriteria  extends SimulationCriteria {
 }

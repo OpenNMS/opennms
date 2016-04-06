@@ -26,32 +26,35 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.api.info;
+package org.opennms.features.topology.plugins.topo.bsm.simulate;
 
-import org.opennms.features.topology.api.GraphContainer;
+import org.opennms.features.topology.api.NamespaceAware;
+import org.opennms.features.topology.api.topo.Criteria;
+import org.opennms.features.topology.plugins.topo.bsm.BusinessServicesTopologyProvider;
 
-import com.vaadin.ui.Component;
+public abstract class SimulationCriteria extends Criteria implements NamespaceAware {
+    @Override
+    public boolean contributesTo(String namespace) {
+        return getNamespace().equals(namespace);
+    }
 
-/**
- * A general item to show up in the info panel.
- */
-public interface InfoPanelItem extends java.lang.Comparable<InfoPanelItem> {
+    @Override
+    public ElementType getType() {
+        return ElementType.EDGE;
+    }
 
-    Component getComponent(GraphContainer container);
+    @Override
+    public String getNamespace() {
+        return BusinessServicesTopologyProvider.TOPOLOGY_NAMESPACE;
+    }
 
-    boolean contributesTo(GraphContainer container);
+    @Override
+    public int hashCode() {
+        return 0;
+    }
 
-    String getTitle(GraphContainer container);
-
-    /**
-     * The order of the item in which it should occur.
-     *
-     * @return
-     */
-    int getOrder();
-
-    // ensure that InfoPanelItems are always sorted by order
-    default int compareTo(InfoPanelItem o) {
-        return Integer.valueOf(getOrder()).compareTo(Integer.valueOf(o.getOrder()));
+    @Override
+    public boolean equals(Object obj) {
+        return obj != null && getClass().equals(obj.getClass());
     }
 }

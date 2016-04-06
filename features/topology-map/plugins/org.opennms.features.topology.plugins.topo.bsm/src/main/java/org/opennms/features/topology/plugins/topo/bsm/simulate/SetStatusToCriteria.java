@@ -26,50 +26,54 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.bsm.service.model.graph.internal;
+package org.opennms.features.topology.plugins.topo.bsm.simulate;
 
-import org.opennms.netmgt.bsm.service.model.edge.Edge;
-import org.opennms.netmgt.bsm.service.model.functions.map.MapFunction;
-import org.opennms.netmgt.bsm.service.model.graph.GraphEdge;
+import java.util.Objects;
 
-public class GraphEdgeImpl extends GraphElement implements GraphEdge {
+import org.opennms.netmgt.bsm.service.model.Status;
 
-    private final MapFunction m_mapFunction;
-    private final int m_weight;
-    private final String m_friendlyName;
+/**
+ * This criteria is used to alter the severity of a specific reduction key.
+ *
+ * @author jwhite
+ */
+public class SetStatusToCriteria extends SimulationCriteria {
 
-    public GraphEdgeImpl(MapFunction mapFunction) {
-        this(mapFunction, 1, null);
+    private Status status;
+    private final String reductionKey;
+
+    public SetStatusToCriteria(String reductionKey, Status status) {
+        this.reductionKey = Objects.requireNonNull(reductionKey);
+        this.status = status;
     }
 
-    public GraphEdgeImpl(Edge edge) {
-        this(edge.getMapFunction(), edge.getWeight(), edge.getFriendlyName());
+    public String getReductionKey() {
+        return reductionKey;
     }
 
-    private GraphEdgeImpl(MapFunction mapFunction, int weight, String friendlyName) {
-        m_mapFunction = mapFunction;
-        m_weight = weight;
-        m_friendlyName = friendlyName;
+    public Status getStatus() {
+        return status;
     }
 
-    public MapFunction getMapFunction() {
-        return m_mapFunction;
-    }
-
-    public int getWeight() {
-        return m_weight;
-    }
-
-    @Override
-    public String getFriendlyName() {
-        return m_friendlyName;
+    public void setStatus(Status status) {
+        this.status = status;
     }
 
     @Override
-    public String toString() {
-        return com.google.common.base.Objects.toStringHelper(this)
-                .add("mapFunction", m_mapFunction)
-                .add("weight", m_weight)
-                .toString();
+    public int hashCode() {
+        return Objects.hash(reductionKey, status);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        final SetStatusToCriteria other = (SetStatusToCriteria) obj;
+        return Objects.equals(this.reductionKey, other.reductionKey) &&
+                Objects.equals(this.status, other.status);
     }
 }

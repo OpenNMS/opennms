@@ -28,8 +28,22 @@
 
 package org.opennms.features.topology.api.info;
 
+import java.util.Collection;
+
+import org.opennms.features.topology.api.GraphContainer;
+import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
 
-public interface VertexInfoPanelItem extends InfoPanelItem<VertexRef> {
+public abstract class VertexInfoPanelItem extends SingleSelectedInfoPanelItem<VertexRef> {
 
+    @Override
+    protected VertexRef findSingleSelectedItem(GraphContainer container) {
+        Collection<VertexRef> selectedVertexRefs = container.getSelectionManager().getSelectedVertexRefs();
+        if (selectedVertexRefs.size() == 1) {
+            final VertexRef vertexRef = selectedVertexRefs.iterator().next();
+            Vertex vertex = container.getBaseTopology().getVertex(vertexRef);
+            return vertex;
+        }
+        return null;
+    }
 }

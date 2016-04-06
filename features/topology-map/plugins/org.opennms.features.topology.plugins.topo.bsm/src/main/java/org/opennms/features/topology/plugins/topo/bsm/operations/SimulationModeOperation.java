@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2016 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -21,31 +21,42 @@
  *      http://www.gnu.org/licenses/
  *
  * For more information contact:
- *     OpenNMS(R) Licensing <license@opennms.org>
- *     http://www.opennms.org/
- *     http://www.opennms.com/
+ * OpenNMS(R) Licensing <license@opennms.org>
+ *      http://www.opennms.org/
+ *      http://www.opennms.com/
  *******************************************************************************/
 
 package org.opennms.features.topology.plugins.topo.bsm.operations;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
 import org.opennms.features.topology.api.AbstractCheckedOperation;
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.OperationContext;
-import org.opennms.features.topology.api.topo.Criteria;
 import org.opennms.features.topology.api.topo.VertexRef;
-import org.opennms.features.topology.plugins.topo.bsm.BusinessServicesHideLeafsCriteria;
 import org.opennms.features.topology.plugins.topo.bsm.BusinessServicesTopologyProvider;
+import org.opennms.features.topology.plugins.topo.bsm.simulate.SimulationEnabledCriteria;
 
-public class HideLeafElementToggleOperation extends AbstractCheckedOperation {
+public class SimulationModeOperation extends AbstractCheckedOperation  {
 
+    private static final SimulationEnabledCriteria crit = new SimulationEnabledCriteria();
+
+    @Override
+    protected boolean isChecked(GraphContainer container) {
+        return container.findSingleCriteria(SimulationEnabledCriteria.class) != null;
+    }
 
     @Override
     public void execute(List<VertexRef> targets, OperationContext operationContext) {
-        toggle(operationContext.getGraphContainer());
+        final GraphContainer container = operationContext.getGraphContainer();
+        if (isChecked(operationContext.getGraphContainer())) {
+            container.removeCriteria(crit);
+        } else {
+            container.addCriteria(crit);
+        }
+        // Force a refresh to update the status
+        container.redoLayout();
     }
 
     @Override
@@ -64,35 +75,7 @@ public class HideLeafElementToggleOperation extends AbstractCheckedOperation {
     }
 
     @Override
-    protected boolean isChecked(GraphContainer container) {
-        return findShowLeafCriteria(container) != null;
-    }
-
-    @Override
-    public Map<String, String> createHistory(GraphContainer container) {
-        return Collections.singletonMap(getClass().getName(), Boolean.toString(isChecked(container)));
-    }
-
-    @Override
     public void applyHistory(GraphContainer container, Map<String, String> settings) {
-        // If the setting for this operation is set to true, it was enabled before
-        if ("true".equals(settings.get(this.getClass().getName()))) {
-            toggle(container);
-        }
-    }
-
-    private BusinessServicesHideLeafsCriteria findShowLeafCriteria(GraphContainer container) {
-        return Criteria.getSingleCriteriaForGraphContainer(container, BusinessServicesHideLeafsCriteria.class, false);
-    }
-
-    private void toggle(GraphContainer container) {
-        BusinessServicesHideLeafsCriteria showLeafCriteria = findShowLeafCriteria(container);
-        if (showLeafCriteria == null) {
-            container.addCriteria(new BusinessServicesHideLeafsCriteria());
-        } else {
-            container.removeCriteria(showLeafCriteria);
-        }
-        container.redoLayout();
-
+        // pass
     }
 }

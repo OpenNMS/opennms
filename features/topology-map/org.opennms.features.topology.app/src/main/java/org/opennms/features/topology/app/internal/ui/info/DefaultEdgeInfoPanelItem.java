@@ -30,6 +30,7 @@ package org.opennms.features.topology.app.internal.ui.info;
 
 import static org.opennms.netmgt.vaadin.core.UIHelper.createLabel;
 
+import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.info.EdgeInfoPanelItem;
 import org.opennms.features.topology.api.topo.AbstractEdge;
 import org.opennms.features.topology.api.topo.EdgeRef;
@@ -37,10 +38,10 @@ import org.opennms.features.topology.api.topo.EdgeRef;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.FormLayout;
 
-public class DefaultEdgeInfoPanelItem implements EdgeInfoPanelItem {
+public class DefaultEdgeInfoPanelItem extends EdgeInfoPanelItem {
 
     @Override
-    public Component getComponent(EdgeRef ref) {
+    protected Component getComponent(EdgeRef ref, GraphContainer container) {
         FormLayout formLayout = new FormLayout();
         formLayout.setSpacing(false);
         formLayout.setMargin(false);
@@ -56,12 +57,12 @@ public class DefaultEdgeInfoPanelItem implements EdgeInfoPanelItem {
     }
 
     @Override
-    public boolean contributesTo(EdgeRef ref) {
+    protected boolean contributesTo(EdgeRef ref, GraphContainer container) {
         return true;
     }
 
     @Override
-    public String getTitle(EdgeRef ref) {
+    protected String getTitle(EdgeRef ref) {
         return "Technical Details";
     }
 
