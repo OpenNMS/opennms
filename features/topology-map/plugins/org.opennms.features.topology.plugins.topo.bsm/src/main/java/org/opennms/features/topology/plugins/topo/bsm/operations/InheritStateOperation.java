@@ -36,6 +36,7 @@ import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.OperationContext;
 import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.features.topology.plugins.topo.bsm.simulate.InheritStateCriteria;
+import org.opennms.features.topology.plugins.topo.bsm.simulate.SimulationAwareStateMachineFactory;
 
 public class InheritStateOperation extends AbstractCheckedOperation  {
 
@@ -61,6 +62,11 @@ public class InheritStateOperation extends AbstractCheckedOperation  {
     @Override
     public boolean display(List<VertexRef> targets, OperationContext operationContext) {
         return true;
+    }
+
+    @Override
+    protected boolean enabled(GraphContainer container) {
+        return SimulationAwareStateMachineFactory.isInSimulationMode(container.getCriteria());
     }
 
     @Override

@@ -34,6 +34,7 @@ import org.opennms.features.topology.api.Operation;
 import org.opennms.features.topology.api.OperationContext;
 import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.features.topology.plugins.topo.bsm.simulate.SetStatusToCriteria;
+import org.opennms.features.topology.plugins.topo.bsm.simulate.SimulationAwareStateMachineFactory;
 
 public class ResetStateOperation implements Operation {
 
@@ -52,7 +53,7 @@ public class ResetStateOperation implements Operation {
 
     @Override
     public boolean enabled(List<VertexRef> targets, OperationContext operationContext) {
-        return true;
+        return SimulationAwareStateMachineFactory.isInSimulationMode(operationContext.getGraphContainer().getCriteria());
     }
 
     @Override
