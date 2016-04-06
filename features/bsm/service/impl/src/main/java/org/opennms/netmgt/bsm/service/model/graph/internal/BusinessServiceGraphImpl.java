@@ -50,7 +50,6 @@ import org.opennms.netmgt.bsm.service.model.graph.GraphVertex;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
-import edu.uci.ics.jung.algorithms.shortestpath.BFSDistanceLabeler;
 import edu.uci.ics.jung.graph.DirectedSparseMultigraph;
 
 public class BusinessServiceGraphImpl extends DirectedSparseMultigraph<GraphVertex, GraphEdge> implements BusinessServiceGraph  {
@@ -168,24 +167,22 @@ public class BusinessServiceGraphImpl extends DirectedSparseMultigraph<GraphVert
     private void calculateAndIndexLevels() {
         // Start by finding the root vertices
         // These are the vertices with no incoming edges
-        final Set<GraphVertexImpl> rootVertices = Sets.newHashSet();
+        final Set<GraphVertex> rootVertices = Sets.newHashSet();
         for (GraphVertex vertex : getVertices()) {
             if (getInEdges(vertex).size() == 0) {
-                rootVertices.add((GraphVertexImpl)vertex);
+                rootVertices.add(vertex);
             }
         }
 
         // Now calculate the distance of every node to each of the root nodes
-        for (GraphVertexImpl rootVertex : rootVertices) {
-            final BFSDistanceLabeler<GraphVertex, GraphEdge> bfsDistance = new BFSDistanceLabeler<>();
-            bfsDistance.labelDistances(this, rootVertex);
-            for (Entry<GraphVertex, Number> entry : bfsDistance.getDistanceDecorator().entrySet()) {
-                final int level = entry.getValue().intValue();
-                final GraphVertexImpl vertex = (GraphVertexImpl)entry.getKey();
+        final GraphLevelIndexer<GraphVertex, GraphEdge> levelIndexer = new GraphLevelIndexer<>();
+        levelIndexer.indexLevel(this, rootVertices);
+        for (Entry<GraphVertex, Integer> entry : levelIndexer.getLevelMap().entrySet()) {
+            final int level = entry.getValue().intValue();
+            final GraphVertexImpl vertex = (GraphVertexImpl)entry.getKey();
 
-                // Store the maximum level within the vertex
-                vertex.setLevel(Math.max(level, vertex.getLevel()));
-            }
+            // Store the maximum level within the vertex
+            vertex.setLevel(Math.max(level, vertex.getLevel()));
         }
 
         // Index the vertices by level
