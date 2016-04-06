@@ -326,10 +326,6 @@
       <bundle>wrap:mvn:org.postgresql/postgresql/${postgresqlVersion}</bundle>
     </feature>
 
-    <feature name="snmp4j" description="SNMP4J" version="2.3.1">
-      <bundle>wrap:mvn:org.snmp4j/snmp4j/2.3.1</bundle>
-    </feature>
-
     <feature name="spring-security32" description="Spring :: Security" version="${springSecurityVersion}">
       <!-- spring-web is necessary for HTTP remoting -->
       <feature version="[4.0,4.1)">spring-web</feature>
@@ -442,7 +438,6 @@
       <feature>dnsjava</feature>
       <feature>hibernate36</feature>
       <feature>jaxb</feature>
-      <feature>snmp4j</feature>
 
       <feature>opennms-core</feature>
       <feature>opennms-events-api</feature>
@@ -699,11 +694,9 @@
 
     <feature name="opennms-snmp" description="OpenNMS :: Core :: SNMP" version="${project.version}">
       <feature>org.json</feature>
-      <feature>snmp4j</feature>
 
       <bundle>mvn:org.opennms.core.snmp/org.opennms.core.snmp.api/${project.version}</bundle>
       <bundle>mvn:org.opennms.core.snmp/org.opennms.core.snmp.commands/${project.version}</bundle>
-      <bundle>wrap:mvn:org.snmp4j/snmp4j/${snmp4jVersion}</bundle>
       <bundle>mvn:org.opennms.core.snmp/org.opennms.core.snmp.implementations.snmp4j/${project.version}</bundle>
       <bundle>mvn:org.opennms.core.snmp/org.opennms.core.snmp.joesnmp/${project.version}</bundle>
     </feature>

@@ -27,14 +27,10 @@
             <Import-Package>
               org.apache.commons.lang;resolution:=optional,
               org.apache.log4j;resolution:=optional,
-              <!-- Not autodetected by bnd -->
-              org.snmp4j.smi,
               *
             </Import-Package>
-            <!-- 
-            <Embed-Dependency>snmp4j;inline=true</Embed-Dependency>
+            <Embed-Dependency>snmp4j*</Embed-Dependency>
             <Embed-Transitive>true</Embed-Transitive>
-            -->
           </instructions>
         </configuration>
       </plugin>
