@@ -43,6 +43,16 @@
 %>
 <%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 
+<%!
+  private WebApplicationContext m_webAppContext;
+  private ResourceService m_resourceService;
+  
+  public void init() throws ServletException {
+    m_webAppContext = WebApplicationContextUtils.getRequiredWebApplicationContext(getServletContext());
+    m_resourceService = m_webAppContext.getBean("resourceService", ResourceService.class);
+  }
+%>
+
 <%
   Interface intf_db = ElementUtil.getSnmpInterfaceByParams(request, getServletContext());
   int nodeId = intf_db.getNodeId();

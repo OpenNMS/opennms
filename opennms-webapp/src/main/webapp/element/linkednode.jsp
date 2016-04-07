@@ -50,6 +50,49 @@
 <%@taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 
+<%!
+    protected int telnetServiceId;
+    protected int httpServiceId;
+    protected int dellServiceId;
+    protected int snmpServiceId;
+    private ResourceService m_resourceService;
+
+    public void init() throws ServletException {
+
+        NetworkElementFactoryInterface factory = NetworkElementFactory.getInstance(getServletContext());
+        
+        try {
+            this.telnetServiceId = factory.getServiceIdFromName("Telnet");
+        }
+        catch (Throwable e) {
+            throw new ServletException( "Could not determine the Telnet service ID", e );
+        }        
+
+        try {
+            this.httpServiceId = factory.getServiceIdFromName("HTTP");
+        }
+        catch (Throwable e) {
+            throw new ServletException( "Could not determine the HTTP service ID", e );
+        }
+
+        try {
+            this.dellServiceId = factory.getServiceIdFromName("Dell-OpenManage");
+        }
+        catch (Throwable e) {
+            throw new ServletException( "Could not determine the Dell-OpenManage service ID", e );
+        }
+
+        try {
+            this.snmpServiceId = factory.getServiceIdFromName("SNMP");
+        }
+        catch (Throwable e) {
+            throw new ServletException( "Could not determine the SNMP service ID", e );
+        }
+
+        WebApplicationContext webAppContext = WebApplicationContextUtils.getRequiredWebApplicationContext(getServletContext());
+        m_resourceService = webAppContext.getBean("resourceService", ResourceService.class);
+    }%>
+
 <%
     final NetworkElementFactoryInterface factory = NetworkElementFactory.getInstance(getServletContext());
     final EnLinkdElementFactoryInterface enlinkdfactory = EnLinkdElementFactory.getInstance(getServletContext());
