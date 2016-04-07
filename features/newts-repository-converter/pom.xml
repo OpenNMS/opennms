@@ -73,6 +73,11 @@
       <scope>test</scope>
     </dependency>
     <dependency>
+      <groupId>org.hamcrest</groupId>
+      <artifactId>hamcrest-library</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-test</artifactId>
       <scope>test</scope>
@@ -93,12 +98,6 @@
       <artifactId>org.opennms.core.test-api.db</artifactId>
       <scope>test</scope>
     </dependency>
-    <dependency>
-      <groupId>org.hamcrest</groupId>
-	  <artifactId>hamcrest-library</artifactId>
-	  <version>1.1</version>
-	  <scope>test</scope>
-	</dependency>
     <dependency>
       <groupId>org.opennms.newts</groupId>
       <artifactId>newts-cassandra-test</artifactId>
