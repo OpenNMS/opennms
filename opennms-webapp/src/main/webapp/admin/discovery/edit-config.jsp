@@ -29,7 +29,23 @@
 
 --%>
 
-<%@page language="java" contentType="text/html" session="true" import="org.opennms.web.api.Util, org.opennms.netmgt.config.discovery.*, org.opennms.web.admin.discovery.ActionDiscoveryServlet" %>
+<%@page language="java" contentType="text/html" session="true" import="
+  java.util.Map,
+  java.util.TreeMap,
+  java.util.stream.*,
+  org.opennms.web.api.Util,
+  org.opennms.netmgt.config.DiscoveryConfigFactory,
+  org.opennms.netmgt.config.discovery.*,
+  org.opennms.netmgt.config.monitoringLocations.LocationDef,
+  org.opennms.netmgt.provision.persist.requisition.Requisition,
+  org.opennms.netmgt.dao.api.*,
+  org.opennms.netmgt.dao.*,
+  org.opennms.netmgt.dao.hibernate.*,
+  org.springframework.web.context.WebApplicationContext,
+  org.springframework.web.context.support.WebApplicationContextUtils,
+  org.opennms.web.svclayer.api.RequisitionAccessService,
+  org.opennms.web.admin.discovery.ActionDiscoveryServlet"
+%>
 <%
 	response.setDateHeader("Expires", 0);
 	response.setHeader("Pragma", "no-cache");
@@ -103,12 +119,39 @@ function restartDiscovery(){
 }
 </script>
 
+<%!
+
+/**
+ * TODO: Use a better constant for this value
+ */
+private static final String DEFAULT_FOREIGN_SOURCE = "default";
+
+%>
+
 <%
+
 HttpSession sess = request.getSession(false);
 DiscoveryConfiguration currConfig  = (DiscoveryConfiguration) sess.getAttribute("discoveryConfiguration");
 if (currConfig == null) {
 	throw new ServletException("The session expired while editing the discovery configuration. Please revisit the page to resume editing the configuration.");
 }
+
+WebApplicationContext context = WebApplicationContextUtils.getRequiredWebApplicationContext(getServletContext());
+
+// Map of primary key to label (which in this case are the same)
+MonitoringLocationDao locationDao = context.getBean(MonitoringLocationDao.class);
+Map<String,String> locations = new TreeMap<String,String>();
+for (LocationDef location : locationDao.findAll()) {
+  locations.put(location.getLocationName(), location.getLocationName());
+}
+
+// Map of primary key to label (which in this case are the same too)
+RequisitionAccessService reqAccessService = context.getBean(RequisitionAccessService.class);
+Map<String,String> foreignsources = new TreeMap<String,String>();
+for (Requisition requisition : reqAccessService.getRequisitions()) {
+  foreignsources.put(requisition.getForeignSource(), requisition.getForeignSource());
+}
+
 %>
 
 <form role="form" class="form-horizontal" method="post" id="modifyDiscoveryConfig" name="modifyDiscoveryConfig" action="<%= Util.calculateUrlBase(request, "admin/discovery/actionDiscovery") %>" onsubmit="return restartDiscovery();">
@@ -173,27 +216,28 @@ if (currConfig == null) {
         </div> <!-- input-group -->
         <div class="col-md-12 input-group">
           <label for="retries" class="control-label">Timeout (milliseconds):</label>
-          <!-- TODO: Use a constant for the default value -->
-          <input type="text" class="form-control" id="timeout" name="timeout" size="4" value="<%=((currConfig.getTimeout()==0)?"800":""+currConfig.getTimeout())%>"/>
+          <input type="text" class="form-control" id="timeout" name="timeout" value="<%=((currConfig.getTimeout()==0)?DiscoveryConfigFactory.DEFAULT_TIMEOUT:currConfig.getTimeout())%>"/>
         </div> <!-- input-group -->
         <div class="col-md-12 input-group">
           <label for="retries" class="control-label">Retries:</label>
-          <!-- TODO: Use a constant for the default value -->
-          <input type="text" class="form-control" id="retries" name="retries" value="<%=((currConfig.getRetries()==0)?"3":""+currConfig.getRetries())%>"/>
+          <input type="text" class="form-control" id="retries" name="retries" value="<%=((currConfig.getRetries()==0)?DiscoveryConfigFactory.DEFAULT_RETRIES:currConfig.getRetries())%>"/>
         </div> <!-- input-group -->
-        </div>
-
-        <div class="list-group-item">
-        <h4 class="list-group-item-heading">Optional configuration</h4>
         <div class="col-md-12 input-group">
           <label for="foreignsource" class="control-label">Foreign Source:</label>
-          <!-- TODO: Make this a dropdown of all foreign sources -->
-          <input type="text" class="form-control" id="foreignsource" name="foreignsource" value="<%=currConfig.getForeignSource()%>"/>
+          <select id="foreignsource" class="form-control" name="foreignsource">
+            <option value="" <%if (currConfig.getForeignSource() == null) out.print("selected");%>>None selected</option>
+            <% for (String key : foreignsources.keySet()) { %>
+              <option value="<%=key%>" <%if(key.equals(currConfig.getForeignSource())) out.print("selected");%>><%=foreignsources.get(key)%></option>
+            <% } %>
+          </select>
         </div> <!-- input-group -->
         <div class="col-md-12 input-group">
           <label for="location" class="control-label">Location:</label>
-          <!-- TODO: Make this a dropdown of all monitoring locations -->
-          <input type="text" class="form-control" id="location" name="location" value="<%=currConfig.getLocation()%>"/>
+          <select id="location" class="form-control" name="location">
+            <% for (String key : locations.keySet()) { %>
+              <option value="<%=key%>" <%if(key.equals(currConfig.getLocation()) || (key.equals(MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID) && currConfig.getLocation() == null)) out.print("selected");%>><%=locations.get(key)%></option>
+            <% } %>
+          </select>
         </div> <!-- input-group -->
         </div>
 
@@ -201,8 +245,7 @@ if (currConfig == null) {
         <h4 class="list-group-item-heading">Advanced configuration</h4>
         <div class="col-md-12 input-group">
           <label for="chunksize" class="control-label">Task chunk size:</label>
-          <!-- TODO: Use a constant for the default value -->
-          <input type="text" class="form-control" id="chunksize" name="chunksize" value="<%=((currConfig.getChunkSize()==0)?"100":""+currConfig.getChunkSize())%>"/>
+          <input type="text" class="form-control" id="chunksize" name="chunksize" value="<%=((currConfig.getChunkSize()==0)?DiscoveryConfigFactory.DEFAULT_CHUNK_SIZE:currConfig.getChunkSize())%>"/>
         </div> <!-- input-group -->
         </div>
       </div>
@@ -214,25 +257,17 @@ if (currConfig == null) {
   <div class="col-md-12">
     <div class="panel panel-default">
       <div class="panel-heading">
-        <h3 class="panel-title">Specifics</h3>
+        <h3 class="panel-title">Specific Addresses</h3>
       </div>
       <%if(currConfig.getSpecificCount()>0){
             Specific[] specs = currConfig.getSpecific();
       %>
 				    <table class="table table-bordered table-condensed">
 				      <tr>
-					<th>
-					    IP Address
-					</th>
-					<th>
-					    Timeout (milliseconds)
-					</th>
-					<th>
-					    Retries
-					</th>
-					<th>
-					    Action
-					</th>
+					<th>IP Address</th>
+					<th>Timeout (milliseconds)</th>
+					<th>Retries</th>
+					<th>Action</th>
 				      </tr>
 				      <%for(int i=0; i<specs.length; i++){%>
 					 <tr class="text-center">
@@ -266,18 +301,10 @@ if (currConfig == null) {
 			    %>
 				    <table class="table table-bordered table-condensed">
 				      <tr>
-					<th>
-					    URL
-					</th>
-					<th>
-					    Timeout (milliseconds)
-					</th>
-					<th>
-					    Retries
-					</th> 
-					<th>
-					    Action
-					</th>
+					<th>URL</th>
+					<th>Timeout (milliseconds)</th>
+					<th>Retries</th> 
+					<th>Action</th>
 				      </tr>
 				      <%for(int i=0; i<urls.length; i++){%>
 					 <tr class="text-center">
@@ -311,21 +338,11 @@ if (currConfig == null) {
 				    %>
 					    <table class="table table-bordered table-condensed">
 					      <tr>
-						<th>
-						    Begin Address
-						</th>
-						<th>
-						    End Address
-						</th>
-						<th>
-						    Timeout (milliseconds)
-						</th>
-						<th>
-						    Retries
-						</th>
-						<th>
-						    Action
-						</th>
+						<th>Begin Address</th>
+						<th>End Address</th>
+						<th>Timeout (milliseconds)</th>
+						<th>Retries</th>
+						<th>Action</th>
 					      </tr>
 					      <%for(int i=0; i<irange.length; i++){
 
@@ -362,15 +379,9 @@ if (currConfig == null) {
 			    %>
 				    <table class="table table-bordered table-condensed">
 				      <tr>
-					<th>
-					    Begin
-					</th>
-					<th>
-					    End
-					</th>
-					<th>
-					    Action
-					</th>
+					<th>Begin</th>
+					<th>End</th>
+					<th>Action</th>
 				      </tr>
 				      <%for(int i=0; i<irange.length; i++){
 

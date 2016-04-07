@@ -66,11 +66,8 @@ public class ModifyDiscoveryConfigurationServlet extends HttpServlet {
 	    LOG.info("Loading Discovery configuration.");
 	    DiscoveryConfiguration config=getDiscoveryConfig();
 	    HttpSession sess = request.getSession();
-        //sess.removeAttribute("discoveryConfiguration");
         sess.setAttribute("discoveryConfiguration",config);
         response.sendRedirect("edit-config.jsp");
-        //RequestDispatcher dispatcher = this.getServletContext().getRequestDispatcher("/admin/discovery/index.jsp");
-        //dispatcher.forward(request, response);
     }
 	
 	/** {@inheritDoc} */

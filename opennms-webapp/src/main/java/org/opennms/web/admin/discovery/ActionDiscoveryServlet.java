@@ -57,10 +57,6 @@ import org.slf4j.LoggerFactory;
  *
  * @author <A HREF="mailto:jason@opennms.org">Jason Johns</A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
- * @author <A HREF="mailto:jason@opennms.org">Jason Johns</A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
- * @version $Id: $
- * @since 1.8.1
  */
 public class ActionDiscoveryServlet extends HttpServlet {
 	
@@ -123,11 +119,11 @@ public class ActionDiscoveryServlet extends HttpServlet {
         	String retries = request.getParameter("specificretries");
         	Specific newSpecific = new Specific();
         	newSpecific.setContent(ipAddr);
-        	if(timeout!=null && !timeout.trim().equals("") && !timeout.equals(config.getTimeout())){
+        	if(timeout!=null && !"".equals(timeout.trim()) && !timeout.equals(config.getTimeout())){
         		newSpecific.setTimeout(WebSecurityUtils.safeParseLong(timeout));
         	}
 
-        	if(retries!=null && !retries.trim().equals("") && !retries.equals(config.getRetries())){
+        	if(retries!=null && !"".equals(retries.trim()) && !retries.equals(config.getRetries())){
         		newSpecific.setRetries(WebSecurityUtils.safeParseInt(retries));
         	}
         	config.addSpecific(newSpecific);
@@ -154,10 +150,10 @@ public class ActionDiscoveryServlet extends HttpServlet {
         	IncludeRange newIR = new IncludeRange();
         	newIR.setBegin(ipAddrBase);
         	newIR.setEnd(ipAddrEnd);
-        	if(timeout!=null && !timeout.trim().equals("") && !timeout.equals(config.getTimeout())){
+        	if(timeout!=null && !"".equals(timeout.trim()) && !timeout.equals(config.getTimeout())){
         		newIR.setTimeout(WebSecurityUtils.safeParseLong(timeout));
         	}
-        	if(retries!=null && !retries.trim().equals("") && !retries.equals(config.getRetries())){
+        	if(retries!=null && !"".equals(retries.trim()) && !retries.equals(config.getRetries())){
         		newIR.setRetries(WebSecurityUtils.safeParseInt(retries));
         	}
         	config.addIncludeRange(newIR);
@@ -182,10 +178,10 @@ public class ActionDiscoveryServlet extends HttpServlet {
 
             IncludeUrl iu = new IncludeUrl();
             iu.setContent(url);
-            if(timeout!=null && !timeout.trim().equals("") && !timeout.equals(config.getTimeout())){
+            if(timeout!=null && !"".equals(timeout.trim()) && !timeout.equals(config.getTimeout())){
                 iu.setTimeout(WebSecurityUtils.safeParseLong(timeout));
             }
-            if(retries!=null && !retries.trim().equals("") && !retries.equals(config.getRetries())){
+            if(retries!=null && !"".equals(retries.trim()) && !retries.equals(config.getRetries())){
                 iu.setRetries(WebSecurityUtils.safeParseInt(retries));
             }
             config.addIncludeUrl(iu);
@@ -254,6 +250,7 @@ public class ActionDiscoveryServlet extends HttpServlet {
 
             LOG.info("Restart Discovery requested!");  
             sess.removeAttribute("discoveryConfiguration");
+            // TODO: NMS-2504: Redirect to a better destination
             response.sendRedirect(Util.calculateUrlBase( request, "event/query?msgmatchany=Discovery" ));
             return;
         }
