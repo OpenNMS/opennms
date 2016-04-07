@@ -53,13 +53,11 @@ import com.google.common.collect.Lists;
  */
 public class RangeChunker
 {
-    public static final int DEFAULT_CHUNK_SIZE = 100;
-    
     private final int m_defaultChunkSize;
     private IpAddressFilter m_ipAddressFilter;
 
     public RangeChunker() {
-        this(DEFAULT_CHUNK_SIZE);
+        this(DiscoveryConfigFactory.DEFAULT_CHUNK_SIZE);
     }
 
     public RangeChunker(final int defaultChunkSize) {
