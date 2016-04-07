@@ -38,4 +38,7 @@ import org.opennms.netmgt.config.monitoringLocations.LocationDef;
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
  */
 public interface MonitoringLocationDao extends OnmsDao<LocationDef, String> {
+
+	public static final String DEFAULT_MONITORING_LOCATION_ID = "localhost";
+
 }
