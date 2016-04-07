@@ -86,11 +86,24 @@ public class DiscoveryConfigFactory implements DiscoveryConfigurationFactory {
     public static final String COMMENT_STR = "#";
     public static final char COMMENT_CHAR = '#';
 
+    /*
+     * These values match the defaults in discovery-configuration.xml
+     */
+    public static final int DEFAULT_PACKETS_PER_SECOND = 1;
+    public static final int DEFAULT_INITIAL_SLEEP_TIME = 30000;
+    public static final int DEFAULT_RESTART_SLEEP_TIME = 86400000;
+    public static final int DEFAULT_RETRIES = 1;
+    public static final int DEFAULT_TIMEOUT = 2000;
+    public static final int DEFAULT_CHUNK_SIZE = 100;
+
     /**
      * The config class loaded from the config file
      */
     private DiscoveryConfiguration m_config;
 
+    /**
+     * @deprecated Inject this value instead of using singleton access.
+     */
     public static DiscoveryConfigFactory getInstance() {
         return BeanUtils.getBean("commonContext", "discoveryFactory", DiscoveryConfigFactory.class);
     }
