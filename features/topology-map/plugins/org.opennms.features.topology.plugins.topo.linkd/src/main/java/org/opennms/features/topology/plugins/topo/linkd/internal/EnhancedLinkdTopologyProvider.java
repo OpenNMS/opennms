@@ -45,7 +45,9 @@ import org.opennms.core.criteria.restrictions.EqRestriction;
 import org.opennms.core.utils.LldpUtils.LldpPortIdSubType;
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.OperationContext;
-import org.opennms.features.topology.api.support.VertexHopGraphProvider;
+import org.opennms.features.topology.api.browsers.ContentType;
+import org.opennms.features.topology.api.browsers.SelectionAware;
+import org.opennms.features.topology.api.browsers.SelectionChangedListener;
 import org.opennms.features.topology.api.support.VertexHopGraphProvider.VertexHopCriteria;
 import org.opennms.features.topology.api.topo.AbstractEdge;
 import org.opennms.features.topology.api.topo.AbstractSearchProvider;
@@ -425,6 +427,7 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
     private BridgeBridgeLinkDao m_bridgeBridgeLinkDao;
     private BridgeMacLinkDao m_bridgeMacLinkDao;
     private CdpLinkDao m_cdpLinkDao;
+    private SelectionAware selectionAwareDelegate = new EnhancedLinkdSelectionAware();
     public final static String LLDP_EDGE_NAMESPACE = TOPOLOGY_NAMESPACE_LINKD + "::LLDP";
     public final static String OSPF_EDGE_NAMESPACE = TOPOLOGY_NAMESPACE_LINKD + "::OSPF";
     public final static String ISIS_EDGE_NAMESPACE = TOPOLOGY_NAMESPACE_LINKD + "::ISIS";
@@ -1243,27 +1246,26 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
         LOG.debug("SearchProvider->onToggleCollapse: called with search result: '{}'", searchResult);
     }
 
+    @Override
+    public SelectionChangedListener.Selection getSelection(List<VertexRef> selectedVertices, ContentType type) {
+       return selectionAwareDelegate.getSelection(selectedVertices, type);
+    }
+
+    @Override
+    public boolean contributesTo(ContentType type) {
+        return selectionAwareDelegate.contributesTo(type);
+    }
+
     private org.opennms.features.topology.api.topo.Criteria findCriterion(String resultId, GraphContainer container) {
 
         org.opennms.features.topology.api.topo.Criteria[] criteria = container.getCriteria();
         for (org.opennms.features.topology.api.topo.Criteria criterion : criteria) {
             if (criterion instanceof LinkdHopCriteria ) {
-
                 String id = ((LinkdHopCriteria) criterion).getId();
-
                 if (id.equals(resultId)) {
                     return criterion;
                 }
             }
-
-            if (criterion instanceof VertexHopGraphProvider.FocusNodeHopCriteria) {
-                String id = ((VertexHopGraphProvider.FocusNodeHopCriteria)criterion).getId();
-
-                if (id.equals(resultId)) {
-                    return criterion;
-                }
-            }
-
         }
         return null;
     }

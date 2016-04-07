@@ -1037,7 +1037,7 @@ create table alarms (
     nodeID                  INTEGER, CONSTRAINT fk_alarms_nodeid FOREIGN KEY (nodeID) REFERENCES node (nodeID) ON DELETE CASCADE,
     ipaddr                  VARCHAR(39),
     serviceID               INTEGER,
-    reductionKey            VARCHAR(256),
+    reductionKey            TEXT,
     alarmType               INTEGER,
     counter                 INTEGER NOT NULL,
     severity                INTEGER NOT NULL,
@@ -2744,3 +2744,82 @@ CREATE TABLE subcomponents (
 
 ALTER TABLE subcomponents ADD CONSTRAINT subcomponents_pkey PRIMARY KEY (component_id, subcomponent_id);
 ALTER TABLE subcomponents ADD CONSTRAINT subcomponents_component_id_subcomponent_id_key UNIQUE (component_id, subcomponent_id);
+
+--##################################################################
+--# Business Service Monitor (BSM) tables
+--##################################################################
+
+CREATE TABLE bsm_reduce (
+    id integer NOT NULL,
+    type character varying(32) NOT NULL,
+    threshold float,
+    threshold_severity integer,
+    CONSTRAINT bsm_reduce_pkey PRIMARY KEY (id)
+);
+
+CREATE TABLE bsm_map (
+    id integer NOT NULL,
+    type character varying(32) NOT NULL,
+    severity integer,
+    CONSTRAINT bsm_map_pkey PRIMARY KEY (id)
+);
+
+CREATE TABLE bsm_service (
+    id integer NOT NULL,
+    name character varying(255) NOT NULL UNIQUE,
+    bsm_reduce_id integer NOT NULL,
+    CONSTRAINT bsm_services_pkey PRIMARY KEY (id),
+    CONSTRAINT fk_bsm_service_reduce_id FOREIGN KEY (bsm_reduce_id) REFERENCES bsm_reduce (id)
+);
+
+CREATE TABLE bsm_service_attributes (
+    bsm_service_id integer NOT NULL,
+    key character varying(255) NOT NULL,
+    value TEXT NOT NULL,
+    CONSTRAINT bsm_service_attributes_pkey PRIMARY KEY (bsm_service_id, key),
+    CONSTRAINT fk_bsm_service_attributes_service_id FOREIGN KEY (bsm_service_id)
+    REFERENCES bsm_service (id)
+);
+
+CREATE TABLE bsm_service_edge (
+    id integer NOT NULL,
+    enabled boolean NOT NULL,
+    weight integer NOT NULL,
+    bsm_map_id integer NOT NULL,
+    bsm_service_id integer NOT NULL,
+    CONSTRAINT bsm_service_edge_pkey PRIMARY KEY (id),
+    CONSTRAINT fk_bsm_service_edge_map_id FOREIGN KEY (bsm_map_id)
+    REFERENCES bsm_map (id),
+    CONSTRAINT fk_bsm_service_edge_service_id FOREIGN KEY (bsm_service_id)
+    REFERENCES bsm_service (id) ON DELETE CASCADE
+);
+
+CREATE TABLE bsm_service_ifservices (
+    id integer NOT NULL,
+    ifserviceid integer NOT NULL,
+    friendlyname varchar(255),
+    CONSTRAINT bsm_service_ifservices_pkey PRIMARY KEY (id),
+    CONSTRAINT fk_bsm_service_ifservices_edge_id FOREIGN KEY (id)
+    REFERENCES bsm_service_edge (id) ON DELETE CASCADE,
+    CONSTRAINT fk_bsm_service_ifservices_ifserviceid FOREIGN KEY (ifserviceid)
+    REFERENCES ifservices (id) ON DELETE CASCADE
+);
+
+CREATE TABLE bsm_service_reductionkeys (
+    id integer NOT NULL,
+    reductionkey TEXT NOT NULL,
+    friendlyname varchar(255),
+    CONSTRAINT bsm_service_reductionkeys_pkey PRIMARY KEY (id),
+    CONSTRAINT fk_bsm_service_reductionkeys_edge_id FOREIGN KEY (id)
+    REFERENCES bsm_service_edge (id) ON DELETE CASCADE
+);
+
+CREATE TABLE bsm_service_children (
+      id integer NOT NULL,
+      bsm_service_child_id integer NOT NULL,
+      CONSTRAINT bsm_service_children_pkey PRIMARY KEY (id),
+      CONSTRAINT fk_bsm_service_children_edge_id FOREIGN KEY (id)
+      REFERENCES bsm_service_edge (id) ON DELETE CASCADE,
+      CONSTRAINT fk_bsm_service_child_service_id FOREIGN KEY (bsm_service_child_id)
+      REFERENCES bsm_service (id) ON DELETE CASCADE
+);

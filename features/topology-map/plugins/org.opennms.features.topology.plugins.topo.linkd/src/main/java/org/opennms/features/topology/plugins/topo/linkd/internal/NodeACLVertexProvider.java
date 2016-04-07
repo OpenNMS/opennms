@@ -37,6 +37,8 @@ import java.util.Set;
 
 import javax.xml.bind.JAXBException;
 
+import org.opennms.features.topology.api.browsers.ContentType;
+import org.opennms.features.topology.api.browsers.SelectionChangedListener;
 import org.opennms.features.topology.api.topo.Criteria;
 import org.opennms.features.topology.api.topo.Edge;
 import org.opennms.features.topology.api.topo.EdgeListener;
@@ -311,5 +313,15 @@ public class NodeACLVertexProvider implements GraphProvider {
     @Override
     public int getVertexTotalCount() {
         return m_delegate.getVertexTotalCount();
+    }
+
+    @Override
+    public SelectionChangedListener.Selection getSelection(List<VertexRef> selectedVertices, ContentType type) {
+        return m_delegate.getSelection(selectedVertices, type);
+    }
+
+    @Override
+    public boolean contributesTo(ContentType type) {
+        return m_delegate.contributesTo(type);
     }
 }

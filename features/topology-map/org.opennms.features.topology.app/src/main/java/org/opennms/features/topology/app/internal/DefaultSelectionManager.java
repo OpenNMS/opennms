@@ -33,6 +33,7 @@ import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 
 import org.opennms.features.topology.api.DefaultSelectionContext;
+import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.SelectionContext;
 import org.opennms.features.topology.api.SelectionListener;
 import org.opennms.features.topology.api.SelectionManager;
@@ -43,7 +44,11 @@ import org.slf4j.LoggerFactory;
 public class DefaultSelectionManager implements SelectionManager {
 	private Set<SelectionListener> m_listeners = new CopyOnWriteArraySet<SelectionListener>();
 	private final Set<SelectionListener> m_addedListeners = new CopyOnWriteArraySet<SelectionListener>();
-	private final SelectionContext m_context = new DefaultSelectionContext();
+	private final SelectionContext m_context;
+
+	public DefaultSelectionManager(GraphContainer graphContainer) {
+		m_context = new DefaultSelectionContext(graphContainer);
+	}
 
 	@Override
 	public boolean deselectAll() {
@@ -71,6 +76,11 @@ public class DefaultSelectionManager implements SelectionManager {
 	@Override
 	public Collection<EdgeRef> getSelectedEdgeRefs() {
 		return m_context.getSelectedEdgeRefs();
+	}
+
+	@Override
+	public GraphContainer getGraphContainer() {
+		return m_context.getGraphContainer();
 	}
 
 	@Override
@@ -115,12 +125,6 @@ public class DefaultSelectionManager implements SelectionManager {
 		if (listener != null) {
 			m_addedListeners.add(listener);
 		}
-	}
-	
-	@Override
-	public void setSelectionListeners(Set<SelectionListener> listeners) {
-		m_addedListeners.clear();
-		m_listeners = listeners;
 	}
 	
 	@Override

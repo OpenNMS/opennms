@@ -38,13 +38,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.vaadin.data.Container;
+import com.vaadin.data.util.AbstractBeanContainer;
+
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.GraphContainer.ChangeListener;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
-
-import com.vaadin.data.Container;
-import com.vaadin.data.util.AbstractBeanContainer;
 
 @SuppressWarnings("serial")
 public class GCFilterableContainer extends AbstractBeanContainer<VertexRef, Vertex> implements Container.Hierarchical {
@@ -104,14 +104,13 @@ public class GCFilterableContainer extends AbstractBeanContainer<VertexRef, Vert
 		return (VertexRef) itemId;
 	}
 
-	/*
+	/**
 	 * Can the specified Item have any children? Don't add a JavaDoc comment
 	 * here, we use the default documentation from implemented interface.
 	 */
 	@Override
 	public boolean areChildrenAllowed(Object itemId) {
 		boolean allowed = internalAreChildrenAllowed(vRef(itemId));
-		//System.err.println("Are children allowed for " + itemId + ": " + allowed);
 		return allowed;
 	}
 
@@ -122,16 +121,14 @@ public class GCFilterableContainer extends AbstractBeanContainer<VertexRef, Vert
 		return false;
 	}
 
-	/*
+	/**
 	 * Gets the IDs of the children of the specified Item. Don't add a JavaDoc
 	 * comment here, we use the default documentation from implemented
 	 * interface.
 	 */
 	@Override
 	public Collection<?> getChildren(Object itemId) {
-
 		Collection<?> children = internalGetChildren(vRef(itemId));
-		//System.err.println("getChildren for " + itemId + ": " + children);
 		return children;
 
 	}
@@ -145,7 +142,7 @@ public class GCFilterableContainer extends AbstractBeanContainer<VertexRef, Vert
 		}
 	}
 
-	/*
+	/**
 	 * Gets the ID of the parent of the specified Item. Don't add a JavaDoc
 	 * comment here, we use the default documentation from implemented
 	 * interface.
@@ -153,7 +150,6 @@ public class GCFilterableContainer extends AbstractBeanContainer<VertexRef, Vert
 	@Override
 	public Object getParent(Object itemId) {
 		Object parent = internalGetParent(vRef(itemId));
-		//System.err.println("getParent for " + itemId + ": " + parent);
 		return parent;
 	}
 
@@ -169,7 +165,7 @@ public class GCFilterableContainer extends AbstractBeanContainer<VertexRef, Vert
 		return null;
 	}
 
-	/*
+	/**
 	 * Is the Item corresponding to the given ID a leaf node? Don't add a
 	 * JavaDoc comment here, we use the default documentation from implemented
 	 * interface.
@@ -177,7 +173,6 @@ public class GCFilterableContainer extends AbstractBeanContainer<VertexRef, Vert
 	@Override
 	public boolean hasChildren(Object itemId) {
 		boolean hasChildren = internalHasChildren(vRef(itemId));
-		//System.err.println("hasChildren for " + itemId + ": " + hasChildren);
 		return hasChildren;
 	}
 
@@ -189,7 +184,7 @@ public class GCFilterableContainer extends AbstractBeanContainer<VertexRef, Vert
 		}
 	}
 
-	/*
+	/**
 	 * Is the Item corresponding to the given ID a root node? Don't add a
 	 * JavaDoc comment here, we use the default documentation from implemented
 	 * interface.
@@ -207,7 +202,7 @@ public class GCFilterableContainer extends AbstractBeanContainer<VertexRef, Vert
 
 	}
 
-	/*
+	/**
 	 * Gets the IDs of the root elements in the container. Don't add a JavaDoc
 	 * comment here, we use the default documentation from implemented
 	 * interface.
@@ -215,7 +210,6 @@ public class GCFilterableContainer extends AbstractBeanContainer<VertexRef, Vert
 	@Override
 	public Collection<?> rootItemIds() {
 		Collection<?> rootItems = internalRootItems();
-		//System.err.println("rootItems: " + rootItems);
 		return rootItems;
 	}
 
@@ -324,7 +318,7 @@ public class GCFilterableContainer extends AbstractBeanContainer<VertexRef, Vert
 		 }
 	 }
 
-	 /*
+	 /**
 	  * Overridden to provide filtering for root & children items.
 	  * 
 	  * (non-Javadoc)
@@ -464,7 +458,7 @@ public class GCFilterableContainer extends AbstractBeanContainer<VertexRef, Vert
 		 return toBeIncluded;
 	 }
 
-	 /*
+	 /**
 	  * (non-Javadoc)
 	  * 
 	  * @see

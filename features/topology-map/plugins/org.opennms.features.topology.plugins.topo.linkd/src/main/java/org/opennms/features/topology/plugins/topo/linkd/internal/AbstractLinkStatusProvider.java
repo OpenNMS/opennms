@@ -83,7 +83,7 @@ public abstract class AbstractLinkStatusProvider implements EdgeStatusProvider {
     private AlarmDao m_alarmDao;
 
     @Override
-    public String getNameSpace() {
+    public String getNamespace() {
         return AbstractLinkdTopologyProvider.TOPOLOGY_NAMESPACE_LINKD;
     }
 
@@ -136,7 +136,7 @@ public abstract class AbstractLinkStatusProvider implements EdgeStatusProvider {
     protected Map<String, EdgeRef> mapRefs(Collection<EdgeRef> edges) {
         Map<String, EdgeRef> retVal = new LinkedHashMap<String, EdgeRef>();
         for (EdgeRef edge : edges) {
-            String nameSpace = getNameSpace();
+            String nameSpace = getNamespace();
             if(edge.getNamespace().equals(nameSpace)) retVal.put(edge.getId(), edge);
         }
         return retVal;
@@ -145,7 +145,7 @@ public abstract class AbstractLinkStatusProvider implements EdgeStatusProvider {
     protected Map<EdgeRef, Status> initializeMap(Collection<EdgeRef> edges) {
         Map<EdgeRef, Status> retVal = new LinkedHashMap<EdgeRef, Status>();
         for (EdgeRef edge : edges) {
-            String nameSpace = getNameSpace();
+            String nameSpace = getNamespace();
             if(edge.getNamespace().equals(nameSpace)) retVal.put(edge, new LinkStatus("unknown"));
         }
         return retVal;

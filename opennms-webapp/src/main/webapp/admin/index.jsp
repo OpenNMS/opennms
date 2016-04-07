@@ -194,6 +194,7 @@
         <ul class="list-unstyled">
             <li><a href="admin/sched-outages/index.jsp">Configure Scheduled Outages</a></li>
             <li><a href="javascript:submitPost()">Manage and Unmanage Interfaces and Services</a></li>
+            <%=getAdminPageNavEntries("service-monitoring")%>
         </ul>
       </div> <!-- panel-body -->
     </div> <!-- panel -->

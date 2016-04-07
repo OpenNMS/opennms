@@ -72,7 +72,7 @@ public class CriteriaBuilderSearchVisitor<T> extends AbstractSearchConditionVisi
 	 * Constructor that specifies the target class and a list of field aliases.
 	 * @param clazz
 	 */
-	public CriteriaBuilderSearchVisitor(CriteriaBuilder criteriaBuilder, Class<T> clazz, Map<String, String> fieldMap) {
+	private CriteriaBuilderSearchVisitor(CriteriaBuilder criteriaBuilder, Class<T> clazz, Map<String, String> fieldMap) {
 		super(fieldMap);
 		m_class = clazz;
 		m_criteriaBuilder = criteriaBuilder;
