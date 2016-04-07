@@ -39,6 +39,7 @@ public class ReductionKeyVertexTest {
         assertEquals("nodeDown:10", ReductionKeyVertex.getLabelFromReductionKey("uei.opennms.org/nodes/nodeDown::10"));
         assertEquals("nodeLostService:DNS", ReductionKeyVertex.getLabelFromReductionKey("uei.opennms.org/nodes/nodeLostService::9:2600:5800:f2a2:0000:02d0:b7ff:fe25:3e1c:DNS"));
         assertEquals("dataCollectionFailed:48", ReductionKeyVertex.getLabelFromReductionKey("uei.opennms.org/nodes/dataCollectionFailed::48"));
-        assertEquals("this_is_a_really_long_re", ReductionKeyVertex.getLabelFromReductionKey("this_is_a_really_long_reduction_key_that_shouldnt_match_the_know_pattern"));
+        assertEquals("this_is_a_really_long_re...", ReductionKeyVertex.getLabelFromReductionKey("this_is_a_really_long_reduction_key_that_shouldnt_match_the_know_pattern"));
+        assertEquals("interfaceDown:162.243.42...", ReductionKeyVertex.getLabelFromReductionKey("uei.opennms.org/nodes/interfaceDown::2:162.243.42.216"));
     }
 }

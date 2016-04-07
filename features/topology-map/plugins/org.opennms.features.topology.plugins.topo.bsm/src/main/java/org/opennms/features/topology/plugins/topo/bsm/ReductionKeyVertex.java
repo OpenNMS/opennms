@@ -38,7 +38,7 @@ import com.google.common.collect.Sets;
 
 public class ReductionKeyVertex extends AbstractBusinessServiceVertex {
 
-    public static final int MAX_LABEL_LENGTH = 24;
+    public static final int MAX_LABEL_LENGTH = 27;
     private static final Pattern REDUCTION_KEY_LABEL_PATTERN = Pattern.compile("^.*\\/(.+?):.*:(.+)$");
 
     private final String reductionKey;
@@ -62,7 +62,10 @@ public class ReductionKeyVertex extends AbstractBusinessServiceVertex {
         } else {
             label = reductionKey;
         }
-        return label.substring(0, Math.min(label.length(), MAX_LABEL_LENGTH));
+        if (label.length() > MAX_LABEL_LENGTH) {
+            return label.substring(0, MAX_LABEL_LENGTH - "...".length()) + "...";
+        }
+        return label;
     }
 
     public String getReductionKey() {
