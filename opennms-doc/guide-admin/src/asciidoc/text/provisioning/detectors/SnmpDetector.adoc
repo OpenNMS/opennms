@@ -1,0 +1,76 @@
+
+// Allow GitHub image rendering
+:imagesdir: ../../../images
+
+==== SNMP Detector
+
+This detector is used to find and assigns services based on _SNMP_.
+The detector binds a service with a given _Service Name_ when a particular _SNMP OID_ as scalar or table matches a given criteria.
+
+===== Detector facts
+
+[options="autowidth"]
+|===
+| Implementation | `org.opennms.netmgt.provision.detector.snmp.SnmpDetector`
+|===
+
+===== Configuration and Usage
+
+.Parameters for the SNMP detector
+[options="header, autowidth"]
+|===
+| Parameter   | Description                                                                                             | Required | Default value
+| `oid`       | _SNMP OID_ for scalar or table to detect the service.                                                   | required | `.1.3.6.1.2.1.1.2.0`
+| `retry`     | Number of retries to detect the service.                                                                | optional | _agent config_
+| `timeout`   | Timeout in milliseconds to wait for a response from the _SNMP_ agent.                                   | optional | _agent config_
+| `vbvalue`   | expected return value to detect the service; if not specified the service is detected if the _SNMP OID_
+                returned any kind of valid value.
+                The `vbvalue` is evaluated as
+                link:https://docs.oracle.com/javase/8/docs/api/java/util/regex/Pattern.html[Java Regular Expression].   | optional | `-`
+| `hex`       | Set `true` if the data is from type _HEX-String_.                                                       | optional | `false`
+| `isTable`   | Set `true` if detector should evaluate _SNMP tables_.                                                   | optional | `false`
+| `matchType` | Set match type to evaluate the expected value in the SNMP table. +
+                _EXIST_: the expected `vbalue` is ignored, service detected if the given table under _OID_ exist +
+                _ALL_: all values in the table must match against expected `vbalue` to detect service +
+                _ANY_: at least one value in the table must match against expected `vbalue` to detect service +
+                _NONE_: None of the values should match against expected value to detect service                        | optional | `EXIST`
+|===
+
+===== Example for SNMP scalar value
+
+We have _Dell_ server farm and want to monitor the global server status provided by the _OpenManage Server Administrator_.
+Global status is provided by a scalar _OID_ `.1.3.6.1.4.1.674.10892.1.200.10.1.2.1`.
+The service should be automatically detected if the server supports this _OID_.
+
+For provisioning we have a requisition named _Server_ which contains all server of our data center.
+A _Detector_ with the name _Dell-OMSA-Global-State_ for this requisition is created with the following parameter:
+
+.Parameters for the SNMP detector
+[options="header, autowidth"]
+|===
+| Parameter | Value
+| `Name`    | `Dell-OMSA-Global-State`
+| `oid`     | `.1.3.6.1.4.1.674.10892.1.200.10.1.2.1`
+|===
+
+When the requisition _Server_ is synchronized the service _Dell-OMSA-Global-State_ will be detected in case they support the given _SNMP OID_.
+
+===== Example using SNMP tables
+
+We have a _HP_ server farm and want to monitor the status of logical drives over _SNMP_ provided from _HP Insight Manager_.
+The status for logical drives is provided in a _SNMP Table_ under `.1.3.6.1.4.1.232.3.2.3.1.1.4`.
+The service should be automatically assigned to all servers exposing the given _SNMP OID_.
+
+For provisioning we have a requisition named _Server_ which contains all server of our data center.
+A _Detector_ with the name _HP-Insight-Drive-Logical_ for this requisition is created with the following parameter:
+
+.Parameters for the SNMP detector
+[options="header, autowidth"]
+|===
+| Parameter | Value
+| `Name`    | `HP-Insight-Drive-Logical`
+| `oid`     | `.1.3.6.1.4.1.232.3.2.3.1.1.4`
+| `isTable` | `true`
+|===
+
+When the requisition _Server_ is synchronized the service _HP-Insight-Drive-Logical_ will be detected in case they support the given _SNMP OID_ table.
