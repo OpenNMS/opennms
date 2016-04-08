@@ -39,6 +39,7 @@ import static org.ops4j.pax.tinybundles.core.TinyBundles.bundle;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.PrintStream;
+import java.net.ServerSocket;
 import java.net.URI;
 import java.security.PrivilegedExceptionAction;
 import java.util.ArrayList;
@@ -69,6 +70,15 @@ public abstract class KarafTestCase {
 
     private static Logger LOG = LoggerFactory.getLogger(KarafTestCase.class);
 
+    public static final String MIN_RMI_SERVER_PORT = "44444";
+    public static final String MAX_RMI_SERVER_PORT = "66666";
+    public static final String MIN_HTTP_PORT = "9080";
+    public static final String MAX_HTTP_PORT = "9999";
+    public static final String MIN_RMI_REG_PORT = "1099";
+    public static final String MAX_RMI_REG_PORT = "9999";
+    public static final String MIN_SSH_PORT = "8101";
+    public static final String MAX_SSH_PORT = "8888";
+
     private static String getKarafVersion() {
         final String karafVersion = System.getProperty("karafVersion", "2.4.0");
         Objects.requireNonNull(karafVersion, "Please define a system property 'karafVersion'.");
@@ -93,6 +103,15 @@ public abstract class KarafTestCase {
         return probe;
     }
 
+    private static int getAvailablePort(int min, int max) {
+        for (int i = min; i <= max; i++) {
+            try (ServerSocket socket = new ServerSocket(i)) {
+                return socket.getLocalPort();
+            } catch (Throwable e) {}
+        }
+        throw new IllegalStateException("Can't find an available network port");
+    }
+
     /**
      * This is the default {@link Configuration} for any Pax Exam tests that
      * use this abstract base class. If you wish to add more Configuration parameters,
@@ -110,6 +129,11 @@ public abstract class KarafTestCase {
     }
 
     protected Option[] configAsArray() {
+        String httpPort = Integer.toString(getAvailablePort(Integer.parseInt(MIN_HTTP_PORT), Integer.parseInt(MAX_HTTP_PORT)));
+        String rmiRegistryPort = Integer.toString(getAvailablePort(Integer.parseInt(MIN_RMI_REG_PORT), Integer.parseInt(MAX_RMI_REG_PORT)));
+        String rmiServerPort = Integer.toString(getAvailablePort(Integer.parseInt(MIN_RMI_SERVER_PORT), Integer.parseInt(MAX_RMI_SERVER_PORT)));
+        String sshPort = Integer.toString(getAvailablePort(Integer.parseInt(MIN_SSH_PORT), Integer.parseInt(MAX_SSH_PORT)));
+
         Option[] options = new Option[]{
             // Use Karaf as the container
             karafDistributionConfiguration().frameworkUrl(
@@ -169,8 +193,15 @@ public abstract class KarafTestCase {
 
             //editConfigurationFilePut("etc/org.apache.karaf.features.cfg", "featuresBoot", "config,ssh,http,http-whiteboard,exam"),
 
-            // Change the SSH port so that it doesn't conflict with a running OpenNMS instance
-            editConfigurationFilePut("etc/org.apache.karaf.shell.cfg", "sshPort", "8201")
+            // Change the all network ports so they don't conflict with a running OpenNMS instance
+            // or previously run Karaf integration tests
+            editConfigurationFilePut("etc/org.ops4j.pax.web.cfg", "org.osgi.service.http.port", httpPort),
+            editConfigurationFilePut("etc/org.apache.karaf.management.cfg", "rmiRegistryPort", rmiRegistryPort),
+            editConfigurationFilePut("etc/org.apache.karaf.management.cfg", "rmiServerPort", rmiServerPort),
+            editConfigurationFilePut("etc/org.apache.karaf.shell.cfg", "sshPort", sshPort),
+
+            // This port is already being allocated according to an org.ops4j.net.FreePort call
+            //editConfigurationFilePut("etc/system.properties", "org.ops4j.pax.exam.rbc.rmi.port", paxExamRmiRegistryPort),
         };
 
         if (Boolean.valueOf(System.getProperty("debug"))) {
