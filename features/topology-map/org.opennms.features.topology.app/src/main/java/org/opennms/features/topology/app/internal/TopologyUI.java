@@ -77,7 +77,6 @@ import org.opennms.features.topology.app.internal.jung.TopoFRLayoutAlgorithm;
 import org.opennms.features.topology.app.internal.operations.RedoLayoutOperation;
 import org.opennms.features.topology.app.internal.operations.TopologySelectorOperation;
 import org.opennms.features.topology.app.internal.support.CategoryHopCriteria;
-import org.opennms.features.topology.app.internal.support.FontAwesomeIcons;
 import org.opennms.features.topology.app.internal.support.IconRepositoryManager;
 import org.opennms.features.topology.app.internal.support.IonicIcons;
 import org.opennms.features.topology.app.internal.ui.HudDisplay;
@@ -141,7 +140,6 @@ import com.vaadin.ui.Window;
 @Title("OpenNMS Topology Map")
 @PreserveOnRefresh
 @StyleSheet(value = {
-        "theme://font-awesome/css/font-awesome.min.css",
         "theme://ionicons/css/ionicons.min.css"
 })
 public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpdateListener, ContextMenuHandler, WidgetUpdateListener, WidgetContext, UriFragmentChangedListener, GraphContainer.ChangeListener, MapViewManagerListener, VertexUpdateListener, SelectionListener, VerticesUpdateManager.VerticesUpdateListener {
@@ -738,17 +736,19 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
 
     private Component createToolbar() {
         final Property<Double> scale = m_graphContainer.getScaleProperty();
-        final Button showFocusVerticesBtn = new Button(FontAwesomeIcons.Icon.eye_open.variant());
+        final Boolean[] eyeClosed = new Boolean[] {false};
+        final Button showFocusVerticesBtn = new Button();
+        showFocusVerticesBtn.setIcon(FontAwesome.EYE);
         showFocusVerticesBtn.setDescription("Toggle Highlight Focus Nodes");
-        showFocusVerticesBtn.setHtmlContentAllowed(true);
         showFocusVerticesBtn.addClickListener(new ClickListener() {
             @Override
             public void buttonClick(ClickEvent event) {
-                if(showFocusVerticesBtn.getCaption().equals(FontAwesomeIcons.Icon.eye_close.variant())){
-                    showFocusVerticesBtn.setCaption(FontAwesomeIcons.Icon.eye_open.variant());
+                if(eyeClosed[0]) {
+                    showFocusVerticesBtn.setIcon(FontAwesome.EYE);
                 } else {
-                    showFocusVerticesBtn.setCaption(FontAwesomeIcons.Icon.eye_close.variant());
+                    showFocusVerticesBtn.setIcon(FontAwesome.EYE_SLASH);
                 }
+                eyeClosed[0] = !eyeClosed[0]; // toggle
                 m_topologyComponent.getState().setHighlightFocus(!m_topologyComponent.getState().isHighlightFocus());
                 m_topologyComponent.updateGraph();
             }
@@ -824,12 +824,14 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
             }
         });
 
-        Button showAllMapBtn = new Button(FontAwesomeIcons.Icon.globe.variant());
+        Button showAllMapBtn = new Button();
+        showAllMapBtn.setIcon(FontAwesome.GLOBE);
         showAllMapBtn.setHtmlContentAllowed(true);
         showAllMapBtn.setDescription("Show Entire Map");
         showAllMapBtn.addClickListener((ClickListener) event -> m_topologyComponent.showAllMap());
 
-        Button centerSelectionBtn = new Button(FontAwesomeIcons.Icon.location_arrow.variant());
+        Button centerSelectionBtn = new Button();
+        centerSelectionBtn.setIcon(FontAwesome.LOCATION_ARROW);
         centerSelectionBtn.setHtmlContentAllowed(true);
         centerSelectionBtn.setDescription("Center On Selection");
         centerSelectionBtn.addClickListener((ClickListener) event -> m_topologyComponent.centerMapOnSelection());
