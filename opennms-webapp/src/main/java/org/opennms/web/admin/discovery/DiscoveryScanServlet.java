@@ -39,34 +39,30 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.opennms.core.utils.WebSecurityUtils;
-import org.opennms.netmgt.config.DiscoveryConfigFactory;
 import org.opennms.netmgt.config.discovery.DiscoveryConfiguration;
 import org.opennms.netmgt.config.discovery.ExcludeRange;
 import org.opennms.netmgt.config.discovery.IncludeRange;
 import org.opennms.netmgt.config.discovery.IncludeUrl;
 import org.opennms.netmgt.config.discovery.Specific;
-import org.opennms.netmgt.events.api.EventConstants;
-import org.opennms.netmgt.events.api.EventProxy;
-import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.web.api.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * A servlet that handles updating the status of the notifications
+ * A servlet that handles configuring a one-time discovery scan.
  *
  * @author <A HREF="mailto:jason@opennms.org">Jason Johns</A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
  */
-public class ActionDiscoveryServlet extends HttpServlet {
+public class DiscoveryScanServlet extends HttpServlet {
+
+    private static final long serialVersionUID = 1018907997499737690L;
 
     /** Constant <code>log</code> */
-    private static final Logger LOG = LoggerFactory.getLogger(ActionDiscoveryServlet.class);
+    private static final Logger LOG = LoggerFactory.getLogger(DiscoveryScanServlet.class);
 
-    private static final long serialVersionUID = 2L;
-    
-    public static final String ATTRIBUTE_DISCOVERY_CONFIGURATION = ActionDiscoveryServlet.class.getSimpleName() + "-discoveryConfiguration";
-    
+    public static final String ATTRIBUTE_DISCOVERY_CONFIGURATION = DiscoveryScanServlet.class.getSimpleName() + "-discoveryConfiguration";
+
     /** Constant <code>addSpecificAction="AddSpecific"</code> */
     public static final String addSpecificAction = "AddSpecific";
     /** Constant <code>removeSpecificAction="RemoveSpecific"</code> */
@@ -90,38 +86,20 @@ public class ActionDiscoveryServlet extends HttpServlet {
     /** Constant <code>saveAndRestartAction="SaveAndRestart"</code> */
     public static final String saveAndRestartAction = "SaveAndRestart";
     
-    /**
-     * <p>getDiscoveryConfig</p>
-     *
-     * @return a {@link org.opennms.netmgt.config.discovery.DiscoveryConfiguration} object.
-     * @throws ServletException 
-     */
-    public static DiscoveryConfiguration getDiscoveryConfig() throws ServletException {
-        DiscoveryConfiguration config = null;
-        try {
-             DiscoveryConfigFactory factory = DiscoveryConfigFactory.getInstance();
-             factory.reload();
-             config = factory.getConfiguration();
-        } catch (final Exception e) {
-            throw new ServletException("Could not load configuration: " + e.getMessage(), e);
-        }
-        return config;
-    }
-
+    
+	/** {@inheritDoc} */
     @Override
-    public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
-        LOG.info("Loading Discovery configuration.");
+	    LOG.info("Loading Discovery configuration.");
         HttpSession sess = request.getSession(true);
         DiscoveryConfiguration config = (DiscoveryConfiguration) sess.getAttribute(ATTRIBUTE_DISCOVERY_CONFIGURATION);
         if (config == null) {
-            config = getDiscoveryConfig();
-            sess.setAttribute(ATTRIBUTE_DISCOVERY_CONFIGURATION, config);
+            config = new DiscoveryConfiguration();
         }
-
-        //Update general settings from the incoming request parameters
-        config = GeneralSettingsLoader.load(request, config);
-
+        //load current general settings
+        config = GeneralSettingsLoader.load(request,config);
+        
         String action = request.getParameter("action");
         LOG.debug("action: {}", action);
 
@@ -230,22 +208,25 @@ public class ActionDiscoveryServlet extends HttpServlet {
         	ExcludeRange er= config.getExcludeRange(index);
         	boolean result = config.removeExcludeRange(er);
         	LOG.debug("Removing Exclude Range result = {}", result);
-        }         
+        }
         
-        //save configuration and restart discovery service
+        // Submit the discovery job
         if(action.equals(saveAndRestartAction)){
-        	DiscoveryConfigFactory dcf=null;
-        	try{
+        
+        	try {
         			StringWriter configString = new StringWriter();
         			config.marshal(configString);
         			LOG.debug(configString.toString().trim());
-        		dcf = DiscoveryConfigFactory.getInstance();
-            	        dcf.saveConfiguration(config);
-        	}catch(Throwable ex){
+        			
+        			// TODO: Submit the job to the discovery queue
+
+        	} catch(Throwable ex) {
         		LOG.error("Error while saving configuration. {}", ex);
         		throw new ServletException(ex);
         	}
-        	
+
+        	// TODO: Send an event here when the scan is started? Or do it on the Camel side?
+        	/*
         	EventProxy proxy = null;
         	try {
     			proxy = Util.createEventProxy();
@@ -262,17 +243,19 @@ public class ActionDiscoveryServlet extends HttpServlet {
     			LOG.error(me.getMessage());
     		}
 
-            LOG.info("Restart Discovery requested!");  
+            LOG.info("Restart Discovery requested!");
+            */
+
             sess.removeAttribute(ATTRIBUTE_DISCOVERY_CONFIGURATION);
-            response.sendRedirect(Util.calculateUrlBase( request, "admin/discovery/config-done.jsp" ));
+            response.sendRedirect(Util.calculateUrlBase( request, "admin/discovery/scan-done.jsp" ));
             return;
         }
         
         sess.setAttribute(ATTRIBUTE_DISCOVERY_CONFIGURATION, config);
-        RequestDispatcher dispatcher = this.getServletContext().getRequestDispatcher("/admin/discovery/edit-config.jsp");
+        RequestDispatcher dispatcher = this.getServletContext().getRequestDispatcher("/admin/discovery/edit-scan.jsp");
         dispatcher.forward(request, response);
     }
-	
+
 	/** {@inheritDoc} */
     @Override
 	public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {

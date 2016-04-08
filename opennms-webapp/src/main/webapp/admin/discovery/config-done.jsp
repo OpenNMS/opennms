@@ -31,46 +31,38 @@
 
 <%@page language="java"
 	contentType="text/html"
-	session="true" 
+	session="true"
 %>
 
+<% String breadcrumb1 = "<a href='admin/index.jsp'> Admin </a>"; %>
+<% String breadcrumb2 = "<a href='admin/discovery/index.jsp'> Discovery </a>"; %>
+<% String breadcrumb3 = "Configuration Updated"; %>
+
 <jsp:include page="/includes/bootstrap.jsp" flush="false" >
-  <jsp:param name="title" value="Configure Discovery" />
+  <jsp:param name="title" value="Discovery Configuration Updated" />
   <jsp:param name="headTitle" value="Discovery" />
   <jsp:param name="headTitle" value="Admin" />
   <jsp:param name="location" value="admin" />
-  <jsp:param name="breadcrumb" value="<a href='admin/index.jsp'>Admin</a>" />
-  <jsp:param name="breadcrumb" value="Discovery" />
+  <jsp:param name="breadcrumb" value="<%=breadcrumb1%>" />
+  <jsp:param name="breadcrumb" value="<%=breadcrumb2%>" />
+  <jsp:param name="breadcrumb" value="<%=breadcrumb3%>" />
 </jsp:include>
 
-<div class="row">
-  <div class="col-md-6">
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h3 class="panel-title">Discovery</h3>
-      </div>
-      <div class="panel-body">
-        <ul class="list-unstyled">
-          <li><a href="admin/discovery/edit-config.jsp">Configure Discovery</a></li>
-          <li><a href="admin/discovery/edit-scan.jsp">Run Single Discovery Scan</a></li>
-        </ul>
-      </div> <!-- panel-body -->
-    </div> <!-- panel -->
-  </div> <!-- column -->
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <h3 class="panel-title">Discovery Configuration Updated</h3>
+  </div>
+  <div class="panel-body">
+    <p>
+      The discovery configuration has been updated successfully and the discovery subsystem has been reloaded. The next scan
+      will begin after the configured initial sleep time.
+    </p>
 
-  <div class="col-md-6">
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h3 class="panel-title">Configuration</h3>
-      </div>
-      <div class="panel-body">
-        <p>The place to configure the Discovery service.
-        After you have added, removed specific IP addresses or ranges, you can save the configuration and restart
-        the service.
-        </p>       
-      </div> <!-- panel-body -->
-    </div> <!-- panel -->
-  </div> <!-- column -->
-</div> <!-- row -->
+    <p><a href='admin/index.jsp'>Return to the admin page</a></p>
+    <p><a href='admin/discovery/index.jsp'>Return to the discovery configuration page</a></p>
+
+  </div> <!-- panel-body -->
+</div> <!-- panel -->
 
 <jsp:include page="/includes/bootstrap-footer.jsp" flush="false" />
+

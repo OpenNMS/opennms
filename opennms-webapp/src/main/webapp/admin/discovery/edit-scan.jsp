@@ -44,7 +44,7 @@
   org.springframework.web.context.WebApplicationContext,
   org.springframework.web.context.support.WebApplicationContextUtils,
   org.opennms.web.svclayer.api.RequisitionAccessService,
-  org.opennms.web.admin.discovery.ActionDiscoveryServlet"
+  org.opennms.web.admin.discovery.DiscoveryScanServlet"
 %>
 <%
 	response.setDateHeader("Expires", 0);
@@ -58,7 +58,7 @@
 <% String breadcrumb3 = "Modify Configuration"; %>
 
 <jsp:include page="/includes/bootstrap.jsp" flush="false" >
-  <jsp:param name="title" value="Modify Discovery Configuration" />
+  <jsp:param name="title" value="Edit Discovery Scan" />
   <jsp:param name="headTitle" value="Discovery" />
   <jsp:param name="headTitle" value="Admin" />
   <jsp:param name="location" value="admin" />
@@ -87,34 +87,34 @@ function addExcludeRange(){
 
 function deleteSpecific(i){
       if(confirm("Are you sure you want to delete the 'Specific'?")){
-	document.modifyDiscoveryConfig.action=document.modifyDiscoveryConfig.action+"?action=<%=ActionDiscoveryServlet.removeSpecificAction%>&index="+i;
+	document.modifyDiscoveryConfig.action=document.modifyDiscoveryConfig.action+"?action=<%=DiscoveryScanServlet.removeSpecificAction%>&index="+i;
 	document.modifyDiscoveryConfig.submit();
 	}
 }
 
 function deleteIR(i){
       if(confirm("Are you sure you want to delete the 'Include Range'?")){
-	document.modifyDiscoveryConfig.action=document.modifyDiscoveryConfig.action+"?action=<%=ActionDiscoveryServlet.removeIncludeRangeAction%>&index="+i;
+	document.modifyDiscoveryConfig.action=document.modifyDiscoveryConfig.action+"?action=<%=DiscoveryScanServlet.removeIncludeRangeAction%>&index="+i;
 	document.modifyDiscoveryConfig.submit();
 	}
 }
 
 function deleteIncludeUrl(i){
     if(confirm("Are you sure you want to delete the 'Include URL'?")){
-	document.modifyDiscoveryConfig.action=document.modifyDiscoveryConfig.action+"?action=<%=ActionDiscoveryServlet.removeIncludeUrlAction%>&index="+i;
+	document.modifyDiscoveryConfig.action=document.modifyDiscoveryConfig.action+"?action=<%=DiscoveryScanServlet.removeIncludeUrlAction%>&index="+i;
 	document.modifyDiscoveryConfig.submit();
 	}
 }
 
 function deleteER(i){
       if(confirm("Are you sure you want to delete the 'Exclude Range'?")){
-	document.modifyDiscoveryConfig.action=document.modifyDiscoveryConfig.action+"?action=<%=ActionDiscoveryServlet.removeExcludeRangeAction%>&index="+i;
+	document.modifyDiscoveryConfig.action=document.modifyDiscoveryConfig.action+"?action=<%=DiscoveryScanServlet.removeExcludeRangeAction%>&index="+i;
 	document.modifyDiscoveryConfig.submit();
 	}
 }
 
 function restartDiscovery(){
-	document.modifyDiscoveryConfig.action=document.modifyDiscoveryConfig.action+"?action=<%=ActionDiscoveryServlet.saveAndRestartAction%>";
+	document.modifyDiscoveryConfig.action=document.modifyDiscoveryConfig.action+"?action=<%=DiscoveryScanServlet.saveAndRestartAction%>";
 	return true;
 }
 </script>
@@ -133,13 +133,11 @@ private static final String DEFAULT_FOREIGN_SOURCE = "default";
 WebApplicationContext context = WebApplicationContextUtils.getRequiredWebApplicationContext(getServletContext());
 
 HttpSession sess = request.getSession(false);
-DiscoveryConfiguration currConfig  = (DiscoveryConfiguration) sess.getAttribute(ActionDiscoveryServlet.ATTRIBUTE_DISCOVERY_CONFIGURATION);
-// If there's no config in the session yet, reload it from the config factory
+DiscoveryConfiguration currConfig  = (DiscoveryConfiguration) sess.getAttribute(DiscoveryScanServlet.ATTRIBUTE_DISCOVERY_CONFIGURATION);
+// If there's no config in the session yet, create a new blank config
 if (currConfig == null) {
-  DiscoveryConfigFactory factory = context.getBean(DiscoveryConfigFactory.class);
-  factory.reload();
-  currConfig = factory.getConfiguration();
-  sess.setAttribute(ActionDiscoveryServlet.ATTRIBUTE_DISCOVERY_CONFIGURATION, currConfig);
+  currConfig = new DiscoveryConfiguration();
+  sess.setAttribute(DiscoveryScanServlet.ATTRIBUTE_DISCOVERY_CONFIGURATION, currConfig);
 }
 
 // Map of primary key to label (which in this case are the same)
@@ -158,7 +156,7 @@ for (Requisition requisition : reqAccessService.getRequisitions()) {
 
 %>
 
-<form role="form" class="form-horizontal" method="post" id="modifyDiscoveryConfig" name="modifyDiscoveryConfig" action="<%= Util.calculateUrlBase(request, "admin/discovery/actionDiscovery") %>" onsubmit="return restartDiscovery();">
+<form role="form" class="form-horizontal" method="post" id="modifyDiscoveryConfig" name="modifyDiscoveryConfig" action="<%= Util.calculateUrlBase(request, "admin/discovery/scanConfig") %>" onsubmit="return restartDiscovery();">
 <input type="hidden" id="specificipaddress" name="specificipaddress" value=""/>
 <input type="hidden" id="specifictimeout" name="specifictimeout" value=""/>
 <input type="hidden" id="specificretries" name="specificretries" value=""/>
@@ -179,7 +177,7 @@ for (Requisition requisition : reqAccessService.getRequisitions()) {
 <input type="hidden" id="erbegin" name="erbegin" value=""/>
 <input type="hidden" id="erend" name="erend" value=""/>
 
-<button type="submit" class="btn btn-default">Start Discovery Scan</button>
+<button type="submit" class="btn btn-default">Save and Restart Discovery</button>
 
 <p/>
 
@@ -191,33 +189,6 @@ for (Requisition requisition : reqAccessService.getRequisitions()) {
       </div>
       <div class="list-group">
         <div class="list-group-item">
-        <div class="col-md-12 input-group">
-          <label for="initialsleeptime" class="control-label">Initial sleep time (seconds):</label>
-          <select id="initialsleeptime" class="form-control" name="initialsleeptime">
-            <option value="30000" <%if(currConfig.getInitialSleepTime()==30000) out.print("selected");%>>30</option>
-            <option value="60000" <%if(currConfig.getInitialSleepTime()==60000) out.print("selected");%>>60</option>
-            <option value="90000" <%if(currConfig.getInitialSleepTime()==90000) out.print("selected");%>>90</option>
-            <option value="120000" <%if(currConfig.getInitialSleepTime()==120000) out.print("selected");%>>120</option>
-            <option value="150000" <%if(currConfig.getInitialSleepTime()==150000) out.print("selected");%>>150</option>
-            <option value="300000" <%if(currConfig.getInitialSleepTime()==300000) out.print("selected");%>>300</option>
-            <option value="600000" <%if(currConfig.getInitialSleepTime()==600000) out.print("selected");%>>600</option>
-          </select>
-        </div> <!-- input-group -->
-        <div class="col-md-12 input-group">
-          <label for="restartsleeptime" class="control-label">Restart sleep time (hours):</label>
-          <select id="restartsleeptime" class="form-control" name="restartsleeptime">
-            <option value="3600000" <%if(currConfig.getRestartSleepTime()==3600000) out.print("selected");%>>1</option>
-            <option value="7200000" <%if(currConfig.getRestartSleepTime()==7200000) out.print("selected");%>>2</option>
-            <option value="10800000" <%if(currConfig.getRestartSleepTime()==10800000) out.print("selected");%>>3</option>
-            <option value="14400000" <%if(currConfig.getRestartSleepTime()==14400000) out.print("selected");%>>4</option>
-            <option value="18000000" <%if(currConfig.getRestartSleepTime()==18000000) out.print("selected");%>>5</option>
-            <option value="21600000" <%if(currConfig.getRestartSleepTime()==21600000) out.print("selected");%>>6</option>
-            <option value="43200000" <%if(currConfig.getRestartSleepTime()==43200000) out.print("selected");%>>12</option>
-            <option value="86400000" <%if(currConfig.getRestartSleepTime()==86400000) out.print("selected");%>>24</option>
-            <option value="129600000" <%if(currConfig.getRestartSleepTime()==129600000) out.print("selected");%>>36</option>
-            <option value="259200000" <%if(currConfig.getRestartSleepTime()==259200000) out.print("selected");%>>72</option>
-          </select>
-        </div> <!-- input-group -->
         <div class="col-md-12 input-group">
           <label for="retries" class="control-label">Timeout (milliseconds):</label>
           <input type="text" class="form-control" id="timeout" name="timeout" value="<%=((currConfig.getTimeout()==0)?DiscoveryConfigFactory.DEFAULT_TIMEOUT:currConfig.getTimeout())%>"/>
@@ -410,7 +381,7 @@ for (Requisition requisition : reqAccessService.getRequisitions()) {
   </div> <!-- column -->
 </div> <!-- row -->
 
-<button type="submit" class="btn btn-default">Start Discovery Scan</button>
+<button type="submit" class="btn btn-default">Save and Restart Discovery</button>
 
 </form>
 

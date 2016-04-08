@@ -509,8 +509,8 @@
     <servlet-class>org.opennms.web.admin.discovery.ActionDiscoveryServlet</servlet-class>
   </servlet>
   <servlet>
-    <servlet-name>modifyDiscoveryConfig</servlet-name>
-    <servlet-class>org.opennms.web.admin.discovery.ModifyDiscoveryConfigurationServlet</servlet-class>
+    <servlet-name>discoveryScan</servlet-name>
+    <servlet-class>org.opennms.web.admin.discovery.DiscoveryScanServlet</servlet-class>
   </servlet>  
   
   <servlet>
@@ -904,8 +904,8 @@
     <url-pattern>/admin/discovery/actionDiscovery</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
-    <servlet-name>modifyDiscoveryConfig</servlet-name>
-    <url-pattern>/admin/discovery/modifyDiscoveryConfig</url-pattern>
+    <servlet-name>discoveryScan</servlet-name>
+    <url-pattern>/admin/discovery/scanConfig</url-pattern>
   </servlet-mapping>
   
   <servlet-mapping>
