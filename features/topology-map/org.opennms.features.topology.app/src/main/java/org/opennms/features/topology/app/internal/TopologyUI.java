@@ -801,7 +801,7 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
 
 
         m_panBtn = new Button();
-        m_panBtn.setIcon(new ThemeResource("images/cursor_drag_arrow.png"));
+        m_panBtn.setIcon(FontAwesome.ARROWS);
         m_panBtn.setDescription("Pan Tool");
         m_panBtn.setStyleName("toolbar-button down");
 
