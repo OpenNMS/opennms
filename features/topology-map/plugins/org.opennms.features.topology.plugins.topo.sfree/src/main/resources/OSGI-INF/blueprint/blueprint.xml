@@ -47,15 +47,15 @@ xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0
         </bean>
     </service>
 
-    <service interface="org.opennms.features.topology.api.IconRepository">
-        <bean class="org.opennms.features.topology.api.support.DefaultIconRepository">
-            <property name="iconMap">
-                <map>
-                    <entry key="sfree:group" value="theme://images/cloud.png"/>
-                    <entry key="sfree:system" value="theme://images/vmware-network.png"/>
-                </map>
-            </property>
-        </bean>
+    <service>
+        <interfaces>
+            <value>org.opennms.features.topology.api.IconRepository</value>
+            <value>org.osgi.service.cm.ManagedService</value>
+        </interfaces>
+        <service-properties>
+            <entry key="service.pid" value="org.opennms.features.topology.app.icons.sfree"/>
+        </service-properties>
+        <bean class="org.opennms.features.topology.api.support.DefaultIconRepository" />
     </service>
     
 </blueprint>

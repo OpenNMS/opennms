@@ -38,8 +38,11 @@ import java.util.Set;
 
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.OperationContext;
-import org.opennms.features.topology.api.support.VertexHopGraphProvider;
+import org.opennms.features.topology.api.browsers.ContentType;
+import org.opennms.features.topology.api.browsers.SelectionChangedListener;
+import org.opennms.features.topology.api.support.VertexHopGraphProvider.DefaultVertexHopCriteria;
 import org.opennms.features.topology.api.topo.AbstractVertex;
+import org.opennms.features.topology.api.topo.DefaultVertexRef;
 import org.opennms.features.topology.api.topo.Edge;
 import org.opennms.features.topology.api.topo.EdgeRef;
 import org.opennms.features.topology.api.topo.GraphProvider;
@@ -120,7 +123,7 @@ public class VmwareTopologyProvider extends SimpleGraphProvider implements Graph
         if (containsVertexId(vertexId)) {
             return (AbstractVertex) getVertex(TOPOLOGY_NAMESPACE_VMWARE, vertexId);
         }
-        return addGroup(vertexId, "DATACENTER_ICON", groupName);
+        return addGroup(vertexId, "vmware.DATACENTER_ICON", groupName);
     }
 
     private AbstractVertex addNetworkVertex(String vertexId, String vertexName) {
@@ -128,7 +131,7 @@ public class VmwareTopologyProvider extends SimpleGraphProvider implements Graph
             return (AbstractVertex) getVertex(TOPOLOGY_NAMESPACE_VMWARE, vertexId);
         }
         AbstractVertex vertex = addVertex(vertexId, 50, 50);
-        vertex.setIconKey("NETWORK_ICON");
+        vertex.setIconKey("vmware.NETWORK_ICON");
         vertex.setLabel(vertexName);
         return vertex;
     }
@@ -138,7 +141,7 @@ public class VmwareTopologyProvider extends SimpleGraphProvider implements Graph
             return (AbstractVertex) getVertex(TOPOLOGY_NAMESPACE_VMWARE, vertexId);
         }
         AbstractVertex vertex = addVertex(vertexId, 50, 50);
-        vertex.setIconKey("DATASTORE_ICON");
+        vertex.setIconKey("vmware.DATASTORE_ICON");
         vertex.setLabel(vertexName);
         return vertex;
     }
@@ -148,14 +151,14 @@ public class VmwareTopologyProvider extends SimpleGraphProvider implements Graph
             return (AbstractVertex) getVertex(TOPOLOGY_NAMESPACE_VMWARE, vertexId);
         }
 
-        String icon = "VIRTUALMACHINE_ICON_UNKNOWN";
+        String icon = "vmware.VIRTUALMACHINE_ICON_UNKNOWN";
 
         if ("poweredOn".equals(powerState)) {
-            icon = "VIRTUALMACHINE_ICON_ON";
+            icon = "vmware.VIRTUALMACHINE_ICON_ON";
         } else if ("poweredOff".equals(powerState)) {
-            icon = "VIRTUALMACHINE_ICON_OFF";
+            icon = "vmware.VIRTUALMACHINE_ICON_OFF";
         } else if ("suspended".equals(powerState)) {
-            icon = "VIRTUALMACHINE_ICON_SUSPENDED";
+            icon = "vmware.VIRTUALMACHINE_ICON_SUSPENDED";
         }
 
         AbstractVertex vertex = addVertex(vertexId, 50, 50);
@@ -171,14 +174,14 @@ public class VmwareTopologyProvider extends SimpleGraphProvider implements Graph
             return (AbstractVertex) getVertex(TOPOLOGY_NAMESPACE_VMWARE, vertexId);
         }
 
-        String icon = "HOSTSYSTEM_ICON_UNKNOWN";
+        String icon = "vmware.HOSTSYSTEM_ICON_UNKNOWN";
 
         if ("poweredOn".equals(powerState)) {
-            icon = "HOSTSYSTEM_ICON_ON";
+            icon = "vmware.HOSTSYSTEM_ICON_ON";
         } else if ("poweredOff".equals(powerState)) {
-            icon = "HOSTSYSTEM_ICON_OFF";
+            icon = "vmware.HOSTSYSTEM_ICON_OFF";
         } else if ("standBy".equals(powerState)) {
-            icon = "HOSTSYSTEM_ICON_STANDBY";
+            icon = "vmware.HOSTSYSTEM_ICON_STANDBY";
         }
 
         AbstractVertex vertex = addVertex(vertexId, 50, 50);
@@ -433,14 +436,22 @@ public class VmwareTopologyProvider extends SimpleGraphProvider implements Graph
 
     @Override
     public void addVertexHopCriteria(SearchResult searchResult, GraphContainer container) {
-        VertexHopGraphProvider.FocusNodeHopCriteria criteria = VertexHopGraphProvider.getFocusNodeHopCriteriaForContainer(container);
-        criteria.add(getVertex(searchResult.getNamespace(), searchResult.getId()));
+        DefaultVertexHopCriteria criteria = new DefaultVertexHopCriteria(
+                new DefaultVertexRef(
+                        searchResult.getNamespace(),
+                        searchResult.getId(),
+                        searchResult.getLabel()));
+        container.addCriteria(criteria);
     }
 
     @Override
     public void removeVertexHopCriteria(SearchResult searchResult, GraphContainer container) {
-        VertexHopGraphProvider.FocusNodeHopCriteria criteria = VertexHopGraphProvider.getFocusNodeHopCriteriaForContainer(container);
-        criteria.remove(getVertex(searchResult.getNamespace(), searchResult.getLabel()));
+        DefaultVertexHopCriteria criteria = new DefaultVertexHopCriteria(
+                new DefaultVertexRef(
+                        searchResult.getNamespace(),
+                        searchResult.getId(),
+                        searchResult.getLabel()));
+        container.removeCriteria(criteria);
     }
 
     @Override
@@ -455,5 +466,10 @@ public class VmwareTopologyProvider extends SimpleGraphProvider implements Graph
         }
 
         return searchResults;
+    }
+
+    @Override
+    public SelectionChangedListener.Selection getSelection(List<VertexRef> selectedVertices, ContentType type) {
+        return getSelection(TOPOLOGY_NAMESPACE_VMWARE, selectedVertices, type);
     }
 }

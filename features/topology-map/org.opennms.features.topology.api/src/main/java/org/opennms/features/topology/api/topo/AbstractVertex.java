@@ -41,7 +41,7 @@ public class AbstractVertex extends DefaultVertexRef implements Vertex {
 	private Integer m_y;
 	private boolean m_selected;
 	private boolean m_locked = false;
-	private String m_ipAddr ="127.0.0.1";
+	private String m_ipAddr;
 	private Integer m_nodeID;
 
 	@Deprecated

@@ -38,6 +38,7 @@ import javax.ws.rs.core.MediaType;
 
 import org.apache.commons.io.IOUtils;
 import org.json.JSONObject;
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.MockLogAppender;
@@ -104,6 +105,17 @@ public class IfServicesRestServiceIT extends AbstractSpringJerseyRestTestCase {
         for(OnmsMonitoredServiceDetail detail : list.getObjects()) {
             assertEquals("F", detail.getStatusCode());
         }
+    }
+
+    @Test
+    @JUnitTemporaryDatabase
+    public void testGetById() throws Exception {
+        OnmsMonitoredServiceDetail service = getXmlObject(JaxbUtils.getContextFor(OnmsMonitoredServiceDetail.class), "/ifservices/2", 200, OnmsMonitoredServiceDetail.class);
+        Assert.assertNotNull(service);
+        Assert.assertEquals("2", service.getId());
+
+        // verify that 404 is implemented correctly
+        sendRequest(GET, "/ifservices/-2", 404);
     }
 
     @Test

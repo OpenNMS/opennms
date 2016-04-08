@@ -262,4 +262,18 @@ public class ProvisioningNewUIIT extends OpenNMSSeleniumTestCase {
         clickId("save-node", false);
         wait.until(ExpectedConditions.not(ExpectedConditions.visibilityOfElementLocated(By.id("save-node"))));
     }
+
+    protected void waitForDropdownClose() {
+        waitForClose(By.cssSelector(".modal-dialog ul.dropdown-menu"));
+    }
+
+    protected void waitForModalClose() {
+        System.err.println("waitForModalClose()");
+        waitForClose(By.cssSelector(".modal-dialog"));
+    }
+
+    protected WebElement findModal() {
+        final String xpath = "//div[contains(@class, 'modal-dialog')]";
+        return wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath(xpath)));
+    }
 }

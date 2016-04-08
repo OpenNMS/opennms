@@ -42,7 +42,7 @@ public class LldpLinkStatusProvider extends AbstractLinkStatusProvider {
     private LldpLinkDao m_lldpLinkDao;
 
     @Override
-    public String getNameSpace() {
+    public String getNamespace() {
         return AbstractLinkdTopologyProvider.TOPOLOGY_NAMESPACE_LINKD + "::LLDP";
     }
 

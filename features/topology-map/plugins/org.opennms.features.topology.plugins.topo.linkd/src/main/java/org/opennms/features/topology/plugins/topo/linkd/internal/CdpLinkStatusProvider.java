@@ -43,7 +43,7 @@ public class CdpLinkStatusProvider extends AbstractLinkStatusProvider{
     private CdpLinkDao m_cdpLinkDao;
 
     @Override
-    public String getNameSpace() { return EnhancedLinkdTopologyProvider.CDP_EDGE_NAMESPACE; }
+    public String getNamespace() { return EnhancedLinkdTopologyProvider.CDP_EDGE_NAMESPACE; }
 
     @Override
     protected List<EdgeAlarmStatusSummary> getEdgeAlarmSummaries(List<Integer> linkIds) {

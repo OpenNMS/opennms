@@ -40,14 +40,12 @@ public class HideNCSPathOperation implements Operation {
     private NCSCriteriaServiceManager m_serviceManager;
     
     @Override
-    public Undoer execute(List<VertexRef> targets, OperationContext operationContext) {
+    public void execute(List<VertexRef> targets, OperationContext operationContext) {
         String sessionId = operationContext.getGraphContainer().getSessionId();
         if(m_serviceManager.isCriteriaRegistered("ncsPath", sessionId)) {
             m_serviceManager.unregisterCriteria("ncsPath", sessionId);
         }
         operationContext.getGraphContainer().redoLayout();
-        
-        return null;
     }
 
     @Override

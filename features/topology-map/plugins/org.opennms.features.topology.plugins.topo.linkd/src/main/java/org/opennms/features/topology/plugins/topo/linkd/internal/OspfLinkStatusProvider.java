@@ -45,7 +45,7 @@ public class OspfLinkStatusProvider extends AbstractLinkStatusProvider {
     private OspfLinkDao m_ospfLinkDao;
 
     @Override
-    public String getNameSpace() {
+    public String getNamespace() {
         return AbstractLinkdTopologyProvider.TOPOLOGY_NAMESPACE_LINKD + "::OSPF";
     }
 

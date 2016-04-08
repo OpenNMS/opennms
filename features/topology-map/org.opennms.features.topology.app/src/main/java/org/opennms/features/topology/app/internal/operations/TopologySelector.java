@@ -28,18 +28,13 @@
 
 package org.opennms.features.topology.app.internal.operations;
 
-import java.util.Collections;
 import java.util.Dictionary;
 import java.util.HashMap;
 import java.util.Hashtable;
-import java.util.List;
 import java.util.Map;
-import org.opennms.features.topology.api.AbstractCheckedOperation;
+
 import org.opennms.features.topology.api.CheckedOperation;
-import org.opennms.features.topology.api.GraphContainer;
-import org.opennms.features.topology.api.OperationContext;
 import org.opennms.features.topology.api.topo.GraphProvider;
-import org.opennms.features.topology.api.topo.VertexRef;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
 import org.slf4j.LoggerFactory;
@@ -47,76 +42,8 @@ import org.slf4j.LoggerFactory;
 public class TopologySelector {
 
 	private BundleContext m_bundleContext;
-	private final Map<GraphProvider, TopologySelectorOperation> m_operations = new HashMap<GraphProvider, TopologySelector.TopologySelectorOperation>();
-	private final Map<GraphProvider, ServiceRegistration<CheckedOperation>> m_registrations = new HashMap<GraphProvider, ServiceRegistration<CheckedOperation>>();
-	
-    
-    private static class TopologySelectorOperation extends AbstractCheckedOperation {
-    	
-    	private GraphProvider m_topologyProvider;
-    	private Map<?,?> m_metaData;
-
-    	public TopologySelectorOperation(GraphProvider topologyProvider, Map<?,?> metaData) {
-    		m_topologyProvider = topologyProvider;
-    		m_metaData = metaData;
-		}
-    	
-    	public String getLabel() {
-    		return m_metaData.get("label") == null ? "No Label for Topology Provider" : (String)m_metaData.get("label");
-    	}
-    	
-
-    	@Override
-    	public Undoer execute(List<VertexRef> targets, OperationContext operationContext) {
-    		execute(operationContext.getGraphContainer());
-    		return null;
-    	}
-    	
-    	private void execute(GraphContainer container) {
-    		LoggerFactory.getLogger(getClass()).debug("Active provider is: {}", m_topologyProvider);
-
-            // only change if provider changed
-    		if(!container.getBaseTopology().equals(m_topologyProvider)) {
-                // Refresh the topology provider, triggering the vertices to load  if they have not yet loaded
-                m_topologyProvider.refresh();
-                container.setBaseTopology(m_topologyProvider);
-                container.clearCriteria(); // remove all criteria
-                container.setSemanticZoomLevel(1); // reset to 1
-                container.addCriteria(container.getBaseTopology().getDefaultCriteria());
-                container.redoLayout();
-            }
-    	}
-
-    	@Override
-    	public boolean display(List<VertexRef> targets, OperationContext operationContext) {
-    		return true;
-    	}
-
-    	@Override
-    	public String getId() {
-    		return getLabel();
-    	}
-
-        @Override
-        protected boolean isChecked(GraphContainer container) {
-			GraphProvider activeGraphProvider = container.getBaseTopology();
-			return m_topologyProvider.equals(activeGraphProvider);
-		}
-
-        @Override
-        public Map<String, String> createHistory(GraphContainer container) {
-        	return Collections.singletonMap(this.getClass().getName() + "." + getLabel(), Boolean.toString(isChecked(container)));
-        }
-
-        @Override
-        public void applyHistory(GraphContainer container, Map<String, String> settings) {
-        	// If the class name and label tuple is set to true, then set the base topology provider
-        	if ("true".equals(settings.get(this.getClass().getName() + "." + getLabel()))) {
-        		execute(container);
-        	}
-        }
-    }
-
+	private final Map<GraphProvider, TopologySelectorOperation> m_operations = new HashMap<>();
+	private final Map<GraphProvider, ServiceRegistration<CheckedOperation>> m_registrations = new HashMap<>();
 
 	public void setBundleContext(BundleContext bundleContext) {
 		m_bundleContext = bundleContext;
@@ -126,7 +53,7 @@ public class TopologySelector {
 		try {
         	LoggerFactory.getLogger(getClass()).debug("Adding graph provider: " + topologyProvider);
         	
-        	TopologySelectorOperation operation = new TopologySelectorOperation(topologyProvider, metaData);
+            TopologySelectorOperation operation = new TopologySelectorOperation(m_bundleContext, topologyProvider, metaData);
         	
         	m_operations.put(topologyProvider, operation);
         	

@@ -152,14 +152,6 @@ public class GWTVertex extends JavaScriptObject {
         return this.tooltipText;
     }-*/;
 
-    public final native String getIconUrl() /*-{
-        return this.iconUrl;
-    }-*/;
-
-    public final native void setIconUrl(String iconUrl) /*-{
-        this.iconUrl = iconUrl;
-    }-*/;
-
     public final native void setSVGIconId(String svgIconId) /*-{
         this.svgIconId = svgIconId;
     }-*/;

@@ -57,7 +57,7 @@ public class PhysicalInterfaceTable extends CellTable<PhysicalInterface> {
 
         setBordered(true);
         setCondensed(true);
-        setStriped(true);
+        setStriped(false);
         setHover(true);
 
         setRowStyles(new RowStyles<PhysicalInterface>() {

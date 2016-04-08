@@ -444,6 +444,11 @@ public class D3 extends JavaScriptObject {
         return this.style(style);
     }-*/;
 
+    /**
+     * HTTP GET the provided file and append it to the dom element "defs".
+     *
+     * @param file the file to GET
+     */
     public final native void injectSVGDef(String file) /*-{
          $wnd.d3.xml(file, function(svg){
 
