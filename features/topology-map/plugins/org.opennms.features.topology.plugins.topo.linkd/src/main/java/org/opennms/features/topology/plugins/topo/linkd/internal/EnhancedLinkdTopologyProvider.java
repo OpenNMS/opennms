@@ -581,9 +581,10 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
         Set<Integer> parsed = new HashSet<Integer>();
         for(OspfLink sourceLink : allLinks) {
             if (parsed.contains(sourceLink.getId())) {
-                LOG.debug("loadtopology: ospf link with id '{]' already parsed, skipping", sourceLink.getId());
+                LOG.debug("loadtopology: ospf link with id '{}' already parsed, skipping", sourceLink.getId());
                 continue;
             }
+            LOG.debug("loadtopology: ospf link with id '{}'", sourceLink.getId());
             OnmsNode sourcenode = nodemap.get(sourceLink.getNode().getId());
             Vertex source = getVertex(getVertexNamespace(),sourcenode.getNodeId());
             if (source == null) {
@@ -592,10 +593,9 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
                 addVertices(source);
             }
             for (OspfLink targetLink : allLinks) {
-                if (parsed.contains(targetLink.getId())) {
-                    LOG.debug("loadtopology: ospf link with id '{]' already parsed, skipping", sourceLink.getId());
+                if (sourceLink.getId().intValue() == targetLink.getId().intValue() || parsed.contains(targetLink.getId())) 
                     continue;
-                }
+                LOG.debug("loadtopology: checking ospf link with id '{}'", targetLink.getId());
                 if(sourceLink.getOspfRemIpAddr().equals(targetLink.getOspfIpAddr()) && targetLink.getOspfRemIpAddr().equals(sourceLink.getOspfIpAddr())) {
                     OnmsNode targetnode = nodemap.get(targetLink.getNode().getId());
                     Vertex target = getVertex(getVertexNamespace(),targetnode.getNodeId());
@@ -630,11 +630,11 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
         Set<LldpLinkDetail> combinedLinkDetails = new HashSet<LldpLinkDetail>();
         Set<Integer> parsed = new HashSet<Integer>();
         for (LldpLink sourceLink : allLinks) {
-            LOG.debug("loadtopology: parsing lldp link with id '{}' link '{}' ", sourceLink.getId(), sourceLink);
             if (parsed.contains(sourceLink.getId())) {
-                LOG.debug("loadtopology: lldp link with id '{]' already parsed, skipping", sourceLink.getId());
+                LOG.debug("loadtopology: lldp link with id '{}' already parsed, skipping", sourceLink.getId());
                 continue;
             }
+            LOG.debug("loadtopology: lldp link with id '{}' link '{}' ", sourceLink.getId(), sourceLink);
             OnmsNode sourceNode = nodemap.get(sourceLink.getNode().getId());
             Vertex source = getVertex(getVertexNamespace(), sourceNode.getNodeId());
             if (source == null) {
@@ -649,13 +649,9 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
             LldpElement sourceLldpElement = lldpelementmap.get(sourceLink.getNode().getId());
             LldpLink targetLink = null;
             for (LldpLink link : allLinks) {
-                if (sourceLink.getId().intValue() == link.getId().intValue())
+                if (sourceLink.getId().intValue() == link.getId().intValue()|| parsed.contains(link.getId()))
                     continue;
-                LOG.debug("loadtopology: parsing lldp link with id '{}' link '{}' ", link.getId(), link);
-                if (parsed.contains(link.getId())) {
-                    LOG.debug("loadtopology: lldp link with id '{]' already parsed, skipping", link.getId());
-                    continue;
-                }
+                LOG.debug("loadtopology: checking lldp link with id '{}' link '{}' ", link.getId(), link);
                 LldpElement element = lldpelementmap.get(link.getNode().getId());
                 //Compare the remote data to the targetNode element data
                 if (!sourceLink.getLldpRemChassisId().equals(element.getLldpChassisId()) || !link.getLldpRemChassisId().equals(sourceLldpElement.getLldpChassisId())) 
