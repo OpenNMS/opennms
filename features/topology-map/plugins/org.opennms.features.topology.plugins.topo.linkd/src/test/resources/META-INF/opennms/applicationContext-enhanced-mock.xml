@@ -28,6 +28,10 @@
         <constructor-arg value="org.opennms.netmgt.dao.api.LldpLinkDao"/>
     </bean>
 
+    <bean class="org.easymock.EasyMock" factory-method="createNiceMock" primary="true" id="lldpElementDao">
+        <constructor-arg value="org.opennms.netmgt.dao.api.LldpElementDao"/>
+    </bean>
+
     <bean class="org.easymock.EasyMock" factory-method="createNiceMock" primary="true" id="ospfLinkDao" >
         <constructor-arg value="org.opennms.netmgt.dao.api.OspfLinkDao"/>
     </bean>
@@ -55,6 +59,7 @@
     <bean id="databasePopulator" class="org.opennms.features.topology.plugins.topo.linkd.internal.EnhancedLinkdMockDataPopulator">
         <property name="nodeDao" ref="nodeDao" />
         <property name="lldpLinkDao" ref="lldpLinkDao" />
+        <property name="lldpElementDao" ref="lldpElementDao" />
         <property name="ospfLinkDao" ref="ospfLinkDao" />
         <property name="snmpInterfaceDao" ref="snmpInterfaceDao" />
         <property name="ipInterfaceDao" ref="ipInterfaceDao" />
@@ -66,6 +71,7 @@
         <property name="cdpLinkDao" ref="cdpLinkDao" />
         <property name="isisLinkDao" ref="isisLinkDao" />
         <property name="lldpLinkDao" ref="lldpLinkDao" />
+        <property name="lldpElementDao" ref="lldpElementDao" />
         <property name="ospfLinkDao" ref="ospfLinkDao" />
         <property name="nodeDao" ref="nodeDao" />
         <property name="snmpInterfaceDao" ref="snmpInterfaceDao" />
