@@ -53,6 +53,9 @@
     <!-- OpenNMS Resource CLI tool -->
     <module>resource-cli</module>
 
+    <!-- OpenNMS rest commons module -->
+    <module>rest-commons</module>
+
     <!-- OpenNMS OSGI Core -->
     <module>opennms-osgi-core</module>
 
@@ -124,6 +127,9 @@
 
     <!-- Elasticsearch event-forwarder-->
     <module>elasticsearch</module>
+
+    <!-- Business Service Monitor -->
+    <module>bsm</module>
 
     <!-- Minion -->
     <module>minion</module>

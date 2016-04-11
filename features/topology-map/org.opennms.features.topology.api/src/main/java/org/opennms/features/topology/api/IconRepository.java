@@ -28,13 +28,47 @@
 
 package org.opennms.features.topology.api;
 
-import java.util.List;
-
+/**
+ * Each {@link IconRepository} stores a mapping from icon keys to icon ids.
+ * The icon key is Graph Provider specific and is defined by it (e.g. "sfree:group")
+ * The icon id should match with an id element in all existing SVGs (not only this {@link IconRepository}.
+ */
 public interface IconRepository {
 
-    boolean contains(String type);
+    /**
+     * Verifies if a mapping for the provided icon Key is defined.
+     * @param iconKey the icon key
+     * @return true if a mapping is defined, false otherwise.
+     */
+    boolean contains(String iconKey);
 
-    String getSVGIconId(String type);
+    /**
+     * Maps the provided <code>iconKey</code> to an SVG id element.
+     * If no mapping is defined, <code>null</code> is returned.
+     *
+     * @param iconKey The icon key to look up
+     * @return The icon id, or null if no mapping is defined.
+     */
+    String getSVGIconId(String iconKey);
 
-    List<String> getSVGIconFiles();
+    /**
+     * Adds a custom icon mapping. The <code>iconKey</code> must be unique in this {@link IconRepository}.
+     *
+     * @param iconKey The icon key
+     * @param iconId The icon id for the icon key
+     */
+    void addIconMapping(String iconKey, String iconId);
+
+    /**
+     * Removes the given <code>iconKey</code> from this {@link IconRepository}.
+     *
+     * @param iconKey The icon key to remove
+     */
+    void removeIconMapping(String iconKey);
+
+    /**
+     * Persists this {@link IconRepository}.
+     * Should be invoked if changes to this {@link IconRepository} should be persisted permanently (e.g. on disk)
+     */
+    void save();
 }

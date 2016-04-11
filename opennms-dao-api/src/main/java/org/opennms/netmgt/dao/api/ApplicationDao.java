@@ -28,6 +28,8 @@
 
 package org.opennms.netmgt.dao.api;
 
+import java.util.List;
+
 import org.opennms.netmgt.model.OnmsApplication;
 
 /**
@@ -42,5 +44,12 @@ public interface ApplicationDao extends OnmsDao<OnmsApplication, Integer> {
      * @return a {@link org.opennms.netmgt.model.OnmsApplication} object.
      */
     OnmsApplication findByName(String label);
+
+    /**
+     * Load all alarms from the alarm table which have a node id, ip address and service type set.
+     *
+     * @return all alarms from the alarm table which have a node id, ip address and service type set.
+     */
+    List<ApplicationStatusEntity> getAlarmStatus();
 
 }

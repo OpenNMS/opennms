@@ -63,6 +63,7 @@ public class AdminPageIT extends OpenNMSSeleniumTestCase {
         // Service Monitoring
         new String[] { "Configure Scheduled Outages", "//form//input[@value='New Name']" },
         new String[] { "Manage and Unmanage Interfaces and Services", "//h3[text()='Manage and Unmanage Interfaces and Services']" },
+        new String[] { "Manage Business Services", "//div[@id='content']//iframe" },
 
         // Performance Measurement
         new String[] { "Configure SNMP Collections and Data Collection Groups", "//div[@id='content']//iframe" },

@@ -47,7 +47,7 @@ public class DeferedNodeLeafVertex extends AbstractVertex {
         OnmsIpInterface ip = m_topologyProvider.getAddress(node.getId());
         setIpAddress(ip == null ? null : ip.getIpAddress().getHostAddress());
 
-        setTooltipText(AbstractLinkdTopologyProvider.getNodeTooltipDefaultText(getIpAddress(), node.getLabel(), ip.isManaged(), node.getSysLocation(), node.getType()));
+        setTooltipText(AbstractLinkdTopologyProvider.getNodeTooltipDefaultText(getIpAddress(), node.getLabel(), ip != null ? ip.isManaged() : false, node.getSysLocation(), node.getType()));
     }
 
     public String getIconKey() {

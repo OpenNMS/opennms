@@ -80,7 +80,8 @@ public class MergingGraphProviderTest {
 		ProviderManager providerManager = new ProviderManager();
 		providerManager.onEdgeProviderBind(m_edgeProvider);
 		
-		m_mergedProvider = new MergingGraphProvider(m_graphProvider, providerManager);
+		m_mergedProvider = new MergingGraphProvider(providerManager);
+		m_mergedProvider.setBaseGraphProvider(m_graphProvider);
 	}
 	
 	@Test

@@ -44,7 +44,7 @@ public class EventsAlarmsOperation extends AbstractOperation implements Operatio
     private String m_alarmsURL;
 
     @Override
-    public Undoer execute(final List<VertexRef> targets, final OperationContext operationContext) {
+    public void execute(final List<VertexRef> targets, final OperationContext operationContext) {
         try {
             String label = "";
             int nodeID = -1;
@@ -85,7 +85,6 @@ public class EventsAlarmsOperation extends AbstractOperation implements Operatio
                 throw new RuntimeException("Failed to create event/alarm window.", e);
             }
         }
-        return null;
     }
 
     @Override

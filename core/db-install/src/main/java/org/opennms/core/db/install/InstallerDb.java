@@ -1184,6 +1184,8 @@ public class InstallerDb {
                 constraint = new Constraint(tableName.toLowerCase(), name, columns, ftable, fcolumns, foreignUpdType, foreignDelType);
             } else if ("c".equals(type)) {
             	constraint = new Constraint(tableName.toLowerCase(), name, checkExpression);
+            } else if ("u".equals(type)) {
+                continue; // Ignored....
             } else {
                 throw new Exception("Do not support constraint type \"" + type + "\" in constraint \"" + name + "\"");
             }

@@ -48,7 +48,7 @@ public class IsIsLinkStatusProvider extends AbstractLinkStatusProvider {
 
 
     @Override
-    public String getNameSpace() {
+    public String getNamespace() {
         return EnhancedLinkdTopologyProvider.ISIS_EDGE_NAMESPACE;
     }
 

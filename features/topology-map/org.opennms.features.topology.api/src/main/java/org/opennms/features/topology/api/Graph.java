@@ -35,6 +35,9 @@ import org.opennms.features.topology.api.topo.Vertex;
 
 public interface Graph {
 
+	/**
+	 * @return The layout which defines x and y positions of the graphs vertices.
+     */
 	Layout getLayout();
 	
 	Collection<Vertex> getDisplayVertices();
@@ -46,6 +49,5 @@ public interface Graph {
 	Vertex getVertexByKey(String vertexKey);
 
 	void visit(GraphVisitor visitor) throws Exception;
-	
 	
 }

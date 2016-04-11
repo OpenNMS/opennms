@@ -55,6 +55,7 @@
         <ref bean="atomFeedProvider"/>
         <!-- <ref bean="atomPojoProvider"/> -->
         <ref bean="searchContextProvider"/>
+        <ref bean="noSuchElementProvider" />
       </jaxrs:providers>
       <jaxrs:outInterceptors>
         <ref bean="gzipOutInterceptor" />

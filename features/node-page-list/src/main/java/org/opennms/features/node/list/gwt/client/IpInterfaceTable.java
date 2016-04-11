@@ -51,7 +51,7 @@ public class IpInterfaceTable extends CellTable<IpInterface> {
 
         setBordered(true);
         setCondensed(true);
-        setStriped(true);
+        setStriped(false);
         setHover(true);
 
         setRowStyles(new RowStyles<IpInterface>() {
