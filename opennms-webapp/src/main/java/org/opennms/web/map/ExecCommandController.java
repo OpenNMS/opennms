@@ -188,8 +188,8 @@ public class ExecCommandController extends AbstractController {
 			}
 
 		} catch (Throwable e) {
-			LOG.error("An error occourred while executing command.",e);
-			os.write("An error occourred.");
+			LOG.error("An error occurred while executing command.",e);
+			os.write("An error occurred.");
 		}finally{
 			os.write("</font>" +
 					"<br>" +
