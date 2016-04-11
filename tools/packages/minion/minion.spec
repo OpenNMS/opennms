@@ -169,7 +169,9 @@ rm -rf $RPM_BUILD_ROOT
 
 %post container
 # Generate an SSH key
-/usr/bin/ssh-keygen -t rsa -N "" -b 4096 -f %{minioninstprefix}/etc/host.key
+if [ ! -f %{minioninstprefix}/etc/host.key ]; then
+    /usr/bin/ssh-keygen -t rsa -N "" -b 4096 -f %{minioninstprefix}/etc/host.key
+fi
 
 %files features-core -f %{_tmppath}/files.core
 %defattr(664 root root 775)
@@ -178,7 +180,7 @@ rm -rf $RPM_BUILD_ROOT
 %post features-core
 # Generate a new UUID
 UUID=$(/usr/bin/uuidgen -t)
-/usr/bin/sed -i "s|id =.*|id = $UUID|g" "%{minioninstprefix}/etc/org.opennms.minion.controller.cfg"
+sed -i "s|id =.*|id = $UUID|g" "%{minioninstprefix}/etc/org.opennms.minion.controller.cfg"
 
 %files features-default -f %{_tmppath}/files.default
 %defattr(664 root root 775)
