@@ -75,6 +75,7 @@ import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.features.topology.app.internal.CommandManager.DefaultOperationContext;
 import org.opennms.features.topology.app.internal.TopologyComponent.VertexUpdateListener;
 import org.opennms.features.topology.app.internal.jung.TopoFRLayoutAlgorithm;
+import org.opennms.features.topology.app.internal.operations.RedoLayoutOperation;
 import org.opennms.features.topology.app.internal.operations.TopologySelectorOperation;
 import org.opennms.features.topology.app.internal.support.CategoryHopCriteria;
 import org.opennms.features.topology.app.internal.support.FontAwesomeIcons;
@@ -169,10 +170,8 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
                 m_refreshInProgress = true;
                 m_topologyComponent.blockSelectionEvents();
 
-                getGraphContainer().getBaseTopology().refresh();
-                getGraphContainer().setDirty(true);
-                getGraphContainer().redoLayout();
-                TopologyUI.this.markAsDirtyRecursive();
+                final RedoLayoutOperation op = new RedoLayoutOperation();
+                op.execute(getGraphContainer());
 
                 m_lastUpdateTime = System.currentTimeMillis();
                 updateTimestamp(m_lastUpdateTime);
