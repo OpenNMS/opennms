@@ -28,8 +28,12 @@
  *******************************************************************************/
 
 --%>
-
-<%@page language="java" contentType="text/html" session="true" import="org.opennms.web.admin.discovery.ActionDiscoveryServlet" %>
+<%@page language="java" contentType="text/html" session="true" import="
+  org.opennms.netmgt.config.discovery.*,
+  org.opennms.web.admin.discovery.DiscoveryServletConstants,
+  org.opennms.web.admin.discovery.ActionDiscoveryServlet,
+  org.opennms.web.admin.discovery.DiscoveryScanServlet
+"%>
 <% 
 	response.setDateHeader("Expires", 0);
 	response.setHeader("Pragma", "no-cache");
@@ -90,7 +94,7 @@ function doAddExcludeRange(){
 	
 	opener.document.getElementById("erbegin").value=document.getElementById("begin").value;
 	opener.document.getElementById("erend").value=document.getElementById("end").value;
-	opener.document.getElementById("modifyDiscoveryConfig").action=opener.document.getElementById("modifyDiscoveryConfig").action+"?action=<%=ActionDiscoveryServlet.addExcludeRangeAction%>";
+	opener.document.getElementById("modifyDiscoveryConfig").action=opener.document.getElementById("modifyDiscoveryConfig").action+"?action=<%=DiscoveryServletConstants.addExcludeRangeAction%>";
 	opener.document.getElementById("modifyDiscoveryConfig").submit();
 	window.close();
 	opener.document.focus();

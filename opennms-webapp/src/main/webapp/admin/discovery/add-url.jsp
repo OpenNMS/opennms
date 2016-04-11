@@ -29,7 +29,12 @@
 
 --%>
 
-<%@page language="java" contentType="text/html" session="true" import="org.opennms.netmgt.config.discovery.*, org.opennms.web.admin.discovery.ActionDiscoveryServlet" %>
+<%@page language="java" contentType="text/html" session="true" import="
+  org.opennms.netmgt.config.discovery.*,
+  org.opennms.web.admin.discovery.DiscoveryServletConstants,
+  org.opennms.web.admin.discovery.ActionDiscoveryServlet,
+  org.opennms.web.admin.discovery.DiscoveryScanServlet
+"%>
 <% 
 	response.setDateHeader("Expires", 0);
 	response.setHeader("Pragma", "no-cache");
@@ -66,7 +71,7 @@ function doAddIncludeUrl() {
 	opener.document.getElementById("iuurl").value=document.getElementById("url").value;
 	opener.document.getElementById("iutimeout").value=document.getElementById("timeout").value;
 	opener.document.getElementById("iuretries").value=document.getElementById("retries").value;
-	opener.document.getElementById("modifyDiscoveryConfig").action=opener.document.getElementById("modifyDiscoveryConfig").action+"?action=<%=ActionDiscoveryServlet.addIncludeUrlAction%>";
+	opener.document.getElementById("modifyDiscoveryConfig").action=opener.document.getElementById("modifyDiscoveryConfig").action+"?action=<%=DiscoveryServletConstants.addIncludeUrlAction%>";
 	opener.document.getElementById("modifyDiscoveryConfig").submit();
 	window.close();
 	opener.document.focus();
@@ -89,7 +94,7 @@ function doAddIncludeUrl() {
           </div>
         </div>
         <div class="form-group">
-          <label for="url" class="col-sm-2 control-label">Timeout (msec):</label>
+          <label for="url" class="col-sm-2 control-label">Timeout (milliseconds):</label>
           <div class="col-sm-10">
 	    <input type="text" class="form-control" id="timeout" name="timeout" value="<%=currConfig.getTimeout()%>"/>
           </div>
@@ -106,8 +111,9 @@ function doAddIncludeUrl() {
             <button type="button" class="btn btn-default" name="cancel" id="cancel" onclick="window.close();opener.document.focus();">Cancel</button>
           </div>
         </div>
-      </div> <!-- panel-body -->
-    </div> <!-- panel -->
+      </form>
+    </div> <!-- panel-body -->
+  </div> <!-- panel -->
   </div> <!-- column -->
 </div> <!-- row -->
 

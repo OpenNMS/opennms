@@ -44,6 +44,7 @@
   org.springframework.web.context.WebApplicationContext,
   org.springframework.web.context.support.WebApplicationContextUtils,
   org.opennms.web.svclayer.api.RequisitionAccessService,
+  org.opennms.web.admin.discovery.DiscoveryServletConstants,
   org.opennms.web.admin.discovery.ActionDiscoveryServlet"
 %>
 <%
@@ -87,34 +88,34 @@ function addExcludeRange(){
 
 function deleteSpecific(i){
       if(confirm("Are you sure you want to delete the 'Specific'?")){
-	document.modifyDiscoveryConfig.action=document.modifyDiscoveryConfig.action+"?action=<%=ActionDiscoveryServlet.removeSpecificAction%>&index="+i;
+	document.modifyDiscoveryConfig.action=document.modifyDiscoveryConfig.action+"?action=<%=DiscoveryServletConstants.removeSpecificAction%>&index="+i;
 	document.modifyDiscoveryConfig.submit();
 	}
 }
 
 function deleteIR(i){
       if(confirm("Are you sure you want to delete the 'Include Range'?")){
-	document.modifyDiscoveryConfig.action=document.modifyDiscoveryConfig.action+"?action=<%=ActionDiscoveryServlet.removeIncludeRangeAction%>&index="+i;
+	document.modifyDiscoveryConfig.action=document.modifyDiscoveryConfig.action+"?action=<%=DiscoveryServletConstants.removeIncludeRangeAction%>&index="+i;
 	document.modifyDiscoveryConfig.submit();
 	}
 }
 
 function deleteIncludeUrl(i){
     if(confirm("Are you sure you want to delete the 'Include URL'?")){
-	document.modifyDiscoveryConfig.action=document.modifyDiscoveryConfig.action+"?action=<%=ActionDiscoveryServlet.removeIncludeUrlAction%>&index="+i;
+	document.modifyDiscoveryConfig.action=document.modifyDiscoveryConfig.action+"?action=<%=DiscoveryServletConstants.removeIncludeUrlAction%>&index="+i;
 	document.modifyDiscoveryConfig.submit();
 	}
 }
 
 function deleteER(i){
       if(confirm("Are you sure you want to delete the 'Exclude Range'?")){
-	document.modifyDiscoveryConfig.action=document.modifyDiscoveryConfig.action+"?action=<%=ActionDiscoveryServlet.removeExcludeRangeAction%>&index="+i;
+	document.modifyDiscoveryConfig.action=document.modifyDiscoveryConfig.action+"?action=<%=DiscoveryServletConstants.removeExcludeRangeAction%>&index="+i;
 	document.modifyDiscoveryConfig.submit();
 	}
 }
 
 function restartDiscovery(){
-	document.modifyDiscoveryConfig.action=document.modifyDiscoveryConfig.action+"?action=<%=ActionDiscoveryServlet.saveAndRestartAction%>";
+	document.modifyDiscoveryConfig.action=document.modifyDiscoveryConfig.action+"?action=<%=DiscoveryServletConstants.saveAndRestartAction%>";
 	return true;
 }
 </script>
@@ -179,7 +180,7 @@ for (Requisition requisition : reqAccessService.getRequisitions()) {
 <input type="hidden" id="erbegin" name="erbegin" value=""/>
 <input type="hidden" id="erend" name="erend" value=""/>
 
-<button type="submit" class="btn btn-default">Start Discovery Scan</button>
+<button type="submit" class="btn btn-default">Save and Restart Discovery</button>
 
 <p/>
 
@@ -410,7 +411,7 @@ for (Requisition requisition : reqAccessService.getRequisitions()) {
   </div> <!-- column -->
 </div> <!-- row -->
 
-<button type="submit" class="btn btn-default">Start Discovery Scan</button>
+<button type="submit" class="btn btn-default">Save and Restart Discovery</button>
 
 </form>
 
