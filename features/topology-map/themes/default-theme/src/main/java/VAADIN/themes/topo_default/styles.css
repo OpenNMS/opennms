@@ -220,6 +220,46 @@ div.v-table-header-wrap {
   overflow: visible;
 }
 
+/* Status Badge */
+.status-badge-container {
+    fill: white;
+}
+
+.status-badge {
+    font-family: Ionicons;
+    stroke-width: 0px;
+    font-size: 16.5pt;
+}
+
+.status-badge.status.normal {
+    stroke:#336600;
+    fill: #336600;
+}
+
+.status-badge.status.indeterminate{
+    stroke:#999000;
+    fill:#999000;
+}
+
+.status-badge.status.warning{
+    stroke:#FFCC00;
+    fill:#FFCC00;
+}
+
+.status-badge.status.minor{
+    stroke:#FF9900;
+    fill:#FF9900;
+}
+.status-badge.status.major{
+    stroke:#FF3300;
+    fill:#FF3300;
+}
+
+.status-badge.status.critical{
+    stroke:#CC0000;
+    fill:#CC0000;
+}
+
 /*** End Vertex Styles***/
 
 /** SearchBox Styles **/
