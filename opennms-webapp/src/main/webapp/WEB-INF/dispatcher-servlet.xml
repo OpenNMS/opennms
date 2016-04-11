@@ -682,6 +682,8 @@
         <property name="eventConfDao" ref="eventConfDao"/>
     </bean>
 
+    <bean name="/ExecCommand" class="org.opennms.web.map.ExecCommandController"/>
+
     <!-- Examples
          <bean name="/nodes.htm" class="org.opennms.controller.NodeController">
            <property name="entityService" ref="entityService" />

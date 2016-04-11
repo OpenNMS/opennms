@@ -936,6 +936,10 @@
         <url-pattern>*.htm</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
+      <servlet-name>dispatcher</servlet-name>
+      <url-pattern>/ExecCommand</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
         <servlet-name>dispatcher</servlet-name>
         <url-pattern>/alarm/index</url-pattern>
     </servlet-mapping>
