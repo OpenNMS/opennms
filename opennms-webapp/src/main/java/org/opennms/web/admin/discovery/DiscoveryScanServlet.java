@@ -28,6 +28,16 @@
 
 package org.opennms.web.admin.discovery;
 
+import static org.opennms.web.admin.discovery.DiscoveryServletConstants.addExcludeRangeAction;
+import static org.opennms.web.admin.discovery.DiscoveryServletConstants.addIncludeRangeAction;
+import static org.opennms.web.admin.discovery.DiscoveryServletConstants.addIncludeUrlAction;
+import static org.opennms.web.admin.discovery.DiscoveryServletConstants.addSpecificAction;
+import static org.opennms.web.admin.discovery.DiscoveryServletConstants.removeExcludeRangeAction;
+import static org.opennms.web.admin.discovery.DiscoveryServletConstants.removeIncludeRangeAction;
+import static org.opennms.web.admin.discovery.DiscoveryServletConstants.removeIncludeUrlAction;
+import static org.opennms.web.admin.discovery.DiscoveryServletConstants.removeSpecificAction;
+import static org.opennms.web.admin.discovery.DiscoveryServletConstants.saveAndRestartAction;
+
 import java.io.IOException;
 import java.io.StringWriter;
 
@@ -63,31 +73,6 @@ public class DiscoveryScanServlet extends HttpServlet {
 
     public static final String ATTRIBUTE_DISCOVERY_CONFIGURATION = DiscoveryScanServlet.class.getSimpleName() + "-discoveryConfiguration";
 
-    /** Constant <code>addSpecificAction="AddSpecific"</code> */
-    public static final String addSpecificAction = "AddSpecific";
-    /** Constant <code>removeSpecificAction="RemoveSpecific"</code> */
-    public static final String removeSpecificAction = "RemoveSpecific";
-    
-    /** Constant <code>addIncludeRangeAction="AddIncludeRange"</code> */
-    public static final String addIncludeRangeAction = "AddIncludeRange";
-    /** Constant <code>removeIncludeRangeAction="RemoveIncludeRange"</code> */
-    public static final String removeIncludeRangeAction = "RemoveIncludeRange";
-
-    /** Constant <code>addIncludeUrlAction="AddIncludeUrl"</code> */
-    public static final String addIncludeUrlAction = "AddIncludeUrl";
-    /** Constant <code>removeIncludeUrlAction="RemoveIncludeUrl"</code> */
-    public static final String removeIncludeUrlAction = "RemoveIncludeUrl";
-
-    /** Constant <code>addExcludeRangeAction="AddExcludeRange"</code> */
-    public static final String addExcludeRangeAction = "AddExcludeRange";
-    /** Constant <code>removeExcludeRangeAction="RemoveExcludeRange"</code> */
-    public static final String removeExcludeRangeAction = "RemoveExcludeRange";
-    
-    /** Constant <code>saveAndRestartAction="SaveAndRestart"</code> */
-    public static final String saveAndRestartAction = "SaveAndRestart";
-    
-    
-	/** {@inheritDoc} */
     @Override
 	public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
