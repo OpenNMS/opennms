@@ -70,45 +70,45 @@
 
 <script type="text/javascript">
 function addSpecific(){
-	window.open('<%=org.opennms.web.api.Util.calculateUrlBase( request, "admin/discovery/add-specific.jsp" )%>', 'AddSpecific', 'toolbar=0,width=700,height=350, left=0, top=0, resizable=1, scrollbars=1')
+	window.open('<%=org.opennms.web.api.Util.calculateUrlBase( request, "admin/discovery/add-specific.jsp?mode=scan" )%>', 'AddSpecific', 'toolbar=0,width=700,height=350, left=0, top=0, resizable=1, scrollbars=1')
 }
 
 function addIncludeRange(){
-	window.open('<%=org.opennms.web.api.Util.calculateUrlBase( request, "admin/discovery/add-ir.jsp" )%>', 'AddIncludeRange', 'toolbar=0,width=750 ,height=500, left=0, top=0, resizable=1, scrollbars=1')
+	window.open('<%=org.opennms.web.api.Util.calculateUrlBase( request, "admin/discovery/add-ir.jsp?mode=scan" )%>', 'AddIncludeRange', 'toolbar=0,width=750 ,height=500, left=0, top=0, resizable=1, scrollbars=1')
 }
 
 function addIncludeUrl(){
-	window.open('<%=org.opennms.web.api.Util.calculateUrlBase( request, "admin/discovery/add-url.jsp" )%>', 'AddIncludeUrl', 'toolbar=0,width=750 ,height=350, left=0, top=0, resizable=1, scrollbars=1')
+	window.open('<%=org.opennms.web.api.Util.calculateUrlBase( request, "admin/discovery/add-url.jsp?mode=scan" )%>', 'AddIncludeUrl', 'toolbar=0,width=750 ,height=350, left=0, top=0, resizable=1, scrollbars=1')
 }
 
 function addExcludeRange(){
-	window.open('<%=org.opennms.web.api.Util.calculateUrlBase( request, "admin/discovery/add-er.jsp" )%>', 'AddExcludeRange', 'toolbar=0,width=600 ,height=350, left=0, top=0, resizable=1, scrollbars=1')
+	window.open('<%=org.opennms.web.api.Util.calculateUrlBase( request, "admin/discovery/add-er.jsp?mode=scan" )%>', 'AddExcludeRange', 'toolbar=0,width=600 ,height=350, left=0, top=0, resizable=1, scrollbars=1')
 }
 
 
 function deleteSpecific(i){
-      if(confirm("Are you sure you want to delete the 'Specific'?")){
+	if(confirm("Are you sure you want to delete this specific address?")){
 	document.modifyDiscoveryConfig.action=document.modifyDiscoveryConfig.action+"?action=<%=DiscoveryServletConstants.removeSpecificAction%>&index="+i;
 	document.modifyDiscoveryConfig.submit();
 	}
 }
 
 function deleteIR(i){
-      if(confirm("Are you sure you want to delete the 'Include Range'?")){
+	if(confirm("Are you sure you want to delete this include range?")){
 	document.modifyDiscoveryConfig.action=document.modifyDiscoveryConfig.action+"?action=<%=DiscoveryServletConstants.removeIncludeRangeAction%>&index="+i;
 	document.modifyDiscoveryConfig.submit();
 	}
 }
 
 function deleteIncludeUrl(i){
-    if(confirm("Are you sure you want to delete the 'Include URL'?")){
+	if(confirm("Are you sure you want to delete this include URL?")){
 	document.modifyDiscoveryConfig.action=document.modifyDiscoveryConfig.action+"?action=<%=DiscoveryServletConstants.removeIncludeUrlAction%>&index="+i;
 	document.modifyDiscoveryConfig.submit();
 	}
 }
 
 function deleteER(i){
-      if(confirm("Are you sure you want to delete the 'Exclude Range'?")){
+	if(confirm("Are you sure you want to delete this exclude range?")){
 	document.modifyDiscoveryConfig.action=document.modifyDiscoveryConfig.action+"?action=<%=DiscoveryServletConstants.removeExcludeRangeAction%>&index="+i;
 	document.modifyDiscoveryConfig.submit();
 	}
@@ -190,15 +190,15 @@ for (Requisition requisition : reqAccessService.getRequisitions()) {
       </div>
       <div class="list-group">
         <div class="list-group-item">
-        <div class="col-md-12 input-group">
+        <div class="col-xs-12 input-group">
           <label for="retries" class="control-label">Timeout (milliseconds):</label>
           <input type="text" class="form-control" id="timeout" name="timeout" value="<%=((currConfig.getTimeout()==0)?DiscoveryConfigFactory.DEFAULT_TIMEOUT:currConfig.getTimeout())%>"/>
         </div> <!-- input-group -->
-        <div class="col-md-12 input-group">
+        <div class="col-xs-12 input-group">
           <label for="retries" class="control-label">Retries:</label>
           <input type="text" class="form-control" id="retries" name="retries" value="<%=((currConfig.getRetries()==0)?DiscoveryConfigFactory.DEFAULT_RETRIES:currConfig.getRetries())%>"/>
         </div> <!-- input-group -->
-        <div class="col-md-12 input-group">
+        <div class="col-xs-12 input-group">
           <label for="foreignsource" class="control-label">Foreign Source:</label>
           <select id="foreignsource" class="form-control" name="foreignsource">
             <option value="" <%if (currConfig.getForeignSource() == null) out.print("selected");%>>None selected</option>
@@ -207,7 +207,7 @@ for (Requisition requisition : reqAccessService.getRequisitions()) {
             <% } %>
           </select>
         </div> <!-- input-group -->
-        <div class="col-md-12 input-group">
+        <div class="col-xs-12 input-group">
           <label for="location" class="control-label">Location:</label>
           <select id="location" class="form-control" name="location">
             <% for (String key : locations.keySet()) { %>
@@ -219,7 +219,7 @@ for (Requisition requisition : reqAccessService.getRequisitions()) {
 
         <div class="list-group-item">
         <h4 class="list-group-item-heading">Advanced configuration</h4>
-        <div class="col-md-12 input-group">
+        <div class="col-xs-12 input-group">
           <label for="chunksize" class="control-label">Task chunk size:</label>
           <input type="text" class="form-control" id="chunksize" name="chunksize" value="<%=((currConfig.getChunkSize()==0)?DiscoveryConfigFactory.DEFAULT_CHUNK_SIZE:currConfig.getChunkSize())%>"/>
         </div> <!-- input-group -->
@@ -230,7 +230,7 @@ for (Requisition requisition : reqAccessService.getRequisitions()) {
 </div> <!-- row -->
 
 <div class="row">
-  <div class="col-md-12">
+  <div class="col-xs-12">
     <div class="panel panel-default">
       <div class="panel-heading">
         <h3 class="panel-title">Specific Addresses</h3>
@@ -267,7 +267,7 @@ for (Requisition requisition : reqAccessService.getRequisitions()) {
 </div> <!-- row -->
 
 <div class="row">
-  <div class="col-md-12">
+  <div class="col-xs-12">
     <div class="panel panel-default">
       <div class="panel-heading">
         <h3 class="panel-title">Include URLs</h3>
@@ -304,7 +304,7 @@ for (Requisition requisition : reqAccessService.getRequisitions()) {
 </div> <!-- row -->
 
 <div class="row">
-  <div class="col-md-12">
+  <div class="col-xs-12">
     <div class="panel panel-default">
       <div class="panel-heading">
         <h3 class="panel-title">Include Ranges</h3>
@@ -345,7 +345,7 @@ for (Requisition requisition : reqAccessService.getRequisitions()) {
 </div> <!-- row -->
 
 <div class="row">
-  <div class="col-md-12">
+  <div class="col-xs-12">
     <div class="panel panel-default">
       <div class="panel-heading">
         <h3 class="panel-title">Exclude Ranges</h3>
