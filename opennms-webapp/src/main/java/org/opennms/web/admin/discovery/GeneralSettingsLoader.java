@@ -66,16 +66,21 @@ public abstract class GeneralSettingsLoader {
 		LOG.debug("chunksize: {}", chunksizeStr);
 		
 		
-		long initSt = WebSecurityUtils.safeParseLong(initSTStr);
-		long restartSt = WebSecurityUtils.safeParseLong(restartSTStr);
-		
-		config.setInitialSleepTime(initSt);
-		config.setRestartSleepTime(restartSt);
-
 		//set the general settings loaded into current configuration
 
-		config.setInitialSleepTime(initSt);
-		config.setRestartSleepTime(restartSt);
+		try {
+			long initSt = WebSecurityUtils.safeParseLong(initSTStr);
+			config.setInitialSleepTime(initSt);
+		} catch (NumberFormatException e) {
+			LOG.debug("Null value in discovery config for initial sleep");
+		}
+		try {
+			long restartSt = WebSecurityUtils.safeParseLong(restartSTStr);
+			config.setRestartSleepTime(restartSt);
+		} catch (NumberFormatException e) {
+			LOG.debug("Null value in discovery config for restart sleep");
+		}
+		
 
 		// TODO: Validate foreign source value
 		if (foreignSource != null && !"".equals(foreignSource.trim())) {
