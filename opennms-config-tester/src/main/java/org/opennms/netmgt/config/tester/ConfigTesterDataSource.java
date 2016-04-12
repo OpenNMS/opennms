@@ -32,15 +32,11 @@ import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.logging.Logger;
 
 import javax.sql.DataSource;
 
 class ConfigTesterDataSource implements DataSource {
-
-	private List<SQLException> m_connectionGetAttempts = new ArrayList<SQLException>();
 
         @Override
 	public PrintWriter getLogWriter() throws SQLException {
@@ -76,26 +72,12 @@ class ConfigTesterDataSource implements DataSource {
 
         @Override
 	public Connection getConnection() throws SQLException {
-		return createStoreAndThrowException();
+            return null;
 	}
 
         @Override
 	public Connection getConnection(String arg0, String arg1)
 			throws SQLException {
-		return createStoreAndThrowException();
-	}
-
-	private Connection createStoreAndThrowException() throws SQLException {
-		SQLException e = createException();
-		m_connectionGetAttempts.add(e);
-		throw e;
-	}
-
-	private static SQLException createException() {
-		return new SQLException("No database connections should be requested when reading a configuration file, dude.");
-	}
-	
-	public List<SQLException> getConnectionGetAttempts() {
-		return m_connectionGetAttempts;
+            return null;
 	}
 }
