@@ -65,19 +65,19 @@ public class ReductionKeyEdgeResponseDTOMarshalTest extends MarshalAndUnmarshalT
                 edge,
                 "{" +
                 "  \"id\" : 1," +
-                "  \"operationalStatus\" : \"WARNING\"," +
-                "  \"mapFunction\" : {" +
+                "  \"operational-status\" : \"WARNING\"," +
+                "  \"map-function\" : {" +
                 "       \"type\" : \"SetTo\"," +
                 "       \"properties\" : {" +
                 "           \"key1\" : \"value1\"" +
                 "       }" +
                 "   }," +
                 "  \"location\" : \"/api/v2/business-services/edges/1\"," +
-                "  \"reductionKeys\" : [" +
+                "  \"reduction-keys\" : [" +
                 "       \"my-custom-reduction-key\"" +
                 "   ]," +
                 "  \"weight\" : 17," +
-                "  \"friendlyName\" : \"reduction-key-friendly-name\"," +
+                "  \"friendly-name\" : \"reduction-key-friendly-name\"," +
                 "}",
                 "<reduction-key-edge>\n" +
                 "   <id>1</id>\n" +
