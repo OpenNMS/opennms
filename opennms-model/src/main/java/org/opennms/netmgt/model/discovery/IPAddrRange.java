@@ -29,6 +29,7 @@
 package org.opennms.netmgt.model.discovery;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -343,4 +344,14 @@ public final class IPAddrRange implements Iterable<InetAddress>, Serializable {
             .append("end", InetAddressUtils.getInetAddress(m_end))
             .toString();
     }
+
+    /**
+     * <P>
+     * Returns the size of this range.
+     * </P>
+     */
+    public BigInteger size() {
+        return InetAddressUtils.difference(InetAddressUtils.getInetAddress(m_end) , InetAddressUtils.getInetAddress(m_begin)).add(BigInteger.ONE);
+    }
+
 }
