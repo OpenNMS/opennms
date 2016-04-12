@@ -77,8 +77,6 @@ public class BusinessServiceVertexInfoPanelItem extends VertexInfoPanelItem {
         formLayout.setSpacing(false);
         formLayout.setMargin(false);
 
-        formLayout.addComponent(createLabel("Name", ref.getLabel()));
-
         ((AbstractBusinessServiceVertex) ref).accept(new BusinessServiceVertexVisitor<Void>() {
             @Override
             public Void visit(BusinessServiceVertex vertex) {
@@ -94,6 +92,9 @@ public class BusinessServiceVertexInfoPanelItem extends VertexInfoPanelItem {
                 IpService ipService = businessServiceManager.getIpServiceById(vertex.getIpServiceId());
                 formLayout.addComponent(createLabel("Interface", ipService.getIpAddress()));
                 formLayout.addComponent(createLabel("Service", ipService.getServiceName()));
+                if (!ipService.getServiceName().equals(vertex.getLabel())) {
+                    formLayout.addComponent(createLabel("Friendly Name", vertex.getLabel()));
+                }
                 return null;
             }
 
