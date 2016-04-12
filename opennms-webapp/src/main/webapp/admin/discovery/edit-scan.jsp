@@ -56,10 +56,10 @@
 %>
 <% String breadcrumb1 = "<a href='admin/index.jsp'> Admin </a>"; %>
 <% String breadcrumb2 = "<a href='admin/discovery/index.jsp'> Discovery </a>"; %>
-<% String breadcrumb3 = "Modify Configuration"; %>
+<% String breadcrumb3 = "Create Discovery Scan"; %>
 
 <jsp:include page="/includes/bootstrap.jsp" flush="false" >
-  <jsp:param name="title" value="Edit Discovery Scan" />
+  <jsp:param name="title" value="Create Discovery Scan" />
   <jsp:param name="headTitle" value="Discovery" />
   <jsp:param name="headTitle" value="Admin" />
   <jsp:param name="location" value="admin" />
