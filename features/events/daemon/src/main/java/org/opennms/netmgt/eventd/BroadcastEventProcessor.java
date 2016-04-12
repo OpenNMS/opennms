@@ -148,7 +148,7 @@ public class BroadcastEventProcessor implements EventListener {
         boolean isTarget = false;
         
         if (EventConstants.RELOAD_DAEMON_CONFIG_UEI.equals(event.getUei())) {
-            Parm target = event.getParm(EventConstants.PARM_DAEMON_NAME);
+            final Parm target = event.getParm(EventConstants.PARM_DAEMON_NAME);
             if (target != null && "Eventd".equalsIgnoreCase(target.getValue().getContent())) {
                 isTarget = true;
             }
