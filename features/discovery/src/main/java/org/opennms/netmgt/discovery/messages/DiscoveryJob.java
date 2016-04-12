@@ -29,6 +29,7 @@
 package org.opennms.netmgt.discovery.messages;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -45,6 +46,9 @@ public class DiscoveryJob implements Serializable {
     private final List<IPPollRange> m_ranges;
     private final String m_foreignSource;
     private final String m_location;
+
+    // TODO: Make this configurable?
+    public static final BigDecimal FUDGE_FACTOR = BigDecimal.valueOf(1.5);
 
     public DiscoveryJob(List<IPPollRange> ranges, String foreignSource, String location) {
         m_ranges = Preconditions.checkNotNull(ranges, "ranges argument");
@@ -98,4 +102,30 @@ public class DiscoveryJob implements Serializable {
                  .add("ranges", m_ranges)
                  .toString();
     }
+
+    /**
+     * <P>
+     * Returns the total task timeout in milliseconds for all IP ranges.
+     * </P>
+     */
+    public int calculateTaskTimeout() {
+        BigDecimal taskTimeOut = BigDecimal.ZERO;
+        for(final IPPollRange range : m_ranges) {
+            taskTimeOut = taskTimeOut.add(
+                // Take the number of retries
+                BigDecimal.valueOf(range.getRetries())
+                // Add 1 for the original request
+                .add(BigDecimal.ONE)
+                // Multiply by the number of addresses
+                .multiply(new BigDecimal(range.getAddressRange().size()))
+                // Multiply by the timeout per retry
+                .multiply(BigDecimal.valueOf(range.getTimeout()))
+                // Multiply by the fudge factor
+                .multiply(FUDGE_FACTOR)
+            );
+        }
+        // If the timeout is greater than Integer.MAX_VALUE, just return Integer.MAX_VALUE
+        return taskTimeOut.compareTo(BigDecimal.valueOf(Integer.MAX_VALUE)) >= 0 ? Integer.MAX_VALUE : taskTimeOut.intValue();
+    }
+
 }
