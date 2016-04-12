@@ -81,79 +81,82 @@ public class BusinessServiceResponseDTOMarshalTest extends MarshalAndUnmarshalTe
             "  \"name\" : \"Web Servers\"," +
             "  \"id\" : 1," +
             "  \"attributes\" : {" +
-            "    \"dc\" : \"RDU\"" +
+            "    \"attribute\" : [ {" +
+            "      \"key\" : \"dc\"," +
+            "      \"value\" : \"RDU\"" +
+            "    } ]" +
             "  }," +
-            "  \"operationalStatus\" : \"CRITICAL\"," +
-            "  \"reduceFunction\" : {" +
+            "  \"operational-status\" : \"CRITICAL\"," +
+            "  \"reduce-function\" : {" +
             "    \"type\" : \"HighestSeverity\"," +
             "    \"properties\" : { }" +
             "  }," +
-            "  \"reductionKeys\" : [ {" +
+            "  \"reduction-key-edges\" : [ {" +
             "    \"id\" : 1," +
-            "    \"operationalStatus\" : \"CRITICAL\"," +
-            "    \"mapFunction\" : {" +
+            "    \"operational-status\" : \"CRITICAL\"," +
+            "    \"map-function\" : {" +
             "      \"type\" : \"Ignore\"," +
             "      \"properties\" : { }" +
             "    }," +
             "    \"weight\" : 9," +
             "    \"location\" : \"/api/v2/test/1\"," +
-            "    \"reductionKeys\" : [ \"myReductionKeyA\" ]," +
-                    "    \"friendlyName\" : \"reduction-key-a-friendly-name\"" +
+            "    \"reduction-keys\" : [ \"myReductionKeyA\" ]," +
+                    "    \"friendly-name\" : \"reduction-key-a-friendly-name\"" +
             "  }, {" +
             "    \"id\" : 2," +
-            "    \"operationalStatus\" : \"NORMAL\"," +
-            "    \"mapFunction\" : {" +
+            "    \"operational-status\" : \"NORMAL\"," +
+            "    \"map-function\" : {" +
             "      \"type\" : \"Ignore\"," +
             "      \"properties\" : { }" +
             "    }," +
             "    \"weight\" : 9," +
             "    \"location\" : \"/api/v2/test/2\"," +
-            "    \"reductionKeys\" : [ \"myReductionKeyB\" ]," +
-                    "    \"friendlyName\" : \"reduction-key-b-friendly-name\"" +
+            "    \"reduction-keys\" : [ \"myReductionKeyB\" ]," +
+                    "    \"friendly-name\" : \"reduction-key-b-friendly-name\"" +
             "  } ]," +
-            "  \"children\" : [ {" +
+            "  \"child-edges\" : [ {" +
             "    \"id\" : 3," +
-            "    \"operationalStatus\" : \"MAJOR\"," +
-            "    \"mapFunction\" : {" +
+            "    \"operational-status\" : \"MAJOR\"," +
+            "    \"map-function\" : {" +
             "      \"type\" : \"Ignore\"," +
             "      \"properties\" : { }" +
             "    }," +
             "    \"weight\" : 7," +
             "    \"location\" : \"/api/v2/test/3\"," +
-            "    \"reductionKeys\" : [ ]," +
-            "    \"childId\" : 2" +
+            "    \"reduction-keys\" : [ ]," +
+            "    \"child-id\" : 2" +
             "  }, {" +
             "    \"id\" : 4," +
-            "    \"operationalStatus\" : \"MAJOR\"," +
-            "    \"mapFunction\" : {" +
+            "    \"operational-status\" : \"MAJOR\"," +
+            "    \"map-function\" : {" +
             "      \"type\" : \"Ignore\"," +
             "      \"properties\" : { }" +
             "    }," +
             "    \"weight\" : 7," +
             "    \"location\" : \"/api/v2/test/4\"," +
-            "    \"reductionKeys\" : [ ]," +
-            "    \"childId\" : 3" +
+            "    \"reduction-keys\" : [ ]," +
+            "    \"child-id\" : 3" +
             "  } ]," +
-            "  \"ipServices\" : [ {" +
+            "  \"ip-service-edges\" : [ {" +
             "    \"id\" : 5," +
-            "    \"operationalStatus\" : \"MINOR\"," +
-            "    \"mapFunction\" : {" +
+            "    \"operational-status\" : \"MINOR\"," +
+            "    \"map-function\" : {" +
             "      \"type\" : \"Ignore\"," +
             "      \"properties\" : { }" +
             "    }," +
             "    \"weight\" : 5," +
             "    \"location\" : \"/api/v2/test/5\"," +
-            "    \"reductionKeys\" : [ \"key1\", \"key2\" ]," +
-            "    \"ipService\" : {" +
+            "    \"reduction-keys\" : [ \"key1\", \"key2\" ]," +
+            "    \"ip-service\" : {" +
             "      \"location\" : \"/api/v2/business-services/ip-services/17\"," +
             "      \"id\" : 17," +
-            "      \"nodeLabel\" : \"dummy\"," +
-            "      \"serviceName\" : \"ICMP\"," +
-            "      \"ipAddress\" : \"1.1.1.1\"" +
+            "      \"node-label\" : \"dummy\"," +
+            "      \"service-name\" : \"ICMP\"," +
+            "      \"ip-address\" : \"1.1.1.1\"" +
             "    }," +
-            "    \"friendlyName\" : \"ip-service-friendly-name\"" +
+            "    \"friendly-name\" : \"ip-service-friendly-name\"" +
             "  } ]," +
-            "  \"parentServices\" : [ 11, 12 ]" +
+            "  \"parent-services\" : [ 11, 12 ]" +
             "}",
             "<business-service>\n" +
             "   <id>1</id>\n" +
@@ -262,10 +265,6 @@ public class BusinessServiceResponseDTOMarshalTest extends MarshalAndUnmarshalTe
         return ipService;
     }
 
-    private static IpServiceEdgeResponseDTO createIpServiceEdgeResponse(long id, IpServiceResponseDTO ipServiceResponseDTO, MapFunctionDTO mapFunctionDTO, Status status, ResourceLocation location) {
-        return createIpServiceEdgeResponse(id, ipServiceResponseDTO, mapFunctionDTO, status, location);
-    }
-
     private static IpServiceEdgeResponseDTO createIpServiceEdgeResponse(long id, IpServiceResponseDTO ipServiceResponseDTO, MapFunctionDTO mapFunctionDTO, Status status, ResourceLocation location, String friendlyName) {
         IpServiceEdgeResponseDTO responseDTO = new IpServiceEdgeResponseDTO();
         responseDTO.setOperationalStatus(status);
@@ -289,10 +288,6 @@ public class BusinessServiceResponseDTOMarshalTest extends MarshalAndUnmarshalTe
         responseDTO.setWeight(7);
         responseDTO.setMapFunction(mapFunctionDTO);
         return responseDTO;
-    }
-
-    private static ReductionKeyEdgeResponseDTO createReductionKeyEdgeResponse(long id, String reductionKey, MapFunctionDTO mapFunctionDTO, Status status, ResourceLocation location) {
-        return createReductionKeyEdgeResponse(id, reductionKey, mapFunctionDTO, status, location);
     }
 
     private static ReductionKeyEdgeResponseDTO createReductionKeyEdgeResponse(long id, String reductionKey, MapFunctionDTO mapFunctionDTO, Status status, ResourceLocation location, String friendlyName) {

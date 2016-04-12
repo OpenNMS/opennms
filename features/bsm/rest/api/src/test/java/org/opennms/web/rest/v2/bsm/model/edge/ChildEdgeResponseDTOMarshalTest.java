@@ -66,19 +66,19 @@ public class ChildEdgeResponseDTOMarshalTest extends MarshalAndUnmarshalTest<Chi
                 edge,
                 "{" +
                 "  \"id\" : 1," +
-                "  \"operationalStatus\" : \"WARNING\"," +
-                "  \"mapFunction\" : {" +
+                "  \"operational-status\" : \"WARNING\"," +
+                "  \"map-function\" : {" +
                 "       \"type\" : \"SetTo\"," +
                 "       \"properties\" : {" +
                 "           \"key1\" : \"value1\"" +
                 "       }" +
                 "   }," +
                 "       \"location\" : \"/api/v2/business-services/edges/1\"," +
-                "  \"reductionKeys\" : [" +
+                "  \"reduction-keys\" : [" +
                 "       \"key1\", \"key2\"" +
                 "   ]," +
                 "  \"weight\" : 20," +
-                "  \"childId\" : 127" +
+                "  \"child-id\" : 127" +
                 "}",
                 "<child-edge>\n" +
                 "   <id>1</id>\n" +

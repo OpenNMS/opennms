@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2015 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2015 The OpenNMS Group, Inc.
+ * Copyright (C) 2016 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -36,40 +36,29 @@ import org.junit.runners.Parameterized;
 import org.opennms.core.test.xml.MarshalAndUnmarshalTest;
 import org.opennms.web.rest.api.ApiVersion;
 import org.opennms.web.rest.api.ResourceLocation;
-import org.opennms.web.rest.v2.bsm.model.edge.IpServiceResponseDTO;
 
-public class IpServiceResponseDTOMarshalTest extends MarshalAndUnmarshalTest<IpServiceResponseDTO> {
+import com.google.common.collect.Lists;
 
-    public IpServiceResponseDTOMarshalTest(Class<IpServiceResponseDTO> clazz, IpServiceResponseDTO sampleObject, String sampleJson, String sampleXml) {
-        super(clazz, sampleObject, sampleJson, sampleXml);
+public class BusinessServiceListDTOMarshalTest extends MarshalAndUnmarshalTest<BusinessServiceListDTO> {
+
+    public BusinessServiceListDTOMarshalTest(Class<BusinessServiceListDTO> type, BusinessServiceListDTO sampleObject, String expectedJson, String expectedXml) {
+        super(type, sampleObject, expectedJson, expectedXml);
     }
 
     @Parameterized.Parameters
     public static Collection<Object[]> data() throws IOException {
-        IpServiceResponseDTO ipService = new IpServiceResponseDTO();
-        ipService.setId(17);
-        ipService.setIpAddress("1.1.1.1");
-        ipService.setNodeLabel("dummy");
-        ipService.setServiceName("ICMP");
-        ipService.setLocation(new ResourceLocation(ApiVersion.Version2, "business-services", "ip-services", "17"));
+        BusinessServiceListDTO listDTO = new BusinessServiceListDTO();
+        listDTO.setServices(Lists.newArrayList(new ResourceLocation(ApiVersion.Version2, "business-services", "1")));
 
         return Arrays.asList(new Object[][]{{
-                IpServiceResponseDTO.class,
-                ipService,
-                "{" +
-                "   \"id\" : 17," +
-                "   \"location\" : \"/api/v2/business-services/ip-services/17\"," +
-                "   \"ip-address\" : \"1.1.1.1\"," +
-                "   \"node-label\" : \"dummy\"," +
-                "   \"service-name\" : \"ICMP\"" +
-                "}",
-                "<ip-service>\n" +
-                "   <id>17</id>\n" +
-                "   <service-name>ICMP</service-name>\n" +
-                "   <node-label>dummy</node-label>\n" +
-                "   <ip-address>1.1.1.1</ip-address>\n" +
-                "   <location>/api/v2/business-services/ip-services/17</location>\n" +
-                "</ip-service>"
+            BusinessServiceListDTO.class,
+            listDTO,
+            "{" +
+            "  \"business-services\" : [ \"/api/v2/business-services/1\" ]" +
+            "}",
+            "<business-services>" +
+            "  <business-service>/api/v2/business-services/1</business-service>" +
+            "</business-services>"
         }});
     }
 }

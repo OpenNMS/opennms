@@ -72,62 +72,67 @@ public class BusinessServiceRequestDTOMarshalTest extends MarshalAndUnmarshalTes
             "{" +
             "  \"name\" : \"Web Servers\"," +
             "  \"attributes\" : {" +
-            "    \"dc\" : \"RDU\"," +
-            "    \"some-key\" : \"some-value\"" +
+            "    \"attribute\" : [ {" +
+            "      \"key\" : \"dc\"," +
+            "      \"value\" : \"RDU\"" +
+            "    }, {" +
+            "      \"key\" : \"some-key\"," +
+            "      \"value\" : \"some-value\"" +
+            "    } ]" +
             "  }," +
-            "  \"reduceFunction\" : {" +
-            "       \"type\" : \"MostCritical\"," +
+            "  \"reduce-function\" : {" +
+            "       \"type\" : \"HighestSeverity\"," +
             "       \"properties\" : { }" +
             "  }," +
-            "  \"childServices\" : [" +
+            "  \"child-edges\" : [" +
             "       {" +
-            "           \"mapFunction\" : {" +
+            "           \"map-function\" : {" +
             "               \"type\" : \"Increase\"," +
             "               \"properties\" : { }" +
             "           }," +
             "           \"weight\" : 5," +
-            "           \"childId\" : 2" +
+            "           \"child-id\" : 2" +
             "       }," +
             "       {" +
-            "           \"mapFunction\" : {" +
+            "           \"map-function\" : {" +
             "               \"type\" : \"SetTo\"," +
             "               \"properties\" : {" +
             "                   \"status\" : \"Critical\"" +
             "               }" +
             "           }," +
             "           \"weight\" : 5," +
-            "           \"childId\" : 3" +
+            "           \"child-id\" : 3" +
             "       }," +
             "   ]," +
-            "  \"ipServices\" : [" +
+            "  \"ip-service-edges\" : [" +
             "       {" +
-            "           \"mapFunction\" : {" +
+            "           \"map-function\" : {" +
             "               \"type\" : \"Increase\"," +
             "               \"properties\" : { }" +
             "           }," +
             "           \"weight\" : 9," +
-            "           \"ipServiceId\" : 1," +
-            "           \"friendlyName\" : \"ip-service-friendly-name\"" +
+            "           \"ip-service-id\" : 1," +
+            "           \"friendly-name\" : \"ip-service-friendly-name\"" +
             "       }," +
             "   ]," +
-            "  \"reductionKeys\" : [" +
+            "  \"reduction-key-edges\" : [" +
             "       {" +
-            "           \"mapFunction\" : {" +
+            "           \"map-function\" : {" +
             "               \"type\" : \"Increase\"," +
             "               \"properties\" : { }" +
             "           }," +
             "           \"weight\" : 7," +
-            "           \"reductionKey\" : \"myReductionKeyA\"," +
-            "           \"friendlyName\" : \"reduction-key-a-friendly-name\"" +
+            "           \"reduction-key\" : \"myReductionKeyA\"," +
+            "           \"friendly-name\" : \"reduction-key-a-friendly-name\"" +
             "       }," +
             "       {" +
-            "            \"mapFunction\" : {" +
+            "            \"map-function\" : {" +
             "               \"type\" : \"Increase\"," +
             "               \"properties\" : { }" +
             "           }," +
             "           \"weight\" : 7," +
-            "           \"reductionKey\" : \"myReductionKeyB\"," +
-            "           \"friendlyName\" : \"reduction-key-b-friendly-name\"" +
+            "           \"reduction-key\" : \"myReductionKeyB\"," +
+            "           \"friendly-name\" : \"reduction-key-b-friendly-name\"" +
             "       }," +
             "   ]," +
             "}",

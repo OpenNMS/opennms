@@ -30,6 +30,7 @@ package org.opennms.web.rest.v2.bsm.model;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import javax.xml.bind.annotation.XmlElement;
@@ -44,8 +45,8 @@ import org.opennms.netmgt.bsm.service.model.BusinessService;
 import org.opennms.web.rest.api.ResourceLocation;
 import org.opennms.web.rest.api.ResourceLocationFactory;
 import org.opennms.web.rest.api.support.JAXBResourceLocationAdapter;
-import org.opennms.web.rest.api.support.JsonResourceLocationDeserializationProvider;
-import org.opennms.web.rest.api.support.JsonResourceLocationSerializationProvider;
+import org.opennms.web.rest.api.support.JsonResourceLocationListDeserializationProvider;
+import org.opennms.web.rest.api.support.JsonResourceLocationListSerializationProvider;
 
 @XmlRootElement(name = "business-services")
 @JsonRootName("business-services")
@@ -62,9 +63,9 @@ public class BusinessServiceListDTO {
     }
 
     @XmlElement(name = "business-service")
-    @JsonProperty("business-service")
-    @JsonSerialize(using = JsonResourceLocationSerializationProvider.class)
-    @JsonDeserialize(using = JsonResourceLocationDeserializationProvider.class)
+    @JsonProperty("business-services")
+    @JsonSerialize(using = JsonResourceLocationListSerializationProvider.class)
+    @JsonDeserialize(using = JsonResourceLocationListDeserializationProvider.class)
     @XmlJavaTypeAdapter(JAXBResourceLocationAdapter.class)
     public List<ResourceLocation> getServices() {
         return this.services;
@@ -72,5 +73,30 @@ public class BusinessServiceListDTO {
 
     public void setServices(final List<ResourceLocation> services) {
         this.services = services;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final BusinessServiceListDTO other = (BusinessServiceListDTO) obj;
+
+        return Objects.equals(services, other.services);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(services);
+    }
+
+    @Override
+    public String toString() {
+        return com.google.common.base.Objects.toStringHelper(this)
+                .add("services", services)
+                .toString();
     }
 }
