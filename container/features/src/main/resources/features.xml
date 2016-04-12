@@ -535,6 +535,7 @@
       <feature>camel-blueprint</feature>
       <feature>activemq-camel</feature>
 
+      <feature>opennms-core-camel</feature>
       <feature>opennms-core-daemon</feature>
       <feature>opennms-core-db</feature>
       <feature>opennms-config</feature>

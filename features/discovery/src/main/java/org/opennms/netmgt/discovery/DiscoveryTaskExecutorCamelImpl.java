@@ -48,7 +48,7 @@ public class DiscoveryTaskExecutorCamelImpl extends DefaultDispatcher implements
 	}
 
 	/**
-	 * Send the incoming {@link SyslogConnection} message into the Camel route
+	 * Send the incoming {@link DiscoveryConfiguration} message into the Camel route
 	 * specified by the {@link #m_endpointUri} property.
 	 */
 	@Override
