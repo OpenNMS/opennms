@@ -51,7 +51,6 @@ import org.junit.runner.RunWith;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.features.topology.api.Constants;
-import org.opennms.features.topology.api.OperationContext;
 import org.opennms.features.topology.api.topo.AbstractVertex;
 import org.opennms.features.topology.api.topo.DefaultVertexRef;
 import org.opennms.features.topology.api.topo.Edge;
@@ -64,20 +63,12 @@ import org.opennms.features.topology.api.topo.VertexProvider;
 import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.features.topology.api.topo.WrappedLeafVertex;
 import org.opennms.features.topology.api.topo.WrappedVertex;
-import org.opennms.netmgt.dao.api.BridgeBridgeLinkDao;
-import org.opennms.netmgt.dao.api.BridgeMacLinkDao;
-import org.opennms.netmgt.dao.api.CdpLinkDao;
-import org.opennms.netmgt.dao.api.IsIsLinkDao;
 import org.opennms.netmgt.dao.api.LldpLinkDao;
 import org.opennms.netmgt.dao.api.OspfLinkDao;
-import org.opennms.netmgt.model.BridgeBridgeLink;
 import org.opennms.netmgt.model.FilterManager;
 import org.opennms.netmgt.model.LldpLink;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OspfLink;
-import org.opennms.netmgt.model.topology.BridgeMacTopologyLink;
-import org.opennms.netmgt.model.topology.CdpTopologyLink;
-import org.opennms.netmgt.model.topology.IsisTopologyLink;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -89,37 +80,17 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 public class EnhancedLinkdTopologyProviderTest {
 
     @Autowired
-    private OperationContext m_operationContext;
-
-    @Autowired
     private EnhancedLinkdTopologyProvider m_topologyProvider;
 
     @Autowired
     private EnhancedLinkdMockDataPopulator m_databasePopulator;
     private String m_originalFilename;
 
-    @Autowired
-    private BridgeBridgeLinkDao m_bridgeBridgeLinkDao;
-
-    @Autowired
-    private BridgeMacLinkDao m_bridgeMacLinkDao;
-
-    @Autowired
-    private CdpLinkDao m_cdpLinkDao;
-
-    @Autowired
-    private IsIsLinkDao m_isisLinkDao;
 
     @Before
     public void setUp() throws Exception{
         MockLogAppender.setupLogging();
 
-        EasyMock.expect(m_bridgeBridgeLinkDao.findAll()).andReturn(new ArrayList<BridgeBridgeLink>()).anyTimes();
-        EasyMock.expect(m_bridgeMacLinkDao.getAllBridgeLinksToBridgeNodes()).andReturn(new ArrayList<BridgeMacTopologyLink>()).anyTimes();
-        EasyMock.expect(m_bridgeMacLinkDao.getAllBridgeLinksToIpAddrToNodes()).andReturn(new ArrayList<BridgeMacTopologyLink>()).anyTimes();
-        EasyMock.expect(m_cdpLinkDao.findLinksForTopology()).andReturn(new ArrayList<CdpTopologyLink>()).anyTimes();
-        EasyMock.expect(m_isisLinkDao.getLinksForTopology()).andReturn(new ArrayList<IsisTopologyLink>()).anyTimes();
-        EasyMock.replay(m_bridgeBridgeLinkDao, m_bridgeMacLinkDao, m_cdpLinkDao, m_isisLinkDao);
 
         m_databasePopulator.populateDatabase();
         m_databasePopulator.setUpMock();
@@ -562,7 +533,6 @@ public class EnhancedLinkdTopologyProviderTest {
 
     @After
     public void tearDown() {
-        EasyMock.reset(m_bridgeBridgeLinkDao, m_bridgeMacLinkDao, m_cdpLinkDao, m_isisLinkDao);
 
         m_databasePopulator.tearDown();
         if(m_topologyProvider != null) {

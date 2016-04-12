@@ -89,9 +89,13 @@
 			<split>
 				<!-- Split the DiscoveryJobs -->
 				<simple>${body}</simple>
+				<!-- Calculate an appropriate JMS timeout based on the task -->
+				<setHeader headerName="CamelJmsRequestTimeout">
+					<simple>${body.calculateTaskTimeout}</simple>
+				</setHeader>
 				<!-- Use recipientList so that we can have a dynamic to: URI -->
 				<recipientList>
-					<!-- TODO: Use a more sophisticated naming convention for this queue -->
+					<!-- TODO: NMS-8217: Use a more sophisticated naming convention for this queue -->
  					<simple>activemq:Location-${body.location}</simple>
 				</recipientList>
 				<!-- Send the DiscoveryResults to the eventWriter -->

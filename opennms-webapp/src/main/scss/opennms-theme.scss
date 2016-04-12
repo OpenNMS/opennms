@@ -629,10 +629,6 @@ a.list-group-item.active:focus {
   color: #fff;
   background-color: #FFBF00;
 }
-.table>thead>tr>td.danger, .table>tbody>tr>td.danger, .table>tfoot>tr>td.danger, .table>thead>tr>th.danger, .table>tbody>tr>th.danger, .table>tfoot>tr>th.danger, .table>thead>tr.danger>td, .table>tbody>tr.danger>td, .table>tfoot>tr.danger>td, .table>thead>tr.danger>th, .table>tbody>tr.danger>th, .table>tfoot>tr.danger>th {
-  color: #fff;
-  background-color: #F45C31;
-}
 
 /* make all TH tags inside a .table dark like OpenNMS 14 */
 .table > tbody > tr > th,
