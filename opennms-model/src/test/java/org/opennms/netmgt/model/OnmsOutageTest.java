@@ -46,7 +46,6 @@ public class OnmsOutageTest {
         JsonTest.assertJsonEquals(
                 "{\"id\" : 1,\n" +
                 "  \"monitoredService\" : {\n" +
-                "    \"id\" : 1,\n" +
                 "    \"applications\" : [ {\n" +
                 "      \"name\" : \"Dummy\",\n" +
                 "      \"id\" : 100\n" +
