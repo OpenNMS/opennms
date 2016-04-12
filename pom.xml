@@ -1689,6 +1689,11 @@
         <scope>test</scope>
       </dependency>
       <dependency>
+        <groupId>org.opennms.features</groupId>
+        <artifactId>org.opennms.features.discovery</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
         <groupId>org.opennms.features.geocoder</groupId>
         <artifactId>org.opennms.features.geocoder.api</artifactId>
         <version>${project.version}</version>
