@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.web.rest.v2;
+package org.opennms.web.rest.v2.bsm;
 
 import java.util.List;
 import java.util.Objects;
