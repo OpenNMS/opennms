@@ -39,7 +39,6 @@ import static org.opennms.web.admin.discovery.DiscoveryServletConstants.removeSp
 import static org.opennms.web.admin.discovery.DiscoveryServletConstants.saveAndRestartAction;
 
 import java.io.IOException;
-import java.io.StringWriter;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -48,15 +47,19 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.opennms.core.soa.ServiceRegistry;
 import org.opennms.core.utils.WebSecurityUtils;
 import org.opennms.netmgt.config.discovery.DiscoveryConfiguration;
 import org.opennms.netmgt.config.discovery.ExcludeRange;
 import org.opennms.netmgt.config.discovery.IncludeRange;
 import org.opennms.netmgt.config.discovery.IncludeUrl;
 import org.opennms.netmgt.config.discovery.Specific;
+import org.opennms.netmgt.discovery.DiscoveryTaskExecutor;
 import org.opennms.web.api.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.context.support.WebApplicationContextUtils;
 
 /**
  * A servlet that handles configuring a one-time discovery scan.
@@ -198,17 +201,23 @@ public class DiscoveryScanServlet extends HttpServlet {
         // Submit the discovery job
         if(action.equals(saveAndRestartAction)){
         
-        	try {
-        			StringWriter configString = new StringWriter();
-        			config.marshal(configString);
-        			LOG.debug(configString.toString().trim());
-        			
-        			// TODO: Submit the job to the discovery queue
-
-        	} catch(Throwable ex) {
-        		LOG.error("Error while saving configuration. {}", ex);
-        		throw new ServletException(ex);
-        	}
+            try {
+                WebApplicationContext beanFactory = WebApplicationContextUtils.getRequiredWebApplicationContext(getServletContext());
+                // Fetch the ServiceRegistry
+                ServiceRegistry registry = beanFactory.getBean(ServiceRegistry.class);
+                // Use it to look up a DiscoveryTaskExecutor service
+                DiscoveryTaskExecutor executor = registry.findProvider(DiscoveryTaskExecutor.class);
+                // If the service exists...
+                if (executor != null) {
+                    // Submit the job to the discovery queue
+                    executor.handleDiscoveryTask(config);
+                } else {
+                    LOG.warn("No DiscoveryTaskExecutor service is available");
+                }
+            } catch(Throwable ex) {
+                LOG.error("Error while submitting task", ex);
+                throw new ServletException(ex);
+            }
 
         	// TODO: Send an event here when the scan is started? Or do it on the Camel side?
         	/*

@@ -138,6 +138,9 @@ DiscoveryConfiguration currConfig  = (DiscoveryConfiguration) sess.getAttribute(
 // If there's no config in the session yet, create a new blank config
 if (currConfig == null) {
   currConfig = new DiscoveryConfiguration();
+  // Set the timeout and retries to the default values
+  currConfig.setTimeout(DiscoveryConfigFactory.DEFAULT_TIMEOUT);
+  currConfig.setRetries(DiscoveryConfigFactory.DEFAULT_RETRIES);
   sess.setAttribute(DiscoveryScanServlet.ATTRIBUTE_DISCOVERY_CONFIGURATION, currConfig);
 }
 

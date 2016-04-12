@@ -79,6 +79,13 @@
     <property name="unmanagedInterfaceFilter" ref="unmanagedInterfaceFilter" />
   </bean>
 
+  <!-- Create a Camel dispatcher that consumes DiscoveryConfiguration tasks -->
+  <bean id="discoveryTaskExecutorCamel" class="org.opennms.netmgt.discovery.DiscoveryTaskExecutorCamelImpl">
+    <constructor-arg value="direct:submitDiscoveryTask"/>
+  </bean>
+
+  <onmsgi:service interface="org.opennms.netmgt.discovery.DiscoveryTaskExecutor" ref="discoveryTaskExecutorCamel"/>
+
   <camelContext id="discoveryCamelContext" xmlns="http://camel.apache.org/schema/spring">
 
     <!-- Bootstrap timer -->
