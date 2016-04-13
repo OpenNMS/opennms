@@ -12,7 +12,7 @@
 
   <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer" />
 
-  <bean id="evaluate.dump_stats_frequency" class="java.lang.Integer">
+  <bean id="dumpStatsFrequency" class="java.lang.Integer">
         <constructor-arg type="java.lang.String" value="${org.opennms.evaluate.dump_stats_frequency:5}" />
   </bean>
 
