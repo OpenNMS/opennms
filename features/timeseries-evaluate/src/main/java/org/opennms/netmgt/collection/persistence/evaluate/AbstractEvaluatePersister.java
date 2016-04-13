@@ -53,7 +53,6 @@ public abstract class AbstractEvaluatePersister extends AbstractPersister {
      */
     public AbstractEvaluatePersister(EvaluateStats stats, ServiceParameters params, RrdRepository repository) {
         super(params, repository);
-        setBuilder(new EvaluatorPersistOperationBuilder());
         this.stats = stats;
     }
 
@@ -62,6 +61,14 @@ public abstract class AbstractEvaluatePersister extends AbstractPersister {
      */
     @Override
     protected void persistStringAttribute(ResourcePath path, String key, String value) throws PersistException {
+    }
+
+    /* (non-Javadoc)
+     * @see org.opennms.netmgt.collection.api.AbstractPersister#isIgnorePersist()
+     */
+    @Override
+    public boolean isIgnorePersist() {
+        return true;
     }
 
     /**

@@ -69,6 +69,7 @@ public class EvaluateGroupPersister extends AbstractEvaluatePersister {
             stats.checkResource(resourceId);
             group.getAttributes().forEach(a -> stats.checkAttribute(resourceId + '/' + a.getName()));
             stats.getSamplesMeter().mark(group.getAttributes().size());
+            setBuilder(new EvaluatorPersistOperationBuilder());
         }
     }
 

@@ -68,6 +68,7 @@ public class EvaluateSinglePersister extends AbstractEvaluatePersister {
             stats.checkResource(resourceId);
             stats.checkAttribute(attribId);
             stats.getSamplesMeter().mark();
+            setBuilder(new EvaluatorPersistOperationBuilder());
         }
     }
 
