@@ -93,4 +93,22 @@ public class BroadcastEventProcessorTest extends TestCase {
         
         m_mocks.verifyAll();
     }
+
+    public void testReloadDaemonConfig() {
+        MockEventIpcManager eventIpcManager = new MockEventIpcManager();
+        BroadcastEventProcessor processor = new BroadcastEventProcessor(eventIpcManager, m_eventConfDao);
+
+        EventBuilder eventBuilder = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_UEI, "dunno");
+        eventBuilder.addParam(EventConstants.PARM_DAEMON_NAME, "Eventd");
+
+        // Expect a call to reload the EventConfDao
+        m_eventConfDao.reload();
+
+        m_mocks.replayAll();
+
+        processor.onEvent(eventBuilder.getEvent());
+
+        m_mocks.verifyAll();
+    }
+
 }
