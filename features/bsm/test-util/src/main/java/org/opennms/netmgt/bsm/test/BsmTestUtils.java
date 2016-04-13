@@ -35,8 +35,8 @@ import java.util.HashMap;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import org.codehaus.jackson.map.ObjectMapper;
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.core.xml.JacksonUtils;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.bsm.persistence.api.BusinessServiceChildEdgeEntity;
 import org.opennms.netmgt.bsm.persistence.api.BusinessServiceEntity;
@@ -188,8 +188,9 @@ public class BsmTestUtils {
     // convert to json
     public static <T> String toJson(T input) {
         Objects.requireNonNull(input);
+
         try {
-            return new ObjectMapper().writeValueAsString(input);
+            return JacksonUtils.createDefaultObjectMapper().writeValueAsString(input);
         } catch (IOException io) {
             throw Throwables.propagate(io);
         }

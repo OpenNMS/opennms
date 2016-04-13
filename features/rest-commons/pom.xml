@@ -29,7 +29,6 @@
         <dependency>
             <groupId>org.codehaus.jackson</groupId>
             <artifactId>jackson-mapper-asl</artifactId>
-            <version>${jacksonVersion}</version>
         </dependency>
         <dependency>
             <groupId>junit</groupId>

@@ -33,27 +33,19 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import org.apache.commons.io.IOUtils;
-import org.codehaus.jackson.map.AnnotationIntrospector;
 import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.xc.JaxbAnnotationIntrospector;
 import org.json.JSONException;
 import org.junit.Assert;
+import org.opennms.core.xml.JacksonUtils;
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 
 public final class JsonTest {
 
     private static final Logger LOG = LoggerFactory.getLogger(JsonTest.class);
 
-    private static final ObjectMapper DEFAULT_OBJECT_MAPPER = new ObjectMapper();
-
-    static {
-        final AnnotationIntrospector introspector = new JaxbAnnotationIntrospector();
-        DEFAULT_OBJECT_MAPPER.getDeserializationConfig().withAnnotationIntrospector(introspector);
-        DEFAULT_OBJECT_MAPPER.getSerializationConfig().withAnnotationIntrospector(introspector);
-    }
+    private static final ObjectMapper DEFAULT_OBJECT_MAPPER = JacksonUtils.createDefaultObjectMapper();
 
     private JsonTest(){}
 

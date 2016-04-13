@@ -359,6 +359,11 @@
       <feature>dnsjava</feature>
       <feature>jaxb</feature>
 
+      <!-- Used by org.opennms.core.xml -->
+      <bundle dependency="true">mvn:org.codehaus.jackson/jackson-core-asl/${jacksonVersion}</bundle>
+      <bundle dependency="true">mvn:org.codehaus.jackson/jackson-mapper-asl/${jacksonVersion}</bundle>
+      <bundle dependency="true">mvn:org.codehaus.jackson/jackson-xc/${jacksonVersion}</bundle>
+
       <bundle>mvn:org.opennms.core/org.opennms.core.api/${project.version}</bundle>
       <bundle>mvn:org.opennms.core/org.opennms.core.criteria/${project.version}</bundle>
       <bundle>mvn:org.opennms.core/org.opennms.core.lib/${project.version}</bundle>
@@ -430,10 +435,6 @@
       <feature>opennms-poller-api</feature>
       <feature>opennms-rrd-api</feature>
       <feature>opennms-snmp</feature>
-
-      <!-- Needed for JSON annotations -->
-      <bundle dependency="true">mvn:org.codehaus.jackson/jackson-core-asl/${jacksonVersion}</bundle>
-      <bundle dependency="true">mvn:org.codehaus.jackson/jackson-mapper-asl/${jacksonVersion}</bundle>
 
       <bundle>mvn:org.opennms/opennms-model/${project.version}</bundle>
     </feature>
