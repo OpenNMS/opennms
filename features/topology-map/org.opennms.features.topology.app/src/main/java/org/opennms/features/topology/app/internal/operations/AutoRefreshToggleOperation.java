@@ -36,6 +36,7 @@ import org.opennms.features.topology.api.AbstractCheckedOperation;
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.OperationContext;
 import org.opennms.features.topology.api.topo.VertexRef;
+import org.opennms.features.topology.app.internal.TopologyUI;
 
 public class AutoRefreshToggleOperation extends AbstractCheckedOperation {
 
@@ -83,7 +84,6 @@ public class AutoRefreshToggleOperation extends AbstractCheckedOperation {
     private static void toggle(final GraphContainer container) {
         if (container.hasAutoRefreshSupport()) {
             container.getAutoRefreshSupport().toggle();
-            container.redoLayout();
         }
     }
 }
