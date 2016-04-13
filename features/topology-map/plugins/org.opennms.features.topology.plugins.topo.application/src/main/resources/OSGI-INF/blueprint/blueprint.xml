@@ -10,9 +10,15 @@ xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0 http://www.osgi.o
 		<argument ref="transactionTemplate" />
 	</bean>
 
+	<bean id="applicationMetaInfo" class="org.opennms.features.topology.api.topo.DefaultMetaInfo">
+		<property name="name" value="Application Topology Provider"/>
+		<property name="description" value="This Topology Provider displays all defined Applications and their calculated states."/>
+	</bean>
+
 	<!-- Topology Provider -->
 	<bean id="applicationTopologyProvider" scope="prototype" class="org.opennms.features.topology.plugins.topo.application.ApplicationTopologyProvider">
 		<argument ref="applicationDao"/>
+		<property name="metaInfo" ref="applicationMetaInfo"/>
 	</bean>
 	<!-- Make it hop aware -->
 	<bean id="applicationTopologyHopProvider" class="org.opennms.features.topology.api.support.VertexHopGraphProvider">
