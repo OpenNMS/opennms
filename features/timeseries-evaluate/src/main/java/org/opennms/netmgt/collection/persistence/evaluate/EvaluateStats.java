@@ -44,23 +44,14 @@ public class EvaluateStats {
     /** The resource map. */
     private final ConcurrentMap<String, Boolean> resourceMap = new ConcurrentHashMap<String, Boolean>();
 
-    /** The metrics map. */
-    private final ConcurrentMap<String, Boolean> metricsMap = new ConcurrentHashMap<String, Boolean>();
+    /** The attribute map. */
+    private final ConcurrentMap<String, Boolean> attributeMap = new ConcurrentHashMap<String, Boolean>();
 
     /** The group map. */
     private final ConcurrentMap<String, Boolean> groupMap = new ConcurrentHashMap<String, Boolean>();
 
-    /** The collections set meter. */
-    private final Meter collectionsMeter;
-
-    /** The resources meter. */
-    private final Meter resourcesMeter;
-
-    /** The metrics meter. */
-    private final Meter metricsMeter;
-
-    /** The groups meter. */
-    private final Meter groupsMeter;
+    /** The samples meter. */
+    private final Meter samplesMeter;
 
     /**
      * Instantiates a new evaluate statistics.
@@ -71,23 +62,13 @@ public class EvaluateStats {
         final Gauge<Integer> resources = () -> { return resourceMap.size(); };
         registry.register(MetricRegistry.name("evaluate", "resources"), resources);
 
-        final Gauge<Integer> metrics = () -> { return metricsMap.size(); };
-        registry.register(MetricRegistry.name("evaluate", "metrics"), metrics);
+        final Gauge<Integer> attributes = () -> { return attributeMap.size(); };
+        registry.register(MetricRegistry.name("evaluate", "attributes"), attributes);
 
         final Gauge<Integer> groups = () -> { return groupMap.size(); };
         registry.register(MetricRegistry.name("evaluate", "groups"), groups);
 
-        collectionsMeter = registry.meter(MetricRegistry.name("evaluate", "meter", "collections"));
-        resourcesMeter = registry.meter(MetricRegistry.name("evaluate", "meter", "resources"));
-        metricsMeter = registry.meter(MetricRegistry.name("evaluate", "meter", "groups"));
-        groupsMeter = registry.meter(MetricRegistry.name("evaluate", "meter", "metrics"));
-    }
-
-    /**
-     * Checks a collection set.
-     */
-    public void checkCollectionSet() {
-        collectionsMeter.mark();
+        samplesMeter = registry.meter(MetricRegistry.name("evaluate", "samples"));
     }
 
     /**
@@ -97,17 +78,15 @@ public class EvaluateStats {
      */
     public void checkResource(String resource) {
         resourceMap.putIfAbsent(resource, true);
-        resourcesMeter.mark();
     }
 
     /**
-     * Checks a metric.
+     * Checks a attribute.
      *
-     * @param metric the metric
+     * @param attribute the attribute
      */
-    public void checkMetric(String metric) {
-        metricsMap.putIfAbsent(metric, true);
-        metricsMeter.mark();
+    public void checkAttribute(String attribute) {
+        attributeMap.putIfAbsent(attribute, true);
     }
 
     /**
@@ -117,7 +96,14 @@ public class EvaluateStats {
      */
     public void checkGroup(String group) {
         groupMap.putIfAbsent(group, true);
-        groupsMeter.mark();
     }
 
+    /**
+     * Gets the samples meter.
+     *
+     * @return the samples meter
+     */
+    public Meter getSamplesMeter() {
+        return samplesMeter;
+    }
 }

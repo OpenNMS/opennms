@@ -33,6 +33,7 @@ import org.opennms.core.logging.Logging;
 import org.opennms.netmgt.collection.api.Persister;
 import org.opennms.netmgt.collection.api.PersisterFactory;
 import org.opennms.netmgt.collection.api.ServiceParameters;
+import org.opennms.netmgt.model.ResourceTypeUtils;
 import org.opennms.netmgt.rrd.RrdRepository;
 
 import org.slf4j.LoggerFactory;
@@ -82,7 +83,7 @@ public class EvaluatePersisterFactory implements PersisterFactory {
      */
     @Override
     public Persister createPersister(ServiceParameters params, RrdRepository repository) {
-        return new EvaluatePersister(stats);
+        return createPersister(params, repository, false, false, false);
     }
 
     /* (non-Javadoc)
@@ -92,7 +93,39 @@ public class EvaluatePersisterFactory implements PersisterFactory {
     public Persister createPersister(ServiceParameters params,
             RrdRepository repository, boolean dontPersistCounters,
             boolean forceStoreByGroup, boolean dontReorderAttributes) {
-        return new EvaluatePersister(stats);
+        if (ResourceTypeUtils.isStoreByGroup() || forceStoreByGroup) {
+            return createGroupPersister(params, repository, dontPersistCounters);
+        } else {
+            return createOneToOnePersister(params, repository, dontPersistCounters);
+        }
+    }
+
+    /**
+     * Creates a new EvaluatePersister object when storeByGroup is enabled.
+     *
+     * @param params the service parameters
+     * @param repository the repository
+     * @param dontPersistCounters the don't persist counters
+     * @return the persister
+     */
+    public Persister createGroupPersister(ServiceParameters params, RrdRepository repository, boolean dontPersistCounters) {
+        EvaluateGroupPersister persister = new EvaluateGroupPersister(stats, params, repository);
+        persister.setIgnorePersist(dontPersistCounters);
+        return persister;
+    }
+
+    /**
+     * Creates a new EvaluatePersister object when storeByGroup is disabled.
+     *
+     * @param params the service parameters
+     * @param repository the repository
+     * @param dontPersistCounters the don't persist counters
+     * @return the persister
+     */
+    public Persister createOneToOnePersister(ServiceParameters params, RrdRepository repository, boolean dontPersistCounters) {
+        EvaluateSinglePersister persister = new EvaluateSinglePersister(stats, params, repository);
+        persister.setIgnorePersist(dontPersistCounters);
+        return persister;
     }
 
 }

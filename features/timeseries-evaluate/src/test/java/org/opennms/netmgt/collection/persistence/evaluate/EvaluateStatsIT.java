@@ -48,21 +48,20 @@ public class EvaluateStatsIT {
     public void testStats() throws Exception {
         MetricRegistry registry = new MetricRegistry();
         EvaluateStats stats = new EvaluateStats(registry);
-
-        // Check collection set
         for (int i = 0; i < 10; i++) {
-            stats.checkCollectionSet();
-        }
-        Assert.assertEquals(10, registry.getMeters().get("evaluate.meter.collections").getCount());
-
-        // Check resources
-        for (int j=0; j<10; j++) {
-            for (int i = 0; i < 10; i++) {
-                stats.checkResource("resource" + i);
+            stats.checkResource("resource" + i);
+            for (int j = 0; j < 10; j++) {
+                stats.checkGroup("resource" + i + "group" + j);
+                for (int k = 0; k < 10; k++) {
+                    stats.checkAttribute("resource" + i + "group" + j + "attribute" + k);
+                    stats.getSamplesMeter().mark();
+                }
             }
         }
         Assert.assertEquals(10, registry.getGauges().get("evaluate.resources").getValue());
-        Assert.assertEquals(100, registry.getMeters().get("evaluate.meter.resources").getCount());
+        Assert.assertEquals(100, registry.getGauges().get("evaluate.groups").getValue());
+        Assert.assertEquals(1000, registry.getGauges().get("evaluate.attributes").getValue());
+        Assert.assertEquals(1000, registry.getMeters().get("evaluate.samples").getCount());
     }
 
 }
