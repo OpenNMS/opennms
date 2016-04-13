@@ -6,8 +6,14 @@ http://www.osgi.org/xmlns/blueprint/v1.0.0 http://www.osgi.org/xmlns/blueprint/v
 http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0 http://aries.apache.org/schemas/blueprint-cm/blueprint-cm-1.1.0.xsd
 ">
 
+	<bean id="simpleMetaInfo" class="org.opennms.features.topology.api.topo.DefaultMetaInfo">
+		<property name="name" value="Simple Topology Provider"/>
+		<property name="description" value="This Topology Provider visualizes a predefined graph."/>
+	</bean>
+
 	<bean id="simpleTopologyFactory" class="org.opennms.features.topology.plugins.topo.simple.internal.SimpleTopologyFactory">
 		<property name="bundleContext" ref="blueprintBundleContext" />
+		<property name="metaInfo" ref="simpleMetaInfo"/>
 	</bean>
 	
     <service interface="org.osgi.service.cm.ManagedServiceFactory" ref="simpleTopologyFactory">

@@ -44,6 +44,7 @@ import org.opennms.features.topology.api.topo.Edge;
 import org.opennms.features.topology.api.topo.EdgeListener;
 import org.opennms.features.topology.api.topo.EdgeRef;
 import org.opennms.features.topology.api.topo.GraphProvider;
+import org.opennms.features.topology.api.topo.MetaInfo;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexListener;
 import org.opennms.features.topology.api.topo.VertexRef;
@@ -323,5 +324,10 @@ public class NodeACLVertexProvider implements GraphProvider {
     @Override
     public boolean contributesTo(ContentType type) {
         return m_delegate.contributesTo(type);
+    }
+
+    @Override
+    public MetaInfo getMetaInfo() {
+        return m_delegate.getMetaInfo();
     }
 }

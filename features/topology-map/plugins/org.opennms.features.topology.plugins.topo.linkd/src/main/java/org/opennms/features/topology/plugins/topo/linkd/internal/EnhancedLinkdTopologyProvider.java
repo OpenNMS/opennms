@@ -55,6 +55,9 @@ import org.opennms.features.topology.api.support.VertexHopGraphProvider.VertexHo
 import org.opennms.features.topology.api.topo.AbstractSearchProvider;
 import org.opennms.features.topology.api.topo.AbstractVertex;
 import org.opennms.features.topology.api.topo.Criteria;
+import org.opennms.features.topology.api.topo.DefaultMetaInfo;
+import org.opennms.features.topology.api.topo.Edge;
+import org.opennms.features.topology.api.topo.MetaInfo;
 import org.opennms.features.topology.api.topo.SearchQuery;
 import org.opennms.features.topology.api.topo.SearchResult;
 import org.opennms.features.topology.api.topo.SimpleConnector;
@@ -1530,5 +1533,4 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
         
         return reverseLink;
     }
-
 }

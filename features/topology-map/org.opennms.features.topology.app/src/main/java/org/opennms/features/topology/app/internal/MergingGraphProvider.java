@@ -41,12 +41,14 @@ import java.util.concurrent.CopyOnWriteArraySet;
 import org.opennms.features.topology.api.browsers.ContentType;
 import org.opennms.features.topology.api.browsers.SelectionChangedListener;
 import org.opennms.features.topology.api.topo.Criteria;
+import org.opennms.features.topology.api.topo.DefaultMetaInfo;
 import org.opennms.features.topology.api.topo.DefaultVertexRef;
 import org.opennms.features.topology.api.topo.Edge;
 import org.opennms.features.topology.api.topo.EdgeListener;
 import org.opennms.features.topology.api.topo.EdgeProvider;
 import org.opennms.features.topology.api.topo.EdgeRef;
 import org.opennms.features.topology.api.topo.GraphProvider;
+import org.opennms.features.topology.api.topo.MetaInfo;
 import org.opennms.features.topology.api.topo.SimpleEdgeProvider;
 import org.opennms.features.topology.api.topo.SimpleVertexProvider;
 import org.opennms.features.topology.api.topo.Vertex;
@@ -778,6 +780,11 @@ public class MergingGraphProvider implements GraphProvider, VertexListener, Edge
 		public boolean contributesTo(ContentType type) {
 			return false;
 		}
+
+		@Override
+		public MetaInfo getMetaInfo() {
+			return new DefaultMetaInfo();
+		}
 	}
 
 	@Override
@@ -800,4 +807,8 @@ public class MergingGraphProvider implements GraphProvider, VertexListener, Edge
 		removeVertexProvider(removedProvider);
 	}
 
+	@Override
+	public MetaInfo getMetaInfo() {
+		return getBaseGraphProvider().getMetaInfo();
+	}
 }
