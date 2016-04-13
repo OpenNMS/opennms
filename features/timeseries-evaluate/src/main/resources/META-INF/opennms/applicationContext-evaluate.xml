@@ -22,7 +22,10 @@
 
   <onmsgi:service interface="org.opennms.netmgt.dao.api.ResourceStorageDao" ref="resourceStorageDao" />
 
-  <bean id="persisterFactory" class="org.opennms.netmgt.collection.persistence.evaluate.EvaluatePersisterFactory" />
+  <bean id="persisterFactory" class="org.opennms.netmgt.collection.persistence.evaluate.EvaluatePersisterFactory">
+      <constructor-arg index="0" ref="metricRegistry" />
+      <constructor-arg index="1" ref="dumpStatsFrequency" />  
+  </bean>
 
   <onmsgi:service interface="org.opennms.netmgt.collection.api.PersisterFactory" ref="persisterFactory" />
 

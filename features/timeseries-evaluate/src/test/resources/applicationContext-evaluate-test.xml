@@ -10,15 +10,18 @@
 
   <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer" />
 
-  <bean id="evaluate.dump_stats_frequency" class="java.lang.Integer">
-        <constructor-arg type="java.lang.String" value="${org.opennms.evaluate.dump_stats_frequency:5}" />
+  <bean id="dumpStatsFrequency" class="java.lang.Integer">
+      <constructor-arg type="java.lang.String" value="${org.opennms.evaluate.dump_stats_frequency:5}" />
   </bean>
 
   <bean id="metricRegistry" class="com.codahale.metrics.MetricRegistry" />
 
   <bean id="resourceStorageDao" primary="true" class="org.opennms.netmgt.dao.support.EvaluateResourceStorageDao" />
 
-  <bean id="persisterFactory" class="org.opennms.netmgt.collection.persistence.evaluate.EvaluatePersisterFactory" />
+  <bean id="persisterFactory" class="org.opennms.netmgt.collection.persistence.evaluate.EvaluatePersisterFactory">
+      <constructor-arg index="0" ref="metricRegistry" />
+      <constructor-arg index="1" ref="dumpStatsFrequency" />  
+  </bean>
 
 </beans>
 

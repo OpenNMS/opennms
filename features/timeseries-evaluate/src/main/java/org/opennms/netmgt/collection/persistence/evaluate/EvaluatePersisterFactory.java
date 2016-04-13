@@ -29,9 +29,6 @@ package org.opennms.netmgt.collection.persistence.evaluate;
 
 import java.util.concurrent.TimeUnit;
 
-import javax.inject.Inject;
-import javax.inject.Named;
-
 import org.opennms.core.logging.Logging;
 import org.opennms.netmgt.collection.api.Persister;
 import org.opennms.netmgt.collection.api.PersisterFactory;
@@ -39,10 +36,10 @@ import org.opennms.netmgt.collection.api.ServiceParameters;
 import org.opennms.netmgt.rrd.RrdRepository;
 
 import org.slf4j.LoggerFactory;
+import org.springframework.util.Assert;
 
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Slf4jReporter;
-import com.google.common.base.Preconditions;
 
 /**
  * A factory for creating EvaluatePersister objects.
@@ -60,13 +57,13 @@ public class EvaluatePersisterFactory implements PersisterFactory {
     /**
      * Instantiates a new evaluate persister factory.
      *
-     * @param dumpFreq the dump frequency
      * @param registry the metric registry
+     * @param dumpFreq the dump frequency
      */
-    @Inject
-    public EvaluatePersisterFactory(@Named("evaluate.dump_stats_frequency") Integer dumpFreq, MetricRegistry registry) {
-        Preconditions.checkArgument(dumpFreq > 0, "dumpFreq must be positive");
-        Preconditions.checkNotNull(registry, "metric registry");
+    public EvaluatePersisterFactory(MetricRegistry registry, Integer dumpFreq) {
+        Assert.notNull(registry, "MetricRegistry is required");
+        Assert.notNull(dumpFreq, "Dump frequency is required");
+        Assert.isTrue(dumpFreq > 0, "Dump frequency must be positive");
 
         stats = new EvaluateStats(registry);
 

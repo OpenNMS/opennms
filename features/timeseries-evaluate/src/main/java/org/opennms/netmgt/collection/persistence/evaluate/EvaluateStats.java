@@ -42,25 +42,25 @@ import com.codahale.metrics.MetricRegistry;
 public class EvaluateStats {
 
     /** The resource map. */
-    private ConcurrentMap<String, Boolean> resourceMap = new ConcurrentHashMap<String, Boolean>();
+    private final ConcurrentMap<String, Boolean> resourceMap = new ConcurrentHashMap<String, Boolean>();
 
     /** The metrics map. */
-    private ConcurrentMap<String, Boolean> metricsMap = new ConcurrentHashMap<String, Boolean>();
+    private final ConcurrentMap<String, Boolean> metricsMap = new ConcurrentHashMap<String, Boolean>();
 
     /** The group map. */
-    private ConcurrentMap<String, Boolean> groupMap = new ConcurrentHashMap<String, Boolean>();
+    private final ConcurrentMap<String, Boolean> groupMap = new ConcurrentHashMap<String, Boolean>();
 
     /** The collections set meter. */
-    private Meter collectionsMeter = new Meter();
+    private final Meter collectionsMeter;
 
     /** The resources meter. */
-    private Meter resourcesMeter = new Meter();
+    private final Meter resourcesMeter;
 
     /** The metrics meter. */
-    private Meter metricsMeter = new Meter();
+    private final Meter metricsMeter;
 
     /** The groups meter. */
-    private Meter groupsMeter = new Meter();
+    private final Meter groupsMeter;
 
     /**
      * Instantiates a new evaluate statistics.
@@ -68,19 +68,19 @@ public class EvaluateStats {
      * @param registry the registry
      */
     public EvaluateStats(MetricRegistry registry) {
-        Gauge<Integer> resources = () -> { return resourceMap.size(); };
+        final Gauge<Integer> resources = () -> { return resourceMap.size(); };
         registry.register(MetricRegistry.name("evaluate", "resources"), resources);
 
-        Gauge<Integer> metrics = () -> { return metricsMap.size(); };
+        final Gauge<Integer> metrics = () -> { return metricsMap.size(); };
         registry.register(MetricRegistry.name("evaluate", "metrics"), metrics);
 
-        Gauge<Integer> groups = () -> { return groupMap.size(); };
+        final Gauge<Integer> groups = () -> { return groupMap.size(); };
         registry.register(MetricRegistry.name("evaluate", "groups"), groups);
 
-        registry.register(MetricRegistry.name("evaluate", "meter", "collections"), collectionsMeter);
-        registry.register(MetricRegistry.name("evaluate", "meter", "resources"), resourcesMeter);
-        registry.register(MetricRegistry.name("evaluate", "meter", "groups"), metricsMeter);
-        registry.register(MetricRegistry.name("evaluate", "meter", "metrics"), groupsMeter);
+        collectionsMeter = registry.meter(MetricRegistry.name("evaluate", "meter", "collections"));
+        resourcesMeter = registry.meter(MetricRegistry.name("evaluate", "meter", "resources"));
+        metricsMeter = registry.meter(MetricRegistry.name("evaluate", "meter", "groups"));
+        groupsMeter = registry.meter(MetricRegistry.name("evaluate", "meter", "metrics"));
     }
 
     /**
