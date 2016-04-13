@@ -63,10 +63,11 @@ public class EvaluateGroupPersister extends AbstractEvaluatePersister {
         pushShouldPersist(group);
         if (shouldPersist()) {
             final String resourceId = getResourceId(group.getResource());
-            final String groupId = new StringBuffer().append(getResourceId(group.getResource())).append('/').append(group.getName()).toString();
-            LOG.debug("visitGroup: {}", groupId);
+            final String groupId = resourceId + '/' + group.getName();
+            LOG.debug("visitGroup: {} = {}", groupId, group.getAttributes().size());
             stats.checkGroup(groupId);
             stats.checkResource(resourceId);
+            group.getAttributes().forEach(a -> stats.checkAttribute(resourceId + '/' + a.getName()));
             stats.getSamplesMeter().mark(group.getAttributes().size());
         }
     }

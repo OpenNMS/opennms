@@ -53,6 +53,7 @@ public abstract class AbstractEvaluatePersister extends AbstractPersister {
      */
     public AbstractEvaluatePersister(EvaluateStats stats, ServiceParameters params, RrdRepository repository) {
         super(params, repository);
+        setBuilder(new EvaluatorPersistOperationBuilder());
         this.stats = stats;
     }
 
