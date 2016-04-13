@@ -377,15 +377,19 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
         // Panel Item to visualize the meta info
         private final InfoPanelItem metaInfoPanelItem = new InfoPanelItem() {
 
-            @Override
-            public Component getComponent(GraphContainer container) {
+            private MetaInfo getMetaInfo() {
                 MetaInfo metaInfo = getGraphContainer().getBaseTopology().getMetaInfo();
 
                 if (Objects.isNull(metaInfo)) {
                     metaInfo = new DefaultMetaInfo();
                 }
 
-                return new Label(metaInfo.getDescription());
+                return metaInfo;
+            }
+
+            @Override
+            public Component getComponent(GraphContainer container) {
+                return new Label(getMetaInfo().getDescription());
             }
 
             @Override
@@ -397,20 +401,16 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
 
             @Override
             public String getTitle(GraphContainer container) {
-                MetaInfo metaInfo = getGraphContainer().getBaseTopology().getMetaInfo();
-
-                if (Objects.isNull(metaInfo)) {
-                    metaInfo = new DefaultMetaInfo();
-                }
-
-                return metaInfo.getName();
+                return getMetaInfo().getName();
             }
 
             @Override
             public int getOrder() {
                 return 0;
             }
-        };        private Component wrap(InfoPanelItem item) {
+        };
+
+        private Component wrap(InfoPanelItem item) {
             return wrap(item.getComponent(m_graphContainer), item.getTitle(m_graphContainer));
         }
 
