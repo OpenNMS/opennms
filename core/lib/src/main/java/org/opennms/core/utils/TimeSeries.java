@@ -11,9 +11,12 @@ public abstract class TimeSeries {
 
     private static final String NEWTS_TIME_SERIES_STRATEGY_NAME = "newts";
 
+    private static final String EVALUETE_TIME_SERIES_STRATEGY_NAME = "evaluate";
+
     public static enum Strategy {
         RRD(RRD_TIME_SERIES_STRATEGY_NAME),
-        NEWTS(NEWTS_TIME_SERIES_STRATEGY_NAME);
+        NEWTS(NEWTS_TIME_SERIES_STRATEGY_NAME),
+        EVALUATE(EVALUETE_TIME_SERIES_STRATEGY_NAME);
 
         private final String m_name;
 

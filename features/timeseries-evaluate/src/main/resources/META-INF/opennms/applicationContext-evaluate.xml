@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" 
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xmlns:onmsgi="http://xmlns.opennms.org/xsd/spring/onms-osgi"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.0.xsd
+       http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-4.0.xsd
+       http://xmlns.opennms.org/xsd/spring/onms-osgi http://xmlns.opennms.org/xsd/spring/onms-osgi.xsd
+       ">
+
+  <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer" />
+
+  <bean id="evaluate.dump_stats_frequency" class="java.lang.Integer">
+        <constructor-arg type="java.lang.String" value="${org.opennms.evaluate.dump_stats_frequency:5}" />
+  </bean>
+
+  <bean id="metricRegistry" class="com.codahale.metrics.MetricRegistry" />
+
+  <bean id="resourceStorageDao" primary="true" class="org.opennms.netmgt.dao.support.EvaluateResourceStorageDao" />
+
+  <onmsgi:service interface="org.opennms.netmgt.dao.api.ResourceStorageDao" ref="resourceStorageDao" />
+
+  <bean id="persisterFactory" class="org.opennms.netmgt.collection.persistence.evaluate.EvaluatePersisterFactory" />
+
+  <onmsgi:service interface="org.opennms.netmgt.collection.api.PersisterFactory" ref="persisterFactory" />
+
+  <!-- Some beans still require an RrdStrategy -->
+  <bean id="rrdStrategy" primary="true" class="org.opennms.netmgt.rrd.NullRrdStrategy" />
+
+  <onmsgi:service ref="rrdStrategy" interface="org.opennms.netmgt.rrd.NullRrdStrategy" />
+
+</beans>
+
