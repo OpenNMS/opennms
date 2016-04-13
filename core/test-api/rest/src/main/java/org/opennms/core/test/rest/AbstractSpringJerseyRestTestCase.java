@@ -65,6 +65,7 @@ import javax.xml.bind.Unmarshaller;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.cxf.transport.servlet.CXFServlet;
+import org.codehaus.jackson.map.ObjectMapper;
 import org.junit.After;
 import org.junit.Before;
 import org.opennms.core.db.DataSourceFactory;
@@ -487,6 +488,20 @@ public abstract class AbstractSpringJerseyRestTestCase {
         }
         Thread.sleep(50);
         return xml;
+    }
+
+    protected <T> T getJsonObject(ObjectMapper mapper, String url, Map<String, String> parameterMap, int expectedStatus, Class<T> expectedClass) throws Exception {
+        MockHttpServletRequest request = createRequest(servletContext, GET, url, parameterMap, getUser(), getUserRoles());
+        MockHttpServletResponse response = createResponse();
+        request.addHeader(ACCEPT, MediaType.APPLICATION_JSON);
+        dispatch(request, response);
+        assertEquals(expectedStatus, response.getStatus());
+
+        System.err.printf("json: %s%n", response.getContentAsString());
+
+        InputStream in = new ByteArrayInputStream(response.getContentAsByteArray());
+
+        return mapper.readValue(in, expectedClass);
     }
 
     protected <T> T getXmlObject(JAXBContext context, String url, Map<String, String> parameterMap, int expectedStatus, Class<T> expectedClass) throws Exception {

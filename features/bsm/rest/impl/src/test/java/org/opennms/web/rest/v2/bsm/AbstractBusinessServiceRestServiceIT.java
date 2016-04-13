@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2015 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2015 The OpenNMS Group, Inc.
+ * Copyright (C) 2008-2016 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -31,7 +31,6 @@ package org.opennms.web.rest.v2.bsm;
 import static org.opennms.netmgt.bsm.test.BsmTestUtils.toRequestDto;
 import static org.opennms.netmgt.bsm.test.BsmTestUtils.toResponseDTO;
 import static org.opennms.netmgt.bsm.test.BsmTestUtils.toResponseDto;
-import static org.opennms.netmgt.bsm.test.BsmTestUtils.toXml;
 import static org.opennms.netmgt.bsm.test.BsmTestUtils.transform;
 import static org.opennms.netmgt.bsm.test.hierarchies.BambooTestHierarchy.BAMBOO_AGENT_CAROLINA_REDUCTION_KEY;
 import static org.opennms.netmgt.bsm.test.hierarchies.BambooTestHierarchy.BAMBOO_AGENT_DUKE_REDUCTION_KEY;
@@ -43,9 +42,6 @@ import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
-
-import javax.ws.rs.core.MediaType;
-import javax.xml.bind.JAXBContext;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -99,6 +95,12 @@ import org.springframework.transaction.annotation.Transactional;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
+/**
+ * Used to test the business services REST endpoints using both
+ * XML and JSON encoding.
+ *
+ * @author jesse
+ */
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @WebAppConfiguration
 @ContextConfiguration(locations = {
@@ -115,7 +117,7 @@ import com.google.common.collect.Sets;
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase(reuseDatabase = false)
 @Transactional
-public class BusinessServiceRestServiceIT extends AbstractSpringJerseyRestTestCase {
+public abstract class AbstractBusinessServiceRestServiceIT extends AbstractSpringJerseyRestTestCase {
 
     @Autowired
     private BusinessServiceDao m_businessServiceDao;
@@ -126,6 +128,12 @@ public class BusinessServiceRestServiceIT extends AbstractSpringJerseyRestTestCa
 
     @Autowired
     private MonitoredServiceDao monitoredServiceDao;
+
+    public abstract String getMediaType();
+
+    public abstract String marshal(Object o);
+
+    public abstract <T> T getAndUnmarshal(String url, int expectedStatus, Class<T> expectedClass) throws Exception;
 
     @Before
     public void setUp() throws Throwable {
@@ -140,7 +148,7 @@ public class BusinessServiceRestServiceIT extends AbstractSpringJerseyRestTestCa
         databasePopulator.resetDatabase(true);
     }
 
-    public BusinessServiceRestServiceIT() {
+    public AbstractBusinessServiceRestServiceIT() {
         super("file:../../../../opennms-webapp-rest/src/main/webapp/WEB-INF/applicationContext-cxf-rest-v2.xml");
     }
 
@@ -165,20 +173,20 @@ public class BusinessServiceRestServiceIT extends AbstractSpringJerseyRestTestCa
 
         // verify adding of not existing ip service is not possible
         edgeRequestDTO.setIpServiceId(-1);
-        sendData(POST, MediaType.APPLICATION_XML, buildIpServiceEdgeUrl(serviceId), toXml(edgeRequestDTO), 404);
+        sendData(POST, getMediaType(), buildIpServiceEdgeUrl(serviceId), marshal(edgeRequestDTO), 404);
 
         // verify adding of existing ip service is possible
         edgeRequestDTO.setIpServiceId(10);
-        sendData(POST, MediaType.APPLICATION_XML, buildIpServiceEdgeUrl(serviceId), toXml(edgeRequestDTO), 200);
+        sendData(POST, getMediaType(), buildIpServiceEdgeUrl(serviceId), marshal(edgeRequestDTO), 200);
         Assert.assertEquals(1, m_businessServiceDao.get(serviceId).getIpServiceEdges().size());
 
         // verify adding twice possible, but not modified
-        sendData(POST, MediaType.APPLICATION_XML, buildIpServiceEdgeUrl(serviceId), toXml(edgeRequestDTO), 304);
+        sendData(POST, getMediaType(), buildIpServiceEdgeUrl(serviceId), marshal(edgeRequestDTO), 304);
         Assert.assertEquals(1, m_businessServiceDao.get(serviceId).getIpServiceEdges().size());
 
         // verify adding of existing ip service is possible
         edgeRequestDTO.setIpServiceId(17);
-        sendData(POST, MediaType.APPLICATION_XML, buildIpServiceEdgeUrl(serviceId), toXml(edgeRequestDTO), 200);
+        sendData(POST, getMediaType(), buildIpServiceEdgeUrl(serviceId), marshal(edgeRequestDTO), 200);
         Assert.assertEquals(2, m_businessServiceDao.get(serviceId).getIpServiceEdges().size());
     }
 
@@ -203,15 +211,15 @@ public class BusinessServiceRestServiceIT extends AbstractSpringJerseyRestTestCa
 
         // verify adding of not existing ip parentEntity is not possible
         edgeRequestDTO.setChildId(-1L);
-        sendData(POST, MediaType.APPLICATION_XML, buildChildServiceEdgeUrl(parentServiceId), toXml(edgeRequestDTO), 404);
+        sendData(POST, getMediaType(), buildChildServiceEdgeUrl(parentServiceId), marshal(edgeRequestDTO), 404);
 
         // verify adding of existing ip parentEntity is possible
         edgeRequestDTO.setChildId(childServiceId);
-        sendData(POST, MediaType.APPLICATION_XML, buildChildServiceEdgeUrl(parentServiceId), toXml(edgeRequestDTO), 200);
+        sendData(POST, getMediaType(), buildChildServiceEdgeUrl(parentServiceId), marshal(edgeRequestDTO), 200);
         Assert.assertEquals(1, m_businessServiceDao.get(parentServiceId).getChildEdges().size());
 
         // verify adding twice possible, but not modified
-        sendData(POST, MediaType.APPLICATION_XML, buildChildServiceEdgeUrl(parentServiceId), toXml(edgeRequestDTO), 304);
+        sendData(POST, getMediaType(), buildChildServiceEdgeUrl(parentServiceId), marshal(edgeRequestDTO), 304);
         Assert.assertEquals(1, m_businessServiceDao.get(parentServiceId).getChildEdges().size());
     }
 
@@ -231,16 +239,16 @@ public class BusinessServiceRestServiceIT extends AbstractSpringJerseyRestTestCa
 
         // verify adding of existing ip service is possible
         edgeRequestDTO.setReductionKey("1st reduction key");
-        sendData(POST, MediaType.APPLICATION_XML, buildReductionKeyEdgeUrl(serviceId), toXml(edgeRequestDTO), 200);
+        sendData(POST, getMediaType(), buildReductionKeyEdgeUrl(serviceId), marshal(edgeRequestDTO), 200);
         Assert.assertEquals(1, m_businessServiceDao.get(serviceId).getReductionKeyEdges().size());
 
         // verify adding twice possible, but not modified
-        sendData(POST, MediaType.APPLICATION_XML, buildReductionKeyEdgeUrl(serviceId), toXml(edgeRequestDTO), 304);
+        sendData(POST, getMediaType(), buildReductionKeyEdgeUrl(serviceId), marshal(edgeRequestDTO), 304);
         Assert.assertEquals(1, m_businessServiceDao.get(serviceId).getReductionKeyEdges().size());
 
         // verify adding of existing ip service is possible
         edgeRequestDTO.setReductionKey("2nd reduction key");
-        sendData(POST, MediaType.APPLICATION_XML, buildReductionKeyEdgeUrl(serviceId), toXml(edgeRequestDTO), 200);
+        sendData(POST, getMediaType(), buildReductionKeyEdgeUrl(serviceId), marshal(edgeRequestDTO), 200);
         Assert.assertEquals(2, m_businessServiceDao.get(serviceId).getReductionKeyEdges().size());
     }
 
@@ -275,7 +283,7 @@ public class BusinessServiceRestServiceIT extends AbstractSpringJerseyRestTestCa
         List<Long> edgeIdList = parent.getEdges().stream().map(e -> e.getId()).sorted().collect(Collectors.toList());
 
         // verify removing not existing ip service not possible
-        sendData(DELETE, MediaType.APPLICATION_XML, buildEdgeUrl(parentServiceId, -1), "", 404);
+        sendData(DELETE, getMediaType(), buildEdgeUrl(parentServiceId, -1), "", 404);
 
         // verify removing of existing ip service is possible
         for (int i = 0; i < edgeIdList.size(); i++) {
@@ -283,11 +291,11 @@ public class BusinessServiceRestServiceIT extends AbstractSpringJerseyRestTestCa
             int edgesLeftCount = edgeIdList.size() - i - 1;
 
             // verify removing of existing ip service is possible
-            sendData(DELETE, MediaType.APPLICATION_XML, buildEdgeUrl(parentServiceId, edgeId), "", 200);
+            sendData(DELETE, getMediaType(), buildEdgeUrl(parentServiceId, edgeId), "", 200);
             Assert.assertEquals(edgesLeftCount, m_businessServiceDao.get(parentServiceId).getEdges().size());
 
             // verify removing twice possible, but not modified
-            sendData(DELETE, MediaType.APPLICATION_XML, buildEdgeUrl(parentServiceId, edgeId), "", 304);
+            sendData(DELETE, getMediaType(), buildEdgeUrl(parentServiceId, edgeId), "", 304);
             Assert.assertEquals(edgesLeftCount, m_businessServiceDao.get(parentServiceId).getEdges().size());
         }
     }
@@ -318,8 +326,7 @@ public class BusinessServiceRestServiceIT extends AbstractSpringJerseyRestTestCa
     }
 
     private List<ResourceLocation> listBusinessServices() throws Exception {
-        JAXBContext context = JAXBContext.newInstance(BusinessServiceListDTO.class, ResourceLocation.class);
-        List<ResourceLocation> services = getXmlObject(context, "/business-services", 200, BusinessServiceListDTO.class).getServices();
+        List<ResourceLocation> services = getAndUnmarshal("/business-services", 200, BusinessServiceListDTO.class).getServices();
         return services;
     }
 
@@ -351,8 +358,7 @@ public class BusinessServiceRestServiceIT extends AbstractSpringJerseyRestTestCa
         // Verify
         Assert.assertEquals(1, businessServices.size());
         BusinessServiceResponseDTO expectedResponseDTO = toResponseDto(bs);
-        BusinessServiceResponseDTO actualResponseDTO = getXmlObject(
-                JAXBContext.newInstance(BusinessServiceResponseDTO.class, ResourceLocation.class),
+        BusinessServiceResponseDTO actualResponseDTO = getAndUnmarshal(
                 buildServiceUrl(id),
                 200, BusinessServiceResponseDTO.class);
         Assert.assertEquals(expectedResponseDTO, actualResponseDTO);
@@ -370,9 +376,7 @@ public class BusinessServiceRestServiceIT extends AbstractSpringJerseyRestTestCa
                 .addReductionKey("reductionKey-3", new IdentityEntity())
                 .toEntity();
 
-        // TODO JSON cannot be deserialized by the rest service. Fix me.
-//        sendData(POST, MediaType.APPLICATION_JSON, "/business-services", toJson(toRequestDto(bs)), 201);
-        sendData(POST, MediaType.APPLICATION_XML, "/business-services", toXml(toRequestDto(bs)) , 201);
+        sendData(POST, getMediaType(), "/business-services", marshal(toRequestDto(bs)) , 201);
         Assert.assertEquals(1, m_businessServiceDao.countAll());
 
         for (BusinessServiceEntity eachEntity : m_businessServiceDao.findAll()) {
@@ -393,13 +397,13 @@ public class BusinessServiceRestServiceIT extends AbstractSpringJerseyRestTestCa
         }
         // save business services
         for (BusinessServiceEntity eachEntity : testData.getServices()) {
-            sendData(POST, MediaType.APPLICATION_XML, "/business-services", toXml(toRequestDto(eachEntity)), 201);
+            sendData(POST, getMediaType(), "/business-services", marshal(toRequestDto(eachEntity)), 201);
         }
         // set hierarchy
         BusinessServiceEntity parentEntity = findEntityByName("Parent")
                 .addChildServiceEdge(findEntityByName("Child 1"), new IdentityEntity(), 1)
                 .addChildServiceEdge(findEntityByName("Child 2"), new IdentityEntity(), 1);
-        sendData(PUT, MediaType.APPLICATION_XML, buildServiceUrl(parentEntity.getId()), toXml(toRequestDto(parentEntity)), 204);
+        sendData(PUT, getMediaType(), buildServiceUrl(parentEntity.getId()), marshal(toRequestDto(parentEntity)), 204);
 
         // Verify
         Assert.assertEquals(3, m_businessServiceDao.countAll());
@@ -428,7 +432,7 @@ public class BusinessServiceRestServiceIT extends AbstractSpringJerseyRestTestCa
 
         // save business services to database
         for (BusinessServiceEntity eachEntity : testData.getServices()) {
-            sendData(POST, MediaType.APPLICATION_XML, "/business-services", toXml(toRequestDto(eachEntity)), 201);
+            sendData(POST, getMediaType(), "/business-services", marshal(toRequestDto(eachEntity)), 201);
         }
 
         // apply ids (we created objects via rest)
@@ -437,7 +441,7 @@ public class BusinessServiceRestServiceIT extends AbstractSpringJerseyRestTestCa
         // set hierarchy
         for (Map.Entry<BusinessServiceEntity, Set<BusinessServiceEdgeEntity>> eachEntry : edgeMap.entrySet()) {
             eachEntry.getKey().setEdges(eachEntry.getValue());
-            sendData(PUT, MediaType.APPLICATION_XML, buildServiceUrl(eachEntry.getKey().getId()), toXml(toRequestDto(eachEntry.getKey())), 204);
+            sendData(PUT, getMediaType(), buildServiceUrl(eachEntry.getKey().getId()), marshal(toRequestDto(eachEntry.getKey())), 204);
         }
 
         // verify
@@ -473,8 +477,7 @@ public class BusinessServiceRestServiceIT extends AbstractSpringJerseyRestTestCa
      * @throws Exception
      */
     private BusinessServiceResponseDTO verifyResponse(BusinessServiceEntity expectedEntity) throws Exception {
-        final BusinessServiceResponseDTO responseDTO = getXmlObject(
-                JAXBContext.newInstance(BusinessServiceResponseDTO.class),
+        final BusinessServiceResponseDTO responseDTO = getAndUnmarshal(
                 buildServiceUrl(expectedEntity.getId()),
                 200,
                 BusinessServiceResponseDTO.class);
@@ -539,10 +542,7 @@ public class BusinessServiceRestServiceIT extends AbstractSpringJerseyRestTestCa
         requestDTO.getAttributes().put("key", "value");
         requestDTO.getReductionKeys().clear();
         requestDTO.addReductionKey("key1updated", new FunctionsManager().getMapFunctionDTO(new Ignore()), Edge.DEFAULT_WEIGHT);
-
-        // TODO JSON cannot be de-serialized by the rest service. Fix me.
-//        sendData(PUT, MediaType.APPLICATION_JSON, "/business-services/" + serviceId, toJson(requestDTO), 204);
-        sendData(PUT, MediaType.APPLICATION_XML, "/business-services/" + serviceId, toXml(requestDTO), 204);
+        sendData(PUT, getMediaType(), "/business-services/" + serviceId, marshal(requestDTO), 204);
 
         // Reload from database and verify changes
         bs = m_businessServiceDao.get(serviceId);
@@ -558,17 +558,17 @@ public class BusinessServiceRestServiceIT extends AbstractSpringJerseyRestTestCa
 
     @Test
     public void verifyListFunctions() throws Exception {
-        List<FunctionMetaDTO> mapFunctions = getXmlObject(JAXBContext.newInstance(FunctionMetaListDTO.class), "/business-services/functions/map", 200, FunctionMetaListDTO.class).getFunctions();
+        List<FunctionMetaDTO> mapFunctions = getAndUnmarshal("/business-services/functions/map", 200, FunctionMetaListDTO.class).getFunctions();
         Assert.assertEquals(5, mapFunctions.size());
         for (FunctionMetaDTO eachFunction : mapFunctions) {
-            FunctionMetaDTO manuallyRead = getXmlObject(JAXBContext.newInstance(FunctionMetaDTO.class), "/business-services/functions/map/" + eachFunction.getName(), 200, FunctionMetaDTO.class);
+            FunctionMetaDTO manuallyRead = getAndUnmarshal("/business-services/functions/map/" + eachFunction.getName(), 200, FunctionMetaDTO.class);
             Assert.assertEquals(eachFunction, manuallyRead);
         }
 
-        List<FunctionMetaDTO> reduceFunctions = getXmlObject(JAXBContext.newInstance(FunctionMetaListDTO.class), "/business-services/functions/reduce", 200, FunctionMetaListDTO.class).getFunctions();
+        List<FunctionMetaDTO> reduceFunctions = getAndUnmarshal("/business-services/functions/reduce", 200, FunctionMetaListDTO.class).getFunctions();
         Assert.assertEquals(3, reduceFunctions.size());
         for (FunctionMetaDTO eachFunction : reduceFunctions) {
-            FunctionMetaDTO manuallyRead = getXmlObject(JAXBContext.newInstance(FunctionMetaDTO.class), "/business-services/functions/reduce/" + eachFunction.getName(), 200, FunctionMetaDTO.class);
+            FunctionMetaDTO manuallyRead = getAndUnmarshal("/business-services/functions/reduce/" + eachFunction.getName(), 200, FunctionMetaDTO.class);
             Assert.assertEquals(eachFunction, manuallyRead);
         }
     }
@@ -579,7 +579,7 @@ public class BusinessServiceRestServiceIT extends AbstractSpringJerseyRestTestCa
                 .name("Dummy Service")
                 .reduceFunction(new HighestSeverityAboveEntity(Status.CRITICAL.ordinal()))
                 .toEntity();
-        sendData(POST, MediaType.APPLICATION_XML, "/business-services", toXml(toRequestDto(entity)), 201);
+        sendData(POST, getMediaType(), "/business-services", marshal(toRequestDto(entity)), 201);
 
         entity.setId(findEntityByName("Dummy Service").getId());
 
@@ -594,7 +594,7 @@ public class BusinessServiceRestServiceIT extends AbstractSpringJerseyRestTestCa
                 .reduceFunction(new HighestSeverityEntity())
                 .toEntity();
 
-        sendData(POST, MediaType.APPLICATION_XML, "/business-services", toXml(toRequestDto(entity)), 201);
+        sendData(POST, getMediaType(), "/business-services", marshal(toRequestDto(entity)), 201);
         BusinessServiceResponseDTO responseDTO = verifyResponse(findEntityByName("Some Custom Name"));
         Assert.assertEquals(1, responseDTO.getReductionKeys().size());
         Assert.assertEquals("so friendly", responseDTO.getReductionKeys().get(0).getFriendlyName());
