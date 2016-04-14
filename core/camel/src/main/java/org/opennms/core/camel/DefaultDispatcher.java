@@ -30,7 +30,10 @@ package org.opennms.core.camel;
 
 import org.apache.camel.InOnly;
 
-@InOnly
+/**
+ * Classes that extend this dispatcher should support an interface that is
+ * annotated {@link InOnly} so that operations can be performed asynchronously.
+ */
 public class DefaultDispatcher {
 
 	private final String m_endpointUri;
