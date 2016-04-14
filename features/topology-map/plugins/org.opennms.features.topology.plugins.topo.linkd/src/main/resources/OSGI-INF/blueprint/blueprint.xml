@@ -28,7 +28,10 @@ xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0
     <reference id="filterManager" interface="org.opennms.netmgt.model.FilterManager" availability="mandatory" />
     <reference id="bridgeBridgeLinkDao" interface="org.opennms.netmgt.dao.api.BridgeBridgeLinkDao" availability="mandatory"/>
     <reference id="bridgeMacLinkDao" interface="org.opennms.netmgt.dao.api.BridgeMacLinkDao" availability="mandatory" />
+    <reference id="bridgeTopologyDao" interface="org.opennms.netmgt.dao.api.BridgeTopologyDao" availability="mandatory" />
     <reference id="cdpLinkDao" interface="org.opennms.netmgt.dao.api.CdpLinkDao" availability="mandatory"/>
+    <reference id="cdpElementDao" interface="org.opennms.netmgt.dao.api.CdpElementDao" availability="mandatory"/>
+    <reference id="ipNetToMediaDao" interface="org.opennms.netmgt.dao.api.IpNetToMediaDao" availability="mandatory"/>
 
     <bean id="enlinkdMetaInfo" class="org.opennms.features.topology.api.topo.DefaultMetaInfo">
         <property name="name" value="Enhanced Linkd Topology Provider"/>
@@ -57,8 +60,11 @@ xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0
         <property name="linkdHopCriteriaFactory" ref="linkdHopCriteriaFactory" />
         <property name="bridgeMacLinkDao" ref="bridgeMacLinkDao" />
         <property name="bridgeBridgeLinkDao" ref="bridgeBridgeLinkDao" />
+        <property name="bridgeTopologyDao" ref="bridgeTopologyDao" />
         <property name="cdpLinkDao" ref="cdpLinkDao"/>
         <property name="metaInfo" ref="enlinkdMetaInfo"/>
+        <property name="cdpElementDao" ref="cdpElementDao"/>
+        <property name="ipNetToMediaDao" ref="ipNetToMediaDao"/>
     </bean>
 
     <!--
