@@ -1,0 +1,666 @@
+2016-04-13 19:42:42,044 INFO  [main] o.o.c.t.OpenNMSJUnit4ClassRunner: Failed while attempting to load default unit test listener class org.opennms.core.test.db.TemporaryDatabaseExecutionListener: org.opennms.core.test.db.TemporaryDatabaseExecutionListener
+2016-04-13 19:42:42,054 INFO  [main] o.o.c.t.OpenNMSJUnit4ClassRunner: Failed while attempting to load default unit test listener class org.opennms.core.test.snmp.JUnitSnmpAgentExecutionListener: org.opennms.core.test.snmp.JUnitSnmpAgentExecutionListener
+2016-04-13 19:42:42,056 INFO  [main] o.o.c.t.OpenNMSJUnit4ClassRunner: Failed while attempting to load default unit test listener class org.opennms.core.test.dns.JUnitDNSServerExecutionListener: org.opennms.core.test.dns.JUnitDNSServerExecutionListener
+2016-04-13 19:42:42,056 INFO  [main] o.o.c.t.OpenNMSJUnit4ClassRunner: Failed while attempting to load default unit test listener class org.opennms.netmgt.collectd.JUnitCollectorExecutionListener: org.opennms.netmgt.collectd.JUnitCollectorExecutionListener
+2016-04-13 19:42:42,062 INFO  [main] o.o.c.t.OpenNMSJUnit4ClassRunner: Failed while attempting to load default unit test listener class org.opennms.core.test.db.TemporaryDatabaseExecutionListener: org.opennms.core.test.db.TemporaryDatabaseExecutionListener
+2016-04-13 19:42:42,062 INFO  [main] o.o.c.t.OpenNMSJUnit4ClassRunner: Failed while attempting to load default unit test listener class org.opennms.core.test.snmp.JUnitSnmpAgentExecutionListener: org.opennms.core.test.snmp.JUnitSnmpAgentExecutionListener
+2016-04-13 19:42:42,063 INFO  [main] o.o.c.t.OpenNMSJUnit4ClassRunner: Failed while attempting to load default unit test listener class org.opennms.core.test.dns.JUnitDNSServerExecutionListener: org.opennms.core.test.dns.JUnitDNSServerExecutionListener
+2016-04-13 19:42:42,063 INFO  [main] o.o.c.t.OpenNMSJUnit4ClassRunner: Failed while attempting to load default unit test listener class org.opennms.netmgt.collectd.JUnitCollectorExecutionListener: org.opennms.netmgt.collectd.JUnitCollectorExecutionListener
+2016-04-13 19:42:42,163 INFO  [main] o.s.b.f.x.XmlBeanDefinitionReader: Loading XML bean definitions from class path resource [applicationContext-client.xml]
+2016-04-13 19:42:42,379 INFO  [main] o.s.c.s.GenericApplicationContext: Refreshing org.springframework.context.support.GenericApplicationContext@5f16132a: startup date [Wed Apr 13 19:42:42 EDT 2016]; root of context hierarchy
+2016-04-13 19:42:42,446 INFO  [main] o.s.b.f.a.AutowiredAnnotationBeanPostProcessor: JSR-330 'javax.inject.Inject' annotation found and supported for autowiring
+2016-04-13 19:42:42,586 DEBUG [main] o.o.c.t.OpenNMSAbstractTestExecutionListener: starting test method public void org.opennms.poller.remote.SimpleBackEndTest.testBackend() throws java.lang.Exception
+2016-04-13 19:42:42,603 DEBUG [main] o.e.j.u.log: Logging to org.apache.logging.slf4j.Log4jLogger@2e2ff723 via org.eclipse.jetty.util.log.Slf4jLog
+2016-04-13 19:42:42,617 DEBUG [main] o.e.j.u.c.Container: Container org.eclipse.jetty.server.Server@62727399 + SelectChannelConnector@0.0.0.0:9162 as connector
+2016-04-13 19:42:42,694 DEBUG [main] o.e.j.u.c.Container: Container o.e.j.w.WebAppContext{/,null},src/test/resources/simple-test-webapp + org.eclipse.jetty.servlet.ErrorPageErrorHandler@2cc3ad05 as error
+2016-04-13 19:42:42,694 DEBUG [main] o.e.j.u.c.Container: Container org.eclipse.jetty.server.handler.HandlerList@710b18a6 + o.e.j.w.WebAppContext{/,null},src/test/resources/simple-test-webapp as handler
+2016-04-13 19:42:42,694 DEBUG [main] o.e.j.u.c.Container: Container org.eclipse.jetty.server.handler.HandlerList@710b18a6 + org.eclipse.jetty.server.handler.ResourceHandler@119020fb as handler
+2016-04-13 19:42:42,694 DEBUG [main] o.e.j.u.c.Container: Container org.eclipse.jetty.server.handler.HandlerList@710b18a6 + org.eclipse.jetty.server.handler.DefaultHandler@3d9f6567 as handler
+2016-04-13 19:42:42,694 DEBUG [main] o.e.j.u.c.Container: Container o.e.j.s.h.ContextHandler{/,file:/Users/agalue/Development/opennms/git/develop/features/remote-poller/target/test-classes/,localhost} + org.eclipse.jetty.server.handler.HandlerList@710b18a6 as handler
+2016-04-13 19:42:42,694 DEBUG [main] o.e.j.u.c.Container: Container org.eclipse.jetty.server.Server@62727399 + o.e.j.s.h.ContextHandler{/,file:/Users/agalue/Development/opennms/git/develop/features/remote-poller/target/test-classes/,localhost} as handler
+2016-04-13 19:42:42,695 DEBUG [main] o.o.c.t.h.JUnitServer: starting jetty on port 9162
+2016-04-13 19:42:42,695 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: starting org.eclipse.jetty.server.Server@62727399
+2016-04-13 19:42:42,695 INFO  [main] o.e.j.s.Server: jetty-8.1.10.v20130312
+2016-04-13 19:42:42,705 DEBUG [main] o.e.j.u.c.Container: Container org.eclipse.jetty.server.Server@62727399 + qtp777341499{8<=0<=0/254,-1} as threadpool
+2016-04-13 19:42:42,706 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: starting o.e.j.s.h.ContextHandler{/,file:/Users/agalue/Development/opennms/git/develop/features/remote-poller/target/test-classes/,localhost}
+2016-04-13 19:42:42,706 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: starting org.eclipse.jetty.server.handler.HandlerList@710b18a6
+2016-04-13 19:42:42,707 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: starting o.e.j.w.WebAppContext{/,null},src/test/resources/simple-test-webapp
+2016-04-13 19:42:42,810 DEBUG [main] o.e.j.s.ServletHandler: filterNameMap={}
+2016-04-13 19:42:42,810 DEBUG [main] o.e.j.s.ServletHandler: pathFilters=null
+2016-04-13 19:42:42,810 DEBUG [main] o.e.j.s.ServletHandler: servletFilterMap=null
+2016-04-13 19:42:42,810 DEBUG [main] o.e.j.s.ServletHandler: servletPathMap={/=default}
+2016-04-13 19:42:42,810 DEBUG [main] o.e.j.s.ServletHandler: servletNameMap={default=default}
+2016-04-13 19:42:42,820 DEBUG [main] o.e.j.s.ServletHandler: filterNameMap={}
+2016-04-13 19:42:42,821 DEBUG [main] o.e.j.s.ServletHandler: pathFilters=null
+2016-04-13 19:42:42,821 DEBUG [main] o.e.j.s.ServletHandler: servletFilterMap=null
+2016-04-13 19:42:42,821 DEBUG [main] o.e.j.s.ServletHandler: servletPathMap={*.jspx=jsp, *.JSPX=jsp, *.jsp=jsp, *.JSPF=jsp, *.jspf=jsp, *.JSP=jsp, *.xsp=jsp, *.XSP=jsp, /=default}
+2016-04-13 19:42:42,821 DEBUG [main] o.e.j.s.ServletHandler: servletNameMap={default=default, jsp=jsp}
+2016-04-13 19:42:42,842 DEBUG [main] o.e.j.s.ServletHandler: filterNameMap={}
+2016-04-13 19:42:42,843 DEBUG [main] o.e.j.s.ServletHandler: pathFilters=null
+2016-04-13 19:42:42,843 DEBUG [main] o.e.j.s.ServletHandler: servletFilterMap=null
+2016-04-13 19:42:42,843 DEBUG [main] o.e.j.s.ServletHandler: servletPathMap={*.jspx=jsp, *.JSPX=jsp, *.jsp=jsp, *.JSPF=jsp, *.jspf=jsp, *.JSP=jsp, *.xsp=jsp, *.XSP=jsp, /simpleBackEnd=simpleBackEnd, /=default}
+2016-04-13 19:42:42,843 DEBUG [main] o.e.j.s.ServletHandler: servletNameMap={default=default, simpleBackEnd=simpleBackEnd, jsp=jsp}
+2016-04-13 19:42:42,847 DEBUG [main] o.e.j.u.c.Container: Container org.eclipse.jetty.servlet.ServletHandler@57fd91c9 + default as servlet
+2016-04-13 19:42:42,851 DEBUG [main] o.e.j.u.c.Container: Container org.eclipse.jetty.servlet.ServletHandler@57fd91c9 + jsp as servlet
+2016-04-13 19:42:42,851 DEBUG [main] o.e.j.u.c.Container: Container org.eclipse.jetty.servlet.ServletHandler@57fd91c9 + simpleBackEnd as servlet
+2016-04-13 19:42:42,852 DEBUG [main] o.e.j.u.c.Container: Container org.eclipse.jetty.servlet.ServletHandler@57fd91c9 + [/]=>default as servletMapping
+2016-04-13 19:42:42,852 DEBUG [main] o.e.j.u.c.Container: Container org.eclipse.jetty.servlet.ServletHandler@57fd91c9 + [*.jsp, *.jspf, *.jspx, *.xsp, *.JSP, *.JSPF, *.JSPX, *.XSP]=>jsp as servletMapping
+2016-04-13 19:42:42,852 DEBUG [main] o.e.j.u.c.Container: Container org.eclipse.jetty.servlet.ServletHandler@57fd91c9 + [/simpleBackEnd]=>simpleBackEnd as servletMapping
+2016-04-13 19:42:42,852 DEBUG [main] o.e.j.u.c.Container: Container org.eclipse.jetty.security.ConstraintSecurityHandler@6cfcd46d + org.eclipse.jetty.servlet.ServletHandler@57fd91c9 as handler
+2016-04-13 19:42:42,853 DEBUG [main] o.e.j.u.c.Container: Container org.eclipse.jetty.server.session.SessionHandler@52045dbe + org.eclipse.jetty.security.ConstraintSecurityHandler@6cfcd46d as handler
+2016-04-13 19:42:42,853 DEBUG [main] o.e.j.u.c.Container: Container org.eclipse.jetty.server.session.SessionHandler@52045dbe + org.eclipse.jetty.server.session.HashSessionManager@674658f7 as sessionManager
+2016-04-13 19:42:42,854 DEBUG [main] o.e.j.u.c.Container: Container o.e.j.w.WebAppContext{/,file:/Users/agalue/Development/opennms/git/develop/features/remote-poller/src/test/resources/simple-test-webapp/},src/test/resources/simple-test-webapp + org.eclipse.jetty.server.session.SessionHandler@52045dbe as handler
+2016-04-13 19:42:42,854 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: starting org.eclipse.jetty.server.session.SessionHandler@52045dbe
+2016-04-13 19:42:42,854 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: starting org.eclipse.jetty.server.session.HashSessionManager@674658f7
+2016-04-13 19:42:42,859 DEBUG [main] o.e.j.u.c.Container: Container org.eclipse.jetty.server.Server@62727399 + org.eclipse.jetty.server.session.HashSessionIdManager@58c34bb3 as sessionIdManager
+2016-04-13 19:42:42,860 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: starting org.eclipse.jetty.server.session.HashSessionIdManager@58c34bb3
+2016-04-13 19:42:42,861 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: STARTED org.eclipse.jetty.server.session.HashSessionIdManager@58c34bb3
+2016-04-13 19:42:42,862 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: STARTED org.eclipse.jetty.server.session.HashSessionManager@674658f7
+2016-04-13 19:42:42,863 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: starting org.eclipse.jetty.security.ConstraintSecurityHandler@6cfcd46d
+2016-04-13 19:42:42,867 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: starting org.eclipse.jetty.servlet.ServletHandler@57fd91c9
+2016-04-13 19:42:42,868 DEBUG [main] o.e.j.s.ServletHandler: filterNameMap={}
+2016-04-13 19:42:42,868 DEBUG [main] o.e.j.s.ServletHandler: pathFilters=null
+2016-04-13 19:42:42,868 DEBUG [main] o.e.j.s.ServletHandler: servletFilterMap=null
+2016-04-13 19:42:42,868 DEBUG [main] o.e.j.s.ServletHandler: servletPathMap={*.jspx=jsp, *.JSPX=jsp, *.jsp=jsp, *.JSPF=jsp, *.jspf=jsp, *.JSP=jsp, *.xsp=jsp, *.XSP=jsp, /simpleBackEnd=simpleBackEnd, /=default}
+2016-04-13 19:42:42,869 DEBUG [main] o.e.j.s.ServletHandler: servletNameMap={default=default, simpleBackEnd=simpleBackEnd, jsp=jsp}
+2016-04-13 19:42:42,869 DEBUG [main] o.e.j.s.h.AbstractHandler: starting org.eclipse.jetty.servlet.ServletHandler@57fd91c9
+2016-04-13 19:42:42,869 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: STARTED org.eclipse.jetty.servlet.ServletHandler@57fd91c9
+2016-04-13 19:42:42,869 DEBUG [main] o.e.j.s.h.AbstractHandler: starting org.eclipse.jetty.security.ConstraintSecurityHandler@6cfcd46d
+2016-04-13 19:42:42,869 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: STARTED org.eclipse.jetty.security.ConstraintSecurityHandler@6cfcd46d
+2016-04-13 19:42:42,869 DEBUG [main] o.e.j.s.h.AbstractHandler: starting org.eclipse.jetty.server.session.SessionHandler@52045dbe
+2016-04-13 19:42:42,870 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: STARTED org.eclipse.jetty.server.session.SessionHandler@52045dbe
+2016-04-13 19:42:42,870 DEBUG [main] o.e.j.s.h.AbstractHandler: starting o.e.j.w.WebAppContext{/,file:/Users/agalue/Development/opennms/git/develop/features/remote-poller/src/test/resources/simple-test-webapp/},src/test/resources/simple-test-webapp
+2016-04-13 19:42:42,870 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: starting org.eclipse.jetty.servlet.ErrorPageErrorHandler@2cc3ad05
+2016-04-13 19:42:42,870 DEBUG [main] o.e.j.s.h.AbstractHandler: starting org.eclipse.jetty.servlet.ErrorPageErrorHandler@2cc3ad05
+2016-04-13 19:42:42,870 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: STARTED org.eclipse.jetty.servlet.ErrorPageErrorHandler@2cc3ad05
+2016-04-13 19:42:42,872 INFO  [main] /: Initializing Spring root WebApplicationContext
+2016-04-13 19:42:42,872 INFO  [main] o.s.w.c.ContextLoader: Root WebApplicationContext: initialization started
+2016-04-13 19:42:42,899 INFO  [main] o.s.w.c.s.XmlWebApplicationContext: Refreshing Root WebApplicationContext: startup date [Wed Apr 13 19:42:42 EDT 2016]; root of context hierarchy
+2016-04-13 19:42:42,900 INFO  [main] o.s.b.f.x.XmlBeanDefinitionReader: Loading XML bean definitions from ServletContext resource [/WEB-INF/applicationContext-exportedSimpleBackEnd.xml]
+2016-04-13 19:42:42,958 INFO  [main] o.s.w.c.ContextLoader: Root WebApplicationContext: initialization completed in 86 ms
+2016-04-13 19:42:42,958 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: starting jsp
+2016-04-13 19:42:42,958 DEBUG [main] o.e.j.s.Holder: Holding class org.apache.jasper.servlet.JspServlet
+2016-04-13 19:42:43,001 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: STARTED jsp
+2016-04-13 19:42:43,001 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: starting default
+2016-04-13 19:42:43,003 DEBUG [main] o.e.j.s.Holder: Holding class org.eclipse.jetty.servlet.DefaultServlet
+2016-04-13 19:42:43,007 DEBUG [main] o.e.j.s.DefaultServlet: resource base = null
+2016-04-13 19:42:43,008 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: STARTED default
+2016-04-13 19:42:43,008 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: starting simpleBackEnd
+2016-04-13 19:42:43,009 DEBUG [main] o.e.j.s.Holder: Holding class org.springframework.web.context.support.HttpRequestHandlerServlet
+2016-04-13 19:42:43,009 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: STARTED simpleBackEnd
+2016-04-13 19:42:43,010 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: STARTED o.e.j.w.WebAppContext{/,file:/Users/agalue/Development/opennms/git/develop/features/remote-poller/src/test/resources/simple-test-webapp/},src/test/resources/simple-test-webapp
+2016-04-13 19:42:43,010 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: starting org.eclipse.jetty.server.handler.ResourceHandler@119020fb
+2016-04-13 19:42:43,010 DEBUG [main] o.e.j.s.h.AbstractHandler: starting org.eclipse.jetty.server.handler.ResourceHandler@119020fb
+2016-04-13 19:42:43,010 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: STARTED org.eclipse.jetty.server.handler.ResourceHandler@119020fb
+2016-04-13 19:42:43,010 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: starting org.eclipse.jetty.server.handler.DefaultHandler@3d9f6567
+2016-04-13 19:42:43,010 DEBUG [main] o.e.j.s.h.AbstractHandler: starting org.eclipse.jetty.server.handler.DefaultHandler@3d9f6567
+2016-04-13 19:42:43,011 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: STARTED org.eclipse.jetty.server.handler.DefaultHandler@3d9f6567
+2016-04-13 19:42:43,011 DEBUG [main] o.e.j.s.h.AbstractHandler: starting org.eclipse.jetty.server.handler.HandlerList@710b18a6
+2016-04-13 19:42:43,011 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: STARTED org.eclipse.jetty.server.handler.HandlerList@710b18a6
+2016-04-13 19:42:43,011 DEBUG [main] o.e.j.s.h.AbstractHandler: starting o.e.j.s.h.ContextHandler{/,file:/Users/agalue/Development/opennms/git/develop/features/remote-poller/target/test-classes/,localhost}
+2016-04-13 19:42:43,011 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: STARTED o.e.j.s.h.ContextHandler{/,file:/Users/agalue/Development/opennms/git/develop/features/remote-poller/target/test-classes/,localhost}
+2016-04-13 19:42:43,012 DEBUG [main] o.e.j.s.h.AbstractHandler: starting org.eclipse.jetty.server.Server@62727399
+2016-04-13 19:42:43,012 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: starting qtp777341499{8<=0<=0/254,-1}
+2016-04-13 19:42:43,017 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: STARTED qtp777341499{8<=7<=8/254,0}
+2016-04-13 19:42:43,018 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: starting SelectChannelConnector@0.0.0.0:9162
+2016-04-13 19:42:43,031 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: starting null/null
+2016-04-13 19:42:43,034 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: STARTED PooledBuffers [0/1024@6144,0/1024@16384,0/1024@-]/PooledBuffers [0/1024@6144,0/1024@32768,0/1024@-]
+2016-04-13 19:42:43,034 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: starting org.eclipse.jetty.server.nio.SelectChannelConnector$ConnectorSelectorManager@426b6a74
+2016-04-13 19:42:43,042 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: STARTED org.eclipse.jetty.server.nio.SelectChannelConnector$ConnectorSelectorManager@426b6a74
+2016-04-13 19:42:43,042 DEBUG [qtp777341499-14 Selector0] o.e.j.i.nio: Starting Thread[qtp777341499-14 Selector0,5,main] on org.eclipse.jetty.io.nio.SelectorManager$1@23f75087
+2016-04-13 19:42:43,042 DEBUG [qtp777341499-15 Selector1] o.e.j.i.nio: Starting Thread[qtp777341499-15 Selector1,5,main] on org.eclipse.jetty.io.nio.SelectorManager$1@6457f08d
+2016-04-13 19:42:43,043 INFO  [main] o.e.j.s.AbstractConnector: Started SelectChannelConnector@0.0.0.0:9162
+2016-04-13 19:42:43,044 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: STARTED SelectChannelConnector@0.0.0.0:9162
+2016-04-13 19:42:43,044 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: STARTED org.eclipse.jetty.server.Server@62727399
+2016-04-13 19:42:43,181 DEBUG [qtp777341499-14 Selector0] o.e.j.i.nio: created SCEP@3bbeb302{l(/127.0.0.1:51213)<->r(/127.0.0.1:9162),d=false,open=true,ishut=false,oshut=false,rb=false,wb=false,w=true,i=0}-{AsyncHttpConnection@31204ed4,g=HttpGenerator{s=0,h=-1,b=-1,c=-1},p=HttpParser{s=-14,l=0,c=0},r=0}
+2016-04-13 19:42:43,195 DEBUG [qtp777341499-18] o.e.j.h.HttpParser: filled 565/565
+2016-04-13 19:42:43,200 DEBUG [qtp777341499-18 - /simpleBackEnd] o.e.j.s.Server: REQUEST /simpleBackEnd on AsyncHttpConnection@31204ed4,g=HttpGenerator{s=0,h=-1,b=-1,c=-1},p=HttpParser{s=2,l=3,c=302},r=1
+2016-04-13 19:42:43,200 DEBUG [qtp777341499-18 - /simpleBackEnd] o.e.j.s.h.ContextHandler: scope null||/simpleBackEnd @ o.e.j.s.h.ContextHandler{/,file:/Users/agalue/Development/opennms/git/develop/features/remote-poller/target/test-classes/,localhost}
+2016-04-13 19:42:43,201 DEBUG [qtp777341499-18 - /simpleBackEnd] o.e.j.s.h.ContextHandler: context=||/simpleBackEnd @ o.e.j.s.h.ContextHandler{/,file:/Users/agalue/Development/opennms/git/develop/features/remote-poller/target/test-classes/,localhost}
+2016-04-13 19:42:43,201 DEBUG [qtp777341499-18 - /simpleBackEnd] o.e.j.s.h.ContextHandler: scope ||/simpleBackEnd @ o.e.j.w.WebAppContext{/,file:/Users/agalue/Development/opennms/git/develop/features/remote-poller/src/test/resources/simple-test-webapp/},src/test/resources/simple-test-webapp
+2016-04-13 19:42:43,201 DEBUG [qtp777341499-18 - /simpleBackEnd] o.e.j.s.h.ContextHandler: context=||/simpleBackEnd @ o.e.j.w.WebAppContext{/,file:/Users/agalue/Development/opennms/git/develop/features/remote-poller/src/test/resources/simple-test-webapp/},src/test/resources/simple-test-webapp
+2016-04-13 19:42:43,203 DEBUG [qtp777341499-18 - /simpleBackEnd] o.e.j.s.session: sessionManager=org.eclipse.jetty.server.session.HashSessionManager@674658f7
+2016-04-13 19:42:43,203 DEBUG [qtp777341499-18 - /simpleBackEnd] o.e.j.s.session: session=null
+2016-04-13 19:42:43,203 DEBUG [qtp777341499-18 - /simpleBackEnd] o.e.j.s.ServletHandler: servlet |/simpleBackEnd|null -> simpleBackEnd
+2016-04-13 19:42:43,206 DEBUG [qtp777341499-18 - /simpleBackEnd] o.e.j.s.ServletHandler: chain=null
+2016-04-13 19:42:43,215 DEBUG [qtp777341499-18 - /simpleBackEnd] o.e.j.s.Server: RESPONSE /simpleBackEnd  200 handled=true
+2016-04-13 19:42:43,221 DEBUG [qtp777341499-18] o.e.j.s.AsyncHttpConnection: Enabled read interest SCEP@3bbeb302{l(/127.0.0.1:51213)<->r(/127.0.0.1:9162),d=true,open=true,ishut=false,oshut=false,rb=false,wb=false,w=true,i=0r}-{AsyncHttpConnection@31204ed4,g=HttpGenerator{s=4,h=0,b=0,c=-1},p=HttpParser{s=0,l=3,c=302},r=1}
+2016-04-13 19:42:43,222 DEBUG [qtp777341499-18] o.e.j.h.HttpParser: filled 0/0
+2016-04-13 19:42:43,225 DEBUG [qtp777341499-19] o.e.j.h.HttpParser: filled 565/565
+2016-04-13 19:42:43,225 DEBUG [qtp777341499-19 - /simpleBackEnd] o.e.j.s.Server: REQUEST /simpleBackEnd on AsyncHttpConnection@31204ed4,g=HttpGenerator{s=0,h=-1,b=-1,c=-1},p=HttpParser{s=2,l=3,c=302},r=2
+2016-04-13 19:42:43,226 DEBUG [qtp777341499-19 - /simpleBackEnd] o.e.j.s.h.ContextHandler: scope null||/simpleBackEnd @ o.e.j.s.h.ContextHandler{/,file:/Users/agalue/Development/opennms/git/develop/features/remote-poller/target/test-classes/,localhost}
+2016-04-13 19:42:43,226 DEBUG [qtp777341499-19 - /simpleBackEnd] o.e.j.s.h.ContextHandler: context=||/simpleBackEnd @ o.e.j.s.h.ContextHandler{/,file:/Users/agalue/Development/opennms/git/develop/features/remote-poller/target/test-classes/,localhost}
+2016-04-13 19:42:43,226 DEBUG [qtp777341499-19 - /simpleBackEnd] o.e.j.s.h.ContextHandler: scope ||/simpleBackEnd @ o.e.j.w.WebAppContext{/,file:/Users/agalue/Development/opennms/git/develop/features/remote-poller/src/test/resources/simple-test-webapp/},src/test/resources/simple-test-webapp
+2016-04-13 19:42:43,226 DEBUG [qtp777341499-19 - /simpleBackEnd] o.e.j.s.h.ContextHandler: context=||/simpleBackEnd @ o.e.j.w.WebAppContext{/,file:/Users/agalue/Development/opennms/git/develop/features/remote-poller/src/test/resources/simple-test-webapp/},src/test/resources/simple-test-webapp
+2016-04-13 19:42:43,226 DEBUG [qtp777341499-19 - /simpleBackEnd] o.e.j.s.session: sessionManager=org.eclipse.jetty.server.session.HashSessionManager@674658f7
+2016-04-13 19:42:43,226 DEBUG [qtp777341499-19 - /simpleBackEnd] o.e.j.s.session: session=null
+2016-04-13 19:42:43,226 DEBUG [qtp777341499-19 - /simpleBackEnd] o.e.j.s.ServletHandler: servlet |/simpleBackEnd|null -> simpleBackEnd
+2016-04-13 19:42:43,226 DEBUG [qtp777341499-19 - /simpleBackEnd] o.e.j.s.ServletHandler: chain=null
+2016-04-13 19:42:43,228 DEBUG [qtp777341499-19 - /simpleBackEnd] o.e.j.s.Server: RESPONSE /simpleBackEnd  200 handled=true
+2016-04-13 19:42:43,229 DEBUG [qtp777341499-19] o.e.j.s.AsyncHttpConnection: Enabled read interest SCEP@3bbeb302{l(/127.0.0.1:51213)<->r(/127.0.0.1:9162),d=true,open=true,ishut=false,oshut=false,rb=false,wb=false,w=true,i=1r}-{AsyncHttpConnection@31204ed4,g=HttpGenerator{s=4,h=0,b=0,c=-1},p=HttpParser{s=0,l=3,c=302},r=2}
+2016-04-13 19:42:43,229 DEBUG [qtp777341499-19] o.e.j.h.HttpParser: filled 0/0
+2016-04-13 19:42:43,230 DEBUG [main] o.o.c.t.OpenNMSAbstractTestExecutionListener: finishing test method public void org.opennms.poller.remote.SimpleBackEndTest.testBackend() throws java.lang.Exception
+2016-04-13 19:42:43,230 DEBUG [main] o.o.c.t.h.JUnitServer: shutting down jetty on port 9162
+2016-04-13 19:42:43,230 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: stopping org.eclipse.jetty.server.Server@62727399
+2016-04-13 19:42:43,230 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: stopping SelectChannelConnector@0.0.0.0:9162
+2016-04-13 19:42:43,233 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: stopping org.eclipse.jetty.server.nio.SelectChannelConnector$ConnectorSelectorManager@426b6a74
+2016-04-13 19:42:43,233 DEBUG [qtp777341499-14 Selector0] o.e.j.i.nio: Stopped Thread[qtp777341499-14 Selector0,5,main] on org.eclipse.jetty.io.nio.SelectorManager$1@23f75087
+2016-04-13 19:42:43,246 DEBUG [main] o.e.j.i.n.ChannelEndPoint: close SCEP@3bbeb302{l(/127.0.0.1:51213)<->r(/127.0.0.1:9162),d=false,open=true,ishut=false,oshut=false,rb=false,wb=false,w=true,i=1r}-{AsyncHttpConnection@31204ed4,g=HttpGenerator{s=0,h=-1,b=-1,c=-1},p=HttpParser{s=-14,l=0,c=-3},r=2}
+2016-04-13 19:42:43,250 DEBUG [qtp777341499-15 Selector1] o.e.j.i.nio: Stopped Thread[qtp777341499-15 Selector1,5,main] on org.eclipse.jetty.io.nio.SelectorManager$1@6457f08d
+2016-04-13 19:42:43,261 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: STOPPED org.eclipse.jetty.server.nio.SelectChannelConnector$ConnectorSelectorManager@426b6a74
+2016-04-13 19:42:43,262 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: stopping PooledBuffers [1/1024@6144,0/1024@16384,0/1024@-]/PooledBuffers [1/1024@6144,1/1024@32768,0/1024@-]
+2016-04-13 19:42:43,262 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: STOPPED null/null
+2016-04-13 19:42:43,262 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: STOPPED SelectChannelConnector@0.0.0.0:9162
+2016-04-13 19:42:43,263 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: stopping o.e.j.s.h.ContextHandler{/,file:/Users/agalue/Development/opennms/git/develop/features/remote-poller/target/test-classes/,localhost}
+2016-04-13 19:42:43,263 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: stopping org.eclipse.jetty.server.handler.HandlerList@710b18a6
+2016-04-13 19:42:43,263 DEBUG [main] o.e.j.s.h.AbstractHandler: stopping org.eclipse.jetty.server.handler.HandlerList@710b18a6
+2016-04-13 19:42:43,263 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: stopping org.eclipse.jetty.server.handler.DefaultHandler@3d9f6567
+2016-04-13 19:42:43,263 DEBUG [main] o.e.j.s.h.AbstractHandler: stopping org.eclipse.jetty.server.handler.DefaultHandler@3d9f6567
+2016-04-13 19:42:43,263 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: STOPPED org.eclipse.jetty.server.handler.DefaultHandler@3d9f6567
+2016-04-13 19:42:43,264 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: stopping org.eclipse.jetty.server.handler.ResourceHandler@119020fb
+2016-04-13 19:42:43,264 DEBUG [main] o.e.j.s.h.AbstractHandler: stopping org.eclipse.jetty.server.handler.ResourceHandler@119020fb
+2016-04-13 19:42:43,264 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: STOPPED org.eclipse.jetty.server.handler.ResourceHandler@119020fb
+2016-04-13 19:42:43,264 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: stopping o.e.j.w.WebAppContext{/,file:/Users/agalue/Development/opennms/git/develop/features/remote-poller/src/test/resources/simple-test-webapp/},src/test/resources/simple-test-webapp
+2016-04-13 19:42:43,264 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: stopping org.eclipse.jetty.server.session.SessionHandler@52045dbe
+2016-04-13 19:42:43,264 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: stopping org.eclipse.jetty.server.session.HashSessionManager@674658f7
+2016-04-13 19:42:43,265 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: STOPPED org.eclipse.jetty.server.session.HashSessionManager@674658f7
+2016-04-13 19:42:43,265 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: stopping org.eclipse.jetty.security.ConstraintSecurityHandler@6cfcd46d
+2016-04-13 19:42:43,265 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: stopping org.eclipse.jetty.servlet.ServletHandler@57fd91c9
+2016-04-13 19:42:43,265 DEBUG [main] o.e.j.s.h.AbstractHandler: stopping org.eclipse.jetty.servlet.ServletHandler@57fd91c9
+2016-04-13 19:42:43,265 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: stopping simpleBackEnd
+2016-04-13 19:42:43,265 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: STOPPED simpleBackEnd
+2016-04-13 19:42:43,265 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: stopping jsp
+2016-04-13 19:42:43,309 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: STOPPED jsp
+2016-04-13 19:42:43,310 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: stopping default
+2016-04-13 19:42:43,310 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: STOPPED default
+2016-04-13 19:42:43,310 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: STOPPED org.eclipse.jetty.servlet.ServletHandler@57fd91c9
+2016-04-13 19:42:43,310 DEBUG [main] o.e.j.s.h.AbstractHandler: stopping org.eclipse.jetty.security.ConstraintSecurityHandler@6cfcd46d
+2016-04-13 19:42:43,310 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: STOPPED org.eclipse.jetty.security.ConstraintSecurityHandler@6cfcd46d
+2016-04-13 19:42:43,310 DEBUG [main] o.e.j.s.h.AbstractHandler: stopping org.eclipse.jetty.server.session.SessionHandler@52045dbe
+2016-04-13 19:42:43,311 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: STOPPED org.eclipse.jetty.server.session.SessionHandler@52045dbe
+2016-04-13 19:42:43,311 DEBUG [main] o.e.j.s.h.AbstractHandler: stopping o.e.j.w.WebAppContext{/,file:/Users/agalue/Development/opennms/git/develop/features/remote-poller/src/test/resources/simple-test-webapp/},src/test/resources/simple-test-webapp
+2016-04-13 19:42:43,311 INFO  [main] /: Closing Spring root WebApplicationContext
+2016-04-13 19:42:43,311 INFO  [main] o.s.w.c.s.XmlWebApplicationContext: Closing Root WebApplicationContext: startup date [Wed Apr 13 19:42:42 EDT 2016]; root of context hierarchy
+2016-04-13 19:42:43,317 INFO  [main] o.e.j.s.l.ELContextCleaner: javax.el.BeanELResolver purged
+2016-04-13 19:42:43,317 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: stopping org.eclipse.jetty.servlet.ErrorPageErrorHandler@2cc3ad05
+2016-04-13 19:42:43,317 DEBUG [main] o.e.j.s.h.AbstractHandler: stopping org.eclipse.jetty.servlet.ErrorPageErrorHandler@2cc3ad05
+2016-04-13 19:42:43,317 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: STOPPED org.eclipse.jetty.servlet.ErrorPageErrorHandler@2cc3ad05
+2016-04-13 19:42:43,318 INFO  [main] o.e.j.s.h.ContextHandler: stopped o.e.j.w.WebAppContext{/,file:/Users/agalue/Development/opennms/git/develop/features/remote-poller/src/test/resources/simple-test-webapp/},src/test/resources/simple-test-webapp
+2016-04-13 19:42:43,318 DEBUG [main] o.e.j.u.c.Container: Container o.e.j.w.WebAppContext{/,file:/Users/agalue/Development/opennms/git/develop/features/remote-poller/src/test/resources/simple-test-webapp/},src/test/resources/simple-test-webapp - org.eclipse.jetty.server.session.SessionHandler@52045dbe as handler
+2016-04-13 19:42:43,318 DEBUG [main] o.e.j.s.ServletHandler: filterNameMap={}
+2016-04-13 19:42:43,318 DEBUG [main] o.e.j.s.ServletHandler: pathFilters=null
+2016-04-13 19:42:43,318 DEBUG [main] o.e.j.s.ServletHandler: servletFilterMap=null
+2016-04-13 19:42:43,318 DEBUG [main] o.e.j.s.ServletHandler: servletPathMap={*.jspx=jsp, *.JSPX=jsp, *.jsp=jsp, *.JSPF=jsp, *.jspf=jsp, *.JSP=jsp, *.xsp=jsp, *.XSP=jsp, /simpleBackEnd=simpleBackEnd, /=default}
+2016-04-13 19:42:43,318 DEBUG [main] o.e.j.s.ServletHandler: servletNameMap={default=default, simpleBackEnd=simpleBackEnd, jsp=jsp}
+2016-04-13 19:42:43,318 DEBUG [main] o.e.j.u.c.Container: Container org.eclipse.jetty.servlet.ServletHandler@57fd91c9 - simpleBackEnd as servlet
+2016-04-13 19:42:43,319 DEBUG [main] o.e.j.u.c.Container: Container org.eclipse.jetty.servlet.ServletHandler@57fd91c9 - jsp as servlet
+2016-04-13 19:42:43,319 DEBUG [main] o.e.j.u.c.Container: Container org.eclipse.jetty.servlet.ServletHandler@57fd91c9 - default as servlet
+2016-04-13 19:42:43,319 DEBUG [main] o.e.j.u.c.Container: Container org.eclipse.jetty.servlet.ServletHandler@57fd91c9 - [/simpleBackEnd]=>simpleBackEnd as servletMapping
+2016-04-13 19:42:43,319 DEBUG [main] o.e.j.u.c.Container: Container org.eclipse.jetty.servlet.ServletHandler@57fd91c9 - [*.jsp, *.jspf, *.jspx, *.xsp, *.JSP, *.JSPF, *.JSPX, *.XSP]=>jsp as servletMapping
+2016-04-13 19:42:43,319 DEBUG [main] o.e.j.u.c.Container: Container org.eclipse.jetty.servlet.ServletHandler@57fd91c9 - [/]=>default as servletMapping
+2016-04-13 19:42:43,319 DEBUG [main] o.e.j.s.ServletHandler: filterNameMap={}
+2016-04-13 19:42:43,319 DEBUG [main] o.e.j.s.ServletHandler: pathFilters=null
+2016-04-13 19:42:43,319 DEBUG [main] o.e.j.s.ServletHandler: servletFilterMap=null
+2016-04-13 19:42:43,319 DEBUG [main] o.e.j.s.ServletHandler: servletPathMap=null
+2016-04-13 19:42:43,319 DEBUG [main] o.e.j.s.ServletHandler: servletNameMap={}
+2016-04-13 19:42:43,320 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: STOPPED o.e.j.w.WebAppContext{/,null},src/test/resources/simple-test-webapp
+2016-04-13 19:42:43,320 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: STOPPED org.eclipse.jetty.server.handler.HandlerList@710b18a6
+2016-04-13 19:42:43,320 DEBUG [main] o.e.j.s.h.AbstractHandler: stopping o.e.j.s.h.ContextHandler{/,file:/Users/agalue/Development/opennms/git/develop/features/remote-poller/target/test-classes/,localhost}
+2016-04-13 19:42:43,320 INFO  [main] o.e.j.s.h.ContextHandler: stopped o.e.j.s.h.ContextHandler{/,file:/Users/agalue/Development/opennms/git/develop/features/remote-poller/target/test-classes/,localhost}
+2016-04-13 19:42:43,320 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: STOPPED o.e.j.s.h.ContextHandler{/,file:/Users/agalue/Development/opennms/git/develop/features/remote-poller/target/test-classes/,localhost}
+2016-04-13 19:42:43,320 DEBUG [main] o.e.j.s.h.AbstractHandler: stopping org.eclipse.jetty.server.Server@62727399
+2016-04-13 19:42:43,321 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: stopping org.eclipse.jetty.server.session.HashSessionIdManager@58c34bb3
+2016-04-13 19:42:43,321 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: STOPPED org.eclipse.jetty.server.session.HashSessionIdManager@58c34bb3
+2016-04-13 19:42:43,321 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: stopping qtp777341499{8<=8<=8/254,0}
+2016-04-13 19:42:43,373 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: STOPPED qtp777341499{8<=0<=0/254,0}
+2016-04-13 19:42:43,373 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: STOPPED org.eclipse.jetty.server.Server@62727399
+2016-04-13 19:42:43,375 DEBUG [main] o.o.c.t.OpenNMSAbstractTestExecutionListener: starting test method public void org.opennms.poller.remote.SimpleBackEndTest.testBackendWithBasicAuth() throws java.lang.Exception
+2016-04-13 19:42:43,375 DEBUG [main] o.e.j.u.c.Container: Container org.eclipse.jetty.server.Server@31e3250d + SelectChannelConnector@0.0.0.0:9162 as connector
+2016-04-13 19:42:43,376 DEBUG [main] o.o.c.t.h.JUnitServer: configuring basic auth
+2016-04-13 19:42:43,381 DEBUG [main] o.e.j.u.c.Container: Container o.e.j.w.WebAppContext{/,null},src/test/resources/simple-test-webapp + org.eclipse.jetty.servlet.ErrorPageErrorHandler@2a3591c5 as error
+2016-04-13 19:42:43,381 DEBUG [main] o.e.j.u.c.Container: Container org.eclipse.jetty.server.handler.HandlerList@34a75079 + o.e.j.w.WebAppContext{/,null},src/test/resources/simple-test-webapp as handler
+2016-04-13 19:42:43,381 DEBUG [main] o.e.j.u.c.Container: Container org.eclipse.jetty.server.handler.HandlerList@34a75079 + org.eclipse.jetty.server.handler.ResourceHandler@346a361 as handler
+2016-04-13 19:42:43,381 DEBUG [main] o.e.j.u.c.Container: Container org.eclipse.jetty.server.handler.HandlerList@34a75079 + org.eclipse.jetty.server.handler.DefaultHandler@107ed6fc as handler
+2016-04-13 19:42:43,381 DEBUG [main] o.e.j.u.c.Container: Container o.e.j.s.h.ContextHandler{/,file:/Users/agalue/Development/opennms/git/develop/features/remote-poller/target/test-classes/,localhost} + org.eclipse.jetty.server.handler.HandlerList@34a75079 as handler
+2016-04-13 19:42:43,381 DEBUG [main] o.e.j.u.c.Container: Container org.eclipse.jetty.security.ConstraintSecurityHandler@1643d68f + o.e.j.s.h.ContextHandler{/,file:/Users/agalue/Development/opennms/git/develop/features/remote-poller/target/test-classes/,localhost} as handler
+2016-04-13 19:42:43,381 DEBUG [main] o.e.j.u.c.Container: Container org.eclipse.jetty.server.Server@31e3250d + org.eclipse.jetty.security.ConstraintSecurityHandler@1643d68f as handler
+2016-04-13 19:42:43,381 DEBUG [main] o.o.c.t.h.JUnitServer: starting jetty on port 9162
+2016-04-13 19:42:43,381 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: starting org.eclipse.jetty.server.Server@31e3250d
+2016-04-13 19:42:43,381 INFO  [main] o.e.j.s.Server: jetty-8.1.10.v20130312
+2016-04-13 19:42:43,382 DEBUG [main] o.e.j.u.c.Container: Container org.eclipse.jetty.server.Server@31e3250d + qtp409565350{8<=0<=0/254,-1} as threadpool
+2016-04-13 19:42:43,382 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: starting org.eclipse.jetty.security.ConstraintSecurityHandler@1643d68f
+2016-04-13 19:42:43,382 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: starting HashLoginService[MyRealm]
+2016-04-13 19:42:43,382 DEBUG [main] o.e.j.s.HashLoginService: doStart: Starting new PropertyUserStore. PropertiesFile: target/test-classes/realm.properties refreshInterval: 300000
+2016-04-13 19:42:43,383 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: starting org.eclipse.jetty.security.PropertyUserStore@acb0951
+2016-04-13 19:42:43,386 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: starting org.eclipse.jetty.util.Scanner@68d6972f
+2016-04-13 19:42:43,387 DEBUG [main] o.e.j.u.Scanner: scanned [/Users/agalue/Development/opennms/git/develop/features/remote-poller/target/test-classes]: {/Users/agalue/Development/opennms/git/develop/features/remote-poller/target/test-classes/realm.properties=ADDED}
+2016-04-13 19:42:43,388 DEBUG [main] o.e.j.u.Scanner: scanned [/Users/agalue/Development/opennms/git/develop/features/remote-poller/target/test-classes]: {/Users/agalue/Development/opennms/git/develop/features/remote-poller/target/test-classes/realm.properties=ADDED}
+2016-04-13 19:42:43,389 DEBUG [main] o.e.j.s.PropertyUserStore: Load org.eclipse.jetty.security.PropertyUserStore@acb0951 from target/test-classes/realm.properties
+2016-04-13 19:42:43,393 DEBUG [main] o.e.j.s.HashLoginService: update: testuser Roles: 1
+2016-04-13 19:42:43,393 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: STARTED org.eclipse.jetty.util.Scanner@68d6972f
+2016-04-13 19:42:43,393 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: STARTED org.eclipse.jetty.security.PropertyUserStore@acb0951
+2016-04-13 19:42:43,393 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: STARTED HashLoginService[MyRealm]
+2016-04-13 19:42:43,394 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: starting o.e.j.s.h.ContextHandler{/,file:/Users/agalue/Development/opennms/git/develop/features/remote-poller/target/test-classes/,localhost}
+2016-04-13 19:42:43,394 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: starting org.eclipse.jetty.server.handler.HandlerList@34a75079
+2016-04-13 19:42:43,394 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: starting o.e.j.w.WebAppContext{/,null},src/test/resources/simple-test-webapp
+2016-04-13 19:42:43,399 DEBUG [main] o.e.j.s.ServletHandler: filterNameMap={}
+2016-04-13 19:42:43,400 DEBUG [main] o.e.j.s.ServletHandler: pathFilters=null
+2016-04-13 19:42:43,400 DEBUG [main] o.e.j.s.ServletHandler: servletFilterMap=null
+2016-04-13 19:42:43,400 DEBUG [main] o.e.j.s.ServletHandler: servletPathMap={/=default}
+2016-04-13 19:42:43,400 DEBUG [main] o.e.j.s.ServletHandler: servletNameMap={default=default}
+2016-04-13 19:42:43,400 DEBUG [main] o.e.j.s.ServletHandler: filterNameMap={}
+2016-04-13 19:42:43,400 DEBUG [main] o.e.j.s.ServletHandler: pathFilters=null
+2016-04-13 19:42:43,401 DEBUG [main] o.e.j.s.ServletHandler: servletFilterMap=null
+2016-04-13 19:42:43,401 DEBUG [main] o.e.j.s.ServletHandler: servletPathMap={*.jspx=jsp, *.JSPX=jsp, *.jsp=jsp, *.JSPF=jsp, *.jspf=jsp, *.JSP=jsp, *.xsp=jsp, *.XSP=jsp, /=default}
+2016-04-13 19:42:43,401 DEBUG [main] o.e.j.s.ServletHandler: servletNameMap={default=default, jsp=jsp}
+2016-04-13 19:42:43,402 DEBUG [main] o.e.j.s.ServletHandler: filterNameMap={}
+2016-04-13 19:42:43,402 DEBUG [main] o.e.j.s.ServletHandler: pathFilters=null
+2016-04-13 19:42:43,402 DEBUG [main] o.e.j.s.ServletHandler: servletFilterMap=null
+2016-04-13 19:42:43,402 DEBUG [main] o.e.j.s.ServletHandler: servletPathMap={*.jspx=jsp, *.JSPX=jsp, *.jsp=jsp, *.JSPF=jsp, *.jspf=jsp, *.JSP=jsp, *.xsp=jsp, *.XSP=jsp, /simpleBackEnd=simpleBackEnd, /=default}
+2016-04-13 19:42:43,402 DEBUG [main] o.e.j.s.ServletHandler: servletNameMap={default=default, simpleBackEnd=simpleBackEnd, jsp=jsp}
+2016-04-13 19:42:43,402 DEBUG [main] o.e.j.u.c.Container: Container org.eclipse.jetty.servlet.ServletHandler@2c1b9e4b + default as servlet
+2016-04-13 19:42:43,402 DEBUG [main] o.e.j.u.c.Container: Container org.eclipse.jetty.servlet.ServletHandler@2c1b9e4b + jsp as servlet
+2016-04-13 19:42:43,402 DEBUG [main] o.e.j.u.c.Container: Container org.eclipse.jetty.servlet.ServletHandler@2c1b9e4b + simpleBackEnd as servlet
+2016-04-13 19:42:43,403 DEBUG [main] o.e.j.u.c.Container: Container org.eclipse.jetty.servlet.ServletHandler@2c1b9e4b + [/]=>default as servletMapping
+2016-04-13 19:42:43,403 DEBUG [main] o.e.j.u.c.Container: Container org.eclipse.jetty.servlet.ServletHandler@2c1b9e4b + [*.jsp, *.jspf, *.jspx, *.xsp, *.JSP, *.JSPF, *.JSPX, *.XSP]=>jsp as servletMapping
+2016-04-13 19:42:43,403 DEBUG [main] o.e.j.u.c.Container: Container org.eclipse.jetty.servlet.ServletHandler@2c1b9e4b + [/simpleBackEnd]=>simpleBackEnd as servletMapping
+2016-04-13 19:42:43,403 DEBUG [main] o.e.j.u.c.Container: Container org.eclipse.jetty.security.ConstraintSecurityHandler@757d6814 + org.eclipse.jetty.servlet.ServletHandler@2c1b9e4b as handler
+2016-04-13 19:42:43,403 DEBUG [main] o.e.j.u.c.Container: Container org.eclipse.jetty.server.session.SessionHandler@649725e3 + org.eclipse.jetty.security.ConstraintSecurityHandler@757d6814 as handler
+2016-04-13 19:42:43,403 DEBUG [main] o.e.j.u.c.Container: Container org.eclipse.jetty.server.session.SessionHandler@649725e3 + org.eclipse.jetty.server.session.HashSessionManager@3c0fae6c as sessionManager
+2016-04-13 19:42:43,403 DEBUG [main] o.e.j.u.c.Container: Container o.e.j.w.WebAppContext{/,file:/Users/agalue/Development/opennms/git/develop/features/remote-poller/src/test/resources/simple-test-webapp/},src/test/resources/simple-test-webapp + org.eclipse.jetty.server.session.SessionHandler@649725e3 as handler
+2016-04-13 19:42:43,403 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: starting org.eclipse.jetty.server.session.SessionHandler@649725e3
+2016-04-13 19:42:43,403 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: starting org.eclipse.jetty.server.session.HashSessionManager@3c0fae6c
+2016-04-13 19:42:43,403 DEBUG [main] o.e.j.u.c.Container: Container org.eclipse.jetty.server.Server@31e3250d + org.eclipse.jetty.server.session.HashSessionIdManager@4c168660 as sessionIdManager
+2016-04-13 19:42:43,404 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: starting org.eclipse.jetty.server.session.HashSessionIdManager@4c168660
+2016-04-13 19:42:43,404 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: STARTED org.eclipse.jetty.server.session.HashSessionIdManager@4c168660
+2016-04-13 19:42:43,404 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: STARTED org.eclipse.jetty.server.session.HashSessionManager@3c0fae6c
+2016-04-13 19:42:43,404 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: starting org.eclipse.jetty.security.ConstraintSecurityHandler@757d6814
+2016-04-13 19:42:43,404 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: starting org.eclipse.jetty.servlet.ServletHandler@2c1b9e4b
+2016-04-13 19:42:43,404 DEBUG [main] o.e.j.s.ServletHandler: filterNameMap={}
+2016-04-13 19:42:43,404 DEBUG [main] o.e.j.s.ServletHandler: pathFilters=null
+2016-04-13 19:42:43,405 DEBUG [main] o.e.j.s.ServletHandler: servletFilterMap=null
+2016-04-13 19:42:43,405 DEBUG [main] o.e.j.s.ServletHandler: servletPathMap={*.jspx=jsp, *.JSPX=jsp, *.jsp=jsp, *.JSPF=jsp, *.jspf=jsp, *.JSP=jsp, *.xsp=jsp, *.XSP=jsp, /simpleBackEnd=simpleBackEnd, /=default}
+2016-04-13 19:42:43,405 DEBUG [main] o.e.j.s.ServletHandler: servletNameMap={default=default, simpleBackEnd=simpleBackEnd, jsp=jsp}
+2016-04-13 19:42:43,405 DEBUG [main] o.e.j.s.h.AbstractHandler: starting org.eclipse.jetty.servlet.ServletHandler@2c1b9e4b
+2016-04-13 19:42:43,405 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: STARTED org.eclipse.jetty.servlet.ServletHandler@2c1b9e4b
+2016-04-13 19:42:43,405 DEBUG [main] o.e.j.s.h.AbstractHandler: starting org.eclipse.jetty.security.ConstraintSecurityHandler@757d6814
+2016-04-13 19:42:43,405 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: STARTED org.eclipse.jetty.security.ConstraintSecurityHandler@757d6814
+2016-04-13 19:42:43,405 DEBUG [main] o.e.j.s.h.AbstractHandler: starting org.eclipse.jetty.server.session.SessionHandler@649725e3
+2016-04-13 19:42:43,405 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: STARTED org.eclipse.jetty.server.session.SessionHandler@649725e3
+2016-04-13 19:42:43,405 DEBUG [main] o.e.j.s.h.AbstractHandler: starting o.e.j.w.WebAppContext{/,file:/Users/agalue/Development/opennms/git/develop/features/remote-poller/src/test/resources/simple-test-webapp/},src/test/resources/simple-test-webapp
+2016-04-13 19:42:43,405 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: starting org.eclipse.jetty.servlet.ErrorPageErrorHandler@2a3591c5
+2016-04-13 19:42:43,406 DEBUG [main] o.e.j.s.h.AbstractHandler: starting org.eclipse.jetty.servlet.ErrorPageErrorHandler@2a3591c5
+2016-04-13 19:42:43,406 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: STARTED org.eclipse.jetty.servlet.ErrorPageErrorHandler@2a3591c5
+2016-04-13 19:42:43,406 INFO  [main] /: Initializing Spring root WebApplicationContext
+2016-04-13 19:42:43,406 INFO  [main] o.s.w.c.ContextLoader: Root WebApplicationContext: initialization started
+2016-04-13 19:42:43,407 INFO  [main] o.s.w.c.s.XmlWebApplicationContext: Refreshing Root WebApplicationContext: startup date [Wed Apr 13 19:42:43 EDT 2016]; root of context hierarchy
+2016-04-13 19:42:43,408 INFO  [main] o.s.b.f.x.XmlBeanDefinitionReader: Loading XML bean definitions from ServletContext resource [/WEB-INF/applicationContext-exportedSimpleBackEnd.xml]
+2016-04-13 19:42:43,432 INFO  [main] o.s.w.c.ContextLoader: Root WebApplicationContext: initialization completed in 26 ms
+2016-04-13 19:42:43,432 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: starting jsp
+2016-04-13 19:42:43,432 DEBUG [main] o.e.j.s.Holder: Holding class org.apache.jasper.servlet.JspServlet
+2016-04-13 19:42:43,433 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: STARTED jsp
+2016-04-13 19:42:43,433 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: starting default
+2016-04-13 19:42:43,433 DEBUG [main] o.e.j.s.Holder: Holding class org.eclipse.jetty.servlet.DefaultServlet
+2016-04-13 19:42:43,434 DEBUG [main] o.e.j.s.DefaultServlet: resource base = null
+2016-04-13 19:42:43,434 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: STARTED default
+2016-04-13 19:42:43,434 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: starting simpleBackEnd
+2016-04-13 19:42:43,434 DEBUG [main] o.e.j.s.Holder: Holding class org.springframework.web.context.support.HttpRequestHandlerServlet
+2016-04-13 19:42:43,434 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: STARTED simpleBackEnd
+2016-04-13 19:42:43,434 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: STARTED o.e.j.w.WebAppContext{/,file:/Users/agalue/Development/opennms/git/develop/features/remote-poller/src/test/resources/simple-test-webapp/},src/test/resources/simple-test-webapp
+2016-04-13 19:42:43,435 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: starting org.eclipse.jetty.server.handler.ResourceHandler@346a361
+2016-04-13 19:42:43,435 DEBUG [main] o.e.j.s.h.AbstractHandler: starting org.eclipse.jetty.server.handler.ResourceHandler@346a361
+2016-04-13 19:42:43,435 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: STARTED org.eclipse.jetty.server.handler.ResourceHandler@346a361
+2016-04-13 19:42:43,435 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: starting org.eclipse.jetty.server.handler.DefaultHandler@107ed6fc
+2016-04-13 19:42:43,435 DEBUG [main] o.e.j.s.h.AbstractHandler: starting org.eclipse.jetty.server.handler.DefaultHandler@107ed6fc
+2016-04-13 19:42:43,435 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: STARTED org.eclipse.jetty.server.handler.DefaultHandler@107ed6fc
+2016-04-13 19:42:43,435 DEBUG [main] o.e.j.s.h.AbstractHandler: starting org.eclipse.jetty.server.handler.HandlerList@34a75079
+2016-04-13 19:42:43,435 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: STARTED org.eclipse.jetty.server.handler.HandlerList@34a75079
+2016-04-13 19:42:43,435 DEBUG [main] o.e.j.s.h.AbstractHandler: starting o.e.j.s.h.ContextHandler{/,file:/Users/agalue/Development/opennms/git/develop/features/remote-poller/target/test-classes/,localhost}
+2016-04-13 19:42:43,435 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: STARTED o.e.j.s.h.ContextHandler{/,file:/Users/agalue/Development/opennms/git/develop/features/remote-poller/target/test-classes/,localhost}
+2016-04-13 19:42:43,436 DEBUG [main] o.e.j.s.h.AbstractHandler: starting org.eclipse.jetty.security.ConstraintSecurityHandler@1643d68f
+2016-04-13 19:42:43,436 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: STARTED org.eclipse.jetty.security.ConstraintSecurityHandler@1643d68f
+2016-04-13 19:42:43,436 DEBUG [main] o.e.j.s.h.AbstractHandler: starting org.eclipse.jetty.server.Server@31e3250d
+2016-04-13 19:42:43,436 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: starting qtp409565350{8<=0<=0/254,-1}
+2016-04-13 19:42:43,437 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: STARTED qtp409565350{8<=7<=8/254,0}
+2016-04-13 19:42:43,437 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: starting SelectChannelConnector@0.0.0.0:9162
+2016-04-13 19:42:43,437 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: starting null/null
+2016-04-13 19:42:43,437 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: STARTED PooledBuffers [0/1024@6144,0/1024@16384,0/1024@-]/PooledBuffers [0/1024@6144,0/1024@32768,0/1024@-]
+2016-04-13 19:42:43,437 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: starting org.eclipse.jetty.server.nio.SelectChannelConnector$ConnectorSelectorManager@51df223b
+2016-04-13 19:42:43,438 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: STARTED org.eclipse.jetty.server.nio.SelectChannelConnector$ConnectorSelectorManager@51df223b
+2016-04-13 19:42:43,438 DEBUG [qtp409565350-26 Selector1] o.e.j.i.nio: Starting Thread[qtp409565350-26 Selector1,5,main] on org.eclipse.jetty.io.nio.SelectorManager$1@46470965
+2016-04-13 19:42:43,438 DEBUG [qtp409565350-25 Selector0] o.e.j.i.nio: Starting Thread[qtp409565350-25 Selector0,5,main] on org.eclipse.jetty.io.nio.SelectorManager$1@78f00d50
+2016-04-13 19:42:43,438 INFO  [main] o.e.j.s.AbstractConnector: Started SelectChannelConnector@0.0.0.0:9162
+2016-04-13 19:42:43,438 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: STARTED SelectChannelConnector@0.0.0.0:9162
+2016-04-13 19:42:43,438 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: STARTED org.eclipse.jetty.server.Server@31e3250d
+2016-04-13 19:42:43,444 DEBUG [qtp409565350-25 Selector0] o.e.j.i.nio: created SCEP@72086620{l(/127.0.0.1:51214)<->r(/127.0.0.1:9162),d=false,open=true,ishut=false,oshut=false,rb=false,wb=false,w=true,i=0}-{AsyncHttpConnection@370ae605,g=HttpGenerator{s=0,h=-1,b=-1,c=-1},p=HttpParser{s=-14,l=0,c=0},r=0}
+2016-04-13 19:42:43,444 DEBUG [qtp409565350-29] o.e.j.h.HttpParser: filled 616/616
+2016-04-13 19:42:43,445 DEBUG [qtp409565350-29 - /simpleBackEnd] o.e.j.s.Server: REQUEST /simpleBackEnd on AsyncHttpConnection@370ae605,g=HttpGenerator{s=0,h=-1,b=-1,c=-1},p=HttpParser{s=2,l=3,c=302},r=1
+2016-04-13 19:42:43,447 DEBUG [qtp409565350-29 - /simpleBackEnd] o.e.j.s.h.ContextHandler: scope null||/simpleBackEnd @ o.e.j.s.h.ContextHandler{/,file:/Users/agalue/Development/opennms/git/develop/features/remote-poller/target/test-classes/,localhost}
+2016-04-13 19:42:43,447 DEBUG [qtp409565350-29 - /simpleBackEnd] o.e.j.s.h.ContextHandler: context=||/simpleBackEnd @ o.e.j.s.h.ContextHandler{/,file:/Users/agalue/Development/opennms/git/develop/features/remote-poller/target/test-classes/,localhost}
+2016-04-13 19:42:43,447 DEBUG [qtp409565350-29 - /simpleBackEnd] o.e.j.s.h.ContextHandler: scope ||/simpleBackEnd @ o.e.j.w.WebAppContext{/,file:/Users/agalue/Development/opennms/git/develop/features/remote-poller/src/test/resources/simple-test-webapp/},src/test/resources/simple-test-webapp
+2016-04-13 19:42:43,447 DEBUG [qtp409565350-29 - /simpleBackEnd] o.e.j.s.h.ContextHandler: context=||/simpleBackEnd @ o.e.j.w.WebAppContext{/,file:/Users/agalue/Development/opennms/git/develop/features/remote-poller/src/test/resources/simple-test-webapp/},src/test/resources/simple-test-webapp
+2016-04-13 19:42:43,447 DEBUG [qtp409565350-29 - /simpleBackEnd] o.e.j.s.session: sessionManager=org.eclipse.jetty.server.session.HashSessionManager@3c0fae6c
+2016-04-13 19:42:43,447 DEBUG [qtp409565350-29 - /simpleBackEnd] o.e.j.s.session: session=null
+2016-04-13 19:42:43,447 DEBUG [qtp409565350-29 - /simpleBackEnd] o.e.j.s.ServletHandler: servlet |/simpleBackEnd|null -> simpleBackEnd
+2016-04-13 19:42:43,447 DEBUG [qtp409565350-29 - /simpleBackEnd] o.e.j.s.ServletHandler: chain=null
+2016-04-13 19:42:43,448 DEBUG [qtp409565350-29 - /simpleBackEnd] o.e.j.s.Server: RESPONSE /simpleBackEnd  200 handled=true
+2016-04-13 19:42:43,449 DEBUG [qtp409565350-29] o.e.j.s.AsyncHttpConnection: Enabled read interest SCEP@72086620{l(/127.0.0.1:51214)<->r(/127.0.0.1:9162),d=true,open=true,ishut=false,oshut=false,rb=false,wb=false,w=true,i=0r}-{AsyncHttpConnection@370ae605,g=HttpGenerator{s=4,h=0,b=0,c=-1},p=HttpParser{s=0,l=3,c=302},r=1}
+2016-04-13 19:42:43,449 DEBUG [qtp409565350-29] o.e.j.h.HttpParser: filled 0/0
+2016-04-13 19:42:43,449 DEBUG [qtp409565350-30] o.e.j.h.HttpParser: filled 616/616
+2016-04-13 19:42:43,450 DEBUG [qtp409565350-30 - /simpleBackEnd] o.e.j.s.Server: REQUEST /simpleBackEnd on AsyncHttpConnection@370ae605,g=HttpGenerator{s=0,h=-1,b=-1,c=-1},p=HttpParser{s=2,l=3,c=302},r=2
+2016-04-13 19:42:43,450 DEBUG [qtp409565350-30 - /simpleBackEnd] o.e.j.s.h.ContextHandler: scope null||/simpleBackEnd @ o.e.j.s.h.ContextHandler{/,file:/Users/agalue/Development/opennms/git/develop/features/remote-poller/target/test-classes/,localhost}
+2016-04-13 19:42:43,450 DEBUG [qtp409565350-30 - /simpleBackEnd] o.e.j.s.h.ContextHandler: context=||/simpleBackEnd @ o.e.j.s.h.ContextHandler{/,file:/Users/agalue/Development/opennms/git/develop/features/remote-poller/target/test-classes/,localhost}
+2016-04-13 19:42:43,450 DEBUG [qtp409565350-30 - /simpleBackEnd] o.e.j.s.h.ContextHandler: scope ||/simpleBackEnd @ o.e.j.w.WebAppContext{/,file:/Users/agalue/Development/opennms/git/develop/features/remote-poller/src/test/resources/simple-test-webapp/},src/test/resources/simple-test-webapp
+2016-04-13 19:42:43,450 DEBUG [qtp409565350-30 - /simpleBackEnd] o.e.j.s.h.ContextHandler: context=||/simpleBackEnd @ o.e.j.w.WebAppContext{/,file:/Users/agalue/Development/opennms/git/develop/features/remote-poller/src/test/resources/simple-test-webapp/},src/test/resources/simple-test-webapp
+2016-04-13 19:42:43,450 DEBUG [qtp409565350-30 - /simpleBackEnd] o.e.j.s.session: sessionManager=org.eclipse.jetty.server.session.HashSessionManager@3c0fae6c
+2016-04-13 19:42:43,451 DEBUG [qtp409565350-30 - /simpleBackEnd] o.e.j.s.session: session=null
+2016-04-13 19:42:43,451 DEBUG [qtp409565350-30 - /simpleBackEnd] o.e.j.s.ServletHandler: servlet |/simpleBackEnd|null -> simpleBackEnd
+2016-04-13 19:42:43,451 DEBUG [qtp409565350-30 - /simpleBackEnd] o.e.j.s.ServletHandler: chain=null
+2016-04-13 19:42:43,451 DEBUG [qtp409565350-30 - /simpleBackEnd] o.e.j.s.Server: RESPONSE /simpleBackEnd  200 handled=true
+2016-04-13 19:42:43,452 DEBUG [qtp409565350-30] o.e.j.s.AsyncHttpConnection: Enabled read interest SCEP@72086620{l(/127.0.0.1:51214)<->r(/127.0.0.1:9162),d=true,open=true,ishut=false,oshut=false,rb=false,wb=false,w=true,i=1r}-{AsyncHttpConnection@370ae605,g=HttpGenerator{s=4,h=0,b=0,c=-1},p=HttpParser{s=0,l=3,c=302},r=2}
+2016-04-13 19:42:43,452 DEBUG [main] o.o.c.t.OpenNMSAbstractTestExecutionListener: finishing test method public void org.opennms.poller.remote.SimpleBackEndTest.testBackendWithBasicAuth() throws java.lang.Exception
+2016-04-13 19:42:43,452 DEBUG [main] o.o.c.t.h.JUnitServer: shutting down jetty on port 9162
+2016-04-13 19:42:43,452 DEBUG [qtp409565350-30] o.e.j.h.HttpParser: filled 0/0
+2016-04-13 19:42:43,452 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: stopping org.eclipse.jetty.server.Server@31e3250d
+2016-04-13 19:42:43,452 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: stopping SelectChannelConnector@0.0.0.0:9162
+2016-04-13 19:42:43,453 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: stopping org.eclipse.jetty.server.nio.SelectChannelConnector$ConnectorSelectorManager@51df223b
+2016-04-13 19:42:43,453 DEBUG [qtp409565350-25 Selector0] o.e.j.i.nio: Stopped Thread[qtp409565350-25 Selector0,5,main] on org.eclipse.jetty.io.nio.SelectorManager$1@78f00d50
+2016-04-13 19:42:43,464 DEBUG [main] o.e.j.i.n.ChannelEndPoint: close SCEP@72086620{l(/127.0.0.1:51214)<->r(/127.0.0.1:9162),d=false,open=true,ishut=false,oshut=false,rb=false,wb=false,w=true,i=1r}-{AsyncHttpConnection@370ae605,g=HttpGenerator{s=0,h=-1,b=-1,c=-1},p=HttpParser{s=-14,l=0,c=-3},r=2}
+2016-04-13 19:42:43,465 DEBUG [qtp409565350-26 Selector1] o.e.j.i.nio: Stopped Thread[qtp409565350-26 Selector1,5,main] on org.eclipse.jetty.io.nio.SelectorManager$1@46470965
+2016-04-13 19:42:43,476 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: STOPPED org.eclipse.jetty.server.nio.SelectChannelConnector$ConnectorSelectorManager@51df223b
+2016-04-13 19:42:43,477 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: stopping PooledBuffers [1/1024@6144,0/1024@16384,0/1024@-]/PooledBuffers [1/1024@6144,1/1024@32768,0/1024@-]
+2016-04-13 19:42:43,477 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: STOPPED null/null
+2016-04-13 19:42:43,477 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: STOPPED SelectChannelConnector@0.0.0.0:9162
+2016-04-13 19:42:43,477 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: stopping org.eclipse.jetty.security.ConstraintSecurityHandler@1643d68f
+2016-04-13 19:42:43,477 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: stopping o.e.j.s.h.ContextHandler{/,file:/Users/agalue/Development/opennms/git/develop/features/remote-poller/target/test-classes/,localhost}
+2016-04-13 19:42:43,477 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: stopping org.eclipse.jetty.server.handler.HandlerList@34a75079
+2016-04-13 19:42:43,478 DEBUG [main] o.e.j.s.h.AbstractHandler: stopping org.eclipse.jetty.server.handler.HandlerList@34a75079
+2016-04-13 19:42:43,478 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: stopping org.eclipse.jetty.server.handler.DefaultHandler@107ed6fc
+2016-04-13 19:42:43,478 DEBUG [main] o.e.j.s.h.AbstractHandler: stopping org.eclipse.jetty.server.handler.DefaultHandler@107ed6fc
+2016-04-13 19:42:43,478 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: STOPPED org.eclipse.jetty.server.handler.DefaultHandler@107ed6fc
+2016-04-13 19:42:43,478 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: stopping org.eclipse.jetty.server.handler.ResourceHandler@346a361
+2016-04-13 19:42:43,478 DEBUG [main] o.e.j.s.h.AbstractHandler: stopping org.eclipse.jetty.server.handler.ResourceHandler@346a361
+2016-04-13 19:42:43,478 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: STOPPED org.eclipse.jetty.server.handler.ResourceHandler@346a361
+2016-04-13 19:42:43,478 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: stopping o.e.j.w.WebAppContext{/,file:/Users/agalue/Development/opennms/git/develop/features/remote-poller/src/test/resources/simple-test-webapp/},src/test/resources/simple-test-webapp
+2016-04-13 19:42:43,478 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: stopping org.eclipse.jetty.server.session.SessionHandler@649725e3
+2016-04-13 19:42:43,479 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: stopping org.eclipse.jetty.server.session.HashSessionManager@3c0fae6c
+2016-04-13 19:42:43,479 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: STOPPED org.eclipse.jetty.server.session.HashSessionManager@3c0fae6c
+2016-04-13 19:42:43,479 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: stopping org.eclipse.jetty.security.ConstraintSecurityHandler@757d6814
+2016-04-13 19:42:43,479 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: stopping org.eclipse.jetty.servlet.ServletHandler@2c1b9e4b
+2016-04-13 19:42:43,479 DEBUG [main] o.e.j.s.h.AbstractHandler: stopping org.eclipse.jetty.servlet.ServletHandler@2c1b9e4b
+2016-04-13 19:42:43,479 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: stopping simpleBackEnd
+2016-04-13 19:42:43,479 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: STOPPED simpleBackEnd
+2016-04-13 19:42:43,479 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: stopping jsp
+2016-04-13 19:42:43,479 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: STOPPED jsp
+2016-04-13 19:42:43,479 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: stopping default
+2016-04-13 19:42:43,480 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: STOPPED default
+2016-04-13 19:42:43,480 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: STOPPED org.eclipse.jetty.servlet.ServletHandler@2c1b9e4b
+2016-04-13 19:42:43,480 DEBUG [main] o.e.j.s.h.AbstractHandler: stopping org.eclipse.jetty.security.ConstraintSecurityHandler@757d6814
+2016-04-13 19:42:43,481 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: STOPPED org.eclipse.jetty.security.ConstraintSecurityHandler@757d6814
+2016-04-13 19:42:43,481 DEBUG [main] o.e.j.s.h.AbstractHandler: stopping org.eclipse.jetty.server.session.SessionHandler@649725e3
+2016-04-13 19:42:43,481 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: STOPPED org.eclipse.jetty.server.session.SessionHandler@649725e3
+2016-04-13 19:42:43,481 DEBUG [main] o.e.j.s.h.AbstractHandler: stopping o.e.j.w.WebAppContext{/,file:/Users/agalue/Development/opennms/git/develop/features/remote-poller/src/test/resources/simple-test-webapp/},src/test/resources/simple-test-webapp
+2016-04-13 19:42:43,481 INFO  [main] /: Closing Spring root WebApplicationContext
+2016-04-13 19:42:43,481 INFO  [main] o.s.w.c.s.XmlWebApplicationContext: Closing Root WebApplicationContext: startup date [Wed Apr 13 19:42:43 EDT 2016]; root of context hierarchy
+2016-04-13 19:42:43,482 INFO  [main] o.e.j.s.l.ELContextCleaner: javax.el.BeanELResolver purged
+2016-04-13 19:42:43,482 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: stopping org.eclipse.jetty.servlet.ErrorPageErrorHandler@2a3591c5
+2016-04-13 19:42:43,482 DEBUG [main] o.e.j.s.h.AbstractHandler: stopping org.eclipse.jetty.servlet.ErrorPageErrorHandler@2a3591c5
+2016-04-13 19:42:43,482 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: STOPPED org.eclipse.jetty.servlet.ErrorPageErrorHandler@2a3591c5
+2016-04-13 19:42:43,482 INFO  [main] o.e.j.s.h.ContextHandler: stopped o.e.j.w.WebAppContext{/,file:/Users/agalue/Development/opennms/git/develop/features/remote-poller/src/test/resources/simple-test-webapp/},src/test/resources/simple-test-webapp
+2016-04-13 19:42:43,482 DEBUG [main] o.e.j.u.c.Container: Container o.e.j.w.WebAppContext{/,file:/Users/agalue/Development/opennms/git/develop/features/remote-poller/src/test/resources/simple-test-webapp/},src/test/resources/simple-test-webapp - org.eclipse.jetty.server.session.SessionHandler@649725e3 as handler
+2016-04-13 19:42:43,482 DEBUG [main] o.e.j.s.ServletHandler: filterNameMap={}
+2016-04-13 19:42:43,482 DEBUG [main] o.e.j.s.ServletHandler: pathFilters=null
+2016-04-13 19:42:43,483 DEBUG [main] o.e.j.s.ServletHandler: servletFilterMap=null
+2016-04-13 19:42:43,483 DEBUG [main] o.e.j.s.ServletHandler: servletPathMap={*.jspx=jsp, *.JSPX=jsp, *.jsp=jsp, *.JSPF=jsp, *.jspf=jsp, *.JSP=jsp, *.xsp=jsp, *.XSP=jsp, /simpleBackEnd=simpleBackEnd, /=default}
+2016-04-13 19:42:43,483 DEBUG [main] o.e.j.s.ServletHandler: servletNameMap={default=default, simpleBackEnd=simpleBackEnd, jsp=jsp}
+2016-04-13 19:42:43,483 DEBUG [main] o.e.j.u.c.Container: Container org.eclipse.jetty.servlet.ServletHandler@2c1b9e4b - simpleBackEnd as servlet
+2016-04-13 19:42:43,483 DEBUG [main] o.e.j.u.c.Container: Container org.eclipse.jetty.servlet.ServletHandler@2c1b9e4b - jsp as servlet
+2016-04-13 19:42:43,483 DEBUG [main] o.e.j.u.c.Container: Container org.eclipse.jetty.servlet.ServletHandler@2c1b9e4b - default as servlet
+2016-04-13 19:42:43,483 DEBUG [main] o.e.j.u.c.Container: Container org.eclipse.jetty.servlet.ServletHandler@2c1b9e4b - [/simpleBackEnd]=>simpleBackEnd as servletMapping
+2016-04-13 19:42:43,483 DEBUG [main] o.e.j.u.c.Container: Container org.eclipse.jetty.servlet.ServletHandler@2c1b9e4b - [*.jsp, *.jspf, *.jspx, *.xsp, *.JSP, *.JSPF, *.JSPX, *.XSP]=>jsp as servletMapping
+2016-04-13 19:42:43,483 DEBUG [main] o.e.j.u.c.Container: Container org.eclipse.jetty.servlet.ServletHandler@2c1b9e4b - [/]=>default as servletMapping
+2016-04-13 19:42:43,483 DEBUG [main] o.e.j.s.ServletHandler: filterNameMap={}
+2016-04-13 19:42:43,483 DEBUG [main] o.e.j.s.ServletHandler: pathFilters=null
+2016-04-13 19:42:43,484 DEBUG [main] o.e.j.s.ServletHandler: servletFilterMap=null
+2016-04-13 19:42:43,484 DEBUG [main] o.e.j.s.ServletHandler: servletPathMap=null
+2016-04-13 19:42:43,484 DEBUG [main] o.e.j.s.ServletHandler: servletNameMap={}
+2016-04-13 19:42:43,484 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: STOPPED o.e.j.w.WebAppContext{/,null},src/test/resources/simple-test-webapp
+2016-04-13 19:42:43,484 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: STOPPED org.eclipse.jetty.server.handler.HandlerList@34a75079
+2016-04-13 19:42:43,484 DEBUG [main] o.e.j.s.h.AbstractHandler: stopping o.e.j.s.h.ContextHandler{/,file:/Users/agalue/Development/opennms/git/develop/features/remote-poller/target/test-classes/,localhost}
+2016-04-13 19:42:43,485 INFO  [main] o.e.j.s.h.ContextHandler: stopped o.e.j.s.h.ContextHandler{/,file:/Users/agalue/Development/opennms/git/develop/features/remote-poller/target/test-classes/,localhost}
+2016-04-13 19:42:43,485 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: STOPPED o.e.j.s.h.ContextHandler{/,file:/Users/agalue/Development/opennms/git/develop/features/remote-poller/target/test-classes/,localhost}
+2016-04-13 19:42:43,485 DEBUG [main] o.e.j.s.h.AbstractHandler: stopping org.eclipse.jetty.security.ConstraintSecurityHandler@1643d68f
+2016-04-13 19:42:43,485 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: stopping HashLoginService[MyRealm]
+2016-04-13 19:42:43,485 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: STOPPED HashLoginService[MyRealm]
+2016-04-13 19:42:43,485 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: STOPPED org.eclipse.jetty.security.ConstraintSecurityHandler@1643d68f
+2016-04-13 19:42:43,485 DEBUG [main] o.e.j.s.h.AbstractHandler: stopping org.eclipse.jetty.server.Server@31e3250d
+2016-04-13 19:42:43,485 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: stopping org.eclipse.jetty.server.session.HashSessionIdManager@4c168660
+2016-04-13 19:42:43,485 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: STOPPED org.eclipse.jetty.server.session.HashSessionIdManager@4c168660
+2016-04-13 19:42:43,485 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: stopping qtp409565350{8<=8<=8/254,0}
+2016-04-13 19:42:43,537 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: STOPPED qtp409565350{8<=0<=0/254,3}
+2016-04-13 19:42:43,537 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: STOPPED org.eclipse.jetty.server.Server@31e3250d
+2016-04-13 19:42:43,538 DEBUG [main] o.o.c.t.OpenNMSAbstractTestExecutionListener: starting test method public void org.opennms.poller.remote.SimpleBackEndTest.testBackendWithBasicAuthInDifferentThread() throws java.lang.Exception
+2016-04-13 19:42:43,539 DEBUG [main] o.e.j.u.c.Container: Container org.eclipse.jetty.server.Server@2cf23c81 + SelectChannelConnector@0.0.0.0:9162 as connector
+2016-04-13 19:42:43,539 DEBUG [main] o.o.c.t.h.JUnitServer: configuring basic auth
+2016-04-13 19:42:43,540 DEBUG [main] o.e.j.u.c.Container: Container o.e.j.w.WebAppContext{/,null},src/test/resources/simple-test-webapp + org.eclipse.jetty.servlet.ErrorPageErrorHandler@94f6bfb as error
+2016-04-13 19:42:43,540 DEBUG [main] o.e.j.u.c.Container: Container org.eclipse.jetty.server.handler.HandlerList@34645867 + o.e.j.w.WebAppContext{/,null},src/test/resources/simple-test-webapp as handler
+2016-04-13 19:42:43,540 DEBUG [main] o.e.j.u.c.Container: Container org.eclipse.jetty.server.handler.HandlerList@34645867 + org.eclipse.jetty.server.handler.ResourceHandler@2484f433 as handler
+2016-04-13 19:42:43,540 DEBUG [main] o.e.j.u.c.Container: Container org.eclipse.jetty.server.handler.HandlerList@34645867 + org.eclipse.jetty.server.handler.DefaultHandler@60b71e8f as handler
+2016-04-13 19:42:43,540 DEBUG [main] o.e.j.u.c.Container: Container o.e.j.s.h.ContextHandler{/,file:/Users/agalue/Development/opennms/git/develop/features/remote-poller/target/test-classes/,localhost} + org.eclipse.jetty.server.handler.HandlerList@34645867 as handler
+2016-04-13 19:42:43,540 DEBUG [main] o.e.j.u.c.Container: Container org.eclipse.jetty.security.ConstraintSecurityHandler@1255b1d1 + o.e.j.s.h.ContextHandler{/,file:/Users/agalue/Development/opennms/git/develop/features/remote-poller/target/test-classes/,localhost} as handler
+2016-04-13 19:42:43,540 DEBUG [main] o.e.j.u.c.Container: Container org.eclipse.jetty.server.Server@2cf23c81 + org.eclipse.jetty.security.ConstraintSecurityHandler@1255b1d1 as handler
+2016-04-13 19:42:43,540 DEBUG [main] o.o.c.t.h.JUnitServer: starting jetty on port 9162
+2016-04-13 19:42:43,541 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: starting org.eclipse.jetty.server.Server@2cf23c81
+2016-04-13 19:42:43,541 INFO  [main] o.e.j.s.Server: jetty-8.1.10.v20130312
+2016-04-13 19:42:43,541 DEBUG [main] o.e.j.u.c.Container: Container org.eclipse.jetty.server.Server@2cf23c81 + qtp73688220{8<=0<=0/254,-1} as threadpool
+2016-04-13 19:42:43,541 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: starting org.eclipse.jetty.security.ConstraintSecurityHandler@1255b1d1
+2016-04-13 19:42:43,541 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: starting HashLoginService[MyRealm]
+2016-04-13 19:42:43,541 DEBUG [main] o.e.j.s.HashLoginService: doStart: Starting new PropertyUserStore. PropertiesFile: target/test-classes/realm.properties refreshInterval: 300000
+2016-04-13 19:42:43,541 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: starting org.eclipse.jetty.security.PropertyUserStore@5f59185e
+2016-04-13 19:42:43,542 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: starting org.eclipse.jetty.util.Scanner@60bdf15d
+2016-04-13 19:42:43,542 DEBUG [main] o.e.j.u.Scanner: scanned [/Users/agalue/Development/opennms/git/develop/features/remote-poller/target/test-classes]: {/Users/agalue/Development/opennms/git/develop/features/remote-poller/target/test-classes/realm.properties=ADDED}
+2016-04-13 19:42:43,542 DEBUG [main] o.e.j.u.Scanner: scanned [/Users/agalue/Development/opennms/git/develop/features/remote-poller/target/test-classes]: {/Users/agalue/Development/opennms/git/develop/features/remote-poller/target/test-classes/realm.properties=ADDED}
+2016-04-13 19:42:43,542 DEBUG [main] o.e.j.s.PropertyUserStore: Load org.eclipse.jetty.security.PropertyUserStore@5f59185e from target/test-classes/realm.properties
+2016-04-13 19:42:43,543 DEBUG [main] o.e.j.s.HashLoginService: update: testuser Roles: 1
+2016-04-13 19:42:43,543 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: STARTED org.eclipse.jetty.util.Scanner@60bdf15d
+2016-04-13 19:42:43,543 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: STARTED org.eclipse.jetty.security.PropertyUserStore@5f59185e
+2016-04-13 19:42:43,543 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: STARTED HashLoginService[MyRealm]
+2016-04-13 19:42:43,543 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: starting o.e.j.s.h.ContextHandler{/,file:/Users/agalue/Development/opennms/git/develop/features/remote-poller/target/test-classes/,localhost}
+2016-04-13 19:42:43,543 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: starting org.eclipse.jetty.server.handler.HandlerList@34645867
+2016-04-13 19:42:43,543 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: starting o.e.j.w.WebAppContext{/,null},src/test/resources/simple-test-webapp
+2016-04-13 19:42:43,549 DEBUG [main] o.e.j.s.ServletHandler: filterNameMap={}
+2016-04-13 19:42:43,552 DEBUG [main] o.e.j.s.ServletHandler: pathFilters=null
+2016-04-13 19:42:43,552 DEBUG [main] o.e.j.s.ServletHandler: servletFilterMap=null
+2016-04-13 19:42:43,552 DEBUG [main] o.e.j.s.ServletHandler: servletPathMap={/=default}
+2016-04-13 19:42:43,552 DEBUG [main] o.e.j.s.ServletHandler: servletNameMap={default=default}
+2016-04-13 19:42:43,553 DEBUG [main] o.e.j.s.ServletHandler: filterNameMap={}
+2016-04-13 19:42:43,553 DEBUG [main] o.e.j.s.ServletHandler: pathFilters=null
+2016-04-13 19:42:43,553 DEBUG [main] o.e.j.s.ServletHandler: servletFilterMap=null
+2016-04-13 19:42:43,553 DEBUG [main] o.e.j.s.ServletHandler: servletPathMap={*.jspx=jsp, *.JSPX=jsp, *.jsp=jsp, *.JSPF=jsp, *.jspf=jsp, *.JSP=jsp, *.xsp=jsp, *.XSP=jsp, /=default}
+2016-04-13 19:42:43,553 DEBUG [main] o.e.j.s.ServletHandler: servletNameMap={default=default, jsp=jsp}
+2016-04-13 19:42:43,554 DEBUG [main] o.e.j.s.ServletHandler: filterNameMap={}
+2016-04-13 19:42:43,554 DEBUG [main] o.e.j.s.ServletHandler: pathFilters=null
+2016-04-13 19:42:43,554 DEBUG [main] o.e.j.s.ServletHandler: servletFilterMap=null
+2016-04-13 19:42:43,554 DEBUG [main] o.e.j.s.ServletHandler: servletPathMap={*.jspx=jsp, *.JSPX=jsp, *.jsp=jsp, *.JSPF=jsp, *.jspf=jsp, *.JSP=jsp, *.xsp=jsp, *.XSP=jsp, /simpleBackEnd=simpleBackEnd, /=default}
+2016-04-13 19:42:43,554 DEBUG [main] o.e.j.s.ServletHandler: servletNameMap={default=default, simpleBackEnd=simpleBackEnd, jsp=jsp}
+2016-04-13 19:42:43,554 DEBUG [main] o.e.j.u.c.Container: Container org.eclipse.jetty.servlet.ServletHandler@5f4d427e + default as servlet
+2016-04-13 19:42:43,554 DEBUG [main] o.e.j.u.c.Container: Container org.eclipse.jetty.servlet.ServletHandler@5f4d427e + jsp as servlet
+2016-04-13 19:42:43,554 DEBUG [main] o.e.j.u.c.Container: Container org.eclipse.jetty.servlet.ServletHandler@5f4d427e + simpleBackEnd as servlet
+2016-04-13 19:42:43,555 DEBUG [main] o.e.j.u.c.Container: Container org.eclipse.jetty.servlet.ServletHandler@5f4d427e + [/]=>default as servletMapping
+2016-04-13 19:42:43,555 DEBUG [main] o.e.j.u.c.Container: Container org.eclipse.jetty.servlet.ServletHandler@5f4d427e + [*.jsp, *.jspf, *.jspx, *.xsp, *.JSP, *.JSPF, *.JSPX, *.XSP]=>jsp as servletMapping
+2016-04-13 19:42:43,555 DEBUG [main] o.e.j.u.c.Container: Container org.eclipse.jetty.servlet.ServletHandler@5f4d427e + [/simpleBackEnd]=>simpleBackEnd as servletMapping
+2016-04-13 19:42:43,555 DEBUG [main] o.e.j.u.c.Container: Container org.eclipse.jetty.security.ConstraintSecurityHandler@6e521c1e + org.eclipse.jetty.servlet.ServletHandler@5f4d427e as handler
+2016-04-13 19:42:43,555 DEBUG [main] o.e.j.u.c.Container: Container org.eclipse.jetty.server.session.SessionHandler@224b4d61 + org.eclipse.jetty.security.ConstraintSecurityHandler@6e521c1e as handler
+2016-04-13 19:42:43,555 DEBUG [main] o.e.j.u.c.Container: Container org.eclipse.jetty.server.session.SessionHandler@224b4d61 + org.eclipse.jetty.server.session.HashSessionManager@5d5d9e5 as sessionManager
+2016-04-13 19:42:43,555 DEBUG [main] o.e.j.u.c.Container: Container o.e.j.w.WebAppContext{/,file:/Users/agalue/Development/opennms/git/develop/features/remote-poller/src/test/resources/simple-test-webapp/},src/test/resources/simple-test-webapp + org.eclipse.jetty.server.session.SessionHandler@224b4d61 as handler
+2016-04-13 19:42:43,555 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: starting org.eclipse.jetty.server.session.SessionHandler@224b4d61
+2016-04-13 19:42:43,555 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: starting org.eclipse.jetty.server.session.HashSessionManager@5d5d9e5
+2016-04-13 19:42:43,555 DEBUG [main] o.e.j.u.c.Container: Container org.eclipse.jetty.server.Server@2cf23c81 + org.eclipse.jetty.server.session.HashSessionIdManager@303e3593 as sessionIdManager
+2016-04-13 19:42:43,555 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: starting org.eclipse.jetty.server.session.HashSessionIdManager@303e3593
+2016-04-13 19:42:43,556 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: STARTED org.eclipse.jetty.server.session.HashSessionIdManager@303e3593
+2016-04-13 19:42:43,556 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: STARTED org.eclipse.jetty.server.session.HashSessionManager@5d5d9e5
+2016-04-13 19:42:43,556 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: starting org.eclipse.jetty.security.ConstraintSecurityHandler@6e521c1e
+2016-04-13 19:42:43,556 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: starting org.eclipse.jetty.servlet.ServletHandler@5f4d427e
+2016-04-13 19:42:43,556 DEBUG [main] o.e.j.s.ServletHandler: filterNameMap={}
+2016-04-13 19:42:43,556 DEBUG [main] o.e.j.s.ServletHandler: pathFilters=null
+2016-04-13 19:42:43,556 DEBUG [main] o.e.j.s.ServletHandler: servletFilterMap=null
+2016-04-13 19:42:43,556 DEBUG [main] o.e.j.s.ServletHandler: servletPathMap={*.jspx=jsp, *.JSPX=jsp, *.jsp=jsp, *.JSPF=jsp, *.jspf=jsp, *.JSP=jsp, *.xsp=jsp, *.XSP=jsp, /simpleBackEnd=simpleBackEnd, /=default}
+2016-04-13 19:42:43,556 DEBUG [main] o.e.j.s.ServletHandler: servletNameMap={default=default, simpleBackEnd=simpleBackEnd, jsp=jsp}
+2016-04-13 19:42:43,556 DEBUG [main] o.e.j.s.h.AbstractHandler: starting org.eclipse.jetty.servlet.ServletHandler@5f4d427e
+2016-04-13 19:42:43,556 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: STARTED org.eclipse.jetty.servlet.ServletHandler@5f4d427e
+2016-04-13 19:42:43,557 DEBUG [main] o.e.j.s.h.AbstractHandler: starting org.eclipse.jetty.security.ConstraintSecurityHandler@6e521c1e
+2016-04-13 19:42:43,557 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: STARTED org.eclipse.jetty.security.ConstraintSecurityHandler@6e521c1e
+2016-04-13 19:42:43,557 DEBUG [main] o.e.j.s.h.AbstractHandler: starting org.eclipse.jetty.server.session.SessionHandler@224b4d61
+2016-04-13 19:42:43,557 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: STARTED org.eclipse.jetty.server.session.SessionHandler@224b4d61
+2016-04-13 19:42:43,557 DEBUG [main] o.e.j.s.h.AbstractHandler: starting o.e.j.w.WebAppContext{/,file:/Users/agalue/Development/opennms/git/develop/features/remote-poller/src/test/resources/simple-test-webapp/},src/test/resources/simple-test-webapp
+2016-04-13 19:42:43,557 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: starting org.eclipse.jetty.servlet.ErrorPageErrorHandler@94f6bfb
+2016-04-13 19:42:43,557 DEBUG [main] o.e.j.s.h.AbstractHandler: starting org.eclipse.jetty.servlet.ErrorPageErrorHandler@94f6bfb
+2016-04-13 19:42:43,557 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: STARTED org.eclipse.jetty.servlet.ErrorPageErrorHandler@94f6bfb
+2016-04-13 19:42:43,558 INFO  [main] /: Initializing Spring root WebApplicationContext
+2016-04-13 19:42:43,558 INFO  [main] o.s.w.c.ContextLoader: Root WebApplicationContext: initialization started
+2016-04-13 19:42:43,559 INFO  [main] o.s.w.c.s.XmlWebApplicationContext: Refreshing Root WebApplicationContext: startup date [Wed Apr 13 19:42:43 EDT 2016]; root of context hierarchy
+2016-04-13 19:42:43,559 INFO  [main] o.s.b.f.x.XmlBeanDefinitionReader: Loading XML bean definitions from ServletContext resource [/WEB-INF/applicationContext-exportedSimpleBackEnd.xml]
+2016-04-13 19:42:43,579 INFO  [main] o.s.w.c.ContextLoader: Root WebApplicationContext: initialization completed in 21 ms
+2016-04-13 19:42:43,579 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: starting jsp
+2016-04-13 19:42:43,579 DEBUG [main] o.e.j.s.Holder: Holding class org.apache.jasper.servlet.JspServlet
+2016-04-13 19:42:43,580 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: STARTED jsp
+2016-04-13 19:42:43,580 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: starting default
+2016-04-13 19:42:43,580 DEBUG [main] o.e.j.s.Holder: Holding class org.eclipse.jetty.servlet.DefaultServlet
+2016-04-13 19:42:43,581 DEBUG [main] o.e.j.s.DefaultServlet: resource base = null
+2016-04-13 19:42:43,581 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: STARTED default
+2016-04-13 19:42:43,581 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: starting simpleBackEnd
+2016-04-13 19:42:43,581 DEBUG [main] o.e.j.s.Holder: Holding class org.springframework.web.context.support.HttpRequestHandlerServlet
+2016-04-13 19:42:43,581 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: STARTED simpleBackEnd
+2016-04-13 19:42:43,582 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: STARTED o.e.j.w.WebAppContext{/,file:/Users/agalue/Development/opennms/git/develop/features/remote-poller/src/test/resources/simple-test-webapp/},src/test/resources/simple-test-webapp
+2016-04-13 19:42:43,582 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: starting org.eclipse.jetty.server.handler.ResourceHandler@2484f433
+2016-04-13 19:42:43,582 DEBUG [main] o.e.j.s.h.AbstractHandler: starting org.eclipse.jetty.server.handler.ResourceHandler@2484f433
+2016-04-13 19:42:43,582 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: STARTED org.eclipse.jetty.server.handler.ResourceHandler@2484f433
+2016-04-13 19:42:43,582 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: starting org.eclipse.jetty.server.handler.DefaultHandler@60b71e8f
+2016-04-13 19:42:43,582 DEBUG [main] o.e.j.s.h.AbstractHandler: starting org.eclipse.jetty.server.handler.DefaultHandler@60b71e8f
+2016-04-13 19:42:43,582 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: STARTED org.eclipse.jetty.server.handler.DefaultHandler@60b71e8f
+2016-04-13 19:42:43,582 DEBUG [main] o.e.j.s.h.AbstractHandler: starting org.eclipse.jetty.server.handler.HandlerList@34645867
+2016-04-13 19:42:43,582 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: STARTED org.eclipse.jetty.server.handler.HandlerList@34645867
+2016-04-13 19:42:43,582 DEBUG [main] o.e.j.s.h.AbstractHandler: starting o.e.j.s.h.ContextHandler{/,file:/Users/agalue/Development/opennms/git/develop/features/remote-poller/target/test-classes/,localhost}
+2016-04-13 19:42:43,582 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: STARTED o.e.j.s.h.ContextHandler{/,file:/Users/agalue/Development/opennms/git/develop/features/remote-poller/target/test-classes/,localhost}
+2016-04-13 19:42:43,582 DEBUG [main] o.e.j.s.h.AbstractHandler: starting org.eclipse.jetty.security.ConstraintSecurityHandler@1255b1d1
+2016-04-13 19:42:43,582 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: STARTED org.eclipse.jetty.security.ConstraintSecurityHandler@1255b1d1
+2016-04-13 19:42:43,582 DEBUG [main] o.e.j.s.h.AbstractHandler: starting org.eclipse.jetty.server.Server@2cf23c81
+2016-04-13 19:42:43,582 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: starting qtp73688220{8<=0<=0/254,-1}
+2016-04-13 19:42:43,583 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: STARTED qtp73688220{8<=7<=8/254,0}
+2016-04-13 19:42:43,583 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: starting SelectChannelConnector@0.0.0.0:9162
+2016-04-13 19:42:43,584 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: starting null/null
+2016-04-13 19:42:43,584 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: STARTED PooledBuffers [0/1024@6144,0/1024@16384,0/1024@-]/PooledBuffers [0/1024@6144,0/1024@32768,0/1024@-]
+2016-04-13 19:42:43,584 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: starting org.eclipse.jetty.server.nio.SelectChannelConnector$ConnectorSelectorManager@33617539
+2016-04-13 19:42:43,584 DEBUG [qtp73688220-35 Selector0] o.e.j.i.nio: Starting Thread[qtp73688220-35 Selector0,5,main] on org.eclipse.jetty.io.nio.SelectorManager$1@3eada185
+2016-04-13 19:42:43,584 DEBUG [qtp73688220-36 Selector1] o.e.j.i.nio: Starting Thread[qtp73688220-36 Selector1,5,main] on org.eclipse.jetty.io.nio.SelectorManager$1@552b839d
+2016-04-13 19:42:43,584 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: STARTED org.eclipse.jetty.server.nio.SelectChannelConnector$ConnectorSelectorManager@33617539
+2016-04-13 19:42:43,585 INFO  [main] o.e.j.s.AbstractConnector: Started SelectChannelConnector@0.0.0.0:9162
+2016-04-13 19:42:43,585 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: STARTED SelectChannelConnector@0.0.0.0:9162
+2016-04-13 19:42:43,585 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: STARTED org.eclipse.jetty.server.Server@2cf23c81
+2016-04-13 19:42:43,587 DEBUG [qtp73688220-35 Selector0] o.e.j.i.nio: created SCEP@3455caf5{l(/127.0.0.1:51215)<->r(/127.0.0.1:9162),d=false,open=true,ishut=false,oshut=false,rb=false,wb=false,w=true,i=0}-{AsyncHttpConnection@7157421b,g=HttpGenerator{s=0,h=-1,b=-1,c=-1},p=HttpParser{s=-14,l=0,c=0},r=0}
+2016-04-13 19:42:43,588 DEBUG [qtp73688220-39] o.e.j.h.HttpParser: filled 616/616
+2016-04-13 19:42:43,590 DEBUG [qtp73688220-39 - /simpleBackEnd] o.e.j.s.Server: REQUEST /simpleBackEnd on AsyncHttpConnection@7157421b,g=HttpGenerator{s=0,h=-1,b=-1,c=-1},p=HttpParser{s=2,l=3,c=302},r=1
+2016-04-13 19:42:43,590 DEBUG [qtp73688220-39 - /simpleBackEnd] o.e.j.s.h.ContextHandler: scope null||/simpleBackEnd @ o.e.j.s.h.ContextHandler{/,file:/Users/agalue/Development/opennms/git/develop/features/remote-poller/target/test-classes/,localhost}
+2016-04-13 19:42:43,590 DEBUG [qtp73688220-39 - /simpleBackEnd] o.e.j.s.h.ContextHandler: context=||/simpleBackEnd @ o.e.j.s.h.ContextHandler{/,file:/Users/agalue/Development/opennms/git/develop/features/remote-poller/target/test-classes/,localhost}
+2016-04-13 19:42:43,591 DEBUG [qtp73688220-39 - /simpleBackEnd] o.e.j.s.h.ContextHandler: scope ||/simpleBackEnd @ o.e.j.w.WebAppContext{/,file:/Users/agalue/Development/opennms/git/develop/features/remote-poller/src/test/resources/simple-test-webapp/},src/test/resources/simple-test-webapp
+2016-04-13 19:42:43,591 DEBUG [qtp73688220-39 - /simpleBackEnd] o.e.j.s.h.ContextHandler: context=||/simpleBackEnd @ o.e.j.w.WebAppContext{/,file:/Users/agalue/Development/opennms/git/develop/features/remote-poller/src/test/resources/simple-test-webapp/},src/test/resources/simple-test-webapp
+2016-04-13 19:42:43,591 DEBUG [qtp73688220-39 - /simpleBackEnd] o.e.j.s.session: sessionManager=org.eclipse.jetty.server.session.HashSessionManager@5d5d9e5
+2016-04-13 19:42:43,591 DEBUG [qtp73688220-39 - /simpleBackEnd] o.e.j.s.session: session=null
+2016-04-13 19:42:43,591 DEBUG [qtp73688220-39 - /simpleBackEnd] o.e.j.s.ServletHandler: servlet |/simpleBackEnd|null -> simpleBackEnd
+2016-04-13 19:42:43,591 DEBUG [qtp73688220-39 - /simpleBackEnd] o.e.j.s.ServletHandler: chain=null
+2016-04-13 19:42:43,592 DEBUG [qtp73688220-39 - /simpleBackEnd] o.e.j.s.Server: RESPONSE /simpleBackEnd  200 handled=true
+2016-04-13 19:42:43,593 DEBUG [qtp73688220-39] o.e.j.s.AsyncHttpConnection: Enabled read interest SCEP@3455caf5{l(/127.0.0.1:51215)<->r(/127.0.0.1:9162),d=true,open=true,ishut=false,oshut=false,rb=false,wb=false,w=true,i=0r}-{AsyncHttpConnection@7157421b,g=HttpGenerator{s=4,h=0,b=0,c=-1},p=HttpParser{s=0,l=3,c=302},r=1}
+2016-04-13 19:42:43,593 DEBUG [qtp73688220-39] o.e.j.h.HttpParser: filled 616/616
+2016-04-13 19:42:43,593 DEBUG [qtp73688220-39 - /simpleBackEnd] o.e.j.s.Server: REQUEST /simpleBackEnd on AsyncHttpConnection@7157421b,g=HttpGenerator{s=0,h=-1,b=-1,c=-1},p=HttpParser{s=2,l=3,c=302},r=2
+2016-04-13 19:42:43,593 DEBUG [qtp73688220-39 - /simpleBackEnd] o.e.j.s.h.ContextHandler: scope null||/simpleBackEnd @ o.e.j.s.h.ContextHandler{/,file:/Users/agalue/Development/opennms/git/develop/features/remote-poller/target/test-classes/,localhost}
+2016-04-13 19:42:43,594 DEBUG [qtp73688220-39 - /simpleBackEnd] o.e.j.s.h.ContextHandler: context=||/simpleBackEnd @ o.e.j.s.h.ContextHandler{/,file:/Users/agalue/Development/opennms/git/develop/features/remote-poller/target/test-classes/,localhost}
+2016-04-13 19:42:43,594 DEBUG [qtp73688220-39 - /simpleBackEnd] o.e.j.s.h.ContextHandler: scope ||/simpleBackEnd @ o.e.j.w.WebAppContext{/,file:/Users/agalue/Development/opennms/git/develop/features/remote-poller/src/test/resources/simple-test-webapp/},src/test/resources/simple-test-webapp
+2016-04-13 19:42:43,594 DEBUG [qtp73688220-39 - /simpleBackEnd] o.e.j.s.h.ContextHandler: context=||/simpleBackEnd @ o.e.j.w.WebAppContext{/,file:/Users/agalue/Development/opennms/git/develop/features/remote-poller/src/test/resources/simple-test-webapp/},src/test/resources/simple-test-webapp
+2016-04-13 19:42:43,594 DEBUG [qtp73688220-39 - /simpleBackEnd] o.e.j.s.session: sessionManager=org.eclipse.jetty.server.session.HashSessionManager@5d5d9e5
+2016-04-13 19:42:43,594 DEBUG [qtp73688220-39 - /simpleBackEnd] o.e.j.s.session: session=null
+2016-04-13 19:42:43,594 DEBUG [qtp73688220-39 - /simpleBackEnd] o.e.j.s.ServletHandler: servlet |/simpleBackEnd|null -> simpleBackEnd
+2016-04-13 19:42:43,594 DEBUG [qtp73688220-39 - /simpleBackEnd] o.e.j.s.ServletHandler: chain=null
+2016-04-13 19:42:43,595 DEBUG [qtp73688220-39 - /simpleBackEnd] o.e.j.s.Server: RESPONSE /simpleBackEnd  200 handled=true
+2016-04-13 19:42:43,596 DEBUG [main] o.o.c.t.OpenNMSAbstractTestExecutionListener: finishing test method public void org.opennms.poller.remote.SimpleBackEndTest.testBackendWithBasicAuthInDifferentThread() throws java.lang.Exception
+2016-04-13 19:42:43,596 DEBUG [qtp73688220-39] o.e.j.s.AsyncHttpConnection: Enabled read interest SCEP@3455caf5{l(/127.0.0.1:51215)<->r(/127.0.0.1:9162),d=true,open=true,ishut=false,oshut=false,rb=false,wb=false,w=true,i=0r}-{AsyncHttpConnection@7157421b,g=HttpGenerator{s=4,h=0,b=0,c=-1},p=HttpParser{s=0,l=3,c=302},r=2}
+2016-04-13 19:42:43,596 DEBUG [main] o.o.c.t.h.JUnitServer: shutting down jetty on port 9162
+2016-04-13 19:42:43,596 DEBUG [qtp73688220-39] o.e.j.h.HttpParser: filled 0/0
+2016-04-13 19:42:43,596 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: stopping org.eclipse.jetty.server.Server@2cf23c81
+2016-04-13 19:42:43,596 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: stopping SelectChannelConnector@0.0.0.0:9162
+2016-04-13 19:42:43,596 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: stopping org.eclipse.jetty.server.nio.SelectChannelConnector$ConnectorSelectorManager@33617539
+2016-04-13 19:42:43,596 DEBUG [qtp73688220-35 Selector0] o.e.j.i.nio: Stopped Thread[qtp73688220-35 Selector0,5,main] on org.eclipse.jetty.io.nio.SelectorManager$1@3eada185
+2016-04-13 19:42:43,611 DEBUG [main] o.e.j.i.n.ChannelEndPoint: close SCEP@3455caf5{l(/127.0.0.1:51215)<->r(/127.0.0.1:9162),d=false,open=true,ishut=false,oshut=false,rb=false,wb=false,w=true,i=1r}-{AsyncHttpConnection@7157421b,g=HttpGenerator{s=0,h=-1,b=-1,c=-1},p=HttpParser{s=-14,l=0,c=-3},r=2}
+2016-04-13 19:42:43,612 DEBUG [qtp73688220-36 Selector1] o.e.j.i.nio: Stopped Thread[qtp73688220-36 Selector1,5,main] on org.eclipse.jetty.io.nio.SelectorManager$1@552b839d
+2016-04-13 19:42:43,624 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: STOPPED org.eclipse.jetty.server.nio.SelectChannelConnector$ConnectorSelectorManager@33617539
+2016-04-13 19:42:43,624 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: stopping PooledBuffers [1/1024@6144,0/1024@16384,0/1024@-]/PooledBuffers [1/1024@6144,1/1024@32768,0/1024@-]
+2016-04-13 19:42:43,624 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: STOPPED null/null
+2016-04-13 19:42:43,624 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: STOPPED SelectChannelConnector@0.0.0.0:9162
+2016-04-13 19:42:43,624 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: stopping org.eclipse.jetty.security.ConstraintSecurityHandler@1255b1d1
+2016-04-13 19:42:43,624 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: stopping o.e.j.s.h.ContextHandler{/,file:/Users/agalue/Development/opennms/git/develop/features/remote-poller/target/test-classes/,localhost}
+2016-04-13 19:42:43,624 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: stopping org.eclipse.jetty.server.handler.HandlerList@34645867
+2016-04-13 19:42:43,624 DEBUG [main] o.e.j.s.h.AbstractHandler: stopping org.eclipse.jetty.server.handler.HandlerList@34645867
+2016-04-13 19:42:43,624 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: stopping org.eclipse.jetty.server.handler.DefaultHandler@60b71e8f
+2016-04-13 19:42:43,624 DEBUG [main] o.e.j.s.h.AbstractHandler: stopping org.eclipse.jetty.server.handler.DefaultHandler@60b71e8f
+2016-04-13 19:42:43,624 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: STOPPED org.eclipse.jetty.server.handler.DefaultHandler@60b71e8f
+2016-04-13 19:42:43,625 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: stopping org.eclipse.jetty.server.handler.ResourceHandler@2484f433
+2016-04-13 19:42:43,625 DEBUG [main] o.e.j.s.h.AbstractHandler: stopping org.eclipse.jetty.server.handler.ResourceHandler@2484f433
+2016-04-13 19:42:43,625 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: STOPPED org.eclipse.jetty.server.handler.ResourceHandler@2484f433
+2016-04-13 19:42:43,625 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: stopping o.e.j.w.WebAppContext{/,file:/Users/agalue/Development/opennms/git/develop/features/remote-poller/src/test/resources/simple-test-webapp/},src/test/resources/simple-test-webapp
+2016-04-13 19:42:43,625 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: stopping org.eclipse.jetty.server.session.SessionHandler@224b4d61
+2016-04-13 19:42:43,625 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: stopping org.eclipse.jetty.server.session.HashSessionManager@5d5d9e5
+2016-04-13 19:42:43,625 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: STOPPED org.eclipse.jetty.server.session.HashSessionManager@5d5d9e5
+2016-04-13 19:42:43,625 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: stopping org.eclipse.jetty.security.ConstraintSecurityHandler@6e521c1e
+2016-04-13 19:42:43,625 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: stopping org.eclipse.jetty.servlet.ServletHandler@5f4d427e
+2016-04-13 19:42:43,625 DEBUG [main] o.e.j.s.h.AbstractHandler: stopping org.eclipse.jetty.servlet.ServletHandler@5f4d427e
+2016-04-13 19:42:43,625 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: stopping simpleBackEnd
+2016-04-13 19:42:43,625 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: STOPPED simpleBackEnd
+2016-04-13 19:42:43,625 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: stopping jsp
+2016-04-13 19:42:43,625 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: STOPPED jsp
+2016-04-13 19:42:43,625 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: stopping default
+2016-04-13 19:42:43,625 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: STOPPED default
+2016-04-13 19:42:43,625 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: STOPPED org.eclipse.jetty.servlet.ServletHandler@5f4d427e
+2016-04-13 19:42:43,625 DEBUG [main] o.e.j.s.h.AbstractHandler: stopping org.eclipse.jetty.security.ConstraintSecurityHandler@6e521c1e
+2016-04-13 19:42:43,625 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: STOPPED org.eclipse.jetty.security.ConstraintSecurityHandler@6e521c1e
+2016-04-13 19:42:43,626 DEBUG [main] o.e.j.s.h.AbstractHandler: stopping org.eclipse.jetty.server.session.SessionHandler@224b4d61
+2016-04-13 19:42:43,626 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: STOPPED org.eclipse.jetty.server.session.SessionHandler@224b4d61
+2016-04-13 19:42:43,626 DEBUG [main] o.e.j.s.h.AbstractHandler: stopping o.e.j.w.WebAppContext{/,file:/Users/agalue/Development/opennms/git/develop/features/remote-poller/src/test/resources/simple-test-webapp/},src/test/resources/simple-test-webapp
+2016-04-13 19:42:43,626 INFO  [main] /: Closing Spring root WebApplicationContext
+2016-04-13 19:42:43,626 INFO  [main] o.s.w.c.s.XmlWebApplicationContext: Closing Root WebApplicationContext: startup date [Wed Apr 13 19:42:43 EDT 2016]; root of context hierarchy
+2016-04-13 19:42:43,626 INFO  [main] o.e.j.s.l.ELContextCleaner: javax.el.BeanELResolver purged
+2016-04-13 19:42:43,626 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: stopping org.eclipse.jetty.servlet.ErrorPageErrorHandler@94f6bfb
+2016-04-13 19:42:43,626 DEBUG [main] o.e.j.s.h.AbstractHandler: stopping org.eclipse.jetty.servlet.ErrorPageErrorHandler@94f6bfb
+2016-04-13 19:42:43,626 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: STOPPED org.eclipse.jetty.servlet.ErrorPageErrorHandler@94f6bfb
+2016-04-13 19:42:43,626 INFO  [main] o.e.j.s.h.ContextHandler: stopped o.e.j.w.WebAppContext{/,file:/Users/agalue/Development/opennms/git/develop/features/remote-poller/src/test/resources/simple-test-webapp/},src/test/resources/simple-test-webapp
+2016-04-13 19:42:43,627 DEBUG [main] o.e.j.u.c.Container: Container o.e.j.w.WebAppContext{/,file:/Users/agalue/Development/opennms/git/develop/features/remote-poller/src/test/resources/simple-test-webapp/},src/test/resources/simple-test-webapp - org.eclipse.jetty.server.session.SessionHandler@224b4d61 as handler
+2016-04-13 19:42:43,627 DEBUG [main] o.e.j.s.ServletHandler: filterNameMap={}
+2016-04-13 19:42:43,627 DEBUG [main] o.e.j.s.ServletHandler: pathFilters=null
+2016-04-13 19:42:43,627 DEBUG [main] o.e.j.s.ServletHandler: servletFilterMap=null
+2016-04-13 19:42:43,627 DEBUG [main] o.e.j.s.ServletHandler: servletPathMap={*.jspx=jsp, *.JSPX=jsp, *.jsp=jsp, *.JSPF=jsp, *.jspf=jsp, *.JSP=jsp, *.xsp=jsp, *.XSP=jsp, /simpleBackEnd=simpleBackEnd, /=default}
+2016-04-13 19:42:43,627 DEBUG [main] o.e.j.s.ServletHandler: servletNameMap={default=default, simpleBackEnd=simpleBackEnd, jsp=jsp}
+2016-04-13 19:42:43,627 DEBUG [main] o.e.j.u.c.Container: Container org.eclipse.jetty.servlet.ServletHandler@5f4d427e - simpleBackEnd as servlet
+2016-04-13 19:42:43,627 DEBUG [main] o.e.j.u.c.Container: Container org.eclipse.jetty.servlet.ServletHandler@5f4d427e - jsp as servlet
+2016-04-13 19:42:43,627 DEBUG [main] o.e.j.u.c.Container: Container org.eclipse.jetty.servlet.ServletHandler@5f4d427e - default as servlet
+2016-04-13 19:42:43,627 DEBUG [main] o.e.j.u.c.Container: Container org.eclipse.jetty.servlet.ServletHandler@5f4d427e - [/simpleBackEnd]=>simpleBackEnd as servletMapping
+2016-04-13 19:42:43,627 DEBUG [main] o.e.j.u.c.Container: Container org.eclipse.jetty.servlet.ServletHandler@5f4d427e - [*.jsp, *.jspf, *.jspx, *.xsp, *.JSP, *.JSPF, *.JSPX, *.XSP]=>jsp as servletMapping
+2016-04-13 19:42:43,627 DEBUG [main] o.e.j.u.c.Container: Container org.eclipse.jetty.servlet.ServletHandler@5f4d427e - [/]=>default as servletMapping
+2016-04-13 19:42:43,627 DEBUG [main] o.e.j.s.ServletHandler: filterNameMap={}
+2016-04-13 19:42:43,627 DEBUG [main] o.e.j.s.ServletHandler: pathFilters=null
+2016-04-13 19:42:43,627 DEBUG [main] o.e.j.s.ServletHandler: servletFilterMap=null
+2016-04-13 19:42:43,627 DEBUG [main] o.e.j.s.ServletHandler: servletPathMap=null
+2016-04-13 19:42:43,627 DEBUG [main] o.e.j.s.ServletHandler: servletNameMap={}
+2016-04-13 19:42:43,628 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: STOPPED o.e.j.w.WebAppContext{/,null},src/test/resources/simple-test-webapp
+2016-04-13 19:42:43,628 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: STOPPED org.eclipse.jetty.server.handler.HandlerList@34645867
+2016-04-13 19:42:43,628 DEBUG [main] o.e.j.s.h.AbstractHandler: stopping o.e.j.s.h.ContextHandler{/,file:/Users/agalue/Development/opennms/git/develop/features/remote-poller/target/test-classes/,localhost}
+2016-04-13 19:42:43,628 INFO  [main] o.e.j.s.h.ContextHandler: stopped o.e.j.s.h.ContextHandler{/,file:/Users/agalue/Development/opennms/git/develop/features/remote-poller/target/test-classes/,localhost}
+2016-04-13 19:42:43,628 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: STOPPED o.e.j.s.h.ContextHandler{/,file:/Users/agalue/Development/opennms/git/develop/features/remote-poller/target/test-classes/,localhost}
+2016-04-13 19:42:43,628 DEBUG [main] o.e.j.s.h.AbstractHandler: stopping org.eclipse.jetty.security.ConstraintSecurityHandler@1255b1d1
+2016-04-13 19:42:43,628 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: stopping HashLoginService[MyRealm]
+2016-04-13 19:42:43,628 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: STOPPED HashLoginService[MyRealm]
+2016-04-13 19:42:43,628 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: STOPPED org.eclipse.jetty.security.ConstraintSecurityHandler@1255b1d1
+2016-04-13 19:42:43,628 DEBUG [main] o.e.j.s.h.AbstractHandler: stopping org.eclipse.jetty.server.Server@2cf23c81
+2016-04-13 19:42:43,628 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: stopping org.eclipse.jetty.server.session.HashSessionIdManager@303e3593
+2016-04-13 19:42:43,628 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: STOPPED org.eclipse.jetty.server.session.HashSessionIdManager@303e3593
+2016-04-13 19:42:43,628 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: stopping qtp73688220{8<=8<=8/254,0}
+2016-04-13 19:42:43,680 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: STOPPED qtp73688220{8<=0<=0/254,5}
+2016-04-13 19:42:43,681 DEBUG [main] o.e.j.u.c.AbstractLifeCycle: STOPPED org.eclipse.jetty.server.Server@2cf23c81
+2016-04-13 19:42:43,683 INFO  [Thread-1] o.s.c.s.GenericApplicationContext: Closing org.springframework.context.support.GenericApplicationContext@5f16132a: startup date [Wed Apr 13 19:42:42 EDT 2016]; root of context hierarchy
