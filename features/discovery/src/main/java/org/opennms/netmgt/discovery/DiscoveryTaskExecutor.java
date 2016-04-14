@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -28,25 +28,14 @@
 
 package org.opennms.netmgt.discovery;
 
-import java.util.Properties;
-
-import org.opennms.netmgt.config.DiscoveryConfigFactory;
+import org.apache.camel.InOnly;
+import org.opennms.netmgt.config.discovery.DiscoveryConfiguration;
 
 /**
- * This class is used to generate a {@link Properties} object that contains
- * scalar values from a {@link DiscoveryConfigFactory} instance.
+ * This interface must be {@link InOnly} in order for task submission to
+ * be performed asynchronously.
  */
-public abstract class DiscoveryConfigurationFactoryPropertiesConverter {
-
-	public static final String INITIAL_SLEEP_TIME = "initialSleepTime";
-	public static final String RESTART_SLEEP_TIME = "restartSleepTime";
-	public static final String PACKETS_PER_SECOND = "packetsPerSecond";
-
-	public static Properties getProperties(final DiscoveryConfigFactory factory) {
-		final Properties retval = new Properties();
-		retval.setProperty(INITIAL_SLEEP_TIME, String.valueOf(factory.getInitialSleepTime()));
-		retval.setProperty(RESTART_SLEEP_TIME, String.valueOf(factory.getRestartSleepTime()));
-		retval.setProperty(PACKETS_PER_SECOND, String.valueOf(factory.getPacketsPerSecond()));
-		return retval;
-	}
+@InOnly
+public interface DiscoveryTaskExecutor {
+	void handleDiscoveryTask(DiscoveryConfiguration message);
 }

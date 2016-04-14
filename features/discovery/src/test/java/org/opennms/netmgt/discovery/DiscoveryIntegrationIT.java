@@ -28,8 +28,10 @@
 
 package org.opennms.netmgt.discovery;
 
+import static org.junit.Assert.assertTrue;
 import static org.opennms.core.utils.InetAddressUtils.str;
 
+import java.util.Date;
 import java.util.stream.StreamSupport;
 
 import org.junit.Before;
@@ -82,7 +84,10 @@ public class DiscoveryIntegrationIT implements InitializingBean {
     private DiscoveryConfigFactory m_discoveryConfig;
 
     @Autowired
-    MockEventIpcManager m_eventIpcManager;
+    private MockEventIpcManager m_eventIpcManager;
+
+    @Autowired
+    private DiscoveryTaskExecutor m_taskExecutor;
 
     @Override
     public void afterPropertiesSet() throws Exception {
@@ -110,8 +115,8 @@ public class DiscoveryIntegrationIT implements InitializingBean {
         // because it is a property placeholder.
         config.setInitialSleepTime(0);
 
-        // TODO: This doesn't work yet.
-        config.setPacketsPerSecond(10);
+        // Discover 255 address ~= 10 seconds
+        config.setPacketsPerSecond(25.5);
 
         // Add a discovery range to the config
         config.removeAllIncludeRange();
@@ -138,6 +143,53 @@ public class DiscoveryIntegrationIT implements InitializingBean {
         //m_discovery.init();
 
         m_discovery.start();
+
+        // TODO: We need to wait more than 30 seconds to account for the discovery
+        // startup delay
+        anticipator.waitForAnticipated(120000);
+        anticipator.verifyAnticipated();
+
+        m_discovery.stop();
+    }
+
+    @Test
+    public void testDiscoveryTaskExecutor() throws Exception {
+        // Add a range of localhost IP addresses to ping
+        IncludeRange range = new IncludeRange();
+        //range.setBegin("127.0.5.1");
+        //range.setEnd("127.0.5.254");
+        range.setBegin("192.168.99.1");
+        range.setEnd("192.168.99.100");
+        range.setTimeout(5000);
+        range.setRetries(0);
+
+        DiscoveryConfiguration config = new DiscoveryConfiguration();
+        config.setInitialSleepTime(0);
+        // 100 addresses at 10 per second should take at least 10 seconds
+        config.setPacketsPerSecond(10);
+        config.removeAllIncludeRange();
+        config.addIncludeRange(range);
+
+        // Anticipate newSuspect events for all of the addresses
+        EventAnticipator anticipator = m_eventIpcManager.getEventAnticipator();
+        StreamSupport.stream(new DiscoveryConfigFactory(config).getConfiguredAddresses().spliterator(), false).forEach(addr -> {
+            System.out.println("ANTICIPATING: " + str(addr.getAddress()));
+            Event event = new Event();
+            event.setUei(EventConstants.NEW_SUSPECT_INTERFACE_EVENT_UEI);
+            event.setInterfaceAddress(addr.getAddress());
+            anticipator.anticipateEvent(event);
+        });
+
+        m_discovery.start();
+
+        Date beforeTime = new Date();
+        // Invoke a one-time scan via the DiscoveryTaskExecutor service
+        m_taskExecutor.handleDiscoveryTask(config);
+        Date afterTime = new Date();
+        // Make sure that this call returns quickly as an async InOnly call
+        long timespan = (afterTime.getTime() - beforeTime.getTime());
+        System.out.println("Task executor invocation took " + timespan + "ms");
+        assertTrue("Timespan was not less than 8 seconds: " + timespan, timespan < 8000L);
 
         // TODO: We need to wait more than 30 seconds to account for the discovery
         // startup delay
