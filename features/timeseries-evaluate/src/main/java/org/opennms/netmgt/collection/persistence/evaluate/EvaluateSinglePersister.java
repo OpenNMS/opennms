@@ -64,12 +64,15 @@ public class EvaluateSinglePersister extends AbstractEvaluatePersister {
         pushShouldPersist(attribute);
         if (shouldPersist()) {
             final String resourceId = getResourceId(attribute.getResource());
-            final String attribId = new StringBuffer().append(resourceId).append('/').append(attribute.getName()).toString();
+            final String attribId = resourceId + '/' + attribute.getName();
             LOG.debug("visitAttribute: {}", attribId);
+            stats.checkNode(attribute.getResource().getParent());
             stats.checkResource(resourceId);
-            stats.checkAttribute(attribId);
             if (attribute.getAttributeType() instanceof NumericCollectionAttributeType) {
+                stats.checkAttribute(attribId, true);
                 stats.getSamplesMeter().mark();
+            } else {
+                stats.checkAttribute(attribId, false);
             }
             setBuilder(new EvaluatorPersistOperationBuilder());
         }

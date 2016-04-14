@@ -30,6 +30,8 @@ package org.opennms.netmgt.collection.persistence.evaluate;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
+import org.opennms.netmgt.model.ResourceTypeUtils;
+
 import com.codahale.metrics.Gauge;
 import com.codahale.metrics.Meter;
 import com.codahale.metrics.MetricRegistry;
@@ -41,11 +43,17 @@ import com.codahale.metrics.MetricRegistry;
  */
 public class EvaluateStats {
 
+    /** The node map. */
+    private final ConcurrentMap<String, Boolean> nodeMap = new ConcurrentHashMap<String, Boolean>();
+
     /** The resource map. */
     private final ConcurrentMap<String, Boolean> resourceMap = new ConcurrentHashMap<String, Boolean>();
 
-    /** The attribute map. */
-    private final ConcurrentMap<String, Boolean> attributeMap = new ConcurrentHashMap<String, Boolean>();
+    /** The numeric attribute map. */
+    private final ConcurrentMap<String, Boolean> numericAttributeMap = new ConcurrentHashMap<String, Boolean>();
+
+    /** The string attribute map. */
+    private final ConcurrentMap<String, Boolean> stringAttributeMap = new ConcurrentHashMap<String, Boolean>();
 
     /** The group map. */
     private final ConcurrentMap<String, Boolean> groupMap = new ConcurrentHashMap<String, Boolean>();
@@ -59,43 +67,65 @@ public class EvaluateStats {
      * @param registry the registry
      */
     public EvaluateStats(MetricRegistry registry) {
+        final Gauge<Integer> node = () -> { return nodeMap.size(); };
+        registry.register(MetricRegistry.name("evaluate", "node"), node);
+
         final Gauge<Integer> resources = () -> { return resourceMap.size(); };
         registry.register(MetricRegistry.name("evaluate", "resources"), resources);
 
-        final Gauge<Integer> attributes = () -> { return attributeMap.size(); };
-        registry.register(MetricRegistry.name("evaluate", "attributes"), attributes);
+        final Gauge<Integer> numericAttributes = () -> { return numericAttributeMap.size(); };
+        registry.register(MetricRegistry.name("evaluate", "numeric-attributes"), numericAttributes);
 
-        final Gauge<Integer> groups = () -> { return groupMap.size(); };
-        registry.register(MetricRegistry.name("evaluate", "groups"), groups);
+        final Gauge<Integer> stringAttributes = () -> { return stringAttributeMap.size(); };
+        registry.register(MetricRegistry.name("evaluate", "string-attributes"), stringAttributes);
+
+        if (ResourceTypeUtils.isStoreByGroup()) {
+            final Gauge<Integer> groups = () -> { return groupMap.size(); };
+            registry.register(MetricRegistry.name("evaluate", "groups"), groups);
+        }
 
         samplesMeter = registry.meter(MetricRegistry.name("evaluate", "samples"));
     }
 
     /**
-     * Checks q resource.
+     * Checks a node.
      *
-     * @param resource the resource
+     * @param nodeId the node identifier
      */
-    public void checkResource(String resource) {
-        resourceMap.putIfAbsent(resource, true);
+    public void checkNode(String nodeId) {
+        nodeMap.putIfAbsent(nodeId, true);
+    }
+
+    /**
+     * Checks a resource.
+     *
+     * @param resourceId the resource identifier
+     */
+    public void checkResource(String resourceId) {
+        resourceMap.putIfAbsent(resourceId, true);
     }
 
     /**
      * Checks a attribute.
      *
-     * @param attribute the attribute
+     * @param attributeId the attribute identifier
+     * @param isNumeric true if the attribute is numeric
      */
-    public void checkAttribute(String attribute) {
-        attributeMap.putIfAbsent(attribute, true);
+    public void checkAttribute(String attributeId, boolean isNumeric) {
+        if (isNumeric) {
+            numericAttributeMap.putIfAbsent(attributeId, true);
+        } else {
+            stringAttributeMap.putIfAbsent(attributeId, true);
+        }
     }
 
     /**
      * Checks a group.
      *
-     * @param group the group
+     * @param groupId the group identifier
      */
-    public void checkGroup(String group) {
-        groupMap.putIfAbsent(group, true);
+    public void checkGroup(String groupId) {
+        groupMap.putIfAbsent(groupId, true);
     }
 
     /**

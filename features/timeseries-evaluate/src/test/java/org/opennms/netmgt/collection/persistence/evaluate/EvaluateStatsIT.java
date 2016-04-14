@@ -28,6 +28,7 @@
 package org.opennms.netmgt.collection.persistence.evaluate;
 
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 
 import com.codahale.metrics.MetricRegistry;
@@ -38,6 +39,16 @@ import com.codahale.metrics.MetricRegistry;
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
 public class EvaluateStatsIT {
+
+    /**
+     * Sets up the test.
+     *
+     * @throws Exception the exception
+     */
+    @Before
+    public void setUp() throws Exception {
+        System.setProperty("org.opennms.rrd.storeByGroup", "true");
+    }
 
     /**
      * Test statistics.
@@ -53,14 +64,14 @@ public class EvaluateStatsIT {
             for (int j = 0; j < 10; j++) {
                 stats.checkGroup("resource" + i + "group" + j);
                 for (int k = 0; k < 10; k++) {
-                    stats.checkAttribute("resource" + i + "group" + j + "attribute" + k);
+                    stats.checkAttribute("resource" + i + "group" + j + "attribute" + k, true);
                     stats.getSamplesMeter().mark();
                 }
             }
         }
         Assert.assertEquals(10, registry.getGauges().get("evaluate.resources").getValue());
         Assert.assertEquals(100, registry.getGauges().get("evaluate.groups").getValue());
-        Assert.assertEquals(1000, registry.getGauges().get("evaluate.attributes").getValue());
+        Assert.assertEquals(1000, registry.getGauges().get("evaluate.numeric-attributes").getValue());
         Assert.assertEquals(1000, registry.getMeters().get("evaluate.samples").getCount());
     }
 
