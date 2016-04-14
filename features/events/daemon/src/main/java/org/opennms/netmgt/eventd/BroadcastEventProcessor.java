@@ -34,6 +34,7 @@ import org.opennms.netmgt.events.api.EventIpcManager;
 import org.opennms.netmgt.events.api.EventListener;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
+import org.opennms.netmgt.xml.event.Parm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.Assert;
@@ -147,7 +148,8 @@ public class BroadcastEventProcessor implements EventListener {
         boolean isTarget = false;
         
         if (EventConstants.RELOAD_DAEMON_CONFIG_UEI.equals(event.getUei())) {
-            if ("Eventd".equalsIgnoreCase(AbstractEventUtil.getInstance().getValueOfParm(EventConstants.PARM_DAEMON_NAME, event))) {
+            final Parm target = event.getParm(EventConstants.PARM_DAEMON_NAME);
+            if (target != null && "Eventd".equalsIgnoreCase(target.getValue().getContent())) {
                 isTarget = true;
             }
         // Deprecating this one...
