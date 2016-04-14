@@ -38,8 +38,12 @@ import com.vaadin.ui.UI;
 
 /**
  * A factory for creating Plugin Manager Administration Application objects.
+ *  
+
+ * SimpleIframeInVaadinApplicationFactory allows iframe pages to be defined in the blueprint
+ * which are served using the SimpleIframeInVaadinApplication
  */
-public class SimpleIframeApplicationFactory extends AbstractApplicationFactory {
+public class SimpleIframeInVaadinApplicationFactory extends AbstractApplicationFactory {
 	
 	private String iframePageUrl;
 	
@@ -83,11 +87,11 @@ public class SimpleIframeApplicationFactory extends AbstractApplicationFactory {
      */
     @Override
     public UI createUI() {
-        SimpleIframeApplication simpleIframeApplication = new SimpleIframeApplication();
-        simpleIframeApplication.setHeaderProvider(m_headerProvider);
-        simpleIframeApplication.setIframePageUrl(iframePageUrl);
-        simpleIframeApplication.setHeaderLinks(headerLinks);;
-        return simpleIframeApplication;
+        SimpleIframeInVaadinApplication simpleIframeInVaadinApplication = new SimpleIframeInVaadinApplication();
+        simpleIframeInVaadinApplication.setHeaderProvider(m_headerProvider);
+        simpleIframeInVaadinApplication.setIframePageUrl(iframePageUrl);
+        simpleIframeInVaadinApplication.setHeaderLinks(headerLinks);;
+        return simpleIframeInVaadinApplication;
     }
 
     /* (non-Javadoc)
@@ -95,7 +99,7 @@ public class SimpleIframeApplicationFactory extends AbstractApplicationFactory {
      */
     @Override
     public Class<? extends UI> getUIClass() {
-        return SimpleIframeApplication.class;
+        return SimpleIframeInVaadinApplication.class;
     }
 
 }

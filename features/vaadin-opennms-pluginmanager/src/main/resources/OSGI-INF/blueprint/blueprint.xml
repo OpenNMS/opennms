@@ -83,7 +83,7 @@
   </service>
 
   <!-- feature Diagnostics page -->
-  <bean id="featureDiagnosticsApplicationFactory" class="org.opennms.features.pluginmgr.vaadin.config.opennms.SimpleIframeApplicationFactory">
+  <bean id="featureDiagnosticsApplicationFactory" class="org.opennms.features.pluginmgr.vaadin.config.opennms.SimpleIframeInVaadinApplicationFactory">
     <property name="headerProvider" ref="onmsHeaderProvider" />
     <property name="iframePageUrl" value="/opennms/featuremgr/diagnostics/feature-mgr-rest-diagnostics.html" />
     <property name="headerLinks">
@@ -100,7 +100,7 @@
   </service>
 
   <!-- Licence Diagnostics page -->
-  <bean id="licenceDiagnosticsApplicationFactory" class="org.opennms.features.pluginmgr.vaadin.config.opennms.SimpleIframeApplicationFactory">
+  <bean id="licenceDiagnosticsApplicationFactory" class="org.opennms.features.pluginmgr.vaadin.config.opennms.SimpleIframeInVaadinApplicationFactory">
     <property name="headerProvider" ref="onmsHeaderProvider" />
     <property name="iframePageUrl" value="/opennms/licencemgr/diagnostics/licence-mgr-rest-diagnostics.html" />
     <property name="headerLinks">
@@ -117,7 +117,7 @@
   </service>
   
   <!-- Plugin Diagnostics page -->
-  <bean id="pluginDiagnosticsApplicationFactory" class="org.opennms.features.pluginmgr.vaadin.config.opennms.SimpleIframeApplicationFactory">
+  <bean id="pluginDiagnosticsApplicationFactory" class="org.opennms.features.pluginmgr.vaadin.config.opennms.SimpleIframeInVaadinApplicationFactory">
     <property name="headerProvider" ref="onmsHeaderProvider" />
     <property name="iframePageUrl" value="/opennms/pluginmgr/diagnostics/plugin-mgr-rest-diagnostics.html" />
     <property name="headerLinks">

@@ -31,17 +31,15 @@ package org.opennms.features.pluginmgr.vaadin.config.opennms;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URL;
 import java.util.Map;
 
-import org.opennms.features.pluginmgr.vaadin.config.opennms.internal.HttpServletRequestVaadinImpl;
 import org.opennms.web.api.OnmsHeaderProvider;
 
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.Title;
 import com.vaadin.server.ExternalResource;
-import com.vaadin.server.Page;
 import com.vaadin.server.VaadinRequest;
+import com.vaadin.server.VaadinServletRequest;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.BrowserFrame;
@@ -57,18 +55,20 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Plugin Manager Administration Application.
+ * 
+ * SimpleIframeInVaadinApplication embeds an iframe reference in a Vaadin generated UI
  */
 @Theme("opennms")
 @Title("Plugin Manager Administration")
 @SuppressWarnings("serial")
-public class SimpleIframeApplication extends UI {
-	private static final Logger LOG = LoggerFactory.getLogger(SimpleIframeApplication.class);
+public class SimpleIframeInVaadinApplication extends UI {
+	private static final Logger LOG = LoggerFactory.getLogger(SimpleIframeInVaadinApplication.class);
 
 	/*- VaadinEditorProperties={"grid":"RegularGrid,20","showGrid":true,"snapToGrid":true,"snapToObject":true,"movingGuides":false,"snappingDistance":10} */
 
 	private OnmsHeaderProvider m_headerProvider;
 	private String m_headerHtml;
-	private VaadinRequest m_request;
+
 	private VerticalLayout m_rootLayout;
 
 	private String iframePageUrl;
@@ -113,13 +113,12 @@ public class SimpleIframeApplication extends UI {
 		m_headerHtml = headerHtml;
 	}
 
-	private void addHeader() {
+	private void addHeader(VaadinRequest request) {
 		if (m_headerProvider != null) {
 			try {
-				URL pageUrl = Page.getCurrent().getLocation().toURL();
-				setHeaderHtml(m_headerProvider.getHeaderHtml(new HttpServletRequestVaadinImpl(m_request, pageUrl)));
+				setHeaderHtml(m_headerProvider.getHeaderHtml(((VaadinServletRequest) request).getHttpServletRequest()));
 			} catch (final Exception e) {
-				LOG.error("failed to get header HTML for request " + m_request.getPathInfo(), e.getCause());
+				LOG.error("failed to get header HTML for request " + request.getPathInfo(), e.getCause());
 			}
 		}
 		if (m_headerHtml != null) {
@@ -156,15 +155,11 @@ public class SimpleIframeApplication extends UI {
 	public void init(VaadinRequest request) {
 		if (iframePageUrl==null) throw new RuntimeException("iframePageUrl must not be null");
 
-		m_request = request;
-
-		m_rootLayout= new VerticalLayout();
-
 		m_rootLayout = new VerticalLayout();
 		m_rootLayout.setSizeFull();
 		m_rootLayout.addStyleName("root-layout");
 		setContent(m_rootLayout);
-		addHeader();
+		addHeader(request);
 
 		//add diagnostic page links
 		if(headerLinks!=null) {

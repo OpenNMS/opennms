@@ -4,7 +4,7 @@
 
 === Installed Plugins
 
-Under plugin settings, the Installed Plugins tab lists which plugins are currently installed in the Karaf instance selected in the Karaf instance data panel. System Plugins cannot be uninstalled through the UI. (The plugin manager is itself a system plugin). Non-system plugins can be reinstalled or removed from the system. Each plugin has metadata associated with it which is used to identify and describe the plugin.
+Under plugin settings, the Installed Plugins tab lists which plugins are currently installed in the Karaf instance selected in the Karaf instance data panel. System Plugins cannot be uninstalled through the UI. (The Plugin Manager is itself a system plugin). Non-system plugins can be reinstalled or removed from the system. Each plugin has metadata associated with it which is used to identify and describe the plugin.
 
 .Plugin Metadata Fields
 [width="100%",options="header,footer"]
@@ -25,7 +25,7 @@ Under plugin settings, the Installed Plugins tab lists which plugins are current
 image::plugin-manager/installedPlugins.png[]
 
 === Available Plugins Server
-The plugin manager obtains a list of available plugins from the 'Available Plugin's server'. This may also host the maven repo used to download the features.
+The Plugin Manager obtains a list of available plugins from the 'Available Plugin's server'. This may also host a maven repo used to download the features if feature download from maven is enabled in karaf.
 
 Alternatively the Plugin Manager can list the available plugins which have been installed as bundled Plugin Kar/RPM's on the local machine. In this case, the Plugin Server URL should be pointed at the localhost. 
 
@@ -42,8 +42,8 @@ If a plugin is installed, the system will try and start it. However if a corresp
 image::plugin-manager/availablePlugins.png[]
 
 === Plugins Manifest
-The Plugins Manifest for a kiven karaf instance lists the target plugins which the karaf instance should install when it next contacts the licene manager. If the Plugin Manager can communicate with the remote server, then a manifest can be selected for installation.
-A manual manifest entry can be created for a feature. This can be used to install features which are not listed in the Available Features list.
+The Plugins Manifest for a given karaf instance lists the target plugins which the karaf instance should install when it next contacts the licence manager. If the Plugin Manager can communicate with the remote server, then a manifest can be selected for installation.
+A manual manifest entry can also be created for a feature. This can be used to install features which are not listed in the Available Features list.
 
 image::plugin-manager/pluginManifest.png[]
 
