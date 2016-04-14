@@ -375,14 +375,7 @@ public abstract class AbstractLinkdTopologyProvider extends AbstractTopologyProv
         return ip;
     }
 
-    protected AbstractVertex getDefaultVertex(Integer nodeId, String sysobjectId, String nodeLabel, String location, NodeType nodeType) {
-        String ip = null;
-        boolean isManaged = false;
-        OnmsIpInterface ipInterface = getAddress(nodeId);
-        if (ipInterface != null && ipInterface.getIpAddress() != null) {
-            ip = ipInterface.getIpAddress().getHostAddress();
-            isManaged = ipInterface.isManaged();
-        }
+    protected AbstractVertex getDefaultVertex(Integer nodeId, String sysobjectId, String nodeLabel, String location, NodeType nodeType, boolean isManaged, String ip) {
         return getVertex(nodeId,
                            ip,
                            sysobjectId,
