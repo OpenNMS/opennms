@@ -37,7 +37,6 @@ import org.opennms.netmgt.config.discovery.DiscoveryConfiguration;
  * This class is an {@link InOnly} endpoint that will send messages to the 
  * Camel endpoint specified by the <code>endpointUri</code> constructor argument.
  */
-@InOnly
 public class DiscoveryTaskExecutorCamelImpl extends DefaultDispatcher implements DiscoveryTaskExecutor {
 
 	@Produce(property="endpointUri")

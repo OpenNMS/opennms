@@ -28,8 +28,14 @@
 
 package org.opennms.netmgt.discovery;
 
+import org.apache.camel.InOnly;
 import org.opennms.netmgt.config.discovery.DiscoveryConfiguration;
 
+/**
+ * This interface must be {@link InOnly} in order for task submission to
+ * be performed asynchronously.
+ */
+@InOnly
 public interface DiscoveryTaskExecutor {
 	void handleDiscoveryTask(DiscoveryConfiguration message);
 }
