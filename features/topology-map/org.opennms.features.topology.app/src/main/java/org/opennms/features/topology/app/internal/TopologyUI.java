@@ -68,6 +68,8 @@ import org.opennms.features.topology.api.info.InfoPanelItem;
 import org.opennms.features.topology.api.support.VertexHopGraphProvider;
 import org.opennms.features.topology.api.support.VertexHopGraphProvider.VertexHopCriteria;
 import org.opennms.features.topology.api.topo.Criteria;
+import org.opennms.features.topology.api.topo.DefaultMetaInfo;
+import org.opennms.features.topology.api.topo.MetaInfo;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.features.topology.app.internal.CommandManager.DefaultOperationContext;
@@ -368,6 +370,42 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
 
             @Override
             public int getOrder() {
+                return 1;
+            }
+        };
+
+        // Panel Item to visualize the meta info
+        private final InfoPanelItem metaInfoPanelItem = new InfoPanelItem() {
+
+            private MetaInfo getMetaInfo() {
+                MetaInfo metaInfo = getGraphContainer().getBaseTopology().getMetaInfo();
+
+                if (Objects.isNull(metaInfo)) {
+                    metaInfo = new DefaultMetaInfo();
+                }
+
+                return metaInfo;
+            }
+
+            @Override
+            public Component getComponent(GraphContainer container) {
+                return new Label(getMetaInfo().getDescription());
+            }
+
+            @Override
+            public boolean contributesTo(GraphContainer container) {
+                // only show if no selection
+                return container.getSelectionManager().getSelectedEdgeRefs().isEmpty()
+                        && container.getSelectionManager().getSelectedVertexRefs().isEmpty();
+            }
+
+            @Override
+            public String getTitle(GraphContainer container) {
+                return getMetaInfo().getName();
+            }
+
+            @Override
+            public int getOrder() {
                 return 0;
             }
         };
@@ -403,6 +441,7 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
         private List<Component> getInfoPanelComponents() {
             final List<InfoPanelItem> infoPanelItems = findInfoPanelItems();
             infoPanelItems.add(selectionContextPanelItem); // manually add this, as it is not exposed via osgi
+            infoPanelItems.add(metaInfoPanelItem); // same here
             return infoPanelItems.stream()
                     .filter(panel -> panel.contributesTo(m_graphContainer))
                     .sorted()
