@@ -28,4 +28,12 @@
       <feature>minion-core-api</feature>
       <bundle>blueprint:mvn:org.opennms.features/org.opennms.features.discovery/${project.version}/xml/blueprint-discovery-distPollerDaoMinion</bundle>
     </feature>
+    
+    <feature name="opennms-trapd-handler-minion" description="OpenNMS :: Trapd :: Handler :: Minion" version="${project.version}">
+      <feature>camel-blueprint</feature>
+      <feature>opennms-trapd</feature>
+
+      <bundle>blueprint:mvn:org.opennms.features.events/org.opennms.features.events.traps/${project.version}/xml/blueprint-trapd-handler-minion</bundle>
+    </feature>
+    
 </features>

@@ -12,7 +12,7 @@
 		http://aries.apache.org/schemas/blueprint-ext/blueprint-ext-1.1.xsd
 ">
 
-	<cm:property-placeholder id="trapHandlerDefaultProperties" persistent-id="org.opennms.netmgt.trapd.handler.default" update-strategy="none">
+	<cm:property-placeholder id="trapHandlerDefaultProperties" persistent-id="org.opennms.netmgt.trapd.handler.default" update-strategy="reload">
 		<cm:default-properties>
 			<cm:property name="brokerUri" value="tcp://127.0.0.1:61616" />
 		</cm:default-properties>

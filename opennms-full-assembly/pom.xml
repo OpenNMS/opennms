@@ -306,6 +306,7 @@
                 <feature>minion-core-api</feature>
                 <feature>opennms-discoverer</feature>
                 <feature>opennms-discovery-distPollerDaoMinion</feature>
+                <feature>opennms-trapd-handler-minion</feature>
 
               </features>
               <repository>target/features-repo</repository>

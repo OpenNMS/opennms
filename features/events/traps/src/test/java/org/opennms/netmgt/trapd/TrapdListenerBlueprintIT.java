@@ -47,6 +47,10 @@ import org.springframework.test.context.ContextConfiguration;
 public class TrapdListenerBlueprintIT extends CamelBlueprintTestSupport {
 
 	private static final Logger LOG = LoggerFactory.getLogger(TrapdListenerBlueprintIT.class);
+	
+	private static final String PORT_NAME="trapd.listen.port";
+	
+	private static final String PERSISTANCE_ID="org.opennms.netmgt.trapd";
 
 	/**
 	 * Use Aries Blueprint synchronous mode to avoid a blueprint deadlock bug.
@@ -74,6 +78,16 @@ public class TrapdListenerBlueprintIT extends CamelBlueprintTestSupport {
 	@Override
 	public String isMockEndpoints() {
 		return "*";
+	}
+
+	/**
+	 * This method overrides the blueprint property and sets port to 10154 instead of 162
+	 */
+	@SuppressWarnings({"rawtypes", "unchecked"})
+	@Override
+	protected String useOverridePropertiesWithConfigAdmin(Dictionary props) throws Exception {
+		props.put(PORT_NAME, 10514);
+		return PERSISTANCE_ID;
 	}
 
 	@SuppressWarnings("rawtypes")

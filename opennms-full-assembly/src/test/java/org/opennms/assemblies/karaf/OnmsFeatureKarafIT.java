@@ -346,6 +346,25 @@ public class OnmsFeatureKarafIT extends KarafTestCase {
 		installFeature("opennms-events-traps");
 		System.out.println(executeCommand("features:list -i"));
 	}
+	
+	@Test
+	public void testInstallFeatureOpennmsTrapd() {
+		installFeature("opennms-trapd");
+		System.out.println(executeCommand("features:list -i"));
+	}
+	
+	@Test
+	public void testInstallFeatureOpennmsTrapdHandlerDefault() {
+		installFeature("opennms-trapd-handler-default");
+		System.out.println(executeCommand("features:list -i"));
+	}
+	
+	@Test
+	public void testInstallFeatureOpennmsTrapdListener() {
+		installFeature("opennms-trapd-listener");
+		System.out.println(executeCommand("features:list -i"));
+	}
+
 	@Test
 	public void testInstallFeatureOpennmsIcmpApi() {
 		installFeature("opennms-icmp-api");
