@@ -40,11 +40,13 @@ public abstract class DiscoveryConfigurationFactoryPropertiesConverter {
 
 	public static final String INITIAL_SLEEP_TIME = "initialSleepTime";
 	public static final String RESTART_SLEEP_TIME = "restartSleepTime";
+	public static final String PACKETS_PER_SECOND = "packetsPerSecond";
 
 	public static Properties getProperties(final DiscoveryConfigFactory factory) {
 		final Properties retval = new Properties();
 		retval.setProperty(INITIAL_SLEEP_TIME, String.valueOf(factory.getInitialSleepTime()));
 		retval.setProperty(RESTART_SLEEP_TIME, String.valueOf(factory.getRestartSleepTime()));
+		retval.setProperty(PACKETS_PER_SECOND, String.valueOf(factory.getPacketsPerSecond()));
 		return retval;
 	}
 }

@@ -85,9 +85,16 @@ public interface DiscoveryConfigurationFactory {
 	/**
 	 * <p>getIntraPacketDelay</p>
 	 * 
-	 * @return an int
+	 * @return a long
 	 */
-	int getIntraPacketDelay();
+	long getIntraPacketDelay();
+	
+	/**
+	 * <p>getPacketsPerSecond</p>
+	 * 
+	 * @return a double
+	 */
+	double getPacketsPerSecond();
 	
 	/**
 	 * <p>getExcludingInterator</p>

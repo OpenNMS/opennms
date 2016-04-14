@@ -49,6 +49,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.base.Throwables;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+import com.google.common.util.concurrent.RateLimiter;
 
 /**
  * <p>This class processes a {@link DiscoveryJob} by executing ICMP pings against
@@ -64,7 +65,7 @@ public class Discoverer {
 
     private static final Logger LOG = LoggerFactory.getLogger(Discoverer.class);
 
-    final Pinger m_pinger;
+    private final Pinger m_pinger;
 
     public Discoverer(Pinger pinger) {
         m_pinger = Preconditions.checkNotNull(pinger, "pinger argument");
@@ -84,9 +85,14 @@ public class Discoverer {
             .map(a -> a.getAddress())
             .forEach(a -> tracker.expectCallbackFor(a));
 
+        // Use a RateLimiter to limit the ping packets per second that we send
+        RateLimiter limiter = RateLimiter.create(job.getPacketsPerSecond());
+
         // Issue all of the pings
-        // TODO: Add delay of {@link DiscoveryConfigFactory#getIntraPacketDelay()}
-        addresses.stream().forEach(a -> ping(a, tracker));
+        addresses.stream().forEach(a -> {
+            limiter.acquire();
+            ping(a, tracker);
+        });
 
         // Don't bother waiting if there aren't any addresses
         if (!addresses.isEmpty()) {
