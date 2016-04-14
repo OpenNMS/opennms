@@ -72,7 +72,7 @@ public class NCSEdgeStatusProvider implements EdgeStatusProvider{
     }
 
     @Override
-    public String getNameSpace() {
+    public String getNamespace() {
         return NCSPathEdgeProvider.PATH_NAMESPACE + "::NCS";
     }
 

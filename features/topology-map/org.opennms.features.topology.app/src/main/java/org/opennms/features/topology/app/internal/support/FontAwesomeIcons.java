@@ -33,10 +33,6 @@ import com.vaadin.server.Resource;
 
 public abstract class FontAwesomeIcons {
 
-    public static void load(Resource css){
-        Page.getCurrent().getStyles().add(css);
-    }
-
     public enum IconVariant {
 
         SIZE_LARGE("icon-large"),

@@ -1,0 +1,30 @@
+
+// Allow GitHub image rendering
+:imagesdir: ../../../images
+
+==== Name of the Detector
+
+A summary what the detector is doing.
+
+===== Detector facts
+
+[options="autowidth"]
+|===
+| Implementation | `Name of the detector class`
+|===
+
+===== Configuration and Usage
+
+.Parameters for the <DETECTOR-NAME-HERE>
+[options="header, autowidth"]
+|===
+| Parameter        | Description                                                                                        | Required | Default value
+| `my parameter 1` | This is a placeholder for the first required monitor parameter description. If you have a very
+                     long description make a soft break at line 120                                                     | required | `-`
+| `my parameter 2` | This is a placeholder for the second optional monitor parameter description.                       | optional | `default value`
+|===
+
+
+===== Examples
+
+A simple short real world example how to use this detector.

@@ -27,12 +27,20 @@
  *******************************************************************************/
 package org.opennms.smoketest;
 
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
 
+import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpPut;
+import org.apache.http.client.methods.HttpRequestBase;
+import org.apache.http.entity.ContentType;
+import org.apache.http.entity.StringEntity;
+
 import org.opennms.core.web.HttpClientWrapper;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.model.OnmsNode;
@@ -62,6 +70,19 @@ public class RequisitionUtils {
 
     public RequisitionUtils(OpenNMSSeleniumTestCase testCase) {
         m_testCase = testCase;
+    }
+
+    protected void createNode(String nodeXML) throws IOException, InterruptedException {
+        sendPost("/rest/nodes", nodeXML);
+    }
+
+    protected void setupTestRequisition(String requisitionXML, String foreignSourceXML) throws IOException, InterruptedException {
+        sendPost("/rest/requisitions/", requisitionXML);
+        if (foreignSourceXML != null && !"".equals(foreignSourceXML)) {
+            sendPost("/rest/foreignSources", foreignSourceXML);
+        }
+        HttpRequestBase request = new HttpPut(OpenNMSSeleniumTestCase.BASE_URL + "/opennms/rest/requisitions/" + OpenNMSSeleniumTestCase.REQUISITION_NAME + "/import");
+        m_testCase.doRequest(request);
     }
 
     protected void deleteTestRequisition() throws Exception {
@@ -107,6 +128,15 @@ public class RequisitionUtils {
 
         @Override public Boolean apply(final WebDriver input) {
             return getNodesInDatabase(OpenNMSSeleniumTestCase.REQUISITION_NAME).size() == m_numberToMatch;
+        }
+    }
+
+    protected void sendPost(final String urlFragment, final String body) throws ClientProtocolException, IOException, InterruptedException {
+        final HttpPost post = new HttpPost(OpenNMSSeleniumTestCase.BASE_URL + "opennms" + (urlFragment.startsWith("/")? urlFragment : "/"+urlFragment));
+        post.setEntity(new StringEntity(body, ContentType.APPLICATION_XML));
+        final Integer response = m_testCase.doRequest(post);
+        if (response < 200 || response >= 300) {
+            throw new RuntimeException("Bad response code! (" + response + ")");
         }
     }
 }

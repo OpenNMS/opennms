@@ -33,18 +33,15 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import org.opennms.features.topology.api.HasExtraComponents;
-import org.opennms.features.topology.api.VerticesUpdateManager;
 import org.opennms.features.topology.api.VerticesUpdateManager.VerticesUpdateEvent;
-import org.opennms.features.topology.api.topo.DefaultVertexRef;
+import org.opennms.features.topology.api.browsers.SelectionAwareTable;
+import org.opennms.features.topology.api.browsers.SelectionChangedListener;
 import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.features.topology.plugins.browsers.AlarmTable;
 import org.opennms.features.topology.plugins.browsers.NodeTable;
-import org.opennms.features.topology.plugins.browsers.SelectionAwareTable;
 import org.opennms.osgi.EventProxy;
 import org.opennms.osgi.VaadinApplicationContextImpl;
 import org.opennms.web.api.OnmsHeaderProvider;
@@ -67,7 +64,6 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.TabSheet.SelectedTabChangeEvent;
 import com.vaadin.ui.TabSheet.SelectedTabChangeListener;
-import com.vaadin.ui.Table;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.VerticalSplitPanel;
@@ -356,27 +352,11 @@ public class NodeMapsApplication extends UI {
     }
 
     public void setFocusedNodes(final List<Integer> nodeIds) {
-        for (final SelectionAwareTable view : new SelectionAwareTable[] { m_alarmTable, m_nodeTable }) {
-            if (view instanceof VerticesUpdateManager.VerticesUpdateListener) {
-                final VerticesUpdateManager.VerticesUpdateListener listener = (VerticesUpdateManager.VerticesUpdateListener)view;
+        m_alarmTable.selectionChanged(new SelectionChangedListener.AlarmNodeIdSelection(nodeIds));
+        m_nodeTable.selectionChanged(new SelectionChangedListener.IdSelection<Integer>(nodeIds));
 
-                final Set<VertexRef> nodeSet = new HashSet<VertexRef>();
-                for (final Integer nodeId : nodeIds) {
-                    nodeSet.add(new DefaultVertexRef("nodes", nodeId.toString(), null));
-                }
-
-                listener.verticesUpdated(new VerticesUpdateEvent(nodeSet));
-
-                if (view instanceof Table) {
-                    final Table table = (Table)view;
-                    table.refreshRowCache();
-                } else {
-                    LOG.error("View {} is not a table!  I can't refresh it.", view);
-                }
-            } else {
-                LOG.error("View {} is not a vertices update listener!", view);
-            }
-        }
+        m_alarmTable.refreshRowCache();
+        m_nodeTable.refreshRowCache();
     }
 
     @Override

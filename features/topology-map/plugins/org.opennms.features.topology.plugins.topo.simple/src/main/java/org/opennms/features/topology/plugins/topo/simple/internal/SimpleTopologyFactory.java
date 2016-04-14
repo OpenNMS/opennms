@@ -38,7 +38,9 @@ import java.util.Map;
 
 import javax.xml.bind.JAXBException;
 
+import org.opennms.features.topology.api.topo.DefaultMetaInfo;
 import org.opennms.features.topology.api.topo.GraphProvider;
+import org.opennms.features.topology.api.topo.MetaInfo;
 import org.opennms.features.topology.plugins.topo.simple.SimpleGraphProvider;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
@@ -52,6 +54,7 @@ public class SimpleTopologyFactory implements ManagedServiceFactory {
 	private static final String LABEL = "label";
 
 	private BundleContext m_bundleContext;
+	private MetaInfo metaInfo = new DefaultMetaInfo();
 	private Map<String, SimpleGraphProvider> m_providers = new HashMap<String, SimpleGraphProvider>();
 	private Map<String, ServiceRegistration<GraphProvider>> m_registrations = new HashMap<String, ServiceRegistration<GraphProvider>>();
 
@@ -73,6 +76,7 @@ public class SimpleTopologyFactory implements ManagedServiceFactory {
 			if (!m_providers.containsKey(pid)) {
 				SimpleGraphProvider topoProvider = new SimpleGraphProvider();
 				topoProvider.setTopologyLocation(url);
+				topoProvider.setMetaInfo(getMetaInfo());
 
 				m_providers.put(pid, topoProvider);
 
@@ -122,4 +126,11 @@ public class SimpleTopologyFactory implements ManagedServiceFactory {
 			
 	}
 
+	public MetaInfo getMetaInfo() {
+		return metaInfo;
+	}
+
+	public void setMetaInfo(MetaInfo metaInfo) {
+		this.metaInfo = metaInfo;
+	}
 }
