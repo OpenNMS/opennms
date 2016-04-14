@@ -34,23 +34,6 @@ xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0
     <reference id="cdpElementDao" interface="org.opennms.netmgt.dao.api.CdpElementDao" availability="mandatory"/>
     <reference id="ipNetToMediaDao" interface="org.opennms.netmgt.dao.api.IpNetToMediaDao" availability="mandatory"/>
 
-    <!-- Metrics -->
-    <bean id="metricRegistry" class="com.codahale.metrics.MetricRegistry" />
-
-    <bean id="metricRegistryJmxReporterBuilder" class="com.codahale.metrics.JmxReporter" factory-method="forRegistry">
-        <argument ref="metricRegistry"/>
-    </bean>
-
-    <bean id="metricRegistryDomainedJmxReporterBuilder" factory-ref="metricRegistryJmxReporterBuilder" factory-method="inDomain">
-        <argument value="org.opennms.features.topology.plugins.topo.linkd" />
-    </bean>
-
-    <bean id="metricRegistryJmxReporter"
-        factory-ref="metricRegistryDomainedJmxReporterBuilder"
-        factory-method="build"
-        init-method="start"
-        destroy-method="stop" />
-
     <bean id="enlinkdMetaInfo" class="org.opennms.features.topology.api.topo.DefaultMetaInfo">
         <property name="name" value="Enhanced Linkd Topology Provider"/>
         <property name="description" value="This Topology Provider displays the topology information discovered by the Enhanced Linkd daemon. It uses the SNMP information of several protocols like OSPF, ISIS, LLDP and CDP to generate an overall topology."/>
@@ -81,8 +64,11 @@ xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0
         <property name="isisLinkDao" ref="isisLinkDao" />
         <property name="bridgeMacLinkDao" ref="bridgeMacLinkDao" />
         <property name="bridgeBridgeLinkDao" ref="bridgeBridgeLinkDao" />
+        <property name="bridgeTopologyDao" ref="bridgeTopologyDao" />
         <property name="cdpLinkDao" ref="cdpLinkDao"/>
         <property name="metaInfo" ref="enlinkdMetaInfo"/>
+        <property name="cdpElementDao" ref="cdpElementDao"/>
+        <property name="ipNetToMediaDao" ref="ipNetToMediaDao"/>
     </bean>
 
     <!--
