@@ -42,13 +42,19 @@ public class DiscoveryJobTest {
     @Test
     public void testCalculateTaskTimeout() throws Exception {
         final List<IPPollRange> m_ranges = new ArrayList<IPPollRange>();
-        for (int i = 1 ; i < 12; i += 5) {
-            IPPollRange ipPollRange = new IPPollRange("127.0.1." + i, "127.0.1." + (i + 4), 50, 2);
+        // Make 3 ranges of 5 addresses each
+        for (int i = 0; i < 3; i++) {
+            IPPollRange ipPollRange = new IPPollRange("127.0.1." + ((i * 5) + 1), "127.0.1." + ((i * 5) + 5), 50, 2);
             m_ranges.add(ipPollRange);
         }
-        DiscoveryJob discoveryJob = new DiscoveryJob(m_ranges, "Bogus FS", "Bogus Location");
+        DiscoveryJob discoveryJob = new DiscoveryJob(m_ranges, "Bogus FS", "Bogus Location", Double.MAX_VALUE);
         // Each task is taking 750 ms so totalTaskTimeout = 750 ms * 3 (number of tasks) = 2250 ms
         assertEquals(Math.round(2250 * 1.5), discoveryJob.calculateTaskTimeout()); 
+
+        // Set the rate to 1 per second and make sure that the timeout is extended
+        // by 1000 milliseconds per all 15 IP addresses
+        discoveryJob = new DiscoveryJob(m_ranges, "Bogus FS", "Bogus Location", 1.0);
+        assertEquals(Math.round(2250 * 1.5) + (15 * 1000), discoveryJob.calculateTaskTimeout()); 
     }
 
     @Test
@@ -64,9 +70,9 @@ public class DiscoveryJobTest {
         // Start the range at 0.0.0.1 so that we don't count zero as a value
         IPPollRange ipPollRange = new IPPollRange("0.0.0.1", "85.85.85.84", 1, 0);
         m_ranges.add(ipPollRange);
-        DiscoveryJob discoveryJob = new DiscoveryJob(m_ranges, "Bogus FS", "Bogus Location");
+        DiscoveryJob discoveryJob = new DiscoveryJob(m_ranges, "Bogus FS", "Bogus Location", Double.MAX_VALUE);
         assertEquals(Integer.MAX_VALUE - 1, discoveryJob.calculateTaskTimeout());
-    } 
+    }
 
     @Test
     public void testTimeoutIntegerMaxValue() throws Exception {
@@ -75,7 +81,7 @@ public class DiscoveryJobTest {
         // Start the range at 0.0.0.1 so that we don't count zero as a value
         IPPollRange ipPollRange = new IPPollRange("0.0.0.1", "85.85.85.85", 1, 0);
         m_ranges.add(ipPollRange);
-        DiscoveryJob discoveryJob = new DiscoveryJob(m_ranges, "Bogus FS", "Bogus Location");
+        DiscoveryJob discoveryJob = new DiscoveryJob(m_ranges, "Bogus FS", "Bogus Location", Double.MAX_VALUE);
         assertEquals(Integer.MAX_VALUE, discoveryJob.calculateTaskTimeout());
     } 
 
@@ -84,7 +90,7 @@ public class DiscoveryJobTest {
         List<IPPollRange> m_ranges = new ArrayList<IPPollRange>();
         IPPollRange ipPollRange = new IPPollRange("0.0.0.0", "89.0.0.0", 1, 0);
         m_ranges.add(ipPollRange);
-        DiscoveryJob discoveryJob = new DiscoveryJob(m_ranges, "Bogus FS", "Bogus Location");
+        DiscoveryJob discoveryJob = new DiscoveryJob(m_ranges, "Bogus FS", "Bogus Location", Double.MAX_VALUE);
         assertEquals(Integer.MAX_VALUE, discoveryJob.calculateTaskTimeout());
     } 
 
@@ -94,7 +100,7 @@ public class DiscoveryJobTest {
         // TODO: Replace defaults with constants
         IPPollRange ipPollRange = new IPPollRange("127.0.0.1", "127.5.118.25", 2000, 1);
         m_ranges.add(ipPollRange);
-        DiscoveryJob discoveryJob = new DiscoveryJob(m_ranges, "Bogus FS", "Bogus Location");
+        DiscoveryJob discoveryJob = new DiscoveryJob(m_ranges, "Bogus FS", "Bogus Location", Double.MAX_VALUE);
         assertTrue(Integer.MAX_VALUE > discoveryJob.calculateTaskTimeout()); 
     }
 
@@ -104,7 +110,7 @@ public class DiscoveryJobTest {
         // TODO: Replace defaults with constants
         IPPollRange ipPollRange = new IPPollRange("127.0.0.1", "127.5.118.26", 2000, 1);
         m_ranges.add(ipPollRange);
-        DiscoveryJob discoveryJob = new DiscoveryJob(m_ranges, "Bogus FS", "Bogus Location");
+        DiscoveryJob discoveryJob = new DiscoveryJob(m_ranges, "Bogus FS", "Bogus Location", Double.MAX_VALUE);
         assertEquals(Integer.MAX_VALUE, discoveryJob.calculateTaskTimeout()); 
     }
 }

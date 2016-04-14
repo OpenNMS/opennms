@@ -244,7 +244,7 @@ public class DiscoveryBlueprintIT extends CamelBlueprintTestSupport {
         config.setLocation( location );
 
         // Execute the job
-        template.requestBody( "direct:submitDiscoveryTask", config );
+        template.requestBody( "seda:submitDiscoveryTask", config );
 
         Thread.sleep( 1000 );
         anticipator.verifyAnticipated();
@@ -311,7 +311,7 @@ public class DiscoveryBlueprintIT extends CamelBlueprintTestSupport {
 
         // Execute the job
         try {
-            template.requestBody( "direct:submitDiscoveryTask", config );
+            template.requestBody( "seda:submitDiscoveryTask", config );
         } catch(CamelExecutionException e) {
             // Expected failure exception
             assertEquals(ExchangeTimedOutException.class, e.getCause().getClass());
