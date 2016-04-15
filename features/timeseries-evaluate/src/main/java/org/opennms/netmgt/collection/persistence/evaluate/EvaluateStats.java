@@ -29,19 +29,29 @@ package org.opennms.netmgt.collection.persistence.evaluate;
 
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.TimeUnit;
 
+import org.opennms.core.logging.Logging;
 import org.opennms.netmgt.model.ResourceTypeUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.DisposableBean;
+import org.springframework.util.Assert;
 
 import com.codahale.metrics.Gauge;
 import com.codahale.metrics.Meter;
 import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.Slf4jReporter;
 
 /**
  * The Class EvaluateStats.
  * 
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
-public class EvaluateStats {
+public class EvaluateStats implements DisposableBean {
+
+    /** The Constant LOGGING_PREFFIX. */
+    private static final String LOGGING_PREFFIX = "EvaluationMetrics";
 
     /** The node map. */
     private final ConcurrentMap<String, Boolean> nodeMap = new ConcurrentHashMap<String, Boolean>();
@@ -64,27 +74,42 @@ public class EvaluateStats {
     /**
      * Instantiates a new evaluate statistics.
      *
-     * @param registry the registry
+     * @param registry the metrics registry
+     * @param dumpFreq the dump frequency
      */
-    public EvaluateStats(MetricRegistry registry) {
-        final Gauge<Integer> node = () -> { return nodeMap.size(); };
+    public EvaluateStats(MetricRegistry registry, Integer dumpFreq) {
+        Assert.notNull(registry, "MetricRegistry is required");
+        Assert.notNull(dumpFreq, "Dump frequency is required");
+        Assert.isTrue(dumpFreq > 0, "Dump frequency must be positive");
+
+        final Gauge<Integer> node = () -> { return nodeMap.keySet().size(); };
         registry.register(MetricRegistry.name("evaluate", "node"), node);
 
-        final Gauge<Integer> resources = () -> { return resourceMap.size(); };
+        final Gauge<Integer> resources = () -> { return resourceMap.keySet().size(); };
         registry.register(MetricRegistry.name("evaluate", "resources"), resources);
 
-        final Gauge<Integer> numericAttributes = () -> { return numericAttributeMap.size(); };
+        final Gauge<Integer> numericAttributes = () -> { return numericAttributeMap.keySet().size(); };
         registry.register(MetricRegistry.name("evaluate", "numeric-attributes"), numericAttributes);
 
-        final Gauge<Integer> stringAttributes = () -> { return stringAttributeMap.size(); };
+        final Gauge<Integer> stringAttributes = () -> { return stringAttributeMap.keySet().size(); };
         registry.register(MetricRegistry.name("evaluate", "string-attributes"), stringAttributes);
 
         if (ResourceTypeUtils.isStoreByGroup()) {
-            final Gauge<Integer> groups = () -> { return groupMap.size(); };
+            final Gauge<Integer> groups = () -> { return groupMap.keySet().size(); };
             registry.register(MetricRegistry.name("evaluate", "groups"), groups);
         }
 
         samplesMeter = registry.meter(MetricRegistry.name("evaluate", "samples"));
+
+        Logging.withPrefix(LOGGING_PREFFIX, () -> {
+            final Slf4jReporter reporter = Slf4jReporter.forRegistry(registry)
+                    .outputTo(LoggerFactory.getLogger(LOGGING_PREFFIX))
+                    .convertRatesTo(TimeUnit.SECONDS)
+                    .convertDurationsTo(TimeUnit.MILLISECONDS)
+                    .build();
+            reporter.start(dumpFreq, TimeUnit.MINUTES);
+        });
+
     }
 
     /**
@@ -136,4 +161,18 @@ public class EvaluateStats {
     public Meter getSamplesMeter() {
         return samplesMeter;
     }
+
+    /* (non-Javadoc)
+     * @see org.springframework.beans.factory.DisposableBean#destroy()
+     */
+    @Override
+    public void destroy() throws Exception {
+        Logger log = LoggerFactory.getLogger(LOGGING_PREFFIX);
+        log.info("nodes: {} ", nodeMap.keySet());
+        log.info("resources: {} ", resourceMap.keySet());
+        log.info("groups: {}", groupMap.keySet());
+        log.info("numeric-attributes: {} ", numericAttributeMap.keySet());
+        log.info("string-atributes: {} ", stringAttributeMap.keySet());
+    }
+
 }

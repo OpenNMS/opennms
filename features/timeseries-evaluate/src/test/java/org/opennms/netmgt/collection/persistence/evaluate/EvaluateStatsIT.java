@@ -58,7 +58,7 @@ public class EvaluateStatsIT {
     @Test
     public void testStats() throws Exception {
         MetricRegistry registry = new MetricRegistry();
-        EvaluateStats stats = new EvaluateStats(registry);
+        EvaluateStats stats = new EvaluateStats(registry, 5);
         for (int i = 0; i < 10; i++) {
             stats.checkResource("resource" + i);
             for (int j = 0; j < 10; j++) {

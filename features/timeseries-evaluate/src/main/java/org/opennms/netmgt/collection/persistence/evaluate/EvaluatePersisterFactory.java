@@ -27,20 +27,13 @@
  *******************************************************************************/
 package org.opennms.netmgt.collection.persistence.evaluate;
 
-import java.util.concurrent.TimeUnit;
-
-import org.opennms.core.logging.Logging;
 import org.opennms.netmgt.collection.api.Persister;
 import org.opennms.netmgt.collection.api.PersisterFactory;
 import org.opennms.netmgt.collection.api.ServiceParameters;
 import org.opennms.netmgt.model.ResourceTypeUtils;
 import org.opennms.netmgt.rrd.RrdRepository;
 
-import org.slf4j.LoggerFactory;
 import org.springframework.util.Assert;
-
-import com.codahale.metrics.MetricRegistry;
-import com.codahale.metrics.Slf4jReporter;
 
 /**
  * A factory for creating EvaluatePersister objects.
@@ -49,33 +42,17 @@ import com.codahale.metrics.Slf4jReporter;
  */
 public class EvaluatePersisterFactory implements PersisterFactory {
 
-    /** The Constant LOGGING_PREFFIX. */
-    private static final String LOGGING_PREFFIX = "EvaluationMetrics";
-
     /** The evaluation statistics. */
     private EvaluateStats stats;
 
     /**
      * Instantiates a new evaluate persister factory.
      *
-     * @param registry the metric registry
-     * @param dumpFreq the dump frequency
+     * @param stats the evaluation statistics object
      */
-    public EvaluatePersisterFactory(MetricRegistry registry, Integer dumpFreq) {
-        Assert.notNull(registry, "MetricRegistry is required");
-        Assert.notNull(dumpFreq, "Dump frequency is required");
-        Assert.isTrue(dumpFreq > 0, "Dump frequency must be positive");
-
-        stats = new EvaluateStats(registry);
-
-        Logging.withPrefix(LOGGING_PREFFIX, () -> {
-            final Slf4jReporter reporter = Slf4jReporter.forRegistry(registry)
-                    .outputTo(LoggerFactory.getLogger(LOGGING_PREFFIX))
-                    .convertRatesTo(TimeUnit.SECONDS)
-                    .convertDurationsTo(TimeUnit.MILLISECONDS)
-                    .build();
-            reporter.start(dumpFreq, TimeUnit.MINUTES);
-        });
+    public EvaluatePersisterFactory(EvaluateStats stats) {
+        Assert.notNull(stats, "EvaluateStats is required");
+        this.stats = stats;
     }
 
     /* (non-Javadoc)
