@@ -50,8 +50,6 @@ import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.HistoryOperation;
 import org.opennms.features.topology.api.Layout;
 import org.opennms.features.topology.api.Point;
-import org.opennms.features.topology.api.support.VertexHopGraphProvider.DefaultVertexHopCriteria;
-import org.opennms.features.topology.api.support.VertexHopGraphProvider.VertexHopCriteria;
 import org.opennms.features.topology.api.topo.CollapsibleCriteria;
 import org.opennms.features.topology.api.topo.Criteria;
 import org.opennms.features.topology.api.topo.Vertex;
@@ -221,13 +219,6 @@ public class SavedHistory {
     public void apply(GraphContainer graphContainer, Collection<HistoryOperation> operations) {
         LOG.debug("Applying " + toString());
 
-        // Set vertices in focus
-        Set<VertexHopCriteria> vertexHopCriterias = Criteria.getCriteriaForGraphContainer(graphContainer, VertexHopCriteria.class);
-        for (VertexHopCriteria eachCriteria : vertexHopCriterias) {
-            graphContainer.removeCriteria(eachCriteria);
-        }
-        m_focusVertices.forEach(vertexRef -> graphContainer.addCriteria(new DefaultVertexHopCriteria(vertexRef)));
-
         // Apply the history for each registered HistoryOperation
         for (HistoryOperation operation : operations) {
             try {
@@ -236,13 +227,21 @@ public class SavedHistory {
                 LOG.warn("Failed to perform applyHistory() operation", e);
             }
         }
+        // Set Vertices in Focus after all other operations are applied, otherwise the topology provider may have changed
+        // which results in a graphContainer.clearCriteria()
+        applyVerticesInFocus(m_focusVertices, graphContainer);
         applySavedLocations(m_locations, graphContainer.getGraph().getLayout());
         graphContainer.setSemanticZoomLevel(getSemanticZoomLevel());
-
-        // Apply the selected vertices
-        graphContainer.getSelectionManager().setSelectedVertexRefs(m_selectedVertices);
-
+        graphContainer.getSelectionManager().setSelectedVertexRefs(m_selectedVertices); // Apply the selected vertices
         graphContainer.getMapViewManager().setBoundingBox(getBoundingBox());
+    }
+
+    private static void applyVerticesInFocus(Set<VertexRef> focusVertices, GraphContainer graphContainer) {
+        Set<VertexHopGraphProvider.VertexHopCriteria> vertexHopCriterias = Criteria.getCriteriaForGraphContainer(graphContainer, VertexHopGraphProvider.VertexHopCriteria.class);
+        for (VertexHopGraphProvider.VertexHopCriteria eachCriteria : vertexHopCriterias) {
+            graphContainer.removeCriteria(eachCriteria);
+        }
+        focusVertices.forEach(vertexRef -> graphContainer.addCriteria(new VertexHopGraphProvider.DefaultVertexHopCriteria(vertexRef)));
     }
 
     private static void applySavedLocations(Map<VertexRef, Point> locations, Layout layout) {

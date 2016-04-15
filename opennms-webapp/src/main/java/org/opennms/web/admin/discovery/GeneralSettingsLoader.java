@@ -31,16 +31,15 @@ package org.opennms.web.admin.discovery;
 import javax.servlet.http.HttpServletRequest;
 
 import org.opennms.core.utils.WebSecurityUtils;
+import org.opennms.netmgt.config.DiscoveryConfigFactory;
 import org.opennms.netmgt.config.discovery.DiscoveryConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
-
-abstract class GeneralSettingsLoader {
-	private static final Logger LOG = LoggerFactory.getLogger(GeneralSettingsLoader.class);
+public abstract class GeneralSettingsLoader {
 
 	/** Constant <code>log</code> */
+	private static final Logger LOG = LoggerFactory.getLogger(GeneralSettingsLoader.class);
 	
 	/**
 	 * <p>load</p>
@@ -56,6 +55,7 @@ abstract class GeneralSettingsLoader {
 		String location = request.getParameter("location");
 		String retriesStr = request.getParameter("retries");
 		String timeoutStr = request.getParameter("timeout");
+		String chunksizeStr = request.getParameter("chunksize");
 		
 		LOG.debug("initialsleeptime: {}", initSTStr);
 		LOG.debug("restartsleeptime: {}", restartSTStr);
@@ -63,43 +63,56 @@ abstract class GeneralSettingsLoader {
 		LOG.debug("location: {}", location);
 		LOG.debug("retries: {}", retriesStr);
 		LOG.debug("timeout: {}", timeoutStr);
+		LOG.debug("chunksize: {}", chunksizeStr);
 		
 		
-		long initSt = WebSecurityUtils.safeParseLong(initSTStr);
-		long restartSt = WebSecurityUtils.safeParseLong(restartSTStr);
-		
-		config.setInitialSleepTime(initSt);
-		config.setRestartSleepTime(restartSt);
-
 		//set the general settings loaded into current configuration
 
-		config.setInitialSleepTime(initSt);
-		config.setRestartSleepTime(restartSt);
+		try {
+			long initSt = WebSecurityUtils.safeParseLong(initSTStr);
+			config.setInitialSleepTime(initSt);
+		} catch (NumberFormatException e) {
+			LOG.debug("Null value in discovery config for initial sleep");
+		}
+		try {
+			long restartSt = WebSecurityUtils.safeParseLong(restartSTStr);
+			config.setRestartSleepTime(restartSt);
+		} catch (NumberFormatException e) {
+			LOG.debug("Null value in discovery config for restart sleep");
+		}
+		
 
+		// TODO: Validate foreign source value
 		if (foreignSource != null && !"".equals(foreignSource.trim())) {
 			config.setForeignSource(foreignSource);
 		} else {
 			config.setForeignSource(null);
 		}
 
+		// TODO: Validate location value
 		if (location != null && !"".equals(location.trim())) {
 			config.setLocation(location);
 		} else {
 			config.setLocation(null);
 		}
-
-		if(retriesStr!=null && (!retriesStr.trim().equals("") && !retriesStr.trim().equals("3"))){
-				config.setRetries(WebSecurityUtils.safeParseInt(retriesStr));
-		}else{
+		
+		if (retriesStr!=null && (!"".equals(retriesStr.trim()) && !String.valueOf(DiscoveryConfigFactory.DEFAULT_RETRIES).equals(retriesStr.trim()))) {
+			config.setRetries(WebSecurityUtils.safeParseInt(retriesStr));
+		} else {
 			config.deleteRetries();
 		}
 		
-		if(timeoutStr!=null && (!timeoutStr.trim().equals("") && !timeoutStr.trim().equals("800"))){
+		if (timeoutStr!=null && (!"".equals(timeoutStr.trim()) && !String.valueOf(DiscoveryConfigFactory.DEFAULT_TIMEOUT).equals(timeoutStr.trim()))) {
 			config.setTimeout(Long.valueOf(timeoutStr).longValue());
-		}else{
+		} else {
 			config.deleteTimeout();
 		}
-	
+		
+		if (chunksizeStr!=null && (!"".equals(chunksizeStr.trim()) && !String.valueOf(DiscoveryConfigFactory.DEFAULT_CHUNK_SIZE).equals(chunksizeStr.trim()))) {
+			config.setChunkSize(Integer.valueOf(chunksizeStr));
+		} else {
+			config.deleteChunkSize();
+		}
 		
 		LOG.debug("General settings uploaded.");
 		

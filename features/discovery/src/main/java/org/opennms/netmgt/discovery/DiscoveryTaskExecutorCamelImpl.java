@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -28,25 +28,30 @@
 
 package org.opennms.netmgt.discovery;
 
-import java.util.Properties;
-
-import org.opennms.netmgt.config.DiscoveryConfigFactory;
+import org.apache.camel.InOnly;
+import org.apache.camel.Produce;
+import org.opennms.core.camel.DefaultDispatcher;
+import org.opennms.netmgt.config.discovery.DiscoveryConfiguration;
 
 /**
- * This class is used to generate a {@link Properties} object that contains
- * scalar values from a {@link DiscoveryConfigFactory} instance.
+ * This class is an {@link InOnly} endpoint that will send messages to the 
+ * Camel endpoint specified by the <code>endpointUri</code> constructor argument.
  */
-public abstract class DiscoveryConfigurationFactoryPropertiesConverter {
+public class DiscoveryTaskExecutorCamelImpl extends DefaultDispatcher implements DiscoveryTaskExecutor {
 
-	public static final String INITIAL_SLEEP_TIME = "initialSleepTime";
-	public static final String RESTART_SLEEP_TIME = "restartSleepTime";
-	public static final String PACKETS_PER_SECOND = "packetsPerSecond";
+	@Produce(property="endpointUri")
+	DiscoveryTaskExecutor m_proxy;
 
-	public static Properties getProperties(final DiscoveryConfigFactory factory) {
-		final Properties retval = new Properties();
-		retval.setProperty(INITIAL_SLEEP_TIME, String.valueOf(factory.getInitialSleepTime()));
-		retval.setProperty(RESTART_SLEEP_TIME, String.valueOf(factory.getRestartSleepTime()));
-		retval.setProperty(PACKETS_PER_SECOND, String.valueOf(factory.getPacketsPerSecond()));
-		return retval;
+	public DiscoveryTaskExecutorCamelImpl(final String endpointUri) {
+		super(endpointUri);
+	}
+
+	/**
+	 * Send the incoming {@link DiscoveryConfiguration} message into the Camel route
+	 * specified by the {@link #m_endpointUri} property.
+	 */
+	@Override
+	public void handleDiscoveryTask(final DiscoveryConfiguration message) {
+		m_proxy.handleDiscoveryTask(message);
 	}
 }

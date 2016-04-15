@@ -28,14 +28,12 @@
 
 package org.opennms.features.amqp.alarmnorthbounder.internal;
 
-import org.apache.camel.InOnly;
 import org.apache.camel.Produce;
 import org.opennms.core.camel.DefaultDispatcher;
 import org.opennms.netmgt.alarmd.api.NorthboundAlarm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@InOnly
 public class DefaultAlarmForwarder extends DefaultDispatcher {
 
     private static final Logger LOG = LoggerFactory.getLogger(DefaultAlarmForwarder.class);

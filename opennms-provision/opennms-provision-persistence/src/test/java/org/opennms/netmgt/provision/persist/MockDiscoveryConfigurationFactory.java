@@ -45,7 +45,12 @@ public class MockDiscoveryConfigurationFactory implements DiscoveryConfiguration
     }
 
     @Override
-    public int getIntraPacketDelay() {
+    public long getIntraPacketDelay() {
+        throw new UnsupportedOperationException("Not yet implemented!");
+    }
+
+    @Override
+    public double getPacketsPerSecond() {
         throw new UnsupportedOperationException("Not yet implemented!");
     }
 

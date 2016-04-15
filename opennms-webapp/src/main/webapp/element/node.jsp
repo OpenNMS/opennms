@@ -118,7 +118,7 @@
         }
 
 		final WebApplicationContext webAppContext = WebApplicationContextUtils.getRequiredWebApplicationContext(getServletContext());
-		m_resourceService = (ResourceService) webAppContext.getBean("resourceService", ResourceService.class);
+		m_resourceService = webAppContext.getBean("resourceService", ResourceService.class);
     }
 
 	public static String getStatusStringWithDefault(OnmsNode node_db) {

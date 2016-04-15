@@ -34,6 +34,7 @@ import java.util.stream.Collectors;
 
 import org.opennms.netmgt.config.DiscoveryConfigFactory;
 import org.opennms.netmgt.config.discovery.DiscoveryConfiguration;
+import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.discovery.IpAddressFilter;
 import org.opennms.netmgt.discovery.messages.DiscoveryJob;
 import org.opennms.netmgt.model.discovery.IPPollAddress;
@@ -53,18 +54,7 @@ import com.google.common.collect.Lists;
  */
 public class RangeChunker
 {
-    public static final int DEFAULT_CHUNK_SIZE = 100;
-    
-    private final int m_defaultChunkSize;
     private IpAddressFilter m_ipAddressFilter;
-
-    public RangeChunker() {
-        this(DEFAULT_CHUNK_SIZE);
-    }
-
-    public RangeChunker(final int defaultChunkSize) {
-        m_defaultChunkSize = defaultChunkSize;
-    }
 
     public void setIpAddressFilter(IpAddressFilter ipAddressFilter) {
         m_ipAddressFilter = ipAddressFilter;
@@ -72,7 +62,9 @@ public class RangeChunker
 
     public List<DiscoveryJob> chunk( final DiscoveryConfiguration config )
     {
-        int chunkSize = (config.getChunkSize() > 0) ? config.getChunkSize() : m_defaultChunkSize;
+        int chunkSize = (config.getChunkSize() > 0) ? config.getChunkSize() : DiscoveryConfigFactory.DEFAULT_CHUNK_SIZE;
+        double packetsPerSecond = (config.getPacketsPerSecond() > 0.0) ? config.getPacketsPerSecond() : DiscoveryConfigFactory.DEFAULT_PACKETS_PER_SECOND;
+
         DiscoveryConfigFactory configFactory = new DiscoveryConfigFactory( config );
 
         List<IPPollRange> ranges = new ArrayList<IPPollRange>();
@@ -98,11 +90,11 @@ public class RangeChunker
 
         // If the monitoring location for the discovery config is not set than use 
         // the default localhost location
-        String location = (config.getLocation() == null || "".equals(config.getLocation().trim())) ? "localhost" : config.getLocation().trim();
+        String location = (config.getLocation() == null || "".equals(config.getLocation().trim())) ? MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID : config.getLocation().trim();
 
         return Lists.partition( ranges, chunkSize ).stream().map(
                         r -> new DiscoveryJob( new ArrayList<IPPollRange>( r ), foreignSource,
-                                        location ) ).collect( Collectors.toList() );
+                                        location, packetsPerSecond ) ).collect( Collectors.toList() );
 
     }
 }
