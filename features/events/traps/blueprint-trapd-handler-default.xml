@@ -38,7 +38,7 @@
 		<propertyPlaceholder id="properties" location="blueprint:trapHandlerDefaultProperties" />
 
 		<route id="receiveTrapConnection">
-			<from uri="activemq:broadcastTrap" />
+			<from uri="activemq:broadcastTrap?disableReplyTo=true" />
 			<!-- TODO: Use marshalling instead of serialization when transmitting object? -->
 			<!-- <bean ref="unmarshaller"/> -->
 			<to uri="seda:trapHandler" />

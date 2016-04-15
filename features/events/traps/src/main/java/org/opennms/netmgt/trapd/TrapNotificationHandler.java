@@ -28,8 +28,14 @@
 
 package org.opennms.netmgt.trapd;
 
+import org.apache.camel.InOnly;
 import org.opennms.netmgt.snmp.TrapNotification;
 
+/**
+ * This interface must be {@link InOnly} in order for trap handling to
+ * be performed asynchronously.
+ */
+@InOnly
 public interface TrapNotificationHandler {
 	void handleTrapNotification(TrapNotification message);
 }

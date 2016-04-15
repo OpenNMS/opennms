@@ -42,14 +42,12 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.MockitoAnnotations;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
-import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.TrapdConfig;
 import org.opennms.netmgt.config.api.EventConfDao;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
 import org.opennms.netmgt.snmp.TrapNotification;
 import org.opennms.netmgt.snmp.snmp4j.Snmp4JTrapNotifier;
-import org.opennms.test.JUnitConfigurationEnvironment;
 import org.opennms.test.mock.EasyMockUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -64,8 +62,6 @@ import org.springframework.test.context.ContextConfiguration;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations = { "classpath:/META-INF/opennms/emptyContext.xml" })
-@JUnitConfigurationEnvironment
-@JUnitTemporaryDatabase
 public class TrapdHandlerDefaultIT extends CamelBlueprintTestSupport {
 
 	private boolean mockInitialized = false;
@@ -76,8 +72,7 @@ public class TrapdHandlerDefaultIT extends CamelBlueprintTestSupport {
 
 	private EasyMockUtils m_mocks = new EasyMockUtils();
 
-	private EventConfDao m_eventConfDao = m_mocks
-			.createMock(EventConfDao.class);
+	private EventConfDao m_eventConfDao = m_mocks.createMock(EventConfDao.class);
 
 	/**
 	 * Use Aries Blueprint synchronous mode to avoid a blueprint deadlock bug.
@@ -118,7 +113,7 @@ public class TrapdHandlerDefaultIT extends CamelBlueprintTestSupport {
 	@Override
 	protected void addServicesOnStartup(
 			Map<String, KeyValueHolder<Object, Dictionary>> services) {
-		// Create a mock SyslogdConfig
+		// Create a mock TrapdConfigBean
 		TrapdConfigBean config = new TrapdConfigBean();
 		config.setSnmpTrapPort(10514);
 		config.setSnmpTrapAddress("127.0.0.1");
@@ -151,7 +146,7 @@ public class TrapdHandlerDefaultIT extends CamelBlueprintTestSupport {
 
 	@Test
 	public void testTrapd() throws Exception {
-		// Expect one SyslogConnection message to be broadcast on the messaging
+		// Expect one TrapNotification message to be broadcast on the messaging
 		// channel
 		MockEndpoint broadcastTrapd = getMockEndpoint(
 				"mock:activemq:broadcastTrap", false);
@@ -203,7 +198,7 @@ public class TrapdHandlerDefaultIT extends CamelBlueprintTestSupport {
 		trapQProcessor.setEventConfDao(m_eventConfDao);
 
 		// Send a TrapQProcessor
-		template.sendBody("activemq:broadcastTrap", trapQProcessor.call());
+		template.sendBody("activemq:broadcastTrap?disableReplyTo=true", trapQProcessor.call());
 
 		assertMockEndpointsSatisfied();
 

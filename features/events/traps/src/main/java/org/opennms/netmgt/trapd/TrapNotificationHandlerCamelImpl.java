@@ -37,7 +37,6 @@ import org.opennms.netmgt.snmp.TrapNotification;
  * This class is an {@link InOnly} endpoint that will send messages to the 
  * Camel endpoint specified by the <code>endpointUri</code> constructor argument.
  */
-@InOnly
 public class TrapNotificationHandlerCamelImpl extends DefaultDispatcher implements TrapNotificationHandler {
 
 	@Produce(property="endpointUri")
