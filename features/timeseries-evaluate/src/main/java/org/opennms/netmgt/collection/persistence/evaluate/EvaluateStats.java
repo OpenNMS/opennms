@@ -167,12 +167,14 @@ public class EvaluateStats implements DisposableBean {
      */
     @Override
     public void destroy() throws Exception {
-        Logger log = LoggerFactory.getLogger(LOGGING_PREFFIX);
-        log.info("nodes: {} ", nodeMap.keySet());
-        log.info("resources: {} ", resourceMap.keySet());
-        log.info("groups: {}", groupMap.keySet());
-        log.info("numeric-attributes: {} ", numericAttributeMap.keySet());
-        log.info("string-atributes: {} ", stringAttributeMap.keySet());
+        Logging.withPrefix(LOGGING_PREFFIX, () -> {
+            Logger log = LoggerFactory.getLogger(LOGGING_PREFFIX);
+            log.info("nodes: {} ", nodeMap.keySet());
+            log.info("resources: {} ", resourceMap.keySet());
+            log.info("groups: {}", groupMap.keySet());
+            log.info("numeric-attributes: {} ", numericAttributeMap.keySet());
+            log.info("string-atributes: {} ", stringAttributeMap.keySet());
+        });
     }
 
 }
