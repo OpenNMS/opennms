@@ -92,12 +92,12 @@ public class BusinessServiceMainLayout extends VerticalLayout {
         HorizontalLayout upperLayout = new HorizontalLayout();
 
         // Reload button to allow manual reloads of the state machine
-        final Button reloadButton = UIHelper.createButton("Reload Daemon", "Reloads the Business Service State Machine", null, (Button.ClickListener) event -> {
+        final Button reloadButton = UIHelper.createButton("Reload Daemon", "Reloads the Business Service State Machine", FontAwesome.REFRESH, (Button.ClickListener) event -> {
             m_businessServiceManager.triggerDaemonReload();
         });
 
         // create Button
-        final Button createButton = new Button("Create");
+        final Button createButton = new Button("Create", FontAwesome.PENCIL_SQUARE_O);
         createButton.setId("createButton");
         createButton.addClickListener((Button.ClickListener) event -> {
             final BusinessService businessService = m_businessServiceManager.createBusinessService();
