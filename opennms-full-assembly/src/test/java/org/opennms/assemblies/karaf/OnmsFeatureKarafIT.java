@@ -341,11 +341,6 @@ public class OnmsFeatureKarafIT extends KarafTestCase {
 		installFeature("opennms-events-daemon");
 		System.out.println(executeCommand("features:list -i"));
 	}
-	@Test
-	public void testInstallFeatureOpennmsEventsTraps() {
-		installFeature("opennms-events-traps");
-		System.out.println(executeCommand("features:list -i"));
-	}
 	
 	@Test
 	public void testInstallFeatureOpennmsTrapd() {

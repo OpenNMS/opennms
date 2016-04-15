@@ -115,7 +115,6 @@ public class FeatureInstallKarafIT extends KarafTestCase {
         //installFeature("opennms-elasticsearch-event-forwarder");
         installFeature("opennms-events-api");
         installFeature("opennms-events-daemon");
-        installFeature("opennms-events-traps");
         installFeature("opennms-icmp-api");
         installFeature("opennms-icmp-jna");
         installFeature("opennms-icmp-jni");

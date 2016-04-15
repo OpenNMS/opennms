@@ -557,23 +557,6 @@
       <bundle>mvn:org.opennms.features.events/org.opennms.features.events.daemon/${project.version}</bundle>
     </feature>
 
-    <feature name="opennms-events-traps" description="OpenNMS :: Events :: Trap Daemon" version="${project.version}">
-      <feature>camel-core</feature>
-      <feature>camel-http</feature>
-      <feature>camel-netty</feature>
-      <feature>activemq-camel</feature>
-
-      <feature>opennms-core</feature>
-      <feature>opennms-core-camel</feature>
-      <feature>opennms-core-db</feature>
-      <feature>opennms-config</feature>
-      <feature>opennms-core-daemon</feature>
-      <feature>opennms-dao-api</feature>
-      <feature>opennms-events-api</feature>
-
-      <bundle>mvn:org.opennms.features.events/org.opennms.features.events.traps/${project.version}</bundle>
-    </feature>
-
     <feature name="opennms-icmp-api" description="OpenNMS :: ICMP :: API" version="${project.version}">
       <feature>opennms-core</feature>
 
