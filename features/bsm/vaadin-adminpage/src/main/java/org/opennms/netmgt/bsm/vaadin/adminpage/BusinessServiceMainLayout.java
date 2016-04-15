@@ -41,6 +41,7 @@ import org.opennms.netmgt.vaadin.core.UIHelper;
 import com.vaadin.data.Container;
 import com.vaadin.data.Container.ItemSetChangeEvent;
 import com.vaadin.data.util.BeanContainer;
+import com.vaadin.server.FontAwesome;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
@@ -130,15 +131,18 @@ public class BusinessServiceMainLayout extends VerticalLayout {
         m_table.setVisibleColumns("name");
 
         /**
-         * createBusinessService generated columns for modification of entries...
+         * add edit and delete buttons
          */
-        m_table.addGeneratedColumn("edit", new Table.ColumnGenerator() {
+        m_table.addGeneratedColumn("edit / delete", new Table.ColumnGenerator() {
             private static final long serialVersionUID = 7113848887128656685L;
 
             @Override
             public Object generateCell(Table source, Object itemId, Object columnId) {
-                Button editButton = new Button("edit");
-                editButton.addStyleName("small");
+                HorizontalLayout layout = new HorizontalLayout();
+                layout.setSpacing(true);
+
+                Button editButton = new Button("Edit", FontAwesome.PENCIL_SQUARE_O);
+               //editButton.addStyleName("small");
                 editButton.setId("editButton-" + m_beanContainer.getItem(itemId).getBean().getName());
 
                 editButton.addClickListener(UIHelper.getCurrent(TransactionAwareUI.class).wrapInTransactionProxy((Button.ClickListener) event -> {
@@ -149,19 +153,10 @@ public class BusinessServiceMainLayout extends VerticalLayout {
 
                     getUI().addWindow(window);
                 }));
-                return editButton;
-            }
-        });
+                layout.addComponent(editButton);
 
-        /**
-         * ...and deletion of entries
-         */
-        m_table.addGeneratedColumn("delete", new Table.ColumnGenerator() {
-            private static final long serialVersionUID = 2425061320600155420L;
-            @Override
-            public Object generateCell(Table source, Object itemId, Object columnId) {
-                Button deleteButton = new Button("delete");
-                deleteButton.addStyleName("small");
+                Button deleteButton = new Button("Delete", FontAwesome.TRASH_O);
+                //deleteButton.addStyleName("small");
                 deleteButton.setId("deleteButton-" + m_beanContainer.getItem(itemId).getBean().getName());
 
                 deleteButton.addClickListener((Button.ClickListener)event -> {
@@ -188,9 +183,14 @@ public class BusinessServiceMainLayout extends VerticalLayout {
                             .open();
                     }
                 });
-                return deleteButton;
+                layout.addComponent(deleteButton);
+
+                return layout;
             }
         });
+
+        m_table.setColumnExpandRatio("name", 5);
+        m_table.setColumnExpandRatio("edit / delete", 1);
 
         /**
          * add the table to the layout
