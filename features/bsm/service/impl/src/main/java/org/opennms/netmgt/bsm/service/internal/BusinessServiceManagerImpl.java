@@ -65,6 +65,7 @@ import org.opennms.netmgt.bsm.service.model.edge.ReductionKeyEdge;
 import org.opennms.netmgt.bsm.service.model.functions.map.MapFunction;
 import org.opennms.netmgt.bsm.service.model.functions.reduce.ReductionFunction;
 import org.opennms.netmgt.bsm.service.model.graph.BusinessServiceGraph;
+import org.opennms.netmgt.bsm.service.model.graph.internal.BusinessServiceGraphImpl;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.events.api.EventConstants;
@@ -398,6 +399,11 @@ public class BusinessServiceManagerImpl implements BusinessServiceManager {
     @Override
     public Node getNodeById(Integer nodeId) {
         return new NodeImpl(getNodeEntity(nodeId));
+    }
+
+    @Override
+    public BusinessServiceGraph getGraph(List<BusinessService> businessServices) {
+        return new BusinessServiceGraphImpl(businessServices);
     }
 
     @Override
