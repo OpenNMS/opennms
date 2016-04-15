@@ -120,6 +120,7 @@ public class BusinessServiceEditWindow extends Window {
      *
      * @param businessService the Business Service DTO instance to be configured
      */
+    @SuppressWarnings("unchecked")
     public BusinessServiceEditWindow(BusinessService businessService,
                                      BusinessServiceManager businessServiceManager) {
         /**
@@ -176,7 +177,6 @@ public class BusinessServiceEditWindow extends Window {
                 close();
             }
 
-            @SuppressWarnings("unchecked")
             private ReductionFunction getReduceFunction() {
                 try {
                     final ReductionFunction reductionFunction = ((Class<? extends ReductionFunction>) m_reduceFunctionNativeSelect.getValue()).newInstance();
@@ -239,6 +239,7 @@ public class BusinessServiceEditWindow extends Window {
         m_nameTextField.setRequired(true);
         m_nameTextField.focus();
         m_nameTextField.addValidator(new AbstractStringValidator("Name must be unique") {
+            private static final long serialVersionUID = 1L;
             @Override
             protected boolean isValidValue(String value) {
                 return value != null && !m_businessServiceNames.contains(value);
@@ -453,12 +454,14 @@ public class BusinessServiceEditWindow extends Window {
                         }
                     })
                     .withKeyValidator(new AbstractStringValidator("Key must not be empty") {
+                        private static final long serialVersionUID = 1L;
                         @Override
                         protected boolean isValidValue(String value) {
                             return !Strings.isNullOrEmpty(value);
                         }
                     })
                     .withKeyValidator(new AbstractStringValidator("Key must be unique") {
+                        private static final long serialVersionUID = 1L;
                         @Override
                         protected boolean isValidValue(String value) {
                             return !m_businessService.getAttributes().containsKey(value);
@@ -475,7 +478,7 @@ public class BusinessServiceEditWindow extends Window {
         editAttributeButton.addStyleName("small");
         attributesButtonLayout.addComponent(editAttributeButton);
         editAttributeButton.addClickListener((Button.ClickListener) event -> {
-            Map.Entry<String, String> entry = (Map.Entry) m_attributesListSelect.getValue();
+            Map.Entry<String, String> entry = (Map.Entry<String, String>) m_attributesListSelect.getValue();
             KeyValueInputDialogWindow keyValueInputDialogWindow = new KeyValueInputDialogWindow()
                     .withKeyFieldName("Key")
                     .withValueFieldName("Value")
@@ -542,6 +545,7 @@ public class BusinessServiceEditWindow extends Window {
         field.setVisible(visible);
     }
 
+    @SuppressWarnings("unchecked")
     private void refreshAttributes() {
         m_attributesListSelect.removeAllItems();
         m_attributesListSelect.addItems(m_businessService.getAttributes().entrySet().stream()

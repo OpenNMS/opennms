@@ -159,18 +159,18 @@ public class BusinessServiceMainLayout extends VerticalLayout {
                         });
                     } else {
                         new org.opennms.netmgt.vaadin.core.ConfirmationDialog()
-                                .withOkAction(UIHelper.getCurrent(TransactionAwareUI.class).wrapInTransactionProxy(new org.opennms.netmgt.vaadin.core.ConfirmationDialog.Action() {
-                                    @Override
-                                    public void execute(org.opennms.netmgt.vaadin.core.ConfirmationDialog window) {
-                                        m_businessServiceManager.getBusinessServiceById((Long) itemId).delete();
-                                        refreshTable();
-                                    }
-                                }))
-                                .withOkLabel("Delete anyway")
-                                .withCancelLabel("Cancel")
-                                .withCaption("Warning")
-                                .withDescription("This entry is referencing or is referenced by other Business Services! Do you really want to delete this entry?")
-                                .open();
+                            .withOkAction((org.opennms.netmgt.vaadin.core.ConfirmationDialog.Action) UIHelper.getCurrent(TransactionAwareUI.class).wrapInTransactionProxy(new org.opennms.netmgt.vaadin.core.ConfirmationDialog.Action() {
+                                @Override
+                                public void execute(org.opennms.netmgt.vaadin.core.ConfirmationDialog window) {
+                                    m_businessServiceManager.getBusinessServiceById((Long) itemId).delete();
+                                    refreshTable();
+                                }
+                            }))
+                            .withOkLabel("Delete anyway")
+                            .withCancelLabel("Cancel")
+                            .withCaption("Warning")
+                            .withDescription("This entry is referencing or is referenced by other Business Services! Do you really want to delete this entry?")
+                            .open();
                     }
                 });
                 return deleteButton;
