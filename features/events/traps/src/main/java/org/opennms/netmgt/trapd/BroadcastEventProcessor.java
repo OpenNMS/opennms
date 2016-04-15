@@ -131,8 +131,10 @@ public final class BroadcastEventProcessor implements EventListener, Initializin
     public void onEvent(Event event) {
 
         String eventUei = event.getUei();
-        if (eventUei == null)
+        if (eventUei == null) {
+            LOG.warn("Received an unexpected event with a null UEI");
             return;
+        }
 
         LOG.debug("Received event: {}", eventUei);
 

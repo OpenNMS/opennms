@@ -21,7 +21,7 @@
   
   <bean id="daemon" class="org.opennms.netmgt.trapd.Trapd">
     <property name="eventReader" ref="eventReader"/>
-    <property name="trapReceiver" ref="trapReceiverSnmp4jImpl"/>
+    <property name="trapReceiver" ref="trapReceiver"/>
     <property name="trapdIpMgr" ref="trapdIpMgr"/>
   </bean>
   
@@ -33,7 +33,7 @@
     <property name="eventCreator" ref="eventCreator"/>
   </bean>
   
-  <bean id="trapReceiverSnmp4jImpl" class="org.opennms.netmgt.trapd.TrapReceiverSnmp4jImpl">
+  <bean id="trapReceiver" class="org.opennms.netmgt.trapd.TrapReceiverImpl">
     <constructor-arg ref="trapConfigBean" />
     <property name="trapNotificationHandlers" ref="trapNotificationDefaultImpl"/>
   </bean>

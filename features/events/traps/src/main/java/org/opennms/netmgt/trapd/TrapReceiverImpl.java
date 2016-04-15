@@ -53,8 +53,8 @@ import org.slf4j.LoggerFactory;
  * @author <a href="http://www.oculan.com">Oculan Corporation</a>
  * @fiddler joed
  */
-public class TrapReceiverSnmp4jImpl implements TrapReceiver, TrapNotificationListener {
-    private static final Logger LOG = LoggerFactory.getLogger(TrapReceiverSnmp4jImpl.class);
+public class TrapReceiverImpl implements TrapReceiver, TrapNotificationListener {
+    private static final Logger LOG = LoggerFactory.getLogger(TrapReceiverImpl.class);
 
     @Resource(name="snmpTrapAddress")
     private String m_snmpTrapAddress;
@@ -77,7 +77,7 @@ public class TrapReceiverSnmp4jImpl implements TrapReceiver, TrapNotificationLis
      * @param hostGroup
      * @param messageGroup
      */
-    public TrapReceiverSnmp4jImpl(final TrapdConfig config) throws SocketException {
+    public TrapReceiverImpl(final TrapdConfig config) throws SocketException {
         if (config == null) {
             throw new IllegalArgumentException("Config cannot be null");
         }
