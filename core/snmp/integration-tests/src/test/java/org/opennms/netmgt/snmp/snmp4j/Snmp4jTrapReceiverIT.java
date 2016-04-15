@@ -98,7 +98,9 @@ public class Snmp4jTrapReceiverIT extends MockSnmpAgentITCase implements TrapPro
         Snmp snmp = null;
 
         try {
-            transportMapping = new DefaultUdpTransportMapping(new UdpAddress(9162));
+            // Set socket option SO_REUSEADDR so that we can bind to the port even if it
+            // has recently been closed by passing 'true' as the second argument here.
+            transportMapping = new DefaultUdpTransportMapping(new UdpAddress(9162), true);
             snmp = new Snmp(transportMapping);
 
             snmp.addCommandResponder(this);

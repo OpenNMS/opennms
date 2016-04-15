@@ -125,14 +125,15 @@ public class TrapReceiverSnmp4jImpl implements TrapReceiver, TrapNotificationLis
                 Logging.withPrefix("OpenNMS.Manager", new Runnable() {
                     @Override
                     public void run() {
-                        LOG.error("init: Failed to listen on SNMP trap port, perhaps something else is already listening?", e);
+                        LOG.error("init: Failed to listen on SNMP trap port " + m_snmpTrapPort + ", perhaps something else is already listening?", e);
                     }
                 });
-                LOG.error("init: Failed to listen on SNMP trap port, perhaps something else is already listening?", e);
+                LOG.error("init: Failed to listen on SNMP trap port " + m_snmpTrapPort + ", perhaps something else is already listening?", e);
+                throw new UndeclaredThrowableException(e, "Failed to listen on SNMP trap port " + m_snmpTrapPort + ", perhaps something else is already listening?");
             } else {
-                LOG.error("init: Failed to initialize SNMP trap socket", e);
+                LOG.error("init: Failed to initialize SNMP trap socket on port " + m_snmpTrapPort, e);
+                throw new UndeclaredThrowableException(e, "Failed to initialize SNMP trap socket on port " + m_snmpTrapPort);
             }
-            throw new UndeclaredThrowableException(e);
         }
     }
 
