@@ -54,8 +54,10 @@ import com.google.common.base.Throwables;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Ordering;
 import com.vaadin.data.Validator;
+import com.vaadin.shared.ui.combobox.FilteringMode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.ListSelect;
@@ -87,8 +89,8 @@ public class BusinessServiceEdgeEditWindow extends Window {
      * declaring the components
      */
     private final NativeSelect m_typeSelect;
-    private final ListSelect m_childServiceComponent;
-    private final ListSelect m_ipServiceComponent;
+    private final ComboBox m_childServiceComponent;
+    private final ComboBox m_ipServiceComponent;
     private final TextField m_reductionKeyComponent;
     private final NativeSelect m_mapFunctionSelect;
     private final NativeSelect m_mapFunctionSeveritySelect;
@@ -149,19 +151,17 @@ public class BusinessServiceEdgeEditWindow extends Window {
         m_typeSelect.setWidth(100.0f, Unit.PERCENTAGE);
         formLayout.addComponent(m_typeSelect);
 
-        /**
-         * child service list
-         */
-        m_childServiceComponent = new ListSelect("Child Service");
+        // List of child services
+        m_childServiceComponent = new ComboBox("Child Service");
         m_childServiceComponent.setId("childServiceList");
-        m_childServiceComponent.setMultiSelect(false);
+        m_childServiceComponent.setInputPrompt("No child service selected");
         m_childServiceComponent.setNewItemsAllowed(false);
         m_childServiceComponent.setNullSelectionAllowed(false);
         m_childServiceComponent.setWidth(100.0f, Unit.PERCENTAGE);
-        m_childServiceComponent.setRows(20);
         m_childServiceComponent.setVisible(false);
         m_childServiceComponent.setImmediate(true);
         m_childServiceComponent.setValidationVisible(true);
+        m_childServiceComponent.setFilteringMode(FilteringMode.CONTAINS);
         m_childServiceComponent.addItems(businessServiceManager.getFeasibleChildServices(businessService).stream()
                                                                .sorted(Ordering.natural()
                                                                                .onResultOf(s -> BusinessServiceEditWindow.describeBusinessService(s)))
@@ -169,19 +169,17 @@ public class BusinessServiceEdgeEditWindow extends Window {
         m_childServiceComponent.getItemIds().forEach(item -> m_childServiceComponent.setItemCaption(item, BusinessServiceEditWindow.describeBusinessService((BusinessService) item)));
         formLayout.addComponent(m_childServiceComponent);
 
-        /**
-         * ip service list
-         */
-        m_ipServiceComponent = new ListSelect("IP Service");
+        // List of IP services
+        m_ipServiceComponent = new ComboBox("IP Service");
         m_ipServiceComponent.setId("ipServiceList");
-        m_ipServiceComponent.setMultiSelect(false);
+        m_ipServiceComponent.setInputPrompt("No IP service selected");
         m_ipServiceComponent.setNewItemsAllowed(false);
         m_ipServiceComponent.setNullSelectionAllowed(false);
         m_ipServiceComponent.setWidth(100.0f, Unit.PERCENTAGE);
-        m_ipServiceComponent.setRows(20);
         m_ipServiceComponent.setVisible(false);
         m_ipServiceComponent.setImmediate(true);
         m_ipServiceComponent.setValidationVisible(true);
+        m_ipServiceComponent.setFilteringMode(FilteringMode.CONTAINS);
         m_ipServiceComponent.addItems(businessServiceManager.getAllIpServices().stream()
                                                             .sorted(Ordering.natural()
                                                                             .onResultOf(s -> BusinessServiceEditWindow.describeIpService(s)))
