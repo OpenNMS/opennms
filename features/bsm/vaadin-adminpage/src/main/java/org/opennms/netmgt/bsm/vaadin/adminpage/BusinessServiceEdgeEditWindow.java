@@ -60,7 +60,6 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.ListSelect;
 import com.vaadin.ui.NativeSelect;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
@@ -115,14 +114,13 @@ public class BusinessServiceEdgeEditWindow extends Window {
         setModal(true);
         setClosable(false);
         setResizable(false);
-        setWidth(50, Unit.PERCENTAGE);
-        setHeight(75, Unit.PERCENTAGE);
+        setWidth(650, Unit.PIXELS);
+        setHeight(300, Unit.PIXELS);
 
         /**
          * Creating the root layout...
          */
         final VerticalLayout rootLayout = new VerticalLayout();
-        rootLayout.setSizeFull();
         rootLayout.setSpacing(true);
         rootLayout.setMargin(false);
 
