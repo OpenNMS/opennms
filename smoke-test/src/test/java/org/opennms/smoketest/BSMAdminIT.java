@@ -70,13 +70,13 @@ public class BSMAdminIT extends OpenNMSSeleniumTestCase {
         }
 
         public BsmAdminPage save() {
-            findElementById("saveButton").click();
+            clickElementUntilItDisappears(By.id("saveButton"));
             wait.until(pageContainsText(businessServiceName));
             return new BsmAdminPage().open();
         }
 
         public BsmAdminPage cancel() {
-            findElementById("cancelButton").click();
+            clickElementUntilItDisappears(By.id("cancelButton"));
             wait.until(ExpectedConditions.elementToBeClickable(By.id("createButton")));
             return new BsmAdminPage();
         }
