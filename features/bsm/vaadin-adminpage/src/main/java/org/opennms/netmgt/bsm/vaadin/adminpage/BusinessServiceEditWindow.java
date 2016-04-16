@@ -136,8 +136,8 @@ public class BusinessServiceEditWindow extends Window {
         setModal(true);
         setClosable(false);
         setResizable(false);
-        setWidth(50, Unit.PERCENTAGE);
-        setHeight(75, Unit.PERCENTAGE);
+        setWidth(650, Unit.PIXELS);
+        setHeight(550, Unit.PIXELS);
 
         /**
          * create set for Business Service names
