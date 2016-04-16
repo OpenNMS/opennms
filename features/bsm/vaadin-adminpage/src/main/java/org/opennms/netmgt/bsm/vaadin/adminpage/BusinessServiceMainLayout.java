@@ -45,6 +45,7 @@ import com.vaadin.server.FontAwesome;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.TreeTable;
 import com.vaadin.ui.VerticalLayout;
@@ -86,18 +87,13 @@ public class BusinessServiceMainLayout extends VerticalLayout {
 
         setSizeFull();
 
-        /**
-         * construct the upper layout for the createBusinessService button and field
-         */
-        HorizontalLayout upperLayout = new HorizontalLayout();
-
         // Reload button to allow manual reloads of the state machine
         final Button reloadButton = UIHelper.createButton("Reload Daemon", "Reloads the Business Service State Machine", FontAwesome.REFRESH, (Button.ClickListener) event -> {
             m_businessServiceManager.triggerDaemonReload();
         });
 
-        // create Button
-        final Button createButton = new Button("Create", FontAwesome.PENCIL_SQUARE_O);
+        // Create button to add a new business server
+        final Button createButton = new Button("New Business Service", FontAwesome.PLUS_SQUARE);
         createButton.setId("createButton");
         createButton.addClickListener((Button.ClickListener) event -> {
             final BusinessService businessService = m_businessServiceManager.createBusinessService();
@@ -106,17 +102,21 @@ public class BusinessServiceMainLayout extends VerticalLayout {
             getUI().addWindow(window);
         });
 
-        /**
-         * add to the upper layout
-         */
+        // Build the upper layout
+        HorizontalLayout upperLayout = new HorizontalLayout();
         upperLayout.setSpacing(true);
-        upperLayout.addComponent(reloadButton);
         upperLayout.addComponent(createButton);
+        upperLayout.addComponent(reloadButton);
+        upperLayout.setComponentAlignment(createButton, Alignment.TOP_LEFT);
+        upperLayout.setComponentAlignment(reloadButton, Alignment.TOP_RIGHT);
+        upperLayout.setWidth(100, Unit.PERCENTAGE);
         addComponent(upperLayout);
-        /**
-         * and set the upper-right alignment
-         */
-        setComponentAlignment(upperLayout, Alignment.TOP_RIGHT);
+
+        // Add some space between the upper layout and the table
+        Label sz = new Label("");
+        sz.setWidth(null);
+        sz.setHeight(5, Unit.PIXELS);
+        addComponent(sz);
 
         /**
          * now construct the table...
