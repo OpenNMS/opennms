@@ -29,6 +29,7 @@
 package org.opennms.netmgt.bsm.vaadin.adminpage;
 
 import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.opennms.netmgt.bsm.service.BusinessServiceManager;
@@ -38,6 +39,7 @@ import org.opennms.netmgt.bsm.service.model.graph.GraphVertex;
 import org.opennms.netmgt.vaadin.core.TransactionAwareUI;
 import org.opennms.netmgt.vaadin.core.UIHelper;
 
+import com.google.common.collect.HashBasedTable;
 import com.vaadin.data.Container;
 import com.vaadin.data.Container.ItemSetChangeEvent;
 import com.vaadin.data.util.BeanContainer;
@@ -70,7 +72,7 @@ public class BusinessServiceMainLayout extends VerticalLayout {
     /**
      * the table instance
      */
-    private final TreeTable m_table;
+    private final TreeTable m_table = new TreeTable();
 
     /**
      * the bean item container for the listed Business Service DTOs
@@ -92,7 +94,7 @@ public class BusinessServiceMainLayout extends VerticalLayout {
             m_businessServiceManager.triggerDaemonReload();
         });
 
-        // Create button to add a new business server
+        // Create button to add a new business service
         final Button createButton = new Button("New Business Service", FontAwesome.PLUS_SQUARE);
         createButton.setId("createButton");
         createButton.addClickListener((Button.ClickListener) event -> {
@@ -102,12 +104,36 @@ public class BusinessServiceMainLayout extends VerticalLayout {
             getUI().addWindow(window);
         });
 
+        // Collapse all
+        final Button collapseButton = new Button("Collapse All", FontAwesome.FOLDER);
+        collapseButton.setId("collapseButton");
+        collapseButton.addClickListener((Button.ClickListener) event -> {
+            m_table.getContainerDataSource().getItemIds()
+                .forEach(id -> m_table.setCollapsed(id, true));
+        });
+
+        // Expand all
+        final Button expandButton = new Button("Expand All", FontAwesome.FOLDER_OPEN);
+        expandButton.setId("expandButton");
+        expandButton.addClickListener((Button.ClickListener) event -> {
+            m_table.getContainerDataSource().getItemIds()
+                .forEach(id -> m_table.setCollapsed(id, false));
+        });
+
+        // Group the create the collapse buttons on the left
+        HorizontalLayout buttonGroup = new HorizontalLayout();
+        buttonGroup.setSpacing(true);
+        buttonGroup.addComponent(createButton);
+        buttonGroup.addComponent(collapseButton);
+        buttonGroup.addComponent(expandButton);
+        buttonGroup.setDefaultComponentAlignment(Alignment.TOP_LEFT);
+
         // Build the upper layout
         HorizontalLayout upperLayout = new HorizontalLayout();
         upperLayout.setSpacing(true);
-        upperLayout.addComponent(createButton);
+        upperLayout.addComponent(buttonGroup);
         upperLayout.addComponent(reloadButton);
-        upperLayout.setComponentAlignment(createButton, Alignment.TOP_LEFT);
+        upperLayout.setComponentAlignment(buttonGroup, Alignment.TOP_LEFT);
         upperLayout.setComponentAlignment(reloadButton, Alignment.TOP_RIGHT);
         upperLayout.setWidth(100, Unit.PERCENTAGE);
         addComponent(upperLayout);
@@ -119,9 +145,8 @@ public class BusinessServiceMainLayout extends VerticalLayout {
         addComponent(sz);
 
         /**
-         * now construct the table...
+         * now setup the table...
          */
-        m_table = new TreeTable();
         m_table.setSizeFull();
         m_table.setContainerDataSource(m_beanContainer);
 
@@ -142,7 +167,6 @@ public class BusinessServiceMainLayout extends VerticalLayout {
                 layout.setSpacing(true);
 
                 Button editButton = new Button("Edit", FontAwesome.PENCIL_SQUARE_O);
-               //editButton.addStyleName("small");
                 editButton.setId("editButton-" + m_beanContainer.getItem(itemId).getBean().getName());
 
                 editButton.addClickListener(UIHelper.getCurrent(TransactionAwareUI.class).wrapInTransactionProxy((Button.ClickListener) event -> {
@@ -156,7 +180,6 @@ public class BusinessServiceMainLayout extends VerticalLayout {
                 layout.addComponent(editButton);
 
                 Button deleteButton = new Button("Delete", FontAwesome.TRASH_O);
-                //deleteButton.addStyleName("small");
                 deleteButton.setId("deleteButton-" + m_beanContainer.getItem(itemId).getBean().getName());
 
                 deleteButton.addClickListener((Button.ClickListener)event -> {
@@ -213,30 +236,45 @@ public class BusinessServiceMainLayout extends VerticalLayout {
         return m_businessServiceManager;
     }
 
-    private void createRowForVertex(BusinessServiceGraph graph, GraphVertex graphVertex, Long parentRowId) {
+    private void createRowForVertex(BusinessServiceGraph graph, GraphVertex graphVertex, BusinessServiceRow parentRow,
+            com.google.common.collect.Table<Long, Optional<Long>, Boolean> collapseState) {
         final BusinessService businessService = graphVertex.getBusinessService();
         if (businessService == null) {
             return;
         }
 
         final long rowId = m_rowIdCounter.incrementAndGet();
-        m_beanContainer.addBean(new BusinessServiceRow(businessService, rowId));
-        if (parentRowId != null) {
-            m_table.setParent(rowId, parentRowId.longValue());
+        final Long parentBusinessServiceId = parentRow != null ? parentRow.getBusinessService().getId() : null;
+        final BusinessServiceRow row = new BusinessServiceRow(rowId, businessService, parentBusinessServiceId);
+        m_beanContainer.addBean(row);
+        if (parentRow != null) {
+            m_table.setParent(rowId, parentRow.getId());
         }
+
+        // Restore the previous collapsed state
+        Boolean wasCollapsed = collapseState.get(businessService.getId(), Optional.ofNullable(parentBusinessServiceId));
+        m_table.setCollapsed(rowId, wasCollapsed != null ? wasCollapsed : true); // Collapse by default
 
         // Recurse with all of the children
         graph.getOutEdges(graphVertex).stream()
             .map(e -> graph.getOpposite(graphVertex, e))
             .filter(v -> v.getBusinessService() != null)
             .sorted((v1, v2) -> v1.getBusinessService().getName().compareTo(v2.getBusinessService().getName()))
-            .forEach(v -> createRowForVertex(graph, v, rowId));
+            .forEach(v -> createRowForVertex(graph, v, row, collapseState));
     }
 
     /**
-     * Refreshes the entries of the table used for listing the DTO instances.
+     * Refreshes table entries.
      */
     private void refreshTable() {
+        // Gather the current collapse state
+        final com.google.common.collect.Table<Long, Optional<Long>, Boolean> collapseState = HashBasedTable.create();
+        for (Long itemId : m_beanContainer.getItemIds()) {
+            final BusinessServiceRow row = m_beanContainer.getItem(itemId).getBean();
+            collapseState.put(row.getBusinessService().getId(), Optional.ofNullable(row.getParentBusinessServiceId()), m_table.isCollapsed(itemId));
+        }
+
+        // Clear the container
         m_beanContainer.setBeanIdProperty("id");
         m_beanContainer.removeAllItems();
         m_rowIdCounter.set(0);
@@ -249,16 +287,21 @@ public class BusinessServiceMainLayout extends VerticalLayout {
         graph.getVerticesByLevel(0).stream()
             .filter(v -> v.getBusinessService() != null)
             .sorted((v1, v2) -> v1.getBusinessService().getName().compareTo(v2.getBusinessService().getName()))
-            .forEach(v -> createRowForVertex(graph, v, null));
+            .forEach(v -> createRowForVertex(graph, v, null, collapseState));
 
         for (Object itemId: m_table.getContainerDataSource().getItemIds()) {
             // Disable the collapse flag on items without any children
             m_table.setChildrenAllowed(itemId, m_table.hasChildren(itemId));
-            // Expand the tree on refresh
-            m_table.setCollapsed(itemId, false);
         }
 
-        // Let the ContainerStrategy know that we changed the item set
+        fireItemSetChange();
+    }
+
+    /**
+     * Lets the ContainerStrategy know that we changed the item set, so
+     * it can adjust the hierarchy accordingly.
+     */
+    private void fireItemSetChange() {
         m_table.containerItemSetChange(new ItemSetChangeEvent() {
             private static final long serialVersionUID = 1L;
             @Override

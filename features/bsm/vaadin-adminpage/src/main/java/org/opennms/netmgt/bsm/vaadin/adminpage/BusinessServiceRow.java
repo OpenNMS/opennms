@@ -44,10 +44,12 @@ public class BusinessServiceRow {
 
     private final long id;
     private final BusinessService businessService;
-    
-    public BusinessServiceRow(BusinessService businessService, long id) {
-        this.businessService = Objects.requireNonNull(businessService);
+    private final Long parentBusinessServiceId;
+
+    public BusinessServiceRow(long id, BusinessService businessService, Long parentBusinessServiceId) {
         this.id = id;
+        this.businessService = Objects.requireNonNull(businessService);
+        this.parentBusinessServiceId = parentBusinessServiceId;
     }
 
     public long getId() {
@@ -60,5 +62,9 @@ public class BusinessServiceRow {
 
     public BusinessService getBusinessService() {
         return businessService;   
+    }
+
+    public Long getParentBusinessServiceId() {
+        return parentBusinessServiceId;
     }
 }

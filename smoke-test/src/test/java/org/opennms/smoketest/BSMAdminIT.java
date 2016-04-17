@@ -254,6 +254,14 @@ public class BSMAdminIT extends OpenNMSSeleniumTestCase {
             }
             verifyElementNotPresent(By.id("deleteButton-" + serviceName));
         }
+
+        public void collapseAll() {
+            findElementById("collapseButton").click();
+        }
+
+        public void expandAll() {
+            findElementById("expandButton").click();
+        }
     }
 
     private class BsmAdminPageEdgeEditWindow {
@@ -536,6 +544,7 @@ public class BSMAdminIT extends OpenNMSSeleniumTestCase {
             bsmAdminPageEditWindow.cancel();
 
             // cleanup
+            bsmAdminPage.expandAll();
             bsmAdminPage.delete(child2, true);
             bsmAdminPage.delete(child1, true);
             bsmAdminPage.delete(parentServiceName);
@@ -785,6 +794,37 @@ public class BSMAdminIT extends OpenNMSSeleniumTestCase {
 
         // clean up afterwards
         bsmAdminPage.delete(serviceName);
+    }
+
+    @Test
+    public void testCanExpandAndCollapse() throws Exception {
+        // Create two business services
+        final String serviceName = createUniqueBusinessServiceName();
+        final String[] serviceNames = new String[]{
+                serviceName + "_1",
+                serviceName + "_2"};
+        for (String eachServiceName : serviceNames) {
+            bsmAdminPage.openNewDialog(eachServiceName).save();
+        }
+
+        // Set the second business service as a child of the first
+        final BsmAdminPageEditWindow bsmAdminPageEditWindow = bsmAdminPage.openEditDialog(serviceNames[0]);
+        bsmAdminPageEditWindow.addChildEdge(serviceNames[1], "Ignore", 1);
+        bsmAdminPageEditWindow.save();
+
+        // If we collapse, we should not be able to see the child
+        bsmAdminPage.collapseAll();
+        verifyElementNotPresent(By.id("deleteButton-" + serviceNames[1]));
+
+        // If we expand, we should be able to see the child
+        bsmAdminPage.expandAll();
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("deleteButton-" + serviceNames[1])));
+
+        // Delete the business services
+        for (int i = 0; i < serviceNames.length; i++) {
+            final String eachServiceName = serviceNames[i];
+            bsmAdminPage.delete(eachServiceName, i==0);
+        }
     }
 
     /**
