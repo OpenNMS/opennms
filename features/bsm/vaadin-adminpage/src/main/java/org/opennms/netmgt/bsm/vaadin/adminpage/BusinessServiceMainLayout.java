@@ -28,26 +28,35 @@
 
 package org.opennms.netmgt.bsm.vaadin.adminpage;
 
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
 
+import org.apache.http.client.utils.URIBuilder;
 import org.opennms.netmgt.bsm.service.BusinessServiceManager;
+import org.opennms.netmgt.bsm.service.BusinessServiceStateMachine;
 import org.opennms.netmgt.bsm.service.model.BusinessService;
+import org.opennms.netmgt.bsm.service.model.Status;
 import org.opennms.netmgt.bsm.service.model.graph.BusinessServiceGraph;
 import org.opennms.netmgt.bsm.service.model.graph.GraphVertex;
 import org.opennms.netmgt.vaadin.core.TransactionAwareUI;
 import org.opennms.netmgt.vaadin.core.UIHelper;
 
+import com.google.common.base.Throwables;
 import com.google.common.collect.HashBasedTable;
 import com.vaadin.data.Container;
 import com.vaadin.data.Container.ItemSetChangeEvent;
 import com.vaadin.data.util.BeanContainer;
+import com.vaadin.server.ExternalResource;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.Link;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.TreeTable;
 import com.vaadin.ui.VerticalLayout;
@@ -89,52 +98,61 @@ public class BusinessServiceMainLayout extends VerticalLayout {
 
         setSizeFull();
 
-        // Reload button to allow manual reloads of the state machine
-        final Button reloadButton = UIHelper.createButton("Reload Daemon", "Reloads the Business Service State Machine", FontAwesome.REFRESH, (Button.ClickListener) event -> {
-            m_businessServiceManager.triggerDaemonReload();
-        });
-
-        // Create button to add a new business service
-        final Button createButton = new Button("New Business Service", FontAwesome.PLUS_SQUARE);
-        createButton.setId("createButton");
-        createButton.addClickListener((Button.ClickListener) event -> {
+        // Create button
+        final Button createButton = UIHelper.createButton("New Business Service", null, FontAwesome.PLUS_SQUARE, (Button.ClickListener) event -> {
             final BusinessService businessService = m_businessServiceManager.createBusinessService();
             final BusinessServiceEditWindow window = new BusinessServiceEditWindow(businessService, m_businessServiceManager);
             window.addCloseListener(e -> refreshTable());
             getUI().addWindow(window);
         });
+        createButton.setId("createButton");
 
         // Collapse all
-        final Button collapseButton = new Button("Collapse All", FontAwesome.FOLDER);
-        collapseButton.setId("collapseButton");
-        collapseButton.addClickListener((Button.ClickListener) event -> {
-            m_table.getContainerDataSource().getItemIds()
-                .forEach(id -> m_table.setCollapsed(id, true));
+        final Button collapseButton = UIHelper.createButton("Collapse All", null, FontAwesome.FOLDER, (Button.ClickListener) event -> {
+            m_table.getContainerDataSource().getItemIds().forEach(id -> m_table.setCollapsed(id, true));
         });
+        collapseButton.setId("collapseButton");
 
         // Expand all
-        final Button expandButton = new Button("Expand All", FontAwesome.FOLDER_OPEN);
-        expandButton.setId("expandButton");
-        expandButton.addClickListener((Button.ClickListener) event -> {
-            m_table.getContainerDataSource().getItemIds()
-                .forEach(id -> m_table.setCollapsed(id, false));
+        final Button expandButton = UIHelper.createButton("Expand All", null, FontAwesome.FOLDER_OPEN, (Button.ClickListener) event -> {
+            m_table.getContainerDataSource().getItemIds().forEach(id -> m_table.setCollapsed(id, false));
         });
+        expandButton.setId("expandButton");
 
-        // Group the create the collapse buttons on the left
-        HorizontalLayout buttonGroup = new HorizontalLayout();
-        buttonGroup.setSpacing(true);
-        buttonGroup.addComponent(createButton);
-        buttonGroup.addComponent(collapseButton);
-        buttonGroup.addComponent(expandButton);
-        buttonGroup.setDefaultComponentAlignment(Alignment.TOP_LEFT);
+        // Refresh
+        final Button refreshButton = UIHelper.createButton("Refresh Table", null, FontAwesome.REFRESH, (Button.ClickListener) event -> {
+            refreshTable();
+        });
+        refreshButton.setId("refreshButton");
+
+        // Reload daemon
+        final Button reloadButton = UIHelper.createButton("Reload Daemon", "Reloads the Business Service State Machine", FontAwesome.RETWEET, (Button.ClickListener) event -> {
+            m_businessServiceManager.triggerDaemonReload();
+        });
+        reloadButton.setId("reloadButton");
+
+        // Group the create and collapse buttons on the left
+        HorizontalLayout leftButtonGroup = new HorizontalLayout();
+        leftButtonGroup.setSpacing(true);
+        leftButtonGroup.addComponent(createButton);
+        leftButtonGroup.addComponent(collapseButton);
+        leftButtonGroup.addComponent(expandButton);
+        leftButtonGroup.setDefaultComponentAlignment(Alignment.TOP_LEFT);
+
+        // Group the refresh and reload buttons to the right
+        HorizontalLayout rightButtonGroup = new HorizontalLayout();
+        rightButtonGroup.setSpacing(true);
+        rightButtonGroup.addComponent(refreshButton);
+        rightButtonGroup.addComponent(reloadButton);
+        rightButtonGroup.setDefaultComponentAlignment(Alignment.TOP_RIGHT);
 
         // Build the upper layout
         HorizontalLayout upperLayout = new HorizontalLayout();
         upperLayout.setSpacing(true);
-        upperLayout.addComponent(buttonGroup);
-        upperLayout.addComponent(reloadButton);
-        upperLayout.setComponentAlignment(buttonGroup, Alignment.TOP_LEFT);
-        upperLayout.setComponentAlignment(reloadButton, Alignment.TOP_RIGHT);
+        upperLayout.addComponent(leftButtonGroup);
+        upperLayout.addComponent(rightButtonGroup);
+        upperLayout.setComponentAlignment(leftButtonGroup, Alignment.TOP_LEFT);
+        upperLayout.setComponentAlignment(rightButtonGroup, Alignment.TOP_RIGHT);
         upperLayout.setWidth(100, Unit.PERCENTAGE);
         addComponent(upperLayout);
 
@@ -154,6 +172,44 @@ public class BusinessServiceMainLayout extends VerticalLayout {
          * ...and configure the visible columns
          */
         m_table.setVisibleColumns("name");
+
+        // Add the "LINKS" columns
+        m_table.addGeneratedColumn("links", new Table.ColumnGenerator() {
+            private static final long serialVersionUID = 7113848887128656685L;
+
+            @Override
+            public Object generateCell(Table source, Object itemId, Object columnId) {
+                final HorizontalLayout layout = new HorizontalLayout();
+                final BusinessServiceStateMachine stateMachine = m_businessServiceManager.getStateMachine();
+                try {
+                    final BusinessService businessService = m_beanContainer.getItem(itemId).getBean().getBusinessService();
+                    final Status status = stateMachine.getOperationalStatus(businessService);
+                    if (status != null) {
+                        final URIBuilder builder = new URIBuilder("http://host/opennms/topology");
+                        builder.addParameter("focus-vertices", businessService.getId().toString());
+                        builder.addParameter("szl", "1");
+                        builder.addParameter("layout", "Hierarchy Layout");
+                        builder.addParameter("provider", "Business Services");
+                        final URL url = builder.build().toURL();
+                        final Link link = new Link("View in Topology UI", new ExternalResource(
+                                String.format("%s?%s", url.getPath(), url.getQuery())));
+                        link.setIcon(FontAwesome.EXTERNAL_LINK_SQUARE);
+                        // This app is typically access in an iframe, so we open the URL in a new window/tab
+                        link.setTargetName("_blank");
+                        layout.addComponent(link);
+                        layout.setComponentAlignment(link, Alignment.MIDDLE_CENTER);
+                    } else {
+                        Label label = new Label("N/A");
+                        label.setDescription("Try reloading the daemon and refreshing the table.");
+                        label.setWidth(null);
+                        layout.addComponent(label);
+                    }
+                } catch (URISyntaxException | MalformedURLException e) {
+                    throw Throwables.propagate(e);
+                }
+                return layout;
+            }
+        });
 
         /**
          * add edit and delete buttons
@@ -213,6 +269,7 @@ public class BusinessServiceMainLayout extends VerticalLayout {
         });
 
         m_table.setColumnExpandRatio("name", 5);
+        m_table.setColumnExpandRatio("links", 1);
         m_table.setColumnExpandRatio("edit / delete", 1);
 
         /**
