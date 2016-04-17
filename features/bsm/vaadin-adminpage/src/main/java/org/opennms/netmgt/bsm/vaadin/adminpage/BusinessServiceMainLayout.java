@@ -228,6 +228,7 @@ public class BusinessServiceMainLayout extends VerticalLayout {
         // Recurse with all of the children
         graph.getOutEdges(graphVertex).stream()
             .map(e -> graph.getOpposite(graphVertex, e))
+            .filter(v -> v.getBusinessService() != null)
             .sorted((v1, v2) -> v1.getBusinessService().getName().compareTo(v2.getBusinessService().getName()))
             .forEach(v -> createRowForVertex(graph, v, rowId));
     }

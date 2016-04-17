@@ -42,6 +42,7 @@ import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
 import org.openqa.selenium.By;
+import org.openqa.selenium.Keys;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -49,6 +50,8 @@ import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
+
+import com.google.common.collect.Lists;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class BSMAdminIT extends OpenNMSSeleniumTestCase {
@@ -85,6 +88,7 @@ public class BSMAdminIT extends OpenNMSSeleniumTestCase {
             WebElement nameField = findElementById("nameField");
             nameField.clear();
             nameField.sendKeys(newName);
+            nameField.sendKeys(Keys.ENTER);
             return new BsmAdminPageEditWindow(newName);
         }
 
@@ -114,8 +118,8 @@ public class BSMAdminIT extends OpenNMSSeleniumTestCase {
 
         public BsmAdminPageEdgeEditWindow addChildEdge(String childServiceText, String mapFunctionText, int weight) throws InterruptedException {
             BsmAdminPageEdgeEditWindow editPage = newEdgeWindow()
-                    .selectChildService(childServiceText)
                     .selectMapFunction(mapFunctionText)
+                    .selectChildService(childServiceText)
                     .weight(weight)
                     .confirm();
             wait.until(ExpectedConditions.elementToBeClickable(By.id("addEdgeButton")));
@@ -128,9 +132,9 @@ public class BSMAdminIT extends OpenNMSSeleniumTestCase {
 
         public BsmAdminPageEditWindow addReductionKeyEdge(String reductionKeyText, String mapFunctionText, int weight, String friendlyName) throws InterruptedException {
             newEdgeWindow()
+                    .selectMapFunction(mapFunctionText)
                     .reductionKey(reductionKeyText)
                     .friendlyName(friendlyName)
-                    .selectMapFunction(mapFunctionText)
                     .weight(weight)
                     .confirm();
             wait.until(ExpectedConditions.elementToBeClickable(By.id("addEdgeButton")));
@@ -260,13 +264,17 @@ public class BSMAdminIT extends OpenNMSSeleniumTestCase {
 
         public BsmAdminPageEdgeEditWindow selectIpService(String ipServiceText) {
             selectEdgeType("IP Service");
-            getSelectWebElement("ipServiceList").selectByVisibleText(ipServiceText);
+            enterText(By.xpath("//div[@id='ipServiceList']/input[1]"), ipServiceText);
+            // Click on the item that appears
+            findElementByXpath("//span[text()='" + ipServiceText + "']").click();
             return this;
         }
 
         public BsmAdminPageEdgeEditWindow selectChildService(String childServiceText) {
             selectEdgeType("Child Service");
-            getSelectWebElement("childServiceList").selectByVisibleText(childServiceText);
+            enterText(By.xpath("//div[@id='childServiceList']/input[1]"), childServiceText);
+            // Click on the item that appears
+            findElementByXpath("//span[text()='" + childServiceText + "']").click();
             return this;
         }
 
@@ -276,21 +284,21 @@ public class BSMAdminIT extends OpenNMSSeleniumTestCase {
         }
 
         public BsmAdminPageEdgeEditWindow friendlyName(String friendlyName) throws InterruptedException {
-            findElementById("friendlyNameField").clear();
-            findElementById("friendlyNameField").sendKeys(friendlyName);
+            enterText(By.id("friendlyNameField"), friendlyName != null ? friendlyName : "");
+            findElementById("friendlyNameField").sendKeys(Keys.ENTER);
             return this;
         }
 
         public BsmAdminPageEdgeEditWindow reductionKey(String reductionKey) throws InterruptedException {
             selectEdgeType("Reduction Key");
-            findElementById("reductionKeyField").clear();
-            findElementById("reductionKeyField").sendKeys(reductionKey);
+            enterText(By.id("reductionKeyField"), reductionKey);
+            findElementById("reductionKeyField").sendKeys(Keys.ENTER);
             return this;
         }
 
         public BsmAdminPageEdgeEditWindow weight(int weight) {
-            findElementById("weightField").clear();
-            findElementById("weightField").sendKeys(String.valueOf(weight));
+            enterText(By.id("weightField"), String.valueOf(weight));
+            findElementById("weightField").sendKeys(Keys.ENTER);
             return this;
         }
 
@@ -406,24 +414,23 @@ public class BSMAdminIT extends OpenNMSSeleniumTestCase {
             final String serviceName = createUniqueBusinessServiceName();
             BsmAdminPageEditWindow bsmAdminPageEditWindow = bsmAdminPage.openNewDialog(serviceName);
 
-            // Check that the ipServices are known
             BsmAdminPageEdgeEditWindow bsmAdminPageEdgeEditWindow = bsmAdminPageEditWindow.newEdgeWindow();
-            bsmAdminPageEdgeEditWindow.selectEdgeType("IP Service");
-            final String IP_SERVICE_1 = "NodeA /0:0:0:0:0:0:0:1 AAA";
-            final String IP_SERVICE_2 = "NodeA /0:0:0:0:0:0:0:1 BBB";
-            final String IP_SERVICE_3 = "NodeA /127.0.0.1 CCC";
-            final String IP_SERVICE_4 = "NodeA /127.0.0.1 DDD";
-            wait.until(pageContainsText(IP_SERVICE_1));
-            wait.until(pageContainsText(IP_SERVICE_2));
-            wait.until(pageContainsText(IP_SERVICE_3));
-            wait.until(pageContainsText(IP_SERVICE_4));
-
-            // Locate relevant components
-            bsmAdminPageEdgeEditWindow.selectIpService(IP_SERVICE_3);
             bsmAdminPageEdgeEditWindow.selectMapFunction("Increase");
-            bsmAdminPageEdgeEditWindow.confirm();
+            bsmAdminPageEdgeEditWindow.selectEdgeType("IP Service");
+
+            // All of these IP services should be available for selection from the drop-down
+            final List<String> ipServices = Lists.newArrayList(
+                    "NodeA /0:0:0:0:0:0:0:1 AAA",
+                    "NodeA /0:0:0:0:0:0:0:1 BBB",
+                    "NodeA /127.0.0.1 DDD",
+                    "NodeA /127.0.0.1 CCC");
+            // Try selecting each of the services, we'll use the last one in the list
+            for (String ipService : ipServices) {
+                bsmAdminPageEdgeEditWindow.selectIpService(ipService);
+            }
 
             // save
+            bsmAdminPageEdgeEditWindow.confirm();
             bsmAdminPageEditWindow.save();
 
             // Verify

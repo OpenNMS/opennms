@@ -115,7 +115,7 @@ public class BusinessServiceEdgeEditWindow extends Window {
         setClosable(false);
         setResizable(false);
         setWidth(650, Unit.PIXELS);
-        setHeight(300, Unit.PIXELS);
+        setHeight(325, Unit.PIXELS);
 
         /**
          * Creating the root layout...
