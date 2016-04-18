@@ -2,60 +2,125 @@
 // Allow GitHub image rendering
 :imagesdir: ../../../images
 
-_OpenNMS_ provides a very powerful and fine grained service assurance layer based on the _Pollerd_ daemon.
-The service assurance layer monitors and tracks the status of nodes, interfaces and services.
-The status of a managed entity is determined based on related events, alarms and outages.
-However, this approach treats every element of the system individually and there is no concept of relationships between different nodes or services in the service assurance layer.
+The _Business Service Monitor (BSM)_ components allows to model high level _Business Services (BS)_.
+A _Business Service_ is not directly related to a _Node_ or _Service_.
+The _Operational Status_ of a _BS_ is driven by the _Alarm Severity_ generated within _OpenNMS_.
 
-The _Business Service Monitoring_ (BSM) feature adds the ability to model relationships between managed entities.
-It combines sets of managed entities into hierarchically structured _Business Services_ that represent a high level view on its elements.
-The _Business Service'_ operational status is calculated from the alarm states of its associated elements determined by the service assurance layer.
-The operational status of a _Business Service_ can be checked at any time.
-If the operational status of a _Business Service_ is changing corresponding events are fired.
+A _BS_ is a composition of _Alarms_ to represent the status of monitored elements and are defined through a _Reduction Key_.
+To build complex _BS_ it is possible to define dependencies and builds a _BS Hierarchy_.
+_BS_ hierarchies are modeled by a dependency graph which is visualized in _Business Services_ as a component of the _Topology User Interface_.
+This section describes how to model and configure _Business Services_ and the dependency graph to build hierarchies.
 
 === Business Service Definition
 
-Business Services can contain attributes, _Reduction Keys_ and also references to monitored services and/or other _Business Services_.
+The _Business Service_ is modeled through a _Business Service Definition_ and is a composition of _Reduction Keys_.
+A _Reduction Key_ is used to generate an _Alarm_, e.g. from a specific monitored service, threshold, SNMP trap or Syslog related _Alarm_.
+The _BS_ is defined with the following components:
 
-==== Reduction Keys
+* _Business Service Name_: Arbitrary name of the _BS_
+* _Reduce Function_: Function to aggregate the _Operational Status_ for this _BS_ with optional configuration parameter, e.g. _Highest Severity_
+* _Edges_: A set of _Reduction Keys_ which is used to calculate the _Operational Status_ of the _BS_
+* _Attributes_: Additional key value pair which can be assigned to a specific _BS_
 
-_Business Services_ enables users to correlate the alarm based status of managed entities into its operational status.
-_Business Services_ can contain a list of _Reduction Keys_ that are used to identify the relevant alarms to summarize.
-_Reduction Keys_ can be added to _Business Services_ as plain text.
+==== Reduce Functions
 
-==== Monitored services / IP Services
+A _Reduce Function_ is used to aggregate the _Operational Status_ for the _BS_.
+The _Alarm Severity_ from the _Edges_ are used as input for the _Reduce Function_.
+For this operation the following _Reduce Functions_ are available:
 
-_Business Services_ can contain references to monitored services (node/interface/service combination).
-A referenced monitored service is called _IP Service_ in the _Business Service_ architecture.
-_IP Services_ in a business service are interpreted as two _Reduction Keys_:
+.Status calculation _Reduce Functions_
+[options="header, autowidth"]
+|===
+| Name                      | Description
+| `Highest Severity`        | Uses the value of the highest severity, _Weight_ is ignored.
+| `Threshold`               | Uses the highest severity found more often than the given threshold.
+| `Highest Severity Above`  | Uses the highest severity only if it is greater or equal than the given threshold severity, _Weight is ignored.
+|===
 
-* `uei.opennms.org/nodes/nodeLostService::%nodeID%:%ipAddress%:%serviceName%`
-This _Reduction Key_ matches the alarms fired if the monitored service goes down.
-* `uei.opennms.org/nodes/interfaceDown::%nodeID%:%ipAddress%`
-This _Reduction Key_ matches the alarms fired if the interface with the given IP address on the node goes down.
-* `uei.opennms.org/nodes/nodeDown::%nodeID%`
-This _Reduction Key_ matches the alarms fired if the entire node providing the monitored service goes down.
 
-==== Business Services
+.Example for Reduce Function with a given Threshold of 0.30 (30%)
+[options="header, autowidth"]
+|===
+| Name       | Weight | Weight Factor | Input Severity | Operational Status | Critical | Major | Minor | Warning | Normal
+| Web-ICMP-1 |   1    |     0,2       |    Critical    |      Critical      |    0,2   |  0,2  |  0,2  |   0,2   |  0,2
+| Web-ICMP-2 |   1    |     0,2       |     Normal     |       Normal       |    0     |  0    |  0    |   0     |  0,2
+| Web-ICMP-3 |   3    |     0,6       |    Warning     |      Warning       |    0     |  0    |  0    |   0,6   |  0,6
+| Total      |        |     1,0       |                |                    |    0%    |  20%  |  20%  |   80%   |  100%
+|===
 
-_Business Services_ can form relationships with other _Business Services_.
-This offers the ability to create hierarchically structures of _Business Services_.
-To determine the operational status of a enclosing _Business Service_ the operational status of all its enclosed _Business Services_ is summarized.
+The _Operational Status Severity_ is evaluated from left to right, the first value higher then the configured _Threshold_ is used.
+In this case the _Operational Status_ is set to _Warning_ because the first threshold which exceeds _30%_ is _Warning_ with _80%_.
+
+==== Edges
+
+The _BS_ dependency graph has _Edges_ which are represented through a _Reduction Key_.
+It allows to model any kind of an _Alarm_ as an _input_ for a _BS_.
+As _Edges_ the following types can be used:
+
+* _Child Service_: Another already defined _Business Service_ where the current _BS_ depends on
+* _IP Service_: Represents an alarm based on a monitored _IP Service_ and is defined by a set of _Reduction Keys_ for _nodeLostService_, _interfaceDown_ and _nodeDown_
+* _Reduction Key_: Set a user defined custom _Reduction Key_ for any _Alarm_, e.g. _SNMP Trap_ or _Threshold_ based Alarm
+
+===== Edge with Child Services
+
+The _Child Service_ represents is any other defined _BS_ and is used to model a _BS_ dependency.
+
+IMPORTANT: The _BS dependency graph_ is a directed circle free graph definition.
+           A _BS_ can be only selected once as dependency in a given _BS Hierarchy_.
+
+===== Edge with IP Services
+
+The _IP Service_ is a predefined set of _Reduction Keys_ which allows easily to assign a specific _Monitored Service_ to the given _BS_.
+As an example you have multiple Servers with a _Monitored Service_ _SMTP_ and you want to model a _BS_ named _Mail Communication_.
+If just the _Reduction Key_ for a _nodeLostService_ is assgined, the _BS_ would not be affected in case the _IP Interface_ or the whole _Node_ goes down.
+_OpenNMS_ generates _Alarms_ with different _UEI_ which needs to be assigned to the _BS_ as well.
+To make it easier to model this use case the _IP Service_ generates the following _Reduction Keys_ automatically:
+
+* `uei.opennms.org/nodes/nodeLostService:%nodeId%:%ipAddress%:%serviceName%`: Matches _Alarms_ when the given _Monitored Service_ goes down
+* `uei.opennms.org/nodes/interfaceDown:%nodeId%:%ipAddress%`: Matches _Alarms_ when the given _IP Interface_ of the _Monitored Service_ goes down
+* `uei.opennms.org/nodes/nodeDown:%nodeId%`: Matches _Alarms_ when the given _Node_ of the _Monitored Service_ goes down
+
+===== Edges with custom Reduction Keys
+
+If the _Operational Status_ of a _BS_ is be based from any other generated _Alarm Severity_ based on the _Reduction Key_.
+The _Reduction Key_ as an _Edge_ has the following parameter:
+
+* _Reduction Key_: The _Reduction Key_ in syntax of _Alarm Parameter_ enclosed with `%` and separated with `:`, e.g. `%uei.opennms.org/nodes/nodeLostService%:%nodeId%:%ipAddress%`
+* _Friendly Name_: An arbitrary name for this _Edge_
+* _Map Function_: The associated _Map Function_ for this _Edge_
+* _Weight_: The _Weight_ for this _Edge_ is evaluated in case multiple _Edges_ for the _BS_ are defined
+
+===== Map Functions
+
+The mapping defines which _Severity_ is used to calculate the _Operational Status_ of the _BS_ and is defined in _Map Functions_ listed below:
+
+.Calculation of the _Operational Status_ with _Map Functions_
+[options="header, autowidth"]
+|===
+| Name       | Description
+| `Identity` | Use the same _Severity_ as _Operational Status_ of the _BS_
+| `Increase` | Increase the _Severity_ by one level and use it as _Operational Status_ of the _BS_
+| `Decrease` | Decrease the _Severity_ by one level and use it as _Operational Status_ of the _BS_
+| `SetTo`    | Set the _Operational Status_ to a constant _Severity_ value
+| `Ignore`   | The input of the _Edge_ is ignored for _Operational Status_ calcualation
+|===
 
 ==== Attributes
 
-Additionally, each _Business Services_ can contain a set of key/value attributes.
+Each _Business Services_ can contain a key value pair as additional attributes.
+It allows to enrich the _BS_ with additional information.
+The _Attributes_ can be used in further workflows e.g. generating _Notifications_ or _BS_ related _Alarms_.
 
 === Operational status
 
-Every _Business Service_ maintains an operational status that represents the overall status of all the contained elements.
-The set of status are similar to the severities defined by _OpenNMS_ itself.
+Every _Business Service_ maintains an _Operational Status_ that represents the overall status of all the contained _Edges_.
+The set of status are similar to the _Severities_ defined by _OpenNMS_ itself.
 
-.States
+.Operational Status representation
 [options="header, autowidth"]
 |===
-| Name            | Numerical code | Color / Code         | Description
-| `Critical`      | _7_            | Purple      / `#c00` | This event means that a severe service affecting event has occured.
+| Name            | Numerical code | Color       / Code   | Description
+| `Critical`      | _7_            | Purple      / `#c00` | This event means that a severe service affecting event has occurred.
 | `Major`         | _6_            | Red         / `#f30` | Indicates serious disruption or malfunction of a service or system.
 | `Minor`         | _5_            | Orange      / `#f90` | Used for troubles that have not immediate effect on service or system performance.
 | `Warning`       | _4_            | Yellow      / `#fc0` | An event has occurred that may require action.
@@ -67,71 +132,40 @@ The set of status are similar to the severities defined by _OpenNMS_ itself.
 | `Indeterminate` | _1_            | Light green / `#990` | No Severity could be associated with this event.
 |===
 
-==== Calculation of the operational status
+If a _Business Service_ changes its _Operational Status_ an _OpenNMS_ event of the type `uei.opennms.org/bsmd/serviceOperationalStatusChanged` is generated and sent to the _OpenNMS Event Bus_.
+The log message of the event contains the following information:
 
-The operational status of a _Business Service_ is correlated in two steps.
-First, the status of each contained element is mapped to the _Business Service_.
-For _Reduction Keys_ and _IP Services_ the status is based on their alarm status.
-For contained _Business Services_ the operational status is used.
+* _Business Service Name_: `businessServiceName`
+* _Business Service Identifier_: `id`
+* _Previous Severity Identifier_: `prevSeverityId`
+* _Previous Severity Label_: `prevSeverityLabel`
+* _New Severity Identifier_: `newSeverityId`
+* _New Severity Label_: `newSeverityLabel`
 
-===== Map Functions
-
-The mapping can be performed by one of _Map Functions_ listed below:
-
-.State calculation _Map Functions_
-[options="header, autowidth"]
-|===
-| Name       | Description
-| `Identity` | Use the status according to the reported severity
-| `Increase` | Use the status according to the reported severity increased by one level
-| `Decrease` | Use the status according to the reported severity decreased by one level
-| `SetTo`    | Uses a constant status value
-| `Ignore`   | Ignores the severity of the managed entity
-|===
-
-===== Reduce Functions
-
-Finally, the list of mapped status values are then aggregated into the operational status of the _Business Service_.
-For this operation the following _Reduce Functions_ are available:
-
-.Status calculation _Reduce Functions_
-[options="header, autowidth"]
-|===
-| Name                      | Description
-| `Highest Severity`        | Uses the value of the highest severity.
-| `Threshold`               | Uses the highest severity found more often than the given threshold.
-| `Highest Severity Above`  | Uses the highest severity only if it is greater or equal than the given threshold severity.
-|===
-
-===== Operational status changes
-
-If a _Business Service_ changes its operational status an _OpenNMS_ event of the type `uei.opennms.org/bsmd/serviceOperationalStatusChanged` is fired.
-The log message of the event contains the name of the _Business Service_.
-Additionally, the previous operational status and the new operational status are included.
-Please note, that this event has no node, interface or service associated.
+NOTE: This event is not associated to a _Node_, _Interface_ or _Service_.
 
 === Business Service Daemon
 
-Internally the _Business Service Monitoring_ feature is driven by the _Business Service Daemon_ (bsmd).
-It is responsible for tracking the operational status of all _Business Services_ and for sending events in case of operational status changes.
+The calculation of the _Operational Status_ of the _BS_ is driven by the _Business Service Daemon_ (bsmd).
+It is responsible for tracking the operational status of all _BS_ and for sending events in case of operational status changes.
 Every time the configuration of a _Business Service_ is changed a reload of the daemon's configuration is required.
 This includes changes like the name of the _Business Service_ or its attributes as well as changes regarding the _Reduction Keys_, contained _Business Services_ or _IP Services_.
+The _bsmd_ configuration can be reloaded with the following mechanisms:
 
-==== Reloading configuration
+* Click the _Reload Daemon_ button in the _Business Service Editor_
+* Send the _reloadDaemonConfig_ event using `send-event.pl` or use the WebUI in _Manually Send an Event_ with parameter `daemonName bsmd`
+* Use the ReST API to perform a `POST` request to `/opennms/api/v2/business-services/daemon/reload`
 
-A configuration reload can be initiated by an `uei.opennms.org/internal/reloadDaemonConfig` event with the parameter `daemonName` set to `bsmd`.
 If the reload of the configuration is done an event of type `uei.opennms.org/internal/reloadDaemonConfigSuccessful` is fired.
-The following options to trigger a configuration reload are available:
 
-* Use the `Reload` button on the `Manage Business Services` page in the administration section of the web UI.
-* Send the `reloadDaemonConfig` event directly to trigger the reload
-* Use the `send-event.pl` script
-
+.Example reloading bsmd configuration from CLI
 [source,shell]
 ----
 $OPENNMS_HOME/bin/send-event.pl -p 'daemonName bsmd' uei.opennms.org/internal/reloadDaemonConfig
 ----
 
-* Use the `Manually Send an Event` page of the web UI located in the admin section to send the event.
-* Use the ReST API to perform a `POST` request to `/opennms/api/v2/business-services/daemon/reload`.
-
+.Example reloading bsmd configuration through ReST POST
+[source,shell]
+----
+curl -X POST -u admin:admin -v http://localhost:8980/opennms/api/v2/business-services/daemon/reload
+----
