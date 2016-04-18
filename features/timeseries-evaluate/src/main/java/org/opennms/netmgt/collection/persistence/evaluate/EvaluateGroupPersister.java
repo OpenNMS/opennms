@@ -28,7 +28,6 @@
 package org.opennms.netmgt.collection.persistence.evaluate;
 
 import org.opennms.netmgt.collection.api.AttributeGroup;
-import org.opennms.netmgt.collection.api.NumericCollectionAttributeType;
 import org.opennms.netmgt.collection.api.ServiceParameters;
 import org.opennms.netmgt.rrd.RrdRepository;
 
@@ -71,9 +70,10 @@ public class EvaluateGroupPersister extends AbstractEvaluatePersister {
             stats.checkResource(resourceId);
             group.getAttributes().forEach(a -> {
                 final String attribId = resourceId + '/' + a.getName();
-                if (a.getAttributeType() instanceof NumericCollectionAttributeType) {
+                if (isNumeric(a)) {
+                    LOG.debug("visitGroup: attribute {}", attribId);
                     stats.checkAttribute(attribId, true);
-                    stats.getSamplesMeter().mark();
+                    stats.markNumericSamplesMeter();
                 } else {
                     stats.checkAttribute(attribId, false);
                 }

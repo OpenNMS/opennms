@@ -28,7 +28,6 @@
 package org.opennms.netmgt.collection.persistence.evaluate;
 
 import org.opennms.netmgt.collection.api.CollectionAttribute;
-import org.opennms.netmgt.collection.api.NumericCollectionAttributeType;
 import org.opennms.netmgt.collection.api.ServiceParameters;
 import org.opennms.netmgt.rrd.RrdRepository;
 
@@ -68,9 +67,9 @@ public class EvaluateSinglePersister extends AbstractEvaluatePersister {
             LOG.debug("visitAttribute: {}", attribId);
             stats.checkNode(attribute.getResource().getParent());
             stats.checkResource(resourceId);
-            if (attribute.getAttributeType() instanceof NumericCollectionAttributeType) {
+            if (isNumeric(attribute)) {
                 stats.checkAttribute(attribId, true);
-                stats.getSamplesMeter().mark();
+                stats.markNumericSamplesMeter();
             } else {
                 stats.checkAttribute(attribId, false);
             }

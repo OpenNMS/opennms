@@ -27,9 +27,19 @@
  *******************************************************************************/
 package org.opennms.netmgt.collection.persistence.evaluate;
 
+import java.io.File;
+import java.util.HashMap;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.netmgt.collection.api.ServiceParameters;
+import org.opennms.netmgt.collection.support.builder.AttributeType;
+import org.opennms.netmgt.collection.support.builder.CollectionSetBuilder;
+import org.opennms.netmgt.collection.support.builder.InterfaceLevelResource;
+import org.opennms.netmgt.collection.support.builder.NodeLevelResource;
+import org.opennms.netmgt.rrd.RrdRepository;
 
 import com.codahale.metrics.MetricRegistry;
 
@@ -40,6 +50,12 @@ import com.codahale.metrics.MetricRegistry;
  */
 public class EvaluateStatsIT {
 
+    /** The metric registry. */
+    private MetricRegistry registry;
+
+    /** The evaluation statistics. */
+    private EvaluateStats stats;
+
     /**
      * Sets up the test.
      *
@@ -48,6 +64,8 @@ public class EvaluateStatsIT {
     @Before
     public void setUp() throws Exception {
         System.setProperty("org.opennms.rrd.storeByGroup", "true");
+        registry = new MetricRegistry();
+        stats = new EvaluateStats(registry, 5, 10);
     }
 
     /**
@@ -57,15 +75,13 @@ public class EvaluateStatsIT {
      */
     @Test
     public void testStats() throws Exception {
-        MetricRegistry registry = new MetricRegistry();
-        EvaluateStats stats = new EvaluateStats(registry, 5);
         for (int i = 0; i < 10; i++) {
             stats.checkResource("resource" + i);
             for (int j = 0; j < 10; j++) {
                 stats.checkGroup("resource" + i + "group" + j);
                 for (int k = 0; k < 10; k++) {
                     stats.checkAttribute("resource" + i + "group" + j + "attribute" + k, true);
-                    stats.getSamplesMeter().mark();
+                    stats.markNumericSamplesMeter();
                 }
             }
         }
@@ -73,6 +89,42 @@ public class EvaluateStatsIT {
         Assert.assertEquals(100, registry.getGauges().get("evaluate.groups").getValue());
         Assert.assertEquals(1000, registry.getGauges().get("evaluate.numeric-attributes").getValue());
         Assert.assertEquals(1000, registry.getMeters().get("evaluate.samples").getCount());
+    }
+
+    /**
+     * Test persister.
+     *
+     * @throws Exception the exception
+     */
+    @Test
+    public void testPersister() throws Exception {
+        RrdRepository repo = new RrdRepository();
+        repo.setRrdBaseDir(new File("/tmp"));
+        EvaluateGroupPersister persister = new EvaluateGroupPersister(stats, new ServiceParameters(new HashMap<String,Object>()), repo);
+        MockCollectionAgent agent = new MockCollectionAgent(1, "node.local", "Test", "001", InetAddressUtils.addr("127.0.0.1"));
+        CollectionSetBuilder builder = new CollectionSetBuilder(agent);
+        NodeLevelResource node = new NodeLevelResource(agent.getNodeId());  
+        InterfaceLevelResource eth0 = new InterfaceLevelResource(node, "eth0");
+        builder.withNumericAttribute(eth0, "mib2-interfaces", "ifInErrors", 0.0, AttributeType.COUNTER);
+        builder.withNumericAttribute(eth0, "mib2-interfaces", "ifOutErrors", 0.0, AttributeType.COUNTER);
+        builder.withNumericAttribute(eth0, "mib2-X-interfaces", "ifHCInOctets", 100.0, AttributeType.COUNTER);
+        builder.withNumericAttribute(eth0, "mib2-X-interfaces", "ifHCOutOctets", 100.0, AttributeType.COUNTER);
+        builder.withStringAttribute(eth0, "mib2-X-interfaces", "ifHighSpeed", "1000");
+        InterfaceLevelResource eth1 = new InterfaceLevelResource(node, "eth1");
+        builder.withNumericAttribute(eth1, "mib2-interfaces", "ifInErrors", 0.0, AttributeType.COUNTER);
+        builder.withNumericAttribute(eth1, "mib2-interfaces", "ifOutErrors", 0.0, AttributeType.COUNTER);
+        builder.withNumericAttribute(eth1, "mib2-X-interfaces", "ifHCInOctets", 100.0, AttributeType.COUNTER);
+        builder.withNumericAttribute(eth1, "mib2-X-interfaces", "ifHCOutOctets", 100.0, AttributeType.COUNTER);
+        builder.withStringAttribute(eth1, "mib2-X-interfaces", "ifHighSpeed", "1000");
+        builder.build().visit(persister);
+        stats.dumpCache();
+        // The following numbers are associated with how CollectionSetBuilder generates resources and attributes, which doesn't match the actual implementations.
+        Assert.assertEquals(1, registry.getGauges().get("evaluate.nodes").getValue());
+        Assert.assertEquals(1, registry.getGauges().get("evaluate.resources").getValue());
+        Assert.assertEquals(2, registry.getGauges().get("evaluate.groups").getValue());
+        Assert.assertEquals(4, registry.getGauges().get("evaluate.numeric-attributes").getValue());
+        Assert.assertEquals(1, registry.getGauges().get("evaluate.string-attributes").getValue());
+        Assert.assertEquals(8, registry.getMeters().get("evaluate.samples").getCount());
     }
 
 }

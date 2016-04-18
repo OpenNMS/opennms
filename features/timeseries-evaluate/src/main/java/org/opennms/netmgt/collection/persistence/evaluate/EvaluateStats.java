@@ -29,13 +29,14 @@ package org.opennms.netmgt.collection.persistence.evaluate;
 
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import org.opennms.core.logging.Logging;
 import org.opennms.netmgt.model.ResourceTypeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.DisposableBean;
 import org.springframework.util.Assert;
 
 import com.codahale.metrics.Gauge;
@@ -48,13 +49,22 @@ import com.codahale.metrics.Slf4jReporter;
  * 
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
-public class EvaluateStats implements DisposableBean {
+public class EvaluateStats {
 
     /** The Constant LOGGING_PREFFIX. */
     private static final String LOGGING_PREFFIX = "EvaluationMetrics";
 
+    /** The Constant LOGGING_SUFFIX. */
+    private static final String LOGGING_SUFFIX = "-Cache";
+
+    /** The Constant LOG. */
+    private static final Logger LOG = LoggerFactory.getLogger(LOGGING_PREFFIX);
+
     /** The node map. */
     private final ConcurrentMap<String, Boolean> nodeMap = new ConcurrentHashMap<String, Boolean>();
+
+    /** The interface map. */
+    private final ConcurrentMap<String, Boolean> interfaceMap = new ConcurrentHashMap<String, Boolean>();
 
     /** The resource map. */
     private final ConcurrentMap<String, Boolean> resourceMap = new ConcurrentHashMap<String, Boolean>();
@@ -68,22 +78,28 @@ public class EvaluateStats implements DisposableBean {
     /** The group map. */
     private final ConcurrentMap<String, Boolean> groupMap = new ConcurrentHashMap<String, Boolean>();
 
-    /** The samples meter. */
-    private final Meter samplesMeter;
+    /** The numeric samples meter. */
+    private final Meter numericSamplesMeter;
 
     /**
      * Instantiates a new evaluate statistics.
      *
      * @param registry the metrics registry
-     * @param dumpFreq the dump frequency
+     * @param dumpStatsFreq the frequency in minutes to dump the statistics to the log file
+     * @param dumpCacheFreq the frequency in minutes to dump the cache content to the log file
      */
-    public EvaluateStats(MetricRegistry registry, Integer dumpFreq) {
+    public EvaluateStats(MetricRegistry registry, Integer dumpStatsFreq, Integer dumpCacheFreq) {
         Assert.notNull(registry, "MetricRegistry is required");
-        Assert.notNull(dumpFreq, "Dump frequency is required");
-        Assert.isTrue(dumpFreq > 0, "Dump frequency must be positive");
+        Assert.notNull(dumpStatsFreq, "Dump statistics frequency is required");
+        Assert.isTrue(dumpStatsFreq > 0, "Dump statistics frequency must be positive");
+        Assert.notNull(dumpCacheFreq, "Dump cache frequency is required");
+        Assert.isTrue(dumpCacheFreq > 0, "Dump cache frequency must be positive");
 
-        final Gauge<Integer> node = () -> { return nodeMap.keySet().size(); };
-        registry.register(MetricRegistry.name("evaluate", "node"), node);
+        final Gauge<Integer> nodes = () -> { return nodeMap.keySet().size(); };
+        registry.register(MetricRegistry.name("evaluate", "nodes"), nodes);
+
+        final Gauge<Integer> interfaces = () -> { return interfaceMap.keySet().size(); };
+        registry.register(MetricRegistry.name("evaluate", "interfaces"), interfaces);
 
         final Gauge<Integer> resources = () -> { return resourceMap.keySet().size(); };
         registry.register(MetricRegistry.name("evaluate", "resources"), resources);
@@ -99,17 +115,23 @@ public class EvaluateStats implements DisposableBean {
             registry.register(MetricRegistry.name("evaluate", "groups"), groups);
         }
 
-        samplesMeter = registry.meter(MetricRegistry.name("evaluate", "samples"));
+        numericSamplesMeter = registry.meter(MetricRegistry.name("evaluate", "samples"));
 
+        // Metric Reporter
         Logging.withPrefix(LOGGING_PREFFIX, () -> {
             final Slf4jReporter reporter = Slf4jReporter.forRegistry(registry)
-                    .outputTo(LoggerFactory.getLogger(LOGGING_PREFFIX))
+                    .outputTo(LOG)
                     .convertRatesTo(TimeUnit.SECONDS)
                     .convertDurationsTo(TimeUnit.MILLISECONDS)
                     .build();
-            reporter.start(dumpFreq, TimeUnit.MINUTES);
+            reporter.start(dumpStatsFreq, TimeUnit.MINUTES);
         });
 
+        // Cache Dump, for debugging purposes
+        Logging.withPrefix(LOGGING_PREFFIX + LOGGING_SUFFIX, () -> {
+            ScheduledExecutorService svc = Executors.newScheduledThreadPool(1);
+            svc.scheduleAtFixedRate(() -> { dumpCache(); }, 0, dumpCacheFreq, TimeUnit.MINUTES);
+        });
     }
 
     /**
@@ -117,8 +139,12 @@ public class EvaluateStats implements DisposableBean {
      *
      * @param nodeId the node identifier
      */
-    public void checkNode(String nodeId) {
-        nodeMap.putIfAbsent(nodeId, true);
+    public void checkNode(final String nodeId) {
+        if (nodeId.startsWith("fs") || nodeId.matches("\\d+")) {
+            nodeMap.putIfAbsent(nodeId, true);
+        } else {
+            interfaceMap.putIfAbsent(nodeId, true);
+        }
     }
 
     /**
@@ -126,7 +152,7 @@ public class EvaluateStats implements DisposableBean {
      *
      * @param resourceId the resource identifier
      */
-    public void checkResource(String resourceId) {
+    public void checkResource(final String resourceId) {
         resourceMap.putIfAbsent(resourceId, true);
     }
 
@@ -136,7 +162,7 @@ public class EvaluateStats implements DisposableBean {
      * @param attributeId the attribute identifier
      * @param isNumeric true if the attribute is numeric
      */
-    public void checkAttribute(String attributeId, boolean isNumeric) {
+    public void checkAttribute(final String attributeId, boolean isNumeric) {
         if (isNumeric) {
             numericAttributeMap.putIfAbsent(attributeId, true);
         } else {
@@ -149,32 +175,29 @@ public class EvaluateStats implements DisposableBean {
      *
      * @param groupId the group identifier
      */
-    public void checkGroup(String groupId) {
+    public void checkGroup(final String groupId) {
         groupMap.putIfAbsent(groupId, true);
     }
 
     /**
-     * Gets the samples meter.
+     * Marks the numeric samples meter.
      *
-     * @return the samples meter
+     * @return the numeric samples meter
      */
-    public Meter getSamplesMeter() {
-        return samplesMeter;
+    public void markNumericSamplesMeter() {
+        numericSamplesMeter.mark();
     }
 
-    /* (non-Javadoc)
-     * @see org.springframework.beans.factory.DisposableBean#destroy()
+    /**
+     * Dumps the content of the cache.
      */
-    @Override
-    public void destroy() throws Exception {
-        Logging.withPrefix(LOGGING_PREFFIX, () -> {
-            Logger log = LoggerFactory.getLogger(LOGGING_PREFFIX);
-            log.info("nodes: {} ", nodeMap.keySet());
-            log.info("resources: {} ", resourceMap.keySet());
-            log.info("groups: {}", groupMap.keySet());
-            log.info("numeric-attributes: {} ", numericAttributeMap.keySet());
-            log.info("string-atributes: {} ", stringAttributeMap.keySet());
-        });
+    protected void dumpCache() {
+        nodeMap.keySet().stream().sorted().forEach(s -> LOG.info("node: {}", s));
+        interfaceMap.keySet().stream().sorted().forEach(s -> LOG.info("interface: {}", s));
+        resourceMap.keySet().stream().sorted().forEach(s -> LOG.info("resource: {}", s));
+        groupMap.keySet().stream().sorted().forEach(s -> LOG.info("group: {}", s));
+        numericAttributeMap.keySet().stream().sorted().forEach(s -> LOG.info("numeric-attribute: {}", s));
+        stringAttributeMap.keySet().stream().sorted().forEach(s -> LOG.info("string-attribute: {}", s));
     }
 
 }
