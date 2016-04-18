@@ -104,6 +104,8 @@ public interface BusinessServiceManager extends NodeManager {
 
     void removeEdge(BusinessService businessService, Edge edge);
 
+    BusinessServiceGraph getGraph(List<BusinessService> businessServices);
+
     /**
      * This returns the actual graph of the underlying {@link BusinessServiceStateMachine}.
      *
