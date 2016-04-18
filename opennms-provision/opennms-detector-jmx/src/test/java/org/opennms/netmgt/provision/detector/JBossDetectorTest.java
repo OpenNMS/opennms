@@ -32,6 +32,7 @@ import static org.junit.Assert.assertNotNull;
 
 import java.rmi.RemoteException;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -58,6 +59,11 @@ public class JBossDetectorTest implements InitializingBean {
     @Before
     public void setUp() throws RemoteException{
         MockLogAppender.setupLogging();
+    }
+
+    @After
+    public void tearDown() {
+        MockLogAppender.assertNoErrorOrGreater();
     }
 
     @Test(timeout=20000)
