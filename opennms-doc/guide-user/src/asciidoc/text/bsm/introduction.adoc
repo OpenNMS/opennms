@@ -2,11 +2,28 @@
 // Allow GitHub image rendering
 :imagesdir: ../../images
 
-The _Business Service Monitoring_ component helps you to quickly identify most critical problems affecting your services.
-While OpenNMS detects issues in your network on a per device level, the _Business Service Monitoring_ takes one step further.
-It allows to model _Business Services_ on a more abstract level and are different from network devices like switches, servers, routers or a virtual machines.
-The _Business Service_ status is driven by specific monitored _Services_ and are driven by a specific set of _Alarms_ and can contain other _Business Services_ to build a hierarchy.
-_Alarm_ status is used to indicate the impact on a _Business Service_ based on outage- or threshold alarms from your monitored network.
+<-- from guide
+_OpenNMS_ provides a very powerful and fine grained service assurance layer based on the _Pollerd_ daemon.
+The service assurance layer monitors and tracks the status of nodes, interfaces and services.
+The status of a managed entity is determined based on related events, alarms and outages.
+However, this approach treats every element of the system individually and there is no concept of relationships between different nodes or services in the service assurance layer.
+
+The _Business Service Monitoring_ (BSM) feature adds the ability to model relationships between managed entities.
+It combines sets of managed entities into hierarchically structured _Business Services_ that represent a high level view on its elements.
+The _Business Service_ operational status is calculated from the alarm states of its associated elements determined by the service assurance layer.
+The operational status of a _Business Service_ can be checked at any time.
+If the operational status of a _Business Service_ is changing corresponding events are fired.
+
+--> from admin guide
+
+The _Business Service Monitoring (BSM)_ component helps to quickly identify most critical problems affecting your services.
+While OpenNMS detects issues in your network on a per network device level, the _BSM_ takes one step further.
+It allows to model _BS_ on a more abstract level independent of network nodes, services or interfaces.
+
+The _Business Service_ status is driven by _Alarms_ and can contain other _Business Services_ to build a _Business Service Hierarchy_.
+A _BS_ is represented as an _Operational Status_ and
+
+_Oper_ status is used to indicate the impact on a _Business Service_ based on outage- or threshold alarms from your monitored network.
 In this hierarchy there is also a possibility to identify the root cause which affects this service.
 
 The _Business Service Monitoring_ has the following components:
