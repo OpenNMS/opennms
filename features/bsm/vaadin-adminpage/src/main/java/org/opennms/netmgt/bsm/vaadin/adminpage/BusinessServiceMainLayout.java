@@ -28,14 +28,14 @@
 
 package org.opennms.netmgt.bsm.vaadin.adminpage;
 
-import java.net.MalformedURLException;
-import java.net.URISyntaxException;
-import java.net.URL;
+import java.nio.charset.Charset;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
 
-import org.apache.http.client.utils.URIBuilder;
+import org.apache.http.client.utils.URLEncodedUtils;
+import org.apache.http.message.BasicNameValuePair;
 import org.opennms.netmgt.bsm.service.BusinessServiceManager;
 import org.opennms.netmgt.bsm.service.BusinessServiceStateMachine;
 import org.opennms.netmgt.bsm.service.model.BusinessService;
@@ -45,8 +45,8 @@ import org.opennms.netmgt.bsm.service.model.graph.GraphVertex;
 import org.opennms.netmgt.vaadin.core.TransactionAwareUI;
 import org.opennms.netmgt.vaadin.core.UIHelper;
 
-import com.google.common.base.Throwables;
 import com.google.common.collect.HashBasedTable;
+import com.google.common.collect.Lists;
 import com.vaadin.data.Container;
 import com.vaadin.data.Container.ItemSetChangeEvent;
 import com.vaadin.data.util.BeanContainer;
@@ -181,31 +181,31 @@ public class BusinessServiceMainLayout extends VerticalLayout {
             public Object generateCell(Table source, Object itemId, Object columnId) {
                 final HorizontalLayout layout = new HorizontalLayout();
                 final BusinessServiceStateMachine stateMachine = m_businessServiceManager.getStateMachine();
-                try {
-                    final BusinessService businessService = m_beanContainer.getItem(itemId).getBean().getBusinessService();
-                    final Status status = stateMachine.getOperationalStatus(businessService);
-                    if (status != null) {
-                        final URIBuilder builder = new URIBuilder("http://host/opennms/topology");
-                        builder.addParameter("focus-vertices", businessService.getId().toString());
-                        builder.addParameter("szl", "1");
-                        builder.addParameter("layout", "Hierarchy Layout");
-                        builder.addParameter("provider", "Business Services");
-                        final URL url = builder.build().toURL();
-                        final Link link = new Link("View in Topology UI", new ExternalResource(
-                                String.format("%s?%s", url.getPath(), url.getQuery())));
-                        link.setIcon(FontAwesome.EXTERNAL_LINK_SQUARE);
-                        // This app is typically access in an iframe, so we open the URL in a new window/tab
-                        link.setTargetName("_blank");
-                        layout.addComponent(link);
-                        layout.setComponentAlignment(link, Alignment.MIDDLE_CENTER);
-                    } else {
-                        Label label = new Label("N/A");
-                        label.setDescription("Try reloading the daemon and refreshing the table.");
-                        label.setWidth(null);
-                        layout.addComponent(label);
-                    }
-                } catch (URISyntaxException | MalformedURLException e) {
-                    throw Throwables.propagate(e);
+                final BusinessService businessService = m_beanContainer.getItem(itemId).getBean().getBusinessService();
+                final Status status = stateMachine.getOperationalStatus(businessService);
+                if (status != null) {
+                    // Build the query string
+                    final List<BasicNameValuePair> urlParms = Lists.newArrayList(
+                            new BasicNameValuePair("focus-vertices", businessService.getId().toString()),
+                            new BasicNameValuePair("szl", "1"),
+                            new BasicNameValuePair("layout", "Hierarchy Layout"),
+                            new BasicNameValuePair("provider", "Business Services")
+                            );
+                    final String queryString = URLEncodedUtils.format(urlParms, Charset.forName("UTF-8"));
+
+                    // Generate the link
+                    final Link link = new Link("View in Topology UI", new ExternalResource(
+                            String.format("/opennms/topology?%s", queryString)));
+                    link.setIcon(FontAwesome.EXTERNAL_LINK_SQUARE);
+                    // This app is typically access in an iframe, so we open the URL in a new window/tab
+                    link.setTargetName("_blank");
+                    layout.addComponent(link);
+                    layout.setComponentAlignment(link, Alignment.MIDDLE_CENTER);
+                } else {
+                    Label label = new Label("N/A");
+                    label.setDescription("Try reloading the daemon and refreshing the table.");
+                    label.setWidth(null);
+                    layout.addComponent(label);
                 }
                 return layout;
             }
