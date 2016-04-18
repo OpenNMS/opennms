@@ -34,7 +34,7 @@
   </bean>
   
   <bean id="trapReceiver" class="org.opennms.netmgt.trapd.TrapReceiverImpl">
-    <constructor-arg ref="trapConfigBean" />
+    <constructor-arg ref="trapdConfig" />
     <property name="trapNotificationHandlers" ref="trapNotificationDefaultImpl"/>
   </bean>
   
@@ -44,8 +44,6 @@
     <constructor-arg ref="eventIpcManager" />
     <constructor-arg ref="trapdIpMgr" />
   </bean>
-  
-  <bean id="trapConfigBean" class="org.opennms.netmgt.trapd.TrapdConfigBean"/>
   
   <bean id="processorFactory" class="org.opennms.netmgt.trapd.TrapQueueProcessorFactory">
     <property name="eventManager" ref="eventIpcManager"/>
