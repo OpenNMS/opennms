@@ -150,7 +150,8 @@ public class RrdStatisticAttributeVisitor implements AttributeVisitor, Initializ
                                             0,
                                             null,
                                             null,
-                                            Collections.singletonList(source));
+                                            Collections.singletonList(source),
+                                            false);
         } catch (final Exception e) {
             LOG.warn("Failed to fetch statistic: {}", source, e);
             return;

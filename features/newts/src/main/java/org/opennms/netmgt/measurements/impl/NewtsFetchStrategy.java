@@ -116,7 +116,7 @@ public class NewtsFetchStrategy implements MeasurementFetchStrategy {
     private final Semaphore availableAggregationThreads = new Semaphore(PARALLELISM);
 
     @Override
-    public FetchResults fetch(long start, long end, long step, int maxrows, Long interval, Long heartbeat, List<Source> sources) {
+    public FetchResults fetch(long start, long end, long step, int maxrows, Long interval, Long heartbeat, List<Source> sources, boolean relaxed) {
         final LateAggregationParams lag = getLagParams(step, interval, heartbeat);
         final Optional<Timestamp> startTs = Optional.of(Timestamp.fromEpochMillis(start));
         final Optional<Timestamp> endTs = Optional.of(Timestamp.fromEpochMillis(end));
@@ -139,6 +139,7 @@ public class NewtsFetchStrategy implements MeasurementFetchStrategy {
             try {
                 OnmsResource resource = entry.getValue().get();
                 if (resource == null) {
+                    if (relaxed) continue;
                     LOG.error("No resource with id: {}", entry.getKey());
                     return null;
                 }
@@ -167,6 +168,7 @@ public class NewtsFetchStrategy implements MeasurementFetchStrategy {
                 }
 
                 if (rrdGraphAttribute == null) {
+                    if (relaxed) continue;
                     LOG.error("No attribute with name: {}", source.getAttribute());
                     return null;
                 }
@@ -233,6 +235,9 @@ public class NewtsFetchStrategy implements MeasurementFetchStrategy {
         }
 
         FetchResults fetchResults = new FetchResults(timestamps, columns, lag.getStep(), constants);
+        if (relaxed) {
+            Utils.fillMissingValues(fetchResults, sources);
+        }
         LOG.trace("Fetch results: {}", fetchResults);
         return fetchResults;
     }

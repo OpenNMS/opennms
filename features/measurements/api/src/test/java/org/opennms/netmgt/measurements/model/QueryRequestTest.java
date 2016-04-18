@@ -62,7 +62,7 @@ public class QueryRequestTest extends XmlTestNoCastor<QueryRequest> {
 
         return Arrays.asList(new Object[][]{{
                 request,
-                "<query-request step=\"300\" start=\"1000\" end=\"2000\" maxrows=\"1\">" +
+                "<query-request step=\"300\" start=\"1000\" end=\"2000\" maxrows=\"1\" relaxed=\"false\">" +
                     "<expression transient=\"false\" label=\"ping1Millis\">ping1Micro / 1000</expression>" +
                     "<filter name=\"name\">" +
                         "<parameter key=\"key\">val</parameter>" +

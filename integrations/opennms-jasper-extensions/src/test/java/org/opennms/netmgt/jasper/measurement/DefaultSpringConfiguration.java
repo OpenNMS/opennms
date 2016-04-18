@@ -43,7 +43,7 @@ import org.springframework.context.annotation.Configuration;
 
 // Spring configuration to define all beans required by MeasurementsService
 @Configuration
-public class SpringTestConfiguration {
+public class DefaultSpringConfiguration {
 
     @Autowired
     private ApplicationContext context;
