@@ -33,6 +33,7 @@ import java.io.IOException;
 
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.HttpGet;
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -41,6 +42,7 @@ import org.junit.Test;
  *
  * @author jwhite
  */
+@Ignore("See NMS-8353")
 public class OSGIPluginManagerIT extends OpenNMSSeleniumTestCase {
 
     @Test
