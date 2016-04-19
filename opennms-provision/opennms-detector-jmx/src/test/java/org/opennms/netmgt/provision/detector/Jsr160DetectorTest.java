@@ -103,6 +103,7 @@ public class Jsr160DetectorTest implements InitializingBean {
     @After
     public void tearDown() throws IOException{
         m_connectorServer.stop();
+        MockLogAppender.assertNoErrorOrGreater();
     }
 
     @Test(timeout=20000)
