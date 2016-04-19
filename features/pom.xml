@@ -116,5 +116,8 @@
     <module>springframework-security</module>
     <module>system-report</module>
     <module>timeseries-evaluate</module>
+
+    <!-- OpenNMS Plugin Manager -->
+    <module>vaadin-opennms-pluginmanager</module>
   </modules>
 </project>

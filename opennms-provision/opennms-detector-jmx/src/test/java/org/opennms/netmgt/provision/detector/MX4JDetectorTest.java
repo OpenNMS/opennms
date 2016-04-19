@@ -50,6 +50,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.spring.BeanUtils;
+import org.opennms.core.test.MockLogAppender;
 import org.opennms.netmgt.config.jmx.JmxConfig;
 import org.opennms.netmgt.provision.detector.jmx.MX4JDetector;
 import org.springframework.beans.factory.InitializingBean;
@@ -83,6 +84,7 @@ public class MX4JDetectorTest implements InitializingBean {
     @Before
     public void setUp() throws IOException {
         assertNotNull(m_detector);
+        MockLogAppender.setupLogging();
 
         JMXServiceURL url = new JMXServiceURL("service:jmx:rmi:///jndi/rmi://localhost:9999/server");
 
@@ -107,6 +109,7 @@ public class MX4JDetectorTest implements InitializingBean {
     public void testDetectorSuccess() throws IOException{
         m_detector.init();
         assertTrue(m_detector.isServiceDetected(InetAddress.getLocalHost()));
+        MockLogAppender.assertNoErrorOrGreater();
     }
 
     @Test(timeout=20000)
@@ -114,6 +117,7 @@ public class MX4JDetectorTest implements InitializingBean {
         m_detector.setPort(9000);
         m_detector.init();
         assertFalse(m_detector.isServiceDetected(InetAddress.getLocalHost()));
+        MockLogAppender.assertNoErrorOrGreater();
     }
 
     @Test(timeout=20000)
@@ -121,5 +125,7 @@ public class MX4JDetectorTest implements InitializingBean {
         m_detector.setUrlPath("wrongpath");
         m_detector.init();
         assertFalse(m_detector.isServiceDetected(InetAddress.getLocalHost()));
+        // Do not assert this because an error is logged
+        //MockLogAppender.assertNoErrorOrGreater();
     }
 }
