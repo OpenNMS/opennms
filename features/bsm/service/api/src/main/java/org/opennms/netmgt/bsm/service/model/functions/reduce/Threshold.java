@@ -65,26 +65,7 @@ public class Threshold implements ReductionFunction {
 
     @Override
     public Optional<Status> reduce(List<Status> statuses) {
-        // We increment the number of "hits" for a particular Status key
-        // when one of the inputs is greater or equals to that given key
-        // For example, reduce(Status.WARNING, Status.NORMAL) would build a map that looks like:
-        //   { 'WARNING': 1, 'NORMAL': 2, 'INDETERMINATE': 2 }
-        final Map<Status, Integer> hitsByStatus = new TreeMap<>(HIGHEST_SEVERITY_FIRST);
-        for (Status s : statuses) {
-            for (Status ss : Status.values()) {
-                if (ss.isGreaterThan(s)) {
-                    continue;
-                }
-
-                Integer count = hitsByStatus.get(ss);
-                if (count == null) {
-                    count = 1;
-                } else {
-                    count = count + 1;
-                }
-                hitsByStatus.put(ss, count);
-            }
-        }
+        final Map<Status, Integer> hitsByStatus = getHitsByStatus(statuses);
 
         // Return status with the highest severity where the number of relative hits
         // is greater than the configured threshold
@@ -107,5 +88,28 @@ public class Threshold implements ReductionFunction {
     @Override
     public <T> T accept(ReduceFunctionVisitor<T> visitor) {
         return visitor.visit(this);
+    }
+
+    // We increment the number of "hits" for a particular Status key
+    // when one of the inputs is greater or equals to that given key
+    // For example, reduce(Status.WARNING, Status.NORMAL) would build a map that looks like:
+    //   { 'WARNING': 1, 'NORMAL': 2, 'INDETERMINATE': 2 }
+    public Map<Status, Integer> getHitsByStatus(List<Status> statuses) {
+        final Map<Status, Integer> hitsByStatus = new TreeMap<>(HIGHEST_SEVERITY_FIRST);
+        for (Status s : statuses) {
+            for (Status ss : Status.values()) {
+                if (ss.isGreaterThan(s)) {
+                    continue;
+                }
+                Integer count = hitsByStatus.get(ss);
+                if (count == null) {
+                    count = 1;
+                } else {
+                    count = count + 1;
+                }
+                hitsByStatus.put(ss, count);
+            }
+        }
+        return hitsByStatus;
     }
 }
