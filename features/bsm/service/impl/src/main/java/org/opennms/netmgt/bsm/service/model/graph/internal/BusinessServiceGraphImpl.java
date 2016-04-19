@@ -62,6 +62,7 @@ public class BusinessServiceGraphImpl extends DirectedSparseMultigraph<GraphVert
     private final Map<String, GraphVertex> m_verticesByReductionKey = Maps.newHashMap();
     private final Map<Long, GraphVertex> m_verticesByEdgeId = Maps.newHashMap();
     private final Map<Integer, Set<GraphVertex>> m_verticesByLevel = Maps.newHashMap();
+    private final Map<Long, GraphEdge> m_edgesByEdgeId = Maps.newHashMap();
 
     public BusinessServiceGraphImpl(final List<? extends BusinessService> businessServices) {
         // Build the graph
@@ -140,6 +141,7 @@ public class BusinessServiceGraphImpl extends DirectedSparseMultigraph<GraphVert
             // Link and index
             addEdge(graphEdge, businessServiceVertex, vertexForEdge[0]);
             m_verticesByEdgeId.put(edge.getId(), vertexForEdge[0]);
+            m_edgesByEdgeId.put(edge.getId(), graphEdge);
         }
         return businessServiceVertex;
     }
@@ -214,6 +216,11 @@ public class BusinessServiceGraphImpl extends DirectedSparseMultigraph<GraphVert
     @Override
     public GraphVertex getVertexByEdgeId(Long id) {
         return m_verticesByEdgeId.get(id);
+    }
+
+    @Override
+    public GraphEdge getGraphEdgeByEdgeId(Long id) {
+        return m_edgesByEdgeId.get(id);
     }
 
     @Override

@@ -44,6 +44,8 @@ public interface BusinessServiceGraph extends DirectedGraph<GraphVertex,GraphEdg
 
     GraphVertex getVertexByEdgeId(Long id);
 
+    GraphEdge getGraphEdgeByEdgeId(Long id);
+
     Set<String> getReductionKeys();
 
 }

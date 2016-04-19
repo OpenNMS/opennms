@@ -471,3 +471,9 @@ div.v-table-header-wrap {
     vertical-align: top;
     padding-left: 8px;
 }
+
+/** Threshold Explanation Window */
+.threshold .v-table-cell-content-selected {
+    background-color: #B2DFFF;
+    /*color: white;*/
+}
