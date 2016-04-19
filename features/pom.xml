@@ -134,5 +134,8 @@
     <!-- Minion -->
     <module>minion</module>
     <module>scv</module>
+
+    <!-- OpenNMS Plugin Manager -->
+    <module>vaadin-opennms-pluginmanager</module>
   </modules>
 </project>
