@@ -31,6 +31,7 @@ package org.opennms.netmgt.provision.detector;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -57,6 +58,11 @@ public class Jsr160DetectorWiringTest implements ApplicationContextAware {
     @Before
     public void setUp() {
         MockLogAppender.setupLogging();
+    }
+
+    @After
+    public void tearDown() {
+        MockLogAppender.assertNoErrorOrGreater();
     }
 
     private void testWiredDetector(Class<? extends ServiceDetector> detectorClass) {

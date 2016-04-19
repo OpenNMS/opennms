@@ -63,9 +63,9 @@ public abstract class Jsr160ConnectionFactory {
      * @param propertiesMap a {@link java.util.Map} object.
      * @param address a {@link java.net.InetAddress} object.
      * @return a {@link org.opennms.netmgt.provision.support.jmx.connectors.Jsr160ConnectionWrapper} object.
-     * @throws IOException 
+     * @throws MalformedURLException, IOException 
      */
-    public static JmxServerConnectionWrapper getMBeanServerConnection(Map<String,?> propertiesMap, InetAddress address) throws IOException {
+    public static JmxServerConnectionWrapper getMBeanServerConnection(Map<String,?> propertiesMap, InetAddress address) throws MalformedURLException, IOException {
         String factory  = ParameterMap.getKeyedString( propertiesMap, "factory", "STANDARD");
         int    port     = ParameterMap.getKeyedInteger(propertiesMap, "port",     1099);
         String protocol = ParameterMap.getKeyedString( propertiesMap, "protocol", "rmi");
