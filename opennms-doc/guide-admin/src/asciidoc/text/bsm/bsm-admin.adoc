@@ -39,7 +39,7 @@ For this operation the following _Reduce Functions_ are available:
 | Name                      | Description
 | `Highest Severity`        | Uses the value of the highest severity, _Weight_ is ignored.
 | `Threshold`               | Uses the highest severity found more often than the given threshold, e.g. 0.26 can also be seen as 26%, which means at least 2 of 4 _Alarms_ need to be raised to change the _BS_.
-| `Highest Severity Above`  | Uses the highest severity only if it is greater or equal than the given threshold severity, _Weight is ignored.
+| `Highest Severity Above`  | Uses the highest severity greater than the given threshold severity.
 |===
 
 The following table shows the status calculation with _Edges_ assigned to an _IP Service_.
