@@ -87,10 +87,5 @@
         <property name="ipNetToMediaDao" ref="ipNetToMediaDao" />
         <property name="configurationFile" value="target/saved-linkd-graph.xml"/>
     </bean>
-
-    <bean id="ospfEdgeProvider" class="org.opennms.features.topology.plugins.topo.linkd.internal.OspfEdgeProvider">
-        <property name="ospfLinkDao" ref="ospfLinkDao" />
-    </bean>
-
 </beans>
 
