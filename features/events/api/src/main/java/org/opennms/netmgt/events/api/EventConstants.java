@@ -1090,7 +1090,9 @@ public abstract class EventConstants {
     //
     // for Bsmd
     //
-    public static final String BUSINESS_SERVICE_OPERATIONAL_STATUS_CHANGED_UEI = "uei.opennms.org/bsmd/serviceOperationalStatusChanged";
+    public static final String BUSINESS_SERVICE_OPERATIONAL_STATUS_CHANGED_UEI = "uei.opennms.org/bsm/serviceOperationalStatusChanged";
+    public static final String BUSINESS_SERVICE_PROBLEM_UEI = "uei.opennms.org/bsm/serviceProblem";
+    public static final String BUSINESS_SERVICE_PROBLEM_RESOLVED_UEI = "uei.opennms.org/bsm/serviceProblemResolved";
 
     public static final String PARM_BUSINESS_SERVICE_ID = "businessServiceId";
     public static final String PARM_BUSINESS_SERVICE_NAME = "businessServiceName";
