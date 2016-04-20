@@ -48,12 +48,12 @@ import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.OperationContext;
 import org.opennms.features.topology.api.support.VertexHopGraphProvider;
 import org.opennms.features.topology.api.support.VertexHopGraphProvider.VertexHopCriteria;
-import org.opennms.features.topology.api.topo.AbstractEdge;
 import org.opennms.features.topology.api.topo.AbstractSearchProvider;
 import org.opennms.features.topology.api.topo.AbstractVertex;
 import org.opennms.features.topology.api.topo.Criteria;
 import org.opennms.features.topology.api.topo.SearchQuery;
 import org.opennms.features.topology.api.topo.SearchResult;
+import org.opennms.features.topology.api.topo.SimpleConnector;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.features.topology.api.topo.WrappedGraph;
@@ -81,7 +81,6 @@ import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.model.OspfLink;
 import org.opennms.netmgt.model.PrimaryType;
 import org.opennms.netmgt.model.CdpLink.CiscoNetworkProtocolType;
-import org.opennms.netmgt.model.topology.BridgeMacTopologyLink;
 import org.opennms.netmgt.model.topology.BridgePort;
 import org.opennms.netmgt.model.topology.BroadcastDomain;
 import org.opennms.netmgt.model.topology.EdgeAlarmStatusSummary;
@@ -416,14 +415,14 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
 
     private LldpLinkDao m_lldpLinkDao;
     private LldpElementDao m_lldpElementDao;
+    private CdpLinkDao m_cdpLinkDao;
+    private CdpElementDao m_cdpElementDao;
     private OspfLinkDao m_ospfLinkDao;
     private IsIsLinkDao m_isisLinkDao;
     private BridgeBridgeLinkDao m_bridgeBridgeLinkDao;
     private BridgeMacLinkDao m_bridgeMacLinkDao;
     private BridgeTopologyDao m_bridgeTopologyDao;
     private IpNetToMediaDao m_ipNetToMediaDao;
-    private CdpLinkDao m_cdpLinkDao;
-    private CdpElementDao m_cdpElementDao;
     public final static String LLDP_EDGE_NAMESPACE = TOPOLOGY_NAMESPACE_LINKD + "::LLDP";
     public final static String OSPF_EDGE_NAMESPACE = TOPOLOGY_NAMESPACE_LINKD + "::OSPF";
     public final static String ISIS_EDGE_NAMESPACE = TOPOLOGY_NAMESPACE_LINKD + "::ISIS";
@@ -471,9 +470,6 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
             LOG.warn("Filename that was specified for linkd topology will be ignored: " + filename + ", using " + getConfigurationFile() + " instead");
         }
         try{
-            //TODO: change to one query from the database that will return all links plus elements joined
-            //This reset container is set in here for the demo, don't commit
-
             resetContainer();
         } catch (Exception e){
             LOG.error("Exception reset Container: "+e.getMessage(),e);
@@ -688,7 +684,58 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
         
         return source;
     }
+
+    protected final LinkdEdge connectCloudMacVertices(String targetmac, VertexRef sourceRef, VertexRef targetRef,String nameSpace) {
+        SimpleConnector source = new SimpleConnector(sourceRef.getNamespace(), sourceRef.getId()+"-"+targetRef.getId()+"-connector", sourceRef);
+        SimpleConnector target = new SimpleConnector(targetRef.getNamespace(), targetRef.getId()+"-"+sourceRef.getId()+"-connector", targetRef);
+
+        LinkdEdge edge = new LinkdEdge(nameSpace, String.valueOf(sourceRef.getId()+"|"+targetRef.getId()+":"+targetmac), source, target);
+        edge.setTargetEndPoint(targetmac);
+        addEdges(edge);
+        
+        return edge;
+    }
+
+    protected final LinkdEdge connectVertices(BridgePort targetlink, VertexRef sourceRef, VertexRef targetRef,String nameSpace) {
+        SimpleConnector source = new SimpleConnector(sourceRef.getNamespace(), sourceRef.getId()+"-"+targetRef.getId()+"-connector", sourceRef);
+        SimpleConnector target = new SimpleConnector(targetRef.getNamespace(), targetRef.getId()+"-"+sourceRef.getId()+"-connector", targetRef);
+
+        LinkdEdge edge = new LinkdEdge(nameSpace, String.valueOf(sourceRef.getId()+"|"+targetRef.getId()+":"+targetlink.getBridgePort()), source, target);
+        if (targetlink.getBridgePortIfIndex() != null)
+            edge.setTargetEndPoint(String.valueOf(targetlink.getBridgePortIfIndex()));
+        addEdges(edge);
+        
+        return edge;
+    }
+
+    protected final LinkdEdge connectVertices(BridgeMacLink link, VertexRef sourceRef, VertexRef targetRef,String nameSpace) {
+        SimpleConnector source = new SimpleConnector(sourceRef.getNamespace(), sourceRef.getId()+"-"+link.getId()+"-connector", sourceRef);
+        SimpleConnector target = new SimpleConnector(targetRef.getNamespace(), targetRef.getId()+"-"+link.getId()+"-connector", targetRef);
+
+        LinkdEdge edge = new LinkdEdge(nameSpace, String.valueOf(link.getId()), source, target);
+        if (link.getBridgePortIfIndex() != null)
+            edge.setSourceEndPoint(String.valueOf(link.getBridgePortIfIndex()));
+        edge.setTargetEndPoint(String.valueOf(link.getMacAddress()));
+        addEdges(edge);
+        
+        return edge;
+    }
+
     
+    protected final LinkdEdge connectVertices(LinkDetail<?> linkdetail, String nameSpace) {
+        SimpleConnector source = new SimpleConnector(linkdetail.getSource().getNamespace(), linkdetail.getSource().getId()+"-"+linkdetail.getId()+"-connector", linkdetail.getSource());
+        SimpleConnector target = new SimpleConnector(linkdetail.getTarget().getNamespace(), linkdetail.getTarget().getId()+"-"+linkdetail.getId()+"-connector", linkdetail.getTarget());
+
+        LinkdEdge edge = new LinkdEdge(nameSpace, linkdetail.getId(), source, target);
+        if (linkdetail.getSourceIfIndex() != null)
+            edge.setSourceEndPoint(String.valueOf(linkdetail.getSourceIfIndex()));
+        if (linkdetail.getTargetIfIndex() != null)
+            edge.setTargetEndPoint(String.valueOf(linkdetail.getTargetIfIndex()));
+        addEdges(edge);
+        
+        return edge;
+    }
+
     private void getLldpLinks(Map<Integer, OnmsNode> nodemap, Map<Integer, List<OnmsSnmpInterface>> nodesnmpmap, Map<Integer, OnmsIpInterface> ipprimarymap) {
         Map<Integer, LldpElement> lldpelementmap = new HashMap<Integer, LldpElement>();
         for (LldpElement lldpelement: m_lldpElementDao.findAll()) {
@@ -750,7 +797,7 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
         }
 
         for (LldpLinkDetail linkDetail : combinedLinkDetails) {
-            AbstractEdge edge = connectVertices(linkDetail.getId(), linkDetail.getSource(), linkDetail.getTarget(), LLDP_EDGE_NAMESPACE);
+            LinkdEdge edge = connectVertices(linkDetail, LLDP_EDGE_NAMESPACE);
             edge.setTooltipText(getEdgeTooltipText(linkDetail,nodesnmpmap));
         }
     }
@@ -783,7 +830,7 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
         }
 
         for (OspfLinkDetail linkDetail : combinedLinkDetails) {
-            AbstractEdge edge = connectVertices(linkDetail.getId(), linkDetail.getSource(), linkDetail.getTarget(), OSPF_EDGE_NAMESPACE);
+            LinkdEdge edge = connectVertices(linkDetail, OSPF_EDGE_NAMESPACE);
             edge.setTooltipText(getEdgeTooltipText(linkDetail,nodesnmpmap));
         }
     }
@@ -852,7 +899,7 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
         }
         
         for (CdpLinkDetail linkDetail : combinedLinkDetails) {
-            AbstractEdge edge = connectVertices(linkDetail.getId(), linkDetail.getSource(), linkDetail.getTarget(), CDP_EDGE_NAMESPACE);
+            LinkdEdge edge = connectVertices(linkDetail, CDP_EDGE_NAMESPACE);
             edge.setTooltipText(getEdgeTooltipText(linkDetail,nodesnmpmap));
         }
     }
@@ -899,7 +946,7 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
                         link.getTargetIfIndex()
                 );
 
-                AbstractEdge edge = connectVertices(linkDetail.getId(), linkDetail.getSource(), linkDetail.getTarget(), ISIS_EDGE_NAMESPACE);
+                LinkdEdge edge = connectVertices(linkDetail, ISIS_EDGE_NAMESPACE);
                 edge.setTooltipText(getEdgeTooltipText(linkDetail,nodesnmpmap));
             }
         }
@@ -909,27 +956,27 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
         int cloudindex = 0;
         for (BroadcastDomain domain: m_bridgeTopologyDao.getAllPersisted(m_bridgeBridgeLinkDao, m_bridgeMacLinkDao)) {
             for (SharedSegment segment: domain.getTopology()) {
-                // bridge bridge link
                 if (segment.noMacsOnSegment() && segment.getBridgeBridgeLinks().size() == 1) {
                     for (BridgeBridgeLink link : segment.getBridgeBridgeLinks()) {
                         Vertex source = getOrCreateVertex(nodemap.get(link.getNode().getId()), ipprimarymap.get(link.getNode().getId()));
                         Vertex target = getOrCreateVertex(nodemap.get(link.getDesignatedNode().getId()), ipprimarymap.get(link.getDesignatedNode().getId()));
                         BridgeLinkDetail detail = new BridgeLinkDetail(EnhancedLinkdTopologyProvider.TOPOLOGY_NAMESPACE_LINKD,source,link.getBridgePortIfIndex(),  target, link.getDesignatedPortIfIndex(), link.getBridgePort(), link.getDesignatedPort(), link.getId(),link.getId() );
-                       AbstractEdge edge = connectVertices(detail.getId(), detail.getSource(), detail.getTarget(), BRIDGE_EDGE_NAMESPACE);
+                       LinkdEdge edge = connectVertices(detail, BRIDGE_EDGE_NAMESPACE);
                        edge.setTooltipText(getEdgeTooltipText(detail,nodesnmpmap));
                     }
                     continue;
                 } 
-                // bridge mac link 
                 if (segment.getBridgeMacLinks().size() == 1 && segment.getBridgeBridgeLinks().size() == 0) {
-                    for (BridgeMacLink link: segment.getBridgeMacLinks()) {
-                        if (macToIpMap.containsKey(link.getMacAddress()) && macToIpMap.get(link.getMacAddress()).size() > 0) {
-                           List<OnmsIpInterface> targetInterfaces = macToIpMap.get(link.getMacAddress());
+                    for (BridgeMacLink sourcelink: segment.getBridgeMacLinks()) {
+                        if (macToIpMap.containsKey(sourcelink.getMacAddress()) && macToIpMap.get(sourcelink.getMacAddress()).size() > 0) {
+                           List<OnmsIpInterface> targetInterfaces = macToIpMap.get(sourcelink.getMacAddress());
                            OnmsIpInterface targetIp = targetInterfaces.get(0);
-                           Vertex source = getOrCreateVertex(nodemap.get(link.getNode().getId()), ipprimarymap.get(link.getNode().getId()));
+                           if (segment.getBridgeIdsOnSegment().contains(targetIp.getNode().getId()))
+                               continue;
+                           Vertex source = getOrCreateVertex(nodemap.get(sourcelink.getNode().getId()), ipprimarymap.get(sourcelink.getNode().getId()));
                            Vertex target = getOrCreateVertex(nodemap.get(targetIp.getNode().getId()), ipprimarymap.get(targetIp.getNode().getId()));
-                           AbstractEdge edge = connectVertices(Integer.toString(link.getId()), source, target, BRIDGE_EDGE_NAMESPACE);
-                           edge.setTooltipText(getEdgeTooltipText(link.getMacAddress(),targetInterfaces));
+                           LinkdEdge edge = connectVertices(sourcelink, source, target, BRIDGE_EDGE_NAMESPACE);
+                           edge.setTooltipText(getEdgeTooltipText(sourcelink,source,target,targetInterfaces,nodesnmpmap));
                         }
                     }
                     continue;    
@@ -938,20 +985,22 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
                 AbstractVertex cloudVertex = addVertex(cloudId, 0, 0);
                 cloudVertex.setLabel("");
                 cloudVertex.setIconKey("cloud");
-                cloudVertex.setTooltipText("Shared Segment: designated bridge: " + nodemap.get(segment.getDesignatedBridge()) + " port: " + segment.getDesignatedPort());
+                cloudVertex.setTooltipText("Shared Segment: " + nodemap.get(segment.getDesignatedBridge()).getLabel() + " port: " + segment.getDesignatedPort());
                 addVertices(cloudVertex);
-                for (BridgePort link: segment.getBridgePortsOnSegment()) {
-                    Vertex target = getOrCreateVertex(nodemap.get(link.getNode().getId()), ipprimarymap.get(link.getNode().getId()));
-                    AbstractEdge edge = connectVertices(cloudVertex.getId()+link.getNode().getId(), cloudVertex, target, BRIDGE_EDGE_NAMESPACE);
-                    edge.setTooltipText(getEdgeTooltipText(link,target,nodesnmpmap));
+                for (BridgePort targetlink: segment.getBridgePortsOnSegment()) {
+                    Vertex target = getOrCreateVertex(nodemap.get(targetlink.getNode().getId()), ipprimarymap.get(targetlink.getNode().getId()));
+                    LinkdEdge edge = connectVertices(targetlink, cloudVertex, target, BRIDGE_EDGE_NAMESPACE);
+                    edge.setTooltipText(getEdgeTooltipText(targetlink,target,nodesnmpmap));
                 }
-                for (String mac: segment.getMacsOnSegment()) {
-                    if (macToIpMap.containsKey(mac) && macToIpMap.get(mac).size() > 0) {
-                        List<OnmsIpInterface> targetInterfaces = macToIpMap.get(mac);
+                for (String targetmac: segment.getMacsOnSegment()) {
+                    if (macToIpMap.containsKey(targetmac) && macToIpMap.get(targetmac).size() > 0) {
+                        List<OnmsIpInterface> targetInterfaces = macToIpMap.get(targetmac);
                         OnmsIpInterface targetIp = targetInterfaces.get(0);
+                        if (segment.getBridgeIdsOnSegment().contains(targetIp.getNode().getId()))
+                                continue;
                         Vertex target = getOrCreateVertex(nodemap.get(targetIp.getNode().getId()), ipprimarymap.get(targetIp.getNode().getId()));
-                        AbstractEdge edge = connectVertices(cloudVertex.getId()+mac, cloudVertex, target, BRIDGE_EDGE_NAMESPACE);
-                        edge.setTooltipText(getEdgeTooltipText(mac,targetInterfaces));
+                        LinkdEdge edge = connectCloudMacVertices(targetmac, cloudVertex, target, BRIDGE_EDGE_NAMESPACE);
+                        edge.setTooltipText(getEdgeTooltipText(targetmac,target,targetInterfaces));
                     }
                     cloudindex++;
                 }
@@ -970,67 +1019,76 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
         }
     }
 
-    private String getEdgeVertexCloudToolTipTextFromSource(Vertex vertex, BridgeMacTopologyLink link, String cloudText) {
-        if (link.getBridgePortIfName() != null)
-            return getEdgeVertexCloudTooltipText(vertex, " port with ifname: " + link.getBridgePortIfName(), cloudText);
-        if (link.getBridgePortIfIndex() != null)
-            return getEdgeVertexCloudTooltipText(vertex, " port with ifindex: " + String.valueOf(link.getBridgePortIfIndex()), cloudText);
-        return getEdgeVertexCloudTooltipText(vertex, " bridge port : " + String.valueOf(link.getBridgePort()), cloudText);
-    }
-
-    private String getEdgeVertexCloudToolTipTextFromTarget(Vertex vertex, BridgeMacTopologyLink link, String cloudText) {
-        if (link.getTargetBridgePort() != null && link.getTargetPortIfName() != null)
-            return getEdgeVertexCloudTooltipText(vertex, " port with ifname: " + link.getTargetPortIfName(), cloudText);
-        if (link.getTargetBridgePort() != null && link.getTargetIfIndex() != null)
-            return getEdgeVertexCloudTooltipText(vertex, " port with ifindex: " + String.valueOf(link.getTargetIfIndex()), cloudText);
-        if (link.getTargetBridgePort() != null )
-            return getEdgeVertexCloudTooltipText(vertex, " bridge port : " + String.valueOf(link.getTargetBridgePort()), cloudText);
-        return getEdgeVertexCloudTooltipText(vertex, " ip/mac : "+ link.getBridgePortIfName() + "/"+ link.getMacAddr(), cloudText);
-    }
-
-    private String getEdgeVertexCloudTooltipText(Vertex vertex, String vertexPortText, String cloudText) {
+    private String getEdgeTooltipText(BridgeMacLink sourcelink,
+            Vertex source, Vertex target,
+            List<OnmsIpInterface> targetInterfaces,
+            Map<Integer, List<OnmsSnmpInterface>> snmpmap) {
         StringBuffer tooltipText = new StringBuffer();
+        tooltipText.append(HTML_TOOLTIP_TAG_OPEN);
+        tooltipText.append("Bridge Layer2");
+        tooltipText.append(HTML_TOOLTIP_TAG_END);
 
+        OnmsSnmpInterface sourceInterface = getByNodeIdAndIfIndex(sourcelink.getBridgePortIfIndex(), target,snmpmap);
+        
         tooltipText.append(HTML_TOOLTIP_TAG_OPEN);
-        tooltipText.append("Type of Link: Bridge Layer 2");
-        tooltipText.append(HTML_TOOLTIP_TAG_OPEN);
-
-        tooltipText.append(HTML_TOOLTIP_TAG_OPEN);
-        tooltipText.append("Name: &lt;endpoint1 " + vertex.getLabel() + vertexPortText);
-        tooltipText.append( " ---- endpoint2 A Shared Segment &gt;");
+        tooltipText.append(source.getLabel());
+        if (sourceInterface != null) {
+            tooltipText.append("(");
+            tooltipText.append(sourceInterface.getIfName());
+            tooltipText.append(")");
+        }
         tooltipText.append(HTML_TOOLTIP_TAG_END);
 
         tooltipText.append(HTML_TOOLTIP_TAG_OPEN);
-        tooltipText.append( "End Point 1: " + vertex.getLabel() + ", " + vertex.getIpAddress());
-        tooltipText.append(HTML_TOOLTIP_TAG_END);
+        tooltipText.append(target.getLabel());
+        tooltipText.append("(");
+        tooltipText.append(sourcelink.getMacAddress());
+        tooltipText.append(")");
+        tooltipText.append("(");
+        if (targetInterfaces.size() == 1) {
+            tooltipText.append(InetAddressUtils.str(targetInterfaces.get(0).getIpAddress()));
+        } else if (targetInterfaces.size() > 1) {
+            tooltipText.append("Multiple ip Addresses ");
+        } else {
+            tooltipText.append("No ip Address found");
+        }
+        tooltipText.append(")");
+        tooltipText.append(HTML_TOOLTIP_TAG_END);        
 
-        tooltipText.append(HTML_TOOLTIP_TAG_OPEN);
-        tooltipText.append( "End Point 1: " + cloudText);
-        tooltipText.append(HTML_TOOLTIP_TAG_END);
+        if ( sourceInterface != null) {
+            if (sourceInterface.getIfSpeed() != null) {
+                tooltipText.append(HTML_TOOLTIP_TAG_OPEN);
+                tooltipText.append(getHumanReadableIfSpeed(sourceInterface.getIfSpeed()));
+                tooltipText.append(HTML_TOOLTIP_TAG_END);
+            }
+        }
+
 
         return tooltipText.toString();
     }
 
-    private String getEdgeTooltipText(String mac, List<OnmsIpInterface> ipifaces) {
+    private String getEdgeTooltipText(String mac, Vertex target, List<OnmsIpInterface> ipifaces) {
         StringBuffer tooltipText = new StringBuffer();
         tooltipText.append(HTML_TOOLTIP_TAG_OPEN);
-        tooltipText.append("Type of Link: Bridge Layer2");
+        tooltipText.append("Bridge Layer2");
         tooltipText.append(HTML_TOOLTIP_TAG_END);
+
         tooltipText.append(HTML_TOOLTIP_TAG_OPEN);
-        tooltipText.append("mac Address: ");
+        tooltipText.append(target.getLabel());
+        tooltipText.append("(");
         tooltipText.append(mac);
-        tooltipText.append(HTML_TOOLTIP_TAG_END);
-        tooltipText.append(HTML_TOOLTIP_TAG_END);
-        tooltipText.append(HTML_TOOLTIP_TAG_OPEN);
+        tooltipText.append(")");
+        tooltipText.append("(");
         if (ipifaces.size() == 1) {
-            tooltipText.append("ip Address: ");
             tooltipText.append(InetAddressUtils.str(ipifaces.get(0).getIpAddress()));
         } else if (ipifaces.size() > 1) {
-            tooltipText.append("multiple ip Addresses ");
+            tooltipText.append("Multiple ip Addresses ");
         } else {
-            tooltipText.append("no ip Address found");
+            tooltipText.append("No ip Address found");
         }
+        tooltipText.append(")");
         tooltipText.append(HTML_TOOLTIP_TAG_END);        
+        
         return tooltipText.toString();
     }
 
@@ -1039,17 +1097,22 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
         StringBuffer tooltipText = new StringBuffer();
         OnmsSnmpInterface targetInterface = getByNodeIdAndIfIndex(port.getBridgePortIfIndex(), target,snmpmap);
         tooltipText.append(HTML_TOOLTIP_TAG_OPEN);
-        tooltipText.append("Type of Link: Bridge Layer2");
+        tooltipText.append("Bridge Layer2");
         tooltipText.append(HTML_TOOLTIP_TAG_END);
+        
         tooltipText.append(HTML_TOOLTIP_TAG_OPEN);
-        tooltipText.append( " ---- endpoint " + target.getLabel());
-        if (targetInterface != null)
-            tooltipText.append( ":"+targetInterface.getIfName());
+        tooltipText.append(target.getLabel());
+        if (targetInterface != null) {
+            tooltipText.append("(");
+            tooltipText.append(targetInterface.getIfName());
+            tooltipText.append(")");
+        }
         tooltipText.append(HTML_TOOLTIP_TAG_END);
+
         if ( targetInterface != null) {
             if (targetInterface.getIfSpeed() != null) {
                 tooltipText.append(HTML_TOOLTIP_TAG_OPEN);
-                tooltipText.append( "Bandwidth: " + getHumanReadableIfSpeed(targetInterface.getIfSpeed()));
+                tooltipText.append(getHumanReadableIfSpeed(targetInterface.getIfSpeed()));
                 tooltipText.append(HTML_TOOLTIP_TAG_END);
             }
         }
@@ -1066,47 +1129,47 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
         OnmsSnmpInterface targetInterface = getByNodeIdAndIfIndex(linkDetail.getTargetIfIndex(), target,snmpmap);
 
         tooltipText.append(HTML_TOOLTIP_TAG_OPEN);
+        tooltipText.append(linkDetail.getType());
         if (sourceInterface != null && targetInterface != null
                 && sourceInterface.getNetMask() != null && !sourceInterface.getNetMask().isLoopbackAddress()
                 && targetInterface.getNetMask() != null && !targetInterface.getNetMask().isLoopbackAddress()) {
-            tooltipText.append("Type of Link: " + linkDetail.getType() + " Layer3/Layer2");
+            tooltipText.append(" Layer3/Layer2");
         } else {
-            tooltipText.append("Type of Link: " + linkDetail.getType() + " Layer2");
+            tooltipText.append(" Layer2");
         }
         tooltipText.append(HTML_TOOLTIP_TAG_END);
 
         tooltipText.append(HTML_TOOLTIP_TAG_OPEN);
-        tooltipText.append( "Name: &lt;endpoint1 " + source.getLabel());
-        if (sourceInterface != null )
-            tooltipText.append( ":"+sourceInterface.getIfName());
-        tooltipText.append( " ---- endpoint2 " + target.getLabel());
-        if (targetInterface != null)
-            tooltipText.append( ":"+targetInterface.getIfName());
-        tooltipText.append("&gt;");
+        tooltipText.append( source.getLabel());
+        if (sourceInterface != null ) {
+            tooltipText.append("(");
+            tooltipText.append(sourceInterface.getIfName());
+            tooltipText.append(")");
+        }
+        tooltipText.append(HTML_TOOLTIP_TAG_END);
+        
+        tooltipText.append(HTML_TOOLTIP_TAG_OPEN);
+        tooltipText.append(target.getLabel());
+        if (targetInterface != null) {
+            tooltipText.append("(");
+            tooltipText.append(targetInterface.getIfName());
+            tooltipText.append(")");
+        }
         tooltipText.append(HTML_TOOLTIP_TAG_END);
 
         if ( targetInterface != null) {
             if (targetInterface.getIfSpeed() != null) {
                 tooltipText.append(HTML_TOOLTIP_TAG_OPEN);
-                tooltipText.append( "Bandwidth: " + getHumanReadableIfSpeed(targetInterface.getIfSpeed()));
+                tooltipText.append(getHumanReadableIfSpeed(targetInterface.getIfSpeed()));
                 tooltipText.append(HTML_TOOLTIP_TAG_END);
             }
         } else if (sourceInterface != null) {
             if (sourceInterface.getIfSpeed() != null) {
                 tooltipText.append(HTML_TOOLTIP_TAG_OPEN);
-                tooltipText.append( "Bandwidth: " + getHumanReadableIfSpeed(sourceInterface.getIfSpeed()));
+                tooltipText.append(getHumanReadableIfSpeed(sourceInterface.getIfSpeed()));
                 tooltipText.append(HTML_TOOLTIP_TAG_END);
             }
         }
-
-        tooltipText.append(HTML_TOOLTIP_TAG_OPEN);
-        tooltipText.append( "End Point 1: " + source.getLabel() + ", " + source.getIpAddress());
-        tooltipText.append(HTML_TOOLTIP_TAG_END);
-
-        tooltipText.append(HTML_TOOLTIP_TAG_OPEN);
-        tooltipText.append( "End Point 2: " + target.getLabel() + ", " + target.getIpAddress());
-        tooltipText.append(HTML_TOOLTIP_TAG_END);
-
         return tooltipText.toString();
     }
 
