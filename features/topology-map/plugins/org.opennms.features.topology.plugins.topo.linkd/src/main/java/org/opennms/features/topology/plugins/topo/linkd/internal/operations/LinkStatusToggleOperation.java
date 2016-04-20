@@ -28,13 +28,11 @@
 
 package org.opennms.features.topology.plugins.topo.linkd.internal.operations;
 
-import org.apache.xpath.operations.Bool;
 import org.opennms.features.topology.api.AbstractCheckedOperation;
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.OperationContext;
 import org.opennms.features.topology.api.topo.EdgeStatusProvider;
 import org.opennms.features.topology.api.topo.VertexRef;
-import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 
 import java.util.ArrayList;

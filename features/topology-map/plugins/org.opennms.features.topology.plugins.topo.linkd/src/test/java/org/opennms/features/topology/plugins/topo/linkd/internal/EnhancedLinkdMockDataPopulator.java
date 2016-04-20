@@ -73,7 +73,6 @@ import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.model.OspfLink;
 import org.opennms.netmgt.model.topology.BridgeMacTopologyLink;
 import org.opennms.netmgt.model.topology.BroadcastDomain;
-import org.opennms.netmgt.model.topology.CdpTopologyLink;
 import org.opennms.netmgt.model.topology.IsisTopologyLink;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -588,6 +587,7 @@ public class EnhancedLinkdMockDataPopulator {
         this.m_nodeDao = nodeDao;
     }
 
+    @SuppressWarnings("deprecation")
     public void check(GraphProvider topologyProvider) {
         String vertexNamespace = topologyProvider.getVertexNamespace();
         Assert.assertEquals(8, topologyProvider.getVertices().size());

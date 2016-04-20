@@ -136,6 +136,7 @@ public class EnhancedLinkdTopologyProviderTest {
         Assert.assertEquals(true, m_topologyProvider.containsVertexId(parentId));
     }
 
+    @SuppressWarnings("deprecation")
     @Test
     public void test() throws Exception {
         new File("target/test-classes/test.xml").delete();
@@ -156,8 +157,8 @@ public class EnhancedLinkdTopologyProviderTest {
         ((AbstractVertex)vertexA).setIpAddress("10.0.0.4");
 
         // Search by VertexRef
-        @SuppressWarnings("deprecation") VertexRef vertexAref = new DefaultVertexRef(m_topologyProvider.getVertexNamespace(), "v0");
-        @SuppressWarnings("deprecation") VertexRef vertexBref = new DefaultVertexRef(m_topologyProvider.getVertexNamespace(), "v1");
+        VertexRef vertexAref = new DefaultVertexRef(m_topologyProvider.getVertexNamespace(), "v0");
+        VertexRef vertexBref = new DefaultVertexRef(m_topologyProvider.getVertexNamespace(), "v1");
         assertEquals(1, m_topologyProvider.getVertices(Collections.singletonList(vertexAref)).size());
         assertEquals(0, m_topologyProvider.getVertices(Collections.singletonList(vertexBref)).size());
 
