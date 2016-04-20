@@ -25,14 +25,9 @@
 	<service interface="org.opennms.netmgt.trapd.TrapNotificationHandler" ref="trapdNotificationHandlerCamel" />
 
 
-	<bean id="activemq" class="org.apache.activemq.camel.component.ActiveMQComponent">
-		<!-- TODO: HZN-490 Add configurable ActiveMQ URI -->
-		<property name="brokerURL" value="${brokerUri}" />
-		<!-- TODO: HZN-490 Add configurable authentication -->
-		<!-- <property name="userName" value="karaf" /> <property name="password" 
-			value="karaf" /> -->
-	</bean>
-
+	<!-- ActiveMQ component provided by minion-core -->
+	<reference id="queuingservice" interface="org.apache.camel.Component" filter="(alias=opennms.broker)"/>
+    
 	<camelContext id="trapdNotificationHandlerMinion"
 		xmlns="http://camel.apache.org/schema/blueprint">
 		<propertyPlaceholder id="properties" location="blueprint:trapdNotificationHandlerMinionProperties" />
@@ -41,7 +36,7 @@
 			<convertBodyTo type="org.opennms.netmgt.trapd.TrapQueueProcessor" />
 			<!-- TODO: Use marshalling instead of serialization when transmitting object? -->
 			<!-- Broadcast message over ActiveMQ -->
-			<to uri="activemq:broadcastTrap?disableReplyTo=true" />
+			<to uri="queuingservice:broadcastTrap?disableReplyTo=true" />
 		</route>
 	</camelContext>
 

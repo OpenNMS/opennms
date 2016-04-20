@@ -30,8 +30,11 @@ package org.opennms.netmgt.trapd;
 
 import java.util.Dictionary;
 import java.util.Map;
+import java.util.Properties;
 
 import org.apache.activemq.broker.BrokerService;
+import org.apache.activemq.camel.component.ActiveMQComponent;
+import org.apache.camel.Component;
 import org.apache.camel.component.mock.MockEndpoint;
 import org.apache.camel.test.blueprint.CamelBlueprintTestSupport;
 import org.apache.camel.util.KeyValueHolder;
@@ -41,9 +44,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.netmgt.snmp.BasicTrapProcessor;
+import org.opennms.netmgt.config.TrapdConfig;
+import org.opennms.netmgt.dao.mock.MockEventIpcManager;
 import org.opennms.netmgt.snmp.TrapNotification;
-import org.opennms.netmgt.snmp.TrapProcessor;
 import org.opennms.netmgt.snmp.snmp4j.Snmp4JTrapNotifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -95,7 +98,22 @@ public class TrapdHandlerMinionIT extends CamelBlueprintTestSupport {
 	@SuppressWarnings("rawtypes")
 	@Override
 	protected void addServicesOnStartup(Map<String, KeyValueHolder<Object, Dictionary>> services) {
-		// Register any mock OSGi services here
+
+		// Create a mock TrapdConfigBean
+		TrapdConfigBean config = new TrapdConfigBean();
+		config.setSnmpTrapPort(10514);
+		config.setSnmpTrapAddress("127.0.0.1");
+		config.setNewSuspectOnTrap(false);
+
+		services.put(TrapdConfig.class.getName(), new KeyValueHolder<Object, Dictionary>(config, new Properties()));
+
+		Properties props = new Properties();
+		props.setProperty("alias", "opennms.broker");
+
+		//creating the Active MQ component and service
+		ActiveMQComponent activeMQ = new ActiveMQComponent();
+		activeMQ.setBrokerURL("tcp://127.0.0.1:61716");
+		services.put( Component.class.getName(), new KeyValueHolder<Object, Dictionary>( activeMQ, props ) );
 	}
 
 	// The location of our Blueprint XML files to be used for testing
@@ -121,13 +139,22 @@ public class TrapdHandlerMinionIT extends CamelBlueprintTestSupport {
 	@Test
 	public void testTrapd() throws Exception {
 		
-		MockEndpoint broadcasTrap = getMockEndpoint("mock:activemq:broadcastTrap", false);
+		MockEndpoint broadcasTrap = getMockEndpoint("mock:queuingservice:broadcastTrap", false);
 		broadcasTrap.setExpectedMessageCount(1);
+		
+		MockEventIpcManager mockEventIpcManager = new MockEventIpcManager();
+
+		MockTrapdIpMgr m_trapdIpMgr=new MockTrapdIpMgr();
+
+		m_trapdIpMgr.clearKnownIpsMap();
+		m_trapdIpMgr.setNodeId("127.0.0.1", 1);
 
 
 		TrapQueueProcessor trap=new TrapQueueProcessor();
 		trap.setNewSuspect(false);
-		TrapProcessor trapProcess = new BasicTrapProcessor();
+		trap.setEventManager(mockEventIpcManager);
+		
+		EventCreator trapProcess = new EventCreator(m_trapdIpMgr);
 		trapProcess.setAgentAddress(InetAddressUtils.ONE_TWENTY_SEVEN);
 		trapProcess.setCommunity("comm");
 		trapProcess.setTrapAddress(InetAddressUtils.ONE_TWENTY_SEVEN);
