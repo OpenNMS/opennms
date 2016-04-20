@@ -28,6 +28,8 @@
 
 package org.opennms.features.topology.plugins.topo.linkd.internal;
 
+import org.osgi.framework.ServiceReference;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;

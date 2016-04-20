@@ -45,8 +45,7 @@ xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0
     </bean>
     <!-- Shared Components end -->
 
-    <bean id="topologyProvider" scope="singleton" class="org.opennms.features.topology.plugins.topo.linkd.internal.EnhancedLinkdTopologyProvider">
-        <argument ref="metricRegistry" />
+    <bean id="topologyProvider" scope="prototype" init-method="onInit" class="org.opennms.features.topology.plugins.topo.linkd.internal.EnhancedLinkdTopologyProvider">
         <property name="configurationFile" value="${configurationFile}"/>
         <property name="transactionOperations" ref="transactionOperations"/>
         <property name="nodeDao" ref="nodeDao" />
@@ -65,9 +64,7 @@ xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0
         <property name="bridgeMacLinkDao" ref="bridgeMacLinkDao" />
         <property name="bridgeBridgeLinkDao" ref="bridgeBridgeLinkDao" />
         <property name="bridgeTopologyDao" ref="bridgeTopologyDao" />
-        <property name="cdpLinkDao" ref="cdpLinkDao"/>
         <property name="metaInfo" ref="enlinkdMetaInfo"/>
-        <property name="cdpElementDao" ref="cdpElementDao"/>
         <property name="ipNetToMediaDao" ref="ipNetToMediaDao"/>
     </bean>
 
