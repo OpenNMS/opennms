@@ -154,8 +154,13 @@ public class BsmdIT {
         // Start the daemon
         m_bsmd.start();
 
-        // Setup expectations
+        // Expect a statusChanged event
         EventBuilder ebldr = new EventBuilder(EventConstants.BUSINESS_SERVICE_OPERATIONAL_STATUS_CHANGED_UEI, "test");
+        ebldr.addParam(EventConstants.PARM_BUSINESS_SERVICE_ID, simpleBs.getId());
+        m_anticipator.anticipateEvent(ebldr.getEvent());
+
+        // Expect a serviceProblem event
+        ebldr = new EventBuilder(EventConstants.BUSINESS_SERVICE_PROBLEM_UEI, "test");
         ebldr.addParam(EventConstants.PARM_BUSINESS_SERVICE_ID, simpleBs.getId());
         m_anticipator.anticipateEvent(ebldr.getEvent());
 
@@ -170,6 +175,28 @@ public class BsmdIT {
 
         // Verify expectations
         Collection<Event> stillWaitingFor = m_anticipator.waitForAnticipated(5000);
+        assertTrue("Expected events not forthcoming " + stillWaitingFor, stillWaitingFor.isEmpty());
+
+        // Expect a statusChanged event
+        ebldr = new EventBuilder(EventConstants.BUSINESS_SERVICE_OPERATIONAL_STATUS_CHANGED_UEI, "test");
+        ebldr.addParam(EventConstants.PARM_BUSINESS_SERVICE_ID, simpleBs.getId());
+        m_anticipator.anticipateEvent(ebldr.getEvent());
+
+        // Expect a serviceProblemResolved event
+        ebldr = new EventBuilder(EventConstants.BUSINESS_SERVICE_PROBLEM_RESOLVED_UEI, "test");
+        ebldr.addParam(EventConstants.PARM_BUSINESS_SERVICE_ID, simpleBs.getId());
+        m_anticipator.anticipateEvent(ebldr.getEvent());
+
+        // Clear the alarm
+        alarm.setSeverity(OnmsSeverity.CLEARED);
+
+        // Send an alarm cleared event
+        ebldr = new EventBuilder(EventConstants.ALARM_CLEARED_UEI, "test");
+        ebldr.addParam(EventConstants.PARM_ALARM_ID, alarm.getId());
+        m_bsmd.handleAlarmLifecycleEvents(ebldr.getEvent());
+
+        // Verify expectations
+        stillWaitingFor = m_anticipator.waitForAnticipated(5000);
         assertTrue("Expected events not forthcoming " + stillWaitingFor, stillWaitingFor.isEmpty());
     }
 
