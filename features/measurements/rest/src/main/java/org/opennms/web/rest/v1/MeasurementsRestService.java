@@ -130,7 +130,8 @@ public class MeasurementsRestService {
             @DefaultValue("300000") @QueryParam("step") final long step,
             @DefaultValue("0") @QueryParam("maxrows") final int maxrows,
             @DefaultValue("") @QueryParam("fallback-attribute") final String fallbackAttribute,
-            @DefaultValue("AVERAGE") @QueryParam("aggregation") final String aggregation) {
+            @DefaultValue("AVERAGE") @QueryParam("aggregation") final String aggregation,
+            @DefaultValue("false") @QueryParam("relaxed") final boolean relaxed) {
 
         QueryRequest request = new QueryRequest();
         // If end is not strictly positive, use the current timestamp
@@ -144,6 +145,7 @@ public class MeasurementsRestService {
 
         request.setStep(step);
         request.setMaxRows(maxrows);
+        request.setRelaxed(relaxed);
 
         // Use the attribute name as the datasource and label
         Source source = new Source(attribute, resourceId, attribute, attribute, false);
