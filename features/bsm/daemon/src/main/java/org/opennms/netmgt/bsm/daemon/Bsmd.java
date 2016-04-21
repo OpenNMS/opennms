@@ -195,7 +195,8 @@ public class Bsmd implements SpringServiceDaemon, BusinessServiceStateChangeHand
         }
         org.opennms.netmgt.xml.eventconf.Event event = eventsForUei.get(0);
         if (!reductionKey.equals(event.getAlarmData().getReductionKey())) {
-            throw new IllegalStateException("Unsupported reduction key " + event.getAlarmData().getReductionKey());
+            throw new IllegalStateException(String.format("Unsupported reduction key '%s' for uei '%s'.",
+                    event.getAlarmData().getReductionKey(), uei));
         }
     }
 

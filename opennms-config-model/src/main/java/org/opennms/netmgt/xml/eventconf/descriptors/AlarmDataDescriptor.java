@@ -35,7 +35,10 @@
 
 package org.opennms.netmgt.xml.eventconf.descriptors;
 
-  //---------------------------------/
+import java.util.ArrayList;
+import java.util.List;
+
+//---------------------------------/
  //- Imported classes and packages -/
 //---------------------------------/
 
@@ -359,7 +362,56 @@ public class AlarmDataDescriptor extends org.exolab.castor.xml.util.XMLClassDesc
         }
         desc.setValidator(fieldValidator);
         //-- initialize element descriptors
-        
+
+        //-- _updateFieldList
+        desc = new org.exolab.castor.xml.util.XMLFieldDescriptorImpl(org.opennms.netmgt.xml.eventconf.UpdateField.class, "_updateFieldList", "update-field", org.exolab.castor.xml.NodeType.Element);
+        handler = new org.exolab.castor.xml.XMLFieldHandler() {
+            @Override
+            public java.lang.Object getValue( java.lang.Object object ) 
+                throws IllegalStateException
+            {
+                AlarmData target = (AlarmData) object;
+                return target.getUpdateFieldList().toArray();
+            }
+            @Override
+            public void setValue( java.lang.Object object, java.lang.Object value) 
+                throws IllegalStateException, IllegalArgumentException
+            {
+                try {
+                    AlarmData target = (AlarmData) object;
+                    final List<org.opennms.netmgt.xml.eventconf.UpdateField> updateFields = new ArrayList<>();
+                    updateFields.addAll(target.getUpdateFieldList());
+                    target.setUpdateFieldList(updateFields);
+                } catch (java.lang.Exception ex) {
+                    throw new IllegalStateException(ex.toString());
+                }
+            }
+            public void resetValue(Object object) throws IllegalStateException, IllegalArgumentException {
+                try {
+                    AlarmData target = (AlarmData) object;
+                    target.setUpdateFieldList(new ArrayList<org.opennms.netmgt.xml.eventconf.UpdateField>(0));
+                } catch (java.lang.Exception ex) {
+                    throw new IllegalStateException(ex.toString());
+                }
+            }
+            @Override
+            public java.lang.Object newInstance(java.lang.Object parent) {
+                return new org.opennms.netmgt.xml.eventconf.UpdateField();
+            }
+        };
+        desc.setSchemaType("org.opennms.netmgt.xml.eventconf.UpdateField");
+        desc.setHandler(handler);
+        desc.setNameSpaceURI("http://xmlns.opennms.org/xsd/eventconf");
+        desc.setMultivalued(true);
+        addFieldDescriptor(desc);
+        addSequenceElement(desc);
+
+        //-- validation code for: _updateFieldList
+        fieldValidator = new org.exolab.castor.xml.FieldValidator();
+        fieldValidator.setMinOccurs(0);
+        { //-- local scope
+        }
+        desc.setValidator(fieldValidator);
     }
 
 
