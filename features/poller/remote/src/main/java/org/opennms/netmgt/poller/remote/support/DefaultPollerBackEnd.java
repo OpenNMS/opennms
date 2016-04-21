@@ -102,9 +102,6 @@ import org.springframework.util.Assert;
 public class DefaultPollerBackEnd implements PollerBackEnd, SpringServiceDaemon {
     private static final Logger LOG = LoggerFactory.getLogger(DefaultPollerBackEnd.class);
 
-    /** Constant <code>DEFAULT_BASENAME="response-time"</code> */
-    public static final String DEFAULT_BASENAME = "response-time";
-
     public static final int HEARTBEAT_STEP_MULTIPLIER = 2;
 
     private static class SimplePollerConfiguration implements PollerConfiguration, Serializable {
@@ -668,7 +665,7 @@ public class DefaultPollerBackEnd implements PollerBackEnd, SpringServiceDaemon 
 
         String dsName = getServiceParameter(svc, "ds-name");
         if (dsName == null) {
-            dsName = DEFAULT_BASENAME;
+            dsName = PollStatus.PROPERTY_RESPONSE_TIME;
         }
 
         String rrdBaseName = getServiceParameter(svc, "rrd-base-name");
