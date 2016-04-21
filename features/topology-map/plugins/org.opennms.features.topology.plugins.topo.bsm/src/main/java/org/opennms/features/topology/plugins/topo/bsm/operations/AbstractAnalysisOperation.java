@@ -108,6 +108,8 @@ public abstract class AbstractAnalysisOperation implements Operation {
         container.addCriteria(new DefaultVertexHopCriteria(target));
         container.setSemanticZoomLevel(0);
 
+        // Remove the current selection before redrawing the layout in order
+        // to avoid centering on the current vertex
         container.getSelectionManager().setSelectedVertexRefs(Collections.emptyList());
         container.getSelectionManager().setSelectedEdgeRefs(Collections.emptyList());
         container.redoLayout();
