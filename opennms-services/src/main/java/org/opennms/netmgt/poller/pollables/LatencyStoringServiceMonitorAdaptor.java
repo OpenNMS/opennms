@@ -68,9 +68,6 @@ public class LatencyStoringServiceMonitorAdaptor implements ServiceMonitor {
 
     private static final Logger LOG = LoggerFactory.getLogger(LatencyStoringServiceMonitorAdaptor.class);
 
-    /** Constant <code>DEFAULT_BASENAME="response-time"</code> */
-    public static final String DEFAULT_BASENAME = "response-time";
-
     public static final int HEARTBEAT_STEP_MULTIPLIER = 2;
 
     private ServiceMonitor m_serviceMonitor;
@@ -133,13 +130,13 @@ public class LatencyStoringServiceMonitorAdaptor implements ServiceMonitor {
 
     private void storeResponseTime(MonitoredService svc, Map<String, Number> entries, Map<String,Object> parameters) {
         String rrdPath     = ParameterMap.getKeyedString(parameters, "rrd-repository", null);
-        String dsName      = ParameterMap.getKeyedString(parameters, "ds-name", DEFAULT_BASENAME);
+        String dsName      = ParameterMap.getKeyedString(parameters, "ds-name", PollStatus.PROPERTY_RESPONSE_TIME);
         String rrdBaseName = ParameterMap.getKeyedString(parameters, "rrd-base-name", dsName);
         String thresholds  = ParameterMap.getKeyedString(parameters, "thresholding-enabled", "false");
 
-        if (!entries.containsKey(dsName) && entries.containsKey(DEFAULT_BASENAME)) {
-            entries.put(dsName, entries.get(DEFAULT_BASENAME));
-            entries.remove(DEFAULT_BASENAME);
+        if (!entries.containsKey(dsName) && entries.containsKey(PollStatus.PROPERTY_RESPONSE_TIME)) {
+            entries.put(dsName, entries.get(PollStatus.PROPERTY_RESPONSE_TIME));
+            entries.remove(PollStatus.PROPERTY_RESPONSE_TIME);
         }
 
         if (thresholds.equalsIgnoreCase("true")) {

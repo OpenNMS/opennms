@@ -188,7 +188,7 @@ final public class TrivialTimeMonitor extends AbstractServiceMonitor {
             skewProps.put("skew", skew);
 	    LOG.debug("persistSkew: Persisting time skew (value = {}) for this node", skew);
         }
-        skewProps.put("response-time", responseTime);
+        skewProps.put(PollStatus.PROPERTY_RESPONSE_TIME, responseTime);
         serviceStatus.setProperties(skewProps);
     }
 

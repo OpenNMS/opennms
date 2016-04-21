@@ -45,6 +45,8 @@ import javax.persistence.Transient;
 public class PollStatus implements Serializable {
     private static final long serialVersionUID = 3L;
 
+    public static final String PROPERTY_RESPONSE_TIME = "response-time";
+
     private Date m_timestamp = new Date();
 
     /**
@@ -445,7 +447,7 @@ public class PollStatus implements Serializable {
      */
     @Column(name="responseTime", nullable=true)
     public Double getResponseTime() {
-        Number val = getProperty("response-time");
+        Number val = getProperty(PROPERTY_RESPONSE_TIME);
         return (val == null ? null : val.doubleValue());
     	
     }
@@ -458,9 +460,9 @@ public class PollStatus implements Serializable {
      */
     public void setResponseTime(final Double responseTime) {
         if (responseTime == null) {
-            m_properties.remove("response-time");
+            m_properties.remove(PROPERTY_RESPONSE_TIME);
         } else {
-            m_properties.put("response-time", responseTime);
+            m_properties.put(PROPERTY_RESPONSE_TIME, responseTime);
         }
     }
 
