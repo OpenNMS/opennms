@@ -352,7 +352,20 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
 
             @Override
             public Component getComponent(GraphContainer container) {
-                return m_hudDisplay;
+                synchronized (m_currentHudDisplayLock) {
+                    m_currentHudDisplay = new HudDisplay();
+                    m_currentHudDisplay.setImmediate(true);
+                    m_currentHudDisplay.setProvider(m_graphContainer.getBaseTopology().getVertexNamespace().equals("nodes") ? "Linkd" : m_graphContainer.getBaseTopology().getVertexNamespace());
+                    m_currentHudDisplay.setVertexFocusCount(getFocusVertices(m_graphContainer));
+                    m_currentHudDisplay.setEdgeFocusCount(0);
+                    m_currentHudDisplay.setVertexSelectionCount(m_graphContainer.getSelectionManager().getSelectedVertexRefs().size());
+                    m_currentHudDisplay.setEdgeSelectionCount(m_graphContainer.getSelectionManager().getSelectedEdgeRefs().size());
+                    m_currentHudDisplay.setVertexContextCount(m_graphContainer.getGraph().getDisplayVertices().size());
+                    m_currentHudDisplay.setEdgeContextCount(m_graphContainer.getGraph().getDisplayEdges().size());
+                    m_currentHudDisplay.setVertexTotalCount(m_graphContainer.getBaseTopology().getVertexTotalCount());
+                    m_currentHudDisplay.setEdgeTotalCount(m_graphContainer.getBaseTopology().getEdges().size());
+                    return m_currentHudDisplay;
+                }
             }
 
             @Override
@@ -448,22 +461,15 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
                     .collect(Collectors.toList());
         }
 
-        private <T extends InfoPanelItem> List<T> findInfoPanelItems() {
+        private List<InfoPanelItem> findInfoPanelItems() {
             try {
-                List<T> serviceList = new ArrayList<>();
-                ServiceReference<?>[] allServiceReferences = m_bundlecontext.getAllServiceReferences(InfoPanelItem.class.getName(), null);
-                if (allServiceReferences != null) {
-                    for (ServiceReference eachReference : allServiceReferences) {
-                        T service = (T) m_bundlecontext.getService(eachReference);
-                        serviceList.add(service);
-                    }
-                }
-                return serviceList;
-
+                return m_bundlecontext.getServiceReferences(InfoPanelItem.class, null).stream()
+                        .map(eachRef -> m_bundlecontext.getService(eachRef))
+                        .collect(Collectors.toList());
             } catch (InvalidSyntaxException e) {
                 LOG.error(e.getMessage(), e);
+                return Collections.emptyList();
             }
-            return Collections.emptyList();
         }
 
         private void refreshInfoPanel() {
@@ -511,11 +517,12 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
     private Button m_selectBtn;
     private Button m_szlOutBtn;
     private LastUpdatedLabel m_lastUpdatedTimeLabel;
-    private HudDisplay m_hudDisplay;
     int m_settingFragment = 0;
     private SearchBox m_searchBox;
     private TabSheet tabSheet;
     private BundleContext m_bundlecontext;
+    private final Object m_currentHudDisplayLock = new Object();
+    private HudDisplay m_currentHudDisplay;
 
     private String getHeader(HttpServletRequest request) throws Exception {
         if(m_headerProvider == null) {
@@ -628,11 +635,9 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
     private boolean noAdditionalFocusCriteria() {
         Criteria[] crits = m_graphContainer.getCriteria();
         for(Criteria criteria : crits){
-            try{
-                CategoryHopCriteria catCrit = (CategoryHopCriteria) criteria;
+            if (criteria instanceof CategoryHopCriteria) {
                 return false;
-            } catch(ClassCastException e){}
-
+            }
         }
         return true;
     }
@@ -724,9 +729,6 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
 
         m_lastUpdatedTimeLabel = new LastUpdatedLabel();
         m_lastUpdatedTimeLabel.setImmediate(true);
-
-        m_hudDisplay = new HudDisplay();
-        m_hudDisplay.setImmediate(true);
 
         m_zoomLevelLabel.setHeight(20, Unit.PIXELS);
         m_zoomLevelLabel.setWidth(22, Unit.PIXELS);
@@ -1277,21 +1279,18 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
             }
 
         }
-        m_hudDisplay.setProvider(graphContainer.getBaseTopology().getVertexNamespace().equals("nodes") ? "Linkd" : graphContainer.getBaseTopology().getVertexNamespace());
-        m_hudDisplay.setVertexFocusCount(getFocusVertices(graphContainer));
-        m_hudDisplay.setEdgeFocusCount(0);
-        m_hudDisplay.setVertexSelectionCount(graphContainer.getSelectionManager().getSelectedVertexRefs().size());
-        m_hudDisplay.setEdgeSelectionCount(graphContainer.getSelectionManager().getSelectedEdgeRefs().size());
-        m_hudDisplay.setVertexContextCount(graphContainer.getGraph().getDisplayVertices().size());
-        m_hudDisplay.setEdgeContextCount(graphContainer.getGraph().getDisplayEdges().size());
-        m_hudDisplay.setVertexTotalCount(graphContainer.getBaseTopology().getVertexTotalCount());
-        m_hudDisplay.setEdgeTotalCount(graphContainer.getBaseTopology().getEdges().size());
 
         m_zoomLevelLabel.setValue(String.valueOf(graphContainer.getSemanticZoomLevel()));
         m_szlOutBtn.setEnabled(graphContainer.getSemanticZoomLevel() > 0);
         updateTabVisibility();
         updateTimestamp(System.currentTimeMillis());
         updateMenuItems();
+
+        synchronized (m_currentHudDisplayLock) {
+            if (m_currentHudDisplay != null) {
+                m_currentHudDisplay.setVertexFocusCount(getFocusVertices(m_graphContainer));
+            }
+        }
     }
 
     private int getFocusVertices(GraphContainer graphContainer) {
@@ -1339,8 +1338,12 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
 
     @Override
     public void selectionChanged(SelectionContext selectionContext) {
-        m_hudDisplay.setVertexSelectionCount(selectionContext.getSelectedVertexRefs().size());
-        m_hudDisplay.setEdgeSelectionCount(selectionContext.getSelectedEdgeRefs().size());
+        synchronized (m_currentHudDisplayLock) {
+            if (m_currentHudDisplay != null) {
+                m_currentHudDisplay.setVertexSelectionCount(selectionContext.getSelectedVertexRefs().size());
+                m_currentHudDisplay.setEdgeSelectionCount(selectionContext.getSelectedEdgeRefs().size());
+            }
+        }
 
         //After selection always set the pantool back to active tool
         if(m_panBtn != null && !m_panBtn.getStyleName().equals("toolbar-button down")){
