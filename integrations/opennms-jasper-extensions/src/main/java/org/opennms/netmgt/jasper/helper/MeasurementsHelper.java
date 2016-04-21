@@ -28,11 +28,20 @@
 
 package org.opennms.netmgt.jasper.helper;
 
-import com.google.common.base.Strings;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+
+import javax.xml.bind.JAXB;
 
 import org.opennms.core.spring.BeanUtils;
+import org.opennms.netmgt.measurements.model.QueryRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.common.base.Strings;
+
+import net.sf.jasperreports.engine.JRException;
 
 /**
  * Provides helper methods for the {@link org.opennms.netmgt.jasper.measurement.MeasurementDataSource}.
@@ -82,6 +91,26 @@ public abstract class MeasurementsHelper {
         } catch (Exception ex) {
             LOG.warn("Error creating bean 'springHelper'. Creating empty SpringHelper");
             return new SpringHelper();
+        }
+    }
+
+    public static QueryRequest unmarshal(String query) throws JRException {
+        try (ByteArrayInputStream input = new ByteArrayInputStream(query.getBytes())) {
+            QueryRequest request = JAXB.unmarshal(input, QueryRequest.class);
+            return request;
+        } catch (IOException e) {
+            LOG.error("An error occurred while unmarshalling the query string", e);
+            throw new JRException(e);
+        }
+    }
+
+    public static String marshal(QueryRequest queryRequest) throws JRException {
+        try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
+            JAXB.marshal(queryRequest, outputStream);
+            return outputStream.toString();
+        } catch (IOException e) {
+            LOG.error("An error occurred while marshalling the query request", e);
+            throw new JRException(e);
         }
     }
 }
