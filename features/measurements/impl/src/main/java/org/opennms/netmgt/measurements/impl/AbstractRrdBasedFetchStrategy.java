@@ -64,7 +64,7 @@ public abstract class AbstractRrdBasedFetchStrategy implements MeasurementFetchS
      */
     @Override
     public FetchResults fetch(long start, long end, long step, int maxrows,
-            Long interval, Long heartbeat, List<Source> sources) throws Exception {
+                              Long interval, Long heartbeat, List<Source> sources, boolean relaxed) throws Exception {
 
         final Map<String, Object> constants = Maps.newHashMap();
 
@@ -75,6 +75,7 @@ public abstract class AbstractRrdBasedFetchStrategy implements MeasurementFetchS
             final OnmsResource resource = m_resourceDao.getResourceById(source
                     .getResourceId());
             if (resource == null) {
+                if (relaxed) continue;
                 LOG.error("No resource with id: {}", source.getResourceId());
                 return null;
             }
@@ -90,6 +91,7 @@ public abstract class AbstractRrdBasedFetchStrategy implements MeasurementFetchS
             }
 
             if (rrdGraphAttribute == null) {
+                if (relaxed) continue;
                 LOG.error("No attribute with name: {}", source.getAttribute());
                 return null;
             }
@@ -105,7 +107,22 @@ public abstract class AbstractRrdBasedFetchStrategy implements MeasurementFetchS
         }
 
         // Fetch
-        return fetchMeasurements(start, end, step, maxrows, rrdsBySource, constants);
+        return fetchMeasurements(start, end, step, maxrows, rrdsBySource, constants, sources, relaxed);
+    }
+
+    /**
+     *  Performs the actual retrieval of the values from the RRD/JRB files.
+     *  If relaxed is <code>true</code> the {@link FetchResults} is populated with {@link Double#NaN} for all missing
+     *  entries.
+     */
+    private FetchResults fetchMeasurements(long start, long end, long step, int maxrows,
+                                           Map<Source, String> rrdsBySource, Map<String, Object> constants,
+                                           List<Source> sources, boolean relaxed) throws RrdException {
+        FetchResults fetchResults = fetchMeasurements(start, end, step, maxrows, rrdsBySource, constants);
+        if (relaxed) {
+            Utils.fillMissingValues(fetchResults, sources);
+        }
+        return fetchResults;
     }
 
     /**

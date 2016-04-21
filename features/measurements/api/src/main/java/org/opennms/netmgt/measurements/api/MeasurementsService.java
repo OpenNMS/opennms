@@ -71,7 +71,8 @@ public class MeasurementsService {
                     request.getMaxRows(),
                     request.getHeartbeat(),
                     request.getInterval(),
-                    request.getSources());
+                    request.getSources(),
+                    request.isRelaxed());
         } catch (Exception e) {
             throw new FetchException(e, "Fetch failed: {}", e.getMessage());
         }
