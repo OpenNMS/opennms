@@ -29,6 +29,7 @@
 package org.opennms.features.topology.plugins.topo.bsm.info;
 
 import java.util.Arrays;
+import java.util.Collections;
 
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.info.VertexInfoPanelItem;
@@ -82,6 +83,11 @@ public class SimulationModeReductionKeyInfoPanelItem extends VertexInfoPanelItem
                 currentSetStatusTo = new SetStatusToCriteria(vertex.getReductionKey(), selectedStatus);
                 container.addCriteria(currentSetStatusTo);
             }
+
+            // Remove the current selection before redrawing the layout in order
+            // to avoid centering on the current vertex
+            container.getSelectionManager().setSelectedVertexRefs(Collections.emptyList());
+            container.getSelectionManager().setSelectedEdgeRefs(Collections.emptyList());
             container.redoLayout();
         });
         formLayout.addComponent(dropdown);
