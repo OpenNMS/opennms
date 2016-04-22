@@ -415,7 +415,7 @@ public class HttpClientWrapper implements Closeable {
                 requestConfigBuilder.setConnectTimeout(m_connectionTimeout);
             }
             if (m_retries != null) {
-                httpClientBuilder.setRetryHandler(new HttpRequestRetryOnExceptionHandler(m_retries, true));
+                httpClientBuilder.setRetryHandler(new HttpRequestRetryOnExceptionHandler(m_retries, false));
             }
             if (m_sslContext.size() != 0) {
                 configureSSLContext(httpClientBuilder);
