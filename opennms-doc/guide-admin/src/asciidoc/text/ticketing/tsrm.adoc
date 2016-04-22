@@ -53,6 +53,7 @@ Following table shows mapping between OpenNMS ticket and TSRM Incident
 |  Ticket Field           | TSRM Incident Field
 | `id`                    | `TICKETID`
 | `state`                 | `STATUS`
+| `summary`               | `DESCRIPTION`
 | `details`               | `DESCRIPTIONLONGDESCRIPTION`
 | `user`                  | `REPORTEDBY`
 | `siteId`                | `SITEID`
