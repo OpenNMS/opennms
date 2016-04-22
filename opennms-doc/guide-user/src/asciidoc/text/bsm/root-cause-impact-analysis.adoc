@@ -1,0 +1,12 @@
+
+// Allow GitHub image rendering
+:imagesdir: ../../images
+
+[[gu-bsm-rc-imp-analysis]]
+=== Root cause and Impact Analysis
+
+Introduction and idea
+
+Image with complex hiearchy for root cause
+
+Image with complex hiearchy for impact

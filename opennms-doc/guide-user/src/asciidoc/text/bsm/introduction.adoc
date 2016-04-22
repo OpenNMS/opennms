@@ -2,44 +2,58 @@
 // Allow GitHub image rendering
 :imagesdir: ../../images
 
-<-- from guide
-_OpenNMS_ provides a very powerful and fine grained service assurance layer based on the _Pollerd_ daemon.
-The service assurance layer monitors and tracks the status of nodes, interfaces and services.
-The status of a managed entity is determined based on related events, alarms and outages.
-However, this approach treats every element of the system individually and there is no concept of relationships between different nodes or services in the service assurance layer.
+While OpenNMS detects issues in your network by device, interface or service, the _Business Service Monitoring (BSM)_ takes one step further.
+The _BSM_ components allows to monitor and model high level _Business Services (BS)_ and helps to quickly identify most critical problems affecting your services.
+With the _BSM_ feature it is possible to model high level _BS_ context around the technical _Service Monitors_ provided in _OpenNMS_.
+To indicate which _BS_ is effected an _Operational Status_ is calculated.
 
-The _Business Service Monitoring_ (BSM) feature adds the ability to model relationships between managed entities.
-It combines sets of managed entities into hierarchically structured _Business Services_ that represent a high level view on its elements.
-The _Business Service_ operational status is calculated from the alarm states of its associated elements determined by the service assurance layer.
-The operational status of a _Business Service_ can be checked at any time.
-If the operational status of a _Business Service_ is changing corresponding events are fired.
+As an example scenario a company runs a shop over the internet.
+The customer enter through a login system, select items, place them in the shopping cart and checkout using a payment system.
+The whole service is provided by a few web servers and access data from databases.
+To monitor the status of the databases, a _SQL_ service monitor on each database server is configured.
+For testing the web servers a _HTTP_ service monitor is used for each of them.
+Covering the overall functionality a _Page Sequence Monitor (PSM)_ is used to test the login, shop and payment workflow through the provided web portal.
+A possible representation of the whole system hierarchy is shown in figure <<ug-bsm-example-web-shop,Example scenario for a web shop>>.
 
---> from admin guide
+[[ug-bsm-example-web-shop]]
+.Example scenario for a web shop
+image:bsm/01_bsm-example-scenario.png[]
 
-The _Business Service Monitoring (BSM)_ component helps to quickly identify most critical problems affecting your services.
-While OpenNMS detects issues in your network on a per network device level, the _BSM_ takes one step further.
-It allows to model _BS_ on a more abstract level independent of network nodes, services or interfaces.
+To be able to model this scenarios the _BSM_ functions can be used.
+The following section describes the components, concepts and functions.
+For configuration and changing the behavior please go to the section _Business Service Monitoring_ in the _Administration Guide_.
 
-The _Business Service_ status is driven by _Alarms_ and can contain other _Business Services_ to build a _Business Service Hierarchy_.
-A _BS_ is represented as an _Operational Status_ and
+=== Business Service Hierarchy
 
-_Oper_ status is used to indicate the impact on a _Business Service_ based on outage- or threshold alarms from your monitored network.
-In this hierarchy there is also a possibility to identify the root cause which affects this service.
+To model the Business Service Hierarchy t
 
-The _Business Service Monitoring_ has the following components:
 
-* _BSMD_: The component to calculate the status for the _Business Service Hierarchy_
-* _Business Service Editor_: Component in the admin web application which allows you to create, update or delete _Business Services_
-* _Topology View for Business Services_: Visual representation of the _Business Service Hiearchy_ as a component of the _Topology User Interface_.
-* _BSM ReST API_: ReST based API to create, update or query _Business Services_ with external applications
+_BS_ can depend on each other and are handled as a _Business Service Hierarchy_ which is visualized in the _Topology User Interface_.
+Based on the hierarchy the _Operational Status_ is calculated with _Map_ and _Reduce Functions_.
+The _Map Function_ influences which _Severity_ from the _Edge_ is used as an input of the _BS_.
+A _Reduce Function_ is a function applied on all inputs of the _BS_ and evaluates also _Weights_ to calculate the _Operational Status_.
 
-NOTE: This guide is focused on basic concepts and how to use it from a users perspective.
-      Changing the behavior and configuration please go to the <<ga-bsm, Administrative Guide>>.
-      If you want to use the _ReST API_ or want to enhance the functionality with code, plsee see the <<dg-bsm, Developers Guide>>.
 
-[[ug-bsm-intro-business-service]]
-.Example for a Business Service
-image::IMAGE-HERE.png[]
+The _Topology User Interface_ allows to reduce and expand the components shown in _Business Service Hierarchy_ using the _Semantic Zoom Level_.
+Higher _Semantic Zoom Level_ defines how many _Neighbors_ are shown related to the elements which are in _Focus_.
+The number can be interpreted as how many hops from the _Focus_ should be shown on the _Topology User Interface_.
 
-The _Business Service_ in <<ug-bsm-intro-business-service, Figure above>> shows an example for a web application.
-With
+[[gu-bsm-hierarchy-image]]
+.Business Service Hierarchy components
+image::bsm/02_bsm-service-hierarchy.png[]
+
+<1> _Business Service_ on highest level which depends on other _Monitored Services_ or _Alarms_
+<2> _Business Service_ as _Edge_ to aggregate an _Operational Status_
+<3> _IP Service_ as _Edge_ as input to calculate the _Operational Status_ of the high level _BS_
+<4> _Reduce Key_ as _Edge_ which classifies in this example _SSH Authentication failures_ coming from _Syslog_.
+<5> _Reduce Key_ which is auto generated by using _IP Service_ as _Edge_
+
+To add an additional selected _BS_ or _Edge_ to _Focus_ use in the context menu _Add to Focus_.
+If you want to have a specific _BS_ or _Edge_ as a single focus use _Set as Focal Point_.
+
+
+The _Operational Status_ of a _BS_ is calculated from _Alarms_ and the _Severity_ driven from the monitoring from _OpenNMS_.
+To reflect more granularity just as _up_ or _down_, the _Operational Status_ uses the _Severities_, i.e. _Normal_, _Warning_, _Minor_, _Major_, _Critical_.
+The class of _Alarms_ used to calculate the _Operational Status_ are defined with _Reduce Keys_ and are represented as _Edges_.
+
+Some
