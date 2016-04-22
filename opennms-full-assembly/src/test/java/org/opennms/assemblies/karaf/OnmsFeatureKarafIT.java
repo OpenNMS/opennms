@@ -436,4 +436,10 @@ public class OnmsFeatureKarafIT extends KarafTestCase {
 		installFeature("spring-webflow");
 		System.out.println(executeCommand("features:list -i"));
 	}
+
+    @Test
+    public void testInstallFeatureTsrmTroubleticketer() {
+        installFeature("tsrm-troubleticketer");
+        System.out.println(executeCommand("features:list -i"));
+    }
 }

@@ -202,6 +202,9 @@ include::text/ticketing/introduction.adoc[]
 // JIRA Ticketer
 include::text/ticketing/jira.adoc[]
 
+// TSRM Ticketer
+include::text/ticketing/tsrm.adoc[]
+
 == Plugin Manager
 include::text/plugin-manager/Introduction.adoc[]
 include::text/plugin-manager/SettingKarafInstanceData.adoc[]

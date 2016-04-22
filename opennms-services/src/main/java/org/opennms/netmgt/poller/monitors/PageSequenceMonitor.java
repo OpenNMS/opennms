@@ -63,6 +63,7 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.client.utils.URLEncodedUtils;
+import org.apache.http.conn.ConnectTimeoutException;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.protocol.HTTP;
 import org.apache.http.protocol.HttpContext;
@@ -95,7 +96,6 @@ import org.slf4j.LoggerFactory;
  */
 @Distributable
 public class PageSequenceMonitor extends AbstractServiceMonitor {
-
 
     private static final Logger LOG = LoggerFactory.getLogger(PageSequenceMonitor.class);
 
@@ -308,9 +308,8 @@ public class PageSequenceMonitor extends AbstractServiceMonitor {
         }
 
         void execute(final HttpClientWrapper parentClientWrapper, final MonitoredService svc, final Properties sequenceProperties) {
-            final HttpClientWrapper clientWrapper = parentClientWrapper.duplicate();
             CloseableHttpResponse response = null;
-            try {
+            try (final HttpClientWrapper clientWrapper = parentClientWrapper.duplicate()) {
                 URI uri = getURI(svc);
                 PageSequenceHttpUriRequest method = getMethod(uri);
 
@@ -377,7 +376,8 @@ public class PageSequenceMonitor extends AbstractServiceMonitor {
 
                 int code = response.getStatusLine().getStatusCode();
                 if (!getRange().contains(code)) {
-                    throw new PageSequenceMonitorException("response code out of range for uri:" + uri + ".  Expected " + getRange() + " but received " + code);
+                    LOG.debug("Response code out of range for URI:" + uri + ".  Expected " + getRange() + " but received " + code);
+                    throw new PageSequenceMonitorException("Response code out of range for URI:" + uri + ".  Expected " + getRange() + " but received " + code);
                 }
 
                 String responseString = EntityUtils.toString(response.getEntity());
@@ -390,8 +390,8 @@ public class PageSequenceMonitor extends AbstractServiceMonitor {
                     }
                     Matcher matcher = getLocationPattern().matcher(locationHeader.getValue());
                     if (!matcher.find()) {
-                        LOG.debug("failed to find '{}' in Location: header at {}:\n{}", getLocationPattern(), uri, locationHeader.getValue(), new Exception());
-                        throw new PageSequenceMonitorException("failed to find '" + getLocationPattern() + "' in Location: header at " + uri);
+                        LOG.debug("Failed to find '{}' in Location: header at {}:\n{}", getLocationPattern(), uri, locationHeader.getValue(), new Exception());
+                        throw new PageSequenceMonitorException("Failed to find '" + getLocationPattern() + "' in Location: header at " + uri);
                     }
                 }
 
@@ -405,21 +405,28 @@ public class PageSequenceMonitor extends AbstractServiceMonitor {
                 if (getSuccessPattern() != null) {
                     Matcher matcher = getSuccessPattern().matcher(responseString);
                     if (!matcher.find()) {
-                        LOG.debug("failed to find '{}' in page content at {}:\n{}", getSuccessPattern(), uri, responseString.trim(), new Exception());
-                        throw new PageSequenceMonitorException("failed to find '" + getSuccessPattern() + "' in page content at " + uri);
+                        LOG.debug("Failed to find '{}' in page content at {}:\n{}", getSuccessPattern(), uri, responseString.trim(), new Exception());
+                        throw new PageSequenceMonitorException("Failed to find '" + getSuccessPattern() + "' in page content at " + uri);
                     }
                     updateSequenceProperties(sequenceProperties, matcher);
                 }
 
             } catch (URISyntaxException e) {
-                throw new IllegalArgumentException("unable to construct URL for page", e);
+                throw new IllegalArgumentException("Unable to construct URL for page", e);
+            } catch (ConnectTimeoutException e) {
+                // NMS-8098: Don't unwrap these exceptions, they have a better message
+                // than the root cause exceptions do
+                LOG.debug(e.getMessage(), e);
+                throw new PageSequenceMonitorException(e.getMessage(), e);
             } catch (IOException e) {
-                LOG.debug("I/O Error", e);
-                throw new PageSequenceMonitorException("I/O Error", e);
-            } finally {
-                if (clientWrapper != null) {
-                    clientWrapper.close(response);
+                // NMS-8098: Unwrap the exception so we can get the most accurate
+                // root cause message
+                Throwable cause = e;
+                while (cause.getCause() != null) {
+                     cause = cause.getCause();
                 }
+                LOG.debug(cause.getMessage(), cause);
+                throw new PageSequenceMonitorException(cause.getMessage(), cause);
             }
         }
 
@@ -474,14 +481,14 @@ public class PageSequenceMonitor extends AbstractServiceMonitor {
                     if (!(address instanceof Inet4Address)) throw new UnknownHostException();
                     host = InetAddressUtils.str(address);
                 } catch (UnknownHostException e) {
-                    throw new PageSequenceMonitorException("failed to find IPv4 address for hostname: " + host);
+                    throw new PageSequenceMonitorException("Failed to find IPv4 address for hostname: " + host);
                 }
             } else if (m_page.getRequireIPv6()) {
                 try {
                     InetAddress address = DnsUtils.resolveHostname(host, true);
                     host = "[" + InetAddressUtils.str(address) + "]";
                 } catch (UnknownHostException e) {
-                    throw new PageSequenceMonitorException("failed to find IPv6 address for hostname: " + host);
+                    throw new PageSequenceMonitorException("Failed to find IPv6 address for hostname: " + host);
                 }
             } else {
                 // Just leave the hostname as-is, let httpclient resolve it using the platform preferences
@@ -663,7 +670,7 @@ public class PageSequenceMonitor extends AbstractServiceMonitor {
     public PollStatus poll(final MonitoredService svc, final Map<String, Object> parameterMap) {
         PollStatus serviceStatus = PollStatus.unavailable("Poll not completed yet");
 
-        Map<String,Number> responseTimes = new LinkedHashMap<String,Number>();
+        final Map<String,Number> responseTimes = new LinkedHashMap<String,Number>();
 
         SequenceTracker tracker = new SequenceTracker(parameterMap, DEFAULT_SEQUENCE_RETRY, DEFAULT_TIMEOUT);
         for(tracker.reset(); tracker.shouldRetry() && !serviceStatus.isAvailable(); tracker.nextAttempt() ) {
@@ -673,23 +680,28 @@ public class PageSequenceMonitor extends AbstractServiceMonitor {
 
                 clientWrapper = parms.createHttpClient();
 
-                tracker.startAttempt();
-                responseTimes.put("response-time", Double.NaN);
-                parms.getPageSequence().execute(clientWrapper, svc, responseTimes);
+                // TODO: Is it normal for monitors to set 'response-time' to NaN
+                // before the poll is executed?
+                responseTimes.put(PollStatus.PROPERTY_RESPONSE_TIME, Double.NaN);
 
+                tracker.startAttempt();
+                parms.getPageSequence().execute(clientWrapper, svc, responseTimes);
                 double responseTime = tracker.elapsedTimeInMillis();
+
                 serviceStatus = PollStatus.available();
-                responseTimes.put("response-time", responseTime);
-                serviceStatus.setProperties(responseTimes);
+                // Update response time with the actual execution time
+                responseTimes.put(PollStatus.PROPERTY_RESPONSE_TIME, responseTime);
 
             } catch (PageSequenceMonitorException e) {
                 serviceStatus = PollStatus.unavailable(e.getMessage());
-                serviceStatus.setProperties(responseTimes);
             } catch (IllegalArgumentException e) {
                 LOG.error("Invalid parameters to monitor", e);
                 serviceStatus = PollStatus.unavailable("Invalid parameter to monitor: " + e.getMessage() + ".  See log for details.");
-                serviceStatus.setProperties(responseTimes);
+            } catch (Throwable e) {
+                LOG.error("Unexpected exception: " + e.getMessage(), e);
+                serviceStatus = PollStatus.unavailable("Unexpected exception: " + e.getMessage());
             } finally {
+                serviceStatus.setProperties(responseTimes);
                 IOUtils.closeQuietly(clientWrapper);
             }
         }
