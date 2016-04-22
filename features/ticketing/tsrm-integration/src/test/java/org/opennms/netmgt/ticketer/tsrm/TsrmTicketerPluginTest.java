@@ -42,6 +42,7 @@ public class TsrmTicketerPluginTest {
         ticket.addAttribute("siteId", "SHSEU");
         ticket.addAttribute("source", "OpenNMS");
         ticket.setUser("openNMS");
+        ticket.setSummary("openNMS summary");
         ticket.setState(Ticket.State.OPEN);
 
         tsrmTicket.saveOrUpdate(ticket);
@@ -50,6 +51,7 @@ public class TsrmTicketerPluginTest {
 
         Ticket newTicket = tsrmTicket.get(ticket.getId());
         newTicket.setState(Ticket.State.CLOSED);
+        newTicket.setSummary("new openNMS summary");
         newTicket.setDetails("new OpenNMS Description");
         newTicket.setUser("oNMS");
 
@@ -59,6 +61,7 @@ public class TsrmTicketerPluginTest {
 
         // When retrieving state, comes as NEW
         // assertEquals(newTicket.getState(), newerTicket.getState());
+        assertEquals(newTicket.getSummary(), newerTicket.getSummary());
         assertEquals(newTicket.getDetails(), newerTicket.getDetails());
         assertEquals(newTicket.getUser(), newerTicket.getUser());
         assertEquals(ticket.getAttribute("siteId"),
