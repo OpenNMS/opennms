@@ -1,0 +1,14 @@
+
+// Allow GitHub image rendering
+:imagesdir: ../../images
+
+[[gu-bsm-sim-mode]]
+=== Simulation Mode
+
+Introduction why simulation mode
+
+Enable simulation mode
+
+What is inherite state vs. reset state
+
+Change state
