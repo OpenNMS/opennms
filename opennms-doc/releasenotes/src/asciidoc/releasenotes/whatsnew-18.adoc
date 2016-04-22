@@ -1,0 +1,8 @@
+[[releasenotes-18]]
+== OpenNMS 18
+
+=== Important Upgrade Notes
+
+* *Upgrade Custom Icon Definitions*: Custom Icon Definitions in the Topology Map are now handled differently.
+  Please migrate existing custom icons.
+  The link:http://docs.opennms.org/opennms/18.0.0/guide-admin/guide-admin.html#_icons[OpenNMS Administrators Guide] covers this topic in more detail.
