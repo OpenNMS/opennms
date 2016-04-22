@@ -9,7 +9,7 @@
       <button class="btn btn-default" type="button" ng-click="generateForeignId(nodeForm.foreignId)" ng-disabled="!isNew"><span class="glyphicon glyphicon-tag"/> Auto-generate</button>
     </span>
   </div>
-  <p ng-show="nodeForm.foreignId.$invalid" class="help-block">Foreign ID is required and must be unique within the requisition.</p>
+  <p ng-show="nodeForm.foreignId.$invalid" class="help-block">Foreign ID is required and must be unique within the requisition, and it cannot contain, :, /, \, ?, &amp;, *, ', "</p>
 </div>
 <div class="form-group" ng-class="{ 'has-error' : nodeForm.nodeLabel.$invalid }">
   <label class="control-label" for="nodeLabel">Node Label</label>
