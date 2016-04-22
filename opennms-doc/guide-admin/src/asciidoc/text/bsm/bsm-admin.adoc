@@ -2,41 +2,30 @@
 // Allow GitHub image rendering
 :imagesdir: ../../../images
 
-This section describes how to model and configure _Business Services_ and the dependency graph to build hierarchies.
+This section describes how to model and configure _Business Services (BS)_.
 
-The _Business Service Monitoring_ has the following components:
+_Business Service Monitoring (BSM)_ includes the following components:
 
-* _BSMD_: The component to calculate the status for the _Business Service Hierarchy_
-* _Business Service Editor_: Component in the admin web application which allows you to create, update or delete _Business Services_
-* _Topology View for Business Services_: Visual representation of the _Business Service Hiearchy_ as a component of the _Topology User Interface_.
-* _BSM ReST API_: ReST based API to create, update or query _Business Services_ with external applications
+* _Business Service Monitoring Daemon (BSMD)_: Maintains and drives the state of all _BS_
+* _Business Service Editor_: Web application which allows you to create, update or delete _BS_
+* _Topology View for Business Services_: Visual representation of the _Business Service Hierarchy_ as a component of the _Topology User Interface_.
+* _BSM ReST API_: ReST based API to create, read, update or delete _BS_
 
-The following sections describe the usage and components of _BSM_ in more detail.
+The following sections describe how these components are used in further detail:
 
 === Business Service Definition
 
 
-A _Business Service_ is the building block which represents a high level _BS_ in the organization, e.g. a web portal for placing orders or something like the Wireless network access in a Hotel.
-The _Operational Status_ of a specific _BS_ it is calculated by _Edges_ which is a set of _Alarms_ defined with _Reduction Keys_.
-A _Reduction Key_ is used to generate an _Alarm_, e.g. from a specific monitored service, threshold, SNMP trap or Syslog related _Alarm_.
+_Business Services_ are used to represent services provided by the business e.g. a web portal for placing orders or wireless network access in a hotel.
+_BS_ are defined with a set of dependencies called _Edges_ and _Map/Reduce_ functions which define how the _Operational Status_ of the _BS_ is derived from it's _Edges_.
+_BS_ ultimately rely on a set of _Reduction Keys_ which are used to reference specific instances of an _Alarm_, e.g. a specific monitored service, threshold or SNMP trap.
 
-The _BS_ is defined with the following components:
+A _BS_ is defined with the following components:
 
-* _Business Service Name_: Arbitrary name of the _BS_
-* _Reduce Function_: Function to aggregate the _Operational Status_ for this _BS_ with optional configuration parameter, e.g. _Highest Severity_
-* _Edges_: A set of _Reduction Keys_ which is used to calculate the _Operational Status_ of the _BS_
-* _Attributes_: Additional key value pair which can be assigned to a specific _BS_
-
-----
-
-The _Business Service_ is modeled through a _Business Service Definition_ and is a composition of _Reduction Keys_.
-A _Reduction Key_ is used to generate an _Alarm_, e.g. from a specific monitored service, threshold, SNMP trap or Syslog related _Alarm_.
-The _BS_ is defined with the following components:
-
-* _Business Service Name_: Arbitrary name of the _BS_
-* _Reduce Function_: Function to aggregate the _Operational Status_ for this _BS_ with optional configuration parameter, e.g. _Highest Severity_
-* _Edges_: A set of _Reduction Keys_ which is used to calculate the _Operational Status_ of the _BS_
-* _Attributes_: Additional key value pair which can be assigned to a specific _BS_
+* _Business Service Name_: A unique name used to identify the _BS_
+* _Edges_: A set of elements on which this _BS_ relies which can include other _BS_, or _Reduction Keys_.
+* _Reduce Function_: Function used to aggregate the _Mapped_ status of all the edges, into a single status. Specific functions may take additional parameters.
+* _Attributes_: Optional key/value pairs that can be used to tag or identify the service.
 
 ==== Reduce Functions
 
@@ -61,10 +50,10 @@ In the table below you find a configuration where _Web Server 3_ is weighted 3 t
 [options="header, autowidth"]
 |===
 | Name       | Weight | Weight Factor | Input Severity | Operational Status | Critical | Major | Minor | Warning | Normal
-| Web-ICMP-1 |   1    |     0,2       |    Critical    |      Critical      |    0,2   |  0,2  |  0,2  |   0,2   |  0,2
-| Web-ICMP-2 |   1    |     0,2       |     Normal     |       Normal       |    0     |  0    |  0    |   0     |  0,2
-| Web-ICMP-3 |   3    |     0,6       |    Warning     |      Warning       |    0     |  0    |  0    |   0,6   |  0,6
-| Total      |        |     1,0       |                |                    |    0,2   |  0,2  |  0,2  |   0,8   |  1
+| Web-ICMP-1 |   1    |     0.2       |    Critical    |      Critical      |    0.2   |  0.2  |  0.2  |   0.2   |  0.2
+| Web-ICMP-2 |   1    |     0.2       |     Normal     |       Normal       |    0     |  0    |  0    |   0     |  0.2
+| Web-ICMP-3 |   3    |     0.6       |    Warning     |      Warning       |    0     |  0    |  0    |   0.6   |  0.6
+| Total      |        |     1.0       |                |                    |    0.2   |  0.2  |  0.2  |   0.8   |  1
 | Percentage |        |     100%      |                |                    |    20%   |  20%  |  20%  |   80%   |  100%
 |===
 
@@ -73,20 +62,27 @@ In this case the _Operational Status_ is set to _Warning_ because the first thre
 
 ==== Edges
 
-The _BS_ dependency graph has _Edges_ which are represented through a _Reduction Key_.
-It allows to model any kind of an _Alarm_ as an _input_ for a _BS_.
-As _Edges_ the following types can be used:
+The following types can be used:
 
-* _Child Service_: Another already defined _Business Service_ where the current _BS_ depends on
-* _IP Service_: Represents an alarm based on a monitored _IP Service_ and is defined by a set of _Reduction Keys_ for _nodeLostService_, _interfaceDown_ and _nodeDown_
-* _Reduction Key_: Set a user defined custom _Reduction Key_ for any _Alarm_, e.g. _SNMP Trap_ or _Threshold_ based Alarm
+* _Child Service_: A reference to an existing _Business Service_ on which to depend
+* _IP Service_: A convenient way to refer to the alarms that can be generated by a monitored _IP Service_. This will automatically provided edges for the _nodeLostService_, _interfaceDown_ and _nodeDown_ reductions keys of the specified service.
+* _Reduction Key_: A resolved _Reduction Key_ used to refer to a specific _Alarm_, e.g. generated by a _SNMP Trap_ or _Threshold_ violation
+
+TIP: If you need help determining the reduction key used by alarm, trigger the alarm in question and pull the reduction key from the _Alarm_ details page.
+
+All edge types have the following parameters:
+
+* _Map Function_: The associated _Map Function_ for this _Edge_
+* _Weight_: The relative _Weight_ of this edge. Used by certain _Reduce Functions_.
+
+Both _IP Service_ and _Reduction Key_ type edges also support a _Friendly Name_ parameter which gives the user control on how the edge is labeled in the _Topology User Interface_.
 
 ===== Edge with Child Services
 
-The _Child Service_ represents is any other defined _BS_ and is used to model a _BS_ dependency.
+The _Child Service_ represents an existing _BS_ and is used to model a _BS_ dependency.
 
-IMPORTANT: The _BS dependency graph_ is a directed circle free graph definition.
-           A _BS_ can be only selected once as dependency in a given _BS Hierarchy_.
+IMPORTANT: The _BS Dependency Graph_ is a directed acyclic graph.
+           This mean that a _BS_ can be only selected once as dependency in a given _BS Hierarchy_.
 
 ===== Edge with IP Services
 
@@ -100,19 +96,16 @@ To make it easier to model this use case the _IP Service_ generates the followin
 * `uei.opennms.org/nodes/interfaceDown:%nodeId%:%ipAddress%`: Matches _Alarms_ when the given _IP Interface_ of the _Monitored Service_ goes down
 * `uei.opennms.org/nodes/nodeDown:%nodeId%`: Matches _Alarms_ when the given _Node_ of the _Monitored Service_ goes down
 
-===== Edges with custom Reduction Keys
+===== Edges with Reduction Keys
 
-If the _Operational Status_ of a _BS_ is be based from any other generated _Alarm Severity_ based on the _Reduction Key_.
-The _Reduction Key_ as an _Edge_ has the following parameter:
-
-* _Reduction Key_: The _Reduction Key_ in syntax of _Alarm Parameter_ enclosed with `%` and separated with `:`, e.g. `%uei.opennms.org/nodes/nodeLostService%:%nodeId%:%ipAddress%`
-* _Friendly Name_: An arbitrary name for this _Edge_
-* _Map Function_: The associated _Map Function_ for this _Edge_
-* _Weight_: The _Weight_ for this _Edge_ is evaluated in case multiple _Edges_ for the _BS_ are defined
+The _Reduction Key_ edge is used to refer to specific instance of alarms.
+When an alarm with the given _Reduction Key_ is present, the alarms' severity will be used to calculate the _Operational Status_ of the _BS_.
 
 ===== Map Functions
 
-The mapping defines which _Severity_ is used to calculate the _Operational Status_ of the _BS_ and is defined in _Map Functions_ listed below:
+The _Map Functions_ define how the _Severity_ of the edge will be used in the _Reduce Function_ of the parent when calculating the _Operational Status_.
+
+The available _Map Functions_ are:
 
 .Calculation of the _Operational Status_ with _Map Functions_
 [options="header, autowidth"]
@@ -127,16 +120,16 @@ The mapping defines which _Severity_ is used to calculate the _Operational Statu
 
 ==== Attributes
 
-Each _Business Services_ can contain a key value pair as additional attributes.
-It allows to enrich the _BS_ with additional information.
-The _Attributes_ can be used in further workflows e.g. generating _Notifications_ or _BS_ related _Alarms_.
+Each _Business Service_ can contain a list of optional key/value attributes.
+These can be used to identify or tag the _BS_, and may be reference in other workflows.
+These attributes do not affect the dependencies or the status calculation of the _BS_.
 
-
+TIP: Attributes can be used to filter _BS_ in _Ops Board_ dashlets.
 
 === Business Service Daemon
 
-The calculation of the _Operational Status_ of the _BS_ is driven by the _Business Service Daemon_ (bsmd).
-It is responsible for tracking the operational status of all _BS_ and for sending events in case of operational status changes.
+The calculation of the _Operational Status_ of the _BS_ is driven by the _Business Service Monitoring Daemon_ (bsmd).
+The daemon is responsible for tracking the operational status of all _BS_ and for sending events in case of operational status changes.
 Every time the configuration of a _Business Service_ is changed a reload of the daemon's configuration is required.
 This includes changes like the name of the _Business Service_ or its attributes as well as changes regarding the _Reduction Keys_, contained _Business Services_ or _IP Services_.
 The _bsmd_ configuration can be reloaded with the following mechanisms:
