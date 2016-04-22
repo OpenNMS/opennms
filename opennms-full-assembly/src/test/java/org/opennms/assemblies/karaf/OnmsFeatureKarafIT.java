@@ -426,6 +426,7 @@ public class OnmsFeatureKarafIT extends KarafTestCase {
 		System.out.println(executeCommand("features:list -i"));
 	}
 	@Test
+	@Ignore("Needs javax.servlet version 2.6")
 	public void testInstallFeatureSpringSecurity32() {
 		installFeature("spring-security32");
 		System.out.println(executeCommand("features:list -i"));
