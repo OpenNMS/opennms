@@ -1037,10 +1037,8 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
         Set<CdpLinkDetail> combinedLinkDetails = new HashSet<CdpLinkDetail>();
         Set<Integer> parsed = new HashSet<Integer>();
         for (LldpLink sourceLink : allLinks) {
-            if (parsed.contains(sourceLink.getId())) {
-                LOG.debug("loadtopology: lldp link with id '{}' already parsed, skipping", sourceLink.getId());
+            if (parsed.contains(sourceLink.getId()))
                 continue;
-            }
             LOG.debug("loadtopology: lldp link with id '{}' link '{}' ", sourceLink.getId(), sourceLink);
             LldpElement sourceLldpElement = lldpelementmap.get(sourceLink.getNode().getId());
             LldpLink targetLink = null;
@@ -1055,22 +1053,20 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
 
                 if (sourceLink.getCdpInterfaceName().equals(link.getCdpCacheDevicePort()) && link.getCdpInterfaceName().equals(sourceLink.getCdpCacheDevicePort())) {
                     targetLink=link;
-                    LOG.info("loadtopology: found cdp mutual link: '{}' and '{}' ", sourceLink,targetLink);
+                    LOG.info("loadtopology: found lldp mutual link: '{}' and '{}' ", sourceLink,targetLink);
                     break;
                 }
             }
             
             if (targetLink == null) {
-                if (sourceLink.getCdpCacheAddressType() == CiscoNetworkProtocolType.ip) {
-                    try {
-                        InetAddress targetAddress = InetAddressUtils.addr(sourceLink.getCdpCacheAddress());
-                        if (ipmap.containsKey(targetAddress)) {
-                            targetLink = reverseCdpLink(ipmap.get(targetAddress), sourceCdpElement, sourceLink ); 
-                            LOG.info("loadtopology: found cdp link using cdp cache address: '{}' and '{}'", sourceLink, targetLink);
-                        }
-                    } catch (Exception e) {
-                        LOG.warn("loadtopology: cannot convert ip address: {}", sourceLink.getCdpCacheAddress(), e);
-                    }
+                List<OnmsNode> nodes = new ArrayList<OnmsNode>();
+                for (OnmsNode node: nodemap.values()) {
+                    if (node.getSysName() != null && sourceLink.getLldpRemSysname() != null && node.getSysName().equals(sourceLink.getLldpRemSysname()))
+                        nodes.add(node);
+                }
+                if (nodes.size() == 1) {
+                    targetLink = reverseLldpLink(nodes.get(0), sourceLldpElement, sourceLink); 
+                    LOG.info("loadtopology: found lldp link using lldp rem sysname: '{}' and '{}'", sourceLink, targetLink);
                 }
             }
             
@@ -1107,7 +1103,7 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
                     continue;
                 LOG.debug("loadtopology: checking ospf link with id '{}'", targetLink.getId());
                 if(sourceLink.getOspfRemIpAddr().equals(targetLink.getOspfIpAddr()) && targetLink.getOspfRemIpAddr().equals(sourceLink.getOspfIpAddr())) {
-                    LOG.debug("loadtopology: found ospf mutual link: '{}' and '{}' ", sourceLink,targetLink);
+                    LOG.info("loadtopology: found ospf mutual link: '{}' and '{}' ", sourceLink,targetLink);
                     parsed.add(sourceLink.getId());
                     parsed.add(targetLink.getId());
                     Vertex source =  getOrCreateVertex(nodemap.get(sourceLink.getNode().getId()),ipprimarymap.get(sourceLink.getNode().getId()));
@@ -1139,10 +1135,8 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
         Set<Integer> parsed = new HashSet<Integer>();
 
         for (CdpLink sourceLink : allLinks) {
-            if (parsed.contains(sourceLink.getId())) {
-                LOG.debug("loadtopology: cdp link with id '{}' already parsed, skipping", sourceLink.getId());
+            if (parsed.contains(sourceLink.getId())) 
                 continue;
-            }
             LOG.debug("loadtopology: cdp link with id '{}' link '{}' ", sourceLink.getId(), sourceLink);
             CdpElement sourceCdpElement = cdpelementmap.get(sourceLink.getNode().getId());
             CdpLink targetLink = null;
@@ -1157,7 +1151,7 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
 
                 if (sourceLink.getCdpInterfaceName().equals(link.getCdpCacheDevicePort()) && link.getCdpInterfaceName().equals(sourceLink.getCdpCacheDevicePort())) {
                     targetLink=link;
-                    LOG.debug("loadtopology: found cdp mutual link: '{}' and '{}' ", sourceLink,targetLink);
+                    LOG.info("loadtopology: found cdp mutual link: '{}' and '{}' ", sourceLink,targetLink);
                     break;
                 }
             }
@@ -1168,7 +1162,7 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
                         InetAddress targetAddress = InetAddressUtils.addr(sourceLink.getCdpCacheAddress());
                         if (ipmap.containsKey(targetAddress)) {
                             targetLink = reverseCdpLink(ipmap.get(targetAddress), sourceCdpElement, sourceLink ); 
-                            LOG.debug("loadtopology: found cdp link using cdp cache address: '{}' and '{}'", sourceLink, targetLink);
+                            LOG.info("loadtopology: found cdp link using cdp cache address: '{}' and '{}'", sourceLink, targetLink);
                         }
                     } catch (Exception e) {
                         LOG.warn("loadtopology: cannot convert ip address: {}", sourceLink.getCdpCacheAddress(), e);
@@ -1177,7 +1171,7 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
             }
             
             if (targetLink == null) {
-                LOG.debug("loadtopology: cannot found target node for link: '{}'", sourceLink);
+                LOG.info("loadtopology: cannot found target node for link: '{}'", sourceLink);
                 continue;
             }
                 
@@ -1245,16 +1239,17 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
     }
 
     private void getBridgeLinks(Map<Integer, OnmsNode> nodemap, Map<Integer, List<OnmsSnmpInterface>> nodesnmpmap,Map<String, List<OnmsIpInterface>> macToIpMap,Map<Integer, List<OnmsIpInterface>> ipmap, Map<Integer, OnmsIpInterface> ipprimarymap){
-        int cloudindex = 0;
         for (BroadcastDomain domain: m_bridgeTopologyDao.getAllPersisted(m_bridgeBridgeLinkDao, m_bridgeMacLinkDao)) {
+            LOG.info("loadtopology: parsing broadcast Domain: '{}', {}", domain);
+            int cloudindex = 0;
             for (SharedSegment segment: domain.getTopology()) {
                 if (segment.noMacsOnSegment() && segment.getBridgeBridgeLinks().size() == 1) {
                     for (BridgeBridgeLink link : segment.getBridgeBridgeLinks()) {
                         Vertex source = getOrCreateVertex(nodemap.get(link.getNode().getId()), ipprimarymap.get(link.getNode().getId()));
                         Vertex target = getOrCreateVertex(nodemap.get(link.getDesignatedNode().getId()), ipprimarymap.get(link.getDesignatedNode().getId()));
                         BridgeLinkDetail detail = new BridgeLinkDetail(EnhancedLinkdTopologyProvider.TOPOLOGY_NAMESPACE_LINKD,source,link.getBridgePortIfIndex(),  target, link.getDesignatedPortIfIndex(), link.getBridgePort(), link.getDesignatedPort(), link.getId(),link.getId() );
-                       LinkdEdge edge = connectVertices(detail, BRIDGE_EDGE_NAMESPACE);
-                       edge.setTooltipText(getEdgeTooltipText(detail,nodesnmpmap));
+                        LinkdEdge edge = connectVertices(detail, BRIDGE_EDGE_NAMESPACE);
+                        edge.setTooltipText(getEdgeTooltipText(detail,nodesnmpmap));
                     }
                     continue;
                 } 
@@ -1279,6 +1274,8 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
                 cloudVertex.setIconKey("cloud");
                 cloudVertex.setTooltipText("Shared Segment: " + nodemap.get(segment.getDesignatedBridge()).getLabel() + " port: " + segment.getDesignatedPort());
                 addVertices(cloudVertex);
+                LOG.info("loadtopology: adding cloud: index: '{}', {}", cloudindex, cloudVertex.getTooltipText() );
+                cloudindex++;
                 for (BridgePort targetlink: segment.getBridgePortsOnSegment()) {
                     Vertex target = getOrCreateVertex(nodemap.get(targetlink.getNode().getId()), ipprimarymap.get(targetlink.getNode().getId()));
                     LinkdEdge edge = connectVertices(targetlink, cloudVertex, target, BRIDGE_EDGE_NAMESPACE);
@@ -1294,7 +1291,6 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
                         LinkdEdge edge = connectCloudMacVertices(targetmac, cloudVertex, target, BRIDGE_EDGE_NAMESPACE);
                         edge.setTooltipText(getEdgeTooltipText(targetmac,target,targetInterfaces));
                     }
-                    cloudindex++;
                 }
             }
         }

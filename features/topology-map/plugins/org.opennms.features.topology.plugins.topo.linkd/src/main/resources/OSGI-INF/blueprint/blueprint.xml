@@ -98,40 +98,14 @@ xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0
 
     <service interface="org.opennms.features.topology.api.topo.SearchProvider" ref="topologyProvider" />
 
-    <!-- EnhancedLinkd StatusProviders Service -->
-    <bean id="lldpLinkStatusProvider" class="org.opennms.features.topology.plugins.topo.linkd.internal.LldpLinkStatusProvider" >
-        <property name="alarmDao" ref="alarmDao" />
-        <property name="lldpLinkDao" ref="lldpLinkDao"/>
-    </bean>
-
-    <bean id="ospfLinkStatusProvider" class="org.opennms.features.topology.plugins.topo.linkd.internal.OspfLinkStatusProvider">
-        <property name="alarmDao" ref="alarmDao"/>
-        <property name="ospfLinkDao" ref="ospfLinkDao" />
-    </bean>
-
-    <bean id="isisLinkStatusProvider" class="org.opennms.features.topology.plugins.topo.linkd.internal.IsIsLinkStatusProvider">
-        <property name="alarmDao" ref="alarmDao"/>
-        <property name="isisLinkDao" ref="isisLinkDao"/>
-    </bean>
-
-    <bean id="bridgeLinkStatusProvider" class="org.opennms.features.topology.plugins.topo.linkd.internal.BridgeLinkStatusProvider">
-        <property name="alarmDao" ref="alarmDao"/>
-        <property name="bridgeMacLinkDao" ref="bridgeMacLinkDao"/>
-        <property name="bridgeBridgeLinkDao" ref="bridgeBridgeLinkDao"/>
-    </bean>
-
-    <bean id="cdpLinkStatusProvider" class="org.opennms.features.topology.plugins.topo.linkd.internal.CdpLinkStatusProvider">
+    <!-- EnhancedLinkd StatusProviders Service and CheckedOperation -->
+    <bean id="linkdEdgeStatusProvider" class="org.opennms.features.topology.plugins.topo.linkd.internal.LinkdEdgeStatusProvider">
         <property name="alarmDao" ref="alarmDao"/>
     </bean>
 
-    <!-- Wrap all edge status providers in one status provider -->
-    <bean id="enlinkdWrappedEdgeStatusProvider" class="org.opennms.features.topology.plugins.topo.linkd.internal.LinkdWrappedEdgeStatusProviders" init-method="init">
+	<bean id="enlinkdWrappedEdgeStatusProvider" class="org.opennms.features.topology.plugins.topo.linkd.internal.operations.LinkdEdgeStatusToggleOperation" init-method="init">
         <property name="enlinkdService" ref="enlinkd" />
-        <property name="llpdStatusProvider" ref="lldpLinkStatusProvider"/>
-        <property name="ospfLinkStatusProvider" ref="ospfLinkStatusProvider"/>
-        <property name="isisLinkStatusProvider" ref="isisLinkStatusProvider"/>
-        <property name="bridgeLinkStatusProvider" ref="bridgeLinkStatusProvider"/>
-        <property name="cdpLinkStatusProvider" ref="cdpLinkStatusProvider"/>
+        <property name="edgeStatusProvider" ref="linkdEdgeStatusProvider"/>
     </bean>
 
     <service interface="org.opennms.features.topology.api.topo.EdgeStatusProvider" ref="enlinkdWrappedEdgeStatusProvider" />
