@@ -426,8 +426,8 @@ public class OnmsFeatureKarafIT extends KarafTestCase {
 		System.out.println(executeCommand("features:list -i"));
 	}
 	@Test
-	@Ignore("Needs javax.servlet version 2.6")
 	public void testInstallFeatureSpringSecurity32() {
+		installFeature("pax-http"); // Provides javax.servlet version 2.6
 		installFeature("spring-security32");
 		System.out.println(executeCommand("features:list -i"));
 	}
@@ -439,6 +439,7 @@ public class OnmsFeatureKarafIT extends KarafTestCase {
 
     @Test
     public void testInstallFeatureTsrmTroubleticketer() {
+        installFeature("pax-http"); // Provides javax.servlet version 2.6
         installFeature("tsrm-troubleticketer");
         System.out.println(executeCommand("features:list -i"));
     }
