@@ -9,7 +9,7 @@ This _Alarms Dashlet_ shows a table with a short alarm description.
 | Field        | Description
 | _Time_       | Absolute time since the alarm appeared
 | _Node label_ | Node label of the node where the alarm occurred
-| _UEI_        | OpenNMS _Unique Event Identifier_ for this alarm
+| _UEI_        | {opennms-product-name} _Unique Event Identifier_ for this alarm
 |===
 
 The _Alarms Dashlet_ can be configured with the following parameters.

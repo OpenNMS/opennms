@@ -46,7 +46,7 @@
 
     public void init() throws ServletException { 
 	    WebApplicationContext m_webAppContext = WebApplicationContextUtils.getRequiredWebApplicationContext(getServletContext());
-	    m_resourceService = (ResourceService) m_webAppContext.getBean("resourceService", ResourceService.class);
+	    m_resourceService = m_webAppContext.getBean("resourceService", ResourceService.class);
     }
 %>
 

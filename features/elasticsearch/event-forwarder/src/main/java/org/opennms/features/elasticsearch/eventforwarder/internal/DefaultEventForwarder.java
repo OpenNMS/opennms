@@ -1,6 +1,5 @@
 package org.opennms.features.elasticsearch.eventforwarder.internal;
 
-import org.apache.camel.InOnly;
 import org.apache.camel.Produce;
 import org.opennms.core.camel.DefaultDispatcher;
 import org.opennms.netmgt.events.api.EventForwarder;
@@ -9,7 +8,6 @@ import org.opennms.netmgt.xml.event.Log;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@InOnly
 public class DefaultEventForwarder extends DefaultDispatcher implements EventForwarder {
 
 	private static final Logger LOG = LoggerFactory.getLogger(DefaultEventForwarder.class);

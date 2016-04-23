@@ -71,7 +71,7 @@ public class RemoteMeasurementDataSourceWrapperIT {
 
     @Test
     public void testOk() throws JRException {
-        JRRewindableDataSource dataSource = new RemoteMeasurementDataSourceWrapper(false, "http://localhost:9999/opennms/rest/measurements", null, null).createDataSource("<dummy request>");
+        JRRewindableDataSource dataSource = new RemoteMeasurementDataSourceWrapper(false, "http://localhost:9999/opennms/rest/measurements", null, null).createDataSource("<query-request />");
         Assert.assertNotNull(dataSource);
         Assert.assertEquals(MeasurementDataSource.class, dataSource.getClass());
     }
@@ -79,7 +79,7 @@ public class RemoteMeasurementDataSourceWrapperIT {
     @Test
     public void testRedirection() {
         try {
-            new RemoteMeasurementDataSourceWrapper(false, "http://localhost:9999/opennms/rest/forward/me", null, null).createDataSource("<dummy request>");
+            new RemoteMeasurementDataSourceWrapper(false, "http://localhost:9999/opennms/rest/forward/me", null, null).createDataSource("<query-request />");
             Assert.fail("JRException was expected, but was not thrown");
         } catch (JRException jre) {
             Assert.assertTrue(jre.toString().contains("Request was redirected. This is not supported."));
@@ -88,7 +88,7 @@ public class RemoteMeasurementDataSourceWrapperIT {
 
     @Test
     public void test404() throws JRException {
-        JRRewindableDataSource dataSource = new RemoteMeasurementDataSourceWrapper(false, "http://localhost:9999/opennms/rest/doesNotExist", null, null).createDataSource("<dummy request>");
+        JRRewindableDataSource dataSource = new RemoteMeasurementDataSourceWrapper(false, "http://localhost:9999/opennms/rest/doesNotExist", null, null).createDataSource("<query-request />");
         Assert.assertNotNull(dataSource);
         Assert.assertEquals(EmptyJRDataSource.class, dataSource.getClass());
     }
@@ -96,7 +96,7 @@ public class RemoteMeasurementDataSourceWrapperIT {
     @Test
     public void testError() {
         try {
-            new RemoteMeasurementDataSourceWrapper(false, "http://localhost:9999/opennms/rest/bad/request", null, null).createDataSource("<dummy request>");
+            new RemoteMeasurementDataSourceWrapper(false, "http://localhost:9999/opennms/rest/bad/request", null, null).createDataSource("<query-request />");
             Assert.fail("JRException was expected, but was not thrown");
         } catch (JRException jre) {
             Assert.assertTrue(jre.toString().contains("Invalid request. Response was"));

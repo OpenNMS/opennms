@@ -3,6 +3,7 @@
     "offset": null, 
     "monitored-service": [
         {
+            "id": "2",
             "ipAddress": "192.168.1.1", 
             "isDown": false, 
             "isMonitored": true, 
@@ -12,6 +13,7 @@
             "statusCode": "A"
         },
         {
+            "id": "3",
             "ipAddress": "192.168.1.1", 
             "isDown": false, 
             "isMonitored": true, 
@@ -21,6 +23,7 @@
             "statusCode": "A"
         },
         {
+            "id": "5",
             "ipAddress": "192.168.1.2", 
             "isDown": false, 
             "isMonitored": true, 
@@ -30,6 +33,7 @@
             "statusCode": "A"
         },
         {
+            "id": "6",
             "ipAddress": "192.168.1.2", 
             "isDown": false, 
             "isMonitored": true, 
@@ -39,6 +43,7 @@
             "statusCode": "A"
         },
         {
+            "id": "8",
             "ipAddress": "192.168.1.3", 
             "isDown": false, 
             "isMonitored": true, 
@@ -48,6 +53,7 @@
             "statusCode": "A"
         },
         {
+            "id": "10",
             "ipAddress": "fe80:0000:0000:0000:aaaa:bbbb:cccc:dddd%5", 
             "isDown": false, 
             "isMonitored": true, 
@@ -57,6 +63,7 @@
             "statusCode": "A"
         },
         {
+            "id": "17",
             "ipAddress": "192.168.2.1", 
             "isDown": false, 
             "isMonitored": true, 
@@ -66,6 +73,7 @@
             "statusCode": "A"
         },
         {
+            "id": "18",
             "ipAddress": "192.168.2.1", 
             "isDown": false, 
             "isMonitored": true, 
@@ -75,6 +83,7 @@
             "statusCode": "A"
         },
         {
+            "id": "20",
             "ipAddress": "192.168.2.2", 
             "isDown": false, 
             "isMonitored": true, 
@@ -84,6 +93,7 @@
             "statusCode": "A"
         },
         {
+            "id": "21",
             "ipAddress": "192.168.2.2", 
             "isDown": false, 
             "isMonitored": true, 

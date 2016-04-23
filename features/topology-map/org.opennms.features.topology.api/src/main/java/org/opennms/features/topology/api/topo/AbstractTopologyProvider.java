@@ -48,6 +48,7 @@ public abstract class AbstractTopologyProvider extends DelegatingVertexEdgeProvi
     protected static final String SIMPLE_VERTEX_ID_PREFIX = "v";
 	protected static final String SIMPLE_GROUP_ID_PREFIX = "g";
 	protected static final String SIMPLE_EDGE_ID_PREFIX = "e";
+    protected MetaInfo metaInfo = new DefaultMetaInfo();
 
 	private static final Logger LOG = LoggerFactory.getLogger(AbstractTopologyProvider.class);
 
@@ -204,6 +205,10 @@ public abstract class AbstractTopologyProvider extends DelegatingVertexEdgeProvi
     protected AbstractTopologyProvider(String namespace) {
 		super(namespace);
 	}
+
+    protected AbstractTopologyProvider(SimpleVertexProvider vertexProvider, SimpleEdgeProvider edgeProvider) {
+        super(vertexProvider, edgeProvider);
+    }
     
     public List<Vertex> getVerticesWithoutGroups() {
         return new ArrayList<Vertex>(
@@ -366,4 +371,13 @@ public abstract class AbstractTopologyProvider extends DelegatingVertexEdgeProvi
 
     @Override
     public abstract void refresh();
+
+    @Override
+    public MetaInfo getMetaInfo() {
+        return metaInfo;
+    }
+
+    public void setMetaInfo(MetaInfo metaInfo) {
+        this.metaInfo = metaInfo;
+    }
 }

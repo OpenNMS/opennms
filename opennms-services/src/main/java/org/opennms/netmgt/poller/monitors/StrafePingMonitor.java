@@ -144,7 +144,7 @@ final public class StrafePingMonitor extends AbstractServiceMonitor {
             }
             returnval.put("loss", CollectionMath.countNull(responseTimes));
             returnval.put("median", CollectionMath.median(responseTimes));
-            returnval.put("response-time", CollectionMath.average(responseTimes));
+            returnval.put(PollStatus.PROPERTY_RESPONSE_TIME, CollectionMath.average(responseTimes));
 
             serviceStatus.setProperties(returnval);
         } catch (Throwable e) {

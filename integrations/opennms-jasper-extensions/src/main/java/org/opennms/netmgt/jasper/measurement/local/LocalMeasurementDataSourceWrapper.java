@@ -28,14 +28,10 @@
 
 package org.opennms.netmgt.jasper.measurement.local;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
+import static org.opennms.netmgt.jasper.helper.MeasurementsHelper.unmarshal;
+
 import java.util.Objects;
 
-import javax.xml.bind.JAXB;
-
-import net.sf.jasperreports.engine.JRException;
-import net.sf.jasperreports.engine.JRRewindableDataSource;
 import org.opennms.netmgt.jasper.measurement.EmptyJRDataSource;
 import org.opennms.netmgt.jasper.measurement.MeasurementDataSource;
 import org.opennms.netmgt.jasper.measurement.MeasurementDataSourceWrapper;
@@ -48,6 +44,9 @@ import org.opennms.netmgt.measurements.model.QueryRequest;
 import org.opennms.netmgt.measurements.model.QueryResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JRRewindableDataSource;
 
 /**
  * This data source is used when the reports are running within a OpenNMS JVM. In detail they should be used
@@ -71,6 +70,7 @@ public class LocalMeasurementDataSourceWrapper implements MeasurementDataSourceW
         Objects.requireNonNull(query);
         QueryRequest queryRequest = unmarshal(query);
         Objects.requireNonNull(queryRequest);
+        queryRequest.setRelaxed(true); // Enforce relaxed mode
 
         try {
             QueryResponse response = fetchService.query(queryRequest);
@@ -89,13 +89,4 @@ public class LocalMeasurementDataSourceWrapper implements MeasurementDataSourceW
         // nothing to do
     }
 
-    private QueryRequest unmarshal(String query) throws JRException {
-        try (ByteArrayInputStream input = new ByteArrayInputStream(query.getBytes())) {
-            QueryRequest request = JAXB.unmarshal(input, QueryRequest.class);
-            return request;
-        } catch (IOException e) {
-            LOG.error("An error occurred while unmarshalling the query string", e);
-            throw new JRException(e);
-        }
-    }
 }

@@ -93,6 +93,19 @@ public class BridgeBridgeLinkDaoHibernate extends AbstractDaoHibernate<BridgeBri
 		}
 	}
 
+        @Override
+        public void deleteByNodeId(Integer nodeId) {
+                for (BridgeBridgeLink elem: find("from BridgeBridgeLink rec where rec.node.id = ? ",nodeId)) {
+                        delete(elem);
+                }
+        }
+
+        @Override
+        public void deleteByDesignatedNodeId(Integer nodeId) {
+                for (BridgeBridgeLink elem: find("from BridgeBridgeLink rec where rec.designatedNode.id = ? ",nodeId)) {
+                        delete(elem);
+                }
+        }
 
 
 

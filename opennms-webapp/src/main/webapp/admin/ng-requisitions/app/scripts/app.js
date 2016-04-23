@@ -9,29 +9,12 @@
 
   angular.module('onms-requisitions', [
     'ngRoute',
+    'ngCookies',
     'ngAnimate',
     'ui.bootstrap',
     'angular-growl',
     'angular-loading-bar'
   ])
-
-  .factory('authHttpResponseInterceptor',['$q','$location', function($q, $location) {
-    return {
-      response: function(response) {
-        return response || $q.when(response);
-      },
-      responseError: function(rejection) {
-        if (rejection.status === 401) {
-          $location.path('/opennms/login.jsp').search('returnTo', $location.path());
-        }
-        return $q.reject(rejection);
-      }
-    };
-  }])
-
-  .config(['$httpProvider',function($httpProvider) {
-    $httpProvider.interceptors.push('authHttpResponseInterceptor');
-  }])
 
   .config(['$routeProvider', function ($routeProvider) {
     $routeProvider
@@ -49,7 +32,10 @@
     })
     .when('/requisitions/:foreignSource/nodes/:foreignId', {
       templateUrl: 'views/node.html',
-      //templateUrl: 'views/node-panels.html',
+      controller: 'NodeController'
+    })
+    .when('/requisitions/:foreignSource/nodes/:foreignId/vertical', {
+      templateUrl: 'views/node-panels.html',
       controller: 'NodeController'
     })
     .otherwise({
@@ -67,7 +53,7 @@
       'mouseenter': 'mouseleave'
     });
     $uibTooltipProvider.options({
-      'placement': 'top',
+      'placement': 'left',
       'trigger': 'mouseenter'
     });
   }]);

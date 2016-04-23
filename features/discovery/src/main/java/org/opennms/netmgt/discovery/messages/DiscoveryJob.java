@@ -28,12 +28,16 @@
 
 package org.opennms.netmgt.discovery.messages;
 
+import static java.math.MathContext.DECIMAL64;
+
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
 import org.opennms.core.utils.IteratorIterator;
+import org.opennms.netmgt.config.DiscoveryConfigFactory;
 import org.opennms.netmgt.model.discovery.IPPollAddress;
 import org.opennms.netmgt.model.discovery.IPPollRange;
 
@@ -45,11 +49,16 @@ public class DiscoveryJob implements Serializable {
     private final List<IPPollRange> m_ranges;
     private final String m_foreignSource;
     private final String m_location;
+    private final double m_packetsPerSecond;
 
-    public DiscoveryJob(List<IPPollRange> ranges, String foreignSource, String location) {
+    // TODO: Make this configurable?
+    public static final BigDecimal FUDGE_FACTOR = BigDecimal.valueOf(1.5);
+
+    public DiscoveryJob(List<IPPollRange> ranges, String foreignSource, String location, double packetsPerSecond) {
         m_ranges = Preconditions.checkNotNull(ranges, "ranges argument");
         m_foreignSource = Preconditions.checkNotNull(foreignSource, "foreignSource argument");
         m_location = Preconditions.checkNotNull(location, "location argument");
+        m_packetsPerSecond = packetsPerSecond > 0.0 ? packetsPerSecond : DiscoveryConfigFactory.DEFAULT_PACKETS_PER_SECOND;
     }
 
     public Iterable<IPPollAddress> getAddresses() {
@@ -66,6 +75,10 @@ public class DiscoveryJob implements Serializable {
 
     public String getLocation() {
         return m_location;
+    }
+
+    public double getPacketsPerSecond() {
+        return m_packetsPerSecond;
     }
 
     @Override
@@ -95,7 +108,44 @@ public class DiscoveryJob implements Serializable {
        return com.google.common.base.Objects.toStringHelper(this)
                  .add("foreignSource", m_foreignSource)
                  .add("location", m_location)
+                 .add("packetsPerSecond", m_packetsPerSecond)
                  .add("ranges", m_ranges)
                  .toString();
     }
+
+    /**
+     * <P>
+     * Returns the total task timeout in milliseconds for all IP ranges.
+     * </P>
+     */
+    public int calculateTaskTimeout() {
+        BigDecimal taskTimeOut = BigDecimal.ZERO;
+        for(final IPPollRange range : m_ranges) {
+            taskTimeOut = taskTimeOut.add(
+                // Take the number of retries
+                BigDecimal.valueOf(range.getRetries())
+                // Add 1 for the original request
+                .add(BigDecimal.ONE, DECIMAL64)
+                // Multiply by the number of addresses
+                .multiply(new BigDecimal(range.getAddressRange().size()), DECIMAL64)
+                // Multiply by the timeout per retry
+                .multiply(BigDecimal.valueOf(range.getTimeout()), DECIMAL64)
+                // Multiply by the fudge factor
+                .multiply(FUDGE_FACTOR, DECIMAL64),
+                DECIMAL64
+            );
+
+            // Add a delay for the rate limiting done with the
+            // m_packetsPerSecond field
+            taskTimeOut = taskTimeOut.add(
+                new BigDecimal(range.getAddressRange().size())
+                .divide(BigDecimal.valueOf(m_packetsPerSecond), DECIMAL64)
+                .multiply(BigDecimal.valueOf(1000), DECIMAL64),
+                DECIMAL64
+            );
+        }
+        // If the timeout is greater than Integer.MAX_VALUE, just return Integer.MAX_VALUE
+        return taskTimeOut.compareTo(BigDecimal.valueOf(Integer.MAX_VALUE)) >= 0 ? Integer.MAX_VALUE : taskTimeOut.intValue();
+    }
+
 }

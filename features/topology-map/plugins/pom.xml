@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.opennms.features</groupId>
     <artifactId>topology</artifactId>
-    <version>18.0.0-SNAPSHOT</version>
+    <version>19.0.0-SNAPSHOT</version>
   </parent>
 
   <modelVersion>4.0.0</modelVersion>
@@ -22,6 +22,8 @@
     <module>org.opennms.features.topology.plugins.ncs</module>
     <module>org.opennms.features.topology.plugins.netutils</module>
     <!-- <module>org.opennms.features.topology.plugins.ssh</module> -->
+    <module>org.opennms.features.topology.plugins.topo.application</module>
+    <module>org.opennms.features.topology.plugins.topo.bsm</module>
     <module>org.opennms.features.topology.plugins.topo.history</module>
     <module>org.opennms.features.topology.plugins.topo.linkd</module>
     <module>org.opennms.features.topology.plugins.topo.sfree</module>

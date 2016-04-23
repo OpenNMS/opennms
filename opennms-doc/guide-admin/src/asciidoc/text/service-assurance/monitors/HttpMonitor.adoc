@@ -35,17 +35,17 @@ The response is parsed and a return code extracted and verified.
                            `header0`, `header1` and `header180`. `header` is *not* a valid parameter name.            | optional | `-`
 | `host-name`            | Specify the _Host_ header's value. | optional | `-`
 | `nodelabel-host-name`  | If the `host-name` parameter isn't set and the `resolve-ip` parameter is set to `false`, +
-                           then OpenNMS will use the node's label to set the _Host_ header's value if this parameter +
-                           is set to `true`. Otherwise, OpenNMS will fall back using the node interface's IP address +
+                           then {opennms-product-name} will use the node's label to set the _Host_ header's value if this parameter +
+                           is set to `true`. Otherwise, {opennms-product-name} will fall back using the node interface's IP address +
                            as _Host_ header value.                                                                     | optional | `false`
 | `password`             | This parameter is meant to be used together with the `user` parameter to perform basic +
                            authentication. This parameter specify to password to be used. The `user` and `password` +
                            parameters are ignored when the `basic-authentication` parameter is defined.                | optional | `empty string`
 | `port`                 | A list of TCP ports to which connection shall be tried. | optional | `80`,`8080`,`8888`
 | `retry`                | Number of attempts to get a valid HTTP response/response-text | optional | `0`
-| `resolve-ip`           | If the `host-name` parameter isn't set and this parameter is set to `true`, OpenNMS will +
+| `resolve-ip`           | If the `host-name` parameter isn't set and this parameter is set to `true`, {opennms-product-name} will +
                            use DNS to resolve the node interface's IP address, and use the result to set the _Host_ +
-                           header's value. When set to `false` and the `host-name` parameter isn't set, OpenNMS will +
+                           header's value. When set to `false` and the `host-name` parameter isn't set, {opennms-product-name} will +
                            try to use the `nodelabel-host-name` parameter to set the _Host_ header's value.            | optional | `false`
 | `response`             | A comma-separated list of acceptable HTTP response code ranges.
                            Example: `200-202,299`                                                                      | optional | If the `url` parameter is set to `/`, the default +

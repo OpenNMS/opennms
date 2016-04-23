@@ -5,11 +5,11 @@ This monitor allows to test the functionality of the link:http://freeradius.org/
 The availability is tested by sending an _AUTH_ packet to the _RADIUS server_.
 If a valid _ACCEPT_ response is received, the _RADIUS_ service is _up_ and considered as available.
 
-IMPORTANT: To use this monitor it is required to install the _RADIUS_ protocol for OpenNMS.
+IMPORTANT: To use this monitor it is required to install the _RADIUS_ protocol for {opennms-product-name}.
 
 [source, bash]
 ----
-{apt-get,yum} install opennms-plugin-protocol-radius
+{apt-get,yum} install {opennms-package-base-name}-plugin-protocol-radius
 ----
 
 The test is similar to test the behavior of a _RADIUS_ server by evaluating the result with the command line tool `radtest`.

@@ -28,10 +28,27 @@
 
 package org.opennms.features.topology.app.internal;
 
-import com.vaadin.server.PaintException;
-import org.opennms.features.topology.api.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import org.opennms.features.topology.api.Graph;
+import org.opennms.features.topology.api.GraphContainer;
+import org.opennms.features.topology.api.Layout;
+import org.opennms.features.topology.api.Point;
+import org.opennms.features.topology.api.SelectionManager;
 import org.opennms.features.topology.api.support.VertexHopGraphProvider.VertexHopCriteria;
-import org.opennms.features.topology.api.topo.*;
+import org.opennms.features.topology.api.topo.Criteria;
+import org.opennms.features.topology.api.topo.Edge;
+import org.opennms.features.topology.api.topo.EdgeRef;
+import org.opennms.features.topology.api.topo.EdgeStatusProvider;
+import org.opennms.features.topology.api.topo.Status;
+import org.opennms.features.topology.api.topo.StatusProvider;
+import org.opennms.features.topology.api.topo.Vertex;
+import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.features.topology.app.internal.gwt.client.SharedEdge;
 import org.opennms.features.topology.app.internal.gwt.client.SharedVertex;
 import org.opennms.features.topology.app.internal.gwt.client.TopologyComponentState;
@@ -39,7 +56,7 @@ import org.opennms.features.topology.app.internal.support.IconRepositoryManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.*;
+import com.vaadin.server.PaintException;
 
 public class GraphPainter extends BaseGraphVisitor {
 
@@ -80,20 +97,23 @@ public class GraphPainter extends BaseGraphVisitor {
         }
 
         if (m_statusProvider != null) {
-            Map<VertexRef, Status> newStatusMap = m_statusProvider.getStatusForVertices(m_graphContainer.getBaseTopology(), new ArrayList<VertexRef>(graph.getDisplayVertices()), m_graphContainer.getCriteria());
-            if (newStatusMap != null) {
-                m_statusMap.clear();
-                m_statusMap.putAll(newStatusMap);
-            }
+			if (m_statusProvider.contributesTo(m_graphContainer.getBaseTopology().getVertexNamespace())) {
+				Map<VertexRef, Status> newStatusMap = m_statusProvider.getStatusForVertices(m_graphContainer.getBaseTopology(), new ArrayList<>(graph.getDisplayVertices()), m_graphContainer.getCriteria());
+				if (newStatusMap != null) {
+					m_statusMap.clear();
+					m_statusMap.putAll(newStatusMap);
+				}
+			}
         }
 
-        if(m_graphContainer.getEdgeStatusProviders() != null) {
-            for (EdgeStatusProvider statusProvider : m_graphContainer.getEdgeStatusProviders()) {
-                if (statusProvider.contributesTo(m_graphContainer.getBaseTopology().getEdgeNamespace())) {
-                    m_edgeStatusMap.putAll(statusProvider.getStatusForEdges(m_graphContainer.getBaseTopology(),
-                            new ArrayList<EdgeRef>(graph.getDisplayEdges()),
-                            m_graphContainer.getCriteria()));
-                }
+        if(m_graphContainer.getEdgeStatusProvider() != null) {
+			EdgeStatusProvider edgeStatusProvider = m_graphContainer.getEdgeStatusProvider();
+			if (edgeStatusProvider.contributesTo(m_graphContainer.getBaseTopology().getEdgeNamespace())) {
+				Map<EdgeRef, Status> newStatusForEdges = edgeStatusProvider.getStatusForEdges(m_graphContainer.getBaseTopology(),
+						new ArrayList<>(graph.getDisplayEdges()),
+						m_graphContainer.getCriteria());
+				m_edgeStatusMap.clear();
+				m_edgeStatusMap.putAll(newStatusForEdges);
             }
         }
     }
@@ -108,15 +128,19 @@ public class GraphPainter extends BaseGraphVisitor {
 		v.setInitialX((int)initialLocation.getX());
 		v.setInitialY((int)initialLocation.getY());
 		v.setX((int)location.getX());
-		v.setY((int)location.getY());
+		v.setY((int) location.getY());
 		v.setSelected(isSelected(m_graphContainer.getSelectionManager(), vertex));
         v.setStatus(getStatus(vertex));
         v.setStatusCount(getStatusCount(vertex));
-        v.setSVGIconId(m_iconRepoManager.findSVGIconIdByKey(vertex.getIconKey()));
+        v.setSVGIconId(getIconId(vertex));
 		v.setLabel(vertex.getLabel());
 		v.setTooltipText(getTooltipText(vertex));
         v.setStyleName(getVertexStyle(vertex));
 		m_vertices.add(v);
+	}
+
+	private String getIconId(Vertex vertex) {
+		return m_iconRepoManager.getSVGIconId(vertex);
 	}
 
     private String getVertexStyle(Vertex vertex) {
@@ -138,7 +162,7 @@ public class GraphPainter extends BaseGraphVisitor {
 
     private String getStatusCount(Vertex vertex) {
         Status status = m_statusMap.get(vertex);
-        Map<String, String> statusProperties = status != null ? status.getStatusProperties() : new HashMap<String, String>();
+        Map<String, String> statusProperties = status != null ? status.getStatusProperties() : new HashMap<>();
         return statusProperties.get("statusCount") == null ? "" : statusProperties.get("statusCount");
     }
 

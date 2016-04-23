@@ -31,7 +31,6 @@ package org.opennms.core.test.karaf;
 import static org.ops4j.pax.exam.CoreOptions.maven;
 import static org.ops4j.pax.exam.CoreOptions.provision;
 import static org.ops4j.pax.exam.karaf.options.KarafDistributionOption.debugConfiguration;
-import static org.ops4j.pax.exam.karaf.options.KarafDistributionOption.editConfigurationFileExtend;
 import static org.ops4j.pax.exam.karaf.options.KarafDistributionOption.editConfigurationFilePut;
 import static org.ops4j.pax.exam.karaf.options.KarafDistributionOption.karafDistributionConfiguration;
 import static org.ops4j.pax.exam.karaf.options.KarafDistributionOption.logLevel;
@@ -40,6 +39,7 @@ import static org.ops4j.pax.tinybundles.core.TinyBundles.bundle;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.PrintStream;
+import java.net.ServerSocket;
 import java.net.URI;
 import java.security.PrivilegedExceptionAction;
 import java.util.ArrayList;
@@ -70,6 +70,15 @@ public abstract class KarafTestCase {
 
     private static Logger LOG = LoggerFactory.getLogger(KarafTestCase.class);
 
+    public static final String MIN_RMI_SERVER_PORT = "44444";
+    public static final String MAX_RMI_SERVER_PORT = "66666";
+    public static final String MIN_HTTP_PORT = "9080";
+    public static final String MAX_HTTP_PORT = "9999";
+    public static final String MIN_RMI_REG_PORT = "1099";
+    public static final String MAX_RMI_REG_PORT = "9999";
+    public static final String MIN_SSH_PORT = "8101";
+    public static final String MAX_SSH_PORT = "8888";
+
     private static String getKarafVersion() {
         final String karafVersion = System.getProperty("karafVersion", "2.4.0");
         Objects.requireNonNull(karafVersion, "Please define a system property 'karafVersion'.");
@@ -94,6 +103,15 @@ public abstract class KarafTestCase {
         return probe;
     }
 
+    private static int getAvailablePort(int min, int max) {
+        for (int i = min; i <= max; i++) {
+            try (ServerSocket socket = new ServerSocket(i)) {
+                return socket.getLocalPort();
+            } catch (Throwable e) {}
+        }
+        throw new IllegalStateException("Can't find an available network port");
+    }
+
     /**
      * This is the default {@link Configuration} for any Pax Exam tests that
      * use this abstract base class. If you wish to add more Configuration parameters,
@@ -111,6 +129,11 @@ public abstract class KarafTestCase {
     }
 
     protected Option[] configAsArray() {
+        String httpPort = Integer.toString(getAvailablePort(Integer.parseInt(MIN_HTTP_PORT), Integer.parseInt(MAX_HTTP_PORT)));
+        String rmiRegistryPort = Integer.toString(getAvailablePort(Integer.parseInt(MIN_RMI_REG_PORT), Integer.parseInt(MAX_RMI_REG_PORT)));
+        String rmiServerPort = Integer.toString(getAvailablePort(Integer.parseInt(MIN_RMI_SERVER_PORT), Integer.parseInt(MAX_RMI_SERVER_PORT)));
+        String sshPort = Integer.toString(getAvailablePort(Integer.parseInt(MIN_SSH_PORT), Integer.parseInt(MAX_SSH_PORT)));
+
         Option[] options = new Option[]{
             // Use Karaf as the container
             karafDistributionConfiguration().frameworkUrl(
@@ -126,7 +149,7 @@ public abstract class KarafTestCase {
                 // Turn off using the deploy folder or stream bundle provisioning
                 // won't happen before the probe bundle executes, causing problems
                 // like {@link NoClassDefFoundError}.
-                .useDeployFolder(false), 
+                .useDeployFolder(false),
 
             // Pack this parent class from src/main/java into a stream bundle
             // so that it is accessible inside the container
@@ -144,16 +167,41 @@ public abstract class KarafTestCase {
             // Set logging to INFO
             logLevel(LogLevelOption.LogLevel.INFO),
 
-            // We overwrite mvn repository settings, because we want a "naked" repository
+            /**
+             * CAUTION: Do not use editConfigurationFileExtend(), it appears to overwrite its own changes
+             * if there are multiple statements.
+             */
+            editConfigurationFilePut("etc/org.ops4j.pax.url.mvn.cfg", "org.ops4j.pax.url.mvn.defaultRepositories",
+                String.join(",", new String[] {
+                    "file:${karaf.home}/${karaf.default.repository}@snapshots@id=karaf.${karaf.default.repository}",
+
+                    // This path needs to match the path in the POM to the repo created by the features-maven-plugin's 'add-features-to-repo' execution, ie:
+                    // <repository>target/paxexam/test-repo</repository>
+                    //
+                    // TODO: Make it possible for tests to override these paths with the path where their 'add-features-to-repo' execution is creating a repo
+                    //
+                    "file:${karaf.home}/../test-repo@snapshots@id=default-repo",
+                    "file:${karaf.home}/../../features-repo@snapshots@id=opennms-repo"
+                })
+            ),
+
+            // Disable all standard internet repositories so that we only rely on the defaultRepositories
             editConfigurationFilePut("etc/org.ops4j.pax.url.mvn.cfg", "org.ops4j.pax.url.mvn.repositories", ""),
-            editConfigurationFilePut("etc/org.ops4j.pax.url.mvn.cfg", "org.ops4j.pax.url.mvn.defaultRepositories", "file:${karaf.home}/${karaf.default.repository}@snapshots@id=karaf.${karaf.default.repository}"),
-            editConfigurationFileExtend("etc/org.ops4j.pax.url.mvn.cfg", "org.ops4j.pax.url.mvn.defaultRepositories", "file:${karaf.home}/../test-repo@snapshots@id=default-repo"),
-            editConfigurationFileExtend("etc/org.ops4j.pax.url.mvn.cfg", "org.ops4j.pax.url.mvn.localRepository", "file:${karaf.home}/../opennms-repo@snapshots@id=opennms-repo"),
+
+            // TODO: I'm not sure what generates this directory
+            //editConfigurationFileExtend("etc/org.ops4j.pax.url.mvn.cfg", "org.ops4j.pax.url.mvn.localRepository", "file:${karaf.home}/../opennms-repo@snapshots@id=opennms-repo"),
 
             //editConfigurationFilePut("etc/org.apache.karaf.features.cfg", "featuresBoot", "config,ssh,http,http-whiteboard,exam"),
 
-            // Change the SSH port so that it doesn't conflict with a running OpenNMS instance
-            editConfigurationFilePut("etc/org.apache.karaf.shell.cfg", "sshPort", "8201")
+            // Change the all network ports so they don't conflict with a running OpenNMS instance
+            // or previously run Karaf integration tests
+            editConfigurationFilePut("etc/org.ops4j.pax.web.cfg", "org.osgi.service.http.port", httpPort),
+            editConfigurationFilePut("etc/org.apache.karaf.management.cfg", "rmiRegistryPort", rmiRegistryPort),
+            editConfigurationFilePut("etc/org.apache.karaf.management.cfg", "rmiServerPort", rmiServerPort),
+            editConfigurationFilePut("etc/org.apache.karaf.shell.cfg", "sshPort", sshPort),
+
+            // This port is already being allocated according to an org.ops4j.net.FreePort call
+            //editConfigurationFilePut("etc/system.properties", "org.ops4j.pax.exam.rbc.rmi.port", paxExamRmiRegistryPort),
         };
 
         if (Boolean.valueOf(System.getProperty("debug"))) {

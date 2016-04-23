@@ -43,8 +43,6 @@ The following releases are available for installation:
 | `snapshot`                | Latest successful develop build
 | `branches/${BRANCH-NAME}` | Install from a specific branch name, e.g. `branches/features-newts` installs the repository for the _Newts_ development branch.
                               Branches can be found in http://yum.opennms.org/branches/ or http://debian.opennms.org/dists/branches/
-| `branches/${RELEASE}`     | Install a specific release, e.g. `branches/release-14.0.3`.
-                              This release branches are also found in http://yum.opennms.org/branches/ or http://debian.opennms.org/dists/branches/
 |===
 
 To install a different release the repository files have to be installed and manually modified.

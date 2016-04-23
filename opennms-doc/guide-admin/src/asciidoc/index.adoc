@@ -10,7 +10,7 @@
 [[ga]]
 = Administrators Guide
 :author: Copyright (c) 2015-2016 The OpenNMS Group, Inc.
-:revnumber: OpenNMS {opennms-version}
+:revnumber: {opennms-product-name} {opennms-version}
 :revdate: {last-update-label} {docdatetime}
 :version-label!:
 
@@ -132,7 +132,7 @@ include::text/performance-data-collection/collectors/wsman/detector.adoc[]
 include::text/events/events.adoc[]
 include::text/events/forward-elasticsearch.adoc[]
 
-[ga-provisioning]
+[[ga-provisioning]]
 == Provisioning
 include::text/provisioning/introduction.adoc[]
 include::text/provisioning/concepts.adoc[]
@@ -146,6 +146,18 @@ include::text/provisioning/integration.adoc[]
 include::text/provisioning/single-node.adoc[]
 include::text/provisioning/fine-grained.adoc[]
 include::text/provisioning/api-examples.adoc[]
+
+[[ga-provisioning-detectors]]
+=== Service Detectors
+include::text/provisioning/detectors/SnmpDetector.adoc[]
+
+[[ga-bsm-admin]]
+== Business Service Monitoring
+include::text/bsm/bsm-admin.adoc[]
+
+[[ga-topology]]
+== Topology Map
+include::text/topology/topology.adoc[]
 
 [[ga-database-reports]]
 == Database Reports
@@ -189,3 +201,12 @@ include::text/ticketing/introduction.adoc[]
 
 // JIRA Ticketer
 include::text/ticketing/jira.adoc[]
+
+// TSRM Ticketer
+include::text/ticketing/tsrm.adoc[]
+
+== Plugin Manager
+include::text/plugin-manager/Introduction.adoc[]
+include::text/plugin-manager/SettingKarafInstanceData.adoc[]
+include::text/plugin-manager/InstallingAvailablePlugins.adoc[]
+include::text/plugin-manager/InstallingLicences.adoc[]

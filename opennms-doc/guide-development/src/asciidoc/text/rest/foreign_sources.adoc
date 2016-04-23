@@ -1,7 +1,7 @@
 
 ==== Foreign Sources
 
-ReSTful service to the OpenNMS Provisioning Foreign Source definitions.  Foreign source definitions are used to control the scanning (service detection) of services for SLA monitoring as well as the data collection settings for physical interfaces (resources).
+ReSTful service to the {opennms-product-name} Provisioning Foreign Source definitions.  Foreign source definitions are used to control the scanning (service detection) of services for SLA monitoring as well as the data collection settings for physical interfaces (resources).
 
 This API supports CRUD operations for managing the Provisioner's foreign source definitions. Foreign source definitions are POSTed and will be deployed when the corresponding requisition gets imported/synchronized by Provisiond.
 

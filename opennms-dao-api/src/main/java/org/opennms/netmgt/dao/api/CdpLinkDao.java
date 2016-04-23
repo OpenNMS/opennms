@@ -50,4 +50,6 @@ public interface CdpLinkDao extends OnmsDao<CdpLink, Integer> {
 
     void deleteByNodeIdOlderThen(Integer nodeiId, Date now);
 
+    public void deleteByNodeId(Integer nodeId);
+
 }

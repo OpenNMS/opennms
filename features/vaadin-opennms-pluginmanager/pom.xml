@@ -1,0 +1,306 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <relativePath>../topology-map/poms/compiled/</relativePath>
+    <groupId>org.opennms.features.topology.build</groupId>
+    <artifactId>compiled-bundle-settings</artifactId>
+    <version>19.0.0-SNAPSHOT</version>
+  </parent>
+
+  <groupId>org.opennms.plugins</groupId>
+  <artifactId>vaadin-opennms-pluginmanager</artifactId>
+  <packaging>bundle</packaging>
+  <name>vaadin-opennms-pluginmanager</name>
+  <description>
+    OpenNMS Vaadin Administration UI for installing Plugin modules.
+  </description>
+  <properties>
+    <bundle.symbolicName>vaadin-opennms-pluginmanager</bundle.symbolicName>
+    <bundle.namespace>org.opennms.features.pluginmgr.vaadin.config.opennms</bundle.namespace>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <pluginmanagerVersion>1.0</pluginmanagerVersion>
+    <licencemanagerVersion>1.0</licencemanagerVersion>
+    <featuremanagerVersion>1.0</featuremanagerVersion>
+  </properties>
+
+  <build>
+    <resources>
+      <resource>
+        <directory>src/main/resources</directory>
+      </resource>
+      <resource>
+        <directory>${project.build.directory}/imported-resources</directory>
+      </resource>
+      <resource>
+        <directory>${project.build.directory}/filtered-resources</directory>
+      </resource>
+    </resources>
+    <plugins>
+
+      <!-- We copy the diagnostics resources directly into this bundle since -->
+      <!-- pax-web DefaultResources cannot expose resources on the class path -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>unpack</id>
+            <phase>generate-sources</phase>
+            <goals>
+              <goal>unpack</goal>
+            </goals>
+            <configuration>
+              <artifactItems>
+                <artifactItem>
+                  <groupId>org.opennms.plugins</groupId>
+                  <artifactId>org.opennms.plugin.pluginmanager.pluginmanager-core</artifactId>
+                  <version>${pluginmanagerVersion}</version>
+                  <type>jar</type>
+                  <overWrite>true</overWrite>
+                  <includes>diagnostics/*</includes>
+                  <outputDirectory>${project.build.directory}/imported-resources</outputDirectory>
+                </artifactItem>
+              </artifactItems>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+      <!-- copy and process the product descriptor for this project -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-resources-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>filter-resources</id>
+            <phase>process-resources</phase>
+            <goals>
+              <goal>copy-resources</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${project.build.directory}/filtered-resources</outputDirectory>
+              <resources>
+                <resource>
+                  <directory>src/main/filtered-resources</directory>
+                  <filtering>true</filtering>
+                </resource>
+              </resources>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+      <plugin>
+        <groupId>org.opennms.maven.plugins</groupId>
+        <artifactId>features-maven-plugin</artifactId>
+        <configuration>
+          <bundles>
+            <bundle>mvn:org.opennms.plugins/vaadin-opennms-pluginmanager/${project.version}</bundle>
+            <bundle>mvn:org.opennms.plugins/org.opennms.plugin.pluginmanager.pluginmanager-core/${pluginmanagerVersion}</bundle>
+          </bundles>
+
+          <!-- repos for licence manager and feature manager -->
+          <repositories>
+            <repository>mvn:org.opennms.plugins/org.opennms.plugin.licencemanager/${licencemanagerVersion}/xml/features</repository>
+            <repository>mvn:org.opennms.plugins/org.opennms.plugin.featuremanager/${featuremanagerVersion}/xml/features</repository>
+          </repositories>
+
+          <features>
+            <feature>opennms-core</feature>
+            <feature>vaadin</feature>
+            <feature>org.opennms.plugin.licencemanager</feature>
+            <feature>org.opennms.plugin.featuremanager</feature>
+          </features>
+
+        </configuration>
+      </plugin>
+
+    </plugins>
+  </build>
+
+  <dependencies>
+    <!-- OpenNMS Vaadin Dependencies -->
+    <dependency>
+      <groupId>org.opennms.features</groupId>
+      <artifactId>vaadin</artifactId>
+      <type>pom</type>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.vaadin-components</groupId>
+      <artifactId>core</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+
+    <!-- OpenNMS core Dependencies -->
+    <dependency>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>spring-dependencies</artifactId>
+      <scope>provided</scope>
+      <type>pom</type>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.core</groupId>
+      <artifactId>org.opennms.core.lib</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-config</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-dao</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-web-api</artifactId>
+      <scope>provided</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>javax.ws.rs</groupId>
+          <artifactId>javax.ws.rs-api</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features</groupId>
+      <artifactId>org.opennms.features.name-cutter</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>commons-lang</groupId>
+      <artifactId>commons-lang</artifactId>
+      <scope>provided</scope>
+    </dependency>
+
+    <!-- logging dependency -->
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+      <scope>provided</scope>
+    </dependency>
+
+    <!-- OSGi Dependencies -->
+
+    <!-- BlueprintContainer from Apache Aries -->
+    <dependency>
+      <groupId>org.apache.aries.blueprint</groupId>
+      <artifactId>org.apache.aries.blueprint.core</artifactId>
+      <version>1.4.1</version> <!-- from Karaf -->
+      <scope>provided</scope>
+    </dependency>
+
+
+    <!-- licence / feature manager dependencies -->
+    <!-- Note feature.xml downloaded here for use later in assembly -->
+    <dependency>
+      <groupId>org.opennms.plugins</groupId>
+      <artifactId>org.opennms.plugin.licencemanager</artifactId>
+      <version>${licencemanagerVersion}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.plugins</groupId>
+      <artifactId>org.opennms.plugin.licencemanager</artifactId>
+      <version>${licencemanagerVersion}</version>
+      <classifier>features</classifier>
+      <type>xml</type>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.plugins</groupId>
+      <artifactId>org.opennms.plugin.featuremanager</artifactId>
+      <version>${featuremanagerVersion}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.plugins</groupId>
+      <artifactId>org.opennms.plugin.featuremanager</artifactId>
+      <version>${featuremanagerVersion}</version>
+      <classifier>features</classifier>
+      <type>xml</type>
+    </dependency>
+
+    <!-- plugin-manager core dependencies -->
+    <dependency>
+      <groupId>org.opennms.plugins</groupId>
+      <artifactId>org.opennms.plugin.pluginmanager.pluginmanager-core</artifactId>
+      <version>${pluginmanagerVersion}</version>
+      <scope>provided</scope>
+    </dependency>
+
+    <!--test dependencies -->
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+  </dependencies>
+
+  <repositories>
+    <repository>
+      <id>vaadin-snapshots</id>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+      <url>http://maven.opennms.org/content/groups/vaadin-snapshot/</url>
+    </repository>
+    <repository>
+      <id>vaadin-addons</id>
+      <url>http://maven.opennms.org/content/groups/vaadin.com-addons/</url>
+    </repository>
+    <repository>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <id>opennms-repo</id>
+      <name>OpenNMS Repository</name>
+      <url>http://maven.opennms.org/content/groups/opennms.org-release</url>
+    </repository>
+    <repository>
+      <id>opennms-snapshots</id>
+      <name>OpenNMS Snapshot Maven Repository</name>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+      <url>http://maven.opennms.org/content/groups/opennms.org-snapshot</url>
+    </repository>
+  </repositories>
+
+  <pluginRepositories>
+    <pluginRepository>
+      <id>codehaus-snapshots</id>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+      <url>http://maven.opennms.org/content/groups/codehaus.org-snapshot/</url>
+    </pluginRepository>
+    <pluginRepository>
+      <id>vaadin-snapshots</id>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+      <url>http://maven.opennms.org/content/groups/vaadin-snapshot/</url>
+    </pluginRepository>
+  </pluginRepositories>
+
+</project>

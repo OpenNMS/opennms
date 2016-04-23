@@ -34,6 +34,7 @@
       <property name="isisElementDao" ref="isisElementDao" />
       <property name="bridgeElementDao" ref="bridgeElementDao" />
       <property name="ipNetToMediaDao" ref="ipNetToMediaDao" />
+      <property name="bridgeTopologyDao" ref="bridgeTopologyDao" />
     </bean>
 
     <bean id="linkdConfig" class="org.opennms.netmgt.config.EnhancedLinkdConfigFactory" lazy-init="true"/>

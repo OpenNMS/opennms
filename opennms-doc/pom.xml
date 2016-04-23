@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.opennms</groupId>
         <artifactId>opennms</artifactId>
-        <version>18.0.0-SNAPSHOT</version>
+        <version>19.0.0-SNAPSHOT</version>
     </parent>
     <groupId>org.opennms.doc</groupId>
     <artifactId>parent</artifactId>
@@ -116,7 +116,9 @@
                     <outputDirectory>${asciidoc.output.directory}</outputDirectory>
                     <imagesDir>images</imagesDir>
                     <attributes>
+                        <opennms-product-name>OpenNMS Horizon</opennms-product-name>
                         <opennms-version>${project.version}</opennms-version>
+                        <opennms-package-base-name>opennms</opennms-package-base-name>
                         <jasperReportsVersion>${jasperreportsVersion}</jasperReportsVersion>
                     </attributes>
                 </configuration>

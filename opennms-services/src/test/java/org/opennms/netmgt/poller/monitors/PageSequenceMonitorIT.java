@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.poller.monitors;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -103,6 +104,7 @@ public class PageSequenceMonitorIT {
         setPageSequenceParam("localhost");
         PollStatus googleStatus = m_monitor.poll(getHttpService("localhost"), m_params);
         assertTrue("Expected available but was "+googleStatus+": reason = "+googleStatus.getReason(), googleStatus.isAvailable());
+        assertTrue("Expected a DS called 'response-time' but did not find one", googleStatus.getProperties().containsKey(PollStatus.PROPERTY_RESPONSE_TIME));
     }
 
     @Test
@@ -111,7 +113,10 @@ public class PageSequenceMonitorIT {
         m_params.put("timeout", "500");
         m_params.put("retries", "0");
         PollStatus notLikely = m_monitor.poll(getHttpService("bogus", InetAddressUtils.addr("1.1.1.1")), m_params);
-        assertTrue("should not be available", notLikely.isUnavailable());
+        assertTrue("Should not be available", notLikely.isUnavailable());
+        // Check to make sure that the connection message is nice
+        assertEquals("Connect to 1.1.1.1:10342 [/1.1.1.1] failed: connect timed out", notLikely.getReason());
+        assertTrue("Expected a DS called 'response-time' but did not find one", notLikely.getProperties().containsKey(PollStatus.PROPERTY_RESPONSE_TIME));
     }
 
     private void setPageSequenceParam(String virtualHost) {
@@ -141,6 +146,7 @@ public class PageSequenceMonitorIT {
         try {
             PollStatus googleStatus = m_monitor.poll(getHttpService("scgi.ebay.com"), m_params);
             assertTrue("Expected available but was "+googleStatus+": reason = "+googleStatus.getReason(), googleStatus.isAvailable());
+            assertTrue("Expected a DS called 'response-time' but did not find one", googleStatus.getProperties().containsKey(PollStatus.PROPERTY_RESPONSE_TIME));
         } finally {
             // Print some debug output if necessary
         }
@@ -175,6 +181,7 @@ public class PageSequenceMonitorIT {
         try {
             PollStatus googleStatus = m_monitor.poll(getHttpService("scgi.ebay.com"), m_params);
             assertTrue("Expected available but was "+googleStatus+": reason = "+googleStatus.getReason(), googleStatus.isAvailable());
+            assertTrue("Expected a DS called 'response-time' but did not find one", googleStatus.getProperties().containsKey(PollStatus.PROPERTY_RESPONSE_TIME));
         } finally {
             // Print some debug output if necessary
         }
@@ -188,6 +195,7 @@ public class PageSequenceMonitorIT {
         try {
             PollStatus googleStatus = m_monitor.poll(getHttpService("scgi.ebay.com"), m_params);
             assertTrue("Expected available but was "+googleStatus+": reason = "+googleStatus.getReason(), googleStatus.isAvailable());
+            assertTrue("Expected a DS called 'response-time' but did not find one", googleStatus.getProperties().containsKey(PollStatus.PROPERTY_RESPONSE_TIME));
         } finally {
             // Print some debug output if necessary
         }
@@ -211,7 +219,7 @@ public class PageSequenceMonitorIT {
 
         PollStatus status = m_monitor.poll(getHttpService("localhost"), m_params);
         assertTrue("Expected available but was "+status+": reason = "+status.getReason(), status.isAvailable());
-
+        assertTrue("Expected a DS called 'response-time' but did not find one", status.getProperties().containsKey(PollStatus.PROPERTY_RESPONSE_TIME));
     }
 
     @Test
@@ -224,6 +232,7 @@ public class PageSequenceMonitorIT {
 
         PollStatus status = m_monitor.poll(getHttpService("www.opennms.com"), m_params);
         assertTrue("Expected available but was "+status+": reason = "+status.getReason(), status.isAvailable());
+        assertTrue("Expected a DS called 'response-time' but did not find one", status.getProperties().containsKey(PollStatus.PROPERTY_RESPONSE_TIME));
     }
 
     @Test
@@ -237,6 +246,7 @@ public class PageSequenceMonitorIT {
 
         PollStatus status = m_monitor.poll(getHttpService("www.opennms.com"), m_params);
         assertTrue("Expected unavailable but was "+status+": reason = "+status.getReason(), status.isDown());
+        assertTrue("Expected a DS called 'response-time' but did not find one", status.getProperties().containsKey(PollStatus.PROPERTY_RESPONSE_TIME));
     }
 
     @Test
@@ -261,6 +271,7 @@ public class PageSequenceMonitorIT {
 
         PollStatus status = m_monitor.poll(getHttpService("localhost"), m_params);
         assertTrue("Expected available but was "+status+": reason = "+status.getReason(), status.isAvailable());
+        assertTrue("Expected a DS called 'response-time' but did not find one", status.getProperties().containsKey(PollStatus.PROPERTY_RESPONSE_TIME));
     }
 
     @Test
@@ -299,6 +310,7 @@ public class PageSequenceMonitorIT {
         try {
             PollStatus status = m_monitor.poll(getHttpService("localhost"), m_params);
             assertTrue("Expected available but was "+status+": reason = "+status.getReason(), status.isAvailable());
+            assertTrue("Expected a DS called 'response-time' but did not find one", status.getProperties().containsKey(PollStatus.PROPERTY_RESPONSE_TIME));
         } finally {
             // Print some debug output if necessary
         }
@@ -332,6 +344,7 @@ public class PageSequenceMonitorIT {
         try {
             PollStatus status = m_monitor.poll(getHttpService("localhost"), params);
             assertTrue("Expected available but was "+status+": reason = "+status.getReason(), status.isAvailable());
+            assertTrue("Expected a DS called 'response-time' but did not find one", status.getProperties().containsKey(PollStatus.PROPERTY_RESPONSE_TIME));
         } finally {
             // Print some debug output if necessary
         }
@@ -357,6 +370,7 @@ public class PageSequenceMonitorIT {
 
         PollStatus status = m_monitor.poll(getHttpService("localhost"), m_params);
         assertTrue("Expected available but was "+status+": reason = "+status.getReason(), status.isAvailable());
+        assertTrue("Expected a DS called 'response-time' but did not find one", status.getProperties().containsKey(PollStatus.PROPERTY_RESPONSE_TIME));
     }
 
     @Test
@@ -379,6 +393,8 @@ public class PageSequenceMonitorIT {
 
         PollStatus status = m_monitor.poll(getHttpService("localhost"), m_params);
         assertTrue("Expected down but was "+status+": reason = "+status.getReason(), status.isDown());
+        assertEquals("Failed to find '/opensadfnms/' in Location: header at http://127.0.0.1:10342/opennms/j_spring_security_check", status.getReason());
+        assertTrue("Expected a DS called 'response-time' but did not find one", status.getProperties().containsKey(PollStatus.PROPERTY_RESPONSE_TIME));
     }
 
     @Test
@@ -396,6 +412,7 @@ public class PageSequenceMonitorIT {
         assertTrue("Expected three DSes", (3 == status.getProperties().size()));
         assertTrue("Expected a DS called 'test1' but did not find one", status.getProperties().containsKey("test1"));
         assertTrue("Expected a DS called 'test2' but did not find one", status.getProperties().containsKey("test2"));
+        assertTrue("Expected a DS called 'response-time' but did not find one", status.getProperties().containsKey(PollStatus.PROPERTY_RESPONSE_TIME));
     }
 
     @Test
@@ -409,6 +426,7 @@ public class PageSequenceMonitorIT {
 
         PollStatus status = m_monitor.poll(getHttpService("localhost"), m_params);
         assertTrue("Expected available but was "+status+": reason = "+status.getReason(), status.isAvailable());
+        assertTrue("Expected a DS called 'response-time' but did not find one", status.getProperties().containsKey(PollStatus.PROPERTY_RESPONSE_TIME));
     }
 
     @Test
@@ -422,5 +440,6 @@ public class PageSequenceMonitorIT {
 
         PollStatus status = m_monitor.poll(getHttpService("localhost"), m_params);
         assertTrue("Expected available but was "+status+": reason = "+status.getReason(), status.isAvailable());
+        assertTrue("Expected a DS called 'response-time' but did not find one", status.getProperties().containsKey(PollStatus.PROPERTY_RESPONSE_TIME));
     }
 }
