@@ -1,0 +1,19 @@
+
+// Allow GitHub image rendering
+:imagesdir: ../../images
+
+[[gu-bsm-sim-mode]]
+=== Simulation Mode
+
+_Simulation Mode_ allows users to _simulate_ the presence of alarms with specific severities.
+This allows users to validate and tune their _Business Service Hierarchies_ until the desired status propagation is achieved.
+
+In order to enter _Simulation Mode_, open a _Business Service Hierarchy_ in the _Topology User Interface_ and toggle the _Simulation Mode_ option in the _Simulate_ menu at the top of the screen.
+
+
+
+Enable simulation mode
+
+What is inherite state vs. reset state
+
+Change state

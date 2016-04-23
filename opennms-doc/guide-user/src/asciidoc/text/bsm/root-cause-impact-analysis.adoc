@@ -1,0 +1,30 @@
+
+// Allow GitHub image rendering
+:imagesdir: ../../images
+
+[[gu-bsm-rc-imp-analysis]]
+=== Root Cause and Impact Analysis
+
+The _Root Cause_ operation can be used to quickly identify the underlying _Reduction Keys_ edges that contribute to the current _Operational Status_ of an element.
+
+
+The _Impact Analysis_ operation, converse to the _Root Cause_ operation, can be used to identify all of the _BS_ affected by a given element.
+
+
+Both of these options are available in the context menu of the _Topology User Interface_ when visualizing _BS_.
+
+[[ug-bsm-example-rca-action]]
+.Example view before performing Root Cause Analysis
+image:bsm/03_bsm-rca-action.png[]
+
+[[ug-bsm-example-rca-results]]
+.Example view after performing Root Cause Analysis
+image:bsm/04_bsm-rca-results.png[]
+
+[[ug-bsm-example-ia-action]]
+.Example view before performing Impact Analysis
+image:bsm/05_bsm-ia-action.png[]
+
+[[ug-bsm-exampleia-results]]
+.Example view after performing Impact Analysis
+image:bsm/06_bsm-ia-results.png[]

@@ -22,3 +22,10 @@ include::text/service-assurance/path-outage.adoc[]
 
 include::text/surveillance-view.adoc[]
 include::text/dashboard.adoc[]
+
+[[gu-bsm]]
+== Busines Service Monitoring
+include::text/bsm/introduction.adoc[]
+include::text/bsm/operational-status.adoc[]
+include::text/bsm/root-cause-impact-analysis.adoc[]
+include::text/bsm/simulation-mode.adoc[]
