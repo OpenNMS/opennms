@@ -91,6 +91,9 @@
 
             <!-- Data Choices -->
             <repository>mvn:org.opennms.features/datachoices/${project.version}/xml/features</repository>
+
+            <!-- OpenNMS Plugin Manager Feature -->
+            <repository>mvn:org.opennms.plugins/vaadin-opennms-pluginmanager/${project.version}/xml/features</repository>
           </repositories>
 
           <!-- 
@@ -230,6 +233,7 @@
             <feature>vaadin-surveillance-views</feature>
             <feature>jira-troubleticketer</feature>
             <feature>datachoices</feature>
+            <feature>vaadin-opennms-pluginmanager</feature>
           </features>
         </configuration>
       </plugin>
@@ -412,6 +416,19 @@
       <version>${project.version}</version>
       <type>pom</type>
       <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.plugins</groupId>
+      <artifactId>vaadin-opennms-pluginmanager</artifactId>
+      <version>${project.version}</version>
+      <type>pom</type>
+      <scope>provided</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>javax.ws.rs</groupId>
+          <artifactId>jsr311-api</artifactId>
+        </exclusion>
+      </exclusions> 
     </dependency>
   </dependencies>
 </project>

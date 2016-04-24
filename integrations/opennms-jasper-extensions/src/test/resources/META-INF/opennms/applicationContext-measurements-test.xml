@@ -9,6 +9,6 @@
            http://www.springframework.org/schema/context/spring-context-4.0.xsd">
 
   <context:annotation-config />
-  <bean id="springTestConfiguration" class="org.opennms.netmgt.jasper.measurement.SpringTestConfiguration"/>
+  <bean id="springTestConfiguration" class="org.opennms.netmgt.jasper.measurement.DefaultSpringConfiguration"/>
 
 </beans>
