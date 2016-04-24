@@ -128,7 +128,9 @@ public class TsrmTicketerPlugin implements Plugin {
                 MXStringType ticketIdFromIncident = new MXStringType();
                 ticketIdFromIncident = incident.getTICKETID();
                 MXStringType description = new MXStringType();
-                description = incident.getDESCRIPTIONLONGDESCRIPTION();
+                description = incident.getDESCRIPTION();
+                MXStringType longDescription = new MXStringType();
+                longDescription = incident.getDESCRIPTIONLONGDESCRIPTION();
                 MXStringType location = new MXStringType();
                 location = incident.getLOCATION();
                 MXStringType reportedBy = new MXStringType();
@@ -149,7 +151,10 @@ public class TsrmTicketerPlugin implements Plugin {
                 ticket.setId(ticketIdFromIncident.getValue());
 
                 if (description != null) {
-                    ticket.setDetails(description.getValue());
+                    ticket.setSummary(description.getValue());
+                }
+                if (longDescription != null) {
+                    ticket.setDetails(longDescription.getValue());
                 }
                 if (reportedBy != null) {
                     ticket.setUser(reportedBy.getValue());
@@ -263,8 +268,12 @@ public class TsrmTicketerPlugin implements Plugin {
         incident.setLOCATION(location);
 
         MXStringType description = new MXStringType();
-        description.setValue(ticket.getDetails());
-        incident.setDESCRIPTIONLONGDESCRIPTION(description);
+        description.setValue(ticket.getSummary());
+        incident.setDESCRIPTION(description);
+
+        MXStringType longDescription = new MXStringType();
+        longDescription.setValue(ticket.getDetails());
+        incident.setDESCRIPTIONLONGDESCRIPTION(longDescription);
 
         MXStringType classStructureId = new MXStringType();
         classStructureId.setValue(ticket.getAttribute(CLASS_STRUCTURE_ID));
