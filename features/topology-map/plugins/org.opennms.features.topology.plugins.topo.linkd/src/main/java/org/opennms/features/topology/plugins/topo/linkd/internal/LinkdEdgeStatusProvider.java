@@ -64,13 +64,18 @@ public class LinkdEdgeStatusProvider implements EdgeStatusProvider {
 EDGES:        for (EdgeRef edgeRef : edges) {
                 LinkdEdge edge = (LinkdEdge) edgeProvider.getEdge(edgeRef);
                 for (OnmsAlarm alarm: getLinkdEdgeDownAlarms()) {
-                    if ( edge.getSource().getId().equals(String.valueOf(alarm.getNodeId()))
+                    if (alarm.getNode().getId() == null)
+                        continue;
+                    if (alarm.getIfIndex() == null)
+                        continue;
+                    int alarmnodeid = alarm.getNode().getId().intValue();
+                    if ( edge.getSourceNodeid() != null && edge.getSourceNodeid().intValue() == alarmnodeid
                             && edge.getSourceEndPoint() != null
                             && edge.getSourceEndPoint().equals(String.valueOf(alarm.getIfIndex()))) {
                         retVal.put(edgeRef, new LinkdEdgeStatus(alarm));
                         continue EDGES;
                     }
-                    if ( edge.getTarget().getId().equals(String.valueOf(alarm.getNodeId()))
+                    if ( edge.getTargetNodeid() != null && edge.getTargetNodeid().intValue() == alarmnodeid
                             && edge.getTargetEndPoint() != null
                             && edge.getTargetEndPoint().equals(String.valueOf(alarm.getIfIndex()))) {
                         retVal.put(edgeRef, new LinkdEdgeStatus(alarm));

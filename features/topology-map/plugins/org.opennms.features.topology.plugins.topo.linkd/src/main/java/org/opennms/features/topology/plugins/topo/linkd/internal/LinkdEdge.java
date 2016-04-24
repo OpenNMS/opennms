@@ -6,6 +6,9 @@ import org.opennms.features.topology.api.topo.Vertex;
 
 public class LinkdEdge extends AbstractEdge {
 
+    private Integer m_sourceNodeid;
+    private Integer m_targetNodeid;
+
     private String m_sourceEndPoint;
     private String m_targetEndPoint;
     
@@ -16,6 +19,22 @@ public class LinkdEdge extends AbstractEdge {
     public LinkdEdge(String namespace, String id, SimpleConnector source,
             SimpleConnector target) {
         super(namespace, id, source, target);
+    }
+
+    public Integer getSourceNodeid() {
+        return m_sourceNodeid;
+    }
+
+    public void setSourceNodeid(Integer sourceNodeid) {
+        m_sourceNodeid = sourceNodeid;
+    }
+
+    public Integer getTargetNodeid() {
+        return m_targetNodeid;
+    }
+
+    public void setTargetNodeid(Integer targetNodeid) {
+        m_targetNodeid = targetNodeid;
     }
 
     public String getSourceEndPoint() {
