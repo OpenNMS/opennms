@@ -28,128 +28,68 @@
 
 package org.opennms.features.topology.plugins.topo.bsm.operations;
 
-import static org.opennms.features.topology.plugins.topo.bsm.GraphVertexToTopologyVertexConverter.createTopologyVertex;
+import java.util.Collection;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
-import java.util.stream.Collectors;
-
-import org.opennms.features.topology.api.GraphContainer;
-import org.opennms.features.topology.api.Operation;
-import org.opennms.features.topology.api.OperationContext;
-import org.opennms.features.topology.api.OperationContext.DisplayLocation;
-import org.opennms.features.topology.api.support.VertexHopGraphProvider.DefaultVertexHopCriteria;
-import org.opennms.features.topology.api.topo.Criteria;
-import org.opennms.features.topology.api.topo.VertexRef;
-import org.opennms.features.topology.plugins.topo.bsm.AbstractBusinessServiceVertex;
 import org.opennms.features.topology.plugins.topo.bsm.BusinessServiceVertex;
 import org.opennms.features.topology.plugins.topo.bsm.BusinessServiceVertexVisitor;
 import org.opennms.features.topology.plugins.topo.bsm.IpServiceVertex;
 import org.opennms.features.topology.plugins.topo.bsm.ReductionKeyVertex;
-import org.opennms.features.topology.plugins.topo.bsm.simulate.SimulationAwareStateMachineFactory;
-import org.opennms.netmgt.bsm.service.BusinessServiceManager;
 import org.opennms.netmgt.bsm.service.BusinessServiceStateMachine;
 import org.opennms.netmgt.bsm.service.model.BusinessService;
 import org.opennms.netmgt.bsm.service.model.IpService;
 import org.opennms.netmgt.bsm.service.model.graph.GraphVertex;
-import org.opennms.netmgt.vaadin.core.InfoDialog;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import com.google.common.collect.Sets;
-
-public class ImpactAnalysisOperation implements Operation {
-    private static final Logger LOG = LoggerFactory.getLogger(ImpactAnalysisOperation.class);
-
-    private BusinessServiceManager businessServiceManager;
+public class ImpactAnalysisOperation extends AbstractAnalysisOperation {
 
     @Override
-    public void execute(List<VertexRef> targets, OperationContext operationContext) {
-        final List<AbstractBusinessServiceVertex> vertices = getVertices(targets);
-        final BusinessServiceStateMachine stateMachine = SimulationAwareStateMachineFactory.createStateMachine(businessServiceManager,
-                operationContext.getGraphContainer().getCriteria());
-        final Set<GraphVertex> graphVerticesToFocus = Sets.newHashSet();
-        for (AbstractBusinessServiceVertex vertex : vertices) {
-            vertex.accept(new BusinessServiceVertexVisitor<Void>() {
-                @Override
-                public Void visit(BusinessServiceVertex vertex) {
-                    BusinessService businessService = businessServiceManager.getBusinessServiceById(vertex.getServiceId());
-                    graphVerticesToFocus.addAll(stateMachine.calculateImpact(businessService));
-                    return null;
-                }
-
-                @Override
-                public Void visit(IpServiceVertex vertex) {
-                    IpService ipService = businessServiceManager.getIpServiceById(vertex.getIpServiceId());
-                    graphVerticesToFocus.addAll(stateMachine.calculateImpact(ipService));
-                    return null;
-                }
-
-                @Override
-                public Void visit(ReductionKeyVertex vertex) {
-                    graphVerticesToFocus.addAll(stateMachine.calculateImpact(vertex.getReductionKey()));
-                    return null;
-                }
-            });
-        }
-        LOG.info("Found {} business services impacted.", graphVerticesToFocus.size());
-
-        if (graphVerticesToFocus.isEmpty()) {
-            new InfoDialog("No result", "No vertices are impacted by the selected vertices.").open();
-        } else {
-            // add to focus
-            GraphContainer container = operationContext.getGraphContainer();
-            removeHopCriteria(container);
-            graphVerticesToFocus.forEach(graphVertex -> container.addCriteria(
-                    new DefaultVertexHopCriteria(createTopologyVertex(graphVertex))));
-            // add the context vertex because it is missing in the root cause result
-            container.addCriteria(new DefaultVertexHopCriteria(targets.get(0)));
-            container.setSemanticZoomLevel(0);
-            container.redoLayout();
-        }
-    }
-
-    public static void removeHopCriteria(GraphContainer container) {
-        Criteria[] currentCriteria = container.getCriteria();
-        for (Criteria c : Arrays.copyOf(currentCriteria, currentCriteria.length)) {
-            if (c instanceof DefaultVertexHopCriteria) {
-                container.removeCriteria(c);
+    public BusinessServiceVertexVisitor<Boolean> getVisitorForSupportedVertices() {
+        return new BusinessServiceVertexVisitor<Boolean>() {
+            @Override
+            public Boolean visit(BusinessServiceVertex vertex) {
+                return true;
             }
-        }
+
+            @Override
+            public Boolean visit(IpServiceVertex vertex) {
+                return true;
+            }
+
+            @Override
+            public Boolean visit(ReductionKeyVertex vertex) {
+                return true;
+            }
+        };
     }
 
     @Override
-    public boolean display(List<VertexRef> targets, OperationContext operationContext) {
-        if (operationContext.getDisplayLocation() == DisplayLocation.MENUBAR) {
-            return false;
-        }
-        return getVertices(targets).size() > 0;
+    public BusinessServiceVertexVisitor<Collection<GraphVertex>> getVisitorForVerticesToFocus(final BusinessServiceStateMachine stateMachine) {
+        return new BusinessServiceVertexVisitor<Collection<GraphVertex>>() {
+            @Override
+            public Collection<GraphVertex> visit(BusinessServiceVertex vertex) {
+                final BusinessService businessService = getBusinessServiceManager().getBusinessServiceById(vertex.getServiceId());
+                return stateMachine.calculateImpact(businessService);
+            }
+
+            @Override
+            public Collection<GraphVertex> visit(IpServiceVertex vertex) {
+                final IpService ipService = getBusinessServiceManager().getIpServiceById(vertex.getIpServiceId());
+                return stateMachine.calculateImpact(ipService);
+            }
+
+            @Override
+            public Collection<GraphVertex> visit(ReductionKeyVertex vertex) {
+                return stateMachine.calculateImpact(vertex.getReductionKey());
+            }
+        };
     }
 
     @Override
-    public boolean enabled(final List<VertexRef> targets, final OperationContext operationContext) {
-        return getVertices(targets).size() > 0;
-    }
-
-    public List<AbstractBusinessServiceVertex> getVertices(List<VertexRef> targets) {
-        if (targets == null) {
-            return Collections.emptyList();
-        }
-        return targets.stream()
-                    .filter(v -> v instanceof AbstractBusinessServiceVertex)
-                    .map(v -> (AbstractBusinessServiceVertex) v)
-                    .collect(Collectors.toList());
+    public String getMessageForNoResultDialog() {
+        return "No root cause was found for the selected vertices.";
     }
 
     @Override
     public String getId() {
         return getClass().getCanonicalName();
-    }
-
-    public void setBusinessServiceManager(BusinessServiceManager businessServiceManager) {
-        this.businessServiceManager = Objects.requireNonNull(businessServiceManager);
     }
 }
