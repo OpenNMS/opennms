@@ -13,6 +13,7 @@
   <modules>
     <module>activemq</module>
     <module>camel</module>
+    <module>collection</module>
     <module>db</module>
     <module>dns</module>
     <module>elasticsearch</module>
