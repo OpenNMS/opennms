@@ -42,7 +42,7 @@ public class HighestSeverityAboveTest {
     @Test
     public void testReduce() {
         HighestSeverityAbove reduceFunction = new HighestSeverityAbove();
-        reduceFunction.setThreshold(Status.CRITICAL);
+        reduceFunction.setThreshold(Status.MAJOR);
 
         assertEquals(Optional.empty(), reduceFunction.reduce(Lists.newArrayList()));
         assertEquals(Optional.empty(), reduceFunction.reduce(Lists.newArrayList(

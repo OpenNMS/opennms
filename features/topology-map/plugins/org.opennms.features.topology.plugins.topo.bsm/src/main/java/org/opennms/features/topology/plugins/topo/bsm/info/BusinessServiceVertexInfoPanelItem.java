@@ -210,6 +210,8 @@ public class BusinessServiceVertexInfoPanelItem extends VertexInfoPanelItem {
      * Window to explain the Threshold function
      */
     private static class ThresholdExplanationWindow extends Window {
+        private static final long serialVersionUID = 1L;
+
         private static final String EDGE_COLUMN = "Edge";
         private static final String STATUS_COLUMN = "Status";
         private static final String WEIGHT_COLUMN = "Weight";

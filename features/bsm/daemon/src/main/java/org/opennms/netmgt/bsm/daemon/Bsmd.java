@@ -195,7 +195,8 @@ public class Bsmd implements SpringServiceDaemon, BusinessServiceStateChangeHand
         }
         org.opennms.netmgt.xml.eventconf.Event event = eventsForUei.get(0);
         if (!reductionKey.equals(event.getAlarmData().getReductionKey())) {
-            throw new IllegalStateException("Unsupported reduction key " + event.getAlarmData().getReductionKey());
+            throw new IllegalStateException(String.format("Unsupported reduction key '%s' for uei '%s'.",
+                    event.getAlarmData().getReductionKey(), uei));
         }
     }
 
@@ -256,13 +257,27 @@ public class Bsmd implements SpringServiceDaemon, BusinessServiceStateChangeHand
         final OnmsSeverity newSeverity = SeverityMapper.toSeverity(newStatus);
         final OnmsSeverity prevSeverity = SeverityMapper.toSeverity(prevStatus);
 
-        final EventBuilder ebldr = new EventBuilder(EventConstants.BUSINESS_SERVICE_OPERATIONAL_STATUS_CHANGED_UEI, NAME);
+        // Always send an serviceOperationalStatusChanged event
+        EventBuilder ebldr = new EventBuilder(EventConstants.BUSINESS_SERVICE_OPERATIONAL_STATUS_CHANGED_UEI, NAME);
         ebldr.addParam(EventConstants.PARM_BUSINESS_SERVICE_ID, businessService.getId());
         ebldr.addParam(EventConstants.PARM_BUSINESS_SERVICE_NAME, businessService.getName());
         ebldr.addParam(EventConstants.PARM_PREV_SEVERITY_ID, prevSeverity.getId());
         ebldr.addParam(EventConstants.PARM_PREV_SEVERITY_LABEL, prevSeverity.getLabel());
         ebldr.addParam(EventConstants.PARM_NEW_SEVERITY_ID, newSeverity.getId());
         ebldr.addParam(EventConstants.PARM_NEW_SEVERITY_LABEL, newSeverity.getLabel());
+        m_eventIpcManager.sendNow(ebldr.getEvent());
+
+        // Generate a serviceProblem or a serviceProblemResolved event based on the current status
+        if (newSeverity.isGreaterThan(OnmsSeverity.NORMAL)) {
+            ebldr = new EventBuilder(EventConstants.BUSINESS_SERVICE_PROBLEM_UEI, NAME);
+            ebldr.addParam(EventConstants.PARM_BUSINESS_SERVICE_ID, businessService.getId());
+            ebldr.addParam(EventConstants.PARM_BUSINESS_SERVICE_NAME, businessService.getName());
+            ebldr.setSeverity(newSeverity.toString());
+        } else {
+            ebldr = new EventBuilder(EventConstants.BUSINESS_SERVICE_PROBLEM_RESOLVED_UEI, NAME);
+            ebldr.addParam(EventConstants.PARM_BUSINESS_SERVICE_ID, businessService.getId());
+            ebldr.addParam(EventConstants.PARM_BUSINESS_SERVICE_NAME, businessService.getName());
+        }
         m_eventIpcManager.sendNow(ebldr.getEvent());
     }
 
