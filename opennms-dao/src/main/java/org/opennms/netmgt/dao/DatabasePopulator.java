@@ -434,6 +434,7 @@ public class DatabasePopulator {
             .setIfDescr("ATM0")
             .setIfAlias("Initial ifAlias value")
             .setIfType(37)
+            .setPhysAddr("34E45604BB69")
             .addIpInterface("192.168.1.1").setIsManaged("M").setIsSnmpPrimary("P");
         //getNodeDao().save(builder.getCurrentNode());
         //getNodeDao().flush();
@@ -445,6 +446,7 @@ public class DatabasePopulator {
             .setIfSpeed(10000000)
             .setIfName("eth0")
             .setIfType(6)
+            .setPhysAddr("C9D2DFC7CB68")
             .addIpInterface("192.168.1.2").setIsManaged("M").setIsSnmpPrimary("S");
         builder.addService(getService("ICMP"));
         builder.addService(getService("HTTP"));
@@ -452,12 +454,14 @@ public class DatabasePopulator {
             .setCollectionEnabled(false)
             .setIfOperStatus(1)
             .setIfSpeed(10000000)
+            .setPhysAddr("EE8CE7F4BE99")
             .addIpInterface("192.168.1.3").setIsManaged("M").setIsSnmpPrimary("N");
         builder.addService(getService("ICMP"));
         builder.addSnmpInterface(4)
             .setCollectionEnabled(false)
             .setIfOperStatus(1)
             .setIfSpeed(10000000)
+            .setPhysAddr("4AF39F080908")
             .addIpInterface("fe80:0000:0000:0000:aaaa:bbbb:cccc:dddd%5").setIsManaged("M").setIsSnmpPrimary("N");
         builder.addService(getService("ICMP"));
         return builder.getCurrentNode();
