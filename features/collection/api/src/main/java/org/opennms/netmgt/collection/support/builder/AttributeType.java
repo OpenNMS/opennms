@@ -37,16 +37,18 @@ package org.opennms.netmgt.collection.support.builder;
  * @author jwhite
  */
 public enum AttributeType {
-    GAUGE("gauge", true),
-    COUNTER("counter", true),
+    GAUGE("gauge", true, "gauge32", "integer32"),
+    COUNTER("counter", true, "counter32"),
     STRING("string", false);
 
     private final String m_name;
     private final boolean m_isNumeric;
+    private final String[] m_aliases;
 
-    private AttributeType(String name, boolean isNumeric) {
+    private AttributeType(String name, boolean isNumeric, String... aliases) {
         m_name = name;
         m_isNumeric = isNumeric;
+        m_aliases = aliases;
     }
 
     public String getName() {
@@ -57,10 +59,27 @@ public enum AttributeType {
         return m_isNumeric;
     }
 
-    public static AttributeType getByName(String name) {
+    public String[] getAliases() {
+        return m_aliases;
+    }
+
+    /**
+     * Parses the attribute type from the given string.
+     *
+     * @param typeAsString type
+     * @return the matching attribute, or null if none was found
+     */
+    public static AttributeType parse(String typeAsString) {
         for (AttributeType type : AttributeType.values()) {
-            if (type.getName().equalsIgnoreCase(name)) {
+            if (type.getName().equalsIgnoreCase(typeAsString)) {
                 return type;
+            } else {
+                // Attribute types can be referred to by many names
+                for (String alias : type.getAliases()) {
+                    if (alias.equalsIgnoreCase(typeAsString)) {
+                        return type;
+                    }
+                }
             }
         }
         return null;

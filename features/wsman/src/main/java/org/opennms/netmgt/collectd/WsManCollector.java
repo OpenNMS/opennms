@@ -204,7 +204,7 @@ public class WsManCollector implements ServiceCollector {
 
             // Associate the values with the configured attributes
             for (Attrib attrib : group.getAttrib()) {
-                AttributeType type = AttributeType.getByName(attrib.getType());
+                AttributeType type = AttributeType.parse(attrib.getType());
                 if (type == null) {
                     LOG.error("Unsupported attribute type: {} for attribute: {} in group: {}. Value will be skipped.",
                             attrib.getType(), attrib.getName(), group.getName());
