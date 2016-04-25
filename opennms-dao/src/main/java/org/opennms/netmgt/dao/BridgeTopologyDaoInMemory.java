@@ -120,6 +120,7 @@ MACLINK:        for (BridgeMacLink link : bridgeMacLinkDao.findByNodeId(nodeid))
         return new SharedSegment();
     }
 
+    @Override
     public Set<BroadcastDomain> getAllPersisted(BridgeBridgeLinkDao bridgeBridgeLinkDao,BridgeMacLinkDao bridgeMacLinkDao) {
         List<SharedSegment> segments = new ArrayList<SharedSegment>();
 

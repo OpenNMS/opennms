@@ -27,4 +27,6 @@ public interface BridgeTopologyDao {
     
     Set<BroadcastDomain> getAll();
 
+    Set<BroadcastDomain> getAllPersisted(BridgeBridgeLinkDao bridgeBridgeLinkDao, BridgeMacLinkDao bridgeMacLinkDao);
+
 }
