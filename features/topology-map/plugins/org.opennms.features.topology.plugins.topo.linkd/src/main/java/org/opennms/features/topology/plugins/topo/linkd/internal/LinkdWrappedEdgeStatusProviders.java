@@ -41,26 +41,17 @@ import org.opennms.features.topology.api.topo.EdgeProvider;
 import org.opennms.features.topology.api.topo.EdgeRef;
 import org.opennms.features.topology.api.topo.EdgeStatusProvider;
 import org.opennms.features.topology.api.topo.Status;
-import org.osgi.framework.ServiceReference;
 
 public class LinkdWrappedEdgeStatusProviders implements EdgeStatusProvider {
 
-    private EdgeStatusProvider m_llpdStatusProvider;
-    private EdgeStatusProvider m_ospfLinkStatusProvider;
-    private EdgeStatusProvider m_isisLinkStatusProvider;
-    private EdgeStatusProvider m_bridgeLinkStatusProvider;
-    private EdgeStatusProvider m_cdpLinkStatusProvider;
+    private EdgeStatusProvider m_edgeStatusProvider;
     private List<EdgeStatusProvider> m_providers;
 
     private Boolean m_enlinkdIsActive = false;
 
     public void init() {
         m_providers = new ArrayList<>();
-        m_providers.add(m_llpdStatusProvider);
-        m_providers.add(m_ospfLinkStatusProvider);
-        m_providers.add(m_isisLinkStatusProvider);
-        m_providers.add(m_bridgeLinkStatusProvider);
-        m_providers.add(m_cdpLinkStatusProvider);
+        m_providers.add(m_edgeStatusProvider);
     }
 
     @Override
@@ -88,28 +79,9 @@ public class LinkdWrappedEdgeStatusProviders implements EdgeStatusProvider {
         }
     }
 
-    public void setLlpdStatusProvider(EdgeStatusProvider llpdStatusProvider) {
-        m_llpdStatusProvider = llpdStatusProvider;
+    public void setEdgeStatusProvider(EdgeStatusProvider edgeStatusProvider) {
+        m_edgeStatusProvider = edgeStatusProvider;
     }
 
-    public void setOspfLinkStatusProvider(EdgeStatusProvider ospfLinkStatusProvider) {
-        m_ospfLinkStatusProvider = ospfLinkStatusProvider;
-    }
-
-    public void setIsisLinkStatusProvider(EdgeStatusProvider isisLinkStatusProvider) {
-        m_isisLinkStatusProvider = isisLinkStatusProvider;
-    }
-
-    public void setBridgeLinkStatusProvider(EdgeStatusProvider bridgeLinkStatusProvider) {
-        m_bridgeLinkStatusProvider = bridgeLinkStatusProvider;
-    }
-
-    public EdgeStatusProvider getCdpLinkStatusProvider() {
-        return m_cdpLinkStatusProvider;
-    }
-
-    public void setCdpLinkStatusProvider(EdgeStatusProvider cdpLinkStatusProvider) {
-        m_cdpLinkStatusProvider = cdpLinkStatusProvider;
-    }
 
 }
