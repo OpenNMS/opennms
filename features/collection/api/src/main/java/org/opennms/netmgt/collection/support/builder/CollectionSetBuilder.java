@@ -85,11 +85,19 @@ public class CollectionSetBuilder {
     }
 
     public CollectionSetBuilder withNumericAttribute(Resource resource, String group, String name, Number value, AttributeType type) {
-        return withAttribute(new NumericAttribute(resource, group, name, value, type));
+        return withAttribute(new NumericAttribute(resource, group, name, value, type, null));
     }
 
     public CollectionSetBuilder withStringAttribute(Resource resource, String group, String name, String value) {
-        return withAttribute(new StringAttribute(resource, group, name, value));
+        return withAttribute(new StringAttribute(resource, group, name, value, null));
+    }
+
+    public CollectionSetBuilder withIdentifiedNumericAttribute(Resource resource, String group, String name, Number value, AttributeType type, String metricId) {
+        return withAttribute(new NumericAttribute(resource, group, name, value, type, metricId));
+    }
+
+    public CollectionSetBuilder withIdentifiedStringAttribute(Resource resource, String group, String name, String value, String metricId) {
+        return withAttribute(new StringAttribute(resource, group, name, value, metricId));
     }
 
     public CollectionSetBuilder withAttribute(Resource resource, String group, String name, String value, AttributeType type) {

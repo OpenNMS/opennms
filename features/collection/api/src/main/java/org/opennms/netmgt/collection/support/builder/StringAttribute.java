@@ -29,8 +29,8 @@
 package org.opennms.netmgt.collection.support.builder;
 
 public class StringAttribute extends Attribute<String> {
-    public StringAttribute(Resource resource, String group, String name, String value) {
-        super(resource, group, name, value, AttributeType.STRING);
+    public StringAttribute(Resource resource, String group, String name, String value, String identifier) {
+        super(resource, group, name, value, AttributeType.STRING, identifier);
     }
 
     @Override

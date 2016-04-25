@@ -29,8 +29,8 @@
 package org.opennms.netmgt.collection.support.builder;
 
 public class NumericAttribute extends Attribute<Number> {
-    public NumericAttribute(Resource resource, String group, String name, Number value, AttributeType type) {
-        super(resource, group, name, value, type);
+    public NumericAttribute(Resource resource, String group, String name, Number value, AttributeType type, String identifier) {
+        super(resource, group, name, value, type, identifier);
         if (!type.isNumeric()) {
             throw new IllegalArgumentException("attribute type " + type  + " is not numeric.");
         }
