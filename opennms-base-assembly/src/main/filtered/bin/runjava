@@ -36,7 +36,8 @@ if [ ! -d "${opennms_home}" ]; then
     opennms_home="$OPENNMS_HOME"
 fi
 
-searchdirs="/usr /opt /Library/Java/JavaVirtualMachines /Library/Java"
+searchdirs="/usr/lib/jvm /usr/java /System/Library/Java/JavaVirtualMachines /Library/Java/JavaVirtualMachines /Library/Java/Home /usr /opt"
+
 dryrun=0
 
 java_conf="$opennms_home/etc/java.conf"
