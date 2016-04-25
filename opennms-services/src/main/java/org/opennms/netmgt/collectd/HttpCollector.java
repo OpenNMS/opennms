@@ -28,7 +28,6 @@
 
 package org.opennms.netmgt.collectd;
 
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -36,14 +35,11 @@ import java.lang.reflect.UndeclaredThrowableException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.charset.Charset;
-import java.nio.file.Path;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -71,23 +67,15 @@ import org.opennms.core.utils.EmptyKeyRelaxedTrustProvider;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.web.HttpClientWrapper;
-import org.opennms.netmgt.collection.api.AttributeGroup;
-import org.opennms.netmgt.collection.api.AttributeGroupType;
 import org.opennms.netmgt.collection.api.AttributeType;
 import org.opennms.netmgt.collection.api.CollectionAgent;
-import org.opennms.netmgt.collection.api.CollectionAttribute;
 import org.opennms.netmgt.collection.api.CollectionInitializationException;
-import org.opennms.netmgt.collection.api.CollectionResource;
 import org.opennms.netmgt.collection.api.CollectionSet;
-import org.opennms.netmgt.collection.api.CollectionSetVisitor;
-import org.opennms.netmgt.collection.api.Persister;
 import org.opennms.netmgt.collection.api.ServiceCollector;
-import org.opennms.netmgt.collection.api.ServiceParameters;
 import org.opennms.netmgt.collection.api.ServiceParameters.ParameterName;
-import org.opennms.netmgt.collection.api.TimeKeeper;
-import org.opennms.netmgt.collection.support.AbstractCollectionAttribute;
-import org.opennms.netmgt.collection.support.AbstractCollectionAttributeType;
-import org.opennms.netmgt.collection.support.AbstractCollectionSet;
+import org.opennms.netmgt.collection.support.builder.CollectionSetBuilder;
+import org.opennms.netmgt.collection.support.builder.CollectionStatus;
+import org.opennms.netmgt.collection.support.builder.NodeLevelResource;
 import org.opennms.netmgt.config.HttpCollectionConfigFactory;
 import org.opennms.netmgt.config.httpdatacollection.Attrib;
 import org.opennms.netmgt.config.httpdatacollection.HttpCollection;
@@ -113,18 +101,9 @@ public class HttpCollector implements ServiceCollector {
 
     private static final NumberFormat PARSER;
 
-    private static final NumberFormat RRD_FORMATTER;
-
     static {
         PARSER = NumberFormat.getNumberInstance();
         ((DecimalFormat)PARSER).setParseBigDecimal(true);
-
-        RRD_FORMATTER = NumberFormat.getNumberInstance();
-        RRD_FORMATTER.setMinimumFractionDigits(0);
-        RRD_FORMATTER.setMaximumFractionDigits(Integer.MAX_VALUE);
-        RRD_FORMATTER.setMinimumIntegerDigits(1);
-        RRD_FORMATTER.setMaximumIntegerDigits(Integer.MAX_VALUE);
-        RRD_FORMATTER.setGroupingUsed(false);
 
         // Make sure that the {@link EmptyKeyRelaxedTrustSSLContext} algorithm
         // is available to JSSE
@@ -134,28 +113,26 @@ public class HttpCollector implements ServiceCollector {
     /** {@inheritDoc} */
     @Override
     public CollectionSet collect(CollectionAgent agent, EventProxy eproxy, Map<String, Object> parameters) {
-        HttpCollectionSet collectionSet = new HttpCollectionSet(agent, parameters);
-        collectionSet.setCollectionTimestamp(new Date());
-        collectionSet.collect();
-        return collectionSet;
+        final CollectionSetBuilder collectionSetBuilder = new CollectionSetBuilder(agent);
+        final HttpCollectorAgent httpCollectorAgent = new HttpCollectorAgent(agent, parameters, collectionSetBuilder);
+        httpCollectorAgent.collect();
+        return collectionSetBuilder.build();
     }
 
-    private static class HttpCollectionSet extends AbstractCollectionSet {
+    private static class HttpCollectorAgent {
         private final CollectionAgent m_agent;
         private final Map<String, Object> m_parameters;
+        private final CollectionSetBuilder m_collectionSetBuilder;
         private Uri m_uriDef;
-        private int m_status;
-        private List<HttpCollectionResource> m_collectionResourceList;
-        private Date m_timestamp;
 
         public Uri getUriDef() {
             return m_uriDef;
         }
 
-        public HttpCollectionSet(CollectionAgent agent, Map<String, Object> parameters) {
+        public HttpCollectorAgent(CollectionAgent agent, Map<String, Object> parameters, CollectionSetBuilder collectionSetBuilder) {
             m_agent = agent;
             m_parameters = parameters;
-            m_status=ServiceCollector.COLLECTION_SUCCEEDED;
+            m_collectionSetBuilder = collectionSetBuilder;
         }
 
         public void collect() {
@@ -166,27 +143,18 @@ public class HttpCollector implements ServiceCollector {
             }
             if (collectionName==null) {
                 LOG.debug("no collection name found in parameters");
-                m_status=ServiceCollector.COLLECTION_FAILED;
+                m_collectionSetBuilder.withStatus(CollectionStatus.FAILED);
                 return;
             }
             HttpCollection collection = HttpCollectionConfigFactory.getInstance().getHttpCollection(collectionName);
-            m_collectionResourceList = new ArrayList<HttpCollectionResource>();
             List<Uri> uriDefs = collection.getUris().getUri();
             for (Uri uriDef : uriDefs) {
                 m_uriDef = uriDef;
-                HttpCollectionResource collectionResource = new HttpCollectionResource(m_agent, uriDef);
                 try {
-                    doCollection(this, collectionResource);
-                    m_collectionResourceList.add(collectionResource);
+                    doCollection(this, m_collectionSetBuilder);
                 } catch (HttpCollectorException e) {
                     LOG.warn("collect: http collection failed", e);
-
-                    /*
-                     * FIXME: This doesn't make sense since everything is SNMP
-                     * collection-centric.  Should probably let the exception
-                     * pass through.
-                     */
-                    m_status=ServiceCollector.COLLECTION_FAILED;
+                    m_collectionSetBuilder.withStatus(CollectionStatus.FAILED);
                 }
             }
         }
@@ -197,32 +165,6 @@ public class HttpCollector implements ServiceCollector {
 
         public Map<String, Object> getParameters() {
             return m_parameters;
-        }
-
-        @Override
-        public int getStatus() {
-            return m_status;
-        }
-
-        public void storeResults(List<HttpCollectionAttribute> results, HttpCollectionResource collectionResource) {
-            collectionResource.storeResults(results);
-        }
-
-        @Override
-        public void visit(CollectionSetVisitor visitor) {
-            visitor.visitCollectionSet(this);
-            for (HttpCollectionResource collectionResource : m_collectionResourceList) {
-                collectionResource.visit(visitor);
-            }
-            visitor.completeCollectionSet(this);
-        }
-
-        @Override
-        public Date getCollectionTimestamp() {
-            return m_timestamp;
-        }
-        public void setCollectionTimestamp(Date timestamp) {
-            this.m_timestamp = timestamp;
         }
 
         public int getPort() { // This method has been created to deal with NMS-4886
@@ -240,7 +182,6 @@ public class HttpCollector implements ServiceCollector {
         }
     }
 
-
     /**
      * Performs HTTP collection.
      * 
@@ -253,38 +194,38 @@ public class HttpCollector implements ServiceCollector {
      * @param collectionSet
      * @throws HttpCollectorException
      */
-    private static void doCollection(final HttpCollectionSet collectionSet, final HttpCollectionResource collectionResource) throws HttpCollectorException {
+    private static void doCollection(final HttpCollectorAgent collectorAgent, final CollectionSetBuilder collectionSetBuilder) throws HttpCollectorException {
         HttpRequestBase method = null;
         HttpClientWrapper clientWrapper = null;
         try {
-            final HttpVersion httpVersion = computeVersion(collectionSet.getUriDef());
+            final HttpVersion httpVersion = computeVersion(collectorAgent.getUriDef());
 
             clientWrapper = HttpClientWrapper.create()
-                    .setConnectionTimeout(ParameterMap.getKeyedInteger(collectionSet.getParameters(), ParameterName.TIMEOUT.toString(), DEFAULT_SO_TIMEOUT))
-                    .setSocketTimeout(ParameterMap.getKeyedInteger(collectionSet.getParameters(), ParameterName.TIMEOUT.toString(), DEFAULT_SO_TIMEOUT))
+                    .setConnectionTimeout(ParameterMap.getKeyedInteger(collectorAgent.getParameters(), ParameterName.TIMEOUT.toString(), DEFAULT_SO_TIMEOUT))
+                    .setSocketTimeout(ParameterMap.getKeyedInteger(collectorAgent.getParameters(), ParameterName.TIMEOUT.toString(), DEFAULT_SO_TIMEOUT))
                     .useBrowserCompatibleCookies();
 
-            if ("https".equals(collectionSet.getUriDef().getUrl().getScheme())) {
+            if ("https".equals(collectorAgent.getUriDef().getUrl().getScheme())) {
                 clientWrapper.useRelaxedSSL("https");
             }
 
             String key = ParameterName.RETRY.toString();
-            if (collectionSet.getParameters().containsKey(ParameterName.RETRIES.toString())) {
+            if (collectorAgent.getParameters().containsKey(ParameterName.RETRIES.toString())) {
                 key = ParameterName.RETRIES.toString();
             }
-            Integer retryCount = ParameterMap.getKeyedInteger(collectionSet.getParameters(), key, DEFAULT_RETRY_COUNT);
+            Integer retryCount = ParameterMap.getKeyedInteger(collectorAgent.getParameters(), key, DEFAULT_RETRY_COUNT);
             clientWrapper.setRetries(retryCount);
 
-            method = buildHttpMethod(collectionSet);
+            method = buildHttpMethod(collectorAgent);
             method.setProtocolVersion(httpVersion);
-            final String userAgent = determineUserAgent(collectionSet);
+            final String userAgent = determineUserAgent(collectorAgent);
             if (userAgent != null && !userAgent.trim().isEmpty()) {
                 clientWrapper.setUserAgent(userAgent);
             }
             final HttpClientWrapper wrapper = clientWrapper;
 
-            if (collectionSet.getUriDef().getUrl().getUserInfo() != null) {
-                final String userInfo = collectionSet.getUriDef().getUrl().getUserInfo();
+            if (collectorAgent.getUriDef().getUrl().getUserInfo() != null) {
+                final String userInfo = collectorAgent.getUriDef().getUrl().getUserInfo();
                 final String[] streetCred = userInfo.split(":", 2);
                 if (streetCred.length == 2) {
                     wrapper.addBasicCredentials(streetCred[0], streetCred[1]);
@@ -296,7 +237,7 @@ public class HttpCollector implements ServiceCollector {
             LOG.info("doCollection: collecting using method: {}", method);
             final CloseableHttpResponse response = clientWrapper.execute(method);
             //Not really a persist as such; it just stores data in collectionSet for later retrieval
-            persistResponse(collectionSet, collectionResource, response);
+            persistResponse(collectorAgent, collectionSetBuilder, response);
         } catch (URISyntaxException e) {
             throw new HttpCollectorException("Error building HttpClient URI", e);
         } catch (IOException e) {
@@ -310,117 +251,44 @@ public class HttpCollector implements ServiceCollector {
         }
     }
 
-    private static class HttpCollectionAttribute extends AbstractCollectionAttribute {
-        private final Object m_value;
-
-        public HttpCollectionAttribute(HttpCollectionResource resource, HttpCollectionAttributeType attribType, Number value) {
-            super(attribType, resource);
-            m_value = value;
-        }
-
-        public HttpCollectionAttribute(HttpCollectionResource resource, HttpCollectionAttributeType attribType, String value) { 
-            super(attribType, resource);
-            m_value = value;
-        }
-
-        @Override
-        public Number getNumericValue() {
-            if (m_value instanceof Number) {
-                return (Number)m_value;
-            } else {
-                try {
-                    return Double.valueOf(m_value.toString());
-                } catch (NumberFormatException nfe) { /* Fall through */ }
-            }
-            LOG.debug("Value for attribute {} does not appear to be a number, skipping", this);
-            return null;
-        }
-
-        @Override
-        public String getStringValue() {
-            return m_value.toString();
-        }
-
-        public String getValueAsString() {
-            if (m_value instanceof Number) {
-                return RRD_FORMATTER.format(m_value);
-            } else {
-                return m_value.toString();
-            }
-        }
-
-        @Override
-        public boolean equals(Object obj) {
-            if (obj instanceof HttpCollectionAttribute) {
-                HttpCollectionAttribute other = (HttpCollectionAttribute)obj;
-                return getName().equals(other.getName());
-            }
-            return false;
-        }
-
-        @Override
-        public int hashCode() {
-            return getName().hashCode();
-        }
-
-        @Override
-        public String toString() {
-            StringBuffer buffer = new StringBuffer();
-            buffer.append("HttpAttribute: ");
-            buffer.append(getName());
-            buffer.append(":");
-            buffer.append(getType());
-            buffer.append(":");
-            buffer.append(getValueAsString());
-            return buffer.toString();
-        }
-
-        @Override
-        public String getMetricIdentifier() {
-            return "Not_Supported_Yet_HTTP_"+getAttributeType().getName();
-        }
-
-    }
-
-    private static List<HttpCollectionAttribute> processResponse(final Locale responseLocale, final String responseBodyAsString, final HttpCollectionSet collectionSet, HttpCollectionResource collectionResource) {
+    private static void processResponse(final Locale responseLocale, final String responseBodyAsString, final HttpCollectorAgent collectorAgent, final CollectionSetBuilder collectionSetBuilder) {
         LOG.debug("processResponse:");
         LOG.debug("responseBody = {}", responseBodyAsString);
-        LOG.debug("getmatches = {}", collectionSet.getUriDef().getUrl().getMatches());
-        List<HttpCollectionAttribute> butes = new LinkedList<HttpCollectionAttribute>();
+        LOG.debug("getmatches = {}", collectorAgent.getUriDef().getUrl().getMatches());
+        int numberOfButes = 0;
         int flags = 0;
-        if (collectionSet.getUriDef().getUrl().isCanonicalEquivalence()) {
+        if (collectorAgent.getUriDef().getUrl().isCanonicalEquivalence()) {
             flags |= Pattern.CANON_EQ;
         }
-        if (collectionSet.getUriDef().getUrl().isCaseInsensitive()) {
+        if (collectorAgent.getUriDef().getUrl().isCaseInsensitive()) {
             flags |= Pattern.CASE_INSENSITIVE;
         }
-        if (collectionSet.getUriDef().getUrl().isComments()) {
+        if (collectorAgent.getUriDef().getUrl().isComments()) {
             flags |= Pattern.COMMENTS;
         }
-        if (collectionSet.getUriDef().getUrl().isDotall()) {
+        if (collectorAgent.getUriDef().getUrl().isDotall()) {
             flags |= Pattern.DOTALL;
         }
-        if (collectionSet.getUriDef().getUrl().isLiteral()) {
+        if (collectorAgent.getUriDef().getUrl().isLiteral()) {
             flags |= Pattern.LITERAL;
         }
-        if (collectionSet.getUriDef().getUrl().isMultiline()) {
+        if (collectorAgent.getUriDef().getUrl().isMultiline()) {
             flags |= Pattern.MULTILINE;
         }
-        if (collectionSet.getUriDef().getUrl().isUnicodeCase()) {
+        if (collectorAgent.getUriDef().getUrl().isUnicodeCase()) {
             flags |= Pattern.UNICODE_CASE;
         }
-        if (collectionSet.getUriDef().getUrl().isUnixLines()) {
+        if (collectorAgent.getUriDef().getUrl().isUnixLines()) {
             flags |= Pattern.UNIX_LINES;
         }
         LOG.debug("flags = {}", flags);
-        Pattern p = Pattern.compile(collectionSet.getUriDef().getUrl().getMatches(), flags);
+        Pattern p = Pattern.compile(collectorAgent.getUriDef().getUrl().getMatches(), flags);
         Matcher m = p.matcher(responseBodyAsString);
 
         final boolean matches = m.matches();
         if (matches) {
             LOG.debug("processResponse: found matching attributes: {}", matches);
-            final List<Attrib> attribDefs = collectionSet.getUriDef().getAttributes().getAttrib();
-            final AttributeGroupType groupType = new AttributeGroupType(collectionSet.getUriDef().getName(), AttributeGroupType.IF_TYPE_ALL);
+            final List<Attrib> attribDefs = collectorAgent.getUriDef().getAttributes().getAttrib();
 
             final List<Locale> locales = new ArrayList<Locale>();
             if (responseLocale != null) {
@@ -431,14 +299,17 @@ public class HttpCollector implements ServiceCollector {
                 locales.add(Locale.ENGLISH);
             }
 
+            // All node resources for HTTP; nothing of interface or "indexed resource" type
+            final NodeLevelResource resource = new NodeLevelResource(collectorAgent.getAgent().getNodeId());
             for (final Attrib attribDef : attribDefs) {
                 final AttributeType type = attribDef.getType();
+
                 String value = null;
                 try {
                     value = m.group(attribDef.getMatchGroup());
                 } catch (final IndexOutOfBoundsException e) {
                     LOG.error("IndexOutOfBoundsException thrown while trying to find regex group, your regex does not contain the following group index: {}", attribDef.getMatchGroup());
-                    LOG.error("Regex statement: {}", collectionSet.getUriDef().getUrl().getMatches());
+                    LOG.error("Regex statement: {}", collectorAgent.getUriDef().getUrl().getMatches());
                     continue;
                 }
 
@@ -459,27 +330,23 @@ public class HttpCollector implements ServiceCollector {
                         continue;
                     }
 
-                    final HttpCollectionAttribute bute = new HttpCollectionAttribute(
-                                                                                     collectionResource,
-                                                                                     new HttpCollectionAttributeType(attribDef, groupType), 
-                                                                                     num
-                            );
-                    LOG.debug("processResponse: adding found numeric attribute: {}", bute);
-                    butes.add(bute);
+                    LOG.debug("processResponse: adding numeric attribute {}", num);
+                    collectionSetBuilder.withNumericAttribute(resource, collectorAgent.getUriDef().getName(), attribDef.getAlias(), num, type);
+                    numberOfButes++;
                 } else {
-                    HttpCollectionAttribute bute =
-                            new HttpCollectionAttribute(
-                                                        collectionResource,
-                                                        new HttpCollectionAttributeType(attribDef, groupType),
-                                                        value);
-                    LOG.debug("processResponse: adding found string attribute: {}", bute);
-                    butes.add(bute);
+                    LOG.debug("processResponse: adding string attribute {}", value);
+                    collectionSetBuilder.withStringAttribute(resource, collectorAgent.getUriDef().getName(), attribDef.getAlias(), value);
+                    numberOfButes++;
                 }
             }
         } else {
             LOG.debug("processResponse: found matching attributes: {}", matches);
         }
-        return butes;
+
+        if (numberOfButes < 1) {
+            LOG.warn("doCollection: no attributes defined by the response: {}", responseBodyAsString.trim());
+            throw new HttpCollectorException("No attributes specified were found.");
+        }
     }
 
     public static class HttpCollectorException extends RuntimeException {
@@ -503,7 +370,7 @@ public class HttpCollector implements ServiceCollector {
         }
     }
 
-    private static void persistResponse(final HttpCollectionSet collectionSet, final HttpCollectionResource collectionResource, final HttpResponse response) throws IOException {
+    private static void persistResponse(final HttpCollectorAgent collectorAgent, final CollectionSetBuilder collectionSetBuilder, final HttpResponse response) throws IOException {
         final String responseString = EntityUtils.toString(response.getEntity());
         if (responseString != null && !"".equals(responseString)) {
             // Get response's locale from the Content-Language header if available
@@ -533,20 +400,12 @@ public class HttpCollector implements ServiceCollector {
                 }
             }
 
-            List<HttpCollectionAttribute> attributes = processResponse(responseLocale, responseString, collectionSet, collectionResource);
-
-            if (attributes.isEmpty()) {
-                LOG.warn("doCollection: no attributes defined by the response: {}", responseString.trim());
-                throw new HttpCollectorException("No attributes specified were found: ");
-            }
-
-            // put the results into the collectionset for later
-            collectionSet.storeResults(attributes, collectionResource);
+            processResponse(responseLocale, responseString, collectorAgent, collectionSetBuilder);
         }
     }
 
-    private static String determineUserAgent(final HttpCollectionSet collectionSet) {
-        String userAgent = collectionSet.getUriDef().getUrl().getUserAgent();
+    private static String determineUserAgent(final HttpCollectorAgent collectorAgent) {
+        String userAgent = collectorAgent.getUriDef().getUrl().getUserAgent();
         return (String) (userAgent == null ? null : userAgent);
     }
 
@@ -555,25 +414,25 @@ public class HttpCollector implements ServiceCollector {
                                Integer.parseInt(uri.getUrl().getHttpVersion().substring(2)));
     }
 
-    private static HttpRequestBase buildHttpMethod(final HttpCollectionSet collectionSet) throws URISyntaxException {
+    private static HttpRequestBase buildHttpMethod(final HttpCollectorAgent collectorAgent) throws URISyntaxException {
         HttpRequestBase method;
-        URI uri = buildUri(collectionSet);
-        if ("GET".equals(collectionSet.getUriDef().getUrl().getMethod())) {
-            method = buildGetMethod(uri, collectionSet);
+        URI uri = buildUri(collectorAgent);
+        if ("GET".equals(collectorAgent.getUriDef().getUrl().getMethod())) {
+            method = buildGetMethod(uri, collectorAgent);
         } else {
-            method = buildPostMethod(uri, collectionSet);
+            method = buildPostMethod(uri, collectorAgent);
         }
 
-        final String virtualHost = collectionSet.getUriDef().getUrl().getVirtualHost();
+        final String virtualHost = collectorAgent.getUriDef().getUrl().getVirtualHost();
         if (virtualHost != null && !virtualHost.trim().isEmpty()) {
             method.setHeader(HTTP.TARGET_HOST, virtualHost);
         }
         return method;
     }
 
-    private static HttpPost buildPostMethod(final URI uri, final HttpCollectionSet collectionSet) {
+    private static HttpPost buildPostMethod(final URI uri, final HttpCollectorAgent collectorAgent) {
         HttpPost method = new HttpPost(uri);
-        List<NameValuePair> postParams = buildRequestParameters(collectionSet);
+        List<NameValuePair> postParams = buildRequestParameters(collectorAgent);
         try {
             UrlEncodedFormEntity entity = new UrlEncodedFormEntity(postParams, "UTF-8");
             method.setEntity(entity);
@@ -583,9 +442,9 @@ public class HttpCollector implements ServiceCollector {
         return method;
     }
 
-    private static HttpGet buildGetMethod(final URI uri, final HttpCollectionSet collectionSet) {
+    private static HttpGet buildGetMethod(final URI uri, final HttpCollectorAgent collectorAgent) {
         URI uriWithQueryString = null;
-        List<NameValuePair> queryParams = buildRequestParameters(collectionSet);
+        List<NameValuePair> queryParams = buildRequestParameters(collectorAgent);
         try {
             StringBuffer query = new StringBuffer();
             query.append(URLEncodedUtils.format(queryParams, "UTF-8"));
@@ -610,34 +469,34 @@ public class HttpCollector implements ServiceCollector {
         }
     }
 
-    private static List<NameValuePair> buildRequestParameters(final HttpCollectionSet collectionSet) {
+    private static List<NameValuePair> buildRequestParameters(final HttpCollectorAgent collectorAgent) {
         List<NameValuePair> retval = new ArrayList<NameValuePair>();
-        if (collectionSet.getUriDef().getUrl().getParameters() == null) {
+        if (collectorAgent.getUriDef().getUrl().getParameters() == null) {
             return retval;
         }
-        List<Parameter> parameters = collectionSet.getUriDef().getUrl().getParameters().getParameter();
+        List<Parameter> parameters = collectorAgent.getUriDef().getUrl().getParameters().getParameter();
         for (Parameter p : parameters) {
             retval.add(new BasicNameValuePair(p.getKey(), p.getValue()));
         }
         return retval;
     }
 
-    private static URI buildUri(final HttpCollectionSet collectionSet) throws URISyntaxException {
+    private static URI buildUri(final HttpCollectorAgent collectorAgent) throws URISyntaxException {
         HashMap<String,String> substitutions = new HashMap<String,String>();
-        substitutions.put("ipaddr", InetAddressUtils.str(collectionSet.getAgent().getAddress()));
-        substitutions.put("nodeid", Integer.toString(collectionSet.getAgent().getNodeId()));
+        substitutions.put("ipaddr", InetAddressUtils.str(collectorAgent.getAgent().getAddress()));
+        substitutions.put("nodeid", Integer.toString(collectorAgent.getAgent().getNodeId()));
 
         final URIBuilder ub = new URIBuilder();
-        ub.setScheme(collectionSet.getUriDef().getUrl().getScheme());
-        ub.setHost(substituteKeywords(substitutions, collectionSet.getUriDef().getUrl().getHost(), "getHost"));
-        ub.setPort(collectionSet.getPort());
-        ub.setPath(substituteKeywords(substitutions, collectionSet.getUriDef().getUrl().getPath(), "getURL"));
+        ub.setScheme(collectorAgent.getUriDef().getUrl().getScheme());
+        ub.setHost(substituteKeywords(substitutions, collectorAgent.getUriDef().getUrl().getHost(), "getHost"));
+        ub.setPort(collectorAgent.getPort());
+        ub.setPath(substituteKeywords(substitutions, collectorAgent.getUriDef().getUrl().getPath(), "getURL"));
 
-        final String query = substituteKeywords(substitutions, collectionSet.getUriDef().getUrl().getQuery(), "getQuery");
+        final String query = substituteKeywords(substitutions, collectorAgent.getUriDef().getUrl().getQuery(), "getQuery");
         final List<NameValuePair> params = URLEncodedUtils.parse(query, Charset.forName("UTF-8"));
         ub.setParameters(params);
 
-        ub.setFragment(substituteKeywords(substitutions, collectionSet.getUriDef().getUrl().getFragment(), "getFragment"));
+        ub.setFragment(substituteKeywords(substitutions, collectorAgent.getUriDef().getUrl().getFragment(), "getFragment"));
         return ub.build();
     }
 
@@ -665,7 +524,6 @@ public class HttpCollector implements ServiceCollector {
         LOG.debug("initialize: Initializing HttpCollector.");
 
         initHttpCollectionConfig();
-        initializeRrdRepository();
     }
 
     private static void initHttpCollectionConfig() {
@@ -681,149 +539,20 @@ public class HttpCollector implements ServiceCollector {
         }
     }
 
-    private static void initializeRrdRepository() throws CollectionInitializationException {
-        LOG.debug("initializeRrdRepository: Initializing RRD repo from HttpCollector...");
-        initializeRrdDirs();
-    }
-
-    private static void initializeRrdDirs() throws CollectionInitializationException {
-        /*
-         * If the RRD file repository directory does NOT already exist, create
-         * it.
-         */
-        StringBuffer sb;
-        File f = new File(HttpCollectionConfigFactory.getInstance().getRrdPath());
-        if (!f.isDirectory()) {
-            if (!f.mkdirs()) {
-                sb = new StringBuffer();
-                sb.append("initializeRrdDirs: Unable to create RRD file repository.  Path doesn't already exist and could not make directory: ");
-                sb.append(HttpCollectionConfigFactory.getInstance().getRrdPath());
-                LOG.error(sb.toString());
-                throw new CollectionInitializationException(sb.toString());
-            }
-        }
-    }
-
     /** {@inheritDoc} */
     @Override
     public void initialize(CollectionAgent agent, Map<String, Object> parameters) {
         LOG.debug("initialize: Initializing HTTP collection for agent: {}", agent);
-
-        // Add any initialization here
     }
 
-    /**
-     * <p>release</p>
-     */
     @Override
     public void release() {
-        // TODO Auto-generated method stub
+        // pass
     }
 
-    /** {@inheritDoc} */
     @Override
     public void release(CollectionAgent agent) {
-        // TODO Auto-generated method stub
-    }
-
-
-    private static class HttpCollectionResource implements CollectionResource {
-
-        private final CollectionAgent m_agent;
-        private final AttributeGroup m_attribGroup;
-
-        public HttpCollectionResource(CollectionAgent agent, Uri uriDef) {
-            m_agent=agent;
-            m_attribGroup=new AttributeGroup(this, new AttributeGroupType(uriDef.getName(), AttributeGroupType.IF_TYPE_ALL));
-        }
-
-        public void storeResults(List<HttpCollectionAttribute> results) {
-            for(HttpCollectionAttribute attrib: results) {
-                m_attribGroup.addAttribute(attrib);
-            }
-        }
-
-        //A rescan is never needed for the HttpCollector
-        @Override
-        public boolean rescanNeeded() {
-            return false;
-        }
-
-        @Override
-        public boolean shouldPersist(ServiceParameters params) {
-            return true;
-        }
-
-        @Override
-        public String getOwnerName() {
-            return m_agent.getHostAddress();
-        }
-
-        @Override
-        public Path getPath() {
-            return m_agent.getStorageDir().toPath();
-        }
-
-        @Override
-        public void visit(CollectionSetVisitor visitor) {
-            visitor.visitResource(this);
-            m_attribGroup.visit(visitor);
-            visitor.completeResource(this);
-        }
-
-        @Override
-        public String getResourceTypeName() {
-            return CollectionResource.RESOURCE_TYPE_NODE; //All node resources for HTTP; nothing of interface or "indexed resource" type
-        }
-
-        @Override
-        public String getInstance() {
-            return null;
-        }
-
-        @Override
-        public String getInterfaceLabel() {
-            return null;
-        }
-
-        @Override
-        public String getParent() {
-            return m_agent.getStorageDir().toString();
-        }
-
-        @Override
-        public TimeKeeper getTimeKeeper() {
-            return null;
-        }
-    }
-
-    private static class HttpCollectionAttributeType extends AbstractCollectionAttributeType {
-        private final Attrib m_attribute;
-
-        public HttpCollectionAttributeType(Attrib attribute, AttributeGroupType groupType) {
-            super(groupType);
-            m_attribute=attribute;
-        }
-
-        @Override
-        public void storeAttribute(CollectionAttribute attribute, Persister persister) {
-            if (m_attribute.getType().isNumeric()) {
-                persister.persistNumericAttribute(attribute);
-            } else {
-                persister.persistStringAttribute(attribute);
-            }
-        }
-
-        @Override
-        public String getName() {
-            return m_attribute.getAlias();
-        }
-
-        @Override
-        public AttributeType getType() {
-            return m_attribute.getType();
-        }
-
+        // pass
     }
 
     /** {@inheritDoc} */
