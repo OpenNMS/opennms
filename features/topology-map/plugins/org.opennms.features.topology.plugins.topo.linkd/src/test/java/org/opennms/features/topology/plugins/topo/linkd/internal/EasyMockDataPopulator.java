@@ -29,7 +29,6 @@
 package org.opennms.features.topology.plugins.topo.linkd.internal;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -386,6 +385,7 @@ public class EasyMockDataPopulator {
         this.m_nodeDao = nodeDao;
     }
 
+    @SuppressWarnings("deprecation")
     public void check(GraphProvider topologyProvider) {
         String vertexNamespace = topologyProvider.getVertexNamespace();
         Assert.assertEquals(8, topologyProvider.getVertices().size());

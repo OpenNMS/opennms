@@ -28,13 +28,11 @@
 
 package org.opennms.features.topology.plugins.topo.linkd.internal.operations;
 
-import org.apache.xpath.operations.Bool;
 import org.opennms.features.topology.api.AbstractCheckedOperation;
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.OperationContext;
 import org.opennms.features.topology.api.topo.EdgeStatusProvider;
 import org.opennms.features.topology.api.topo.VertexRef;
-import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 
 import java.util.ArrayList;
@@ -42,24 +40,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public class LinkStatusToggleOperation extends AbstractCheckedOperation {
+public class LinkdEdgeStatusToggleOperation extends AbstractCheckedOperation {
 
-    private EdgeStatusProvider m_llpdStatusProvider;
-    private EdgeStatusProvider m_ospfLinkStatusProvider;
-    private EdgeStatusProvider m_isisLinkStatusProvider;
-    private EdgeStatusProvider m_bridgeLinkStatusProvider;
-    private EdgeStatusProvider m_cdpLinkStatusProvider;
+    private EdgeStatusProvider m_edgeStatusProvider;
     private List<EdgeStatusProvider> m_providers;
 
     private Boolean m_enlinkdIsActive = false;
 
     public void init() {
         m_providers = new ArrayList<EdgeStatusProvider>();
-        m_providers.add(m_llpdStatusProvider);
-        m_providers.add(m_ospfLinkStatusProvider);
-        m_providers.add(m_isisLinkStatusProvider);
-        m_providers.add(m_bridgeLinkStatusProvider);
-        m_providers.add(m_cdpLinkStatusProvider);
+        m_providers.add(m_edgeStatusProvider);
     }
 
     @Override
@@ -122,28 +112,8 @@ public class LinkStatusToggleOperation extends AbstractCheckedOperation {
         graphContainer.redoLayout();
     }
 
-    public void setLlpdStatusProvider(EdgeStatusProvider llpdStatusProvider) {
-        m_llpdStatusProvider = llpdStatusProvider;
-    }
-
-    public void setOspfLinkStatusProvider(EdgeStatusProvider ospfLinkStatusProvider) {
-        m_ospfLinkStatusProvider = ospfLinkStatusProvider;
-    }
-
-    public void setIsisLinkStatusProvider(EdgeStatusProvider isisLinkStatusProvider) {
-        m_isisLinkStatusProvider = isisLinkStatusProvider;
-    }
-
-    public void setBridgeLinkStatusProvider(EdgeStatusProvider bridgeLinkStatusProvider) {
-        m_bridgeLinkStatusProvider = bridgeLinkStatusProvider;
-    }
-
-    public EdgeStatusProvider getCdpLinkStatusProvider() {
-        return m_cdpLinkStatusProvider;
-    }
-
-    public void setCdpLinkStatusProvider(EdgeStatusProvider cdpLinkStatusProvider) {
-        m_cdpLinkStatusProvider = cdpLinkStatusProvider;
+    public void setEdgeStatusProvider(EdgeStatusProvider edgeStatusProvider) {
+        m_edgeStatusProvider = edgeStatusProvider;
     }
 
     public void setEnlinkdService(ServiceReference<?> enlinkdService) {
