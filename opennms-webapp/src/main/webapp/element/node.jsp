@@ -618,7 +618,7 @@ function confirmAssetEdit() {
   		 vlanid ${bridge.vlan}
   		</c:if>
   		<c:if test="${! empty bridge.vlanname}">
-  		  (${bridge.vlan})
+  		  (${bridge.vlanname})
   		</c:if>
     </h3>
     </div>
