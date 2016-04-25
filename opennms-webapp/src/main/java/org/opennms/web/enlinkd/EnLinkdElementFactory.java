@@ -528,10 +528,14 @@ public class EnLinkdElementFactory implements InitializingBean,
         }
         List<NodeLinkBridge> nodelinks = new ArrayList<NodeLinkBridge>();
         for (String mac : mactoIpMap.keySet()) {
-            nodelinks.add(convertFromModel(mac,
-                                           m_bridgetopologyDao.getHostNodeSharedSegment(m_bridgeBridgeLinkDao,
-                                                                                        m_bridgeMacLinkDao,
-                                                                                        mac),
+            SharedSegment segment = m_bridgetopologyDao.getHostNodeSharedSegment(m_bridgeBridgeLinkDao,
+                                                                                 m_bridgeMacLinkDao,
+                                                                                 mac);
+            if (segment.isEmpty())
+                continue;
+            if (!segment.containsMac(mac))
+                continue;
+            nodelinks.add(convertFromModel(mac,segment,
                                            getNodePortString(mactoIpMap.get(mac),
                                                              mac)));
         }
