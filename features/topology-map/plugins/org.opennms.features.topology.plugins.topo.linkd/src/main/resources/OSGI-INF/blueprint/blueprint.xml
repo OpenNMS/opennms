@@ -103,7 +103,7 @@ xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0
         <property name="alarmDao" ref="alarmDao"/>
     </bean>
 
-	<bean id="enlinkdWrappedEdgeStatusProvider" class="org.opennms.features.topology.plugins.topo.linkd.internal.operations.LinkdEdgeStatusToggleOperation" init-method="init">
+	<bean id="enlinkdWrappedEdgeStatusProvider" class="org.opennms.features.topology.plugins.topo.linkd.internal.LinkdWrappedEdgeStatusProviders" init-method="init">
         <property name="enlinkdService" ref="enlinkd" />
         <property name="edgeStatusProvider" ref="linkdEdgeStatusProvider"/>
     </bean>
