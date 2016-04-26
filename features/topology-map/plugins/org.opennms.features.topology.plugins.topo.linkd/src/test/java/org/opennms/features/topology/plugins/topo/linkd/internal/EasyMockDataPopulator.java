@@ -385,6 +385,7 @@ public class EasyMockDataPopulator {
         this.m_nodeDao = nodeDao;
     }
 
+    @SuppressWarnings("deprecation")
     public void check(GraphProvider topologyProvider) {
         String vertexNamespace = topologyProvider.getVertexNamespace();
         Assert.assertEquals(8, topologyProvider.getVertices().size());
