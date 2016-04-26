@@ -437,6 +437,9 @@ public final class EventTranslatorConfigFactory implements EventTranslatorConfig
             clonedEvent.setSeverity(null);
             /* the reasoning for alarmData and severity also applies to description (see NMS-4038). */
             clonedEvent.setDescr(null);
+            if (!m_mapping.isPreserveSnmpData()) { // NMS-8374
+                clonedEvent.setSnmp(null);
+            }
             return clonedEvent;
         }
 
