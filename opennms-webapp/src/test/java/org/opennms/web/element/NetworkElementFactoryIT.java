@@ -183,4 +183,27 @@ public class NetworkElementFactoryIT implements InitializingBean {
         Service[] svc = NetworkElementFactory.getInstance(m_appContext).getServicesOnInterface(1, "192.168.1.1");
         assertEquals(2, svc.length);
     }
+
+    @Test
+    @JUnitTemporaryDatabase
+    public void testGetNodeByPhysAddr() {
+        List<OnmsNode> nodes = NetworkElementFactory.getInstance(m_appContext).getNodesFromPhysaddr("34:E4:56:04:BB:69");
+        assertEquals(1, nodes.size());
+        // try without :
+        nodes = NetworkElementFactory.getInstance(m_appContext).getNodesFromPhysaddr("34E45604BB69");
+        assertEquals(1, nodes.size());
+        // try with -
+        nodes = NetworkElementFactory.getInstance(m_appContext).getNodesFromPhysaddr("34-E4-56-04-BB-69");
+        assertEquals(1, nodes.size());
+        // try with lower-case
+        nodes = NetworkElementFactory.getInstance(m_appContext).getNodesFromPhysaddr("34:e4:56:04:bb:69");
+        assertEquals(1, nodes.size());
+    }
+
+    @Test
+    @JUnitTemporaryDatabase
+    public void testGetNodesWithPhysAddr() {
+        List<OnmsNode> nodes = NetworkElementFactory.getInstance(m_appContext).getNodesWithPhysAddr("34:E4:56:04:BB:69");
+        assertEquals(1, nodes.size());
+    }
 }
