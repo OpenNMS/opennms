@@ -40,6 +40,11 @@
                                 are included in the repository tar.gz file, add the feature to this list. -->
                             <features>
                                 <feature>opennms-discoverer</feature>
+                                <feature>opennms-syslogd-listener-javanet</feature>
+                                <feature>opennms-syslogd-listener-camel-netty</feature>
+                                <feature>opennms-syslogd-listener-nio</feature>
+                                <feature>opennms-syslogd-handler-minion</feature>
+                                <feature>opennms-syslogd-handler-kafka</feature>
                             </features>
                             <repository>target/maven-repo</repository>
                         </configuration>
