@@ -38,6 +38,7 @@ import org.apache.activemq.broker.BrokerService;
 import org.apache.activemq.camel.component.ActiveMQComponent;
 import org.apache.camel.CamelContext;
 import org.apache.camel.CamelExecutionException;
+import org.apache.camel.Component;
 import org.apache.camel.Exchange;
 import org.apache.camel.ExchangeTimedOutException;
 import org.apache.camel.Message;
@@ -152,8 +153,15 @@ public class DiscoveryBlueprintIT extends CamelBlueprintTestSupport {
         config.setRestartSleepTime(30000);
         DiscoveryConfigFactory configFactory = new DiscoveryConfigFactory(config);
 
-        services.put( DiscoveryConfigurationFactory.class.getName(),
-                new KeyValueHolder<Object, Dictionary>(configFactory, new Properties() ) );
+        services.put(DiscoveryConfigurationFactory.class.getName(),
+                     new KeyValueHolder<Object, Dictionary>(configFactory,
+                                                            new Properties()));
+
+        Properties props = new Properties();
+        props.setProperty("alias", "onms.broker");
+        services.put(Component.class.getName(),
+                     new KeyValueHolder<Object, Dictionary>(ActiveMQComponent.activeMQComponent("vm://localhost?create=false"),
+                                                            props));
     }
 
     // The location of our Blueprint XML file to be used for testing
@@ -166,7 +174,7 @@ public class DiscoveryBlueprintIT extends CamelBlueprintTestSupport {
     @BeforeClass
     public static void startActiveMQ() throws Exception {
         m_broker = new BrokerService();
-        m_broker.addConnector("vm://localhost");
+        m_broker.addConnector("tcp://127.0.0.1:61616");
         m_broker.start();
     }
 
@@ -186,11 +194,12 @@ public class DiscoveryBlueprintIT extends CamelBlueprintTestSupport {
          */
         SimpleRegistry registry = new SimpleRegistry();
         CamelContext mockDiscoverer = new DefaultCamelContext(registry);
-        mockDiscoverer.addComponent("activemq", ActiveMQComponent.activeMQComponent("vm://localhost?create=false"));
+        mockDiscoverer.addComponent("queuingservice", ActiveMQComponent.activeMQComponent("vm://localhost?create=false"));
+
         mockDiscoverer.addRoutes(new RouteBuilder() {
             @Override
             public void configure() throws Exception {
-                String from = String.format("activemq:Location-%s", LOCATION);
+                String from = String.format("queuingservice:Location-%s", LOCATION);
 
                 from(from)
                 .process(new Processor() {
@@ -258,11 +267,12 @@ public class DiscoveryBlueprintIT extends CamelBlueprintTestSupport {
          */
         SimpleRegistry registry = new SimpleRegistry();
         CamelContext mockDiscoverer = new DefaultCamelContext(registry);
-        mockDiscoverer.addComponent("activemq", ActiveMQComponent.activeMQComponent("vm://localhost?create=false"));
+        mockDiscoverer.addComponent("queuingservice", ActiveMQComponent.activeMQComponent("vm://localhost?create=false"));
+
         mockDiscoverer.addRoutes(new RouteBuilder() {
             @Override
             public void configure() throws Exception {
-                String from = String.format("activemq:Location-%s", LOCATION);
+                String from = String.format("queuingservice:Location-%s", LOCATION);
 
                 from(from)
                 .process(new Processor() {
