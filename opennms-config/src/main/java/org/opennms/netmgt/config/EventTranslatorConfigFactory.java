@@ -429,18 +429,14 @@ public final class EventTranslatorConfigFactory implements EventTranslatorConfig
 
         private Event cloneEvent(Event srcEvent) {
             Event clonedEvent = EventTranslatorConfigFactory.cloneEvent(srcEvent);
-            /* Since several fields are computed based on translated information in 
-             * eventd using the data from eventconf, we unset them here to eventd
+            /* since alarmData and severity are computed based on translated information in 
+             * eventd using the data from eventconf, we unset it here to eventd
              * can reset to the proper new settings.
              */ 
             clonedEvent.setAlarmData(null);
             clonedEvent.setSeverity(null);
+            /* the reasoning for alarmData and severity also applies to description (see NMS-4038). */
             clonedEvent.setDescr(null);
-            clonedEvent.setLogmsg(null);
-            clonedEvent.setOperinstruct(null);
-            clonedEvent.setMask(null);
-            clonedEvent.setSnmp(null);
-            LOG.debug("cloneEvent: {}", clonedEvent);
             return clonedEvent;
         }
 
