@@ -336,6 +336,16 @@ public class WillItUnmarshalIT {
                     ResourceTypes.class,
                     Impl.JAXB);
         }
+
+        // Add all jmx-datacollection configuration files
+        for (final File file : FileUtils.listFiles(new File(getDaemonEtcDirectory(), "jmx-datacollection-config.d"),
+                                                   new String[] { "xml" },
+                                                   true)) {
+            addFile(Source.ABSOLUTE,
+                    file.getPath(),
+                    JmxDatacollectionConfig.class,
+                    Impl.JAXB);
+        }
     }
 
     /**
