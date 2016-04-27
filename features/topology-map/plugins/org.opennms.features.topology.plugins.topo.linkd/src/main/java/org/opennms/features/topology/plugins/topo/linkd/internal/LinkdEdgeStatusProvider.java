@@ -53,7 +53,7 @@ public class LinkdEdgeStatusProvider implements EdgeStatusProvider {
     private AlarmDao m_alarmDao;
 
     @Override
-    public String getNamespace() {
+    public String getNameSpace() {
         return AbstractLinkdTopologyProvider.TOPOLOGY_NAMESPACE_LINKD;
     }
 
