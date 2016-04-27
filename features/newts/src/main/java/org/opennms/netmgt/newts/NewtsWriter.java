@@ -47,6 +47,7 @@ import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.codahale.metrics.Gauge;
+import com.codahale.metrics.Meter;
 import com.codahale.metrics.MetricRegistry;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
@@ -84,6 +85,8 @@ public class NewtsWriter implements WorkHandler<SampleBatchEvent>, DisposableBea
 
     private final int m_numWriterThreads;
 
+    private final Meter m_droppedMetrics;
+
     /**
      * The {@link RingBuffer} doesn't appear to expose any methods that indicate the number
      * of elements that are currently "queued", so we keep track of them with this atomic counter.
@@ -118,6 +121,8 @@ public class NewtsWriter implements WorkHandler<SampleBatchEvent>, DisposableBea
                         return Long.valueOf(m_ringBufferSize);
                     }
                 });
+
+        m_droppedMetrics = registry.meter(MetricRegistry.name("ring-buffer", "dropped-metrics"));
 
         LOG.debug("Using max_batch_size: {} and ring_buffer_size: {}", maxBatchSize, m_ringBufferSize);
         setUpWorkerPool();
@@ -162,6 +167,7 @@ public class NewtsWriter implements WorkHandler<SampleBatchEvent>, DisposableBea
                     .collect(Collectors.joining(", "));
             LOG.error("The ring buffer is full. {} samples associated with resource ids {} will be dropped.",
                     samples.size(), uniqueResourceIds);
+            m_droppedMetrics.mark(samples.size());
             return;
         }
         // Increase our sample counter
