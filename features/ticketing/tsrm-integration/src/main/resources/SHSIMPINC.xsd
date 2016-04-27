@@ -190,6 +190,7 @@
       <xsd:element name="SOURCE" type="MXStringType" minOccurs="0" />
       <xsd:element name="STATUS" type="MXStringType" minOccurs="0" />
       <xsd:element name="STATUSDATE" type="MXDateTimeType" nillable="true" minOccurs="0" />
+      <xsd:element name="STATUSIFACE" type="MXBooleanType" minOccurs="0" />
       <xsd:element name="SUPERVISOR" type="MXStringType" minOccurs="0" />
       <xsd:element name="TARGETCONTACTDATE" type="MXDateTimeType" nillable="true" minOccurs="0" />
       <xsd:element name="TARGETDESC" type="MXStringType" minOccurs="0" />

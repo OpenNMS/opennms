@@ -56,9 +56,18 @@ Following table shows mapping between OpenNMS ticket and TSRM Incident
 | `summary`               | `DESCRIPTION`
 | `details`               | `DESCRIPTIONLONGDESCRIPTION`
 | `user`                  | `REPORTEDBY`
-| `siteId`                | `SITEID`
-| `location`              | `LOCATION`
+| `affectedPerson`        | `AFFECTEDPERSON`
+| `assetNum`              | `ASSETNUM`
+| `classId`               | `CLASS`
 | `classStructureId`      | `CLASSSTRUCTUREID`
+| `commodity`             | `COMMODITY`
+| `location`              | `LOCATION`
 | `ownerGroup`            | `OWNERGROUP`
+| `shsCallerType`         | `SHSCALLERTYPE`
+| `shsReasonForOutage`    | `SHSREASONFOROUTAGE`
+| `shsResolution`         | `SHSRESOLUTION`
+| `shsRoomNumber`         | `SHSROOMNUMBER`
+| `siteId`                | `SITEID`
 | `source`                | `source`
+| `statusIface`           | `STATUSIFACE`
 |===
