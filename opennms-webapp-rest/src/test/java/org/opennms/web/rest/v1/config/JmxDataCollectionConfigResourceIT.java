@@ -80,20 +80,20 @@ public class JmxDataCollectionConfigResourceIT extends AbstractSpringJerseyRestT
         assertNotNull(config);
 
         assertEquals(4, config.getJmxCollectionCount());
-        assertEquals(config.getJmxCollection(0).getRrd().getStep(), 300);
-        assertEquals("jboss", config.getJmxCollection(0).getName());
+
+        assertEquals("jboss", config.getJmxCollection("jboss").getName());
+        assertEquals(300, config.getJmxCollection("jboss").getRrd().getStep());
         assertEquals(4, config.getJmxCollection("jboss").getMbeanCount());
-        assertEquals(4, config.getJmxCollection(0).getMbeanCount());
-        assertEquals(config.getJmxCollection(1).getRrd().getStep(), 300);
-        assertEquals("jsr160", config.getJmxCollection(1).getName());
+
+        assertEquals("jsr160", config.getJmxCollection("jsr160").getName());
+        assertEquals(300, config.getJmxCollection("jsr160").getRrd().getStep());
         assertEquals(31, config.getJmxCollection("jsr160").getMbeanCount());
-        assertEquals(31, config.getJmxCollection(1).getMbeanCount());
 
-        assertEquals(config.getJmxCollection(2).getRrd().getStep(), 300);
-        assertEquals("cassandra21x", config.getJmxCollection(2).getName());
+        assertEquals(300, config.getJmxCollection("cassandra21x").getRrd().getStep());
+        assertEquals("cassandra21x", config.getJmxCollection("cassandra21x").getName());
 
-        assertEquals(config.getJmxCollection(3).getRrd().getStep(), 300);
-        assertEquals("cassandra21x-newts", config.getJmxCollection(3).getName());
+        assertEquals(300, config.getJmxCollection("cassandra21x-newts").getRrd().getStep());
+        assertEquals("cassandra21x-newts", config.getJmxCollection("cassandra21x-newts").getName());
     }
 
 }
