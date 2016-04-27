@@ -56,9 +56,9 @@
 		<argument ref="eventForwarder" />
 	</bean>
 
-	<bean id="discovery-activemq" class="org.apache.activemq.camel.component.ActiveMQComponent">
+	<bean id="activemq" class="org.apache.activemq.camel.component.ActiveMQComponent">
 		<!-- TODO: HZN-490 Add configurable ActiveMQ URI -->
-		<property name="brokerURL" value="tcp://localhost:61616" />
+		<property name="brokerURL" value="vm://localhost?create=false" />
 		<!-- TODO: HZN-490 Add configurable authentication -->
 		<!--
 		<property name="userName" value="karaf" />

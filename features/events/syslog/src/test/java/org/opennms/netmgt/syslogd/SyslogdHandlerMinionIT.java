@@ -31,8 +31,11 @@ package org.opennms.netmgt.syslogd;
 import java.nio.ByteBuffer;
 import java.util.Dictionary;
 import java.util.Map;
+import java.util.Properties;
 
 import org.apache.activemq.broker.BrokerService;
+import org.apache.activemq.camel.component.ActiveMQComponent;
+import org.apache.camel.Component;
 import org.apache.camel.component.mock.MockEndpoint;
 import org.apache.camel.test.blueprint.CamelBlueprintTestSupport;
 import org.apache.camel.util.KeyValueHolder;
@@ -86,6 +89,11 @@ public class SyslogdHandlerMinionIT extends CamelBlueprintTestSupport {
 	@Override
 	protected void addServicesOnStartup(Map<String, KeyValueHolder<Object, Dictionary>> services) {
 		// Register any mock OSGi services here
+		ActiveMQComponent queueingservice = new ActiveMQComponent();
+		queueingservice.setBrokerURL("tcp://127.0.0.1:61716");
+		Properties props = new Properties();
+		props.put("alias", "opennms.broker");
+		services.put(Component.class.getName(), new KeyValueHolder<Object, Dictionary>(queueingservice, props));
 	}
 
 	// The location of our Blueprint XML files to be used for testing
@@ -108,10 +116,10 @@ public class SyslogdHandlerMinionIT extends CamelBlueprintTestSupport {
 		}
 	}
 
-	@Test
+	@Test(timeout=60000)
 	public void testSyslogd() throws Exception {
 		// Expect one SyslogConnection message to be broadcast on the messaging channel
-		MockEndpoint broadcastSyslog = getMockEndpoint("mock:activemq:broadcastSyslog", false);
+		MockEndpoint broadcastSyslog = getMockEndpoint("mock:queuingservice:broadcastSyslog", false);
 		broadcastSyslog.setExpectedMessageCount(1);
 
 		// Create a mock SyslogdConfig
