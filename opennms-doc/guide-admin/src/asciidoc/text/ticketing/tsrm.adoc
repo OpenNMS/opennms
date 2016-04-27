@@ -46,7 +46,7 @@ The plugin should be ready to use. When troubleshooting, consult the following l
 
 ==== Mapping OpenNMS Ticket with TSRM Incident
 
-Following table shows mapping between OpenNMS ticket and TSRM Incident
+Following tables shows mapping between OpenNMS ticket and TSRM Incident
 
 [options="header, autowidth"]
 |===
@@ -56,6 +56,12 @@ Following table shows mapping between OpenNMS ticket and TSRM Incident
 | `summary`               | `DESCRIPTION`
 | `details`               | `DESCRIPTIONLONGDESCRIPTION`
 | `user`                  | `REPORTEDBY`
+|===
+
+Below fields are not part of Ticket, they have to be added as attributes.
+[options="header, autowidth"]
+|===
+|  Ticket Field           | TSRM Incident Field
 | `affectedPerson`        | `AFFECTEDPERSON`
 | `assetNum`              | `ASSETNUM`
 | `classId`               | `CLASS`
