@@ -198,7 +198,8 @@ public class RrdStatisticAttributeVisitorTest extends TestCase {
                                      0,
                                      null,
                                      null,
-                                     Collections.singletonList(source)))
+                                     Collections.singletonList(source),
+                                    false))
                 .andReturn(results);
         m_statisticVisitor.visit(attribute, 1.0);
 
@@ -254,7 +255,8 @@ public class RrdStatisticAttributeVisitorTest extends TestCase {
                                      0,
                                      null,
                                      null,
-                                     Collections.singletonList(source)))
+                                     Collections.singletonList(source),
+                                    false))
                 .andReturn(results);
 
         m_mocks.replayAll();

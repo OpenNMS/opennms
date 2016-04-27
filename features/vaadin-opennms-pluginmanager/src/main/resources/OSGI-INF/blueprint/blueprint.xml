@@ -1,0 +1,180 @@
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0"
+  xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0 
+					http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd
+					http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0 
+					https://svn.apache.org/repos/asf/aries/tags/blueprint-0.3.1/blueprint-cm/src/main/resources/org/apache/aries/blueprint/compendium/cm/blueprint-cm-1.1.0.xsd
+					http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 
+					https://svn.apache.org/repos/asf/aries/tags/blueprint-0.3.1/blueprint-core/src/main/resources/org/apache/aries/blueprint/ext/blueprint-ext.xsd">
+
+  <!-- register product information with product registry in licence manager-->
+  <reference id="productRegister" interface="org.opennms.karaf.productpub.ProductRegister" timeout="10000" />
+
+  <bean id="localBundleProductDescription" class="org.opennms.karaf.productpub.BundleProductSpecImpl" init-method="registerSpec" destroy-method="unregisterSpec">
+    <property name="bundleContext" ref="blueprintBundleContext"></property>
+    <property name="productPublisher" ref="productRegister"></property>
+    <property name="productMetadataUri" value="/productSpec.xml"></property>
+  </bean>
+
+  <!-- Provides OpenNMS headers for admin pages -->
+  <reference id="onmsHeaderProvider" interface="org.opennms.web.api.OnmsHeaderProvider" availability="optional" />
+  
+  <!-- configure the rest service for plugin manager -->
+  <!-- ReST Servelet configuration for jersey -->
+  <service interface="javax.servlet.http.HttpServlet">
+    <service-properties>
+      <entry key="alias" value="/pluginmgr/rest/v1-0" />
+    </service-properties>
+    <bean class="com.sun.jersey.spi.container.servlet.ServletContainer">
+      <argument ref="pluginManagerRestApplication" />
+    </bean>
+  </service>
+
+  <bean id="pluginManagerRestApplication" class="org.opennms.features.pluginmgr.rest.impl.PluginManagerRestApplication" destroy-method="destroyMethod"/>
+
+  <!-- ServiceLoader(FeaturesService featuresService) -->
+  <bean id="serviceLoader" class="org.opennms.features.pluginmgr.rest.impl.ServiceLoader">
+    <argument ref="pluginManagerImpl" />
+  </bean>
+
+  <!-- configures the main ui for plugin application -->
+  
+  <!-- Main Plugin UI -->
+  <bean id="pluginManagerAdminApplicationFactory" class="org.opennms.features.pluginmgr.vaadin.config.opennms.PluginManagerAdminApplicationFactory">
+    <property name="blueprintContainer" ref="blueprintContainer"/> <!-- predefined -->
+    <property name="pluginManager" ref="pluginManagerImpl" />
+    <property name="headerProvider" ref="onmsHeaderProvider" />
+    <property name="headerLinks">
+      <map>
+        <entry key="Licence Manager Diagnostics" value="/opennms/admin/plugin-manager-licence-diagnostics" />
+        <entry key="Feature Manager Diagnostics" value="/opennms/admin/plugin-manager-feature-diagnostics" />
+        <entry key="Plugin Manager Diagnostics" value="/opennms/admin/plugin-manager-plugin-diagnostics" />
+      </map>
+    </property>
+  </bean>
+  
+  <!-- wires in the list editor prototype -->
+  <bean id="instanceListEditor" class="org.opennms.features.pluginmgr.vaadin.pluginmanager.SimpleInstanceListEditor" scope="prototype"/>
+  
+
+  <!-- plugin manager service -->
+  <service ref="pluginManagerImpl" interface="org.opennms.features.pluginmgr.PluginManager" />
+     
+  <bean id="pluginManagerImpl" class="org.opennms.features.pluginmgr.PluginManagerImpl" init-method="load" destroy-method="close">
+    <!-- setting defaults if no pluginManifestData.xml -->
+    <property name="fileUri" value="${pluginModelfileUri}" />
+    <property name="pluginServerUsername" value="${pluginServerUsername}" />
+    <property name="pluginServerPassword" value="${pluginServerPassword}" />
+    <property name="pluginServerUrl" value="${pluginServerUrl}" />
+    <property name="licenceShoppingCartUrl" value="${licenceShoppingCartUrl}" />
+    <!-- default local values for local karaf system if no pluginManifestData.xml -->
+    <property name="localKarafInstanceName" value="${localKarafInstanceName}" />
+    <property name="localKarafInstanceUserName" value="${localKarafInstanceUserName}" />
+    <property name="localKarafInstanceUserName" value="${localKarafInstanceUserName}" />
+    <property name="localKarafInstanceUrl" value="${localKarafInstanceUrl}" />
+    <property name="localRemoteIsAccessible" value="${localRemoteIsAccessible}" />
+    <property name="localAllowUpdateMessages" value="${localAllowUpdateMessages}" />
+  </bean>
+  
+
+  <service id="pluginManagerRestService" interface="org.opennms.vaadin.extender.ApplicationFactory" ref="pluginManagerAdminApplicationFactory">
+    <service-properties>
+      <entry key="alias" value="/admin/plugin-manager" />
+    </service-properties>
+  </service>
+
+  <!-- feature Diagnostics page -->
+  <bean id="featureDiagnosticsApplicationFactory" class="org.opennms.features.pluginmgr.vaadin.config.opennms.SimpleIframeInVaadinApplicationFactory">
+    <property name="headerProvider" ref="onmsHeaderProvider" />
+    <property name="iframePageUrl" value="/opennms/featuremgr/diagnostics/feature-mgr-rest-diagnostics.html" />
+    <property name="headerLinks">
+      <map>
+        <entry key="Return to Plugin Manager" value="/opennms/admin/plugin-manager" />
+      </map>
+    </property>
+  </bean>
+
+  <service id="featureDiagnosticsService" interface="org.opennms.vaadin.extender.ApplicationFactory" ref="featureDiagnosticsApplicationFactory">
+    <service-properties>
+      <entry key="alias" value="/admin/plugin-manager-feature-diagnostics" />
+    </service-properties>
+  </service>
+
+  <!-- Licence Diagnostics page -->
+  <bean id="licenceDiagnosticsApplicationFactory" class="org.opennms.features.pluginmgr.vaadin.config.opennms.SimpleIframeInVaadinApplicationFactory">
+    <property name="headerProvider" ref="onmsHeaderProvider" />
+    <property name="iframePageUrl" value="/opennms/licencemgr/diagnostics/licence-mgr-rest-diagnostics.html" />
+    <property name="headerLinks">
+      <map>
+        <entry key="Return to Plugin Manager" value="/opennms/admin/plugin-manager" />
+      </map>
+    </property>
+  </bean>
+
+  <service id="licenceDiagnosticsService" interface="org.opennms.vaadin.extender.ApplicationFactory" ref="licenceDiagnosticsApplicationFactory">
+    <service-properties>
+      <entry key="alias" value="/admin/plugin-manager-licence-diagnostics" />
+    </service-properties>
+  </service>
+  
+  <!-- Plugin Diagnostics page -->
+  <bean id="pluginDiagnosticsApplicationFactory" class="org.opennms.features.pluginmgr.vaadin.config.opennms.SimpleIframeInVaadinApplicationFactory">
+    <property name="headerProvider" ref="onmsHeaderProvider" />
+    <property name="iframePageUrl" value="/opennms/pluginmgr/diagnostics/plugin-mgr-rest-diagnostics.html" />
+    <property name="headerLinks">
+      <map>
+        <entry key="Return to Plugin Manager" value="/opennms/admin/plugin-manager" />
+      </map>
+    </property>
+  </bean>
+
+  <service id="pluginDiagnosticsService" interface="org.opennms.vaadin.extender.ApplicationFactory" ref="pluginDiagnosticsApplicationFactory">
+    <service-properties>
+      <entry key="alias" value="/admin/plugin-manager-plugin-diagnostics" />
+    </service-properties>
+  </service> 
+  
+  <!-- Maps in the test resource files for serving basic test pages -->
+  <bean id="testResourceMapping" class="org.ops4j.pax.web.extender.whiteboard.runtime.DefaultResourceMapping">
+    <property name="alias" value="/pluginmgr/diagnostics" />
+    <property name="path" value="/diagnostics" />
+  </bean>
+
+  <service id="testResources" ref="testResourceMapping" interface="org.ops4j.pax.web.extender.whiteboard.ResourceMapping" />
+  
+
+  <!-- Setting up link to plugin manager in admin page -->
+
+  <bean id="pluginManagerAdminUiLink" class="org.opennms.netmgt.vaadin.core.AdminPageNavEntry">
+    <!-- <property name="url" value="admin/pluginManager.jsp" /> -->
+    <property name="url" value="admin/plugin-manager" />
+    <property name="name" value="OpenNMS Plugin Manager" />
+  </bean>
+
+  <service id="pluginManagerAdminUiService" interface="org.opennms.web.navigate.PageNavEntry" ref="pluginManagerAdminUiLink">
+    <service-properties>
+      <entry key="Page" value="admin" />
+      <entry key="Category" value="operations" />
+      <entry key="registration.export" value="true" />
+    </service-properties>
+  </service>
+  
+
+  <!-- load default properties from  org.opennms.features.pluginmgr.config.cfg if exists -->
+  <cm:property-placeholder persistent-id="org.opennms.features.pluginmgr.config" update-strategy="reload">
+    <cm:default-properties>
+      <cm:property name="pluginModelfileUri" value="./etc/pluginManifestData.xml" />
+      <cm:property name="pluginServerUsername" value="admin" />
+      <cm:property name="pluginServerPassword" value="admin" />
+      <cm:property name="pluginServerUrl" value="http://localhost:8980/opennms" />
+      <cm:property name="licenceShoppingCartUrl" value="http://opennms.org" />
+      <!-- default local values for local karaf system if no pluginManifestData.xml -->
+      <cm:property name="localKarafInstanceName" value="localhost" />
+      <cm:property name="localKarafInstanceUserName" value="admin" />
+      <cm:property name="localKarafInstancePassword" value="admin" />
+      <cm:property name="localKarafInstanceUrl" value="http://localhost:8980/opennms" />
+      <cm:property name="localRemoteIsAccessible" value="true" />
+      <cm:property name="localAllowUpdateMessages" value="false" />
+    </cm:default-properties>
+  </cm:property-placeholder>
+
+</blueprint>

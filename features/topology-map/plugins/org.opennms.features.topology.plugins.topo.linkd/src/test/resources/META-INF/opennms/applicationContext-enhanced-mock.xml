@@ -8,6 +8,10 @@
     </bean>
     -->
 
+    <bean class="org.easymock.EasyMock" factory-method="createNiceMock" primary="true" id="bridgeTopologyDao">
+        <constructor-arg value="org.opennms.netmgt.dao.api.BridgeTopologyDao"/>
+    </bean>
+
     <bean class="org.easymock.EasyMock" factory-method="createNiceMock" primary="true" id="bridgeBridgeLinkDao">
         <constructor-arg value="org.opennms.netmgt.dao.api.BridgeBridgeLinkDao"/>
     </bean>
@@ -20,12 +24,20 @@
         <constructor-arg value="org.opennms.netmgt.dao.api.CdpLinkDao"/>
     </bean>
 
+    <bean class="org.easymock.EasyMock" factory-method="createNiceMock" primary="true" id="cdpElementDao">
+        <constructor-arg value="org.opennms.netmgt.dao.api.CdpElementDao"/>
+    </bean>
+
     <bean class="org.easymock.EasyMock" factory-method="createNiceMock" primary="true" id="isisLinkDao">
         <constructor-arg value="org.opennms.netmgt.dao.api.IsIsLinkDao"/>
     </bean>
 
     <bean class="org.easymock.EasyMock" factory-method="createNiceMock" primary="true" id="lldpLinkDao">
         <constructor-arg value="org.opennms.netmgt.dao.api.LldpLinkDao"/>
+    </bean>
+
+    <bean class="org.easymock.EasyMock" factory-method="createNiceMock" primary="true" id="lldpElementDao">
+        <constructor-arg value="org.opennms.netmgt.dao.api.LldpElementDao"/>
     </bean>
 
     <bean class="org.easymock.EasyMock" factory-method="createNiceMock" primary="true" id="ospfLinkDao" >
@@ -44,6 +56,10 @@
         <constructor-arg value="org.opennms.netmgt.dao.api.IpInterfaceDao"/>
     </bean>
 
+    <bean class="org.easymock.EasyMock" factory-method="createNiceMock" primary="true" id="ipNetToMediaDao">
+        <constructor-arg value="org.opennms.netmgt.dao.api.IpNetToMediaDao"/>
+    </bean>
+
     <bean class="org.easymock.EasyMock" factory-method="createNiceMock" primary="true" id="operationContext">
         <constructor-arg value="org.opennms.features.topology.api.OperationContext"/>
     </bean>
@@ -53,29 +69,23 @@
     </bean>
 
     <bean id="databasePopulator" class="org.opennms.features.topology.plugins.topo.linkd.internal.EnhancedLinkdMockDataPopulator">
-        <property name="nodeDao" ref="nodeDao" />
-        <property name="lldpLinkDao" ref="lldpLinkDao" />
-        <property name="ospfLinkDao" ref="ospfLinkDao" />
-        <property name="snmpInterfaceDao" ref="snmpInterfaceDao" />
-        <property name="ipInterfaceDao" ref="ipInterfaceDao" />
     </bean>
 
     <bean id="enLinkdTopologyProvider" class="org.opennms.features.topology.plugins.topo.linkd.internal.EnhancedLinkdTopologyProvider">
+        <property name="bridgeTopologyDao" ref="bridgeTopologyDao" />
         <property name="bridgeBridgeLinkDao" ref="bridgeBridgeLinkDao" />
         <property name="bridgeMacLinkDao" ref="bridgeMacLinkDao" />
         <property name="cdpLinkDao" ref="cdpLinkDao" />
+        <property name="cdpElementDao" ref="cdpElementDao" />
         <property name="isisLinkDao" ref="isisLinkDao" />
         <property name="lldpLinkDao" ref="lldpLinkDao" />
+        <property name="lldpElementDao" ref="lldpElementDao" />
         <property name="ospfLinkDao" ref="ospfLinkDao" />
         <property name="nodeDao" ref="nodeDao" />
         <property name="snmpInterfaceDao" ref="snmpInterfaceDao" />
         <property name="ipInterfaceDao" ref="ipInterfaceDao" />
+        <property name="ipNetToMediaDao" ref="ipNetToMediaDao" />
         <property name="configurationFile" value="target/saved-linkd-graph.xml"/>
     </bean>
-
-    <bean id="ospfEdgeProvider" class="org.opennms.features.topology.plugins.topo.linkd.internal.OspfEdgeProvider">
-        <property name="ospfLinkDao" ref="ospfLinkDao" />
-    </bean>
-
 </beans>
 

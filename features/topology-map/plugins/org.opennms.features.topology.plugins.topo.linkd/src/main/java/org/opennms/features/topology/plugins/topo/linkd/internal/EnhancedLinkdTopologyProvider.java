@@ -30,8 +30,9 @@ package org.opennms.features.topology.plugins.topo.linkd.internal;
 
 import java.io.File;
 import java.lang.reflect.UndeclaredThrowableException;
+import java.net.InetAddress;
 import java.net.MalformedURLException;
-import java.util.Collection;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -41,53 +42,63 @@ import java.util.Set;
 import javax.xml.bind.JAXBException;
 
 import org.apache.commons.lang.StringUtils;
-import org.opennms.core.criteria.restrictions.EqRestriction;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.LldpUtils.LldpPortIdSubType;
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.OperationContext;
-import org.opennms.features.topology.api.support.VertexHopGraphProvider;
+import org.opennms.features.topology.api.browsers.ContentType;
+import org.opennms.features.topology.api.browsers.SelectionAware;
+import org.opennms.features.topology.api.browsers.SelectionChangedListener;
 import org.opennms.features.topology.api.support.VertexHopGraphProvider.VertexHopCriteria;
-import org.opennms.features.topology.api.topo.AbstractEdge;
 import org.opennms.features.topology.api.topo.AbstractSearchProvider;
 import org.opennms.features.topology.api.topo.AbstractVertex;
 import org.opennms.features.topology.api.topo.Criteria;
-import org.opennms.features.topology.api.topo.Edge;
 import org.opennms.features.topology.api.topo.SearchQuery;
 import org.opennms.features.topology.api.topo.SearchResult;
+import org.opennms.features.topology.api.topo.SimpleConnector;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.features.topology.api.topo.WrappedGraph;
 import org.opennms.features.topology.api.topo.WrappedVertex;
 import org.opennms.netmgt.dao.api.BridgeBridgeLinkDao;
 import org.opennms.netmgt.dao.api.BridgeMacLinkDao;
+import org.opennms.netmgt.dao.api.BridgeTopologyDao;
+import org.opennms.netmgt.dao.api.CdpElementDao;
 import org.opennms.netmgt.dao.api.CdpLinkDao;
+import org.opennms.netmgt.dao.api.IpNetToMediaDao;
 import org.opennms.netmgt.dao.api.IsIsLinkDao;
 import org.opennms.netmgt.dao.api.LldpElementDao;
 import org.opennms.netmgt.dao.api.LldpLinkDao;
 import org.opennms.netmgt.dao.api.OspfLinkDao;
 import org.opennms.netmgt.model.BridgeBridgeLink;
+import org.opennms.netmgt.model.BridgeMacLink;
+import org.opennms.netmgt.model.CdpElement;
+import org.opennms.netmgt.model.CdpLink;
+import org.opennms.netmgt.model.IpNetToMedia;
 import org.opennms.netmgt.model.LldpElement;
 import org.opennms.netmgt.model.LldpLink;
+import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.model.OspfLink;
-import org.opennms.netmgt.model.topology.BridgeMacTopologyLink;
-import org.opennms.netmgt.model.topology.CdpTopologyLink;
+import org.opennms.netmgt.model.PrimaryType;
+import org.opennms.netmgt.model.CdpLink.CiscoNetworkProtocolType;
+import org.opennms.netmgt.model.topology.BridgePort;
+import org.opennms.netmgt.model.topology.BroadcastDomain;
 import org.opennms.netmgt.model.topology.EdgeAlarmStatusSummary;
 import org.opennms.netmgt.model.topology.IsisTopologyLink;
+import org.opennms.netmgt.model.topology.SharedSegment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
-import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Multimap;
 
 public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider {
 
-    private abstract class LinkDetail<K> {
+    abstract class LinkDetail<K> {
         private final String m_id;
         private final Vertex m_source;
         private final K m_sourceLink;
@@ -133,7 +144,7 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
         }
     }
 
-    private class LldpLinkDetail extends LinkDetail<LldpLink> {
+    class LldpLinkDetail extends LinkDetail<LldpLink> {
 
 
         public LldpLinkDetail(String id, Vertex source, LldpLink sourceLink, Vertex target, LldpLink targetLink) {
@@ -178,7 +189,7 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
         }
     }
 
-    private class OspfLinkDetail extends LinkDetail<OspfLink>{
+    class OspfLinkDetail extends LinkDetail<OspfLink>{
 
         public OspfLinkDetail(String id, Vertex source, OspfLink sourceLink, Vertex target, OspfLink targetLink) {
             super(id, source, sourceLink, target, targetLink);
@@ -221,7 +232,7 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
         }
     }
 
-    private class IsIsLinkDetail extends LinkDetail<Integer>{
+    class IsIsLinkDetail extends LinkDetail<Integer>{
 
 
         private final int m_sourceIfindex;
@@ -274,7 +285,7 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
         }
     }
 
-    public class BridgeLinkDetail extends LinkDetail<Integer> {
+    class BridgeLinkDetail extends LinkDetail<Integer> {
 
         private final String m_vertexNamespace;
         private final Integer m_sourceBridgePort;
@@ -349,17 +360,10 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
         }
     }
 
-    public class CdpLinkDetail extends LinkDetail<Integer>{
+    public class CdpLinkDetail extends LinkDetail<CdpLink> {
 
-        private final Integer m_sourceIfIndex;
-        private final String m_sourceIfName;
-        private final String m_targetIfName;
-
-        public CdpLinkDetail(String id, Vertex source, Integer sourceIfIndex, String sourceIfName, Vertex target, String targetIfName) {
-            super(id, source, null, target, null);
-            m_sourceIfIndex = sourceIfIndex;
-            m_sourceIfName = sourceIfName;
-            m_targetIfName = targetIfName;
+        public CdpLinkDetail(String id, Vertex source, CdpLink sourceLink, Vertex target, CdpLink targetLink) {
+            super(id, source, sourceLink, target, targetLink);
         }
 
         @Override
@@ -385,24 +389,17 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
 
         @Override
         public Integer getSourceIfIndex() {
-            return m_sourceIfIndex;
+            return getSourceLink().getCdpCacheIfIndex();
         }
 
         @Override
         public Integer getTargetIfIndex() {
-            return null;
+            return getTargetLink().getCdpCacheIfIndex();
         }
 
         @Override
         public String getType() { return "CDP"; }
 
-        public String getSourceIfName() {
-            return m_sourceIfName;
-        }
-
-        public String getTargetIfName() {
-            return m_targetIfName;
-        }
     }
 
     private static Logger LOG = LoggerFactory.getLogger(EnhancedLinkdTopologyProvider.class);
@@ -420,11 +417,17 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
 
     private LldpLinkDao m_lldpLinkDao;
     private LldpElementDao m_lldpElementDao;
+    private CdpLinkDao m_cdpLinkDao;
+    private CdpElementDao m_cdpElementDao;
     private OspfLinkDao m_ospfLinkDao;
     private IsIsLinkDao m_isisLinkDao;
     private BridgeBridgeLinkDao m_bridgeBridgeLinkDao;
     private BridgeMacLinkDao m_bridgeMacLinkDao;
-    private CdpLinkDao m_cdpLinkDao;
+    private BridgeTopologyDao m_bridgeTopologyDao;
+    private IpNetToMediaDao m_ipNetToMediaDao;
+
+    private SelectionAware selectionAwareDelegate = new EnhancedLinkdSelectionAware();
+    
     public final static String LLDP_EDGE_NAMESPACE = TOPOLOGY_NAMESPACE_LINKD + "::LLDP";
     public final static String OSPF_EDGE_NAMESPACE = TOPOLOGY_NAMESPACE_LINKD + "::OSPF";
     public final static String ISIS_EDGE_NAMESPACE = TOPOLOGY_NAMESPACE_LINKD + "::ISIS";
@@ -439,7 +442,7 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
      * @throws MalformedURLException
      */
     public void onInit() throws MalformedURLException, JAXBException {
-        LOG.debug("init: loading enlinkd topology.");
+        LOG.info("init: loading enlinkd topology.");
         try {
             // @see http://issues.opennms.org/browse/NMS-7835
             getTransactionOperations().execute(new TransactionCallbackWithoutResult() {
@@ -461,6 +464,8 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
                 throw (JAXBException)t;
             }
         }
+        LOG.info("init: enlinkd topology loaded.");
+
     }
 
     @Override
@@ -470,38 +475,142 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
             LOG.warn("Filename that was specified for linkd topology will be ignored: " + filename + ", using " + getConfigurationFile() + " instead");
         }
         try{
-            //TODO: change to one query from the database that will return all links plus elements joined
-            //This reset container is set in here for the demo, don't commit
-
             resetContainer();
         } catch (Exception e){
             LOG.error("Exception reset Container: "+e.getMessage(),e);
         }
+        
+        Map<Integer, OnmsNode> nodemap = new HashMap<Integer, OnmsNode>();
+        Map<Integer, List<OnmsIpInterface>> nodeipmap = new HashMap<Integer,  List<OnmsIpInterface>>();
+        Map<Integer, OnmsIpInterface> nodeipprimarymap = new HashMap<Integer, OnmsIpInterface>();
+        Map<String, List<OnmsIpInterface>> macipmap = new HashMap<String, List<OnmsIpInterface>>();
+        Map<InetAddress, OnmsIpInterface> ipmap = new HashMap<InetAddress,  OnmsIpInterface>();
+        Map<Integer,List<OnmsSnmpInterface>> nodesnmpmap = new HashMap<Integer, List<OnmsSnmpInterface>>();
+        
+        try {
+            LOG.info("Loading nodes");
+            for (OnmsNode node: m_nodeDao.findAll()) {
+                nodemap.put(node.getId(), node);
+            }
+            LOG.info("Nodes loaded");
+        } catch (Exception e){
+            LOG.error("Exception getting node list: "+e.getMessage(),e);
+        }
+
+        try {
+            LOG.info("Loading Ip Interface");
+            Set<InetAddress> duplicatedips = new HashSet<InetAddress>();
+            for (OnmsIpInterface ip: m_ipInterfaceDao.findAll()) {
+                if (!nodeipmap.containsKey(ip.getNode().getId())) {
+                    nodeipmap.put(ip.getNode().getId(), new ArrayList<OnmsIpInterface>());
+                    nodeipprimarymap.put(ip.getNode().getId(), ip);
+                }
+                nodeipmap.get(ip.getNode().getId()).add(ip);
+                if (ip.getIsSnmpPrimary().equals(PrimaryType.PRIMARY)) {
+                    nodeipprimarymap.put(ip.getNode().getId(), ip);
+                }
+                
+                if (duplicatedips.contains(ip.getIpAddress())) {
+                    LOG.info("Loading ip Interface, found duplicated ip {}, skipping ", InetAddressUtils.str(ip.getIpAddress()));
+                    continue;
+                }
+                if (ipmap.containsKey(ip.getIpAddress())) {
+                    LOG.info("Loading ip Interface, found duplicated ip {}, skipping ", InetAddressUtils.str(ip.getIpAddress()));
+                    duplicatedips.add(ip.getIpAddress());
+                    continue;
+                }
+                ipmap.put(ip.getIpAddress(), ip);
+            }
+            for (InetAddress duplicated: duplicatedips)
+                ipmap.remove(duplicated);
+            LOG.info("Ip Interface loaded");
+        } catch (Exception e){
+            LOG.error("Exception getting ip list: "+e.getMessage(),e);
+        }
+
+        try {
+            LOG.info("Loading Snmp Interface");
+            for (OnmsSnmpInterface snmp: m_snmpInterfaceDao.findAll()) {
+                if (!nodesnmpmap.containsKey(snmp.getNode().getId()))
+                    nodesnmpmap.put(snmp.getNode().getId(), new ArrayList<OnmsSnmpInterface>());
+                nodesnmpmap.get(snmp.getNode().getId()).add(snmp);
+            }
+            LOG.info("Snmp Interface loaded");
+        } catch (Exception e){
+            LOG.error("Exception getting snmp interface list: "+e.getMessage(),e);
+        }
+
+        try {
+            Set<String> duplicatednodemac = new HashSet<String>();
+            Map<String, Integer> mactonodemap = new HashMap<String, Integer>();
+            LOG.info("Loading ip net to media");
+            for (IpNetToMedia ipnettomedia: m_ipNetToMediaDao.findAll()) {
+                if (duplicatednodemac.contains(ipnettomedia.getPhysAddress())) {
+                    LOG.info("load ip net media: different nodeid found for ip: {} mac: {}. Skipping...",InetAddressUtils.str(ipnettomedia.getNetAddress()), ipnettomedia.getPhysAddress());
+                    continue;
+                }
+                OnmsIpInterface ip = ipmap.get(ipnettomedia.getNetAddress());
+                if (ip == null) {
+                    LOG.info("load ip net media: no nodeid found for ip: {} mac: {}. Skipping...",InetAddressUtils.str(ipnettomedia.getNetAddress()), ipnettomedia.getPhysAddress());
+                    continue;
+                }
+                if (mactonodemap.containsKey(ipnettomedia.getPhysAddress())) {
+                    if (mactonodemap.get(ipnettomedia.getPhysAddress()).intValue() != ip.getNode().getId().intValue()) {
+                        LOG.info("load ip net media: different nodeid found for ip: {} mac: {}. Skipping...",InetAddressUtils.str(ipnettomedia.getNetAddress()), ipnettomedia.getPhysAddress());
+                        duplicatednodemac.add(ipnettomedia.getPhysAddress());
+                        continue;
+                    }
+                }
+
+                if (!macipmap.containsKey(ipnettomedia.getPhysAddress())) {
+                    macipmap.put(ipnettomedia.getPhysAddress(), new ArrayList<OnmsIpInterface>());
+                    mactonodemap.put(ipnettomedia.getPhysAddress(), ip.getNode().getId());
+                }
+                macipmap.get(ipnettomedia.getPhysAddress()).add(ip);
+            }
+            for (String dupmac: duplicatednodemac)
+                macipmap.remove(dupmac);
+            
+            LOG.info("Ip net to media loaded");
+        } catch (Exception e){
+            LOG.error("Exception getting ip net to media list: "+e.getMessage(),e);
+        }
+
 
         try{
-            getLldpLinks();
+            LOG.info("Loading Lldp link");
+            getLldpLinks(nodemap, nodesnmpmap,nodeipprimarymap);
+            LOG.info("Lldp link loaded");
         } catch (Exception e){
             LOG.error("Exception getting Lldp link: "+e.getMessage(),e);
         }
         try{
-            getOspfLinks();
+            LOG.info("Loading Ospf link");
+            getOspfLinks(nodemap,nodesnmpmap,nodeipprimarymap);
+            LOG.info("Ospf link loaded");
         } catch (Exception e){
             LOG.error("Exception getting Ospf link: "+e.getMessage(),e);
         }
         try{
-            getIsIsLinks();
+            LOG.info("Loading Cdp link");
+            getCdpLinks(nodemap,nodesnmpmap,nodeipprimarymap,ipmap);
+            LOG.info("Cdp link loaded");
+        } catch (Exception e){
+            LOG.error("Exception getting Cdp link: "+e.getMessage(),e);
+        }
+        try{
+            LOG.info("Loading IsIs link");
+            getIsIsLinks(nodesnmpmap,nodeipprimarymap);
+            LOG.info("IsIs link loaded");
         } catch (Exception e){
             LOG.error("Exception getting IsIs link: "+e.getMessage(),e);
         }
         try{
-            getBridgeLinks();
+            LOG.info("Loading Bridge link");
+            getBridgeLinks(nodemap, nodesnmpmap,macipmap,nodeipmap,nodeipprimarymap);
+            LOG.info("Bridge link loaded");
         } catch (Exception e){
             LOG.error("Exception getting Bridge link: "+e.getMessage(),e);
-        }
-        try{
-            getCdpLinks();
-        } catch (Exception e){
-            LOG.error("Exception getting Cdp link: "+e.getMessage(),e);
         }
 
         LOG.debug("loadtopology: adding nodes without links: " + isAddNodeWithoutLink());
@@ -565,157 +674,250 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
 
     }
 
-    private void getOspfLinks() {
-        List<OspfLink> allLinks =  getOspfLinkDao().findAll();
-        Set<OspfLinkDetail> combinedLinkDetails = new HashSet<OspfLinkDetail>();
-        for(OspfLink sourceLink : allLinks) {
-            Vertex source = getVertex(getVertexNamespace(),sourceLink.getNode().getNodeId());
-            if (source == null) {
-                source = getDefaultVertex(sourceLink.getNode().getId(), sourceLink.getNode().getSysObjectId(), sourceLink.getNode().getLabel(), 
-                                          sourceLink.getNode().getSysLocation(), sourceLink.getNode().getType());
-                addVertices(source);
-            }
-            for (OspfLink targetLink : allLinks) {
-                if(sourceLink.getOspfRemIpAddr().equals(targetLink.getOspfIpAddr()) && targetLink.getOspfRemIpAddr().equals(sourceLink.getOspfIpAddr())) {
-                    Vertex target = getVertex(getVertexNamespace(),targetLink.getNode().getNodeId());
-                    if (target == null) {
-                        target = getDefaultVertex(targetLink.getNode().getId(), targetLink.getNode().getSysObjectId(), targetLink.getNode().getLabel(), 
-                                                  targetLink.getNode().getSysLocation(), targetLink.getNode().getType());
-                        addVertices(target);
-                    }
-                    OspfLinkDetail linkDetail = new OspfLinkDetail(
-                            Math.min(sourceLink.getId(), targetLink.getId()) + "|" + Math.max(sourceLink.getId(), targetLink.getId()),
-                            source, sourceLink, target, targetLink);
-                    combinedLinkDetails.add(linkDetail);
-                }
-            }
+    protected final Vertex getOrCreateVertex(OnmsNode sourceNode,OnmsIpInterface primary) {
+        Vertex source = getVertex(getVertexNamespace(), sourceNode.getNodeId());
+        if (source == null) {
+            source = getDefaultVertex(sourceNode.getId(),
+                                  sourceNode.getSysObjectId(),
+                                  sourceNode.getLabel(),
+                                  sourceNode.getSysLocation(),
+                                  sourceNode.getType(),
+                                  primary.isManaged(),
+                                  InetAddressUtils.str(primary.getIpAddress()));
+            addVertices(source);
         }
-
-        for (OspfLinkDetail linkDetail : combinedLinkDetails) {
-            AbstractEdge edge = connectVertices(linkDetail.getId(), linkDetail.getSource(), linkDetail.getTarget(), OSPF_EDGE_NAMESPACE);
-            edge.setTooltipText(getEdgeTooltipText(linkDetail));
-        }
+        
+        return source;
     }
 
-    private void getLldpLinks() {
+    protected final LinkdEdge connectCloudMacVertices(String targetmac, VertexRef sourceRef, VertexRef targetRef,String nameSpace) {
+        SimpleConnector source = new SimpleConnector(sourceRef.getNamespace(), sourceRef.getId()+"-"+targetRef.getId()+"-connector", sourceRef);
+        SimpleConnector target = new SimpleConnector(targetRef.getNamespace(), targetRef.getId()+"-"+sourceRef.getId()+"-connector", targetRef);
+
+        LinkdEdge edge = new LinkdEdge(nameSpace, targetRef.getId()+":"+targetmac, source, target);
+        edge.setTargetEndPoint(targetmac);
+        addEdges(edge);
+        
+        return edge;
+    }
+
+    protected final LinkdEdge connectVertices(BridgePort targetport, VertexRef sourceRef, VertexRef targetRef,String nameSpace) {
+        SimpleConnector source = new SimpleConnector(sourceRef.getNamespace(), sourceRef.getId()+"-"+targetRef.getId()+"-connector", sourceRef);
+        SimpleConnector target = new SimpleConnector(targetRef.getNamespace(), targetRef.getId()+"-"+sourceRef.getId()+"-connector", targetRef);
+
+        LinkdEdge edge = new LinkdEdge(nameSpace, targetRef.getId()+":"+targetport.getBridgePort(), source, target);
+        edge.setTargetNodeid(targetport.getNode().getId());
+        if (targetport.getBridgePortIfIndex() != null)
+            edge.setTargetEndPoint(String.valueOf(targetport.getBridgePortIfIndex()));
+        addEdges(edge);
+        
+        return edge;
+    }
+
+    protected final LinkdEdge connectVertices(BridgeMacLink link, VertexRef sourceRef, VertexRef targetRef,String nameSpace) {
+        SimpleConnector source = new SimpleConnector(sourceRef.getNamespace(), sourceRef.getId()+"-"+link.getId()+"-connector", sourceRef);
+        SimpleConnector target = new SimpleConnector(targetRef.getNamespace(), targetRef.getId()+"-"+link.getId()+"-connector", targetRef);
+
+        LinkdEdge edge = new LinkdEdge(nameSpace, String.valueOf(link.getId()), source, target);
+        edge.setSourceNodeid(link.getNode().getId());
+        if (link.getBridgePortIfIndex() != null)
+            edge.setSourceEndPoint(String.valueOf(link.getBridgePortIfIndex()));
+        edge.setTargetEndPoint(String.valueOf(link.getMacAddress()));
+        addEdges(edge);
+        
+        return edge;
+    }
+
+    
+    protected final LinkdEdge connectVertices(LinkDetail<?> linkdetail, String nameSpace) {
+        SimpleConnector source = new SimpleConnector(linkdetail.getSource().getNamespace(), linkdetail.getSource().getId()+"-"+linkdetail.getId()+"-connector", linkdetail.getSource());
+        SimpleConnector target = new SimpleConnector(linkdetail.getTarget().getNamespace(), linkdetail.getTarget().getId()+"-"+linkdetail.getId()+"-connector", linkdetail.getTarget());
+
+        LinkdEdge edge = new LinkdEdge(nameSpace, linkdetail.getId(), source, target);
+        try {
+            edge.setSourceNodeid(Integer.parseInt(linkdetail.getSource().getId()));
+        } catch (NumberFormatException e) {
+            
+        }
+        try {
+            edge.setTargetNodeid(Integer.parseInt(linkdetail.getTarget().getId()));
+        } catch (NumberFormatException e) {
+            
+        }
+        if (linkdetail.getSourceIfIndex() != null)
+            edge.setSourceEndPoint(String.valueOf(linkdetail.getSourceIfIndex()));
+        if (linkdetail.getTargetIfIndex() != null)
+            edge.setTargetEndPoint(String.valueOf(linkdetail.getTargetIfIndex()));
+        addEdges(edge);
+        
+        return edge;
+    }
+
+    private void getLldpLinks(Map<Integer, OnmsNode> nodemap, Map<Integer, List<OnmsSnmpInterface>> nodesnmpmap, Map<Integer, OnmsIpInterface> ipprimarymap) {
+        Map<Integer, LldpElement> lldpelementmap = new HashMap<Integer, LldpElement>();
+        for (LldpElement lldpelement: m_lldpElementDao.findAll()) {
+            lldpelementmap.put(lldpelement.getNode().getId(), lldpelement);
+        }
         List<LldpLink> allLinks = m_lldpLinkDao.findAll();
         Set<LldpLinkDetail> combinedLinkDetails = new HashSet<LldpLinkDetail>();
         Set<Integer> parsed = new HashSet<Integer>();
         for (LldpLink sourceLink : allLinks) {
-            LOG.debug("loadtopology: parsing lldp link with id '{}' link '{}' ", sourceLink.getId(), sourceLink);
-            if (parsed.contains(sourceLink.getId())) {
-                LOG.debug("loadtopology: lldp link with id '{]' already parsed, skipping", sourceLink.getId());
+            if (parsed.contains(sourceLink.getId()))
                 continue;
-            }
-            parsed.add(sourceLink.getId());
-            OnmsNode sourceNode = sourceLink.getNode();
-            Vertex source = getVertex(getVertexNamespace(), sourceNode.getNodeId());
-            if (source == null) {
-                source = getDefaultVertex(sourceNode.getId(),
-                                      sourceNode.getSysObjectId(),
-                                      sourceNode.getLabel(),
-                                      sourceNode.getSysLocation(),
-                                      sourceNode.getType());
-                addVertices(source);
-            }
-
-            LldpElement sourceElement = sourceNode.getLldpElement();
+            LOG.debug("loadtopology: lldp link with id '{}' link '{}' ", sourceLink.getId(), sourceLink);
+            LldpElement sourceLldpElement = lldpelementmap.get(sourceLink.getNode().getId());
             LldpLink targetLink = null;
             for (LldpLink link : allLinks) {
-                LOG.debug("loadtopology: parsing lldp link with id '{}' link '{}' ", link.getId(), link);
-                if (parsed.contains(link.getId())) {
-                    LOG.debug("loadtopology: lldp link with id '{]' already parsed, skipping", link.getId());
+                if (sourceLink.getId().intValue() == link.getId().intValue()|| parsed.contains(link.getId()))
                     continue;
-                }
-                LldpElement element = link.getNode().getLldpElement();
+                LOG.debug("loadtopology: checking lldp link with id '{}' link '{}' ", link.getId(), link);
+                LldpElement element = lldpelementmap.get(link.getNode().getId());
                 //Compare the remote data to the targetNode element data
-                if (!sourceLink.getLldpRemChassisId().equals(element.getLldpChassisId()) || !link.getLldpRemChassisId().equals(sourceElement.getLldpChassisId())) 
+                if (!sourceLink.getLldpRemChassisId().equals(element.getLldpChassisId()) || !link.getLldpRemChassisId().equals(sourceLldpElement.getLldpChassisId())) 
                     continue;
                 boolean bool1 = sourceLink.getLldpRemPortId().equals(link.getLldpPortId()) && link.getLldpRemPortId().equals(sourceLink.getLldpPortId());
                 boolean bool3 = sourceLink.getLldpRemPortIdSubType() == link.getLldpPortIdSubType() && link.getLldpRemPortIdSubType() == sourceLink.getLldpPortIdSubType();
 
                 if (bool1 && bool3) {
                     targetLink=link;
-                    parsed.add(targetLink.getId());
-                    LOG.debug("loadtopology: found lldp mutual link: '{}' and '{}' ", sourceLink,targetLink);
+                    LOG.info("loadtopology: found lldp mutual link: '{}' and '{}' ", sourceLink,targetLink);
                     break;
                 }
             }
             
             if (targetLink == null) {
-                final org.opennms.core.criteria.Criteria criteria = new org.opennms.core.criteria.Criteria(OnmsNode.class).addRestriction(new EqRestriction("sysName", sourceLink.getLldpRemSysname()));
-                List<OnmsNode> nodes = m_nodeDao.findMatching(criteria);
+                List<OnmsNode> nodes = new ArrayList<OnmsNode>();
+                for (OnmsNode node: nodemap.values()) {
+                    if (node.getSysName() != null && sourceLink.getLldpRemSysname() != null && node.getSysName().equals(sourceLink.getLldpRemSysname()))
+                        nodes.add(node);
+                }
                 if (nodes.size() == 1) {
-                    targetLink = reverseLldpLink(nodes.get(0), sourceLink.getNode().getLldpElement(), sourceLink); 
-                    LOG.debug("loadtopology: found lldp link using lldp rem sysname: '{}' and '{}'", sourceLink, targetLink);
+                    targetLink = reverseLldpLink(nodes.get(0), sourceLldpElement, sourceLink); 
+                    LOG.info("loadtopology: found lldp link using lldp rem sysname: '{}' and '{}'", sourceLink, targetLink);
                 }
             }
             
             if (targetLink == null) {
-                LOG.debug("loadtopology: cannot found target node for link: '{}'", sourceLink);
+                LOG.info("loadtopology: cannot found target node for link: '{}'", sourceLink);
                 continue;
             }
                 
-            OnmsNode targetNode = targetLink.getNode();
-            Vertex target = getVertex(getVertexNamespace(), targetNode.getNodeId());
-            if (target == null) {
-                target = getDefaultVertex(targetNode.getId(),
-                                          targetNode.getSysObjectId(),
-                                          targetNode.getLabel(),
-                                        targetNode.getSysLocation(),
-                                        targetNode.getType());
-                addVertices(target);
-            }
+            parsed.add(sourceLink.getId());
+            parsed.add(targetLink.getId());
+            Vertex source =  getOrCreateVertex(nodemap.get(sourceLink.getNode().getId()),ipprimarymap.get(sourceLink.getNode().getId()));
+            Vertex target = getOrCreateVertex(nodemap.get(targetLink.getNode().getId()),ipprimarymap.get(targetLink.getNode().getId()));
             combinedLinkDetails.add(new LldpLinkDetail(Math.min(sourceLink.getId(), targetLink.getId()) + "|" + Math.max(sourceLink.getId(), targetLink.getId()),
                                                        source, sourceLink, target, targetLink));
 
         }
 
         for (LldpLinkDetail linkDetail : combinedLinkDetails) {
-            AbstractEdge edge = connectVertices(linkDetail.getId(), linkDetail.getSource(), linkDetail.getTarget(), LLDP_EDGE_NAMESPACE);
-            edge.setTooltipText(getEdgeTooltipText(linkDetail));
+            LinkdEdge edge = connectVertices(linkDetail, LLDP_EDGE_NAMESPACE);
+            edge.setTooltipText(getEdgeTooltipText(linkDetail,nodesnmpmap));
         }
     }
 
-    private void getCdpLinks() {
-        List<CdpTopologyLink> cdpLinks = m_cdpLinkDao.findLinksForTopology();
-
-        if (cdpLinks != null && cdpLinks.size() > 0) {
-            for (CdpTopologyLink link : cdpLinks) {
-                LOG.debug("loadtopology: adding cdp link: '{}'", link );
-                String id = Math.min(link.getSourceId(), link.getTargetId()) + "|" + Math.max(link.getSourceId(), link.getTargetId());
-                Vertex source = getVertex(getVertexNamespace(), link.getSrcNodeId().toString());
-                if (source == null) {
-                    source = getDefaultVertex(link.getSrcNodeId(),
-                                              link.getSrcSysoid(),
-                                              link.getSrcLabel(),
-                                            link.getSrcLocation(),
-                                        link.getSrcNodeType());
-                    addVertices(source);
+    private void getOspfLinks(Map<Integer, OnmsNode> nodemap,Map<Integer, List<OnmsSnmpInterface>> nodesnmpmap, Map<Integer, OnmsIpInterface> ipprimarymap) {
+        List<OspfLink> allLinks =  getOspfLinkDao().findAll();
+        Set<OspfLinkDetail> combinedLinkDetails = new HashSet<OspfLinkDetail>();
+        Set<Integer> parsed = new HashSet<Integer>();
+        for(OspfLink sourceLink : allLinks) {
+            if (parsed.contains(sourceLink.getId())) 
+                continue;
+            LOG.debug("loadtopology: ospf link with id '{}'", sourceLink.getId());
+            for (OspfLink targetLink : allLinks) {
+                if (sourceLink.getId().intValue() == targetLink.getId().intValue() || parsed.contains(targetLink.getId())) 
+                    continue;
+                LOG.debug("loadtopology: checking ospf link with id '{}'", targetLink.getId());
+                if(sourceLink.getOspfRemIpAddr().equals(targetLink.getOspfIpAddr()) && targetLink.getOspfRemIpAddr().equals(sourceLink.getOspfIpAddr())) {
+                    LOG.info("loadtopology: found ospf mutual link: '{}' and '{}' ", sourceLink,targetLink);
+                    parsed.add(sourceLink.getId());
+                    parsed.add(targetLink.getId());
+                    Vertex source =  getOrCreateVertex(nodemap.get(sourceLink.getNode().getId()),ipprimarymap.get(sourceLink.getNode().getId()));
+                    Vertex target = getOrCreateVertex(nodemap.get(targetLink.getNode().getId()),ipprimarymap.get(targetLink.getNode().getId()));
+                    OspfLinkDetail linkDetail = new OspfLinkDetail(
+                            Math.min(sourceLink.getId(), targetLink.getId()) + "|" + Math.max(sourceLink.getId(), targetLink.getId()),
+                            source, sourceLink, target, targetLink);
+                    combinedLinkDetails.add(linkDetail);
+                    break;
                 }
-                Vertex target = getVertex(getVertexNamespace(), link.getTargetNodeId().toString());
-                if (target == null) {
-                    target = getDefaultVertex(link.getTargetNodeId(),
-                                              link.getTargetSysoid(),
-                                              link.getTargetLabel(),
-                                            link.getTargetLocation(),
-                                            link.getTargetNodeType());
-                    addVertices(target);
-                }
-                CdpLinkDetail linkDetail = new CdpLinkDetail(id,
-                        source,
-                        link.getSrcIfIndex(),
-                        link.getSrcIfName(),
-                        target,
-                        link.getTargetIfName());
-
-                AbstractEdge edge = connectVertices(linkDetail.getId(), linkDetail.getSource(), linkDetail.getTarget(), CDP_EDGE_NAMESPACE);
-                edge.setTooltipText(getEdgeTooltipText(linkDetail));
             }
         }
+
+        for (OspfLinkDetail linkDetail : combinedLinkDetails) {
+            LinkdEdge edge = connectVertices(linkDetail, OSPF_EDGE_NAMESPACE);
+            edge.setTooltipText(getEdgeTooltipText(linkDetail,nodesnmpmap));
+        }
     }
 
-    private void getIsIsLinks(){
+    private void getCdpLinks(Map<Integer,OnmsNode> nodemap,Map<Integer, List<OnmsSnmpInterface>> nodesnmpmap, 
+            Map<Integer, OnmsIpInterface> ipprimarymap, Map<InetAddress,OnmsIpInterface> ipmap) {
+        Map<Integer, CdpElement> cdpelementmap = new HashMap<Integer, CdpElement>();
+        for (CdpElement cdpelement: m_cdpElementDao.findAll()) {
+            cdpelementmap.put(cdpelement.getNode().getId(), cdpelement);
+        }
+
+        List<CdpLink> allLinks = m_cdpLinkDao.findAll();
+        Set<CdpLinkDetail> combinedLinkDetails = new HashSet<CdpLinkDetail>();
+        Set<Integer> parsed = new HashSet<Integer>();
+
+        for (CdpLink sourceLink : allLinks) {
+            if (parsed.contains(sourceLink.getId())) 
+                continue;
+            LOG.debug("loadtopology: cdp link with id '{}' link '{}' ", sourceLink.getId(), sourceLink);
+            CdpElement sourceCdpElement = cdpelementmap.get(sourceLink.getNode().getId());
+            CdpLink targetLink = null;
+            for (CdpLink link : allLinks) {
+                if (sourceLink.getId().intValue() == link.getId().intValue()|| parsed.contains(link.getId()))
+                    continue;
+                LOG.debug("loadtopology: checking cdp link with id '{}' link '{}' ", link.getId(), link);
+                CdpElement element = cdpelementmap.get(link.getNode().getId());
+                //Compare the remote data to the targetNode element data
+                if (!sourceLink.getCdpCacheDeviceId().equals(element.getCdpGlobalDeviceId()) || !link.getCdpCacheDeviceId().equals(sourceCdpElement.getCdpGlobalDeviceId())) 
+                    continue;
+
+                if (sourceLink.getCdpInterfaceName().equals(link.getCdpCacheDevicePort()) && link.getCdpInterfaceName().equals(sourceLink.getCdpCacheDevicePort())) {
+                    targetLink=link;
+                    LOG.info("loadtopology: found cdp mutual link: '{}' and '{}' ", sourceLink,targetLink);
+                    break;
+                }
+            }
+            
+            if (targetLink == null) {
+                if (sourceLink.getCdpCacheAddressType() == CiscoNetworkProtocolType.ip) {
+                    try {
+                        InetAddress targetAddress = InetAddressUtils.addr(sourceLink.getCdpCacheAddress());
+                        if (ipmap.containsKey(targetAddress)) {
+                            targetLink = reverseCdpLink(ipmap.get(targetAddress), sourceCdpElement, sourceLink ); 
+                            LOG.info("loadtopology: found cdp link using cdp cache address: '{}' and '{}'", sourceLink, targetLink);
+                        }
+                    } catch (Exception e) {
+                        LOG.warn("loadtopology: cannot convert ip address: {}", sourceLink.getCdpCacheAddress(), e);
+                    }
+                }
+            }
+            
+            if (targetLink == null) {
+                LOG.info("loadtopology: cannot found target node for link: '{}'", sourceLink);
+                continue;
+            }
+                
+            parsed.add(sourceLink.getId());
+            parsed.add(targetLink.getId());
+            Vertex source =  getOrCreateVertex(nodemap.get(sourceLink.getNode().getId()),ipprimarymap.get(sourceLink.getNode().getId()));
+            Vertex target = getOrCreateVertex(nodemap.get(targetLink.getNode().getId()),ipprimarymap.get(targetLink.getNode().getId()));
+            combinedLinkDetails.add(new CdpLinkDetail(Math.min(sourceLink.getId(), targetLink.getId()) + "|" + Math.max(sourceLink.getId(), targetLink.getId()),
+                                                       source, sourceLink, target, targetLink));
+
+        }
+        
+        for (CdpLinkDetail linkDetail : combinedLinkDetails) {
+            LinkdEdge edge = connectVertices(linkDetail, CDP_EDGE_NAMESPACE);
+            edge.setTooltipText(getEdgeTooltipText(linkDetail,nodesnmpmap));
+        }
+    }
+
+    private void getIsIsLinks(Map<Integer, List<OnmsSnmpInterface>> nodesnmpmap, Map<Integer, OnmsIpInterface> ipprimarymap){
         List<IsisTopologyLink> isislinks = m_isisLinkDao.getLinksForTopology();
 
         if (isislinks != null && isislinks.size() > 0) {
@@ -724,21 +926,27 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
                 String id = Math.min(link.getSourceId(), link.getTargetId()) + "|" + Math.max(link.getSourceId(), link.getTargetId());
                 Vertex source = getVertex(getVertexNamespace(), link.getSrcNodeId().toString());
                 if (source == null) {
+                    OnmsIpInterface primary= ipprimarymap.get(link.getSrcNodeId());
                      source = getDefaultVertex(link.getSrcNodeId(),
                                        link.getSrcSysoid(),
                                        link.getSrcLabel(),
                                      link.getSrcLocation(),
-                                     link.getSrcNodeType());
+                                     link.getSrcNodeType(),
+                                     primary.isManaged(),
+                                     InetAddressUtils.str(primary.getIpAddress()));
                     addVertices(source);
 
                 }
                 Vertex target = getVertex(getVertexNamespace(), link.getTargetNodeId().toString());
                 if (target == null) {
+                    OnmsIpInterface targetprimary= ipprimarymap.get(link.getSrcNodeId());
                     target = getDefaultVertex(link.getTargetNodeId(),
                                        link.getTargetSysoid(),
                                        link.getTargetLabel(),
                                          link.getTargetLocation(),
-                                         link.getTargetNodeType());
+                                         link.getTargetNodeType(),
+                                         targetprimary.isManaged(),
+                                         InetAddressUtils.str(targetprimary.getIpAddress()));
                     addVertices(target);
                 }
                 IsIsLinkDetail linkDetail = new IsIsLinkDetail(
@@ -751,240 +959,66 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
                         link.getTargetIfIndex()
                 );
 
-                AbstractEdge edge = connectVertices(linkDetail.getId(), linkDetail.getSource(), linkDetail.getTarget(), ISIS_EDGE_NAMESPACE);
-                edge.setTooltipText(getEdgeTooltipText(linkDetail));
+                LinkdEdge edge = connectVertices(linkDetail, ISIS_EDGE_NAMESPACE);
+                edge.setTooltipText(getEdgeTooltipText(linkDetail,nodesnmpmap));
             }
         }
     }
 
-    private void getBridgeLinks(){
-        // parse bridge bridge link simple connection
-        for (BridgeBridgeLink link : m_bridgeBridgeLinkDao.findAll()) {
-            Vertex source = getVertex(getVertexNamespace(), link.getNode().getId().toString());
-            if (source==null) {
-                source = getDefaultVertex(link.getNode().getId(), link.getNode().getSysObjectId(), link.getNode().getLabel(),link.getNode().getSysDescription(),link.getNode().getType());
-                addVertices(source);
-           }
-            Vertex target = getVertex(getVertexNamespace(), link.getDesignatedNode().getId().toString());
-            if (target == null) {
-                target = getDefaultVertex(link.getDesignatedNode().getId(), link.getDesignatedNode().getSysObjectId(), link.getDesignatedNode().getLabel(),link.getDesignatedNode().getSysDescription(),link.getDesignatedNode().getType());
-                addVertices(target);
-            }
-            BridgeLinkDetail detail = new BridgeLinkDetail(EnhancedLinkdTopologyProvider.TOPOLOGY_NAMESPACE_LINKD,source,link.getBridgePortIfIndex(),  target, link.getDesignatedPortIfIndex(), link.getBridgePort(), link.getDesignatedPort(), link.getId(),link.getId() );
-           AbstractEdge edge = connectVertices(detail.getId(), detail.getSource(), detail.getTarget(), BRIDGE_EDGE_NAMESPACE);
-           edge.setTooltipText(getEdgeTooltipText(detail));
-        }
-
-        // parse instead inherited multi bridge links...
-        // here we must use a cloud to connect vertexes
-        Map<String, String> mactocloud = new HashMap<String, String>(); 
-        int cloudindex = 0;
-        for (BridgeMacTopologyLink link : m_bridgeMacLinkDao.getAllBridgeLinksToBridgeNodes()) {
-            
-            String sourceLinkId=link.getSrcNodeId()+":"+link.getBridgePort();
-            String targetLinkId=link.getTargetNodeId()+":"+link.getTargetBridgePort();
-            if (link.getBridgePortIfIndex() != null)
-                    sourceLinkId = link.getSrcNodeId()+":"+link.getBridgePortIfIndex();
-            if (link.getTargetIfIndex() != null)
-                 targetLinkId=link.getTargetNodeId()+":"+link.getTargetIfIndex();
-
-            if (mactocloud.containsKey(sourceLinkId) && mactocloud.containsKey(targetLinkId)) {
-                mactocloud.put(link.getMacAddr(), mactocloud.get(sourceLinkId));
-                continue;
-            }
-            
-            if (mactocloud.containsKey(sourceLinkId) && !mactocloud.containsKey(targetLinkId)) {
-                Vertex cloudVertex = getVertex(getVertexNamespace(), mactocloud.get(sourceLinkId));
-                Vertex target = getVertex(getVertexNamespace(), link.getTargetNodeId().toString());
-                if (target == null) {
-                    target = getDefaultVertex(link.getTargetNodeId(),
-                                       link.getTargetSysoid(),
-                                       link.getTargetLabel(),
-                                     link.getTargetLocation(),
-                                     link.getTargetNodeType());
-                    addVertices(target);
-                }
-                Edge edge = connectVertices(EdgeAlarmStatusSummary.getDefaultEdgeId(link.getTargetId(), link.getTargetId()), cloudVertex, target, BRIDGE_EDGE_NAMESPACE);
-                edge.setTooltipText(getEdgeVertexCloudToolTipTextFromTarget(target, link, cloudVertex.getTooltipText()));
-
-                mactocloud.put(link.getMacAddr(), mactocloud.get(sourceLinkId));
-                mactocloud.put(targetLinkId, mactocloud.get(sourceLinkId));
-                continue;
-            }
-            
-            if (!mactocloud.containsKey(sourceLinkId) && mactocloud.containsKey(targetLinkId)) {
-                Vertex cloudVertex = getVertex(getVertexNamespace(), mactocloud.get(targetLinkId));
-                Vertex source = getVertex(getVertexNamespace(), link.getSrcNodeId().toString());
-                if (source == null) {
-                    source = getDefaultVertex(link.getSrcNodeId(),
-                                       link.getSrcSysoid(),
-                                       link.getSrcLabel(),
-                                     link.getSrcLocation(),
-                                     link.getSrcNodeType());
-                    addVertices(source);
-                }
-                Edge edge = connectVertices(EdgeAlarmStatusSummary.getDefaultEdgeId(link.getId(), link.getId()), cloudVertex, source, BRIDGE_EDGE_NAMESPACE);
-                edge.setTooltipText(getEdgeVertexCloudToolTipTextFromSource(source, link, cloudVertex.getTooltipText()));
-
-                mactocloud.put(link.getMacAddr(), mactocloud.get(targetLinkId));
-                mactocloud.put(sourceLinkId, mactocloud.get(targetLinkId));
-                continue;
-            }
-
-            Vertex source = getVertex(getVertexNamespace(), link.getSrcNodeId().toString());
-            if (source == null) {
-                source = getDefaultVertex(link.getSrcNodeId(),
-                                   link.getSrcSysoid(),
-                                   link.getSrcLabel(),
-                                 link.getSrcLocation(),
-                                 link.getSrcNodeType());
-                addVertices(source);
-            }
-            Vertex target = getVertex(getVertexNamespace(), link.getTargetNodeId().toString());
-            if (target == null) {
-                target = getDefaultVertex(link.getTargetNodeId(),
-                                   link.getTargetSysoid(),
-                                   link.getTargetLabel(),
-                                 link.getTargetLocation(),
-                                 link.getTargetNodeType());
-                addVertices(target);
-            }
-            if (mactocloud.containsKey(link.getMacAddr())) {
-                Vertex cloudVertex = getVertex(getVertexNamespace(), mactocloud.get(link.getMacAddr()));
-                Edge edge1 = connectVertices(EdgeAlarmStatusSummary.getDefaultEdgeId(link.getId(), link.getId()), cloudVertex, source, BRIDGE_EDGE_NAMESPACE);
-                edge1.setTooltipText(getEdgeVertexCloudToolTipTextFromSource(source, link, cloudVertex.getTooltipText()));
-                Edge edge2 = connectVertices(EdgeAlarmStatusSummary.getDefaultEdgeId(link.getTargetId(), link.getTargetId()), cloudVertex, target, BRIDGE_EDGE_NAMESPACE);
-                edge2.setTooltipText(getEdgeVertexCloudToolTipTextFromTarget(target, link,cloudVertex.getTooltipText()));
-                mactocloud.put(sourceLinkId, mactocloud.get(link.getMacAddr()));
-                mactocloud.put(targetLinkId, mactocloud.get(link.getMacAddr()));
-                continue;
-            }
-            
-            String cloudId = "Cloud:"+cloudindex;
-            AbstractVertex cloudVertex = addVertex(cloudId, 0, 0);
-            cloudVertex.setLabel("");
-            cloudVertex.setIconKey("cloud");
-            cloudVertex.setTooltipText("Cloud Representing a Shared Segment connecting switches");
-            addVertices(cloudVertex);
-
-            Edge edge1 = connectVertices(EdgeAlarmStatusSummary.getDefaultEdgeId(link.getId(), link.getId()), cloudVertex, source, BRIDGE_EDGE_NAMESPACE);
-            edge1.setTooltipText(getEdgeVertexCloudToolTipTextFromSource(source, link,cloudVertex.getTooltipText()));
-            Edge edge2 = connectVertices(EdgeAlarmStatusSummary.getDefaultEdgeId(link.getTargetId(), link.getTargetId()), cloudVertex, target, BRIDGE_EDGE_NAMESPACE);
-            edge2.setTooltipText(getEdgeVertexCloudToolTipTextFromTarget(target, link, cloudVertex.getTooltipText()));
-            mactocloud.put(link.getMacAddr(), cloudId);
-            mactocloud.put(sourceLinkId, cloudId);
-            mactocloud.put(targetLinkId, cloudId);
-            cloudindex++;
-        }
-        
-        // now we parse the linkd from switches to hosts
-        Multimap<String, BridgeMacTopologyLink> multimap = HashMultimap.create();
-        for (BridgeMacTopologyLink macLink : m_bridgeMacLinkDao.getAllBridgeLinksToIpAddrToNodes()) {
-            String sourceid = String.valueOf(macLink.getSrcNodeId()) + ":" +String.valueOf(macLink.getBridgePort());
-            if (macLink.getBridgePortIfIndex() != null )
-                sourceid = String.valueOf(macLink.getSrcNodeId()) + ":" +String.valueOf(macLink.getBridgePortIfIndex());
-            multimap.put(sourceid, macLink);
-        }
-
-        
-        for (String key : multimap.keySet()){
-            Collection<BridgeMacTopologyLink> links = multimap.get(key);
-            if (links.size() == 1) {
-                BridgeMacTopologyLink link = links.iterator().next();
-                String edgeId = String.valueOf(link.getId())+ "|" + String.valueOf(link.getTargetId());
-                Vertex target = getVertex(getVertexNamespace(), link.getTargetNodeId().toString());
-                if (target == null) {
-                    target = getDefaultVertex(link.getTargetNodeId(),
-                                       link.getTargetSysoid(),
-                                       link.getTargetLabel(),
-                                     link.getTargetLocation(),
-                                     link.getTargetNodeType());
-                    addVertices(target);
-                }
-
-                if (mactocloud.containsKey(link.getMacAddr())) {
-                    Vertex cloudVertex = getVertex(getVertexNamespace(), mactocloud.get(link.getMacAddr()));
-                    Edge edge = connectVertices(edgeId, cloudVertex, target, BRIDGE_EDGE_NAMESPACE);
-                    edge.setTooltipText(getEdgeVertexCloudToolTipTextFromTarget(target, link,cloudVertex.getTooltipText()));
-                    continue;
-                }
-                Vertex source = getVertex(getVertexNamespace(), link.getSrcNodeId().toString());
-                if (source == null) {
-                    source = getDefaultVertex(link.getSrcNodeId(),
-                                       link.getSrcSysoid(),
-                                       link.getSrcLabel(),
-                                     link.getSrcLocation(),
-                                     link.getSrcNodeType());
-                    addVertices(source);
-                }
-                BridgeLinkDetail detail = new BridgeLinkDetail(edgeId,EnhancedLinkdTopologyProvider.TOPOLOGY_NAMESPACE_LINKD,source, link.getBridgePortIfIndex(), target, link.getTargetIfIndex(), link.getBridgePort(), link.getTargetBridgePort(),link.getId(),link.getTargetId());
-                AbstractEdge edge = connectVertices(detail.getId(), detail.getSource(), detail.getTarget(), BRIDGE_EDGE_NAMESPACE);
-                edge.setTooltipText(getEdgeTooltipText(detail));
-                continue;
-            }
-            // This is a multi link. Means that we have multiple and node on the same bridge port
-            // The connection is with a cloud
-            if (mactocloud.containsKey(key)) {
-                Vertex cloudVertex = getVertex(getVertexNamespace(), mactocloud.get(mactocloud.get(key)));
-                for (BridgeMacTopologyLink link : multimap.get(key)) {
-                    String edgeId = String.valueOf(link.getId())+ "|" + String.valueOf(link.getTargetId());
-                    Vertex target = getVertex(getVertexNamespace(), link.getTargetNodeId().toString());
-                    if (target == null) {
-                        target = getDefaultVertex(link.getTargetNodeId(),
-                                           link.getTargetSysoid(),
-                                           link.getTargetLabel(),
-                                         link.getTargetLocation(),
-                                         link.getTargetNodeType());
-                        addVertices(target);
+    private void getBridgeLinks(Map<Integer, OnmsNode> nodemap, Map<Integer, List<OnmsSnmpInterface>> nodesnmpmap,Map<String, List<OnmsIpInterface>> macToIpMap,Map<Integer, List<OnmsIpInterface>> ipmap, Map<Integer, OnmsIpInterface> ipprimarymap){
+        for (BroadcastDomain domain: m_bridgeTopologyDao.getAllPersisted(m_bridgeBridgeLinkDao, m_bridgeMacLinkDao)) {
+            LOG.info("loadtopology: parsing broadcast Domain: '{}', {}", domain);
+            for (SharedSegment segment: domain.getTopology()) {
+                if (segment.noMacsOnSegment() && segment.getBridgeBridgeLinks().size() == 1) {
+                    for (BridgeBridgeLink link : segment.getBridgeBridgeLinks()) {
+                        Vertex source = getOrCreateVertex(nodemap.get(link.getNode().getId()), ipprimarymap.get(link.getNode().getId()));
+                        Vertex target = getOrCreateVertex(nodemap.get(link.getDesignatedNode().getId()), ipprimarymap.get(link.getDesignatedNode().getId()));
+                        BridgeLinkDetail detail = new BridgeLinkDetail(EnhancedLinkdTopologyProvider.TOPOLOGY_NAMESPACE_LINKD,source,link.getBridgePortIfIndex(),  target, link.getDesignatedPortIfIndex(), link.getBridgePort(), link.getDesignatedPort(), link.getId(),link.getId() );
+                        LinkdEdge edge = connectVertices(detail, BRIDGE_EDGE_NAMESPACE);
+                        edge.setTooltipText(getEdgeTooltipText(detail,nodesnmpmap));
                     }
-                    AbstractEdge edge2 = connectVertices(edgeId, cloudVertex, target, BRIDGE_EDGE_NAMESPACE);
-                    edge2.setTooltipText(getEdgeVertexCloudToolTipTextFromTarget(target, link,cloudVertex.getTooltipText()));
+                    continue;
+                } 
+                if (segment.getBridgeMacLinks().size() == 1 && segment.getBridgeBridgeLinks().size() == 0) {
+                    for (BridgeMacLink sourcelink: segment.getBridgeMacLinks()) {
+                        if (macToIpMap.containsKey(sourcelink.getMacAddress()) && macToIpMap.get(sourcelink.getMacAddress()).size() > 0) {
+                           List<OnmsIpInterface> targetInterfaces = macToIpMap.get(sourcelink.getMacAddress());
+                           OnmsIpInterface targetIp = targetInterfaces.get(0);
+                           if (segment.getBridgeIdsOnSegment().contains(targetIp.getNode().getId()))
+                               continue;
+                           Vertex source = getOrCreateVertex(nodemap.get(sourcelink.getNode().getId()), ipprimarymap.get(sourcelink.getNode().getId()));
+                           Vertex target = getOrCreateVertex(nodemap.get(targetIp.getNode().getId()), ipprimarymap.get(targetIp.getNode().getId()));
+                           LinkdEdge edge = connectVertices(sourcelink, source, target, BRIDGE_EDGE_NAMESPACE);
+                           edge.setTooltipText(getEdgeTooltipText(sourcelink,source,target,targetInterfaces,nodesnmpmap));
+                        }
+                    }
+                    continue;    
                 }
-                continue; // next multimap key
-            }
-
-            // well we do not have yet a cloud......for the specified node:bridgeport
-            String[] keyParts = key.split(":");
-            String sourceNodeId = keyParts[0];
-            String bridgePort = keyParts[1];
-            BridgeMacTopologyLink link1 = multimap.get(key).iterator().next();
-            Vertex parentVertex = getVertex(getVertexNamespace(), sourceNodeId);
-            if (parentVertex == null) {
-                parentVertex = getDefaultVertex(link1.getSrcNodeId(),
-                                   link1.getSrcSysoid(),
-                                   link1.getSrcLabel(),
-                                 link1.getSrcLocation(),
-                                 link1.getSrcNodeType());
-                addVertices(parentVertex);
-            }
-            
-            AbstractVertex    cloudVertex = addVertex(key, 0, 0);
-            cloudVertex.setLabel("");
-            cloudVertex.setIconKey("cloud");
-            cloudVertex.setTooltipText("Cloud Representing the Shared Segment connecting to switch: " + parentVertex.getLabel() + " bridge port: " + bridgePort);
-
-            Edge edge = connectVertices(EdgeAlarmStatusSummary.getDefaultEdgeId(link1.getId(), link1.getId()), cloudVertex, parentVertex, BRIDGE_EDGE_NAMESPACE);
-            edge.setTooltipText(getEdgeVertexCloudToolTipTextFromSource(parentVertex, link1,cloudVertex.getTooltipText()));
-            
-            for (BridgeMacTopologyLink link : multimap.get(key)) {
-                String edgeId = String.valueOf(link.getId())+ "|" + String.valueOf(link.getTargetId());
-                Vertex target = getVertex(getVertexNamespace(), link.getTargetNodeId().toString());
-                if (target == null) {
-                    target = getDefaultVertex(link.getTargetNodeId(),
-                                       link.getTargetSysoid(),
-                                       link.getTargetLabel(),
-                                     link.getTargetLocation(),
-                                     link.getTargetNodeType());
-                    addVertices(target);
+                String cloudId = segment.getDesignatedBridge()+":"+segment.getDesignatedPort();
+                AbstractVertex cloudVertex = addVertex(cloudId, 0, 0);
+                cloudVertex.setLabel("");
+                cloudVertex.setIconKey("cloud");
+                cloudVertex.setTooltipText("Shared Segment: " + nodemap.get(segment.getDesignatedBridge()).getLabel() + " port: " + segment.getDesignatedPort());
+                addVertices(cloudVertex);
+                LOG.info("loadtopology: adding cloud: id: '{}', {}", cloudId, cloudVertex.getTooltipText() );
+                for (BridgePort targetport: segment.getBridgePortsOnSegment()) {
+                    Vertex target = getOrCreateVertex(nodemap.get(targetport.getNode().getId()), ipprimarymap.get(targetport.getNode().getId()));
+                    LinkdEdge edge = connectVertices(targetport, cloudVertex, target, BRIDGE_EDGE_NAMESPACE);
+                    edge.setTooltipText(getEdgeTooltipText(targetport,target,nodesnmpmap));
                 }
-                AbstractEdge edge2 = connectVertices(edgeId, cloudVertex, target, BRIDGE_EDGE_NAMESPACE);
-                edge2.setTooltipText(getEdgeVertexCloudToolTipTextFromTarget(target, link,cloudVertex.getTooltipText()));
+                for (String targetmac: segment.getMacsOnSegment()) {
+                    if (macToIpMap.containsKey(targetmac) && macToIpMap.get(targetmac).size() > 0) {
+                        List<OnmsIpInterface> targetInterfaces = macToIpMap.get(targetmac);
+                        OnmsIpInterface targetIp = targetInterfaces.get(0);
+                        if (segment.getBridgeIdsOnSegment().contains(targetIp.getNode().getId()))
+                                continue;
+                        Vertex target = getOrCreateVertex(nodemap.get(targetIp.getNode().getId()), ipprimarymap.get(targetIp.getNode().getId()));
+                        LinkdEdge edge = connectCloudMacVertices(targetmac, cloudVertex, target, BRIDGE_EDGE_NAMESPACE);
+                        edge.setTooltipText(getEdgeTooltipText(targetmac,target,targetInterfaces));
+                    }
+                }
             }
-    
         }
-
-
-
     }
 
     @Override
@@ -998,104 +1032,168 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
         }
     }
 
-    private String getEdgeVertexCloudToolTipTextFromSource(Vertex vertex, BridgeMacTopologyLink link, String cloudText) {
-        if (link.getBridgePortIfName() != null)
-            return getEdgeVertexCloudTooltipText(vertex, " port with ifname: " + link.getBridgePortIfName(), cloudText);
-        if (link.getBridgePortIfIndex() != null)
-            return getEdgeVertexCloudTooltipText(vertex, " port with ifindex: " + String.valueOf(link.getBridgePortIfIndex()), cloudText);
-        return getEdgeVertexCloudTooltipText(vertex, " bridge port : " + String.valueOf(link.getBridgePort()), cloudText);
-    }
-
-    private String getEdgeVertexCloudToolTipTextFromTarget(Vertex vertex, BridgeMacTopologyLink link, String cloudText) {
-        if (link.getTargetBridgePort() != null && link.getTargetPortIfName() != null)
-            return getEdgeVertexCloudTooltipText(vertex, " port with ifname: " + link.getTargetPortIfName(), cloudText);
-        if (link.getTargetBridgePort() != null && link.getTargetIfIndex() != null)
-            return getEdgeVertexCloudTooltipText(vertex, " port with ifindex: " + String.valueOf(link.getTargetIfIndex()), cloudText);
-        if (link.getTargetBridgePort() != null )
-            return getEdgeVertexCloudTooltipText(vertex, " bridge port : " + String.valueOf(link.getTargetBridgePort()), cloudText);
-        return getEdgeVertexCloudTooltipText(vertex, " ip/mac : "+ link.getBridgePortIfName() + "/"+ link.getMacAddr(), cloudText);
-    }
-
-    private String getEdgeVertexCloudTooltipText(Vertex vertex, String vertexPortText, String cloudText) {
+    private String getEdgeTooltipText(BridgeMacLink sourcelink,
+            Vertex source, Vertex target,
+            List<OnmsIpInterface> targetInterfaces,
+            Map<Integer, List<OnmsSnmpInterface>> snmpmap) {
         StringBuffer tooltipText = new StringBuffer();
-
         tooltipText.append(HTML_TOOLTIP_TAG_OPEN);
-        tooltipText.append("Type of Link: Bridge Layer 2");
-        tooltipText.append(HTML_TOOLTIP_TAG_OPEN);
-
-        tooltipText.append(HTML_TOOLTIP_TAG_OPEN);
-        tooltipText.append("Name: &lt;endpoint1 " + vertex.getLabel() + vertexPortText);
-        tooltipText.append( " ---- endpoint2 A Shared Segment &gt;");
+        tooltipText.append("Bridge Layer2");
         tooltipText.append(HTML_TOOLTIP_TAG_END);
 
+        OnmsSnmpInterface sourceInterface = getByNodeIdAndIfIndex(sourcelink.getBridgePortIfIndex(), target,snmpmap);
+        
         tooltipText.append(HTML_TOOLTIP_TAG_OPEN);
-        tooltipText.append( "End Point 1: " + vertex.getLabel() + ", " + vertex.getIpAddress());
-        tooltipText.append(HTML_TOOLTIP_TAG_END);
-
-        tooltipText.append(HTML_TOOLTIP_TAG_OPEN);
-        tooltipText.append( "End Point 1: " + cloudText);
-        tooltipText.append(HTML_TOOLTIP_TAG_END);
-
-        return tooltipText.toString();
-    }
-
-    private String getEdgeTooltipText(LinkDetail<?> linkDetail) {
-
-        StringBuffer tooltipText = new StringBuffer();
-        Vertex source = linkDetail.getSource();
-        Vertex target = linkDetail.getTarget();
-        OnmsSnmpInterface sourceInterface = getByNodeIdAndIfIndex(linkDetail.getSourceIfIndex(), source);
-        OnmsSnmpInterface targetInterface = getByNodeIdAndIfIndex(linkDetail.getTargetIfIndex(), target);
-
-        tooltipText.append(HTML_TOOLTIP_TAG_OPEN);
-        if (sourceInterface != null && targetInterface != null
-                && sourceInterface.getNetMask() != null && !sourceInterface.getNetMask().isLoopbackAddress()
-                && targetInterface.getNetMask() != null && !targetInterface.getNetMask().isLoopbackAddress()) {
-            tooltipText.append("Type of Link: " + linkDetail.getType() + " Layer3/Layer2");
-        } else {
-            tooltipText.append("Type of Link: " + linkDetail.getType() + " Layer2");
+        tooltipText.append(source.getLabel());
+        if (sourceInterface != null) {
+            tooltipText.append("(");
+            tooltipText.append(sourceInterface.getIfName());
+            tooltipText.append(")");
         }
         tooltipText.append(HTML_TOOLTIP_TAG_END);
 
         tooltipText.append(HTML_TOOLTIP_TAG_OPEN);
-        tooltipText.append( "Name: &lt;endpoint1 " + source.getLabel());
-        if (sourceInterface != null )
-            tooltipText.append( ":"+sourceInterface.getIfName());
-        tooltipText.append( " ---- endpoint2 " + target.getLabel());
-        if (targetInterface != null)
-            tooltipText.append( ":"+targetInterface.getIfName());
-        tooltipText.append("&gt;");
+        tooltipText.append(target.getLabel());
+        tooltipText.append("(");
+        tooltipText.append(sourcelink.getMacAddress());
+        tooltipText.append(")");
+        tooltipText.append("(");
+        if (targetInterfaces.size() == 1) {
+            tooltipText.append(InetAddressUtils.str(targetInterfaces.get(0).getIpAddress()));
+        } else if (targetInterfaces.size() > 1) {
+            tooltipText.append("Multiple ip Addresses ");
+        } else {
+            tooltipText.append("No ip Address found");
+        }
+        tooltipText.append(")");
+        tooltipText.append(HTML_TOOLTIP_TAG_END);        
+
+        if ( sourceInterface != null) {
+            if (sourceInterface.getIfSpeed() != null) {
+                tooltipText.append(HTML_TOOLTIP_TAG_OPEN);
+                tooltipText.append(getHumanReadableIfSpeed(sourceInterface.getIfSpeed()));
+                tooltipText.append(HTML_TOOLTIP_TAG_END);
+            }
+        }
+
+
+        return tooltipText.toString();
+    }
+
+    private String getEdgeTooltipText(String mac, Vertex target, List<OnmsIpInterface> ipifaces) {
+        StringBuffer tooltipText = new StringBuffer();
+        tooltipText.append(HTML_TOOLTIP_TAG_OPEN);
+        tooltipText.append("Bridge Layer2");
+        tooltipText.append(HTML_TOOLTIP_TAG_END);
+
+        tooltipText.append(HTML_TOOLTIP_TAG_OPEN);
+        tooltipText.append(target.getLabel());
+        tooltipText.append("(");
+        tooltipText.append(mac);
+        tooltipText.append(")");
+        tooltipText.append("(");
+        if (ipifaces.size() == 1) {
+            tooltipText.append(InetAddressUtils.str(ipifaces.get(0).getIpAddress()));
+        } else if (ipifaces.size() > 1) {
+            tooltipText.append("Multiple ip Addresses ");
+        } else {
+            tooltipText.append("No ip Address found");
+        }
+        tooltipText.append(")");
+        tooltipText.append(HTML_TOOLTIP_TAG_END);        
+        
+        return tooltipText.toString();
+    }
+
+
+    private String getEdgeTooltipText(BridgePort port, Vertex target, Map<Integer,List<OnmsSnmpInterface>> snmpmap) {
+        StringBuffer tooltipText = new StringBuffer();
+        OnmsSnmpInterface targetInterface = getByNodeIdAndIfIndex(port.getBridgePortIfIndex(), target,snmpmap);
+        tooltipText.append(HTML_TOOLTIP_TAG_OPEN);
+        tooltipText.append("Bridge Layer2");
+        tooltipText.append(HTML_TOOLTIP_TAG_END);
+        
+        tooltipText.append(HTML_TOOLTIP_TAG_OPEN);
+        tooltipText.append(target.getLabel());
+        if (targetInterface != null) {
+            tooltipText.append("(");
+            tooltipText.append(targetInterface.getIfName());
+            tooltipText.append(")");
+        }
         tooltipText.append(HTML_TOOLTIP_TAG_END);
 
         if ( targetInterface != null) {
             if (targetInterface.getIfSpeed() != null) {
                 tooltipText.append(HTML_TOOLTIP_TAG_OPEN);
-                tooltipText.append( "Bandwidth: " + getHumanReadableIfSpeed(targetInterface.getIfSpeed()));
+                tooltipText.append(getHumanReadableIfSpeed(targetInterface.getIfSpeed()));
+                tooltipText.append(HTML_TOOLTIP_TAG_END);
+            }
+        }
+        
+        return tooltipText.toString();
+    }
+
+    private String getEdgeTooltipText(LinkDetail<?> linkDetail,Map<Integer,List<OnmsSnmpInterface>> snmpmap) {
+
+        StringBuffer tooltipText = new StringBuffer();
+        Vertex source = linkDetail.getSource();
+        Vertex target = linkDetail.getTarget();
+        OnmsSnmpInterface sourceInterface = getByNodeIdAndIfIndex(linkDetail.getSourceIfIndex(), source,snmpmap);
+        OnmsSnmpInterface targetInterface = getByNodeIdAndIfIndex(linkDetail.getTargetIfIndex(), target,snmpmap);
+
+        tooltipText.append(HTML_TOOLTIP_TAG_OPEN);
+        tooltipText.append(linkDetail.getType());
+        if (sourceInterface != null && targetInterface != null
+                && sourceInterface.getNetMask() != null && !sourceInterface.getNetMask().isLoopbackAddress()
+                && targetInterface.getNetMask() != null && !targetInterface.getNetMask().isLoopbackAddress()) {
+            tooltipText.append(" Layer3/Layer2");
+        } else {
+            tooltipText.append(" Layer2");
+        }
+        tooltipText.append(HTML_TOOLTIP_TAG_END);
+
+        tooltipText.append(HTML_TOOLTIP_TAG_OPEN);
+        tooltipText.append( source.getLabel());
+        if (sourceInterface != null ) {
+            tooltipText.append("(");
+            tooltipText.append(sourceInterface.getIfName());
+            tooltipText.append(")");
+        }
+        tooltipText.append(HTML_TOOLTIP_TAG_END);
+        
+        tooltipText.append(HTML_TOOLTIP_TAG_OPEN);
+        tooltipText.append(target.getLabel());
+        if (targetInterface != null) {
+            tooltipText.append("(");
+            tooltipText.append(targetInterface.getIfName());
+            tooltipText.append(")");
+        }
+        tooltipText.append(HTML_TOOLTIP_TAG_END);
+
+        if ( targetInterface != null) {
+            if (targetInterface.getIfSpeed() != null) {
+                tooltipText.append(HTML_TOOLTIP_TAG_OPEN);
+                tooltipText.append(getHumanReadableIfSpeed(targetInterface.getIfSpeed()));
                 tooltipText.append(HTML_TOOLTIP_TAG_END);
             }
         } else if (sourceInterface != null) {
             if (sourceInterface.getIfSpeed() != null) {
                 tooltipText.append(HTML_TOOLTIP_TAG_OPEN);
-                tooltipText.append( "Bandwidth: " + getHumanReadableIfSpeed(sourceInterface.getIfSpeed()));
+                tooltipText.append(getHumanReadableIfSpeed(sourceInterface.getIfSpeed()));
                 tooltipText.append(HTML_TOOLTIP_TAG_END);
             }
         }
-
-        tooltipText.append(HTML_TOOLTIP_TAG_OPEN);
-        tooltipText.append( "End Point 1: " + source.getLabel() + ", " + source.getIpAddress());
-        tooltipText.append(HTML_TOOLTIP_TAG_END);
-
-        tooltipText.append(HTML_TOOLTIP_TAG_OPEN);
-        tooltipText.append( "End Point 2: " + target.getLabel() + ", " + target.getIpAddress());
-        tooltipText.append(HTML_TOOLTIP_TAG_END);
-
         return tooltipText.toString();
     }
 
-    private OnmsSnmpInterface getByNodeIdAndIfIndex(Integer ifIndex, Vertex source) {
-        if(source.getId() != null && StringUtils.isNumeric(source.getId()) && ifIndex != null)
-            return getSnmpInterfaceDao().findByNodeIdAndIfIndex(Integer.parseInt(source.getId()), ifIndex);
-
+    private OnmsSnmpInterface getByNodeIdAndIfIndex(Integer ifIndex, Vertex source, Map<Integer,List<OnmsSnmpInterface>> snmpmap) {
+        if(source.getId() != null && StringUtils.isNumeric(source.getId()) && ifIndex != null 
+                && snmpmap.containsKey(Integer.parseInt(source.getId()))) {
+            for (OnmsSnmpInterface snmpiface: snmpmap.get(Integer.parseInt(source.getId()))) {
+                if (ifIndex.intValue() == snmpiface.getIfIndex().intValue())
+                    return snmpiface;
+            }
+        }
         return null;
     }
 
@@ -1147,6 +1245,22 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
         m_bridgeBridgeLinkDao = bridgeBridgeLinkDao;
     }
 
+    public BridgeTopologyDao getBridgeTopologyDao() {
+        return m_bridgeTopologyDao;
+    }
+
+    public void setBridgeTopologyDao(BridgeTopologyDao bridgeTopologyDao) {
+        m_bridgeTopologyDao = bridgeTopologyDao;
+    }
+
+    public IpNetToMediaDao getIpNetToMediaDao() {
+        return m_ipNetToMediaDao;
+    }
+    
+    public void setIpNetToMediaDao(IpNetToMediaDao ipNetToMediaDao) {
+        m_ipNetToMediaDao = ipNetToMediaDao;
+    }
+
     public CdpLinkDao getCdpLinkDao() {
         return m_cdpLinkDao;
     }
@@ -1155,6 +1269,13 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
         m_cdpLinkDao = cdpLinkDao;
     }
 
+    public CdpElementDao getCdpElementDao() {
+        return m_cdpElementDao;
+    }
+
+    public void setCdpElementDao(CdpElementDao cdpElementDao) {
+        m_cdpElementDao = cdpElementDao;
+    }
 
     //Search Provider methods
     @Override
@@ -1243,27 +1364,26 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
         LOG.debug("SearchProvider->onToggleCollapse: called with search result: '{}'", searchResult);
     }
 
+    @Override
+    public SelectionChangedListener.Selection getSelection(List<VertexRef> selectedVertices, ContentType type) {
+       return selectionAwareDelegate.getSelection(selectedVertices, type);
+    }
+
+    @Override
+    public boolean contributesTo(ContentType type) {
+        return selectionAwareDelegate.contributesTo(type);
+    }
+
     private org.opennms.features.topology.api.topo.Criteria findCriterion(String resultId, GraphContainer container) {
 
         org.opennms.features.topology.api.topo.Criteria[] criteria = container.getCriteria();
         for (org.opennms.features.topology.api.topo.Criteria criterion : criteria) {
             if (criterion instanceof LinkdHopCriteria ) {
-
                 String id = ((LinkdHopCriteria) criterion).getId();
-
                 if (id.equals(resultId)) {
                     return criterion;
                 }
             }
-
-            if (criterion instanceof VertexHopGraphProvider.FocusNodeHopCriteria) {
-                String id = ((VertexHopGraphProvider.FocusNodeHopCriteria)criterion).getId();
-
-                if (id.equals(resultId)) {
-                    return criterion;
-                }
-            }
-
         }
         return null;
     }
@@ -1276,6 +1396,17 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
         }
     }
 
+    private CdpLink reverseCdpLink(OnmsIpInterface iface, CdpElement element, CdpLink link) {
+        CdpLink reverseLink = new CdpLink();
+        reverseLink.setId(-link.getId());
+        reverseLink.setNode(iface.getNode());
+        reverseLink.setCdpCacheIfIndex(iface.getIfIndex());
+        reverseLink.setCdpInterfaceName(link.getCdpCacheDevicePort());
+        reverseLink.setCdpCacheDeviceId(element.getCdpGlobalDeviceId());
+        reverseLink.setCdpCacheDevicePort(link.getCdpInterfaceName());
+        return reverseLink;
+    }
+    
     private LldpLink reverseLldpLink(OnmsNode sourcenode, LldpElement element, LldpLink link) {
         LldpLink reverseLink = new LldpLink();
         reverseLink.setId(-link.getId());
@@ -1306,5 +1437,4 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
         
         return reverseLink;
     }
-
 }

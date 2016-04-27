@@ -28,6 +28,13 @@
 
 package org.opennms.netmgt.syslogd;
 
+import org.apache.camel.InOnly;
+
+/**
+ * This interface must be {@link InOnly} in order for task submission to
+ * be performed asynchronously.
+ */
+@InOnly
 public interface SyslogConnectionHandler {
 	void handleSyslogConnection(SyslogConnection message);
 }

@@ -54,8 +54,8 @@ public class OnmsFeatureKarafIT extends KarafTestCase {
 
 	@Before
 	public void setUp() {
-		addFeaturesUrl(maven().groupId("org.opennms.container").artifactId("karaf").version("18.0.0-SNAPSHOT").type("xml").classifier("features").getURL());
-		addFeaturesUrl(maven().groupId("org.opennms.karaf").artifactId("opennms").version("18.0.0-SNAPSHOT").type("xml").classifier("features").getURL());
+		addFeaturesUrl(maven().groupId("org.opennms.container").artifactId("karaf").version("19.0.0-SNAPSHOT").type("xml").classifier("features").getURL());
+		addFeaturesUrl(maven().groupId("org.opennms.karaf").artifactId("opennms").version("19.0.0-SNAPSHOT").type("xml").classifier("features").getURL());
 	}
 
 	@Test
@@ -427,6 +427,7 @@ public class OnmsFeatureKarafIT extends KarafTestCase {
 	}
 	@Test
 	public void testInstallFeatureSpringSecurity32() {
+		installFeature("pax-http"); // Provides javax.servlet version 2.6
 		installFeature("spring-security32");
 		System.out.println(executeCommand("features:list -i"));
 	}
@@ -435,4 +436,11 @@ public class OnmsFeatureKarafIT extends KarafTestCase {
 		installFeature("spring-webflow");
 		System.out.println(executeCommand("features:list -i"));
 	}
+
+    @Test
+    public void testInstallFeatureTsrmTroubleticketer() {
+        installFeature("pax-http"); // Provides javax.servlet version 2.6
+        installFeature("tsrm-troubleticketer");
+        System.out.println(executeCommand("features:list -i"));
+    }
 }

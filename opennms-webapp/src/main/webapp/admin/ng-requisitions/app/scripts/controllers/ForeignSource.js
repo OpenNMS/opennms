@@ -287,6 +287,37 @@
     };
 
     /**
+    * @description Opens the modal window to move a policy
+    *
+    * @name ForeignSourceController:moveDetector
+    * @ngdoc method
+    * @methodOf ForeignSourceController
+    * @param {object} policy The policy object to move
+    */
+    $scope.movePolicy = function(policy) {
+      var form = this.fsForm;
+      var pos = $scope.indexOfPolicy(policy);
+      var max = $scope.foreignSourceDef.policies.length - 1;
+      $uibModal.open({
+        backdrop: 'static',
+        keyboard: false,
+        size: 'sm',
+        controller: 'MoveController',
+        templateUrl: 'views/move.html',
+        resolve: {
+          label: function() { return policy.name },
+          position: function() { return pos },
+          maximum: function() { return max }
+        }
+      }).result.then(function(dst) {
+        form.$dirty = true;
+        $scope.foreignSourceDef.policies.splice(pos, 1);
+        $scope.foreignSourceDef.policies.splice(dst, 0, policy);
+
+      });
+    };
+
+    /**
     * @description Removes a policy
     *
     * @name ForeignSourceController:removePolicy
@@ -341,6 +372,37 @@
         if (isNew) {
           $scope.foreignSourceDef.detectors.pop();
         }
+      });
+    };
+
+    /**
+    * @description Opens the modal window to move a detector
+    *
+    * @name ForeignSourceController:moveDetector
+    * @ngdoc method
+    * @methodOf ForeignSourceController
+    * @param {object} detector The detector object to move
+    */
+    $scope.moveDetector = function(detector) {
+      var form = this.fsForm;
+      var pos = $scope.indexOfDetector(detector);
+      var max = $scope.foreignSourceDef.detectors.length - 1;
+      $uibModal.open({
+        backdrop: 'static',
+        keyboard: false,
+        size: 'sm',
+        controller: 'MoveController',
+        templateUrl: 'views/move.html',
+        resolve: {
+          label: function() { return detector.name },
+          position: function() { return pos },
+          maximum: function() { return max }
+        }
+      }).result.then(function(dst) {
+        form.$dirty = true;
+        $scope.foreignSourceDef.detectors.splice(pos, 1);
+        $scope.foreignSourceDef.detectors.splice(dst, 0, detector);
+
       });
     };
 

@@ -290,6 +290,40 @@
   
   <!-- WARMERGE: insert listener -->
 
+  <!--
+    Configure the JspServlet to use updated compiler syntax.
+
+    WARNING: There is a bug in our version of the Glassfish JSP library
+    that causes crashes when using any Java 8 lambdas. The bytecode that
+    is generated from compiling lambdas triggers this bug:
+
+    https://bz.apache.org/bugzilla/show_bug.cgi?id=54475
+
+    So we need to leave the language level at Java 7 until we upgrade to
+    at least Jetty 9.1 to get lambda support. :-/
+
+    http://issues.opennms.org/browse/NMS-8289
+
+    Ugh, and I just figured out that the jetty-jspc-maven-plugin doesn't
+    support editing this value at all so we're stuck with whatever it
+    defaults to (Java 1.5). Commenting this section out.
+  -->
+  <!--
+  <servlet id="jsp">
+    <servlet-name>jsp</servlet-name>
+    <servlet-class>org.apache.jasper.servlet.JspServlet</servlet-class>
+    <init-param>
+      <param-name>compilerSourceVM</param-name>
+      <param-value>1.7</param-value>
+    </init-param>
+    <init-param>
+      <param-name>compilerTargetVM</param-name>
+      <param-value>1.7</param-value>
+    </init-param>
+    <load-on-startup>0</load-on-startup>
+  </servlet>
+  -->
+
   <!-- ==================================================================== -->
   <!-- The default servlet.                                                 -->
   <!-- This servlet, normally mapped to /, provides the handling for static -->
@@ -428,8 +462,8 @@
     <servlet-class>org.opennms.web.admin.discovery.ActionDiscoveryServlet</servlet-class>
   </servlet>
   <servlet>
-    <servlet-name>modifyDiscoveryConfig</servlet-name>
-    <servlet-class>org.opennms.web.admin.discovery.ModifyDiscoveryConfigurationServlet</servlet-class>
+    <servlet-name>discoveryScan</servlet-name>
+    <servlet-class>org.opennms.web.admin.discovery.DiscoveryScanServlet</servlet-class>
   </servlet>  
   
   <servlet>
@@ -823,8 +857,8 @@
     <url-pattern>/admin/discovery/actionDiscovery</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
-    <servlet-name>modifyDiscoveryConfig</servlet-name>
-    <url-pattern>/admin/discovery/modifyDiscoveryConfig</url-pattern>
+    <servlet-name>discoveryScan</servlet-name>
+    <url-pattern>/admin/discovery/scanConfig</url-pattern>
   </servlet-mapping>
   
   <servlet-mapping>

@@ -94,19 +94,13 @@ div.v-table-header-wrap {
 * End toolbar spacing
 */
 
+/** Edge Styles **/
 .edge {
 	stroke: #ccc;
 }
 
-.edge.up{
-    stroke:#336600;
-}
-
-.edge.down{
-    stroke:#CC0000;
-}
-
-.edge.selected {
+.edge.selected,
+.edge.ncs.selected {
 	stroke: #00ffff;
 }
 
@@ -118,16 +112,32 @@ div.v-table-header-wrap {
 	stroke: #FFD700;
 }
 
-.edge.ncs.selected {
-	stroke: #00ffff;
+.edge .status.indeterminate {
+    stroke: #999000;
 }
 
-.edge.ncs.down{
+.edge.up,
+.edge.ncs.up,
+.edge.normal {
+    stroke: #336600;
+}
+
+.edge.warning {
+    stroke: #FFCC00;
+}
+
+.edge.minor {
+    stroke: #FF9900;
+}
+
+.edge.major {
+    stroke:#FF3300;
+}
+
+.edge.down,
+.edge.ncs.down,
+.edge.critical {
     stroke:#CC0000;
-}
-
-.edge.ncs.up{
-    stroke:#336600;
 }
 
 .map-controls {
@@ -143,9 +153,13 @@ div.v-table-header-wrap {
     pointer-events: none;
 }
 
+.vertex-label {
+    alignment-base: text-before-edge;
+    text-anchor: middle;
+    font-size: 9px;
+}
 
-
-/******** Status Styles ********/
+/******** Vertex Status Styles ********/
 .vertex .status.selected,
 .vertex .status.cleared,
 .vertex .status.normal, 
@@ -206,21 +220,60 @@ div.v-table-header-wrap {
   overflow: visible;
 }
 
+/* Status Badge */
+.status-badge-container {
+    fill: white;
+}
+
+.status-badge {
+    font-family: Ionicons;
+    stroke-width: 0px;
+    font-size: 16.5pt;
+}
+
+.status-badge.status.normal {
+    stroke:#336600;
+    fill: #336600;
+}
+
+.status-badge.status.indeterminate{
+    stroke:#999000;
+    fill:#999000;
+}
+
+.status-badge.status.warning{
+    stroke:#FFCC00;
+    fill:#FFCC00;
+}
+
+.status-badge.status.minor{
+    stroke:#FF9900;
+    fill:#FF9900;
+}
+.status-badge.status.major{
+    stroke:#FF3300;
+    fill:#FF3300;
+}
+
+.status-badge.status.critical{
+    stroke:#CC0000;
+    fill:#CC0000;
+}
+
 /*** End Vertex Styles***/
 
 /** SearchBox Styles **/
+.topology-search {
+    padding: 18px;
+}
+
 .search-token-field {
 	border-radius: 2px;
 	-moz-border-radius: 2px;
 	-webkit-border-radius: 2px;
-    background-color: #6EC0FF;
     color: black;
 	padding: 2px 5px 2px 5px;
 	margin: 1px;
-}
-
-.search-token-field a:hover{
-	color:white;
 }
 
 .search-token-namespace{
@@ -229,8 +282,8 @@ div.v-table-header-wrap {
 }
 
 .search-token-label{
-    padding-right: 8px;
-    max-width: 156px;
+    padding-right: 5px;
+    max-width: 180px;
     word-wrap: break-word;
 }
 
@@ -353,4 +406,74 @@ div.v-table-header-wrap {
 	border-color: gray;
 	background-color: white;
 	-moz-border-radius: ;
+}
+
+/* Icon Selection Dialog */
+.svgIconOverlay.selected {
+    stroke-width: 2px;
+    stroke: #2e6da4;
+    opacity: 1;
+    fill-opacity: 0;
+}
+
+.icon-selection-component,
+.v-slot-icon-selection-component {
+    overflow-y: scroll;
+    overflow-x: hidden;
+}
+
+/* Info Panel Styling */
+.toggle-button {
+    background: rgba(255, 255, 255, 0.9) url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAAUCAQAAAAXDMSnAAAAi0lEQVR4AX3JQcqBURQG4O/+9WNG30D3vOfSDTuQsgcZyBakZANSzMVMBme3zsBI5/VMn4ZKLP5ki1E4tYejWpilxVUtzOEUD68odYmXR5BJNp/4zllXD2phllYvamHmirsayUkfJ5ruHzueTldC08kcT5YOY9xYujqQM03XKXuaLmEtNF1e1Nz89gbL+0do6OEwRwAAAABJRU5ErkJggg==") no-repeat scroll 7px center / 7px 10px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+    position: absolute;
+    top: 8px;
+    left: 100%;
+    z-index: 10000;
+    cursor: pointer;
+    height: 48px;
+    width: 23px;
+}
+
+.toggle-button.info-panel-collapsed {
+    transform: scaleX(-1);
+}
+
+.info-panel-component {
+    background-color: #f9f9f9;
+    border: 1px solid black;
+}
+
+.info-panel-item {
+    overflow: auto;
+}
+
+.info-panel-item-label {
+    font-weight: bold;
+}
+
+.info-panel-area {
+    height: 100%;
+    max-width: 350px;
+    overflow-y: auto;
+}
+
+/** Simulation Info Panel Styling */
+.info-panel-area .v-slot-simulation .v-slot-warning {
+    color: orange;
+}
+
+.info-panel-area .v-slot-simulation .v-slot-warning .v-caption-warning {
+    display: inline;
+}
+
+.info-panel-area .v-slot-simulation .v-label-warning {
+    vertical-align: top;
+    padding-left: 8px;
+}
+
+/** Threshold Explanation Window */
+.threshold .v-table-cell-content-selected {
+    background-color: #B2DFFF;
+    /*color: white;*/
 }

@@ -28,24 +28,24 @@
 
 package org.opennms.netmgt.provision.detector.jmx;
 
-import org.opennms.core.utils.InetAddressUtils;
-
-import org.opennms.netmgt.dao.jmx.JmxConfigDao;
-import org.opennms.netmgt.jmx.connection.JmxServerConnectionWrapper;
-import org.opennms.netmgt.provision.support.SyncAbstractDetector;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.management.InstanceNotFoundException;
-import javax.management.MalformedObjectNameException;
-import javax.management.ObjectName;
-
 import java.io.IOException;
 import java.io.InterruptedIOException;
 import java.net.ConnectException;
 import java.net.InetAddress;
+import java.net.MalformedURLException;
 import java.net.NoRouteToHostException;
 import java.net.PortUnreachableException;
+
+import javax.management.InstanceNotFoundException;
+import javax.management.MalformedObjectNameException;
+import javax.management.ObjectName;
+import javax.naming.NameNotFoundException;
+
+import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.netmgt.jmx.connection.JmxServerConnectionWrapper;
+import org.opennms.netmgt.provision.support.SyncAbstractDetector;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 /**
@@ -85,7 +85,7 @@ public abstract class JMXDetector extends SyncAbstractDetector {
         super(serviceName, port, timeout, retries);
     }
 
-    abstract protected JmxServerConnectionWrapper connect(final InetAddress address, final int port, final int timeout) throws ConnectException, IOException;
+    abstract protected JmxServerConnectionWrapper connect(final InetAddress address, final int port, final int timeout) throws ConnectException, IOException, MalformedURLException;
 
     /** {@inheritDoc} */
     @Override
@@ -129,7 +129,48 @@ public abstract class JMXDetector extends SyncAbstractDetector {
             } catch (InstanceNotFoundException e) {
                 LOG.info("isServiceDetected: {}: Object instance {} does not exists on address {} port {} within timeout: {} attempt: {}", getServiceName(), m_object, ipAddr, port, timeout, attempts, e);
             } catch (IOException e) {
-                LOG.error("isServiceDetected: {}: An unexpected I/O exception occured contacting address {} port {}",getServiceName(), ipAddr, port, e);
+                // NMS-8096: Because the JMX connections wrap lower-level exceptions in an IOException,
+                // we need to unwrap the exceptions to provide INFO log messages about failures
+
+                boolean loggedIt = false;
+
+                // Unwrap exception
+                Throwable cause = e.getCause();
+                while (cause != null && loggedIt == false) {
+                    if (cause instanceof ConnectException) {
+                        // Connection refused!! Continue to retry.
+                        LOG.info("isServiceDetected: {}: Unable to connect to address: {} port {}, attempt #{}",getServiceName(), ipAddr, port, attempts, e);
+                        loggedIt = true;
+                    } else if (cause instanceof NoRouteToHostException) {
+                        // No Route to host!!!
+                        LOG.info("isServiceDetected: {}: No route to address {} was available", getServiceName(), ipAddr, e);
+                        loggedIt = true;
+                    } else if (cause instanceof PortUnreachableException) {
+                        // Port unreachable
+                        LOG.info("isServiceDetected: {}: Port unreachable while connecting to address {} port {} within timeout: {} attempt: {}", getServiceName(), ipAddr, port, timeout, attempts, e);
+                        loggedIt = true;
+                    } else if (cause instanceof InterruptedIOException) {
+                        // Expected exception
+                        LOG.info("isServiceDetected: {}: Did not connect to address {} port {} within timeout: {} attempt: {}", getServiceName(), ipAddr, port, timeout, attempts, e);
+                        loggedIt = true;
+                    } else if (cause instanceof NameNotFoundException) {
+                        LOG.info("isServiceDetected: {}: Name {} not found on address {} port {} within timeout: {} attempt: {}", getServiceName(), m_object, ipAddr, port, timeout, attempts, e);
+                        loggedIt = true;
+                    } else if (cause instanceof MalformedObjectNameException) {
+                        LOG.info("isServiceDetected: {}: Object instance {} is not valid on address {} port {} within timeout: {} attempt: {}", getServiceName(), m_object, ipAddr, port, timeout, attempts, e);
+                        loggedIt = true;
+                    } else if (cause instanceof InstanceNotFoundException) {
+                        LOG.info("isServiceDetected: {}: Object instance {} does not exists on address {} port {} within timeout: {} attempt: {}", getServiceName(), m_object, ipAddr, port, timeout, attempts, e);
+                        loggedIt = true;
+                    }
+
+                    cause = cause.getCause();
+                }
+
+                if (!loggedIt) {
+                    // If none of the causes are an expected type, log an error
+                    LOG.error("isServiceDetected: {}: An unexpected I/O exception occured contacting address {} port {}",getServiceName(), ipAddr, port, e);
+                }
             } catch (Throwable t) {
                 LOG.error("isServiceDetected: {}: Unexpected error trying to detect {} on address {} port {}", getServiceName(), getServiceName(), ipAddr, port, t);
             }

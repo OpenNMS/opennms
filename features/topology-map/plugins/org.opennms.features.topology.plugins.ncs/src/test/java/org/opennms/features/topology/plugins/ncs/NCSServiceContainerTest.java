@@ -36,13 +36,13 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import com.vaadin.data.util.BeanItem;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.opennms.netmgt.model.OnmsCriteria;
 import org.opennms.netmgt.model.ncs.NCSComponent;
 import org.opennms.netmgt.model.ncs.NCSComponentRepository;
-
-import com.vaadin.data.util.BeanItem;
 
 public class NCSServiceContainerTest {
     
@@ -130,7 +130,6 @@ public class NCSServiceContainerTest {
 
         @Override
         public NCSComponent load(Long id) {
-            // TODO Auto-generated method stub
             return null;
         }
 
@@ -156,13 +155,11 @@ public class NCSServiceContainerTest {
 
         @Override
         public NCSComponent findByTypeAndForeignIdentity(String type, String foreignSource, String foreignId) {
-            // TODO Auto-generated method stub
             return null;
         }
 
         @Override
         public List<NCSComponent> findComponentsThatDependOn( NCSComponent component) {
-            // TODO Auto-generated method stub
             return null;
         }
 
@@ -197,12 +194,10 @@ public class NCSServiceContainerTest {
     public void testGetChildrenForItemId() {
         Collection<Long> rootItemIds = m_container.rootItemIds();
         Long parentId = rootItemIds.iterator().next();
-        System.out.println(parentId);
         Collection<Long> children = m_container.getChildren(parentId);
         for(Long id : children) {
             assertFalse(parentId == id);
         }
-        System.out.println(children);
     }
     
     @Test

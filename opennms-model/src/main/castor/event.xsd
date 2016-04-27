@@ -651,21 +651,7 @@
     </annotation>
     <complexType>
       <sequence>
-        <element name="update-field" minOccurs="0" maxOccurs="unbounded">
-          <annotation>
-            <documentation>
-            This element provides a list of the fields that will be updated during alarm reduction in addition to the defaults. For
-            example: severity.
-            </documentation>
-          </annotation>
-          <complexType>
-            <simpleContent>
-              <extension base="string">
-                <attribute name="update" type="boolean" use="optional" default="true" />
-              </extension>
-            </simpleContent>
-          </complexType>
-        </element>
+        <element ref="this:update-field" minOccurs="0" maxOccurs="unbounded" />
       </sequence>
       <attribute name="reduction-key" type="string" use="required" />
       <attribute name="alarm-type" use="required">
@@ -679,6 +665,13 @@
       <attribute name="auto-clean" type="boolean" use="optional" default="false" />
       <attribute name="x733-alarm-type" type="this:x733-alarm-type" use="optional" />
       <attribute name="x733-probable-cause" type="int" use="optional" />
+    </complexType>
+  </element>
+
+  <element name="update-field">
+    <complexType>
+      <attribute name="field-name" type="string" use="required" />
+      <attribute name="update-on-reduction" type="boolean" use="optional" default="true" />
     </complexType>
   </element>
 

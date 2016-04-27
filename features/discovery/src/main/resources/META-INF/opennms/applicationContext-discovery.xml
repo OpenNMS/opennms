@@ -79,6 +79,13 @@
     <property name="unmanagedInterfaceFilter" ref="unmanagedInterfaceFilter" />
   </bean>
 
+  <!-- Create a Camel dispatcher that consumes DiscoveryConfiguration tasks -->
+  <bean id="discoveryTaskExecutorCamel" class="org.opennms.netmgt.discovery.DiscoveryTaskExecutorCamelImpl">
+    <constructor-arg value="seda:submitDiscoveryTask"/>
+  </bean>
+
+  <onmsgi:service interface="org.opennms.netmgt.discovery.DiscoveryTaskExecutor" ref="discoveryTaskExecutorCamel"/>
+
   <camelContext id="discoveryCamelContext" xmlns="http://camel.apache.org/schema/spring">
 
     <!-- Bootstrap timer -->
@@ -87,22 +94,27 @@
       <!-- Set the DiscoveryConfiguration as the message body -->
       <transform><simple>${bean:discoveryFactory.getConfiguration}</simple></transform>
       <!-- Submit it as a Discovery task -->
-      <to uri="direct:submitDiscoveryTask" />
+      <to uri="seda:submitDiscoveryTask" />
     </route>
 
     <route id="submitDiscoveryTask">
-      <from uri="direct:submitDiscoveryTask" />
-      <!-- 
-        Make sure that this exchange is using an InOut exchange so that the output
-        of each to: endpoint is passed to the next to: endpoint
-      -->
-      <setExchangePattern pattern="InOut"/>
+      <from uri="seda:submitDiscoveryTask" />
       <bean ref="rangeChunker" />
       <split>
         <!-- Split the DiscoveryJobs -->
         <simple>${body}</simple>
-        <!-- Use recipientList so that we can have a dynamic to: URI -->
+        <!-- Calculate an appropriate JMS timeout based on the task -->
+        <setHeader headerName="CamelJmsRequestTimeout">
+          <simple>${body.calculateTaskTimeout}</simple>
+        </setHeader>
+        <!--
+          Use recipientList so that we can have a dynamic 'to:' URI.
+          Make sure that the exchange is using an InOut pattern so 
+          that the output is passed to the next endpoint.
+        -->
+        <setExchangePattern pattern="InOut"/>
         <recipientList>
+          <!-- TODO: NMS-8217: Use a more sophisticated naming convention for this queue -->
           <simple>activemq:Location-${body.location}</simple>
         </recipientList>
         <!-- Send the DiscoveryResults to the eventWriter -->

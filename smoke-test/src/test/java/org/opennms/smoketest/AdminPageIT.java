@@ -51,6 +51,7 @@ public class AdminPageIT extends OpenNMSSeleniumTestCase {
         new String[] { "Import and Export Asset Information", "//h3[text()='Import and Export Assets']" },
         new String[] { "Manage Surveillance Categories", "//h3[text()='Surveillance Categories']" },
         new String[] { "Configure Discovery", "//h3[text()='General Settings']" },
+        new String[] { "Run Single Discovery Scan", "//h3[text()='Exclude Ranges']" },
         new String[] { "Configure SNMP Community Names by IP Address", "//h3[text()='SNMP Config Lookup']" },
         new String[] { "Manually Add an Interface", "//h3[text()='Enter IP Address']" },
         new String[] { "Delete Nodes", "//h3[text()='Delete Nodes']" },
@@ -63,6 +64,7 @@ public class AdminPageIT extends OpenNMSSeleniumTestCase {
         // Service Monitoring
         new String[] { "Configure Scheduled Outages", "//form//input[@value='New Name']" },
         new String[] { "Manage and Unmanage Interfaces and Services", "//h3[text()='Manage and Unmanage Interfaces and Services']" },
+        new String[] { "Manage Business Services", "//div[@id='content']//iframe" },
 
         // Performance Measurement
         new String[] { "Configure SNMP Collections and Data Collection Groups", "//div[@id='content']//iframe" },
@@ -81,6 +83,7 @@ public class AdminPageIT extends OpenNMSSeleniumTestCase {
         new String[] { "Ops Board Configuration", "//div[@id='content']//iframe" },
         new String[] { "Surveillance Views Configuration", "//div[@id='content']//iframe" },
         new String[] { "JMX Configuration Generator", "//div[@id='content']//iframe" },
+        //new String[] { "OpenNMS Plugin Manager", "/html/body/iframe" }, See NMS-8353
         new String[] { "Data Choices", "//*[@id='datachoices-enable']" }
     };
 

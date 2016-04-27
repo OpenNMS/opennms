@@ -48,6 +48,14 @@ import org.springframework.transaction.support.TransactionOperations;
  * This is achieved by wrapping each method call around a {@link TransactionOperations#execute(TransactionCallback)} call.
  */
 public class TransactionAwareBeanProxyFactory {
+
+    private static class TransactionInvocationHandlerException extends RuntimeException {
+
+        public TransactionInvocationHandlerException(String message, Throwable cause) {
+            super(message, cause);
+        }
+    }
+
     private final TransactionOperations transactionOperations;
 
     public TransactionAwareBeanProxyFactory(TransactionOperations transactionOperations) {
@@ -65,27 +73,43 @@ public class TransactionAwareBeanProxyFactory {
     public <T> T createProxy(final T createProxyFor) {
         Objects.requireNonNull(createProxyFor);
 
+        // if no interfaces, there is nothing to do
         if (createProxyFor.getClass().getInterfaces().length == 0) {
             throw new IllegalArgumentException("No interface defined for class " + createProxyFor.getClass());
         }
 
+        // This is the "magic" to wrap any method call of the defined interfaces in a transaction aware call
         final InvocationHandler transactionInvocationHandler = new InvocationHandler() {
             @Override
             public Object invoke(Object proxyObject, Method method, Object[] objects) throws Throwable {
-                Object result = transactionOperations.execute(new TransactionCallback<Object>() {
-                    @Override
-                    public Object doInTransaction(TransactionStatus status) {
-                        try {
-                            return method.invoke(createProxyFor, objects);
-                        } catch (IllegalAccessException | InvocationTargetException e) {
-                            throw new RuntimeException(e);
+                try {
+                    Object result = transactionOperations.execute(new TransactionCallback<Object>() {
+                        @Override
+                        public Object doInTransaction(TransactionStatus status) {
+                            try {
+                                return method.invoke(createProxyFor, objects);
+                            } catch (InvocationTargetException e) {
+                                // we wrap the InvocationTargetException into a RuntimeException as the method signature
+                                // of doInTransaction does not allow throwing exceptions.
+                                throw new TransactionInvocationHandlerException("Error while invoking transaction aware method", e);
+                            } catch (IllegalAccessException e) {
+                                throw new RuntimeException(e);
+                            }
                         }
+                    });
+                    return result;
+                // We catch TransactionInvocationHandlerException in order to deal with exceptions thrown by the "transactionInvocationHandler" above.
+                // We grab the target Exception of a possible InvocationTargetException to ensure the right exception is propagated.
+                } catch (TransactionInvocationHandlerException ex) {
+                    if (ex.getCause() instanceof InvocationTargetException) {
+                        throw ((InvocationTargetException)ex.getCause()).getTargetException();
                     }
-                });
-                return result;
+                    throw ex.getCause(); //otherwise throw the cause, as we do not know what to do
+                }
             }
         };
 
+        // This creates the actual Transaction-Aware Proxy
         T transactionAwareProxy = (T) Proxy.newProxyInstance(
                 createProxyFor.getClass().getClassLoader(),
                 createProxyFor.getClass().getInterfaces(),

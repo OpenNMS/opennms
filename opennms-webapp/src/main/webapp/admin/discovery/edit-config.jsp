@@ -29,7 +29,24 @@
 
 --%>
 
-<%@page language="java" contentType="text/html" session="true" import="org.opennms.web.api.Util, org.opennms.netmgt.config.discovery.*, org.opennms.web.admin.discovery.ActionDiscoveryServlet" %>
+<%@page language="java" contentType="text/html" session="true" import="
+  java.util.Map,
+  java.util.TreeMap,
+  java.util.stream.*,
+  org.opennms.web.api.Util,
+  org.opennms.netmgt.config.DiscoveryConfigFactory,
+  org.opennms.netmgt.config.discovery.*,
+  org.opennms.netmgt.config.monitoringLocations.LocationDef,
+  org.opennms.netmgt.provision.persist.requisition.Requisition,
+  org.opennms.netmgt.dao.api.*,
+  org.opennms.netmgt.dao.*,
+  org.opennms.netmgt.dao.hibernate.*,
+  org.springframework.web.context.WebApplicationContext,
+  org.springframework.web.context.support.WebApplicationContextUtils,
+  org.opennms.web.svclayer.api.RequisitionAccessService,
+  org.opennms.web.admin.discovery.DiscoveryServletConstants,
+  org.opennms.web.admin.discovery.ActionDiscoveryServlet"
+%>
 <%
 	response.setDateHeader("Expires", 0);
 	response.setHeader("Pragma", "no-cache");
@@ -53,62 +70,93 @@
 
 <script type="text/javascript">
 function addSpecific(){
-	window.open('<%=org.opennms.web.api.Util.calculateUrlBase( request, "admin/discovery/add-specific.jsp" )%>', 'AddSpecific', 'toolbar=0,width=700,height=350, left=0, top=0, resizable=1, scrollbars=1')
+	window.open('<%=org.opennms.web.api.Util.calculateUrlBase( request, "admin/discovery/add-specific.jsp?mode=config" )%>', 'AddSpecific', 'toolbar=0,width=700,height=350, left=0, top=0, resizable=1, scrollbars=1')
 }
 
 function addIncludeRange(){
-	window.open('<%=org.opennms.web.api.Util.calculateUrlBase( request, "admin/discovery/add-ir.jsp" )%>', 'AddIncludeRange', 'toolbar=0,width=750 ,height=500, left=0, top=0, resizable=1, scrollbars=1')
+	window.open('<%=org.opennms.web.api.Util.calculateUrlBase( request, "admin/discovery/add-ir.jsp?mode=config" )%>', 'AddIncludeRange', 'toolbar=0,width=750 ,height=500, left=0, top=0, resizable=1, scrollbars=1')
 }
 
 function addIncludeUrl(){
-	window.open('<%=org.opennms.web.api.Util.calculateUrlBase( request, "admin/discovery/add-url.jsp" )%>', 'AddIncludeUrl', 'toolbar=0,width=750 ,height=350, left=0, top=0, resizable=1, scrollbars=1')
+	window.open('<%=org.opennms.web.api.Util.calculateUrlBase( request, "admin/discovery/add-url.jsp?mode=config" )%>', 'AddIncludeUrl', 'toolbar=0,width=750 ,height=350, left=0, top=0, resizable=1, scrollbars=1')
 }
 
 function addExcludeRange(){
-	window.open('<%=org.opennms.web.api.Util.calculateUrlBase( request, "admin/discovery/add-er.jsp" )%>', 'AddExcludeRange', 'toolbar=0,width=600 ,height=350, left=0, top=0, resizable=1, scrollbars=1')
+	window.open('<%=org.opennms.web.api.Util.calculateUrlBase( request, "admin/discovery/add-er.jsp?mode=config" )%>', 'AddExcludeRange', 'toolbar=0,width=600 ,height=350, left=0, top=0, resizable=1, scrollbars=1')
 }
 
 
 function deleteSpecific(i){
-      if(confirm("Are you sure you want to delete the 'Specific'?")){
-	document.modifyDiscoveryConfig.action=document.modifyDiscoveryConfig.action+"?action=<%=ActionDiscoveryServlet.removeSpecificAction%>&index="+i;
+	if(confirm("Are you sure you want to delete this specific address?")){
+	document.modifyDiscoveryConfig.action=document.modifyDiscoveryConfig.action+"?action=<%=DiscoveryServletConstants.removeSpecificAction%>&index="+i;
 	document.modifyDiscoveryConfig.submit();
 	}
 }
 
 function deleteIR(i){
-      if(confirm("Are you sure you want to delete the 'Include Range'?")){
-	document.modifyDiscoveryConfig.action=document.modifyDiscoveryConfig.action+"?action=<%=ActionDiscoveryServlet.removeIncludeRangeAction%>&index="+i;
+	if(confirm("Are you sure you want to delete this include range?")){
+	document.modifyDiscoveryConfig.action=document.modifyDiscoveryConfig.action+"?action=<%=DiscoveryServletConstants.removeIncludeRangeAction%>&index="+i;
 	document.modifyDiscoveryConfig.submit();
 	}
 }
 
 function deleteIncludeUrl(i){
-    if(confirm("Are you sure you want to delete the 'Include URL'?")){
-	document.modifyDiscoveryConfig.action=document.modifyDiscoveryConfig.action+"?action=<%=ActionDiscoveryServlet.removeIncludeUrlAction%>&index="+i;
+	if(confirm("Are you sure you want to delete this include URL?")){
+	document.modifyDiscoveryConfig.action=document.modifyDiscoveryConfig.action+"?action=<%=DiscoveryServletConstants.removeIncludeUrlAction%>&index="+i;
 	document.modifyDiscoveryConfig.submit();
 	}
 }
 
 function deleteER(i){
-      if(confirm("Are you sure you want to delete the 'Exclude Range'?")){
-	document.modifyDiscoveryConfig.action=document.modifyDiscoveryConfig.action+"?action=<%=ActionDiscoveryServlet.removeExcludeRangeAction%>&index="+i;
+	if(confirm("Are you sure you want to delete this exclude range?")){
+	document.modifyDiscoveryConfig.action=document.modifyDiscoveryConfig.action+"?action=<%=DiscoveryServletConstants.removeExcludeRangeAction%>&index="+i;
 	document.modifyDiscoveryConfig.submit();
 	}
 }
 
 function restartDiscovery(){
-	document.modifyDiscoveryConfig.action=document.modifyDiscoveryConfig.action+"?action=<%=ActionDiscoveryServlet.saveAndRestartAction%>";
+	document.modifyDiscoveryConfig.action=document.modifyDiscoveryConfig.action+"?action=<%=DiscoveryServletConstants.saveAndRestartAction%>";
 	return true;
 }
 </script>
 
+<%!
+
+/**
+ * TODO: Use a better constant for this value
+ */
+private static final String DEFAULT_FOREIGN_SOURCE = "default";
+
+%>
+
 <%
+
+WebApplicationContext context = WebApplicationContextUtils.getRequiredWebApplicationContext(getServletContext());
+
 HttpSession sess = request.getSession(false);
-DiscoveryConfiguration currConfig  = (DiscoveryConfiguration) sess.getAttribute("discoveryConfiguration");
+DiscoveryConfiguration currConfig  = (DiscoveryConfiguration) sess.getAttribute(ActionDiscoveryServlet.ATTRIBUTE_DISCOVERY_CONFIGURATION);
+// If there's no config in the session yet, reload it from the config factory
 if (currConfig == null) {
-	throw new ServletException("The session expired while editing the discovery configuration. Please revisit the page to resume editing the configuration.");
+  DiscoveryConfigFactory factory = context.getBean(DiscoveryConfigFactory.class);
+  factory.reload();
+  currConfig = factory.getConfiguration();
+  sess.setAttribute(ActionDiscoveryServlet.ATTRIBUTE_DISCOVERY_CONFIGURATION, currConfig);
 }
+
+// Map of primary key to label (which in this case are the same)
+MonitoringLocationDao locationDao = context.getBean(MonitoringLocationDao.class);
+Map<String,String> locations = new TreeMap<String,String>();
+for (LocationDef location : locationDao.findAll()) {
+  locations.put(location.getLocationName(), location.getLocationName());
+}
+
+// Map of primary key to label (which in this case are the same too)
+RequisitionAccessService reqAccessService = context.getBean(RequisitionAccessService.class);
+Map<String,String> foreignsources = new TreeMap<String,String>();
+for (Requisition requisition : reqAccessService.getRequisitions()) {
+  foreignsources.put(requisition.getForeignSource(), requisition.getForeignSource());
+}
+
 %>
 
 <form role="form" class="form-horizontal" method="post" id="modifyDiscoveryConfig" name="modifyDiscoveryConfig" action="<%= Util.calculateUrlBase(request, "admin/discovery/actionDiscovery") %>" onsubmit="return restartDiscovery();">
@@ -132,117 +180,106 @@ if (currConfig == null) {
 <input type="hidden" id="erbegin" name="erbegin" value=""/>
 <input type="hidden" id="erend" name="erend" value=""/>
 
-<div class="row">
-  <div class="col-md-4">
-    <button type="submit" class="btn btn-default">Save and Restart Discovery</button>
-  </div> <!-- column -->
-</div> <!-- row -->
+<button type="submit" class="btn btn-default">Save and Restart Discovery</button>
 
-<div class="row top-buffer">
+<p/>
+
+<div class="row">
   <div class="col-md-6">
     <div class="panel panel-default">
       <div class="panel-heading">
         <h3 class="panel-title">General Settings</h3>
       </div>
-      <div class="panel-body">
-        <div class="form-group">
-          <label for="initialsleeptime" class="col-sm-4 control-label">Initial sleep time (sec.):</label>
-          <div class="col-sm-8">
-            <select id="initialsleeptime" class="form-control" name="initialsleeptime">
-              <option value="30000" <%if(currConfig.getInitialSleepTime()==30000) out.print("selected");%>>30</option>
-              <option value="60000" <%if(currConfig.getInitialSleepTime()==60000) out.print("selected");%>>60</option>
-              <option value="90000" <%if(currConfig.getInitialSleepTime()==90000) out.print("selected");%>>90</option>
-              <option value="120000" <%if(currConfig.getInitialSleepTime()==120000) out.print("selected");%>>120</option>
-              <option value="150000" <%if(currConfig.getInitialSleepTime()==150000) out.print("selected");%>>150</option>
-              <option value="300000" <%if(currConfig.getInitialSleepTime()==300000) out.print("selected");%>>300</option>
-              <option value="600000" <%if(currConfig.getInitialSleepTime()==600000) out.print("selected");%>>600</option>
-            </select>
-          </div>
-        </div> <!-- form-group -->
-        <div class="form-group">
-          <label for="restartsleeptime" class="col-sm-4 control-label">Restart sleep time (hours):</label>
-          <div class="col-sm-8">
-            <select id="restartsleeptime" class="form-control" name="restartsleeptime">
-              <option value="3600000" <%if(currConfig.getRestartSleepTime()==3600000) out.print("selected");%>>1</option>
-              <option value="7200000" <%if(currConfig.getRestartSleepTime()==7200000) out.print("selected");%>>2</option>
-              <option value="10800000" <%if(currConfig.getRestartSleepTime()==10800000) out.print("selected");%>>3</option>
-              <option value="14400000" <%if(currConfig.getRestartSleepTime()==14400000) out.print("selected");%>>4</option>
-              <option value="18000000" <%if(currConfig.getRestartSleepTime()==18000000) out.print("selected");%>>5</option>
-              <option value="21600000" <%if(currConfig.getRestartSleepTime()==21600000) out.print("selected");%>>6</option>
-              <option value="43200000" <%if(currConfig.getRestartSleepTime()==43200000) out.print("selected");%>>12</option>
-              <option value="86400000" <%if(currConfig.getRestartSleepTime()==86400000) out.print("selected");%>>24</option>
-              <option value="129600000" <%if(currConfig.getRestartSleepTime()==129600000) out.print("selected");%>>36</option>
-              <option value="259200000" <%if(currConfig.getRestartSleepTime()==259200000) out.print("selected");%>>72</option>
-            </select>
-          </div>
-        </div> <!-- form-group -->
-        <div class="form-group">
-          <label for="foreignsource" class="col-sm-4 control-label">Foreign Source (Optional):</label>
-          <div class="col-sm-8">
-            <!-- TODO: Make this a dropdown of all foreign sources -->
-            <input type="text" class="form-control" id="foreignsource" name="foreignsource" value="<%=currConfig.getForeignSource()%>"/>
-          </div>
-        </div> <!-- form-group -->
-        <div class="form-group">
-          <label for="location" class="col-sm-4 control-label">Location (Optional):</label>
-          <div class="col-sm-8">
-            <!-- TODO: Make this a dropdown of all monitoring locations -->
-            <input type="text" class="form-control" id="location" name="location" value="<%=currConfig.getLocation()%>"/>
-          </div>
-        </div> <!-- form-group -->
-        <div class="form-group">
-          <label for="retries" class="col-sm-4 control-label">Retries:</label>
-          <div class="col-sm-8">
-            <input type="text" class="form-control" id="retries" name="retries" value="<%=((currConfig.getRetries()==0)?"3":""+currConfig.getRetries())%>"/>
-          </div>
-        </div> <!-- form-group -->
-        <div class="form-group">
-          <label for="retries" class="col-sm-4 control-label">Retries:</label>
-          <div class="col-sm-8">
-            <input type="text" class="form-control" id="retries" name="retries" value="<%=((currConfig.getRetries()==0)?"3":""+currConfig.getRetries())%>"/>
-          </div>
-        </div> <!-- form-group -->
-        <div class="form-group">
-          <label for="retries" class="col-sm-4 control-label">Timeout (ms.):</label>
-          <div class="col-sm-8">
-            <input type="text" class="form-control" id="timeout" name="timeout" size="4" value="<%=((currConfig.getTimeout()==0)?"800":""+currConfig.getTimeout())%>"/>
-          </div>
-        </div> <!-- form-group -->
-      </div> <!-- panel-body -->
+      <div class="list-group">
+        <div class="list-group-item">
+        <div class="col-xs-12 input-group">
+          <label for="initialsleeptime" class="control-label">Initial sleep time (seconds):</label>
+          <select id="initialsleeptime" class="form-control" name="initialsleeptime">
+            <option value="30000" <%if(currConfig.getInitialSleepTime()==30000) out.print("selected");%>>30</option>
+            <option value="60000" <%if(currConfig.getInitialSleepTime()==60000) out.print("selected");%>>60</option>
+            <option value="90000" <%if(currConfig.getInitialSleepTime()==90000) out.print("selected");%>>90</option>
+            <option value="120000" <%if(currConfig.getInitialSleepTime()==120000) out.print("selected");%>>120</option>
+            <option value="150000" <%if(currConfig.getInitialSleepTime()==150000) out.print("selected");%>>150</option>
+            <option value="300000" <%if(currConfig.getInitialSleepTime()==300000) out.print("selected");%>>300</option>
+            <option value="600000" <%if(currConfig.getInitialSleepTime()==600000) out.print("selected");%>>600</option>
+          </select>
+        </div> <!-- input-group -->
+        <div class="col-xs-12 input-group">
+          <label for="restartsleeptime" class="control-label">Restart sleep time (hours):</label>
+          <select id="restartsleeptime" class="form-control" name="restartsleeptime">
+            <option value="3600000" <%if(currConfig.getRestartSleepTime()==3600000) out.print("selected");%>>1</option>
+            <option value="7200000" <%if(currConfig.getRestartSleepTime()==7200000) out.print("selected");%>>2</option>
+            <option value="10800000" <%if(currConfig.getRestartSleepTime()==10800000) out.print("selected");%>>3</option>
+            <option value="14400000" <%if(currConfig.getRestartSleepTime()==14400000) out.print("selected");%>>4</option>
+            <option value="18000000" <%if(currConfig.getRestartSleepTime()==18000000) out.print("selected");%>>5</option>
+            <option value="21600000" <%if(currConfig.getRestartSleepTime()==21600000) out.print("selected");%>>6</option>
+            <option value="43200000" <%if(currConfig.getRestartSleepTime()==43200000) out.print("selected");%>>12</option>
+            <option value="86400000" <%if(currConfig.getRestartSleepTime()==86400000) out.print("selected");%>>24</option>
+            <option value="129600000" <%if(currConfig.getRestartSleepTime()==129600000) out.print("selected");%>>36</option>
+            <option value="259200000" <%if(currConfig.getRestartSleepTime()==259200000) out.print("selected");%>>72</option>
+          </select>
+        </div> <!-- input-group -->
+        <div class="col-xs-12 input-group">
+          <label for="retries" class="control-label">Timeout (milliseconds):</label>
+          <input type="text" class="form-control" id="timeout" name="timeout" value="<%=((currConfig.getTimeout()==0)?DiscoveryConfigFactory.DEFAULT_TIMEOUT:currConfig.getTimeout())%>"/>
+        </div> <!-- input-group -->
+        <div class="col-xs-12 input-group">
+          <label for="retries" class="control-label">Retries:</label>
+          <input type="text" class="form-control" id="retries" name="retries" value="<%=((currConfig.getRetries()==0)?DiscoveryConfigFactory.DEFAULT_RETRIES:currConfig.getRetries())%>"/>
+        </div> <!-- input-group -->
+        <div class="col-xs-12 input-group">
+          <label for="foreignsource" class="control-label">Foreign Source:</label>
+          <select id="foreignsource" class="form-control" name="foreignsource">
+            <option value="" <%if (currConfig.getForeignSource() == null) out.print("selected");%>>None selected</option>
+            <% for (String key : foreignsources.keySet()) { %>
+              <option value="<%=key%>" <%if(key.equals(currConfig.getForeignSource())) out.print("selected");%>><%=foreignsources.get(key)%></option>
+            <% } %>
+          </select>
+        </div> <!-- input-group -->
+        <div class="col-xs-12 input-group">
+          <label for="location" class="control-label">Location:</label>
+          <select id="location" class="form-control" name="location">
+            <% for (String key : locations.keySet()) { %>
+              <option value="<%=key%>" <%if(key.equals(currConfig.getLocation()) || (key.equals(MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID) && currConfig.getLocation() == null)) out.print("selected");%>><%=locations.get(key)%></option>
+            <% } %>
+          </select>
+        </div> <!-- input-group -->
+        </div>
+
+        <div class="list-group-item">
+        <h4 class="list-group-item-heading">Advanced configuration</h4>
+        <div class="col-xs-12 input-group">
+          <label for="chunksize" class="control-label">Task chunk size:</label>
+          <input type="text" class="form-control" id="chunksize" name="chunksize" value="<%=((currConfig.getChunkSize()==0)?DiscoveryConfigFactory.DEFAULT_CHUNK_SIZE:currConfig.getChunkSize())%>"/>
+        </div> <!-- input-group -->
+        </div>
+      </div>
     </div> <!-- panel -->
   </div> <!-- column -->
 </div> <!-- row -->
 
-<div class="row top-buffer">
-  <div class="col-md-12">
+<div class="row">
+  <div class="col-xs-12">
     <div class="panel panel-default">
       <div class="panel-heading">
-        <h3 class="panel-title">Specifics</h3>
+        <h3 class="panel-title">Specific Addresses</h3>
       </div>
       <%if(currConfig.getSpecificCount()>0){
             Specific[] specs = currConfig.getSpecific();
       %>
 				    <table class="table table-bordered table-condensed">
 				      <tr>
-					<th>
-					    IP Address
-					</th>
-					<th>
-					    Timeout (ms.)
-					</th>
-					<th>
-					    Retries
-					</th>
-					<th>
-					    Action
-					</th>
+					<th>IP Address</th>
+					<th>Timeout (milliseconds)</th>
+					<th>Retries</th>
+					<th>Action</th>
 				      </tr>
 				      <%for(int i=0; i<specs.length; i++){%>
 					 <tr class="text-center">
 					  <td><%=specs[i].getContent()%></td>
 					  <td><%=(specs[i].getTimeout()!=0)?""+specs[i].getTimeout():""+currConfig.getTimeout() %></td>
 					  <td><%=(specs[i].getRetries()!=0)?""+specs[i].getRetries():""+currConfig.getRetries() %></td>
-					  <td width="1%"><button type="button" class="btn btn-default" onclick="deleteSpecific(<%=i%>);">Delete</button></td>
+					  <td width="1%"><button type="button" class="btn btn-xs btn-default" onclick="deleteSpecific(<%=i%>);">Delete</button></td>
 					</tr>
 				      <%} // end for%>
 				     </table>
@@ -258,8 +295,8 @@ if (currConfig == null) {
   </div> <!-- column -->
 </div> <!-- row -->
 
-<div class="row top-buffer">
-  <div class="col-md-12">
+<div class="row">
+  <div class="col-xs-12">
     <div class="panel panel-default">
       <div class="panel-heading">
         <h3 class="panel-title">Include URLs</h3>
@@ -269,25 +306,17 @@ if (currConfig == null) {
 			    %>
 				    <table class="table table-bordered table-condensed">
 				      <tr>
-					<th>
-					    URL
-					</th>
-					<th>
-					    Timeout (ms.)
-					</th>
-					<th>
-					    Retries
-					</th>
-					<th>
-					    Action
-					</th>
+					<th>URL</th>
+					<th>Timeout (milliseconds)</th>
+					<th>Retries</th> 
+					<th>Action</th>
 				      </tr>
 				      <%for(int i=0; i<urls.length; i++){%>
 					 <tr class="text-center">
 					  <td><%=urls[i].getContent()%></td>
 					  <td><%=(urls[i].getTimeout()!=0)?""+urls[i].getTimeout():""+currConfig.getTimeout() %></td>
 					  <td><%=(urls[i].getRetries()!=0)?""+urls[i].getRetries():""+currConfig.getRetries() %></td>
-					  <td width="1%"><button type="button" class="btn btn-default" onclick="deleteIncludeUrl(<%=i%>);">Delete</button></td>
+					  <td width="1%"><button type="button" class="btn btn-xs btn-default" onclick="deleteIncludeUrl(<%=i%>);">Delete</button></td>
 					</tr>
 				      <%} // end for%>
 				     </table>
@@ -303,8 +332,8 @@ if (currConfig == null) {
   </div> <!-- column -->
 </div> <!-- row -->
 
-<div class="row top-buffer">
-  <div class="col-md-12">
+<div class="row">
+  <div class="col-xs-12">
     <div class="panel panel-default">
       <div class="panel-heading">
         <h3 class="panel-title">Include Ranges</h3>
@@ -314,21 +343,11 @@ if (currConfig == null) {
 				    %>
 					    <table class="table table-bordered table-condensed">
 					      <tr>
-						<th>
-						    Begin Address
-						</th>
-						<th>
-						    End Address
-						</th>
-						<th>
-						    Timeout (ms.)
-						</th>
-						<th>
-						    Retries
-						</th>
-						<th>
-						    Action
-						</th>
+						<th>Begin Address</th>
+						<th>End Address</th>
+						<th>Timeout (milliseconds)</th>
+						<th>Retries</th>
+						<th>Action</th>
 					      </tr>
 					      <%for(int i=0; i<irange.length; i++){
 
@@ -338,7 +357,7 @@ if (currConfig == null) {
 						  <td><%=irange[i].getEnd()%></td>
 						  <td><%=(irange[i].getTimeout()!=0)?""+irange[i].getTimeout():""+currConfig.getTimeout() %></td>
 						  <td><%=(irange[i].getRetries()!=0)?""+irange[i].getRetries():""+currConfig.getRetries() %></td>
-						  <td width="1%"><button type="button" onclick="deleteIR(<%=i%>);">Delete</button></td>
+						  <td width="1%"><button type="button" class="btn btn-xs btn-default" onclick="deleteIR(<%=i%>);">Delete</button></td>
 						</tr>
 					      <%} // end for%>
 					     </table>
@@ -354,8 +373,8 @@ if (currConfig == null) {
   </div> <!-- column -->
 </div> <!-- row -->
 
-<div class="row top-buffer">
-  <div class="col-md-12">
+<div class="row">
+  <div class="col-xs-12">
     <div class="panel panel-default">
       <div class="panel-heading">
         <h3 class="panel-title">Exclude Ranges</h3>
@@ -365,15 +384,9 @@ if (currConfig == null) {
 			    %>
 				    <table class="table table-bordered table-condensed">
 				      <tr>
-					<th>
-					    Begin
-					</th>
-					<th>
-					    End
-					</th>
-					<th>
-					    Action
-					</th>
+					<th>Begin</th>
+					<th>End</th>
+					<th>Action</th>
 				      </tr>
 				      <%for(int i=0; i<irange.length; i++){
 
@@ -381,7 +394,7 @@ if (currConfig == null) {
 					 <tr class="text-center">
 					  <td><%=irange[i].getBegin()%></td>
 					  <td><%=irange[i].getEnd()%></td>
-					  <td width="1%"><button type="button" onclick="deleteER(<%=i%>);">Delete</button></td>
+					  <td width="1%"><button type="button" class="btn btn-xs btn-default" onclick="deleteER(<%=i%>);">Delete</button></td>
 					</tr>
 				      <%} // end for%>
 
@@ -398,12 +411,11 @@ if (currConfig == null) {
   </div> <!-- column -->
 </div> <!-- row -->
 
-<div class="row top-buffer">
-  <div class="col-md-4">
-    <button type="submit" class="btn btn-default">Save and Restart Discovery</button>
-  </div> <!-- column -->
-</div> <!-- row -->
+<button type="submit" class="btn btn-default">Save and Restart Discovery</button>
 
 </form>
+
+<!-- TODO: Remove this, add top padding to the footer div -->
+<p/>
 
 <jsp:include page="/includes/bootstrap-footer.jsp" flush="false" />

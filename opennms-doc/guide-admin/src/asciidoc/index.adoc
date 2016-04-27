@@ -151,6 +151,14 @@ include::text/provisioning/api-examples.adoc[]
 === Service Detectors
 include::text/provisioning/detectors/SnmpDetector.adoc[]
 
+[[ga-bsm]]
+== Business Service Monitoring
+include::text/bsm/bsm-admin.adoc[]
+
+[[ga-topology]]
+== Topology Map
+include::text/topology/topology.adoc[]
+
 [[ga-database-reports]]
 == Database Reports
 include::text/database-reports/database.adoc[]
@@ -193,3 +201,12 @@ include::text/ticketing/introduction.adoc[]
 
 // JIRA Ticketer
 include::text/ticketing/jira.adoc[]
+
+// TSRM Ticketer
+include::text/ticketing/tsrm.adoc[]
+
+== Plugin Manager
+include::text/plugin-manager/Introduction.adoc[]
+include::text/plugin-manager/SettingKarafInstanceData.adoc[]
+include::text/plugin-manager/InstallingAvailablePlugins.adoc[]
+include::text/plugin-manager/InstallingLicences.adoc[]

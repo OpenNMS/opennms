@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms.core</groupId>
     <artifactId>org.opennms.core.build</artifactId>
-    <version>18.0.0-SNAPSHOT</version>
+    <version>19.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.core.build</groupId>
@@ -19,58 +19,33 @@
     </resources>
     <plugins>
       <plugin>
-        <groupId>org.codehaus.gmaven</groupId>
-        <artifactId>gmaven-plugin</artifactId>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>keytool-maven-plugin</artifactId>
+        <version>1.5</version>
         <executions>
           <execution>
-            <id>generate-key</id>
-            <phase>generate-resources</phase>
+            <id>generateKeyPair</id>
             <goals>
-              <goal>execute</goal>
+              <goal>generateKeyPair</goal>
             </goals>
+            <phase>generate-resources</phase>
             <configuration>
-              <source>
-                def keystore = new File(project.properties['webstart.keystore'])
-                if (!keystore.exists()) {
-                  keystore.parentFile.mkdirs();
-                  println "keystore is missing, generating for alias '${project.properties['webstart.keyalias']}'"
-                  def args = [
-                    keystore: project.properties['webstart.keystore'],
-                    alias: project.properties['webstart.keyalias'],
-                    storepass: project.properties['webstart.storepass'],
-                    dname: "cn=${project.properties['webstart.dnameCn']}"
-                  ]
-                  if (project.properties['webstart.keypass']) {
-                    args.put('keypass', project.properties['webstart.keypass'])
-                  }
-                  def ant = new AntBuilder();
-                  ant.genkey(args)
-                }
-              </source>
+              <!-- Don't generate a key if the keystore already exists -->
+              <skipIfExist>true</skipIfExist>
+              <keystore>${webstart.keystore}</keystore>
+              <storepass>${webstart.storepass}</storepass>
+              <alias>${webstart.keyalias}</alias>
+              <keypass>${webstart.keypass}</keypass>
+              <dname>cn=${webstart.dnameCn}</dname>
+
+              <!-- I'm not sure if we need these extension attributes -->
+              <!-- Add X.509 V3 "KeyUsage" attribute -->
+              <!-- <ext>KU=digitalSignature</ext> -->
+              <!-- Add X.509 V3 "ExtendedKeyUsage" attribute -->
+              <!-- <ext>EKU=codeSigning</ext> -->
             </configuration>
           </execution>
         </executions>
-        <dependencies>
-          <dependency>
-            <groupId>org.codehaus.gmaven.runtime</groupId>
-            <artifactId>gmaven-runtime-1.7</artifactId>
-            <version>1.3</version>
-          </dependency>
-          <dependency>
-            <groupId>org.codehaus.groovy</groupId>
-            <artifactId>groovy-all</artifactId>
-            <version>1.7.5</version>
-          </dependency>
-          <!-- Needed for AntBuilder calls in remote poller projects -->
-          <dependency>
-            <groupId>org.apache.ant</groupId>
-            <artifactId>ant</artifactId>
-            <version>1.8.2</version>
-          </dependency>
-        </dependencies>
-        <configuration>
-          <providerSelection>1.7</providerSelection>
-        </configuration>
       </plugin>
     </plugins>
   </build>
