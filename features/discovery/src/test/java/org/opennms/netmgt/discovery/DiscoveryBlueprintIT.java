@@ -29,10 +29,8 @@
 package org.opennms.netmgt.discovery;
 
 import java.net.InetAddress;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Dictionary;
-import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
@@ -70,7 +68,6 @@ import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.events.api.EventIpcManager;
 import org.opennms.netmgt.icmp.Pinger;
 import org.opennms.netmgt.model.OnmsDistPoller;
-import org.opennms.netmgt.model.discovery.IPPollRange;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -169,7 +166,7 @@ public class DiscoveryBlueprintIT extends CamelBlueprintTestSupport {
     @BeforeClass
     public static void startActiveMQ() throws Exception {
         m_broker = new BrokerService();
-        m_broker.addConnector("tcp://127.0.0.1:61616");
+        m_broker.addConnector("vm://localhost");
         m_broker.start();
     }
 
@@ -180,7 +177,7 @@ public class DiscoveryBlueprintIT extends CamelBlueprintTestSupport {
         }
     }
 
-    @Test
+    @Test(timeout=60000)
     public void testDiscover() throws Exception {
 
         /*
@@ -189,7 +186,7 @@ public class DiscoveryBlueprintIT extends CamelBlueprintTestSupport {
          */
         SimpleRegistry registry = new SimpleRegistry();
         CamelContext mockDiscoverer = new DefaultCamelContext(registry);
-        mockDiscoverer.addComponent("activemq", ActiveMQComponent.activeMQComponent("tcp://127.0.0.1:61616"));
+        mockDiscoverer.addComponent("activemq", ActiveMQComponent.activeMQComponent("vm://localhost?create=false"));
         mockDiscoverer.addRoutes(new RouteBuilder() {
             @Override
             public void configure() throws Exception {
@@ -252,7 +249,7 @@ public class DiscoveryBlueprintIT extends CamelBlueprintTestSupport {
         mockDiscoverer.stop();
     }
     
-    @Test
+    @Test(timeout=60000)
     public void testDiscoverToTestTimeout() throws Exception {
 
         /*
@@ -261,7 +258,7 @@ public class DiscoveryBlueprintIT extends CamelBlueprintTestSupport {
          */
         SimpleRegistry registry = new SimpleRegistry();
         CamelContext mockDiscoverer = new DefaultCamelContext(registry);
-        mockDiscoverer.addComponent("activemq", ActiveMQComponent.activeMQComponent("tcp://127.0.0.1:61616"));
+        mockDiscoverer.addComponent("activemq", ActiveMQComponent.activeMQComponent("vm://localhost?create=false"));
         mockDiscoverer.addRoutes(new RouteBuilder() {
             @Override
             public void configure() throws Exception {
