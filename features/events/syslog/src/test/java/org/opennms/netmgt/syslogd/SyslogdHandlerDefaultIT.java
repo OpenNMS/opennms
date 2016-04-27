@@ -111,7 +111,8 @@ public class SyslogdHandlerDefaultIT extends CamelBlueprintTestSupport {
 	@BeforeClass
 	public static void startActiveMQ() throws Exception {
 		m_broker = new BrokerService();
-		m_broker.addConnector("tcp://127.0.0.1:61616");
+		//m_broker.addConnector("tcp://127.0.0.1:61616");
+		m_broker.addConnector("vm://localhost");
 		m_broker.start();
 	}
 
@@ -122,7 +123,7 @@ public class SyslogdHandlerDefaultIT extends CamelBlueprintTestSupport {
 		}
 	}
 
-	@Test
+	@Test(timeout=60000)
 	public void testSyslogd() throws Exception {
 		// Expect one SyslogConnection message to be broadcast on the messaging channel
 		MockEndpoint broadcastSyslog = getMockEndpoint("mock:activemq:broadcastSyslog", false);
