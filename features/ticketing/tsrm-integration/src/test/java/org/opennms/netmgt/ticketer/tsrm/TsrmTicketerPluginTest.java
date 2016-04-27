@@ -41,9 +41,12 @@ public class TsrmTicketerPluginTest {
         // ticket.addAttribute("ownergroup", "NOC_EU");
         ticket.addAttribute("siteId", "SHSEU");
         ticket.addAttribute("source", "OpenNMS");
+        ticket.addAttribute("classId", "INCIDENT");
         ticket.setUser("openNMS");
         ticket.setSummary("openNMS summary");
         ticket.setState(Ticket.State.OPEN);
+        ticket.addAttribute("shsReasonForOutage", "failure");
+        ticket.addAttribute("shsRoomNumber", "Room 21");
 
         tsrmTicket.saveOrUpdate(ticket);
 
@@ -70,6 +73,11 @@ public class TsrmTicketerPluginTest {
                      newerTicket.getAttribute("source"));
         assertEquals(ticket.getAttribute("location"),
                      newerTicket.getAttribute("location"));
+        assertEquals(ticket.getAttribute("shsRoomNumber"),
+                     newerTicket.getAttribute("shsRoomNumber"));
+        assertEquals(ticket.getAttribute("shsReasonForOutage"),
+                     newerTicket.getAttribute("shsReasonForOutage"));
+
     }
 
 }
