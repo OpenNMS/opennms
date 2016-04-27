@@ -1,5 +1,4 @@
 /*global Requisition:true, bootbox:true */
-/*jshint eqnull:true */
 
 /**
 * @author Alejandro Galue <agalue@opennms.org>

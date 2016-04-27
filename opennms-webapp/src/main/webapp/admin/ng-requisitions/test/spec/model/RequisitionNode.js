@@ -1,3 +1,5 @@
+/*global RequisitionNode:true */
+
 /**
 * @author Alejandro Galue <agalue@opennms.org>
 * @copyright 2014 The OpenNMS Group, Inc.
@@ -40,9 +42,9 @@ describe('Model: RequisitionsNode', function () {
   it('verify object translation', function () {
     var reqNode = new RequisitionNode('test-requisition', onmsNode, false);
     expect(reqNode).not.toBe(null);
-    expect(reqNode.parentForeignSource).toBe("routers");
+    expect(reqNode.parentForeignSource).toBe('routers');
     expect(reqNode.parentForeignId).toBe(null);
-    expect(reqNode.parentNodeLabel).toBe("rt001.local");
+    expect(reqNode.parentNodeLabel).toBe('rt001.local');
     expect(reqNode.categories.length).toBe(1);
     expect(reqNode.categories[0].name).toBe('Servers');
     expect(reqNode.interfaces.length).toBe(1);
