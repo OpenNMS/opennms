@@ -153,7 +153,12 @@ include::text/provisioning/detectors/SnmpDetector.adoc[]
 
 [[ga-bsm]]
 == Business Service Monitoring
-include::text/bsm/bsm-admin.adoc[]
+include::text/bsm/introduction.adoc[]
+include::text/bsm/business-service-definition.adoc[]
+include::text/bsm/edges.adoc[]
+include::text/bsm/map-functions.adoc[]
+include::text/bsm/reduce-functions.adoc[]
+include::text/bsm/bsmd.adoc[]
 
 [[ga-topology]]
 == Topology Map
