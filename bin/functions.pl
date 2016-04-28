@@ -344,7 +344,7 @@ sub find_java_home {
 					next if ($java  =~ /openjdk/i);
 					next if ($build =~ /openjdk/i);
 				}
-				next unless ($shortversion);
+				next unless (defined $shortversion and $shortversion);
 
 				$versions->{$shortversion}             = {} unless (exists $versions->{$shortversion});
 				$versions->{$shortversion}->{$version} = {} unless (exists $versions->{$shortversion}->{$version});

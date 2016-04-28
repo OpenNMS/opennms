@@ -231,14 +231,12 @@ public class DefaultNodeListService implements NodeListService, InitializingBean
         criteria.add(Restrictions.ne("monitoredService.status", "D"));
     }
 
-    private static void addCriteriaForMaclike(OnmsCriteria criteria, String macLike) {
-        String macLikeStripped = macLike.replaceAll("[:-]", "");
+    private static void addCriteriaForMaclike(final OnmsCriteria criteria, final String macLike) {
+        final String macLikeStripped = macLike.replaceAll("[:-]", "");
         
         criteria.createAlias("node.snmpInterfaces", "snmpInterface", OnmsCriteria.LEFT_JOIN);
-        criteria.createAlias("node.arpInterfaces", "arpInterface", OnmsCriteria.LEFT_JOIN);
-        Disjunction physAddrDisjunction = Restrictions.disjunction();
+        final Disjunction physAddrDisjunction = Restrictions.disjunction();
         physAddrDisjunction.add(Restrictions.ilike("snmpInterface.physAddr", macLikeStripped, MatchMode.ANYWHERE));
-        physAddrDisjunction.add(Restrictions.ilike("arpInterface.physAddr", macLikeStripped, MatchMode.ANYWHERE));
         criteria.add(physAddrDisjunction);
   
         // This is an alternative to the above code if we need to use the out-of-the-box DetachedCriteria which doesn't let us specify the join type 
@@ -248,7 +246,6 @@ public class DefaultNodeListService implements NodeListService, InitializingBean
         
         Disjunction physAddrDisjuction = Restrictions.disjunction();
         physAddrDisjuction.add(Restrictions.sqlRestriction("{alias}." + propertyName + " IN (SELECT nodeid FROM snmpinterface WHERE snmpphysaddr LIKE ? )", value, new StringType()));
-        physAddrDisjuction.add(Restrictions.sqlRestriction("{alias}." + propertyName + " IN (SELECT nodeid FROM atinterface WHERE atphysaddr LIKE ? )", value, new StringType()));
         criteria.add(physAddrDisjuction);
         */
     }

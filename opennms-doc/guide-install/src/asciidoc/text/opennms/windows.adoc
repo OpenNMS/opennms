@@ -3,7 +3,7 @@
 :imagesdir: ../../images
 
 [[gi-install-opennms-windows]]
-=== Install on Microsoft Windows Systems
+=== Microsoft Windows
 
 IMPORTANT: This guide does not apply to OpenNMS Meridian, which can be installed only on Red Hat Enterprise Linux or CentOS systems.
 
@@ -25,7 +25,7 @@ The setup process is described in the following steps:
 . First start of the _OpenNMS_ application
 
 [[gi-install-opennms-deb-prepare-pg]]
-==== Installation PostgreSQL
+==== Install PostgreSQL
 
 _PostgreSQL_ is available for _Microsoft Windows_ and latest version can be downloaded from link:http://www.enterprisedb.com/products-services-training/pgdownload#windows[Download PostgreSQL] page.
 Follow the on-screen instructions of the graphical installer.
