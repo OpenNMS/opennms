@@ -3,7 +3,7 @@
 :imagesdir: ../../images
 
 [[gi-install-r-rhel]]
-=== Installing on RHEL-based systems
+=== RHEL
 
 This section describes how to install _R_ on a _RHEL_ based system.
 
