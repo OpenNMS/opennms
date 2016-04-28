@@ -65,7 +65,7 @@ NOTE: With OpenNMS 17.0.0 it is preferred to use _jrrd2_ instead of _jrrd_.
       The _jrrd2_ module is improved for performance by adding multithreading capabilities.
 
 [[gi-rrdtool-configure-opennms]]
-=== Configuration of OpenNMS
+=== Configure {opennms-product-name}
 
 To configure _OpenNMS_ to use _RRDtool_ instead of _JRobin_ configure the following properties in `rrd-configuration.properties`.
 
