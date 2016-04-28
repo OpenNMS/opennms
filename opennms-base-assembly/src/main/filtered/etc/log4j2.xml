@@ -141,7 +141,10 @@
     <logger name="snaq.db" additivity="false" level="INFO">
       <appender-ref ref="RoutingAppender"/>
     </logger>
-    
+    <logger name="com.datastax.driver" additivity="false" level="INFO">
+      <appender-ref ref="RoutingAppender"/>
+    </logger>
+
     <!-- Allow any message to pass through the root logger -->
     <root level="DEBUG">
       <!-- 
