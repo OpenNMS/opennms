@@ -5,10 +5,9 @@
 [[gi-install-opennms-repo-releases]]
 == Yum/APT Package Repositories
 
-Installation packages are available for different releases of _OpenNMS_. You need to choose which
-release you would like to run and then configure your package repository to point to that release.
-Configuring a package repository will enable you to install and update the software by using
-standard Linux software update tools like _yum_ and _apt_.
+Installation packages are available for different releases of _OpenNMS_.
+You need to choose which release you would like to run and then configure your package repository to point to that release.
+Configuring a package repository will enable you to install and update the software by using standard Linux software update tools like _yum_ and _apt_.
 
 The following package repositories are available:
 
