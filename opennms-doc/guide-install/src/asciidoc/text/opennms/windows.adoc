@@ -3,7 +3,7 @@
 :imagesdir: ../../images
 
 [[gi-install-opennms-windows]]
-=== Install on Microsoft Windows Systems
+=== Microsoft Windows
 
 IMPORTANT: This guide does not apply to OpenNMS Meridian, which can be installed only on Red Hat Enterprise Linux or CentOS systems.
 

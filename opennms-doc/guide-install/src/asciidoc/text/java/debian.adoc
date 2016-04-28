@@ -3,7 +3,7 @@
 :imagesdir: ../../images
 
 [[gi-install-oracle-java-debian]]
-=== Setup on _Debian-based_ systems
+=== Debian
 
 This section describes how to install _Oracle Java 8_ on a _Debian-based_ system like _Debian 8_ or _Ubuntu 14.04 LTS_.
 

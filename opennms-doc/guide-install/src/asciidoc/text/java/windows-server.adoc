@@ -3,7 +3,7 @@
 :imagesdir: ../../images
 
 [[gi-install-oracle-java-windows]]
-=== Setup on Windows Server
+=== Microsoft Windows
 
 This section describes how to install _Oracle Java 8_ on a system running the _Microsoft Windows Server 2012_ operating system.
 

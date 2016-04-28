@@ -2,8 +2,11 @@
 // Allow GitHub image rendering
 :imagesdir: ../../images
 
+[[gi-install-opennms]]
+== OpenNMS
+
 [[gi-install-opennms-rhel]]
-=== Installing on RHEL-based system
+=== RHEL
 
 This section describes how to install the _OpenNMS_ platform on _CentOS 7.1_.
 The setup process is described in the following steps:
@@ -41,6 +44,8 @@ The following packages will be automatically installed:
 * _jdk1.8_: _Oracle Java 8_ environment from _OpenNMS_ respository
 * _postgresql_: _PostgreSQL_ database server from distribution repository
 * _postgresql-libs_: _PostgreSQL_ database from distribution repository
+
+TIP: Verify the version of the _OpenNMS_ packages that was installed with `yum info opennms`.
 
 With the successful installed packages the _OpenNMS_ platform is installed in the following directory structure:
 

@@ -3,7 +3,7 @@
 :imagesdir: ../../images
 
 [[gi-install-opennms-debian]]
-=== Install on Debian-based systems
+=== Debian
 
 IMPORTANT: This guide does not apply to OpenNMS Meridian, which can be installed only on Red Hat Enterprise Linux or CentOS systems.
 
@@ -57,6 +57,8 @@ The following packages will be automatically installed:
 * _jdk1.8_: _Oracle Java 8_ environment from _OpenNMS_ respository
 * _postgresql_: _PostgreSQL_ database server from distribution repository
 * _postgresql-libs_: _PostgreSQL_ database from distribution repository
+
+TIP: Verify the version of the _OpenNMS_ packages that was installed with `apt-cache show opennms`.
 
 With the successful installed packages the _OpenNMS_ platform is installed in the following directory structure:
 
