@@ -68,6 +68,8 @@ function branch()
 {
     if [ -n "${BRANCH}" ]; then
         echo "${BRANCH}"
+    elif [ -n "${BAMBOO_OPENNMS_BRANCH_NAME}" ]; then
+        echo "${BAMBOO_OPENNMS_BRANCH_NAME}"
     elif [ -n "${bamboo_planRepository_branch}" ]; then
         echo "${bamboo_planRepository_branch}"
     elif use_git; then
