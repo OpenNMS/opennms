@@ -3,16 +3,17 @@
 :imagesdir: ../../images
 
 [[gi-install-oracle-java]]
-== Installing Oracle Java Environment
+== Oracle Java SE Development Kit 8
 
-Installing _Oracle Java 8_ requires external installation packages.
-These packages are provided from _Oracle_ or 3rd party maintainer for the _Debian_ and _Ubuntu-based_ _Linux Distributions_.
+Installing the _Oracle Java SE Development Kit 8_ (_JDK8_) requires installation packages provided by _Oracle_ 
+or a 3rd-party maintainer for _Debian_-based Linux distributions.
 The following tools should be installed to follow this installation manual:
 
-* download files and tools with `wget` and `curl`
-* extract archives with `tar`
-* text manipulation with `sed`
-* Editor, e.g. `vi`, `nano` or `joe`
-* internet access
+* Download files and tools with `wget` and `curl`
+* Extract archives with `tar`
+* Text manipulation with `sed`
+* Editing text, e.g. `vi`, `nano` or `joe`
+* Internet access
 
-WARNING: By downloading the _Oracle Java 8 RPM_ installer you'll accept the license agreement from _Oracle_ which can be found on the link:https://www.java.com/en/download/faq/distribution.xml[Java distribution] web site.
+WARNING: By downloading the _Oracle Java SE Development Kit 8_ RPM installer, you will accept the license agreement 
+from _Oracle_ which can be found on the link:https://www.java.com/en/download/faq/distribution.xml[Java distribution] web site.
