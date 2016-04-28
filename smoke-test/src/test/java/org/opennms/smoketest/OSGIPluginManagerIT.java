@@ -42,7 +42,6 @@ import org.junit.Test;
  *
  * @author jwhite
  */
-@Ignore("See NMS-8353")
 public class OSGIPluginManagerIT extends OpenNMSSeleniumTestCase {
 
     @Test
