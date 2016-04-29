@@ -3,92 +3,41 @@
 :imagesdir: ../../images
 
 [[gi-basic-install-opennms]]
-== Basic Installation of OpenNMS
+== Installation Overview
 
 The _OpenNMS_ platform can be installed in several ways.
-This guide describes the installation of the platform on _RHEL-_, _Debian-_ and _Microsoft Windows_ based operation systems.
-Installable pre-compiled software packages are provided through _RPM_ and _Debian_ repository servers.
-Running _OpenNMS_ requires the following components:
+This guide describes the installation of the platform on _Red Hat Enterprise Linux (RHEL)_-based, _Debian_-based and _Microsoft Windows_ 
+operating systems. The following abbreviations will be used to refer to the following operating systems:
 
-* Internet access to download and verify installation packages from public repository server
-* Installed <<gi-install-oracle-java, Oracle Java 8>> environment
-* PostgreSQL 9.1+ data base
-* Set link to section which describes to install with RRDTool.
-  Optional link:http://oss.oetiker.ch/rrdtool/[RRDtool] to persist long term performance data
+* _RHEL_: Red Hat Enterprise Linux 6 or higher, CentOS 6 or higher, Fedora 20 or higher
+* _Debian_: Debian 7 or higher, Ubuntu 14.04 or higher
+* _Microsoft Windows_: Windows 8.1, Windows Server 2012, Windows 10
 
-NOTE: _OpenJDK 8_ can be used, but for production and critical environments _Oracle Java 8_ is recommended.
+Installable, precompiled software packages are provided through _RHEL Yum_ and _Debian APT_ repository servers and from the
+link:https://sourceforge.net/projects/opennms/files/OpenNMS/[OpenNMS Sourceforge project page].
+Installing _OpenNMS_ requires the following prerequisites:
 
-NOTE: `${OPENNMS_HOME}` is referred to the path _OpenNMS_ is installed to.
-      On _RHEL-based_ systems it is `/opt/opennms` on _Debian-based_ systems it is `/usr/share/opennms`.
-      The environment in _Microsoft Windows_ can refer to `C:\Program Files\opennms`
+* A configured <<gi-install-opennms-repo-releases, Yum or APT Package Repository>> for your platform (Linux only)
+* Internet access to download and verify _OpenNMS_ packages from the Yum or APT package repositories
+* <<gi-install-oracle-java, Oracle Java SE Development Kit 8>> environment
+* PostgreSQL database version 9.1 or higher
+* A time-series database engine to persist long-term performance data:
+** JRobin: The default choice. JRobin is included inside OpenNMS and doesn't require additional software to be installed.
+** <<gi-rrdtool-time-series-database, RRDtool>>: A higher performance, file-based database.
+** <<gi-install-ts-newts, Newts>>: The highest performance solution. Newts uses an Apache Cassandra database for clustered scalability.
+
+NOTE: _OpenJDK 8_ can be used, but for production and critical environments _Oracle Java SE Development Kit 8_ is recommended.
+
+[NOTE]
+====
+`${OPENNMS_HOME}` will be used to refer to the path where _OpenNMS_ is installed. It is different
+depending on your platform:
+
+* _RHEL_: `/opt/opennms`
+* _Debian_: `/usr/share/opennms`
+* _Microsoft Windows_: `C:\Program Files\opennms`
+====
 
 With the _opennms_ meta package all dependencies needed for the components mentioned above are maintained.
 The following sections describe how to install _OpenNMS_ on a single system.
-Dependencies for _Java_ and the _PostgreSQL_ data base are maintained with the _opennms_ meta installation package.
-
-[[gi-install-opennms-repo-releases]]
-=== Repositories for Releases
-
-Installation packages are available for different releases of _OpenNMS_.
-The configuration of the repository decides which _OpenNMS_ release will be installed.
-
-The following releases are available for installation:
-
-._OpenNMS_ release name convention
-[options="header, autowidth"]
-|===
-| Release                   | Description
-| `stable`                  | Latest stable release
-| `testing`                 | Release candidate for next stable
-| `snapshot`                | Latest successful develop build
-| `branches/${BRANCH-NAME}` | Install from a specific branch name, e.g. `branches/features-newts` installs the repository for the _Newts_ development branch.
-                              Branches can be found in http://yum.opennms.org/branches/ or http://debian.opennms.org/dists/branches/
-|===
-
-To install a different release the repository files have to be installed and manually modified.
-
-==== Specific Release on RHEL-based system
-
-.Installation of release specific repositories
-[source, shell]
-----
-rpm -Uvh http://yum.opennms.org/repofiles/opennms-repo-${RELEASE}-rhel7.noarch.rpm<1>
-rpm --import http://yum.opennms.org/OPENNMS-GPG-KEY
-----
-
-<1> Replace `${RELEASE}` with a release name like `testing` or `snapshot`.
-
-Install _OpenNMS_ with _YUM_ following the normal installation procedure.
-
-.Installation of the full _OpenNMS_ application with all dependencies
-[source, shell]
-----
-yum install opennms
-----
-
-TIP: Verify the release of _OpenNMS_ packages with `yum info opennms`.
-
-==== Specific Release on Debian-based system
-
-Create a new apt source file (eg: `/etc/apt/sources.list.d/opennms.list`), and add the following 2 lines:
-
-.Package repository configuration for Debian-based systems
-[source, shell]
-----
-deb http://debian.opennms.org ${RELEASE} main <1>
-deb-src http://debian.opennms.org ${RELEASE} main <1>
-----
-
-<1> Replace `${RELEASE}` with a release name like `testing` or `snapshot`.
-
-Import the packages' authentication key with the following command:
-
-.GPG key import for Debian-based systems
-[source, shell]
-----
-wget -O - http://debian.opennms.org/OPENNMS-GPG-KEY | apt-key add -
-----
-
-Run `apt-get update` and install _OpenNMS_ with _apt_ following the normal installation procedure.
-
-TIP: Verify the release of _OpenNMS_ packages with `apt-cache show opennms`.
+Dependencies for _Java_ and the _PostgreSQL_ database are maintained with the _opennms_ meta installation package.

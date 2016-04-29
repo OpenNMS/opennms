@@ -3,7 +3,7 @@
 :imagesdir: ../../images
 
 [[gi-install-cassandra-rhel]]
-==== Installing on RHEL-based systems
+==== RHEL
 
 This section describes how to install the latest _Cassandra 2.1.x_ release on a _RHEL_ based systems for _Newts_.
 The first step is to add the _DataStax_ community repository and install the required _GPG Key_ to verify the integrity of the _RPM packages_.
