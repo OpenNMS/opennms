@@ -178,8 +178,10 @@ include::text/ticketing/introduction.adoc[]
 // JIRA Ticketer
 include::text/ticketing/jira.adoc[]
 
+[[ga-opennms-plugin-manager]]
 == Plugin Manager
-include::text/plugin-manager/Introduction.adoc[]
-include::text/plugin-manager/SettingKarafInstanceData.adoc[]
-include::text/plugin-manager/InstallingAvailablePlugins.adoc[]
-include::text/plugin-manager/InstallingLicences.adoc[]
+include::text/plugin-manager/introduction.adoc[]
+include::text/plugin-manager/setting-karaf-instance-data.adoc[]
+include::text/plugin-manager/installing-available-plugins.adoc[]
+include::text/plugin-manager/installing-licences.adoc[]
+
