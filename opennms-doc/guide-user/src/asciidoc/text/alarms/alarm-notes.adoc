@@ -1,0 +1,26 @@
+
+:imagesdir: ../../images
+
+[[gu-alarm-notes]]
+=== Alarm Notes
+
+_{opennms-product-name}_ tells you if you have an outage and creates an _Alarm_.
+Working with a few people in a Network Operation Center (NOC) it is necessary to share information about a current _Alarm_.
+_Alarm Notes_ can be used to assign custom comments on a specific _Alarm_ or predefine a comment for a whole class of _Alarms_.
+
+This section describes how to add and remove _Sticky_ and _Journal Memo_ information on _Alarms_.
+The figure <<gu-alarm-notes-ui, Alarm Detail View>> shows the component to add these information in _Memos_ to the _Alarm_.
+
+[[gu-alarm-notes-ui]]
+.Alarm Detail View
+image:alarms/01_alarm-notes.png[]
+
+The _Alarm Notes_ allows you to add two types of notes on an existing _Alarm_ or _Alarm Class_:
+
+* _Sticky Memo_: A user defined note for a specific instance of an _Alarm_.
+                 Deleting the _Alarm_ will also delete the sticky memo.
+* _Journal Memo_: A user defined note for a whole class of alarms based on the resolved reduction key.
+                  It will be shown for all _Alarms_ matching a specific reduction key.
+                  Deleting an alarm doesn't remove the _Journal Memo_, they can be removed by pressing the "Clear" button on an existing _Alarm_.
+
+If an _Alarm_ has a sticky and/or a _Journal Memo_ it is indicated with two icons on the "Alarm list Summary" and "Alarm List Detail".
