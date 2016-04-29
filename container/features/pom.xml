@@ -225,6 +225,7 @@
             <feature>opennms-syslogd-listener-javanet</feature>
             <feature>opennms-syslogd-listener-camel-netty</feature>
             <feature>opennms-syslogd-listener-nio</feature>
+            <feature>opennms-syslogd-handler-default</feature>
             <feature>opennms-syslogd-handler-kafka</feature>
             <feature>opennms-syslogd-handler-minion</feature>
             <!-- <feature>opennms-webapp</feature> -->
