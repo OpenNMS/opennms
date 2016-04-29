@@ -1,5 +1,4 @@
 /*global bootbox:true */
-/*jshint eqnull:true */
 
 /**
 * @author Alejandro Galue <agalue@opennms.org>
@@ -189,12 +188,12 @@
         if (foreignSource) {
           // Validate Requisition
           if (foreignSource.match(/[\/\\?:&*'"]/)) {
-            bootbox.alert("Can't add the requisition " + foreignSource + " because the following characters are invalid:<br/>:, /, \\, ?, &, *, ', \"");
+            bootbox.alert('Cannot add the requisition ' + foreignSource + ' because the following characters are invalid:<br/>:, /, \\, ?, &, *, \', "');
             return;
           }
           var r = $scope.requisitionsData.getRequisition(foreignSource);
           if (r != null) {
-            bootbox.alert("Can't add the requisition " + foreignSource+ " because there is already a requisition with that name");
+            bootbox.alert('Cannot add the requisition ' + foreignSource+ ' because there is already a requisition with that name');
             return;
           }
           // Create Requisition
