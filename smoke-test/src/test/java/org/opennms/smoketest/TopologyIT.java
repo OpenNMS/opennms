@@ -28,12 +28,14 @@
 
 package org.opennms.smoketest;
 
-import java.util.List;
+import java.util.Objects;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.interactions.Actions;
 
-import com.google.common.collect.Lists;
+import com.google.common.base.Throwables;
 
 public class TopologyIT extends OpenNMSSeleniumTestCase {
 
@@ -41,40 +43,128 @@ public class TopologyIT extends OpenNMSSeleniumTestCase {
 
     private final TopologyUiPage topologyUiPage = new TopologyUiPage();
 
-    private final static List<String> availableLayouts = Lists.newArrayList(
-            "Circle Layout",
-            "D3 Layout",
-            "FR Layout",
-            "Hierarchy Layout",
-            "ISOM Layout",
-            "KK Layout",
-            "Manual Layout",
-            "Real Ultimate Layout",
-            "Spring Layout"
-            );
+    private static enum Layout {
+        CIRCLE("Circle Layout"),
+        D3("D3 Layout"),
+        FR("FR Layout"),
+        HIERARCHY("Hierarchy Layout"),
+        ISOM("ISOM Layout"),
+        KK("KK Layout"),
+        REAL("Real Ultimate Layout"),
+        SPRING("Spring Layout");
+
+        private final String label;
+
+        Layout(String label) {
+            this.label = Objects.requireNonNull(label);
+        }
+
+        public String getLabel() {
+            return label;
+        }
+    }
+
+    private static enum TopologyProvider {
+        APPLICATION("Application"),
+        BUSINESSSERVICE("Business Services"),
+        ENLINKD("Enhanced Linkd"),
+        VMWARE("VMware");
+
+        private final String label;
+
+        TopologyProvider(String label) {
+            this.label = Objects.requireNonNull(label);
+        }
+
+        public String getLabel() {
+            return label;
+        }
+    }
 
     /**
      * Class to control the inputs and workflow of the "Topology UI" Page
      */
-    private class TopologyUiPage {
+    public class TopologyUiPage {
         public TopologyUiPage open() {
             m_driver.get(TOPOLOGY_UI_URL);
             return this;
         }
  
-        public TopologyUiPage selectLayout(String layoutName) {
-            clickItemInMenuBar("View");
-            clickItemInMenuBar(layoutName);
-            showEntireMap();
+        public TopologyUiPage clickOnMenuItemsWithLabels(String... labels) {
+            resetMenu();
+            Actions actions = new Actions(m_driver);
+            for (String label : labels) {
+                WebElement menuElement = getMenubarElement(label);
+                actions.moveToElement(menuElement);
+                menuElement.click();
+            }
             return this;
         }
 
-        private void clickItemInMenuBar(String itemName) {
-            findElementByXpath("//span[@class='v-menubar-menuitem-caption' and text()='" + itemName + "']").click();
+        public TopologyUiPage selectLayout(Layout layout) {
+            clickOnMenuItemsWithLabels("View", layout.getLabel());
+            return this;
         }
 
-        private void showEntireMap() {
-            findElementByXpath("//i[@class='icon-globe']").click();
+        public TopologyUiPage selectTopologyProvider(TopologyProvider topologyProvider) {
+            clickOnMenuItemsWithLabels("View", topologyProvider.getLabel());
+            return this;
+        }
+
+        public TopologyUiPage setAutomaticRefresh(boolean enabled) {
+            boolean alreadyEnabled = isMenuItemChecked("Automatic Refresh", "View");
+            if ((alreadyEnabled && !enabled) || (!alreadyEnabled && enabled)) {
+                clickOnMenuItemsWithLabels("View", "Automatic Refresh");
+            }
+            return this;
+        }
+
+        public void showEntireMap() {
+            getShowEntireMapElement().click();
+        }
+
+        private WebElement getMenubarElement(String itemName) {
+            return findElementByXpath("//span[@class='v-menubar-menuitem-caption' and text()='" + itemName + "']/parent::*");
+        }
+
+        private WebElement getShowEntireMapElement() {
+            return findElementByXpath("//i[@class='icon-globe']");
+        }
+
+        private void resetMenu() {
+            // The menu can act weirdly if we're already hovering over it so we mouse-over to
+            // a known element off of the menu, and click a couples times just to make sure
+            WebElement showEntireMap = getShowEntireMapElement();
+            Actions actions = new Actions(m_driver);
+            actions.moveToElement(showEntireMap);
+            actions.clickAndHold();
+            try {
+                Thread.sleep(500);
+            } catch (InterruptedException e) {
+                throw Throwables.propagate(e);
+            }
+            actions.release();
+            showEntireMap.click();
+        }
+
+        private boolean isMenuItemChecked(String itemName, String... path) {
+            clickOnMenuItemsWithLabels(path);
+
+            final WebElement automaticRefresh = getMenubarElement("Automatic Refresh");
+            final String cssClasses = automaticRefresh.getAttribute("class");
+            if (cssClasses != null) {
+                if (cssClasses.contains("-unchecked")) {
+                    return false;
+                } else if (cssClasses.contains("-checked")) {
+                    return true;
+                } else {
+                    throw new RuntimeException("Unknown CSS classes '" + cssClasses + "'."
+                                + " Unable to determine if the item is checked or unchecked.");
+                }
+            } else {
+                throw new RuntimeException("Element has no CSS classes!"
+                        + " Unable to determine if the item is checked or unchecked.");
+            }
         }
     }
 
@@ -84,9 +174,35 @@ public class TopologyIT extends OpenNMSSeleniumTestCase {
     }
 
     @Test
-    public void canSelectLayouts() throws InterruptedException {
-        for (String layout : availableLayouts) {
+    public void canSelectKnownLayouts() throws InterruptedException {
+        for (Layout layout : Layout.values()) {
             topologyUiPage.selectLayout(layout);
         }
+    }
+
+    @Test
+    public void canSelectKnownTopologyProviders() throws InterruptedException {
+        for (TopologyProvider topologyProvider : TopologyProvider.values()) {
+            topologyUiPage.selectTopologyProvider(topologyProvider);
+        }
+    }
+
+    @Test
+    public void canToggleAutomaticRefresh() {
+        // Disable
+        topologyUiPage.setAutomaticRefresh(false)
+            .setAutomaticRefresh(false)
+            .setAutomaticRefresh(false);
+
+        // Enable
+        topologyUiPage.setAutomaticRefresh(true)
+            .setAutomaticRefresh(true)
+            .setAutomaticRefresh(true);
+
+        // Enable/Disable
+        topologyUiPage.setAutomaticRefresh(false)
+            .setAutomaticRefresh(true)
+            .setAutomaticRefresh(false)
+            .setAutomaticRefresh(true);
     }
 }
