@@ -39,6 +39,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.Map.Entry;
 
 import javax.xml.bind.JAXBException;
 
@@ -652,7 +653,7 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
         try {
             LOG.debug("loadtopology: adding nodes without links: " + isAddNodeWithoutLink());
             if (isAddNodeWithoutLink()) {
-                addNodesWithoutLinks();
+                addNodesWithoutLinks(nodemap,nodeipmap,nodeipprimarymap);
             }
         } finally {
             context.stop();
@@ -1087,6 +1088,26 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
                         edge.setTooltipText(getEdgeTooltipText(targetmac,target,targetInterfaces));
                     }
                 }
+            }
+        }
+    }
+
+    private void addNodesWithoutLinks(Map<Integer, OnmsNode> nodemap, Map<Integer, List<OnmsIpInterface>> nodeipmap, Map<Integer, OnmsIpInterface> nodeipprimarymap) {
+        for (Entry<Integer, OnmsNode> entry: nodemap.entrySet()) {
+            Integer nodeId = entry.getKey();
+            OnmsNode node = entry.getValue();
+            if (getVertex(getVertexNamespace(), nodeId.toString()) == null) {
+                LOG.debug("Adding link-less node: {}", node.getLabel());
+                // Use the primary interface, if set
+                OnmsIpInterface ipInterface = nodeipprimarymap.get(nodeId);
+                if (ipInterface == null) {
+                    // Otherwise fall back to the first interface defined
+                    List<OnmsIpInterface> ipInterfaces = nodeipmap.getOrDefault(nodeId, Collections.emptyList());
+                    if (ipInterfaces.size() > 0) {
+                        ipInterfaces.get(0);
+                    }
+                }
+                addVertices(createVertexFor(node, ipInterface));
             }
         }
     }
