@@ -36,6 +36,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 import javax.xml.bind.JAXBException;
@@ -89,6 +90,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.Timer;
 import com.google.common.collect.Lists;
 
 public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider {
@@ -426,27 +429,64 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
     public final static String BRIDGE_EDGE_NAMESPACE = TOPOLOGY_NAMESPACE_LINKD + "::BRIDGE";
     public final static String CDP_EDGE_NAMESPACE = TOPOLOGY_NAMESPACE_LINKD + "::CDP";
 
-    public EnhancedLinkdTopologyProvider() { }
+    private final Timer m_loadFullTimer;
+    private final Timer m_loadNodesTimer;
+    private final Timer m_loadIpInterfacesTimer;
+    private final Timer m_loadSnmpInterfacesTimer;
+    private final Timer m_loadIpNetToMediaTimer;
+    private final Timer m_loadLldpLinksTimer;
+    private final Timer m_loadOspfLinksTimer;
+    private final Timer m_loadCdpLinksTimer;
+    private final Timer m_loadIsisLinksTimer;
+    private final Timer m_loadBridgeLinksTimer;
+    private final Timer m_loadNoLinksTimer;
+    private final Timer m_loadManualLinksTimer;
+
+    public EnhancedLinkdTopologyProvider(MetricRegistry registry) {
+        Objects.requireNonNull(registry);
+        m_loadFullTimer = registry.timer(MetricRegistry.name("enlinkd", "load", "full"));
+        m_loadNodesTimer = registry.timer(MetricRegistry.name("enlinkd", "load", "nodes"));
+        m_loadIpInterfacesTimer = registry.timer(MetricRegistry.name("enlinkd", "load", "ipinterfaces"));
+        m_loadSnmpInterfacesTimer = registry.timer(MetricRegistry.name("enlinkd", "load", "snmpinterfaces"));
+        m_loadIpNetToMediaTimer = registry.timer(MetricRegistry.name("enlinkd", "load", "ipnettomedia"));
+        m_loadLldpLinksTimer = registry.timer(MetricRegistry.name("enlinkd", "load", "links", "lldp"));
+        m_loadOspfLinksTimer = registry.timer(MetricRegistry.name("enlinkd", "load", "links", "ospf"));
+        m_loadCdpLinksTimer = registry.timer(MetricRegistry.name("enlinkd", "load", "links", "cdp"));
+        m_loadIsisLinksTimer = registry.timer(MetricRegistry.name("enlinkd", "load", "links", "isis"));
+        m_loadBridgeLinksTimer = registry.timer(MetricRegistry.name("enlinkd", "load", "links", "bridge"));
+        m_loadNoLinksTimer = registry.timer(MetricRegistry.name("enlinkd", "load", "links", "none"));
+        m_loadManualLinksTimer = registry.timer(MetricRegistry.name("enlinkd", "load", "links", "manual"));
+    }
 
     @Override
     @Transactional
     public void load(String filename) throws MalformedURLException, JAXBException {
+        final Timer.Context context = m_loadFullTimer.time();
         if (filename != null) {
             LOG.warn("Filename that was specified for linkd topology will be ignored: " + filename + ", using " + getConfigurationFile() + " instead");
         }
+        try {
+            loadCompleteTopology();
+        } finally {
+            context.stop();
+        }
+    }
+
+    private void loadCompleteTopology() throws MalformedURLException, JAXBException {
         try{
             resetContainer();
         } catch (Exception e){
             LOG.error("Exception reset Container: "+e.getMessage(),e);
         }
-        
+
         Map<Integer, OnmsNode> nodemap = new HashMap<Integer, OnmsNode>();
         Map<Integer, List<OnmsIpInterface>> nodeipmap = new HashMap<Integer,  List<OnmsIpInterface>>();
         Map<Integer, OnmsIpInterface> nodeipprimarymap = new HashMap<Integer, OnmsIpInterface>();
         Map<String, List<OnmsIpInterface>> macipmap = new HashMap<String, List<OnmsIpInterface>>();
         Map<InetAddress, OnmsIpInterface> ipmap = new HashMap<InetAddress,  OnmsIpInterface>();
         Map<Integer,List<OnmsSnmpInterface>> nodesnmpmap = new HashMap<Integer, List<OnmsSnmpInterface>>();
-        
+
+        Timer.Context context = m_loadNodesTimer.time();
         try {
             LOG.info("Loading nodes");
             for (OnmsNode node: m_nodeDao.findAll()) {
@@ -455,8 +495,11 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
             LOG.info("Nodes loaded");
         } catch (Exception e){
             LOG.error("Exception getting node list: "+e.getMessage(),e);
+        } finally {
+            context.stop();
         }
 
+        context = m_loadIpInterfacesTimer.time();
         try {
             LOG.info("Loading Ip Interface");
             Set<InetAddress> duplicatedips = new HashSet<InetAddress>();
@@ -469,7 +512,7 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
                 if (ip.getIsSnmpPrimary().equals(PrimaryType.PRIMARY)) {
                     nodeipprimarymap.put(ip.getNode().getId(), ip);
                 }
-                
+
                 if (duplicatedips.contains(ip.getIpAddress())) {
                     LOG.info("Loading ip Interface, found duplicated ip {}, skipping ", InetAddressUtils.str(ip.getIpAddress()));
                     continue;
@@ -486,8 +529,11 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
             LOG.info("Ip Interface loaded");
         } catch (Exception e){
             LOG.error("Exception getting ip list: "+e.getMessage(),e);
+        } finally {
+            context.stop();
         }
 
+        context = m_loadSnmpInterfacesTimer.time();
         try {
             LOG.info("Loading Snmp Interface");
             for (OnmsSnmpInterface snmp: m_snmpInterfaceDao.findAll()) {
@@ -498,8 +544,11 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
             LOG.info("Snmp Interface loaded");
         } catch (Exception e){
             LOG.error("Exception getting snmp interface list: "+e.getMessage(),e);
+        } finally {
+            context.stop();
         }
 
+        context = m_loadIpNetToMediaTimer.time();
         try {
             Set<String> duplicatednodemac = new HashSet<String>();
             Map<String, Integer> mactonodemap = new HashMap<String, Integer>();
@@ -534,104 +583,132 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
             LOG.info("Ip net to media loaded");
         } catch (Exception e){
             LOG.error("Exception getting ip net to media list: "+e.getMessage(),e);
+        } finally {
+            context.stop();
         }
 
-
+        context = m_loadLldpLinksTimer.time();
         try{
             LOG.info("Loading Lldp link");
             getLldpLinks(nodemap, nodesnmpmap,nodeipprimarymap);
             LOG.info("Lldp link loaded");
         } catch (Exception e){
             LOG.error("Exception getting Lldp link: "+e.getMessage(),e);
+        } finally {
+            context.stop();
         }
+
+        context = m_loadOspfLinksTimer.time();
         try{
             LOG.info("Loading Ospf link");
             getOspfLinks(nodemap,nodesnmpmap,nodeipprimarymap);
             LOG.info("Ospf link loaded");
         } catch (Exception e){
             LOG.error("Exception getting Ospf link: "+e.getMessage(),e);
+        } finally {
+            context.stop();
         }
+
+        context = m_loadIsisLinksTimer.time();
         try{
             LOG.info("Loading Cdp link");
             getCdpLinks(nodemap,nodesnmpmap,nodeipprimarymap,ipmap);
             LOG.info("Cdp link loaded");
         } catch (Exception e){
             LOG.error("Exception getting Cdp link: "+e.getMessage(),e);
+        } finally {
+            context.stop();
         }
+
+        context = m_loadCdpLinksTimer.time();
         try{
             LOG.info("Loading IsIs link");
             getIsIsLinks(nodesnmpmap,nodeipprimarymap);
             LOG.info("IsIs link loaded");
         } catch (Exception e){
             LOG.error("Exception getting IsIs link: "+e.getMessage(),e);
+        } finally {
+            context.stop();
         }
+
+        context = m_loadBridgeLinksTimer.time();
         try{
             LOG.info("Loading Bridge link");
             getBridgeLinks(nodemap, nodesnmpmap,macipmap,nodeipmap,nodeipprimarymap);
             LOG.info("Bridge link loaded");
         } catch (Exception e){
             LOG.error("Exception getting Bridge link: "+e.getMessage(),e);
+        } finally {
+            context.stop();
         }
 
-        LOG.debug("loadtopology: adding nodes without links: " + isAddNodeWithoutLink());
-        if (isAddNodeWithoutLink()) {
-            addNodesWithoutLinks();
+        context = m_loadNoLinksTimer.time();
+        try {
+            LOG.debug("loadtopology: adding nodes without links: " + isAddNodeWithoutLink());
+            if (isAddNodeWithoutLink()) {
+                addNodesWithoutLinks();
+            }
+        } finally {
+            context.stop();
         }
 
-        File configFile = new File(getConfigurationFile());
-        if (configFile.exists() && configFile.canRead()) {
-            LOG.debug("loadtopology: loading topology from configuration file: " + getConfigurationFile());
-            WrappedGraph graph = getGraphFromFile(configFile);
+        context = m_loadManualLinksTimer.time();
+        try {
+            File configFile = new File(getConfigurationFile());
+            if (configFile.exists() && configFile.canRead()) {
+                LOG.debug("loadtopology: loading topology from configuration file: " + getConfigurationFile());
+                WrappedGraph graph = getGraphFromFile(configFile);
 
-            // Add all groups to the topology
-            for (WrappedVertex eachVertexInFile: graph.m_vertices) {
-                if (eachVertexInFile.group) {
-                    LOG.debug("loadtopology: adding group to topology: " + eachVertexInFile.id);
-                    if (eachVertexInFile.namespace == null) {
-                        eachVertexInFile.namespace = getVertexNamespace();
-                        LoggerFactory.getLogger(this.getClass()).warn("Setting namespace on vertex to default: {}", eachVertexInFile);
+                // Add all groups to the topology
+                for (WrappedVertex eachVertexInFile: graph.m_vertices) {
+                    if (eachVertexInFile.group) {
+                        LOG.debug("loadtopology: adding group to topology: " + eachVertexInFile.id);
+                        if (eachVertexInFile.namespace == null) {
+                            eachVertexInFile.namespace = getVertexNamespace();
+                            LoggerFactory.getLogger(this.getClass()).warn("Setting namespace on vertex to default: {}", eachVertexInFile);
+                        }
+                        if (eachVertexInFile.id == null) {
+                            LoggerFactory.getLogger(this.getClass()).warn("Invalid vertex unmarshalled from {}: {}", getConfigurationFile(), eachVertexInFile);
+                        }
+                        AbstractVertex newGroupVertex = addGroup(eachVertexInFile.id, eachVertexInFile.iconKey, eachVertexInFile.label);
+                        newGroupVertex.setIpAddress(eachVertexInFile.ipAddr);
+                        newGroupVertex.setLocked(eachVertexInFile.locked);
+                        if (eachVertexInFile.nodeID != null) newGroupVertex.setNodeID(eachVertexInFile.nodeID);
+                        if (!newGroupVertex.equals(eachVertexInFile.parent)) newGroupVertex.setParent(eachVertexInFile.parent);
+                        newGroupVertex.setSelected(eachVertexInFile.selected);
+                        newGroupVertex.setStyleName(eachVertexInFile.styleName);
+                        newGroupVertex.setTooltipText(eachVertexInFile.tooltipText);
+                        if (eachVertexInFile.x != null) newGroupVertex.setX(eachVertexInFile.x);
+                        if (eachVertexInFile.y != null) newGroupVertex.setY(eachVertexInFile.y);
                     }
-                    if (eachVertexInFile.id == null) {
-                        LoggerFactory.getLogger(this.getClass()).warn("Invalid vertex unmarshalled from {}: {}", getConfigurationFile(), eachVertexInFile);
+                }
+                for (Vertex vertex: getVertices()) {
+                    if (vertex.getParent() != null && !vertex.equals(vertex.getParent())) {
+                        LOG.debug("loadtopology: setting parent of " + vertex + " to " + vertex.getParent());
+                        setParent(vertex, vertex.getParent());
                     }
-                    AbstractVertex newGroupVertex = addGroup(eachVertexInFile.id, eachVertexInFile.iconKey, eachVertexInFile.label);
-                    newGroupVertex.setIpAddress(eachVertexInFile.ipAddr);
-                    newGroupVertex.setLocked(eachVertexInFile.locked);
-                    if (eachVertexInFile.nodeID != null) newGroupVertex.setNodeID(eachVertexInFile.nodeID);
-                    if (!newGroupVertex.equals(eachVertexInFile.parent)) newGroupVertex.setParent(eachVertexInFile.parent);
-                    newGroupVertex.setSelected(eachVertexInFile.selected);
-                    newGroupVertex.setStyleName(eachVertexInFile.styleName);
-                    newGroupVertex.setTooltipText(eachVertexInFile.tooltipText);
-                    if (eachVertexInFile.x != null) newGroupVertex.setX(eachVertexInFile.x);
-                    if (eachVertexInFile.y != null) newGroupVertex.setY(eachVertexInFile.y);
                 }
-            }
-            for (Vertex vertex: getVertices()) {
-                if (vertex.getParent() != null && !vertex.equals(vertex.getParent())) {
-                    LOG.debug("loadtopology: setting parent of " + vertex + " to " + vertex.getParent());
-                    setParent(vertex, vertex.getParent());
+                // Add all children to the specific group
+                // Attention: We ignore all other attributes, they do not need to be merged!
+                for (WrappedVertex eachVertexInFile : graph.m_vertices) {
+                    if (!eachVertexInFile.group && eachVertexInFile.parent != null) {
+                        final Vertex child = getVertex(eachVertexInFile);
+                        final Vertex parent = getVertex(eachVertexInFile.parent);
+                        if (child == null || parent == null) continue;
+                        LOG.debug("loadtopology: setting parent of " + child + " to " + parent);
+                        if (!child.equals(parent)) setParent(child, parent);
+                    }
                 }
+            } else {
+                LOG.debug("loadtopology: could not load topology configFile:" + getConfigurationFile());
             }
-            // Add all children to the specific group
-            // Attention: We ignore all other attributes, they do not need to be merged!
-            for (WrappedVertex eachVertexInFile : graph.m_vertices) {
-                if (!eachVertexInFile.group && eachVertexInFile.parent != null) {
-                    final Vertex child = getVertex(eachVertexInFile);
-                    final Vertex parent = getVertex(eachVertexInFile.parent);
-                    if (child == null || parent == null) continue;
-                    LOG.debug("loadtopology: setting parent of " + child + " to " + parent);
-                    if (!child.equals(parent)) setParent(child, parent);
-                }
-            }
-        } else {
-            LOG.debug("loadtopology: could not load topology configFile:" + getConfigurationFile());
+        } finally {
+            context.stop();
         }
-        LOG.debug("Found " + getGroups().size() + " groups");
-        LOG.debug("Found " + getVerticesWithoutGroups().size() + " vertices");
-        LOG.debug("Found " + getEdges().size() + " edges");
 
-
-
+        LOG.debug("Found {} groups", getGroups().size());
+        LOG.debug("Found {} vertices", getVerticesWithoutGroups().size());
+        LOG.debug("Found {} edges", getEdges().size());
     }
 
     protected final Vertex getOrCreateVertex(OnmsNode sourceNode,OnmsIpInterface primary) {
