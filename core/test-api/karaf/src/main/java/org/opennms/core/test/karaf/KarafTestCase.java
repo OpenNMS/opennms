@@ -80,7 +80,7 @@ public abstract class KarafTestCase {
     public static final String MAX_SSH_PORT = "8888";
 
     private static String getKarafVersion() {
-        final String karafVersion = System.getProperty("karafVersion", "2.4.0");
+        final String karafVersion = System.getProperty("karafVersion", "2.4.3");
         Objects.requireNonNull(karafVersion, "Please define a system property 'karafVersion'.");
         return karafVersion;
     }

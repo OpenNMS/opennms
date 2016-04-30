@@ -62,7 +62,7 @@ public class TopologyMapIT extends KarafTestCase {
                     maven().groupId("org.opennms.container").artifactId("karaf").versionAsInProject().type("tar.gz")
                 ).karafVersion(
                     //MavenUtils.getArtifactVersion("org.apache.karaf", "apache-karaf")
-                    "2.4.0"
+                    "2.4.3"
                 ).name("OpenNMS Apache Karaf").unpackDirectory(new File("target/exam")
             ),
 
@@ -110,13 +110,13 @@ public class TopologyMapIT extends KarafTestCase {
 
     @Test
     public void listCommands() throws Exception {
-        addFeaturesUrl(maven().groupId("org.apache.karaf.assemblies.features").artifactId("standard").version("2.4.0").classifier("features").type("xml").getURL());
+        addFeaturesUrl(maven().groupId("org.apache.karaf.assemblies.features").artifactId("standard").version("2.4.3").classifier("features").type("xml").getURL());
         System.out.println(executeCommand("osgi:list -t 0"));
     }
 
     @Test
     public void getTopologyProvider() {
-        addFeaturesUrl(maven().groupId("org.apache.karaf.assemblies.features").artifactId("standard").version("2.4.0").classifier("features").type("xml").getURL());
+        addFeaturesUrl(maven().groupId("org.apache.karaf.assemblies.features").artifactId("standard").version("2.4.3").classifier("features").type("xml").getURL());
 
         /*
         TODO: Install the topology features and fetch them from the OSGi registry
