@@ -32,6 +32,7 @@ import java.io.File;
 import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -796,27 +797,58 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
     }
 
     private void getLldpLinks(Map<Integer, OnmsNode> nodemap, Map<Integer, List<OnmsSnmpInterface>> nodesnmpmap, Map<Integer, OnmsIpInterface> ipprimarymap) {
+        // Index the nodes by sysName
+        final Map<String, OnmsNode> nodesbysysname = new HashMap<>();
+        for (OnmsNode node: nodemap.values()) {
+            if (node.getSysName() != null) {
+                nodesbysysname.putIfAbsent(node.getSysName(), node);
+            }
+        }
+
+        // Index the LLDP elements by node id
         Map<Integer, LldpElement> lldpelementmap = new HashMap<Integer, LldpElement>();
         for (LldpElement lldpelement: m_lldpElementDao.findAll()) {
             lldpelementmap.put(lldpelement.getNode().getId(), lldpelement);
         }
+
+        // Pull all of the LLDP links and index them by remote chassis id
         List<LldpLink> allLinks = m_lldpLinkDao.findAll();
+        Map<String, List<LldpLink>> linksByRemoteChassisId = new HashMap<>();
+        for (LldpLink link : allLinks) {
+            final String remoteChassisId = link.getLldpRemChassisId();
+            List<LldpLink> linksWithRemoteChassisId = linksByRemoteChassisId.get(remoteChassisId);
+            if (linksWithRemoteChassisId == null) {
+                linksWithRemoteChassisId = new ArrayList<>();
+                linksByRemoteChassisId.put(remoteChassisId, linksWithRemoteChassisId);
+            }
+            linksWithRemoteChassisId.add(link);
+        }
+
         Set<LldpLinkDetail> combinedLinkDetails = new HashSet<LldpLinkDetail>();
         Set<Integer> parsed = new HashSet<Integer>();
         for (LldpLink sourceLink : allLinks) {
-            if (parsed.contains(sourceLink.getId()))
+            if (parsed.contains(sourceLink.getId())) {
                 continue;
+            }
             LOG.debug("loadtopology: lldp link with id '{}' link '{}' ", sourceLink.getId(), sourceLink);
             LldpElement sourceLldpElement = lldpelementmap.get(sourceLink.getNode().getId());
             LldpLink targetLink = null;
-            for (LldpLink link : allLinks) {
-                if (sourceLink.getId().intValue() == link.getId().intValue()|| parsed.contains(link.getId()))
+
+            // Limit the candidate links by only choosing those have a remote chassis id matching the chassis id of the source link
+            for (LldpLink link : linksByRemoteChassisId.getOrDefault(sourceLldpElement.getLldpChassisId(), Collections.emptyList())) {
+                if (parsed.contains(link.getId())) {
                     continue;
+                }
+
+                if (sourceLink.getId().intValue() == link.getId().intValue()) {
+                    continue;
+                }
                 LOG.debug("loadtopology: checking lldp link with id '{}' link '{}' ", link.getId(), link);
                 LldpElement element = lldpelementmap.get(link.getNode().getId());
-                //Compare the remote data to the targetNode element data
-                if (!sourceLink.getLldpRemChassisId().equals(element.getLldpChassisId()) || !link.getLldpRemChassisId().equals(sourceLldpElement.getLldpChassisId())) 
+                // Compare the chassis id on the other end of the link
+                if (!sourceLink.getLldpRemChassisId().equals(element.getLldpChassisId())) {
                     continue;
+                }
                 boolean bool1 = sourceLink.getLldpRemPortId().equals(link.getLldpPortId()) && link.getLldpRemPortId().equals(sourceLink.getLldpPortId());
                 boolean bool3 = sourceLink.getLldpRemPortIdSubType() == link.getLldpPortIdSubType() && link.getLldpRemPortIdSubType() == sourceLink.getLldpPortIdSubType();
 
@@ -826,19 +858,15 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
                     break;
                 }
             }
-            
-            if (targetLink == null) {
-                List<OnmsNode> nodes = new ArrayList<OnmsNode>();
-                for (OnmsNode node: nodemap.values()) {
-                    if (node.getSysName() != null && sourceLink.getLldpRemSysname() != null && node.getSysName().equals(sourceLink.getLldpRemSysname()))
-                        nodes.add(node);
-                }
-                if (nodes.size() == 1) {
-                    targetLink = reverseLldpLink(nodes.get(0), sourceLldpElement, sourceLink); 
+
+            if (targetLink == null && sourceLink.getLldpRemSysname() != null) {
+                final OnmsNode node = nodesbysysname.get(sourceLink.getLldpRemSysname());
+                if (node != null) {
+                    targetLink = reverseLldpLink(node, sourceLldpElement, sourceLink);
                     LOG.info("loadtopology: found lldp link using lldp rem sysname: '{}' and '{}'", sourceLink, targetLink);
                 }
             }
-            
+
             if (targetLink == null) {
                 LOG.info("loadtopology: cannot found target node for link: '{}'", sourceLink);
                 continue;
