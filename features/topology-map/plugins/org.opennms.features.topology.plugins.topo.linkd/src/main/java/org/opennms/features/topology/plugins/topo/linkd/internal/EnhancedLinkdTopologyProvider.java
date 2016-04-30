@@ -29,7 +29,6 @@
 package org.opennms.features.topology.plugins.topo.linkd.internal;
 
 import java.io.File;
-import java.lang.reflect.UndeclaredThrowableException;
 import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
@@ -72,6 +71,7 @@ import org.opennms.netmgt.model.BridgeBridgeLink;
 import org.opennms.netmgt.model.BridgeMacLink;
 import org.opennms.netmgt.model.CdpElement;
 import org.opennms.netmgt.model.CdpLink;
+import org.opennms.netmgt.model.CdpLink.CiscoNetworkProtocolType;
 import org.opennms.netmgt.model.IpNetToMedia;
 import org.opennms.netmgt.model.LldpElement;
 import org.opennms.netmgt.model.LldpLink;
@@ -80,7 +80,6 @@ import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.model.OspfLink;
 import org.opennms.netmgt.model.PrimaryType;
-import org.opennms.netmgt.model.CdpLink.CiscoNetworkProtocolType;
 import org.opennms.netmgt.model.topology.BridgePort;
 import org.opennms.netmgt.model.topology.BroadcastDomain;
 import org.opennms.netmgt.model.topology.EdgeAlarmStatusSummary;
@@ -88,9 +87,7 @@ import org.opennms.netmgt.model.topology.IsisTopologyLink;
 import org.opennms.netmgt.model.topology.SharedSegment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
 import com.google.common.collect.Lists;
 
@@ -430,38 +427,6 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
     public final static String CDP_EDGE_NAMESPACE = TOPOLOGY_NAMESPACE_LINKD + "::CDP";
 
     public EnhancedLinkdTopologyProvider() { }
-
-    /**
-     * Used as an init-method in the OSGi blueprint
-     * @throws JAXBException
-     * @throws MalformedURLException
-     */
-    public void onInit() throws MalformedURLException, JAXBException {
-        LOG.info("init: loading enlinkd topology.");
-        try {
-            // @see http://issues.opennms.org/browse/NMS-7835
-            getTransactionOperations().execute(new TransactionCallbackWithoutResult() {
-                @Override
-                public void doInTransactionWithoutResult(TransactionStatus status) {
-                    try {
-                        load(null);
-                    } catch (MalformedURLException | JAXBException e) {
-                        throw new UndeclaredThrowableException(e);
-                    }
-                }
-            });
-        } catch (UndeclaredThrowableException e) {
-            // I'm not sure if there's a more elegant way to do this...
-            Throwable t = e.getUndeclaredThrowable();
-            if (t instanceof MalformedURLException) {
-                throw (MalformedURLException)t;
-            } else if (t instanceof JAXBException) {
-                throw (JAXBException)t;
-            }
-        }
-        LOG.info("init: enlinkd topology loaded.");
-
-    }
 
     @Override
     @Transactional
