@@ -73,6 +73,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import com.codahale.metrics.MetricRegistry;
+
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations={
         "classpath:/META-INF/opennms/applicationContext-enhanced-mock.xml"
@@ -466,7 +468,7 @@ public class EnhancedLinkdTopologyProviderTest {
      */
     @Test
     public void testAssignChildrenToParentsCorrectly() throws MalformedURLException, JAXBException {
-        EnhancedLinkdTopologyProvider topologyProvider = new EnhancedLinkdTopologyProvider();
+        EnhancedLinkdTopologyProvider topologyProvider = new EnhancedLinkdTopologyProvider(new MetricRegistry());
 
         topologyProvider.setNodeDao(m_databasePopulator.getNodeDao());
         topologyProvider.setIpInterfaceDao(m_databasePopulator.getIpInterfaceDao());

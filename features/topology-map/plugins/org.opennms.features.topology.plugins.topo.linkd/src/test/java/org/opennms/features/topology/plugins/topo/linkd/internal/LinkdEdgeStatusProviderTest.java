@@ -60,7 +60,13 @@ import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OspfLink;
 import org.opennms.netmgt.model.topology.BridgePort;
 
+import com.codahale.metrics.MetricRegistry;
+
 public class LinkdEdgeStatusProviderTest extends EnhancedLinkdTopologyProvider {
+
+    public LinkdEdgeStatusProviderTest() {
+        super(new MetricRegistry());
+    }
 
     private AlarmDao m_alarmDao;
     private LinkdEdgeStatusProvider m_statusProvider;
