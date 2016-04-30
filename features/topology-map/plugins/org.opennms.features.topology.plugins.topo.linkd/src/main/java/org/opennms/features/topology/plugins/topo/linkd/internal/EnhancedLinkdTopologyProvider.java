@@ -537,9 +537,14 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
         try {
             LOG.info("Loading Snmp Interface");
             for (OnmsSnmpInterface snmp: m_snmpInterfaceDao.findAll()) {
-                if (!nodesnmpmap.containsKey(snmp.getNode().getId()))
-                    nodesnmpmap.put(snmp.getNode().getId(), new ArrayList<OnmsSnmpInterface>());
-                nodesnmpmap.get(snmp.getNode().getId()).add(snmp);
+                // Index the SNMP interfaces by node id
+                final int nodeId = snmp.getNode().getId();
+                List<OnmsSnmpInterface> snmpinterfaces = nodesnmpmap.get(nodeId);
+                if (snmpinterfaces == null) {
+                    snmpinterfaces = new ArrayList<>();
+                    nodesnmpmap.put(nodeId, snmpinterfaces);
+                }
+                snmpinterfaces.add(snmp);
             }
             LOG.info("Snmp Interface loaded");
         } catch (Exception e){
