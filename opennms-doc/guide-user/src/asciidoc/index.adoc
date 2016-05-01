@@ -29,3 +29,8 @@ include::text/bsm/introduction.adoc[]
 include::text/bsm/operational-status.adoc[]
 include::text/bsm/root-cause-impact-analysis.adoc[]
 include::text/bsm/simulation-mode.adoc[]
+
+[[gu-alarms]]
+== Alarms
+include::text/alarms/alarm-notes.adoc[]
+
