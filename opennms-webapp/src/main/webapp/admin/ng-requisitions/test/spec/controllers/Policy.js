@@ -98,7 +98,7 @@ describe('Controller: PolicyController', function () {
       RequisitionsService: mockRequisitionsService,
       policy: policy
     });
-  };
+  }
 
   beforeEach(module('onms-requisitions', function($provide) {
     $provide.value('$log', console);    

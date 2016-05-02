@@ -1,5 +1,5 @@
 /*global RequisitionInterface:true */
-/*jshint eqnull:true, undef:false, unused:false, sub:true */
+/*jshint unused:false, sub:true */
 
 /**
 * @author Alejandro Galue <agalue@opennms.org>
