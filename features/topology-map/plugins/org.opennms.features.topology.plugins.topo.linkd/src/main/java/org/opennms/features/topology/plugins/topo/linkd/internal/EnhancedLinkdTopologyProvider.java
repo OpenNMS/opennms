@@ -29,15 +29,17 @@
 package org.opennms.features.topology.plugins.topo.linkd.internal;
 
 import java.io.File;
-import java.lang.reflect.UndeclaredThrowableException;
 import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
+import java.util.Map.Entry;
 
 import javax.xml.bind.JAXBException;
 
@@ -72,6 +74,7 @@ import org.opennms.netmgt.model.BridgeBridgeLink;
 import org.opennms.netmgt.model.BridgeMacLink;
 import org.opennms.netmgt.model.CdpElement;
 import org.opennms.netmgt.model.CdpLink;
+import org.opennms.netmgt.model.CdpLink.CiscoNetworkProtocolType;
 import org.opennms.netmgt.model.IpNetToMedia;
 import org.opennms.netmgt.model.LldpElement;
 import org.opennms.netmgt.model.LldpLink;
@@ -80,7 +83,6 @@ import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.model.OspfLink;
 import org.opennms.netmgt.model.PrimaryType;
-import org.opennms.netmgt.model.CdpLink.CiscoNetworkProtocolType;
 import org.opennms.netmgt.model.topology.BridgePort;
 import org.opennms.netmgt.model.topology.BroadcastDomain;
 import org.opennms.netmgt.model.topology.EdgeAlarmStatusSummary;
@@ -88,10 +90,10 @@ import org.opennms.netmgt.model.topology.IsisTopologyLink;
 import org.opennms.netmgt.model.topology.SharedSegment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
+import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.Timer;
 import com.google.common.collect.Lists;
 
 public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider {
@@ -429,59 +431,64 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
     public final static String BRIDGE_EDGE_NAMESPACE = TOPOLOGY_NAMESPACE_LINKD + "::BRIDGE";
     public final static String CDP_EDGE_NAMESPACE = TOPOLOGY_NAMESPACE_LINKD + "::CDP";
 
-    public EnhancedLinkdTopologyProvider() { }
+    private final Timer m_loadFullTimer;
+    private final Timer m_loadNodesTimer;
+    private final Timer m_loadIpInterfacesTimer;
+    private final Timer m_loadSnmpInterfacesTimer;
+    private final Timer m_loadIpNetToMediaTimer;
+    private final Timer m_loadLldpLinksTimer;
+    private final Timer m_loadOspfLinksTimer;
+    private final Timer m_loadCdpLinksTimer;
+    private final Timer m_loadIsisLinksTimer;
+    private final Timer m_loadBridgeLinksTimer;
+    private final Timer m_loadNoLinksTimer;
+    private final Timer m_loadManualLinksTimer;
 
-    /**
-     * Used as an init-method in the OSGi blueprint
-     * @throws JAXBException
-     * @throws MalformedURLException
-     */
-    public void onInit() throws MalformedURLException, JAXBException {
-        LOG.info("init: loading enlinkd topology.");
-        try {
-            // @see http://issues.opennms.org/browse/NMS-7835
-            getTransactionOperations().execute(new TransactionCallbackWithoutResult() {
-                @Override
-                public void doInTransactionWithoutResult(TransactionStatus status) {
-                    try {
-                        load(null);
-                    } catch (MalformedURLException | JAXBException e) {
-                        throw new UndeclaredThrowableException(e);
-                    }
-                }
-            });
-        } catch (UndeclaredThrowableException e) {
-            // I'm not sure if there's a more elegant way to do this...
-            Throwable t = e.getUndeclaredThrowable();
-            if (t instanceof MalformedURLException) {
-                throw (MalformedURLException)t;
-            } else if (t instanceof JAXBException) {
-                throw (JAXBException)t;
-            }
-        }
-        LOG.info("init: enlinkd topology loaded.");
-
+    public EnhancedLinkdTopologyProvider(MetricRegistry registry) {
+        Objects.requireNonNull(registry);
+        m_loadFullTimer = registry.timer(MetricRegistry.name("enlinkd", "load", "full"));
+        m_loadNodesTimer = registry.timer(MetricRegistry.name("enlinkd", "load", "nodes"));
+        m_loadIpInterfacesTimer = registry.timer(MetricRegistry.name("enlinkd", "load", "ipinterfaces"));
+        m_loadSnmpInterfacesTimer = registry.timer(MetricRegistry.name("enlinkd", "load", "snmpinterfaces"));
+        m_loadIpNetToMediaTimer = registry.timer(MetricRegistry.name("enlinkd", "load", "ipnettomedia"));
+        m_loadLldpLinksTimer = registry.timer(MetricRegistry.name("enlinkd", "load", "links", "lldp"));
+        m_loadOspfLinksTimer = registry.timer(MetricRegistry.name("enlinkd", "load", "links", "ospf"));
+        m_loadCdpLinksTimer = registry.timer(MetricRegistry.name("enlinkd", "load", "links", "cdp"));
+        m_loadIsisLinksTimer = registry.timer(MetricRegistry.name("enlinkd", "load", "links", "isis"));
+        m_loadBridgeLinksTimer = registry.timer(MetricRegistry.name("enlinkd", "load", "links", "bridge"));
+        m_loadNoLinksTimer = registry.timer(MetricRegistry.name("enlinkd", "load", "links", "none"));
+        m_loadManualLinksTimer = registry.timer(MetricRegistry.name("enlinkd", "load", "links", "manual"));
     }
 
     @Override
     @Transactional
     public void load(String filename) throws MalformedURLException, JAXBException {
+        final Timer.Context context = m_loadFullTimer.time();
         if (filename != null) {
             LOG.warn("Filename that was specified for linkd topology will be ignored: " + filename + ", using " + getConfigurationFile() + " instead");
         }
+        try {
+            loadCompleteTopology();
+        } finally {
+            context.stop();
+        }
+    }
+
+    private void loadCompleteTopology() throws MalformedURLException, JAXBException {
         try{
             resetContainer();
         } catch (Exception e){
             LOG.error("Exception reset Container: "+e.getMessage(),e);
         }
-        
+
         Map<Integer, OnmsNode> nodemap = new HashMap<Integer, OnmsNode>();
         Map<Integer, List<OnmsIpInterface>> nodeipmap = new HashMap<Integer,  List<OnmsIpInterface>>();
         Map<Integer, OnmsIpInterface> nodeipprimarymap = new HashMap<Integer, OnmsIpInterface>();
         Map<String, List<OnmsIpInterface>> macipmap = new HashMap<String, List<OnmsIpInterface>>();
         Map<InetAddress, OnmsIpInterface> ipmap = new HashMap<InetAddress,  OnmsIpInterface>();
         Map<Integer,List<OnmsSnmpInterface>> nodesnmpmap = new HashMap<Integer, List<OnmsSnmpInterface>>();
-        
+
+        Timer.Context context = m_loadNodesTimer.time();
         try {
             LOG.info("Loading nodes");
             for (OnmsNode node: m_nodeDao.findAll()) {
@@ -490,8 +497,11 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
             LOG.info("Nodes loaded");
         } catch (Exception e){
             LOG.error("Exception getting node list: "+e.getMessage(),e);
+        } finally {
+            context.stop();
         }
 
+        context = m_loadIpInterfacesTimer.time();
         try {
             LOG.info("Loading Ip Interface");
             Set<InetAddress> duplicatedips = new HashSet<InetAddress>();
@@ -504,7 +514,7 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
                 if (ip.getIsSnmpPrimary().equals(PrimaryType.PRIMARY)) {
                     nodeipprimarymap.put(ip.getNode().getId(), ip);
                 }
-                
+
                 if (duplicatedips.contains(ip.getIpAddress())) {
                     LOG.info("Loading ip Interface, found duplicated ip {}, skipping ", InetAddressUtils.str(ip.getIpAddress()));
                     continue;
@@ -521,20 +531,31 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
             LOG.info("Ip Interface loaded");
         } catch (Exception e){
             LOG.error("Exception getting ip list: "+e.getMessage(),e);
+        } finally {
+            context.stop();
         }
 
+        context = m_loadSnmpInterfacesTimer.time();
         try {
             LOG.info("Loading Snmp Interface");
             for (OnmsSnmpInterface snmp: m_snmpInterfaceDao.findAll()) {
-                if (!nodesnmpmap.containsKey(snmp.getNode().getId()))
-                    nodesnmpmap.put(snmp.getNode().getId(), new ArrayList<OnmsSnmpInterface>());
-                nodesnmpmap.get(snmp.getNode().getId()).add(snmp);
+                // Index the SNMP interfaces by node id
+                final int nodeId = snmp.getNode().getId();
+                List<OnmsSnmpInterface> snmpinterfaces = nodesnmpmap.get(nodeId);
+                if (snmpinterfaces == null) {
+                    snmpinterfaces = new ArrayList<>();
+                    nodesnmpmap.put(nodeId, snmpinterfaces);
+                }
+                snmpinterfaces.add(snmp);
             }
             LOG.info("Snmp Interface loaded");
         } catch (Exception e){
             LOG.error("Exception getting snmp interface list: "+e.getMessage(),e);
+        } finally {
+            context.stop();
         }
 
+        context = m_loadIpNetToMediaTimer.time();
         try {
             Set<String> duplicatednodemac = new HashSet<String>();
             Map<String, Integer> mactonodemap = new HashMap<String, Integer>();
@@ -569,104 +590,132 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
             LOG.info("Ip net to media loaded");
         } catch (Exception e){
             LOG.error("Exception getting ip net to media list: "+e.getMessage(),e);
+        } finally {
+            context.stop();
         }
 
-
+        context = m_loadLldpLinksTimer.time();
         try{
             LOG.info("Loading Lldp link");
             getLldpLinks(nodemap, nodesnmpmap,nodeipprimarymap);
             LOG.info("Lldp link loaded");
         } catch (Exception e){
             LOG.error("Exception getting Lldp link: "+e.getMessage(),e);
+        } finally {
+            context.stop();
         }
+
+        context = m_loadOspfLinksTimer.time();
         try{
             LOG.info("Loading Ospf link");
             getOspfLinks(nodemap,nodesnmpmap,nodeipprimarymap);
             LOG.info("Ospf link loaded");
         } catch (Exception e){
             LOG.error("Exception getting Ospf link: "+e.getMessage(),e);
+        } finally {
+            context.stop();
         }
+
+        context = m_loadIsisLinksTimer.time();
         try{
             LOG.info("Loading Cdp link");
             getCdpLinks(nodemap,nodesnmpmap,nodeipprimarymap,ipmap);
             LOG.info("Cdp link loaded");
         } catch (Exception e){
             LOG.error("Exception getting Cdp link: "+e.getMessage(),e);
+        } finally {
+            context.stop();
         }
+
+        context = m_loadCdpLinksTimer.time();
         try{
             LOG.info("Loading IsIs link");
             getIsIsLinks(nodesnmpmap,nodeipprimarymap);
             LOG.info("IsIs link loaded");
         } catch (Exception e){
             LOG.error("Exception getting IsIs link: "+e.getMessage(),e);
+        } finally {
+            context.stop();
         }
+
+        context = m_loadBridgeLinksTimer.time();
         try{
             LOG.info("Loading Bridge link");
             getBridgeLinks(nodemap, nodesnmpmap,macipmap,nodeipmap,nodeipprimarymap);
             LOG.info("Bridge link loaded");
         } catch (Exception e){
             LOG.error("Exception getting Bridge link: "+e.getMessage(),e);
+        } finally {
+            context.stop();
         }
 
-        LOG.debug("loadtopology: adding nodes without links: " + isAddNodeWithoutLink());
-        if (isAddNodeWithoutLink()) {
-            addNodesWithoutLinks();
+        context = m_loadNoLinksTimer.time();
+        try {
+            LOG.debug("loadtopology: adding nodes without links: " + isAddNodeWithoutLink());
+            if (isAddNodeWithoutLink()) {
+                addNodesWithoutLinks(nodemap,nodeipmap,nodeipprimarymap);
+            }
+        } finally {
+            context.stop();
         }
 
-        File configFile = new File(getConfigurationFile());
-        if (configFile.exists() && configFile.canRead()) {
-            LOG.debug("loadtopology: loading topology from configuration file: " + getConfigurationFile());
-            WrappedGraph graph = getGraphFromFile(configFile);
+        context = m_loadManualLinksTimer.time();
+        try {
+            File configFile = new File(getConfigurationFile());
+            if (configFile.exists() && configFile.canRead()) {
+                LOG.debug("loadtopology: loading topology from configuration file: " + getConfigurationFile());
+                WrappedGraph graph = getGraphFromFile(configFile);
 
-            // Add all groups to the topology
-            for (WrappedVertex eachVertexInFile: graph.m_vertices) {
-                if (eachVertexInFile.group) {
-                    LOG.debug("loadtopology: adding group to topology: " + eachVertexInFile.id);
-                    if (eachVertexInFile.namespace == null) {
-                        eachVertexInFile.namespace = getVertexNamespace();
-                        LoggerFactory.getLogger(this.getClass()).warn("Setting namespace on vertex to default: {}", eachVertexInFile);
+                // Add all groups to the topology
+                for (WrappedVertex eachVertexInFile: graph.m_vertices) {
+                    if (eachVertexInFile.group) {
+                        LOG.debug("loadtopology: adding group to topology: " + eachVertexInFile.id);
+                        if (eachVertexInFile.namespace == null) {
+                            eachVertexInFile.namespace = getVertexNamespace();
+                            LoggerFactory.getLogger(this.getClass()).warn("Setting namespace on vertex to default: {}", eachVertexInFile);
+                        }
+                        if (eachVertexInFile.id == null) {
+                            LoggerFactory.getLogger(this.getClass()).warn("Invalid vertex unmarshalled from {}: {}", getConfigurationFile(), eachVertexInFile);
+                        }
+                        AbstractVertex newGroupVertex = addGroup(eachVertexInFile.id, eachVertexInFile.iconKey, eachVertexInFile.label);
+                        newGroupVertex.setIpAddress(eachVertexInFile.ipAddr);
+                        newGroupVertex.setLocked(eachVertexInFile.locked);
+                        if (eachVertexInFile.nodeID != null) newGroupVertex.setNodeID(eachVertexInFile.nodeID);
+                        if (!newGroupVertex.equals(eachVertexInFile.parent)) newGroupVertex.setParent(eachVertexInFile.parent);
+                        newGroupVertex.setSelected(eachVertexInFile.selected);
+                        newGroupVertex.setStyleName(eachVertexInFile.styleName);
+                        newGroupVertex.setTooltipText(eachVertexInFile.tooltipText);
+                        if (eachVertexInFile.x != null) newGroupVertex.setX(eachVertexInFile.x);
+                        if (eachVertexInFile.y != null) newGroupVertex.setY(eachVertexInFile.y);
                     }
-                    if (eachVertexInFile.id == null) {
-                        LoggerFactory.getLogger(this.getClass()).warn("Invalid vertex unmarshalled from {}: {}", getConfigurationFile(), eachVertexInFile);
+                }
+                for (Vertex vertex: getVertices()) {
+                    if (vertex.getParent() != null && !vertex.equals(vertex.getParent())) {
+                        LOG.debug("loadtopology: setting parent of " + vertex + " to " + vertex.getParent());
+                        setParent(vertex, vertex.getParent());
                     }
-                    AbstractVertex newGroupVertex = addGroup(eachVertexInFile.id, eachVertexInFile.iconKey, eachVertexInFile.label);
-                    newGroupVertex.setIpAddress(eachVertexInFile.ipAddr);
-                    newGroupVertex.setLocked(eachVertexInFile.locked);
-                    if (eachVertexInFile.nodeID != null) newGroupVertex.setNodeID(eachVertexInFile.nodeID);
-                    if (!newGroupVertex.equals(eachVertexInFile.parent)) newGroupVertex.setParent(eachVertexInFile.parent);
-                    newGroupVertex.setSelected(eachVertexInFile.selected);
-                    newGroupVertex.setStyleName(eachVertexInFile.styleName);
-                    newGroupVertex.setTooltipText(eachVertexInFile.tooltipText);
-                    if (eachVertexInFile.x != null) newGroupVertex.setX(eachVertexInFile.x);
-                    if (eachVertexInFile.y != null) newGroupVertex.setY(eachVertexInFile.y);
                 }
-            }
-            for (Vertex vertex: getVertices()) {
-                if (vertex.getParent() != null && !vertex.equals(vertex.getParent())) {
-                    LOG.debug("loadtopology: setting parent of " + vertex + " to " + vertex.getParent());
-                    setParent(vertex, vertex.getParent());
+                // Add all children to the specific group
+                // Attention: We ignore all other attributes, they do not need to be merged!
+                for (WrappedVertex eachVertexInFile : graph.m_vertices) {
+                    if (!eachVertexInFile.group && eachVertexInFile.parent != null) {
+                        final Vertex child = getVertex(eachVertexInFile);
+                        final Vertex parent = getVertex(eachVertexInFile.parent);
+                        if (child == null || parent == null) continue;
+                        LOG.debug("loadtopology: setting parent of " + child + " to " + parent);
+                        if (!child.equals(parent)) setParent(child, parent);
+                    }
                 }
+            } else {
+                LOG.debug("loadtopology: could not load topology configFile:" + getConfigurationFile());
             }
-            // Add all children to the specific group
-            // Attention: We ignore all other attributes, they do not need to be merged!
-            for (WrappedVertex eachVertexInFile : graph.m_vertices) {
-                if (!eachVertexInFile.group && eachVertexInFile.parent != null) {
-                    final Vertex child = getVertex(eachVertexInFile);
-                    final Vertex parent = getVertex(eachVertexInFile.parent);
-                    if (child == null || parent == null) continue;
-                    LOG.debug("loadtopology: setting parent of " + child + " to " + parent);
-                    if (!child.equals(parent)) setParent(child, parent);
-                }
-            }
-        } else {
-            LOG.debug("loadtopology: could not load topology configFile:" + getConfigurationFile());
+        } finally {
+            context.stop();
         }
-        LOG.debug("Found " + getGroups().size() + " groups");
-        LOG.debug("Found " + getVerticesWithoutGroups().size() + " vertices");
-        LOG.debug("Found " + getEdges().size() + " edges");
 
-
-
+        LOG.debug("Found {} groups", getGroups().size());
+        LOG.debug("Found {} vertices", getVerticesWithoutGroups().size());
+        LOG.debug("Found {} edges", getEdges().size());
     }
 
     protected final Vertex getOrCreateVertex(OnmsNode sourceNode,OnmsIpInterface primary) {
@@ -749,27 +798,58 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
     }
 
     private void getLldpLinks(Map<Integer, OnmsNode> nodemap, Map<Integer, List<OnmsSnmpInterface>> nodesnmpmap, Map<Integer, OnmsIpInterface> ipprimarymap) {
+        // Index the nodes by sysName
+        final Map<String, OnmsNode> nodesbysysname = new HashMap<>();
+        for (OnmsNode node: nodemap.values()) {
+            if (node.getSysName() != null) {
+                nodesbysysname.putIfAbsent(node.getSysName(), node);
+            }
+        }
+
+        // Index the LLDP elements by node id
         Map<Integer, LldpElement> lldpelementmap = new HashMap<Integer, LldpElement>();
         for (LldpElement lldpelement: m_lldpElementDao.findAll()) {
             lldpelementmap.put(lldpelement.getNode().getId(), lldpelement);
         }
+
+        // Pull all of the LLDP links and index them by remote chassis id
         List<LldpLink> allLinks = m_lldpLinkDao.findAll();
+        Map<String, List<LldpLink>> linksByRemoteChassisId = new HashMap<>();
+        for (LldpLink link : allLinks) {
+            final String remoteChassisId = link.getLldpRemChassisId();
+            List<LldpLink> linksWithRemoteChassisId = linksByRemoteChassisId.get(remoteChassisId);
+            if (linksWithRemoteChassisId == null) {
+                linksWithRemoteChassisId = new ArrayList<>();
+                linksByRemoteChassisId.put(remoteChassisId, linksWithRemoteChassisId);
+            }
+            linksWithRemoteChassisId.add(link);
+        }
+
         Set<LldpLinkDetail> combinedLinkDetails = new HashSet<LldpLinkDetail>();
         Set<Integer> parsed = new HashSet<Integer>();
         for (LldpLink sourceLink : allLinks) {
-            if (parsed.contains(sourceLink.getId()))
+            if (parsed.contains(sourceLink.getId())) {
                 continue;
+            }
             LOG.debug("loadtopology: lldp link with id '{}' link '{}' ", sourceLink.getId(), sourceLink);
             LldpElement sourceLldpElement = lldpelementmap.get(sourceLink.getNode().getId());
             LldpLink targetLink = null;
-            for (LldpLink link : allLinks) {
-                if (sourceLink.getId().intValue() == link.getId().intValue()|| parsed.contains(link.getId()))
+
+            // Limit the candidate links by only choosing those have a remote chassis id matching the chassis id of the source link
+            for (LldpLink link : linksByRemoteChassisId.getOrDefault(sourceLldpElement.getLldpChassisId(), Collections.emptyList())) {
+                if (parsed.contains(link.getId())) {
                     continue;
+                }
+
+                if (sourceLink.getId().intValue() == link.getId().intValue()) {
+                    continue;
+                }
                 LOG.debug("loadtopology: checking lldp link with id '{}' link '{}' ", link.getId(), link);
                 LldpElement element = lldpelementmap.get(link.getNode().getId());
-                //Compare the remote data to the targetNode element data
-                if (!sourceLink.getLldpRemChassisId().equals(element.getLldpChassisId()) || !link.getLldpRemChassisId().equals(sourceLldpElement.getLldpChassisId())) 
+                // Compare the chassis id on the other end of the link
+                if (!sourceLink.getLldpRemChassisId().equals(element.getLldpChassisId())) {
                     continue;
+                }
                 boolean bool1 = sourceLink.getLldpRemPortId().equals(link.getLldpPortId()) && link.getLldpRemPortId().equals(sourceLink.getLldpPortId());
                 boolean bool3 = sourceLink.getLldpRemPortIdSubType() == link.getLldpPortIdSubType() && link.getLldpRemPortIdSubType() == sourceLink.getLldpPortIdSubType();
 
@@ -779,19 +859,15 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
                     break;
                 }
             }
-            
-            if (targetLink == null) {
-                List<OnmsNode> nodes = new ArrayList<OnmsNode>();
-                for (OnmsNode node: nodemap.values()) {
-                    if (node.getSysName() != null && sourceLink.getLldpRemSysname() != null && node.getSysName().equals(sourceLink.getLldpRemSysname()))
-                        nodes.add(node);
-                }
-                if (nodes.size() == 1) {
-                    targetLink = reverseLldpLink(nodes.get(0), sourceLldpElement, sourceLink); 
+
+            if (targetLink == null && sourceLink.getLldpRemSysname() != null) {
+                final OnmsNode node = nodesbysysname.get(sourceLink.getLldpRemSysname());
+                if (node != null) {
+                    targetLink = reverseLldpLink(node, sourceLldpElement, sourceLink);
                     LOG.info("loadtopology: found lldp link using lldp rem sysname: '{}' and '{}'", sourceLink, targetLink);
                 }
             }
-            
+
             if (targetLink == null) {
                 LOG.info("loadtopology: cannot found target node for link: '{}'", sourceLink);
                 continue;
@@ -1012,6 +1088,26 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
                         edge.setTooltipText(getEdgeTooltipText(targetmac,target,targetInterfaces));
                     }
                 }
+            }
+        }
+    }
+
+    private void addNodesWithoutLinks(Map<Integer, OnmsNode> nodemap, Map<Integer, List<OnmsIpInterface>> nodeipmap, Map<Integer, OnmsIpInterface> nodeipprimarymap) {
+        for (Entry<Integer, OnmsNode> entry: nodemap.entrySet()) {
+            Integer nodeId = entry.getKey();
+            OnmsNode node = entry.getValue();
+            if (getVertex(getVertexNamespace(), nodeId.toString()) == null) {
+                LOG.debug("Adding link-less node: {}", node.getLabel());
+                // Use the primary interface, if set
+                OnmsIpInterface ipInterface = nodeipprimarymap.get(nodeId);
+                if (ipInterface == null) {
+                    // Otherwise fall back to the first interface defined
+                    List<OnmsIpInterface> ipInterfaces = nodeipmap.getOrDefault(nodeId, Collections.emptyList());
+                    if (ipInterfaces.size() > 0) {
+                        ipInterfaces.get(0);
+                    }
+                }
+                addVertices(createVertexFor(node, ipInterface));
             }
         }
     }
