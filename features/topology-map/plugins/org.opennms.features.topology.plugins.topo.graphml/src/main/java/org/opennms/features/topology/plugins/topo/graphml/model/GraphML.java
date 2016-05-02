@@ -30,6 +30,7 @@ package org.opennms.features.topology.plugins.topo.graphml.model;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class GraphML extends GraphMLElement {
     private List<GraphMLGraph> graphs = new ArrayList<>();
@@ -45,6 +46,22 @@ public class GraphML extends GraphMLElement {
 
     public List<GraphMLGraph> getGraphs() {
         return graphs;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), graphs);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        boolean equals = super.equals(obj);
+        if (equals) {
+            if (obj instanceof GraphML) {
+                return Objects.equals(graphs, ((GraphML) obj).graphs);
+            }
+        }
+        return false;
     }
 }
 

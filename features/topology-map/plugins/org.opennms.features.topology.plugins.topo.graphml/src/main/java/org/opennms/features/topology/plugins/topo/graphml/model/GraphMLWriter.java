@@ -44,6 +44,9 @@ import org.graphdrawing.graphml.KeyType;
 import org.graphdrawing.graphml.KeyTypeType;
 import org.graphdrawing.graphml.NodeType;
 
+/**
+ * Persists GraphML files.
+ */
 public class GraphMLWriter {
 
     public interface ProcessHook {
@@ -83,6 +86,8 @@ public class GraphMLWriter {
             for (GraphMLEdge eachEdge : eachGraph.getEdges()) {
                 EdgeType edgeType = new EdgeType();
                 edgeType.setId(eachEdge.getId());
+                edgeType.setSource(eachEdge.getSource().getId());
+                edgeType.setTarget(eachEdge.getTarget().getId());
                 graphType.getDataOrNodeOrEdge().add(edgeType);
                 addProperties(graphmlType, KeyForType.EDGE, eachEdge, dataType -> edgeType.getData().add(dataType));
             }
@@ -94,7 +99,7 @@ public class GraphMLWriter {
 
     private static void addProperties(GraphmlType graphmlType, KeyForType keyForType, GraphMLElement element, DataTypeAddCallback callback) throws InvalidGraphException {
         for (Map.Entry<String, Object> eachEntry : element.getProperties().entrySet()) {
-            if (eachEntry.getKey().equals(GraphMLProperties.ID)) { // skip IDs
+            if (eachEntry.getKey().equals(GraphMLElement.ID)) { // skip IDs
                 continue;
             }
             List<KeyType> definedKeys = graphmlType.getKey().stream()
@@ -142,8 +147,4 @@ public class GraphMLWriter {
         }
         throw new InvalidGraphException("Input '" + input + "'not parseable");
     }
-
-
-
-
 }

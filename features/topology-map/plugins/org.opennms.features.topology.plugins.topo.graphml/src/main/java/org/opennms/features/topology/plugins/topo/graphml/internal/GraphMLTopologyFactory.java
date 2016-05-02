@@ -67,7 +67,7 @@ public class GraphMLTopologyFactory implements ManagedServiceFactory {
 	public void updated(String pid, @SuppressWarnings("rawtypes") Dictionary properties) throws ConfigurationException {
 		String location = (String)properties.get(TOPOLOGY_LOCATION);
 		if (!m_providers.containsKey(pid)) {
-			GraphMLTopologyProvider topoProvider = new GraphMLTopologyProvider("NOT_DEFINED_YET");
+			GraphMLTopologyProvider topoProvider = new GraphMLTopologyProvider("graphml");
 			topoProvider.setTopologyLocation(location);
 			topoProvider.setMetaInfo(getMetaInfo());
 			Dictionary<String,Object> metaData = new Hashtable<>();

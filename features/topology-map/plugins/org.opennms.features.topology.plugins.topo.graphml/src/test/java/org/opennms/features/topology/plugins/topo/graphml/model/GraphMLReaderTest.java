@@ -33,25 +33,15 @@ import org.junit.Test;
 
 public class GraphMLReaderTest {
 
-    private static final String NAMESPACE = "my-namespace";
-
     @Test
     public void verifyRead() throws InvalidGraphException {
         GraphML graphML = GraphMLReader.read(getClass().getResourceAsStream("/test-graph.xml"));
-        Assert.assertEquals(NAMESPACE, graphML.getNamespace());
         Assert.assertEquals(1, graphML.getGraphs().size());
 
         GraphMLGraph graph = graphML.getGraphs().get(0);
-        Assert.assertEquals(NAMESPACE, graph.getNamespace());
 
         Assert.assertEquals(20, graph.getEdges().size());
         Assert.assertEquals(25, graph.getNodes().size());
 
-        for (GraphMLEdge eachEdge : graph.getEdges()) {
-            Assert.assertEquals(NAMESPACE, eachEdge.getNamespace());
-        }
-        for (GraphMLNode eachNode : graph.getNodes()) {
-            Assert.assertEquals(NAMESPACE, eachNode.getNamespace());
-        }
     }
 }

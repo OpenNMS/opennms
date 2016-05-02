@@ -35,23 +35,12 @@ public class GraphMLEdge extends GraphMLElement {
     private GraphMLNode target;
     private GraphMLNode source;
 
-    public GraphMLEdge() {
-    }
-
     public GraphMLNode getTarget() {
         return target;
     }
 
     public GraphMLNode getSource() {
         return source;
-    }
-
-    public String getLabel() {
-        return getProperty(GraphMLProperties.LABEL);
-    }
-
-    public String getTooltipText() {
-        return getProperty(GraphMLProperties.TOOLTIP_TEXT);
     }
 
     public void setTarget(GraphMLNode target) {
@@ -65,5 +54,24 @@ public class GraphMLEdge extends GraphMLElement {
     @Override
     public <T> T accept(GraphMLElementVisitor<T> visitor) {
         return visitor.visit(this);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), target, source);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        boolean equals = super.equals(obj);
+        if (equals) {
+            if (obj instanceof GraphMLEdge) {
+                GraphMLEdge other = (GraphMLEdge) obj;
+                equals = Objects.equals(target, other.target)
+                        && Objects.equals(source, other.source);
+                return equals;
+            }
+        }
+        return false;
     }
 }

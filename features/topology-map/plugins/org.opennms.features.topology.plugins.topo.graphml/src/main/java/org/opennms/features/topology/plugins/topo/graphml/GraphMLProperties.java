@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.plugins.topo.graphml.model;
+package org.opennms.features.topology.plugins.topo.graphml;
 
 public interface GraphMLProperties {
     String ID = "id";

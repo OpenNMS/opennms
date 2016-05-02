@@ -31,14 +31,27 @@ package org.opennms.features.topology.plugins.topo.graphml;
 import java.util.HashMap;
 
 import org.opennms.features.topology.api.topo.AbstractVertex;
+import org.opennms.features.topology.plugins.topo.graphml.model.GraphMLNode;
 
 public class GraphMLVertex extends AbstractVertex {
     private HashMap<String, Object> properties = new HashMap<>();
 
-    public GraphMLVertex(final String namespace,
-                         final String id,
-                         final String label) {
-        super(namespace, id, label);
+    protected GraphMLVertex(GraphMLNode graphMLNode) {
+        super(graphMLNode.getProperty(GraphMLProperties.NAMESPACE),
+                graphMLNode.getProperty(GraphMLProperties.ID),
+                graphMLNode.getProperty(GraphMLProperties.LABEL));
+
+        setIconKey(graphMLNode.getProperty(GraphMLProperties.ICON_KEY));
+        setIpAddress(graphMLNode.getProperty(GraphMLProperties.IP_ADDRESS));
+        setLocked(Boolean.valueOf(graphMLNode.getProperty(GraphMLProperties.LOCKED)));
+        setSelected(Boolean.valueOf(graphMLNode.getProperty(GraphMLProperties.SELECTED)));
+        setStyleName(graphMLNode.getProperty(GraphMLProperties.STYLE_NAME));
+        setTooltipText(graphMLNode.getProperty(GraphMLProperties.TOOLTIP_TEXT));
+        if (graphMLNode.getProperty(GraphMLProperties.NODE_ID) != null) {
+            setNodeID(graphMLNode.getProperty(GraphMLProperties.NODE_ID));
+        }
+
+        setProperties(graphMLNode.getProperties());
     }
 
     public void setProperties(HashMap<String, Object> properties) {

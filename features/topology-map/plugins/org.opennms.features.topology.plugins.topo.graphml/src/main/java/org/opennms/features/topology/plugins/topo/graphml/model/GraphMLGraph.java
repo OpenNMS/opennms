@@ -30,15 +30,13 @@ package org.opennms.features.topology.plugins.topo.graphml.model;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class GraphMLGraph extends GraphMLElement {
 
     private List<GraphMLEdge> edges = new ArrayList<>();
 
     private List<GraphMLNode> nodes = new ArrayList<>();
-
-    public GraphMLGraph() {
-    }
 
     public void addEdge(GraphMLEdge edge) {
         edges.add(edge);
@@ -60,8 +58,30 @@ public class GraphMLGraph extends GraphMLElement {
         return getNodes().stream().filter(node -> node.getId().equals(id)).findFirst().orElse(null);
     }
 
+    public GraphMLEdge getEdgeById(String id) {
+        return getEdges().stream().filter(edge -> edge.getId().equals(id)).findFirst().orElse(null);
+    }
+
     @Override
     public <T> T accept(GraphMLElementVisitor<T> visitor) {
         return visitor.visit(this);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), edges, nodes);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        boolean equals = super.equals(obj);
+        if (equals) {
+            if (obj instanceof GraphMLGraph) {
+                GraphMLGraph other = (GraphMLGraph) obj;
+                equals = Objects.equals(edges, other.edges) && Objects.equals(nodes, other.nodes);
+                return equals;
+            }
+        }
+        return false;
     }
 }

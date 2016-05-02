@@ -31,8 +31,11 @@ package org.opennms.features.topology.plugins.topo.graphml.model;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 public abstract class GraphMLElement {
+
+    protected static final String ID = "id";
 
     public interface GraphMLElementVisitor<T> {
         T visit(GraphMLGraph graph);
@@ -43,15 +46,12 @@ public abstract class GraphMLElement {
 
     private final Map<String, Object> properties = new HashMap<>();
 
-    public GraphMLElement() {
-    }
-
     public String getId() {
-        return getProperty(GraphMLProperties.ID);
+        return getProperty(ID);
     }
 
-    public String getNamespace() {
-        return getProperty(GraphMLProperties.NAMESPACE);
+    public void setId(String id) {
+        setProperty(ID, Objects.requireNonNull(id));
     }
 
     public <T> T getProperty(String key) {
@@ -68,4 +68,28 @@ public abstract class GraphMLElement {
 
     public abstract <T> T accept(GraphMLElementVisitor<T> visitor);
 
+    @Override
+    public int hashCode() {
+        return properties.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (obj == this) {
+            return true;
+        }
+        if (obj instanceof GraphMLElement) {
+            return Objects.equals(properties, ((GraphMLElement)obj).properties);
+        }
+        return false;
+    }
+
+    @Override
+    public String toString() {
+        return com.google.common.base.Objects.toStringHelper(getClass())
+                .add("id", getId()).toString();
+    }
 }

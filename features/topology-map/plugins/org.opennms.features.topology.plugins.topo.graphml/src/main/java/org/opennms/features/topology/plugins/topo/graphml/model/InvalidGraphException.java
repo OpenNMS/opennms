@@ -28,6 +28,9 @@
 
 package org.opennms.features.topology.plugins.topo.graphml.model;
 
+/**
+ * Exception which is thrown if the {@link GraphMLReader} or {@link GraphMLWriter} cannot process the graph.
+ */
 public class InvalidGraphException extends Exception {
     public InvalidGraphException(String errorMessage) {
         super(errorMessage);

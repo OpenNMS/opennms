@@ -63,7 +63,6 @@ public class GraphMLReader {
 
     private static final Logger LOG = LoggerFactory.getLogger(GraphMLReader.class);
 
-
     public static GraphML read(InputStream input) throws InvalidGraphException {
         return convert(JAXB.unmarshal(input, GraphmlType.class));
     }
@@ -215,7 +214,7 @@ public class GraphMLReader {
 
         // add id as property
         if (elementId != null) {
-            graphElement.setProperty(GraphMLProperties.ID, elementId);
+            graphElement.setProperty(GraphMLElement.ID, elementId);
         }
     }
 
@@ -241,43 +240,25 @@ public class GraphMLReader {
         List<String> nodeIds = new ArrayList<>();
         List<String> edgeIds = new ArrayList<>();
         List<String> graphIds = new ArrayList<>();
-        String namespace = graphML.getNamespace();
-        if (Strings.isNullOrEmpty(namespace)) {
-            throw new InvalidGraphException("No namespace defined for type 'GraphML'");
-        }
 
         for (GraphMLGraph eachGraph : graphML.getGraphs()) {
-            validateNamespace(namespace, eachGraph.getNamespace());
-            eachGraph.getNamespace();
-
             if (graphIds.contains(eachGraph.getId())) {
                 throw new InvalidGraphException("There already exists a graph with id " + eachGraph.getId());
             }
             graphIds.add(eachGraph.getId());
 
             for (GraphMLNode eachNode : eachGraph.getNodes()) {
-                validateNamespace(namespace, eachNode.getNamespace());
                 if (nodeIds.contains(eachNode.getId())) {
                     throw new InvalidGraphException("There already exists a node with id " + eachNode.getId());
                 }
                 nodeIds.add(eachNode.getId());
             }
             for (GraphMLEdge eachEdge : eachGraph.getEdges()) {
-                validateNamespace(namespace, eachEdge.getNamespace());
                 if (edgeIds.contains(eachEdge.getId())) {
                     throw new InvalidGraphException("There already exists an edge with id " + eachEdge.getId());
                 }
                 edgeIds.add(eachEdge.getId());
             }
-        }
-    }
-
-    private static void validateNamespace(String expectedNamespace, String namespace) throws InvalidGraphException {
-        if (namespace == null) {
-            throw new InvalidGraphException("No namespace defined");
-        }
-        if (expectedNamespace != null && !expectedNamespace.equals(namespace)) {
-            throw new InvalidGraphException("Namespace mismatch");
         }
     }
 }

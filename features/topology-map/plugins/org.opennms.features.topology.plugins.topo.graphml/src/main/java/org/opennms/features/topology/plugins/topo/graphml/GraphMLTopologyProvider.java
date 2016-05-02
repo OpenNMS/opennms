@@ -33,6 +33,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.xml.bind.JAXBException;
@@ -53,6 +54,8 @@ import org.opennms.features.topology.plugins.topo.graphml.model.GraphMLReader;
 import org.opennms.features.topology.plugins.topo.graphml.model.InvalidGraphException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.common.base.Strings;
 
 public class GraphMLTopologyProvider extends AbstractTopologyProvider implements GraphProvider {
     private static final Logger LOG = LoggerFactory.getLogger(GraphMLTopologyProvider.class);
@@ -75,8 +78,10 @@ public class GraphMLTopologyProvider extends AbstractTopologyProvider implements
             return;
         }
         try (InputStream input = new FileInputStream(graphMLFile)) {
-            GraphML graphML = GraphMLReader.read(input);
-            final String namespace = graphML.getNamespace();
+            final GraphML graphML = GraphMLReader.read(input);
+            validate(graphML);
+
+            final String namespace = graphML.getProperty(GraphMLProperties.NAMESPACE);
             if (!getVertexNamespace().equals(namespace)) {
                 LoggerFactory.getLogger(this.getClass()).info("Creating new vertex provider with namespace {}", namespace);
                 m_vertexProvider = new SimpleVertexProvider(namespace);
@@ -88,20 +93,8 @@ public class GraphMLTopologyProvider extends AbstractTopologyProvider implements
 
             // Add all Nodes to container
             for (GraphMLGraph eachGraph : graphML.getGraphs()) {
-                for (GraphMLNode vertex : eachGraph.getNodes()) {
-                    GraphMLVertex newVertex = new GraphMLVertex(
-                            vertex.getNamespace(),
-                            vertex.getId(),
-                            vertex.getLabel());
-                    newVertex.setIconKey(vertex.getIconKey());
-                    newVertex.setIpAddress(vertex.getIpAddr());
-                    newVertex.setLabel(vertex.getLabel());
-                    newVertex.setLocked(vertex.isLocked());
-                    if (vertex.getNodeID() != null) newVertex.setNodeID(vertex.getNodeID());
-                    newVertex.setSelected(vertex.isSelected());
-                    newVertex.setStyleName(vertex.getStyleName());
-                    newVertex.setTooltipText(vertex.getTooltipText());
-                    newVertex.setProperties(vertex.getProperties());
+                for (GraphMLNode graphMLNode : eachGraph.getNodes()) {
+                    GraphMLVertex newVertex = new GraphMLVertex(graphMLNode);
                     addVertices(newVertex);
                 }
             }
@@ -109,10 +102,10 @@ public class GraphMLTopologyProvider extends AbstractTopologyProvider implements
             // Add all Edges to container
             for (GraphMLGraph eachGraph : graphML.getGraphs()) {
                 for (org.opennms.features.topology.plugins.topo.graphml.model.GraphMLEdge eachEdge : eachGraph.getEdges()) {
-                    GraphMLEdge newEdge = createGraphMLEdge(eachEdge.getNamespace(), eachEdge.getId(), eachEdge.getSource(), eachEdge.getTarget());
-                    newEdge.setProperties(eachEdge.getProperties());
-                    newEdge.setLabel(eachEdge.getLabel());
-                    newEdge.setTooltipText(eachEdge.getTooltipText());
+                    GraphMLVertex sourceVertex = (GraphMLVertex) getVertex(getVertexNamespace(), eachEdge.getSource().getId());
+                    GraphMLVertex targetVertex = (GraphMLVertex) getVertex(getVertexNamespace(), eachEdge.getTarget().getId());
+                    GraphMLEdge newEdge = new GraphMLEdge(eachEdge, sourceVertex, targetVertex);
+                    addEdges(newEdge);
                 }
             }
         } catch (InvalidGraphException | IOException e) {
@@ -127,12 +120,6 @@ public class GraphMLTopologyProvider extends AbstractTopologyProvider implements
     @Override
     public void load(final String filename) throws MalformedURLException, JAXBException {
         refresh();
-    }
-
-    private GraphMLEdge createGraphMLEdge(String id, String namespace, GraphMLNode source, GraphMLNode target) {
-        GraphMLVertex sourceVertex = (GraphMLVertex) getVertex(source.getNamespace(), source.getId());
-        GraphMLVertex targetVertex = (GraphMLVertex) getVertex(target.getNamespace(), target.getId());
-        return new GraphMLEdge(namespace, id, sourceVertex, targetVertex);
     }
 
     @Override
@@ -156,6 +143,50 @@ public class GraphMLTopologyProvider extends AbstractTopologyProvider implements
     @Override
     public boolean contributesTo(ContentType type) {
         return false;
+    }
+
+    private void validate(GraphML graphML) throws InvalidGraphException {
+        final List<String> nodeIds = new ArrayList<>();
+        final List<String> edgeIds = new ArrayList<>();
+        final List<String> graphIds = new ArrayList<>();
+        final String namespace = graphML.getProperty(GraphMLProperties.NAMESPACE);
+
+        if (Strings.isNullOrEmpty(namespace)) {
+            throw new InvalidGraphException("No namespace defined for type 'GraphML'");
+        }
+
+        for (GraphMLGraph eachGraph : graphML.getGraphs()) {
+            validateNamespace(namespace, eachGraph.getProperty(GraphMLProperties.NAMESPACE));
+
+            if (graphIds.contains(eachGraph.getId())) {
+                throw new InvalidGraphException("There already exists a graph with id " + eachGraph.getId());
+            }
+            graphIds.add(eachGraph.getId());
+
+            for (GraphMLNode eachNode : eachGraph.getNodes()) {
+                validateNamespace(namespace, eachNode.getProperty(GraphMLProperties.NAMESPACE));
+                if (nodeIds.contains(eachNode.getId())) {
+                    throw new InvalidGraphException("There already exists a node with id " + eachNode.getId());
+                }
+                nodeIds.add(eachNode.getId());
+            }
+            for (org.opennms.features.topology.plugins.topo.graphml.model.GraphMLEdge eachEdge : eachGraph.getEdges()) {
+                validateNamespace(namespace, eachEdge.getProperty(GraphMLProperties.NAMESPACE));
+                if (edgeIds.contains(eachEdge.getId())) {
+                    throw new InvalidGraphException("There already exists an edge with id " + eachEdge.getId());
+                }
+                edgeIds.add(eachEdge.getId());
+            }
+        }
+    }
+
+    private static void validateNamespace(String expectedNamespace, String namespace) throws InvalidGraphException {
+        if (namespace == null) {
+            throw new InvalidGraphException("No namespace defined");
+        }
+        if (expectedNamespace != null && !expectedNamespace.equals(namespace)) {
+            throw new InvalidGraphException("Namespace mismatch: Expected '" + expectedNamespace + "' but got '" + namespace + "'");
+        }
     }
 
 }
