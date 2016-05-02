@@ -35,6 +35,7 @@ import java.util.concurrent.TimeUnit;
 import org.junit.Before;
 import org.junit.Test;
 import org.openqa.selenium.By;
+import org.openqa.selenium.Point;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
 
@@ -45,6 +46,8 @@ import com.google.common.collect.Lists;
  * Generic tests for the Topology UI that do not require any elements
  * to be present in the database.
  *
+ * Provides utilities that can be used for more specific tests.
+ *
  * @author jwhite
  */
 public class TopologyIT extends OpenNMSSeleniumTestCase {
@@ -53,6 +56,9 @@ public class TopologyIT extends OpenNMSSeleniumTestCase {
 
     private TopologyUiPage topologyUiPage;
 
+    /**
+     * All known layout algorithms.
+     */
     public static enum Layout {
         CIRCLE("Circle Layout"),
         D3("D3 Layout"),
@@ -74,6 +80,9 @@ public class TopologyIT extends OpenNMSSeleniumTestCase {
         }
     }
 
+    /**
+     * All known topology providers.
+     */
     public static enum TopologyProvider {
         APPLICATION("Application"),
         BUSINESSSERVICE("Business Services"),
@@ -91,13 +100,17 @@ public class TopologyIT extends OpenNMSSeleniumTestCase {
         }
     }
 
+    /**
+     * Represents a vertex that is focused using
+     * criteria listed bellow the search bar.
+     */
     public static class FocusedVertex {
-        private final OpenNMSSeleniumTestCase testCase;
+        private final TopologyUiPage ui;
         private final String namespace;
         private final String label;
 
-        public FocusedVertex(OpenNMSSeleniumTestCase testCase, String namespace, String label) {
-            this.testCase = Objects.requireNonNull(testCase);
+        public FocusedVertex(TopologyUiPage ui, String namespace, String label) {
+            this.ui = Objects.requireNonNull(ui);
             this.namespace = Objects.requireNonNull(namespace);
             this.label = Objects.requireNonNull(label);
         }
@@ -112,20 +125,57 @@ public class TopologyIT extends OpenNMSSeleniumTestCase {
 
         public void centerOnMap() {
             getElement().findElement(By.xpath("//a[@class='icon-location-arrow']")).click();
+            ui.waitForTransition();
         }
 
         public void removeFromFocus() {
             getElement().findElement(By.xpath("//a[@class='icon-remove']")).click();
+            ui.waitForTransition();
         }
 
         private WebElement getElement() {
-            return testCase.findElementByXpath("//*/table[@class='search-token-field']"
+            return ui.testCase.findElementByXpath("//*/table[@class='search-token-field']"
                     + "//div[@class='search-token-label' and contains(text(),'" + label + "')]");
         }
     }
 
     /**
-     * Class to control the inputs and workflow of the "Topology UI" Page
+     * Represents a vertex that is currently visible on the map.
+     */
+    public static class VisibleVertex {
+        private final OpenNMSSeleniumTestCase testCase;
+        private final String label;
+
+        public VisibleVertex(OpenNMSSeleniumTestCase testCase, String label) {
+            this.testCase = Objects.requireNonNull(testCase);
+            this.label = Objects.requireNonNull(label);
+        }
+
+        public String getLabel() {
+            return label;
+        }
+
+        public Point getLocation() {
+            return getElement().getLocation();
+        }
+
+        public void select() {
+            getElement().findElement(By.xpath("//*[@class='svgIconOverlay']")).click();
+        }
+
+        private WebElement getElement() {
+            return testCase.findElementByXpath("//*[@id='TopologyComponent']"
+                    + "//*[@class='vertex-label' and text()='" + label + "']/..");
+        }
+
+        @Override
+        public String toString() {
+            return String.format("VisibleVertex[label='%s']", label);
+        }
+    }
+
+    /**
+     * Controls the workflow of the "Topology UI" Page
      */
     public static class TopologyUiPage {
         private final OpenNMSSeleniumTestCase testCase;
@@ -170,6 +220,7 @@ public class TopologyIT extends OpenNMSSeleniumTestCase {
 
         public TopologyUiPage showEntireMap() {
             getShowEntireMapElement().click();
+            waitForTransition();
             return this;
         }
 
@@ -181,17 +232,55 @@ public class TopologyIT extends OpenNMSSeleniumTestCase {
         public List<FocusedVertex> getFocusedVertices() {
             final List<FocusedVertex> verticesInFocus = Lists.newArrayList();
             try {
-                // We don't want to wait around too long if there are no results
+                // Reduce the timeout so we don't wait around for too long if there are no vertices in focus
                 testCase.setImplicitWait(1, TimeUnit.SECONDS);
                 for (WebElement el : testCase.m_driver.findElements(By.xpath("//*/table[@class='search-token-field']"))) {
                     final String namespace = el.findElement(By.xpath("//div[@class='search-token-namespace']")).getText();
                     final String label = el.findElement(By.xpath("//div[@class='search-token-label']")).getText();
-                    verticesInFocus.add(new FocusedVertex(testCase, namespace, label));
+                    verticesInFocus.add(new FocusedVertex(this, namespace, label));
                 }
             } finally {
                 testCase.setImplicitWait();
             }
             return verticesInFocus;
+        }
+
+        public List<VisibleVertex> getVisibleVertices() {
+            final List<VisibleVertex> visibleVertices = Lists.newArrayList();
+            try {
+                // Reduce the timeout so we don't wait around for too long if there are no visible vertices
+                testCase.setImplicitWait(1, TimeUnit.SECONDS);
+                for (WebElement el : testCase.m_driver.findElements(By.xpath("//*[@id='TopologyComponent']//*[@class='vertex-label']"))) {
+                    visibleVertices.add(new VisibleVertex(testCase, el.getText()));
+                }
+            } finally {
+                testCase.setImplicitWait();
+            }
+            return visibleVertices;
+        }
+
+        public int getSzl() {
+            return Integer.parseInt(testCase.findElementById("szlInputLabel").getText());
+        }
+
+        public TopologyUiPage setSzl(int szl) {
+            testCase.enterText(By.id("szlInputLabel"), Integer.toString(szl));
+            waitForTransition();
+            return this;
+        }
+
+        /**
+         * This method is used to block and wait for any transitions to occur.
+         * This should be used after adding or removing vertices from focus and/or
+         * changing the SZL.
+         */
+        private void waitForTransition() {
+            try {
+                // TODO: Find a better way that does not require an explicit sleep
+                Thread.sleep(2000);
+            } catch (InterruptedException e) {
+                throw Throwables.propagate(e);
+            }
         }
 
         private WebElement getMenubarElement(String itemName) {
@@ -221,7 +310,7 @@ public class TopologyIT extends OpenNMSSeleniumTestCase {
         private boolean isMenuItemChecked(String itemName, String... path) {
             clickOnMenuItemsWithLabels(path);
 
-            final WebElement automaticRefresh = getMenubarElement("Automatic Refresh");
+            final WebElement automaticRefresh = getMenubarElement(itemName);
             final String cssClasses = automaticRefresh.getAttribute("class");
             if (cssClasses != null) {
                 if (cssClasses.contains("-unchecked")) {
@@ -248,6 +337,7 @@ public class TopologyIT extends OpenNMSSeleniumTestCase {
 
         public TopologyUiPage selectItemThatContains(String substring) {
             ui.testCase.findElementByXpath("//*/td[@role='menuitem']/div[contains(text(),'" + substring + "')]").click();
+            ui.waitForTransition();
             return ui;
         }
     }
