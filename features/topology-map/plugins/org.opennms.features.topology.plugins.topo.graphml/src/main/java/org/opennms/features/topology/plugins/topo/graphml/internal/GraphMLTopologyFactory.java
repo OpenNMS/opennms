@@ -32,6 +32,7 @@ import java.util.Dictionary;
 import java.util.Hashtable;
 import java.util.Map;
 
+import org.opennms.features.topology.api.support.VertexHopGraphProvider;
 import org.opennms.features.topology.api.topo.DefaultMetaInfo;
 import org.opennms.features.topology.api.topo.GraphProvider;
 import org.opennms.features.topology.api.topo.MetaInfo;
@@ -75,7 +76,10 @@ public class GraphMLTopologyFactory implements ManagedServiceFactory {
 			if (properties.get(LABEL) != null) {
 				metaData.put(LABEL, properties.get(LABEL));
 			}
-			ServiceRegistration<GraphProvider> registration = m_bundleContext.registerService(GraphProvider.class, topoProvider, metaData);
+
+			// wrap as hop provider
+			VertexHopGraphProvider vertexHopGraphProvider = new VertexHopGraphProvider(topoProvider);
+			ServiceRegistration<GraphProvider> registration = m_bundleContext.registerService(GraphProvider.class, vertexHopGraphProvider, metaData);
 			m_registrations.put(pid, registration);
 			m_providers.put(pid, topoProvider);
 		} else {
