@@ -3,12 +3,12 @@
 :imagesdir: ../../images
 
 [[gi-configure-opennms]]
-=== Configure OpenNMS
+=== Configure {opennms-product-name}
 
-Once _Cassandra_ is installed, _OpenNMS_ can be configured to use _Newts_.
+Once _Cassandra_ is installed, _{opennms-product-name}_ can be configured to use _Newts_.
 To enable and configure _Newts_, set the following properties in `${OPENNMS_HOME}/etc/opennms.properties`:
 
-.Configuration for _OpenNMS_
+.Configuration for _{opennms-product-name}_
 [source]
 ----
 # Configure storage strategy
@@ -42,4 +42,4 @@ describe table terms;
 describe table samples;
 ----
 
-Restart _OpenNMS_ to apply the changes.
+Restart _{opennms-product-name}_ to apply the changes.

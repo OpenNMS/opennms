@@ -49,10 +49,12 @@ public interface MeasurementFetchStrategy {
      * @param interval   duration in milliseconds, used by strategies that implement late aggregation
      * @param heartbeat  duration in milliseconds, used by strategies that implement late aggregation 
      * @param sources    array of sources - these should have unique labels
+     * @param relaxed    if <code>false</code> a missing source results in a return of <code>null</code>.
+     *                   <code>true</code> on the other hand ignores that source.
      * @return           null when a resource id or attribute cannot be found
      * @throws Exception
      */
     public FetchResults fetch(long start, long end, long step, int maxrows,
-            Long interval, Long heartbeat,
-            List<Source> sources) throws Exception;
+                              Long interval, Long heartbeat,
+                              List<Source> sources, boolean relaxed) throws Exception;
 }

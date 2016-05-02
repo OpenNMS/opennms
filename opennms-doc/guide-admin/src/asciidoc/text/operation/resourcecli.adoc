@@ -4,7 +4,7 @@
 
 === resourcecli: simple resource management tool
 
-Sometimes a user want to list or manually delete collected data (resources) of an _OpenNMS_ instance.
+Sometimes a user want to list or manually delete collected data (resources) of an _{opennms-product-name}_ instance.
 When using _RRDTool-_ or _JRobin_-based storage this can easily be achieved by traversing the `share/rrd` directory and its subdirectories.
 The several `.rrd` or `.jrb` files can be listed or deleted for individual nodes.
 When _Newts_-based storage is used the data is stored and indexed remotely on a _Cassandra_ cluster.
@@ -30,7 +30,7 @@ The command line tool accepts the following sub-commands.
 [options="header, autowidth"]
 |===
 | Sub-command     | Description
-| `list`          | Queries a _OpenNMS_ server for available resources.
+| `list`          | Queries an _{opennms-product-name}_ server for available resources.
 | `show`          | Displays details for a given resource.
 | `delete`        | Deletes a given resource and all of its child resources.
 |===
@@ -39,17 +39,17 @@ The following global options are available in each of the sub-commands of the to
 
 [options="header, autowidth"]
 |===
-| Option/Argument    | Description                                  | Default
-| `--help`           | Displays help and exit                       | false
-| `--username VALUE` | Username for connecting to _OpenNMS_         | admin
-| `--password VALUE` | Password for connecting to _OpenNMS_         | admin
-| `--url VALUE`      | URL of the _OpenNMS_ instance to connect to  | http://localhost:8980/opennms
+| Option/Argument    | Description                                                 | Default
+| `--help`           | Displays help and exit                                      | false
+| `--username VALUE` | Username for connecting to _{opennms-product-name}_         | admin
+| `--password VALUE` | Password for connecting to _{opennms-product-name}_         | admin
+| `--url VALUE`      | URL of the _{opennms-product-name}_ instance to connect to  | http://localhost:8980/opennms
 |===
 
 ==== Sub-command: list
 
-This sub-command is used to query a _OpenNMS_ instance for its available resources.
-The following example queries the local _OpenNMS_ instance with the credentials `admin/secret`.
+This sub-command is used to query an _{opennms-product-name}_ instance for its available resources.
+The following example queries the local _{opennms-product-name}_ instance with the credentials `admin/secret`.
 
 [source, shell]
 ----

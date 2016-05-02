@@ -132,6 +132,7 @@ public class RScriptExecutor {
                 Writer out = new OutputStreamWriter(fos);) {
             template.process(input.getArguments(), out);
         } catch (IOException | TemplateException e) {
+            scriptOnDisk.delete();
             throw new RScriptException("Failed to process the template.", e);
         }
 
@@ -141,6 +142,7 @@ public class RScriptExecutor {
         try {
             inputTableAsCsv = toCsv(input.getTable());
         } catch (IOException e) {
+            scriptOnDisk.delete();
             throw new RScriptException("Failed to convert the input table to CSV.", e);
         }
 
@@ -169,6 +171,7 @@ public class RScriptExecutor {
         try {
             executor.execute(cmdLine);
         } catch (IOException e) {
+            scriptOnDisk.delete();
             throw new RScriptException("An error occured while executing Rscript, or the requested script.",
                     inputTableAsCsv.toString(), stderr.toString(), stdout.toString(), e);
         }
@@ -180,6 +183,8 @@ public class RScriptExecutor {
         } catch (Throwable t) {
             throw new RScriptException("Failed to parse the script's output.",
                     inputTableAsCsv.toString(), stderr.toString(), stdout.toString(), t);
+        } finally {
+            scriptOnDisk.delete();
         }
     }
 

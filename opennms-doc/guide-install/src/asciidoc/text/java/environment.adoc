@@ -5,16 +5,16 @@
 [[gi-install-env]]
 === Java Environment
 
-To provide _Java_, applications use the `$JAVA_HOME` environment variable.
+To locate the _Java_ system files, applications typically use the `$JAVA_HOME` environment variable.
 The environment can be set for a specific user or globally for the whole system on boot time.
 
 .Example path to Java on RHEL, Debian and Microsoft Windows systems
 * RHEL: `/usr/java/jdk1.8.0_51`
 * Debian: `/usr/lib/jvm/java-8-oracle`
-* Windows Server 2012: `C:\Program Files\Java\jre1.8.0_51`
+* Microsoft Windows: `C:\Program Files\Java\jre1.8.0_51`
 
 [[gi-install-env-linux]]
-==== Set Java home in Linux
+==== Set JAVA_HOME on Linux
 
 .Option 1: Set the Java environment for the current user
 [source, bash]
@@ -31,7 +31,7 @@ export JAVA_HOME=/path/to/java
 ----
 
 [[gi-install-env-windows]]
-==== Set Java home in Windows Server 2012
+==== Set JAVA_HOME on Microsoft Windows
 
 .Option 1: Set JAVA_HOME as user specific system variable
 [source]

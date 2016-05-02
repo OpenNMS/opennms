@@ -61,6 +61,7 @@
     <jsp:param name="script" value='<script type="text/javascript" src="bower_components/angular-bootstrap/ui-bootstrap-tpls.min.js"></script>' />
     <jsp:param name="script" value='<script type="text/javascript" src="bower_components/angular-loading-bar/build/loading-bar.min.js"></script>' />
     <jsp:param name="script" value='<script type="text/javascript" src="bower_components/angular-growl-v2/build/angular-growl.min.js"></script>' />
+    <jsp:param name="script" value='<script type="text/javascript" src="bower_components/ip-address/dist/ip-address-globals.js"></script>' />
     <jsp:param name="script" value='<script type="text/javascript" src="bower_components/bootbox/bootbox.js"></script>' />
 
     <jsp:param name="script" value='<script type="text/javascript" src="scripts/app.js"></script>' />
@@ -68,10 +69,15 @@
     <jsp:param name="script" value='<script type="text/javascript" src="scripts/model/RequisitionNode.js"></script>' />
     <jsp:param name="script" value='<script type="text/javascript" src="scripts/model/Requisition.js"></script>' />
     <jsp:param name="script" value='<script type="text/javascript" src="scripts/model/RequisitionsData.js"></script>' />
+    <jsp:param name="script" value='<script type="text/javascript" src="scripts/model/QuickNode.js"></script>' />
     <jsp:param name="script" value='<script type="text/javascript" src="scripts/services/Requisitions.js"></script>' />
     <jsp:param name="script" value='<script type="text/javascript" src="scripts/services/Synchronize.js"></script>' />
     <jsp:param name="script" value='<script type="text/javascript" src="scripts/filters/startFrom.js"></script>' />
     <jsp:param name="script" value='<script type="text/javascript" src="scripts/directives/requisitionConstraints.js"></script>' />
+    <jsp:param name="script" value='<script type="text/javascript" src="scripts/controllers/Move.js"></script>' />
+    <jsp:param name="script" value='<script type="text/javascript" src="scripts/controllers/QuickAddNode.js"></script>' />
+    <jsp:param name="script" value='<script type="text/javascript" src="scripts/controllers/QuickAddNodeModal.js"></script>' />
+    <jsp:param name="script" value='<script type="text/javascript" src="scripts/controllers/CloneForeignSource.js"></script>' />
     <jsp:param name="script" value='<script type="text/javascript" src="scripts/controllers/Detector.js"></script>' />
     <jsp:param name="script" value='<script type="text/javascript" src="scripts/controllers/Policy.js"></script>' />
     <jsp:param name="script" value='<script type="text/javascript" src="scripts/controllers/ForeignSource.js"></script>' />

@@ -174,7 +174,8 @@ public class ReportDefinitionTest extends TestCase {
                                               0,
                                               null,
                                               null,
-                                              Collections.singletonList(source)))
+                                              Collections.singletonList(source),
+                                              false))
                 .andReturn(results);
 
         m_mocks.replayAll();
@@ -263,7 +264,8 @@ public class ReportDefinitionTest extends TestCase {
                                               0,
                                               null,
                                               null,
-                                              Collections.singletonList(source)))
+                                              Collections.singletonList(source),
+                                              false))
                 .andReturn(results);
 
 

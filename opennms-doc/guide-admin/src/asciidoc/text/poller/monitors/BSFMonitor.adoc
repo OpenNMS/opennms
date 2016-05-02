@@ -9,7 +9,7 @@ It's intended for a small number of custom checks or prototyping of monitors.
 ===== BSFMonitor vs SystemExecuteMonitor
 
 The _BSFMonitor_ avoids the overhead of _fork(2)_ that is used by the _SystemExecuteMonitor_.
-_BSFMonitor_ also grants access to a selection of _OpenNMS_ internal methods and classes that can be used in the script.
+_BSFMonitor_ also grants access to a selection of _{opennms-product-name}_ internal methods and classes that can be used in the script.
 
 ===== Monitor facts
 
@@ -156,7 +156,7 @@ if (testFile.exists()) {
 ===== Example Groovy
 
 To use the Groovy language an additional library is required.
-Copy a compatible +groovy-all.jar+ into to `opennms/lib` folder and restart _OpenNMS_.
+Copy a compatible +groovy-all.jar+ into to `opennms/lib` folder and restart _{opennms-product-name}_.
 That makes _Groovy_ available for the _BSFMonitor_.
 
 ._Groovy_ example `poller-configuration.xml` with default `run-type` set to `eval`
@@ -211,7 +211,7 @@ if (testFile.exists()) {
 ===== Example Jython
 
 To use the _Jython_ (_Java_ implementation of _Python_) language an additional library is required.
-Copy a compatible `jython-x.y.z.jar` into the `opennms/lib` folder and restart _OpenNMS_.
+Copy a compatible `jython-x.y.z.jar` into the `opennms/lib` folder and restart _{opennms-product-name}_.
 That makes _Jython_ available for the _BSFMonitor_.
 
 .Jython example `poller-configuration.xml` with `run-type` `exec`

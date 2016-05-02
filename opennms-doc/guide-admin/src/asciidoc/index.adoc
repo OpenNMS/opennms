@@ -9,10 +9,14 @@
 
 [[ga]]
 = Administrators Guide
-:author: Copyright (c) 2015 The OpenNMS Group, Inc.
-:revnumber: OpenNMS {opennms-version}
+:author: Copyright (c) 2015-2016 The OpenNMS Group, Inc.
+:revnumber: {opennms-product-name} {opennms-version}
 :revdate: {last-update-label} {docdatetime}
 :version-label!:
+
+[[ga-admin-datachoices]]
+== Data Choices
+include::text/datachoices.adoc[]
 
 [[ga-admin-ui]]
 == Administrative Webinterface
@@ -173,3 +177,11 @@ include::text/ticketing/introduction.adoc[]
 
 // JIRA Ticketer
 include::text/ticketing/jira.adoc[]
+
+[[ga-opennms-plugin-manager]]
+== Plugin Manager
+include::text/plugin-manager/introduction.adoc[]
+include::text/plugin-manager/setting-karaf-instance-data.adoc[]
+include::text/plugin-manager/installing-available-plugins.adoc[]
+include::text/plugin-manager/installing-licences.adoc[]
+

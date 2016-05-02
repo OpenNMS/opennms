@@ -18,6 +18,7 @@
   *
   * @requires $scope Angular local scope
   * @requires $routeParams Angular route params
+  * @requires $cookies Angular cookies
   * @requires $window Document window
   * @requires $uibModal Angular UI modal
   * @requires RequisitionsService The requisitions service
@@ -25,7 +26,7 @@
   *
   * @description The controller for manage requisitioned nodes (add/edit the nodes on a specific requisition)
   */
-  .controller('NodeController', ['$scope', '$routeParams', '$window', '$uibModal', 'RequisitionsService', 'growl', function($scope, $routeParams, $window, $uibModal, RequisitionsService, growl) {
+  .controller('NodeController', ['$scope', '$routeParams', '$cookies', '$window', '$uibModal', 'RequisitionsService', 'growl', function($scope, $routeParams, $cookies, $window, $uibModal, RequisitionsService, growl) {
 
     /**
     * @description The timing status.
@@ -159,6 +160,30 @@
     };
 
     /**
+    * @description Goes to the vertical layout page (navigation)
+    *
+    * @name NodeController:goVerticalLayout
+    * @ngdoc method
+    * @methodOf NodeController
+    */
+    $scope.goVerticalLayout = function() {
+      $cookies.put('use_requisitions_node_vertical_layout', 'true');
+      $scope.goTo('#/requisitions/' + $scope.foreignSource + '/nodes/' + $scope.foreignId + '/vertical');
+    };
+
+    /**
+    * @description Goes to the horizontal layout page (navigation)
+    *
+    * @name NodeController:goHorizontalLayout
+    * @ngdoc method
+    * @methodOf NodeController
+    */
+    $scope.goHorizontalLayout = function() {
+      $cookies.put('use_requisitions_node_vertical_layout', 'false');
+      $scope.goTo('#/requisitions/' + $scope.foreignSource + '/nodes/' + $scope.foreignId);
+    };
+
+    /**
     * @description Shows an error to the user
     *
     * @name NodeController:errorHandler
@@ -186,7 +211,7 @@
     /**
     * @description Shows the dialog for add/edit an asset field
     *
-    * @name NodeController:save
+    * @name NodeController:editAsset
     * @ngdoc method
     * @methodOf NodeController
     * @param {integer} index The index of the asset to be edited
@@ -202,6 +227,7 @@
 
       var modalInstance = $uibModal.open({
         backdrop: 'static',
+        keyboard: false,
         controller: 'AssetController',
         templateUrl: 'views/asset.html',
         resolve: {
@@ -223,7 +249,7 @@
     /**
     * @description Removes an asset from the local node
     *
-    * @name NodeController:save
+    * @name NodeController:removeAsset
     * @ngdoc method
     * @methodOf NodeController
     * @param {integer} index The index of the asset to be removed
@@ -236,7 +262,7 @@
     /**
     * @description Adds a new asset to the local node
     *
-    * @name NodeController:save
+    * @name NodeController:addAsset
     * @ngdoc method
     * @methodOf NodeController
     */
@@ -247,7 +273,7 @@
     /**
     * @description Shows a modal dialog for add/edit an interface
     *
-    * @name NodeController:save
+    * @name NodeController:editInterface
     * @ngdoc method
     * @methodOf NodeController
     * @param {integer} index The index of the interface to be edited
@@ -265,6 +291,7 @@
 
       var modalInstance = $uibModal.open({
         backdrop: 'static',
+        keyboard: false,
         controller: 'InterfaceController',
         templateUrl: 'views/interface.html',
         resolve: {
@@ -288,7 +315,7 @@
     /**
     * @description Removes an interface from the local node
     *
-    * @name NodeController:save
+    * @name NodeController:removeInterface
     * @ngdoc method
     * @methodOf NodeController
     * @param {integer} index The index of the interface to be removed
@@ -301,7 +328,7 @@
     /**
     * @description Adds a new interface to the local node
     *
-    * @name NodeController:save
+    * @name NodeController:addInterface
     * @ngdoc method
     * @methodOf NodeController
     */
@@ -312,7 +339,7 @@
     /**
     * @description Removes a category from the local node
     *
-    * @name NodeController:save
+    * @name NodeController:removeCategory
     * @ngdoc method
     * @methodOf NodeController
     * @param {integer} index The index of the category to be removed
@@ -325,7 +352,7 @@
     /**
     * @description Adds a new category to the local node
     *
-    * @name NodeController:save
+    * @name NodeController:addCategory
     * @ngdoc method
     * @methodOf NodeController
     */
@@ -347,6 +374,7 @@
       RequisitionsService.saveNode($scope.node).then(
         function() { // success
           growl.success('The node ' + $scope.node.nodeLabel + ' has been saved.');
+          $scope.foreignId = $scope.node.foreignId;
           form.$dirty = false;
         },
         $scope.errorHandler
@@ -356,7 +384,7 @@
     /**
     * @description Refresh the local node from the server
     *
-    * @name NodeController:save
+    * @name NodeController:refresh
     * @ngdoc method
     * @methodOf NodeController
     */
@@ -404,8 +432,8 @@
     */
     $scope.getPrimaryAddress = function() {
       var ip = $scope.node.getPrimaryIpAddress();
-      return ip == null ? "N/A" : ip;
-    }
+      return ip == null ? 'N/A' : ip;
+    };
 
     // Initialization of the node's page for either adding a new node or editing an existing node
 
@@ -424,6 +452,7 @@
     );
 
     // Initialize foreign-id black list (thanks to the cache, this call is not expensive)
+    // TODO: What if the cache is disabled ?
     RequisitionsService.getRequisition($scope.foreignSource).then(
       function(requisition) {
         angular.forEach(requisition.nodes, function(node) {

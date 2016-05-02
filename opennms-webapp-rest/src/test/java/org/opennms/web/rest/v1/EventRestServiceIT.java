@@ -105,10 +105,9 @@ public class EventRestServiceIT extends AbstractSpringJerseyRestTestCase {
         anticipator.anticipateEvent(e);
 
         // POST the event to the REST API
-        MockHttpServletResponse response = sendData(POST, MediaType.APPLICATION_XML, "/events", JaxbUtils.marshal(e));
+        sendData(POST, MediaType.APPLICATION_XML, "/events", JaxbUtils.marshal(e), 204);
 
         // Verify
-        assertEquals(200, response.getStatus());
         m_eventMgr.finishProcessingEvents();
         anticipator.verifyAnticipated(1000, 0, 0, 0, 0);
     }
