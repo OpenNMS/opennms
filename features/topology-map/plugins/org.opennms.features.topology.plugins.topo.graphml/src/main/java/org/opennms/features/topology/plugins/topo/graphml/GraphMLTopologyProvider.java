@@ -60,6 +60,8 @@ import com.google.common.base.Strings;
 public class GraphMLTopologyProvider extends AbstractTopologyProvider implements GraphProvider {
     private static final Logger LOG = LoggerFactory.getLogger(GraphMLTopologyProvider.class);
 
+    public static GraphML lastGraph;
+
     private File graphMLFile;
 
     public GraphMLTopologyProvider(String namespace) {
@@ -80,6 +82,7 @@ public class GraphMLTopologyProvider extends AbstractTopologyProvider implements
         try (InputStream input = new FileInputStream(graphMLFile)) {
             final GraphML graphML = GraphMLReader.read(input);
             validate(graphML);
+            lastGraph = graphML; // TODO: FIXME: HACK
 
             final String namespace = graphML.getProperty(GraphMLProperties.NAMESPACE);
             if (!getVertexNamespace().equals(namespace)) {
