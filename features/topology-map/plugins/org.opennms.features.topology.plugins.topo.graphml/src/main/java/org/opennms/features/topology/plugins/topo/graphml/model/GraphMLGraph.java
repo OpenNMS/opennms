@@ -28,38 +28,37 @@
 
 package org.opennms.features.topology.plugins.topo.graphml.model;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.Objects;
 
 public class GraphMLGraph extends GraphMLElement {
 
-    private List<GraphMLEdge> edges = new ArrayList<>();
-
-    private List<GraphMLNode> nodes = new ArrayList<>();
+    private final LinkedHashMap<String, GraphMLEdge> edgesById = new LinkedHashMap<>();
+    private final LinkedHashMap<String, GraphMLNode> nodeById = new LinkedHashMap<>();
 
     public void addEdge(GraphMLEdge edge) {
-        edges.add(edge);
+        edgesById.put(edge.getId(), edge);
     }
 
     public void addNode(GraphMLNode node) {
-        nodes.add(node);
+        nodeById.put(node.getId(), node);
     }
 
-    public List<GraphMLEdge> getEdges() {
-        return edges;
+    public Collection<GraphMLEdge> getEdges() {
+        return edgesById.values();
     }
 
-    public List<GraphMLNode> getNodes() {
-        return nodes;
+    public Collection<GraphMLNode> getNodes() {
+        return nodeById.values();
     }
 
     public GraphMLNode getNodeById(String id) {
-        return getNodes().stream().filter(node -> node.getId().equals(id)).findFirst().orElse(null);
+        return nodeById.get(id);
     }
 
     public GraphMLEdge getEdgeById(String id) {
-        return getEdges().stream().filter(edge -> edge.getId().equals(id)).findFirst().orElse(null);
+        return edgesById.get(id);
     }
 
     @Override
@@ -69,7 +68,7 @@ public class GraphMLGraph extends GraphMLElement {
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), edges, nodes);
+        return Objects.hash(super.hashCode(), edgesById, nodeById);
     }
 
     @Override
@@ -78,7 +77,7 @@ public class GraphMLGraph extends GraphMLElement {
         if (equals) {
             if (obj instanceof GraphMLGraph) {
                 GraphMLGraph other = (GraphMLGraph) obj;
-                equals = Objects.equals(edges, other.edges) && Objects.equals(nodes, other.nodes);
+                equals = Objects.equals(edgesById, other.edgesById) && Objects.equals(nodeById, other.nodeById);
                 return equals;
             }
         }
