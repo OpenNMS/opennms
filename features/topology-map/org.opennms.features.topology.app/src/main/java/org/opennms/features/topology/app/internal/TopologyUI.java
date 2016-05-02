@@ -735,6 +735,7 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
         m_lastUpdatedTimeLabel = new LastUpdatedLabel();
         m_lastUpdatedTimeLabel.setImmediate(true);
 
+        m_zoomLevelLabel.setId("szlInputLabel");
         m_zoomLevelLabel.setHeight(20, Unit.PIXELS);
         m_zoomLevelLabel.setWidth(22, Unit.PIXELS);
         m_zoomLevelLabel.addStyleName("center-text");
@@ -813,6 +814,7 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
         sliderLayout.addComponent(demagnifyBtn);
 
         m_szlOutBtn = new Button();
+        m_szlOutBtn.setId("szlOutBtn");
         m_szlOutBtn.setHtmlContentAllowed(true);
         m_szlOutBtn.setCaption(FontAwesomeIcons.Icon.arrow_down.variant());
         m_szlOutBtn.setDescription("Collapse Semantic Zoom Level");
@@ -830,6 +832,7 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
         });
 
         final Button szlInBtn = new Button();
+        szlInBtn.setId("szlInBtn");
         szlInBtn.setHtmlContentAllowed(true);
         szlInBtn.setCaption(FontAwesomeIcons.Icon.arrow_up.variant());
         szlInBtn.setDescription("Expand Semantic Zoom Level");

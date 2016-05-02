@@ -28,9 +28,14 @@
 
 package org.opennms.smoketest.topo;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.greaterThan;
+import static org.hamcrest.Matchers.hasItems;
 import static org.junit.Assert.assertEquals;
 
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -41,6 +46,7 @@ import org.opennms.smoketest.OpenNMSSeleniumTestCase;
 import org.opennms.smoketest.TopologyIT.FocusedVertex;
 import org.opennms.smoketest.TopologyIT.TopologyProvider;
 import org.opennms.smoketest.TopologyIT.TopologyUiPage;
+import org.opennms.smoketest.TopologyIT.VisibleVertex;
 
 import com.google.common.collect.Lists;
 
@@ -63,6 +69,7 @@ public class BSMTopologyIT extends OpenNMSSeleniumTestCase {
     @Test
     public void canViewVertices() throws InterruptedException {
         final List<String> businessServiceNames = createChainOfBusinessServices(5);
+
         try {
             // Open up the Topology UI and select the Business Services topology provider
             topologyUiPage.open();
@@ -71,7 +78,6 @@ public class BSMTopologyIT extends OpenNMSSeleniumTestCase {
             // Remove any existing vertices from focus
             for (FocusedVertex focusedVerted : topologyUiPage.getFocusedVertices()) {
                 focusedVerted.removeFromFocus();
-                Thread.sleep(500); // TODO: Remove this explicit sleep
             }
             assertEquals(0, topologyUiPage.getFocusedVertices().size());
 
@@ -82,7 +88,59 @@ public class BSMTopologyIT extends OpenNMSSeleniumTestCase {
             // We should have a single vertex in focus
             assertEquals(1, topologyUiPage.getFocusedVertices().size());
 
-            // TODO: Verify that the vertices appear on the layout and adjust the SZL
+            // Make sure the SZL is set to 1
+            topologyUiPage.setSzl(1);
+
+            // We should have two vertices visible
+            List<VisibleVertex> visibleVertices = topologyUiPage.getVisibleVertices();
+            assertEquals(2, visibleVertices.size());
+
+            // The two vertices visible, should have the labels from the first two business services
+            Set<String> vertexNames = visibleVertices.stream()
+                .map(v -> v.getLabel())
+                .collect(Collectors.toSet());
+            assertThat(vertexNames, hasItems(businessServiceNames.get(0), businessServiceNames.get(1)));
+
+            // Now bump up the SZL
+            topologyUiPage.setSzl(4);
+
+            // We should have five vertices visible
+            visibleVertices = topologyUiPage.getVisibleVertices();
+            assertEquals(5, visibleVertices.size());
+
+            // Sort the vertices in the same order as the business services
+            List<VisibleVertex> sortedVertices = Lists.newArrayList();
+            for (String businessService : businessServiceNames) {
+                for (VisibleVertex visibleVertex : visibleVertices) {
+                    if (businessService.equals(visibleVertex.getLabel())) {
+                        sortedVertices.add(visibleVertex);
+                        break;
+                    }
+                }
+            }
+            String msg = String.format("Could not find all vertices for: %s, found: %s, candidates: %s",
+                    businessServiceNames, sortedVertices, visibleVertices);
+            assertEquals(msg, 5, sortedVertices.size());
+
+            // By default, we should be using the hierarchical layout,
+            // so all of the vertices should be aligned horizontally
+            int expectedX = sortedVertices.get(0).getLocation().getX();
+            for (VisibleVertex visibleVertex : sortedVertices) {
+                assertEquals(visibleVertex + "is not at the expected location.", expectedX, visibleVertex.getLocation().getX());
+            }
+
+            // and every vertex should be lower than the last
+            Integer expectedY = -1;
+            for (VisibleVertex visibleVertex : sortedVertices) {
+                Integer currentY = visibleVertex.getLocation().getY();
+                assertThat(visibleVertex.toString(), currentY, greaterThan(expectedY));
+                expectedY = currentY;
+            }
+
+            // Now verify that every vertex can be selected
+            sortedVertices.stream()
+                .forEach(v -> v.select());
+
         } finally {
             deleteBusinessServices(businessServiceNames);
         }
@@ -114,10 +172,6 @@ public class BSMTopologyIT extends OpenNMSSeleniumTestCase {
         return businessServiceNames;
     }
 
-    /**
-     * TODO: Make this a utility method that just deletes everything
-     * without requiring an explicit list.
-     */
     private void deleteBusinessServices(List<String> businessServiceNames) {
         // Delete the business services we created
         bsmAdminPage.open();
