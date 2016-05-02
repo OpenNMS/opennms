@@ -16,13 +16,13 @@ describe('Controller: DetectorController', function () {
   };
 
   var detectorList = [{
-    "name": "ICMP",
-    "class": "org.opennms.netmgt.provision.detector.icmp.IcmpDetector",
-    "parameters": [{"key": "port"}, {"key": "ipMatch"}, {"key": "retries"}, {"key": "timeout"}]
+    'name': 'ICMP',
+    'class': 'org.opennms.netmgt.provision.detector.icmp.IcmpDetector',
+    'parameters': [{'key': 'port'}, {'key': 'ipMatch'}, {'key': 'retries'}, {'key': 'timeout'}]
   },{
-    "name": "SNMP",
-    "class": "org.opennms.netmgt.provision.detector.snmp.SnmpDetector",
-    "parameters": [{"key": "port"}, {"key": "vbvalue"}, {"key": "oid"}, {"key": "ipMatch"}, {"key": "retries"}, {"key": "agentConfigFactory"}, {"key": "timeout"}]
+    'name': 'SNMP',
+    'class': 'org.opennms.netmgt.provision.detector.snmp.SnmpDetector',
+    'parameters': [{'key': 'port'}, {'key': 'vbvalue'}, {'key': 'oid'}, {'key': 'ipMatch'}, {'key': 'retries'}, {'key': 'agentConfigFactory'}, {'key': 'timeout'}]
   }];
 
   function createController() {
@@ -32,7 +32,7 @@ describe('Controller: DetectorController', function () {
       RequisitionsService: mockRequisitionsService,
       detector: detector
     });
-  };
+  }
 
   beforeEach(module('onms-requisitions', function($provide) {
     $provide.value('$log', console);
@@ -67,7 +67,7 @@ describe('Controller: DetectorController', function () {
 
     scope.updateAvailableParameters(detectorList[1]);
     expect(scope.availableParameters.length).toBe(7);
-    expect(scope.availableParameters[0].key).toBe("port");
+    expect(scope.availableParameters[0].key).toBe('port');
   });
 
 });

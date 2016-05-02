@@ -13,11 +13,13 @@
   "noarg": true,
   "quotmark": "single",
   "regexp": true,
-  "undef": true,
+  "undef": false,
   "unused": true,
   "strict": true,
   "trailing": true,
   "smarttabs": true,
+  "-W041": false,
+  "eqnull": true,
   "globals": {
     "angular": false
   }

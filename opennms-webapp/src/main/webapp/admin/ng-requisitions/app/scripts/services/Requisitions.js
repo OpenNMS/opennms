@@ -1,4 +1,3 @@
-/*jshint eqnull:true */
 /*global RequisitionsData:true, Requisition:true, RequisitionNode:true */
 
 /**
