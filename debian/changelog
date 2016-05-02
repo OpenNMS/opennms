@@ -1,3 +1,10 @@
+opennms (17.1.1-3) stable; urgency=low
+
+  * New stable release.  This release is identical to 17.1.1-2 but adds support
+    for iplike-pgsql95 and iplike-pgsql96.
+
+ -- OpenNMS Release Manager <opennms@opennms.org>  Mon, 02 May 2016 13:48:57 -0500
+
 opennms (17.1.1-2) stable; urgency=low
 
   * New stable release.  This release is identical to 17.1.1-1 but adds support
