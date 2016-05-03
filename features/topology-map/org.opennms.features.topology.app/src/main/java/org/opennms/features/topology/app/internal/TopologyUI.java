@@ -454,9 +454,28 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
             infoPanelItems.add(selectionContextPanelItem); // manually add this, as it is not exposed via osgi
             infoPanelItems.add(metaInfoPanelItem); // same here
             return infoPanelItems.stream()
-                    .filter(panel -> panel.contributesTo(m_graphContainer))
+                    .filter(item -> {
+                        try {
+                            return item.contributesTo(m_graphContainer);
+                        } catch (Throwable t) {
+                            // See NMS-8394
+                            LOG.error("An error occured while determining if info panel item {} should be displayed. "
+                                    + "The component will not be displayed.", item.getClass(), t);
+                            return false;
+                        }
+                    })
                     .sorted()
-                    .map(item -> wrap(item))
+                    .map(item -> {
+                        try {
+                            return wrap(item);
+                        } catch (Throwable t) {
+                            // See NMS-8394
+                            LOG.error("An error occured while retriveing the component from info panel item {}. "
+                                    + "The component will not be displayed.", item.getClass(), t);
+                            return null;
+                        }
+                    })
+                    .filter(component -> component != null) // Skip any nulls from components with exceptions
                     .collect(Collectors.toList());
         }
 
@@ -735,6 +754,7 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
         m_lastUpdatedTimeLabel = new LastUpdatedLabel();
         m_lastUpdatedTimeLabel.setImmediate(true);
 
+        m_zoomLevelLabel.setId("szlInputLabel");
         m_zoomLevelLabel.setHeight(20, Unit.PIXELS);
         m_zoomLevelLabel.setWidth(22, Unit.PIXELS);
         m_zoomLevelLabel.addStyleName("center-text");
@@ -813,6 +833,7 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
         sliderLayout.addComponent(demagnifyBtn);
 
         m_szlOutBtn = new Button();
+        m_szlOutBtn.setId("szlOutBtn");
         m_szlOutBtn.setHtmlContentAllowed(true);
         m_szlOutBtn.setCaption(FontAwesomeIcons.Icon.arrow_down.variant());
         m_szlOutBtn.setDescription("Collapse Semantic Zoom Level");
@@ -830,6 +851,7 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
         });
 
         final Button szlInBtn = new Button();
+        szlInBtn.setId("szlInBtn");
         szlInBtn.setHtmlContentAllowed(true);
         szlInBtn.setCaption(FontAwesomeIcons.Icon.arrow_up.variant());
         szlInBtn.setDescription("Expand Semantic Zoom Level");

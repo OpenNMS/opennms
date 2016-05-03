@@ -59,7 +59,6 @@
       <artifactId>org.opennms.core.criteria</artifactId>
       <scope>provided</scope>
     </dependency>
-
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
@@ -70,13 +69,16 @@
 	   <artifactId>org.osgi.core</artifactId>
 	   <scope>provided</scope>
 	</dependency>
-	
     <dependency>
 	   <groupId>org.osgi</groupId>
 	   <artifactId>org.osgi.compendium</artifactId>
 	   <scope>provided</scope>
 	</dependency>
-
+    <dependency>
+      <groupId>org.opennms.core.test-api</groupId>
+      <artifactId>org.opennms.core.test-api.lib</artifactId>
+      <scope>test</scope>
+    </dependency>
 	<dependency>
 	   <groupId>junit</groupId>
 	   <artifactId>junit</artifactId>

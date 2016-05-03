@@ -32,7 +32,7 @@ import org.easymock.EasyMock;
 import org.junit.Test;
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.OperationContext;
-import org.opennms.features.topology.plugins.topo.simple.SimpleGraphProvider;
+import org.opennms.features.topology.api.topo.SimpleGraphProvider;
 
 import com.vaadin.data.Property;
 import com.vaadin.ui.UI;
