@@ -37,6 +37,17 @@
         </service-properties>
     </service>
 
+    <!-- Meta topology provider -->
+    <bean id="vmwareMetaTopologyProvider" class="org.opennms.features.topology.api.topo.SimpleMetaTopologyProvider">
+        <argument ref="vmwareTopologyProvider" />
+    </bean>
+
+    <service interface="org.opennms.features.topology.api.topo.MetaTopologyProvider" ref="vmwareMetaTopologyProvider">
+        <service-properties>
+            <entry key="label" value="VMware" />
+        </service-properties>
+    </service>
+
     <service>
         <interfaces>
             <value>org.opennms.features.topology.api.IconRepository</value>

@@ -29,7 +29,7 @@
 package org.opennms.features.topology.app.internal;
 
 import static org.opennms.features.topology.api.support.VertexHopGraphProvider.getWrappedVertexHopCriteria;
-import static org.opennms.features.topology.app.internal.operations.TopologySelectorOperation.createOperationForDefaultGraphProvider;
+import static org.opennms.features.topology.app.internal.operations.MetaTopologySelectorOperation.createOperationForDefaultGraphProvider;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -75,7 +75,7 @@ import org.opennms.features.topology.app.internal.CommandManager.DefaultOperatio
 import org.opennms.features.topology.app.internal.TopologyComponent.VertexUpdateListener;
 import org.opennms.features.topology.app.internal.jung.TopoFRLayoutAlgorithm;
 import org.opennms.features.topology.app.internal.operations.RedoLayoutOperation;
-import org.opennms.features.topology.app.internal.operations.TopologySelectorOperation;
+import org.opennms.features.topology.app.internal.operations.MetaTopologySelectorOperation;
 import org.opennms.features.topology.app.internal.support.CategoryHopCriteria;
 import org.opennms.features.topology.app.internal.support.FontAwesomeIcons;
 import org.opennms.features.topology.app.internal.support.IconRepositoryManager;
@@ -597,7 +597,7 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
         // If no Topology Provider was selected (due to loadUserSettings(), fallback to default
         if (m_graphContainer.getBaseTopology() == null
                 || m_graphContainer.getBaseTopology() == MergingGraphProvider.NULL_PROVIDER) {
-            TopologySelectorOperation defaultTopologySelectorOperation = createOperationForDefaultGraphProvider(m_bundlecontext, "(|(label=Enhanced Linkd)(label=Linkd))");
+            MetaTopologySelectorOperation defaultTopologySelectorOperation = createOperationForDefaultGraphProvider(m_bundlecontext, "(|(label=Enhanced Linkd)(label=Linkd))");
             Objects.requireNonNull(defaultTopologySelectorOperation, "No default GraphProvider found."); // no default found, abort
             defaultTopologySelectorOperation.execute(m_graphContainer);
         }

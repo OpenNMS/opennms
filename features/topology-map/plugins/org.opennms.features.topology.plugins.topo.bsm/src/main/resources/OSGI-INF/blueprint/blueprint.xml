@@ -36,10 +36,16 @@
             <entry key="label" value="Business Services" />
         </service-properties>
     </service>
-    <service interface="org.opennms.features.topology.api.topo.GraphProvider" ref="bsmTopologyHopProvider">
+
+    <!-- Meta topology provider -->
+    <bean id="bsmMetaTopologyProvider" class="org.opennms.features.topology.api.topo.SimpleMetaTopologyProvider">
+        <argument ref="bsmTopologyHopProvider" />
+        <property name="preferredLayout" value="Hierarchy Layout"/>
+    </bean>
+
+    <service interface="org.opennms.features.topology.api.topo.MetaTopologyProvider" ref="bsmMetaTopologyProvider">
         <service-properties>
             <entry key="label" value="Business Services" />
-            <entry key="preferredLayout" value="Hierarchy Layout" />
         </service-properties>
     </service>
 

@@ -61,6 +61,7 @@ import org.opennms.features.topology.api.topo.EdgeProvider;
 import org.opennms.features.topology.api.topo.EdgeRef;
 import org.opennms.features.topology.api.topo.EdgeStatusProvider;
 import org.opennms.features.topology.api.topo.GraphProvider;
+import org.opennms.features.topology.api.topo.MetaTopologyProvider;
 import org.opennms.features.topology.api.topo.RefComparator;
 import org.opennms.features.topology.api.topo.StatusProvider;
 import org.opennms.features.topology.api.topo.Vertex;
@@ -278,6 +279,8 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
     private VEGraph m_graph;
     private AtomicBoolean m_containerDirty = new AtomicBoolean(Boolean.TRUE);
 
+    private MetaTopologyProvider m_metaTopologyProvider;
+
     public VEProviderGraphContainer(ProviderManager providerManager) {
         m_mergedGraphProvider = new MergingGraphProvider(providerManager);
     }
@@ -354,6 +357,16 @@ public class VEProviderGraphContainer implements GraphContainer, VertexListener,
             m_layoutAlgorithm.updateLayout(this);
             fireGraphChanged();
         }
+    }
+
+    @Override
+    public MetaTopologyProvider getMetaTopologyProvider() {
+        return m_metaTopologyProvider;
+    }
+
+    @Override
+    public void setMetaTopologyProvider(MetaTopologyProvider metaGraphProvider) {
+        m_metaTopologyProvider = metaGraphProvider;
     }
 
     @Override

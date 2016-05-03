@@ -44,6 +44,7 @@ import org.opennms.features.topology.api.LayoutAlgorithm;
 import org.opennms.features.topology.api.OperationContext;
 import org.opennms.features.topology.api.topo.EdgeStatusProvider;
 import org.opennms.features.topology.api.topo.GraphProvider;
+import org.opennms.features.topology.api.topo.MetaTopologyProvider;
 import org.opennms.features.topology.api.topo.StatusProvider;
 import org.opennms.features.topology.api.topo.VertexRef;
 import org.osgi.framework.BundleContext;
@@ -52,27 +53,24 @@ import org.osgi.framework.ServiceReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class TopologySelectorOperation extends AbstractCheckedOperation {
+public class MetaTopologySelectorOperation extends AbstractCheckedOperation {
 
-	private static final Logger LOG = LoggerFactory.getLogger(TopologySelectorOperation.class);
+	private static final Logger LOG = LoggerFactory.getLogger(MetaTopologySelectorOperation.class);
 
-	private final GraphProvider m_topologyProvider;
+	private final MetaTopologyProvider m_metaTopologyProvider;
 	private final BundleContext m_bundleContext;
 	private final String m_label;
-	private final String m_preferredLayout;
 
-    public TopologySelectorOperation(BundleContext bundleContext, GraphProvider topologyProvider, Map<?,?> metadata) {
+    public MetaTopologySelectorOperation(BundleContext bundleContext, MetaTopologyProvider metaTopologyProvider, Map<?,?> metadata) {
 		this(bundleContext,
-			 topologyProvider,
-			 metadata.get("label") == null ? "No Label for Topology Provider" : (String) metadata.get("label"),
-			 (String) metadata.get("preferredLayout"));
+		     metaTopologyProvider,
+			 metadata.get("label") == null ? "No Label for Meta Topology Provider" : (String) metadata.get("label"));
     }
 
-	private TopologySelectorOperation(BundleContext bundleContext, GraphProvider graphProvider, String label, String preferredLayout) {
-		m_topologyProvider = graphProvider;
+	private MetaTopologySelectorOperation(BundleContext bundleContext, MetaTopologyProvider metaTopologyProvider, String label) {
+	    m_metaTopologyProvider = metaTopologyProvider;
 		m_bundleContext = bundleContext;
 		m_label = label;
-		m_preferredLayout = preferredLayout;
 	}
 
     public String getLabel() {
@@ -89,28 +87,35 @@ public class TopologySelectorOperation extends AbstractCheckedOperation {
 	}
 
 	/**
-	 * Changes the base topology to {@link #m_topologyProvider} and optionally resets all criteria and sets the szl to 1.
+	 * Changes the base topology to {@link #m_metaTopologyProvider} and optionally resets all criteria and sets the szl to 1.
 	 * @param container The GraphContainer.
 	 * @param resetCriteriaAndSzl Defines if the criteria and szl is reset.
      */
 	private void execute(GraphContainer container, boolean resetCriteriaAndSzl) {
-       	LOG.debug("Active provider is: {}", m_topologyProvider);
+	    LOG.debug("Active provider is: {}", m_metaTopologyProvider);
 
         // only change if provider changed
-        if(!container.getBaseTopology().equals(m_topologyProvider)) {
-			// We automatically set status providers if there are any
-			StatusProvider vertexStatusProvider = findVertexStatusProvider(m_topologyProvider);
-			EdgeStatusProvider edgeStatusProvider = findEdgeStatusProvider(m_topologyProvider);
-			LayoutAlgorithm layoutAlgorithm = findLayoutAlgorithm();
+	    final MetaTopologyProvider currentMetaTopologyProvider = container.getMetaTopologyProvider();
+        if(currentMetaTopologyProvider == null || !currentMetaTopologyProvider.equals(m_metaTopologyProvider)) {
+            container.setMetaTopologyProvider(m_metaTopologyProvider);
+
+            // Grab the default topology provider
+            final GraphProvider defaultTopologyProvider = m_metaTopologyProvider.getDefaultGraphProvider();
+            final String preferredLayout = m_metaTopologyProvider.getPreferredLayout(defaultTopologyProvider);
+
+            // We automatically set status providers if there are any
+			StatusProvider vertexStatusProvider = findVertexStatusProvider(defaultTopologyProvider);
+			EdgeStatusProvider edgeStatusProvider = findEdgeStatusProvider(defaultTopologyProvider);
+			LayoutAlgorithm layoutAlgorithm = findLayoutAlgorithm(preferredLayout);
 
             // Refresh the topology provider, triggering the vertices to load  if they have not yet loaded
-            m_topologyProvider.refresh();
+			defaultTopologyProvider.refresh();
 			container.setEdgeStatusProvider(edgeStatusProvider);
 			container.setVertexStatusProvider(vertexStatusProvider);
 			if (layoutAlgorithm != null) {
 				container.setLayoutAlgorithm(layoutAlgorithm);
 			}
-            container.setBaseTopology(m_topologyProvider);
+            container.setBaseTopology(defaultTopologyProvider);
 			if (resetCriteriaAndSzl) {
 				container.clearCriteria(); // remove all criteria
 				container.setSemanticZoomLevel(1); // reset to 1
@@ -132,8 +137,8 @@ public class TopologySelectorOperation extends AbstractCheckedOperation {
 
     @Override
     protected boolean isChecked(GraphContainer container) {
-        GraphProvider activeGraphProvider = container.getBaseTopology();
-        return m_topologyProvider.equals(activeGraphProvider);
+        final MetaTopologyProvider activeMetaTopologyProvider = container.getMetaTopologyProvider();
+        return m_metaTopologyProvider.equals(activeMetaTopologyProvider);
     }
 
     @Override
@@ -149,10 +154,10 @@ public class TopologySelectorOperation extends AbstractCheckedOperation {
         }
     }
 
-	private LayoutAlgorithm findLayoutAlgorithm() {
-		if (m_preferredLayout != null) {
+	private LayoutAlgorithm findLayoutAlgorithm(String preferredLayout) {
+		if (preferredLayout != null) {
 			// LayoutOperations are exposed as CheckedOperations
-			CheckedOperation operation = findSingleService(m_bundleContext, CheckedOperation.class, null, String.format("(operation.label=%s*)", m_preferredLayout));
+			CheckedOperation operation = findSingleService(m_bundleContext, CheckedOperation.class, null, String.format("(operation.label=%s*)", preferredLayout));
 			if (operation instanceof LayoutOperation) { // Cast it to LayoutOperation if possible
 				return ((LayoutOperation) operation).getLayoutAlgorithm();
 			}
@@ -214,8 +219,9 @@ public class TopologySelectorOperation extends AbstractCheckedOperation {
 		LOG.debug("Finding Service of type {} and additional filter criteria {} ...", clazz, query);
 		try {
 			ServiceReference<?>[] allServiceReferences = bundleContext.getAllServiceReferences(clazz.getName(), query);
-			for (ServiceReference eachServiceReference : allServiceReferences) {
-				T statusProvider = (T) bundleContext.getService(eachServiceReference);
+			for (ServiceReference<?> eachServiceReference : allServiceReferences) {
+				@SuppressWarnings("unchecked")
+                T statusProvider = (T) bundleContext.getService(eachServiceReference);
 				serviceList.add(statusProvider);
 			}
 		} catch (InvalidSyntaxException e) {
@@ -225,16 +231,15 @@ public class TopologySelectorOperation extends AbstractCheckedOperation {
 		return serviceList;
 	}
 
-	public static TopologySelectorOperation createOperationForDefaultGraphProvider(BundleContext bundleContext, String filterCriteria) {
+	public static MetaTopologySelectorOperation createOperationForDefaultGraphProvider(BundleContext bundleContext, String filterCriteria) {
 		try {
-			Collection<ServiceReference<GraphProvider>> serviceReferences = bundleContext.getServiceReferences(GraphProvider.class, filterCriteria);
+			Collection<ServiceReference<MetaTopologyProvider>> serviceReferences = bundleContext.getServiceReferences(MetaTopologyProvider.class, filterCriteria);
 			if (!serviceReferences.isEmpty()) {
-				ServiceReference reference = serviceReferences.iterator().next();
-				return new TopologySelectorOperation(
+				ServiceReference<?> reference = serviceReferences.iterator().next();
+				return new MetaTopologySelectorOperation(
 						bundleContext,
-						(GraphProvider) bundleContext.getService(reference),
-						(String) reference.getProperty("label"),
-						(String) reference.getProperty("preferredLayout"));
+						(MetaTopologyProvider) bundleContext.getService(reference),
+						(String) reference.getProperty("label"));
 			}
 		} catch (InvalidSyntaxException e) {
 			LOG.error("Could not query BundleContext for services", e);

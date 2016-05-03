@@ -81,7 +81,7 @@ xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0
         <argument ref="topologyHopProvider" />
         <argument ref="nodeDao" />
     </bean>
-    
+
     <!-- Linkd Topology Provider Services -->
     <service ref="topologyACLProvider">
     	<interfaces>
@@ -89,9 +89,17 @@ xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0
     		<value>org.opennms.features.topology.api.topo.EdgeProvider</value>
     		<value>org.opennms.features.topology.api.topo.GraphProvider</value>
     	</interfaces>
+    </service>
+
+    <!-- Meta topology provider -->
+    <bean id="enhancedLinkdMetaTopologyProvider" class="org.opennms.features.topology.api.topo.SimpleMetaTopologyProvider">
+        <argument ref="topologyACLProvider" />
+        <property name="preferredLayout" value="D3 Layout"/>
+    </bean>
+
+    <service interface="org.opennms.features.topology.api.topo.MetaTopologyProvider" ref="enhancedLinkdMetaTopologyProvider">
         <service-properties>
             <entry key="label" value="Enhanced Linkd" />
-            <entry key="preferredLayout" value="D3 Layout" />
         </service-properties>
     </service>
 
