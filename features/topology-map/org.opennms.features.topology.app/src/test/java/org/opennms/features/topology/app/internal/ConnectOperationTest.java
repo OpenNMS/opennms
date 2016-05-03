@@ -47,7 +47,7 @@ import org.opennms.features.topology.api.topo.GraphProvider;
 import org.opennms.features.topology.api.topo.SimpleLeafVertex;
 import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.features.topology.app.internal.operations.ConnectOperation;
-import org.opennms.features.topology.plugins.topo.simple.SimpleGraphProvider;
+import org.opennms.features.topology.api.topo.SimpleGraphProvider;
 
 import com.vaadin.ui.UI;
 

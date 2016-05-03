@@ -55,7 +55,7 @@ import org.opennms.features.topology.api.SelectionManager;
 import org.opennms.features.topology.api.topo.Criteria;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
-import org.opennms.features.topology.plugins.topo.simple.SimpleGraphProvider;
+import org.opennms.features.topology.api.topo.SimpleGraphProvider;
 import org.slf4j.LoggerFactory;
 
 import com.vaadin.data.Validator.InvalidValueException;
