@@ -21,9 +21,4 @@ http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0 http://aries.apache.
     	  <entry key="service.pid" value="org.opennms.features.topology.plugins.topo.graphml"/>
     	</service-properties>
     </service>
-
-    <!-- Search Provider -->
-    <bean id="graphMLSearchProvider" class="org.opennms.features.topology.plugins.topo.graphml.GraphMLSearchProvider" />
-    <service interface="org.opennms.features.topology.api.topo.SearchProvider" ref="graphMLSearchProvider" />
-
 </blueprint>

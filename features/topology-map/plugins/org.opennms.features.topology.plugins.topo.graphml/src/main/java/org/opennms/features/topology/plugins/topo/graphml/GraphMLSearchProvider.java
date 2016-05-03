@@ -30,7 +30,7 @@ package org.opennms.features.topology.plugins.topo.graphml;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
+import java.util.Objects;
 
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.topo.SearchQuery;
@@ -41,28 +41,31 @@ import org.opennms.features.topology.plugins.topo.graphml.model.GraphMLNode;
 
 public class GraphMLSearchProvider extends SimpleSearchProvider {
 
-    private Optional<GraphML> getGraph() {
-        return Optional.ofNullable(GraphMLTopologyProvider.lastGraph);
+    private final GraphMLTopologyProvider graphMLTopologyProvider;
+
+    public GraphMLSearchProvider(GraphMLTopologyProvider graphMLTopologyProvider) {
+        this.graphMLTopologyProvider = Objects.requireNonNull(graphMLTopologyProvider);
     }
 
     @Override
     public String getSearchProviderNamespace() {
-        return (String) getGraph().map(g -> g.getProperty(GraphMLProperties.NAMESPACE)).orElse(null);
+        return graphMLTopologyProvider.getVertexNamespace();
     }
 
     @Override
     public List<? extends VertexRef> queryVertices(SearchQuery searchQuery, GraphContainer container) {
-        // Search all of the nodes on all the graphs
         final List<GraphMLVertex> matchingVertices = new ArrayList<>();
-        getGraph().ifPresent(d -> {
-            d.getGraphs().stream()
+        final GraphML graphML = graphMLTopologyProvider.getGraphML();
+        if (graphML != null) {
+            // Search all of the nodes on all the graphs
+            graphML.getGraphs().stream()
                 .map(g -> g.getNodes())
                 .flatMap(l -> l.stream())
                 .filter(n -> matches(searchQuery, n))
                 .sorted((n1, n2) -> n1.getId().compareTo(n2.getId()))
                 .map(n -> new GraphMLVertex(n))
                 .forEach(v -> matchingVertices.add(v));
-        });
+        }
         return matchingVertices;
     }
 
