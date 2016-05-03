@@ -54,7 +54,7 @@ public class TopologyIT extends OpenNMSSeleniumTestCase {
 
     private static final String TOPOLOGY_UI_URL = BASE_URL + "opennms/topology";
 
-    private TopologyUiPage topologyUiPage;
+    private TopologyUIPage topologyUiPage;
 
     /**
      * All known layout algorithms.
@@ -105,11 +105,11 @@ public class TopologyIT extends OpenNMSSeleniumTestCase {
      * criteria listed bellow the search bar.
      */
     public static class FocusedVertex {
-        private final TopologyUiPage ui;
+        private final TopologyUIPage ui;
         private final String namespace;
         private final String label;
 
-        public FocusedVertex(TopologyUiPage ui, String namespace, String label) {
+        public FocusedVertex(TopologyUIPage ui, String namespace, String label) {
             this.ui = Objects.requireNonNull(ui);
             this.namespace = Objects.requireNonNull(namespace);
             this.label = Objects.requireNonNull(label);
@@ -177,19 +177,19 @@ public class TopologyIT extends OpenNMSSeleniumTestCase {
     /**
      * Controls the workflow of the "Topology UI" Page
      */
-    public static class TopologyUiPage {
+    public static class TopologyUIPage {
         private final OpenNMSSeleniumTestCase testCase;
 
-        public TopologyUiPage(OpenNMSSeleniumTestCase testCase) {
+        public TopologyUIPage(OpenNMSSeleniumTestCase testCase) {
             this.testCase = Objects.requireNonNull(testCase);
         }
 
-        public TopologyUiPage open() {
+        public TopologyUIPage open() {
             testCase.m_driver.get(TOPOLOGY_UI_URL);
             return this;
         }
  
-        public TopologyUiPage clickOnMenuItemsWithLabels(String... labels) {
+        public TopologyUIPage clickOnMenuItemsWithLabels(String... labels) {
             resetMenu();
             Actions actions = new Actions(testCase.m_driver);
             for (String label : labels) {
@@ -200,17 +200,17 @@ public class TopologyIT extends OpenNMSSeleniumTestCase {
             return this;
         }
 
-        public TopologyUiPage selectLayout(Layout layout) {
+        public TopologyUIPage selectLayout(Layout layout) {
             clickOnMenuItemsWithLabels("View", layout.getLabel());
             return this;
         }
 
-        public TopologyUiPage selectTopologyProvider(TopologyProvider topologyProvider) {
+        public TopologyUIPage selectTopologyProvider(TopologyProvider topologyProvider) {
             clickOnMenuItemsWithLabels("View", topologyProvider.getLabel());
             return this;
         }
 
-        public TopologyUiPage setAutomaticRefresh(boolean enabled) {
+        public TopologyUIPage setAutomaticRefresh(boolean enabled) {
             boolean alreadyEnabled = isMenuItemChecked("Automatic Refresh", "View");
             if ((alreadyEnabled && !enabled) || (!alreadyEnabled && enabled)) {
                 clickOnMenuItemsWithLabels("View", "Automatic Refresh");
@@ -218,15 +218,15 @@ public class TopologyIT extends OpenNMSSeleniumTestCase {
             return this;
         }
 
-        public TopologyUiPage showEntireMap() {
+        public TopologyUIPage showEntireMap() {
             getShowEntireMapElement().click();
             waitForTransition();
             return this;
         }
 
-        public TopologyUiSearchResults search(String query) {
+        public TopologyUISearchResults search(String query) {
             testCase.enterText(By.xpath("//*[@id='info-panel-component']//input[@type='text']"), query);
-            return new TopologyUiSearchResults(this);
+            return new TopologyUISearchResults(this);
         }
 
         public List<FocusedVertex> getFocusedVertices() {
@@ -263,7 +263,7 @@ public class TopologyIT extends OpenNMSSeleniumTestCase {
             return Integer.parseInt(testCase.findElementById("szlInputLabel").getText());
         }
 
-        public TopologyUiPage setSzl(int szl) {
+        public TopologyUIPage setSzl(int szl) {
             testCase.enterText(By.id("szlInputLabel"), Integer.toString(szl));
             waitForTransition();
             return this;
@@ -328,14 +328,14 @@ public class TopologyIT extends OpenNMSSeleniumTestCase {
         }
     }
 
-    public static class TopologyUiSearchResults {
-        private final TopologyUiPage ui;
+    public static class TopologyUISearchResults {
+        private final TopologyUIPage ui;
 
-        public TopologyUiSearchResults(TopologyUiPage ui) {
+        public TopologyUISearchResults(TopologyUIPage ui) {
             this.ui = Objects.requireNonNull(ui);
         }
 
-        public TopologyUiPage selectItemThatContains(String substring) {
+        public TopologyUIPage selectItemThatContains(String substring) {
             ui.testCase.findElementByXpath("//*/td[@role='menuitem']/div[contains(text(),'" + substring + "')]").click();
             ui.waitForTransition();
             return ui;
@@ -344,7 +344,7 @@ public class TopologyIT extends OpenNMSSeleniumTestCase {
 
     @Before
     public void setUp() {
-        topologyUiPage = new TopologyUiPage(this);
+        topologyUiPage = new TopologyUIPage(this);
         topologyUiPage.open();
     }
 

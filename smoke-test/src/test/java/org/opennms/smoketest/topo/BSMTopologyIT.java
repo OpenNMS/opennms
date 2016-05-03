@@ -45,7 +45,7 @@ import org.opennms.smoketest.BSMAdminIT.BsmAdminPageEditWindow;
 import org.opennms.smoketest.OpenNMSSeleniumTestCase;
 import org.opennms.smoketest.TopologyIT.FocusedVertex;
 import org.opennms.smoketest.TopologyIT.TopologyProvider;
-import org.opennms.smoketest.TopologyIT.TopologyUiPage;
+import org.opennms.smoketest.TopologyIT.TopologyUIPage;
 import org.opennms.smoketest.TopologyIT.VisibleVertex;
 
 import com.google.common.collect.Lists;
@@ -58,12 +58,12 @@ import com.google.common.collect.Lists;
 public class BSMTopologyIT extends OpenNMSSeleniumTestCase {
 
     private BsmAdminPage bsmAdminPage;
-    private TopologyUiPage topologyUiPage;
+    private TopologyUIPage topologyUiPage;
 
     @Before
     public void setUp() {
         bsmAdminPage = new BsmAdminPage(this);
-        topologyUiPage = new TopologyUiPage(this);
+        topologyUiPage = new TopologyUIPage(this);
     }
 
     @Test
