@@ -38,6 +38,7 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.Point;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 
 import com.google.common.base.Throwables;
 import com.google.common.collect.Lists;
@@ -186,6 +187,9 @@ public class TopologyIT extends OpenNMSSeleniumTestCase {
 
         public TopologyUIPage open() {
             testCase.m_driver.get(TOPOLOGY_UI_URL);
+            // Wait for the "View" menu to be clickable before returning control to the test in order
+            // to make sure that the page is fully loaded
+            testCase.wait.until(ExpectedConditions.elementToBeClickable(getCriteriaForMenubarElement("View")));
             return this;
         }
  
@@ -284,7 +288,11 @@ public class TopologyIT extends OpenNMSSeleniumTestCase {
         }
 
         private WebElement getMenubarElement(String itemName) {
-            return testCase.findElementByXpath("//span[@class='v-menubar-menuitem-caption' and text()='" + itemName + "']/parent::*");
+            return testCase.m_driver.findElement(getCriteriaForMenubarElement(itemName));
+        }
+
+        private By getCriteriaForMenubarElement(String itemName) {
+            return By.xpath("//span[@class='v-menubar-menuitem-caption' and text()='" + itemName + "']/parent::*");
         }
 
         private WebElement getShowEntireMapElement() {
