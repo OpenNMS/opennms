@@ -153,7 +153,12 @@ include::text/provisioning/detectors/SnmpDetector.adoc[]
 
 [[ga-bsm]]
 == Business Service Monitoring
-include::text/bsm/bsm-admin.adoc[]
+include::text/bsm/introduction.adoc[]
+include::text/bsm/business-service-definition.adoc[]
+include::text/bsm/edges.adoc[]
+include::text/bsm/map-functions.adoc[]
+include::text/bsm/reduce-functions.adoc[]
+include::text/bsm/bsmd.adoc[]
 
 [[ga-topology]]
 == Topology Map
@@ -205,8 +210,10 @@ include::text/ticketing/jira.adoc[]
 // TSRM Ticketer
 include::text/ticketing/tsrm.adoc[]
 
+[[ga-opennms-plugin-manager]]
 == Plugin Manager
-include::text/plugin-manager/Introduction.adoc[]
-include::text/plugin-manager/SettingKarafInstanceData.adoc[]
-include::text/plugin-manager/InstallingAvailablePlugins.adoc[]
-include::text/plugin-manager/InstallingLicences.adoc[]
+include::text/plugin-manager/introduction.adoc[]
+include::text/plugin-manager/setting-karaf-instance-data.adoc[]
+include::text/plugin-manager/installing-available-plugins.adoc[]
+include::text/plugin-manager/installing-licences.adoc[]
+

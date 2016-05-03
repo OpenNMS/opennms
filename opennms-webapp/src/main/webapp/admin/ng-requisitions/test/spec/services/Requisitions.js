@@ -1,4 +1,4 @@
-/*global RequisitionNode:true, Requisition:true */
+/*global RequisitionNode:true, Requisition:true, QuickNode:true */
 /*jshint sub:true */
 
 /**
@@ -101,34 +101,34 @@ describe('Service: RequisitionsService', function () {
   };
 
   var foreignSourceDef = {
-    "name": "add-node-to-requisition-test",
-    "date-stamp": 1458575873998,
-    "scan-interval": "1d",
-    "detectors": [{
-      "name": "ICMP",
-      "class": "org.opennms.netmgt.provision.detector.icmp.IcmpDetector",
-      "parameter": []
+    'name': 'add-node-to-requisition-test',
+    'date-stamp': 1458575873998,
+    'scan-interval': '1d',
+    'detectors': [{
+      'name': 'ICMP',
+      'class': 'org.opennms.netmgt.provision.detector.icmp.IcmpDetector',
+      'parameter': []
     }, {
-      "name": "SNMP",
-      "class": "org.opennms.netmgt.provision.detector.snmp.SnmpDetector",
-      "parameter": []
+      'name': 'SNMP',
+      'class': 'org.opennms.netmgt.provision.detector.snmp.SnmpDetector',
+      'parameter': []
     }, {
-      "name ": "HTTP-8980",
-      "class": "org.opennms.netmgt.provision.detector.simple.HttpDetector",
-      "parameter": [{
-        "key": "port",
-        "value": "8980"
+      'name ': 'HTTP-8980',
+      'class': 'org.opennms.netmgt.provision.detector.simple.HttpDetector',
+      'parameter': [{
+        'key': 'port',
+        'value': '8980'
       }]
     }],
-    "policies": [{
-      "name": "No IPs",
-      "class": "org.opennms.netmgt.provision.persist.policies.MatchingIpInterfacePolicy",
-      "parameter": [{
-        "key": "action",
-        "value": "DO_NOT_PERSIST"
+    'policies': [{
+      'name': 'No IPs',
+      'class': 'org.opennms.netmgt.provision.persist.policies.MatchingIpInterfacePolicy',
+      'parameter': [{
+        'key': 'action',
+        'value': 'DO_NOT_PERSIST'
       }, {
-        "key": "matchBehavior",
-        "value": "NO_PARAMETERS"
+        'key': 'matchBehavior',
+        'value': 'NO_PARAMETERS'
       }]
     }]
   };
@@ -145,7 +145,7 @@ describe('Service: RequisitionsService', function () {
     var requisitionsUrl = requisitionsService.internal.requisitionsUrl;
     $httpBackend.expect('GET', requisitionsUrl).respond(requisitions);
     $httpBackend.expect('GET', requisitionsUrl + '/deployed/stats').respond(deployedStats);
-    requisitionsService.getRequisitions().then(function() { console.log("Cache updated!"); });
+    requisitionsService.getRequisitions().then(function() { console.log('Cache updated!'); });
     $httpBackend.flush();
   };
 
@@ -239,9 +239,9 @@ describe('Service: RequisitionsService', function () {
     console.log('Running tests for getRequisitionNames');
 
     var requisitionNames = {
-      "count": 3,
-      "totalCount": 3, 
-      "foreign-source": [
+      'count': 3,
+      'totalCount': 3, 
+      'foreign-source': [
         requisitions['model-import'][0]['foreign-source'],
         requisitions['model-import'][1]['foreign-source'],
         requisitions['model-import'][2]['foreign-source']
@@ -358,7 +358,7 @@ describe('Service: RequisitionsService', function () {
     var importUrl = requisitionsService.internal.requisitionsUrl + '/' + foreignSource + '/import?rescanExisting=false';
     $httpBackend.expect('PUT', importUrl).respond({});
 
-    requisitionsService.synchronizeRequisition(foreignSource, "false").then(function() {}, errorHandlerFn);
+    requisitionsService.synchronizeRequisition(foreignSource, 'false').then(function() {}, errorHandlerFn);
     $httpBackend.flush();
   });
 
@@ -652,24 +652,24 @@ describe('Service: RequisitionsService', function () {
     initializeCache();
 
     var policies = { plugins: [{
-      "name": "Match IP Interface",
-      "class": "org.opennms.netmgt.provision.persist.policies.MatchingIpInterfacePolicy",
-      "parameters": [{
-        "key": "matchBehavior",
-        "required": true,
-        "options": ["ALL_PARAMETERS", "ANY_PARAMETER", "NO_PARAMETERS"]
+      'name': 'Match IP Interface',
+      'class': 'org.opennms.netmgt.provision.persist.policies.MatchingIpInterfacePolicy',
+      'parameters': [{
+        'key': 'matchBehavior',
+        'required': true,
+        'options': ['ALL_PARAMETERS', 'ANY_PARAMETER', 'NO_PARAMETERS']
       }, {
-        "key": "action",
-        "required": true,
-        "options": ["DISABLE_COLLECTION", "DISABLE_SNMP_POLL", "DO_NOT_PERSIST", "ENABLE_COLLECTION", "ENABLE_SNMP_POLL", "MANAGE", "UNMANAGE"]
+        'key': 'action',
+        'required': true,
+        'options': ['DISABLE_COLLECTION', 'DISABLE_SNMP_POLL', 'DO_NOT_PERSIST', 'ENABLE_COLLECTION', 'ENABLE_SNMP_POLL', 'MANAGE', 'UNMANAGE']
       }, {
-        "key": "hostName",
-        "required": false,
-        "options": []
+        'key': 'hostName',
+        'required': false,
+        'options': []
       }, {
-        "key": "ipAddress",
-        "required": false,
-        "options": []
+        'key': 'ipAddress',
+        'required': false,
+        'options': []
       }]
     }]};
 
@@ -694,28 +694,28 @@ describe('Service: RequisitionsService', function () {
     initializeCache();
 
     var detectors = { plugins: [{
-      "name": "ICMP",
-      "class": "org.opennms.netmgt.provision.detector.icmp.IcmpDetector",
-      "parameters": [{
-        "key": "port",
-        "required": false,
-        "options": []
+      'name': 'ICMP',
+      'class': 'org.opennms.netmgt.provision.detector.icmp.IcmpDetector',
+      'parameters': [{
+        'key': 'port',
+        'required': false,
+        'options': []
       }, {
-        "key": "ipMatch",
-        "required": false,
-        "options": []
+        'key': 'ipMatch',
+        'required': false,
+        'options': []
       }, {
-        "key": "retries",
-        "required": false,
-        "options": []
+        'key': 'retries',
+        'required': false,
+        'options': []
       }, {
-        "key": "timeout",
-        "required": false,
-        "options": []
+        'key': 'timeout',
+        'required': false,
+        'options': []
       }, {
-        "key": "serviceName",
-        "required": false,
-        "options": []
+        'key': 'serviceName',
+        'required': false,
+        'options': []
       }]
     }]};
     var url = requisitionsService.internal.foreignSourcesConfigUrl + '/detectors';
@@ -833,15 +833,15 @@ describe('Service: RequisitionsService', function () {
     console.log('Running tests for cloneForeignSourceDefinition for an unknown source');
 
     var requisitionNames = {
-      "count": 3,
-      "totalCount": 3, 
-      "foreign-source": [ 'Routers', 'Servers', 'Storage' ]
+      'count': 3,
+      'totalCount': 3, 
+      'foreign-source': [ 'Routers', 'Servers', 'Storage' ]
     };
 
     $httpBackend.expect('GET', requisitionsService.internal.requisitionNamesUrl).respond(requisitionNames);
 
     requisitionsService.cloneForeignSourceDefinition('this_does_not_exist', 'Routers').then(errorHandlerFn, function(msg) {
-      expect(msg).toBe('The source requisition this_does_not_exist does not exist.')
+      expect(msg).toBe('The source requisition this_does_not_exist does not exist.');
     });
 
     $httpBackend.flush();
@@ -851,15 +851,15 @@ describe('Service: RequisitionsService', function () {
     console.log('Running tests for cloneForeignSourceDefinition for an unknown destination');
 
     var requisitionNames = {
-      "count": 3,
-      "totalCount": 3, 
-      "foreign-source": [ 'Routers', 'Servers', 'Storage' ]
+      'count': 3,
+      'totalCount': 3, 
+      'foreign-source': [ 'Routers', 'Servers', 'Storage' ]
     };
 
     $httpBackend.expect('GET', requisitionsService.internal.requisitionNamesUrl).respond(requisitionNames);
 
     requisitionsService.cloneForeignSourceDefinition('Routers', 'this_does_not_exist').then(errorHandlerFn, function(msg) {
-      expect(msg).toBe('The target requisition this_does_not_exist does not exist.')
+      expect(msg).toBe('The target requisition this_does_not_exist does not exist.');
     });
 
     $httpBackend.flush();
@@ -869,9 +869,9 @@ describe('Service: RequisitionsService', function () {
     console.log('Running tests for cloneForeignSourceDefinition');
 
     var requisitionNames = {
-      "count": 3,
-      "totalCount": 3, 
-      "foreign-source": [ 'Routers', 'Servers', 'Storage' ]
+      'count': 3,
+      'totalCount': 3, 
+      'foreign-source': [ 'Routers', 'Servers', 'Storage' ]
     };
 
     $httpBackend.expect('GET', requisitionsService.internal.requisitionNamesUrl).respond(requisitionNames);

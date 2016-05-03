@@ -36,7 +36,6 @@ import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import javax.xml.bind.JAXB;
 import javax.xml.bind.JAXBContext;
@@ -65,8 +64,6 @@ import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsNode.NodeType;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.transaction.support.TransactionOperations;
 
 import com.google.common.base.Function;
@@ -75,8 +72,6 @@ import com.google.common.collect.Collections2;
 import com.google.common.collect.Lists;
 
 public abstract class AbstractLinkdTopologyProvider extends AbstractTopologyProvider implements GraphProvider,  SearchProvider {
-
-    private static Logger LOG = LoggerFactory.getLogger(AbstractLinkdTopologyProvider.class);
 
     public static final String TOPOLOGY_NAMESPACE_LINKD = "nodes";
     protected static final String HTML_TOOLTIP_TAG_OPEN = "<p>";
@@ -410,14 +405,7 @@ public abstract class AbstractLinkdTopologyProvider extends AbstractTopologyProv
         VertexHopGraphProvider.VertexHopCriteria criterion = null;
 
         if (node != null) {
-            String ip = null;
-            boolean isManaged= false;
-            final OnmsIpInterface ipInterface = getAddress(node.getId());
-            if (ipInterface != null && ipInterface.getIpAddress() != null) {
-                ip = ipInterface.getIpAddress().getHostAddress();
-                isManaged = ipInterface.isManaged();
-            }
-            final Vertex defaultVertex = getVertex(node.getId(),ip,node.getSysObjectId(),node.getLabel(),getNodeTooltipDefaultText(ip,node.getLabel(),isManaged,node.getSysLocation(),node.getType()));
+            final Vertex defaultVertex = createVertexFor(node, getAddress(node.getId()));
             if (defaultVertex != null) {
                 criterion = new LinkdHopCriteria(node.getNodeId(), node.getLabel(), m_nodeDao);
             }
@@ -426,16 +414,14 @@ public abstract class AbstractLinkdTopologyProvider extends AbstractTopologyProv
         return criterion;
     }
 
-    protected void addNodesWithoutLinks() {
-        Map<Integer, String> nodeLabelsById = getAllNodesNoACL();
-        for (Entry<Integer, String> nodeIdAndLabel: nodeLabelsById.entrySet()) {
-            Integer nodeId = nodeIdAndLabel.getKey();
-            String nodeLabel = nodeIdAndLabel.getValue();
-            if (getVertex(getVertexNamespace(), nodeId.toString()) == null) {
-                LOG.debug("Adding link-less node: " + nodeLabel);
-                addVertices(new DeferedNodeLeafVertex(TOPOLOGY_NAMESPACE_LINKD, nodeId, nodeLabel, this));
-            }
+    protected Vertex createVertexFor(OnmsNode node, OnmsIpInterface ipInterface) {
+        String ip = null;
+        boolean isManaged= false;
+        if (ipInterface != null && ipInterface.getIpAddress() != null) {
+            ip = ipInterface.getIpAddress().getHostAddress();
+            isManaged = ipInterface.isManaged();
         }
+        return getVertex(node.getId(),ip,node.getSysObjectId(),node.getLabel(),getNodeTooltipDefaultText(ip,node.getLabel(),isManaged,node.getSysLocation(),node.getType()));
     }
 
     private interface LinkState {
