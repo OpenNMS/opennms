@@ -22,7 +22,7 @@
     <session-timeout>-1</session-timeout>
   </session-config>
   -->
-  
+
   <!--  This is used by the Spring ContextLoaderListener <listener> below -->
   <context-param>
     <param-name>contextConfigLocation</param-name>
@@ -52,13 +52,13 @@
         <!-- WARMERGE: insert contextConfigLocation -->
     </param-value>
   </context-param>
-  
+
   <context-param>
     <param-name>parentContextKey</param-name>
     <param-value>daoContext</param-value>
   </context-param>
 
-  <!-- WARMERGE: insert context-param -->  
+  <!-- WARMERGE: insert context-param -->
 
   <filter>
     <!-- This filter has to come before other filters. -->
@@ -129,7 +129,7 @@
       <param-value>120</param-value>
     </init-param>
   </filter>
-  
+
   <filter>
     <description>Adds the refresh HTTP header to a servlet's or JSP's output so it will be automatically reloaded.</description>
     <filter-name>AddRefreshHeader-30</filter-name>
@@ -141,7 +141,7 @@
     </init-param>
   </filter>
 
-  
+
   <filter>
     <description>Stores HTTP request parameters in request attributes for later access</description>
     <filter-name>StoreRequestProperties</filter-name>
@@ -152,17 +152,17 @@
       <param-value>relativeRequestPath</param-value>
     </init-param>
   </filter>
-  
+
   <filter>
     <filter-name>openSessionInViewFilter</filter-name>
     <filter-class>org.springframework.orm.hibernate3.support.OpenSessionInViewFilter</filter-class>
   </filter>
-  
+
   <filter>
     <filter-name>eXtremeExport</filter-name>
     <filter-class>org.extremecomponents.table.filter.ExportFilter</filter-class>
   </filter>
-  
+
   <filter>
     <filter-name>UrlRewriteFilter</filter-name>
     <filter-class>org.tuckey.web.filters.urlrewrite.UrlRewriteFilter</filter-class>
@@ -208,7 +208,7 @@
     <filter-name>springSecurityFilterChain</filter-name>
     <url-pattern>/*</url-pattern>
   </filter-mapping>
-  
+
   <filter-mapping>
     <filter-name>StoreRequestProperties</filter-name>
     <url-pattern>/*</url-pattern>
@@ -277,7 +277,7 @@
   <!-- WARMERGE: insert filter-mapping -->
 
   <!--
-    This listener handles setting OpenNMS-specific context properties 
+    This listener handles setting OpenNMS-specific context properties
     and starts and stops the RTC subscription timer.
   -->
   <listener>
@@ -295,7 +295,7 @@
         <param-name>org.apache.activemq.brokerURL</param-name>
         <param-value>tcp://localhost:61616</param-value>
     </context-param>
-  
+
   <!-- WARMERGE: insert listener -->
 
   <!--
@@ -337,7 +337,7 @@
   <!-- This servlet, normally mapped to /, provides the handling for static -->
   <!-- content, OPTIONS and TRACE methods for the context.                  -->
   <!-- The following initParameters are supported:                          -->
-  <!--  
+  <!--
  *  acceptRanges      If true, range requests and responses are
  *                    supported
  *
@@ -363,9 +363,9 @@
  *
  *  resourceBase      Set to replace the context resource base
  *
- *  resourceCache     If set, this is a context attribute name, which the servlet 
- *                    will use to look for a shared ResourceCache instance. 
- *                        
+ *  resourceCache     If set, this is a context attribute name, which the servlet
+ *                    will use to look for a shared ResourceCache instance.
+ *
  *  relativeResourceBase
  *                    Set with a pathname relative to the base of the
  *                    servlet context root. Useful for only serving static content out
@@ -496,7 +496,7 @@
 	<servlet-class>org.springframework.js.resource.ResourceServlet</servlet-class>
 	<load-on-startup>0</load-on-startup>
    </servlet>
-	
+
    <!-- Map all /resources requests to the Resource Servlet for handling -->
    <servlet-mapping>
 		<servlet-name>Resources Servlet</servlet-name>
@@ -511,8 +511,8 @@
   <servlet>
     <servlet-name>discoveryScan</servlet-name>
     <servlet-class>org.opennms.web.admin.discovery.DiscoveryScanServlet</servlet-class>
-  </servlet>  
-  
+  </servlet>
+
   <servlet>
     <servlet-name>importAssets</servlet-name>
     <servlet-class>org.opennms.web.asset.ImportAssetsServlet</servlet-class>
@@ -542,7 +542,7 @@
       <description>Redirect to this sibling URL after changing the parameter set.</description>
       <param-name>redirect.url</param-name>
       <param-value>list</param-value>
-    </init-param>    
+    </init-param>
   </servlet>
   <servlet>
     <servlet-name>queryAlarm</servlet-name>
@@ -551,28 +551,28 @@
       <description>Redirect to this sibling URL after changing the parameter set.</description>
       <param-name>redirect.url</param-name>
       <param-value>list.htm</param-value>
-    </init-param>    
+    </init-param>
   </servlet>
-  
-  
+
+
   <!-- Servlet for updating the notification status -->
   <servlet>
     <servlet-name>updateNotificationStatus</servlet-name>
     <servlet-class>org.opennms.web.admin.notification.UpdateNotifdStatusServlet</servlet-class>
   </servlet>
-  
+
   <!-- Servlet for building destination paths from a wizard -->
   <servlet>
     <servlet-name>destinationWizard</servlet-name>
     <servlet-class>org.opennms.web.admin.notification.DestinationWizardServlet</servlet-class>
   </servlet>
-  
+
   <!-- Servlet for building notifications from a wizard -->
   <servlet>
     <servlet-name>notificationWizard</servlet-name>
     <servlet-class>org.opennms.web.admin.notification.noticeWizard.NotificationWizardServlet</servlet-class>
   </servlet>
-  
+
   <!-- Servlets for configuration of users groups -->
   <servlet>
     <!-- servlet for passing parameters to the user modify jsp -->
@@ -604,7 +604,7 @@
     <servlet-name>deleteUser</servlet-name>
     <servlet-class>org.opennms.web.admin.users.DeleteUserServlet</servlet-class>
   </servlet>
-  
+
   <servlet>
     <!-- servlet for adding duty schedules to a user's notification info-->
     <servlet-name>addDutySchedules</servlet-name>
@@ -615,17 +615,17 @@
     <servlet-name>removeDutySchedules</servlet-name>
     <servlet-class>org.opennms.web.admin.users.RemoveDutySchedulesServlet</servlet-class>
   </servlet>
-  
+
   <servlet>
   	<servlet-name>admin-roles</servlet-name>
   	<servlet-class>org.opennms.web.admin.roles.AdminRoleServlet</servlet-class>
   </servlet>
-  
+
   <servlet>
   	<servlet-name>user-roles</servlet-name>
   	<servlet-class>org.opennms.web.admin.roles.UserRoleServlet</servlet-class>
   </servlet>
-  
+
 <!-- Servlets for user account self-service -->
   <!-- servlet for self-service password change entry point-->
   <servlet>
@@ -633,7 +633,7 @@
     <servlet-class>org.opennms.web.account.selfService.NewPasswordEntryServlet</servlet-class>
   </servlet>
    <!-- servlet for self-service password change action -->
-  <servlet>   
+  <servlet>
     <servlet-name>newPasswordAction</servlet-name>
     <servlet-class>org.opennms.web.account.selfService.NewPasswordActionServlet</servlet-class>
   </servlet>
@@ -647,7 +647,7 @@
     <servlet-name>newPasswordAction</servlet-name>
     <url-pattern>/account/selfService/newPasswordAction</url-pattern>
   </servlet-mapping>
-  
+
   <servlet>
     <servlet-name>nodeLabelChange</servlet-name>
     <servlet-class>org.opennms.web.nodelabel.NodeLabelChangeServlet</servlet-class>
@@ -721,13 +721,13 @@
     <servlet-name>snmpConfig</servlet-name>
     <servlet-class>org.opennms.web.admin.nodeManagement.SnmpConfigServlet</servlet-class>
   </servlet>
-  
+
   <!--servlet for updating the notify flag in the ifservices table -->
   <servlet>
         <servlet-name>updateServiceNotify</servlet-name>
         <servlet-class>org.opennms.web.admin.notification.ServiceNoticeUpdateServlet</servlet-class>
   </servlet>
-  
+
   <servlet>
     <servlet-name>rtcPost</servlet-name>
     <servlet-class>org.opennms.web.category.RTCPostServlet</servlet-class>
@@ -740,7 +740,7 @@
     <!-- Load on startup so that we can immediately start processing RTC POSTs -->
     <load-on-startup>1</load-on-startup>
   </servlet>
-  
+
   <servlet>
     <servlet-name>sendMail</servlet-name>
     <servlet-class>org.opennms.web.mail.MailerServlet</servlet-class>
@@ -753,7 +753,7 @@
       <description>Redirect to this sibling URL on success.</description>
       <param-name>mail.program</param-name>
       <param-value>/bin/mail</param-value>
-    </init-param>    
+    </init-param>
   </servlet>
 
   <servlet>
@@ -778,7 +778,7 @@
     <servlet-name>invClogin</servlet-name>
     <servlet-class>org.opennms.web.inventory.InvCloginServlet</servlet-class>
   </servlet-->
-  
+
   <servlet>
   	<servlet-name>purdyChart</servlet-name>
   	<servlet-class>org.opennms.web.graph.PurdyChartServlet</servlet-class>
@@ -787,7 +787,7 @@
   		<param-value>sample-bar-chart</param-value>
   	</init-param>
   </servlet>
- 
+
   <servlet>
         <servlet-name>dispatcher</servlet-name>
         <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
@@ -795,18 +795,18 @@
   </servlet>
 
   <!-- desktop graph servlet mapping -->
-  <!-- desktop survey report servlet mapping -->  
-  
+  <!-- desktop survey report servlet mapping -->
+
   <servlet-mapping>
   	<servlet-name>purdyChart</servlet-name>
   	<url-pattern>/charts</url-pattern>
   </servlet-mapping>
-  
+
   <servlet-mapping>
     <servlet-name>queryEvent</servlet-name>
     <url-pattern>/event/query</url-pattern>
   </servlet-mapping>
-  
+
   <servlet-mapping>
     <servlet-name>queryAlarm</servlet-name>
     <url-pattern>/alarm/query</url-pattern>
@@ -817,19 +817,19 @@
     <servlet-name>updateNotificationStatus</servlet-name>
     <url-pattern>/admin/updateNotificationStatus</url-pattern>
   </servlet-mapping>
-  
+
   <!-- servlet mapping for the destination wizard servlet -->
   <servlet-mapping>
     <servlet-name>destinationWizard</servlet-name>
     <url-pattern>/admin/notification/destinationWizard</url-pattern>
   </servlet-mapping>
-  
+
   <!-- servlet mapping for the notification wizard servlet -->
   <servlet-mapping>
     <servlet-name>notificationWizard</servlet-name>
     <url-pattern>/admin/notification/noticeWizard/notificationWizard</url-pattern>
   </servlet-mapping>
-    
+
   <!-- servlet mapping for configuring users groups -->
   <!-- user configuration servlets -->
   <!-- converted to Controller -->
@@ -880,7 +880,7 @@
       <url-pattern>/support/groups/setACLUserGroups</url-pattern>
   </servlet-mapping>
   <!-- end -->
-  
+
   <servlet-mapping>
     <servlet-name>admin-roles</servlet-name>
     <url-pattern>/admin/userGroupView/roles</url-pattern>
@@ -897,7 +897,7 @@
     <servlet-name>nodeLabelChange</servlet-name>
     <url-pattern>/admin/nodeLabelChange</url-pattern>
   </servlet-mapping>
-  
+
     <!--servlet mapping for restart discovery servlet-->
   <servlet-mapping>
     <servlet-name>actionDiscovery</servlet-name>
@@ -907,7 +907,7 @@
     <servlet-name>discoveryScan</servlet-name>
     <url-pattern>/admin/discovery/scanConfig</url-pattern>
   </servlet-mapping>
-  
+
   <servlet-mapping>
     <servlet-name>modifyAsset</servlet-name>
     <url-pattern>/asset/modifyAsset</url-pattern>
@@ -920,7 +920,7 @@
     <servlet-name>exportAssets</servlet-name>
     <url-pattern>/admin/asset/assets.csv</url-pattern>
   </servlet-mapping>
-  
+
   <servlet-mapping>
     <servlet-name>getInterfaces</servlet-name>
     <url-pattern>/admin/nodemanagement/getInterfaces</url-pattern>
@@ -982,7 +982,7 @@
         <servlet-name>updateServiceNotify</servlet-name>
         <url-pattern>/admin/updateServiceNotify</url-pattern>
   </servlet-mapping>
-  
+
   <servlet-mapping>
     <servlet-name>rtcPost</servlet-name>
     <url-pattern>/rtc/post/*</url-pattern>
@@ -1001,12 +1001,12 @@
     <servlet-name>nodeRescan</servlet-name>
     <url-pattern>/element/rescan</url-pattern>
   </servlet-mapping>
-  
+
    <servlet-mapping>
     <servlet-name>ManageSnmpIntf</servlet-name>
     <url-pattern>/element/ManageSnmpIntf</url-pattern>
   </servlet-mapping>
-  
+
   <servlet-mapping>
     <servlet-name>gwtDispatcher</servlet-name>
     <url-pattern>*.gwt</url-pattern>
@@ -1039,7 +1039,7 @@
   <servlet-mapping>
     <servlet-name>dispatcher</servlet-name>
     <url-pattern>/alarm/acknowledgeByFilter</url-pattern>
-  </servlet-mapping>  
+  </servlet-mapping>
   <servlet-mapping>
     <servlet-name>dispatcher</servlet-name>
     <url-pattern>/alarm/changeSeverity</url-pattern>
@@ -1100,14 +1100,14 @@
         <servlet-name>dispatcher</servlet-name>
         <url-pattern>/frontPage.htm</url-pattern>
   </servlet-mapping>
-    
+
   <servlet-mapping>
         <servlet-name>dispatcher</servlet-name>
         <url-pattern>/graph/graph.png</url-pattern>
   </servlet-mapping>
 
-  <!-- WARMERGE: insert servlet -->  
-  <!-- WARMERGE: insert servlet-mapping -->  
+  <!-- WARMERGE: insert servlet -->
+  <!-- WARMERGE: insert servlet-mapping -->
 
   <error-page>
     <exception-type>org.opennms.web.category.CategoryNotFoundException</exception-type>
@@ -1152,7 +1152,7 @@
   <error-page>
     <exception-type>org.opennms.netmgt.events.api.EventProxyException</exception-type>
     <location>/errors/eventproxyexception.jsp</location>
-  </error-page>  
+  </error-page>
   <error-page>
     <exception-type>org.opennms.web.admin.nodeManagement.NoManagedInterfacesException</exception-type>
     <location>/errors/nomanagedinterfaces.jsp</location>
@@ -1160,21 +1160,21 @@
   <error-page>
     <exception-type>java.lang.Throwable</exception-type>
     <location>/errors/unknownexception.jsp</location>
-  </error-page>  
+  </error-page>
   <error-page>
     <error-code>500</error-code>
     <location>/errors/unknownexception.jsp</location>
-  </error-page>  
+  </error-page>
   <error-page>
     <error-code>404</error-code>
     <location>/errors/pagenotfound.jsp</location>
   </error-page>
-  
+
   <!-- the welcome-file elements need to point at a file that exists or
        a non-wildcard url-pattern in a servlet-mapping element. -->
   <welcome-file-list>
     <welcome-file>frontPage.jsp</welcome-file>
   </welcome-file-list>
-  
+
 </web-app>
 
