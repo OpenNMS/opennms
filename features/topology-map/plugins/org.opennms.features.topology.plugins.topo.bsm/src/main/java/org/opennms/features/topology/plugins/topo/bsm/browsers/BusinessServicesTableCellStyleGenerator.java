@@ -28,6 +28,8 @@
 
 package org.opennms.features.topology.plugins.topo.bsm.browsers;
 
+import java.util.NoSuchElementException;
+
 import org.opennms.netmgt.bsm.service.BusinessServiceManager;
 import org.opennms.netmgt.bsm.service.model.BusinessService;
 import org.opennms.netmgt.bsm.service.model.Status;
@@ -43,9 +45,13 @@ public class BusinessServicesTableCellStyleGenerator implements Table.CellStyleG
     public String getStyle(Table source, Object itemId, Object propertyId) {
         if (propertyId == null) {
             Long serviceId = (Long) itemId;
-            BusinessService businessService = businessServiceManager.getBusinessServiceById(serviceId);
-            Status status = businessService.getOperationalStatus();
-            return String.format("alarm-%s", status.name().toLowerCase());
+            try {
+                BusinessService businessService = businessServiceManager.getBusinessServiceById(serviceId);
+                Status status = businessService.getOperationalStatus();
+                return String.format("alarm-%s", status.name().toLowerCase());
+            } catch (NoSuchElementException nse) {
+                return null;
+            }
         }
         return null;
     }

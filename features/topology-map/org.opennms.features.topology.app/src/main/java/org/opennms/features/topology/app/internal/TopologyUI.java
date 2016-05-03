@@ -453,9 +453,28 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
             infoPanelItems.add(selectionContextPanelItem); // manually add this, as it is not exposed via osgi
             infoPanelItems.add(metaInfoPanelItem); // same here
             return infoPanelItems.stream()
-                    .filter(panel -> panel.contributesTo(m_graphContainer))
+                    .filter(item -> {
+                        try {
+                            return item.contributesTo(m_graphContainer);
+                        } catch (Throwable t) {
+                            // See NMS-8394
+                            LOG.error("An error occured while determining if info panel item {} should be displayed. "
+                                    + "The component will not be displayed.", item.getClass(), t);
+                            return false;
+                        }
+                    })
                     .sorted()
-                    .map(item -> wrap(item))
+                    .map(item -> {
+                        try {
+                            return wrap(item);
+                        } catch (Throwable t) {
+                            // See NMS-8394
+                            LOG.error("An error occured while retriveing the component from info panel item {}. "
+                                    + "The component will not be displayed.", item.getClass(), t);
+                            return null;
+                        }
+                    })
+                    .filter(component -> component != null) // Skip any nulls from components with exceptions
                     .collect(Collectors.toList());
         }
 
