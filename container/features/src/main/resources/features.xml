@@ -748,9 +748,13 @@
     </feature>
 
     <!-- TODO: Rename this. It's more of an Dominion-side syslog connection handler... -->
+    <!-- TODO: We can't use the opennms-core-camel feature here because it pulls in artifacts that conflict with the system classpath -->
     <feature name="opennms-syslogd-handler-default" description="OpenNMS :: Syslogd :: Handler :: Default" version="${project.version}">
+      <feature>activemq-camel</feature>
       <feature>camel-blueprint</feature>
-      <feature>opennms-syslogd</feature>
+      <feature>camel-http</feature>
+
+      <bundle dependency="true">mvn:org.opennms.core/org.opennms.core.camel/${project.version}</bundle>
 
       <bundle>blueprint:mvn:org.opennms.features.events/org.opennms.features.events.syslog/${project.version}/xml/blueprint-syslog-handler-default</bundle>
     </feature>
