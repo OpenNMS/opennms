@@ -53,7 +53,7 @@
 
 		<route id="receiveSyslogConnection">
 			<from uri="activemq:broadcastSyslog"/>
-			<bean ref="unmarshaller"/>
+			<process ref="unmarshaller"/>
 			<!-- Update the SyslogdConfig on the message to the local config value -->
 			<bean ref="syslogdConfigProcessor"/>
 			<to uri="seda:syslogHandler"/>
