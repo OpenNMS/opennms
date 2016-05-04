@@ -416,12 +416,6 @@ public class VTopologyComponent extends Composite implements SVGTopologyMap, Top
 		m_graph = GWTGraph.create();
 	}
 
-    @Override
-    protected void onAttach() {
-        super.onAttach();
-        boolean isAttached = this.isAttached();
-    }
-
     @SuppressWarnings("serial")
     @Override
 	protected void onLoad() {
