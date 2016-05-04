@@ -122,6 +122,7 @@ public class SyslogConnection implements Callable<Callable<?>> {
 
     @XmlAttribute
     public byte[] getBytes() {
+        m_bytes.rewind();
         byte[] retval = new byte[m_bytes.remaining()];
         m_bytes.get(retval);
         m_bytes.rewind();
@@ -160,10 +161,12 @@ public class SyslogConnection implements Callable<Callable<?>> {
 
             return new SyslogProcessor(re.getEvent(), m_config.getNewSuspectOnMessage());
 
-        } catch (final UnsupportedEncodingException e1) {
-            LOG.debug("Failure to convert package", e1);
+        } catch (final UnsupportedEncodingException e) {
+            LOG.info("Failure to convert package", e);
         } catch (final MessageDiscardedException e) {
-            LOG.debug("Message discarded, returning without enqueueing event.", e);
+            LOG.info("Message discarded, returning without enqueueing event.", e);
+        } catch (final Throwable e) {
+            LOG.error("Unexpected exception while processing SyslogConnection", e);
         }
         return null;
     }

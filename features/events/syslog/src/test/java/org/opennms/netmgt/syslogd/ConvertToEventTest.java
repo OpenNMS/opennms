@@ -1,5 +1,7 @@
 package org.opennms.netmgt.syslogd;
 
+import static org.junit.Assert.fail;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.DatagramPacket;
@@ -11,10 +13,9 @@ import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.junit.Test;
 import org.opennms.core.test.ConfigurationTestUtils;
-import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.SyslogdConfig;
 import org.opennms.netmgt.config.SyslogdConfigFactory;
-import org.opennms.test.JUnitConfigurationEnvironment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,11 +23,9 @@ import org.slf4j.LoggerFactory;
   * Convert to event junit test file to test the performance of Syslogd ConvertToEvent processor
  * @author ms043660
  */
-@JUnitConfigurationEnvironment
-@JUnitTemporaryDatabase
 public class ConvertToEventTest {
-    private static final Logger LOG = LoggerFactory.getLogger(ConvertToEvent.class);
-    private static SyslogdConfig config;
+
+    private static final Logger LOG = LoggerFactory.getLogger(ConvertToEventTest.class);
 
     /**
      * Test method which calls the ConvertToEvent constructor.
@@ -43,7 +42,7 @@ public class ConvertToEventTest {
         // Inputstream to create syslogdconfiguration
         InputStream stream = ConfigurationTestUtils.getInputStreamForResource(this,
                                                                               "/etc/syslogd-loadtest-configuration.xml");
-        config = new SyslogdConfigFactory(stream);
+        SyslogdConfig config = new SyslogdConfigFactory(stream);
 
         // Sample message which is embedded in packet and passed as parameter
         // to
@@ -64,13 +63,34 @@ public class ConvertToEventTest {
         // @param len The length of the XML data in the buffer
         try {
             ConvertToEvent convertToEvent = new ConvertToEvent(
-                                                               pkt.getAddress(),
-                                                               pkt.getPort(),
-                                                               data, config);
+                pkt.getAddress(),
+                pkt.getPort(),
+                data, config
+            );
+            LOG.info("Generated event: {}", convertToEvent.getEvent().toString());
         } catch (MessageDiscardedException e) {
-            LOG.debug("Message Parsing failed: {}");
+            LOG.error("Message Parsing failed", e);
+            fail("Message Parsing failed: " + e.getMessage());
         }
     }
-    
-    
+
+    @Test
+    public void testCiscoEventConversion() throws MarshalException, ValidationException, IOException {
+
+        InputStream stream = ConfigurationTestUtils.getInputStreamForResource(this, "/etc/syslogd-cisco-configuration.xml");
+        SyslogdConfig config = new SyslogdConfigFactory(stream);
+
+        try {
+            ConvertToEvent convertToEvent = new ConvertToEvent(
+                InetAddressUtils.ONE_TWENTY_SEVEN,
+                9999,
+                "<190>Mar 11 08:35:17 aaa_host 30128311: Mar 11 08:35:16.844 CST: %SEC-6-IPACCESSLOGP: list in110 denied tcp 192.168.10.100(63923) -> 192.168.11.128(1521), 1 packet", 
+                config
+            );
+            LOG.info("Generated event: {}", convertToEvent.getEvent().toString());
+        } catch (MessageDiscardedException e) {
+            LOG.error("Message Parsing failed", e);
+            fail("Message Parsing failed: " + e.getMessage());
+        }
+    }
 }
