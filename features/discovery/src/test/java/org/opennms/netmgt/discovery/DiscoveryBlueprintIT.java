@@ -29,10 +29,8 @@
 package org.opennms.netmgt.discovery;
 
 import java.net.InetAddress;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Dictionary;
-import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
@@ -40,6 +38,7 @@ import org.apache.activemq.broker.BrokerService;
 import org.apache.activemq.camel.component.ActiveMQComponent;
 import org.apache.camel.CamelContext;
 import org.apache.camel.CamelExecutionException;
+import org.apache.camel.Component;
 import org.apache.camel.Exchange;
 import org.apache.camel.ExchangeTimedOutException;
 import org.apache.camel.Message;
@@ -70,7 +69,6 @@ import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.events.api.EventIpcManager;
 import org.opennms.netmgt.icmp.Pinger;
 import org.opennms.netmgt.model.OnmsDistPoller;
-import org.opennms.netmgt.model.discovery.IPPollRange;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -155,8 +153,15 @@ public class DiscoveryBlueprintIT extends CamelBlueprintTestSupport {
         config.setRestartSleepTime(30000);
         DiscoveryConfigFactory configFactory = new DiscoveryConfigFactory(config);
 
-        services.put( DiscoveryConfigurationFactory.class.getName(),
-                new KeyValueHolder<Object, Dictionary>(configFactory, new Properties() ) );
+        services.put(DiscoveryConfigurationFactory.class.getName(),
+                     new KeyValueHolder<Object, Dictionary>(configFactory,
+                                                            new Properties()));
+
+        Properties props = new Properties();
+        props.setProperty("alias", "onms.broker");
+        services.put(Component.class.getName(),
+                     new KeyValueHolder<Object, Dictionary>(ActiveMQComponent.activeMQComponent("vm://localhost?create=false"),
+                                                            props));
     }
 
     // The location of our Blueprint XML file to be used for testing
@@ -180,7 +185,7 @@ public class DiscoveryBlueprintIT extends CamelBlueprintTestSupport {
         }
     }
 
-    @Test
+    @Test(timeout=60000)
     public void testDiscover() throws Exception {
 
         /*
@@ -189,11 +194,12 @@ public class DiscoveryBlueprintIT extends CamelBlueprintTestSupport {
          */
         SimpleRegistry registry = new SimpleRegistry();
         CamelContext mockDiscoverer = new DefaultCamelContext(registry);
-        mockDiscoverer.addComponent("activemq", ActiveMQComponent.activeMQComponent("tcp://127.0.0.1:61616"));
+        mockDiscoverer.addComponent("queuingservice", ActiveMQComponent.activeMQComponent("vm://localhost?create=false"));
+
         mockDiscoverer.addRoutes(new RouteBuilder() {
             @Override
             public void configure() throws Exception {
-                String from = String.format("activemq:Location-%s", LOCATION);
+                String from = String.format("queuingservice:Location-%s", LOCATION);
 
                 from(from)
                 .process(new Processor() {
@@ -252,7 +258,7 @@ public class DiscoveryBlueprintIT extends CamelBlueprintTestSupport {
         mockDiscoverer.stop();
     }
     
-    @Test
+    @Test(timeout=60000)
     public void testDiscoverToTestTimeout() throws Exception {
 
         /*
@@ -261,11 +267,12 @@ public class DiscoveryBlueprintIT extends CamelBlueprintTestSupport {
          */
         SimpleRegistry registry = new SimpleRegistry();
         CamelContext mockDiscoverer = new DefaultCamelContext(registry);
-        mockDiscoverer.addComponent("activemq", ActiveMQComponent.activeMQComponent("tcp://127.0.0.1:61616"));
+        mockDiscoverer.addComponent("queuingservice", ActiveMQComponent.activeMQComponent("vm://localhost?create=false"));
+
         mockDiscoverer.addRoutes(new RouteBuilder() {
             @Override
             public void configure() throws Exception {
-                String from = String.format("activemq:Location-%s", LOCATION);
+                String from = String.format("queuingservice:Location-%s", LOCATION);
 
                 from(from)
                 .process(new Processor() {

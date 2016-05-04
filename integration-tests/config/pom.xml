@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>integration-tests</artifactId>
-    <version>18.0.0-SNAPSHOT</version>
+    <version>19.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>org.opennms.integration-tests.config</artifactId>
@@ -30,7 +30,7 @@
               <excludeTypes>tar.gz</excludeTypes>
               <!-- TODO: Remove this when we add tests for OpenNMS features -->
               <excludeGroupIds>org.opennms</excludeGroupIds>
-              <outputDirectory>target/paxexam/test-repo</outputDirectory>
+              <outputDirectory>${project.build.directory}/paxexam/test-repo</outputDirectory>
             </configuration>
           </execution>
         </executions>
@@ -63,6 +63,26 @@
               <goal>integration-test</goal>
               <goal>verify</goal>
             </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <artifactId>maven-clean-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>cleanup-integration-tests</id>
+            <phase>post-integration-test</phase>
+            <goals>
+              <goal>clean</goal>
+            </goals>
+            <configuration>
+              <excludeDefaultDirectories>true</excludeDefaultDirectories>
+              <filesets>
+                <fileset>
+                  <directory>${project.build.directory}/paxexam/test-repo</directory>
+                </fileset>
+              </filesets>
+            </configuration>
           </execution>
         </executions>
       </plugin>

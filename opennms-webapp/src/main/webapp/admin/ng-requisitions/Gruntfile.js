@@ -18,6 +18,8 @@ module.exports = function (grunt) {
   // Define the configuration for all the tasks
   grunt.initConfig({
 
+    pkg: grunt.file.readJSON('package.json'),
+
     // Project settings
     yeoman: {
       // configurable paths
@@ -145,9 +147,18 @@ module.exports = function (grunt) {
 
     // Automatically inject Bower components into the app
     bowerInstall: {
-      app: {
-        src: ['<%= yeoman.app %>/index.html'],
-        ignorePath: '<%= yeoman.app %>/'
+      target: {
+        src: [
+          '<%= yeoman.app %>/index.jsp',
+          '<%= yeoman.app %>/quick-add-node.jsp'
+        ],
+        cwd: '',
+        dependencies: true,
+        devDependencies: false,
+        exclude: [],
+        fileTypes: {},
+        ignorePath: '',
+        overrides: {}
       }
     },
 
@@ -162,34 +173,6 @@ module.exports = function (grunt) {
             '<%= yeoman.dist %>/styles/fonts/*'
           ]
         }
-      }
-    },
-
-    // Reads HTML for usemin blocks to enable smart builds that automatically
-    // concat, minify and revision files. Creates configurations in memory so
-    // additional tasks can operate on them
-    useminPrepare: {
-      html: '<%= yeoman.app %>/index.html',
-      options: {
-        dest: '<%= yeoman.dist %>',
-        flow: {
-          html: {
-            steps: {
-              js: ['concat', 'uglifyjs'],
-              css: ['cssmin']
-            },
-            post: {}
-          }
-        }
-      }
-    },
-
-    // Performs rewrites based on rev and the useminPrepare configuration
-    usemin: {
-      html: ['<%= yeoman.dist %>/{,*/}*.html'],
-      css: ['<%= yeoman.dist %>/styles/{,*/}*.css'],
-      options: {
-        assetsDirs: ['<%= yeoman.dist %>']
       }
     },
 
@@ -239,27 +222,6 @@ module.exports = function (grunt) {
       }
     },
 
-    // ngmin tries to make the code safe for minification automatically by
-    // using the Angular long form for dependency injection. It doesn't work on
-    // things like resolve or inject so those have to be done manually.
-    ngmin: {
-      dist: {
-        files: [{
-          expand: true,
-          cwd: '.tmp/concat/scripts',
-          src: '*.js',
-          dest: '.tmp/concat/scripts'
-        }]
-      }
-    },
-
-    // Replace Google CDN references
-    cdnify: {
-      dist: {
-        html: ['<%= yeoman.dist %>/*.html']
-      }
-    },
-
     // Copies remaining files to places other tasks can use
     copy: {
       dist: {
@@ -271,7 +233,7 @@ module.exports = function (grunt) {
           src: [
             '*.{ico,png,txt}',
             '.htaccess',
-            '*.html',
+            '*.jsp',
             'views/{,*/}*.html',
             'images/{,*/}*.{webp}',
             'fonts/*'
@@ -306,31 +268,22 @@ module.exports = function (grunt) {
       ]
     },
 
-    // By default, your `index.html`'s <!-- Usemin block --> will take care of
-    // minification. These next options are pre-configured if you do not wish
-    // to use the Usemin blocks.
-    // cssmin: {
-    //   dist: {
-    //     files: {
-    //       '<%= yeoman.dist %>/styles/main.css': [
-    //         '.tmp/styles/{,*/}*.css',
-    //         '<%= yeoman.app %>/styles/{,*/}*.css'
-    //       ]
-    //     }
-    //   }
-    // },
-    // uglify: {
-    //   dist: {
-    //     files: {
-    //       '<%= yeoman.dist %>/scripts/scripts.js': [
-    //         '<%= yeoman.dist %>/scripts/scripts.js'
-    //       ]
-    //     }
-    //   }
-    // },
-    // concat: {
-    //   dist: {}
-    // },
+    uglify: {
+      options: {
+        mangle: false,
+        banner: '/*! <%= pkg.name %> <%= pkg.version %> - built on <%= grunt.template.today("yyyy-mm-dd") %> */\n'
+      },
+      dist: {
+        files: [{
+          src: '<%= yeoman.app %>/scripts/**/*.js',
+          dest: '<%= yeoman.dist %>/<%= pkg.name %>.min.js'
+        }]
+      }
+    },
+
+    concat: {
+       dist: {}
+    },
 
     // Test settings
     karma: {
@@ -367,6 +320,7 @@ module.exports = function (grunt) {
 
   // Load the docular plugin.
   grunt.loadNpmTasks('grunt-ngdocs');
+  grunt.loadNpmTasks('grunt-bower-install');
 
   grunt.registerTask('serve', function (target) {
     if (target === 'dist') {
@@ -399,17 +353,13 @@ module.exports = function (grunt) {
   grunt.registerTask('build', [
     'clean:dist',
     'bowerInstall',
-    'useminPrepare',
     'concurrent:dist',
     'autoprefixer',
     'concat',
-    'ngmin',
     'copy:dist',
-    'cdnify',
     'cssmin',
     'uglify',
     'rev',
-    'usemin',
     'htmlmin'
   ]);
 

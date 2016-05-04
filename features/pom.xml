@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>opennms</artifactId>
-    <version>18.0.0-SNAPSHOT</version>
+    <version>19.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>org.opennms.features</artifactId>
@@ -124,6 +124,7 @@
     <module>ncs</module>
     <module>springframework-security</module>
     <module>system-report</module>
+    <module>timeseries-evaluate</module>
 
     <!-- Elasticsearch event-forwarder-->
     <module>elasticsearch</module>
@@ -134,5 +135,8 @@
     <!-- Minion -->
     <module>minion</module>
     <module>scv</module>
+
+    <!-- OpenNMS Plugin Manager -->
+    <module>vaadin-opennms-pluginmanager</module>
   </modules>
 </project>

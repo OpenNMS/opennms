@@ -1,5 +1,4 @@
 /*global Address4:true, Address6:true */
-/*jshint eqnull:true */
 
 /**
 * @author Alejandro Galue <agalue@opennms.org>
@@ -104,11 +103,11 @@
       link: function(scope, element, attrs, ctrl) {
         ctrl.$parsers.unshift(function(foreignId) {
           var found = scope.foreignIdBlackList != null && scope.foreignIdBlackList.indexOf(foreignId) != -1;
-          if (found) {
-            ctrl.$setValidity('unique', false);
+          if (found || foreignId.match(/[\/\\?:&*'"]/)) {
+            ctrl.$setValidity('valid', false);
             return undefined;
           } else {
-            ctrl.$setValidity('unique', true);
+            ctrl.$setValidity('valid', true);
             return foreignId;
           }
         });

@@ -72,6 +72,7 @@ import org.opennms.netmgt.filter.FilterDaoFactory;
 import org.opennms.netmgt.filter.api.FilterDao;
 import org.opennms.netmgt.mock.MockNetwork;
 import org.opennms.netmgt.model.events.EventBuilder;
+import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.rrd.RrdRepository;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
@@ -307,8 +308,8 @@ public class LatencyThresholdingSetIT implements TemporaryDatabaseAware<MockData
             attributes.put("ping" + i, 2 * i);
         }
         attributes.put("loss", 60.0);
-        attributes.put("response-time", 100.0);
         attributes.put("median", 100.0);
+        attributes.put(PollStatus.PROPERTY_RESPONSE_TIME, 100.0);
         assertTrue(thresholdingSet.hasThresholds(attributes));
         List<Event> triggerEvents = thresholdingSet.applyThresholds("StrafePing", attributes);
         assertTrue(triggerEvents.size() == 1);

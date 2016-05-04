@@ -29,7 +29,6 @@
 
 --%>
 
-<%@page import="org.opennms.web.enlinkd.BridgeLinkSharedHost"%>
 <%@page import="org.opennms.web.enlinkd.EnLinkdElementFactory"%>
 <%@page import="org.opennms.web.enlinkd.EnLinkdElementFactoryInterface"%>
 <%@page import="org.opennms.web.enlinkd.BridgeLinkNode"%>
@@ -62,48 +61,6 @@
 <%@taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 
-<%!
-    protected int telnetServiceId;
-    protected int httpServiceId;
-    protected int dellServiceId;
-    protected int snmpServiceId;
-    private ResourceService m_resourceService;
-
-    public void init() throws ServletException {
-
-        NetworkElementFactoryInterface factory = NetworkElementFactory.getInstance(getServletContext());
-        
-        try {
-            this.telnetServiceId = factory.getServiceIdFromName("Telnet");
-        }
-        catch (Throwable e) {
-            throw new ServletException( "Could not determine the Telnet service ID", e );
-        }        
-
-        try {
-            this.httpServiceId = factory.getServiceIdFromName("HTTP");
-        }
-        catch (Throwable e) {
-            throw new ServletException( "Could not determine the HTTP service ID", e );
-        }
-
-        try {
-            this.dellServiceId = factory.getServiceIdFromName("Dell-OpenManage");
-        }
-        catch (Throwable e) {
-            throw new ServletException( "Could not determine the Dell-OpenManage service ID", e );
-        }
-
-        try {
-            this.snmpServiceId = factory.getServiceIdFromName("SNMP");
-        }
-        catch (Throwable e) {
-            throw new ServletException( "Could not determine the SNMP service ID", e );
-        }
-
-        WebApplicationContext webAppContext = WebApplicationContextUtils.getRequiredWebApplicationContext(getServletContext());
-        m_resourceService = webAppContext.getBean("resourceService", ResourceService.class);
-    }%>
 
 <%
     NetworkElementFactoryInterface factory = NetworkElementFactory.getInstance(getServletContext());
@@ -122,66 +79,6 @@
     if( node_db == null ) {
 		throw new ElementNotFoundException("No such node in database", "node", "element/linkednode.jsp", "node", "element/nodeList.htm");
     }
-    String parentRes = Integer.toString(nodeId);
-    String parentResType = "node";
-    if (!(node_db.getForeignSource() == null) && !(node_db.getForeignId() == null)) {
-        parentRes = node_db.getForeignSource() + ":" + node_db.getForeignId();
-        parentResType = "nodeSource";
-    }
-
-    //find the telnet interfaces, if any
-    String telnetIp = null;
-    Service[] telnetServices = factory.getServicesOnNode(nodeId, this.telnetServiceId);
-    
-    if( telnetServices != null && telnetServices.length > 0 ) {
-        ArrayList<InetAddress> ips = new ArrayList<InetAddress>();
-        for( int i=0; i < telnetServices.length; i++ ) {
-            ips.add(InetAddressUtils.addr(telnetServices[i].getIpAddress()));
-        }
-        
-        InetAddress lowest = InetAddressUtils.getLowestInetAddress(ips);
-        
-        if( lowest != null ) {
-            telnetIp = lowest.getHostAddress();
-        }
-    }    
-
-    //find the HTTP interfaces, if any
-    String httpIp = null;
-    Service[] httpServices = factory.getServicesOnNode(nodeId, this.httpServiceId);
-
-    if( httpServices != null && httpServices.length > 0 ) {
-        ArrayList<InetAddress> ips = new ArrayList<InetAddress>();
-        for( int i=0; i < httpServices.length; i++ ) {
-            ips.add(InetAddressUtils.addr(httpServices[i].getIpAddress()));
-        }
-
-        InetAddress lowest = InetAddressUtils.getLowestInetAddress(ips);
-
-        if( lowest != null ) {
-            httpIp = lowest.getHostAddress();
-        }
-    }
-
-    //find the Dell-OpenManage interfaces, if any
-    String dellIp = null;
-    Service[] dellServices = factory.getServicesOnNode(nodeId, this.dellServiceId);
-
-    if( dellServices != null && dellServices.length > 0 ) {
-        ArrayList<InetAddress> ips = new ArrayList<InetAddress>();
-        for( int i=0; i < dellServices.length; i++ ) {
-            ips.add(InetAddressUtils.addr(dellServices[i].getIpAddress()));
-        }
-
-        InetAddress lowest = InetAddressUtils.getLowestInetAddress(ips);
-
-        if( lowest != null ) {
-            dellIp = lowest.getHostAddress();
-        }
-    }
-
-    //find if SNMP is on this node 
-    Service[] snmpServices = factory.getServicesOnNode(nodeId, this.snmpServiceId);
 
 %>
 
@@ -211,60 +108,9 @@
 <!-- Body -->
   <h4>Node: <%=node_db.getLabel()%></h4>
 
-  <ul class="list-inline">
-    <li>
-		  <a href="event/list.htm?filter=node%3D<%=nodeId%>">View Events</a>
-	 </li>
-    <li>
-		<a href="asset/modify.jsp?node=<%=nodeId%>">Asset Info</a>
-	</li>
-		<% if( telnetIp != null ) { %>
-          <li>
-          <a href="telnet://<%=telnetIp%>">Telnet</a>
-          </li>
-        <% } %>
-
-        <% if( httpIp != null ) { %>
-           <li>
-           <a href="http://<%=httpIp%>">HTTP</a>
-           </li>
-        <% } %>
-
-        <% if( dellIp != null ) { %>
-          <li>
-          <a href="https://<%=dellIp%>:1311">OpenManage</a>
-          </li>
-        <% } %>
-
-        <% if (m_resourceService.findNodeChildResources(node_db).size() > 0) { %>
-	  <li>
-        <c:url var="resourceGraphsUrl" value="graph/chooseresource.htm">
-          <c:param name="parentResourceType" value="<%=parentResType%>"/>
-          <c:param name="parentResource" value="<%=parentRes%>"/>
-          <c:param name="reports" value="all"/>
-        </c:url>
-          <a href="${fn:escapeXml(resourceGraphsUrl)}">Resource Graphs</a>
-	  </li>
-        <% } %>
-        
-         <li>
-         <a href="element/rescan.jsp?node=<%=nodeId%>">Rescan</a>
-         </li>
-        <% if( request.isUserInRole( Authentication.ROLE_ADMIN )) { %> 
-           <li>
-           <a href="admin/nodemanagement/index.jsp?node=<%=nodeId%>">Admin</a>
-           </li>
-        <% } %>
-	  </ul>
 
 <div class="row">
 <div class="col-md-12">
-	<div class="panel panel-default">
-    <!-- general info box -->
-    <div class="panel-heading">
-			<h3 class="panel-title">General (Status: <%=(node_db == null ? "Unknown" : ElementUtil.getNodeStatusString(node_db))%>)</h3>
-    </div>
-	</div>
 
 <!--  BRIDGE Links -->
 

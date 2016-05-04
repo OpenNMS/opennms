@@ -3,7 +3,7 @@
 :imagesdir: ../../images
 
 [[gi-install-cassandra-windows]]
-==== Installing on Windows Server systems
+==== Microsoft Windows
 
 This section describes how to install the latest _Cassandra 2.1.x_ release on a _Microsoft Windows Server_ based systems for _Newts_.
 The first step is to download the graphical installer and register _Cassandra_ as a _Windows Service_ so it can be manged through the _Service Manager_.

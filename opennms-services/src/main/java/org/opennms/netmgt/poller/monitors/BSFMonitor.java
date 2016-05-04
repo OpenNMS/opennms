@@ -236,8 +236,8 @@ public class BSFMonitor extends AbstractServiceMonitor {
                         throw new RuntimeException("Invalid run-type '" + runType + "'");
                     }
                     long endTime = System.currentTimeMillis();
-                    if (!times.containsKey("response-time")) {
-                        times.put("response-time", endTime - startTime);
+                    if (!times.containsKey(PollStatus.PROPERTY_RESPONSE_TIME)) {
+                        times.put(PollStatus.PROPERTY_RESPONSE_TIME, endTime - startTime);
                     }
                     
                     if (STATUS_UNKNOWN.equals(results.get("status"))) {

@@ -36,6 +36,7 @@ import java.io.IOException;
 import java.math.BigInteger;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -57,6 +58,8 @@ import org.opennms.netmgt.bsm.service.model.BusinessService;
 import org.opennms.netmgt.bsm.service.model.IpService;
 import org.opennms.netmgt.bsm.service.model.Status;
 import org.opennms.netmgt.bsm.service.model.edge.Edge;
+import org.opennms.netmgt.bsm.service.model.functions.reduce.Threshold;
+import org.opennms.netmgt.bsm.service.model.functions.reduce.ThresholdResultExplanation;
 import org.opennms.netmgt.bsm.service.model.graph.BusinessServiceGraph;
 import org.opennms.netmgt.bsm.service.model.graph.GraphEdge;
 import org.opennms.netmgt.bsm.service.model.graph.GraphVertex;
@@ -486,6 +489,35 @@ public class DefaultBusinessServiceStateMachine implements BusinessServiceStateM
         } finally {
             m_rwLock.readLock().unlock();
         }
+    }
+
+    @Override
+    public ThresholdResultExplanation explain(BusinessService businessService, Threshold threshold) {
+        final GraphVertex vertex = getGraph().getVertexByBusinessServiceId(businessService.getId());
+
+        // Calculate the weighed statuses from the child edges
+        List<Status> statuses = weighStatuses(getGraph().getOutEdges(vertex));
+
+        // Reduce
+        Status result = threshold.reduce(statuses).orElse(MIN_SEVERITY);
+
+        ThresholdResultExplanation explanation = new ThresholdResultExplanation();
+        explanation.setStatus(result);
+        explanation.setHitsByStatus(threshold.getHitsByStatus(statuses));
+        explanation.setGraphEdges(getGraph().getOutEdges(vertex));
+        explanation.setWeightStatuses(statuses);
+        explanation.setFunction(threshold);
+
+        Map<GraphEdge, GraphVertex> graphEdgeToGraphVertex = new HashMap<>();
+        for (Edge eachEdge : businessService.getEdges()) {
+            GraphVertex vertexForEdge = getGraph().getVertexByEdgeId(eachEdge.getId());
+            GraphEdge graphEdge = getGraph().getGraphEdgeByEdgeId(eachEdge.getId());
+            if (vertexForEdge != null && graphEdge != null) {
+                graphEdgeToGraphVertex.put(graphEdge, vertexForEdge);
+            }
+        }
+        explanation.setGraphEdgeToGraphVertexMapping(graphEdgeToGraphVertex);
+        return explanation;
     }
 
     private List<GraphVertex> calculateImpact(GraphVertex vertex) {

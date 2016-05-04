@@ -131,6 +131,11 @@ public class MeasurementRestServiceIT extends AbstractSpringJerseyRestTestCase {
         sendRequest(GET, "/measurements/should_not_/exist", 404);
     }
 
+    @Test
+    public void verifyRelaxMode() throws Exception {
+        sendRequest(GET, "/measurements/should_not_/exist?relaxed=true", 200);
+    }
+
     /**
      * Used to test the marshaling of the result set to both
      * XML and JSON.
