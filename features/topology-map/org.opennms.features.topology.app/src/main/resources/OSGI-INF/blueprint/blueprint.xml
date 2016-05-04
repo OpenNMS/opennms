@@ -353,6 +353,14 @@ http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 http://aries.apache.org/schemas/b
         <bean class="org.opennms.features.topology.app.internal.operations.AutoRefreshToggleOperation"/>
     </service>
 
+    <service interface="org.opennms.features.topology.api.Operation" >
+        <service-properties>
+            <entry key="operation.contextMenuLocation" value=""/>
+            <entry key="operation.label" value="Navigate To"/>
+        </service-properties>
+        <bean class="org.opennms.features.topology.app.internal.operations.NavigateToOperation"/>
+    </service>
+
     <!-- removed for SPC-247
     <service interface="org.opennms.features.topology.api.Operation" >
         <service-properties>

@@ -28,7 +28,12 @@
 
 package org.opennms.features.topology.api.topo;
 
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 import java.util.Objects;
+
+import com.google.common.collect.Lists;
 
 /**
  * A {@link MetaTopologyProvider} that supports a single {@link GraphProvider}.
@@ -55,6 +60,16 @@ public class SimpleMetaTopologyProvider implements MetaTopologyProvider {
             return preferredLayout;
         }
         return null;
+    }
+
+    @Override
+    public Collection<VertexRef> getOppositeVertices(VertexRef vertexRef) {
+        return Collections.emptySet();
+    }
+
+    @Override
+    public List<GraphProvider> getGraphProviders() {
+        return Lists.newArrayList(graphProvider);
     }
 
     public void setPreferredLayout(String preferredLayout) {

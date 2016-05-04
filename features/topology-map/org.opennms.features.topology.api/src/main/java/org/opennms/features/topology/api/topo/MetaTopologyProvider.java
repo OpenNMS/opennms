@@ -28,10 +28,17 @@
 
 package org.opennms.features.topology.api.topo;
 
+import java.util.Collection;
+import java.util.List;
+
 public interface MetaTopologyProvider {
 
     GraphProvider getDefaultGraphProvider();
 
-    public String getPreferredLayout(GraphProvider graphProvider);
+    Collection<GraphProvider> getGraphProviders();
+
+    String getPreferredLayout(GraphProvider graphProvider);
+
+    Collection<VertexRef> getOppositeVertices(VertexRef vertexRef);
 
 }

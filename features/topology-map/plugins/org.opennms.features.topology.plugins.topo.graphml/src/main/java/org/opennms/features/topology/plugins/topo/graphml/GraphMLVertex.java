@@ -36,9 +36,8 @@ import org.opennms.features.topology.plugins.topo.graphml.model.GraphMLNode;
 public class GraphMLVertex extends AbstractVertex {
     private HashMap<String, Object> properties = new HashMap<>();
 
-    protected GraphMLVertex(GraphMLNode graphMLNode) {
-        super(graphMLNode.getProperty(GraphMLProperties.NAMESPACE),
-                graphMLNode.getProperty(GraphMLProperties.ID),
+    protected GraphMLVertex(String namespace, GraphMLNode graphMLNode) {
+        super(namespace, graphMLNode.getProperty(GraphMLProperties.ID),
                 graphMLNode.getProperty(GraphMLProperties.LABEL));
 
         setIconKey(graphMLNode.getProperty(GraphMLProperties.ICON_KEY));

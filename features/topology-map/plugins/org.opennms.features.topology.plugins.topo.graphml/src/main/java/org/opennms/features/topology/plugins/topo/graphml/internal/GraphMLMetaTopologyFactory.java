@@ -32,13 +32,10 @@ import java.util.Dictionary;
 import java.util.Hashtable;
 import java.util.Map;
 
-import org.opennms.features.topology.api.support.VertexHopGraphProvider;
 import org.opennms.features.topology.api.topo.DefaultMetaInfo;
-import org.opennms.features.topology.api.topo.GraphProvider;
 import org.opennms.features.topology.api.topo.MetaInfo;
 import org.opennms.features.topology.api.topo.MetaTopologyProvider;
-import org.opennms.features.topology.api.topo.SimpleMetaTopologyProvider;
-import org.opennms.features.topology.plugins.topo.graphml.GraphMLTopologyProvider;
+import org.opennms.features.topology.plugins.topo.graphml.GraphMLMetaTopologyProvider;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceRegistration;
@@ -47,15 +44,15 @@ import org.osgi.service.cm.ManagedServiceFactory;
 
 import com.google.common.collect.Maps;
 
-public class GraphMLTopologyFactory implements ManagedServiceFactory {
-		
+public class GraphMLMetaTopologyFactory implements ManagedServiceFactory {
+
 	private static final String TOPOLOGY_LOCATION = "topologyLocation";
 	private static final String LABEL = "label";
 
 	private BundleContext m_bundleContext;
 	private MetaInfo metaInfo = new DefaultMetaInfo();
-	private Map<String, GraphMLTopologyProvider> m_providers = Maps.newHashMap();
-	private Map<String, ServiceRegistration<GraphProvider>> m_registrations =  Maps.newHashMap();
+	private Map<String, GraphMLMetaTopologyProvider> m_providers = Maps.newHashMap();
+	private Map<String, ServiceRegistration<MetaTopologyProvider>> m_registrations =  Maps.newHashMap();
 
 	public void setBundleContext(BundleContext bundleContext) {
 		m_bundleContext = bundleContext;
@@ -70,27 +67,24 @@ public class GraphMLTopologyFactory implements ManagedServiceFactory {
 	public void updated(String pid, @SuppressWarnings("rawtypes") Dictionary properties) throws ConfigurationException {
 		String location = (String)properties.get(TOPOLOGY_LOCATION);
 		if (!m_providers.containsKey(pid)) {
-			GraphMLTopologyProvider topoProvider = new GraphMLTopologyProvider("graphml");
-			topoProvider.setTopologyLocation(location);
-			topoProvider.setMetaInfo(getMetaInfo());
-			Dictionary<String,Object> metaData = new Hashtable<>();
+			final Dictionary<String,Object> metaData = new Hashtable<>();
 			metaData.put(Constants.SERVICE_PID, pid);
 			if (properties.get(LABEL) != null) {
 				metaData.put(LABEL, properties.get(LABEL));
 			}
 
-			// wrap as hop provider
-			VertexHopGraphProvider vertexHopGraphProvider = new VertexHopGraphProvider(topoProvider);
-			ServiceRegistration<GraphProvider> registration = m_bundleContext.registerService(GraphProvider.class, vertexHopGraphProvider, metaData);
-			m_registrations.put(pid, registration);
-			m_providers.put(pid, topoProvider);
+			// Expose the MetaTopologyProvider
+			final GraphMLMetaTopologyProvider metaTopologyProvider = new GraphMLMetaTopologyProvider();
+			metaTopologyProvider.setTopologyLocation(location);
+			metaTopologyProvider.setMetaInfo(getMetaInfo());
+			metaTopologyProvider.load();
+			ServiceRegistration<MetaTopologyProvider> registration = m_bundleContext.registerService(MetaTopologyProvider.class, metaTopologyProvider, metaData);
 
-			// Expose the MetaTopologyProvider too
-			SimpleMetaTopologyProvider metaTopologyProvider = new SimpleMetaTopologyProvider(vertexHopGraphProvider);
-			m_bundleContext.registerService(MetaTopologyProvider.class, metaTopologyProvider, metaData);
+			m_registrations.put(pid, registration);
+			m_providers.put(pid, metaTopologyProvider);
 		} else {
 			m_providers.get(pid).setTopologyLocation(location);
-			ServiceRegistration<GraphProvider> registration = m_registrations.get(pid);
+			ServiceRegistration<MetaTopologyProvider> registration = m_registrations.get(pid);
 			Dictionary<String,Object> metaData = new Hashtable<>();
 			metaData.put(Constants.SERVICE_PID, pid);
 			if (properties.get(LABEL) != null) {
@@ -102,7 +96,7 @@ public class GraphMLTopologyFactory implements ManagedServiceFactory {
 
 	@Override
 	public void deleted(String pid) {
-		ServiceRegistration<GraphProvider> registration = m_registrations.remove(pid);
+		ServiceRegistration<MetaTopologyProvider> registration = m_registrations.remove(pid);
 		if (registration != null) {
 			registration.unregister();
 		}
