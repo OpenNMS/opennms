@@ -30,6 +30,7 @@ package org.opennms.core.test.karaf;
 
 import static org.ops4j.pax.exam.CoreOptions.maven;
 import static org.ops4j.pax.exam.CoreOptions.provision;
+import static org.ops4j.pax.exam.CoreOptions.systemPackages;
 import static org.ops4j.pax.exam.karaf.options.KarafDistributionOption.debugConfiguration;
 import static org.ops4j.pax.exam.karaf.options.KarafDistributionOption.editConfigurationFilePut;
 import static org.ops4j.pax.exam.karaf.options.KarafDistributionOption.karafDistributionConfiguration;
@@ -59,6 +60,7 @@ import org.ops4j.pax.exam.Option;
 import org.ops4j.pax.exam.ProbeBuilder;
 import org.ops4j.pax.exam.TestProbeBuilder;
 import org.ops4j.pax.exam.karaf.options.LogLevelOption;
+import org.ops4j.pax.exam.options.MavenUrlReference;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceReference;
@@ -137,11 +139,7 @@ public abstract class KarafTestCase {
         Option[] options = new Option[]{
             // Use Karaf as the container
             karafDistributionConfiguration().frameworkUrl(
-                maven()
-                    .groupId("org.apache.karaf")
-                    .artifactId("apache-karaf")
-                    .type("tar.gz")
-                    .version(getKarafVersion()))
+                getFrameworkUrl())
                 .karafVersion(getKarafVersion())
                 .name("Apache Karaf")
                 .unpackDirectory(new File("target/paxexam/")
@@ -208,7 +206,33 @@ public abstract class KarafTestCase {
             options = Arrays.copyOf(options, options.length + 1);
             options[options.length -1] = debugConfiguration("8889", true);
         }
+
+        String[] systemPackages = getSystemPackages();
+        if (systemPackages.length > 0) {
+            options = Arrays.copyOf(options, options.length + 1);
+            options[options.length -1] = systemPackages(systemPackages);
+        }
+
         return options;
+    }
+
+    /**
+     * Use the vanilla Apache Karaf container. Override this method to use
+     * a different Karaf-compatible framework artifact.
+     */
+    protected MavenUrlReference getFrameworkUrl() {
+        return maven()
+                .groupId("org.apache.karaf")
+                .artifactId("apache-karaf")
+                .type("tar.gz")
+                .version(getKarafVersion());
+    }
+
+    /**
+     * Override this method to add system packages to the test container.
+     */
+    protected String[] getSystemPackages() {
+        return new String[0];
     }
 
     protected void addFeaturesUrl(String url) {

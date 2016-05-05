@@ -718,9 +718,9 @@
 
       <feature>opennms-core</feature>
       <feature>opennms-core-camel</feature>
+      <feature>opennms-core-daemon</feature>
       <feature>opennms-core-db</feature>
       <feature>opennms-config</feature>
-      <feature>opennms-core-daemon</feature>
       <feature>opennms-dao-api</feature>
 
       <bundle>mvn:org.opennms.features.events/org.opennms.features.events.syslog/${project.version}</bundle>
