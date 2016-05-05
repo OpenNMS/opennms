@@ -93,6 +93,24 @@ Some endpoints deal in resources, which are identified by _Resource IDs_. Since 
 
 The two styles are not interchangeable. For example, it is not valid to use `node[Routers:atledg04]` nor to use `nodeSource[175]`.
 
+IMPORTANT: On systems where `storeByForeignSource` is enabled, you must *always* use the `nodeSource` style when referring to requisitioned nodes and `node` when referring to auto-provisioned nodes. The following tables summarize which style is permissible in which situation. Auto-provisioned nodes are ones that do not belong to any requisition. As these nodes lack a foreign-source name, they intrinsically cannot be represented using `nodeSource` style identifiers.
+
+.If `storeByForeignSource` is `false`
+[options="header"]
+|===
+| Node Provisioning Style | `node[]` Valid? | `nodeSource[]` Valid?
+| Requisitioned           | Yes             | Yes
+| Auto-Provisioned        | Yes             | No
+|===
+
+.If `storeByForeignSource` is `true`
+[options="header"]
+|===
+| Node Provisioning Style | `node[]` Valid? | `nodeSource[]` Valid?
+| Requisitioned           | No              | Yes
+| Auto-Provisioned        | Yes             | No
+|===
+
 The node identifier is followed by a period, then a resource-type name and instance name. The instance name's characteristics may vary from one resource-type to the next. A few examples:
 
 [options="header", cols="5,10"]
