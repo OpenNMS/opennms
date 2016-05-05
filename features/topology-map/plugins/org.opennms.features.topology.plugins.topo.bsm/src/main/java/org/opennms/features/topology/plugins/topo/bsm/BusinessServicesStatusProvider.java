@@ -60,7 +60,11 @@ public class BusinessServicesStatusProvider implements StatusProvider, EdgeStatu
         return vertices.stream()
             .filter(v -> contributesTo(v.getNamespace()) && v instanceof AbstractBusinessServiceVertex)
             .map(v -> (AbstractBusinessServiceVertex) v)
-            .collect(Collectors.toMap(v -> v, v -> new DefaultStatus(getStatus(stateMachine, v).getLabel(), 0)));
+            .collect(Collectors.toMap(v -> v, v -> {
+                org.opennms.netmgt.bsm.service.model.Status status = getStatus(stateMachine, v);
+                // Status can be null
+                return status != null ? new DefaultStatus(status.getLabel(), 0) : null;
+            }));
     }
 
     @Override
@@ -69,7 +73,11 @@ public class BusinessServicesStatusProvider implements StatusProvider, EdgeStatu
         return edges.stream()
                 .filter(edge -> contributesTo(edge.getNamespace()) && edge instanceof BusinessServiceEdge)
                 .map(edge -> (BusinessServiceEdge) edge)
-                .collect(Collectors.toMap(edge -> edge, edge -> new DefaultStatus(getStatus(stateMachine, edge).getLabel(), 0)));
+                .collect(Collectors.toMap(edge -> edge, edge -> {
+                    org.opennms.netmgt.bsm.service.model.Status status = getStatus(stateMachine, edge);
+                    // Status can be null
+                    return status != null ? new DefaultStatus(status.getLabel(), 0) : null;
+                }));
     }
 
     public static org.opennms.netmgt.bsm.service.model.Status getStatus(BusinessServiceStateMachine stateMachine, AbstractBusinessServiceVertex vertex) {
