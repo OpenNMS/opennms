@@ -180,5 +180,7 @@ public class BSMTopologyIT extends OpenNMSSeleniumTestCase {
             final String eachServiceName = businessServiceNames.get(i);
             bsmAdminPage.delete(eachServiceName, !isLast);
         }
+        // Reload the daemon to remove the services from the state machine
+        bsmAdminPage.reloadDaemon();
     }
 }
