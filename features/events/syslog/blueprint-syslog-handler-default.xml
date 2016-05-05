@@ -46,7 +46,7 @@
 
 		<route id="receiveSyslogConnection">
 			<from uri="queuingservice:broadcastSyslog?disableReplyTo=true"/>
-			<bean ref="unmarshaller"/>
+			<process ref="unmarshaller"/>
 			<!-- Update the SyslogdConfig on the message to the local config value -->
 			<bean ref="syslogdConfigProcessor"/>
 			<to uri="seda:syslogHandler"/>
