@@ -349,6 +349,7 @@ public class OnmsFeatureKarafIT extends KarafTestCase {
 	}
 	
 	@Test
+	@Ignore("OSGi dependency problems: org.opennms.netmgt.trapd")
 	public void testInstallFeatureOpennmsTrapdHandlerDefault() {
 		installFeature("opennms-trapd-handler-default");
 		System.out.println(executeCommand("features:list -i"));
