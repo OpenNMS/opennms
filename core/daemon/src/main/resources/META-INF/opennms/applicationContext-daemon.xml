@@ -34,4 +34,30 @@
     <constructor-arg value="file:${opennms.home}/etc/opennms-activemq.xml" />
   </bean>
 
+  <bean id="jmsConnectionFactory" class="org.apache.activemq.ActiveMQConnectionFactory">
+    <property name="brokerURL" value="vm://localhost?create=false" />
+  </bean>
+
+  <bean id="pooledConnectionFactory" class="org.apache.activemq.pool.PooledConnectionFactory"
+    init-method="start" destroy-method="stop">
+    <property name="maxConnections" value="8" />
+    <property name="connectionFactory" ref="jmsConnectionFactory" />
+  </bean>
+
+  <bean id="jmsConfig" class="org.apache.camel.component.jms.JmsConfiguration">
+    <property name="connectionFactory" ref="pooledConnectionFactory" />
+    <property name="concurrentConsumers" value="10" />
+  </bean>
+
+  <bean id="queuingservice" class="org.apache.activemq.camel.component.ActiveMQComponent">
+    <property name="configuration" ref="jmsConfig" />
+  </bean>
+
+  <onmsgi:service id="activemqService" ref="queuingservice"
+    interface="org.apache.camel.Component">
+      <onmsgi:service-properties>
+        <entry key="alias" value="onms.broker" />
+      </onmsgi:service-properties>
+  </onmsgi:service>
+    
 </beans>

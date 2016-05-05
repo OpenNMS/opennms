@@ -17,7 +17,7 @@ describe('Controller: AssetController', function () {
       asset: asset,
       assetsBlackList: []
     });
-  };
+  }
 
   beforeEach(module('onms-requisitions', function($provide) {
     $provide.value('$log', console);    

@@ -445,9 +445,28 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
             infoPanelItems.add(selectionContextPanelItem); // manually add this, as it is not exposed via osgi
             infoPanelItems.add(metaInfoPanelItem); // same here
             return infoPanelItems.stream()
-                    .filter(panel -> panel.contributesTo(m_graphContainer))
+                    .filter(item -> {
+                        try {
+                            return item.contributesTo(m_graphContainer);
+                        } catch (Throwable t) {
+                            // See NMS-8394
+                            LOG.error("An error occurred while determining if info panel item {} should be displayed. "
+                                    + "The component will not be displayed.", item.getClass(), t);
+                            return false;
+                        }
+                    })
                     .sorted()
-                    .map(item -> wrap(item))
+                    .map(item -> {
+                        try {
+                            return wrap(item);
+                        } catch (Throwable t) {
+                            // See NMS-8394
+                            LOG.error("An error occurred while retriveing the component from info panel item {}. "
+                                    + "The component will not be displayed.", item.getClass(), t);
+                            return null;
+                        }
+                    })
+                    .filter(component -> component != null) // Skip any nulls from components with exceptions
                     .collect(Collectors.toList());
         }
 
@@ -746,6 +765,7 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
         demagnifyBtn.addClickListener((ClickListener) event -> scale.setValue(Math.max(0, scale.getValue() - 0.25)));
 
         m_szlOutBtn = new Button();
+        m_szlOutBtn.setId("szlOutBtn");
         m_szlOutBtn.setIcon(FontAwesome.ANGLE_DOWN);
         m_szlOutBtn.setDescription("Decrease Semantic Zoom Level");
         m_szlOutBtn.setEnabled(m_graphContainer.getSemanticZoomLevel() > 0);
@@ -761,6 +781,7 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
         });
 
         final Button szlInBtn = new Button();
+        szlInBtn.setId("szlInBtn");
         szlInBtn.setIcon(FontAwesome.ANGLE_UP);
         szlInBtn.setDescription("Increase Semantic Zoom Level");
         szlInBtn.addClickListener(new ClickListener() {
@@ -771,6 +792,8 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
                 saveHistory();
             }
         });
+
+        m_zoomLevelLabel.setId("szlInputLabel");
 
         m_panBtn = new Button();
         m_panBtn.setIcon(FontAwesome.ARROWS);

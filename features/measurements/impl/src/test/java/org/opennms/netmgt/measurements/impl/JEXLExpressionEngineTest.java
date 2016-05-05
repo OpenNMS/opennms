@@ -377,6 +377,13 @@ public class JEXLExpressionEngineTest {
         assertEquals(104.607560713, results[0], 0.0001);
     }
 
+    @Test
+    public void canReferenceDiffTime() throws ExpressionException {
+        // The __diff_time attribute is used by Backshift
+        double results[] = performExpression("1 * __diff_time");
+        assertEquals(99000.0, results[0], 0.0001);
+    }
+
     private double[] performExpression(String expression) throws ExpressionException {
         Map<String, Object> constants = Maps.newHashMap();
         return performExpression(expression, constants);

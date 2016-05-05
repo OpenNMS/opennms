@@ -71,7 +71,10 @@
     <bean id="databasePopulator" class="org.opennms.features.topology.plugins.topo.linkd.internal.EnhancedLinkdMockDataPopulator">
     </bean>
 
+    <bean id="metricRegistry" class="com.codahale.metrics.MetricRegistry" />
+
     <bean id="enLinkdTopologyProvider" class="org.opennms.features.topology.plugins.topo.linkd.internal.EnhancedLinkdTopologyProvider">
+        <constructor-arg ref="metricRegistry"/>
         <property name="bridgeTopologyDao" ref="bridgeTopologyDao" />
         <property name="bridgeBridgeLinkDao" ref="bridgeBridgeLinkDao" />
         <property name="bridgeMacLinkDao" ref="bridgeMacLinkDao" />

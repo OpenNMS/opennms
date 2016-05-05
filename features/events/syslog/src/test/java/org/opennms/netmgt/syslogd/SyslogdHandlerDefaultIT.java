@@ -35,6 +35,9 @@ import java.util.Map;
 import java.util.Properties;
 
 import org.apache.activemq.broker.BrokerService;
+import org.apache.camel.component.seda.SedaComponent;
+import org.apache.activemq.camel.component.ActiveMQComponent;
+import org.apache.camel.Component;
 import org.apache.camel.component.mock.MockEndpoint;
 import org.apache.camel.test.blueprint.CamelBlueprintTestSupport;
 import org.apache.camel.util.KeyValueHolder;
@@ -100,6 +103,11 @@ public class SyslogdHandlerDefaultIT extends CamelBlueprintTestSupport {
 		config.setDiscardUei("DISCARD-MATCHING-MESSAGES");
 
 		services.put(SyslogdConfig.class.getName(), new KeyValueHolder<Object, Dictionary>(config, new Properties()));
+	        Properties props = new Properties();
+	        props.setProperty("alias", "onms.broker");
+	        services.put(Component.class.getName(),
+	                     new KeyValueHolder<Object, Dictionary>(ActiveMQComponent.activeMQComponent("vm://localhost?create=false"),
+	                                                            props));
 	}
 
 	// The location of our Blueprint XML files to be used for testing
@@ -111,7 +119,8 @@ public class SyslogdHandlerDefaultIT extends CamelBlueprintTestSupport {
 	@BeforeClass
 	public static void startActiveMQ() throws Exception {
 		m_broker = new BrokerService();
-		m_broker.addConnector("tcp://127.0.0.1:61616");
+		//m_broker.addConnector("tcp://127.0.0.1:61616");
+		m_broker.addConnector("vm://localhost");
 		m_broker.start();
 	}
 
@@ -122,10 +131,10 @@ public class SyslogdHandlerDefaultIT extends CamelBlueprintTestSupport {
 		}
 	}
 
-	@Test
+	@Test(timeout=60000)
 	public void testSyslogd() throws Exception {
 		// Expect one SyslogConnection message to be broadcast on the messaging channel
-		MockEndpoint broadcastSyslog = getMockEndpoint("mock:activemq:broadcastSyslog", false);
+		MockEndpoint broadcastSyslog = getMockEndpoint("mock:queuingservice:broadcastSyslog", false);
 		broadcastSyslog.setExpectedMessageCount(1);
 
 		MockEndpoint syslogHandler = getMockEndpoint("mock:seda:syslogHandler", false);
@@ -147,7 +156,7 @@ public class SyslogdHandlerDefaultIT extends CamelBlueprintTestSupport {
 
 		// Send a SyslogConnection
 		template.sendBody(
-			"activemq:broadcastSyslog",
+			"queuingservice:broadcastSyslog",
 			JaxbUtils.marshal(new SyslogConnection(InetAddressUtils.ONE_TWENTY_SEVEN, 2000, ByteBuffer.wrap(messageBytes), config))
 		);
 

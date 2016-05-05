@@ -83,7 +83,7 @@ public class AdminPageIT extends OpenNMSSeleniumTestCase {
         new String[] { "Ops Board Configuration", "//div[@id='content']//iframe" },
         new String[] { "Surveillance Views Configuration", "//div[@id='content']//iframe" },
         new String[] { "JMX Configuration Generator", "//div[@id='content']//iframe" },
-        //new String[] { "OpenNMS Plugin Manager", "/html/body/iframe" }, See NMS-8353
+        new String[] { "OpenNMS Plugin Manager", "/html/body/iframe" },
         new String[] { "Data Choices", "//*[@id='datachoices-enable']" }
     };
 

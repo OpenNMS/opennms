@@ -55,16 +55,9 @@
 	<bean id="eventWriter" class="org.opennms.netmgt.discovery.actors.EventWriter">
 		<argument ref="eventForwarder" />
 	</bean>
-
-	<bean id="discovery-activemq" class="org.apache.activemq.camel.component.ActiveMQComponent">
-		<!-- TODO: HZN-490 Add configurable ActiveMQ URI -->
-		<property name="brokerURL" value="tcp://localhost:61616" />
-		<!-- TODO: HZN-490 Add configurable authentication -->
-		<!--
-		<property name="userName" value="karaf" />
-		<property name="password" value="karaf" />
-		-->
-	</bean>
+	
+	<!-- ActiveMQ component from OpenNMS deamon context -->
+	<reference id="queuingservice" interface="org.apache.camel.Component" filter="(alias=onms.broker)"/>
 
 	<camelContext id="discoveryCamelContext" xmlns="http://camel.apache.org/schema/blueprint">
 		<propertyPlaceholder id="properties" location="blueprint:discoveryProperties" />
@@ -100,7 +93,7 @@
 				<setExchangePattern pattern="InOut"/>
 				<recipientList>
 					<!-- TODO: NMS-8217: Use a more sophisticated naming convention for this queue -->
- 					<simple>activemq:Location-${body.location}</simple>
+ 				    <simple>queuingservice:Location-${body.location}</simple>
 				</recipientList>
 				<!-- Send the DiscoveryResults to the eventWriter -->
 				<bean ref="eventWriter" />

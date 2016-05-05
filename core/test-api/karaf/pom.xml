@@ -51,7 +51,7 @@
               <useRepositoryLayout>true</useRepositoryLayout>
               <excludeTypes>tar.gz</excludeTypes>
               <excludeGroupIds>org.opennms</excludeGroupIds>
-              <outputDirectory>target/paxexam/test-repo</outputDirectory>
+              <outputDirectory>${project.build.directory}/paxexam/test-repo</outputDirectory>
             </configuration>
           </execution>
         </executions>
@@ -149,6 +149,26 @@
             </goals>
           </execution>
         </executions>
+      </plugin>
+      <plugin> 
+        <artifactId>maven-clean-plugin</artifactId> 
+        <executions> 
+          <execution> 
+            <id>cleanup-integration-tests</id> 
+            <phase>post-integration-test</phase> 
+            <goals> 
+              <goal>clean</goal> 
+            </goals> 
+            <configuration> 
+              <excludeDefaultDirectories>true</excludeDefaultDirectories> 
+              <filesets> 
+                <fileset> 
+                  <directory>${project.build.directory}/paxexam/test-repo</directory> 
+                </fileset> 
+              </filesets> 
+            </configuration> 
+          </execution> 
+        </executions> 
       </plugin>
     </plugins>
   </build>
