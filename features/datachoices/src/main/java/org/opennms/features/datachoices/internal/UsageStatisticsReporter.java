@@ -135,7 +135,7 @@ public class UsageStatisticsReporter implements StateChangeHandler {
                 client.execute(httpRequest);
                 LOG.info("Succesfully sent usage statistics report.");
             } catch (IOException e) {
-                LOG.info("The usage statitistics report was not succesfully delivered: {}", e.getMessage());
+                LOG.info("The usage statistics report was not succesfully delivered: {}", e.getMessage());
             }
         }
     }

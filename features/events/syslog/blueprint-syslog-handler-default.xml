@@ -37,23 +37,16 @@
 		<argument ref="syslogdConfig"/>
 	</bean>
 
+	<!-- ActiveMQ component from OpenNMS deamon context -->
+	<reference id="queuingservice" interface="org.apache.camel.Component" filter="(alias=onms.broker)"/>
 
-	<bean id="activemq" class="org.apache.activemq.camel.component.ActiveMQComponent">
-		<!-- TODO: HZN-490 Add configurable ActiveMQ URI -->
-		<property name="brokerURL" value="${brokerUri}" />
-		<!-- TODO: HZN-490 Add configurable authentication -->
-		<!--
-		<property name="userName" value="karaf" />
-		<property name="password" value="karaf" />
-		-->
-	</bean>
 
 	<camelContext id="syslogConnectionHandlerDefaultContext" xmlns="http://camel.apache.org/schema/blueprint">
 		<propertyPlaceholder id="properties" location="blueprint:syslogHandlerDefaultProperties" />
 
 		<route id="receiveSyslogConnection">
-			<from uri="activemq:broadcastSyslog"/>
-			<bean ref="unmarshaller"/>
+			<from uri="queuingservice:broadcastSyslog"/>
+			<process ref="unmarshaller"/>
 			<!-- Update the SyslogdConfig on the message to the local config value -->
 			<bean ref="syslogdConfigProcessor"/>
 			<to uri="seda:syslogHandler"/>

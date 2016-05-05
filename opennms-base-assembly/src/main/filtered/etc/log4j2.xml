@@ -141,9 +141,12 @@
     <logger name="snaq.db" additivity="false" level="INFO">
       <appender-ref ref="RoutingAppender"/>
     </logger>
-    
+    <logger name="com.datastax.driver" additivity="false" level="INFO">
+      <appender-ref ref="RoutingAppender"/>
+    </logger>
+
     <!-- Allow any message to pass through the root logger -->
-    <root level="TRACE">
+    <root level="DEBUG">
       <!-- 
         Each category/log can be set to one of TRACE, INFO, DEBUG, WARN, ERROR
 
@@ -157,7 +160,7 @@
         None of the below of the KeyValuePairs are actually necessary but are just to indicate
         some well known prefixes in the log or to override the defaultThreshold for a given prefix.
       -->
-      <DynamicThresholdFilter key="prefix" defaultThreshold="TRACE">
+      <DynamicThresholdFilter key="prefix" defaultThreshold="DEBUG">
         <!-- always leave instrumentation logging at INFO -->
         <KeyValuePair key="instrumentation"      value="INFO" />
         <KeyValuePair key="access-point-monitor" value="DEBUG" />
