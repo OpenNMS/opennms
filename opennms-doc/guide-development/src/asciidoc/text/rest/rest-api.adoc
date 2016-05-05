@@ -91,7 +91,7 @@ Some endpoints deal in resources, which are identified by _Resource IDs_. Since 
 | `nodeSource` | Identifies a node by its foreign-source name and foreign-ID, joined by a single colon | `nodeSource[Servers:115da833-0957-4471-b496-a731928c27dd]`
 |===
 
-The `node[]` style cannot take a foreign-source:foreign-ID tuple. For example, it is not valid to use `node[Routers:atledg04]`. As a fallback mechanism, however, using `nodeSource[175]` will be internally translated to `node[175]`. It is therefore always safe to use the `nodeSource[]` style, which will simplify many client implementations.
+The two styles are not interchangeable. For example, it is not valid to use `node[Routers:atledg04]` nor to use `nodeSource[175]`.
 
 The node identifier is followed by a period, then a resource-type name and instance name. The instance name's characteristics may vary from one resource-type to the next. A few examples:
 
