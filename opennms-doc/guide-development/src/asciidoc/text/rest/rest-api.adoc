@@ -93,20 +93,22 @@ Some endpoints deal in resources, which are identified by _Resource IDs_. Since 
 
 The two styles are not interchangeable. For example, it is not valid to use `node[Routers:atledg04]` nor to use `nodeSource[175]`.
 
-IMPORTANT: On systems where `storeByForeignSource` is enabled, you must *always* use the `nodeSource` style when referring to requisitioned nodes and `node` when referring to auto-provisioned nodes. The following tables summarize which style is permissible in which situation. Auto-provisioned nodes are ones that do not belong to any requisition. As these nodes lack a foreign-source name, they intrinsically cannot be represented using `nodeSource` style identifiers.
+IMPORTANT: On systems where `storeByForeignSource` is enabled, you must *always* use the `nodeSource` style when referring to requisitioned nodes and `node` when referring to auto-provisioned nodes.
+
+Auto-provisioned nodes are ones that do not belong to any requisition but were added through discovery or another mechanism that creates `newSuspect` events. Since these nodes lack a foreign-source name, they intrinsically cannot be represented using `nodeSource` style identifiers. The following tables summarize which style is permissible in which situation.
 
 .If `storeByForeignSource` is `false`
-[options="header"]
+[options="header", cols="h,2*"]
 |===
-| Node Provisioning Style | `node[]` Valid? | `nodeSource[]` Valid?
+| Node Provisioning Style | `node[]` Valid | `nodeSource[]` Valid
 | Requisitioned           | Yes             | Yes
 | Auto-Provisioned        | Yes             | No
 |===
 
 .If `storeByForeignSource` is `true`
-[options="header"]
+[options="header", cols="h,2*"]
 |===
-| Node Provisioning Style | `node[]` Valid? | `nodeSource[]` Valid?
+| Node Provisioning Style | `node[]` Valid | `nodeSource[]` Valid
 | Requisitioned           | No              | Yes
 | Auto-Provisioned        | Yes             | No
 |===
@@ -120,3 +122,9 @@ The node identifier is followed by a period, then a resource-type name and insta
 | `interfaceSnmp[eth0-04013f75f101]` | A layer-two interface as represented by a row in the SNMP `ifTable`. The instance identifier is composed of the interface's `ifName` and its `ifPhysAddress` (if it has one).
 | `dskIndex[_root_fs]`               | The root filesystem of a node running the Net-SNMP management agent.
 |===
+
+Putting it all together, here are a few well-formed resource IDs:
+
+* `node[1].nodeSnmp[]`
+* `node[42].interfaceSnmp[eth0-04013f75f101]`
+* `nodeSource[Servers:115da833-0957-4471-b496-a731928c27dd].dskIndex[_root_fs]`
