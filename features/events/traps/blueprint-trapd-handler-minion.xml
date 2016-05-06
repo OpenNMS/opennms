@@ -1,5 +1,6 @@
 <blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0"
 	xmlns:ext="http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.1.0"
 	xsi:schemaLocation="
 		http://www.osgi.org/xmlns/blueprint/v1.0.0 
@@ -12,25 +13,16 @@
 		http://aries.apache.org/schemas/blueprint-ext/blueprint-ext-1.1.xsd
 ">
 
-	<cm:property-placeholder id="trapdNotificationHandlerMinionProperties" persistent-id="org.opennms.netmgt.trapd.handler.minion" update-strategy="none">
-		<cm:default-properties>
-			<cm:property name="brokerUri" value="tcp://127.0.0.1:61716" />
-		</cm:default-properties>
-	</cm:property-placeholder>
-
 	<bean id="trapdNotificationHandlerCamel" class="org.opennms.netmgt.trapd.TrapNotificationHandlerCamelImpl">
 		<argument value="seda:handleMessage" />
 	</bean>
 
 	<service interface="org.opennms.netmgt.trapd.TrapNotificationHandler" ref="trapdNotificationHandlerCamel" />
 
-
 	<!-- ActiveMQ component provided by minion-core -->
 	<reference id="queuingservice" interface="org.apache.camel.Component" filter="(alias=opennms.broker)"/>
-    
-	<camelContext id="trapdNotificationHandlerMinion"
-		xmlns="http://camel.apache.org/schema/blueprint">
-		<propertyPlaceholder id="properties" location="blueprint:trapdNotificationHandlerMinionProperties" />
+
+	<camelContext id="trapdNotificationHandlerMinion" xmlns="http://camel.apache.org/schema/blueprint">
 		<route id="trapdHandlerMinion">
 			<from uri="seda:handleMessage" />
 			<convertBodyTo type="org.opennms.netmgt.trapd.TrapQueueProcessor" />
