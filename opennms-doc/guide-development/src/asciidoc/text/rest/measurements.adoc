@@ -87,14 +87,14 @@ curl -X POST  -H "Accept: application/json" -H "Content-Type: application/json" 
             "aggregation": "AVERAGE",
             "attribute": "ifHCInOctets",
             "label": "ifHCInOctets",
-            "resourceId": "nodeSource[NODES:1424038123222].interfaceSnmp[eth0-04013f75f101]",
+            "resourceId": "nodeSource[Servers:1424038123222].interfaceSnmp[eth0-04013f75f101]",
             "transient": "false"
         },
         {
             "aggregation": "AVERAGE",
             "attribute": "ifHCOutOctets",
             "label": "ifHCOutOctets",
-            "resourceId": "nodeSource[NODES:1424038123222].interfaceSnmp[eth0-04013f75f101]",
+            "resourceId": "nodeSource[Servers:1424038123222].interfaceSnmp[eth0-04013f75f101]",
             "transient": "true"
         }
     ],
