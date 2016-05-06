@@ -45,7 +45,7 @@ import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.TrapdConfig;
-import org.opennms.netmgt.dao.mock.MockEventIpcManager;
+import org.opennms.netmgt.snmp.BasicTrapProcessor;
 import org.opennms.netmgt.snmp.TrapNotification;
 import org.opennms.netmgt.snmp.snmp4j.Snmp4JTrapNotifier;
 import org.slf4j.Logger;
@@ -125,6 +125,7 @@ public class TrapdHandlerMinionIT extends CamelBlueprintTestSupport {
 	@BeforeClass
 	public static void startActiveMQ() throws Exception {
 		m_broker = new BrokerService();
+		// TODO: Open the broker on a port that is checked to be free
 		m_broker.addConnector("tcp://127.0.0.1:61716");
 		m_broker.start();
 	}
@@ -138,29 +139,11 @@ public class TrapdHandlerMinionIT extends CamelBlueprintTestSupport {
 
 	@Test
 	public void testTrapd() throws Exception {
-		
-		MockEndpoint broadcasTrap = getMockEndpoint("mock:queuingservice:broadcastTrap", false);
-		broadcasTrap.setExpectedMessageCount(1);
-		
-		MockEventIpcManager mockEventIpcManager = new MockEventIpcManager();
+		MockEndpoint broadcastTrap = getMockEndpoint("mock:queuingservice:broadcastTrap", false);
+		broadcastTrap.setExpectedMessageCount(1);
 
-		MockTrapdIpMgr m_trapdIpMgr=new MockTrapdIpMgr();
-
-		m_trapdIpMgr.clearKnownIpsMap();
-		m_trapdIpMgr.setNodeId("127.0.0.1", 1);
-
-
-		TrapQueueProcessor trap=new TrapQueueProcessor();
-		trap.setNewSuspect(false);
-		trap.setEventManager(mockEventIpcManager);
-		
-		EventCreator trapProcess = new EventCreator(m_trapdIpMgr);
-		trapProcess.setAgentAddress(InetAddressUtils.ONE_TWENTY_SEVEN);
-		trapProcess.setCommunity("comm");
-		trapProcess.setTrapAddress(InetAddressUtils.ONE_TWENTY_SEVEN);
-		
 		PDU snmp4JV2cTrapPdu = new PDU();
-		
+
 		OID oid = new OID(".1.3.6.1.2.1.1.3.0");
 		snmp4JV2cTrapPdu.add(new VariableBinding(SnmpConstants.sysUpTime, new TimeTicks(5000)));
 		snmp4JV2cTrapPdu.add(new VariableBinding(SnmpConstants.snmpTrapOID, new OID(oid)));
@@ -171,15 +154,20 @@ public class TrapdHandlerMinionIT extends CamelBlueprintTestSupport {
 		snmp4JV2cTrapPdu.setType(PDU.NOTIFICATION);
 
 		TrapNotification snmp4JV2cTrap = new Snmp4JTrapNotifier.Snmp4JV2TrapInformation(
-				InetAddressUtils.ONE_TWENTY_SEVEN, new String("public"),
-				snmp4JV2cTrapPdu, trapProcess);
-		
-		trap.setTrapNotification(snmp4JV2cTrap);
+				InetAddressUtils.ONE_TWENTY_SEVEN, "public",
+				snmp4JV2cTrapPdu, new BasicTrapProcessor());
 
-
-		template.requestBody("seda:handleMessage", trap.call());
+		template.requestBody("seda:handleMessage", snmp4JV2cTrap);
 
 		assertMockEndpointsSatisfied();
 
+		TrapNotification received = broadcastTrap.getExchanges().get(0).getIn().getBody(TrapNotification.class);
+		BasicTrapProcessor receivedProcessor = (BasicTrapProcessor)received.getTrapProcessor();
+		assertEquals("public", receivedProcessor.getCommunity());
+		assertEquals(InetAddressUtils.ONE_TWENTY_SEVEN, receivedProcessor.getTrapAddress());
+		assertEquals(InetAddressUtils.ONE_TWENTY_SEVEN, receivedProcessor.getAgentAddress());
+		assertEquals(".1.3.6.1.2.1.1.3", receivedProcessor.getTrapIdentity().getEnterpriseId());
+		assertEquals(6, receivedProcessor.getTrapIdentity().getGeneric());
+		assertEquals(0, receivedProcessor.getTrapIdentity().getSpecific());
 	}
 }

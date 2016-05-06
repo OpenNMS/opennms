@@ -25,7 +25,7 @@
 	<camelContext id="trapdNotificationHandlerMinion" xmlns="http://camel.apache.org/schema/blueprint">
 		<route id="trapdHandlerMinion">
 			<from uri="seda:handleMessage" />
-			<convertBodyTo type="org.opennms.netmgt.trapd.TrapQueueProcessor" />
+			<convertBodyTo type="org.opennms.netmgt.snmp.TrapNotification" />
 			<!-- TODO: Use marshalling instead of serialization when transmitting object? -->
 			<!-- Broadcast message over ActiveMQ -->
 			<to uri="queuingservice:broadcastTrap?disableReplyTo=true" />
