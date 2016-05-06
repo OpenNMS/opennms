@@ -49,12 +49,23 @@ public class SupportPageIT extends OpenNMSSeleniumTestCase {
 
     @Test
     public void testAllLinksArePresent() throws Exception {
-        assertEquals(3, countElementsMatchingCss("h3.panel-title"));
+        assertEquals(4, countElementsMatchingCss("h3.panel-title"));
         final String[] links = new String[] {
                 "the OpenNMS.com support page",
                 "About the OpenNMS Web Console",
                 "Release Notes",
-                "Online Documentation",
+                // Online docs links
+                "Installation Guide",
+                "Users Guide",
+                "Administrators Guide",
+                "Developers Guide",
+                "Online Wiki Documentation",
+                // Offline docs links
+                "Installation Guide",
+                "Users Guide",
+                "Administrators Guide",
+                "Developers Guide",
+                "Online Wiki Documentation",
                 "Generate a System Report",
                 "Open a Bug or Enhancement Request",
                 "Chat with Developers on IRC"
