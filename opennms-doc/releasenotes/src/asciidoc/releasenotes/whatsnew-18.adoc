@@ -8,17 +8,13 @@
 * *PostgreSQL 9.1 or higher*: Horizon 17 now requires PostgreSQL 9.1 or higher.
   All older versions of PostgreSQL are past their end-of-life support date.
 
-=== Important Upgrade Notes
+=== Breaking Changes
 
-* *Upgrade Custom Icon Definitions*: Custom Icon Definitions in the Topology Map are now handled differently.
-  Please migrate existing custom icons.
-  The link:https://docs.opennms.org/opennms/releases/18.0.0/guide-admin/guide-admin.html#_icons[OpenNMS Administrators Guide] covers this topic in more detail.
-
-=== API or Breaking Changes
-
+* *Custom Topology Icon Definitions*: Custom Icon Definitions in the Topology Map are now handled differently.
+  You will need to migrate your existing custom icons to the new layout.  The link:https://docs.opennms.org/opennms/releases/18.0.0/guide-admin/guide-admin.html#_icons[OpenNMS Administrators Guide] covers this topic in more detail.
+* Event Translator: The default behavior of the event translator preserving SNMP data when cloning event has been changed to *_NOT_* preserve that data by default.  To restore the old behavior, set `preserve-snmp-data="true"` on the event XML.  For more information, see link:http://issues.opennms.org/browse/NMS-8374[issue NMS-8374].
 * ReST API: The ReST API has been normalized to give better and more consistent responses to queries.
   This includes dropping support for redirecting to the model URL on write operations (POST, etc.)  If you were relying on this old (broken) behavior, please update your ReST API calls accordingly.  Most client code should be unaffected.
-* Event Translator: The default behavior of the event translator preserving SNMP data when cloning event has been changed to *_NOT_* preserve that data by default.  To restore the old behavior, set `preserve-snmp-data="true"` on the event XML.  For more information, see link:http://issues.opennms.org/browse/NMS-8374[issue NMS-8374].
 
 === New Features
 
