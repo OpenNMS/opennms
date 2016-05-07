@@ -49,6 +49,7 @@ public class SupportPageIT extends OpenNMSSeleniumTestCase {
 
     @Test
     public void testAllLinksArePresent() throws Exception {
+        Thread.sleep(4000);
         assertEquals(4, countElementsMatchingCss("h3.panel-title"));
         final String[] links = new String[] {
                 "the OpenNMS.com support page",
