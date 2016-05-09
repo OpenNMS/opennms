@@ -55,9 +55,11 @@ import org.snmp4j.smi.TimeTicks;
 import org.snmp4j.smi.Variable;
 import org.snmp4j.smi.VariableBinding;
 
-public class Snmp4JTrapNotifier implements CommandResponder {
-	
-	public static final transient Logger LOG = LoggerFactory.getLogger(Snmp4JTrapNotifier.class);
+public class Snmp4JTrapNotifier implements CommandResponder, Serializable {
+
+    private static final long serialVersionUID = 8889136314276990017L;
+
+    public static final transient Logger LOG = LoggerFactory.getLogger(Snmp4JTrapNotifier.class);
 
     private TrapProcessorFactory m_trapProcessorFactory;
     private TrapNotificationListener m_listener;

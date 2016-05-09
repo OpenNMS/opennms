@@ -28,14 +28,17 @@
 
 package org.opennms.netmgt.snmp;
 
+import java.io.Serializable;
 import java.net.InetAddress;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public abstract class TrapInformation implements TrapNotification {
-	
-	private static final transient Logger LOG = LoggerFactory.getLogger(TrapInformation.class);
+public abstract class TrapInformation implements TrapNotification, Serializable {
+
+    private static final long serialVersionUID = -730398590817240290L;
+
+    private static final transient Logger LOG = LoggerFactory.getLogger(TrapInformation.class);
 
     /**
      * The internet address of the sending agent
