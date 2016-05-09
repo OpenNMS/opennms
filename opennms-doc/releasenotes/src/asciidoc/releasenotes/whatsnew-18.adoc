@@ -5,7 +5,7 @@
 
 * *Java 8*: OpenNMS Horizon 18 requires Java 8 as the runtime environment.
   To run Horizon 18, we recommend the most recent version of Oracle JDK 8 for your platform.
-* *PostgreSQL 9.1 or higher*: Horizon 17 now requires PostgreSQL 9.1 or higher.
+* *PostgreSQL 9.1 or higher*: Horizon 18 requires PostgreSQL 9.1 or higher.
   All older versions of PostgreSQL are past their end-of-life support date.
 
 === Breaking Changes
