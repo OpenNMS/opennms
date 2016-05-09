@@ -149,7 +149,7 @@
     </logger>
 
     <!-- Allow any message to pass through the root logger -->
-    <root level="DEBUG">
+    <root level="WARN">
       <!-- 
         Each category/log can be set to one of TRACE, INFO, DEBUG, WARN, ERROR
 
@@ -172,6 +172,7 @@
         <KeyValuePair key="alarmd"               value="WARN" />
         <KeyValuePair key="asterisk-gateway"     value="WARN" />
         <KeyValuePair key="archiver"             value="WARN" />
+        <KeyValuePair key="bsmd"                 value="WARN" />
         <KeyValuePair key="collectd"             value="WARN" />
         <KeyValuePair key="correlator"           value="WARN" />
         <KeyValuePair key="dhcpd"                value="WARN" />
@@ -183,7 +184,6 @@
         <KeyValuePair key="enlinkd"              value="WARN" />
         <KeyValuePair key="manager"              value="DEBUG" />
         <KeyValuePair key="map"                  value="WARN" />
-        <KeyValuePair key="model-importer"       value="WARN" />
         <KeyValuePair key="notifd"               value="WARN" />
         <KeyValuePair key="oss-qosd"             value="WARN" />
         <KeyValuePair key="oss-qosdrx"           value="WARN" />
