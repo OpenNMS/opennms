@@ -36,21 +36,32 @@ import java.util.List;
 import org.opennms.core.criteria.Alias;
 import org.opennms.core.criteria.Criteria;
 import org.opennms.core.criteria.restrictions.EqRestriction;
-import org.opennms.core.criteria.restrictions.Restriction;
-import org.opennms.core.criteria.restrictions.Restrictions;
-import org.opennms.features.topology.api.VerticesUpdateManager;
+import org.opennms.features.topology.api.browsers.ContentType;
+import org.opennms.features.topology.api.browsers.OnmsContainerDatasource;
+import org.opennms.features.topology.api.browsers.OnmsVaadinContainer;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.OnmsDao;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.PrimaryType;
-import org.opennms.osgi.EventConsumer;
+import org.springframework.transaction.support.TransactionOperations;
 
-public class NodeDaoContainer extends OnmsDaoContainer<OnmsNode,Integer> {
+public class NodeDaoContainer extends OnmsVaadinContainer<OnmsNode,Integer> {
 
 	private static final long serialVersionUID = -5697472655705494537L;
 
-	public NodeDaoContainer(NodeDao dao) {
-		super(OnmsNode.class, dao);
+    public static class NodeDaoContainerDatasource extends OnmsDaoContainerDatasource<OnmsNode, Integer> {
+        public NodeDaoContainerDatasource(OnmsDao<OnmsNode, Integer> dao, TransactionOperations transactionTemplate) {
+            super(dao, transactionTemplate);
+        }
+
+        @Override
+        public void findMatchingCallback(OnmsNode node) {
+            node.getPrimaryInterface();
+        }
+    }
+
+	public NodeDaoContainer(NodeDao dao, TransactionOperations transactionTemplate) {
+	    super(OnmsNode.class, new NodeDaoContainerDatasource(dao, transactionTemplate));
         addBeanToHibernatePropertyMapping("primaryInterface", "ipInterfaces.ipAddress");
 	}
 
@@ -69,34 +80,18 @@ public class NodeDaoContainer extends OnmsDaoContainer<OnmsNode,Integer> {
     }
 
     @Override
-    protected List<OnmsNode> getItemsForCache(OnmsDao<OnmsNode, Integer> dao, Page page) {
+    protected List<OnmsNode> getItemsForCache(final OnmsContainerDatasource<OnmsNode, Integer> datasource, final Page page) {
         // The join criteria isSnmpPrimary = PrimaryType.PRIMARY is used to only consider primary interfaces.
         // It is supposed that only one primary interface exists, but that is not always the case.
         // In order to create a valid result set, we "unify" the result.
         // See http://issues.opennms.org/browse/NMS-8079 for more details
-        List<OnmsNode> itemsForCache = super.getItemsForCache(dao, page);
+        List<OnmsNode> itemsForCache = super.getItemsForCache(datasource, page);
         return new ArrayList<>(new LinkedHashSet<>(itemsForCache));
     }
 
     @Override
-    protected void doItemAddedCallBack(int rowNumber, Integer id, OnmsNode eachBean) {
-        eachBean.getPrimaryInterface();
-    }
-
-    @Override
-    @EventConsumer
-    public void verticesUpdated(final VerticesUpdateManager.VerticesUpdateEvent event) {
-        final List<Restriction> newRestrictions = new ArrayList<Restriction>();
-        final List<Integer> nodeIds = extractNodeIds(event.getVertexRefs());
-        if (nodeIds.size() > 0) {
-            newRestrictions.add(Restrictions.in("id", nodeIds));
-        }
-
-        if (!getRestrictions().equals(newRestrictions)) { // selection really changed
-            setRestrictions(newRestrictions);
-            getCache().reload(getPage());
-            fireItemSetChangedEvent();
-        }
+    protected ContentType getContentType() {
+        return ContentType.Node;
     }
 }
 

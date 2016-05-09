@@ -62,6 +62,14 @@ public class DefaultMapViewManager implements MapViewManager{
     }
     @Override
     public void setMapBounds(BoundingBox boundingBox) {
+        // If the bounding box is smaller than the viewport, the bounding box is scaled that it
+        // maximizes the used area but still has the same aspect ratio as the viewport.
+        // In earlier versions this was done afterwards but that leads to boundingBoxChanged events fired (due to fireUpdate())
+        // and that caused the UI to behave not correctly. Changing the boundingBox before avoids unnecessary listener
+        // notifications, because the m_mapBounds equals the bounding box with aspect ratio
+        if(boundingBox.getWidth() < m_viewPortWidth && boundingBox.getHeight() < m_viewPortHeight) {
+            boundingBox = boundingBox.computeWithAspectRatio(getViewPortAspectRatio());
+        }
         if (!m_mapBounds.equals(boundingBox)) {
             if(boundingBox.getHeight() < m_viewPortHeight/2){
                 //Don't allow the height to be less than half the viewport height
@@ -72,10 +80,6 @@ public class DefaultMapViewManager implements MapViewManager{
 
             m_center = m_mapBounds.getCenter();
             fireUpdate();
-        }
-
-        if(m_mapBounds.getWidth() < m_viewPortWidth && m_mapBounds.getHeight() < m_viewPortHeight){
-            m_mapBounds = m_mapBounds.computeWithAspectRatio(getViewPortAspectRatio());
         }
     }
     @Override

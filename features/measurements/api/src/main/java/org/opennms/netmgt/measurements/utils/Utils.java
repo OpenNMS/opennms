@@ -28,7 +28,12 @@
 
 package org.opennms.netmgt.measurements.utils;
 
+import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+
+import org.opennms.netmgt.measurements.api.FetchResults;
+import org.opennms.netmgt.measurements.model.Source;
 
 /**
  * Utility functions.
@@ -53,7 +58,7 @@ public class Utils {
     }
 
     /**
-     * Converts constants stored in strings.properties to {@link org.opennms.netmgt.measurements.api.FetchResult}
+     * Converts constants stored in strings.properties to {@link org.opennms.netmgt.measurements.api.FetchResults}
      * constants.
      *
      * Keys are prefix with the source label in order to avoid collisions.
@@ -75,5 +80,30 @@ public class Utils {
             fetchResultConstants.put(String.format("%s.%s", sourceLabel, propertyName),
                     propertyValue);
         }
+    }
+
+    /**
+     * Enrich the <code>fetchResults</code> with NaN values for all <code>sources</code> which do not have values in the <code>fetchResults</code>.
+     *
+     * @param fetchResults
+     * @param sources
+     */
+    public static void fillMissingValues(FetchResults fetchResults, List<Source> sources) {
+        Objects.requireNonNull(fetchResults);
+        Objects.requireNonNull(sources);
+        final int rowCount = fetchResults.getTimestamps().length;
+        for (Source eachSource : sources) {
+            if (!fetchResults.getColumns().containsKey(eachSource.getLabel())) {
+                fetchResults.getColumns().put(eachSource.getLabel(), createNaNArray(rowCount));
+            }
+        }
+    }
+
+    private static double[] createNaNArray(int numberOfRows) {
+        final double[] values = new double[numberOfRows];
+        for (int i=0; i<numberOfRows; i++) {
+            values[i] = Double.NaN;
+        }
+        return values;
     }
 }

@@ -85,12 +85,7 @@ public class DefaultLayout implements Layout {
 	
 	@Override
 	public Map<VertexRef,Point> getLocations() {
-		return Collections.unmodifiableMap(new HashMap<VertexRef,Point>(m_locations));
-	}
-	
-	@Override
-	public void setLocation(VertexRef v, double x, double y) {
-		setLocation(v, new Point(x, y));
+		return Collections.unmodifiableMap(new HashMap<>(m_locations));
 	}
 
 	@Override
@@ -114,7 +109,7 @@ public class DefaultLayout implements Layout {
     public BoundingBox getBounds() {
         Collection<? extends Vertex> vertices = m_graphContainer.getGraph().getDisplayVertices();
         if(vertices.size() > 0) {
-            Collection<VertexRef> vRefs = new ArrayList<VertexRef>();
+            Collection<VertexRef> vRefs = new ArrayList<>();
             for(Vertex v : vertices) {
                 vRefs.add(v);
             }

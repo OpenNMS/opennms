@@ -99,6 +99,9 @@ public class JEXLExpressionEngine implements ExpressionEngine {
         final Map<String, double[]> columns = results.getColumns();
         final int numRows = timestamps.length;
 
+        // Calculate the time span
+        jexlValues.put("__diff_time", numRows < 1 ? 0d : timestamps[numRows-1] - timestamps[0]);
+
         final double expressionValues[][] = new double[numNonTransientExpression][numRows];
 
         // Iterate through all of the rows, apply the expressions

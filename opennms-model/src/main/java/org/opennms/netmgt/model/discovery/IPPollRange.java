@@ -28,9 +28,12 @@
 
 package org.opennms.netmgt.model.discovery;
 
+import java.io.Serializable;
 import java.net.InetAddress;
 import java.util.Enumeration;
 import java.util.Iterator;
+
+import org.apache.commons.lang.builder.ToStringBuilder;
 
 /**
  * <p>
@@ -43,7 +46,9 @@ import java.util.Iterator;
  * @author <A HREF="mailto:sowmya@opennms.org">Sowmya </A>
  * @author <A HREF="mailto:weave@oculan.com">Brian Weaver </A>
  */
-public class IPPollRange implements Iterable<IPPollAddress> {
+public class IPPollRange implements Iterable<IPPollAddress>, Serializable {
+    private static final long serialVersionUID = -287583115922481242L;
+
     /**
      * The range to cycle over.
      */
@@ -202,7 +207,7 @@ public class IPPollRange implements Iterable<IPPollAddress> {
      * @see IPAddrRange
      * 
      */
-    IPPollRange(InetAddress start, InetAddress end, long timeout, int retries) {
+    public IPPollRange(InetAddress start, InetAddress end, long timeout, int retries) {
         m_range = new IPAddrRange(start, end);
         m_timeout = timeout;
         m_retries = retries;
@@ -290,5 +295,14 @@ public class IPPollRange implements Iterable<IPPollAddress> {
     @Override
     public Iterator<IPPollAddress> iterator() {
         return new IPPollRangeGenerator(m_range.elements());
+    }
+
+    @Override
+    public String toString() {
+        return new ToStringBuilder(this)
+            .append("range", m_range)
+            .append("timeout", m_timeout)
+            .append("retries", m_retries)
+            .toString();
     }
 }

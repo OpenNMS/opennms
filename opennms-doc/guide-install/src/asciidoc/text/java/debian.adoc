@@ -3,9 +3,9 @@
 :imagesdir: ../../images
 
 [[gi-install-oracle-java-debian]]
-=== Setup on _Debian-based_ systems
+=== Debian
 
-This section describes how to install _Oracle Java 8_ on a _Debian-based_ system like _Debian 8_ or _Ubuntu 14.04 LTS_.
+This section describes how to install _Oracle Java SE Development Kit 8_ on a _Debian-based_ system like _Debian 8_ or _Ubuntu 14.04 LTS_.
 
 .Add Java repository from webupd8 maintainer
 [source, bash]
@@ -22,7 +22,7 @@ apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys EEA14886
 apt-get update
 ----
 
-.Install Oracle Java 8 installer
+.Install Oracle Java SE Development Kit 8
 [source, bash]
 ----
 apt-get install -y oracle-java8-installer

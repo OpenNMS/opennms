@@ -297,8 +297,8 @@ public class TestMenuBarBuilder {
         return new CheckedOperation() {
 
             @Override
-            public Undoer execute(List<VertexRef> targets, OperationContext operationContext) {
-                return null;
+            public void execute(List<VertexRef> targets, OperationContext operationContext) {
+                ;
             }
 
             @Override
@@ -378,8 +378,8 @@ public class TestMenuBarBuilder {
         return new Operation() {
 
             @Override
-            public Undoer execute(List<VertexRef> targets, OperationContext operationContext) {
-                return null;
+            public void execute(List<VertexRef> targets, OperationContext operationContext) {
+
             }
 
             @Override

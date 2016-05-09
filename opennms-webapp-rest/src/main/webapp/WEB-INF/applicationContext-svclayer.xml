@@ -97,7 +97,7 @@
     <constructor-arg name="remoteRepositoryConfigDao" ref="defaultRemoteRepositoryConfigDao"/>
     <constructor-arg name="localReportRepository" ref="legacyLocalReportRepository"/>
   </bean>
-  <bean id="foreignSourceAndRequistionAccessService" class="org.opennms.web.svclayer.support.DefaultRequisitionAccessService"></bean>
+  <bean id="foreignSourceAndRequisitionAccessService" class="org.opennms.web.svclayer.support.DefaultRequisitionAccessService"></bean>
   <bean id="snmpConfigAccessService" class="org.opennms.netmgt.config.SnmpConfigAccessService" />
   <!-- Foreign Sources Configuration -->
   <bean name="defaultForeignSourceService" class="org.opennms.netmgt.provision.persist.DefaultForeignSourceService">

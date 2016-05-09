@@ -51,7 +51,7 @@ import org.opennms.features.vaadin.jmxconfiggenerator.data.MetaAttribItem;
 import org.opennms.features.vaadin.jmxconfiggenerator.data.MetaAttribItem.AttribType;
 import org.opennms.features.vaadin.jmxconfiggenerator.data.SelectableBeanItemContainer;
 import org.opennms.features.vaadin.jmxconfiggenerator.data.SelectionValueChangedListener;
-import org.opennms.features.vaadin.jmxconfiggenerator.ui.UIHelper;
+import org.opennms.netmgt.vaadin.core.UIHelper;
 import org.opennms.features.vaadin.jmxconfiggenerator.ui.mbeans.validation.AttributeNameValidator;
 import org.opennms.features.vaadin.jmxconfiggenerator.ui.mbeans.validation.UniqueAttributeNameValidator;
 

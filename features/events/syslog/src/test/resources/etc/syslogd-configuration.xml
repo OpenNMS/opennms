@@ -1,0 +1,88 @@
+<?xml version="1.0"?>
+<syslogd-configuration>
+    <configuration
+            syslog-port="10514"
+            listen-address="127.0.0.1"
+            new-suspect-on-message="false"
+            forwarding-regexp="^.*\s*(19|20)\d\d([-/.])(0[1-9]|1[012])\2(0[1-9]|[12][0-9]|3[01])(\s+)(\S+)(\s)(\S.+)"
+            matching-group-host="6"
+            matching-group-message="8"
+            discard-uei="DISCARD-MATCHING-MESSAGES"
+            />
+
+    <ueiList>
+        <ueiMatch>
+            <match type="substr" expression="CRISCO"/>
+            <uei>uei.opennms.org/tests/syslogd/substrUeiRewriteTest</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression="foo: (\d+) out of (\d+) tests failed for (\S+)$"/>
+            <uei>uei.opennms.org/tests/syslogd/regexUeiRewriteTest</uei>
+        </ueiMatch>
+        <ueiMatch>
+            <match type="regex" expression="[Cc]ritical"/>
+            <uei>uei.opennms.org/tests/syslogd/regexUeiRewriteUnanchoredTest</uei>
+        </ueiMatch>
+        <ueiMatch>
+        	<match type="substr" expression="JUNK"/>
+        	<uei>DISCARD-MATCHING-MESSAGES</uei>
+        </ueiMatch>
+        <ueiMatch>
+        	<match type="regex" expression="[Tt][Rr][Aa][Ss][Hh]"/>
+        	<uei>DISCARD-MATCHING-MESSAGES</uei>
+        </ueiMatch>
+        <ueiMatch>
+        	<match type="regex" expression="coffee: Secretly replaced (\S+) coffee with (\d+) (\S+)$"/>
+        	<uei>uei.opennms.org/tests/syslogd/regexParameterAssignmentTest/bothKinds</uei>
+        	<parameter-assignment matching-group="1" parameter-name="whoseBeverage" />
+        	<parameter-assignment matching-group="2" parameter-name="count" />
+        	<parameter-assignment matching-group="3" parameter-name="replacementItem" />        	
+        </ueiMatch>
+        <ueiMatch>
+        	<match type="regex" expression="tea: Secretly replaced (\S+) tea with (\d+) (\S+)$" default-parameter-mapping="false"/>
+        	<uei>uei.opennms.org/tests/syslogd/regexParameterAssignmentTest/userSpecifiedOnly</uei>
+        	<parameter-assignment matching-group="1" parameter-name="whoseBeverage" />
+        	<parameter-assignment matching-group="2" parameter-name="count" />
+        	<parameter-assignment matching-group="3" parameter-name="replacementItem" />
+        </ueiMatch>
+        <ueiMatch>
+        	<process-match expression="beerd" />
+        	<match type="regex" expression=".*" default-parameter-mapping="false"/>
+        	<uei>uei.opennms.org/tests/syslogd/nonMessageMatch/processOnly</uei>
+        </ueiMatch>
+        <ueiMatch>
+        	<facility>local0</facility>
+        	<match type="regex" expression=".*" default-parameter-mapping="false"/>
+        	<uei>uei.opennms.org/tests/syslogd/nonMessageMatch/facilityOnly</uei>
+        </ueiMatch>
+        <ueiMatch>
+        	<facility>local1</facility>
+        	<severity>Warning</severity>
+        	<process-match expression="maltd" />
+        	<match type="regex" expression=".*" default-parameter-mapping="false"/>
+        	<uei>uei.opennms.org/tests/syslogd/nonMessageMatch/facilitySeverityProcess</uei>
+        </ueiMatch>
+        <ueiMatch>
+        	<facility>local1</facility>
+        	<severity>Warning</severity>
+        	<match type="regex" expression=".*" default-parameter-mapping="false"/>
+        	<uei>uei.opennms.org/tests/syslogd/nonMessageMatch/facilitySeverity</uei>
+        </ueiMatch>
+        <ueiMatch>
+        	<severity>Critical</severity>
+        	<match type="regex" expression=".*" default-parameter-mapping="false"/>
+        	<uei>uei.opennms.org/tests/syslogd/nonMessageMatch/severityOnly</uei>
+        </ueiMatch>
+    </ueiList>
+
+    <hideMessage>
+        <hideMatch>
+            <match type="substr" expression="TESTHIDING"/>
+        </hideMatch>
+        <hideMatch>
+            <match type="regex" expression="[Dd]ouble[Ss]ecret"/>
+        </hideMatch>
+    </hideMessage>
+
+
+</syslogd-configuration>

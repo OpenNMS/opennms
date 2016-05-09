@@ -86,7 +86,11 @@ public class EventRestService extends OnmsRestService {
     @Path("{eventId}")
     @Transactional
     public OnmsEvent getEvent(@PathParam("eventId") final Integer eventId) {
-        return m_eventDao.get(eventId);
+        final OnmsEvent e = m_eventDao.get(eventId);
+        if (e == null) {
+            throw getException(Status.NOT_FOUND, "Event object {} was not found.", Integer.toString(eventId));
+        }
+        return e;
     }
 
     /**
@@ -196,7 +200,7 @@ public class EventRestService extends OnmsRestService {
      * the events
      * 
      * @param eventId
-     *            a {@link java.lang.String} object.
+     *            a {@link java.lang.Integer} object.
      * @param ack
      *            a {@link java.lang.Boolean} object.
      */
@@ -204,16 +208,16 @@ public class EventRestService extends OnmsRestService {
     @Path("{eventId}")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Transactional
-    public Response updateEvent(@Context final SecurityContext securityContext, @Context final UriInfo uriInfo, @PathParam("eventId") final String eventId, @FormParam("ack") final Boolean ack) {
+    public Response updateEvent(@Context final SecurityContext securityContext, @PathParam("eventId") final Integer eventId, @FormParam("ack") final Boolean ack) {
         writeLock();
 
         try {
-            final OnmsEvent event = m_eventDao.get(Integer.valueOf(eventId));
+            final OnmsEvent event = getEvent(eventId);
             if (ack == null) {
                 throw getException(Status.BAD_REQUEST, "Must supply the 'ack' parameter, set to either 'true' or 'false'");
             }
             processEventAck(securityContext, event, ack);
-            return Response.seeOther(getRedirectUri(uriInfo)).build();
+            return Response.noContent().build();
         } finally {
             writeUnlock();
         }
@@ -230,7 +234,7 @@ public class EventRestService extends OnmsRestService {
     @PUT
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Transactional
-    public Response updateEvents(@Context final SecurityContext securityContext, @Context final UriInfo uriInfo, final MultivaluedMapImpl formProperties) {
+    public Response updateEvents(@Context final SecurityContext securityContext, final MultivaluedMapImpl formProperties) {
         writeLock();
 
         try {
@@ -246,7 +250,7 @@ public class EventRestService extends OnmsRestService {
             for (final OnmsEvent event : m_eventDao.findMatching(builder.toCriteria())) {
                 processEventAck(securityContext, event, ack);
             }
-            return Response.seeOther(getRedirectUri(uriInfo)).build();
+            return Response.noContent().build();
         } finally {
             writeUnlock();
         }
@@ -267,8 +271,14 @@ public class EventRestService extends OnmsRestService {
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     @Transactional
     public Response publishEvent(final org.opennms.netmgt.xml.event.Event event) {
+        if (event.getSource() == null) {
+            event.setSource("ReST");
+        }
+        if (event.getTime() == null) {
+            event.setTime(new Date());
+        }
         m_eventForwarder.sendNow(event);
-        return Response.ok().build();
+        return Response.noContent().build();
     }
 
     private static CriteriaBuilder getCriteriaBuilder(final MultivaluedMap<String, String> params) {

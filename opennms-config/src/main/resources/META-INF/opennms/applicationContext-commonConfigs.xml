@@ -18,19 +18,19 @@
 
     <context:annotation-config />
 
-    <bean id="propertyPlaceholderConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
-    <property name="systemPropertiesModeName" value="SYSTEM_PROPERTIES_MODE_OVERRIDE" />
-    <!-- 
-      We need to ignore unresolvable placeholders since if multiple PropertyPlaceholderConfigurer
-      preprocessors are in use in a single context (such as inside unit tests), Spring will encounter
-      the issue documented here:
+    <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <property name="systemPropertiesModeName" value="SYSTEM_PROPERTIES_MODE_OVERRIDE" />
+        <!-- 
+          We need to ignore unresolvable placeholders since if multiple PropertyPlaceholderConfigurer
+          preprocessors are in use in a single context (such as inside unit tests), Spring will encounter
+          the issue documented here:
 
-      https://jira.springsource.org/browse/SPR-6428
+          https://jira.springsource.org/browse/SPR-6428
 
-      TODO: Fix this behavior after upgrading to Spring 3.1.
-    -->
-    <property name="ignoreUnresolvablePlaceholders" value="true"/>
-  </bean>
+          TODO: Fix this behavior after upgrading to Spring 3.1.
+        -->
+        <property name="ignoreUnresolvablePlaceholders" value="true"/>
+    </bean>
 
 	<bean id="init-onmsServerConfig-factory" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
 		<property name="staticMethod"><value>org.opennms.netmgt.config.OpennmsServerConfigFactory.init</value></property>
@@ -137,6 +137,10 @@
   <bean id="eventdConfigManager" class="org.opennms.netmgt.config.EventdConfigManager"/>
   
   <onmsgi:service interface="org.opennms.netmgt.config.api.EventdConfig" ref="eventdConfigManager" />
+  
+  <bean id="syslogdConfigFactory" class="org.opennms.netmgt.config.SyslogdConfigFactory" />
+  
+  <onmsgi:service interface="org.opennms.netmgt.config.SyslogdConfig" ref="syslogdConfigFactory" />
   
   <bean id="trapdConfig-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean" lazy-init="true">
     <property name="staticMethod"><value>org.opennms.netmgt.config.TrapdConfigFactory.init</value></property>

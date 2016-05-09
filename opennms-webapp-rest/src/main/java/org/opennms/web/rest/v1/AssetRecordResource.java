@@ -36,11 +36,9 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
-import javax.ws.rs.core.UriInfo;
 
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.events.api.EventConstants;
@@ -100,7 +98,7 @@ public class AssetRecordResource extends OnmsRestService {
      */
     @PUT
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-    public Response updateAssetRecord(@Context final UriInfo uriInfo, @PathParam("nodeCriteria") final String nodeCriteria, final MultivaluedMapImpl params) {
+    public Response updateAssetRecord(@PathParam("nodeCriteria") final String nodeCriteria, final MultivaluedMapImpl params) {
         OnmsNode node = m_nodeDao.get(nodeCriteria);
         if (node == null) {
             throw getException(Status.BAD_REQUEST, "updateAssetRecord: Can't find node " + nodeCriteria);
@@ -114,6 +112,7 @@ public class AssetRecordResource extends OnmsRestService {
             assetRecord.setGeolocation(new OnmsGeolocation());
         }
         LOG.debug("updateAssetRecord: updating category {}", assetRecord);
+        boolean modified = false;
         BeanWrapper wrapper = PropertyAccessorFactory.forBeanPropertyAccess(assetRecord);
         wrapper.registerCustomEditor(Date.class, new ISO8601DateEditor());
         for(String key : params.keySet()) {
@@ -121,19 +120,21 @@ public class AssetRecordResource extends OnmsRestService {
                 String stringValue = params.getFirst(key);
                 Object value = wrapper.convertIfNecessary(stringValue, (Class<?>)wrapper.getPropertyType(key));
                 wrapper.setPropertyValue(key, value);
+                modified = true;
             }
         }
-
-        LOG.debug("updateAssetRecord: assetRecord {} updated", assetRecord);
-        m_nodeDao.saveOrUpdate(node);
-
-        try {
-            sendEvent(EventConstants.ASSET_INFO_CHANGED_EVENT_UEI, node.getId());
-        } catch (EventProxyException e) {
-            throw getException(Status.BAD_REQUEST, e.getMessage());
+        if (modified) {
+            LOG.debug("updateAssetRecord: assetRecord {} updated", assetRecord);
+            m_nodeDao.saveOrUpdate(node);
+            try {
+                sendEvent(EventConstants.ASSET_INFO_CHANGED_EVENT_UEI, node.getId());
+            } catch (EventProxyException e) {
+                throw getException(Status.INTERNAL_SERVER_ERROR, e.getMessage());
+            }
+            return Response.noContent().build();
         }
 
-        return Response.seeOther(getRedirectUri(uriInfo)).build();
+        return Response.notModified().build();
     }
 
     private static OnmsAssetRecord getAssetRecord(OnmsNode node) {
@@ -142,7 +143,7 @@ public class AssetRecordResource extends OnmsRestService {
     
     
     private void sendEvent(String uei, int nodeId) throws EventProxyException {
-        EventBuilder bldr = new EventBuilder(uei, getClass().getName());
+        EventBuilder bldr = new EventBuilder(uei, "ReST");
         bldr.setNodeid(nodeId);
         m_eventProxy.send(bldr.getEvent());
     }

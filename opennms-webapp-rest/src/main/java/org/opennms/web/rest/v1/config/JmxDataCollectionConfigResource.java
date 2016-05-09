@@ -33,6 +33,7 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 
 import org.opennms.core.config.api.ConfigurationResourceException;
 import org.opennms.core.xml.AbstractJaxbConfigDao;
@@ -70,7 +71,7 @@ public class JmxDataCollectionConfigResource implements InitializingBean {
         final JmxDatacollectionConfig jmxDataCollectionConfig = m_jmxDataCollectionConfigDao.getContainer().getObject();
 
         if (jmxDataCollectionConfig == null) {
-            return Response.status(404).build();
+            return Response.status(Status.NOT_FOUND).build();
         }
 
         return Response.ok(jmxDataCollectionConfig).build();

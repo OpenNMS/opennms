@@ -66,8 +66,11 @@ public class DefaultPollService implements PollService {
         
         m_monitors = monitors;
     }
-    
-    /** {@inheritDoc} */
+
+    /**
+     * This method will initialize the {@link ServiceMonitor} for the
+     * {@link PolledService}.
+     */
     @Override
     public void initialize(PolledService polledService) {
         ServiceMonitor monitor = getServiceMonitor(polledService);

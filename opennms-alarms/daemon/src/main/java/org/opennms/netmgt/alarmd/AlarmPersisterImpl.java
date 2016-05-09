@@ -30,9 +30,12 @@ package org.opennms.netmgt.alarmd;
 
 import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.dao.api.EventDao;
+import org.opennms.netmgt.events.api.EventConstants;
+import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.model.OnmsSeverity;
+import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.UpdateField;
 import org.slf4j.Logger;
@@ -50,6 +53,7 @@ public class AlarmPersisterImpl implements AlarmPersister {
 
     private AlarmDao m_alarmDao;
     private EventDao m_eventDao;
+    private EventForwarder m_eventForwarder;
 
     /** {@inheritDoc} 
      * @return */
@@ -76,7 +80,8 @@ public class AlarmPersisterImpl implements AlarmPersister {
         String reductionKey = event.getAlarmData().getReductionKey();
         LOG.debug("addOrReduceEventAsAlarm: looking for existing reduction key: {}", reductionKey);
         OnmsAlarm alarm = m_alarmDao.findByReductionKey(reductionKey);
-    
+
+        EventBuilder ebldr = null;
         if (alarm == null) {
             LOG.debug("addOrReduceEventAsAlarm: reductionKey:{} not found, instantiating new alarm", reductionKey);
             alarm = createNewAlarm(e, event);
@@ -84,19 +89,29 @@ public class AlarmPersisterImpl implements AlarmPersister {
             //FIXME: this should be a cascaded save
             m_alarmDao.save(alarm);
             m_eventDao.saveOrUpdate(e);
+
+            ebldr = new EventBuilder(EventConstants.ALARM_CREATED_UEI, Alarmd.NAME);
         } else {
             LOG.debug("addOrReduceEventAsAlarm: reductionKey:{} found, reducing event to existing alarm: {}", reductionKey, alarm.getIpAddr());
             reduceEvent(e, alarm, event);
             m_alarmDao.update(alarm);
             m_eventDao.update(e);
-    
+
             if (event.getAlarmData().isAutoClean()) {
                 m_eventDao.deletePreviousEventsForAlarm(alarm.getId(), e);
             }
+
+            ebldr = new EventBuilder(EventConstants.ALARM_UPDATED_WITH_REDUCED_EVENT_UEI, Alarmd.NAME);
         }
-        
+
         if (alarm.getNodeId() != null) {
             alarm.getNode().getForeignSource(); // This should trigger the lazy loading of the node object, to properly populate the NorthboundAlarm class.
+        }
+
+        if (ebldr != null) {
+            ebldr.addParam(EventConstants.PARM_ALARM_UEI, alarm.getUei());
+            ebldr.addParam(EventConstants.PARM_ALARM_ID, alarm.getId());
+            m_eventForwarder.sendNow(ebldr.getEvent());
         }
 
         return alarm;
@@ -258,4 +273,11 @@ public class AlarmPersisterImpl implements AlarmPersister {
         return m_eventDao;
     }
 
+    public void setEventForwarder(EventForwarder eventForwarder) {
+        m_eventForwarder = eventForwarder;
+    }
+
+    public EventForwarder getEventForwarder() {
+        return m_eventForwarder;
+    }
 }

@@ -31,7 +31,6 @@ package org.opennms.netmgt.model;
 import static org.opennms.core.utils.InetAddressUtils.addr;
 
 import java.net.InetAddress;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;

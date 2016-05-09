@@ -31,6 +31,7 @@ package org.opennms.netmgt.provision.detector.jmx;
 import java.io.IOException;
 import java.net.ConnectException;
 import java.net.InetAddress;
+import java.net.MalformedURLException;
 import java.util.Map;
 
 import org.opennms.core.spring.BeanUtils;
@@ -43,7 +44,6 @@ import org.opennms.netmgt.jmx.connection.JmxServerConnector;
 import org.opennms.netmgt.jmx.impl.connection.connectors.Jsr160ConnectionFactory;
 import org.opennms.netmgt.jmx.impl.connection.connectors.PlatformMBeanServerConnector;
 
-import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 
 /**
@@ -82,7 +82,7 @@ public abstract class AbstractJsr160Detector extends JMXDetector {
      * @throws IOException 
      */
     @Override
-    protected JmxServerConnectionWrapper connect(final InetAddress address, final int port, final int timeout) throws IOException {
+    protected JmxServerConnectionWrapper connect(final InetAddress address, final int port, final int timeout) throws MalformedURLException, IOException {
         if (m_jmxConfigDao == null) {
             m_jmxConfigDao = BeanUtils.getBean("daoContext", "jmxConfigDao", JmxConfigDao.class);
         }

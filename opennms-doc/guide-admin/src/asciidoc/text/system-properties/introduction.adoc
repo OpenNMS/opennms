@@ -1,0 +1,23 @@
+
+// Allow GitHub image rendering
+:imagesdir: ../images
+
+The global behavior of _OpenNMS_ is configured with Property files.
+Configuration can have also effect on the _Java Virtual Machine_ underneath _OpenNMS_.
+Changes in these property files require a restart of _OpenNMS_.
+The configuration files can be found in `${OPENNMS_HOME}/etc`.
+
+The priority for _Java system properties_ is as follows:
+
+. Those set via the _Java_ command line i.e. in `opennms.conf` via `ADDITIONAL_MANAGER_OPTIONS`
+. `opennms.properties.d/*.properties`
+. `opennms.properties`
+. `libraries.properties`
+. `rrd-configuration.properties`
+. `bootstrap.properties`
+
+Property files in `opennms.properties.d/` are sorted alphabetically.
+
+TIP: To avoid conflicts with customized configurations, all custom properties can be added to one or more files in `${OPENNMS_HOME}/etc/opennms.properties.d/`.
+     It is recommended to avoid modification of OpenNMS properties from the default installation.
+     Create dedicated files with your customized properties in `opennms.properties.d/`.

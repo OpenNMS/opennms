@@ -167,7 +167,7 @@ public class AdminSnmpConfigForIpPageIT extends OpenNMSSeleniumTestCase {
             enterText(By.name(fieldName), "1000"); // > 0
             validate(errorMessageTemplate, fieldName, fieldLabel, "1000", true);
             // reset to default
-            enterText(By.name(fieldName),  "");
+            findElementByName(fieldName).clear();
         }
 
         // now test max request size individually

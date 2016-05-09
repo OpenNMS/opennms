@@ -3,7 +3,7 @@
   <parent>
     <artifactId>opennms</artifactId>
     <groupId>org.opennms</groupId>
-    <version>17.1.1</version>
+    <version>18.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>opennms-base-assembly</artifactId>
@@ -359,6 +359,10 @@
     </dependency>
     <dependency>
       <groupId>org.opennms.features.events</groupId>
+      <artifactId>org.opennms.features.events.syslog</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.events</groupId>
       <artifactId>org.opennms.features.events.traps</artifactId>
     </dependency>
     <dependency>
@@ -610,7 +614,32 @@
     </dependency>
     <dependency>
       <groupId>org.opennms.features</groupId>
+      <artifactId>org.opennms.features.rest-commons</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.bsm</groupId>
+      <artifactId>org.opennms.features.bsm.persistence.impl</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.bsm</groupId>
+      <artifactId>org.opennms.features.bsm.service.impl</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.bsm</groupId>
+      <artifactId>org.opennms.features.bsm.daemon</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features</groupId>
       <artifactId>org.opennms.features.newts</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features</groupId>
+      <artifactId>org.opennms.features.timeseries-evaluate</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
@@ -643,35 +672,6 @@
       <groupId>oro</groupId>
       <artifactId>oro</artifactId>
     </dependency>
-    <!-- dependencies for SMS monitors -->
-    <!--
-    <dependency>
-      <groupId>org.opennms.features.sms-reflector</groupId>
-      <artifactId>sms-gateway</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.features.sms-reflector</groupId>
-      <artifactId>sms-service</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.features.sms-reflector</groupId>
-      <artifactId>sms-ping</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.features.sms-reflector</groupId>
-      <artifactId>sms-monitor</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.dependencies</groupId>
-      <artifactId>smslib-dependencies</artifactId>
-      <type>pom</type>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.dependencies</groupId>
-      <artifactId>rxtx-dependencies</artifactId>
-      <type>pom</type>
-    </dependency>
-    -->
     <!-- dependencies for XML/JSON collector -->
     <dependency>
       <groupId>commons-jxpath</groupId>
@@ -719,6 +719,32 @@
       <groupId>org.opennms</groupId>
       <artifactId>opennms-jasperstudio-extension</artifactId>
       <version>${project.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>org.springframework</groupId>
+          <artifactId>spring-expression</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.springframework</groupId>
+          <artifactId>spring-asm</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.springframework</groupId>
+          <artifactId>spring-aop</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.springframework</groupId>
+          <artifactId>spring-context</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.springframework</groupId>
+          <artifactId>spring-beans</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.springframework</groupId>
+          <artifactId>spring-core</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <!-- TODO: Is this the better place for the following dependency? -->
     <dependency>
@@ -727,7 +753,7 @@
       <type>pom</type>
     </dependency>
     <dependency>
-      <groupId>org.opennms</groupId>
+      <groupId>org.opennms.features</groupId>
       <artifactId>org.opennms.features.discovery</artifactId>
       <version>${project.version}</version>
     </dependency>

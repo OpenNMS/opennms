@@ -112,7 +112,7 @@ public class DiskUsageDetector extends SnmpDetector {
     public boolean isProtocolSupported(InetAddress address) {
         try {
             SnmpAgentConfig agentConfig = SnmpPeerFactory.getInstance().getAgentConfig(address);
-            return (getValue(agentConfig, DEFAULT_OID) != null);
+            return getValue(agentConfig, DEFAULT_OID, isHex()) != null;
 
         } catch (Throwable t) {
             throw new UndeclaredThrowableException(t);

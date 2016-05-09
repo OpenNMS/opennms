@@ -86,17 +86,34 @@ public class DiscoveryConfigFactory implements DiscoveryConfigurationFactory {
     public static final String COMMENT_STR = "#";
     public static final char COMMENT_CHAR = '#';
 
+    /*
+     * These values match the defaults in discovery-configuration.xml
+     */
+    public static final double DEFAULT_PACKETS_PER_SECOND = 1.0;
+    public static final int DEFAULT_INITIAL_SLEEP_TIME = 30000;
+    public static final int DEFAULT_RESTART_SLEEP_TIME = 86400000;
+    public static final int DEFAULT_RETRIES = 1;
+    public static final int DEFAULT_TIMEOUT = 2000;
+    public static final int DEFAULT_CHUNK_SIZE = 100;
+
     /**
      * The config class loaded from the config file
      */
     private DiscoveryConfiguration m_config;
 
+    /**
+     * @deprecated Inject this value instead of using singleton access.
+     */
     public static DiscoveryConfigFactory getInstance() {
         return BeanUtils.getBean("commonContext", "discoveryFactory", DiscoveryConfigFactory.class);
     }
 
-    public DiscoveryConfigFactory() {
+    public DiscoveryConfigFactory() throws MarshalException, ValidationException, IOException {
         reload();
+    }
+
+    public DiscoveryConfigFactory (DiscoveryConfiguration config) {
+        m_config = config;
     }
 
     public Lock getReadLock() {
@@ -109,6 +126,7 @@ public class DiscoveryConfigFactory implements DiscoveryConfigurationFactory {
 
     /**
      * Reload the config from the default config file.
+     * @throws MarshalException, ValidationException, IOException 
      *
      * @exception java.io.IOException
      *                Thrown if the specified config file cannot be read/loaded
@@ -120,7 +138,7 @@ public class DiscoveryConfigFactory implements DiscoveryConfigurationFactory {
      * @throws org.exolab.castor.xml.MarshalException if any.
      * @throws org.exolab.castor.xml.ValidationException if any.
      */
-    public synchronized void reload() {
+    public synchronized void reload() throws MarshalException, ValidationException, IOException {
         try {
             File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.DISCOVERY_CONFIG_FILE_NAME);
             LOG.debug("reload: config file path {}", cfgFile.getPath());
@@ -135,12 +153,9 @@ public class DiscoveryConfigFactory implements DiscoveryConfigurationFactory {
             } catch (final Throwable e) {
                 throw new ValidationException("An error occurred while validating the configuration: " + e.getMessage(), e);
             }
-        } catch (MarshalException e) {
-            LOG.error("Could unmarshal configuration file: " + ConfigFileConstants.DISCOVERY_CONFIG_FILE_NAME, e);
-        } catch (ValidationException e) {
-            LOG.error("Could unmarshal configuration file: " + ConfigFileConstants.DISCOVERY_CONFIG_FILE_NAME, e);
-        } catch (IOException e) {
-            LOG.error("Could unmarshal configuration file: " + ConfigFileConstants.DISCOVERY_CONFIG_FILE_NAME, e);
+        } catch (MarshalException | ValidationException | IOException e) {
+            LOG.error("Could not unmarshal configuration file: " + ConfigFileConstants.getFileName(ConfigFileConstants.DISCOVERY_CONFIG_FILE_NAME), e);
+            throw e;
         }
     }
 
@@ -149,6 +164,7 @@ public class DiscoveryConfigFactory implements DiscoveryConfigurationFactory {
      *
      * @return a {@link org.opennms.netmgt.config.discovery.DiscoveryConfiguration} object.
      */
+    @Override
     public synchronized DiscoveryConfiguration getConfiguration() {
         return m_config;
     }
@@ -299,6 +315,7 @@ public class DiscoveryConfigFactory implements DiscoveryConfigurationFactory {
      *
      * @return a {@link java.util.List} object.
      */
+    @Override
     public List<IPPollAddress> getURLSpecifics() {
         final List<IPPollAddress> specifics = new LinkedList<IPPollAddress>();
 
@@ -339,6 +356,7 @@ public class DiscoveryConfigFactory implements DiscoveryConfigurationFactory {
      *
      * @return a {@link java.util.List} object.
      */
+    @Override
     public List<IPPollRange> getRanges() {
         final List<IPPollRange> includes = new LinkedList<IPPollRange>();
 
@@ -398,6 +416,7 @@ public class DiscoveryConfigFactory implements DiscoveryConfigurationFactory {
      *
      * @return a {@link java.util.List} object.
      */
+    @Override
     public List<IPPollAddress> getSpecifics() {
         final List<IPPollAddress> specifics = new LinkedList<IPPollAddress>();
 
@@ -444,6 +463,7 @@ public class DiscoveryConfigFactory implements DiscoveryConfigurationFactory {
      * @param address a {@link java.net.InetAddress} object.
      * @return a boolean.
      */
+    @Override
     public boolean isExcluded(final InetAddress address) {
         getReadLock().lock();
         try {
@@ -463,6 +483,7 @@ public class DiscoveryConfigFactory implements DiscoveryConfigurationFactory {
         }
     }
 
+    @Override
     public String getForeignSource(InetAddress address) {
         getReadLock().lock();
         try {
@@ -512,14 +533,30 @@ public class DiscoveryConfigFactory implements DiscoveryConfigurationFactory {
 
 
     /**
-     * <p>getIntraPacketDelay</p>
+     * <p>getPacketsPerSecond</p>
      *
      * @return a int.
      */
-    public int getIntraPacketDelay() {
+    @Override
+    public double getPacketsPerSecond() {
         getReadLock().lock();
         try {
-            return 1000 / getConfiguration().getPacketsPerSecond();
+            return getConfiguration().getPacketsPerSecond();
+        } finally {
+            getReadLock().unlock();
+        }
+    }
+
+    /**
+     * <p>getIntraPacketDelay</p>
+     *
+     * @return a long.
+     */
+    @Override
+    public long getIntraPacketDelay() {
+        getReadLock().lock();
+        try {
+            return Math.round(1000.0 / getConfiguration().getPacketsPerSecond());
         } finally {
             getReadLock().unlock();
         }
@@ -531,6 +568,7 @@ public class DiscoveryConfigFactory implements DiscoveryConfigurationFactory {
      * @param it a {@link java.util.Iterator} object.
      * @return a {@link java.util.Iterator} object.
      */
+    @Override
     public Iterator<IPPollAddress> getExcludingInterator(final Iterator<IPPollAddress> it) {
         return new FilteringIterator<IPPollAddress>(it) {
             @Override
@@ -546,6 +584,7 @@ public class DiscoveryConfigFactory implements DiscoveryConfigurationFactory {
      *
      * @return a {@link java.lang.Iterable} object.
      */
+    @Override
     public Iterable<IPPollAddress> getConfiguredAddresses() {
         getReadLock().lock();
         try {
@@ -571,6 +610,7 @@ public class DiscoveryConfigFactory implements DiscoveryConfigurationFactory {
      *
      * @return a long.
      */
+    @Override
     public long getRestartSleepTime() {
         getReadLock().lock();
         try {
@@ -585,6 +625,7 @@ public class DiscoveryConfigFactory implements DiscoveryConfigurationFactory {
      *
      * @return a long.
      */
+    @Override
     public long getInitialSleepTime() {
         getReadLock().lock();
         try {

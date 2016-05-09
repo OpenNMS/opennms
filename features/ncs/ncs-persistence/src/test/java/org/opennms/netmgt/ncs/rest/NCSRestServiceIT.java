@@ -288,8 +288,8 @@ public class NCSRestServiceIT extends AbstractSpringJerseyRestTestCase {
 
 		assertTrue(xml.contains("jnxVpnPwVpnName"));
 
-		sendRequest(DELETE, url, 200);
-		sendRequest(GET, url, 400);
+		sendRequest(DELETE, url, 204);
+		sendRequest(GET, url, 404);
 		sendRequest(GET, "/NCS/Service/NA-Service:123", 200);
 
 	}
@@ -302,7 +302,7 @@ public class NCSRestServiceIT extends AbstractSpringJerseyRestTestCase {
 		String url = "/NCS/Service/hello:world";
 
 		// Testing GET Collection
-		sendRequest(GET, url, 400);
+		sendRequest(GET, url, 404);
 
 	}
 
@@ -422,7 +422,7 @@ public class NCSRestServiceIT extends AbstractSpringJerseyRestTestCase {
 		anticipateEvent(EventConstants.COMPONENT_UPDATED_UEI, new String[] { "top",    "Top1",     "topFs1",    "topFd1" });
 		anticipateEvent(EventConstants.COMPONENT_UPDATED_UEI, new String[] { "child1", "Child1-2", "child1Fs1", "child1Fd2" });
 		anticipateEvent(EventConstants.COMPONENT_DELETED_UEI, new String[] { "child1", "Child1-1", "child1Fs1", "child1Fd1" });
-		sendRequest(DELETE, "/NCS/child1/child1Fs1:child1Fd1", parseParamData("deleteOrphans=true"), 200);
+		sendRequest(DELETE, "/NCS/child1/child1Fs1:child1Fd1", parseParamData("deleteOrphans=true"), 204);
 
 		String xml = sendRequest(GET, "/NCS/top/topFs1:topFd1", 200);
 		assertFalse(xml.contains("child1Fd1"));

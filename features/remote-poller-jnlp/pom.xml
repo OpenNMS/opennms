@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>org.opennms.features</artifactId>
-    <version>17.1.1</version>
+    <version>18.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.features</groupId>
@@ -112,8 +112,31 @@
             <configuration>
               <jnlpFiles>
                 <jnlpFile>
-                  <templateFilename>app.vm</templateFilename>
+                  <inputTemplate>app.vm</inputTemplate>
                   <outputFilename>app.jnlp</outputFilename>
+                  <jarResources>
+                    <jarResource>
+                      <groupId>org.opennms.features</groupId>
+                      <artifactId>org.opennms.features.remote-poller</artifactId>
+                      <version>${project.version}</version>
+                      <mainClass>org.opennms.poller.remote.Main</mainClass>
+                    </jarResource>
+                  </jarResources>
+                </jnlpFile>
+              </jnlpFiles>
+            </configuration>
+          </execution>
+          <execution>
+            <id>scan-report</id>
+            <goals>
+              <goal>jnlp-download-servlet</goal>
+            </goals>
+            <phase>compile</phase>
+            <configuration>
+              <jnlpFiles>
+                <jnlpFile>
+                  <inputTemplate>scan-report.vm</inputTemplate>
+                  <outputFilename>scan-report.jnlp</outputFilename>
                   <jarResources>
                     <jarResource>
                       <groupId>org.opennms.features</groupId>
@@ -135,7 +158,7 @@
             <configuration>
               <jnlpFiles>
                 <jnlpFile>
-                  <templateFilename>headless.vm</templateFilename>
+                  <inputTemplate>headless.vm</inputTemplate>
                   <outputFilename>headless.jnlp</outputFilename>
                   <jarResources>
                     <jarResource>
@@ -163,12 +186,29 @@
             <storepass>${webstart.storepass}</storepass>
             <alias>${webstart.keyalias}</alias>
             <dnameCn>${webstart.dnameCn}</dnameCn>
-            <dnameCn>${webstart.dnameCn}</dnameCn>
             <verify>true</verify>
           </sign>
           <updateManifestEntries>
-            <Permissions>all-permissions</Permissions>
+            <!--
+              Application name that is displayed on the Security Warning
+              when first starting the application
+            -->
+            <Application-Name>OpenNMS Remote Poller</Application-Name>
+
+            <!-- Allow libraries loaded from any source -->
+            <!-- <Application-Library-Allowable-Codebase>*</Application-Library-Allowable-Codebase> -->
+
+            <!-- Allow loading the application from any URL -->
             <Codebase>*</Codebase>
+
+            <!-- Run in all-permissions mode instead of sandboxed mode -->
+            <Permissions>all-permissions</Permissions>
+
+            <!-- Don't load any unsigned classes -->
+            <!-- <Trusted-Only>true</Trusted-Only> -->
+
+            <!-- Allow loading classes from sandboxed libraries -->
+            <!-- <Trusted-Library>true</Trusted-Library> -->
           </updateManifestEntries>
         </configuration>
         <dependencies>
@@ -210,6 +250,28 @@
             <version>1.4</version>
           </dependency>
         </dependencies>
+      </plugin>
+      <!-- Export the certificate that was used to sign the JNLP app in PEM format -->
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>keytool-maven-plugin</artifactId>
+        <version>1.5</version>
+        <executions>
+          <execution>
+            <id>exportCertificate</id>
+            <goals>
+              <goal>exportCertificate</goal>
+            </goals>
+            <phase>compile</phase>
+            <configuration>
+              <keystore>${webstart.keystore}</keystore>
+              <storepass>${webstart.storepass}</storepass>
+              <alias>${webstart.keyalias}</alias>
+              <rfc>true</rfc>
+              <file>${project.build.directory}/jnlp/jnlp.pem</file>
+            </configuration>
+          </execution>
+        </executions>
       </plugin>
     </plugins>
   </build>

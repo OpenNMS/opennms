@@ -3,7 +3,7 @@ package org.opennms.features.vaadin.jmxconfiggenerator.data;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.opennms.features.vaadin.jmxconfiggenerator.ui.UIHelper;
+import org.opennms.netmgt.vaadin.core.UIHelper;
 
 public class UiModelTest {
 

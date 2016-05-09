@@ -30,26 +30,26 @@ package org.opennms.features.topology.app.internal;
 
 import java.util.List;
 
+import com.vaadin.event.Action;
+
 import org.opennms.features.topology.api.Operation;
 import org.opennms.features.topology.api.OperationContext;
 import org.opennms.features.topology.api.topo.VertexRef;
 
-import com.vaadin.event.Action;
-
 public interface Command {
 
-    public abstract void doCommand(List<VertexRef> target, OperationContext operationContext);
+    void doCommand(List<VertexRef> target, OperationContext operationContext);
 
-    public abstract void undoCommand();
+    void undoCommand();
 
-    public abstract String getMenuPosition();
+    String getMenuPosition();
     
-    public abstract String getContextMenuPosition();
+    String getContextMenuPosition();
 
-    public abstract boolean isAction();
+    boolean isAction();
     
-    public abstract Action getAction();
+    Action getAction();
     
-    public abstract Operation getOperation();
+    Operation getOperation();
 
 }

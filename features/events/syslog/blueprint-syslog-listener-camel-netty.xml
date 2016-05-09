@@ -1,0 +1,44 @@
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0"
+	xmlns:ext="http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.1.0"
+	xsi:schemaLocation="
+		http://www.osgi.org/xmlns/blueprint/v1.0.0 
+		http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd
+
+		http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0
+		http://aries.apache.org/schemas/blueprint-cm/blueprint-cm-1.1.0.xsd
+
+		http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.1.0
+		http://aries.apache.org/schemas/blueprint-ext/blueprint-ext-1.1.xsd
+">
+
+	<cm:property-placeholder id="syslogProperties"
+		persistent-id="org.opennms.netmgt.syslog" update-strategy="none">
+		<cm:default-properties>
+			<cm:property name="syslog.listen.interface" value="0.0.0.0" />
+			<cm:property name="syslog.listen.port" value="1514" />
+		</cm:default-properties>
+	</cm:property-placeholder>
+
+	<bean id="syslogConfig" class="org.opennms.netmgt.syslogd.SyslogConfigBean">
+		<property name="syslogPort" value="${syslog.listen.port}" />
+		<property name="listenAddress" value="${syslog.listen.interface}" />
+	</bean>
+
+	<reference id="syslogConnectionHandlers"
+		interface="org.opennms.netmgt.syslogd.SyslogConnectionHandler" />
+
+	<service interface="org.opennms.netmgt.syslogd.SyslogReceiver"
+		ref="syslogReceiverCamelNetty" />
+
+	<bean id="syslogReceiverCamelNetty" class="org.opennms.netmgt.syslogd.SyslogReceiverCamelNettyImpl"
+		destroy-method="stop">
+		<argument ref="syslogConfig" />
+		<property name="syslogConnectionHandlers" ref="syslogConnectionHandlers" />
+	</bean>
+
+	<bean class="java.lang.Thread" init-method="start">
+		<argument ref="syslogReceiverCamelNetty" />
+	</bean>
+
+</blueprint>

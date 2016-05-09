@@ -29,11 +29,11 @@
 package org.opennms.poller.remote;
 
 public class DefaultSimpleBackEnd implements SimpleBackEnd {
-	private int m_count = 0;
+    private int m_count = 0;
 
-        @Override
-	public int getCount() {
-		return m_count++;
-	}
+    @Override
+    public int getCount() {
+        return m_count++;
+    }
 
 }

@@ -21,7 +21,7 @@
         <parameter name="ds_endDate" class="java.lang.String" />
         <parameter name="ds_dsName" class="java.lang.String" />
         <queryString language="measurement">
-            <![CDATA[<query-request step="500" start="$P{ds_startDate}" end="$P{ds_endDate">
+            <![CDATA[<query-request step="500" start="$P{ds_startDate}" end="$P{ds_endDate}">
   <analytics-command filter="HoltWinters" column-name-or-prefix="HW">
     <arguments>
         <argument>Values</argument>

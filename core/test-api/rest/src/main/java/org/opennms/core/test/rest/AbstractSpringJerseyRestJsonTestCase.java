@@ -56,16 +56,6 @@ public abstract class AbstractSpringJerseyRestJsonTestCase extends AbstractSprin
     public static String ACCEPT = "Accept";
 
     @Override
-    protected MockHttpServletResponse sendPost(String url, String xml) throws Exception {
-        return sendData(POST, MediaType.APPLICATION_JSON, url, xml, /* POST/Redirect/GET */ 303);
-    }
-
-    @Override
-    protected MockHttpServletResponse sendPost(String url, String xml, int statusCode) throws Exception {
-        return sendData(POST, MediaType.APPLICATION_JSON, url, xml, statusCode);
-    }
-
-    @Override
     protected MockHttpServletResponse sendPost(String url, String xml, int statusCode, final String expectedUrlSuffix) throws Exception {
         LOG.debug("POST {}, expected status code = {}, expected URL suffix = {}", url, statusCode, expectedUrlSuffix);
         final MockHttpServletResponse response = sendData(POST, MediaType.APPLICATION_JSON, url, xml, statusCode);

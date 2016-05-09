@@ -42,12 +42,12 @@ import org.junit.Before;
 import org.junit.Test;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.features.topology.api.support.VertexHopGraphProvider;
-import org.opennms.features.topology.api.support.VertexHopGraphProvider.FocusNodeHopCriteria;
+import org.opennms.features.topology.api.support.VertexHopGraphProvider.DefaultVertexHopCriteria;
 import org.opennms.features.topology.api.support.VertexHopGraphProvider.VertexHopCriteria;
 import org.opennms.features.topology.api.topo.AbstractVertex;
-import org.opennms.features.topology.api.topo.DefaultVertexRef;
 import org.opennms.features.topology.api.topo.CollapsibleCriteria;
 import org.opennms.features.topology.api.topo.Criteria;
+import org.opennms.features.topology.api.topo.DefaultVertexRef;
 import org.opennms.features.topology.api.topo.Edge;
 import org.opennms.features.topology.api.topo.GraphProvider;
 import org.opennms.features.topology.api.topo.Vertex;
@@ -224,8 +224,7 @@ public class VertexHopGraphProviderTest {
 
 	@Test
 	public void testGraphProvider() {
-		FocusNodeHopCriteria criteria = new FocusNodeHopCriteria("TEST NODES");
-		criteria.add(new DefaultVertexRef("nodes", "g0"));
+		DefaultVertexHopCriteria criteria = new DefaultVertexHopCriteria(new DefaultVertexRef("nodes", "g0"));
 		m_provider.getVertices(criteria);
 
 		assertEquals(0, m_provider.getSemanticZoomLevel(new DefaultVertexRef("nodes", "g0")));
@@ -246,8 +245,7 @@ public class VertexHopGraphProviderTest {
 		assertNull(m_provider.getParent(new DefaultVertexRef("nodes", "v3")));
 		assertNull(m_provider.getParent(new DefaultVertexRef("nodes", "v4")));
 
-		criteria.clear();
-		criteria.add(new DefaultVertexRef("nodes", "v1"));
+		criteria = new DefaultVertexHopCriteria(new DefaultVertexRef("nodes", "v1"));
 		m_provider.getVertices(criteria);
 
 		assertEquals(2, m_provider.getSemanticZoomLevel(new DefaultVertexRef("nodes", "g0")));

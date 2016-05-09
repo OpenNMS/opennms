@@ -32,6 +32,7 @@ import org.opennms.features.topology.api.Graph;
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.Layout;
 import org.opennms.features.topology.api.LayoutAlgorithm;
+import org.opennms.features.topology.api.Point;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,10 +41,7 @@ public class SimpleLayoutAlgorithm implements LayoutAlgorithm {
 	
 	private static final Logger s_log = LoggerFactory.getLogger(SimpleLayoutAlgorithm.class);
 
-    /* (non-Javadoc)
-     * @see org.opennms.features.vaadin.topology.LayoutAlgorithm#updateLayout(org.opennms.features.vaadin.topology.Graph)
-     */
-        @Override
+	@Override
     public void updateLayout(GraphContainer graphContainer) {
 
     	Graph g = graphContainer.getGraph();
@@ -58,15 +56,15 @@ public class SimpleLayoutAlgorithm implements LayoutAlgorithm {
 		for(Vertex vertex : g.getDisplayVertices()) {
             s_log.debug("Laying out vertex id : {}", vertex);
 			if(i == 0) {
-				layout.setLocation(vertex, cx, cy);
-            }else {
+				layout.setLocation(vertex, new Point(cx, cy));
+            } else {
     	        int n = i - 1;
     	        double a = (2*Math.PI)/(g.getDisplayVertices().size() -1);
     	        
     	        int x = (int) (r * Math.cos(n*a) + cx);
     	        int y = (int) (r * Math.sin(n*a) + cy);
 
-    	        layout.setLocation(vertex, x, y);
+    	        layout.setLocation(vertex, new Point(x, y));
             }
 			i++;
         }

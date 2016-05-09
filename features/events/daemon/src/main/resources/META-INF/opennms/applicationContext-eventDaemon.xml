@@ -133,6 +133,4 @@
     <constructor-arg ref="eventConfDao"/>
   </bean>
 
-  <bean id="eventUtil" class="org.opennms.netmgt.eventd.EventUtilDaoImpl" />
-
 </beans>

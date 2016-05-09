@@ -86,7 +86,7 @@ public class BgpSessionDetector extends SnmpDetector {
 
             configureAgentVersion(agentConfig);
 
-            String bgpPeerState = getValue(agentConfig, BGP_PEER_STATE_OID + "." + bgpPeerIp);
+            String bgpPeerState = getValue(agentConfig, BGP_PEER_STATE_OID + "." + bgpPeerIp, isHex());
             LOG.debug("BgpSessionMonitor.capsd: bgpPeerState: {}", bgpPeerState);
             if  (bgpPeerState != null && Integer.parseInt(bgpPeerState) >= 1 && Integer.parseInt(bgpPeerState) <= 6){
                 return true;

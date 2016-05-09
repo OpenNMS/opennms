@@ -1,16 +1,19 @@
 package org.opennms.smoketest;
 
-import org.junit.Assert;
-import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import static org.opennms.smoketest.OpenNMSSeleniumTestCase.BASIC_AUTH_PASSWORD;
+import static org.opennms.smoketest.OpenNMSSeleniumTestCase.BASIC_AUTH_USERNAME;
+import static org.opennms.smoketest.OpenNMSSeleniumTestCase.OPENNMS_WEB_HOST;
+import static org.opennms.smoketest.OpenNMSSeleniumTestCase.OPENNMS_WEB_PORT;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Base64;
 
-import static org.opennms.smoketest.OpenNMSSeleniumTestCase.*;
+import org.junit.Assert;
+import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Tests if sites with /osgi/* context can be registered.
@@ -23,11 +26,16 @@ public class OsgiUrlPatternResponseIT {
     @Test
     public void testOsgiUrlPatternResponse() throws IOException {
         final String[] paths = new String[]{
-                "jmx-config-tool", "vaadin-surveillance-views?dashboard=true",
+                "jmx-config-tool",
+                "vaadin-surveillance-views?dashboard=true",
                 "vaadin-surveillance-views?dashboard=false",
-                "vaadin-surveillance-views-config", "wallboard-config"  };
+                "vaadin-surveillance-views-config",
+                "wallboard-config",
+                "bsm-admin-page",
+                "node-maps"
+        };
 
-        for (String eachPath : paths) {
+        for (final String eachPath : paths) {
             final String urlString = String.format("http://%s:%s/opennms/osgi/%s", OPENNMS_WEB_HOST, OPENNMS_WEB_PORT, eachPath);
             LOG.info("Verifying url '{}' ...", urlString);
 
@@ -49,22 +57,15 @@ public class OsgiUrlPatternResponseIT {
             }
 
             // Valid request, now check for OK
-            Assert.assertEquals(
-                    String.format("URL: %s: status %s (%s) expected but %s (%s) received.",
-                            urlString,
-                            200,
-                            "OK",
-                            connection.getResponseCode(),
-                            connection.getResponseMessage()),
-                    200, connection.getResponseCode());
+            final String errorMessage = String.format("URL: %s: status %s (%s) expected but %s (%s) received.",
+                urlString, 200, "OK", connection.getResponseCode(),  connection.getResponseMessage());
+            Assert.assertEquals(errorMessage, 200, connection.getResponseCode());
             LOG.info("OK");
         }
     }
 
     private String createBasicAuthHeader() {
-        final String pass = String.format("%s:%s",
-                BASIC_AUTH_USERNAME,
-                BASIC_AUTH_PASSWORD);
+        final String pass = String.format("%s:%s", BASIC_AUTH_USERNAME, BASIC_AUTH_PASSWORD);
         final String basicAuthHeader = "Basic " + new String(Base64.getEncoder().encode(pass.getBytes()));
         return basicAuthHeader;
     }

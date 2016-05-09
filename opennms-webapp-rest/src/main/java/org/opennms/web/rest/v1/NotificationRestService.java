@@ -78,8 +78,15 @@ public class NotificationRestService extends OnmsRestService {
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     @Path("{notifId}")
     @Transactional
-    public OnmsNotification getNotification(@PathParam("notifId") int notifId) {
-        return m_notifDao.get(notifId);
+    public OnmsNotification getNotification(@PathParam("notifId") Integer notifId) {
+        if (notifId == null) {
+            throw getException(Status.BAD_REQUEST, "Notification ID is required");
+        }
+        final OnmsNotification notif = m_notifDao.get(notifId);
+        if (notif == null) {
+            throw getException(Status.NOT_FOUND, "Notification {} was not found.", Integer.toString(notifId));
+        }
+        return notif;
     }
     
     /**
@@ -126,16 +133,16 @@ public class NotificationRestService extends OnmsRestService {
     @Path("{notifId}")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Transactional
-    public Response updateNotification(@Context final SecurityContext securityContext, @Context final UriInfo uriInfo, @PathParam("notifId") final String notifId, @FormParam("ack") final Boolean ack) {
+    public Response updateNotification(@Context final SecurityContext securityContext, @PathParam("notifId") final Integer notifId, @FormParam("ack") final Boolean ack) {
         writeLock();
         
         try {
-            OnmsNotification notif=m_notifDao.get(Integer.valueOf(notifId));
             if(ack==null) {
                 throw getException(Status.BAD_REQUEST, "Must supply the 'ack' parameter, set to either 'true' or 'false'");
             }
+            OnmsNotification notif= getNotification(notifId);
             processNotifAck(securityContext, notif,ack);
-            return Response.seeOther(uriInfo.getBaseUriBuilder().path(this.getClass()).path(this.getClass(), "getNotification").build(notifId)).build();
+            return Response.noContent().build();
         } finally {
             writeUnlock();
         }
@@ -149,7 +156,7 @@ public class NotificationRestService extends OnmsRestService {
     @PUT
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Transactional
-    public Response updateNotifications(@Context final SecurityContext securityContext, @Context final UriInfo uriInfo, final MultivaluedMapImpl params) {
+    public Response updateNotifications(@Context final SecurityContext securityContext, final MultivaluedMapImpl params) {
         writeLock();
         
         try {
@@ -164,7 +171,7 @@ public class NotificationRestService extends OnmsRestService {
             for (final OnmsNotification notif : m_notifDao.findMatching(builder.toCriteria())) {
                 processNotifAck(securityContext, notif, ack);
             }
-            return Response.seeOther(uriInfo.getBaseUriBuilder().path(this.getClass()).path(this.getClass(), "getNotifications").build()).build();
+            return Response.noContent().build();
         } finally {
             writeUnlock();
         }

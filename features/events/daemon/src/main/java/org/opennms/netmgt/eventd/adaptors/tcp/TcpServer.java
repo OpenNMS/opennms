@@ -165,6 +165,17 @@ final class TcpServer implements Runnable {
 
         try {
             m_tcpSock = new ServerSocket(m_tcpPort, 0, m_ipAddress);
+
+            // Set SO_REUSEADDR so that we don't run into problems in
+            // unit tests trying to rebind to an address where other tests
+            // also bound. This shouldn't have any effect at runtime.
+            try {
+                LOG.debug("Setting socket SO_REUSEADDR to true");
+                m_tcpSock.setReuseAddress(true);
+            } catch (SocketException e) {
+                LOG.warn("An I/O error occured while trying to set SO_REUSEADDR", e);
+            }
+
         } catch (IOException e) {
             IOException n = new IOException("Could not create listening TCP socket on " + m_ipAddress + ":" + m_tcpPort + ": " + e);
             n.initCause(e);
