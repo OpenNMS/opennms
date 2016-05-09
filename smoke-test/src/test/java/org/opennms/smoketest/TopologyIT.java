@@ -40,6 +40,7 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 
+import com.google.common.base.Preconditions;
 import com.google.common.base.Throwables;
 import com.google.common.collect.Lists;
 
@@ -268,8 +269,16 @@ public class TopologyIT extends OpenNMSSeleniumTestCase {
         }
 
         public TopologyUIPage setSzl(int szl) {
-            testCase.enterText(By.id("szlInputLabel"), Integer.toString(szl));
-            waitForTransition();
+            Preconditions.checkArgument(szl >= 0, "The semantic zoom level must be >= 0");
+            int currentSzl = Integer.valueOf(testCase.findElementById("szlInputLabel").getText()).intValue();
+            if (szl != currentSzl) {
+                boolean shouldIncrease = currentSzl - szl< 0;
+                WebElement button = testCase.findElementById(shouldIncrease ? "szlInBtn" : "szlOutBtn");
+                for (int i=0; i < Math.abs(szl - currentSzl); i++) {
+                    button.click();
+                }
+                waitForTransition();
+            }
             return this;
         }
 

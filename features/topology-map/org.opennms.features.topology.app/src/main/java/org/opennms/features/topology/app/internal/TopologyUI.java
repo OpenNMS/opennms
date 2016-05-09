@@ -79,9 +79,9 @@ import org.opennms.features.topology.app.internal.operations.TopologySelectorOpe
 import org.opennms.features.topology.app.internal.support.CategoryHopCriteria;
 import org.opennms.features.topology.app.internal.support.FontAwesomeIcons;
 import org.opennms.features.topology.app.internal.support.IconRepositoryManager;
+import org.opennms.features.topology.app.internal.support.IonicIcons;
 import org.opennms.features.topology.app.internal.ui.HudDisplay;
 import org.opennms.features.topology.app.internal.ui.InfoPanel;
-import org.opennms.features.topology.app.internal.ui.LastUpdatedLabel;
 import org.opennms.features.topology.app.internal.ui.NoContentAvailableWindow;
 import org.opennms.features.topology.app.internal.ui.SearchBox;
 import org.opennms.osgi.EventConsumer;
@@ -104,38 +104,33 @@ import com.vaadin.annotations.StyleSheet;
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.Title;
 import com.vaadin.data.Property;
-import com.vaadin.event.FieldEvents;
 import com.vaadin.event.ShortcutAction;
 import com.vaadin.server.DefaultErrorHandler;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.server.Page.UriFragmentChangedEvent;
 import com.vaadin.server.Page.UriFragmentChangedListener;
 import com.vaadin.server.RequestHandler;
-import com.vaadin.server.ThemeResource;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinResponse;
 import com.vaadin.server.VaadinServletRequest;
 import com.vaadin.server.VaadinSession;
-import com.vaadin.shared.ui.slider.SliderOrientation;
 import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.Component;
+import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.MenuBar;
 import com.vaadin.ui.MenuBar.MenuItem;
-import com.vaadin.ui.NativeButton;
 import com.vaadin.ui.Notification;
-import com.vaadin.ui.Slider;
 import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.TabSheet.SelectedTabChangeEvent;
 import com.vaadin.ui.TabSheet.SelectedTabChangeListener;
 import com.vaadin.ui.TextArea;
-import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.VerticalSplitPanel;
@@ -154,7 +149,6 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
     private class DynamicUpdateRefresher implements Refresher.RefreshListener {
         private final Object lockObject = new Object();
         private boolean m_refreshInProgress = false;
-        private long m_lastUpdateTime = 0;
 
 
         @Override
@@ -171,9 +165,6 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
 
                 final RedoLayoutOperation op = new RedoLayoutOperation();
                 op.execute(getGraphContainer());
-
-                m_lastUpdateTime = System.currentTimeMillis();
-                updateTimestamp(m_lastUpdateTime);
 
                 m_topologyComponent.unblockSelectionEvents();
                 m_refreshInProgress = false;
@@ -459,7 +450,7 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
                             return item.contributesTo(m_graphContainer);
                         } catch (Throwable t) {
                             // See NMS-8394
-                            LOG.error("An error occured while determining if info panel item {} should be displayed. "
+                            LOG.error("An error occurred while determining if info panel item {} should be displayed. "
                                     + "The component will not be displayed.", item.getClass(), t);
                             return false;
                         }
@@ -470,7 +461,7 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
                             return wrap(item);
                         } catch (Throwable t) {
                             // See NMS-8394
-                            LOG.error("An error occured while retriveing the component from info panel item {}. "
+                            LOG.error("An error occurred while retriveing the component from info panel item {}. "
                                     + "The component will not be displayed.", item.getClass(), t);
                             return null;
                         }
@@ -527,8 +518,8 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
     private VerticalLayout m_rootLayout;
     private final IconRepositoryManager m_iconRepositoryManager;
     private WidgetManager m_widgetManager;
-    private AbsoluteLayout m_treeMapSplitPanel;
-    private final TextField m_zoomLevelLabel = new TextField();
+    private Component m_mapLayout;
+    private final Label m_zoomLevelLabel = new Label();
     private final HistoryManager m_historyManager;
     private String m_headerHtml;
     private boolean m_showHeader = true;
@@ -539,7 +530,6 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
     private Button m_panBtn;
     private Button m_selectBtn;
     private Button m_szlOutBtn;
-    private LastUpdatedLabel m_lastUpdatedTimeLabel;
     int m_settingFragment = 0;
     private SearchBox m_searchBox;
     private TabSheet tabSheet;
@@ -735,56 +725,20 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
         m_rootLayout.addComponent(m_layout);
         m_rootLayout.setExpandRatio(m_layout, 1);
 
-        //Don't create a horizontal Split container here, no need. Remove and use the absolute
-        m_treeMapSplitPanel = new AbsoluteLayout();
-        m_treeMapSplitPanel.addComponent(createMapLayout(), "top: 0px; left: 0px; right: 0px; bottom: 0px;");
-        m_treeMapSplitPanel.setSizeFull();
+        m_mapLayout = createMapLayout();
+        m_mapLayout.setSizeFull();
 
         menuBarUpdated(m_commandManager);
         if(m_widgetManager.widgetCount() != 0) {
             updateWidgetView(m_widgetManager);
         }else {
-            m_layout.addComponent(m_treeMapSplitPanel);
+            m_layout.addComponent(m_mapLayout);
         }
     }
 
-    private Component createMapLayout() {
+    private Component createToolbar() {
         final Property<Double> scale = m_graphContainer.getScaleProperty();
-
-        m_lastUpdatedTimeLabel = new LastUpdatedLabel();
-        m_lastUpdatedTimeLabel.setImmediate(true);
-
-        m_zoomLevelLabel.setId("szlInputLabel");
-        m_zoomLevelLabel.setHeight(20, Unit.PIXELS);
-        m_zoomLevelLabel.setWidth(22, Unit.PIXELS);
-        m_zoomLevelLabel.addStyleName("center-text");
-        m_zoomLevelLabel.addTextChangeListener(new FieldEvents.TextChangeListener() {
-            @Override
-            public void textChange(FieldEvents.TextChangeEvent event) {
-                try{
-                    int zoomLevel = Integer.parseInt(event.getText());
-                    setSemanticZoomLevel(zoomLevel);
-                } catch(NumberFormatException e){
-                    setSemanticZoomLevel(m_graphContainer.getSemanticZoomLevel());
-                }
-
-            }
-        });
-
-        m_topologyComponent = new TopologyComponent(m_graphContainer, m_iconRepositoryManager, this);
-        m_topologyComponent.setSizeFull();
-        m_topologyComponent.addMenuItemStateListener(this);
-        m_topologyComponent.addVertexUpdateListener(this);
-
-        final Slider slider = new Slider(0, 1);
-        slider.setPropertyDataSource(scale);
-        slider.setResolution(1);
-        slider.setHeight("200px");
-        slider.setOrientation(SliderOrientation.VERTICAL);
-
-        slider.setImmediate(true);
-
-        final NativeButton showFocusVerticesBtn = new NativeButton(FontAwesomeIcons.Icon.eye_open.variant());
+        final Button showFocusVerticesBtn = new Button(FontAwesomeIcons.Icon.eye_open.variant());
         showFocusVerticesBtn.setDescription("Toggle Highlight Focus Nodes");
         showFocusVerticesBtn.setHtmlContentAllowed(true);
         showFocusVerticesBtn.addClickListener(new ClickListener() {
@@ -800,51 +754,27 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
             }
         });
 
-        final NativeButton magnifyBtn = new NativeButton();
-        magnifyBtn.setHtmlContentAllowed(true);
-        magnifyBtn.setCaption("<i class=\"" + FontAwesomeIcons.Icon.zoom_in.stylename() + "\" ></i>");
-        magnifyBtn.setStyleName("icon-button");
-        magnifyBtn.addClickListener(new ClickListener() {
-            @Override
-            public void buttonClick(ClickEvent event) {
-                if(slider.getValue() < 1){
-                    slider.setValue(Math.min(1, slider.getValue() + 0.25));
-                }
-            }
-        });
+        final Button magnifyBtn = new Button();
+        magnifyBtn.setIcon(FontAwesome.PLUS);
+        magnifyBtn.setDescription("Magnify");
+        magnifyBtn.addClickListener((ClickListener) event -> scale.setValue(Math.min(1, scale.getValue() + 0.25)));
 
-        final NativeButton demagnifyBtn = new NativeButton();
-        demagnifyBtn.setHtmlContentAllowed(true);
-        demagnifyBtn.setCaption("<i class=\"" + FontAwesomeIcons.Icon.zoom_out.stylename() + "\" ></i>");
-        demagnifyBtn.setStyleName("icon-button");
-        demagnifyBtn.addClickListener(new ClickListener() {
-            @Override
-            public void buttonClick(ClickEvent event) {
-                if(slider.getValue() != 0){
-                    slider.setValue(Math.max(0, slider.getValue() - 0.25));
-                }
-            }
-        });
-
-        VerticalLayout sliderLayout = new VerticalLayout();
-        sliderLayout.setDefaultComponentAlignment(Alignment.MIDDLE_CENTER);
-        sliderLayout.addComponent(magnifyBtn);
-        sliderLayout.addComponent(slider);
-        sliderLayout.addComponent(demagnifyBtn);
+        final Button demagnifyBtn = new Button();
+        demagnifyBtn.setIcon(FontAwesome.MINUS);
+        demagnifyBtn.setDescription("Demagnify");
+        demagnifyBtn.addClickListener((ClickListener) event -> scale.setValue(Math.max(0, scale.getValue() - 0.25)));
 
         m_szlOutBtn = new Button();
         m_szlOutBtn.setId("szlOutBtn");
-        m_szlOutBtn.setHtmlContentAllowed(true);
-        m_szlOutBtn.setCaption(FontAwesomeIcons.Icon.arrow_down.variant());
-        m_szlOutBtn.setDescription("Collapse Semantic Zoom Level");
+        m_szlOutBtn.setIcon(FontAwesome.ANGLE_DOWN);
+        m_szlOutBtn.setDescription("Decrease Semantic Zoom Level");
         m_szlOutBtn.setEnabled(m_graphContainer.getSemanticZoomLevel() > 0);
         m_szlOutBtn.addClickListener(new ClickListener() {
             @Override
             public void buttonClick(ClickEvent event) {
                 int szl = m_graphContainer.getSemanticZoomLevel();
                 if (szl > 0) {
-                    szl--;
-                    setSemanticZoomLevel(szl);
+                    setSemanticZoomLevel(szl - 1);
                     saveHistory();
                 }
             }
@@ -852,36 +782,34 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
 
         final Button szlInBtn = new Button();
         szlInBtn.setId("szlInBtn");
-        szlInBtn.setHtmlContentAllowed(true);
-        szlInBtn.setCaption(FontAwesomeIcons.Icon.arrow_up.variant());
-        szlInBtn.setDescription("Expand Semantic Zoom Level");
+        szlInBtn.setIcon(FontAwesome.ANGLE_UP);
+        szlInBtn.setDescription("Increase Semantic Zoom Level");
         szlInBtn.addClickListener(new ClickListener() {
 
             @Override
             public void buttonClick(ClickEvent event) {
-                int szl = m_graphContainer.getSemanticZoomLevel();
-                szl++;
-                setSemanticZoomLevel(szl);
+                setSemanticZoomLevel(m_graphContainer.getSemanticZoomLevel() + 1);
                 saveHistory();
             }
         });
 
+        m_zoomLevelLabel.setId("szlInputLabel");
 
         m_panBtn = new Button();
         m_panBtn.setIcon(FontAwesome.ARROWS);
         m_panBtn.setDescription("Pan Tool");
-        m_panBtn.setStyleName("toolbar-button down");
+        m_panBtn.addStyleName("selected");
 
         m_selectBtn = new Button();
-        m_selectBtn.setIcon(new ThemeResource("images/selection.png"));
+        m_selectBtn.setIcon(IonicIcons.ANDROID_EXPAND);
         m_selectBtn.setDescription("Selection Tool");
         m_selectBtn.setStyleName("toolbar-button");
         m_selectBtn.addClickListener(new ClickListener() {
 
             @Override
             public void buttonClick(ClickEvent event) {
-                m_selectBtn.setStyleName("toolbar-button down");
-                m_panBtn.setStyleName("toolbar-button");
+                m_selectBtn.addStyleName("selected");
+                m_panBtn.removeStyleName("selected");
                 m_topologyComponent.setActiveTool("select");
             }
         });
@@ -890,112 +818,155 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
 
             @Override
             public void buttonClick(ClickEvent event) {
-                m_panBtn.setStyleName("toolbar-button down");
-                m_selectBtn.setStyleName("toolbar-button");
+                m_panBtn.addStyleName("selected");
+                m_selectBtn.removeStyleName("selected");
                 m_topologyComponent.setActiveTool("pan");
             }
         });
 
-        final Button historyBackBtn = new Button(FontAwesomeIcons.Icon.arrow_left.variant());
-        historyBackBtn.setHtmlContentAllowed(true);
-        historyBackBtn.setDescription("Click to go back");
-        historyBackBtn.addClickListener(new ClickListener() {
-            @Override
-            public void buttonClick(ClickEvent event) {
-                com.vaadin.ui.JavaScript.getCurrent().execute("window.history.back()");
-            }
-        });
-
-        final Button historyForwardBtn = new Button(FontAwesomeIcons.Icon.arrow_right.variant());
-        historyForwardBtn.setHtmlContentAllowed(true);
-        historyForwardBtn.setDescription("Click to go forward");
-        historyForwardBtn.addClickListener(new ClickListener() {
-            @Override
-            public void buttonClick(ClickEvent event) {
-                com.vaadin.ui.JavaScript.getCurrent().execute("window.history.forward()");
-            }
-        });
-
-        m_searchBox = new SearchBox(m_serviceManager, new CommandManager.DefaultOperationContext(this, m_graphContainer, OperationContext.DisplayLocation.SEARCH));
-
-        //History Button Layout
-        HorizontalLayout historyButtonLayout = new HorizontalLayout();
-        historyButtonLayout.setSpacing(true);
-        historyButtonLayout.addComponent(historyBackBtn);
-        historyButtonLayout.addComponent(historyForwardBtn);
-
-        //Semantic Controls Layout
-        HorizontalLayout semanticLayout = new HorizontalLayout();
-        semanticLayout.setSpacing(true);
-        semanticLayout.addComponent(szlInBtn);
-        semanticLayout.addComponent(m_zoomLevelLabel);
-        semanticLayout.addComponent(m_szlOutBtn);
-        semanticLayout.setComponentAlignment(m_zoomLevelLabel, Alignment.MIDDLE_CENTER);
-
-        VerticalLayout historyCtrlLayout = new VerticalLayout();
-        historyCtrlLayout.setDefaultComponentAlignment(Alignment.MIDDLE_CENTER);
-        historyCtrlLayout.addComponent(historyButtonLayout);
-
-        HorizontalLayout controlLayout = new HorizontalLayout();
-        controlLayout.setDefaultComponentAlignment(Alignment.MIDDLE_CENTER);
-        controlLayout.addComponent(m_panBtn);
-        controlLayout.addComponent(m_selectBtn);
-
-        VerticalLayout semanticCtrlLayout = new VerticalLayout();
-        semanticCtrlLayout.setDefaultComponentAlignment(Alignment.MIDDLE_CENTER);
-        semanticCtrlLayout.addComponent(semanticLayout);
-
-        HorizontalLayout locationToolLayout = createLocationToolLayout();
-
-        //Vertical Layout for all tools on right side
-        VerticalLayout toollayout = new VerticalLayout();
-        toollayout.setDefaultComponentAlignment(Alignment.MIDDLE_CENTER);
-        toollayout.setSpacing(true);
-
-        toollayout.addComponent(historyCtrlLayout);
-        toollayout.addComponent(locationToolLayout);
-        toollayout.addComponent(showFocusVerticesBtn);
-        toollayout.addComponent(sliderLayout);
-        toollayout.addComponent(controlLayout);
-        toollayout.addComponent(semanticCtrlLayout);
-
-        AbsoluteLayout mapLayout = new AbsoluteLayout();
-        mapLayout.addComponent(m_topologyComponent, "top:0px; left: 0px; right: 0px; bottom: 0px;");
-        mapLayout.addComponent(m_lastUpdatedTimeLabel, "top: 5px; right: 10px;");
-        mapLayout.addComponent(toollayout, "top: 25px; right: 10px;");
-        mapLayout.setSizeFull();
-
-        m_infoPanel = new InfoPanel(m_searchBox, mapLayout);
-        return m_infoPanel;
-    }
-
-    private HorizontalLayout createLocationToolLayout() {
-        HorizontalLayout layout = new HorizontalLayout();
-        layout.setSpacing(true);
-        layout.setDefaultComponentAlignment(Alignment.MIDDLE_CENTER);
-
         Button showAllMapBtn = new Button(FontAwesomeIcons.Icon.globe.variant());
         showAllMapBtn.setHtmlContentAllowed(true);
         showAllMapBtn.setDescription("Show Entire Map");
-        showAllMapBtn.addClickListener(new ClickListener() {
-            @Override
-            public void buttonClick(ClickEvent event) {
-                m_topologyComponent.showAllMap();
-            }
-        });
+        showAllMapBtn.addClickListener((ClickListener) event -> m_topologyComponent.showAllMap());
 
         Button centerSelectionBtn = new Button(FontAwesomeIcons.Icon.location_arrow.variant());
         centerSelectionBtn.setHtmlContentAllowed(true);
         centerSelectionBtn.setDescription("Center On Selection");
-        centerSelectionBtn.addClickListener(new ClickListener() {
-            @Override
-            public void buttonClick(ClickEvent event) {
-                m_topologyComponent.centerMapOnSelection();
+        centerSelectionBtn.addClickListener((ClickListener) event -> m_topologyComponent.centerMapOnSelection());
+
+        Button shareButton = new Button("", FontAwesome.SHARE_SQUARE_O);
+        shareButton.setDescription("Share");
+        shareButton.addClickListener((x) -> {
+            // create the share link
+            String fragment = getPage().getLocation().getFragment();
+            String url = getPage().getLocation().toString().replace("#" + getPage().getLocation().getFragment(), "");
+            String shareLink = String.format("%s?%s=%s", url, TopologyUIRequestHandler.PARAMETER_HISTORY_FRAGMENT, fragment);
+
+            // Create the Window
+            Window shareWindow = new Window();
+            shareWindow.setCaption("Share Link");
+            shareWindow.setModal(true);
+            shareWindow.setClosable(true);
+            shareWindow.setResizable(false);
+            shareWindow.setWidth(400, Unit.PIXELS);
+
+            TextArea shareLinkField = new TextArea();
+            shareLinkField.setValue(shareLink);
+            shareLinkField.setReadOnly(true);
+            shareLinkField.setRows(3);
+            shareLinkField.setWidth(100, Unit.PERCENTAGE);
+
+            // Close Button
+            Button close = new Button("Close");
+            close.setClickShortcut(ShortcutAction.KeyCode.ESCAPE, null);
+            close.addClickListener(event -> shareWindow.close());
+
+            // Layout for Buttons
+            HorizontalLayout buttonLayout = new HorizontalLayout();
+            buttonLayout.setMargin(true);
+            buttonLayout.setSpacing(true);
+            buttonLayout.setWidth("100%");
+            buttonLayout.addComponent(close);
+            buttonLayout.setComponentAlignment(close, Alignment.BOTTOM_RIGHT);
+
+            // Content Layout
+            VerticalLayout verticalLayout = new VerticalLayout();
+            verticalLayout.setMargin(true);
+            verticalLayout.setSpacing(true);
+            verticalLayout.addComponent(new Label("Please use the following link to share the current view with others."));
+            verticalLayout.addComponent(shareLinkField);
+            verticalLayout.addComponent(buttonLayout);
+
+            shareWindow.setContent(verticalLayout);
+
+            getUI().addWindow(shareWindow);
+        });
+
+        // Refresh Button
+        Button refreshButton = new Button();
+        refreshButton.setIcon(FontAwesome.REFRESH);
+        refreshButton.setDescription("Refresh Now");
+        refreshButton.addClickListener((event) -> new DynamicUpdateRefresher().refreshUI());
+
+        //Vertical Layout for all tools on right side
+        Button layerButton = new Button();
+
+        // Actual Layout for the Toolbar
+        CssLayout contentLayout = new CssLayout();
+        contentLayout.addStyleName("toolbar-component");
+        contentLayout.addComponent(createGroup(szlInBtn, m_zoomLevelLabel, m_szlOutBtn));
+        contentLayout.addComponent(createGroup(refreshButton, centerSelectionBtn, showAllMapBtn, layerButton, showFocusVerticesBtn));
+        contentLayout.addComponent(createGroup(m_panBtn, m_selectBtn));
+        contentLayout.addComponent(createGroup(magnifyBtn, demagnifyBtn));
+        contentLayout.addComponent(createGroup(shareButton));
+
+        // Dummy Layer
+        VerticalLayout layerLayout = new VerticalLayout();
+        layerLayout.setSpacing(true);
+        layerLayout.setMargin(true);
+        layerLayout.addComponent(new Label("Layer Dummy 1"));
+        layerLayout.addComponent(new Label("Layer Dummy 2"));
+        layerLayout.addComponent(new Label("Layer Dummy 3"));
+
+        // Toolbar
+        CssLayout toolbarLayout = new CssLayout();
+        toolbarLayout.addStyleName("toolbar");
+        toolbarLayout.addComponent(contentLayout);
+
+        // Layer Button behaviour
+        layerButton.setIcon(FontAwesome.BARS);
+        layerButton.addClickListener((event) -> {
+            if (layerButton.getStyleName().contains("collapsed")) {
+                layerButton.removeStyleName("collapsed");
+                toolbarLayout.removeComponent(layerLayout);
+            } else {
+                layerButton.addStyleName("collapsed");
+                toolbarLayout.addComponent(layerLayout);
             }
         });
 
-        layout.addComponent(centerSelectionBtn);
-        layout.addComponent(showAllMapBtn);
+        return toolbarLayout;
+    }
+
+    private CssLayout createGroup(Component... components) {
+        CssLayout group = new CssLayout();
+        group.addStyleName("toolbar-component-group");
+        group.setSizeFull();
+        for (Component eachComponent : components) {
+            eachComponent.setPrimaryStyleName("toolbar-group-item");
+            group.addComponent(eachComponent);
+        }
+        return group;
+    }
+
+    private Component createMapLayout() {
+        // Topology (Map) Component
+        m_topologyComponent = new TopologyComponent(m_graphContainer, m_iconRepositoryManager, this);
+        m_topologyComponent.setSizeFull();
+        m_topologyComponent.addMenuItemStateListener(this);
+        m_topologyComponent.addVertexUpdateListener(this);
+
+        // Search Box
+        m_searchBox = new SearchBox(m_serviceManager, new CommandManager.DefaultOperationContext(this, m_graphContainer, OperationContext.DisplayLocation.SEARCH));
+
+        // Info Panel
+        m_infoPanel = new InfoPanel(m_searchBox);
+
+        // Toolbar
+        Component toolbar = createToolbar();
+
+        // Map Layout (we need to wrap it in an absolute layout otherwise it shows up twice on the topology map)
+        AbsoluteLayout mapLayout = new AbsoluteLayout();
+        mapLayout.addComponent(m_topologyComponent, "top:0px; left: 0px; right: 0px; bottom: 0px;");
+        mapLayout.setSizeFull();
+
+        HorizontalLayout layout = new HorizontalLayout();
+        layout.addStyleName("map-layout");
+        layout.addComponent(m_infoPanel);
+        layout.addComponent(mapLayout);
+        layout.addComponent(toolbar);
+        layout.setExpandRatio(mapLayout, 1);
+        layout.setSizeFull();
 
         return layout;
     }
@@ -1032,10 +1003,10 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
             synchronized (m_layout) {
                 m_layout.removeAllComponents();
                 if(widgetManager.widgetCount() == 0) {
-                    m_layout.addComponent(m_treeMapSplitPanel);
+                    m_layout.addComponent(m_mapLayout);
                 } else {
                     VerticalSplitPanel bottomLayoutBar = new VerticalSplitPanel();
-                    bottomLayoutBar.setFirstComponent(m_treeMapSplitPanel);
+                    bottomLayoutBar.setFirstComponent(m_mapLayout);
                     // Split the screen 70% top, 30% bottom
                     bottomLayoutBar.setSplitPosition(70, Unit.PERCENTAGE);
                     bottomLayoutBar.setSizeFull();
@@ -1136,10 +1107,6 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
         }
     }
 
-    public void updateTimestamp(long updateTime) {
-        m_lastUpdatedTimeLabel.setUpdateTime(updateTime);
-    }
-
 	@Override
 	public void updateMenuItems() {
 		updateMenuItems(m_menuBar.getItems());
@@ -1176,56 +1143,6 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
 
 		m_contextMenu = commandManager.getContextMenu(new DefaultOperationContext(this, m_graphContainer, DisplayLocation.CONTEXTMENU));
 		m_contextMenu.setAsContextMenuOf(this);
-
-        // Add Menu Item to share the View with others
-        m_menuBar.addItem("Share", FontAwesome.SHARE, new MenuBar.Command() {
-            @Override
-            public void menuSelected(MenuItem selectedItem) {
-                // create the share link
-                String fragment = getPage().getLocation().getFragment();
-                String url = getPage().getLocation().toString().replace("#" + getPage().getLocation().getFragment(), "");
-                String shareLink = String.format("%s?%s=%s", url, TopologyUIRequestHandler.PARAMETER_HISTORY_FRAGMENT, fragment);
-
-                // Create the Window
-                Window shareWindow = new Window();
-                shareWindow.setCaption("Share Link");
-                shareWindow.setModal(true);
-                shareWindow.setClosable(true);
-                shareWindow.setResizable(false);
-                shareWindow.setWidth(400, Unit.PIXELS);
-
-                TextArea shareLinkField = new TextArea();
-                shareLinkField.setValue(shareLink);
-                shareLinkField.setReadOnly(true);
-                shareLinkField.setRows(3);
-                shareLinkField.setWidth(100, Unit.PERCENTAGE);
-
-                // Close Button
-                Button close = new Button("Close");
-                close.setClickShortcut(ShortcutAction.KeyCode.ESCAPE, null);
-                close.addClickListener(event -> shareWindow.close());
-
-                // Layout for Buttons
-                HorizontalLayout buttonLayout = new HorizontalLayout();
-                buttonLayout.setMargin(true);
-                buttonLayout.setSpacing(true);
-                buttonLayout.setWidth("100%");
-                buttonLayout.addComponent(close);
-                buttonLayout.setComponentAlignment(close, Alignment.BOTTOM_RIGHT);
-
-                // Content Layout
-                VerticalLayout verticalLayout = new VerticalLayout();
-                verticalLayout.setMargin(true);
-                verticalLayout.setSpacing(true);
-                verticalLayout.addComponent(new Label("Please use the following link to share the current view with others."));
-                verticalLayout.addComponent(shareLinkField);
-                verticalLayout.addComponent(buttonLayout);
-
-                shareWindow.setContent(verticalLayout);
-
-                getUI().addWindow(shareWindow);
-            }
-        });
 
         updateMenuItems();
 	}
@@ -1313,7 +1230,6 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
         m_zoomLevelLabel.setValue(String.valueOf(graphContainer.getSemanticZoomLevel()));
         m_szlOutBtn.setEnabled(graphContainer.getSemanticZoomLevel() > 0);
         updateTabVisibility();
-        updateTimestamp(System.currentTimeMillis());
         updateMenuItems();
 
         synchronized (m_currentHudDisplayLock) {
@@ -1376,11 +1292,11 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
         }
 
         //After selection always set the pantool back to active tool
-        if(m_panBtn != null && !m_panBtn.getStyleName().equals("toolbar-button down")){
-            m_panBtn.setStyleName("toolbar-button down");
+        if(m_panBtn != null && !m_panBtn.getStyleName().contains("selected")) {
+            m_panBtn.addStyleName("selected");
         }
-        if(m_selectBtn != null && m_selectBtn.getStyleName().equals("toolbar-button down")){
-            m_selectBtn.setStyleName("toolbar-button");
+        if(m_selectBtn != null && m_selectBtn.getStyleName().contains("selected")) {
+            m_selectBtn.removeStyleName("selected");
         }
         if(m_topologyComponent != null) m_topologyComponent.setActiveTool("pan");
         saveHistory();
