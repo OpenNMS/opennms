@@ -1,5 +1,5 @@
 [[releasenotes-18]]
-== OpenNMS Horizon 18
+== What's New in OpenNMS Horizon 18
 
 === System Requirements
 

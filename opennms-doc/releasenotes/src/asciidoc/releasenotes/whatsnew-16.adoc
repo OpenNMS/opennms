@@ -1,6 +1,6 @@
 
 [[releasenotes-16]]
-== OpenNMS 16
+== What's New in OpenNMS 16
 
 Since OpenNMS 15, many features have been refactored to increase modularity of the OpenNMS code. New reporting capabilities have also been added to
 support integration with external graphing engines such as Grafana.
