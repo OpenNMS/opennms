@@ -513,6 +513,14 @@ abstract public class XmlTest<T> {
             final long[] expectedArray = (long[])expected;
             final long[] actualArray   = (long[])actual;
             assertTrue(assertionMessage, Arrays.equals(expectedArray, actualArray));
+        } else if (expected instanceof int[] || actual instanceof int[]) {
+            final int[] expectedArray = (int[])expected;
+            final int[] actualArray   = (int[])actual;
+            assertTrue(assertionMessage, Arrays.equals(expectedArray, actualArray));
+        } else if (expected instanceof byte[] || actual instanceof byte[]) {
+            final byte[] expectedArray = (byte[])expected;
+            final byte[] actualArray   = (byte[])actual;
+            assertTrue(assertionMessage, Arrays.equals(expectedArray, actualArray));
         } else {
             expected.getClass().isPrimitive();
             assertEquals(assertionMessage, expected, actual);
