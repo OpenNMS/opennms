@@ -46,9 +46,14 @@ import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.TrapdConfig;
 import org.opennms.netmgt.config.api.EventConfDao;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
+import org.opennms.netmgt.dao.mock.MockEventIpcManager.EmptyEventConfDao;
+import org.opennms.netmgt.events.api.EventForwarder;
+import org.opennms.netmgt.events.api.EventIpcManager;
+import org.opennms.netmgt.snmp.BasicTrapProcessor;
 import org.opennms.netmgt.snmp.TrapNotification;
 import org.opennms.netmgt.snmp.snmp4j.Snmp4JTrapNotifier;
-import org.opennms.test.mock.EasyMockUtils;
+import org.opennms.netmgt.xml.event.Event;
+import org.opennms.netmgt.xml.event.Log;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.snmp4j.PDU;
@@ -70,9 +75,7 @@ public class TrapdHandlerDefaultIT extends CamelBlueprintTestSupport {
 
 	private static BrokerService m_broker = null;
 
-	private EasyMockUtils m_mocks = new EasyMockUtils();
-
-	private EventConfDao m_eventConfDao = m_mocks.createMock(EventConfDao.class);
+	private EventIpcManager m_eventIpcManager = new MockEventIpcManager();
 
 	/**
 	 * Use Aries Blueprint synchronous mode to avoid a blueprint deadlock bug.
@@ -111,17 +114,37 @@ public class TrapdHandlerDefaultIT extends CamelBlueprintTestSupport {
 
 	@SuppressWarnings("rawtypes")
 	@Override
-	protected void addServicesOnStartup(
-			Map<String, KeyValueHolder<Object, Dictionary>> services) {
+	protected void addServicesOnStartup(Map<String, KeyValueHolder<Object, Dictionary>> services) {
+
 		// Create a mock TrapdConfigBean
 		TrapdConfigBean config = new TrapdConfigBean();
-		config.setSnmpTrapPort(10514);
-		config.setSnmpTrapAddress("127.0.0.1");
+		//config.setSnmpTrapPort(10514);
+		//config.setSnmpTrapAddress("127.0.0.1");
 		config.setNewSuspectOnTrap(false);
 
 		services.put(
-				TrapdConfig.class.getName(),
-				new KeyValueHolder<Object, Dictionary>(config, new Properties()));
+			TrapdConfig.class.getName(),
+			new KeyValueHolder<Object, Dictionary>(config, new Properties())
+		);
+
+		services.put(
+			EventForwarder.class.getName(),
+			new KeyValueHolder<Object, Dictionary>(new EventForwarder() {
+				@Override
+				public void sendNow(Log eventLog) {
+					// Do nothing
+					LOG.info("Got an event log: " + eventLog.toString());
+				}
+
+				@Override
+				public void sendNow(Event event) {
+					// Do nothing
+					LOG.info("Got an event: " + event.toString());
+				}
+			}, new Properties())
+		);
+
+		services.put(EventConfDao.class.getName(), new KeyValueHolder<Object, Dictionary>(new EmptyEventConfDao(), new Properties()));
 	}
 
 	// The location of our Blueprint XML files to be used for testing
@@ -146,36 +169,19 @@ public class TrapdHandlerDefaultIT extends CamelBlueprintTestSupport {
 
 	@Test
 	public void testTrapd() throws Exception {
-		// Expect one TrapNotification message to be broadcast on the messaging
-		// channel
-		MockEndpoint broadcastTrapd = getMockEndpoint(
-				"mock:activemq:broadcastTrap", false);
+		// Expect one TrapNotification message to be broadcast on the messaging channel
+		MockEndpoint broadcastTrapd = getMockEndpoint("mock:activemq:broadcastTrap", false);
 		broadcastTrapd.setExpectedMessageCount(1);
 
-		MockEndpoint trapHandler = getMockEndpoint("mock:seda:trapHandler",
-				false);
+		MockEndpoint trapHandler = getMockEndpoint("mock:seda:trapHandler", false);
 		trapHandler.setExpectedMessageCount(1);
 
-		// Create a mock SyslogdConfig
-		TrapdConfigBean config = new TrapdConfigBean();
-		config.setSnmpTrapPort(10514);
-		config.setSnmpTrapAddress("127.0.0.1");
-		config.setNewSuspectOnTrap(false);
-
-		MockEventIpcManager mockEventIpcManager = new MockEventIpcManager();
-
+		/*
 		MockTrapdIpMgr m_trapdIpMgr=new MockTrapdIpMgr();
 
 		m_trapdIpMgr.clearKnownIpsMap();
 		m_trapdIpMgr.setNodeId("127.0.0.1", 1);
-
-		TrapQueueProcessor trapQProcessor = new TrapQueueProcessor();
-		EventCreator trapProcess = new EventCreator(m_trapdIpMgr);
-		trapProcess.setAgentAddress(InetAddressUtils.ONE_TWENTY_SEVEN);
-		trapProcess.setCommunity("comm");
-		trapProcess.setTimeStamp(System.currentTimeMillis());
-		trapProcess.setTrapAddress(InetAddressUtils.ONE_TWENTY_SEVEN);
-		trapQProcessor.setEventManager(mockEventIpcManager);
+		*/
 
 		// create instance of snmp4JV2cTrap
 		PDU snmp4JV2cTrapPdu = new PDU();
@@ -191,21 +197,22 @@ public class TrapdHandlerDefaultIT extends CamelBlueprintTestSupport {
 
 		TrapNotification snmp4JV2cTrap = new Snmp4JTrapNotifier.Snmp4JV2TrapInformation(
 				InetAddressUtils.ONE_TWENTY_SEVEN, new String("public"),
-				snmp4JV2cTrapPdu, trapProcess);
+				snmp4JV2cTrapPdu, new BasicTrapProcessor());
 
-		trapQProcessor.setTrapNotification(snmp4JV2cTrap);
-
-		trapQProcessor.setEventConfDao(m_eventConfDao);
-
-		// Send a TrapQProcessor
-		template.sendBody("activemq:broadcastTrap?disableReplyTo=true", trapQProcessor.call());
+		// Send the TrapNotification
+		template.sendBody("activemq:broadcastTrap?disableReplyTo=true", snmp4JV2cTrap);
 
 		assertMockEndpointsSatisfied();
 
 		// Check that the input for the seda:trapHandler endpoint matches
 		// the TrapQProcessor that we simulated via ActiveMQ
-		TrapQueueProcessor result = trapHandler.getReceivedExchanges().get(0)
-				.getIn().getBody(TrapQueueProcessor.class);
-		System.out.println("Result ++++:" + result);
+		TrapNotification result = trapHandler.getReceivedExchanges().get(0).getIn().getBody(TrapNotification.class);
+		LOG.info("Result: " + result);
+
+		// Assert that the trap's content is correct
+		BasicTrapProcessor processor = (BasicTrapProcessor)result.getTrapProcessor();
+		assertEquals("v2", processor.getVersion());
+
+		// TODO: Use an EventAnticipator to assert that a trap event was created
 	}
 }

@@ -29,6 +29,7 @@
 package org.opennms.netmgt.trapd;
 
 import java.net.InetAddress;
+import java.net.ServerSocket;
 import java.util.Dictionary;
 import java.util.Map;
 import java.util.Properties;
@@ -63,6 +64,8 @@ public class TrapdListenerBlueprintIT extends CamelBlueprintTestSupport {
 	private static final String PERSISTANCE_ID="org.opennms.netmgt.trapd";
 
 	private final TrapNotificationLatch m_handler = new TrapNotificationLatch(3);
+
+	private int m_port;
 
 	/**
 	 * Use Aries Blueprint synchronous mode to avoid a blueprint deadlock bug.
@@ -99,8 +102,18 @@ public class TrapdListenerBlueprintIT extends CamelBlueprintTestSupport {
 	@Override
 	protected String useOverridePropertiesWithConfigAdmin(Dictionary props) throws Exception {
 		// TODO: Check that this port is available before using it
-		props.put(PORT_NAME, 10514);
+		m_port = getAvailablePort(10500, 10900);
+		props.put(PORT_NAME, m_port);
 		return PERSISTANCE_ID;
+	}
+
+	private static int getAvailablePort(int min, int max) {
+		for (int i = min; i <= max; i++) {
+			try (ServerSocket socket = new ServerSocket(i)) {
+				return socket.getLocalPort();
+			} catch (Throwable e) {}
+		}
+		throw new IllegalStateException("Can't find an available network port");
 	}
 
 	@SuppressWarnings("rawtypes")
@@ -142,6 +155,8 @@ public class TrapdListenerBlueprintIT extends CamelBlueprintTestSupport {
 
 	@Test
 	public void testTrapd() throws Exception {
+		Thread.sleep(10000);
+
 		for (int i = 0; i < 3; i++) {
 			LOG.info("Sending trap");
 			try {
@@ -149,13 +164,15 @@ public class TrapdListenerBlueprintIT extends CamelBlueprintTestSupport {
 				pdu.addVarBind(SnmpObjId.get(".1.3.6.1.2.1.1.3.0"), SnmpUtils.getValueFactory().getTimeTicks(0));
 				pdu.addVarBind(SnmpObjId.get(".1.3.6.1.6.3.1.1.4.1.0"), SnmpUtils.getValueFactory().getObjectId(SnmpObjId.get(".1.3.6.1.4.1.5813.1")));
 				pdu.addVarBind(SnmpObjId.get(".1.3.6.1.4.1.5813.20.1"), SnmpUtils.getValueFactory().getOctetString("Hello world".getBytes("UTF-8")));
-				pdu.send(InetAddressUtils.str(InetAddressUtils.ONE_TWENTY_SEVEN), 10514, "public");
+				pdu.send(InetAddressUtils.str(InetAddressUtils.ONE_TWENTY_SEVEN), m_port, "public");
 			} catch (Throwable e) {
 				LOG.error(e.getMessage(), e);
 			}
 			LOG.info("Trap has been sent");
 		}
-		m_handler.getLatch().await(30, TimeUnit.SECONDS);
+		if (!m_handler.getLatch().await(30, TimeUnit.SECONDS)) {
+			fail("Countdown latch failed");
+		}
 		
 		TrapNotification notification = m_handler.getLast();
 		notification.setTrapProcessor(new TrapProcessor() {

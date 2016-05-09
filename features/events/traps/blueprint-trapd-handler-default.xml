@@ -24,8 +24,26 @@
 		<argument ref="trapdIpMgr"/>
 	</bean>
 
+	<!-- Get a reference to the org.opennms.netmgt.events.api.EventForwarder -->
+	<reference id="eventForwarder" interface="org.opennms.netmgt.events.api.EventForwarder" availability="mandatory"/>
+
+	<!-- Get a reference to the org.opennms.netmgt.config.api.EventConfDao -->
+	<reference id="eventConfDao" interface="org.opennms.netmgt.config.api.EventConfDao" availability="mandatory"/>
+
+	<!-- Get a reference to the org.opennms.netmgt.config.TrapdConfig -->
+	<reference id="trapdConfig" interface="org.opennms.netmgt.config.TrapdConfig" availability="mandatory"/>
+
+	<bean id="newSuspectOnTrap" factory-ref="trapdConfig" factory-method="getNewSuspectOnTrap"/>
+
+	<bean id="processorFactory" class="org.opennms.netmgt.trapd.TrapQueueProcessorFactory">
+		<property name="eventConfDao" ref="eventConfDao"/>
+		<property name="eventForwarder" ref="eventForwarder"/>
+		<property name="newSuspect" ref="newSuspectOnTrap"/>
+	</bean>
+
 	<bean id="trapConnectionHandlerDefault" class="org.opennms.netmgt.trapd.TrapNotificationHandlerDefaultImpl">
 		<property name="eventCreator" ref="eventCreator"/>
+		<property name="processorFactory" ref="processorFactory"/>
 	</bean>
 
 	<bean id="activemq" class="org.apache.activemq.camel.component.ActiveMQComponent">

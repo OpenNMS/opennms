@@ -46,7 +46,7 @@
   </bean>
   
   <bean id="processorFactory" class="org.opennms.netmgt.trapd.TrapQueueProcessorFactory">
-    <property name="eventManager" ref="eventIpcManager"/>
+    <property name="eventForwarder" ref="eventIpcManager"/>
   </bean>
   
   <bean id="newSuspectOnTrap" factory-bean="trapdConfig" factory-method="getNewSuspectOnTrap"/>
