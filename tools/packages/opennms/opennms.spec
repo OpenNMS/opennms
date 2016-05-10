@@ -883,6 +883,15 @@ else
 	echo "done"
 fi
 
+printf -- "- making symlink for $ROOT_INST/jetty-webapps/%{servletdir}/docs... "
+if [ -e "$ROOT_INST/jetty-webapps/%{servletdir}/docs" ] && [ ! -L "$ROOT_INST/jetty-webapps/%{servletdir}/docs" ]; then
+  echo "failed: $ROOT_INST/jetty-webapps/%{servletdir}/docs is a real directory, but it should be a symlink to %{_docdir}/%{name}-%{version}."
+else
+  rm -rf "$ROOT_INST/jetty-webapps/%{servletdir}/docs"
+  ln -sf "%{_docdir}/%{name}-%{version}" "$ROOT_INST/jetty-webapps/%{servletdir}/docs"
+  echo "done"
+fi
+
 %postun -p /bin/bash docs
 ROOT_INST="$RPM_INSTALL_PREFIX0"
 SHARE_INST="$RPM_INSTALL_PREFIX1"
@@ -895,6 +904,12 @@ if [ "$1" = 0 ]; then
 	if [ -L "$ROOT_INST/docs" ]; then
 		rm -f "$ROOT_INST/docs"
 	fi
+fi
+
+if [ "$1" = 0 ]; then
+  if [ -L "$ROOT_INST/jetty-webapps/%{servletdir}/docs" ]; then
+    rm -f "$ROOT_INST/jetty-webapps/%{servletdir}/docs"
+  fi
 fi
 
 %post -p /bin/bash core
