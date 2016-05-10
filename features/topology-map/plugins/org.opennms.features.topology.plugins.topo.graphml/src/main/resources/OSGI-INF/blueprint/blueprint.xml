@@ -1,0 +1,24 @@
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0"
+xsi:schemaLocation="
+http://www.osgi.org/xmlns/blueprint/v1.0.0 http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd
+http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0 http://aries.apache.org/schemas/blueprint-cm/blueprint-cm-1.1.0.xsd
+">
+
+	<bean id="graphMLMetaInfo" class="org.opennms.features.topology.api.topo.DefaultMetaInfo">
+		<property name="name" value="GraphML Topology Provider"/>
+		<property name="description" value="This Topology Provider visualizes a predefined GraphML graph."/>
+	</bean>
+
+	<bean id="graphmlTopologyFactory" class="org.opennms.features.topology.plugins.topo.graphml.internal.GraphMLTopologyFactory">
+		<property name="bundleContext" ref="blueprintBundleContext" />
+		<property name="metaInfo" ref="graphMLMetaInfo"/>
+	</bean>
+	
+    <service interface="org.osgi.service.cm.ManagedServiceFactory" ref="graphmlTopologyFactory">
+    	<service-properties>
+    	  <entry key="service.pid" value="org.opennms.features.topology.plugins.topo.graphml"/>
+    	</service-properties>
+    </service>
+</blueprint>

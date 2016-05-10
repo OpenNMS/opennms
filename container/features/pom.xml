@@ -79,10 +79,10 @@
             <repository>mvn:org.opennms.osgi.features.topology/opennms-topology-runtime-linkd/${project.version}/xml/features</repository>
             <repository>mvn:org.opennms.osgi.features.topology/opennms-topology-runtime-ncs/${project.version}/xml/features</repository>
             <repository>mvn:org.opennms.osgi.features.topology/opennms-topology-runtime-sfree/${project.version}/xml/features</repository>
-            <repository>mvn:org.opennms.osgi.features.topology/opennms-topology-runtime-simple/${project.version}/xml/features</repository>
             <repository>mvn:org.opennms.osgi.features.topology/opennms-topology-runtime-vmware/${project.version}/xml/features</repository>
             <repository>mvn:org.opennms.osgi.features.topology/opennms-topology-runtime-application/${project.version}/xml/features</repository>
             <repository>mvn:org.opennms.osgi.features.topology/opennms-topology-runtime-bsm/${project.version}/xml/features</repository>
+            <repository>mvn:org.opennms.osgi.features.topology/opennms-topology-runtime-graphml/${project.version}/xml/features</repository>
 
             <!-- Vaadin Feature -->
             <repository>mvn:org.opennms.features/vaadin/${project.version}/xml/features</repository>
@@ -248,10 +248,10 @@
             <feature>opennms-topology-runtime-linkd</feature>
             <feature>opennms-topology-runtime-ncs</feature>
             <feature>opennms-topology-runtime-sfree</feature>
-            <feature>opennms-topology-runtime-simple</feature>
             <feature>opennms-topology-runtime-vmware</feature>
             <feature>opennms-topology-runtime-application</feature>
             <feature>opennms-topology-runtime-bsm</feature>
+            <feature>opennms-topology-runtime-graphml</feature>
             <feature>vaadin</feature>
             <feature>vaadin-dashboard</feature>
             <feature>vaadin-jmxconfiggenerator</feature>
@@ -453,14 +453,14 @@
     </dependency>
     <dependency>
       <groupId>org.opennms.osgi.features.topology</groupId>
-      <artifactId>opennms-topology-runtime-sfree</artifactId>
+      <artifactId>opennms-topology-runtime-graphml</artifactId>
       <version>${project.version}</version>
       <type>pom</type>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms.osgi.features.topology</groupId>
-      <artifactId>opennms-topology-runtime-simple</artifactId>
+      <artifactId>opennms-topology-runtime-sfree</artifactId>
       <version>${project.version}</version>
       <type>pom</type>
       <scope>provided</scope>

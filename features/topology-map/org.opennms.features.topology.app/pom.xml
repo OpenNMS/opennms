@@ -123,13 +123,6 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.opennms.features.topology.plugins.topo</groupId>
-            <artifactId>simple</artifactId>
-            <version>${project.version}</version>
-            <scope>test</scope>
-        </dependency>
-
-        <dependency>
             <groupId>org.osgi</groupId>
             <artifactId>org.osgi.core</artifactId>
             <scope>provided</scope>
@@ -146,7 +139,6 @@
             <scope>provided</scope>
         </dependency>
     </dependencies>
-
     <repositories>
         <repository>
             <snapshots><enabled>false</enabled></snapshots>
@@ -156,5 +148,4 @@
             <url>http://maven.opennms.org/content/groups/opennms.org-release</url>
         </repository>
     </repositories>
-
 </project>
