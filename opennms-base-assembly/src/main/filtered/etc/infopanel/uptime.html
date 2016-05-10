@@ -1,0 +1,24 @@
+{# Example template for the system uptime provided by the netsnmp agent #}
+{% set visible = node != null && node.sysObjectId == ".1.3.6.1.4.1.8072.3.2.10" %}
+{% set title = "System uptime" %}
+
+{% set resourceId = "node[" + node.id + "].nodeSnmp[]" %}
+{% set attributeId = "hrSystemUptime" %}
+{% set v = measurements.getLastValue(resourceId, attributeId)/100.0/60.0/60.0/24.0 %}
+
+<table border="0" width="100%">
+    <tr>
+        <td width="80" align="right" valign="top">Value</td>
+        <td width="14"></td>
+        <td align="left" valign="top">
+            {{ v|round(2) }} day(s)
+        </td>
+    </tr>
+    <tr>
+        <td width="80" align="right" valign="top">Graph</td>
+        <td width="14"></td>
+        <td align="left" valign="top">
+            <img src="/opennms/graph/graph.png?resourceId=node[{{ node.id }}].nodeSnmp[]&report=netsnmp.hrSystemUptime&start={{ System.currentTimeMillis() }}&end={{ System.currentTimeMillis()-(60*60*1000) }}&width=170&height=30">
+        </td>
+    </tr>
+</table>

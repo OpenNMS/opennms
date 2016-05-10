@@ -49,14 +49,15 @@ public class MeasurementsWrapper {
     }
 
     public double getLastValue(final String resource, final String attribute) {
-        QueryResponse.WrappedPrimitive[] columns = query(resource, attribute).getColumns();
-        LOG.debug("MEASUREMENTS: Received {} columns", columns.length);
+        long end = System.currentTimeMillis();
+        long start = end - (15 * 60 * 1000);
+
+        QueryResponse.WrappedPrimitive[] columns = queryInt(resource, attribute, start, end, 300000, "AVERAGE").getColumns();
+
         if (columns.length > 0) {
             double[] values = columns[0].getList();
-            LOG.debug("MEASUREMENTS: First columns has {} entries", values.length);
             if (values.length > 0) {
                 for(int i = values.length-1; i >= 0; i--) {
-                    LOG.warn("MEASUREMENTS: Entry[{}] = {}", i, values[i]);
                     if (!Double.isNaN(values[i])) {
                         return values[i];
                     }
@@ -66,18 +67,25 @@ public class MeasurementsWrapper {
         return Double.NaN;
     }
 
-    private QueryResponse query(final String resource, final String attribute) {
-        long end = System.currentTimeMillis();
-        long start = end - (30 * 60 * 1000); // 30 Minutes
+    public double[] query(final String resource, final String attribute, final long start, final long end, final long step, final String aggregation) {
+        QueryResponse.WrappedPrimitive[] columns = queryInt(resource, attribute, start, end, step, aggregation).getColumns();
 
+        if (columns.length > 0) {
+            return columns[0].getList();
+        }
+
+        return new double[] {};
+    }
+
+    private QueryResponse queryInt(final String resource, final String attribute, final long start, final long end, final long step, final String aggregation) {
         QueryRequest request = new QueryRequest();
         request.setRelaxed(true);
         request.setStart(start);
         request.setEnd(end);
-        request.setStep(300000);
+        request.setStep(step);
 
         Source source = new Source();
-        source.setAggregation("AVERAGE");
+        source.setAggregation(aggregation);
         source.setTransient(false);
         source.setAttribute(attribute);
         source.setResourceId(resource);
