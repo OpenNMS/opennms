@@ -29,10 +29,22 @@
 package org.opennms.netmgt.syslogd;
 
 import java.util.Dictionary;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
 
+import org.apache.camel.CamelContext;
+import org.apache.camel.Component;
+import org.apache.camel.Exchange;
+import org.apache.camel.Processor;
+import org.apache.camel.builder.RouteBuilder;
+import org.apache.camel.component.kafka.KafkaComponent;
+import org.apache.camel.component.kafka.KafkaConstants;
+import org.apache.camel.impl.DefaultCamelContext;
+import org.apache.camel.impl.SimpleRegistry;
 import org.apache.camel.test.blueprint.CamelBlueprintTestSupport;
 import org.apache.camel.util.KeyValueHolder;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
@@ -57,6 +69,11 @@ public class SyslogdHandlerKafkaIT extends CamelBlueprintTestSupport {
 		System.setProperty("org.apache.aries.blueprint.synchronous", Boolean.TRUE.toString());
 		System.setProperty("de.kalpatec.pojosr.framework.events.sync", Boolean.TRUE.toString());
 	}
+	
+    @BeforeClass
+    public static void startActiveMQ() throws Exception {
+
+    }
 
 	@Override
 	public boolean isUseAdviceWith() {
@@ -78,6 +95,16 @@ public class SyslogdHandlerKafkaIT extends CamelBlueprintTestSupport {
 	@Override
 	protected void addServicesOnStartup(Map<String, KeyValueHolder<Object, Dictionary>> services) {
 		// Register any mock OSGi services here
+		services.put( SyslogConnectionHandler.class.getName(), new KeyValueHolder<Object, Dictionary>(new SyslogConnectionHandlerCamelImpl("seda:handleMessage"), new Properties()));
+		
+		//creating kafka component
+		Properties props = new Properties();
+		props.setProperty("alias", "opennms.broker");
+		
+		KafkaComponent kafka = new KafkaComponent();
+		kafka.createComponentConfiguration().setBaseUri("kafka://localhost:9092");
+        services.put( Component.class.getName(),
+                new KeyValueHolder<Object, Dictionary>( kafka, props ) );
 	}
 
 	// The location of our Blueprint XML files to be used for testing
@@ -88,6 +115,27 @@ public class SyslogdHandlerKafkaIT extends CamelBlueprintTestSupport {
 
 	@Test
 	public void testSyslogd() throws Exception {
-		// TODO: Perform integration testing
+		
+        Map<String, Object> parms = new HashMap<String, Object>();
+        parms.put("port",61616);	
+        SimpleRegistry registry = new SimpleRegistry();
+        CamelContext syslogd = new DefaultCamelContext(registry);
+        syslogd.addComponent("kafka", new KafkaComponent());
+        syslogd.addRoutes(new RouteBuilder() {
+            @Override
+            public void configure() throws Exception {
+
+                from("seda:handleMessage").convertBodyTo(SyslogConnection.class).process(new Processor() {
+                    @Override
+                    public void process(Exchange exchange) throws Exception {
+                        exchange.getIn().setBody("Test Message from Camel Kafka Component Final",String.class);
+                        exchange.getIn().setHeader(KafkaConstants.PARTITION_KEY,simple("${body.hostname}"));
+                    }
+                }).log("address:${body.sourceAddress}").log("port: ${body.port}").transform(simple("${body.byteBuffer}")).convertBodyTo(String.class).log(body().toString()).to("kafka:localhost:9092?topic=syslog;serializerClass=kafka.serializer.StringEncoder");
+            
+            }
+        });
+        
+        syslogd.start();
 	}
 }
