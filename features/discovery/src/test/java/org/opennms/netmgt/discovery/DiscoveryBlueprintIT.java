@@ -34,7 +34,6 @@ import java.util.Dictionary;
 import java.util.Map;
 import java.util.Properties;
 
-import org.apache.activemq.broker.BrokerService;
 import org.apache.activemq.camel.component.ActiveMQComponent;
 import org.apache.camel.CamelContext;
 import org.apache.camel.CamelExecutionException;
@@ -47,11 +46,11 @@ import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.impl.DefaultCamelContext;
 import org.apache.camel.impl.SimpleRegistry;
 import org.apache.camel.util.KeyValueHolder;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
+import org.opennms.core.test.activemq.ActiveMQBroker;
 import org.opennms.core.test.camel.CamelBlueprintTest;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.DiscoveryConfigFactory;
@@ -80,7 +79,8 @@ public class DiscoveryBlueprintIT extends CamelBlueprintTest {
 
     private static final String LOCATION = "RDU";
 
-    private static BrokerService m_broker = null;
+    @ClassRule
+    public static ActiveMQBroker s_broker = new ActiveMQBroker();
 
     /**
      * Register a mock OSGi {@link SchedulerService} so that we can make sure that the scheduler
@@ -131,20 +131,6 @@ public class DiscoveryBlueprintIT extends CamelBlueprintTest {
     @Override
     protected String getBlueprintDescriptor() {
         return "file:blueprint-discovery.xml";
-    }
-
-    @BeforeClass
-    public static void startActiveMQ() throws Exception {
-        m_broker = new BrokerService();
-        m_broker.addConnector("tcp://127.0.0.1:61616");
-        m_broker.start();
-    }
-
-    @AfterClass
-    public static void stopActiveMQ() throws Exception {
-        if (m_broker != null) {
-            m_broker.stop();
-        }
     }
 
     @Test(timeout=60000)

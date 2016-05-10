@@ -33,16 +33,15 @@ import java.util.Dictionary;
 import java.util.Map;
 import java.util.Properties;
 
-import org.apache.activemq.broker.BrokerService;
 import org.apache.activemq.camel.component.ActiveMQComponent;
 import org.apache.camel.Component;
 import org.apache.camel.component.mock.MockEndpoint;
 import org.apache.camel.util.KeyValueHolder;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
+import org.opennms.core.test.activemq.ActiveMQBroker;
 import org.opennms.core.test.camel.CamelBlueprintTest;
 import org.opennms.core.utils.InetAddressUtils;
 import org.springframework.test.context.ContextConfiguration;
@@ -51,14 +50,15 @@ import org.springframework.test.context.ContextConfiguration;
 @ContextConfiguration(locations = { "classpath:/META-INF/opennms/emptyContext.xml" })
 public class SyslogdHandlerMinionIT extends CamelBlueprintTest {
 
-	private static BrokerService m_broker = null;
+    @ClassRule
+    public static ActiveMQBroker s_broker = new ActiveMQBroker();
 
 	@SuppressWarnings("rawtypes")
 	@Override
 	protected void addServicesOnStartup(Map<String, KeyValueHolder<Object, Dictionary>> services) {
 		// Register any mock OSGi services here
 		ActiveMQComponent queueingservice = new ActiveMQComponent();
-		queueingservice.setBrokerURL("tcp://127.0.0.1:61716");
+		queueingservice.setBrokerURL("vm://localhost?create=false");
 		Properties props = new Properties();
 		props.put("alias", "opennms.broker");
 		services.put(Component.class.getName(), new KeyValueHolder<Object, Dictionary>(queueingservice, props));
@@ -68,20 +68,6 @@ public class SyslogdHandlerMinionIT extends CamelBlueprintTest {
 	@Override
 	protected String getBlueprintDescriptor() {
 		return "file:blueprint-syslog-handler-minion.xml";
-	}
-
-	@BeforeClass
-	public static void startActiveMQ() throws Exception {
-		m_broker = new BrokerService();
-		m_broker.addConnector("tcp://127.0.0.1:61716");
-		m_broker.start();
-	}
-
-	@AfterClass
-	public static void stopActiveMQ() throws Exception {
-		if (m_broker != null) {
-			m_broker.stop();
-		}
 	}
 
 	@Test(timeout=60000)

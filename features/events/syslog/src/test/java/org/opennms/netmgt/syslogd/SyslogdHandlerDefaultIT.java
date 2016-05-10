@@ -34,16 +34,15 @@ import java.util.Dictionary;
 import java.util.Map;
 import java.util.Properties;
 
-import org.apache.activemq.broker.BrokerService;
 import org.apache.activemq.camel.component.ActiveMQComponent;
 import org.apache.camel.Component;
 import org.apache.camel.component.mock.MockEndpoint;
 import org.apache.camel.util.KeyValueHolder;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
+import org.opennms.core.test.activemq.ActiveMQBroker;
 import org.opennms.core.test.camel.CamelBlueprintTest;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.xml.JaxbUtils;
@@ -53,7 +52,8 @@ import org.springframework.test.context.ContextConfiguration;
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations = { "classpath:/META-INF/opennms/emptyContext.xml" })
 public class SyslogdHandlerDefaultIT extends CamelBlueprintTest {
-	private static BrokerService m_broker = null;
+    @ClassRule
+    public static ActiveMQBroker s_broker = new ActiveMQBroker();
 
 	@SuppressWarnings("rawtypes")
 	@Override
@@ -80,21 +80,6 @@ public class SyslogdHandlerDefaultIT extends CamelBlueprintTest {
 	@Override
 	protected String getBlueprintDescriptor() {
 		return "file:blueprint-syslog-handler-default.xml";
-	}
-
-	@BeforeClass
-	public static void startActiveMQ() throws Exception {
-		m_broker = new BrokerService();
-		//m_broker.addConnector("tcp://127.0.0.1:61616");
-		m_broker.addConnector("vm://localhost");
-		m_broker.start();
-	}
-
-	@AfterClass
-	public static void stopActiveMQ() throws Exception {
-		if (m_broker != null) {
-			m_broker.stop();
-		}
 	}
 
 	@Test(timeout=60000)
