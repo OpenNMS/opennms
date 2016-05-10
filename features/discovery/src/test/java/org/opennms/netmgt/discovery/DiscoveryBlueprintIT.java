@@ -46,13 +46,13 @@ import org.apache.camel.Processor;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.impl.DefaultCamelContext;
 import org.apache.camel.impl.SimpleRegistry;
-import org.apache.camel.test.blueprint.CamelBlueprintTestSupport;
 import org.apache.camel.util.KeyValueHolder;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
+import org.opennms.core.test.camel.CamelBlueprintTest;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.DiscoveryConfigFactory;
 import org.opennms.netmgt.config.api.DiscoveryConfigurationFactory;
@@ -70,15 +70,11 @@ import org.opennms.netmgt.events.api.EventIpcManager;
 import org.opennms.netmgt.icmp.Pinger;
 import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.netmgt.model.events.EventBuilder;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.test.context.ContextConfiguration;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration( locations = { "classpath:/META-INF/opennms/emptyContext.xml" } )
-public class DiscoveryBlueprintIT extends CamelBlueprintTestSupport {
-
-    private static final Logger LOG = LoggerFactory.getLogger(DiscoveryBlueprintIT.class );
+public class DiscoveryBlueprintIT extends CamelBlueprintTest {
 
     private static final MockEventIpcManager IPC_MANAGER_INSTANCE = new MockEventIpcManager();
 
@@ -87,45 +83,12 @@ public class DiscoveryBlueprintIT extends CamelBlueprintTestSupport {
     private static BrokerService m_broker = null;
 
     /**
-     * Use Aries Blueprint synchronous mode to avoid a blueprint deadlock bug.
-     * 
-     * @see https://issues.apache.org/jira/browse/ARIES-1051
-     * @see https://access.redhat.com/site/solutions/640943
-     */
-    @Override
-    public void doPreSetup() throws Exception
-    {
-        System.setProperty( "org.apache.aries.blueprint.synchronous", Boolean.TRUE.toString() );
-        System.setProperty( "de.kalpatec.pojosr.framework.events.sync", Boolean.TRUE.toString() );
-    }
-
-    @Override
-    public boolean isUseAdviceWith()
-    {
-        return true;
-    }
-
-    @Override
-    public boolean isUseDebugger()
-    {
-        // must enable debugger
-        return true;
-    }
-
-    @Override
-    public String isMockEndpoints()
-    {
-        return "*";
-    }
-
-    /**
      * Register a mock OSGi {@link SchedulerService} so that we can make sure that the scheduler
      * whiteboard is working properly.
      */
     @SuppressWarnings( "rawtypes" )
     @Override
-    protected void addServicesOnStartup( Map<String, KeyValueHolder<Object, Dictionary>> services )
-    {
+    protected void addServicesOnStartup( Map<String, KeyValueHolder<Object, Dictionary>> services ) {
         services.put( Pinger.class.getName(), new KeyValueHolder<Object, Dictionary>(new TestPinger(), new Properties()));
 
         services.put( EventForwarder.class.getName(),
@@ -166,8 +129,7 @@ public class DiscoveryBlueprintIT extends CamelBlueprintTestSupport {
 
     // The location of our Blueprint XML file to be used for testing
     @Override
-    protected String getBlueprintDescriptor()
-    {
+    protected String getBlueprintDescriptor() {
         return "file:blueprint-discovery.xml";
     }
 
