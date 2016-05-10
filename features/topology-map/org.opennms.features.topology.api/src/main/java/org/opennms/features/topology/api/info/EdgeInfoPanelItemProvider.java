@@ -29,19 +29,21 @@
 package org.opennms.features.topology.api.info;
 
 import java.util.Collection;
+import java.util.Optional;
 
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.topo.EdgeRef;
 
-public abstract class EdgeInfoPanelItem extends SingleSelectedInfoPanelItem<EdgeRef> {
+public abstract class EdgeInfoPanelItemProvider extends SingleSelectedInfoPanelItemProvider<EdgeRef> {
 
     @Override
-    protected EdgeRef findSingleSelectedItem(GraphContainer container) {
+    protected Optional<EdgeRef> findSingleSelectedItem(GraphContainer container) {
         Collection<EdgeRef> selectedEdgeRefs = container.getSelectionManager().getSelectedEdgeRefs();
         if (selectedEdgeRefs.size() == 1) {
             final EdgeRef edgeRef = selectedEdgeRefs.iterator().next();
-            return edgeRef;
+            return Optional.of(edgeRef);
         }
-        return null;
+
+        return Optional.empty();
     }
 }

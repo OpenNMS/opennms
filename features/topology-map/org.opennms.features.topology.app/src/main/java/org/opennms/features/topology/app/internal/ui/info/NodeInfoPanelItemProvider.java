@@ -32,13 +32,16 @@ import static org.opennms.netmgt.vaadin.core.UIHelper.createButton;
 import static org.opennms.netmgt.vaadin.core.UIHelper.createLabel;
 
 import org.opennms.features.topology.api.GraphContainer;
-import org.opennms.features.topology.api.info.VertexInfoPanelItem;
+import org.opennms.features.topology.api.info.VertexInfoPanelItemProvider;
+import org.opennms.features.topology.api.info.item.DefaultInfoPanelItem;
+import org.opennms.features.topology.api.info.item.InfoPanelItem;
 import org.opennms.features.topology.api.topo.AbstractVertex;
 import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.features.topology.app.internal.ui.NodeInfoWindow;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.OnmsNode;
 
+import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
@@ -46,58 +49,48 @@ import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.themes.BaseTheme;
 
-public class NodeInfoPanelItem extends VertexInfoPanelItem {
+public class NodeInfoPanelItemProvider extends VertexInfoPanelItemProvider {
 
     private final NodeDao nodeDao;
 
-    public NodeInfoPanelItem(NodeDao nodeDao) {
+    public NodeInfoPanelItemProvider(NodeDao nodeDao) {
         this.nodeDao = nodeDao;
     }
 
-    @Override
-    protected Component getComponent(VertexRef ref, GraphContainer container) {
-        if (ref instanceof AbstractVertex && ((AbstractVertex) ref).getNodeID() != null) {
-            AbstractVertex vertex = ((AbstractVertex) ref);
-            OnmsNode node = nodeDao.get(vertex.getNodeID());
+    private Component createComponent(AbstractVertex ref) {
+        Preconditions.checkState(ref.getNodeID() != null, "no Node ID defined.");
+        OnmsNode node = nodeDao.get(ref.getNodeID());
+        FormLayout formLayout = new FormLayout();
+        formLayout.setSpacing(false);
+        formLayout.setMargin(false);
 
-            if (node != null) {
-                FormLayout formLayout = new FormLayout();
-                formLayout.setSpacing(false);
-                formLayout.setMargin(false);
+        formLayout.addComponent(createLabel("Node ID", "" + node.getId()));
 
-                formLayout.addComponent(createLabel("Node ID", "" + node.getId()));
+        final HorizontalLayout nodeButtonLayout = new HorizontalLayout();
+        Button nodeButton = createButton(node.getLabel(), null, null, event -> new NodeInfoWindow(ref.getNodeID()).open());
+        nodeButton.setStyleName(BaseTheme.BUTTON_LINK);
+        nodeButtonLayout.addComponent(nodeButton);
+        nodeButtonLayout.setCaption("Node Label");
+        formLayout.addComponent(nodeButtonLayout);
 
-                final HorizontalLayout nodeButtonLayout = new HorizontalLayout();
-                Button nodeButton = createButton(node.getLabel(), null, null, event -> new NodeInfoWindow(vertex.getNodeID()).open());
-                nodeButton.setStyleName(BaseTheme.BUTTON_LINK);
-                nodeButtonLayout.addComponent(nodeButton);
-                nodeButtonLayout.setCaption("Node Label");
-                formLayout.addComponent(nodeButtonLayout);
-
-                if (! Strings.isNullOrEmpty(node.getSysObjectId())) {
-                    formLayout.addComponent(createLabel("Enterprise OID", node.getSysObjectId()));
-                }
-
-                return formLayout;
-            }
+        if (!Strings.isNullOrEmpty(node.getSysObjectId())) {
+            formLayout.addComponent(createLabel("Enterprise OID", node.getSysObjectId()));
         }
 
-        return null;
+        return formLayout;
     }
 
     @Override
-    protected boolean contributesTo(VertexRef ref, GraphContainer container) {
-        return (ref instanceof AbstractVertex) &&
-               (((AbstractVertex) ref).getNodeID() != null);
+    protected boolean contributeTo(VertexRef ref, GraphContainer container) {
+        return ref instanceof AbstractVertex && ((AbstractVertex) ref).getNodeID() != null;
     }
 
     @Override
-    protected String getTitle(VertexRef vertexRef) {
-        return "Node Details";
+    protected InfoPanelItem createInfoPanelItem(VertexRef ref, GraphContainer graphContainer) {
+        return new DefaultInfoPanelItem()
+                .withOrder(-500)
+                .withTitle("Node Details")
+                .withComponent(createComponent((AbstractVertex) ref));
     }
 
-    @Override
-    public int getOrder() {
-        return -500;
-    }
 }

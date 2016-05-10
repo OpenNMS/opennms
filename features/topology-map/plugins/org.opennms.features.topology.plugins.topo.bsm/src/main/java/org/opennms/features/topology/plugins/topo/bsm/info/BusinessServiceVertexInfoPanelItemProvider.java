@@ -29,7 +29,7 @@
 package org.opennms.features.topology.plugins.topo.bsm.info;
 
 import static java.util.Comparator.comparing;
-import static org.opennms.features.topology.plugins.topo.bsm.info.BusinessServiceVertexStatusInfoPanelItem.createStatusLabel;
+import static org.opennms.features.topology.plugins.topo.bsm.info.BusinessServiceVertexStatusInfoPanelItemProvider.createStatusLabel;
 import static org.opennms.netmgt.vaadin.core.UIHelper.createButton;
 import static org.opennms.netmgt.vaadin.core.UIHelper.createLabel;
 
@@ -37,7 +37,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.opennms.features.topology.api.GraphContainer;
-import org.opennms.features.topology.api.info.VertexInfoPanelItem;
+import org.opennms.features.topology.api.info.VertexInfoPanelItemProvider;
+import org.opennms.features.topology.api.info.item.DefaultInfoPanelItem;
+import org.opennms.features.topology.api.info.item.InfoPanelItem;
 import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.features.topology.plugins.topo.bsm.AbstractBusinessServiceVertex;
 import org.opennms.features.topology.plugins.topo.bsm.BusinessServiceVertex;
@@ -74,13 +76,13 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.BaseTheme;
 
-public class BusinessServiceVertexInfoPanelItem extends VertexInfoPanelItem {
+public class BusinessServiceVertexInfoPanelItemProvider extends VertexInfoPanelItemProvider {
 
     private BusinessServiceManager businessServiceManager;
 
     private final TransactionAwareBeanProxyFactory transactionAwareBeanProxyFactory;
 
-    public BusinessServiceVertexInfoPanelItem(TransactionAwareBeanProxyFactory transactionAwareBeanProxyFactory) {
+    public BusinessServiceVertexInfoPanelItemProvider(TransactionAwareBeanProxyFactory transactionAwareBeanProxyFactory) {
         this.transactionAwareBeanProxyFactory = transactionAwareBeanProxyFactory;
     }
 
@@ -89,17 +91,24 @@ public class BusinessServiceVertexInfoPanelItem extends VertexInfoPanelItem {
     }
 
     @Override
-    protected boolean contributesTo(VertexRef vertexRef, GraphContainer container) {
+    protected boolean contributeTo(VertexRef vertexRef, GraphContainer container) {
         return vertexRef.getNamespace().equals(BusinessServicesTopologyProvider.TOPOLOGY_NAMESPACE);
     }
 
     @Override
-    protected Component getComponent(VertexRef ref, GraphContainer container) {
+    protected InfoPanelItem createInfoPanelItem(VertexRef ref, GraphContainer graphContainer) {
+        return new DefaultInfoPanelItem()
+                .withOrder(0)
+                .withTitle(getTitle((AbstractBusinessServiceVertex) ref))
+                .withComponent(createComponent((AbstractBusinessServiceVertex) ref, graphContainer));
+    }
+
+    private Component createComponent(AbstractBusinessServiceVertex ref, GraphContainer graphContainer) {
         final FormLayout formLayout = new FormLayout();
         formLayout.setSpacing(false);
         formLayout.setMargin(false);
 
-        ((AbstractBusinessServiceVertex) ref).accept(new BusinessServiceVertexVisitor<Void>() {
+        ref.accept(new BusinessServiceVertexVisitor<Void>() {
             @Override
             public Void visit(BusinessServiceVertex vertex) {
                 final BusinessService businessService = businessServiceManager.getBusinessServiceById(vertex.getServiceId());
@@ -120,12 +129,17 @@ public class BusinessServiceVertexInfoPanelItem extends VertexInfoPanelItem {
                     @Override
                     // Threshold is not very transparent, we add an Explain Button in these cases
                     public Void visit(Threshold threshold) {
-                        final Button explainButton = createButton("Explain", "Explain the Threshold function", FontAwesome.TABLE, (Button.ClickListener) event -> {
-                            ThresholdExplanationWindow explainWindow = new ThresholdExplanationWindow(
-                                    SimulationAwareStateMachineFactory.createSimulatedStateMachine(businessServiceManager, container.getCriteria())
-                                            .explain(businessService, (Threshold) businessService.getReduceFunction()));
-                            UI.getCurrent().addWindow(explainWindow);
-                        });
+                        final Button explainButton = createButton("Explain",
+                                                                  "Explain the Threshold function",
+                                                                  FontAwesome.TABLE,
+                                                                  (Button.ClickListener) event -> {
+                                                                      ThresholdExplanationWindow explainWindow = new ThresholdExplanationWindow(
+                                                                              SimulationAwareStateMachineFactory.createSimulatedStateMachine(businessServiceManager,
+                                                                                                                                             graphContainer.getCriteria())
+                                                                                                                .explain(businessService,
+                                                                                                                         (Threshold) businessService.getReduceFunction()));
+                                                                      UI.getCurrent().addWindow(explainWindow);
+                                                                  });
                         explainButton.setStyleName(BaseTheme.BUTTON_LINK);
                         formLayout.addComponent(explainButton);
                         return null;
@@ -158,9 +172,8 @@ public class BusinessServiceVertexInfoPanelItem extends VertexInfoPanelItem {
         return formLayout;
     }
 
-    @Override
-    protected String getTitle(VertexRef ref) {
-        return ((AbstractBusinessServiceVertex) ref).accept(new BusinessServiceVertexVisitor<String>() {
+    private static String getTitle(AbstractBusinessServiceVertex ref) {
+        return ref.accept(new BusinessServiceVertexVisitor<String>() {
             @Override
             public String visit(BusinessServiceVertex vertex) {
                 return "Business Service Details";
@@ -178,11 +191,6 @@ public class BusinessServiceVertexInfoPanelItem extends VertexInfoPanelItem {
         });
     }
 
-    @Override
-    public int getOrder() {
-        return 0;
-    }
-
     private static String getReduceFunctionDescription(final ReductionFunction reductionFunction) {
         return reductionFunction.accept(new ReduceFunctionVisitor<String>() {
             @Override
@@ -193,15 +201,15 @@ public class BusinessServiceVertexInfoPanelItem extends VertexInfoPanelItem {
             @Override
             public String visit(HighestSeverityAbove function) {
                 return String.format("%s (%s)",
-                        function.getClass().getSimpleName(),
-                        function.getThreshold().getLabel());
+                                     function.getClass().getSimpleName(),
+                                     function.getThreshold().getLabel());
             }
 
             @Override
             public String visit(Threshold function) {
                 return String.format("%s (%s)",
-                        function.getClass().getSimpleName(),
-                        Float.toString(function.getThreshold()));
+                                     function.getClass().getSimpleName(),
+                                     Float.toString(function.getThreshold()));
             }
         });
     }

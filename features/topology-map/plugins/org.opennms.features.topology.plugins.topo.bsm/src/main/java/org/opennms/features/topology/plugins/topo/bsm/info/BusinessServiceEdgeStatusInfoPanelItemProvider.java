@@ -28,10 +28,12 @@
 
 package org.opennms.features.topology.plugins.topo.bsm.info;
 
-import static org.opennms.features.topology.plugins.topo.bsm.info.BusinessServiceVertexStatusInfoPanelItem.createStatusLabel;
+import static org.opennms.features.topology.plugins.topo.bsm.info.BusinessServiceVertexStatusInfoPanelItemProvider.createStatusLabel;
 
 import org.opennms.features.topology.api.GraphContainer;
-import org.opennms.features.topology.api.info.EdgeInfoPanelItem;
+import org.opennms.features.topology.api.info.EdgeInfoPanelItemProvider;
+import org.opennms.features.topology.api.info.item.DefaultInfoPanelItem;
+import org.opennms.features.topology.api.info.item.InfoPanelItem;
 import org.opennms.features.topology.api.topo.EdgeRef;
 import org.opennms.features.topology.plugins.topo.bsm.AbstractBusinessServiceVertex;
 import org.opennms.features.topology.plugins.topo.bsm.BusinessServiceEdge;
@@ -46,13 +48,13 @@ import org.opennms.netmgt.vaadin.core.TransactionAwareBeanProxyFactory;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.FormLayout;
 
-public class BusinessServiceEdgeStatusInfoPanelItem extends EdgeInfoPanelItem {
+public class BusinessServiceEdgeStatusInfoPanelItemProvider extends EdgeInfoPanelItemProvider {
 
     private BusinessServiceManager businessServiceManager;
 
     private final TransactionAwareBeanProxyFactory transactionAwareBeanProxyFactory;
 
-    public BusinessServiceEdgeStatusInfoPanelItem(TransactionAwareBeanProxyFactory transactionAwareBeanProxyFactory) {
+    public BusinessServiceEdgeStatusInfoPanelItemProvider(TransactionAwareBeanProxyFactory transactionAwareBeanProxyFactory) {
         this.transactionAwareBeanProxyFactory = transactionAwareBeanProxyFactory;
     }
 
@@ -60,18 +62,18 @@ public class BusinessServiceEdgeStatusInfoPanelItem extends EdgeInfoPanelItem {
         this.businessServiceManager = transactionAwareBeanProxyFactory.createProxy(businessServiceManager);
     }
 
-    @Override
-    protected Component getComponent(EdgeRef ref, GraphContainer container) {
+    private Component createComponent(BusinessServiceEdge ref, GraphContainer container) {
         FormLayout formLayout = new FormLayout();
         formLayout.setMargin(false);
         formLayout.setSpacing(false);
         formLayout.addStyleName("severity");
 
-        final BusinessServiceEdge businessServiceEdge = ((BusinessServiceEdge) ref);
-
-        final BusinessServiceStateMachine stateMachine = SimulationAwareStateMachineFactory.createStateMachine(businessServiceManager, container.getCriteria());
-        final Status outgoingStatus = BusinessServicesStatusProvider.getStatus(stateMachine, businessServiceEdge);
-        final Status incomingStatus = BusinessServicesStatusProvider.getStatus(stateMachine, ((AbstractBusinessServiceVertex) businessServiceEdge.getTarget().getVertex()));
+        final BusinessServiceStateMachine stateMachine = SimulationAwareStateMachineFactory.createStateMachine(businessServiceManager,
+                                                                                                               container.getCriteria());
+        final Status outgoingStatus = BusinessServicesStatusProvider.getStatus(stateMachine, ref);
+        final Status incomingStatus = BusinessServicesStatusProvider.getStatus(stateMachine,
+                                                                               ((AbstractBusinessServiceVertex) ref.getTarget()
+                                                                                                                   .getVertex()));
 
         formLayout.addComponent(createStatusLabel("Outgoing Severity", outgoingStatus));
         formLayout.addComponent(createStatusLabel("Incoming Severity", incomingStatus));
@@ -80,18 +82,13 @@ public class BusinessServiceEdgeStatusInfoPanelItem extends EdgeInfoPanelItem {
     }
 
     @Override
-    protected boolean contributesTo(EdgeRef edgeRef, GraphContainer container) {
+    protected boolean contributeTo(EdgeRef edgeRef, GraphContainer container) {
         return BusinessServicesTopologyProvider.TOPOLOGY_NAMESPACE.equals(edgeRef.getNamespace());
     }
 
     @Override
-    public int getOrder() {
-        return 0;
-    }
-
-    @Override
-    protected String getTitle(EdgeRef edgeRef) {
-        return "Map Function Status";
+    protected InfoPanelItem createInfoPanelItem(EdgeRef ref, GraphContainer graphContainer) {
+        return new DefaultInfoPanelItem().withOrder(0).withTitle("Map Function Status").withComponent(createComponent((BusinessServiceEdge) ref, graphContainer));
     }
 }
 

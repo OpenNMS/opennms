@@ -29,21 +29,26 @@
 package org.opennms.features.topology.api.info;
 
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Optional;
 
 import org.opennms.features.topology.api.GraphContainer;
-import org.opennms.features.topology.api.topo.Vertex;
-import org.opennms.features.topology.api.topo.VertexRef;
+import org.opennms.features.topology.api.info.item.InfoPanelItem;
+import org.opennms.features.topology.api.topo.Ref;
 
-public abstract class VertexInfoPanelItem extends SingleSelectedInfoPanelItem<VertexRef> {
+public abstract class SingleSelectedInfoPanelItemProvider<T extends Ref> implements InfoPanelItemProvider {
 
     @Override
-    protected VertexRef findSingleSelectedItem(GraphContainer container) {
-        Collection<VertexRef> selectedVertexRefs = container.getSelectionManager().getSelectedVertexRefs();
-        if (selectedVertexRefs.size() == 1) {
-            final VertexRef vertexRef = selectedVertexRefs.iterator().next();
-            Vertex vertex = container.getBaseTopology().getVertex(vertexRef);
-            return vertex;
-        }
-        return null;
+    public Collection<? extends InfoPanelItem> getContributions(GraphContainer container) {
+        return findSingleSelectedItem(container)
+                .filter(ref -> contributeTo(ref, container))
+                .map(ref -> Collections.singleton(createInfoPanelItem(ref, container)))
+                .orElseGet(Collections::emptySet);
     }
+
+    protected abstract boolean contributeTo(T ref, GraphContainer graphContainer);
+
+    protected abstract InfoPanelItem createInfoPanelItem(T ref, GraphContainer graphContainer);
+
+    protected abstract Optional<T> findSingleSelectedItem(GraphContainer container);
 }

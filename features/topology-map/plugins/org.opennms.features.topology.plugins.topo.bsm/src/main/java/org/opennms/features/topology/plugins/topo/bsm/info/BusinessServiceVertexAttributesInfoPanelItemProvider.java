@@ -33,7 +33,9 @@ import static org.opennms.netmgt.vaadin.core.UIHelper.createLabel;
 import java.util.Map;
 
 import org.opennms.features.topology.api.GraphContainer;
-import org.opennms.features.topology.api.info.VertexInfoPanelItem;
+import org.opennms.features.topology.api.info.VertexInfoPanelItemProvider;
+import org.opennms.features.topology.api.info.item.DefaultInfoPanelItem;
+import org.opennms.features.topology.api.info.item.InfoPanelItem;
 import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.features.topology.plugins.topo.bsm.BusinessServiceVertex;
 import org.opennms.netmgt.bsm.service.BusinessServiceManager;
@@ -43,13 +45,13 @@ import org.opennms.netmgt.vaadin.core.TransactionAwareBeanProxyFactory;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.FormLayout;
 
-public class BusinessServiceVertexAttributesInfoPanelItem extends VertexInfoPanelItem {
+public class BusinessServiceVertexAttributesInfoPanelItemProvider extends VertexInfoPanelItemProvider {
 
     private BusinessServiceManager businessServiceManager;
 
     private final TransactionAwareBeanProxyFactory transactionAwareBeanProxyFactory;
 
-    public BusinessServiceVertexAttributesInfoPanelItem(TransactionAwareBeanProxyFactory transactionAwareBeanProxyFactory) {
+    public BusinessServiceVertexAttributesInfoPanelItemProvider(TransactionAwareBeanProxyFactory transactionAwareBeanProxyFactory) {
         this.transactionAwareBeanProxyFactory = transactionAwareBeanProxyFactory;
     }
 
@@ -57,19 +59,12 @@ public class BusinessServiceVertexAttributesInfoPanelItem extends VertexInfoPane
         this.businessServiceManager = transactionAwareBeanProxyFactory.createProxy(businessServiceManager);
     }
 
-    @Override
-    protected boolean contributesTo(VertexRef vertexRef, GraphContainer container) {
-        return vertexRef instanceof BusinessServiceVertex
-               && !this.businessServiceManager.getBusinessServiceById(((BusinessServiceVertex) vertexRef).getServiceId()).getAttributes().isEmpty();
-    }
-
-    @Override
-    protected Component getComponent(VertexRef ref, GraphContainer container) {
+    private Component createComponent(VertexRef ref) {
         final FormLayout formLayout = new FormLayout();
         formLayout.setSpacing(false);
         formLayout.setMargin(false);
 
-        final BusinessService businessService = this.businessServiceManager.getBusinessServiceById(((BusinessServiceVertex) ref).getServiceId());
+        final BusinessService businessService = businessServiceManager.getBusinessServiceById(((BusinessServiceVertex) ref).getServiceId());
 
         for (Map.Entry<String, String> e : businessService.getAttributes().entrySet()) {
             formLayout.addComponent(createLabel(e.getKey(), e.getValue()));
@@ -79,14 +74,18 @@ public class BusinessServiceVertexAttributesInfoPanelItem extends VertexInfoPane
     }
 
     @Override
-    protected String getTitle(VertexRef ref) {
-        return "Business Service Attributes";
+    protected boolean contributeTo(VertexRef vertexRef, GraphContainer container) {
+        return vertexRef instanceof BusinessServiceVertex && !this.businessServiceManager.getBusinessServiceById(((BusinessServiceVertex) vertexRef).getServiceId()).getAttributes().isEmpty();
     }
 
     @Override
-    public int getOrder() {
-        return 10;
+    protected InfoPanelItem createInfoPanelItem(VertexRef ref, GraphContainer graphContainer) {
+        return new DefaultInfoPanelItem()
+                .withOrder(10)
+                .withTitle("Business Service Attributes")
+                .withComponent(createComponent(ref));
     }
+
 }
 
 
