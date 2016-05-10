@@ -36,6 +36,8 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 import org.opennms.netmgt.snmp.CollectionTracker;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
@@ -63,6 +65,7 @@ import org.snmp4j.ScopedPDU;
 import org.snmp4j.Snmp;
 import org.snmp4j.TransportMapping;
 import org.snmp4j.event.ResponseEvent;
+import org.snmp4j.event.ResponseListener;
 import org.snmp4j.mp.MPv3;
 import org.snmp4j.mp.MessageProcessingModel;
 import org.snmp4j.mp.PduHandle;
@@ -194,7 +197,19 @@ public class Snmp4JStrategy implements SnmpStrategy {
         
         return buildAndSendPdu(agentConfig, PDU.GET, oids, null);
     }
-    
+
+    @Override
+    public CompletableFuture<SnmpValue[]> getAsync(SnmpAgentConfig agentConfig, SnmpObjId[] oids) {
+        final CompletableFuture<SnmpValue[]> future = new CompletableFuture<>();
+        final Snmp4JAgentConfig snmp4jAgentConfig = new Snmp4JAgentConfig(agentConfig);
+        final PDU pdu = buildPdu(snmp4jAgentConfig, PDU.GET, oids, null);
+        if (pdu == null) {
+            future.completeExceptionally(new Exception("Invalid PDU for OIDs: " + Arrays.toString(oids)));
+        }
+        send(snmp4jAgentConfig, pdu, true, future);
+        return future;
+    }
+
     /**
      * SNMP4J getNext implementation
      * 
@@ -242,45 +257,65 @@ public class Snmp4JStrategy implements SnmpStrategy {
      * adapted from default SnmpAgentConfig values to those compatible with the SNMP4J library.
      */
     protected SnmpValue[] send(Snmp4JAgentConfig agentConfig, PDU pdu, boolean expectResponse) {
+        final CompletableFuture<SnmpValue[]> future = new CompletableFuture<>();
+        send(agentConfig, pdu, expectResponse, future);
+        try {
+            return future.get();
+        } catch (ExecutionException | InterruptedException e) {
+            LOG.error(e.getMessage(), e);
+            return new SnmpValue[] { null };
+        }
+    }
+
+    private void send(Snmp4JAgentConfig agentConfig, PDU pdu, boolean expectResponse, CompletableFuture<SnmpValue[]> future) {
         Snmp session;
 
         try {
             session = agentConfig.createSnmpSession();
         } catch (IOException e) {
             LOG.error("send: Could not create SNMP session for agent {}", agentConfig, e);
-            return new SnmpValue[] { null };
+            future.completeExceptionally(new Exception("Could not create SNMP session for agent"));
+            return;
+        }
+
+        if (expectResponse) {
+            try {
+                session.listen();
+            } catch (IOException e) {
+                LOG.error("send: error setting up listener for SNMP responses", e);
+                future.completeExceptionally(new Exception("error setting up listener for SNMP responses"));
+                return;
+            }
         }
 
         try {
             if (expectResponse) {
-                try {
-                    session.listen();
-                } catch (IOException e) {
-                    LOG.error("send: error setting up listener for SNMP responses", e);
-                    return new SnmpValue[] { null };
-                }
+                session.send(pdu, agentConfig.getTarget(), null, new ResponseListener() {
+                    @Override
+                    public void onResponse(ResponseEvent responseEvent) {
+                        if (expectResponse) {
+                            try {
+                                future.complete(processResponse(agentConfig, responseEvent));
+                            } catch (IOException e) {
+                                future.completeExceptionally(e);
+                            }
+                        }
+                        closeQuietly(session);
+                    }
+                });
+            } else {
+                session.send(pdu, agentConfig.getTarget());
+                future.complete(null);
+                closeQuietly(session);
             }
-    
-            try {
-                final ResponseEvent responseEvent = session.send(pdu, agentConfig.getTarget());
-
-                if (expectResponse) {
-                    return processResponse(agentConfig, responseEvent);
-                } else {
-                    return null;
-                }
-            } catch (final IOException e) {
-                LOG.error("send: error during SNMP operation", e);
-                return new SnmpValue[] { null };
-            } catch (final RuntimeException e) {
-                LOG.error("send: unexpected error during SNMP operation", e);
-                return new SnmpValue[] { null };
-            }
-        } finally {
-            closeQuietly(session);
+        } catch (final IOException e) {
+            LOG.error("send: error during SNMP operation", e);
+            future.completeExceptionally(e);
+        } catch (final RuntimeException e) {
+            LOG.error("send: unexpected error during SNMP operation", e);
+            future.completeExceptionally(e);
         }
     }
-    
 
     protected PDU buildPdu(Snmp4JAgentConfig agentConfig, int pduType, SnmpObjId[] oids, SnmpValue[] values) {
         PDU pdu = agentConfig.createPdu(pduType);
@@ -611,5 +646,4 @@ public class Snmp4JStrategy implements SnmpStrategy {
 	public byte[] getLocalEngineID() {
 		return MPv3.createLocalEngineID();
 	}
-
 }
