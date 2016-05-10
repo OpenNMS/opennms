@@ -6,6 +6,7 @@ http://www.osgi.org/xmlns/blueprint/v1.0.0 http://www.osgi.org/xmlns/blueprint/v
 http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0 http://aries.apache.org/schemas/blueprint-cm/blueprint-cm-1.1.0.xsd
 ">
 	<reference id="nodeDao" interface="org.opennms.netmgt.dao.api.NodeDao" availability="mandatory" />
+	<reference id="measurementsService" interface="org.opennms.netmgt.measurements.api.MeasurementsService" availability="mandatory"/>
 
 	<bean id="graphMLMetaInfo" class="org.opennms.features.topology.api.topo.DefaultMetaInfo">
 		<property name="name" value="GraphML Topology Provider"/>
@@ -25,6 +26,7 @@ http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0 http://aries.apache.
 	<service interface="org.opennms.features.topology.api.info.InfoPanelItemProvider">
 		<bean class="org.opennms.features.topology.plugins.topo.graphml.info.GenericInfoPanelItemProvider">
 			<argument ref="nodeDao" />
+			<argument ref="measurementsService"/>
 		</bean>
 	</service>
 </blueprint>

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  * <p>
- * Copyright (C) 2015 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2015 The OpenNMS Group, Inc.
+ * Copyright (C) 2016 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
  * <p>
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  * <p>
@@ -28,88 +28,10 @@
 
 package org.opennms.netmgt.measurements.api;
 
-import java.util.Map;
-
-import com.google.common.base.Preconditions;
-import com.google.common.collect.RowSortedTable;
-
-import org.opennms.netmgt.measurements.api.exceptions.FetchException;
 import org.opennms.netmgt.measurements.api.exceptions.MeasurementException;
-import org.opennms.netmgt.measurements.api.exceptions.ResourceNotFoundException;
-import org.opennms.netmgt.measurements.api.exceptions.ValidationException;
 import org.opennms.netmgt.measurements.model.QueryRequest;
 import org.opennms.netmgt.measurements.model.QueryResponse;
-import org.opennms.netmgt.measurements.model.Source;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
-@Component("measurementsService")
-public class MeasurementsService {
-
-    private final MeasurementFetchStrategy fetchStrategy;
-    private final ExpressionEngine expressionEngine;
-    private final FilterEngine filterEngine;
-    private final QueryRequestValidator queryRequestValidator = new QueryRequestValidator();
-
-    @Autowired
-    public MeasurementsService(MeasurementFetchStrategy fetchStrategy, ExpressionEngine expressionEngine, FilterEngine filterEngine) {
-        this.fetchStrategy = Preconditions.checkNotNull(fetchStrategy);
-        this.expressionEngine = Preconditions.checkNotNull(expressionEngine);
-        this.filterEngine = Preconditions.checkNotNull(filterEngine);
-    }
-
-    public QueryResponse query(QueryRequest request) throws MeasurementException {
-        validate(request);
-
-        // Fetch the measurements
-        FetchResults results;
-        try {
-            results = fetchStrategy.fetch(
-                    request.getStart(),
-                    request.getEnd(),
-                    request.getStep(),
-                    request.getMaxRows(),
-                    request.getHeartbeat(),
-                    request.getInterval(),
-                    request.getSources(),
-                    request.isRelaxed());
-        } catch (Exception e) {
-            throw new FetchException(e, "Fetch failed: {}", e.getMessage());
-        }
-        if (results == null) {
-            throw new ResourceNotFoundException(request);
-        }
-
-        // Apply the expression to the fetch results
-        expressionEngine.applyExpressions(request, results);
-
-        // Apply the filters
-        if (!request.getFilters().isEmpty()) {
-            RowSortedTable<Long, String, Double> table = results.asRowSortedTable();
-            filterEngine.filter(request.getFilters(), table);
-            results = new FetchResults(table, results.getStep(), results.getConstants());
-        }
-
-        // Remove any transient values belonging to sources
-        final Map<String, double[]> columns = results.getColumns();
-        for (final Source source : request.getSources()) {
-            if (source.getTransient()) {
-                columns.remove(source.getLabel());
-            }
-        }
-
-        // Build the response
-        final QueryResponse response = new QueryResponse();
-        response.setStart(request.getStart());
-        response.setEnd(request.getEnd());
-        response.setStep(results.getStep());
-        response.setTimestamps(results.getTimestamps());
-        response.setColumns(results.getColumns());
-        response.setConstants(results.getConstants());
-        return response;
-    }
-
-    private void validate(QueryRequest request) throws ValidationException {
-        queryRequestValidator.validate(request);
-    }
+public interface MeasurementsService {
+    QueryResponse query(QueryRequest request) throws MeasurementException;
 }
