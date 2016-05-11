@@ -29,6 +29,7 @@
 package org.opennms.features.topology.plugins.topo.graphml.info;
 
 import java.util.Collections;
+import java.util.List;
 
 import org.opennms.netmgt.measurements.api.MeasurementsService;
 import org.opennms.netmgt.measurements.model.QueryRequest;
@@ -38,6 +39,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Throwables;
+import com.google.gwt.thirdparty.guava.common.primitives.Doubles;
 
 public class MeasurementsWrapper {
     private final static Logger LOG = LoggerFactory.getLogger(GenericInfoPanelItemProvider.class);
@@ -49,10 +51,14 @@ public class MeasurementsWrapper {
     }
 
     public double getLastValue(final String resource, final String attribute) {
+        return getLastValue(resource, attribute, "AVERAGE");
+    }
+
+    public double getLastValue(final String resource, final String attribute, final String aggregation) {
         long end = System.currentTimeMillis();
         long start = end - (15 * 60 * 1000);
 
-        QueryResponse.WrappedPrimitive[] columns = queryInt(resource, attribute, start, end, 300000, "AVERAGE").getColumns();
+        QueryResponse.WrappedPrimitive[] columns = queryInt(resource, attribute, start, end, 300000, aggregation).getColumns();
 
         if (columns.length > 0) {
             double[] values = columns[0].getList();
@@ -67,14 +73,14 @@ public class MeasurementsWrapper {
         return Double.NaN;
     }
 
-    public double[] query(final String resource, final String attribute, final long start, final long end, final long step, final String aggregation) {
+    public List<Double> query(final String resource, final String attribute, final long start, final long end, final long step, final String aggregation) {
         QueryResponse.WrappedPrimitive[] columns = queryInt(resource, attribute, start, end, step, aggregation).getColumns();
 
         if (columns.length > 0) {
-            return columns[0].getList();
+            return Doubles.asList(columns[0].getList());
         }
 
-        return new double[] {};
+        return Collections.emptyList();
     }
 
     private QueryResponse queryInt(final String resource, final String attribute, final long start, final long end, final long step, final String aggregation) {

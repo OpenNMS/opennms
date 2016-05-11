@@ -65,6 +65,7 @@ import com.google.common.collect.Sets;
 import com.hubspot.jinjava.Jinjava;
 import com.hubspot.jinjava.interpret.RenderResult;
 import com.hubspot.jinjava.interpret.TemplateError;
+import com.hubspot.jinjava.lib.fn.ELFunctionDefinition;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Label;
@@ -98,6 +99,8 @@ public class GenericInfoPanelItemProvider implements InfoPanelItemProvider {
         this.jinjava = withClassLoaderFix(Jinjava::new);
         this.nodeDao = Objects.requireNonNull(nodeDao);
         this.measurementsService = Objects.requireNonNull(measurementsService);
+
+        this.jinjava.getGlobalContext().registerFunction(new ELFunctionDefinition("System", "currentTimeMillis", System.class, "currentTimeMillis"));
     }
 
     private class TemplateItem implements InfoPanelItem {
