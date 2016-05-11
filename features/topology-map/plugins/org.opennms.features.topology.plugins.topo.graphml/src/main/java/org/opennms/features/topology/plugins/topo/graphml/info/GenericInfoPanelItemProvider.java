@@ -54,6 +54,7 @@ import org.opennms.features.topology.api.topo.EdgeRef;
 import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.features.topology.plugins.topo.graphml.GraphMLVertex;
 import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.measurements.api.MeasurementsService;
 import org.opennms.netmgt.model.OnmsNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -64,6 +65,7 @@ import com.google.common.collect.Sets;
 import com.hubspot.jinjava.Jinjava;
 import com.hubspot.jinjava.interpret.RenderResult;
 import com.hubspot.jinjava.interpret.TemplateError;
+import com.hubspot.jinjava.lib.fn.ELFunctionDefinition;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Label;
@@ -91,9 +93,14 @@ public class GenericInfoPanelItemProvider implements InfoPanelItemProvider {
 
     private final Jinjava jinjava;
 
-    public GenericInfoPanelItemProvider(NodeDao nodeDao) throws InstantiationException, IllegalAccessException {
+    private final MeasurementsService measurementsService;
+
+    public GenericInfoPanelItemProvider(NodeDao nodeDao, MeasurementsService measurementsService) throws InstantiationException, IllegalAccessException {
         this.jinjava = withClassLoaderFix(Jinjava::new);
         this.nodeDao = Objects.requireNonNull(nodeDao);
+        this.measurementsService = Objects.requireNonNull(measurementsService);
+
+        this.jinjava.getGlobalContext().registerFunction(new ELFunctionDefinition("System", "currentTimeMillis", System.class, "currentTimeMillis"));
     }
 
     private class TemplateItem implements InfoPanelItem {
@@ -241,8 +248,7 @@ public class GenericInfoPanelItemProvider implements InfoPanelItemProvider {
                 .map(this::createVertexContext)
                 .ifPresent(context::putAll);
 
-        // TODO Measurements-API
-//        context.put("measurements", new MeasurementsWrapper(measurementsService));
+        context.put("measurements", new MeasurementsWrapper(measurementsService));
 
         return context;
     }
