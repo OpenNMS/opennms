@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2016 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,33 +26,47 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.topology.app.internal.gwt.client;
+package org.opennms.features.topology.app.internal.support;
 
-import com.google.gwt.core.client.GWT;
-import com.vaadin.client.communication.StateChangeEvent;
-import com.vaadin.client.ui.AbstractComponentConnector;
-import com.vaadin.shared.ui.Connect;
+import com.vaadin.server.FontIcon;
+import com.vaadin.server.Resource;
 
-@Connect(org.opennms.features.topology.app.internal.ui.LastUpdatedLabel.class)
-public class LastUpdatedLabelConnector extends AbstractComponentConnector{
+public enum IonicIcons implements FontIcon {
 
+    ANDROID_EXPAND(0XF386);
+
+    private static final String FONT_FAMILY = "Ionicons";
+
+    private int codepoint;
+
+    IonicIcons(int codepoint) {
+        this.codepoint = codepoint;
+    }
+
+    /**
+     * Unsupported: {@link FontIcon} does not have a MIME type and is not a
+     * {@link Resource} that can be used in a context where a MIME type would be
+     * needed.
+     */
     @Override
-    protected VLastUpdatedLabel createWidget() {
-        return GWT.create(VLastUpdatedLabel.class);
+    public String getMIMEType() {
+        throw new UnsupportedOperationException(FontIcon.class.getSimpleName()
+                + " should not be used where a MIME type is needed.");
     }
 
     @Override
-    public VLastUpdatedLabel getWidget() {
-        return (VLastUpdatedLabel) super.getWidget();
+    public String getFontFamily() {
+        return FONT_FAMILY;
     }
 
     @Override
-    public LastUpdatedLabelState getState() {
-        return (LastUpdatedLabelState) super.getState();
+    public int getCodepoint() {
+        return codepoint;
     }
 
     @Override
-    public void onStateChanged(StateChangeEvent stateChangeEvent) {
-        getWidget().setUpdateTime(getState().getUpdateTime());
+    public String getHtml() {
+        return "<span class=\"v-icon\" style=\"font-family: " + FONT_FAMILY
+                + ";\">&#x" + Integer.toHexString(codepoint) + ";</span>";
     }
 }

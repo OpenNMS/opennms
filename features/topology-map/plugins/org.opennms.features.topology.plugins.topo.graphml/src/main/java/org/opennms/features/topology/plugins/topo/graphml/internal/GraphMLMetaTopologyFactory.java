@@ -36,6 +36,8 @@ import org.opennms.features.topology.api.topo.DefaultMetaInfo;
 import org.opennms.features.topology.api.topo.MetaInfo;
 import org.opennms.features.topology.api.topo.MetaTopologyProvider;
 import org.opennms.features.topology.plugins.topo.graphml.GraphMLMetaTopologyProvider;
+import org.opennms.features.topology.api.topo.SearchProvider;
+import org.opennms.features.topology.plugins.topo.graphml.GraphMLSearchProvider;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceRegistration;
@@ -82,6 +84,11 @@ public class GraphMLMetaTopologyFactory implements ManagedServiceFactory {
 
 			m_registrations.put(pid, registration);
 			m_providers.put(pid, metaTopologyProvider);
+
+			// TODO search provider
+			// Create and register a SearchProvider for the GraphML document
+//			GraphMLSearchProvider searchProvider = new GraphMLSearchProvider(topoProvider);
+//			m_bundleContext.registerService(SearchProvider.class, searchProvider, new Hashtable<>());
 		} else {
 			m_providers.get(pid).setTopologyLocation(location);
 			ServiceRegistration<MetaTopologyProvider> registration = m_registrations.get(pid);
@@ -100,9 +107,7 @@ public class GraphMLMetaTopologyFactory implements ManagedServiceFactory {
 		if (registration != null) {
 			registration.unregister();
 		}
-		
 		m_providers.remove(pid);
-			
 	}
 
 	public MetaInfo getMetaInfo() {

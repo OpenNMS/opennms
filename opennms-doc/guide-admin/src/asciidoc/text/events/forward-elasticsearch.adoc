@@ -3,9 +3,9 @@
 :imagesdir: ../../images
 
 [[ga-events-forwarding-elastic]]
-=== Forwarding Events to Elasticsearch
+=== Forwarding Events to Elasticsearch 1.x
 
-_OpenNMS_ can be configured to forward all _Events_ and _Alarms_ to https://www.elastic.co/products/elasticsearch[Elasticsearch] for indexing, long time archiving, plotting with _Grafana_ and browsing with _Kibana_.
+_OpenNMS_ can be configured to forward all _Events_ and _Alarms_ to https://www.elastic.co/products/elasticsearch[Elasticsearch 1.x] for indexing, long time archiving, plotting with _Grafana_ and browsing with _Kibana_.
 
 NOTE: _Elasticsearch_ is not intended as a replacement for _PostgreSQL_ which is still a required component to run _OpenNMS_.
 

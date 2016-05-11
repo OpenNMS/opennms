@@ -141,6 +141,7 @@ public class GraphMLMetaTopologyProvider implements MetaTopologyProvider {
         this.metaInfo = metaInfo;
     }
 
+    // TODO Validate namespace?
     private void validate(GraphML graphML) throws InvalidGraphException {
         final List<String> nodeIds = new ArrayList<>();
         final List<String> edgeIds = new ArrayList<>();

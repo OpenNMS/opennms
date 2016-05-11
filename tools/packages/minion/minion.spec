@@ -115,6 +115,8 @@ mkdir -p $RPM_BUILD_ROOT%{minioninstprefix}
 tar zxvf $RPM_BUILD_DIR/%{_name}-%{version}-%{release}/features/minion/container/karaf/target/karaf-*.tar.gz -C $RPM_BUILD_ROOT%{minioninstprefix} --strip-components=1
 # Remove the data directory
 rm -rf $RPM_BUILD_ROOT%{minioninstprefix}/data
+# Remove the demos directory
+rm -rf $RPM_BUILD_ROOT%{minioninstprefix}/demos
 
 # Copy over the run script
 mkdir -p $RPM_BUILD_ROOT%{_initrddir}
@@ -133,28 +135,20 @@ tar zxvf $RPM_BUILD_DIR/%{_name}-%{version}-%{release}/features/minion/repositor
 
 # container package files
 find $RPM_BUILD_ROOT%{minioninstprefix} ! -type d | \
-    sed -e "s|^$RPM_BUILD_ROOT|%attr(644,root,root) |" | \
     grep -v %{minioninstprefix}/bin | \
-    grep -v %{minioninstprefix}/repositories | \
+    grep -v %{minionrepoprefix} | \
     grep -v %{minioninstprefix}/etc/featuresBoot.d | \
     grep -v %{minioninstprefix}/etc/org.opennms.minion.controller.cfg | \
+    sed -e "s|^$RPM_BUILD_ROOT|%attr(644,root,root) |" | \
     sort > %{_tmppath}/files.container
 find $RPM_BUILD_ROOT%{minioninstprefix}/bin ! -type d | \
     sed -e "s|^$RPM_BUILD_ROOT|%attr(755,root,root) |" | \
     sort >> %{_tmppath}/files.container
+# Exclude subdirs of the repository directory
 find $RPM_BUILD_ROOT%{minioninstprefix} -type d | \
+    grep -v %{minionrepoprefix}/ | \
     sed -e "s,^$RPM_BUILD_ROOT,%dir ," | \
     sort >> %{_tmppath}/files.container
-
-# features-core package files
-find $RPM_BUILD_ROOT%{minionrepoprefix}/core ! -type d | \
-    sed -e "s|^$RPM_BUILD_ROOT|%attr(644,root,root) |" | \
-    sort > %{_tmppath}/files.core
-
-# features-default package files
-find $RPM_BUILD_ROOT%{minionrepoprefix}/default ! -type d | \
-    sed -e "s|^$RPM_BUILD_ROOT|%attr(644,root,root) |" | \
-    sort > %{_tmppath}/files.default
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -168,20 +162,29 @@ rm -rf $RPM_BUILD_ROOT
 %attr(644,root,root) %{minioninstprefix}/etc/featuresBoot.d/.readme
 
 %post container
-# Generate an SSH key
+# Clean out the data directory
+rm -rf %{minioninstprefix}/data
+# Generate an SSH key if necessary
 if [ ! -f %{minioninstprefix}/etc/host.key ]; then
     /usr/bin/ssh-keygen -t rsa -N "" -b 4096 -f %{minioninstprefix}/etc/host.key
 fi
 
-%files features-core -f %{_tmppath}/files.core
-%defattr(664 root root 775)
+%files features-core
+%defattr(644 root root 755)
+%{minionrepoprefix}/core
 %config(noreplace) %{minioninstprefix}/etc/org.opennms.minion.controller.cfg
 
 %post features-core
 # Generate a new UUID
 UUID=$(/usr/bin/uuidgen -t)
 sed -i "s|id =.*|id = $UUID|g" "%{minioninstprefix}/etc/org.opennms.minion.controller.cfg"
+# Remove the directory used as the local Maven repo cache
+rm -rf %{minionrepoprefix}/.local
 
-%files features-default -f %{_tmppath}/files.default
-%defattr(664 root root 775)
+%files features-default
+%defattr(644 root root 755)
+%{minionrepoprefix}/default
 
+%post features-default
+# Remove the directory used as the local Maven repo cache
+rm -rf %{minionrepoprefix}/.local

@@ -142,6 +142,8 @@ public class SyslogReceiverCamelNettyImpl implements SyslogReceiver {
         //Adding netty component to camel inorder to resolve OSGi loading issues
         NettyComponent nettyComponent = new NettyComponent();
         m_camel = new DefaultCamelContext(registry);
+        // Set the context name so that it shows up nicely in JMX
+        m_camel.setName("org.opennms.features.events.syslog.listener.camel-netty");
         m_camel.addComponent("netty", nettyComponent);
 
         try {
