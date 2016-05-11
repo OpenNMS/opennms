@@ -67,5 +67,6 @@
 		<constructor-arg value="file:${opennms.home}/etc/vacuumd-configuration.xml" />
 	</bean>
 
-</beans>
+    <bean id="jmxDataCollectionConfigDao" class="org.opennms.netmgt.config.JMXDataCollectionConfigDao" />
 
+</beans>

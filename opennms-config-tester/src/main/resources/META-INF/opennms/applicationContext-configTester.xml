@@ -51,7 +51,7 @@
         <entry key="javamail-configuration.xml" value="javamailConfigurationDao"/>
         <entry key="jdbc-datacollection-config.xml" value="jdbcDataCollectionConfigDao"/>
         <entry key="jmx-config.xml" value="jmxConfigDao"/>
-        <entry key="jmx-datacollection-config.xml" value="jmxDataCollectionConfigFactory"/>
+        <entry key="jmx-datacollection-config.xml" value="jmxDataCollectionConfigDao"/>
         <entry key="ksc-performance-reports.xml" value="kscReportFactory"/>
         <entry key="magic-users.properties" value="userDao"/>
         <entry key="microblog-configuration.xml" value="microblogConfigurationDao"/>
@@ -229,13 +229,9 @@
   <bean id="jmxConfigDao" class="org.opennms.netmgt.dao.jmx.JmxConfigDaoJaxb">
     <property name="configResource" value="file:${opennms.home}/etc/jmx-config.xml"/>
   </bean>
-  
-  <bean id="jmxDataCollectionConfigFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-    <property name="staticMethod"><value>org.opennms.netmgt.config.JMXDataCollectionConfigFactory.init</value></property>
-  </bean>
 
-  <bean id="jmxDataCollectionConfigFactory" class="org.opennms.netmgt.config.JMXDataCollectionConfigFactory" depends-on="jmxDataCollectionConfigFactory-init" factory-method="getInstance"/>
-    
+  <bean id="jmxDataCollectionConfigDao" class="org.opennms.netmgt.config.JMXDataCollectionConfigDao" />
+
   <bean id="kscReportFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
     <property name="staticMethod"><value>org.opennms.netmgt.config.KSC_PerformanceReportFactory.init</value></property>
   </bean>

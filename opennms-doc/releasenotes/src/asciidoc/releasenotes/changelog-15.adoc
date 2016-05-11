@@ -7,7 +7,7 @@
 
 Release 15.0.2 is the latest stable release of OpenNMS.  It consists of a large number of bugfixes and other small changes included in Meridian 2015.1.0.
 
-The codename for 15.0.1 is _Psychonauts_.
+The codename for 15.0.2 is _Psychonauts_.
 
 ===== Sub-task
 * Enhance documentation for VmwareCimMonitor (Issue http://issues.opennms.org/browse/NMS-7214[NMS-7214])

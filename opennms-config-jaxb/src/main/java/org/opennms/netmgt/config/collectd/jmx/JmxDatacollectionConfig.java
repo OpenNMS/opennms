@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2012 The OpenNMS Group, Inc.
+ * Copyright (C) 2012-2016 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -40,6 +40,7 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+
 import java.util.Objects;
 
 @XmlRootElement(name = "jmx-datacollection-config")
@@ -136,4 +137,17 @@ public class JmxDatacollectionConfig implements java.io.Serializable {
         this._rrdRepository = rrdRepository;
     }
 
+    public JmxDatacollectionConfig merge(JmxDatacollectionConfig other) {
+        if (other == null) {
+            return this;
+        }
+        // Overwrite the rrdRepository iff it's null
+        if (_rrdRepository == null && other._rrdRepository != null) {
+            _rrdRepository = other._rrdRepository;
+        }
+
+        // Merge the lists of collections
+        getJmxCollectionList().addAll(other.getJmxCollectionList());
+        return this;
+    }
 }

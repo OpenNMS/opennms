@@ -36,6 +36,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 
 import org.opennms.netmgt.snmp.CollectionTracker;
 import org.opennms.netmgt.snmp.InetAddrUtils;
@@ -126,6 +127,11 @@ public class MockSnmpStrategy implements SnmpStrategy {
     		values.add(container.findValueForOid(oid));
         }
         return values.toArray(EMPTY_SNMP_VALUE_ARRAY);
+    }
+
+    @Override
+    public CompletableFuture<SnmpValue[]> getAsync(SnmpAgentConfig agentConfig, SnmpObjId[] oids) {
+        return CompletableFuture.completedFuture(get(agentConfig, oids));
     }
 
     @Override
