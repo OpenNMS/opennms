@@ -33,6 +33,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
+import kafka.server.KafkaConfig;
+import kafka.server.KafkaServer;
+
 import org.apache.camel.CamelContext;
 import org.apache.camel.Component;
 import org.apache.camel.Exchange;
@@ -44,6 +47,8 @@ import org.apache.camel.impl.DefaultCamelContext;
 import org.apache.camel.impl.SimpleRegistry;
 import org.apache.camel.test.blueprint.CamelBlueprintTestSupport;
 import org.apache.camel.util.KeyValueHolder;
+import org.apache.curator.test.TestingServer;
+import org.junit.After;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -57,6 +62,12 @@ import org.springframework.test.context.ContextConfiguration;
 public class SyslogdHandlerKafkaIT extends CamelBlueprintTestSupport {
 
 	private static final Logger LOG = LoggerFactory.getLogger(SyslogdHandlerKafkaIT.class);
+	
+	private static KafkaConfig kafkaConfig;
+	
+	private KafkaServer kafkaServer;
+	private  TestingServer zkTestServer;
+	
 
 	/**
 	 * Use Aries Blueprint synchronous mode to avoid a blueprint deadlock bug.
@@ -68,10 +79,26 @@ public class SyslogdHandlerKafkaIT extends CamelBlueprintTestSupport {
 	public void doPreSetup() throws Exception {
 		System.setProperty("org.apache.aries.blueprint.synchronous", Boolean.TRUE.toString());
 		System.setProperty("de.kalpatec.pojosr.framework.events.sync", Boolean.TRUE.toString());
+		
+		zkTestServer = new TestingServer(2181);
+    	Properties properties = new Properties();
+    	properties.put("port", "9092");
+    	properties.put("host.name", "localhost");
+    	properties.put("broker.id", "5001");
+    	properties.put("enable.zookeeper", "false");
+    	properties.put("zookeeper.connect",zkTestServer.getConnectString());
+    	try{
+    	kafkaConfig = new KafkaConfig(properties);
+    	kafkaServer = new KafkaServer(kafkaConfig, null);
+    	kafkaServer.startup();
+    	}
+    	catch(Exception e){
+    		e.printStackTrace();
+    	}
 	}
 	
     @BeforeClass
-    public static void startActiveMQ() throws Exception {
+    public static void startKafka() throws Exception {
 
     }
 
@@ -137,5 +164,10 @@ public class SyslogdHandlerKafkaIT extends CamelBlueprintTestSupport {
         });
         
         syslogd.start();
+	}
+	
+	@After
+	public void shutDownKafka(){
+		kafkaServer.shutdown();
 	}
 }
