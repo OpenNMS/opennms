@@ -825,6 +825,7 @@ public class TopologyUI extends UI implements CommandUpdateListener, MenuItemUpd
         });
 
         Button showAllMapBtn = new Button();
+        showAllMapBtn.setId("showEntireMapBtn");
         showAllMapBtn.setIcon(FontAwesome.GLOBE);
         showAllMapBtn.setHtmlContentAllowed(true);
         showAllMapBtn.setDescription("Show Entire Map");
